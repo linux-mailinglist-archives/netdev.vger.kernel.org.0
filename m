@@ -2,118 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43CB149A492
+	by mail.lfdr.de (Postfix) with ESMTP id D65F449A497
 	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 03:10:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2375176AbiAYATc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 19:19:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44792 "EHLO
+        id S2375247AbiAYATj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 19:19:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356401AbiAXWz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 17:55:59 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAB4C0680BC
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 13:10:05 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id y15so44326430lfa.9
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 13:10:05 -0800 (PST)
+        with ESMTP id S1844125AbiAXXHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 18:07:51 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C91C09F48F
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 13:17:27 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id i2so16021932wrb.12
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 13:17:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=1xnQF9bLGcpqpvgeBQWxaXO0sby0WkycSwLqzj4kn+w=;
-        b=Ng7RNB8+owqz2sMnqb+D3YKugbGxUS2d4ZMSn0kKJiuCLTY/mLNqhonMbkCvT6pNgx
-         S/YOAAiZ3S6M7RER960DQBd6IePRtB12JLMvyDgw9mdahFFJtw39naV20if2MpmNfdty
-         ykJax6Ty3jejql0vgStXaZ0v7OQt9AsAXmwQTpjqm+DaWnlGLgzy678Jx4GVmUjIyraB
-         +OOuO+azoZgnKz3dcfra6lXZqv1CYnQMe1vqnYyUVkx63qwr/XOWC+qA3Nh6OfNxQOd2
-         1yRH3w+IqhQRnN4I1WqY+9if/oFhxhoqzybaP25gLt0Z7iWoNybnkENrFj+BNumSkhOg
-         l5Rg==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:to:cc:content-language
+         :subject:content-transfer-encoding;
+        bh=z3FqBb/haKpnKgynn4HAsm7mOULNDfWSQcpc7NXlq5s=;
+        b=HhdlaQmlviPY1jYncizwEVflHeD+xHVy1lbIGqMQfPgl74Aj8YpR1JONi/EIOYWuRE
+         q48aPkPZt67BYXCOH4Ur4EKfPCwoGh62B0qTGxeUXHR8eCwJQGwafieB9I+Fi2YgFBOJ
+         1XgH3NZfO0GwY0IPkPHPsUvATd0dTf0NjPtB5TtsDQ6Dvv3+F2Jh30QBl11izNqZcjCv
+         I+CAlUZJwYlBEVaL6q6GJLuvU+aB6MC/1Sam8KgJliRfGJif++NH3d6yWc1uRQm5WEwo
+         KaKKOk9Mtw4eT/WqlhfeGb2s5vYaZbNYiORua4q3dRmfZ5j1RIpojd26kI7BqIt5+JUG
+         oyUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=1xnQF9bLGcpqpvgeBQWxaXO0sby0WkycSwLqzj4kn+w=;
-        b=0YvMX9wr84+FBE8LoGJRe6NNBEOV9A6MYV+YtzLLGSFiXXdUQTn19bCmQObTU0TKuT
-         tPCCiC/dj+aMkG5KF8OKt4L14QB/A37hWz8zh5ck/n86X783QmFUqhIiSdwECuM7phxb
-         dmmCgyAc7KFolMdMy8CcIhtLqa3oa4M6E1KsNscdCosqK2k9D8P7grZmqM35+LsPVUW1
-         g7I+e0rL0DDEViYT2w+lsGZCg82NwLE7xHOPtFM7p0sKwyaooSeFGqNU4fdvZ7QSPvbb
-         hx0SgtgAFfNpuxfouOE6hMPRM4xI3l2kWq13YJhWptQYn0ybNlMV5RcG91AAJ8W2md7i
-         j++w==
-X-Gm-Message-State: AOAM533RltIkt2SFwPYQt4q+/EpG4UywtfDJ1KII1S5YulyhI2IbnBv0
-        3rhYNJ46rvCpqRqQR07iIw/yaFhs/Swuuw==
-X-Google-Smtp-Source: ABdhPJwfE3A4W4S/oUX8Zs78yXqD+R3+6wSR9G234+TTwq7Sz7sfOUAV7oAU3AhIfLvwjpCjsmWiqQ==
-X-Received: by 2002:a19:ae05:: with SMTP id f5mr435716lfc.496.1643058603513;
-        Mon, 24 Jan 2022 13:10:03 -0800 (PST)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id t12sm1009115ljj.118.2022.01.24.13.10.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 13:10:03 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net 2/2] net: dsa: Avoid cross-chip syncing of VLAN filtering
-Date:   Mon, 24 Jan 2022 22:09:44 +0100
-Message-Id: <20220124210944.3749235-3-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220124210944.3749235-1-tobias@waldekranz.com>
-References: <20220124210944.3749235-1-tobias@waldekranz.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from:to
+         :cc:content-language:subject:content-transfer-encoding;
+        bh=z3FqBb/haKpnKgynn4HAsm7mOULNDfWSQcpc7NXlq5s=;
+        b=fEDRy/0W0lpaSnwDdKb4JFh3Ack04kND9npIlJg5u6xBqqKRXqUPAT3CURdAWpL7FA
+         N2CaVLNO9Ad9QkMGZZ7uELufqoNlwiBOvYOrbs1lfVIFdthbjGUmUD/1o5vdHBbVSYef
+         CAivxWWkyaw/enMVMI8DzHQfLgC1Vbw7dhlrAAt8ar0L68k+qAWGjtnChnCOeToiIyQS
+         pI3gzhJdDJrBuOsrGKvwqf/vczqMBTHhWp6Y1nyO9L8hYHpW4rp9H6dQGNW2UpSpA69c
+         Nu4aQPZsqAW+xM/VUjMoF6HEnS6ftugNfCPgmgL2hCYevjCLQJOyyc4tup9RFzbZIsHx
+         0oMg==
+X-Gm-Message-State: AOAM533RDeXyJ6w82sRKnYxnj6oFHct++qN67V1kJBmO7TjrS52LVCIG
+        x1jRbYtBhbxizsT8AA4TRsgOElisD+A=
+X-Google-Smtp-Source: ABdhPJz23Rb8DtiaFY6mHtANtuCns1WKaCkMEpyujlDeTQSu7wcVUZgDdblfzH6REAAF/tE+7gcomQ==
+X-Received: by 2002:a05:6000:15cd:: with SMTP id y13mr10584435wry.421.1643059046005;
+        Mon, 24 Jan 2022 13:17:26 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f4d:2b00:7c08:a48:e7d2:55c0? (p200300ea8f4d2b007c080a48e7d255c0.dip0.t-ipconnect.de. [2003:ea:8f4d:2b00:7c08:a48:e7d2:55c0])
+        by smtp.googlemail.com with ESMTPSA id p15sm14831808wrq.66.2022.01.24.13.17.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 13:17:25 -0800 (PST)
+Message-ID: <6c61ea93-2513-74e9-9e91-1c2c27c8746c@gmail.com>
+Date:   Mon, 24 Jan 2022 22:17:17 +0100
 MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>
+Content-Language: en-US
+Subject: [PATCH net-next] r8169: use new PM macros
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changes to VLAN filtering are not applicable to cross-chip
-notifications.
+This is based on series [0] that extended the PM core. Now the compiler
+can see the PM callbacks also on systems not defining CONFIG_PM.
+The optimizer will remove the functions then in this case.
 
-On a system like this:
+[0] https://lore.kernel.org/netdev/20211207002102.26414-1-paul@crapouillou.net/
 
-.-----.   .-----.   .-----.
-| sw1 +---+ sw2 +---+ sw3 |
-'-1-2-'   '-1-2-'   '-1-2-'
-
-Before this change, upon sw1p1 leaving a bridge, a call to
-dsa_port_vlan_filtering would also be made to sw2p1 and sw3p1.
-
-In this scenario:
-
-.---------.   .-----.   .-----.
-|   sw1   +---+ sw2 +---+ sw3 |
-'-1-2-3-4-'   '-1-2-'   '-1-2-'
-
-When sw1p4 would leave a bridge, dsa_port_vlan_filtering would be
-called for sw2 and sw3 with a non-existing port - leading to array
-out-of-bounds accesses and crashes on mv88e6xxx.
-
-Fixes: d371b7c92d19 ("net: dsa: Unset vlan_filtering when ports leave the bridge")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- net/dsa/switch.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 9f9b70d6070a..517cc83d13cc 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -180,9 +180,11 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
- 						info->sw_index, info->port,
- 						info->bridge);
- 
--	err = dsa_switch_sync_vlan_filtering(ds, info);
--	if (err)
--		return err;
-+	if (ds->dst->index == info->tree_index && ds->index == info->sw_index) {
-+		err = dsa_switch_sync_vlan_filtering(ds, info);
-+		if (err)
-+			return err;
-+	}
- 
- 	return dsa_tag_8021q_bridge_leave(ds, info);
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 19e2621e0..ca95e9266 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4843,8 +4843,6 @@ static void rtl8169_net_suspend(struct rtl8169_private *tp)
+ 		rtl8169_down(tp);
  }
+ 
+-#ifdef CONFIG_PM
+-
+ static int rtl8169_runtime_resume(struct device *dev)
+ {
+ 	struct rtl8169_private *tp = dev_get_drvdata(dev);
+@@ -4860,7 +4858,7 @@ static int rtl8169_runtime_resume(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int __maybe_unused rtl8169_suspend(struct device *device)
++static int rtl8169_suspend(struct device *device)
+ {
+ 	struct rtl8169_private *tp = dev_get_drvdata(device);
+ 
+@@ -4873,7 +4871,7 @@ static int __maybe_unused rtl8169_suspend(struct device *device)
+ 	return 0;
+ }
+ 
+-static int __maybe_unused rtl8169_resume(struct device *device)
++static int rtl8169_resume(struct device *device)
+ {
+ 	struct rtl8169_private *tp = dev_get_drvdata(device);
+ 
+@@ -4915,13 +4913,11 @@ static int rtl8169_runtime_idle(struct device *device)
+ }
+ 
+ static const struct dev_pm_ops rtl8169_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(rtl8169_suspend, rtl8169_resume)
+-	SET_RUNTIME_PM_OPS(rtl8169_runtime_suspend, rtl8169_runtime_resume,
+-			   rtl8169_runtime_idle)
++	SYSTEM_SLEEP_PM_OPS(rtl8169_suspend, rtl8169_resume)
++	RUNTIME_PM_OPS(rtl8169_runtime_suspend, rtl8169_runtime_resume,
++		       rtl8169_runtime_idle)
+ };
+ 
+-#endif /* CONFIG_PM */
+-
+ static void rtl_wol_shutdown_quirk(struct rtl8169_private *tp)
+ {
+ 	/* WoL fails with 8168b when the receiver is disabled. */
+@@ -5460,9 +5456,7 @@ static struct pci_driver rtl8169_pci_driver = {
+ 	.probe		= rtl_init_one,
+ 	.remove		= rtl_remove_one,
+ 	.shutdown	= rtl_shutdown,
+-#ifdef CONFIG_PM
+-	.driver.pm	= &rtl8169_pm_ops,
+-#endif
++	.driver.pm	= pm_ptr(&rtl8169_pm_ops),
+ };
+ 
+ module_pci_driver(rtl8169_pci_driver);
 -- 
-2.25.1
+2.34.1
 
