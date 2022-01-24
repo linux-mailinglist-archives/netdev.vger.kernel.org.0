@@ -2,159 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8594C498436
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 17:04:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A90874982EA
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 16:03:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238274AbiAXQEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 11:04:44 -0500
-Received: from mail-dm6nam10on2058.outbound.protection.outlook.com ([40.107.93.58]:47456
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241090AbiAXQEc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jan 2022 11:04:32 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bj4Q+wHN21g+Dp+jZppHv5qCOTe2R6qp+lGC8QCq/+Y90ezX6bgCJhJQlc0eWrl6sarHwqaFOnxggBBrTIUy5pzFEws0dX203r5Dy5paJwiPCCX1keT5E1zVXxRgEEeOYmPYKs/NAnGDyRKnEZOx9yH8IvXVYbJOVsIkTWFf8ozUnDThqdU3Q+2yfyxPM5QeT0mLnxt3faGSeV9dzLdHf74nPVHL7k5kB/LQ8Ulo2DMR0WfcDzWjREllzDfo2E0I0V6y3fYOvFaGYu+lAfl1PPYODtVFrgfOh6JkdvlpbHwqa4otlwPcq966NL7hsvGpDHDEiOck3BOtWV1HfjWazQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=G9Rqklwm6xmRPZUnmBs/xzlDuJ0RiAGE0HY1U/tx6zw=;
- b=WkQp5TnMNlRFJF0zXIlYT2cZ7L3PgtAO7BGH1pbqVSzYJP10xHQlxz/nVJzeKPG/stnbPbHCM/1zOoz8d7bWWDnASZAFSevGBF89tydrFiadC0riP4oHPVB3U1vb0iKHzFLzvs01aWd3l8qU/gIdapUObkGHgTKiMCU5g0o05WRTlokVrIWxqcqIYZoWP7nhTkicI2qr5Dp+Vgg3Wt2Qkbl/RSFZOO5w3a+waWCEvRWW0RsDpLU3jXorRCtpgqisYQ+Go37J7Ip+gmifD2cZ78/RI5InC27e53j6S9oXMPkBsJ1VzDz/gaeXfBJNnMtzsxrvjiGYdgMLKIaFGFw/Ow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G9Rqklwm6xmRPZUnmBs/xzlDuJ0RiAGE0HY1U/tx6zw=;
- b=gjYJbO03QrCwPMY/cT5WyNlwk+EhIslzCfaApH30liPOfquI+ES6KSO4kB41J0Xs8tdZn7A0VEGaf7mJ6ymr02qwOyCHaSKM/30P0MIAb+GIpfCZBd/2dC9eqkBJp13b8NEV+psMvBJ6H6nii+t1StuC8gnFWDyH+AHPWn0vgx2FuPP1A1NVquvKvyRFNZvzr+7d4qAkRc03aKDpMG/qL3AjsY/MdSd4ZvLkry96+fuxyM/awppAz04UaafREwXIxzDyDALom4seezxaLYDNs8YPBq2LDRKEQP42BanyN06EOAJHsS5DWHczThuQmbFxEwWz/aDQn8lO21vxm0m9gQ==
-Received: from BN1PR13CA0001.namprd13.prod.outlook.com (2603:10b6:408:e2::6)
- by DM6PR12MB3195.namprd12.prod.outlook.com (2603:10b6:5:183::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.12; Mon, 24 Jan
- 2022 16:04:29 +0000
-Received: from BN8NAM11FT058.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e2:cafe::ab) by BN1PR13CA0001.outlook.office365.com
- (2603:10b6:408:e2::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.14 via Frontend
- Transport; Mon, 24 Jan 2022 16:04:29 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- BN8NAM11FT058.mail.protection.outlook.com (10.13.177.58) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4909.7 via Frontend Transport; Mon, 24 Jan 2022 16:04:28 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 24 Jan
- 2022 16:04:21 +0000
-Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Mon, 24 Jan 2022
- 08:04:17 -0800
-References: <20220120095550.5056-1-moshet@nvidia.com>
- <Yel1AuSIcab+VUsO@lunn.ch>
- <172d43f5-c223-6d6f-c625-dbf1b40c4d15@nvidia.com>
- <Ye1yCtN9g/9+Sv5Q@lunn.ch>
-User-agent: mu4e 1.6.6; emacs 27.2
-From:   Petr Machata <petrm@nvidia.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Moshe Tal <moshet@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S243327AbiAXPDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 10:03:01 -0500
+Received: from mga01.intel.com ([192.55.52.88]:64673 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240371AbiAXPCi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jan 2022 10:02:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643036558; x=1674572558;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=12MT7URXnDq/Fp4XFhkmyf3ldBVGzHv0vwmewAlkDXU=;
+  b=IPKhfZGutDbLgX1Gl6K7AHXxdRZiKGKCxsWmlR6uG19CVC2Rc1IH575a
+   vGgBmd51mXvuucgLWSIdKv/b4sl33QhDMrkKFoPwXS12mhqddAWNlTewi
+   Zh/8LvTCsa6YCkYAwxvD6UbMqmcMKribfOEa8VHdAGjChbc12ryon87Qq
+   zVHWingleh5M3cZtBvEZe0EXO7v0di4TZzLFIKoH8xVX6c9RdgkB3m0zk
+   aTXjMdyh1jOvWPWlU2oc8EZ8r1tNBvLJrZMH96B34Qkddo+64/GWFNjR/
+   /kQJvraHQWWAqedUQXBrWWYXL0QE+atahSbs4aLe2D5aFmbUgY4s5TBi8
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="270498703"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="270498703"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:37 -0800
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="519972062"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:20 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nC0qE-00Dvkq-Jt;
+        Mon, 24 Jan 2022 17:01:10 +0200
+Date:   Mon, 24 Jan 2022 17:01:10 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
+        openipmi-developer@lists.sourceforge.net,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Amit Cohen <amcohen@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>, Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH net] ethtool: Fix link extended state for big endian
-Date:   Mon, 24 Jan 2022 12:58:00 +0100
-In-Reply-To: <Ye1yCtN9g/9+Sv5Q@lunn.ch>
-Message-ID: <87czkhp1c0.fsf@nvidia.com>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        platform-driver-x86@vger.kernel.org,
+        Benson Leung <bleung@chromium.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>, netdev@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>,
+        Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>,
+        linux-mediatek@lists.infradead.org,
+        Brian Norris <computersforpeace@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] driver core: platform: Rename
+ platform_get_irq_optional() to platform_get_irq_silent()
+Message-ID: <Ye6/NgfxsZnpXE09@smile.fi.intel.com>
+References: <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
+ <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
+ <Yd9L9SZ+g13iyKab@sirena.org.uk>
+ <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
+ <YeA7CjOyJFkpuhz/@sirena.org.uk>
+ <20220113194358.xnnbhsoyetihterb@pengutronix.de>
+ <YeF05vBOzkN+xYCq@smile.fi.intel.com>
+ <20220115154539.j3tsz5ioqexq2yuu@pengutronix.de>
+ <YehdsUPiOTwgZywq@smile.fi.intel.com>
+ <20220120075718.5qtrpc543kkykaow@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: drhqmail201.nvidia.com (10.126.190.180) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6b96bb2f-758b-4462-c0ce-08d9df533399
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3195:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB31954BCEBB1B5BFBA4C603B2D65E9@DM6PR12MB3195.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qI5UbnThSvJpVdQ2Nf+X7usjWRP1kcgjzUCmecH09ftzg+8/eaonDusVu4adVrSHW79yZkb+Y4WHYNMPaLa8BWVE0t1cKnHn5HRlQr10sdZUlc0Ro0ISvG9dgy8aHOoKAA+x/Fm9mBBAaWQH7AJEP1zXladBUE8OiX2XNwl4r3docfvNVQcuwDNvUGR0acIRX/kcpWvzhijEOQFTjfXcRJePqg4OTNDPhhp/v0jJEHz/2BRPJMD8yT3e1bQPtQ757+4xyvjYqW+lX9+Eqq099eEtiHgxH5rSU9Fyfh7o756WEe0wyhL5qq54FlFcnFliRntsPthfYIAO80GwSUighGK/ENgc5d0QukAIUkEo0srIMgwQbZlvPHyaOkk4331NIRm9f8utYNkuXg3u4q88jOYhTsUG24vuyht6E+8Vi2vnLHryIexF38C8NpzGISd01tDyF4iiapN2lUYfWAgIMV6KiYGJEYyJHpwRkQX7jugm8x2eRGj8O4XiwKP1cDSmfbmn81LvSjNs7G9df/SG1kGuXQNuoS7IiScvfZtRW2MYcy7JfY1zPUeaZGPKboae0iOorp2plLGUpU3S2USU3nDp9CWD7dSJs01R0lghjNkf1UdLSA6lav2+ildWtaoZ1EdxuOhJTUz4DZpk6dpPtNRjWAU73Ryj7LWmV1noA/0Zk0SZM0B/yMkcBZxDUxL24+D3NxVNOsLdlSAQBb+Bla8qaFfB11i2ENup/zAbZv2aWbXs3VHOJzIC8wXK60B+w7MbLiSV/Z9U65KK9Zk20djnnKtZOEKwHflPCOxBBNc=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(40470700004)(40460700003)(426003)(70586007)(36860700001)(83380400001)(6666004)(47076005)(8936002)(86362001)(5660300002)(70206006)(26005)(6916009)(508600001)(2616005)(8676002)(336012)(186003)(82310400004)(2906002)(316002)(36756003)(356005)(81166007)(16526019)(54906003)(107886003)(4326008)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2022 16:04:28.8754
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6b96bb2f-758b-4462-c0ce-08d9df533399
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT058.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3195
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220120075718.5qtrpc543kkykaow@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jan 20, 2022 at 08:57:18AM +0100, Uwe Kleine-König wrote:
+> On Wed, Jan 19, 2022 at 08:51:29PM +0200, Andy Shevchenko wrote:
+> > On Sat, Jan 15, 2022 at 04:45:39PM +0100, Uwe Kleine-König wrote:
+> > > On Fri, Jan 14, 2022 at 03:04:38PM +0200, Andy Shevchenko wrote:
+> > > > On Thu, Jan 13, 2022 at 08:43:58PM +0100, Uwe Kleine-König wrote:
+> > > > > > It'd certainly be good to name anything that doesn't correspond to one
+> > > > > > of the existing semantics for the API (!) something different rather
+> > > > > > than adding yet another potentially overloaded meaning.
+> > > > > 
+> > > > > It seems we're (at least) three who agree about this. Here is a patch
+> > > > > fixing the name.
+> > > > 
+> > > > And similar number of people are on the other side.
+> > > 
+> > > If someone already opposed to the renaming (and not only the name) I
+> > > must have missed that.
+> > > 
+> > > So you think it's a good idea to keep the name
+> > > platform_get_irq_optional() despite the "not found" value returned by it
+> > > isn't usable as if it were a normal irq number?
+> > 
+> > I meant that on the other side people who are in favour of Sergey's patch.
+> > Since that I commented already that I opposed the renaming being a standalone
+> > change.
+> > 
+> > Do you agree that we have several issues with platform_get_irq*() APIs?
+> > 
+> > 1. The unfortunate naming
+> 
+> unfortunate naming for the currently implemented semantic, yes.
 
-Andrew Lunn <andrew@lunn.ch> writes:
+Yes.
 
->> The Netlink message was defined to only pass u8 and we can't change the 
->> message format without causing incompatibility issues.
->> So, we are assuming that values will be under 255.
->> 
->> Still, the compiler is storing enum as int, this isn't matter what the 
->> size of the other members of the union.
->> If it will be read into u8 - on BE systems the MSB will be read and so 
->> it will always pass a zero.
->
-> It sounds to me like the type system is being bypassed somewhere. If
-> the compiler knows we are assigning an emum to a u8, it should perform
-> a cast and i would expect it to get it correct, independent of big or
-> little endian. When that u8 is assigned back to an enum, the compiler
-> should do another cast, and everything works out.
->
-> I assume there are no compiler warnings? The enum -> u8 is an
-> assignment to a smaller type, which is something you sometimes see
-> compilers warn about. So it might be there is an explicit cast
-> somewhere?
+> > 2. The vIRQ0 handling: a) WARN() followed by b) returned value 0
+> 
+> I'm happy with the vIRQ0 handling. Today platform_get_irq() and it's
+> silent variant returns either a valid and usuable irq number or a
+> negative error value. That's totally fine.
 
-The only cast I'm aware of is the implicit cast in the call to
-nla_put_u8(). The C standard has this to say about the conversions:
+It might return 0.
+Actually it seems that the WARN() can only be issued in two cases:
+- SPARC with vIRQ0 in one of the array member
+- fallback to ACPI for GPIO IRQ resource with index 0
 
-    When a value with integer type is converted to another integer type
-    other than _Bool, if the value can be represented by the new type,
-    it is unchanged.
+But the latter is bogus, because it would mean a bug in the ACPI code.
 
-There's more verbiage about what happens when it doesn't fit, but we are
-on a happy path here.
+The bottom line here is the SPARC case. Anybody familiar with the platform
+can shed a light on this. If there is no such case, we may remove warning
+along with ret = 0 case from platfrom_get_irq().
 
-I'm not especially well-versed in various warnings GCC gives, but I
-think it only warns about expressions that involve literals. So
-assigning an overlarge literal to a narrow type, or literal-only
-expressions that would overflow the type of the expression.
+> > 3. The specific cookie for "IRQ not found, while no error happened" case
+> 
+> Not sure what you mean here. I have no problem that a situation I can
+> cope with is called an error for the query function. I just do error
+> handling and continue happily. So the part "while no error happened" is
+> irrelevant to me.
 
-> But you are saying this is not actually happening, the wrong end is
-> being discarded. Should we not actually be trying to find where the
-> type system is broken?
+I meant that instead of using special error code, 0 is very much good for
+the cases when IRQ is not found. It allows to distinguish -ENXIO from the
+low layer from -ENXIO with this magic meaning.
 
-The mistake was in the union. Both the u8 and the enums are laid out to
-start on the same address. When an enumerator is stored into an enum
-field on a little-endian machine, the LSB is stored first, and that's
-where u8 is laid out in the enum as well, so you get the enumerator
-value back when reading the u8.
+> Additionally I see the problems:
+> 
+> 4. The semantic as implemented in Sergey's patch isn't better than the
+> current one.
 
-On big-endian machines however, the byte that u8 is laid out on is the
-MSB, which is a zero in our case.
+I disagree on this. See above on why.
 
-The underlying type for an enum is an integer. So de iure the fix should
-have been u8->int, not u8->u32. Practically I suspect it does not
-matter.
+> platform_get_irq*() is still considerably different from
+> (clk|gpiod)_get* because the not-found value for the _optional variant
+> isn't usuable for the irq case. For clk and gpio I get rid of a whole if
+> branch, for irq I only change the if-condition. (And if that change is
+> considered good or bad seems to be subjective.)
+
+You are mixing up two things:
+ - semantics of the pointer
+ - semantics of the cookie
+
+Like I said previously the mistake is in putting an equal sign between apples
+and oranges (or in terms of Python, which is a good example here, None and
+False objects, where in both case 0 is magic and Python `if X`, `while `X` will
+work in the same way, the `typeof(X)` is different semantically).
+
+> For the idea to add a warning to platform_get_irq_optional for all but
+> -ENXIO (and -EPROBE_DEFER), I see the problem:
+> 
+> 5. platform_get_irq*() issuing an error message is only correct most of
+> the time and given proper error handling in the caller (which might be
+> able to handle not only -ENXIO but maybe also -EINVAL[1]) the error message
+> is irritating. Today platform_get_irq() emits an error message for all
+> but -EPROBE_DEFER. As soon as we find a driver that handles -EINVAL we
+> need a function platform_get_irq_variant1 to be silent for -EINVAL,
+> -EPROBE_DEFER and -ENXIO (or platform_get_irq_variant2 that is only
+> silent for -EINVAL and -EPROBE_DEFER?)
+> 
+> IMHO a query function should always be silent and let the caller do the
+> error handling. And if it's only because
+> 
+> 	mydev: IRQ index 0 not found
+> 
+> is worse than
+> 
+> 	mydev: neither TX irq not a muxed RX/TX irq found
+> 
+> . Also "index 0" is irritating for devices that are expected to have
+> only a single irq (i.e. the majority of all devices).
+
+Yeah, ack the #5.
+
+> Yes, I admit, we can safe some code by pushing the error message in a
+> query function. But that doesn't only have advantages.
+
+> [1] Looking through the source I wonder: What are the errors that can happen
+>     in platform_get_irq*()? (calling everything but a valid irq number
+>     an error) Looking at many callers, they only seem to expect "not
+>     found" and some "probe defer" (even platform_get_irq() interprets
+>     everything but -EPROBE_DEFER as "IRQ index %u not found\n".)
+>     IMHO before we should consider to introduce a platform_get_irq*()
+>     variant with improved semantics, some cleanup in the internals of
+>     the irq lookup are necessary.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
