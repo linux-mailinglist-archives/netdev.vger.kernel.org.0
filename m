@@ -2,113 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C62C149B22D
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:46:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6682249B251
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:54:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344574AbiAYKoM convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Jan 2022 05:44:12 -0500
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:37617 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353423AbiAYKkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 05:40:18 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 9C18DFF809;
-        Tue, 25 Jan 2022 10:40:10 +0000 (UTC)
-Date:   Tue, 25 Jan 2022 11:40:09 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Xue Liu <liuxuenetmail@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Harry Morris <harrymorris12@gmail.com>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [wpan-next v2 1/9] net: ieee802154: hwsim: Ensure proper
- channel selection at probe time
-Message-ID: <20220125114009.49e0086a@xps13>
-In-Reply-To: <CAB_54W5k-AUJhcS0Wf7==5qApYo3-ZAU7VyDWLgdpKusZO093A@mail.gmail.com>
-References: <20220120112115.448077-1-miquel.raynal@bootlin.com>
-        <20220120112115.448077-2-miquel.raynal@bootlin.com>
-        <CAB_54W5k-AUJhcS0Wf7==5qApYo3-ZAU7VyDWLgdpKusZO093A@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1344866AbiAYKtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 05:49:12 -0500
+Received: from foss.arm.com ([217.140.110.172]:34102 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1355114AbiAYKou (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jan 2022 05:44:50 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 792DB1FB;
+        Tue, 25 Jan 2022 02:44:44 -0800 (PST)
+Received: from ip-10-252-15-108.eu-west-1.compute.internal (unknown [10.252.15.108])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 9E0813F7D8;
+        Tue, 25 Jan 2022 02:44:41 -0800 (PST)
+From:   German Gomez <german.gomez@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org
+Cc:     irogers@google.com, German Gomez <german.gomez@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Alexandre Truong <alexandre.truong@arm.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH] perf test: update arm64 perf_event_attr tests for --call-graph
+Date:   Tue, 25 Jan 2022 10:44:34 +0000
+Message-Id: <20220125104435.2737-1-german.gomez@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+The struct perf_event_attr is initialised differently in Arm64 when
+recording in call-graph fp mode, so update the relevant tests, and add
+two extra arm64-only tests.
 
-alex.aring@gmail.com wrote on Sun, 23 Jan 2022 15:34:14 -0500:
+Fixes: 7248e308a575 ("perf tools: Record ARM64 LR register automatically")
+Signed-off-by: German Gomez <german.gomez@arm.com>
+---
+ tools/perf/tests/attr/README                            | 2 ++
+ tools/perf/tests/attr/test-record-graph-default         | 2 ++
+ tools/perf/tests/attr/test-record-graph-default-aarch64 | 9 +++++++++
+ tools/perf/tests/attr/test-record-graph-fp              | 2 ++
+ tools/perf/tests/attr/test-record-graph-fp-aarch64      | 9 +++++++++
+ 5 files changed, 24 insertions(+)
+ create mode 100644 tools/perf/tests/attr/test-record-graph-default-aarch64
+ create mode 100644 tools/perf/tests/attr/test-record-graph-fp-aarch64
 
-> Hi,
-> 
-> On Thu, 20 Jan 2022 at 06:21, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> >
-> > Drivers are expected to set the PHY current_channel and current_page
-> > according to their default state. The hwsim driver is advertising being
-> > configured on channel 13 by default but that is not reflected in its own
-> > internal pib structure. In order to ensure that this driver consider the
-> > current channel as being 13 internally, we can call hwsim_hw_channel()
-> > instead of creating an empty pib structure.
-> >
-> > We assume here that kvfree_rcu(NULL) is a valid call.
-> >
-> > Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> >  drivers/net/ieee802154/mac802154_hwsim.c | 10 +---------
-> >  1 file changed, 1 insertion(+), 9 deletions(-)
-> >
-> > diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
-> > index 8caa61ec718f..795f8eb5387b 100644
-> > --- a/drivers/net/ieee802154/mac802154_hwsim.c
-> > +++ b/drivers/net/ieee802154/mac802154_hwsim.c
-> > @@ -732,7 +732,6 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
-> >  {
-> >         struct ieee802154_hw *hw;
-> >         struct hwsim_phy *phy;
-> > -       struct hwsim_pib *pib;
-> >         int idx;
-> >         int err;
-> >
-> > @@ -780,13 +779,8 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
-> >
-> >         /* hwsim phy channel 13 as default */
-> >         hw->phy->current_channel = 13;
-> > -       pib = kzalloc(sizeof(*pib), GFP_KERNEL);
-> > -       if (!pib) {
-> > -               err = -ENOMEM;
-> > -               goto err_pib;
-> > -       }
-> > +       hwsim_hw_channel(hw, hw->phy->current_page, hw->phy->current_channel);  
-> 
-> Probably you saw it already; this will end in a
-> "suspicious_RCU_usage", that's because of an additional lock check in
-> hwsim_hw_channel() which checks if rtnl is held. However, in this
-> situation it's not necessary to hold the rtnl lock because we know the
-> phy is not being registered yet.
+diff --git a/tools/perf/tests/attr/README b/tools/perf/tests/attr/README
+index a36f49fb4dbe..1116fc6bf2ac 100644
+--- a/tools/perf/tests/attr/README
++++ b/tools/perf/tests/attr/README
+@@ -45,8 +45,10 @@ Following tests are defined (with perf commands):
+   perf record -d kill                           (test-record-data)
+   perf record -F 100 kill                       (test-record-freq)
+   perf record -g kill                           (test-record-graph-default)
++  perf record -g kill                           (test-record-graph-default-aarch64)
+   perf record --call-graph dwarf kill		(test-record-graph-dwarf)
+   perf record --call-graph fp kill              (test-record-graph-fp)
++  perf record --call-graph fp kill              (test-record-graph-fp-aarch64)
+   perf record --group -e cycles,instructions kill (test-record-group)
+   perf record -e '{cycles,instructions}' kill   (test-record-group1)
+   perf record -e '{cycles/period=1/,instructions/period=2/}:S' kill (test-record-group2)
+diff --git a/tools/perf/tests/attr/test-record-graph-default b/tools/perf/tests/attr/test-record-graph-default
+index 5d8234d50845..f0a18b4ea4f5 100644
+--- a/tools/perf/tests/attr/test-record-graph-default
++++ b/tools/perf/tests/attr/test-record-graph-default
+@@ -2,6 +2,8 @@
+ command = record
+ args    = --no-bpf-event -g kill >/dev/null 2>&1
+ ret     = 1
++# arm64 enables registers in the default mode (fp)
++arch    = !aarch64
+ 
+ [event:base-record]
+ sample_type=295
+diff --git a/tools/perf/tests/attr/test-record-graph-default-aarch64 b/tools/perf/tests/attr/test-record-graph-default-aarch64
+new file mode 100644
+index 000000000000..e98d62efb6f7
+--- /dev/null
++++ b/tools/perf/tests/attr/test-record-graph-default-aarch64
+@@ -0,0 +1,9 @@
++[config]
++command = record
++args    = --no-bpf-event -g kill >/dev/null 2>&1
++ret     = 1
++arch    = aarch64
++
++[event:base-record]
++sample_type=4391
++sample_regs_user=1073741824
+diff --git a/tools/perf/tests/attr/test-record-graph-fp b/tools/perf/tests/attr/test-record-graph-fp
+index 5630521c0b0f..a6e60e839205 100644
+--- a/tools/perf/tests/attr/test-record-graph-fp
++++ b/tools/perf/tests/attr/test-record-graph-fp
+@@ -2,6 +2,8 @@
+ command = record
+ args    = --no-bpf-event --call-graph fp kill >/dev/null 2>&1
+ ret     = 1
++# arm64 enables registers in fp mode
++arch    = !aarch64
+ 
+ [event:base-record]
+ sample_type=295
+diff --git a/tools/perf/tests/attr/test-record-graph-fp-aarch64 b/tools/perf/tests/attr/test-record-graph-fp-aarch64
+new file mode 100644
+index 000000000000..cbeea9971285
+--- /dev/null
++++ b/tools/perf/tests/attr/test-record-graph-fp-aarch64
+@@ -0,0 +1,9 @@
++[config]
++command = record
++args    = --no-bpf-event --call-graph fp kill >/dev/null 2>&1
++ret     = 1
++arch    = aarch64
++
++[event:base-record]
++sample_type=4391
++sample_regs_user=1073741824
+-- 
+2.25.1
 
-yes, indeed!
-
-> 
-> Either we change it to rcu_derefence() but then we would reduce the
-> check if rtnl lock is being held or just simply initial the default
-> pib->channel here to 13 which makes that whole patch a one line fix.
-
-In general I like to drop more lines than I add, hence my first choice
-but just setting pib->channel to 13 also makes sense here and avoids
-oversimplifying the rtnl check in hwsim_hw_channel(), so let's go for
-it.
-
-Thanks,
-Miquèl
