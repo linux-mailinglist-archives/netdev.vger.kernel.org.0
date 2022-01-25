@@ -2,268 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C07D149B5C0
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 15:09:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A90049B602
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 15:21:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578064AbiAYOJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 09:09:06 -0500
-Received: from mga01.intel.com ([192.55.52.88]:34131 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1384953AbiAYOFM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jan 2022 09:05:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643119511; x=1674655511;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=z6iO4goP/6mOntNu6iUnXj156J2xRO3zDzNJWbq5fzg=;
-  b=DlV+ovpEXn8N+TNyiZrsmwlK+kX+rXtW7PAPhXl/8FCqQabAj+873dU5
-   pXSJM6lOWgJei1+yLNHVWY+4sFX61lEV3Nym8AT3WP8b0dm7JZ2PkDB66
-   5X5WhhbXJOHbeBRwxYI4U3/i6+/cpN0sO3VmQyZPic00XxInOsPtTA40t
-   nPtu9vk/aVvpzaVrTbK9HJIUAt3Fm5iGENPSgJKUd55XROVXbPOJIWKle
-   S6yVXTKYrakaUWXGMy6T+ZNHjY9lbBcFfZ/LO9X7KDyZWKp9/8/ciG9pU
-   MH63qlKkPdcnkfO2EO6h+bh6tWlg8Vxe6QgUimUhf8l/VfvMzSPQOJ4MN
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="270750702"
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="270750702"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 06:02:45 -0800
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="695840276"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 06:02:27 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nCMNp-00EGb4-Aj;
-        Tue, 25 Jan 2022 16:01:17 +0200
-Date:   Tue, 25 Jan 2022 16:01:17 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>, netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] driver core: platform: Rename
- platform_get_irq_optional() to platform_get_irq_silent()
-Message-ID: <YfACrffZCCeleOjK@smile.fi.intel.com>
-References: <YeA7CjOyJFkpuhz/@sirena.org.uk>
- <20220113194358.xnnbhsoyetihterb@pengutronix.de>
- <YeF05vBOzkN+xYCq@smile.fi.intel.com>
- <20220115154539.j3tsz5ioqexq2yuu@pengutronix.de>
- <YehdsUPiOTwgZywq@smile.fi.intel.com>
- <20220120075718.5qtrpc543kkykaow@pengutronix.de>
- <Ye6/NgfxsZnpXE09@smile.fi.intel.com>
- <15796e57-f7d4-9c66-3b53-0b026eaf31d8@omp.ru>
- <CAMuHMdXouECKa43OwUgQ6dA+gNeOqEZHZgOmQzqknzYiA924YA@mail.gmail.com>
- <33e55c4c0a637b23d76db5d33872378ad04121bd.camel@ew.tq-group.com>
-MIME-Version: 1.0
+        id S1578396AbiAYOTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 09:19:08 -0500
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:26542 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1578125AbiAYOOk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 09:14:40 -0500
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20PAxDZv029911;
+        Tue, 25 Jan 2022 14:14:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=AOA3T7T5CYWWQ/tVHiMgyTqnJ/MREMvuv22qc7XzdM8=;
+ b=HEZMlLXi0WQNOUx8hN7nyoMi/b+lyagHtAxp3dQWBVFTGsbUgKkr4nHBVCGcD6MpFgMi
+ /FfrDDtmqw5XNnZPjpgVabWiNoD7hPNN6hjytCO/NZ5P/sgXGqA67l6UzVCoTzoU1Mum
+ Pvd/wYaQWyIPNqo6AENycwDRl4PAT9i/Lj7uQ3CObvIfsUhAn7vZ76oH1ib4cLF0Wdaf
+ Xh8vN3CP7lgtmrJgC195nb5Ideg8rjnHmJIg9pO8TF31x/+6KdbHghIZ0OzMIdV2tyow
+ UFEhALBA1Fhn+kSJAdzj5YuEzZZLKWNMWaeXcgMtKkYmrcThFYaO/0Pg0rpPcEi3l+L2 4g== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dsy7au6c1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 25 Jan 2022 14:14:25 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20PEAknI156901;
+        Tue, 25 Jan 2022 14:14:24 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2100.outbound.protection.outlook.com [104.47.70.100])
+        by aserp3020.oracle.com with ESMTP id 3dtax6hpcs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 25 Jan 2022 14:14:24 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fYrUgXUzzuMG0joMJkJJxubVdRPU0+HQZ2V6ToQTMD7vi8S2RYGaveIp0hZUjPzh1v3x2ur5ZG7MHAZZqvyCsh4M5o0iuc1C5jrcLvmf01h2IiYtvUz6SQqrCpPFJ3IsY459HvFxdy6hrMJI4V5DuTT2kuqlmpleM1U0IJ5VhvX3DBeLkUAfOfz8JRadFN7T6x4+DZDojhkym84yFer2pCHHa6lSV/MKsJZJBXDcsGB4eYALIT8z9h2qqyp83oOyUV4dYQlnH+iO/fB+gsnSggv1zAHmDoZywW3CvoD4VTUVaJiK3p/K8trsG0CSxWsCqcHPaAklvSg0Q+u3L2jW1g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AOA3T7T5CYWWQ/tVHiMgyTqnJ/MREMvuv22qc7XzdM8=;
+ b=mI3eR5++oe7LWQaoIxoxGcqq2W0pdEzqinDDMsLIjtJLV73znlz8cVZSxAs3FwkbksAgJul67jzAbtrH/Z6bwF3aIBWhcG0rgQtYgfwsAAR5liBHN+gqDiq6HFz3NwCdeb0Br1GJM3hubr0f5ewGN6SSgWq2Qycfj6/rvrl8M1Vcduk2DDWisRVl7QL3+P4/UoMVw7SIZWMZy7ixnTiZ5Xw8UYQpD90CXU8Hm7fqLwo1DXjf3vpcSDd4h7KUBMS8JevEtqFvwyYwcMRW/Fpd5xkZjfr/rHueAex1049O+AG4P/sqpGgt7vk+2PA4XyFiljgu+heVA47ojP0XZDx7dw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AOA3T7T5CYWWQ/tVHiMgyTqnJ/MREMvuv22qc7XzdM8=;
+ b=NdojT9jYNWnEshE4XSeMlz6mo2eiX86Qsxcv/KO17JSD8ccMUTqKTZYfBjPjtX3pyA8I+x9858/0XFQ7Uh+STt68SnqJIMUKTcYT4KUvh6qyet8XfhMnOVyEtU5KG50O1dZdDw9UVO5QJSJUmPFLbrYkRxX1Oe9Gi1Ft2MX2nis=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by CO6PR10MB5475.namprd10.prod.outlook.com
+ (2603:10b6:303:13e::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Tue, 25 Jan
+ 2022 14:14:21 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::c13b:5812:a403:6d96]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::c13b:5812:a403:6d96%6]) with mapi id 15.20.4909.019; Tue, 25 Jan 2022
+ 14:14:21 +0000
+Date:   Tue, 25 Jan 2022 17:14:01 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Colin Ian King <colin.i.king@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-parisc@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: tulip: remove redundant assignment to variable
+ new_csr6
+Message-ID: <20220125141401.GV1951@kadam>
+References: <20220123183440.112495-1-colin.i.king@gmail.com>
+ <20220124103038.76f15516@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <33e55c4c0a637b23d76db5d33872378ad04121bd.camel@ew.tq-group.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220124103038.76f15516@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0033.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4d::14)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6aa0a650-1296-42c0-fcc3-08d9e00cfb2e
+X-MS-TrafficTypeDiagnostic: CO6PR10MB5475:EE_
+X-Microsoft-Antispam-PRVS: <CO6PR10MB54756EC22E8C9F31E0089CC08E5F9@CO6PR10MB5475.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1284;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: O2N9izYMOcOsLnsAqc3+xmLlxBoHzj35qtcgs1hCwb/rS3UIOEyttZaP/veFbpCuuE9jU7oe91DvheLNuHBdUbgEsOtqiNlrqzjwFrL3ZRXEDlju48+oI7iNdldHIqQkmynmID6dSTF6wouXS0WXdr+zUVtT/M1nOqXj7WIj0aSTc8MzN1XY7W/xXhc2r3M/3CPkjBDVdMo8PLWD5hcbXfizp5blM24yTwLmC8+9Cm/F5i2OFXqMj23T9mBx7SAErfYnHgxQdKcXCGK3jzvc65kzi62ZWuM2BeenE/mySI/CRqOb8ui2gTCn6QdKoBmDmLBXeQuPXRXpkcOyCPigBIEzzdGtzgDn6KkCWxT4VV3t11waX8pglAEU0EHfvAcnXCfDeUSuRXUmEo/SHNtlgxK5WYuVcpl8FJjLMHiEpAvd4fWbTnucOqCYCawUy+z7nYDO00VA2O+1/nbQtnr0zvdM8cgU6nOrdR6UjgcfdASPQHo3xq/yzv+owUdjsgxiYtYqWh9n5FXB8uFXHU2j2kL8+rfhHlN0i2IA4o80UlmUKccjQfhHO9lz3++7U//9gnaG0K7Yhpyhl3ARoXJNdN2f7HpiSDsBgPTMSazJcjWqXHhh2fPFogo0eNJ8TqbgNzL8lA7XfJ7QYmN7Zo8ce650aRgPAym7z8uTlP7LaTzX3MdLUkmToidhcEi9lyj05IPozadwNny1k9nv9aykWg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(6506007)(6512007)(6666004)(9686003)(86362001)(52116002)(54906003)(316002)(6486002)(83380400001)(508600001)(6916009)(26005)(186003)(38350700002)(38100700002)(1076003)(33656002)(8936002)(5660300002)(44832011)(4326008)(66946007)(2906002)(66556008)(33716001)(66476007)(8676002)(20210929001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AWIk5Fqsn3jFFf9oe17mQiNmpw9Ylb5zck1PLvq+cD46cj3RKP0Vr6/GR/e/?=
+ =?us-ascii?Q?7HJ7ll2O1E9wu+FbwbsReJjPXTsDGADkK9s/vqgx7weR93AtoBeJZbtDv3gW?=
+ =?us-ascii?Q?C5IvydMdCt96ZQEXIfB0YbqWuqmEp8oH49UkdVQREAC3hdshCn0toZmq39pQ?=
+ =?us-ascii?Q?yCH3GLVdOqGD+qiPwInoa6nBliBVWt5CS5UC2sYNq8TciWHQtBfZjby7MxFs?=
+ =?us-ascii?Q?X9xCmuXP/UseU1dw89GHkhNx2HNXFsC07QmJ4PeYK3iqVTIhZBvJ9d7li+Yw?=
+ =?us-ascii?Q?P2zMmwoYQ5eLjgNXnjFL0G0T5pzIGXV2Y8pLah5w0Z+pt2pxKP68SLQdK3ns?=
+ =?us-ascii?Q?d4MZZbo7lmSARyptBDksJb9b2DwA/SFbNl6VTbZKwyD1CPEmkkPPsgnEX3Eb?=
+ =?us-ascii?Q?LdT4puCqd+62dWQzEmco7zlQrSCeoNCB3LU0M4BfIzT5j/5T23rmR5ynQ9R7?=
+ =?us-ascii?Q?Gr2Io8XWE6WAJsLYOwvPjy+iCoF74JPnxWU4OJPIb4WtCaES7jTn/QydKIJk?=
+ =?us-ascii?Q?qWYsNDataEoYaM8D4/lmdsmsL7BcAS2qD0zeORr930ugix+ioTzfraqmA1oX?=
+ =?us-ascii?Q?8fb/XYbiEXlQjIL2uERsA5uyrKQDjzMl/1Q5c3ulTVJb1e+qmnp7LlzY4jVh?=
+ =?us-ascii?Q?bB2uh1MeW+iF5tTB7fTgXKUS9kpa77MzszvFQSf/UluCIyLLHw5fq13abN8j?=
+ =?us-ascii?Q?9+qKZcA1hjY78NBxcTgX41y9gGeHEl7IIJ4i3fKTE/xk/8yyhyl5q7O0+JDu?=
+ =?us-ascii?Q?ao8yXN+XuhVN2PhNbI8D7owxmqXuWATE1F1cV5CF5jvNp+33EQ2KjEQnEVQX?=
+ =?us-ascii?Q?9yGtsUDH+877TwzUMBzHTc9DxJqhWhGzhmTBv2+T1GTD5HXXyVYSOM2Kr/Rm?=
+ =?us-ascii?Q?eI2eVyNE54T5V8x+ORuuXOFaed71mMtT+r6ZnNSdfuM3nFo+pET5tCvwAsZi?=
+ =?us-ascii?Q?B5O3ah5uAsc5O0qw/kMoZxuFyDmIEu4EPtVpO5Yni/nmpTyTuqlMa/TQdu5p?=
+ =?us-ascii?Q?5ulJOMo2ZX8Ew7Kem9+FEcbMsSqX9rNi0TorM9bBGqZ8UAjd+87WjXblwFJe?=
+ =?us-ascii?Q?o75FuC61rx4UbdxS72jJ9KfsKpKnLi6RP3ZR1b0d4frCYXCDPWmkyPHnln15?=
+ =?us-ascii?Q?pUy8QyKMtYXjmvp55K9nwFsM6YikPlcoKQF6q1RyMfq+5s6JW3PUFXnrdTPt?=
+ =?us-ascii?Q?cXcgJaFePVMdCZrGeI4bsC9YqjAkRxnEkVt0xWUp/RuvplEoVdvPd4+pKSSo?=
+ =?us-ascii?Q?9kDTwVcDVUxrnCQkxd3sAfPZmLhTnAHWz1ZnapEib9Mi5h97CWCjlwspNoBl?=
+ =?us-ascii?Q?OwMgY27sf52F2O+FBS9KHtCOqawDEVpGbflBGX6yJhMEAY3vXm4S+0a6E7QS?=
+ =?us-ascii?Q?JtWo+cKgFZbaeD0YcT5TjsuA2vdy4rgHVxzKSx6nayZJwdxXrVuOu5jBIW+w?=
+ =?us-ascii?Q?dLmjg+kR4sOrk+CWBKvhz/fayxiz40ZnMRT2UgHz1hIq/kN3EFXEh8R/FSSg?=
+ =?us-ascii?Q?1kEBBuhhyw8n6BR6QYPHlBAHGkyhXvezvGmgGQzmxojO9n1aHT5R/cCrVDk7?=
+ =?us-ascii?Q?QRyMd+GniEA8H6ZZI/ztliQ/AZfidtEaodu9bl4yW/QtwYaIwmIgZCk/3Dg8?=
+ =?us-ascii?Q?b65HITku7Q9qlIP8eAhUhJnBP3u1wFez/6IqVwsdVQE/NiYab68tuCIz29sV?=
+ =?us-ascii?Q?nKPZc2RN/f+6Fy+GJlgg2EY0I1o=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6aa0a650-1296-42c0-fcc3-08d9e00cfb2e
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 14:14:21.5212
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uApql8IkpkzW/QGpW3S1nR/N+QELSmEeSbJr7b59oQUegmvhHpikXNu09VvT8Ab/xycQolvPo5o46+34ShrN7G0lThLeaaaPWNGWEIraLGk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR10MB5475
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10237 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0 mlxscore=0
+ phishscore=0 suspectscore=0 spamscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2201250093
+X-Proofpoint-GUID: 6is_FKRevyMC7Svjmnfs2jrLVoNfWUoy
+X-Proofpoint-ORIG-GUID: 6is_FKRevyMC7Svjmnfs2jrLVoNfWUoy
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 01:56:05PM +0100, Matthias Schiffer wrote:
-> On Tue, 2022-01-25 at 09:25 +0100, Geert Uytterhoeven wrote:
-> > On Mon, Jan 24, 2022 at 10:02 PM Sergey Shtylyov <s.shtylyov@omp.ru>
-> > wrote:
-> > > On 1/24/22 6:01 PM, Andy Shevchenko wrote:
-
-...
-
-> > > > > > 2. The vIRQ0 handling: a) WARN() followed by b) returned
-> > > > > > value 0
-> > > > > 
-> > > > > I'm happy with the vIRQ0 handling. Today platform_get_irq() and
-> > > > > it's
-> > > > > silent variant returns either a valid and usuable irq number or
-> > > > > a
-> > > > > negative error value. That's totally fine.
-> > > > 
-> > > > It might return 0.
-> > > > Actually it seems that the WARN() can only be issued in two
-> > > > cases:
-> > > > - SPARC with vIRQ0 in one of the array member
-> > > > - fallback to ACPI for GPIO IRQ resource with index 0
-> > > 
-> > >    You have probably missed the recent discovery that
-> > > arch/sh/boards/board-aps4*.c
-> > > causes IRQ0 to be passed as a direct IRQ resource?
-> > 
-> > So far no one reported seeing the big fat warning ;-)
+On Mon, Jan 24, 2022 at 10:30:38AM -0800, Jakub Kicinski wrote:
+> On Sun, 23 Jan 2022 18:34:40 +0000 Colin Ian King wrote:
+> > Variable new_csr6 is being initialized with a value that is never
+> > read, it is being re-assigned later on. The assignment is redundant
+> > and can be removed.
 > 
-> FWIW, we had a similar issue with an IRQ resource passed from the
-> tqmx86 MFD driver do the GPIO driver, which we noticed due to this
-> warning, and which was fixed
-> in a946506c48f3bd09363c9d2b0a178e55733bcbb6
-> and 9b87f43537acfa24b95c236beba0f45901356eb2.
-
-No, it's not, unfortunately :-( You just band aided the warning issue, but the
-root cause is the WARN() and possibility to see valid (v)IRQ0 in the resources.
-See below.
-
-> I believe these changes are what promted this whole discussion and led
-> to my "Reported-by" on the patch?
+> > @@ -21,7 +21,7 @@ void pnic_do_nway(struct net_device *dev)
+> >  	struct tulip_private *tp = netdev_priv(dev);
+> >  	void __iomem *ioaddr = tp->base_addr;
+> >  	u32 phy_reg = ioread32(ioaddr + 0xB8);
+> > -	u32 new_csr6 = tp->csr6 & ~0x40C40200;
+> > +	u32 new_csr6;
+> >  
+> >  	if (phy_reg & 0x78000000) { /* Ignore baseT4 */
+> >  		if (phy_reg & 0x20000000)		dev->if_port = 5;
 > 
-> It is not entirely clear to me when IRQ 0 is valid and when it isn't,
-> but the warning seems useful to me. Maybe it would make more sense to
-> warn when such an IRQ resource is registered for a platform device, and
-> not when it is looked up?
+> I can't say I see what you mean, it's not set in some cases:
 > 
-> My opinion is that it would be very confusing if there are any places
-> in the kernel (on some platforms) where IRQ 0 is valid,
-
-And those places are board files like yours :( They have to be fixed
-eventually. Ideally by using IRQ domains. At least that's how it's
-done elsewhere.
-
-> but for
-> platform_get_irq() it would suddenly mean "not found". Keeping a
-> negative return value seems preferable to me for this reason.
-
-IRQ 0 is valid, vIRQ0 (or read it as cookie) is not.
-
-Now, the problem in your case is that you are talking about board files, while
-ACPI and DT never gives resource with vIRQ0. For board files some (legacy) code
-decides that it's fine to supply HW IRQ, while the de facto case is that
-platform_get_resource() returns whatever is in the resource, while
-platform_get_irq() should return a cookie.
-
-> (An alternative, more involved idea would be to add 1 to all IRQ
-> "cookies", so IRQ 0 would return 1, leaving 0 as a special value. I
-> have absolutely no idea how big the API surface is that would need
-> changes, and it is likely not worth the effort at all.)
-
-This is what IRQ domains do, they start vIRQs from 1.
-
-> > > > The bottom line here is the SPARC case. Anybody familiar with the
-> > > > platform
-> > > > can shed a light on this. If there is no such case, we may remove
-> > > > warning
-> > > > along with ret = 0 case from platfrom_get_irq().
-> > > 
-> > >    I'm afraid you're too fast here... :-)
-> > >    We'll have a really hard time if we continue to allow IRQ0 to be
-> > > returned by
-> > > platform_get_irq() -- we'll have oto fileter it out in the callers
-> > > then...
-> > 
-> > So far no one reported seeing the big fat warning?
-> > 
-> > > > > > 3. The specific cookie for "IRQ not found, while no error
-> > > > > > happened" case
-> > > > > 
-> > > > > Not sure what you mean here. I have no problem that a situation
-> > > > > I can
-> > > > > cope with is called an error for the query function. I just do
-> > > > > error
-> > > > > handling and continue happily. So the part "while no error
-> > > > > happened" is
-> > > > > irrelevant to me.
-> > > > 
-> > > > I meant that instead of using special error code, 0 is very much
-> > > > good for
-> > > > the cases when IRQ is not found. It allows to distinguish -ENXIO
-> > > > from the
-> > > > low layer from -ENXIO with this magic meaning.
-> > > 
-> > >    I don't see how -ENXIO can trickle from the lower layers,
-> > > frankly...
-> > 
-> > It might one day, leading to very hard to track bugs.
+> 			if (tp->medialock) {
+> 			} else if (tp->nwayset  &&  (dev->if_port & 1)) {
+> 				next_tick = 1*HZ;
+> 			} else if (dev->if_port == 0) {
+> 				dev->if_port = 3;
+> 				iowrite32(0x33, ioaddr + CSR12);
+> 				new_csr6 = 0x01860000;
+> 				iowrite32(0x1F868, ioaddr + 0xB8);
+> 			} else {
+> 				dev->if_port = 0;
+> 				iowrite32(0x32, ioaddr + CSR12);
+> 				new_csr6 = 0x00420000;
+> 				iowrite32(0x1F078, ioaddr + 0xB8);
+> 			}
+> 			if (tp->csr6 != new_csr6) {
+> 				tp->csr6 = new_csr6;
 > 
-> As gregkh noted, changing the return value without also making the
-> compile fail will be a huge PITA whenever driver patches are back- or
-> forward-ported, as it would require subtle changes in error paths,
-> which can easily slip through unnoticed, in particular with half-
-> automated stable backports.
+> 
+> That said clang doesn't complain so maybe I'm missing something static
+> analysis had figured out about this code.
 
-Let's not modify kernel at all then, because in many cases it is a PITA
-for back- or forward-porting :-)
+You're looking at the wrong function.  This is pnic_do_nway() and you're
+looking at pnic_timer().
 
-> Even if another return value like -ENODEV might be better aligned with
-> ...regulator_get_optional() and similar functions, or we even find a
-> way to make 0 usable for this, none of the proposed changes strike me
-> as big enough a win to outweigh the churn caused by making such a
-> change at all.
+Of course, Colin's patch assumes the current behavior is correct...  I
+guess the current behavior can't be that terrible since it predates git
+and no one has complained.
 
-Yeah, let's continue to suffer from ugly interface and see more band aids
-landing around...
+drivers/net/ethernet/dec/tulip/pnic.c
+    19        void pnic_do_nway(struct net_device *dev)
+    20        {
+    21                struct tulip_private *tp = netdev_priv(dev);
+    22                void __iomem *ioaddr = tp->base_addr;
+    23                u32 phy_reg = ioread32(ioaddr + 0xB8);
+    24                u32 new_csr6 = tp->csr6 & ~0x40C40200;
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
--- 
-With Best Regards,
-Andy Shevchenko
+    25
+    26                if (phy_reg & 0x78000000) { /* Ignore baseT4 */
+    27                        if (phy_reg & 0x20000000)                dev->if_port = 5;
+    28                        else if (phy_reg & 0x40000000)        dev->if_port = 3;
+    29                        else if (phy_reg & 0x10000000)        dev->if_port = 4;
+    30                        else if (phy_reg & 0x08000000)        dev->if_port = 0;
+    31                        tp->nwayset = 1;
+    32                        new_csr6 = (dev->if_port & 1) ? 0x01860000 : 0x00420000;
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+    33                        iowrite32(0x32 | (dev->if_port & 1), ioaddr + CSR12);
+    34                        if (dev->if_port & 1)
+    35                                iowrite32(0x1F868, ioaddr + 0xB8);
+    36                        if (phy_reg & 0x30000000) {
+    37                                tp->full_duplex = 1;
+    38                                new_csr6 |= 0x00000200;
+    39                        }
+    40                        if (tulip_debug > 1)
+    41                                netdev_dbg(dev, "PNIC autonegotiated status %08x, %s\n",
+    42                                           phy_reg, medianame[dev->if_port]);
+    43                        if (tp->csr6 != new_csr6) {
+    44                                tp->csr6 = new_csr6;
+    45                                /* Restart Tx */
+    46                                tulip_restart_rxtx(tp);
+    47                                netif_trans_update(dev);
+    48                        }
+    49                }
+    50        }
 
+regards,
+dan carpenter
