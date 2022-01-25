@@ -2,119 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0CFE49B0FA
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:02:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CA9549B0FB
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:02:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237162AbiAYJy6 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Jan 2022 04:54:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235323AbiAYJwG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 04:52:06 -0500
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B24C061763;
-        Tue, 25 Jan 2022 01:51:40 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 24D64100002;
-        Tue, 25 Jan 2022 09:51:36 +0000 (UTC)
-Date:   Tue, 25 Jan 2022 10:51:35 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Stefan Schmidt <stefan@datenfreihafen.org>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        id S237814AbiAYJy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 04:54:59 -0500
+Received: from mail-co1nam11on2042.outbound.protection.outlook.com ([40.107.220.42]:57147
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237014AbiAYJwM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jan 2022 04:52:12 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n31AeFgWIOPa1V+zqKriucX0yCeQnmtLuDmUvf4pzo4WH9S2poaObzoNTXe8ewZC6rT8kAAEjXjGQqwiCLIsTiNJ7CO+fcoS08ghLCWRxEvcG6z2HjIyC5F8gu6CJs9MNjMuPh63fyYfXxiAWhdGXdtwoURzhRm1ioeADjouUX5GMGhaYxlsVrgVfGay9OdgofD8E2TcO+gBiGmZuFKa2WzquQoRmlq72cuxnB2GSNL9qZjZ3KeMAtECjMNi4VKDkjQcbhMqEyrMZN2atUEnrx952dVYI+z+0iKNiT33+LVwJmHdDJJ9ZKrNVHGMeLUiiSEuF+4MDnNePT1cxSRw3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GYljgxDCOqBS0cG9ozrUiwS1rxenhMHmVw3PQ2I7MOU=;
+ b=PLTklmAETmlcyFe8g48r9xWKo/F7EfO1I6JuJ8F6Y3DWKgMoZInMFaU7byf59D69BrbwO8etPLvqf8ga7UGZ5r2WwYnX2cslrVdoBLIlsTPodwsSb1mAONCdp5JV70/XStn1qZkRLsbBM4BF4YW3vxGRVvIGVoHqWIZaxBhjzMY4f37P6g7M69gnZVxWZPLI4BAXi+y8AMzp9U+KCNsEIG2cPzI4yrlRx9MezYEdIgFizA0szJqDt/12y5cxi3biy/97dHMp13KSlpOSWRmZuUaR7rZ6S433oqoW9ZeMiuRggllnnmL6/teca2UjzSF0sji0ftYa/SmvP5tK8CJntg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=lists.linux-foundation.org
+ smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GYljgxDCOqBS0cG9ozrUiwS1rxenhMHmVw3PQ2I7MOU=;
+ b=d881QzRAD7HJEdK+Qa4qIx9zHxINwZwOfb3kpA3Ua0M4Dm2qioxrpfXOsKKom45GcCon9dpNCxBGFMl4NemX5BWegYcFQ+YctBPCmx95vb8dtYW82Y8LutK3Hp3Nvj568N12pBQ1MEGmif8EbalxInWBesV+Is4lDRGt5i7tbkEhzqNkDe0dhwY4hb5CCeWS1Zr8pa5qlTOqKXuKQJW1ocV7qKspF7I3aBjips3MBXadOchJQ7RLEf+poBqWXxBpaUknPWwUUyUuO56N7CpCtLm7VSS5sdtQiGZJenbQFlHmPEpVHSbTr5IMOGOjzNRO1QqCmkZ0eiDXduL7XHucRA==
+Received: from DM6PR13CA0033.namprd13.prod.outlook.com (2603:10b6:5:bc::46) by
+ BYAPR12MB3624.namprd12.prod.outlook.com (2603:10b6:a03:aa::17) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4930.15; Tue, 25 Jan 2022 09:52:02 +0000
+Received: from DM6NAM11FT024.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:bc:cafe::2d) by DM6PR13CA0033.outlook.office365.com
+ (2603:10b6:5:bc::46) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.7 via Frontend
+ Transport; Tue, 25 Jan 2022 09:52:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT024.mail.protection.outlook.com (10.13.172.159) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4909.7 via Frontend Transport; Tue, 25 Jan 2022 09:52:01 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 25 Jan
+ 2022 09:52:00 +0000
+Received: from [172.27.12.100] (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Tue, 25 Jan 2022
+ 01:51:57 -0800
+Message-ID: <25ec6925-8ebf-d2fa-7d73-708ba72cec0a@nvidia.com>
+Date:   Tue, 25 Jan 2022 11:51:53 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH net] net: bridge: vlan: Fix dumping with ifindex
+Content-Language: en-US
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+To:     Benjamin Poirier <bpoirier@nvidia.com>
+CC:     Roopa Prabhu <roopa@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Xue Liu <liuxuenetmail@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Harry Morris <harrymorris12@gmail.com>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [wpan-next v2 0/9] ieee802154: A bunch of fixes
-Message-ID: <20220125105135.2f6a18dc@xps13>
-In-Reply-To: <e401539a-6a05-9982-72a6-ac360b0bdf97@datenfreihafen.org>
-References: <20220120112115.448077-1-miquel.raynal@bootlin.com>
-        <CAB_54W5_dALTBdvXSRMpiEJBFTqVkzewHJcBjgLn79=Ku6cR9A@mail.gmail.com>
-        <20220121092715.3d1de2ed@xps13>
-        <e401539a-6a05-9982-72a6-ac360b0bdf97@datenfreihafen.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>
+References: <20220125061903.714509-1-bpoirier@nvidia.com>
+ <cc425efa-1e20-286a-ba96-bc9555142c9c@nvidia.com>
+In-Reply-To: <cc425efa-1e20-286a-ba96-bc9555142c9c@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: drhqmail203.nvidia.com (10.126.190.182) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 47d35212-d2be-45d7-ff2b-08d9dfe855a3
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3624:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB36245D4FF473A52872F28B59DF5F9@BYAPR12MB3624.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:660;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uXcG8XGHjWV0UgUfUakd+c6F0IgM9Ms5BtUCZplkUzL1s5DbH+OkQLNJJ15MP+eObnXrG6KBni15aMdyDQhplZ02QPwTL6j1TriH+b44NcyWRI5dBd51QallSjzygOyFjv1pXpBSTh2WuTdKtx196aMf7oKF7cFdL+8Paa++xBrVkauKCxWtCPkh4E9thQSo91u1u7Rdc0jxQOGCQlNmFUMCGCgzYX9plRue27L4WDwIw4lJrphfVLqE+zkmBNZtVKtRX/Pgar6Oip2vI9vor/6ix9Kcxz5CoFSNhY51z1T8VR4V0mmngqTAZadF4qB3ibGwdHOCTGsk4CMXvrOfYg56fYnJBmDZTcoEX0xcizzpPvT/FL4JICsWO/CLn6+Z48DAbSXUSdGqhiPxVoxVZTKUAyK41MgUVV4XDP61F4znIdm+esW9nsp1tJfQAlMPEytdDlMgOwTAzKldGam2rLPr0ie9f8YgNKUngK9S/0LxZ+5MCqYaHAArJoe1vF1F6LLDJGbGE7y3Dj5EaaSbaxkDZ9Zad4mQhBpjbjvGCmqUXVZ/IlrnYhiGhh9sXACtCt+kwkBc9zCpAutlshq0iWQY767AQMV2XTk5nafGE6EpJgrKddJCmwTgOdZbABjU0ufqrpG9clSmlrn++N+QA4sJubtg8QnK0IGs2oNdcs1ogaaVNm2wnnvIU3rsdMy4A4Y5SsRotHIV28YvLEICZsOMmgeL4AuNN+HZElf+a031KKANko/g/vjXy0OCZ7Qe
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(6666004)(16576012)(86362001)(316002)(37006003)(82310400004)(54906003)(31696002)(83380400001)(81166007)(40460700003)(508600001)(6636002)(53546011)(47076005)(356005)(2616005)(336012)(426003)(186003)(26005)(36860700001)(16526019)(36756003)(8936002)(31686004)(5660300002)(4326008)(6862004)(70586007)(70206006)(2906002)(8676002)(43740500002)(36900700001)(20210929001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 09:52:01.0447
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 47d35212-d2be-45d7-ff2b-08d9dfe855a3
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT024.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3624
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stefan,
+On 25/01/2022 10:24, Nikolay Aleksandrov wrote:
+> On 25/01/2022 08:19, Benjamin Poirier wrote:
+>> Specifying ifindex in a RTM_GETVLAN dump leads to an infinite repetition
+>> of the same entries. netlink_dump() normally calls the dump function
+>> repeatedly until it returns 0 which br_vlan_rtm_dump() never does in
+>> that case.
+>>
+>> Fixes: 8dcea187088b ("net: bridge: vlan: add rtm definitions and dump support")
+>> Signed-off-by: Benjamin Poirier <bpoirier@nvidia.com>
+>> ---
+>>  net/bridge/br_vlan.c | 6 ++++--
+>>  1 file changed, 4 insertions(+), 2 deletions(-)
+>>
+> [snip]
+>>
+>> diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+>> index 84ba456a78cc..2e606f2b9a4d 100644
+>> --- a/net/bridge/br_vlan.c
+>> +++ b/net/bridge/br_vlan.c
+>> @@ -2013,7 +2013,7 @@ static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
+>>  		dump_flags = nla_get_u32(dtb[BRIDGE_VLANDB_DUMP_FLAGS]);
+>>  
+>>  	rcu_read_lock();
+>> -	if (bvm->ifindex) {
+>> +	if (bvm->ifindex && !s_idx) {
+>>  		dev = dev_get_by_index_rcu(net, bvm->ifindex);
+>>  		if (!dev) {
+>>  			err = -ENODEV;
+>> @@ -2022,7 +2022,9 @@ static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
+>>  		err = br_vlan_dump_dev(dev, skb, cb, dump_flags);
+>>  		if (err && err != -EMSGSIZE)
+>>  			goto out_err;
+>> -	} else {
+>> +		else if (!err)
+>> +			idx++;
+>> +	} else if (!bvm->ifindex) {
+>>  		for_each_netdev_rcu(net, dev) {
+>>  			if (idx < s_idx)
+>>  				goto skip;
+> 
+> Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-stefan@datenfreihafen.org wrote on Fri, 21 Jan 2022 13:48:14 +0100:
+Actually I'd prefer an alternative that would encapsulate handling the single
+device dump in its block, avoid all the "else if"s and is simpler (untested):
 
-> Hello.
-> 
-> On 21.01.22 09:27, Miquel Raynal wrote:
-> > Hi Alexander,
-> > 
-> > alex.aring@gmail.com wrote on Thu, 20 Jan 2022 17:52:57 -0500:
-> >   
-> >> Hi,
-> >>
-> >> On Thu, 20 Jan 2022 at 06:21, Miquel Raynal <miquel.raynal@bootlin.com> wrote:  
-> >>>
-> >>> In preparation to a wider series, here are a number of small and random
-> >>> fixes across the subsystem.
-> >>>
-> >>> Changes in v2:
-> >>> * Fixed the build error reported by a robot. It ended up being something
-> >>>    which I fixed in a commit from a following series. I've now sorted
-> >>>    this out and the patch now works on its own.  
-> >>>   >>  
-> >> This patch series should be reviewed first and have all current
-> >> detected fixes, it also should be tagged "wpan" (no need to fix that
-> >> now). Then there is a following up series for a new feature which you
-> >> like to tackle, maybe the "more generic symbol duration handling"? It
-> >> should be based on this "fixes" patch series, Stefan will then get
-> >> things sorted out to queue them right for upstream.
-> >> Stefan, please correct me if I'm wrong.  
-> 
-> Alex, agreed. I will take this series first and see if the patches apply cleanly against my wpan tree. Once in they can be feed back into net, net-next and finally wpan-next again.
-> 
-> > Yup sorry that's not what I meant: the kernel robot detected that a
-> > patch broke the build. This patch was part of the current series. The
-> > issue was that I messed a copy paste error. But I didn't ran a
-> > per-patch build test and another patch, which had nothing to do with
-> > this fix, actually addressed the build issue. I very likely failed
-> > something during my rebase operation. >
-> > So yes, this series should come first. Then we'll tackle the symbol
-> > duration series, the Kconfig cleanup and after that we can start thick
-> > topics :)  
-> 
-> That sounds like a great plan to me. I know splitting the huge amount of work you do up into digestible pieces is work not much liked, so I appreciate that you take this without much grumble. :-)
-
-Yeah no problem, I also know what it is like to be on the reviewer
-side, and while I like to have the full contribution to get the big
-picture, I also find it much easier to review smaller series, so let's
-got for it now that the main boundaries for the scan support have been
-shared.
-
-> I also finally started to start my review backlog on your work. Catched up on the big v3 patchset now. Will look over the newest sets over the weekend so we should be ready to process the fixes series and maybe more next week.
-> 
-> >> Also, please give me the weekend to review this patch series.  
-> 
-> Alex, whenever you are ready with them please add you ack and I will doe my review and testing in parallel.
-> 
-> > Yes of course, you've been very (very) reactive so far, I try to be
-> > also more reactive on my side but that's of course not a race!  
-> 
-> And being so reactive is very much appreciated. We just need to throttle this a bit so we can keep up with reviewer resources. :-)
-
-Yup! I'll soon send a v3 addressing your comments, this time I'll even
-split the first series so that you have a series with only fixes for
-the wpan branch, and another series with very small cleanups for
-wpan-next. I'll send both because they are not very big.
-
-Thanks,
-Miquèl
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index 84ba456a78cc..43201260e37b 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -2020,7 +2020,8 @@ static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
+                        goto out_err;
+                }
+                err = br_vlan_dump_dev(dev, skb, cb, dump_flags);
+-               if (err && err != -EMSGSIZE)
++               /* if the dump completed without an error we return 0 here */
++               if (err != -EMSGSIZE)
+                        goto out_err;
+        } else {
+                for_each_netdev_rcu(net, dev) {
