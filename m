@@ -2,120 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26CA149B2F1
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 12:31:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0BBB49B302
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 12:37:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344102AbiAYLbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 06:31:23 -0500
-Received: from mga18.intel.com ([134.134.136.126]:46033 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346881AbiAYL3M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jan 2022 06:29:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643110149; x=1674646149;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=lQrfEXVLGpaNR1bzpdDKi/OjamQdZz/E9VEBgcj+KlQ=;
-  b=eIiqLz8Ql92mRqRbvelNLgsf4KB6+vNZhDm8/Mrxl6/lN/rtuSb+XZPX
-   MLYhmXLB4AI7jz2ylrWLpwS7eqiMn4Bd8OT+5LStl0AhBeYFkMTOVCrzt
-   GtRLqLvQ/71pAgg6x9r1FDXxU5Hn2rjTqYkN2OA7kR+ztunZcZI9FUS3b
-   ZW1RabOtFTDy39uljBlDGYNhTHu3bOLKNBpZgYINtmo/uVKNVBXmkAi83
-   X+WFz07vS85ocrRcax0qwi0Lx9GMaz0+QuHPyNW0KTxVKTPfZ46/ZqlGx
-   G/S82bJb37qAzNDM39p77FbBjSca2g5H2NBRPAnwGiMXbiE78WE9Fy4GI
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="229854657"
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="229854657"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 03:28:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="494964994"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by orsmga002.jf.intel.com with ESMTP; 25 Jan 2022 03:28:52 -0800
-Date:   Tue, 25 Jan 2022 12:28:52 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com
-Subject: Re: [PATCH bpf-next v4 2/8] ice: xsk: force rings to be sized to
- power of 2
-Message-ID: <Ye/e9GqLkuekqFos@boxer>
-References: <20220124165547.74412-1-maciej.fijalkowski@intel.com>
- <20220124165547.74412-3-maciej.fijalkowski@intel.com>
- <20220125112306.746139-1-alexandr.lobakin@intel.com>
+        id S1381316AbiAYLhL convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Jan 2022 06:37:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53700 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350694AbiAYLdD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 06:33:03 -0500
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5962C061744;
+        Tue, 25 Jan 2022 03:33:00 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id A601420000A;
+        Tue, 25 Jan 2022 11:32:56 +0000 (UTC)
+Date:   Tue, 25 Jan 2022 12:32:55 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Xue Liu <liuxuenetmail@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harry Morris <harrymorris12@gmail.com>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [wpan-next v2 8/9] net: mac802154: Explain the use of
+ ieee802154_wake/stop_queue()
+Message-ID: <20220125123255.05fef400@xps13>
+In-Reply-To: <CAB_54W6dCoEinhdq-HAQj0CQ9_wf-xK9ESOfvB6K4JMwHo7Vaw@mail.gmail.com>
+References: <20220120112115.448077-1-miquel.raynal@bootlin.com>
+        <20220120112115.448077-9-miquel.raynal@bootlin.com>
+        <CAB_54W6dCoEinhdq-HAQj0CQ9_wf-xK9ESOfvB6K4JMwHo7Vaw@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220125112306.746139-1-alexandr.lobakin@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 12:23:06PM +0100, Alexander Lobakin wrote:
-> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Date: Mon, 24 Jan 2022 17:55:41 +0100
+Hi Alexander,
+
+alex.aring@gmail.com wrote on Sun, 23 Jan 2022 15:56:22 -0500:
+
+> Hi,
 > 
-> > With the upcoming introduction of batching to XSK data path,
-> > performance wise it will be the best to have the ring descriptor count
-> > to be aligned to power of 2.
-> > 
-> > Check if rings sizes that user is going to attach the XSK socket fulfill
-> > the condition above. For Tx side, although check is being done against
-> > the Tx queue and in the end the socket will be attached to the XDP
-> > queue, it is fine since XDP queues get the ring->count setting from Tx
-> > queues.
-> > 
-> > Suggested-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> On Thu, 20 Jan 2022 at 06:21, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> >
+> > It is not straightforward to the newcomer that a single skb can be sent
+> > at a time and that the internal process is to stop the queue when
+> > processing a frame before re-enabling it. Make this clear by documenting
+> > the ieee802154_wake/stop_queue() helpers.
+> >
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > > ---
-> >  drivers/net/ethernet/intel/ice/ice_xsk.c | 9 +++++++++
-> >  1 file changed, 9 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-> > index 2388837d6d6c..0350f9c22c62 100644
-> > --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-> > +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-> > @@ -327,6 +327,14 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
-> >  	bool if_running, pool_present = !!pool;
-> >  	int ret = 0, pool_failure = 0;
-> >  
-> > +	if (!is_power_of_2(vsi->rx_rings[qid]->count) ||
-> > +	    !is_power_of_2(vsi->tx_rings[qid]->count)) {
-> > +		netdev_err(vsi->netdev,
-> > +			   "Please align ring sizes at idx %d to power of 2\n", qid);
+> >  include/net/mac802154.h | 12 ++++++++++++
+> >  1 file changed, 12 insertions(+)
+> >
+> > diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+> > index d524ffb9eb25..94b2e3008e77 100644
+> > --- a/include/net/mac802154.h
+> > +++ b/include/net/mac802154.h
+> > @@ -464,6 +464,12 @@ void ieee802154_rx_irqsafe(struct ieee802154_hw *hw, struct sk_buff *skb,
+> >   * ieee802154_wake_queue - wake ieee802154 queue
+> >   * @hw: pointer as obtained from ieee802154_alloc_hw().
+> >   *
+> > + * Tranceivers have either one transmit framebuffer or one framebuffer for both
+> > + * transmitting and receiving. Hence, the core only handles one frame at a time  
 > 
-> Ideally I'd pass xdp->extack from ice_xdp() to print this message
-> directly in userspace (note that NL_SET_ERR_MSG{,_MOD}() don't
-> support string formatting, but the user already knows QID at this
-> point).
+> this is not a fundamental physical law, they might exist but not supported yet.
 
-I thought about that as well but it seemed to me kinda off to have a
-single extack usage in here. Updating the rest of error paths in
-ice_xsk_pool_setup() to make use of extack is a candidate for a separate
-patch to me.
+I think it's important to explain why we call these helpers
+before/after transmissions. I've reworded the beginning of the sentence
+to: "Tranceivers usually have..." to reflect that this is the current
+state of the support, but is not marble solid either. I've also updated
+the second sentence about the core "Hence, the core currently only
+handles..."
 
-WDYT?
-
+> > + * for each phy, which means we had to stop the queue to avoid new skb to come
+> > + * during the transmission. The queue then needs to be woken up after the
+> > + * operation.
+> > + *
+> >   * Drivers should use this function instead of netif_wake_queue.  
 > 
-> > +		pool_failure = -EINVAL;
-> > +		goto failure;
-> > +	}
-> > +
-> >  	if_running = netif_running(vsi->netdev) && ice_is_xdp_ena_vsi(vsi);
-> >  
-> >  	if (if_running) {
-> > @@ -349,6 +357,7 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
-> >  			netdev_err(vsi->netdev, "ice_qp_ena error = %d\n", ret);
-> >  	}
-> >  
-> > +failure:
-> >  	if (pool_failure) {
-> >  		netdev_err(vsi->netdev, "Could not %sable buffer pool, error = %d\n",
-> >  			   pool_present ? "en" : "dis", pool_failure);
-> > -- 
-> > 2.33.1
+> It's a must.
+>
+> >   */
+> >  void ieee802154_wake_queue(struct ieee802154_hw *hw);
+> > @@ -472,6 +478,12 @@ void ieee802154_wake_queue(struct ieee802154_hw *hw);
+> >   * ieee802154_stop_queue - stop ieee802154 queue
+> >   * @hw: pointer as obtained from ieee802154_alloc_hw().
+> >   *
+> > + * Tranceivers have either one transmit framebuffer or one framebuffer for both
+> > + * transmitting and receiving. Hence, the core only handles one frame at a time
+> > + * for each phy, which means we need to tell upper layers to stop giving us new
+> > + * skbs while we are busy with the transmitted one. The queue must then be
+> > + * stopped before transmitting.
+> > + *
+> >   * Drivers should use this function instead of netif_stop_queue.
+> >   */
+> >  void ieee802154_stop_queue(struct ieee802154_hw *hw);  
 > 
-> Thanks,
-> Al
+> Same for stop, stop has something additional here... it is never used
+> by any driver because we do that on mac802154 layer. Simply, they
+> don't use this function.
+
+That's true, and this is addressed in a later series where we actually
+stop exporting these helpers because we want everything to be handled
+by the _xmit_complete/error() helpers and keep full control of the
+queue. The comments added above will remain because they are useful to
+understand why these helpers are called. But the last sentence above
+their use from drivers being preferred to the netif_ calls will be
+dropped.
+
+Thanks,
+Miquèl
