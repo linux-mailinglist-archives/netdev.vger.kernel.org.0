@@ -2,55 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DEEE49BAFA
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 19:09:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 787A149BB02
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 19:12:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242561AbiAYSIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 13:08:19 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:36316 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243976AbiAYSHy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 13:07:54 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44AB7B817EF;
-        Tue, 25 Jan 2022 18:07:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF6BBC340E0;
-        Tue, 25 Jan 2022 18:07:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643134072;
-        bh=qaTTedUmiE2cBTM4T25L/uUOErgonKVsicfShCcszvQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lCB8p4DldybUAkBa3OuP43iCxZa5o3+R+JntgcIwMGWQZrJ73FygylJxULwg8q3zC
-         Rvv1KPxdv9pu3gYIb6lA8Ri5XhEtB0Nb7Dn4F7zu+sSo8MhFdElcLujzF4oNZzYVDk
-         utJKm2tpQYSh4UODm4QzKw/JfPYVCHoKQTP4bYPVLqhZkMeW2P9Szd1ZkLUwcIOQfl
-         I7UJgSvUv4pQmldfMdtsbb59tSxOQdJMiF3pgI8Q419z0ttCAkj/hchPCeNU81WQad
-         048f+lybIPO15j1zSqw0hJtx3Hsk13eMtBlbfkax5SttBImWRDuzO5B2cN8tWp0WAm
-         CCoFlMoKtKCgw==
-Date:   Tue, 25 Jan 2022 10:07:50 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Qing Deng <i@moy.cat>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ip6_tunnel: allow routing IPv4 traffic in NBMA mode
-Message-ID: <20220125100750.0bae1acf@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220123060000.GA12551@devbox>
-References: <20220123060000.GA12551@devbox>
+        id S234672AbiAYSMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 13:12:02 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:22510 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233950AbiAYSL7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 13:11:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643134318;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZYZFcKeTPsQCFaSsqNlB8G3oqmreXQCJIoK82/wxEkU=;
+        b=XEI8APwOLMstwDfrWdiGxohk0Tj8iYSCVRKmV+JMtqSXFTuhnopJyp3loDxYaHHf8o6WO3
+        zXkPX9jUNBdvt/mZ5qSie953p3xwpFT67vrMTvNMTWIr8HrCqg8yCIjR4ZExKqYfBDjcK3
+        WoGPRhqRNFS9hfmvU8oHnW67UDy54qE=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-557-hy8-s6oYNAqIZcskIGp_RQ-1; Tue, 25 Jan 2022 13:11:56 -0500
+X-MC-Unique: hy8-s6oYNAqIZcskIGp_RQ-1
+Received: by mail-ej1-f69.google.com with SMTP id m21-20020a1709061ed500b006b3003ec50dso3778941ejj.17
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 10:11:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZYZFcKeTPsQCFaSsqNlB8G3oqmreXQCJIoK82/wxEkU=;
+        b=SGcMh/z2PnbZ9+cNvh8nh/YM85yhQ6eYQBB4LYSpzxZWcypiU2pAfJzLf6YBTjDH1G
+         o9RY0iLVr0CRt1V9dc74AU23tPk9A34xm4vY9T7xN4v1pcDV8WkJDytV8hAq3IXV3VOu
+         U/i/ebMoQaHjv1kbea1xUCvJSdh7D73xKIEcP20/qWMgfBrKWSDbf83gdAYuiHVI6F8u
+         SZn3vkIu30+VJiiFTo/QUF9KMZLkdHXQ/U2mgGBh6JxBwZGIOD+EmUsW21c7cTLuuaT+
+         QVFKfC3KjArYt/E875zkYDDkn3XlYNG68h8Cd+FEaxt+3H3gb/fpARvvRLRTmwwBF9yU
+         lo6g==
+X-Gm-Message-State: AOAM530RgG5hcXSm3tTtAEjFMdWKSWVzzCrCF3Z07JPKbIFxK1SGcS97
+        dy/sTW+ldAhvNNWEv+j24C9EPrss3djFUCa1OGDrMAvtUNWHKEwWcqNsseB9iebpDu3dHgdCr99
+        jMKDA9WLbvKrPJ8vZ
+X-Received: by 2002:a17:907:9605:: with SMTP id gb5mr17348661ejc.685.1643134315388;
+        Tue, 25 Jan 2022 10:11:55 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyoPAYB5FVJEoP403NezL+MUS0Tv2jX6/UgHpSL8/pKp8IUbV8+JT6INoyPbobrfnoWYRryPQ==
+X-Received: by 2002:a17:907:9605:: with SMTP id gb5mr17348639ejc.685.1643134315151;
+        Tue, 25 Jan 2022 10:11:55 -0800 (PST)
+Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id k7sm6425341ejp.182.2022.01.25.10.11.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 10:11:54 -0800 (PST)
+Date:   Tue, 25 Jan 2022 19:11:52 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v5 2/9] fprobe: Add ftrace based probe APIs
+Message-ID: <YfA9aC5quQNc89Hc@krava>
+References: <164311269435.1933078.6963769885544050138.stgit@devnote2>
+ <164311271777.1933078.9066058105807126444.stgit@devnote2>
+ <YfAoMW6i4gqw2Na0@krava>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfAoMW6i4gqw2Na0@krava>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 23 Jan 2022 14:00:00 +0800 Qing Deng wrote:
-> Since IPv4 routes support IPv6 gateways now, we can route IPv4 traffic in
-> NBMA tunnels.
+On Tue, Jan 25, 2022 at 05:41:24PM +0100, Jiri Olsa wrote:
+> On Tue, Jan 25, 2022 at 09:11:57PM +0900, Masami Hiramatsu wrote:
 > 
-> Signed-off-by: Qing Deng <i@moy.cat>
+> SNIP
+> 
+> > +
+> > +/* Convert ftrace location address from symbols */
+> > +static int convert_func_addresses(struct fprobe *fp)
+> > +{
+> > +	unsigned long addr, size;
+> > +	unsigned int i;
+> > +
+> > +	/* Convert symbols to symbol address */
+> > +	if (fp->syms) {
+> > +		fp->addrs = kcalloc(fp->nentry, sizeof(*fp->addrs), GFP_KERNEL);
+> > +		if (!fp->addrs)
+> > +			return -ENOMEM;
+> > +
+> > +		for (i = 0; i < fp->nentry; i++) {
+> > +			fp->addrs[i] = kallsyms_lookup_name(fp->syms[i]);
+> > +			if (!fp->addrs[i])	/* Maybe wrong symbol */
+> > +				goto error;
+> > +		}
+> > +	}
+> > +
+> > +	/* Convert symbol address to ftrace location. */
+> > +	for (i = 0; i < fp->nentry; i++) {
+> > +		if (!kallsyms_lookup_size_offset(fp->addrs[i], &size, NULL))
+> > +			size = MCOUNT_INSN_SIZE;
+> > +		addr = ftrace_location_range(fp->addrs[i], fp->addrs[i] + size);
+> 
+> you need to substract 1 from 'end' in here, as explained in
+> __within_notrace_func comment:
+> 
+>         /*
+>          * Since ftrace_location_range() does inclusive range check, we need
+>          * to subtract 1 byte from the end address.
+>          */
+> 
+> like in the patch below
+> 
+> also this convert is for archs where address from kallsyms does not match
+> the real attach addresss, like for arm you mentioned earlier, right?
+> 
+> could we have that arch specific, so we don't have extra heavy search
+> loop for archs that do not need it?
 
-Applied, thanks, c1f55c5e0482 ("ip6_tunnel: allow routing IPv4 traffic
-in NBMA mode")  in net-next.
+one more question..
+
+I'm adding support for user to pass function symbols to bpf fprobe link
+and I thought I'd pass symbols array to register_fprobe, but I'd need to
+copy the whole array of strings from user space first, which could take
+lot of memory considering attachment of 10k+ functions
+
+so I'm thinking better way is to resolve symbols already in bpf fprobe
+link code and pass just addresses to register_fprobe
+
+I assume you want to keep symbol interface, right? could we have some
+flag ensuring the conversion code is skipped, so we don't go through
+it twice?
+
+in any case I need addresses before I call register_fprobe, because
+of the bpf cookies setup
+
+thanks,
+jirka
+
