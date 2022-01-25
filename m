@@ -2,65 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F6A149BFA4
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 00:36:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2C2F49BFAC
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 00:40:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234915AbiAYXg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 18:36:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51406 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234943AbiAYXgn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 18:36:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAA6C061749
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 15:36:39 -0800 (PST)
+        id S234947AbiAYXkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 18:40:15 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45756 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234941AbiAYXkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 18:40:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CEB076131E
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 23:36:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D313C340E0;
-        Tue, 25 Jan 2022 23:36:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DCAF1B81B84
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 23:40:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9A351C340E5;
+        Tue, 25 Jan 2022 23:40:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643153798;
-        bh=E6tfEN8ha+Lxt4LF4uvgJ897Z30jCnh865B56nYQfpU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PgTlzZQBbAhpjpmGYH05hBVaS5phEVyuHg7mNeIUjYjqtnPdG0/7GXPACGAbZqIT0
-         zOFdOT2sPE6wYhW5qWnrjVqLIB46NuYAV1QHQq7v0agnmzlmqyyBHAUncqhaP07PnX
-         SjZOo4W6dF6yAUM4/+pKUwMK2zvxlCZwhy2au6mv+pWSxcIjdPkYofJtHwO0Xt5CLR
-         lEn0Z0xb9tDT2VEC36m5FY/m9xFZfaVxER1nmUKyma+agYaAev2hFAgQ85hyZFW0vE
-         M4/ePGMzNMBgb2WHOA+7XgDfEjX/PJUAtD3B891iWGnwf+Ee/xLJRenCIauaKmHSMQ
-         kwGdHjgD8gHvA==
-Date:   Tue, 25 Jan 2022 15:36:37 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Awogbemila <awogbemila@google.com>
-Cc:     netdev@vger.kernel.org, jeroendb@google.com,
-        Catherine Sullivan <csully@google.com>
-Subject: Re: [PATCH net-next] gve: Fix GFP flags when allocing pages
-Message-ID: <20220125153637.7bd81c37@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220125215910.3551874-2-awogbemila@google.com>
-References: <20220125215910.3551874-1-awogbemila@google.com>
-        <20220125215910.3551874-2-awogbemila@google.com>
+        s=k20201202; t=1643154009;
+        bh=czDhqrh/CRw9weHgbBA1yXkErrzTy6UWUgKUoQHtGRA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KFtD7xi4Fbs3n8VWi6o/qupYBeNP+/K5APonj/FfJDeRWC8qpc8jv4Qrm/dr7Ayev
+         6gclwdWJLOyAHn62iUfPi3NDbcAMXM5C+oIaSu9q2e8pVe+yABY81TGGw9DW+v32OB
+         X00V8DbZ3Grsm3jXyzzJde13wp7j3XgK3o5E43MkSdcqg+3Mi4X6Vy8x62fEQx8BQc
+         x4n+BSerbw0g0NmjXAhhz7TsIdY9Uafmjk+pkQTEES4Ipuxd0yrHi+boZwQP2OLeYI
+         r4px85JRrE7sK94BVGsyzMBs5XBO54B3CBDVGS1BiBhLQhJxGxQ/Qx/LFCBNYthtlq
+         b8wM7DFcIhXZQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 82B30E5D07D;
+        Tue, 25 Jan 2022 23:40:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: Adjust sk_gso_max_size once when set
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164315400953.24146.6826771602579742703.git-patchwork-notify@kernel.org>
+Date:   Tue, 25 Jan 2022 23:40:09 +0000
+References: <20220125024511.27480-1-dsahern@kernel.org>
+In-Reply-To: <20220125024511.27480-1-dsahern@kernel.org>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, edumazet@google.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jan 2022 13:59:10 -0800 David Awogbemila wrote:
-> From: Catherine Sullivan <csully@google.com>
-> 
-> Use GFP_ATOMIC when allocating pages out of the hotpath,
-> continue to use GFP_KERNEL when allocating pages during setup.
-> 
-> GFP_KERNEL will allow blocking which allows it to succeed
-> more often in a low memory enviornment but in the hotpath we do
-> not want to allow the allocation to block.
+Hello:
 
-Sounds like a fix, right?  Sleeping in atomic is a bug.
-In that case please resend as [PATCH net] and with a Fixes: tag
-included.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-FWIW adding cover letters with a single patch is not required,
-but you can keep it if you prefer it that way.
+On Mon, 24 Jan 2022 19:45:11 -0700 you wrote:
+> sk_gso_max_size is set based on the dst dev. Both users of it
+> adjust the value by the same offset - (MAX_TCP_HEADER + 1). Rather
+> than compute the same adjusted value on each call do the adjustment
+> once when set.
+> 
+> Signed-off-by: David Ahern <dsahern@kernel.org>
+> Cc: Eric Dumazet <edumazet@google.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] net: Adjust sk_gso_max_size once when set
+    https://git.kernel.org/netdev/net-next/c/ab14f1802cfb
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
