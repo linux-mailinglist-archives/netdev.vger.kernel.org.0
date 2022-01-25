@@ -2,79 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE82F49AA81
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 05:38:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D618149AA79
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 05:38:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1326028AbiAYDjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 22:39:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41592 "EHLO
+        id S1325861AbiAYDjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 22:39:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1312914AbiAYCrG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 21:47:06 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82938C08118D;
-        Mon, 24 Jan 2022 16:05:14 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id j23so54440562edp.5;
-        Mon, 24 Jan 2022 16:05:14 -0800 (PST)
+        with ESMTP id S1311361AbiAYCkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 21:40:17 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AABE2C0AD1B9
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 16:09:56 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id o11so813492pjf.0
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 16:09:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LqtTZJJS+DuJnUoPPxfP5zYuoYB4Rs8EWL7kEIrwG24=;
-        b=ibXrjc29K9+PFIfTeLx1Lxucf/xWbRvcHFlDOTHrkLhJHd8qlmgOA5VY/od8cbW2ni
-         nMbRjFB0ZKgLIEjuZZOex9znIMtnU94Yi/TK90xe/5UcXXhOK29/+VFfHTP8WgSE4fPl
-         5XF1iHBBNtDI7BG/ikjcu1v0Eber71joc+IFzMqI6wYmewDNZIQU02pvVHWbUFuV3iP2
-         WGZiSOyYLqWKGle3NNAj+QmKg6hWi3SI5axc2Im932dADn36QZMJVn9OF6tMNhaZFemW
-         W3jG78/zrfrwbbbUTUIJTwjS8u+9QbMuAmq4SBEP+3tX0QxyTczOpsYv6HgwRDtcl2H/
-         DBaQ==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=XOycsyS8WRs8WZM/52QyGEA5jLYLxAJ/W6Zuel7qkRA=;
+        b=j2s8zFBzUfPmqiNAfQ+O9pjMLaytZx0misgPSkjmRyyrpU8dsRMgfe6YvR8OBvh8rU
+         cdJdsGmBkXHhxtw0OaIoEt1MyxbLNyDJPC0zc01BKrtfdqgoHOJGAC3nWqWRBV54Au5u
+         SDJzr7vfqwumulYXbQHLOt83yqQOehwmdzSx8TOfKKfvI/viSWW1Zil2DAkt6tlmgMsd
+         V9U4gMav7dc+Jj0ZCrlBiJY4/7qRbEVcF131eurJJujHas18lDU2uRg8lIvJs7nDz388
+         WXhAP1sZdLVbSs9cOvpWhD+mjFIQ+YeIkTsALQsjYx/HqXAGhRHljyFG7eyxACqTf4rD
+         UT5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LqtTZJJS+DuJnUoPPxfP5zYuoYB4Rs8EWL7kEIrwG24=;
-        b=S7j4dC81OV1WX/PLpB5QtWblxC9T3S66wAxA1hin2GXLKVZn/Cmq5NAl3KHnENLqsS
-         gOAHqvA71TI+HxB2Xo6QYsXv5apfxLW6Aqq7KutgrK1R1799jn7yshi7ZbAIWa0vWYQh
-         fGrGGynP3M9+9UbPHjtJbbeK2dsML4DAyrvp0H2Vl61+mXpx0aE7z2bXoFN6uwp33Ctr
-         H15yaT2pTiRlDToIp8KRj3vL6fALy10cQGPewELHuGoH37EMzYVJ9z/llneAs9hu9PaY
-         BzClO1GMUC66nVozLfrsYXOLKvn0L2pOAKX6/j5CDreJzyQ6S/V6aokBbhSst2epqvWl
-         Y8Lg==
-X-Gm-Message-State: AOAM5324Z3CK+5VzfoadF7nJF1NulPPwPWuiolqWab4UBaemnb8744xs
-        ArC12DM+xWpUVCB83zik6YqQttpSY+U=
-X-Google-Smtp-Source: ABdhPJyu4EhknJPBIadru/z1uc/Sm2oPuZXKuVuUp5FtKPF3lG0c8yu5fwyEDdSgOkSZC39YXDazVw==
-X-Received: by 2002:a05:6402:1112:: with SMTP id u18mr18264945edv.150.1643069113153;
-        Mon, 24 Jan 2022 16:05:13 -0800 (PST)
-Received: from skbuf ([188.25.255.2])
-        by smtp.gmail.com with ESMTPSA id kq16sm5419982ejb.163.2022.01.24.16.05.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 16:05:12 -0800 (PST)
-Date:   Tue, 25 Jan 2022 02:05:11 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 1/2] net: dsa: Move VLAN filtering syncing out of
- dsa_switch_bridge_leave
-Message-ID: <20220125000511.oabwtychzodqghjx@skbuf>
-References: <20220124210944.3749235-1-tobias@waldekranz.com>
- <20220124210944.3749235-2-tobias@waldekranz.com>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=XOycsyS8WRs8WZM/52QyGEA5jLYLxAJ/W6Zuel7qkRA=;
+        b=RPEIJwL+och/qpK5v6dZ+SY3yMoJmkKwZqwLhe52SFnKEB6i2WK1es8rh+K5NXQL5y
+         aX+JJ5DM+ciF2cIQq9JnhG49pYl1LWIP32aGJEkv5P40leb2SFOpv5/AIvwuR5tUTtO0
+         bCERz3Znm4JVhWwvW/MFq7qEnmW0SnlnUEi4DYPxHfMPwZIFC8JAL+PjO5hQVTPuBnzB
+         VaBo5tjxlsDQSJWzGSjq+kAwmvxEYsmvrHCCIjobMVTiF6wSHQslOj5BTQW7j2t/hWDC
+         ZFCmy8d0xKCWQqGBxW+8ZNYNWWMUSpuGKYs2PYH/uZYArDHHIAtCXm56jYc3YTgiWkS5
+         Ys8Q==
+X-Gm-Message-State: AOAM5320Hrb4IsU36F8nQp6qvsMkdNPjcBs34lT9taQI7Pc6d3ua+nig
+        EpxsWIk89FCPcXl7cCbns4i8hA1cgFRSA7/iukE=
+X-Google-Smtp-Source: ABdhPJxfkQgMcWDBc2uLBVJg4u/Uyf8YkSkQS18Mxc79JrvH/lIijAMFCSgpvQrji2SA0ndrYygkrSgoTYkW8dR6tOM=
+X-Received: by 2002:a17:90b:4f84:: with SMTP id qe4mr805873pjb.24.1643069395558;
+ Mon, 24 Jan 2022 16:09:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124210944.3749235-2-tobias@waldekranz.com>
+Received: by 2002:a05:6a10:f350:0:0:0:0 with HTTP; Mon, 24 Jan 2022 16:09:54
+ -0800 (PST)
+Reply-To: ayishagddafio@mail.ru
+From:   Aisha Gaddafi <bunny2320123@gmail.com>
+Date:   Mon, 24 Jan 2022 16:09:55 -0800
+Message-ID: <CA+z0umED6hE+jN1jFzsaZwhyOe523kL3zyKT7RDbQ_017Ectyw@mail.gmail.com>
+Subject: Dearest Friend,?
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 10:09:43PM +0100, Tobias Waldekranz wrote:
-> Most of dsa_switch_bridge_leave was, in fact, dealing with the syncing
-> of VLAN filtering for switches on which that is a global
-> setting. Separate the two phases to prepare for the cross-chip related
-> bugfix in the following commit.
-> 
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> ---
+Dearest Friend,
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+In the name of God, Most Gracious, Most Merciful.
+
+Peace be upon you and mercy be upon you and blessings be upon you.
+I have the sum of $27.5 million USD for investment, I am interested in
+you for investment project assistance in your country. My name is
+Aisha  Gaddafi and presently living in Oman, I am a Widow and single
+Mother with three Children, the only biological Daughter of late
+Libyan President (Late Colonel Muammar Gaddafi) and presently I am
+under political asylum protection by the Omani Government.
+
+Kindly reply urgently for more details.
+
+my email address below: ayishagddafio@mail.ru
+Thanks
+Yours Truly Aisha
