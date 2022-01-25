@@ -2,308 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6683249AA39
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 05:36:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF78C49AA63
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 05:36:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1325055AbiAYDfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 22:35:34 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:21856 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S3415324AbiAYBn7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 20:43:59 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20P0RLls013327;
-        Mon, 24 Jan 2022 17:17:07 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=pcERiuSJ5sW21VKUEXE26BYRjKXdyaIg0YOqwMG2484=;
- b=FJxipa55ItGRfO5rhuxnfnOkG1A/mmMuPO1Zp0uYAq2H+Gca09alxloTIEHqC9xxWQtC
- 5MEVgUnS0DkymSV4uyQwX/mLRp2ziDMzBCeozmqzGyNltJvdzaUlgmA9u4a23SkO9vQt
- uy8jlsbCEk32k6oXLMH8fgBHgodhwHsofqw= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dswcpvg1c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 24 Jan 2022 17:17:07 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 24 Jan 2022 17:17:05 -0800
+        id S1325494AbiAYDh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 22:37:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33092 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S3418000AbiAYCM0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 21:12:26 -0500
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2061a.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e83::61a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088FAC09F493;
+        Mon, 24 Jan 2022 17:24:11 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gmPaucD4zaQz/cZAeULEbvNldsOdbf4+3+ICAFgftGJZzqhJvvFpM1tCYcvHOXMxFpdmIn0tg5FJyDWLwbjX/KF+DNEF29FKXRdQXo2RFesJBS/UqhBOjz003Lt07pcAFAG+ql8QvNRDzBU4ZE+qFEJ/rlm3oYCUtHSo0F4axcfJCtq8UH/coQi72dEs5BvyKjbB/FR6JIBh+fBrSfZKDZuoOoIuf4YiF8m7/WU4vNqWNTCoElN9y4YxqRErgNoNsiXCtT19CTH5CfxHzHRfEz1x9RSBy+3ci4/Is2XJlCdDhHkxnXcvPZLXzLahsO6zuJpppQwyTg+xZxqiGvysPw==
+ b=DIJnNdKBGfr+4FAtQ9cwueU20mEOhY8E/w60um9U4OFUX9Q9NOEjhR1i3g6n9wbi6U/LGhblARtoQzDFaO4IQriyzJRr6av/9733VnnWm0awjDwiaVNb6p1jPaQ/rlzfqOzBYtrDDkMyyuoSRh4jrbKBjWcUrZvYP5Ch7D0tVouw0O/2Q+AIIlFw7KpcRrwBBVedLkAuYMRhbCpzjEhM6OSp0uS9gyGtCLuI5orilUBnsPOymyibx2tczYQLTjoAPdXXG+Ja5pJjryNvmKVoDfW/6QErxVQ5NTvh8A6Ae6OecEHqZcF3/BBSUdUU0GxbHujIf7luKAm2qjLpNxKNig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pcERiuSJ5sW21VKUEXE26BYRjKXdyaIg0YOqwMG2484=;
- b=D2D4MccKnfTlo4PJgvkYlXKnDe+keYytp4IooYaO4HmyGFEsrhBAMfkK0gVy/Dex5OUC/KlR4n3B1DsW0uPRRX5pbUrmxSJTw5fc6sP5S8OF5KbJk5DGZPxZ6pWuhRPdmqCGJmp0nH9lrMvMhxiq06JkwelIVdEq+oNlq689i+2oom6UcAs9QBBgVxQWf4bbVu+Qa5uTjrP4QIqfyxbtcn2EMSbQC1Wiuk9fYcRAeFE5Ocm2z4o3vF2uXen7/NYibJFRqbmELGKaQjFyJcyfVa9AqmYnjDzbMkkdZc1rLfedTNcvLQCaXU1PdV0q4TEYwMNhI/o1BN0RCxWqcZxfag==
+ bh=zSVbl9JsHgzoHnrW2ZChU783JGQNs8GpyOXTPWS3InU=;
+ b=GzQQMqOTW916Ad25Ypju1uhCsA8tgDxY5thgtmU2UX9b/bK39TkqNXHAupoIIxLCMDv6UpaVJ6008r2P2Rwjuvs33RwAngiAS6I3C1t2i1dN1OHynGf5pZweLZADVmX+BRfsUYrllQfBsek8Qo1W1FGTMOmh+i9nbH3ekAfzxmSw7/9Xc6OzFchZLlnLiLCILXyknPG5nARUPUSjvE7z7gyBMAXhevNO3+0u+iMz0icywPJVI8DP4lno4d9SCiM1MCtyzDO1puHgNmEencU36AgEkSlVSDeo1m5OCZWQXX7W+BjKXItmilC9Zs0WM3je+f+7f2mKA/zKzm/Sc0ewTw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
- by DM5PR1501MB2133.namprd15.prod.outlook.com (2603:10b6:4:a1::18) with
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zSVbl9JsHgzoHnrW2ZChU783JGQNs8GpyOXTPWS3InU=;
+ b=IHslbCUCcaH1we5lm5PKjAfRKZBpRZSPoZVWcRAlm6yV/Wel8ZSDEQEQMHO3EGOU9p775neFw89ffDPZr9XudshQPj9OlARpR0S6dPX5/7uyTW3tSLtFsVI0Sx1kGxGLAPOdtYONv8qZUTRnZDgWQHEw+c8AnHH0VB4I+5DUw54=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN9PR12MB5115.namprd12.prod.outlook.com (2603:10b6:408:118::14)
+ by BN8PR12MB3058.namprd12.prod.outlook.com (2603:10b6:408:66::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.17; Tue, 25 Jan
- 2022 01:17:00 +0000
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::b0ca:a63e:fb69:6437]) by SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::b0ca:a63e:fb69:6437%6]) with mapi id 15.20.4909.017; Tue, 25 Jan 2022
- 01:17:00 +0000
-Date:   Mon, 24 Jan 2022 17:16:55 -0800
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Menglong Dong <menglong8.dong@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8; Tue, 25 Jan
+ 2022 01:23:58 +0000
+Received: from BN9PR12MB5115.namprd12.prod.outlook.com
+ ([fe80::971:531c:e4f4:8a9a]) by BN9PR12MB5115.namprd12.prod.outlook.com
+ ([fe80::971:531c:e4f4:8a9a%7]) with mapi id 15.20.4909.017; Tue, 25 Jan 2022
+ 01:23:58 +0000
+Message-ID: <500a3aa0-f51e-92ac-82d6-7ffc7f603e2c@amd.com>
+Date:   Mon, 24 Jan 2022 20:23:56 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: Build regressions/improvements in v5.17-rc1
+Content-Language: en-US
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Alex Deucher <alexdeucher@gmail.com>
+Cc:     ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        KVM list <kvm@vger.kernel.org>,
         Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Mengen Sun <mengensun@tencent.com>, <flyingpeng@tencent.com>,
-        <mungerjiang@tencent.com>, Menglong Dong <imagedong@tencent.com>
-Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct
- bpf_sock'
-Message-ID: <20220125011655.qpb7gelbik4tdwcf@kafai-mbp.dhcp.thefacebook.com>
-References: <20220113070245.791577-1-imagedong@tencent.com>
- <CAADnVQKNCqUzPJAjSHMFr-Ewwtv5Cs3UCQpthaKDTd+YNRWqqg@mail.gmail.com>
- <CADxym3bJZrcGHKH8=kKBkxh848dijAZ56n0fm_DvEh6Bbnrezg@mail.gmail.com>
- <20220120041754.scj3hsrxmwckl7pd@ast-mbp.dhcp.thefacebook.com>
- <CADxym3b-Q6LyjKqTFcrssK9dVJ8hL6QkMb0MzLyn64r4LS=xtw@mail.gmail.com>
- <CAADnVQKaaPKPkqYfhcM=YNCxodBL_ME6CMk3DPXF_Kq2zoyM=w@mail.gmail.com>
- <20220125003522.dqbesxtfppoxcg2s@kafai-mbp.dhcp.thefacebook.com>
- <CAADnVQ+xnnuf3ssgmkR3Nui46WT6h37RUU1zsjhOhy+vCfVdXA@mail.gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAADnVQ+xnnuf3ssgmkR3Nui46WT6h37RUU1zsjhOhy+vCfVdXA@mail.gmail.com>
-X-ClientProxiedBy: MN2PR19CA0058.namprd19.prod.outlook.com
- (2603:10b6:208:19b::35) To SA1PR15MB5016.namprd15.prod.outlook.com
- (2603:10b6:806:1db::19)
+        linux-um <linux-um@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        "Tobin C. Harding" <me@tobin.cc>
+References: <20220123125737.2658758-1-geert@linux-m68k.org>
+ <alpine.DEB.2.22.394.2201240851560.2674757@ramsan.of.borg>
+ <CADnq5_MUq0fX7wMLJyUUxxa+2xoRinonL-TzD8tUhXALRfY8-A@mail.gmail.com>
+ <CAMuHMdWUWqHYbbavtMT-XAD_sarDPC5xnc3c0pX1ZAh3Wuzuzg@mail.gmail.com>
+ <aca104cf-5f5f-b696-754a-35e62dbe64c3@infradead.org>
+From:   Felix Kuehling <felix.kuehling@amd.com>
+In-Reply-To: <aca104cf-5f5f-b696-754a-35e62dbe64c3@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: YTXPR0101CA0003.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b00::16) To BN9PR12MB5115.namprd12.prod.outlook.com
+ (2603:10b6:408:118::14)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5c04f556-b864-4931-c0ae-08d9dfa06303
-X-MS-TrafficTypeDiagnostic: DM5PR1501MB2133:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1501MB2133E60CDFE3148357DEB4BFD55F9@DM5PR1501MB2133.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Office365-Filtering-Correlation-Id: 04bcbaa5-ef8b-47a2-ea6d-08d9dfa15c79
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3058:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB30587CA5EE5B4A40821148CB925F9@BN8PR12MB3058.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: if4ihsgpwfBK5bg1N+s7KhBMQ7HZH+vVMvRjAMbEreVnW2pXXjjr0Oqx3vgL8KEv1ACDO4vvAojihHQdTvGSfpIrh2LOxNCn4fiKxxTDe6figV0KEyfNj8/kipjtlbJJtuYZg8W+P/gvlXRbF6JbVicB2AxodzoqZb7v3Ffcr2TxuRbYreR14dA321w/7X1w8auJ2cBBmEMn65CUTiOZRKHS6FfOfK8uCzqk4lCRVHxd0TgopGw7wk5ud1HYZD7KKPi6w5y5EY8CivPlKiUFImTVDjmZcLlLLeT1UdgRr64QGIW3xIaR1zYMBFewxM0+xAJM+318SaXwyxKtZAwxKeg6AuQWJbhFPpHppDkR9FQKbCxIP3ygKaUdKJbaP+pi0PXYy2NniysN9ZiRa1f+Vyhxe5R4JwO3uO3upiJrHH15L2yeYoRzQ1kOjVHIxjWUlnV4F5vOJKiQJiIHkVGT+AVbUtblX46RPcle8LNT8Re/E33WACnPXzBCEb40qAGNNpr7Mk9IhDGhVt9Tnh9zfxr/eAhAoODwgzQyD95+VQalN7oOhH3LwIDet9+2XOwt1QaTkaEUuPUYXxKburAAJS7fgpYw/+VTfBqIUe221dFtFv2ak9eZLWngbkXzCGU+jP+AQN0WObfzDjpWQlVZPg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6916009)(2906002)(9686003)(66476007)(66946007)(316002)(6486002)(508600001)(186003)(6512007)(8676002)(8936002)(66556008)(52116002)(7416002)(38100700002)(86362001)(1076003)(5660300002)(6506007)(54906003)(53546011)(6666004)(83380400001)(4326008);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: sS1wRn8mUsx8ThWydY3jSQuCEBzwhuyTPl+Ax2bx14pFnwXlaaSKqyDAOQT7HDkbxKxOTIdGQm7ZVLVJWnP8mYfoIgQmv5xWeUzVo5IcRIzqUHAFVP7fPNL6Os4MQDlX6S/cdOTWdwYeienvC441qYw2JVYdsmKqFgD9lxt9CCkdz6uwBzJ9+fZFNfC7oahG7f1v2mIFj52NlAeNkYhPLe9Be/KF8p8OXcm//Rr3Y0o0FeDm5w6IkiXhsqUe0enMVOs6Igv4H2i0aVvb1UsUdQ0H8hs3a326Io27IbL0kS0epv3hyanZCwSoSTy25vwhh+kO53eMrTSYpuJhY8K+IZWKIt6Rk2qn/G88Gxwkzoeb9SHLu9T4Msft7Hdxt8iCx3l6QLwnVpVjSoyh82sa0gFqlVGWIXTTn8N48I+DX/mJwo3yy/hti6anTjGA+aSrtSQ9Xii1r7QTny2qtyHIqq7UFckoMQMDAsaLKslbvQpuAuLsCdPtNSkNfEUQ5Aeyj7nooJPiUTS6Go2g8TYkNLPEDuO79eslRbUC/SIE1hTBofs35svsDNXT8392B0RL5lb5kxqlVT/2cp+vVEDNmCPZEtS7iZlamq3hSa9nz0gH+isrtzMV7DYlDU/SDJVxULb7q/E3Vk533dEcj77eGaV/vDob7OYRU9E++goKLkeUREq5RUq2d1vPP3+Y2n7SCkM7MqCYq+4dLjHH05fOJtaOFKSbpoFQK7Zt7scbaUn1FXfX+EB5C+yQva/IvvAXQ3Pr5Zytqty3SXiZP1XTawQNXhVflKWUb0rNZUBW6ckig/Ymlh2rJR1Be9b8y86rV+C9Fr8nPA3PkazQubU5lQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR12MB5115.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(186003)(53546011)(31696002)(26005)(6486002)(8936002)(66476007)(86362001)(66556008)(66946007)(508600001)(31686004)(6506007)(5660300002)(110136005)(2616005)(316002)(84970400001)(83380400001)(2906002)(8676002)(44832011)(7416002)(38100700002)(54906003)(6512007)(4326008)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JbAg0SdD7NCE1pCKXYbHFjQYFE9zJr8ob1PsNEVygmwmLxDXUwpXjC55mywH?=
- =?us-ascii?Q?Cr/z2KhAm79sobyjgu0HtJUn/sKHugNRDUlSU5TBOEvCqyMcPnpvcO7x8Pee?=
- =?us-ascii?Q?4luK8D29nHRTbhA6MJaRVIfyXd30TZRqB6+NnMkSrZ6MFH304Bv4yTtln5t2?=
- =?us-ascii?Q?2wLn/pmMdyXblrRtPiiW4wJn7hKQJ8ZKWVp+d+G0RNUaTZeHJtY5LHj73Um2?=
- =?us-ascii?Q?2AM2S6Eie0QfmQDhhPI0Vv4geztf+53Cifzo+TtOirjb9oDc/xkt/Nl8SdaJ?=
- =?us-ascii?Q?PtNhYZ90S13Xj1mby8JE9VuIGn448mOWUfQm3uuKluUMe9U6bh3Bnko62Mkf?=
- =?us-ascii?Q?tWzX3AGw9UUPemsgn2gX+0+ENeRX1VjrnbNfIbpdXUa5JjZfGxhLg0pbk4xx?=
- =?us-ascii?Q?KgUuVVzx8mpPvh0HYrppDMcufeQKzr97tHo/YvQvEexgoGWSXPyijwXDDhm5?=
- =?us-ascii?Q?RTHX8aTx89CLVJMhRaTXVB4sJjgicYebcGZMeo8yGQvpV7JNBdkfYAxdDG70?=
- =?us-ascii?Q?/H4SfM/vHEijbMBpm7rNOQqR5tgXL+joxthfAE4wR9wVVlCqJRs/k99C46oE?=
- =?us-ascii?Q?ixIU7bEwyXbXGkk6oEzRuguICljLi9+/FmXyI2C2exeOQmHBZ2qrBKmQHyFh?=
- =?us-ascii?Q?TgsLVSlTcD+ViSiQ1F6NF0mINcerc66W86yuHgaz9SPDt6+F6wk1qJ8Yl5Ld?=
- =?us-ascii?Q?331jA2vVSJVgzpxFx4VqiFJiTkl0Ht3uKz/7xDqO/lm9ytLNBdXZoGR9ZIgP?=
- =?us-ascii?Q?T90C0wp16cAb25a955kPoqRJZeUqo/7SxTTOKrdwz3AVHFT7QJA8ww8nuzb8?=
- =?us-ascii?Q?U/kZUJPBbWpxOTie8ZyCBjOInW3CWVsucwTdwKvLel/l1zm7iCnVOJwEkAhO?=
- =?us-ascii?Q?LIq093IehPe4RfzT9CbtdzyvVJmEDe+rYT2WdFK0vrCL5jaoourANAfRLq6Q?=
- =?us-ascii?Q?8GDnhAG0pKM3kn5YMDsguVF0tDyINpOZsJLcjNxOoAMUJW5KRn0z7N28x+hb?=
- =?us-ascii?Q?QQgGF5JXAEc4KXeGn+XwbY2wdGiJzld21nwa0okg5qTrw7e45z2IIdGKwTgH?=
- =?us-ascii?Q?rkDAUFi32NDZAuY4wVH2XVhQRwCgXdFyfl8PjK0V1u02B3IKoOE8KqrrB7s3?=
- =?us-ascii?Q?s+FXmaK1Q669CrmRsEBMbBmgCO/atRE0QsMwWgcuEUsqRu//zYbSW2My5F2L?=
- =?us-ascii?Q?lgiyK+ONuiLN+pZ5A6q5q5sOdAR0d4PKSc2PVwMHc2ZNZWdToAIM2WqRJGwg?=
- =?us-ascii?Q?HjCK5tOaeYRkWxnZ/NkSEOvVhsPMCJ4ajB12J7s+yTBU3LyF/dhShixLR9eT?=
- =?us-ascii?Q?4OA0p0ti6VbiSMlJfPyL6YXTwMngcHEyRCyC4OQdEXbSW0WsZ8qpV6ZDCY7c?=
- =?us-ascii?Q?s3tzEUfVPyylTKo/UQAOWD9/BRd1pVky+cOtWhzzPdhZga8cW/wwUifDXi20?=
- =?us-ascii?Q?FcYWf/thcOgnv8vWmufrBYl00aBp5iQiIE9oe+EQm4MU/IJPi3c+6QR+WUzl?=
- =?us-ascii?Q?Di02/5quFrXQn0kg7NmkPqStHPIY/3E1w95C8kBRMR3T1CaMkRmhasuQkBc1?=
- =?us-ascii?Q?ZrNnkozLjlyAuSVcjgmKaHtMZOQrom3BRh9bEFr8kGZMYpNFaZ/KANlMxWp+?=
- =?us-ascii?Q?sg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c04f556-b864-4931-c0ae-08d9dfa06303
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dWJjaXgrYjNSZWxOZVEwVGsyMlZHRG5PUHVnOEUrUmIyYk1OVlNPdjkwZHFu?=
+ =?utf-8?B?b2VXSkFybE5XWnpQZ0p6bnJNazFmeWVuTExpQkI4eHY2M3JiSFM5NkZIeHk0?=
+ =?utf-8?B?Mkd3N0U3TThaYUxTdFJKT09OOGJBQTIvcUcrd0ZrRUdkeEgvemx6OWVaQnV5?=
+ =?utf-8?B?UVcxeTRYRVE3UkNFT1dEMERmQnBkVjhUbEhpbGMrdGZJWGVvVmcrOW5WTDFP?=
+ =?utf-8?B?eEQ5dXdKYlRZbWVCMzNaVVNQZlBQNHZGVzNlUWF3N0Y3NHhuTFc2L2dVajVM?=
+ =?utf-8?B?a1NETXlsWk9IZE9LZDFUVXMyMTJUYlRXRlNIZmxPOHU2cmtYMVJJdk44ZDRS?=
+ =?utf-8?B?MElhRTBLc3NSWFYyWWFGNmxEcExwZnV1dXRaWW1oRXFpMVMwdGVXeDVscERm?=
+ =?utf-8?B?cjd6Z3BqZ0dkRWFzRTFCd1Ntd2FId21SZXFXME5TVWZjNGduZWhxNWQ5NjND?=
+ =?utf-8?B?K1ZkVzhFS1prZWplb2hrN1Q3YTBFNFRtYUR1ZGZzUmxJNjR1dU5yMXRHMXVN?=
+ =?utf-8?B?VmdNczFqR3dEU2Q4VHJId1Q5Z3UxZFFFOUdBMXNFenlqcVNiUG1hUEsrOEp5?=
+ =?utf-8?B?ZU51NUpXVkpsTHF2VHZJYjFXNi9MbVhnVkt5R255V0NKSjZieHZBQ1RIeVdw?=
+ =?utf-8?B?d1lIN1BtTDB3Z1hBVG9Ca1g5RjVYUjZzUzlyZlBabWpDV1llUGFTc0laOVlO?=
+ =?utf-8?B?VU9RbUZtSit6T0dEUmM3RnB3L3NycUNiMEduL052M1ZiMUxCeWV1ZG85cm1o?=
+ =?utf-8?B?dHRaUmthWWR5ME5vK0dObmRRRzlyOGp4OVk0ejhueE1nRDk1c2UxZU5ZZ3NQ?=
+ =?utf-8?B?WGdCZ25xN2JJVkhRRWo2dm1LcjQvNnV4Qm1vQ3hnSWxPWVZ6M0J5RXV6MXRI?=
+ =?utf-8?B?MlA5K051OEQvSjNya3o0dEc3Y0RnRzhuZCtUWjhlVWhaSnFWbTRvcE1FN0NU?=
+ =?utf-8?B?QWYzeUkwUTgzNXZHV1lzRGgxbkdEdCtWYmdod3Ezd1piWUMrMnV1U1pIS2Zs?=
+ =?utf-8?B?ZkhuRTgyei9qSWVCL3g0bGlmbURocHJIK00rZWt3YTZBcTNHVWo1WVRXNVhn?=
+ =?utf-8?B?cC9URnRLQWZwRnQybkwwOEd0M3BwTmFYNDRPRnhuVlppdmNoZzBDWlVNaFBx?=
+ =?utf-8?B?eTljSmFJS1c0UEQ4ZXdFbnpzTWV1aW9XWTZTcUk1Q1p4R1FaTUZjdjZzaEJw?=
+ =?utf-8?B?a2JoZGhzTUhESkJoSHpLQ1MyYnNaUVdLb0JSOXVQVTQ2dDR2MFY0eEExKzBW?=
+ =?utf-8?B?NHhvUUg0SmZndFBCQlZTeGk2L1FZRElOU25PVVg1OTlvOXo0QmxpUTVvN1d3?=
+ =?utf-8?B?SGsrT2lQWS9WY2tnWjE3czZDcDNvZjJUNnlnWVVkRWtvc0l6Rm5PdWdUeExi?=
+ =?utf-8?B?c0lEQ1RDanRyT09mNldIbVkyWVd4Y2pMbmR2dkdmcWFndU16WEtOK1prZlJ6?=
+ =?utf-8?B?aGhncWhFa3o4TkwvUVBIcnhwYkVYb1lQZ3FqMkFBZkN4NTEvMGZ0UnJOUk4y?=
+ =?utf-8?B?bzdaTXh5NFkzZWRxaEZpSTZNMXdPMDBvRUdmYWc5NjJVL2hJOGdkalZjZ3pj?=
+ =?utf-8?B?bkNmTVFjNnZvc3Y3S2tFdXZTNlI2ckFmOW9teHo4ZGNNc1d5Q1lrUkRYZkZo?=
+ =?utf-8?B?R1VXMXBWN2tnMlJ2bEJDV2o5TytxRyt1WkUwZFhmdjBnT0E5UWlVMjhMa0t6?=
+ =?utf-8?B?YTFkeXRXOW4zaHh3U2lKMVU5Q2ZpZlhYNFRvTTRVT243MHNUTXZObmZ1WFZF?=
+ =?utf-8?B?RUtQWDRMZXhSKzBEVlFkVFp4TkM4eVNtMWZncVozRm8ybUtKVGUvNVkzbFZP?=
+ =?utf-8?B?K0tvVU95UW9RMVlZQlpjMEg4TUNtZUN6OTlQUnB3ZkFsVk81RU1BbkZUcjFw?=
+ =?utf-8?B?Tlh3UUI2aHVWa2RzbVVKSkgrbUZ0YjRhRWhCT2g2YW5WMVNGUUVxQTRpYWpJ?=
+ =?utf-8?B?UmMxU3lWVURpdGNvcjNWMGdzbXhOVDZoTUYzRXhkVC8rYVBPdFYreWpjZW52?=
+ =?utf-8?B?d0gxdkhpZ3ZFS0JkWGJ4UTJRcXY2cDFFUWF1NUlVa0d5bVJqbUM3UjFmNC9o?=
+ =?utf-8?B?Q3dCNGdHYWFyUmFXSmFHOWdRYkpoVjFxT3JjN2lQbWEzbStZbVVZbithSWVm?=
+ =?utf-8?B?bW1aeEJ2ck4vN2JxZEk0VUNQK0pUck1HMjVrbDBGd2g1ZngzMmYvU1ZVd0dJ?=
+ =?utf-8?Q?kVWpGXnS3s1eVDHYBqqnZMs=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 04bcbaa5-ef8b-47a2-ea6d-08d9dfa15c79
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR12MB5115.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 01:17:00.3585
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 01:23:58.6202
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pyikVt5Ltie1sDv+ENmVlvKwAbevr4nODGw9FrJUDr2wbi/5I37evpF4iLxVOP7L
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1501MB2133
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: TIyuLgzJY02b9vjWH53_5p8PmUZM8Ta4
-X-Proofpoint-ORIG-GUID: TIyuLgzJY02b9vjWH53_5p8PmUZM8Ta4
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-24_10,2022-01-24_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 phishscore=0
- malwarescore=0 spamscore=0 clxscore=1015 lowpriorityscore=0
- impostorscore=0 suspectscore=0 mlxscore=0 adultscore=0 mlxlogscore=999
- bulkscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2201250006
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-UserPrincipalName: oXcSYPMslqvMz5gstb1SKEZF8muKJXbaWuLyg9snLBV1Gqx1CAjfZeeSS9TloKM+BTAPWtrVs3ELVz7U4t41mw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3058
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 05:03:20PM -0800, Alexei Starovoitov wrote:
-> On Mon, Jan 24, 2022 at 4:35 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> >
-> > On Thu, Jan 20, 2022 at 09:17:27PM -0800, Alexei Starovoitov wrote:
-> > > On Thu, Jan 20, 2022 at 6:18 AM Menglong Dong <menglong8.dong@gmail.com> wrote:
-> > > >
-> > > > On Thu, Jan 20, 2022 at 12:17 PM Alexei Starovoitov
-> > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > >
-> > > > > On Thu, Jan 20, 2022 at 11:02:27AM +0800, Menglong Dong wrote:
-> > > > > > Hello!
-> > > > > >
-> > > > > > On Thu, Jan 20, 2022 at 6:03 AM Alexei Starovoitov
-> > > > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > > > >
-> > > > > > [...]
-> > > > > > >
-> > > > > > > Looks like
-> > > > > > >  __sk_buff->remote_port
-> > > > > > >  bpf_sock_ops->remote_port
-> > > > > > >  sk_msg_md->remote_port
-> > > > > > > are doing the right thing,
-> > > > > > > but bpf_sock->dst_port is not correct?
-> > > > > > >
-> > > > > > > I think it's better to fix it,
-> > > > > > > but probably need to consolidate it with
-> > > > > > > convert_ctx_accesses() that deals with narrow access.
-> > > > > > > I suspect reading u8 from three flavors of 'remote_port'
-> > > > > > > won't be correct.
-> > > > > >
-> > > > > > What's the meaning of 'narrow access'? Do you mean to
-> > > > > > make 'remote_port' u16? Or 'remote_port' should be made
-> > > > > > accessible with u8? In fact, '*((u16 *)&skops->remote_port + 1)'
-> > > > > > won't work, as it only is accessible with u32.
-> > > > >
-> > > > > u8 access to remote_port won't pass the verifier,
-> > > > > but u8 access to dst_port will.
-> > > > > Though it will return incorrect data.
-> > > > > See how convert_ctx_accesses() handles narrow loads.
-> > > > > I think we need to generalize it for different endian fields.
-> > > >
-> > > > Yeah, I understand narrower load in convert_ctx_accesses()
-> > > > now. Seems u8 access to dst_port can't pass the verifier too,
-> > > > which can be seen form bpf_sock_is_valid_access():
-> > > >
-> > > > $    switch (off) {
-> > > > $    case offsetof(struct bpf_sock, state):
-> > > > $    case offsetof(struct bpf_sock, family):
-> > > > $    case offsetof(struct bpf_sock, type):
-> > > > $    case offsetof(struct bpf_sock, protocol):
-> > > > $    case offsetof(struct bpf_sock, dst_port):  // u8 access is not allowed
-> > > > $    case offsetof(struct bpf_sock, src_port):
-> > > > $    case offsetof(struct bpf_sock, rx_queue_mapping):
-> > > > $    case bpf_ctx_range(struct bpf_sock, src_ip4):
-> > > > $    case bpf_ctx_range_till(struct bpf_sock, src_ip6[0], src_ip6[3]):
-> > > > $    case bpf_ctx_range(struct bpf_sock, dst_ip4):
-> > > > $    case bpf_ctx_range_till(struct bpf_sock, dst_ip6[0], dst_ip6[3]):
-> > > > $        bpf_ctx_record_field_size(info, size_default);
-> > > > $        return bpf_ctx_narrow_access_ok(off, size, size_default);
-> > > > $    }
-> > > >
-> > > > I'm still not sure what should we do now. Should we make all
-> > > > remote_port and dst_port narrower accessable and endianness
-> > > > right? For example the remote_port in struct bpf_sock_ops:
-> > > >
-> > > > --- a/net/core/filter.c
-> > > > +++ b/net/core/filter.c
-> > > > @@ -8414,6 +8414,7 @@ static bool sock_ops_is_valid_access(int off, int size,
-> > > >                                 return false;
-> > > >                         info->reg_type = PTR_TO_PACKET_END;
-> > > >                         break;
-> > > > +               case bpf_ctx_range(struct bpf_sock_ops, remote_port):
-> > >
-> > > Ahh. bpf_sock_ops don't have it.
-> > > But bpf_sk_lookup and sk_msg_md have it.
-> > >
-> > > bpf_sk_lookup->remote_port
-> > > supports narrow access.
-> > >
-> > > When it accesses sport from bpf_sk_lookup_kern.
-> > >
-> > > and we have tests that do u8 access from remote_port.
-> > > See verifier/ctx_sk_lookup.c
-> > >
-> > > >                 case offsetof(struct bpf_sock_ops, skb_tcp_flags):
-> > > >                         bpf_ctx_record_field_size(info, size_default);
-> > > >                         return bpf_ctx_narrow_access_ok(off, size,
-> > > >
-> > > > If remote_port/dst_port are made narrower accessable, the
-> > > > result will be right. Therefore, *((u16*)&sk->remote_port) will
-> > > > be the port with network byte order. And the port in host byte
-> > > > order can be get with:
-> > > > bpf_ntohs(*((u16*)&sk->remote_port))
-> > > > or
-> > > > bpf_htonl(sk->remote_port)
-> > >
-> > > So u8, u16, u32 will work if we make them narrow-accessible, right?
-> > >
-> > > The summary if I understood it:
-> > > . only bpf_sk_lookup->remote_port is doing it correctly for u8,u16,u32 ?
-> > > . bpf_sock->dst_port is not correct for u32,
-> > >   since it's missing bpf_ctx_range() ?
-> > > . __sk_buff->remote_port
-> > >  bpf_sock_ops->remote_port
-> > >  sk_msg_md->remote_port
-> > >  correct for u32 access only. They don't support narrow access.
-> > >
-> > > but wait
-> > > we have a test for bpf_sock->dst_port in progs/test_sock_fields.c.
-> > > How does it work then?
-> > >
-> > > I think we need more eyes on the problem.
-> > > cc-ing more experts.
-> > iiuc,  I think both bpf_sk_lookup and bpf_sock allow narrow access.
-> > bpf_sock only allows ((__u8 *)&bpf_sock->dst_port)[0] but
-> > not ((__u8 *)&bpf_sock->dst_port)[1].  bpf_sk_lookup allows reading
-> > a byte at [0], [1], [2], and [3].
-> >
-> > The test_sock_fields.c currently works because it is comparing
-> > with another __u16: "sk->dst_port == srv_sa6.sin6_port".
-> > It should also work with bpf_ntohS() which usually is what the
-> > userspace program expects when dealing with port instead of using bpf_ntohl()?
-> > Thus, I think we can keep the lower 16 bits way that bpf_sock->dst_port
-> > and bpf_sk_lookup->remote_port (and also bpf_sock_addr->user_port ?) are
-> > using.  Also, changing it to the upper 16 bits will break existing
-> > bpf progs.
-> >
-> > For narrow access with any number of bytes at any offset may be useful
-> > for IP[6] addr.  Not sure about the port though.  Ideally it should only
-> > allow sizeof(__u16) read at offset 0.  However, I think at this point it makes
-> > sense to make them consistent with how bpf_sk_lookup does it also,
-> > i.e. allow byte [0], [1], [2], and [3] access.
-> 
-> Sounds like the proposal is to do:
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index a06931c27eeb..1a8c97bc1927 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -8276,9 +8276,9 @@ bool bpf_sock_is_valid_access(int off, int size,
-> enum bpf_access_type type,
->         case offsetof(struct bpf_sock, family):
->         case offsetof(struct bpf_sock, type):
->         case offsetof(struct bpf_sock, protocol):
-> -       case offsetof(struct bpf_sock, dst_port):
->         case offsetof(struct bpf_sock, src_port):
->         case offsetof(struct bpf_sock, rx_queue_mapping):
-> +       case bpf_ctx_range(struct bpf_sock, dst_port):
->         case bpf_ctx_range(struct bpf_sock, src_ip4):
-> 
-> and then document bpf_sock->dst_port and bpf_sk_lookup->remote_port
-also bpf_sock_addr->user_port
 
-> behavior and their difference vs
->   __sk_buff->remote_port
->   bpf_sock_ops->remote_port
->   sk_msg_md->remote_port
-> ?
-Yes, agree on the code change and adding doc.
+Am 2022-01-24 um 14:11 schrieb Randy Dunlap:
+> On 1/24/22 10:55, Geert Uytterhoeven wrote:
+>> Hi Alex,
+>>
+>> On Mon, Jan 24, 2022 at 7:52 PM Alex Deucher <alexdeucher@gmail.com> wrote:
+>>> On Mon, Jan 24, 2022 at 5:25 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>>>> On Sun, 23 Jan 2022, Geert Uytterhoeven wrote:
+>>>>>   + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: error: control reaches end of non-void function [-Werror=return-type]:  => 1560:1
+>>> I don't really see what's going on here:
+>>>
+>>> #ifdef CONFIG_X86_64
+>>> return cpu_data(first_cpu_of_numa_node).apicid;
+>>> #else
+>>> return first_cpu_of_numa_node;
+>>> #endif
+>> Ah, the actual failure causing this was not included:
+>>
+>> In file included from /kisskb/src/arch/x86/um/asm/processor.h:41:0,
+>>                   from /kisskb/src/include/linux/mutex.h:19,
+>>                   from /kisskb/src/include/linux/kernfs.h:11,
+>>                   from /kisskb/src/include/linux/sysfs.h:16,
+>>                   from /kisskb/src/include/linux/kobject.h:20,
+>>                   from /kisskb/src/include/linux/pci.h:35,
+>>                   from
+>> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:25:
+>> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: In
+>> function 'kfd_cpumask_to_apic_id':
+>> /kisskb/src/arch/um/include/asm/processor-generic.h:103:18: error:
+>> called object is not a function or function pointer
+>>   #define cpu_data (&boot_cpu_data)
+>>                    ^
+>> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1556:9:
+>> note: in expansion of macro 'cpu_data'
+>>    return cpu_data(first_cpu_of_numa_node).apicid;
+>>           ^
+>> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1560:1:
+>> error: control reaches end of non-void function [-Werror=return-type]
+>>   }
+>>   ^
+> ah yes, UML.
+> I have a bunch of UML fixes that I have been hesitant to post.
+>
+> This is one of them.
+> What do people think about this?
 
-> I suspect we cannot remove lshift_16 from them either,
-> since it might break some prog as well.
-Right, I believe the existing lshift_16 has to stay.
+Does it make sense to configure a UML kernel with a real device driver 
+in the first place? Or should we just prevent enabling amdgpu for UML 
+with a Kconfig dependency?
+
+Regards,
+   Felix
+
+
+>
+> thanks.
+>
+> ---
+> From: Randy Dunlap <rdunlap@infradead.org>
+>
+>
+> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1556:9: note: in expansion of macro ‘cpu_data’
+>    return cpu_data(first_cpu_of_numa_node).apicid;
+>           ^~~~~~~~
+> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1560:1: error: control reaches end of non-void function [-Werror=return-type]
+>
+> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c: In function ‘kfd_fill_iolink_info_for_cpu’:
+> ../arch/um/include/asm/processor-generic.h:103:19: error: called object is not a function or function pointer
+>   #define cpu_data (&boot_cpu_data)
+>                    ~^~~~~~~~~~~~~~~
+> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1688:27: note: in expansion of macro ‘cpu_data’
+>    struct cpuinfo_x86 *c = &cpu_data(0);
+>                             ^~~~~~~~
+> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1691:7: error: dereferencing pointer to incomplete type ‘struct cpuinfo_x86’
+>    if (c->x86_vendor == X86_VENDOR_AMD)
+>         ^~
+> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1691:23: error: ‘X86_VENDOR_AMD’ undeclared (first use in this function); did you mean ‘X86_VENDOR_ANY’?
+>    if (c->x86_vendor == X86_VENDOR_AMD)
+>                         ^~~~~~~~~~~~~~
+>                         X86_VENDOR_ANY
+>
+> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c: In function ‘kfd_create_vcrat_image_cpu’:
+> ../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1742:11: warning: unused variable ‘entries’ [-Wunused-variable]
+>    uint32_t entries = 0;
+>
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> ---
+>   drivers/gpu/drm/amd/amdkfd/kfd_crat.c     |    6 +++---
+>   drivers/gpu/drm/amd/amdkfd/kfd_topology.c |    2 +-
+>   2 files changed, 4 insertions(+), 4 deletions(-)
+>
+> --- linux-next-20220107.orig/drivers/gpu/drm/amd/amdkfd/kfd_topology.c
+> +++ linux-next-20220107/drivers/gpu/drm/amd/amdkfd/kfd_topology.c
+> @@ -1552,7 +1552,7 @@ static int kfd_cpumask_to_apic_id(const
+>   	first_cpu_of_numa_node = cpumask_first(cpumask);
+>   	if (first_cpu_of_numa_node >= nr_cpu_ids)
+>   		return -1;
+> -#ifdef CONFIG_X86_64
+> +#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
+>   	return cpu_data(first_cpu_of_numa_node).apicid;
+>   #else
+>   	return first_cpu_of_numa_node;
+> --- linux-next-20220107.orig/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+> +++ linux-next-20220107/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+> @@ -1679,7 +1679,7 @@ static int kfd_fill_mem_info_for_cpu(int
+>   	return 0;
+>   }
+>   
+> -#ifdef CONFIG_X86_64
+> +#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
+>   static int kfd_fill_iolink_info_for_cpu(int numa_node_id, int *avail_size,
+>   				uint32_t *num_entries,
+>   				struct crat_subtype_iolink *sub_type_hdr)
+> @@ -1738,7 +1738,7 @@ static int kfd_create_vcrat_image_cpu(vo
+>   	struct crat_subtype_generic *sub_type_hdr;
+>   	int avail_size = *size;
+>   	int numa_node_id;
+> -#ifdef CONFIG_X86_64
+> +#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
+>   	uint32_t entries = 0;
+>   #endif
+>   	int ret = 0;
+> @@ -1803,7 +1803,7 @@ static int kfd_create_vcrat_image_cpu(vo
+>   			sub_type_hdr->length);
+>   
+>   		/* Fill in Subtype: IO Link */
+> -#ifdef CONFIG_X86_64
+> +#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
+>   		ret = kfd_fill_iolink_info_for_cpu(numa_node_id, &avail_size,
+>   				&entries,
+>   				(struct crat_subtype_iolink *)sub_type_hdr);
+>
+>
