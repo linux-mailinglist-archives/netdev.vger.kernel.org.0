@@ -2,52 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5AEB49BF4A
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 00:02:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 194B649BF8E
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 00:31:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234570AbiAYXCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 18:02:41 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:58328 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234563AbiAYXCh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 18:02:37 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id F3DC4CE19A7;
-        Tue, 25 Jan 2022 23:02:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F18E5C340E0;
-        Tue, 25 Jan 2022 23:02:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643151754;
-        bh=gp6pWEqFqGSE/3T0cqmvdasPflH4sWC6zy+xc4W3hSQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sd3iA8+K/pmrFF3ikMd973xnXeioQrp3wtkL2HjlHAbfa7hhyeEaPcov1ScYlb4GZ
-         Mpnbo04tFOG4HeB8vsChnECzL+GQmXcM0zhJGN+CN6mLnOogdOd/uOgBn3HkjM8+iP
-         VY3iQ3tbEIrklxJpQEnsV2LN+ghrt9MkQ9HD74eiIFM/HY9h+/lkGaVrXeO2Azc69P
-         7MwbXzVXZdcyIr7u1V2RqP4VaiC8HPL0AeCNYvGGuZOuGfKkbJGYCLVSRBU2jxgbAc
-         IchS2AdNjtDA/o9INH/whB6mnoaYrNv2gecTM81eCbnABfqoLmnumCmVEcGaL8XiU7
-         siuzeaqWx7yEg==
-Date:   Tue, 25 Jan 2022 15:02:33 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jeffrey Ji <jeffreyjilinux@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Brian Vazquez <brianvv@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jeffreyji <jeffreyji@google.com>
-Subject: Re: [PATCH v3 net-next] net-core: add InMacErrors counter
-Message-ID: <20220125150233.27073ad5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220125221214.2480419-1-jeffreyji@google.com>
-References: <20220125221214.2480419-1-jeffreyji@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S234816AbiAYXbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 18:31:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234817AbiAYXbM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 18:31:12 -0500
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB785C06161C
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 15:31:11 -0800 (PST)
+Received: by mail-pl1-x64a.google.com with SMTP id v14-20020a170902e8ce00b0014b48e8e498so3334335plg.2
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 15:31:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=2OxD7lhWQ8z8mrbAunWzD14dk/y6gG9+Nr2iMdNY+h0=;
+        b=B4zcLfUj2Ox6kiViLjEMRa5lHUY71DWHjbZZ7nDAZnI+/cMgn4dsxZHYFR0gRhxsoA
+         s33H9DP0RxzoUg9k3FmnhTKuIbMFFtmSMES37CLu+5iMA+gEKbYDRSu6Ys9ahONcLLhc
+         U5NiZEqyj+NCvJbh0JGld96xfHlzY7yZhfn4PwCGp17WgF9aNBg+OyOTFYJj/R/aFnYk
+         E27VK+uMMmBbhMc/wuXHhIOBAHMX47gTURxaTmpE0ttReDjKtdfmk+UuJlnBit6r3UXK
+         B5PXGZzFWX0ZdX2mWZH91FVXmwviewUUn/fJ5Jwz1rJhf7R8gAJjjzR+3KarG0Yzn88+
+         bHvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=2OxD7lhWQ8z8mrbAunWzD14dk/y6gG9+Nr2iMdNY+h0=;
+        b=A6XsbrMUL9v0/Dsma0Jzu0Qf4ia3TjHCsrCVdz8lO3XkfpuPegku3KgXDQij6SXFFa
+         9pB02k0PVtdIBfqL+RckJuZmDA7DOw3TnyM6KnPsLJA2FxfgPZch+VS0+QIATKnBaRac
+         NLPLXm3BdISWdkkzppnmrJaLQXzxUpYV4itS8lcauDQ04SM0LAmeB+Boxx2K6fT97u3a
+         BbunbQru7024mkFxQgyrKYkmASsFP51CUOIiF+Y0Da3KlCfQCq3eg4/o0WqbLDz7kFaj
+         CY/6STnq6qkgLx6/1Rd8ePt0O0puSqI6rhQvWMN8GofuXEOtsysJ2mCOcHS7T6/QLLea
+         zQ2g==
+X-Gm-Message-State: AOAM530gY7sjgP255fYawfa3TN9x+Vq+Y0/0wJm3UCc32VrszwEpncBW
+        AM86TW6pWQiOfqRBKOCju3ygvmpjUz4hrHUaKRWeRSspqFToFIc07MxVip/6pMNyEeLEWC6MJN5
+        3BN6Dk8lZI3N6oS16g4WwDxf9oxjBDVC7R50Didi5qcCV5/b24nDyf8+8CbGCdFHKkfKZceoe
+X-Google-Smtp-Source: ABdhPJwxJLbzcv8D2uSCbyauiVD56hA4mQL7jwyOCRkg/UE9uG2OUn4pJlUjO0PnccV28vD/QvJZ/gFIfFhj36Wg
+X-Received: from awogbemila.sea.corp.google.com ([2620:15c:100:202:89e3:235:ddae:72e0])
+ (user=awogbemila job=sendgmr) by 2002:a17:90b:4a86:: with SMTP id
+ lp6mr5930273pjb.140.1643153471360; Tue, 25 Jan 2022 15:31:11 -0800 (PST)
+Date:   Tue, 25 Jan 2022 13:59:09 -0800
+Message-Id: <20220125215910.3551874-1-awogbemila@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
+Subject: [PATCH net-next 0/1] GVE page allocation improvement
+From:   David Awogbemila <awogbemila@google.com>
+To:     netdev@vger.kernel.org
+Cc:     jeroendb@google.com, David Awogbemila <awogbemila@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jan 2022 22:12:14 +0000 Jeffrey Ji wrote:
-> Change-Id: If820cc676807ba8438a9034873df3ef2e0b07213
+This series contains one patch which attempts to improve the way gve allocates pages by specifying
+GFP_ATOMIC in the hot path instead of GFP_KERNEL.
 
-Please drop the Change-Id.
+Catherine Sullivan (1):
+  gve: Fix GFP flags when allocing pages
+
+ drivers/net/ethernet/google/gve/gve.h        | 2 +-
+ drivers/net/ethernet/google/gve/gve_main.c   | 6 +++---
+ drivers/net/ethernet/google/gve/gve_rx.c     | 3 ++-
+ drivers/net/ethernet/google/gve/gve_rx_dqo.c | 2 +-
+ 4 files changed, 7 insertions(+), 6 deletions(-)
+
+-- 
+2.34.1.703.g22d0c6ccf7-goog
+
