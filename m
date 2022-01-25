@@ -2,18 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 433A049B3FD
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 13:30:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 800E649B3FB
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 13:30:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383083AbiAYM2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 07:28:21 -0500
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:37637 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383104AbiAYMZ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 07:25:58 -0500
+        id S1383378AbiAYM2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 07:28:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37354 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1383196AbiAYMZw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 07:25:52 -0500
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B207BC06173B;
+        Tue, 25 Jan 2022 04:25:46 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 278D1FF806;
-        Tue, 25 Jan 2022 12:25:41 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 475EAFF811;
+        Tue, 25 Jan 2022 12:25:43 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -26,10 +29,12 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-next v3 0/3] ieee802154: A bunch of light changes
-Date:   Tue, 25 Jan 2022 13:25:37 +0100
-Message-Id: <20220125122540.855604-1-miquel.raynal@bootlin.com>
+Subject: [wpan-next v3 1/3] net: ieee802154: hwsim: Ensure frame checksum are valid
+Date:   Tue, 25 Jan 2022 13:25:38 +0100
+Message-Id: <20220125122540.855604-2-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220125122540.855604-1-miquel.raynal@bootlin.com>
+References: <20220125122540.855604-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -37,26 +42,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Here are a few small cleanups and improvements in preparation of a wider
-series bringing a lot of features. These are aside changes, hence they
-have their own small series.
+There is no point in accepting frames with a wrong or missing checksum,
+at least not outside of a promiscuous setting. Set the right flag by
+default in the hwsim driver to ensure checksums are not ignored.
 
-Changes in v3:
-* Split the v2 into two series: fixes for the wpan branch and cleanups
-  for wpan-next. Here are random "cleanups".
-* Reworded the ieee802154_wake/stop_queue helpers kdoc as discussed
-  with Alexander.
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+---
+ drivers/net/ieee802154/mac802154_hwsim.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Miquel Raynal (3):
-  net: ieee802154: hwsim: Ensure frame checksum are valid
-  net: ieee802154: Use the IEEE802154_MAX_PAGE define when relevant
-  net: mac802154: Explain the use of ieee802154_wake/stop_queue()
-
- drivers/net/ieee802154/mac802154_hwsim.c |  2 +-
- include/net/mac802154.h                  | 12 ++++++++++++
- net/ieee802154/nl-phy.c                  |  4 ++--
- 3 files changed, 15 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
+index 00ec188a3257..be77f489be13 100644
+--- a/drivers/net/ieee802154/mac802154_hwsim.c
++++ b/drivers/net/ieee802154/mac802154_hwsim.c
+@@ -791,7 +791,7 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
+ 	phy->idx = idx;
+ 	INIT_LIST_HEAD(&phy->edges);
+ 
+-	hw->flags = IEEE802154_HW_PROMISCUOUS;
++	hw->flags = IEEE802154_HW_PROMISCUOUS | IEEE802154_HW_RX_DROP_BAD_CKSUM;
+ 	hw->parent = dev;
+ 
+ 	err = ieee802154_register_hw(hw);
 -- 
 2.27.0
 
