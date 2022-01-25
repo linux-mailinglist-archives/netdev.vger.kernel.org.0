@@ -2,76 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 552B249BE75
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 23:28:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5824D49BE7E
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 23:29:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233813AbiAYW21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 17:28:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35370 "EHLO
+        id S233844AbiAYW3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 17:29:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233816AbiAYW2X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 17:28:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6009EC061744
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 14:28:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EB43B81B7E
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 22:28:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5BF5C340E0;
-        Tue, 25 Jan 2022 22:28:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643149699;
-        bh=JjU8WCk/+P3a4NUBCcn++jQaOrAEzgpcmDcIlK/Z9xM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=O5jcCEMrWYOX/TNGBEKJcV7RcSHnbDWs0nstcZ7o+Ojuys1uPdngK7lPY5vPoh3Js
-         uq+2TZWQNWmUJ3uhYp2k8QyEeQr9yQXlizfTdI1SF/gsoOi5FGv5axO7zmwB7yP3h6
-         5iKUj9KwhOL1pMsFR2WqbuRkqwzKNYiWcMsjvWeS/y2oLI55Bf4lfpC4Lk5uGPFVAD
-         YYEvrl7ONVW4yWeUGI1gDoeya0vn8v0480wDaUvrAhXbMsPq+yj3tJupXdtEj2i2In
-         l8j3R8b1PRhO4cTVINnk5SE2xY0YIg+qTFusXmpwN9rKRX5X9brfDcCXaQj82Y2LUX
-         tX/vQQ9aulvvA==
-Date:   Tue, 25 Jan 2022 14:28:18 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, dave@thedillows.org
-Subject: Re: [PATCH net 0/3] ethernet: fix some esoteric drivers after
- netdev->dev_addr constification
-Message-ID: <20220125142818.16fe1e11@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220125222317.1307561-1-kuba@kernel.org>
-References: <20220125222317.1307561-1-kuba@kernel.org>
+        with ESMTP id S233849AbiAYW3h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 17:29:37 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B681C061747
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 14:29:37 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id n16-20020a17090a091000b001b46196d572so4255342pjn.5
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 14:29:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tvCCRY6xlvOrQ/O19UIHhWrCaHxPn5tYjPvlxSdaNTE=;
+        b=ezsiHOEmDt4gnBx7CueGXVEDVlG7985IefHrNORw7k+KaA65+RLmTDDn2+WBWW19cU
+         mlbpvMhhndxXhS5gW2+5Eid1Djj/Pn3b6C881PmOPmnFeQNSBhR733zGfglrVeVdI9Up
+         bvV9ZMQKA/Hgf03ti70ZXiw6suVFHU4vcCNKMdgEwTf+mdp+PWLVR2L0oQQfMiHZVV/R
+         QkMdSDvf4ZhO1qkaak9mcK06EzUmKaFzSUxSVPj8raiQrbypJiTALMrvZNx62nDMWFee
+         HyQ9+tZm63xW+2C4tPuTnwgFIQRefLNzT9e+7tKrDBrnn5A9N9y3GPc/FPyfoDDobXAy
+         p8HA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tvCCRY6xlvOrQ/O19UIHhWrCaHxPn5tYjPvlxSdaNTE=;
+        b=jos66UmJP1Ya1P8KwhPbJIITD8V+jNLVvufKXq36jYbbBFkJRn4bS7hYISOjylKBX/
+         2Ui41PoJnJEc+OBmI405lK0/R1OD5OgBFMSngNbyCQml5TNw5JMgENm4S+XCG+epq9sl
+         /Pd7AaPsVMqo0OFBojPW6D3UGvoCOttRu9tmCbl+I4w3fJspPoZEFYyaiVeUENljiC3c
+         0YWz2r26FEApLHCIShXjRKvNsKlNeDuYLG6uyIchAvXJvmd03o0AnaBzJdf+tliF2nBj
+         aPz8legJD7gBIajTkzpx49nbT7wC4A4kRMkYAibeWf7NaNAYKYgtJPb1he/Iu9B4XhtI
+         wMoQ==
+X-Gm-Message-State: AOAM53172bqgRitUsCTXRbUyJP2TgtgDVE5s4ARPMjZMRJzAUnoMb+kU
+        sZvxG1CNRAMW85h7Tad+2bRIeJUVMK/WAv9Vw+4=
+X-Google-Smtp-Source: ABdhPJwkJvEQszdeT+/nhBg+5zrDcMUhS8orSAKbqHKbuR1DlqEfWeLz2u1pncIlO5B4R2lj9YUNiCp8AMFC+iKn3tI=
+X-Received: by 2002:a17:903:246:b0:14a:26ae:4e86 with SMTP id
+ j6-20020a170903024600b0014a26ae4e86mr21446887plh.59.1643149776457; Tue, 25
+ Jan 2022 14:29:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <228b64d7-d3d4-c557-dba9-00f7c094f496@gmail.com>
+ <20220124172158.tkbfstpwg2zp5kaq@skbuf> <20220124093556.50fe39a3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20220124102051.7c40e015@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20220124190845.md3m2wzu7jx4xtpr@skbuf> <20220124113812.5b75eaab@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20220124205607.kugsccikzgmbdgmf@skbuf> <20220124134242.595fd728@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20220124223053.gpeonw6f34icwsht@skbuf> <CAJq09z5JF71kFKxF860RCXPvofhitaPe7ES4UTMeEVO8LH=PoA@mail.gmail.com>
+ <20220125094742.nkxgv4r2fetpko7r@skbuf>
+In-Reply-To: <20220125094742.nkxgv4r2fetpko7r@skbuf>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Tue, 25 Jan 2022 19:29:25 -0300
+Message-ID: <CAJq09z4OC4OijWT8=-=vXRQhqFsaP0+asXyO69i37aj39DMB6A@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
+ cpu ports, non cpu extint
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jan 2022 14:23:14 -0800 Jakub Kicinski wrote:
-> Looking at recent fixes for drivers which don't get included with
-> allmodconfig builds I thought it's worth grepping for more instances of:
-> 
->   dev->dev_addr\[.*\] = 
-> 
-> This set contains the fixes.
+> Could you implement a prototype of packet parsing in ndo_features_check,
+> which checks for the known DSA EtherType and clears the offload bit for
+> unsupported packets, and do some performance testing before and after,
+> to lean the argument in your favor with some numbers? I've no problem if
+> you test for the worst case, i.e. line rate with small UDP packets
+> encapsulated with the known (offload-capable) DSA tag format, where
+> there is little benefit for offloading TX checksumming.
 
-Hi Arnd, there's another case in drivers/net/ethernet/i825xx/ether1.c
-which will be broken in 5.17, it looks like only RiscPC includes that.
-But when I do:
+There is no way to tell if a packet has a DSA tag only by parsing its
+content. For Realtek and Marvel EDSA, there is a distinct ethertype
+(although Marvel EDSA uses a non-registered number) that drivers can
+check. For others, specially those that add the tag before the
+ethernet header or after the payload, it might not have a magic
+number. It is impossible to securely identify if and which DSA is in
+use for some DSA tags from the packet alone. This is also the case for
+mediatek. Although it places its tag just before ethertype (like
+Realtek and Marvel), there is no magic number. It needs some context
+to know what type of DSA was applied.
 
-make ARCH=arm CROSS_COMPILE=$cross/arm-linux-gnueabi/bin/arm-linux-gnueabi- O=build_tmp/ rpc_defconfig
+skb_buf today knows nothing about the added DSA tag. Although
+net_device does know if it is a master port in a dsa tree, and it has
+a default dsa tag, with multiple switches using different tags, it
+cannot tell which dsa tag was added to that packet.
+That is the information I need to test if that tag is supported or not
+by this drive.
 
-The resulting config is not for ARCH_RPC:
+I believe once an offload HW can digest a dsa tag, it might support
+the same type of protocols with or without the tag.
+In the end, what really matters is if a driver supports a specific dsa tag.
 
-$ grep ARM_ETHER1 build_tmp/.config
-$ grep RPC build_tmp/.config
-# CONFIG_AF_RXRPC is not set
-CONFIG_SUNRPC=y
-# CONFIG_SUNRPC_DEBUG is not set
-CONFIG_XZ_DEC_POWERPC=y
-$ grep ACORN build_tmp/.config
-# CONFIG_ACORN_PARTITION is not set
-CONFIG_FONT_ACORN_8x8=y
+Wouldn't it be much easier to have a dedicated optional
+ndo_dsa_tag_supported()? It would be only needed for those drivers
+that still use NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM and only those that
+can digest a tag.
 
-Is there an extra smidgen of magic I need to produce a working config
-here?  Is RPC dead and can we send it off to Valhalla?
+Regards,
