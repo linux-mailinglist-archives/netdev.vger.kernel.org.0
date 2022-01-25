@@ -2,148 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9108649BF8F
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 00:31:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00CAE49BF4D
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 00:03:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234820AbiAYXbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 18:31:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50106 "EHLO
+        id S234584AbiAYXDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 18:03:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234817AbiAYXbN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 18:31:13 -0500
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01B5C06161C
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 15:31:13 -0800 (PST)
-Received: by mail-pj1-x104a.google.com with SMTP id 19-20020a17090a001300b001b480b09680so13236456pja.2
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 15:31:13 -0800 (PST)
+        with ESMTP id S234586AbiAYXCt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 18:02:49 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A59C06173B;
+        Tue, 25 Jan 2022 15:02:49 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id u11so20779936plh.13;
+        Tue, 25 Jan 2022 15:02:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=HpjWin1DH8UBNh1LETr1Xp2GlBQmPbNLxZODD4SqDmI=;
-        b=G87XdBSzh5ZrwAEWXj663AGXCwWdcT+pOPmo8tRQBvmcQ+yOf3Hi4PrA6x70IphPcm
-         1392ORG3M38D3yjgSOhVQ5rrMxmzUQU1OmDNcRgBDP/ojkmfehRJAkE2HHItDNLVXDPx
-         KiWgbh7QHggrshPnid+FrRYtsCTS+cGvhzQOZZvOANPcP4756vP0LgE8xy2w3Ckpvr6g
-         PXJTetR1/MlRHUdQkcCnKElJgAmuMRMePlc+CcXzaSAGxVkTb97qQm521z0ju49eTH0d
-         +C1QzDn79nmmjiS3R3NkQ/xMb6/yiucgiwNW4m1ebc0ILYKzpo9hrGZPbSi77ksx5LMY
-         cxeg==
+        bh=EBImikir9ryAT25BALwOBZaIdeZpyfkOerp8AGfow0Y=;
+        b=nS/qs9KssIJBTLzoLDLJszdVUiXxpkn92Gj/mSrQkvnuM5mgW1SQgyG1o+8jAruIj7
+         ECS09HKz/+dnA+KNFP2GgHqKwmKO2hCXnqNDrNrDNuKMBTs+5Z+l4C0tk/fZMCZnoZdr
+         YhC3VN2lfAFgR/0mdLfFIUG4PJRoh7kFfMHP3pqhfdEsCUT78J5zjm1dWL8MFMZ8d0pX
+         WuURUQf53/4jtwjRwdI9Dxw5Y8rZR7KHJRXKizykEq7xkNycQK5bwgeSMYMBj17IFW+r
+         mblklustS3N81EEQYEu675+sO1LupmJjWR4M2HVHsEYGXegfUO32PGTktkreTBVB37VZ
+         +OQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=HpjWin1DH8UBNh1LETr1Xp2GlBQmPbNLxZODD4SqDmI=;
-        b=tOfJXVqNPxMTBi9dg/KkzxSd8wSsysjW3bPIjPP3dkJDsRFGzUU2yrvTlWFD55E6xU
-         gCl8R8XR3I3a1sDiH7CBcP1lSm7Q//iI4P7UVKFqkL+iSSJz5S4NNW9Fpc9sD8mvPzv3
-         IY/mm0f2SHMLOJUHFj4vq8Jcm+TCyRUlZKMHblQcTxSvGyC5dQPtTlVjzvsfgROwUpQ0
-         JlvF1kMIEbPT8qdTb/pLgn7O82WqaMs2I/+rbil1PrcEPp9kB6+Ok8qZDg26VQt9vfcy
-         875uh+/9re5lZWSmwCR2wfbsxOvpYcsZIqLvZHgiKjcWJvgLx2jYRsDRwQpK9F54IXtj
-         UcXA==
-X-Gm-Message-State: AOAM532xtKFbVzPX5ZAP7iMa6pIMSWbfQHqLpkiAIBxJ8QFJo8SKLVue
-        c2UqoICDcm0KCQx6609fD7BfIKAOohlqWmOO4rCKJ2OvSCPQVkoeUOVzz3MTJfBhWW0X+ZHToZj
-        bjXBn9fuZIUNikGPMxJUqwPtufoD4z5uIINxUzGmzfwgXhoox1spY0Grj57KwbTOEs/Mv0snL
-X-Google-Smtp-Source: ABdhPJz8rbgxJSkXZnfw48eIoK8DoVODsfeYBt3DDSQ2B9O69lYuqVWIZl5PfyjHv9o5dCt7Zzzl1IuAiNPrWSHP
-X-Received: from awogbemila.sea.corp.google.com ([2620:15c:100:202:89e3:235:ddae:72e0])
- (user=awogbemila job=sendgmr) by 2002:a17:90a:bc84:: with SMTP id
- x4mr5912841pjr.230.1643153473052; Tue, 25 Jan 2022 15:31:13 -0800 (PST)
-Date:   Tue, 25 Jan 2022 13:59:10 -0800
-In-Reply-To: <20220125215910.3551874-1-awogbemila@google.com>
-Message-Id: <20220125215910.3551874-2-awogbemila@google.com>
-Mime-Version: 1.0
-References: <20220125215910.3551874-1-awogbemila@google.com>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-Subject: [PATCH net-next] gve: Fix GFP flags when allocing pages
-From:   David Awogbemila <awogbemila@google.com>
-To:     netdev@vger.kernel.org
-Cc:     jeroendb@google.com, Catherine Sullivan <csully@google.com>,
-        David Awogbemila <awogbemila@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EBImikir9ryAT25BALwOBZaIdeZpyfkOerp8AGfow0Y=;
+        b=okBwUwq6UTYsMQhAX2djnD4sxagRhUPIwoCkT0VIwEdcvYeTlD2gCJnj4Siz13NK06
+         ikN9705PjjPrDXmaaQo/qytClKv4VNB3y2D52PviZqS4xAyWSzuNQRt5V8QQvKnjeIWy
+         Z6+pbf1d1gRUwL0wmtWidM5eZUk7OW5F7OxS+o4W/746PSBudOJAnH1tjfz6PEiuxNoI
+         Ed2Gv5ccH2HNOmpPFLnGGXdXnFpQqsmFObgFjWA0SDzghyu6IxD9hf+6WxCTGiVqrc1I
+         XLKsU+X+rAiPMtX2CylA+1YZtf0OSyCtMAJ8yljYS+UL+9sakvB+8je+cinTtTSzleZw
+         6a/g==
+X-Gm-Message-State: AOAM532xm9DnCjwiERDDxWlvOIyKrtLILdU+CGmUNqUajIyuLcHhKXfN
+        bFBjG5yLO0k+F7T+g0Bqt0q3J3Dboak4wq1tuoU=
+X-Google-Smtp-Source: ABdhPJy5YQg3TdenuLu2bpBojTq87dI7qwnNcwo4fmhj3+xZGz079adASMz1cchAxmmJBkXWlv8d72PId6c8m90wEOk=
+X-Received: by 2002:a17:90b:3b4c:: with SMTP id ot12mr5749610pjb.62.1643151768394;
+ Tue, 25 Jan 2022 15:02:48 -0800 (PST)
+MIME-Version: 1.0
+References: <20220113070245.791577-1-imagedong@tencent.com>
+ <87sftbobys.fsf@cloudflare.com> <20220125224524.fkodqvknsluihw74@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20220125224524.fkodqvknsluihw74@kafai-mbp.dhcp.thefacebook.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 25 Jan 2022 15:02:37 -0800
+Message-ID: <CAADnVQKbYCCYjCMhEV7p1YzkAVSKvg-1VKfWVQYVL0TaESNxBQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct bpf_sock'
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
+        Menglong Dong <menglong8.dong@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Mengen Sun <mengensun@tencent.com>, flyingpeng@tencent.com,
+        mungerjiang@tencent.com, Menglong Dong <imagedong@tencent.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Catherine Sullivan <csully@google.com>
+On Tue, Jan 25, 2022 at 2:45 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Tue, Jan 25, 2022 at 08:24:27PM +0100, Jakub Sitnicki wrote:
+> > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > index b0383d371b9a..891a182a749a 100644
+> > > --- a/include/uapi/linux/bpf.h
+> > > +++ b/include/uapi/linux/bpf.h
+> > > @@ -5500,7 +5500,11 @@ struct bpf_sock {
+> > >     __u32 src_ip4;
+> > >     __u32 src_ip6[4];
+> > >     __u32 src_port;         /* host byte order */
+> > > -   __u32 dst_port;         /* network byte order */
+> > > +   __u32 dst_port;         /* low 16-bits are in network byte order,
+> > > +                            * and high 16-bits are filled by 0.
+> > > +                            * So the real port in host byte order is
+> > > +                            * bpf_ntohs((__u16)dst_port).
+> > > +                            */
+> > >     __u32 dst_ip4;
+> > >     __u32 dst_ip6[4];
+> > >     __u32 state;
+> >
+> > I'm probably missing something obvious, but is there anything stopping
+> > us from splitting the field, so that dst_ports is 16-bit wide?
+> >
+> > I gave a quick check to the change below and it seems to pass verifier
+> > checks and sock_field tests.
+> >
+> > IDK, just an idea. Didn't give it a deeper thought.
+> >
+> > --8<--
+> >
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 4a2f7041ebae..344d62ccafba 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -5574,7 +5574,8 @@ struct bpf_sock {
+> >       __u32 src_ip4;
+> >       __u32 src_ip6[4];
+> >       __u32 src_port;         /* host byte order */
+> > -     __u32 dst_port;         /* network byte order */
+> > +     __u16 unused;
+> > +     __u16 dst_port;         /* network byte order */
+> This will break the existing bpf prog.
 
-Use GFP_ATOMIC when allocating pages out of the hotpath,
-continue to use GFP_KERNEL when allocating pages during setup.
+I think Jakub's idea is partially expressed:
++       case offsetof(struct bpf_sock, dst_port):
++               bpf_ctx_record_field_size(info, sizeof(__u16));
++               return bpf_ctx_narrow_access_ok(off, size, sizeof(__u16));
 
-GFP_KERNEL will allow blocking which allows it to succeed
-more often in a low memory enviornment but in the hotpath we do
-not want to allow the allocation to block.
-
-Signed-off-by: Catherine Sullivan <csully@google.com>
-Signed-off-by: David Awogbemila <awogbemila@google.com>
----
- drivers/net/ethernet/google/gve/gve.h        | 2 +-
- drivers/net/ethernet/google/gve/gve_main.c   | 6 +++---
- drivers/net/ethernet/google/gve/gve_rx.c     | 3 ++-
- drivers/net/ethernet/google/gve/gve_rx_dqo.c | 2 +-
- 4 files changed, 7 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-index 5f5d4f7aa813..160735484465 100644
---- a/drivers/net/ethernet/google/gve/gve.h
-+++ b/drivers/net/ethernet/google/gve/gve.h
-@@ -843,7 +843,7 @@ static inline bool gve_is_gqi(struct gve_priv *priv)
- /* buffers */
- int gve_alloc_page(struct gve_priv *priv, struct device *dev,
- 		   struct page **page, dma_addr_t *dma,
--		   enum dma_data_direction);
-+		   enum dma_data_direction, gfp_t gfp_flags);
- void gve_free_page(struct device *dev, struct page *page, dma_addr_t dma,
- 		   enum dma_data_direction);
- /* tx handling */
-diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index f7f65c4bf993..54e51c8221b8 100644
---- a/drivers/net/ethernet/google/gve/gve_main.c
-+++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -766,9 +766,9 @@ static void gve_free_rings(struct gve_priv *priv)
- 
- int gve_alloc_page(struct gve_priv *priv, struct device *dev,
- 		   struct page **page, dma_addr_t *dma,
--		   enum dma_data_direction dir)
-+		   enum dma_data_direction dir, gfp_t gfp_flags)
- {
--	*page = alloc_page(GFP_KERNEL);
-+	*page = alloc_page(gfp_flags);
- 	if (!*page) {
- 		priv->page_alloc_fail++;
- 		return -ENOMEM;
-@@ -811,7 +811,7 @@ static int gve_alloc_queue_page_list(struct gve_priv *priv, u32 id,
- 	for (i = 0; i < pages; i++) {
- 		err = gve_alloc_page(priv, &priv->pdev->dev, &qpl->pages[i],
- 				     &qpl->page_buses[i],
--				     gve_qpl_dma_dir(priv, id));
-+				     gve_qpl_dma_dir(priv, id), GFP_KERNEL);
- 		/* caller handles clean up */
- 		if (err)
- 			return -ENOMEM;
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index 9ddcc497f48e..2068199445bd 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -86,7 +86,8 @@ static int gve_rx_alloc_buffer(struct gve_priv *priv, struct device *dev,
- 	dma_addr_t dma;
- 	int err;
- 
--	err = gve_alloc_page(priv, dev, &page, &dma, DMA_FROM_DEVICE);
-+	err = gve_alloc_page(priv, dev, &page, &dma, DMA_FROM_DEVICE,
-+			     GFP_ATOMIC);
- 	if (err)
- 		return err;
- 
-diff --git a/drivers/net/ethernet/google/gve/gve_rx_dqo.c b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-index beb8bb079023..8c939628e2d8 100644
---- a/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-@@ -157,7 +157,7 @@ static int gve_alloc_page_dqo(struct gve_priv *priv,
- 	int err;
- 
- 	err = gve_alloc_page(priv, &priv->pdev->dev, &buf_state->page_info.page,
--			     &buf_state->addr, DMA_FROM_DEVICE);
-+			     &buf_state->addr, DMA_FROM_DEVICE, GFP_KERNEL);
- 	if (err)
- 		return err;
- 
--- 
-2.35.0.rc0.227.g00780c9af4-goog
-
+Either 'unused' needs to be after dst_port or
+bpf_sock_is_valid_access() needs to allow offset at 'unused'
+and at 'dst_port'.
+And allow u32 access though the size is actually u16.
+Then the existing bpf progs (without recompiling) should work?
