@@ -2,117 +2,326 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3421949B0CE
+	by mail.lfdr.de (Postfix) with ESMTP id EFEA549B0CF
 	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:01:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235729AbiAYJtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 04:49:05 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:5678 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S234335AbiAYJmU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 04:42:20 -0500
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20P9g7Um018272;
-        Tue, 25 Jan 2022 09:42:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=3otL+4z0kpAg/JI3RysnLW9r0L/YYZ3G6sqBrPUos1o=;
- b=bm9nlYIpfKzdf9wJo+Ris3IgoYJjp82vbk/TmRiPgeutCZD1MC87ROc+nrohznmWS153
- a6kjFP6xE/hs4AO0wdbFoPenzg3HmwyF+9yJaycSjuvrWXjJqfVYiWcIhVi1RzeGm8/S
- lecnCtQTP2FDTvyLlZR0Qbj1lF8UvxmIiBfzV+6jHZNsQCG+tKEIHplKajY+CHu1fc42
- Gv7buXIlZ/MVKkYdkzCgTIsuu+S5KqKXvsPTmLOv2J8xKlKAWoosEiArMKJ5MfQnd9mC
- OK/TvfjsJmOcaDb1yyVGaJ8KiqKyy3RQY3WN+qduqAXN1pZLq8yxdNCK/p6pjW7MFfPc ng== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dtet1r020-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jan 2022 09:42:11 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20P9gBid018335;
-        Tue, 25 Jan 2022 09:42:11 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dtet1r01g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jan 2022 09:42:11 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20P9dt9A021927;
-        Tue, 25 Jan 2022 09:42:09 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma02fra.de.ibm.com with ESMTP id 3dr9j9b1xn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jan 2022 09:42:08 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20P9g6jb36045144
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 25 Jan 2022 09:42:06 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 84C8B4C04A;
-        Tue, 25 Jan 2022 09:42:06 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 41BB54C058;
-        Tue, 25 Jan 2022 09:42:06 +0000 (GMT)
-Received: from [9.171.94.78] (unknown [9.171.94.78])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 25 Jan 2022 09:42:06 +0000 (GMT)
-Message-ID: <1f13f001-e4d7-fdcd-6575-caa1be1526e1@linux.ibm.com>
-Date:   Tue, 25 Jan 2022 10:42:05 +0100
+        id S236253AbiAYJtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 04:49:10 -0500
+Received: from sender4-op-o14.zoho.com ([136.143.188.14]:17479 "EHLO
+        sender4-op-o14.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236945AbiAYJo2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 04:44:28 -0500
+ARC-Seal: i=1; a=rsa-sha256; t=1643103853; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=IxNn0w/mTMWWSG0HR2/sERiSwkF4ovDqmMENhkhWrIQ3As1Gdvz86GetMPxGqUF52/y/I59rAkNV53xH6Crb9ifOrBj7riBTNoY+w1Ik4n0aAuCEjE9cfrnnVfKxncP7WGIU2qnF0ZtbRTvAN96CWJzyeBoiiqnG83+mYm7pigY=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1643103853; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=OMA8ku6KdQLT1/01LbbzKfjiscVVtNA5NRLjrtLh7JE=; 
+        b=cXmba6M6vTpuNZNxxrVSEJ9tYRTweTT6BCZqM8WDm7hMJFO5rI6lAQEXvG6ymE0Ry13JQ4GglQe9Fk3eBdpSTPVRSh4JezDZsbBWLB2JkuFCGspTC3QFTgl4x63cyc7o/tuoWDxVVGtX2bRA3EbxKneHrTCvrFXvDHbXYpO9/R4=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1643103853;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+        bh=OMA8ku6KdQLT1/01LbbzKfjiscVVtNA5NRLjrtLh7JE=;
+        b=F6uDb911zGe722YeZ5KJNa11lYE2aeFdxwhD0csjI0s/0u6FBC81UuQtgQezwKLW
+        6phZiyORPk7IrcPXlj2bdPza2g2hoebfqxFcrHURSpy/4DX0V+UUzJoP2qz/8HMtSUN
+        LKGyt5bvkRkbDnZLSwjRL5ZkkkalqHOt91U5SriE=
+Received: from [10.10.10.216] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
+        with SMTPS id 16431038508751015.7524216853523; Tue, 25 Jan 2022 01:44:10 -0800 (PST)
+Message-ID: <e5f1f484-5682-6338-f974-23e77f415018@arinc9.com>
+Date:   Tue, 25 Jan 2022 12:44:03 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [RFC PATCH net-next] net/smc: Introduce receive queue flow
- control support
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
+ cpu ports, non cpu extint
 Content-Language: en-US
-To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>,
-        kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220120065140.5385-1-guangguan.wang@linux.alibaba.com>
-From:   Stefan Raspl <raspl@linux.ibm.com>
-In-Reply-To: <20220120065140.5385-1-guangguan.wang@linux.alibaba.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <ALSI@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>
+References: <20220124084649.0918ba5c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20220124165535.tksp4aayeaww7mbf@skbuf>
+ <228b64d7-d3d4-c557-dba9-00f7c094f496@gmail.com>
+ <20220124172158.tkbfstpwg2zp5kaq@skbuf>
+ <20220124093556.50fe39a3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20220124102051.7c40e015@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20220124190845.md3m2wzu7jx4xtpr@skbuf>
+ <20220124113812.5b75eaab@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20220124205607.kugsccikzgmbdgmf@skbuf>
+ <20220124134242.595fd728@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20220124223053.gpeonw6f34icwsht@skbuf>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20220124223053.gpeonw6f34icwsht@skbuf>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: qwhbVy3rG3bYBb61MKH5uEk6M6GBXzIS
-X-Proofpoint-ORIG-GUID: P4u1KMhNSr5YUk26tLwFBpUocj4uMVHf
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-25_02,2022-01-24_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 clxscore=1011
- phishscore=0 suspectscore=0 spamscore=0 impostorscore=0 malwarescore=0
- adultscore=0 mlxscore=0 lowpriorityscore=0 priorityscore=1501
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201250063
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/20/22 07:51, Guangguan Wang wrote:
-> This implement rq flow control in smc-r link layer. QPs
-> communicating without rq flow control, in the previous
-> version, may result in RNR (reveive not ready) error, which
-> means when sq sends a message to the remote qp, but the
-> remote qp's rq has no valid rq entities to receive the message.
-> In RNR condition, the rdma transport layer may retransmit
-> the messages again and again until the rq has any entities,
-> which may lower the performance, especially in heavy traffic.
-> Using credits to do rq flow control can avoid the occurrence
-> of RNR.
+On 25/01/2022 01:30, Vladimir Oltean wrote:
+> On Mon, Jan 24, 2022 at 01:42:42PM -0800, Jakub Kicinski wrote:
+>> On Mon, 24 Jan 2022 22:56:07 +0200 Vladimir Oltean wrote:
+>>> On Mon, Jan 24, 2022 at 11:38:12AM -0800, Jakub Kicinski wrote:
+>>>> On Mon, 24 Jan 2022 21:08:45 +0200 Vladimir Oltean wrote:
+>>>>> So before we declare that any given Ethernet driver is buggy for declaring
+>>>>> NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM and not checking that skb->csum_start
+>>>>> points where it expects it to (taking into consideration potential VLAN
+>>>>> headers, IPv6 extension headers),
+>>>>
+>>>> Extension headers are explicitly not supported by NETIF_F_IPV6_CSUM.
+>>>>
+>>>> IIRC Tom's hope was to delete NETIF_F_IP*_CSUM completely once all
+>>>> drivers are converted to parsing and therefore can use NETIF_F_HW_CSUM.
+>>>
+>>> IIUC, NETIF_F_IP*_CSUM vs NETIF_F_HW_CSUM doesn't make that big of a
+>>> difference in terms of what the driver should check for, if the hardware
+>>> checksum offload engine can't directly be given the csum_start and
+>>> csum_offset, wherever they may be.
+>>>
+>>>>> is there any driver that _does_ perform these checks correctly, that
+>>>>> could be used as an example?
+>>>>
+>>>> I don't think so. Let me put it this way - my understanding is that up
+>>>> until now we had been using the vlan_features, mpls_features etc to
+>>>> perform L2/L2.5/below-IP feature stripping. This scales poorly to DSA
+>>>> tags, as discussed in this thread.
+>>>>
+>>>> I'm suggesting we extend the kind of checking we already do to work
+>>>> around inevitable deficiencies of device parsers for tunnels to DSA
+>>>> tags.
+>>>
+>>> Sorry, I'm very tired and I probably don't understand what you're
+>>> saying, so excuse the extra clarification questions.
+>>>
+>>> The typical protocol checking that drivers with NETIF_F_HW_CSUM do seems
+>>> to be based on vlan_get_protocol()/skb->protocol/skb_network_header()/
+>>> skb_transport_header() values, all of which make DSA invisible. So they
+>>> don't work if the underlying hardware really doesn't like seeing an
+>>> unexpected DSA header.
+>>>
+>>> When you say "I'm suggesting we extend the kind of checking we already do",
+>>> do you mean we should modify the likes of e1000e and igb such that, if
+>>> they're ever used as DSA masters, they do a full header parse of the
+>>> packet (struct ethhdr :: h_proto, check if VLAN, struct iphdr/ipv6hdr,
+>>> etc.) instead of the current logic?
+>>
+>> That was my thinking, yes. The exact amount of work depends on the
+>> driver, I believe that more recent Intel parts (igb, ixgbe and newer)
+>> pass a L3 offset to the HW. They treat L2 as opaque, ergo no patches
+>> needed. At a glance e1000e passes the full skb_checksum_start_offset()
+>> to HW, so likely even better.
+> 
+> Ah, right, I missed that. I agree that a driver that uses
+> skb->csum_start is very likely to work unmodified with DSA headers
+> (not trailers). I didn't notice this in e1000 because I was just
+> searching for csum_start.
+> 
+>> It's only drivers for devices which actually want to parse the Ethertype
+>> that would need extra checks. (Coincidentally such devices can't support
+>> MPLS given the lack of L3 indication in the frame.)
+>>
+>>> It will be pretty convoluted unless
+>>> we have some helper. Because if I follow through, for a DSA-tagged IP
+>>> packet on xmit, skb->protocol is certainly htons(ETH_P_IP):
+>>>
+>>> ntohs(skb->protocol) = 0x800, csum_offset = 16, csum_start = 280, skb_checksum_start_offset = 54, skb->network_header = 260, skb_network_header_len = 20
+>>>
+>>> skb_dump output:
+>>> skb len=94 headroom=226 headlen=94 tailroom=384
+>>> mac=(226,34) net=(260,20) trans=280
+>>> shinfo(txflags=0 nr_frags=0 gso(size=0 type=1 segs=1))
+>>> csum(0x100118 ip_summed=3 complete_sw=0 valid=0 level=0)
+>>> hash(0x7710ee84 sw=0 l4=1) proto=0x0800 pkttype=0 iif=0
+>>> dev name=eno2 feat=0x00020100001149a9
+>>> sk family=2 type=1 proto=6
+>>> skb headroom: 00000000: 6c 00 03 02 64 65 76 00 fe ed ca fe 28 00 00 00
+>>> ...(junk)...
+>>> skb headroom: 000000e0: 5f 43
+>>>                          20 byte DSA tag
+>>>                          |
+>>>                          v
+>>> skb linear:   00000000: 88 80 00 0a 80 00 00 00 00 00 00 00 08 00 30 00
+>>>                                      skb_mac_header()
+>>>                                      |
+>>>                                      v
+>>> skb linear:   00000010: 00 00 00 00 68 05 ca 92 af 20 00 04 9f 05 f6 28
+>>>                                skb_network_header()
+>>>                                |
+>>>                                v
+>>> skb linear:   00000020: 08 00 45 00 00 3c 26 47 40 00 40 06 00 49 0a 00
+>>>                                            skb_checksum_start_offset
+>>>                                            |
+>>>                                            |                       csum_offset
+>>>                                            v                       v
+>>> skb linear:   00000030: 00 2c 0a 00 00 01 b6 08 14 51 11 1f 91 4f 00 00
+>>> skb linear:   00000040: 00 00 a0 02 fa f0 14 5b 00 00 02 04 05 b4 04 02
+>>> skb linear:   00000050: 08 0a 2e 00 e5 b8 00 00 00 00 01 03 03 07
+>>
+>> Oof, so in this case the DSA tag is _before_ the skb_mac_header()?
+>> Or the prepend is supposed to be parsable as a Ethernet header?
+>> Seems like any device that can do csum over this packet must already
+>> use L3/L4 offsets or have explicit knowledge of DSA, right?
+> 
+> I'm sorry, there's a mistake, skb_mac_header() points to the DSA tag
+> here (and skb_mac_header_len is 34), I wanted to say "real MAC header"
+> but failed to do so. This case shouldn't pose any special problems.
+> 
+>>> I don't know, I just don't expect that non-DSA users of those drivers
+>>> will be very happy about such changes. Do these existing protocol
+>>> checking schemes qualify as buggy?
+>>
+>> Unfortunate reality of the checksum offloads is that most drivers for
+>> devices which parse on Tx are buggy, it's more of a question of whether
+>> anyone tried to use an unsupported protocol stack :( Recent example
+>> that comes to mind is 1698d600b361 ("bnxt_en: Implement
+>> .ndo_features_check().").
+> 
+> Nice hook this ndo_features_check! In my reading of validate_xmit_skb()
+> I went right past it.
+> 
+>>> If this is the convention that we want to enforce, then I can't really
+>>> help Luiz with fixing the OpenWRT mtk_eth_soc.c - he'll have to figure
+>>> out a way to parse the packets for which his hardware will accept the
+>>> checksumming offload, and call skb_checksum_help() otherwise.
+>>>
+>>>> We can come up with various schemes of expressing capabilities
+>>>> between underlying driver and tag driver. I'm not aware of similar
+>>>> out-of-band schemes existing today so it'd be "DSA doing it's own
+>>>> thing", which does not seem great.
+>>>
+>>> It at least seems less complex to me, and less checking in the fast path
+>>> if I understand everything that's been said correctly.
+>>
+>> I understand, I'm primarily trying to share some context and prior work.
+>> I don't mean to nack all other approaches.
+>>
+>> I believe writing a parser matching the device behavior would be easier
+>> for a driver author than interpreting the runes of our csum offload API
+>> and getting thru the thicket of all the bits. If that's not the case my
+>> argument is likely defeated.
+> 
+> Ok, writing a parser might be needed if the DSA master is going, for
+> some reason, to support TX checksum offloading with some DSA headers but
+> not with others.
+> 
+> If that is not the case, and that Ethernet controller simply doesn't
+> support TX checksumming unless it's the plain old Ethernet {+ VLAN} +
+> IP/IPv6 + TCP/UDP, then this blanket patch below should fix the problem
+> almost elegantly, and parsing is a useless complication (warning, not
+> even compile-tested!):
 
-That's some truly substantial improvements!
-But we need to be careful with protocol-level changes: There are other operating 
-systems like z/OS and AIX which have compatible implementations of SMC, too. 
-Changes like a reduction of connections per link group or usage of reserved 
-fields would need to be coordinated, and likely would have unwanted side-effects 
-even when used with older Linux kernel versions.
-Changing the protocol is "expensive" insofar as it requires time to thoroughly 
-discuss the changes, perform compatibility tests, and so on.
-So I would like to urge you to investigate alternative ways that do not require 
-protocol-level changes to address this scenario, e.g. by modifying the number of 
-completion queue elements, to see if this could yield similar results.
+I tried it on the upstream mtk_eth_soc on an mt7621a board with an 
+rtl8367s switch connected to the 2nd GMAC of the SoC running 5.17-rc1.
 
-Thx!
+Although "ethtool --show-offload eth1" does not show anything different, 
+I can now ssh to the device (only way that came into my mind to quickly 
+check TCP traffic).
+
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -1986,6 +1986,16 @@ static int mtk_hwlro_get_fdir_all(struct
+  	return 0;
+  }
+
++static netdev_features_t fe_features_check(struct sk_buff *skb,
++					   struct net_device *dev,
++					   netdev_features_t features)
++{
++	if (netdev_uses_dsa(dev))
++		features &= ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
++
++	return features;
++}
++
+  static netdev_features_t mtk_fix_features(struct net_device *dev,
+  					  netdev_features_t features)
+  {
+@@ -2906,6 +2916,7 @@ static const struct net_device_ops mtk_n
+  #ifdef CONFIG_NET_POLL_CONTROLLER
+  	.ndo_poll_controller	= mtk_poll_controller,
+  #endif
++	.ndo_features_check	= fe_features_check,
+  	.ndo_setup_tc		= mtk_eth_setup_tc,
+  };
 
 
-
-
-
+> 
+> -----------------------------[ cut here ]-----------------------------
+>  From 5ef3d3cd8441d756933558212f518f48754c64d9 Mon Sep 17 00:00:00 2001
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Date: Tue, 25 Jan 2022 00:16:57 +0200
+> Subject: [PATCH] ramips: ethernet: ralink: disable TX checksumming on DSA
+>   masters
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>   .../files/drivers/net/ethernet/ralink/mtk_eth_soc.c  | 12 ++++++++++++
+>   1 file changed, 12 insertions(+)
+> 
+> diff --git a/target/linux/ramips/files/drivers/net/ethernet/ralink/mtk_eth_soc.c b/target/linux/ramips/files/drivers/net/ethernet/ralink/mtk_eth_soc.c
+> index e07e5ed5a8f8..6ed9bc5942fd 100644
+> --- a/target/linux/ramips/files/drivers/net/ethernet/ralink/mtk_eth_soc.c
+> +++ b/target/linux/ramips/files/drivers/net/ethernet/ralink/mtk_eth_soc.c
+> @@ -31,6 +31,7 @@
+>   #include <linux/io.h>
+>   #include <linux/bug.h>
+>   #include <linux/netfilter.h>
+> +#include <net/dsa.h>
+>   #include <net/netfilter/nf_flow_table.h>
+>   #include <linux/of_gpio.h>
+>   #include <linux/gpio.h>
+> @@ -1497,6 +1498,16 @@ static int fe_change_mtu(struct net_device *dev, int new_mtu)
+>   	return fe_open(dev);
+>   }
+>   
+> +static netdev_features_t fe_features_check(struct sk_buff *skb,
+> +					   struct net_device *dev,
+> +					   netdev_features_t features)
+> +{
+> +	if (netdev_uses_dsa(dev))
+> +		features &= ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
+> +
+> +	return features;
+> +}
+> +
+>   static const struct net_device_ops fe_netdev_ops = {
+>   	.ndo_init		= fe_init,
+>   	.ndo_uninit		= fe_uninit,
+> @@ -1514,6 +1525,7 @@ static const struct net_device_ops fe_netdev_ops = {
+>   #ifdef CONFIG_NET_POLL_CONTROLLER
+>   	.ndo_poll_controller	= fe_poll_controller,
+>   #endif
+> +	.ndo_features_check	= fe_features_check,
+>   };
+>   
+>   static void fe_reset_pending(struct fe_priv *priv)
+> -----------------------------[ cut here ]-----------------------------
+> 
+> This is essentially what Florian said ages ago, it just took me a very
+> long time to process. I guess what hadn't fully clicked in my head is
+> that the TX checksumming offload being functional is more a matter of
+> telling the hardware what are the L3 and L4 offsets, and the csum_offset,
+> rather than it requiring any particular understanding of the DSA header.
+> In turn, it means that for "nice" Ethernet controller implementations
+> where that is the case, it would be actively detrimential to add a new
+> .ndo_get_dsa_features() or something like that - because such a driver
+> would report that it supports all DSA header-type formats (trailers are
+> still broken as long as there isn't a csum_end). And keeping that kind
+> of driver in sync with all DSA protocols that appear will become a
+> repetitive task.
+> 
+> So crisis averted, I guess?
+> Thanks a lot to both of you for the patient explanations!
+> I retract my proposal for a new ndo and also suggest that the DSA master
+> driver takes care to not leave as zero a TX checksum it can't offload.
