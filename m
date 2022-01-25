@@ -2,129 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70DFC49B1AA
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:29:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00A8D49B1D6
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:44:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352451AbiAYKZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 05:25:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58632 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1348644AbiAYKXL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 05:23:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643106179;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KfO8JQDP2fzwwyVNOov4juy70MimJyiWRONtd3Q4kcc=;
-        b=Lvnqp8YyUk2T92ddnKXC4h8IrbPaxq9kbD71I7A0HFnXK9EAEZlbhCUFeL5Jwtaznw7UmA
-        EoZxQy3jkp3FUqQ4/vw1ISv4atLSTswroNXw9kIB+mlRdGa0IgQAYKNYe8g7NvS69KND7V
-        GxLgifleW4FkeajOxp26nAELeKcnqC0=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-586-nj_tQhqsPR60N6XGt96N2Q-1; Tue, 25 Jan 2022 05:22:58 -0500
-X-MC-Unique: nj_tQhqsPR60N6XGt96N2Q-1
-Received: by mail-ed1-f70.google.com with SMTP id j10-20020a05640211ca00b003ff0e234fdfso14758579edw.0
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 02:22:58 -0800 (PST)
+        id S1355275AbiAYKaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 05:30:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37634 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348782AbiAYKXh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 05:23:37 -0500
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF18BC061760
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 02:23:24 -0800 (PST)
+Received: by mail-yb1-xb42.google.com with SMTP id c6so60182264ybk.3
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 02:23:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=EBHbP83/CZFp2F2gENfmEXu6m8S2pw12piuqN6IlINY=;
+        b=PMGhQQXl7RXGayaCDZI8V+7UUVHKvHpKVZWGAp1lWeS55R9cpkVuMr4LWzmTRu3T/7
+         xFtZGiM+cYqx76r0ItmFqP8+APLBT84FWqml4vSkLGxw2YafCI8SavbKU81gLUs0LTxC
+         U56yBbpQdVm57f+lEGiCpR8BbLGE/q2/gISzFIVKYf7pN6CttySVgxwMGteaL6euucys
+         tgt5CwLaS5a2rEFszELyIAeGPTf1g2CmVfltxns6OxQN8XYMLHRyVWrkoFA+22Z4vKaa
+         iwTpwCTGTWOIs3X3lf3VtC8CJ4DLR/vH53H4Lcy40C+YmLXseLICmQAVOVKJfRflmi/Y
+         A3Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=KfO8JQDP2fzwwyVNOov4juy70MimJyiWRONtd3Q4kcc=;
-        b=YkqrdREqMkeVhjeyX52pf0JwrgTWkPRkH04gxhzwsZMrqfNXO6F6u31m2i0na32QU5
-         tKSgwaR5eHypAalhy5HGZ9njFt2QlrekGRhExy5BzIh4ARhOhSr37BustG5BkT7/bWPM
-         MqXte80nFc3T5Jqsg6LKUT8g0xC0ArA1kSnOMYou4gjjgkDelXcHbuFQOsKi3MAgBvv3
-         3AzgrhvGEIqZ7i8CxBPGdVjDMPA9b4sMZ1nTQdK+U1WZKRV9Ed7jpSdvVSpg1+LYxHrA
-         AlpgWtWvUNg+XhaBAQXoHFI6+7qt0KN7Pt18hlw4NMq0qqjk/VdmPX6kleiBdpUfjbDx
-         ugUA==
-X-Gm-Message-State: AOAM533qg1wvw2YDIoxrGRSeTmF3IjTf64MrDvesjHkLPovftPQCQPbw
-        EyhCLzaajcVR+LL1JgNExDSByzloaSg/b/my4nqwzOJUi/G8TQWylodmGwm8NNtAIjAqfQoxEIL
-        zNJqVal/zqyqPEfEn
-X-Received: by 2002:a05:6402:5246:: with SMTP id t6mr12304174edd.35.1643106176134;
-        Tue, 25 Jan 2022 02:22:56 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyfHmpaq8eF4mbc3w+L8OSpYsJBEPi/S6sbiyN/cLWAZjc9Fv5atMbCeIp8pJB+8gJ57Rvq6w==
-X-Received: by 2002:a05:6402:5246:: with SMTP id t6mr12304117edd.35.1643106175159;
-        Tue, 25 Jan 2022 02:22:55 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id g12sm8033268edv.89.2022.01.25.02.22.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 02:22:54 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id E35D01805FA; Tue, 25 Jan 2022 11:22:52 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-omap@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: cpsw: Properly initialise struct page_pool_params
-In-Reply-To: <20220125051522.GA1171881@euler>
-References: <20220124143531.361005-1-toke@redhat.com>
- <20220125051522.GA1171881@euler>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 25 Jan 2022 11:22:52 +0100
-Message-ID: <87tuds3yir.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=EBHbP83/CZFp2F2gENfmEXu6m8S2pw12piuqN6IlINY=;
+        b=dryB3XSB6B5DxLyYlUL6NDm6WXiihbUAof+Rf8UWKrwLGMhTbv0WcIoxVhZXORQAk6
+         StklJQNHHA6IF72anlwAsHxyNFnvUfpCczY0NvXxpJ6o9OzDh/pEQt0aQ+7LlaAHo2V7
+         q+bnHumyjym63dVqLczhH/gVCfKp0IHaESNUsjdaMLrsPSK9ThxeDsWqhOEf3OEinbN8
+         5YhggWAAFTMpoYsvyumegjzoMK14xE/L9yI1WokUFW0xBD1/8Nr987miWUP8rnJFfkHV
+         g45DIO+bSzcs3ojA3DkKBMcvfWy4Xcj8xLA8Hc5RRr6XPDLKYQ1DXAv+t6P7mEtP2ruz
+         H5KQ==
+X-Gm-Message-State: AOAM532E+oWiDWnxUjBGSmp7r/82X/I/FGeWcqBLLaPRwn/Nfed0hbVu
+        8kF9HDU6d/9v9szWf3+YDJJFGx6vGNCmKfYUFx8=
+X-Google-Smtp-Source: ABdhPJzepwKrKeIVkxGhO1fXTi7lwpHqmHdec+QcuuRPdRAgOsQIcis43fvMaweCBEzKK8om1R5RpXdYoKVMNyGTMQI=
+X-Received: by 2002:a05:6902:1504:: with SMTP id q4mr16840449ybu.556.1643106204261;
+ Tue, 25 Jan 2022 02:23:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Received: by 2002:a05:7110:31d0:b0:121:e4d4:44fc with HTTP; Tue, 25 Jan 2022
+ 02:23:24 -0800 (PST)
+Reply-To: tonysiruno9@gmail.com
+From:   Tony Siruno <frankrajahtg@gmail.com>
+Date:   Tue, 25 Jan 2022 10:23:24 +0000
+Message-ID: <CALfvvy+HUsrQWq2E9pUYqw5ahRHeQwJpbwLUgHYn7VVUrYV89g@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Colin Foster <colin.foster@in-advantage.com> writes:
+Warum schweigen Sie? Ich hoffe, es geht Ihnen gut, denn jetzt habe ich
+Ihnen diese Mail zweimal gesendet, ohne von Ihnen zu h=C3=B6ren. Heute
+komme ich von meiner Reise zur=C3=BCck und Sie schweigen =C3=BCber die Post=
+, die
+ich Ihnen seit letzter Woche gesendet habe. Bitte lassen Sie mich Ich
+kenne den Grund, warum Sie geschwiegen haben. Ich habe mir
+vorgestellt, warum Sie mir nicht sehr wichtig geantwortet haben.
+Bitte, Liebes, ich brauche Ihr ehrliches Vertrauen und Ihre Hilfe. Mit
+meiner guten Absicht kann ich Ihnen vertrauen, dass Sie die Summe von
+12.500.000,00 Millionen US-Dollar in =C3=BCberweisen Ihr Konto in Ihrem
+Land, wenn m=C3=B6glich, melden Sie sich bei mir, um weitere Informationen
+zu erhalten. Ich warte auf Ihre Antwort und bitte lassen Sie es mich
+wissen, als zu schweigen.
 
-> On Mon, Jan 24, 2022 at 03:35:29PM +0100, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> The cpsw driver didn't properly initialise the struct page_pool_params
->> before calling page_pool_create(), which leads to crashes after the stru=
-ct
->> has been expanded with new parameters.
->>=20
->> The second Fixes tag below is where the buggy code was introduced, but
->> because the code was moved around this patch will only apply on top of t=
-he
->> commit in the first Fixes tag.
->>=20
->> Fixes: c5013ac1dd0e ("net: ethernet: ti: cpsw: move set of common functi=
-ons in cpsw_priv")
->> Fixes: 9ed4050c0d75 ("net: ethernet: ti: cpsw: add XDP support")
->> Reported-by: Colin Foster <colin.foster@in-advantage.com>
->> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->> ---
->>  drivers/net/ethernet/ti/cpsw_priv.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>=20
->> diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/=
-ti/cpsw_priv.c
->> index ba220593e6db..8f6817f346ba 100644
->> --- a/drivers/net/ethernet/ti/cpsw_priv.c
->> +++ b/drivers/net/ethernet/ti/cpsw_priv.c
->> @@ -1146,7 +1146,7 @@ int cpsw_fill_rx_channels(struct cpsw_priv *priv)
->>  static struct page_pool *cpsw_create_page_pool(struct cpsw_common *cpsw,
->>  					       int size)
->>  {
->> -	struct page_pool_params pp_params;
->> +	struct page_pool_params pp_params =3D {};
->>  	struct page_pool *pool;
->>=20=20
->>  	pp_params.order =3D 0;
->> --=20
->> 2.34.1
->>=20
->
-> Works for me. Thanks Toke! Hopefully my tested by tag addition is done
-> correctly:
->
-> Tested-by: Colin Foster <colin.foster@in-advantage.com>
-
-You're welcome! Tag looks good, thanks for testing :)
-
--Toke
-
+Herr Tony Siruno.
