@@ -2,53 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C58F49B3AE
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 13:20:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18C4A49B3BF
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 13:21:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441985AbiAYMPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 07:15:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55544 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347223AbiAYMNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 07:13:32 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9E42B817ED;
-        Tue, 25 Jan 2022 12:13:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 220CDC340E8;
-        Tue, 25 Jan 2022 12:13:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643112806;
-        bh=YP8yR2ULzF4ht0C7ZypYUVFYi3bHtPsRHNq8KOsRvFg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QICtXK9EGK6UyhVFqu9JINjfmGO3rDXfJkp8XDa5XBt87C4KS2Y62sfKRZww6dEtc
-         wABAUbMNGJt3hwecun7YjslUMKug9JupiSFIqgVEKcB7L84JHNm1swPUISJFAUV6Wb
-         uRfwCiVR9XDMrzyhTyrs3H2rz0jrJS+mSfvnsZLRDZvS9CY9jc6HzucotRhnJV/k+D
-         kWuWulVVl5+FcOdf7l+vsGgZoXnUxVDblKPvsF/rMgnhn35NbqPsuUq282TVsUb7p2
-         dP18ld3ehy1nw+6nEM7nKHHKNDu14Z7KKf4aRqvbDc//US5iHZefMwe2gsT9IZLupB
-         CD8A/hvLb3KVA==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v5 9/9] docs: fprobe: Add fprobe description to ftrace-use.rst
-Date:   Tue, 25 Jan 2022 21:13:19 +0900
-Message-Id: <164311279968.1933078.10295698671764269513.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164311269435.1933078.6963769885544050138.stgit@devnote2>
-References: <164311269435.1933078.6963769885544050138.stgit@devnote2>
-User-Agent: StGit/0.19
+        id S1444208AbiAYMRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 07:17:06 -0500
+Received: from relay11.mail.gandi.net ([217.70.178.231]:33941 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355332AbiAYMOo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 07:14:44 -0500
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 01BE2100002;
+        Tue, 25 Jan 2022 12:14:27 +0000 (UTC)
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [wpan v3 0/6] ieee802154: A bunch of fixes
+Date:   Tue, 25 Jan 2022 13:14:20 +0100
+Message-Id: <20220125121426.848337-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -56,163 +37,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a documentation of fprobe for the user who needs
-this interface.
+In preparation to a wider series, here are a number of small and random
+fixes across the subsystem.
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- Documentation/trace/fprobe.rst |  131 ++++++++++++++++++++++++++++++++++++++++
- Documentation/trace/index.rst  |    1 
- 2 files changed, 132 insertions(+)
- create mode 100644 Documentation/trace/fprobe.rst
+Changes in v2:
+* Fixed the wrong RCU usage when updating the default channel at probe
+  time in hwsim.
+* Actually fixed the skb leak fix in the at86rf230 driver as suggested
+  by Alexander.
+* Also reordered the calls to free the skb then wake the queue
+  everywhere else.
+* Added a missing Fixes tag (for the meaningful error codes patch).
 
-diff --git a/Documentation/trace/fprobe.rst b/Documentation/trace/fprobe.rst
-new file mode 100644
-index 000000000000..c53950a1f91e
---- /dev/null
-+++ b/Documentation/trace/fprobe.rst
-@@ -0,0 +1,131 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+==================================
-+Fprobe - Function entry/exit probe
-+==================================
-+
-+.. Author: Masami Hiramatsu <mhiramat@kernel.org>
-+
-+Introduction
-+============
-+
-+Instead of using ftrace full feature, if you only want to attach callbacks
-+on function entry and exit, similar to the kprobes and kretprobes, you can
-+use fprobe. Compared with kprobes and kretprobes, fprobe gives faster
-+instrumentation for multiple functions with single handler. This document
-+describes how to use fprobe.
-+
-+The usage of fprobe
-+===================
-+
-+The fprobe is a wrapper of ftrace (+ kretprobe-like return callback) to
-+attach callbacks to multiple function entry and exit. User needs to set up
-+the `struct fprobe` and pass it to `register_fprobe()`.
-+
-+Typically, `fprobe` data structure is initialized with the `syms`, `nentry`
-+and `entry_handler` and/or `exit_handler` as below.
-+
-+.. code-block:: c
-+
-+ char targets[] = {"func1", "func2", "func3"};
-+ struct fprobe fp = {
-+        .syms           = targets,
-+        .nentry         = ARRAY_SIZE(targets),
-+        .entry_handler  = my_entry_callback,
-+        .exit_handler   = my_exit_callback,
-+ };
-+
-+The ftrace_ops in the fprobe is automatically set. The FTRACE_OPS_FL_SAVE_REGS
-+and FTRACE_OPS_FL_RECURSION
-+flag will be set. If you need other flags, please set it by yourself.
-+
-+.. code-block:: c
-+
-+ fp.ops.flags |= FTRACE_OPS_FL_RCU;
-+
-+To enable this fprobe, call::
-+
-+  register_fprobe(&fp);
-+
-+To disable (remove from functions) this fprobe, call::
-+
-+  unregister_fprobe(&fp);
-+
-+You can temporally (soft) disable the fprobe by::
-+
-+  disable_fprobe(&fp);
-+
-+and resume by::
-+
-+  enable_fprobe(&fp);
-+
-+The above is defined by including the header::
-+
-+  #include <linux/fprobe.h>
-+
-+Same as ftrace, the registered callback will start being called some time
-+after the register_fprobe() is called and before it returns. See
-+:file:`Documentation/trace/ftrace.rst`.
-+
-+
-+The fprobe entry/exit handler
-+=============================
-+
-+The prototype of the entry/exit callback function is as follows:
-+
-+.. code-block:: c
-+
-+ void callback_func(struct fprobe *fp, unsigned long entry_ip, struct pt_regs *regs);
-+
-+Note that both entry and exit callback has same ptototype. The @entry_ip is
-+saved at function entry and passed to exit handler.
-+
-+@fp
-+        This is the address of `fprobe` data structure related to this handler.
-+        You can embed the `fprobe` to your data structure and get it by
-+        container_of() macro from @fp. The @fp must not be NULL.
-+
-+@entry_ip
-+        This is the entry address of the traced function (both entry and exit).
-+
-+@regs
-+        This is the `pt_regs` data structure at the entry and exit. Note that
-+        the instruction pointer of @regs may be different from the @entry_ip
-+        in the entry_handler. If you need traced instruction pointer, you need
-+        to use @entry_ip. On the other hand, in the exit_handler, the instruction
-+        pointer of @regs is set to the currect return address.
-+
-+
-+Use fprobe with raw address list
-+================================
-+
-+Instead of passing the array of symbols, you can pass a array of raw
-+function addresses via `fprobe::addrs`. In this case, the value of
-+this array will be changed automatically to the dynamic ftrace NOP
-+location addresses in the given kernel function. So please take care
-+if you share this array with others.
-+
-+
-+The missed counter
-+==================
-+
-+The `fprobe` data structure has `fprobe::nmissed` counter field as same as
-+kprobes.
-+This counter counts up when;
-+
-+ - fprobe fails to take ftrace_recursion lock. This usually means that a function
-+   which is traced by other ftrace users is called from the entry_handler.
-+
-+ - fprobe fails to setup the function exit because of the shortage of rethook
-+   (the shadow stack for hooking the function return.)
-+
-+Note that `fprobe::nmissed` field is counted up in both case. The former case
-+will skip both of entry and exit callback, and the latter case will skip exit
-+callback, but in both case the counter is just increased by 1.
-+
-+Functions and structures
-+========================
-+
-+.. kernel-doc:: include/linux/fprobe.h
-+.. kernel-doc:: kernel/trace/fprobe.c
-+
-diff --git a/Documentation/trace/index.rst b/Documentation/trace/index.rst
-index 3769b9b7aed8..b9f3757f8269 100644
---- a/Documentation/trace/index.rst
-+++ b/Documentation/trace/index.rst
-@@ -9,6 +9,7 @@ Linux Tracing Technologies
-    tracepoint-analysis
-    ftrace
-    ftrace-uses
-+   fprobe
-    kprobes
-    kprobetrace
-    uprobetracer
+Miquel Raynal (6):
+  net: ieee802154: hwsim: Ensure proper channel selection at probe time
+  net: ieee802154: mcr20a: Fix lifs/sifs periods
+  net: ieee802154: at86rf230: Stop leaking skb's
+  net: ieee802154: ca8210: Stop leaking skb's
+  net: ieee802154: Return meaningful error codes from the netlink
+    helpers
+  MAINTAINERS: Remove Harry Morris bouncing address
+
+ MAINTAINERS                              |  3 +--
+ drivers/net/ieee802154/at86rf230.c       | 13 +++++++++++--
+ drivers/net/ieee802154/ca8210.c          |  1 +
+ drivers/net/ieee802154/mac802154_hwsim.c |  1 +
+ drivers/net/ieee802154/mcr20a.c          |  4 ++--
+ net/ieee802154/nl802154.c                |  8 ++++----
+ 6 files changed, 20 insertions(+), 10 deletions(-)
+
+-- 
+2.27.0
 
