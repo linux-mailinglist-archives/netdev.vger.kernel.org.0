@@ -2,56 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC8B249BA70
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 18:35:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23D9349BAA8
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 18:54:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243215AbiAYReh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 12:34:37 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:53670 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1588269AbiAYRcz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jan 2022 12:32:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=/fp2RW+WTrkt/5EmkS1z/tRkquj7q2TTpRqNxuP+OlE=; b=xQI0orZn3j+CMFqNLJgjv8nyYF
-        ta2VeW+qQIfNOxfAZr4avv/leRBZK+ZVYnRZg2BmLiMrnNp3uhZn3q2rs2hS7CkvzGyTPPwtMnYhZ
-        XESZTDCv8WINrwYQ0YryYx3Fjnt0o2UPuJ4eVglgjyrXbDZs6xaRkhkVmyiXx2gMvbtQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nCPgQ-002gya-QV; Tue, 25 Jan 2022 18:32:42 +0100
-Date:   Tue, 25 Jan 2022 18:32:42 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Robert Hancock <robert.hancock@calian.com>
-Cc:     netdev@vger.kernel.org, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, robh+dt@kernel.org, marex@denx.de,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v2 2/2] net: dsa: microchip: Add property to
- disable reference clock
-Message-ID: <YfA0Ov8Skh0e50uA@lunn.ch>
-References: <20220125171140.258190-1-robert.hancock@calian.com>
- <20220125171140.258190-3-robert.hancock@calian.com>
+        id S1354844AbiAYRxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 12:53:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56858 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243629AbiAYRxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 12:53:38 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A58EC06173B
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 09:53:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C341B819DB
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 17:53:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AF05C340E0;
+        Tue, 25 Jan 2022 17:53:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643133212;
+        bh=bk7i+u0+BCEycnH9ujJxBXYeq0wbj7P4jlA8LQAr3Bk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gQFyFVYkGbZvG7CgRvtjbXj5LoEoQdJOGM18lMEyBr3R11ac1xkSzXYbbxMNcE/Aw
+         ZbM11O/xrecX/579OMz6hAo5LtmVvv6shHwhTOVtDZHTaiZaNOkfehlguu7yo2193s
+         W5RZMVXiewjz9hfUZhBfqnY1vz29r4kU4K5yrqIVrHfXBuQaU2z/jQo43H0m4kO8vG
+         u6mGoeROxI7qAJsq8KagHRJnejvyFejRv0e5hrs0rg8Pw7VC88m7364y5aMMZkwAZo
+         fY3b5r9IanBe5xp2i8lbppWsRmGrD3Il1bqr6qLaWp/5ipxCBD3s3Ow5w0Xl8g6/0p
+         bEpW6y0fGaVyw==
+Date:   Tue, 25 Jan 2022 09:53:31 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, dsahern@gmail.com, pabeni@redhat.com,
+        herbert@gondor.apana.org.au, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2] ipv6: gro: flush instead of assuming
+ different flows on hop_limit mismatch
+Message-ID: <20220125095331.768dcc49@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220125044444.108785-1-kuba@kernel.org>
+References: <20220125044444.108785-1-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220125171140.258190-3-robert.hancock@calian.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->  		dev->synclko_125 = of_property_read_bool(dev->dev->of_node,
->  							 "microchip,synclko-125");
-> +		dev->synclko_disable = of_property_read_bool(dev->dev->of_node,
-> +							     "microchip,synclko-disable");
+On Mon, 24 Jan 2022 20:44:44 -0800 Jakub Kicinski wrote:
+> IPv6 GRO considers packets to belong to different flows when their
+> hop_limit is different. This seems counter-intuitive, the flow is
+> the same. hop_limit may vary because of various bugs or hacks but
+> that doesn't mean it's okay for GRO to reorder packets.
+> 
+> Practical impact of this problem on overall TCP performance
+> is unclear, but TCP itself detects this reordering and bumps
+> TCPSACKReorder resulting in user complaints.
+> 
+> Eric warns that there may be performance regressions in setups
+> which do packet spraying across links with similar RTT but different
+> hop count. To be safe let's target -next and not treat this
+> as a fix. If the packet spraying is using flow label there should
+> be no difference in behavior as flow label is checked first.
+> 
+> Note that the code plays an easy to miss trick by upcasting next_hdr
+> to a u16 pointer and compares next_hdr and hop_limit in one go.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> --
+> v2: resend for -next with the sparse false-positive addressed
 
-It seems like microchip,synclko-125 and microchip,synclko-disable are
-mutually exclusive? Please add an -EINVAL if both a present.
-
-This should also be mentioned in the binding document.
-
-Thanks
-	Andrew
+In net-next now: 6fc2f3832d36 ("ipv6: gro: flush instead of assuming
+different flows on hop_limit mismatch")
