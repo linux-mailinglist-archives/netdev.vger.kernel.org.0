@@ -2,292 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B7BE49B000
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 10:40:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE5BB49B003
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 10:40:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380131AbiAYJW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 04:22:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49294 "EHLO
+        id S1380220AbiAYJWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 04:22:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457010AbiAYJNw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 04:13:52 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F848C061756;
-        Tue, 25 Jan 2022 01:07:02 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id k18so18505705wrg.11;
-        Tue, 25 Jan 2022 01:07:02 -0800 (PST)
+        with ESMTP id S1457601AbiAYJP7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 04:15:59 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9E7C061392;
+        Tue, 25 Jan 2022 01:09:38 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id b15so4065281plg.3;
+        Tue, 25 Jan 2022 01:09:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=iwmoJT9J3KW1qHLuBB0lUUWGzwPfXFvj7N2whex8G5A=;
-        b=blOqohD34M+Eu3szMq32ApG8R02FFfQ9RdaG6nOKomGRDSBl++Gy+q0Vl22yaM8ejZ
-         Q4nlCN/+D8x3GNlOCdSzhbyCCe/E+x1xX1z680e16Hg+MRvjIMQ8WCphrK/ON5hxIkMA
-         4p+j7cg6ujm1XQtwNZclsMBXgq21ZdnIFyd9tr0L+Rvfbg8x/LWI+B67WoRECPvl+nVZ
-         vBMqsmP4+0hDs3SPwRltS+SmFpP9ZFVsHdcSRpt3UnwJ2T/htlWWoCLIUeUvcSV8RHyX
-         T7nIfihtO50u6qI5A0A7PXjjzLJPi2nODIDist2I7pOBmzJfdAxKgl+TkjJG1MmJNEOu
-         ga6w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=42lpJKH/197MI5hsdw9tU1SEO23Oa2DGBNUGHdx2ufE=;
+        b=EDq+QJiMmK5DiOm8LZw4vU6lKmBQLJ8R/nKBBXhnpRIa9jalF+nt+2GvEs1LjZz4/S
+         sCWADAp7bh2s35uVU1PYNu7sTU32szid/b6bxYGSUZNHqc/3unCq72mF5yacBzuvyg4A
+         8IHWW73PtZXSK1apnqFhCwxWCaLhrxhXw1zT8JwKoC25NIodn+3PmKTJVjtUPuR3h3TI
+         IVxOiiyXr9Mw0KPtsg/yJfnKM2EvRlWSFNpgIMiWFFgIf/Z72z1ftkN4uinJoSICE5q3
+         H+LfAuxfkKCwRKRCwPZarO1wP7SmLcCYhyqHFiGXF54QI8rQ0qhP4IgZKKi+hYNWrXg7
+         tQ5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=iwmoJT9J3KW1qHLuBB0lUUWGzwPfXFvj7N2whex8G5A=;
-        b=w2UVqj0zemDUKTv4+iVpNarOvsWBF2Vmo9X62AXcqiOVyfORNWhP1QKSuzED4XRHYL
-         9YXRcjk5Q8cLtu1/KoC6+L8xmf8TvrX8Smgr9JpRKvx3cv7LNQEKCA/e3XcYJ3g3O/a0
-         X7cTSsRZCtomLipTTbUWqXE/CeoPIJDz0GllBJ9V4lmH+M44eEUcqmLLS3zMOd8HP0Qp
-         TOPzCREDIz+KIf1aOA/5PikLOtkJjihNjz5xRtLg6g0tVUF1/PjpXygo16Y/nWDnyL32
-         3XKkvRJpToRA8U1mE5VbCVJ7tQ4YKnyfHCyHThUr7nHdhJqhoaWeu340W90gl7K8myii
-         gjXQ==
-X-Gm-Message-State: AOAM5314hLkajZC92vz92pYxbvy3KWQYOisLANBUvt2w+OJL8th6/AiH
-        +WPImXBYV2pmbhNbBfSolJs=
-X-Google-Smtp-Source: ABdhPJzhLxpgI40CqB6uKpmEMH5Xy3E0lAekUjQG/OHxmTB0Mqggo/e8zioXHddQWarG7hy0OXEV+Q==
-X-Received: by 2002:adf:edcb:: with SMTP id v11mr17321618wro.257.1643101620589;
-        Tue, 25 Jan 2022 01:07:00 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f4d:2b00:5c73:9a8b:4a19:9778? (p200300ea8f4d2b005c739a8b4a199778.dip0.t-ipconnect.de. [2003:ea:8f4d:2b00:5c73:9a8b:4a19:9778])
-        by smtp.googlemail.com with ESMTPSA id p13sm1120278wrx.86.2022.01.25.01.06.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 01:07:00 -0800 (PST)
-Message-ID: <bc9a18d7-3250-ce2e-bc54-7600f3b83e28@gmail.com>
-Date:   Tue, 25 Jan 2022 10:06:51 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=42lpJKH/197MI5hsdw9tU1SEO23Oa2DGBNUGHdx2ufE=;
+        b=cTSByIQtFB7eqfNyDGF2a3ot2idF5Gmrxt8wQca+J2CiLVfQjw1FLs5JaPAyv1dwZQ
+         RQLEAwFm66qj9xR2SO/YR9VeZcLBRI7Vh6KH6OXSjEm0qlQc/pH9WZ5zu9yqob7Ev9Sd
+         V2DdXMFx6Q01Zqs/p79qYPEYYhndmTJUcDjfYUXnRlUE4kg0Wloag8ibwg/pr7f6V/Vd
+         FDd50frlrI+BqIyqvIta36hvxIMMjV/DHqVoKtu5nYMTfb2m942ZPqWiVAoh6h+eC+dL
+         dJGu+3rzD+rd0WSjxsU4Qu5VxdKLeEopRflIll9Qi9kaErVtPLISZmxul3Y/OD4A9TWx
+         useg==
+X-Gm-Message-State: AOAM530Ow/6Aj2kIdsmR0lfoSrcHS9dt87z0GzU6hj0nOSK49Mm2GSsw
+        vQiokSvucdKLgfefmGCuo0qf3GLycKkcwsz6uzj3aa1t0YmvhiDM
+X-Google-Smtp-Source: ABdhPJyqTFWftoQFx9H1Jiob42r1oDUTGn8X2rO0mPftKpNbSvZbQbr3Hz4gl9r61MHuv1Pud+yfBAbv8h8ZDQ/7iBY=
+X-Received: by 2002:a17:90b:3912:: with SMTP id ob18mr2514051pjb.112.1643101778133;
+ Tue, 25 Jan 2022 01:09:38 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Content-Language: en-US
-To:     Hau <hau@realtek.com>, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "grundler@chromium.org" <grundler@chromium.org>
-References: <20220124181937.6331-1-hau@realtek.com>
- <b71ee3d2-5ecd-e4ee-d6ca-25bf017920cd@gmail.com>
- <1f089edfb1824b19bbf87b2ce725ce50@realtek.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next 1/1] r8169: enable RTL8125 ASPM L1.2
-In-Reply-To: <1f089edfb1824b19bbf87b2ce725ce50@realtek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220124165547.74412-1-maciej.fijalkowski@intel.com> <20220124165547.74412-5-maciej.fijalkowski@intel.com>
+In-Reply-To: <20220124165547.74412-5-maciej.fijalkowski@intel.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 25 Jan 2022 10:09:27 +0100
+Message-ID: <CAJ8uoz3Mq7JtfbwN4MvacBkV+7Rpv-=CyFwNdsZ1PN3jFH=7AQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 4/8] ice: make Tx threshold dependent on ring length
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25.01.2022 09:51, Hau wrote:
->> On 24.01.2022 19:19, Chunhao Lin wrote:
->>> This patch will enable RTL8125 ASPM L1.2 on the platforms that have
->>> tested RTL8125 with ASPM L1.2 enabled.
->>> Register mac ocp 0xc0b2 will help to identify if RTL8125 has been
->>> tested on L1.2 enabled platform. If it is, this register will be set to 0xf.
->>> If not, this register will be default value 0.
->>>
->> Who and what defines which value this register has? The BIOS? ACPI?
->> Mainboard vendors test and can control the flagging? How about add-on
->> cards and systems with other boot loaders, e.g. SBC's with RTL8125 like
->> Odroid H2+?
->>
->    Soc vendor can opt-in to enable these bits to enable L1.2 through programming tool/bios/uboot.
->    Right now, there is no plan for set these bits for add-on card.
-> 
->> What is actually the critical component that makes L1.2 work or not with
->> RTL8125 on a particular system? The chipset? Or electrical characteristics?
->>
->    RTL8125 can support L1.2, but it disabled by r8169. So we create an option
->    to let soc vendor can opn-in to enabled L1.2 with r8169.
->    
+On Mon, Jan 24, 2022 at 8:38 PM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> XDP_TX workloads use a concept of Tx threshold that indicates the
+> interval of setting RS bit on descriptors which in turn tells the HW to
+> generate an interrupt to signal the completion of Tx on HW side. It is
+> currently based on a constant value of 32 which might not work out well
+> for various sizes of ring combined with for example batch size that can
+> be set via SO_BUSY_POLL_BUDGET.
+>
+> Internal tests based on AF_XDP showed that most convenient setup of
+> mentioned threshold is when it is equal to quarter of a ring length.
+>
+> Make use of recently introduced ICE_RING_QUARTER macro and use this
+> value as a substitute for ICE_TX_THRESH.
+>
+> Align also ethtool -G callback so that next_dd/next_rs fields are up to
+> date in terms of the ring size.
 
-Thanks, Hau. Still the question is open what's the root cause of L1.2 not working
-with RTL8125 on *some* systems. I can't imagine that it just by chance works or not.
-If we know which component conflicts with RTL8125 then maybe a PCI quirk could
-be used.
+Thanks Maciej.
 
->> The difference in power consumption between L1.1 and L1.2 is a few mW
->> ([0]).
->> So I wonder whether it's worth it to add this flagging mechanism.
->> Or does it also impact reaching certain package power saving states?
->>
->    Upstream port also can save power when rtl8125 L1.2 is enabled.
-> 
->> [0] https://pcisig.com/making-most-pcie%C2%AE-low-power-features
->>
->>> Signed-off-by: Chunhao Lin <hau@realtek.com>
->>> ---
->>>  drivers/net/ethernet/realtek/r8169_main.c | 99
->>> ++++++++++++++++++-----
->>>  1 file changed, 79 insertions(+), 20 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c
->>> b/drivers/net/ethernet/realtek/r8169_main.c
->>> index 19e2621e0645..b1e013969d4c 100644
->>> --- a/drivers/net/ethernet/realtek/r8169_main.c
->>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
->>> @@ -2238,21 +2238,6 @@ static void rtl_wol_enable_rx(struct
->> rtl8169_private *tp)
->>>  			AcceptBroadcast | AcceptMulticast |
->> AcceptMyPhys);  }
->>>
->>> -static void rtl_prepare_power_down(struct rtl8169_private *tp) -{
->>> -	if (tp->dash_type != RTL_DASH_NONE)
->>> -		return;
->>> -
->>> -	if (tp->mac_version == RTL_GIGA_MAC_VER_32 ||
->>> -	    tp->mac_version == RTL_GIGA_MAC_VER_33)
->>> -		rtl_ephy_write(tp, 0x19, 0xff64);
->>> -
->>> -	if (device_may_wakeup(tp_to_dev(tp))) {
->>> -		phy_speed_down(tp->phydev, false);
->>> -		rtl_wol_enable_rx(tp);
->>> -	}
->>> -}
->>> -
->>>  static void rtl_init_rxcfg(struct rtl8169_private *tp)  {
->>>  	switch (tp->mac_version) {
->>> @@ -2650,6 +2635,34 @@ static void rtl_pcie_state_l2l3_disable(struct
->> rtl8169_private *tp)
->>>  	RTL_W8(tp, Config3, RTL_R8(tp, Config3) & ~Rdy_to_L23);  }
->>>
->>> +static void rtl_disable_exit_l1(struct rtl8169_private *tp) {
->>
->> Why is this function needed? The chip should be quiet anyway.
->> IOW: What could be the impact of not having this function currently?
->> If it fixes something then it should be a separate patch.
->>
-This question would still be open.
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
->>> +	/* Bits control which events trigger ASPM L1 exit:
->>> +	 * Bit 12: rxdv
->>> +	 * Bit 11: ltr_msg
->>> +	 * Bit 10: txdma_poll
->>> +	 * Bit  9: xadm
->>> +	 * Bit  8: pktavi
->>> +	 * Bit  7: txpla
->>> +	 */
->>> +	switch (tp->mac_version) {
->>> +	case RTL_GIGA_MAC_VER_34 ... RTL_GIGA_MAC_VER_36:
->>> +		rtl_eri_clear_bits(tp, 0xd4, 0x1f00);
->>> +		break;
->>> +	case RTL_GIGA_MAC_VER_37 ... RTL_GIGA_MAC_VER_38:
->>> +		rtl_eri_clear_bits(tp, 0xd4, 0x0c00);
->>> +		break;
->>> +	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
->>> +		rtl_eri_clear_bits(tp, 0xd4, 0x1f80);
->>> +		break;
->>> +	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
->>> +		r8168_mac_ocp_modify(tp, 0xc0ac, 0x1f80, 0);
->>> +		break;
->>> +	default:
->>> +		break;
->>> +	}
->>> +}
->>> +
->>>  static void rtl_enable_exit_l1(struct rtl8169_private *tp)  {
->>>  	/* Bits control which events trigger ASPM L1 exit:
->>> @@ -2692,6 +2705,33 @@ static void rtl_hw_aspm_clkreq_enable(struct
->> rtl8169_private *tp, bool enable)
->>>  	udelay(10);
->>>  }
->>>
->>> +static void rtl_hw_aspm_l12_enable(struct rtl8169_private *tp, bool
->>> +enable) {
->>
->> I assume this code works on RTL8125 only. Then this should be reflected in
->> the function naming, like we do it for other version-specific functions.
->>
->>> +	/* Don't enable L1.2 in the chip if OS can't control ASPM */
->>> +	if (enable && tp->aspm_manageable) {
->>> +		r8168_mac_ocp_modify(tp, 0xe094, 0xff00, 0);
->>> +		r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, BIT(2));
->>> +	} else {
->>> +		r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, 0);
->>> +	}
->>> +}
->>> +
->>> +static void rtl_prepare_power_down(struct rtl8169_private *tp) {
->>> +	if (tp->dash_type != RTL_DASH_NONE)
->>> +		return;
->>> +
->>> +	if (tp->mac_version == RTL_GIGA_MAC_VER_32 ||
->>> +	    tp->mac_version == RTL_GIGA_MAC_VER_33)
->>> +		rtl_ephy_write(tp, 0x19, 0xff64);
->>> +
->>> +	if (device_may_wakeup(tp_to_dev(tp))) {
->>> +		rtl_disable_exit_l1(tp);
->>> +		phy_speed_down(tp->phydev, false);
->>> +		rtl_wol_enable_rx(tp);
->>> +	}
->>> +}
->>> +
->>>  static void rtl_set_fifo_size(struct rtl8169_private *tp, u16 rx_stat,
->>>  			      u16 tx_stat, u16 rx_dyn, u16 tx_dyn)  { @@ -
->> 3675,6 +3715,7
->>> @@ static void rtl_hw_start_8125b(struct rtl8169_private *tp)
->>>  	rtl_ephy_init(tp, e_info_8125b);
->>>  	rtl_hw_start_8125_common(tp);
->>>
->>> +	rtl_hw_aspm_l12_enable(tp, true);
->>>  	rtl_hw_aspm_clkreq_enable(tp, true);  }
->>>
->>> @@ -5255,6 +5296,20 @@ static void rtl_init_mac_address(struct
->> rtl8169_private *tp)
->>>  	rtl_rar_set(tp, mac_addr);
->>>  }
->>>
->>> +/* mac ocp 0xc0b2 will help to identify if RTL8125 has been tested
->>> + * on L1.2 enabled platform. If it is, this register will be set to 0xf.
->>> + * If not, this register will be default value 0.
->>> + */
->>> +static bool rtl_platform_l12_enabled(struct rtl8169_private *tp) {
->>
->> The function name is misleading. It could be read as checking whether the
->> platform supports L1.2.
->>
->>> +	switch (tp->mac_version) {
->>> +	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
->>> +		return (r8168_mac_ocp_read(tp, 0xc0b2) & 0xf) ? true : false;
->>> +	default:
->>> +		return false;
->>> +	}
->>> +}
->>> +
->>>  static int rtl_init_one(struct pci_dev *pdev, const struct
->>> pci_device_id *ent)  {
->>>  	struct rtl8169_private *tp;
->>> @@ -5333,11 +5388,15 @@ static int rtl_init_one(struct pci_dev *pdev,
->> const struct pci_device_id *ent)
->>>  	 * Chips from RTL8168h partially have issues with L1.2, but seem
->>>  	 * to work fine with L1 and L1.1.
->>>  	 */
->>> -	if (tp->mac_version >= RTL_GIGA_MAC_VER_45)
->>> -		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
->>> -	else
->>> -		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
->>> -	tp->aspm_manageable = !rc;
->>> +	if (!rtl_platform_l12_enabled(tp)) {
->>> +		if (tp->mac_version >= RTL_GIGA_MAC_VER_45)
->>> +			rc = pci_disable_link_state(pdev,
->> PCIE_LINK_STATE_L1_2);
->>> +		else
->>> +			rc = pci_disable_link_state(pdev,
->> PCIE_LINK_STATE_L1);
->>> +		tp->aspm_manageable = !rc;
->>> +	} else {
->>> +		tp->aspm_manageable = pcie_aspm_enabled(pdev);
->>> +	}
->>>
->>
->> Better readable may be the following:
->>
->> if (rtl_platform_l12_enabled(tp)) {
->> 	tp->aspm_manageable = pcie_aspm_enabled(pdev); } else if (tp-
->>> mac_version >= RTL_GIGA_MAC_VER_45) {
->> 	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
->> 	tp->aspm_manageable = !rc;
->> } else {
->> 	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
->> 	tp->aspm_manageable = !rc;
->> }
->>
->>>  	tp->dash_type = rtl_check_dash(tp);
->>>
->>
->> ------Please consider the environment before printing this e-mail.
-
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_ethtool.c  |  2 ++
+>  drivers/net/ethernet/intel/ice/ice_main.c     |  4 ++--
+>  drivers/net/ethernet/intel/ice/ice_txrx.h     |  1 -
+>  drivers/net/ethernet/intel/ice/ice_txrx_lib.c | 14 ++++++++------
+>  4 files changed, 12 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+> index e2e3ef7fba7f..e3df0134dc77 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+> @@ -2803,6 +2803,8 @@ ice_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring,
+>                 /* clone ring and setup updated count */
+>                 xdp_rings[i] = *vsi->xdp_rings[i];
+>                 xdp_rings[i].count = new_tx_cnt;
+> +               xdp_rings[i].next_dd = ICE_RING_QUARTER(&xdp_rings[i]) - 1;
+> +               xdp_rings[i].next_rs = ICE_RING_QUARTER(&xdp_rings[i]) - 1;
+>                 xdp_rings[i].desc = NULL;
+>                 xdp_rings[i].tx_buf = NULL;
+>                 err = ice_setup_tx_ring(&xdp_rings[i]);
+> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+> index 30814435f779..1980eff8f0e7 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_main.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
+> @@ -2495,10 +2495,10 @@ static int ice_xdp_alloc_setup_rings(struct ice_vsi *vsi)
+>                 xdp_ring->reg_idx = vsi->txq_map[xdp_q_idx];
+>                 xdp_ring->vsi = vsi;
+>                 xdp_ring->netdev = NULL;
+> -               xdp_ring->next_dd = ICE_TX_THRESH - 1;
+> -               xdp_ring->next_rs = ICE_TX_THRESH - 1;
+>                 xdp_ring->dev = dev;
+>                 xdp_ring->count = vsi->num_tx_desc;
+> +               xdp_ring->next_dd = ICE_RING_QUARTER(xdp_ring) - 1;
+> +               xdp_ring->next_rs = ICE_RING_QUARTER(xdp_ring) - 1;
+>                 WRITE_ONCE(vsi->xdp_rings[i], xdp_ring);
+>                 if (ice_setup_tx_ring(xdp_ring))
+>                         goto free_xdp_rings;
+> diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
+> index f70a5eb74839..611dd7c4a631 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_txrx.h
+> +++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
+> @@ -13,7 +13,6 @@
+>  #define ICE_MAX_CHAINED_RX_BUFS        5
+>  #define ICE_MAX_BUF_TXD                8
+>  #define ICE_MIN_TX_LEN         17
+> -#define ICE_TX_THRESH          32
+>
+>  /* The size limit for a transmit buffer in a descriptor is (16K - 1).
+>   * In order to align with the read requests we will align the value to
+> diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
+> index 0e87b98e0966..9677cf880a4b 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
+> @@ -222,6 +222,7 @@ ice_receive_skb(struct ice_rx_ring *rx_ring, struct sk_buff *skb, u16 vlan_tag)
+>  static void ice_clean_xdp_irq(struct ice_tx_ring *xdp_ring)
+>  {
+>         unsigned int total_bytes = 0, total_pkts = 0;
+> +       u16 tx_thresh = ICE_RING_QUARTER(xdp_ring);
+>         u16 ntc = xdp_ring->next_to_clean;
+>         struct ice_tx_desc *next_dd_desc;
+>         u16 next_dd = xdp_ring->next_dd;
+> @@ -233,7 +234,7 @@ static void ice_clean_xdp_irq(struct ice_tx_ring *xdp_ring)
+>             cpu_to_le64(ICE_TX_DESC_DTYPE_DESC_DONE)))
+>                 return;
+>
+> -       for (i = 0; i < ICE_TX_THRESH; i++) {
+> +       for (i = 0; i < tx_thresh; i++) {
+>                 tx_buf = &xdp_ring->tx_buf[ntc];
+>
+>                 total_bytes += tx_buf->bytecount;
+> @@ -254,9 +255,9 @@ static void ice_clean_xdp_irq(struct ice_tx_ring *xdp_ring)
+>         }
+>
+>         next_dd_desc->cmd_type_offset_bsz = 0;
+> -       xdp_ring->next_dd = xdp_ring->next_dd + ICE_TX_THRESH;
+> +       xdp_ring->next_dd = xdp_ring->next_dd + tx_thresh;
+>         if (xdp_ring->next_dd > xdp_ring->count)
+> -               xdp_ring->next_dd = ICE_TX_THRESH - 1;
+> +               xdp_ring->next_dd = tx_thresh - 1;
+>         xdp_ring->next_to_clean = ntc;
+>         ice_update_tx_ring_stats(xdp_ring, total_pkts, total_bytes);
+>  }
+> @@ -269,12 +270,13 @@ static void ice_clean_xdp_irq(struct ice_tx_ring *xdp_ring)
+>   */
+>  int ice_xmit_xdp_ring(void *data, u16 size, struct ice_tx_ring *xdp_ring)
+>  {
+> +       u16 tx_thresh = ICE_RING_QUARTER(xdp_ring);
+>         u16 i = xdp_ring->next_to_use;
+>         struct ice_tx_desc *tx_desc;
+>         struct ice_tx_buf *tx_buf;
+>         dma_addr_t dma;
+>
+> -       if (ICE_DESC_UNUSED(xdp_ring) < ICE_TX_THRESH)
+> +       if (ICE_DESC_UNUSED(xdp_ring) < tx_thresh)
+>                 ice_clean_xdp_irq(xdp_ring);
+>
+>         if (!unlikely(ICE_DESC_UNUSED(xdp_ring))) {
+> @@ -306,7 +308,7 @@ int ice_xmit_xdp_ring(void *data, u16 size, struct ice_tx_ring *xdp_ring)
+>                 tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_rs);
+>                 tx_desc->cmd_type_offset_bsz |=
+>                         cpu_to_le64(ICE_TX_DESC_CMD_RS << ICE_TXD_QW1_CMD_S);
+> -               xdp_ring->next_rs = ICE_TX_THRESH - 1;
+> +               xdp_ring->next_rs = tx_thresh - 1;
+>         }
+>         xdp_ring->next_to_use = i;
+>
+> @@ -314,7 +316,7 @@ int ice_xmit_xdp_ring(void *data, u16 size, struct ice_tx_ring *xdp_ring)
+>                 tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_rs);
+>                 tx_desc->cmd_type_offset_bsz |=
+>                         cpu_to_le64(ICE_TX_DESC_CMD_RS << ICE_TXD_QW1_CMD_S);
+> -               xdp_ring->next_rs += ICE_TX_THRESH;
+> +               xdp_ring->next_rs += tx_thresh;
+>         }
+>
+>         return ICE_XDP_TX;
+> --
+> 2.33.1
+>
