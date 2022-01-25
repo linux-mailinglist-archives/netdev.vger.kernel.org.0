@@ -2,25 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 291FE49B27B
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 12:01:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F03449B2BE
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 12:13:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379919AbiAYLAE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Jan 2022 06:00:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379908AbiAYK6f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 05:58:35 -0500
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A19CDC06173D;
-        Tue, 25 Jan 2022 02:58:34 -0800 (PST)
+        id S1380814AbiAYLNv convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Jan 2022 06:13:51 -0500
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:46795 "EHLO
+        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380842AbiAYLLS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 06:11:18 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id BB4A06000B;
-        Tue, 25 Jan 2022 10:58:29 +0000 (UTC)
-Date:   Tue, 25 Jan 2022 11:58:28 +0100
+        by mail.gandi.net (Postfix) with ESMTPSA id E4114FF80E;
+        Tue, 25 Jan 2022 11:10:42 +0000 (UTC)
+Date:   Tue, 25 Jan 2022 12:10:41 +0100
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
         linux-wpan - ML <linux-wpan@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -33,15 +30,14 @@ Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         Frederic Blain <frederic.blain@qorvo.com>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [wpan-next v2 4/9] net: ieee802154: at86rf230: Stop leaking
- skb's
-Message-ID: <20220125115828.74738f60@xps13>
-In-Reply-To: <CAB_54W6GLqY69D=kmjiGCaVHh1+vjKp8OtdS77Nu-bZRqELjNw@mail.gmail.com>
+Subject: Re: [wpan-next v2 6/9] net: ieee802154: Use the IEEE802154_MAX_PAGE
+ define when relevant
+Message-ID: <20220125121041.391d60c3@xps13>
+In-Reply-To: <7287b3d9-dbdd-c2c3-01c7-1f272749ebb9@datenfreihafen.org>
 References: <20220120112115.448077-1-miquel.raynal@bootlin.com>
-        <20220120112115.448077-5-miquel.raynal@bootlin.com>
-        <CAB_54W721DFUw+qu6_UR58GFvjLxshmxiTE0DX-DNNY-XLskoQ@mail.gmail.com>
-        <CAB_54W4qLJQhPYY1h-88VK7n554SdtY9CLF3U5HLR6QS4i4tNA@mail.gmail.com>
-        <CAB_54W6GLqY69D=kmjiGCaVHh1+vjKp8OtdS77Nu-bZRqELjNw@mail.gmail.com>
+        <20220120112115.448077-7-miquel.raynal@bootlin.com>
+        <CAB_54W5DfNa8QSTiejL=1ywEShkK07bwvJeHkhcVowLtOtZrUw@mail.gmail.com>
+        <7287b3d9-dbdd-c2c3-01c7-1f272749ebb9@datenfreihafen.org>
 Organization: Bootlin
 X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
@@ -51,73 +47,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+Hi Stefan,
 
-alex.aring@gmail.com wrote on Sun, 23 Jan 2022 18:14:12 -0500:
+stefan@datenfreihafen.org wrote on Mon, 24 Jan 2022 09:06:39 +0100:
 
-> Hi,
+> Hello.
 > 
-> On Sun, 23 Jan 2022 at 17:41, Alexander Aring <alex.aring@gmail.com> wrote:
-> >
+> On 23.01.22 21:44, Alexander Aring wrote:
 > > Hi,
-> >
-> > On Sun, 23 Jan 2022 at 15:43, Alexander Aring <alex.aring@gmail.com> wrote:  
-> > >
-> > > Hi,
-> > >
-> > > On Thu, 20 Jan 2022 at 06:21, Miquel Raynal <miquel.raynal@bootlin.com> wrote:  
-> > > >
-> > > > Upon error the ieee802154_xmit_complete() helper is not called. Only
-> > > > ieee802154_wake_queue() is called manually. We then leak the skb
-> > > > structure.
-> > > >
-> > > > Free the skb structure upon error before returning.
-> > > >
-> > > > There is no Fixes tag applying here, many changes have been made on this
-> > > > area and the issue kind of always existed.
-> > > >
-> > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > ---
-> > > >  drivers/net/ieee802154/at86rf230.c | 1 +
-> > > >  1 file changed, 1 insertion(+)
-> > > >
-> > > > diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-> > > > index 7d67f41387f5..0746150f78cf 100644
-> > > > --- a/drivers/net/ieee802154/at86rf230.c
-> > > > +++ b/drivers/net/ieee802154/at86rf230.c
-> > > > @@ -344,6 +344,7 @@ at86rf230_async_error_recover_complete(void *context)
-> > > >                 kfree(ctx);
-> > > >
-> > > >         ieee802154_wake_queue(lp->hw);
-> > > > +       dev_kfree_skb_any(lp->tx_skb);  
-> > >
-> > > as I said in other mails there is more broken, we need a:
-> > >
-> > > if (lp->is_tx) {
-> > >         ieee802154_wake_queue(lp->hw);
-> > >         dev_kfree_skb_any(lp->tx_skb);
-> > >         lp->is_tx = 0;
-> > > }
-> > >
-> > > in at86rf230_async_error_recover().
-> > >  
-> > s/at86rf230_async_error_recover/at86rf230_async_error_recover_complete/
-> >
-> > move the is_tx = 0 out of at86rf230_async_error_recover().  
+> > 
+> > On Thu, 20 Jan 2022 at 06:21, Miquel Raynal <miquel.raynal@bootlin.com> wrote:  
+> >>
+> >> This define already exist but is hardcoded in nl-phy.c. Use the
+> >> definition when relevant.
+> >>
+> >> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> >> ---
+> >>   net/ieee802154/nl-phy.c | 5 +++--
+> >>   1 file changed, 3 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/net/ieee802154/nl-phy.c b/net/ieee802154/nl-phy.c
+> >> index dd5a45f8a78a..02f6a53d0faa 100644
+> >> --- a/net/ieee802154/nl-phy.c
+> >> +++ b/net/ieee802154/nl-phy.c
+> >> @@ -30,7 +30,8 @@ static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
+> >>   {
+> >>          void *hdr;
+> >>          int i, pages = 0;
+> >> -       uint32_t *buf = kcalloc(32, sizeof(uint32_t), GFP_KERNEL);
+> >> +       uint32_t *buf = kcalloc(IEEE802154_MAX_PAGE + 1, sizeof(uint32_t),
+> >> +                               GFP_KERNEL);
+> >>
+> >>          pr_debug("%s\n", __func__);
+> >>
+> >> @@ -47,7 +48,7 @@ static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
+> >>              nla_put_u8(msg, IEEE802154_ATTR_PAGE, phy->current_page) ||
+> >>              nla_put_u8(msg, IEEE802154_ATTR_CHANNEL, phy->current_channel))
+> >>                  goto nla_put_failure;
+> >> -       for (i = 0; i < 32; i++) {
+> >> +       for (i = 0; i <= IEEE802154_MAX_PAGE; i++) {
+> >>                  if (phy->supported.channels[i])
+> >>                          buf[pages++] = phy->supported.channels[i] | (i << 27);
+> >>          }  
+> > 
+> > Where is the fix here?  
 > 
-> Sorry, still seeing an issue here.
-> 
-> We cannot move is_tx = 0 out of at86rf230_async_error_recover()
-> because switching to RX_AACK_ON races with a new interrupt and is_tx
-> is not correct anymore. We need something new like "was_tx" to
-> remember that it was a tx case for the error handling in
-> at86rf230_async_error_recover_complete().
+> While its more cleanup than fix, its clear and easy and there is no problem for it to go into wpan instead of wpan-next.
 
-It wasn't easy to catch...
-
-I've added a was_tx boolean which is set at the same time is_tx is
-reset. Then, in the complete handler, if was_tx was set we reset it and
-run the kfree/wake calls. I believe this should sort it out.
+As answered earlier, I will split the series so that it's clearer what
+should go to wpan and what should go to wpan-next, no problem with that.
 
 Thanks,
 Miquèl
