@@ -2,96 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69E1349B350
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 12:56:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EDCF49B352
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 12:56:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386501AbiAYLw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 06:52:26 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:9895 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355313AbiAYLrC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 06:47:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643111222; x=1674647222;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xiWmJDXPO/D1w7Ju122vw1nvViDOQdNF7I3VbzCdrLs=;
-  b=Y6TMqxtUPlYafTns07VspD7epH8ZmnGnHLHJ4lLy8yXOGlUrZw0cJXKr
-   +kHmPjX8rBe/mi4V1HSDM9YJgb/VlU7vUHSetNUf5p232aEnEz9enD2/R
-   DP5V5i4RBMSx5WqD/MuUzE1ExH4sFia6aBP7BIx0Iihy94JMyVNCjSQgD
-   e0rNo2Zjs9pqfO2O2OCVkeUMxOVHU+YJUr2WoX7lIbCqMDiBLdKA9n4u2
-   dzx395SYKaFb0bH6yrJzM0G3h6GX/P98M8sl3wzB6OFtriMwU8/xmT2g2
-   TCDYpk7zaIzkHBca2qAywVN55Zfmkrv6P7pJFJ4uQkZFdWT6DZ3WP9V+H
-   A==;
-IronPort-SDR: QDLHEJUEW07O3b4Zo/oGQC1s+iqqQGv8lEXzpkl16U2m8JWeom6JR0qR4DLz2leccAk3aqqWS0
- mFxc8dwpS5D0BbBnAPeUS6XfIyqj9Xjg/U4fkx88lIVFHW6EeRrQs9EQewDkYiGmLz4cJgCS29
- 97umIrd0AMPrVqISlJPRuv+WDIzliD/i19XN5INkhL07e5o69LUo5GOPj6ErERbtW/qI3EovMm
- KUdiuVp8KI/fWPZZ7pREk2aTTlwd92tr+fC72TEonnxuF21Wh+meAiv3SYnWzrPHT1QHZah+95
- s9kz6Mte2SnudOZf2hbAh/YO
+        id S1386580AbiAYLwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 06:52:38 -0500
+Received: from mga01.intel.com ([192.55.52.88]:24661 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1354551AbiAYLtm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jan 2022 06:49:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643111382; x=1674647382;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XgPBEn+pv0EEtiEI4b0vg2zPYktvxuIAfYsv/F36xPA=;
+  b=LQmOQ3yNBdovCKJMOZho65stmA29CfLXtkyoXH0VfNVNlbEj9ZaBbJJB
+   FMiwXeQTtCy4vnvYAWG/L4F0a+DEYnArVN9DxZLjxRmqshTiVztpDQk7F
+   gnMkRXybZtyVx1PC+s5zPokZSdqNktIOiM9G6Vn/VCIVUIfBhczUvaXEm
+   RAEeQyxM3BsxTljeEwYLs1F3zhcb8w/oc6+xbY5CJ/1jdrDu5YMMoA4+j
+   ad1PowAQjdMnwWsRbe5GK51SJ1nELv1ZZlP0ovTBr9AA9wHvV1D4+0ZPk
+   tj1RvA26J5MDJ+KAIMj2krBrgpSmkcs8dKthyMB62QGjfxEtnp76XJyXT
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="270728189"
 X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="151350167"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Jan 2022 04:47:02 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 25 Jan 2022 04:47:01 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 25 Jan 2022 04:46:59 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <f.fainelli@gmail.com>,
-        <vivien.didelot@gmail.com>, <vladimir.oltean@nxp.com>,
-        <andrew@lunn.ch>, Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net v2 2/2] net: lan966x: Fix sleep in atomic context when updating MAC table
-Date:   Tue, 25 Jan 2022 12:48:16 +0100
-Message-ID: <20220125114816.187124-3-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220125114816.187124-1-horatiu.vultur@microchip.com>
-References: <20220125114816.187124-1-horatiu.vultur@microchip.com>
+   d="scan'208";a="270728189"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 03:49:39 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
+   d="scan'208";a="673965569"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by fmsmga001.fm.intel.com with ESMTP; 25 Jan 2022 03:49:37 -0800
+Date:   Tue, 25 Jan 2022 12:49:36 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, magnus.karlsson@intel.com
+Subject: Re: [PATCH bpf-next v4 2/8] ice: xsk: force rings to be sized to
+ power of 2
+Message-ID: <Ye/j0FjYCeJlbWR/@boxer>
+References: <20220124165547.74412-1-maciej.fijalkowski@intel.com>
+ <20220124165547.74412-3-maciej.fijalkowski@intel.com>
+ <20220125112306.746139-1-alexandr.lobakin@intel.com>
+ <Ye/e9GqLkuekqFos@boxer>
+ <20220125114202.748079-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220125114202.748079-1-alexandr.lobakin@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function lan966x_mac_wait_for_completion is used to poll the status
-of the MAC table using the function readx_poll_timeout. The problem with
-this function is that is called also from atomic context. Therefore
-update the function to use readx_poll_timeout_atomic.
+On Tue, Jan 25, 2022 at 12:42:02PM +0100, Alexander Lobakin wrote:
+> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> Date: Tue, 25 Jan 2022 12:28:52 +0100
+> 
+> > On Tue, Jan 25, 2022 at 12:23:06PM +0100, Alexander Lobakin wrote:
+> > > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > > Date: Mon, 24 Jan 2022 17:55:41 +0100
+> > > 
+> > > > With the upcoming introduction of batching to XSK data path,
+> > > > performance wise it will be the best to have the ring descriptor count
+> > > > to be aligned to power of 2.
+> > > > 
+> > > > Check if rings sizes that user is going to attach the XSK socket fulfill
+> > > > the condition above. For Tx side, although check is being done against
+> > > > the Tx queue and in the end the socket will be attached to the XDP
+> > > > queue, it is fine since XDP queues get the ring->count setting from Tx
+> > > > queues.
+> > > > 
+> > > > Suggested-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> > > > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > > > ---
+> > > >  drivers/net/ethernet/intel/ice/ice_xsk.c | 9 +++++++++
+> > > >  1 file changed, 9 insertions(+)
+> > > > 
+> > > > diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> > > > index 2388837d6d6c..0350f9c22c62 100644
+> > > > --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
+> > > > +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> > > > @@ -327,6 +327,14 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
+> > > >  	bool if_running, pool_present = !!pool;
+> > > >  	int ret = 0, pool_failure = 0;
+> > > >  
+> > > > +	if (!is_power_of_2(vsi->rx_rings[qid]->count) ||
+> > > > +	    !is_power_of_2(vsi->tx_rings[qid]->count)) {
+> > > > +		netdev_err(vsi->netdev,
+> > > > +			   "Please align ring sizes at idx %d to power of 2\n", qid);
+> > > 
+> > > Ideally I'd pass xdp->extack from ice_xdp() to print this message
+> > > directly in userspace (note that NL_SET_ERR_MSG{,_MOD}() don't
+> > > support string formatting, but the user already knows QID at this
+> > > point).
+> > 
+> > I thought about that as well but it seemed to me kinda off to have a
+> > single extack usage in here. Updating the rest of error paths in
+> > ice_xsk_pool_setup() to make use of extack is a candidate for a separate
+> > patch to me.
+> > 
+> > WDYT?
+> 
+> The rest uses string formatting to print the error code, and thus
+> would lose their meaning. This one to me is more of the same kind
+> as let's say "MTU too large for XDP" message, i.e. user config
+> constraints check fail. But I'm fine if you'd prefer to keep a
+> single source of output messages throughout the function.
 
-Fixes: e18aba8941b40b ("net: lan966x: add mactable support")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/ethernet/microchip/lan966x/lan966x_mac.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+Doubling the logs wouldn't hurt - keep current netdev_err with ret codes
+and have more meaningful messages carried up to userspace via
+NL_SET_ERR_MSG_MOD.
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-index ca5f1177963d..ce5970bdcc6a 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-@@ -40,11 +40,12 @@ static int lan966x_mac_wait_for_completion(struct lan966x *lan966x)
- {
- 	u32 val;
- 
--	return readx_poll_timeout(lan966x_mac_get_status,
--		lan966x, val,
--		(ANA_MACACCESS_MAC_TABLE_CMD_GET(val)) ==
--		MACACCESS_CMD_IDLE,
--		TABLE_UPDATE_SLEEP_US, TABLE_UPDATE_TIMEOUT_US);
-+	return readx_poll_timeout_atomic(lan966x_mac_get_status,
-+					 lan966x, val,
-+					 (ANA_MACACCESS_MAC_TABLE_CMD_GET(val)) ==
-+					 MACACCESS_CMD_IDLE,
-+					 TABLE_UPDATE_SLEEP_US,
-+					 TABLE_UPDATE_TIMEOUT_US);
- }
- 
- static void lan966x_mac_select(struct lan966x *lan966x,
--- 
-2.33.0
-
+> 
+> > 
+> > > 
+> > > > +		pool_failure = -EINVAL;
+> > > > +		goto failure;
+> > > > +	}
+> > > > +
+> > > >  	if_running = netif_running(vsi->netdev) && ice_is_xdp_ena_vsi(vsi);
+> > > >  
+> > > >  	if (if_running) {
+> > > > @@ -349,6 +357,7 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
+> > > >  			netdev_err(vsi->netdev, "ice_qp_ena error = %d\n", ret);
+> > > >  	}
+> > > >  
+> > > > +failure:
+> > > >  	if (pool_failure) {
+> > > >  		netdev_err(vsi->netdev, "Could not %sable buffer pool, error = %d\n",
+> > > >  			   pool_present ? "en" : "dis", pool_failure);
+> > > > -- 
+> > > > 2.33.1
+> > > 
+> > > Thanks,
+> > > Al
+> 
+> Al
