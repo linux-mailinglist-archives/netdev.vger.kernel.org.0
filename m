@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4783A49BAE5
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 19:04:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C620F49BAE1
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 19:04:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353243AbiAYSDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 13:03:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58686 "EHLO
+        id S242093AbiAYSDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 13:03:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357908AbiAYSB0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 13:01:26 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C34BC061744;
-        Tue, 25 Jan 2022 10:01:22 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id z14so16468238ljc.13;
-        Tue, 25 Jan 2022 10:01:22 -0800 (PST)
+        with ESMTP id S1357905AbiAYSBZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 13:01:25 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89BBC061747;
+        Tue, 25 Jan 2022 10:01:23 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id b9so9240222lfq.6;
+        Tue, 25 Jan 2022 10:01:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GM66wyVEQfYH7PQMt46Z5bne3N5mqgIHb4gE5XOX3QU=;
-        b=qyX4+YOYstvWZ1ZiNLgvZY9TpsI07bcy1pSRR/tryKGf6eHosT3nY2XJ3VnftoWE6D
-         lFstLOcE3HaNjlqisM5DI9KtnQ5isJdsloqol6DpAHFh1PmGmpT/TzGhA92zXgcSlCw8
-         vO80Ebh+IF2kJ2vQddoGyUSUAK/Eqia13m27m83QkJa7F4WBniAk81U0cxWDtkwoCKVQ
-         cCLH1nBHXCbpg0cinEymgD/SZYqtgH7w/UvyEmBClP6JFwNigbVt525c24FGLyDKWscv
-         7iQGHRpVIxrDrBLD9QTQvnbQm9ljrqtJTRN/3aeGeRy77WK0woITYfSeoSCIaQm2PT3c
-         2gHw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=XBYYHHcrj5iWKbV8iDsJjMg/wgtciWUkHYCjJmxtXi8=;
+        b=YkDBRgLMrF9XmbvguP6Y67CU9AL6lAUs1LjxUejM3fh1klFFdQ4llHjpsv3eZoeYCl
+         f2haVwMHPJcD5Tq0jvJgg8Z4OFcwPba1zlEgDEPe3Xe4L5KilTwWXTgjMJ5iykCmNxhz
+         ZPzGnDFtsNMQ5GPzlsyeZUjOg3lnXXuIfXgXrwBemVyRt2zbT4MBUQzPMSdRn4htoGmg
+         bUcSyI+rtGmoXo7E3JUE7+8coQEUHQB5oQpnl1zuCgC3EIPiMJgoDSmJLomtGwKPTAiv
+         c9s3o37yEN7k5M35blvDgbVMtyEH7gSuIUU6QtTkZFu6Ih4Scs6iArWGeU1HmATokRYV
+         TSSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GM66wyVEQfYH7PQMt46Z5bne3N5mqgIHb4gE5XOX3QU=;
-        b=5QtsVjvFhcd6UfCrGoZcyiNowAPrFkkO9yj+6Q3cTVPXKWwL9a7LpTXNBeDglNYAqf
-         Ut3zhNEsHhkmrfxySCxctMdE+es5gI+DgoBaMi6obHotpqX0g5Yx/lZHD+E+kh5SsHEQ
-         RtBSW4tp0ax0COmgpgMr4HJcs6bstVoPzlQ6LXIoSGgkgqhJE67K1cBrC/tV/yXb210Q
-         OD0tfZkYQyGqkxOPHWoJW927QN6nA6JM+/sEcTzSuAiI9Bs7Q8NIVHc9Mo/+rhO5ffMf
-         d1lpv/RzQmBZNrgzreMf+my589ht0OCnrFZEzXHlbTo6HkS9dSyJg7oNRgtflMZYY4L2
-         XxHw==
-X-Gm-Message-State: AOAM530cvycVrBNQKxe9+lW9AbzD4k1t/JK/PkRLM/x5ob+5G0szUTPk
-        7L4sEy1VBjRx+IubOQPtVUfPncl+xGc=
-X-Google-Smtp-Source: ABdhPJwoWthi4gg4kuMx//yhY6O7ZoD9EuAirCd3tjV+pL+5cXulMUAH0DG7CEqZRyZnq1GcejGO2Q==
-X-Received: by 2002:a2e:8e21:: with SMTP id r1mr6874390ljk.433.1643133679587;
-        Tue, 25 Jan 2022 10:01:19 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=XBYYHHcrj5iWKbV8iDsJjMg/wgtciWUkHYCjJmxtXi8=;
+        b=A21dXoMRV+oml8L1SqNuBff7EIwfxj3pI/edVc3Rwrd6wsVRDv2/xOjTcNgJrtGHeF
+         YdKSirwEw7Vr65PSPLDJ0btKX5A3pFbMTL/foYTrXaqfYYGYIz8lENRtfU2H3RY4b1j3
+         tf8hURY3h27c8hXVSGApwooFIU9DhqsHH7B+iNyBdIyWTencXmzWeQkGUMazF44O3r5+
+         iJhV/wGQ7+pMSrfXaFO+I7PU7QLFYPIejvO0U0LMEDTgVsb0GVipEY7PPi6G3sGQ33VH
+         GzhrGuR6rcKoJteUzpQwMdhrdETt3Gn5ihoXz4s3JxKMq5LB91J6LYvb0wdfzNeIVto7
+         JI0A==
+X-Gm-Message-State: AOAM5321VV710eZL24kLet04tK+hq53aZ+3gEjaIOuVzN04h5DQDxq80
+        FoIQD5JswzOGU+ga81yJMRo=
+X-Google-Smtp-Source: ABdhPJxEvKovHTQ3+tJlg+4T9j7URvdFNBsGv3zx6ejSUbnCIMZnkAFxMSkZrL3+wPSy2sYnU3HtSg==
+X-Received: by 2002:a05:6512:3f84:: with SMTP id x4mr17279303lfa.486.1643133681974;
+        Tue, 25 Jan 2022 10:01:21 -0800 (PST)
 Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id z24sm1149121lfb.206.2022.01.25.10.01.17
+        by smtp.gmail.com with ESMTPSA id z24sm1149121lfb.206.2022.01.25.10.01.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 10:01:19 -0800 (PST)
+        Tue, 25 Jan 2022 10:01:21 -0800 (PST)
 From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
@@ -65,10 +65,12 @@ Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
         Florian Fainelli <f.fainelli@gmail.com>,
         Hauke Mehrtens <hauke@hauke-m.de>,
         =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH 0/2] dt-bindings: nvmem: support describing cells
-Date:   Tue, 25 Jan 2022 19:01:12 +0100
-Message-Id: <20220125180114.12286-1-zajec5@gmail.com>
+Subject: [PATCH 1/2] dt-bindings: nvmem: extract NVMEM cell to separated file
+Date:   Tue, 25 Jan 2022 19:01:13 +0100
+Message-Id: <20220125180114.12286-2-zajec5@gmail.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220125180114.12286-1-zajec5@gmail.com>
+References: <20220125180114.12286-1-zajec5@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -78,64 +80,93 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Rafał Miłecki <rafal@milecki.pl>
 
-Michael has recently posted a cleaned up patchset for NVMEM
-transformations support:
-[PATCH 0/8] nvmem: add ethernet address offset support
-https://lore.kernel.org/lkml/20211228142549.1275412-1-michael@walle.cc/T/
-https://patchwork.ozlabs.org/project/linux-mtd/list/?series=278644&state=*
+This will allow adding binding for more specific cells and reusing
+(sharing) common code.
 
-I find it very important & fully support it. In home routers we very
-often deal with just one MAC address that:
-1. Is a base for calculating multiple Ethernet addresses
-2. Can be stored in binary as well as ASCII format
-
-I'd like to suggest just a slightly different solution though. I think
-that using something like:
-
-otp-1 {
-        compatible = "kontron,sl28-vpd", "user-otp";
-        #address-cells = <1>;
-        #size-cells = <1>;
-
-        base_mac_address: base-mac-address@17 {
-                #nvmem-cell-cells = <1>;
-                reg = <17 6>;
-        };
-};
-
-isn't clear enough and requires too much conditional code in Linux /
-whatever implementation. DT doesn't make it clear which NVMEM cells
-are used for what and how should be handled. That has to be hardcoded in
-a Linux / whatever driver.
-
-My idea is to add "compatible" & additional flags to NVMEM cells.
-Example:
-
-otp-1 {
-        compatible = "user-otp";
-        #address-cells = <1>;
-        #size-cells = <1>;
-
-        base_mac_address: base-mac-address@17 {
-                compatible = "mac-address";
-                reg = <17 6>;
-                #nvmem-cell-cells = <1>;
-        };
-};
-
-(for more examples see PATCH 2/2 and its mac-address.yaml .
-
-Rafał Miłecki (2):
-  dt-bindings: nvmem: extract NVMEM cell to separated file
-  dt-bindings: nvmem: cells: add MAC address cell
-
- .../devicetree/bindings/nvmem/cells/cell.yaml | 35 +++++++
- .../bindings/nvmem/cells/mac-address.yaml     | 94 +++++++++++++++++++
- .../devicetree/bindings/nvmem/nvmem.yaml      | 25 +----
- 3 files changed, 131 insertions(+), 23 deletions(-)
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+ .../devicetree/bindings/nvmem/cells/cell.yaml | 35 +++++++++++++++++++
+ .../devicetree/bindings/nvmem/nvmem.yaml      | 25 ++-----------
+ 2 files changed, 37 insertions(+), 23 deletions(-)
  create mode 100644 Documentation/devicetree/bindings/nvmem/cells/cell.yaml
- create mode 100644 Documentation/devicetree/bindings/nvmem/cells/mac-address.yaml
 
+diff --git a/Documentation/devicetree/bindings/nvmem/cells/cell.yaml b/Documentation/devicetree/bindings/nvmem/cells/cell.yaml
+new file mode 100644
+index 000000000000..5d62d0c8f1e1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/nvmem/cells/cell.yaml
+@@ -0,0 +1,35 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/nvmem/cells/cell.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: NVMEM cell
++
++maintainers:
++  - Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
++
++description: NVMEM cell is a data entry of NVMEM device.
++
++properties:
++  reg:
++    maxItems: 1
++    description:
++      Offset and size in bytes within the storage device.
++
++  bits:
++    maxItems: 1
++    items:
++      items:
++        - minimum: 0
++          maximum: 7
++          description:
++            Offset in bit within the address range specified by reg.
++        - minimum: 1
++          description:
++            Size in bit within the address range specified by reg.
++
++required:
++  - reg
++
++additionalProperties: true
+diff --git a/Documentation/devicetree/bindings/nvmem/nvmem.yaml b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
+index 456fb808100a..6b075c1db446 100644
+--- a/Documentation/devicetree/bindings/nvmem/nvmem.yaml
++++ b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
+@@ -40,29 +40,8 @@ properties:
+     maxItems: 1
+ 
+ patternProperties:
+-  "@[0-9a-f]+(,[0-7])?$":
+-    type: object
+-
+-    properties:
+-      reg:
+-        maxItems: 1
+-        description:
+-          Offset and size in bytes within the storage device.
+-
+-      bits:
+-        maxItems: 1
+-        items:
+-          items:
+-            - minimum: 0
+-              maximum: 7
+-              description:
+-                Offset in bit within the address range specified by reg.
+-            - minimum: 1
+-              description:
+-                Size in bit within the address range specified by reg.
+-
+-    required:
+-      - reg
++  "@[0-9a-f]+$":
++    $ref: cells/cell.yaml#
+ 
+ additionalProperties: true
+ 
 -- 
 2.31.1
 
