@@ -2,41 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFDC749B7FB
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 16:54:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D57949B801
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 16:54:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244806AbiAYPv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 10:51:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35094 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1582332AbiAYPtl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 10:49:41 -0500
+        id S1582634AbiAYPwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 10:52:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1582592AbiAYPuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 10:50:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F16C9C06175C;
+        Tue, 25 Jan 2022 07:50:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53964B8189A
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 15:49:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E029FC340E0;
-        Tue, 25 Jan 2022 15:49:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9345C61709;
+        Tue, 25 Jan 2022 15:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B89D0C340E0;
+        Tue, 25 Jan 2022 15:50:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643125778;
-        bh=FyzBCm/F5xLEAFx8GkTMwk8BBAFZV44giEr2QcekNJc=;
+        s=k20201202; t=1643125815;
+        bh=Mi5eVYM6QJCHabfvmRhwsZzeukWWaZZdSnpEj1Kq9go=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=K0Ge9NSO5G9CqimwKmhs2NlairIW7lrIQHwIdlILjC8TEIOB5IjbmVnkxJfYGleHe
-         unpRQvikJMlMHGb99ia5DwglWIUCTRoNY+6gR1Sh0ajuQVeIBSGVhqfnqp2K5O2S4U
-         lZ4cW5JkkUJUscOSje/zZIcT6KxB73pP3sDHoDZEIQlrLHxGwYhV5uQzHkZmrNR9dy
-         RtV0XSyQ7zXNtOTAums2pggBw/VQx5ActSgx3Y86SvHthlBRp1jZfhfts/I2hyreXl
-         GXgyIWoJYL0zUhmbSco0vkAWTJZAPAmCgtHKzeUht4pCvUkidjfFknqILfldPCWrPA
-         fb7anTrP/tkbA==
-Date:   Tue, 25 Jan 2022 07:49:37 -0800
+        b=gAzWjAGNNWq5M1HDijXlRV1Qm54BKJNF0JBd+33oKVFdZariM2Lfo0AU+od2dhqnD
+         07Mr/5o9mfrxEa2jWYedwqw2zO8KsgfPwylN+oXciSfgR4QM+qOe/MyGhpj2mJzd3w
+         jrDfGXrEouH6ReLLBqJ38+Zhd73K9zlBLPRpzPR8SiFWdSZX3rSGTvSKbDsOk7+X/I
+         Dq1Jkr+iVHRZ9kjFeGJWeeOJFCuZwM3fyG4cFmyhJBvi9FGhsmlwtOw01jhoFjTEVW
+         5LMU6t2aorVHunhvkF77kGyv/GJSRyY2KRxGjTIL5Rlzgg/k4j7fDX0mYTBig0vlEy
+         6A8M9tPgSAIQQ==
+Date:   Tue, 25 Jan 2022 07:50:13 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH net] net: fec_mpc52xx: don't discard const from
- netdev->dev_addr
-Message-ID: <20220125074937.6bb36ea4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220124172249.2827138-1-kuba@kernel.org>
-References: <20220124172249.2827138-1-kuba@kernel.org>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     <davem@davemloft.net>, <wangjie125@huawei.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <chenhao288@hisilicon.com>
+Subject: Re: [PATCH net] net: hns3: handle empty unknown interrupt for VF
+Message-ID: <20220125075013.6d5a9d0a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220125070312.53945-1-huangguangbin2@huawei.com>
+References: <20220125070312.53945-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,17 +48,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 24 Jan 2022 09:22:49 -0800 Jakub Kicinski wrote:
-> Recent changes made netdev->dev_addr const, and it's passed
-> directly to mpc52xx_fec_set_paddr().
+On Tue, 25 Jan 2022 15:03:12 +0800 Guangbin Huang wrote:
+> From: Yufeng Mo <moyufeng@huawei.com>
 > 
-> Similar problem exists on the probe patch, the driver needs
-> to call eth_hw_addr_set().
+> Since some interrupt states may be cleared by hardware, the driver
+> may receive an empty interrupt. Currently, the VF driver directly
+> disables the vector0 interrupt in this case. As a result, the VF
+> is unavailable. Therefore, the vector0 interrupt should be enabled
+> in this case.
 > 
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Fixes: adeef3e32146 ("net: constify netdev->dev_addr")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Fixes: b90fcc5bd904 ("net: hns3: add reset handling for VF when doing Core/Global/IMP reset")
+> Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 
-This is in net now:
+Applied, thanks:
 
-74afa3063097 ("net: fec_mpc52xx: don't discard const from netdev->dev_addr")
+2f61353cd2f7 ("net: hns3: handle empty unknown interrupt for VF")
