@@ -2,140 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EDCF49B352
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 12:56:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20BC249B36C
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 13:01:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386580AbiAYLwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 06:52:38 -0500
-Received: from mga01.intel.com ([192.55.52.88]:24661 "EHLO mga01.intel.com"
+        id S1386899AbiAYL50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 06:57:26 -0500
+Received: from mout.gmx.net ([212.227.17.22]:42741 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354551AbiAYLtm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jan 2022 06:49:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643111382; x=1674647382;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XgPBEn+pv0EEtiEI4b0vg2zPYktvxuIAfYsv/F36xPA=;
-  b=LQmOQ3yNBdovCKJMOZho65stmA29CfLXtkyoXH0VfNVNlbEj9ZaBbJJB
-   FMiwXeQTtCy4vnvYAWG/L4F0a+DEYnArVN9DxZLjxRmqshTiVztpDQk7F
-   gnMkRXybZtyVx1PC+s5zPokZSdqNktIOiM9G6Vn/VCIVUIfBhczUvaXEm
-   RAEeQyxM3BsxTljeEwYLs1F3zhcb8w/oc6+xbY5CJ/1jdrDu5YMMoA4+j
-   ad1PowAQjdMnwWsRbe5GK51SJ1nELv1ZZlP0ovTBr9AA9wHvV1D4+0ZPk
-   tj1RvA26J5MDJ+KAIMj2krBrgpSmkcs8dKthyMB62QGjfxEtnp76XJyXT
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="270728189"
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="270728189"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 03:49:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; 
-   d="scan'208";a="673965569"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by fmsmga001.fm.intel.com with ESMTP; 25 Jan 2022 03:49:37 -0800
-Date:   Tue, 25 Jan 2022 12:49:36 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com
-Subject: Re: [PATCH bpf-next v4 2/8] ice: xsk: force rings to be sized to
- power of 2
-Message-ID: <Ye/j0FjYCeJlbWR/@boxer>
-References: <20220124165547.74412-1-maciej.fijalkowski@intel.com>
- <20220124165547.74412-3-maciej.fijalkowski@intel.com>
- <20220125112306.746139-1-alexandr.lobakin@intel.com>
- <Ye/e9GqLkuekqFos@boxer>
- <20220125114202.748079-1-alexandr.lobakin@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220125114202.748079-1-alexandr.lobakin@intel.com>
+        id S1387457AbiAYLy3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jan 2022 06:54:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1643111645;
+        bh=ysRRjGKIMqKJerfGK+e2tfi9u6nC1fsZO+7hFmeCsFY=;
+        h=X-UI-Sender-Class:Subject:From:In-Reply-To:Date:Cc:References:To;
+        b=iC9vY4YGgpXhX4vxgin8/aGaKJjNNohx05ioIwODlFtvmmGGiGkO8GGdcoSaPEQFV
+         YeK6FS+9/11vHnVG3M43KSY+f6LeV+V7Wg0zju8QdhHCzRZ1bw751L601WeKcsJtiv
+         LB+NSydzx4PY6R+Pnipf5i5LjKYGNLKjsmkJbQ1Q=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from smtpclient.apple ([77.10.95.53]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mel81-1mbc8O2nBd-00aqRr; Tue, 25
+ Jan 2022 12:54:05 +0100
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
+Subject: Re: [Cake] [PATCH net] sch_cake: diffserv8 CS1 should be bulk
+From:   Sebastian Moeller <moeller0@gmx.de>
+In-Reply-To: <87r18w3wvq.fsf@toke.dk>
+Date:   Tue, 25 Jan 2022 12:54:02 +0100
+Cc:     Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>,
+        cake@lists.bufferbloat.net, Jakub Kicinski <kuba@kernel.org>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <242985FC-238B-442D-8D86-A49449FF963E@gmx.de>
+References: <20220125060410.2691029-1-matt@codeconstruct.com.au>
+ <87r18w3wvq.fsf@toke.dk>
+To:     =?utf-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+X-Mailer: Apple Mail (2.3654.120.0.1.13)
+X-Provags-ID: V03:K1:xRBUq0p2cmL2Tyd6//F4hI9GaSs0n7SFSjfHP0lnGCDNQdKcOIz
+ 3pyXPemrgYl+ts4qUDvbT6izfF4btaRhPH1X7T1siYDZJng6HVHtqUzKolAK5pS874ECcEu
+ 3xmJgK5Px8YVoIFvXw0PGBPtDO6VAf1T0O2j+zbqeXAXvI+5mrYPeTu7qyYLiBZGPCUtq8x
+ 2GwwPoLppbgmuewixHfrA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:kXKGvUB50tI=:L5TISX4mLzPRFPACaxW6XI
+ ks29m20WZ2EfwYd++gNW69R7YTf01f4dsma/9zjNO4EAwPH1J8t3b9krtueIKwe3cv+NvLAeD
+ NJ7Y00YUMLfixi2cz43XELqVo/35Zyo6NMfUoGCnfEZUWZX74+0m6/5Ygo3gWK08YlnuVQH+S
+ Y9EdGptQlQ3yBsE7gRn92L+YeOIIHGh95lrgnUbb8d/vUEgLmc4Mtlm4nA5iS/l/EIgxElBMA
+ BVBUsTt5L+Zki8GsEHlVz8CYLry08SESGQ7fh7Nkmjc2nbgh1N15tUfr0bbfQgMPuvDD4qHzz
+ sCKWupZSTPdeluJgDCqZxP8OEvVxUXvdokIuU1MVYIf5FwDBvUnTspzZIwko+J1Wnr08YEog7
+ XKpyBeDt1ysHAS8VESK2vp7pYXAl2ZKYxYeDyRdMiqrSqsdBOu0MoiZS9EbYW46n/MTVgEUvD
+ ZO+M0mJKJLbiYDds6Vi9N99QhAIxkeojqtCUIc7W9/v7RMEQ7+8kZWy1HGmbkPg1AEXeD3JBD
+ 7KlM7NcdURlEsY9XHTPYf3+Nj0p6pKa6FrJl8gWOZ99wANFxr0mdos56K/LWxHj7gTGtZH45p
+ emzPU8fCxVe/HkOShiSagCUP2xZg6pzn23IEPBs4Q2yKSmDkZKDLzLD8hlf7hmc3PNA5lTcGs
+ u+fYDBm58QJydyoanKlAWgA5cewcSfNiRMHqikQb0859CtHkFlfMmCGH8/tiKooM7ieU0yS2m
+ ZBBMCb4+G+++Mz4lY4goJRSm+Yd6bZmOEILiv2Bc32xUU+349LY7Q6RE8RvxUacklSK6Dye99
+ JQYxcB84JmAb9hS41MnaQezU8lb/94rAgo3jMjVtF0Ya+pbo9Hh1dDW/wG8pB93pbEut3aM4L
+ 9UEPokDXiX9c8Sr2VATC6+HG5zm/eeP/BtBov2osoxtSgcu8IO/nUC4jD+N40l7ufdLhk30CO
+ RzOS1JzNBgb1KbJPHULei6yWYJRKqiytdBq2NKDQoWpfbJygJiJ/k64XWas5DoLbNZ9r2gHTL
+ TaW5AfLhD71/W3WI0BuUuY4euFbFHQbUa2Ksoed1b6KwfRh26K6/wklPbuss4nMDoaSH6XSuD
+ N2tRsspTHfhZuc=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 12:42:02PM +0100, Alexander Lobakin wrote:
-> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Date: Tue, 25 Jan 2022 12:28:52 +0100
-> 
-> > On Tue, Jan 25, 2022 at 12:23:06PM +0100, Alexander Lobakin wrote:
-> > > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > > Date: Mon, 24 Jan 2022 17:55:41 +0100
-> > > 
-> > > > With the upcoming introduction of batching to XSK data path,
-> > > > performance wise it will be the best to have the ring descriptor count
-> > > > to be aligned to power of 2.
-> > > > 
-> > > > Check if rings sizes that user is going to attach the XSK socket fulfill
-> > > > the condition above. For Tx side, although check is being done against
-> > > > the Tx queue and in the end the socket will be attached to the XDP
-> > > > queue, it is fine since XDP queues get the ring->count setting from Tx
-> > > > queues.
-> > > > 
-> > > > Suggested-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > > > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > > > ---
-> > > >  drivers/net/ethernet/intel/ice/ice_xsk.c | 9 +++++++++
-> > > >  1 file changed, 9 insertions(+)
-> > > > 
-> > > > diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-> > > > index 2388837d6d6c..0350f9c22c62 100644
-> > > > --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-> > > > +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-> > > > @@ -327,6 +327,14 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
-> > > >  	bool if_running, pool_present = !!pool;
-> > > >  	int ret = 0, pool_failure = 0;
-> > > >  
-> > > > +	if (!is_power_of_2(vsi->rx_rings[qid]->count) ||
-> > > > +	    !is_power_of_2(vsi->tx_rings[qid]->count)) {
-> > > > +		netdev_err(vsi->netdev,
-> > > > +			   "Please align ring sizes at idx %d to power of 2\n", qid);
-> > > 
-> > > Ideally I'd pass xdp->extack from ice_xdp() to print this message
-> > > directly in userspace (note that NL_SET_ERR_MSG{,_MOD}() don't
-> > > support string formatting, but the user already knows QID at this
-> > > point).
-> > 
-> > I thought about that as well but it seemed to me kinda off to have a
-> > single extack usage in here. Updating the rest of error paths in
-> > ice_xsk_pool_setup() to make use of extack is a candidate for a separate
-> > patch to me.
-> > 
-> > WDYT?
-> 
-> The rest uses string formatting to print the error code, and thus
-> would lose their meaning. This one to me is more of the same kind
-> as let's say "MTU too large for XDP" message, i.e. user config
-> constraints check fail. But I'm fine if you'd prefer to keep a
-> single source of output messages throughout the function.
+Mmmh,
 
-Doubling the logs wouldn't hurt - keep current netdev_err with ret codes
-and have more meaningful messages carried up to userspace via
-NL_SET_ERR_MSG_MOD.
 
-> 
-> > 
-> > > 
-> > > > +		pool_failure = -EINVAL;
-> > > > +		goto failure;
-> > > > +	}
-> > > > +
-> > > >  	if_running = netif_running(vsi->netdev) && ice_is_xdp_ena_vsi(vsi);
-> > > >  
-> > > >  	if (if_running) {
-> > > > @@ -349,6 +357,7 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
-> > > >  			netdev_err(vsi->netdev, "ice_qp_ena error = %d\n", ret);
-> > > >  	}
-> > > >  
-> > > > +failure:
-> > > >  	if (pool_failure) {
-> > > >  		netdev_err(vsi->netdev, "Could not %sable buffer pool, error = %d\n",
-> > > >  			   pool_present ? "en" : "dis", pool_failure);
-> > > > -- 
-> > > > 2.33.1
-> > > 
-> > > Thanks,
-> > > Al
-> 
-> Al
+> On Jan 25, 2022, at 11:58, Toke H=C3=B8iland-J=C3=B8rgensen =
+<toke@redhat.com> wrote:
+>=20
+> Matt Johnston <matt@codeconstruct.com.au> writes:
+>=20
+>> The CS1 priority (index 0x08) was changed from 0 to 1 when LE (index
+>> 0x01) was added. This looks unintentional, it doesn't match the
+>> docs and CS1 shouldn't be the same tin as AF1x
+>=20
+> Hmm, Kevin, any comments?
+
+I am clearly not Kevin, but....
+
+https://elixir.bootlin.com/linux/v5.16.2/source/net/sched/sch_cake.c
+static const u8 diffserv8[] =3D {
+2, 0, 1, 2, 4, 2, 2, 2,=09
+1, 2, 1, 2, 1, 2, 1, 2,
+5, 2, 4, 2, 4, 2, 4, 2,
+3, 2, 3, 2, 3, 2, 3, 2,
+6, 2, 3, 2, 3, 2, 3, 2,
+6, 2, 2, 2, 6, 2, 6, 2,
+7, 2, 2, 2, 2, 2, 2, 2,
+7, 2, 2, 2, 2, 2, 2, 2,
+};
+
+LE(1) is tin 0 the lowest
+CS1(8) is 1 slightly above LE
+CS0/BE(0) is 2
+AF1x (10, 12, 14) are all in tin 1 as is CS1
+AF2x (18, 20, 22) in tin4
+AF3x (26, 28, 30) in tin3
+AF4x (34, 36, 38) in tin3
+
+Just as documented in the code:
+{
+/*	Pruned list of traffic classes for typical applications:
+ *
+ *		Network Control          (CS6, CS7)
+ *		Minimum Latency          (EF, VA, CS5, CS4)
+ *		Interactive Shell        (CS2, TOS1)
+ *		Low Latency Transactions (AF2x, TOS4)
+ *		Video Streaming          (AF4x, AF3x, CS3)
+ *		Bog Standard             (CS0 etc.)
+ *		High Throughput          (AF1x, TOS2)
+ *		Background Traffic       (CS1, LE)
+ *
+ *		Total 8 traffic classes.
+ */
+
+I note that this seems backwards, as I assumed the AFN to be in =
+increasing order of priority, but at the same time I care very little =
+for he 12 AF codepoints, they are not reliably end to end, and many =
+important devices only allow 3 priority bits anyway, so I question =
+whether they actually ever see much use at all, but that is =
+tangential...
+
+
+BUT IMHO the main reason for introducing LE in the first place was/is =
+that CS1 often is interpreted as higher priority than CS0 (e.g. by gear =
+that looks at the 3 highest TOS bits), resulting in an priority =
+inversion where BK packets end up with higher priority than BE in spite =
+of the senders intention being the other way round. Having CS1 in the =
+same tin/priority tier as CS0 seems harmless (priorities are not =
+guaranteed e2e anyway, so CS1/LE will be routinely treated equally as =
+CS0/BE already and senders will need to have made peace with that =
+already).
+
+
+So I argue  with the introduction of LE, CS1 should be treated =
+equivalently to CS0 (giving it higher priority will actively do the =
+wrong thing for senders still using CS1 for background). So I agree that =
+there is potential for cahnge, but that change should IMHO be to move =
+CS1 to tin2 in diffserv8...
+
+BUT to be really, really frank, none of this matters much, since DSCPs =
+are not stable end to end, so local remapping seems required anyway, and =
+then the re-mapper needs to look at the actual mapping scheme =
+independent of the narratives given for different DSCPs/PHBs in IETF =
+documents (affectionately called "DSCP-fan-fiction").
+
+Regards
+	Sebastian
+
+
+
+
+>=20
+> -Toke
+>=20
+> _______________________________________________
+> Cake mailing list
+> Cake@lists.bufferbloat.net
+> https://lists.bufferbloat.net/listinfo/cake
+
