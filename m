@@ -2,287 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E583A49BDFF
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 22:53:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 369C049BE40
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 23:12:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233392AbiAYVxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 16:53:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55688 "EHLO
+        id S233569AbiAYWMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 17:12:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233383AbiAYVxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 16:53:33 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80DA9C06173B;
-        Tue, 25 Jan 2022 13:53:33 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id h21so4809925wrb.8;
-        Tue, 25 Jan 2022 13:53:33 -0800 (PST)
+        with ESMTP id S230384AbiAYWMb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 17:12:31 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683AEC06173B;
+        Tue, 25 Jan 2022 14:12:31 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id d12-20020a17090a628c00b001b4f47e2f51so3024574pjj.3;
+        Tue, 25 Jan 2022 14:12:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=c7U0AhtAd8UvvLOu/L0/Gknc1JV4kBu8H1gQJ9Mdsfc=;
-        b=JwCkfR4SNHOq8YagGzKIEI81pxGi5/yCgcrPo5manT4qnFTGnM7i1siNk+2sNK/vUh
-         v5DX4Av0OtXJfkOEm9iuq1HK4q7Koo2OcQr8uriakJrXtAkf8XzU3oCcDjaA4FXICJ70
-         gPaoxniQETifYSHTyaq4B4/f2iW2zhrMUnN7k7It01BxdMFm+w4lICwbdUPIWtFTD0Bp
-         x33SY9NWNGQXUAAfrtCLcLg1p18gfIua6IWEo14cGRlm9xze+xjmXs7SW9oyttiJazbN
-         jDWjUGjk/5waWPbev7NE6vhGLsmUb0q7LndijnQRyMjDIhZIVIRVyr9QwtYtvOJn67PF
-         Wc5w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3Yoct/VPi8jO4D/aE/BTbIZHXj0319KiEEnpzVlWesc=;
+        b=NdJsKEOryeOjv55P/Tg1skfzUozfpfJ96/zwSoGpshVNSf8710X9EeTECXaJzizESG
+         NEynU3wFfTM8IeLHt1XIw0VxzJyPge2pKzMDApLeocReSiIDdySmrKoYyC79z24YdAbw
+         DuQHLQaEVBQajp0juWw36libRC6KC8eErpRjoEpnLxhRD5xYfCP5p8Qbl1ipkpVft5in
+         p7E6Ab/nYiiUziawFyQJ6EoOr0OxGkkqgu3DoORZ9gaC39YRA2tPBqt7FoE2xwDLxkmu
+         aZeJMiOm0bEknBFJVo1YZwAoHPKoCQOBCUtAUPOqsGNIW5fEHvrYJ5qAg/I53mcx96K3
+         ZbuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=c7U0AhtAd8UvvLOu/L0/Gknc1JV4kBu8H1gQJ9Mdsfc=;
-        b=NaMUZo1JebAcp84DlpdH679BBvNGwI8jynYb8PGoRbmPqlL0+yj39k+WM80aLJ08eW
-         Xd1L59PEmjtIhooxb4e/B/fajcVRrinWnot6G8e1YztLBI/IRCkwyKJwcq0DVy/IRr+5
-         tPF1YbCadt94BJKbYDPmSDnWsvxTY4F+3DjP2DL1iz73jipGg9ra8563itIaTXKkP76M
-         DhKXe0kdrnPEt+vjQOGInX0kFFEqUBJ6h87l1AwXyIuhi35Jsp7jKDzCb4W+7g9LqdWB
-         7ckm8kqdYWvTPewWTd1o7FDcPMVEFeOLDSNOzJnZHTZwGNLzWarHQ8XvsrFcGK1MpE/C
-         uN1g==
-X-Gm-Message-State: AOAM531dV/eiKnupsdAXtZ6MNyeSnwN/Y0IRf/zIquDON9zq/MpT30cL
-        DU3f9xZZX2SGNDVFGNJlOwvcZBZYAGs=
-X-Google-Smtp-Source: ABdhPJyB2CQu0H4jp7QQNyaCwFvl1GZSa009hsa7g78f7nfqI0Za8gNuu4psSVTbt4h12a360WRcqw==
-X-Received: by 2002:a5d:64e8:: with SMTP id g8mr8713050wri.574.1643147611922;
-        Tue, 25 Jan 2022 13:53:31 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f4d:2b00:5062:8000:c669:60de? (p200300ea8f4d2b0050628000c66960de.dip0.t-ipconnect.de. [2003:ea:8f4d:2b00:5062:8000:c669:60de])
-        by smtp.googlemail.com with ESMTPSA id n15sm1503732wmr.26.2022.01.25.13.53.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 13:53:31 -0800 (PST)
-Message-ID: <5ec25f20-8acf-544d-30f6-f0eeecd9b2f1@gmail.com>
-Date:   Tue, 25 Jan 2022 22:53:27 +0100
+        bh=3Yoct/VPi8jO4D/aE/BTbIZHXj0319KiEEnpzVlWesc=;
+        b=1Dy753UMtoErmR8QdZONaP4tBCPK2wrWuvbb2qy6KRhXk2vQgZ1sepfgAi9MbIklso
+         3vNlfVpsT/CxeJNVRs5NNq9mwU8lqm3Qws86u1nMR+hwB/hROlIo/QDGXmJg9JcNXw3b
+         Azq11w6WfTr1v6/40G5wB9YbLLKH2A/V5fULUheEJXnMcZyQB8YiV3zsyKjkVRviJZt8
+         FBxd+UfJc7Tp1TZVN2K+OIDbg7BlObp9xPFzTaV9WeWY/Rmc3qF2Wsr8eRMNPtm/T1Vl
+         cx5Kxi44jjYnxe1e+zxa2WmhGEPGA5k+nNdtXC7C5Posf0sNG1I+i3FrYG22YUahdqqv
+         U9Lw==
+X-Gm-Message-State: AOAM5315T5/4qiZL9HFkJB+TGXL206KLY7FgUc2ExM+x7s94xi641lZI
+        d8abGLyC+jsOxWLt3f0iVmN66EBypvI=
+X-Google-Smtp-Source: ABdhPJwFyyb6PnmCgIP2b2dxTy7MQtCoNk1TASRxCjYSPHT75cyJXbe/A/BcNx0Ffv3ulyFRvAAr3Q==
+X-Received: by 2002:a17:902:ecca:b0:14b:4bef:a2c7 with SMTP id a10-20020a170902ecca00b0014b4befa2c7mr11637882plh.25.1643148750906;
+        Tue, 25 Jan 2022 14:12:30 -0800 (PST)
+Received: from jeffreyji1.c.googlers.com.com (173.84.105.34.bc.googleusercontent.com. [34.105.84.173])
+        by smtp.gmail.com with ESMTPSA id q13sm23811pfj.63.2022.01.25.14.12.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 14:12:30 -0800 (PST)
+From:   Jeffrey Ji <jeffreyjilinux@gmail.com>
+X-Google-Original-From: Jeffrey Ji <jeffreyji@google.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Brian Vazquez <brianvv@google.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, jeffreyji <jeffreyji@google.com>
+Subject: [PATCH v3 net-next] net-core: add InMacErrors counter
+Date:   Tue, 25 Jan 2022 22:12:14 +0000
+Message-Id: <20220125221214.2480419-1-jeffreyji@google.com>
+X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Content-Language: en-US
-To:     Chunhao Lin <hau@realtek.com>, netdev@vger.kernel.org
-Cc:     nic_swsd@realtek.com, linux-kernel@vger.kernel.org
-References: <20220124181937.6331-1-hau@realtek.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next 1/1] r8169: enable RTL8125 ASPM L1.2
-In-Reply-To: <20220124181937.6331-1-hau@realtek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24.01.2022 19:19, Chunhao Lin wrote:
-> This patch will enable RTL8125 ASPM L1.2 on the platforms that have
-> tested RTL8125 with ASPM L1.2 enabled.
-> Register mac ocp 0xc0b2 will help to identify if RTL8125 has been tested
-> on L1.2 enabled platform. If it is, this register will be set to 0xf.
-> If not, this register will be default value 0.
-> 
-> Signed-off-by: Chunhao Lin <hau@realtek.com>
-> ---
->  drivers/net/ethernet/realtek/r8169_main.c | 99 ++++++++++++++++++-----
->  1 file changed, 79 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 19e2621e0645..b1e013969d4c 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -2238,21 +2238,6 @@ static void rtl_wol_enable_rx(struct rtl8169_private *tp)
->  			AcceptBroadcast | AcceptMulticast | AcceptMyPhys);
->  }
->  
-> -static void rtl_prepare_power_down(struct rtl8169_private *tp)
-> -{
-> -	if (tp->dash_type != RTL_DASH_NONE)
-> -		return;
-> -
-> -	if (tp->mac_version == RTL_GIGA_MAC_VER_32 ||
-> -	    tp->mac_version == RTL_GIGA_MAC_VER_33)
-> -		rtl_ephy_write(tp, 0x19, 0xff64);
-> -
-> -	if (device_may_wakeup(tp_to_dev(tp))) {
-> -		phy_speed_down(tp->phydev, false);
-> -		rtl_wol_enable_rx(tp);
-> -	}
-> -}
-> -
->  static void rtl_init_rxcfg(struct rtl8169_private *tp)
->  {
->  	switch (tp->mac_version) {
-> @@ -2650,6 +2635,34 @@ static void rtl_pcie_state_l2l3_disable(struct rtl8169_private *tp)
->  	RTL_W8(tp, Config3, RTL_R8(tp, Config3) & ~Rdy_to_L23);
->  }
->  
-> +static void rtl_disable_exit_l1(struct rtl8169_private *tp)
-> +{
-> +	/* Bits control which events trigger ASPM L1 exit:
-> +	 * Bit 12: rxdv
-> +	 * Bit 11: ltr_msg
-> +	 * Bit 10: txdma_poll
-> +	 * Bit  9: xadm
-> +	 * Bit  8: pktavi
-> +	 * Bit  7: txpla
-> +	 */
-> +	switch (tp->mac_version) {
-> +	case RTL_GIGA_MAC_VER_34 ... RTL_GIGA_MAC_VER_36:
-> +		rtl_eri_clear_bits(tp, 0xd4, 0x1f00);
-> +		break;
-> +	case RTL_GIGA_MAC_VER_37 ... RTL_GIGA_MAC_VER_38:
-> +		rtl_eri_clear_bits(tp, 0xd4, 0x0c00);
-> +		break;
-> +	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
-> +		rtl_eri_clear_bits(tp, 0xd4, 0x1f80);
-> +		break;
-> +	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
-> +		r8168_mac_ocp_modify(tp, 0xc0ac, 0x1f80, 0);
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +}
-> +
->  static void rtl_enable_exit_l1(struct rtl8169_private *tp)
->  {
->  	/* Bits control which events trigger ASPM L1 exit:
-> @@ -2692,6 +2705,33 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
->  	udelay(10);
->  }
->  
-> +static void rtl_hw_aspm_l12_enable(struct rtl8169_private *tp, bool enable)
-> +{
-> +	/* Don't enable L1.2 in the chip if OS can't control ASPM */
-> +	if (enable && tp->aspm_manageable) {
-> +		r8168_mac_ocp_modify(tp, 0xe094, 0xff00, 0);
-> +		r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, BIT(2));
-> +	} else {
-> +		r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, 0);
-> +	}
-> +}
-> +
-> +static void rtl_prepare_power_down(struct rtl8169_private *tp)
-> +{
-> +	if (tp->dash_type != RTL_DASH_NONE)
-> +		return;
-> +
-> +	if (tp->mac_version == RTL_GIGA_MAC_VER_32 ||
-> +	    tp->mac_version == RTL_GIGA_MAC_VER_33)
-> +		rtl_ephy_write(tp, 0x19, 0xff64);
-> +
-> +	if (device_may_wakeup(tp_to_dev(tp))) {
-> +		rtl_disable_exit_l1(tp);
-> +		phy_speed_down(tp->phydev, false);
-> +		rtl_wol_enable_rx(tp);
-> +	}
-> +}
-> +
->  static void rtl_set_fifo_size(struct rtl8169_private *tp, u16 rx_stat,
->  			      u16 tx_stat, u16 rx_dyn, u16 tx_dyn)
->  {
-> @@ -3675,6 +3715,7 @@ static void rtl_hw_start_8125b(struct rtl8169_private *tp)
->  	rtl_ephy_init(tp, e_info_8125b);
->  	rtl_hw_start_8125_common(tp);
->  
-> +	rtl_hw_aspm_l12_enable(tp, true);
->  	rtl_hw_aspm_clkreq_enable(tp, true);
->  }
->  
-> @@ -5255,6 +5296,20 @@ static void rtl_init_mac_address(struct rtl8169_private *tp)
->  	rtl_rar_set(tp, mac_addr);
->  }
->  
-> +/* mac ocp 0xc0b2 will help to identify if RTL8125 has been tested
-> + * on L1.2 enabled platform. If it is, this register will be set to 0xf.
-> + * If not, this register will be default value 0.
-> + */
-> +static bool rtl_platform_l12_enabled(struct rtl8169_private *tp)
-> +{
-> +	switch (tp->mac_version) {
-> +	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
-> +		return (r8168_mac_ocp_read(tp, 0xc0b2) & 0xf) ? true : false;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
->  static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  {
->  	struct rtl8169_private *tp;
-> @@ -5333,11 +5388,15 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	 * Chips from RTL8168h partially have issues with L1.2, but seem
->  	 * to work fine with L1 and L1.1.
->  	 */
-> -	if (tp->mac_version >= RTL_GIGA_MAC_VER_45)
-> -		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
-> -	else
-> -		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
-> -	tp->aspm_manageable = !rc;
-> +	if (!rtl_platform_l12_enabled(tp)) {
-> +		if (tp->mac_version >= RTL_GIGA_MAC_VER_45)
-> +			rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
-> +		else
-> +			rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
-> +		tp->aspm_manageable = !rc;
-> +	} else {
-> +		tp->aspm_manageable = pcie_aspm_enabled(pdev);
-> +	}
->  
->  	tp->dash_type = rtl_check_dash(tp);
->  
+From: jeffreyji <jeffreyji@google.com>
 
-Hi Hau,
+Increment InMacErrors counter when packet dropped due to incorrect dest
+MAC addr.
 
-the following is a stripped-down version of the patch. Could you please check/test?
-If function rtl_disable_exit_l1() is actually needed, I'd prefer to add it
-in a separate patch (to facilitate bisecting).
+An example when this drop can occur is when manually crafting raw
+packets that will be consumed by a user space application via a tap
+device. For testing purposes local traffic was generated using trafgen
+for the client and netcat to start a server
 
+example output from nstat:
+\~# nstat -a | grep InMac
+Ip6InMacErrors                  0                  0.0
+IpExtInMacErrors                1                  0.0
 
- drivers/net/ethernet/realtek/r8169_main.c | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
+counter was incremented.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index ca95e9266..890a64245 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2684,7 +2684,15 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
- 	if (enable && tp->aspm_manageable) {
- 		RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
- 		RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
-+
-+		if (tp->mac_version == RTL_GIGA_MAC_VER_63) {
-+			r8168_mac_ocp_modify(tp, 0xe094, 0xff00, 0);
-+			r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, BIT(2));
-+		}
- 	} else {
-+		if (tp->mac_version == RTL_GIGA_MAC_VER_63)
-+			r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, 0);
-+
- 		RTL_W8(tp, Config2, RTL_R8(tp, Config2) & ~ClkReqEn);
- 		RTL_W8(tp, Config5, RTL_R8(tp, Config5) & ~ASPM_en);
- 	}
-@@ -5251,6 +5259,16 @@ static void rtl_init_mac_address(struct rtl8169_private *tp)
- 	rtl_rar_set(tp, mac_addr);
- }
+Change-Id: If820cc676807ba8438a9034873df3ef2e0b07213
+Signed-off-by: jeffreyji <jeffreyji@google.com>
+---
+ include/linux/skbuff.h    |  1 +
+ include/uapi/linux/snmp.h |  1 +
+ net/ipv4/ip_input.c       |  7 +++++--
+ net/ipv4/proc.c           |  1 +
+ net/ipv6/ip6_input.c      | 12 +++++++-----
+ net/ipv6/proc.c           |  1 +
+ 6 files changed, 16 insertions(+), 7 deletions(-)
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index bf11e1fbd69b..04a36352f677 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -320,6 +320,7 @@ enum skb_drop_reason {
+ 	SKB_DROP_REASON_TCP_CSUM,
+ 	SKB_DROP_REASON_TCP_FILTER,
+ 	SKB_DROP_REASON_UDP_CSUM,
++	SKB_DROP_REASON_BAD_DEST_MAC,
+ 	SKB_DROP_REASON_MAX,
+ };
  
-+/* register is set if system vendor successfully tested ASPM 1.2 */
-+static bool rtl_aspm_is_safe(struct rtl8169_private *tp)
-+{
-+	if (tp->mac_version >= RTL_GIGA_MAC_VER_60 &&
-+	    r8168_mac_ocp_read(tp, 0xc0b2) & 0xf)
-+		return true;
-+
-+	return false;
-+}
-+
- static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- {
- 	struct rtl8169_private *tp;
-@@ -5329,7 +5347,9 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	 * Chips from RTL8168h partially have issues with L1.2, but seem
- 	 * to work fine with L1 and L1.1.
+diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
+index 904909d020e2..ac2fac12dd7d 100644
+--- a/include/uapi/linux/snmp.h
++++ b/include/uapi/linux/snmp.h
+@@ -57,6 +57,7 @@ enum
+ 	IPSTATS_MIB_ECT0PKTS,			/* InECT0Pkts */
+ 	IPSTATS_MIB_CEPKTS,			/* InCEPkts */
+ 	IPSTATS_MIB_REASM_OVERLAPS,		/* ReasmOverlaps */
++	IPSTATS_MIB_INMACERRORS,		/* InMacErrors */
+ 	__IPSTATS_MIB_MAX
+ };
+ 
+diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+index 3a025c011971..379ef6b46920 100644
+--- a/net/ipv4/ip_input.c
++++ b/net/ipv4/ip_input.c
+@@ -441,8 +441,11 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
+ 	/* When the interface is in promisc. mode, drop all the crap
+ 	 * that it receives, do not try to analyse it.
  	 */
--	if (tp->mac_version >= RTL_GIGA_MAC_VER_45)
-+	if (rtl_aspm_is_safe(tp))
-+		rc = 0;
-+	else if (tp->mac_version >= RTL_GIGA_MAC_VER_45)
- 		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
- 	else
- 		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
+-	if (skb->pkt_type == PACKET_OTHERHOST)
+-		goto drop;
++	if (skb->pkt_type == PACKET_OTHERHOST) {
++		__IP_INC_STATS(net, IPSTATS_MIB_INMACERRORS);
++		kfree_skb_reason(skb, SKB_DROP_REASON_BAD_DEST_MAC);
++		return NULL;
++	}
+ 
+ 	__IP_UPD_PO_STATS(net, IPSTATS_MIB_IN, skb->len);
+ 
+diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
+index f30273afb539..dfe0a1dbf8e9 100644
+--- a/net/ipv4/proc.c
++++ b/net/ipv4/proc.c
+@@ -117,6 +117,7 @@ static const struct snmp_mib snmp4_ipextstats_list[] = {
+ 	SNMP_MIB_ITEM("InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
+ 	SNMP_MIB_ITEM("InCEPkts", IPSTATS_MIB_CEPKTS),
+ 	SNMP_MIB_ITEM("ReasmOverlaps", IPSTATS_MIB_REASM_OVERLAPS),
++	SNMP_MIB_ITEM("InMacErrors", IPSTATS_MIB_INMACERRORS),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 80256717868e..f6245fba7699 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -149,15 +149,17 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
+ 	u32 pkt_len;
+ 	struct inet6_dev *idev;
+ 
+-	if (skb->pkt_type == PACKET_OTHERHOST) {
+-		kfree_skb(skb);
+-		return NULL;
+-	}
+-
+ 	rcu_read_lock();
+ 
+ 	idev = __in6_dev_get(skb->dev);
+ 
++	if (skb->pkt_type == PACKET_OTHERHOST) {
++		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INMACERRORS);
++		rcu_read_unlock();
++		kfree_skb_reason(skb, SKB_DROP_REASON_BAD_DEST_MAC);
++		return NULL;
++	}
++
+ 	__IP6_UPD_PO_STATS(net, idev, IPSTATS_MIB_IN, skb->len);
+ 
+ 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL ||
+diff --git a/net/ipv6/proc.c b/net/ipv6/proc.c
+index d6306aa46bb1..76e6119ba558 100644
+--- a/net/ipv6/proc.c
++++ b/net/ipv6/proc.c
+@@ -84,6 +84,7 @@ static const struct snmp_mib snmp6_ipstats_list[] = {
+ 	SNMP_MIB_ITEM("Ip6InECT1Pkts", IPSTATS_MIB_ECT1PKTS),
+ 	SNMP_MIB_ITEM("Ip6InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
+ 	SNMP_MIB_ITEM("Ip6InCEPkts", IPSTATS_MIB_CEPKTS),
++	SNMP_MIB_ITEM("Ip6InMacErrors", IPSTATS_MIB_INMACERRORS),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
 -- 
-2.35.0
-
+2.35.0.rc0.227.g00780c9af4-goog
 
