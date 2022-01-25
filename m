@@ -2,139 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC1E49B9CC
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 18:10:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 495B549B9D1
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 18:13:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350459AbiAYRJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 12:09:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38026 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359219AbiAYRII (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 12:08:08 -0500
+        id S1390215AbiAYRMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 12:12:12 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:41022 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381226AbiAYRKU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 12:10:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B047561155;
-        Tue, 25 Jan 2022 17:08:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87F60C340E0;
-        Tue, 25 Jan 2022 17:08:05 +0000 (UTC)
-Date:   Tue, 25 Jan 2022 12:08:04 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v5 7/9] fprobe: Add exit_handler support
-Message-ID: <20220125120804.595afd8b@gandalf.local.home>
-In-Reply-To: <164311277634.1933078.2632008023256564980.stgit@devnote2>
-References: <164311269435.1933078.6963769885544050138.stgit@devnote2>
-        <164311277634.1933078.2632008023256564980.stgit@devnote2>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CA45ECE19D4;
+        Tue, 25 Jan 2022 17:10:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E3004C340E8;
+        Tue, 25 Jan 2022 17:10:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643130613;
+        bh=IGK8sFR8ROzYCbr03pUu99n6qgq4YQbfLcWdiBF3v5U=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=hTnNQ1I6XhvuUzlIx3lBAM5WfZR/1gU7rkhJ68+8ZQVJeWc4AcaHWzJKbL49NOSlp
+         wbqdAQG2PrtiF7o8r8hvXrVTIZv5LgcOnV+8BjH1+8CdgGEKdlFAiPldvWh4fYyGaa
+         GJYnS9LjDLXxowha5R/J+JyKeRnsngHtE1EnPy+B1QyBo2Oah5SU9AKRb0j+GauBdo
+         9+MNjUTwb1FiRGgfxTeyGgXojJ2zDudU+OZrlWxOZGssvMW+2OKXcXOYYf9aS0gv/b
+         Lmb40PJtC++OY+Yjg30MdUDfLOnT1N6gRNAX4slb2Lku68Ljf6nb+H7rrXMu+i2mhV
+         awX4CzFSMlnkA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D0D02E5D087;
+        Tue, 25 Jan 2022 17:10:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] amd: declance: use eth_hw_addr_set()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164313061384.29422.12974024496460633467.git-patchwork-notify@kernel.org>
+Date:   Tue, 25 Jan 2022 17:10:13 +0000
+References: <20220125144007.64407-1-tsbogend@alpha.franken.de>
+In-Reply-To: <20220125144007.64407-1-tsbogend@alpha.franken.de>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jan 2022 21:12:56 +0900
-Masami Hiramatsu <mhiramat@kernel.org> wrote:
+Hello:
 
-> Add exit_handler to fprobe. fprobe + rethook allows us
-> to hook the kernel function return without fgraph tracer.
-> Eventually, the fgraph tracer will be generic array based
-> return hooking and fprobe may use it if user requests.
-> Since both array-based approach and list-based approach
-> have Pros and Cons, (e.g. memory consumption v.s. less
-> missing events) it is better to keep both but fprobe
-> will provide the same exit-handler interface.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Again the 55 character width ;-)
-
+On Tue, 25 Jan 2022 15:40:06 +0100 you wrote:
+> Copy scattered mac address octets into an array then eth_hw_addr_set().
 > 
-> Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+> Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 > ---
->  Changes in v5:
->   - Add dependency for HAVE_RETHOOK.
->  Changes in v4:
->   - Check fprobe is disabled in the exit handler.
->  Changes in v3:
->   - Make sure to clear rethook->data before free.
->   - Handler checks the data is not NULL.
->   - Free rethook only if the rethook is using.
-> ---
+>  drivers/net/ethernet/amd/declance.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
-> @@ -82,6 +117,7 @@ static int convert_func_addresses(struct fprobe *fp)
->   */
->  int register_fprobe(struct fprobe *fp)
->  {
-> +	unsigned int i, size;
->  	int ret;
->  
->  	if (!fp || !fp->nentry || (!fp->syms && !fp->addrs) ||
-> @@ -96,10 +132,29 @@ int register_fprobe(struct fprobe *fp)
->  	fp->ops.func = fprobe_handler;
->  	fp->ops.flags = FTRACE_OPS_FL_SAVE_REGS;
->  
-> +	/* Initialize rethook if needed */
-> +	if (fp->exit_handler) {
-> +		size = fp->nentry * num_possible_cpus() * 2;
-> +		fp->rethook = rethook_alloc((void *)fp, fprobe_exit_handler);
+Here is the summary with links:
+  - amd: declance: use eth_hw_addr_set()
+    https://git.kernel.org/netdev/net/c/8bdd24940b69
 
-Shouldn't we check if fp->rethook succeeded to be allocated?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-> +		for (i = 0; i < size; i++) {
-> +			struct rethook_node *node;
-> +
-> +			node = kzalloc(sizeof(struct fprobe_rethook_node), GFP_KERNEL);
-> +			if (!node) {
-> +				rethook_free(fp->rethook);
-> +				ret = -ENOMEM;
-> +				goto out;
-> +			}
-> +			rethook_add_node(fp->rethook, node);
-> +		}
-> +	} else
-> +		fp->rethook = NULL;
-> +
->  	ret = ftrace_set_filter_ips(&fp->ops, fp->addrs, fp->nentry, 0, 0);
->  	if (!ret)
->  		ret = register_ftrace_function(&fp->ops);
->  
-> +out:
->  	if (ret < 0 && fp->syms) {
->  		kfree(fp->addrs);
->  		fp->addrs = NULL;
-> @@ -125,8 +180,16 @@ int unregister_fprobe(struct fprobe *fp)
->  		return -EINVAL;
->  
->  	ret = unregister_ftrace_function(&fp->ops);
-> +	if (ret < 0)
-> +		return ret;
-
-If we fail to unregister the fp->ops, we do not free the allocated nodes
-above?
-
--- Steve
-
->  
-> -	if (!ret && fp->syms) {
-> +	if (fp->rethook) {
-> +		/* Make sure to clear rethook->data before freeing. */
-> +		WRITE_ONCE(fp->rethook->data, NULL);
-> +		barrier();
-> +		rethook_free(fp->rethook);
-> +	}
-> +	if (fp->syms) {
->  		kfree(fp->addrs);
->  		fp->addrs = NULL;
->  	}
 
