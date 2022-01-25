@@ -2,164 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5A9049AF08
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 10:09:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB8249AF20
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 10:10:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454335AbiAYI67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 03:58:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45176 "EHLO
+        id S1454667AbiAYJAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 04:00:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453435AbiAYI4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 03:56:22 -0500
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D3EC068081;
-        Mon, 24 Jan 2022 23:54:54 -0800 (PST)
-Received: by mail-il1-x135.google.com with SMTP id u5so16101813ilq.9;
-        Mon, 24 Jan 2022 23:54:54 -0800 (PST)
+        with ESMTP id S1454181AbiAYI54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 03:57:56 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D63C068087;
+        Tue, 25 Jan 2022 00:17:38 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id h20-20020a17090adb9400b001b518bf99ffso1458121pjv.1;
+        Tue, 25 Jan 2022 00:17:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=2W+udFU5NsZtns60icl5F/GlK0QBOVQF6hcovdrLxX8=;
-        b=E5e8bl5jXV8NiVC489HE9pxffzjl4oHV/Hx5fCC7CuSgnQyUNFVKxsfDG3K2JUppt5
-         yv06XmVVuXhMuRXC9krGhH13ar8lGO6+FcEx4ZkCy36M4eGuhvtADyXRGCBxjyALyoP3
-         TtMGVn2hYDjwANi4PkpSM+NO/0AQM/jYDymYYiAEwfaJCJ2okIZfaM4DudDj2uMS1Sx2
-         KuL2AhA33Nk5MFl10B/Y+2E4GE6N1nXViUUfnqGS8FAJcRIOOG9fvq4okML3o+A2CU90
-         TLu9xY3QPeATrSJPoVnQSwMprtisr1qf9gC+OUbGTLFfVMeQv3BUW4MO4FgyyJ8wTmem
-         mAwA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eTbUeqXpB2EXe8rHgW/mo0ZdZLLl7DCmA+2qGBk1qlI=;
+        b=lw2zsEIaKAsMyw/46jIWz6dUwtvG9TwJdvYyA8ZhnqUUQoz6OvOOWmZnxVCj6nof6R
+         lPf7ii3PHOtlB74vltOWwFhDrYW20KO0cMC0i4xFSIBg+LdAgs6BlBGD4okEnB8/Iqoc
+         FFtF+KFullOvV4ZveB4YaFbqgYc7EoPbXhCruMglQOCmHC5mJ4qXpuVWb/GpUbpjYSIF
+         bbmR8dutq4f2zvDj/UuL8cRkok7uMAyGGG90owrGFf2ZDYDGOcaK8Kwn5YlPvvyiu/1a
+         W5qXI1eqiywQpCylv8m/NnObt2LJGTnPU2/Ms9jpa4jANtURqxS8RrJWqogqXA1txvoM
+         T7/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=2W+udFU5NsZtns60icl5F/GlK0QBOVQF6hcovdrLxX8=;
-        b=4rS05UJWKcWUC1OpT/PLCVlGdvHPCpDrb+lazuNFqEAjWimUBKulW5pDZ+6UU4uYJh
-         zBuyvoTYyfG2r0qts9iwqSFrXRTBCGu/1J/EdeYXZHzCL/0lzOwbdjHwi9GiemsPVuyQ
-         ElqRuyFaWFMaC6cF/2OsfvZhJkCpvr6PZJ0PXuheJPUaM8Q3mi6dNGB/OanH3CBZu4Ri
-         kIEuf0Y9g4LhhxVncOVYYOLrjNNg/MFhfv0Mkk9y9CK/LIvm3Ev4cjTctR7A+65ThTCx
-         Fivx4/nKfZ9VRrt8hQoLLRA52qVSWQ2kZINN4BOPUALOzDFKCehkbzA3/fYVCxkVlNY6
-         tyWA==
-X-Gm-Message-State: AOAM532avYLYXgznL204HaogVylp8jRkfT2q+cjnjDoZQ21Su/UetxXm
-        19u+ZNYTJvE1kxCQVJN8ujE=
-X-Google-Smtp-Source: ABdhPJwes1JpWvcuHgBR6aD8tWy0/yv0ixxqO9OSQ0um+y8EsVzOwbhXNhkAeoBZWWofEr8M4afGzQ==
-X-Received: by 2002:a92:cda6:: with SMTP id g6mr9254017ild.211.1643097293676;
-        Mon, 24 Jan 2022 23:54:53 -0800 (PST)
-Received: from localhost ([99.197.200.79])
-        by smtp.gmail.com with ESMTPSA id o11sm9279959ilu.36.2022.01.24.23.54.52
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eTbUeqXpB2EXe8rHgW/mo0ZdZLLl7DCmA+2qGBk1qlI=;
+        b=t9P98E4Ix6cCumhryg1uFHrss33d4NGCbiY2uZ532vuamyUQkj4VLO39QeJeFggVlm
+         3VUMvQjJSTQZHGfr3mYH9x9SR+pMgiF/JTR6Uo3J8/C4VfdHYkJCV8Gt7Zw7Y4Shifpp
+         vOXpm8UQCFXau9/PHbrDfpad64yKApa1+ZJCAax4oEPLzlq5AuAgatxfP10WkocDNvFQ
+         rPQTG3QIq3n1KAYwaWPuXzaWfJxKpWdA4tGof2sf/5HFlRILdDh9jHT+e+c8dVXSdv7D
+         tSLRv3Vq9UKIPjLUAO+hqXbd7VccTIYkEk9p7OSdqF398hfAX6kikOLWTnCx5tO7pOgi
+         1XTA==
+X-Gm-Message-State: AOAM530FLsCZuAORZ/bvoY5SbimBcjCyQAyIf/5IXo2Iioh3AQF4jsCA
+        ZnD0fX8zE0Do79SQ7K4ICFUm2r2X+7E=
+X-Google-Smtp-Source: ABdhPJx6L6+8l+L8jZMwdBs6avo0rhanj4MsfYNK10snJ/LnByyf8QGMMq9G9d/oXuiEq63QSzCUUg==
+X-Received: by 2002:a17:903:24d:b0:149:b68f:579 with SMTP id j13-20020a170903024d00b00149b68f0579mr18371541plh.1.1643098657325;
+        Tue, 25 Jan 2022 00:17:37 -0800 (PST)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id l21sm18928949pfu.120.2022.01.25.00.17.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 23:54:53 -0800 (PST)
-Date:   Mon, 24 Jan 2022 23:54:46 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>, bpf@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
+        Tue, 25 Jan 2022 00:17:36 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org
-Cc:     Tariq Toukan <tariqt@nvidia.com>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
-        Petar Penkov <ppenkov@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Mathieu Xhonneux <m.xhonneux@gmail.com>,
         Lorenz Bauer <lmb@cloudflare.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joe Stringer <joe@cilium.io>,
-        Florent Revest <revest@chromium.org>,
-        linux-kselftest@vger.kernel.org,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Message-ID: <61efacc6980f4_274ca2083e@john.notmuch>
-In-Reply-To: <20220124151340.376807-3-maximmi@nvidia.com>
-References: <20220124151340.376807-1-maximmi@nvidia.com>
- <20220124151340.376807-3-maximmi@nvidia.com>
-Subject: RE: [PATCH bpf-next v2 2/3] bpf: Add helpers to issue and check SYN
- cookies in XDP
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        William Tu <u9012063@gmail.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH bpf 0/7] selftests/bpf: use temp netns for testing
+Date:   Tue, 25 Jan 2022 16:17:10 +0800
+Message-Id: <20220125081717.1260849-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maxim Mikityanskiy wrote:
-> The new helpers bpf_tcp_raw_{gen,check}_syncookie allow an XDP program
-> to generate SYN cookies in response to TCP SYN packets and to check
-> those cookies upon receiving the first ACK packet (the final packet of
-> the TCP handshake).
-> 
-> Unlike bpf_tcp_{gen,check}_syncookie these new helpers don't need a
-> listening socket on the local machine, which allows to use them together
-> with synproxy to accelerate SYN cookie generation.
-> 
-> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-> ---
+There are some bpf tests using hard code netns name like ns0, ns1, etc.
+This kind of ns name is easily used by other tests or system. If there
+is already a such netns, all the related tests will failed. So let's
+use temp netns name for testing.
 
-[...]
+The first patch not only change to temp netns. But also fixed an interface
+index issue. So I add fixes tag. For the later patches, I think that
+should be an update instead of fixes, so the fixes tag is not added.
 
-> +
-> +BPF_CALL_4(bpf_tcp_raw_check_syncookie, void *, iph, u32, iph_len,
-> +	   struct tcphdr *, th, u32, th_len)
-> +{
-> +#ifdef CONFIG_SYN_COOKIES
-> +	u32 cookie;
-> +	int ret;
-> +
-> +	if (unlikely(th_len < sizeof(*th)))
-> +		return -EINVAL;
-> +
-> +	if (!th->ack || th->rst || th->syn)
-> +		return -EINVAL;
-> +
-> +	if (unlikely(iph_len < sizeof(struct iphdr)))
-> +		return -EINVAL;
-> +
-> +	cookie = ntohl(th->ack_seq) - 1;
-> +
-> +	/* Both struct iphdr and struct ipv6hdr have the version field at the
-> +	 * same offset so we can cast to the shorter header (struct iphdr).
-> +	 */
-> +	switch (((struct iphdr *)iph)->version) {
-> +	case 4:
+Hangbin Liu (7):
+  selftests/bpf/test_xdp_redirect_multi: use temp netns for testing
+  selftests/bpf/test_xdp_veth: use temp netns for testing
+  selftests/bpf/test_xdp_vlan: use temp netns for testing
+  selftests/bpf/test_lwt_seg6local: use temp netns for testing
+  selftests/bpf/test_tcp_check_syncookie: use temp netns for testing
+  selftests/bpf/test_xdp_meta: use temp netns for testing
+  selftests/bpf/test_xdp_redirect: use temp netns for testing
 
-Did you consider just exposing __cookie_v4_check() and __cookie_v6_check()?
-My code at least has already run the code above before it would ever call
-this helper so all the other bits are duplicate. The only reason to build
-it this way, as I see it, is either code can call it blindly without doing 
-4/v6 switch. or to make it look and feel like 'tc' world, but its already
-dropped the ok so its a bit different already and ifdef TC/XDP could
-hanlde the different parts.
+ .../selftests/bpf/test_lwt_seg6local.sh       | 170 +++++++++---------
+ .../selftests/bpf/test_tcp_check_syncookie.sh |   5 +-
+ tools/testing/selftests/bpf/test_xdp_meta.sh  |  38 ++--
+ .../selftests/bpf/test_xdp_redirect.sh        |  30 ++--
+ .../selftests/bpf/test_xdp_redirect_multi.sh  |  60 ++++---
+ tools/testing/selftests/bpf/test_xdp_veth.sh  |  39 ++--
+ tools/testing/selftests/bpf/test_xdp_vlan.sh  |  66 +++----
+ 7 files changed, 213 insertions(+), 195 deletions(-)
 
+-- 
+2.31.1
 
-> +		ret = __cookie_v4_check((struct iphdr *)iph, th, cookie);
-> +		break;
-> +
-> +#if IS_BUILTIN(CONFIG_IPV6)
-> +	case 6:
-> +		if (unlikely(iph_len < sizeof(struct ipv6hdr)))
-> +			return -EINVAL;
-> +
-> +		ret = __cookie_v6_check((struct ipv6hdr *)iph, th, cookie);
-> +		break;
-> +#endif /* CONFIG_IPV6 */
-> +
-> +	default:
-> +		return -EPROTONOSUPPORT;
-> +	}
-> +
-> +	if (ret > 0)
-> +		return 0;
-> +
-> +	return -EACCES;
-> +#else
-> +	return -EOPNOTSUPP;
-> +#endif
-> +}
