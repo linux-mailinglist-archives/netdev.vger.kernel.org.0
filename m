@@ -2,40 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFA4649BAEF
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 19:06:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5EC549BAF7
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 19:08:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388338AbiAYSEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 13:04:55 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34208 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387978AbiAYSDh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 13:03:37 -0500
+        id S241414AbiAYSHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 13:07:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59994 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240472AbiAYSGw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 13:06:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B38C061753
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 10:06:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA6BEB817EF
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 18:03:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 756A1C340E0;
-        Tue, 25 Jan 2022 18:03:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1228B61518
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 18:06:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40F2CC340E0;
+        Tue, 25 Jan 2022 18:06:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643133814;
-        bh=ztQatopzBcrDNgqSmbXixT+nvnwQrpH36UxPH3sKo7I=;
+        s=k20201202; t=1643134010;
+        bh=pGmHSreaw+K+mCVIrpn0Tq464ZP2iaRHxtgPr7CmaCQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TNiHeaK3bZl4isx0SQx9pD/tGFoC271khbFtXzHLyeFqKTTPU92+EblsmdQsEhkgU
-         VxZOkZbl6z8lfDKq6xLSXXdex4VW2bdu8wn7IuVmoMh01+/FhdjbYbzklswDSJP2H9
-         hPcjZzeGr9jrb/hhKaBp4s52olqjKdl5oMowUScppZWDq3udnXgiIW4ZiLi/UhQ6qN
-         BmY2DmkemueZh/mhW8KCrkIfnfC8dfxs+xJ5PS7qf42D37KrDEvwumACSeqo0zvadH
-         MODhV7/tVycqcpRoHAmTRkF5WNSmQed86+59BROxgnVKOtbaWsBhZ0J24aGZZwXHYR
-         MMfoIGmXSP6pw==
-Date:   Tue, 25 Jan 2022 10:03:33 -0800
+        b=kgWCVf80MRBGtlHCNTbhah2VxDLzmFbKx5OSztJJg9Op06hLDpAWNAeWvvJLpRsF/
+         LF9IzeyY66yllnrV+Ai2FNO40TrGvDFvCCARpM4MON3OeMSny6/mpRiAPeNHiZUTgy
+         zoEZoAH3gWGvo/My/Ry5VJPix4w6Krtos3kcxL5RKezFlGSIi1yTyoy4pb7ZH8hoXG
+         DMDMsU114v2by6v9q2F/pqMtCCYzv25XRSb+dZUbNqiCjRCSnsKjdP+9nTDnUQ3Pmj
+         nW4QRKcwXilioGQ+6eKjleLLqXqYQX8j2tKptI6bvp5Q7pjxl8bxiwaHLwKOZQE8Lk
+         dhUO/uVUqIVug==
+Date:   Tue, 25 Jan 2022 10:06:49 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, drivers@pensando.io
-Subject: Re: [PATCH net 00/16] ionic: updates for stable FW recovery
-Message-ID: <20220125100333.4e5580a7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220124185312.72646-1-snelson@pensando.io>
-References: <20220124185312.72646-1-snelson@pensando.io>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next] ipv4: get rid of fib_info_hash_{alloc|free}
+Message-ID: <20220125100649.5ba2344b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220124173115.3061285-1-eric.dumazet@gmail.com>
+References: <20220124173115.3061285-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -43,11 +48,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 24 Jan 2022 10:52:56 -0800 Shannon Nelson wrote:
-> Recent FW work has tightened up timings in its error recovery
-> handling and uncovered weaknesses in the driver's responses,
-> so this is a set of updates primarily for better handling of
-> the firmware's recovery mechanisms.
+On Mon, 24 Jan 2022 09:31:15 -0800 Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Use kvzalloc()/kvfree() instead of hand coded functions.
 
-Applied, thanks, 8a0de61c40af ("Merge branch 'ionic-fw-recovery'")
-in net-next.
+Applied, thanks, ca73b68aca4a ("ipv4: get rid of
+fib_info_hash_{alloc|free}") in net-next.
