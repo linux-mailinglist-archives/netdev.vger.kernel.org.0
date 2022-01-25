@@ -2,125 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DFA549BBE1
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 20:13:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E54A849BBE2
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 20:13:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229651AbiAYTN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 14:13:29 -0500
-Received: from mga18.intel.com ([134.134.136.126]:26303 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229606AbiAYTN2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jan 2022 14:13:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643138008; x=1674674008;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=8U2uqQ+7mSsXJgVb92mw6z7879L7Nus9mCGKlA0E61A=;
-  b=nVcPLPRrmIs+1q68KeOO+heiZ18Y8gEhzFAUBu0EgejFg2dWLiXVNpjF
-   eq+M6HQkxredGAOP+6FBroBxv6n+8k4IR+F9AYUOVm97DUsE1STpKXTR/
-   Nk6rwvnLacG6pO7fOgFJOWB7ctlqUj79WyFqyHucm/2FvNwe3ZqyKhe4U
-   2ZpjrvaAnZS6furX4tQBYt8/eyBdIylezPlF4rkvdOUjkYx1NS5NiW6he
-   +B3w5mRmFFDVIjwxVZgX8CHv53fSBM9JUCJ7UvrmbgeoXyVMtjH9FLoQs
-   xKO/5nRBPMYrW2EFZ9089hGwSUP3As9d/jUXDo6O57FjTsi2LZYkwLOmf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="229966929"
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="229966929"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 11:13:27 -0800
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="597231996"
-Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.209.29.200]) ([10.209.29.200])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 11:13:25 -0800
-Message-ID: <b163fdb0-3b86-08d3-a6ef-efde3dde26ed@linux.intel.com>
-Date:   Tue, 25 Jan 2022 11:13:25 -0800
+        id S229670AbiAYTNl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 14:13:41 -0500
+Received: from mx3.molgen.mpg.de ([141.14.17.11]:48533 "EHLO mx1.molgen.mpg.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229653AbiAYTNe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jan 2022 14:13:34 -0500
+Received: from [192.168.0.2] (ip5f5aeaa2.dynamic.kabel-deutschland.de [95.90.234.162])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id C2CEF61E6478B;
+        Tue, 25 Jan 2022 20:13:27 +0100 (CET)
+Message-ID: <159db05f-539c-fe29-608b-91b036588033@molgen.mpg.de>
+Date:   Tue, 25 Jan 2022 20:13:27 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH net-next v4 03/13] net: wwan: t7xx: Add core components
 Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com
-References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com>
- <20220114010627.21104-4-ricardo.martinez@linux.intel.com>
- <21cc8585-9bad-2322-44c2-fc99c4dccda0@linux.intel.com>
-From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
-In-Reply-To: <21cc8585-9bad-2322-44c2-fc99c4dccda0@linux.intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>
+Cc:     rcu@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+Subject: BUG: Kernel NULL pointer dereference on write at 0x00000000
+ (rtmsg_ifinfo_build_skb)
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Dear Linux folks,
 
-On 1/24/2022 6:51 AM, Ilpo Järvinen wrote:
-> On Thu, 13 Jan 2022, Ricardo Martinez wrote:
->
->> From: Haijun Liu <haijun.liu@mediatek.com>
->>
->> Registers the t7xx device driver with the kernel. Setup all the core
->> components: PCIe layer, Modem Host Cross Core Interface (MHCCIF),
->> modem control operations, modem state machine, and build
->> infrastructure.
->>
->> * PCIe layer code implements driver probe and removal.
->> * MHCCIF provides interrupt channels to communicate events
->>    such as handshake, PM and port enumeration.
->> * Modem control implements the entry point for modem init,
->>    reset and exit.
->> * The modem status monitor is a state machine used by modem control
->>    to complete initialization and stop. It is used also to propagate
->>    exception events reported by other components.
->>
->> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
->> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
->> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
->> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
->> ---
-> Some states in t7xx_common.h (MD_STATE_...) would logically belong to this
-> patch instead of 02/. ...I think they were initally here but got moved
-> with t7xx_skb_data_area_size(). And there was also things clearly related
-> to 05/ in t7xx_common.h (at least CTL_ID_*).
 
-Originally, 02 and 03 were going to be part of the same "Core 
-functionality" patch,
+I do not know, if this is an rcutorture issue, or if rcutorture found a 
+bug with `rtmsg_ifinfo_build_skb()`.
 
-the only reason for splitting it was to make that core patch smaller. 
-The result is that
 
-02 uses code defined at 03, note that compilation is enabled at 03.
+Building Linux 5.17-rc1+ (dd81e1c7d5fb) under Ubuntu 21.04 with
 
-Will merge 02 and 03 in the next version, also clean t7xx_common.h from 
-definitions
+     CONFIG_TORTURE_TEST=y
+     CONFIG_RCU_TORTURE_TEST=y
 
-not used.
+and
 
-...
->> +int t7xx_fsm_append_cmd(struct t7xx_fsm_ctl *ctl, enum t7xx_fsm_cmd_state cmd_id, unsigned int flag)
-> No callsite in this patch seems to care about the error code, is it ok?
+     $ clang --version
+     Ubuntu clang version 12.0.0-3ubuntu1~21.04.2
+     Target: powerpc64le-unknown-linux-gnu
+     Thread model: posix
+     InstalledDir: /usr/bin
+     $ make -j100 LLVM=1 LLVM_IAS=0 bindeb-pkg
 
-Even though there's no recovery path (like retry) for 
-t7xx_fsm_append_cmd() failures, it makes sense to
+and booting it on an IBM S822LC, Linux paniced with a null pointer 
+dereference, and the watchdog rebooted, and I found the message below in 
+`/sys/fs/pstore/dmesg-nvram-2.enc.z`.
 
-propagate the error instead of ignoring it, will add that in the next 
-version.
+```
+[    T1] Key type id_legacy registered
+[    T1] SGI XFS with ACLs, security attributes, no debug enabled
+[    T1] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 
+248)
+[    T1] io scheduler mq-deadline registered
+[    T1] io scheduler kyber registered
+[  T198] cryptomgr_test (198) used greatest stack depth: 13536 bytes left
+[    T1] pci 0021:10:00.0: enabling device (0141 -> 0143)
+[    T1] Using unsupported 1024x768 (null) at 3fe882010000, depth=32, 
+pitch=4096
+[    T1] Console: switching to colour frame buffer device 128x48
+[    T1] fb0: Open Firmware frame buffer device on 
+/pciex@3fffe41100000/pci@0/pci@0/pci@b/pci@0/vga@0
+[    T1] hvc0: raw protocol on /ibm,opal/consoles/serial@0 (boot console)
+[    T1] hvc0: No interrupts property, using OPAL event
+[    T1] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+[    T1] Non-volatile memory driver v1.3
+[    T1] brd: module loaded
+[    T1] loop: module loaded
+[    T1] ipr: IBM Power RAID SCSI Device Driver version: 2.6.4 (March 
+14, 2017)
+[    T1] ahci 0021:0e:00.0: version 3.0
+[    T1] ahci 0021:0e:00.0: enabling device (0141 -> 0143)
+[    T1] ahci 0021:0e:00.0: AHCI 0001.0000 32 slots 4 ports 6 Gbps 0xf 
+impl SATA mode
+[    T1] ahci 0021:0e:00.0: flags: 64bit ncq sntf led only pmp fbs pio 
+slum part sxs
+[    T1] scsi host0: ahci
+[    T1] scsi host1: ahci
+[    T1] scsi host2: ahci
+[    T1] scsi host3: ahci
+[    T1] ata1: SATA max UDMA/133 abar m2048@0x3fe881000000 port 
+0x3fe881000100 irq 39
+[    T1] ata2: SATA max UDMA/133 abar m2048@0x3fe881000000 port 
+0x3fe881000180 irq 39
+[    T1] ata3: SATA max UDMA/133 abar m2048@0x3fe881000000 port 
+0x3fe881000200 irq 39
+[    T1] ata4: SATA max UDMA/133 abar m2048@0x3fe881000000 port 
+0x3fe881000280 irq 39
+[    T1] e100: Intel(R) PRO/100 Network Driver
+[    T1] e100: Copyright(c) 1999-2006 Intel Corporation
+[    T1] e1000: Intel(R) PRO/1000 Network Driver
+[    T1] e1000: Copyright (c) 1999-2006 Intel Corporation.
+[    T1] e1000e: Intel(R) PRO/1000 Network Driver
+[    T1] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+[    T1] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    T1] ehci-pci: EHCI PCI platform driver
+[    T1] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    T1] ohci-pci: OHCI PCI platform driver
+[    T1] rtc-opal opal-rtc: registered as rtc0
+[    T1] rtc-opal opal-rtc: setting system clock to 2022-01-24T18:21:45 
+UTC (1643048505)
+[    T1] i2c_dev: i2c /dev entries driver
+[    T1] device-mapper: uevent: version 1.0.3
+[    T1] device-mapper: ioctl: 4.45.0-ioctl (2021-03-22) initialised: 
+dm-devel@redhat.com
+[    T1] powernv-cpufreq: cpufreq pstate min 0xffffffd5 nominal 
+0xffffffef max 0x0
+[    T1] powernv-cpufreq: Workload Optimized Frequency is disabled in 
+the platform
+[    T1] powernv_idle_driver registered
+[    T1] nx_compress_powernv: coprocessor found on chip 0, CT 3 CI 1
+[    T1] nx_compress_powernv: coprocessor found on chip 8, CT 3 CI 9
+[    T1] usbcore: registered new interface driver usbhid
+[    T1] usbhid: USB HID core driver
+[    T1] ipip: IPv4 and MPLS over IPv4 tunneling driver
+[    T1] NET: Registered PF_INET6 protocol family
+[    T1] Segment Routing with IPv6
+[    T1] In-situ OAM (IOAM) with IPv6
+[    T1] sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+[    T1] BUG: Kernel NULL pointer dereference on write at 0x00000000
+[    T1] Faulting instruction address: 0xc0000000008e2400
+[    T1] Oops: Kernel access of bad area, sig: 11 [#1]
+[    T1] LE PAGE_SIZE=64K MMU=Hash PREEMPT SMP NR_CPUS=16 NUMA PowerNV
+[    T1] Modules linked in:
+[    T1] CPU: 11 PID: 1 Comm: swapper/0 Not tainted 
+5.17.0-rc1-00032-gdd81e1c7d5fb #29
+[    T1] NIP:  c0000000008e2400 LR: c000000000d65db0 CTR: c000000000f0bb60
+[    T1] REGS: c0000000125033e0 TRAP: 0380   Not tainted 
+(5.17.0-rc1-00032-gdd81e1c7d5fb)
+[    T1] MSR:  9000000000009033 <SF,HV,EE,ME,IR,DR,RI,LE>  CR: 42800c40 
+XER: 00000000
+[    T1] CFAR: c000000000d65dac IRQMASK: 0
+[    T1] GPR00: c000000000d65b40 c000000012503680 c00000000290c600 
+0000000000000000
+[    T1] GPR04: ffffffffffffffff 00000000ffffffff 0000000000000000 
+0000000000000cc0
+[    T1] GPR08: 0000000000000000 0000000000000000 ffffffffffffffff 
+0000000000000001
+[    T1] GPR12: 0000000000000000 c000007fffff6c00 c000000000012478 
+0000000000000000
+[    T1] GPR16: 0000000000000000 0000000000000000 0000000000000000 
+0000000000000000
+[    T1] GPR20: 0000000000000000 c000000002810100 0000000000000cc0 
+0000000000000000
+[    T1] GPR24: 0000000000000010 c00000000294cf50 0000000000000000 
+0000000000000000
+[    T1] GPR28: 0000000000000000 c00000001ec61000 0000000000000000 
+c000000012503680
+[    T1] NIP [c0000000008e2400] strlen+0x10/0x30
+[    T1] LR [c000000000d65db0] if_nlmsg_size+0x150/0x360
+[    T1] Call Trace:
+[    T1] [c000000012503680] [c0000000125036c0] 0xc0000000125036c0 
+(unreliable)
+[    T1] [c0000000125036f0] [c000000000d65b40] 
+rtmsg_ifinfo_build_skb+0x80/0x1a0
+[    T1] [c0000000125037b0] [c000000000d66be0] rtmsg_ifinfo+0x70/0xd0
+[    T1] [c000000012503800] [c000000000d4de50] 
+register_netdevice+0x690/0x770
+[    T1] [c000000012503890] [c000000000d4e2bc] register_netdev+0x4c/0x80
+[    T1] [c0000000125038c0] [c000000000f4784c] sit_init_net+0x10c/0x1d0
+[    T1] [c000000012503910] [c000000000d33c0c] ops_init+0x13c/0x1b0
+[    T1] [c000000012503970] [c000000000d331bc] 
+register_pernet_operations+0xec/0x1e0
+[    T1] [c0000000125039d0] [c000000000d33440] 
+register_pernet_device+0x60/0xd0
+[    T1] [c000000012503a20] [c000000002085478] sit_init+0x54/0x160
+[    T1] [c000000012503ab0] [c000000000011ba8] do_one_initcall+0xd8/0x3b0
+[    T1] [c000000012503c70] [c000000002006064] do_initcall_level+0xe4/0x1c4
+[    T1] [c000000012503cc0] [c000000002005f20] do_initcalls+0x84/0xe4
+[    T1] [c000000012503d40] [c000000002005c7c] 
+kernel_init_freeable+0x160/0x1ec
+[    T1] [c000000012503da0] [c0000000000124ac] kernel_init+0x3c/0x270
+[    T1] [c000000012503e10] [c00000000000cd64] 
+ret_from_kernel_thread+0x5c/0x64
+[    T1] Instruction dump:
+[    T1] eb81ffe0 7c0803a6 4e800020 00000000 00000000 00000000 60000000 
+60000000
+[    T1] 3883ffff 60000000 60000000 60000000 <8ca40001> 28050000 
+4082fff8 7c632050
+[    T1] ---[ end trace 0000000000000000 ]---
+[    T1]
+[  T206] ata4: SATA link down (SStatus 0 SControl 300)
+[  T204] ata3: SATA link down (SStatus 0 SControl 300)
+[  T200] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[  T200] ata1.00: ATA-10: ST1000NX0313         00LY266 00LY265IBM, BE33, 
+max UDMA/133
+[  T200] ata1.00: 1953525168 sectors, multi 0: LBA48 NCQ (depth 32), AA
+[  T200] ata1.00: configured for UDMA/133
+[    T7] scsi 0:0:0:0: Direct-Access     ATA      ST1000NX0313     BE33 
+PQ: 0 ANSI: 5
+[    T7] sd 0:0:0:0: Attached scsi generic sg0 type 0
+[  T209] sd 0:0:0:0: [sda] 1953525168 512-byte logical blocks: (1.00 
+TB/932 GiB)
+[  T209] sd 0:0:0:0: [sda] 4096-byte physical blocks
+[  T209] sd 0:0:0:0: [sda] Write Protect is off
+[  T209] sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
+[  T209] sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, 
+doesn't support DPO or FUA
+[  T209]  sda: sda1 sda2
+[  T209] sd 0:0:0:0: [sda] Attached SCSI removable disk
+[    T1] Kernel panic - not syncing: Attempted to kill init! 
+exitcode=0x0000000b
+```
 
-> E.g.:
->> +int t7xx_md_init(struct t7xx_pci_dev *t7xx_dev)
->> +{
->> ...
-> If this returns an error, does it mean init/probe stalls? Or is there
-> some backup to restart?
-An error here will cause probe to fail, there's no recovery path for this.
 
+Kind regards,
+
+Paul
