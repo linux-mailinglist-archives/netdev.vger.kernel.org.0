@@ -2,183 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E0A49BFBE
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 00:51:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAB6C49BFC0
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 00:54:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234992AbiAYXv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 18:51:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54686 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232112AbiAYXv1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 18:51:27 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D49FC06161C;
-        Tue, 25 Jan 2022 15:51:26 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id z5so6986270plg.8;
-        Tue, 25 Jan 2022 15:51:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=++5iX4mvdzpdgf8jzEfgSE8X/Ff/aR2LGCChym4KTt8=;
-        b=WOlWdF8X2wmxR6au/jzbHGZJndG/0nrtx/pWqr4WcHAbVKXVqxleXWN717gtr3VMKE
-         O0FZF7zYCDypRd5ocKiFcb9YajgDlxF+VU+BrGKyMiZNLV5xo5igo6XvaVQll8WItWcP
-         l06YKo31dXV/DK3ADf602vsHf28Z2+ccdtgM9YzAuDxytSR1YThBUXcDYwu5SCxTyplS
-         bbdBaY0AhTHE9YoSi2ZlKLKSr9zp1jODe2TsoeydIC8clvR7Jo3lQXL/O7jRteni22Kq
-         WiTUhobhvY6OvTP+Pfi72+FOtV3jjRHpiDanFcl20g3lsqMmDIvyd9s4MS+B+a/lRUuH
-         naag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=++5iX4mvdzpdgf8jzEfgSE8X/Ff/aR2LGCChym4KTt8=;
-        b=v/FEZOk2DImRMEdXMa73tufA0FAbxSx50wfmOmGBafUNcjg+HWLWLhzJf3TTRikhYk
-         /Iewzj/1C1tXyb11Zrb4sC3DelOclvjRWz4RnZIa+2kNC7IQtkdBeWY+W+7Bsz6VFndo
-         HZALIte11d0yPj3QupUYxlkRhbvQRHYACfZRuj3PRXLTRU9ep+6gb5IjoXbKu/XPUYN6
-         93uxNwvTPqCG14hudhvGLYlbgpApycxZzwrfV2B6BOC+KwdlvSO5ZzCnTXPw/ibctAGI
-         4cgeJjHotAsfcSvVUfaDXZ79F4BO9vis69leJ/Cxgxo0nM4HEqUG7zn9EhTMZ93fDs15
-         MrGw==
-X-Gm-Message-State: AOAM530Ygxe4A5zx9pExU0IdMGlusMtPn7J6IO5pCa1U8Tl/QCZ0UeeX
-        ahM0VWWEve2rf183+UOgnfc=
-X-Google-Smtp-Source: ABdhPJyTga5l60A6u9EfrDF0sogmd/aZSDOXMZlBWPM+IQXHemEs4zZ1GSdCwQyHwRxFTvPT38+wMA==
-X-Received: by 2002:a17:902:ea0d:b0:14b:4c26:f42f with SMTP id s13-20020a170902ea0d00b0014b4c26f42fmr11076437plg.125.1643154685721;
-        Tue, 25 Jan 2022 15:51:25 -0800 (PST)
-Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id nv13sm1436998pjb.18.2022.01.25.15.51.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 15:51:24 -0800 (PST)
-Date:   Wed, 26 Jan 2022 05:19:36 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     sdf@google.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Subject: Re: [PATCH bpf-next] bpf: fix register_btf_kfunc_id_set for
- !CONFIG_DEBUG_INFO_BTF
-Message-ID: <20220125234936.qal3xzsigkpauofj@apollo.legion>
-References: <20220125003845.2857801-1-sdf@google.com>
- <20220125021008.lo6k6lmpleoli73r@apollo.legion>
- <YfAqa0iVZ8IHiUtH@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        id S234999AbiAYXyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 18:54:07 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:12880 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234993AbiAYXyG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 18:54:06 -0500
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20PMO3c7022634;
+        Tue, 25 Jan 2022 15:53:26 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=CP4+RF5HI6hG7E44gon6LkBA+oHD020hS0lJ/eVe5Qs=;
+ b=UF2biwBu+QxbJEXvwlexj65FPPl+5Gk8xhB3GkFGyJSbV5k5CtceQeYyqmc8plfjGTCD
+ jSjh4OhOm+HO4EJw6xfIaBtCDvJsk7u5+QxUyprZLUt9qJNnTn+/GJlcGEleWsCKef+w
+ rhvbQfO3MD/cQh5TKCevImlCm1xY7fHGpjs= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dtfjgcxg9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 25 Jan 2022 15:53:25 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 25 Jan 2022 15:53:25 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BdYeTF4DZg7Bskt4OmKYENLb/IMt7txZw41qnShnNm0LY8DRjzsf25sEirby1N24Fd0fROIgapDAXMDMkzesJyT0RX5i22ROaZJTOG8/ODxQzXzBsDE8b4gGo4qZbTqt4r8FbVjSjZsEgjxfhZzXao0Nz4DxFp9uQUQRePZcY/yWihQcKwCABfGR/VaRUpX4O9HuIFWOnm/QHvEaklzGhOfre9XOVx31J33Wwz2I+gs92lPxrLhgdKWncrb6bS5yAbDbwcImNoTwbNtptnSa0Ye7lPR3RnspHcxieJFtMdsNWFbl849M8UjI4gkFOWRSfIT9Ydd+PEZ0js2lhXyuew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CP4+RF5HI6hG7E44gon6LkBA+oHD020hS0lJ/eVe5Qs=;
+ b=IeIIYcugvN46f2TmsetHOfCaPW1qRmHwVDxEQsmmv4nnStG5H1w7va4qHom+a4iYtXiZehYw/qPsBKZJAH44daVxo0Gu4zy/nOA6zHwNtnZfFCCMmTpoHiNvvvKDNm9DvDeYs6jn+T5ZGnL2y7viZx1Yh6sWFavyijfFJSRdZuEsmAzc+PUqApcCoqm320djWWgBBo/WQp0n3FEoWa4DjhjlR8KYIHp7YoYOUSc10pPp07X6oRlVhLLAwcFLctDzJM7xSwUbhWsw1eB6u2ZCTcsUbw8a6lydR/gW79wMDUVQz/M8L9jcj30rL3RzUfSXEM0Gny5V845pK1k7VZ91fg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
+ by DM5PR15MB1436.namprd15.prod.outlook.com (2603:10b6:3:d3::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.17; Tue, 25 Jan
+ 2022 23:53:23 +0000
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::b0ca:a63e:fb69:6437]) by SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::b0ca:a63e:fb69:6437%6]) with mapi id 15.20.4909.017; Tue, 25 Jan 2022
+ 23:53:23 +0000
+Date:   Tue, 25 Jan 2022 15:53:20 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     Jakub Sitnicki <jakub@cloudflare.com>,
+        Menglong Dong <menglong8.dong@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Mengen Sun <mengensun@tencent.com>, <flyingpeng@tencent.com>,
+        <mungerjiang@tencent.com>, Menglong Dong <imagedong@tencent.com>
+Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct
+ bpf_sock'
+Message-ID: <20220125235320.fx775qsdtqon272v@kafai-mbp.dhcp.thefacebook.com>
+References: <20220113070245.791577-1-imagedong@tencent.com>
+ <87sftbobys.fsf@cloudflare.com>
+ <20220125224524.fkodqvknsluihw74@kafai-mbp.dhcp.thefacebook.com>
+ <CAADnVQKbYCCYjCMhEV7p1YzkAVSKvg-1VKfWVQYVL0TaESNxBQ@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <YfAqa0iVZ8IHiUtH@google.com>
+In-Reply-To: <CAADnVQKbYCCYjCMhEV7p1YzkAVSKvg-1VKfWVQYVL0TaESNxBQ@mail.gmail.com>
+X-ClientProxiedBy: BY3PR04CA0008.namprd04.prod.outlook.com
+ (2603:10b6:a03:217::13) To SA1PR15MB5016.namprd15.prod.outlook.com
+ (2603:10b6:806:1db::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4ae82ff7-0fa2-4ab0-b21b-08d9e05ddf49
+X-MS-TrafficTypeDiagnostic: DM5PR15MB1436:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR15MB14368C3A6CD44201349EFE6FD55F9@DM5PR15MB1436.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: S3hl+Zt+ZUrLCa8gGLp0ze/bMF483qZIpDNNNuRoWbSiwCv941gEd9w2FDCA2CbkhzWXfFfZTfddpvruaqi4g5kjIEUTUZwfuPXgPVdLCc0r/3/3hiK7smQ91hJzZ28RPhNt2ENbrxYQbSl40p5i/jhWDEUHPd5NnpNXJMAv5Q0hmQIhtqCMIR9NVihA9KJ/xZdSPuOJ62NpNUSkbgB+3i5H+Nfb1Dm3xG+tVzJcOqWg320KtG+XlKAPbWgenGZ7Em8ry6jtnMXcLhnbpa7TYKSIe5SngQWld76mlF4FlEitRbki3qzPHWdmIA+Fhd1TO2gOnKer0JkNeOvKnRlHP+Cc5TDpxzJBIhImcnnnNGJ9fk/5bu1gBkjuKxuWmJ/p4ykvZVTYAzO+mR+OGH0rnJ/v40OqEVkJraIp54ro7EFJO3epVXD3LW1m3sW8XbnJz4Mjb7L/rcgNxOll/zdkwlqzBKGiEMDl4FR2hoye3tbEmYfsbdRQh1uYyT/vpuiRywfuN319zgL/HSWBOTW4kkwTspfgjHH3ojyojLJcLDJUURLlC6gBnxVCQAUlYk6bcyAouV9SPe7dIgiWij3jV6i5Bm+xccvi6+QB5453wY5Qr2Xe8fl63hczO3gdNVi5eMviF7rOfpuphFQ3Zo5Fqg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(1076003)(66556008)(6916009)(66476007)(66946007)(5660300002)(4326008)(8676002)(7416002)(8936002)(6486002)(86362001)(316002)(53546011)(38100700002)(186003)(52116002)(6512007)(2906002)(9686003)(54906003)(6506007)(83380400001)(508600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+56KRqnTdu+J7Z7b5ufyH3BctUUBw/ZyrOnnWerHG1YIlQd2ragfh2F8BBmQ?=
+ =?us-ascii?Q?AUe3y1yI6WylkCebYVB8emK1rDbwXweA/4NTeHtZiGZdHBoTKA+7Z2Pu8T4d?=
+ =?us-ascii?Q?ZIc4zndXSGSTt3EDI91PsqQeexRONoCcRJitwbsb4Ghpvj+UXifu9QFbH9X4?=
+ =?us-ascii?Q?6w3db2nM0D64CieKTkd/0YD9u19ta4TgufY3WWCsB4fk15+fhvE6I6B2ECmW?=
+ =?us-ascii?Q?41eQQz8va9xjqRir6uW+PZOS1YIeM0AIJ4z1fAHpPQzlFB98EdwrHvSt69+B?=
+ =?us-ascii?Q?TCoekJs0FvmVkgijVnh/d3BPKSozxJ8JFBrFDBy2evlJGaGRBGZYjSg2btME?=
+ =?us-ascii?Q?nxCdun8H8GddC0JD0AK+3415TyxGJBPusL9VpckQ/Dd0ShnocbkwAz/AoWyd?=
+ =?us-ascii?Q?jb/h9tq4cPLCLQZziyCokiRltBwhE62d4kMUgjBpMZxrfTlwnatmWrPLZTVg?=
+ =?us-ascii?Q?3/eMTb039di9n57Lx9NmtVGIYD6RMgH5ID51AX0cSF9m91HtXyyHM/xjE0Mh?=
+ =?us-ascii?Q?N8Yn0eK5v0nRGk+E2/Sz+MSsq7eZLNydueAirFud6r8zom9R1ht2yRlYifTP?=
+ =?us-ascii?Q?ugdRFRCCdrJNZtc9YR/3KioJ+xypWvMfVUgqB0fUx0Q9Hdaur0O7/arcWkm7?=
+ =?us-ascii?Q?debjfj9j9DSwk7dRVthkF862pjxq6mK7p6WwfAhg6/X0PxRR9mxToES6/MyY?=
+ =?us-ascii?Q?cAfCv8+leXOQUGb5iqOuVqeosLPM9nqNSl70Ku15sjHYEBJ1agfVyVF/IKcU?=
+ =?us-ascii?Q?H+RHRpBuFRZipxv05X4h9M/R2rgDhV7l2YMH1HBTG/gX1ysiLEHnuOCUNs+B?=
+ =?us-ascii?Q?vNcmYDVLQ011Yg+zExa0EAsH3R/o22NbOZs5CBMXXjzJNUPrmzr+p4G+S4c1?=
+ =?us-ascii?Q?4/vjvZWMVjWLm4CKiV8axrVUXbxuXwi+tcmYBQYatwwUGE38iEg2EI8pxC6q?=
+ =?us-ascii?Q?y67Q5cQe68ZOKa+2jOe0PwJPmkcUxpVXrejwZPG3HaL5BGdpCxNGU7oKMRpZ?=
+ =?us-ascii?Q?SbkvWyIC3lxqjc+U6ny0iD0dSlX8uC3JlMW8pCtzIN5CfqIBHKzVqBAMNBUF?=
+ =?us-ascii?Q?sBJ3mMJe7hakcFV8pjOYqYn7IsUZUdeD3hnMYp9v1Wl/bP+TM8pop8NTFWiP?=
+ =?us-ascii?Q?srZOs4b/kWVMDGEuBgIj5Y2NU+Ss+U8UvtAv8/vHe61qMQSSUzYNqV1vKxKM?=
+ =?us-ascii?Q?lHAw0XrPz0sHueZtzJzJAfne0LOpRyyQWSsswCs+akt8Cf3u+V4d8udSg6nM?=
+ =?us-ascii?Q?rEVW1BG2/DmK4c+zCGW+0em8dwRvfYz5vh83Var0XuAnfFTzLFaiwCpN3TQ4?=
+ =?us-ascii?Q?V3xakF+jAuaxUlSjyPHE0MOyPkwIkqWolDGBgLc6LmnFX7hHutGFdK7ZM7vz?=
+ =?us-ascii?Q?eFft/FGWF1p51GEQ47X1xM7Vhlc5PGD75zveXx3tjlT+5a2m4Uw6kT8vAxlY?=
+ =?us-ascii?Q?E2KoF+h+2cNHyn1q7lVIbxNOcVjn2JmH0KzzjtGU98tb/+MfrwwwF4Xgn33B?=
+ =?us-ascii?Q?vyEM7DbyAiRr3upXSMuPzrYT7OlBvP+/9IhBlFl1Rh1JmxWI+bVeVdJS1iig?=
+ =?us-ascii?Q?Gc9fol1Uls37egL5+csY7Bb2K7uINuItIp02HLvy?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4ae82ff7-0fa2-4ab0-b21b-08d9e05ddf49
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 23:53:23.4395
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wYPRfNqMF3RLfAl7qVjtC0uSDCrBnl4KZC6MSV9i9bSG3HJySODj/MNDRntSu9GA
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1436
+X-OriginatorOrg: fb.com
+X-Proofpoint-GUID: xtVNz6j7RvZ6rj2OiqybuE1-0PaEKIII
+X-Proofpoint-ORIG-GUID: xtVNz6j7RvZ6rj2OiqybuE1-0PaEKIII
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-25_06,2022-01-25_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 suspectscore=0
+ bulkscore=0 phishscore=0 adultscore=0 spamscore=0 lowpriorityscore=0
+ mlxlogscore=621 clxscore=1015 impostorscore=0 priorityscore=1501
+ mlxscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201250144
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 10:20:51PM IST, sdf@google.com wrote:
-> On 01/25, Kumar Kartikeya Dwivedi wrote:
-> > On Tue, Jan 25, 2022 at 06:08:45AM IST, Stanislav Fomichev wrote:
-> > > Commit dee872e124e8 ("bpf: Populate kfunc BTF ID sets in struct btf")
-> > > breaks loading of some modules when CONFIG_DEBUG_INFO_BTF is not set.
-> > > register_btf_kfunc_id_set returns -ENOENT to the callers when
-> > > there is no module btf. Let's return 0 (success) instead to let
-> > > those modules work in !CONFIG_DEBUG_INFO_BTF cases.
+On Tue, Jan 25, 2022 at 03:02:37PM -0800, Alexei Starovoitov wrote:
+> On Tue, Jan 25, 2022 at 2:45 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> >
+> > On Tue, Jan 25, 2022 at 08:24:27PM +0100, Jakub Sitnicki wrote:
+> > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > > index b0383d371b9a..891a182a749a 100644
+> > > > --- a/include/uapi/linux/bpf.h
+> > > > +++ b/include/uapi/linux/bpf.h
+> > > > @@ -5500,7 +5500,11 @@ struct bpf_sock {
+> > > >     __u32 src_ip4;
+> > > >     __u32 src_ip6[4];
+> > > >     __u32 src_port;         /* host byte order */
+> > > > -   __u32 dst_port;         /* network byte order */
+> > > > +   __u32 dst_port;         /* low 16-bits are in network byte order,
+> > > > +                            * and high 16-bits are filled by 0.
+> > > > +                            * So the real port in host byte order is
+> > > > +                            * bpf_ntohs((__u16)dst_port).
+> > > > +                            */
+> > > >     __u32 dst_ip4;
+> > > >     __u32 dst_ip6[4];
+> > > >     __u32 state;
 > > >
-> > > Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > > Fixes: dee872e124e8 ("bpf: Populate kfunc BTF ID sets in struct btf")
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
->
-> > Thanks for the fix.
->
-> > >  kernel/bpf/btf.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > I'm probably missing something obvious, but is there anything stopping
+> > > us from splitting the field, so that dst_ports is 16-bit wide?
 > > >
-> > > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > > index 57f5fd5af2f9..24205c2d4f7e 100644
-> > > --- a/kernel/bpf/btf.c
-> > > +++ b/kernel/bpf/btf.c
-> > > @@ -6741,7 +6741,7 @@ int register_btf_kfunc_id_set(enum bpf_prog_type
-> > prog_type,
+> > > I gave a quick check to the change below and it seems to pass verifier
+> > > checks and sock_field tests.
 > > >
-> > >  	btf = btf_get_module_btf(kset->owner);
-> > >  	if (IS_ERR_OR_NULL(btf))
-> > > -		return btf ? PTR_ERR(btf) : -ENOENT;
-> > > +		return btf ? PTR_ERR(btf) : 0;
->
-> > I think it should still be an error when CONFIG_DEBUG_INFO_BTF is enabled.
->
-> > How about doing it differently:
->
-> > Make register_btf_kfunc_id_set, btf_kfunc_id_set_contains, and functions
-> > only
-> > called by them all dependent upon CONFIG_DEBUG_INFO_BTF. Then code picks
-> > the
-> > static inline definition from the header and it works fine with 'return
-> > 0' and
-> > 'return false'.
->
-> > In case CONFIG_DEBUG_INFO_BTF is enabled, but
-> > CONFIG_DEBUG_INFO_BTF_MODULES is
-> > disabled, we can do the error upgrade but inside btf_get_module_btf.
->
-> > I.e. extend the comment it has to say that when it returns NULL, it
-> > means there
-> > is no BTF (hence nothing to do), but it never returns NULL when
-> > DEBUF_INFO_BTF*
-> > is enabled, but upgrades the btf == NULL to a PTR_ERR(-ENOENT), because
-> > the btf
-> > should be there when the options are enabled.
->
-> > e.g. If CONFIG_DEBUG_INFO_BTF=y but CONFIG_DEBUG_INFO_BTF_MODULES=n, it
-> > can
-> > return NULL for owner == <some module ptr>, but not for owner == NULL
-> > (vmlinux),
-> > because CONFIG_DEBUG_INFO_BTF is set. If both are disabled, it can
-> > return NULL
-> > for both. If both are set, it will never return NULL.
->
-> > Then the caller can just special case NULL depending on their usage.
->
-> > And your current diff remains same combined with the above changes.
->
-> > WDYT? Does this look correct or did I miss something important?
->
-> I initially started with this approach, adding ifdef
-> CONFIG_DEBUG_INFO_BTF/CONFIG_DEBUG_INFO_BTF_MODULES, but it quickly
-> became a bit ugly :-( I can retry if you prefer, but how about, instead,
-> we handle it explicitly this way in the caller?
->
->
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index 24205c2d4f7e..e66f60b288d0 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -6740,8 +6740,19 @@ int register_btf_kfunc_id_set(enum bpf_prog_type
-> prog_type,
->  	int ret;
->
->  	btf = btf_get_module_btf(kset->owner);
-> -	if (IS_ERR_OR_NULL(btf))
-> -		return btf ? PTR_ERR(btf) : 0;
-> +	if (!btf) {
-> +		if (!kset->owner && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) {
-> +			pr_err("missing vmlinux BTF\n");
-> +			return -ENOENT;
-> +		}
-> +		if (kset->owner && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES)) {
-> +			pr_err("missing module BTF\n");
-> +			return -ENOENT;
-> +		}
-> +		return 0;
-> +	}
-> +	if (IS_ERR(btf))
-> +		return PTR_ERR(btf);
->
->  	hook = bpf_prog_type_to_kfunc_hook(prog_type);
->  	ret = btf_populate_kfunc_set(btf, hook, kset);
->
-> Basically, treat as error the cases we care about:
-> - non-module && CONFIG_DEBUG_INFO_BTF -> ENOENT
-> - module && CONFIG_DEBUG_INFO_BTF_MODULES -> ENOENT
->
-> Also give the user some hint on what went wrong; insmod gave me "Unknown
-> symbol in module, or unknown parameter (see dmesg)" for ENOENT (and
-> dmesg was empty).
+> > > IDK, just an idea. Didn't give it a deeper thought.
+> > >
+> > > --8<--
+> > >
+> > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > index 4a2f7041ebae..344d62ccafba 100644
+> > > --- a/include/uapi/linux/bpf.h
+> > > +++ b/include/uapi/linux/bpf.h
+> > > @@ -5574,7 +5574,8 @@ struct bpf_sock {
+> > >       __u32 src_ip4;
+> > >       __u32 src_ip6[4];
+> > >       __u32 src_port;         /* host byte order */
+> > > -     __u32 dst_port;         /* network byte order */
+> > > +     __u16 unused;
+> > > +     __u16 dst_port;         /* network byte order */
+> > This will break the existing bpf prog.
+> 
+> I think Jakub's idea is partially expressed:
+> +       case offsetof(struct bpf_sock, dst_port):
+> +               bpf_ctx_record_field_size(info, sizeof(__u16));
+> +               return bpf_ctx_narrow_access_ok(off, size, sizeof(__u16));
+> 
+> Either 'unused' needs to be after dst_port or
+> bpf_sock_is_valid_access() needs to allow offset at 'unused'
+> and at 'dst_port'.
+> And allow u32 access though the size is actually u16.
+> Then the existing bpf progs (without recompiling) should work?
+Yes, I think that should work with the existing bpf progs.
+I suspect putting 'dst_port' first and then followed by 'unused'
+may be easier.  That will also serve as a natural doc for the
+current behavior (the value is in the lower 16 bits).
 
-Alright, LGTM. Also maybe we can say "missing vmlinux BTF, cannot register
-kfuncs" instead.
-
---
-Kartikeya
+It can be extended to bpf_sk_lookup? bpf_sk_lookup can read at any
+offset of these 4 bytes, so may need to read 0 during
+convert_ctx_accesses?
