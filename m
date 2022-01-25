@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C06A149AF39
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 10:10:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E6C149AF42
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 10:10:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455789AbiAYJHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 04:07:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45150 "EHLO
+        id S1455835AbiAYJHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 04:07:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454225AbiAYI6V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 03:58:21 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D7EC05A199;
-        Tue, 25 Jan 2022 00:18:09 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id p37so18954648pfh.4;
-        Tue, 25 Jan 2022 00:18:09 -0800 (PST)
+        with ESMTP id S1454232AbiAYI6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 03:58:22 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8CEC05A19A;
+        Tue, 25 Jan 2022 00:18:16 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id p37so18954939pfh.4;
+        Tue, 25 Jan 2022 00:18:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=8fMIhYh/j4v25pOVuKzY8WeiuuQjcrhkrY/qBrQikhk=;
-        b=H4uRqbo2mz11fQLsoARPO2Dn0pxOqeZcCcvsSEWrinAyyt3KmUynk82bi9fJPwZ3fu
-         IbXCudWsNQ62Ma4HpYy6B2Dn0Fl8Crne2HJkaSVI+WOg8W8gnHT2B0ZK1UqTXsKkOMqS
-         7BrdX30ixL6XePH2H8hUvG4epZslcvrnbLa1pm16IAnlBHYO2gKuhVkKJUoVA49DUL7V
-         PSUPSvr3z9RcwqYBWdQ1aqFp1m6s5s8Tc7fSelDfhDAn01L4gZbo8+Z8bpoprlBbnz1o
-         oL9DiqyUlIICJ8390bUydzjYDeAu3GuhNsKOV07H0UrwX3eF0RcqdHRVWfHzyMcZ/Zkj
-         s+aw==
+        bh=SnVSNMKy52XbhPLKBQYYgTXySBoRRsbquBsPKnvecCk=;
+        b=BidoxjrzfYvjErQaBQ8xv871HIYIo35AH7+MHHndYuHAKIBxrTdi4VM/dAwPf5wLxT
+         9h0FH0STuwkdD3LANZk5By6y9eEI5jVuN0wpkXvfAQ5yMw1roaaEJIV6qQ0+c6hxv6j3
+         ITXJHoplSFyidog1RaaFy/9EDHNAj1PKnZyfjOPFmIQnmViHVsk4g8ITtM9dS2VaSidu
+         xoOvAWXaWvQWIQfJYyhQ320wYVJYF/ERax9bGtc1T4Upx/hh3bQOc9aSJKwE7sLgU59X
+         kmbumGC13eXh2tVBo5/9JBaWx4brUH0DIeYZxuhqWw0i7uzWe0mwqc8dyIx+qBZ/F114
+         cOgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8fMIhYh/j4v25pOVuKzY8WeiuuQjcrhkrY/qBrQikhk=;
-        b=kACTn5zQX6fLfJo4VLmVv478QxJa9TU8b5mmjEuKe3g35EUXNZ6dsR/5npYliba0kl
-         +QC1smrdmauybUJ0A6sYD2sZoZRAN0KVKSyQME9LJKYClkSLrmJ6fqKPxgPKKrjcjNzf
-         1etxNO/dXqyS0sseJyYYlNpK07hXRwKlFMaB2BoF55dl408+rTEAPIRb2SvC6wl8PyHc
-         0UuivlBZTv4ZYK3nTUkZEw082nFp/hM5+VlsAR2uUg5BVePeQGeEsi4jiAb7VJzlUC8q
-         jC8KAOwvZPDyejiG8J3h0Tpt6Zcj42wesJO4aIP600WqYmWMcZl6NbKe1zgrx0Ws+s2Q
-         4P8Q==
-X-Gm-Message-State: AOAM532fVvXzz1k1yLLkb7c+k30Uuln8Ad6wam3fXmDy2AklPjKitBut
-        g3anTIWjEfVV2/Rc3SDtIGsnnsC/sHU=
-X-Google-Smtp-Source: ABdhPJxvAB3a1pP3mf+CvmPX5CqEPrDM+tETr03f+hTWIrazTPjIShS2PnOmfZCnij8EYy3jk+bNQg==
-X-Received: by 2002:a05:6a00:b42:b0:4ca:a5da:f184 with SMTP id p2-20020a056a000b4200b004caa5daf184mr3438023pfo.50.1643098689176;
-        Tue, 25 Jan 2022 00:18:09 -0800 (PST)
+        bh=SnVSNMKy52XbhPLKBQYYgTXySBoRRsbquBsPKnvecCk=;
+        b=vTJ+O+0WgCdzJHkIvTqQeHuBPziBDrsvxZBZT2cDV3hxKEtznnPEgdnq1T7jZXvVj7
+         Rd5U39qDqyD6UQjx/mGdobg7++CGUBpyBrUAm4kdEKslVAUw7WiJJPhf1F8qtgwQn9/g
+         4S2F02IYZXKTkn5i1gu/h3+EARTyBiiB9NZDzc1FFAGuJ65j9Xq7Bg2StBfFPCikyo1F
+         pMSsNwxw0A85sZR+4CVJUJsQyX1V8BC7WE2ywYvmouWz9PynlemnKDmfB/V0sxQ7Gzvf
+         4i/BmZYFiydkr3WOfP1Q+BwMpHXVA/Y3FFb8a1ADfYalzSnvFwhvm6wb5R6Ct06MtdXk
+         dbYg==
+X-Gm-Message-State: AOAM532cn9UXo+jxjmVCAI9Ulw4Kukn+mgudzmMi7FHkbYkJC2RB+kPA
+        MleoDzx6Ex6oVJfkq28MW93MdqbAttg=
+X-Google-Smtp-Source: ABdhPJyYy35USLhCzOT92ouwDk3aL+zQPh5uOv2FLlTW1lDcHYWXxaippNCIL7HJnELfv6t7YWyISA==
+X-Received: by 2002:a63:8c59:: with SMTP id q25mr14244001pgn.13.1643098695447;
+        Tue, 25 Jan 2022 00:18:15 -0800 (PST)
 Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id l21sm18928949pfu.120.2022.01.25.00.18.04
+        by smtp.gmail.com with ESMTPSA id l21sm18928949pfu.120.2022.01.25.00.18.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 00:18:08 -0800 (PST)
+        Tue, 25 Jan 2022 00:18:15 -0800 (PST)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -60,9 +60,9 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Toshiaki Makita <toshiaki.makita1@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH bpf 6/7] selftests/bpf/test_xdp_meta: use temp netns for testing
-Date:   Tue, 25 Jan 2022 16:17:16 +0800
-Message-Id: <20220125081717.1260849-7-liuhangbin@gmail.com>
+Subject: [PATCH bpf 7/7] selftests/bpf/test_xdp_redirect: use temp netns for testing
+Date:   Tue, 25 Jan 2022 16:17:17 +0800
+Message-Id: <20220125081717.1260849-8-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220125081717.1260849-1-liuhangbin@gmail.com>
 References: <20220125081717.1260849-1-liuhangbin@gmail.com>
@@ -77,82 +77,78 @@ netns already exists.
 
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- tools/testing/selftests/bpf/test_xdp_meta.sh | 38 ++++++++++----------
- 1 file changed, 20 insertions(+), 18 deletions(-)
+ .../selftests/bpf/test_xdp_redirect.sh        | 30 ++++++++++---------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/test_xdp_meta.sh b/tools/testing/selftests/bpf/test_xdp_meta.sh
-index d10cefd6eb09..ea69370caae3 100755
---- a/tools/testing/selftests/bpf/test_xdp_meta.sh
-+++ b/tools/testing/selftests/bpf/test_xdp_meta.sh
-@@ -2,6 +2,8 @@
+diff --git a/tools/testing/selftests/bpf/test_xdp_redirect.sh b/tools/testing/selftests/bpf/test_xdp_redirect.sh
+index 57c8db9972a6..1d79f31480ad 100755
+--- a/tools/testing/selftests/bpf/test_xdp_redirect.sh
++++ b/tools/testing/selftests/bpf/test_xdp_redirect.sh
+@@ -10,6 +10,8 @@
+ #     | xdp forwarding |
+ #     ------------------
  
- # Kselftest framework requirement - SKIP code is 4.
- readonly KSFT_SKIP=4
 +readonly NS1="ns1-$(mktemp -u XXXXXX)"
 +readonly NS2="ns2-$(mktemp -u XXXXXX)"
+ ret=0
+ 
+ setup()
+@@ -17,27 +19,27 @@ setup()
+ 
+ 	local xdpmode=$1
+ 
+-	ip netns add ns1
+-	ip netns add ns2
++	ip netns add ${NS1}
++	ip netns add ${NS2}
+ 
+-	ip link add veth1 index 111 type veth peer name veth11 netns ns1
+-	ip link add veth2 index 222 type veth peer name veth22 netns ns2
++	ip link add veth1 index 111 type veth peer name veth11 netns ${NS1}
++	ip link add veth2 index 222 type veth peer name veth22 netns ${NS2}
+ 
+ 	ip link set veth1 up
+ 	ip link set veth2 up
+-	ip -n ns1 link set dev veth11 up
+-	ip -n ns2 link set dev veth22 up
++	ip -n ${NS1} link set dev veth11 up
++	ip -n ${NS2} link set dev veth22 up
+ 
+-	ip -n ns1 addr add 10.1.1.11/24 dev veth11
+-	ip -n ns2 addr add 10.1.1.22/24 dev veth22
++	ip -n ${NS1} addr add 10.1.1.11/24 dev veth11
++	ip -n ${NS2} addr add 10.1.1.22/24 dev veth22
+ }
  
  cleanup()
  {
-@@ -13,8 +15,8 @@ cleanup()
- 
- 	set +e
  	ip link del veth1 2> /dev/null
+ 	ip link del veth2 2> /dev/null
 -	ip netns del ns1 2> /dev/null
 -	ip netns del ns2 2> /dev/null
 +	ip netns del ${NS1} 2> /dev/null
 +	ip netns del ${NS2} 2> /dev/null
  }
  
- ip link set dev lo xdp off 2>/dev/null > /dev/null
-@@ -24,32 +26,32 @@ if [ $? -ne 0 ];then
- fi
- set -e
+ test_xdp_redirect()
+@@ -52,13 +54,13 @@ test_xdp_redirect()
+ 		return 0
+ 	fi
  
--ip netns add ns1
--ip netns add ns2
-+ip netns add ${NS1}
-+ip netns add ${NS2}
+-	ip -n ns1 link set veth11 $xdpmode obj xdp_dummy.o sec xdp &> /dev/null
+-	ip -n ns2 link set veth22 $xdpmode obj xdp_dummy.o sec xdp &> /dev/null
++	ip -n ${NS1} link set veth11 $xdpmode obj xdp_dummy.o sec xdp &> /dev/null
++	ip -n ${NS2} link set veth22 $xdpmode obj xdp_dummy.o sec xdp &> /dev/null
+ 	ip link set dev veth1 $xdpmode obj test_xdp_redirect.o sec redirect_to_222 &> /dev/null
+ 	ip link set dev veth2 $xdpmode obj test_xdp_redirect.o sec redirect_to_111 &> /dev/null
  
- trap cleanup 0 2 3 6 9
- 
- ip link add veth1 type veth peer name veth2
- 
--ip link set veth1 netns ns1
--ip link set veth2 netns ns2
-+ip link set veth1 netns ${NS1}
-+ip link set veth2 netns ${NS2}
- 
--ip netns exec ns1 ip addr add 10.1.1.11/24 dev veth1
--ip netns exec ns2 ip addr add 10.1.1.22/24 dev veth2
-+ip netns exec ${NS1} ip addr add 10.1.1.11/24 dev veth1
-+ip netns exec ${NS2} ip addr add 10.1.1.22/24 dev veth2
- 
--ip netns exec ns1 tc qdisc add dev veth1 clsact
--ip netns exec ns2 tc qdisc add dev veth2 clsact
-+ip netns exec ${NS1} tc qdisc add dev veth1 clsact
-+ip netns exec ${NS2} tc qdisc add dev veth2 clsact
- 
--ip netns exec ns1 tc filter add dev veth1 ingress bpf da obj test_xdp_meta.o sec t
--ip netns exec ns2 tc filter add dev veth2 ingress bpf da obj test_xdp_meta.o sec t
-+ip netns exec ${NS1} tc filter add dev veth1 ingress bpf da obj test_xdp_meta.o sec t
-+ip netns exec ${NS2} tc filter add dev veth2 ingress bpf da obj test_xdp_meta.o sec t
- 
--ip netns exec ns1 ip link set dev veth1 xdp obj test_xdp_meta.o sec x
--ip netns exec ns2 ip link set dev veth2 xdp obj test_xdp_meta.o sec x
-+ip netns exec ${NS1} ip link set dev veth1 xdp obj test_xdp_meta.o sec x
-+ip netns exec ${NS2} ip link set dev veth2 xdp obj test_xdp_meta.o sec x
- 
--ip netns exec ns1 ip link set dev veth1 up
--ip netns exec ns2 ip link set dev veth2 up
-+ip netns exec ${NS1} ip link set dev veth1 up
-+ip netns exec ${NS2} ip link set dev veth2 up
- 
--ip netns exec ns1 ping -c 1 10.1.1.22
--ip netns exec ns2 ping -c 1 10.1.1.11
-+ip netns exec ${NS1} ping -c 1 10.1.1.22
-+ip netns exec ${NS2} ping -c 1 10.1.1.11
- 
- exit 0
+-	if ip netns exec ns1 ping -c 1 10.1.1.22 &> /dev/null &&
+-	   ip netns exec ns2 ping -c 1 10.1.1.11 &> /dev/null; then
++	if ip netns exec ${NS1} ping -c 1 10.1.1.22 &> /dev/null &&
++	   ip netns exec ${NS2} ping -c 1 10.1.1.11 &> /dev/null; then
+ 		echo "selftests: test_xdp_redirect $xdpmode [PASS]";
+ 	else
+ 		ret=1
 -- 
 2.31.1
 
