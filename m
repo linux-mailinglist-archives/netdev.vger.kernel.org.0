@@ -2,202 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E235749B38A
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 13:14:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D91F49B38D
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 13:14:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350383AbiAYMOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 07:14:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33940 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444538AbiAYMKz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 07:10:55 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7307C061753;
-        Tue, 25 Jan 2022 04:09:02 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id e17so3295748ljk.5;
-        Tue, 25 Jan 2022 04:09:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=jYOvh3TluQrcjkgjx/socsMLlC7b20Fo9pmrYGjtKZg=;
-        b=e50pbGE8w0eIJVRReXoEZVlQD4WcZK070mmTC4q8/+TTueNm/GMXLNhx9y45Qn7pw4
-         3QN+rL4MuXizPS4/DiGvDnLrR2hzhZGpfizBtgxZkXcAVdNaM6ggpYxgV6WcklQczb9x
-         fb3nicof9MjMt/YxSlFv4dpx5t23LRTM504/diB50diJnpn0aNkW1pu3pO4zylBw6Aes
-         OTJFU28m8O5V9ohzYoFxI4FZNIktw2CKVOkIqeDHvNmbcghbjhGyeGR9TIS/jMuFhlF5
-         e2VyU+246N0qkNcHwErKtrUPGOfBbNCxUKcNmuQn+28pH4N5HGEwda9Yt+odv8k+s3jz
-         Y4jA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=jYOvh3TluQrcjkgjx/socsMLlC7b20Fo9pmrYGjtKZg=;
-        b=NvRuameHfATFJt4l0oi6w5sFket6Z6eqaEty37yMsaukAMHnHhOKGBYuWWfW7VOdH8
-         hHRoPbDE4zfLKo8Fk/vFqafLctzoOzemxnyxiq+C1WS/JqzuDm1+kVU/ycwFQDwSVbbn
-         FR7gW24IDPFQOub2iNz6fs6E2QUTEVlSaCwwucjjCl/65eOXBs3yHE7WnpZDjz2+Ka31
-         cRxxy0fqPBuIAJ0ufzQpBXnQBcZGAmEKiNmk6bMWwv1pAQDUGFPDqZViyjgUcGO9Hb52
-         uSN5Vxu5ZLk4SPTmKlsxs45rfSeQXGWWuLeKxvlAZf55u32aO2Q+XpTr6+YBLWNjYCNp
-         3KCw==
-X-Gm-Message-State: AOAM5325OSL3f7ut0B19G+V6LaLqgelP1lOg+s7JBheUZkGGfo7XRPtJ
-        HXdqtSbYgNiDbH78TH5hiGE=
-X-Google-Smtp-Source: ABdhPJwVub3zDKTOB+wjBLNORR7sCU9xt8UfpG/X3/KvRRBcVKHVtkjQDkJBg0tA78MsiLJC2g6uDA==
-X-Received: by 2002:a2e:a5c9:: with SMTP id n9mr14649555ljp.220.1643112540915;
-        Tue, 25 Jan 2022 04:09:00 -0800 (PST)
-Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.googlemail.com with ESMTPSA id y11sm1168942ljj.122.2022.01.25.04.08.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 04:09:00 -0800 (PST)
-Message-ID: <455f4360-34fe-7fee-66d5-fd945fe1e086@gmail.com>
-Date:   Tue, 25 Jan 2022 13:08:58 +0100
+        id S1355828AbiAYMOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 07:14:25 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59782 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355907AbiAYMLm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 07:11:42 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 705A560FFB;
+        Tue, 25 Jan 2022 12:11:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7418EC340E8;
+        Tue, 25 Jan 2022 12:11:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643112700;
+        bh=s/++T4vWmGwl42K8BOKMjcTgDgC5RAaZIAeyuP1TZj8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ZJS+FA0Q8+xLsXW24zmFHFubs1V+od2Jg1gEZG2lRCqe1+7Dc8wsIq/IH7GprIg8g
+         vyFl4vH8fyW/bXzYjxKU+BReikOScUnbCVMi5M2qNw6rMc11hTQQipPf79vRx0qc20
+         sMiHHeAfw/zDK4jmfqGu2ZQ/j6fTnwRzKihj2C6IZbU/QL/U/ninW9A7qKkqwA4P9S
+         U/pxb/B1l9/FibMe8/6x8heEBFmQFvQ4jV8qpMG2JGVaHvmdt82/aKhLR2wP2bI9v/
+         Mnj1wCaGotnXDebto6Y/WZonD4eJSBtV8h4mjPxCReXLDD9etXS0NthVd1j3PuDS8p
+         DzS5IJsue/ghA==
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH v5 0/9] fprobe: Introduce fprobe function entry/exit probe 
+Date:   Tue, 25 Jan 2022 21:11:34 +0900
+Message-Id: <164311269435.1933078.6963769885544050138.stgit@devnote2>
+X-Mailer: git-send-email 2.25.1
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
- Thunderbird/96.0
-Subject: Re: [PATCH 6/8] nvmem: transformations: ethernet address offset
- support
-To:     Michael Walle <michael@walle.cc>, linux-mtd@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-References: <20211228142549.1275412-1-michael@walle.cc>
- <20211228142549.1275412-7-michael@walle.cc>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-In-Reply-To: <20211228142549.1275412-7-michael@walle.cc>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.12.2021 15:25, Michael Walle wrote:
-> An nvmem cell might just contain a base MAC address. To generate a
-> address of a specific interface, add a transformation to add an offset
-> to this base address.
-> 
-> Add a generic implementation and the first user of it, namely the sl28
-> vpd storage.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->   drivers/nvmem/transformations.c | 45 +++++++++++++++++++++++++++++++++
->   1 file changed, 45 insertions(+)
-> 
-> diff --git a/drivers/nvmem/transformations.c b/drivers/nvmem/transformations.c
-> index 61642a9feefb..15cd26da1f83 100644
-> --- a/drivers/nvmem/transformations.c
-> +++ b/drivers/nvmem/transformations.c
-> @@ -12,7 +12,52 @@ struct nvmem_transformations {
->   	nvmem_cell_post_process_t pp;
->   };
->   
-> +/**
-> + * nvmem_transform_mac_address_offset() - Add an offset to a mac address cell
-> + *
-> + * A simple transformation which treats the index argument as an offset and add
-> + * it to a mac address. This is useful, if the nvmem cell stores a base
-> + * ethernet address.
-> + *
-> + * @index: nvmem cell index
-> + * @data: nvmem data
-> + * @bytes: length of the data
-> + *
-> + * Return: 0 or negative error code on failure.
-> + */
-> +static int nvmem_transform_mac_address_offset(int index, unsigned int offset,
-> +					      void *data, size_t bytes)
-> +{
-> +	if (bytes != ETH_ALEN)
-> +		return -EINVAL;
-> +
-> +	if (index < 0)
-> +		return -EINVAL;
-> +
-> +	if (!is_valid_ether_addr(data))
-> +		return -EINVAL;
-> +
-> +	eth_addr_add(data, index);
-> +
-> +	return 0;
-> +}
-> +
-> +static int nvmem_kontron_sl28_vpd_pp(void *priv, const char *id, int index,
-> +				     unsigned int offset, void *data,
-> +				     size_t bytes)
-> +{
-> +	if (!id)
-> +		return 0;
-> +
-> +	if (!strcmp(id, "mac-address"))
-> +		return nvmem_transform_mac_address_offset(index, offset, data,
-> +							  bytes);
-> +
-> +	return 0;
-> +}
-> +
->   static const struct nvmem_transformations nvmem_transformations[] = {
-> +	{ .compatible = "kontron,sl28-vpd", .pp = nvmem_kontron_sl28_vpd_pp },
->   	{}
->   };
+Hi,
 
-I think it's a rather bad solution that won't scale well at all.
+Here is the 5th version of fprobe. This version fixed some build
+issues on fprobe and rethook (thanks for kernel test bot to give
+a hint!). The previous version is here[1];
 
-You'll end up with a lot of NVMEM device specific strings and code in a
-NVMEM core.
+[1] https://lore.kernel.org/all/164304056155.1680787.14081905648619647218.stgit@devnote2/
 
-You'll have a lot of duplicated code (many device specific functions
-calling e.g. nvmem_transform_mac_address_offset()).
+This series introduces the fprobe, the function entry/exit probe
+with multiple probe point support. This also introduces the rethook
+for hooking function return as same as kretprobe does. This
+abstraction will help us to generalize the fgraph tracer,
+because we can just switch it from rethook in fprobe, depending
+on the kernel configuration.
 
-I think it also ignores fact that one NVMEM device can be reused in
-multiple platforms / device models using different (e.g. vendor / device
-specific) cells.
+The patch [1/9] is from Jiri's series[2].
+
+[2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
 
 
-What if we have:
-1. Foo company using "kontron,sl28-vpd" with NVMEM cells:
-    a. "mac-address"
-    b. "mac-address-2"
-    c. "mac-address-3"
-2. Bar company using "kontron,sl28-vpd" with NVMEM cell:
-    a. "mac-address"
+Thank you,
 
-In the first case you don't want any transformation.
+---
 
+Jiri Olsa (1):
+      ftrace: Add ftrace_set_filter_ips function
 
-If you consider using transformations for ASCII formats too then it
-causes another conflict issue. Consider two devices:
-
-1. Foo company device with BIN format of MAC
-2. Bar company device with ASCII format of MAC
-
-Both may use exactly the same binding:
-
-partition@0 {
-         compatible = "nvmem-cells";
-         reg = <0x0 0x100000>;
-         label = "bootloader";
-
-         #address-cells = <1>;
-         #size-cells = <1>;
-
-         mac-address@100 {
-                 reg = <0x100 0x6>;
-         };
-};
-
-how are you going to handle them with proposed implementation? You can't
-support both if you share "nvmem-cells" compatible string.
+Masami Hiramatsu (8):
+      fprobe: Add ftrace based probe APIs
+      rethook: Add a generic return hook
+      rethook: x86: Add rethook x86 implementation
+      ARM: rethook: Add rethook arm implementation
+      arm64: rethook: Add arm64 rethook implementation
+      fprobe: Add exit_handler support
+      fprobe: Add sample program for fprobe
+      docs: fprobe: Add fprobe description to ftrace-use.rst
 
 
-I think that what can solve those problems is assing "compatible" to
-NVMEM cells.
+ Documentation/trace/fprobe.rst                |  131 +++++++++++
+ Documentation/trace/index.rst                 |    1 
+ arch/arm/Kconfig                              |    1 
+ arch/arm/include/asm/stacktrace.h             |    4 
+ arch/arm/kernel/stacktrace.c                  |    6 
+ arch/arm/probes/Makefile                      |    1 
+ arch/arm/probes/rethook.c                     |   71 ++++++
+ arch/arm64/Kconfig                            |    1 
+ arch/arm64/include/asm/stacktrace.h           |    2 
+ arch/arm64/kernel/probes/Makefile             |    1 
+ arch/arm64/kernel/probes/rethook.c            |   25 ++
+ arch/arm64/kernel/probes/rethook_trampoline.S |   87 +++++++
+ arch/arm64/kernel/stacktrace.c                |    7 -
+ arch/x86/Kconfig                              |    1 
+ arch/x86/include/asm/unwind.h                 |    8 +
+ arch/x86/kernel/Makefile                      |    1 
+ arch/x86/kernel/kprobes/common.h              |    1 
+ arch/x86/kernel/rethook.c                     |  115 +++++++++
+ include/linux/fprobe.h                        |   86 +++++++
+ include/linux/ftrace.h                        |    3 
+ include/linux/rethook.h                       |   99 ++++++++
+ include/linux/sched.h                         |    3 
+ kernel/exit.c                                 |    2 
+ kernel/fork.c                                 |    3 
+ kernel/trace/Kconfig                          |   25 ++
+ kernel/trace/Makefile                         |    2 
+ kernel/trace/fprobe.c                         |  198 ++++++++++++++++
+ kernel/trace/ftrace.c                         |   53 ++++
+ kernel/trace/rethook.c                        |  311 +++++++++++++++++++++++++
+ samples/Kconfig                               |    7 +
+ samples/Makefile                              |    1 
+ samples/fprobe/Makefile                       |    3 
+ samples/fprobe/fprobe_example.c               |  103 ++++++++
+ 33 files changed, 1349 insertions(+), 14 deletions(-)
+ create mode 100644 Documentation/trace/fprobe.rst
+ create mode 100644 arch/arm/probes/rethook.c
+ create mode 100644 arch/arm64/kernel/probes/rethook.c
+ create mode 100644 arch/arm64/kernel/probes/rethook_trampoline.S
+ create mode 100644 arch/x86/kernel/rethook.c
+ create mode 100644 include/linux/fprobe.h
+ create mode 100644 include/linux/rethook.h
+ create mode 100644 kernel/trace/fprobe.c
+ create mode 100644 kernel/trace/rethook.c
+ create mode 100644 samples/fprobe/Makefile
+ create mode 100644 samples/fprobe/fprobe_example.c
 
-Let me think about details of that possible solution.
+--
+Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
