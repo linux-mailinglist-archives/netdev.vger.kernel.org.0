@@ -2,110 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5824D49BE7E
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 23:29:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C8FC49BF3F
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 00:01:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233844AbiAYW3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 17:29:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233849AbiAYW3h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 17:29:37 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B681C061747
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 14:29:37 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id n16-20020a17090a091000b001b46196d572so4255342pjn.5
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 14:29:37 -0800 (PST)
+        id S234533AbiAYXBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 18:01:18 -0500
+Received: from mail.bonificablesfoesco.net ([195.114.216.178]:58310 "EHLO
+        bonificablesfoesco.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234547AbiAYXBO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 18:01:14 -0500
+X-Greylist: delayed 809 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Jan 2022 18:01:14 EST
+Received: from 42.91-116-32.dynamic.clientes.euskaltel.es (unknown [91.116.32.42])
+        by bonificablesfoesco.net (Postfix) with ESMTPSA id 962981F0414
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 23:44:00 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tvCCRY6xlvOrQ/O19UIHhWrCaHxPn5tYjPvlxSdaNTE=;
-        b=ezsiHOEmDt4gnBx7CueGXVEDVlG7985IefHrNORw7k+KaA65+RLmTDDn2+WBWW19cU
-         mlbpvMhhndxXhS5gW2+5Eid1Djj/Pn3b6C881PmOPmnFeQNSBhR733zGfglrVeVdI9Up
-         bvV9ZMQKA/Hgf03ti70ZXiw6suVFHU4vcCNKMdgEwTf+mdp+PWLVR2L0oQQfMiHZVV/R
-         QkMdSDvf4ZhO1qkaak9mcK06EzUmKaFzSUxSVPj8raiQrbypJiTALMrvZNx62nDMWFee
-         HyQ9+tZm63xW+2C4tPuTnwgFIQRefLNzT9e+7tKrDBrnn5A9N9y3GPc/FPyfoDDobXAy
-         p8HA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tvCCRY6xlvOrQ/O19UIHhWrCaHxPn5tYjPvlxSdaNTE=;
-        b=jos66UmJP1Ya1P8KwhPbJIITD8V+jNLVvufKXq36jYbbBFkJRn4bS7hYISOjylKBX/
-         2Ui41PoJnJEc+OBmI405lK0/R1OD5OgBFMSngNbyCQml5TNw5JMgENm4S+XCG+epq9sl
-         /Pd7AaPsVMqo0OFBojPW6D3UGvoCOttRu9tmCbl+I4w3fJspPoZEFYyaiVeUENljiC3c
-         0YWz2r26FEApLHCIShXjRKvNsKlNeDuYLG6uyIchAvXJvmd03o0AnaBzJdf+tliF2nBj
-         aPz8legJD7gBIajTkzpx49nbT7wC4A4kRMkYAibeWf7NaNAYKYgtJPb1he/Iu9B4XhtI
-         wMoQ==
-X-Gm-Message-State: AOAM53172bqgRitUsCTXRbUyJP2TgtgDVE5s4ARPMjZMRJzAUnoMb+kU
-        sZvxG1CNRAMW85h7Tad+2bRIeJUVMK/WAv9Vw+4=
-X-Google-Smtp-Source: ABdhPJwkJvEQszdeT+/nhBg+5zrDcMUhS8orSAKbqHKbuR1DlqEfWeLz2u1pncIlO5B4R2lj9YUNiCp8AMFC+iKn3tI=
-X-Received: by 2002:a17:903:246:b0:14a:26ae:4e86 with SMTP id
- j6-20020a170903024600b0014a26ae4e86mr21446887plh.59.1643149776457; Tue, 25
- Jan 2022 14:29:36 -0800 (PST)
+        d=bonificablesfoesco.net; s=default; t=1643150640;
+        bh=JaL3vgEQf4BsgBGuJmwHprWCLwPukQyLjCTSewL3BZA=; h=From:To:Subject;
+        b=eOTxbMFgFRX82z49AsrW6Mi5MNQ/jLmeZnSjJbaGO/oO/F0PHTpotV8LUMqkyPmEF
+         oYeHeYzcvY1MSebJO730OWcs6Y27twG6/v0oK1BBL8UVmtL0pSww7RTQhqszSBE/0i
+         4u4pxQZQA9Db7Bd/IBaKIC0CdmP2rEVvtqiwIrJU=
 MIME-Version: 1.0
-References: <228b64d7-d3d4-c557-dba9-00f7c094f496@gmail.com>
- <20220124172158.tkbfstpwg2zp5kaq@skbuf> <20220124093556.50fe39a3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20220124102051.7c40e015@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20220124190845.md3m2wzu7jx4xtpr@skbuf> <20220124113812.5b75eaab@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20220124205607.kugsccikzgmbdgmf@skbuf> <20220124134242.595fd728@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20220124223053.gpeonw6f34icwsht@skbuf> <CAJq09z5JF71kFKxF860RCXPvofhitaPe7ES4UTMeEVO8LH=PoA@mail.gmail.com>
- <20220125094742.nkxgv4r2fetpko7r@skbuf>
-In-Reply-To: <20220125094742.nkxgv4r2fetpko7r@skbuf>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Tue, 25 Jan 2022 19:29:25 -0300
-Message-ID: <CAJq09z4OC4OijWT8=-=vXRQhqFsaP0+asXyO69i37aj39DMB6A@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
- cpu ports, non cpu extint
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
-Content-Type: text/plain; charset="UTF-8"
+From:   "FOESCO" <info26@bonificablesfoesco.net>
+Reply-To: info26@bonificablesfoesco.net
+To:     netdev@vger.kernel.org
+Subject: Respuesta FOESCO
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Smart_Send_3_1_6
+Date:   Tue, 25 Jan 2022 23:43:59 +0100
+Message-ID: <87403492365921363822066@DESKTOP-HRJ56BJ>
+X-Priority: 1
+X-MSMail-Priority: High
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Could you implement a prototype of packet parsing in ndo_features_check,
-> which checks for the known DSA EtherType and clears the offload bit for
-> unsupported packets, and do some performance testing before and after,
-> to lean the argument in your favor with some numbers? I've no problem if
-> you test for the worst case, i.e. line rate with small UDP packets
-> encapsulated with the known (offload-capable) DSA tag format, where
-> there is little benefit for offloading TX checksumming.
+Buenos d=EDas
 
-There is no way to tell if a packet has a DSA tag only by parsing its
-content. For Realtek and Marvel EDSA, there is a distinct ethertype
-(although Marvel EDSA uses a non-registered number) that drivers can
-check. For others, specially those that add the tag before the
-ethernet header or after the payload, it might not have a magic
-number. It is impossible to securely identify if and which DSA is in
-use for some DSA tags from the packet alone. This is also the case for
-mediatek. Although it places its tag just before ethertype (like
-Realtek and Marvel), there is no magic number. It needs some context
-to know what type of DSA was applied.
 
-skb_buf today knows nothing about the added DSA tag. Although
-net_device does know if it is a master port in a dsa tree, and it has
-a default dsa tag, with multiple switches using different tags, it
-cannot tell which dsa tag was added to that packet.
-That is the information I need to test if that tag is supported or not
-by this drive.
 
-I believe once an offload HW can digest a dsa tag, it might support
-the same type of protocols with or without the tag.
-In the end, what really matters is if a driver supports a specific dsa tag.
+Adjuntamos en PDF el listado de Cursos Bonificables E-learning disponibles =
+para la convocatoria FEBRERO 2022.
 
-Wouldn't it be much easier to have a dedicated optional
-ndo_dsa_tag_supported()? It would be only needed for those drivers
-that still use NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM and only those that
-can digest a tag.
+Todos los cursos impartidos son 100% Bonificables con cargo al Cr=E9dito de=
+ Formaci=F3n 2022 y van dirigidos a empleados, no aut=F3nomos.
 
-Regards,
+Para poder consultar a FUNDAE vuestro cr=E9dito de formaci=F3n disponible s=
+e ha de cumplimentar y firmar el documento adjunto CONTRATO DE ENCOMIENDA y=
+ mandarlo a esta misma direcci=F3n de correo electr=F3nico.
+
+
+INSTRUCCIONES DE SOLICITUD:
+
+Se han de cumplimentar =FAnicamente los siguientes datos de la FICHA DE INS=
+CRIPCI=D3N adjunta (1 impreso por curso) y se ha de mandar escaneado o en f=
+otograf=EDa a esta misma direcci=F3n de correo electr=F3nico.
+
+-  Curso a realizar
+-  Nombre completo y DNI del alumno
+-  N=FAmero de afiliaci=F3n a la Seguridad Social del alumno (Dato indicado=
+ en las n=F3minas)
+-  Tel=E9fono y e-mail del alumno
+-  Nombre y CIF de la empresa
+-  Direcci=F3n de la empresa
+-  Tel=E9fono y e-mail de la empresa
+-  Tel=E9fono y e-mail del gestor de la empresa
+-  Cta. Cotizaci=F3n a la seguridad social de la empresa (Dato indicado en =
+las n=F3minas)
+-  A=F1o de creaci=F3n de la empresa
+-  Nombre completo y DNI de un representante legal de la empresa
+-  Firma del representante legal de la empresa.
+-  Sello de la empresa.
+-  Firma del alumno.
+
+
+Seg=FAn el Real Decreto 18/2021 referente a los ERTES, necesitaremos adem=
+=E1s vuestra respuesta a las siguientes cuestiones:
+
+-  N=FAmero de empleados en activo en la empresa:
+-  N=FAmero de empleados en situaci=F3n de ERTE en la empresa:
+-  Indique si su empresa ha renovado ERTE a partir del 1 de noviembre de 20=
+21 hasta el 28 de febrero 2022:
+
+
+Quedamos a la espera de vuestra respuesta.
+
+
+Un cordial saludo.
+
+
+Departamento de Formaci=F3n Bonificable
+FOESCO Formaci=F3n Estatal Continua.
+Empresa inscrita en el Registro de empresas de Formaci=F3n.
+
+www.foesco.com
+e-mail:     cursos@foesco.net
+Tel:          910 323 794
+
+(Horario de 9h a 15h y de 17h a 20h de Lunes a Viernes)
+
+FOESCO ofrece formaci=F3n a empresas y trabajadores en activo a trav=E9s de=
+ cursos bonificados por la Fundaci=F3n Estatal para la Formaci=F3n en el Em=
+pleo (antiguo FORCEM) que gestiona las acciones formativas de FORMACI=D3N C=
+ONTINUA para trabajadores y se rige por la ley 30/2015 de 9 de Septiembre.
+
+Antes de imprimir este e-mail piense bien si es necesario hacerlo. La infor=
+maci=F3n transmitida en este mensaje est=E1 dirigida solamente a las person=
+as o entidades que figuran en el encabezamiento y contiene informaci=F3n co=
+nfidencial, por lo que, si usted lo recibiera por error, por favor destr=FA=
+yalo sin copiarlo, usarlo ni distribuirlo, comunic=E1ndolo inmediatamente a=
+l emisor del mensaje. De conformidad con lo dispuesto en el Reglamento Euro=
+peo del 2016/679, del 27 de Abril de 2016, FOESCO le informa que los datos =
+por usted suministrados ser=E1n tratados con las medidas de seguridad confo=
+rmes a la normativa vigente que se requiere. Dichos datos ser=E1n empleados=
+ con fines de gesti=F3n. Para el ejercicio de sus derechos de transparencia=
+, informaci=F3n, acceso, rectificaci=F3n, supresi=F3n o derecho al olvido, =
+limitaci=F3n del tratamiento , portabilidad de datos y oposici=F3n de sus d=
+atos de car=E1cter personal deber=E1 dirigirse a la direcci=F3n del Respons=
+able del tratamiento a C/ LAGUNA DEL MARQUESADO N=BA10, 28021, MADRID, "PUL=
+SANDO AQUI" <mailto:bajas@foesco.com=3FSubject=3DBAJA%20CORREOS> y "ENVIAR".
