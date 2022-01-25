@@ -2,155 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 145E349AA84
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 05:38:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD4C049AA85
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 05:38:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1326133AbiAYDkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 22:40:08 -0500
-Received: from prt-mail.chinatelecom.cn ([42.123.76.228]:46846 "EHLO
-        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1313847AbiAYCts (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 21:49:48 -0500
-HMM_SOURCE_IP: 172.18.0.218:47440.867916151
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-112.38.63.33 (unknown [172.18.0.218])
-        by chinatelecom.cn (HERMES) with SMTP id AD18B280120;
-        Tue, 25 Jan 2022 10:14:52 +0800 (CST)
-X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.218])
-        by app0025 with ESMTP id e0540388d85e46bb8c77434da3cdff77 for jay.vosburgh@canonical.com;
-        Tue, 25 Jan 2022 10:14:55 CST
-X-Transaction-ID: e0540388d85e46bb8c77434da3cdff77
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.218
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-Message-ID: <e23303ba-1892-a72b-3f54-d512abd540c0@chinatelecom.cn>
-Date:   Tue, 25 Jan 2022 10:14:50 +0800
+        id S1326151AbiAYDkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 22:40:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42076 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1314221AbiAYCu1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 21:50:27 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD01BC055A8D
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 18:16:31 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id n8so13464974lfq.4
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 18:16:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=+I8bpSDY3UJ6OSgnCV8hooMg00EqCoTfo1ts2/fP4sk=;
+        b=F2X5A++j0pmDvN90cxpi+GYoPWzYy6EaUxn42+p53Q8QRWH6N9KEXn+EvFDE5fotsf
+         8QBEal3Ylp39zXGO6NMG9QoHcCZ5tB3ceYcCn4/1Xo+fJWvWs6gFP2tkkvJjxaTd6Q4w
+         qXb8wvzk9MEZGCYukOtZuUkg00CmrjwbAMqOT7pUMWr6ZYpJFpnCTSL1DCyTxOgkVEq7
+         8gsnAzmsEwf7bapaZO/CiVjNHYJM8sQTlNNA3MlhLbhwqU6NpoVdTRjhviOt2/jdabUC
+         8dY2fN2EYZkkWW9S8d54gUOWPHoOGiZPpG8ex0IN/zP2kVDCMRzZiEyjbKmy4sP/0DME
+         uEPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=+I8bpSDY3UJ6OSgnCV8hooMg00EqCoTfo1ts2/fP4sk=;
+        b=CtjZTILiKx7yKymRi2wx1tCmiYoVoQxnYfDsvuBZ+hUDi5a4kwk9NNhyNJYSxbax5/
+         e7+FatkbFFV8ELlr4kJtTsNP/tTYDxst/IXSI/WIbvyPdTVgR1/tNhDVv274OZGk2foZ
+         KZxYqozLw8dxdw6BvZKL30Vty/p62Z0Sy3Fcu6PZpFGa9qdidRCKNBZtch1QUQVvmiHV
+         RCvhGHnEtKqo+Og6hbdFPfID+Ovw/0Y3wJ/4AFkmHoGf404Sei/LxqiLHj1SfX8yg2+4
+         Ccv+SWXyVjlc8h50kzHr0/X0sXYPtFz1TVK4P5ydHzXit+nDpelXgW8hXfn+15PxB59w
+         9wAQ==
+X-Gm-Message-State: AOAM531kVQOl5Way6x3TSrqX5zxXA5GBTG4knGRdjaEBStMJeo+XhL1j
+        OvrXs4yTC91fFR49ArmDxhSbFjhdUv4rTb808iQ=
+X-Google-Smtp-Source: ABdhPJyOlAEMHb5hGSQiV6pVbZG9NiolAmWvw6/LoipWpKj+OpAv47diTAuphJKbv17nnl8aR4GGCA4kbs+y6sc/gII=
+X-Received: by 2002:a05:6512:3f16:: with SMTP id y22mr14805750lfa.61.1643076989922;
+ Mon, 24 Jan 2022 18:16:29 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v8] net: bonding: Add support for IPV6 ns/na to
- balance-alb/balance-tlb mode
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, nikolay@nvidia.com,
-        huyd12@chinatelecom.cn
-References: <20220125002954.94405-1-sunshouxin@chinatelecom.cn>
- <26803.1643073023@famine>
-From:   =?UTF-8?B?5a2Z5a6I6ZGr?= <sunshouxin@chinatelecom.cn>
-In-Reply-To: <26803.1643073023@famine>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Sender: madamaisha93@gmail.com
+Received: by 2002:a05:651c:1783:0:0:0:0 with HTTP; Mon, 24 Jan 2022 18:16:29
+ -0800 (PST)
+From:   "MRS. Aisha" <madamisha00@gmail.com>
+Date:   Tue, 25 Jan 2022 02:16:29 +0000
+X-Google-Sender-Auth: GqKwJKbe_Bh0yjyoEuw2RVkqavM
+Message-ID: <CAOL7JY_XmZHf3JgxOekeNkuqnP5JCtguU4jmK7He48N1iPE+rw@mail.gmail.com>
+Subject: COULD YOU BE TRSUTED?,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-在 2022/1/25 9:10, Jay Vosburgh 写道:
-> Sun Shouxin <sunshouxin@chinatelecom.cn> wrote:
->
->> Since ipv6 neighbor solicitation and advertisement messages
->> isn't handled gracefully in bond6 driver, we can see packet
->> drop due to inconsistency between mac address in the option
->> message and source MAC .
->>
->> Another examples is ipv6 neighbor solicitation and advertisement
->> messages from VM via tap attached to host bridge, the src mac
->> might be changed through balance-alb mode, but it is not synced
->> with Link-layer address in the option message.
->>
->> The patch implements bond6's tx handle for ipv6 neighbor
->> solicitation and advertisement messages.
->>
->> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
->> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
->> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
->> ---
->> drivers/net/bonding/bond_alb.c | 37 +++++++++++++++++++++++++++++++++-
->> 1 file changed, 36 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
->> index 533e476988f2..d4d8670643e9 100644
->> --- a/drivers/net/bonding/bond_alb.c
->> +++ b/drivers/net/bonding/bond_alb.c
->> @@ -1269,6 +1269,34 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
->> 	return res;
->> }
->>
->> +/* determine if the packet is NA or NS */
->> +static bool __alb_determine_nd(struct icmp6hdr *hdr)
->> +{
->> +	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
->> +	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
->> +		return true;
->> +	}
->> +
->> +	return false;
->> +}
->> +
->> +static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
->> +{
->> +	struct ipv6hdr *ip6hdr;
->> +	struct icmp6hdr *hdr;
->> +
->> +	ip6hdr = ipv6_hdr(skb);
->> +	if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
->> +		if (!pskb_may_pull(skb, sizeof(struct ipv6hdr) + sizeof(struct icmp6hdr)))
->> +			return true;
->> +
->> +		hdr = icmp6_hdr(skb);
->> +		return __alb_determine_nd(hdr);
->> +	}
->> +
->> +	return false;
->> +}
->> +
->> /************************ exported alb functions ************************/
->>
->> int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
->> @@ -1348,8 +1376,10 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
->> 	/* Do not TX balance any multicast or broadcast */
->> 	if (!is_multicast_ether_addr(eth_data->h_dest)) {
->> 		switch (skb->protocol) {
->> -		case htons(ETH_P_IP):
->> 		case htons(ETH_P_IPV6):
->> +			if (alb_determine_nd(skb, bond))
->> +				break;
-> 	I missed this before, but the new expectation is to have a
-> "fallthrough;" statement when intentionally falling through to the next
-> case.  See include/linux/compiler_attributes.h.
->
-> 	That nit aside, this still looks fine to me.
->
-> 	-J
-
-
-Thanks your comment, I'll adjust it and send out V9 soon.
-
-
->> +		case htons(ETH_P_IP):
->> 			hash_index = bond_xmit_hash(bond, skb);
->> 			if (bond->params.tlb_dynamic_lb) {
->> 				tx_slave = tlb_choose_channel(bond,
->> @@ -1446,6 +1476,11 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
->> 			break;
->> 		}
->>
->> +		if (alb_determine_nd(skb, bond)) {
->> +			do_tx_balance = false;
->> +			break;
->> +		}
->> +
->> 		hash_start = (char *)&ip6hdr->daddr;
->> 		hash_size = sizeof(ip6hdr->daddr);
->> 		break;
->>
->> base-commit: dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
->> -- 
->> 2.27.0
->>
-> ---
-> 	-Jay Vosburgh, jay.vosburgh@canonical.com
+-- 
+COULD YOU BE TRSUTED?,
+I am Dr. Aisha al-Gaddafi, the daughter of the late Libyan president,
+ i am contacting you, because I need a Partner or an investor
+Who will help me in investing the sum of $27.5 MillionUSD  in his or
+her country?
+The funds are deposited  in Burkina Faso, where I am living for the
+moment with my children Please after reading this mail try to  contact
+me through  this my private email address :{
+madamgadafiaisha@gmail.com}  if you really want me to see your
+response
+Thanks, I await your response
+Dr. Aisha al-gaddafi.
