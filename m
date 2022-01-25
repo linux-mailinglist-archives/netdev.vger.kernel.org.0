@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A28649AD83
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 08:24:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D75E649AD85
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 08:24:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442284AbiAYHVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 02:21:03 -0500
-Received: from mail-dm6nam10on2098.outbound.protection.outlook.com ([40.107.93.98]:28769
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        id S1442662AbiAYHVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 02:21:04 -0500
+Received: from mail-co1nam11on2118.outbound.protection.outlook.com ([40.107.220.118]:4612
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1443610AbiAYHPt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jan 2022 02:15:49 -0500
+        id S1443677AbiAYHQS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jan 2022 02:16:18 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aHIgFnHJLcrBwup+2GzNl9qKd9rtAD10PUN0KNUpryn+7FCxDwY8JO6oU4RA0HHNhHx7Iehj+qLKrt66qMyNwPz9ACPlxQxF46z8FKIgT9ZDin4Ih5d0KXP92tBm73hOIjT53wkRHemcrsQXCCMtRupO7Tlfn4f5xMkl//Ppwsy+VSBAb3uJS/XEJd9y/wSEcf6JJBa9IryPUQVodqQ7FhfaBR1EcXG4MlQlSLxA5YXe9ONam2uQvMwjj3jWOmsdkNq40vRJGBrGZzuvDjOsbCNN5RQ/Q3fGERTa9c2EIOBJuwyE0Q/Xg+n5sfPlkpO57PasJwov7ctrE58hA4F22w==
+ b=XdaaOvJYiOj49gdDRZWeUW6y/3TV9vdH8D1EAc3nExC/aIezUyru4PgZi+jv6gUVqhsk/DDxpLGtNE03hTkUfD8vOxGyjS9EgIe8WyQqElLeeEgcVLpXoVXc69oRC3LYKskAvEZVg9bZfdGTR/+uKmJRXf0OyZ+zDnSGaJEdofLGEUcdSMheF4D4AcNZPbj/pfUyc49TWxaolgTK0Htzr+WD695YV0k479ldJiEKsfyxJ9a2/BGPrj1qvo2JrkU4HvXjv6gCJ3xQMCQukAjxoJNhdCn0gmIK2gBrnEHuGaZnCIApKF7ccOzIFHimWyGaMc3QGoPb9sRmWYFls8mBOg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=whwbk6T1Kv7OS5XtcGVmvmHi2YEiBJy1sgZHu+PwC3U=;
- b=fWKrT8PNxogRG+OfiHtsOWdk8shjKAi72ZjohWLV4rrwiCVLcPlk5XADsAEqUWuhwDFgftID7l0hdGVLQbsbDCf/Q+82QDOZHPbjKef2KvbV9bVhYJuZ9iXmfoQex9Aw9egmwNteoulhEMlN3Gbv69D6AC6s61Isdx7pDZ+F31rOJXrOE3JjJUQ37HCakHs6+ThoCqjxLxt1mqpLJPzXkFrsxYLso0+T3ah50IXEvdecEEtiy5UHb0YUNDIsbEuxvGqX2f1aY5GnhqMEj+SgDohzNAKe6DdPxzmNY60ohRtMxMK2F95LFhOi0dBiGHYn0DlJ58pxnLt9Qiv+U5jZFg==
+ bh=mQDF4oCS4oyLJbH4+gGFq/wxc013Q8C8cVc0ZWNaAXo=;
+ b=D0NRkBZ8wjdQAEg+qYamDAaU1gWcDzqIvd82mb+QF+8jLzbWpfOC6rMVIEqovz5SINFWU68VCbHkemLIXNlalcE5iUnmHBg2ZootEibtNJkg6UqeTtD6Nsvpi6r8qQ5cuzVO/Jo6AQKpgswFqJlUAxU1MC31l+fTIN0z5Be+sDvO5Q27C+9uoojmredYxz3I6Nm6cS1zMyDspeFSalSprAzJnKqedIPgehWT09Aqq1QFibulsCA/dG8UyQcQbeLZY7Tkhi1m9vnAAshdlUcfslpvucN4GcmfqS2NiqJMcDdI3DJxMurLMnvz3Kge4dWQre7aey9Ikw5xCilLIBj4kg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=whwbk6T1Kv7OS5XtcGVmvmHi2YEiBJy1sgZHu+PwC3U=;
- b=eef0zLr6WabcEMANon+YwlKU23aOMhelr1oUg5ddboYHJvYLVl9U4yiz3zaZNBVKxe2AXn03Cyy+z7U4o4IxYKx9SLNRaK8VEkKtqYSLQq3IdrG6TCnhBo+mkhHqCvJKEhaTghq0jsAXYlrJEChIK+nM3wM7hxN/GNCY1KLTHCk=
+ bh=mQDF4oCS4oyLJbH4+gGFq/wxc013Q8C8cVc0ZWNaAXo=;
+ b=D0PP4/2FAQz3LEI7BA3XWqRexOYPBlu3IB5YkjT3Tw9aFSVjiK0ESFwo2FzKjKsJOfxoAez+SNhb5jv0TLdwEZHOkB3hBM0snhf9V/ogaXjKIH8Y+SIkon+KyAqM6ghV1IKrxSzPR4a6noxbUkunZ7iZt5Og7d0Y0TgaSWY6iEE=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=in-advantage.com;
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  (2603:10b6:301:35::37) by DM6PR10MB2538.namprd10.prod.outlook.com
  (2603:10b6:5:b3::14) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10; Tue, 25 Jan
- 2022 07:15:42 +0000
+ 2022 07:15:43 +0000
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::2d52:2a96:7e6c:460f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::2d52:2a96:7e6c:460f%4]) with mapi id 15.20.4909.017; Tue, 25 Jan 2022
- 07:15:42 +0000
+ 07:15:43 +0000
 From:   Colin Foster <colin.foster@in-advantage.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -45,10 +45,12 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 0/2] use bulk reads for ocelot statistics
-Date:   Mon, 24 Jan 2022 23:15:29 -0800
-Message-Id: <20220125071531.1181948-1-colin.foster@in-advantage.com>
+Subject: [PATCH v3 net-next 1/2] net: mscc: ocelot: add ability to perform bulk reads
+Date:   Mon, 24 Jan 2022 23:15:30 -0800
+Message-Id: <20220125071531.1181948-2-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220125071531.1181948-1-colin.foster@in-advantage.com>
+References: <20220125071531.1181948-1-colin.foster@in-advantage.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: MWHPR20CA0028.namprd20.prod.outlook.com
@@ -56,84 +58,117 @@ X-ClientProxiedBy: MWHPR20CA0028.namprd20.prod.outlook.com
  (2603:10b6:301:35::37)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ca33d131-be8e-4029-6b89-08d9dfd27f1e
+X-MS-Office365-Filtering-Correlation-Id: 93ed2847-8f81-42a7-6591-08d9dfd27f7b
 X-MS-TrafficTypeDiagnostic: DM6PR10MB2538:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR10MB25380D429658BC129F9EFC3CA45F9@DM6PR10MB2538.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1468;
+X-Microsoft-Antispam-PRVS: <DM6PR10MB253878C1AC0D78B19F4A9F40A45F9@DM6PR10MB2538.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Rf8IusnZ4PignErdSDd4o2SRt5RQuXz0hokH2lil6HAuUug1XtvNiQeLrd57NKf9Iuzjug6CTLbiP5MXJPssgGWgnTGC+xxgwjJYWDosB20DSirMlO7MdBvRlbAn7fMOs/BR5cSyGfg3SNBct3epzvYrjVZDWrRDc7gPRYaBRCuxHS4fm9OaBTL1Xj9zVJTIKXPXXK/TRIOhqCAF9zjhy35dmRg05pYkwEkHXjIuMGldB9GB/goxhZIpf49yBk0Fryo7mMCJKHkj9BQPzpbLKKYN+q8oEqasPBOBMZoZf/837xcutgT/F31VQZDF3BH+Ijy5c23/XqVCwRR7cf/VFmcFJxp5dHtk4cBtHBHFrKRpiHLfXwsZwMLcwdTJGakLvnqTl4dHUz7+3biT04Pz7+2GcXomky+z+2AcvSTZgKwWxPG0SsIl/e0Xt6aGTbdLBWWRX+o7VMjBAHDE+0g6v4EwHZa6/x+hH1nDQZLMUc2T+k5KTtV4LAKsJuRjx3LRw35Pmpq09+Z8OrhDr128aXhlLVOmNwel9eSxe3JGcqeMBEnpO+oFEcTLY0C/2E8U6kXRrejn5TIq6izoHgzMmwtTON2v17JC2W5nJKZfWZj+6uFsujgIgK2qUWhMr//aaZzXStpX6NnamJHydUC7FF6+9w/GUGiL1+cQXZ1npBVZ9DUP3gdBR444gzfh3pbS3HKrYNwXH0KAOoYdWLiHEw==
+X-Microsoft-Antispam-Message-Info: UwyfB7bc9HWRE5uXAYhclfGLk3oGQO1omoL8G1o4vflz4cxGas8plmQ7CA4uiRVgfhmrKVoI7yLUUR9Hk8gkmZ21q1ZXCos2yJ8VL4mX0JwOa7LP7anopfiNDy47hO7VgUX4NI+Wt7CdUKXnoBEfyXAQwWb8Z4kjwxe9Ya5UyL113QFLKY0CVfVxdweHXycjL5Hw+sZUYdXUuD0eFO6AQ8HnMZe4ni6rkMwefkB1QDLNpk+rTwdZ2+6RZkowh8njYwuC87VHNpPUN/HIx6HQsQWIkoc0r89xF2sEl+jKxeTLTK2deM4WWCH1nryMPbGxbM2kb4WgIyRZx9PH+2pI34vLBDf2dKYucMsP9PSXfi1ZlVH4xQ5R8Uh/wjXs5nU6JN9VRGRoYWzk26WGj9fZX+47ztLfqtYbmrIVA3yvgnEhOHDJpyz4WpAKNa3hH0E0o2FUoRfIiAhGnguCyRsdwPRJ4H5c3D/QP1UoyGo9eRNOBWdc8nlLKM8yZaUDe3eJcKfzf4P64ezxAFEibvaIbkxdETCtKz6cqPtqDdYMyYakyrMKc9WV3Zej9UFEWfiqB2UWTVeAVtkVRJdulJV9SaVQS9cMfZvn+TakiUhDCVl5SNqNA7yDGVnCf1M5FKhZ3emSq4y3eWlzahkYL3U/S5+JEzNseEEq9aTUazO6ko/ScigcmefS7wMGHxaZNdC2c8qYhhEfJqi/f9hZnRCkSA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(346002)(376002)(136003)(42606007)(366004)(39830400003)(66946007)(38350700002)(6666004)(2906002)(8936002)(36756003)(38100700002)(508600001)(6512007)(2616005)(8676002)(5660300002)(316002)(4326008)(44832011)(6506007)(52116002)(54906003)(86362001)(83380400001)(26005)(66556008)(186003)(66476007)(1076003)(6486002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tL3ECIwNcxVRDJVbxn/zjALW9Bv+W1VfQT9RLxQAEZ9Nn+s9fYzxTSv8/WbX?=
- =?us-ascii?Q?7iIWchIwZjhPhB3wG6H0U5qbHKzwC2s4wHnIRseajwV1bupfT6wu2wAhDK0X?=
- =?us-ascii?Q?1w0l8YXN4Jxsh6iUsWLy315Qcak1eeO805ErHBg8g7Du0+9yaIkJGJtKk7dC?=
- =?us-ascii?Q?xEgXuWHAywlNRi/HbJ0o60LBmbnCYt4Fe4oxTh1+BT2wkSvyThhf5LVS4qLF?=
- =?us-ascii?Q?hDUweMvMYVWDpyHWXTIEb/c37An896Pgwi/ocj978OFBZs0gP8NgOzOq108k?=
- =?us-ascii?Q?aYmiESvpjOoJJx7JGKaRt8RG7XMztCrIg1mk4jn5uj8WJut/t6Y6Q7Q0aW0v?=
- =?us-ascii?Q?igRj8VQ2IdlmYsa+XJ8WwiUnTyb04kTh062376kwWtFITT6UZBwhOUCGTTKN?=
- =?us-ascii?Q?jWjH4wHWVDco4uLECsT6uvdpuwYHdAvyUxYKB1aBcjG1MpnMEvC4JFVteasq?=
- =?us-ascii?Q?u81snHFv0ucerbrwxpwlsOXA5NUKDVsqadMvFP6fp+8AynleCdrcogVHDRe4?=
- =?us-ascii?Q?P15AfsRiG7ab+ubeQEYy5lqFdgDEZe6vWA/49hGY7f3Ejc7b4FeOUgBtdNUU?=
- =?us-ascii?Q?a9mJRmPiiE6wNyAymSXei/Bqn9zBgH5KoXN8O0439srCxudqI1tPCWqcpy0L?=
- =?us-ascii?Q?8fZPR4qx4D7KsEqvCHTOT8NCTfPHuOK5UPrvfcUN6XhjR3PS170jfn/hs5V1?=
- =?us-ascii?Q?EU2fJWvHjO4NqI+1pzqlkNkSg0MLkBY41F4iwjF1Vyi2S13xFgSoudoZ/HPK?=
- =?us-ascii?Q?daSgq03i1Cio9iWazLiaBMdGQX/+qGxJeqIO3vXwIU51oSF/F7ay/CsAqDiH?=
- =?us-ascii?Q?jPVxbJ3rZrgB694W4YKu2NxD/3EZdtx6zQZ1lx/87+jbmyugNY8mTeMjrrWd?=
- =?us-ascii?Q?8qR3N4znAYTwnHKUMCUb000THbmZPoKv0AGDC/8CrYrRMorr/5XHGX8JB4+i?=
- =?us-ascii?Q?a/2N8ef0TMtb0qFLS+z3Fk0/4PJPFnbjC/Xoy+Ck4YfhCg3alxGAe4AywlSP?=
- =?us-ascii?Q?T9zbWG936px9wfiS2izPxuwwmqMS5Cerlp4JmtSKqQrdsUsucCHbfsz3Yg6s?=
- =?us-ascii?Q?vevjM2o+qpkMw55EUj9J0raf6gxb2Rp/GcWIUiKDdamS8imcjOC4WBtKDfTw?=
- =?us-ascii?Q?ShrdSWo3tHJkLzKmoTDzb0fcJvASOevnoPSvoj8j7LXpHNPTTqOD8ycuG0lD?=
- =?us-ascii?Q?qbULAPqw6U+VK9fT38n/l858wvTzRd1Qt47JmQtFnZurqoBK2clTXt5cw3Fm?=
- =?us-ascii?Q?gDwaQrbbopXUGqEK70+2ROwxV6g53BMXJMbbSkbX/wStlUF5v8GtzDPwXqdX?=
- =?us-ascii?Q?ERQwcqmUL/UFKugRiSgll1S83nVLXIqYUtNmnYIKPvlvv1tJIIRCEibLfP0s?=
- =?us-ascii?Q?YE1ZXG5xJgWusQVa5TiVkHRtJMTBE8bhz9FxdfoR4rxMQFfpa7VAiChy+FsF?=
- =?us-ascii?Q?hHc0HtgtzzgdNgrcLlYnKPQW7oG4ixDISlpy/OXhR70Jy2K/LmHTy/wfzmUd?=
- =?us-ascii?Q?s8Y/gKYDdeNUPwwxL7Kh1tuBZs/A8X6OGsfSkNVnbT9w9tMFW8LdLqPWg01n?=
- =?us-ascii?Q?GOhOYEoozU3CRXugNENWKQaVOffL8cz9A0A9ij5SLtg185YFRfKs0d0mPizz?=
- =?us-ascii?Q?JM7A/wujFKpJRfslmukN0UmiTP3WdEYw6FewkbArViCKwTPhdLnVU7gRG5gI?=
- =?us-ascii?Q?qs4FcDjtVMPEORVOxxSeSySoAOo=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?f9+CK+Hl77m5X+vu82aJqu7CwmC0IZJaJmQjd19M9JRrPTg15KeYZD9T7fTQ?=
+ =?us-ascii?Q?VRVvqa9M7l8fhZM8wTSD0ZGD87YAOsaiKpwUtc0zh/PjcjBRSeRcXx4oV21D?=
+ =?us-ascii?Q?LTNVFrOrRZPw4+l2ih03KGaDdFvQ3U3qDL/Wz/apKIx+WzSNSHOrlQA07jVN?=
+ =?us-ascii?Q?moYli8t3wRkzDNNGU8k8MigGltkoJeh5e3jUC/DP5DeHostC0u+GywcM+sGV?=
+ =?us-ascii?Q?Sm2gFevEPSb6UsM1p7qs5lguAu8vNl/YJDUs4tPnwaBBH8o+5J1btEC0b9S3?=
+ =?us-ascii?Q?DvxXNBrOKWdepOWgRP6t7FQyrg4DyByH6zk0SuPl3dXKZlf+ggRkyOhO/Jui?=
+ =?us-ascii?Q?Br6hH2HedKqt+bh3tHv7nMr1H23Gb21Uj+O9PmpYlp5XUuy4kSmUgFHwlyre?=
+ =?us-ascii?Q?oyLbqiYvCVhsM1O29UuS4gZkBZ30aUYh8eOeDallGLed1nOWWrXLPevytCfV?=
+ =?us-ascii?Q?eyCwVfSngg57axYQQYJRaoUuUeYBekqqhUyjOMTHhoCUHrTiUwDtEmpwYMpF?=
+ =?us-ascii?Q?+cKXMf4jjhzIZlfdEUYGMruCVHEpXEeqlGl75R8Lhxg9ZvkTweViorCqmVr3?=
+ =?us-ascii?Q?1hI3epOaVEvP9HrK5VutgFGlIG9p4Ql8IbjDTg1RC0q6H0APH03sdkoQ7qEE?=
+ =?us-ascii?Q?kSPvdzoaXH2Rjm0McFCBTMUQ556YS6oyEwtqo7Owr2VHVCW7Q5WSLo74QmGA?=
+ =?us-ascii?Q?y2XgPZXbAqVCHUUzchK9VY1OS6Om+rwfxpwYgOyHS0M1s5tXGyAvhLyHCmcW?=
+ =?us-ascii?Q?x8g6OlqlHsAAUMU/zDGeyaW3sSxD04NO7b57O7u7/dXBLKQjbbF31bM/WyFZ?=
+ =?us-ascii?Q?2vNKMudJjJ5lN3IQztFg32l6rA2Hk0NnBLtlQZOTWtpnMI7R+SnL0B+Emx5b?=
+ =?us-ascii?Q?JybgYr1GSNzr8R/hAfpgUEfwwJFlcQU4IdmYs6Ey5VBq1UxWool+DCJXte/s?=
+ =?us-ascii?Q?GNu5v7gYATYb9OCCjTzQPdnpJvD0S7A2v0yI7DVjF63a1q8IbwBChwTheG7b?=
+ =?us-ascii?Q?0bICDyxylEb3kShuR1ocM9yAy4PRT43XiUxoQ/7fEV3IMZltriso8oLSQPB4?=
+ =?us-ascii?Q?tAzB7OF22BxyzclL0ovYs1HshzWazk52DvyQRJ9++9vZvswdpGSKaCmnWstw?=
+ =?us-ascii?Q?mtji/b8hO9LRQgYJkyJWbXfx7ENmGqCBn4dniWPYraFEYMygYsglAkzJnVk3?=
+ =?us-ascii?Q?XXrEJrXB19DYObPP+rGdy9iFirdznCqGDXfFzwyF2CutByhjdPaMruuVDfCi?=
+ =?us-ascii?Q?sFSDVoMNX6xa8svJ2gtypFvGsh54heVQ9CMyiepuQVPNSzh8iTuC/SzmbICe?=
+ =?us-ascii?Q?XrMDFWIeM7aaXCL50g5ct1n+IGkckaPuIGL1eg7p9V7x6kxL9diYRUHaKw8Q?=
+ =?us-ascii?Q?kxJTreViZmH1PbOsq+WtFHl5grxL7SCPB3UngtQX+Nv0yYe7bUJ+mkENQiZd?=
+ =?us-ascii?Q?nGdApDeqQR8DMOKturiL07hRe5HmTVMvTT2ejF+P2g2tpgCLqXNZa3mIl9zu?=
+ =?us-ascii?Q?kx7sLl/LC8d291pIcNkxN7IrM+Xsr8n0Qj1LbeUNCShyYpI16NcwwIuRtlBT?=
+ =?us-ascii?Q?Bo8DnM1BwHBTkUFptR+6VhgMrVh/ZmewdZd4YkHSsK2CQAR3hLQ8eF5SL10O?=
+ =?us-ascii?Q?lvyK3r5ooSilIegKn+uXjAvQ/8Mp9bV6BiM3T4JIlC6sXp5eCW8GNpZtaUSZ?=
+ =?us-ascii?Q?bi1ihbFHGKHAgbeHcidXtSLdwaY=3D?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ca33d131-be8e-4029-6b89-08d9dfd27f1e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93ed2847-8f81-42a7-6591-08d9dfd27f7b
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 07:15:42.0805
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 07:15:42.6586
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Q4fHVN8QsNy5bV4IVrViGzhSRdWOKJ9e+Jw/QTqrx+cKb2vl2UbXtqnSMcDL4Pzsj6k67FmlfY8Ah3G3inxcaXeJL+CCkKN1PFHJpc24X2Y=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9Scwc8LsM9dT7UPtJWX6D3MSswX6Ic90MB63lmD47XTLi+kstJwiwafgPANZlvl11cKe+qdizsitL539PuMLWbNbCcE+qEHdWPMPmLpca5U=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2538
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ocelot loops over memory regions to gather stats on different ports.
-These regions are mostly continuous, and are ordered. This patch set
-uses that information to break the stats reads into regions that can get
-read in bulk.
+Regmap supports bulk register reads. Ocelot does not. This patch adds
+support for Ocelot to invoke bulk regmap reads. That will allow any driver
+that performs consecutive reads over memory regions to optimize that
+access.
 
-The motiviation is for general cleanup, but also for SPI. Performing two
-back-to-back reads on a SPI bus require toggling the CS line, holding,
-re-toggling the CS line, sending 3 address bytes, sending N padding
-bytes, then actually performing the read. Bulk reads could reduce almost
-all of that overhead, but require that the reads are performed via
-regmap_bulk_read.
+Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+---
+ drivers/net/ethernet/mscc/ocelot_io.c | 13 +++++++++++++
+ include/soc/mscc/ocelot.h             |  4 ++++
+ 2 files changed, 17 insertions(+)
 
-v1 > v2: reword commit messages
-v2 > v3: correctly mark this for net-next when sending
-
-Colin Foster (2):
-  net: mscc: ocelot: add ability to perform bulk reads
-  net: mscc: ocelot: use bulk reads for stats
-
- drivers/net/ethernet/mscc/ocelot.c    | 76 ++++++++++++++++++++++-----
- drivers/net/ethernet/mscc/ocelot_io.c | 13 +++++
- include/soc/mscc/ocelot.h             | 12 +++++
- 3 files changed, 88 insertions(+), 13 deletions(-)
-
+diff --git a/drivers/net/ethernet/mscc/ocelot_io.c b/drivers/net/ethernet/mscc/ocelot_io.c
+index 7390fa3980ec..2067382d0ee1 100644
+--- a/drivers/net/ethernet/mscc/ocelot_io.c
++++ b/drivers/net/ethernet/mscc/ocelot_io.c
+@@ -10,6 +10,19 @@
+ 
+ #include "ocelot.h"
+ 
++int __ocelot_bulk_read_ix(struct ocelot *ocelot, u32 reg, u32 offset, void *buf,
++			  int count)
++{
++	u16 target = reg >> TARGET_OFFSET;
++
++	WARN_ON(!target);
++
++	return regmap_bulk_read(ocelot->targets[target],
++				ocelot->map[target][reg & REG_MASK] + offset,
++				buf, count);
++}
++EXPORT_SYMBOL_GPL(__ocelot_bulk_read_ix);
++
+ u32 __ocelot_read_ix(struct ocelot *ocelot, u32 reg, u32 offset)
+ {
+ 	u16 target = reg >> TARGET_OFFSET;
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 62cd61d4142e..b66e5abe04a7 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -744,6 +744,8 @@ struct ocelot_policer {
+ 	u32 burst; /* bytes */
+ };
+ 
++#define ocelot_bulk_read_rix(ocelot, reg, ri, buf, count) __ocelot_bulk_read_ix(ocelot, reg, reg##_RSZ * (ri), buf, count)
++
+ #define ocelot_read_ix(ocelot, reg, gi, ri) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
+ #define ocelot_read_gix(ocelot, reg, gi) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi))
+ #define ocelot_read_rix(ocelot, reg, ri) __ocelot_read_ix(ocelot, reg, reg##_RSZ * (ri))
+@@ -786,6 +788,8 @@ struct ocelot_policer {
+ u32 ocelot_port_readl(struct ocelot_port *port, u32 reg);
+ void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg);
+ void ocelot_port_rmwl(struct ocelot_port *port, u32 val, u32 mask, u32 reg);
++int __ocelot_bulk_read_ix(struct ocelot *ocelot, u32 reg, u32 offset, void *buf,
++			  int count);
+ u32 __ocelot_read_ix(struct ocelot *ocelot, u32 reg, u32 offset);
+ void __ocelot_write_ix(struct ocelot *ocelot, u32 val, u32 reg, u32 offset);
+ void __ocelot_rmw_ix(struct ocelot *ocelot, u32 val, u32 mask, u32 reg,
 -- 
 2.25.1
 
