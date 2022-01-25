@@ -2,190 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 739B949B7A4
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 16:31:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4220549B7CB
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 16:40:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347595AbiAYPbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 10:31:08 -0500
-Received: from mga09.intel.com ([134.134.136.24]:27223 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349233AbiAYP3A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jan 2022 10:29:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643124540; x=1674660540;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ULg4leY6X8BAN2e9AP3dMu8QMfm9aWcndEJARw1vmoQ=;
-  b=IkpErf0R2WQNmrkrbHj98KZEw60oDWKJsGslha4CZ3HjNRAybnED+Hj0
-   xbOLH791CJ+tq/phPJioOnFOXsx5B9p6d4GDJ67ns29mPSiowmHAiA6EV
-   gwXlHp76GKgHTzI5Gv1eIpAC6yrCrTmDRxRKaHrcjZO4FYG0ItkTzCRe2
-   t5pHLJ6L3Dj/OaD5kW+Acomrr3joQLQq2eDB7PxjqJ+NeKaBlW42AiZ41
-   0FJdqiBxfMSi2C9IUXM9vwvmhVGrr1Re0XGFB6cJ0qS8rLZTOjig1dIMb
-   5CaLBa5MO1OWTr5sXI9RlG5lYS+MYZ2L/KD5SOy1AMOorNlV3ZNPYXeFS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="246108417"
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="246108417"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 07:26:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
-   d="scan'208";a="627965453"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga004.jf.intel.com with ESMTP; 25 Jan 2022 07:26:32 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20PFQVdg014105;
-        Tue, 25 Jan 2022 15:26:31 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com
-Subject: Re: [PATCH bpf-next v4 2/8] ice: xsk: force rings to be sized to power of 2
-Date:   Tue, 25 Jan 2022 16:24:39 +0100
-Message-Id: <20220125152439.831365-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <YfAQrME95s758ITD@boxer>
-References: <20220124165547.74412-1-maciej.fijalkowski@intel.com> <20220124165547.74412-3-maciej.fijalkowski@intel.com> <20220125112306.746139-1-alexandr.lobakin@intel.com> <Ye/e9GqLkuekqFos@boxer> <20220125114202.748079-1-alexandr.lobakin@intel.com> <Ye/j0FjYCeJlbWR/@boxer> <20220125120033.748345-1-alexandr.lobakin@intel.com> <YfAQrME95s758ITD@boxer>
+        id S1358431AbiAYPjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 10:39:32 -0500
+Received: from mail-db8eur05on2051.outbound.protection.outlook.com ([40.107.20.51]:15073
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1385355AbiAYPhX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jan 2022 10:37:23 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=V+Lb0uQbtewCw1VWKZpTJdJ8ARCCyf4e1arXWKJxNb4jYgg91HTSh9+sDwfpQtTZwLju0W1W1axlptt3QvFrN+56dUCYSWKIvgecthDt7Lx9iwXgqHGteQ7NAsjiQJaZc1rA/SST7p3JawVvHOKZ/GAkx7rT6mF4644KT84rXBv0WqpKIvLjDfIzm//d8Y02IawkSoHKRO8nz9vcv/chx1luVCZLteEwuEP3pwqK7+nrCk/fIb5aMVm/DT5P29yczjPhBvMsyI1eGzyblfhMmKCSc/a8qPqQza5IWKgRiDE7JCOlkOo7bZ0XeaGSIpn/sYh14HsMdjTNkvW+hLUg3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3QcQs/cWeWLQhESfBX/sjyRVYXbwe2ACFDzcLkF75wo=;
+ b=DdOjg1zSAv0J1OORi+Bfb0lS5huXN00sK2qeS9Ge0uFGbbpvzDmA6aMdMa2ZJlYGzXVIVsv95TsT6DOXZ4djBKkfT4ZB84RnO4z6xIpthXhkRqyrl0HG2Zsocb8nPcrqZjERapHhzRBwhUsdNoAYabGki//YJm0+vBrTHylbBsK3dZFclFaNT5++RCrbblomofwwKHhc2IpHD1wnS6L1qDgzm2mPRcec8APs2fb8TwqneVSSpFmN2Bwy06fWkzhrFWICnytW7r4cq+vVtturK6dvYWYMVZ47Sj3Sr4fZzvGWy5JE1JhxDTVH84xc0kSuLECWvMxYGD7kRXU+BL643Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3QcQs/cWeWLQhESfBX/sjyRVYXbwe2ACFDzcLkF75wo=;
+ b=NO4tYSCvvSYa+Tj4+qd2CNzyfI3kYHMNpKrxY03rken0gApR9OJTTIWF83PbK88gCUleElcsZHhAa3oiXDMXzjJmvtP+je+js8YpB0sTGHuoQR056i5jfVHhjNjkmYT8pA3dFuo+Fpo0Zx+S0+8mnxNjyx8+k0ivvxRIPrRiong=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM0PR04MB6115.eurprd04.prod.outlook.com (2603:10a6:208:146::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Tue, 25 Jan
+ 2022 15:37:13 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::f4d7:e110:4789:67b1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::f4d7:e110:4789:67b1%5]) with mapi id 15.20.4909.017; Tue, 25 Jan 2022
+ 15:37:12 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+CC:     Miroslav Lichvar <mlichvar@redhat.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Russell King <linux@arm.linux.org.uk>
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+Thread-Topic: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+Thread-Index: AQHYAPlHUZ7+aaeSVU6jmUK14JiGzaxsOSsAgAC1gICAAAeKAIAAtFaAgAAKjACABFJtgIAAZxAAgAGSUQA=
+Date:   Tue, 25 Jan 2022 15:37:12 +0000
+Message-ID: <20220125153712.dnujk6k3nfxczmi3@skbuf>
+References: <20220103232555.19791-4-richardcochran@gmail.com>
+ <20220120164832.xdebp5vykib6h6dp@skbuf> <Yeoqof1onvrcWGNp@lunn.ch>
+ <20220121040508.GA7588@hoboy.vegasvil.org>
+ <20220121145035.z4yv2qsub5mr7ljs@skbuf>
+ <20220121152820.GA15600@hoboy.vegasvil.org> <Ye5xN6sQvsfX1lmn@localhost>
+ <20220124153716.GB28194@hoboy.vegasvil.org>
+In-Reply-To: <20220124153716.GB28194@hoboy.vegasvil.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 88876fee-c9a7-40c0-030b-08d9e0188ed5
+x-ms-traffictypediagnostic: AM0PR04MB6115:EE_
+x-microsoft-antispam-prvs: <AM0PR04MB61153FD6DBAA46EA74CDA8D6E05F9@AM0PR04MB6115.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: D6xyiy3xcZzfia8+5+s77vlioJf1KaRgs5FXr3KcZsqALdkAy92MGvx5ike//7Lx1iJAOKyTXSgpwkKCWlDp3pERx73qHbstSTbjKNworB8S5tJJ+Bi9MS1Z4jN9ndiDPDao/j2es5c9ZuUhbWBpqHQnUz8ZkFJjokcU6Vdl+OTdyrCtTgsn+rNVRwggBc67o8iYXCXymc6jmeJi8+POGwlfGvBUY8jw6A13DkYO/tul1nwl+/V8+TiK9TlJgNst6tES502ATSXamMb/GQ59Ztwqaqn89/yH6l3AN8wU9yHSnUFuDaGq2eQ/5tizc6yFJqW6J20E25Ll1U4kOl3JX8otmqylWYJ99ojhNUh6EYdmrfx1YRzMK7Gb9FV3dG66BmZbRdhDO3Q00CSE+mjlM7R05954+mxK4+9wm+/mxEIfB+bSCGY0fRH7NJ7oaUnwvg9GB8iPVR8dng+sMoB2o+Wshqe2y8lna1W/dQ/7/7tmbsa/o1H4I7Rc1CMHFCNv073yDGHV278jpobztIZUhb2qFPlt/fC5qNG44YMJa/KbcqS2WADNnlCLJFwAEFwchtm7l5nXrT9Lky206os916OZIaNEIqtMexiEysqxvPGqiTpq3p8NbCcodViTlIT9TnjcMfcFEWXVAs+3URpwy6mZvhzrx93HzshZx1E8TSPe3LCVFqoqG0FHaX5J5AY2gccQxg4y+QznaHaspAXryqob+xnb+BWQQEN1fiyHN1k=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(508600001)(6506007)(6512007)(9686003)(44832011)(2906002)(7416002)(86362001)(5660300002)(38070700005)(38100700002)(91956017)(66946007)(66476007)(66446008)(64756008)(8936002)(8676002)(4326008)(6916009)(54906003)(66556008)(76116006)(71200400001)(83380400001)(1076003)(316002)(33716001)(122000001)(26005)(186003)(6486002)(268134005)(20210929001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?1mG/WmVy5Ao2tpGM0Iuy46/sUfTtngPEstvLlUNPCkpjNc66n+WwEH569lng?=
+ =?us-ascii?Q?NSpnoN12rU/5SR8MjCFesuuOlVQym+h63Di9UYDBm87UcqGNVoKywRXmKTUa?=
+ =?us-ascii?Q?eyYnwznvMIyindma1HlPgXHs43qK/O11P2DK780i94xMSNgtaW798diH68ex?=
+ =?us-ascii?Q?3YtVY4DMolAw5Mj4ctzcIuNLIaNAS8dbTib7zdjHFBV5wja6y3cLhBltnx2h?=
+ =?us-ascii?Q?g2KbwShH30eEwz9aUl7wk0M4qiuo1xzDFQ80tAjuy8sJKUumv9t3hb2Rk3Oc?=
+ =?us-ascii?Q?6X1LAaNKahEUMyorEfAkGAPztIH6c1ZM+CeRxqG3/w3jvIAxECH0f5NCNKgP?=
+ =?us-ascii?Q?0j09OAHgRqRNh96Kv/o7GdoheHSqc9D8mee4V1HgBVoH4phsJiVWMUEuELC8?=
+ =?us-ascii?Q?jl8CBXat23QeM7693I4+G9fuxYJwlWIh/K/03jPFACtSusC0uhoAPmRaxsml?=
+ =?us-ascii?Q?EQb3KitKLRXF8gXHUOfBfy17UM4AYjy2/uopwVWBuZ16GlgbZgTdByBVPff7?=
+ =?us-ascii?Q?YZwAkSx2JILiIiKFVeCK6wgCpTgb32YN8IBlL83ExgXdBUnmq6qQKenKp3/X?=
+ =?us-ascii?Q?hFMbX4a0BmqdVD/Rq81Q4r8Nu0tjT5BccLkepaR+YzhY498U+X2UqmYf6Oix?=
+ =?us-ascii?Q?C3+Kjn5KFFibYABhlT+1JiCDb+xIrE/o0SuKvp86e3txAiSJyLaOFkw7eAPS?=
+ =?us-ascii?Q?XtUqGVAbOCxnzyeuSqRU6V6CJm7a+msdEAqqUH6zHc0IKXGadoC18wz61sip?=
+ =?us-ascii?Q?4jCQ76qirA3FYR33UKXqMMdT/BVbNUtPwE2mH7T8INRGZelW2GSrsVmaL9kx?=
+ =?us-ascii?Q?vKs2eB6ZVnvZCwPGdxgx+ez8DQeaH8kiD41SPU6eOOyKNyKBRrMifIvpLWKS?=
+ =?us-ascii?Q?rSblC17kz4eC86hOb9iGaYjMW+vsdcRzpIb7N9L6y3Ns45yUD1CXv/JQ5wa5?=
+ =?us-ascii?Q?zEeITb4kIKuw+vtqiBOyTh/CXKtw8MdS9y6b5SAEOF7yBqhKc0RLs/+bIuCa?=
+ =?us-ascii?Q?DmZo/2GfculfvRtTN7JJHwy5nClHKWvKJAYQwV4xIvy0EVx/SgmluD/Cy3YR?=
+ =?us-ascii?Q?kC33ZOHsg1AF9ItCiqcmIe5qBUEzNCmQYyFxn681tHyl4QaZo+8WkAXtSr+r?=
+ =?us-ascii?Q?8bSCfnh5xoAwHpFqECjitHro1ovo/NCMuSYiQJPc7BRKgVlYF1xrcVSUIVtr?=
+ =?us-ascii?Q?vjCbIzVW21GLtt8ELq8teVqBZRicFKEgu2IG2so/h1xJMhT8TAZgIoAjRu9J?=
+ =?us-ascii?Q?o5XaZk3A6HPBqDVtMCMnpgcXX9OuttTwjX/AQGT0Qp3g2rOzBeW9gZQfBKGr?=
+ =?us-ascii?Q?g6YmDBupaHx0xOosGG3/+OAmCReozKY/cJtYgBOFuivXOQe/FsbSZP+8fw8r?=
+ =?us-ascii?Q?3Y3JSi2sLxHgMfbDnOLCcKATlZwsWcfi2HXPv4kptLBcvEwaH0c22VekuBwt?=
+ =?us-ascii?Q?eca0R1akTKw9ZBZ3jZBkIXXVlpVTMjeo93sZmtTOmHEQH0wj+BDqdX8nTy6Y?=
+ =?us-ascii?Q?CHJGxFS6fHBSDYJp42P/az4Ft24hGbCUi1PXdAY2UTBY/yQ15mv2UD3CgeZH?=
+ =?us-ascii?Q?qsYI6XLEgZFydZY+mBuDm1V08/My/OSodMckYOY032aQq6dzJIipYAkSh4Xp?=
+ =?us-ascii?Q?2fJZy+DELwPRF3slrgqFMs8=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <049BA5E7EC3C3448B0C6BB0EA42C6EFF@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88876fee-c9a7-40c0-030b-08d9e0188ed5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jan 2022 15:37:12.9016
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sUQ/WE/itsNiXhx3vK1UnD9u3GLPpSdvoOpq/51BdTRbFTpn5kuv1usXEbhVIvUjwsXVtdE/WdLherMSelRZJw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6115
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Date: Tue, 25 Jan 2022 16:01:00 +0100
+On Mon, Jan 24, 2022 at 07:37:16AM -0800, Richard Cochran wrote:
+> On Mon, Jan 24, 2022 at 10:28:23AM +0100, Miroslav Lichvar wrote:
+>=20
+> > FWIW, scm_timestamping has three fields and the middle one no longer
+> > seems to be used. If a new socket/timestamping option enabled all
+> > three (SW, MAC, PHY) timestamps in the cmsg, I think that would be a
+> > nice feature.
+>=20
+> This won't work because:
+>=20
+> - There would need to be seven^W eight, not three slots.
+>=20
+> - Even with just three, the CMSG would have to have a bit that clearly
+>   identifies the new format.
+> =20
+> > From an admin point of view, it makes sense to me to have an option to
+> > disable PHY timestamps for the whole device if there are issues with
+> > it. For debugging and applications, it would be nice to have an option
+> > to get all of them at the same time.
+>=20
+> Right.  Those are two different use cases.  The present series
+> addresses the first one.  The second one entails making a new flavor
+> of time stamping API.
 
-> On Tue, Jan 25, 2022 at 01:00:33PM +0100, Alexander Lobakin wrote:
-> > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > Date: Tue, 25 Jan 2022 12:49:36 +0100
-> > 
-> > > On Tue, Jan 25, 2022 at 12:42:02PM +0100, Alexander Lobakin wrote:
-> > > > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > > > Date: Tue, 25 Jan 2022 12:28:52 +0100
-> > > > 
-> > > > > On Tue, Jan 25, 2022 at 12:23:06PM +0100, Alexander Lobakin wrote:
-> > > > > > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > > > > > Date: Mon, 24 Jan 2022 17:55:41 +0100
-> > > > > > 
-> > > > > > > With the upcoming introduction of batching to XSK data path,
-> > > > > > > performance wise it will be the best to have the ring descriptor count
-> > > > > > > to be aligned to power of 2.
-> > > > > > > 
-> > > > > > > Check if rings sizes that user is going to attach the XSK socket fulfill
-> > > > > > > the condition above. For Tx side, although check is being done against
-> > > > > > > the Tx queue and in the end the socket will be attached to the XDP
-> > > > > > > queue, it is fine since XDP queues get the ring->count setting from Tx
-> > > > > > > queues.
-> > > > > > > 
-> > > > > > > Suggested-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > > > > > > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > > > > > > ---
-> > > > > > >  drivers/net/ethernet/intel/ice/ice_xsk.c | 9 +++++++++
-> > > > > > >  1 file changed, 9 insertions(+)
-> > > > > > > 
-> > > > > > > diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-> > > > > > > index 2388837d6d6c..0350f9c22c62 100644
-> > > > > > > --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-> > > > > > > +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-> > > > > > > @@ -327,6 +327,14 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
-> > > > > > >  	bool if_running, pool_present = !!pool;
-> > > > > > >  	int ret = 0, pool_failure = 0;
-> > > > > > >  
-> > > > > > > +	if (!is_power_of_2(vsi->rx_rings[qid]->count) ||
-> > > > > > > +	    !is_power_of_2(vsi->tx_rings[qid]->count)) {
-> > > > > > > +		netdev_err(vsi->netdev,
-> > > > > > > +			   "Please align ring sizes at idx %d to power of 2\n", qid);
-> > > > > > 
-> > > > > > Ideally I'd pass xdp->extack from ice_xdp() to print this message
-> > > > > > directly in userspace (note that NL_SET_ERR_MSG{,_MOD}() don't
-> > > > > > support string formatting, but the user already knows QID at this
-> > > > > > point).
-> > > > > 
-> > > > > I thought about that as well but it seemed to me kinda off to have a
-> > > > > single extack usage in here. Updating the rest of error paths in
-> > > > > ice_xsk_pool_setup() to make use of extack is a candidate for a separate
-> > > > > patch to me.
-> > > > > 
-> > > > > WDYT?
-> > > > 
-> > > > The rest uses string formatting to print the error code, and thus
-> > > > would lose their meaning. This one to me is more of the same kind
-> > > > as let's say "MTU too large for XDP" message, i.e. user config
-> > > > constraints check fail. But I'm fine if you'd prefer to keep a
-> > > > single source of output messages throughout the function.
-> > > 
-> > > Doubling the logs wouldn't hurt - keep current netdev_err with ret codes
-> > > and have more meaningful messages carried up to userspace via
-> > > NL_SET_ERR_MSG_MOD.
-> > 
-> > Ah, right, this works as well. Let's leave it as it is for now then.
-> 
-> Well, I had a feeling that we don't utilize extack for a reason. Turns out
-> for XDP_SETUP_XSK_POOL we simply don't provide it.
-> 
-> struct netdev_bpf {
-> 	enum bpf_netdev_command command;
-> 	union {
-> 		/* XDP_SETUP_PROG */
-> 		struct {
-> 			u32 flags;
-> 			struct bpf_prog *prog;
-> 			struct netlink_ext_ack *extack;
-> 		};
-> 		/* BPF_OFFLOAD_MAP_ALLOC, BPF_OFFLOAD_MAP_FREE */
-> 		struct {
-> 			struct bpf_offloaded_map *offmap;
-> 		};
-> 		/* XDP_SETUP_XSK_POOL */
-> 		struct {
-> 			struct xsk_buff_pool *pool;
-> 			u16 queue_id;
-> 		} xsk;
-> 	};
-> 
-> I forgot about that :<
+I agree that they are different use cases, but with the runtime PHC
+change being now possible, there isn't really a clear-cut moment when an
+application can now say "from this moment on, I'm only getting
+timestamps from the new PHC". Especially when you switch over from the
+PHY to the MAC, a few tens of ms may pass until you get an RX timestamp
+from the PHY, and the MAC PHC may well be up and operational in the
+meantime, and ptp4l synchronizing based on its timestamps.
 
-Wooh, I missed it completely at some point. I thought it's always
-there and available.
-
-From me for the series (writing it here instead of replying to 0/8
-since you're going to drop v5 soon anyways :p):
-
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-
-> 
-> };
-> > 
-> > > 
-> > > > 
-> > > > > 
-> > > > > > 
-> > > > > > > +		pool_failure = -EINVAL;
-> > > > > > > +		goto failure;
-> > > > > > > +	}
-> > > > > > > +
-> > > > > > >  	if_running = netif_running(vsi->netdev) && ice_is_xdp_ena_vsi(vsi);
-> > > > > > >  
-> > > > > > >  	if (if_running) {
-> > > > > > > @@ -349,6 +357,7 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
-> > > > > > >  			netdev_err(vsi->netdev, "ice_qp_ena error = %d\n", ret);
-> > > > > > >  	}
-> > > > > > >  
-> > > > > > > +failure:
-> > > > > > >  	if (pool_failure) {
-> > > > > > >  		netdev_err(vsi->netdev, "Could not %sable buffer pool, error = %d\n",
-> > > > > > >  			   pool_present ? "en" : "dis", pool_failure);
-> > > > > > > -- 
-> > > > > > > 2.33.1
-> > > > > > 
-> > > > > > Thanks,
-> > > > > > Al
-> > > > 
-> > > > Al
-> > 
-> > Al
-
-Thanks!
-Al
+I don't have a clear idea how to put it in practice, either. I'll think
+about it, but the problem I see is that the phc_index reported by
+"ethtool -T" becomes a fuzzy concept in the presence of multiple PHCs.
+Adding the ability to retrieve timestamps from all of them doesn't make
+it any easier to select which one gets reported to ethtool.
+Maybe there's room for both the sysfs and the socket option after all.=
