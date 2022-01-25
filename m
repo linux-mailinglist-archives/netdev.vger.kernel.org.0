@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 096B349AE28
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 09:40:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99EE949AE35
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 09:40:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379147AbiAYIgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 03:36:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39208 "EHLO
+        id S1378869AbiAYIiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 03:38:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450731AbiAYIdX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 03:33:23 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A4DC061290;
-        Mon, 24 Jan 2022 23:04:41 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id o10so16085994ilh.0;
-        Mon, 24 Jan 2022 23:04:41 -0800 (PST)
+        with ESMTP id S1450881AbiAYIeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 03:34:21 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F03C067A65;
+        Mon, 24 Jan 2022 23:06:36 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id z4so870524ilz.4;
+        Mon, 24 Jan 2022 23:06:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=4mNtJKL4HQgQkY9btV767Gf4EXhzAnjyYSo6Uxupisw=;
-        b=SetAMpByN6ia20pJuSAz+LUw5IBghr4Jb4MdiFqfsA4NjQieFHyr++NRMGUPXfLSd3
-         CWzH6n3PbWYg/JgOTH1WdtIe3rYUxJf0+MLntbTsAvEFPql+hqSpt3ADIwBK/cvnrrKk
-         Sk/ltgwdACLMeUjW8A4UNEL/5l4z7TgDIWsOQpbf2jeizXFWPEFe0Cf128RE9lTMz6cG
-         J9dlN/uezqLuah9kGK9VkIubGhOn4ZaxWMyFrGVk5QJv2V9zdu93Q9pS5p/zKbgGpKF8
-         MJ2gagpzI8WIJqmAOgRxabikx0IgvVwAJ8SlBTbEH22gvh+jBRaWfa9rF/nlvC2f01fs
-         vnBA==
+        bh=XkEXtjfj5tnMePJhCr34XCaoEd1OT4vImrqiyvQGwjI=;
+        b=HfwAH3hAOJweTswFlUQ/SNXg3BnH31JU1JBtiB8BAfd4rUcCbLOLC3DXHFZZSbTZIg
+         6D8lBuy195UIs3UlvUyjzL56qAudRVdcXLhIODB8wL4IGb7k1yEUyrb77jLScF6q/Eef
+         X8yqdHntE30WlgX4x9E+6IAST0MYSJptWdMSZrfHCIR/fQNWqcwrh15Us8o2oHr1GFm4
+         sKZO7QvdIqUU5GGeXuyU2vjziCJHH08yTOEeWcQgVO+7TDiYs+tbyZKxYDPhm5/WLSzQ
+         GcL6uDPnSAsL9vIJu7d+27IWEW8EQtbAaRvbmtd4em9xdZTvC0O0pKJkQgRna+00lNvZ
+         RZ3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=4mNtJKL4HQgQkY9btV767Gf4EXhzAnjyYSo6Uxupisw=;
-        b=Rg60obq8KRb61kRx9AQ4IKsChDety2EWQa+pz70UClm5OztC8xBHDMcpg6NkNsVx/P
-         MIx2C1AT6jH5L67+iPJ9zP6+7R0AKUfkxfXglpH5MhOudBQYjliT/d0agJQ0dPk+d16Y
-         1xJJoEwZeyOaE9R6pI+pm7lLRfehg/SlornfPtWj9zecyqaKSBIqpYLBm5ffAm+n3XHD
-         yU5KuLM0c9cLcwLyAp6LWRR7HePzRp+i777UvBZcJ+DKsHFenI9Fo8Hu5DNu86i4Nf2D
-         LGXduD8I+Nig1eUnRXU93gbry5uMAQUXbF9SaFkSWt422ynll42Yh5HWKm8vP3H8NtYI
-         7ZMQ==
-X-Gm-Message-State: AOAM533WwKZUkS+eQllQUb0aFdOCqTbVr1Aw40Xbs9nxqThsvdKMJlTc
-        L4e2ZuStYmTLEmfWZST+pbc=
-X-Google-Smtp-Source: ABdhPJzEhNiX4C4ZHSGIxQeH4w9KUxwUEieWmGB615JFoANsY7YXEdWYh3xNztnD3RydwYaQxumY+A==
-X-Received: by 2002:a05:6e02:927:: with SMTP id o7mr9936105ilt.43.1643094280888;
-        Mon, 24 Jan 2022 23:04:40 -0800 (PST)
+        bh=XkEXtjfj5tnMePJhCr34XCaoEd1OT4vImrqiyvQGwjI=;
+        b=Eup7uEawU0mUV0VILF8Iiy4aLsyJIU6OPEVqFbHsk7rEPVVwfP0KWb6QbOEV3Vc/3J
+         Jcr//cbpo0vnqcp3d5Cx0mp7cBWi6xE7nQP5VDVa3AmiBn+zkfb4fj8gBMoTWs5UWkDo
+         /Easd+YRr9XB/aJnM6/fl1KNYDX0ka7d7LqGy+vEmkxEYf7BRb0V4kY7FC/oJrlraG44
+         Zbd6J3S5FbXmMNQTLLcx/7tkp+Ul8YFqBZa02q6kyOexz4t2JKc7ZBjzcIE2gUZXA/qf
+         HCP7bFA6mYKpTu5EwtNy/clJwY7RYz6GxPZWDXc0bCn89bLR0i5IGQv1KWj1JKuCQobB
+         mw9w==
+X-Gm-Message-State: AOAM533TzAy16bYCMa73pnYyFVKr37/rFnEzd4sZTlE43G0HBm0f3Zw0
+        7MNzJpZkF5G+NZfnU48rzMw=
+X-Google-Smtp-Source: ABdhPJx9w8Fz8i2yQXSJZnqRxlTcoTdTcYjAj2ZeMfBIR5za0cG2/bQFx+ms06APnXEHCIZeiPsA7Q==
+X-Received: by 2002:a05:6e02:19cd:: with SMTP id r13mr10793858ill.89.1643094395674;
+        Mon, 24 Jan 2022 23:06:35 -0800 (PST)
 Received: from localhost ([99.197.200.79])
-        by smtp.gmail.com with ESMTPSA id x1sm8503952ilv.30.2022.01.24.23.04.39
+        by smtp.gmail.com with ESMTPSA id d8sm7837025ilg.81.2022.01.24.23.06.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 23:04:40 -0800 (PST)
-Date:   Mon, 24 Jan 2022 23:04:35 -0800
+        Mon, 24 Jan 2022 23:06:35 -0800 (PST)
+Date:   Mon, 24 Jan 2022 23:06:29 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Maxim Mikityanskiy <maximmi@nvidia.com>, bpf@vger.kernel.org,
         Alexei Starovoitov <ast@kernel.org>,
@@ -63,12 +63,11 @@ Cc:     Tariq Toukan <tariqt@nvidia.com>, Martin KaFai Lau <kafai@fb.com>,
         Lorenz Bauer <lmb@cloudflare.com>,
         Eric Dumazet <edumazet@google.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Message-ID: <61efa1032e925_274ca208fb@john.notmuch>
-In-Reply-To: <20220124151146.376446-3-maximmi@nvidia.com>
+Message-ID: <61efa17548a0_274ca2089c@john.notmuch>
+In-Reply-To: <20220124151146.376446-4-maximmi@nvidia.com>
 References: <20220124151146.376446-1-maximmi@nvidia.com>
- <20220124151146.376446-3-maximmi@nvidia.com>
-Subject: RE: [PATCH bpf v2 2/4] bpf: Support dual-stack sockets in
- bpf_tcp_check_syncookie
+ <20220124151146.376446-4-maximmi@nvidia.com>
+Subject: RE: [PATCH bpf v2 3/4] bpf: Use EOPNOTSUPP in bpf_tcp_check_syncookie
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -78,44 +77,40 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Maxim Mikityanskiy wrote:
-> bpf_tcp_gen_syncookie looks at the IP version in the IP header and
-> validates the address family of the socket. It supports IPv4 packets in
-> AF_INET6 dual-stack sockets.
-> 
-> On the other hand, bpf_tcp_check_syncookie looks only at the address
-> family of the socket, ignoring the real IP version in headers, and
-> validates only the packet size. This implementation has some drawbacks:
-> 
-> 1. Packets are not validated properly, allowing a BPF program to trick
->    bpf_tcp_check_syncookie into handling an IPv6 packet on an IPv4
->    socket.
-
-These programs are all CAP_NET_ADMIN I believe so not so sure this is
-critical from a BPF program might trick the helper, but consistency
-is nice.
-
-> 
-> 2. Dual-stack sockets fail the checks on IPv4 packets. IPv4 clients end
->    up receiving a SYNACK with the cookie, but the following ACK gets
->    dropped.
-
-Agree we need to fix this. Also would be nice to add a test to capture
-this case so we don't break it again later. Its a bit subtle so might
-not be caught right away without a selftest.
-
-> 
-> This patch fixes these issues by changing the checks in
-> bpf_tcp_check_syncookie to match the ones in bpf_tcp_gen_syncookie. IP
-> version from the header is taken into account, and it is validated
-> properly with address family.
-
-Code looks good, would be nice to have a test.
-
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-
+> When CONFIG_SYN_COOKIES is off, bpf_tcp_check_syncookie returns
+> ENOTSUPP. It's a non-standard and deprecated code. The related function
+> bpf_tcp_gen_syncookie and most of the other functions use EOPNOTSUPP if
+> some feature is not available. This patch changes ENOTSUPP to EOPNOTSUPP
+> in bpf_tcp_check_syncookie.
 > 
 > Fixes: 399040847084 ("bpf: add helper to check for a valid SYN cookie")
 > Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 > Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+
+This came up in another thread? Or was it the same and we lost the context
+in the commit msg. Either way I don't think we should start one-off
+changing these user facing error codes. Its not the only spot we do this
+and its been this way for sometime.
+
+Is it causing a real problem?
+
 > ---
->  net/core/filter.c | 17 +++++++++++++----
+>  net/core/filter.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 780e635fb52a..2c9106704821 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -6814,7 +6814,7 @@ BPF_CALL_5(bpf_tcp_check_syncookie, struct sock *, sk, void *, iph, u32, iph_len
+>  
+>  	return -ENOENT;
+>  #else
+> -	return -ENOTSUPP;
+> +	return -EOPNOTSUPP;
+>  #endif
+>  }
+>  
+> -- 
+> 2.30.2
+> 
