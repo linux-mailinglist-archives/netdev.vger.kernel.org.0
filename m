@@ -2,309 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16B3949B75B
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 16:14:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33AF649B7BA
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 16:36:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581922AbiAYPOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 10:14:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47840 "EHLO
+        id S1376478AbiAYPf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 10:35:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1581513AbiAYPML (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 10:12:11 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64366C06173B;
-        Tue, 25 Jan 2022 07:12:11 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id p12so63951656edq.9;
-        Tue, 25 Jan 2022 07:12:11 -0800 (PST)
+        with ESMTP id S1350112AbiAYPdj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 10:33:39 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4C9C06176F
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 07:22:55 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id e2so5153225wra.2
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 07:22:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=b/fVXGWL7pXguX3NnL+L9P3rO1c2oKSjzsBSQyAaKoI=;
-        b=b49+POoNj5fEkS3FK8cNC5hrd0L0Q8NYvsXzIbXVCfLrjq5zOWOZ8IcLn5Cgdj53c5
-         XmtWnBNl55rAQ1T8BTs604GyDQzge9/Q8QyG3n1obTzwEwHvSdykC4UsTyFWMukQnssv
-         CaJxDzMJVbTDSvWto/RnZjUDDSANqJOaGn5VYB5HKjVAnJFygAeYPmi/SINAlFPK3x9N
-         m5ZYMaYml97/4HFzJ0TgAANF7Bj5Z0jImirg6HY/6JP+ZlZWrqlAisFEikTJjas/KZPw
-         e2bgqFdvMdAgtm/mo5myrCc8BVDEGvvxg2deACgWVA8Y1kZvQotbN3xuin2jkivFXBhF
-         4uaA==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cG/42W/iCx6VSeDO0kv9NR+h9YB1RdbhOInMmW4LKb8=;
+        b=yIgZcv3zFq8CZzLy/y2G41X1Du0nBHCXnyBd0kodJAZWXeIJxWmtRz+tv/qA4ZwDsc
+         PU2bv6FdEcBbQELDUnxlR38i/pHnTXwZiU2m18q2rUol+prUGPAkxA1ynNNAw3zn+99D
+         snAxqMdkBQbH+sa5NOqz6xDaZ9maMVd3n/a78f7y2tvnb8/e2wl5rZRyYQAWj5UbDWS2
+         xtFskQchbnzhDSuTx3xSQHdnVmqniLAA9n6HXKOxipNdVg7zfnuDptnn02Oh/oZaeGR+
+         JCdqFhy4MtimBoXWY7UgwpVLx29n5UhtZ4mJ5wqbuF+ojgPEJFbE2lWjKclgj02Tq9zs
+         tMAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=b/fVXGWL7pXguX3NnL+L9P3rO1c2oKSjzsBSQyAaKoI=;
-        b=HcYpK3pEg1B921yeZqKBW+uYOU8w2nXYxoEe7GSleTdByfOFjnqbR/9Yxv4RnoHa0N
-         QCBBJ2WgmXzL7klxZTN9PHm/aaP1UUHQW9zd1g6hcZilrzc5OCHNb9C6BfFoCZ1FU8i0
-         KyXKfe0jOp+5uQq9lFLZRJD34dhxFRuGrHFjUdbKanX8UxACM1uPp6oYRhqPWEvzga5x
-         dbrOUZ8I0pmUfiOE6c2Jedj2+DGzh5H1BjVORKrbnkzX7Inn5bAysLiynQcl2avv0Vaz
-         Jwl7jhI1D/tOnSWKma/eipAGZZtHEOO+61WfwPqKvk/b+RFE/WK3uTEnVYlF6pj1MZyx
-         qLrQ==
-X-Gm-Message-State: AOAM531zaGCrJqavTZI3IvGiPQ5ZXFP/hTTNjpu7rLXV2tX/NJtOdE+F
-        pkgK9jQiImC7UYgHq2oRbbY=
-X-Google-Smtp-Source: ABdhPJzSk6NWHSYclxAOyjZyJFZ1K6AbVTBS8s7c5CQF+5NDJeZFqS47qK6tI1OypDgzFrI3QS0Trg==
-X-Received: by 2002:a05:6402:438b:: with SMTP id o11mr14226461edc.23.1643123529440;
-        Tue, 25 Jan 2022 07:12:09 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id 5sm8706467edx.32.2022.01.25.07.12.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 07:12:08 -0800 (PST)
-Date:   Tue, 25 Jan 2022 17:12:07 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH v7 11/16] net: dsa: qca8k: add support for mib
- autocast in Ethernet packet
-Message-ID: <20220125151207.zmwioczu54kkwcjm@skbuf>
-References: <20220123013337.20945-1-ansuelsmth@gmail.com>
- <20220123013337.20945-12-ansuelsmth@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cG/42W/iCx6VSeDO0kv9NR+h9YB1RdbhOInMmW4LKb8=;
+        b=4zZzj5dRdLg8ESpXPn+uD+cWYvRLezwybpS6R1dXuaSZFJhnpyWEpfW8KlOsnswhaU
+         wXpqRgLGMaWmEtiSm6/DE3jTucSJP2R+NTXcGyL/v0lssyZJdbXXXP+4/gpmgkk5MEWN
+         tOt5r8dExHH1HXO7Du6RciponPqQgCEvcBh6G+IbT+y+pM8JfokFzyzE85+I4tSyNCSU
+         lT5QcltzyMVKOCpUvUUicRkSpD/qE3BAK/7cTcZ2Pe2uSfhep3O5ofX/gvk/B21fg8TC
+         6o8Gbd711BRmeyohv6UnqmzLB1XEdqvsoiBcDnvCnH7WB5lEZgT9HQTnqh4zSp5npGZX
+         gDSQ==
+X-Gm-Message-State: AOAM53376CbvDrRJRSI5RwtYjaiVukeKG5a3MSXTa4WixiRTcLGa/8pL
+        EG/1E8D9z5YYcXNJhWHXPIyhLUzed7l0Blbf8lUF3NbcCnWkgMgu
+X-Google-Smtp-Source: ABdhPJxwwTqmrLx+MIQWggb0oFQRdgGwJXfmZI6d5R30HZdgSnKu50nfGGqFRZfdP2Ai1+R5zpOflX/StrPk+KQmZCk=
+X-Received: by 2002:adf:9148:: with SMTP id j66mr19240606wrj.434.1643124173614;
+ Tue, 25 Jan 2022 07:22:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220123013337.20945-12-ansuelsmth@gmail.com>
+References: <1643106363-20246-1-git-send-email-baowen.zheng@corigine.com>
+In-Reply-To: <1643106363-20246-1-git-send-email-baowen.zheng@corigine.com>
+From:   Victor Nogueira <victor@mojatatu.com>
+Date:   Tue, 25 Jan 2022 12:22:42 -0300
+Message-ID: <CA+NMeC_BK65Oej=tL0ooyBhhEk6wK73HOaV5LR3QQkzXpbzNgQ@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next v1] tc: add skip_hw and skip_sw to control
+ action offload
+To:     Baowen Zheng <baowen.zheng@corigine.com>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Simon Horman <simon.horman@corigine.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 23, 2022 at 02:33:32AM +0100, Ansuel Smith wrote:
-> The switch can autocast MIB counter using Ethernet packet.
-> Add support for this and provide a handler for the tagger.
-> The switch will send packet with MIB counter for each port, the switch
-> will use completion API to wait for the correct packet to be received
-> and will complete the task only when each packet is received.
-> Although the handler will drop all the other packet, we still have to
-> consume each MIB packet to complete the request. This is done to prevent
-> mixed data with concurrent ethtool request.
-> 
-> connect_tag_protocol() is used to add the handler to the tag_qca tagger,
-> master_state_change() use the MIB lock to make sure no MIB Ethernet is
-> in progress.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Hi Baowen,
+
+I applied your patch, ran tdc.sh and in particular the vlan tests broke.
+
+cheers,
+Victor
+
+On Tue, Jan 25, 2022 at 7:35 AM Baowen Zheng <baowen.zheng@corigine.com> wrote:
+>
+> Add skip_hw and skip_sw flags for user to control whether
+> offload action to hardware.
+>
+> Also we add hw_count to show how many hardwares accept to offload
+> the action.
+>
+> Change man page to describe the usage of skip_sw and skip_hw flag.
+>
+> An example to add and query action as below.
+>
+> $ tc actions add action police rate 1mbit burst 100k index 100 skip_sw
+>
+> $ tc -s -d actions list action police
+> total acts 1
+>     action order 0:  police 0x64 rate 1Mbit burst 100Kb mtu 2Kb action reclassify overhead 0b linklayer ethernet
+>     ref 1 bind 0  installed 2 sec used 2 sec
+>     Action statistics:
+>     Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>     backlog 0b 0p requeues 0
+>     skip_sw in_hw in_hw_count 1
+>     used_hw_stats delayed
+>
+> Signed-off-by: baowen zheng <baowen.zheng@corigine.com>
+> Signed-off-by: Simon Horman <simon.horman@corigine.com>
 > ---
->  drivers/net/dsa/qca8k.c | 108 +++++++++++++++++++++++++++++++++++++++-
->  drivers/net/dsa/qca8k.h |  17 ++++++-
->  2 files changed, 122 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> index 35711d010eb4..f51a6d8993ff 100644
-> --- a/drivers/net/dsa/qca8k.c
-> +++ b/drivers/net/dsa/qca8k.c
-> @@ -811,7 +811,10 @@ qca8k_mib_init(struct qca8k_priv *priv)
->  	int ret;
->  
->  	mutex_lock(&priv->reg_mutex);
-> -	ret = regmap_set_bits(priv->regmap, QCA8K_REG_MIB, QCA8K_MIB_FLUSH | QCA8K_MIB_BUSY);
-> +	ret = regmap_update_bits(priv->regmap, QCA8K_REG_MIB,
-> +				 QCA8K_MIB_FUNC | QCA8K_MIB_BUSY,
-> +				 FIELD_PREP(QCA8K_MIB_FUNC, QCA8K_MIB_FLUSH) |
-> +				 QCA8K_MIB_BUSY);
->  	if (ret)
->  		goto exit;
->  
-> @@ -1882,6 +1885,97 @@ qca8k_get_strings(struct dsa_switch *ds, int port, u32 stringset, uint8_t *data)
->  			ETH_GSTRING_LEN);
+>  man/man8/tc-actions.8 | 24 ++++++++++++++++++++
+>  tc/m_action.c         | 63 +++++++++++++++++++++++++++++++++++++++++++--------
+>  2 files changed, 77 insertions(+), 10 deletions(-)
+>
+> diff --git a/man/man8/tc-actions.8 b/man/man8/tc-actions.8
+> index 6f1c201..5c399cd 100644
+> --- a/man/man8/tc-actions.8
+> +++ b/man/man8/tc-actions.8
+> @@ -52,6 +52,8 @@ actions \- independently defined actions in tc
+>  .I HWSTATSSPEC
+>  ] [
+>  .I CONTROL
+> +] [
+> +.I SKIPSPEC
+>  ]
+>
+>  .I ACTISPEC
+> @@ -99,6 +101,11 @@ Time since last update.
+>  .IR reclassify " | " pipe " | " drop " | " continue " | " ok
 >  }
->  
-> +static void qca8k_mib_autocast_handler(struct dsa_switch *ds, struct sk_buff *skb)
-> +{
-> +	const struct qca8k_match_data *match_data;
-> +	struct qca8k_mib_hdr_data *mib_hdr_data;
-> +	struct qca8k_priv *priv = ds->priv;
-> +	const struct qca8k_mib_desc *mib;
-> +	struct mib_ethhdr *mib_ethhdr;
-> +	int i, mib_len, offset = 0;
-> +	u64 *data;
-> +	u8 port;
-> +
-> +	mib_ethhdr = (struct mib_ethhdr *)skb_mac_header(skb);
-> +	mib_hdr_data = &priv->mib_hdr_data;
-> +
-> +	/* The switch autocast every port. Ignore other packet and
-> +	 * parse only the requested one.
-> +	 */
-> +	port = FIELD_GET(QCA_HDR_RECV_SOURCE_PORT, ntohs(mib_ethhdr->hdr));
-> +	if (port != mib_hdr_data->req_port)
-> +		goto exit;
-> +
-> +	match_data = device_get_match_data(priv->dev);
-> +	data = mib_hdr_data->data;
-> +
-> +	for (i = 0; i < match_data->mib_count; i++) {
-> +		mib = &ar8327_mib[i];
-> +
-> +		/* First 3 mib are present in the skb head */
-> +		if (i < 3) {
-> +			data[i] = mib_ethhdr->data[i];
-> +			continue;
-> +		}
-> +
-> +		mib_len = sizeof(uint32_t);
-> +
-> +		/* Some mib are 64 bit wide */
-> +		if (mib->size == 2)
-> +			mib_len = sizeof(uint64_t);
-> +
-> +		/* Copy the mib value from packet to the */
-> +		memcpy(data + i, skb->data + offset, mib_len);
-> +
-> +		/* Set the offset for the next mib */
-> +		offset += mib_len;
-> +	}
-> +
-> +exit:
-> +	/* Complete on receiving all the mib packet */
-> +	if (refcount_dec_and_test(&mib_hdr_data->port_parsed))
-> +		complete(&mib_hdr_data->rw_done);
+>
+> +.I SKIPSPEC
+> +:= {
+> +.IR skip_sw " | " skip_hw
 > +}
 > +
-> +static int
-> +qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
-> +{
-> +	struct dsa_port *dp = dsa_to_port(ds, port);
-> +	struct qca8k_mib_hdr_data *mib_hdr_data;
-> +	struct qca8k_priv *priv = ds->priv;
-> +	int ret;
+>  .I TC_OPTIONS
+>  These are the options that are specific to
+>  .B tc
+> @@ -270,6 +277,23 @@ Return to the calling qdisc for packet processing, and end classification of
+>  this packet.
+>  .RE
+>
+> +.TP
+> +.I SKIPSPEC
+> +The
+> +.I SKIPSPEC
+> +indicates how
+> +.B tc
+> +should proceed when executing the action. Any of the following are valid:
+> +.RS
+> +.TP
+> +.B skip_sw
+> +Do not process action by software. If hardware has no offload support for this
+> +action, operation will fail.
+> +.TP
+> +.B skip_hw
+> +Do not process action by hardware.
+> +.RE
 > +
-> +	mib_hdr_data = &priv->mib_hdr_data;
+>  .SH SEE ALSO
+>  .BR tc (8),
+>  .BR tc-bpf (8),
+> diff --git a/tc/m_action.c b/tc/m_action.c
+> index b16882a..b9fed6f 100644
+> --- a/tc/m_action.c
+> +++ b/tc/m_action.c
+> @@ -51,9 +51,10 @@ static void act_usage(void)
+>                 "       FL := ls | list | flush | <ACTNAMESPEC>\n"
+>                 "       ACTNAMESPEC :=  action <ACTNAME>\n"
+>                 "       ACTISPEC := <ACTNAMESPEC> <INDEXSPEC>\n"
+> -               "       ACTSPEC := action <ACTDETAIL> [INDEXSPEC] [HWSTATSSPEC]\n"
+> +               "       ACTSPEC := action <ACTDETAIL> [INDEXSPEC] [HWSTATSSPEC] [SKIPSPEC]\n"
+>                 "       INDEXSPEC := index <32 bit indexvalue>\n"
+>                 "       HWSTATSSPEC := hw_stats [ immediate | delayed | disabled ]\n"
+> +               "       SKIPSPEC := [ skip_sw | skip_hw ]\n"
+>                 "       ACTDETAIL := <ACTNAME> <ACTPARAMS>\n"
+>                 "               Example ACTNAME is gact, mirred, bpf, etc\n"
+>                 "               Each action has its own parameters (ACTPARAMS)\n"
+> @@ -210,12 +211,14 @@ int parse_action(int *argc_p, char ***argv_p, int tca_id, struct nlmsghdr *n)
+>         struct rtattr *tail, *tail2;
+>         char k[FILTER_NAMESZ];
+>         int act_ck_len = 0;
+> +       __u32 flag = 0;
+>         int ok = 0;
+>         int eap = 0; /* expect action parameters */
+>
+>         int ret = 0;
+>         int prio = 0;
+>         unsigned char act_ck[TC_COOKIE_MAX_SIZE];
+> +       int skip_loop = 2;
+>
+>         if (argc <= 0)
+>                 return -1;
+> @@ -314,13 +317,27 @@ done0:
+>                         }
+>
+>                         if (*argv && strcmp(*argv, "no_percpu") == 0) {
+> +                               flag |= TCA_ACT_FLAGS_NO_PERCPU_STATS;
+> +                               NEXT_ARG_FWD();
+> +                       }
 > +
-> +	mutex_lock(&mib_hdr_data->mutex);
+> +                       /* we need to parse twice to fix skip flag out of order */
+> +                       while (skip_loop--) {
+> +                               if (*argv && strcmp(*argv, "skip_sw") == 0) {
+> +                                       flag |= TCA_ACT_FLAGS_SKIP_SW;
+> +                                       NEXT_ARG_FWD();
+> +                               } else if (*argv && strcmp(*argv, "skip_hw") == 0) {
+> +                                       flag |= TCA_ACT_FLAGS_SKIP_HW;
+> +                                       NEXT_ARG_FWD();
+> +                               }
+> +                       }
 > +
-> +	reinit_completion(&mib_hdr_data->rw_done);
+> +                       if (flag) {
+>                                 struct nla_bitfield32 flags =
+> -                                       { TCA_ACT_FLAGS_NO_PERCPU_STATS,
+> -                                         TCA_ACT_FLAGS_NO_PERCPU_STATS };
+> +                                       { flag, flag };
+>
+>                                 addattr_l(n, MAX_MSG, TCA_ACT_FLAGS, &flags,
+>                                           sizeof(struct nla_bitfield32));
+> -                               NEXT_ARG_FWD();
+>                         }
+>
+>                         addattr_nest_end(n, tail);
+> @@ -396,13 +413,39 @@ static int tc_print_one_action(FILE *f, struct rtattr *arg)
+>                                            strsz, b1, sizeof(b1)));
+>                 print_nl();
+>         }
+> -       if (tb[TCA_ACT_FLAGS]) {
+> -               struct nla_bitfield32 *flags = RTA_DATA(tb[TCA_ACT_FLAGS]);
+> +       if (tb[TCA_ACT_FLAGS] || tb[TCA_ACT_IN_HW_COUNT]) {
+> +               bool skip_hw = false;
+> +               if (tb[TCA_ACT_FLAGS]) {
+> +                       struct nla_bitfield32 *flags = RTA_DATA(tb[TCA_ACT_FLAGS]);
 > +
-> +	mib_hdr_data->req_port = dp->index;
-> +	mib_hdr_data->data = data;
-> +	refcount_set(&mib_hdr_data->port_parsed, QCA8K_NUM_PORTS);
-> +
-> +	mutex_lock(&priv->reg_mutex);
-> +
-> +	/* Send mib autocast request */
-> +	ret = regmap_update_bits(priv->regmap, QCA8K_REG_MIB,
-> +				 QCA8K_MIB_FUNC | QCA8K_MIB_BUSY,
-> +				 FIELD_PREP(QCA8K_MIB_FUNC, QCA8K_MIB_CAST) |
-> +				 QCA8K_MIB_BUSY);
-> +
-> +	mutex_unlock(&priv->reg_mutex);
-> +
-> +	if (ret)
-> +		goto exit;
-> +
-> +	ret = wait_for_completion_timeout(&mib_hdr_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
-> +
-> +exit:
-> +	mutex_unlock(&mib_hdr_data->mutex);
-> +
-> +	return ret;
-> +}
-> +
->  static void
->  qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
->  			uint64_t *data)
-> @@ -1893,6 +1987,10 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
->  	u32 hi = 0;
->  	int ret;
->  
-> +	if (priv->mgmt_master &&
-> +	    qca8k_get_ethtool_stats_eth(ds, port, data) > 0)
-> +		return;
-> +
->  	match_data = of_device_get_match_data(priv->dev);
->  
->  	for (i = 0; i < match_data->mib_count; i++) {
-> @@ -2573,7 +2671,8 @@ qca8k_master_change(struct dsa_switch *ds, const struct net_device *master,
->  	if (dp->index != 0)
->  		return;
->  
-> -	mutex_lock(&priv->mgmt_hdr_data.mutex);
-> +	mutex_unlock(&priv->mgmt_hdr_data.mutex);
-
-Why do you unlock mgmt_hdr_data here?
-
-> +	mutex_lock(&priv->mib_hdr_data.mutex);
->  
->  	if (operational)
->  		priv->mgmt_master = master;
-> @@ -2581,6 +2680,7 @@ qca8k_master_change(struct dsa_switch *ds, const struct net_device *master,
->  		priv->mgmt_master = NULL;
->  
->  	mutex_unlock(&priv->mgmt_hdr_data.mutex);
-> +	mutex_unlock(&priv->mib_hdr_data.mutex);
-
-Please unlock in the reverse order of locking.
-
->  }
->  
->  static int qca8k_connect_tag_protocol(struct dsa_switch *ds,
-> @@ -2593,6 +2693,7 @@ static int qca8k_connect_tag_protocol(struct dsa_switch *ds,
->  		tagger_data = ds->tagger_data;
->  
->  		tagger_data->rw_reg_ack_handler = qca8k_rw_reg_ack_handler;
-> +		tagger_data->mib_autocast_handler = qca8k_mib_autocast_handler;
->  
->  		break;
->  	default:
-> @@ -2721,6 +2822,9 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
->  	mutex_init(&priv->mgmt_hdr_data.mutex);
->  	init_completion(&priv->mgmt_hdr_data.rw_done);
->  
-> +	mutex_init(&priv->mib_hdr_data.mutex);
-> +	init_completion(&priv->mib_hdr_data.rw_done);
-> +
->  	priv->ds->dev = &mdiodev->dev;
->  	priv->ds->num_ports = QCA8K_NUM_PORTS;
->  	priv->ds->priv = priv;
-> diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-> index a358a67044d3..dc1365542aa3 100644
-> --- a/drivers/net/dsa/qca8k.h
-> +++ b/drivers/net/dsa/qca8k.h
-> @@ -67,7 +67,7 @@
->  #define QCA8K_REG_MODULE_EN				0x030
->  #define   QCA8K_MODULE_EN_MIB				BIT(0)
->  #define QCA8K_REG_MIB					0x034
-> -#define   QCA8K_MIB_FLUSH				BIT(24)
-> +#define   QCA8K_MIB_FUNC				GENMASK(26, 24)
->  #define   QCA8K_MIB_CPU_KEEP				BIT(20)
->  #define   QCA8K_MIB_BUSY				BIT(17)
->  #define QCA8K_MDIO_MASTER_CTRL				0x3c
-> @@ -317,6 +317,12 @@ enum qca8k_vlan_cmd {
->  	QCA8K_VLAN_READ = 6,
->  };
->  
-> +enum qca8k_mid_cmd {
-> +	QCA8K_MIB_FLUSH = 1,
-> +	QCA8K_MIB_FLUSH_PORT = 2,
-> +	QCA8K_MIB_CAST = 3,
-> +};
-> +
->  struct ar8xxx_port_status {
->  	int enabled;
->  };
-> @@ -340,6 +346,14 @@ struct qca8k_mgmt_hdr_data {
->  	u32 data[4];
->  };
->  
-> +struct qca8k_mib_hdr_data {
-> +	struct completion rw_done;
-> +	struct mutex mutex; /* Process one command at time */
-> +	refcount_t port_parsed; /* Counter to track parsed port */
-> +	u8 req_port;
-> +	u64 *data; /* pointer to ethtool data */
-> +};
-> +
->  struct qca8k_ports_config {
->  	bool sgmii_rx_clk_falling_edge;
->  	bool sgmii_tx_clk_falling_edge;
-> @@ -367,6 +381,7 @@ struct qca8k_priv {
->  	unsigned int port_mtu[QCA8K_NUM_PORTS];
->  	const struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
->  	struct qca8k_mgmt_hdr_data mgmt_hdr_data;
-> +	struct qca8k_mib_hdr_data mib_hdr_data;
->  };
->  
->  struct qca8k_mib_desc {
-> -- 
-> 2.33.1
-> 
+> +                       if (flags->selector & TCA_ACT_FLAGS_NO_PERCPU_STATS)
+> +                               print_bool(PRINT_ANY, "no_percpu", "\tno_percpu",
+> +                                          flags->value &
+> +                                          TCA_ACT_FLAGS_NO_PERCPU_STATS);
+> +                       if (flags->selector & TCA_ACT_FLAGS_SKIP_HW) {
+> +                               print_bool(PRINT_ANY, "skip_hw", "\tskip_hw",
+> +                                          flags->value &
+> +                                          TCA_ACT_FLAGS_SKIP_HW);
+> +                               skip_hw = !!(flags->value & TCA_ACT_FLAGS_SKIP_HW);
+> +                       }
+> +                       if (flags->selector & TCA_ACT_FLAGS_SKIP_SW)
+> +                               print_bool(PRINT_ANY, "skip_sw", "\tskip_sw",
+> +                                          flags->value &
+> +                                          TCA_ACT_FLAGS_SKIP_SW);
+> +               }
+> +               if (tb[TCA_ACT_IN_HW_COUNT] && !skip_hw) {
+> +                       __u32 count = rta_getattr_u32(tb[TCA_ACT_IN_HW_COUNT]);
+> +                       if (count) {
+> +                               print_bool(PRINT_ANY, "in_hw", "\tin_hw",
+> +                                          true);
+> +                               print_uint(PRINT_ANY, "in_hw_count",
+> +                                          " in_hw_count %u", count);
+> +                       } else {
+> +                               print_bool(PRINT_ANY, "not_in_hw",
+> +                                          "\tnot_in_hw", true);
+> +                       }
+> +               }
+>
+> -               if (flags->selector & TCA_ACT_FLAGS_NO_PERCPU_STATS)
+> -                       print_bool(PRINT_ANY, "no_percpu", "\tno_percpu",
+> -                                  flags->value &
+> -                                  TCA_ACT_FLAGS_NO_PERCPU_STATS);
+>                 print_nl();
+>         }
+>         if (tb[TCA_ACT_HW_STATS])
+> --
+> 1.8.3.1
+>
