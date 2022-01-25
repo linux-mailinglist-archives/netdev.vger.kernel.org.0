@@ -2,100 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 816ED49B1D8
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:44:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21CF449B1DA
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:44:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356089AbiAYKaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 05:30:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37700 "EHLO
+        id S1356128AbiAYKaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 05:30:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349031AbiAYKXp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 05:23:45 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770D3C061769
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 02:23:40 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id r10so30783784edt.1
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 02:23:40 -0800 (PST)
+        with ESMTP id S1352036AbiAYKY7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 05:24:59 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C80C0613DE;
+        Tue, 25 Jan 2022 02:24:57 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id o12so12377814lfg.12;
+        Tue, 25 Jan 2022 02:24:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rLx/YZxDfavcDLwOxOrS4Rl7DmDxsfuNzODHqKOrfoo=;
-        b=Cjqz4sGxayNEsd0GCR1jIVFD74VKC0x8YraruTsPgfOND0X2ETqMAY5JFiAndZytMK
-         0vWmsJ53n+ZvUBJ3THnVnuegNLujOvRJ29cpo2wrGGfM8IQERsbvLPSZiYtebktMEAn5
-         lP4jhdLT8I6R058mj/Du1FEwceKZtriaaoFWBjgHNetNGbwpeYOOaoejqlsvMPTluJ1s
-         GXo99p08y6lcBEFNTXa1xW9tOutTgBKBPjtYtWR07W0Po1E6UtwB4+yK1qFE7VBu0zZb
-         oeGW+7rDQoZJAaz1/vKmRlOwX/BY5VXWFd7/lA5BGJtxewlQ/lFI6jGJN8S3rK+UMm4E
-         15FA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=9BG2GS4zinb7Ow72+Oc/dISNMPxbcJYV6aq+uT4bdK0=;
+        b=blXz03GfcmGHo8II4aBz3Obb+udMVXJzDsGHCznCs3ZCPSRdsakcLuHbROuo1SK4GA
+         SuXp367kkdb+yMu6eMKCScOGPafKSq7CceAdgCuWq4Z9277qMxceJIsKDWqdCnEeorOQ
+         2H586I5mrrK0vzkFrABPRkeuSP05P/Mxk78zi4kU332uYNcRyimOmgvh3U8qZPuATc2u
+         wotd5ayJVrV4m4JwUXMBQmzghcPyxWohRchMtcyMFfqsbrqG5W8oyNdqChZaKL74vaJ4
+         R8Rq7IKtOJObQbMyc75nKQ7G8ifhQ7oRUW1+iDyp2F8m8XhDxejtXj7I4Ey8gwZNE2Zz
+         8jow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rLx/YZxDfavcDLwOxOrS4Rl7DmDxsfuNzODHqKOrfoo=;
-        b=eIr8QHLtN2UWi7lymOY283LW4iKPBfEsjvSYxB/SNygyhXeUDNtqsy72IRxC/LJdpX
-         CsaXGJ3ONkwekNGRCu/Igf5nieXWwZrxKVobUL3Io+sRuEZEYqk3+uUy664atg3ccNIY
-         qfpIbnMWUAvRrsrnEq997/wdAjDt6hl5nsfVkRsktjQT9tSkrU0FHzw1Xmr/ZoyKm38T
-         ybt2Og7hzXNM83KH6mMg5HQ5RZxCkDOQoCAb5UPP1G220jjyPHfZvmLWo4fkiMfRzj5d
-         CSFeEGqJkqyPRrqoLfkPqpz8YPrj6UZ6Hla48L9TvFGi5DbXgRfeMcRiW8MKYZR89oBl
-         dVDg==
-X-Gm-Message-State: AOAM530TjSxr60+4z3fwgUbUP/+MDkNGZ2Zrg25+la0PYusuolTkrnrE
-        o847y0Pr8w7MlY15soWw61TGEjMBNGypcKYFQrNLkw==
-X-Google-Smtp-Source: ABdhPJzA60Ix8HB8puuXpcFij81WpZZ6sgSvskX6fLo4WF6+a1KQnXgq0MrdYEc7H/MvpVAOfZCSBG9y4O425dVnhbw=
-X-Received: by 2002:a05:6402:1604:: with SMTP id f4mr19778138edv.352.1643106219001;
- Tue, 25 Jan 2022 02:23:39 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=9BG2GS4zinb7Ow72+Oc/dISNMPxbcJYV6aq+uT4bdK0=;
+        b=77cjDJNEEdlVogKHi1EOMv6cojVoMq8fGIIgKp2gooIOdPskKRMTMdDdYdwzI42b0/
+         992uEKGlnLkv4XJZHRjiEgF1tRiiQaN21gZtznJFCdvhiTwdnfjuOiqiQxFXUy1r0Law
+         pZ1clusueWgd0eOFGS49NJAan0R9bNDlkzz4SP5LQ78ZiLaAzstbLkpFvoeI6p393B9W
+         ip/koMgpOpH9RHgJz19ggee7uh2kWz7cRu6Txy/lKb/rulrBhcHpMt6s0st+bQKLChBH
+         QtTa4/qnWmpoK/gJBGy1EoeWIVOWARoVgyBMVXfLW6nNQYj4pZghiayMWfornrncgVya
+         COgQ==
+X-Gm-Message-State: AOAM530SsJHC5PniHhu/JFzwdtRW9fDONtxZKyNG3UWlLpskclGiKz4i
+        vqUiv3qTpfyWKxFhkVH7liw=
+X-Google-Smtp-Source: ABdhPJy/dzbGa69dT6Zgyw2xUBM0PDpzJjNBd9JiVGSa3Rrdvss02918Vl59SsYkbxguJc/zayyU1A==
+X-Received: by 2002:a05:6512:39c1:: with SMTP id k1mr15660735lfu.207.1643106295329;
+        Tue, 25 Jan 2022 02:24:55 -0800 (PST)
+Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id k10sm451341lfv.258.2022.01.25.02.24.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 02:24:54 -0800 (PST)
+Message-ID: <0d9a0ce5-ab34-cf05-158e-e25fc5595b4d@gmail.com>
+Date:   Tue, 25 Jan 2022 11:24:52 +0100
 MIME-Version: 1.0
-References: <20220120070226.1492-1-biao.huang@mediatek.com> <20220120070226.1492-5-biao.huang@mediatek.com>
-In-Reply-To: <20220120070226.1492-5-biao.huang@mediatek.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Tue, 25 Jan 2022 11:23:28 +0100
-Message-ID: <CAMRc=MdVKdXcK0gdBSpaaSm5fx1o5Sy_0-JJBPK0=Xp7UmQnqQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 4/9] dt-bindings: net: mtk-star-emac: add
- support for MT8365
-To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     David Miller <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
+Subject: Re: [PATCH 5/8] net: add helper eth_addr_add()
+To:     Michael Walle <michael@walle.cc>, linux-mtd@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Yinghua Pan <ot_yinghua.pan@mediatek.com>,
-        srv_heupstream@mediatek.com, Macpaul Lin <macpaul.lin@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+References: <20211228142549.1275412-1-michael@walle.cc>
+ <20211228142549.1275412-6-michael@walle.cc>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+In-Reply-To: <20211228142549.1275412-6-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 8:02 AM Biao Huang <biao.huang@mediatek.com> wrote:
->
-> Add binding document for Ethernet on MT8365.
->
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+On 28.12.2021 15:25, Michael Walle wrote:
+> Add a helper to add an offset to a ethernet address. This comes in handy
+> if you have a base ethernet address for multiple interfaces.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 > ---
->  Documentation/devicetree/bindings/net/mediatek,star-emac.yaml | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml b/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-> index e6a5ff208253..87a8b25b03a6 100644
-> --- a/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-> +++ b/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-> @@ -23,6 +23,7 @@ properties:
->        - mediatek,mt8516-eth
->        - mediatek,mt8518-eth
->        - mediatek,mt8175-eth
-> +      - mediatek,mt8365-eth
->
->    reg:
->      maxItems: 1
-> --
-> 2.25.1
->
+>   include/linux/etherdevice.h | 14 ++++++++++++++
+>   1 file changed, 14 insertions(+)
+> 
+> diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
+> index 2ad71cc90b37..9d621dc85290 100644
+> --- a/include/linux/etherdevice.h
+> +++ b/include/linux/etherdevice.h
+> @@ -486,6 +486,20 @@ static inline void eth_addr_inc(u8 *addr)
+>   	u64_to_ether_addr(u, addr);
+>   }
+>   
+> +/**
+> + * eth_addr_add() - Add (or subtract) and offset to/from the given MAC address.
+> + *
+> + * @offset: Offset to add.
+> + * @addr: Pointer to a six-byte array containing Ethernet address to increment.
+> + */
+> +static inline void eth_addr_add(u8 *addr, long offset)
+> +{
+> +	u64 u = ether_addr_to_u64(addr);
+> +
+> +	u += offset;
+> +	u64_to_ether_addr(u, addr);
+> +}
 
-Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Please check eth_hw_addr_gen() which contains identical code +
+eth_hw_addr_set().
+
+You should probably make eth_hw_addr_gen() use your new function as a
+helper.
