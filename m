@@ -2,89 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB86D49AA48
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 05:36:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C69F849AA74
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 05:38:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385073AbiAYDgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 22:36:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56024 "EHLO
+        id S1325785AbiAYDip (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 22:38:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3415548AbiAYBrc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 20:47:32 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C5AC0617A3
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 16:38:49 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id f12-20020a056902038c00b006116df1190aso38199275ybs.20
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 16:38:49 -0800 (PST)
+        with ESMTP id S3424036AbiAYCik (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 21:38:40 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F20C061243
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 16:53:15 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id r10so28704194edt.1
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 16:53:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=AE42NXyGuF++OsviAYaBM/aTmpTPsKa7gHXSQEZykMk=;
-        b=epqnPUKasiEtVVChbxwzoIKZvsEye6JpyuSU3+3TTjN6k+SwW/3ePaZzTsoMMIKl7a
-         smbzhVEuKtL+O7FpT8UhKnSYwfd2IOxl5sQYEMIdtPqj7GR6EETLVOzJ+id/rbL5cfpX
-         +0PWD4TSsL5dXEXsG2q/jLVwx6WbZ6UawAQzhFOekBDUfUEl93AexIEJPqkfeZi/a168
-         tYGCif8PANqr6Tjf/cYay9ZjfFjeKDzh7mvGHozh6UEHXYGV5bvrZgj9FqXd2n+RvH48
-         xqeiQzjWSnO0tD2GpNkb+bUYmxSBXLfZjJB/bu6GeeR/R6Jz69TU9+2Cn1xUj1BmTMnf
-         XlBw==
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=/6PDy6Ji21puXCl+kh+tPzXcTzJ0YJY6QF8JOjRKpZ4=;
+        b=FaZq7GvdasR+tPYnSuMXkW+ylvaK1i8MUMZLjvI6x3n16n8SVoXrzClaUp2VH8+slH
+         k+UDAR575tIyH1erfVHB2Gcl7LnXRInMsV7KeRzHln8SIPN2LsUKgmkrUkRKVdEEHIo3
+         3R1LSPbPv9K68P+NoIVSBf9lcuylLp4B1re2ltyjQ0GVN8iwFyXGoymqes9GHgBp6CES
+         pd6NR21vuYyD6/taO6rJ4jadZLT3t8kCwseti1wWZMqIcmx6xDaD3Z8T4UJ75EeeDo0S
+         HqWXI6IP0TcbQhyArfhX9qF9HxUg/Zm+0vR0B9u43ChM48UdYELyV0fCqCRCpkaetZSI
+         PvhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=AE42NXyGuF++OsviAYaBM/aTmpTPsKa7gHXSQEZykMk=;
-        b=x3CnZ48IBAQjVD9CBzI6LxuArwc/k87w3EPoKxQvug8NGdPR1P0xfQd/+bEOHrsQdw
-         NW6HqVxJ2jCSgs4BvaB1q0ruq6T7ZBBCFbhq1I9sgOqJEmFk2pnle2BbmeP8iD6cDWhr
-         1Kj+n5L10djb4qMzfAgliPCWcEVWRwLS4NAJVIs88MQ0snnfKHnjWoHvWALl80KeE9rB
-         YPvUreIducnJ6DzEh4u2l2Us49S4iivLR6By77m/BDkxHdnsvDkb5aF24wEZHfl+gxnE
-         KeXDwTMBNI4rprJBvsJ/ryqH7hiyfIpolzJMeoFl+m/47JRdHLHgcIBqxvtoNxtVZls5
-         fvOQ==
-X-Gm-Message-State: AOAM533D+g3tNa51OU/LjG1OMQ1B3rMadrIHu3+lnJDC/U3lcfr5ST8o
-        qCaWO6XJsXbUwI1gv1+61dHmzUHd7YjzCO3X5bEtwe7e/nbroo/b71/ZTf8G/XGDGNejE3yLvlo
-        pSyRj9rGWPST371PfyQWMkCt5YMtj4v55jQ2pIA2qmjbzvPd78to8aw==
-X-Google-Smtp-Source: ABdhPJygJaFOA7hjd6Q/A1ZwXd9SVSFn5POPN1pc7ztOjwG/0r9GVBFJUKADFz0f7LuhzSjy+h+j+XA=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:2b4e:2e9:6635:b685])
- (user=sdf job=sendgmr) by 2002:a0d:d701:0:b0:2ca:287c:6bb4 with SMTP id
- 00721157ae682-2ca287c6e03mr2441197b3.89.1643071128462; Mon, 24 Jan 2022
- 16:38:48 -0800 (PST)
-Date:   Mon, 24 Jan 2022 16:38:45 -0800
-Message-Id: <20220125003845.2857801-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-Subject: [PATCH bpf-next] bpf: fix register_btf_kfunc_id_set for !CONFIG_DEBUG_INFO_BTF
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        Stanislav Fomichev <sdf@google.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=/6PDy6Ji21puXCl+kh+tPzXcTzJ0YJY6QF8JOjRKpZ4=;
+        b=cS5VTUAM+Y6L+nXco+vCcLMxRRQrgT6xuKp7dECWTm+ToVAl7MgLCJ1Yd46RW4y1SG
+         fItpgAZf+RqV+QI+DADgkQcxHCW6r6HcEaBD0XQrzy4sGf+MeEk1XDvgdyD2imW+IAgD
+         Ary9ZCQ3mrjba/mC6657KyyirENYfeYPqgOFr1XIIOUeS4QHZ6DVMMfWz5l+yJjCfFd3
+         lSlqXxSLigPH35NS+sNWxBjzrmHw8lVko5tF+BrkA19a4YMiG7A/hV95id16s509QLyE
+         L0TrMXRaWy1FihmRDV3DyYumgGgpKAxQ+h7T3jQvp5+Pz/SAVuXXYwUmNHBiAgmCBHg0
+         TPEA==
+X-Gm-Message-State: AOAM532auJGwx2N9rkYyIWi8ZI6zlKRp6MYvoMPgaTW0d7kpDSTzb9OM
+        T80XoyzjWLnzr3JyoCMDkUINif0FxnF/8rCpgMjCQxwMt8U=
+X-Google-Smtp-Source: ABdhPJy2LrBM5WzZe3CZlW2MKq6gQFwkzM6Y5WAPTepIBeFcm+NcdDccCXtOvBFU2KuDNmOT+aPjZhw6aO6u9ZVbVks=
+X-Received: by 2002:a17:906:2f0c:: with SMTP id v12mr14542328eji.761.1643071982556;
+ Mon, 24 Jan 2022 16:53:02 -0800 (PST)
+MIME-Version: 1.0
+Sender: micaibrahim2@gmail.com
+Received: by 2002:a05:6408:26a8:b0:13e:ebab:e530 with HTTP; Mon, 24 Jan 2022
+ 16:53:01 -0800 (PST)
+From:   "MRS. Maya Olivia" <mrs.mayaolivia@gmail.com>
+Date:   Tue, 25 Jan 2022 00:53:01 +0000
+X-Google-Sender-Auth: _9NBcCrDhLmWlLPbR8Z0LyckfNk
+Message-ID: <CAFYpAgD2xF47gFOkmv43JTh_9beAGz=1+QRh2KtAzcx7LBD0Nw@mail.gmail.com>
+Subject: Hello My Dear friend.
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit dee872e124e8 ("bpf: Populate kfunc BTF ID sets in struct btf")
-breaks loading of some modules when CONFIG_DEBUG_INFO_BTF is not set.
-register_btf_kfunc_id_set returns -ENOENT to the callers when
-there is no module btf. Let's return 0 (success) instead to let
-those modules work in !CONFIG_DEBUG_INFO_BTF cases.
+My husband wish, can I trust you?
 
-Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Fixes: dee872e124e8 ("bpf: Populate kfunc BTF ID sets in struct btf")
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- kernel/bpf/btf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I am Mrs. Maya Oliver, from Norway
+. Firstly, I am married to Mr. Patrick Oliver, A diamond and gold
+merchant who owns a small gold Mine in Burkina Faso and Egypt Cairo;
+He died of Cardiovascular Disease in mid-March 2011. During his
+lifetime he deposited the sum of =E2=82=AC 18.5 Million Euro) Eighteen
+million, Five hundred thousand Euros in a bank in Ouagadougou the
+capital city of Burkina Faso. The deposited money was from the sale of
+the shares, death benefits payment and entitlements of my deceased
+husband by his company.
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 57f5fd5af2f9..24205c2d4f7e 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -6741,7 +6741,7 @@ int register_btf_kfunc_id_set(enum bpf_prog_type prog_type,
- 
- 	btf = btf_get_module_btf(kset->owner);
- 	if (IS_ERR_OR_NULL(btf))
--		return btf ? PTR_ERR(btf) : -ENOENT;
-+		return btf ? PTR_ERR(btf) : 0;
- 
- 	hook = bpf_prog_type_to_kfunc_hook(prog_type);
- 	ret = btf_populate_kfunc_set(btf, hook, kset);
--- 
-2.35.0.rc0.227.g00780c9af4-goog
+Since his death I decided not to remarry, When my late husband was
+Alive he deposited the sum of =E2=82=AC 18.5 Million Euro) Eight million, F=
+ive hundred
+thousand Euro) in a bank in Burkina Faso, Presently this money is
+still in bank. And My Doctor told me that I don't have much time to
+live because of the cancer problem,
 
+Having known my condition I decided to hand you over this fund to take
+care of the less-privileged people, you will utilize this money the
+way I am going to instruct herein. I want you to take 35% Percent of
+the total money for your personal use While 65% of the money will go
+to charity" people and helping the orphanage.
+
+I don't want my husband's efforts to be used by the Government. I grew
+up as an Orphan and I don't have anybody as my family member,
+Meanwhile the total funds is currently with the RIA transfer company
+under the guiding of my bank director and they have been instructed to
+transfer the funds to you through the mention options bellow
+1, Money Gram
+2, ATM card,
+3 RIA
+4, Online Transfer
+that mention above method of transfer is 100% guarantee for you to
+received the funds without much delaying, once you are in contact with
+them,   base on the urgency required for you to handle the project, as
+my doctors has confirmed that I don=E2=80=99t have much time to live, bello=
+w
+is the contact of the RIA transfer manager who will proceed the
+transfer to you once you are in contact with them.
+
+BELOW HERE IS THEIR CONTACT INFORMATION
+OFFICE NAME: RIA MONEY TRANSFER SERVICE BURKINA FASO
+CONTACT PERSON: Mr. Mohamed SIMPORE - Directeur g=C3=A9n=C3=A9ral
+CONTACT FIRST EMAIL:  transferriamoney0@gmail.com
+CONTACT SECOND EMAIL:  servicemoneygram8@gmail.com
+Phone Numbers: (+226) 25 49 24 0470
+
+Please note you will be required to send them your information as below
+ A scan copy of your passport or ID card
+Your telephone number=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=
+=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6
+Your occupation =E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=
+=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=
+=A6=E2=80=A6=E2=80=A6
+So as to commence the transfer to you without delaying
+Regards,
+Mrs. Maya Oliver,
