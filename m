@@ -2,259 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33AF649B7BA
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 16:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 739B949B7A4
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 16:31:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376478AbiAYPf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 10:35:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350112AbiAYPdj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 10:33:39 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4C9C06176F
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 07:22:55 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id e2so5153225wra.2
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 07:22:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cG/42W/iCx6VSeDO0kv9NR+h9YB1RdbhOInMmW4LKb8=;
-        b=yIgZcv3zFq8CZzLy/y2G41X1Du0nBHCXnyBd0kodJAZWXeIJxWmtRz+tv/qA4ZwDsc
-         PU2bv6FdEcBbQELDUnxlR38i/pHnTXwZiU2m18q2rUol+prUGPAkxA1ynNNAw3zn+99D
-         snAxqMdkBQbH+sa5NOqz6xDaZ9maMVd3n/a78f7y2tvnb8/e2wl5rZRyYQAWj5UbDWS2
-         xtFskQchbnzhDSuTx3xSQHdnVmqniLAA9n6HXKOxipNdVg7zfnuDptnn02Oh/oZaeGR+
-         JCdqFhy4MtimBoXWY7UgwpVLx29n5UhtZ4mJ5wqbuF+ojgPEJFbE2lWjKclgj02Tq9zs
-         tMAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cG/42W/iCx6VSeDO0kv9NR+h9YB1RdbhOInMmW4LKb8=;
-        b=4zZzj5dRdLg8ESpXPn+uD+cWYvRLezwybpS6R1dXuaSZFJhnpyWEpfW8KlOsnswhaU
-         wXpqRgLGMaWmEtiSm6/DE3jTucSJP2R+NTXcGyL/v0lssyZJdbXXXP+4/gpmgkk5MEWN
-         tOt5r8dExHH1HXO7Du6RciponPqQgCEvcBh6G+IbT+y+pM8JfokFzyzE85+I4tSyNCSU
-         lT5QcltzyMVKOCpUvUUicRkSpD/qE3BAK/7cTcZ2Pe2uSfhep3O5ofX/gvk/B21fg8TC
-         6o8Gbd711BRmeyohv6UnqmzLB1XEdqvsoiBcDnvCnH7WB5lEZgT9HQTnqh4zSp5npGZX
-         gDSQ==
-X-Gm-Message-State: AOAM53376CbvDrRJRSI5RwtYjaiVukeKG5a3MSXTa4WixiRTcLGa/8pL
-        EG/1E8D9z5YYcXNJhWHXPIyhLUzed7l0Blbf8lUF3NbcCnWkgMgu
-X-Google-Smtp-Source: ABdhPJxwwTqmrLx+MIQWggb0oFQRdgGwJXfmZI6d5R30HZdgSnKu50nfGGqFRZfdP2Ai1+R5zpOflX/StrPk+KQmZCk=
-X-Received: by 2002:adf:9148:: with SMTP id j66mr19240606wrj.434.1643124173614;
- Tue, 25 Jan 2022 07:22:53 -0800 (PST)
+        id S1347595AbiAYPbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 10:31:08 -0500
+Received: from mga09.intel.com ([134.134.136.24]:27223 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1349233AbiAYP3A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jan 2022 10:29:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643124540; x=1674660540;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ULg4leY6X8BAN2e9AP3dMu8QMfm9aWcndEJARw1vmoQ=;
+  b=IkpErf0R2WQNmrkrbHj98KZEw60oDWKJsGslha4CZ3HjNRAybnED+Hj0
+   xbOLH791CJ+tq/phPJioOnFOXsx5B9p6d4GDJ67ns29mPSiowmHAiA6EV
+   gwXlHp76GKgHTzI5Gv1eIpAC6yrCrTmDRxRKaHrcjZO4FYG0ItkTzCRe2
+   t5pHLJ6L3Dj/OaD5kW+Acomrr3joQLQq2eDB7PxjqJ+NeKaBlW42AiZ41
+   0FJdqiBxfMSi2C9IUXM9vwvmhVGrr1Re0XGFB6cJ0qS8rLZTOjig1dIMb
+   5CaLBa5MO1OWTr5sXI9RlG5lYS+MYZ2L/KD5SOy1AMOorNlV3ZNPYXeFS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="246108417"
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
+   d="scan'208";a="246108417"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2022 07:26:34 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; 
+   d="scan'208";a="627965453"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga004.jf.intel.com with ESMTP; 25 Jan 2022 07:26:32 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20PFQVdg014105;
+        Tue, 25 Jan 2022 15:26:31 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, magnus.karlsson@intel.com
+Subject: Re: [PATCH bpf-next v4 2/8] ice: xsk: force rings to be sized to power of 2
+Date:   Tue, 25 Jan 2022 16:24:39 +0100
+Message-Id: <20220125152439.831365-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <YfAQrME95s758ITD@boxer>
+References: <20220124165547.74412-1-maciej.fijalkowski@intel.com> <20220124165547.74412-3-maciej.fijalkowski@intel.com> <20220125112306.746139-1-alexandr.lobakin@intel.com> <Ye/e9GqLkuekqFos@boxer> <20220125114202.748079-1-alexandr.lobakin@intel.com> <Ye/j0FjYCeJlbWR/@boxer> <20220125120033.748345-1-alexandr.lobakin@intel.com> <YfAQrME95s758ITD@boxer>
 MIME-Version: 1.0
-References: <1643106363-20246-1-git-send-email-baowen.zheng@corigine.com>
-In-Reply-To: <1643106363-20246-1-git-send-email-baowen.zheng@corigine.com>
-From:   Victor Nogueira <victor@mojatatu.com>
-Date:   Tue, 25 Jan 2022 12:22:42 -0300
-Message-ID: <CA+NMeC_BK65Oej=tL0ooyBhhEk6wK73HOaV5LR3QQkzXpbzNgQ@mail.gmail.com>
-Subject: Re: [PATCH iproute2-next v1] tc: add skip_hw and skip_sw to control
- action offload
-To:     Baowen Zheng <baowen.zheng@corigine.com>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Simon Horman <simon.horman@corigine.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Baowen,
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Date: Tue, 25 Jan 2022 16:01:00 +0100
 
-I applied your patch, ran tdc.sh and in particular the vlan tests broke.
+> On Tue, Jan 25, 2022 at 01:00:33PM +0100, Alexander Lobakin wrote:
+> > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > Date: Tue, 25 Jan 2022 12:49:36 +0100
+> > 
+> > > On Tue, Jan 25, 2022 at 12:42:02PM +0100, Alexander Lobakin wrote:
+> > > > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > > > Date: Tue, 25 Jan 2022 12:28:52 +0100
+> > > > 
+> > > > > On Tue, Jan 25, 2022 at 12:23:06PM +0100, Alexander Lobakin wrote:
+> > > > > > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > > > > > Date: Mon, 24 Jan 2022 17:55:41 +0100
+> > > > > > 
+> > > > > > > With the upcoming introduction of batching to XSK data path,
+> > > > > > > performance wise it will be the best to have the ring descriptor count
+> > > > > > > to be aligned to power of 2.
+> > > > > > > 
+> > > > > > > Check if rings sizes that user is going to attach the XSK socket fulfill
+> > > > > > > the condition above. For Tx side, although check is being done against
+> > > > > > > the Tx queue and in the end the socket will be attached to the XDP
+> > > > > > > queue, it is fine since XDP queues get the ring->count setting from Tx
+> > > > > > > queues.
+> > > > > > > 
+> > > > > > > Suggested-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> > > > > > > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > > > > > > ---
+> > > > > > >  drivers/net/ethernet/intel/ice/ice_xsk.c | 9 +++++++++
+> > > > > > >  1 file changed, 9 insertions(+)
+> > > > > > > 
+> > > > > > > diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> > > > > > > index 2388837d6d6c..0350f9c22c62 100644
+> > > > > > > --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
+> > > > > > > +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> > > > > > > @@ -327,6 +327,14 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
+> > > > > > >  	bool if_running, pool_present = !!pool;
+> > > > > > >  	int ret = 0, pool_failure = 0;
+> > > > > > >  
+> > > > > > > +	if (!is_power_of_2(vsi->rx_rings[qid]->count) ||
+> > > > > > > +	    !is_power_of_2(vsi->tx_rings[qid]->count)) {
+> > > > > > > +		netdev_err(vsi->netdev,
+> > > > > > > +			   "Please align ring sizes at idx %d to power of 2\n", qid);
+> > > > > > 
+> > > > > > Ideally I'd pass xdp->extack from ice_xdp() to print this message
+> > > > > > directly in userspace (note that NL_SET_ERR_MSG{,_MOD}() don't
+> > > > > > support string formatting, but the user already knows QID at this
+> > > > > > point).
+> > > > > 
+> > > > > I thought about that as well but it seemed to me kinda off to have a
+> > > > > single extack usage in here. Updating the rest of error paths in
+> > > > > ice_xsk_pool_setup() to make use of extack is a candidate for a separate
+> > > > > patch to me.
+> > > > > 
+> > > > > WDYT?
+> > > > 
+> > > > The rest uses string formatting to print the error code, and thus
+> > > > would lose their meaning. This one to me is more of the same kind
+> > > > as let's say "MTU too large for XDP" message, i.e. user config
+> > > > constraints check fail. But I'm fine if you'd prefer to keep a
+> > > > single source of output messages throughout the function.
+> > > 
+> > > Doubling the logs wouldn't hurt - keep current netdev_err with ret codes
+> > > and have more meaningful messages carried up to userspace via
+> > > NL_SET_ERR_MSG_MOD.
+> > 
+> > Ah, right, this works as well. Let's leave it as it is for now then.
+> 
+> Well, I had a feeling that we don't utilize extack for a reason. Turns out
+> for XDP_SETUP_XSK_POOL we simply don't provide it.
+> 
+> struct netdev_bpf {
+> 	enum bpf_netdev_command command;
+> 	union {
+> 		/* XDP_SETUP_PROG */
+> 		struct {
+> 			u32 flags;
+> 			struct bpf_prog *prog;
+> 			struct netlink_ext_ack *extack;
+> 		};
+> 		/* BPF_OFFLOAD_MAP_ALLOC, BPF_OFFLOAD_MAP_FREE */
+> 		struct {
+> 			struct bpf_offloaded_map *offmap;
+> 		};
+> 		/* XDP_SETUP_XSK_POOL */
+> 		struct {
+> 			struct xsk_buff_pool *pool;
+> 			u16 queue_id;
+> 		} xsk;
+> 	};
+> 
+> I forgot about that :<
 
-cheers,
-Victor
+Wooh, I missed it completely at some point. I thought it's always
+there and available.
 
-On Tue, Jan 25, 2022 at 7:35 AM Baowen Zheng <baowen.zheng@corigine.com> wrote:
->
-> Add skip_hw and skip_sw flags for user to control whether
-> offload action to hardware.
->
-> Also we add hw_count to show how many hardwares accept to offload
-> the action.
->
-> Change man page to describe the usage of skip_sw and skip_hw flag.
->
-> An example to add and query action as below.
->
-> $ tc actions add action police rate 1mbit burst 100k index 100 skip_sw
->
-> $ tc -s -d actions list action police
-> total acts 1
->     action order 0:  police 0x64 rate 1Mbit burst 100Kb mtu 2Kb action reclassify overhead 0b linklayer ethernet
->     ref 1 bind 0  installed 2 sec used 2 sec
->     Action statistics:
->     Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
->     backlog 0b 0p requeues 0
->     skip_sw in_hw in_hw_count 1
->     used_hw_stats delayed
->
-> Signed-off-by: baowen zheng <baowen.zheng@corigine.com>
-> Signed-off-by: Simon Horman <simon.horman@corigine.com>
-> ---
->  man/man8/tc-actions.8 | 24 ++++++++++++++++++++
->  tc/m_action.c         | 63 +++++++++++++++++++++++++++++++++++++++++++--------
->  2 files changed, 77 insertions(+), 10 deletions(-)
->
-> diff --git a/man/man8/tc-actions.8 b/man/man8/tc-actions.8
-> index 6f1c201..5c399cd 100644
-> --- a/man/man8/tc-actions.8
-> +++ b/man/man8/tc-actions.8
-> @@ -52,6 +52,8 @@ actions \- independently defined actions in tc
->  .I HWSTATSSPEC
->  ] [
->  .I CONTROL
-> +] [
-> +.I SKIPSPEC
->  ]
->
->  .I ACTISPEC
-> @@ -99,6 +101,11 @@ Time since last update.
->  .IR reclassify " | " pipe " | " drop " | " continue " | " ok
->  }
->
-> +.I SKIPSPEC
-> +:= {
-> +.IR skip_sw " | " skip_hw
-> +}
-> +
->  .I TC_OPTIONS
->  These are the options that are specific to
->  .B tc
-> @@ -270,6 +277,23 @@ Return to the calling qdisc for packet processing, and end classification of
->  this packet.
->  .RE
->
-> +.TP
-> +.I SKIPSPEC
-> +The
-> +.I SKIPSPEC
-> +indicates how
-> +.B tc
-> +should proceed when executing the action. Any of the following are valid:
-> +.RS
-> +.TP
-> +.B skip_sw
-> +Do not process action by software. If hardware has no offload support for this
-> +action, operation will fail.
-> +.TP
-> +.B skip_hw
-> +Do not process action by hardware.
-> +.RE
-> +
->  .SH SEE ALSO
->  .BR tc (8),
->  .BR tc-bpf (8),
-> diff --git a/tc/m_action.c b/tc/m_action.c
-> index b16882a..b9fed6f 100644
-> --- a/tc/m_action.c
-> +++ b/tc/m_action.c
-> @@ -51,9 +51,10 @@ static void act_usage(void)
->                 "       FL := ls | list | flush | <ACTNAMESPEC>\n"
->                 "       ACTNAMESPEC :=  action <ACTNAME>\n"
->                 "       ACTISPEC := <ACTNAMESPEC> <INDEXSPEC>\n"
-> -               "       ACTSPEC := action <ACTDETAIL> [INDEXSPEC] [HWSTATSSPEC]\n"
-> +               "       ACTSPEC := action <ACTDETAIL> [INDEXSPEC] [HWSTATSSPEC] [SKIPSPEC]\n"
->                 "       INDEXSPEC := index <32 bit indexvalue>\n"
->                 "       HWSTATSSPEC := hw_stats [ immediate | delayed | disabled ]\n"
-> +               "       SKIPSPEC := [ skip_sw | skip_hw ]\n"
->                 "       ACTDETAIL := <ACTNAME> <ACTPARAMS>\n"
->                 "               Example ACTNAME is gact, mirred, bpf, etc\n"
->                 "               Each action has its own parameters (ACTPARAMS)\n"
-> @@ -210,12 +211,14 @@ int parse_action(int *argc_p, char ***argv_p, int tca_id, struct nlmsghdr *n)
->         struct rtattr *tail, *tail2;
->         char k[FILTER_NAMESZ];
->         int act_ck_len = 0;
-> +       __u32 flag = 0;
->         int ok = 0;
->         int eap = 0; /* expect action parameters */
->
->         int ret = 0;
->         int prio = 0;
->         unsigned char act_ck[TC_COOKIE_MAX_SIZE];
-> +       int skip_loop = 2;
->
->         if (argc <= 0)
->                 return -1;
-> @@ -314,13 +317,27 @@ done0:
->                         }
->
->                         if (*argv && strcmp(*argv, "no_percpu") == 0) {
-> +                               flag |= TCA_ACT_FLAGS_NO_PERCPU_STATS;
-> +                               NEXT_ARG_FWD();
-> +                       }
-> +
-> +                       /* we need to parse twice to fix skip flag out of order */
-> +                       while (skip_loop--) {
-> +                               if (*argv && strcmp(*argv, "skip_sw") == 0) {
-> +                                       flag |= TCA_ACT_FLAGS_SKIP_SW;
-> +                                       NEXT_ARG_FWD();
-> +                               } else if (*argv && strcmp(*argv, "skip_hw") == 0) {
-> +                                       flag |= TCA_ACT_FLAGS_SKIP_HW;
-> +                                       NEXT_ARG_FWD();
-> +                               }
-> +                       }
-> +
-> +                       if (flag) {
->                                 struct nla_bitfield32 flags =
-> -                                       { TCA_ACT_FLAGS_NO_PERCPU_STATS,
-> -                                         TCA_ACT_FLAGS_NO_PERCPU_STATS };
-> +                                       { flag, flag };
->
->                                 addattr_l(n, MAX_MSG, TCA_ACT_FLAGS, &flags,
->                                           sizeof(struct nla_bitfield32));
-> -                               NEXT_ARG_FWD();
->                         }
->
->                         addattr_nest_end(n, tail);
-> @@ -396,13 +413,39 @@ static int tc_print_one_action(FILE *f, struct rtattr *arg)
->                                            strsz, b1, sizeof(b1)));
->                 print_nl();
->         }
-> -       if (tb[TCA_ACT_FLAGS]) {
-> -               struct nla_bitfield32 *flags = RTA_DATA(tb[TCA_ACT_FLAGS]);
-> +       if (tb[TCA_ACT_FLAGS] || tb[TCA_ACT_IN_HW_COUNT]) {
-> +               bool skip_hw = false;
-> +               if (tb[TCA_ACT_FLAGS]) {
-> +                       struct nla_bitfield32 *flags = RTA_DATA(tb[TCA_ACT_FLAGS]);
-> +
-> +                       if (flags->selector & TCA_ACT_FLAGS_NO_PERCPU_STATS)
-> +                               print_bool(PRINT_ANY, "no_percpu", "\tno_percpu",
-> +                                          flags->value &
-> +                                          TCA_ACT_FLAGS_NO_PERCPU_STATS);
-> +                       if (flags->selector & TCA_ACT_FLAGS_SKIP_HW) {
-> +                               print_bool(PRINT_ANY, "skip_hw", "\tskip_hw",
-> +                                          flags->value &
-> +                                          TCA_ACT_FLAGS_SKIP_HW);
-> +                               skip_hw = !!(flags->value & TCA_ACT_FLAGS_SKIP_HW);
-> +                       }
-> +                       if (flags->selector & TCA_ACT_FLAGS_SKIP_SW)
-> +                               print_bool(PRINT_ANY, "skip_sw", "\tskip_sw",
-> +                                          flags->value &
-> +                                          TCA_ACT_FLAGS_SKIP_SW);
-> +               }
-> +               if (tb[TCA_ACT_IN_HW_COUNT] && !skip_hw) {
-> +                       __u32 count = rta_getattr_u32(tb[TCA_ACT_IN_HW_COUNT]);
-> +                       if (count) {
-> +                               print_bool(PRINT_ANY, "in_hw", "\tin_hw",
-> +                                          true);
-> +                               print_uint(PRINT_ANY, "in_hw_count",
-> +                                          " in_hw_count %u", count);
-> +                       } else {
-> +                               print_bool(PRINT_ANY, "not_in_hw",
-> +                                          "\tnot_in_hw", true);
-> +                       }
-> +               }
->
-> -               if (flags->selector & TCA_ACT_FLAGS_NO_PERCPU_STATS)
-> -                       print_bool(PRINT_ANY, "no_percpu", "\tno_percpu",
-> -                                  flags->value &
-> -                                  TCA_ACT_FLAGS_NO_PERCPU_STATS);
->                 print_nl();
->         }
->         if (tb[TCA_ACT_HW_STATS])
-> --
-> 1.8.3.1
->
+From me for the series (writing it here instead of replying to 0/8
+since you're going to drop v5 soon anyways :p):
+
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+
+> 
+> };
+> > 
+> > > 
+> > > > 
+> > > > > 
+> > > > > > 
+> > > > > > > +		pool_failure = -EINVAL;
+> > > > > > > +		goto failure;
+> > > > > > > +	}
+> > > > > > > +
+> > > > > > >  	if_running = netif_running(vsi->netdev) && ice_is_xdp_ena_vsi(vsi);
+> > > > > > >  
+> > > > > > >  	if (if_running) {
+> > > > > > > @@ -349,6 +357,7 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
+> > > > > > >  			netdev_err(vsi->netdev, "ice_qp_ena error = %d\n", ret);
+> > > > > > >  	}
+> > > > > > >  
+> > > > > > > +failure:
+> > > > > > >  	if (pool_failure) {
+> > > > > > >  		netdev_err(vsi->netdev, "Could not %sable buffer pool, error = %d\n",
+> > > > > > >  			   pool_present ? "en" : "dis", pool_failure);
+> > > > > > > -- 
+> > > > > > > 2.33.1
+> > > > > > 
+> > > > > > Thanks,
+> > > > > > Al
+> > > > 
+> > > > Al
+> > 
+> > Al
+
+Thanks!
+Al
