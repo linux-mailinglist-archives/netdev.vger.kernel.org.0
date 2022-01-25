@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22E2049B3C3
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 13:21:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DA2C49B3C7
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 13:21:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444783AbiAYMRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 07:17:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34800 "EHLO
+        id S1444842AbiAYMR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 07:17:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355132AbiAYMOr (ORCPT
+        with ESMTP id S1355169AbiAYMOr (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 07:14:47 -0500
 Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0007EC061751;
-        Tue, 25 Jan 2022 04:14:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AAA6C061753;
+        Tue, 25 Jan 2022 04:14:45 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 49103100010;
-        Tue, 25 Jan 2022 12:14:41 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id B3150100011;
+        Tue, 25 Jan 2022 12:14:42 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -29,9 +29,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan v3 4/6] net: ieee802154: ca8210: Stop leaking skb's
-Date:   Tue, 25 Jan 2022 13:14:24 +0100
-Message-Id: <20220125121426.848337-5-miquel.raynal@bootlin.com>
+Subject: [wpan v3 5/6] net: ieee802154: Return meaningful error codes from the netlink helpers
+Date:   Tue, 25 Jan 2022 13:14:25 +0100
+Message-Id: <20220125121426.848337-6-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220125121426.848337-1-miquel.raynal@bootlin.com>
 References: <20220125121426.848337-1-miquel.raynal@bootlin.com>
@@ -42,30 +42,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Upon error the ieee802154_xmit_complete() helper is not called. Only
-ieee802154_wake_queue() is called manually. We then leak the skb
-structure.
+Returning -1 does not indicate anything useful.
 
-Free the skb structure upon error before returning.
+Use a standard and meaningful error code instead.
 
-Fixes: ded845a781a5 ("ieee802154: Add CA8210 IEEE 802.15.4 device driver")
+Fixes: a26c5fd7622d ("nl802154: add support for security layer")
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/net/ieee802154/ca8210.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/ieee802154/nl802154.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-index ece6ff6049f6..f3438d3e104a 100644
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -1771,6 +1771,7 @@ static int ca8210_async_xmit_complete(
- 			status
- 		);
- 		if (status != MAC_TRANSACTION_OVERFLOW) {
-+			dev_kfree_skb_any(priv->tx_skb);
- 			ieee802154_wake_queue(priv->hw);
- 			return 0;
- 		}
+diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+index 277124f206e0..e0b072aecf0f 100644
+--- a/net/ieee802154/nl802154.c
++++ b/net/ieee802154/nl802154.c
+@@ -1441,7 +1441,7 @@ static int nl802154_send_key(struct sk_buff *msg, u32 cmd, u32 portid,
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -1634,7 +1634,7 @@ static int nl802154_send_device(struct sk_buff *msg, u32 cmd, u32 portid,
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -1812,7 +1812,7 @@ static int nl802154_send_devkey(struct sk_buff *msg, u32 cmd, u32 portid,
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -1988,7 +1988,7 @@ static int nl802154_send_seclevel(struct sk_buff *msg, u32 cmd, u32 portid,
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
 -- 
 2.27.0
 
