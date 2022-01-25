@@ -2,212 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54C5949AE4F
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 09:47:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A28649AD83
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 08:24:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359677AbiAYIqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 03:46:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40966 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355202AbiAYIko (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 03:40:44 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95F2C06808B
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 23:15:35 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id w190so12611503pfw.7
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 23:15:35 -0800 (PST)
+        id S1442284AbiAYHVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 02:21:03 -0500
+Received: from mail-dm6nam10on2098.outbound.protection.outlook.com ([40.107.93.98]:28769
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1443610AbiAYHPt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jan 2022 02:15:49 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aHIgFnHJLcrBwup+2GzNl9qKd9rtAD10PUN0KNUpryn+7FCxDwY8JO6oU4RA0HHNhHx7Iehj+qLKrt66qMyNwPz9ACPlxQxF46z8FKIgT9ZDin4Ih5d0KXP92tBm73hOIjT53wkRHemcrsQXCCMtRupO7Tlfn4f5xMkl//Ppwsy+VSBAb3uJS/XEJd9y/wSEcf6JJBa9IryPUQVodqQ7FhfaBR1EcXG4MlQlSLxA5YXe9ONam2uQvMwjj3jWOmsdkNq40vRJGBrGZzuvDjOsbCNN5RQ/Q3fGERTa9c2EIOBJuwyE0Q/Xg+n5sfPlkpO57PasJwov7ctrE58hA4F22w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=whwbk6T1Kv7OS5XtcGVmvmHi2YEiBJy1sgZHu+PwC3U=;
+ b=fWKrT8PNxogRG+OfiHtsOWdk8shjKAi72ZjohWLV4rrwiCVLcPlk5XADsAEqUWuhwDFgftID7l0hdGVLQbsbDCf/Q+82QDOZHPbjKef2KvbV9bVhYJuZ9iXmfoQex9Aw9egmwNteoulhEMlN3Gbv69D6AC6s61Isdx7pDZ+F31rOJXrOE3JjJUQ37HCakHs6+ThoCqjxLxt1mqpLJPzXkFrsxYLso0+T3ah50IXEvdecEEtiy5UHb0YUNDIsbEuxvGqX2f1aY5GnhqMEj+SgDohzNAKe6DdPxzmNY60ohRtMxMK2F95LFhOi0dBiGHYn0DlJ58pxnLt9Qiv+U5jZFg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=d6e9piRdTKa3UHadnhDTGSz08tmmVdIBkR4Xko1CjUo=;
-        b=CZuYvt8epJ+SE8W4u964tONm4HL8E2VjzrAeu5AUpafXjx8aTMZP+dXQexCyAeoqfn
-         80Skfb4RdR0e79dqPmiG+s5pTEsFGk9Up7CbIKK1J3q39T0nv78rZVEq0vEAO8lxOgSD
-         ugMtvEZ9UYYEJ7y08skauOXgvlKYce/1yRZuhxBYD/9tCY/GWz3APqxPzLRqbVZsq3J2
-         uyDSF5zZx3NbX7UysXu3KWUQ5HIM8uM8V3Qx6/WbZTMGycww0YP9qy7PtEdjsByfXuA3
-         qsZ3CTLPYIPqbCkhZ/ynYNvaUuiBtEtkDuTyiWjVZYPLh9KE900s9qsRCimzSju8iRbp
-         GPHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=d6e9piRdTKa3UHadnhDTGSz08tmmVdIBkR4Xko1CjUo=;
-        b=4ssZ3fX2g0m/vDqp1LeyRRLTId7B20KMwH6WHzGYOnBOy7HZquJhFfiXkm7uWtIcae
-         cBc+Fl6x9XQkS5pXmRO3LGvssHR6nXcC/3uKJznoZiVgPX72RGdO45u483kQGRjneCRd
-         CI8LAjytZnj21XRktjBqLYFswXV7aoh6j3y+Q/H6OxWJG8QmG61meGHIv7BlwDiewvkh
-         dBTfGTVqga3XUtrEWe5P1hMFGv3Sj3t0FuiobAQKxKL4Q86Um6+468/airs/NJj0+68X
-         Zh3MDuQzOaT0peehKmBW3N8cfYMDNb6gVpXtbQyEbomAyZUf8JK+I29VAs1XSIqtk6vT
-         +UhQ==
-X-Gm-Message-State: AOAM5307r8WvxVzaPOMe1gjkb0JJPEDjcJevVmc+GECQZh7Hg3XbpPre
-        vcnotMiB5t6h5IsnzCGhXu5IqZeS0Oz0UF/dDNY=
-X-Google-Smtp-Source: ABdhPJwdKcyN4ADPVRLG94sQLfm01Lv3p66p1g/f33guAAtBMgVmGjxvDkF+K9vv3ijI5Sxu/z1CTRmfi9GqVCpKCcI=
-X-Received: by 2002:a63:461c:: with SMTP id t28mr14238191pga.547.1643094935053;
- Mon, 24 Jan 2022 23:15:35 -0800 (PST)
-MIME-Version: 1.0
-References: <20220124084649.0918ba5c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20220124165535.tksp4aayeaww7mbf@skbuf> <228b64d7-d3d4-c557-dba9-00f7c094f496@gmail.com>
- <20220124172158.tkbfstpwg2zp5kaq@skbuf> <20220124093556.50fe39a3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20220124102051.7c40e015@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20220124190845.md3m2wzu7jx4xtpr@skbuf> <20220124113812.5b75eaab@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20220124205607.kugsccikzgmbdgmf@skbuf> <20220124134242.595fd728@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20220124223053.gpeonw6f34icwsht@skbuf>
-In-Reply-To: <20220124223053.gpeonw6f34icwsht@skbuf>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Tue, 25 Jan 2022 04:15:23 -0300
-Message-ID: <CAJq09z5JF71kFKxF860RCXPvofhitaPe7ES4UTMeEVO8LH=PoA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
- cpu ports, non cpu extint
-To:     Vladimir Oltean <olteanv@gmail.com>
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=whwbk6T1Kv7OS5XtcGVmvmHi2YEiBJy1sgZHu+PwC3U=;
+ b=eef0zLr6WabcEMANon+YwlKU23aOMhelr1oUg5ddboYHJvYLVl9U4yiz3zaZNBVKxe2AXn03Cyy+z7U4o4IxYKx9SLNRaK8VEkKtqYSLQq3IdrG6TCnhBo+mkhHqCvJKEhaTghq0jsAXYlrJEChIK+nM3wM7hxN/GNCY1KLTHCk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by DM6PR10MB2538.namprd10.prod.outlook.com
+ (2603:10b6:5:b3::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10; Tue, 25 Jan
+ 2022 07:15:42 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::2d52:2a96:7e6c:460f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::2d52:2a96:7e6c:460f%4]) with mapi id 15.20.4909.017; Tue, 25 Jan 2022
+ 07:15:42 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
-Content-Type: text/plain; charset="UTF-8"
+        "David S. Miller" <davem@davemloft.net>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 0/2] use bulk reads for ocelot statistics
+Date:   Mon, 24 Jan 2022 23:15:29 -0800
+Message-Id: <20220125071531.1181948-1-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MWHPR20CA0028.namprd20.prod.outlook.com
+ (2603:10b6:300:ed::14) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ca33d131-be8e-4029-6b89-08d9dfd27f1e
+X-MS-TrafficTypeDiagnostic: DM6PR10MB2538:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR10MB25380D429658BC129F9EFC3CA45F9@DM6PR10MB2538.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1468;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Rf8IusnZ4PignErdSDd4o2SRt5RQuXz0hokH2lil6HAuUug1XtvNiQeLrd57NKf9Iuzjug6CTLbiP5MXJPssgGWgnTGC+xxgwjJYWDosB20DSirMlO7MdBvRlbAn7fMOs/BR5cSyGfg3SNBct3epzvYrjVZDWrRDc7gPRYaBRCuxHS4fm9OaBTL1Xj9zVJTIKXPXXK/TRIOhqCAF9zjhy35dmRg05pYkwEkHXjIuMGldB9GB/goxhZIpf49yBk0Fryo7mMCJKHkj9BQPzpbLKKYN+q8oEqasPBOBMZoZf/837xcutgT/F31VQZDF3BH+Ijy5c23/XqVCwRR7cf/VFmcFJxp5dHtk4cBtHBHFrKRpiHLfXwsZwMLcwdTJGakLvnqTl4dHUz7+3biT04Pz7+2GcXomky+z+2AcvSTZgKwWxPG0SsIl/e0Xt6aGTbdLBWWRX+o7VMjBAHDE+0g6v4EwHZa6/x+hH1nDQZLMUc2T+k5KTtV4LAKsJuRjx3LRw35Pmpq09+Z8OrhDr128aXhlLVOmNwel9eSxe3JGcqeMBEnpO+oFEcTLY0C/2E8U6kXRrejn5TIq6izoHgzMmwtTON2v17JC2W5nJKZfWZj+6uFsujgIgK2qUWhMr//aaZzXStpX6NnamJHydUC7FF6+9w/GUGiL1+cQXZ1npBVZ9DUP3gdBR444gzfh3pbS3HKrYNwXH0KAOoYdWLiHEw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(346002)(376002)(136003)(42606007)(366004)(39830400003)(66946007)(38350700002)(6666004)(2906002)(8936002)(36756003)(38100700002)(508600001)(6512007)(2616005)(8676002)(5660300002)(316002)(4326008)(44832011)(6506007)(52116002)(54906003)(86362001)(83380400001)(26005)(66556008)(186003)(66476007)(1076003)(6486002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tL3ECIwNcxVRDJVbxn/zjALW9Bv+W1VfQT9RLxQAEZ9Nn+s9fYzxTSv8/WbX?=
+ =?us-ascii?Q?7iIWchIwZjhPhB3wG6H0U5qbHKzwC2s4wHnIRseajwV1bupfT6wu2wAhDK0X?=
+ =?us-ascii?Q?1w0l8YXN4Jxsh6iUsWLy315Qcak1eeO805ErHBg8g7Du0+9yaIkJGJtKk7dC?=
+ =?us-ascii?Q?xEgXuWHAywlNRi/HbJ0o60LBmbnCYt4Fe4oxTh1+BT2wkSvyThhf5LVS4qLF?=
+ =?us-ascii?Q?hDUweMvMYVWDpyHWXTIEb/c37An896Pgwi/ocj978OFBZs0gP8NgOzOq108k?=
+ =?us-ascii?Q?aYmiESvpjOoJJx7JGKaRt8RG7XMztCrIg1mk4jn5uj8WJut/t6Y6Q7Q0aW0v?=
+ =?us-ascii?Q?igRj8VQ2IdlmYsa+XJ8WwiUnTyb04kTh062376kwWtFITT6UZBwhOUCGTTKN?=
+ =?us-ascii?Q?jWjH4wHWVDco4uLECsT6uvdpuwYHdAvyUxYKB1aBcjG1MpnMEvC4JFVteasq?=
+ =?us-ascii?Q?u81snHFv0ucerbrwxpwlsOXA5NUKDVsqadMvFP6fp+8AynleCdrcogVHDRe4?=
+ =?us-ascii?Q?P15AfsRiG7ab+ubeQEYy5lqFdgDEZe6vWA/49hGY7f3Ejc7b4FeOUgBtdNUU?=
+ =?us-ascii?Q?a9mJRmPiiE6wNyAymSXei/Bqn9zBgH5KoXN8O0439srCxudqI1tPCWqcpy0L?=
+ =?us-ascii?Q?8fZPR4qx4D7KsEqvCHTOT8NCTfPHuOK5UPrvfcUN6XhjR3PS170jfn/hs5V1?=
+ =?us-ascii?Q?EU2fJWvHjO4NqI+1pzqlkNkSg0MLkBY41F4iwjF1Vyi2S13xFgSoudoZ/HPK?=
+ =?us-ascii?Q?daSgq03i1Cio9iWazLiaBMdGQX/+qGxJeqIO3vXwIU51oSF/F7ay/CsAqDiH?=
+ =?us-ascii?Q?jPVxbJ3rZrgB694W4YKu2NxD/3EZdtx6zQZ1lx/87+jbmyugNY8mTeMjrrWd?=
+ =?us-ascii?Q?8qR3N4znAYTwnHKUMCUb000THbmZPoKv0AGDC/8CrYrRMorr/5XHGX8JB4+i?=
+ =?us-ascii?Q?a/2N8ef0TMtb0qFLS+z3Fk0/4PJPFnbjC/Xoy+Ck4YfhCg3alxGAe4AywlSP?=
+ =?us-ascii?Q?T9zbWG936px9wfiS2izPxuwwmqMS5Cerlp4JmtSKqQrdsUsucCHbfsz3Yg6s?=
+ =?us-ascii?Q?vevjM2o+qpkMw55EUj9J0raf6gxb2Rp/GcWIUiKDdamS8imcjOC4WBtKDfTw?=
+ =?us-ascii?Q?ShrdSWo3tHJkLzKmoTDzb0fcJvASOevnoPSvoj8j7LXpHNPTTqOD8ycuG0lD?=
+ =?us-ascii?Q?qbULAPqw6U+VK9fT38n/l858wvTzRd1Qt47JmQtFnZurqoBK2clTXt5cw3Fm?=
+ =?us-ascii?Q?gDwaQrbbopXUGqEK70+2ROwxV6g53BMXJMbbSkbX/wStlUF5v8GtzDPwXqdX?=
+ =?us-ascii?Q?ERQwcqmUL/UFKugRiSgll1S83nVLXIqYUtNmnYIKPvlvv1tJIIRCEibLfP0s?=
+ =?us-ascii?Q?YE1ZXG5xJgWusQVa5TiVkHRtJMTBE8bhz9FxdfoR4rxMQFfpa7VAiChy+FsF?=
+ =?us-ascii?Q?hHc0HtgtzzgdNgrcLlYnKPQW7oG4ixDISlpy/OXhR70Jy2K/LmHTy/wfzmUd?=
+ =?us-ascii?Q?s8Y/gKYDdeNUPwwxL7Kh1tuBZs/A8X6OGsfSkNVnbT9w9tMFW8LdLqPWg01n?=
+ =?us-ascii?Q?GOhOYEoozU3CRXugNENWKQaVOffL8cz9A0A9ij5SLtg185YFRfKs0d0mPizz?=
+ =?us-ascii?Q?JM7A/wujFKpJRfslmukN0UmiTP3WdEYw6FewkbArViCKwTPhdLnVU7gRG5gI?=
+ =?us-ascii?Q?qs4FcDjtVMPEORVOxxSeSySoAOo=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ca33d131-be8e-4029-6b89-08d9dfd27f1e
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 07:15:42.0805
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Q4fHVN8QsNy5bV4IVrViGzhSRdWOKJ9e+Jw/QTqrx+cKb2vl2UbXtqnSMcDL4Pzsj6k67FmlfY8Ah3G3inxcaXeJL+CCkKN1PFHJpc24X2Y=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2538
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wow... that's a lot to digest.
+Ocelot loops over memory regions to gather stats on different ports.
+These regions are mostly continuous, and are ordered. This patch set
+uses that information to break the stats reads into regions that can get
+read in bulk.
 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  .../files/drivers/net/ethernet/ralink/mtk_eth_soc.c  | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
->
-> diff --git a/target/linux/ramips/files/drivers/net/ethernet/ralink/mtk_eth_soc.c b/target/linux/ramips/files/drivers/net/ethernet/ralink/mtk_eth_soc.c
-> index e07e5ed5a8f8..6ed9bc5942fd 100644
-> --- a/target/linux/ramips/files/drivers/net/ethernet/ralink/mtk_eth_soc.c
-> +++ b/target/linux/ramips/files/drivers/net/ethernet/ralink/mtk_eth_soc.c
-> @@ -31,6 +31,7 @@
->  #include <linux/io.h>
->  #include <linux/bug.h>
->  #include <linux/netfilter.h>
-> +#include <net/dsa.h>
->  #include <net/netfilter/nf_flow_table.h>
->  #include <linux/of_gpio.h>
->  #include <linux/gpio.h>
-> @@ -1497,6 +1498,16 @@ static int fe_change_mtu(struct net_device *dev, int new_mtu)
->         return fe_open(dev);
->  }
->
-> +static netdev_features_t fe_features_check(struct sk_buff *skb,
-> +                                          struct net_device *dev,
-> +                                          netdev_features_t features)
-> +{
-> +       if (netdev_uses_dsa(dev))
-> +               features &= ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
-> +
-> +       return features;
-> +}
-> +
->  static const struct net_device_ops fe_netdev_ops = {
->         .ndo_init               = fe_init,
->         .ndo_uninit             = fe_uninit,
-> @@ -1514,6 +1525,7 @@ static const struct net_device_ops fe_netdev_ops = {
->  #ifdef CONFIG_NET_POLL_CONTROLLER
->         .ndo_poll_controller    = fe_poll_controller,
->  #endif
-> +       .ndo_features_check     = fe_features_check,
->  };
->
->  static void fe_reset_pending(struct fe_priv *priv)
+The motiviation is for general cleanup, but also for SPI. Performing two
+back-to-back reads on a SPI bus require toggling the CS line, holding,
+re-toggling the CS line, sending 3 address bytes, sending N padding
+bytes, then actually performing the read. Bulk reads could reduce almost
+all of that overhead, but require that the reads are performed via
+regmap_bulk_read.
 
-Thanks, Vladimir. I'll try that patch soon. However, it will never be
-accepted even in OpenWrt as is because it does offload its own
-proprietary tag.
-I might need to add another if like:
+v1 > v2: reword commit messages
+v2 > v3: correctly mark this for net-next when sending
 
-> +       if (netdev_uses_dsa(dev))
-> +               if (skb->???->proto_in_use != DSA_TAG_PROTO_MTK)
-> +                      features &= ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
+Colin Foster (2):
+  net: mscc: ocelot: add ability to perform bulk reads
+  net: mscc: ocelot: use bulk reads for stats
 
-I think it would need to save the used tag in some form of an oob
-signal (as Florian suggested). In that case, even the
-netdev_uses_dsa() test can be removed as a skb with an oob tag signal
-is surely from a dsa device.
+ drivers/net/ethernet/mscc/ocelot.c    | 76 ++++++++++++++++++++++-----
+ drivers/net/ethernet/mscc/ocelot_io.c | 13 +++++
+ include/soc/mscc/ocelot.h             | 12 +++++
+ 3 files changed, 88 insertions(+), 13 deletions(-)
 
-Anyway, even with existing offload code not doing exactly what they
-should, they normally work given a normal device usage. The strange
-part is that DSA assumes those features, copied from master to slave,
-will still be the same even after a tag was injected into the packet.
+-- 
+2.25.1
 
-Sorry for my arrogance being a newbie but I think the place to fix the
-problem is still in slave feature list. It is better than having the
-kernel repeat the test for every single packet. And nobody will be
-willing to add extra overhead to a working code just because DSA needs
-it. It is easier to add a new function that does not touch existing
-code paths.
-
-I believe that those drivers with NETIF_F_HW_CSUM are fine for every
-type of DSA, right? So, just those with NETIF_F_IP_CSUM |
-NETIF_F_IPV6_CSUM set needs to be adjusted. A fully implemented
-ndo_features_check() will work but improving it for every driver will
-add extra code/overhead for all packets, used with DSA or not. And
-that extra code needed for DSA will either always keep or remove the
-same features for a given slave.
-
-I imagine that for NETIF_F_CSUM_MASK and NETIF_F_GSO_MASK, it would
-not be too hard to build a set of candidate packets to test if that
-feature is still valid after the tag was added. With that assumption,
-a new ndo_features_check_offline(), similar to ndo_features_check()
-but not be called by netif_skb_features, will test each candidate
-during slave setup. If the check disagrees after the tag was added,
-that feature should be disabled for that slave. Something like:
-
-slave->features = master->features;
-if (slave->features & (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM))
-    if (dev->netdev_ops->ndo_features_check_offline)
-        foreach (test_candidate)
-            tagged_test_candidate = add_tag (test_candidate, slave->tag);
-
-            slave->features &=
-~(master->netdev_ops->ndo_features_check_offline(test_candidate,
-master, slave->features) ^
-
-master->netdev_ops->ndo_features_check_offline(tagged_test_candidate,
-master, slave->features)
-    else
-        slave->features &= ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK)
-
-The only drivers that would have performance regression while used as
-DSA master ports are those:
-1) that does not have NETIF_F_HW_CSUM set
-2) but could still offload after a particular DSA tag was added (when
-tag vendor and HW matches)
-3) and still didn't implement the new ndo_features_check_offline().
-
-ndo_features_check_offline() would not be too much different from what
-Vladmir suggested for the out-of-tree mtk_eth_soc driver.
-
-ndo_features_check_offline(sbk, dev, features) {
-    switch (sbk->oob->tag) {
-    case SUPPORTED_TAG_1:
-    case SUPPORTED_TAG_2:
-    case SUPPORTED_TAG_3:
-    case NO_TAG:
-        break;
-    default:
-        features &= ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
-    }
-
-    if (dev->netdev_ops->ndo_features_check)
-         features &= dev->netdev_ops->ndo_features_check(skb, dev, features);
-
-    /* some more test if needed*/
-
-    return features;
-}
-
-If used exclusively by DSA, ndo_features_check_offline could also be
-called ndo_dsa_features_check (or any better name than
-ndo_features_check_offline). That is not far away from what Vladmir
-suggested (and later retracted) in the first place.
-
-Regards,
-
-Luiz
