@@ -2,198 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88C8049BBFE
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 20:24:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF33849BC22
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 20:31:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbiAYTYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 14:24:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49604 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229845AbiAYTYe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 14:24:34 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D7EC06173B
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 11:24:30 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id c192so784755wma.4
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 11:24:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=2GxzEUJrbvJEXdIt4dxtW3JqvSSBS0SEXbo+rF+J2Es=;
-        b=h/LU+OQkCLJaflAwiAhLZhROf9gu0u04QOiiywp8MbAdXWHbLv9BJWIWqdgLBJqXlQ
-         jziDd2CzVsTHo9l/pMK7FMnADO1aIFzR7RehLiBIFJYQtWmj4qmOrQMgv1SEOxjkeksa
-         /HWOr+68PnTLuFbyEPa22a3ia8ELcYfVJ1+TY=
+        id S230115AbiAYTbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 14:31:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35270 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230109AbiAYTbY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 14:31:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643139083;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1y3rvxPiO/9emawQnXo32bBBh9nL/eYXEjpNfFj991A=;
+        b=OPwu7babQZ/xtc72zj7EUUNeS0bp7qsIt//PBIippxKPUD+c7GpZunpbWpSUd6tQq9O+JH
+        RC+qryePgc4VDZuRcH4/1T6/ICKsHGDbu/L+ykZNgZyFRdyl0ywkZrtUCoOvBY5PABAjvS
+        fUhuMxP85Su48rbSzzb6YJf5FIsE0r8=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-669-_WOFwQrrNVW9vEGPDb9kzA-1; Tue, 25 Jan 2022 14:31:15 -0500
+X-MC-Unique: _WOFwQrrNVW9vEGPDb9kzA-1
+Received: by mail-lj1-f199.google.com with SMTP id u4-20020a2e8544000000b0023aeea9107dso1866748ljj.21
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 11:31:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=2GxzEUJrbvJEXdIt4dxtW3JqvSSBS0SEXbo+rF+J2Es=;
-        b=qFjaieIKT0caMgkGu6zUPnmt7cW3UdLqJTATj5guy9TjKhmxVcHxHobEJ2n//QUMp5
-         FFyYbj5qNbC+1aIFCbW4j/+Fl+kzDdp+lJmCvXPK2NNPFZ/XVRzxgalkpaUYZ31tRHuL
-         zrwamF7tjFntueGTP2kMPvTALSqRXRDs0YlPk22eMc2/3vZxLA3UVm5FR43NMKgMm6iT
-         YBwfwGJ+GHXU1RbcQ/S8sTwXqp/06ZIU8kImSnB3TrbuxbJkWYyXot0Lqd6HjN5Wwcuh
-         KmIh69itQgs8HN8MpXHdKpcIUFe0VkjLUqwF7DtpGUP8T13HZK9rKFGHH+vXpSfRrYkz
-         M2Fg==
-X-Gm-Message-State: AOAM531RFLNF/mjvE2RLQkIMfFWMo9lRtzP41+uFxbOH2swj0w7VxiWM
-        BDe52RoFoBnWjmqBFhwjtIEa0Q==
-X-Google-Smtp-Source: ABdhPJyGrZuTRIehTH5rIo4cKX3JZjHM45w9hw7K1RgCCI0IgmWRQrkgjedGBbyeSK4Ic7PRc0cpDg==
-X-Received: by 2002:a05:600c:4e46:: with SMTP id e6mr4165180wmq.15.1643138669440;
-        Tue, 25 Jan 2022 11:24:29 -0800 (PST)
-Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0e00.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::e00])
-        by smtp.gmail.com with ESMTPSA id h127sm1279065wmh.27.2022.01.25.11.24.27
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1y3rvxPiO/9emawQnXo32bBBh9nL/eYXEjpNfFj991A=;
+        b=acuI9P8ZrSqDS6hb/84hxefayOQGatD2LieKnQIAGD/gak2INZKxWsI9nn57M4iIAg
+         OjIrnzHFNgZAQNq/+lhrI4uWrFGkTQCHYRJPO5rfBzEaOH4bROoVzyWGHIQg8u5W9p0X
+         WLFAwCqT30tGadYuxWZU75PNpp4V9pacjTks/DZcF8S8fsqqUxAaErM+cBgmVmn0cJVo
+         hbXs325dhAZGw+Z2FuWCecCOp7VxFCE6FPRENizMdkso7LdakFtl87EyMVSsKQD0rn//
+         8feQ/EQuwneNO6D+ak6+BR8ZGviu0ANE1vYZy1XCZdyPbz/uBAHNYrOSHwlGTiaDwcIe
+         M0yg==
+X-Gm-Message-State: AOAM533oF74ACmzYjG5pEsLSt4TMfOPoK2cUVk/8sHvp3FvAwWId9plO
+        8j17qAZbntfGyOgJFS+qWazmDH4Yzm3Syx+BPl1QmXSmh4/3XWbC75bMCKt0RZ1jq+4ZEpsm1ts
+        z+w4KmPoLdcz+wGeb
+X-Received: by 2002:a05:6512:2216:: with SMTP id h22mr31665lfu.155.1643139073549;
+        Tue, 25 Jan 2022 11:31:13 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwZcH0aJ/a9DBOcxqASffCbpLGVyuJBXzBRwot1LsOd1f4QjOwT+3Ljc8MBb8XNCWiArZCXLA==
+X-Received: by 2002:a17:906:175b:: with SMTP id d27mr17480756eje.476.1643139052011;
+        Tue, 25 Jan 2022 11:30:52 -0800 (PST)
+Received: from redhat.com ([176.12.185.204])
+        by smtp.gmail.com with ESMTPSA id o11sm8670746edh.75.2022.01.25.11.30.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 11:24:28 -0800 (PST)
-References: <20220113070245.791577-1-imagedong@tencent.com>
-User-agent: mu4e 1.1.0; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     menglong8.dong@gmail.com
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mengensun@tencent.com,
-        flyingpeng@tencent.com, mungerjiang@tencent.com,
-        Menglong Dong <imagedong@tencent.com>
-Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct
- bpf_sock'
-In-reply-to: <20220113070245.791577-1-imagedong@tencent.com>
-Date:   Tue, 25 Jan 2022 20:24:27 +0100
-Message-ID: <87sftbobys.fsf@cloudflare.com>
+        Tue, 25 Jan 2022 11:30:48 -0800 (PST)
+Date:   Tue, 25 Jan 2022 14:30:44 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Zhu Lingshan <lingshan.zhu@intel.com>
+Cc:     jasowang@redhat.com, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH V2 3/4] vhost_vdpa: don't setup irq offloading when
+ irq_num < 0
+Message-ID: <20220125143008-mutt-send-email-mst@kernel.org>
+References: <20220125091744.115996-1-lingshan.zhu@intel.com>
+ <20220125091744.115996-4-lingshan.zhu@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220125091744.115996-4-lingshan.zhu@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 08:02 AM CET, menglong8.dong@gmail.com wrote:
-> From: Menglong Dong <imagedong@tencent.com>
->
-> The description of 'dst_port' in 'struct bpf_sock' is not accurated.
-> In fact, 'dst_port' is not in network byte order, it is 'partly' in
-> network byte order.
->
-> We can see it in bpf_sock_convert_ctx_access():
->
->> case offsetof(struct bpf_sock, dst_port):
->> 	*insn++ = BPF_LDX_MEM(
->> 		BPF_FIELD_SIZEOF(struct sock_common, skc_dport),
->> 		si->dst_reg, si->src_reg,
->> 		bpf_target_off(struct sock_common, skc_dport,
->> 			       sizeof_field(struct sock_common,
->> 					    skc_dport),
->> 			       target_size));
->
-> It simply passes 'sock_common->skc_dport' to 'bpf_sock->dst_port',
-> which makes that the low 16-bits of 'dst_port' is equal to 'skc_port'
-> and is in network byte order, but the high 16-bites of 'dst_port' is
-> 0. And the actual port is 'bpf_ntohs((__u16)dst_port)', and
-> 'bpf_ntohl(dst_port)' is totally not the right port.
->
-> This is different form 'remote_port' in 'struct bpf_sock_ops' or
-> 'struct __sk_buff':
->
->> case offsetof(struct __sk_buff, remote_port):
->> 	BUILD_BUG_ON(sizeof_field(struct sock_common, skc_dport) != 2);
->>
->> 	*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_buff, sk),
->> 			      si->dst_reg, si->src_reg,
->> 				      offsetof(struct sk_buff, sk));
->> 	*insn++ = BPF_LDX_MEM(BPF_H, si->dst_reg, si->dst_reg,
->> 			      bpf_target_off(struct sock_common,
->> 					     skc_dport,
->> 					     2, target_size));
->> #ifndef __BIG_ENDIAN_BITFIELD
->> 	*insn++ = BPF_ALU32_IMM(BPF_LSH, si->dst_reg, 16);
->> #endif
->
-> We can see that it will left move 16-bits in little endian, which makes
-> the whole 'remote_port' is in network byte order, and the actual port
-> is bpf_ntohl(remote_port).
->
-> Note this in the document of 'dst_port'. ( Maybe this should be unified
-> in the code? )
->
-> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+On Tue, Jan 25, 2022 at 05:17:43PM +0800, Zhu Lingshan wrote:
+> When irq number is negative(e.g., -EINVAL), the virtqueue
+> may be disabled or the virtqueues are sharing a device irq.
+> In such case, we should not setup irq offloading for a virtqueue.
+> 
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 > ---
->  include/uapi/linux/bpf.h | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
->
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index b0383d371b9a..891a182a749a 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -5500,7 +5500,11 @@ struct bpf_sock {
->  	__u32 src_ip4;
->  	__u32 src_ip6[4];
->  	__u32 src_port;		/* host byte order */
-> -	__u32 dst_port;		/* network byte order */
-> +	__u32 dst_port;		/* low 16-bits are in network byte order,
-> +				 * and high 16-bits are filled by 0.
-> +				 * So the real port in host byte order is
-> +				 * bpf_ntohs((__u16)dst_port).
-> +				 */
->  	__u32 dst_ip4;
->  	__u32 dst_ip6[4];
->  	__u32 state;
+>  drivers/vhost/vdpa.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 851539807bc9..909891d518e8 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -96,6 +96,9 @@ static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
+>  	if (!ops->get_vq_irq)
+>  		return;
+>  
+> +	if (irq < 0)
+> +		return;
+> +
+>  	irq = ops->get_vq_irq(vdpa, qid);
 
-I'm probably missing something obvious, but is there anything stopping
-us from splitting the field, so that dst_ports is 16-bit wide?
+So it's used before it's initialized. Ugh.
+How was this patchset tested?
 
-I gave a quick check to the change below and it seems to pass verifier
-checks and sock_field tests.
+>  	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+>  	if (!vq->call_ctx.ctx || irq < 0)
+> -- 
+> 2.27.0
 
-IDK, just an idea. Didn't give it a deeper thought.
-
---8<--
-
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 4a2f7041ebae..344d62ccafba 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5574,7 +5574,8 @@ struct bpf_sock {
- 	__u32 src_ip4;
- 	__u32 src_ip6[4];
- 	__u32 src_port;		/* host byte order */
--	__u32 dst_port;		/* network byte order */
-+	__u16 unused;
-+	__u16 dst_port;		/* network byte order */
- 	__u32 dst_ip4;
- 	__u32 dst_ip6[4];
- 	__u32 state;
-diff --git a/net/core/filter.c b/net/core/filter.c
-index a06931c27eeb..c56b8ba82de5 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -8276,7 +8276,6 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 	case offsetof(struct bpf_sock, family):
- 	case offsetof(struct bpf_sock, type):
- 	case offsetof(struct bpf_sock, protocol):
--	case offsetof(struct bpf_sock, dst_port):
- 	case offsetof(struct bpf_sock, src_port):
- 	case offsetof(struct bpf_sock, rx_queue_mapping):
- 	case bpf_ctx_range(struct bpf_sock, src_ip4):
-@@ -8285,6 +8284,9 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 	case bpf_ctx_range_till(struct bpf_sock, dst_ip6[0], dst_ip6[3]):
- 		bpf_ctx_record_field_size(info, size_default);
- 		return bpf_ctx_narrow_access_ok(off, size, size_default);
-+	case offsetof(struct bpf_sock, dst_port):
-+		bpf_ctx_record_field_size(info, sizeof(__u16));
-+		return bpf_ctx_narrow_access_ok(off, size, sizeof(__u16));
- 	}
-
- 	return size == size_default;
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 4a2f7041ebae..344d62ccafba 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -5574,7 +5574,8 @@ struct bpf_sock {
- 	__u32 src_ip4;
- 	__u32 src_ip6[4];
- 	__u32 src_port;		/* host byte order */
--	__u32 dst_port;		/* network byte order */
-+	__u16 unused;
-+	__u16 dst_port;		/* network byte order */
- 	__u32 dst_ip4;
- 	__u32 dst_ip6[4];
- 	__u32 state;
