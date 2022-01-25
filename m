@@ -2,98 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA1FC49BD5C
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 21:42:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BD2E49BDB2
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 22:08:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232395AbiAYUmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 15:42:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
+        id S232933AbiAYVIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 16:08:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232319AbiAYUmc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 15:42:32 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA1DC06173B;
-        Tue, 25 Jan 2022 12:42:32 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id b1-20020a17090a990100b001b14bd47532so4053237pjp.0;
-        Tue, 25 Jan 2022 12:42:32 -0800 (PST)
+        with ESMTP id S232926AbiAYVIR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 16:08:17 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D65C06173B
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 13:08:17 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id k18so22170408wrg.11
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 13:08:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PMctrldMf2S/f/I1l/eTo+t/ba/alGG1j0/ACCI4cdo=;
-        b=LCgrEQHXMYetbj2RsqFpwyGrfHSmnxbllW6ieP+3E3Jfcigrl85BrGewMUF3XKYB8U
-         LDzbq4qTTu6Ooy56H7eRjCWj1aIZjcUm9ORsUEP1oAqQ9mFVaqQX/SlVCnGgdqd8xCgI
-         KyyBfkABXDF2SYkX5QH9sL5OaGYZdkK1toDoCbdWHRPBTjisUZ++VLfTmaPe7VEjj0ai
-         Ig35u3OTE7VwyTwXXCUcolVQEevba2QCjXn+vVvRkqHMiO6rLixZuZ5Ij455Qw5IALmn
-         6B4yjZiCfIEA3LYlDDlDI7nziuoWbAIT3KmU4tHNyZjupj6HMhxps8uoLxJg2MSdMOeh
-         CRnQ==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hRIN485mlrcj7PPVRMy8ZYW6DMVN6CxvBD0Qt81l1Tg=;
+        b=OyrpCheu4IWP3j94dt4Uj0kEGkstoBwoUm3UKy4oBO/VlamYoAx7eXnGkILTYYfZET
+         qNOfhb6jxPfdU7QvlE+v86iAHDqGuezVfhMCghFT82VEoD+y56loVkSRbajLF7bMLjO6
+         dtK76w2qWtUxZL7WnMFU3sAHQpW6kwpWQ6S/wGpVoNeVjtbXTaZ7nZJxTd7UKUMISICo
+         UxkVjmFGtrM40o9rlhHO+EiKnnSsf8iym9+S2oWqwdWgvr2khPWrdzYHY8Onr9t1lPDj
+         lm21C5eOszRzEvDVYlGFIB+7pTBN0N6JV01e64GFbFugK+rmcdgd7k8cqGTQEl/pSnW3
+         ZyiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PMctrldMf2S/f/I1l/eTo+t/ba/alGG1j0/ACCI4cdo=;
-        b=uyYm/phCjWQ+pnF6R3eTx41eQF0YPFLextH9Vcl01GbkNphP0EPWaUP8gVVSAwDn+J
-         i8LL74wSrl/WnS/GEnrA5apN+4g6kqYWnWfunX3oQafUq26uxV3KqUQN7cpTxzPw0g14
-         A5dOJaucdI0Lmi+htYdjN7TClDM7Pk4m6MebWpwueuyKTGdxVWr0Ak9YTmAmtjiTcELL
-         sUmz1uhVngD1Q/3s0U62RtarzBjGT1VPsBjKbOKtUQUAkTsAJzo67fJ85gOP+Zl4djfe
-         3k0CW9k727JePD7RD8pdYTMvaH2g3gLJ6upDhtgsdzke4Z3Qbizmac1LKI9pMq2qIkPm
-         Ayuw==
-X-Gm-Message-State: AOAM530YMONMjbQRMkL4wP3JujNPidCGo65ZRDJv/1zOLTKHOni5Z0hV
-        9U5fTZmq86/hD+SfFeJrboLvXu1mg0i3S7uQ1dw=
-X-Google-Smtp-Source: ABdhPJwjoLo8t/w6QkYWkj0v+wGYitF06y/+3A18wiZw38ydPLzqPraAoJjgcHh6QhWCy/uL7RJuQ1GD1DRuURXhF/4=
-X-Received: by 2002:a17:90b:3b4c:: with SMTP id ot12mr5274812pjb.62.1643143351672;
- Tue, 25 Jan 2022 12:42:31 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hRIN485mlrcj7PPVRMy8ZYW6DMVN6CxvBD0Qt81l1Tg=;
+        b=qvn7COLq6HzWEm49BgjocijdiURZx2V8GV8VGJ6qrS81e5xR5wbfqXNw0G1QT/SMXE
+         JUBAxrllqkGmbx6fiotVgUOsiOTcPsT2MGIiaoyd1WOS58BhSp3obRgvkXGxgbhVKTlI
+         jeqGYAP4qOdbOotRF2Fc+f9qQ9cSr3Y8+cv3+IEY2Y5UFDRHGLnitFCuZXaSRq88JfmO
+         mtyq4Vt+8TxcjcY27pzIqYXg7gRp/wjfgt9BQ7TIzbtohQRAU/AlVeVC85XvhFQikHoM
+         U8O/2YSXye8BAS5pJXEmZAMyHwzVwFx2jbuC/zj9TXMs8fXARFieVTzOrmi0tnpQ2B4n
+         AOlA==
+X-Gm-Message-State: AOAM533S6gf+H8vIAwkuEHc+HiGKApKVPYONJ3KEPfmHKGJhXhuDmxJo
+        RTsATRTsx/I/4gTSw9DMbf9jkeHF+6T3iA==
+X-Google-Smtp-Source: ABdhPJww6SSNDfbkoVqhrP5f+frAHLa703i6C7GEUir+k8Tg6t0E8oOm4/LyTIQR7+h5rj2QqFOwaw==
+X-Received: by 2002:adf:cc8c:: with SMTP id p12mr18853884wrj.677.1643144896183;
+        Tue, 25 Jan 2022 13:08:16 -0800 (PST)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id a14sm19140853wri.25.2022.01.25.13.08.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 13:08:15 -0800 (PST)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
+        ulli.kroll@googlemail.com
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH v2] net: ethernet: cortina: permit to set mac address in DT
+Date:   Tue, 25 Jan 2022 21:08:11 +0000
+Message-Id: <20220125210811.54350-1-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <1b99ae14-abb4-d18f-cc6a-d7e523b25542@gmail.com> <fb79a3fb-8ada-63cc-1f33-1825dbfde481@gmail.com>
-In-Reply-To: <fb79a3fb-8ada-63cc-1f33-1825dbfde481@gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 25 Jan 2022 12:42:20 -0800
-Message-ID: <CAADnVQ+ewS9WE3rS3LbhL4w1aND8v_JOvzKUK+ZuseGfk8Sdew@mail.gmail.com>
-Subject: Re: "resolve_btfids: unresolved symbol" warnings while building v5.17-rc1
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 12:29 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
->
-> On 11/15/21 16:34, Pavel Skripkin wrote:
-> > Hi, net/bpf developers!
-> >
-> > While building newest kernel for fuzzing I met following warnings:
-> >
-> > ```
-> >     BTFIDS  vmlinux
-> > WARN: resolve_btfids: unresolved symbol tcp_dctcp_kfunc_ids
-> > WARN: resolve_btfids: unresolved symbol tcp_cubic_kfunc_ids
-> > WARN: resolve_btfids: unresolved symbol tcp_bbr_kfunc_ids
-> >     SORTTAB vmlinux
-> >
-> > ```
-> >
-> > I haven't seen such warnings before and have no idea are they important
-> > or not. Config is attached.
-> >
-> > My host is openSUSE Tumbleweed with gcc (SUSE Linux) 10.3.1 20210707
-> > [revision 048117e16c77f82598fca9af585500572d46ad73] if it's important :)
-> >
-> >
->
-> Hi Kumar and other net/bpf developers!,
->
-> while building v5.17-rc1 (0280e3c58f92b2fe0e8fbbdf8d386449168de4a8) with
-> mostly random config I met this warning
->
-> ```
-> WARN: resolve_btfids: unresolved symbol bpf_lsm_task_getsecid_subj
-> ```
+Add ability of setting mac address in DT for cortina ethernet driver.
 
-Thanks for the report.
-It's already fixed in bpf tree.
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+---
+Changes since v1:
+- fixed reverse christmas tree of the mac variable
+
+ drivers/net/ethernet/cortina/gemini.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/net/ethernet/cortina/gemini.c b/drivers/net/ethernet/cortina/gemini.c
+index c78b99a497df..8014eb33937c 100644
+--- a/drivers/net/ethernet/cortina/gemini.c
++++ b/drivers/net/ethernet/cortina/gemini.c
+@@ -2363,11 +2363,13 @@ static void gemini_port_save_mac_addr(struct gemini_ethernet_port *port)
+ static int gemini_ethernet_port_probe(struct platform_device *pdev)
+ {
+ 	char *port_names[2] = { "ethernet0", "ethernet1" };
++	struct device_node *np = pdev->dev.of_node;
+ 	struct gemini_ethernet_port *port;
+ 	struct device *dev = &pdev->dev;
+ 	struct gemini_ethernet *geth;
+ 	struct net_device *netdev;
+ 	struct device *parent;
++	u8 mac[ETH_ALEN];
+ 	unsigned int id;
+ 	int irq;
+ 	int ret;
+@@ -2473,6 +2475,12 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
+ 	netif_napi_add(netdev, &port->napi, gmac_napi_poll,
+ 		       DEFAULT_NAPI_WEIGHT);
+ 
++	ret = of_get_mac_address(np, mac);
++	if (!ret) {
++		dev_info(dev, "Setting macaddr from DT %pM\n", mac);
++		memcpy(port->mac_addr, mac, ETH_ALEN);
++	}
++
+ 	if (is_valid_ether_addr((void *)port->mac_addr)) {
+ 		eth_hw_addr_set(netdev, (u8 *)port->mac_addr);
+ 	} else {
+-- 
+2.34.1
+
