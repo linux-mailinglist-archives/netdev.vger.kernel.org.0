@@ -2,105 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAB2349BC25
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 20:32:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 147E849BC08
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 20:26:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbiAYTcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 14:32:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36800 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230116AbiAYTcw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 14:32:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643139171;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ciPfMtAL50TWYFEZLNyqHSn6Da8We+lU53UsYq3iOGI=;
-        b=VlIBwN+NQZyEPhm5GQrvRl32KbIGK0nM5njn8pjJvMz85FrsQe9gYRqBYz5BxJWR5n7EGM
-        IvIfkHB4+bhNXOCIkeuuUuSIcMTqiDwQhVohs/S8yZDwHZ7EgTanIIbOm/a3P+ProoAXKT
-        3RfN9TSpm3yAqxM6mOJf/9ed93yM/Q4=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-208-uniO82IpPkaj9zdYCoZKaQ-1; Tue, 25 Jan 2022 14:32:49 -0500
-X-MC-Unique: uniO82IpPkaj9zdYCoZKaQ-1
-Received: by mail-ej1-f69.google.com with SMTP id k16-20020a17090632d000b006ae1cdb0f07so3867666ejk.16
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 11:32:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ciPfMtAL50TWYFEZLNyqHSn6Da8We+lU53UsYq3iOGI=;
-        b=Hf3T0mRyr2IAfFq6hxoMLBKK4u2H7pz87zdot9Hz0CRSr+huAWEdaJU5WKqatfIuQS
-         I5DygWg/YHScBIKl5Q08DMQMbbFxjU3Rj2K8XcZF0GJWRJkNc1xA2IDtRNPQR4uQcydM
-         i5HDpMasWZk8xxoe5Hq0RqVVq4P4l9e1GZqcP3p/3+P90Gs8rRpkBqmxLDgNuLW7vp4G
-         TAoQqVv381FcR6IpfjHvtbSSV2067RdK+h5yDQqotf/bv1yf85M3STs8vk3pU5EOYTYH
-         OAH4eSGkv4EL7tNPVSEUxBD2KqKqSna2sM49ckaeWFIzB0C5OLVc7mvOpfAGm/XZ3vxc
-         xAJA==
-X-Gm-Message-State: AOAM53274YSvsqDLfNX7Vu1E6a/8gC7iK3GUcx0MVBAMUWsVo+XLKNBs
-        79UriPbL3jwjfY6uzZz5LJu3TXXh7RBE6+/sjWr85l0pCVWcVMdKSPCCdvLARUXjJ1+XuofW8yF
-        fCNtmvT5s6loPmPbo
-X-Received: by 2002:a05:6402:1104:: with SMTP id u4mr22299208edv.24.1643139168447;
-        Tue, 25 Jan 2022 11:32:48 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxmP7u7yUi6Xhu+9fK4nud1OqU+ebd0NePrm49LbmpmCD3peeOVKz96FWzu7vP+O7g76Bsd6A==
-X-Received: by 2002:a05:6402:1104:: with SMTP id u4mr22299198edv.24.1643139168220;
-        Tue, 25 Jan 2022 11:32:48 -0800 (PST)
-Received: from redhat.com ([176.12.185.204])
-        by smtp.gmail.com with ESMTPSA id s7sm6518410ejo.212.2022.01.25.11.32.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 11:32:47 -0800 (PST)
-Date:   Tue, 25 Jan 2022 14:32:43 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Zhu Lingshan <lingshan.zhu@intel.com>
-Cc:     jasowang@redhat.com, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH V2 0/4] vDPA/ifcvf: implement shared IRQ feature
-Message-ID: <20220125143151-mutt-send-email-mst@kernel.org>
-References: <20220125091744.115996-1-lingshan.zhu@intel.com>
+        id S229940AbiAYT0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 14:26:45 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36862 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229924AbiAYT0h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 14:26:37 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A788EB818C2;
+        Tue, 25 Jan 2022 19:26:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 960C5C340E0;
+        Tue, 25 Jan 2022 19:26:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643138793;
+        bh=kyf0fBuyLxoLx1MUqMK5zUGymedo4pfkJrSdske5Tnk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=VJf5g0XdmTzrj1XQlhdy7Krt3mjRTUCv2ZDCa1UVRuMjj5Dzwh3WvDqu35Ge8f5mf
+         v8CjGbTdjTd0l8cCcAYEgGYVWEBQqVvp7Q1Yzrd03kGCWtO10EQneler1Y1sYWZFCA
+         G33zOLj5fg5sr2uKrzzZxFtFDoB5E89vPIRstickLdvOOnYLs1Gtzv06wxODFPnqBt
+         YVhMe4XmwWWMBV5S+WPEqs7NZ71jA7QsF8Iwo1B6JMlEcxueT3Kk7CDfnsvYRV8cSs
+         xkTG8k/Hqe7xD816kAuhHnPpOt9Hdv5kQIKSccsdUyuAPaM6Ytnvei3oQmixqjxiGs
+         K/MJMSnL/xdSQ==
+Date:   Tue, 25 Jan 2022 13:33:19 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Simon Horman <simon.horman@corigine.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     oss-drivers@corigine.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] nfp: flower: Use struct_size() helper in kmalloc()
+Message-ID: <20220125193319.GA73108@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220125091744.115996-1-lingshan.zhu@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 05:17:40PM +0800, Zhu Lingshan wrote:
-> It has been observed that on some platforms/devices, there may
-> not be enough MSI vectors for virtqueues and the config change.
-> Under such circumstances, the interrupt sources of a device
-> have to share vectors/IRQs.
-> 
-> This series implemented a shared IRQ feature for ifcvf.
+Make use of the struct_size() helper instead of an open-coded version,
+in order to avoid any potential type mistakes or integer overflows that,
+in the worst scenario, could lead to heap overflows.
 
-Which configurations did you test with this, and what were
-the results? Given patch 3 is broken ...
+Also, address the following sparse warnings:
+drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c:359:25: warning: using sizeof on a flexible structure
 
+Link: https://github.com/KSPP/linux/issues/174
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Please help review.
-> 
-> Changes from V1:
-> (1) Enable config interrupt when only one vector is allocated(Michael)
-> (2) Clean vectors/IRQs if failed to request config interrupt
-> since config interrupt is a must(Michael)
-> (3) Keep local vdpa_ops, disable irq_bypass by setting IRQ = -EINVAL
-> for shared IRQ case(Michael)
-> (4) Improvements on error messages(Michael)
-> (5) Squash functions implementation patches to the callers(Michael)
-> 
-> Zhu Lingshan (4):
->   vDPA/ifcvf: implement IO read/write helpers in the header file
->   vDPA/ifcvf: implement device MSIX vector allocator
->   vhost_vdpa: don't setup irq offloading when irq_num < 0
->   vDPA/ifcvf: implement shared IRQ feature
-> 
->  drivers/vdpa/ifcvf/ifcvf_base.c |  67 +++------
->  drivers/vdpa/ifcvf/ifcvf_base.h |  60 +++++++-
->  drivers/vdpa/ifcvf/ifcvf_main.c | 254 ++++++++++++++++++++++++++++----
->  drivers/vhost/vdpa.c            |   3 +
->  4 files changed, 305 insertions(+), 79 deletions(-)
-> 
-> -- 
-> 2.27.0
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+index dfb4468fe287..ce865e619568 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+@@ -356,7 +356,7 @@ __nfp_tun_add_route_to_cache(struct list_head *route_list,
+ 			return 0;
+ 		}
+ 
+-	entry = kmalloc(sizeof(*entry) + add_len, GFP_ATOMIC);
++	entry = kmalloc(struct_size(entry, ip_add, add_len), GFP_ATOMIC);
+ 	if (!entry) {
+ 		spin_unlock_bh(list_lock);
+ 		return -ENOMEM;
+-- 
+2.27.0
 
