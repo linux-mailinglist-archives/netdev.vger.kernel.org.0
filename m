@@ -2,21 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 974FE49B3F8
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 13:30:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 354A849B3FF
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 13:30:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383295AbiAYM1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 07:27:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37358 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383119AbiAYMZw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 07:25:52 -0500
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA20C06173D;
-        Tue, 25 Jan 2022 04:25:47 -0800 (PST)
+        id S1383113AbiAYM2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 07:28:37 -0500
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:43063 "EHLO
+        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1383153AbiAYMZ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 07:25:58 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 24DEBFF809;
-        Tue, 25 Jan 2022 12:25:44 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id DA655FF807;
+        Tue, 25 Jan 2022 12:25:46 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -29,9 +26,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-next v3 2/3] net: ieee802154: Use the IEEE802154_MAX_PAGE define when relevant
-Date:   Tue, 25 Jan 2022 13:25:39 +0100
-Message-Id: <20220125122540.855604-3-miquel.raynal@bootlin.com>
+Subject: [wpan-next v3 3/3] net: mac802154: Explain the use of ieee802154_wake/stop_queue()
+Date:   Tue, 25 Jan 2022 13:25:40 +0100
+Message-Id: <20220125122540.855604-4-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220125122540.855604-1-miquel.raynal@bootlin.com>
 References: <20220125122540.855604-1-miquel.raynal@bootlin.com>
@@ -42,38 +39,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This define already exist but is hardcoded in nl-phy.c. Use the
-definition when relevant.
+It is not straightforward to the newcomer that a single skb can
+currently be sent at a time and that the internal process is to stop the
+queue when processing a frame before re-enabling it.
 
-While at it, also convert the type from uint32_t to u32.
+Make this clear by documenting the ieee802154_wake/stop_queue()
+helpers.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- net/ieee802154/nl-phy.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/mac802154.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/net/ieee802154/nl-phy.c b/net/ieee802154/nl-phy.c
-index dd5a45f8a78a..359249ab77bf 100644
---- a/net/ieee802154/nl-phy.c
-+++ b/net/ieee802154/nl-phy.c
-@@ -30,7 +30,7 @@ static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
- {
- 	void *hdr;
- 	int i, pages = 0;
--	uint32_t *buf = kcalloc(32, sizeof(uint32_t), GFP_KERNEL);
-+	u32 *buf = kcalloc(IEEE802154_MAX_PAGE + 1, sizeof(u32), GFP_KERNEL);
- 
- 	pr_debug("%s\n", __func__);
- 
-@@ -47,7 +47,7 @@ static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
- 	    nla_put_u8(msg, IEEE802154_ATTR_PAGE, phy->current_page) ||
- 	    nla_put_u8(msg, IEEE802154_ATTR_CHANNEL, phy->current_channel))
- 		goto nla_put_failure;
--	for (i = 0; i < 32; i++) {
-+	for (i = 0; i <= IEEE802154_MAX_PAGE; i++) {
- 		if (phy->supported.channels[i])
- 			buf[pages++] = phy->supported.channels[i] | (i << 27);
- 	}
+diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+index d524ffb9eb25..2c3bbc6645ba 100644
+--- a/include/net/mac802154.h
++++ b/include/net/mac802154.h
+@@ -464,6 +464,12 @@ void ieee802154_rx_irqsafe(struct ieee802154_hw *hw, struct sk_buff *skb,
+  * ieee802154_wake_queue - wake ieee802154 queue
+  * @hw: pointer as obtained from ieee802154_alloc_hw().
+  *
++ * Tranceivers usually have either one transmit framebuffer or one framebuffer
++ * for both transmitting and receiving. Hence, the core currently only handles
++ * one frame at a time for each phy, which means we had to stop the queue to
++ * avoid new skb to come during the transmission. The queue then needs to be
++ * woken up after the operation.
++ *
+  * Drivers should use this function instead of netif_wake_queue.
+  */
+ void ieee802154_wake_queue(struct ieee802154_hw *hw);
+@@ -472,6 +478,12 @@ void ieee802154_wake_queue(struct ieee802154_hw *hw);
+  * ieee802154_stop_queue - stop ieee802154 queue
+  * @hw: pointer as obtained from ieee802154_alloc_hw().
+  *
++ * Tranceivers usually have either one transmit framebuffer or one framebuffer
++ * for both transmitting and receiving. Hence, the core currently only handles
++ * one frame at a time for each phy, which means we need to tell upper layers to
++ * stop giving us new skbs while we are busy with the transmitted one. The queue
++ * must then be stopped before transmitting.
++ *
+  * Drivers should use this function instead of netif_stop_queue.
+  */
+ void ieee802154_stop_queue(struct ieee802154_hw *hw);
 -- 
 2.27.0
 
