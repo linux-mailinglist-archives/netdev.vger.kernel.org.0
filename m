@@ -2,132 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40F1249AB76
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 06:16:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 578C549AC75
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 07:38:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343660AbiAYE4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 23:56:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56066 "EHLO
+        id S1345046AbiAYGid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 01:38:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S246821AbiAYDsv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 22:48:51 -0500
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E005C055AB9;
-        Mon, 24 Jan 2022 14:58:55 -0800 (PST)
-Received: by mail-il1-x134.google.com with SMTP id y17so3737389ilm.1;
-        Mon, 24 Jan 2022 14:58:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dDNdwkpKNppfQdAX/RdKIIe2QTeFkfz/ktdn7giHmGI=;
-        b=MBEEVN7qDgCDFdhhT/HSwodOkA2yjB0B9zxtw7ijLPl52m/FAjbCwaWH8yWFYUtARU
-         4ZJH46ALo8osGkf0MEwlDgjllQpwLMIcbsuNWbuxW2N0EM8xWtzfxwDl88IU8aUbkork
-         HyRmA6KX+zCPsaTu8DYH7MhRh1w5fVM4wF0kwNOsDLIZpeGhPKkGmnB4DzM0jiNfcwr6
-         OxrxepvUEe0HCeIFtrK3rgloAORRIvUmwSM3DoYAi6F3xFmj8p9QB8HMIYn6wsQtK4lc
-         ywDaz3wUhu2uh12LimtVHU2REFuwrij1vAxG65TQ9IMWvm/yVzNWMkpd9cYH/5wY+vIF
-         zsFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dDNdwkpKNppfQdAX/RdKIIe2QTeFkfz/ktdn7giHmGI=;
-        b=zlqyGXvXz6NqxC+AweejPTMhDadKqjzwwiZNfMDdGm3izGzw5HQuxn3VqD39vW4I+N
-         v6kDs/R6IHqOHPhWnttACR5tjqDoDpcS4pFXxGUM1HMq47fOwK9+0dSr89d56xjBJmT8
-         xJxJvlGL1iQH9BsQ/+APYnBDeZgGi1SPjF2072gIxzkxy5xYdUPM9Huu1Hnjjo1TfQjH
-         RGOOCyq3h6Zxrh1oopWbPj3bECDjCmeY3V7jLI2WKg+sM+ujBjDEafGLeNcVioOQL2qP
-         nXRknZwQnSq/Ru/2+VGb4FeorLrz8IecMLiifA8jcWSFcIof1DdAGilghou1VbTUB5U0
-         DjtA==
-X-Gm-Message-State: AOAM5328n2E4gM/Fi/3RbRm5mN+WlF9tlvXpUoR587rft+HGTk6H46hg
-        faOA8SzvrW4SVTfL1IoIsOOn+26zBqrq2L6tWw4=
-X-Google-Smtp-Source: ABdhPJzw6T+yZqQNek1Xa16SraihhQDl009D5c6isNAz+ULolEbkGeGQItFNTYFc/HRNedmb9oOGygvRXqA0YbOCVLI=
-X-Received: by 2002:a05:6e02:190e:: with SMTP id w14mr9072640ilu.71.1643065134544;
- Mon, 24 Jan 2022 14:58:54 -0800 (PST)
+        with ESMTP id S250008AbiAYENm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 23:13:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341B8C038AEB
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 18:45:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43E62B8160E
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 02:45:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73364C340E4;
+        Tue, 25 Jan 2022 02:45:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643078715;
+        bh=H8ypNzemf6M24UnLiB3XifisMaHbaxNEj4wM+Or5/ew=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AowtDQLQSAIoJofcFgVSrHW3Gc1o8cOAkf7jh4OrKWoVGoxPIfpV3bDa6K+qfRg9M
+         7ar0jnlQTGPAp8feQ43tP+i1ld+UR5Y8m+DTIp+YAUxbyq13mqhZOb1ju/qhI+WtEY
+         K/epMQLyNoZJk96ePmcAgZtfdXCF31LziBhEH6xsg0d7C51UsRVUMjbdDqfS67leO1
+         yrttnwCmMP3StF/uSRWWwwA8ek84a10yHB1EgUKL5DQdQNiLsYZstcrZ1X3Qy9y2im
+         AKAyblhWmgBKMgCd6zKjjxka5tld/n5hhHuPgwOpXvKikodwI7Bxmxkls4XjK9kONW
+         jK/R4orzmN5oQ==
+From:   David Ahern <dsahern@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH net-next] net: Adjust sk_gso_max_size once when set
+Date:   Mon, 24 Jan 2022 19:45:11 -0700
+Message-Id: <20220125024511.27480-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
-References: <164260419349.657731.13913104835063027148.stgit@devnote2>
- <CAEf4Bzbbimea3ydwafXSHFiEffYx5zAcwGNKk8Zi6QZ==Vn0Ug@mail.gmail.com>
- <20220121135510.7cfa6540e31824aa39b1c1b8@kernel.org> <CAEf4Bza0eTft2kjcm9HhKpAm=AuXnGwZfZ+sYpVVBvj93PBreQ@mail.gmail.com>
- <Ye3ptcW0eAFRYm58@krava> <20220124092405.665e9e0fc3ce14b16a1a9fcf@kernel.org>
- <Ye6ZyeHQtPfUoSvX@krava> <CAEf4BzbrVBXDJA4qbCgudiiLGtHNyUQAOuE=AUwfxzMrF=Wr=w@mail.gmail.com>
- <Ye8m2CpVI8VOiMTH@krava>
-In-Reply-To: <Ye8m2CpVI8VOiMTH@krava>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 24 Jan 2022 14:58:43 -0800
-Message-ID: <CAEf4Bzasj_3EFwW6RvMcV9Z95QUfevUX5eTA5_yWB4Q+KvXuXg@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 0/9] fprobe: Introduce fprobe function entry/exit probe
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 2:23 PM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Mon, Jan 24, 2022 at 12:22:10PM -0800, Andrii Nakryiko wrote:
->
-> SNIP
->
-> > > > > > > > > (This testing patch is just for confirming the rethook is correctly
-> > > > > > > > >  implemented.)
-> > > > > > > > >
-> > > > > > > > > BTW, on the x86, ftrace (with fentry) location address is same as
-> > > > > > > > > symbol address. But on other archs, it will be different (e.g. arm64
-> > > > > > > > > will need 2 instructions to save link-register and call ftrace, the
-> > > > > > > > > 2nd instruction will be the ftrace location.)
-> > > > > > > > > Does libbpf correctly handle it?
-> > > > >
-> > > > > hm, I'm probably missing something, but should this be handled by arm
-> > > > > specific kernel code? user passes whatever is found in kallsyms, right?
-> > > >
-> > > > In x86, fentry nop is always placed at the first instruction of the function,
-> > > > but the other arches couldn't do that if they use LR (link register) for
-> > > > storing return address instead of stack. E.g. arm64 saves lr and call the
-> > > > ftrace. Then ftrace location address of a function is not the symbol address.
-> > > >
-> > > > Anyway, I updated fprobe to handle those cases. I also found some issues
-> > > > on rethook, so let me update the series again.
-> > >
-> > > great, I reworked the bpf fprobe link change and need to add the
-> > > symbols attachment support, so you don't need to include it in
-> > > new version.. I'll rebase it and send on top of your patchset
-> >
-> > Using just addresses (IPs) for retsnoop and bpftrace is fine because
-> > such generic tools are already parsing kallsyms and probably building
-> > some lookup table. But in general, having IP-based attachment is a
-> > regression from current perf_event_open-based kprobe, where user is
-> > expected to pass symbolic function name. Using IPs has an advantage of
-> > being unambiguous (e.g., when same static function name in kernel
-> > belongs to multiple actual functions), so there is that. But I was
-> > also wondering wouldn't kernel need to do symbol to IP resolution
-> > anyways just to check that we are attaching to function entry?
->
-> ftrace does its own check for address to attach, it keeps record
-> for every attachable address.. so less work for us ;-)
+sk_gso_max_size is set based on the dst dev. Both users of it
+adjust the value by the same offset - (MAX_TCP_HEADER + 1). Rather
+than compute the same adjusted value on each call do the adjustment
+once when set.
 
-Oh, makes sense, thanks!
+Signed-off-by: David Ahern <dsahern@kernel.org>
+Cc: Eric Dumazet <edumazet@google.com>
+---
+ net/core/sock.c       | 1 +
+ net/ipv4/tcp.c        | 3 +--
+ net/ipv4/tcp_output.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
->
-> >
-> > I'll wait for your patch set to see how did you go about it in a new revision.
->
-> I agree we should have the support to use symbols as well, I'll add it
+diff --git a/net/core/sock.c b/net/core/sock.c
+index e21485ab285d..114a6e220ba9 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2261,6 +2261,7 @@ void sk_setup_caps(struct sock *sk, struct dst_entry *dst)
+ 			sk->sk_route_caps |= NETIF_F_SG | NETIF_F_HW_CSUM;
+ 			/* pairs with the WRITE_ONCE() in netif_set_gso_max_size() */
+ 			sk->sk_gso_max_size = READ_ONCE(dst->dev->gso_max_size);
++			sk->sk_gso_max_size -= (MAX_TCP_HEADER + 1);
+ 			/* pairs with the WRITE_ONCE() in netif_set_gso_max_segs() */
+ 			max_segs = max_t(u32, READ_ONCE(dst->dev->gso_max_segs), 1);
+ 		}
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 3b75836db19b..1afa3f2f9a6d 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -893,8 +893,7 @@ static unsigned int tcp_xmit_size_goal(struct sock *sk, u32 mss_now,
+ 		return mss_now;
+ 
+ 	/* Note : tcp_tso_autosize() will eventually split this later */
+-	new_size_goal = sk->sk_gso_max_size - 1 - MAX_TCP_HEADER;
+-	new_size_goal = tcp_bound_to_half_wnd(tp, new_size_goal);
++	new_size_goal = tcp_bound_to_half_wnd(tp, sk->sk_gso_max_size);
+ 
+ 	/* We try hard to avoid divides here */
+ 	size_goal = tp->gso_segs * mss_now;
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 5079832af5c1..11c06b9db801 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1960,7 +1960,7 @@ static u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
+ 
+ 	bytes = min_t(unsigned long,
+ 		      sk->sk_pacing_rate >> READ_ONCE(sk->sk_pacing_shift),
+-		      sk->sk_gso_max_size - 1 - MAX_TCP_HEADER);
++		      sk->sk_gso_max_size);
+ 
+ 	/* Goal is to send at least one packet per ms,
+ 	 * not one big TSO packet every 100 ms.
+-- 
+2.25.1
 
-sounds good, thanks
-
->
-> jirka
->
