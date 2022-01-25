@@ -2,146 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 787A149BB02
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 19:12:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A15649BB43
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 19:27:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234672AbiAYSMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 13:12:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:22510 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233950AbiAYSL7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 13:11:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643134318;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZYZFcKeTPsQCFaSsqNlB8G3oqmreXQCJIoK82/wxEkU=;
-        b=XEI8APwOLMstwDfrWdiGxohk0Tj8iYSCVRKmV+JMtqSXFTuhnopJyp3loDxYaHHf8o6WO3
-        zXkPX9jUNBdvt/mZ5qSie953p3xwpFT67vrMTvNMTWIr8HrCqg8yCIjR4ZExKqYfBDjcK3
-        WoGPRhqRNFS9hfmvU8oHnW67UDy54qE=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-557-hy8-s6oYNAqIZcskIGp_RQ-1; Tue, 25 Jan 2022 13:11:56 -0500
-X-MC-Unique: hy8-s6oYNAqIZcskIGp_RQ-1
-Received: by mail-ej1-f69.google.com with SMTP id m21-20020a1709061ed500b006b3003ec50dso3778941ejj.17
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 10:11:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZYZFcKeTPsQCFaSsqNlB8G3oqmreXQCJIoK82/wxEkU=;
-        b=SGcMh/z2PnbZ9+cNvh8nh/YM85yhQ6eYQBB4LYSpzxZWcypiU2pAfJzLf6YBTjDH1G
-         o9RY0iLVr0CRt1V9dc74AU23tPk9A34xm4vY9T7xN4v1pcDV8WkJDytV8hAq3IXV3VOu
-         U/i/ebMoQaHjv1kbea1xUCvJSdh7D73xKIEcP20/qWMgfBrKWSDbf83gdAYuiHVI6F8u
-         SZn3vkIu30+VJiiFTo/QUF9KMZLkdHXQ/U2mgGBh6JxBwZGIOD+EmUsW21c7cTLuuaT+
-         QVFKfC3KjArYt/E875zkYDDkn3XlYNG68h8Cd+FEaxt+3H3gb/fpARvvRLRTmwwBF9yU
-         lo6g==
-X-Gm-Message-State: AOAM530RgG5hcXSm3tTtAEjFMdWKSWVzzCrCF3Z07JPKbIFxK1SGcS97
-        dy/sTW+ldAhvNNWEv+j24C9EPrss3djFUCa1OGDrMAvtUNWHKEwWcqNsseB9iebpDu3dHgdCr99
-        jMKDA9WLbvKrPJ8vZ
-X-Received: by 2002:a17:907:9605:: with SMTP id gb5mr17348661ejc.685.1643134315388;
-        Tue, 25 Jan 2022 10:11:55 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyoPAYB5FVJEoP403NezL+MUS0Tv2jX6/UgHpSL8/pKp8IUbV8+JT6INoyPbobrfnoWYRryPQ==
-X-Received: by 2002:a17:907:9605:: with SMTP id gb5mr17348639ejc.685.1643134315151;
-        Tue, 25 Jan 2022 10:11:55 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id k7sm6425341ejp.182.2022.01.25.10.11.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 10:11:54 -0800 (PST)
-Date:   Tue, 25 Jan 2022 19:11:52 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v5 2/9] fprobe: Add ftrace based probe APIs
-Message-ID: <YfA9aC5quQNc89Hc@krava>
-References: <164311269435.1933078.6963769885544050138.stgit@devnote2>
- <164311271777.1933078.9066058105807126444.stgit@devnote2>
- <YfAoMW6i4gqw2Na0@krava>
+        id S231683AbiAYS1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 13:27:32 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:57564 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231658AbiAYS12 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 13:27:28 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20PAXH6J025305;
+        Tue, 25 Jan 2022 10:27:12 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0220;
+ bh=R4xsLDo0IDM+WN++RajqbMQ729YCfaTeKhxL7/Be6Q8=;
+ b=Tf9wW0A+ISrG2HBP7iFCfrRcBAit7sO1Kw9QjK/OHRFXHG8KcvMe4fZsPbzH6NWis30v
+ xouTHc2cFFDJ/qwe2K6nS+NhNk5UCUnO4TNPX0wumpucfDoONjO/mk51Qwsa/3B6KgeK
+ tKQNPAGoxtaC7d0xtEuwxZ/qdH2CblZOs75DcOngi9VGoIOTvMiWYkAiLaKQfbD/Ko/J
+ NDbFhxbdVl1SLLXi+8S0i7w7icmZILLt5Hu12rD0l7Yej2e5AHHTMhsGgI0vncUxJBVh
+ z4o5g/BZTy4GPNr6i/EDmYfIbzb0exUCum71NkCPcWEtHryUKRuDkm52yswEi2wwmKL8 Gg== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3dt8muk0ge-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 25 Jan 2022 10:27:12 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 25 Jan
+ 2022 10:27:10 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 25 Jan 2022 10:27:09 -0800
+Received: from localhost.localdomain (unknown [10.28.34.29])
+        by maili.marvell.com (Postfix) with ESMTP id A97345E6868;
+        Tue, 25 Jan 2022 10:27:04 -0800 (PST)
+From:   Shijith Thotton <sthotton@marvell.com>
+To:     Arnaud Ebalard <arno@natisbad.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Boris Brezillon <bbrezillon@kernel.org>
+CC:     Srujana Challa <schalla@marvell.com>,
+        <linux-crypto@vger.kernel.org>, <jerinj@marvell.com>,
+        <sgoutham@marvell.com>, Shijith Thotton <sthotton@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:MARVELL OCTEONTX2 RVU ADMIN FUNCTION DRIVER" 
+        <netdev@vger.kernel.org>
+Subject: [PATCH] crypto: octeontx2: disable DMA black hole on an DMA fault
+Date:   Tue, 25 Jan 2022 23:56:23 +0530
+Message-ID: <2ece169a85504c8a185070055db2f6f8ea3c7d11.1643134449.git.sthotton@marvell.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <ab2269cb3ef3049ed0ab73f28be29f6669a06e36.1643134480.git.sthotton@marvell.com>
+References: <ab2269cb3ef3049ed0ab73f28be29f6669a06e36.1643134480.git.sthotton@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfAoMW6i4gqw2Na0@krava>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: IzxQUWPTrdDlWI6sUKAOlwFzFEeTCAdW
+X-Proofpoint-GUID: IzxQUWPTrdDlWI6sUKAOlwFzFEeTCAdW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-25_03,2022-01-25_02,2021-12-02_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 05:41:24PM +0100, Jiri Olsa wrote:
-> On Tue, Jan 25, 2022 at 09:11:57PM +0900, Masami Hiramatsu wrote:
-> 
-> SNIP
-> 
-> > +
-> > +/* Convert ftrace location address from symbols */
-> > +static int convert_func_addresses(struct fprobe *fp)
-> > +{
-> > +	unsigned long addr, size;
-> > +	unsigned int i;
-> > +
-> > +	/* Convert symbols to symbol address */
-> > +	if (fp->syms) {
-> > +		fp->addrs = kcalloc(fp->nentry, sizeof(*fp->addrs), GFP_KERNEL);
-> > +		if (!fp->addrs)
-> > +			return -ENOMEM;
-> > +
-> > +		for (i = 0; i < fp->nentry; i++) {
-> > +			fp->addrs[i] = kallsyms_lookup_name(fp->syms[i]);
-> > +			if (!fp->addrs[i])	/* Maybe wrong symbol */
-> > +				goto error;
-> > +		}
-> > +	}
-> > +
-> > +	/* Convert symbol address to ftrace location. */
-> > +	for (i = 0; i < fp->nentry; i++) {
-> > +		if (!kallsyms_lookup_size_offset(fp->addrs[i], &size, NULL))
-> > +			size = MCOUNT_INSN_SIZE;
-> > +		addr = ftrace_location_range(fp->addrs[i], fp->addrs[i] + size);
-> 
-> you need to substract 1 from 'end' in here, as explained in
-> __within_notrace_func comment:
-> 
->         /*
->          * Since ftrace_location_range() does inclusive range check, we need
->          * to subtract 1 byte from the end address.
->          */
-> 
-> like in the patch below
-> 
-> also this convert is for archs where address from kallsyms does not match
-> the real attach addresss, like for arm you mentioned earlier, right?
-> 
-> could we have that arch specific, so we don't have extra heavy search
-> loop for archs that do not need it?
+From: Srujana Challa <schalla@marvell.com>
 
-one more question..
+When CPT_AF_DIAG[FLT_DIS] = 0 and a CPT engine access to
+LLC/DRAM encounters a fault/poison, a rare case may result
+in unpredictable data being delivered to a CPT engine.
+So, this patch adds code to set FLT_DIS as a workaround.
 
-I'm adding support for user to pass function symbols to bpf fprobe link
-and I thought I'd pass symbols array to register_fprobe, but I'd need to
-copy the whole array of strings from user space first, which could take
-lot of memory considering attachment of 10k+ functions
+Signed-off-by: Srujana Challa <schalla@marvell.com>
+Signed-off-by: Shijith Thotton <sthotton@marvell.com>
+---
+ drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c | 13 +++++++++++++
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c |  1 +
+ 2 files changed, 14 insertions(+)
 
-so I'm thinking better way is to resolve symbols already in bpf fprobe
-link code and pass just addresses to register_fprobe
-
-I assume you want to keep symbol interface, right? could we have some
-flag ensuring the conversion code is skipped, so we don't go through
-it twice?
-
-in any case I need addresses before I call register_fprobe, because
-of the bpf cookies setup
-
-thanks,
-jirka
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
+index 4c8ebdf671ca..e0b29cf504b9 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
+@@ -1111,6 +1111,7 @@ int otx2_cpt_create_eng_grps(struct otx2_cptpf_dev *cptpf,
+ 	struct otx2_cpt_engines engs[OTX2_CPT_MAX_ETYPES_PER_GRP] = { {0} };
+ 	struct pci_dev *pdev = cptpf->pdev;
+ 	struct fw_info_t fw_info;
++	u64 reg_val;
+ 	int ret = 0;
+ 
+ 	mutex_lock(&eng_grps->lock);
+@@ -1203,6 +1204,18 @@ int otx2_cpt_create_eng_grps(struct otx2_cptpf_dev *cptpf,
+ 	 */
+ 	otx2_cpt_write_af_reg(&cptpf->afpf_mbox, pdev, CPT_AF_CTX_FLUSH_TIMER,
+ 			      CTX_FLUSH_TIMER_CNT, BLKADDR_CPT0);
++
++	/*
++	 * Set CPT_AF_DIAG[FLT_DIS], as a workaround for HW errata, when
++	 * CPT_AF_DIAG[FLT_DIS] = 0 and a CPT engine access to LLC/DRAM
++	 * encounters a fault/poison, a rare case may result in
++	 * unpredictable data being delivered to a CPT engine.
++	 */
++	otx2_cpt_read_af_reg(&cptpf->afpf_mbox, pdev, CPT_AF_DIAG, &reg_val,
++			     BLKADDR_CPT0);
++	otx2_cpt_write_af_reg(&cptpf->afpf_mbox, pdev, CPT_AF_DIAG,
++			      reg_val | BIT_ULL(24), BLKADDR_CPT0);
++
+ 	mutex_unlock(&eng_grps->lock);
+ 	return 0;
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+index 45357deecabb..1f7c971e6757 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+@@ -606,6 +606,7 @@ static bool is_valid_offset(struct rvu *rvu, struct cpt_rd_wr_reg_msg *req)
+ 	} else if (!(req->hdr.pcifunc & RVU_PFVF_FUNC_MASK)) {
+ 		/* Registers that can be accessed from PF */
+ 		switch (offset) {
++		case CPT_AF_DIAG:
+ 		case CPT_AF_CTL:
+ 		case CPT_AF_PF_FUNC:
+ 		case CPT_AF_BLK_RST:
+-- 
+2.25.1
 
