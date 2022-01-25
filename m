@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18C4A49B3BF
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 13:21:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AB0749B3C1
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 13:21:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444208AbiAYMRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 07:17:06 -0500
-Received: from relay11.mail.gandi.net ([217.70.178.231]:33941 "EHLO
+        id S1444545AbiAYMRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 07:17:17 -0500
+Received: from relay11.mail.gandi.net ([217.70.178.231]:42567 "EHLO
         relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355332AbiAYMOo (ORCPT
+        with ESMTP id S1358563AbiAYMOo (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 07:14:44 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 01BE2100002;
-        Tue, 25 Jan 2022 12:14:27 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3059A10000E;
+        Tue, 25 Jan 2022 12:14:30 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -26,10 +26,12 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan v3 0/6] ieee802154: A bunch of fixes
-Date:   Tue, 25 Jan 2022 13:14:20 +0100
-Message-Id: <20220125121426.848337-1-miquel.raynal@bootlin.com>
+Subject: [wpan v3 1/6] net: ieee802154: hwsim: Ensure proper channel selection at probe time
+Date:   Tue, 25 Jan 2022 13:14:21 +0100
+Message-Id: <20220125121426.848337-2-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220125121426.848337-1-miquel.raynal@bootlin.com>
+References: <20220125121426.848337-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -37,35 +39,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation to a wider series, here are a number of small and random
-fixes across the subsystem.
+Drivers are expected to set the PHY current_channel and current_page
+according to their default state. The hwsim driver is advertising being
+configured on channel 13 by default but that is not reflected in its own
+internal pib structure. In order to ensure that this driver consider the
+current channel as being 13 internally, we at least need to set the
+pib->channel field to 13.
 
-Changes in v2:
-* Fixed the wrong RCU usage when updating the default channel at probe
-  time in hwsim.
-* Actually fixed the skb leak fix in the at86rf230 driver as suggested
-  by Alexander.
-* Also reordered the calls to free the skb then wake the queue
-  everywhere else.
-* Added a missing Fixes tag (for the meaningful error codes patch).
+Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+---
+ drivers/net/ieee802154/mac802154_hwsim.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Miquel Raynal (6):
-  net: ieee802154: hwsim: Ensure proper channel selection at probe time
-  net: ieee802154: mcr20a: Fix lifs/sifs periods
-  net: ieee802154: at86rf230: Stop leaking skb's
-  net: ieee802154: ca8210: Stop leaking skb's
-  net: ieee802154: Return meaningful error codes from the netlink
-    helpers
-  MAINTAINERS: Remove Harry Morris bouncing address
-
- MAINTAINERS                              |  3 +--
- drivers/net/ieee802154/at86rf230.c       | 13 +++++++++++--
- drivers/net/ieee802154/ca8210.c          |  1 +
- drivers/net/ieee802154/mac802154_hwsim.c |  1 +
- drivers/net/ieee802154/mcr20a.c          |  4 ++--
- net/ieee802154/nl802154.c                |  8 ++++----
- 6 files changed, 20 insertions(+), 10 deletions(-)
-
+diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
+index 8caa61ec718f..00ec188a3257 100644
+--- a/drivers/net/ieee802154/mac802154_hwsim.c
++++ b/drivers/net/ieee802154/mac802154_hwsim.c
+@@ -786,6 +786,7 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
+ 		goto err_pib;
+ 	}
+ 
++	pib->page = 13;
+ 	rcu_assign_pointer(phy->pib, pib);
+ 	phy->idx = idx;
+ 	INIT_LIST_HEAD(&phy->edges);
 -- 
 2.27.0
 
