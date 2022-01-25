@@ -2,584 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D231F49BC6D
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 20:45:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2DE949BC80
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 20:52:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230457AbiAYTn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 14:43:59 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:20900 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230449AbiAYTnI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 14:43:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643139783;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/CbQhZ/5Q6kk2WRebj7TZprFPKvjfn/uvEP5MmtPAd8=;
-        b=Ifnop34JzM0KIuq6cJ6A+IDhN+Y0OEQ4mejYWBh1f1XwIZt0DfvaOnOSL+M0J+G7cugwrM
-        9t3/ZdYpjboxrKXKpjJXHr97XK0/0fpsVhpBQjJdXE79AGcx2lX14eNV8gSTaY+03rG0kX
-        IJu5G+bbSHeqI0CSGZjrW84rN3iioGg=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-335-iK28QlopPsiKYSYWN5iBNw-1; Tue, 25 Jan 2022 14:43:00 -0500
-X-MC-Unique: iK28QlopPsiKYSYWN5iBNw-1
-Received: by mail-ej1-f71.google.com with SMTP id x16-20020a170906135000b006b5b4787023so3887338ejb.12
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 11:43:00 -0800 (PST)
+        id S230460AbiAYTv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 14:51:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230405AbiAYTvz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 14:51:55 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E2BAC06173B
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 11:51:54 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id x7so58799354lfu.8
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 11:51:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fastly.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VBbPm13s6wEPsIOn2ZRkMSoeMmWCgQIojvbG+4GjWDQ=;
+        b=Z6uZ57KhTOb09VZMts+DwHK53KaGEf4jA/Enzg7yLpZTOzNr4kbQl7EEdNs1eyFa/y
+         9K8uzjVcdK687yRhq4YqEbV7CWStyXgx+pao28Ctdz7RkwNaq9zMmHIJnuzs7pzByAol
+         dzPxjahkltv3jURrjsjNd8NpZQ9y94mBrY620=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/CbQhZ/5Q6kk2WRebj7TZprFPKvjfn/uvEP5MmtPAd8=;
-        b=PQm0T2c74Zldm/PXu8QEydrhs8xX0o+NmR3kF22QR/anHuRD5urOSpToZQZckr7PHa
-         6qacBzpF8oRt3HJsPP6I/BZXT9In3ek6L2H+vgwKqlgns8dWoQg81S2DVZKd4rv/g2gS
-         xsiEnYsYpiI1asroK9kT6AsbsN1WAHMnQflmMOWt10IltGiZllLJIz4CNJHfswxubd+P
-         osD3s5FwdYzxIv4dcQXfpYwf9o2+Aag93ljgNFGN5VFP/0NmAdseOTHyc921H/U5rhPd
-         UCU0uvVPqpBZDSJaU0E8nXQgZeWEN/g5t3nscbddkSfYJIplfYX60RqMaqDpfzhzYBy5
-         nnfQ==
-X-Gm-Message-State: AOAM530yJdVGmFHFjE2PpI4qr3rpsmonn5cy/imEJb5dcZjLo52QFMxr
-        srFUCakUt5cdMSNC267ldNXW+oZDhd8hnGBkAh4/niJqrLKGj4Ohsbf5xw97BOYbc3TMvzePBcY
-        yGM1u8g++aUpH3b6y
-X-Received: by 2002:a17:906:1585:: with SMTP id k5mr17412045ejd.83.1643139778342;
-        Tue, 25 Jan 2022 11:42:58 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwnZgPCV7xN986ZX0Q5muMpqvLE+su6gyUnnMPXCJdYarTJ+PM9ZIhHwcANNLGGbugwWKrsVw==
-X-Received: by 2002:a17:906:1585:: with SMTP id k5mr17412025ejd.83.1643139777949;
-        Tue, 25 Jan 2022 11:42:57 -0800 (PST)
-Received: from redhat.com ([176.12.185.204])
-        by smtp.gmail.com with ESMTPSA id e2sm6572490ejr.210.2022.01.25.11.42.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 11:42:57 -0800 (PST)
-Date:   Tue, 25 Jan 2022 14:42:52 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Zhu Lingshan <lingshan.zhu@intel.com>
-Cc:     jasowang@redhat.com, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH V2 4/4] vDPA/ifcvf: implement shared IRQ feature
-Message-ID: <20220125143716-mutt-send-email-mst@kernel.org>
-References: <20220125091744.115996-1-lingshan.zhu@intel.com>
- <20220125091744.115996-5-lingshan.zhu@intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VBbPm13s6wEPsIOn2ZRkMSoeMmWCgQIojvbG+4GjWDQ=;
+        b=nKAzN8Acybm04iNokZb3i5F6HqC4icnlZc51hFtJFebHymq15KtSFpVNUu08/4KCyO
+         7QvKu3nt+fVMzOpAFpwQlgqH5cvymgiuii6/+0j6kLOUtTWcSSAspJ8VTMmnWXdeOt+T
+         XDXpJ+8Dc2phkiFrhNn9O/1IwIC4K1P1yMXsNBD+cn0q74KbjH2HBuPPc3mfxWbx2W47
+         P6Fl+vf/1KhHXIpfjfocOkit7wCtzeqD8/Xn0YNkOk2ImFthESjiilV8q5+PCkrDgjxY
+         YwHmYCwJCx6dU+8hWXOq3uoaA4a2dlAigks9bZllrAmEhnetrn3MNJ66jFisqyscVk6c
+         Ei5w==
+X-Gm-Message-State: AOAM533Wj9vvfpYlEGbzCe3rh6+PxbiTwqq699IcDr4Z8FzoMC2ufl98
+        5MzZ31UV3+YtGOFETTLUxMK8lKsRtUh4grrcS7qwaQ==
+X-Google-Smtp-Source: ABdhPJx3fLcy3gU/50YmqHRSCRlkLYDoGFFfFFPL3ROGihqT/sQpHZ47J8Vf/jAXu9q5WixPnt5W8Uf+oM31Ae0RRSU=
+X-Received: by 2002:a05:6512:22d1:: with SMTP id g17mr18330760lfu.154.1643140312724;
+ Tue, 25 Jan 2022 11:51:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220125091744.115996-5-lingshan.zhu@intel.com>
+References: <1642716150-100589-1-git-send-email-jdamato@fastly.com> <Ye234Pb0f1SusMbA@pop-os.localdomain>
+In-Reply-To: <Ye234Pb0f1SusMbA@pop-os.localdomain>
+From:   Joe Damato <jdamato@fastly.com>
+Date:   Tue, 25 Jan 2022 11:51:41 -0800
+Message-ID: <CALALjgzLSmv4yiSuiF0DLU717peuhV3B1UAZ3uc9XStny4LR9w@mail.gmail.com>
+Subject: Re: [PATCH net-next] sock: add sndbuff full perf trace event
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 05:17:44PM +0800, Zhu Lingshan wrote:
-> On some platforms/devices, there may not be enough MSI vector
-> slots allocated for virtqueues and config changes. In such a case,
-> the interrupt sources(virtqueues, config changes) must share
-> an IRQ/vector, to avoid initialization failures, keep
-> the device functional.
-> 
-> This commit handles three cases:
-> (1) number of the allocated vectors == the number of virtqueues + 1
-> (config changes), every virtqueue and the config interrupt has
-> a separated vector/IRQ, the best and the most likely case.
-> (2) number of the allocated vectors is less than the best case, but
-> greater than 1. In this case, all virtqueues share a vector/IRQ,
-> the config interrupt has a separated vector/IRQ
-> (3) only one vector is allocated, in this case, the virtqueues and
-> the config interrupt share a vector/IRQ. The worst and most
-> unlikely case.
-> 
-> Otherwise, it needs to fail.
-> 
-> This commit introduces some helper functions:
-> ifcvf_set_vq_vector() and ifcvf_set_config_vector() sets virtqueue
-> vector and config vector in the device config space, so that
-> the device can send interrupt DMA.
-> 
-> This commit adds some fields in struct ifcvf_hw and re-placed
-> the existed fields to be aligned with the cacheline.
-> 
-> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> ---
->  drivers/vdpa/ifcvf/ifcvf_base.c |  47 +++++--
->  drivers/vdpa/ifcvf/ifcvf_base.h |  23 ++-
->  drivers/vdpa/ifcvf/ifcvf_main.c | 240 +++++++++++++++++++++++++++-----
->  3 files changed, 253 insertions(+), 57 deletions(-)
-> 
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
-> index 397692ae671c..18dcb63ab1e3 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_base.c
-> +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
-> @@ -15,6 +15,36 @@ struct ifcvf_adapter *vf_to_adapter(struct ifcvf_hw *hw)
->  	return container_of(hw, struct ifcvf_adapter, vf);
->  }
->  
-> +int ifcvf_set_vq_vector(struct ifcvf_hw *hw, u16 qid, int vector)
-> +{
-> +	struct virtio_pci_common_cfg __iomem *cfg = hw->common_cfg;
-> +	struct ifcvf_adapter *ifcvf = vf_to_adapter(hw);
-> +
-> +	ifc_iowrite16(qid, &cfg->queue_select);
-> +	ifc_iowrite16(vector, &cfg->queue_msix_vector);
-> +	if (ifc_ioread16(&cfg->queue_msix_vector) == VIRTIO_MSI_NO_VECTOR) {
-> +		IFCVF_ERR(ifcvf->pdev, "No msix vector for queue %u\n", qid);
-> +			return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +int ifcvf_set_config_vector(struct ifcvf_hw *hw, int vector)
-> +{
-> +	struct virtio_pci_common_cfg __iomem *cfg = hw->common_cfg;
-> +	struct ifcvf_adapter *ifcvf = vf_to_adapter(hw);
-> +
-> +	cfg = hw->common_cfg;
-> +	ifc_iowrite16(vector,  &cfg->msix_config);
-> +	if (ifc_ioread16(&cfg->msix_config) == VIRTIO_MSI_NO_VECTOR) {
-> +		IFCVF_ERR(ifcvf->pdev, "No msix vector for device config\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static void __iomem *get_cap_addr(struct ifcvf_hw *hw,
->  				  struct virtio_pci_cap *cap)
->  {
-> @@ -140,6 +170,8 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
->  		  hw->common_cfg, hw->notify_base, hw->isr,
->  		  hw->dev_cfg, hw->notify_off_multiplier);
->  
-> +	hw->vqs_shared_irq = -EINVAL;
-> +
+ On Sun, Jan 23, 2022 at 12:17 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Thu, Jan 20, 2022 at 02:02:30PM -0800, Joe Damato wrote:
+> > Calls to sock_alloc_send_pskb can fail or trigger a wait if there is no
+> > sndbuf space available.
+> >
+> > Add a perf trace event to help users monitor when and how this occurs so
+> > appropriate application level changes can be made, if necessary.
+> >
+> > Signed-off-by: Joe Damato <jdamato@fastly.com>
+> > ---
+> >  include/trace/events/sock.h | 21 +++++++++++++++++++++
+> >  net/core/sock.c             |  1 +
+> >  2 files changed, 22 insertions(+)
+>
+> There are more places where we set the SOCKWQ_ASYNC_NOSPACE bit, so
+> it looks like your patch is incomplete.
 
-This stuffing of errno values into u32 is not a good idea.
+Thanks for taking a look.
 
+I had originally taken your comment to suggest that the generic stream
+code should trigger the same tracepoint; I agree and am happy to
+generate a v2 with that case covered.
 
->  	return 0;
->  }
->  
-> @@ -321,12 +353,6 @@ static int ifcvf_hw_enable(struct ifcvf_hw *hw)
->  
->  	ifcvf = vf_to_adapter(hw);
->  	cfg = hw->common_cfg;
-> -	ifc_iowrite16(IFCVF_MSI_CONFIG_OFF, &cfg->msix_config);
-> -
-> -	if (ifc_ioread16(&cfg->msix_config) == VIRTIO_MSI_NO_VECTOR) {
-> -		IFCVF_ERR(ifcvf->pdev, "No msix vector for device config\n");
-> -		return -EINVAL;
-> -	}
->  
->  	for (i = 0; i < hw->nr_vring; i++) {
->  		if (!hw->vring[i].ready)
-> @@ -340,15 +366,6 @@ static int ifcvf_hw_enable(struct ifcvf_hw *hw)
->  		ifc_iowrite64_twopart(hw->vring[i].used, &cfg->queue_used_lo,
->  				     &cfg->queue_used_hi);
->  		ifc_iowrite16(hw->vring[i].size, &cfg->queue_size);
-> -		ifc_iowrite16(i + IFCVF_MSI_QUEUE_OFF, &cfg->queue_msix_vector);
-> -
-> -		if (ifc_ioread16(&cfg->queue_msix_vector) ==
-> -		    VIRTIO_MSI_NO_VECTOR) {
-> -			IFCVF_ERR(ifcvf->pdev,
-> -				  "No msix vector for queue %u\n", i);
-> -			return -EINVAL;
-> -		}
-> -
->  		ifcvf_set_vq_state(hw, i, hw->vring[i].last_avail_idx);
->  		ifc_iowrite16(1, &cfg->queue_enable);
->  	}
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-> index 949b4fb9d554..d2a2a526f0fc 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
-> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-> @@ -27,8 +27,6 @@
->  
->  #define IFCVF_QUEUE_ALIGNMENT	PAGE_SIZE
->  #define IFCVF_QUEUE_MAX		32768
-> -#define IFCVF_MSI_CONFIG_OFF	0
-> -#define IFCVF_MSI_QUEUE_OFF	1
->  #define IFCVF_PCI_MAX_RESOURCE	6
->  
->  #define IFCVF_LM_CFG_SIZE		0x40
-> @@ -42,6 +40,13 @@
->  #define ifcvf_private_to_vf(adapter) \
->  	(&((struct ifcvf_adapter *)adapter)->vf)
->  
-> +/* all vqs and config interrupt has its own vector */
-> +#define MSIX_VECTOR_PER_VQ_AND_CONFIG		1
-> +/* all vqs share a vector, and config interrupt has a separate vector */
-> +#define MSIX_VECTOR_SHARED_VQ_AND_CONFIG	2
-> +/* all vqs and config interrupt share a vector */
-> +#define MSIX_VECTOR_DEV_SHARED			3
-> +
->  static inline u8 ifc_ioread8(u8 __iomem *addr)
->  {
->  	return ioread8(addr);
-> @@ -97,25 +102,27 @@ struct ifcvf_hw {
->  	u8 __iomem *isr;
->  	/* Live migration */
->  	u8 __iomem *lm_cfg;
-> -	u16 nr_vring;
->  	/* Notification bar number */
->  	u8 notify_bar;
-> +	u8 msix_vector_status;
-> +	/* virtio-net or virtio-blk device config size */
-> +	u32 config_size;
->  	/* Notificaiton bar address */
->  	void __iomem *notify_base;
->  	phys_addr_t notify_base_pa;
->  	u32 notify_off_multiplier;
-> +	u32 dev_type;
->  	u64 req_features;
->  	u64 hw_features;
-> -	u32 dev_type;
->  	struct virtio_pci_common_cfg __iomem *common_cfg;
->  	void __iomem *dev_cfg;
->  	struct vring_info vring[IFCVF_MAX_QUEUES];
->  	void __iomem * const *base;
->  	char config_msix_name[256];
->  	struct vdpa_callback config_cb;
-> -	unsigned int config_irq;
-> -	/* virtio-net or virtio-blk device config size */
-> -	u32 config_size;
-> +	u32 config_irq;
-> +	u32 vqs_shared_irq;
-> +	u16 nr_vring;
->  };
->  
->  struct ifcvf_adapter {
-> @@ -160,4 +167,6 @@ int ifcvf_set_vq_state(struct ifcvf_hw *hw, u16 qid, u16 num);
->  struct ifcvf_adapter *vf_to_adapter(struct ifcvf_hw *hw);
->  int ifcvf_probed_virtio_net(struct ifcvf_hw *hw);
->  u32 ifcvf_get_config_size(struct ifcvf_hw *hw);
-> +int ifcvf_set_vq_vector(struct ifcvf_hw *hw, u16 qid, int vector);
-> +int ifcvf_set_config_vector(struct ifcvf_hw *hw, int vector);
->  #endif /* _IFCVF_H_ */
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-> index 7e2af2d2aaf5..c7070ff01776 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
-> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-> @@ -17,6 +17,7 @@
->  #define DRIVER_AUTHOR   "Intel Corporation"
->  #define IFCVF_DRIVER_NAME       "ifcvf"
->  
-> +/* handles config interrupt */
->  static irqreturn_t ifcvf_config_changed(int irq, void *arg)
->  {
->  	struct ifcvf_hw *vf = arg;
-> @@ -27,6 +28,7 @@ static irqreturn_t ifcvf_config_changed(int irq, void *arg)
->  	return IRQ_HANDLED;
->  }
->  
-> +/* handles vqs interrupt */
->  static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
->  {
->  	struct vring_info *vring = arg;
-> @@ -37,24 +39,77 @@ static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
->  	return IRQ_HANDLED;
->  }
->  
-> +/* handls vqs shared interrupt */
-> +static irqreturn_t ifcvf_vq_shared_intr_handler(int irq, void *arg)
-> +{
-> +	struct ifcvf_hw *vf = arg;
-> +	struct vring_info *vring;
-> +	int i;
-> +
-> +	for (i = 0; i < vf->nr_vring; i++) {
-> +		vring = &vf->vring[i];
-> +		if (vring->cb.callback)
-> +			vf->vring->cb.callback(vring->cb.private);
-> +	}
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +/* handles a shared interrupt for vqs and config */
-> +static irqreturn_t ifcvf_dev_shared_intr_handler(int irq, void *arg)
-> +{
-> +	struct ifcvf_hw *vf = arg;
-> +	u8 isr;
-> +
-> +	isr = ifc_ioread8(vf->isr);
-> +	if (isr & VIRTIO_PCI_ISR_CONFIG)
-> +		ifcvf_config_changed(irq, arg);
-> +
-> +	return ifcvf_vq_shared_intr_handler(irq, arg);
-> +}
-> +
->  static void ifcvf_free_irq_vectors(void *data)
->  {
->  	pci_free_irq_vectors(data);
->  }
->  
-> -static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
-> +static void ifcvf_free_vq_irq(struct ifcvf_adapter *adapter, int queues)
->  {
->  	struct pci_dev *pdev = adapter->pdev;
->  	struct ifcvf_hw *vf = &adapter->vf;
->  	int i;
->  
-> +	if (vf->msix_vector_status == MSIX_VECTOR_PER_VQ_AND_CONFIG)
-> +		for (i = 0; i < queues; i++) {
-> +			devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
-> +			vf->vring[i].irq = -EINVAL;
-> +		}
-> +	else {
-> +		devm_free_irq(&pdev->dev, vf->vqs_shared_irq, vf);
-> +	}	vf->vqs_shared_irq = -EINVAL;
+Are you suggesting that all places where SOCKWQ_ASYNC_NOSPACE is set
+(e.g. the poll functions for various protocols) should trigger this
+tracepoint, as well? Some of these may not have a user configurable
+sndbuf, but I suppose knowing that this event is happening could be
+helpful.
 
-If you use {} in the else branch, use it on the then branch, too.
-
-
-> +}
->  
-> -	for (i = 0; i < queues; i++) {
-> -		devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
-> -		vf->vring[i].irq = -EINVAL;
-> +static void ifcvf_free_config_irq(struct ifcvf_adapter *adapter)
-> +{
-> +	struct pci_dev *pdev = adapter->pdev;
-> +	struct ifcvf_hw *vf = &adapter->vf;
-> +
-> +	/* If the irq is shared by all vqs and the config interrupt,
-> +	 * it is already freed in ifcvf_free_vq_irq, so here only
-> +	 * need to free config irq when msix_vector_status != MSIX_VECTOR_DEV_SHARED
-> +	 */
-> +	if (vf->msix_vector_status != MSIX_VECTOR_DEV_SHARED) {
-> +		devm_free_irq(&pdev->dev, vf->config_irq, vf);
-> +		vf->config_irq = -EINVAL;
->  	}
-> +}
-> +
-> +static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
-> +{
-> +	struct pci_dev *pdev = adapter->pdev;
->  
-> -	devm_free_irq(&pdev->dev, vf->config_irq, vf);
-> +	ifcvf_free_vq_irq(adapter, queues);
-> +	ifcvf_free_config_irq(adapter);
->  	ifcvf_free_irq_vectors(pdev);
->  }
->  
-> @@ -81,58 +136,170 @@ static int ifcvf_alloc_vectors(struct ifcvf_adapter *adapter)
->  	return ret;
->  }
->  
-> -static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
-> +static int ifcvf_request_per_vq_irq(struct ifcvf_adapter *adapter)
->  {
->  	struct pci_dev *pdev = adapter->pdev;
->  	struct ifcvf_hw *vf = &adapter->vf;
-> -	int vector, i, ret, irq;
-> -	u16 nvectors, max_intr;
-> +	int i, vector, ret, irq;
->  
-> -	nvectors = ifcvf_alloc_vectors(adapter);
-> -	if (!(nvectors > 0))
-> -		return nvectors;
-> +	for (i = 0; i < vf->nr_vring; i++) {
-> +		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n", pci_name(pdev), i);
-> +		vector = i;
-> +		irq = pci_irq_vector(pdev, vector);
-> +		ret = devm_request_irq(&pdev->dev, irq,
-> +				       ifcvf_intr_handler, 0,
-> +				       vf->vring[i].msix_name,
-> +				       &vf->vring[i]);
-> +		if (ret) {
-> +			IFCVF_ERR(pdev, "Failed to request irq for vq %d\n", i);
-> +			ifcvf_free_vq_irq(adapter, i);
-> +		} else {
-> +			vf->vring[i].irq = irq;
-> +			ifcvf_set_vq_vector(vf, i, vector);
-> +		}
-> +	}
->  
-> -	max_intr = vf->nr_vring + 1;
-> +	vf->vqs_shared_irq = -EINVAL;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ifcvf_request_shared_vq_irq(struct ifcvf_adapter *adapter)
-> +{
-> +	struct pci_dev *pdev = adapter->pdev;
-> +	struct ifcvf_hw *vf = &adapter->vf;
-> +	int i, vector, ret, irq;
-> +
-> +	vector = 0;
-> +	irq = pci_irq_vector(pdev, vector);
-> +	ret = devm_request_irq(&pdev->dev, irq,
-> +			       ifcvf_vq_shared_intr_handler, 0,
-> +			       "ifcvf_vq_shared_irq",
-> +			       vf);
-> +	if (ret) {
-> +		IFCVF_ERR(pdev, "Failed to request shared irq for vf\n");
-> +
-> +		return ret;
-> +	}
-> +
-> +	vf->vqs_shared_irq = irq;
-> +	for (i = 0; i < vf->nr_vring; i++) {
-> +		vf->vring[i].irq = -EINVAL;
-> +		ifcvf_set_vq_vector(vf, i, vector);
-> +	}
-> +
-> +	return 0;
-> +
-> +}
-> +
-> +static int ifcvf_request_dev_shared_irq(struct ifcvf_adapter *adapter)
-> +{
-> +	struct pci_dev *pdev = adapter->pdev;
-> +	struct ifcvf_hw *vf = &adapter->vf;
-> +	int i, vector, ret, irq;
-> +
-> +	vector = 0;
-> +	irq = pci_irq_vector(pdev, vector);
-> +	ret = devm_request_irq(&pdev->dev, irq,
-> +			       ifcvf_dev_shared_intr_handler, 0,
-> +			       "ifcvf_dev_shared_irq",
-> +			       vf);
-> +	if (ret) {
-> +		IFCVF_ERR(pdev, "Failed to request shared irq for vf\n");
->  
-> -	ret = pci_alloc_irq_vectors(pdev, max_intr,
-> -				    max_intr, PCI_IRQ_MSIX);
-> -	if (ret < 0) {
-> -		IFCVF_ERR(pdev, "Failed to alloc IRQ vectors\n");
->  		return ret;
->  	}
->  
-> +	vf->vqs_shared_irq = irq;
-> +	for (i = 0; i < vf->nr_vring; i++) {
-> +		vf->vring[i].irq = -EINVAL;
-> +		ifcvf_set_vq_vector(vf, i, vector);
-> +	}
-> +
-> +	vf->config_irq = irq;
-> +	ifcvf_set_config_vector(vf, vector);
-> +
-> +	return 0;
-> +
-> +}
-> +
-> +static int ifcvf_request_vq_irq(struct ifcvf_adapter *adapter)
-> +{
-> +	struct ifcvf_hw *vf = &adapter->vf;
-> +	int ret;
-> +
-> +	if (vf->msix_vector_status == MSIX_VECTOR_PER_VQ_AND_CONFIG)
-> +		ret = ifcvf_request_per_vq_irq(adapter);
-> +	else
-> +		ret = ifcvf_request_shared_vq_irq(adapter);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ifcvf_request_config_irq(struct ifcvf_adapter *adapter)
-> +{
-> +	struct pci_dev *pdev = adapter->pdev;
-> +	struct ifcvf_hw *vf = &adapter->vf;
-> +	int config_vector, ret;
-> +
-> +	if (vf->msix_vector_status == MSIX_VECTOR_DEV_SHARED)
-> +		return 0;
-> +
-> +	if (vf->msix_vector_status == MSIX_VECTOR_PER_VQ_AND_CONFIG)
-> +		/* vector 0 ~ vf->nr_vring for vqs, num vf->nr_vring vector for config interrupt */
-> +		config_vector = vf->nr_vring;
-> +
-> +	if (vf->msix_vector_status ==  MSIX_VECTOR_SHARED_VQ_AND_CONFIG)
-> +		/* vector 0 for vqs and 1 for config interrupt */
-> +		config_vector = 1;
-> +
->  	snprintf(vf->config_msix_name, 256, "ifcvf[%s]-config\n",
->  		 pci_name(pdev));
-> -	vector = 0;
-> -	vf->config_irq = pci_irq_vector(pdev, vector);
-> +	vf->config_irq = pci_irq_vector(pdev, config_vector);
->  	ret = devm_request_irq(&pdev->dev, vf->config_irq,
->  			       ifcvf_config_changed, 0,
->  			       vf->config_msix_name, vf);
->  	if (ret) {
->  		IFCVF_ERR(pdev, "Failed to request config irq\n");
-> +		ifcvf_free_vq_irq(adapter, vf->nr_vring);
->  		return ret;
->  	}
-> +		ifcvf_set_config_vector(vf, config_vector);
->  
-> -	for (i = 0; i < vf->nr_vring; i++) {
-> -		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
-> -			 pci_name(pdev), i);
-> -		vector = i + IFCVF_MSI_QUEUE_OFF;
-> -		irq = pci_irq_vector(pdev, vector);
-> -		ret = devm_request_irq(&pdev->dev, irq,
-> -				       ifcvf_intr_handler, 0,
-> -				       vf->vring[i].msix_name,
-> -				       &vf->vring[i]);
-> -		if (ret) {
-> -			IFCVF_ERR(pdev,
-> -				  "Failed to request irq for vq %d\n", i);
-> -			ifcvf_free_irq(adapter, i);
-> +	return 0;
-> +}
->  
-> -			return ret;
-> -		}
-> +static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
-
-This function was not moved, was it?
-
-Try --minimal or --histogram maybe. Or just
---anchored=ifcvf_request_irq
-
-
-> +{
-> +	struct ifcvf_hw *vf = &adapter->vf;
-> +	u16 nvectors, max_intr;
-> +	int ret;
->  
-> -		vf->vring[i].irq = irq;
-> +	nvectors = ifcvf_alloc_vectors(adapter);
-> +	if (!(nvectors > 0))
-> +		return nvectors;
-> +
-
-
-> +	vf->msix_vector_status = MSIX_VECTOR_PER_VQ_AND_CONFIG;
-> +	max_intr = vf->nr_vring + 1;
-> +	if (nvectors < max_intr)
-> +		vf->msix_vector_status = MSIX_VECTOR_SHARED_VQ_AND_CONFIG;
-> +
-> +	if (nvectors == 1) {
-> +		vf->msix_vector_status = MSIX_VECTOR_DEV_SHARED;
-> +		ret = ifcvf_request_dev_shared_irq(adapter);
-> +
-> +		return ret;
->  	}
->  
-> +	ret = ifcvf_request_vq_irq(adapter);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ifcvf_request_config_irq(adapter);
-> +
-> +	if (ret)
-> +		return ret;
-> +
->  	return 0;
->  }
->  
-> @@ -436,7 +603,10 @@ static int ifcvf_vdpa_get_vq_irq(struct vdpa_device *vdpa_dev,
->  {
->  	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
->  
-> -	return vf->vring[qid].irq;
-> +	if (vf->vqs_shared_irq < 0)
-> +		return vf->vring[qid].irq;
-> +	else
-> +		return -EINVAL;
->  }
->  
->  static struct vdpa_notification_area ifcvf_get_vq_notification(struct vdpa_device *vdpa_dev,
-> -- 
-> 2.27.0
-
+Thanks.
