@@ -2,104 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12B1149B1A8
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:28:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70DFC49B1AA
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:29:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352343AbiAYKZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 05:25:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37538 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235222AbiAYKXC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 05:23:02 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32FF4C06173E
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 02:23:00 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id p15so29547614ejc.7
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 02:23:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mXvXXH5NkD3VAbxPYQLS+yBdXysPjN86vINvSbtOAUo=;
-        b=pDneXHtftHaFd0QpxVSQgYZJ/r85V/t7o7isVF9jWMXmK6UBInq4U2qhRaHN9SwHWb
-         +0+uu2yDz4gyvRd8ExR0Y5Gr6hHRYuo4GHXw+g4H8G7bB6zqppHg6WqlXl5CPg59NNdl
-         6/qXOtTbqvTSRLzAgl1zCdDRoM9RZCFoQDlE/H8a4ZGMQWkqHsuSAFhM72EqI+RmXBxs
-         9nIPmmd06u2ezVi3XwxyrvGbsohdc1lF/NPzkPidacBVKieVvp6qL2elTUErmY1JIANy
-         e1NfXcC10p09JorqT1p5lV33SQaKg3ODW8x+wi8GN4EQbYUNiklzMJjHAiVmlss+XzGr
-         OygQ==
+        id S1352451AbiAYKZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 05:25:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58632 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1348644AbiAYKXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 05:23:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643106179;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KfO8JQDP2fzwwyVNOov4juy70MimJyiWRONtd3Q4kcc=;
+        b=Lvnqp8YyUk2T92ddnKXC4h8IrbPaxq9kbD71I7A0HFnXK9EAEZlbhCUFeL5Jwtaznw7UmA
+        EoZxQy3jkp3FUqQ4/vw1ISv4atLSTswroNXw9kIB+mlRdGa0IgQAYKNYe8g7NvS69KND7V
+        GxLgifleW4FkeajOxp26nAELeKcnqC0=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-586-nj_tQhqsPR60N6XGt96N2Q-1; Tue, 25 Jan 2022 05:22:58 -0500
+X-MC-Unique: nj_tQhqsPR60N6XGt96N2Q-1
+Received: by mail-ed1-f70.google.com with SMTP id j10-20020a05640211ca00b003ff0e234fdfso14758579edw.0
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 02:22:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mXvXXH5NkD3VAbxPYQLS+yBdXysPjN86vINvSbtOAUo=;
-        b=IOF7j6OtzFmBpe3Tc4My8WrWL+XiBVX4VqyB9mCJr++Tzw7+1EpIC2FwdDUsFK29CX
-         pUimK6CDHopT7wO8vjtsuBelgAA1JVg9WcG2F7aTnedfAHb3IcdqSCYp+gM4P1Gx2oW/
-         hnxpAz4g1QzZDaOM91WF+/k9xPMgNCmafP7ExL7aJrd1Z+0vVgYJXANJMELwZyUdHHnw
-         +juNOMqdP9rYr5YMHI4Q+anYd1l2aDGQyzrf7irzofIM+2cuJsllnM3bckqrZtZNSYeD
-         NYN9CEPQXk+IQt4Jx3egzQMdNuSumgV16PrJ6+ShIQe+vjEt/0tuJucNuJayzhy6fz9/
-         pVJg==
-X-Gm-Message-State: AOAM532DVjSgbJqpW12Lfa+Cnd0j69tBGFh2V9S3olCDTFmDEkEj+dOR
-        8SVt+FQiUJzzjCrkD8LME3nQVo4tP8GYZsGOoDSbiw==
-X-Google-Smtp-Source: ABdhPJzZTQ34Sj6DntR4KEnfsahwcr2GjkI+X89p/KhV55EV9Ip8387kcoPafKP0Tf9qoGGj36xxE50nWLaCOxj2LZ8=
-X-Received: by 2002:a17:907:3f93:: with SMTP id hr19mr16043123ejc.697.1643106178771;
- Tue, 25 Jan 2022 02:22:58 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=KfO8JQDP2fzwwyVNOov4juy70MimJyiWRONtd3Q4kcc=;
+        b=YkqrdREqMkeVhjeyX52pf0JwrgTWkPRkH04gxhzwsZMrqfNXO6F6u31m2i0na32QU5
+         tKSgwaR5eHypAalhy5HGZ9njFt2QlrekGRhExy5BzIh4ARhOhSr37BustG5BkT7/bWPM
+         MqXte80nFc3T5Jqsg6LKUT8g0xC0ArA1kSnOMYou4gjjgkDelXcHbuFQOsKi3MAgBvv3
+         3AzgrhvGEIqZ7i8CxBPGdVjDMPA9b4sMZ1nTQdK+U1WZKRV9Ed7jpSdvVSpg1+LYxHrA
+         AlpgWtWvUNg+XhaBAQXoHFI6+7qt0KN7Pt18hlw4NMq0qqjk/VdmPX6kleiBdpUfjbDx
+         ugUA==
+X-Gm-Message-State: AOAM533qg1wvw2YDIoxrGRSeTmF3IjTf64MrDvesjHkLPovftPQCQPbw
+        EyhCLzaajcVR+LL1JgNExDSByzloaSg/b/my4nqwzOJUi/G8TQWylodmGwm8NNtAIjAqfQoxEIL
+        zNJqVal/zqyqPEfEn
+X-Received: by 2002:a05:6402:5246:: with SMTP id t6mr12304174edd.35.1643106176134;
+        Tue, 25 Jan 2022 02:22:56 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyfHmpaq8eF4mbc3w+L8OSpYsJBEPi/S6sbiyN/cLWAZjc9Fv5atMbCeIp8pJB+8gJ57Rvq6w==
+X-Received: by 2002:a05:6402:5246:: with SMTP id t6mr12304117edd.35.1643106175159;
+        Tue, 25 Jan 2022 02:22:55 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id g12sm8033268edv.89.2022.01.25.02.22.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 02:22:54 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E35D01805FA; Tue, 25 Jan 2022 11:22:52 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: cpsw: Properly initialise struct page_pool_params
+In-Reply-To: <20220125051522.GA1171881@euler>
+References: <20220124143531.361005-1-toke@redhat.com>
+ <20220125051522.GA1171881@euler>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 25 Jan 2022 11:22:52 +0100
+Message-ID: <87tuds3yir.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20220120070226.1492-1-biao.huang@mediatek.com> <20220120070226.1492-3-biao.huang@mediatek.com>
-In-Reply-To: <20220120070226.1492-3-biao.huang@mediatek.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Tue, 25 Jan 2022 11:22:48 +0100
-Message-ID: <CAMRc=McZTped08HwbM+pr-xtsDyddTLjpsCc_f7ucoDM2DNXaw@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 2/9] net: ethernet: mtk-star-emac: modify IRQ
- trigger flags
-To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Yinghua Pan <ot_yinghua.pan@mediatek.com>,
-        srv_heupstream@mediatek.com, Macpaul Lin <macpaul.lin@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 8:02 AM Biao Huang <biao.huang@mediatek.com> wrote:
->
-> If the flags in request_irq() is IRQF_TRIGGER_NONE, the trigger method
-> is determined by "interrupt" property in dts.
-> So, modify the flag from IRQF_TRIGGER_FALLING to IRQF_TRIGGER_NONE.
->
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-> Signed-off-by: Yinghua Pan <ot_yinghua.pan@mediatek.com>
-> ---
->  drivers/net/ethernet/mediatek/mtk_star_emac.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> index 26f5020f2e9c..7c2af775d601 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> @@ -959,7 +959,7 @@ static int mtk_star_enable(struct net_device *ndev)
->
->         /* Request the interrupt */
->         ret = request_irq(ndev->irq, mtk_star_handle_irq,
-> -                         IRQF_TRIGGER_FALLING, ndev->name, ndev);
-> +                         IRQF_TRIGGER_NONE, ndev->name, ndev);
->         if (ret)
->                 goto err_free_skbs;
->
-> --
-> 2.25.1
->
+Colin Foster <colin.foster@in-advantage.com> writes:
 
-Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
+> On Mon, Jan 24, 2022 at 03:35:29PM +0100, Toke H=C3=B8iland-J=C3=B8rgense=
+n wrote:
+>> The cpsw driver didn't properly initialise the struct page_pool_params
+>> before calling page_pool_create(), which leads to crashes after the stru=
+ct
+>> has been expanded with new parameters.
+>>=20
+>> The second Fixes tag below is where the buggy code was introduced, but
+>> because the code was moved around this patch will only apply on top of t=
+he
+>> commit in the first Fixes tag.
+>>=20
+>> Fixes: c5013ac1dd0e ("net: ethernet: ti: cpsw: move set of common functi=
+ons in cpsw_priv")
+>> Fixes: 9ed4050c0d75 ("net: ethernet: ti: cpsw: add XDP support")
+>> Reported-by: Colin Foster <colin.foster@in-advantage.com>
+>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> ---
+>>  drivers/net/ethernet/ti/cpsw_priv.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>=20
+>> diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/=
+ti/cpsw_priv.c
+>> index ba220593e6db..8f6817f346ba 100644
+>> --- a/drivers/net/ethernet/ti/cpsw_priv.c
+>> +++ b/drivers/net/ethernet/ti/cpsw_priv.c
+>> @@ -1146,7 +1146,7 @@ int cpsw_fill_rx_channels(struct cpsw_priv *priv)
+>>  static struct page_pool *cpsw_create_page_pool(struct cpsw_common *cpsw,
+>>  					       int size)
+>>  {
+>> -	struct page_pool_params pp_params;
+>> +	struct page_pool_params pp_params =3D {};
+>>  	struct page_pool *pool;
+>>=20=20
+>>  	pp_params.order =3D 0;
+>> --=20
+>> 2.34.1
+>>=20
+>
+> Works for me. Thanks Toke! Hopefully my tested by tag addition is done
+> correctly:
+>
+> Tested-by: Colin Foster <colin.foster@in-advantage.com>
+
+You're welcome! Tag looks good, thanks for testing :)
+
+-Toke
+
