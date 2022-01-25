@@ -2,163 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DF6949B0F8
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:02:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0CFE49B0FA
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:02:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237114AbiAYJy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 04:54:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58184 "EHLO
+        id S237162AbiAYJy6 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Jan 2022 04:54:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232833AbiAYJvH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 04:51:07 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1ACC06175D
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 01:51:06 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id n10so46021957edv.2
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 01:51:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HlPvap3s7pdO0i3AvOfOgwK8HydV4tcDe28Yz+r5dr0=;
-        b=czSb6VFvgku1bVsTdGbcRTR0h8h7GNK9U7KQbStWcKMBxUQIn8d5yU5gfXgnxAmfvr
-         2OsmpbsMIKQIJzgXfb/MHunf7rUu/HGy0aTFyNATY4s5oSHnUwkn+ccspaA7B4xMMS1x
-         ODBXUhk+iS4skIxEjJktEEBsCu1Mqmf1LYWH64SqZdlpNzh3svpwMTEynwMu1BHsJCQh
-         s/nSaUKZT5NM+M527n8NWD/Z6I5Nc9AKrr4oIkAPNW16pRI9PW4+GrJAo9N+219PjRZh
-         p3qKj2+9BdnsGQKJ/+Afhue35T2O3LgrmT+bzwkIXvYESr2x0PxpiBd3hO+zmXQ08DjV
-         O1hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HlPvap3s7pdO0i3AvOfOgwK8HydV4tcDe28Yz+r5dr0=;
-        b=5DoyOrr3Bo+PvOvoXvY2V106WKnbXGiZrG6qKghkZ0FTZWNPDYCuks2caQjCdCAAoh
-         +bb6O/p09FSsmnTojNS6kJAP1wmFfgATDejwo/uMIdQlW+7bq5dq+yBGU5UoKjey7TGG
-         x96ZNgAUr6NAycuqmPgylFxEJQ5UqtIP2LrqUu+XdrtGtpITG3gOL2tldHu3C7YlyK0G
-         oGxa/RgNe5sZKKnoR8RiC8+9LyBj4ysiZWWzHYYY+sQiPo+fULsHBe5sNM7vKJD3QRVC
-         SHT9Uh3n50DwUJGQe1MEHa7YJZzHfZN+8xUHg/5CdKJy2A8bSuOAfRw8HNJpUy+lu3bY
-         kjNQ==
-X-Gm-Message-State: AOAM531cG3EAKpvJND1k6gqtZW6dJUeAKcmVW/iP/ZQ34gKAJ3m2kYen
-        z7GKupaYp0jUqCmmfBDRJOV1Y7uA343ocTaIf5bIbw==
-X-Google-Smtp-Source: ABdhPJwQzlX3EMzz8K17JeuAaI2l2wrQ2t9jeb+BkBrkVLHJV+P7nqMNLX4xKtjzYu9msSkcu7xBJKtfWdWFjHaLCAI=
-X-Received: by 2002:a05:6402:1604:: with SMTP id f4mr19666005edv.352.1643104264783;
- Tue, 25 Jan 2022 01:51:04 -0800 (PST)
+        with ESMTP id S235323AbiAYJwG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 04:52:06 -0500
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B24C061763;
+        Tue, 25 Jan 2022 01:51:40 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 24D64100002;
+        Tue, 25 Jan 2022 09:51:36 +0000 (UTC)
+Date:   Tue, 25 Jan 2022 10:51:35 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Xue Liu <liuxuenetmail@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harry Morris <harrymorris12@gmail.com>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [wpan-next v2 0/9] ieee802154: A bunch of fixes
+Message-ID: <20220125105135.2f6a18dc@xps13>
+In-Reply-To: <e401539a-6a05-9982-72a6-ac360b0bdf97@datenfreihafen.org>
+References: <20220120112115.448077-1-miquel.raynal@bootlin.com>
+        <CAB_54W5_dALTBdvXSRMpiEJBFTqVkzewHJcBjgLn79=Ku6cR9A@mail.gmail.com>
+        <20220121092715.3d1de2ed@xps13>
+        <e401539a-6a05-9982-72a6-ac360b0bdf97@datenfreihafen.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220120070226.1492-1-biao.huang@mediatek.com> <20220120070226.1492-2-biao.huang@mediatek.com>
-In-Reply-To: <20220120070226.1492-2-biao.huang@mediatek.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Tue, 25 Jan 2022 10:50:54 +0100
-Message-ID: <CAMRc=Mc+DqcQFGqxoYXYG-VCuaKkJusoVGSHb0G-MtYsiVCxVw@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 1/9] net: ethernet: mtk-star-emac: store
- bit_clk_div in compat structure
-To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Yinghua Pan <ot_yinghua.pan@mediatek.com>,
-        srv_heupstream@mediatek.com, Macpaul Lin <macpaul.lin@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 8:02 AM Biao Huang <biao.huang@mediatek.com> wrote:
->
-> From: Fabien Parent <fparent@baylibre.com>
->
-> Not all the SoC are using the same clock divider. Move the divider into
-> a compat structure specific to the SoCs.
->
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> ---
->  drivers/net/ethernet/mediatek/mtk_star_emac.c | 23 +++++++++++++++----
->  1 file changed, 19 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> index 1d5dd2015453..26f5020f2e9c 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-> @@ -17,6 +17,7 @@
->  #include <linux/module.h>
->  #include <linux/netdevice.h>
->  #include <linux/of.h>
-> +#include <linux/of_device.h>
->  #include <linux/of_mdio.h>
->  #include <linux/of_net.h>
->  #include <linux/platform_device.h>
-> @@ -232,6 +233,10 @@ struct mtk_star_ring {
->         unsigned int tail;
->  };
->
-> +struct mtk_star_compat {
-> +       unsigned char bit_clk_div;
-> +};
-> +
->  struct mtk_star_priv {
->         struct net_device *ndev;
->
-> @@ -257,6 +262,8 @@ struct mtk_star_priv {
->         int duplex;
->         int pause;
->
-> +       const struct mtk_star_compat *compat_data;
-> +
->         /* Protects against concurrent descriptor access. */
->         spinlock_t lock;
->
-> @@ -899,7 +906,7 @@ static void mtk_star_init_config(struct mtk_star_priv *priv)
->         regmap_write(priv->regs, MTK_STAR_REG_SYS_CONF, val);
->         regmap_update_bits(priv->regs, MTK_STAR_REG_MAC_CLK_CONF,
->                            MTK_STAR_MSK_MAC_CLK_CONF,
-> -                          MTK_STAR_BIT_CLK_DIV_10);
-> +                          priv->compat_data->bit_clk_div);
->  }
->
->  static void mtk_star_set_mode_rmii(struct mtk_star_priv *priv)
-> @@ -1461,6 +1468,7 @@ static int mtk_star_probe(struct platform_device *pdev)
->
->         priv = netdev_priv(ndev);
->         priv->ndev = ndev;
-> +       priv->compat_data = of_device_get_match_data(&pdev->dev);
->         SET_NETDEV_DEV(ndev, dev);
->         platform_set_drvdata(pdev, ndev);
->
-> @@ -1556,10 +1564,17 @@ static int mtk_star_probe(struct platform_device *pdev)
->         return devm_register_netdev(dev, ndev);
->  }
->
-> +static struct mtk_star_compat mtk_star_mt8516_compat = {
+Hi Stefan,
 
-static const ... ?
+stefan@datenfreihafen.org wrote on Fri, 21 Jan 2022 13:48:14 +0100:
 
-> +       .bit_clk_div = MTK_STAR_BIT_CLK_DIV_10,
-> +};
-> +
->  static const struct of_device_id mtk_star_of_match[] = {
-> -       { .compatible = "mediatek,mt8516-eth", },
-> -       { .compatible = "mediatek,mt8518-eth", },
-> -       { .compatible = "mediatek,mt8175-eth", },
-> +       { .compatible = "mediatek,mt8516-eth",
-> +         .data = &mtk_star_mt8516_compat },
-> +       { .compatible = "mediatek,mt8518-eth",
-> +         .data = &mtk_star_mt8516_compat },
-> +       { .compatible = "mediatek,mt8175-eth",
-> +         .data = &mtk_star_mt8516_compat },
->         { }
->  };
->  MODULE_DEVICE_TABLE(of, mtk_star_of_match);
-> --
-> 2.25.1
->
+> Hello.
+> 
+> On 21.01.22 09:27, Miquel Raynal wrote:
+> > Hi Alexander,
+> > 
+> > alex.aring@gmail.com wrote on Thu, 20 Jan 2022 17:52:57 -0500:
+> >   
+> >> Hi,
+> >>
+> >> On Thu, 20 Jan 2022 at 06:21, Miquel Raynal <miquel.raynal@bootlin.com> wrote:  
+> >>>
+> >>> In preparation to a wider series, here are a number of small and random
+> >>> fixes across the subsystem.
+> >>>
+> >>> Changes in v2:
+> >>> * Fixed the build error reported by a robot. It ended up being something
+> >>>    which I fixed in a commit from a following series. I've now sorted
+> >>>    this out and the patch now works on its own.  
+> >>>   >>  
+> >> This patch series should be reviewed first and have all current
+> >> detected fixes, it also should be tagged "wpan" (no need to fix that
+> >> now). Then there is a following up series for a new feature which you
+> >> like to tackle, maybe the "more generic symbol duration handling"? It
+> >> should be based on this "fixes" patch series, Stefan will then get
+> >> things sorted out to queue them right for upstream.
+> >> Stefan, please correct me if I'm wrong.  
+> 
+> Alex, agreed. I will take this series first and see if the patches apply cleanly against my wpan tree. Once in they can be feed back into net, net-next and finally wpan-next again.
+> 
+> > Yup sorry that's not what I meant: the kernel robot detected that a
+> > patch broke the build. This patch was part of the current series. The
+> > issue was that I messed a copy paste error. But I didn't ran a
+> > per-patch build test and another patch, which had nothing to do with
+> > this fix, actually addressed the build issue. I very likely failed
+> > something during my rebase operation. >
+> > So yes, this series should come first. Then we'll tackle the symbol
+> > duration series, the Kconfig cleanup and after that we can start thick
+> > topics :)  
+> 
+> That sounds like a great plan to me. I know splitting the huge amount of work you do up into digestible pieces is work not much liked, so I appreciate that you take this without much grumble. :-)
+
+Yeah no problem, I also know what it is like to be on the reviewer
+side, and while I like to have the full contribution to get the big
+picture, I also find it much easier to review smaller series, so let's
+got for it now that the main boundaries for the scan support have been
+shared.
+
+> I also finally started to start my review backlog on your work. Catched up on the big v3 patchset now. Will look over the newest sets over the weekend so we should be ready to process the fixes series and maybe more next week.
+> 
+> >> Also, please give me the weekend to review this patch series.  
+> 
+> Alex, whenever you are ready with them please add you ack and I will doe my review and testing in parallel.
+> 
+> > Yes of course, you've been very (very) reactive so far, I try to be
+> > also more reactive on my side but that's of course not a race!  
+> 
+> And being so reactive is very much appreciated. We just need to throttle this a bit so we can keep up with reviewer resources. :-)
+
+Yup! I'll soon send a v3 addressing your comments, this time I'll even
+split the first series so that you have a series with only fixes for
+the wpan branch, and another series with very small cleanups for
+wpan-next. I'll send both because they are not very big.
+
+Thanks,
+Miquèl
