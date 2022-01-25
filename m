@@ -2,153 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 176CF49B16F
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:27:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 368B149B188
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 11:28:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243397AbiAYKQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 05:16:48 -0500
-Received: from mail-mw2nam12on2045.outbound.protection.outlook.com ([40.107.244.45]:31201
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241935AbiAYKHb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:07:31 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QK34qnXRa/K5tvNkFblgs6XGOv8EUsQyDQ/WkVi7HUHxxujqvJ5prU3Aqcng0P2sp213QdmBzf2fCDWJJ8ejk782yA+fRvvHm3wAmkpXLaLCpg3RuWBjCmy4Z/xHFG+BW/v0XhKuNrlEHEgQkkf7pK/cpi04D/arszqQWtdz8vurUEzMV1Fh1kkirgGEkDrHFqEWt1SP5gh0CLPBx5wLD5JT5ouEGASyUFXiEqXZeyAgAeSPYKKFl6YqGf5Xdv9zV9BsDtTnedivIwopDz1BIb5XE0rF68rn8s5GlW8UoVfFP+bqUDR62GZi9YugB3vWfa4kPG4c9Fx2vTEaD3taEA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=p6LayzCh38zwtBp/UVxSfequOAk4uaEFm0D8zYrVkQg=;
- b=VXbPf97cG5NVS4UAzM5tLLeV4fgXB4jJBk4ePHXvX8dEWycsreplB+8nY8KWRTcFRSTt87zHAtsi2XaKqcSqZoRE2dhMcWbx1FYm9RQciz7FMQ+pYqdJOoz4euLAkRyGl9xSJD/sI3e+2ME143kEVYiP8v28uCEqCn1j9uRrcnwO2smza2RHMh0/TqfJWNF9SzHzg/nVVspvhWHsbKiBeFxs00GsosnZ725aLWdpukIcxS+iZBHS7DqH/4CpYNKO/f+jmfVIotrjmLQ5rJ3zptt6e6s48EuLiXNbupPiz+fZOUOGxbM97w2e1W/YIfDdObeOrlmXLfeBhZz5WOJeGQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p6LayzCh38zwtBp/UVxSfequOAk4uaEFm0D8zYrVkQg=;
- b=UZzqiuqEsoY6xfsOqHXe5zBDKXJeantngdSSFGBNiCYtAgt0alLwgeIaE5kOPhSGytYnL41zso+By0v3qjcSodurqE70E9yLFZ8PUCbN0aog/kjuEOeg6VxKDzTV96yy0XHajb4ohpGbJztZp2x3com3ejBj6YULpLND7+Myg4zDm0nAMjwr0Ng5dJkHEJw0QowFyU6HLFVfZyFpI/NqDutlmbLyQXlGBNfT0tcZxXBEqbebJn7qH37sIqVvi8cXR58DxPQxNfeV1JLEnHRDxPLrRmC0dfOXKF01sBryjZdbj4R6xnRgg6rPtXByauicyABsjRLLQY/DX90teJPwBw==
-Received: from BN9P222CA0006.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::11)
- by BY5PR12MB4290.namprd12.prod.outlook.com (2603:10b6:a03:20e::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Tue, 25 Jan
- 2022 10:07:17 +0000
-Received: from BN8NAM11FT059.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10c:cafe::f) by BN9P222CA0006.outlook.office365.com
- (2603:10b6:408:10c::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8 via Frontend
- Transport; Tue, 25 Jan 2022 10:07:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.236) by
- BN8NAM11FT059.mail.protection.outlook.com (10.13.177.120) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4909.7 via Frontend Transport; Tue, 25 Jan 2022 10:07:16 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
- 15.0.1497.18; Tue, 25 Jan 2022 10:07:15 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9;
- Tue, 25 Jan 2022 02:07:15 -0800
-Received: from vdi.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server id 15.2.986.9 via Frontend
- Transport; Tue, 25 Jan 2022 02:07:10 -0800
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-To:     <netdev@vger.kernel.org>, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH net] sch_htb: Fail on unsupported parameters when offload is requested
-Date:   Tue, 25 Jan 2022 12:06:54 +0200
-Message-ID: <20220125100654.424570-1-maximmi@nvidia.com>
-X-Mailer: git-send-email 2.25.1
+        id S1349079AbiAYKXp convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Jan 2022 05:23:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36892 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243261AbiAYKU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 05:20:27 -0500
+X-Greylist: delayed 152348 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 25 Jan 2022 02:20:17 PST
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBFEC061744;
+        Tue, 25 Jan 2022 02:20:08 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id DC28B2000C;
+        Tue, 25 Jan 2022 10:19:29 +0000 (UTC)
+Date:   Tue, 25 Jan 2022 11:19:28 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Emma Anholt <emma@anholt.net>,
+        David Lechner <david@lechnology.com>,
+        Kamlesh Gurudasani <kamlesh.gurudasani@gmail.com>,
+        Noralf =?UTF-8?B?VHLDuG5uZXM=?= <noralf@tronnes.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dan Robertson <dan@dlrobertson.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Yasunari Takiguchi <Yasunari.Takiguchi@sony.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Charles-Antoine Couret <charles-antoine.couret@nexvision.fr>,
+        Antti Palosaari <crope@iki.fi>,
+        Lee Jones <lee.jones@linaro.org>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eric Piel <eric.piel@tremplin-utc.net>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Thomas Kopp <thomas.kopp@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        =?UTF-8?B?xYF1?= =?UTF-8?B?a2Fzeg==?= Stelmach 
+        <l.stelmach@samsung.com>, Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Harry Morris <h.morris@cascoda.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ajay Singh <ajay.kathat@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Solomon Peachy <pizza@shaftnet.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Mark Greer <mgreer@animalcreek.com>,
+        Benson Leung <bleung@chromium.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?UTF-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        James Schulman <james.schulman@cirrus.com>,
+        David Rhodes <david.rhodes@cirrus.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Daniel Mack <daniel@zonque.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Ronald =?UTF-8?B?VHNjaGFsw6Ry?= <ronald@innovation.ch>,
+        Marco Felsch <m.felsch@pengutronix.de>,
+        Jonathan =?UTF-8?B?TmV1c2Now6RmZXI=?= <j.neuschaefer@gmx.net>,
+        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Heiko Schocher <hs@denx.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Matt Kline <matt@bitbashing.io>,
+        Torin Cooper-Bennun <torin@maxiluxsystems.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Stefan =?UTF-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nanyong Sun <sunnanyong@huawei.com>,
+        Yang Shen <shenyang39@huawei.com>,
+        dingsenjie <dingsenjie@yulong.com>,
+        Aditya Srivastava <yashsri421@gmail.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Michael Walle <michael@walle.cc>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        wengjianfeng <wengjianfeng@yulong.com>,
+        Sidong Yang <realwakka@gmail.com>,
+        Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>,
+        Zhang Qilong <zhangqilong3@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
+        Davidlohr Bueso <dbueso@suse.de>, Claudius Heine <ch@denx.de>,
+        Jiri Prchal <jiri.prchal@aksignal.cz>,
+        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-hwmon@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
+        linux-wireless@vger.kernel.org, libertas-dev@lists.infradead.org,
+        platform-driver-x86@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-omap@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: Re: [PATCH 5/5] spi: make remove callback a void function
+Message-ID: <20220125111928.781d0bb3@xps13>
+In-Reply-To: <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
+References: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
+        <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8688deac-94c0-40fe-ef74-08d9dfea773f
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4290:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB4290B025C52E988BFA24FB95DC5F9@BY5PR12MB4290.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: auakZRgNI1OwElPs3CPnbUTVIeAeuKOXJWl0G/ex9nCvyCrX2Gfwb1/DgV9hTAPtnnAGBM6TR+xEKMMw7TwMi9Et3UiTYqQx80v7yDROgDwlmUT95LYQzZNTE8jgA10+MumGmmB8IVjY6CY08V38j9IcvjDYSi/66xWVwtMzxrYB5HOsXYW3HdBOL7PSymHp/57oRSHfAB2zKpCXcWBdFtbyuWu87IML6khLO9qGkbBx0GNagYc09muo4On4uwgC+59hCCMHWYfxh9Br4HxnH4DNQj4VA9vdqQx4gMQZb9dVsJy7G8Q8pe2mziHxx9bJDnqpdyc5Bl4Z34dwy2lTEsaM5tUzhXKxj9dHlQsf+UUQhB3fFTQ2lnb9qDBACiuRVtEaV/beCnooUm2RS5ef/fvHokCLR9uhhdPdLdpYvpFdA1N2WIm0Ko2fIHbRsT/tR6hZK60UPIkIexgz1qBZdy0MPmEMXu3gr4O9fbYLjQ6rOPJ6XChrdwHs2hQr/RquPRa8FJCORg+svBl1tHkv/HH3OZ71b1AsyimeEHOqlhFOV/LasgrNTVsFKbk604mNcny+crD56iLy8pIxhF7Q0XrWe74u45GMPhTmLRdrRoUk3k43QfxFw0LLttAmeKagmWygQkaa5mS7CR2chY1TITx6y/7lXYU9Zh4U/z7l7ZUzsR4W6kjH4PJHcZN76uAxhJ7DW9q5tihW47IPHFicyxDeuofZLwuTSt7IqdrU4Qq3PvhrK5Lo9vk0cl15J34ZPChaz5yXG2yLLKM+O2123j+ZuNBbO1AJ/WH7RgQhtGI=
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(40470700004)(36840700001)(46966006)(107886003)(6666004)(82310400004)(81166007)(186003)(8936002)(70206006)(26005)(508600001)(40460700003)(47076005)(70586007)(8676002)(336012)(1076003)(36860700001)(426003)(4326008)(36756003)(7696005)(83380400001)(54906003)(86362001)(2616005)(2906002)(356005)(5660300002)(110136005)(316002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 10:07:16.2218
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8688deac-94c0-40fe-ef74-08d9dfea773f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT059.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4290
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current implementation of HTB offload doesn't support some
-parameters. Instead of ignoring them, actively return the EINVAL error
-when they are set to non-defaults.
+Hi Uwe,
 
-As this patch goes to stable, the driver API is not changed here. If
-future drivers support more offload parameters, the checks can be moved
-to the driver side.
+u.kleine-koenig@pengutronix.de wrote on Sun, 23 Jan 2022 18:52:01 +0100:
 
-Note that the buffer and cbuffer parameters are also not supported, but
-the tc userspace tool assigns some default values derived from rate and
-ceil, and identifying these defaults in sch_htb would be unreliable, so
-they are still ignored.
+> The value returned by an spi driver's remove function is mostly ignored.
+> (Only an error message is printed if the value is non-zero that the
+> error is ignored.)
+> 
+> So change the prototype of the remove function to return no value. This
+> way driver authors are not tempted to assume that passing an error to
+> the upper layer is a good idea. All drivers are adapted accordingly.
+> There is no intended change of behaviour, all callbacks were prepared to
+> return 0 before.
+> 
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> ---
 
-Fixes: d03b195b5aa0 ("sch_htb: Hierarchical QoS hardware offload")
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
----
- net/sched/sch_htb.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+[...]
 
-diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
-index 9267922ea9c3..23a9d6242429 100644
---- a/net/sched/sch_htb.c
-+++ b/net/sched/sch_htb.c
-@@ -1810,6 +1810,26 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
- 	if (!hopt->rate.rate || !hopt->ceil.rate)
- 		goto failure;
- 
-+	if (q->offload) {
-+		/* Options not supported by the offload. */
-+		if (hopt->rate.overhead || hopt->ceil.overhead) {
-+			NL_SET_ERR_MSG(extack, "HTB offload doesn't support the overhead parameter");
-+			goto failure;
-+		}
-+		if (hopt->rate.mpu || hopt->ceil.mpu) {
-+			NL_SET_ERR_MSG(extack, "HTB offload doesn't support the mpu parameter");
-+			goto failure;
-+		}
-+		if (hopt->quantum) {
-+			NL_SET_ERR_MSG(extack, "HTB offload doesn't support the quantum parameter");
-+			goto failure;
-+		}
-+		if (hopt->prio) {
-+			NL_SET_ERR_MSG(extack, "HTB offload doesn't support the prio parameter");
-+			goto failure;
-+		}
-+	}
-+
- 	/* Keeping backward compatible with rate_table based iproute2 tc */
- 	if (hopt->rate.linklayer == TC_LINKLAYER_UNAWARE)
- 		qdisc_put_rtab(qdisc_get_rtab(&hopt->rate, tb[TCA_HTB_RTAB],
--- 
-2.25.1
+>  drivers/mtd/devices/mchp23k256.c                      |  4 +---
+>  drivers/mtd/devices/mchp48l640.c                      |  4 +---
+>  drivers/mtd/devices/mtd_dataflash.c                   |  4 +---
+>  drivers/mtd/devices/sst25l.c                          |  4 +---
 
+For MTD devices:
+Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
+
+Thanks,
+Miquèl
