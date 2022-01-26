@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CE1749D545
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 23:18:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B65649D54A
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 23:18:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233404AbiAZWSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 17:18:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55308 "EHLO
+        id S233497AbiAZWSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 17:18:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233384AbiAZWSi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 17:18:38 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF85C061747
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:18:38 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id y27so971192pfa.0
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:18:38 -0800 (PST)
+        with ESMTP id S233281AbiAZWSo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 17:18:44 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D385C061753
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:18:43 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id d5so930762pjk.5
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:18:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=eBKvYDb6VakQr9I32CgZ8GyjwlSfCMHD5apokqZR7fA=;
-        b=sYIv4CgAIFylOPcghyp3zVLMlxw6paLMJSYOOcSluYU+RNsCOcm4WrasH58NWAlL11
-         BL5wP7ZsndWamfeADtqcBziDYEq4uRZC25op4bgZYJ/IYGmvbUWDgwPAinvfLqD3qiuJ
-         oU65aZ1Ojq9311fR77/01QM0V9dp8ut4El6I39/3T4pPtRzYQHjo9tl26AN8HiEvPxhN
-         PjV8/sGN0SmEZmUjAMP6KzuS1gsK6mcMlIGSWZol1aMlB3BwQdvl+ZolhbxpgzfBe92s
-         cOLD1KBFf2WQKcqboPUj5nvv8s0fxZghcc0UkF+JMbNkNqqMfXiot7lZTLrTyvDE49GO
-         RIIg==
+        bh=T59xVJJlA+EwlaGRXk+Mubmt7OJZ+aefRvmsTWRIfZk=;
+        b=FjfwCepDMrYAl6cCQD3rTG90tWvm4oH3qlX5wwVVkPEIBawz6MUHPMYMTquz6QlXwl
+         K8CrGGnp9o9CPKcKgRwD9rz5wD1jsLZblhej6ErYoMLGnUcInvyLrJASj9P5Kvy0n+t0
+         4A+tNHI3fZ7AG9KzEpahJ9I8h6kXrgzUnCson4AgyTaQy4mjDdRe3kpHFXkcHOGZd+G4
+         rS6dIj1fAs77BFvg8S09qxS6IFXmT0sNKgy1WHRz0Le/t56zoH8Npu5rDfQWnLVtp3bK
+         PwVMDMjVaRwGroM+DDfceUlAgGVyjOR5QL4LNW2eD8FWqVLpDqzrJ5eJ/OxGvvzr3Fb3
+         CPkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=eBKvYDb6VakQr9I32CgZ8GyjwlSfCMHD5apokqZR7fA=;
-        b=j4SVpHKUCDBdWTQi67mOAp7mG0YuJy4V6rPpzlDFbCVRMa5mL6Z4v2AiL0l+1hZUiU
-         RZQ3wdKnMjpALnFMgsEllmP96/jF+pg/45mA28VtKDk3jF40O7R1wbntVQsyckpcJErm
-         M9an16YvkGpc/phxS509scuDfeg7tqkxZwl/5CqoHzrrLbFFovTU4XLLkJjoKthwVSxE
-         XzcC1SutTfnS1BeGrUFpurW6dDpjs/WKy+R8WNqucsCQCPnpBZW50r+7GOZiZN4+MfVU
-         Zw7Sr2m0mgEoMdZWbINQHIQ7Z42C27YviSkfr3BttJWLKv4JeGjCBwQx89I5/eO+LQH0
-         GIEQ==
-X-Gm-Message-State: AOAM532LQTlXJ1jhuWVTs6t0zzDVHSjZ/WnBnD9VuvC/oUod8riwuibq
-        +xbhQTsn8530/6vHIKQu7es8Pg==
-X-Google-Smtp-Source: ABdhPJyccWVvDDw4dXIfu+AsyrSRolCJ7BageCJSH5N4dEgU/4o/GhWml0R+Qeqlqut9diKItq5hFw==
-X-Received: by 2002:a65:4d0f:: with SMTP id i15mr707539pgt.464.1643235518167;
-        Wed, 26 Jan 2022 14:18:38 -0800 (PST)
+        bh=T59xVJJlA+EwlaGRXk+Mubmt7OJZ+aefRvmsTWRIfZk=;
+        b=YS6aOtVpSRaXPtbaqI6kHPtOXdXLliec94ra9Dq+RJyicy3XLw2K5VlR23J6RRboga
+         OyFIeE/1m4yUCbs2W52eDoNO8hebIdOGKzpUGeHLzeG+kZCSHu8gxKKURH1+1AwdOuLA
+         Hjm29g4a4zrZRMLJHF4JoUmXHRpxc9aZ5dsnpuY8KCLBm8SdyEYA8kZAV8IorGreDE3D
+         kAHhmN0lKd0jyBKToqbHmlFg674xdOzFnUJHpHhI9wOT4sGQHhk2C4jcWED40lVFfdRN
+         JHHqfeFbhdFili6KPfxUy93lMEhIXgIXDw3RfOoZzpmJfAMTyl+0xXmB3c8uAvYFXbVS
+         EMHA==
+X-Gm-Message-State: AOAM530lMX9WPCDQkMxrvHBKcxpo+iDSm+LyxfQ/+UJc1cF0yQTXn58X
+        mPJZyBsfyBhFXpnExgK0WwojFw==
+X-Google-Smtp-Source: ABdhPJx6TCHpA/COkQuYUbezUZQALiNNu+l8B0//dp5HGfF1iL4HjnTbxsufWle4aMkApq99SMVzWQ==
+X-Received: by 2002:a17:90a:6585:: with SMTP id k5mr10847701pjj.94.1643235522915;
+        Wed, 26 Jan 2022 14:18:42 -0800 (PST)
 Received: from localhost.localdomain ([2401:4900:1f3a:4e9b:8fa7:36dc:a805:c73f])
-        by smtp.gmail.com with ESMTPSA id t17sm4233742pgm.69.2022.01.26.14.18.33
+        by smtp.gmail.com with ESMTPSA id t17sm4233742pgm.69.2022.01.26.14.18.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 14:18:37 -0800 (PST)
+        Wed, 26 Jan 2022 14:18:42 -0800 (PST)
 From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
 To:     linux-arm-msm@vger.kernel.org
 Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
@@ -54,11 +54,10 @@ Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
         robh+dt@kernel.org, agross@kernel.org, sboyd@kernel.org,
         tdas@codeaurora.org, mturquette@baylibre.com,
         linux-clk@vger.kernel.org, bjorn.andersson@linaro.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5/8] arm64: dts: qcom: sa8155p-adp: Enable ethernet node
-Date:   Thu, 27 Jan 2022 03:47:22 +0530
-Message-Id: <20220126221725.710167-6-bhupesh.sharma@linaro.org>
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 6/8] net: stmmac: dwmac-qcom-ethqos: Adjust rgmii loopback_en per platform
+Date:   Thu, 27 Jan 2022 03:47:23 +0530
+Message-Id: <20220126221725.710167-7-bhupesh.sharma@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220126221725.710167-1-bhupesh.sharma@linaro.org>
 References: <20220126221725.710167-1-bhupesh.sharma@linaro.org>
@@ -68,186 +67,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vinod Koul <vkoul@kernel.org>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-Enable the etheret node, add the phy node and pinctrl for ethernet.
+Not all platforms should have RGMII_CONFIG_LOOPBACK_EN and the result it
+about 50% packet loss on incoming messages. So make it possile to
+configure this per compatible and enable it for QCS404.
 
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-[bhsharma: Correct ethernet/rgmii related pinmuxs, specify multi-queues and
- plug in the PHY interrupt for WOL]
-Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Cc: David S. Miller <davem@davemloft.net>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sa8155p-adp.dts | 144 +++++++++++++++++++++++
- 1 file changed, 144 insertions(+)
+ .../stmicro/stmmac/dwmac-qcom-ethqos.c        | 22 +++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
-index 8756c2b25c7e..474f688f14a2 100644
---- a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
-+++ b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
-@@ -47,6 +47,65 @@ vreg_s4a_1p8: smps4 {
- 
- 		vin-supply = <&vreg_3p3>;
- 	};
-+
-+	mtl_rx_setup: rx-queues-config {
-+		snps,rx-queues-to-use = <4>;
-+		snps,rx-sched-sp;
-+
-+		queue0 {
-+			snps,dcb-algorithm;
-+			snps,map-to-dma-channel = <0x0>;
-+			snps,route-up;
-+			snps,priority = <0x1>;
-+		};
-+
-+		queue1 {
-+			snps,dcb-algorithm;
-+			snps,map-to-dma-channel = <0x1>;
-+			snps,route-ptp;
-+		};
-+
-+		queue2 {
-+			snps,avb-algorithm;
-+			snps,map-to-dma-channel = <0x2>;
-+			snps,route-avcp;
-+		};
-+
-+		queue3 {
-+			snps,avb-algorithm;
-+			snps,map-to-dma-channel = <0x3>;
-+			snps,priority = <0xC>;
-+		};
-+	};
-+
-+	mtl_tx_setup: tx-queues-config {
-+		snps,tx-queues-to-use = <4>;
-+		snps,tx-sched-wrr;
-+
-+		queue0 {
-+			snps,weight = <0x10>;
-+			snps,dcb-algorithm;
-+			snps,priority = <0x0>;
-+		};
-+
-+		queue1 {
-+			snps,weight = <0x11>;
-+			snps,dcb-algorithm;
-+			snps,priority = <0x1>;
-+		};
-+
-+		queue2 {
-+			snps,weight = <0x12>;
-+			snps,dcb-algorithm;
-+			snps,priority = <0x2>;
-+		};
-+
-+		queue3 {
-+			snps,weight = <0x13>;
-+			snps,dcb-algorithm;
-+			snps,priority = <0x3>;
-+		};
-+	};
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+index 8cdba9d521ec..0cc28c79cc61 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+@@ -78,6 +78,7 @@ struct ethqos_emac_por {
+ struct ethqos_emac_driver_data {
+ 	const struct ethqos_emac_por *por;
+ 	unsigned int num_por;
++	bool rgmii_config_looback_en;
  };
  
- &apps_rsc {
-@@ -317,6 +376,42 @@ &remoteproc_cdsp {
- 	firmware-name = "qcom/sa8155p/cdsp.mdt";
+ struct qcom_ethqos {
+@@ -90,6 +91,7 @@ struct qcom_ethqos {
+ 
+ 	const struct ethqos_emac_por *por;
+ 	unsigned int num_por;
++	bool rgmii_config_looback_en;
  };
  
-+&ethernet {
-+	status = "okay";
-+
-+	snps,reset-gpio = <&tlmm 79 GPIO_ACTIVE_LOW>;
-+	snps,reset-active-low;
-+	snps,reset-delays-us = <0 11000 70000>;
-+
-+	snps,ptp-ref-clk-rate = <250000000>;
-+	snps,ptp-req-clk-rate = <96000000>;
-+
-+	snps,mtl-rx-config = <&mtl_rx_setup>;
-+	snps,mtl-tx-config = <&mtl_tx_setup>;
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&ethernet_defaults>;
-+
-+	phy-handle = <&rgmii_phy>;
-+	phy-mode = "rgmii";
-+	mdio {
-+		#address-cells = <0x1>;
-+		#size-cells = <0x0>;
-+
-+		compatible = "snps,dwmac-mdio";
-+
-+		/* Micrel KSZ9031RNZ PHY */
-+		rgmii_phy: phy@7 {
-+			reg = <0x7>;
-+
-+			interrupt-parent = <&tlmm>;
-+			interrupts-extended = <&tlmm 124 IRQ_TYPE_EDGE_FALLING>; /* phy intr */
-+			device_type = "ethernet-phy";
-+			compatible = "ethernet-phy-ieee802.3-c22";
-+		};
-+	};
-+};
-+
- &uart2 {
- 	status = "okay";
+ static int rgmii_readl(struct qcom_ethqos *ethqos, unsigned int offset)
+@@ -181,6 +183,7 @@ static const struct ethqos_emac_por emac_v2_3_0_por[] = {
+ static const struct ethqos_emac_driver_data emac_v2_3_0_data = {
+ 	.por = emac_v2_3_0_por,
+ 	.num_por = ARRAY_SIZE(emac_v2_3_0_por),
++	.rgmii_config_looback_en = true,
  };
-@@ -407,4 +502,53 @@ mux {
- 			drive-strength = <2>;
- 		};
- 	};
-+
-+	ethernet_defaults: ethernet-defaults {
-+		mdc {
-+			pins = "gpio7";
-+			function = "rgmii";
-+			bias-pull-up;
-+		};
-+
-+		mdio {
-+			pins = "gpio59";
-+			function = "rgmii";
-+			bias-pull-up;
-+		};
-+
-+		rgmii-rx {
-+			pins = "gpio117", "gpio118", "gpio119", "gpio120", "gpio115", "gpio116";
-+			function = "rgmii";
-+			bias-disable;
-+			drive-strength = <2>;
-+		};
-+
-+		rgmii-tx {
-+			pins = "gpio122", "gpio4", "gpio5", "gpio6", "gpio114", "gpio121";
-+			function = "rgmii";
-+			bias-pull-up;
-+			drive-strength = <16>;
-+		};
-+
-+		phy-intr {
-+			pins = "gpio124";
-+			function = "emac_phy";
-+			bias-disable;
-+			drive-strength = <8>;
-+		};
-+
-+		pps {
-+			pins = "gpio81";
-+			function = "emac_pps";
-+			bias-disable;
-+			drive-strength = <8>;
-+		};
-+
-+		phy-reset {
-+			pins = "gpio79";
-+			function = "gpio";
-+			bias-pull-up;
-+			drive-strength = <16>;
-+		};
-+	};
+ 
+ static const struct ethqos_emac_por emac_v2_1_0_por[] = {
+@@ -195,6 +198,7 @@ static const struct ethqos_emac_por emac_v2_1_0_por[] = {
+ static const struct ethqos_emac_driver_data emac_v2_1_0_data = {
+ 	.por = emac_v2_1_0_por,
+ 	.num_por = ARRAY_SIZE(emac_v2_1_0_por),
++	.rgmii_config_looback_en = false,
  };
+ 
+ static int ethqos_dll_configure(struct qcom_ethqos *ethqos)
+@@ -311,8 +315,12 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
+ 		rgmii_updatel(ethqos, SDCC_DDR_CONFIG_PRG_DLY_EN,
+ 			      SDCC_DDR_CONFIG_PRG_DLY_EN,
+ 			      SDCC_HC_REG_DDR_CONFIG);
+-		rgmii_updatel(ethqos, RGMII_CONFIG_LOOPBACK_EN,
+-			      RGMII_CONFIG_LOOPBACK_EN, RGMII_IO_MACRO_CONFIG);
++		if (ethqos->rgmii_config_looback_en)
++			rgmii_updatel(ethqos, RGMII_CONFIG_LOOPBACK_EN,
++				      RGMII_CONFIG_LOOPBACK_EN, RGMII_IO_MACRO_CONFIG);
++		else
++			rgmii_updatel(ethqos, RGMII_CONFIG_LOOPBACK_EN,
++				      0, RGMII_IO_MACRO_CONFIG);
+ 		break;
+ 
+ 	case SPEED_100:
+@@ -345,8 +353,13 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
+ 		rgmii_updatel(ethqos, SDCC_DDR_CONFIG_EXT_PRG_RCLK_DLY_EN,
+ 			      SDCC_DDR_CONFIG_EXT_PRG_RCLK_DLY_EN,
+ 			      SDCC_HC_REG_DDR_CONFIG);
+-		rgmii_updatel(ethqos, RGMII_CONFIG_LOOPBACK_EN,
+-			      RGMII_CONFIG_LOOPBACK_EN, RGMII_IO_MACRO_CONFIG);
++		if (ethqos->rgmii_config_looback_en)
++			rgmii_updatel(ethqos, RGMII_CONFIG_LOOPBACK_EN,
++				      RGMII_CONFIG_LOOPBACK_EN, RGMII_IO_MACRO_CONFIG);
++		else
++			rgmii_updatel(ethqos, RGMII_CONFIG_LOOPBACK_EN,
++				      0, RGMII_IO_MACRO_CONFIG);
++
+ 		break;
+ 
+ 	case SPEED_10:
+@@ -518,6 +531,7 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
+ 	data = of_device_get_match_data(&pdev->dev);
+ 	ethqos->por = data->por;
+ 	ethqos->num_por = data->num_por;
++	ethqos->rgmii_config_looback_en = data->rgmii_config_looback_en;
+ 
+ 	ethqos->rgmii_clk = devm_clk_get(&pdev->dev, "rgmii");
+ 	if (IS_ERR(ethqos->rgmii_clk)) {
 -- 
 2.34.1
 
