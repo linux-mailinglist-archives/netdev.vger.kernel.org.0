@@ -2,106 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1AC949C93E
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 13:05:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04F9149C93B
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 13:04:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241058AbiAZMFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 07:05:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52810 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233883AbiAZMFj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 07:05:39 -0500
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C30BC06161C;
-        Wed, 26 Jan 2022 04:05:39 -0800 (PST)
-Received: by mail-pj1-x1044.google.com with SMTP id o11so5774607pjf.0;
-        Wed, 26 Jan 2022 04:05:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZARXyeQlg5luOscbsmArF8xVktdStoU7fcfRA8fZs8I=;
-        b=JayHx62MZ+0zcrjWO1RAPU3RqTz9Bz61ccATR2p+3qMcvidz/I9DLqC3siKcQVK8gP
-         UjajrXNOo54Fp3GtJFxnDd1H8fq/1rCP23zZI5XqncDWtYnKUCTpxQCnPnlp0JNOhJV/
-         8OQ9u0hiN0XVwlLhGzdf6W3xem2TMrkNDqoviS+N0sOypRhOlN627QOkYyuAn0l/G2Pa
-         M4efcltDxoKA+fIhjlNIU23KJuJN+zyhDhjmlSf31tT0YQmd/DtYZAl2AEo8XkAy0qc5
-         0B73P/vpq7m6cMd1cSjzP//+AAnj6tzCYJ8i736Kzhfj3vWEuQfemWiP+aMzRdB1a/mx
-         f1Sw==
+        id S241045AbiAZMEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 07:04:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:55134 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233883AbiAZMEE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 07:04:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643198644;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Rxu+xIvjFnCWUUg4LR7b57e/T2dW4crjuCGw7/sZ+G4=;
+        b=Lj2ezPyKlvBmkjFBkGXraLeTsywzw3npKDUuzW2XM8oXmxLGY64gML75RXKtoPSY3Shns2
+        T+ZLRWD3rR4PH8Ysm8vNjsexu9SdWVJVjwUtVYLYIBxTsSgginD4sVU7VcUZ5cj5w/xdGf
+        cPVtOFwOdgI8+3KTsd6/IRVgeAl3hs4=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-671-GywpGgsSMv2G2VIsLpnN7w-1; Wed, 26 Jan 2022 07:04:03 -0500
+X-MC-Unique: GywpGgsSMv2G2VIsLpnN7w-1
+Received: by mail-ej1-f70.google.com with SMTP id i21-20020a1709063c5500b006b4c7308c19so4785589ejg.14
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 04:04:02 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZARXyeQlg5luOscbsmArF8xVktdStoU7fcfRA8fZs8I=;
-        b=GHBFFsG4VrVjAvqolHetHAPjfkfRtoN2ToAweitW2840W6GbxwXrtI3RKv733VMHH3
-         kcBGrkdSdMbrr2/0pEsmLyhReb5JgNd38C2T2RYV4jeOY+lj4/yLbIVx8uaX0NOTDzkb
-         tQOf/4eU53AMlcwHsXns03ZRKvQBYxIu57nTITU5mKxK5f1gMTo/hQC/ZHLqAN3E2ShK
-         2nz9JmclrV4UK1m0GMUFvYoDwoIUKP9aoJxBMHRNFz8RFbwWoXkE2UrxNhE80t4924wB
-         K4H7Ux9EjQaagU5O2DoZpxk17UPtmwObhqz2ai0GH0k4E1vcFZDRpStVjsWkuho76UKN
-         y4sw==
-X-Gm-Message-State: AOAM532wsBP3YxxG+0q1H4+D/3vUu+1ir7P7GQj+POe7vtR4IH5mYvDO
-        YMTOCU7UtRE9DGjUia5ThZU=
-X-Google-Smtp-Source: ABdhPJx06AZgoeK3Rdg74ijUBLl5ANnsa5saw8byqAabmNu2S63YN13jRwnPoQjiElRhDCBiizllHg==
-X-Received: by 2002:a17:90b:4f44:: with SMTP id pj4mr8417288pjb.167.1643198738903;
-        Wed, 26 Jan 2022 04:05:38 -0800 (PST)
-Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id n4sm4987900pjf.0.2022.01.26.04.05.38
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Rxu+xIvjFnCWUUg4LR7b57e/T2dW4crjuCGw7/sZ+G4=;
+        b=MERkkJeQ5romNMrn3L2zQTlh04YOnfJq2Dz5t2UIOm+ziRmebnYG1UP9TamFniZT8C
+         dERdjCKG0F9yOdc59kMjJnjrz/gNQe+IR90FSGOenAWoqNwtQqO0+psFz9MVwi1hyfpk
+         5Tge19dEAPD1BzgIOgtt0mqyd8/cI18C/Q9LbR8ju4CTLHT0ri7mqNsPuvKYlABPndKB
+         Ay16A6aXxoEiwG8CfPmQ2kQNtot+dtpDalRV+kgRu34Eck4XWNrQIsSQ60VUyTdgY27A
+         uN2qyU20T174Ygn9lzI873d2LKTrQEO+7e8snkHmvikNV1Nsq+EJxZYAN7VsxU1b0bUF
+         QlYg==
+X-Gm-Message-State: AOAM532bziQD1DzsH89jlHcBYeeqGXwI2JVyz1WusryQYSTbXbV6RH0l
+        Fs0WXW+UrnweEFdAYMNXPeHUgXXuw3N0QPgNkyXuSndy6aZbQ/lzHdEXrv07Pl/j3ZxrnQms43i
+        ljZ09v+zEySK3us/u
+X-Received: by 2002:a17:906:5208:: with SMTP id g8mr19288935ejm.634.1643198639445;
+        Wed, 26 Jan 2022 04:03:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx20qiGcount9gXgCJ4X5aF3vX+eaFsSPFELTeKR1M5Z7OzD9puXNwQl5QGT0zPpIiW6u90uw==
+X-Received: by 2002:a17:906:5208:: with SMTP id g8mr19288858ejm.634.1643198638008;
+        Wed, 26 Jan 2022 04:03:58 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id b7sm6493432edv.58.2022.01.26.04.03.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 04:05:38 -0800 (PST)
-Date:   Wed, 26 Jan 2022 17:33:47 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+        Wed, 26 Jan 2022 04:03:57 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id EEF051805FA; Wed, 26 Jan 2022 13:03:56 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         ast@kernel.org, daniel@iogearbox.net, dsahern@kernel.org,
-        komachi.yoshiki@gmail.com, brouer@redhat.com,
+        komachi.yoshiki@gmail.com, brouer@redhat.com, memxor@gmail.com,
         andrii.nakryiko@gmail.com
 Subject: Re: [RFC bpf-next 1/2] net: bridge: add unstable
  br_fdb_find_port_from_ifindex helper
-Message-ID: <20220126120347.cp3xvuxkwyi2o5wx@apollo.legion>
+In-Reply-To: <YfEzl0wL+51wa6z7@lore-desk>
 References: <cover.1643044381.git.lorenzo@kernel.org>
  <720907692575488526f06edc2cf5c8f783777d4f.1643044381.git.lorenzo@kernel.org>
- <878rv558fy.fsf@toke.dk>
- <YfEzl0wL+51wa6z7@lore-desk>
+ <878rv558fy.fsf@toke.dk> <YfEzl0wL+51wa6z7@lore-desk>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 26 Jan 2022 13:03:56 +0100
+Message-ID: <87bkzy3dqr.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfEzl0wL+51wa6z7@lore-desk>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 05:12:15PM IST, Lorenzo Bianconi wrote:
-> > [ snip to focus on the API ]
-> >
-> > > +int br_fdb_find_port_from_ifindex(struct xdp_md *xdp_ctx,
-> > > +				  struct bpf_fdb_lookup *opt,
-> > > +				  u32 opt__sz)
-> > > +{
-> > > +	struct xdp_buff *ctx = (struct xdp_buff *)xdp_ctx;
-> > > +	struct net_bridge_port *port;
-> > > +	struct net_device *dev;
-> > > +	int ret = -ENODEV;
-> > > +
-> > > +	BUILD_BUG_ON(sizeof(struct bpf_fdb_lookup) != NF_BPF_FDB_OPTS_SZ);
-> > > +	if (!opt || opt__sz != sizeof(struct bpf_fdb_lookup))
-> > > +		return -ENODEV;
-> >
-> > Why is the BUILD_BUG_ON needed? Or why is the NF_BPF_FDB_OPTS_SZ
-> > constant even needed?
+Lorenzo Bianconi <lorenzo@kernel.org> writes:
+
+>> > +	rcu_read_lock();
+>> 
+>> This is not needed when the function is only being called from XDP...
 >
-> I added it to be symmetric with respect to ct counterpart
+> don't we need it since we do not hold the rtnl here?
 
-But the constant needs to be an enum, not a define, otherwise it will not be
-emitted to BTF, I added it so that one could easily check the struct 'version'
-(because sizeof is not relocated in BPF programs).
+No. XDP programs always run under local_bh_disable() which "counts" as
+an rcu_read_lock(); I did some cleanup around this a while ago, see this
+commit for a longer explanation:
 
-Yes, bpf_core_field_exists and would also work, but the size is fixed anyway and
-we need to check it, so it felt better to give it a name and also make it
-visible to BPF programs at the same time.
+782347b6bcad ("xdp: Add proper __rcu annotations to redirect map entries")
 
->
->  [...]
+-Toke
 
---
-Kartikeya
