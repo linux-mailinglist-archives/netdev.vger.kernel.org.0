@@ -2,316 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECF5B49CC61
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 15:32:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3107A49CC6F
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 15:36:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242163AbiAZOcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 09:32:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59554 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242147AbiAZOc3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 09:32:29 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC84C061747
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 06:32:29 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id b1-20020a17090a990100b001b14bd47532so7293pjp.0
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 06:32:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=e50/ZIMQaxDCbsjkCHIbFxxG7HiJC0StWx+ig1pfA54=;
-        b=EnqQuwvmczdPXanCPT+6Jb2MtdjlTrKRl1xeDB+Ipk3Qy6QbjVaSFPnjTMLpLO6MrF
-         FBx26lTt3gyFIFi49kCAo8I1r0UFzE5xs+4ZuXR7EcWbACP+7VmGaj4QBQ0+u9DuIsBc
-         jir0koMznHOE61zlJZf4QmlW8oQuf+wGwLcjxdkuoWslGzwtJBSuvl2fMeUJggrUWp3F
-         itzMLUpObQVCD9ZTlJRwWrIgA9Mu4ivZkc7wf8OQQErnxh8zdJDLVvA9b9afQWICJS4+
-         DJu0eDZTM/ZaMrSJOPRteBEyC9AUZapvXC0CNGHBqDNBmLT45WGc3K2udEpZvnlZVFLl
-         qkaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=e50/ZIMQaxDCbsjkCHIbFxxG7HiJC0StWx+ig1pfA54=;
-        b=gvc8bRJ3ohVC0aPfwkQZpBmlc7/gSFwZQG0n03OrTdVik37Cysuv2s3Sjv6X9aM3nH
-         5VfDp0TzQ2pkoekICkuRCOG4Aa04Z63e5ZdjHCWTXVQMSIhFgS+XUcfAoHGmRa3W6zXq
-         7mJJHQ0zGK/WN+ZeeHZppzJQEx0mCY5F8TlOrhh01qunaJmjal7e7jpQI/J8jPMQ7vun
-         D0TCF97UJoDGM6uUn86CXcKfhsEDCKtGGlcopBowyg5dMZRX9VifGKfaMM4q9ctsVFTO
-         A1gPOiT+j9RtA/5T1rkv2ymQB326r9gR36IEsl26Z0mZzyR7KpgnICTXZwT5avIeexs1
-         0JiA==
-X-Gm-Message-State: AOAM533K+b4AOL1joGwdwVV+yZYTwZDFw7uOJ350fJwCec7/3UlrSw7e
-        6D/UEKSYP/tCYQEjeGOL2Cz2bJwaUfJjmg==
-X-Google-Smtp-Source: ABdhPJwNtcXZeon3KZfAzCOlge28l2YvKQNX6lwrZndHgtg4/mHGTTi3W6Oq4gQBjUMKefVZBXz2NQ==
-X-Received: by 2002:a17:902:ac98:b0:14a:dffc:ba69 with SMTP id h24-20020a170902ac9800b0014adffcba69mr23847216plr.2.1643207548598;
-        Wed, 26 Jan 2022 06:32:28 -0800 (PST)
-Received: from bogon.xiaojukeji.com ([111.201.150.233])
-        by smtp.gmail.com with ESMTPSA id n4sm5268501pjf.0.2022.01.26.06.32.23
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jan 2022 06:32:28 -0800 (PST)
-From:   xiangxia.m.yue@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        id S242190AbiAZOgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 09:36:12 -0500
+Received: from mail-bn7nam10on2046.outbound.protection.outlook.com ([40.107.92.46]:54049
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235539AbiAZOgL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jan 2022 09:36:11 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KCA13Z8FYLgaLvHLDJc+gZ57BjIgTmPzenl7EJ9y+VKtaiDWtucYIjjwC37fNilLhw84V2s4oL5sO0R2CyrZu5FzLUE1LUbP/NVyUwBgIMgCHcv8qeGo3Zp+9ku5XGaxmz7QXKAiR9C9IZNXUeFCWLtFvkxZVnDPB1upIc0pSbj0ynKTfxqwWF7RLCYNFkSpSQWmjAIHKc8fXwYQlI5eAoxoFW8SAPRDj7eRZjqM881iSM1UX8SgrvaI77+aeqnGoBG2/ZCpDrOe/ZYDVuRP/jPmU4ZrzEFSq7cNZcjbaM9eDDV5jhcwfE29V1PRypfP576jh4DKyL6NQ/e4abv3kw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Rroqk15qS0UHYcunOAdvKXc2JT2slnormnLDOeBEdiQ=;
+ b=iLMOkptiDAboPjxGPRcUl/dsm6zhToznCi6cAEC5HYNMCm+Vuk0QtlfZ9JOGfCG6WsOrr77YsKSBEXMgmFAezmrIoDNf33IE7rv4XJAEfurixeYJPI+z01Z9ZLAyEaWufT734vqfMkHxYygMCEmmHscoJw7PFMo6lnVWGgeJkwLkUq3MqpsJX83ixQz5vOntBpm0yOBd0IOed2/NBLb4jQPJ5hSQBlHuynPBvrCH0WWi4pYwSWzJNCgyofn7oV8Tjkno16Xw9MbD8U6jTmiMMTm1oj5PG3bpCVyYtnqTajsrw+ELWzGNLJucLYdhOfAJSoEOkJ3H174nR/Ht8/lcFA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Rroqk15qS0UHYcunOAdvKXc2JT2slnormnLDOeBEdiQ=;
+ b=N56n94oUCoXb1jmKT0vEO9ILVnxStFhm5j/HHA4W4GF4CPr4/qUFcGt5O2lcnsDnP92RSGY0DRjIqePEOg2bolLLEhYTUVees7n3tFpCZuJzuLyRNFtkI9iLXgwFQEfeLn0ITTgaqLr5vwmWPNzAosRfAwJNx5XecFaEHqnU/B4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from CO6PR12MB5427.namprd12.prod.outlook.com (2603:10b6:5:358::13)
+ by BYAPR12MB4709.namprd12.prod.outlook.com (2603:10b6:a03:98::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.12; Wed, 26 Jan
+ 2022 14:36:08 +0000
+Received: from CO6PR12MB5427.namprd12.prod.outlook.com
+ ([fe80::dd4b:b67b:1688:b52]) by CO6PR12MB5427.namprd12.prod.outlook.com
+ ([fe80::dd4b:b67b:1688:b52%9]) with mapi id 15.20.4930.017; Wed, 26 Jan 2022
+ 14:36:07 +0000
+Message-ID: <a0d2a954-45ea-9b51-678d-0e501d7e2bdd@amd.com>
+Date:   Wed, 26 Jan 2022 09:35:59 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 07/11] drm/amd/display: Use str_yes_no()
+Content-Language: en-US
+To:     Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        linux-security-module@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
         "David S. Miller" <davem@davemloft.net>,
+        Emma Anholt <emma@anholt.net>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Subject: [net-next v8 2/2] net: sched: support hash/classid/cpuid selecting tx queue
-Date:   Wed, 26 Jan 2022 22:32:06 +0800
-Message-Id: <20220126143206.23023-3-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20220126143206.23023-1-xiangxia.m.yue@gmail.com>
-References: <20220126143206.23023-1-xiangxia.m.yue@gmail.com>
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Leo Li <sunpeng.li@amd.com>, Petr Mladek <pmladek@suse.com>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vishal Kulkarni <vishal@chelsio.com>
+References: <20220126093951.1470898-1-lucas.demarchi@intel.com>
+ <20220126093951.1470898-8-lucas.demarchi@intel.com>
+From:   Harry Wentland <harry.wentland@amd.com>
+In-Reply-To: <20220126093951.1470898-8-lucas.demarchi@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: YT3PR01CA0117.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:85::35) To CO6PR12MB5427.namprd12.prod.outlook.com
+ (2603:10b6:5:358::13)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4e80176b-7ab1-40c9-68b7-08d9e0d93059
+X-MS-TrafficTypeDiagnostic: BYAPR12MB4709:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB4709516AD1B219AA681FCEB88C209@BYAPR12MB4709.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:612;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: iLrZlAlk/lf2aVe+T5P07EojtUQkZgn1kJQIoP6CohrDRyNwjjwAEdB0MwGBEVNTYqHzaG8s5EECXa3n4wuaH8hAinS+icN3stSPbjgZ0/e3qXe82A/iJJAnPl9EehSYlvQDW9phKLWISbEiNYg8DcKfYA+iuK2zx20ecGH+H8IBd4SgtvshLSHhOF72J/LefxyvB6bBFF3aKt+fLSU9bkpdtV9T83HCZiTDKqgyamPtlyUMT8ZwjIDluKWdUacTFUsyyKDSm2iXbWC6DRiz4ZpTz6u0rsujucSqOhSw40xkrY53rl1M66MxZa+b4iH/a+Sa3XsPVPXMyfYYg+MzZmqeZVQ/TAZ9sDjEi+UI/VOtnRNuavJlkEKECd6eul+MqhjItndSeD+DEyOK21LSIn4nfpQ05H1rDMcqPDMvP8puGUD/sE/6cS+udz7Q7bPXsKaMJrZ49wNZHy1jP400PB+29gsGnPYF5sDhDxcJx8F9Vxp08pmrPRdhBikexm+CVTi/k/iqHwD8w0kbp7ioBEOjFbON4didMcP+neyNt4a5yOvffcEQzF1E9OCPI9dZMJCGc4SfJFCRe/SRHZik1yGdVph54q2ACT7uk4QBPXwz8bJKHob16mFq8+o/T3J5JoILtvZP7iUMm94j3cOSeir6aYFrOM2DTP0eUEjavQRIlYiVcg/XCHM7nGoUDPNjyQuYkIE8vMgUMXe9ni0DsoQLEwlOs6qxxtCRjzHQbUU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5427.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(7406005)(38100700002)(186003)(26005)(6666004)(8936002)(316002)(6506007)(54906003)(53546011)(86362001)(2906002)(31696002)(8676002)(44832011)(66476007)(508600001)(66556008)(83380400001)(4326008)(7416002)(5660300002)(36756003)(6486002)(66946007)(2616005)(6512007)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QWRNUTBwNFdOTU4xRk00cXROSHp4aThiekZYWEZpaUxuR0QxekxzczNpbWVL?=
+ =?utf-8?B?Z1Jrd29aUC93Y1hwenpReDkvQXV2NnI5cDJPTEpsT1BDS3dOanluUTA0ODZt?=
+ =?utf-8?B?S1hBYkdRVW9NRDRLek5WVjhUTXpDZ1IvZTJ6Mzk4YUdmdWFzM09YTWZlT0hK?=
+ =?utf-8?B?bDZsc1QxL1VBc3BKZ0p5ZzAwcysxdXpmclRxSXoweDB4ZmtCRUdScy91em8v?=
+ =?utf-8?B?Y2luNnFSREt4M0VmRHpBUjRHekZIWUpsWEgrT3dnY00rTENXNDJBMDl3UmZ5?=
+ =?utf-8?B?dElxK3dkd1d4R0xSSlp4ZldxckxMSUVEUE1BQnBDUkltUkIrRTc0ejdBUDNW?=
+ =?utf-8?B?dFhXQVRSM29yWDk5Qm1HVXI5UUtuWFIyNk0reDlPd2pZN20zTnI1N1BNOFlG?=
+ =?utf-8?B?Qm9qTzlqTy82dVJwQ1FGaVBrekw1MzY4VFdJY2c0bGVVUzhpK3JZTDl6M3Y4?=
+ =?utf-8?B?U2dkQS83ZmphMW5vVnVJeFA3RTRtR0xuZ2RtVWdTL25hN2FrUDNFbUVCVllq?=
+ =?utf-8?B?akhtdjhrYU41S3dPeVF4ckJkRXY0bHYwdlgxTnh5cXNnTmxTZ0szTEhZdWNh?=
+ =?utf-8?B?ckF0OG0vNkxETWk4QnpTRy9uZElNYUhjOEI5dzNhVXpmTWVGUFhqNHc4bkVh?=
+ =?utf-8?B?bXdJVU5SRVowN3RxTVpNYTJMZ0syRkE4ZDQyZk5SWG1seUpiSEFKQ0tnS0RB?=
+ =?utf-8?B?azB4RzRMUktkT2kxMm05NC80SWhyRFdJWU5qaE5RTHpEcHVwK3U5ejFoQXR1?=
+ =?utf-8?B?c3NqL1ZkZW5IZFlteUQvZEN0T1pwOURQNVVTdkp6bU95OVJXMFRWU3lrNG45?=
+ =?utf-8?B?WUV2SkZyQW1mUzRNVCtWTDV0d1Jsd05YajJ2QWdvZEcxek1QTElzRTl6SkNK?=
+ =?utf-8?B?d0ZDL2VIdmtSMjhxYjZUSXJzTXhHRUhmRDNTVGJrcE9URE15QTlibXBwL1VM?=
+ =?utf-8?B?WVF2eGh0Z1BTL1dLTmVwTDhEai9jTVdPSE80VDhJZHJaa3ZDSFpKUGZSQi9B?=
+ =?utf-8?B?Uko3SVFHa2JyKzBoR3ZoNkN3dU5DazlMdFFldTZ6TERaZ0xxdlc1SkFJVkNr?=
+ =?utf-8?B?V0w0L2crRS9pV0JlNlZVVUhxWkFRdDZOaWEwZUVPd3BGcUg4T1ZLMmp2Z0tm?=
+ =?utf-8?B?QWhWMG1aYnNsOFR5bE9Zd2tMM05Xcmo0M2FSdG1TeHZ4Mmt6MmlyOHhOdzRJ?=
+ =?utf-8?B?WThScUpVTDhCdnh2UG1ub2dvR1Q2Mi9xVyt0L2lLQUwwVlVoNjA1Wnl2N0pH?=
+ =?utf-8?B?Nk5QZXFxVTBqOVdkc1BiZER0ckNaQTkrOEg4bC9LT3NQRnVDSSt3aVBvVWpQ?=
+ =?utf-8?B?RjVQaGdnVVBhS3FyTERUZDl4cEQrdzNvSTlLWmpIMDJXbnFBSlNDS0k3Mks4?=
+ =?utf-8?B?V2pDWmlITGFtbTZ4TFppdUZHTFBFZ3U5dklsSlpNc0xUUTgxYUZGU3JScVVH?=
+ =?utf-8?B?SlpIbDQ1MG44SjlzYTYxZEpHR1Y1VmVKNUZoaXFqbkxmQTdoL1g0bEVTUkNr?=
+ =?utf-8?B?Uzk2RDZraXVyV0VJNXppbnQ1ZVVTRjVDSmx0aEw3Wjhib1ErdFcwN3hRMzRJ?=
+ =?utf-8?B?RWEyUzFPZmNpZm90Z084eDlaeDJBcmswTUtZUTlmVDEvcTA1WDdvYWc4RlRo?=
+ =?utf-8?B?TkhxZjJzUVUzVTR6d2dJTjVuQWtEOXI1WHFiSTNyOFgzeGNzWWdxMnhWcFlu?=
+ =?utf-8?B?UDlST1VDbnVDOUh2QVVVaU5JMENBSjl6S0I3b0p5TEtHY2MweVFKS0l5RStZ?=
+ =?utf-8?B?Z01IZnAzYkN2WVJ6bG1Qa1FoUnRkWDlYRk4zMzlPMG55R29DQUl2VEVyMEFt?=
+ =?utf-8?B?RlIyWC9KOG83Z1ljN3lIVm5RZUpaUFIxZXJVUGhqWXM2YmE2a1RTUGZ3Rnc5?=
+ =?utf-8?B?Vzlmd1ZXaHc2TmphSmVFdWtUblE0NUpwUkxCZ1pzK2Qvell3KzBBOVVqQWNz?=
+ =?utf-8?B?K0x6aUtHME8wbE44Q0UyM2RVcFVaaFIwMHFEanlXV1hab2RiNVp6alBsenNI?=
+ =?utf-8?B?bEt1bTQxb3hxTVFRb0k1NG9BNkZ6S2J4dzgrYk9XQjg1ZDZMSWtBeUQyeWFw?=
+ =?utf-8?B?b29HOU9Nd3BTUEVwZmxwQTlNamZteWtYTE80QXNveXJEQXJOWGFVcUtGWXAy?=
+ =?utf-8?B?TEM4V0piVUtES0pYOEkxWlVMeW1TVHR5KzJPOHIvWm5PejFJaDNXUzJHWXBh?=
+ =?utf-8?Q?dEtvXorhJXR7hgKLBT6avCY=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4e80176b-7ab1-40c9-68b7-08d9e0d93059
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5427.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2022 14:36:07.6607
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AL2DQBVlQw8soauM8w3I6BFgcgUz+ev1Obsu+XhIu9qzd7pIzmTj+EgbNhovxSg4nNUf/Ye/GJgr5QVaES3Xrw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB4709
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On 2022-01-26 04:39, Lucas De Marchi wrote:
+> Remove the local yesno() implementation and adopt the str_yes_no() from
+> linux/string_helpers.h.
+> 
+> Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
 
-This patch allows user to select queue_mapping, range
-from A to B. And user can use skbhash, cgroup classid
-and cpuid to select Tx queues. Then we can load balance
-packets from A to B queue. The range is an unsigned 16bit
-value in decimal format.
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
 
-$ tc filter ... action skbedit queue_mapping skbhash A B
+Harry
 
-"skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit")
-is enhanced with flags:
-* SKBEDIT_F_TXQ_SKBHASH
-* SKBEDIT_F_TXQ_CLASSID
-* SKBEDIT_F_TXQ_CPUID
-
-Use skb->hash, cgroup classid, or cpuid to distribute packets.
-Then same range of tx queues can be shared for different flows,
-cgroups, or CPUs in a variety of scenarios.
-
-For example, F1 may share range R1 with F2. The best way to do
-that is to set flag to SKBEDIT_F_TXQ_HASH, using skb->hash to
-share the queues. If cgroup C1 want to share the R1 with cgroup
-C2 .. Cn, use the SKBEDIT_F_TXQ_CLASSID. Of course, in some other
-scenario, C1 use R1, while Cn can use the Rn.
-
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Alexander Lobakin <alobakin@pm.me>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Talal Ahmad <talalahmad@google.com>
-Cc: Kevin Hao <haokexin@gmail.com>
-Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc: Antoine Tenart <atenart@kernel.org>
-Cc: Wei Wang <weiwan@google.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
- include/net/tc_act/tc_skbedit.h        |  1 +
- include/uapi/linux/tc_act/tc_skbedit.h |  8 +++
- net/sched/act_skbedit.c                | 78 +++++++++++++++++++++++++-
- 3 files changed, 84 insertions(+), 3 deletions(-)
-
-diff --git a/include/net/tc_act/tc_skbedit.h b/include/net/tc_act/tc_skbedit.h
-index 00bfee70609e..ee96e0fa6566 100644
---- a/include/net/tc_act/tc_skbedit.h
-+++ b/include/net/tc_act/tc_skbedit.h
-@@ -17,6 +17,7 @@ struct tcf_skbedit_params {
- 	u32 mark;
- 	u32 mask;
- 	u16 queue_mapping;
-+	u16 mapping_mod;
- 	u16 ptype;
- 	struct rcu_head rcu;
- };
-diff --git a/include/uapi/linux/tc_act/tc_skbedit.h b/include/uapi/linux/tc_act/tc_skbedit.h
-index 800e93377218..5ea1438a4d88 100644
---- a/include/uapi/linux/tc_act/tc_skbedit.h
-+++ b/include/uapi/linux/tc_act/tc_skbedit.h
-@@ -29,6 +29,13 @@
- #define SKBEDIT_F_PTYPE			0x8
- #define SKBEDIT_F_MASK			0x10
- #define SKBEDIT_F_INHERITDSFIELD	0x20
-+#define SKBEDIT_F_TXQ_SKBHASH		0x40
-+#define SKBEDIT_F_TXQ_CLASSID		0x80
-+#define SKBEDIT_F_TXQ_CPUID		0x100
-+
-+#define SKBEDIT_F_TXQ_HASH_MASK (SKBEDIT_F_TXQ_SKBHASH | \
-+				 SKBEDIT_F_TXQ_CLASSID | \
-+				 SKBEDIT_F_TXQ_CPUID)
- 
- struct tc_skbedit {
- 	tc_gen;
-@@ -45,6 +52,7 @@ enum {
- 	TCA_SKBEDIT_PTYPE,
- 	TCA_SKBEDIT_MASK,
- 	TCA_SKBEDIT_FLAGS,
-+	TCA_SKBEDIT_QUEUE_MAPPING_MAX,
- 	__TCA_SKBEDIT_MAX
- };
- #define TCA_SKBEDIT_MAX (__TCA_SKBEDIT_MAX - 1)
-diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
-index d5799b4fc499..4c209689f8de 100644
---- a/net/sched/act_skbedit.c
-+++ b/net/sched/act_skbedit.c
-@@ -10,6 +10,7 @@
- #include <linux/kernel.h>
- #include <linux/skbuff.h>
- #include <linux/rtnetlink.h>
-+#include <net/cls_cgroup.h>
- #include <net/netlink.h>
- #include <net/pkt_sched.h>
- #include <net/ip.h>
-@@ -23,6 +24,38 @@
- static unsigned int skbedit_net_id;
- static struct tc_action_ops act_skbedit_ops;
- 
-+static u16 tcf_skbedit_hash(struct tcf_skbedit_params *params,
-+			    struct sk_buff *skb)
-+{
-+	u32 mapping_hash_type = params->flags & SKBEDIT_F_TXQ_HASH_MASK;
-+	u16 queue_mapping = params->queue_mapping;
-+	u16 mapping_mod = params->mapping_mod;
-+	u32 hash = 0;
-+
-+	switch (mapping_hash_type) {
-+	case SKBEDIT_F_TXQ_CLASSID:
-+		hash = task_get_classid(skb);
-+		break;
-+	case SKBEDIT_F_TXQ_SKBHASH:
-+		hash = skb_get_hash(skb);
-+		break;
-+	case SKBEDIT_F_TXQ_CPUID:
-+		hash = raw_smp_processor_id();
-+		break;
-+	case 0:
-+		/* Hash type isn't specified. In this case:
-+		 * hash % mapping_mod == 0
-+		 */
-+		break;
-+	default:
-+		net_warn_ratelimited("The type of queue_mapping hash is not supported. 0x%x\n",
-+				     mapping_hash_type);
-+	}
-+
-+	queue_mapping = queue_mapping + hash % mapping_mod;
-+	return netdev_cap_txqueue(skb->dev, queue_mapping);
-+}
-+
- static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
- 			   struct tcf_result *res)
- {
-@@ -62,7 +95,7 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
- #ifdef CONFIG_NET_EGRESS
- 		netdev_xmit_skip_txqueue(true);
- #endif
--		skb_set_queue_mapping(skb, params->queue_mapping);
-+		skb_set_queue_mapping(skb, tcf_skbedit_hash(params, skb));
- 	}
- 	if (params->flags & SKBEDIT_F_MARK) {
- 		skb->mark &= ~params->mask;
-@@ -96,6 +129,7 @@ static const struct nla_policy skbedit_policy[TCA_SKBEDIT_MAX + 1] = {
- 	[TCA_SKBEDIT_PTYPE]		= { .len = sizeof(u16) },
- 	[TCA_SKBEDIT_MASK]		= { .len = sizeof(u32) },
- 	[TCA_SKBEDIT_FLAGS]		= { .len = sizeof(u64) },
-+	[TCA_SKBEDIT_QUEUE_MAPPING_MAX]	= { .len = sizeof(u16) },
- };
- 
- static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
-@@ -112,6 +146,7 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
- 	struct tcf_skbedit *d;
- 	u32 flags = 0, *priority = NULL, *mark = NULL, *mask = NULL;
- 	u16 *queue_mapping = NULL, *ptype = NULL;
-+	u16 mapping_mod = 1;
- 	bool exists = false;
- 	int ret = 0, err;
- 	u32 index;
-@@ -156,7 +191,34 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
- 
- 	if (tb[TCA_SKBEDIT_FLAGS] != NULL) {
- 		u64 *pure_flags = nla_data(tb[TCA_SKBEDIT_FLAGS]);
--
-+		u64 mapping_hash_type;
-+
-+		mapping_hash_type = *pure_flags & SKBEDIT_F_TXQ_HASH_MASK;
-+		if (mapping_hash_type) {
-+			u16 *queue_mapping_max;
-+
-+			/* Hash types are mutually exclusive. */
-+			if (mapping_hash_type & (mapping_hash_type - 1)) {
-+				NL_SET_ERR_MSG_MOD(extack, "Multi types of hash are specified.");
-+				return -EINVAL;
-+			}
-+
-+			if (!tb[TCA_SKBEDIT_QUEUE_MAPPING] ||
-+			    !tb[TCA_SKBEDIT_QUEUE_MAPPING_MAX]) {
-+				NL_SET_ERR_MSG_MOD(extack, "Missing required range of queue_mapping.");
-+				return -EINVAL;
-+			}
-+
-+			queue_mapping_max =
-+				nla_data(tb[TCA_SKBEDIT_QUEUE_MAPPING_MAX]);
-+			if (*queue_mapping_max < *queue_mapping) {
-+				NL_SET_ERR_MSG_MOD(extack, "The range of queue_mapping is invalid, max < min.");
-+				return -EINVAL;
-+			}
-+
-+			mapping_mod = *queue_mapping_max - *queue_mapping + 1;
-+			flags |= mapping_hash_type;
-+		}
- 		if (*pure_flags & SKBEDIT_F_INHERITDSFIELD)
- 			flags |= SKBEDIT_F_INHERITDSFIELD;
- 	}
-@@ -208,8 +270,10 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
- 	params_new->flags = flags;
- 	if (flags & SKBEDIT_F_PRIORITY)
- 		params_new->priority = *priority;
--	if (flags & SKBEDIT_F_QUEUE_MAPPING)
-+	if (flags & SKBEDIT_F_QUEUE_MAPPING) {
- 		params_new->queue_mapping = *queue_mapping;
-+		params_new->mapping_mod = mapping_mod;
-+	}
- 	if (flags & SKBEDIT_F_MARK)
- 		params_new->mark = *mark;
- 	if (flags & SKBEDIT_F_PTYPE)
-@@ -276,6 +340,13 @@ static int tcf_skbedit_dump(struct sk_buff *skb, struct tc_action *a,
- 		goto nla_put_failure;
- 	if (params->flags & SKBEDIT_F_INHERITDSFIELD)
- 		pure_flags |= SKBEDIT_F_INHERITDSFIELD;
-+	if (params->flags & SKBEDIT_F_TXQ_HASH_MASK) {
-+		if (nla_put_u16(skb, TCA_SKBEDIT_QUEUE_MAPPING_MAX,
-+				params->queue_mapping + params->mapping_mod - 1))
-+			goto nla_put_failure;
-+
-+		pure_flags |= params->flags & SKBEDIT_F_TXQ_HASH_MASK;
-+	}
- 	if (pure_flags != 0 &&
- 	    nla_put(skb, TCA_SKBEDIT_FLAGS, sizeof(pure_flags), &pure_flags))
- 		goto nla_put_failure;
-@@ -325,6 +396,7 @@ static size_t tcf_skbedit_get_fill_size(const struct tc_action *act)
- 	return nla_total_size(sizeof(struct tc_skbedit))
- 		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_PRIORITY */
- 		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_QUEUE_MAPPING */
-+		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_QUEUE_MAPPING_MAX */
- 		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MARK */
- 		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_PTYPE */
- 		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MASK */
--- 
-2.27.0
+> ---
+>  .../drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c  | 14 +++++---------
+>  1 file changed, 5 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
+> index 26719efa5396..5ff1076b9130 100644
+> --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
+> +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
+> @@ -23,6 +23,7 @@
+>   *
+>   */
+>  
+> +#include <linux/string_helpers.h>
+>  #include <linux/uaccess.h>
+>  
+>  #include "dc.h"
+> @@ -49,11 +50,6 @@ struct dmub_debugfs_trace_entry {
+>  	uint32_t param1;
+>  };
+>  
+> -static inline const char *yesno(bool v)
+> -{
+> -	return v ? "yes" : "no";
+> -}
+> -
+>  /* parse_write_buffer_into_params - Helper function to parse debugfs write buffer into an array
+>   *
+>   * Function takes in attributes passed to debugfs write entry
+> @@ -853,12 +849,12 @@ static int psr_capability_show(struct seq_file *m, void *data)
+>  	if (!(link->connector_signal & SIGNAL_TYPE_EDP))
+>  		return -ENODEV;
+>  
+> -	seq_printf(m, "Sink support: %s", yesno(link->dpcd_caps.psr_caps.psr_version != 0));
+> +	seq_printf(m, "Sink support: %s", str_yes_no(link->dpcd_caps.psr_caps.psr_version != 0));
+>  	if (link->dpcd_caps.psr_caps.psr_version)
+>  		seq_printf(m, " [0x%02x]", link->dpcd_caps.psr_caps.psr_version);
+>  	seq_puts(m, "\n");
+>  
+> -	seq_printf(m, "Driver support: %s", yesno(link->psr_settings.psr_feature_enabled));
+> +	seq_printf(m, "Driver support: %s", str_yes_no(link->psr_settings.psr_feature_enabled));
+>  	if (link->psr_settings.psr_version)
+>  		seq_printf(m, " [0x%02x]", link->psr_settings.psr_version);
+>  	seq_puts(m, "\n");
+> @@ -1207,8 +1203,8 @@ static int dp_dsc_fec_support_show(struct seq_file *m, void *data)
+>  	drm_modeset_drop_locks(&ctx);
+>  	drm_modeset_acquire_fini(&ctx);
+>  
+> -	seq_printf(m, "FEC_Sink_Support: %s\n", yesno(is_fec_supported));
+> -	seq_printf(m, "DSC_Sink_Support: %s\n", yesno(is_dsc_supported));
+> +	seq_printf(m, "FEC_Sink_Support: %s\n", str_yes_no(is_fec_supported));
+> +	seq_printf(m, "DSC_Sink_Support: %s\n", str_yes_no(is_dsc_supported));
+>  
+>  	return ret;
+>  }
 
