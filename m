@@ -2,39 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB49549D253
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 20:11:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DA3749D25A
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 20:11:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244356AbiAZTLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 14:11:21 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:55070 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244357AbiAZTLR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 14:11:17 -0500
+        id S244401AbiAZTLY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 14:11:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244371AbiAZTLT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 14:11:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201AEC06174E
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 11:11:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65EB4615C1
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF425616D6
         for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 19:11:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06038C340E3;
-        Wed, 26 Jan 2022 19:11:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64108C340EB;
+        Wed, 26 Jan 2022 19:11:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1643224277;
-        bh=BnF7jakSQX4z4RoEUeII1OrL4n52DWWGQ9UzbgMR/vQ=;
+        bh=AevhdFTBTW9OIurvhykP2rB2wGBcxt7p/InAn4l3nR4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g1/Gf/khprquuogXXAY6VkTsBPCPajGhviH6XCodTOmOWqmMJ6afEiEQ9hYMCI1tW
-         xE4plcEll9ZiWv9ifmD8m/9DFYnfMD4EjaVREUN3f+PlfRUp0hepuMVqzHgqPb5sQ9
-         TnrPOohbWgeLyaeRHxt7yLWJ9Dcnn2PALX65jBkFuDjHTuDUOhiaXxjZ2A7QmyrAob
-         uU4XNiKk/1qbaM5ii9NXad9EUq/Oh47GjsDuGSDFb0F3yz9CG+3FBwrOk3y3z5/sci
-         Wrka9t7Ph5rsx1zeQh3N1nte8ztzbtvY4ThZLyw0vv+H2DavOQQXaaXwAxtyrV0G+Z
-         L+PsSIDM/g2zg==
+        b=rtMc+D8qOPrG0pIzGhufvdoPiX/oCdFi/JWz1j4rLWq4McFDQvs0wt2CNnTUdvYUd
+         4Q8xVnD3S5/0AufBP4P9nES++uOj7fVD/93xcMXCJ4qEN6rhqYMaaL31m1upCWYQqA
+         TRMVKhWGhBZGL5XUzls2jx5hU2NK1gE2ieFA4ldNrzF3CJ1MmrTuKdX3ZkEUMCZaid
+         YieNluf1L+3xF7qE4ScgorbxxhNvDkfEYpvJmyoqeNV/KDI2SkPlXDumG0Z/rtfRI6
+         RfVBMp0/5CcqapJ47nxJWTr8Ru3G/DsGZvP2lAMvnVCuP7OQYkdrSgMQ4axZwj5QLg
+         1cTgTwi3qhNDw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        pabeni@redhat.com, willemb@google.com
-Subject: [PATCH net-next 10/15] udp: remove inner_udp_hdr()
-Date:   Wed, 26 Jan 2022 11:11:04 -0800
-Message-Id: <20220126191109.2822706-11-kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 11/15] udplite: remove udplite_csum_outgoing()
+Date:   Wed, 26 Jan 2022 11:11:05 -0800
+Message-Id: <20220126191109.2822706-12-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220126191109.2822706-1-kuba@kernel.org>
 References: <20220126191109.2822706-1-kuba@kernel.org>
@@ -44,32 +46,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Not used since added in v3.8.
+Not used since v4.0.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: pabeni@redhat.com
-CC: willemb@google.com
----
- include/linux/udp.h | 5 -----
- 1 file changed, 5 deletions(-)
+ include/net/udplite.h | 43 -------------------------------------------
+ 1 file changed, 43 deletions(-)
 
-diff --git a/include/linux/udp.h b/include/linux/udp.h
-index ae66dadd8543..254a2654400f 100644
---- a/include/linux/udp.h
-+++ b/include/linux/udp.h
-@@ -23,11 +23,6 @@ static inline struct udphdr *udp_hdr(const struct sk_buff *skb)
- 	return (struct udphdr *)skb_transport_header(skb);
+diff --git a/include/net/udplite.h b/include/net/udplite.h
+index 9185e45b997f..a3c53110d30b 100644
+--- a/include/net/udplite.h
++++ b/include/net/udplite.h
+@@ -70,49 +70,6 @@ static inline int udplite_checksum_init(struct sk_buff *skb, struct udphdr *uh)
+ 	return 0;
  }
  
--static inline struct udphdr *inner_udp_hdr(const struct sk_buff *skb)
+-/* Slow-path computation of checksum. Socket is locked. */
+-static inline __wsum udplite_csum_outgoing(struct sock *sk, struct sk_buff *skb)
 -{
--	return (struct udphdr *)skb_inner_transport_header(skb);
+-	const struct udp_sock *up = udp_sk(skb->sk);
+-	int cscov = up->len;
+-	__wsum csum = 0;
+-
+-	if (up->pcflag & UDPLITE_SEND_CC) {
+-		/*
+-		 * Sender has set `partial coverage' option on UDP-Lite socket.
+-		 * The special case "up->pcslen == 0" signifies full coverage.
+-		 */
+-		if (up->pcslen < up->len) {
+-			if (0 < up->pcslen)
+-				cscov = up->pcslen;
+-			udp_hdr(skb)->len = htons(up->pcslen);
+-		}
+-		/*
+-		 * NOTE: Causes for the error case  `up->pcslen > up->len':
+-		 *        (i)  Application error (will not be penalized).
+-		 *       (ii)  Payload too big for send buffer: data is split
+-		 *             into several packets, each with its own header.
+-		 *             In this case (e.g. last segment), coverage may
+-		 *             exceed packet length.
+-		 *       Since packets with coverage length > packet length are
+-		 *       illegal, we fall back to the defaults here.
+-		 */
+-	}
+-
+-	skb->ip_summed = CHECKSUM_NONE;     /* no HW support for checksumming */
+-
+-	skb_queue_walk(&sk->sk_write_queue, skb) {
+-		const int off = skb_transport_offset(skb);
+-		const int len = skb->len - off;
+-
+-		csum = skb_checksum(skb, off, (cscov > len)? len : cscov, csum);
+-
+-		if ((cscov -= len) <= 0)
+-			break;
+-	}
+-	return csum;
 -}
 -
- #define UDP_HTABLE_SIZE_MIN		(CONFIG_BASE_SMALL ? 128 : 256)
- 
- static inline u32 udp_hashfn(const struct net *net, u32 num, u32 mask)
+ /* Fast-path computation of checksum. Socket may not be locked. */
+ static inline __wsum udplite_csum(struct sk_buff *skb)
+ {
 -- 
 2.34.1
 
