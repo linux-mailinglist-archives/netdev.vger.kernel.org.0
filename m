@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F53449C486
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 08:36:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA77749C496
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 08:36:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237902AbiAZHgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 02:36:01 -0500
-Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:34955 "EHLO
-        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237920AbiAZHfs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 02:35:48 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V2uVHmm_1643182545;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V2uVHmm_1643182545)
+        id S237983AbiAZHgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 02:36:10 -0500
+Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:46590 "EHLO
+        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237929AbiAZHfv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 02:35:51 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V2uPGOq_1643182546;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V2uPGOq_1643182546)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 26 Jan 2022 15:35:46 +0800
+          Wed, 26 Jan 2022 15:35:47 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
@@ -25,9 +25,9 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
-Subject: [PATCH v3 11/17] virtio_pci: queue_reset: release vq by vp_dev->vqs
-Date:   Wed, 26 Jan 2022 15:35:27 +0800
-Message-Id: <20220126073533.44994-12-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v3 12/17] virtio_pci: queue_reset: setup_vq use vring_setup_virtqueue()
+Date:   Wed, 26 Jan 2022 15:35:28 +0800
+Message-Id: <20220126073533.44994-13-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220126073533.44994-1-xuanzhuo@linux.alibaba.com>
 References: <20220126073533.44994-1-xuanzhuo@linux.alibaba.com>
@@ -37,92 +37,137 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the process of queue reset, vq leaves vdev->vqs, so the original
-processing logic may miss some vq. So modify the processing method of
-releasing vq. Release vq by listing vqs.
+setup_vq replaces vring_create_virtuque() with vring_setup_virtqueue() to
+support the need to enable reset vq.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/virtio/virtio_pci_common.c | 22 ++++++++++++++++++----
- drivers/virtio/virtio_pci_common.h |  2 ++
- 2 files changed, 20 insertions(+), 4 deletions(-)
+ drivers/virtio/virtio_pci_common.c |  8 ++++----
+ drivers/virtio/virtio_pci_common.h |  4 +++-
+ drivers/virtio/virtio_pci_legacy.c |  5 +++--
+ drivers/virtio/virtio_pci_modern.c | 20 ++++++++++++++------
+ 4 files changed, 24 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
-index fdbde1db5ec5..6b2573ec1ae8 100644
+index 6b2573ec1ae8..c02936d29a31 100644
 --- a/drivers/virtio/virtio_pci_common.c
 +++ b/drivers/virtio/virtio_pci_common.c
-@@ -260,12 +260,20 @@ static void vp_del_vq(struct virtqueue *vq)
- void vp_del_vqs(struct virtio_device *vdev)
+@@ -209,7 +209,7 @@ static struct virtqueue *vp_setup_vq(struct virtio_device *vdev, unsigned index,
+ 				     void (*callback)(struct virtqueue *vq),
+ 				     const char *name,
+ 				     bool ctx,
+-				     u16 msix_vec)
++				     u16 msix_vec, u16 num)
  {
  	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
--	struct virtqueue *vq, *n;
--	int i;
-+	struct virtio_pci_vq_info *info;
-+	struct virtqueue *vq;
-+	int i, v;
-+
-+	for (i = 0; i < vp_dev->nvqs; ++i) {
-+
-+		info = vp_dev->vqs[i];
-+		if (!info)
-+			continue;
-+
-+		vq = info->vq;
+ 	struct virtio_pci_vq_info *info = kmalloc(sizeof *info, GFP_KERNEL);
+@@ -221,7 +221,7 @@ static struct virtqueue *vp_setup_vq(struct virtio_device *vdev, unsigned index,
+ 		return ERR_PTR(-ENOMEM);
  
--	list_for_each_entry_safe(vq, n, &vdev->vqs, list) {
- 		if (vp_dev->per_vq_vectors) {
--			int v = vp_dev->vqs[vq->index]->msix_vector;
-+			v = info->msix_vector;
+ 	vq = vp_dev->setup_vq(vp_dev, info, index, callback, name, ctx,
+-			      msix_vec);
++			      msix_vec, NULL, num);
+ 	if (IS_ERR(vq))
+ 		goto out_info;
  
- 			if (v != VIRTIO_MSI_NO_VECTOR) {
- 				int irq = pci_irq_vector(vp_dev->pci_dev, v);
-@@ -275,6 +283,7 @@ void vp_del_vqs(struct virtio_device *vdev)
- 			}
+@@ -368,7 +368,7 @@ static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned nvqs,
+ 			msix_vec = VP_MSIX_VQ_VECTOR;
+ 		vqs[i] = vp_setup_vq(vdev, queue_idx++, callbacks[i], names[i],
+ 				     ctx ? ctx[i] : false,
+-				     msix_vec);
++				     msix_vec, 0);
+ 		if (IS_ERR(vqs[i])) {
+ 			err = PTR_ERR(vqs[i]);
+ 			goto error_find;
+@@ -423,7 +423,7 @@ static int vp_find_vqs_intx(struct virtio_device *vdev, unsigned nvqs,
  		}
- 		vp_del_vq(vq);
-+		vp_dev->vqs[i] = NULL;
- 	}
- 	vp_dev->per_vq_vectors = false;
- 
-@@ -308,6 +317,7 @@ void vp_del_vqs(struct virtio_device *vdev)
- 	vp_dev->msix_affinity_masks = NULL;
- 	kfree(vp_dev->vqs);
- 	vp_dev->vqs = NULL;
-+	vp_dev->nvqs = 0;
- }
- 
- static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned nvqs,
-@@ -324,6 +334,8 @@ static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned nvqs,
- 	if (!vp_dev->vqs)
- 		return -ENOMEM;
- 
-+	vp_dev->nvqs = nvqs;
-+
- 	if (per_vq_vectors) {
- 		/* Best option: one for change interrupt, one per vq. */
- 		nvectors = 1;
-@@ -395,6 +407,8 @@ static int vp_find_vqs_intx(struct virtio_device *vdev, unsigned nvqs,
- 	if (!vp_dev->vqs)
- 		return -ENOMEM;
- 
-+	vp_dev->nvqs = nvqs;
-+
- 	err = request_irq(vp_dev->pci_dev->irq, vp_interrupt, IRQF_SHARED,
- 			dev_name(&vdev->dev), vp_dev);
- 	if (err)
+ 		vqs[i] = vp_setup_vq(vdev, queue_idx++, callbacks[i], names[i],
+ 				     ctx ? ctx[i] : false,
+-				     VIRTIO_MSI_NO_VECTOR);
++				     VIRTIO_MSI_NO_VECTOR, 0);
+ 		if (IS_ERR(vqs[i])) {
+ 			err = PTR_ERR(vqs[i]);
+ 			goto out_del_vqs;
 diff --git a/drivers/virtio/virtio_pci_common.h b/drivers/virtio/virtio_pci_common.h
-index 23f6c5c678d5..392d990b7c73 100644
+index 392d990b7c73..65db92245e41 100644
 --- a/drivers/virtio/virtio_pci_common.h
 +++ b/drivers/virtio/virtio_pci_common.h
-@@ -60,6 +60,8 @@ struct virtio_pci_device {
- 	/* array of all queues for house-keeping */
- 	struct virtio_pci_vq_info **vqs;
+@@ -84,7 +84,9 @@ struct virtio_pci_device {
+ 				      void (*callback)(struct virtqueue *vq),
+ 				      const char *name,
+ 				      bool ctx,
+-				      u16 msix_vec);
++				      u16 msix_vec,
++				      struct virtqueue *vq,
++				      u16 num);
+ 	void (*del_vq)(struct virtio_pci_vq_info *info);
  
-+	u32 nvqs;
+ 	u16 (*config_vector)(struct virtio_pci_device *vp_dev, u16 vector);
+diff --git a/drivers/virtio/virtio_pci_legacy.c b/drivers/virtio/virtio_pci_legacy.c
+index b3f8128b7983..9bc41b764624 100644
+--- a/drivers/virtio/virtio_pci_legacy.c
++++ b/drivers/virtio/virtio_pci_legacy.c
+@@ -113,9 +113,10 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+ 				  void (*callback)(struct virtqueue *vq),
+ 				  const char *name,
+ 				  bool ctx,
+-				  u16 msix_vec)
++				  u16 msix_vec,
++				  struct virtqueue *vq,
++				  u16 ring_num)
+ {
+-	struct virtqueue *vq;
+ 	u16 num;
+ 	int err;
+ 	u64 q_pfn;
+diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
+index 5455bc041fb6..2ce58de549de 100644
+--- a/drivers/virtio/virtio_pci_modern.c
++++ b/drivers/virtio/virtio_pci_modern.c
+@@ -187,11 +187,12 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+ 				  void (*callback)(struct virtqueue *vq),
+ 				  const char *name,
+ 				  bool ctx,
+-				  u16 msix_vec)
++				  u16 msix_vec,
++				  struct virtqueue *vq,
++				  u16 ring_num)
+ {
+ 
+ 	struct virtio_pci_modern_device *mdev = &vp_dev->mdev;
+-	struct virtqueue *vq;
+ 	u16 num;
+ 	int err;
+ 
+@@ -203,6 +204,13 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+ 	if (!num || vp_modern_get_queue_enable(mdev, index))
+ 		return ERR_PTR(-ENOENT);
+ 
++	if (ring_num) {
++		if (ring_num > num)
++			return ERR_PTR(-ENOENT);
 +
- 	/* MSI-X support */
- 	int msix_enabled;
- 	int intx_enabled;
++		num = ring_num;
++	}
++
+ 	if (num & (num - 1)) {
+ 		dev_warn(&vp_dev->pci_dev->dev, "bad queue size %u", num);
+ 		return ERR_PTR(-EINVAL);
+@@ -211,10 +219,10 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+ 	info->msix_vector = msix_vec;
+ 
+ 	/* create the vring */
+-	vq = vring_create_virtqueue(index, num,
+-				    SMP_CACHE_BYTES, &vp_dev->vdev,
+-				    true, true, ctx,
+-				    vp_notify, callback, name);
++	vq = vring_setup_virtqueue(index, num,
++				   SMP_CACHE_BYTES, &vp_dev->vdev,
++				   true, true, ctx,
++				   vp_notify, callback, name, vq);
+ 	if (!vq)
+ 		return ERR_PTR(-ENOMEM);
+ 
 -- 
 2.31.0
 
