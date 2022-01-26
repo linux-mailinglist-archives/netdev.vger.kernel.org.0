@@ -2,156 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D18D249CF35
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 17:08:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C32F49CF51
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 17:14:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237180AbiAZQHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 11:07:35 -0500
-Received: from foss.arm.com ([217.140.110.172]:50036 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236823AbiAZQHe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jan 2022 11:07:34 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CED85D6E;
-        Wed, 26 Jan 2022 08:07:33 -0800 (PST)
-Received: from ip-10-252-15-108.eu-west-1.compute.internal (unknown [10.252.15.108])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8151C3F766;
-        Wed, 26 Jan 2022 08:07:31 -0800 (PST)
-From:   German Gomez <german.gomez@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org
-Cc:     German Gomez <german.gomez@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH] perf test: Add perf_event_attr tests for the arm_spe event
-Date:   Wed, 26 Jan 2022 16:07:09 +0000
-Message-Id: <20220126160710.32983-1-german.gomez@arm.com>
-X-Mailer: git-send-email 2.25.1
+        id S235987AbiAZQOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 11:14:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:53111 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239836AbiAZQOt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 11:14:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643213689;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fysXeXh1WW6YVve6gUqELrIgjARZKl2Vh28eeLnVfZQ=;
+        b=NtjTip9aiBacQwdgaV8hyConcuX43fE6/pyLhfPbEHMRYRmhIrGHq3UuGPCOssWd8f54OU
+        v85/k8hs3WQR+QQfFIiPfH+u/IhalJnlshK0maQkBqop6dgbE6POfDAvOnLHTDv1c1dyJz
+        Vc05grWyo9ImEryTQbGBv85iQLxbRE4=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-297-zkkxwwBFMUGgXcBILO8T1w-1; Wed, 26 Jan 2022 11:14:47 -0500
+X-MC-Unique: zkkxwwBFMUGgXcBILO8T1w-1
+Received: by mail-qv1-f69.google.com with SMTP id eo11-20020ad4594b000000b0042151b7180aso254011qvb.8
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 08:14:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version;
+        bh=fysXeXh1WW6YVve6gUqELrIgjARZKl2Vh28eeLnVfZQ=;
+        b=Uupmm+ToiL74jpVhE8RARt64UXyCjKAWMbTL6omXDSnnLAb8IUG3W1bfrIHKCJpoqa
+         dy3g79dsDYaocNm4lSe6i1GgfNwwwW52bieYN9z9+fYFwMHXf5qr1+tGRT0Q2EvGTFsl
+         ow1GOYz9hQ+aKirO4QUvjJ/buajB+NMflAVpAbu2Wf3n4MayBNJMDRkeKk4pxt4rRV1M
+         QFoit1a5fp7bM6LtfSwb2XgUDRO0N61pZrQToqP6/XHpC+A22K24PO8xxT+SBECK6jQB
+         iLN9v22XNB7U9/nT1o1L8hWfW+hCRX0RvuTioqbeHzMG+ew9BfYaB0xRtlmfqCeZNMfT
+         eujA==
+X-Gm-Message-State: AOAM530mkPfWMZxCWYG2Gq95SZcABSFOXeq533KMAnntiwLQFD1Qzwf9
+        aGu9kbvNpc4+cBANH80igmhdSqvWhlbegw5xbR1Lbkp+tOO8ngMb5qU7NzC8ZARCsW6ZYrj4vd1
+        7IDGsFEwlWieyiBYO
+X-Received: by 2002:a05:620a:4450:: with SMTP id w16mr18960196qkp.340.1643213686776;
+        Wed, 26 Jan 2022 08:14:46 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJybO+VZrDyMSpaH2QEaia6yUqym/IYy2hLS2N/KGMzG5CMLHY7PhfIqb74i025vJ2KJWTEnwQ==
+X-Received: by 2002:a05:620a:4450:: with SMTP id w16mr18960171qkp.340.1643213686490;
+        Wed, 26 Jan 2022 08:14:46 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-96-254.dyn.eolo.it. [146.241.96.254])
+        by smtp.gmail.com with ESMTPSA id b23sm10165798qtp.94.2022.01.26.08.14.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 08:14:45 -0800 (PST)
+Message-ID: <6cccaaa7854c98248d663f60404ab6163250107f.camel@redhat.com>
+Subject: Re: [PATCH net-next 6/6] ipv4/tcp: do not use per netns ctl sockets
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>, mptcp@lists.linux.dev
+Date:   Wed, 26 Jan 2022 17:14:42 +0100
+In-Reply-To: <20220124202457.3450198-7-eric.dumazet@gmail.com>
+References: <20220124202457.3450198-1-eric.dumazet@gmail.com>
+         <20220124202457.3450198-7-eric.dumazet@gmail.com>
+Content-Type: multipart/mixed; boundary="=-JZLwH+BnmnbBU710Mfv4"
+User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds a couple of perf_event_attr tests for the fix introduced in [1].
-The tests check that the correct sample_period value is set in the
-struct perf_event_attr of the arm_spe events.
 
-[1]: https://lore.kernel.org/all/20220118144054.2541-1-german.gomez@arm.com/
+--=-JZLwH+BnmnbBU710Mfv4
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 
-Signed-off-by: German Gomez <german.gomez@arm.com>
----
- tools/perf/tests/attr/README                  |  2 +
- tools/perf/tests/attr/base-record-spe         | 40 +++++++++++++++++++
- tools/perf/tests/attr/test-record-spe-period  | 12 ++++++
- .../tests/attr/test-record-spe-period-term    | 12 ++++++
- 4 files changed, 66 insertions(+)
- create mode 100644 tools/perf/tests/attr/base-record-spe
- create mode 100644 tools/perf/tests/attr/test-record-spe-period
- create mode 100644 tools/perf/tests/attr/test-record-spe-period-term
+Hello,
+On Mon, 2022-01-24 at 12:24 -0800, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> TCP ipv4 uses per-cpu/per-netns ctl sockets in order to send
+> RST and some ACK packets (on behalf of TIMEWAIT sockets).
+> 
+> This adds memory and cpu costs, which do not seem needed.
+> Now typical servers have 256 or more cores, this adds considerable
+> tax to netns users.
+> 
+> tcp sockets are used from BH context, are not receiving packets,
+> and do not store any persistent state but the 'struct net' pointer
+> in order to be able to use IPv4 output functions.
+> 
+> Note that I attempted a related change in the past, that had
+> to be hot-fixed in commit bdbbb8527b6f ("ipv4: tcp: get rid of ugly unicast_sock")
+> 
+> This patch could very well surface old bugs, on layers not
+> taking care of sk->sk_kern_sock properly.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-diff --git a/tools/perf/tests/attr/README b/tools/perf/tests/attr/README
-index 1116fc6bf2ac..454505d343fa 100644
---- a/tools/perf/tests/attr/README
-+++ b/tools/perf/tests/attr/README
-@@ -58,6 +58,8 @@ Following tests are defined (with perf commands):
-   perf record -c 100 -P kill                    (test-record-period)
-   perf record -c 1 --pfm-events=cycles:period=2 (test-record-pfm-period)
-   perf record -R kill                           (test-record-raw)
-+  perf record -c 2 -e arm_spe_0// -- kill       (test-record-spe-period)
-+  perf record -e arm_spe_0/period=3/ -- kill    (test-record-spe-period-term)
-   perf stat -e cycles kill                      (test-stat-basic)
-   perf stat kill                                (test-stat-default)
-   perf stat -d kill                             (test-stat-detailed-1)
-diff --git a/tools/perf/tests/attr/base-record-spe b/tools/perf/tests/attr/base-record-spe
-new file mode 100644
-index 000000000000..08fa96b59240
---- /dev/null
-+++ b/tools/perf/tests/attr/base-record-spe
-@@ -0,0 +1,40 @@
-+[event]
-+fd=*
-+group_fd=-1
-+flags=*
-+cpu=*
-+type=*
-+size=*
-+config=*
-+sample_period=*
-+sample_type=*
-+read_format=*
-+disabled=*
-+inherit=*
-+pinned=*
-+exclusive=*
-+exclude_user=*
-+exclude_kernel=*
-+exclude_hv=*
-+exclude_idle=*
-+mmap=*
-+comm=*
-+freq=*
-+inherit_stat=*
-+enable_on_exec=*
-+task=*
-+watermark=*
-+precise_ip=*
-+mmap_data=*
-+sample_id_all=*
-+exclude_host=*
-+exclude_guest=*
-+exclude_callchain_kernel=*
-+exclude_callchain_user=*
-+wakeup_events=*
-+bp_type=*
-+config1=*
-+config2=*
-+branch_sample_type=*
-+sample_regs_user=*
-+sample_stack_user=*
-diff --git a/tools/perf/tests/attr/test-record-spe-period b/tools/perf/tests/attr/test-record-spe-period
-new file mode 100644
-index 000000000000..75f8c9cd8e3f
---- /dev/null
-+++ b/tools/perf/tests/attr/test-record-spe-period
-@@ -0,0 +1,12 @@
-+[config]
-+command = record
-+args    = --no-bpf-event -c 2 -e arm_spe_0// -- kill >/dev/null 2>&1
-+ret     = 1
-+arch    = aarch64
-+
-+[event-10:base-record-spe]
-+sample_period=2
-+freq=0
-+
-+# dummy event
-+[event-1:base-record-spe]
-diff --git a/tools/perf/tests/attr/test-record-spe-period-term b/tools/perf/tests/attr/test-record-spe-period-term
-new file mode 100644
-index 000000000000..8f60a4fec657
---- /dev/null
-+++ b/tools/perf/tests/attr/test-record-spe-period-term
-@@ -0,0 +1,12 @@
-+[config]
-+command = record
-+args    = --no-bpf-event -e arm_spe_0/period=3/ -- kill >/dev/null 2>&1
-+ret     = 1
-+arch    = aarch64
-+
-+[event-10:base-record-spe]
-+sample_period=3
-+freq=0
-+
-+# dummy event
-+[event-1:base-record-spe]
--- 
-2.25.1
+We are observing UaF in our self-tests on top of this patch:
+
+https://github.com/multipath-tcp/mptcp_net-next/issues/256
+
+While I can't exclude the MPTCP code is misusing sk_net_refcnt and/or
+sk_kern_sock, we can reproduce the issue even with plain TCP sockets[1]
+
+The kasan report points to:
+
+	struct inet_hashinfo *hashinfo = tw->tw_dr->hashinfo;
+
+in inet_twsk_kill(). Apparently tw->tw_dr still refers to:
+
+	&sock_net(sk)->ipv4.tcp_death_row
+
+and the owning netns has been already dismantelled, as expected.
+I could not find any code setting tw->tw_dr to a safe value after netns
+destruction?!? am I missing something relevant?
+
+Thanks!
+
+Paolo
+
+[1] patching the selftest script with the attached patch and running it
+in a loop:
+
+while ./mptcp_connect.sh -t -t; do : ; done
+
+--=-JZLwH+BnmnbBU710Mfv4
+Content-Disposition: attachment; filename="selftests_tcp.patch"
+Content-Type: text/x-patch; name="selftests_tcp.patch"; charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+ZGlmZiAtLWdpdCBhL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL25ldC9tcHRjcC9tcHRjcF9jb25u
+ZWN0LnNoIGIvdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMvbmV0L21wdGNwL21wdGNwX2Nvbm5lY3Qu
+c2gKaW5kZXggY2I1ODA5Yjg5MDgxLi4xNTJkMzk1OTE2ODIgMTAwNzU1Ci0tLSBhL3Rvb2xzL3Rl
+c3Rpbmcvc2VsZnRlc3RzL25ldC9tcHRjcC9tcHRjcF9jb25uZWN0LnNoCisrKyBiL3Rvb2xzL3Rl
+c3Rpbmcvc2VsZnRlc3RzL25ldC9tcHRjcC9tcHRjcF9jb25uZWN0LnNoCkBAIC02MDksOCArNjA5
+LDggQEAgcnVuX3Rlc3RzX2xvKCkKIAkJbG9jYWxfYWRkcj0iMC4wLjAuMCIKIAlmaQogCi0JZG9f
+dHJhbnNmZXIgJHtsaXN0ZW5lcl9uc30gJHtjb25uZWN0b3JfbnN9IE1QVENQIE1QVENQIFwKLQkJ
+ICAgICR7Y29ubmVjdF9hZGRyfSAke2xvY2FsX2FkZHJ9ICIke2V4dHJhX2FyZ3N9IgorCSNkb190
+cmFuc2ZlciAke2xpc3RlbmVyX25zfSAke2Nvbm5lY3Rvcl9uc30gTVBUQ1AgTVBUQ1AgXAorCSMJ
+ICAgICR7Y29ubmVjdF9hZGRyfSAke2xvY2FsX2FkZHJ9ICIke2V4dHJhX2FyZ3N9IgogCWxyZXQ9
+JD8KIAlpZiBbICRscmV0IC1uZSAwIF07IHRoZW4KIAkJcmV0PSRscmV0CkBAIC02MjQsMTYgKzYy
+NCwxNiBAQCBydW5fdGVzdHNfbG8oKQogCQlmaQogCWZpCiAKLQlkb190cmFuc2ZlciAke2xpc3Rl
+bmVyX25zfSAke2Nvbm5lY3Rvcl9uc30gTVBUQ1AgVENQIFwKLQkJICAgICR7Y29ubmVjdF9hZGRy
+fSAke2xvY2FsX2FkZHJ9ICIke2V4dHJhX2FyZ3N9IgorCSNkb190cmFuc2ZlciAke2xpc3RlbmVy
+X25zfSAke2Nvbm5lY3Rvcl9uc30gTVBUQ1AgVENQIFwKKwkjCSAgICAke2Nvbm5lY3RfYWRkcn0g
+JHtsb2NhbF9hZGRyfSAiJHtleHRyYV9hcmdzfSIKIAlscmV0PSQ/CiAJaWYgWyAkbHJldCAtbmUg
+MCBdOyB0aGVuCiAJCXJldD0kbHJldAogCQlyZXR1cm4gMQogCWZpCiAKLQlkb190cmFuc2ZlciAk
+e2xpc3RlbmVyX25zfSAke2Nvbm5lY3Rvcl9uc30gVENQIE1QVENQIFwKLQkJICAgICR7Y29ubmVj
+dF9hZGRyfSAke2xvY2FsX2FkZHJ9ICIke2V4dHJhX2FyZ3N9IgorCSNkb190cmFuc2ZlciAke2xp
+c3RlbmVyX25zfSAke2Nvbm5lY3Rvcl9uc30gVENQIE1QVENQIFwKKwkjCSAgICAke2Nvbm5lY3Rf
+YWRkcn0gJHtsb2NhbF9hZGRyfSAiJHtleHRyYV9hcmdzfSIKIAlscmV0PSQ/CiAJaWYgWyAkbHJl
+dCAtbmUgMCBdOyB0aGVuCiAJCXJldD0kbHJldApAQCAtNzE2LDggKzcxNiw4IEBAIEVPRgogCiAJ
+VEVTVF9DT1VOVD0xMDAwMAogCWxvY2FsIGV4dHJhX2FyZ3M9Ii1vIFRSQU5TUEFSRU5UIgotCWRv
+X3RyYW5zZmVyICR7bGlzdGVuZXJfbnN9ICR7Y29ubmVjdG9yX25zfSBNUFRDUCBNUFRDUCBcCi0J
+CSAgICAke2Nvbm5lY3RfYWRkcn0gJHtsb2NhbF9hZGRyfSAiJHtleHRyYV9hcmdzfSIKKwkjZG9f
+dHJhbnNmZXIgJHtsaXN0ZW5lcl9uc30gJHtjb25uZWN0b3JfbnN9IE1QVENQIE1QVENQIFwKKwkj
+CSAgICAke2Nvbm5lY3RfYWRkcn0gJHtsb2NhbF9hZGRyfSAiJHtleHRyYV9hcmdzfSIKIAlscmV0
+PSQ/CiAKIAlpcCBuZXRucyBleGVjICIkbGlzdGVuZXJfbnMiIG5mdCBmbHVzaCBydWxlc2V0Cg==
+
+
+--=-JZLwH+BnmnbBU710Mfv4--
 
