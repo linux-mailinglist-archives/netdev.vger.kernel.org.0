@@ -2,208 +2,313 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93EC749D2D0
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 20:53:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C192C49D2EB
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 20:58:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231670AbiAZTxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 14:53:38 -0500
-Received: from mga12.intel.com ([192.55.52.136]:51577 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229484AbiAZTxh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jan 2022 14:53:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643226817; x=1674762817;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=SfmTOnDdU92cbvpQLKkkH57/Nw9iTV4EaYgalGsaY7A=;
-  b=EiMj/WunXWByFYRL29oXc8Kzikz4snYSKrtjyhiOzy4R1cwfbSvCdG4g
-   XLOsf6/wRmMzl4L92YPzY82IA72N9ztdRvilO4QZtjq9zHqHGKamW3bH7
-   5T7PT98IuP5X047IpJzBLg1HPn6MijPmSIwNdyQuTVjKvdZZod262kFrv
-   4rOS8PqGaBPb41l+1mEmEYRoKNEz5/tRkoN8WP1IGnOVFuM65k31DOPci
-   GXT8uhH/OKrqvMowcirWPY5baLTwNcr0p8a8bJTWODwp7gzXW9tGWX57T
-   Y7L94Qg0+mKYIP0ZNb7f0IdXm6IJktFlNMbH7KnLidlhx7FflxIqngIio
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="226614492"
-X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
-   d="scan'208";a="226614492"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 11:53:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
-   d="scan'208";a="674456993"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga001.fm.intel.com with ESMTP; 26 Jan 2022 11:53:36 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 26 Jan 2022 11:53:34 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 26 Jan 2022 11:53:34 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20 via Frontend Transport; Wed, 26 Jan 2022 11:53:34 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.176)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Wed, 26 Jan 2022 11:53:34 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SP1OqEqTtXIWpECUts2I51Yst5tD/cLBKqpVx9C94BlNCOvfWuNIv3LRI2DP0AX7ynKR8Nm6NxsY6KHM0xAxT14ngS5fO06cr88Ad9SNxH4UX7z2LGFhL8BcIVOvsB7ZS0R6B6YwVv8s3puUL2vbnO47RP5qEFTzagIRmpaMgHMNTDHgWRfjImt2LKFNJtCNHKVRRaQQGXMuwmpBwTKTECv1nUEsvJ96vBvZc12yPtps7VtPSwrw88zoags1Wt2KD9jnKz27nvzawfk6BOjtPtiMghjuSHZnDI7E1/IhDOGX/aw62rIuFHeSVfvFYI11iyZUiG3/C2hqfdf1GW4HJw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=c6bYwo8Xa7vXFr/7E1tU2lxAlB7zCP9BhDlYww3dxQc=;
- b=K13WXXtLbESkr7bKp0SZ52NqivU6r7pPk3fk1oWPDXmeVfA4f3kEnS9jr0zlWVUmGHbQeYZ9K0EmcrgpDDdxQ1F54mUtyFqW1x3jptZUhHcRsGrOGBAH7LlCw+ZiVHNXCf8ybVwx3sYBeet+xzpVQwbD9GmQGVLw+ASz43IYexmiUhC4MGC/4ssgQa2BCt4CDGUH3daDwM05Cfgu2GRWk/iYjmFgRIvdsQ/eAnLEZ1OrgmXUBGt29OT1GkC5jNxVPTkf3Duc4AJA9xn4kPl+Fu9U/mKLHUUqo0QuynP3m1iomcn7OJFJFn5hOK3PvNhDCsA7CKdOiELKqPnVi8GGsA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CO1PR11MB4914.namprd11.prod.outlook.com (2603:10b6:303:90::24)
- by CY4PR11MB1783.namprd11.prod.outlook.com (2603:10b6:903:11d::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.14; Wed, 26 Jan
- 2022 19:53:31 +0000
-Received: from CO1PR11MB4914.namprd11.prod.outlook.com
- ([fe80::d016:68bf:aa12:d92d]) by CO1PR11MB4914.namprd11.prod.outlook.com
- ([fe80::d016:68bf:aa12:d92d%3]) with mapi id 15.20.4930.015; Wed, 26 Jan 2022
- 19:53:31 +0000
-Message-ID: <bb6675f9-63ce-77a2-e4fe-76cc592e5f41@intel.com>
-Date:   Wed, 26 Jan 2022 11:53:29 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] i40e: remove enum i40e_client_state
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, <anthony.l.nguyen@intel.com>
-CC:     <shiraz.saleem@intel.com>, <netdev@vger.kernel.org>,
-        <intel-wired-lan@lists.osuosl.org>
-References: <20220126185544.2787111-1-kuba@kernel.org>
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-In-Reply-To: <20220126185544.2787111-1-kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MW4P223CA0021.NAMP223.PROD.OUTLOOK.COM
- (2603:10b6:303:80::26) To CO1PR11MB4914.namprd11.prod.outlook.com
- (2603:10b6:303:90::24)
+        id S232685AbiAZT62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 14:58:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51164 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230122AbiAZT61 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 14:58:27 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434E8C06161C;
+        Wed, 26 Jan 2022 11:58:27 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id u15so926786wrt.3;
+        Wed, 26 Jan 2022 11:58:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=Z6nIps8YazaNhe1+Yw3J4MaNNx0eAK31JViEHafHbC0=;
+        b=PmljW7dIKrMfIyxEbZigwWK2vNVfa1ZaUrMIb0xBg8Qk5XXK1oeeusbQy+BcpFbpi2
+         9gbY7gPdleaclJGdckxy/VMBqTcYp+NWZsqK2kDxUKTa1cJpsYjJRKxxw5br4aauiJyF
+         eWMYJIsG5XyP71iEJGNIaLIFJvzvoUMem4MW4KKoBDA0UhivSDppJOnpccsja4YdsM8x
+         viev721AIt7jnKz7P+M5DB57Z4YopGEOHiymwJ26cBtxfrwjPoc3GCMhcnT2c9NPC6fF
+         SWHh9bSqwDuFhkL0a7uouxKNcsLSb9ZkcgK278xDwShvrCKNWBTTNOpUi5XknW8qIGjE
+         29Pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=Z6nIps8YazaNhe1+Yw3J4MaNNx0eAK31JViEHafHbC0=;
+        b=t0m/YI/H/wOXqkV6G7VWlFeQF/E6oKYVaQ1+QmDx9R6NJAqvnSMwHBCHedIvfSF8hF
+         aCWTCFI6C7c0rFRYZj4jcWxUr2zPRVi0patb3LtZxxtH/e26UMqTxcNGtOA7Y/yLRUlV
+         vqPNJHSyASbp6Dk/vLSUk561Prk5MDiBAgPC5TfdG/8Is5kDfXUHnf4OjupIpqM4VAQA
+         qmMD/hyycHihFfZipGr48/FqXI4MNL0PDlw/kqwLamQKQR4fwUftPvta3B6/Qjj7O1Tr
+         JEYntg3yl5WswqGvP5q6wJ53rkNWs5CeStJN2mO33oRjyO6G7q7D0ATgH+A+weCmIIWQ
+         UBpg==
+X-Gm-Message-State: AOAM531C49XiHHLnMueI7/o3UiTH/uwKwRnu0HUZtUvxY89Mjxy3Vipb
+        W1YKIBSYNNhHFyQxtkm1BjNBMJ04MUg=
+X-Google-Smtp-Source: ABdhPJy+bP4OW/ajAVYQ3HlF3qJTr2n90JFNzt+a20v2SUd2DkxpPko5x7OnT4a/pksPc7zVNxnanA==
+X-Received: by 2002:a05:6000:1568:: with SMTP id 8mr189647wrz.278.1643227105813;
+        Wed, 26 Jan 2022 11:58:25 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f4d:2b00:4959:c362:fa9a:b656? (p200300ea8f4d2b004959c362fa9ab656.dip0.t-ipconnect.de. [2003:ea:8f4d:2b00:4959:c362:fa9a:b656])
+        by smtp.googlemail.com with ESMTPSA id w8sm224754wrq.3.2022.01.26.11.58.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 11:58:25 -0800 (PST)
+Message-ID: <a42b7653-7be6-a0ed-5ed9-7668e5348c2d@gmail.com>
+Date:   Wed, 26 Jan 2022 20:58:21 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 267a3695-9bac-4abd-3572-08d9e1058749
-X-MS-TrafficTypeDiagnostic: CY4PR11MB1783:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-Microsoft-Antispam-PRVS: <CY4PR11MB178394F2631B11732E47415A97209@CY4PR11MB1783.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2KCw1WkctORM+H4x1yOp0VPkvoVT40y1mH7JejE5POG5cBeAdzplHz26EK/CT9RUh8PUh6johRRYh7hPyNwnC6YcMWStTOHz5+3/u1wlm1H+FXx7lgmT0eP96ePexgRGTYz86upL5/6Bag7MIFiLDoLibID1+OZCmepMK5lrRWPQOVChQJCfK1+ffRw7aAfe4HWPsXXNqRuHyhCPZk5HOd8NSqRJR+jQKenLxvOSf71Srvs1sGxlhdGASZjG7/ESLGFgu3dWVawvBiYMEgBMVnE9FwVPdoZQXrpnidOqmv9bHLGckykulaPKPRnHz5Brg5g4qToqDJchADhiam/yS7Q9XJ/Xbywd2g0AMs6GPomORuXYTlzuxNUcFUYvJt87iHWMBkEVWunyMnVLAbBxORBF8dxrFmt6DtmJX9hZObH2LkTudqP9XCJ6kU4woA9B4gy1ajNoifThQ15TtUUQc05ZtIB//AMQbPb0d5jGaLzu4NnBOI83DIhs666wXYAPYOiuaJxMSVG4cH5Q2Gk3retBuiVpVppiqwd1pA3WMCKBC3xH1FCXd3lKuezSAu8ldD00qJdZmO0+1/1J/fryE1cV02WRBX5mKUNbZplfN9DFN/nqb4rtjsL1qcgk8gJzOMa1eZsQPVXoyP6Mmwm/mB985bqBTq91exP4q1xCwfRx5wDykKP4HnU/wJIXL43tww3fAbmg/c/N0u/bbYvflP0Q0kkxVnGbF8bHCBTRTpw=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4914.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(83380400001)(44832011)(31686004)(82960400001)(6512007)(2616005)(53546011)(4326008)(6636002)(8676002)(26005)(316002)(66946007)(66476007)(66556008)(86362001)(8936002)(31696002)(6506007)(186003)(36756003)(508600001)(5660300002)(38100700002)(6486002)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?K095WmZZaDZSTERPZUNRN0p4dVAzQ0JBSktaVFRVcVlrUG1vMmVzalQrRlVC?=
- =?utf-8?B?aXJQZzZDMDJXdG14N25uRlNGaHNKS2IvYjNxUkU4eVRHQVZJREtKTFQycXF0?=
- =?utf-8?B?eTlBdk4reDhWNzFYMVdFTm1Ja1c5ZENKUjZCcWl6NHM0d2FzOXY1ZkFPdTh4?=
- =?utf-8?B?YmNQV2M3KzBsb01hZEQrdXJ1bVNQbzYyZ2VYd0c0WnBrNDEwTEttb2tBMHNv?=
- =?utf-8?B?Q2xsaXRpM0RQaFZVdXkva0tFbitWVmxVYnZURnc5WFNSU2RDeXRuWnA3V0F6?=
- =?utf-8?B?SllxcXcyTFVhNXFYaXZxMFlFNVJWODVwa1A3Q29uNkl2WW5yVVJtNFFQeVJZ?=
- =?utf-8?B?NXFVWThMZ0xhV0xqTzlHWU1LRi9EQ2dzeWZGcUtiVG94QWVMRTI0bVFBWVhY?=
- =?utf-8?B?Qi8zcDVFYjlYL2pHbzBjRWI1MitxV0xTRFdvaUlERVd5V0VQK3lHU05UbmpM?=
- =?utf-8?B?dDNHWTlKbkxnNjBmQ0d2V0hMQ2F0UDBuelhPS2huSVJuK1gyMmlVYnU3MHpj?=
- =?utf-8?B?RncyRVl3Q1BNbWlZam9IeTQrMU1LWUR0SDhETlQ2U3ozd3dNdUJSenNBdXVH?=
- =?utf-8?B?WUQxZzFpK3ZWbW95RUNhWFRTOFBuZVV1ZHhTWE5kNElOUXUwcmw0WGtmcURw?=
- =?utf-8?B?UGhMTVhQb1pyMGl2anpXR2hLTlpEcVFveEdDK2s2YXkvZ1ZjVzNrdnVtSzNT?=
- =?utf-8?B?bEZjYW02bDZRT1VpUVQ5VlM5a05KaG9GaHVYQjFBaFJsUUdTelE2bml3NjlN?=
- =?utf-8?B?U2dYREd4dFQxRE9HS3dDYWZhY20weXppalNQWW92MVQ2MW1LMEtzSFpGbllP?=
- =?utf-8?B?dmtZRFJVNXkyako5Sitsc2xxZkZkSTZoZG9PeWFvdklpeWRrelg1OEs2Vkpp?=
- =?utf-8?B?NHBPTnpxeWdzNzJYaHprTFhLanNZbnkrS1ZZT1UzM2ZOSFpqL2FpbXMxWGVv?=
- =?utf-8?B?N09GYjFubitmb1ljcUxGbkdnRmZ2ekxHMHpNZktQM3BENENtcXBPYWlWZ0sr?=
- =?utf-8?B?MVd4UFFJdkFybUVpd1g1TkZNQ3UyWVdSYURrckwwNmprRjVhOGVwQUFnNVRY?=
- =?utf-8?B?bndYTkZNdHJLV3hBVE1CZHRZZFY5VHozQ1psbERvc1NUNzRjNW56d3RyVFow?=
- =?utf-8?B?WTB1dHJHYmk3WGoxV0ZoMEpiUnpXZFdCS2NvZm8yYzJ3dnV2WE4wK0V4MUJC?=
- =?utf-8?B?NnQrYU9MVW1yaVVTaU96a3haVUhLWWxiVDR6bmNwYitrTzFlV0dMRlg5K0ts?=
- =?utf-8?B?U1h4Z3ptM1l5ZFJNUkh1dWlBbnY3UHRTM2hEV3haZk5DRm40cnR6YlBmMkV0?=
- =?utf-8?B?SXUybnZLWEhGVGgxSCtmVnY4T0lIcHJxRWErT1hFSElEeWVNYnpGaVRPN1V1?=
- =?utf-8?B?QWFCMjJ5VmhEZDFUTkNvUkJJd0hHY3JKSHJDbmFaRFlyRGVOclk5dkpHUmJR?=
- =?utf-8?B?TUExa0xab0RWdm1lNk8zRnYzTlhxdytPL09kRUlybjdwZGl0TVFoRVdYSVNV?=
- =?utf-8?B?TTl4VlpVdHh2eTQvd0JxTTRSTGREc01Vc0lWa2toODZlN0RHYWxIQ25vanZ2?=
- =?utf-8?B?WC9LeWhQcllZSzk5STd4UmVPeVB3bnE0UVJpQjJWOURhTXRIMVZEZXZScjdS?=
- =?utf-8?B?Z0lJS3ZXVGlPZmViSGRwbUVmMXR1K205RTNIWFZRc3I3RFJRd0YxTzJqam1V?=
- =?utf-8?B?UktrK3h2TXBFNW5RVnBPSlRYRW1za1pyRUJNRERYekFYajlXOGQ5QjJRbEdQ?=
- =?utf-8?B?b0Z5dWJWQ2w0R2pEbmJ3RU1PRE5KTVdsK2NQS0FiOVkyNmZOU2xPa1ZCVGsv?=
- =?utf-8?B?UFFkOUNkT0hCZ1dFNFdoRUF4RENycEdVZ0FqTHhTNVZvblUwNFBRRGI4Z1JW?=
- =?utf-8?B?TDFnemhJNzdJM2NWZ2piVXRhMyt1S1RVb3lXUlEvRlFKM3FwMmNaT0NZNmxV?=
- =?utf-8?B?VUN1Ni9zUUxDdlNJNTFvUnM2ODhqK2R0bzFYR01aYlJHSXJNbGk5eStnbU1a?=
- =?utf-8?B?Z2FGME9aTDNOcTRaZ0tzTFBWajJuMjZsS0kwZkxtd3NEYTZqYWR2dnNnY3FV?=
- =?utf-8?B?Q2x4ZTBUZEUzdWluVHlnaFdjWks3TzNkV2JJZmhhN3VhenZSaUtjU3ZmMEFi?=
- =?utf-8?B?RHpQWTJ1Vno4bkQrTzYvTUZlZWVZWkR5RzZOWmErZXNhMFVqTDFJaW1jVHBB?=
- =?utf-8?B?YmFOQy9adVpUNEhkV0tYY1BwNk40K1NVbDM3UElrSmIySTlQTTJlNmF1RElP?=
- =?utf-8?B?S05OV25QWTd2eWdYc3dacHZ4ajlRPT0=?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 267a3695-9bac-4abd-3572-08d9e1058749
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4914.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2022 19:53:31.2474
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oWEkXKpcuoc3ywBf9UAGzzS8073gRsUwO63WPPkAcUO4H6Ven5223On2GxYg5N9/fqspYx/XumSgzvFCHbdCsfi01vMW5PbSRZPCPmP/5T4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR11MB1783
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Content-Language: en-US
+To:     Hau <hau@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220124181937.6331-1-hau@realtek.com>
+ <5ec25f20-8acf-544d-30f6-f0eeecd9b2f1@gmail.com>
+ <439ba7073446410da75509a5add95e03@realtek.com>
+ <daa376b3-d756-b85d-d256-49012ebe928b@gmail.com>
+ <0a281169bb114b69a49f91be80bbdf45@realtek.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next 1/1] r8169: enable RTL8125 ASPM L1.2
+In-Reply-To: <0a281169bb114b69a49f91be80bbdf45@realtek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks Jakub!
-
-On 1/26/2022 10:55 AM, Jakub Kicinski wrote:
-> It's not used.
-
-minor nit, you didn't say if you wanted this to go to net or net-next or 
-add a Fixes: tag?
-
-maybe:
-Fixes: e3219ce6a775 ("i40e: Add support for client interface for IWARP 
-driver")
-
-
-
+On 26.01.2022 16:03, Hau wrote:
 > 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-for the patch itself, it looks fine to me, so if you spin this
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-
-
-> ---
->   include/linux/net/intel/i40e_client.h | 10 ----------
->   1 file changed, 10 deletions(-)
 > 
-> diff --git a/include/linux/net/intel/i40e_client.h b/include/linux/net/intel/i40e_client.h
-> index 6b3267b49755..ed42bd5f639f 100644
-> --- a/include/linux/net/intel/i40e_client.h
-> +++ b/include/linux/net/intel/i40e_client.h
-> @@ -26,11 +26,6 @@ struct i40e_client_version {
->   	u8 rsvd;
->   };
->   
-> -enum i40e_client_state {
-> -	__I40E_CLIENT_NULL,
-> -	__I40E_CLIENT_REGISTERED
-> -};
-> -
->   enum i40e_client_instance_state {
->   	__I40E_CLIENT_INSTANCE_NONE,
->   	__I40E_CLIENT_INSTANCE_OPENED,
-> @@ -190,11 +185,6 @@ struct i40e_client {
->   	const struct i40e_client_ops *ops; /* client ops provided by the client */
->   };
->   
-> -static inline bool i40e_client_is_registered(struct i40e_client *client)
-> -{
-> -	return test_bit(__I40E_CLIENT_REGISTERED, &client->state);
-> -}
-> -
->   void i40e_client_device_register(struct i40e_info *ldev, struct i40e_client *client);
->   void i40e_client_device_unregister(struct i40e_info *ldev);
->   
+>> -----Original Message-----
+>> From: Heiner Kallweit [mailto:hkallweit1@gmail.com]
+>> Sent: Wednesday, January 26, 2022 9:47 PM
+>> To: Hau <hau@realtek.com>; netdev@vger.kernel.org
+>> Cc: nic_swsd <nic_swsd@realtek.com>; linux-kernel@vger.kernel.org
+>> Subject: Re: [PATCH net-next 1/1] r8169: enable RTL8125 ASPM L1.2
+>>
+>> On 26.01.2022 14:00, Hau wrote:
+>>>> On 24.01.2022 19:19, Chunhao Lin wrote:
+>>>>> This patch will enable RTL8125 ASPM L1.2 on the platforms that have
+>>>>> tested RTL8125 with ASPM L1.2 enabled.
+>>>>> Register mac ocp 0xc0b2 will help to identify if RTL8125 has been
+>>>>> tested on L1.2 enabled platform. If it is, this register will be set to 0xf.
+>>>>> If not, this register will be default value 0.
+>>>>>
+>>>>> Signed-off-by: Chunhao Lin <hau@realtek.com>
+>>>>> ---
+>>>>>  drivers/net/ethernet/realtek/r8169_main.c | 99
+>>>>> ++++++++++++++++++-----
+>>>>>  1 file changed, 79 insertions(+), 20 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c
+>>>>> b/drivers/net/ethernet/realtek/r8169_main.c
+>>>>> index 19e2621e0645..b1e013969d4c 100644
+>>>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>>>>> @@ -2238,21 +2238,6 @@ static void rtl_wol_enable_rx(struct
+>>>> rtl8169_private *tp)
+>>>>>  			AcceptBroadcast | AcceptMulticast |
+>>>> AcceptMyPhys);  }
+>>>>>
+>>>>> -static void rtl_prepare_power_down(struct rtl8169_private *tp) -{
+>>>>> -	if (tp->dash_type != RTL_DASH_NONE)
+>>>>> -		return;
+>>>>> -
+>>>>> -	if (tp->mac_version == RTL_GIGA_MAC_VER_32 ||
+>>>>> -	    tp->mac_version == RTL_GIGA_MAC_VER_33)
+>>>>> -		rtl_ephy_write(tp, 0x19, 0xff64);
+>>>>> -
+>>>>> -	if (device_may_wakeup(tp_to_dev(tp))) {
+>>>>> -		phy_speed_down(tp->phydev, false);
+>>>>> -		rtl_wol_enable_rx(tp);
+>>>>> -	}
+>>>>> -}
+>>>>> -
+>>>>>  static void rtl_init_rxcfg(struct rtl8169_private *tp)  {
+>>>>>  	switch (tp->mac_version) {
+>>>>> @@ -2650,6 +2635,34 @@ static void
+>>>>> rtl_pcie_state_l2l3_disable(struct
+>>>> rtl8169_private *tp)
+>>>>>  	RTL_W8(tp, Config3, RTL_R8(tp, Config3) & ~Rdy_to_L23);  }
+>>>>>
+>>>>> +static void rtl_disable_exit_l1(struct rtl8169_private *tp) {
+>>>>> +	/* Bits control which events trigger ASPM L1 exit:
+>>>>> +	 * Bit 12: rxdv
+>>>>> +	 * Bit 11: ltr_msg
+>>>>> +	 * Bit 10: txdma_poll
+>>>>> +	 * Bit  9: xadm
+>>>>> +	 * Bit  8: pktavi
+>>>>> +	 * Bit  7: txpla
+>>>>> +	 */
+>>>>> +	switch (tp->mac_version) {
+>>>>> +	case RTL_GIGA_MAC_VER_34 ... RTL_GIGA_MAC_VER_36:
+>>>>> +		rtl_eri_clear_bits(tp, 0xd4, 0x1f00);
+>>>>> +		break;
+>>>>> +	case RTL_GIGA_MAC_VER_37 ... RTL_GIGA_MAC_VER_38:
+>>>>> +		rtl_eri_clear_bits(tp, 0xd4, 0x0c00);
+>>>>> +		break;
+>>>>> +	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
+>>>>> +		rtl_eri_clear_bits(tp, 0xd4, 0x1f80);
+>>>>> +		break;
+>>>>> +	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
+>>>>> +		r8168_mac_ocp_modify(tp, 0xc0ac, 0x1f80, 0);
+>>>>> +		break;
+>>>>> +	default:
+>>>>> +		break;
+>>>>> +	}
+>>>>> +}
+>>>>> +
+>>>>>  static void rtl_enable_exit_l1(struct rtl8169_private *tp)  {
+>>>>>  	/* Bits control which events trigger ASPM L1 exit:
+>>>>> @@ -2692,6 +2705,33 @@ static void rtl_hw_aspm_clkreq_enable(struct
+>>>> rtl8169_private *tp, bool enable)
+>>>>>  	udelay(10);
+>>>>>  }
+>>>>>
+>>>>> +static void rtl_hw_aspm_l12_enable(struct rtl8169_private *tp, bool
+>>>>> +enable) {
+>>>>> +	/* Don't enable L1.2 in the chip if OS can't control ASPM */
+>>>>> +	if (enable && tp->aspm_manageable) {
+>>>>> +		r8168_mac_ocp_modify(tp, 0xe094, 0xff00, 0);
+>>>>> +		r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, BIT(2));
+>>>>> +	} else {
+>>>>> +		r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, 0);
+>>>>> +	}
+>>>>> +}
+>>>>> +
+>>>>> +static void rtl_prepare_power_down(struct rtl8169_private *tp) {
+>>>>> +	if (tp->dash_type != RTL_DASH_NONE)
+>>>>> +		return;
+>>>>> +
+>>>>> +	if (tp->mac_version == RTL_GIGA_MAC_VER_32 ||
+>>>>> +	    tp->mac_version == RTL_GIGA_MAC_VER_33)
+>>>>> +		rtl_ephy_write(tp, 0x19, 0xff64);
+>>>>> +
+>>>>> +	if (device_may_wakeup(tp_to_dev(tp))) {
+>>>>> +		rtl_disable_exit_l1(tp);
+>>>>> +		phy_speed_down(tp->phydev, false);
+>>>>> +		rtl_wol_enable_rx(tp);
+>>>>> +	}
+>>>>> +}
+>>>>> +
+>>>>>  static void rtl_set_fifo_size(struct rtl8169_private *tp, u16 rx_stat,
+>>>>>  			      u16 tx_stat, u16 rx_dyn, u16 tx_dyn)  { @@ -
+>>>> 3675,6 +3715,7
+>>>>> @@ static void rtl_hw_start_8125b(struct rtl8169_private *tp)
+>>>>>  	rtl_ephy_init(tp, e_info_8125b);
+>>>>>  	rtl_hw_start_8125_common(tp);
+>>>>>
+>>>>> +	rtl_hw_aspm_l12_enable(tp, true);
+>>>>>  	rtl_hw_aspm_clkreq_enable(tp, true);  }
+>>>>>
+>>>>> @@ -5255,6 +5296,20 @@ static void rtl_init_mac_address(struct
+>>>> rtl8169_private *tp)
+>>>>>  	rtl_rar_set(tp, mac_addr);
+>>>>>  }
+>>>>>
+>>>>> +/* mac ocp 0xc0b2 will help to identify if RTL8125 has been tested
+>>>>> + * on L1.2 enabled platform. If it is, this register will be set to 0xf.
+>>>>> + * If not, this register will be default value 0.
+>>>>> + */
+>>>>> +static bool rtl_platform_l12_enabled(struct rtl8169_private *tp) {
+>>>>> +	switch (tp->mac_version) {
+>>>>> +	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
+>>>>> +		return (r8168_mac_ocp_read(tp, 0xc0b2) & 0xf) ? true : false;
+>>>>> +	default:
+>>>>> +		return false;
+>>>>> +	}
+>>>>> +}
+>>>>> +
+>>>>>  static int rtl_init_one(struct pci_dev *pdev, const struct
+>>>>> pci_device_id *ent)  {
+>>>>>  	struct rtl8169_private *tp;
+>>>>> @@ -5333,11 +5388,15 @@ static int rtl_init_one(struct pci_dev
+>>>>> *pdev,
+>>>> const struct pci_device_id *ent)
+>>>>>  	 * Chips from RTL8168h partially have issues with L1.2, but seem
+>>>>>  	 * to work fine with L1 and L1.1.
+>>>>>  	 */
+>>>>> -	if (tp->mac_version >= RTL_GIGA_MAC_VER_45)
+>>>>> -		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
+>>>>> -	else
+>>>>> -		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
+>>>>> -	tp->aspm_manageable = !rc;
+>>>>> +	if (!rtl_platform_l12_enabled(tp)) {
+>>>>> +		if (tp->mac_version >= RTL_GIGA_MAC_VER_45)
+>>>>> +			rc = pci_disable_link_state(pdev,
+>>>> PCIE_LINK_STATE_L1_2);
+>>>>> +		else
+>>>>> +			rc = pci_disable_link_state(pdev,
+>>>> PCIE_LINK_STATE_L1);
+>>>>> +		tp->aspm_manageable = !rc;
+>>>>> +	} else {
+>>>>> +		tp->aspm_manageable = pcie_aspm_enabled(pdev);
+>>>>> +	}
+>>>>>
+>>>>>  	tp->dash_type = rtl_check_dash(tp);
+>>>>>
+>>>>
+>>>> Hi Hau,
+>>>>
+>>>> the following is a stripped-down version of the patch. Could you
+>>>> please check/test?
+>>> This patch is ok.
+>>> L1 substate lock can apply for both rtl8125a.rtl8125b.
+>>> if (enable && tp->aspm_manageable) {
+>>> 	RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
+>>> 	RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
+>>>
+>>> 	if (tp->mac_version >= RTL_GIGA_MAC_VER_60) {
+>>> 		r8168_mac_ocp_modify(tp, 0xe094, 0xff00, 0);
+>>> 		r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, BIT(2));
+>>> 	}
+>>> } else {
+>>> 	if (tp->mac_version >= RTL_GIGA_MAC_VER_60)
+>>> 		r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, 0);
+>>>
+>>> 	RTL_W8(tp, Config2, RTL_R8(tp, Config2) & ~ClkReqEn);
+>>> 	RTL_W8(tp, Config5, RTL_R8(tp, Config5) & ~ASPM_en); }
+>>>
+>>>> If function rtl_disable_exit_l1() is actually needed, I'd prefer to
+>>>> add it in a separate patch (to facilitate bisecting).
+>>>>
+>>> If exit l1 mask is enabled, hardware will prone to exit l1. That will
+>>> prevent hardware from entering l1 substate. So It needs to disable l1
+>>> exist mask when device go to d3 state for entering l1 substate..
+>>>
+>> My understanding of PCI power management may be incomplete, but:
+>> If a device goes to D3, then doesn't the bus go to L2/L3?
+>> L1 exit criteria would be irrelevant then.
+> Your understanding is correct.
+> D3 is divided to two substate, D3hot and D3cold. D3cold will enter L2/L3.
+> D3hot may enter L1 or L2/L3 ready.  In D3hot case, enable exit l1 mask will
+> prevent hardware from entering PM L1. That is our hardware issue.
+> So we disable exit l1 mask before hardware enter D3.
+> 
+> 
+I submitted the patch to enable L1.2 if tested with your Suggested-by.
+One last question before submitting the disable_exit_l1 patch.
 
+Depending on the chip version only certain L1 exit bits are set.
+
++	switch (tp->mac_version) {
++	case RTL_GIGA_MAC_VER_34 ... RTL_GIGA_MAC_VER_36:
++		rtl_eri_clear_bits(tp, 0xd4, 0x1f00);
++		break;
++	case RTL_GIGA_MAC_VER_37 ... RTL_GIGA_MAC_VER_38:
++		rtl_eri_clear_bits(tp, 0xd4, 0x0c00);
++		break;
++	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
++		rtl_eri_clear_bits(tp, 0xd4, 0x1f80);
++		break;
++	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
++		r8168_mac_ocp_modify(tp, 0xc0ac, 0x1f80, 0);
++		break;
+
+Would it be safe to shorten this to the following? Or is some bit
+in this range used for another purpose on certain chip versions?
+
++	switch (tp->mac_version) {
++	case RTL_GIGA_MAC_VER_34 ... RTL_GIGA_MAC_VER_38:
++	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
++		rtl_eri_clear_bits(tp, 0xd4, 0x1f80);
++		break;
++	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
++		r8168_mac_ocp_modify(tp, 0xc0ac, 0x1f80, 0);
++		break;
