@@ -2,115 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55DBB49C45F
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 08:35:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 355FF49C465
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 08:35:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237869AbiAZHfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 02:35:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbiAZHfd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 02:35:33 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C0BC06161C
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 23:35:33 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id o64so22501190pjo.2
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 23:35:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aF5kcu0t39kU7a8AXsYZ8oRu5hf/ROtjmPzvTNsZtlU=;
-        b=CKgCKEp09ZIsc4FKB4swlyApSX2KUJMcSteSs3AhqjkzDYt/MNIM82CejyhxTp1Wle
-         xoScOvng4o9vBJErudvfXdKS45XcBbQiDT+Qo3Hv1z5MHSy/NWMyr24UJlB4zKIy8mo8
-         tPx9KF7QoVdBGcj1S+8CpgWkYMkwVShWb53sfQC78FHC+xbv6iYQZ4B2iXQAJfi2FU8m
-         /BGSjmLgcFMpbd5cM1EJ6Cp3H3ZKOZ7XnflMZP+TlqNiOJz9+cgfIBzY8azHsrdaR+kj
-         3BcCIFxlgYbkh7pt/tvSjuWPAR+KdovMyaMaqEvN2FE0oEL4iqg4/89wtPv4tjmQEaMi
-         /D2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aF5kcu0t39kU7a8AXsYZ8oRu5hf/ROtjmPzvTNsZtlU=;
-        b=IbD1/tGlJ5g1Wo6EsuIjgpocwzCTZn9S2JGTsyDO2NOXY7u5wm4mivGVl4ZElfG3hf
-         CAs5aGhfXvUm1J4BKbRlLrfLKxsTNVV8xG1vq9d7Apl5+hBZhzo9UICG85nB8sgCGiCS
-         xBpsJxxLcxFkuU5f1FwMp5qzv8trxI7kJvX4z9endnidUeLvbELIAXq5ZJB/YpNvK/yo
-         SXXOPMDYJBJA+KNKsNgXMUis3AKrzJD4B/jF/tCO1A73fafDT0aG1oUwRmYi8gXYMVr4
-         U3zcqTuEMDPvqTtJOa/8sZFcp8fmx51RGb1UEEvgUF7t3NEJUjtRRKhuKpBJCOraaC5I
-         8OeA==
-X-Gm-Message-State: AOAM5324lX9MxDJ0QFHuWrGDP1k7niiik9Tm3aJz1rEZ3osL462af5f5
-        fDDFmssRRs7Kk4mJoGe8gDyEZM9FC1s=
-X-Google-Smtp-Source: ABdhPJyL47wJFm8IWnR82VIkXgy8O85YI6/ULFSkglETvJi79WtS4IJuIVO1lFFVhajQkRv2J5lMRg==
-X-Received: by 2002:a17:902:e0c2:b0:14a:e796:26c2 with SMTP id e2-20020a170902e0c200b0014ae79626c2mr22273423pla.118.1643182532307;
-        Tue, 25 Jan 2022 23:35:32 -0800 (PST)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p12sm2240819pjj.55.2022.01.25.23.35.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 23:35:31 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S237891AbiAZHfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 02:35:41 -0500
+Received: from out199-6.us.a.mail.aliyun.com ([47.90.199.6]:34467 "EHLO
+        out199-6.us.a.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237874AbiAZHfi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 02:35:38 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V2uAwQt_1643182534;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V2uAwQt_1643182534)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 26 Jan 2022 15:35:35 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        David Ahern <dsahern@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH RFC net-next 0/5] bonding: add IPv6 NS/NA monitor support
-Date:   Wed, 26 Jan 2022 15:35:16 +0800
-Message-Id: <20220126073521.1313870-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
+Subject: [PATCH v3 01/17] virtio_pci: struct virtio_pci_common_cfg add queue_notify_data
+Date:   Wed, 26 Jan 2022 15:35:17 +0800
+Message-Id: <20220126073533.44994-2-xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220126073533.44994-1-xuanzhuo@linux.alibaba.com>
+References: <20220126073533.44994-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an RFC of adding IPv6 NS/NA monitor support for bonding. I
-posted a draft patch before[1]. But that patch is too big and David
-Ahern suggested to split it smaller. So I split the previous patch
-to 5 small ones, maybe not very good :)
+Add queue_notify_data in struct virtio_pci_common_cfg, which comes from
+here https://github.com/oasis-tcs/virtio-spec/issues/89
 
-The iproute2 patch is here [2].
+Since I want to add queue_reset after it, I submitted this patch first.
 
-This patch add bond IPv6 NS/NA monitor support. A new option
-ns_ip6_target is added, which is similar with arp_ip_target.
-The IPv6 NS/NA monitor will take effect when there is a valid IPv6
-address. And ARP monitor will stop working.
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+---
+ include/uapi/linux/virtio_pci.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-A new field struct in6_addr ip6_addr is added to struct bond_opt_value
-for IPv6 support. Thus __bond_opt_init() is also updated to check
-string, addr first.
-
-Function bond_handle_vlan() is split from bond_arp_send() for both
-IPv4/IPv6 usage.
-
-To alloc NS message and send out. ndisc_ns_create() and ndisc_send_skb()
-are exported.
-
-[1] https://lore.kernel.org/netdev/20211124071854.1400032-1-liuhangbin@gmail.com
-[2] https://lore.kernel.org/netdev/20211124071854.1400032-2-liuhangbin@gmail.com
-
-Hangbin Liu (5):
-  ipv6: separate ndisc_ns_create() from ndisc_send_ns()
-  Bonding: split bond_handle_vlan from bond_arp_send
-  bonding: add ip6_addr for bond_opt_value
-  bonding: add new parameter ns_targets
-  bonding: add new option ns_ip6_target
-
- Documentation/networking/bonding.rst |  11 ++
- drivers/net/bonding/bond_main.c      | 266 ++++++++++++++++++++++++---
- drivers/net/bonding/bond_netlink.c   |  55 ++++++
- drivers/net/bonding/bond_options.c   | 142 +++++++++++++-
- drivers/net/bonding/bond_sysfs.c     |  22 +++
- include/net/bond_options.h           |  14 +-
- include/net/bonding.h                |  36 ++++
- include/net/ndisc.h                  |   5 +
- include/uapi/linux/if_link.h         |   1 +
- net/ipv6/ndisc.c                     |  45 +++--
- tools/include/uapi/linux/if_link.h   |   1 +
- 11 files changed, 549 insertions(+), 49 deletions(-)
-
+diff --git a/include/uapi/linux/virtio_pci.h b/include/uapi/linux/virtio_pci.h
+index 3a86f36d7e3d..492c89f56c6a 100644
+--- a/include/uapi/linux/virtio_pci.h
++++ b/include/uapi/linux/virtio_pci.h
+@@ -164,6 +164,7 @@ struct virtio_pci_common_cfg {
+ 	__le32 queue_avail_hi;		/* read-write */
+ 	__le32 queue_used_lo;		/* read-write */
+ 	__le32 queue_used_hi;		/* read-write */
++	__le16 queue_notify_data;	/* read-write */
+ };
+ 
+ /* Fields in VIRTIO_PCI_CAP_PCI_CFG: */
 -- 
-2.31.1
+2.31.0
 
