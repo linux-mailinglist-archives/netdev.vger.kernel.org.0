@@ -2,278 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A7D249D0EE
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 18:38:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5287649D117
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 18:44:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243828AbiAZRiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 12:38:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47210 "EHLO
+        id S243901AbiAZRoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 12:44:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243822AbiAZRit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 12:38:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAF9C06161C;
-        Wed, 26 Jan 2022 09:38:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60134B81CAE;
-        Wed, 26 Jan 2022 17:38:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88173C340E3;
-        Wed, 26 Jan 2022 17:38:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643218723;
-        bh=EFdscSLnaWLhYVWNI1QN+bbNVEh+ATXkGkbBTAYxJVU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QKMFT5JIOjKA4WSdOxxZoprP9S5gopg2K0wTG2r2HrnH2fsvbccXZe4hjNxu0SYAp
-         jIB1k3adqafrenS5Z1NabRPOFMZusn6sg3UQK4nhtpDtH9jBVmxDLsEHSdiptXmV62
-         li8OruZAgJdla3Dhv4Lzvp0EG3z9qgP1lx2cyEINGkFpaIXjW1la+H3FojZRBG5Xtk
-         vcE4nEGqnx9HFaG2qUCjcDKWDIKa+Wiu6k28OK8BKoFR4VhE4X5AF2jxxaXNOBsV0N
-         JSmpjuPNfitBM3tsSB/2PNgtRaqaryeZi+ma42g9YcyiBkLZiLp7N6TfD9qVdkJJhO
-         +2H1WnvFufsbw==
-Date:   Thu, 27 Jan 2022 01:31:05 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Samuel Holland <samuel@sholland.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: stmmac: dwmac-sun8i: fix double disable and
- unprepare "stmmaceth" clk
-Message-ID: <YfGFWT5o3QW8pzsD@xhacker>
-References: <20220123132805.758-1-jszhang@kernel.org>
- <38c41c04-abde-4d55-ed7c-515b6bba9c54@sholland.org>
- <YfFkz1d9onk+ITGg@xhacker>
- <YfFwH9gHdN3fnx22@xhacker>
+        with ESMTP id S237344AbiAZRoI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 12:44:08 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC33C06173B
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 09:44:07 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id e17so675992ljk.5
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 09:44:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=klAqn1xLqtZoojfb1Qegc6zQK1oGL4d9QTe7/dZRi7o=;
+        b=NuYakNQJ7MSq2gaO5AaCSz8EqyNAYKVjMFCblt9F1yw93jEFLUN0JbxKw6w6blYCUE
+         SnXf8xRYLOpR85buv32UvVcKP8U0b2yiBRHVNmwqRC9nU+YtJGw9W6U7LXnDFpoCbR++
+         pafYxoPtMieS9xxMfQlFFIT1TlOKQc1qVlUNxT86EiSDqJgV5DApSs2CpYBZU76vMhCR
+         AmtgJ1++wbfEZW2jgpnPkTw1jUgiNkVCJJrcwTXMm2HkSTPfN6SS87NlJ91I4leeyEv7
+         AX1FoALxKOCRYo/4no1LktugEYKfu8oTez8AcWi27sfrnLd8RqU0BUxwVe1i7qslh1Vv
+         +vVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=klAqn1xLqtZoojfb1Qegc6zQK1oGL4d9QTe7/dZRi7o=;
+        b=WYXh6egjefuMqlX/M9KAQSQdjrt1h0qSS0W0vBVbfQaRx9hxoIvbgm/Z03YofDDsv0
+         coIj+0+XtsbhbudZRU0zUFRUpmRVsqpZUSkXPotgG16xnyGLaQtFjkC/lpIp0LMb0tY8
+         6+K5d82XW5TioLY9vZOd94Rs+BH1JRPz+e+JWc37Ga1SKiZhRYfekCHzbjcqPbHGjPv1
+         QrIlmj0yCz1mKwNXB/VW1swznoJdB9mVxHl11YMMT5uWR1rJ2sf1d39VmMLrMkuAycYc
+         BLmp/3qOnAw+g7NlWj88YAXbkWj2e4uoNID78a+bADES1IJLstTuAk8+kKMpOwQ0qLxp
+         VCqw==
+X-Gm-Message-State: AOAM532IHyb/tgX4zZH6HOdnbLUT3yODY99mE09CtTVzhDP5jSSPbhIE
+        F+sSDri9RUfP/lcTbvP7GTBbwMyP4Xr/u979y6wIfQ==
+X-Google-Smtp-Source: ABdhPJyDm+DZhYLnJD3FRKFC7QIqAVSaSVmbBAZC9/SpvXEp+d4OzJEBsbFnCtG4G5j1UMq+oFuJMRuktO1C3+AnJxk=
+X-Received: by 2002:a2e:a7c4:: with SMTP id x4mr97620ljp.133.1643219045720;
+ Wed, 26 Jan 2022 09:44:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YfFwH9gHdN3fnx22@xhacker>
+References: <20220125232424.2487391-1-jeffreyji@google.com>
+In-Reply-To: <20220125232424.2487391-1-jeffreyji@google.com>
+From:   Brian Vazquez <brianvv@google.com>
+Date:   Wed, 26 Jan 2022 09:43:54 -0800
+Message-ID: <CAMzD94QFnN013ePHb+yGYGFrFSWBDG-aLF8v=A2+kvj00YStmA@mail.gmail.com>
+Subject: Re: [PATCH v4 net-next] net-core: add InMacErrors counter
+To:     Jeffrey Ji <jeffreyjilinux@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jeffreyji <jeffreyji@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 12:00:42AM +0800, Jisheng Zhang wrote:
-> On Wed, Jan 26, 2022 at 11:12:28PM +0800, Jisheng Zhang wrote:
-> > On Sun, Jan 23, 2022 at 01:43:37PM -0600, Samuel Holland wrote:
-> > > On 1/23/22 7:28 AM, Jisheng Zhang wrote:
-> > > > Fix warnings on Allwinner D1 platform:
-> > > > 
-> > > > [    1.604695] ------------[ cut here ]------------
-> > > > [    1.609328] bus-emac already disabled
-> > > > [    1.613015] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:952 clk_core_disable+0xcc/0xec
-> > > > [    1.621039] CPU: 0 PID: 38 Comm: kworker/u2:1 Not tainted 5.14.0-rc4#1
-> > > > [    1.627653] Hardware name: Allwinner D1 NeZha (DT)
-> > > > [    1.632443] Workqueue: events_unbound deferred_probe_work_func
-> > > > [    1.638286] epc : clk_core_disable+0xcc/0xec
-> > > > [    1.642561]  ra : clk_core_disable+0xcc/0xec
-> > > > [    1.646835] epc : ffffffff8023c2ec ra : ffffffff8023c2ec sp : ffffffd00411bb10
-> > > > [    1.654054]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : ffffffff80ed6a6f
-> > > > [    1.661272]  t1 : ffffffff80ed6a60 t2 : 0000000000000000 s0 : ffffffe001509e00
-> > > > [    1.668489]  s1 : 0000000000000001 a0 : 0000000000000019 a1 : ffffffff80e80bd8
-> > > > [    1.675707]  a2 : 00000000ffffefff a3 : 00000000000000f4 a4 : 0000000000000002
-> > > > [    1.682924]  a5 : 0000000000000001 a6 : 0000000000000030 a7 : 00000000028f5c29
-> > > > [    1.690141]  s2 : 0000000000000800 s3 : ffffffe001375000 s4 : ffffffe01fdf7a80
-> > > > [    1.697358]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
-> > > > [    1.704577]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
-> > > > [    1.711794]  s11: ffffffe001b80760 t3 : 0000000000000062 t4 : ffffffffffffffff
-> > > > [    1.719012]  t5 : ffffffff80e0f6d8 t6 : ffffffd00411b8f0
-> > > > [    1.724321] status: 8000000201800100 badaddr: 0000000000000000 cause: 0000000000000003
-> > > > [    1.732233] [<ffffffff8023c2ec>] clk_core_disable+0xcc/0xec
-> > > > [    1.737810] [<ffffffff80240430>] clk_disable+0x38/0x78
-> > > > [    1.742956] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
-> > > > [    1.748451] [<ffffffff8031a500>] stmmac_remove_config_dt+0x1c/0x4c
-> > > > [    1.754646] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
-> > > > [    1.760484] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
-> > > > [    1.765975] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
-> > > > [    1.771382] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
-> > > > [    1.777305] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
-> > > > [    1.783402] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
-> > > > [    1.789324] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
-> > > > [    1.795508] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
-> > > > [    1.802125] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
-> > > > [    1.807701] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
-> > > > [    1.813277] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
-> > > > [    1.818852] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
-> > > > [    1.825122] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
-> > > > [    1.830872] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
-> > > > [    1.836362] [<ffffffff80026bf4>] kthreadd+0x94/0x188
-> > > > [    1.841335] [<ffffffff80026bf4>] kthreadd+0x94/0x188
-> > > > [    1.846304] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
-> > > > [    1.852054] [<ffffffff80026564>] kthread+0x124/0x160
-> > > > [    1.857021] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
-> > > > [    1.862770] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
-> > > > [    1.868956] ---[ end trace 8d5c6046255f84a0 ]---
-> > > > [    1.873675] ------------[ cut here ]------------
-> > > > [    1.878366] bus-emac already unprepared
-> > > > [    1.882378] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:810 clk_core_unprepare+0xe4/0x168
-> > > > [    1.890673] CPU: 0 PID: 38 Comm: kworker/u2:1 Tainted: G        W	5.14.0-rc4 #1
-> > > > [    1.898674] Hardware name: Allwinner D1 NeZha (DT)
-> > > > [    1.903464] Workqueue: events_unbound deferred_probe_work_func
-> > > > [    1.909305] epc : clk_core_unprepare+0xe4/0x168
-> > > > [    1.913840]  ra : clk_core_unprepare+0xe4/0x168
-> > > > [    1.918375] epc : ffffffff8023d6cc ra : ffffffff8023d6cc sp : ffffffd00411bb10
-> > > > [    1.925593]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : 0000000000000002
-> > > > [    1.932811]  t1 : ffffffe01f743be0 t2 : 0000000000000040 s0 : ffffffe001509e00
-> > > > [    1.940029]  s1 : 0000000000000001 a0 : 000000000000001b a1 : ffffffe00143a800
-> > > > [    1.947246]  a2 : 0000000000000000 a3 : 00000000000000f4 a4 : 0000000000000001
-> > > > [    1.954463]  a5 : 0000000000000000 a6 : 0000000005fce2a5 a7 : 0000000000000001
-> > > > [    1.961680]  s2 : 0000000000000800 s3 : ffffffff80afeb90 s4 : ffffffe01fdf7a80
-> > > > [    1.968898]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
-> > > > [    1.976115]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
-> > > > [    1.983333]  s11: ffffffe001b80760 t3 : ffffffff80b39120 t4 : 0000000000000001
-> > > > [    1.990550]  t5 : 0000000000000000 t6 : ffffffe001600002
-> > > > [    1.995859] status: 8000000201800120 badaddr: 0000000000000000 cause: 0000000000000003
-> > > > [    2.003771] [<ffffffff8023d6cc>] clk_core_unprepare+0xe4/0x168
-> > > > [    2.009609] [<ffffffff802403a0>] clk_unprepare+0x24/0x3c
-> > > > [    2.014929] [<ffffffff8031a508>] stmmac_remove_config_dt+0x24/0x4c
-> > > > [    2.021125] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
-> > > > [    2.026965] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
-> > > > [    2.032463] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
-> > > > [    2.037871] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
-> > > > [    2.043795] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
-> > > > [    2.049892] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
-> > > > [    2.055815] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
-> > > > [    2.061999] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
-> > > > [    2.068616] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
-> > > > [    2.074193] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
-> > > > [    2.079769] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
-> > > > [    2.085345] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
-> > > > [    2.091616] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
-> > > > [    2.097367] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
-> > > > [    2.102858] [<ffffffff80026bf4>] kthreadd+0x94/0x188
-> > > > [    2.107830] [<ffffffff80026bf4>] kthreadd+0x94/0x188
-> > > > [    2.112800] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
-> > > > [    2.118551] [<ffffffff80026564>] kthread+0x124/0x160
-> > > > [    2.123520] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
-> > > > [    2.129268] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
-> > > > [    2.135455] ---[ end trace 8d5c6046255f84a1 ]---
-> > > > 
-> > > > the dwmmac-sun8i driver will get the "stmmaceth" clk as tx_clk during
-> > > > driver initialization. If stmmac_dvr_probe() fails due to various
-> > > > reasons, sun8i_dwmac_exit() will disable and unprepare the "stmmaceth"
-> > > > clk, then stmmac_remove_config_dt() will disable and unprepare the
-> > > > clk again.
-> > > 
-> > > This should still be balanced, because both stmmac_probe_config_dt and
-> > > sun8i_dwmac_init prepare/enable the clock, so the dwmac-sun8i glue layer calls
-> > > stmmac_dvr_probe with the clock having an enable count of 2. It looks like the
-> > > underlying issue is that commit 5ec55823438e ("net: stmmac: add clocks
-> > > management for gmac driver") introduces unbalanced runtime PM.
-> > 
-> > I added some printk then retested, the problem is triggered as below:
-> > 
-> > stmmac_probe_config_dt() enable the clk
-> > sun8i_dwmac_init() enble the clk again
-> > stmmac_dvr_probe() succeed, but it calls pm_runtime_put(), so rpm will
-> > disable the clk
-> > sun8i_dwmac_reset() fails due to various reason
-> > sun8i_dwmac_exit() disable the clk, this is fine
-> > stmmac_remove_config_dt() disable the clk again, so ccf complains.
-> > 
-> > The key here is: whether we should let stmmac_dvr_probe() calls
-> > pm_runtime_put() or let stmmac users to determine whether we could
-> > let rpm go?
-> > If we keep current behavior: stmmac users need to take care
-> > the code after stmmac_dvr_probe, including error handling code path,
-> > if we touch access registers, we need to call pm_runtime_get_sync()
-> > firstly.
-> > 
-> > Since the commit 5ec55823438e has been in for a long time, I'll submit
-> > a patch to follow this way.
-> > 
-> 
-> After reading the code and commit history, I found some users suffering
-> from the runtimepm issues, for example, dwmac-rk.c, so I changed my
-> idea. I think it's better to let stmmac users to call pm_runtime_put():
-> 
-> First of all, only the users know whether it's safe to finally
-> keep the mac runtime suspended after probe.
-> 
-> Secondly, if the users need to do platform specific operations after
-> stmmac_dvr_probe(), especially needs to access some registers, we have
-> to resume the mac firstly. The error handling code path also needs to
-> take care of it. It looks a bit strange resume immediately resume the
-> mac after suspending it.
-> 
-> Any suggestion is welcome.
-> 
-> PS: Since this would partially revert commit 5ec55823438e, I add Joakim
-> into the email thread.
-> 
-If we keep current behavior as is, and let stmmac users to take care
-necessary runtime resume before specific handling, we need similar
-patch as dwmac-sun8i below for all stmmac users, especially the error
-handling path:
+Reviewed-by: Brian Vazquez <brianvv@google.com>
 
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index 09644ab0d87a..ef2acea3d036 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -16,6 +16,7 @@
- #include <linux/of_net.h>
- #include <linux/phy.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
- #include <linux/regulator/consumer.h>
- #include <linux/regmap.h>
- #include <linux/stmmac.h>
-@@ -1254,6 +1255,7 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
- 	ndev = dev_get_drvdata(&pdev->dev);
- 	priv = netdev_priv(ndev);
- 
-+	pm_runtime_get_sync(&pdev->dev);
- 	/* The mux must be registered after parent MDIO
- 	 * so after stmmac_dvr_probe()
- 	 */
-@@ -1272,12 +1274,15 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
- 			goto dwmac_remove;
- 	}
- 
-+	pm_runtime_put(&pdev->dev);
-+
- 	return 0;
- 
- dwmac_mux:
- 	reset_control_put(gmac->rst_ephy);
- 	clk_put(gmac->ephy_clk);
- dwmac_remove:
-+	pm_runtime_put_noidle(&pdev->dev);
- 	stmmac_dvr_remove(&pdev->dev);
- dwmac_exit:
- 	sun8i_dwmac_exit(pdev, gmac);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 8ded4be08b00..2f9bd1eacb81 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7133,6 +7133,10 @@ int stmmac_dvr_remove(struct device *dev)
- 
- 	netdev_info(priv->dev, "%s: removing driver", __func__);
- 
-+	pm_runtime_get_sync(dev);
-+	pm_runtime_disable(dev);
-+	pm_runtime_put_noidle(dev);
-+
- 	stmmac_stop_all_dma(priv);
- 	stmmac_mac_set(priv, priv->ioaddr, false);
- 	netif_carrier_off(ndev);
-@@ -7151,8 +7155,6 @@ int stmmac_dvr_remove(struct device *dev)
- 	if (priv->plat->stmmac_rst)
- 		reset_control_assert(priv->plat->stmmac_rst);
- 	reset_control_assert(priv->plat->stmmac_ahb_rst);
--	pm_runtime_put(dev);
--	pm_runtime_disable(dev);
- 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI)
- 		stmmac_mdio_unregister(ndev);
+On Tue, Jan 25, 2022 at 3:24 PM Jeffrey Ji <jeffreyjilinux@gmail.com> wrote:
+>
+> From: jeffreyji <jeffreyji@google.com>
+>
+> Increment InMacErrors counter when packet dropped due to incorrect dest
+> MAC addr.
+>
+> An example when this drop can occur is when manually crafting raw
+> packets that will be consumed by a user space application via a tap
+> device. For testing purposes local traffic was generated using trafgen
+> for the client and netcat to start a server
+>
+> example output from nstat:
+> \~# nstat -a | grep InMac
+> Ip6InMacErrors                  0                  0.0
+> IpExtInMacErrors                1                  0.0
+>
+> Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+> with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
+> counter was incremented.
+>
+> Changelog:
+>
+> v3-4:
+> Remove Change-Id
+>
+> v2:
+> Use skb_free_reason() for tracing
+> Add real-life example in patch msg
+>
+> Signed-off-by: jeffreyji <jeffreyji@google.com>
+> ---
+>  include/linux/skbuff.h    |  1 +
+>  include/uapi/linux/snmp.h |  1 +
+>  net/ipv4/ip_input.c       |  7 +++++--
+>  net/ipv4/proc.c           |  1 +
+>  net/ipv6/ip6_input.c      | 12 +++++++-----
+>  net/ipv6/proc.c           |  1 +
+>  6 files changed, 16 insertions(+), 7 deletions(-)
+>
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index bf11e1fbd69b..04a36352f677 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -320,6 +320,7 @@ enum skb_drop_reason {
+>         SKB_DROP_REASON_TCP_CSUM,
+>         SKB_DROP_REASON_TCP_FILTER,
+>         SKB_DROP_REASON_UDP_CSUM,
+> +       SKB_DROP_REASON_BAD_DEST_MAC,
+>         SKB_DROP_REASON_MAX,
+>  };
+>
+> diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
+> index 904909d020e2..ac2fac12dd7d 100644
+> --- a/include/uapi/linux/snmp.h
+> +++ b/include/uapi/linux/snmp.h
+> @@ -57,6 +57,7 @@ enum
+>         IPSTATS_MIB_ECT0PKTS,                   /* InECT0Pkts */
+>         IPSTATS_MIB_CEPKTS,                     /* InCEPkts */
+>         IPSTATS_MIB_REASM_OVERLAPS,             /* ReasmOverlaps */
+> +       IPSTATS_MIB_INMACERRORS,                /* InMacErrors */
+>         __IPSTATS_MIB_MAX
+>  };
+>
+> diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+> index 3a025c011971..379ef6b46920 100644
+> --- a/net/ipv4/ip_input.c
+> +++ b/net/ipv4/ip_input.c
+> @@ -441,8 +441,11 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
+>         /* When the interface is in promisc. mode, drop all the crap
+>          * that it receives, do not try to analyse it.
+>          */
+> -       if (skb->pkt_type == PACKET_OTHERHOST)
+> -               goto drop;
+> +       if (skb->pkt_type == PACKET_OTHERHOST) {
+> +               __IP_INC_STATS(net, IPSTATS_MIB_INMACERRORS);
+> +               kfree_skb_reason(skb, SKB_DROP_REASON_BAD_DEST_MAC);
+> +               return NULL;
+> +       }
+>
+>         __IP_UPD_PO_STATS(net, IPSTATS_MIB_IN, skb->len);
+>
+> diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
+> index f30273afb539..dfe0a1dbf8e9 100644
+> --- a/net/ipv4/proc.c
+> +++ b/net/ipv4/proc.c
+> @@ -117,6 +117,7 @@ static const struct snmp_mib snmp4_ipextstats_list[] = {
+>         SNMP_MIB_ITEM("InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
+>         SNMP_MIB_ITEM("InCEPkts", IPSTATS_MIB_CEPKTS),
+>         SNMP_MIB_ITEM("ReasmOverlaps", IPSTATS_MIB_REASM_OVERLAPS),
+> +       SNMP_MIB_ITEM("InMacErrors", IPSTATS_MIB_INMACERRORS),
+>         SNMP_MIB_SENTINEL
+>  };
+>
+> diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+> index 80256717868e..f6245fba7699 100644
+> --- a/net/ipv6/ip6_input.c
+> +++ b/net/ipv6/ip6_input.c
+> @@ -149,15 +149,17 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
+>         u32 pkt_len;
+>         struct inet6_dev *idev;
+>
+> -       if (skb->pkt_type == PACKET_OTHERHOST) {
+> -               kfree_skb(skb);
+> -               return NULL;
+> -       }
+> -
+>         rcu_read_lock();
+>
+>         idev = __in6_dev_get(skb->dev);
+>
+> +       if (skb->pkt_type == PACKET_OTHERHOST) {
+> +               __IP6_INC_STATS(net, idev, IPSTATS_MIB_INMACERRORS);
+> +               rcu_read_unlock();
+> +               kfree_skb_reason(skb, SKB_DROP_REASON_BAD_DEST_MAC);
+> +               return NULL;
+> +       }
+> +
+>         __IP6_UPD_PO_STATS(net, idev, IPSTATS_MIB_IN, skb->len);
+>
+>         if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL ||
+> diff --git a/net/ipv6/proc.c b/net/ipv6/proc.c
+> index d6306aa46bb1..76e6119ba558 100644
+> --- a/net/ipv6/proc.c
+> +++ b/net/ipv6/proc.c
+> @@ -84,6 +84,7 @@ static const struct snmp_mib snmp6_ipstats_list[] = {
+>         SNMP_MIB_ITEM("Ip6InECT1Pkts", IPSTATS_MIB_ECT1PKTS),
+>         SNMP_MIB_ITEM("Ip6InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
+>         SNMP_MIB_ITEM("Ip6InCEPkts", IPSTATS_MIB_CEPKTS),
+> +       SNMP_MIB_ITEM("Ip6InMacErrors", IPSTATS_MIB_INMACERRORS),
+>         SNMP_MIB_SENTINEL
+>  };
+>
+> --
+> 2.35.0.rc0.227.g00780c9af4-goog
+>
