@@ -2,150 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4C6B49C2B7
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 05:40:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 179A749C2B8
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 05:40:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232717AbiAZEkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 23:40:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35162 "EHLO
+        id S233238AbiAZEkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 23:40:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232432AbiAZEki (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 23:40:38 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F3AC06161C
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 20:40:38 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id i30so2920575pfk.8
-        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 20:40:38 -0800 (PST)
+        with ESMTP id S231732AbiAZEkj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 23:40:39 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD5EC061744
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 20:40:39 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id u11so21341751plh.13
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 20:40:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0rW7cSD/7nqlUahrITWvzMdLBf/ZZP4egXgY7UnZbNE=;
-        b=C8tZxNyG5y/U3dk2xNmRZD2fdJY7z0B1/eop0NUDgTAV4Ya37f6nJxsV/YlbLCiX5U
-         woqs3JPxRpYeLqkY7dHZa3WOtUCbn0FZpYvB3b7i2GRRhSnl6lkltjdoQhc6fuDHXOyx
-         VBhZIMrmYvGIWawAZHMzOskhQzf1bKM4w/sQ4=
+        bh=455jHzpZKl+i99QBAMM/nIa+UODXenNPvKvUf3S1ZoA=;
+        b=QqdY3UdV66zX/5R0GpMBiT2ySITYNL+ZY/NOM6y5Vd53cdQYZ486VEoHJAdYIR9p11
+         WAybCx6F3OySJ6nA1p/yW/5xpSpGlcNWFxQMKl9c17MNbR25s7HDdXVPDOxvMWhka14l
+         6wBFkyvSorPYfuLDgCwPV/Tq/vAsCjR+JGma8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=0rW7cSD/7nqlUahrITWvzMdLBf/ZZP4egXgY7UnZbNE=;
-        b=Y6rXAoDJgIzsyapHMzvcicA7SSjr7jaZDRb+aFQApbtMOTrAKi63XcI/HpK+nGYECY
-         aG1cjcSr9gXQWRBm9iz9aOUUdtXT5qgiZN1OIIynhz1v1fDVAoTz9qngkiHEQ2aD9VrY
-         9EHNvF+aBKREfT2XWdaEfNXgzdApGU1sbPlOnzv8cPT/XuZBSs1HFOrP4f8P9bZN2oqj
-         2fsuguImTlGKm3gMJWuBLKEByxG0mv0JdO+7qm9GwRBLEZdr5TqQ2ZQcfgY9+YBJDmfk
-         C79A5bonADStivKuHfJakNVPT8JTOvWEumEFNNtF3i4PoVqQB9HpCGJLvQIi6a+eB+vR
-         fJSQ==
-X-Gm-Message-State: AOAM531IO3mo/mq1Mwyp+e+a+5t38dAzly9yRmQFt8J2f2uWy21cCu2Z
-        O9OQHP30uEAVa8Fz+aJxgReEqQ==
-X-Google-Smtp-Source: ABdhPJxSbpmVV3Nu4r2SbDC8NXW5KA53BEMwqtN54wn2yCKUtOJJSSqDvfKVaRNbO/vQbYtTB/htzg==
-X-Received: by 2002:a63:610b:: with SMTP id v11mr17797493pgb.183.1643172037544;
-        Tue, 25 Jan 2022 20:40:37 -0800 (PST)
+        bh=455jHzpZKl+i99QBAMM/nIa+UODXenNPvKvUf3S1ZoA=;
+        b=73IR/c4KwDFZ9rphRUb3v37YsicsEEZEfpEcpf0cWI8X/nzKo8pQG3+dIL/Di4+AIk
+         DttLo79JA/umqhyWguCdaQTnTVk9RAtYpSI4A/WO8Xir0gHkfJFGgINiEOPjX/l0dp9u
+         3TWZnoEnVKmSKOVXafRZMVj3S41RIhS/87s/PABy/9l/7LVcMtK75TPmYmyNaSl0zwhO
+         pMuembyHSXVJ+dR2DlxN9rXOr3Sb+5tDGKnwjcgySsgDFNTw/vztAgumgJFIjDcJQBOB
+         jmzzCtxcIZv5nWhSpLeU5BXg0+Y+3moHRYmyN1ktzIv1iihsBAWV0IAe04fEjAmlIAY+
+         9ZmQ==
+X-Gm-Message-State: AOAM530hRXAwpTbyfOJWzXjMXmvmyxaTxevtkQy52gfBFeBxk3L+fInp
+        8qAASTN+N+L7jAY86ABBdY2Sng==
+X-Google-Smtp-Source: ABdhPJxcme0n0VkCVTMosb9vQMtoneqP0tbpT7CsRsETfO3WxjssrczBUXPq2eKA8uFuOlPOqlwN1Q==
+X-Received: by 2002:a17:90a:14a4:: with SMTP id k33mr6907376pja.21.1643172038987;
+        Tue, 25 Jan 2022 20:40:38 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s12sm559957pfk.65.2022.01.25.20.40.36
+        by smtp.gmail.com with ESMTPSA id s12sm559957pfk.65.2022.01.25.20.40.37
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jan 2022 20:40:37 -0800 (PST)
+        Tue, 25 Jan 2022 20:40:38 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
         pavan.chebbi@broadcom.com,
         Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH net-next 4/5] bnxt_en: Implement .adjtime() for PTP RTC mode
-Date:   Tue, 25 Jan 2022 23:40:12 -0500
-Message-Id: <1643172013-31729-5-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 5/5] bnxt_en: Handle async event when the PHC is updated in RTC mode
+Date:   Tue, 25 Jan 2022 23:40:13 -0500
+Message-Id: <1643172013-31729-6-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1643172013-31729-1-git-send-email-michael.chan@broadcom.com>
 References: <1643172013-31729-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000a1ebf805d674cd9d"
+        boundary="000000000000b7f0fc05d674cd36"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000a1ebf805d674cd9d
+--000000000000b7f0fc05d674cd36
 
 From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-The adjusted time is set in the PHC in RTC mode.  We also need to
-update the snapshots ptp->current_time and ptp->old_time when the
-time is adjusted.
+In Multi-host environment, when the PHC is updated by one host,
+an async message from firmware will be sent to other hosts.
+Re-initialize the timecounter when the driver receives this
+async message.
 
 Cc: Richard Cochran <richardcochran@gmail.com>
 Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
 Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 36 +++++++++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h |  1 +
- 2 files changed, 37 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 29 +++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index 066e5a9bb29e..a0b321a19361 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -148,11 +148,47 @@ static int bnxt_ptp_gettimex(struct ptp_clock_info *ptp_info,
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 514798a4f15b..c313221348c5 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -233,6 +233,7 @@ static const u16 bnxt_async_events_arr[] = {
+ 	ASYNC_EVENT_CMPL_EVENT_ID_ECHO_REQUEST,
+ 	ASYNC_EVENT_CMPL_EVENT_ID_PPS_TIMESTAMP,
+ 	ASYNC_EVENT_CMPL_EVENT_ID_ERROR_REPORT,
++	ASYNC_EVENT_CMPL_EVENT_ID_PHC_UPDATE,
+ };
  
-+/* Caller holds ptp_lock */
-+void bnxt_ptp_update_current_time(struct bnxt *bp)
-+{
-+	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
+ static struct workqueue_struct *bnxt_pf_wq;
+@@ -2079,6 +2080,16 @@ static void bnxt_event_error_report(struct bnxt *bp, u32 data1, u32 data2)
+ 	(BNXT_EVENT_RING_TYPE(data2) ==	\
+ 	 ASYNC_EVENT_CMPL_RING_MONITOR_MSG_EVENT_DATA2_DISABLE_RING_TYPE_RX)
+ 
++#define BNXT_EVENT_PHC_EVENT_TYPE(data1)	\
++	(((data1) & ASYNC_EVENT_CMPL_PHC_UPDATE_EVENT_DATA1_FLAGS_MASK) >>\
++	 ASYNC_EVENT_CMPL_PHC_UPDATE_EVENT_DATA1_FLAGS_SFT)
 +
-+	bnxt_refclk_read(ptp->bp, NULL, &ptp->current_time);
-+	WRITE_ONCE(ptp->old_time, ptp->current_time);
-+}
++#define BNXT_EVENT_PHC_RTC_UPDATE(data1)	\
++	(((data1) & ASYNC_EVENT_CMPL_PHC_UPDATE_EVENT_DATA1_PHC_TIME_MSB_MASK) >>\
++	 ASYNC_EVENT_CMPL_PHC_UPDATE_EVENT_DATA1_PHC_TIME_MSB_SFT)
 +
-+static int bnxt_ptp_adjphc(struct bnxt_ptp_cfg *ptp, s64 delta)
-+{
-+	struct hwrm_port_mac_cfg_input *req;
-+	int rc;
++#define BNXT_PHC_BITS	48
 +
-+	rc = hwrm_req_init(ptp->bp, req, HWRM_PORT_MAC_CFG);
-+	if (rc)
-+		return rc;
-+
-+	req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_ADJ_PHASE);
-+	req->ptp_adj_phase = cpu_to_le64(delta);
-+
-+	rc = hwrm_req_send(ptp->bp, req);
-+	if (rc) {
-+		netdev_err(ptp->bp->dev, "ptp adjphc failed. rc = %x\n", rc);
-+	} else {
-+		spin_lock_bh(&ptp->ptp_lock);
-+		bnxt_ptp_update_current_time(ptp->bp);
-+		spin_unlock_bh(&ptp->ptp_lock);
-+	}
-+
-+	return rc;
-+}
-+
- static int bnxt_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
+ static int bnxt_async_event_process(struct bnxt *bp,
+ 				    struct hwrm_async_event_cmpl *cmpl)
  {
- 	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
- 						ptp_info);
- 
-+	if (ptp->bp->fw_cap & BNXT_FW_CAP_PTP_RTC)
-+		return bnxt_ptp_adjphc(ptp, delta);
+@@ -2258,6 +2269,24 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 		bnxt_event_error_report(bp, data1, data2);
+ 		goto async_event_process_exit;
+ 	}
++	case ASYNC_EVENT_CMPL_EVENT_ID_PHC_UPDATE: {
++		switch (BNXT_EVENT_PHC_EVENT_TYPE(data1)) {
++		case ASYNC_EVENT_CMPL_PHC_UPDATE_EVENT_DATA1_FLAGS_PHC_RTC_UPDATE:
++			if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
++				struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
++				u64 ns;
 +
- 	spin_lock_bh(&ptp->ptp_lock);
- 	timecounter_adjtime(&ptp->tc, delta);
- 	spin_unlock_bh(&ptp->ptp_lock);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-index ca850c5f0607..373baf45884b 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-@@ -131,6 +131,7 @@ do {						\
- #endif
++				spin_lock_bh(&ptp->ptp_lock);
++				bnxt_ptp_update_current_time(bp);
++				ns = (((u64)BNXT_EVENT_PHC_RTC_UPDATE(data1) <<
++				       BNXT_PHC_BITS) | ptp->current_time);
++				bnxt_ptp_rtc_timecounter_init(ptp, ns);
++				spin_unlock_bh(&ptp->ptp_lock);
++			}
++			break;
++		}
++		goto async_event_process_exit;
++	}
+ 	case ASYNC_EVENT_CMPL_EVENT_ID_DEFERRED_RESPONSE: {
+ 		u16 seq_id = le32_to_cpu(cmpl->event_data2) & 0xffff;
  
- int bnxt_ptp_parse(struct sk_buff *skb, u16 *seq_id, u16 *hdr_off);
-+void bnxt_ptp_update_current_time(struct bnxt *bp);
- void bnxt_ptp_pps_event(struct bnxt *bp, u32 data1, u32 data2);
- void bnxt_ptp_reapply_pps(struct bnxt *bp);
- int bnxt_hwtstamp_set(struct net_device *dev, struct ifreq *ifr);
 -- 
 2.18.1
 
 
---000000000000a1ebf805d674cd9d
+--000000000000b7f0fc05d674cd36
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -216,13 +206,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINnXeTBRbY8wc7j3RU5aBb9YYs/wQrib
-UoFPualZk+GZMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDEy
-NjA0NDAzOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMF1tnxxc+pRSDqqIBnp+yJP8vIsRyUn
+bYpFaLh16UMWMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDEy
+NjA0NDAzOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCMo5hxP64BcDC9htCmGMp0ua88f4PJzVi95FSctRWHnfVdbFrM
-MWFPWyqnwiJI7kpxLPiiJqiNl2SfkRpyf+i8TbCX5auY6JxiHWUYudixjkZQVEFjq7C1EO0nSkwD
-/gLmifnsBB7eiHpLpy52KzCEDMZoTNHAgoE27RSAjrSZblabYlPmzEor+7+1bXgNi7r7aNCd/3vc
-9DzALDNIootyIPVBSR8f2IlqH1/pNZajgC4F0unXIryWVRx3gHF47tUn0m0maXCO2C8S6DZw0uh4
-jAvSyXeFnL46VGDYDjedWhv4S+vbGZbipqGeoUQzOp8HPDV0Mnrp3L4MKH4PJPzZ
---000000000000a1ebf805d674cd9d--
+ATANBgkqhkiG9w0BAQEFAASCAQBBunDsgwCoeUsakE9qZHbuKYGCbTi/OURDe9BEe9N0RaCqlSAW
+KElFGTVwXzzY4V7f2g+N5YrYa9Aa9DsxD1od6WCkt2IWP12j/P7NHZso9CEt9UNSrKvtpPHTiNuX
+PEPpPB10VqYx+VeBP8+AnWhmZGItcALaeYDFJx6/us1slUqQ3zytBPLttmSZgrm8WLYx+mEvgaNh
+hTRi31UykMUqpdU4AC6x5NZOno0npnFSZPjn6Z2QApMJ5cBfTqEoIH4ihh2WHf7muO+/jrq0v3OH
+Pxh9MKLYnXaUIr4l4QosipdMpHaFt0Amcnx1a+64FmnOr/UwoMYEIQ3LZ3tdMCag
+--000000000000b7f0fc05d674cd36--
