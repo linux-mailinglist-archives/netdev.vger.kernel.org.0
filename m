@@ -2,111 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BE0349CC02
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 15:14:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6E7E49CC12
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 15:16:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232447AbiAZOON (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 09:14:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29739 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235430AbiAZOOL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 09:14:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643206450;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sIHOSHa8eGkKGGsPkDgJCA6OjwUd7QYCWYjmU+mG6O0=;
-        b=YjGsliaLe+GJEvnt/Y+5wUXLcVzxsSmrMS8pZV3zvBcqkq1CxptHcYqRMXwm/30ryL8NDR
-        KdmobClCuIx3EzHWBO9vyyhWCSkRGC6CoYMnche4CHXITN3jo1SGLPrlhPZ+g0MsuxLYtv
-        lrfG+0ktx1aRGfEJ9WxKKGSQmWQiSko=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-176-wjvQ7gc8NlKlmSW1W7HFxA-1; Wed, 26 Jan 2022 09:14:09 -0500
-X-MC-Unique: wjvQ7gc8NlKlmSW1W7HFxA-1
-Received: by mail-wr1-f71.google.com with SMTP id r26-20020adfab5a000000b001d67d50a45cso4336907wrc.18
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 06:14:09 -0800 (PST)
+        id S242025AbiAZOQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 09:16:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235463AbiAZOQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 09:16:13 -0500
+Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A36C06173B
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 06:16:12 -0800 (PST)
+Received: by mail-ua1-x933.google.com with SMTP id c36so43064233uae.13
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 06:16:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=24sUfwbscwaSS1v34BS4ZqD0wKMzP9W3ynvkxLp+q7A=;
+        b=gTPeTHWahFdxiWoNawVGnQRFGBASr9fBJuikPpOrLvvhH2vzZ+2+pPy8Z57VxahUAL
+         8bsxCmvMj2LrgZaTqWye/dFd0NkhDIDI9rFWVU23DtW5AADN9tFyUl33P3/f/bOXpRkg
+         pb4C/pmYTbSE3SSnsvAdW57nQM1zCNCqDfrfw+7fu7Vq2icotD3VMoRVqlNJcURPzr1p
+         n9YcYrPLwHikLJ6ZOS4z94p/rk+iihdno/27NnfIg9Wadbjp2aJ/m2/+wCih0QLMPhua
+         uVSinWvM5n1gzig7XrwbBkUEf/RzeDoQJiQB0pt2RLUpiBxO6IvHgCBoHf5kylBB/7No
+         tOjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sIHOSHa8eGkKGGsPkDgJCA6OjwUd7QYCWYjmU+mG6O0=;
-        b=WJUe6ExH96NcAHZ55ODwLQ71VabWzS454oP3HrmQBSbwBYi+yxhtsKDhTHaju3yfCQ
-         GDNtNEQ56/CxYZHT2hvEymg5/cdck/4j2twR0w53CSXlVuDtMOq1g+I7wpoBP0fnYZbe
-         l5mMKraBEVR11Hcy/MVfbSlxOpSlJikx8/iPx+UgwACD95rSJ8SMsbqlrcA2LNntNxwF
-         Z13kmvFKuJayA4jjOTLYvpliVi/xNmVtOHwgW92a7uNRMULk3H7oml8yrnD4Gy3d2Ydi
-         3r+vEIxFUl0xKV9S04WRcvO+M7e7oQzZewa+JDGTLuKug/neAmSwQiUogDTlvWH1ACV8
-         KZFQ==
-X-Gm-Message-State: AOAM5320Sk6eIiRT8SncfYTvlGxgJ6+Iu5jfa/rBO4K+vb1Tv7gzmmtd
-        C9jFZReaPL4RGzSdvA+rX61xsTgBkF3majLq1tX7/rKdUZf7Fdcyf93zqvAkw18r0m44ZOHk+wt
-        u8fks3ZdvON0+l40d
-X-Received: by 2002:a7b:c181:: with SMTP id y1mr7547568wmi.137.1643206447918;
-        Wed, 26 Jan 2022 06:14:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyxsuOF3MaH44FkbRm4WHcKCRq305PlEtcSv3SMmq9JgF98lmfEoXB0+wfRuQwNcMIKUfVgdQ==
-X-Received: by 2002:a7b:c181:: with SMTP id y1mr7547554wmi.137.1643206447732;
-        Wed, 26 Jan 2022 06:14:07 -0800 (PST)
-Received: from redhat.com ([2.55.9.226])
-        by smtp.gmail.com with ESMTPSA id n14sm12369103wri.75.2022.01.26.06.14.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 06:14:07 -0800 (PST)
-Date:   Wed, 26 Jan 2022 09:14:03 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Zhu Lingshan <lingshan.zhu@intel.com>
-Cc:     jasowang@redhat.com, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH V3 0/4] vDPA/ifcvf: implement shared IRQ feature
-Message-ID: <20220126091329-mutt-send-email-mst@kernel.org>
-References: <20220126124912.90205-1-lingshan.zhu@intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=24sUfwbscwaSS1v34BS4ZqD0wKMzP9W3ynvkxLp+q7A=;
+        b=QKDmleS7F/xMFvQmQ20hDMlqtWGPbSRPi65BhCcK6soIEpfzXxV1t/RSxojgiA5W4x
+         +OIW9n+Ay0T+HRshWXunrALdZbXRzpZyqNoddhv3+kY0A8pA/PGNX0MzQH4qPa+UqtCH
+         m2wP+E/LEWcGXLAN5jwiD2meiC+IXW7ZIntZPDvPYOs7bMyG2N6PrbOF+xxK0EBlN0Zi
+         1FkSTpDVGlj7i/W1ZLSKHwb4v8DEZ4ZUOwtBf2PH+vD8zoDap9DmShLVTviCfIcx9/6e
+         pP/v7Yn3+4maCB8tybBstzCAlvKRSuXV8cZkMlM3FkWSnPb+82DvHGX942irJqrE/hMO
+         OKVA==
+X-Gm-Message-State: AOAM531du2H3Efd3TW1jCPdI30eZc3MgvoYohGCiGS+UXCI9ZQnKSwwy
+        qVmCBwlq146wSv4IgaZI5ol9TnxCdAw=
+X-Google-Smtp-Source: ABdhPJzVGbhFRko+6uajCml/hGGd7jLbyQLiYl7KNoma/qu7QCenkySYUul6Lao03/p7ri3EV2kcdA==
+X-Received: by 2002:a67:1081:: with SMTP id 123mr9001031vsq.69.1643206571938;
+        Wed, 26 Jan 2022 06:16:11 -0800 (PST)
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
+        by smtp.gmail.com with ESMTPSA id k20sm295808vsg.14.2022.01.26.06.16.11
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 06:16:11 -0800 (PST)
+Received: by mail-ua1-f51.google.com with SMTP id w21so43065878uan.7
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 06:16:11 -0800 (PST)
+X-Received: by 2002:a67:ea17:: with SMTP id g23mr4599918vso.35.1643206570833;
+ Wed, 26 Jan 2022 06:16:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126124912.90205-1-lingshan.zhu@intel.com>
+References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
+ <20220124080215.265538-2-konstantin.meskhidze@huawei.com> <CA+FuTSf4EjgjBCCOiu-PHJcTMia41UkTh8QJ0+qdxL_J8445EA@mail.gmail.com>
+ <0934a27a-d167-87ea-97d2-b3ac952832ff@huawei.com>
+In-Reply-To: <0934a27a-d167-87ea-97d2-b3ac952832ff@huawei.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 26 Jan 2022 09:15:34 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSc8ZAeaHWVYf-zmn6i5QLJysYGJppAEfb7tRbtho7_DKA@mail.gmail.com>
+Message-ID: <CA+FuTSc8ZAeaHWVYf-zmn6i5QLJysYGJppAEfb7tRbtho7_DKA@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/2] landlock: TCP network hooks implementation
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     mic@digikod.net, linux-security-module@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter@vger.kernel.org,
+        yusongping@huawei.com, artem.kuzin@huawei.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 08:49:08PM +0800, Zhu Lingshan wrote:
-> It has been observed that on some platforms/devices, there may
-> not be enough MSI vectors for virtqueues and the config change.
-> Under such circumstances, the interrupt sources of a device
-> have to share vectors/IRQs.
-> 
-> This series implemented a shared IRQ feature for ifcvf.
-> 
-> Please help review.
+On Wed, Jan 26, 2022 at 3:06 AM Konstantin Meskhidze
+<konstantin.meskhidze@huawei.com> wrote:
+>
+>
+>
+> 1/25/2022 5:17 PM, Willem de Bruijn =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+> > On Mon, Jan 24, 2022 at 3:02 AM Konstantin Meskhidze
+> > <konstantin.meskhidze@huawei.com> wrote:
+> >>
+> >> Support of socket_bind() and socket_connect() hooks.
+> >> Current prototype can restrict binding and connecting of TCP
+> >> types of sockets. Its just basic idea how Landlock could support
+> >> network confinement.
+> >>
+> >> Changes:
+> >> 1. Access masks array refactored into 1D one and changed
+> >> to 32 bits. Filesystem masks occupy 16 lower bits and network
+> >> masks reside in 16 upper bits.
+> >> 2. Refactor API functions in ruleset.c:
+> >>      1. Add void *object argument.
+> >>      2. Add u16 rule_type argument.
+> >> 3. Use two rb_trees in ruleset structure:
+> >>      1. root_inode - for filesystem objects
+> >>      2. root_net_port - for network port objects
+> >>
+> >> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+> >
+> >> +static int hook_socket_connect(struct socket *sock, struct sockaddr *=
+address, int addrlen)
+> >> +{
+> >> +       short socket_type;
+> >> +       struct sockaddr_in *sockaddr;
+> >> +       u16 port;
+> >> +       const struct landlock_ruleset *const dom =3D landlock_get_curr=
+ent_domain();
+> >> +
+> >> +       /* Check if the hook is AF_INET* socket's action */
+> >> +       if ((address->sa_family !=3D AF_INET) && (address->sa_family !=
+=3D AF_INET6))
+> >> +               return 0;
+> >
+> > Should this be a check on the socket family (sock->ops->family)
+> > instead of the address family?
+>
+> Actually connect() function checks address family:
+>
+> int __inet_stream_connect(... ,struct sockaddr *uaddr ,...) {
+> ...
+>         if (uaddr) {
+>                 if (addr_len < sizeof(uaddr->sa_family))
+>                 return -EINVAL;
+>
+>                 if (uaddr->sa_family =3D=3D AF_UNSPEC) {
+>                         err =3D sk->sk_prot->disconnect(sk, flags);
+>                         sock->state =3D err ? SS_DISCONNECTING :
+>                         SS_UNCONNECTED;
+>                 goto out;
+>                 }
+>         }
+>
+> ...
+> }
 
-Given the history, can you please report which tests
-were performed with this patchset? Which configs tested?
-Thanks?
+Right. My question is: is the intent of this feature to be limited to
+sockets of type AF_INET(6) or to addresses?
 
-> Changes from V2:
-> (1) Fix misuse of nvectors(in ifcvf_alloc_vectors return value)(Michael)
-> (2) Fix misuse of irq = get_vq_irq() in setup irqbypass(Michael)
-> (3) Coding style improvements(Michael)
-> (4) Better naming of device shared irq/shared vq irq
-> 
-> Changes from V1:
-> (1) Enable config interrupt when only one vector is allocated(Michael)
-> (2) Clean vectors/IRQs if failed to request config interrupt
-> since config interrupt is a must(Michael)
-> (3) Keep local vdpa_ops, disable irq_bypass by setting IRQ = -EINVAL
-> for shared IRQ case(Michael)
-> (4) Improvements on error messages(Michael)
-> (5) Squash functions implementation patches to the callers(Michael)
-> 
-> Zhu Lingshan (4):
->   vDPA/ifcvf: implement IO read/write helpers in the header file
->   vDPA/ifcvf: implement device MSIX vector allocator
->   vhost_vdpa: don't setup irq offloading when irq_num < 0
->   vDPA/ifcvf: implement shared IRQ feature
-> 
->  drivers/vdpa/ifcvf/ifcvf_base.c |  67 +++-----
->  drivers/vdpa/ifcvf/ifcvf_base.h |  60 +++++++-
->  drivers/vdpa/ifcvf/ifcvf_main.c | 260 ++++++++++++++++++++++++++++----
->  drivers/vhost/vdpa.c            |   4 +
->  4 files changed, 312 insertions(+), 79 deletions(-)
-> 
-> -- 
-> 2.27.0
+I would think the first. Then you also want to catch operations on
+such sockets that may pass a different address family. AF_UNSPEC is
+the known offender that will effect a state change on AF_INET(6)
+sockets.
 
+> >
+> > It is valid to pass an address with AF_UNSPEC to a PF_INET(6) socket.
+> > And there are legitimate reasons to want to deny this. Such as passing
+> > a connection to a unprivileged process and disallow it from disconnect
+> > and opening a different new connection.
+>
+> As far as I know using AF_UNSPEC to unconnect takes effect on
+> UDP(DATAGRAM) sockets.
+> To unconnect a UDP socket, we call connect but set the family member of
+> the socket address structure (sin_family for IPv4 or sin6_family for
+> IPv6) to AF_UNSPEC. It is the process of calling connect on an already
+> connected UDP socket that causes the socket to become unconnected.
+>
+> This RFC patch just supports TCP connections. I need to check the logic
+> if AF_UNSPEC provided in connenct() function for TCP(STREAM) sockets.
+> Does it disconnect already established TCP connection?
+>
+> Thank you for noticing about this issue. Need to think through how
+> to manage it with Landlock network restrictions for both TCP and UDP
+> sockets.
+
+AF_UNSPEC also disconnects TCP.
+
+> >
+> >> +
+> >> +       socket_type =3D sock->type;
+> >> +       /* Check if it's a TCP socket */
+> >> +       if (socket_type !=3D SOCK_STREAM)
+> >> +               return 0;
+> >> +
+> >> +       if (!dom)
+> >> +               return 0;
+> >> +
+> >> +       /* Get port value in host byte order */
+> >> +       sockaddr =3D (struct sockaddr_in *)address;
+> >> +       port =3D ntohs(sockaddr->sin_port);
+> >> +
+> >> +       return check_socket_access(dom, port, LANDLOCK_ACCESS_NET_CONN=
+ECT_TCP);
+> >> +}
+> > .
