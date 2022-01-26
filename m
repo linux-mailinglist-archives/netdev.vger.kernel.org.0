@@ -2,85 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B23A49CA78
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 14:13:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0B0549CAC6
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 14:28:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237755AbiAZNNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 08:13:30 -0500
-Received: from mail-vk1-f171.google.com ([209.85.221.171]:33603 "EHLO
-        mail-vk1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234991AbiAZNN3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 08:13:29 -0500
-Received: by mail-vk1-f171.google.com with SMTP id 48so11452818vki.0;
-        Wed, 26 Jan 2022 05:13:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xkGtktozf/u1g5YQKQwaOxUHOjH3v3y6pWsIirGR8fY=;
-        b=n8eUWLfE+wUWr+SSr5K6HYOkXUdUuSwVpGSm6ag37fPVTfoJjPINxMXmSNZeHOppvn
-         lXZRha4H0/JitxCJItN5nVe+aNOkpuYANImjF6WV+oFJQGMhRTIOVx0Zx+5z7IX8j4q0
-         xFK4dH5y/XMg1QS+dq0F+DKAj7DhafKjI6cOP8QTvAyvmqlqcByxnVk+PPyYc2M11AEv
-         Qi5HKSXkbOV0VtWh/r3Si9siQgDDrdn7yuLPtwSiqW2LnWrpCFPvr1URtwu7Y3zFJtGX
-         HWuBfurwY3g2/j53dbjKFSt30UEAiaMlq5Y6uhT9a0hhf5zIBLjwG5nKcK62FpDj9c5l
-         4u3A==
-X-Gm-Message-State: AOAM533tkVGa7aIQtJQG5yMbXkLvncGp8+TpK0ZqfAlV3/Yqr6X5Pqzp
-        MKRRWfdFMOGdjLv4z1BJbfAGrFnR/MkNGlDY
-X-Google-Smtp-Source: ABdhPJzGl2EBxYDe7IgmZQw3RRrTPqh2pUBu7x2sbY9UmFop9FH1/THiOtcH4EyVP7/TUFR8A+5rnQ==
-X-Received: by 2002:a67:d317:: with SMTP id a23mr9116989vsj.50.1643202808688;
-        Wed, 26 Jan 2022 05:13:28 -0800 (PST)
-Received: from mail-vk1-f172.google.com (mail-vk1-f172.google.com. [209.85.221.172])
-        by smtp.gmail.com with ESMTPSA id u8sm419935uaa.12.2022.01.26.05.13.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Jan 2022 05:13:27 -0800 (PST)
-Received: by mail-vk1-f172.google.com with SMTP id w17so10476861vko.9;
-        Wed, 26 Jan 2022 05:13:26 -0800 (PST)
-X-Received: by 2002:a05:6102:34e:: with SMTP id e14mr2483928vsa.68.1643202806127;
- Wed, 26 Jan 2022 05:13:26 -0800 (PST)
-MIME-Version: 1.0
-References: <20220111162231.10390-1-uli+renesas@fpond.eu> <20220111162231.10390-6-uli+renesas@fpond.eu>
-In-Reply-To: <20220111162231.10390-6-uli+renesas@fpond.eu>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 26 Jan 2022 14:13:14 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUu_K5k_C1O54=4b7wv+92XVc2esisv3+xvVD4F_nZQgA@mail.gmail.com>
-Message-ID: <CAMuHMdUu_K5k_C1O54=4b7wv+92XVc2esisv3+xvVD4F_nZQgA@mail.gmail.com>
-Subject: Re: [PATCH v2 5/5] dt-bindings: can: renesas,rcar-canfd: Document
- r8a779a0 support
-To:     Ulrich Hecht <uli+renesas@fpond.eu>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, linux-can@vger.kernel.org,
-        "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        id S239492AbiAZN16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 08:27:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232039AbiAZN16 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 08:27:58 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42133C06161C;
+        Wed, 26 Jan 2022 05:27:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ZAq7lphUj4ZBbT0ttD3I4ZX17HecYYp/WQ0M7GbtbZg=; b=eFfUhCblrGf2E9eacHO/gPRV0+
+        zygiBNn0vwQXKqFymnCr9Q4qqkJ2UnBpzzmuIBdkSUViGWPMdfgBXbVWpq6hZELCjDLLtL5t8G17w
+        /ZV8q0145pveahnMnBUbWiEUItdiWmGN7BuNEYfFqvMbF4wuWdvGPJaTrnGbLD3jblCcEj6q/ooH9
+        9+lkEKoXdzlvBjgZzs3Enc591b7BaAKvn/woO0JrL2OLOrV0zzmFRTtZTNzaU+f4sYOD5rLEKD/Im
+        DZzdEClcdv/5wAZHjt36yv8j8tu4rHShQ5D+avIeu9MkMsoOZENA2n8ypE1TMEU7KLbfJK7s2kuXK
+        GQrBBiIA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56888)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nCiKu-0003K2-6Q; Wed, 26 Jan 2022 13:27:44 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nCiKk-0004VA-3N; Wed, 26 Jan 2022 13:27:34 +0000
+Date:   Wed, 26 Jan 2022 13:27:34 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        socketcan@hartkopp.net,
-        Kieran Bingham <kieran.bingham@ideasonboard.com>
-Content-Type: text/plain; charset="UTF-8"
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: stmmac: don't stop RXC during LPI
+Message-ID: <YfFMRoLixWR/8spY@shell.armlinux.org.uk>
+References: <20220123141245.1060-1-jszhang@kernel.org>
+ <Ye15va7tFWMgKPEE@lunn.ch>
+ <Ye19bHxcQ5Plx0v9@xhacker>
+ <Ye2SznI2rNKAUDIq@lunn.ch>
+ <YfFEulZJKzuRQfeG@xhacker>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfFEulZJKzuRQfeG@xhacker>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 5:22 PM Ulrich Hecht <uli+renesas@fpond.eu> wrote:
-> Document support for rcar_canfd on R8A779A0 (V3U) SoCs.
+On Wed, Jan 26, 2022 at 08:55:22PM +0800, Jisheng Zhang wrote:
+> On Sun, Jan 23, 2022 at 06:39:26PM +0100, Andrew Lunn wrote:
+> > > I think this is a common issue because the MAC needs phy's RXC for RX
+> > > logic. But it's better to let other stmmac users verify. The issue
+> > > can easily be reproduced on platforms with PHY_POLL external phy.
+> > 
+> > What is the relevance of PHY polling here? Are you saying if the PHY
+> > is using interrupts you do not see this issue?
+> 
+> I tried these two days, if the PHY is using interrupts, I can't
+> reproduce the issue. It looks a bit more complex. Any suggestions?
 
-R-Car V3U
+I suppose it could be that there is a delay between the PHY reporting
+the link loss, raising an interrupt, which is then processed to disable
+the receive side, and the PHY going into LPI. The problem with polling
+is, well, it's polling, and at a one second rate - which probably is too
+long between the PHY noticing the loss of link and going into LPI.
 
-> Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+What this also probably means is that if interrupt latency is high
+enough, the same problem will occur.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+So maybe the EEE support to be a little more clever - so we only enable
+clock stop after the MAC driver has disabled the receive side.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
