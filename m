@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07A3449C738
+	by mail.lfdr.de (Postfix) with ESMTP id 9A4A449C73A
 	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 11:15:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239724AbiAZKOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 05:14:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54790 "EHLO
+        id S239742AbiAZKOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 05:14:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232102AbiAZKOv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 05:14:51 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE3DC06161C
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:50 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id o12so18640641lfg.12
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:50 -0800 (PST)
+        with ESMTP id S239732AbiAZKOw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 05:14:52 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAAAC061744
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:52 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id p27so62125004lfa.1
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:organization:content-transfer-encoding;
-        bh=oT7VXAYr1RlKcC98jWVV1AYCja1UpLRPiR4q3wejxVA=;
-        b=NvRuai8lXax1U7sBNU4VPS/k14T3EaNJRElshLx90nevrt12JEU4w7LNjtgaGeHU/U
-         7If6Ltrt2sE4Umo+ltVazzcWnstLrrUR6Qk3X0glvqP9W3nJdDvZUjD6H1FBM/bHh+CR
-         0tGbiigcM7H9yKqJFxQlapVNQgiL9RBGzcW69ZoHx0EHAIFZxvJfbb1t1wFEz38pm6JI
-         qRLKHLYs0Nt3xKcs27kEXlm1bJeWeM5ZVj4bIveXRIIkLnpQjaGTa/cL489ujko/V8gi
-         ANQmeKzNzp31vXxfxzcssYFcSsFaXiht+4wIBAZde9Yqovz5jF6A1lPFYfP8tVpv3MzU
-         fQJg==
+        bh=/mvM51A5cZB1/LP8bxdtukBhEKxdmFmIE0WYJdIBCJA=;
+        b=mvIP15AWvQg1ZCiSg0C3i/x1fq4RgGtsbSqHGugR8AvKBMBhnyQpIvYdTa0Q1lSPf9
+         4rI0oX+gyII5WDvROn/rYgWLGUEkOOeVq+2PN9wQ1m3SQWOXPkYqFU1VTMstSvYYveCj
+         H2yYU0GNO/jwjQRZg5P9ux025ZhnUCBYVTIsdRWKVdc+j9dwPfsIGx/Y6ClttcDRVsMu
+         ShkjLCwfwlDESlOcUrMr4QmsUFqYcJCRJcD1UbnXBwrD5KYNfZup3CxAEgEZ+u375Mjl
+         gtS1T6Bfu43yUZAXYZ+jVMxGjPIJOIvURAGvzRg4KfqzK76meuahOnSz7vUWritSnzDd
+         yp3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:organization:content-transfer-encoding;
-        bh=oT7VXAYr1RlKcC98jWVV1AYCja1UpLRPiR4q3wejxVA=;
-        b=XqNlcuphygvOBIjgKO8j7tPB+JuuCn9bchaHWK0gf5YyIPR48x1Q0s541NTJNNIguR
-         gkm/sqyH3Ru9CfJn6KuR4H9M6AG3QAGf1XYCiW02pSVa+1u4/X2ywrnozGxx0X1goM+U
-         SrX5r8cll3A0TfF3SqGSecZ4DH5hzZIYq13vnVO5i4SE2csfp4AfGxYl7Mx7Q6ivErzl
-         HsuzX9CbkZc/Lyi3KV2LeZZAidat5aqq2NedL0va0Gg1hQ4Wer/RteU4VkmJXjCNSfCd
-         yzUBv0JnEq/jEEX4N4Z2pqqF65Hjg8ruSYhzhjzkH1qohJXhboVQ1LgEiXvtHiQv0qM3
-         mh8A==
-X-Gm-Message-State: AOAM532vRryduBJHGtDS5Kj9fQ66fisMJvnBrNjcModwiMAlYtzYlg7x
-        6RsKLHLY0xNEAyIL7X0fFRyzag==
-X-Google-Smtp-Source: ABdhPJyfKp3pZx4gkqPihioKFMszACC2nq5auF0qwUCkwVvR4ZEvusm7VaGL+LurbX6E5VROm45fjw==
-X-Received: by 2002:ac2:596a:: with SMTP id h10mr14507077lfp.528.1643192089053;
-        Wed, 26 Jan 2022 02:14:49 -0800 (PST)
+        bh=/mvM51A5cZB1/LP8bxdtukBhEKxdmFmIE0WYJdIBCJA=;
+        b=l9fO+TvYV72xMT+FW62vHHbiGI/+ofw61/hN8S1n256JmGG6pONj47GyqWb5j1e+1B
+         TEJ0R5JmsATnxiVyuHcNETtAw3jXeyXCKpKIutCQ9Tcd0dE64umTIo8Ord3fHSp+6lXX
+         hWi9ZZUR0N+T8TWbMc56VIjk9SEZt4WOmrITTuXwz5AfHDIsPbPHEv7rSRu/dIDi8UTR
+         biEfaYK+m0Ewl7y09rkHDQnHsIqH8Ir4J/1564NF5cIWEChlrGNtn9cPKhgMSrJs+lMY
+         pzgyCPY/2HPQs2Uwghx6sOWWVs2qXCqyCShLMm8Q4stNB/q4rMrRWsnkR3V3ujetutxI
+         606g==
+X-Gm-Message-State: AOAM532ivnfEPnO9qMq+6QLMoMLhYK4UwPeayvNOcUQ2CrB5M2/lUPiO
+        Zhe4BBQb00dmllBgcaeRz9lCbA==
+X-Google-Smtp-Source: ABdhPJyvELxIdfcM95tWre+Zw7gqfURABlf0U53dRmWPEok32iFeh0sYdUrHcb/83tLAAdRaV6JSXw==
+X-Received: by 2002:a05:6512:3406:: with SMTP id i6mr19581169lfr.637.1643192090820;
+        Wed, 26 Jan 2022 02:14:50 -0800 (PST)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id h13sm1351906lfv.100.2022.01.26.02.14.48
+        by smtp.gmail.com with ESMTPSA id h13sm1351906lfv.100.2022.01.26.02.14.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 02:14:48 -0800 (PST)
+        Wed, 26 Jan 2022 02:14:50 -0800 (PST)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Madalin Bucur <madalin.bucur@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shaohui Xie <Shaohui.Xie@freescale.com>,
-        Scott Wood <scottwood@freescale.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/5] dt-bindings: net: xgmac_mdio: Remove unsupported "bus-frequency"
-Date:   Wed, 26 Jan 2022 11:14:28 +0100
-Message-Id: <20220126101432.822818-2-tobias@waldekranz.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Markus Koch <markus@notsyncing.net>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 2/5] net/fsl: xgmac_mdio: Use managed device resources
+Date:   Wed, 26 Jan 2022 11:14:29 +0100
+Message-Id: <20220126101432.822818-3-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220126101432.822818-1-tobias@waldekranz.com>
 References: <20220126101432.822818-1-tobias@waldekranz.com>
@@ -67,36 +67,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This property has never been supported by the driver. The kernel has
-settled on "clock-frequency" as the standard name for this binding, so
-once that is supported we will document that instead.
+All of the resources used by this driver has managed interfaces, so
+use them. Heed the warning in the comment before platform_get_resource
+and use a bare devm_ioremap to allow for non-exclusive access to the
+IO memory.
 
-Fixes: 7f93c9d90f4d ("power/fsl: add MDIO dt binding for FMan")
 Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- Documentation/devicetree/bindings/net/fsl-fman.txt | 9 ---------
- 1 file changed, 9 deletions(-)
+ drivers/net/ethernet/freescale/xgmac_mdio.c | 35 ++++-----------------
+ 1 file changed, 6 insertions(+), 29 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/fsl-fman.txt b/Documentation/devicetree/bindings/net/fsl-fman.txt
-index 020337f3c05f..cd5288fb4318 100644
---- a/Documentation/devicetree/bindings/net/fsl-fman.txt
-+++ b/Documentation/devicetree/bindings/net/fsl-fman.txt
-@@ -388,15 +388,6 @@ PROPERTIES
- 		Value type: <prop-encoded-array>
- 		Definition: A standard property.
+diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
+index 266e562bd67a..40442d64a247 100644
+--- a/drivers/net/ethernet/freescale/xgmac_mdio.c
++++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
+@@ -273,7 +273,7 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
  
--- bus-frequency
--		Usage: optional
--		Value type: <u32>
--		Definition: Specifies the external MDIO bus clock speed to
--		be used, if different from the standard 2.5 MHz.
--		This may be due to the standard speed being unsupported (e.g.
--		due to a hardware problem), or to advertise that all relevant
--		components in the system support a faster speed.
+-	bus = mdiobus_alloc_size(sizeof(struct mdio_fsl_priv));
++	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(struct mdio_fsl_priv));
+ 	if (!bus)
+ 		return -ENOMEM;
+ 
+@@ -284,13 +284,11 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
+ 	bus->probe_capabilities = MDIOBUS_C22_C45;
+ 	snprintf(bus->id, MII_BUS_ID_SIZE, "%pa", &res->start);
+ 
+-	/* Set the PHY base address */
+ 	priv = bus->priv;
+-	priv->mdio_base = ioremap(res->start, resource_size(res));
+-	if (!priv->mdio_base) {
+-		ret = -ENOMEM;
+-		goto err_ioremap;
+-	}
++	priv->mdio_base = devm_ioremap(&pdev->dev, res->start,
++				       resource_size(res));
++	if (IS_ERR(priv->mdio_base))
++		return PTR_ERR(priv->mdio_base);
+ 
+ 	/* For both ACPI and DT cases, endianness of MDIO controller
+ 	 * needs to be specified using "little-endian" property.
+@@ -312,31 +310,11 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
+ 		ret = -EINVAL;
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "cannot register MDIO bus\n");
+-		goto err_registration;
++		return ret;
+ 	}
+ 
+ 	platform_set_drvdata(pdev, bus);
+ 
+-	return 0;
 -
- - interrupts
- 		Usage: required for external MDIO
- 		Value type: <prop-encoded-array>
+-err_registration:
+-	iounmap(priv->mdio_base);
+-
+-err_ioremap:
+-	mdiobus_free(bus);
+-
+-	return ret;
+-}
+-
+-static int xgmac_mdio_remove(struct platform_device *pdev)
+-{
+-	struct mii_bus *bus = platform_get_drvdata(pdev);
+-	struct mdio_fsl_priv *priv = bus->priv;
+-
+-	mdiobus_unregister(bus);
+-	iounmap(priv->mdio_base);
+-	mdiobus_free(bus);
+-
+ 	return 0;
+ }
+ 
+@@ -364,7 +342,6 @@ static struct platform_driver xgmac_mdio_driver = {
+ 		.acpi_match_table = xgmac_acpi_match,
+ 	},
+ 	.probe = xgmac_mdio_probe,
+-	.remove = xgmac_mdio_remove,
+ };
+ 
+ module_platform_driver(xgmac_mdio_driver);
 -- 
 2.25.1
 
