@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D976049CA6F
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 14:11:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECDDB49CA75
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 14:12:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236852AbiAZNLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 08:11:22 -0500
-Received: from mail-vk1-f182.google.com ([209.85.221.182]:43841 "EHLO
-        mail-vk1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234995AbiAZNLV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 08:11:21 -0500
-Received: by mail-vk1-f182.google.com with SMTP id w206so14582814vkd.10;
-        Wed, 26 Jan 2022 05:11:21 -0800 (PST)
+        id S237635AbiAZNMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 08:12:55 -0500
+Received: from mail-vk1-f175.google.com ([209.85.221.175]:47003 "EHLO
+        mail-vk1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234991AbiAZNMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 08:12:54 -0500
+Received: by mail-vk1-f175.google.com with SMTP id z15so11323716vkp.13;
+        Wed, 26 Jan 2022 05:12:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=bFbkuijaiH0+MDZA4Nt3F0F0GOCS29abOfcWN2LnmLk=;
-        b=vCHiMZt2GrX5lP0b7SdEor9Uc+4TaILxDeyU5RO4YGMMfIboXKvEwVy42LAAmSNwgh
-         GKMHhr2XL77cDLLhP4nehGaY1lzubF5lTUyoZpSXcp8u1Bgx2h2/blC/+JnG+6ywGe/x
-         GtzonZNWc7rb1XTLPsdR0laotPEWr5yhklC+NEUgRWcOIhzyAv74mrcBwOty2BWmudTq
-         5Z088DrLV31uYH46J+NCXoYRpP1sf8dKBoUvxwm1eq5KPDHc1o5gr2+KW6GUANSJ0WDj
-         +2v63hu8khxkv1NJt4QRMQyC6loBzScKOfSGknOo8TnQOI+hQLIxN3Ng3bzazQM8fO6l
-         1Cxw==
-X-Gm-Message-State: AOAM53215CNTn5LJubsWkfvDt7XF6S6Id9sVME9EacBTrztDIfWdZXjR
-        W1fDA6Ofs2FFry9GgbV+xBUm9/n5qXRO8pIN
-X-Google-Smtp-Source: ABdhPJw5Mk5lYt+TZxvBcMTycifX3o3UUk0lve1vmTcBehPPAAWwN5Vw3MYi0VLAaRvDfim0BP5i0w==
-X-Received: by 2002:a67:c885:: with SMTP id v5mr662538vsk.39.1643202680766;
-        Wed, 26 Jan 2022 05:11:20 -0800 (PST)
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com. [209.85.221.181])
-        by smtp.gmail.com with ESMTPSA id u12sm4325550vku.9.2022.01.26.05.11.18
+        bh=BhJUXbO8q0bPKjK33ClDLLcFdaoVbDDuXbB3IPKRL8Y=;
+        b=noVYv68WuAgU8HUxBJolC73hWZZDUXNtV2y+YZGvzior9TBG4kqyjSqE426GJs1qyG
+         vKhuuhpIfsDuaiw9NJP7suGlUvAb8Zfb4uRWildQ2q3pHT7CQany5mftB3tIxgLzn1bY
+         XK9c4fnj+Js0vRboku4JuPxUnIQZWGiWQ3TL4q+t9FzpY77uK/hFbt5k9R69B98VIAnj
+         cZSywpK+GHUF1XiQHhj/YaLgqnmQCh3ETS6rVv9M8PVZrEt/u0MhzvatXe41FxeOj0Sk
+         Hi+/3ZF9u1Wn6SKfBWpxa+5JXMeJleSdI9xtfi78BetUlobZyhF4pxhJ47acgoxhUtOC
+         HpaQ==
+X-Gm-Message-State: AOAM532aYhLf9HTr5qa/B+A46YUTumrzvI+NaY+PLnxoySKhr6vm2u7a
+        Yt0KPV0xZhoBDUinBYXADD9C4l2MLOmVEA1P
+X-Google-Smtp-Source: ABdhPJxyEmvWNKfxyfW9IWX7lh60fcVY7PAuHSfqMiXFOClNmZSlib2ABmjaYlPhQt2umf9NE+P9qg==
+X-Received: by 2002:a1f:a3ca:: with SMTP id m193mr8572626vke.3.1643202773937;
+        Wed, 26 Jan 2022 05:12:53 -0800 (PST)
+Received: from mail-vk1-f172.google.com (mail-vk1-f172.google.com. [209.85.221.172])
+        by smtp.gmail.com with ESMTPSA id k20sm258738vsg.14.2022.01.26.05.12.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Jan 2022 05:11:19 -0800 (PST)
-Received: by mail-vk1-f181.google.com with SMTP id w206so14582569vkd.10;
-        Wed, 26 Jan 2022 05:11:18 -0800 (PST)
-X-Received: by 2002:ab0:13f1:: with SMTP id n46mr6555392uae.14.1643202678231;
- Wed, 26 Jan 2022 05:11:18 -0800 (PST)
+        Wed, 26 Jan 2022 05:12:52 -0800 (PST)
+Received: by mail-vk1-f172.google.com with SMTP id m131so14563196vkm.7;
+        Wed, 26 Jan 2022 05:12:52 -0800 (PST)
+X-Received: by 2002:a67:a401:: with SMTP id n1mr5404419vse.38.1643202772297;
+ Wed, 26 Jan 2022 05:12:52 -0800 (PST)
 MIME-Version: 1.0
-References: <20220111162231.10390-1-uli+renesas@fpond.eu> <20220111162231.10390-4-uli+renesas@fpond.eu>
-In-Reply-To: <20220111162231.10390-4-uli+renesas@fpond.eu>
+References: <20220111162231.10390-1-uli+renesas@fpond.eu> <20220111162231.10390-5-uli+renesas@fpond.eu>
+In-Reply-To: <20220111162231.10390-5-uli+renesas@fpond.eu>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 26 Jan 2022 14:11:06 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUAvWTG2kqRkU2Ee=dVQa8K8b4ixu63V-ADESAo676__g@mail.gmail.com>
-Message-ID: <CAMuHMdUAvWTG2kqRkU2Ee=dVQa8K8b4ixu63V-ADESAo676__g@mail.gmail.com>
-Subject: Re: [PATCH v2 3/5] arm64: dts: renesas: r8a779a0: Add CANFD device node
+Date:   Wed, 26 Jan 2022 14:12:41 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWwsbPGojoyjPkfBa=-cpb_tXJgys=yeHr6KBdDT0MWSA@mail.gmail.com>
+Message-ID: <CAMuHMdWwsbPGojoyjPkfBa=-cpb_tXJgys=yeHr6KBdDT0MWSA@mail.gmail.com>
+Subject: Re: [PATCH v2 4/5] arm64: dts: renesas: r8a779a0-falcon: enable CANFD
+ 0 and 1
 To:     Ulrich Hecht <uli+renesas@fpond.eu>
 Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>,
@@ -64,14 +65,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Uli,
+
 On Tue, Jan 11, 2022 at 5:22 PM Ulrich Hecht <uli+renesas@fpond.eu> wrote:
-> This patch adds a CANFD device node for r8a779a0.
->
-> Based on patch by Kazuya Mizuguchi.
+> Enables confirmed-working CAN interfaces 0 and 1 on the Falcon board.
 >
 > Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
 
+Thanks for your patch!
+
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Perhaps you want to describe can_clk (40 MHz) and its pinctrl, too?
 
 Gr{oetje,eeting}s,
 
