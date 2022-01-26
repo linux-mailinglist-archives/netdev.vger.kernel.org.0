@@ -2,120 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B228349C271
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 05:05:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B113B49C291
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 05:18:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237473AbiAZEFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 23:05:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55644 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237464AbiAZEFl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 23:05:41 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7EBEC061747;
-        Tue, 25 Jan 2022 20:05:40 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id k25so35508710ejp.5;
-        Tue, 25 Jan 2022 20:05:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lMvaUNa0epuWNVjB66ksvUi4IFQlW9eBOcK2Yd36MmQ=;
-        b=fwAoJX7uENLxSN7DTZ8PqBXvJvcMTediYsfnKAuesi62gHW5S0sMY3sRwYGYjOSSww
-         WZHn9IqZwvqcHn7q3eGzmXnz4rw+32/rHlbgx+AEQkY1LRlWft4XVEOPCO11jc8fo2uL
-         M4Qgz7ftiLcfTPFnTSO57whNdmKoZRInoRh9PQnrXAWPMiEj0ZppY0xSMK1qF6tp6x6o
-         gNVCHQfoHgInaF7/90STsrZDPuI0EZ2iIfv2umu8mpsYYPA9voAz7dH7g3z+SVRvwX2K
-         isdCFOGST6ABNIIupcYk5k6zsaukQ0pfsDMH54e0/06ZjwnBiagMrHGmXu2+rH7YmTkK
-         YPMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lMvaUNa0epuWNVjB66ksvUi4IFQlW9eBOcK2Yd36MmQ=;
-        b=WALpaEdCwWlOAUeA8chZbT3n/au+9Ou0jBs58nsp0hCCKJr864V5pVzEuFORm0cvsk
-         DtlDlVV7aKTJfPHwG2tT2P6VWj+C9hMmStNqnVT7WNW58hUGeU0/nVxRDaMnrBnvPWp3
-         5eJklxXDleikZieQHlbJb3PlQgFC/HgCdBW0Adop0E9QPfxnJyVyHAtDUL6TByzO+Aw+
-         zBmckxhJ2iSl3QhWnmQk4o+2Kbw22YkHSK9zXwQtdcq6VNeMPa+h0lhzMnhrqBSLHzUa
-         TdwbARFzzJkKFfNsQtvc1BLMw0YrAlCss5XXMMLigkQ1ibIpzde7Cymw6h5FDsRLgr3k
-         hUWg==
-X-Gm-Message-State: AOAM5330Wt6waJGc1tWToOqNOCkucMy/cv148vTi8ERS751wESb0R/xf
-        Q084MipEWwhhOKr86rCB+TQ=
-X-Google-Smtp-Source: ABdhPJzpr/NO+jpBXEqcyNQbAaZSVw3yPjSTlvG+QrzbR1t7pVcEnQLFJHmx4ngn3zl+oovsJFmmQQ==
-X-Received: by 2002:a17:906:9743:: with SMTP id o3mr18624064ejy.162.1643169939262;
-        Tue, 25 Jan 2022 20:05:39 -0800 (PST)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id gu2sm6823228ejb.221.2022.01.25.20.05.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 20:05:38 -0800 (PST)
-Date:   Wed, 26 Jan 2022 05:05:37 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH v7 06/16] net: dsa: tag_qca: add define for handling
- mgmt Ethernet packet
-Message-ID: <YfDIkSpH7g+TPan0@Ansuel-xps.localdomain>
-References: <20220123013337.20945-1-ansuelsmth@gmail.com>
- <20220123013337.20945-7-ansuelsmth@gmail.com>
- <70a44baa-4a1c-9c9e-6781-b1b563c787bd@gmail.com>
- <YfDHmpLxqUGWatQC@Ansuel-xps.localdomain>
- <ffd2326c-5b66-87d8-ad42-6dea37e290d6@gmail.com>
+        id S229868AbiAZESC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 23:18:02 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:49682 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229671AbiAZESB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 23:18:01 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CBE00CE1BBF;
+        Wed, 26 Jan 2022 04:17:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61B32C340E3;
+        Wed, 26 Jan 2022 04:17:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643170678;
+        bh=MaAuNjsFO8On+BGpUOJ4aK1T9MBVNUh+44P2Z4qFPYQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cwQgwPJRdJ0WHqCqAeWadgK+l1IyR8R05fdGOpE3f90v/9Ocq2lw1LDrenpG8/++/
+         0bly1h4lIoY1v8CpsT7bVS4nLTaX4DPGQ6lnpLJKg3G0n0gqM9af7BGFVW94y75Y8n
+         ZuJ7zuNkG5DK7zmOMxT2VCLsxahb9u6jfrgzLybhiWvhxkFjgx2weWPdnrD6i+6Anj
+         d3Zzl0xzlwM0kjCF7uKvK+K6++Rn0uiiivlAX6fVtCZ7nhrdJRU0EsRolboOcSag92
+         NJ8fq7P66AT8IjK0TVB21pjKjmAsa1QskuKMIpB+4MwlFPbwaYYSMRiW+g1pezaYWm
+         vV9d8AgmG3u4Q==
+Date:   Tue, 25 Jan 2022 20:17:56 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH net v2 2/2] net: stmmac: skip only stmmac_ptp_register
+ when resume from suspend
+Message-ID: <20220125201756.1606e1c4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220125032324.4055-3-mohammad.athari.ismail@intel.com>
+References: <20220125032324.4055-1-mohammad.athari.ismail@intel.com>
+        <20220125032324.4055-3-mohammad.athari.ismail@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ffd2326c-5b66-87d8-ad42-6dea37e290d6@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 08:02:53PM -0800, Florian Fainelli wrote:
-> 
-> 
-> On 1/25/2022 8:01 PM, Ansuel Smith wrote:
-> > On Tue, Jan 25, 2022 at 07:54:15PM -0800, Florian Fainelli wrote:
-> > > 
-> > > 
-> > > On 1/22/2022 5:33 PM, Ansuel Smith wrote:
-> > > > Add all the required define to prepare support for mgmt read/write in
-> > > > Ethernet packet. Any packet of this type has to be dropped as the only
-> > > > use of these special packet is receive ack for an mgmt write request or
-> > > > receive data for an mgmt read request.
-> > > > A struct is used that emulates the Ethernet header but is used for a
-> > > > different purpose.
-> > > > 
-> > > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > > > ---
-> > > 
-> > > [snip]
-> > > 
-> > > > +/* Special struct emulating a Ethernet header */
-> > > > +struct mgmt_ethhdr {
-> > > > +	u32 command;		/* command bit 31:0 */
-> > > > +	u32 seq;		/* seq 63:32 */
-> > > > +	u32 mdio_data;		/* first 4byte mdio */
-> > > > +	__be16 hdr;		/* qca hdr */
-> > > > +} __packed;
-> > > 
-> > > Might be worth adding a BUILD_BUG_ON(sizeof(struct mgmt_ethhdr) !=
-> > > QCA_HDR_MGMT_PKG_LEN) when you start making use of that structure?
-> > 
-> > Where should I put this check? Right after the struct definition,
-> > correct? (I just checked definition of the macro)
-> 
-> It would have to be in a call site where you use the structure, I have not
-> checked whether putting it in a static inline function in .h file actually
-> works if the inline function is not used at all.
+On Tue, 25 Jan 2022 11:23:24 +0800 Mohammad Athari Bin Ismail wrote:
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index d7e261768f73..b8e5e19e6f7b 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -880,11 +880,12 @@ EXPORT_SYMBOL_GPL(stmmac_init_tstamp_counter);
+>  /**
+>   * stmmac_init_ptp - init PTP
+>   * @priv: driver private structure
+> + * @ptp_register: register PTP if set
+>   * Description: this is to verify if the HW supports the PTPv1 or PTPv2.
+>   * This is done by looking at the HW cap. register.
+>   * This function also registers the ptp driver.
+>   */
+> -static int stmmac_init_ptp(struct stmmac_priv *priv)
+> +static int stmmac_init_ptp(struct stmmac_priv *priv, bool ptp_register)
+>  {
+>  	bool xmac = priv->plat->has_gmac4 || priv->plat->has_xgmac;
+>  	int ret;
+> @@ -914,7 +915,8 @@ static int stmmac_init_ptp(struct stmmac_priv *priv)
+>  	priv->hwts_tx_en = 0;
+>  	priv->hwts_rx_en = 0;
+>  
+> -	stmmac_ptp_register(priv);
+> +	if (ptp_register)
+> +		stmmac_ptp_register(priv);
 
-Think I can test that by just putting a wrong value in
-QCA_HDR_MGMT_PKG_LEN and check if the error is triggered.
-Will check if the macro will actually work. 
+stmmac_init_ptp() only has one caller, and the registration step is last.
+Wouldn't it be better to move the stmmac_ptp_register() call out to
+stmmac_hw_setup()? That way we don't need to pass extra arguments to init.
 
-> -- 
-> Florian
-
--- 
-	Ansuel
+>  	return 0;
+>  }
+> @@ -3241,7 +3243,7 @@ static int stmmac_fpe_start_wq(struct stmmac_priv *priv)
+>  /**
+>   * stmmac_hw_setup - setup mac in a usable state.
+>   *  @dev : pointer to the device structure.
+> - *  @init_ptp: initialize PTP if set
+> + *  @ptp_register: register PTP if set
+>   *  Description:
+>   *  this is the main function to setup the HW in a usable state because the
+>   *  dma engine is reset, the core registers are configured (e.g. AXI,
+> @@ -3251,7 +3253,7 @@ static int stmmac_fpe_start_wq(struct stmmac_priv *priv)
+>   *  0 on success and an appropriate (-)ve integer as defined in errno.h
+>   *  file on failure.
+>   */
+> -static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
+> +static int stmmac_hw_setup(struct net_device *dev, bool ptp_register)
+>  {
+>  	struct stmmac_priv *priv = netdev_priv(dev);
+>  	u32 rx_cnt = priv->plat->rx_queues_to_use;
+> @@ -3308,13 +3310,11 @@ static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
+>  
+>  	stmmac_mmc_setup(priv);
+>  
+> -	if (init_ptp) {
+> -		ret = stmmac_init_ptp(priv);
+> -		if (ret == -EOPNOTSUPP)
+> -			netdev_warn(priv->dev, "PTP not supported by HW\n");
+> -		else if (ret)
+> -			netdev_warn(priv->dev, "PTP init failed\n");
+> -	}
+> +	ret = stmmac_init_ptp(priv, ptp_register);
+> +	if (ret == -EOPNOTSUPP)
+> +		netdev_warn(priv->dev, "PTP not supported by HW\n");
+> +	else if (ret)
+> +		netdev_warn(priv->dev, "PTP init failed\n");
