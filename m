@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCCDD49C6C0
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 10:45:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B3D549C6C4
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 10:46:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232052AbiAZJpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 04:45:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47736 "EHLO
+        id S232146AbiAZJqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 04:46:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231967AbiAZJpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 04:45:13 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2919DC06161C
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 01:45:13 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id j14so18972216lja.3
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 01:45:13 -0800 (PST)
+        with ESMTP id S232073AbiAZJqV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 04:46:21 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1E5C061744
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 01:46:20 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id o12so18499011lfg.12
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 01:46:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=bnkwPVjd8gERi15PejeRSl6RpasvAU7m0QgLpZCryOE=;
-        b=o2OH/SX+q0f8PhXQtrCtcIu4R/3petNi4CdvQYzPn605fTwCcNeoxPLdZ44byyZrC8
-         KuskMFXGnFSMMbEguRaDdN41l8HNpOSXlaAH9xkWTTdsI7MOiN6YngkK6qPPbuSDl4iL
-         XmDyL7URVClIZqSyDg8Ae9wg5F2vRbtcKpvnU=
+        bh=LpTaU2Ptr8MQ/wN++pzUGfYSFa+pffVDK7J691el+xI=;
+        b=yMvK6vPPbGBnuLsvGBBDXyTE2AbQ4G1HcCUAjxDkxfT8BG+8bRZBDWCRIzxqaIVOCO
+         NYBVPjfpPcFa+ZCUk6/uuRfnFi0AV2lJzlHLSCzXCLqFJaaZME0SIO5SgQcitMs4E23r
+         ciPEfJVik7FUyYExCFSqmXAgN0+y+ecIexyG4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=bnkwPVjd8gERi15PejeRSl6RpasvAU7m0QgLpZCryOE=;
-        b=NIAsCQ9fIz4hn2WN6knVSbSDXqt1Or7WAuUXxqMrEPeCpPYXwP2Y2/jcWyx6D1aokV
-         wARjMKdsSzRRv/WvONgn/JwuGAnvh0yMgKQkyiDPU+hRtxE4chTiMaME5k42NkZYjX77
-         EIu99KWerb7+vgCV0yQZBV7BB77herNeck80GIe1Rk53GlIUSQ2LcBaDyGNtNT3pj1dP
-         OzsX4z9y4S8Rw6A5pEpGLRXh/Qo2NUm6zcSYLKq1GKzJkdiu5WDuvthJzrSK5SIc1fja
-         lWXoEf+aZlHy7Kw+14PpCjNlpk4NWor/tGWnJ0hLaZNkaODudoehyVhirJkqczmkFHyY
-         0fxQ==
-X-Gm-Message-State: AOAM5326euep3NLjVT7BMZ03XcBzjRbC98Tj0nBODRClRYHpGANkDMDM
-        I7U6bwZKPxprhiu8lctpeCtzarOgrE9pbnOSXBCaLK+STRY=
-X-Google-Smtp-Source: ABdhPJw1RxhrH2QiGQh8zOXtB0UG0Owa8Qaj/JCeYoea+5nUdaNK9tV2INvRQ2plcyqlF41LuRieL9I+0nqD3rrHHV8=
-X-Received: by 2002:a2e:6e0e:: with SMTP id j14mr5158246ljc.510.1643190311516;
- Wed, 26 Jan 2022 01:45:11 -0800 (PST)
+        bh=LpTaU2Ptr8MQ/wN++pzUGfYSFa+pffVDK7J691el+xI=;
+        b=5KGbI/5Y2bMzr8aiXSHVv6jRNEKjlrauRL7VihSg0yH0Pd0Bzi9ZXrJS/Y4RFn6P+J
+         j76QVX+FXZuoZcUrS1pYHhOnnJTIc68nS6dorTqEUFOSm2IBf2tEZMWAdC40Alw35QLt
+         4rpwY5btxgM/fQmewXkwE5Vfhj6ROeCYGzqQryUxzBAuNl5NMBOw134fKRQaLKWf50ie
+         jmlPEYrydrRyfIDz1PeBNV8bFJ8GA65PToA8DrQeDTO8H3CrIF6eHSUbtDmkf7Ei/YPJ
+         YmLdOXRWi7hLIm84wS9mOYR/0pPb/s8AYXPpkNYVypMJ/H5WYqb34SJW/CB0obk1HT6c
+         GC/w==
+X-Gm-Message-State: AOAM533NobRBbFNHMoe7wlEgQeujJoRJV4QvtTamxm/XiambFCoVpORV
+        b4qPH4etXkhRyXDhIHeVItjsJIZuN+HmStlRqQubAw==
+X-Google-Smtp-Source: ABdhPJyJUeBUcRbKBBc5OZhT3CTkWd+leTIulW72WHw2OORXwCdM8BcPQZqWcWkYa2JBBQ1HO7kLz8pv/jPLIi1IO5k=
+X-Received: by 2002:a05:6512:3086:: with SMTP id z6mr4373391lfd.102.1643190379153;
+ Wed, 26 Jan 2022 01:46:19 -0800 (PST)
 MIME-Version: 1.0
-References: <20220124151146.376446-1-maximmi@nvidia.com> <20220124151146.376446-5-maximmi@nvidia.com>
-In-Reply-To: <20220124151146.376446-5-maximmi@nvidia.com>
+References: <20220124151146.376446-1-maximmi@nvidia.com> <20220124151146.376446-2-maximmi@nvidia.com>
+In-Reply-To: <20220124151146.376446-2-maximmi@nvidia.com>
 From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Wed, 26 Jan 2022 09:45:00 +0000
-Message-ID: <CACAyw9_5-T5Y9AQpAmCe=aj9A0Q=SMyx1cMz6TRQvnW=NU9ygA@mail.gmail.com>
-Subject: Re: [PATCH bpf v2 4/4] bpf: Fix documentation of th_len in bpf_tcp_{gen,check}_syncookie
+Date:   Wed, 26 Jan 2022 09:46:08 +0000
+Message-ID: <CACAyw98mbtZSH3yddaptKb4Qi7Grxzt80ihqiHA3qw9n4XwVjg@mail.gmail.com>
+Subject: Re: [PATCH bpf v2 1/4] bpf: Use ipv6_only_sock in bpf_tcp_gen_syncookie
 To:     Maxim Mikityanskiy <maximmi@nvidia.com>
 Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -68,17 +68,14 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, 24 Jan 2022 at 15:13, Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
 >
-> bpf_tcp_gen_syncookie and bpf_tcp_check_syncookie expect the full length
-> of the TCP header (with all extensions). Fix the documentation that says
-> it should be sizeof(struct tcphdr).
+> Instead of querying the sk_ipv6only field directly, use the dedicated
+> ipv6_only_sock helper.
+>
+> Fixes: 70d66244317e ("bpf: add bpf_tcp_gen_syncookie helper")
+> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 
-I don't understand this change, sorry. Are you referring to the fact
-that the check is len < sizeof(*th) instead of len != sizeof(*th)?
-
-Your commit message makes me think that the helpers will access data
-in the extension headers, which isn't true as far as I can tell. That
-would be a problem in fact, since it could be used to read memory that
-the verifier hasn't deemed safe.
+Acked-by: Lorenz Bauer <lmb@cloudflare.com>
 
 -- 
 Lorenz Bauer  |  Systems Engineer
