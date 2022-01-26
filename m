@@ -2,86 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38DAB49C216
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 04:28:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EDF549C21D
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 04:29:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237176AbiAZD2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 22:28:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47236 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237143AbiAZD2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 22:28:52 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9BCC06161C;
-        Tue, 25 Jan 2022 19:28:52 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id nn16-20020a17090b38d000b001b56b2bce31so4874690pjb.3;
-        Tue, 25 Jan 2022 19:28:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=W0/VThFcJa9vLUnJjkFf1P9yWFM1rwFeXTDTDQSnGBM=;
-        b=TLSext6CJMcifmjsaLFHRvpQB5XeJWpuLC+zeu2rLqFzYg6TufniIq7rniykXl4+3+
-         ERpBjHOwFpjgeXz6jFdBJSN1ZMPajiCIj0cs6W/iBIHtUw5wQoQfKI97GZZKv+FRRNje
-         faSsE5f0s2w6IS1wJqyoDCyDrt1HETkrf8/hnkP/53SpwE6ZK4QnGc6LWrx9YmgQziis
-         +Kyq7jfRprrI4JgPRNLCKwd0rOd41QClkeb15IDB4wYM2C1VDk+sLhXS1YTeZWZS3JX+
-         QZEKqj3F233Z06iptDA2Itj7x+2uPtlSgrS7HmJAF14pTCP62lMo1TRKMWHvkfaZr2kI
-         PPqA==
+        id S237188AbiAZD3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 22:29:24 -0500
+Received: from mail-oi1-f170.google.com ([209.85.167.170]:34730 "EHLO
+        mail-oi1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230046AbiAZD3X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 22:29:23 -0500
+Received: by mail-oi1-f170.google.com with SMTP id bb37so35112633oib.1;
+        Tue, 25 Jan 2022 19:29:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=W0/VThFcJa9vLUnJjkFf1P9yWFM1rwFeXTDTDQSnGBM=;
-        b=Xb0J5m9fgPgy7CKZAgkhgKf7AUahWad8wTGF2olLRSkroGY2waEjttYpxlPFohzMu8
-         xivsEHFiaaCbjuAS9mqz/QIfpLENUUtryd4wpKIWMEf7vF6xpIqFxEEydBN+zDtev2PO
-         NWt/SLUIqswx6wWMLgkbGUcJrajq7AM59VNWNUS3CWzffySFfoYn2PqwPp5L7X45zz+T
-         EZBZggjg1BBBleYG6audjsPNDGVodueUBq9XzhWxe49Ox9MmWrVno0pRJkxhG8/rmkOV
-         AJQYUTqZHN/xxQuJvlnETOOmpOr8Dsnv5I8l9mukx23F1VqIw9aiElpvykAtFDXi0IJU
-         3cCA==
-X-Gm-Message-State: AOAM532GZIp1V+rabMVbgw3v8ck5+p+sMVh46V2Wpd3x1n73srSmAMZ0
-        JAinwm0+48AICFvjJpoqZS/d4LjiIjo=
-X-Google-Smtp-Source: ABdhPJyACQPx1bMbYFQpthM6zfRv/NSr332diLDHCP8Sdj0N8GEYeRIai8Mm2mX1WsGsO8X451HYZw==
-X-Received: by 2002:a17:902:e74d:b0:14b:4166:35c9 with SMTP id p13-20020a170902e74d00b0014b416635c9mr13841880plf.135.1643167732300;
-        Tue, 25 Jan 2022 19:28:52 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id l22sm390039pfc.191.2022.01.25.19.28.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 19:28:51 -0800 (PST)
-Message-ID: <cba84992-17cb-9313-9d84-0ed16e122e40@gmail.com>
-Date:   Tue, 25 Jan 2022 19:28:50 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC PATCH v7 05/16] net: dsa: tag_qca: enable promisc_on_master
- flag
-Content-Language: en-US
-To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220123013337.20945-1-ansuelsmth@gmail.com>
- <20220123013337.20945-6-ansuelsmth@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220123013337.20945-6-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=MVc9s3fcMth95toFpCpjRYn/jVBPtTn1dYVLMhfLjBQ=;
+        b=pNx/8RjoW3N8HEB2WAqhNnlAFSyiE3qC5kRvK0LED4PtPw/0Dttmd4YwElJZiGPuAK
+         gC1Vjx8ldhqajWydRf7RHjZ9aJzMzf4JsUEsCRNZo+tV7U97zDm3HGgCG+O6Os+zkcJz
+         kSQQXWAaVp4lbKV0VG5bSKL1S7Ve6b+LyQZ0EApItoXfhmU6lHBRBLUXKCx4GpFEMG+E
+         eT/T7gqYYcjChwGG0ScRtAjJxmSeF9Hr6L5t1ARxrQ26NwKoziUxO5ygp2voQPCtt2ox
+         hBCzLUM19Zrl+7LUtLqslJq6zid/OD//vRkdRHUk4IESeQ2gZNH+ZCYoVEUx201TiBeh
+         U+ZQ==
+X-Gm-Message-State: AOAM531ASCCQaYU6DnhzeKXV7Qq7excrrrgHwOvSAwIj3gwNpqfw+9qF
+        AGk35E7ULcKvAZo4p6jV2w==
+X-Google-Smtp-Source: ABdhPJyGjhDzW3VjlAj62sAJEzUAaYUE1AdtZZbl9Kh5WzWinsja0JijFVTHL7Ik2dLL4lN7AZDcIg==
+X-Received: by 2002:a05:6808:1508:: with SMTP id u8mr2535003oiw.155.1643167762685;
+        Tue, 25 Jan 2022 19:29:22 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id a10sm3693017otq.64.2022.01.25.19.29.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 19:29:21 -0800 (PST)
+Received: (nullmailer pid 3724356 invoked by uid 1000);
+        Wed, 26 Jan 2022 03:29:18 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Robert Hancock <robert.hancock@calian.com>
+Cc:     devicetree@vger.kernel.org, claudiu.beznea@microchip.com,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        nicolas.ferre@microchip.com, robh+dt@kernel.org,
+        michal.simek@xilinx.com
+In-Reply-To: <20220125170533.256468-2-robert.hancock@calian.com>
+References: <20220125170533.256468-1-robert.hancock@calian.com> <20220125170533.256468-2-robert.hancock@calian.com>
+Subject: Re: [PATCH net-next v2 1/3] dt-bindings: net: cdns,macb: added generic PHY and reset mappings for ZynqMP
+Date:   Tue, 25 Jan 2022 21:29:18 -0600
+Message-Id: <1643167758.842879.3724354.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/22/2022 5:33 PM, Ansuel Smith wrote:
-> Ethernet MDIO packets are non-standard and DSA master expects the first
-> 6 octets to be the MAC DA. To address these kind of packet, enable
-> promisc_on_master flag for the tagger.
+On Tue, 25 Jan 2022 11:05:31 -0600, Robert Hancock wrote:
+> Updated macb DT binding documentation to reflect the phy-names, phys,
+> resets, reset-names properties which are now used with ZynqMP GEM
+> devices, and added a ZynqMP-specific DT example.
 > 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+> ---
+>  .../devicetree/bindings/net/cdns,macb.yaml    | 46 +++++++++++++++++++
+>  1 file changed, 46 insertions(+)
+> 
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+Error: Documentation/devicetree/bindings/net/cdns,macb.example.dts:41.39-40 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:378: Documentation/devicetree/bindings/net/cdns,macb.example.dt.yaml] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1398: dt_binding_check] Error 2
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1584186
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
