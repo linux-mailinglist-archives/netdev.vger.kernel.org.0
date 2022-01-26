@@ -2,40 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C33CD49C037
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 01:38:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46D1549C038
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 01:38:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235357AbiAZAiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 19:38:10 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33904 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235340AbiAZAiH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 19:38:07 -0500
+        id S235358AbiAZAiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 19:38:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37008 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235352AbiAZAiJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 19:38:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4913C06161C
+        for <netdev@vger.kernel.org>; Tue, 25 Jan 2022 16:38:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1BA4B81B9A
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 00:38:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 585A8C340EB;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E4DFB81B9C
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 00:38:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C20C7C340E0;
         Wed, 26 Jan 2022 00:38:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643157485;
-        bh=X4yd7Dxmu5PFhFcieA8ox30wK4paNfYa0lKukRAMuz8=;
+        s=k20201202; t=1643157486;
+        bh=8EPKyibJPLFnHUibBxFOVRIZAK8CWCm519c3Pj97zX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oF00jcGG9O2JgCAACElzEdRtFg5cf9j5vTLHU8Ah/RaHgr6oPzA7JzxxZk/lR1hpj
-         8NQAhKIYgsC5o3t5soLWm+9YJkcK/ii4U6mHdkPHmAqQlf/wT+G7DXJun0GsPN4ozq
-         ZTDl4ePzH5CCx9Isv7uFvmXrsyXVMB5/MhAzu+9dAXnbs2aFi/z7LkQ2nez3zuoa6W
-         Lwyc/mou2FFqoMsk1wemPRVLlHbVgd0YN9lbqsLEfhEnZpDhKmvbEMPTjPmnjBH0xc
-         9z0TK53dUrFC+1CRU/nL+Dq8oki66vwzZJENv593auxBLa/HRsDkQCqscZ475GQ89x
-         CpqeuXUVwFRUw==
+        b=XEV65wnTHrrJMFVD1o4AVGvnyx+XZkTw54t5/+klLsvCw29pnWZleaxwW2LYDes8A
+         /l4HvF1G38v12ijoQzQNuxi30GcCoIUxv/JEn6ZK/e3Fpxfdr8rUuvLmAG9rDGyqjS
+         HmgPtVnZyE0td0tc6HVEVBsbpcefWLd0LuS4RNp45PNZPwHQeHX6lbXFnPZihDnBqo
+         gGhLgList6tuwUvwyfOLbEbTckvIS0MIXlhDU6gaj0PbIOfDjviuTw4/tGab+k9qxh
+         CAlXGCvQPAcP0TwF6sfr+E3FsY5R0uRJ925BO9nISIH+z5nEwdnd0L7W4i+FP0R5lG
+         +WBaNVH6jME5A==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, dave@thedillows.org, linux@armlinux.org.uk,
         linux-arm-kernel@lists.infradead.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net v2 1/6] ethernet: 3com/typhoon: don't write directly to netdev->dev_addr
-Date:   Tue, 25 Jan 2022 16:37:56 -0800
-Message-Id: <20220126003801.1736586-2-kuba@kernel.org>
+Subject: [PATCH net v2 2/6] ethernet: tundra: don't write directly to netdev->dev_addr
+Date:   Tue, 25 Jan 2022 16:37:57 -0800
+Message-Id: <20220126003801.1736586-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220126003801.1736586-1-kuba@kernel.org>
 References: <20220126003801.1736586-1-kuba@kernel.org>
@@ -45,41 +48,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This driver casts off the const and writes directly to netdev->dev_addr.
-This will result in a MAC address tree corruption and a warning.
+netdev->dev_addr is const now.
 
-Compile tested ppc6xx_defconfig.
+Maintain the questionable offsetting in ndo_set_mac_address.
+
+Compile tested holly_defconfig and mpc7448_hpc2_defconfig.
 
 Fixes: adeef3e32146 ("net: constify netdev->dev_addr")
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/3com/typhoon.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/tundra/tsi108_eth.c | 35 ++++++++++++------------
+ 1 file changed, 18 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/3com/typhoon.c b/drivers/net/ethernet/3com/typhoon.c
-index 481f1df3106c..8aec5d9fbfef 100644
---- a/drivers/net/ethernet/3com/typhoon.c
-+++ b/drivers/net/ethernet/3com/typhoon.c
-@@ -2278,6 +2278,7 @@ typhoon_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	struct net_device *dev;
- 	struct typhoon *tp;
- 	int card_id = (int) ent->driver_data;
-+	u8 addr[ETH_ALEN] __aligned(4);
- 	void __iomem *ioaddr;
- 	void *shared;
- 	dma_addr_t shared_dma;
-@@ -2409,8 +2410,9 @@ typhoon_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto error_out_reset;
+diff --git a/drivers/net/ethernet/tundra/tsi108_eth.c b/drivers/net/ethernet/tundra/tsi108_eth.c
+index cf0917b29e30..5251fc324221 100644
+--- a/drivers/net/ethernet/tundra/tsi108_eth.c
++++ b/drivers/net/ethernet/tundra/tsi108_eth.c
+@@ -1091,20 +1091,22 @@ static int tsi108_get_mac(struct net_device *dev)
+ 	struct tsi108_prv_data *data = netdev_priv(dev);
+ 	u32 word1 = TSI_READ(TSI108_MAC_ADDR1);
+ 	u32 word2 = TSI_READ(TSI108_MAC_ADDR2);
++	u8 addr[ETH_ALEN];
+ 
+ 	/* Note that the octets are reversed from what the manual says,
+ 	 * producing an even weirder ordering...
+ 	 */
+ 	if (word2 == 0 && word1 == 0) {
+-		dev->dev_addr[0] = 0x00;
+-		dev->dev_addr[1] = 0x06;
+-		dev->dev_addr[2] = 0xd2;
+-		dev->dev_addr[3] = 0x00;
+-		dev->dev_addr[4] = 0x00;
++		addr[0] = 0x00;
++		addr[1] = 0x06;
++		addr[2] = 0xd2;
++		addr[3] = 0x00;
++		addr[4] = 0x00;
+ 		if (0x8 == data->phy)
+-			dev->dev_addr[5] = 0x01;
++			addr[5] = 0x01;
+ 		else
+-			dev->dev_addr[5] = 0x02;
++			addr[5] = 0x02;
++		eth_hw_addr_set(dev, addr);
+ 
+ 		word2 = (dev->dev_addr[0] << 16) | (dev->dev_addr[1] << 24);
+ 
+@@ -1114,12 +1116,13 @@ static int tsi108_get_mac(struct net_device *dev)
+ 		TSI_WRITE(TSI108_MAC_ADDR1, word1);
+ 		TSI_WRITE(TSI108_MAC_ADDR2, word2);
+ 	} else {
+-		dev->dev_addr[0] = (word2 >> 16) & 0xff;
+-		dev->dev_addr[1] = (word2 >> 24) & 0xff;
+-		dev->dev_addr[2] = (word1 >> 0) & 0xff;
+-		dev->dev_addr[3] = (word1 >> 8) & 0xff;
+-		dev->dev_addr[4] = (word1 >> 16) & 0xff;
+-		dev->dev_addr[5] = (word1 >> 24) & 0xff;
++		addr[0] = (word2 >> 16) & 0xff;
++		addr[1] = (word2 >> 24) & 0xff;
++		addr[2] = (word1 >> 0) & 0xff;
++		addr[3] = (word1 >> 8) & 0xff;
++		addr[4] = (word1 >> 16) & 0xff;
++		addr[5] = (word1 >> 24) & 0xff;
++		eth_hw_addr_set(dev, addr);
  	}
  
--	*(__be16 *)&dev->dev_addr[0] = htons(le16_to_cpu(xp_resp[0].parm1));
--	*(__be32 *)&dev->dev_addr[2] = htonl(le32_to_cpu(xp_resp[0].parm2));
-+	*(__be16 *)&addr[0] = htons(le16_to_cpu(xp_resp[0].parm1));
-+	*(__be32 *)&addr[2] = htonl(le32_to_cpu(xp_resp[0].parm2));
-+	eth_hw_addr_set(dev, addr);
- 
  	if (!is_valid_ether_addr(dev->dev_addr)) {
- 		err_msg = "Could not obtain valid ethernet address, aborting";
+@@ -1136,14 +1139,12 @@ static int tsi108_set_mac(struct net_device *dev, void *addr)
+ {
+ 	struct tsi108_prv_data *data = netdev_priv(dev);
+ 	u32 word1, word2;
+-	int i;
+ 
+ 	if (!is_valid_ether_addr(addr))
+ 		return -EADDRNOTAVAIL;
+ 
+-	for (i = 0; i < 6; i++)
+-		/* +2 is for the offset of the HW addr type */
+-		dev->dev_addr[i] = ((unsigned char *)addr)[i + 2];
++	/* +2 is for the offset of the HW addr type */
++	eth_hw_addr_set(dev, ((unsigned char *)addr) + 2);
+ 
+ 	word2 = (dev->dev_addr[0] << 16) | (dev->dev_addr[1] << 24);
+ 
 -- 
 2.34.1
 
