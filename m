@@ -2,186 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3939849C5BA
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 10:02:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D07A249C5C7
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 10:05:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238722AbiAZJCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 04:02:41 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:45467 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237684AbiAZJCk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 04:02:40 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20Q92bYP2023613, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20Q92bYP2023613
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 26 Jan 2022 17:02:37 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 26 Jan 2022 17:02:37 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 26 Jan 2022 17:02:36 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
- RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
- 15.01.2308.020; Wed, 26 Jan 2022 17:02:36 +0800
-From:   Hau <hau@realtek.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next 1/1] r8169: enable RTL8125 ASPM L1.2
-Thread-Topic: [PATCH net-next 1/1] r8169: enable RTL8125 ASPM L1.2
-Thread-Index: AQHYEU71utwpaLacm0G/vN72YItAmaxzrMwAgAFTwtA=
-Date:   Wed, 26 Jan 2022 09:02:36 +0000
-Message-ID: <052d2be6e8f445f3a4890e259bdee8ce@realtek.com>
-References: <20220124181937.6331-1-hau@realtek.com>
- <23d3e690-da16-df03-4c75-dc92625b2c96@gmail.com>
-In-Reply-To: <23d3e690-da16-df03-4c75-dc92625b2c96@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.129]
-x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEvMjYg5LiK5Y2IIDA4OjAzOjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S238750AbiAZJF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 04:05:29 -0500
+Received: from mga17.intel.com ([192.55.52.151]:44553 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231404AbiAZJF3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jan 2022 04:05:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643187929; x=1674723929;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ggEHQETAv3lIPyDtUG98X3fyvSWeMQrZEDGtYqjDGro=;
+  b=GsrV4KKkI9aTnAL2asGlOF2XIAK+9sMQv4az0wGVCL6X/0dPYtnWobWZ
+   b12eVG/Y019aQBgft0tyiMUzLEPEEduhS/Pyjz7UqqaN5ryb6CuFa5c1C
+   8UEscW/PQu3mtPXMOn4NSOQP/le9i6HVPSIQzp6xAD/41cWGEwK/ouxIL
+   aX9uBIiyjK5+nwKG1LlJDo8EYrVObpOCPye5/O/21HqZfOdfKTq/a2XUh
+   BcyksDa7zfWNX3LshJMj4Ir0h7uBM9Q00iM6AMtbu6G8JEV6i6kqgghlj
+   bYA9+SW+WxpjR0LGd2SPBj7VdyBAXBwrD08UZqaP7z5tkq56oHAg9sO4N
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="227184325"
+X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
+   d="scan'208";a="227184325"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 01:05:28 -0800
+X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
+   d="scan'208";a="628246433"
+Received: from richardt-mobl1.amr.corp.intel.com (HELO ldmartin-desk2) ([10.212.143.219])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 01:05:28 -0800
+Date:   Wed, 26 Jan 2022 01:05:27 -0800
+From:   Lucas De Marchi <lucas.demarchi@intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
+        nouveau@lists.freedesktop.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        dri-devel@lists.freedesktop.org,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        amd-gfx@lists.freedesktop.org, Ben Skeggs <bskeggs@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Leo Li <sunpeng.li@amd.com>, intel-gfx@lists.freedesktop.org,
+        Raju Rangoju <rajur@chelsio.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 3/3] drm: Convert open yes/no strings to yesno()
+Message-ID: <20220126090527.ksuah5m6xctx7jjo@ldmartin-desk2>
+X-Patchwork-Hint: comment
+References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
+ <20220119072450.2890107-4-lucas.demarchi@intel.com>
+ <Yehm5/DJ5Ljo1EWs@smile.fi.intel.com>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <Yehm5/DJ5Ljo1EWs@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gT24gMjQuMDEuMjAyMiAxOToxOSwgQ2h1bmhhbyBMaW4gd3JvdGU6DQo+ID4gVGhpcyBw
-YXRjaCB3aWxsIGVuYWJsZSBSVEw4MTI1IEFTUE0gTDEuMiBvbiB0aGUgcGxhdGZvcm1zIHRoYXQg
-aGF2ZQ0KPiA+IHRlc3RlZCBSVEw4MTI1IHdpdGggQVNQTSBMMS4yIGVuYWJsZWQuDQo+ID4gUmVn
-aXN0ZXIgbWFjIG9jcCAweGMwYjIgd2lsbCBoZWxwIHRvIGlkZW50aWZ5IGlmIFJUTDgxMjUgaGFz
-IGJlZW4NCj4gPiB0ZXN0ZWQgb24gTDEuMiBlbmFibGVkIHBsYXRmb3JtLiBJZiBpdCBpcywgdGhp
-cyByZWdpc3RlciB3aWxsIGJlIHNldCB0byAweGYuDQo+ID4gSWYgbm90LCB0aGlzIHJlZ2lzdGVy
-IHdpbGwgYmUgZGVmYXVsdCB2YWx1ZSAwLg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogQ2h1bmhh
-byBMaW4gPGhhdUByZWFsdGVrLmNvbT4NCj4gPiAtLS0NCj4gPiAgZHJpdmVycy9uZXQvZXRoZXJu
-ZXQvcmVhbHRlay9yODE2OV9tYWluLmMgfCA5OQ0KPiA+ICsrKysrKysrKysrKysrKysrKy0tLS0t
-DQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCA3OSBpbnNlcnRpb25zKCspLCAyMCBkZWxldGlvbnMoLSkN
-Cj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9yZWFsdGVrL3I4MTY5
-X21haW4uYw0KPiA+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVhbHRlay9yODE2OV9tYWluLmMN
-Cj4gPiBpbmRleCAxOWUyNjIxZTA2NDUuLmIxZTAxMzk2OWQ0YyAxMDA2NDQNCj4gPiAtLS0gYS9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9yZWFsdGVrL3I4MTY5X21haW4uYw0KPiA+ICsrKyBiL2RyaXZl
-cnMvbmV0L2V0aGVybmV0L3JlYWx0ZWsvcjgxNjlfbWFpbi5jDQo+ID4gQEAgLTIyMzgsMjEgKzIy
-MzgsNiBAQCBzdGF0aWMgdm9pZCBydGxfd29sX2VuYWJsZV9yeChzdHJ1Y3QNCj4gcnRsODE2OV9w
-cml2YXRlICp0cCkNCj4gPiAgCQkJQWNjZXB0QnJvYWRjYXN0IHwgQWNjZXB0TXVsdGljYXN0IHwN
-Cj4gQWNjZXB0TXlQaHlzKTsgIH0NCj4gPg0KPiA+IC1zdGF0aWMgdm9pZCBydGxfcHJlcGFyZV9w
-b3dlcl9kb3duKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRwKSAtew0KPiA+IC0JaWYgKHRwLT5k
-YXNoX3R5cGUgIT0gUlRMX0RBU0hfTk9ORSkNCj4gPiAtCQlyZXR1cm47DQo+ID4gLQ0KPiA+IC0J
-aWYgKHRwLT5tYWNfdmVyc2lvbiA9PSBSVExfR0lHQV9NQUNfVkVSXzMyIHx8DQo+ID4gLQkgICAg
-dHAtPm1hY192ZXJzaW9uID09IFJUTF9HSUdBX01BQ19WRVJfMzMpDQo+ID4gLQkJcnRsX2VwaHlf
-d3JpdGUodHAsIDB4MTksIDB4ZmY2NCk7DQo+ID4gLQ0KPiA+IC0JaWYgKGRldmljZV9tYXlfd2Fr
-ZXVwKHRwX3RvX2Rldih0cCkpKSB7DQo+ID4gLQkJcGh5X3NwZWVkX2Rvd24odHAtPnBoeWRldiwg
-ZmFsc2UpOw0KPiA+IC0JCXJ0bF93b2xfZW5hYmxlX3J4KHRwKTsNCj4gPiAtCX0NCj4gPiAtfQ0K
-PiA+IC0NCj4gPiAgc3RhdGljIHZvaWQgcnRsX2luaXRfcnhjZmcoc3RydWN0IHJ0bDgxNjlfcHJp
-dmF0ZSAqdHApICB7DQo+ID4gIAlzd2l0Y2ggKHRwLT5tYWNfdmVyc2lvbikgew0KPiA+IEBAIC0y
-NjUwLDYgKzI2MzUsMzQgQEAgc3RhdGljIHZvaWQgcnRsX3BjaWVfc3RhdGVfbDJsM19kaXNhYmxl
-KHN0cnVjdA0KPiBydGw4MTY5X3ByaXZhdGUgKnRwKQ0KPiA+ICAJUlRMX1c4KHRwLCBDb25maWcz
-LCBSVExfUjgodHAsIENvbmZpZzMpICYgflJkeV90b19MMjMpOyAgfQ0KPiA+DQo+ID4gK3N0YXRp
-YyB2b2lkIHJ0bF9kaXNhYmxlX2V4aXRfbDEoc3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHApIHsN
-Cj4gPiArCS8qIEJpdHMgY29udHJvbCB3aGljaCBldmVudHMgdHJpZ2dlciBBU1BNIEwxIGV4aXQ6
-DQo+ID4gKwkgKiBCaXQgMTI6IHJ4ZHYNCj4gPiArCSAqIEJpdCAxMTogbHRyX21zZw0KPiA+ICsJ
-ICogQml0IDEwOiB0eGRtYV9wb2xsDQo+ID4gKwkgKiBCaXQgIDk6IHhhZG0NCj4gPiArCSAqIEJp
-dCAgODogcGt0YXZpDQo+ID4gKwkgKiBCaXQgIDc6IHR4cGxhDQo+ID4gKwkgKi8NCj4gPiArCXN3
-aXRjaCAodHAtPm1hY192ZXJzaW9uKSB7DQo+ID4gKwljYXNlIFJUTF9HSUdBX01BQ19WRVJfMzQg
-Li4uIFJUTF9HSUdBX01BQ19WRVJfMzY6DQo+ID4gKwkJcnRsX2VyaV9jbGVhcl9iaXRzKHRwLCAw
-eGQ0LCAweDFmMDApOw0KPiA+ICsJCWJyZWFrOw0KPiA+ICsJY2FzZSBSVExfR0lHQV9NQUNfVkVS
-XzM3IC4uLiBSVExfR0lHQV9NQUNfVkVSXzM4Og0KPiA+ICsJCXJ0bF9lcmlfY2xlYXJfYml0cyh0
-cCwgMHhkNCwgMHgwYzAwKTsNCj4gPiArCQlicmVhazsNCj4gPiArCWNhc2UgUlRMX0dJR0FfTUFD
-X1ZFUl80MCAuLi4gUlRMX0dJR0FfTUFDX1ZFUl81MzoNCj4gPiArCQlydGxfZXJpX2NsZWFyX2Jp
-dHModHAsIDB4ZDQsIDB4MWY4MCk7DQo+ID4gKwkJYnJlYWs7DQo+ID4gKwljYXNlIFJUTF9HSUdB
-X01BQ19WRVJfNjAgLi4uIFJUTF9HSUdBX01BQ19WRVJfNjM6DQo+ID4gKwkJcjgxNjhfbWFjX29j
-cF9tb2RpZnkodHAsIDB4YzBhYywgMHgxZjgwLCAwKTsNCj4gPiArCQlicmVhazsNCj4gPiArCWRl
-ZmF1bHQ6DQo+ID4gKwkJYnJlYWs7DQo+ID4gKwl9DQo+ID4gK30NCj4gPiArDQo+ID4gIHN0YXRp
-YyB2b2lkIHJ0bF9lbmFibGVfZXhpdF9sMShzdHJ1Y3QgcnRsODE2OV9wcml2YXRlICp0cCkgIHsN
-Cj4gPiAgCS8qIEJpdHMgY29udHJvbCB3aGljaCBldmVudHMgdHJpZ2dlciBBU1BNIEwxIGV4aXQ6
-DQo+ID4gQEAgLTI2OTIsNiArMjcwNSwzMyBAQCBzdGF0aWMgdm9pZCBydGxfaHdfYXNwbV9jbGty
-ZXFfZW5hYmxlKHN0cnVjdA0KPiBydGw4MTY5X3ByaXZhdGUgKnRwLCBib29sIGVuYWJsZSkNCj4g
-PiAgCXVkZWxheSgxMCk7DQo+ID4gIH0NCj4gPg0KPiA+ICtzdGF0aWMgdm9pZCBydGxfaHdfYXNw
-bV9sMTJfZW5hYmxlKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRwLCBib29sDQo+ID4gK2VuYWJs
-ZSkgew0KPiA+ICsJLyogRG9uJ3QgZW5hYmxlIEwxLjIgaW4gdGhlIGNoaXAgaWYgT1MgY2FuJ3Qg
-Y29udHJvbCBBU1BNICovDQo+ID4gKwlpZiAoZW5hYmxlICYmIHRwLT5hc3BtX21hbmFnZWFibGUp
-IHsNCj4gPiArCQlyODE2OF9tYWNfb2NwX21vZGlmeSh0cCwgMHhlMDk0LCAweGZmMDAsIDApOw0K
-PiA+ICsJCXI4MTY4X21hY19vY3BfbW9kaWZ5KHRwLCAweGUwOTIsIDB4MDBmZiwgQklUKDIpKTsN
-Cj4gPiArCX0gZWxzZSB7DQo+ID4gKwkJcjgxNjhfbWFjX29jcF9tb2RpZnkodHAsIDB4ZTA5Miwg
-MHgwMGZmLCAwKTsNCj4gPiArCX0NCj4gPiArfQ0KPiA+ICsNCj4gDQo+IFJlZ2lzdGVyIEUwOTQg
-Yml0cyAwLi4xNSBhcmUgY2xlYXJlZCB3aGVuIGVuYWJsaW5nLCBidXQgbm90IHRvdWNoZWQgb24N
-Cj4gZGlzYWJsaW5nLiBJIHRoaXMgY29ycmVjdD8NCiAgIFJlZ2lzdGVyIEUwOTQgYml0cyA4Li4u
-MTUgaXMgYSB0aW1lciBjb3VudGVyIHRoYXQgaXMgdXNlZCB0byBjb250cm9sIHdoZW4gdG8gZGlz
-YWJsZSBlcGh5IHR4L3J4Lg0KICAgU2V0IGl0IHRvIDAgbWVhbnMgZGlzYWJsZSBlcGh5IHR4L3J4
-IGltbWVkaWF0ZWx5IHdoZW4gY2VydGFpbiBjb25kaXRpb24gbWVldC4gDQogICBJdCBoYXMgbm8g
-bWVhbmluZyB3aGVuIHJlZ2lzdGVyIEUwOTIgYml0IDIgaXMgc2V0IHRvIDAuDQoNCj4gQW5kIGZv
-ciBiYXNpY2FsbHkgdGhlIHNhbWUgcHVycG9zZSB3ZSBoYXZlIHRoZSBmb2xsb3dpbmcgZnVuY3Rp
-b24uDQo+ICJkb24ndCBlbmFibGUgTDEuMiBpbiB0aGUgY2hpcCIgaXMgbm90IGNvdmVyZWQgYnkg
-QVNQTV9lbiBpbiBDb25maWc1Pw0KICAgUmVnaXN0ZXIgRTA5MiBpcyBsaWtlICBBU1BNX2VuIGlu
-IENvbmZpZzUuIEJ1dCBpdCBjb250cm9scyBMMSBzdWJzdGF0ZSAoTDEuMS9MMS4yKSBlbmFibGUg
-c3RhdHVzLg0KDQo+IA0KPiBzdGF0aWMgdm9pZCBydGxfaHdfYXNwbV9jbGtyZXFfZW5hYmxlKHN0
-cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRwLCBib29sDQo+IGVuYWJsZSkgew0KPiAJLyogRG9uJ3Qg
-ZW5hYmxlIEFTUE0gaW4gdGhlIGNoaXAgaWYgT1MgY2FuJ3QgY29udHJvbCBBU1BNICovDQo+IAlp
-ZiAoZW5hYmxlICYmIHRwLT5hc3BtX21hbmFnZWFibGUpIHsNCj4gCQlSVExfVzgodHAsIENvbmZp
-ZzUsIFJUTF9SOCh0cCwgQ29uZmlnNSkgfCBBU1BNX2VuKTsNCj4gCQlSVExfVzgodHAsIENvbmZp
-ZzIsIFJUTF9SOCh0cCwgQ29uZmlnMikgfCBDbGtSZXFFbik7DQo+IAl9IGVsc2Ugew0KPiAJCVJU
-TF9XOCh0cCwgQ29uZmlnMiwgUlRMX1I4KHRwLCBDb25maWcyKSAmIH5DbGtSZXFFbik7DQo+IAkJ
-UlRMX1c4KHRwLCBDb25maWc1LCBSVExfUjgodHAsIENvbmZpZzUpICYgfkFTUE1fZW4pOw0KPiAJ
-fQ0KPiANCj4gCXVkZWxheSgxMCk7DQo+IH0NCj4gDQo+IA0KPiA+ICtzdGF0aWMgdm9pZCBydGxf
-cHJlcGFyZV9wb3dlcl9kb3duKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRwKSB7DQo+ID4gKwlp
-ZiAodHAtPmRhc2hfdHlwZSAhPSBSVExfREFTSF9OT05FKQ0KPiA+ICsJCXJldHVybjsNCj4gPiAr
-DQo+ID4gKwlpZiAodHAtPm1hY192ZXJzaW9uID09IFJUTF9HSUdBX01BQ19WRVJfMzIgfHwNCj4g
-PiArCSAgICB0cC0+bWFjX3ZlcnNpb24gPT0gUlRMX0dJR0FfTUFDX1ZFUl8zMykNCj4gPiArCQly
-dGxfZXBoeV93cml0ZSh0cCwgMHgxOSwgMHhmZjY0KTsNCj4gPiArDQo+ID4gKwlpZiAoZGV2aWNl
-X21heV93YWtldXAodHBfdG9fZGV2KHRwKSkpIHsNCj4gPiArCQlydGxfZGlzYWJsZV9leGl0X2wx
-KHRwKTsNCj4gPiArCQlwaHlfc3BlZWRfZG93bih0cC0+cGh5ZGV2LCBmYWxzZSk7DQo+ID4gKwkJ
-cnRsX3dvbF9lbmFibGVfcngodHApOw0KPiA+ICsJfQ0KPiA+ICt9DQo+ID4gKw0KPiA+ICBzdGF0
-aWMgdm9pZCBydGxfc2V0X2ZpZm9fc2l6ZShzdHJ1Y3QgcnRsODE2OV9wcml2YXRlICp0cCwgdTE2
-IHJ4X3N0YXQsDQo+ID4gIAkJCSAgICAgIHUxNiB0eF9zdGF0LCB1MTYgcnhfZHluLCB1MTYgdHhf
-ZHluKSAgeyBAQCAtDQo+IDM2NzUsNiArMzcxNSw3DQo+ID4gQEAgc3RhdGljIHZvaWQgcnRsX2h3
-X3N0YXJ0XzgxMjViKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRwKQ0KPiA+ICAJcnRsX2VwaHlf
-aW5pdCh0cCwgZV9pbmZvXzgxMjViKTsNCj4gPiAgCXJ0bF9od19zdGFydF84MTI1X2NvbW1vbih0
-cCk7DQo+ID4NCj4gPiArCXJ0bF9od19hc3BtX2wxMl9lbmFibGUodHAsIHRydWUpOw0KPiA+ICAJ
-cnRsX2h3X2FzcG1fY2xrcmVxX2VuYWJsZSh0cCwgdHJ1ZSk7ICB9DQo+ID4NCj4gPiBAQCAtNTI1
-NSw2ICs1Mjk2LDIwIEBAIHN0YXRpYyB2b2lkIHJ0bF9pbml0X21hY19hZGRyZXNzKHN0cnVjdA0K
-PiBydGw4MTY5X3ByaXZhdGUgKnRwKQ0KPiA+ICAJcnRsX3Jhcl9zZXQodHAsIG1hY19hZGRyKTsN
-Cj4gPiAgfQ0KPiA+DQo+ID4gKy8qIG1hYyBvY3AgMHhjMGIyIHdpbGwgaGVscCB0byBpZGVudGlm
-eSBpZiBSVEw4MTI1IGhhcyBiZWVuIHRlc3RlZA0KPiA+ICsgKiBvbiBMMS4yIGVuYWJsZWQgcGxh
-dGZvcm0uIElmIGl0IGlzLCB0aGlzIHJlZ2lzdGVyIHdpbGwgYmUgc2V0IHRvIDB4Zi4NCj4gPiAr
-ICogSWYgbm90LCB0aGlzIHJlZ2lzdGVyIHdpbGwgYmUgZGVmYXVsdCB2YWx1ZSAwLg0KPiA+ICsg
-Ki8NCj4gPiArc3RhdGljIGJvb2wgcnRsX3BsYXRmb3JtX2wxMl9lbmFibGVkKHN0cnVjdCBydGw4
-MTY5X3ByaXZhdGUgKnRwKSB7DQo+ID4gKwlzd2l0Y2ggKHRwLT5tYWNfdmVyc2lvbikgew0KPiA+
-ICsJY2FzZSBSVExfR0lHQV9NQUNfVkVSXzYwIC4uLiBSVExfR0lHQV9NQUNfVkVSXzYzOg0KPiA+
-ICsJCXJldHVybiAocjgxNjhfbWFjX29jcF9yZWFkKHRwLCAweGMwYjIpICYgMHhmKSA/IHRydWUg
-OiBmYWxzZTsNCj4gPiArCWRlZmF1bHQ6DQo+ID4gKwkJcmV0dXJuIGZhbHNlOw0KPiA+ICsJfQ0K
-PiA+ICt9DQo+ID4gKw0KPiA+ICBzdGF0aWMgaW50IHJ0bF9pbml0X29uZShzdHJ1Y3QgcGNpX2Rl
-diAqcGRldiwgY29uc3Qgc3RydWN0DQo+ID4gcGNpX2RldmljZV9pZCAqZW50KSAgew0KPiA+ICAJ
-c3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHA7DQo+ID4gQEAgLTUzMzMsMTEgKzUzODgsMTUgQEAg
-c3RhdGljIGludCBydGxfaW5pdF9vbmUoc3RydWN0IHBjaV9kZXYgKnBkZXYsDQo+IGNvbnN0IHN0
-cnVjdCBwY2lfZGV2aWNlX2lkICplbnQpDQo+ID4gIAkgKiBDaGlwcyBmcm9tIFJUTDgxNjhoIHBh
-cnRpYWxseSBoYXZlIGlzc3VlcyB3aXRoIEwxLjIsIGJ1dCBzZWVtDQo+ID4gIAkgKiB0byB3b3Jr
-IGZpbmUgd2l0aCBMMSBhbmQgTDEuMS4NCj4gPiAgCSAqLw0KPiA+IC0JaWYgKHRwLT5tYWNfdmVy
-c2lvbiA+PSBSVExfR0lHQV9NQUNfVkVSXzQ1KQ0KPiA+IC0JCXJjID0gcGNpX2Rpc2FibGVfbGlu
-a19zdGF0ZShwZGV2LCBQQ0lFX0xJTktfU1RBVEVfTDFfMik7DQo+ID4gLQllbHNlDQo+ID4gLQkJ
-cmMgPSBwY2lfZGlzYWJsZV9saW5rX3N0YXRlKHBkZXYsIFBDSUVfTElOS19TVEFURV9MMSk7DQo+
-ID4gLQl0cC0+YXNwbV9tYW5hZ2VhYmxlID0gIXJjOw0KPiA+ICsJaWYgKCFydGxfcGxhdGZvcm1f
-bDEyX2VuYWJsZWQodHApKSB7DQo+ID4gKwkJaWYgKHRwLT5tYWNfdmVyc2lvbiA+PSBSVExfR0lH
-QV9NQUNfVkVSXzQ1KQ0KPiA+ICsJCQlyYyA9IHBjaV9kaXNhYmxlX2xpbmtfc3RhdGUocGRldiwN
-Cj4gUENJRV9MSU5LX1NUQVRFX0wxXzIpOw0KPiA+ICsJCWVsc2UNCj4gPiArCQkJcmMgPSBwY2lf
-ZGlzYWJsZV9saW5rX3N0YXRlKHBkZXYsDQo+IFBDSUVfTElOS19TVEFURV9MMSk7DQo+ID4gKwkJ
-dHAtPmFzcG1fbWFuYWdlYWJsZSA9ICFyYzsNCj4gPiArCX0gZWxzZSB7DQo+ID4gKwkJdHAtPmFz
-cG1fbWFuYWdlYWJsZSA9IHBjaWVfYXNwbV9lbmFibGVkKHBkZXYpOw0KPiA+ICsJfQ0KPiA+DQo+
-ID4gIAl0cC0+ZGFzaF90eXBlID0gcnRsX2NoZWNrX2Rhc2godHApOw0KPiA+DQo+IA0KPiAtLS0t
-LS1QbGVhc2UgY29uc2lkZXIgdGhlIGVudmlyb25tZW50IGJlZm9yZSBwcmludGluZyB0aGlzIGUt
-bWFpbC4NCg==
+On Wed, Jan 19, 2022 at 09:30:47PM +0200, Andy Shevchenko wrote:
+>On Tue, Jan 18, 2022 at 11:24:50PM -0800, Lucas De Marchi wrote:
+>> linux/string_helpers.h provides a helper to return "yes"/"no"
+>> strings. Replace the open coded versions with yesno(). The places were
+>> identified with the following semantic patch:
+>>
+>> 	@@
+>> 	expression b;
+>> 	@@
+>>
+>> 	- b ? "yes" : "no"
+>> 	+ yesno(b)
+>>
+>> Then the includes were added, so we include-what-we-use, and parenthesis
+>> adjusted in drivers/gpu/drm/v3d/v3d_debugfs.c. After the conversion we
+>> still see the same binary sizes:
+>>
+>>    text    data     bss     dec     hex filename
+>> 1442171   60344     800 1503315  16f053 ./drivers/gpu/drm/radeon/radeon.ko
+>> 1442171   60344     800 1503315  16f053 ./drivers/gpu/drm/radeon/radeon.ko.old
+>> 5985991  324439   33808 6344238  60ce2e ./drivers/gpu/drm/amd/amdgpu/amdgpu.ko
+>> 5985991  324439   33808 6344238  60ce2e ./drivers/gpu/drm/amd/amdgpu/amdgpu.ko.old
+>>  411986   10490    6176  428652   68a6c ./drivers/gpu/drm/drm.ko
+>>  411986   10490    6176  428652   68a6c ./drivers/gpu/drm/drm.ko.old
+>> 1970292  109515    2352 2082159  1fc56f ./drivers/gpu/drm/nouveau/nouveau.ko
+>> 1970292  109515    2352 2082159  1fc56f ./drivers/gpu/drm/nouveau/nouveau.ko.old
+>
+>...
+>
+>>  #include <linux/module.h>
+>>  #include <linux/sched.h>
+>>  #include <linux/slab.h>
+>> +#include <linux/string_helpers.h>
+>
+>+ blank line?
+>
+>> +#include <linux/string_helpers.h>
+>
+>...
+>
+>>  	seq_printf(m, "\tDP branch device present: %s\n",
+>> -		   branch_device ? "yes" : "no");
+>> +		   yesno(branch_device));
+>
+>Now it's possible to keep this on one line.
+>
+>...
+>
+>>  	drm_printf_indent(p, indent, "imported=%s\n",
+>> -			  obj->import_attach ? "yes" : "no");
+>> +			  yesno(obj->import_attach));
+>
+>81 here, but anyway, ditto!
+>
+>...
+>
+>>   */
+>
+>+blank line here?
+>
+>> +#include <linux/string_helpers.h>
+>> +
+>>  #include "aux.h"
+>>  #include "pad.h"
+>
+>...
+>
+>>  	seq_printf(m, "MMU:        %s\n",
+>> -		   (ident2 & V3D_HUB_IDENT2_WITH_MMU) ? "yes" : "no");
+>> +		   yesno(ident2 & V3D_HUB_IDENT2_WITH_MMU));
+>>  	seq_printf(m, "TFU:        %s\n",
+>> -		   (ident1 & V3D_HUB_IDENT1_WITH_TFU) ? "yes" : "no");
+>> +		   yesno(ident1 & V3D_HUB_IDENT1_WITH_TFU));
+>>  	seq_printf(m, "TSY:        %s\n",
+>> -		   (ident1 & V3D_HUB_IDENT1_WITH_TSY) ? "yes" : "no");
+>> +		   yesno(ident1 & V3D_HUB_IDENT1_WITH_TSY));
+>>  	seq_printf(m, "MSO:        %s\n",
+>> -		   (ident1 & V3D_HUB_IDENT1_WITH_MSO) ? "yes" : "no");
+>> +		   yesno(ident1 & V3D_HUB_IDENT1_WITH_MSO));
+>>  	seq_printf(m, "L3C:        %s (%dkb)\n",
+>> -		   (ident1 & V3D_HUB_IDENT1_WITH_L3C) ? "yes" : "no",
+>> +		   yesno(ident1 & V3D_HUB_IDENT1_WITH_L3C),
+>>  		   V3D_GET_FIELD(ident2, V3D_HUB_IDENT2_L3C_NKB));
+>
+>I believe it's fine to join back to have less LOCs (yes, it will be 83 or so,
+>but I believe in these cases it's very much okay).
+
+now that we are converting to str_yes_no(), we will have a few more
+chars. Some maintainers may be more strict on the 80 or 100 chars. I
+will assume whatever is in the code base is the preferred form.
+
+thanks
+Lucas De Marchi
+
+>
+>-- 
+>With Best Regards,
+>Andy Shevchenko
+>
+>
