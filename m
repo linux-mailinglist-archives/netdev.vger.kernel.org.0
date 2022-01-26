@@ -2,85 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54EB949D3EB
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 21:57:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D828349D3F6
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 22:00:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231487AbiAZU5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 15:57:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36478 "EHLO
+        id S231494AbiAZVAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 16:00:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231445AbiAZU5G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 15:57:06 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B725C06161C;
-        Wed, 26 Jan 2022 12:57:06 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Jkbcw0LRfz4xmx;
-        Thu, 27 Jan 2022 07:57:03 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1643230625;
-        bh=cjuTzKhDkCsuuyLW9b96xzPl6QhdHMRo44uq08vCYms=;
-        h=Date:From:To:Cc:Subject:From;
-        b=EIgIIWetf8yFVGQHZc+zkqlkKeY6ufzzGm4FO39lFqtr292YNV696BmrRJb5mAOjV
-         wiH/mcWFZxlxjSjtcIXffHrC6xIzTCbVP8W7bvsPLh/ciXrOPBORmGIhCPNczqZ15c
-         fJFUIjG/U5i9hw5lP8HDt59GKiqC5Q62b2szkr74nU/G6akJZVWzt6A3h8lCcD3MOO
-         TGwIlnpzbgJkjblkjoZtAccs/nx3uh/WqcJgQ/NP5xy8JLEpAtSUlqvC+UfewhoBTr
-         6cjq8qaKPZDiM7bqKKHgXc0JZQ1tczD95+shzMGhfcQRUEnWj7MaxnNn5mIXWPRrGs
-         U16mqkg80ntUw==
-Date:   Thu, 27 Jan 2022 07:57:02 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Signed-off-by missing for commits in the net-next tree
-Message-ID: <20220127075702.1b0b73c2@canb.auug.org.au>
+        with ESMTP id S229726AbiAZVAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 16:00:04 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0966C06161C;
+        Wed, 26 Jan 2022 13:00:03 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id a8so1163149ejc.8;
+        Wed, 26 Jan 2022 13:00:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lEkoIfpLwpN4qDKwjyAgXgxx9hZ83QdosrwUlDdKfoE=;
+        b=FatyzVxn8iwK6oF5QWSlw4gHgbM26lJJtdDThHmjips75V08YS8HIW0FNwTGKWyLyl
+         YCafkxaxDuJ6uM+lHR+ZU+HyLZnYdZeXuw04I1iUeSrgWoU6XKXfTmGPjrHnfK9zof7r
+         xKmaw3u7EYYwxXt5p4HccILZaknEuIkwN0ji/HogCS2rUtNni1ciZx4lzP9pAFMdOTez
+         51TqDGCS8bLXSXjvxZ16sC4yR9rDsloMeZgo/mGKP3BEs8UNvSzjF76j/HwWHydjMPlm
+         bkeiv7r38XrC78Kt3uIu6q+Qgv7wWHo1+OFaXq9c4ufQ3lP+YtucMbEKFq1baf2t9Z/v
+         kjjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lEkoIfpLwpN4qDKwjyAgXgxx9hZ83QdosrwUlDdKfoE=;
+        b=R25MNVx42SPnDSoyRWNHaeKVomHhsscXnC2KSSp47tIso8lqyzxywCaDh8NBa7AEsq
+         X8oIZrcNKMl+PLEhlAUA8LR46J6Fqrs6ITNAsmP3ZcBeTCjAuFV6oPjJns73Yaqm0ddC
+         2IiAfu553crz4iOiCWh/ujuacw3fBHJ/uu1Bya2cnFAepxN1tX7oy1QURuDcbDfin/zZ
+         ZtNdY7enPvVYcJ+oggpHSHR1ek+MqcJ0BwRPLKSPeUlc0XvJlqNcRq/eHWu0BAw7+Dv9
+         yNIWhcTetwHfSWjbR3KD1cZbcjGtwvrJS7JEWoNaPqC7ExMZaZFIKqDfbx4dezhH0sI0
+         0XgQ==
+X-Gm-Message-State: AOAM533OjwElxxWyybVk9FVeOzEDjw2gZMFlQcyPYVH9FJl8wGvni7VD
+        a2hw8hqxe8BcnMibPRcPaJY=
+X-Google-Smtp-Source: ABdhPJyWcOaMaA6GtxM/Hfz7JzwQUmNhn6lmaq++H4vDoAn0iGlx32WV+ejhsiL+hdxIJVv7KEpWfg==
+X-Received: by 2002:a17:906:3b84:: with SMTP id u4mr364282ejf.689.1643230802265;
+        Wed, 26 Jan 2022 13:00:02 -0800 (PST)
+Received: from skbuf ([188.27.184.105])
+        by smtp.gmail.com with ESMTPSA id o14sm7872487eju.118.2022.01.26.13.00.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 13:00:01 -0800 (PST)
+Date:   Wed, 26 Jan 2022 23:00:00 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH v7 01/16] net: dsa: provide switch operations for
+ tracking the master state
+Message-ID: <20220126210000.qx5hxwgogjwllem7@skbuf>
+References: <20220123013337.20945-1-ansuelsmth@gmail.com>
+ <20220123013337.20945-2-ansuelsmth@gmail.com>
+ <f1547841-2210-ec68-3111-333bb7468b34@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/ho3yJJm664Ov7YLS+Zw88gM";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f1547841-2210-ec68-3111-333bb7468b34@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/ho3yJJm664Ov7YLS+Zw88gM
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, Jan 25, 2022 at 07:22:51PM -0800, Florian Fainelli wrote:
+> 
+> 
+> On 1/22/2022 5:33 PM, Ansuel Smith wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > 
+> > Certain drivers may need to send management traffic to the switch for
+> > things like register access, FDB dump, etc, to accelerate what their
+> > slow bus (SPI, I2C, MDIO) can already do.
+> > 
+> > Ethernet is faster (especially in bulk transactions) but is also more
+> > unreliable, since the user may decide to bring the DSA master down (or
+> > not bring it up), therefore severing the link between the host and the
+> > attached switch.
+> > 
+> > Drivers needing Ethernet-based register access already should have
+> > fallback logic to the slow bus if the Ethernet method fails, but that
+> > fallback may be based on a timeout, and the I/O to the switch may slow
+> > down to a halt if the master is down, because every Ethernet packet will
+> > have to time out. The driver also doesn't have the option to turn off
+> > Ethernet-based I/O momentarily, because it wouldn't know when to turn it
+> > back on.
+> > 
+> > Which is where this change comes in. By tracking NETDEV_CHANGE,
+> > NETDEV_UP and NETDEV_GOING_DOWN events on the DSA master, we should know
+> > the exact interval of time during which this interface is reliably
+> > available for traffic. Provide this information to switches so they can
+> > use it as they wish.
+> > 
+> > An helper is added dsa_port_master_is_operational() to check if a master
+> > port is operational.
 
-Hi all,
+"The DSA master is able to pass traffic when it was brought
+administratively up and is also operationally up. We introduce a helper
+function named dsa_port_master_is_operational() which checks for the
+proper conditions on a CPU port's DSA master."
 
-Commits
-
-  04a0683f7db4 ("net: stmmac: convert to phylink_generic_validate()")
-  f4c296c90976 ("net: stmmac: remove phylink_config.pcs_poll usage")
-  d194923d51c9 ("net: stmmac: fill in supported_interfaces")
-  92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
-  be6ec5b70266 ("net: xpcs: add support for retrieving supported interface =
-modes")
-
-are missing a Signed-off-by from their author.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/ho3yJJm664Ov7YLS+Zw88gM
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHxtZ4ACgkQAVBC80lX
-0Gw4sAf9FhJRCPchnhM+UlW0VC/k89qoLcm6DAiZolMvGa2RVHkBIbKRJtjir0BH
-pmE/nQzOmFB+FvPSMST0TOk1CIoYglqz6gvZFkGx8vcQAU0iR+V3oT6zHBDwa5tu
-tqhMfNjoOe4ITQfEN8TXs2gg9f82DJ74+1XBkD9bWwjAKn+FBTiaICmXDsKf6Y+g
-jjNjt843AIegCaP1uwDBHZmDF0MdBI6dR80EMZctXpBN4DEr9rQdV6fDRb+lwCqy
-c3bsMjKJiztc3QvC8lD50DOy8PdYOTvN+exhDOI38nagSkTvpEbUl4XQlJaCPtvY
-kGW9Z38kYTrfxnJwWuLxMM3yXVKUSw==
-=SxhN
------END PGP SIGNATURE-----
-
---Sig_/ho3yJJm664Ov7YLS+Zw88gM--
+> > 
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> 
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> -- 
+> Florian
