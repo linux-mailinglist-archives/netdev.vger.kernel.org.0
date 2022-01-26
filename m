@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2073C49C69A
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 10:40:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38FB049C6A2
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 10:40:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239341AbiAZJjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 04:39:47 -0500
-Received: from mga05.intel.com ([192.55.52.43]:9284 "EHLO mga05.intel.com"
+        id S239418AbiAZJj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 04:39:56 -0500
+Received: from mga11.intel.com ([192.55.52.93]:26605 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239261AbiAZJjf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jan 2022 04:39:35 -0500
+        id S239281AbiAZJjj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jan 2022 04:39:39 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643189975; x=1674725975;
+  t=1643189979; x=1674725979;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GYppmqUP4lbR+vsHIMjZKwAtlHKGNb6DyJc+gQD8j4Q=;
-  b=jb6eOhKMmY7yUQuALacvimaTp1B8iFOBzSuNtY4XGi4yS2tiJ3/fsWJo
-   ZSPq6NVM53Q4hS5LRiFZJBlFeyVzRVTYsORM3P017Fm1o2NNmxoH6/WxK
-   utaWSI/U0g1jiRnMp5+Bb7792C0prmCbzNh2WoQzDxVbnY8zZB8/i3rd+
-   otho8tSaMJwBWx5u4IBx5fr91kbLRYZCSspbEumTLPI+aQwyUuXuNTbGk
-   tUtogFELe96T2MX9d3Z4lKthlu5EUqPd/1OFfZTBn5yW2pwzAObRcAMaK
-   Q4tX/pfBUMvZ/uH2NCwIP3dmJytkJSI9wIIOLX9B7M578UtGgujstyWQI
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="332869386"
+  bh=KcRtycUl4lDfGh110lR4XASfjxvG1FP1xhGR1aDDOAA=;
+  b=dzDcJHul1ERWMAXInc7mCYqO/OtfydXH71bwwKDrKgFXTdbbYq/BS0uQ
+   5MXU9Yo5tC88ibxVWKmi1Zy8W8/phJNOZE+s0IRS285Nan+qPhSpG1/gu
+   9CpMoO2vwRFgSsKwxZfRNGSzk+B8yo21ZkynCy5xMSqb48ikcbSoECMPh
+   YNhhCHyQ1uhNKWK9GpQmPLj8RgE+df1vG2I7yNMkvv0LkKHCMURFD8EQH
+   +5XotoVOvLynbFlVx1I/w6SpYg/H8d4igv9ggoDH9xH9azfqKCEvl/D83
+   4HfGY28KI1yPN6gReSzUJUHjW07g7/r2todelJgghBEIpOo2aVAgEt/By
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="244114638"
 X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
-   d="scan'208";a="332869386"
+   d="scan'208";a="244114638"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 01:39:31 -0800
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 01:39:31 -0800
 X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
-   d="scan'208";a="477433106"
+   d="scan'208";a="477433109"
 Received: from lucas-s2600cw.jf.intel.com ([10.165.21.202])
   by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 01:39:30 -0800
 From:   Lucas De Marchi <lucas.demarchi@intel.com>
@@ -38,7 +38,8 @@ To:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
         dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
         linux-security-module@vger.kernel.org,
         nouveau@lists.freedesktop.org, netdev@vger.kernel.org
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
+Cc:     Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
@@ -62,13 +63,12 @@ Cc:     Alex Deucher <alexander.deucher@amd.com>,
         Raju Rangoju <rajur@chelsio.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
         Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
         Steven Rostedt <rostedt@goodmis.org>,
         Vishal Kulkarni <vishal@chelsio.com>
-Subject: [PATCH v2 09/11] drm: Convert open-coded yes/no strings to yesno()
-Date:   Wed, 26 Jan 2022 01:39:49 -0800
-Message-Id: <20220126093951.1470898-10-lucas.demarchi@intel.com>
+Subject: [PATCH v2 10/11] tomoyo: Use str_yes_no()
+Date:   Wed, 26 Jan 2022 01:39:50 -0800
+Message-Id: <20220126093951.1470898-11-lucas.demarchi@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220126093951.1470898-1-lucas.demarchi@intel.com>
 References: <20220126093951.1470898-1-lucas.demarchi@intel.com>
@@ -78,231 +78,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-linux/string_helpers.h provides a helper to return "yes"/"no" strings.
-Replace the open coded versions with str_yes_no(). The places were
-identified with the following semantic patch:
-
-	@@
-	expression b;
-	@@
-
-	- b ? "yes" : "no"
-	+ str_yes_no(b)
-
-Then the includes were added, so we include-what-we-use, and parenthesis
-adjusted in drivers/gpu/drm/v3d/v3d_debugfs.c. After the conversion we
-still see the same binary sizes:
-
-   text    data     bss     dec     hex filename
-  51149    3295     212   54656    d580 virtio/virtio-gpu.ko.old
-  51149    3295     212   54656    d580 virtio/virtio-gpu.ko
-1441491   60340     800 1502631  16eda7 radeon/radeon.ko.old
-1441491   60340     800 1502631  16eda7 radeon/radeon.ko
-6125369  328538   34000 6487907  62ff63 amd/amdgpu/amdgpu.ko.old
-6125369  328538   34000 6487907  62ff63 amd/amdgpu/amdgpu.ko
- 411986   10490    6176  428652   68a6c drm.ko.old
- 411986   10490    6176  428652   68a6c drm.ko
-  98129    1636     264  100029   186bd dp/drm_dp_helper.ko.old
-  98129    1636     264  100029   186bd dp/drm_dp_helper.ko
-1973432  109640    2352 2085424  1fd230 nouveau/nouveau.ko.old
-1973432  109640    2352 2085424  1fd230 nouveau/nouveau.ko
+Remove the local yesno() implementation and adopt the str_yes_no() from
+linux/string_helpers.h.
 
 Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
+Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 ---
- drivers/gpu/drm/amd/amdgpu/atom.c             |  4 +++-
- drivers/gpu/drm/dp/drm_dp.c                   |  3 ++-
- drivers/gpu/drm/drm_client_modeset.c          |  3 ++-
- drivers/gpu/drm/drm_gem.c                     |  3 ++-
- drivers/gpu/drm/nouveau/nvkm/subdev/i2c/aux.c |  5 ++++-
- drivers/gpu/drm/radeon/atom.c                 |  3 ++-
- drivers/gpu/drm/v3d/v3d_debugfs.c             | 11 ++++++-----
- drivers/gpu/drm/virtio/virtgpu_debugfs.c      |  4 +++-
- 8 files changed, 24 insertions(+), 12 deletions(-)
+ security/tomoyo/audit.c  |  2 +-
+ security/tomoyo/common.c | 19 +++++--------------
+ security/tomoyo/common.h |  1 -
+ 3 files changed, 6 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/atom.c b/drivers/gpu/drm/amd/amdgpu/atom.c
-index 6fa2229b7229..1c5d9388ad0b 100644
---- a/drivers/gpu/drm/amd/amdgpu/atom.c
-+++ b/drivers/gpu/drm/amd/amdgpu/atom.c
-@@ -25,6 +25,8 @@
- #include <linux/module.h>
- #include <linux/sched.h>
- #include <linux/slab.h>
-+#include <linux/string_helpers.h>
-+
- #include <asm/unaligned.h>
- 
- #include <drm/drm_util.h>
-@@ -740,7 +742,7 @@ static void atom_op_jump(atom_exec_context *ctx, int *ptr, int arg)
- 		break;
- 	}
- 	if (arg != ATOM_COND_ALWAYS)
--		SDEBUG("   taken: %s\n", execute ? "yes" : "no");
-+		SDEBUG("   taken: %s\n", str_yes_no(execute));
- 	SDEBUG("   target: 0x%04X\n", target);
- 	if (execute) {
- 		if (ctx->last_jump == (ctx->start + target)) {
-diff --git a/drivers/gpu/drm/dp/drm_dp.c b/drivers/gpu/drm/dp/drm_dp.c
-index 6d43325acca5..c43577c8ac4d 100644
---- a/drivers/gpu/drm/dp/drm_dp.c
-+++ b/drivers/gpu/drm/dp/drm_dp.c
-@@ -28,6 +28,7 @@
- #include <linux/module.h>
- #include <linux/sched.h>
- #include <linux/seq_file.h>
-+#include <linux/string_helpers.h>
- 
- #include <drm/dp/drm_dp_helper.h>
- #include <drm/drm_print.h>
-@@ -1239,7 +1240,7 @@ void drm_dp_downstream_debug(struct seq_file *m,
- 	bool branch_device = drm_dp_is_branch(dpcd);
- 
- 	seq_printf(m, "\tDP branch device present: %s\n",
--		   branch_device ? "yes" : "no");
-+		   str_yes_no(branch_device));
- 
- 	if (!branch_device)
- 		return;
-diff --git a/drivers/gpu/drm/drm_client_modeset.c b/drivers/gpu/drm/drm_client_modeset.c
-index ced09c7c06f9..e6346a67cd98 100644
---- a/drivers/gpu/drm/drm_client_modeset.c
-+++ b/drivers/gpu/drm/drm_client_modeset.c
-@@ -11,6 +11,7 @@
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/slab.h>
-+#include <linux/string_helpers.h>
- 
- #include <drm/drm_atomic.h>
- #include <drm/drm_client.h>
-@@ -241,7 +242,7 @@ static void drm_client_connectors_enabled(struct drm_connector **connectors,
- 		connector = connectors[i];
- 		enabled[i] = drm_connector_enabled(connector, true);
- 		DRM_DEBUG_KMS("connector %d enabled? %s\n", connector->base.id,
--			      connector->display_info.non_desktop ? "non desktop" : enabled[i] ? "yes" : "no");
-+			      connector->display_info.non_desktop ? "non desktop" : str_yes_no(enabled[i]));
- 
- 		any_enabled |= enabled[i];
- 	}
-diff --git a/drivers/gpu/drm/drm_gem.c b/drivers/gpu/drm/drm_gem.c
-index 21631c22b374..3c888db59ea4 100644
---- a/drivers/gpu/drm/drm_gem.c
-+++ b/drivers/gpu/drm/drm_gem.c
-@@ -37,6 +37,7 @@
- #include <linux/pagevec.h>
- #include <linux/shmem_fs.h>
- #include <linux/slab.h>
-+#include <linux/string_helpers.h>
- #include <linux/types.h>
+diff --git a/security/tomoyo/audit.c b/security/tomoyo/audit.c
+index d79bf07e16be..023bedd9dfa3 100644
+--- a/security/tomoyo/audit.c
++++ b/security/tomoyo/audit.c
+@@ -166,7 +166,7 @@ static char *tomoyo_print_header(struct tomoyo_request_info *r)
+ 		       "#%04u/%02u/%02u %02u:%02u:%02u# profile=%u mode=%s granted=%s (global-pid=%u) task={ pid=%u ppid=%u uid=%u gid=%u euid=%u egid=%u suid=%u sgid=%u fsuid=%u fsgid=%u }",
+ 		       stamp.year, stamp.month, stamp.day, stamp.hour,
+ 		       stamp.min, stamp.sec, r->profile, tomoyo_mode[r->mode],
+-		       tomoyo_yesno(r->granted), gpid, tomoyo_sys_getpid(),
++		       str_yes_no(r->granted), gpid, tomoyo_sys_getpid(),
+ 		       tomoyo_sys_getppid(),
+ 		       from_kuid(&init_user_ns, current_uid()),
+ 		       from_kgid(&init_user_ns, current_gid()),
+diff --git a/security/tomoyo/common.c b/security/tomoyo/common.c
+index 5c64927bf2b3..ff17abc96e5c 100644
+--- a/security/tomoyo/common.c
++++ b/security/tomoyo/common.c
+@@ -8,6 +8,7 @@
  #include <linux/uaccess.h>
- 
-@@ -1145,7 +1146,7 @@ void drm_gem_print_info(struct drm_printer *p, unsigned int indent,
- 			  drm_vma_node_start(&obj->vma_node));
- 	drm_printf_indent(p, indent, "size=%zu\n", obj->size);
- 	drm_printf_indent(p, indent, "imported=%s\n",
--			  obj->import_attach ? "yes" : "no");
-+			  str_yes_no(obj->import_attach));
- 
- 	if (obj->funcs->print_info)
- 		obj->funcs->print_info(p, indent, obj);
-diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/aux.c b/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/aux.c
-index a11637b0f6cc..d063d0dc13c5 100644
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/aux.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/aux.c
-@@ -21,6 +21,9 @@
-  *
-  * Authors: Ben Skeggs
-  */
-+
-+#include <linux/string_helpers.h>
-+
- #include "aux.h"
- #include "pad.h"
- 
-@@ -94,7 +97,7 @@ void
- nvkm_i2c_aux_monitor(struct nvkm_i2c_aux *aux, bool monitor)
- {
- 	struct nvkm_i2c_pad *pad = aux->pad;
--	AUX_TRACE(aux, "monitor: %s", monitor ? "yes" : "no");
-+	AUX_TRACE(aux, "monitor: %s", str_yes_no(monitor));
- 	if (monitor)
- 		nvkm_i2c_pad_mode(pad, NVKM_I2C_PAD_AUX);
- 	else
-diff --git a/drivers/gpu/drm/radeon/atom.c b/drivers/gpu/drm/radeon/atom.c
-index f15b20da5315..c1bbfbe28bda 100644
---- a/drivers/gpu/drm/radeon/atom.c
-+++ b/drivers/gpu/drm/radeon/atom.c
-@@ -25,6 +25,7 @@
- #include <linux/module.h>
- #include <linux/sched.h>
  #include <linux/slab.h>
+ #include <linux/security.h>
 +#include <linux/string_helpers.h>
+ #include "common.h"
  
- #include <asm/unaligned.h>
+ /* String table for operation mode. */
+@@ -174,16 +175,6 @@ static bool tomoyo_manage_by_non_root;
  
-@@ -722,7 +723,7 @@ static void atom_op_jump(atom_exec_context *ctx, int *ptr, int arg)
- 		break;
- 	}
- 	if (arg != ATOM_COND_ALWAYS)
--		SDEBUG("   taken: %s\n", execute ? "yes" : "no");
-+		SDEBUG("   taken: %s\n", str_yes_no(execute));
- 	SDEBUG("   target: 0x%04X\n", target);
- 	if (execute) {
- 		if (ctx->last_jump == (ctx->start + target)) {
-diff --git a/drivers/gpu/drm/v3d/v3d_debugfs.c b/drivers/gpu/drm/v3d/v3d_debugfs.c
-index e76b24bb8828..29fd13109e43 100644
---- a/drivers/gpu/drm/v3d/v3d_debugfs.c
-+++ b/drivers/gpu/drm/v3d/v3d_debugfs.c
-@@ -6,6 +6,7 @@
- #include <linux/debugfs.h>
- #include <linux/pm_runtime.h>
- #include <linux/seq_file.h>
-+#include <linux/string_helpers.h>
+ /* Utility functions. */
  
- #include <drm/drm_debugfs.h>
- 
-@@ -148,15 +149,15 @@ static int v3d_v3d_debugfs_ident(struct seq_file *m, void *unused)
- 		   V3D_GET_FIELD(ident3, V3D_HUB_IDENT3_IPREV),
- 		   V3D_GET_FIELD(ident3, V3D_HUB_IDENT3_IPIDX));
- 	seq_printf(m, "MMU:        %s\n",
--		   (ident2 & V3D_HUB_IDENT2_WITH_MMU) ? "yes" : "no");
-+		   str_yes_no(ident2 & V3D_HUB_IDENT2_WITH_MMU));
- 	seq_printf(m, "TFU:        %s\n",
--		   (ident1 & V3D_HUB_IDENT1_WITH_TFU) ? "yes" : "no");
-+		   str_yes_no(ident1 & V3D_HUB_IDENT1_WITH_TFU));
- 	seq_printf(m, "TSY:        %s\n",
--		   (ident1 & V3D_HUB_IDENT1_WITH_TSY) ? "yes" : "no");
-+		   str_yes_no(ident1 & V3D_HUB_IDENT1_WITH_TSY));
- 	seq_printf(m, "MSO:        %s\n",
--		   (ident1 & V3D_HUB_IDENT1_WITH_MSO) ? "yes" : "no");
-+		   str_yes_no(ident1 & V3D_HUB_IDENT1_WITH_MSO));
- 	seq_printf(m, "L3C:        %s (%dkb)\n",
--		   (ident1 & V3D_HUB_IDENT1_WITH_L3C) ? "yes" : "no",
-+		   str_yes_no(ident1 & V3D_HUB_IDENT1_WITH_L3C),
- 		   V3D_GET_FIELD(ident2, V3D_HUB_IDENT2_L3C_NKB));
- 
- 	for (core = 0; core < cores; core++) {
-diff --git a/drivers/gpu/drm/virtio/virtgpu_debugfs.c b/drivers/gpu/drm/virtio/virtgpu_debugfs.c
-index b6954e2f75e6..853dd9aa397e 100644
---- a/drivers/gpu/drm/virtio/virtgpu_debugfs.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_debugfs.c
-@@ -23,6 +23,8 @@
-  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-  */
- 
-+#include <linux/string_helpers.h>
-+
- #include <drm/drm_debugfs.h>
- #include <drm/drm_file.h>
- 
-@@ -31,7 +33,7 @@
- static void virtio_gpu_add_bool(struct seq_file *m, const char *name,
- 				bool value)
+-/**
+- * tomoyo_yesno - Return "yes" or "no".
+- *
+- * @value: Bool value.
+- */
+-const char *tomoyo_yesno(const unsigned int value)
+-{
+-	return value ? "yes" : "no";
+-}
+-
+ /**
+  * tomoyo_addprintf - strncat()-like-snprintf().
+  *
+@@ -730,8 +721,8 @@ static void tomoyo_print_config(struct tomoyo_io_buffer *head, const u8 config)
  {
--	seq_printf(m, "%-16s : %s\n", name, value ? "yes" : "no");
-+	seq_printf(m, "%-16s : %s\n", name, str_yes_no(value));
+ 	tomoyo_io_printf(head, "={ mode=%s grant_log=%s reject_log=%s }\n",
+ 			 tomoyo_mode[config & 3],
+-			 tomoyo_yesno(config & TOMOYO_CONFIG_WANT_GRANT_LOG),
+-			 tomoyo_yesno(config & TOMOYO_CONFIG_WANT_REJECT_LOG));
++			 str_yes_no(config & TOMOYO_CONFIG_WANT_GRANT_LOG),
++			 str_yes_no(config & TOMOYO_CONFIG_WANT_REJECT_LOG));
  }
  
- static void virtio_gpu_add_int(struct seq_file *m, const char *name, int value)
+ /**
+@@ -1354,8 +1345,8 @@ static bool tomoyo_print_condition(struct tomoyo_io_buffer *head,
+ 	case 3:
+ 		if (cond->grant_log != TOMOYO_GRANTLOG_AUTO)
+ 			tomoyo_io_printf(head, " grant_log=%s",
+-					 tomoyo_yesno(cond->grant_log ==
+-						      TOMOYO_GRANTLOG_YES));
++					 str_yes_no(cond->grant_log ==
++						    TOMOYO_GRANTLOG_YES));
+ 		tomoyo_set_lf(head);
+ 		return true;
+ 	}
+diff --git a/security/tomoyo/common.h b/security/tomoyo/common.h
+index 85246b9df7ca..ca285f362705 100644
+--- a/security/tomoyo/common.h
++++ b/security/tomoyo/common.h
+@@ -959,7 +959,6 @@ char *tomoyo_read_token(struct tomoyo_acl_param *param);
+ char *tomoyo_realpath_from_path(const struct path *path);
+ char *tomoyo_realpath_nofollow(const char *pathname);
+ const char *tomoyo_get_exe(void);
+-const char *tomoyo_yesno(const unsigned int value);
+ const struct tomoyo_path_info *tomoyo_compare_name_union
+ (const struct tomoyo_path_info *name, const struct tomoyo_name_union *ptr);
+ const struct tomoyo_path_info *tomoyo_get_domainname
 -- 
 2.34.1
 
