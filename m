@@ -2,154 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9698449C8FC
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 12:45:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8066E49C90C
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 12:48:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240944AbiAZLpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 06:45:52 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:35727 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240945AbiAZLpt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 06:45:49 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20QBjjLjB022732, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20QBjjLjB022732
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 26 Jan 2022 19:45:45 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 26 Jan 2022 19:45:45 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 26 Jan 2022 19:45:43 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
- RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
- 15.01.2308.020; Wed, 26 Jan 2022 19:45:43 +0800
-From:   Hau <hau@realtek.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next 1/1] r8169: enable RTL8125 ASPM L1.2
-Thread-Topic: [PATCH net-next 1/1] r8169: enable RTL8125 ASPM L1.2
-Thread-Index: AQHYEU71utwpaLacm0G/vN72YItAmaxzrMwAgAFTwtD//5mTgIAAltJA
-Date:   Wed, 26 Jan 2022 11:45:43 +0000
-Message-ID: <660659d112434614b5b4c0dd0aeecf40@realtek.com>
-References: <20220124181937.6331-1-hau@realtek.com>
- <23d3e690-da16-df03-4c75-dc92625b2c96@gmail.com>
- <052d2be6e8f445f3a4890e259bdee8ce@realtek.com>
- <c8df96c7-79b2-8b5b-9036-12bd8bfd5582@gmail.com>
-In-Reply-To: <c8df96c7-79b2-8b5b-9036-12bd8bfd5582@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.129]
-x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEvMjYg5LiK5Y2IIDA5OjM0OjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S234215AbiAZLr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 06:47:58 -0500
+Received: from mail-dm3nam07on2067.outbound.protection.outlook.com ([40.107.95.67]:7008
+        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232111AbiAZLr5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jan 2022 06:47:57 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NPK0FqYf/grozAnx0Jk0BvyQvvIwGugFmT/atR6eN9aLa9b7rUvMUhxbKeShVuB7AcgYPJM/AAH71ZXjzHZYDNs8LZV+5OWO34PA+GvaELiSJoDLCyirjyYe3mfqXOvMYlCfrLXd0qNoqa9XT4YsWpTfWX7mRxdL2ZgbcN7scckD4KKQFHnn5l58ReMejVq05XYw0RWsHcU3F80zr+IUrbQKF8OHSb0+B0QE8yK6z7J48IUI/M9UXL3sI/bFYMcwDHFN2ZNzTX6ipm5YV5Wgopw4y81Jev2V3II3khwxpDK7o7/wgrV7KtB7rrICJSC+pkEwdTkojY5UfNgNkUspSA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RBU0mFLnrxNzUJLTuzxW7CrmGo9YeBtK4S7blNHscPw=;
+ b=Sur6gvcza4TzUlrj8fpn4lJ6hCokHmtfVVGKhmssCAFshAJKRuc9QeIFejk+8ZOHf44L0Qd3Z+OPbdW6ff1yTlRnDODEdENLxWc/s3wEMLXy2FenrC2nH/m8tZ79IVrVug/QMcy5DlAmrhy7zd/D6uIvmkhMD/anUoBQhXaOehJNA4UriO0kwlpy+KleIIJTUX45uVOYMlXNKGXpV/id3g0DdDaF4t9uY1jeaG33AuKV1r8u3Cl6dctOitl3f6cVbocKpDp6304lXVH1AULcVRtndI7/b4L3xVPXyOjJEQDyDLiW69i1dLSON/SI+jlG0O3FrcRJZFyYWUkF0mOokA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RBU0mFLnrxNzUJLTuzxW7CrmGo9YeBtK4S7blNHscPw=;
+ b=TmQZrrkjt26iAyUpAo/UkoR7iX/z4jLIs6FoZag3zzYh0fLFIjvsoF4HrTXqBHx1CjGqfjEJ0y1QeBj1tdkWxXU3yC9G99LJ+397JsVxbPzLn7WvfHv0mE6fgzpbjcwjg2pDdT8yresE9C2VYRTFATrPYee3sqOs8JulBuDGRCOp3uzi2cJ/Xwv5SLKDD0cHjyGpchP9kgrdDCwgykhx+m85ZWoKzKDQIUcDsx6es6L99rmybNrsUNcARZLssDJse6wIFzQo1eTuoA0EOH9mdLAVjznjh2xvt68R9aYayakS7ZFY1Nunr+OUtg34brRNOVj2TXiNIsyDLupUY/LREA==
+Received: from BN9PR03CA0312.namprd03.prod.outlook.com (2603:10b6:408:112::17)
+ by BL0PR12MB4674.namprd12.prod.outlook.com (2603:10b6:207:38::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.17; Wed, 26 Jan
+ 2022 11:47:56 +0000
+Received: from BN8NAM11FT019.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:112:cafe::68) by BN9PR03CA0312.outlook.office365.com
+ (2603:10b6:408:112::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.17 via Frontend
+ Transport; Wed, 26 Jan 2022 11:47:56 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT019.mail.protection.outlook.com (10.13.176.158) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4930.15 via Frontend Transport; Wed, 26 Jan 2022 11:47:55 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 26 Jan
+ 2022 11:47:53 +0000
+Received: from [172.27.15.168] (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Wed, 26 Jan 2022
+ 03:47:49 -0800
+Message-ID: <66d6c646-d71d-91d3-993c-fc542bf77e0f@nvidia.com>
+Date:   Wed, 26 Jan 2022 13:47:45 +0200
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH RFC net-next 0/5] bonding: add IPv6 NS/NA monitor support
+Content-Language: en-US
+To:     Hangbin Liu <liuhangbin@gmail.com>, <netdev@vger.kernel.org>
+CC:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Ahern <dsahern@gmail.com>
+References: <20220126073521.1313870-1-liuhangbin@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+In-Reply-To: <20220126073521.1313870-1-liuhangbin@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: drhqmail203.nvidia.com (10.126.190.182) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7924ea6f-ee20-4db7-5207-08d9e0c1b13b
+X-MS-TrafficTypeDiagnostic: BL0PR12MB4674:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB46746A57D1627B746E786BEDDF209@BL0PR12MB4674.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5dlVjOqorOCs1dzOtfNrDUt/IwXxPON4zDRtvkzf3knD5qGHFEug2RABQ2DrGEaKM2Ky4OkfOtnn41lI6TTqtftah2MrcYPPA/qjUwVcRv0rHnnm8EGb3FgL4jIFveV+Dn63Sb7l6WTE5jDStWv+jri+xjR57dqm/FUunQhHc9kFVRNiOWWrJwXyRqSoIUWqVzHRg1FhVqcXF94+FiHNdKwuhNvGrCNHSGyU+fuWAIa0E8gFJ+5rscqhBG6vSeHz8OwawyHqqFKCNZVMgnDLJdk45CvUxwdF8GBl3A4ILYyDrEpjh8Ed5d5Lnceu0usKGy94nGF9Jp6blcUAXNCOXGAj2s689PTcEafqGDzxTPsIrmvDYa+P7BcMk9F6HfAONpDUXeQqILrI8l15zj0Shwfeutpq0wmjSv0+rkPHCvVx+Na1CF1Hkk6P6DY2aMWyAv0QYGFaaso1z0EQsSVFYqeKyvvbdimJwg+gu0XnjstiRZ3uIbdHUhid/2oFVbnyANmWJbSVzAp44bO50cn9uhcgSSSGHtL0rEqA7x9gblaPnhBIPdjxIBXhamKBKz6kOz/TZUcg3LH38fB+TqYeLaDqTlA/pAtns1KCOLNQyex8zx64Lwy9LHr219ZD72QLwYJv99zazmCpHF+g2d/0XlP9geKmwmG+jiI+h8+gTOHNx0ynen3IElVkj1gGxXyvcroR8oR/PPeGKDXig1KmmkMnmpUKhPJr2LK3RDWaBp+SHNDE1uLlT3AflcJ2Z7DJZfJg9nnZqBdHYdL7rdqyXif3XFd5HJRB4ARHVrI2YIbwKgTNZYU/DDWVQS+FcKBTB/xJ5vWNEPQ0CUdU2uI99l+fFJb5FiX8URlR1NV8Lgw=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(53546011)(81166007)(356005)(70586007)(70206006)(4326008)(8936002)(8676002)(31696002)(54906003)(110136005)(16576012)(86362001)(316002)(966005)(40460700003)(6666004)(508600001)(426003)(336012)(47076005)(36860700001)(31686004)(82310400004)(83380400001)(2906002)(36756003)(2616005)(5660300002)(186003)(16526019)(26005)(36900700001)(43740500002)(20210929001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2022 11:47:55.4213
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7924ea6f-ee20-4db7-5207-08d9e0c1b13b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT019.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4674
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBPbiAyNi4wMS4yMDIyIDEwOjAyLCBIYXUgd3JvdGU6DQo+ID4NCj4gPg0KPiA+PiBPbiAyNC4w
-MS4yMDIyIDE5OjE5LCBDaHVuaGFvIExpbiB3cm90ZToNCj4gPj4+IFRoaXMgcGF0Y2ggd2lsbCBl
-bmFibGUgUlRMODEyNSBBU1BNIEwxLjIgb24gdGhlIHBsYXRmb3JtcyB0aGF0IGhhdmUNCj4gPj4+
-IHRlc3RlZCBSVEw4MTI1IHdpdGggQVNQTSBMMS4yIGVuYWJsZWQuDQo+ID4+PiBSZWdpc3RlciBt
-YWMgb2NwIDB4YzBiMiB3aWxsIGhlbHAgdG8gaWRlbnRpZnkgaWYgUlRMODEyNSBoYXMgYmVlbg0K
-PiA+Pj4gdGVzdGVkIG9uIEwxLjIgZW5hYmxlZCBwbGF0Zm9ybS4gSWYgaXQgaXMsIHRoaXMgcmVn
-aXN0ZXIgd2lsbCBiZSBzZXQgdG8gMHhmLg0KPiA+Pj4gSWYgbm90LCB0aGlzIHJlZ2lzdGVyIHdp
-bGwgYmUgZGVmYXVsdCB2YWx1ZSAwLg0KPiA+Pj4NCj4gPj4+IFNpZ25lZC1vZmYtYnk6IENodW5o
-YW8gTGluIDxoYXVAcmVhbHRlay5jb20+DQo+ID4+PiAtLS0NCj4gPj4+ICBkcml2ZXJzL25ldC9l
-dGhlcm5ldC9yZWFsdGVrL3I4MTY5X21haW4uYyB8IDk5DQo+ID4+PiArKysrKysrKysrKysrKysr
-KystLS0tLQ0KPiA+Pj4gIDEgZmlsZSBjaGFuZ2VkLCA3OSBpbnNlcnRpb25zKCspLCAyMCBkZWxl
-dGlvbnMoLSkNCj4gPj4+DQo+ID4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQv
-cmVhbHRlay9yODE2OV9tYWluLmMNCj4gPj4+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVhbHRl
-ay9yODE2OV9tYWluLmMNCj4gPj4+IGluZGV4IDE5ZTI2MjFlMDY0NS4uYjFlMDEzOTY5ZDRjIDEw
-MDY0NA0KPiA+Pj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVhbHRlay9yODE2OV9tYWlu
-LmMNCj4gPj4+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3JlYWx0ZWsvcjgxNjlfbWFpbi5j
-DQo+ID4+PiBAQCAtMjIzOCwyMSArMjIzOCw2IEBAIHN0YXRpYyB2b2lkIHJ0bF93b2xfZW5hYmxl
-X3J4KHN0cnVjdA0KPiA+PiBydGw4MTY5X3ByaXZhdGUgKnRwKQ0KPiA+Pj4gIAkJCUFjY2VwdEJy
-b2FkY2FzdCB8IEFjY2VwdE11bHRpY2FzdCB8DQo+ID4+IEFjY2VwdE15UGh5cyk7ICB9DQo+ID4+
-Pg0KPiA+Pj4gLXN0YXRpYyB2b2lkIHJ0bF9wcmVwYXJlX3Bvd2VyX2Rvd24oc3RydWN0IHJ0bDgx
-NjlfcHJpdmF0ZSAqdHApIC17DQo+ID4+PiAtCWlmICh0cC0+ZGFzaF90eXBlICE9IFJUTF9EQVNI
-X05PTkUpDQo+ID4+PiAtCQlyZXR1cm47DQo+ID4+PiAtDQo+ID4+PiAtCWlmICh0cC0+bWFjX3Zl
-cnNpb24gPT0gUlRMX0dJR0FfTUFDX1ZFUl8zMiB8fA0KPiA+Pj4gLQkgICAgdHAtPm1hY192ZXJz
-aW9uID09IFJUTF9HSUdBX01BQ19WRVJfMzMpDQo+ID4+PiAtCQlydGxfZXBoeV93cml0ZSh0cCwg
-MHgxOSwgMHhmZjY0KTsNCj4gPj4+IC0NCj4gPj4+IC0JaWYgKGRldmljZV9tYXlfd2FrZXVwKHRw
-X3RvX2Rldih0cCkpKSB7DQo+ID4+PiAtCQlwaHlfc3BlZWRfZG93bih0cC0+cGh5ZGV2LCBmYWxz
-ZSk7DQo+ID4+PiAtCQlydGxfd29sX2VuYWJsZV9yeCh0cCk7DQo+ID4+PiAtCX0NCj4gPj4+IC19
-DQo+ID4+PiAtDQo+ID4+PiAgc3RhdGljIHZvaWQgcnRsX2luaXRfcnhjZmcoc3RydWN0IHJ0bDgx
-NjlfcHJpdmF0ZSAqdHApICB7DQo+ID4+PiAgCXN3aXRjaCAodHAtPm1hY192ZXJzaW9uKSB7DQo+
-ID4+PiBAQCAtMjY1MCw2ICsyNjM1LDM0IEBAIHN0YXRpYyB2b2lkDQo+ID4+PiBydGxfcGNpZV9z
-dGF0ZV9sMmwzX2Rpc2FibGUoc3RydWN0DQo+ID4+IHJ0bDgxNjlfcHJpdmF0ZSAqdHApDQo+ID4+
-PiAgCVJUTF9XOCh0cCwgQ29uZmlnMywgUlRMX1I4KHRwLCBDb25maWczKSAmIH5SZHlfdG9fTDIz
-KTsgIH0NCj4gPj4+DQo+ID4+PiArc3RhdGljIHZvaWQgcnRsX2Rpc2FibGVfZXhpdF9sMShzdHJ1
-Y3QgcnRsODE2OV9wcml2YXRlICp0cCkgew0KPiA+Pj4gKwkvKiBCaXRzIGNvbnRyb2wgd2hpY2gg
-ZXZlbnRzIHRyaWdnZXIgQVNQTSBMMSBleGl0Og0KPiA+Pj4gKwkgKiBCaXQgMTI6IHJ4ZHYNCj4g
-Pj4+ICsJICogQml0IDExOiBsdHJfbXNnDQo+ID4+PiArCSAqIEJpdCAxMDogdHhkbWFfcG9sbA0K
-PiA+Pj4gKwkgKiBCaXQgIDk6IHhhZG0NCj4gPj4+ICsJICogQml0ICA4OiBwa3RhdmkNCj4gPj4+
-ICsJICogQml0ICA3OiB0eHBsYQ0KPiA+Pj4gKwkgKi8NCj4gPj4+ICsJc3dpdGNoICh0cC0+bWFj
-X3ZlcnNpb24pIHsNCj4gPj4+ICsJY2FzZSBSVExfR0lHQV9NQUNfVkVSXzM0IC4uLiBSVExfR0lH
-QV9NQUNfVkVSXzM2Og0KPiA+Pj4gKwkJcnRsX2VyaV9jbGVhcl9iaXRzKHRwLCAweGQ0LCAweDFm
-MDApOw0KPiA+Pj4gKwkJYnJlYWs7DQo+ID4+PiArCWNhc2UgUlRMX0dJR0FfTUFDX1ZFUl8zNyAu
-Li4gUlRMX0dJR0FfTUFDX1ZFUl8zODoNCj4gPj4+ICsJCXJ0bF9lcmlfY2xlYXJfYml0cyh0cCwg
-MHhkNCwgMHgwYzAwKTsNCj4gPj4+ICsJCWJyZWFrOw0KPiA+Pj4gKwljYXNlIFJUTF9HSUdBX01B
-Q19WRVJfNDAgLi4uIFJUTF9HSUdBX01BQ19WRVJfNTM6DQo+ID4+PiArCQlydGxfZXJpX2NsZWFy
-X2JpdHModHAsIDB4ZDQsIDB4MWY4MCk7DQo+ID4+PiArCQlicmVhazsNCj4gPj4+ICsJY2FzZSBS
-VExfR0lHQV9NQUNfVkVSXzYwIC4uLiBSVExfR0lHQV9NQUNfVkVSXzYzOg0KPiA+Pj4gKwkJcjgx
-NjhfbWFjX29jcF9tb2RpZnkodHAsIDB4YzBhYywgMHgxZjgwLCAwKTsNCj4gPj4+ICsJCWJyZWFr
-Ow0KPiA+Pj4gKwlkZWZhdWx0Og0KPiA+Pj4gKwkJYnJlYWs7DQo+ID4+PiArCX0NCj4gPj4+ICt9
-DQo+ID4+PiArDQo+ID4+PiAgc3RhdGljIHZvaWQgcnRsX2VuYWJsZV9leGl0X2wxKHN0cnVjdCBy
-dGw4MTY5X3ByaXZhdGUgKnRwKSAgew0KPiA+Pj4gIAkvKiBCaXRzIGNvbnRyb2wgd2hpY2ggZXZl
-bnRzIHRyaWdnZXIgQVNQTSBMMSBleGl0Og0KPiA+Pj4gQEAgLTI2OTIsNiArMjcwNSwzMyBAQCBz
-dGF0aWMgdm9pZCBydGxfaHdfYXNwbV9jbGtyZXFfZW5hYmxlKHN0cnVjdA0KPiA+PiBydGw4MTY5
-X3ByaXZhdGUgKnRwLCBib29sIGVuYWJsZSkNCj4gPj4+ICAJdWRlbGF5KDEwKTsNCj4gPj4+ICB9
-DQo+ID4+Pg0KPiA+Pj4gK3N0YXRpYyB2b2lkIHJ0bF9od19hc3BtX2wxMl9lbmFibGUoc3RydWN0
-IHJ0bDgxNjlfcHJpdmF0ZSAqdHAsIGJvb2wNCj4gPj4+ICtlbmFibGUpIHsNCj4gPj4+ICsJLyog
-RG9uJ3QgZW5hYmxlIEwxLjIgaW4gdGhlIGNoaXAgaWYgT1MgY2FuJ3QgY29udHJvbCBBU1BNICov
-DQo+ID4+PiArCWlmIChlbmFibGUgJiYgdHAtPmFzcG1fbWFuYWdlYWJsZSkgew0KPiA+Pj4gKwkJ
-cjgxNjhfbWFjX29jcF9tb2RpZnkodHAsIDB4ZTA5NCwgMHhmZjAwLCAwKTsNCj4gPj4+ICsJCXI4
-MTY4X21hY19vY3BfbW9kaWZ5KHRwLCAweGUwOTIsIDB4MDBmZiwgQklUKDIpKTsNCj4gPj4+ICsJ
-fSBlbHNlIHsNCj4gPj4+ICsJCXI4MTY4X21hY19vY3BfbW9kaWZ5KHRwLCAweGUwOTIsIDB4MDBm
-ZiwgMCk7DQo+ID4+PiArCX0NCj4gPj4+ICt9DQo+ID4+PiArDQo+ID4+DQo+ID4+IFJlZ2lzdGVy
-IEUwOTQgYml0cyAwLi4xNSBhcmUgY2xlYXJlZCB3aGVuIGVuYWJsaW5nLCBidXQgbm90IHRvdWNo
-ZWQNCj4gPj4gb24gZGlzYWJsaW5nLiBJIHRoaXMgY29ycmVjdD8NCj4gPiAgICBSZWdpc3RlciBF
-MDk0IGJpdHMgOC4uLjE1IGlzIGEgdGltZXIgY291bnRlciB0aGF0IGlzIHVzZWQgdG8gY29udHJv
-bCB3aGVuIHRvDQo+IGRpc2FibGUgZXBoeSB0eC9yeC4NCj4gPiAgICBTZXQgaXQgdG8gMCBtZWFu
-cyBkaXNhYmxlIGVwaHkgdHgvcnggaW1tZWRpYXRlbHkgd2hlbiBjZXJ0YWluIGNvbmRpdGlvbg0K
-PiBtZWV0Lg0KPiA+ICAgIEl0IGhhcyBubyBtZWFuaW5nIHdoZW4gcmVnaXN0ZXIgRTA5MiBiaXQg
-MiBpcyBzZXQgdG8gMC4NCj4gPg0KPiBUaGFua3MgZm9yIHRoZSBleHBsYW5hdGlvbi4NCj4gDQo+
-ID4+IEFuZCBmb3IgYmFzaWNhbGx5IHRoZSBzYW1lIHB1cnBvc2Ugd2UgaGF2ZSB0aGUgZm9sbG93
-aW5nIGZ1bmN0aW9uLg0KPiA+PiAiZG9uJ3QgZW5hYmxlIEwxLjIgaW4gdGhlIGNoaXAiIGlzIG5v
-dCBjb3ZlcmVkIGJ5IEFTUE1fZW4gaW4gQ29uZmlnNT8NCj4gPiAgICBSZWdpc3RlciBFMDkyIGlz
-IGxpa2UgIEFTUE1fZW4gaW4gQ29uZmlnNS4gQnV0IGl0IGNvbnRyb2xzIEwxIHN1YnN0YXRlDQo+
-IChMMS4xL0wxLjIpIGVuYWJsZSBzdGF0dXMuDQo+ID4NCj4gSG93IGlzIHRoaXMgaGFuZGxlZCBm
-b3IgdGhlIFJUTDgxNjggY2hpcCB2ZXJzaW9ucyBzdXBwb3J0aW5nIEwxIHN1Yi1zdGF0ZXMNCj4g
-KFJUTDgxNjhoKT8NCj4gSXMgdGhlcmUgYSBzaW1pbGFyIHJlZ2lzdGVyIG9yIGRvZXMgQ29uZmln
-NSBBU1BNX2VuIGNvbnRyb2wgYWxzbyB0aGUgTDENCj4gc3Vic3RhdGVzIG9uIHRoZXNlIGNoaXAg
-dmVyc2lvbnM/DQo+IA0KWW91IGNvdWxkIGFwcGx5IHRoZSBzYW1lIHNldHRpbmcgb24gUlRMODE2
-OEguDQoNCj4gPj4NCj4gPj4gc3RhdGljIHZvaWQgcnRsX2h3X2FzcG1fY2xrcmVxX2VuYWJsZShz
-dHJ1Y3QgcnRsODE2OV9wcml2YXRlICp0cCwNCj4gPj4gYm9vbA0KPiA+PiBlbmFibGUpIHsNCj4g
-Pj4gCS8qIERvbid0IGVuYWJsZSBBU1BNIGluIHRoZSBjaGlwIGlmIE9TIGNhbid0IGNvbnRyb2wg
-QVNQTSAqLw0KPiA+PiAJaWYgKGVuYWJsZSAmJiB0cC0+YXNwbV9tYW5hZ2VhYmxlKSB7DQo+ID4+
-IAkJUlRMX1c4KHRwLCBDb25maWc1LCBSVExfUjgodHAsIENvbmZpZzUpIHwgQVNQTV9lbik7DQo+
-ID4+IAkJUlRMX1c4KHRwLCBDb25maWcyLCBSVExfUjgodHAsIENvbmZpZzIpIHwgQ2xrUmVxRW4p
-Ow0KPiA+PiAJfSBlbHNlIHsNCj4gPj4gCQlSVExfVzgodHAsIENvbmZpZzIsIFJUTF9SOCh0cCwg
-Q29uZmlnMikgJiB+Q2xrUmVxRW4pOw0KPiA+PiAJCVJUTF9XOCh0cCwgQ29uZmlnNSwgUlRMX1I4
-KHRwLCBDb25maWc1KSAmIH5BU1BNX2VuKTsNCj4gPj4gCX0NCj4gPj4NCj4gPj4gCXVkZWxheSgx
-MCk7DQo+ID4+IH0NCj4gPj4NCj4gPj4NCj4gLi4uDQo+IC0tLS0tLVBsZWFzZSBjb25zaWRlciB0
-aGUgZW52aXJvbm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWlsLg0K
+On 26/01/2022 09:35, Hangbin Liu wrote:
+> This is an RFC of adding IPv6 NS/NA monitor support for bonding. I
+> posted a draft patch before[1]. But that patch is too big and David
+> Ahern suggested to split it smaller. So I split the previous patch
+> to 5 small ones, maybe not very good :)
+> 
+> The iproute2 patch is here [2].
+> 
+> This patch add bond IPv6 NS/NA monitor support. A new option
+> ns_ip6_target is added, which is similar with arp_ip_target.
+> The IPv6 NS/NA monitor will take effect when there is a valid IPv6
+> address. And ARP monitor will stop working.
+> 
+> A new field struct in6_addr ip6_addr is added to struct bond_opt_value
+> for IPv6 support. Thus __bond_opt_init() is also updated to check
+> string, addr first.
+> 
+> Function bond_handle_vlan() is split from bond_arp_send() for both
+> IPv4/IPv6 usage.
+> 
+> To alloc NS message and send out. ndisc_ns_create() and ndisc_send_skb()
+> are exported.
+> 
+> [1] https://lore.kernel.org/netdev/20211124071854.1400032-1-liuhangbin@gmail.com
+> [2] https://lore.kernel.org/netdev/20211124071854.1400032-2-liuhangbin@gmail.com
+> 
+> Hangbin Liu (5):
+>   ipv6: separate ndisc_ns_create() from ndisc_send_ns()
+>   Bonding: split bond_handle_vlan from bond_arp_send
+>   bonding: add ip6_addr for bond_opt_value
+>   bonding: add new parameter ns_targets
+>   bonding: add new option ns_ip6_target
+> 
+>  Documentation/networking/bonding.rst |  11 ++
+>  drivers/net/bonding/bond_main.c      | 266 ++++++++++++++++++++++++---
+>  drivers/net/bonding/bond_netlink.c   |  55 ++++++
+>  drivers/net/bonding/bond_options.c   | 142 +++++++++++++-
+>  drivers/net/bonding/bond_sysfs.c     |  22 +++
+>  include/net/bond_options.h           |  14 +-
+>  include/net/bonding.h                |  36 ++++
+>  include/net/ndisc.h                  |   5 +
+>  include/uapi/linux/if_link.h         |   1 +
+>  net/ipv6/ndisc.c                     |  45 +++--
+>  tools/include/uapi/linux/if_link.h   |   1 +
+>  11 files changed, 549 insertions(+), 49 deletions(-)
+> 
+
+Hi,
+I'd imagine such option to work alongside ARP, i.e. to be able to have both
+ARP and ND targets at the same time. On Rx you can choose which one to check
+based on the protocol, at Tx the same. Then you can reuse and extend most of the
+current arp procedures to handle IPv6 as well. And most of all remove these ifs
+all around the code:
++		if (bond_slave_is_up(slave)) {
++			if (bond_do_ns_validate(bond))
++				bond_ns_send_all(bond, slave);
++			else
++				bond_arp_send_all(bond, slave);
++		}
+
+and just have one procedure that handles both if there are any targets for that protocol.
+That will completely remove the need for bond_do_ns_validate() helper.
+
+Also define BOND_MAX_ND_TARGETS as BOND_MAX_ARP_TARGETS just for the namesake.
+
+Another cosmetic nit: adjust for reverse xmas tree ordering of local variables all over.
+
+Cheers,
+ Nik
+
+
+
