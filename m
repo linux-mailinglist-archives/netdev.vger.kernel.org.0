@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B40E049C213
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 04:28:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38DAB49C216
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 04:28:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237152AbiAZD2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 22:28:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47150 "EHLO
+        id S237176AbiAZD2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 22:28:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237143AbiAZD2d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 22:28:33 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C938C06161C;
-        Tue, 25 Jan 2022 19:28:32 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id s61-20020a17090a69c300b001b4d0427ea2so3525688pjj.4;
-        Tue, 25 Jan 2022 19:28:32 -0800 (PST)
+        with ESMTP id S237143AbiAZD2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 22:28:52 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9BCC06161C;
+        Tue, 25 Jan 2022 19:28:52 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id nn16-20020a17090b38d000b001b56b2bce31so4874690pjb.3;
+        Tue, 25 Jan 2022 19:28:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :references:from:in-reply-to:content-transfer-encoding;
-        bh=eZCPCMPd3mt57EyhCZ62iVdlHE4UKPJRZU4e5HBqWHA=;
-        b=DKuaM0vlqb43TGRkH/ny+XUXa1k1TUJ2mufyxWVlhnfxQz+6QQ84zliis9bj87p08O
-         kAFn3Yq/GyBduIeMspBM5+3rq/8IRDu9G24NxCxdHdnlj+wu54Iid97mxkToMMDjd3vK
-         n9F6h8vDaMPICOgnOVW5eijEO2NzFfRraYHvNoTMXXRKS2Z8NWX0CyeOtrq/2kv1C7NL
-         Sdq92N2MD/RINPkwgceUuBTDYew2BLD4Ku5z+Pa62/po/dqC6JOsIJsjrVMgroYAy5Xd
-         cgX7DNCmisNTMKtHNGVJwq/YRLogCfY0MK3dt1Y56Ihb8BWT2hFmciEMgtro2wGQeuRS
-         zMYw==
+        bh=W0/VThFcJa9vLUnJjkFf1P9yWFM1rwFeXTDTDQSnGBM=;
+        b=TLSext6CJMcifmjsaLFHRvpQB5XeJWpuLC+zeu2rLqFzYg6TufniIq7rniykXl4+3+
+         ERpBjHOwFpjgeXz6jFdBJSN1ZMPajiCIj0cs6W/iBIHtUw5wQoQfKI97GZZKv+FRRNje
+         faSsE5f0s2w6IS1wJqyoDCyDrt1HETkrf8/hnkP/53SpwE6ZK4QnGc6LWrx9YmgQziis
+         +Kyq7jfRprrI4JgPRNLCKwd0rOd41QClkeb15IDB4wYM2C1VDk+sLhXS1YTeZWZS3JX+
+         QZEKqj3F233Z06iptDA2Itj7x+2uPtlSgrS7HmJAF14pTCP62lMo1TRKMWHvkfaZr2kI
+         PPqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=eZCPCMPd3mt57EyhCZ62iVdlHE4UKPJRZU4e5HBqWHA=;
-        b=ZkP6LTG6kVe2YEVhzdDbGUAxxUxhmht5eTIKpqEnfDA+hZyltpMDRSs0bMM/eOaCpI
-         dFWOKemmVAcFoZKrAcX8Id6d8lzlobnvMAHbWQOJ5DVd9eO1hpa1Y5eP9mFVyJGc7VNn
-         LZqpx7hf12262r3neOZex4EVtleQoom0h891OLaKuy2FGVKXOSQAbZRWerLbmkbfxGNk
-         7UK52FbIvpczq9V+1rCnHpvIcBwUwSljowIslLoPmSmuX2yhcCKiqZ64Z/OWVbFAfA2g
-         a0fb4pihfmIck8GjdyqFCTUVyXEr5ikUsLCTf/QIg9zJMwCOTxA96c4INvevsQ10HMFC
-         vHjw==
-X-Gm-Message-State: AOAM5326PNH30GKsNQHYVLaq6OFR5ZdWbOvecZX2wXgj6jAEYS5gbzFV
-        7ii2/DXuCsWq7EgoL/9jI10=
-X-Google-Smtp-Source: ABdhPJwjbM71sxlpCt6Xf7FgupXigB9yHdggEDOtVYF2wFLRmB38q8EsHngF8+EuYWBLdUSdXqE8bg==
-X-Received: by 2002:a17:903:2342:b0:14b:449:d517 with SMTP id c2-20020a170903234200b0014b0449d517mr21617134plh.104.1643167711919;
-        Tue, 25 Jan 2022 19:28:31 -0800 (PST)
+        bh=W0/VThFcJa9vLUnJjkFf1P9yWFM1rwFeXTDTDQSnGBM=;
+        b=Xb0J5m9fgPgy7CKZAgkhgKf7AUahWad8wTGF2olLRSkroGY2waEjttYpxlPFohzMu8
+         xivsEHFiaaCbjuAS9mqz/QIfpLENUUtryd4wpKIWMEf7vF6xpIqFxEEydBN+zDtev2PO
+         NWt/SLUIqswx6wWMLgkbGUcJrajq7AM59VNWNUS3CWzffySFfoYn2PqwPp5L7X45zz+T
+         EZBZggjg1BBBleYG6audjsPNDGVodueUBq9XzhWxe49Ox9MmWrVno0pRJkxhG8/rmkOV
+         AJQYUTqZHN/xxQuJvlnETOOmpOr8Dsnv5I8l9mukx23F1VqIw9aiElpvykAtFDXi0IJU
+         3cCA==
+X-Gm-Message-State: AOAM532GZIp1V+rabMVbgw3v8ck5+p+sMVh46V2Wpd3x1n73srSmAMZ0
+        JAinwm0+48AICFvjJpoqZS/d4LjiIjo=
+X-Google-Smtp-Source: ABdhPJyACQPx1bMbYFQpthM6zfRv/NSr332diLDHCP8Sdj0N8GEYeRIai8Mm2mX1WsGsO8X451HYZw==
+X-Received: by 2002:a17:902:e74d:b0:14b:4166:35c9 with SMTP id p13-20020a170902e74d00b0014b416635c9mr13841880plf.135.1643167732300;
+        Tue, 25 Jan 2022 19:28:52 -0800 (PST)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id w19sm420047pfu.47.2022.01.25.19.28.30
+        by smtp.gmail.com with ESMTPSA id l22sm390039pfc.191.2022.01.25.19.28.50
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 19:28:31 -0800 (PST)
-Message-ID: <08ea3f8d-53df-2fd3-a03f-165840f85b47@gmail.com>
-Date:   Tue, 25 Jan 2022 19:28:30 -0800
+        Tue, 25 Jan 2022 19:28:51 -0800 (PST)
+Message-ID: <cba84992-17cb-9313-9d84-0ed16e122e40@gmail.com>
+Date:   Tue, 25 Jan 2022 19:28:50 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [RFC PATCH v7 04/16] net: dsa: tag_qca: move define to include
- linux/dsa
+Subject: Re: [RFC PATCH v7 05/16] net: dsa: tag_qca: enable promisc_on_master
+ flag
 Content-Language: en-US
 To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -63,9 +63,9 @@ To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
 References: <20220123013337.20945-1-ansuelsmth@gmail.com>
- <20220123013337.20945-5-ansuelsmth@gmail.com>
+ <20220123013337.20945-6-ansuelsmth@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220123013337.20945-5-ansuelsmth@gmail.com>
+In-Reply-To: <20220123013337.20945-6-ansuelsmth@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -75,11 +75,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 1/22/2022 5:33 PM, Ansuel Smith wrote:
-> Move tag_qca define to include dir linux/dsa as the qca8k require access
-> to the tagger define to support in-band mdio read/write using ethernet
-> packet.
+> Ethernet MDIO packets are non-standard and DSA master expects the first
+> 6 octets to be the MAC DA. To address these kind of packet, enable
+> promisc_on_master flag for the tagger.
 > 
 > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
