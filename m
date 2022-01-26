@@ -2,130 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 345F449D652
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 00:43:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3AC749D655
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 00:45:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230258AbiAZXni (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 18:43:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46752 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230105AbiAZXnh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 18:43:37 -0500
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CD4DC06161C
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 15:43:37 -0800 (PST)
-Received: by mail-qt1-x831.google.com with SMTP id r14so1129661qtt.5
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 15:43:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=0muTo4uRZ70YCwX6/v+4u66TzelKiI99n7msjCM8zH4=;
-        b=H7S5kjHfOZwyiEXgw+ZkvHgnhwIox/j51Y4uKukg2qG7Q31aFuzOEiM7Vd+T9ZUshv
-         XJymh+/Txzn6Qc86u68pZzM2ZxaCCEF/kYHXm7oKpFqFF/BkQ5hLvB1eC3jdboiNIPQg
-         s6mXuWveVV0QZdphrbYn0iKiDjdtUatXHCq+ndiyXP7K7OeI/dIXBJkI52Oz/WwPY/Y5
-         1LrpaZUhrnJuwSZz03y9gzNO9RJeXkKu85U6nCMIKkpct2/qt+VhUQMQekratlGUXMQQ
-         aWjyvqd5jsvIxCmTYIw6YE6wzduSTTzO8R4URqud+8AAvVlyHDOl4U5mnnkIHxQphVXo
-         jf6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=0muTo4uRZ70YCwX6/v+4u66TzelKiI99n7msjCM8zH4=;
-        b=AhC9KH6qzv86StNSczGm1ZuvpXs13BX4bIJ4VbYN81466phstkko0gfEMYY+svgJCI
-         vqnMG/SPz/pxEgcKVIMJnm7ruhzZpHER/pdTjRu/wrKaqxPNdB9Cf72QHnGc3IjjlwiK
-         HFxfu5fbXpylovxysXd8i4p7tlZvMyBQmZRBha9w4Ucc8X6ikFN4EZqy7mA14C9rIjGF
-         1b/Z48SrJ3FIKNqgNWFO/MMYJGQamuVX4NDMhOsHc6G6cU1OMD8G6e04o3oR0W73ZetG
-         62umRYpBBoSvVutm9Al46UXGg0XMHhVjb3Co9eCXUXtNt4ofnVCymq1v0nA+m5IZgYJg
-         sQfw==
-X-Gm-Message-State: AOAM531/7BdvbzVHe+fa0EN24utOamLGWTgSTUx2l28xWVIGoNKchUT4
-        6OARsnzaLSC2mNSXeF4k674m2udojgx3ow==
-X-Google-Smtp-Source: ABdhPJyOZ4c2KT9+v+HX9rxPginUJoZ+AUFJG2kvk+aw3/w6XXQgT1EpYyZ3LZnhXRCh2a38VtyaAA==
-X-Received: by 2002:a05:622a:1744:: with SMTP id l4mr852954qtk.571.1643240616660;
-        Wed, 26 Jan 2022 15:43:36 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id h6sm551185qko.7.2022.01.26.15.43.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Jan 2022 15:43:36 -0800 (PST)
-Message-ID: <89023d8a-4bf2-be3f-99c4-46c137da8599@linaro.org>
-Date:   Wed, 26 Jan 2022 17:43:35 -0600
+        id S230175AbiAZXpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 18:45:24 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:56538 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229451AbiAZXpT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jan 2022 18:45:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=KtETfU1+wqNMppMn4Ma2jeShcVH64evaxx2kWzZVGG8=; b=GUCG7xO1z7VQ6MisHEWzT+utQp
+        +DXEPSm1F4TbRCBm2yeQVrAIxBghnENx689AWvbxjbF1eMG6OcFzPZd298SnTDAdWavU4iLSQgZ1v
+        V7DHmd8R+cpZAs7mEIOO7ZC5JuPH2Q5lmby54uPTLzMMUDXXn5BzSxYHqDgps4V9LTRI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nCryS-002sOg-8K; Thu, 27 Jan 2022 00:45:12 +0100
+Date:   Thu, 27 Jan 2022 00:45:12 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] net: dsa: mv88e6xxx: Improve performance of
+ busy bit polling
+Message-ID: <YfHdCDIUvpaYpDSF@lunn.ch>
+References: <20220126231239.1443128-1-tobias@waldekranz.com>
+ <20220126231239.1443128-2-tobias@waldekranz.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: IPA monitor (Final RFC)
-Content-Language: en-US
-From:   Alex Elder <elder@linaro.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Network Development <netdev@vger.kernel.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-References: <384e168b-8266-cb9b-196b-347a513c0d36@linaro.org>
- <e666e0cb-5b65-1fe9-61ae-a3a3cea54ea0@linaro.org>
- <9da2f1f6-fc7c-e131-400d-97ac3b8cdadc@linaro.org> <YeLk3STfx2DO4+FO@lunn.ch>
- <c9db7b36-3855-1ac1-41b6-f7e9b91e2074@linaro.org>
- <20220118103017.158ede27@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <f02ad768-2c8e-c8ed-e5f6-6ee79bf97c06@linaro.org>
- <36491c9e-c9fb-6740-9e51-58c23737318f@linaro.org>
-In-Reply-To: <36491c9e-c9fb-6740-9e51-58c23737318f@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220126231239.1443128-2-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Damned double spacing.  I'm not sure why it's happening...	-Alex
+> @@ -86,12 +86,12 @@ int mv88e6xxx_write(struct mv88e6xxx_chip *chip, int addr, int reg, u16 val)
+>  int mv88e6xxx_wait_mask(struct mv88e6xxx_chip *chip, int addr, int reg,
+>  			u16 mask, u16 val)
+>  {
+> +	const unsigned long timeout = jiffies + msecs_to_jiffies(50);
+>  	u16 data;
+>  	int err;
+> -	int i;
+>  
+>  	/* There's no bus specific operation to wait for a mask */
+> -	for (i = 0; i < 16; i++) {
+> +	do {
+>  		err = mv88e6xxx_read(chip, addr, reg, &data);
+>  		if (err)
+>  			return err;
+> @@ -99,8 +99,8 @@ int mv88e6xxx_wait_mask(struct mv88e6xxx_chip *chip, int addr, int reg,
+>  		if ((data & mask) == val)
+>  			return 0;
+>  
+> -		usleep_range(1000, 2000);
+> -	}
+> +		cpu_relax();
+> +	} while (time_before(jiffies, timeout));
 
-In previous messages I explained how the Qualcomm IP Accelerator
-(IPA) sometimes has the ability to replicate all packets it
-processes, and supply those replicated packets to the main
-application processor (AP).  I initially suggested using a network
-device as the interface for this, but after some discussion, Jakub
-recommended using a debugfs file to supply these packets.
+I don't know if this is an issue or not...
 
-Below is basically a specification for the design I'll use.  It is
-what I intend to implement, so if anyone has any objection, please
-voice it now.  I'll be sending this code out for review in the
-coming few weeks.
+There are a few bit-banging systems out there. For those, i wonder if
+50ms is too short? With the old code, they had 16 chances, no matter
+how slow they were. With the new code, if they take 50ms for one
+transaction, they don't get a second chance.
 
-Thank you.
+But if they have taken 50ms, around 37ms has been spent with the
+preamble, start, op, phy address, and register address. I assume at
+that point the switch actually looks at the register, and given your
+timings, it really should be ready, so a second loop is probably not
+required?
 
-					-Alex
+O.K, so this seems safe.
 
-- A new debugfs directory "qcom_ipaX" will be created for each IPA
-   instance (X = IPA device number).  There's normally only going to
-   be one of these, but there is at least one SoC that has two.
-     /sys/kernel/debug/qcom_ipa0/
-- If an IPA instance supports a "monitor endpoint", a "monitor" file
-   will be created in its "qcom_ipaX" directory.
-     /sys/kernel/debug/qcom_ipa0/monitor
-- The "monitor" file is opened exclusively (no O_EXCL needed).  An
-   attempt to open that file when it's already open produces EBUSY.
-- The monitor file is read-only (S_IRUSR), and does not support seeks.
-- Once opened, "monitor packets" (which consist of a fixed size
-   status header, followed by replicated packet data) will be
-   accumulated in *receive* buffers.  If a replicated packet is
-   large, it will have been truncated by hardware to reduce
-   monitoring bandwidth.
-- Once opened, reads to the monitor file are satisfied as follows:
-     - If no receive buffers have accumulated, the read will block
-       until at least one monitor packet can be returned.
-     - If the file is opened with O_NONBLOCK, a read that would block
-       will return EAGAIN instead of blocking.
-     - A read that blocks is interruptible.
-     - A valid monitor packet is supplied to user space at most once.
-     - Only "complete" monitor packets are supplied to the reader.
-       I.e., a status header will always be supplied together with
-       the packet data it describes.
-     - A *read* buffer will be filled with as many monitor packets as
-       possible.  If they'll fit in the read buffer, all accumulated
-       monitor packets will be returned to the reader.
-     - If the read buffer has insufficient room for the next
-       available monitor packet, the read request returns.
-     - If any monitor packet received from hardware is bad, it--along
-       with everything beyond it in its page--will be discarded.
-         - The received data must be big enough to hold a status
-	  header.
-	- The received data must contain the packet data, meaning
-	  packet length in the status header lies within range.
+     Andrew
