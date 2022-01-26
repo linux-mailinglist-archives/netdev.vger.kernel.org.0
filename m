@@ -2,110 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E8F549CF28
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 17:06:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D18D249CF35
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 17:08:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236936AbiAZQGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 11:06:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53688 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236287AbiAZQF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 11:05:59 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5468AC061749
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 08:05:59 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id n8so23509309lfq.4
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 08:05:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=ShRv9pV2AiOoQ7kKf6pAT6HNznQzxV/dtMmDpxzFPcg=;
-        b=x/mBXdR5xx1bnGxI0gToBwM8f+86VgfurgD7HrCzY4IDZ4GW3oJ07mtynE4A/KBMWU
-         yghTqu/ixf5zAZ7Vd/eJhjVVfiJ83QudJ390VSd6J1bc7dN42gKpVaE+D/YUc6p0XYDl
-         Xkn1GkZLQcbJdtv5FcCf4H/KNuubUTZDihhWet0x80YAQ57/ea2WlskuBHh9CN/aJyOb
-         8oPol5kjPmoR+YC5uhW4ctY6hn1NOoQA0rOyVq8QJ8x1zse1Ih7XMLh59zO+mQwgOTVs
-         AXREqT/Uzlevgvpp68Zzx0czl/GhwIR/XhM4RlxSlgmWfvohkht7fBTuP4/ojLlSsWbi
-         xZoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=ShRv9pV2AiOoQ7kKf6pAT6HNznQzxV/dtMmDpxzFPcg=;
-        b=IQYcZkrUycxfIpSgZEc9MZ7UmEnib8vtnGWsO9R+pl1ep9ha+CVZrulTR9CkuJuUK1
-         LXP7p3nP2S40fmzA5dsByAa8MF9ogZYOcgNi+jKani9kCmk+W4nSzXJjfpVIZ/gMTo2i
-         Rny24Rd9ZnlTwqIKImdQJSl9dVaeIQ+h+u7a1HN8gjCDjZPBeD2FczHamQIWvHhIT0bg
-         RMYjD8aX9QN6BpacAzaeJWs0gy6MARrr62MCmqk4LgUK+sCOw7NZmONiF+FHdxbInbnb
-         0RNjoLv4dOXVG3lVCO7rvLW/tmFguPIg9xNXQg/vR1wYMFKE71qOfoCrJUcg/9u9WIrO
-         Pb9Q==
-X-Gm-Message-State: AOAM5303VfeX/07RPNzqenRAeHAJfJsonjZqRCzEZHP73rInlG+KUaxa
-        /MwoopJykt/7+n+W7kcbfpzVrQ==
-X-Google-Smtp-Source: ABdhPJx0jRxATWymTrblnpnNQ0Bh0U6mtk54N2Aq+6epLPW62w5Iza5uwSyU0BFxEpANkmB47UhGdA==
-X-Received: by 2002:a05:6512:130b:: with SMTP id x11mr20691710lfu.660.1643213157285;
-        Wed, 26 Jan 2022 08:05:57 -0800 (PST)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id p6sm1869984lfa.241.2022.01.26.08.05.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 08:05:56 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next 5/5] dt-bindings: net: xgmac_mdio: Add "clock-frequency" and "suppress-preamble"
-Date:   Wed, 26 Jan 2022 17:05:43 +0100
-Message-Id: <20220126160544.1179489-6-tobias@waldekranz.com>
+        id S237180AbiAZQHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 11:07:35 -0500
+Received: from foss.arm.com ([217.140.110.172]:50036 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236823AbiAZQHe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jan 2022 11:07:34 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CED85D6E;
+        Wed, 26 Jan 2022 08:07:33 -0800 (PST)
+Received: from ip-10-252-15-108.eu-west-1.compute.internal (unknown [10.252.15.108])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8151C3F766;
+        Wed, 26 Jan 2022 08:07:31 -0800 (PST)
+From:   German Gomez <german.gomez@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org
+Cc:     German Gomez <german.gomez@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH] perf test: Add perf_event_attr tests for the arm_spe event
+Date:   Wed, 26 Jan 2022 16:07:09 +0000
+Message-Id: <20220126160710.32983-1-german.gomez@arm.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220126160544.1179489-1-tobias@waldekranz.com>
-References: <20220126160544.1179489-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-Organization: Westermo
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver now supports the standard "clock-frequency" and
-"suppress-preamble" properties, do document them in the binding
-description.
+Adds a couple of perf_event_attr tests for the fix introduced in [1].
+The tests check that the correct sample_period value is set in the
+struct perf_event_attr of the arm_spe events.
 
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+[1]: https://lore.kernel.org/all/20220118144054.2541-1-german.gomez@arm.com/
+
+Signed-off-by: German Gomez <german.gomez@arm.com>
 ---
- .../devicetree/bindings/net/fsl-fman.txt      | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ tools/perf/tests/attr/README                  |  2 +
+ tools/perf/tests/attr/base-record-spe         | 40 +++++++++++++++++++
+ tools/perf/tests/attr/test-record-spe-period  | 12 ++++++
+ .../tests/attr/test-record-spe-period-term    | 12 ++++++
+ 4 files changed, 66 insertions(+)
+ create mode 100644 tools/perf/tests/attr/base-record-spe
+ create mode 100644 tools/perf/tests/attr/test-record-spe-period
+ create mode 100644 tools/perf/tests/attr/test-record-spe-period-term
 
-diff --git a/Documentation/devicetree/bindings/net/fsl-fman.txt b/Documentation/devicetree/bindings/net/fsl-fman.txt
-index cd5288fb4318..801efc7d6818 100644
---- a/Documentation/devicetree/bindings/net/fsl-fman.txt
-+++ b/Documentation/devicetree/bindings/net/fsl-fman.txt
-@@ -388,6 +388,25 @@ PROPERTIES
- 		Value type: <prop-encoded-array>
- 		Definition: A standard property.
- 
-+- clocks
-+		Usage: optional
-+		Value type: <phandle>
-+		Definition: A reference to the input clock of the controller
-+		from which the MDC frequency is derived.
+diff --git a/tools/perf/tests/attr/README b/tools/perf/tests/attr/README
+index 1116fc6bf2ac..454505d343fa 100644
+--- a/tools/perf/tests/attr/README
++++ b/tools/perf/tests/attr/README
+@@ -58,6 +58,8 @@ Following tests are defined (with perf commands):
+   perf record -c 100 -P kill                    (test-record-period)
+   perf record -c 1 --pfm-events=cycles:period=2 (test-record-pfm-period)
+   perf record -R kill                           (test-record-raw)
++  perf record -c 2 -e arm_spe_0// -- kill       (test-record-spe-period)
++  perf record -e arm_spe_0/period=3/ -- kill    (test-record-spe-period-term)
+   perf stat -e cycles kill                      (test-stat-basic)
+   perf stat kill                                (test-stat-default)
+   perf stat -d kill                             (test-stat-detailed-1)
+diff --git a/tools/perf/tests/attr/base-record-spe b/tools/perf/tests/attr/base-record-spe
+new file mode 100644
+index 000000000000..08fa96b59240
+--- /dev/null
++++ b/tools/perf/tests/attr/base-record-spe
+@@ -0,0 +1,40 @@
++[event]
++fd=*
++group_fd=-1
++flags=*
++cpu=*
++type=*
++size=*
++config=*
++sample_period=*
++sample_type=*
++read_format=*
++disabled=*
++inherit=*
++pinned=*
++exclusive=*
++exclude_user=*
++exclude_kernel=*
++exclude_hv=*
++exclude_idle=*
++mmap=*
++comm=*
++freq=*
++inherit_stat=*
++enable_on_exec=*
++task=*
++watermark=*
++precise_ip=*
++mmap_data=*
++sample_id_all=*
++exclude_host=*
++exclude_guest=*
++exclude_callchain_kernel=*
++exclude_callchain_user=*
++wakeup_events=*
++bp_type=*
++config1=*
++config2=*
++branch_sample_type=*
++sample_regs_user=*
++sample_stack_user=*
+diff --git a/tools/perf/tests/attr/test-record-spe-period b/tools/perf/tests/attr/test-record-spe-period
+new file mode 100644
+index 000000000000..75f8c9cd8e3f
+--- /dev/null
++++ b/tools/perf/tests/attr/test-record-spe-period
+@@ -0,0 +1,12 @@
++[config]
++command = record
++args    = --no-bpf-event -c 2 -e arm_spe_0// -- kill >/dev/null 2>&1
++ret     = 1
++arch    = aarch64
 +
-+- clock-frequency
-+		Usage: optional
-+		Value type: <u32>
-+		Definition: Specifies the external MDC frequency, in Hertz, to
-+		be used. Requires that the input clock is specified in the
-+		"clocks" property. See also: mdio.yaml.
++[event-10:base-record-spe]
++sample_period=2
++freq=0
 +
-+- suppress-preamble
-+		Usage: optional
-+		Value type: <boolean>
-+		Definition: Disable generation of preamble bits. See also:
-+		mdio.yaml.
++# dummy event
++[event-1:base-record-spe]
+diff --git a/tools/perf/tests/attr/test-record-spe-period-term b/tools/perf/tests/attr/test-record-spe-period-term
+new file mode 100644
+index 000000000000..8f60a4fec657
+--- /dev/null
++++ b/tools/perf/tests/attr/test-record-spe-period-term
+@@ -0,0 +1,12 @@
++[config]
++command = record
++args    = --no-bpf-event -e arm_spe_0/period=3/ -- kill >/dev/null 2>&1
++ret     = 1
++arch    = aarch64
 +
- - interrupts
- 		Usage: required for external MDIO
- 		Value type: <prop-encoded-array>
++[event-10:base-record-spe]
++sample_period=3
++freq=0
++
++# dummy event
++[event-1:base-record-spe]
 -- 
 2.25.1
 
