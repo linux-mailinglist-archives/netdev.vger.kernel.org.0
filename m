@@ -2,263 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5875149D2AB
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 20:45:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E47C449D2B0
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 20:49:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244511AbiAZTpi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Jan 2022 14:45:38 -0500
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:34655 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244508AbiAZTph (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 14:45:37 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-604-MD7w0cHDO_-37nywdBXuew-1; Wed, 26 Jan 2022 14:45:35 -0500
-X-MC-Unique: MD7w0cHDO_-37nywdBXuew-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6977818460E6;
-        Wed, 26 Jan 2022 19:45:34 +0000 (UTC)
-Received: from localhost.localdomain.com (unknown [10.22.16.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DDCE84EE1D;
-        Wed, 26 Jan 2022 19:45:33 +0000 (UTC)
-From:   Wen Liang <liangwen12year@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com, aclaudi@redhat.com
-Subject: [PATCH iproute2 v5 2/2] tc: u32: add json support in `print_raw`, `print_ipv4`, `print_ipv6`
-Date:   Wed, 26 Jan 2022 14:44:48 -0500
-Message-Id: <b357d21c3d85d877b9b426409b9d3e79af5028f8.1643225596.git.liangwen12year@gmail.com>
-In-Reply-To: <cover.1643225596.git.liangwen12year@gmail.com>
-References: <cover.1643225596.git.liangwen12year@gmail.com>
+        id S230403AbiAZTtW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 14:49:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231869AbiAZTtR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 14:49:17 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C0E0C06161C
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 11:49:16 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id m6so1910790ybc.9
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 11:49:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sdMVHRf2IrT9f8QWnms4/Mk2kr8xPAYAVug2mP2Oizo=;
+        b=DLWrOFPw4saMO662YBG5ktqxBvQ5aidEm3AFaO08RlXS2xRgPBB5d6gADEA4um0s2Q
+         IlDZVk0oR878ZBxxjLfkLJZmx8+kzV4uvcrZrlWfI/aplYNF6UHLZGKRmZpAnKcEwBkf
+         CMzs9wrGSbckKzceJGUW1dRCXAJCp34kgJFpjmz+5T4jyO+RAY10lhWejLnkZd2ELj9t
+         1yPgPWnWfwMd/v47zLA2/tKQ3rMZHs+8YND7obAFNEWUILUWe/uRj4svTarfsbZoOf/b
+         9GhJ3avCQM4Q+BT2RfvEvXAxEQYavuPOK4OjhE2oio06Gf9GaY3phzNuPt4OMHLYKBwa
+         QKkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sdMVHRf2IrT9f8QWnms4/Mk2kr8xPAYAVug2mP2Oizo=;
+        b=eVxMvThSFlpfsF+chWAmvDpjWF8/Hj1s5N0g8e0Lfx3YMnOpt18annHA6QxGZulOmP
+         wLULk6ORfYq6dbvnt76NDtFcpMq+v5ZTjLL+59N3NSoqW4VhnoDKu1faXIo7pJGq5fyV
+         giUU6qKjNO2mvYabPZIMLPRwgF4U2oY+fL2AW0FGCHWznYk1Lts1WxN/QD/OGC0X2BxN
+         GMs92a7Xre6KBatMYI3MQbEAPBFtUshV5QuVsgsmTu2y5kV4KvfVxFeu8uDBBECR9ddG
+         lnGPJr1PCj0L+MyRuewzkKH9jCibTKLvlaZIJMoVyoApOawvm6VQyaG3EWPl4i7u762l
+         pyPQ==
+X-Gm-Message-State: AOAM531/iE7boj5Bvf+8LwzM9Fc5LwrPgQfn9G7WImfoWa5HINEiQLNj
+        +69Hr5h8cdabL6QAJVw4toXIx2qjNHagp92iDWM=
+X-Google-Smtp-Source: ABdhPJxHEwE2hk4TlWzyApFiFvUU0DKPmsGvk/VjCpUl9f9yt4ZxulrHsslzegcst15ZbS4EYf7nJRqz1tEAkMgmGSQ=
+X-Received: by 2002:a25:3d81:: with SMTP id k123mr711827yba.740.1643226555755;
+ Wed, 26 Jan 2022 11:49:15 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: gmail.com
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+References: <20211224164926.80733-1-xiangxia.m.yue@gmail.com>
+ <20211224164926.80733-3-xiangxia.m.yue@gmail.com> <CAM_iQpUhNmmxyPXjyRBKzjVkreu0WXvoyOTdxT0pdjUBsFkx6A@mail.gmail.com>
+ <20211224144441.534559e8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20211224144441.534559e8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 26 Jan 2022 11:49:05 -0800
+Message-ID: <CAM_iQpVF_sHRFzyKEHAbyi7RJH-4cLGvisFEKRjvMXvEMAHEWw@mail.gmail.com>
+Subject: Re: [net-next v7 2/2] net: sched: support hash/classid/cpuid
+ selecting tx queue
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the key struct of u32 filter does not support json. This
-commit adds json support for showing key.
+On Fri, Dec 24, 2021 at 2:44 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri, 24 Dec 2021 11:28:45 -0800 Cong Wang wrote:
+> > On Fri, Dec 24, 2021 at 8:49 AM <xiangxia.m.yue@gmail.com> wrote:
+> > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > >
+> > > This patch allows user to select queue_mapping, range
+> > > from A to B. And user can use skbhash, cgroup classid
+> > > and cpuid to select Tx queues. Then we can load balance
+> > > packets from A to B queue. The range is an unsigned 16bit
+> > > value in decimal format.
+> > >
+> > > $ tc filter ... action skbedit queue_mapping skbhash A B
+> > >
+> > > "skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit")
+> > > is enhanced with flags:
+> > > * SKBEDIT_F_TXQ_SKBHASH
+> > > * SKBEDIT_F_TXQ_CLASSID
+> > > * SKBEDIT_F_TXQ_CPUID
+> >
+> > NACK.
+> >
+> > These values can either obtained from user-space, or is nonsense
+> > at all.
+>
+> Can you elaborate? What values can be obtained from user space?
+> What is nonsense?
 
-Signed-off-by: Wen Liang <liangwen12year@gmail.com>
----
- tc/f_u32.c | 121 ++++++++++++++++++++++++++++++++++-------------------
- 1 file changed, 79 insertions(+), 42 deletions(-)
+Of course.
 
-diff --git a/tc/f_u32.c b/tc/f_u32.c
-index 11da202e..d787eb91 100644
---- a/tc/f_u32.c
-+++ b/tc/f_u32.c
-@@ -824,23 +824,27 @@ static void print_ipv4(FILE *f, const struct tc_u32_key *key)
- {
- 	char abuf[256];
- 
-+	open_json_object("match");
- 	switch (key->off) {
- 	case 0:
- 		switch (ntohl(key->mask)) {
- 		case 0x0f000000:
--			fprintf(f, "\n  match IP ihl %u",
--				ntohl(key->val) >> 24);
-+			print_nl();
-+			print_uint(PRINT_ANY, "ip_ihl", "  match IP ihl %u",
-+				   ntohl(key->val) >> 24);
- 			return;
- 		case 0x00ff0000:
--			fprintf(f, "\n  match IP dsfield %#x",
--				ntohl(key->val) >> 16);
-+			print_nl();
-+			print_0xhex(PRINT_ANY, "ip_dsfield", "  match IP dsfield %#x",
-+				    ntohl(key->val) >> 16);
- 			return;
- 		}
- 		break;
- 	case 8:
- 		if (ntohl(key->mask) == 0x00ff0000) {
--			fprintf(f, "\n  match IP protocol %d",
--				ntohl(key->val) >> 16);
-+			print_nl();
-+			print_int(PRINT_ANY, "ip_protocol", "  match IP protocol %d",
-+				  ntohl(key->val) >> 16);
- 			return;
- 		}
- 		break;
-@@ -849,11 +853,21 @@ static void print_ipv4(FILE *f, const struct tc_u32_key *key)
- 			int bits = mask2bits(key->mask);
- 
- 			if (bits >= 0) {
--				fprintf(f, "\n  %s %s/%d",
--					key->off == 12 ? "match IP src" : "match IP dst",
--					inet_ntop(AF_INET, &key->val,
--						  abuf, sizeof(abuf)),
--					bits);
-+				const char *addr;
-+
-+				if (key->off == 12) {
-+					print_nl();
-+					print_null(PRINT_FP, NULL, "  match IP src ", NULL);
-+					open_json_object("src");
-+				} else {
-+					print_nl();
-+					print_null(PRINT_FP, NULL, "  match IP dst ", NULL);
-+					open_json_object("dst");
-+				}
-+				addr = inet_ntop(AF_INET, &key->val, abuf, sizeof(abuf));
-+				print_string(PRINT_ANY, "address", "%s", addr);
-+				print_int(PRINT_ANY, "prefixlen", "/%d", bits);
-+				close_json_object();
- 				return;
- 			}
- 		}
-@@ -862,45 +876,52 @@ static void print_ipv4(FILE *f, const struct tc_u32_key *key)
- 	case 20:
- 		switch (ntohl(key->mask)) {
- 		case 0x0000ffff:
--			fprintf(f, "\n  match dport %u",
--				ntohl(key->val) & 0xffff);
-+			print_uint(PRINT_ANY, "dport", "match dport %u",
-+				   ntohl(key->val) & 0xffff);
- 			return;
- 		case 0xffff0000:
--			fprintf(f, "\n  match sport %u",
--				ntohl(key->val) >> 16);
-+			print_nl();
-+			print_uint(PRINT_ANY, "sport", "  match sport %u",
-+				   ntohl(key->val) >> 16);
- 			return;
- 		case 0xffffffff:
--			fprintf(f, "\n  match dport %u, match sport %u",
--				ntohl(key->val) & 0xffff,
--				ntohl(key->val) >> 16);
--
-+			print_nl();
-+			print_uint(PRINT_ANY, "dport", "  match dport %u, ",
-+				   ntohl(key->val) & 0xffff);
-+			print_uint(PRINT_ANY, "sport", "match sport %u",
-+				   ntohl(key->val) >> 16);
- 			return;
- 		}
- 		/* XXX: Default print_raw */
- 	}
-+	close_json_object();
- }
- 
- static void print_ipv6(FILE *f, const struct tc_u32_key *key)
- {
- 	char abuf[256];
- 
-+	open_json_object("match");
- 	switch (key->off) {
- 	case 0:
- 		switch (ntohl(key->mask)) {
- 		case 0x0f000000:
--			fprintf(f, "\n  match IP ihl %u",
--				ntohl(key->val) >> 24);
-+			print_nl();
-+			print_uint(PRINT_ANY, "ip_ihl", "  match IP ihl %u",
-+				   ntohl(key->val) >> 24);
- 			return;
- 		case 0x00ff0000:
--			fprintf(f, "\n  match IP dsfield %#x",
--				ntohl(key->val) >> 16);
-+			print_nl();
-+			print_0xhex(PRINT_ANY, "ip_dsfield", "  match IP dsfield %#x",
-+				    ntohl(key->val) >> 16);
- 			return;
- 		}
- 		break;
- 	case 8:
- 		if (ntohl(key->mask) == 0x00ff0000) {
--			fprintf(f, "\n  match IP protocol %d",
--				ntohl(key->val) >> 16);
-+			print_nl();
-+			print_int(PRINT_ANY, "ip_protocol", "  match IP protocol %d",
-+				  ntohl(key->val) >> 16);
- 			return;
- 		}
- 		break;
-@@ -909,11 +930,21 @@ static void print_ipv6(FILE *f, const struct tc_u32_key *key)
- 			int bits = mask2bits(key->mask);
- 
- 			if (bits >= 0) {
--				fprintf(f, "\n  %s %s/%d",
--					key->off == 12 ? "match IP src" : "match IP dst",
--					inet_ntop(AF_INET, &key->val,
--						  abuf, sizeof(abuf)),
--					bits);
-+				const char *addr;
-+
-+				if (key->off == 12) {
-+					print_nl();
-+					print_null(PRINT_FP, NULL, "  match IP src ", NULL);
-+					open_json_object("src");
-+				} else {
-+					print_nl();
-+					print_null(PRINT_FP, NULL, "  match IP dst ", NULL);
-+					open_json_object("dst");
-+				}
-+				addr = inet_ntop(AF_INET, &key->val, abuf, sizeof(abuf));
-+				print_string(PRINT_ANY, "address", "%s", addr);
-+				print_int(PRINT_ANY, "prefixlen", "/%d", bits);
-+				close_json_object();
- 				return;
- 			}
- 		}
-@@ -922,31 +953,37 @@ static void print_ipv6(FILE *f, const struct tc_u32_key *key)
- 	case 20:
- 		switch (ntohl(key->mask)) {
- 		case 0x0000ffff:
--			fprintf(f, "\n  match sport %u",
--				ntohl(key->val) & 0xffff);
-+			print_nl();
-+			print_uint(PRINT_ANY, "sport", "  match sport %u",
-+				   ntohl(key->val) & 0xffff);
- 			return;
- 		case 0xffff0000:
--			fprintf(f, "\n  match dport %u",
--				ntohl(key->val) >> 16);
-+			print_uint(PRINT_ANY, "dport", "match dport %u",
-+				   ntohl(key->val) >> 16);
- 			return;
- 		case 0xffffffff:
--			fprintf(f, "\n  match sport %u, match dport %u",
--				ntohl(key->val) & 0xffff,
--				ntohl(key->val) >> 16);
-+			print_nl();
-+			print_uint(PRINT_ANY, "sport", "  match sport %u, ",
-+				   ntohl(key->val) & 0xffff);
-+			print_uint(PRINT_ANY, "dport", "match dport %u",
-+				   ntohl(key->val) >> 16);
- 
- 			return;
- 		}
- 		/* XXX: Default print_raw */
- 	}
-+	close_json_object();
- }
- 
- static void print_raw(FILE *f, const struct tc_u32_key *key)
- {
--	fprintf(f, "\n  match %08x/%08x at %s%d",
--		(unsigned int)ntohl(key->val),
--		(unsigned int)ntohl(key->mask),
--		key->offmask ? "nexthdr+" : "",
--		key->off);
-+	open_json_object("match");
-+	print_nl();
-+	print_hex(PRINT_ANY, "value", "  match %08x", (unsigned int)ntohl(key->val));
-+	print_hex(PRINT_ANY, "mask", "/%08x ", (unsigned int)ntohl(key->mask));
-+	print_string(PRINT_ANY, "offmask", "at %s", key->offmask ? "nexthdr+" : "");
-+	print_int(PRINT_ANY, "off", "%d", key->off);
-+	close_json_object();
- }
- 
- static const struct {
--- 
-2.26.3
+1. SKBHASH is nonsense, because from a user's point of view, it really
+has no meaning at all, skb hash itself is not visible to user and setting
+an invisible value to as an skb queue mapping is pretty much like setting
+a random value here.
 
+2. CLASSID is obviously easy to obtain from user-space, as it is passed
+from user-space.
+
+3. CPUID is nonsense, because a process can be migrated easily from
+one CPU to another. Putting OOO packets side, users can't figure out
+which CPU the process is running *in general*. (Of course you can bind
+CPU but clearly you can't bind every process)
+
+>
+> > Sorry, we don't accept enforcing such bad policies in kernel. Please
+> > drop this patch.
+>
+> Again, unclear what your objection is. There's plenty similar
+> functionality in TC. Please be more specific.
+
+What exact TC functionality are you talking about? Please be specific.
+
+If you mean Qdisc's, it is virtually just impossible to have a programmable
+Qdisc, even my eBPF Qdisc only provides very limited programmablities.
+
+If you mean TC filter or action, we already have eBPF filter and eBPF
+action.
+
+Thanks.
