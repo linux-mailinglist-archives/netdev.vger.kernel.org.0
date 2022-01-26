@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A4A449C73A
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 11:15:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 389F749C73C
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 11:15:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239742AbiAZKOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 05:14:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54798 "EHLO
+        id S239749AbiAZKO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 05:14:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239732AbiAZKOw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 05:14:52 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAAAC061744
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:52 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id p27so62125004lfa.1
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:52 -0800 (PST)
+        with ESMTP id S239743AbiAZKOy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 05:14:54 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38865C061747
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:54 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id z19so25380593lfq.13
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:organization:content-transfer-encoding;
-        bh=/mvM51A5cZB1/LP8bxdtukBhEKxdmFmIE0WYJdIBCJA=;
-        b=mvIP15AWvQg1ZCiSg0C3i/x1fq4RgGtsbSqHGugR8AvKBMBhnyQpIvYdTa0Q1lSPf9
-         4rI0oX+gyII5WDvROn/rYgWLGUEkOOeVq+2PN9wQ1m3SQWOXPkYqFU1VTMstSvYYveCj
-         H2yYU0GNO/jwjQRZg5P9ux025ZhnUCBYVTIsdRWKVdc+j9dwPfsIGx/Y6ClttcDRVsMu
-         ShkjLCwfwlDESlOcUrMr4QmsUFqYcJCRJcD1UbnXBwrD5KYNfZup3CxAEgEZ+u375Mjl
-         gtS1T6Bfu43yUZAXYZ+jVMxGjPIJOIvURAGvzRg4KfqzK76meuahOnSz7vUWritSnzDd
-         yp3g==
+        bh=qqxkmTuDL0v9WH77bm0OjP2Xt3xkG3hMYP9qpSlEMQo=;
+        b=kWB3pDyb6GK7cB9NC0EGJqCO++IYq7Ux9l7gTi9HBrbqNcOXW374l/CfIfwBhdGMyO
+         R7gb2yLbmQ/7/7TsX3Nvg5M0hStCx24nC3lUBoNhxi7hqAb7PxTX8y10YhDaXMlq6okp
+         49EATEyHJPhRJl9LrA2pCABm4pXyTyC8GCHnZ6W1WjCfE9qsXSAG8/629WB8wxEDMD4q
+         c5UEHofas4N4Qic/PFWspRZITQljlIbh7kgyJACe2+9WSeud2hOCpNDqM6clctZK0HqE
+         B3zr14qW2/HoqCfoxbKloJhuwDGkM55BT98n6TYMrH7WKdBS227SFKpR6yaZ7Hgo3S4H
+         B9VA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:organization:content-transfer-encoding;
-        bh=/mvM51A5cZB1/LP8bxdtukBhEKxdmFmIE0WYJdIBCJA=;
-        b=l9fO+TvYV72xMT+FW62vHHbiGI/+ofw61/hN8S1n256JmGG6pONj47GyqWb5j1e+1B
-         TEJ0R5JmsATnxiVyuHcNETtAw3jXeyXCKpKIutCQ9Tcd0dE64umTIo8Ord3fHSp+6lXX
-         hWi9ZZUR0N+T8TWbMc56VIjk9SEZt4WOmrITTuXwz5AfHDIsPbPHEv7rSRu/dIDi8UTR
-         biEfaYK+m0Ewl7y09rkHDQnHsIqH8Ir4J/1564NF5cIWEChlrGNtn9cPKhgMSrJs+lMY
-         pzgyCPY/2HPQs2Uwghx6sOWWVs2qXCqyCShLMm8Q4stNB/q4rMrRWsnkR3V3ujetutxI
-         606g==
-X-Gm-Message-State: AOAM532ivnfEPnO9qMq+6QLMoMLhYK4UwPeayvNOcUQ2CrB5M2/lUPiO
-        Zhe4BBQb00dmllBgcaeRz9lCbA==
-X-Google-Smtp-Source: ABdhPJyvELxIdfcM95tWre+Zw7gqfURABlf0U53dRmWPEok32iFeh0sYdUrHcb/83tLAAdRaV6JSXw==
-X-Received: by 2002:a05:6512:3406:: with SMTP id i6mr19581169lfr.637.1643192090820;
-        Wed, 26 Jan 2022 02:14:50 -0800 (PST)
+        bh=qqxkmTuDL0v9WH77bm0OjP2Xt3xkG3hMYP9qpSlEMQo=;
+        b=YtvwB4m1kAhrFA3BMc29NWuXMH/iMGLRuR/OK2ESsZPY5dEjwRZWBGInAtewOrh7BG
+         Uv3DkwinGa+sO0HwzM7BaAEiEl4hbB9pIVXF2raaGa23uhYaSybrTl1O+zXen/OxdTOX
+         vdPqXFHu6hLrVuj7eV9KGJcMZSfv0v0NbZNg1w3CK1rv8M+tDl8t/4MZu7zoC1E18uuQ
+         S7bL4u+UuxXWAzk0VDX8oK+ZgM+QQhuSl2SrU0q0jlwxpDRzP4EyuqjGL3h1NCaYAR04
+         Q/lUeP+khM48UkHefhwOAHjOufWaeKiYBlB4Zl4+ogUePtAC8nOPeD9kuQdp76un+lyv
+         SHBQ==
+X-Gm-Message-State: AOAM530d1W+sXNvFz53B8sJeaqmiLjSuHuN3p3yFmTXplki7+TZ/vibq
+        9bMS0oU/KjisHgCS1b3XkChf0g==
+X-Google-Smtp-Source: ABdhPJw1Sm+RU38Ee1daea/JwTDtshnGfEbZdRpC2dQ6WKLjwdjbEONVXnXgFxZI3rHD0jS0MNhz8A==
+X-Received: by 2002:a05:6512:1519:: with SMTP id bq25mr10006379lfb.326.1643192092592;
+        Wed, 26 Jan 2022 02:14:52 -0800 (PST)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id h13sm1351906lfv.100.2022.01.26.02.14.50
+        by smtp.gmail.com with ESMTPSA id h13sm1351906lfv.100.2022.01.26.02.14.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 02:14:50 -0800 (PST)
+        Wed, 26 Jan 2022 02:14:52 -0800 (PST)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+Cc:     netdev@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Markus Koch <markus@notsyncing.net>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/5] net/fsl: xgmac_mdio: Use managed device resources
-Date:   Wed, 26 Jan 2022 11:14:29 +0100
-Message-Id: <20220126101432.822818-3-tobias@waldekranz.com>
+Subject: [PATCH net-next 3/5] net/fsl: xgmac_mdio: Support preamble suppression
+Date:   Wed, 26 Jan 2022 11:14:30 +0100
+Message-Id: <20220126101432.822818-4-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220126101432.822818-1-tobias@waldekranz.com>
 References: <20220126101432.822818-1-tobias@waldekranz.com>
@@ -67,88 +67,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All of the resources used by this driver has managed interfaces, so
-use them. Heed the warning in the comment before platform_get_resource
-and use a bare devm_ioremap to allow for non-exclusive access to the
-IO memory.
+Support the standard "suppress-preamble" attribute to disable preamble
+generation.
 
 Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- drivers/net/ethernet/freescale/xgmac_mdio.c | 35 ++++-----------------
- 1 file changed, 6 insertions(+), 29 deletions(-)
+ drivers/net/ethernet/freescale/xgmac_mdio.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
 diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
-index 266e562bd67a..40442d64a247 100644
+index 40442d64a247..18bf2370d45a 100644
 --- a/drivers/net/ethernet/freescale/xgmac_mdio.c
 +++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
-@@ -273,7 +273,7 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
- 
--	bus = mdiobus_alloc_size(sizeof(struct mdio_fsl_priv));
-+	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(struct mdio_fsl_priv));
- 	if (!bus)
- 		return -ENOMEM;
- 
-@@ -284,13 +284,11 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
- 	bus->probe_capabilities = MDIOBUS_C22_C45;
- 	snprintf(bus->id, MII_BUS_ID_SIZE, "%pa", &res->start);
- 
--	/* Set the PHY base address */
- 	priv = bus->priv;
--	priv->mdio_base = ioremap(res->start, resource_size(res));
--	if (!priv->mdio_base) {
--		ret = -ENOMEM;
--		goto err_ioremap;
--	}
-+	priv->mdio_base = devm_ioremap(&pdev->dev, res->start,
-+				       resource_size(res));
-+	if (IS_ERR(priv->mdio_base))
-+		return PTR_ERR(priv->mdio_base);
- 
- 	/* For both ACPI and DT cases, endianness of MDIO controller
- 	 * needs to be specified using "little-endian" property.
-@@ -312,31 +310,11 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
- 		ret = -EINVAL;
- 	if (ret) {
- 		dev_err(&pdev->dev, "cannot register MDIO bus\n");
--		goto err_registration;
-+		return ret;
- 	}
- 
- 	platform_set_drvdata(pdev, bus);
- 
--	return 0;
--
--err_registration:
--	iounmap(priv->mdio_base);
--
--err_ioremap:
--	mdiobus_free(bus);
--
--	return ret;
--}
--
--static int xgmac_mdio_remove(struct platform_device *pdev)
--{
--	struct mii_bus *bus = platform_get_drvdata(pdev);
--	struct mdio_fsl_priv *priv = bus->priv;
--
--	mdiobus_unregister(bus);
--	iounmap(priv->mdio_base);
--	mdiobus_free(bus);
--
- 	return 0;
+@@ -39,6 +39,7 @@ struct tgec_mdio_controller {
+ #define MDIO_STAT_CLKDIV(x)	(((x>>1) & 0xff) << 8)
+ #define MDIO_STAT_BSY		BIT(0)
+ #define MDIO_STAT_RD_ER		BIT(1)
++#define MDIO_STAT_PRE_DIS	BIT(5)
+ #define MDIO_CTL_DEV_ADDR(x) 	(x & 0x1f)
+ #define MDIO_CTL_PORT_ADDR(x)	((x & 0x1f) << 5)
+ #define MDIO_CTL_PRE_DIS	BIT(10)
+@@ -254,6 +255,21 @@ static int xgmac_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+ 	return ret;
  }
  
-@@ -364,7 +342,6 @@ static struct platform_driver xgmac_mdio_driver = {
- 		.acpi_match_table = xgmac_acpi_match,
- 	},
- 	.probe = xgmac_mdio_probe,
--	.remove = xgmac_mdio_remove,
- };
++static void xgmac_mdio_set_suppress_preamble(struct mii_bus *bus)
++{
++	struct mdio_fsl_priv *priv = (struct mdio_fsl_priv *)bus->priv;
++	struct tgec_mdio_controller __iomem *regs = priv->mdio_base;
++	struct device *dev = bus->parent;
++	u32 mdio_stat;
++
++	if (!device_property_read_bool(dev, "suppress-preamble"))
++		return;
++
++	mdio_stat = xgmac_read32(&regs->mdio_stat, priv->is_little_endian);
++	mdio_stat |= MDIO_STAT_PRE_DIS;
++	xgmac_write32(mdio_stat, &regs->mdio_stat, priv->is_little_endian);
++}
++
+ static int xgmac_mdio_probe(struct platform_device *pdev)
+ {
+ 	struct fwnode_handle *fwnode;
+@@ -301,6 +317,8 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
+ 	priv->has_a011043 = device_property_read_bool(&pdev->dev,
+ 						      "fsl,erratum-a011043");
  
- module_platform_driver(xgmac_mdio_driver);
++	xgmac_mdio_set_suppress_preamble(bus);
++
+ 	fwnode = pdev->dev.fwnode;
+ 	if (is_of_node(fwnode))
+ 		ret = of_mdiobus_register(bus, to_of_node(fwnode));
 -- 
 2.25.1
 
