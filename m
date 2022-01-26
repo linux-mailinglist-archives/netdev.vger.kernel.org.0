@@ -2,98 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB7A949D5BD
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 23:53:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DD6D49D5C0
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 23:54:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232030AbiAZWxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 17:53:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35176 "EHLO
+        id S231213AbiAZWyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 17:54:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232064AbiAZWxc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 17:53:32 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6542C06161C
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:53:32 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id g9-20020a17090a67c900b001b4f1d71e4fso1022182pjm.4
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:53:32 -0800 (PST)
+        with ESMTP id S229882AbiAZWyX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 17:54:23 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784CEC06161C;
+        Wed, 26 Jan 2022 14:54:22 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id a13so1479428wrh.9;
+        Wed, 26 Jan 2022 14:54:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jmylYnPW0itqk7X3kALZZJzsAaqdNt+3di958skR0YI=;
-        b=PHqUwsaNVoleX6lM8/jK8bmNbOWlq2er+xvJuFqzw6iPanil4hooAU8qxSxIqs3gnx
-         yD9wnS+rsC5aOFii+X674igUsl6mXFK8bCd/0xiCKcYur8FlJGVHBVZctdKSCdJgYe1x
-         5UnYTJIOx7UZVbzQCFMMs6OhpI24L0xOF/rR4=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PO1dIhcK60bQr+pge6rKhddGGc1Umwp4/+oDuyEDXSI=;
+        b=ZFzTBZzbOAtfDtGH4MBTICabaIhl1FSZqzEAkUCFUnUvRzrP+/g5GdCqvKhh5QOBsb
+         qOpyRjIoR6YKO2j19K4wzAeRnvncXocI3MUJo5esQpKhk/hYQE4XMLNOvAn1Bm8QQhbx
+         rjc+5L/ZnwlRL/zT244lIyFOu4t88MVBENgDc1s1d22Ht3Rce9PwN784jEmrdORJHMRV
+         UMwt1BEJkhLdh+40qFoYXesj21d2Bx+AYj/7cPz+npnjsLOHSs7psKiZVsJPW7lwHIrn
+         o4tY9O2Nasr1gfaz0IxFybokJlEMaVPI8vdrt4QIVg6XfiunFEoMSwQNLEtqDg8h0T9c
+         XoHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jmylYnPW0itqk7X3kALZZJzsAaqdNt+3di958skR0YI=;
-        b=vzDdvE0amkrfJQcFHpfMria2UfdrwG2aMbHL7jGp1gnR2EwdDq+0yDSuu+0PRAMW21
-         xlGOv61dO+g43HaxJxeeM/6pMy0JbjAN1hc4ZVUtdvMZWa49yGewpRbSBdZ8mB2hQgn8
-         Yre3TW5Tm0KCX478WZbIwAzJbd5FiBgJcMuN/Qj8K0GTaZgTaeNEbt6bNnS2TUojlFp/
-         xVyxTQZPOx+RYqFiaxNUEthaLiI1Y2+ppo4NNM8QkHMknistgo0DlS2ayEB1L4EQWpAg
-         DbX9dhr2qG7tqgTP6oR+pXiUtegSEunl+WLWhRzTmbSfP20x5Pi3pQ3C6aGnSXCRyPIY
-         izlg==
-X-Gm-Message-State: AOAM532E3FycWUbvrZT9Wg5hQZgO+kbnSPfsvpPORh3jPaPH8EUNU0kD
-        1C5ohMa8n9WKJSxmXbrKMscYuA==
-X-Google-Smtp-Source: ABdhPJz0naa97lzLP+/kLQLkxJiIfooOGk727zm3c6gKvGHG1g4Up7tKbetD2ZS99Jox6VBbC04MAw==
-X-Received: by 2002:a17:90b:3852:: with SMTP id nl18mr10993180pjb.228.1643237612205;
-        Wed, 26 Jan 2022 14:53:32 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id b14sm3246409pfm.17.2022.01.26.14.53.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 14:53:31 -0800 (PST)
-Date:   Wed, 26 Jan 2022 14:53:31 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH RESEND] net/mlx5e: Use struct_group() for memcpy() region
-Message-ID: <202201261452.97A809BE9C@keescook>
-References: <20220124172242.2410996-1-keescook@chromium.org>
- <20220126212854.6gxffia7vj6cbtbh@sx1>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PO1dIhcK60bQr+pge6rKhddGGc1Umwp4/+oDuyEDXSI=;
+        b=jyrY/apob9sv214Hu3If1bApsEN5wBy/09nYoiJdxd0aGhv2plWpqZE2KOGRXMx5qi
+         x02yu3LAvqWXo8QJIVj3VHbi9hMYaE00XeMqbfrEABwpT0cJppn9i78omm+YjToi8MAK
+         gneU/ubcTG6XPxAkeq1x+btUkGc6gbNzdhXhg0y6Z+sChGOoYxQlVtVrqTp4RH3rTmg1
+         K40bI0WjGXCEINDObpt/1SO1tzjVF9kXPjpIBebDdvL0ZuTJh0fs0b5HNhqETk4sCYwe
+         p+s29NHl0euG018WtvOybLPjMNg1jAk0XvJTGspNl0E/3RpPDnpb/bNEK/sefx/0+skK
+         B9Dg==
+X-Gm-Message-State: AOAM530nWLYfjrj9/aB418SfhzCwj7GJUPzdhzFxBpX/KcrYPWDd6NOD
+        0J0yqPdmWLUBJSLGTD717n2t+l3W4ER9ObjsV6tjInzYu50=
+X-Google-Smtp-Source: ABdhPJyv0J32NQEuhg3Bnxr+Dsw0ak4P+L+cAPmuyZibn+/XjzX+cnEJrSWpd5sKtbI+vCeDtz5niG06i1jImqp1kHE=
+X-Received: by 2002:adf:cc88:: with SMTP id p8mr590930wrj.207.1643237660944;
+ Wed, 26 Jan 2022 14:54:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126212854.6gxffia7vj6cbtbh@sx1>
+References: <20220125121426.848337-1-miquel.raynal@bootlin.com>
+ <20220125121426.848337-2-miquel.raynal@bootlin.com> <d3cab1bb-184d-73f9-7bd8-8eefc5e7e70c@datenfreihafen.org>
+ <20220125174849.31501317@xps13> <89726c29-bf7d-eaf1-2af0-da1914741bec@datenfreihafen.org>
+In-Reply-To: <89726c29-bf7d-eaf1-2af0-da1914741bec@datenfreihafen.org>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Wed, 26 Jan 2022 17:54:09 -0500
+Message-ID: <CAB_54W4TGvLeXdKLpxDwTrt4a19WPtSWDXq7kX4i-Ypd6euLnQ@mail.gmail.com>
+Subject: Re: [wpan v3 1/6] net: ieee802154: hwsim: Ensure proper channel
+ selection at probe time
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 01:28:54PM -0800, Saeed Mahameed wrote:
-> On 24 Jan 09:22, Kees Cook wrote:
-> > In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> > field bounds checking for memcpy(), memmove(), and memset(), avoid
-> > intentionally writing across neighboring fields.
-> > 
-> > Use struct_group() in struct vlan_ethhdr around members h_dest and
-> > h_source, so they can be referenced together. This will allow memcpy()
-> > and sizeof() to more easily reason about sizes, improve readability,
-> > and avoid future warnings about writing beyond the end of h_dest.
-> > 
-> > "pahole" shows no size nor member offset changes to struct vlan_ethhdr.
-> > "objdump -d" shows no object code changes.
-> > 
-> > Cc: Saeed Mahameed <saeedm@nvidia.com>
-> > Cc: Leon Romanovsky <leon@kernel.org>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: netdev@vger.kernel.org
-> > Cc: linux-rdma@vger.kernel.org
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > ---
-> > Since this results in no binary differences, I will carry this in my tree
-> > unless someone else wants to pick it up. It's one of the last remaining
-> > clean-ups needed for the next step in memcpy() hardening.
-> > ---
-> 
-> applied to net-next-mlx5
+Hi,
 
-Thanks! How often does net-next-mlx5 flush into net-next?
+On Wed, Jan 26, 2022 at 8:38 AM Stefan Schmidt
+<stefan@datenfreihafen.org> wrote:
+>
+>
+> Hello.
+>
+> On 25.01.22 17:48, Miquel Raynal wrote:
+> > Hi Stefan,
+> >
+> > stefan@datenfreihafen.org wrote on Tue, 25 Jan 2022 15:28:11 +0100:
+> >
+> >> Hello.
+> >>
+> >> On 25.01.22 13:14, Miquel Raynal wrote:
+> >>> Drivers are expected to set the PHY current_channel and current_page
+> >>> according to their default state. The hwsim driver is advertising being
+> >>> configured on channel 13 by default but that is not reflected in its own
+> >>> internal pib structure. In order to ensure that this driver consider the
+> >>> current channel as being 13 internally, we at least need to set the
+> >>> pib->channel field to 13.
+> >>>
+> >>> Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
+> >>> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> >>> ---
+> >>>    drivers/net/ieee802154/mac802154_hwsim.c | 1 +
+> >>>    1 file changed, 1 insertion(+)
+> >>>
+> >>> diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
+> >>> index 8caa61ec718f..00ec188a3257 100644
+> >>> --- a/drivers/net/ieee802154/mac802154_hwsim.c
+> >>> +++ b/drivers/net/ieee802154/mac802154_hwsim.c
+> >>> @@ -786,6 +786,7 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
+> >>>             goto err_pib;
+> >>>     }
+> >>>    > +      pib->page = 13;
+> >>
+> >> You want to set channel not page here.
+> >
+> > Oh crap /o\ I've messed that update badly. Of course I meant
+> > pib->channel here, as it is in the commit log.
+> >
+> > I'll wait for Alexander's feedback before re-spinning. Unless the rest
+> > looks good for you both, I don't know if your policy allows you to fix
+> > it when applying, anyhow I'll do what is necessary.
+>
+> If Alex has nothing else and there is no re-spin I fix this when
+> applying, no worries.
 
--- 
-Kees Cook
+Everything is fine.
+
+Acked-by: Alexander Aring <aahringo@redhat.com>
+
+On the whole series. Thanks.
+
+- Alex
