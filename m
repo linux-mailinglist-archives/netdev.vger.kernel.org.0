@@ -2,70 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56E6549C237
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 04:40:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6715449C23B
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 04:42:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232305AbiAZDkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 22:40:42 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57294 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230085AbiAZDkm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 22:40:42 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 053ACB81BAA;
-        Wed, 26 Jan 2022 03:40:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68B31C340E3;
-        Wed, 26 Jan 2022 03:40:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643168439;
-        bh=YILwlodCyd4mdH5DL4bOcMKvZ745VRwUzzjYehTweJ0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=b2ywctUMiZxNPwLdRX94rGjTss4FNogBgcpctz7UZGex59ZECtuAheH6P3tkitkC+
-         6EsGv2IsdX4ns8jcim7ao56cBbOF+ffvhEqLFg9uDuAXIZ2I8ViWdNENAKk2ikeDMP
-         xbmwiYST2aqX06zI9rUx6c4Oj0+NzT+zGJT9OIoRH+SsuBrX3T19kOfzmK3A1+e/fI
-         rFsJAt+/JuTTv4AzPhvC72v9uqgtJrnpeEuHMLuNG05Pbm+HauhS8XZFCytzC6EZCn
-         Lwm4TIc9/SolMY5aGrqfhnCXqB8iKqijr+EqEcJ+RGxPumv+ucypOBHaIWP4dlh6aT
-         BEZo20uNoHpcg==
-Date:   Tue, 25 Jan 2022 19:40:38 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jisheng Zhang <jszhang@kernel.org>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: stmmac: don't stop RXC during LPI
-Message-ID: <20220125194038.4bfa2007@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220123141245.1060-1-jszhang@kernel.org>
-References: <20220123141245.1060-1-jszhang@kernel.org>
+        id S233343AbiAZDmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 22:42:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237249AbiAZDmj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 22:42:39 -0500
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777BFC06161C;
+        Tue, 25 Jan 2022 19:42:39 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id i30so2814884pfk.8;
+        Tue, 25 Jan 2022 19:42:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=K1WyeGYezne19214IRAQWvSDltEgxn3XDoQpdetw7bg=;
+        b=DsGAPtTFGfvOA61xg0f3nJvleU3CpPPq9W1cxQ5EwZXY8BOCe+QPNDLz8penIEiS+8
+         YZ7w+f5NaSpZ6Rd+lnwNrWcZFF3F8Jb3f8PcSttTe5OM12y5Ib1BGSaT0XYnrp02Ebin
+         YLjEjY+WSe91T8Mm0IROphypxUbDwozg8GYqMyMDSvN9uno+fAJA/0ex8+7X9KdMDDiD
+         6WlBSAHHUtcPQgRVxZHEQPTKOaInkl2d8RV9S8u9AT9h/ZG7+j5lAwYtbnXFdGzdKVf2
+         cJxcsj7azL/bFMtRgU2xUe0QLz6Mm7XDo4bnuHtfZ9vSrd81ySvVLjyC+fqAlrdHGlrV
+         0fSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=K1WyeGYezne19214IRAQWvSDltEgxn3XDoQpdetw7bg=;
+        b=j0Dyt3ldRueZCewn7eTXjNkCkgNDWubOGAZdZaBTvs2lgOZknMwgXTIl4BMB5Dr4Zg
+         es3o2ueVCYCIf2iRAVny98dIcKTyeWXRjVfFlFpKIAUyZmgAjTAbPaH8/OifKVJN7BAP
+         q9kxz6U3aQ4bzSYBfz45EWD2hvpbsRfqqHrEVRiSJDTChWv3fca8wU3JsnF0OrdpJhDb
+         OyhAVVLHcnYgB/RvztMF3UlErFbE7Y3EyrbnpCmWMPPdonj3GWkhE6Smsrgnd1mNPbFS
+         j7dtgxtXuDA8vG+ni1DFWfJTg3cgoMLloq7gE+mwbYUYnOKi552aTipoL8WPdsjd/LLo
+         lSLA==
+X-Gm-Message-State: AOAM531gQXGeRTEWOT9IdTpk9chWwtw7HY1p0C3AU0vQLum7fD1oW2sB
+        1gctGUQDez8PxXMSYgdRlPw=
+X-Google-Smtp-Source: ABdhPJzl+/Yfm34IakLL/o9t/S/HumPeC6qSszNbPmuOFWiiVFyQs+hhAtl6LCCGwZMRyHScubFQrQ==
+X-Received: by 2002:a05:6a00:14c9:b0:4c7:f5db:5bd7 with SMTP id w9-20020a056a0014c900b004c7f5db5bd7mr15772616pfu.46.1643168558977;
+        Tue, 25 Jan 2022 19:42:38 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id n2sm15670408pga.39.2022.01.25.19.42.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 19:42:38 -0800 (PST)
+Message-ID: <e8a1ed56-ba04-45bf-8e89-3404ae1b3239@gmail.com>
+Date:   Tue, 25 Jan 2022 19:42:36 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH v7 14/16] net: dsa: qca8k: cache lo and hi for mdio
+ write
+Content-Language: en-US
+To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220123013337.20945-1-ansuelsmth@gmail.com>
+ <20220123013337.20945-15-ansuelsmth@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220123013337.20945-15-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 23 Jan 2022 22:12:45 +0800 Jisheng Zhang wrote:
-> I met can't receive rx pkt issue with below steps:
-> 0.plug in ethernet cable then boot normal and get ip from dhcp server
-> 1.quickly hotplug out then hotplug in the ethernet cable
-> 2.trigger the dhcp client to renew lease
-> 
-> tcpdump shows that the request tx pkt is sent out successfully,
-> but the mac can't receive the rx pkt.
-> 
-> The issue can easily be reproduced on platforms with PHY_POLL external
-> phy. If we don't allow the phy to stop the RXC during LPI, the issue
-> is gone. I think it's unsafe to stop the RXC during LPI because the mac
-> needs RXC clock to support RX logic.
-> 
-> And the 2nd param clk_stop_enable of phy_init_eee() is a bool, so use
-> false instead of 0.
 
-FWIW this is marked Changes Requested in pw, TBH I'm not sure what 
-the conclusion is but if the patch is good please try to fold the
-information requested in the discussion into the commit msg and repost.
+
+On 1/22/2022 5:33 PM, Ansuel Smith wrote:
+>  From Documentation, we can cache lo and hi the same way we do with the
+> page. This massively reduce the mdio write as 3/4 of the time as we only
+> require to write the lo or hi part for a mdio write.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
