@@ -2,110 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A52C49CAFC
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 14:38:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FE9849CB0A
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 14:41:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235155AbiAZNiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 08:38:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46346 "EHLO
+        id S233948AbiAZNlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 08:41:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240383AbiAZNiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 08:38:06 -0500
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF70FC061755;
-        Wed, 26 Jan 2022 05:38:05 -0800 (PST)
-Received: from [IPV6:2003:e9:d72b:2eaa:447d:e748:10d2:36ed] (p200300e9d72b2eaa447de74810d236ed.dip0.t-ipconnect.de [IPv6:2003:e9:d72b:2eaa:447d:e748:10d2:36ed])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id A9EE3C038E;
-        Wed, 26 Jan 2022 14:38:02 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1643204282;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wbNKPmgJEiNFOnTRv+PLwEdswWmhQgNJusEBa/wyE0M=;
-        b=pd+V5CoQurY2v68KBDCVsqSOuMIwbwyBMVrgM+N+Cqgi35vCJoKo81V2j/dc1Suto6u/Pt
-        0yJXd348d3eVCG3ff5aXymhYMeEizfjTejLbmGe6FFXmjbTjsOCbplur3v5r26zbl3rz3U
-        IUTkoS1IGVW9BP//i4BDyCFRiWgFlWybBtbxPHogDIXR7j1LB1HCrET0LKcGqVbcM4btQK
-        8nNe3MXXMZkXGa6epQ6j4aU1aJGe4dFMMFyW7qlWKJ2yNP49iCdweB/ACfdEhXApgD5vAH
-        fbXajcknO3dMWVUoaYIfYlhKd6nmW9FCeGjLp6NmMwHXlllqIdLRBfLRciDbfg==
-Message-ID: <89726c29-bf7d-eaf1-2af0-da1914741bec@datenfreihafen.org>
-Date:   Wed, 26 Jan 2022 14:38:02 +0100
+        with ESMTP id S231530AbiAZNlT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 08:41:19 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E54C06161C
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 05:41:18 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id c23so10184895wrb.5
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 05:41:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7+N71zg3iuUOoYIsjVL8hKct1j2esLviVDD9dzeBwNo=;
+        b=7J7paDx2alOxVr9gUMdlMUbgAQcRfEaNJXFEJjMinn2FV0q0DYev6UJ40OO7W5biW0
+         nEFZsciaOZRWDrB3MxCMt9ib/e6hoFmWgl8phYRMsNVPqGK8fprUv86k8FEofjUyj5rH
+         cUV99sUmkXcZ7sUmW8JgN5Mu8TItB36HBjeTsFjaussT3ZmI4MGb/6EHZ1pIR/DBkFuR
+         f3YtseGZZHTvP9IEOXkSUnJjzwlWGrZBvbc2KYUF6zy4bGRmYhZi0flbXmDUwHdM9QsU
+         Yw6/YmTOe61eOs+2nvawCbnW+pjchF9HN3NabZ8Vb+QEgkqLdC25ecvO3B6CmDu0KGbe
+         syVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7+N71zg3iuUOoYIsjVL8hKct1j2esLviVDD9dzeBwNo=;
+        b=1kXVZVjaJ0lL3Yd+OiskZPqb7FjPNa3tQvRRFYO4dHRNg1tflfxBIVJBY1v+3a/kHr
+         /Z9+oq8bYUmwlWZmE56vDa3J9MW3VwCna9EpXbxBGdlRzGKNFecNij06ESt9cwLAW8aG
+         ikCwTufvFFXYieTE4DQqMaUnfMshT1GqR6z5NrcZ0FQHqbJr6ciWI6MhfSctaTP/rm1a
+         0f8Y3q0eySJgVgT+MEUDTl40LFt6HmFWhx9SF2JwtTSSC4fHXkIjjhiOtcQL4ycliXQy
+         oevWPgOvYpmKNN1y0gOUuYR12UGRPfIP17iYswpJITBb2geRQeZ0X3Vy4MIQZfptedX1
+         Mgsw==
+X-Gm-Message-State: AOAM532x+ozX8qmaFbYQWS1aWf/fK/mfiuzBLclh1OhRFvbDA8gQNa5O
+        Hr5YI3SZieNVG1CnSDmaeMqIx/ckBoo+zLiKLOtgOowt8CllTeazVSE=
+X-Google-Smtp-Source: ABdhPJxPgl7c+i1X0PaOqzq1D5Bor+SophR6piOsgz90JeRMQchwcKKQ2qC1vgW+4wibvPn3pM9ndthtSsrnk9BP4Uo=
+X-Received: by 2002:adf:edcf:: with SMTP id v15mr22536921wro.501.1643204477360;
+ Wed, 26 Jan 2022 05:41:17 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [wpan v3 1/6] net: ieee802154: hwsim: Ensure proper channel
- selection at probe time
-Content-Language: en-US
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>, linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-References: <20220125121426.848337-1-miquel.raynal@bootlin.com>
- <20220125121426.848337-2-miquel.raynal@bootlin.com>
- <d3cab1bb-184d-73f9-7bd8-8eefc5e7e70c@datenfreihafen.org>
- <20220125174849.31501317@xps13>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220125174849.31501317@xps13>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <1643180079-17097-1-git-send-email-baowen.zheng@corigine.com>
+In-Reply-To: <1643180079-17097-1-git-send-email-baowen.zheng@corigine.com>
+From:   Victor Nogueira <victor@mojatatu.com>
+Date:   Wed, 26 Jan 2022 10:41:06 -0300
+Message-ID: <CA+NMeC_RKJXwbpjejTXKViUzUjDi0N-ZKoSa9fun=ySfThV5gA@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next v2] tc: add skip_hw and skip_sw to control
+ action offload
+To:     Baowen Zheng <baowen.zheng@corigine.com>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Simon Horman <simon.horman@corigine.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jan 26, 2022 at 3:55 AM Baowen Zheng <baowen.zheng@corigine.com> wrote:
+>
+> Add skip_hw and skip_sw flags for user to control whether
+> offload action to hardware.
+>
+> Also we add hw_count to show how many hardwares accept to offload
+> the action.
+>
+> Change man page to describe the usage of skip_sw and skip_hw flag.
+>
+> An example to add and query action as below.
+>
+> $ tc actions add action police rate 1mbit burst 100k index 100 skip_sw
+>
+> $ tc -s -d actions list action police
+> total acts 1
+>     action order 0:  police 0x64 rate 1Mbit burst 100Kb mtu 2Kb action reclassify overhead 0b linklayer ethernet
+>     ref 1 bind 0  installed 2 sec used 2 sec
+>     Action statistics:
+>     Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>     backlog 0b 0p requeues 0
+>     skip_sw in_hw in_hw_count 1
+>     used_hw_stats delayed
+>
+> Signed-off-by: baowen zheng <baowen.zheng@corigine.com>
+> Signed-off-by: Simon Horman <simon.horman@corigine.com>
 
-Hello.
-
-On 25.01.22 17:48, Miquel Raynal wrote:
-> Hi Stefan,
-> 
-> stefan@datenfreihafen.org wrote on Tue, 25 Jan 2022 15:28:11 +0100:
-> 
->> Hello.
->>
->> On 25.01.22 13:14, Miquel Raynal wrote:
->>> Drivers are expected to set the PHY current_channel and current_page
->>> according to their default state. The hwsim driver is advertising being
->>> configured on channel 13 by default but that is not reflected in its own
->>> internal pib structure. In order to ensure that this driver consider the
->>> current channel as being 13 internally, we at least need to set the
->>> pib->channel field to 13.
->>>
->>> Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
->>> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
->>> ---
->>>    drivers/net/ieee802154/mac802154_hwsim.c | 1 +
->>>    1 file changed, 1 insertion(+)
->>>
->>> diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
->>> index 8caa61ec718f..00ec188a3257 100644
->>> --- a/drivers/net/ieee802154/mac802154_hwsim.c
->>> +++ b/drivers/net/ieee802154/mac802154_hwsim.c
->>> @@ -786,6 +786,7 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
->>>    		goto err_pib;
->>>    	}
->>>    > +	pib->page = 13;
->>
->> You want to set channel not page here.
-> 
-> Oh crap /o\ I've messed that update badly. Of course I meant
-> pib->channel here, as it is in the commit log.
-> 
-> I'll wait for Alexander's feedback before re-spinning. Unless the rest
-> looks good for you both, I don't know if your policy allows you to fix
-> it when applying, anyhow I'll do what is necessary.
-
-If Alex has nothing else and there is no re-spin I fix this when 
-applying, no worries.
-
-regards
-Stefan Schmidt
+I applied this version, tested it and can confirm the breakage in tdc is gone.
+Tested-by: Victor Nogueira <victor@mojatatu.com>
