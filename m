@@ -2,168 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 010DA49C25B
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 04:57:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAF7049C25D
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 04:58:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237392AbiAZD5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 22:57:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53710 "EHLO
+        id S237404AbiAZD6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 22:58:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237380AbiAZD5O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 22:57:14 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB8EC06161C;
-        Tue, 25 Jan 2022 19:57:14 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id w190so15391468pfw.7;
-        Tue, 25 Jan 2022 19:57:14 -0800 (PST)
+        with ESMTP id S235579AbiAZD6A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 22:58:00 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB530C06161C;
+        Tue, 25 Jan 2022 19:57:59 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id p12so66973368edq.9;
+        Tue, 25 Jan 2022 19:57:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=YV1zTxzK/cL80YKh5C7Q+2qU/mN/EUwAAXT6OGx6VQc=;
-        b=IMl1VzH/GwBMc+2r/CP5K7NMsuoyzlpL8Yozj1pJypKFAfUGkv6VVeoxF8t3I/433t
-         ATP5/a/gURAVJ1+v35RAAD+iUSVcnpiFXDOR1SNqptMLBIELCD3RNsC5jfDICGdGc8TT
-         IZ+RjMGDFiqWCtSitgY7wQJUccRTdCceJIiSTsioSM6bK+yxKaPvKhFqBUJ8r6l2mBC3
-         sCA7lbc1sXjBJ6RePqMZ6H7daMbnZh7Cg1MxBHbmMIxaroJb/SXTjAAGjphSuxvnPjdC
-         +Sn0v089fmaO4C1xqCWcp+ZrOug+NOk9zET7dPPu65QUWIxw+yUyroZ86HFrJ9UGpw0q
-         UIxg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KP4uWq0QeOW5Ia4UP5ZJMtL4L9PQT08IZKjbYTw6HS4=;
+        b=a5nHgAbGuHdsDvalV3ulYVHh+F1AkBi7D4xvdgo8vjgBGDBNpMeEZ7Kh1rO27nGlJR
+         mb5ahifZdue9eehkIJvAlubM1bMvEvUK/VMW/5SfD4hKgA/+wM34ZxK0NPSvzt8cZMTs
+         Bgzh8y3w9SPZM07C+qImpZH0kTJQIS7GcFki1pSC7lGoNh2G2KzCpdpmgSLGACMmQADV
+         MB9OTWR+KPbx75eAlRzInn10FKzhjN1G7W0azz/anZcDTp0mjRT1mAMLdH53oDCPLzM8
+         El4G5GP1KHrjHOLi6yIBlQKPHgXZMp9jr+UBd5YtcEWHnOMRag/c9GYsR812NRm1BMlO
+         6c5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YV1zTxzK/cL80YKh5C7Q+2qU/mN/EUwAAXT6OGx6VQc=;
-        b=V4NTRcHi1Suy2/XO5Ytoe7G0CEjikfb5hxiwHREtB2rvkW9SlG/63YQuQwlzivmqWh
-         0CoB/YIurZMevWtgD/auJ6JEuh0oSrmjZmaalMFpA8hU8K1SmyDLAF69l2AbcLEEuBuR
-         zKNf3Nnu6NQg4qLjmI5HcC48GPhV7kW5lgh9BwpvyqoOGrPTnSa8RWA6q6b5IdgY0eGA
-         xj7dz0CjE2ogF9h6ITDNR1zPLrD0WecXqu8jcR+lYV7pR7ANYy6ELq4UtXn+C7/tvdh9
-         Bmiw3zkkL1e3QM+RNcuUDcicb4kiEZ19tJFs32MPbRqJa0LjKQqmb0LVDS4l5aYKqzFY
-         w/Hw==
-X-Gm-Message-State: AOAM533RQyaXFQZ/Bwl4GJPAbUV2/Ub2Iw4V2dmRWF7tmlLRt/m0z39T
-        ZgO6DhKA2i4sky5EOzm25y8=
-X-Google-Smtp-Source: ABdhPJxoMcbeHTERBg3AEQZqz2BnaL3IosjmeGG9n3aZMtsZ4opUmRFfem7PHjxh2QYk5jQxnFVdmw==
-X-Received: by 2002:a63:6b85:: with SMTP id g127mr17257525pgc.409.1643169433963;
-        Tue, 25 Jan 2022 19:57:13 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id y42sm482786pfa.5.2022.01.25.19.57.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 19:57:13 -0800 (PST)
-Message-ID: <b5d362d1-3b08-73bf-d8ac-712cfe953569@gmail.com>
-Date:   Tue, 25 Jan 2022 19:57:11 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC PATCH v7 06/16] net: dsa: tag_qca: add define for handling
- mgmt Ethernet packet
-Content-Language: en-US
-To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KP4uWq0QeOW5Ia4UP5ZJMtL4L9PQT08IZKjbYTw6HS4=;
+        b=ii5kGNDq/9agV6ZlZHXbvypyJizDptPUGAXlzB5wa34XQuUhpgbAT+yBTjmwreRsFQ
+         xpIj6KzVDdzzEGQ+tmga9nvC8pd8lpHBMU5LZNjS7zeuJ6dgl1QQbfoyTnAYeTZLcgvO
+         eHoFRCL0gDW0zq3A3D8K2l8jc+dzORqMjHP33VotNcfCOterb8VQuSjCQRwy64gamW55
+         SHEChxPEAHjfvdSGsK29QwBklPSUWACKXBThKIts+h68ByFPMX7ehX3QJoPxl/i9HOZX
+         6BrOHHED9k74ABVMYYh1wJSQ56wAFQoWkzGZ1T2RnnkNrAJXov4rSPA2GB+o0HDADcQQ
+         LE2w==
+X-Gm-Message-State: AOAM531/StTOl547P3UdMxAF3qF6ewJGuV9HuyNsdp+dyGtViq+nIxF3
+        KBpajyblcC9yWdkFISsMVbE=
+X-Google-Smtp-Source: ABdhPJxhF1UcSBfLkC/26usZ4e4zApS3y0H2vFkMmUbqAL+fTo2jr7YLh5XCDnTbl+wbJr1DInQc4w==
+X-Received: by 2002:a05:6402:2294:: with SMTP id cw20mr23332046edb.178.1643169478148;
+        Tue, 25 Jan 2022 19:57:58 -0800 (PST)
+Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id fh23sm6940036ejc.176.2022.01.25.19.57.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jan 2022 19:57:57 -0800 (PST)
+Date:   Wed, 26 Jan 2022 04:57:56 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
+Subject: Re: [RFC PATCH v7 15/16] net: da: qca8k: add support for larger
+ read/write size with mgmt Ethernet
+Message-ID: <YfDGxIKzvGlZnltP@Ansuel-xps.localdomain>
 References: <20220123013337.20945-1-ansuelsmth@gmail.com>
- <20220123013337.20945-7-ansuelsmth@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220123013337.20945-7-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ <20220123013337.20945-16-ansuelsmth@gmail.com>
+ <ce5891d1-d0ae-ba59-65ad-3ece92496c86@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ce5891d1-d0ae-ba59-65ad-3ece92496c86@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/22/2022 5:33 PM, Ansuel Smith wrote:
-> Add all the required define to prepare support for mgmt read/write in
-> Ethernet packet. Any packet of this type has to be dropped as the only
-> use of these special packet is receive ack for an mgmt write request or
-> receive data for an mgmt read request.
-> A struct is used that emulates the Ethernet header but is used for a
-> different purpose.
+On Tue, Jan 25, 2022 at 07:48:27PM -0800, Florian Fainelli wrote:
 > 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->   include/linux/dsa/tag_qca.h | 44 +++++++++++++++++++++++++++++++++++++
->   net/dsa/tag_qca.c           | 13 ++++++++---
->   2 files changed, 54 insertions(+), 3 deletions(-)
 > 
-> diff --git a/include/linux/dsa/tag_qca.h b/include/linux/dsa/tag_qca.h
-> index c02d2d39ff4a..1a02f695f3a3 100644
-> --- a/include/linux/dsa/tag_qca.h
-> +++ b/include/linux/dsa/tag_qca.h
-> @@ -12,10 +12,54 @@
->   #define QCA_HDR_RECV_FRAME_IS_TAGGED	BIT(3)
->   #define QCA_HDR_RECV_SOURCE_PORT	GENMASK(2, 0)
->   
-> +/* Packet type for recv */
-> +#define QCA_HDR_RECV_TYPE_NORMAL	0x0
-> +#define QCA_HDR_RECV_TYPE_MIB		0x1
-> +#define QCA_HDR_RECV_TYPE_RW_REG_ACK	0x2
-> +
->   #define QCA_HDR_XMIT_VERSION		GENMASK(15, 14)
->   #define QCA_HDR_XMIT_PRIORITY		GENMASK(13, 11)
->   #define QCA_HDR_XMIT_CONTROL		GENMASK(10, 8)
->   #define QCA_HDR_XMIT_FROM_CPU		BIT(7)
->   #define QCA_HDR_XMIT_DP_BIT		GENMASK(6, 0)
->   
-> +/* Packet type for xmit */
-> +#define QCA_HDR_XMIT_TYPE_NORMAL	0x0
-> +#define QCA_HDR_XMIT_TYPE_RW_REG	0x1
-> +
-> +/* Check code for a valid mgmt packet. Switch will ignore the packet
-> + * with this wrong.
-> + */
-> +#define QCA_HDR_MGMT_CHECK_CODE_VAL	0x5
-> +
-> +/* Specific define for in-band MDIO read/write with Ethernet packet */
-> +#define QCA_HDR_MGMT_SEQ_LEN		4 /* 4 byte for the seq */
-> +#define QCA_HDR_MGMT_COMMAND_LEN	4 /* 4 byte for the command */
-> +#define QCA_HDR_MGMT_DATA1_LEN		4 /* First 4 byte for the mdio data */
-> +#define QCA_HDR_MGMT_HEADER_LEN		(QCA_HDR_MGMT_SEQ_LEN + \
-> +					QCA_HDR_MGMT_COMMAND_LEN + \
-> +					QCA_HDR_MGMT_DATA1_LEN)
-> +
-> +#define QCA_HDR_MGMT_DATA2_LEN		12 /* Other 12 byte for the mdio data */
-> +#define QCA_HDR_MGMT_PADDING_LEN	34 /* Padding to reach the min Ethernet packet */
-> +
-> +#define QCA_HDR_MGMT_PKG_LEN		(QCA_HDR_MGMT_HEADER_LEN + \
-> +					QCA_HDR_LEN + \
-> +					QCA_HDR_MGMT_DATA2_LEN + \
-> +					QCA_HDR_MGMT_PADDING_LEN)
-> +
-> +#define QCA_HDR_MGMT_SEQ_NUM		GENMASK(31, 0)  /* 63, 32 */
-> +#define QCA_HDR_MGMT_CHECK_CODE		GENMASK(31, 29) /* 31, 29 */
-> +#define QCA_HDR_MGMT_CMD		BIT(28)		/* 28 */
-> +#define QCA_HDR_MGMT_LENGTH		GENMASK(23, 20) /* 23, 20 */
-> +#define QCA_HDR_MGMT_ADDR		GENMASK(18, 0)  /* 18, 0 */
-> +
-> +/* Special struct emulating a Ethernet header */
-> +struct mgmt_ethhdr {
-> +	u32 command;		/* command bit 31:0 */
-> +	u32 seq;		/* seq 63:32 */
-> +	u32 mdio_data;		/* first 4byte mdio */
-> +	__be16 hdr;		/* qca hdr */
-> +} __packed;
-> +
->   #endif /* __TAG_QCA_H */
-> diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
-> index f8df49d5956f..c57d6e1a0c0c 100644
-> --- a/net/dsa/tag_qca.c
-> +++ b/net/dsa/tag_qca.c
-> @@ -32,10 +32,10 @@ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
->   
->   static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
->   {
-> -	u8 ver;
-> -	u16  hdr;
-> -	int port;
-> +	u16 hdr, pk_type;
+> On 1/22/2022 5:33 PM, Ansuel Smith wrote:
+> > mgmt Ethernet packet can read/write up to 16byte at times. The len reg
+> > is limited to 15 (0xf). The switch actually sends and accepts data in 4
+> > different steps of len values.
+> > Len steps:
+> > - 0: nothing
+> > - 1-4: first 4 byte
+> > - 5-6: first 12 byte
+> > - 7-15: all 16 byte
+> 
+> This is really odd, it almost felt like the length was a byte enable
+> bitmask, but it is not?
+>
 
-Should pk_type be u8 since there are only 5 bits for QCA_HDR_RECV_TYPE?
+To me it seems like they match the size to the 3 different operation
+that is
+4: normal mdio / reg access
+12: acl table to directly write and read it
+16: offload table that is 16 byte long to directl write and read.
 
-With Vladimir's comments addressed:
+With this in mind, it does make sense why it bheave like that.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> > 
+> > In the allock skb function we check if the len is 16 and we fix it to a
+> > len of 15.
+> 
+> s/allock/alloc/
+> 
+> > It the read/write function interest to extract the real asked
+> > data. The tagger handler will always copy the fully 16byte with a READ
+> > command. This is useful for some big regs like the fdb reg that are
+> > more than 4byte of data. This permits to introduce a bulk function that
+> > will send and request the entire entry in one go.
+> > Write function is changed and it does now require to pass the pointer to
+> > val to also handle array val.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > ---
+> >   drivers/net/dsa/qca8k.c | 56 ++++++++++++++++++++++++++++++-----------
+> >   1 file changed, 41 insertions(+), 15 deletions(-)
+> > 
+> > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> > index 2a43fb9aeef2..0183ce2d5b74 100644
+> > --- a/drivers/net/dsa/qca8k.c
+> > +++ b/drivers/net/dsa/qca8k.c
+> > @@ -219,7 +219,9 @@ static void qca8k_rw_reg_ack_handler(struct dsa_switch *ds, struct sk_buff *skb)
+> >   	if (cmd == MDIO_READ) {
+> >   		mgmt_hdr_data->data[0] = mgmt_ethhdr->mdio_data;
+> > -		/* Get the rest of the 12 byte of data */
+> > +		/* Get the rest of the 12 byte of data.
+> > +		 * The read/write function will extract the requested data.
+> > +		 */
+> >   		if (len > QCA_HDR_MGMT_DATA1_LEN)
+> >   			memcpy(mgmt_hdr_data->data + 1, skb->data,
+> >   			       QCA_HDR_MGMT_DATA2_LEN);
+> > @@ -229,16 +231,30 @@ static void qca8k_rw_reg_ack_handler(struct dsa_switch *ds, struct sk_buff *skb)
+> >   }
+> >   static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 reg, u32 *val,
+> > -					       int seq_num, int priority)
+> > +					       int seq_num, int priority, int len)
+> 
+> unsigned int len
+> 
+> >   {
+> >   	struct mgmt_ethhdr *mgmt_ethhdr;
+> >   	struct sk_buff *skb;
+> > +	int real_len;
+> 
+> Likewise.
+> 
+> > +	u32 *data2;
+> >   	u16 hdr;
+> >   	skb = dev_alloc_skb(QCA_HDR_MGMT_PKG_LEN);
+> >   	if (!skb)
+> >   		return NULL;
+> > +	/* Max value for len reg is 15 (0xf) but the switch actually return 16 byte
+> > +	 * Actually for some reason the steps are:
+> > +	 * 0: nothing
+> > +	 * 1-4: first 4 byte
+> > +	 * 5-6: first 12 byte
+> > +	 * 7-15: all 16 byte
+> > +	 */
+> > +	if (len == 16)
+> > +		real_len = 15;
+> > +	else
+> > +		real_len = len;
+> > +
+> >   	skb_reset_mac_header(skb);
+> >   	skb_set_network_header(skb, skb->len);
+> > @@ -253,7 +269,7 @@ static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 reg, u32 *
+> >   	mgmt_ethhdr->seq = FIELD_PREP(QCA_HDR_MGMT_SEQ_NUM, seq_num);
+> >   	mgmt_ethhdr->command = FIELD_PREP(QCA_HDR_MGMT_ADDR, reg);
+> > -	mgmt_ethhdr->command |= FIELD_PREP(QCA_HDR_MGMT_LENGTH, 4);
+> > +	mgmt_ethhdr->command |= FIELD_PREP(QCA_HDR_MGMT_LENGTH, real_len);
+> >   	mgmt_ethhdr->command |= FIELD_PREP(QCA_HDR_MGMT_CMD, cmd);
+> >   	mgmt_ethhdr->command |= FIELD_PREP(QCA_HDR_MGMT_CHECK_CODE,
+> >   					   QCA_HDR_MGMT_CHECK_CODE_VAL);
+> > @@ -263,19 +279,22 @@ static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 reg, u32 *
+> >   	mgmt_ethhdr->hdr = htons(hdr);
+> > -	skb_put_zero(skb, QCA_HDR_MGMT_DATA2_LEN + QCA_HDR_MGMT_PADDING_LEN);
+> > +	data2 = skb_put_zero(skb, QCA_HDR_MGMT_DATA2_LEN + QCA_HDR_MGMT_PADDING_LEN);
+> > +	if (cmd == MDIO_WRITE && len > QCA_HDR_MGMT_DATA1_LEN)
+> > +		memcpy(data2, val + 1, len - QCA_HDR_MGMT_DATA1_LEN);
+> >   	return skb;
+> >   }
+> > -static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val)
+> > +static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+> >   {
+> >   	struct qca8k_mgmt_hdr_data *mgmt_hdr_data = &priv->mgmt_hdr_data;
+> >   	struct sk_buff *skb;
+> >   	bool ack;
+> >   	int ret;
+> > -	skb = qca8k_alloc_mdio_header(MDIO_READ, reg, NULL, 200, QCA8K_ETHERNET_MDIO_PRIORITY);
+> > +	skb = qca8k_alloc_mdio_header(MDIO_READ, reg, NULL, 200,
+> > +				      QCA8K_ETHERNET_MDIO_PRIORITY, len);
+> >   	if (!skb)
+> >   		return -ENOMEM;
+> > @@ -297,6 +316,9 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val)
+> >   					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
+> >   	*val = mgmt_hdr_data->data[0];
+> > +	if (len > QCA_HDR_MGMT_DATA1_LEN)
+> > +		memcpy(val + 1, mgmt_hdr_data->data + 1, len - QCA_HDR_MGMT_DATA1_LEN);
+> > +
+> >   	ack = mgmt_hdr_data->ack;
+> >   	mutex_unlock(&mgmt_hdr_data->mutex);
+> > @@ -310,14 +332,15 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val)
+> >   	return 0;
+> >   }
+> > -static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 val)
+> > +static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+> >   {
+> >   	struct qca8k_mgmt_hdr_data *mgmt_hdr_data = &priv->mgmt_hdr_data;
+> >   	struct sk_buff *skb;
+> >   	bool ack;
+> >   	int ret;
+> > -	skb = qca8k_alloc_mdio_header(MDIO_WRITE, reg, &val, 200, QCA8K_ETHERNET_MDIO_PRIORITY);
+> > +	skb = qca8k_alloc_mdio_header(MDIO_WRITE, reg, val, 200,
+> > +				      QCA8K_ETHERNET_MDIO_PRIORITY, len);
+> >   	if (!skb)
+> >   		return -ENOMEM;
+> > @@ -357,14 +380,14 @@ qca8k_regmap_update_bits_eth(struct qca8k_priv *priv, u32 reg, u32 mask, u32 wri
+> >   	u32 val = 0;
+> >   	int ret;
+> > -	ret = qca8k_read_eth(priv, reg, &val);
+> > +	ret = qca8k_read_eth(priv, reg, &val, 4);
+> 
+> sizeof(val) instead of 4.
+> 
+> >   	if (ret)
+> >   		return ret;
+> >   	val &= ~mask;
+> >   	val |= write_val;
+> > -	return qca8k_write_eth(priv, reg, val);
+> > +	return qca8k_write_eth(priv, reg, &val, 4);
+> 
+> Likewise
+> 
+> >   }
+> >   static int
+> > @@ -376,7 +399,7 @@ qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
+> >   	u16 r1, r2, page;
+> >   	int ret;
+> > -	if (priv->mgmt_master && !qca8k_read_eth(priv, reg, val))
+> > +	if (priv->mgmt_master && !qca8k_read_eth(priv, reg, val, 4))
+> 
+> Likewise and everywhere below as well.
+> -- 
+> Florian
+
 -- 
-Florian
+	Ansuel
