@@ -2,144 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B29449C531
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 09:24:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5816449C54F
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 09:32:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238393AbiAZIYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 03:24:14 -0500
-Received: from mail-dm6nam12on2137.outbound.protection.outlook.com ([40.107.243.137]:27361
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238378AbiAZIYN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jan 2022 03:24:13 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y8rEUjSrjLZhUGAdWNgDfwhIJt9oiJ6+u9XMZaROyM87aqec/su0uxFmoqaBm5kVJa7BaNZrHkdlB2QorfjkPtx+6col0x80KKpNhdSHjirklmP62zDtiWHIaFZCfLKlaKf21ZTN5KegzYymgNzVOt/+a371+JfEmHL3voJJqOK1DBpTWYF3DjDMm12j50N0MIXYss7SD2jFGiByX6deQu+s4Fpbc2x4dUBb3UozRxXLQbONnmPrj20kDC9OPUhXOW5Qi/+NlorS7uMkrSOvG+8/Sd+TXu7Kt1+TAU6S3Fnj2uHiv6/fssJHgJEDJa3cPA38KDu8ynLJJPPH4vPmRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GX0N6vbMZQdrhYZw+HpqCmqFIdiSjLTHQS4EjxOg22c=;
- b=Wfi5R9ZH/uzoyGebsqjMs8e9DToAEo0qweuF5jkGOzGv3tepJy0ZxW1Fu+HGSgjoTc6HqBOkk27K+UPDl2lxgffrJMpSCcx5EjFfv/cc+dk+xHrhK1AwEXuvKBsxN5HvE1gQOQnQZf65Vbm+UsVbkTOeFwSa1Qep6K/kGJcNSCxQ00Kvx6CSg1tCWBW3W+MH3DdSFrbQ7gjb6JULr3mVrSSWzwrL3w3MedZQSqzqBljq8NIi3D+7vYqj1/EKazkyK/oPMIqwO3BD8eXV6J92Eoh03rnOmlD0aUK9IfS/bbGHxDQbwjOUr5zo7cc/rXkZJqOKn8xonrZMgKmEERO79g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GX0N6vbMZQdrhYZw+HpqCmqFIdiSjLTHQS4EjxOg22c=;
- b=t25INnG/O1pbJxXl/EMH8x2oOFubZdtCtq/B+73eBez4TP5vrx/N0ViVOsg8phWXq3QG9plpUj+646IjVrvHEroP/Jg/6qdE3aOYqA4kMfXCMRnbNpWiBDacVlR147eIPAqaDDiYFSyniK/AtOhn1VCxVKWxBDhikoJd2YcSqJU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MW4PR13MB5937.namprd13.prod.outlook.com (2603:10b6:303:1b5::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.10; Wed, 26 Jan
- 2022 08:24:10 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f486:da6a:1232:9008]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f486:da6a:1232:9008%3]) with mapi id 15.20.4930.015; Wed, 26 Jan 2022
- 08:24:10 +0000
-Date:   Wed, 26 Jan 2022 09:24:03 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, oss-drivers@corigine.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] nfp: flower: Use struct_size() helper in kmalloc()
-Message-ID: <20220126082402.GA29381@corigine.com>
-References: <20220125193319.GA73108@embeddedor>
+        id S230417AbiAZIcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 03:32:01 -0500
+Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:45367 "EHLO
+        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230181AbiAZIcA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 03:32:00 -0500
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id AFB3F3200929;
+        Wed, 26 Jan 2022 03:31:59 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Wed, 26 Jan 2022 03:32:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=QUo6781SxULPMHpoj
+        nTNwQpKL0Js0yzIOxH8yB78W9M=; b=GJynzN7jMMXqYICZmRu/KfVyS3Q1xK/jN
+        vv7jsQQMsdjvLJps2f93/mRuIFKEcqit17NEXjwN4oNuIO0Ig7U0tX9TfX0LcuZT
+        Prj0Fph1ralF6RSNjcxg/vfwKPIk2eEv6ylfY+Bmp1ddIktBCYtQ2azOWs4PVqgP
+        gXl2PJGbpeDRS/69km6TspfcmNqIZvxuGHR2NoFZi+z2K5Qh/c6pRGUMRW2Ans3j
+        9rnWb9yul9DzrcVKqTxZPga+4tZJVmF8Nj2ZtOAzjoUGsspHAKVifdCZeYbj4PGF
+        T5XVBDKOrlcoeWloD5gJ4oqFc5HHCAsecxRgBuX7/Fl3M/4hh+k0g==
+X-ME-Sender: <xms:_gbxYcv-RvJCPPFK31F44YE3J3fFN03-E7H-Wo13jlN5DdAhRi-K9A>
+    <xme:_gbxYZf6Pia8hqjDwvuV7G-oww2WuK7GVN2PK-9dNmuUYHFKIg4j1DspGeYV7o39z
+    0z7cZ-QKTsUMxs>
+X-ME-Received: <xmr:_gbxYXy0iMqtCMmejKr5kTMCWPJbncpstpQFjPFdl7PWtRWn4DN63aFmPBv5S0P4VAxtpGMAmHRkpqMnVK1hMLGTSOUYKg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrfedtgdduvddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeekueeukeejfeevtefggfejieetveevudevteehieettdefvdfhueevfeduuddv
+    feenucffohhmrghinhepnhgvthifohhrkhdrtgiinecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:_gbxYfOsjz3DC4_YvaUEM6MGBWDeSdc5ACe2AvqqD4_Pn7QhU0gO1Q>
+    <xmx:_gbxYc-51rH8rZN4UrKvoxsNF0bePXKPoNzKo0YwCu5CPfbEwp1aBw>
+    <xmx:_gbxYXWzF_GjzsCpYNuIatVGw1DMsIhRKY9wyz-_sYfhP2VnoiCjuA>
+    <xmx:_wbxYbn7xHsl1sSk4h5mxwFtBXAFKDOpuFmP1wZZoZKGMbwBsp2rSw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 26 Jan 2022 03:31:58 -0500 (EST)
+Date:   Wed, 26 Jan 2022 10:31:54 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Tomas Hlavacek <tmshlvck@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Stefano Brivio <sbrivio@redhat.com>
+Subject: Re: [RFC PATCH] ipv4: fix fnhe dump record multiplication
+Message-ID: <YfEG+mWz0vmrNWj3@shredder>
+References: <20220120235028.9040-1-tmshlvck@gmail.com>
+ <ee82bed1-7033-406d-4738-cab6d0ec8fb6@gmail.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220125193319.GA73108@embeddedor>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: AM4PR05CA0010.eurprd05.prod.outlook.com (2603:10a6:205::23)
- To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0b0199ac-085c-4356-b885-08d9e0a53a66
-X-MS-TrafficTypeDiagnostic: MW4PR13MB5937:EE_
-X-Microsoft-Antispam-PRVS: <MW4PR13MB5937A3699A2FD43F937DF471E8209@MW4PR13MB5937.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /1nS7fd4lAb4XMnG1c7cP24bdNpiPm/3JxjzKITxExUirQxRfWABCinmxE4pv8cHiZnXwTMJ7d0abDjXnzPPTyW+aj0Car8IFgzliTnwF5n3eiS761O/yTEH5yvPeTplA648UdqCWTGMH0vwgVkxs0WVMzReW4ahUeYXsilR4ncrj3GNzFBL4zCLhELXPeHZ8fUpvstNcMKciLpETvl8iuz3Cdtmd8+5yzZi8RYrEqn2UWLNi2GZl7VeSibVpwjg5sUGyqbwDNI2bZVBB70VymbZiNTdwK/aGmrm9OpH3fdDPvaUOlsNO7wbRVfmN9IAilhnC7ETDWAesBdg+wMvEIGqBVfJH1iiqytwDbXTU5l1zRiFpNHgf0Lm+iW+7VeNjf1RMTjI5NQP0DrQqejnwOWfmKLLh7m2+b05e9gosLTDzG5h3yf/t3hy2yM/jvqMWlx6edgVZCwECBix+hcIi9TD3bcM9eGRByZVWeZVeJohCY7M2Or3G2EMdpFQmrmbePIfY+IdeI9JcQ8WsaxQhY4xyxVmUMYYgSDbc2Q8LVtOouqUNSr5g493CDInQsguRisNrFpl8KevLcHDhwr94F0LDVYkebmcoDhvplEq7lDNi8KGsCIGekauH1AJArMXr5Ga4RrpaqTV+Gb3jztsSaG1nm6LwEEcobImtDFxp/OtJjjPz86600FVNiY6INciz+WBm+VbWUdJkB/Ivx2e3klUNDI1HzlGjCMEs5e/GFTFvQvq1/cHk6VYY1v92VtCIKFR+a1seiGLuhQDXsB0LQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(39830400003)(136003)(396003)(376002)(366004)(346002)(1076003)(2906002)(66556008)(8676002)(66946007)(36756003)(8936002)(66476007)(2616005)(44832011)(5660300002)(4326008)(38100700002)(186003)(83380400001)(6486002)(54906003)(966005)(6916009)(86362001)(316002)(6666004)(33656002)(6512007)(6506007)(508600001)(52116002)(20210929001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0WATtZaRK0TpbS4quDs5oQOsOVMlffN3ZsFSXEybQS0EHtqChLxIvNcg4X6Y?=
- =?us-ascii?Q?K+zDJ3cDAvgm1w5PZIjBr/hu80jCim637V/6AHNW/voW6ricNKbR3d/GlzAg?=
- =?us-ascii?Q?Tkl7soWTe07faHqm92fwcO6Ko0NTsZXN0ZjlbvQg0Bz9kcn5KLN4LY3XNkgF?=
- =?us-ascii?Q?ytWYzhyDeyYG8eAK+KTjlt3A3gDlyPGb2Ofa5Gngd/IzD+0TWDMyd9sgEETx?=
- =?us-ascii?Q?uLjfo8gi9I3G/SdbKx87htcXoN07s3RF2fGB2VbhPQxJtPdD9RoXQGwPuDDr?=
- =?us-ascii?Q?CsPTHcVaf3c/4IPTtN8WU4dDsjv18crMPXFe+14a7Web6fP7ZKV18cn4EqVq?=
- =?us-ascii?Q?JzkINxeRCNmDFpDQ1zrHw9znWqxsi/rQdCQWKU+JGH2H2Aq9MjmFyIoT7sd7?=
- =?us-ascii?Q?RTnH7CHBptsFwtWUOqz9OkFTAVU0Y+lHLgk4qL1x8TF7tRI0asaY8tP7BcCI?=
- =?us-ascii?Q?IbWLfwbzdEHXqrsZMFOJ/pMHmjMA783Y17jkfc54hAWzfdxbOKgDXpFWF7LX?=
- =?us-ascii?Q?Yk/4lVnql97o/1MqaVIB3E7PNxT6klQB1ntP+Y7VJC6Wp39SXSzCiRPdZK2A?=
- =?us-ascii?Q?cyf3U85EEGLRXC1Q5egL0Ah3YsWvRhCpb+LzDHi8fewrPd1/EPM8TzrJrwZy?=
- =?us-ascii?Q?iorgzgOBhs1V8jXfRl9SAHfJiuwNQubVz8fAI+OsCh6vY7zFNVbkCBvfjm7H?=
- =?us-ascii?Q?mIPR67Ucmavh7U+83Pm06w6DwZeSPiDZb9AHx9cRZs/0bJ+79gr8jnz/3B31?=
- =?us-ascii?Q?gd3fqIX9wOp09oLi/isEio7+8vXYu/uEmEYGAAKXIZYv+U3lIYWuh31cADC6?=
- =?us-ascii?Q?QkeGrOSc9bKs1O62jpGppyADdGLDYBbtgpoUkl/IkjwMonyZixppShIRB/oa?=
- =?us-ascii?Q?NqYbhyVDWAY7ebELCwrQIRRsptAiDkxz+bTwhn62uc7BGW7kzk3thcY6Tpf/?=
- =?us-ascii?Q?jWxDSNFsWkIxagME2tOube7Sap0B9MYEIvpgGlrdysO+y3Ukc/EJbXMzXvhd?=
- =?us-ascii?Q?ObWO36vRiwSaLwy6BctwexRwznjEctkOzwhtBhFoAgj5k0HEZihR4bH/QHug?=
- =?us-ascii?Q?HOBnqIpJGrYVtDKSuxcdbGZajRAO1NTThxfn07j7IyNDe7dnMD/kLdrH31bC?=
- =?us-ascii?Q?6Qt1GTM9/Q2FYkFdSP+74dOC5S11ZzV0mZdgEGvqGuOkaqKVSpYiE1EcdmSY?=
- =?us-ascii?Q?iAJfNIc2WEPTxU4tfFGVXm9ONf7DAKoxbucqLA7Cs16W09LJrNu1AnfRH16D?=
- =?us-ascii?Q?c+r5KhXXCjDG3I5q3B5fChCoIDjTCKdMJoIk3FDTzd9WLd4eaG5LQnk9/ToL?=
- =?us-ascii?Q?GVu9GNmkm+pJFdvo5+xi42Dkc6WBEg3XcwRCyCegiZRrCE1nyyVy0z0bv7zu?=
- =?us-ascii?Q?8XwUtiyCoOCT8um+kgBhkqinRKw0RV52/nQXeYL+mOBS3exg5k2PmPpjBA4i?=
- =?us-ascii?Q?2NvjVe6XQRRDXYpH3neV6qjYtZBKp42UhgAJ8OAbk4pDk7nhNaftiRgA/zK9?=
- =?us-ascii?Q?6lYBEZ4hniqSUQMIbhwH4d9QzOhN5Xxaf+705mGjF5isDXxatFSg+IHz/BUJ?=
- =?us-ascii?Q?776wRKAVve3gJTnGllfxFp7YvlKc7TUAUl9X9RCsOOXsvnc/0DMTqhDGquIS?=
- =?us-ascii?Q?NANg8JCGpfivrjAOBaABSyQDoggb2+nVqnJ0FjwhzqRlRktmLI9BE3G05jO1?=
- =?us-ascii?Q?8KlBG0Obzj7/CnaHmKgZh9I8UAMTGW7NFgpDACF24jlPhsAYOt354/5fj7WT?=
- =?us-ascii?Q?8MrOeSr82Q=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0b0199ac-085c-4356-b885-08d9e0a53a66
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2022 08:24:10.5234
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jw114JF7EZXrQakAbKU6Bj/4K/idjZxKYTxE7mi5KpSceAd9iMV4Ylkxjavbc7df7yYMdHEIV3JHq6k4M97Yn+mnnIDkqvbAc2xZlJERNmY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR13MB5937
+In-Reply-To: <ee82bed1-7033-406d-4738-cab6d0ec8fb6@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 01:33:19PM -0600, Gustavo A. R. Silva wrote:
-> Make use of the struct_size() helper instead of an open-coded version,
-> in order to avoid any potential type mistakes or integer overflows that,
-> in the worst scenario, could lead to heap overflows.
+On Sat, Jan 22, 2022 at 09:55:18AM -0700, David Ahern wrote:
+> [ cc Stefano and Ido ]
 > 
-> Also, address the following sparse warnings:
-> drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c:359:25: warning: using sizeof on a flexible structure
+> On 1/20/22 4:50 PM, Tomas Hlavacek wrote:
+> > Fix the multiplication of the FNHE records during dump: Check in
+> > fnhe_dump_bucket() that the dumped record destination address falls
+> > within the key (prefix, prefixlen) of the FIB leaf that is being dumped.
+> > 
+> > FNHE table records can be dumped multiple times to netlink on RTM_GETROUTE
+> > command with NLM_F_DUMP flag - either to "ip route show cache" or to any
+> > routing daemon. The multiplication is substantial under specific
+> > conditions - it can produce over 120M netlink messages in one dump.
+> > It happens if there is one shared struct fib_nh linked through
+> > struct fib_info (->fib_nh) from many leafs in FIB over struct fib_alias.
+> > 
+> > This situation can be triggered by importing a full BGP table over GRE
+> > tunnel. In this case there are ~800k routes that translates to ~120k leafs
+> > in FIB that all ulimately links the same next-hop (the other end of
+> > the GRE tunnel). The GRE tunnel creates one FNHE record for each
+> > destination IP that is routed to the tunnel because of PMTU. In my case
+> > I had around 1000 PMTU records after a few minutes in a lab connected to
+> > the public internet so the FNHE dump produced 120M records that easily
+> > stalled BIRD routing daemon as described here:
+> > http://trubka.network.cz/pipermail/bird-users/2022-January/015897.html
+> > (There is a work-around already committed to BIRD that removes unnecessary
+> > dumps of FNHE.)
+> > 
+> > Signed-off-by: Tomas Hlavacek <tmshlvck@gmail.com>
+> > ---
+> >  include/net/route.h |  3 ++-
+> >  net/ipv4/fib_trie.c |  3 ++-
+> >  net/ipv4/route.c    | 25 ++++++++++++++++++++++---
+> >  3 files changed, 26 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/include/net/route.h b/include/net/route.h
+> > index 2e6c0e153e3a..066eab9c5d99 100644
+> > --- a/include/net/route.h
+> > +++ b/include/net/route.h
+> > @@ -244,7 +244,8 @@ void rt_del_uncached_list(struct rtable *rt);
+> >  
+> >  int fib_dump_info_fnhe(struct sk_buff *skb, struct netlink_callback *cb,
+> >  		       u32 table_id, struct fib_info *fi,
+> > -		       int *fa_index, int fa_start, unsigned int flags);
+> > +		       int *fa_index, int fa_start, unsigned int flags,
+> > +		       __be32 prefix, unsigned char prefixlen);
+> >  
+> >  static inline void ip_rt_put(struct rtable *rt)
+> >  {
+> > diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+> > index 8060524f4256..7a42db70f46d 100644
+> > --- a/net/ipv4/fib_trie.c
+> > +++ b/net/ipv4/fib_trie.c
+> > @@ -2313,7 +2313,8 @@ static int fn_trie_dump_leaf(struct key_vector *l, struct fib_table *tb,
+> >  
+> >  		if (filter->dump_exceptions) {
+> >  			err = fib_dump_info_fnhe(skb, cb, tb->tb_id, fi,
+> > -						 &i_fa, s_fa, flags);
+> > +						 &i_fa, s_fa, flags, xkey,
+> > +						 (KEYLENGTH - fa->fa_slen));
+> >  			if (err < 0)
+> >  				goto stop;
+> >  		}
+> > diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+> > index 0b4103b1e622..bc882c85228d 100644
+> > --- a/net/ipv4/route.c
+> > +++ b/net/ipv4/route.c
+> > @@ -3049,10 +3049,25 @@ static int rt_fill_info(struct net *net, __be32 dst, __be32 src,
+> >  	return -EMSGSIZE;
+> >  }
+> >  
+> > +static int fnhe_daddr_check(__be32 daddr, struct net *net, u32 table_id,
+> > +			    __be32 prefix, unsigned char prefixlen)
+> > +{
+> > +	struct flowi4 fl4 = { .daddr = daddr };
+> > +	struct fib_table *tb = fib_get_table(net, table_id);
+> > +	struct fib_result res;
+> > +	int err = fib_table_lookup(tb, &fl4, &res, FIB_LOOKUP_NOREF);
 > 
-> Link: https://github.com/KSPP/linux/issues/174
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> I get the fundamental problem you want to solve. I think a fib lookup on
+> each nexthop exception for each leaf is a heavyweight solution this is
+> going to add up to significant overhead.
 
-Acked-by: Simon Horman <simon.horman@corigine.com>
+I agree
 
-> ---
->  drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-> index dfb4468fe287..ce865e619568 100644
-> --- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-> +++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-> @@ -356,7 +356,7 @@ __nfp_tun_add_route_to_cache(struct list_head *route_list,
->  			return 0;
->  		}
->  
-> -	entry = kmalloc(sizeof(*entry) + add_len, GFP_ATOMIC);
-> +	entry = kmalloc(struct_size(entry, ip_add, add_len), GFP_ATOMIC);
->  	if (!entry) {
->  		spin_unlock_bh(list_lock);
->  		return -ENOMEM;
-> -- 
-> 2.27.0
+> The fundamental problem you are trying to solve is to not walk the
+> exceptions for a fib_info more than once. A fib_info can be used with
+> many fib_entries so perhaps the solution is to walk the fib_info structs
+> that exist in fib_info_hash outside of the trie walk.
+
+Sounds like a good idea, though I'm not sure how difficult to implement.
+If a dump needs to be restarted, then the netlink callback arguments
+need to differentiate between the place in the FIB trie where the dump
+was stopped and the FIB info hash table.
+
+Also, isn't the problem also present in IPv6 when nexthop objects are
+used? In the legacy model, IPv6 nexthops are not shared (which means
+exceptions are not dumped multiple times), but with nexthop objects they
+can be shared.
+
+> 
+> 
+> > +
+> > +	if (!err && res.prefix == prefix && res.prefixlen == prefixlen)
+> > +		return 1;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  static int fnhe_dump_bucket(struct net *net, struct sk_buff *skb,
+> >  			    struct netlink_callback *cb, u32 table_id,
+> >  			    struct fnhe_hash_bucket *bucket, int genid,
+> > -			    int *fa_index, int fa_start, unsigned int flags)
+> > +			    int *fa_index, int fa_start, unsigned int flags,
+> > +			    __be32 prefix, unsigned char prefixlen)
+> >  {
+> >  	int i;
+> >  
+> > @@ -3067,6 +3082,9 @@ static int fnhe_dump_bucket(struct net *net, struct sk_buff *skb,
+> >  			if (*fa_index < fa_start)
+> >  				goto next;
+> >  
+> > +			if (!fnhe_daddr_check(fnhe->fnhe_daddr, net, table_id, prefix, prefixlen))
+> > +				goto next;
+> > +
+> >  			if (fnhe->fnhe_genid != genid)
+> >  				goto next;
+> >  
+> > @@ -3096,7 +3114,8 @@ static int fnhe_dump_bucket(struct net *net, struct sk_buff *skb,
+> >  
+> >  int fib_dump_info_fnhe(struct sk_buff *skb, struct netlink_callback *cb,
+> >  		       u32 table_id, struct fib_info *fi,
+> > -		       int *fa_index, int fa_start, unsigned int flags)
+> > +		       int *fa_index, int fa_start, unsigned int flags,
+> > +		       __be32 prefix, unsigned char prefixlen)
+> >  {
+> >  	struct net *net = sock_net(cb->skb->sk);
+> >  	int nhsel, genid = fnhe_genid(net);
+> > @@ -3115,7 +3134,7 @@ int fib_dump_info_fnhe(struct sk_buff *skb, struct netlink_callback *cb,
+> >  		if (bucket)
+> >  			err = fnhe_dump_bucket(net, skb, cb, table_id, bucket,
+> >  					       genid, fa_index, fa_start,
+> > -					       flags);
+> > +					       flags, prefix, prefixlen);
+> >  		rcu_read_unlock();
+> >  		if (err)
+> >  			return err;
 > 
