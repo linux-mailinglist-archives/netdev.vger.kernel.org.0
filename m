@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7794349D5B6
+	by mail.lfdr.de (Postfix) with ESMTP id C063549D5B7
 	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 23:51:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231555AbiAZWvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 17:51:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34784 "EHLO
+        id S231376AbiAZWv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 17:51:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231597AbiAZWvy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 17:51:54 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5396FC06173B
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:51:54 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id q75so641435pgq.5
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:51:54 -0800 (PST)
+        with ESMTP id S231392AbiAZWvz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 17:51:55 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C84C06161C
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:51:55 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id i1so878038pla.9
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:51:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=fastly.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=nMhyZuz5FFHXx6SDIWuWD353Ivk0f2F3J9m8oxhLKhE=;
-        b=gFacH/DvGsMLVHix1oTy7Hmcnj6Vq+NTq8Ao+Ul1QiTURmSY31geJXe5C3LxzkJigh
-         AwyT/X9otwhOvh7eqghURSEDQmTYdbG8PTSfNMaAX7pVSYw9tFpo+J6AoBP4F51LelrF
-         EyfwrU3i+5u9/TFHgcPz1cWdsyOuvcwmvP0is=
+        bh=pToh2wvYgYPrpKDxpymUchJpPok83K1wHJc2NYkaSuE=;
+        b=lGyLwI0Iv8Imyx1xxIMX9LmDAXxbPapefd2E4ssjwVVbN34T93amq/LbgoOdc5TvJq
+         AlMYt8EihMMvL60Wp8LaIoZ/hUFcEev0P4X9KLh4W9v+0ERI79/iMBwRdNG3lbGyG5L/
+         AW6ZxtrwiKdhHsjpdD70In9PxwQ/3rQmqX/7M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=nMhyZuz5FFHXx6SDIWuWD353Ivk0f2F3J9m8oxhLKhE=;
-        b=1rux8G7iMmsXvsmMy+uU/IXLF7e4k74T4s+3jH92+lvzdj28Nc+x2CQ+XJgROUfV4T
-         1zBw/H2y6N4w7faqHvzH3BfOMyZWkfe2hmOecwN8MTJkdwx2fEL7PLVnxSK2++tS35/S
-         W1T93DTmCEIKIL5cSd/2e2FwVe/Zn2mqdXrhNea68XZ6JAJfXHOl4zQsq9a3dzKWtEq4
-         g83+Q+QM9wqESKSZkCM9JG61gEEpUhevdTvVExbE4ruF3hBHu7J2/rtYULSgL0o8xbDH
-         W34CEXtEbm59/iePEWluZ1aJsxtb8ewuqArWdKM63bJC+RxQORFklIBHm5GON/ifMLIN
-         tDpQ==
-X-Gm-Message-State: AOAM5320PkzyDzyfYmvMdnIpAyMUNwnFBQiZq/Fozqk7WJMMNR3Gxj4b
-        qJwM0sacMNZRFLZ7VP/Ujq/rYRDeCFVM7YFDB9GcPrZZB2KocdWWs7fFJ3nmeNM2ovWI7t4Xsgi
-        T+eXWPK9ra7y5zfwSNGYpLUKLuFxBik7Mx20Qdm6+ZYjBB+bXMJ8eenTIYuJoxiZ2Pu/8
-X-Google-Smtp-Source: ABdhPJze0ZxXHOjMTsRUtq4X/VQGhmFqHLmTsaROLnTdEqmfo7g8ivgM7DlJXGTYCUjMDpY/lHWuMw==
-X-Received: by 2002:a05:6a00:244b:: with SMTP id d11mr429376pfj.49.1643237513424;
-        Wed, 26 Jan 2022 14:51:53 -0800 (PST)
+        bh=pToh2wvYgYPrpKDxpymUchJpPok83K1wHJc2NYkaSuE=;
+        b=4zNznP/BVWo5MMg2W5UASbzAYw1SbIgtVIL3tZUqkfhHNoCQ9RN/Hr/37xyQ7BEgbg
+         YRgO08Sbhg1WEwFc1iWRpTSzqqhcqW5J4+lJ8nPhTupvv8u7YhsbNoWJR4w/MVOFg/U0
+         nmHsdw+wU8V0EfdcsaeeNK9zQbnBTygOx+HRxItnGKkvOh/JRq78svkD+vp8tqObiHz8
+         miMSMpdjf7iq/UlosmS1mGPNx4foLi9HPe3juNGyy5b0NtxVH9ksHhXF3kCFACEG1fxG
+         4ujmsJHm34yBA+0nEH1kHJ/0Xiy9H3/pkOH76h2IdVqL8oCqBGJNaMip5R6WMak5//O+
+         lhag==
+X-Gm-Message-State: AOAM531oiwXUw4ePIXqD38dE2fzE7PvgGWywUV1jGltVUTK82UXS0dKP
+        DYdwpnvNqQK8y8F1LwhkdTuJF2FEh3z+Nh9Y76x1928t/c9vPmwcLMW/+M2nKBflU51Bk2O6CDe
+        4UroPLxd5VwxJ/tpuyzIVmtDEkukUQrV1+ho0QNMkhnmQgU4GoQ5jG/K/owZYEy74hq2P
+X-Google-Smtp-Source: ABdhPJyPXupHScrKo6BUjE2ocjfDzLH/c1V80tmF/a+D/iBR1dCRkL5GAOOaHRSEceyabt3w6hEtyg==
+X-Received: by 2002:a17:902:7848:: with SMTP id e8mr862292pln.90.1643237514868;
+        Wed, 26 Jan 2022 14:51:54 -0800 (PST)
 Received: from localhost.localdomain (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
-        by smtp.gmail.com with ESMTPSA id q15sm3793941pjj.19.2022.01.26.14.51.52
+        by smtp.gmail.com with ESMTPSA id q15sm3793941pjj.19.2022.01.26.14.51.53
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jan 2022 14:51:52 -0800 (PST)
+        Wed, 26 Jan 2022 14:51:54 -0800 (PST)
 From:   Joe Damato <jdamato@fastly.com>
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net, ilias.apalodimas@linaro.org,
         hawk@kernel.org, Joe Damato <jdamato@fastly.com>
-Subject: [PATCH net-next 2/6] net: page_pool: Add a stat for the slow alloc path
-Date:   Wed, 26 Jan 2022 14:48:16 -0800
-Message-Id: <1643237300-44904-3-git-send-email-jdamato@fastly.com>
+Subject: [PATCH net-next 3/6] net: page_pool: Add a high order alloc stat
+Date:   Wed, 26 Jan 2022 14:48:17 -0800
+Message-Id: <1643237300-44904-4-git-send-email-jdamato@fastly.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1643237300-44904-1-git-send-email-jdamato@fastly.com>
 References: <1643237300-44904-1-git-send-email-jdamato@fastly.com>
@@ -58,44 +58,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a stat, 'slow', for the slow allocation path. A static inline accessor
-function is exposed for accessing this stat.
+Add a stat to track high order allocations in the slow path. A static
+inline function is exposed for accessing this stat.
 
 Signed-off-by: Joe Damato <jdamato@fastly.com>
 ---
- include/net/page_pool.h | 10 ++++++++++
- net/core/page_pool.c    |  6 ++++--
- 2 files changed, 14 insertions(+), 2 deletions(-)
+ include/net/page_pool.h | 11 +++++++++++
+ net/core/page_pool.c    |  1 +
+ 2 files changed, 12 insertions(+)
 
 diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index 3ae3dc4..b5691ee 100644
+index b5691ee..b024197 100644
 --- a/include/net/page_pool.h
 +++ b/include/net/page_pool.h
-@@ -82,6 +82,7 @@ struct pp_alloc_cache {
- struct page_pool_stats {
+@@ -83,6 +83,7 @@ struct page_pool_stats {
  	struct {
  		u64 fast; /* fast path allocations */
-+		u64 slow; /* slow-path order-0 allocations */
+ 		u64 slow; /* slow-path order-0 allocations */
++		u64 slow_high_order; /* slow-path high order allocations */
  	} alloc;
  };
  
-@@ -201,6 +202,10 @@ static inline u64 page_pool_stats_get_fast(struct page_pool *pool)
- 	return pool->ps.alloc.fast;
+@@ -206,6 +207,11 @@ static inline u64 page_pool_stats_get_slow(struct page_pool *pool)
+ {
+ 	return pool->ps.alloc.slow;
  }
- 
-+static inline u64 page_pool_stats_get_slow(struct page_pool *pool)
++
++static inline u64 page_pool_stats_get_slow_high_order(struct page_pool *pool)
 +{
-+	return pool->ps.alloc.slow;
++	return pool->ps.alloc.slow_high_order;
 +}
  #else
  static inline void page_pool_destroy(struct page_pool *pool)
  {
-@@ -225,6 +230,11 @@ static inline u64 page_pool_stats_get_fast(struct page_pool *pool)
+@@ -235,6 +241,11 @@ static inline u64 page_pool_stats_get_slow(struct page_pool *pool)
  {
  	return 0;
  }
 +
-+static inline u64 page_pool_stats_get_slow(struct page_pool *pool)
++static inline u64 page_pool_stats_get_slow_high_order(struct page_pool *pool)
 +{
 +	return 0;
 +}
@@ -103,24 +104,17 @@ index 3ae3dc4..b5691ee 100644
  
  void page_pool_put_page(struct page_pool *pool, struct page *page,
 diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 84c9566..9dbe721 100644
+index 9dbe721..3a4b912 100644
 --- a/net/core/page_pool.c
 +++ b/net/core/page_pool.c
-@@ -294,10 +294,12 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+@@ -240,6 +240,7 @@ static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
+ 		return NULL;
  	}
  
- 	/* Return last page */
--	if (likely(pool->alloc.count > 0))
-+	if (likely(pool->alloc.count > 0)) {
- 		page = pool->alloc.cache[--pool->alloc.count];
--	else
-+		pool->ps.alloc.slow++;
-+	} else {
- 		page = NULL;
-+	}
++	pool->ps.alloc.slow_high_order++;
+ 	page_pool_set_pp_info(pool, page);
  
- 	/* When page just alloc'ed is should/must have refcnt 1. */
- 	return page;
+ 	/* Track how many pages are held 'in-flight' */
 -- 
 2.7.4
 
