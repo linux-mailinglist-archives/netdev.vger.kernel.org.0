@@ -2,163 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C32F49CF51
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 17:14:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC8E049CF89
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 17:22:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235987AbiAZQOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 11:14:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:53111 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239836AbiAZQOt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 11:14:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643213689;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fysXeXh1WW6YVve6gUqELrIgjARZKl2Vh28eeLnVfZQ=;
-        b=NtjTip9aiBacQwdgaV8hyConcuX43fE6/pyLhfPbEHMRYRmhIrGHq3UuGPCOssWd8f54OU
-        v85/k8hs3WQR+QQfFIiPfH+u/IhalJnlshK0maQkBqop6dgbE6POfDAvOnLHTDv1c1dyJz
-        Vc05grWyo9ImEryTQbGBv85iQLxbRE4=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-297-zkkxwwBFMUGgXcBILO8T1w-1; Wed, 26 Jan 2022 11:14:47 -0500
-X-MC-Unique: zkkxwwBFMUGgXcBILO8T1w-1
-Received: by mail-qv1-f69.google.com with SMTP id eo11-20020ad4594b000000b0042151b7180aso254011qvb.8
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 08:14:47 -0800 (PST)
+        id S236516AbiAZQWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 11:22:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57626 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230404AbiAZQWd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 11:22:33 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED142C06161C
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 08:22:32 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id b13so35414edn.0
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 08:22:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ChwzZTRG63neeYkDuG5p4+7QYgaQ1JXUbn2vX9zUqqY=;
+        b=OvG6XNqoMkyRYDsxaHtxZWlUsVi38qYgRzOQAK4J8DZL3USF2NSvoQDsdQgwng0wDL
+         LZ/xFReHYTmFGwLgxUiM1HNC7WqoTiBM3Tw1mLE9ejjaPbrfVlEMpipMUFrKPDP1C5gT
+         lf2//Tl8VGJ3d8KGB9b4L+5LgvTaPEkk4zWu6DwBnoEviZH/sOt7Jo/8YNX6hQqKPiKv
+         zR5BTr5S4ooVoerdiu1ha8CMCAWYCcswO3IUQWrvRMtO9vCt3x5kPIaRQ6uDd4xXBatU
+         PbJ3Z6jdKBi9leMFQussY3AeVA5SenZUlRJRo/q8y2HUk/WswbMBlu1SY42QPquMHp2Y
+         Y+Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version;
-        bh=fysXeXh1WW6YVve6gUqELrIgjARZKl2Vh28eeLnVfZQ=;
-        b=Uupmm+ToiL74jpVhE8RARt64UXyCjKAWMbTL6omXDSnnLAb8IUG3W1bfrIHKCJpoqa
-         dy3g79dsDYaocNm4lSe6i1GgfNwwwW52bieYN9z9+fYFwMHXf5qr1+tGRT0Q2EvGTFsl
-         ow1GOYz9hQ+aKirO4QUvjJ/buajB+NMflAVpAbu2Wf3n4MayBNJMDRkeKk4pxt4rRV1M
-         QFoit1a5fp7bM6LtfSwb2XgUDRO0N61pZrQToqP6/XHpC+A22K24PO8xxT+SBECK6jQB
-         iLN9v22XNB7U9/nT1o1L8hWfW+hCRX0RvuTioqbeHzMG+ew9BfYaB0xRtlmfqCeZNMfT
-         eujA==
-X-Gm-Message-State: AOAM530mkPfWMZxCWYG2Gq95SZcABSFOXeq533KMAnntiwLQFD1Qzwf9
-        aGu9kbvNpc4+cBANH80igmhdSqvWhlbegw5xbR1Lbkp+tOO8ngMb5qU7NzC8ZARCsW6ZYrj4vd1
-        7IDGsFEwlWieyiBYO
-X-Received: by 2002:a05:620a:4450:: with SMTP id w16mr18960196qkp.340.1643213686776;
-        Wed, 26 Jan 2022 08:14:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJybO+VZrDyMSpaH2QEaia6yUqym/IYy2hLS2N/KGMzG5CMLHY7PhfIqb74i025vJ2KJWTEnwQ==
-X-Received: by 2002:a05:620a:4450:: with SMTP id w16mr18960171qkp.340.1643213686490;
-        Wed, 26 Jan 2022 08:14:46 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-96-254.dyn.eolo.it. [146.241.96.254])
-        by smtp.gmail.com with ESMTPSA id b23sm10165798qtp.94.2022.01.26.08.14.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 08:14:45 -0800 (PST)
-Message-ID: <6cccaaa7854c98248d663f60404ab6163250107f.camel@redhat.com>
-Subject: Re: [PATCH net-next 6/6] ipv4/tcp: do not use per netns ctl sockets
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>, mptcp@lists.linux.dev
-Date:   Wed, 26 Jan 2022 17:14:42 +0100
-In-Reply-To: <20220124202457.3450198-7-eric.dumazet@gmail.com>
-References: <20220124202457.3450198-1-eric.dumazet@gmail.com>
-         <20220124202457.3450198-7-eric.dumazet@gmail.com>
-Content-Type: multipart/mixed; boundary="=-JZLwH+BnmnbBU710Mfv4"
-User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ChwzZTRG63neeYkDuG5p4+7QYgaQ1JXUbn2vX9zUqqY=;
+        b=TbHpUYT2iSss0owTZltouE5DrlKuFP2mmivPj/WVR9zAos+kRiBYMVbs2sJ+Zp8d29
+         MOmkzi+NdoXp54X9m0yEWt+xsNpt2ifvQM6Z6Ar/kUqsZV2QBfm+duNsBWx42tRVvcH5
+         bZSHrEgOBcNfAwgYUdOZFrIeHCAu0Put+7kGQwFaJ8S+XpADE3zO5LfDLMnfzRR1ocwJ
+         nCQBmEmW0gURtGfULUdI52DLftj53u+pQv85IXn1ayD6eXG03CG4rCYCdei5lrW0HjvY
+         FLPQpiFxVH7iQJlHpYhx4KcGO9Uu8YRnws/HE4A+F1ReM/PeYyH0lskelfdRcDP8owIs
+         +mgg==
+X-Gm-Message-State: AOAM532t0g8HK39MzEJoOtX3e7qSCL5+7m9gBKu0E9XIz/IzDVFa3SRz
+        qvJs7uEC4oGEJk2DwspjGziuIWfFx32tVdb0kkc=
+X-Google-Smtp-Source: ABdhPJwx8/GkRvUILsec3w6D2vfCrBkCyfKM/+j10st7koQBZGFqG8+rOup04cPu+Xm3X0NRViDbqAjWJvS7nu78he0=
+X-Received: by 2002:a05:6402:1119:: with SMTP id u25mr25482182edv.367.1643214151273;
+ Wed, 26 Jan 2022 08:22:31 -0800 (PST)
 MIME-Version: 1.0
+References: <164305938406.3234.4558403245506832559.stgit@localhost.localdomain>
+ <YfD9KvMxl4D3+Tyi@hades>
+In-Reply-To: <YfD9KvMxl4D3+Tyi@hades>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 26 Jan 2022 08:22:19 -0800
+Message-ID: <CAKgT0UdhuakHDSnZ9cuW+TbogMn3t4UG7fz1QQS-VZj6_W2ODA@mail.gmail.com>
+Subject: Re: [net-next PATCH] page_pool: Refactor page_pool to enable
+ fragmenting after allocation
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Netdev <netdev@vger.kernel.org>, hawk@kernel.org,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jan 25, 2022 at 11:50 PM Ilias Apalodimas
+<ilias.apalodimas@linaro.org> wrote:
+>
+> Hi Alexander,
+>
+> Thanks for the patch
+>
+> On Mon, Jan 24, 2022 at 01:23:04PM -0800, Alexander Duyck wrote:
+> > From: Alexander Duyck <alexanderduyck@fb.com>
+> >
+> > This change is meant to permit a driver to perform "fragmenting" of the
+> > page from within the driver instead of the current model which requires
+> > pre-partitioning the page. The main motivation behind this is to support
+> > use cases where the page will be split up by the driver after DMA instead
+> > of before.
+> >
+> > With this change it becomes possible to start using page pool to replace
+> > some of the existing use cases where multiple references were being used
+> > for a single page, but the number needed was unknown as the size could be
+> > dynamic.
+> >
+>
+> Any specific use cases you have in mind?
 
---=-JZLwH+BnmnbBU710Mfv4
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+For example with the mlx5e we could probably do away with a number of
+page_ref_inc calls and have the page pool take care of the DMA ops
+instead of what happens right now where the DMA unmapping and refcount
+are having to be manipulated by the driver.
 
-Hello,
-On Mon, 2022-01-24 at 12:24 -0800, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> TCP ipv4 uses per-cpu/per-netns ctl sockets in order to send
-> RST and some ACK packets (on behalf of TIMEWAIT sockets).
-> 
-> This adds memory and cpu costs, which do not seem needed.
-> Now typical servers have 256 or more cores, this adds considerable
-> tax to netns users.
-> 
-> tcp sockets are used from BH context, are not receiving packets,
-> and do not store any persistent state but the 'struct net' pointer
-> in order to be able to use IPv4 output functions.
-> 
-> Note that I attempted a related change in the past, that had
-> to be hot-fixed in commit bdbbb8527b6f ("ipv4: tcp: get rid of ugly unicast_sock")
-> 
-> This patch could very well surface old bugs, on layers not
-> taking care of sk->sk_kern_sock properly.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+The basic idea is to make it so that the drivers can make better use
+of page_pool instead of working around it by disabling functionality,
+cheating the page count, or implementing their own recycling schemes
+on top of page pool.
 
-We are observing UaF in our self-tests on top of this patch:
+> > For example, with this code it would be possible to do something like
+> > the following to handle allocation:
+> >   page = page_pool_alloc_pages();
+> >   if (!page)
+> >     return NULL;
+> >   page_pool_fragment_page(page, DRIVER_PAGECNT_BIAS_MAX);
+> >   rx_buf->page = page;
+> >   rx_buf->pagecnt_bias = DRIVER_PAGECNT_BIAS_MAX;
+> >
+> > Then we would process a received buffer by handling it with:
+> >   rx_buf->pagecnt_bias--;
+> >
+> > Once the page has been fully consumed we could then flush the remaining
+> > instances with:
+> >   if (page_pool_defrag_page(page, rx_buf->pagecnt_bias))
+> >     continue;
+> >   page_pool_put_defragged_page(pool, page -1, !!budget);
+> >
+> > The general idea is that we want to have the ability to allocate a page
+> > with excess fragment count and then trim off the unneeded fragments.
+> >
+> > Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
+> > ---
+> >  include/net/page_pool.h |   71 ++++++++++++++++++++++++++++-------------------
+> >  net/core/page_pool.c    |   24 +++++++---------
+> >  2 files changed, 54 insertions(+), 41 deletions(-)
+> >
+> > diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> > index 79a805542d0f..a437c0383889 100644
+> > --- a/include/net/page_pool.h
+> > +++ b/include/net/page_pool.h
+> > @@ -201,8 +201,49 @@ static inline void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+> >  }
+> >  #endif
+> >
+> > -void page_pool_put_page(struct page_pool *pool, struct page *page,
+> > -                     unsigned int dma_sync_size, bool allow_direct);
+> > +void page_pool_put_defragged_page(struct page_pool *pool, struct page *page,
+> > +                               unsigned int dma_sync_size,
+> > +                               bool allow_direct);
+> > +
+> > +static inline void page_pool_fragment_page(struct page *page, long nr)
+> > +{
+> > +     atomic_long_set(&page->pp_frag_count, nr);
+> > +}
+> > +
+> > +static inline long page_pool_defrag_page(struct page *page, long nr)
+> > +{
+> > +     long ret;
+> > +
+> > +     /* If nr == pp_frag_count then we are have cleared all remaining
+> > +      * references to the page. No need to actually overwrite it, instead
+> > +      * we can leave this to be overwritten by the calling function.
+> > +      *
+> > +      * The main advantage to doing this is that an atomic_read is
+> > +      * generally a much cheaper operation than an atomic update,
+> > +      * especially when dealing with a page that may be parititioned
+> > +      * into only 2 or 3 pieces.
+> > +      */
+> > +     if (atomic_long_read(&page->pp_frag_count) == nr)
+> > +             return 0;
+> > +
+> > +     ret = atomic_long_sub_return(nr, &page->pp_frag_count);
+> > +     WARN_ON(ret < 0);
+> > +     return ret;
+> > +}
+> > +
+> > +static inline void page_pool_put_page(struct page_pool *pool,
+> > +                                   struct page *page,
+> > +                                   unsigned int dma_sync_size,
+> > +                                   bool allow_direct)
+> > +{
+> > +#ifdef CONFIG_PAGE_POOL
+> > +     /* It is not the last user for the page frag case */
+> > +     if (pool->p.flags & PP_FLAG_PAGE_FRAG && page_pool_defrag_page(page, 1))
+> > +             return;
+> > +
+> > +     page_pool_put_defragged_page(pool, page, dma_sync_size, allow_direct);
+> > +#endif
+> > +}
+> >
+> >  /* Same as above but will try to sync the entire area pool->max_len */
+> >  static inline void page_pool_put_full_page(struct page_pool *pool,
+> > @@ -211,9 +252,7 @@ static inline void page_pool_put_full_page(struct page_pool *pool,
+> >       /* When page_pool isn't compiled-in, net/core/xdp.c doesn't
+> >        * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
+>
+> nit, but the comment can either go away or move to the new
+> page_pool_put_page()
 
-https://github.com/multipath-tcp/mptcp_net-next/issues/256
+Okay, I will move the comment.
 
-While I can't exclude the MPTCP code is misusing sk_net_refcnt and/or
-sk_kern_sock, we can reproduce the issue even with plain TCP sockets[1]
+> > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> > index bd62c01a2ec3..74fda40da51e 100644
+> > --- a/net/core/page_pool.c
+> > +++ b/net/core/page_pool.c
+> > @@ -423,11 +423,6 @@ static __always_inline struct page *
+> >  __page_pool_put_page(struct page_pool *pool, struct page *page,
+> >                    unsigned int dma_sync_size, bool allow_direct)
+> >  {
+> > -     /* It is not the last user for the page frag case */
+> > -     if (pool->p.flags & PP_FLAG_PAGE_FRAG &&
+> > -         page_pool_atomic_sub_frag_count_return(page, 1))
+> > -             return NULL;
+> > -
+> >       /* This allocator is optimized for the XDP mode that uses
+> >        * one-frame-per-page, but have fallbacks that act like the
+> >        * regular page allocator APIs.
+> > @@ -471,8 +466,8 @@ __page_pool_put_page(struct page_pool *pool, struct page *page,
+> >       return NULL;
+> >  }
+> >
+> > -void page_pool_put_page(struct page_pool *pool, struct page *page,
+> > -                     unsigned int dma_sync_size, bool allow_direct)
+> > +void page_pool_put_defragged_page(struct page_pool *pool, struct page *page,
+> > +                               unsigned int dma_sync_size, bool allow_direct)
+> >  {
+> >       page = __page_pool_put_page(pool, page, dma_sync_size, allow_direct);
+> >       if (page && !page_pool_recycle_in_ring(pool, page)) {
+> > @@ -480,7 +475,7 @@ void page_pool_put_page(struct page_pool *pool, struct page *page,
+> >               page_pool_return_page(pool, page);
+> >       }
+> >  }
+> > -EXPORT_SYMBOL(page_pool_put_page);
+> > +EXPORT_SYMBOL(page_pool_put_defragged_page);
+> >
+> >  /* Caller must not use data area after call, as this function overwrites it */
+> >  void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+> > @@ -491,6 +486,11 @@ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+> >       for (i = 0; i < count; i++) {
+> >               struct page *page = virt_to_head_page(data[i]);
+> >
+> > +             /* It is not the last user for the page frag case */
+> > +             if (pool->p.flags & PP_FLAG_PAGE_FRAG &&
+> > +                 page_pool_defrag_page(page, 1))
+> > +                     continue;
+>
+> Would it make sense to have this check on a function?  Something like
+> page_pool_is_last_frag() or similar? Also for for readability switch do
+> (pool->p.flags & PP_FLAG_PAGE_FRAG) && ...
 
-The kasan report points to:
-
-	struct inet_hashinfo *hashinfo = tw->tw_dr->hashinfo;
-
-in inet_twsk_kill(). Apparently tw->tw_dr still refers to:
-
-	&sock_net(sk)->ipv4.tcp_death_row
-
-and the owning netns has been already dismantelled, as expected.
-I could not find any code setting tw->tw_dr to a safe value after netns
-destruction?!? am I missing something relevant?
-
-Thanks!
-
-Paolo
-
-[1] patching the selftest script with the attached patch and running it
-in a loop:
-
-while ./mptcp_connect.sh -t -t; do : ; done
-
---=-JZLwH+BnmnbBU710Mfv4
-Content-Disposition: attachment; filename="selftests_tcp.patch"
-Content-Type: text/x-patch; name="selftests_tcp.patch"; charset="UTF-8"
-Content-Transfer-Encoding: base64
-
-ZGlmZiAtLWdpdCBhL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL25ldC9tcHRjcC9tcHRjcF9jb25u
-ZWN0LnNoIGIvdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMvbmV0L21wdGNwL21wdGNwX2Nvbm5lY3Qu
-c2gKaW5kZXggY2I1ODA5Yjg5MDgxLi4xNTJkMzk1OTE2ODIgMTAwNzU1Ci0tLSBhL3Rvb2xzL3Rl
-c3Rpbmcvc2VsZnRlc3RzL25ldC9tcHRjcC9tcHRjcF9jb25uZWN0LnNoCisrKyBiL3Rvb2xzL3Rl
-c3Rpbmcvc2VsZnRlc3RzL25ldC9tcHRjcC9tcHRjcF9jb25uZWN0LnNoCkBAIC02MDksOCArNjA5
-LDggQEAgcnVuX3Rlc3RzX2xvKCkKIAkJbG9jYWxfYWRkcj0iMC4wLjAuMCIKIAlmaQogCi0JZG9f
-dHJhbnNmZXIgJHtsaXN0ZW5lcl9uc30gJHtjb25uZWN0b3JfbnN9IE1QVENQIE1QVENQIFwKLQkJ
-ICAgICR7Y29ubmVjdF9hZGRyfSAke2xvY2FsX2FkZHJ9ICIke2V4dHJhX2FyZ3N9IgorCSNkb190
-cmFuc2ZlciAke2xpc3RlbmVyX25zfSAke2Nvbm5lY3Rvcl9uc30gTVBUQ1AgTVBUQ1AgXAorCSMJ
-ICAgICR7Y29ubmVjdF9hZGRyfSAke2xvY2FsX2FkZHJ9ICIke2V4dHJhX2FyZ3N9IgogCWxyZXQ9
-JD8KIAlpZiBbICRscmV0IC1uZSAwIF07IHRoZW4KIAkJcmV0PSRscmV0CkBAIC02MjQsMTYgKzYy
-NCwxNiBAQCBydW5fdGVzdHNfbG8oKQogCQlmaQogCWZpCiAKLQlkb190cmFuc2ZlciAke2xpc3Rl
-bmVyX25zfSAke2Nvbm5lY3Rvcl9uc30gTVBUQ1AgVENQIFwKLQkJICAgICR7Y29ubmVjdF9hZGRy
-fSAke2xvY2FsX2FkZHJ9ICIke2V4dHJhX2FyZ3N9IgorCSNkb190cmFuc2ZlciAke2xpc3RlbmVy
-X25zfSAke2Nvbm5lY3Rvcl9uc30gTVBUQ1AgVENQIFwKKwkjCSAgICAke2Nvbm5lY3RfYWRkcn0g
-JHtsb2NhbF9hZGRyfSAiJHtleHRyYV9hcmdzfSIKIAlscmV0PSQ/CiAJaWYgWyAkbHJldCAtbmUg
-MCBdOyB0aGVuCiAJCXJldD0kbHJldAogCQlyZXR1cm4gMQogCWZpCiAKLQlkb190cmFuc2ZlciAk
-e2xpc3RlbmVyX25zfSAke2Nvbm5lY3Rvcl9uc30gVENQIE1QVENQIFwKLQkJICAgICR7Y29ubmVj
-dF9hZGRyfSAke2xvY2FsX2FkZHJ9ICIke2V4dHJhX2FyZ3N9IgorCSNkb190cmFuc2ZlciAke2xp
-c3RlbmVyX25zfSAke2Nvbm5lY3Rvcl9uc30gVENQIE1QVENQIFwKKwkjCSAgICAke2Nvbm5lY3Rf
-YWRkcn0gJHtsb2NhbF9hZGRyfSAiJHtleHRyYV9hcmdzfSIKIAlscmV0PSQ/CiAJaWYgWyAkbHJl
-dCAtbmUgMCBdOyB0aGVuCiAJCXJldD0kbHJldApAQCAtNzE2LDggKzcxNiw4IEBAIEVPRgogCiAJ
-VEVTVF9DT1VOVD0xMDAwMAogCWxvY2FsIGV4dHJhX2FyZ3M9Ii1vIFRSQU5TUEFSRU5UIgotCWRv
-X3RyYW5zZmVyICR7bGlzdGVuZXJfbnN9ICR7Y29ubmVjdG9yX25zfSBNUFRDUCBNUFRDUCBcCi0J
-CSAgICAke2Nvbm5lY3RfYWRkcn0gJHtsb2NhbF9hZGRyfSAiJHtleHRyYV9hcmdzfSIKKwkjZG9f
-dHJhbnNmZXIgJHtsaXN0ZW5lcl9uc30gJHtjb25uZWN0b3JfbnN9IE1QVENQIE1QVENQIFwKKwkj
-CSAgICAke2Nvbm5lY3RfYWRkcn0gJHtsb2NhbF9hZGRyfSAiJHtleHRyYV9hcmdzfSIKIAlscmV0
-PSQ/CiAKIAlpcCBuZXRucyBleGVjICIkbGlzdGVuZXJfbnMiIG5mdCBmbHVzaCBydWxlc2V0Cg==
-
-
---=-JZLwH+BnmnbBU710Mfv4--
-
+I will address the readability issue by wrapping the check in
+parenthesis when I move it to a function. I will likely be inverting
+it anyway so it will be: !(flags & FRAG) || (defrag_page() == 0)
