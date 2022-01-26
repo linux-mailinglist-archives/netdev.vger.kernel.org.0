@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27D4249C20F
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 04:27:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BB4349C211
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 04:28:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229885AbiAZD1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 22:27:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46922 "EHLO
+        id S237132AbiAZD2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 22:28:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237131AbiAZD1i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 22:27:38 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24835C06161C;
-        Tue, 25 Jan 2022 19:27:38 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id q63so17370266pja.1;
-        Tue, 25 Jan 2022 19:27:38 -0800 (PST)
+        with ESMTP id S230042AbiAZD2K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 22:28:10 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E1DC06161C;
+        Tue, 25 Jan 2022 19:28:10 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id d7so21222195plr.12;
+        Tue, 25 Jan 2022 19:28:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=V0UVDCg60iNlU3TXYumhUCU+eIfgZKaQYAacKYvjuTA=;
-        b=URPGAF1+eebmy5yheslwAMSi5NlPFd6ImLfIKDXEHBcYg1D8/qsNA3o/MN1KPRpvfG
-         xcS/Yqa1h7WbVvvxVXWAPsg3mKEujoKVsHQmD6nK3KP+h899TCQo/irNvXz7s/sXkvi+
-         erj8N4IZEC01ArcrgcTTBoFmTJFU+YkHSWx8NwBet60vp+j6K7FrlQRH4GgIhw7gWZaN
-         LJyw1uDRVnatWlPEN98nCY3tBHCC//71CQX5PCdjuSxbFSNuWpyZYhmynmGU0aExT7C1
-         UsUp9TuDl7sBHnHcVJTlVIB2hx/l1MMJavEpQVlgoo/a1XD0Mv8K3f3ZMF2CG+87nUAD
-         19lA==
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=bw+612EkD6lKhovasyhewKKPgB3AQUWv6mFICa+za7M=;
+        b=ld1oT4He9bXUyBbjHg1R/+5DNQaZ+bXzlJOztmMPSZXhp9bsCdJFHwyhQev5pRJKaC
+         bk/3+WpYbm56QwEix25xJwmpgYvTHhzfXIIm8FMbphg74XJQjBVL1ilbUoHzNggz819+
+         KPRKdBIhXkccf362Ju71D6Fpq0Rrhf90WvKkvM0Mgo/Sfma/js0hNoCNNp8jeRIr89lb
+         /DoiG2iPrPAm2oZb+nRbSY9n1bxeleECRd3C9GQPRymRK86oRHpY+mf99/inPd4f037y
+         zPzdcoPCc+aEAPMAYvmuKI1L8ABbxl/VYEbOR2u2EgLDIHEa5Uk3UWTZCMV0ECmNczwW
+         EhCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+         :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=V0UVDCg60iNlU3TXYumhUCU+eIfgZKaQYAacKYvjuTA=;
-        b=E8Tg1zFVWywmZkFYf1I+RIXTC4FpA1Vq9iDPIS4C24WkRoYoLDD+nvRVGjmTUv7lcb
-         VS+fj2chyLEakJQih6UubKIl+ePOt553A1/tl5avLBgXWEEC71PxenpcbXiG7ISc2CwQ
-         Gw7K7Kjm+IZmZMB968hNd5Gl4lKhWwqRQPjWMxxXlVj79AZUL1DRHNBAzIcSLqB4BDQc
-         TUXnlk6wVPFI3ScWOVNjKpGwBzAgE6VXbVSl+VobtiQBYruaDGSeuituhOY980VyawwS
-         0Aw/J2VT+eRLdPWyrNLZPT82kdMVAlua+T1xYDsEf80QVVxUnnFhWeCUaIHY39Qppocn
-         LAwg==
-X-Gm-Message-State: AOAM530YKnxaew3/NfMKEE3w3P5cE+/PbgGmSWATGJQxPlegGlD3D7rl
-        KgTrZKXu3NbmyfhQHTd/SPs=
-X-Google-Smtp-Source: ABdhPJwS7HD+choTy2WvuofXSADGNgsJZVcIfmHdI0NgrDZAPR7P6TOA/cc2SpDc3b+pugS25KVrdw==
-X-Received: by 2002:a17:902:e843:b0:14b:339c:f427 with SMTP id t3-20020a170902e84300b0014b339cf427mr16115095plg.108.1643167657671;
-        Tue, 25 Jan 2022 19:27:37 -0800 (PST)
+        bh=bw+612EkD6lKhovasyhewKKPgB3AQUWv6mFICa+za7M=;
+        b=A6B3i9iLdLGuAdtkcfQv4akAMS1AoVtIS5d5dfYEHaJSfim0PgiQ2HmQXnW4w76KRv
+         X+O51w5youaZ+7xREb2IJET/JPcSA7C7WdLN8qWL43F0rGUYZaRZI0ebXHyXfDT/wpuC
+         fTcM1BZ5SrMoTJFMh13uNfmykfVM6gLdazeSHfW9DVAPQ0Nxm8xZWHgLSDvbvJtCPD9n
+         8PopefHDLsyhaU+ibZBu/8JOTZI1+tpIUE98mZqThykrq5vWEpmyBYSlGpttmdECpZ6C
+         ozL93xMO9mw3u9P6Zihtp/UDU/3KNJqOjznwxB7o71gl7F0Uk/yUA2PTldwEffjrNvgx
+         Dxqg==
+X-Gm-Message-State: AOAM531d29nWeVSrqcJRsBV8fvc2l9qiqupb/NK6Fj8VdacfW6D0A4Ku
+        LGTWRHld7WjzwjGFqBhfodGaeGYCrGY=
+X-Google-Smtp-Source: ABdhPJy57Pu/PtYgCZQySDmzqVqoqcXJnaz9q+1GsPW5ygjit3En6V5gAF7wcIv8U5dYKEBZCmjMog==
+X-Received: by 2002:a17:902:d48b:b0:14b:53c9:da09 with SMTP id c11-20020a170902d48b00b0014b53c9da09mr11251672plg.1.1643167689854;
+        Tue, 25 Jan 2022 19:28:09 -0800 (PST)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id l10sm396846pff.44.2022.01.25.19.27.36
+        by smtp.gmail.com with ESMTPSA id w15sm15771970pgk.78.2022.01.25.19.28.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 19:27:37 -0800 (PST)
-Message-ID: <cba946ff-5ba4-b2af-118c-b1d0a7669450@gmail.com>
-Date:   Tue, 25 Jan 2022 19:27:35 -0800
+        Tue, 25 Jan 2022 19:28:09 -0800 (PST)
+Message-ID: <0dd95c31-d54e-0879-619a-e3fa701e5779@gmail.com>
+Date:   Tue, 25 Jan 2022 19:28:08 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [RFC PATCH v7 02/16] net: dsa: replay master state events in
- dsa_tree_{setup,teardown}_master
+Subject: Re: [RFC PATCH v7 03/16] net: dsa: tag_qca: convert to FIELD macro
 Content-Language: en-US
 To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -62,11 +61,10 @@ To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20220123013337.20945-1-ansuelsmth@gmail.com>
- <20220123013337.20945-3-ansuelsmth@gmail.com>
+ <20220123013337.20945-4-ansuelsmth@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220123013337.20945-3-ansuelsmth@gmail.com>
+In-Reply-To: <20220123013337.20945-4-ansuelsmth@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -76,31 +74,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 1/22/2022 5:33 PM, Ansuel Smith wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Convert driver to FIELD macro to drop redundant define.
 > 
-> In order for switch driver to be able to make simple and reliable use of
-> the master tracking operations, they must also be notified of the
-> initial state of the DSA master, not just of the changes. This is
-> because they might enable certain features only during the time when
-> they know that the DSA master is up and running.
-> 
-> Therefore, this change explicitly checks the state of the DSA master
-> under the same rtnl_mutex as we were holding during the
-> dsa_master_setup() and dsa_master_teardown() call. The idea being that
-> if the DSA master became operational in between the moment in which it
-> became a DSA master (dsa_master_setup set dev->dsa_ptr) and the moment
-> when we checked for the master being up, there is a chance that we
-> would emit a ->master_state_change() call with no actual state change.
-> We need to avoid that by serializing the concurrent netdevice event with
-> us. If the netdevice event started before, we force it to finish before
-> we begin, because we take rtnl_lock before making netdev_uses_dsa()
-> return true. So we also handle that early event and do nothing on it.
-> Similarly, if the dev_open() attempt is concurrent with us, it will
-> attempt to take the rtnl_mutex, but we're holding it. We'll see that
-> the master flag IFF_UP isn't set, then when we release the rtnl_mutex
-> we'll process the NETDEV_UP notifier.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
