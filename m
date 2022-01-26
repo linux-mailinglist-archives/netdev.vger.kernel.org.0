@@ -2,116 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6D7649D25B
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 20:11:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 023C849D28E
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 20:37:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244405AbiAZTLY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 14:11:24 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:55116 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244370AbiAZTLT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 14:11:19 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18405616E3
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 19:11:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6CF9C340EA;
-        Wed, 26 Jan 2022 19:11:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643224278;
-        bh=BG6BnPctooTBwFqa7t+hX9i6hf8qYsGFcFBzkIdS0og=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gr4W4XrRx2IBJHH3lqMiJUbq/KwVWbhfsDBd/v+FQR1QTqXWR80bF8UUE9tF8+4f/
-         4pZZjWSLMr5yb3qVjsBpW3PM608BEHUQmY33VQluC8OUFZZ6C/pKjZVbzd4CitejUP
-         SoZ2eY7/SqUcI98Yna+4Mwsm0smeMVMT+n6OO0yktnC6nFq5Vxjhx68NVFMbFJm95k
-         2kQWdPZ8TXWVI9R2iute/eVU8Qs616Z9JWmsIwm0NY73F9nv5GkQHWTswnA4rvlpWC
-         bpCLpUJ71nhH8gQPrRoeD2kzRINwHASnQGj5bsmiqafuL0a+L3rRecBTB4QNABPDl1
-         5mxd1e8eu19wg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        jmaloy@redhat.com, ying.xue@windriver.com,
-        tipc-discussion@lists.sourceforge.net
-Subject: [PATCH net-next 15/15] net: tipc: remove unused static inlines
-Date:   Wed, 26 Jan 2022 11:11:09 -0800
-Message-Id: <20220126191109.2822706-16-kuba@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220126191109.2822706-1-kuba@kernel.org>
-References: <20220126191109.2822706-1-kuba@kernel.org>
+        id S244469AbiAZThG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 14:37:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46220 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244467AbiAZThG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 14:37:06 -0500
+Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA56C06161C
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 11:37:05 -0800 (PST)
+Received: by mail-ua1-x92a.google.com with SMTP id l1so643802uap.8
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 11:37:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ov8sR96UJZP9jcwN/mm9WE7GxDKJOLyGvYLjiEWOfco=;
+        b=ZHDx7HuohoRPAwMSeUakSJJgMsVtz8QSFITD2hoE9TGZvDkCL8IZqrYtgb/UhJGyaS
+         V68rPVtbiZi9G2oCKwW6wEAir3RUmODJ5MlHIbgy0f1szRiIWK38Ek73Pt4pK7boT0Dr
+         v6BjbYl4hFMc8WabY71UjCF7tQ4UEYWcrerKy4oN8/vAghNGK9W99YfqK+BnMT5t29YJ
+         tYbAAHYkXq1KHSa9mxsrU93YZbT3w8Zk6HDOzIzyqBS6vGUpgdBMpLL0h/3vh6t9xIFV
+         LuJ2/hLwi4B/iNdPrsfhETUr5K32MbMJ4kDSg2cwOXZiTuNQOxVKthaE+X+f5ig/erV+
+         R1Qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ov8sR96UJZP9jcwN/mm9WE7GxDKJOLyGvYLjiEWOfco=;
+        b=tEAd4BGaLYXSiWYSzN+bKMh2wmmjHbY6ft9vanNdN/C8BpKFV5DNV5gXR0qK3qq8hT
+         DzB5F+oHLkwPhIPUr0VtaqwB2W2SV8WYb/riZcWg/dDDm77CLR4HgZJ8dnSPdDfml7Wc
+         uPp6vsI4KtH/tk0F6CvbmJX/QUZtvbSx0mhNpFjJOmN89ORaUBVI4RMke64aOpOyTLAp
+         Zy4rJfW2q4VMfgNZ0EUaVkakfmiUOxlQx0WSHW43c5B58DXL0ms3oFvWGtO1u2Tg1g4h
+         rh80YTzhLh/24Y6fZES/Xz8j9AUTZ5rNsca92HYdzqxV6+G7xtrV7oNSQLeYLTbKkdgs
+         rKlQ==
+X-Gm-Message-State: AOAM532N1KZOtBqbn+Y7GSOqgZYxt7TsF21Fzz8kdvobBg1wfdhaJFDj
+        QCwE9m+/Zhd65fglvMHvVBgX8x7MwE0=
+X-Google-Smtp-Source: ABdhPJzr5+8AqmGn/u34THfyqYCXJwQQI0PIci43jGpPeNnPrr66Z+YtWzaXJ2w3Ibp7zWvqyAIHCg==
+X-Received: by 2002:a05:6102:226d:: with SMTP id v13mr147950vsd.63.1643225824872;
+        Wed, 26 Jan 2022 11:37:04 -0800 (PST)
+Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com. [209.85.222.45])
+        by smtp.gmail.com with ESMTPSA id p2sm708404uao.1.2022.01.26.11.37.04
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 11:37:04 -0800 (PST)
+Received: by mail-ua1-f45.google.com with SMTP id y4so711668uad.1
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 11:37:04 -0800 (PST)
+X-Received: by 2002:a05:6102:d87:: with SMTP id d7mr365519vst.60.1643225823948;
+ Wed, 26 Jan 2022 11:37:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220126191109.2822706-1-kuba@kernel.org> <20220126191109.2822706-11-kuba@kernel.org>
+In-Reply-To: <20220126191109.2822706-11-kuba@kernel.org>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 26 Jan 2022 14:36:28 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSfOPomWTXY7rV4kqYYwvZ0Vgir5SAnEFn8pWbg_q8974Q@mail.gmail.com>
+Message-ID: <CA+FuTSfOPomWTXY7rV4kqYYwvZ0Vgir5SAnEFn8pWbg_q8974Q@mail.gmail.com>
+Subject: Re: [PATCH net-next 10/15] udp: remove inner_udp_hdr()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, pabeni@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IIUC the TIPC msg helpers are not meant to provide
-and exhaustive API, so remove the unused ones.
+On Wed, Jan 26, 2022 at 2:11 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Not used since added in v3.8.
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: jmaloy@redhat.com
-CC: ying.xue@windriver.com
-CC: tipc-discussion@lists.sourceforge.net
----
- net/tipc/msg.h | 23 -----------------------
- 1 file changed, 23 deletions(-)
-
-diff --git a/net/tipc/msg.h b/net/tipc/msg.h
-index 64ae4c4c44f8..c5eec16213d7 100644
---- a/net/tipc/msg.h
-+++ b/net/tipc/msg.h
-@@ -226,14 +226,6 @@ static inline void msg_set_bits(struct tipc_msg *m, u32 w,
- 	m->hdr[w] |= htonl(val);
- }
- 
--static inline void msg_swap_words(struct tipc_msg *msg, u32 a, u32 b)
--{
--	u32 temp = msg->hdr[a];
--
--	msg->hdr[a] = msg->hdr[b];
--	msg->hdr[b] = temp;
--}
--
- /*
-  * Word 0
-  */
-@@ -480,11 +472,6 @@ static inline void msg_incr_reroute_cnt(struct tipc_msg *m)
- 	msg_set_bits(m, 1, 21, 0xf, msg_reroute_cnt(m) + 1);
- }
- 
--static inline void msg_reset_reroute_cnt(struct tipc_msg *m)
--{
--	msg_set_bits(m, 1, 21, 0xf, 0);
--}
--
- static inline u32 msg_lookup_scope(struct tipc_msg *m)
- {
- 	return msg_bits(m, 1, 19, 0x3);
-@@ -800,11 +787,6 @@ static inline void msg_set_dest_domain(struct tipc_msg *m, u32 n)
- 	msg_set_word(m, 2, n);
- }
- 
--static inline u32 msg_bcgap_after(struct tipc_msg *m)
--{
--	return msg_bits(m, 2, 16, 0xffff);
--}
--
- static inline void msg_set_bcgap_after(struct tipc_msg *m, u32 n)
- {
- 	msg_set_bits(m, 2, 16, 0xffff, n);
-@@ -868,11 +850,6 @@ static inline void msg_set_next_sent(struct tipc_msg *m, u16 n)
- 	msg_set_bits(m, 4, 0, 0xffff, n);
- }
- 
--static inline void msg_set_long_msgno(struct tipc_msg *m, u32 n)
--{
--	msg_set_bits(m, 4, 0, 0xffff, n);
--}
--
- static inline u32 msg_bc_netid(struct tipc_msg *m)
- {
- 	return msg_word(m, 4);
--- 
-2.34.1
-
+Acked-by: Willem de Bruijn <willemb@google.com>
