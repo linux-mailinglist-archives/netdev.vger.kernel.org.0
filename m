@@ -2,90 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0B0549CAC6
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 14:28:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10F9D49CACF
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 14:30:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239492AbiAZN16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 08:27:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
+        id S239639AbiAZNaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 08:30:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232039AbiAZN16 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 08:27:58 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42133C06161C;
-        Wed, 26 Jan 2022 05:27:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ZAq7lphUj4ZBbT0ttD3I4ZX17HecYYp/WQ0M7GbtbZg=; b=eFfUhCblrGf2E9eacHO/gPRV0+
-        zygiBNn0vwQXKqFymnCr9Q4qqkJ2UnBpzzmuIBdkSUViGWPMdfgBXbVWpq6hZELCjDLLtL5t8G17w
-        /ZV8q0145pveahnMnBUbWiEUItdiWmGN7BuNEYfFqvMbF4wuWdvGPJaTrnGbLD3jblCcEj6q/ooH9
-        9+lkEKoXdzlvBjgZzs3Enc591b7BaAKvn/woO0JrL2OLOrV0zzmFRTtZTNzaU+f4sYOD5rLEKD/Im
-        DZzdEClcdv/5wAZHjt36yv8j8tu4rHShQ5D+avIeu9MkMsoOZENA2n8ypE1TMEU7KLbfJK7s2kuXK
-        GQrBBiIA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56888)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nCiKu-0003K2-6Q; Wed, 26 Jan 2022 13:27:44 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nCiKk-0004VA-3N; Wed, 26 Jan 2022 13:27:34 +0000
-Date:   Wed, 26 Jan 2022 13:27:34 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Jisheng Zhang <jszhang@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: stmmac: don't stop RXC during LPI
-Message-ID: <YfFMRoLixWR/8spY@shell.armlinux.org.uk>
-References: <20220123141245.1060-1-jszhang@kernel.org>
- <Ye15va7tFWMgKPEE@lunn.ch>
- <Ye19bHxcQ5Plx0v9@xhacker>
- <Ye2SznI2rNKAUDIq@lunn.ch>
- <YfFEulZJKzuRQfeG@xhacker>
+        with ESMTP id S239570AbiAZNac (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 08:30:32 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52D0C061747
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 05:30:31 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id a28so32910137lfl.7
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 05:30:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=41gfOK3SwjHN5QGLkwbAzzyj+KqK0hiE/9CoXJsNy30=;
+        b=fazgTc8LYb2smVQ9HIHKZum2qBRuwRdewGBr6Nb1DMBW7ikf8wauel84++vEdeQflr
+         910HrL8zmfvJ34plx+JbFRO2MUVzAMhPlsh5idqEO2AN+YjiJcCD6N4JyZ+uuYbCm8lv
+         dcJdy10hsa+Dxi1v3OT3/5/psct8K1aayjkbfXnxU8qJGeqh4m2/RGAOlILJUhJnx7cj
+         IMBVK8R2Lnp4n2cyWKQP6sELFsL06YYcRUrExNy88Elk957U/rHV7rX+CUeme6gV/T2O
+         cykUT7d+OEQd4znkAKG0fLbVLexvgelbgxbyG0pmgEG4FUUH101nYKZG+p11GjuS26X3
+         bRQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=41gfOK3SwjHN5QGLkwbAzzyj+KqK0hiE/9CoXJsNy30=;
+        b=c8rnB8AG8nCRV65EhZBpdrEOGDKaAeEJCjMC1d+BqJg7ByCLXjJRbPLjep9M9EePAz
+         SyL8/7zE3M4Hwz9U2JUH4CVt1Y6z2n1s/j/SXPqQKEg1fLPFpaRtDO9BddyKlyZThpzU
+         GhAGdEjbIyDmFXmQRapxs/xGItJTc2Rdix5uYQuUdgGmtQLqj3b8lDzdJa2ewWs/6w+4
+         yz3l7ivbUE6bsjZe7qfK4IsueorAYpRnvNVLESCzXzPuYIi63QbSHI4mDGPOmr1RUb4K
+         BxhdvtUhQrlwl9x1dkxIGLTxtsL2xRtxSz7c8haKB1MizYA9FG1pTDrOimMWEs7GcZet
+         /tTA==
+X-Gm-Message-State: AOAM532SEDmnlmZwn3jgQZV1CbfWGFBfkPmjZaC2BcfVNGxLahFKl6g4
+        Ng0KV7YngH+CjfrAv0QGwylnkPrVHc2wig==
+X-Google-Smtp-Source: ABdhPJwgZnK1VTV9czEZu8TldMygF0tKYTolQG20/RIdfWmw9JA0z6P14IouH5OT+t781NWHyRuirg==
+X-Received: by 2002:a19:431e:: with SMTP id q30mr8353511lfa.285.1643203829807;
+        Wed, 26 Jan 2022 05:30:29 -0800 (PST)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id p15sm1828709lfc.307.2022.01.26.05.30.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 05:30:29 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Marcin Wojtas <mw@semihalf.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Markus Koch <markus@notsyncing.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 4/5] net/fsl: xgmac_mdio: Support setting the
+ MDC frequency
+In-Reply-To: <YfFHmkFXtlVus9IW@lunn.ch>
+References: <20220126101432.822818-1-tobias@waldekranz.com>
+ <20220126101432.822818-5-tobias@waldekranz.com> <YfFHmkFXtlVus9IW@lunn.ch>
+Date:   Wed, 26 Jan 2022 14:30:28 +0100
+Message-ID: <87r18ubp57.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfFEulZJKzuRQfeG@xhacker>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 08:55:22PM +0800, Jisheng Zhang wrote:
-> On Sun, Jan 23, 2022 at 06:39:26PM +0100, Andrew Lunn wrote:
-> > > I think this is a common issue because the MAC needs phy's RXC for RX
-> > > logic. But it's better to let other stmmac users verify. The issue
-> > > can easily be reproduced on platforms with PHY_POLL external phy.
-> > 
-> > What is the relevance of PHY polling here? Are you saying if the PHY
-> > is using interrupts you do not see this issue?
-> 
-> I tried these two days, if the PHY is using interrupts, I can't
-> reproduce the issue. It looks a bit more complex. Any suggestions?
+On Wed, Jan 26, 2022 at 14:07, Andrew Lunn <andrew@lunn.ch> wrote:
+> Hi Tobias
+>
+>>  struct mdio_fsl_priv {
+>>  	struct	tgec_mdio_controller __iomem *mdio_base;
+>> +	struct clk *enet_clk;
+>
+> It looks like there is a whitespace issue here?
+>
 
-I suppose it could be that there is a delay between the PHY reporting
-the link loss, raising an interrupt, which is then processed to disable
-the receive side, and the PHY going into LPI. The problem with polling
-is, well, it's polling, and at a one second rate - which probably is too
-long between the PHY noticing the loss of link and going into LPI.
+Ahh, sorry about that!
 
-What this also probably means is that if interrupt latency is high
-enough, the same problem will occur.
+>> +	u32	mdc_freq;
+>>  	bool	is_little_endian;
+>>  	bool	has_a009885;
+>>  	bool	has_a011043;
+>> @@ -255,6 +258,34 @@ static int xgmac_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+>>  	return ret;
+>>  }
+>>  
+>> +static void xgmac_mdio_set_mdc_freq(struct mii_bus *bus)
+>> +{
+>> +	struct mdio_fsl_priv *priv = (struct mdio_fsl_priv *)bus->priv;
+>> +	struct tgec_mdio_controller __iomem *regs = priv->mdio_base;
+>> +	struct device *dev = bus->parent;
+>> +	u32 mdio_stat, div;
+>> +
+>> +	if (device_property_read_u32(dev, "clock-frequency", &priv->mdc_freq))
+>> +		return;
+>> +
+>> +	priv->enet_clk = devm_clk_get(dev, NULL);
+>> +	if (IS_ERR(priv->enet_clk)) {
+>> +		dev_err(dev, "Input clock unknown, not changing MDC frequency");
+>
+> Is the clock optional or mandatory?
 
-So maybe the EEE support to be a little more clever - so we only enable
-clock stop after the MAC driver has disabled the receive side.
+As the code is now, it is mandatory. I could add some default frequency,
+but I fear that could do more harm than good?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> If mandatory, then i would prefer -ENODEV and fail the probe.
+>
+>> +		return;
+>> +	}
+>> +
+>> +	div = ((clk_get_rate(priv->enet_clk) / priv->mdc_freq) - 1) / 2;
+>> +	if (div < 5 || div > 0x1ff) {
+>> +		dev_err(dev, "Requested MDC frequecy is out of range, ignoring");
+>
+> and here return -EINVAL.
+>
+> I always think it is best to make it obvious something is broken. One
+> additional line on the console can be missed for a while. All the
+> Ethernet devices missing because the PHYs are missing, because the
+> MDIO bus is missing is going to get noticed very quickly.
+
+Darn, the last thing I did was to change this from a hard to a soft
+error :)
+
+Ok, no worries about regressions for deployed stuff already out there?
