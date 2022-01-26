@@ -2,79 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7838749C4C4
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 08:54:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8524B49C4C9
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 08:54:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238066AbiAZHyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 02:54:13 -0500
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:33604 "EHLO
-        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229840AbiAZHyK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 02:54:10 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R921e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0V2ucAWv_1643183646;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V2ucAWv_1643183646)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 26 Jan 2022 15:54:07 +0800
-Message-Id: <1643183537.4001389-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [RFC PATCH 0/5] TUN/VirtioNet USO features support.
-Date:   Wed, 26 Jan 2022 15:52:17 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Andrew Melnychenko <andrew@daynix.com>
-Cc:     yan@daynix.com, yuri.benditovich@daynix.com, davem@davemloft.net,
-        kuba@kernel.org, mst@redhat.com, jasowang@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-In-Reply-To: <20220125084702.3636253-1-andrew@daynix.com>
+        id S238080AbiAZHyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 02:54:38 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:52711 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229840AbiAZHyi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 02:54:38 -0500
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 51A415C011C;
+        Wed, 26 Jan 2022 02:54:37 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Wed, 26 Jan 2022 02:54:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=SKGS1zEnaV0fvTDM6
+        ntgjxIzlGVxcG6al568ySb0rQM=; b=PK0ydKVjyuytKIpayMC5aLszd6KWSoPnq
+        ik3Lmmw+K8hvaq5rvAa3l4uBcNxr8SWg9AiqFKwKRicVCvmkY8zH67gZtyOPo5T0
+        38ppC+lDHYV2FS0BXSoi8Ws/lVac1zucxpqvOVCdIQaZdMHr4ltskAJZWB0uNdd0
+        qyBZ22Q0mzJMHNNIp9bi/y54cMwtJHQp5CN/lIiVTWHafXV7YHFXvGY6E63RPIpM
+        l1M7UvPGiR6TKr+KRga7IkQ2RMzYfXpbvzk7oXhEkNxfDUBmko6Ete1UY1hYtiFq
+        CXZZ0zinCuqgiBSLD5MmKYVs0fLlushw7WmFZlKa8Q6O036Cz85sg==
+X-ME-Sender: <xms:Pf7wYUfku9RBU_jvEjoWD3mfQjo_5J8mBRMLPbCkynmxjR3vAZ0xKQ>
+    <xme:Pf7wYWMYgq5Mj8r3v92-GcPxEGiGiZbPvAyN0MHZ_tw-V7PAMWWEh4bVfTX9lF6dw
+    cS8nvm_N0qCT9Q>
+X-ME-Received: <xmr:Pf7wYVis8XsFlx8Elktwm0_ooLTod0uMyacKYcXo1kgrFSr6uKhbJ26ncwbJOplu0iMTjOx6rb0q5nSBjN9kKJsyBtY5sg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrfedtgdduudehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeehhfdthfduueehgfekkefhhedutddvveefteehteekleevgfegteevueelheek
+    ueenucffohhmrghinhepghhithhhuhgsrdgtohhmnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:Pf7wYZ_dwFxsSiZx2SvkEwpzenhfU5SaEKUePuhtQwT8GSf7CKcbRw>
+    <xmx:Pf7wYQv7EjI_HRa2poIfDSlQD1b4Cj9kHYRkNHcz0yONAGjRmLF3kQ>
+    <xmx:Pf7wYQFiq9hgd7-rDlzQMDZDyGz0krQ6Sns0ER7ZHB3mD4tp1TYUdg>
+    <xmx:Pf7wYaUMW7E6H53zZuYUflAs3yF1h-xf0D5HaTOVshyaNwlKMwwh6A>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 26 Jan 2022 02:54:36 -0500 (EST)
+Date:   Wed, 26 Jan 2022 09:54:32 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Ido Schimmel <idosch@nvidia.com>, Petr Machata <petrm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] mlxsw: spectrum_kvdl: Use struct_size() helper in
+ kzalloc()
+Message-ID: <YfD+OCLziDeuDr8R@shredder>
+References: <20220125170128.GA60918@embeddedor>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220125170128.GA60918@embeddedor>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jan 2022 10:46:57 +0200, Andrew Melnychenko <andrew@daynix.com> wrote:
-> Added new offloads for TUN devices TUN_F_USO4 and TUN_F_USO6.
-> Technically they enable NETIF_F_GSO_UDP_L4
-> (and only if USO4 & USO6 are set simultaneously).
-> It allows to transmission of large UDP packets.
->
-> Different features USO4 and USO6 are required for qemu where Windows guests can
-> enable disable USO receives for IPv4 and IPv6 separately.
-> On the other side, Linux can't really differentiate USO4 and USO6, for now.
-> For now, to enable USO for TUN it requires enabling USO4 and USO6 together.
-> In the future, there would be a mechanism to control UDP_L4 GSO separately.
->
-> Test it WIP Qemu https://github.com/daynix/qemu/tree/Dev_USOv2
->
-> New types for VirtioNet already on mailing:
-> https://lists.oasis-open.org/archives/virtio-comment/202110/msg00010.html
+On Tue, Jan 25, 2022 at 11:01:28AM -0600, Gustavo A. R. Silva wrote:
+> Make use of the struct_size() helper instead of an open-coded version,
+> in order to avoid any potential type mistakes or integer overflows that,
+> in the worst scenario, could lead to heap overflows.
+> 
+> Also, address the following sparse warnings:
+> drivers/net/ethernet/mellanox/mlxsw/spectrum1_kvdl.c:229:24: warning: using sizeof on a flexible structure
+> 
+> Link: https://github.com/KSPP/linux/issues/174
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-Seems like this hasn't been upvoted yet.
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 
-	https://github.com/oasis-tcs/virtio-spec#use-of-github-issues
-
-Thanks.
-
->
-> Also, there is a known issue with transmitting packages between two guests.
-> Without hacks with skb's GSO - packages are still segmented on the host's postrouting.
->
-> Andrew Melnychenko (5):
->   uapi/linux/if_tun.h: Added new ioctl for tun/tap.
->   driver/net/tun: Added features for USO.
->   uapi/linux/virtio_net.h: Added USO types.
->   linux/virtio_net.h: Added Support for GSO_UDP_L4 offload.
->   drivers/net/virtio_net.c: Added USO support.
->
->  drivers/net/tap.c               | 18 ++++++++++++++++--
->  drivers/net/tun.c               | 15 ++++++++++++++-
->  drivers/net/virtio_net.c        | 22 ++++++++++++++++++----
->  include/linux/virtio_net.h      | 11 +++++++++++
->  include/uapi/linux/if_tun.h     |  3 +++
->  include/uapi/linux/virtio_net.h |  4 ++++
->  6 files changed, 66 insertions(+), 7 deletions(-)
->
-> --
-> 2.34.1
->
-> _______________________________________________
-> Virtualization mailing list
-> Virtualization@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+Thanks
