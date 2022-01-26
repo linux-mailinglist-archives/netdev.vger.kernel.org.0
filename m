@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BB4349C211
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 04:28:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B40E049C213
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 04:28:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237132AbiAZD2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jan 2022 22:28:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47050 "EHLO
+        id S237152AbiAZD2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jan 2022 22:28:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230042AbiAZD2K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 22:28:10 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E1DC06161C;
-        Tue, 25 Jan 2022 19:28:10 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id d7so21222195plr.12;
-        Tue, 25 Jan 2022 19:28:10 -0800 (PST)
+        with ESMTP id S237143AbiAZD2d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jan 2022 22:28:33 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C938C06161C;
+        Tue, 25 Jan 2022 19:28:32 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id s61-20020a17090a69c300b001b4d0427ea2so3525688pjj.4;
+        Tue, 25 Jan 2022 19:28:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :references:from:in-reply-to:content-transfer-encoding;
-        bh=bw+612EkD6lKhovasyhewKKPgB3AQUWv6mFICa+za7M=;
-        b=ld1oT4He9bXUyBbjHg1R/+5DNQaZ+bXzlJOztmMPSZXhp9bsCdJFHwyhQev5pRJKaC
-         bk/3+WpYbm56QwEix25xJwmpgYvTHhzfXIIm8FMbphg74XJQjBVL1ilbUoHzNggz819+
-         KPRKdBIhXkccf362Ju71D6Fpq0Rrhf90WvKkvM0Mgo/Sfma/js0hNoCNNp8jeRIr89lb
-         /DoiG2iPrPAm2oZb+nRbSY9n1bxeleECRd3C9GQPRymRK86oRHpY+mf99/inPd4f037y
-         zPzdcoPCc+aEAPMAYvmuKI1L8ABbxl/VYEbOR2u2EgLDIHEa5Uk3UWTZCMV0ECmNczwW
-         EhCA==
+        bh=eZCPCMPd3mt57EyhCZ62iVdlHE4UKPJRZU4e5HBqWHA=;
+        b=DKuaM0vlqb43TGRkH/ny+XUXa1k1TUJ2mufyxWVlhnfxQz+6QQ84zliis9bj87p08O
+         kAFn3Yq/GyBduIeMspBM5+3rq/8IRDu9G24NxCxdHdnlj+wu54Iid97mxkToMMDjd3vK
+         n9F6h8vDaMPICOgnOVW5eijEO2NzFfRraYHvNoTMXXRKS2Z8NWX0CyeOtrq/2kv1C7NL
+         Sdq92N2MD/RINPkwgceUuBTDYew2BLD4Ku5z+Pa62/po/dqC6JOsIJsjrVMgroYAy5Xd
+         cgX7DNCmisNTMKtHNGVJwq/YRLogCfY0MK3dt1Y56Ihb8BWT2hFmciEMgtro2wGQeuRS
+         zMYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=bw+612EkD6lKhovasyhewKKPgB3AQUWv6mFICa+za7M=;
-        b=A6B3i9iLdLGuAdtkcfQv4akAMS1AoVtIS5d5dfYEHaJSfim0PgiQ2HmQXnW4w76KRv
-         X+O51w5youaZ+7xREb2IJET/JPcSA7C7WdLN8qWL43F0rGUYZaRZI0ebXHyXfDT/wpuC
-         fTcM1BZ5SrMoTJFMh13uNfmykfVM6gLdazeSHfW9DVAPQ0Nxm8xZWHgLSDvbvJtCPD9n
-         8PopefHDLsyhaU+ibZBu/8JOTZI1+tpIUE98mZqThykrq5vWEpmyBYSlGpttmdECpZ6C
-         ozL93xMO9mw3u9P6Zihtp/UDU/3KNJqOjznwxB7o71gl7F0Uk/yUA2PTldwEffjrNvgx
-         Dxqg==
-X-Gm-Message-State: AOAM531d29nWeVSrqcJRsBV8fvc2l9qiqupb/NK6Fj8VdacfW6D0A4Ku
-        LGTWRHld7WjzwjGFqBhfodGaeGYCrGY=
-X-Google-Smtp-Source: ABdhPJy57Pu/PtYgCZQySDmzqVqoqcXJnaz9q+1GsPW5ygjit3En6V5gAF7wcIv8U5dYKEBZCmjMog==
-X-Received: by 2002:a17:902:d48b:b0:14b:53c9:da09 with SMTP id c11-20020a170902d48b00b0014b53c9da09mr11251672plg.1.1643167689854;
-        Tue, 25 Jan 2022 19:28:09 -0800 (PST)
+        bh=eZCPCMPd3mt57EyhCZ62iVdlHE4UKPJRZU4e5HBqWHA=;
+        b=ZkP6LTG6kVe2YEVhzdDbGUAxxUxhmht5eTIKpqEnfDA+hZyltpMDRSs0bMM/eOaCpI
+         dFWOKemmVAcFoZKrAcX8Id6d8lzlobnvMAHbWQOJ5DVd9eO1hpa1Y5eP9mFVyJGc7VNn
+         LZqpx7hf12262r3neOZex4EVtleQoom0h891OLaKuy2FGVKXOSQAbZRWerLbmkbfxGNk
+         7UK52FbIvpczq9V+1rCnHpvIcBwUwSljowIslLoPmSmuX2yhcCKiqZ64Z/OWVbFAfA2g
+         a0fb4pihfmIck8GjdyqFCTUVyXEr5ikUsLCTf/QIg9zJMwCOTxA96c4INvevsQ10HMFC
+         vHjw==
+X-Gm-Message-State: AOAM5326PNH30GKsNQHYVLaq6OFR5ZdWbOvecZX2wXgj6jAEYS5gbzFV
+        7ii2/DXuCsWq7EgoL/9jI10=
+X-Google-Smtp-Source: ABdhPJwjbM71sxlpCt6Xf7FgupXigB9yHdggEDOtVYF2wFLRmB38q8EsHngF8+EuYWBLdUSdXqE8bg==
+X-Received: by 2002:a17:903:2342:b0:14b:449:d517 with SMTP id c2-20020a170903234200b0014b0449d517mr21617134plh.104.1643167711919;
+        Tue, 25 Jan 2022 19:28:31 -0800 (PST)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id w15sm15771970pgk.78.2022.01.25.19.28.08
+        by smtp.gmail.com with ESMTPSA id w19sm420047pfu.47.2022.01.25.19.28.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 19:28:09 -0800 (PST)
-Message-ID: <0dd95c31-d54e-0879-619a-e3fa701e5779@gmail.com>
-Date:   Tue, 25 Jan 2022 19:28:08 -0800
+        Tue, 25 Jan 2022 19:28:31 -0800 (PST)
+Message-ID: <08ea3f8d-53df-2fd3-a03f-165840f85b47@gmail.com>
+Date:   Tue, 25 Jan 2022 19:28:30 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [RFC PATCH v7 03/16] net: dsa: tag_qca: convert to FIELD macro
+Subject: Re: [RFC PATCH v7 04/16] net: dsa: tag_qca: move define to include
+ linux/dsa
 Content-Language: en-US
 To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -62,9 +63,9 @@ To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
 References: <20220123013337.20945-1-ansuelsmth@gmail.com>
- <20220123013337.20945-4-ansuelsmth@gmail.com>
+ <20220123013337.20945-5-ansuelsmth@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220123013337.20945-4-ansuelsmth@gmail.com>
+In-Reply-To: <20220123013337.20945-5-ansuelsmth@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -74,7 +75,9 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 1/22/2022 5:33 PM, Ansuel Smith wrote:
-> Convert driver to FIELD macro to drop redundant define.
+> Move tag_qca define to include dir linux/dsa as the qca8k require access
+> to the tagger define to support in-band mdio read/write using ethernet
+> packet.
 > 
 > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 
