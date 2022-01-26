@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B586949D208
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 19:48:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B38549D209
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 19:48:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232915AbiAZSru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 13:47:50 -0500
-Received: from mga14.intel.com ([192.55.52.115]:15663 "EHLO mga14.intel.com"
+        id S244238AbiAZSrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 13:47:51 -0500
+Received: from mga11.intel.com ([192.55.52.93]:63127 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244272AbiAZSrp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jan 2022 13:47:45 -0500
+        id S244292AbiAZSrr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jan 2022 13:47:47 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643222865; x=1674758865;
+  t=1643222867; x=1674758867;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=0FlLNVzlgBbmOGH8jyPjUQAgjokexaT7q4vEAPdFIZ0=;
-  b=cjnGW93RknOs8DYPuPP/DvqtMt2yalP3gv1cbe4AjkYQRx5muMp3oibb
-   1u8j7SAxVqacRqOTvb+Pihro/vGn/FVw6vNRmFjT01DqwprkFcSR279DA
-   cHjPtMjto8Odz+A3LykHq84nXqQEQTMnHdF4sU3Feyj7O2wN6LYwxt2wD
-   /Pglb/loC2etPx3oip2xHtBNUU2I+kMuhJhOlcKSmBoEtA3VSjKEOFGAf
-   n/A3xpRqHuC6EaPIxyZQkYy7qthOvi/B4dJ+RnxsZTP4higss3rvEYFGK
-   3SerRUZkwa0XThCIYj+58fDW/aSKVjLZ5u9NRWryWmZzNs8uJOmsf2GgW
+  bh=ynISfQGFkE0Pd3v8j9hwtGZ3p4Vm3qAMrOtfMEbwy3k=;
+  b=UjDat6GUITbOOBe/w5smbk/oIfAtqxlhWw4xqIAtbJAk7NBaRm70KNeA
+   TSa5EIHKLkT9D2BSsxBf4dRQGAKihMnNlPHA+GKh/oI9CVupR0IgzrU1X
+   +k1Ymm9mine4h6Q/waObMaSQPQtw9bxnT/GuldLenGsTSciYfoOz+qnNm
+   U/3c9LXKYNqBuLZwEXF+Y5WLWdSWsg3pOsz67X8F8/ZY2bHme5om79Qxy
+   PwSj1YynuQEUD9sKqcPxuhaxIpiW6XSIrdl/mnYNCB5nGVlzhyhrnHWY1
+   9yjFA7DkcKSxdBs6MTzjZO7VWlAe2gOyr/eZoQ6El0q+0eyhfQ7ySvm4V
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="246840789"
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="244221518"
 X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="246840789"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 10:47:45 -0800
+   d="scan'208";a="244221518"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 10:47:47 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="767220884"
+   d="scan'208";a="618052579"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga006.fm.intel.com with ESMTP; 26 Jan 2022 10:47:44 -0800
+  by FMSMGA003.fm.intel.com with ESMTP; 26 Jan 2022 10:47:45 -0800
 Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20QIlVdb000727;
-        Wed, 26 Jan 2022 18:47:43 GMT
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20QIlVdc000727;
+        Wed, 26 Jan 2022 18:47:45 GMT
 From:   Marcin Szycik <marcin.szycik@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com
-Subject: [RFC PATCH net-next 3/5] net/sched: Allow flower to match on GTP options
-Date:   Wed, 26 Jan 2022 19:43:56 +0100
-Message-Id: <20220126184358.6505-4-marcin.szycik@linux.intel.com>
+Subject: [RFC PATCH net-next 4/5] ice: Fix FV offset searching
+Date:   Wed, 26 Jan 2022 19:43:57 +0100
+Message-Id: <20220126184358.6505-5-marcin.szycik@linux.intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220126184358.6505-1-marcin.szycik@linux.intel.com>
 References: <20220126184358.6505-1-marcin.szycik@linux.intel.com>
@@ -52,268 +52,145 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wojciech Drewek <wojciech.drewek@intel.com>
+From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 
-Options are as follows: PDU_TYPE:QFI and they refernce to
-the fields from the  PDU Session Protocol. PDU Session data
-is conveyed in GTP-U Extension Header.
+Checking only protocol ids while searching for correct FVs can lead to a
+situation, when incorrect FV will be added to the list. Incorrect means
+that FV has correct protocol id but incorrect offset.
 
-GTP-U Extension Header is described in 3GPP TS 29.281.
-PDU Session Protocol is described in 3GPP TS 38.415.
+Call ice_get_sw_fv_list with ice_prot_lkup_ext struct which contains all
+protocol ids with offsets.
 
-PDU_TYPE -  indicates the type of the PDU Session Information (4 bits)
-QFI      -  QoS Flow Identifier (6 bits)
+With this modification allocating and collecting protocol ids list is
+not longer needed.
 
-  # ip link add gtp_dev type gtp role sgsn
-  # tc qdisc add dev gtp_dev ingress
-  # tc filter add dev gtp_dev protocol ip parent ffff: \
-      flower \
-        enc_key_id 11 \
-        gtp_opts 1:8/ff:ff \
-      action mirred egress redirect dev eth0
-
-Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 ---
- include/net/gtp.h              |   5 ++
- include/uapi/linux/if_tunnel.h |   4 +-
- include/uapi/linux/pkt_cls.h   |  15 +++++
- net/sched/cls_flower.c         | 116 +++++++++++++++++++++++++++++++++
- 4 files changed, 139 insertions(+), 1 deletion(-)
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    | 16 +++-----
+ .../net/ethernet/intel/ice/ice_flex_pipe.h    |  2 +-
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 39 +------------------
+ 3 files changed, 9 insertions(+), 48 deletions(-)
 
-diff --git a/include/net/gtp.h b/include/net/gtp.h
-index ae915dd33d20..c78702e3d663 100644
---- a/include/net/gtp.h
-+++ b/include/net/gtp.h
-@@ -27,6 +27,11 @@ struct gtp1_header {	/* According to 3GPP TS 29.060. */
- 	__be32	tid;
- } __attribute__ ((packed));
- 
-+struct gtp_pdu_session_info {	/* According to 3GPP TS 38.415. */
-+	u8	pdu_type;
-+	u8	qfi;
-+};
-+
- static inline bool netif_is_gtp(const struct net_device *dev)
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+index 4deb2c9446ec..22072709cc4e 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
++++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+@@ -1781,7 +1781,7 @@ ice_get_sw_fv_bitmap(struct ice_hw *hw, enum ice_prof_type req_profs,
+  * allocated for every list entry.
+  */
+ int
+-ice_get_sw_fv_list(struct ice_hw *hw, u8 *prot_ids, u16 ids_cnt,
++ice_get_sw_fv_list(struct ice_hw *hw, struct ice_prot_lkup_ext *lkups,
+ 		   unsigned long *bm, struct list_head *fv_list)
  {
- 	return dev->rtnl_link_ops &&
-diff --git a/include/uapi/linux/if_tunnel.h b/include/uapi/linux/if_tunnel.h
-index 7d9105533c7b..102119628ff5 100644
---- a/include/uapi/linux/if_tunnel.h
-+++ b/include/uapi/linux/if_tunnel.h
-@@ -176,8 +176,10 @@ enum {
- #define TUNNEL_VXLAN_OPT	__cpu_to_be16(0x1000)
- #define TUNNEL_NOCACHE		__cpu_to_be16(0x2000)
- #define TUNNEL_ERSPAN_OPT	__cpu_to_be16(0x4000)
-+#define TUNNEL_GTP_OPT		__cpu_to_be16(0x8000)
+ 	struct ice_sw_fv_list_entry *fvl;
+@@ -1793,7 +1793,7 @@ ice_get_sw_fv_list(struct ice_hw *hw, u8 *prot_ids, u16 ids_cnt,
  
- #define TUNNEL_OPTIONS_PRESENT \
--		(TUNNEL_GENEVE_OPT | TUNNEL_VXLAN_OPT | TUNNEL_ERSPAN_OPT)
-+		(TUNNEL_GENEVE_OPT | TUNNEL_VXLAN_OPT | TUNNEL_ERSPAN_OPT | \
-+		TUNNEL_GTP_OPT)
+ 	memset(&state, 0, sizeof(state));
  
- #endif /* _UAPI_IF_TUNNEL_H_ */
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index ee38b35c3f57..404f97fb239c 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -616,6 +616,10 @@ enum {
- 					 * TCA_FLOWER_KEY_ENC_OPT_ERSPAN_
- 					 * attributes
- 					 */
-+	TCA_FLOWER_KEY_ENC_OPTS_GTP,	/* Nested
-+					 * TCA_FLOWER_KEY_ENC_OPT_GTP_
-+					 * attributes
-+					 */
- 	__TCA_FLOWER_KEY_ENC_OPTS_MAX,
- };
+-	if (!ids_cnt || !hw->seg)
++	if (!lkups->n_val_words || !hw->seg)
+ 		return -EINVAL;
  
-@@ -654,6 +658,17 @@ enum {
- #define TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX \
- 		(__TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX - 1)
+ 	ice_seg = hw->seg;
+@@ -1812,20 +1812,16 @@ ice_get_sw_fv_list(struct ice_hw *hw, u8 *prot_ids, u16 ids_cnt,
+ 		if (!test_bit((u16)offset, bm))
+ 			continue;
  
-+enum {
-+	TCA_FLOWER_KEY_ENC_OPT_GTP_UNSPEC,
-+	TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE,		/* u8 */
-+	TCA_FLOWER_KEY_ENC_OPT_GTP_QFI,			/* u8 */
-+
-+	__TCA_FLOWER_KEY_ENC_OPT_GTP_MAX,
-+};
-+
-+#define TCA_FLOWER_KEY_ENC_OPT_GTP_MAX \
-+		(__TCA_FLOWER_KEY_ENC_OPT_GTP_MAX - 1)
-+
- enum {
- 	TCA_FLOWER_KEY_MPLS_OPTS_UNSPEC,
- 	TCA_FLOWER_KEY_MPLS_OPTS_LSE,
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 1a9b1f140f9e..c80fc49c0da1 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -25,6 +25,7 @@
- #include <net/geneve.h>
- #include <net/vxlan.h>
- #include <net/erspan.h>
-+#include <net/gtp.h>
+-		for (i = 0; i < ids_cnt; i++) {
++		for (i = 0; i < lkups->n_val_words; i++) {
+ 			int j;
  
- #include <net/dst.h>
- #include <net/dst_metadata.h>
-@@ -723,6 +724,7 @@ enc_opts_policy[TCA_FLOWER_KEY_ENC_OPTS_MAX + 1] = {
- 	[TCA_FLOWER_KEY_ENC_OPTS_GENEVE]        = { .type = NLA_NESTED },
- 	[TCA_FLOWER_KEY_ENC_OPTS_VXLAN]         = { .type = NLA_NESTED },
- 	[TCA_FLOWER_KEY_ENC_OPTS_ERSPAN]        = { .type = NLA_NESTED },
-+	[TCA_FLOWER_KEY_ENC_OPTS_GTP]		= { .type = NLA_NESTED },
- };
- 
- static const struct nla_policy
-@@ -746,6 +748,12 @@ erspan_opt_policy[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX + 1] = {
- 	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID]       = { .type = NLA_U8 },
- };
- 
-+static const struct nla_policy
-+gtp_opt_policy[TCA_FLOWER_KEY_ENC_OPT_GTP_MAX + 1] = {
-+	[TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE]	   = { .type = NLA_U8 },
-+	[TCA_FLOWER_KEY_ENC_OPT_GTP_QFI]	   = { .type = NLA_U8 },
-+};
-+
- static const struct nla_policy
- mpls_stack_entry_policy[TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX + 1] = {
- 	[TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH]    = { .type = NLA_U8 },
-@@ -1262,6 +1270,49 @@ static int fl_set_erspan_opt(const struct nlattr *nla, struct fl_flow_key *key,
- 	return sizeof(*md);
+-			/* This code assumes that if a switch field vector line
+-			 * has a matching protocol, then this line will contain
+-			 * the entries necessary to represent every field in
+-			 * that protocol header.
+-			 */
+ 			for (j = 0; j < hw->blk[ICE_BLK_SW].es.fvw; j++)
+-				if (fv->ew[j].prot_id == prot_ids[i])
++				if (fv->ew[j].prot_id == lkups->fv_words[i].prot_id &&
++				    fv->ew[j].off == lkups->fv_words[i].off)
+ 					break;
+ 			if (j >= hw->blk[ICE_BLK_SW].es.fvw)
+ 				break;
+-			if (i + 1 == ids_cnt) {
++			if (i + 1 == lkups->n_val_words) {
+ 				fvl = devm_kzalloc(ice_hw_to_dev(hw),
+ 						   sizeof(*fvl), GFP_KERNEL);
+ 				if (!fvl)
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
+index 6cbc29bcb02f..c266655089f2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
++++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
+@@ -87,7 +87,7 @@ ice_get_sw_fv_bitmap(struct ice_hw *hw, enum ice_prof_type type,
+ void
+ ice_init_prof_result_bm(struct ice_hw *hw);
+ int
+-ice_get_sw_fv_list(struct ice_hw *hw, u8 *prot_ids, u16 ids_cnt,
++ice_get_sw_fv_list(struct ice_hw *hw, struct ice_prot_lkup_ext *lkups,
+ 		   unsigned long *bm, struct list_head *fv_list);
+ bool
+ ice_get_open_tunnel_port(struct ice_hw *hw, u16 *port,
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
+index 11ae0bee3590..49308a22a92c 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.c
++++ b/drivers/net/ethernet/intel/ice/ice_switch.c
+@@ -4426,41 +4426,6 @@ ice_create_recipe_group(struct ice_hw *hw, struct ice_sw_recipe *rm,
+ 	return status;
  }
  
-+static int fl_set_gtp_opt(const struct nlattr *nla, struct fl_flow_key *key,
-+			  int depth, int option_len,
-+			  struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[TCA_FLOWER_KEY_ENC_OPT_GTP_MAX + 1];
-+	struct gtp_pdu_session_info *sinfo;
-+	u8 len = key->enc_opts.len;
-+	int err;
-+
-+	sinfo = (struct gtp_pdu_session_info *)&key->enc_opts.data[len];
-+	memset(sinfo, 0xff, option_len);
-+
-+	if (!depth)
-+		return sizeof(*sinfo);
-+
-+	if (nla_type(nla) != TCA_FLOWER_KEY_ENC_OPTS_GTP) {
-+		NL_SET_ERR_MSG_MOD(extack, "Non-gtp option type for mask");
-+		return -EINVAL;
-+	}
-+
-+	err = nla_parse_nested(tb, TCA_FLOWER_KEY_ENC_OPT_GTP_MAX, nla,
-+			       gtp_opt_policy, extack);
-+	if (err < 0)
-+		return err;
-+
-+	if (!option_len &&
-+	    (!tb[TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE] ||
-+	     !tb[TCA_FLOWER_KEY_ENC_OPT_GTP_QFI])) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Missing tunnel key gtp option pdu type or qfi");
-+		return -EINVAL;
-+	}
-+
-+	if (tb[TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE])
-+		sinfo->pdu_type =
-+			nla_get_u8(tb[TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE]);
-+
-+	if (tb[TCA_FLOWER_KEY_ENC_OPT_GTP_QFI])
-+		sinfo->qfi = nla_get_u8(tb[TCA_FLOWER_KEY_ENC_OPT_GTP_QFI]);
-+
-+	return sizeof(*sinfo);
-+}
-+
- static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
- 			  struct fl_flow_key *mask,
- 			  struct netlink_ext_ack *extack)
-@@ -1386,6 +1437,38 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
- 				return -EINVAL;
- 			}
- 			break;
-+		case TCA_FLOWER_KEY_ENC_OPTS_GTP:
-+			if (key->enc_opts.dst_opt_type) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "Duplicate type for gtp options");
-+				return -EINVAL;
-+			}
-+			option_len = 0;
-+			key->enc_opts.dst_opt_type = TUNNEL_GTP_OPT;
-+			option_len = fl_set_gtp_opt(nla_opt_key, key,
-+						    key_depth, option_len,
-+						    extack);
-+			if (option_len < 0)
-+				return option_len;
-+
-+			key->enc_opts.len += option_len;
-+			/* At the same time we need to parse through the mask
-+			 * in order to verify exact and mask attribute lengths.
-+			 */
-+			mask->enc_opts.dst_opt_type = TUNNEL_GTP_OPT;
-+			option_len = fl_set_gtp_opt(nla_opt_msk, mask,
-+						    msk_depth, option_len,
-+						    extack);
-+			if (option_len < 0)
-+				return option_len;
-+
-+			mask->enc_opts.len += option_len;
-+			if (key->enc_opts.len != mask->enc_opts.len) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "Key and mask miss aligned");
-+				return -EINVAL;
-+			}
-+			break;
- 		default:
- 			NL_SET_ERR_MSG(extack, "Unknown tunnel option type");
- 			return -EINVAL;
-@@ -2761,6 +2844,34 @@ static int fl_dump_key_erspan_opt(struct sk_buff *skb,
- 	return -EMSGSIZE;
- }
+-/**
+- * ice_get_fv - get field vectors/extraction sequences for spec. lookup types
+- * @hw: pointer to hardware structure
+- * @lkups: lookup elements or match criteria for the advanced recipe, one
+- *	   structure per protocol header
+- * @lkups_cnt: number of protocols
+- * @bm: bitmap of field vectors to consider
+- * @fv_list: pointer to a list that holds the returned field vectors
+- */
+-static int
+-ice_get_fv(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+-	   unsigned long *bm, struct list_head *fv_list)
+-{
+-	u8 *prot_ids;
+-	int status;
+-	u16 i;
+-
+-	prot_ids = kcalloc(lkups_cnt, sizeof(*prot_ids), GFP_KERNEL);
+-	if (!prot_ids)
+-		return -ENOMEM;
+-
+-	for (i = 0; i < lkups_cnt; i++)
+-		if (!ice_prot_type_to_id(lkups[i].type, &prot_ids[i])) {
+-			status = -EIO;
+-			goto free_mem;
+-		}
+-
+-	/* Find field vectors that include all specified protocol types */
+-	status = ice_get_sw_fv_list(hw, prot_ids, lkups_cnt, bm, fv_list);
+-
+-free_mem:
+-	kfree(prot_ids);
+-	return status;
+-}
+-
+ /**
+  * ice_tun_type_match_word - determine if tun type needs a match mask
+  * @tun_type: tunnel type
+@@ -4608,11 +4573,11 @@ ice_add_adv_recipe(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
  
-+static int fl_dump_key_gtp_opt(struct sk_buff *skb,
-+			       struct flow_dissector_key_enc_opts *enc_opts)
-+
-+{
-+	struct gtp_pdu_session_info *session_info;
-+	struct nlattr *nest;
-+
-+	nest = nla_nest_start_noflag(skb, TCA_FLOWER_KEY_ENC_OPTS_GTP);
-+	if (!nest)
-+		goto nla_put_failure;
-+
-+	session_info = (struct gtp_pdu_session_info *)&enc_opts->data[0];
-+
-+	if (nla_put_u8(skb, TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE,
-+		       session_info->pdu_type))
-+		goto nla_put_failure;
-+
-+	if (nla_put_u8(skb, TCA_FLOWER_KEY_ENC_OPT_GTP_QFI, session_info->qfi))
-+		goto nla_put_failure;
-+
-+	nla_nest_end(skb, nest);
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(skb, nest);
-+	return -EMSGSIZE;
-+}
-+
- static int fl_dump_key_ct(struct sk_buff *skb,
- 			  struct flow_dissector_key_ct *key,
- 			  struct flow_dissector_key_ct *mask)
-@@ -2824,6 +2935,11 @@ static int fl_dump_key_options(struct sk_buff *skb, int enc_opt_type,
- 		if (err)
- 			goto nla_put_failure;
- 		break;
-+	case TUNNEL_GTP_OPT:
-+		err = fl_dump_key_gtp_opt(skb, enc_opts);
-+		if (err)
-+			goto nla_put_failure;
-+		break;
- 	default:
- 		goto nla_put_failure;
- 	}
+ 	/* Get bitmap of field vectors (profiles) that are compatible with the
+ 	 * rule request; only these will be searched in the subsequent call to
+-	 * ice_get_fv.
++	 * ice_get_sw_fv_list.
+ 	 */
+ 	ice_get_compat_fv_bitmap(hw, rinfo, fv_bitmap);
+ 
+-	status = ice_get_fv(hw, lkups, lkups_cnt, fv_bitmap, &rm->fv_list);
++	status = ice_get_sw_fv_list(hw, lkup_exts, fv_bitmap, &rm->fv_list);
+ 	if (status)
+ 		goto err_unroll;
+ 
 -- 
 2.31.1
 
