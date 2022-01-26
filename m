@@ -2,135 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 112D049C731
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 11:13:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4520149C736
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 11:14:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239721AbiAZKN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 05:13:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54474 "EHLO
+        id S232081AbiAZKOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 05:14:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239718AbiAZKN2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 05:13:28 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46738C06161C;
-        Wed, 26 Jan 2022 02:13:28 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id m11so68147256edi.13;
-        Wed, 26 Jan 2022 02:13:28 -0800 (PST)
+        with ESMTP id S229726AbiAZKOu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 05:14:50 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE078C06161C
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:49 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id n8so21665740lfq.4
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7of4j6tXJsQTj96IqMsKqWsSKbGVqn3ZKiSJTHPl75E=;
-        b=QHZGNvAuvGw7dVgE+zNRdndvuugGnChjIbsMvjjz/ITotAgWGyNwZuN48EXCo8az5D
-         RWQMdAopz5nv/RRobC4VoRcuLtfo/RrKWSAUysAnG5W/5/9h/OvMXETCBuAkEbn4m9Vh
-         ZRKNjulT52tFSx8jl00TJVZCKzHeKwvhagWm2XuDHHRI67mQUHyXyGjJwC3tgnpudBHK
-         CUPg3gPeW91RE8SwaJcaX/cvKSHU6keIf7UPLJbzDiBXtJyAMK7gupAvOKDHHEKJh+F3
-         9WpCas3I2OiV7CjbJWwV6SnsGTJS7yhn6+3ULU7z0WtzzLGHTl8R51wyt+Vu1KuStZpj
-         M64Q==
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=UOo5cvIiZREl6uP4YcssGwlg61ZqPc8mTlvnFID9fEQ=;
+        b=UffQtYPeKWeMguTgswjaF8k6ATapFmbcZxHcHXKuu+HvsDZpLcW/uoE0wZCgX2/EVY
+         GUovQd7iWCf/EB9/cw4Oavn+io0PloJtEqdAQkgi8AR7HN73lEhyj05tMMDP96C5GWGd
+         NJVvNKbaZJatCQN5VFPzhVnttYHvDqk3Q4kVi+d1ysQ9BaP85luwjkMOJnKNVib0hRm8
+         fo9UVKZlwZ3JiLx70VttbRSzj5MaxQIggEx4zHmEc4gWOJ+9cNtUbbO9956HQF6WOr2l
+         ev5JJY8b/v8XOJZirVhc4SYMeeNIBaxzLGufZF3XKRq3z/enKBZOOVUkcJoI9zLF7DqN
+         C9hQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7of4j6tXJsQTj96IqMsKqWsSKbGVqn3ZKiSJTHPl75E=;
-        b=q1t0IviRPdFarPCBKA6U2xj6mBJiT6/hkdmgmCzxQKFsawbX/M0vG0rjTq5HD+I2W+
-         ia3c+IpAySABXPFubpGx+oRXKZ7oJwu8t6nDNNeUl2SQDUN3SPVS4hQ0sRJDeENsoMN3
-         K0iLU32WBYSU0CJ3rkrUFFZ+F5QD1OOAtn7cFdtRHUxQ4dhYJfWVJIn6i6av178vpWxo
-         yfzchJEsO8ykrCFMF37LTtfFY8NVyVjicfBZ18oAniEwf7hoASBlG6jYtzK22Liqa6Yk
-         nv0BCb+by6r3zrD5QCEBRxXl9G+IqIuOghodF32XToMubmldX5p41Q85KouMbdHaUKkU
-         yeyA==
-X-Gm-Message-State: AOAM531yvUun8sq+fjOqHIVTWroyMwgHzkm38qVeJCJ0zbcAnyVUARI4
-        AiZR8LwIuRlYeFrdPq2J9HQOwRkm/RTSDHbhaNI=
-X-Google-Smtp-Source: ABdhPJynLKvQGv/H0FG+uuXI+OlMGiphzh5iPLeSuydUEWE4P8tlRcmMs/osAZq4tj+XuWR5dY63TLHMcK+DIJhiiao=
-X-Received: by 2002:a05:6402:35d5:: with SMTP id z21mr17032960edc.29.1643192006805;
- Wed, 26 Jan 2022 02:13:26 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=UOo5cvIiZREl6uP4YcssGwlg61ZqPc8mTlvnFID9fEQ=;
+        b=yru0RcLZzI1UgeDXMPm9IKXZK5ms2Sjs7W3k9cyoePcUYJxLAZNLZtMHrGzzQxVMHu
+         bdTe6Mf9K1Zqp9WqJ8w2/vFuAhKsZF6hbYSX3JLWyn847LlnvTx63bpyaSJ9i90LnPj9
+         LqCldaxGT6Bgo36uFRk1X7d9IRCvoCzR8fewgblVR+86SlXgJAI7yzag8udzcXqgCDqE
+         ksrJ2EsZeeVU5ZLOsQyy0yFgRV/bkcNr1mTat+q3CWgEVyRZLUZOJybuocrkMEoJmCPA
+         VRqLf0oJM9gZU4AB0kUknUOZFXDgU4oYGdC4MofUsLcEXK5roob5cV0jvxNLAjVeqHKH
+         huRA==
+X-Gm-Message-State: AOAM531ANyGxA/AoyJbRpOhtTk4TpK+aQigspgCEo+wRzF5UO7aJIfgL
+        pSb0v2ejv+vcItZl9ZQs9+yrzcLPPyjNTQ==
+X-Google-Smtp-Source: ABdhPJwmo80IoFsQhYIXxm3NWigQZv33LC/Wq/gPmzb3oCzixpKpK4dmscAYukmxXcpsYljTyNSz9g==
+X-Received: by 2002:a05:6512:77:: with SMTP id i23mr4088981lfo.24.1643192087968;
+        Wed, 26 Jan 2022 02:14:47 -0800 (PST)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id h13sm1351906lfv.100.2022.01.26.02.14.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 02:14:47 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next 0/5] net/fsl: xgmac_mdio: Preamble suppression and custom MDC frequencies
+Date:   Wed, 26 Jan 2022 11:14:27 +0100
+Message-Id: <20220126101432.822818-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220126093951.1470898-1-lucas.demarchi@intel.com> <20220126093951.1470898-10-lucas.demarchi@intel.com>
-In-Reply-To: <20220126093951.1470898-10-lucas.demarchi@intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 26 Jan 2022 12:12:50 +0200
-Message-ID: <CAHp75Vd+TmShx==d_JHZUu0Q-9X7CmZEOFdKnSrcRKs81Gxn3g@mail.gmail.com>
-Subject: Re: [PATCH v2 09/11] drm: Convert open-coded yes/no strings to yesno()
-To:     Lucas De Marchi <lucas.demarchi@intel.com>
-Cc:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        linux-security-module@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        "David S. Miller" <davem@davemloft.net>,
-        Emma Anholt <emma@anholt.net>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Julia Lawall <julia.lawall@lip6.fr>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Leo Li <sunpeng.li@amd.com>, Petr Mladek <pmladek@suse.com>,
-        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vishal Kulkarni <vishal@chelsio.com>
-Content-Type: text/plain; charset="UTF-8"
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 11:39 AM Lucas De Marchi
-<lucas.demarchi@intel.com> wrote:
->
-> linux/string_helpers.h provides a helper to return "yes"/"no" strings.
-> Replace the open coded versions with str_yes_no(). The places were
-> identified with the following semantic patch:
->
->         @@
->         expression b;
->         @@
->
->         - b ? "yes" : "no"
->         + str_yes_no(b)
->
-> Then the includes were added, so we include-what-we-use, and parenthesis
-> adjusted in drivers/gpu/drm/v3d/v3d_debugfs.c. After the conversion we
-> still see the same binary sizes:
->
->    text    data     bss     dec     hex filename
->   51149    3295     212   54656    d580 virtio/virtio-gpu.ko.old
->   51149    3295     212   54656    d580 virtio/virtio-gpu.ko
-> 1441491   60340     800 1502631  16eda7 radeon/radeon.ko.old
-> 1441491   60340     800 1502631  16eda7 radeon/radeon.ko
-> 6125369  328538   34000 6487907  62ff63 amd/amdgpu/amdgpu.ko.old
-> 6125369  328538   34000 6487907  62ff63 amd/amdgpu/amdgpu.ko
->  411986   10490    6176  428652   68a6c drm.ko.old
->  411986   10490    6176  428652   68a6c drm.ko
->   98129    1636     264  100029   186bd dp/drm_dp_helper.ko.old
->   98129    1636     264  100029   186bd dp/drm_dp_helper.ko
-> 1973432  109640    2352 2085424  1fd230 nouveau/nouveau.ko.old
-> 1973432  109640    2352 2085424  1fd230 nouveau/nouveau.ko
+The first patch removes the docs for a binding that has never been
+supported by the driver as far as I can see. This is a bit of a
+mystery to me, maybe Freescale/NXP had/has support for it in an
+internal version?
 
-This probably won't change for modules, but if you compile in the
-linker may try to optimize it. Would be nice to see the old-new for
-`make allyesconfig` or equivalent.
+We then start working on the xgmac_mdio driver, converting the driver
+to exclusively use managed resources, thereby simplifying the error
+paths. Suggested by Andrew.
 
-...
+Preamble suppression is then added, followed by MDC frequency
+customization. Neither code will change any bits if the corresponding
+dt properties are not specified, so as to not trample on any setup
+done by the bootloader, which boards might have relied on up to now.
 
->         seq_printf(m, "\tDP branch device present: %s\n",
-> -                  branch_device ? "yes" : "no");
-> +                  str_yes_no(branch_device));
+Finally, we document the new bindings.
 
-Can it be now on one line? Same Q for all similar cases in the entire series.
+Tested on a T1023 based board.
+
+Tobias Waldekranz (5):
+  dt-bindings: net: xgmac_mdio: Remove unsupported "bus-frequency"
+  net/fsl: xgmac_mdio: Use managed device resources
+  net/fsl: xgmac_mdio: Support preamble suppression
+  net/fsl: xgmac_mdio: Support setting the MDC frequency
+  dt-bindings: net: xgmac_mdio: Add "clock-frequency" and
+    "suppress-preamble"
+
+ .../devicetree/bindings/net/fsl-fman.txt      | 22 +++--
+ drivers/net/ethernet/freescale/xgmac_mdio.c   | 88 ++++++++++++-------
+ 2 files changed, 74 insertions(+), 36 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.25.1
+
