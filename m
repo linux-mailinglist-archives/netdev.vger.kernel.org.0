@@ -2,455 +2,333 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C2F849D16A
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 19:07:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7560649D176
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 19:11:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237281AbiAZSHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 13:07:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230376AbiAZSHT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 13:07:19 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5871C06161C
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 10:07:19 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id r59so407069pjg.4
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 10:07:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0U+VWc2OMJHZavzm1G6VqOpxzkLwQbtULvahec56s6c=;
-        b=K+69qJBNUoIHlf0fq38F0BoA9/gHJ/+tpzs6lPrp/w/AAYKvKd+cAOj/OezpVxY8kE
-         kzbAheVRcZJINmrNpsOY0n0t9/+CWygI20+WG5AmFp2ZiFjbfn5dd3OkaFYXGftgeRyh
-         +y+vEUSwUEr4YgzGDGomOs2QRqD1PNPrBqiRswezlb2oVlxDy7vBiKpCJpnvCQZjRbke
-         nbfThLc8R2bPLNdbmBnvEWvvBn4ZLDWDeGGKrqanXKsZRIFiK/L7YnA5k6hmymUthCou
-         mr/e5bunkeBNgBE7vLNkxrIC2ZmPuij1lYbg+wxPP29CpRdpoVNr/omrgsOdCulvppHN
-         179A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0U+VWc2OMJHZavzm1G6VqOpxzkLwQbtULvahec56s6c=;
-        b=cMmmrHIN6wPKdkm9Qi/uV1LPUs+aInmPjb9l9ZWxqSFiXyEA4EOQfYzZfibYZC4RnC
-         ImkyqVP87zGYWhYvCtBBCW3s4HBX7seqQ0Gf4T3j8aqP8xuJMwS7XugPvcAY+69iA/n/
-         3iD+DMPEHYA5ocEGi2jy2RwhbHDrXG3PMJhJUvGF72g/WjenYTXPwm5/70DrstAWNt6+
-         jjynsNJpSroxjWYXGrBM1naK/0D2pWdwQ9LoAHkYtxQ746bwvJcGQBMPqYuvqsJMu76L
-         e6F1EVx+ur+98+XkUJaKBMc5bBugv69HSQckf4Rd3a8EGK7lJiYi4P6sttdzUstUBFkK
-         d+oA==
-X-Gm-Message-State: AOAM530rfvN1a3GpWXfEf7sYsme7HMhtch4wigVEuLZAZCn8f/5erctl
-        fnLBh5UKczHQmBRwPwKSU8k=
-X-Google-Smtp-Source: ABdhPJx3JyR2KhjD7cMOgoddhowQtLPZHha+kZPFJIL45He2BiiVu0DPlXi3KHT4rFzeFhZzNyGVrQ==
-X-Received: by 2002:a17:90b:4d84:: with SMTP id oj4mr91898pjb.192.1643220439053;
-        Wed, 26 Jan 2022 10:07:19 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:cfcb:2c25:b567:59da])
-        by smtp.gmail.com with ESMTPSA id a17sm17116737pgh.9.2022.01.26.10.07.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 10:07:18 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next] tcp: allocate tcp_death_row outside of struct netns_ipv4
-Date:   Wed, 26 Jan 2022 10:07:14 -0800
-Message-Id: <20220126180714.845362-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
+        id S238712AbiAZSJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 13:09:57 -0500
+Received: from mx0d-0054df01.pphosted.com ([67.231.150.19]:15396 "EHLO
+        mx0d-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236949AbiAZSJ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 13:09:56 -0500
+Received: from pps.filterd (m0209000.ppops.net [127.0.0.1])
+        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20QBqB87023860;
+        Wed, 26 Jan 2022 13:09:05 -0500
+Received: from can01-qb1-obe.outbound.protection.outlook.com (mail-qb1can01lp2051.outbound.protection.outlook.com [104.47.60.51])
+        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3dsyrhs4u6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 26 Jan 2022 13:09:04 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jqpG54QrKpln63g2dwW/OZ8jEvK3i3EvyBVNRQGR/eP9YDG/dpOfWuUsGdI88El5d72dP/Wxyl3CmWrlpMb+pZclFKxMwmprce1PKiADjWBCPvaKYtJ3eD71SgEddRsvRJlKqxGAM8yFFnUgOCXZJ5FBQ0cuzrdT51aLHmwRrGvx0aTlKh5nJcdmUYHc5hvmEwfe+dVDeZgF3uZY6QmOyP3ghNFLHT2H9B4uBjRXOTFjBds8ljXx1xKUh7kgIhMjYD4I4NZ/3RlZBJf67NFNLwo5v/KKhPUJQCwVXBKZwYIO4muu7mTGw0t2qZUsu6P97v6kq+16CmJcb/I0A2um8w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zZyWhAev/SERQMWjqxxdDj7Rku50JFqZAmK/Euk3EFY=;
+ b=nuTYJdQyyMMxEbo1E4Tlr49BxoI32D0OParfXINFDOGNBsECWWR0ij17kc1l+GRztQwYr2cv8m21qEMyxCOu5UESOZoxLK8iXKU8Wfwh/2kqxxrhwabEKvpMj6KqkPXcWmKdA++Fj3IcK6JgXeksi/+V0H31UpRgkdvtOxfuR0H0NfkQolWv8AZFqNC6wDRu1FaVujXLiWx9mcu9KzzoKaQSkgs1Mxn44ZGv0fdpYRlLKil5w/iblRxIoigSkqTtZI/d5oJiRh1ShMMOUL+sf42xql/0TMBSbHDNJPUUKS3HeluKZrBU+KQrlXRZzekOF2LeiRajw3xFkcdGbS/Gjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zZyWhAev/SERQMWjqxxdDj7Rku50JFqZAmK/Euk3EFY=;
+ b=A9B2VQz9eSvvb/WoEm25iVhHYX52V/hVcEHeMlqdS0xOa87SANwsEOZZUYM6nUSgkFCXEtUcVADYPlIYphlZgU1VTePYQkHp9JQfsungVjacXRLHJ+UM6uq0fUFZtLuXYRV0bpYL1F0+KmxMccZf8adnjB6FsppaEZaLc6WapEs=
+Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:6a::19)
+ by YQXPR01MB3192.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:c00:46::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Wed, 26 Jan
+ 2022 18:09:02 +0000
+Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::6929:c39f:d893:b6c8]) by YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::6929:c39f:d893:b6c8%2]) with mapi id 15.20.4888.020; Wed, 26 Jan 2022
+ 18:09:02 +0000
+From:   Robert Hancock <robert.hancock@calian.com>
+To:     "temnota.am@gmail.com" <temnota.am@gmail.com>
+CC:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "mail@david-bauer.net" <mail@david-bauer.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "kuba@kernel.org" <kuba@kernel.org>
+Subject: Re: [PATCH net-next v4 0/3] at803x fiber/SFP support
+Thread-Topic: [PATCH net-next v4 0/3] at803x fiber/SFP support
+Thread-Index: AQHYEgw739VxIbt+A065/HR6IapGzqx1VP0AgABGggA=
+Date:   Wed, 26 Jan 2022 18:09:02 +0000
+Message-ID: <4b3d71d33f4cd47875fbdea9f5540c01a10a34bd.camel@calian.com>
+References: <20220125165410.252903-1-robert.hancock@calian.com>
+         <YfFTGL1AdbOQOE8R@ppc.Dlink>
+In-Reply-To: <YfFTGL1AdbOQOE8R@ppc.Dlink>
+Accept-Language: en-CA, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e94737d5-058f-44f5-ebee-08d9e0f6ef25
+x-ms-traffictypediagnostic: YQXPR01MB3192:EE_
+x-microsoft-antispam-prvs: <YQXPR01MB3192B973F91A6425349D0E8DEC209@YQXPR01MB3192.CANPRD01.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: GeO0jgHrqZ/M7ZQraVMUrKK9h2AC0QYqOr2uBpDrSIBrv1B25gnkjj4aixOwyO+GePa8LpxOxdhKJo5HbBG7hXXccN+FfIL1e6YN4o3tBrQMw1iVEFKdA8hPzhetyqdt7yw9B2088ckU4Jix8+fJzs8HFuOvWuP0PNJvmi0bPsFu90yRNL6Qx5pe2cygFMl2jRbMEdPgBYpuv3b79jAnLmDo+DrHqWy9ZkOm3G9bVB8Ot1pVi/rx6rofpeELylqPEaCFPh5awxxxVPuiz8x90pLY8uTZjJ3Ey/V6u1eFeOY/4GmZZOT4SWMRMDfq42zQ86hgdnhoVN6ZqSYa97U6pikW7ty7v7LdTN3MGF9MrpMfTPaYGQmQC2tHcif2VUES3AgaT8VM3bLT4Q6jaE5qn8c5k2ei2hfOy4SbXzRofovvyJFoeqM/Va23a2k1jhw3ruuz3yMIs+bK4NTSSk/ALID7BYEYRJNAjz0VxKemdkDIU/BRLnTcjQpVMfvGjkW3Y79VhW7Ag/HHtiGqs2C6vsAh3BPDJTmk8qpSbaF0Xb7WZ1tl/lru9RAlQEHbxXs7GjSE99RGu7quBVG4Z5G7QaOqc2z6ShY+h+4RcCel+5Clpk9GDpuOBciW9FiJWcX8w7MQmxK02wDve//Ffi803HMl3Jil9+hUnZxq4w2t7lNndImNsKdp2a46EqMaHNd7WtTFjihBm/iRHVty4eFFlPgpBDaI3Yuo7ugQ1iRZcf0kCFK+2VkfonbCJ88+6g2anvlFp1HJWRACpifxHyZn2lx3mGKxnRw5VAM9Ds1Gu6n7EP5ttlnWNWYRh0QXINf4gbLKXo4I0HAhHLgLAaGUC4YlsdDaOL1rS2lwXkZDU5s=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(2906002)(6512007)(5660300002)(508600001)(2616005)(6506007)(36756003)(30864003)(71200400001)(6486002)(44832011)(66946007)(15974865002)(316002)(83380400001)(6916009)(186003)(26005)(54906003)(38070700005)(76116006)(122000001)(64756008)(66446008)(66556008)(38100700002)(8676002)(4326008)(8936002)(66476007)(99106002)(18886075002)(20210929001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ajdwZmhIcE1YV1UycXlUY3kxclZvRnZsVjV2WC9Sd1RkM2pRZG11YWRuU1Fu?=
+ =?utf-8?B?Zml5MDVCWEcrU1RTRDhpQ2hCelhWWUpjWWtsSy8veDdZMlVhaGM4dy9VWDcz?=
+ =?utf-8?B?bWlDb0hma2JZSE9SOUo2QzdmQ2x1MndrdDdLdWl1b29UbDVGMWhnUG8wWFo3?=
+ =?utf-8?B?MW5TRS8zNmlXWW11UWwwUm5JMDZZUGVtMEtMTnRxUGowQkdvN2FrZlB6YXh5?=
+ =?utf-8?B?anpxNkxqd0pUUnBPWTNNWXA2RHNpQVQ5RGZYcVZLaTJ1ZGNmUzExMkJ5Z1U5?=
+ =?utf-8?B?ZjZKMzA0NzYyY1ZUV1BOb24yTTN5ajlLM0Z6V2Z0T0VrZ2swaFpkdXh2Z2lS?=
+ =?utf-8?B?b1crNldsZW1jcDZ5b2RPK3BTM0hObGpodjdsQkt3bUlYd2NOT1ZOTDZuRHk4?=
+ =?utf-8?B?UlVUM3RQa3pqOXZ3YXByOTlkQmJxeGF6VTRNRXpoa2kvUnE5bWZkNEc0SStY?=
+ =?utf-8?B?YlRpeHpxSjIxRUVLSkVKWkc5ejkvcER0YXY5d1l3UVJLaXhIbGU3dmFkK2dl?=
+ =?utf-8?B?S0p6aWlkcTBxd3Jpb0JzTi9zbzVUVEtHOWRWK2FFVzFZRXVmZitwSDgwbTJ4?=
+ =?utf-8?B?Yy9WRUt4VjdOcUU2RDE0RG15UUl0VjFlcnRGbHlWL3VSa3dqMWRmTDVrMXVp?=
+ =?utf-8?B?dXV6Mm5PRlA1c3IvazJtZmxqT0lXNHA1d0JmUmlmYzVlSm5NcnhDSlgxVUdv?=
+ =?utf-8?B?VmpycEJsQnpRVEtuZ3lIUkhiWmpDZWZEUXUrcmI4VUtsdjlLRGFGMzB2b0d2?=
+ =?utf-8?B?elBNM1pjQlBJaC9PSURmdW45djEyZGk3S3dHMUhwU01aMTRudjJzMEdqMkVu?=
+ =?utf-8?B?blZkemtCL3U2b2c5eGtzMW1RZzJwajVVKzZ2bytSUCtHOFlkUE5iLzJaN0t6?=
+ =?utf-8?B?SzFZSXM0N2NNVDliZndVZkhaanNqeHBOSVBoSVA4NW4xYXNBSWd6eWZJcVZK?=
+ =?utf-8?B?Z3B1VWFkUmxGOHpmVmpPeHEyam9oNjBZRUUraUlkSEpFMFNuKzVPK1dxYXQ5?=
+ =?utf-8?B?bUZ4Z0Z5Qk1NK1NSQnh6REhpNmZNK1hMTHcxd3pURVdrRUt5QWVWQ29SMjZt?=
+ =?utf-8?B?SHJPaUV6dmwyRUNQK3BiSW9OV2lIMm9wZVUwWkIvR2p1ZHZkclY2VDlYR1Rz?=
+ =?utf-8?B?a1FjelRKU3B4MVBzUm1Fd1JaK3k4KzZLUDdqRUk5UnJ5WEZLeEtVL1Z0ZUhn?=
+ =?utf-8?B?eVlzZzFSSVd0SUZHOS9vbXcxQzVmQ1VwNkdWUEJqWkNwdFFGUWtHQS9QNlpU?=
+ =?utf-8?B?MDZ2SVdOOVVEdXc3LzBkMTZWc1lQRjEvWUF5RHNvYWpTZ3dhQWs2dGh1SDVX?=
+ =?utf-8?B?R3JzQU1CRy8vNEF3UG1tU1BxenRRcjJEUHV6Mzh4dXVSUm5OeDRqU3FaM1BX?=
+ =?utf-8?B?ZmRIeEgxZ093bUh4cDZyVjM5d0RhcTk1aXY4a1pIOFNobjJOOVpObis2V3B3?=
+ =?utf-8?B?Y0Uyelp4aDIzSGNNa3FORTlVc3p0cmhKQkhtbEFxUEpvb2lMUHl1SC9MdE1n?=
+ =?utf-8?B?am1GMHVFTXJueldhYlFQNms3a3JNWWJmR1RLaElzMklkbHMyc3YyK2R6c0F2?=
+ =?utf-8?B?Z1JCMHJKbEY1M1RDckE1eEtCcWJiaktpOFYrRHpzYkg5SHMyLzB6N1BiSExX?=
+ =?utf-8?B?N3llcFoxYkNqZm1uVERHVUkrKzFCbFFZSDRtekhESkVUMmZXQ2ErLzVXYzBt?=
+ =?utf-8?B?YUlCYlJOV1prZUYzaElDdHE4dWhCNlppVll2bW42dHNJeGlYZlN2UlVNYUhi?=
+ =?utf-8?B?NHdqMXUxUXhkMzhuN1NFa1hTZWlwQUVHbGJ0dTUwZkV5bVAvMkpuRW8rNU4v?=
+ =?utf-8?B?eWcwQWxSbDRUckJrQ1loZGV5WllUWFMzdUh1Z0RZdnorVzMxcHNKYzA4bEc4?=
+ =?utf-8?B?NkVxbVd0YUIrTXlCNEpENnZ0U05XS002dElSb2p3OGRVc2tjdVJKZFVZT3My?=
+ =?utf-8?B?RzhGWVRSQU9ZMWNNbXUvRDRkYUpDcGVsYkNJa0ZicG9FTGsyTnNWcGpIbStn?=
+ =?utf-8?B?cDhsdE9zVWpOR1BxTlpkQkI5N1lVYkx5QTNhNldRbUJCRHJ3aGhqMXQ1Uk5p?=
+ =?utf-8?B?ejZ0M2NoWDQ4N25lTDBzRkdmeFBFMU1MTGNjem1UNUxnMkJJa1krYzAxQ2Ey?=
+ =?utf-8?B?MzNOYVBlbkswL3I3Mll2ZW9FTkFROE1oZDNlUzRqbTQzMnZKQVExRENyZ3d1?=
+ =?utf-8?B?R2didFI1UFh5VkxITTl6Unk3YWdJQk5jUGErOGNCdnRQWEV2NmVOZHlqZ29u?=
+ =?utf-8?Q?31dj3dO9xUWhf0/kCrMINARZT06M9aiahHLHgft0Y8=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <F4AB96A589353542A4B3B2A16A735411@CANPRD01.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: calian.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: e94737d5-058f-44f5-ebee-08d9e0f6ef25
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jan 2022 18:09:02.7711
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: S2NTg35QtF9+wmbJhTQCrPqGVgjgemqOTmPL/RNXGy2C52v9R5HDMIiTtBgIa1qxYafqzGUQ5k/2sqqhidp9oMKsbk8EdSJc9eZnPgRGPbA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: YQXPR01MB3192
+X-Proofpoint-ORIG-GUID: Glx-xaQyuKvi5JWyTBP9DsnnWujNmg5f
+X-Proofpoint-GUID: Glx-xaQyuKvi5JWyTBP9DsnnWujNmg5f
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-26_06,2022-01-26_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ lowpriorityscore=0 suspectscore=0 mlxlogscore=999 clxscore=1011
+ phishscore=0 bulkscore=0 priorityscore=1501 adultscore=0 impostorscore=0
+ mlxscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201260111
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-
-I forgot tcp had per netns tracking of timewait sockets,
-and their sysctl to change the limit.
-
-After 0dad4087a86a ("tcp/dccp: get rid of inet_twsk_purge()"),
-whole struct net can be freed before last tw socket is freed.
-
-We need to allocate a separate struct inet_timewait_death_row
-object per netns.
-
-tw_count becomes a refcount and gains associated debugging infrastructure.
-
-BUG: KASAN: use-after-free in inet_twsk_kill+0x358/0x3c0 net/ipv4/inet_timewait_sock.c:46
-Read of size 8 at addr ffff88807d5f9f40 by task kworker/1:7/3690
-
-CPU: 1 PID: 3690 Comm: kworker/1:7 Not tainted 5.16.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events pwq_unbound_release_workfn
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0x8d/0x336 mm/kasan/report.c:255
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- inet_twsk_kill+0x358/0x3c0 net/ipv4/inet_timewait_sock.c:46
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
- expire_timers kernel/time/timer.c:1466 [inline]
- __run_timers.part.0+0x67c/0xa30 kernel/time/timer.c:1734
- __run_timers kernel/time/timer.c:1715 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1747
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
- invoke_softirq kernel/softirq.c:432 [inline]
- __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
- sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
-RIP: 0010:lockdep_unregister_key+0x1c9/0x250 kernel/locking/lockdep.c:6328
-Code: 00 00 00 48 89 ee e8 46 fd ff ff 4c 89 f7 e8 5e c9 ff ff e8 09 cc ff ff 9c 58 f6 c4 02 75 26 41 f7 c4 00 02 00 00 74 01 fb 5b <5d> 41 5c 41 5d 41 5e 41 5f e9 19 4a 08 00 0f 0b 5b 5d 41 5c 41 5d
-RSP: 0018:ffffc90004077cb8 EFLAGS: 00000206
-RAX: 0000000000000046 RBX: ffff88807b61b498 RCX: 0000000000000001
-RDX: dffffc0000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffff888077027128 R08: 0000000000000001 R09: ffffffff8f1ea4fc
-R10: fffffbfff1ff93ee R11: 000000000000af1e R12: 0000000000000246
-R13: 0000000000000000 R14: ffffffff8ffc89b8 R15: ffffffff90157fb0
- wq_unregister_lockdep kernel/workqueue.c:3508 [inline]
- pwq_unbound_release_workfn+0x254/0x340 kernel/workqueue.c:3746
- process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
- worker_thread+0x657/0x1110 kernel/workqueue.c:2454
- kthread+0x2e9/0x3a0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-
-Allocated by task 3635:
- kasan_save_stack+0x1e/0x50 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:46 [inline]
- set_alloc_info mm/kasan/common.c:437 [inline]
- __kasan_slab_alloc+0x90/0xc0 mm/kasan/common.c:470
- kasan_slab_alloc include/linux/kasan.h:260 [inline]
- slab_post_alloc_hook mm/slab.h:732 [inline]
- slab_alloc_node mm/slub.c:3230 [inline]
- slab_alloc mm/slub.c:3238 [inline]
- kmem_cache_alloc+0x202/0x3a0 mm/slub.c:3243
- kmem_cache_zalloc include/linux/slab.h:705 [inline]
- net_alloc net/core/net_namespace.c:407 [inline]
- copy_net_ns+0x125/0x760 net/core/net_namespace.c:462
- create_new_namespaces+0x3f6/0xb20 kernel/nsproxy.c:110
- unshare_nsproxy_namespaces+0xc1/0x1f0 kernel/nsproxy.c:226
- ksys_unshare+0x445/0x920 kernel/fork.c:3048
- __do_sys_unshare kernel/fork.c:3119 [inline]
- __se_sys_unshare kernel/fork.c:3117 [inline]
- __x64_sys_unshare+0x2d/0x40 kernel/fork.c:3117
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The buggy address belongs to the object at ffff88807d5f9a80
- which belongs to the cache net_namespace of size 6528
-The buggy address is located 1216 bytes inside of
- 6528-byte region [ffff88807d5f9a80, ffff88807d5fb400)
-The buggy address belongs to the page:
-page:ffffea0001f57e00 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88807d5f9a80 pfn:0x7d5f8
-head:ffffea0001f57e00 order:3 compound_mapcount:0 compound_pincount:0
-memcg:ffff888070023001
-flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000010200 ffff888010dd4f48 ffffea0001404e08 ffff8880118fd000
-raw: ffff88807d5f9a80 0000000000040002 00000001ffffffff ffff888070023001
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 3634, ts 119694798460, free_ts 119693556950
- prep_new_page mm/page_alloc.c:2434 [inline]
- get_page_from_freelist+0xa72/0x2f50 mm/page_alloc.c:4165
- __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5389
- alloc_pages+0x1aa/0x310 mm/mempolicy.c:2271
- alloc_slab_page mm/slub.c:1799 [inline]
- allocate_slab mm/slub.c:1944 [inline]
- new_slab+0x28a/0x3b0 mm/slub.c:2004
- ___slab_alloc+0x87c/0xe90 mm/slub.c:3018
- __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3105
- slab_alloc_node mm/slub.c:3196 [inline]
- slab_alloc mm/slub.c:3238 [inline]
- kmem_cache_alloc+0x35c/0x3a0 mm/slub.c:3243
- kmem_cache_zalloc include/linux/slab.h:705 [inline]
- net_alloc net/core/net_namespace.c:407 [inline]
- copy_net_ns+0x125/0x760 net/core/net_namespace.c:462
- create_new_namespaces+0x3f6/0xb20 kernel/nsproxy.c:110
- unshare_nsproxy_namespaces+0xc1/0x1f0 kernel/nsproxy.c:226
- ksys_unshare+0x445/0x920 kernel/fork.c:3048
- __do_sys_unshare kernel/fork.c:3119 [inline]
- __se_sys_unshare kernel/fork.c:3117 [inline]
- __x64_sys_unshare+0x2d/0x40 kernel/fork.c:3117
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1352 [inline]
- free_pcp_prepare+0x374/0x870 mm/page_alloc.c:1404
- free_unref_page_prepare mm/page_alloc.c:3325 [inline]
- free_unref_page+0x19/0x690 mm/page_alloc.c:3404
- skb_free_head net/core/skbuff.c:655 [inline]
- skb_release_data+0x65d/0x790 net/core/skbuff.c:677
- skb_release_all net/core/skbuff.c:742 [inline]
- __kfree_skb net/core/skbuff.c:756 [inline]
- consume_skb net/core/skbuff.c:914 [inline]
- consume_skb+0xc2/0x160 net/core/skbuff.c:908
- skb_free_datagram+0x1b/0x1f0 net/core/datagram.c:325
- netlink_recvmsg+0x636/0xea0 net/netlink/af_netlink.c:1998
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- sock_recvmsg net/socket.c:962 [inline]
- ____sys_recvmsg+0x2c4/0x600 net/socket.c:2632
- ___sys_recvmsg+0x127/0x200 net/socket.c:2674
- __sys_recvmsg+0xe2/0x1a0 net/socket.c:2704
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Memory state around the buggy address:
- ffff88807d5f9e00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88807d5f9e80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff88807d5f9f00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                           ^
- ffff88807d5f9f80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88807d5fa000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-
-Fixes: 0dad4087a86a ("tcp/dccp: get rid of inet_twsk_purge()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Reported-by: Paolo Abeni <pabeni@redhat.com>
----
- include/net/netns/ipv4.h      |  8 +++-----
- net/dccp/minisocks.c          |  1 +
- net/ipv4/inet_timewait_sock.c |  8 +++++---
- net/ipv4/proc.c               |  4 ++--
- net/ipv4/sysctl_net_ipv4.c    | 20 ++++++++++++--------
- net/ipv4/tcp_ipv4.c           | 14 +++++++++++---
- net/ipv4/tcp_minisocks.c      |  2 +-
- net/ipv6/tcp_ipv6.c           |  3 ++-
- 8 files changed, 37 insertions(+), 23 deletions(-)
-
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 22b4c6df1d2b383cd10dd3dc11cf8c39388c50bf..94568e02200134efd3c187823e545bcea5dfafeb 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -31,18 +31,16 @@ struct ping_group_range {
- struct inet_hashinfo;
- 
- struct inet_timewait_death_row {
--	atomic_t		tw_count;
--	char			tw_pad[L1_CACHE_BYTES - sizeof(atomic_t)];
-+	refcount_t		tw_refcount;
- 
--	struct inet_hashinfo 	*hashinfo;
-+	struct inet_hashinfo 	*hashinfo ____cacheline_aligned_in_smp;
- 	int			sysctl_max_tw_buckets;
- };
- 
- struct tcp_fastopen_context;
- 
- struct netns_ipv4 {
--	/* Please keep tcp_death_row at first field in netns_ipv4 */
--	struct inet_timewait_death_row tcp_death_row ____cacheline_aligned_in_smp;
-+	struct inet_timewait_death_row *tcp_death_row;
- 
- #ifdef CONFIG_SYSCTL
- 	struct ctl_table_header	*forw_hdr;
-diff --git a/net/dccp/minisocks.c b/net/dccp/minisocks.c
-index 91e7a2202697143fddd1e81e2c528ea9bbc4ae4e..64d805b27addea27b3fb0b93fb27514a5ec0ae64 100644
---- a/net/dccp/minisocks.c
-+++ b/net/dccp/minisocks.c
-@@ -22,6 +22,7 @@
- #include "feat.h"
- 
- struct inet_timewait_death_row dccp_death_row = {
-+	.tw_refcount = REFCOUNT_INIT(1),
- 	.sysctl_max_tw_buckets = NR_FILE * 2,
- 	.hashinfo	= &dccp_hashinfo,
- };
-diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
-index 71808c7a7025c0a3a811b629a7796ad148152a4c..9e0bbd02656013e6e8be5765a7b86fc16e6bf831 100644
---- a/net/ipv4/inet_timewait_sock.c
-+++ b/net/ipv4/inet_timewait_sock.c
-@@ -58,7 +58,9 @@ static void inet_twsk_kill(struct inet_timewait_sock *tw)
- 	inet_twsk_bind_unhash(tw, hashinfo);
- 	spin_unlock(&bhead->lock);
- 
--	atomic_dec(&tw->tw_dr->tw_count);
-+	if (refcount_dec_and_test(&tw->tw_dr->tw_refcount))
-+		kfree(tw->tw_dr);
-+
- 	inet_twsk_put(tw);
- }
- 
-@@ -157,7 +159,7 @@ struct inet_timewait_sock *inet_twsk_alloc(const struct sock *sk,
- {
- 	struct inet_timewait_sock *tw;
- 
--	if (atomic_read(&dr->tw_count) >= dr->sysctl_max_tw_buckets)
-+	if (refcount_read(&dr->tw_refcount) - 1 >= dr->sysctl_max_tw_buckets)
- 		return NULL;
- 
- 	tw = kmem_cache_alloc(sk->sk_prot_creator->twsk_prot->twsk_slab,
-@@ -249,7 +251,7 @@ void __inet_twsk_schedule(struct inet_timewait_sock *tw, int timeo, bool rearm)
- 		__NET_INC_STATS(twsk_net(tw), kill ? LINUX_MIB_TIMEWAITKILLED :
- 						     LINUX_MIB_TIMEWAITED);
- 		BUG_ON(mod_timer(&tw->tw_timer, jiffies + timeo));
--		atomic_inc(&tw->tw_dr->tw_count);
-+		refcount_inc(&tw->tw_dr->tw_refcount);
- 	} else {
- 		mod_timer_pending(&tw->tw_timer, jiffies + timeo);
- 	}
-diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
-index f30273afb5399ddf0122e46e36da2ddae720a1c3..28836071f0a691dc23952f0273a7faf61b1ebb2c 100644
---- a/net/ipv4/proc.c
-+++ b/net/ipv4/proc.c
-@@ -59,8 +59,8 @@ static int sockstat_seq_show(struct seq_file *seq, void *v)
- 	socket_seq_show(seq);
- 	seq_printf(seq, "TCP: inuse %d orphan %d tw %d alloc %d mem %ld\n",
- 		   sock_prot_inuse_get(net, &tcp_prot), orphans,
--		   atomic_read(&net->ipv4.tcp_death_row.tw_count), sockets,
--		   proto_memory_allocated(&tcp_prot));
-+		   refcount_read(&net->ipv4.tcp_death_row->tw_refcount) - 1,
-+		   sockets, proto_memory_allocated(&tcp_prot));
- 	seq_printf(seq, "UDP: inuse %d mem %ld\n",
- 		   sock_prot_inuse_get(net, &udp_prot),
- 		   proto_memory_allocated(&udp_prot));
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 97eb54774924471ab71ea65e6240ed01a9785232..1cae27b5dcd836f1c5ae1ba1b0d4bae5899b3e6f 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -589,6 +589,14 @@ static struct ctl_table ipv4_table[] = {
- };
- 
- static struct ctl_table ipv4_net_table[] = {
-+	/* tcp_max_tw_buckets must be first in this table. */
-+	{
-+		.procname	= "tcp_max_tw_buckets",
-+/*		.data		= &init_net.ipv4.tcp_death_row.sysctl_max_tw_buckets, */
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec
-+	},
- 	{
- 		.procname	= "icmp_echo_ignore_all",
- 		.data		= &init_net.ipv4.sysctl_icmp_echo_ignore_all,
-@@ -1000,13 +1008,6 @@ static struct ctl_table ipv4_net_table[] = {
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= &two,
- 	},
--	{
--		.procname	= "tcp_max_tw_buckets",
--		.data		= &init_net.ipv4.tcp_death_row.sysctl_max_tw_buckets,
--		.maxlen		= sizeof(int),
--		.mode		= 0644,
--		.proc_handler	= proc_dointvec
--	},
- 	{
- 		.procname	= "tcp_max_syn_backlog",
- 		.data		= &init_net.ipv4.sysctl_max_syn_backlog,
-@@ -1400,7 +1401,8 @@ static __net_init int ipv4_sysctl_init_net(struct net *net)
- 		if (!table)
- 			goto err_alloc;
- 
--		for (i = 0; i < ARRAY_SIZE(ipv4_net_table) - 1; i++) {
-+		/* skip first entry (sysctl_max_tw_buckets) */
-+		for (i = 1; i < ARRAY_SIZE(ipv4_net_table) - 1; i++) {
- 			if (table[i].data) {
- 				/* Update the variables to point into
- 				 * the current struct net
-@@ -1415,6 +1417,8 @@ static __net_init int ipv4_sysctl_init_net(struct net *net)
- 		}
- 	}
- 
-+	table[0].data = &net->ipv4.tcp_death_row->sysctl_max_tw_buckets;
-+
- 	net->ipv4.ipv4_hdr = register_net_sysctl(net, "net/ipv4", table);
- 	if (!net->ipv4.ipv4_hdr)
- 		goto err_reg;
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index a7d83ceea42076e89862619f4b0cd7ae9277e7de..00cd6ccf3ab480cfb6f1ea3ab7c4c3df70c39a19 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -208,7 +208,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 	struct rtable *rt;
- 	int err;
- 	struct ip_options_rcu *inet_opt;
--	struct inet_timewait_death_row *tcp_death_row = &sock_net(sk)->ipv4.tcp_death_row;
-+	struct inet_timewait_death_row *tcp_death_row = sock_net(sk)->ipv4.tcp_death_row;
- 
- 	if (addr_len < sizeof(struct sockaddr_in))
- 		return -EINVAL;
-@@ -3117,9 +3117,13 @@ EXPORT_SYMBOL(tcp_prot);
- 
- static void __net_exit tcp_sk_exit(struct net *net)
- {
-+	struct inet_timewait_death_row *tcp_death_row = net->ipv4.tcp_death_row;
-+
- 	if (net->ipv4.tcp_congestion_control)
- 		bpf_module_put(net->ipv4.tcp_congestion_control,
- 			       net->ipv4.tcp_congestion_control->owner);
-+	if (refcount_dec_and_test(&tcp_death_row->tw_refcount))
-+		kfree(tcp_death_row);
- }
- 
- static int __net_init tcp_sk_init(struct net *net)
-@@ -3151,9 +3155,13 @@ static int __net_init tcp_sk_init(struct net *net)
- 	net->ipv4.sysctl_tcp_tw_reuse = 2;
- 	net->ipv4.sysctl_tcp_no_ssthresh_metrics_save = 1;
- 
-+	net->ipv4.tcp_death_row = kzalloc(sizeof(struct inet_timewait_death_row), GFP_KERNEL);
-+	if (!net->ipv4.tcp_death_row)
-+		return -ENOMEM;
-+	refcount_set(&net->ipv4.tcp_death_row->tw_refcount, 1);
- 	cnt = tcp_hashinfo.ehash_mask + 1;
--	net->ipv4.tcp_death_row.sysctl_max_tw_buckets = cnt / 2;
--	net->ipv4.tcp_death_row.hashinfo = &tcp_hashinfo;
-+	net->ipv4.tcp_death_row->sysctl_max_tw_buckets = cnt / 2;
-+	net->ipv4.tcp_death_row->hashinfo = &tcp_hashinfo;
- 
- 	net->ipv4.sysctl_max_syn_backlog = max(128, cnt / 128);
- 	net->ipv4.sysctl_tcp_sack = 1;
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 7c2d3ac2363acebcfd92d7a4886c052c8aa120b9..3977257f80d9963c84a117d4d65d426f1952449f 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -248,7 +248,7 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
- 	const struct inet_connection_sock *icsk = inet_csk(sk);
- 	const struct tcp_sock *tp = tcp_sk(sk);
- 	struct inet_timewait_sock *tw;
--	struct inet_timewait_death_row *tcp_death_row = &sock_net(sk)->ipv4.tcp_death_row;
-+	struct inet_timewait_death_row *tcp_death_row = sock_net(sk)->ipv4.tcp_death_row;
- 
- 	tw = inet_twsk_alloc(sk, tcp_death_row, state);
- 
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 1e55ee98dfedac67a591a8a04ce98f334a4b8b7c..0c648bf07f395d5e1ec0917d32fe55a46e853912 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -148,6 +148,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
- 	struct sockaddr_in6 *usin = (struct sockaddr_in6 *) uaddr;
- 	struct inet_sock *inet = inet_sk(sk);
- 	struct inet_connection_sock *icsk = inet_csk(sk);
-+	struct inet_timewait_death_row *tcp_death_row;
- 	struct ipv6_pinfo *np = tcp_inet6_sk(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct in6_addr *saddr = NULL, *final_p, final;
-@@ -156,7 +157,6 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
- 	struct dst_entry *dst;
- 	int addr_type;
- 	int err;
--	struct inet_timewait_death_row *tcp_death_row = &sock_net(sk)->ipv4.tcp_death_row;
- 
- 	if (addr_len < SIN6_LEN_RFC2133)
- 		return -EINVAL;
-@@ -308,6 +308,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
- 	inet->inet_dport = usin->sin6_port;
- 
- 	tcp_set_state(sk, TCP_SYN_SENT);
-+	tcp_death_row = sock_net(sk)->ipv4.tcp_death_row;
- 	err = inet6_hash_connect(tcp_death_row, sk);
- 	if (err)
- 		goto late_failure;
--- 
-2.35.0.rc0.227.g00780c9af4-goog
-
+T24gV2VkLCAyMDIyLTAxLTI2IGF0IDE2OjU2ICswMzAwLCBBbmRyZXkgSnIuIE1lbG5pa292IHdy
+b3RlOg0KPiBPbiBUdWUsIEphbiAyNSwgMjAyMiBhdCAxMDo1NDowN0FNIC0wNjAwLCBSb2JlcnQg
+SGFuY29jayB3cm90ZToNCj4gPiBBZGQgc3VwcG9ydCBmb3IgMTAwMEJhc2UtWCBmaWJlciBtb2Rl
+cyB0byB0aGUgYXQ4MDN4IFBIWSBkcml2ZXIsIGFzDQo+ID4gd2VsbCBhcyBzdXBwb3J0IGZvciBj
+b25uZWN0aW5nIGEgZG93bnN0cmVhbSBTRlAgY2FnZS4NCj4gPiANCj4gPiBDaGFuZ2VzIHNpbmNl
+IHYzOg0KPiA+IC1SZW5hbWVkIHNvbWUgY29uc3RhbnRzIHdpdGggT0hNIHN1ZmZpeCBmb3IgY2xh
+cml0eQ0KPiA+IA0KPiA+IENoYW5nZXMgc2luY2UgdjI6DQo+ID4gLWZpeGVkIHRhYnMvc3BhY2Vz
+IGlzc3VlIGluIG9uZSBwYXRjaA0KPiA+IA0KPiA+IENoYW5nZXMgc2luY2UgdjE6DQo+ID4gLW1v
+dmVkIHBhZ2Ugc2VsZWN0aW9uIHRvIGNvbmZpZ19pbml0IHNvIGl0IGlzIGhhbmRsZWQgcHJvcGVy
+bHkNCj4gPiBhZnRlciBzdXNwZW5kL3Jlc3VtZQ0KPiA+IC1hZGRlZCBleHBsaWNpdCBjaGVjayBm
+b3IgZW1wdHkgc2ZwX3N1cHBvcnQgYml0bWFzaw0KPiA+IA0KPiA+IFJvYmVydCBIYW5jb2NrICgz
+KToNCj4gPiAgIG5ldDogcGh5OiBhdDgwM3g6IG1vdmUgcGFnZSBzZWxlY3Rpb24gZml4IHRvIGNv
+bmZpZ19pbml0DQo+ID4gICBuZXQ6IHBoeTogYXQ4MDN4OiBhZGQgZmliZXIgc3VwcG9ydA0KPiA+
+ICAgbmV0OiBwaHk6IGF0ODAzeDogU3VwcG9ydCBkb3duc3RyZWFtIFNGUCBjYWdlDQo+ID4gDQo+
+IEJhY2twb3J0ZWQgdGhpcyBzZXJpZXMgdG8gNS4xNS4xNiBhbmQgdGVzdGVkIG9uIFViaXF1aXRp
+IEVkZ2VSb3V0ZXIgWCBTRlANCj4gaGFyZHdhcmUuIE9wdGljYWwgU0ZQIG1vZHVsZXMgd29ya2lu
+ZyB3aXRob3V0IHByb2JsZW1zLCBidXQgY29vcGVyIFNGUCB3aXRoDQo+IE1hcnZlbGwgODhFMTEx
+MSBub3Qgd29yayAtIGxpbmsgaXMgdXAgYnV0IG5vIHBhY2tldHMgc2VudC9yZWNpZXZlZCB2aWEN
+Cj4gaW50ZXJmYWNlLg0KDQpJbnRlcmVzdGluZywgYXBwYXJlbnRseSB3ZSB3ZXJlbid0IHRoZSBv
+bmx5IG9uZXMgd2VpcmQgZW5vdWdoIHRvIHVzZSBhbiBBUjgwMzENCmZvciBhbiBTRlAgbW9kdWxl
+Li4NCg0KPiANCj4gIyBkbWVzZyB8IGdyZXAgLWlFICcoZHNhfGV0aHxtZGlvfHNmcCknDQo+IFsg
+ICAgMC4wMDAwMDBdIE1JUFM6IG1hY2hpbmUgaXMgVWJpcXVpdGkgRWRnZVJvdXRlciBYIFNGUA0K
+PiBbICAgIDEuMzQ5MTYyXSBncGlvLTcgKHNmcF9pMmNfY2xrX2dhdGUpOiBob2dnZWQgYXMgb3V0
+cHV0L2hpZ2gNCj4gWyAgICA0LjY4NTUzNV0gbGlicGh5OiBGaXhlZCBNRElPIEJ1czogcHJvYmVk
+DQo+IFsgICAgNC43MzIyMDddIGxpYnBoeTogbWRpbzogcHJvYmVkDQo+IFsgICAgNC43MzkxNTFd
+IG10NzUzMCBtZGlvLWJ1czowMDogTVQ3NTMwIGFkYXB0cyBhcyBtdWx0aS1jaGlwIG1vZHVsZQ0K
+PiBbICAgIDQuNzY4OTU1XSBtdGtfc29jX2V0aCAxZTEwMDAwMC5ldGhlcm5ldCBkc2E6IG1lZGlh
+dGVrIGZyYW1lIGVuZ2luZSBhdA0KPiAweGJlMTAwMDAwLCBpcnEgMjANCj4gWyAgICA0Ljg1MjI1
+NF0gbXQ3NTMwIG1kaW8tYnVzOjAwOiBNVDc1MzAgYWRhcHRzIGFzIG11bHRpLWNoaXAgbW9kdWxl
+DQo+IFsgICAgNC45NzMzOTNdIG10NzUzMCBtZGlvLWJ1czowMCBldGgwICh1bmluaXRpYWxpemVk
+KTogUEhZIFttdDc1MzAtMDowMF0NCj4gZHJpdmVyIFtHZW5lcmljIFBIWV0gKGlycT1QT0xMKQ0K
+PiBbICAgIDQuOTkzNjc2XSBtdDc1MzAgbWRpby1idXM6MDAgZXRoMSAodW5pbml0aWFsaXplZCk6
+IFBIWSBbbXQ3NTMwLTA6MDFdDQo+IGRyaXZlciBbR2VuZXJpYyBQSFldIChpcnE9UE9MTCkNCj4g
+WyAgICA1LjAxNDA1NF0gbXQ3NTMwIG1kaW8tYnVzOjAwIGV0aDIgKHVuaW5pdGlhbGl6ZWQpOiBQ
+SFkgW210NzUzMC0wOjAyXQ0KPiBkcml2ZXIgW0dlbmVyaWMgUEhZXSAoaXJxPVBPTEwpDQo+IFsg
+ICAgNS4wMzQ0MDVdIG10NzUzMCBtZGlvLWJ1czowMCBldGgzICh1bmluaXRpYWxpemVkKTogUEhZ
+IFttdDc1MzAtMDowM10NCj4gZHJpdmVyIFtHZW5lcmljIFBIWV0gKGlycT1QT0xMKQ0KPiBbICAg
+IDUuMDU0NzA0XSBtdDc1MzAgbWRpby1idXM6MDAgZXRoNCAodW5pbml0aWFsaXplZCk6IFBIWSBb
+bXQ3NTMwLTA6MDRdDQo+IGRyaXZlciBbR2VuZXJpYyBQSFldIChpcnE9UE9MTCkNCj4gWyAgICA1
+LjEzMTg1MF0gbXQ3NTMwIG1kaW8tYnVzOjAwIGV0aDUgKHVuaW5pdGlhbGl6ZWQpOiBQSFkgW21k
+aW8tYnVzOjA3XQ0KPiBkcml2ZXIgW1F1YWxjb21tIEF0aGVyb3MgQVI4MDMxL0FSODAzM10gKGly
+cT1QT0xMKQ0KPiBbICAgIDUuMTU1ODI4XSBtdDc1MzAgbWRpby1idXM6MDA6IGNvbmZpZ3VyaW5n
+IGZvciBmaXhlZC9yZ21paSBsaW5rIG1vZGUNCj4gWyAgICA1LjE3MjI5MF0gRFNBOiB0cmVlIDAg
+c2V0dXANCj4gWyAgICA1LjE3OTMwMl0gbXQ3NTMwIG1kaW8tYnVzOjAwOiBMaW5rIGlzIFVwIC0g
+MUdicHMvRnVsbCAtIGZsb3cgY29udHJvbCBvZmYNCj4gWyAgICA5LjEwMzI5MV0gbXRrX3NvY19l
+dGggMWUxMDAwMDAuZXRoZXJuZXQgZHNhOiBjb25maWd1cmluZyBmb3IgZml4ZWQvcmdtaWkNCj4g
+bGluayBtb2RlDQo+IFsgICAgOS4xMTkyMzBdIGRldmljZSBkc2EgZW50ZXJlZCBwcm9taXNjdW91
+cyBtb2RlDQo+IFsgICAgOS4xMjg2NTRdIG10a19zb2NfZXRoIDFlMTAwMDAwLmV0aGVybmV0IGRz
+YTogTGluayBpcyBVcCAtIDFHYnBzL0Z1bGwgLQ0KPiBmbG93IGNvbnRyb2wgcngvdHgNCj4gWyAg
+ICA5LjEzMTU2M10gbXQ3NTMwIG1kaW8tYnVzOjAwIGV0aDE6IGNvbmZpZ3VyaW5nIGZvciBwaHkv
+Z21paSBsaW5rIG1vZGUNCj4gWyAgICA5LjE1ODkyNl0gSVB2NjogQUREUkNPTkYoTkVUREVWX0NI
+QU5HRSk6IGRzYTogbGluayBiZWNvbWVzIHJlYWR5DQo+IFsgICAxMy4zMDY1OTBdIGRldmljZSBk
+c2EgbGVmdCBwcm9taXNjdW91cyBtb2RlDQo+IFsgICAxNC41ODc5NTNdIGxpYnBoeTogU0ZQIEky
+QyBCdXM6IHByb2JlZA0KPiBbICAgMTQuNzUxNDIwXSBzZnAgc2ZwX2V0aDU6IEhvc3QgbWF4aW11
+bSBwb3dlciAxLjBXDQo+IFsgICAxNC44MjEyOTZdIHNmcCBzZnBfZXRoNTogTm8gdHhfZGlzYWJs
+ZSBwaW46IFNGUCBtb2R1bGVzIHdpbGwgYWx3YXlzIGJlDQo+IGVtaXR0aW5nLg0KPiBbICAgMTUu
+NjkxMjYxXSBzZnAgc2ZwX2V0aDU6IG1vZHVsZSBHYXRlcmF5ICAgICAgICAgIEdSLVMxLVJKICAg
+ICAgICAgcmV2DQo+IEEgICAgc24gWDIwMTYwNDE2MjI5MyAgICBkYyAxNjA0MjIgIA0KPiBbICAg
+MTUuNzEwNjg2XSBRdWFsY29tbSBBdGhlcm9zIEFSODAzMS9BUjgwMzMgbWRpby1idXM6MDc6IG1v
+ZHVsZSBtYXkgbm90DQo+IGZ1bmN0aW9uIGlmIDEwMDBCYXNlLVggbm90IHN1cHBvcnRlZA0KPiBb
+ICAgMzYuNDQwMDcyXSBtdGtfc29jX2V0aCAxZTEwMDAwMC5ldGhlcm5ldCBkc2E6IExpbmsgaXMg
+RG93bg0KPiBbICAgMzYuNDYxMzc0XSBtdGtfc29jX2V0aCAxZTEwMDAwMC5ldGhlcm5ldCBkc2E6
+IGNvbmZpZ3VyaW5nIGZvciBmaXhlZC9yZ21paQ0KPiBsaW5rIG1vZGUNCj4gWyAgIDM2LjQ3Nzg1
+Nl0gbXRrX3NvY19ldGggMWUxMDAwMDAuZXRoZXJuZXQgZHNhOiBMaW5rIGlzIFVwIC0gMUdicHMv
+RnVsbCAtDQo+IGZsb3cgY29udHJvbCByeC90eA0KPiBbICAgMzYuNDk1MTQyXSBJUHY2OiBBRERS
+Q09ORihORVRERVZfQ0hBTkdFKTogZHNhOiBsaW5rIGJlY29tZXMgcmVhZHkNCj4gWyAgIDM2LjUw
+ODI0Nl0gZGV2aWNlIGRzYSBlbnRlcmVkIHByb21pc2N1b3VzIG1vZGUNCj4gWyAgIDM2LjUxNzk3
+Nl0gbXQ3NTMwIG1kaW8tYnVzOjAwIGV0aDE6IGNvbmZpZ3VyaW5nIGZvciBwaHkvZ21paSBsaW5r
+IG1vZGUNCj4gWyAgIDM2LjUzMjc5NF0gYnItbGFuOiBwb3J0IDEoZXRoMSkgZW50ZXJlZCBibG9j
+a2luZyBzdGF0ZQ0KPiBbICAgMzYuNTQzMzIyXSBici1sYW46IHBvcnQgMShldGgxKSBlbnRlcmVk
+IGRpc2FibGVkIHN0YXRlDQo+IFsgICAzNi41NTU3NjhdIGRldmljZSBldGgxIGVudGVyZWQgcHJv
+bWlzY3VvdXMgbW9kZQ0KPiBbICAgMzYuNTkyMzMyXSBtdDc1MzAgbWRpby1idXM6MDAgZXRoMjog
+Y29uZmlndXJpbmcgZm9yIHBoeS9nbWlpIGxpbmsgbW9kZQ0KPiBbICAgMzYuNjA3MTEzXSBici1s
+YW46IHBvcnQgMihldGgyKSBlbnRlcmVkIGJsb2NraW5nIHN0YXRlDQo+IFsgICAzNi42MTc2NTFd
+IGJyLWxhbjogcG9ydCAyKGV0aDIpIGVudGVyZWQgZGlzYWJsZWQgc3RhdGUNCj4gWyAgIDM2LjYz
+MDI2OF0gZGV2aWNlIGV0aDIgZW50ZXJlZCBwcm9taXNjdW91cyBtb2RlDQo+IFsgICAzNi42NTUy
+MzNdIG10NzUzMCBtZGlvLWJ1czowMCBldGgzOiBjb25maWd1cmluZyBmb3IgcGh5L2dtaWkgbGlu
+ayBtb2RlDQo+IFsgICAzNi42Njk5NTddIGJyLWxhbjogcG9ydCAzKGV0aDMpIGVudGVyZWQgYmxv
+Y2tpbmcgc3RhdGUNCj4gWyAgIDM2LjY4MDQ1NF0gYnItbGFuOiBwb3J0IDMoZXRoMykgZW50ZXJl
+ZCBkaXNhYmxlZCBzdGF0ZQ0KPiBbICAgMzYuNjkzMzUxXSBkZXZpY2UgZXRoMyBlbnRlcmVkIHBy
+b21pc2N1b3VzIG1vZGUNCj4gWyAgIDM2LjcxODU5Nl0gbXQ3NTMwIG1kaW8tYnVzOjAwIGV0aDQ6
+IGNvbmZpZ3VyaW5nIGZvciBwaHkvZ21paSBsaW5rIG1vZGUNCj4gWyAgIDM2LjczMzQzNV0gYnIt
+bGFuOiBwb3J0IDQoZXRoNCkgZW50ZXJlZCBibG9ja2luZyBzdGF0ZQ0KPiBbICAgMzYuNzQzOTc3
+XSBici1sYW46IHBvcnQgNChldGg0KSBlbnRlcmVkIGRpc2FibGVkIHN0YXRlDQo+IFsgICAzNi43
+NTY5NjZdIGRldmljZSBldGg0IGVudGVyZWQgcHJvbWlzY3VvdXMgbW9kZQ0KPiBbICAgMzYuNzc5
+OTgzXSBtdDc1MzAgbWRpby1idXM6MDAgZXRoNTogY29uZmlndXJpbmcgZm9yIHBoeS9yZ21paS1y
+eGlkIGxpbmsNCj4gbW9kZQ0KPiBbICAgMzYuNzk1MDczXSBtdDc1MzAgbWRpby1idXM6MDAgZXRo
+NTogTm8gcGh5IGxlZCB0cmlnZ2VyIHJlZ2lzdGVyZWQgZm9yDQo+IHNwZWVkKC0xKQ0KPiBbICAg
+MzYuODEwMDUxXSBici1sYW46IHBvcnQgNShldGg1KSBlbnRlcmVkIGJsb2NraW5nIHN0YXRlDQo+
+IFsgICAzNi44MTAyNzddIG10NzUzMCBtZGlvLWJ1czowMCBldGg1OiBMaW5rIGlzIFVwIC0gVW5r
+bm93bi9Vbmtub3duIC0gZmxvdw0KPiBjb250cm9sIG9mZg0KPiANCj4gTGluayBpcyB1cCAtIGJ1
+dCB3aGF0IG1vZGUgaXMgc2VsZWN0ZWQgPz8gTm8gcGFja2V0cyByZWNlaXZlZCBmcm9tDQo+IGlu
+dGVyZmFjZSwgcmVtb3RlIHNpZGUgcmVwb3J0IDEwMDAvRnVsbCBzcGVlZCBuZWdvdGlhdGVkLCBU
+WCBjb3VudGVycw0KPiBpbmNyZWFzZWQuDQoNCkkgdGhpbmsgeW91J3JlIHJ1bm5pbmcgaW50byB0
+aGUgaW5oZXJlbnQgbGltaXRhdGlvbiBvZiB0aGlzIHNldHVwICh3aGljaCB0aGUNCiJtb2R1bGUg
+bWF5IG5vdCBmdW5jdGlvbiBpZiAxMDAwQmFzZS1YIG5vdCBzdXBwb3J0ZWQiIG1lc3NhZ2UgaXMg
+dHJ5aW5nIHRvIHRlbGwNCnlvdSkgLSB0aGUgQVI4MDMxIG9ubHkgc3VwcG9ydHMgMTAwMEJhc2Ut
+WCBvbiB0aGlzIGludGVyZmFjZSwgbm90IFNHTUlJLiBNYW55DQoocGVyaGFwcyBtb3N0KSBjb3Bw
+ZXIgU0ZQIG1vZHVsZXMgdXNlIG9yIGRlZmF1bHQgdG8gU0dNSUkgbW9kZSBiZWNhdXNlIGl0DQph
+bGxvd3MgdGhlIGxpbmsgdG8gd29yayBhdCAxMDAgb3IgMTAgTWJwcyBzcGVlZHMgYXMgd2VsbCBh
+cyAxIEdicHMuDQoNClRoZSBkaWZmZXJlbmNlIGJldHdlZW4gMTAwMEJhc2UtWCBhbmQgU0dNSUks
+IGF0IGxlYXN0IHdoZW4gYXQgMTAwMCBNYnBzIHNwZWVkcywNCmlzIG1vc3RseSBpbiB0aGUgYXV0
+by1uZWdvdGlhdGlvbiwgc28gd2UndmUgZm91bmQgdGhhdCBpbiBtYW55IGNhc2VzIHlvdSBjYW4N
+CmdldCBpdCB0byB3b3JrIGJ5IHVzaW5nIGV0aHRvb2wgdG8gZGlzYWJsZSBhdXRvLW5lZ290aWF0
+aW9uIGFuZCBmb3JjaW5nIDEwMDANCk1icHMgZnVsbCBkdXBsZXggbW9kZSBvbiB0aGUgaW50ZXJm
+YWNlLiBJdCBzZWVtcyB0aGF0IChhdCBsZWFzdCBmcm9tIHdoYXQgd2UNCmhhdmUgc2VlbikgdGhl
+IFNGUCBtb2R1bGUgc2lkZSB3aWxsIG9mdGVuIGRlY2lkZSB0byBnaXZlIHVwIG9uIGF1dG8tbmVn
+b3RpYXRpb24gDQp3aGVuIGl0IHNlZXMgYSBsaW5rIGFuZCBqdXN0IHJ1biBhdCB0aGUgcHJvcGVy
+IHJhdGUgLSB0aGF0IGRvZXNuJ3QgZ2VuZXJhbGx5DQphZmZlY3QgdGhlIHNlcGFyYXRlIG5lZ290
+aWF0aW9uIHRoYXQgaGFwcGVucyBvbiB0aGUgY29wcGVyIGxpbmsgdG8gd2hhdGV2ZXIgaXMNCmNv
+bm5lY3RlZCBvbiB0aGUgb3RoZXIgZW5kLiBPYnZpb3VzbHkgaWYgdGhlIGxpbmsgcGFydG5lciBj
+b25uZWN0ZWQgb24gdGhlDQpjb3BwZXIgc2lkZSBkb2Vzbid0IHN1cHBvcnQgMSBHYnBzIGl0IHdv
+bid0IHdvcmsuDQoNCkknbSBub3QgZW50aXJlbHkgc3VyZSB3aHkgaXQgd29ya2VkIGFmdGVyIHRo
+ZSBtb2R1bGUgd2FzIHVucGx1Z2dlZCBhbmQgcGx1Z2dlZA0KYmFjayBpbiBob3dldmVyLiBCdXQg
+bXkgZ3Vlc3MgaXQncyByZWxhdGVkIHRvIHRoaXMgaXNzdWUgc29tZWhvdy4NCg0KPiANCj4gWyAg
+IDM2LjgyMDYwNl0gYnItbGFuOiBwb3J0IDUoZXRoNSkgZW50ZXJlZCBkaXNhYmxlZCBzdGF0ZQ0K
+PiBbICAgMzYuODQ5NTE1XSBkZXZpY2UgZXRoNSBlbnRlcmVkIHByb21pc2N1b3VzIG1vZGUNCj4g
+WyAgIDM2Ljg2MjE0Ml0gYnItbGFuOiBwb3J0IDUoZXRoNSkgZW50ZXJlZCBibG9ja2luZyBzdGF0
+ZQ0KPiBbICAgMzYuODcyNjczXSBici1sYW46IHBvcnQgNShldGg1KSBlbnRlcmVkIGZvcndhcmRp
+bmcgc3RhdGUNCj4gWyAgIDM3LjI2MDU5NV0gbXQ3NTMwIG1kaW8tYnVzOjAwIGV0aDA6IGNvbmZp
+Z3VyaW5nIGZvciBwaHkvZ21paSBsaW5rIG1vZGUNCj4gWyAgIDQwLjM2MjAyOV0gbXQ3NTMwIG1k
+aW8tYnVzOjAwIGV0aDA6IExpbmsgaXMgVXAgLSAxR2Jwcy9GdWxsIC0gZmxvdw0KPiBjb250cm9s
+IG9mZg0KPiBbICAgNDAuMzc2NjU2XSBJUHY2OiBBRERSQ09ORihORVRERVZfQ0hBTkdFKTogZXRo
+MDogbGluayBiZWNvbWVzIHJlYWR5DQo+IFsgIDY3MC4yMDE0ODddIG10NzUzMCBtZGlvLWJ1czow
+MCBldGg1OiBMaW5rIGlzIERvd24NCj4gWyAgNjcwLjIxMTQyM10gYnItbGFuOiBwb3J0IDUoZXRo
+NSkgZW50ZXJlZCBkaXNhYmxlZCBzdGF0ZQ0KPiBbICA2NzEuMjQxMzM5XSBtdDc1MzAgbWRpby1i
+dXM6MDAgZXRoNTogTm8gcGh5IGxlZCB0cmlnZ2VyIHJlZ2lzdGVyZWQgZm9yDQo+IHNwZWVkKC0x
+KQ0KPiBbICA2NzEuMjU2Nzg5XSBtdDc1MzAgbWRpby1idXM6MDAgZXRoNTogTGluayBpcyBVcCAt
+IFVua25vd24vVW5rbm93biAtIGZsb3cNCj4gY29udHJvbCBvZmYNCj4gWyAgNjcxLjI3MjM0M10g
+YnItbGFuOiBwb3J0IDUoZXRoNSkgZW50ZXJlZCBibG9ja2luZyBzdGF0ZQ0KPiBbICA2NzEuMjgy
+ODIxXSBici1sYW46IHBvcnQgNShldGg1KSBlbnRlcmVkIGZvcndhcmRpbmcgc3RhdGUNCj4gWyAg
+NjcxLjQ3MTIxMF0gc2ZwIHNmcF9ldGg1OiBtb2R1bGUgcmVtb3ZlZA0KPiANCj4gTm93LCBJJ20g
+cmVtb3ZlZCBjb3BwZXIgU0ZQLCBhbmQgaW5zdGFsbCBvcHRpbGNhbCBTRlA6DQo+IA0KPiBbICA2
+NzIuMjgxNDUxXSBtdDc1MzAgbWRpby1idXM6MDAgZXRoNTogTGluayBpcyBEb3duDQo+IFsgIDY3
+Mi4yOTA5NDNdIGJyLWxhbjogcG9ydCA1KGV0aDUpIGVudGVyZWQgZGlzYWJsZWQgc3RhdGUNCj4g
+WyAgNjg4LjkyMTg2OF0gbXQ3NTMwIG1kaW8tYnVzOjAwIGV0aDU6IExpbmsgaXMgVXAgLSAxR2Jw
+cy9GdWxsIC0gZmxvdw0KPiBjb250cm9sIG9mZg0KPiBbICA2ODguOTM2NTEyXSBici1sYW46IHBv
+cnQgNShldGg1KSBlbnRlcmVkIGJsb2NraW5nIHN0YXRlDQo+IFsgIDY4OC45NDY5NDRdIGJyLWxh
+bjogcG9ydCA1KGV0aDUpIGVudGVyZWQgZm9yd2FyZGluZyBzdGF0ZQ0KPiBbICA2ODkuNTkxMTky
+XSBzZnAgc2ZwX2V0aDU6IG1vZHVsZSBHYXRlcmF5ICAgICAgICAgIEdSLVMxLVgzMTIwTC1EICAg
+cmV2DQo+IEEgICAgc24gWDIwMTYwMjIyMDk2MSAgICBkYyAxNjAyMjkgIA0KPiANCj4gTGluayBp
+cyB1cCwgMTAwMC9GdWxsLCBwYWNrZXRzIHRyYXZlcnNlIGluIGJvdGggZGlyZWN0aW9ucy4gTm93
+LCBpbnNlcnQgYmFjaw0KPiBjb3BwZXIgU0ZQOg0KPiANCj4gWyAgNzMxLjU2MTQ0Nl0gbXQ3NTMw
+IG1kaW8tYnVzOjAwIGV0aDU6IExpbmsgaXMgRG93bg0KPiBbICA3MzEuNTcwOTQ3XSBici1sYW46
+IHBvcnQgNShldGg1KSBlbnRlcmVkIGRpc2FibGVkIHN0YXRlDQo+IFsgIDczMy44NDE2MDldIHNm
+cCBzZnBfZXRoNTogbW9kdWxlIHJlbW92ZWQNCj4gWyAgNzUxLjMyMTU3Nl0gbXQ3NTMwIG1kaW8t
+YnVzOjAwIGV0aDU6IExpbmsgaXMgVXAgLSAxR2Jwcy9Vbmtub3duIC0gZmxvdw0KPiBjb250cm9s
+IG9mZg0KPiANCj4gV2hvYSwgbGluayB1cCB3aXRoIDFHYnBzIHNwZWVkLg0KPiANCj4gWyAgNzUx
+LjMzNjczM10gYnItbGFuOiBwb3J0IDUoZXRoNSkgZW50ZXJlZCBibG9ja2luZyBzdGF0ZQ0KPiBb
+ICA3NTEuMzQ3MTY3XSBici1sYW46IHBvcnQgNShldGg1KSBlbnRlcmVkIGZvcndhcmRpbmcgc3Rh
+dGUNCj4gWyAgNzUxLjk2MTE5M10gc2ZwIHNmcF9ldGg1OiBtb2R1bGUgR2F0ZXJheSAgICAgICAg
+ICBHUi1TMS1SSiAgICAgICAgIHJldg0KPiBBICAgIHNuIFgyMDE2MDQxNjIyOTMgICAgZGMgMTYw
+NDIyICANCj4gWyAgNzUxLjk4MDY2N10gUXVhbGNvbW0gQXRoZXJvcyBBUjgwMzEvQVI4MDMzIG1k
+aW8tYnVzOjA3OiBtb2R1bGUgbWF5IG5vdA0KPiBmdW5jdGlvbiBpZiAxMDAwQmFzZS1YIG5vdCBz
+dXBwb3J0ZWQNCj4gWyAgNzUzLjQwMTQ4M10gbXQ3NTMwIG1kaW8tYnVzOjAwIGV0aDU6IExpbmsg
+aXMgRG93bg0KPiBbICA3NTMuNDEwOTg0XSBici1sYW46IHBvcnQgNShldGg1KSBlbnRlcmVkIGRp
+c2FibGVkIHN0YXRlDQo+IFsgIDc1NC40NDE2MjddIG10NzUzMCBtZGlvLWJ1czowMCBldGg1OiBM
+aW5rIGlzIFVwIC0gMUdicHMvVW5rbm93biAtIGZsb3cNCj4gY29udHJvbCBvZmYNCj4gWyAgNzU0
+LjQ1NzE0NF0gYnItbGFuOiBwb3J0IDUoZXRoNSkgZW50ZXJlZCBibG9ja2luZyBzdGF0ZQ0KPiBb
+ICA3NTQuNDY3NjE5XSBici1sYW46IHBvcnQgNShldGg1KSBlbnRlcmVkIGZvcndhcmRpbmcgc3Rh
+dGUNCj4gDQo+IE5vdyBwYWNrZXRzIHRyYXZlcnNlIGluIGJvdGggZGlyZWN0aW9ucyBmb3IgY29w
+cGVyIG1vZHVsZSB0b28uDQo+IA0KPiBDYW4gc29tZW9uZSBleHBsYWluIC0gd2h5IGNvcHBlciBt
+b2R1bGUgbm90IHdvcmsgZnJvbSBib290PyBBbmQgaG93IGNvbnRyb2xsDQo+IDg4RTExMTENCj4g
+aW5zaWRlIFNGUCA/DQoNClRoYXQncyB0aGUgb3RoZXIgaXNzdWUgd2l0aCB0aGlzIHNldHVwIHdp
+dGggY29wcGVyIG1vZHVsZXMgLSB5b3UgZW5kIHVwIHdpdGgNCnRoZSBBUjgwMzEgUEhZIGRldmlj
+ZSwgd2hpY2ggaXMgYmFzaWNhbGx5IGFjdGluZyBhcyBhbiBSR01JSSBldGMuIHRvIDEwMDBCYXNl
+LVggDQpjb252ZXJ0ZXIsIGFuZCB0aGUgUEhZIGRldmljZSBpbnNpZGUgdGhlIG1vZHVsZSB3aGlj
+aCBpcyB0aGUgb25lIHRhbGtpbmcgdG8gdGhlDQpvdXRzaWRlIHdvcmxkLiBBcyBSdXNzZWxsIG1l
+bnRpb25lZCwgdGhpcyBzb3J0IG9mIGR1YWwtUEhZIHNldHVwIGlzbid0IGhhbmRsZWQNCndlbGwg
+aW4gTGludXggcmlnaHQgbm93IC0gaW4gdGhpcyBBUjgwMzEgc2V0dXAsIHRoZSBrZXJuZWwgdGFs
+a3MgdG8gdGhlIFNGUA0KbW9kdWxlIGVub3VnaCB0byBpZGVudGlmeSBpdCwgYnV0IHRoZSBkcml2
+ZXIgZm9yIHRoZSBtb2R1bGUgUEhZIGlzIG5vdCBwcm9iZWQuDQpFdmVuIGlmIGl0IHdhcywgaXQg
+Y2FuJ3QgcmVhbGx5IGJlIGhvb2tlZCB1cCB0byB0aGUgbmV0d29yayBpbnRlcmZhY2UgYmVjYXVz
+ZQ0KdGhlIG5ldHdvcmsgbGF5ZXIgb25seSBzdXBwb3J0cyBiaW5kaW5nIG9uZSBQSFkgdG8gYSBk
+ZXZpY2UsIHNvIHRoZXJlJ3Mgbm90DQpyZWFsbHkgYSB3YXkgdG8gY29udHJvbCBpdC4NCg0KVGhl
+cmUncyBzdXBwb3J0IGZvciBNQUMgZHJpdmVycyB3aGljaCBoYXZlIGFuIGludGVncmF0ZWQgb3Ig
+c2VtaS1pbnRlZ3JhdGVkIFBDUw0KbGF5ZXIgd2hpY2ggaGFuZGxlcyAxMDAwQmFzZS1YIG9yIFNH
+TUlJIC0gc29tZSBvZiB3aGljaCBsb29rIGxpa2UgYSBQSFkgaW4gdGhhdA0KdGhleSBzdXBwb3J0
+IHN0YW5kYXJkIFBIWSByZWdpc3RlcnMgYW5kL29yIGhhdmUgYW4gTURJTyBpbnRlcmZhY2UgLSBi
+dXQgdGhhdA0KZXNzZW50aWFsbHkgaXMgaGFuZGxlZCBpbnRlcm5hbGx5IHRvIHBoeWxpbmsgYW5k
+IHRoZSBNQUMgZHJpdmVyIGFuZCB0aGUgIlBIWSItDQpuZXNzIGlzbid0IHJlYWxseSBleHBvc2Vk
+IHRvIHRoZSByZXN0IG9mIHRoZSBrZXJuZWwuIEJ1dCBpbiB0aGlzIGNhc2UsIHRoZSBNQUMNCmRy
+aXZlciBoYXMgbm8gcmVhbCBrbm93bGVkZ2Ugb2YgdGhlIGRvd25zdHJlYW0gU0ZQIGNvbnRyYXB0
+aW9uIHRoYXQncyBiZWVuDQphdHRhY2hlZCBvbiBpdHMgUEhZIGludGVyZmFjZSwgYW5kIHRoZSBv
+bmx5IFBIWSB0aGUga2VybmVsIGFzc29jaWF0ZXMgd2l0aCB0aGUNCmludGVyZmFjZSBpcyB0aGUg
+QVI4MDMxLg0KDQpJbiB0aGUgQVI4MDMxIGNhc2UgaG93ZXZlciwgdGhpcyBpc24ndCByZWFsbHkg
+YSBiaWcgaXNzdWUgYmVjYXVzZSB0aGUgaW5oZXJlbnQNCmxpbWl0YXRpb24gb2Ygb25seSBzdXBw
+b3J0aW5nIDEwMDBCYXNlLVggaXMgbW9yZSBzaWduaWZpY2FudCB0aGFuIHRoZQ0KbGltaXRhdGlv
+bnMgdGhlIGtlcm5lbCBzaWRlIGlzIGltcG9zaW5nLi4NCg0KLS0gDQpSb2JlcnQgSGFuY29jaw0K
+U2VuaW9yIEhhcmR3YXJlIERlc2lnbmVyLCBDYWxpYW4gQWR2YW5jZWQgVGVjaG5vbG9naWVzDQp3
+d3cuY2FsaWFuLmNvbQ0K
