@@ -2,83 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B3D549C6C4
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 10:46:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A4A649C6CF
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 10:48:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232146AbiAZJqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 04:46:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48010 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232073AbiAZJqV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 04:46:21 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1E5C061744
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 01:46:20 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id o12so18499011lfg.12
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 01:46:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LpTaU2Ptr8MQ/wN++pzUGfYSFa+pffVDK7J691el+xI=;
-        b=yMvK6vPPbGBnuLsvGBBDXyTE2AbQ4G1HcCUAjxDkxfT8BG+8bRZBDWCRIzxqaIVOCO
-         NYBVPjfpPcFa+ZCUk6/uuRfnFi0AV2lJzlHLSCzXCLqFJaaZME0SIO5SgQcitMs4E23r
-         ciPEfJVik7FUyYExCFSqmXAgN0+y+ecIexyG4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LpTaU2Ptr8MQ/wN++pzUGfYSFa+pffVDK7J691el+xI=;
-        b=5KGbI/5Y2bMzr8aiXSHVv6jRNEKjlrauRL7VihSg0yH0Pd0Bzi9ZXrJS/Y4RFn6P+J
-         j76QVX+FXZuoZcUrS1pYHhOnnJTIc68nS6dorTqEUFOSm2IBf2tEZMWAdC40Alw35QLt
-         4rpwY5btxgM/fQmewXkwE5Vfhj6ROeCYGzqQryUxzBAuNl5NMBOw134fKRQaLKWf50ie
-         jmlPEYrydrRyfIDz1PeBNV8bFJ8GA65PToA8DrQeDTO8H3CrIF6eHSUbtDmkf7Ei/YPJ
-         YmLdOXRWi7hLIm84wS9mOYR/0pPb/s8AYXPpkNYVypMJ/H5WYqb34SJW/CB0obk1HT6c
-         GC/w==
-X-Gm-Message-State: AOAM533NobRBbFNHMoe7wlEgQeujJoRJV4QvtTamxm/XiambFCoVpORV
-        b4qPH4etXkhRyXDhIHeVItjsJIZuN+HmStlRqQubAw==
-X-Google-Smtp-Source: ABdhPJyJUeBUcRbKBBc5OZhT3CTkWd+leTIulW72WHw2OORXwCdM8BcPQZqWcWkYa2JBBQ1HO7kLz8pv/jPLIi1IO5k=
-X-Received: by 2002:a05:6512:3086:: with SMTP id z6mr4373391lfd.102.1643190379153;
- Wed, 26 Jan 2022 01:46:19 -0800 (PST)
-MIME-Version: 1.0
-References: <20220124151146.376446-1-maximmi@nvidia.com> <20220124151146.376446-2-maximmi@nvidia.com>
-In-Reply-To: <20220124151146.376446-2-maximmi@nvidia.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Wed, 26 Jan 2022 09:46:08 +0000
-Message-ID: <CACAyw98mbtZSH3yddaptKb4Qi7Grxzt80ihqiHA3qw9n4XwVjg@mail.gmail.com>
-Subject: Re: [PATCH bpf v2 1/4] bpf: Use ipv6_only_sock in bpf_tcp_gen_syncookie
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S232461AbiAZJsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 04:48:14 -0500
+Received: from mga18.intel.com ([134.134.136.126]:4595 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232255AbiAZJsO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jan 2022 04:48:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643190494; x=1674726494;
+  h=from:to:cc:subject:date:message-id;
+  bh=JDgk8tdiajGeraEL32XBZT7Uhv8Nx78Co1o96ic4M6o=;
+  b=fgp6mHeKFisG7b4zAnqSij4OeZmuHwKT5oZL/Iib26ZoyYFPY6KYvXWG
+   4q0EmCnCv3fv7mAzZKbXbEX4uf4wVgJiEpJ7wim3vjr1OphbX68lEEEoz
+   s4tGZnQMzFvdZ+aRAV0eCOMb4xZwVtsSr2nYOo5V4XPfPWh98+wtBRXbs
+   6cF1yrw742tN6gPuCJwJKSTEhHNX0L3RNqHRwP5rbW7MQIQH2BTnmPVgi
+   hORsO7N1+7raH7lAGOQQEDsyYVGRo6JdsHgJw8l3N3Z4TzzWHsyJpAopT
+   HL3WVc8S1tjG+567XSDmiUaKuVcCM1G4Y2uo1uWoy540NPvYc+VuANtxe
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="230090777"
+X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
+   d="scan'208";a="230090777"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 01:48:14 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,317,1635231600"; 
+   d="scan'208";a="617918575"
+Received: from mismail5-ilbpg0.png.intel.com ([10.88.229.13])
+  by FMSMGA003.fm.intel.com with ESMTP; 26 Jan 2022 01:48:08 -0800
+From:   Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Petar Penkov <ppenkov@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, mohammad.athari.ismail@intel.com
+Subject: [PATCH net 0/2] Fix PTP issue in stmmac
+Date:   Wed, 26 Jan 2022 17:47:21 +0800
+Message-Id: <20220126094723.11849-1-mohammad.athari.ismail@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 24 Jan 2022 at 15:13, Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
->
-> Instead of querying the sk_ipv6only field directly, use the dedicated
-> ipv6_only_sock helper.
->
-> Fixes: 70d66244317e ("bpf: add bpf_tcp_gen_syncookie helper")
-> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+This patch series to fix PTP issue in stmmac related to:
+1/ PTP clock source configuration during initialization.
+2/ PTP initialization during resume from suspend.
 
-Acked-by: Lorenz Bauer <lmb@cloudflare.com>
+Mohammad Athari Bin Ismail (2):
+  net: stmmac: configure PTP clock source prior to PTP initialization
+  net: stmmac: skip only stmmac_ptp_register when resume from suspend
+
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 23 ++++++++++---------
+ .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  |  3 ---
+ 2 files changed, 12 insertions(+), 14 deletions(-)
 
 -- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+2.17.1
 
-www.cloudflare.com
