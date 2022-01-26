@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16E3B49D532
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 23:18:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA1EF49D536
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 23:18:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233166AbiAZWSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 17:18:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55154 "EHLO
+        id S233241AbiAZWSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 17:18:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233122AbiAZWST (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 17:18:19 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04885C061757
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:18:17 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id a8so925549pfa.6
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:18:17 -0800 (PST)
+        with ESMTP id S233206AbiAZWSW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 17:18:22 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06FBC06173B
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:18:22 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id x11so839617plg.6
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 14:18:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ltUaf0P7+L7T6ZQurZSqM5no7v9v1dUYJbr17H6OFeE=;
-        b=GLR7jiNk80+lc4ufxK9ZhAJsn9m6eraXUlEp18njsVAZbtmEBA9ZVPorH4qskiDTKi
-         D49Ia7LJjcm+1/cWDCogGbroN9YMoMQa7fqe6q57AZOsVeDVaEc9eqVhkkHXdLhw1Ib4
-         MfC5zBCeq7jIOynF0qwsduKkks7qL0qV45zn+iDwVAI3TkZcxHGic3qdCQnjibiGe6nd
-         1bAQzLBM4jlf4QNWUPjhdG0ivNe7CVkt8pKeNvBVE9WnCL2T4l2mz9FgtPByQ6K7KhTv
-         SEO3fzBiqupq03OzQwGdVaOi5X1WOepZIqYBfQimPhl5oFPEmliH0niHEtr/QEUJ70XQ
-         pQmg==
+        bh=TvAg1xHZI1QjfE0M/idYsUOkdgyiQc9M7Ozsk6troqQ=;
+        b=beBp5Pwo2AoqU6AjJs6BL8bOpl5i/hoEJpp+loI7jz99JgUQUadlq9iDfPNzerf35q
+         TfxJ50isloRxSTSYN0mfuON7Motw3CbzwxqKiX3RgRWdIvc1VYsTc4KiVFtNrtegD1F2
+         hYpuoBKGtr5LYvVXCzqp0EE/fcn9SUT0sfY3KcELCZyC44L6cQ7ineKr+k4aSb9DBOLW
+         0ITMmLqELAAm5MSJdJQhs6FUaOGRO7kJ/WND1XqBRMr2MOz1dttl9oMf94g4q7Cl09c5
+         SXsnUPoP9uvM9KB5OFPm3xRvLeP+NQW4it3Rp0eOwlGfEdnHphc7ldNpU3I9fgcDD3Rj
+         ODjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ltUaf0P7+L7T6ZQurZSqM5no7v9v1dUYJbr17H6OFeE=;
-        b=jvAqYgARslnAIVmoC3BYSsjiyP7OBu/Lv5+78RYeK0MPtx4uqPniRncr6B5SNrwDGi
-         my6IrrQKHkj2SKK5cE+KOuIjvfUbm4f/ImYopQSOfmWG8PEVc/FN+EKFVqQxa4m2Qr/B
-         gshsTGosm7+I9tAYz2a6RfBtzup7TMUnmFgLcNBE4V4iwBeAcciCF7wm+iaVcVmUATqx
-         7+2SgQ+4fORPXur7Vo1ZyiuU/0PCAaxu8iZkRosTZeGTJC3vCGphjyg4aUtyQmjAF0nQ
-         Rbmik0zeJgsUj7MRsO372TtgcGtbD+k2w9s0diXvSaXI2EcOx90eIqFQIxcRYr9Isu2R
-         3I8g==
-X-Gm-Message-State: AOAM530lZsC8o/gzMwV2aIrHC5NG6sxOp6akCK/NCwoZRdrweSTGr38T
-        U4iiB3E6ZgI/XhoHDGBg8pXMTw==
-X-Google-Smtp-Source: ABdhPJxB/gBmtmXsdGO6QIYNImm7PodEODZA1vSH9IXF5Dp/PLfyDkrfYVGRyE3evUCvjsvT3Y6LxQ==
-X-Received: by 2002:a63:6c43:: with SMTP id h64mr700027pgc.120.1643235496462;
-        Wed, 26 Jan 2022 14:18:16 -0800 (PST)
+        bh=TvAg1xHZI1QjfE0M/idYsUOkdgyiQc9M7Ozsk6troqQ=;
+        b=YmqKEtpOCFipq43EI/YTdUNW1aFcPSsXIGUse2Pt7JqF6GnTYdvy64qbM62Cuy6LJF
+         z8AbpHhQwiQfHoGncskuwrXQsxrq0hk0ynVxyU8qnjjetKVZGYIHI3WPH6PK+cewu8kS
+         75rJASB9A+NysYZEpN4vdGp8pePBnchmZru4f+kbJxgLRxVfdAWhGlKCHmAE9yTtwrfV
+         WJGrPoLBDeVCbWV1+3oO1FW6LZ/Sj8PHdbzkLCsU6ExuLmrVB5pkdCMbImEwX9JPnUjD
+         UuVreGCCTaFLOYMFSpxAZE3t9E7dURCwi1CiBiwwXq0iZqqEV4Z3U7FZkCkBixo6BbQM
+         OENQ==
+X-Gm-Message-State: AOAM533gtXb31+PSSjycfKawqrfEBbwAi+egl6wxcnKDlMb/NXGKeRj2
+        QjDn7qHZkJoNVm79qcI1Q+GyBg==
+X-Google-Smtp-Source: ABdhPJxJleh1CqUwc2Rlq4VfwmCRx3TJyN0oy5lI8/j1SY/cOObeMlJE0NPZUucZM0yinz2wVNWltg==
+X-Received: by 2002:a17:902:ecd0:: with SMTP id a16mr578351plh.64.1643235502199;
+        Wed, 26 Jan 2022 14:18:22 -0800 (PST)
 Received: from localhost.localdomain ([2401:4900:1f3a:4e9b:8fa7:36dc:a805:c73f])
-        by smtp.gmail.com with ESMTPSA id t17sm4233742pgm.69.2022.01.26.14.18.11
+        by smtp.gmail.com with ESMTPSA id t17sm4233742pgm.69.2022.01.26.14.18.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 14:18:16 -0800 (PST)
+        Wed, 26 Jan 2022 14:18:21 -0800 (PST)
 From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
 To:     linux-arm-msm@vger.kernel.org
 Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
@@ -55,10 +55,10 @@ Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
         tdas@codeaurora.org, mturquette@baylibre.com,
         linux-clk@vger.kernel.org, bjorn.andersson@linaro.org,
         davem@davemloft.net, netdev@vger.kernel.org,
-        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>
-Subject: [PATCH 1/8] dt-bindings: net: qcom,ethqos: Document SM8150 SoC compatible
-Date:   Thu, 27 Jan 2022 03:47:18 +0530
-Message-Id: <20220126221725.710167-2-bhupesh.sharma@linaro.org>
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 2/8] net: stmmac: Add support for SM8150
+Date:   Thu, 27 Jan 2022 03:47:19 +0530
+Message-Id: <20220126221725.710167-3-bhupesh.sharma@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220126221725.710167-1-bhupesh.sharma@linaro.org>
 References: <20220126221725.710167-1-bhupesh.sharma@linaro.org>
@@ -70,30 +70,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vinod Koul <vkoul@kernel.org>
 
-SM8150 has a ethernet controller and needs a different configuration so
-add a new compatible for this
+This adds compatible, POR config & driver data for ethernet controller
+found in SM8150 SoC.
 
-Cc: Rob Herring <robh@kernel.org>
+Cc: David S. Miller <davem@davemloft.net>
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
+[bhsharma: Massage the commit log and other cosmetic changes]
+Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
 ---
- Documentation/devicetree/bindings/net/qcom,ethqos.txt | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ .../ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c   | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/qcom,ethqos.txt b/Documentation/devicetree/bindings/net/qcom,ethqos.txt
-index fcf5035810b5..1f5746849a71 100644
---- a/Documentation/devicetree/bindings/net/qcom,ethqos.txt
-+++ b/Documentation/devicetree/bindings/net/qcom,ethqos.txt
-@@ -7,7 +7,9 @@ This device has following properties:
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+index 2ffa0a11eea5..8cdba9d521ec 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+@@ -183,6 +183,20 @@ static const struct ethqos_emac_driver_data emac_v2_3_0_data = {
+ 	.num_por = ARRAY_SIZE(emac_v2_3_0_por),
+ };
  
- Required properties:
++static const struct ethqos_emac_por emac_v2_1_0_por[] = {
++	{ .offset = RGMII_IO_MACRO_CONFIG,	.value = 0x40C01343 },
++	{ .offset = SDCC_HC_REG_DLL_CONFIG,	.value = 0x2004642C },
++	{ .offset = SDCC_HC_REG_DDR_CONFIG,	.value = 0x00000000 },
++	{ .offset = SDCC_HC_REG_DLL_CONFIG2,	.value = 0x00200000 },
++	{ .offset = SDCC_USR_CTL,		.value = 0x00010800 },
++	{ .offset = RGMII_IO_MACRO_CONFIG2,	.value = 0x00002060 },
++};
++
++static const struct ethqos_emac_driver_data emac_v2_1_0_data = {
++	.por = emac_v2_1_0_por,
++	.num_por = ARRAY_SIZE(emac_v2_1_0_por),
++};
++
+ static int ethqos_dll_configure(struct qcom_ethqos *ethqos)
+ {
+ 	unsigned int val;
+@@ -558,6 +572,7 @@ static int qcom_ethqos_remove(struct platform_device *pdev)
  
--- compatible: Should be qcom,qcs404-ethqos"
-+- compatible: Should be one of:
-+		"qcom,qcs404-ethqos"
-+		"qcom,sm8150-ethqos"
- 
- - reg: Address and length of the register set for the device
- 
+ static const struct of_device_id qcom_ethqos_match[] = {
+ 	{ .compatible = "qcom,qcs404-ethqos", .data = &emac_v2_3_0_data},
++	{ .compatible = "qcom,sm8150-ethqos", .data = &emac_v2_1_0_data},
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, qcom_ethqos_match);
 -- 
 2.34.1
 
