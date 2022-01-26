@@ -2,58 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4520149C736
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 11:14:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07A3449C738
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 11:15:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232081AbiAZKOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 05:14:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54782 "EHLO
+        id S239724AbiAZKOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 05:14:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbiAZKOu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 05:14:50 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE078C06161C
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:49 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id n8so21665740lfq.4
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:49 -0800 (PST)
+        with ESMTP id S232102AbiAZKOv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 05:14:51 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE3DC06161C
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:50 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id o12so18640641lfg.12
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 02:14:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=UOo5cvIiZREl6uP4YcssGwlg61ZqPc8mTlvnFID9fEQ=;
-        b=UffQtYPeKWeMguTgswjaF8k6ATapFmbcZxHcHXKuu+HvsDZpLcW/uoE0wZCgX2/EVY
-         GUovQd7iWCf/EB9/cw4Oavn+io0PloJtEqdAQkgi8AR7HN73lEhyj05tMMDP96C5GWGd
-         NJVvNKbaZJatCQN5VFPzhVnttYHvDqk3Q4kVi+d1ysQ9BaP85luwjkMOJnKNVib0hRm8
-         fo9UVKZlwZ3JiLx70VttbRSzj5MaxQIggEx4zHmEc4gWOJ+9cNtUbbO9956HQF6WOr2l
-         ev5JJY8b/v8XOJZirVhc4SYMeeNIBaxzLGufZF3XKRq3z/enKBZOOVUkcJoI9zLF7DqN
-         C9hQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=oT7VXAYr1RlKcC98jWVV1AYCja1UpLRPiR4q3wejxVA=;
+        b=NvRuai8lXax1U7sBNU4VPS/k14T3EaNJRElshLx90nevrt12JEU4w7LNjtgaGeHU/U
+         7If6Ltrt2sE4Umo+ltVazzcWnstLrrUR6Qk3X0glvqP9W3nJdDvZUjD6H1FBM/bHh+CR
+         0tGbiigcM7H9yKqJFxQlapVNQgiL9RBGzcW69ZoHx0EHAIFZxvJfbb1t1wFEz38pm6JI
+         qRLKHLYs0Nt3xKcs27kEXlm1bJeWeM5ZVj4bIveXRIIkLnpQjaGTa/cL489ujko/V8gi
+         ANQmeKzNzp31vXxfxzcssYFcSsFaXiht+4wIBAZde9Yqovz5jF6A1lPFYfP8tVpv3MzU
+         fQJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=UOo5cvIiZREl6uP4YcssGwlg61ZqPc8mTlvnFID9fEQ=;
-        b=yru0RcLZzI1UgeDXMPm9IKXZK5ms2Sjs7W3k9cyoePcUYJxLAZNLZtMHrGzzQxVMHu
-         bdTe6Mf9K1Zqp9WqJ8w2/vFuAhKsZF6hbYSX3JLWyn847LlnvTx63bpyaSJ9i90LnPj9
-         LqCldaxGT6Bgo36uFRk1X7d9IRCvoCzR8fewgblVR+86SlXgJAI7yzag8udzcXqgCDqE
-         ksrJ2EsZeeVU5ZLOsQyy0yFgRV/bkcNr1mTat+q3CWgEVyRZLUZOJybuocrkMEoJmCPA
-         VRqLf0oJM9gZU4AB0kUknUOZFXDgU4oYGdC4MofUsLcEXK5roob5cV0jvxNLAjVeqHKH
-         huRA==
-X-Gm-Message-State: AOAM531ANyGxA/AoyJbRpOhtTk4TpK+aQigspgCEo+wRzF5UO7aJIfgL
-        pSb0v2ejv+vcItZl9ZQs9+yrzcLPPyjNTQ==
-X-Google-Smtp-Source: ABdhPJwmo80IoFsQhYIXxm3NWigQZv33LC/Wq/gPmzb3oCzixpKpK4dmscAYukmxXcpsYljTyNSz9g==
-X-Received: by 2002:a05:6512:77:: with SMTP id i23mr4088981lfo.24.1643192087968;
-        Wed, 26 Jan 2022 02:14:47 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=oT7VXAYr1RlKcC98jWVV1AYCja1UpLRPiR4q3wejxVA=;
+        b=XqNlcuphygvOBIjgKO8j7tPB+JuuCn9bchaHWK0gf5YyIPR48x1Q0s541NTJNNIguR
+         gkm/sqyH3Ru9CfJn6KuR4H9M6AG3QAGf1XYCiW02pSVa+1u4/X2ywrnozGxx0X1goM+U
+         SrX5r8cll3A0TfF3SqGSecZ4DH5hzZIYq13vnVO5i4SE2csfp4AfGxYl7Mx7Q6ivErzl
+         HsuzX9CbkZc/Lyi3KV2LeZZAidat5aqq2NedL0va0Gg1hQ4Wer/RteU4VkmJXjCNSfCd
+         yzUBv0JnEq/jEEX4N4Z2pqqF65Hjg8ruSYhzhjzkH1qohJXhboVQ1LgEiXvtHiQv0qM3
+         mh8A==
+X-Gm-Message-State: AOAM532vRryduBJHGtDS5Kj9fQ66fisMJvnBrNjcModwiMAlYtzYlg7x
+        6RsKLHLY0xNEAyIL7X0fFRyzag==
+X-Google-Smtp-Source: ABdhPJyfKp3pZx4gkqPihioKFMszACC2nq5auF0qwUCkwVvR4ZEvusm7VaGL+LurbX6E5VROm45fjw==
+X-Received: by 2002:ac2:596a:: with SMTP id h10mr14507077lfp.528.1643192089053;
+        Wed, 26 Jan 2022 02:14:49 -0800 (PST)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id h13sm1351906lfv.100.2022.01.26.02.14.47
+        by smtp.gmail.com with ESMTPSA id h13sm1351906lfv.100.2022.01.26.02.14.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 02:14:47 -0800 (PST)
+        Wed, 26 Jan 2022 02:14:48 -0800 (PST)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next 0/5] net/fsl: xgmac_mdio: Preamble suppression and custom MDC frequencies
-Date:   Wed, 26 Jan 2022 11:14:27 +0100
-Message-Id: <20220126101432.822818-1-tobias@waldekranz.com>
+Cc:     netdev@vger.kernel.org, Madalin Bucur <madalin.bucur@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shaohui Xie <Shaohui.Xie@freescale.com>,
+        Scott Wood <scottwood@freescale.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 1/5] dt-bindings: net: xgmac_mdio: Remove unsupported "bus-frequency"
+Date:   Wed, 26 Jan 2022 11:14:28 +0100
+Message-Id: <20220126101432.822818-2-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220126101432.822818-1-tobias@waldekranz.com>
+References: <20220126101432.822818-1-tobias@waldekranz.com>
 MIME-Version: 1.0
 Organization: Westermo
 Content-Transfer-Encoding: 8bit
@@ -61,36 +67,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The first patch removes the docs for a binding that has never been
-supported by the driver as far as I can see. This is a bit of a
-mystery to me, maybe Freescale/NXP had/has support for it in an
-internal version?
+This property has never been supported by the driver. The kernel has
+settled on "clock-frequency" as the standard name for this binding, so
+once that is supported we will document that instead.
 
-We then start working on the xgmac_mdio driver, converting the driver
-to exclusively use managed resources, thereby simplifying the error
-paths. Suggested by Andrew.
+Fixes: 7f93c9d90f4d ("power/fsl: add MDIO dt binding for FMan")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+---
+ Documentation/devicetree/bindings/net/fsl-fman.txt | 9 ---------
+ 1 file changed, 9 deletions(-)
 
-Preamble suppression is then added, followed by MDC frequency
-customization. Neither code will change any bits if the corresponding
-dt properties are not specified, so as to not trample on any setup
-done by the bootloader, which boards might have relied on up to now.
-
-Finally, we document the new bindings.
-
-Tested on a T1023 based board.
-
-Tobias Waldekranz (5):
-  dt-bindings: net: xgmac_mdio: Remove unsupported "bus-frequency"
-  net/fsl: xgmac_mdio: Use managed device resources
-  net/fsl: xgmac_mdio: Support preamble suppression
-  net/fsl: xgmac_mdio: Support setting the MDC frequency
-  dt-bindings: net: xgmac_mdio: Add "clock-frequency" and
-    "suppress-preamble"
-
- .../devicetree/bindings/net/fsl-fman.txt      | 22 +++--
- drivers/net/ethernet/freescale/xgmac_mdio.c   | 88 ++++++++++++-------
- 2 files changed, 74 insertions(+), 36 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/fsl-fman.txt b/Documentation/devicetree/bindings/net/fsl-fman.txt
+index 020337f3c05f..cd5288fb4318 100644
+--- a/Documentation/devicetree/bindings/net/fsl-fman.txt
++++ b/Documentation/devicetree/bindings/net/fsl-fman.txt
+@@ -388,15 +388,6 @@ PROPERTIES
+ 		Value type: <prop-encoded-array>
+ 		Definition: A standard property.
+ 
+-- bus-frequency
+-		Usage: optional
+-		Value type: <u32>
+-		Definition: Specifies the external MDIO bus clock speed to
+-		be used, if different from the standard 2.5 MHz.
+-		This may be due to the standard speed being unsupported (e.g.
+-		due to a hardware problem), or to advertise that all relevant
+-		components in the system support a faster speed.
+-
+ - interrupts
+ 		Usage: required for external MDIO
+ 		Value type: <prop-encoded-array>
 -- 
 2.25.1
 
