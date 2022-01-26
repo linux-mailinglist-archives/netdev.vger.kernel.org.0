@@ -2,120 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18EBA49D1E1
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 19:39:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A797049D203
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 19:47:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244230AbiAZSjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 13:39:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39463 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231659AbiAZSjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 13:39:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643222382;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=b9o6V+tZDb8Yj7qyJiHKfvxGFT9XTISplnHY/OXHxgs=;
-        b=aqGkzy1CwCel7AgLyVdLoooPl8+78DILfreoOd2u1IeJ5FNH7+E/9jYW5aYnJI3TPK7VSH
-        h0X4NDKrOJo5IltC+VLTqYFqOgkS3EcevNUPlrHy9mF0KFHpBqoJNiwRbKPh6tgqCvaUMj
-        AVx3XXNf38eRTm+vy5Az1P5kv0StXAk=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-482-U9A0HUGxM32Ej8na5HusnQ-1; Wed, 26 Jan 2022 13:39:40 -0500
-X-MC-Unique: U9A0HUGxM32Ej8na5HusnQ-1
-Received: by mail-wr1-f70.google.com with SMTP id i16-20020adfa510000000b001d7f57750a6so146034wrb.0
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 10:39:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=b9o6V+tZDb8Yj7qyJiHKfvxGFT9XTISplnHY/OXHxgs=;
-        b=Mou59OadqR6Ll2uJNmDZvzS6d8OTlnJjAD/1cb+otSl2eehyoTcSVEn9GUUWqa9aF7
-         +ckx+RJMWJ9IHcPV7FlqLwOWLLwg07OAS0pfrGe9KuP2a2pgIUlNtd1gF09p7soHIBuT
-         Csgp4j/Y8TDHxfZrYhloLmDQLH//0JMp+NIDJLCKxr2/EE4QZAXUOoJ3u36n9M111Ia8
-         U6HoYxpFV8Vkck1UEQBOaMyVXAszpa7od4LPn5SXmiDOF9wcOI+ObxCJQRJ4QuZ/LwR8
-         K7N+8lpryn/ob5N0SJdVkQxB5VNHXF49hoscqJnyPtgdF0aWFGlJCQ2CF6vj+yXSnrz8
-         EsEw==
-X-Gm-Message-State: AOAM5307+yXBcNIHzlpTAe1VUh2WQY+BKnGUUB/RQ9DT3k9Tse/CSqWu
-        AVL+NG5LcWbH09kXVwGALM2cW2Ej2zVMV4EYonjG8/nLvP1agwsgU2IEA/kUu7NIRLLzHzvJznR
-        78wE411X7uE9shFuA
-X-Received: by 2002:adf:e444:: with SMTP id t4mr23469315wrm.325.1643222379360;
-        Wed, 26 Jan 2022 10:39:39 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyfhiPSDyIK6O2Jg9WJbv10h2Cyepp5IX7xwVzNUp99cfzHpUU5mkcoEnDViPa0ONyKdePCaw==
-X-Received: by 2002:adf:e444:: with SMTP id t4mr23469299wrm.325.1643222379187;
-        Wed, 26 Jan 2022 10:39:39 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id f6sm47352wrj.26.2022.01.26.10.39.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 10:39:38 -0800 (PST)
-Date:   Wed, 26 Jan 2022 19:39:37 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v5 2/9] fprobe: Add ftrace based probe APIs
-Message-ID: <YfGVab8kNW1AkYXk@krava>
-References: <164311269435.1933078.6963769885544050138.stgit@devnote2>
- <164311271777.1933078.9066058105807126444.stgit@devnote2>
- <YfAoMW6i4gqw2Na0@krava>
- <YfA9aC5quQNc89Hc@krava>
- <20220126115022.fda21a3face4e97684f5bab9@kernel.org>
- <20220127005952.42dd07ff5f275e61be638283@kernel.org>
+        id S244191AbiAZSrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 13:47:33 -0500
+Received: from mga14.intel.com ([192.55.52.115]:15642 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232915AbiAZSrd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jan 2022 13:47:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643222853; x=1674758853;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=TQOjJRw4GSNEHhEbpovjpLCE+1+6qAcVr7yv4IL6oY4=;
+  b=RH7gStZh4Mg2ZIGURvZWfNQ/N5dJlthG4xPkBdw5lT9GnvFZlajWBv+f
+   DnNMJnxeHUk0Voobklk/PsHRarNOStzglF23CcHqQqHGg9LPjflj/fFXq
+   GyAbxT4hfItSugEVEqmuUYzH7iG+W6mpZFj5yNA8zxQGZOCAuqPGOo6pD
+   Rn3HG3RUj+HW3Gh7sRWhaDhw3Eg4lgxcaUWBrp3lsY/C9xQy+ek9/+Nlh
+   tNE+ZF4zRS6OP5q2TP0E1n/fT83df7n8/cMYDtlZcpBmO1yo7hII3ufFs
+   zlBAXEwlIQqdkkJtBpbwv/J67mM0/QBxGYaYKwQbcLBny5VvkF8lKiCx8
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="246840762"
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="246840762"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 10:47:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="767220866"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga006.fm.intel.com with ESMTP; 26 Jan 2022 10:47:32 -0800
+Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20QIlVdY000727;
+        Wed, 26 Jan 2022 18:47:31 GMT
+From:   Marcin Szycik <marcin.szycik@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
+        Marcin Szycik <marcin.szycik@linux.intel.com>
+Subject: [RFC PATCH net-next 0/5] ice: GTP support in switchdev
+Date:   Wed, 26 Jan 2022 19:43:53 +0100
+Message-Id: <20220126184358.6505-1-marcin.szycik@linux.intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127005952.42dd07ff5f275e61be638283@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 12:59:52AM +0900, Masami Hiramatsu wrote:
-> On Wed, 26 Jan 2022 11:50:22 +0900
-> Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> 
-> > > one more question..
-> > > 
-> > > I'm adding support for user to pass function symbols to bpf fprobe link
-> > > and I thought I'd pass symbols array to register_fprobe, but I'd need to
-> > > copy the whole array of strings from user space first, which could take
-> > > lot of memory considering attachment of 10k+ functions
-> > > 
-> > > so I'm thinking better way is to resolve symbols already in bpf fprobe
-> > > link code and pass just addresses to register_fprobe
-> > 
-> > That is OK. Fprobe accepts either ::syms or ::addrs.
-> > 
-> > > 
-> > > I assume you want to keep symbol interface, right? could we have some
-> > > flag ensuring the conversion code is skipped, so we don't go through
-> > > it twice?
-> > 
-> > Yeah, we still have many unused bits in fprobe::flags. :)
-> 
-> Instead of that, according to Steve's comment, I would like to introduce
-> 3 registration APIs.
-> 
-> int register_fprobe(struct fprobe *fp, const char *filter, const char *notrace);
-> int register_fprobe_ips(struct fprobe *fp, unsigned long *addrs, int num);
-> int register_fprobe_syms(struct fprobe *fp, const char **syms, int num);
-> 
-> The register_fprobe_ips() will not touch the @addrs. You have to set the
-> correct ftrace location address in the @addrs.
+Add support for adding GTP-C and GTP-U filters in switchdev mode.
 
-ok, sounds good
+To create a filter for GTP, create a GTP-type netdev with ip tool, enable
+hardware offload, add qdisc and add a filter in tc:
 
-thanks,
-jirka
+ip link add $GTP0 type gtp role <sgsn/ggsn> hsize <hsize>
+ethtool -K $PF0 hw-tc-offload on
+tc qdisc add dev $GTP0 ingress
+tc filter add dev $GTP0 ingress prio 1 flower enc_key_id 1337 \
+action mirred egress redirect dev $VF1_PR
+
+By default, a filter for GTP-U will be added. To add a filter for GTP-C,
+specify enc_dst_port = 2123, e.g.:
+
+tc filter add dev $GTP0 ingress prio 1 flower enc_key_id 1337 \
+enc_dst_port 2123 action mirred egress redirect dev $VF1_PR
+
+Note: IPv6 offload is not supported yet.
+Note: GTP-U with no payload offload is not supported yet.
+
+ICE COMMS package is required to create a filter as it contains GTP
+profiles.
+
+Changes in iproute2 are required to be able to add GTP netdev and use
+GTP-specific options (QFI and PDU type). This will be submitted separately.
+
+Marcin Szycik (1):
+  ice: Support GTP-U and GTP-C offload in switchdev
+
+Michal Swiatkowski (1):
+  ice: Fix FV offset searching
+
+Wojciech Drewek (3):
+  gtp: Allow to create GTP device without FDs
+  gtp: Add support for checking GTP device type
+  net/sched: Allow flower to match on GTP options
+
+ drivers/net/ethernet/intel/ice/ice.h          |   1 +
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    |  46 +-
+ .../net/ethernet/intel/ice/ice_flex_pipe.h    |   2 +-
+ .../net/ethernet/intel/ice/ice_flex_type.h    |   6 +-
+ .../ethernet/intel/ice/ice_protocol_type.h    |  19 +
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 630 ++++++++++++++++--
+ drivers/net/ethernet/intel/ice/ice_switch.h   |   9 +
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 105 ++-
+ drivers/net/ethernet/intel/ice/ice_tc_lib.h   |   3 +
+ drivers/net/gtp.c                             |  74 +-
+ include/net/gtp.h                             |  11 +
+ include/uapi/linux/if_tunnel.h                |   4 +-
+ include/uapi/linux/pkt_cls.h                  |  15 +
+ net/sched/cls_flower.c                        | 116 ++++
+ 14 files changed, 967 insertions(+), 74 deletions(-)
+
+-- 
+2.31.1
 
