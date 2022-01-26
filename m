@@ -2,160 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE4A949C410
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 08:11:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 442B849C437
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 08:23:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237627AbiAZHLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 02:11:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40294 "EHLO
+        id S237717AbiAZHXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 02:23:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229474AbiAZHLG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 02:11:06 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD87C06161C;
-        Tue, 25 Jan 2022 23:11:06 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id b5so8924088qtq.11;
-        Tue, 25 Jan 2022 23:11:06 -0800 (PST)
+        with ESMTP id S229641AbiAZHXV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 02:23:21 -0500
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0856DC06161C;
+        Tue, 25 Jan 2022 23:23:20 -0800 (PST)
+Received: by mail-pj1-x1042.google.com with SMTP id h12so22458685pjq.3;
+        Tue, 25 Jan 2022 23:23:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=RjxNj/myb3M2Lao7EHl6J9lNWX3kPOqbaZl/DPICdls=;
-        b=bBKo/ChzjuMxtxpte2jXmcp/t9bTMGFqN+vB8q//VlJFPNWnnWX/aQQf1cuB2nFIAh
-         whuln3gSdgn1K6Nr/hkxMVGvbG9WaXHtEjGnfdaCzX/l10R1mYNHUe3PTCZc0n2Xz+Yw
-         VZqxUrabNDSI9t6dUtRE66iIH4aoDPYxqGRfKws0PRHPRJdWYCT7cIdEZJ7KyR4PhiRR
-         hIIgVeKBTJTI1Hc6Jr9uQOZvPITGMy+n+jSRo5Rgz7N/R5X6ID1Y+ppjGrmW07XHPW5p
-         50bXghk/OdDn+Vg+c1AZ78R7WWq96+YkYfoDvWfv58Fiqv7DNCL0UH3N5mWiQ/nFuE4W
-         oXZQ==
+        bh=8z8QaPzSpYleEBkb/3BW1hePTgzB2h/wRA/Ef7uJuSQ=;
+        b=MAFclsnfDcCr0FlzF9arMxcarozNUtuK2GFdTbelSb7Wkrit6g+KTuDNq9rdY9yCn/
+         8++JLr87o3SKB3jPC/s/Gyj7e8RAy3SMFa+ukm78x5gsUs+SS5trFyNK5LwcIcWarjzD
+         tboNUACtPRZMaKtJ6UdX1jVmkLi/Kae5MKoa6FZ0RYmsOwTo3W8h+lMyVnYXwMyH2y4a
+         BZII28i7KghfPYhZMy2lenrGsNGYzZhKBa4g1QkWY4fVPF38nx7mq3uXuYTrYsx+gKhK
+         IUxfNwf+xusB9uGIxEteT61p3ZCDBbVIOfU0MZ8yNGjbw1STde1z9932YW6+i3rTSTbz
+         JWQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=RjxNj/myb3M2Lao7EHl6J9lNWX3kPOqbaZl/DPICdls=;
-        b=WZLvzZoO1yWVF/KdSazwJda2uixrFjwB/xRoYoT/r+glroB7bvE9ohxjlOnHfHumGi
-         C9tHvoRHNWzc74F7jOSnmNjzWoauVUycYYMOo6+cn91DSkJWKNd1HqvKqZ2OfB5N/imc
-         QHg9sV6JFy1LbGs6IygTN9K7izONq6lGWR0yAfDdFxagRDKCJzIECEJQtUOMR0qV6D4R
-         Oiw9e5AYfWVA6Iut/vAZTcG0xwcMX4CZaL95taxjcFwb3N5Y8gMIpwtRihmo/aY6j8mN
-         IKPCYfkRqlS2P20UaCYK9nGBPpcbofgI4mE2pCwJxHY2tepBSy4OgGP+Rzk/OGKGvaYC
-         gxRw==
-X-Gm-Message-State: AOAM530nWYPX4bGRKf+Qjpls+vaTnr79kFl3vAW9P7pCU7jYE4lxfgoo
-        ZwtQk56gpq8ruo5Fp9R7ir9prOGnNOo=
-X-Google-Smtp-Source: ABdhPJxVftBzv/RlBGaQrACFNIcQy0HHpKNuToYS9XGsE6OAygGlCdZF3LC0npchFuPc2S5pF0fDww==
-X-Received: by 2002:a05:622a:115:: with SMTP id u21mr8722814qtw.263.1643181065929;
-        Tue, 25 Jan 2022 23:11:05 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id w18sm10487315qkp.96.2022.01.25.23.11.02
+        bh=8z8QaPzSpYleEBkb/3BW1hePTgzB2h/wRA/Ef7uJuSQ=;
+        b=ig9GD6yJ8GdfrfKVGcC9aWpASHDmG0LZQdUyPbS68zXZ9mJEmAf624YFxKIvPvUNEV
+         MYl0xKGeLwrq7arZrKe2TJf2jG/BvvDszjSqQsDkUa5YExW/2rfjPI5/tcf+dNlXUkdN
+         y8EnhhQI0Y1RP/0snxw8kGFYkwkKIk8kFKdD4Lxf9qR8nGfvQtnHa/OXu3sSPBvkGnkE
+         wZUUFe0Q+ompv5cgscKbm5ByDZGnAfEJOvlS+VotfbxMdIfT2HQiT/ybeBr41TpfsVz8
+         m3a7aT8JnWCM6g8c9wMV6C3qujQ1iWJS2TMthfQXmUFNNfhTeTa7c7szI92LIq9hEn+1
+         T8Zg==
+X-Gm-Message-State: AOAM531rEUpRBZrSxVwEJmO2JYqgJJLo2WdVJA9LtgUF26mhks8eQUKs
+        ppE1SvS3UxgZFu6+Q6/OU11Ob7MszSk=
+X-Google-Smtp-Source: ABdhPJxmdCDH1bkuwdkyi7FVRgTPEkNEGS4N9qOcrJAkIwBH3ql00NGu2M455/W+Rx/9K6Kdx2El4A==
+X-Received: by 2002:a17:902:e552:b0:149:b7bf:9b42 with SMTP id n18-20020a170902e55200b00149b7bf9b42mr21223022plf.70.1643181800405;
+        Tue, 25 Jan 2022 23:23:20 -0800 (PST)
+Received: from localhost.localdomain ([43.132.141.4])
+        by smtp.gmail.com with ESMTPSA id l21sm1061884pfu.120.2022.01.25.23.23.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 23:11:05 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: xu.xin16@zte.com.cn
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xu xin <xu.xin16@zte.com.cn>
-Subject: [PATCH resend] ipv4: Namespaceify min_adv_mss sysctl knob
-Date:   Wed, 26 Jan 2022 07:10:58 +0000
-Message-Id: <20220126071058.1168074-1-xu.xin16@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 25 Jan 2022 23:23:19 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     kuba@kernel.org
+Cc:     nhorman@tuxdriver.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dsahern@kernel.org,
+        rostedt@goodmis.org, Menglong Dong <imagedong@tencent.com>
+Subject: [PATCH v2 net-next] net: drop_monitor: support drop reason
+Date:   Wed, 26 Jan 2022 15:23:06 +0800
+Message-Id: <20220126072306.3218272-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: xu xin <xu.xin16@zte.com.cn>
+From: Menglong Dong <imagedong@tencent.com>
 
-Different netns has different requirement on the setting of min_adv_mss
-sysctl which the advertised MSS will be never lower than.
+In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()")
+drop reason is introduced to the tracepoint of kfree_skb. Therefore,
+drop_monitor is able to report the drop reason to users by netlink.
 
-Enable min_adv_mss to be configured per network namespace.
+For now, the number of drop reason is passed to users ( seems it's
+a little troublesome to pass the drop reason as string ). Therefore,
+users can do some customized description of the reason.
 
-Signed-off-by: xu xin <xu.xin16@zte.com.cn>
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/net/netns/ipv4.h |  1 +
- net/ipv4/route.c         | 21 +++++++++++----------
- 2 files changed, 12 insertions(+), 10 deletions(-)
+v2:
+- get a pointer to struct net_dm_skb_cb instead of local var for
+  each field
+---
+ include/uapi/linux/net_dropmon.h |  1 +
+ net/core/drop_monitor.c          | 16 ++++++++++++++--
+ 2 files changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 7855764..8fea3cb 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -87,6 +87,7 @@ struct netns_ipv4 {
+diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
+index 66048cc5d7b3..b2815166dbc2 100644
+--- a/include/uapi/linux/net_dropmon.h
++++ b/include/uapi/linux/net_dropmon.h
+@@ -93,6 +93,7 @@ enum net_dm_attr {
+ 	NET_DM_ATTR_SW_DROPS,			/* flag */
+ 	NET_DM_ATTR_HW_DROPS,			/* flag */
+ 	NET_DM_ATTR_FLOW_ACTION_COOKIE,		/* binary */
++	NET_DM_ATTR_REASON,			/* u32 */
  
- 	u32 ip_rt_min_pmtu;
- 	int ip_rt_mtu_expires;
-+	int ip_rt_min_advmss;
+ 	__NET_DM_ATTR_MAX,
+ 	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index 7b288a121a41..b5d8e19ccc1d 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -126,6 +126,7 @@ struct net_dm_skb_cb {
+ 		struct devlink_trap_metadata *hw_metadata;
+ 		void *pc;
+ 	};
++	enum skb_drop_reason reason;
+ };
  
- 	struct local_ports ip_local_ports;
- 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index ff6f91c..e42e283 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -112,14 +112,13 @@
- 
- #define DEFAULT_MIN_PMTU (512 + 20 + 20)
- #define DEFAULT_MTU_EXPIRES (10 * 60 * HZ)
--
-+#define DEFAULT_MIN_ADVMSS 256
- static int ip_rt_max_size;
- static int ip_rt_redirect_number __read_mostly	= 9;
- static int ip_rt_redirect_load __read_mostly	= HZ / 50;
- static int ip_rt_redirect_silence __read_mostly	= ((HZ / 50) << (9 + 1));
- static int ip_rt_error_cost __read_mostly	= HZ;
- static int ip_rt_error_burst __read_mostly	= 5 * HZ;
--static int ip_rt_min_advmss __read_mostly	= 256;
- 
- static int ip_rt_gc_timeout __read_mostly	= RT_GC_TIMEOUT;
- 
-@@ -1298,9 +1297,10 @@ static void set_class_tag(struct rtable *rt, u32 tag)
- 
- static unsigned int ipv4_default_advmss(const struct dst_entry *dst)
+ #define NET_DM_SKB_CB(__skb) ((struct net_dm_skb_cb *)&((__skb)->cb[0]))
+@@ -498,6 +499,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
  {
-+	struct net *net = dev_net(dst->dev);
- 	unsigned int header_size = sizeof(struct tcphdr) + sizeof(struct iphdr);
- 	unsigned int advmss = max_t(unsigned int, ipv4_mtu(dst) - header_size,
--				    ip_rt_min_advmss);
-+				    net->ipv4.ip_rt_min_advmss);
+ 	ktime_t tstamp = ktime_get_real();
+ 	struct per_cpu_dm_data *data;
++	struct net_dm_skb_cb *cb;
+ 	struct sk_buff *nskb;
+ 	unsigned long flags;
  
- 	return min(advmss, IPV4_MAX_PMTU - header_size);
- }
-@@ -3535,13 +3535,6 @@ static struct ctl_table ipv4_route_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec,
- 	},
--	{
--		.procname	= "min_adv_mss",
--		.data		= &ip_rt_min_advmss,
--		.maxlen		= sizeof(int),
--		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
--	},
- 	{ }
- };
+@@ -508,7 +510,9 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+ 	if (!nskb)
+ 		return;
  
-@@ -3569,6 +3562,13 @@ static struct ctl_table ipv4_route_netns_table[] = {
- 		.mode           = 0644,
- 		.proc_handler   = proc_dointvec_jiffies,
- 	},
-+	{
-+		.procname   = "min_adv_mss",
-+		.data       = &init_net.ipv4.ip_rt_min_advmss,
-+		.maxlen     = sizeof(int),
-+		.mode       = 0644,
-+		.proc_handler   = proc_dointvec,
-+	},
- 	{ },
- };
+-	NET_DM_SKB_CB(nskb)->pc = location;
++	cb = NET_DM_SKB_CB(nskb);
++	cb->reason = reason;
++	cb->pc = location;
+ 	/* Override the timestamp because we care about the time when the
+ 	 * packet was dropped.
+ 	 */
+@@ -606,12 +610,17 @@ static int net_dm_packet_report_in_port_put(struct sk_buff *msg, int ifindex,
+ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+ 				     size_t payload_len)
+ {
+-	u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
++	struct net_dm_skb_cb *cb = NET_DM_SKB_CB(skb);
+ 	char buf[NET_DM_MAX_SYMBOL_LEN];
++	enum skb_drop_reason reason;
+ 	struct nlattr *attr;
+ 	void *hdr;
++	u64 pc;
+ 	int rc;
  
-@@ -3631,6 +3631,7 @@ static __net_init int netns_ip_rt_init(struct net *net)
- 	/* Set default value for namespaceified sysctls */
- 	net->ipv4.ip_rt_min_pmtu = DEFAULT_MIN_PMTU;
- 	net->ipv4.ip_rt_mtu_expires = DEFAULT_MTU_EXPIRES;
-+	net->ipv4.ip_rt_min_advmss = DEFAULT_MIN_ADVMSS;
- 	return 0;
- }
++	pc = (u64)(uintptr_t)cb->pc;
++	reason = cb->reason;
++
+ 	hdr = genlmsg_put(msg, 0, 0, &net_drop_monitor_family, 0,
+ 			  NET_DM_CMD_PACKET_ALERT);
+ 	if (!hdr)
+@@ -623,6 +632,9 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+ 	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
+ 		goto nla_put_failure;
  
++	if (nla_put_u32(msg, NET_DM_ATTR_REASON, reason))
++		goto nla_put_failure;
++
+ 	snprintf(buf, sizeof(buf), "%pS", NET_DM_SKB_CB(skb)->pc);
+ 	if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
+ 		goto nla_put_failure;
 -- 
-2.15.2
+2.34.1
 
