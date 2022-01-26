@@ -2,140 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F98249C4DD
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 09:06:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E689E49C4DF
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 09:07:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238130AbiAZIGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 03:06:12 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4516 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbiAZIGL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 03:06:11 -0500
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JkGRP68zHz67wqg;
-        Wed, 26 Jan 2022 16:02:41 +0800 (CST)
-Received: from [10.122.132.241] (10.122.132.241) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Wed, 26 Jan 2022 09:06:08 +0100
-Message-ID: <0934a27a-d167-87ea-97d2-b3ac952832ff@huawei.com>
-Date:   Wed, 26 Jan 2022 11:05:53 +0300
+        id S230124AbiAZIH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 03:07:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230011AbiAZIH1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 03:07:27 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51195C06161C;
+        Wed, 26 Jan 2022 00:07:27 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id h20-20020a17090adb9400b001b518bf99ffso3993730pjv.1;
+        Wed, 26 Jan 2022 00:07:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WK1m9YGMIOU47nTvl2kdOoyGhuyNMDYzbDohinKezdc=;
+        b=N+YPh5xjqoSydTKNpzJ5hMlKUC7AnDBc9HPQRM+ImxjektnmmydPb5CIdeNLqd7nWN
+         d8qrH6pgPDKnwno7lJMYvOC3Q2wnB/TjwxgtHT8UR86RB6lQUbzL6ctoHKmoTFJfSTKn
+         4GWoYUNE+6SPe93nXEU0CkVMmD7jXN4HQBYxogHu/JXGHjYYL/10SV+KdfBOPPMQe113
+         isPsdFmyDbN07Zt0fvN3B58TiwvbnxddzkatQAR/7tvsqw5IfhYise4TBzX99eCU78uV
+         wEIMpuAEB0Eu6JlBGaVoX9D1UbiIFY6l6T6qVqCd4LLVjFrKw67SocY84iIUjTrgMwmC
+         F2Mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WK1m9YGMIOU47nTvl2kdOoyGhuyNMDYzbDohinKezdc=;
+        b=CrgO++NezBDW+YYpQNRcoFMqp5oOgqpSogDKUnHpx5crYeN8wGn2vnfbCFnUtBTyPf
+         jN0vHJkPV72jNpRCyD2Lma2ooW2qV9HdaG2XjwRQkTZrXJNO51F8mbV90QQftuyugwnc
+         oirOpKo0jWxRahMOpQmnM+IFTdu/TZ9FnaMWRRVVWqgm+I6k8I2VB7/vsXCHpsiJziqI
+         i09DWlfwS/2rAVKklXTPT04mO7Pif5LjCSfx0tlHhz9fkFkf0WOUdmhfoEu3pOuzW1EF
+         uEzwHIpQVj79fX2bjOuC2BJU1cIz/0VVfnjo6C/K8dzrOZoTKG7lMeT9dQccA0cvDRCr
+         XYdw==
+X-Gm-Message-State: AOAM530InIRO20dT92Jya3QPuyil2CV21swMVf9SRqpXwAYndIxI4/OR
+        qmBIxTZEx3DKKJftbvAWuuvh1vEepr3AJckVPRKLGY74L7V0mg==
+X-Google-Smtp-Source: ABdhPJy3npHkp4muntCPuuN3taHcWgfTMM2vPynP6YkfKJnoorurZfnd8xG08Slqmy8zPP3aXigdPCi3eKrEnpx3JAk=
+X-Received: by 2002:a17:902:7148:b0:14b:650c:4ce7 with SMTP id
+ u8-20020a170902714800b0014b650c4ce7mr8969378plm.4.1643184446641; Wed, 26 Jan
+ 2022 00:07:26 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC PATCH 1/2] landlock: TCP network hooks implementation
-Content-Language: ru
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     <mic@digikod.net>, <linux-security-module@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <netfilter@vger.kernel.org>,
-        <yusongping@huawei.com>, <artem.kuzin@huawei.com>
-References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
- <20220124080215.265538-2-konstantin.meskhidze@huawei.com>
- <CA+FuTSf4EjgjBCCOiu-PHJcTMia41UkTh8QJ0+qdxL_J8445EA@mail.gmail.com>
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-In-Reply-To: <CA+FuTSf4EjgjBCCOiu-PHJcTMia41UkTh8QJ0+qdxL_J8445EA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml753-chm.china.huawei.com (10.201.108.203) To
- fraeml704-chm.china.huawei.com (10.206.15.53)
-X-CFilter-Loop: Reflected
+References: <20220125160446.78976-1-maciej.fijalkowski@intel.com> <20220125160446.78976-9-maciej.fijalkowski@intel.com>
+In-Reply-To: <20220125160446.78976-9-maciej.fijalkowski@intel.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Wed, 26 Jan 2022 09:07:15 +0100
+Message-ID: <CAJ8uoz39QX5weOyJEgQC9r-V58C1wqTYSnbc+s+uZSxnsWP=qw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 8/8] ice: xsk: borrow xdp_tx_active logic from i40e
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jan 25, 2022 at 11:58 PM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> One of the things that commit 5574ff7b7b3d ("i40e: optimize AF_XDP Tx
+> completion path") introduced was the @xdp_tx_active field. Its usage
+> from i40e can be adjusted to ice driver and give us positive performance
+> results.
+>
+> If the descriptor that @next_dd points to has been sent by HW (its DD
+> bit is set), then we are sure that at least quarter of the ring is ready
+> to be cleaned. If @xdp_tx_active is 0 which means that related xdp_ring
+> is not used for XDP_{TX, REDIRECT} workloads, then we know how many XSK
+> entries should placed to completion queue, IOW walking through the ring
+> can be skipped.
 
+Thanks Maciej.
 
-1/25/2022 5:17 PM, Willem de Bruijn пишет:
-> On Mon, Jan 24, 2022 at 3:02 AM Konstantin Meskhidze
-> <konstantin.meskhidze@huawei.com> wrote:
->>
->> Support of socket_bind() and socket_connect() hooks.
->> Current prototype can restrict binding and connecting of TCP
->> types of sockets. Its just basic idea how Landlock could support
->> network confinement.
->>
->> Changes:
->> 1. Access masks array refactored into 1D one and changed
->> to 32 bits. Filesystem masks occupy 16 lower bits and network
->> masks reside in 16 upper bits.
->> 2. Refactor API functions in ruleset.c:
->>      1. Add void *object argument.
->>      2. Add u16 rule_type argument.
->> 3. Use two rb_trees in ruleset structure:
->>      1. root_inode - for filesystem objects
->>      2. root_net_port - for network port objects
->>
->> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-> 
->> +static int hook_socket_connect(struct socket *sock, struct sockaddr *address, int addrlen)
->> +{
->> +       short socket_type;
->> +       struct sockaddr_in *sockaddr;
->> +       u16 port;
->> +       const struct landlock_ruleset *const dom = landlock_get_current_domain();
->> +
->> +       /* Check if the hook is AF_INET* socket's action */
->> +       if ((address->sa_family != AF_INET) && (address->sa_family != AF_INET6))
->> +               return 0;
-> 
-> Should this be a check on the socket family (sock->ops->family)
-> instead of the address family?
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Actually connect() function checks address family:
-
-int __inet_stream_connect(... ,struct sockaddr *uaddr ,...) {
-...
-	if (uaddr) {
-		if (addr_len < sizeof(uaddr->sa_family))
-		return -EINVAL;
-
-		if (uaddr->sa_family == AF_UNSPEC) {
-			err = sk->sk_prot->disconnect(sk, flags);
-			sock->state = err ? SS_DISCONNECTING : 	
-			SS_UNCONNECTED;
-		goto out;
-		}
-	}
-
-...
-}
-
-> 
-> It is valid to pass an address with AF_UNSPEC to a PF_INET(6) socket.
-> And there are legitimate reasons to want to deny this. Such as passing
-> a connection to a unprivileged process and disallow it from disconnect
-> and opening a different new connection.
-
-As far as I know using AF_UNSPEC to unconnect takes effect on 
-UDP(DATAGRAM) sockets.
-To unconnect a UDP socket, we call connect but set the family member of 
-the socket address structure (sin_family for IPv4 or sin6_family for 
-IPv6) to AF_UNSPEC. It is the process of calling connect on an already 
-connected UDP socket that causes the socket to become unconnected.
-
-This RFC patch just supports TCP connections. I need to check the logic
-if AF_UNSPEC provided in connenct() function for TCP(STREAM) sockets.
-Does it disconnect already established TCP connection?
-
-Thank you for noticing about this issue. Need to think through how
-to manage it with Landlock network restrictions for both TCP and UDP
-sockets.
-
-> 
->> +
->> +       socket_type = sock->type;
->> +       /* Check if it's a TCP socket */
->> +       if (socket_type != SOCK_STREAM)
->> +               return 0;
->> +
->> +       if (!dom)
->> +               return 0;
->> +
->> +       /* Get port value in host byte order */
->> +       sockaddr = (struct sockaddr_in *)address;
->> +       port = ntohs(sockaddr->sin_port);
->> +
->> +       return check_socket_access(dom, port, LANDLOCK_ACCESS_NET_CONNECT_TCP);
->> +}
-> .
+> Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_txrx.h     |  1 +
+>  drivers/net/ethernet/intel/ice/ice_txrx_lib.c |  1 +
+>  drivers/net/ethernet/intel/ice/ice_xsk.c      | 15 ++++++++++++---
+>  3 files changed, 14 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
+> index 666db35a2919..466253ac2ee1 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_txrx.h
+> +++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
+> @@ -333,6 +333,7 @@ struct ice_tx_ring {
+>         spinlock_t tx_lock;
+>         u32 txq_teid;                   /* Added Tx queue TEID */
+>         /* CL4 - 4th cacheline starts here */
+> +       u16 xdp_tx_active;
+>  #define ICE_TX_FLAGS_RING_XDP          BIT(0)
+>         u8 flags;
+>         u8 dcb_tc;                      /* Traffic class of ring */
+> diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
+> index 9677cf880a4b..eb21cec1d772 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
+> @@ -302,6 +302,7 @@ int ice_xmit_xdp_ring(void *data, u16 size, struct ice_tx_ring *xdp_ring)
+>         tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TX_DESC_CMD_EOP, 0,
+>                                                       size, 0);
+>
+> +       xdp_ring->xdp_tx_active++;
+>         i++;
+>         if (i == xdp_ring->count) {
+>                 i = 0;
+> diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> index 8b6acb4afb7f..2976991c0ab2 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> @@ -687,6 +687,7 @@ static void
+>  ice_clean_xdp_tx_buf(struct ice_tx_ring *xdp_ring, struct ice_tx_buf *tx_buf)
+>  {
+>         xdp_return_frame((struct xdp_frame *)tx_buf->raw_buf);
+> +       xdp_ring->xdp_tx_active--;
+>         dma_unmap_single(xdp_ring->dev, dma_unmap_addr(tx_buf, dma),
+>                          dma_unmap_len(tx_buf, len), DMA_TO_DEVICE);
+>         dma_unmap_len_set(tx_buf, len, 0);
+> @@ -703,9 +704,8 @@ static u16 ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring, int napi_budget)
+>  {
+>         u16 tx_thresh = ICE_RING_QUARTER(xdp_ring);
+>         int budget = napi_budget / tx_thresh;
+> -       u16 ntc = xdp_ring->next_to_clean;
+>         u16 next_dd = xdp_ring->next_dd;
+> -       u16 cleared_dds = 0;
+> +       u16 ntc, cleared_dds = 0;
+>
+>         do {
+>                 struct ice_tx_desc *next_dd_desc;
+> @@ -721,6 +721,12 @@ static u16 ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring, int napi_budget)
+>
+>                 cleared_dds++;
+>                 xsk_frames = 0;
+> +               if (likely(!xdp_ring->xdp_tx_active)) {
+> +                       xsk_frames = tx_thresh;
+> +                       goto skip;
+> +               }
+> +
+> +               ntc = xdp_ring->next_to_clean;
+>
+>                 for (i = 0; i < tx_thresh; i++) {
+>                         tx_buf = &xdp_ring->tx_buf[ntc];
+> @@ -736,6 +742,10 @@ static u16 ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring, int napi_budget)
+>                         if (ntc >= xdp_ring->count)
+>                                 ntc = 0;
+>                 }
+> +skip:
+> +               xdp_ring->next_to_clean += tx_thresh;
+> +               if (xdp_ring->next_to_clean >= desc_cnt)
+> +                       xdp_ring->next_to_clean -= desc_cnt;
+>                 if (xsk_frames)
+>                         xsk_tx_completed(xdp_ring->xsk_pool, xsk_frames);
+>                 next_dd_desc->cmd_type_offset_bsz = 0;
+> @@ -744,7 +754,6 @@ static u16 ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring, int napi_budget)
+>                         next_dd = tx_thresh - 1;
+>         } while (budget--);
+>
+> -       xdp_ring->next_to_clean = ntc;
+>         xdp_ring->next_dd = next_dd;
+>
+>         return cleared_dds * tx_thresh;
+> --
+> 2.33.1
+>
