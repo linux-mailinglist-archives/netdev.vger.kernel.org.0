@@ -2,210 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDE9A49CD40
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 16:04:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E2A049CDD9
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 16:20:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242536AbiAZPD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 10:03:57 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:56793 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242510AbiAZPD5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 10:03:57 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20QF3rfiE025202, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20QF3rfiE025202
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 26 Jan 2022 23:03:53 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 26 Jan 2022 23:03:53 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 26 Jan 2022 07:03:52 -0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
- RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
- 15.01.2308.020; Wed, 26 Jan 2022 23:03:52 +0800
-From:   Hau <hau@realtek.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next 1/1] r8169: enable RTL8125 ASPM L1.2
-Thread-Topic: [PATCH net-next 1/1] r8169: enable RTL8125 ASPM L1.2
-Thread-Index: AQHYEU71utwpaLacm0G/vN72YItAmaxzwzyAgAF/8qD//4piAIAAlGzg
-Date:   Wed, 26 Jan 2022 15:03:52 +0000
-Message-ID: <0a281169bb114b69a49f91be80bbdf45@realtek.com>
-References: <20220124181937.6331-1-hau@realtek.com>
- <5ec25f20-8acf-544d-30f6-f0eeecd9b2f1@gmail.com>
- <439ba7073446410da75509a5add95e03@realtek.com>
- <daa376b3-d756-b85d-d256-49012ebe928b@gmail.com>
-In-Reply-To: <daa376b3-d756-b85d-d256-49012ebe928b@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.129]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEvMjYg5LiL5Y2IIDAyOjAwOjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S242726AbiAZPUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 10:20:01 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44596 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242719AbiAZPUA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 10:20:00 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5E93B81EAB;
+        Wed, 26 Jan 2022 15:19:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D746C340E3;
+        Wed, 26 Jan 2022 15:19:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643210397;
+        bh=n6r5NLPu48M24FdnE1DRwiL0ETeAUov3E04nHml1+OA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iR9aeJVCn3IY4N9J7ST0e4Sezv4Q73Kn2q9XpFbvsjfWvjaIsfcuLaBOXGCxBECDM
+         +ZrvFScmw/keHW4ZbZVZBWvnrVdA1KEB/Q823A4eQ8B3VTZRM096vK66kI4QfECcW+
+         7rvwYuZWlQsFOsTjG2VMWoWGJhmADxRmp9E2Vv9kbygFrRJIhlf/FOj90b28oTMwPA
+         TRhIr0TEhK7vOHUcSiR5C3tYW8z8Lg3uFVA/Wnv8mt2gBdGESaUjXE2kve6JOPBHGM
+         JAj8sqlocrOmmR3WA9/RsCB54SrgWi491DLsoNpj8zu4xGMWT4bbxMEJCdyHVtiVAr
+         WD0dh0eVPBQyw==
+Date:   Wed, 26 Jan 2022 23:12:15 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-kernel@vger.kernel.org,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: Re: [PATCH] net: stmmac: dwmac-sun8i: fix double disable and
+ unprepare "stmmaceth" clk
+Message-ID: <YfFkz1d9onk+ITGg@xhacker>
+References: <20220123132805.758-1-jszhang@kernel.org>
+ <38c41c04-abde-4d55-ed7c-515b6bba9c54@sholland.org>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <38c41c04-abde-4d55-ed7c-515b6bba9c54@sholland.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSGVpbmVyIEthbGx3ZWl0
-IFttYWlsdG86aGthbGx3ZWl0MUBnbWFpbC5jb21dDQo+IFNlbnQ6IFdlZG5lc2RheSwgSmFudWFy
-eSAyNiwgMjAyMiA5OjQ3IFBNDQo+IFRvOiBIYXUgPGhhdUByZWFsdGVrLmNvbT47IG5ldGRldkB2
-Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IG5pY19zd3NkIDxuaWNfc3dzZEByZWFsdGVrLmNvbT47IGxp
-bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IFtQQVRDSCBuZXQtbmV4
-dCAxLzFdIHI4MTY5OiBlbmFibGUgUlRMODEyNSBBU1BNIEwxLjINCj4gDQo+IE9uIDI2LjAxLjIw
-MjIgMTQ6MDAsIEhhdSB3cm90ZToNCj4gPj4gT24gMjQuMDEuMjAyMiAxOToxOSwgQ2h1bmhhbyBM
-aW4gd3JvdGU6DQo+ID4+PiBUaGlzIHBhdGNoIHdpbGwgZW5hYmxlIFJUTDgxMjUgQVNQTSBMMS4y
-IG9uIHRoZSBwbGF0Zm9ybXMgdGhhdCBoYXZlDQo+ID4+PiB0ZXN0ZWQgUlRMODEyNSB3aXRoIEFT
-UE0gTDEuMiBlbmFibGVkLg0KPiA+Pj4gUmVnaXN0ZXIgbWFjIG9jcCAweGMwYjIgd2lsbCBoZWxw
-IHRvIGlkZW50aWZ5IGlmIFJUTDgxMjUgaGFzIGJlZW4NCj4gPj4+IHRlc3RlZCBvbiBMMS4yIGVu
-YWJsZWQgcGxhdGZvcm0uIElmIGl0IGlzLCB0aGlzIHJlZ2lzdGVyIHdpbGwgYmUgc2V0IHRvIDB4
-Zi4NCj4gPj4+IElmIG5vdCwgdGhpcyByZWdpc3RlciB3aWxsIGJlIGRlZmF1bHQgdmFsdWUgMC4N
-Cj4gPj4+DQo+ID4+PiBTaWduZWQtb2ZmLWJ5OiBDaHVuaGFvIExpbiA8aGF1QHJlYWx0ZWsuY29t
-Pg0KPiA+Pj4gLS0tDQo+ID4+PiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVhbHRlay9yODE2OV9t
-YWluLmMgfCA5OQ0KPiA+Pj4gKysrKysrKysrKysrKysrKysrLS0tLS0NCj4gPj4+ICAxIGZpbGUg
-Y2hhbmdlZCwgNzkgaW5zZXJ0aW9ucygrKSwgMjAgZGVsZXRpb25zKC0pDQo+ID4+Pg0KPiA+Pj4g
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L3JlYWx0ZWsvcjgxNjlfbWFpbi5jDQo+
-ID4+PiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3JlYWx0ZWsvcjgxNjlfbWFpbi5jDQo+ID4+PiBp
-bmRleCAxOWUyNjIxZTA2NDUuLmIxZTAxMzk2OWQ0YyAxMDA2NDQNCj4gPj4+IC0tLSBhL2RyaXZl
-cnMvbmV0L2V0aGVybmV0L3JlYWx0ZWsvcjgxNjlfbWFpbi5jDQo+ID4+PiArKysgYi9kcml2ZXJz
-L25ldC9ldGhlcm5ldC9yZWFsdGVrL3I4MTY5X21haW4uYw0KPiA+Pj4gQEAgLTIyMzgsMjEgKzIy
-MzgsNiBAQCBzdGF0aWMgdm9pZCBydGxfd29sX2VuYWJsZV9yeChzdHJ1Y3QNCj4gPj4gcnRsODE2
-OV9wcml2YXRlICp0cCkNCj4gPj4+ICAJCQlBY2NlcHRCcm9hZGNhc3QgfCBBY2NlcHRNdWx0aWNh
-c3QgfA0KPiA+PiBBY2NlcHRNeVBoeXMpOyAgfQ0KPiA+Pj4NCj4gPj4+IC1zdGF0aWMgdm9pZCBy
-dGxfcHJlcGFyZV9wb3dlcl9kb3duKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRwKSAtew0KPiA+
-Pj4gLQlpZiAodHAtPmRhc2hfdHlwZSAhPSBSVExfREFTSF9OT05FKQ0KPiA+Pj4gLQkJcmV0dXJu
-Ow0KPiA+Pj4gLQ0KPiA+Pj4gLQlpZiAodHAtPm1hY192ZXJzaW9uID09IFJUTF9HSUdBX01BQ19W
-RVJfMzIgfHwNCj4gPj4+IC0JICAgIHRwLT5tYWNfdmVyc2lvbiA9PSBSVExfR0lHQV9NQUNfVkVS
-XzMzKQ0KPiA+Pj4gLQkJcnRsX2VwaHlfd3JpdGUodHAsIDB4MTksIDB4ZmY2NCk7DQo+ID4+PiAt
-DQo+ID4+PiAtCWlmIChkZXZpY2VfbWF5X3dha2V1cCh0cF90b19kZXYodHApKSkgew0KPiA+Pj4g
-LQkJcGh5X3NwZWVkX2Rvd24odHAtPnBoeWRldiwgZmFsc2UpOw0KPiA+Pj4gLQkJcnRsX3dvbF9l
-bmFibGVfcngodHApOw0KPiA+Pj4gLQl9DQo+ID4+PiAtfQ0KPiA+Pj4gLQ0KPiA+Pj4gIHN0YXRp
-YyB2b2lkIHJ0bF9pbml0X3J4Y2ZnKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRwKSAgew0KPiA+
-Pj4gIAlzd2l0Y2ggKHRwLT5tYWNfdmVyc2lvbikgew0KPiA+Pj4gQEAgLTI2NTAsNiArMjYzNSwz
-NCBAQCBzdGF0aWMgdm9pZA0KPiA+Pj4gcnRsX3BjaWVfc3RhdGVfbDJsM19kaXNhYmxlKHN0cnVj
-dA0KPiA+PiBydGw4MTY5X3ByaXZhdGUgKnRwKQ0KPiA+Pj4gIAlSVExfVzgodHAsIENvbmZpZzMs
-IFJUTF9SOCh0cCwgQ29uZmlnMykgJiB+UmR5X3RvX0wyMyk7ICB9DQo+ID4+Pg0KPiA+Pj4gK3N0
-YXRpYyB2b2lkIHJ0bF9kaXNhYmxlX2V4aXRfbDEoc3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHAp
-IHsNCj4gPj4+ICsJLyogQml0cyBjb250cm9sIHdoaWNoIGV2ZW50cyB0cmlnZ2VyIEFTUE0gTDEg
-ZXhpdDoNCj4gPj4+ICsJICogQml0IDEyOiByeGR2DQo+ID4+PiArCSAqIEJpdCAxMTogbHRyX21z
-Zw0KPiA+Pj4gKwkgKiBCaXQgMTA6IHR4ZG1hX3BvbGwNCj4gPj4+ICsJICogQml0ICA5OiB4YWRt
-DQo+ID4+PiArCSAqIEJpdCAgODogcGt0YXZpDQo+ID4+PiArCSAqIEJpdCAgNzogdHhwbGENCj4g
-Pj4+ICsJICovDQo+ID4+PiArCXN3aXRjaCAodHAtPm1hY192ZXJzaW9uKSB7DQo+ID4+PiArCWNh
-c2UgUlRMX0dJR0FfTUFDX1ZFUl8zNCAuLi4gUlRMX0dJR0FfTUFDX1ZFUl8zNjoNCj4gPj4+ICsJ
-CXJ0bF9lcmlfY2xlYXJfYml0cyh0cCwgMHhkNCwgMHgxZjAwKTsNCj4gPj4+ICsJCWJyZWFrOw0K
-PiA+Pj4gKwljYXNlIFJUTF9HSUdBX01BQ19WRVJfMzcgLi4uIFJUTF9HSUdBX01BQ19WRVJfMzg6
-DQo+ID4+PiArCQlydGxfZXJpX2NsZWFyX2JpdHModHAsIDB4ZDQsIDB4MGMwMCk7DQo+ID4+PiAr
-CQlicmVhazsNCj4gPj4+ICsJY2FzZSBSVExfR0lHQV9NQUNfVkVSXzQwIC4uLiBSVExfR0lHQV9N
-QUNfVkVSXzUzOg0KPiA+Pj4gKwkJcnRsX2VyaV9jbGVhcl9iaXRzKHRwLCAweGQ0LCAweDFmODAp
-Ow0KPiA+Pj4gKwkJYnJlYWs7DQo+ID4+PiArCWNhc2UgUlRMX0dJR0FfTUFDX1ZFUl82MCAuLi4g
-UlRMX0dJR0FfTUFDX1ZFUl82MzoNCj4gPj4+ICsJCXI4MTY4X21hY19vY3BfbW9kaWZ5KHRwLCAw
-eGMwYWMsIDB4MWY4MCwgMCk7DQo+ID4+PiArCQlicmVhazsNCj4gPj4+ICsJZGVmYXVsdDoNCj4g
-Pj4+ICsJCWJyZWFrOw0KPiA+Pj4gKwl9DQo+ID4+PiArfQ0KPiA+Pj4gKw0KPiA+Pj4gIHN0YXRp
-YyB2b2lkIHJ0bF9lbmFibGVfZXhpdF9sMShzdHJ1Y3QgcnRsODE2OV9wcml2YXRlICp0cCkgIHsN
-Cj4gPj4+ICAJLyogQml0cyBjb250cm9sIHdoaWNoIGV2ZW50cyB0cmlnZ2VyIEFTUE0gTDEgZXhp
-dDoNCj4gPj4+IEBAIC0yNjkyLDYgKzI3MDUsMzMgQEAgc3RhdGljIHZvaWQgcnRsX2h3X2FzcG1f
-Y2xrcmVxX2VuYWJsZShzdHJ1Y3QNCj4gPj4gcnRsODE2OV9wcml2YXRlICp0cCwgYm9vbCBlbmFi
-bGUpDQo+ID4+PiAgCXVkZWxheSgxMCk7DQo+ID4+PiAgfQ0KPiA+Pj4NCj4gPj4+ICtzdGF0aWMg
-dm9pZCBydGxfaHdfYXNwbV9sMTJfZW5hYmxlKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRwLCBi
-b29sDQo+ID4+PiArZW5hYmxlKSB7DQo+ID4+PiArCS8qIERvbid0IGVuYWJsZSBMMS4yIGluIHRo
-ZSBjaGlwIGlmIE9TIGNhbid0IGNvbnRyb2wgQVNQTSAqLw0KPiA+Pj4gKwlpZiAoZW5hYmxlICYm
-IHRwLT5hc3BtX21hbmFnZWFibGUpIHsNCj4gPj4+ICsJCXI4MTY4X21hY19vY3BfbW9kaWZ5KHRw
-LCAweGUwOTQsIDB4ZmYwMCwgMCk7DQo+ID4+PiArCQlyODE2OF9tYWNfb2NwX21vZGlmeSh0cCwg
-MHhlMDkyLCAweDAwZmYsIEJJVCgyKSk7DQo+ID4+PiArCX0gZWxzZSB7DQo+ID4+PiArCQlyODE2
-OF9tYWNfb2NwX21vZGlmeSh0cCwgMHhlMDkyLCAweDAwZmYsIDApOw0KPiA+Pj4gKwl9DQo+ID4+
-PiArfQ0KPiA+Pj4gKw0KPiA+Pj4gK3N0YXRpYyB2b2lkIHJ0bF9wcmVwYXJlX3Bvd2VyX2Rvd24o
-c3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHApIHsNCj4gPj4+ICsJaWYgKHRwLT5kYXNoX3R5cGUg
-IT0gUlRMX0RBU0hfTk9ORSkNCj4gPj4+ICsJCXJldHVybjsNCj4gPj4+ICsNCj4gPj4+ICsJaWYg
-KHRwLT5tYWNfdmVyc2lvbiA9PSBSVExfR0lHQV9NQUNfVkVSXzMyIHx8DQo+ID4+PiArCSAgICB0
-cC0+bWFjX3ZlcnNpb24gPT0gUlRMX0dJR0FfTUFDX1ZFUl8zMykNCj4gPj4+ICsJCXJ0bF9lcGh5
-X3dyaXRlKHRwLCAweDE5LCAweGZmNjQpOw0KPiA+Pj4gKw0KPiA+Pj4gKwlpZiAoZGV2aWNlX21h
-eV93YWtldXAodHBfdG9fZGV2KHRwKSkpIHsNCj4gPj4+ICsJCXJ0bF9kaXNhYmxlX2V4aXRfbDEo
-dHApOw0KPiA+Pj4gKwkJcGh5X3NwZWVkX2Rvd24odHAtPnBoeWRldiwgZmFsc2UpOw0KPiA+Pj4g
-KwkJcnRsX3dvbF9lbmFibGVfcngodHApOw0KPiA+Pj4gKwl9DQo+ID4+PiArfQ0KPiA+Pj4gKw0K
-PiA+Pj4gIHN0YXRpYyB2b2lkIHJ0bF9zZXRfZmlmb19zaXplKHN0cnVjdCBydGw4MTY5X3ByaXZh
-dGUgKnRwLCB1MTYgcnhfc3RhdCwNCj4gPj4+ICAJCQkgICAgICB1MTYgdHhfc3RhdCwgdTE2IHJ4
-X2R5biwgdTE2IHR4X2R5bikgIHsgQEAgLQ0KPiA+PiAzNjc1LDYgKzM3MTUsNw0KPiA+Pj4gQEAg
-c3RhdGljIHZvaWQgcnRsX2h3X3N0YXJ0XzgxMjViKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRw
-KQ0KPiA+Pj4gIAlydGxfZXBoeV9pbml0KHRwLCBlX2luZm9fODEyNWIpOw0KPiA+Pj4gIAlydGxf
-aHdfc3RhcnRfODEyNV9jb21tb24odHApOw0KPiA+Pj4NCj4gPj4+ICsJcnRsX2h3X2FzcG1fbDEy
-X2VuYWJsZSh0cCwgdHJ1ZSk7DQo+ID4+PiAgCXJ0bF9od19hc3BtX2Nsa3JlcV9lbmFibGUodHAs
-IHRydWUpOyAgfQ0KPiA+Pj4NCj4gPj4+IEBAIC01MjU1LDYgKzUyOTYsMjAgQEAgc3RhdGljIHZv
-aWQgcnRsX2luaXRfbWFjX2FkZHJlc3Moc3RydWN0DQo+ID4+IHJ0bDgxNjlfcHJpdmF0ZSAqdHAp
-DQo+ID4+PiAgCXJ0bF9yYXJfc2V0KHRwLCBtYWNfYWRkcik7DQo+ID4+PiAgfQ0KPiA+Pj4NCj4g
-Pj4+ICsvKiBtYWMgb2NwIDB4YzBiMiB3aWxsIGhlbHAgdG8gaWRlbnRpZnkgaWYgUlRMODEyNSBo
-YXMgYmVlbiB0ZXN0ZWQNCj4gPj4+ICsgKiBvbiBMMS4yIGVuYWJsZWQgcGxhdGZvcm0uIElmIGl0
-IGlzLCB0aGlzIHJlZ2lzdGVyIHdpbGwgYmUgc2V0IHRvIDB4Zi4NCj4gPj4+ICsgKiBJZiBub3Qs
-IHRoaXMgcmVnaXN0ZXIgd2lsbCBiZSBkZWZhdWx0IHZhbHVlIDAuDQo+ID4+PiArICovDQo+ID4+
-PiArc3RhdGljIGJvb2wgcnRsX3BsYXRmb3JtX2wxMl9lbmFibGVkKHN0cnVjdCBydGw4MTY5X3By
-aXZhdGUgKnRwKSB7DQo+ID4+PiArCXN3aXRjaCAodHAtPm1hY192ZXJzaW9uKSB7DQo+ID4+PiAr
-CWNhc2UgUlRMX0dJR0FfTUFDX1ZFUl82MCAuLi4gUlRMX0dJR0FfTUFDX1ZFUl82MzoNCj4gPj4+
-ICsJCXJldHVybiAocjgxNjhfbWFjX29jcF9yZWFkKHRwLCAweGMwYjIpICYgMHhmKSA/IHRydWUg
-OiBmYWxzZTsNCj4gPj4+ICsJZGVmYXVsdDoNCj4gPj4+ICsJCXJldHVybiBmYWxzZTsNCj4gPj4+
-ICsJfQ0KPiA+Pj4gK30NCj4gPj4+ICsNCj4gPj4+ICBzdGF0aWMgaW50IHJ0bF9pbml0X29uZShz
-dHJ1Y3QgcGNpX2RldiAqcGRldiwgY29uc3Qgc3RydWN0DQo+ID4+PiBwY2lfZGV2aWNlX2lkICpl
-bnQpICB7DQo+ID4+PiAgCXN0cnVjdCBydGw4MTY5X3ByaXZhdGUgKnRwOw0KPiA+Pj4gQEAgLTUz
-MzMsMTEgKzUzODgsMTUgQEAgc3RhdGljIGludCBydGxfaW5pdF9vbmUoc3RydWN0IHBjaV9kZXYN
-Cj4gPj4+ICpwZGV2LA0KPiA+PiBjb25zdCBzdHJ1Y3QgcGNpX2RldmljZV9pZCAqZW50KQ0KPiA+
-Pj4gIAkgKiBDaGlwcyBmcm9tIFJUTDgxNjhoIHBhcnRpYWxseSBoYXZlIGlzc3VlcyB3aXRoIEwx
-LjIsIGJ1dCBzZWVtDQo+ID4+PiAgCSAqIHRvIHdvcmsgZmluZSB3aXRoIEwxIGFuZCBMMS4xLg0K
-PiA+Pj4gIAkgKi8NCj4gPj4+IC0JaWYgKHRwLT5tYWNfdmVyc2lvbiA+PSBSVExfR0lHQV9NQUNf
-VkVSXzQ1KQ0KPiA+Pj4gLQkJcmMgPSBwY2lfZGlzYWJsZV9saW5rX3N0YXRlKHBkZXYsIFBDSUVf
-TElOS19TVEFURV9MMV8yKTsNCj4gPj4+IC0JZWxzZQ0KPiA+Pj4gLQkJcmMgPSBwY2lfZGlzYWJs
-ZV9saW5rX3N0YXRlKHBkZXYsIFBDSUVfTElOS19TVEFURV9MMSk7DQo+ID4+PiAtCXRwLT5hc3Bt
-X21hbmFnZWFibGUgPSAhcmM7DQo+ID4+PiArCWlmICghcnRsX3BsYXRmb3JtX2wxMl9lbmFibGVk
-KHRwKSkgew0KPiA+Pj4gKwkJaWYgKHRwLT5tYWNfdmVyc2lvbiA+PSBSVExfR0lHQV9NQUNfVkVS
-XzQ1KQ0KPiA+Pj4gKwkJCXJjID0gcGNpX2Rpc2FibGVfbGlua19zdGF0ZShwZGV2LA0KPiA+PiBQ
-Q0lFX0xJTktfU1RBVEVfTDFfMik7DQo+ID4+PiArCQllbHNlDQo+ID4+PiArCQkJcmMgPSBwY2lf
-ZGlzYWJsZV9saW5rX3N0YXRlKHBkZXYsDQo+ID4+IFBDSUVfTElOS19TVEFURV9MMSk7DQo+ID4+
-PiArCQl0cC0+YXNwbV9tYW5hZ2VhYmxlID0gIXJjOw0KPiA+Pj4gKwl9IGVsc2Ugew0KPiA+Pj4g
-KwkJdHAtPmFzcG1fbWFuYWdlYWJsZSA9IHBjaWVfYXNwbV9lbmFibGVkKHBkZXYpOw0KPiA+Pj4g
-Kwl9DQo+ID4+Pg0KPiA+Pj4gIAl0cC0+ZGFzaF90eXBlID0gcnRsX2NoZWNrX2Rhc2godHApOw0K
-PiA+Pj4NCj4gPj4NCj4gPj4gSGkgSGF1LA0KPiA+Pg0KPiA+PiB0aGUgZm9sbG93aW5nIGlzIGEg
-c3RyaXBwZWQtZG93biB2ZXJzaW9uIG9mIHRoZSBwYXRjaC4gQ291bGQgeW91DQo+ID4+IHBsZWFz
-ZSBjaGVjay90ZXN0Pw0KPiA+IFRoaXMgcGF0Y2ggaXMgb2suDQo+ID4gTDEgc3Vic3RhdGUgbG9j
-ayBjYW4gYXBwbHkgZm9yIGJvdGggcnRsODEyNWEucnRsODEyNWIuDQo+ID4gaWYgKGVuYWJsZSAm
-JiB0cC0+YXNwbV9tYW5hZ2VhYmxlKSB7DQo+ID4gCVJUTF9XOCh0cCwgQ29uZmlnNSwgUlRMX1I4
-KHRwLCBDb25maWc1KSB8IEFTUE1fZW4pOw0KPiA+IAlSVExfVzgodHAsIENvbmZpZzIsIFJUTF9S
-OCh0cCwgQ29uZmlnMikgfCBDbGtSZXFFbik7DQo+ID4NCj4gPiAJaWYgKHRwLT5tYWNfdmVyc2lv
-biA+PSBSVExfR0lHQV9NQUNfVkVSXzYwKSB7DQo+ID4gCQlyODE2OF9tYWNfb2NwX21vZGlmeSh0
-cCwgMHhlMDk0LCAweGZmMDAsIDApOw0KPiA+IAkJcjgxNjhfbWFjX29jcF9tb2RpZnkodHAsIDB4
-ZTA5MiwgMHgwMGZmLCBCSVQoMikpOw0KPiA+IAl9DQo+ID4gfSBlbHNlIHsNCj4gPiAJaWYgKHRw
-LT5tYWNfdmVyc2lvbiA+PSBSVExfR0lHQV9NQUNfVkVSXzYwKQ0KPiA+IAkJcjgxNjhfbWFjX29j
-cF9tb2RpZnkodHAsIDB4ZTA5MiwgMHgwMGZmLCAwKTsNCj4gPg0KPiA+IAlSVExfVzgodHAsIENv
-bmZpZzIsIFJUTF9SOCh0cCwgQ29uZmlnMikgJiB+Q2xrUmVxRW4pOw0KPiA+IAlSVExfVzgodHAs
-IENvbmZpZzUsIFJUTF9SOCh0cCwgQ29uZmlnNSkgJiB+QVNQTV9lbik7IH0NCj4gPg0KPiA+PiBJ
-ZiBmdW5jdGlvbiBydGxfZGlzYWJsZV9leGl0X2wxKCkgaXMgYWN0dWFsbHkgbmVlZGVkLCBJJ2Qg
-cHJlZmVyIHRvDQo+ID4+IGFkZCBpdCBpbiBhIHNlcGFyYXRlIHBhdGNoICh0byBmYWNpbGl0YXRl
-IGJpc2VjdGluZykuDQo+ID4+DQo+ID4gSWYgZXhpdCBsMSBtYXNrIGlzIGVuYWJsZWQsIGhhcmR3
-YXJlIHdpbGwgcHJvbmUgdG8gZXhpdCBsMS4gVGhhdCB3aWxsDQo+ID4gcHJldmVudCBoYXJkd2Fy
-ZSBmcm9tIGVudGVyaW5nIGwxIHN1YnN0YXRlLiBTbyBJdCBuZWVkcyB0byBkaXNhYmxlIGwxDQo+
-ID4gZXhpc3QgbWFzayB3aGVuIGRldmljZSBnbyB0byBkMyBzdGF0ZSBmb3IgZW50ZXJpbmcgbDEg
-c3Vic3RhdGUuLg0KPiA+DQo+IE15IHVuZGVyc3RhbmRpbmcgb2YgUENJIHBvd2VyIG1hbmFnZW1l
-bnQgbWF5IGJlIGluY29tcGxldGUsIGJ1dDoNCj4gSWYgYSBkZXZpY2UgZ29lcyB0byBEMywgdGhl
-biBkb2Vzbid0IHRoZSBidXMgZ28gdG8gTDIvTDM/DQo+IEwxIGV4aXQgY3JpdGVyaWEgd291bGQg
-YmUgaXJyZWxldmFudCB0aGVuLg0KWW91ciB1bmRlcnN0YW5kaW5nIGlzIGNvcnJlY3QuDQpEMyBp
-cyBkaXZpZGVkIHRvIHR3byBzdWJzdGF0ZSwgRDNob3QgYW5kIEQzY29sZC4gRDNjb2xkIHdpbGwg
-ZW50ZXIgTDIvTDMuDQpEM2hvdCBtYXkgZW50ZXIgTDEgb3IgTDIvTDMgcmVhZHkuICBJbiBEM2hv
-dCBjYXNlLCBlbmFibGUgZXhpdCBsMSBtYXNrIHdpbGwNCnByZXZlbnQgaGFyZHdhcmUgZnJvbSBl
-bnRlcmluZyBQTSBMMS4gVGhhdCBpcyBvdXIgaGFyZHdhcmUgaXNzdWUuDQpTbyB3ZSBkaXNhYmxl
-IGV4aXQgbDEgbWFzayBiZWZvcmUgaGFyZHdhcmUgZW50ZXIgRDMuDQoNCg0KDQo+IC0tLS0tLVBs
-ZWFzZSBjb25zaWRlciB0aGUgZW52aXJvbm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWls
-Lg0K
+On Sun, Jan 23, 2022 at 01:43:37PM -0600, Samuel Holland wrote:
+> On 1/23/22 7:28 AM, Jisheng Zhang wrote:
+> > Fix warnings on Allwinner D1 platform:
+> > 
+> > [    1.604695] ------------[ cut here ]------------
+> > [    1.609328] bus-emac already disabled
+> > [    1.613015] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:952 clk_core_disable+0xcc/0xec
+> > [    1.621039] CPU: 0 PID: 38 Comm: kworker/u2:1 Not tainted 5.14.0-rc4#1
+> > [    1.627653] Hardware name: Allwinner D1 NeZha (DT)
+> > [    1.632443] Workqueue: events_unbound deferred_probe_work_func
+> > [    1.638286] epc : clk_core_disable+0xcc/0xec
+> > [    1.642561]  ra : clk_core_disable+0xcc/0xec
+> > [    1.646835] epc : ffffffff8023c2ec ra : ffffffff8023c2ec sp : ffffffd00411bb10
+> > [    1.654054]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : ffffffff80ed6a6f
+> > [    1.661272]  t1 : ffffffff80ed6a60 t2 : 0000000000000000 s0 : ffffffe001509e00
+> > [    1.668489]  s1 : 0000000000000001 a0 : 0000000000000019 a1 : ffffffff80e80bd8
+> > [    1.675707]  a2 : 00000000ffffefff a3 : 00000000000000f4 a4 : 0000000000000002
+> > [    1.682924]  a5 : 0000000000000001 a6 : 0000000000000030 a7 : 00000000028f5c29
+> > [    1.690141]  s2 : 0000000000000800 s3 : ffffffe001375000 s4 : ffffffe01fdf7a80
+> > [    1.697358]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
+> > [    1.704577]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
+> > [    1.711794]  s11: ffffffe001b80760 t3 : 0000000000000062 t4 : ffffffffffffffff
+> > [    1.719012]  t5 : ffffffff80e0f6d8 t6 : ffffffd00411b8f0
+> > [    1.724321] status: 8000000201800100 badaddr: 0000000000000000 cause: 0000000000000003
+> > [    1.732233] [<ffffffff8023c2ec>] clk_core_disable+0xcc/0xec
+> > [    1.737810] [<ffffffff80240430>] clk_disable+0x38/0x78
+> > [    1.742956] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
+> > [    1.748451] [<ffffffff8031a500>] stmmac_remove_config_dt+0x1c/0x4c
+> > [    1.754646] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
+> > [    1.760484] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
+> > [    1.765975] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
+> > [    1.771382] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
+> > [    1.777305] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
+> > [    1.783402] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
+> > [    1.789324] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
+> > [    1.795508] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
+> > [    1.802125] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
+> > [    1.807701] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
+> > [    1.813277] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
+> > [    1.818852] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
+> > [    1.825122] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
+> > [    1.830872] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
+> > [    1.836362] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+> > [    1.841335] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+> > [    1.846304] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
+> > [    1.852054] [<ffffffff80026564>] kthread+0x124/0x160
+> > [    1.857021] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
+> > [    1.862770] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
+> > [    1.868956] ---[ end trace 8d5c6046255f84a0 ]---
+> > [    1.873675] ------------[ cut here ]------------
+> > [    1.878366] bus-emac already unprepared
+> > [    1.882378] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:810 clk_core_unprepare+0xe4/0x168
+> > [    1.890673] CPU: 0 PID: 38 Comm: kworker/u2:1 Tainted: G        W	5.14.0-rc4 #1
+> > [    1.898674] Hardware name: Allwinner D1 NeZha (DT)
+> > [    1.903464] Workqueue: events_unbound deferred_probe_work_func
+> > [    1.909305] epc : clk_core_unprepare+0xe4/0x168
+> > [    1.913840]  ra : clk_core_unprepare+0xe4/0x168
+> > [    1.918375] epc : ffffffff8023d6cc ra : ffffffff8023d6cc sp : ffffffd00411bb10
+> > [    1.925593]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : 0000000000000002
+> > [    1.932811]  t1 : ffffffe01f743be0 t2 : 0000000000000040 s0 : ffffffe001509e00
+> > [    1.940029]  s1 : 0000000000000001 a0 : 000000000000001b a1 : ffffffe00143a800
+> > [    1.947246]  a2 : 0000000000000000 a3 : 00000000000000f4 a4 : 0000000000000001
+> > [    1.954463]  a5 : 0000000000000000 a6 : 0000000005fce2a5 a7 : 0000000000000001
+> > [    1.961680]  s2 : 0000000000000800 s3 : ffffffff80afeb90 s4 : ffffffe01fdf7a80
+> > [    1.968898]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
+> > [    1.976115]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
+> > [    1.983333]  s11: ffffffe001b80760 t3 : ffffffff80b39120 t4 : 0000000000000001
+> > [    1.990550]  t5 : 0000000000000000 t6 : ffffffe001600002
+> > [    1.995859] status: 8000000201800120 badaddr: 0000000000000000 cause: 0000000000000003
+> > [    2.003771] [<ffffffff8023d6cc>] clk_core_unprepare+0xe4/0x168
+> > [    2.009609] [<ffffffff802403a0>] clk_unprepare+0x24/0x3c
+> > [    2.014929] [<ffffffff8031a508>] stmmac_remove_config_dt+0x24/0x4c
+> > [    2.021125] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
+> > [    2.026965] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
+> > [    2.032463] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
+> > [    2.037871] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
+> > [    2.043795] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
+> > [    2.049892] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
+> > [    2.055815] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
+> > [    2.061999] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
+> > [    2.068616] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
+> > [    2.074193] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
+> > [    2.079769] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
+> > [    2.085345] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
+> > [    2.091616] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
+> > [    2.097367] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
+> > [    2.102858] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+> > [    2.107830] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+> > [    2.112800] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
+> > [    2.118551] [<ffffffff80026564>] kthread+0x124/0x160
+> > [    2.123520] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
+> > [    2.129268] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
+> > [    2.135455] ---[ end trace 8d5c6046255f84a1 ]---
+> > 
+> > the dwmmac-sun8i driver will get the "stmmaceth" clk as tx_clk during
+> > driver initialization. If stmmac_dvr_probe() fails due to various
+> > reasons, sun8i_dwmac_exit() will disable and unprepare the "stmmaceth"
+> > clk, then stmmac_remove_config_dt() will disable and unprepare the
+> > clk again.
+> 
+> This should still be balanced, because both stmmac_probe_config_dt and
+> sun8i_dwmac_init prepare/enable the clock, so the dwmac-sun8i glue layer calls
+> stmmac_dvr_probe with the clock having an enable count of 2. It looks like the
+> underlying issue is that commit 5ec55823438e ("net: stmmac: add clocks
+> management for gmac driver") introduces unbalanced runtime PM.
+
+I added some printk then retested, the problem is triggered as below:
+
+stmmac_probe_config_dt() enable the clk
+sun8i_dwmac_init() enble the clk again
+stmmac_dvr_probe() succeed, but it calls pm_runtime_put(), so rpm will
+disable the clk
+sun8i_dwmac_reset() fails due to various reason
+sun8i_dwmac_exit() disable the clk, this is fine
+stmmac_remove_config_dt() disable the clk again, so ccf complains.
+
+The key here is: whether we should let stmmac_dvr_probe() calls
+pm_runtime_put() or let stmmac users to determine whether we could
+let rpm go?
+If we keep current behavior: stmmac users need to take care
+the code after stmmac_dvr_probe, including error handling code path,
+if we touch access registers, we need to call pm_runtime_get_sync()
+firstly.
+
+Since the commit 5ec55823438e has been in for a long time, I'll submit
+a patch to follow this way.
+
+Thanks
+>  - stmmac_dvr_probe calls pm_runtime_get_noresume and pm_runtime_set_active,
+> since it assumes the clocks are already enabled. This is fine.
+>  - If stmmac_dvr_probe fails, it calls stmmac_bus_clks_config(priv, false),
+> which drops the enable count down to 1. This is a bug, not just in this case,
+> but also because it will unbalance the clocks if runtime PM is disabled.
+>  - If stmmac_dvr_probe fails, it never calls pm_runtime_disable if the failure
+> occurs after the call to pm_runtime_enable. This is also a bug.
+> 
+> It looks like at some point stmmac_dvr_remove was expected to leave all of the
+> clocks disabled, but it must leave them enabled as of commit 8f269102baf7 ("net:
+> stmmac: disable clocks in stmmac_remove_config_dt()"), since
+> stmmac_remove_config_dt is called after stmmac_dvr_remove in stmmac_pltfr_remove.
+>  - If stmmac_dvr_probe succeeds, it calls pm_runtime_put. This allows runtime PM
+> to suspend the device, dropping the clock enable count to 1. This is fine.
+>  - But then stmmac_dvr_remove calls pm_runtime_put as well. It needs to do the
+> opposite. It must ensure the device is runtime resumed, so the clock enable
+> count matches what it was before stmmac_dvr_probe was called (in this case: 2).
+> 
+> > Currently, there's no other usage of tx_clk except preparing and
+> > enabling, we can fix the above warnings by simply removing the tx_clk
+> > and all its usage, we rely on the common stmmac_probe_config_dt()
+> > routine to prepare and enable the stmmaceth clk.
+> 
+> This is a good change to make, as indeed this code is now unnecessary, and
+> removing it will allow runtime PM to actually disable the clock. But I am not
+> sure how this resolves the warnings you are seeing, as the sun8i_dwmac_init/exit
+> calls should have been balanced already.
+> 
+> Can you check if the PHY regulator is also getting unbalanced? Unbalanced calls
+> to sun8i_dwmac_exit would also underflow the regulator use count, which should
+> trigger its own warning.
+> 
+> Regards,
+> Samuel
+> 
+> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> > ---
+> >  .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 20 +------------------
+> >  1 file changed, 1 insertion(+), 19 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+> > index 617d0e4c6495..d97469825e53 100644
+> > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+> > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+> > @@ -57,7 +57,6 @@ struct emac_variant {
+> >  };
+> >  
+> >  /* struct sunxi_priv_data - hold all sunxi private data
+> > - * @tx_clk:	reference to MAC TX clock
+> >   * @ephy_clk:	reference to the optional EPHY clock for the internal PHY
+> >   * @regulator:	reference to the optional regulator
+> >   * @rst_ephy:	reference to the optional EPHY reset for the internal PHY
+> > @@ -68,7 +67,6 @@ struct emac_variant {
+> >   * @mux_handle:	Internal pointer used by mdio-mux lib
+> >   */
+> >  struct sunxi_priv_data {
+> > -	struct clk *tx_clk;
+> >  	struct clk *ephy_clk;
+> >  	struct regulator *regulator;
+> >  	struct reset_control *rst_ephy;
+> > @@ -579,22 +577,14 @@ static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
+> >  		}
+> >  	}
+> >  
+> > -	ret = clk_prepare_enable(gmac->tx_clk);
+> > -	if (ret) {
+> > -		dev_err(&pdev->dev, "Could not enable AHB clock\n");
+> > -		goto err_disable_regulator;
+> > -	}
+> > -
+> >  	if (gmac->use_internal_phy) {
+> >  		ret = sun8i_dwmac_power_internal_phy(netdev_priv(ndev));
+> >  		if (ret)
+> > -			goto err_disable_clk;
+> > +			goto err_disable_regulator;
+> >  	}
+> >  
+> >  	return 0;
+> >  
+> > -err_disable_clk:
+> > -	clk_disable_unprepare(gmac->tx_clk);
+> >  err_disable_regulator:
+> >  	if (gmac->regulator)
+> >  		regulator_disable(gmac->regulator);
+> > @@ -1043,8 +1033,6 @@ static void sun8i_dwmac_exit(struct platform_device *pdev, void *priv)
+> >  	if (gmac->variant->soc_has_internal_phy)
+> >  		sun8i_dwmac_unpower_internal_phy(gmac);
+> >  
+> > -	clk_disable_unprepare(gmac->tx_clk);
+> > -
+> >  	if (gmac->regulator)
+> >  		regulator_disable(gmac->regulator);
+> >  }
+> > @@ -1167,12 +1155,6 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+> >  		return -EINVAL;
+> >  	}
+> >  
+> > -	gmac->tx_clk = devm_clk_get(dev, "stmmaceth");
+> > -	if (IS_ERR(gmac->tx_clk)) {
+> > -		dev_err(dev, "Could not get TX clock\n");
+> > -		return PTR_ERR(gmac->tx_clk);
+> > -	}
+> > -
+> >  	/* Optional regulator for PHY */
+> >  	gmac->regulator = devm_regulator_get_optional(dev, "phy");
+> >  	if (IS_ERR(gmac->regulator)) {
+> > 
+> 
