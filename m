@@ -2,124 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 607CB49C84E
-	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 12:09:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7265D49C859
+	for <lists+netdev@lfdr.de>; Wed, 26 Jan 2022 12:11:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240494AbiAZLJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 06:09:22 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33250 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240491AbiAZLJV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 06:09:21 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DB8B618CA;
-        Wed, 26 Jan 2022 11:09:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D563C340E3;
-        Wed, 26 Jan 2022 11:09:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643195361;
-        bh=/zWncPmKwzXMZGHZvCSwS6Snn34KR1tN9vb7JKiM7T0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Q267gzkyR7eaQ8SFeGSWEWz71T7iffwrNfqZFfL+jbp7N7cS3VYfxm3RnUTTo5YXz
-         Tuw99yUEAPLsiMXQS+V4ynhQBOsGMMZdzBbzzWIH0uf6HK83D0m1ihmKq6RxNLOj/E
-         BTzUKgFDd5IL/CeVF8wRiwNIqFZr/o+Cb1GmfiQRCSvpX2er5mzAhrteXdM4CvNo4Z
-         nJP7a9C74K2lpgLClUR5cUVKMsmIoNPJWsPAVrV2ojP7RMQ5J3HwyI3iHaQ0PHMdFK
-         tw+tP6M1pst1kUucafw+F+MVsF4YfTtldl3yAreuDveGsj5+GczDqo+5AGkqcK/h7l
-         a0V+HtYRrIfTA==
-Date:   Wed, 26 Jan 2022 12:09:17 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Nikolay Aleksandrov <nikolay@nvidia.com>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S240507AbiAZLLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 06:11:01 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:35874 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240501AbiAZLLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 06:11:01 -0500
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JkLbj3SdVzccr3;
+        Wed, 26 Jan 2022 19:10:09 +0800 (CST)
+Received: from [10.174.176.117] (10.174.176.117) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 26 Jan 2022 19:10:59 +0800
+Subject: Re: [PATCH bpf-next] bpf, arm64: enable kfunc call
+To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@kernel.org>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        Ido Schimmel <idosch@idosch.org>
-Subject: Re: [RFC bpf-next 1/2] net: bridge: add unstable
- br_fdb_find_port_from_ifindex helper
-Message-ID: <YfEr3Soy8YuJczHk@lore-desk>
-References: <cover.1643044381.git.lorenzo@kernel.org>
- <720907692575488526f06edc2cf5c8f783777d4f.1643044381.git.lorenzo@kernel.org>
- <61553c87-a3d3-07ae-8c2f-93cf0cb52263@nvidia.com>
- <CAADnVQLv=45+Symc-8Y9QuzOAG40e3XkvVxQ-ibO-HOCyJhETw@mail.gmail.com>
+        Ard Biesheuvel <ard.biesheuvel@arm.com>
+CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220119144942.305568-1-houtao1@huawei.com>
+ <b54b3297-086c-1b64-1c25-01f70c6412af@iogearbox.net>
+From:   Hou Tao <houtao1@huawei.com>
+Message-ID: <67471472-d37f-2c56-2e9c-0030a02e1bd9@huawei.com>
+Date:   Wed, 26 Jan 2022 19:10:58 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kFCkJi5WGm1W4ka3"
-Content-Disposition: inline
-In-Reply-To: <CAADnVQLv=45+Symc-8Y9QuzOAG40e3XkvVxQ-ibO-HOCyJhETw@mail.gmail.com>
+In-Reply-To: <b54b3297-086c-1b64-1c25-01f70c6412af@iogearbox.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [10.174.176.117]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
---kFCkJi5WGm1W4ka3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-> On Mon, Jan 24, 2022 at 10:32 AM Nikolay Aleksandrov <nikolay@nvidia.com>=
- wrote:
-> > >
-> > > +int br_fdb_find_port_from_ifindex(struct xdp_md *xdp_ctx,
-> > > +                               struct bpf_fdb_lookup *opt,
-> > > +                               u32 opt__sz)
-> > > +{
-> > > +     struct xdp_buff *ctx =3D (struct xdp_buff *)xdp_ctx;
-> > > +     struct net_bridge_port *port;
-> > > +     struct net_device *dev;
-> > > +     int ret =3D -ENODEV;
-> > > +
-> > > +     BUILD_BUG_ON(sizeof(struct bpf_fdb_lookup) !=3D NF_BPF_FDB_OPTS=
-_SZ);
-> > > +     if (!opt || opt__sz !=3D sizeof(struct bpf_fdb_lookup))
-> > > +             return -ENODEV;
-> > > +
-> > > +     rcu_read_lock();
-> > > +
-> > > +     dev =3D dev_get_by_index_rcu(dev_net(ctx->rxq->dev), opt->ifind=
-ex);
-> > > +     if (!dev)
-> > > +             goto out;
->=20
-> imo that is way too much wrapping for an unstable helper.
-> The dev lookup is not cheap.
->=20
-> With all the extra checks the XDP acceleration gets reduced.
-> I think it would be better to use kprobe/fentry on bridge
-> functions that operate on fdb and replicate necessary
-> data into bpf map.
-> Then xdp prog would do a single cheap lookup from that map
-> to figure out 'port'.
-
-ack, right. This is a very interesting approach. I will investigate it. Tha=
-nks.
+On 1/25/2022 12:21 AM, Daniel Borkmann wrote:
+> On 1/19/22 3:49 PM, Hou Tao wrote:
+>> Since commit b2eed9b58811 ("arm64/kernel: kaslr: reduce module
+>> randomization range to 2 GB"), for arm64 whether KASLR is enabled
+>> or not, the module is placed within 2GB of the kernel region, so
+>> s32 in bpf_kfunc_desc is sufficient to represente the offset of
+>> module function relative to __bpf_call_base. The only thing needed
+>> is to override bpf_jit_supports_kfunc_call().
+>>
+>> Signed-off-by: Hou Tao <houtao1@huawei.com>
+>
+> Lgtm, could we also add a BPF selftest to assert that this assumption
+> won't break in future when bpf_jit_supports_kfunc_call() returns true?
+>
+> E.g. extending lib/test_bpf.ko could be an option, wdyt?
+Make sense.  Will figure out how to done that.
 
 Regards,
-Lorenzo
+Tao
+>
+>> ---
+>>   arch/arm64/net/bpf_jit_comp.c | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+>> index e96d4d87291f..74f9a9b6a053 100644
+>> --- a/arch/arm64/net/bpf_jit_comp.c
+>> +++ b/arch/arm64/net/bpf_jit_comp.c
+>> @@ -1143,6 +1143,11 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog
+>> *prog)
+>>       return prog;
+>>   }
+>>   +bool bpf_jit_supports_kfunc_call(void)
+>> +{
+>> +    return true;
+>> +}
+>> +
+>>   u64 bpf_jit_alloc_exec_limit(void)
+>>   {
+>>       return VMALLOC_END - VMALLOC_START;
+>>
+>
+> .
 
---kFCkJi5WGm1W4ka3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYfEr3QAKCRA6cBh0uS2t
-rI/BAQC9L141LtGoDrESrDY1ii4/RP/UGl82ndKb1Ap3thTqwQD/X6/s02kMpW3J
-LqMH3nrhFBuZEt8OpC7T95rtRIf85Qc=
-=PuxP
------END PGP SIGNATURE-----
-
---kFCkJi5WGm1W4ka3--
