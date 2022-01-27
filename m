@@ -2,153 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAAF949EF12
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 00:54:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5051249EF13
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 00:55:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344001AbiA0Xyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 18:54:40 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:43124
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229658AbiA0Xyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 18:54:39 -0500
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id A7DB53F1C2
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 23:54:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1643327671;
-        bh=bOdva2AZJZiNL7yaZKCS3GNPbvit/x1vhYqH6ntbRZY=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=pkndNsgRlWhQFr2MS+tL/izbln8cJxNLD+DjEg0zoGkpJ84ur7HLstdQy6fHa0Dis
-         GlSx0QIFImzjnBNHUvW2o8CcXRkoMpPAAx7FAtywvH+gcoKeocpUi5NeGYUL1uUmY+
-         zm3V0vvtK7ai2qIMeWjW1ur1mxBruN3YnzcbVAGQ6rIYcH5XE8s6+P9ms2LfJO+vHV
-         y0m5BNpoxhIqQWYnvbigVrqQRPRUFW9ulXCF9U8rhYIg9neVm2pd5egQeqpusU1jm5
-         6bLwRrBbuBbgGzaHfiiu95m2s3X7nLp2ewFEklT0ZZ/ikId+iMvNLzbT1LNXdKzaDn
-         dNNhnhVXlLJzA==
-Received: by mail-pj1-f69.google.com with SMTP id a10-20020a17090abe0a00b001b4df1f5a6eso2777901pjs.6
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 15:54:31 -0800 (PST)
+        id S243394AbiA0XzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 18:55:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40256 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229658AbiA0XzQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 18:55:16 -0500
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0325FC061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 15:55:16 -0800 (PST)
+Received: by mail-lj1-x232.google.com with SMTP id z7so6640572ljj.4
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 15:55:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fastly.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tKITQprWMQWZ0S2MUC7tRxmK+x/kgvVxT0nwvaf2g9w=;
+        b=KPmYzmzRT6bXluVgaktvlucF3KoJq7wUmoPcuzsB34JQ5jiFTcwXyJEfaanlP4N6Cg
+         H+zONLTA7ZyQZz6lLVKuYW2cpwx8mOUSA6ZRZ4bZ5YzdliEUCc01gO8FBO7Jg07DYWZq
+         7NMncrlzyCJ7Rmoe+ajt2Qcj83Z6WA0KFKc+Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
-         :comments:mime-version:content-id:content-transfer-encoding:date
-         :message-id;
-        bh=bOdva2AZJZiNL7yaZKCS3GNPbvit/x1vhYqH6ntbRZY=;
-        b=vkisXovxH5lepoXKnd1cJLz97UsaneMHIUrOt/xuGu4uL5ILUhZxn4EiUZNDWuTWp+
-         Fc9OW+UHYsZ8PzZTS4CxSCuLsG+/AuuY0Ch+62jZDWe79d+IIpIKzXoAKSC5yWxkcijJ
-         aigZq97X/wO04PA/IH7S8+5FIK5oqiUJkaxiV0U+/Cg3O9U3JTYkX0g98zQ4f/cFc2cD
-         Pe5PGL5u2AZ0a9vP19XAdVVY//E2QmCHWTAnniAtdJMxxqc1k/I8t8wP31IysWD3jnu1
-         cDrIxfKjuvgbeEzsR/eQX86Qqq2LJVQkn+bUXtA43eWzUC+9WlzChEptNhej/YzyqyDw
-         zWfg==
-X-Gm-Message-State: AOAM531k2bHfjxULFl+JfC+Qkk9+jC9g+lKb3dNNniHWVt36ZHoyA2Y+
-        IRYzzX209UEtyuj7dhLqdnK1rkLR+oP+7Oe+zc/zCWCOwx5UTQqXpyNBehW5xtySZ4sf8DuQA3m
-        zBwSiWP0kx2auIACIU4SoMYcohXkgaUV+1w==
-X-Received: by 2002:a17:90a:c901:: with SMTP id v1mr16521029pjt.203.1643327670215;
-        Thu, 27 Jan 2022 15:54:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz0v0vcCGKDKDGwm6fmWeUs/HHNBuv8vn2TwBJ86NMvPaRW+YROdUWp1weqQr0poUSPAI3wtA==
-X-Received: by 2002:a17:90a:c901:: with SMTP id v1mr16521008pjt.203.1643327669949;
-        Thu, 27 Jan 2022 15:54:29 -0800 (PST)
-Received: from famine.localdomain ([50.125.80.157])
-        by smtp.gmail.com with ESMTPSA id a38sm6671756pfx.46.2022.01.27.15.54.29
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Jan 2022 15:54:29 -0800 (PST)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 12EBF60DD1; Thu, 27 Jan 2022 15:54:29 -0800 (PST)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 0C0AEA0B26;
-        Thu, 27 Jan 2022 15:54:29 -0800 (PST)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Mahesh Bandewar <maheshb@google.com>
-cc:     Netdev <netdev@vger.kernel.org>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mahesh Bandewar <mahesh@bandewar.net>
-Subject: Re: [PATCH next] bonding: pair enable_port with slave_arr_updates
-In-reply-to: <20220127002605.4049593-1-maheshb@google.com>
-References: <20220127002605.4049593-1-maheshb@google.com>
-Comments: In-reply-to Mahesh Bandewar <maheshb@google.com>
-   message dated "Wed, 26 Jan 2022 16:26:05 -0800."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tKITQprWMQWZ0S2MUC7tRxmK+x/kgvVxT0nwvaf2g9w=;
+        b=0b0ODF5m5pFJDR/Nx/llbyIio931ssY05HiuVwfejnzIGEyr6CyBHUO1jodaJKP7DJ
+         yT5HztMQOmtnVJITUqukTEOvAH7q/dfMF2qsbR/UTdZqns/9hETcSQmVpZZnmPHRJ8/v
+         WVxMLVKcJu8k+XHJP1q49hpZfxxKHboo+fztwfs+5UUfUQtDZI3yxtPbUyLjpaGCujy5
+         myDzc97Q3DY1zxnlixBPPkql7iYb3UkYv3ZrTJxGJJEMLb5Iz4xf++sPenbWFBGISBD6
+         NmBt71oSGOKqBeKwo1cx/v46AKhldOAOqfJ9xxDcgDMTUXOZTrmQXhIN/av92Cg3ffki
+         qunA==
+X-Gm-Message-State: AOAM5301BWHvXEEgfazSFHdtZayg7T6jm3xeQC2c2f3ffPSz9pTGaspV
+        zXt1bvNPRhQ0fUIeVmwdd+TQcCUQdSQR5Aj65fedIU1briQcdQ==
+X-Google-Smtp-Source: ABdhPJy5tenH+Sj98OBjvBsfuo3zfNNr9q6E3JezuK9ILOu+DfCBzRX1baz+nznVZY057e4nIykLKwWCpBQLsPE+TTI=
+X-Received: by 2002:a2e:bf0f:: with SMTP id c15mr4335780ljr.408.1643327714360;
+ Thu, 27 Jan 2022 15:55:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <25025.1643327669.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Thu, 27 Jan 2022 15:54:29 -0800
-Message-ID: <25026.1643327669@famine>
+References: <1643237300-44904-1-git-send-email-jdamato@fastly.com> <YfJhIpBGW6suBwkY@hades>
+In-Reply-To: <YfJhIpBGW6suBwkY@hades>
+From:   Joe Damato <jdamato@fastly.com>
+Date:   Thu, 27 Jan 2022 15:55:03 -0800
+Message-ID: <CALALjgyosP7GeMZgiQ3c=TXP=wBJeOC4GYV3PtKY544JbQ72Hg@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/6] net: page_pool: Add page_pool stat counters
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        hawk@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mahesh Bandewar <maheshb@google.com> wrote:
-
->When 803.2ad mode enables a participating port, it should update
->the slave-array. I have observed that the member links are participating
->and are part of the active aggregator while the traffic is egressing via
->only one member link (in a case where two links are participating). Via
->krpobes I discovered that that slave-arr has only one link added while
->the other participating link wasn't part of the slave-arr.
+On Thu, Jan 27, 2022 at 1:08 AM Ilias Apalodimas
+<ilias.apalodimas@linaro.org> wrote:
 >
->I couldn't see what caused that situation but the simple code-walk
->through provided me hints that the enable_port wasn't always associated
->with the slave-array update.
+> Hi Joe,
 >
->Signed-off-by: Mahesh Bandewar <maheshb@google.com>
->---
-> drivers/net/bonding/bond_3ad.c | 4 ++++
-> 1 file changed, 4 insertions(+)
+> On Wed, Jan 26, 2022 at 02:48:14PM -0800, Joe Damato wrote:
+> > Greetings:
+> >
+> > This series adds some stat counters for the page_pool allocation path which
+> > help to track:
+> >
+> >       - fast path allocations
+> >       - slow path order-0 allocations
+> >       - slow path high order allocations
+> >       - refills which failed due to an empty ptr ring, forcing a slow
+> >         path allocation
+> >       - allocations fulfilled via successful refill
+> >       - pages which cannot be added to the cache because of numa mismatch
+> >         (i.e. waived)
+> >
 >
->diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3a=
-d.c
->index 6006c2e8fa2b..f20bbc18a03f 100644
->--- a/drivers/net/bonding/bond_3ad.c
->+++ b/drivers/net/bonding/bond_3ad.c
->@@ -1024,6 +1024,8 @@ static void ad_mux_machine(struct port *port, bool =
-*update_slave_arr)
-> =
+> Thanks for the patch.  Stats are something that's indeed missing from the
+> API.  The patch  should work for Rx based allocations (which is what you
+> currently cover),  since the RX side is usually protected by NAPI.  However
+> we've added a few features recently,  which we would like to have stats on.
 
-> 					__enable_port(port);
-> 				}
->+				/* Slave array needs update */
->+				*update_slave_arr =3D true;
-> 			}
+Thanks for taking a look at the patch.
 
-	Shouldn't this be in the same block as the __enable_port() call?
-If I'm reading the code correctly, as written this will trigger an
-update of the array on every pass of the state machine (every 100ms) if
-any port is in COLLECTING_DISTRIBUTING state, which is the usual case.
+> commit 6a5bcd84e886("page_pool: Allow drivers to hint on SKB recycling"),
+> introduces recycling capabilities on the API.  I think it would be far more
+> interesting to be able to extend the statistics to recycled/non-recycled
+> packets as well in the future.
 
-> 			break;
-> 		default:
->@@ -1779,6 +1781,8 @@ static void ad_agg_selection_logic(struct aggregato=
-r *agg,
-> 			     port =3D port->next_port_in_aggregator) {
-> 				__enable_port(port);
-> 			}
->+			/* Slave array needs update. */
->+			*update_slave_arr =3D true;
-> 		}
+I agree. Tracking recycling events would be both helpful and
+interesting, indeed.
 
-	I suspect this change would only affect your issue if the port
-in question was failing to partner (i.e., the peer wasn't running LACP
-or there was some failure in the LACP negotiation).  If the ports in
-your test were in the same aggregator, that shouldn't be the case, as I
-believe unpartnered ports are always individual (not in an aggregator).
+> But the recycling is asynchronous and we
+> can't add locks just for the sake of accurate statistics.
 
-	Do you have a test?
+Agreed.
 
-	-J
+> Can we instead
+> convert that to a per-cpu structure for producers?
 
-> 	}
-> =
+If my understanding of your proposal is accurate, moving the stats
+structure to a per-cpu structure (instead of per-pool) would add
+ambiguity as to the performance of a specific driver's page pool. In
+exchange for the ambiguity, though, we'd get stats for additional
+events, which could be interesting.
 
->-- =
+It seems like under load it might be very useful to know that a
+particular driver's page pool is adding pressure to the buddy
+allocator in the slow path. I suppose that a user could move softirqs
+around on their system to alleviate some of the ambiguity and perhaps
+that is good enough.
 
->2.35.0.rc0.227.g00780c9af4-goog
+
+
+
+
+
+
+> Thanks!
+> /Ilias
 >
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+> > Some static inline wrappers are provided for accessing these stats. The
+> > intention is that drivers which use the page_pool API can, if they choose,
+> > use this stats API.
+> >
+> > It assumed that the API consumer will ensure the page_pool is not destroyed
+> > during calls to the stats API.
+> >
+> > If this series is accepted, I'll submit a follow up patch which will export
+> > these stats per RX-ring via ethtool in a driver which uses the page_pool
+> > API.
+> >
+> > Joe Damato (6):
+> >   net: page_pool: Add alloc stats and fast path stat
+> >   net: page_pool: Add a stat for the slow alloc path
+> >   net: page_pool: Add a high order alloc stat
+> >   net: page_pool: Add stat tracking empty ring
+> >   net: page_pool: Add stat tracking cache refills.
+> >   net: page_pool: Add a stat tracking waived pages.
+> >
+> >  include/net/page_pool.h | 82 +++++++++++++++++++++++++++++++++++++++++++++++++
+> >  net/core/page_pool.c    | 15 +++++++--
+> >  2 files changed, 94 insertions(+), 3 deletions(-)
+> >
+> > --
+> > 2.7.4
+> >
