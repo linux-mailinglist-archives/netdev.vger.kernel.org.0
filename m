@@ -2,31 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B950249E80E
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 17:51:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBE2949E81B
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 17:54:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244137AbiA0Qv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 11:51:57 -0500
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:55479 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244141AbiA0Qv5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 11:51:57 -0500
+        id S244141AbiA0QyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 11:54:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55558 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237397AbiA0QyP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 11:54:15 -0500
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88965C061714;
+        Thu, 27 Jan 2022 08:54:14 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 364CFC0008;
-        Thu, 27 Jan 2022 16:51:53 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 1BCD7C0003;
+        Thu, 27 Jan 2022 16:54:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1643302315;
+        t=1643302452;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yldgb1jJRgdr5TixNjS58O9AjaOif/VfjaBoPa/kMoY=;
-        b=AVA954oRh1GHgwDI6bSPcB2SlgInevrzfz+RG2NwscCR1IROs9Esf1+PJPbtdoAk3wJOfI
-        5RizSUBc5dgDc/4mUTP0O+Mp4STR3Q9xz5sDjEqFgNvsnWBy9V/jxYcl9MiBqYYiFhkKst
-        6PBJ4zzV/NkIpVcu17AUIPMKPvW/yPgR+Gfmwd8RciBPB9CLIIOGml0782pQ+hFe4h6SqS
-        mxa3mwEqj1jY4Ep+SttE+/JTeWyiTUQopX7CO8l3cAlJbSy6qJxzM6mIawGDdSDcW6TRS6
-        QJ6QuJRsxKvQ7dJRQ0SPivGVtxFJIB/PSbHsZsQva0MeAPgv+cSC9lOINBd6wg==
-Date:   Thu, 27 Jan 2022 17:51:51 +0100
+        bh=IvtKV4Bh1kWEO/WKcmj7NfRZ2FJ3K2bDH9xAeH8VGHA=;
+        b=Xbh8gJr78/4fIFuTILF1vW84ncRpl1Hyg1RDrGOrCjaoSnfTbymyJ+NdYn/dzhiiydD8Im
+        NALYRTg4YmboqZ0vG2GFARgZfVzeBOMN8WwtnwbQXEY+uQw7DNbXPMdM69HuByAZtFK8fw
+        SHSGZMEWGxusxbtSNj5x8d4NRdXGw4eG2MpPeUZio+OeupGWpBrw46dl2bDMSQD9BojVoz
+        /n9FysPX6j6D6xa4X6X7OMIoE29Np0Sj9O405uEsFslG5Zc7GoLGxhru93MjBfy1DEz0tV
+        BfBU5XNOGrGlOKUMVVJSnTC/NfZgkEAQTEMxksHqyqGk2brYkxwSNNmXCdE5cw==
+Date:   Thu, 27 Jan 2022 17:54:09 +0100
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Stefan Schmidt <stefan@datenfreihafen.org>
 Cc:     Alexander Aring <alex.aring@gmail.com>, linux-wpan@vger.kernel.org,
@@ -38,13 +41,13 @@ Cc:     Alexander Aring <alex.aring@gmail.com>, linux-wpan@vger.kernel.org,
         Frederic Blain <frederic.blain@qorvo.com>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [wpan-next 4/4] net: ieee802154: Add a kernel doc header to the
- ieee802154_addr structure
-Message-ID: <20220127175151.1d6f70bb@xps13>
-In-Reply-To: <6903cb13-2fc9-8c8a-f247-8cbeddf51103@datenfreihafen.org>
+Subject: Re: [wpan-next 2/4] net: mac802154: Include the softMAC stack
+ inside the IEEE 802.15.4 menu
+Message-ID: <20220127175409.777b9dff@xps13>
+In-Reply-To: <53c2d017-a7a5-3ed0-a68c-6b67c96b5b54@datenfreihafen.org>
 References: <20220120004350.308866-1-miquel.raynal@bootlin.com>
-        <20220120004350.308866-5-miquel.raynal@bootlin.com>
-        <6903cb13-2fc9-8c8a-f247-8cbeddf51103@datenfreihafen.org>
+        <20220120004350.308866-3-miquel.raynal@bootlin.com>
+        <53c2d017-a7a5-3ed0-a68c-6b67c96b5b54@datenfreihafen.org>
 Organization: Bootlin
 X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
@@ -56,51 +59,59 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi Stefan,
 
-stefan@datenfreihafen.org wrote on Thu, 27 Jan 2022 17:05:42 +0100:
+stefan@datenfreihafen.org wrote on Thu, 27 Jan 2022 17:04:41 +0100:
 
 > Hello.
 >=20
 > On 20.01.22 01:43, Miquel Raynal wrote:
 > > From: David Girault <david.girault@qorvo.com>
 > >=20
-> > While not being absolutely needed, it at least explain the mode vs. enum
-> > fields.
+> > The softMAC stack has no meaning outside of the IEEE 802.15.4 stack and
+> > cannot be used without it.
 > >=20
 > > Signed-off-by: David Girault <david.girault@qorvo.com>
-> > [miquel.raynal@bootlin.com: Isolate this change from a bigger commit and
-> >                              reword the comment]
+> > [miquel.raynal@bootlin.com: Isolate this change from a bigger commit]
 > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > > ---
-> >   include/net/cfg802154.h | 10 ++++++++++
-> >   1 file changed, 10 insertions(+)
+> >   net/Kconfig            | 1 -
+> >   net/ieee802154/Kconfig | 1 +
+> >   2 files changed, 1 insertion(+), 1 deletion(-)
 > >=20
-> > diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-> > index 4193c242d96e..0b8b1812cea1 100644
-> > --- a/include/net/cfg802154.h
-> > +++ b/include/net/cfg802154.h
-> > @@ -29,6 +29,16 @@ struct ieee802154_llsec_key_id;
-> >   struct ieee802154_llsec_key;
-> >   #endif /* CONFIG_IEEE802154_NL802154_EXPERIMENTAL */ =20
-> >   > +/** =20
-> > + * struct ieee802154_addr - IEEE802.15.4 device address
-> > + * @mode: Address mode from frame header. Can be one of:
-> > + *        - @IEEE802154_ADDR_NONE
-> > + *        - @IEEE802154_ADDR_SHORT
-> > + *        - @IEEE802154_ADDR_LONG
-> > + * @pan_id: The PAN ID this address belongs to
-> > + * @short_addr: address if @mode is @IEEE802154_ADDR_SHORT
-> > + * @extended_addr: address if @mode is @IEEE802154_ADDR_LONG
-> > + */
-> >   struct ieee802154_addr {
-> >   	u8 mode;
-> >   	__le16 pan_id;
+> > diff --git a/net/Kconfig b/net/Kconfig
+> > index 0da89d09ffa6..a5e31078fd14 100644
+> > --- a/net/Kconfig
+> > +++ b/net/Kconfig
+> > @@ -228,7 +228,6 @@ source "net/x25/Kconfig"
+> >   source "net/lapb/Kconfig"
+> >   source "net/phonet/Kconfig"
+> >   source "net/6lowpan/Kconfig"
+> > -source "net/mac802154/Kconfig"
+> >   source "net/sched/Kconfig"
+> >   source "net/dcb/Kconfig"
+> >   source "net/dns_resolver/Kconfig"
+> > diff --git a/net/ieee802154/Kconfig b/net/ieee802154/Kconfig
+> > index 31aed75fe62d..7e4b1d49d445 100644
+> > --- a/net/ieee802154/Kconfig
+> > +++ b/net/ieee802154/Kconfig
+> > @@ -36,6 +36,7 @@ config IEEE802154_SOCKET
+> >   	  for 802.15.4 dataframes. Also RAW socket interface to build MAC
+> >   	  header from userspace. =20
+> >   > +source "net/mac802154/Kconfig" =20
+> >   source "net/ieee802154/6lowpan/Kconfig" =20
+> >   >   endif =20
 > >  =20
 >=20
-> Same here, please fold into the addr moving patch. I see no reason why sp=
-litting these would make it easier or do I miss something?
+> Please fold this patch into the previous one moving the Kconfig option ar=
+ound. This can be done in one go.
 
-I really split every change that I could as a habit, but there is no
-problem with squashing them both.
+Sure.
+
+By the way, I was questioning myself: why is the mac802154 folder
+outside of ieee802154? I don't really understand the organization but
+as it would massively prevent any of the future changes that I already
+prepared to apply correctly, I haven't proposed such a move -yet. But
+I would like to know what's the idea behind the current folder
+hierarchy?
 
 Thanks,
 Miqu=C3=A8l
