@@ -2,90 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75CC549E30D
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 14:06:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C0C949E323
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 14:16:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241500AbiA0NGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 08:06:12 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:57790 "EHLO vps0.lunn.ch"
+        id S241579AbiA0NQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 08:16:47 -0500
+Received: from mga05.intel.com ([192.55.52.43]:61072 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241497AbiA0NGG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 08:06:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=I1B80wTk0Z7TVvxhdKY4ix7J4uHlW/Q6ukG/Wfi3avE=; b=Yv8sMaxTNQyOPYFTYkbMTA1oiC
-        bh212u4L3DJ7q1zBayPmfps1AkXC9/0mKa7MbSXtcZkpOVyRN7er7jUX5sXynN26lJHNKNTjCjZlA
-        MACVcKug7cKRPlLtrICfbWVTaRH5ls4cNS2HkWoBAaopDpqhjeLTJZ3OnkQTBjy+DoGM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nD4TR-002zOw-Gv; Thu, 27 Jan 2022 14:06:01 +0100
-Date:   Thu, 27 Jan 2022 14:06:01 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] net: dsa: mv88e6xxx: Improve performance of
- busy bit polling
-Message-ID: <YfKYua94K20/gkCA@lunn.ch>
-References: <20220126231239.1443128-1-tobias@waldekranz.com>
- <20220126231239.1443128-2-tobias@waldekranz.com>
- <YfHdCDIUvpaYpDSF@lunn.ch>
- <87o83xbajf.fsf@waldekranz.com>
+        id S236055AbiA0NQr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jan 2022 08:16:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643289407; x=1674825407;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KafQ7cuMd0XW06yWg4Hjs+yKBCBPY0GJeWm1s/bsDEE=;
+  b=gEq3kd5hQmTaAOO8CJAKIWtqyUehCiX5mRS+6IDXyDeEnHNaqqD4OUIu
+   OtogqfC/xImw6WPDsLW9e5aC/AwVMEnWBNsoAoZMUiY5yUULE9otHxvRC
+   dzUeF/e9ngbiMY74ZevwIO54/jaOM5CmmV5vyAdDx3W23aSTNXhkGWIuE
+   T4jwilcpuWBUfkmMbJpHReCUr1mw+OueFIA6EoAutVa7Fwui/QYY1wyvJ
+   dj70lOJWieNZKQpErKAEIRnNiOU2N+5ZOTGZNzl0woMVO1+gPBXan78kL
+   heSV3NsuyLRKi14XbbHi0AtsP8h8JYm3PqJ0pCLo3eJioP5MD+9yEjLEO
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="333198231"
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="333198231"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 05:16:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="628677118"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga004.jf.intel.com with ESMTP; 27 Jan 2022 05:16:45 -0800
+Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20RDGipc023596;
+        Thu, 27 Jan 2022 13:16:44 GMT
+From:   Wojciech Drewek <wojciech.drewek@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, stephen@networkplumber.org,
+        michal.swiatkowski@linux.intel.com, marcin.szycik@linux.intel.com
+Subject: [PATCH iproute2-next 0/2] GTP support for ip link and tc flower
+Date:   Thu, 27 Jan 2022 14:13:53 +0100
+Message-Id: <20220127131355.126824-1-wojciech.drewek@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87o83xbajf.fsf@waldekranz.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 01:58:12PM +0100, Tobias Waldekranz wrote:
-> On Thu, Jan 27, 2022 at 00:45, Andrew Lunn <andrew@lunn.ch> wrote:
-> > There are a few bit-banging systems out there. For those, i wonder if
-> > 50ms is too short? With the old code, they had 16 chances, no matter
-> > how slow they were. With the new code, if they take 50ms for one
-> > transaction, they don't get a second chance.
-> >
-> > But if they have taken 50ms, around 37ms has been spent with the
-> > preamble, start, op, phy address, and register address. I assume at
-> > that point the switch actually looks at the register, and given your
-> > timings, it really should be ready, so a second loop is probably not
-> > required?
-> >
-> > O.K, so this seems safe.
-> 
-> I think you raise a good point though. Say that you then have this
-> series of events:
-> 
-> 1. Bang out ST
-> 2. Bang out OP
-> 3. Bang out PHYADR
-> 4. Bang out REGADR
-> 5. Clock out TA
-> 6. schedule()
-> 7. A SCHED_FIFO/P99 task runs
-> 8. Clock in DATA
-> 
-> - Steps 1 through 5 could plausibly be completed before the bit clears
->   if you are running over some memory mapped GPIO lines
-> - Step 7 could execute for more than 50ms
-> - After step 8, you would see the busy bit set, but your time is up
+This patch series introduces GTP support to iproute2. Since this patch
+series it is possible to create net devices of GTP type. Then, those
+devices can be used in tc in order to offload GTP packets. New field
+in tc flower (gtp_opts) can be used to match on QFI and PDU type.
 
-So this is the opposite case i was thinking about. A very fast bit
-banger. Yes, in theory this could happen.
+Kernel changes:
+https://lore.kernel.org/netdev/20220127125525.125805-1-marcin.szycik@linux.intel.com/T/#u
 
-> All of this is of course _very_ unlikely, but not impossible. Should we
-> ensure that you always get at least two bites at the apple?
+Wojciech Drewek (2):
+  ip: GTP support in ip link
+  f_flower: Implement gtp options support
 
-This is why i always point people at include/linux/iopoll.h. It
-handles conditions like this by doing one more poll after the timeout
-just to be sure the scheduler has not interfered. So a minimum of 2
-would be good.
+ include/uapi/linux/pkt_cls.h |  16 +++++
+ ip/Makefile                  |   2 +-
+ ip/iplink.c                  |   2 +-
+ ip/iplink_gtp.c              | 116 +++++++++++++++++++++++++++++++++
+ man/man8/ip-link.8.in        |  25 +++++++-
+ man/man8/tc-flower.8         |  10 +++
+ tc/f_flower.c                | 120 +++++++++++++++++++++++++++++++++++
+ 7 files changed, 288 insertions(+), 3 deletions(-)
+ create mode 100644 ip/iplink_gtp.c
 
-      Andrew
+-- 
+2.31.1
+
