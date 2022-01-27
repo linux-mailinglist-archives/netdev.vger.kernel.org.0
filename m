@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 715A149E104
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 12:33:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9E4349E10C
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 12:33:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240469AbiA0LdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 06:33:17 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:35652 "EHLO
+        id S240505AbiA0LdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 06:33:19 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:35678 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240431AbiA0LdP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 06:33:15 -0500
+        with ESMTP id S240452AbiA0LdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 06:33:17 -0500
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643283194;
+        s=2020; t=1643283195;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=i7B20wzlMtToieI5G7tCnCKu5TFMOwHYL5yYAy+C5s0=;
-        b=JBkP8NyESqVS1Hlzz9WJk5NOcg243nCN04rH587WjPfrsgbMd+GF/cLL/KbCXARSBGy1te
-        hnCMEdp37RY02ygC9IbYA60OWJRD5q7sv+jMgvDu1eUKskhYRm8bG1FdR30mutei0b5Wi4
-        0k2g6OoFCBnXNs6C8CXFmSE+P3tuS6qhvlOyeWawldEug7w4y5qGsgUCe8Ca2Q1TguzFAY
-        VtqdCdIlbp3ysKNH7OdDI0WzDdkrdnrKM/ELtMGf8lwFX15SItsdZSArQhIdQB4OHefEDF
-        pAiL+soouMZwsuDsrY0hfyAN42JEj2I+goxptLQyo3+9vr4MAWvXSJMxVycebA==
+        bh=wTKjbYOxuRFcL31Sy6LSHpAHIAEA5Do9fBb8rIU2B/A=;
+        b=JKVRy6jNueSrYIN6Xe3JiWap0sunJm+2QdxKeILRU59BwtyBatJK0iWtQj5t285PKHOt3B
+        LZSJvksiOCnCmb1pWYwjpZ3dS05Jo9hnhL0mD/hbbXU9b6PU9/6DScg3Zo5PM6d1rQNiJu
+        FZ1npFIuC9ZY0NjZPIk1w82UUoVxX+NHar9HUAqz1J5b5QPCof71pawdcrrGcz9DsoU1W7
+        +ZQi4p7ESLBqUHelgD7ClXhI45Rycs+0aSgLSysa5IvNkvyuj2ZPs7Gbbw7gfabX6tBEUE
+        jeogssDZhf4C2eP0LgUBx8YMwwXRrY7Eqz6tQ99PfaJ4JyFfTWgFF/yeGh1kVw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643283194;
+        s=2020e; t=1643283195;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=i7B20wzlMtToieI5G7tCnCKu5TFMOwHYL5yYAy+C5s0=;
-        b=rx72YmxkZxACjESl0FCo5J02aVqivX+TAKPihjEbioTCo9OxW5XT5J4ODTO61qpGacEqwu
-        WPl6X2GShe2I5oAw==
+        bh=wTKjbYOxuRFcL31Sy6LSHpAHIAEA5Do9fBb8rIU2B/A=;
+        b=VgquP+WkCVhYqSRx0+UG+vW3EM3AWP3WCFrN8rLQ5teC06FJyBDBteYWgyOe75HAEiL3oq
+        GxNJ2dKiRYy6CIAg==
 To:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
         linux-usb@vger.kernel.org, netdev@vger.kernel.org
@@ -47,10 +47,12 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Thomas Gleixner <tglx@linutronix.de>,
         UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
         Woojung Huh <woojung.huh@microchip.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 1/7] genirq: Provide generic_handle_irq_safe().
-Date:   Thu, 27 Jan 2022 12:32:57 +0100
-Message-Id: <20220127113303.3012207-2-bigeasy@linutronix.de>
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Michael Below <below@judiz.de>,
+        Salvatore Bonaccorso <carnil@debian.org>
+Subject: [PATCH 2/7] i2c: core: Use generic_handle_irq_safe() in i2c_handle_smbus_host_notify().
+Date:   Thu, 27 Jan 2022 12:32:58 +0100
+Message-Id: <20220127113303.3012207-3-bigeasy@linutronix.de>
 In-Reply-To: <20220127113303.3012207-1-bigeasy@linutronix.de>
 References: <20220127113303.3012207-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -59,61 +61,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Provide generic_handle_irq_safe() which can be used can used from any
-context.
+The i2c-i801 driver invokes i2c_handle_smbus_host_notify() from his
+interrupt service routine. On PREEMPT_RT i2c-i801's handler is forced
+threaded with enabled interrupts which leads to a warning by
+handle_irq_event_percpu() assuming that irq_default_primary_handler()
+enabled interrupts.
 
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+i2c-i801's interrupt handler can't be made non-threaded because the
+interrupt line is shared with other devices.
+
+Use generic_handle_irq_safe() which can invoked with disabled and enabled
+interrupts.
+
+Reported-by: Michael Below <below@judiz.de>
+Link: https://bugs.debian.org/1002537
+Cc: Salvatore Bonaccorso <carnil@debian.org>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- include/linux/irqdesc.h |  1 +
- kernel/irq/irqdesc.c    | 21 +++++++++++++++++++++
- 2 files changed, 22 insertions(+)
+ drivers/i2c/i2c-core-base.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/irqdesc.h b/include/linux/irqdesc.h
-index 93d270ca0c567..a77584593f7d1 100644
---- a/include/linux/irqdesc.h
-+++ b/include/linux/irqdesc.h
-@@ -160,6 +160,7 @@ static inline void generic_handle_irq_desc(struct irq_d=
-esc *desc)
+diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
+index 2c59dd748a49f..3f9e5303b6163 100644
+--- a/drivers/i2c/i2c-core-base.c
++++ b/drivers/i2c/i2c-core-base.c
+@@ -1424,7 +1424,7 @@ int i2c_handle_smbus_host_notify(struct i2c_adapter *=
+adap, unsigned short addr)
+ 	if (irq <=3D 0)
+ 		return -ENXIO;
 =20
- int handle_irq_desc(struct irq_desc *desc);
- int generic_handle_irq(unsigned int irq);
-+int generic_handle_irq_safe(unsigned int irq);
+-	generic_handle_irq(irq);
++	generic_handle_irq_safe(irq);
 =20
- #ifdef CONFIG_IRQ_DOMAIN
- /*
-diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
-index 2267e6527db3c..97223df2f460e 100644
---- a/kernel/irq/irqdesc.c
-+++ b/kernel/irq/irqdesc.c
-@@ -662,6 +662,27 @@ int generic_handle_irq(unsigned int irq)
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(generic_handle_irq);
-=20
-+/**
-+ * generic_handle_irq_safe - Invoke the handler for a particular irq
-+ * @irq:	The irq number to handle
-+ *
-+ * Returns:	0 on success, or -EINVAL if conversion has failed
-+ *
-+ * This function must be called either from an IRQ context with irq regs
-+ * initialized or with care from any context.
-+ */
-+int generic_handle_irq_safe(unsigned int irq)
-+{
-+	unsigned long flags;
-+	int ret;
-+
-+	local_irq_save(flags);
-+	ret =3D handle_irq_desc(irq_to_desc(irq));
-+	local_irq_restore(flags);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(generic_handle_irq_safe);
-+
- #ifdef CONFIG_IRQ_DOMAIN
- /**
-  * generic_handle_domain_irq - Invoke the handler for a HW irq belonging
 --=20
 2.34.1
 
