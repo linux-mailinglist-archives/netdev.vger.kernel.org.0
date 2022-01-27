@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1955349DF29
+	by mail.lfdr.de (Postfix) with ESMTP id AE7B549DF2B
 	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 11:21:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239261AbiA0KVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 05:21:51 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:4337 "EHLO
+        id S239273AbiA0KVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 05:21:52 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:56253 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239190AbiA0KVr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 05:21:47 -0500
+        with ESMTP id S239236AbiA0KVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 05:21:50 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643278908; x=1674814908;
+  t=1643278910; x=1674814910;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=gnw0nh/wGeANOqPAT/MkPq4M75UmbDnmFg03jJ2kgR0=;
-  b=BY4s3GDK8QjQG7juExw4VYuNbSMhN8qBguykIs9QVIV4Q0k8BXwUcSs5
-   kbJQwjZTYZU0E44T7MHoFhs9yuzZDm6J0rcWZwtND4pVT3PyWmHVUZTie
-   sqcXiUysNtrV/Icxo4hWIvMOwkLXeWDRrMfBEuiq9DMZZLjAHgvL3FiiS
-   h1itf3IDdT6l1JKrYZ/1w4p/p9BagXTldsW4em2/+Y3ClnE6YdVltFVf4
-   6psHwc1/Bd8qODgJsBIDUFrz5SdSuthkK1ZsMf0GY+g/mL61hIE8TvLtG
-   eTgpMT/Bn/Fj4O9sR7UdOplempNEWtmZ2ZVeVcN8MFbdkkQffJZNNAgye
-   g==;
-IronPort-SDR: 8LDiHpDAjPzyrOmaI0iKRCCCpQv4aEASETKdjLhMpVtyTySy6P7U0CuARSQac64II2iCPS4wdS
- ubCMca/kJ8vLi4pKJAx18DN8NNOQg8cPEo9D3GwNqy2tnM1dDxwPsiaindwqniJWpijMEyMqhZ
- nlrIj9I3rqMsNlEERRQ0CsUbYsUHsYRiSpHdtjdaCPp9O8a0xcoA9qbczbjLXLraQ0DqTh9fv2
- TuAiLvqw1fVkZ1P9/kTUr17KUXL1kee1fkSWTnDfokmwIYVESvMkFbHovRdRQz633xWkScISU4
- dzSFCfXJVqTTdA2ipMqwlZ6/
+  bh=lx5VdUQOGKz/Rsx5nOuadN3WJ2sablyuHpJsYZtnXCs=;
+  b=Czd/WkZHDf/qKQxrIawZbXJpEIGxtAAG0d4xG9sT0SK31cp3fhDdUoS7
+   jJFOkW2kVGaTM/+WsWpc64VJjX3SwgUPYyu9zzlCOUWSOSpuIUYL95u0U
+   dWSxVajGQwL5pdCUMMqb2OXmM3wRp3ularut5RrEwS7YPtZr0ESHtT9TR
+   eJcglVnYYXE6kLDZxSNF//sOkuEh5OpS8W/hSk2PdtP5XOjaXv/uALec/
+   g/0+E4QhBloGLWM1hRaekUqu/f6eH/4mfVEp4p6F8dwpUFIVz7KZNR5OW
+   bjPVflLp2oyTrit0KLFcK335ySj48A4UxyMaE6FIpWdRW7Uh1nc92qwi4
+   A==;
+IronPort-SDR: c5gl7B1vWTnQPgun/eMmdsEBrQ8Rmmwcba+MTjh6jxwE+BudmncfPOD6gQNVANl+jnmodY0dqP
+ FEXyCTN3ZUoE8wz+jV/NcpELBig5xEycNI7rWwZEjI+u+XCicy9B5ae1DDoeS/rhuekwxvSBEx
+ R1O/zL91G+W03xPmwNSDguVAzP3duDHCflW3g7jAB0TFQqGge3cPlU+UH9ZoPNKKOiq+quFPvX
+ mi9/s0BzJZSqIWK0GgJst4mZ5EiQ/Wt71TXSdgrGVF6MmxS7hN9qJg3S54VgebkZKAeCaX8IKg
+ uYrXIln0t1EGB8cVGRzfwZ1Q
 X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="151079225"
+   d="scan'208";a="146782901"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jan 2022 03:21:48 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jan 2022 03:21:49 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 27 Jan 2022 03:21:46 -0700
+ 15.1.2375.17; Thu, 27 Jan 2022 03:21:49 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 27 Jan 2022 03:21:43 -0700
+ 15.1.2375.17 via Frontend Transport; Thu, 27 Jan 2022 03:21:46 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
@@ -48,9 +48,9 @@ CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
         <richardcochran@gmail.com>, <f.fainelli@gmail.com>,
         <vivien.didelot@gmail.com>, <vladimir.oltean@nxp.com>,
         <andrew@lunn.ch>, Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 3/7] net: lan966x: Add support for ptp clocks
-Date:   Thu, 27 Jan 2022 11:23:29 +0100
-Message-ID: <20220127102333.987195-4-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 4/7] net: lan966x: Implement SIOCSHWTSTAMP and SIOCGHWTSTAMP
+Date:   Thu, 27 Jan 2022 11:23:30 +0100
+Message-ID: <20220127102333.987195-5-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220127102333.987195-1-horatiu.vultur@microchip.com>
 References: <20220127102333.987195-1-horatiu.vultur@microchip.com>
@@ -61,409 +61,197 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The lan966x has 3 PHC. Enable each of them, for now all the
-timestamping is happening on the first PHC.
+Implement the ioctl callbacks SIOCSHWTSTAMP and SIOCGHWTSTAMP to allow
+to configure the ports to enable/disable timestamping. The HW is capable
+to run both 1-step timestamping and 2-step timestamping.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- .../net/ethernet/microchip/lan966x/Makefile   |   3 +-
- .../ethernet/microchip/lan966x/lan966x_main.c |   8 +
- .../ethernet/microchip/lan966x/lan966x_main.h |  20 ++
- .../ethernet/microchip/lan966x/lan966x_ptp.c  | 287 ++++++++++++++++++
- 4 files changed, 317 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
+ .../ethernet/microchip/lan966x/lan966x_main.c | 18 ++++
+ .../ethernet/microchip/lan966x/lan966x_main.h |  9 ++
+ .../ethernet/microchip/lan966x/lan966x_ptp.c  | 85 +++++++++++++++++++
+ 3 files changed, 112 insertions(+)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/Makefile b/drivers/net/ethernet/microchip/lan966x/Makefile
-index 040cfff9f577..a9ffc719aa0e 100644
---- a/drivers/net/ethernet/microchip/lan966x/Makefile
-+++ b/drivers/net/ethernet/microchip/lan966x/Makefile
-@@ -7,4 +7,5 @@ obj-$(CONFIG_LAN966X_SWITCH) += lan966x-switch.o
- 
- lan966x-switch-objs  := lan966x_main.o lan966x_phylink.o lan966x_port.o \
- 			lan966x_mac.o lan966x_ethtool.o lan966x_switchdev.o \
--			lan966x_vlan.o lan966x_fdb.o lan966x_mdb.o
-+			lan966x_vlan.o lan966x_fdb.o lan966x_mdb.o \
-+			lan966x_ptp.o
 diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 2853e8f7fb39..ee3505318c5c 100644
+index ee3505318c5c..c62615b9d101 100644
 --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
 +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -932,8 +932,15 @@ static int lan966x_probe(struct platform_device *pdev)
- 	if (err)
- 		goto cleanup_ports;
- 
-+	err = lan966x_ptp_init(lan966x);
-+	if (err)
-+		goto cleanup_fdb;
-+
- 	return 0;
- 
-+cleanup_fdb:
-+	lan966x_fdb_deinit(lan966x);
-+
- cleanup_ports:
- 	fwnode_handle_put(portnp);
- 
-@@ -959,6 +966,7 @@ static int lan966x_remove(struct platform_device *pdev)
- 	lan966x_mac_purge_entries(lan966x);
- 	lan966x_mdb_deinit(lan966x);
- 	lan966x_fdb_deinit(lan966x);
-+	lan966x_ptp_deinit(lan966x);
- 
+@@ -351,6 +351,23 @@ static int lan966x_port_get_parent_id(struct net_device *dev,
  	return 0;
  }
+ 
++static int lan966x_port_ioctl(struct net_device *dev, struct ifreq *ifr,
++			      int cmd)
++{
++	struct lan966x_port *port = netdev_priv(dev);
++
++	if (!phy_has_hwtstamp(dev->phydev) && port->lan966x->ptp) {
++		switch (cmd) {
++		case SIOCSHWTSTAMP:
++			return lan966x_ptp_hwtstamp_set(port, ifr);
++		case SIOCGHWTSTAMP:
++			return lan966x_ptp_hwtstamp_get(port, ifr);
++		}
++	}
++
++	return phy_mii_ioctl(dev->phydev, ifr, cmd);
++}
++
+ static const struct net_device_ops lan966x_port_netdev_ops = {
+ 	.ndo_open			= lan966x_port_open,
+ 	.ndo_stop			= lan966x_port_stop,
+@@ -361,6 +378,7 @@ static const struct net_device_ops lan966x_port_netdev_ops = {
+ 	.ndo_get_stats64		= lan966x_stats_get,
+ 	.ndo_set_mac_address		= lan966x_port_set_mac_address,
+ 	.ndo_get_port_parent_id		= lan966x_port_get_parent_id,
++	.ndo_eth_ioctl			= lan966x_port_ioctl,
+ };
+ 
+ bool lan966x_netdevice_check(const struct net_device *dev)
 diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index 99c6d0a9f946..c77a91aa24e7 100644
+index c77a91aa24e7..55fa5e56b8d1 100644
 --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
 +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -8,6 +8,7 @@
- #include <linux/jiffies.h>
- #include <linux/phy.h>
- #include <linux/phylink.h>
-+#include <linux/ptp_clock_kernel.h>
- #include <net/switchdev.h>
+@@ -54,6 +54,10 @@
+ #define LAN966X_PHC_COUNT		3
+ #define LAN966X_PHC_PORT		0
  
- #include "lan966x_regs.h"
-@@ -50,6 +51,9 @@
- #define LAN966X_SPEED_100		2
- #define LAN966X_SPEED_10		3
- 
-+#define LAN966X_PHC_COUNT		3
-+#define LAN966X_PHC_PORT		0
++#define IFH_REW_OP_NOOP			0x0
++#define IFH_REW_OP_ONE_STEP_PTP		0x3
++#define IFH_REW_OP_TWO_STEP_PTP		0x4
 +
  /* MAC table entry types.
   * ENTRYTYPE_NORMAL is subject to aging.
   * ENTRYTYPE_LOCKED is not subject to aging.
-@@ -70,6 +74,14 @@ struct lan966x_stat_layout {
- 	char name[ETH_GSTRING_LEN];
- };
- 
-+struct lan966x_phc {
-+	struct ptp_clock *clock;
-+	struct ptp_clock_info info;
-+	struct hwtstamp_config hwtstamp_config;
-+	struct lan966x *lan966x;
-+	u8 index;
-+};
-+
- struct lan966x {
- 	struct device *dev;
- 
-@@ -113,6 +125,11 @@ struct lan966x {
- 	/* mdb */
- 	struct list_head mdb_entries;
- 	struct list_head pgid_entries;
-+
-+	/* ptp */
-+	bool ptp;
-+	struct lan966x_phc phc[LAN966X_PHC_COUNT];
-+	spinlock_t ptp_clock_lock; /* lock for phc */
+@@ -130,6 +134,7 @@ struct lan966x {
+ 	bool ptp;
+ 	struct lan966x_phc phc[LAN966X_PHC_COUNT];
+ 	spinlock_t ptp_clock_lock; /* lock for phc */
++	struct mutex ptp_lock; /* lock for ptp interface state */
  };
  
  struct lan966x_port_config {
-@@ -228,6 +245,9 @@ int lan966x_handle_port_mdb_del(struct lan966x_port *port,
- void lan966x_mdb_erase_entries(struct lan966x *lan966x, u16 vid);
- void lan966x_mdb_write_entries(struct lan966x *lan966x, u16 vid);
- 
-+int lan966x_ptp_init(struct lan966x *lan966x);
-+void lan966x_ptp_deinit(struct lan966x *lan966x);
+@@ -159,6 +164,8 @@ struct lan966x_port {
+ 	struct phylink *phylink;
+ 	struct phy *serdes;
+ 	struct fwnode_handle *fwnode;
 +
++	u8 ptp_cmd;
+ };
+ 
+ extern const struct phylink_mac_ops lan966x_phylink_mac_ops;
+@@ -247,6 +254,8 @@ void lan966x_mdb_write_entries(struct lan966x *lan966x, u16 vid);
+ 
+ int lan966x_ptp_init(struct lan966x *lan966x);
+ void lan966x_ptp_deinit(struct lan966x *lan966x);
++int lan966x_ptp_hwtstamp_set(struct lan966x_port *port, struct ifreq *ifr);
++int lan966x_ptp_hwtstamp_get(struct lan966x_port *port, struct ifreq *ifr);
+ 
  static inline void __iomem *lan_addr(void __iomem *base[],
  				     int id, int tinst, int tcnt,
- 				     int gbase, int ginst,
 diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-new file mode 100644
-index 000000000000..69d8f43e2b1b
---- /dev/null
+index 69d8f43e2b1b..9ff4d3fca5a1 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
 +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-@@ -0,0 +1,287 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+
-+#include <linux/ptp_classify.h>
-+
-+#include "lan966x_main.h"
-+
-+#define LAN966X_MAX_PTP_ID	512
-+
-+/* Represents 1ppm adjustment in 2^59 format with 6.037735849ns as reference
-+ * The value is calculated as following: (1/1000000)/((2^-59)/6.037735849)
-+ */
-+#define LAN966X_1PPM_FORMAT		3480517749723LL
-+
-+/* Represents 1ppb adjustment in 2^29 format with 6.037735849ns as reference
-+ * The value is calculated as following: (1/1000000000)/((2^59)/6.037735849)
-+ */
-+#define LAN966X_1PPB_FORMAT		3480517749LL
-+
-+#define TOD_ACC_PIN		0x5
-+
-+enum {
-+	PTP_PIN_ACTION_IDLE = 0,
-+	PTP_PIN_ACTION_LOAD,
-+	PTP_PIN_ACTION_SAVE,
-+	PTP_PIN_ACTION_CLOCK,
-+	PTP_PIN_ACTION_DELTA,
-+	PTP_PIN_ACTION_TOD
-+};
-+
-+static u64 lan966x_ptp_get_nominal_value(void)
+@@ -35,6 +35,90 @@ static u64 lan966x_ptp_get_nominal_value(void)
+ 	return res;
+ }
+ 
++int lan966x_ptp_hwtstamp_set(struct lan966x_port *port, struct ifreq *ifr)
 +{
-+	u64 res = 0x304d2df1;
++	struct lan966x *lan966x = port->lan966x;
++	bool l2 = false, l4 = false;
++	struct hwtstamp_config cfg;
++	struct lan966x_phc *phc;
 +
-+	res <<= 32;
-+	return res;
-+}
-+
-+static int lan966x_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
-+{
-+	struct lan966x_phc *phc = container_of(ptp, struct lan966x_phc, info);
-+	struct lan966x *lan966x = phc->lan966x;
-+	unsigned long flags;
-+	bool neg_adj = 0;
-+	u64 tod_inc;
-+	u64 ref;
-+
-+	if (!scaled_ppm)
-+		return 0;
-+
-+	if (scaled_ppm < 0) {
-+		neg_adj = 1;
-+		scaled_ppm = -scaled_ppm;
-+	}
-+
-+	tod_inc = lan966x_ptp_get_nominal_value();
-+
-+	/* The multiplication is split in 2 separate additions because of
-+	 * overflow issues. If scaled_ppm with 16bit fractional part was bigger
-+	 * than 20ppm then we got overflow.
++	/* For now don't allow to run ptp on ports that are part of a bridge,
++	 * because in case of transparent clock the HW will still forward the
++	 * frames, so there would be duplicate frames
 +	 */
-+	ref = LAN966X_1PPM_FORMAT * (scaled_ppm >> 16);
-+	ref += (LAN966X_1PPM_FORMAT * (0xffff & scaled_ppm)) >> 16;
-+	tod_inc = neg_adj ? tod_inc - ref : tod_inc + ref;
++	if (lan966x->bridge_mask & BIT(port->chip_port))
++		return -EINVAL;
 +
-+	spin_lock_irqsave(&lan966x->ptp_clock_lock, flags);
++	if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
++		return -EFAULT;
 +
-+	lan_rmw(PTP_DOM_CFG_CLKCFG_DIS_SET(1 << BIT(phc->index)),
-+		PTP_DOM_CFG_CLKCFG_DIS,
-+		lan966x, PTP_DOM_CFG);
-+
-+	lan_wr((u32)tod_inc & 0xFFFFFFFF, lan966x,
-+	       PTP_CLK_PER_CFG(phc->index, 0));
-+	lan_wr((u32)(tod_inc >> 32), lan966x,
-+	       PTP_CLK_PER_CFG(phc->index, 1));
-+
-+	lan_rmw(PTP_DOM_CFG_CLKCFG_DIS_SET(0),
-+		PTP_DOM_CFG_CLKCFG_DIS,
-+		lan966x, PTP_DOM_CFG);
-+
-+	spin_unlock_irqrestore(&lan966x->ptp_clock_lock, flags);
-+
-+	return 0;
-+}
-+
-+static int lan966x_ptp_settime64(struct ptp_clock_info *ptp,
-+				 const struct timespec64 *ts)
-+{
-+	struct lan966x_phc *phc = container_of(ptp, struct lan966x_phc, info);
-+	struct lan966x *lan966x = phc->lan966x;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&lan966x->ptp_clock_lock, flags);
-+
-+	/* Must be in IDLE mode before the time can be loaded */
-+	lan_rmw(PTP_PIN_CFG_PIN_ACTION_SET(PTP_PIN_ACTION_IDLE) |
-+		PTP_PIN_CFG_PIN_DOM_SET(phc->index) |
-+		PTP_PIN_CFG_PIN_SYNC_SET(0),
-+		PTP_PIN_CFG_PIN_ACTION |
-+		PTP_PIN_CFG_PIN_DOM |
-+		PTP_PIN_CFG_PIN_SYNC,
-+		lan966x, PTP_PIN_CFG(TOD_ACC_PIN));
-+
-+	/* Set new value */
-+	lan_wr(PTP_TOD_SEC_MSB_TOD_SEC_MSB_SET(upper_32_bits(ts->tv_sec)),
-+	       lan966x, PTP_TOD_SEC_MSB(TOD_ACC_PIN));
-+	lan_wr(lower_32_bits(ts->tv_sec),
-+	       lan966x, PTP_TOD_SEC_LSB(TOD_ACC_PIN));
-+	lan_wr(ts->tv_nsec, lan966x, PTP_TOD_NSEC(TOD_ACC_PIN));
-+
-+	/* Apply new values */
-+	lan_rmw(PTP_PIN_CFG_PIN_ACTION_SET(PTP_PIN_ACTION_LOAD) |
-+		PTP_PIN_CFG_PIN_DOM_SET(phc->index) |
-+		PTP_PIN_CFG_PIN_SYNC_SET(0),
-+		PTP_PIN_CFG_PIN_ACTION |
-+		PTP_PIN_CFG_PIN_DOM |
-+		PTP_PIN_CFG_PIN_SYNC,
-+		lan966x, PTP_PIN_CFG(TOD_ACC_PIN));
-+
-+	spin_unlock_irqrestore(&lan966x->ptp_clock_lock, flags);
-+
-+	return 0;
-+}
-+
-+static int lan966x_ptp_gettime64(struct ptp_clock_info *ptp,
-+				 struct timespec64 *ts)
-+{
-+	struct lan966x_phc *phc = container_of(ptp, struct lan966x_phc, info);
-+	struct lan966x *lan966x = phc->lan966x;
-+	unsigned long flags;
-+	time64_t s;
-+	s64 ns;
-+
-+	spin_lock_irqsave(&lan966x->ptp_clock_lock, flags);
-+
-+	lan_rmw(PTP_PIN_CFG_PIN_ACTION_SET(PTP_PIN_ACTION_SAVE) |
-+		PTP_PIN_CFG_PIN_DOM_SET(phc->index) |
-+		PTP_PIN_CFG_PIN_SYNC_SET(0),
-+		PTP_PIN_CFG_PIN_ACTION |
-+		PTP_PIN_CFG_PIN_DOM |
-+		PTP_PIN_CFG_PIN_SYNC,
-+		lan966x, PTP_PIN_CFG(TOD_ACC_PIN));
-+
-+	s = lan_rd(lan966x, PTP_TOD_SEC_MSB(TOD_ACC_PIN));
-+	s <<= 32;
-+	s |= lan_rd(lan966x, PTP_TOD_SEC_LSB(TOD_ACC_PIN));
-+	ns = lan_rd(lan966x, PTP_TOD_NSEC(TOD_ACC_PIN));
-+	ns &= PTP_TOD_NSEC_TOD_NSEC;
-+
-+	spin_unlock_irqrestore(&lan966x->ptp_clock_lock, flags);
-+
-+	/* Deal with negative values */
-+	if ((ns & 0xFFFFFFF0) == 0x3FFFFFF0) {
-+		s--;
-+		ns &= 0xf;
-+		ns += 999999984;
++	switch (cfg.tx_type) {
++	case HWTSTAMP_TX_ON:
++		port->ptp_cmd = IFH_REW_OP_TWO_STEP_PTP;
++		break;
++	case HWTSTAMP_TX_ONESTEP_SYNC:
++		port->ptp_cmd = IFH_REW_OP_ONE_STEP_PTP;
++		break;
++	case HWTSTAMP_TX_OFF:
++		port->ptp_cmd = IFH_REW_OP_NOOP;
++		break;
++	default:
++		return -ERANGE;
 +	}
 +
-+	set_normalized_timespec64(ts, s, ns);
-+	return 0;
-+}
++	mutex_lock(&lan966x->ptp_lock);
 +
-+static int lan966x_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
-+{
-+	struct lan966x_phc *phc = container_of(ptp, struct lan966x_phc, info);
-+	struct lan966x *lan966x = phc->lan966x;
-+
-+	if (delta > -(NSEC_PER_SEC / 2) && delta < (NSEC_PER_SEC / 2)) {
-+		unsigned long flags;
-+
-+		spin_lock_irqsave(&lan966x->ptp_clock_lock, flags);
-+
-+		/* Must be in IDLE mode before the time can be loaded */
-+		lan_rmw(PTP_PIN_CFG_PIN_ACTION_SET(PTP_PIN_ACTION_IDLE) |
-+			PTP_PIN_CFG_PIN_DOM_SET(phc->index) |
-+			PTP_PIN_CFG_PIN_SYNC_SET(0),
-+			PTP_PIN_CFG_PIN_ACTION |
-+			PTP_PIN_CFG_PIN_DOM |
-+			PTP_PIN_CFG_PIN_SYNC,
-+			lan966x, PTP_PIN_CFG(TOD_ACC_PIN));
-+
-+		lan_wr(PTP_TOD_NSEC_TOD_NSEC_SET(delta),
-+		       lan966x, PTP_TOD_NSEC(TOD_ACC_PIN));
-+
-+		/* Adjust time with the value of PTP_TOD_NSEC */
-+		lan_rmw(PTP_PIN_CFG_PIN_ACTION_SET(PTP_PIN_ACTION_DELTA) |
-+			PTP_PIN_CFG_PIN_DOM_SET(phc->index) |
-+			PTP_PIN_CFG_PIN_SYNC_SET(0),
-+			PTP_PIN_CFG_PIN_ACTION |
-+			PTP_PIN_CFG_PIN_DOM |
-+			PTP_PIN_CFG_PIN_SYNC,
-+			lan966x, PTP_PIN_CFG(TOD_ACC_PIN));
-+
-+		spin_unlock_irqrestore(&lan966x->ptp_clock_lock, flags);
-+	} else {
-+		/* Fall back using lan966x_ptp_settime64 which is not exact */
-+		struct timespec64 ts;
-+		u64 now;
-+
-+		lan966x_ptp_gettime64(ptp, &ts);
-+
-+		now = ktime_to_ns(timespec64_to_ktime(ts));
-+		ts = ns_to_timespec64(now + delta);
-+
-+		lan966x_ptp_settime64(ptp, &ts);
++	switch (cfg.rx_filter) {
++	case HWTSTAMP_FILTER_NONE:
++		break;
++	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
++	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
++	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
++		l4 = true;
++		break;
++	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
++	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
++	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
++		l2 = true;
++		break;
++	case HWTSTAMP_FILTER_PTP_V2_EVENT:
++	case HWTSTAMP_FILTER_PTP_V2_SYNC:
++	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
++		l2 = true;
++		l4 = true;
++		break;
++	default:
++		mutex_unlock(&lan966x->ptp_lock);
++		return -ERANGE;
 +	}
 +
-+	return 0;
++	if (l2 && l4)
++		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
++	else if (l2)
++		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
++	else if (l4)
++		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_L4_EVENT;
++	else
++		cfg.rx_filter = HWTSTAMP_FILTER_NONE;
++
++	/* Commit back the result & save it */
++	phc = &lan966x->phc[LAN966X_PHC_PORT];
++	memcpy(&phc->hwtstamp_config, &cfg, sizeof(cfg));
++	mutex_unlock(&lan966x->ptp_lock);
++
++	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
 +}
 +
-+static struct ptp_clock_info lan966x_ptp_clock_info = {
-+	.owner		= THIS_MODULE,
-+	.name		= "lan966x ptp",
-+	.max_adj	= 200000,
-+	.gettime64	= lan966x_ptp_gettime64,
-+	.settime64	= lan966x_ptp_settime64,
-+	.adjtime	= lan966x_ptp_adjtime,
-+	.adjfine	= lan966x_ptp_adjfine,
-+};
-+
-+static int lan966x_ptp_phc_init(struct lan966x *lan966x,
-+				int index,
-+				struct ptp_clock_info *clock_info)
++int lan966x_ptp_hwtstamp_get(struct lan966x_port *port, struct ifreq *ifr)
 +{
-+	struct lan966x_phc *phc = &lan966x->phc[index];
++	struct lan966x *lan966x = port->lan966x;
++	struct lan966x_phc *phc;
 +
-+	phc->info = *clock_info;
-+	phc->clock = ptp_clock_register(&phc->info, lan966x->dev);
-+	if (IS_ERR(phc->clock))
-+		return PTR_ERR(phc->clock);
-+
-+	phc->index = index;
-+	phc->lan966x = lan966x;
-+
-+	/* PTP Rx stamping is always enabled.  */
-+	phc->hwtstamp_config.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
-+
-+	return 0;
++	phc = &lan966x->phc[LAN966X_PHC_PORT];
++	return copy_to_user(ifr->ifr_data, &phc->hwtstamp_config,
++			    sizeof(phc->hwtstamp_config)) ? -EFAULT : 0;
 +}
 +
-+int lan966x_ptp_init(struct lan966x *lan966x)
-+{
-+	u64 tod_adj = lan966x_ptp_get_nominal_value();
-+	int err, i;
-+
-+	if (!lan966x->ptp)
-+		return 0;
-+
-+	for (i = 0; i < LAN966X_PHC_COUNT; ++i) {
-+		err = lan966x_ptp_phc_init(lan966x, i, &lan966x_ptp_clock_info);
-+		if (err)
-+			return err;
-+	}
-+
-+	spin_lock_init(&lan966x->ptp_clock_lock);
-+
-+	/* Disable master counters */
-+	lan_wr(PTP_DOM_CFG_ENA_SET(0), lan966x, PTP_DOM_CFG);
-+
-+	/* Configure the nominal TOD increment per clock cycle */
-+	lan_rmw(PTP_DOM_CFG_CLKCFG_DIS_SET(0x7),
-+		PTP_DOM_CFG_CLKCFG_DIS,
-+		lan966x, PTP_DOM_CFG);
-+
-+	for (i = 0; i < LAN966X_PHC_COUNT; ++i) {
-+		lan_wr((u32)tod_adj & 0xFFFFFFFF, lan966x,
-+		       PTP_CLK_PER_CFG(i, 0));
-+		lan_wr((u32)(tod_adj >> 32), lan966x,
-+		       PTP_CLK_PER_CFG(i, 1));
-+	}
-+
-+	lan_rmw(PTP_DOM_CFG_CLKCFG_DIS_SET(0),
-+		PTP_DOM_CFG_CLKCFG_DIS,
-+		lan966x, PTP_DOM_CFG);
-+
-+	/* Enable master counters */
-+	lan_wr(PTP_DOM_CFG_ENA_SET(0x7), lan966x, PTP_DOM_CFG);
-+
-+	return 0;
-+}
-+
-+void lan966x_ptp_deinit(struct lan966x *lan966x)
-+{
-+	int i;
-+
-+	for (i = 0; i < LAN966X_PHC_COUNT; ++i)
-+		ptp_clock_unregister(lan966x->phc[i].clock);
-+}
+ static int lan966x_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ {
+ 	struct lan966x_phc *phc = container_of(ptp, struct lan966x_phc, info);
+@@ -252,6 +336,7 @@ int lan966x_ptp_init(struct lan966x *lan966x)
+ 	}
+ 
+ 	spin_lock_init(&lan966x->ptp_clock_lock);
++	mutex_init(&lan966x->ptp_lock);
+ 
+ 	/* Disable master counters */
+ 	lan_wr(PTP_DOM_CFG_ENA_SET(0), lan966x, PTP_DOM_CFG);
 -- 
 2.33.0
 
