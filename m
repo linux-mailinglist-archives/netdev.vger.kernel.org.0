@@ -2,116 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBE2949E81B
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 17:54:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8793449E82C
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 17:56:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244141AbiA0QyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 11:54:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55558 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237397AbiA0QyP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 11:54:15 -0500
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88965C061714;
-        Thu, 27 Jan 2022 08:54:14 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 1BCD7C0003;
-        Thu, 27 Jan 2022 16:54:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1643302452;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IvtKV4Bh1kWEO/WKcmj7NfRZ2FJ3K2bDH9xAeH8VGHA=;
-        b=Xbh8gJr78/4fIFuTILF1vW84ncRpl1Hyg1RDrGOrCjaoSnfTbymyJ+NdYn/dzhiiydD8Im
-        NALYRTg4YmboqZ0vG2GFARgZfVzeBOMN8WwtnwbQXEY+uQw7DNbXPMdM69HuByAZtFK8fw
-        SHSGZMEWGxusxbtSNj5x8d4NRdXGw4eG2MpPeUZio+OeupGWpBrw46dl2bDMSQD9BojVoz
-        /n9FysPX6j6D6xa4X6X7OMIoE29Np0Sj9O405uEsFslG5Zc7GoLGxhru93MjBfy1DEz0tV
-        BfBU5XNOGrGlOKUMVVJSnTC/NfZgkEAQTEMxksHqyqGk2brYkxwSNNmXCdE5cw==
-Date:   Thu, 27 Jan 2022 17:54:09 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Stefan Schmidt <stefan@datenfreihafen.org>
-Cc:     Alexander Aring <alex.aring@gmail.com>, linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [wpan-next 2/4] net: mac802154: Include the softMAC stack
- inside the IEEE 802.15.4 menu
-Message-ID: <20220127175409.777b9dff@xps13>
-In-Reply-To: <53c2d017-a7a5-3ed0-a68c-6b67c96b5b54@datenfreihafen.org>
-References: <20220120004350.308866-1-miquel.raynal@bootlin.com>
-        <20220120004350.308866-3-miquel.raynal@bootlin.com>
-        <53c2d017-a7a5-3ed0-a68c-6b67c96b5b54@datenfreihafen.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S244211AbiA0Q4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 11:56:32 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36854 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229864AbiA0Q4b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 11:56:31 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0590AB800E2;
+        Thu, 27 Jan 2022 16:56:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E8B8C340E4;
+        Thu, 27 Jan 2022 16:56:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643302588;
+        bh=Jbbt90GOScnUkca96ukAtB0TEYFj51dYwo1DO4Rum0s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oOnw0x/alJ+ho6f0ec8wuvxvo+ON2SwStZQNk4Z/kIs99P7+vMIBiC5LpUsHsY+0K
+         p4PyoVSDtL3sRD+obH6dyEo5QEamQznXpOA0hwaQ/Dd53MX6nL7euiOkwQko+JZtNE
+         AMXfKPbIC9WPgz0cMGYm0iFCkHOjMYOAFk+mLyxILf6zyOtlIC3mNgfdgskIr7kLjj
+         J/FkEam5mfZFJoUd9hfArJyBZAosejauzDBHaAQWo1/OwA1IHzHuKT5XxuNhFtoDd7
+         j4Hw2/RCLTJ8gpHGXKc2zOBWuU84LeOCIsiSFiKuWXIQCq/6rY0ZcnruwzOVPM/rke
+         mbbxhf7UEKehg==
+Date:   Thu, 27 Jan 2022 08:56:27 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] usbnet: add devlink support
+Message-ID: <20220127085627.70b31e30@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YfK9uV0BviEiemDi@lunn.ch>
+References: <20220127110742.922752-1-o.rempel@pengutronix.de>
+        <YfK9uV0BviEiemDi@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stefan,
+On Thu, 27 Jan 2022 16:43:53 +0100 Andrew Lunn wrote:
+> On Thu, Jan 27, 2022 at 12:07:42PM +0100, Oleksij Rempel wrote:
+> > The weakest link of usbnet devices is the USB cable. Currently there is
+> > no way to automatically detect cable related issues except of analyzing
+> > kernel log, which would differ depending on the USB host controller.
+> > 
+> > The Ethernet packet counter could potentially show evidence of some USB
+> > related issues, but can be Ethernet related problem as well.  
+> 
+> I don't know the usbnet drivers very well. A quick look suggests they
+> don't support statistics via ethtool -S. So you could make use of that
+> to return statistics about USB error events.
 
-stefan@datenfreihafen.org wrote on Thu, 27 Jan 2022 17:04:41 +0100:
+On using devlink health - it is great when you want to attach some extra
+info to the error report. If you're just counting different types of
+errors seems like an overkill.
 
-> Hello.
->=20
-> On 20.01.22 01:43, Miquel Raynal wrote:
-> > From: David Girault <david.girault@qorvo.com>
-> >=20
-> > The softMAC stack has no meaning outside of the IEEE 802.15.4 stack and
-> > cannot be used without it.
-> >=20
-> > Signed-off-by: David Girault <david.girault@qorvo.com>
-> > [miquel.raynal@bootlin.com: Isolate this change from a bigger commit]
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> >   net/Kconfig            | 1 -
-> >   net/ieee802154/Kconfig | 1 +
-> >   2 files changed, 1 insertion(+), 1 deletion(-)
-> >=20
-> > diff --git a/net/Kconfig b/net/Kconfig
-> > index 0da89d09ffa6..a5e31078fd14 100644
-> > --- a/net/Kconfig
-> > +++ b/net/Kconfig
-> > @@ -228,7 +228,6 @@ source "net/x25/Kconfig"
-> >   source "net/lapb/Kconfig"
-> >   source "net/phonet/Kconfig"
-> >   source "net/6lowpan/Kconfig"
-> > -source "net/mac802154/Kconfig"
-> >   source "net/sched/Kconfig"
-> >   source "net/dcb/Kconfig"
-> >   source "net/dns_resolver/Kconfig"
-> > diff --git a/net/ieee802154/Kconfig b/net/ieee802154/Kconfig
-> > index 31aed75fe62d..7e4b1d49d445 100644
-> > --- a/net/ieee802154/Kconfig
-> > +++ b/net/ieee802154/Kconfig
-> > @@ -36,6 +36,7 @@ config IEEE802154_SOCKET
-> >   	  for 802.15.4 dataframes. Also RAW socket interface to build MAC
-> >   	  header from userspace. =20
-> >   > +source "net/mac802154/Kconfig" =20
-> >   source "net/ieee802154/6lowpan/Kconfig" =20
-> >   >   endif =20
-> >  =20
->=20
-> Please fold this patch into the previous one moving the Kconfig option ar=
-ound. This can be done in one go.
-
-Sure.
-
-By the way, I was questioning myself: why is the mac802154 folder
-outside of ieee802154? I don't really understand the organization but
-as it would massively prevent any of the future changes that I already
-prepared to apply correctly, I haven't proposed such a move -yet. But
-I would like to know what's the idea behind the current folder
-hierarchy?
-
-Thanks,
-Miqu=C3=A8l
+> However, GregKH point still stands, maybe such statistics should be
+> made for all USB devices, and be available in /sys/bus/usb/devices/*
