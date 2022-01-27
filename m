@@ -2,116 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B9F649E84E
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 18:03:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B48149E868
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 18:09:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244266AbiA0RDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 12:03:38 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:35978 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244258AbiA0RDh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 12:03:37 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4A35CCE22BD;
-        Thu, 27 Jan 2022 17:03:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBA39C340E4;
-        Thu, 27 Jan 2022 17:03:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643303013;
-        bh=94at8KQ2mwsXO6lk24alNapdJfEz9l+tLpUbw2MGJvE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Wmf8Qp2UPnOHrkmSywJK8a/3xwloHfqdLJaQGPzTEyXHv1ngZEGOfUey0llaGmUtJ
-         9bRxfCFiIfdU+SSAmIA/XMy6r1dtROtxkgGUUOb22VZSFd/DWpPzz5YgFLHhSRxYAf
-         SDy2sm7w6olVU7bBXg8q/RTximr2sx7SGgW0HD8rTWlL3B5nGjp7HuoEcZ1EP5jJZ0
-         CpinGI4Yg6vIgl/XXcyRP8O7VKL8KPQBAMrUTXwdcKW5U5BXcVA4G4AoiWAA5qw9sQ
-         gfTDs41o4tX2M2glfUB8hlmgtgt4ScJq8Vx0JbT04x+QbE4qPoIeo83WpH3a8cPlX8
-         rhB18IUNLt0hg==
-Date:   Thu, 27 Jan 2022 18:03:29 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH 1/7] genirq: Provide generic_handle_irq_safe().
-Message-ID: <YfLQYa5aKJKs7ZUe@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>, Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>, UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>
-References: <20220127113303.3012207-1-bigeasy@linutronix.de>
- <20220127113303.3012207-2-bigeasy@linutronix.de>
+        id S244322AbiA0RJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 12:09:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238767AbiA0RJX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 12:09:23 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCC3C061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 09:09:23 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id a8so7223737ejc.8
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 09:09:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZPHRE+C/v2gNlL2a7HeYHesyem4JYDq+ldUsKhvfG1s=;
+        b=IHyD5WRqTbUmmWI8+vLcD4Kp6ngG/OB8pKAAOgJJT1cqDAgmMAfMCxRRMAjkCmbCmK
+         BGW8YA0lugwhkzVlFTO+ZBSANh7Rtbu1d9XfrtjZmy4gfSme3QuwU4TEleL/YwPSrcp5
+         ZA/xcOCNd+GC4oEr2beUZ/SzDzx2NHWjjJ+L5hDd557MIIvVO3hsY77c1JOrxkVPCgzg
+         fWznPX0556UbEpR11kbtVVLOavD+Dxs9DAkSv5y+PJdPT2u4by8g1fMtwxIu0jeB+px+
+         XphWUOdxCfFgWr697LXR41+ykxk6Mk03fkb5J4J6wRut4+5OalmuFrReeeune1W/bJXT
+         dCUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZPHRE+C/v2gNlL2a7HeYHesyem4JYDq+ldUsKhvfG1s=;
+        b=pEIfBuTgwz2c2HgPPHX+ssUQDjXJGD0ne7p2lWo/rsGkYO1LdLvchCi7ANJaU1iNka
+         7W8VPbwjH9NBAi4biyffaqf+mkkCHsvES5kj8pOvmDioYNfdZtcHy2zUx26bhAbEU+A7
+         btQOxIsrZ/RG7J87mHQu5dFp0D11ubwRvdZDv8FVuy/+TCDVnn4EX5rT331ifEfSS4ya
+         ct1ZbQLDgFy+3TqM/hKNXQNIyAHRGMmzO3LmJlSum4qnUUirVGGtBRvpXzJlXkuId/yZ
+         J+mAUbeePKn05CopXqHt/6gHyyX1sYSVgrDxYGjDbiYlv6Jf0Dcp3bqiIJ8KZFcPA5NT
+         atjg==
+X-Gm-Message-State: AOAM5321vYu5vmx/rZHKYn8ziLAvfrid+fBcpA1ZrNc05KDKlDx+cn6y
+        iZMB4yg8fmBiKcGD+sKUr7bSMw==
+X-Google-Smtp-Source: ABdhPJw3UvX1SmRdPOm2ASisWcPsdzNnny+A9/yUDLRkyoFTSQ5UbF9BZr6ucKYXwfZqvt8dVzT5mw==
+X-Received: by 2002:a17:906:b116:: with SMTP id u22mr3667402ejy.427.1643303361918;
+        Thu, 27 Jan 2022 09:09:21 -0800 (PST)
+Received: from ?IPV6:2a02:578:8593:1200:fe1f:d9d6:8db5:a255? ([2a02:578:8593:1200:fe1f:d9d6:8db5:a255])
+        by smtp.gmail.com with ESMTPSA id c1sm8927832ejs.29.2022.01.27.09.09.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Jan 2022 09:09:21 -0800 (PST)
+Message-ID: <1825f5e8-6d13-a317-4a96-f4a4fcf07409@tessares.net>
+Date:   Thu, 27 Jan 2022 18:09:20 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="isj9qhmX5nh2QcHe"
-Content-Disposition: inline
-In-Reply-To: <20220127113303.3012207-2-bigeasy@linutronix.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next 3/3] net/smc: Fallback when handshake workqueue
+ congested
+Content-Language: en-GB
+To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        MPTCP Upstream <mptcp@lists.linux.dev>
+References: <cover.1643284658.git.alibuda@linux.alibaba.com>
+ <ed4781cde8e3b9812d4a46ce676294a812c80e8f.1643284658.git.alibuda@linux.alibaba.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <ed4781cde8e3b9812d4a46ce676294a812c80e8f.1643284658.git.alibuda@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
---isj9qhmX5nh2QcHe
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+(+cc MPTCP ML)
 
-Hi Sebastian,
+On 27/01/2022 13:08, D. Wythe wrote:
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
+> 
+> This patch intends to provide a mechanism to allow automatic fallback to
+> TCP according to the pressure of SMC handshake process. At present,
+> frequent visits will cause the incoming connections to be backlogged in
+> SMC handshake queue, raise the connections established time. Which is
+> quite unacceptable for those applications who base on short lived
+> connections.
 
-> +/**
-> + * generic_handle_irq_safe - Invoke the handler for a particular irq
+(...)
 
-This is the same desc as for generic_handle_irq(). I suggest to add
-something like "from any context" to have some distinction.
+> diff --git a/net/smc/Kconfig b/net/smc/Kconfig
+> index 1ab3c5a..1903927 100644
+> --- a/net/smc/Kconfig
+> +++ b/net/smc/Kconfig
+> @@ -19,3 +19,15 @@ config SMC_DIAG
+>  	  smcss.
+>  
+>  	  if unsure, say Y.
+> +
+> +if MPTCP
 
-> + * This function must be called either from an IRQ context with irq regs
-> + * initialized or with care from any context.
+After having read the code and the commit message, it is not clear to me
+ why this new feature requires to have MPTCP enabled. May you share some
+explanations about that please?
 
-I think "with care" is not obvious enough. Can you describe it a little?
+> +
+> +config SMC_AUTO_FALLBACK
+> +	bool "SMC: automatic fallback to TCP"
+> +	default y
+> +	help
+> +	  Allow automatic fallback to TCP accroding to the pressure of SMC-R
+> +	  handshake process.
+> +
+> +	  If that's not what you except or unsure, say N.
+> +endif
 
-Thanks for this work,
-
-   Wolfram
-
---isj9qhmX5nh2QcHe
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmHy0F0ACgkQFA3kzBSg
-KbYGfg/8DbJCFJiQlAG3Yv27Ey+1jfWpgmNZZdoSSO8hcxHmT8ATT7qQPDNw1JXL
-Q0dObGbaNCO1fyflMSd/VBwblWRgGeN6Y7oOgdC5EMTuwAeyvimXPi5rXdEw+xjN
-+Hn0VMPv7QIlqyU8a4E3pew1u07eW9drEah3FB/hrWmouw2lAbE6/p4q5JEkhzUN
-/WG8yZzNR8EBUPHQ2eX3Mt2rFViy26AhI+Z0dmJ0O+63CCd6B53RV7AloT/+aGWn
-0XN/CqEKg9I7A22st4lC9nlhhmdviksGYmZiIzbsTLwH+eZBjnQv4eZ4XAHYQEUn
-7Brexu5x9VpcSa668q7AhdbAzBbeo5K2hT0/i1H+HCSqfmIiY039H5mD+fF5m4xd
-C7a4zBBDA5aj0U4Yf3a8pz3DGW7l1196nYET9nC8DN6t97xbaXVeGG2UzYybKv8X
-Oq1rruBjdjf2exYIzHAWZ0OBDdn+OfzixKn9MgG/GNS2JJhoIq8s0nt2zbHLkR86
-cTRblvFyxk4CZ7cRnglREQAWQTd8MElkFNwIlE4dBQ4FYFkpTdOG3URgZu/m7Gly
-8D4B9fMVaoZ6WtzrZ8qZn4zJ5Qm7InR/3C9+TBxPsB2L3vXXOHSYaJYKlUS2OUOZ
-5KNoLxPEoRXl0NSvTv5bsRER+Dvlezf4x/F5nQPkgdq5lNcdRgE=
-=I3gu
------END PGP SIGNATURE-----
-
---isj9qhmX5nh2QcHe--
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
