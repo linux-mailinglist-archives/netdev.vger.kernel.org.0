@@ -2,98 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BE4C49E551
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 15:59:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F72F49E573
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 16:08:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238091AbiA0O7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 09:59:40 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:8698 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233473AbiA0O7j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 09:59:39 -0500
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20REfigt030373;
-        Thu, 27 Jan 2022 14:59:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=inKHah+VEsfzUdiYlIOFTgi2CaHuGDHs0qs6LOJQxU4=;
- b=C+J/v07JCuw58z4ZJtClNngqI7oAgRgWWbNsJIkvxiHoXmyUpaNnSojoa96IdeuM5WX3
- FhUQpD37dVmSe3iju/KIUBJ+n+Q/UcBBAT2D027g4V2XFMUiMhLsq4m1/0iHCzlMwBLf
- lWEGIrzpo2syoIJHANihX/PWJks/LMH5jI4KqB9wtfYZc1tZrNc8iCCV36Bb3zZD980U
- 4zKxvOm9Sr37CoLj1eSkyoj0IMkJyrK+huz6SALvFZppXt3Wn+fmwiN6pVE1/sx1Xc8V
- qLigssC4VzIYw5AIQB39N2N9c5TXr/2iEEXIGdjGUGKbzhc/ZKlPsV9k+LfdclRAgwp1 kg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3duta8vk94-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 14:59:37 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20REk3du013443;
-        Thu, 27 Jan 2022 14:59:37 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3duta8vk8e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 14:59:37 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20RErCUe026913;
-        Thu, 27 Jan 2022 14:59:34 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma04fra.de.ibm.com with ESMTP id 3dr9j9y2nf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 14:59:34 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20RExV3m46792972
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 27 Jan 2022 14:59:31 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BAD694C04A;
-        Thu, 27 Jan 2022 14:59:31 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 783194C059;
-        Thu, 27 Jan 2022 14:59:31 +0000 (GMT)
-Received: from [9.152.222.35] (unknown [9.152.222.35])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 27 Jan 2022 14:59:31 +0000 (GMT)
-Message-ID: <c32293df-44c2-fedf-7fee-40f3d01fd475@linux.ibm.com>
-Date:   Thu, 27 Jan 2022 15:59:37 +0100
+        id S242661AbiA0PIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 10:08:15 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:45118 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236461AbiA0PIN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 10:08:13 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id BF9551F385;
+        Thu, 27 Jan 2022 15:08:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1643296092; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=mvJIovCCwTZuCdni1wLB/3C4S6Z52Y9C071Ax9CQEfg=;
+        b=jf60WUdW/fXlDfwzsRfgCO9f8Z7uxstryb7hrnmwPBJESHztvEBUfH3ttI/REYnXs6r6lJ
+        ppd8EFmq62b+6nQ3w/D4aQdbHdZbwAEiUOZlY0vn/dhAWq4/wWZpMQNGCd22SnHGpOHzlM
+        DhNnbT/DHbxBkYRTUtgT1brae4V1LSE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1643296092;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=mvJIovCCwTZuCdni1wLB/3C4S6Z52Y9C071Ax9CQEfg=;
+        b=eepX5l7g6pGuILBefofCCu4h8dJCebYHI6A1uyrUMuvTqvgsOIzd/ui2m/+bKqv2UWm4lT
+        xTveboO07szXyMAg==
+Received: from adalid.arch.suse.de (adalid.arch.suse.de [10.161.8.13])
+        by relay2.suse.de (Postfix) with ESMTP id 62F49A3B83;
+        Thu, 27 Jan 2022 15:08:12 +0000 (UTC)
+From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: e1000e: Recover at least in-memory copy of NVM checksum
+Date:   Thu, 27 Jan 2022 16:08:07 +0100
+Message-Id: <20220127150807.26448-1-tbogendoerfer@suse.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net-next 0/2] net/smc: Spread workload over multiple cores
-Content-Language: en-US
-To:     Tony Lu <tonylu@linux.alibaba.com>, kuba@kernel.org,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-References: <20220126130140.66316-1-tonylu@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20220126130140.66316-1-tonylu@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: upm9WjGLpsFHnmkH-8yvb8N71Y4Q9r-V
-X-Proofpoint-ORIG-GUID: odXEawHBf9Zy_TDAqIns_WJcfksMic_a
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-27_03,2022-01-27_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- clxscore=1011 impostorscore=0 priorityscore=1501 bulkscore=0
- mlxlogscore=999 phishscore=0 malwarescore=0 suspectscore=0 mlxscore=0
- spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201270088
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/01/2022 14:01, Tony Lu wrote:
-> Currently, SMC creates one CQ per IB device, and shares this cq among
-> all the QPs of links. Meanwhile, this CQ is always binded to the first
-> completion vector, the IRQ affinity of this vector binds to some CPU
-> core. 
+Commit 4051f68318ca ("e1000e: Do not take care about recovery NVM
+checksum") causes a regression for systems with a broken NVM checksum
+and hardware which is not able to update the NVM. Before the change the
+in-memory copy was correct even the NVM update doesn't work, which is
+good enough for the driver to work again.
 
-As discussed in the RFC thread, please come back with the complete fix.
+See
 
-Thanks for the work you are putting in here!
+https://bugzilla.opensuse.org/show_bug.cgi?id=1191663
 
-And thanks for the feedback from the rdma side!
+for more details.
+
+This patch reverts the change and moves the check for hardware without
+NVM update capability right before the real flash update.
+
+Fixes: 4051f68318ca ("e1000e: Do not take care about recovery NVM checksum")
+Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+---
+ drivers/net/ethernet/intel/e1000e/ich8lan.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+index 5e4fc9b4e2ad..613a60f24ba6 100644
+--- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
++++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+@@ -3808,6 +3808,9 @@ static s32 e1000_update_nvm_checksum_spt(struct e1000_hw *hw)
+ 	if (nvm->type != e1000_nvm_flash_sw)
+ 		goto out;
+ 
++	if (hw->mac.type >= e1000_pch_cnp)
++		goto out;
++
+ 	nvm->ops.acquire(hw);
+ 
+ 	/* We're writing to the opposite bank so if we're on bank 1,
+@@ -4136,17 +4139,13 @@ static s32 e1000_validate_nvm_checksum_ich8lan(struct e1000_hw *hw)
+ 		return ret_val;
+ 
+ 	if (!(data & valid_csum_mask)) {
+-		e_dbg("NVM Checksum Invalid\n");
+-
+-		if (hw->mac.type < e1000_pch_cnp) {
+-			data |= valid_csum_mask;
+-			ret_val = e1000_write_nvm(hw, word, 1, &data);
+-			if (ret_val)
+-				return ret_val;
+-			ret_val = e1000e_update_nvm_checksum(hw);
+-			if (ret_val)
+-				return ret_val;
+-		}
++		data |= valid_csum_mask;
++		ret_val = e1000_write_nvm(hw, word, 1, &data);
++		if (ret_val)
++			return ret_val;
++		ret_val = e1000e_update_nvm_checksum(hw);
++		if (ret_val)
++			return ret_val;
+ 	}
+ 
+ 	return e1000e_validate_nvm_checksum_generic(hw);
+-- 
+2.29.2
+
