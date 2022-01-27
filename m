@@ -2,41 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EA2549E700
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 17:04:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D71B849E705
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 17:05:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243409AbiA0QEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 11:04:44 -0500
-Received: from proxima.lasnet.de ([78.47.171.185]:40838 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238386AbiA0QEo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 11:04:44 -0500
+        id S243424AbiA0QFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 11:05:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44158 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238116AbiA0QFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 11:05:44 -0500
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F06C061714;
+        Thu, 27 Jan 2022 08:05:44 -0800 (PST)
 Received: from [IPV6:2003:e9:d724:a665:d7b5:f965:3476:16f8] (p200300e9d724a665d7b5f965347616f8.dip0.t-ipconnect.de [IPv6:2003:e9:d724:a665:d7b5:f965:3476:16f8])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
         (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id C943EC0AA9;
-        Thu, 27 Jan 2022 17:04:41 +0100 (CET)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id EF6B7C02E8;
+        Thu, 27 Jan 2022 17:05:42 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1643299482;
+        s=2021; t=1643299543;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=r6l64ysRMSB2kc26/F2X0Sizt9cvfxhS8L7sLJlrudQ=;
-        b=rJYOMeLahuLQvn6llhHtJrBhqKksXGZCT07Q0ldEKwEs5c9Hu700oF63waDwYhVLtWbXC6
-        sD9Etqzz/4L3AOM8euoLnkCdGpscu5UnugtYcV3XPKbLx6sONpu1X52nn0tjIPXUBnEEAj
-        VhhCIjk1u8edjni2ch0BDNzo4O5E28c3zgk1MX84suJ2rTCGFqK+bVhgWvkKywCpztHG61
-        HM26hmTL0gE9kkmcBC99NAxdud1wb8QUOfnw8A+wuAfs15r9kSTcbQgAgIA+iFpd9WBYzw
-        PNER+ypJCnbRaL1/qdNzntgMSL7Gi7PJvlcUH6a66LcockbHNaFONyv41YU3pg==
-Message-ID: <53c2d017-a7a5-3ed0-a68c-6b67c96b5b54@datenfreihafen.org>
-Date:   Thu, 27 Jan 2022 17:04:41 +0100
+        bh=FfsBBNyW3usZsZKpkTjNPtPSOuDwgu4XSB4iGuoPRKw=;
+        b=Zv4PpLPz0FEwR6BAITIRZ3EDeyIQhvhP9iqfa2QefOgpWpQqw0pEFl4O7rlfC1fKv+GJBa
+        U2oqWGXakHtvnveqY92EBICoTTazJOM2LaAzPvSvyj65QW7F6LHTJeoESNJpzRNg8IjRgE
+        Fjxa+IC68Sj97laMd9Vla8oro9KJG+gBkh7XCkgVZL/U4MSbdNsk91aUhcD0+wCiPGAl9C
+        KS+yiLFaQawq5rQfUf5yxOtR55Nhuy0O6E0rY1yj03Fki74IFqtkYTcODbIKgdeEuJVjTs
+        gF39Bcnu8iUrH/jr6fz6NG9AceqOQwxw0SyujoYLVpBpLDPuFziKwns76LA0vQ==
+Message-ID: <6903cb13-2fc9-8c8a-f247-8cbeddf51103@datenfreihafen.org>
+Date:   Thu, 27 Jan 2022 17:05:42 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.3.0
-Subject: Re: [wpan-next 2/4] net: mac802154: Include the softMAC stack inside
- the IEEE 802.15.4 menu
+Subject: Re: [wpan-next 4/4] net: ieee802154: Add a kernel doc header to the
+ ieee802154_addr structure
 Content-Language: en-US
 To:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Alexander Aring <alex.aring@gmail.com>,
@@ -50,9 +53,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 References: <20220120004350.308866-1-miquel.raynal@bootlin.com>
- <20220120004350.308866-3-miquel.raynal@bootlin.com>
+ <20220120004350.308866-5-miquel.raynal@bootlin.com>
 From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220120004350.308866-3-miquel.raynal@bootlin.com>
+In-Reply-To: <20220120004350.308866-5-miquel.raynal@bootlin.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -65,45 +68,42 @@ Hello.
 On 20.01.22 01:43, Miquel Raynal wrote:
 > From: David Girault <david.girault@qorvo.com>
 > 
-> The softMAC stack has no meaning outside of the IEEE 802.15.4 stack and
-> cannot be used without it.
+> While not being absolutely needed, it at least explain the mode vs. enum
+> fields.
 > 
 > Signed-off-by: David Girault <david.girault@qorvo.com>
-> [miquel.raynal@bootlin.com: Isolate this change from a bigger commit]
+> [miquel.raynal@bootlin.com: Isolate this change from a bigger commit and
+>                              reword the comment]
 > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
->   net/Kconfig            | 1 -
->   net/ieee802154/Kconfig | 1 +
->   2 files changed, 1 insertion(+), 1 deletion(-)
+>   include/net/cfg802154.h | 10 ++++++++++
+>   1 file changed, 10 insertions(+)
 > 
-> diff --git a/net/Kconfig b/net/Kconfig
-> index 0da89d09ffa6..a5e31078fd14 100644
-> --- a/net/Kconfig
-> +++ b/net/Kconfig
-> @@ -228,7 +228,6 @@ source "net/x25/Kconfig"
->   source "net/lapb/Kconfig"
->   source "net/phonet/Kconfig"
->   source "net/6lowpan/Kconfig"
-> -source "net/mac802154/Kconfig"
->   source "net/sched/Kconfig"
->   source "net/dcb/Kconfig"
->   source "net/dns_resolver/Kconfig"
-> diff --git a/net/ieee802154/Kconfig b/net/ieee802154/Kconfig
-> index 31aed75fe62d..7e4b1d49d445 100644
-> --- a/net/ieee802154/Kconfig
-> +++ b/net/ieee802154/Kconfig
-> @@ -36,6 +36,7 @@ config IEEE802154_SOCKET
->   	  for 802.15.4 dataframes. Also RAW socket interface to build MAC
->   	  header from userspace.
+> diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
+> index 4193c242d96e..0b8b1812cea1 100644
+> --- a/include/net/cfg802154.h
+> +++ b/include/net/cfg802154.h
+> @@ -29,6 +29,16 @@ struct ieee802154_llsec_key_id;
+>   struct ieee802154_llsec_key;
+>   #endif /* CONFIG_IEEE802154_NL802154_EXPERIMENTAL */
 >   
-> +source "net/mac802154/Kconfig"
->   source "net/ieee802154/6lowpan/Kconfig"
->   
->   endif
+> +/**
+> + * struct ieee802154_addr - IEEE802.15.4 device address
+> + * @mode: Address mode from frame header. Can be one of:
+> + *        - @IEEE802154_ADDR_NONE
+> + *        - @IEEE802154_ADDR_SHORT
+> + *        - @IEEE802154_ADDR_LONG
+> + * @pan_id: The PAN ID this address belongs to
+> + * @short_addr: address if @mode is @IEEE802154_ADDR_SHORT
+> + * @extended_addr: address if @mode is @IEEE802154_ADDR_LONG
+> + */
+>   struct ieee802154_addr {
+>   	u8 mode;
+>   	__le16 pan_id;
 > 
 
-Please fold this patch into the previous one moving the Kconfig option 
-around. This can be done in one go.
+Same here, please fold into the addr moving patch. I see no reason why 
+splitting these would make it easier or do I miss something?
 
 regards
 Stefan Schmidt
