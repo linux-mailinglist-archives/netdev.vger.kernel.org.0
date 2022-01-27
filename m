@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1977C49D7B0
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 02:59:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69E7849D7AE
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 02:59:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234773AbiA0B7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 20:59:07 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:47288 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S234734AbiA0B7G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 20:59:06 -0500
-X-UUID: 029557a3844b41de882aae9a7dd40965-20220127
-X-UUID: 029557a3844b41de882aae9a7dd40965-20220127
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        id S234756AbiA0B7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 20:59:06 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:41354 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234726AbiA0B7F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 20:59:05 -0500
+X-UUID: a1b522c76a374cd2a21daa328e31f79a-20220127
+X-UUID: a1b522c76a374cd2a21daa328e31f79a-20220127
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
         (envelope-from <biao.huang@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1442677135; Thu, 27 Jan 2022 09:59:02 +0800
+        with ESMTP id 1994771345; Thu, 27 Jan 2022 09:59:03 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 27 Jan 2022 09:59:00 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 27 Jan 2022 09:59:01 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 27 Jan 2022 09:58:59 +0800
+ Transport; Thu, 27 Jan 2022 09:59:00 +0800
 From:   Biao Huang <biao.huang@mediatek.com>
 To:     David Miller <davem@davemloft.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -42,9 +42,9 @@ CC:     Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
         Yinghua Pan <ot_yinghua.pan@mediatek.com>,
         <srv_heupstream@mediatek.com>,
         Macpaul Lin <macpaul.lin@mediatek.com>
-Subject: [PATCH net-next v2 1/9] net: ethernet: mtk-star-emac: store bit_clk_div in compat structure
-Date:   Thu, 27 Jan 2022 09:58:49 +0800
-Message-ID: <20220127015857.9868-2-biao.huang@mediatek.com>
+Subject: [PATCH net-next v2 2/9] net: ethernet: mtk-star-emac: modify IRQ trigger flags
+Date:   Thu, 27 Jan 2022 09:58:50 +0800
+Message-ID: <20220127015857.9868-3-biao.huang@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220127015857.9868-1-biao.huang@mediatek.com>
 References: <20220127015857.9868-1-biao.huang@mediatek.com>
@@ -56,87 +56,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Fabien Parent <fparent@baylibre.com>
-
-Not all the SoC are using the same clock divider. Move the divider into
-a compat structure specific to the SoCs.
+If the flags in request_irq() is IRQF_TRIGGER_NONE, the trigger method
+is determined by "interrupt" property in dts.
+So, modify the flag from IRQF_TRIGGER_FALLING to IRQF_TRIGGER_NONE.
 
 Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-Signed-off-by: Fabien Parent <fparent@baylibre.com>
+Signed-off-by: Yinghua Pan <ot_yinghua.pan@mediatek.com>
+Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
 ---
- drivers/net/ethernet/mediatek/mtk_star_emac.c | 23 +++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_star_emac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-index 1d5dd2015453..7fd8ec0fc636 100644
+index 7fd8ec0fc636..a8fbbbcd185b 100644
 --- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
 +++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-@@ -17,6 +17,7 @@
- #include <linux/module.h>
- #include <linux/netdevice.h>
- #include <linux/of.h>
-+#include <linux/of_device.h>
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
- #include <linux/platform_device.h>
-@@ -232,6 +233,10 @@ struct mtk_star_ring {
- 	unsigned int tail;
- };
+@@ -959,7 +959,7 @@ static int mtk_star_enable(struct net_device *ndev)
  
-+struct mtk_star_compat {
-+	unsigned char bit_clk_div;
-+};
-+
- struct mtk_star_priv {
- 	struct net_device *ndev;
+ 	/* Request the interrupt */
+ 	ret = request_irq(ndev->irq, mtk_star_handle_irq,
+-			  IRQF_TRIGGER_FALLING, ndev->name, ndev);
++			  IRQF_TRIGGER_NONE, ndev->name, ndev);
+ 	if (ret)
+ 		goto err_free_skbs;
  
-@@ -257,6 +262,8 @@ struct mtk_star_priv {
- 	int duplex;
- 	int pause;
- 
-+	const struct mtk_star_compat *compat_data;
-+
- 	/* Protects against concurrent descriptor access. */
- 	spinlock_t lock;
- 
-@@ -899,7 +906,7 @@ static void mtk_star_init_config(struct mtk_star_priv *priv)
- 	regmap_write(priv->regs, MTK_STAR_REG_SYS_CONF, val);
- 	regmap_update_bits(priv->regs, MTK_STAR_REG_MAC_CLK_CONF,
- 			   MTK_STAR_MSK_MAC_CLK_CONF,
--			   MTK_STAR_BIT_CLK_DIV_10);
-+			   priv->compat_data->bit_clk_div);
- }
- 
- static void mtk_star_set_mode_rmii(struct mtk_star_priv *priv)
-@@ -1461,6 +1468,7 @@ static int mtk_star_probe(struct platform_device *pdev)
- 
- 	priv = netdev_priv(ndev);
- 	priv->ndev = ndev;
-+	priv->compat_data = of_device_get_match_data(&pdev->dev);
- 	SET_NETDEV_DEV(ndev, dev);
- 	platform_set_drvdata(pdev, ndev);
- 
-@@ -1556,10 +1564,17 @@ static int mtk_star_probe(struct platform_device *pdev)
- 	return devm_register_netdev(dev, ndev);
- }
- 
-+static const struct mtk_star_compat mtk_star_mt8516_compat = {
-+	.bit_clk_div = MTK_STAR_BIT_CLK_DIV_10,
-+};
-+
- static const struct of_device_id mtk_star_of_match[] = {
--	{ .compatible = "mediatek,mt8516-eth", },
--	{ .compatible = "mediatek,mt8518-eth", },
--	{ .compatible = "mediatek,mt8175-eth", },
-+	{ .compatible = "mediatek,mt8516-eth",
-+	  .data = &mtk_star_mt8516_compat },
-+	{ .compatible = "mediatek,mt8518-eth",
-+	  .data = &mtk_star_mt8516_compat },
-+	{ .compatible = "mediatek,mt8175-eth",
-+	  .data = &mtk_star_mt8516_compat },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, mtk_star_of_match);
 -- 
 2.25.1
 
