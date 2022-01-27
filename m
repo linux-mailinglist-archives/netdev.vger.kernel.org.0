@@ -2,92 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DC5549E118
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 12:33:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C0CA49E169
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 12:44:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240533AbiA0LdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 06:33:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
+        id S240760AbiA0Lok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 06:44:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240482AbiA0LdT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 06:33:19 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C6A2C061749;
-        Thu, 27 Jan 2022 03:33:19 -0800 (PST)
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643283197;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZnqBSA0fX+jQu5NWHLqll8brJ7sQU9NzIdODqyqj1bE=;
-        b=Q+dMM7Q2U8ZnFsJmtKBKMyTFK/NwRUspp1jHd025ymaNdAH5HG9m0qiDDdFo+8SsD1OOSq
-        XhdLxpNsvdbW3GHcLOPc9t7tE2/yeZ1SAyZyAkZL+bCN7Eq4cuaHr7Ns4HSm8F2SYw6BMV
-        YyOss4QzJNl8H6ssjX9r65ps2LL8mLpE9DFH17Tk8InkYZ05Tp/Vsres/zQ6VXQN75xqSo
-        +uBsTPjrrVLXC9cAVrMcId5bJ9xPB6pcor8DdgeKkLo8tnIds7qf5yp6MhfUA+VGr9td0R
-        OuHLpeSt61TkUDdzwZiKsAf+o7YQ2uaCnLw78ftXIZrhfEpcRRi8vkfeGsz+jQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643283197;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZnqBSA0fX+jQu5NWHLqll8brJ7sQU9NzIdODqyqj1bE=;
-        b=HfV/uD24kkWJpBncedkJYbJ9LHCd+gIicOaa3Ov9P9oJotKouxwL0LxvVjE4w8l7PdLzLT
-        s7HbM7nauDjMhFDw==
-To:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 7/7] staging: greybus: gpio: Use generic_handle_irq_safe().
-Date:   Thu, 27 Jan 2022 12:33:03 +0100
-Message-Id: <20220127113303.3012207-8-bigeasy@linutronix.de>
-In-Reply-To: <20220127113303.3012207-1-bigeasy@linutronix.de>
-References: <20220127113303.3012207-1-bigeasy@linutronix.de>
+        with ESMTP id S240745AbiA0Loj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 06:44:39 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0AAC061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 03:44:39 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id z199so3176771iof.10
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 03:44:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=0esgVCvqWG4IGILQe8nSte71Uu1ctnMt+J04XkruIJI=;
+        b=KTqrapb9R/vGOjYUBXGKs0o32UdaGoE5yRtcEJ//PzGQsAo9FEZQz/rwQLSSHM3A/k
+         yE9Opx4oObolKvr9/kW4UDhTX28kh/6x4HYFWoZ2WbFg04mvMYvjrin6KoaRXyISvn2g
+         ebLFLPmo4hSshUILE6P0ytuJ3mRYH0tv92+2jWkFPqSoXaPVhZ3z7FPYYvE6pVgCSX4B
+         kQkdMVQC/iJbGbczY6jwT0mB+4V2v+Jcx0nqNqHznthfIDIZof7TR6/6mLh+tcAA1E+C
+         kgpPeswOMlauxqBznfh6Axz9fqST40xcXqoAtP7PHoJDPEBxq3g/+tXToeFcqhOvAnwt
+         vmiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=0esgVCvqWG4IGILQe8nSte71Uu1ctnMt+J04XkruIJI=;
+        b=EBTs0q2GSWga4aLEzJkVfgjYbbiUL6Tz78nyn+HnUhGttQBFg1y6ugUP1hiYCjHU/I
+         Wo2T9CoIxA+mfumwLLlqukdqifXG6mcFzbcPQfaa4qK65krC6MB2hgHAan8jEsmCAvxo
+         Vyz5+MB5Kx5cXGpifqkEVbLKG0WB0LRaTEVcE27GSY3/uQAIKAKyf8ZczMkbtUQ4Yczi
+         6N6UaGxfKnmPEiWZyqAOGxzKoRSmIdznOs7DWU6OhZFle4eUFjAQS862zA1PX5F8mqod
+         +lNZufo4pXFmPvjZt9XqcYI9+OwpU9StnwugcOtxSIHmxqsfFDxFIsluUbYl0GBCHfQY
+         KFkQ==
+X-Gm-Message-State: AOAM53330+bU3DKaEbxAnb08SOp9XUYVqf8rnb929B0GAjlUqvBnzWL9
+        xX8UMJ6n6ALuSNDk/QqC5zk8kJKokeqyUED1/Uw=
+X-Google-Smtp-Source: ABdhPJxR0yJqxVyP82JupJcwPFRyTQTfJAEKw4+wRns8lppDcPOVFQJbUSuthclyKmkaArSoQl3UaenwNjgCuqpX+AU=
+X-Received: by 2002:a6b:710c:: with SMTP id q12mr1728388iog.148.1643283879184;
+ Thu, 27 Jan 2022 03:44:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Received: by 2002:a05:6638:11d0:0:0:0:0 with HTTP; Thu, 27 Jan 2022 03:44:38
+ -0800 (PST)
+Reply-To: muhammedkhalid653@gmail.com
+From:   muhammed khalid <able6136@gmail.com>
+Date:   Thu, 27 Jan 2022 11:44:38 +0000
+Message-ID: <CABbgLSRjntDOD42QfsT1FoJtDYAJHqQkEyot6N+-T5==FNQJXw@mail.gmail.com>
+Subject: Assist me
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of manually disabling interrupts before invoking use
-generic_handle_irq() which can be invoked with enabled and disabled
-interrupts.
+-- 
+Dear friend
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/staging/greybus/gpio.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+I am Mohammed Khalid I am a politician in Afghanistan, I seek your
+assistance to receive my luggage because currently I am in hiding in
+Kabul to avoid the Taliban since I work with the ministry of finance
+so for this reason I need your assistance to claim my luggage
+containing three million five hundred thousand dollars for investment
+in your country pending to the time I will be able to leave Kabul
+either dead or alive that is why I am entrusting this fund to you
 
-diff --git a/drivers/staging/greybus/gpio.c b/drivers/staging/greybus/gpio.c
-index 7e6347fe93f99..8a7cf1d0e9688 100644
---- a/drivers/staging/greybus/gpio.c
-+++ b/drivers/staging/greybus/gpio.c
-@@ -391,10 +391,7 @@ static int gb_gpio_request_handler(struct gb_operation=
- *op)
- 		return -EINVAL;
- 	}
-=20
--	local_irq_disable();
--	ret =3D generic_handle_irq(irq);
--	local_irq_enable();
--
-+	ret =3D generic_handle_irq_safe(irq);
- 	if (ret)
- 		dev_err(dev, "failed to invoke irq handler\n");
-=20
---=20
-2.34.1
+I am expecting to hear from you through my private email address for
+my security and safety because the Taliban are monitoring calls to
+know our exact location in Kabul
 
+Expecting to hear from you
+Regards
+Mohammed Khalid
