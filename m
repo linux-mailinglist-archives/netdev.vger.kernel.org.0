@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7B1F49DD8B
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:15:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4DDF49DD8E
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:15:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238405AbiA0JOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 04:14:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59208 "EHLO
+        id S238429AbiA0JOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 04:14:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbiA0JOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:14:05 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A244C06173B;
-        Thu, 27 Jan 2022 01:14:05 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id x11so1949194plg.6;
-        Thu, 27 Jan 2022 01:14:05 -0800 (PST)
+        with ESMTP id S238434AbiA0JOL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:14:11 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E2EC061748;
+        Thu, 27 Jan 2022 01:14:10 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id d187so2066329pfa.10;
+        Thu, 27 Jan 2022 01:14:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=w3YfXYwf6leAIb9pOlV8H4EpsmXCP8MCeqEUbaPVjyc=;
-        b=Nfx1InlJYov9ejrIoKHTeUElTm321Q+oj8Op1IO3QL4XVO/ejbSFs7Ap1IB9cVSwHy
-         7Bsl++8888G0XZHlBplWHfT7ghJanVzEgeZn6DGB0CFqawTYaHiySuedQY9PXQs423gR
-         967Clu4cRcMPBVKbxaqWKBtITKAaWyrDxIBJvRX/cDx+VJqtYgsIx072XKsVNnAKZ2HX
-         RLoGnismV4pdjOd01xUtbYdB++gk7g6PEoo8u5zZpW+1yyG2phRymfpefa5TS0dNhqZl
-         P0pKkkFk4LYpLvUO7FG65Vvv1lAxgKDNC8qqMDNA0VGZvTnCcrtUT+Dde6IZQ8qL47Ma
-         V7rg==
+        bh=AAC7L6aHlRQtxgtk8rcpxBhloOR2RlrXxvp2Txw/5xE=;
+        b=MRKmhsTNLZLleU81qV7xLErDVASy6I3To0/5fdfxXhHCd6gL/Csd8O0V+33LfyDwTY
+         sQh7Ubp0Pj8PUOiKsBEBEqDi9kET2sO8exYb4nOCL1bNGYJe2uLP74o3k2TwlU6Z8dwT
+         LvjpdhUq2fxumOjRSihH58g1NswCTFbW4YEwC3K0TbE4H8WTRbg98ejTdmyEVD2JpGAT
+         m+H+XnkrpSLOnAcDJR2nZslsDbQteie9aZp6MIoNi6VUahkejqU/5ZLx1D1mCZ1eiA06
+         xH2oHA2AYvOersRrP/xaQ+8jSgOqF9BcQXJ8kn/xztqQTlYB0930V7ASvGujsGFt3NRE
+         Hqzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=w3YfXYwf6leAIb9pOlV8H4EpsmXCP8MCeqEUbaPVjyc=;
-        b=J5FOjDEHWWayHrf7grqN07KLwZyQlFY2RME4riqHV49MvDlRXlzOoJdh7QqNJddXeq
-         pc46HueQ2wK6v5l17f27SDwDOtFSjvMkvZvy6hmGNTkGsqQQNv9jybD5emljOx/RcKhy
-         lCVFsEJHXPxdcXlmOGbTDrJktqf9KBADnRniNCSjimm/repl1DePB9RqgFXvOaVvAn5w
-         fJM4gu7GdfHVed6VtXuKLUmFRtl/gpzsxuPkfejzDyhAvc0jd6wdIGzhNEpJ0aCPhbEI
-         I8DFEc+T14vwNHoGb4jrAqeiU4SuZ+Xb972B6dkK+FxiQJVxczLMs38HVlIwZC28+gUF
-         Tb7g==
-X-Gm-Message-State: AOAM530dQJH6Ga6xdwzEu9Ymh1WUbw5LT+dtc9meUjkb2aKWGnFfZBiP
-        dJuh77ODOVTlBu8ZZXbc5Pg=
-X-Google-Smtp-Source: ABdhPJyWiAJ98iTWD8aNOHlUaj1FO5j2c1X66G6BCbP4ejaXIs8xRTuwx5dd9AZY47dPecpWgfmaEA==
-X-Received: by 2002:a17:902:e788:: with SMTP id cp8mr2331391plb.172.1643274844984;
-        Thu, 27 Jan 2022 01:14:04 -0800 (PST)
+        bh=AAC7L6aHlRQtxgtk8rcpxBhloOR2RlrXxvp2Txw/5xE=;
+        b=L2sxQuce6usjV5QTOgXQ1+TkISa0ywS2lZyKMJpAS2P7RLC1RWN7UKUB31YaLdhmCg
+         HH9L6jQmilp0fSoOgiJtBB9O6mQr226pMg1XJMHBuohZJ5pHxjhvavdwi7lONnFh2HSQ
+         Uu8Alz75bvx5MaeZrytsSuWuGAIAa6LEoIEPfUOugSFshM9z37XERzvCWZG5A5biLyzj
+         LrnjUThhteqYdAqfr5nT//hwOWLIXV2t3bE3deiNpWrtI27ngBLBxkleQqi4T+4VF3H/
+         ekpI0P4WEAJJbky8PuucbrOKnrzhHuubs8aIkzo4vtUJwOb/HZlBi9kdIAEx/DBusST5
+         Enjw==
+X-Gm-Message-State: AOAM532vFE/J4s8fT/c/s0IwHca76sFOBHl/FfQyjveqpdySTMsgAxgO
+        FTvBd8+UcJtzYQA/xDcWoTs=
+X-Google-Smtp-Source: ABdhPJwCOcuBlP+heAAlOrxsbAtPfegoo6mEkqibvGXk8MzoLUlQAgGj1IJ7fXgnKmB5HE9dZBwYuA==
+X-Received: by 2002:a05:6a00:1342:: with SMTP id k2mr2139063pfu.20.1643274850283;
+        Thu, 27 Jan 2022 01:14:10 -0800 (PST)
 Received: from localhost.localdomain ([43.132.141.8])
-        by smtp.gmail.com with ESMTPSA id j11sm2046338pjf.53.2022.01.27.01.14.00
+        by smtp.gmail.com with ESMTPSA id j11sm2046338pjf.53.2022.01.27.01.14.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 01:14:04 -0800 (PST)
+        Thu, 27 Jan 2022 01:14:09 -0800 (PST)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     dsahern@kernel.org, kuba@kernel.org
@@ -58,9 +58,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         memxor@gmail.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
         coreteam@netfilter.org, mengensun@tencent.com
-Subject: [PATCH v2 net-next 5/8] net: ipv4: use kfree_skb_reason() in ip_rcv_finish_core()
-Date:   Thu, 27 Jan 2022 17:13:05 +0800
-Message-Id: <20220127091308.91401-6-imagedong@tencent.com>
+Subject: [PATCH v2 net-next 6/8] net: ipv4: use kfree_skb_reason() in ip_protocol_deliver_rcu()
+Date:   Thu, 27 Jan 2022 17:13:06 +0800
+Message-Id: <20220127091308.91401-7-imagedong@tencent.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220127091308.91401-1-imagedong@tencent.com>
 References: <20220127091308.91401-1-imagedong@tencent.com>
@@ -72,101 +72,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Replace kfree_skb() with kfree_skb_reason() in ip_rcv_finish_core(),
-following drop reasons are introduced:
+Replace kfree_skb() with kfree_skb_reason() in ip_protocol_deliver_rcu().
+Following new drop reasons are introduced:
 
-SKB_DROP_REASON_IP_RPFILTER
-SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST
+SKB_DROP_REASON_XFRM_POLICY
+SKB_DROP_REASON_IP_NOPROTO
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
 v2:
-- remove SKB_DROP_REASON_EARLY_DEMUX and SKB_DROP_REASON_IP_ROUTE_INPUT
-- add document for SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST and
-  SKB_DROP_REASON_IP_RPFILTER
+- add document for the introduced drop reasons
 ---
- include/linux/skbuff.h     |  9 +++++++++
- include/trace/events/skb.h |  3 +++
- net/ipv4/ip_input.c        | 14 ++++++++++----
- 3 files changed, 22 insertions(+), 4 deletions(-)
+ include/linux/skbuff.h     | 2 ++
+ include/trace/events/skb.h | 2 ++
+ net/ipv4/ip_input.c        | 5 +++--
+ 3 files changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 2e87da91424f..2d712459d564 100644
+index 2d712459d564..4e55321e2fc2 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -330,6 +330,15 @@ enum skb_drop_reason {
- 					 * IP header (see
- 					 * IPSTATS_MIB_INHDRERRORS)
- 					 */
-+	SKB_DROP_REASON_IP_RPFILTER,	/* IP rpfilter validate failed.
-+					 * see the document for rp_filter
-+					 * in ip-sysctl.rst for more
-+					 * information
-+					 */
-+	SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST, /* destination address of L2
-+						  * is multicast, but L3 is
-+						  * unicast.
-+						  */
+@@ -339,6 +339,8 @@ enum skb_drop_reason {
+ 						  * is multicast, but L3 is
+ 						  * unicast.
+ 						  */
++	SKB_DROP_REASON_XFRM_POLICY,	/* xfrm policy check failed */
++	SKB_DROP_REASON_IP_NOPROTO,	/* no support for IP protocol */
  	SKB_DROP_REASON_MAX,
  };
  
 diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index f2b1778485f0..485a1d3034a4 100644
+index 485a1d3034a4..985e481c092d 100644
 --- a/include/trace/events/skb.h
 +++ b/include/trace/events/skb.h
-@@ -20,6 +20,9 @@
- 	EM(SKB_DROP_REASON_OTHERHOST, OTHERHOST)		\
- 	EM(SKB_DROP_REASON_IP_CSUM, IP_CSUM)			\
- 	EM(SKB_DROP_REASON_IP_INHDR, IP_INHDR)			\
-+	EM(SKB_DROP_REASON_IP_RPFILTER, IP_RPFILTER)		\
-+	EM(SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST,		\
-+	   UNICAST_IN_L2_MULTICAST)				\
+@@ -23,6 +23,8 @@
+ 	EM(SKB_DROP_REASON_IP_RPFILTER, IP_RPFILTER)		\
+ 	EM(SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST,		\
+ 	   UNICAST_IN_L2_MULTICAST)				\
++	EM(SKB_DROP_REASON_XFRM_POLICY, XFRM_POLICY)		\
++	EM(SKB_DROP_REASON_IP_NOPROTO, IP_NOPROTO)		\
  	EMe(SKB_DROP_REASON_MAX, MAX)
  
  #undef EM
 diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index 7f64c5432cba..184decb1c8eb 100644
+index 184decb1c8eb..74c090f6eb9d 100644
 --- a/net/ipv4/ip_input.c
 +++ b/net/ipv4/ip_input.c
-@@ -318,8 +318,10 @@ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
- {
- 	const struct iphdr *iph = ip_hdr(skb);
- 	int (*edemux)(struct sk_buff *skb);
-+	int err, drop_reason;
- 	struct rtable *rt;
--	int err;
-+
-+	drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 
- 	if (ip_can_use_hint(skb, iph, hint)) {
- 		err = ip_route_use_hint(skb, iph->daddr, iph->saddr, iph->tos,
-@@ -396,19 +398,23 @@ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
- 		 * so-called "hole-196" attack) so do it for both.
- 		 */
- 		if (in_dev &&
--		    IN_DEV_ORCONF(in_dev, DROP_UNICAST_IN_L2_MULTICAST))
-+		    IN_DEV_ORCONF(in_dev, DROP_UNICAST_IN_L2_MULTICAST)) {
-+			drop_reason = SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST;
- 			goto drop;
-+		}
- 	}
- 
- 	return NET_RX_SUCCESS;
- 
- drop:
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, drop_reason);
- 	return NET_RX_DROP;
- 
- drop_error:
--	if (err == -EXDEV)
-+	if (err == -EXDEV) {
-+		drop_reason = SKB_DROP_REASON_IP_RPFILTER;
- 		__NET_INC_STATS(net, LINUX_MIB_IPRPFILTER);
-+	}
- 	goto drop;
- }
- 
+@@ -196,7 +196,8 @@ void ip_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int protocol)
+ 	if (ipprot) {
+ 		if (!ipprot->no_policy) {
+ 			if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb)) {
+-				kfree_skb(skb);
++				kfree_skb_reason(skb,
++						 SKB_DROP_REASON_XFRM_POLICY);
+ 				return;
+ 			}
+ 			nf_reset_ct(skb);
+@@ -215,7 +216,7 @@ void ip_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int protocol)
+ 				icmp_send(skb, ICMP_DEST_UNREACH,
+ 					  ICMP_PROT_UNREACH, 0);
+ 			}
+-			kfree_skb(skb);
++			kfree_skb_reason(skb, SKB_DROP_REASON_IP_NOPROTO);
+ 		} else {
+ 			__IP_INC_STATS(net, IPSTATS_MIB_INDELIVERS);
+ 			consume_skb(skb);
 -- 
 2.34.1
 
