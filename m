@@ -2,158 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D758649E38A
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 14:33:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 755B449E3A9
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 14:39:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241806AbiA0Ndj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 08:33:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36100 "EHLO
+        id S241893AbiA0NjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 08:39:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242072AbiA0Ncu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 08:32:50 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8BEC061760
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 05:32:44 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id n8so5378971lfq.4
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 05:32:44 -0800 (PST)
+        with ESMTP id S242230AbiA0Nh6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 08:37:58 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96ED7C0613EE;
+        Thu, 27 Jan 2022 05:34:44 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id bg19-20020a05600c3c9300b0034565e837b6so3316120wmb.1;
+        Thu, 27 Jan 2022 05:34:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NWE1+aRes3zB48V9f+3catFSPmCCuIRuHklKncMmBWY=;
-        b=NZEIsYtyt3kAm88SSBmhYlFpn7sBVaEUhuSUqdAm9aXQSwU6BQ8Th13fvmHWKmpLqR
-         NFGwNcjB03qZT8OAZ1l3wfGiCeJB3tgq23vZWlcg0zkuQBh+TNMlC867+ylYZJMJ0Nfz
-         t7r9i49RjChrz/Ffgc1+i+4gzsHZxgzjdd3BMf793ds0+gy7QnywKrfcqfZhxJGTyV7l
-         8P9PayEWFag+k/mSgWbVvobX5AmKcdeyIgeWWCklnxv6WMmntlHWMVyDGA8kvWsq0ha1
-         uDRB8MtXFF9f6ntorvqqF52XFeNKKUZCO8Wjc8Zc7zJyn30v86wP1gKMNOXkhu9zsuZC
-         rPrA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=PtD0FgMryNIEfo1jRPVV0cUNzb19Sn8D3fM6blA12z8=;
+        b=mJEfK4o/cPw8XO1sAK5M7gsOLWGX80WauflsKooGb7ZFVVa+s4u32wNhJ0tg/klSo4
+         sqJu1MumMXoK58OinVz9HOj5EKN66PedW5tRPhyn3WrhM0pqnjndsRUMVPXjrP5e557S
+         xVcvoaedKwnKP5WnRXtjU736LRLI3UunPwNQMWWqvTlJPC7ogCr4tGM6zIkpS8CKpwc4
+         TtALbxfc2E2gE6y1ckb/C1QjWq1aoq06jUzOJFcb7L4S64vR6wRZRNvxTAP+TT79um4z
+         fsE/6bqfMz3U06V1OWVPgEU+NWIX8+d97nkTtWVZhWpcJNPUKwLtHfMwkLdcAyfhMoK8
+         YYDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NWE1+aRes3zB48V9f+3catFSPmCCuIRuHklKncMmBWY=;
-        b=FzKx6Se8myRkcuAUEEIf0fhYxpCCaDH7jQb5TQ4/dfCMdyw+nCe7R7u62pLW6ApAIB
-         P63zKWmMQ5IFIf1g42CC9UXpE44YbU/ajyd8Q7hrOhEZ1vH0gRfuUVKuDzTsW/bDCU3C
-         IiNyChfLbePi8zVq+6CKwri5fRvXsClwNOMXCAJOtNs9qz5y1MBzRDpYAywgPT9dsjpw
-         hvPCfHzCDagofkVYK5wSfXNOfAIwQsmt1Wu+LdhS7r1tGWYIZCAcgivvlNCtvLJLqDvG
-         PwTXpPCBYScaCgGMjNwsCUDKAp5X3vf/yuoOdUV65+1uCKKGl/US1Qq8TmLAGhKS8IeL
-         kTvw==
-X-Gm-Message-State: AOAM532iVnXtqNbP6vtchiCTqKLgOTrTORNRO1V4ChhICnlnHSvby3JQ
-        DQTutEE0A5izFqoBPbRNsom5qlpMcgiHcB5dR5c=
-X-Google-Smtp-Source: ABdhPJzlVkP5tf3tJ0aQ19MF0BxUeu4Hs+LNclZls29RYtyz6MEg6w8mcjpm1n47mBSMnxV1pcYJgrL3WmID6lJFAm8=
-X-Received: by 2002:a19:f806:: with SMTP id a6mr2962254lff.592.1643290362527;
- Thu, 27 Jan 2022 05:32:42 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=PtD0FgMryNIEfo1jRPVV0cUNzb19Sn8D3fM6blA12z8=;
+        b=IOi4dXdhKguuDFhNfm7ePwvsr88VT6nUFR7zeeHXcGUYzsiARaqDfi34eHDmJpWMf+
+         Rd7qfR9UJXclEZv+TkYD8iWqLrjrDYkUmdmaY7jQsvT7Ks7vgcoHrfZ4YQJsq2ofSO5B
+         zy8NhFq8dtwgX0dG/xJVpyxj6aL1mKSkt8kHXC5oo//Qbn0Ldg3eouLZfOPox7H8Nhwm
+         Lvt6qKTWHeVmt52u5BJHBR71mdnjY7/q15cgLSHGAr5twz5w4GEIGwE6aoSJ5S0h+N7r
+         GsA5ys2fL6/t1S9t/AsFRDDxG3nY1CtOyNQFbHbhURcVvyuiz457WKHyS75qBvVnLEA0
+         paCA==
+X-Gm-Message-State: AOAM5335JAxXgoZTukNkUbRjc7uI5Ls7EHVP2G8Oinb33ZOY/tAX/L8j
+        y5G1nnhTxmsshaiOgLmD1hiYn2/vrxE=
+X-Google-Smtp-Source: ABdhPJwpccnsbgjKRndlWasEVTPIjTprM6ThyfKPt7POLIcMIUxxWzIt7TDhKx/s2vN+i8nPotXfHQ==
+X-Received: by 2002:a05:600c:1e8b:: with SMTP id be11mr11928824wmb.96.1643290483143;
+        Thu, 27 Jan 2022 05:34:43 -0800 (PST)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id e13sm2572953wrq.35.2022.01.27.05.34.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 05:34:42 -0800 (PST)
+Date:   Thu, 27 Jan 2022 14:34:41 +0100
+From:   Corentin Labbe <clabbe.montjoie@gmail.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Subject: Re: [PATCH] crypto: authenc - Fix sleep in atomic context in
+ decrypt_tail
+Message-ID: <YfKfcRCOgCzYNLRG@Red>
+References: <Yd1SIHUNdLIvKhzz@Red>
+ <YeD4rt1OVnEMBr+A@gondor.apana.org.au>
+ <YeD6vt47+pAl0SxG@gondor.apana.org.au>
+ <YeEiWmkyNwfgQgmn@Red>
+ <YeZx1aVL0HnT9tCB@Red>
+ <Yee2oKxPSLaYY31N@gondor.apana.org.au>
 MIME-Version: 1.0
-References: <1642746887-30924-1-git-send-email-sbhatta@marvell.com>
-In-Reply-To: <1642746887-30924-1-git-send-email-sbhatta@marvell.com>
-From:   sundeep subbaraya <sundeep.lkml@gmail.com>
-Date:   Thu, 27 Jan 2022 19:02:30 +0530
-Message-ID: <CALHRZuqE3z27wq58a=xdRbjEXLfufN7mkVxANgnSqB0EEFnd3Q@mail.gmail.com>
-Subject: Re: [net PATCH 0/9] Fixes for CN10K and CN9xxx platforms
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, hariprasad <hkelam@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yee2oKxPSLaYY31N@gondor.apana.org.au>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David and Jakub,
+Le Wed, Jan 19, 2022 at 05:58:40PM +1100, Herbert Xu a écrit :
+> On Tue, Jan 18, 2022 at 08:52:53AM +0100, Corentin Labbe wrote:
+> >
+> > With my patch, I got:
+> > [   38.515668] BUG: sleeping function called from invalid context at crypto/skcipher.c:482
+> > [   38.523708] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 84, name: 1c15000.crypto-
+> > [   38.532176] preempt_count: 200, expected: 0
+> > [   38.536381] CPU: 6 PID: 84 Comm: 1c15000.crypto- Not tainted 5.16.0-next-20220115-00124-g13473e8fac33-dirty #116
+> > [   38.546551] Hardware name: Allwinner A83t board
+> > [   38.551100]  unwind_backtrace from show_stack+0x10/0x14
+> > [   38.556358]  show_stack from dump_stack_lvl+0x40/0x4c
+> > [   38.561428]  dump_stack_lvl from __might_resched+0x118/0x154
+> > [   38.567107]  __might_resched from skcipher_walk_virt+0xe8/0xec
+> > [   38.572955]  skcipher_walk_virt from crypto_cbc_decrypt+0x2c/0x170
+> > [   38.579147]  crypto_cbc_decrypt from crypto_skcipher_decrypt+0x38/0x5c
+> > [   38.585680]  crypto_skcipher_decrypt from authenc_verify_ahash_done+0x18/0x34
+> > [   38.592825]  authenc_verify_ahash_done from crypto_finalize_request+0x6c/0xe4
+> > [   38.599974]  crypto_finalize_request from sun8i_ss_hash_run+0x73c/0xb98
+> > [   38.606602]  sun8i_ss_hash_run from crypto_pump_work+0x1a8/0x330
+> > [   38.612616]  crypto_pump_work from kthread_worker_fn+0xa8/0x1c4
+> > [   38.618550]  kthread_worker_fn from kthread+0xf0/0x110
+> > [   38.623701]  kthread from ret_from_fork+0x14/0x2c
+> > [   38.628414] Exception stack(0xc2247fb0 to 0xc2247ff8)
+> > [   38.633468] 7fa0:                                     00000000 00000000 00000000 00000000
+> > [   38.641640] 7fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> > [   38.649809] 7fe0:i 00000000 00000000 00000000 00000000 00000013 00000000
+> > 
+> > This is when testing hmac(sha1) on my crypto driver sun8i-ss and crypto testing authenc(hmac-sha1-sun8i-ss,cbc(aes-generic)).
+> > 
+> > Do you have any idea to better fix my issue ?
+> 
+> This backtrace is caused by a bug in authenc:
+> 
+> ---8<---
+> The function crypto_authenc_decrypt_tail discards its flags
+> argument and always relies on the flags from the original request
+> when starting its sub-request.
+> 
+> This is clearly wrong as it may cause the SLEEPABLE flag to be
+> set when it shouldn't.
+> 
+> Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
+> Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+> 
+> diff --git a/crypto/authenc.c b/crypto/authenc.c
+> index 670bf1a01d00..17f674a7cdff 100644
+> --- a/crypto/authenc.c
+> +++ b/crypto/authenc.c
+> @@ -253,7 +253,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
+>  		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
+>  
+>  	skcipher_request_set_tfm(skreq, ctx->enc);
+> -	skcipher_request_set_callback(skreq, aead_request_flags(req),
+> +	skcipher_request_set_callback(skreq, flags,
+>  				      req->base.complete, req->base.data);
+>  	skcipher_request_set_crypt(skreq, src, dst,
+>  				   req->cryptlen - authsize, req->iv);
+> -- 
 
-Any comments on this patchset ?
+This fixes my issue.
 
-Thanks,
-Sundeep
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
 
-On Fri, Jan 21, 2022 at 12:04 PM Subbaraya Sundeep <sbhatta@marvell.com> wrote:
->
-> Hi,
->
-> This patchset has consolidated fixes in Octeontx2 driver
-> handling CN10K and CN9xxx platforms. When testing the
-> new CN10K hardware some issues resurfaced like accessing
-> wrong register for CN10K and enabling loopback on not supported
-> interfaces. Some fixes are needed for CN9xxx platforms as well.
->
-> Below is the description of patches
->
-> Patch 1: AF sets RX RSS action for all the VFs when a VF is
-> brought up. But when a PF sets RX action for its VF like Drop/Direct
-> to a queue in ntuple filter it is not retained because of AF fixup.
-> This patch skips modifying VF RX RSS action if PF has already
-> set its action.
->
-> Patch 2: When configuring backpressure wrong register is being read for
-> LBKs hence fixed it.
->
-> Patch 3: Some RVU blocks may take longer time to reset but are guaranteed
-> to complete the reset. Hence wait till reset is complete.
->
-> Patch 4: For enabling LMAC CN10K needs another register compared
-> to CN9xxx platforms. Hence changed it.
->
-> Patch 5: Adds missing barrier before submitting memory pointer
-> to the aura hardware.
->
-> Patch 6: Increase polling time while link credit restore and also
-> return proper error code when timeout occurs.
->
-> Patch 7: Internal loopback not supported on LPCS interfaces like
-> SGMII/QSGMII so do not enable it.
->
-> Patch 8: When there is a error in message processing, AF sets the error
-> response and replies back to requestor. PF forwards a invalid message to
-> VF back if AF reply has error in it. This way VF lacks the actual error set
-> by AF for its message. This is changed such that PF simply forwards the
-> actual reply and let VF handle the error.
->
-> Patch 9: ntuple filter with "flow-type ether proto 0x8842 vlan 0x92e"
-> was not working since ethertype 0x8842 is NGIO protocol. Hardware
-> parser explicitly parses such NGIO packets and sets the packet as
-> NGIO and do not set it as tagged packet. Fix this by changing parser
-> such that it sets the packet as both NGIO and tagged by using
-> separate layer types.
->
-> Thanks,
-> Sundeep
->
-> Geetha sowjanya (5):
->   octeontx2-af: Retry until RVU block reset complete
->   octeontx2-af: cn10k: Use appropriate register for LMAC enable
->   octeontx2-pf: cn10k: Ensure valid pointers are freed to aura
->   octeontx2-af: Increase link credit restore polling timeout
->   octeontx2-af: cn10k: Do not enable RPM loopback for LPC interfaces
->
-> Kiran Kumar K (1):
->   octeontx2-af: Add KPU changes to parse NGIO as separate layer
->
-> Subbaraya Sundeep (2):
->   octeontx2-af: Do not fixup all VF action entries
->   octeontx2-pf: Forward error codes to VF
->
-> Sunil Goutham (1):
->   octeontx2-af: Fix LBK backpressure id count
->
->  drivers/net/ethernet/marvell/octeontx2/af/cgx.c    |  2 +
->  .../ethernet/marvell/octeontx2/af/lmac_common.h    |  3 +
->  drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  1 +
->  .../ethernet/marvell/octeontx2/af/npc_profile.h    | 70 +++++++++++-----------
->  drivers/net/ethernet/marvell/octeontx2/af/rpm.c    | 66 +++++++++++++++-----
->  drivers/net/ethernet/marvell/octeontx2/af/rpm.h    |  4 ++
->  drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |  7 ++-
->  drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |  1 +
->  .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    | 14 ++++-
->  .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    |  2 +
->  .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 20 +++----
->  .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    | 22 ++++++-
->  .../net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c | 20 ++++---
->  .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  1 +
->  .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  7 ++-
->  15 files changed, 164 insertions(+), 76 deletions(-)
->
-> --
-> 2.7.4
->
+Thanks
