@@ -2,149 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C6EA49EECF
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 00:24:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C38649EF03
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 00:52:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241348AbiA0XYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 18:24:34 -0500
-Received: from mga17.intel.com ([192.55.52.151]:21970 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234804AbiA0XYd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 18:24:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643325873; x=1674861873;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=R4aUtkmA+9GfZrFOvme9j8OBwfAKZDoxsNcZRrM1jHM=;
-  b=fK+1LJ36HqqNWufqcQTTiHmuV5k5EHFeaZuBNSZW9oJh11oJc6hpgOJt
-   8+YvVz+Xk1RDzPqqsXy6N8PYO8wbLViTd4jJmqAkfjHzNzPFjhHaHCCBj
-   YVwYKQowh51FwofEjB0bw1UfOHXlKOEYCtjYOANK0GYxVvso4/xCL7EUE
-   yfRTjERJ6MZN+d8IxlIv9MEIk/nMSaVYAMDbCSX32UKFiGvyNkcqHrjkg
-   +ViFeOxL+X4bxfVIz7r3Okx6hOnZqZHRix7qwSC9i4lDJNp4gOJ+wzCoW
-   iUvH+9FDQv9wM/9yJOcr2846yYIMTWtt5DtnNo8c+Ao1iYZyfP8NyG8+o
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="227664893"
-X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="227664893"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 15:24:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="618516978"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 27 Jan 2022 15:24:31 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nDE7y-000N9o-Ga; Thu, 27 Jan 2022 23:24:30 +0000
-Date:   Fri, 28 Jan 2022 07:23:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com
-Cc:     kbuild-all@lists.01.org, kuba@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org, "D. Wythe" <alibuda@linux.alibaba.com>
-Subject: Re: [PATCH net-next 2/3] net/smc: Limits backlog connections
-Message-ID: <202201280741.2EsIf9Jy-lkp@intel.com>
-References: <9b52fc3f11a2ae6f23224a178fd4cff9f9dd4eaa.1643284658.git.alibuda@linux.alibaba.com>
+        id S1343847AbiA0Xwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 18:52:42 -0500
+Received: from mail.netfilter.org ([217.70.188.207]:42990 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239508AbiA0Xwl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 18:52:41 -0500
+Received: from localhost.localdomain (unknown [78.30.32.163])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 3CC3B60676;
+        Fri, 28 Jan 2022 00:49:35 +0100 (CET)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net 0/8] Netfilter fixes for net
+Date:   Fri, 28 Jan 2022 00:52:27 +0100
+Message-Id: <20220127235235.656931-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9b52fc3f11a2ae6f23224a178fd4cff9f9dd4eaa.1643284658.git.alibuda@linux.alibaba.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Wythe",
+Hi,
 
-Thank you for the patch! Perhaps something to improve:
+The following patchset contains Netfilter fixes for net:
 
-[auto build test WARNING on net-next/master]
+1) Remove leftovers from flowtable modules, from Geert Uytterhoeven.
 
-url:    https://github.com/0day-ci/linux/commits/D-Wythe/Optimizing-performance-in-short-lived/20220127-200912
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git fbb8295248e1d6f576d444309fcf79356008eac1
-config: x86_64-randconfig-s022-20220124 (https://download.01.org/0day-ci/archive/20220128/202201280741.2EsIf9Jy-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/0day-ci/linux/commit/718aff24f3fcc73ecb7bff17fcbe029b799c6624
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review D-Wythe/Optimizing-performance-in-short-lived/20220127-200912
-        git checkout 718aff24f3fcc73ecb7bff17fcbe029b799c6624
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash net/smc/
+2) Missing refcount increment of conntrack template in nft_ct,
+   from Florian Westphal.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+3) Reduce nft_zone selftest time, also from Florian.
 
+4) Add selftest to cover stateless NAT on fragments, from Florian Westphal.
 
-sparse warnings: (new ones prefixed by >>)
->> net/smc/af_smc.c:2202:25: sparse: sparse: incorrect type in assignment (different modifiers) @@     expected struct inet_connection_sock_af_ops *ori_af_ops @@     got struct inet_connection_sock_af_ops const *icsk_af_ops @@
-   net/smc/af_smc.c:2202:25: sparse:     expected struct inet_connection_sock_af_ops *ori_af_ops
-   net/smc/af_smc.c:2202:25: sparse:     got struct inet_connection_sock_af_ops const *icsk_af_ops
+5) Do not set net_device when for reject packets from the bridge path,
+   from Phil Sutter.
 
-vim +2202 net/smc/af_smc.c
+6) Cancel register tracking info on nft_byteorder operations.
 
-  2166	
-  2167	static int smc_listen(struct socket *sock, int backlog)
-  2168	{
-  2169		struct sock *sk = sock->sk;
-  2170		struct smc_sock *smc;
-  2171		int rc;
-  2172	
-  2173		smc = smc_sk(sk);
-  2174		lock_sock(sk);
-  2175	
-  2176		rc = -EINVAL;
-  2177		if ((sk->sk_state != SMC_INIT && sk->sk_state != SMC_LISTEN) ||
-  2178		    smc->connect_nonblock)
-  2179			goto out;
-  2180	
-  2181		rc = 0;
-  2182		if (sk->sk_state == SMC_LISTEN) {
-  2183			sk->sk_max_ack_backlog = backlog;
-  2184			goto out;
-  2185		}
-  2186		/* some socket options are handled in core, so we could not apply
-  2187		 * them to the clc socket -- copy smc socket options to clc socket
-  2188		 */
-  2189		smc_copy_sock_settings_to_clc(smc);
-  2190		if (!smc->use_fallback)
-  2191			tcp_sk(smc->clcsock->sk)->syn_smc = 1;
-  2192	
-  2193		/* save original sk_data_ready function and establish
-  2194		 * smc-specific sk_data_ready function
-  2195		 */
-  2196		smc->clcsk_data_ready = smc->clcsock->sk->sk_data_ready;
-  2197		smc->clcsock->sk->sk_data_ready = smc_clcsock_data_ready;
-  2198		smc->clcsock->sk->sk_user_data =
-  2199			(void *)((uintptr_t)smc | SK_USER_DATA_NOCOPY);
-  2200	
-  2201		/* save origin ops */
-> 2202		smc->ori_af_ops = inet_csk(smc->clcsock->sk)->icsk_af_ops;
-  2203	
-  2204		smc->af_ops = *smc->ori_af_ops;
-  2205		smc->af_ops.syn_recv_sock = smc_tcp_syn_recv_sock;
-  2206	
-  2207		inet_csk(smc->clcsock->sk)->icsk_af_ops = &smc->af_ops;
-  2208	
-  2209		rc = kernel_listen(smc->clcsock, backlog);
-  2210		if (rc) {
-  2211			smc->clcsock->sk->sk_data_ready = smc->clcsk_data_ready;
-  2212			goto out;
-  2213		}
-  2214		sk->sk_max_ack_backlog = backlog;
-  2215		sk->sk_ack_backlog = 0;
-  2216		sk->sk_state = SMC_LISTEN;
-  2217	
-  2218	out:
-  2219		release_sock(sk);
-  2220		return rc;
-  2221	}
-  2222	
+7) Extend nft_concat_range selftest to cover set reload with no elements,
+   from Florian Westphal.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+8) Remove useless update of pointer in chain blob builder, reported
+   by kbuild test robot.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 2f61353cd2f789a4229b6f5c1c24a40a613357bb:
+
+  net: hns3: handle empty unknown interrupt for VF (2022-01-25 13:08:05 +0000)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to b07f413732549e5a96e891411fbb5980f2d8e5a1:
+
+  netfilter: nf_tables: remove assignment with no effect in chain blob builder (2022-01-27 17:50:56 +0100)
+
+----------------------------------------------------------------
+Florian Westphal (4):
+      netfilter: nft_ct: fix use after free when attaching zone template
+      selftests: netfilter: reduce zone stress test running time
+      selftests: netfilter: check stateless nat udp checksum fixup
+      selftests: nft_concat_range: add test for reload with no element add/del
+
+Geert Uytterhoeven (1):
+      netfilter: Remove flowtable relics
+
+Pablo Neira Ayuso (2):
+      netfilter: nft_byteorder: track register operations
+      netfilter: nf_tables: remove assignment with no effect in chain blob builder
+
+Phil Sutter (1):
+      netfilter: nft_reject_bridge: Fix for missing reply from prerouting
+
+ net/bridge/netfilter/nft_reject_bridge.c           |   8 +-
+ net/ipv4/netfilter/Kconfig                         |   4 -
+ net/ipv6/netfilter/Kconfig                         |   4 -
+ net/ipv6/netfilter/Makefile                        |   3 -
+ net/ipv6/netfilter/nf_flow_table_ipv6.c            |   0
+ net/netfilter/nf_tables_api.c                      |   1 -
+ net/netfilter/nft_byteorder.c                      |  12 ++
+ net/netfilter/nft_ct.c                             |   5 +-
+ .../selftests/netfilter/nft_concat_range.sh        |  72 +++++++++-
+ tools/testing/selftests/netfilter/nft_nat.sh       | 152 +++++++++++++++++++++
+ .../testing/selftests/netfilter/nft_zones_many.sh  |  12 +-
+ 11 files changed, 249 insertions(+), 24 deletions(-)
+ delete mode 100644 net/ipv6/netfilter/nf_flow_table_ipv6.c
