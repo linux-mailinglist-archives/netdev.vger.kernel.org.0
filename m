@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6D4449D7BB
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 03:00:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8346B49D7B7
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 03:00:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234949AbiA0B7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 20:59:18 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:41500 "EHLO
+        id S234842AbiA0B7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 20:59:17 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:41548 "EHLO
         mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S234687AbiA0B7K (ORCPT
+        with ESMTP id S234786AbiA0B7K (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 20:59:10 -0500
-X-UUID: 186c714561cb433a939c0ea94fac20f3-20220127
-X-UUID: 186c714561cb433a939c0ea94fac20f3-20220127
+X-UUID: efa5da12b9f54990af1a8fe571c71682-20220127
+X-UUID: efa5da12b9f54990af1a8fe571c71682-20220127
 Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
         (envelope-from <biao.huang@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1198502311; Thu, 27 Jan 2022 09:59:05 +0800
+        with ESMTP id 1421973521; Thu, 27 Jan 2022 09:59:07 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 27 Jan 2022 09:59:04 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 27 Jan 2022 09:59:05 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 27 Jan 2022 09:59:03 +0800
+ Transport; Thu, 27 Jan 2022 09:59:04 +0800
 From:   Biao Huang <biao.huang@mediatek.com>
 To:     David Miller <davem@davemloft.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -42,9 +42,9 @@ CC:     Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
         Yinghua Pan <ot_yinghua.pan@mediatek.com>,
         <srv_heupstream@mediatek.com>,
         Macpaul Lin <macpaul.lin@mediatek.com>
-Subject: [PATCH net-next v2 4/9] dt-bindings: net: mtk-star-emac: add support for MT8365
-Date:   Thu, 27 Jan 2022 09:58:52 +0800
-Message-ID: <20220127015857.9868-5-biao.huang@mediatek.com>
+Subject: [PATCH net-next v2 5/9] net: ethernet: mtk-star-emac: add clock pad selection for RMII
+Date:   Thu, 27 Jan 2022 09:58:53 +0800
+Message-ID: <20220127015857.9868-6-biao.huang@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220127015857.9868-1-biao.huang@mediatek.com>
 References: <20220127015857.9868-1-biao.huang@mediatek.com>
@@ -56,26 +56,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add binding document for Ethernet on MT8365.
+This patch add a new dts property named "mediatek,rmii-rxc" parsing
+in driver, which will configure MAC to select which pin the RMII reference
+clock is connected to, TXC or RXC.
+
+TXC pad is the default reference clock pin. If user wants to use RXC pad
+instead, add "mediatek,rmii-rxc" to corresponding device node.
 
 Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Yinghua Pan <ot_yinghua.pan@mediatek.com>
 ---
- Documentation/devicetree/bindings/net/mediatek,star-emac.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mediatek/mtk_star_emac.c | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml b/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-index e6a5ff208253..87a8b25b03a6 100644
---- a/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-+++ b/Documentation/devicetree/bindings/net/mediatek,star-emac.yaml
-@@ -23,6 +23,7 @@ properties:
-       - mediatek,mt8516-eth
-       - mediatek,mt8518-eth
-       - mediatek,mt8175-eth
-+      - mediatek,mt8365-eth
+diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
+index a3884beaa3fe..d69f75661e75 100644
+--- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
++++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
+@@ -189,6 +189,8 @@ static const char *const mtk_star_clk_names[] = { "core", "reg", "trans" };
+ #define MTK_PERICFG_REG_NIC_CFG_CON_V2		0x0c10
+ #define MTK_PERICFG_REG_NIC_CFG_CON_CFG_INTF	GENMASK(3, 0)
+ #define MTK_PERICFG_BIT_NIC_CFG_CON_RMII	1
++#define MTK_PERICFG_BIT_NIC_CFG_CON_CLK		BIT(0)
++#define MTK_PERICFG_BIT_NIC_CFG_CON_CLK_V2	BIT(8)
  
-   reg:
-     maxItems: 1
+ /* Represents the actual structure of descriptors used by the MAC. We can
+  * reuse the same structure for both TX and RX - the layout is the same, only
+@@ -265,6 +267,7 @@ struct mtk_star_priv {
+ 	int speed;
+ 	int duplex;
+ 	int pause;
++	bool rmii_rxc;
+ 
+ 	const struct mtk_star_compat *compat_data;
+ 
+@@ -1528,6 +1531,8 @@ static int mtk_star_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 	}
+ 
++	priv->rmii_rxc = of_property_read_bool(of_node, "mediatek,rmii-rxc");
++
+ 	if (priv->compat_data->set_interface_mode) {
+ 		ret = priv->compat_data->set_interface_mode(ndev);
+ 		if (ret) {
+@@ -1571,17 +1576,25 @@ static int mt8516_set_interface_mode(struct net_device *ndev)
+ {
+ 	struct mtk_star_priv *priv = netdev_priv(ndev);
+ 	struct device *dev = mtk_star_get_dev(priv);
+-	unsigned int intf_val;
++	unsigned int intf_val, ret, rmii_rxc;
+ 
+ 	switch (priv->phy_intf) {
+ 	case PHY_INTERFACE_MODE_RMII:
+ 		intf_val = MTK_PERICFG_BIT_NIC_CFG_CON_RMII;
++		rmii_rxc = priv->rmii_rxc ? 0 : MTK_PERICFG_BIT_NIC_CFG_CON_CLK;
+ 		break;
+ 	default:
+ 		dev_err(dev, "This interface not supported\n");
+ 		return -EINVAL;
+ 	}
+ 
++	ret = regmap_update_bits(priv->pericfg,
++				 MTK_PERICFG_REG_NIC_CFG1_CON,
++				 MTK_PERICFG_BIT_NIC_CFG_CON_CLK,
++				 rmii_rxc);
++	if (ret)
++		return ret;
++
+ 	return regmap_update_bits(priv->pericfg,
+ 				  MTK_PERICFG_REG_NIC_CFG0_CON,
+ 				  MTK_PERICFG_REG_NIC_CFG_CON_CFG_INTF,
+@@ -1597,6 +1610,7 @@ static int mt8365_set_interface_mode(struct net_device *ndev)
+ 	switch (priv->phy_intf) {
+ 	case PHY_INTERFACE_MODE_RMII:
+ 		intf_val = MTK_PERICFG_BIT_NIC_CFG_CON_RMII;
++		intf_val |= priv->rmii_rxc ? 0 : MTK_PERICFG_BIT_NIC_CFG_CON_CLK_V2;
+ 		break;
+ 	default:
+ 		dev_err(dev, "This interface not supported\n");
+@@ -1605,7 +1619,8 @@ static int mt8365_set_interface_mode(struct net_device *ndev)
+ 
+ 	return regmap_update_bits(priv->pericfg,
+ 				  MTK_PERICFG_REG_NIC_CFG_CON_V2,
+-				  MTK_PERICFG_REG_NIC_CFG_CON_CFG_INTF,
++				  MTK_PERICFG_REG_NIC_CFG_CON_CFG_INTF |
++				  MTK_PERICFG_BIT_NIC_CFG_CON_CLK_V2,
+ 				  intf_val);
+ }
+ 
 -- 
 2.25.1
 
