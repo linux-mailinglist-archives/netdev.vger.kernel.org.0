@@ -2,156 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF89A49E408
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 15:01:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 609A949E40E
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 15:02:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241935AbiA0OBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 09:01:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
+        id S242155AbiA0OCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 09:02:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233274AbiA0OBY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 09:01:24 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9DFC061714
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 06:01:23 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1nD5Kx-0008DX-0C; Thu, 27 Jan 2022 15:01:19 +0100
-Message-ID: <6ef3a2bbae4ae92943cc66972c945a6543706883.camel@pengutronix.de>
-Subject: Re: [PATCH net-next v1 4/4] usbnet: add support for label from
- device tree
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        devicetree@vger.kernel.org, linux-usb@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, kernel@pengutronix.de,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Date:   Thu, 27 Jan 2022 15:01:16 +0100
-In-Reply-To: <YfKcYXjfhVKUKfzY@kroah.com>
-References: <20220127104905.899341-1-o.rempel@pengutronix.de>
-         <20220127104905.899341-5-o.rempel@pengutronix.de>
-         <YfJ6lhZMAEmetdad@kroah.com> <20220127112305.GC9150@pengutronix.de>
-         <YfKCTG7N86yy74q+@kroah.com> <20220127120039.GE9150@pengutronix.de>
-         <YfKcYXjfhVKUKfzY@kroah.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        with ESMTP id S242154AbiA0OCk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 09:02:40 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C69C061751
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 06:02:39 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id h14so8878830ybe.12
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 06:02:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=4hMay+JAuCcxTH5jMZax3EOAyZhyTNJ51MAkVpSdHBs=;
+        b=kpVZma9R6J9c0+P0r7AcgR532LdaKxwRWCZjAThl+o7n34MBKHCkGk4IX4Eoiwj+WS
+         tBkE4lvUkTngDMhr9oRWSLIrwD0Mhf2aVlre0sLTyklPICSvOSgTuP4rRt7f8v22f7zh
+         v73un4SZKiNHQYpvcwloXy4eu2pLaOl6kWWC2a1syrRr9WVzph8stSZFjVY+dz+f1n0c
+         xkNf71DLgexrsyfTUGPzrASf/vujZLE7mAt7Ty9Hb3NAJuZG43nFCy8vdQGUtNE3ggF3
+         M58CLC0cu75S393E2XhW7HJKXlJCWmfrchKaJW8y+x8ntSGU0R7PyFKmvzAC8R7HrbkI
+         bb+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=4hMay+JAuCcxTH5jMZax3EOAyZhyTNJ51MAkVpSdHBs=;
+        b=2lv1bq4cwNCIMPKHj92wDkEy6o3yBsjyIo+6YhbRLjE2wQwoHDquXDvnw2X4Gm9ThG
+         B6DUovSJ1vDNjbP7qGCwWnNnuLrJxe3KBMgDXraGvOaq3jC9upUwJSZmnCVYtlXWPyqm
+         l2QKzNqmfpJZ3yrjvS5buyNFy5M08i704I+z96QDaE7sstDAabCLS6K2hVIwN2TNvxXZ
+         NFyVSvOhaYdiWahc9vNtEcOyeEkCqTzy8aOckAnD7GgxcAMOU/4xT5dWPqhffP7vJ3FK
+         kS/rqBy+QoAq8CzfsRK9Yd9wLVXGFo6Vl+HYECCSm54cH2hlSGkR+sMizThX/siOadni
+         3laQ==
+X-Gm-Message-State: AOAM530sUb7q/UOxyU0LrA6yI4XoTdweELRSWMVPBBjt3tEHbUu+Cqre
+        nLYh8TwU2tPyZiHk5eVCVaUJ2WmqfaSMr6jnVEw=
+X-Google-Smtp-Source: ABdhPJylDyO06wHPSrcoEjey+zasSeRYW4/MOBlgK1B91kfjH6wcT9IkHbWnOL0qO6gZFm/zFK7qx9wY81u0tIiAYpM=
+X-Received: by 2002:a05:6902:120e:: with SMTP id s14mr5736215ybu.359.1643292158229;
+ Thu, 27 Jan 2022 06:02:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Sender: modumaajiyusufari@gmail.com
+Received: by 2002:a81:5689:0:0:0:0:0 with HTTP; Thu, 27 Jan 2022 06:02:37
+ -0800 (PST)
+From:   Lisa Williams <lw2367585@gmail.com>
+Date:   Thu, 27 Jan 2022 14:02:37 +0000
+X-Google-Sender-Auth: 9dYoCKn40RyIGKeIJsx-235-O08
+Message-ID: <CAD5cse2JNgTOC4CJtZ9pA_NuxqX2e4c-yduA81+ENw+sh4i2bA@mail.gmail.com>
+Subject: My name is Lisa Williams
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Greg,
+Hi Dear,
 
-Am Donnerstag, dem 27.01.2022 um 14:21 +0100 schrieb Greg KH:
-> On Thu, Jan 27, 2022 at 01:00:39PM +0100, Oleksij Rempel wrote:
-> > On Thu, Jan 27, 2022 at 12:30:20PM +0100, Greg KH wrote:
-> > > On Thu, Jan 27, 2022 at 12:23:05PM +0100, Oleksij Rempel wrote:
-> > > > On Thu, Jan 27, 2022 at 11:57:26AM +0100, Greg KH wrote:
-> > > > > On Thu, Jan 27, 2022 at 11:49:05AM +0100, Oleksij Rempel wrote:
-> > > > > > Similar to the option to set a netdev name in device tree for switch
-> > > > > > ports by using the property "label" in the DSA framework, this patch
-> > > > > > adds this functionality to the usbnet infrastructure.
-> > > > > > 
-> > > > > > This will help to name the interfaces properly throughout supported
-> > > > > > devices. This provides stable interface names which are useful
-> > > > > > especially in embedded use cases.
-> > > > > 
-> > > > > Stable interface names are for userspace to set, not the kernel.
-> > > > > 
-> > > > > Why would USB care about this?  If you need something like this, get it
-> > > > > from the USB device itself, not DT, which should have nothing to do with
-> > > > > USB as USB is a dynamic, self-describing, bus.  Unlike DT.
-> > > > > 
-> > > > > So I do not think this is a good idea.
-> > > > 
-> > > > This is needed for embedded devices with integrated USB Ethernet
-> > > > controller. Currently I have following use cases to solve:
-> > > > - Board with one or multiple USB Ethernet controllers with external PHY.
-> > > >   The PHY need devicetree to describe IRQ, clock sources, label on board, etc.
-> > > 
-> > > The phy is for the USB controller, not the Ethernet controller, right?
-> > > If for the ethernet controller, ugh, that's a crazy design and I would
-> > > argue a broken one.  But whatever, DT should not be used to describe a
-> > > USB device itself.
-> > > 
-> > > > - Board with USB Ethernet controller with DSA switch. The USB ethernet
-> > > >   controller is attached to the CPU port of DSA switch. In this case,
-> > > >   DSA switch is the sub-node of the USB device.
-> > > 
-> > > What do you mean exactly by "sub node"?  USB does not have such a term.
-> > 
-> > Here are some examples:
-> > 
-> >   - |
-> >     usb@11270000 {
-> >         reg = <0x11270000 0x1000>;
-> 
-> How can a USB device have a register?
-> 
-> And what does 11270000 mean?
-> 
-> 
-> >         #address-cells = <1>;
-> >         #size-cells = <0>;
-> > 
-> >         ethernet@1 {
-> >             compatible = "usb424,ec00";
-> >             reg = <1>;
-> >             label = "LAN0";
-> 
-> Where did that come from?  That should be added in userspace, not from
-> the kernel.
-> 
-> > 	    // there is no internal eeprom, so MAC address is taken from
-> > 	    // NVMEM of the SoC.
-> >             local-mac-address = [00 00 00 00 00 00];
-> > 
-> >             mdio {
-> > 		ethernet-phy@4 {
-> > 			reg = <4>;
-> > 			// Interrupt is attached to the SoC or the GPIO
-> > 			// controller of the same USB devices.
-> > 			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
-> > 			// same about reset. It is attached to the SoC
-> > 			// or GPIO controller of the USB device.
-> > 			reset-gpios = <&gpio3 31 GPIO_ACTIVE_LOW>;
-> > 			reset-assert-us = <10000>;
-> > 			reset-deassert-us = <1000>;
-> > 			// some external clock provider
-> > 			clocks = <&clk>
-> > 			qca,smarteee-tw-us-1g = <24>;
-> > 			qca,clk-out-frequency = <125000000>;
-> 
-> So this device does not follow the spec for this driver in that you have
-> to get the values for the phy from DT and not the device itself?  Why
-> not fix the firmware in the device to report this?
-> 
-> Anyway, this feels really wrong, USB should not be involved in DT by
-> virtue of how the bus was designed.
+My name is Lisa  Williams, I am from the United States of America, Its
+my pleasure to contact you for new and special friendship, I will be
+glad to see your reply for us to know each other better and exchange
+pictures.
 
-While one can argue about the kind of information provided here, it is
-well defined how DT can augment the information about a device on a
-runtime discoverable bus like USB. There is even a DT binding that
-lists you as the maintainer of this standard:
-Documentation/devicetree/bindings/usb/usb-device.yaml
-
-USB is not special here, PCI has the same way for DT to augment runtime
-discovered device information and that is even covered by the ancient
-IEEE 1275 Open Firmware standard.
-
-Regards,
-Lucas
-
+Yours
+Lisa
