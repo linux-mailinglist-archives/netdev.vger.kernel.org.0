@@ -2,87 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1488D49DD9D
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:16:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 076D949DDBB
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:19:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231163AbiA0JQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 04:16:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbiA0JQN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:16:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7802C061714
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 01:16:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66B1861B95
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 09:16:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D3E5C340E4;
-        Thu, 27 Jan 2022 09:16:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643274971;
-        bh=A9vp8c8ZpwHkWeD8WUMc5vPvhRV6/QMvKA5mN+Eiicg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=T4kIbO3JDeKw3Ug29f6ujSnzZVMTlvYsToDuGTrJrvh9kS6g0cjGIJF/SL0y4vkBt
-         RZuC6xH93SeM/gftrGovxlZ8KDRU/+9AGjvfxzISdhsQf1iYKeYED5p3KlYGt3tFFU
-         A0zzrm7nXvqaE8W4wr3IODpQZUz21KRJK7sTx0mqG3Qem+p9p562/EQtzLBHvbl4gc
-         V5GLM4Zx6N/H1HznZkUWrjF8bX7TsiL396T7YBdP70Qh2HeZ9wMeB4DZVCCx1BZ5zY
-         8R4zi8va6ObY4Xux2eOsbM9zScClUHlRNICWMsj4CVqsuiwg+RTGTW+CylUsRZic5H
-         ILf7D18jE5xSg==
-Date:   Thu, 27 Jan 2022 11:16:07 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jian Shen <shenjian15@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linuxarm@openeuler.org
-Subject: Re: [RFCv2 net-next 000/167] net: extend the netdev_features_t
-Message-ID: <YfJi10IcxtYQ7Ttr@unreal>
-References: <20210929155334.12454-1-shenjian15@huawei.com>
+        id S238442AbiA0JTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 04:19:10 -0500
+Received: from einhorn.in-berlin.de ([192.109.42.8]:55181 "EHLO
+        einhorn-mail-out.in-berlin.de" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S235110AbiA0JTK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:19:10 -0500
+X-Envelope-From: thomas@x-berg.in-berlin.de
+Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
+        by einhorn.in-berlin.de  with ESMTPS id 20R9Ix5J001657
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Thu, 27 Jan 2022 10:18:59 +0100
+Received: from thomas by x-berg.in-berlin.de with local (Exim 4.92)
+        (envelope-from <thomas@x-berg.in-berlin.de>)
+        id 1nD0vj-00052Y-07; Thu, 27 Jan 2022 10:18:59 +0100
+Date:   Thu, 27 Jan 2022 10:18:58 +0100
+From:   Thomas Osterried <thomas@osterried.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, ralf@linux-mips.org,
+        linux-hams@vger.kernel.org
+Subject: Re: [PATCH net-next 06/15] net: ax25: remove route refcount
+Message-ID: <20220127091858.GF18529@x-berg.in-berlin.de>
+References: <20220126191109.2822706-1-kuba@kernel.org>
+ <20220126191109.2822706-7-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20210929155334.12454-1-shenjian15@huawei.com>
+In-Reply-To: <20220126191109.2822706-7-kuba@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Thomas Osterried <thomas@x-berg.in-berlin.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 11:50:47PM +0800, Jian Shen wrote:
-> For the prototype of netdev_features_t is u64, and the number
-> of netdevice feature bits is 64 now. So there is no space to
-> introduce new feature bit.
->=20
-> This patchset try to solve it by change the prototype of
-> netdev_features_t from u64 to bitmap. With this change,
-> it's necessary to introduce a set of bitmap operation helpers
-> for netdev features. Meanwhile, the functions which use
-> netdev_features_t as return value are also need to be changed,
-> return the result as an output parameter.
->=20
-> With above changes, it will affect hundreds of files, and all the
-> nic drivers. To make it easy to be reviewed, split the changes
-> to 167 patches to 5 parts.
->=20
-> patch 1~22: convert the prototype which use netdev_features_t
-> as return value
-> patch 24: introduce fake helpers for bitmap operation
-> patch 25~165: use netdev_feature_xxx helpers
-> patch 166: use macro __DECLARE_NETDEV_FEATURE_MASK to replace
-> netdev_feature_t declaration.
-> patch 167: change the type of netdev_features_t to bitmap,
-> and rewrite the bitmap helpers.
->=20
-> Sorry to send a so huge patchset, I wanna to get more suggestions
-> to finish this work, to make it much more reviewable and feasible.
->=20
-> The former discussing for the changes, see [1]
-> [1]. https://www.spinics.net/lists/netdev/msg753528.html
->=20
+Hello,
 
-------------------------------------------------
+ think it's absolutely correct to state
+  "Nothing takes the refcount since v4.9."
+because in ax25_rt_add(),
+  refcount_set(&ax25_rt->refcount, 1);
+is used (for every new ax25_rt entry).
 
-Is anyone actively working on this task?
+But nothing does an increment.
+There's one function in include/net/ax25.h ,
+  ax25_hold_route() which would refcount_inc(&ax25_rt->refcount)
+but it's not called from anywhere.
 
-Thanks
+=> It's value is always 1, and the deleting function ax25_put_route() decrements it again before freeing.
+   I also see no sense in this (anymore).
+
+
+Every struct ax25_route_list operation is assured with either
+  write_lock_bh(&ax25_route_lock);
+  write_unlock_bh(&ax25_route_lock);
+or
+  the struct ax25_route returned from functions is assured by calling read_lock(&ax25_route_lock).
+
+-> No refcount is needed.
+
+
+=> It's good to tidy up stuff that's needed anymore.
+
+But keep in mind:
+The code has strong similarities with include/net/x25.h and x25/x25_route.c ,
+especially in the parts of ax25_hold_route() and ax25_rt_add().
+This will get lost.
+
+
+But there a things a bot does not know: human readable senteces.
+ax25_get_route() is introduced with:
+
+  /*
+   *      Find AX.25 route
+   *
+   *      Only routes with a reference count of zero can be destroyed.
+   *      Must be called with ax25_route_lock read locked.
+   */
+
+The first sentence informs: ax25_rt entries may be freed during the ax25_route_list operation.
+It mentiones reference count (which will exist anymore).
+The conclusion of the first sentence is "Must be called with ax25_route_lock read locked.". This is still true and assured.
+I don't think it has to explain why the read lock is necessary (it's obvious, that routes could be deleted or added to the list). ->
+
+  /*
+   *      Find AX.25 route
+   *
+   *      Must be called with ax25_route_lock read locked.
+   */
+
+should be enough.
+
+ff-topic:
+=========
+
+About read_lock)(): Inconsistent use.
+It's
+  directly called,
+and by
+  ax25_route_lock_use(), which calls read_lock():
+  {
+          read_lock(&ax25_route_lock);
+  }
+
+This makes the code harder to read.
+There's also a function ax25_rt_seq_stop() that calls read_unlock() instead of calling ax25_route_lock_unuse(), which does the same.
+
+
+vy 73,
+	- Thomas  dl9sau
+
+On Wed, Jan 26, 2022 at 11:11:00AM -0800, Jakub Kicinski wrote:
+> Nothing takes the refcount since v4.9.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: ralf@linux-mips.org
+> CC: linux-hams@vger.kernel.org
+> ---
+>  include/net/ax25.h    | 12 ------------
+>  net/ax25/ax25_route.c |  5 ++---
+>  2 files changed, 2 insertions(+), 15 deletions(-)
+> 
+> diff --git a/include/net/ax25.h b/include/net/ax25.h
+> index 526e49589197..cb628c5d7c5b 100644
+> --- a/include/net/ax25.h
+> +++ b/include/net/ax25.h
+> @@ -187,18 +187,12 @@ typedef struct {
+>  
+>  typedef struct ax25_route {
+>  	struct ax25_route	*next;
+> -	refcount_t		refcount;
+>  	ax25_address		callsign;
+>  	struct net_device	*dev;
+>  	ax25_digi		*digipeat;
+>  	char			ip_mode;
+>  } ax25_route;
+>  
+> -static inline void ax25_hold_route(ax25_route *ax25_rt)
+> -{
+> -	refcount_inc(&ax25_rt->refcount);
+> -}
+> -
+>  void __ax25_put_route(ax25_route *ax25_rt);
+>  
+>  extern rwlock_t ax25_route_lock;
+> @@ -213,12 +207,6 @@ static inline void ax25_route_lock_unuse(void)
+>  	read_unlock(&ax25_route_lock);
+>  }
+>  
+> -static inline void ax25_put_route(ax25_route *ax25_rt)
+> -{
+> -	if (refcount_dec_and_test(&ax25_rt->refcount))
+> -		__ax25_put_route(ax25_rt);
+> -}
+> -
+>  typedef struct {
+>  	char			slave;			/* slave_mode?   */
+>  	struct timer_list	slave_timer;		/* timeout timer */
+> diff --git a/net/ax25/ax25_route.c b/net/ax25/ax25_route.c
+> index d0b2e094bd55..be97dc6a53cb 100644
+> --- a/net/ax25/ax25_route.c
+> +++ b/net/ax25/ax25_route.c
+> @@ -111,7 +111,6 @@ static int __must_check ax25_rt_add(struct ax25_routes_struct *route)
+>  		return -ENOMEM;
+>  	}
+>  
+> -	refcount_set(&ax25_rt->refcount, 1);
+>  	ax25_rt->callsign     = route->dest_addr;
+>  	ax25_rt->dev          = ax25_dev->dev;
+>  	ax25_rt->digipeat     = NULL;
+> @@ -160,12 +159,12 @@ static int ax25_rt_del(struct ax25_routes_struct *route)
+>  		    ax25cmp(&route->dest_addr, &s->callsign) == 0) {
+>  			if (ax25_route_list == s) {
+>  				ax25_route_list = s->next;
+> -				ax25_put_route(s);
+> +				__ax25_put_route(s);
+>  			} else {
+>  				for (t = ax25_route_list; t != NULL; t = t->next) {
+>  					if (t->next == s) {
+>  						t->next = s->next;
+> -						ax25_put_route(s);
+> +						__ax25_put_route(s);
+>  						break;
+>  					}
+>  				}
+> -- 
+> 2.34.1
+> 
