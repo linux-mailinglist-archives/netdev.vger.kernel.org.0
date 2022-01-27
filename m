@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E85049E2FE
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 14:00:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38B1249E2FA
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 14:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241461AbiA0NAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 08:00:34 -0500
-Received: from mga07.intel.com ([134.134.136.100]:3511 "EHLO mga07.intel.com"
+        id S241446AbiA0NAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 08:00:24 -0500
+Received: from mga06.intel.com ([134.134.136.31]:51976 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241464AbiA0NAc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 08:00:32 -0500
+        id S241433AbiA0NAX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jan 2022 08:00:23 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643288432; x=1674824432;
+  t=1643288423; x=1674824423;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=qqdElTsE7YN3NAR2wcrpbAjmNUND3PYPv0QA94UzEAg=;
-  b=mdcsKjyexc8wto4ud7DixRw38vur0ftAyY8Fa7ddZZ8bavUtUanT/IXx
-   BVk8vnUTqdNvOmE/q58Ocf3PPPrm7qPcvHauTWqCwTS5foGT0xPdLxle0
-   LJ+NKRa6RogmDdXw9qnqe7M32bpMJ/J1O0nJ6jG8i0Rcj+utnOw/RdFo2
-   JPIVMNEZCaqF5hxALipq2QFVdc5bShXm8zYna9U8UTiZ7LT49EloxqwvJ
-   yIUC1Qh1tyyLqLpQ1RQEvMfMbf5LyONnMmS28C5C1zMmrFlf8DKj1SMRF
-   PnaXxCNR2zvOji1WjUN8dgQnpNYUvQpeSqye7yn2o6RLhIxh6+2xrIGhZ
+  bh=/el1qt9lc5Co2J+eHPhJkacvEleK1FnA+se1S8lEmhc=;
+  b=hh8K54X2octwX2ztChSwy5DeLTfjHfDiW7Kd1CPbsOvn9TYx70vFFzml
+   Em5WBDc446C4EHW5dMJ7dJ5w+vT28ZVmEeU7dKQZK2aM565z/OYkhRdie
+   kdoFmyx0hQqVZGIe48VqTZF/Xw32TPUeGFvuSVjWOmXNQikkwuIbLZgKM
+   1P94838PhnYpdsuLm0zpXn9PCfJK+NQTBksQdy/bcOcg5urOzBEK+Y6+C
+   m/EOl5ceT/YPDfFiFiQZjkdgdPF+jN4L+z1e+SWi6bgQhOzezSYe9o+7D
+   4M2P1J7Zkm2w+3KDX/q++qkYR8xDHbVCZSQFZ2ye0oxjXUZVKvRHPf30A
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="310154024"
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="307553614"
 X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="310154024"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 05:00:31 -0800
+   d="scan'208";a="307553614"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 05:00:22 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="495715633"
+   d="scan'208";a="625207553"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga002.jf.intel.com with ESMTP; 27 Jan 2022 05:00:18 -0800
+  by fmsmga002.fm.intel.com with ESMTP; 27 Jan 2022 05:00:20 -0800
 Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20RD0Dfg020316;
-        Thu, 27 Jan 2022 13:00:13 GMT
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20RD0Jl9020358;
+        Thu, 27 Jan 2022 13:00:19 GMT
 From:   Marcin Szycik <marcin.szycik@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
-        davem@davemloft.net, kuba@kernel.org,
-        Marcin Szycik <marcin.szycik@linux.intel.com>
-Subject: [RFC PATCH net-next v2 0/5] ice: GTP support in switchdev
-Date:   Thu, 27 Jan 2022 13:55:25 +0100
-Message-Id: <20220127125525.125805-1-marcin.szycik@linux.intel.com>
+        davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
+        laforge@gnumonks.org, osmocom-net-gprs@lists.osmocom.org
+Subject: [RFC PATCH net-next v2 1/5] gtp: Allow to create GTP device without FDs
+Date:   Thu, 27 Jan 2022 13:57:25 +0100
+Message-Id: <20220127125725.125915-1-marcin.szycik@linux.intel.com>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -52,62 +52,153 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for adding GTP-C and GTP-U filters in switchdev mode.
+From: Wojciech Drewek <wojciech.drewek@intel.com>
 
-To create a filter for GTP, create a GTP-type netdev with ip tool, enable
-hardware offload, add qdisc and add a filter in tc:
+Currently, when the user wants to create GTP device, he has to
+provide file handles to the sockets created in userspace (IFLA_GTP_FD0,
+IFLA_GTP_FD1). This behaviour is not ideal, considering the option of
+adding support for GTP device creation through ip link. Ip link
+application is not a good place to create such sockets.
 
-ip link add $GTP0 type gtp role <sgsn/ggsn> hsize <hsize>
-ethtool -K $PF0 hw-tc-offload on
-tc qdisc add dev $GTP0 ingress
-tc filter add dev $GTP0 ingress prio 1 flower enc_key_id 1337 \
-action mirred egress redirect dev $VF1_PR
+This patch allows to create GTP device without providing
+IFLA_GTP_FD0 and IFLA_GTP_FD1 arguments. If the user does not
+provide file handles to the sockets, then GTP module takes care
+of creating UDP sockets by itself. Sockets are created with the
+commonly known UDP ports used for GTP protocol (GTP0_PORT and
+GTP1U_PORT). In this case we don't have to provide encap_destroy
+because no extra deinitialization is needed, everything is covered
+by udp_tunnel_sock_release.
 
-By default, a filter for GTP-U will be added. To add a filter for GTP-C,
-specify enc_dst_port = 2123, e.g.:
+Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+---
+ drivers/net/gtp.c | 74 ++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 67 insertions(+), 7 deletions(-)
 
-tc filter add dev $GTP0 ingress prio 1 flower enc_key_id 1337 \
-enc_dst_port 2123 action mirred egress redirect dev $VF1_PR
-
-Note: IPv6 offload is not supported yet.
-Note: GTP-U with no payload offload is not supported yet.
-
-ICE COMMS package is required to create a filter as it contains GTP
-profiles.
-
-Changes in iproute2 are required to be able to add GTP netdev and use
-GTP-specific options (QFI and PDU type). This patchset will be submitted
-separately.
-
-v2: Adding more CC
-
-Marcin Szycik (1):
-  ice: Support GTP-U and GTP-C offload in switchdev
-
-Michal Swiatkowski (1):
-  ice: Fix FV offset searching
-
-Wojciech Drewek (3):
-  gtp: Allow to create GTP device without FDs
-  gtp: Add support for checking GTP device type
-  net/sched: Allow flower to match on GTP options
-
- drivers/net/ethernet/intel/ice/ice.h          |   1 +
- .../net/ethernet/intel/ice/ice_flex_pipe.c    |  46 +-
- .../net/ethernet/intel/ice/ice_flex_pipe.h    |   2 +-
- .../net/ethernet/intel/ice/ice_flex_type.h    |   6 +-
- .../ethernet/intel/ice/ice_protocol_type.h    |  19 +
- drivers/net/ethernet/intel/ice/ice_switch.c   | 630 ++++++++++++++++--
- drivers/net/ethernet/intel/ice/ice_switch.h   |   9 +
- drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 105 ++-
- drivers/net/ethernet/intel/ice/ice_tc_lib.h   |   3 +
- drivers/net/gtp.c                             |  74 +-
- include/net/gtp.h                             |  11 +
- include/uapi/linux/if_tunnel.h                |   4 +-
- include/uapi/linux/pkt_cls.h                  |  15 +
- net/sched/cls_flower.c                        | 116 ++++
- 14 files changed, 967 insertions(+), 74 deletions(-)
-
+diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index 24e5c54d06c1..a2ad0af913cb 100644
+--- a/drivers/net/gtp.c
++++ b/drivers/net/gtp.c
+@@ -66,8 +66,10 @@ struct gtp_dev {
+ 
+ 	struct sock		*sk0;
+ 	struct sock		*sk1u;
++	u8			sk_created;
+ 
+ 	struct net_device	*dev;
++	struct net		*net;
+ 
+ 	unsigned int		role;
+ 	unsigned int		hash_size;
+@@ -320,8 +322,16 @@ static void gtp_encap_disable_sock(struct sock *sk)
+ 
+ static void gtp_encap_disable(struct gtp_dev *gtp)
+ {
+-	gtp_encap_disable_sock(gtp->sk0);
+-	gtp_encap_disable_sock(gtp->sk1u);
++	if (gtp->sk_created) {
++		udp_tunnel_sock_release(gtp->sk0->sk_socket);
++		udp_tunnel_sock_release(gtp->sk1u->sk_socket);
++		gtp->sk_created = false;
++		gtp->sk0 = NULL;
++		gtp->sk1u = NULL;
++	} else {
++		gtp_encap_disable_sock(gtp->sk0);
++		gtp_encap_disable_sock(gtp->sk1u);
++	}
+ }
+ 
+ /* UDP encapsulation receive handler. See net/ipv4/udp.c.
+@@ -664,9 +674,6 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+ 	struct gtp_net *gn;
+ 	int hashsize, err;
+ 
+-	if (!data[IFLA_GTP_FD0] && !data[IFLA_GTP_FD1])
+-		return -EINVAL;
+-
+ 	gtp = netdev_priv(dev);
+ 
+ 	if (!data[IFLA_GTP_PDP_HASHSIZE]) {
+@@ -677,6 +684,8 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+ 			hashsize = 1024;
+ 	}
+ 
++	gtp->net = src_net;
++
+ 	err = gtp_hashtable_new(gtp, hashsize);
+ 	if (err < 0)
+ 		return err;
+@@ -844,6 +853,38 @@ static struct sock *gtp_encap_enable_socket(int fd, int type,
+ 	return sk;
+ }
+ 
++static struct sock *gtp_encap_create_sock(int type, struct gtp_dev *gtp)
++{
++	struct udp_tunnel_sock_cfg tuncfg = {};
++	struct udp_port_cfg udp_conf = {
++		.local_ip.s_addr	= htonl(INADDR_ANY),
++		.family			= AF_INET,
++	};
++	struct net *net = gtp->net;
++	struct socket *sock;
++	int err;
++
++	if (type == UDP_ENCAP_GTP0)
++		udp_conf.local_udp_port = GTP0_PORT;
++	else if (type == UDP_ENCAP_GTP1U)
++		udp_conf.local_udp_port = GTP1U_PORT;
++	else
++		return ERR_PTR(-EINVAL);
++
++	err = udp_sock_create(net, &udp_conf, &sock);
++	if (err)
++		return ERR_PTR(err);
++
++	tuncfg.sk_user_data = gtp;
++	tuncfg.encap_type = type;
++	tuncfg.encap_rcv = gtp_encap_recv;
++	tuncfg.encap_destroy = NULL;
++
++	setup_udp_tunnel_sock(net, sock, &tuncfg);
++
++	return sock->sk;
++}
++
+ static int gtp_encap_enable(struct gtp_dev *gtp, struct nlattr *data[])
+ {
+ 	struct sock *sk1u = NULL;
+@@ -868,11 +909,30 @@ static int gtp_encap_enable(struct gtp_dev *gtp, struct nlattr *data[])
+ 		}
+ 	}
+ 
++	if (!data[IFLA_GTP_FD0] && !data[IFLA_GTP_FD1]) {
++		sk0 = gtp_encap_create_sock(UDP_ENCAP_GTP0, gtp);
++		if (IS_ERR(sk0))
++			return PTR_ERR(sk0);
++
++		sk1u = gtp_encap_create_sock(UDP_ENCAP_GTP1U, gtp);
++		if (IS_ERR(sk1u)) {
++			udp_tunnel_sock_release(sk0->sk_socket);
++			return PTR_ERR(sk1u);
++		}
++		gtp->sk_created = true;
++	}
++
+ 	if (data[IFLA_GTP_ROLE]) {
+ 		role = nla_get_u32(data[IFLA_GTP_ROLE]);
+ 		if (role > GTP_ROLE_SGSN) {
+-			gtp_encap_disable_sock(sk0);
+-			gtp_encap_disable_sock(sk1u);
++			if (gtp->sk_created) {
++				udp_tunnel_sock_release(sk0->sk_socket);
++				udp_tunnel_sock_release(sk1u->sk_socket);
++				gtp->sk_created = false;
++			} else {
++				gtp_encap_disable_sock(sk0);
++				gtp_encap_disable_sock(sk1u);
++			}
+ 			return -EINVAL;
+ 		}
+ 	}
 -- 
 2.31.1
 
