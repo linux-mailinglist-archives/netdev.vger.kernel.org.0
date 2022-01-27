@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FDAC49E01A
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 12:02:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A08949E01C
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 12:02:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239911AbiA0LCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 06:02:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56982 "EHLO
+        id S239899AbiA0LCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 06:02:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239901AbiA0LCf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 06:02:35 -0500
+        with ESMTP id S239910AbiA0LCj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 06:02:39 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D72C061747
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 03:02:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5663C061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 03:02:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Q4yCrH/K+RSxFop37Lm+p8UoZbZb6fQIGoRd3/pKonI=; b=Q3oX2xXv25qEbS/fQECdKR6h2u
-        4H12mGxjmEvWHQXzO6sX5+On8PyJQ14FbOOqzkuoYzAHydu8BgEQKDjvKEQbfqZi4kt8+1rBLyobY
-        KOZYA8tKlk1BDlgPUKPUdIqYgFectXps/IKT+yo/vPrlx5ERrHHaYnK0J0i+jIKdqh3+UKJfHAz7f
-        VcuFl+ZiIpWcMFfxU8tjZb3auqAymCutQewubJnCoRtx1KzJN01fNUxgQyj9if7GBS/5Ri5pm3WrJ
-        KdV/egYazZamnDQzj3ZF57f1J5A5pi7sy7M6vSOTEuDQcA0Kk9DAHXfZZDv1HMx0LkMzJD5ZIU5mf
-        O0PiLmgA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:43576 helo=rmk-PC.armlinux.org.uk)
+        bh=ym86r40hCOLjql2uq3t65x0k+krlcnBEvwVTHnPjFKU=; b=YKRmJwEhhOAZfQY0uWtMlJ50s6
+        mosCToU0r9EasBD3xtZIgtGVrzpAPkXNkiaQSJtJQ2CPxPhYPaQUsbkLZpnxrM+c86Xaz+gh3w4wo
+        LOO1+QuAIzadrJYC/ZeaKrYLKrosZfO9q+gfm3Au7W4j0SBmh/W3ziqK4kuVNwkFPyC1BMIghqtTF
+        jPxrI/IFP1/Hv5JeKOwXQlGFMuez2FqOhd2e9PcdFuJf7zmrqfLJ60krtn+gWbzTHE6CaadLZOxox
+        roR2odFKlpWXfdQbMsx6FX7OibWBdctDqV8/KqZxW6FXffITCGrACLMriWTTxiYoMQg+AA10aHhAE
+        vw4wXJ5Q==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:43578 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1nD2Xu-0004Mc-85; Thu, 27 Jan 2022 11:02:30 +0000
+        id 1nD2Xz-0004Mo-CY; Thu, 27 Jan 2022 11:02:35 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1nD2Xt-005UcX-Kt; Thu, 27 Jan 2022 11:02:29 +0000
+        id 1nD2Xy-005Ucd-Ot; Thu, 27 Jan 2022 11:02:34 +0000
 In-Reply-To: <YfJ7omKUSF6BY+CL@shell.armlinux.org.uk>
 References: <YfJ7omKUSF6BY+CL@shell.armlinux.org.uk>
 From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -46,134 +46,96 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         Woojung Huh <woojung.huh@microchip.com>
-Subject: [PATCH CFT net-next 4/5] net: dsa: qca8k: convert to
+Subject: [PATCH CFT net-next 5/5] net: dsa: xrs700x: convert to
  phylink_generic_validate()
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1nD2Xt-005UcX-Kt@rmk-PC.armlinux.org.uk>
+Message-Id: <E1nD2Xy-005Ucd-Ot@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Thu, 27 Jan 2022 11:02:29 +0000
+Date:   Thu, 27 Jan 2022 11:02:34 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Populate the supported interfaces and MAC capabilities for the QCA8K
-DSA switch and remove the old validate implementation to allow DSA to
-use phylink_generic_validate() for this switch driver.
+Populate the supported interfaces and MAC capabilities for the xrs700x
+family of DSA switches and remove the old validate implementation to
+allow DSA to use phylink_generic_validate() for this switch driver.
 
-In making this change, we bring consistency to the ethtool linkmodes
-that phylink's validate step produces, thereby following the expected
-behaviour as the phylink documentation has explained. Specifically, the
-ethtool 1000baseX_Full capability is now permitted for all interface
-modes, as it is a property of the PHY driver whether 1000baseX fiber
-connections can be supported.
+According to commit ee00b24f32eb ("net: dsa: add Arrow SpeedChips
+XRS700x driver") the switch supports one RMII port and up to three
+RGMII ports. This commit assumes that port 0 is the RMII port and the
+remainder are RGMII.
+
+This commit also results in the Autoneg bit being set in the ethtool
+link modes, which wasn't in the original; if this switch supports
+RGMII to a 10/100/1G PHY, then surely we want to allow Autoneg on the
+PHY.
 
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/dsa/qca8k.c | 66 ++++++++++++-----------------------------
- 1 file changed, 19 insertions(+), 47 deletions(-)
+ drivers/net/dsa/xrs700x/xrs700x.c | 29 +++++++++++------------------
+ 1 file changed, 11 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 039694518788..c8a36ee56b75 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -1531,67 +1531,39 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 	}
+diff --git a/drivers/net/dsa/xrs700x/xrs700x.c b/drivers/net/dsa/xrs700x/xrs700x.c
+index 0730352cdd57..bc06fe6bac6b 100644
+--- a/drivers/net/dsa/xrs700x/xrs700x.c
++++ b/drivers/net/dsa/xrs700x/xrs700x.c
+@@ -442,34 +442,27 @@ static void xrs700x_teardown(struct dsa_switch *ds)
+ 	cancel_delayed_work_sync(&priv->mib_work);
  }
  
--static void
--qca8k_phylink_validate(struct dsa_switch *ds, int port,
--		       unsigned long *supported,
--		       struct phylink_link_state *state)
-+static void qca8k_phylink_get_caps(struct dsa_switch *ds, int port,
-+				   struct phylink_config *config)
+-static void xrs700x_phylink_validate(struct dsa_switch *ds, int port,
+-				     unsigned long *supported,
+-				     struct phylink_link_state *state)
++static void xrs700x_phylink_get_caps(struct dsa_switch *ds, int port,
++				     struct phylink_config *config)
  {
 -	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
 -
  	switch (port) {
- 	case 0: /* 1st CPU port */
--		if (state->interface != PHY_INTERFACE_MODE_NA &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII_TXID &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII_RXID &&
--		    state->interface != PHY_INTERFACE_MODE_SGMII)
--			goto unsupported;
-+		phy_interface_set_rgmii(config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_SGMII,
+ 	case 0:
++		__set_bit(PHY_INTERFACE_MODE_RMII,
 +			  config->supported_interfaces);
++		config->mac_capabilities = MAC_10FD | MAC_100FD;
  		break;
 +
  	case 1:
  	case 2:
  	case 3:
- 	case 4:
- 	case 5:
- 		/* Internal PHY */
--		if (state->interface != PHY_INTERFACE_MODE_NA &&
--		    state->interface != PHY_INTERFACE_MODE_GMII &&
--		    state->interface != PHY_INTERFACE_MODE_INTERNAL)
--			goto unsupported;
-+		__set_bit(PHY_INTERFACE_MODE_GMII,
-+			  config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-+			  config->supported_interfaces);
+-		phylink_set(mask, 1000baseT_Full);
++		phy_interface_set_rgmii(config->supported_interfaces);
++		config->mac_capabilities = MAC_10FD | MAC_100FD | MAC_1000FD;
  		break;
 +
- 	case 6: /* 2nd CPU port / external PHY */
--		if (state->interface != PHY_INTERFACE_MODE_NA &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII_TXID &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII_RXID &&
--		    state->interface != PHY_INTERFACE_MODE_SGMII &&
--		    state->interface != PHY_INTERFACE_MODE_1000BASEX)
--			goto unsupported;
-+		phy_interface_set_rgmii(config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_SGMII,
-+			  config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_1000BASEX,
-+			  config->supported_interfaces);
- 		break;
--	default:
--unsupported:
+ 	default:
 -		linkmode_zero(supported);
+ 		dev_err(ds->dev, "Unsupported port: %i\n", port);
 -		return;
++		break;
  	}
- 
+-
 -	phylink_set_port_modes(mask);
--	phylink_set(mask, Autoneg);
 -
--	phylink_set(mask, 1000baseT_Full);
--	phylink_set(mask, 10baseT_Half);
+-	/* The switch only supports full duplex. */
 -	phylink_set(mask, 10baseT_Full);
--	phylink_set(mask, 100baseT_Half);
 -	phylink_set(mask, 100baseT_Full);
--
--	if (state->interface == PHY_INTERFACE_MODE_1000BASEX)
--		phylink_set(mask, 1000baseX_Full);
--
--	phylink_set(mask, Pause);
--	phylink_set(mask, Asym_Pause);
 -
 -	linkmode_and(supported, supported, mask);
 -	linkmode_and(state->advertising, state->advertising, mask);
-+	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
-+		MAC_10 | MAC_100 | MAC_1000FD;
  }
  
- static int
-@@ -2410,7 +2382,7 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
- 	.port_vlan_filtering	= qca8k_port_vlan_filtering,
- 	.port_vlan_add		= qca8k_port_vlan_add,
- 	.port_vlan_del		= qca8k_port_vlan_del,
--	.phylink_validate	= qca8k_phylink_validate,
-+	.phylink_get_caps	= qca8k_phylink_get_caps,
- 	.phylink_mac_link_state	= qca8k_phylink_mac_link_state,
- 	.phylink_mac_config	= qca8k_phylink_mac_config,
- 	.phylink_mac_link_down	= qca8k_phylink_mac_link_down,
+ static void xrs700x_mac_link_up(struct dsa_switch *ds, int port,
+@@ -703,7 +696,7 @@ static const struct dsa_switch_ops xrs700x_ops = {
+ 	.setup			= xrs700x_setup,
+ 	.teardown		= xrs700x_teardown,
+ 	.port_stp_state_set	= xrs700x_port_stp_state_set,
+-	.phylink_validate	= xrs700x_phylink_validate,
++	.phylink_get_caps	= xrs700x_phylink_get_caps,
+ 	.phylink_mac_link_up	= xrs700x_mac_link_up,
+ 	.get_strings		= xrs700x_get_strings,
+ 	.get_sset_count		= xrs700x_get_sset_count,
 -- 
 2.30.2
 
