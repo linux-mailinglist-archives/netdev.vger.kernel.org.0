@@ -2,108 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D71B849E705
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 17:05:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E28A649E76D
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 17:24:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243424AbiA0QFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 11:05:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44158 "EHLO
+        id S243659AbiA0QYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 11:24:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238116AbiA0QFo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 11:05:44 -0500
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F06C061714;
-        Thu, 27 Jan 2022 08:05:44 -0800 (PST)
-Received: from [IPV6:2003:e9:d724:a665:d7b5:f965:3476:16f8] (p200300e9d724a665d7b5f965347616f8.dip0.t-ipconnect.de [IPv6:2003:e9:d724:a665:d7b5:f965:3476:16f8])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id EF6B7C02E8;
-        Thu, 27 Jan 2022 17:05:42 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1643299543;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FfsBBNyW3usZsZKpkTjNPtPSOuDwgu4XSB4iGuoPRKw=;
-        b=Zv4PpLPz0FEwR6BAITIRZ3EDeyIQhvhP9iqfa2QefOgpWpQqw0pEFl4O7rlfC1fKv+GJBa
-        U2oqWGXakHtvnveqY92EBICoTTazJOM2LaAzPvSvyj65QW7F6LHTJeoESNJpzRNg8IjRgE
-        Fjxa+IC68Sj97laMd9Vla8oro9KJG+gBkh7XCkgVZL/U4MSbdNsk91aUhcD0+wCiPGAl9C
-        KS+yiLFaQawq5rQfUf5yxOtR55Nhuy0O6E0rY1yj03Fki74IFqtkYTcODbIKgdeEuJVjTs
-        gF39Bcnu8iUrH/jr6fz6NG9AceqOQwxw0SyujoYLVpBpLDPuFziKwns76LA0vQ==
-Message-ID: <6903cb13-2fc9-8c8a-f247-8cbeddf51103@datenfreihafen.org>
-Date:   Thu, 27 Jan 2022 17:05:42 +0100
+        with ESMTP id S243564AbiA0QYs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 11:24:48 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43ABBC061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 08:24:48 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id v186so10424018ybg.1
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 08:24:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=GUGMKOXoeh+DsxEq/mythQWeBs2PTApaRiGCR6ELsyQ=;
+        b=M8Ei78c6rWLxCnLUfGitRLwe0XeOIf6XsTgFItI4JdVB+QxZEQzLgikpyO3egRV+Xh
+         nDkXm5N0B5WzGZhIZKsB8lpqynkWz2yPIb4XWpzKVARBacgGmj8ne+5ldSUHREGMdIJT
+         /JvIZ1Z7VCgqRzjwBdyvr+QB3l6YVO03uGHRpY7RdKFedg1dyzcAEuiEudJgvoDz74to
+         3TVX5L+cNXdRHh39+GajSmWya5srt8bl0vcb+hVxa3H0UaN4Xu1nXamQmYAaAKcaX+Pu
+         1lgBpFuD9k5I+SmI2nlQJp4fxKzd4JHmBCjU6cuiwhcIMksrRZzrLBTbSfi5bnwjgM2w
+         ZWYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=GUGMKOXoeh+DsxEq/mythQWeBs2PTApaRiGCR6ELsyQ=;
+        b=AYovQRc+cM58vYeGeVTpNlKWSHMyHeC7ys9/+sVNQpBJ9dOzJqhznxMRbwhG4s3V8r
+         aiClVEx4+fcrpNGzyCkDn8GWsEn3GZkWnn2cNrZFhLV+0DRVWXsWPOV1JpV5z+9f7VdS
+         87Fq4fqpMXBZklT4NLz0SdNPKd9nJw1b8BX9lWxcttF91zgmU17HaBVjTt34c9ZeVeji
+         oGW7deeqekEPflshBtpyXkYPzeHdCX6IEx3WXu5SSZ7bMGOFMsVdHNpFUIZbtKMvJP9b
+         FXjQDb1QqLczjNM6o35/6FY7GkH7OUd4QkStDbQdF4jJ4cYSwFhm9ny7v1UnB9tTvDPQ
+         SB9w==
+X-Gm-Message-State: AOAM5337RHgnwfv6xdz2IAl3Alt5fPo2aaIlLRUD9wMd5sz5i6Ud/voG
+        sUb4UwUf9i5DfMWH9gRwbRoJOlxHtKZRMlu29AA=
+X-Google-Smtp-Source: ABdhPJxt6mYcqbhxh9WVoyD34aoCfk9ORTMQ3f8RKyJryulHtYe2If8yyALSytdvgTxsZu6oGBFXTjmHyu+J9kyglnk=
+X-Received: by 2002:a25:8082:: with SMTP id n2mr6840913ybk.605.1643300687491;
+ Thu, 27 Jan 2022 08:24:47 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [wpan-next 4/4] net: ieee802154: Add a kernel doc header to the
- ieee802154_addr structure
-Content-Language: en-US
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        linux-wpan@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-References: <20220120004350.308866-1-miquel.raynal@bootlin.com>
- <20220120004350.308866-5-miquel.raynal@bootlin.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220120004350.308866-5-miquel.raynal@bootlin.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a05:7000:cf0b:0:0:0:0 with HTTP; Thu, 27 Jan 2022 08:24:47
+ -0800 (PST)
+Reply-To: abrahammorrison443@gmail.com
+From:   Abraham Morrison <mysecretary00001@gmail.com>
+Date:   Thu, 27 Jan 2022 08:24:47 -0800
+Message-ID: <CAFpE+swCbACLEQBZ5pipFfEj4ARy7WKwPkuR6vJuOXg=8tN5Jw@mail.gmail.com>
+Subject: Good day!
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Jak si=C4=99 masz? Mam nadziej=C4=99, =C5=BCe jeste=C5=9B zdrowy i zdrowy? =
+Informuj=C4=99, =C5=BCe
+pomy=C5=9Blnie zako=C5=84czy=C5=82em transakcj=C4=99 z pomoc=C4=85 nowego p=
+artnera. W
+mi=C4=99dzyczasie postanowi=C5=82em zrekompensowa=C4=87 ci kwot=C4=99 500 0=
+00 USD z powodu
+twoich wcze=C5=9Bniejszych wysi=C5=82k=C3=B3w, chocia=C5=BC rozczarowa=C5=
+=82e=C5=9B mnie po drodze.
 
-Hello.
+Radz=C4=99 skontaktowa=C4=87 si=C4=99 z moj=C4=85 sekretark=C4=85 w sprawie=
+ karty bankomatowej
+o warto=C5=9Bci 500.000,00 $, kt=C3=B3r=C4=85 zachowa=C5=82em dla Ciebie.
 
-On 20.01.22 01:43, Miquel Raynal wrote:
-> From: David Girault <david.girault@qorvo.com>
-> 
-> While not being absolutely needed, it at least explain the mode vs. enum
-> fields.
-> 
-> Signed-off-by: David Girault <david.girault@qorvo.com>
-> [miquel.raynal@bootlin.com: Isolate this change from a bigger commit and
->                              reword the comment]
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> ---
->   include/net/cfg802154.h | 10 ++++++++++
->   1 file changed, 10 insertions(+)
-> 
-> diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-> index 4193c242d96e..0b8b1812cea1 100644
-> --- a/include/net/cfg802154.h
-> +++ b/include/net/cfg802154.h
-> @@ -29,6 +29,16 @@ struct ieee802154_llsec_key_id;
->   struct ieee802154_llsec_key;
->   #endif /* CONFIG_IEEE802154_NL802154_EXPERIMENTAL */
->   
-> +/**
-> + * struct ieee802154_addr - IEEE802.15.4 device address
-> + * @mode: Address mode from frame header. Can be one of:
-> + *        - @IEEE802154_ADDR_NONE
-> + *        - @IEEE802154_ADDR_SHORT
-> + *        - @IEEE802154_ADDR_LONG
-> + * @pan_id: The PAN ID this address belongs to
-> + * @short_addr: address if @mode is @IEEE802154_ADDR_SHORT
-> + * @extended_addr: address if @mode is @IEEE802154_ADDR_LONG
-> + */
->   struct ieee802154_addr {
->   	u8 mode;
->   	__le16 pan_id;
-> 
+Skontaktuj si=C4=99 z ni=C4=85, podaj=C4=85c poni=C5=BCsze informacje.
+Imi=C4=99: Linda Koffi
+E-mail: koffilinda785@gmail.com
 
-Same here, please fold into the addr moving patch. I see no reason why 
-splitting these would make it easier or do I miss something?
+Popro=C5=9B j=C4=85, aby przes=C5=82a=C5=82a Ci ca=C5=82kowit=C4=85 sum=C4=
+=99 (500.000.00 dolar=C3=B3w) karty
+bankomatowej, kt=C3=B3r=C4=85 zachowa=C5=82em dla Ciebie.
 
-regards
-Stefan Schmidt
+Pan Abraham Morrison
