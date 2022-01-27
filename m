@@ -2,83 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07C4549E802
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 17:50:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B950249E80E
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 17:51:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243940AbiA0QuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 11:50:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54644 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234585AbiA0QuL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 11:50:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5EF4C061714;
-        Thu, 27 Jan 2022 08:50:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42AB061A40;
-        Thu, 27 Jan 2022 16:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ABA68C340EB;
-        Thu, 27 Jan 2022 16:50:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643302210;
-        bh=Cz6QMeKxN77A7aL8FqHZmINBlF/a0VxVjq8JBN3/TWQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Wl0EpUBG1Qc7pGf23lssSOMLEySR8X9nCa3q6oZGgnJHTxruUzb/PIIFVr08f6opb
-         znMEwLh4L7GMpoXzH7/KaBfSjfd0V/xMqWPV/A2RKdViO0HYDMMVJuJbCvEh+JjFhj
-         VmpPfwh+7vIasnFcA3owUZ0M8pP4RGP3mQahwY7h295/zNxBcXJkp0PENhqI2HW/wc
-         +e4ZrJr2bm0uTnKzu45pmHi6SJM+BUnXQK0lsVohROPJkDCLb9cecNZghnNnm5taum
-         naiJW8py9aIWVo+oHCbgpjjwmZgnq8E2leqwRzZFVMbm2tXAIek8dZLzbhfp6oT+Xi
-         jDCNuz8xFTW5Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8F3D6E5D07E;
-        Thu, 27 Jan 2022 16:50:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S244137AbiA0Qv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 11:51:57 -0500
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:55479 "EHLO
+        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244141AbiA0Qv5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 11:51:57 -0500
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 364CFC0008;
+        Thu, 27 Jan 2022 16:51:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1643302315;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yldgb1jJRgdr5TixNjS58O9AjaOif/VfjaBoPa/kMoY=;
+        b=AVA954oRh1GHgwDI6bSPcB2SlgInevrzfz+RG2NwscCR1IROs9Esf1+PJPbtdoAk3wJOfI
+        5RizSUBc5dgDc/4mUTP0O+Mp4STR3Q9xz5sDjEqFgNvsnWBy9V/jxYcl9MiBqYYiFhkKst
+        6PBJ4zzV/NkIpVcu17AUIPMKPvW/yPgR+Gfmwd8RciBPB9CLIIOGml0782pQ+hFe4h6SqS
+        mxa3mwEqj1jY4Ep+SttE+/JTeWyiTUQopX7CO8l3cAlJbSy6qJxzM6mIawGDdSDcW6TRS6
+        QJ6QuJRsxKvQ7dJRQ0SPivGVtxFJIB/PSbHsZsQva0MeAPgv+cSC9lOINBd6wg==
+Date:   Thu, 27 Jan 2022 17:51:51 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     Alexander Aring <alex.aring@gmail.com>, linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [wpan-next 4/4] net: ieee802154: Add a kernel doc header to the
+ ieee802154_addr structure
+Message-ID: <20220127175151.1d6f70bb@xps13>
+In-Reply-To: <6903cb13-2fc9-8c8a-f247-8cbeddf51103@datenfreihafen.org>
+References: <20220120004350.308866-1-miquel.raynal@bootlin.com>
+        <20220120004350.308866-5-miquel.raynal@bootlin.com>
+        <6903cb13-2fc9-8c8a-f247-8cbeddf51103@datenfreihafen.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next] selftests: xsk: fix bpf_res cleanup test
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164330221058.9164.13990882355843912872.git-patchwork-notify@kernel.org>
-Date:   Thu, 27 Jan 2022 16:50:10 +0000
-References: <20220125082945.26179-1-magnus.karlsson@gmail.com>
-In-Reply-To: <20220125082945.26179-1-magnus.karlsson@gmail.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
-        bpf@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Stefan,
 
-This patch was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+stefan@datenfreihafen.org wrote on Thu, 27 Jan 2022 17:05:42 +0100:
 
-On Tue, 25 Jan 2022 09:29:45 +0100 you wrote:
-> From: Magnus Karlsson <magnus.karlsson@intel.com>
-> 
-> After commit 710ad98c363a ("veth: Do not record rx queue hint in
-> veth_xmit"), veth no longer receives traffic on the same queue as it
-> was sent on. This breaks the bpf_res test for the AF_XDP selftests as
-> the socket tied to queue 1 will not receive traffic anymore. Modify
-> the test so that two sockets are tied to queue id 0 using a shared
-> umem instead. When killing the first socket enter the second socket
-> into the xskmap so that traffic will flow to it. This will still test
-> that the resources are not cleaned up until after the second socket
-> dies, without having to rely on veth supporting rx_queue hints.
-> 
-> [...]
+> Hello.
+>=20
+> On 20.01.22 01:43, Miquel Raynal wrote:
+> > From: David Girault <david.girault@qorvo.com>
+> >=20
+> > While not being absolutely needed, it at least explain the mode vs. enum
+> > fields.
+> >=20
+> > Signed-off-by: David Girault <david.girault@qorvo.com>
+> > [miquel.raynal@bootlin.com: Isolate this change from a bigger commit and
+> >                              reword the comment]
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
+> >   include/net/cfg802154.h | 10 ++++++++++
+> >   1 file changed, 10 insertions(+)
+> >=20
+> > diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
+> > index 4193c242d96e..0b8b1812cea1 100644
+> > --- a/include/net/cfg802154.h
+> > +++ b/include/net/cfg802154.h
+> > @@ -29,6 +29,16 @@ struct ieee802154_llsec_key_id;
+> >   struct ieee802154_llsec_key;
+> >   #endif /* CONFIG_IEEE802154_NL802154_EXPERIMENTAL */ =20
+> >   > +/** =20
+> > + * struct ieee802154_addr - IEEE802.15.4 device address
+> > + * @mode: Address mode from frame header. Can be one of:
+> > + *        - @IEEE802154_ADDR_NONE
+> > + *        - @IEEE802154_ADDR_SHORT
+> > + *        - @IEEE802154_ADDR_LONG
+> > + * @pan_id: The PAN ID this address belongs to
+> > + * @short_addr: address if @mode is @IEEE802154_ADDR_SHORT
+> > + * @extended_addr: address if @mode is @IEEE802154_ADDR_LONG
+> > + */
+> >   struct ieee802154_addr {
+> >   	u8 mode;
+> >   	__le16 pan_id;
+> >  =20
+>=20
+> Same here, please fold into the addr moving patch. I see no reason why sp=
+litting these would make it easier or do I miss something?
 
-Here is the summary with links:
-  - [bpf-next] selftests: xsk: fix bpf_res cleanup test
-    https://git.kernel.org/bpf/bpf-next/c/3b22523bca02
+I really split every change that I could as a habit, but there is no
+problem with squashing them both.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks,
+Miqu=C3=A8l
