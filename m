@@ -2,70 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7825749D98A
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 05:13:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 744AB49D99F
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 05:30:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235907AbiA0ENh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 23:13:37 -0500
-Received: from einhorn.in-berlin.de ([192.109.42.8]:40831 "EHLO
-        einhorn-mail-out.in-berlin.de" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232382AbiA0ENg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 23:13:36 -0500
-X-Greylist: delayed 777 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Jan 2022 23:13:36 EST
-X-Envelope-From: thomas@x-berg.in-berlin.de
-Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
-        by einhorn.in-berlin.de  with ESMTPS id 20R3xugg026181
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 04:59:56 +0100
-Received: from thomas by x-berg.in-berlin.de with local (Exim 4.92)
-        (envelope-from <thomas@x-berg.in-berlin.de>)
-        id 1nCvwy-0003eu-9x; Thu, 27 Jan 2022 04:59:56 +0100
-Date:   Thu, 27 Jan 2022 04:59:56 +0100
-From:   Thomas Osterried <thomas@osterried.de>
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     jpr@f6fbb.org, davem@davemloft.net, kuba@kernel.org,
-        wang6495@umn.edu, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] yam: fix a memory leak in yam_siocdevprivate()
-Message-ID: <20220127035956.GE18529@x-berg.in-berlin.de>
-References: <20220124032954.18283-1-hbh25y@gmail.com>
+        id S236034AbiA0EaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 23:30:13 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:46166 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236029AbiA0EaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 23:30:12 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4836B82150
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 04:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 83D8BC340E9;
+        Thu, 27 Jan 2022 04:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643257810;
+        bh=H6es6dNoLOO7ekNEEEgC4b98+5SJFJsimGYbsqjSRng=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KWRYEH5g4xsQU3obw73BZG4WY4OxeInDTMmWmlr6F31XDaRvWoQibhETTdEZLxjly
+         SzVpnDswaeKY7BOx7Seb2YH6oMJg5+7J7EmcWUQOuaXV3NqIxa3z1CKUUD8X1acBXI
+         6o3Em8mJGTTztVvFGNKsi9mkMuE4cCokm0dx/paGI8M5gvGM+AgFYY7/b699EehCts
+         tgJSuQk8iika/XP1Ugh8e4K3iPyacmqpyjM9fTUig8kwqqZqPSZuNPV5yv1XRkcU3K
+         As8bxvZjLm2/h00WT3BFCqBw2WQdYyxbNImdbXWJDESm2bMiaQ4sL3g4UkOLCpehL6
+         Y+frw1c9EHqLA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6C203E5D084;
+        Thu, 27 Jan 2022 04:30:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124032954.18283-1-hbh25y@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Thomas Osterried <thomas@x-berg.in-berlin.de>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH iproute2 v2] dcb: app: Add missing "dcb app show dev X
+ default-prio"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164325781043.10851.1475698773516083038.git-patchwork-notify@kernel.org>
+Date:   Thu, 27 Jan 2022 04:30:10 +0000
+References: <f83e5480816bb050ff9005409ae2ae64b44d52de.1642668290.git.petrm@nvidia.com>
+In-Reply-To: <f83e5480816bb050ff9005409ae2ae64b44d52de.1642668290.git.petrm@nvidia.com>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+        stephen@networkplumber.org, maksymy@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-Just a comment: Looks ok for me.
+This patch was applied to iproute2/iproute2.git (main)
+by Stephen Hemminger <stephen@networkplumber.org>:
 
-On Mon, Jan 24, 2022 at 11:29:54AM +0800, Hangyu Hua wrote:
-> ym needs to be free when ym->cmd != SIOCYAMSMCS.
+On Thu, 20 Jan 2022 09:57:54 +0100 you wrote:
+> All the actual code exists, but we neglect to recognize "default-prio" as a
+> CLI key for selection of what to show.
 > 
-> Fixes: 0781168e23a2 ("yam: fix a missing-check bug")
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
 > ---
->  drivers/net/hamradio/yam.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/hamradio/yam.c b/drivers/net/hamradio/yam.c
-> index 6376b8485976..980f2be32f05 100644
-> --- a/drivers/net/hamradio/yam.c
-> +++ b/drivers/net/hamradio/yam.c
-> @@ -950,9 +950,7 @@ static int yam_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __
->  		ym = memdup_user(data, sizeof(struct yamdrv_ioctl_mcs));
->  		if (IS_ERR(ym))
->  			return PTR_ERR(ym);
-> -		if (ym->cmd != SIOCYAMSMCS)
-> -			return -EINVAL;
-> -		if (ym->bitrate > YAM_MAXBITRATE) {
-> +		if (ym->cmd != SIOCYAMSMCS || ym->bitrate > YAM_MAXBITRATE) {
->  			kfree(ym);
->  			return -EINVAL;
->  		}
-> -- 
-> 2.25.1
-> 
+>  dcb/dcb_app.c | 2 ++
+>  1 file changed, 2 insertions(+)
+
+Here is the summary with links:
+  - [iproute2,v2] dcb: app: Add missing "dcb app show dev X default-prio"
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=924f6b4a5d2b
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
