@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA0149E20A
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 13:09:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61A7D49E20D
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 13:09:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240926AbiA0MIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 07:08:49 -0500
-Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:58553 "EHLO
-        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240904AbiA0MIt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 07:08:49 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V2zmQrx_1643285326;
-Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V2zmQrx_1643285326)
+        id S240976AbiA0MIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 07:08:53 -0500
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:37719 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240904AbiA0MIw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 07:08:52 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R691e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V2zmQsM_1643285329;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V2zmQsM_1643285329)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 27 Jan 2022 20:08:46 +0800
+          Thu, 27 Jan 2022 20:08:49 +0800
 From:   "D. Wythe" <alibuda@linux.alibaba.com>
 To:     kgraul@linux.ibm.com
 Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
         linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
         "D. Wythe" <alibuda@linux.alibaba.com>
-Subject: [PATCH net-next 2/3] net/smc: Limits backlog connections
-Date:   Thu, 27 Jan 2022 20:08:02 +0800
-Message-Id: <9b52fc3f11a2ae6f23224a178fd4cff9f9dd4eaa.1643284658.git.alibuda@linux.alibaba.com>
+Subject: [PATCH net-next 3/3] net/smc: Fallback when handshake workqueue congested
+Date:   Thu, 27 Jan 2022 20:08:03 +0800
+Message-Id: <ed4781cde8e3b9812d4a46ce676294a812c80e8f.1643284658.git.alibuda@linux.alibaba.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <cover.1643284658.git.alibuda@linux.alibaba.com>
 References: <cover.1643284658.git.alibuda@linux.alibaba.com>
@@ -32,142 +32,129 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-Current implementation does not handling backlog semantics, one
-potential risk is that server will be flooded by infinite amount
-connections, even if client was SMC-incapable.
-
-This patch works to put a limit on backlog connections, referring to the
-TCP implementation, we divides SMC connections into two categories:
-
-1. Half SMC connection, which includes all TCP established while SMC not
+This patch intends to provide a mechanism to allow automatic fallback to
+TCP according to the pressure of SMC handshake process. At present,
+frequent visits will cause the incoming connections to be backlogged in
+SMC handshake queue, raise the connections established time. Which is
+quite unacceptable for those applications who base on short lived
 connections.
 
-2. Full SMC connection, which includes all SMC established connections.
+It should be optional for applications that don't care about connection
+established time. For now, this patch only provides the switch at the
+compile time.
 
-For half SMC connection, since all half SMC connections starts with TCP
-established, we can achieve our goal by put a limit before TCP
-established. Refer to the implementation of TCP, this limits will based
-on not only the half SMC connections but also the full connections,
-which is also a constraint on full SMC connections.
+There are two ways to implement this mechanism:
 
-For full SMC connections, although we know exactly where it starts, it's
-quite hard to put a limit before it. The easiest way is to block wait
-before receive SMC confirm CLC message, while it's under protection by
-smc_server_lgr_pending, a global lock, which leads this limit to the
-entire host instead of a single listen socket. Another way is to drop
-the full connections, but considering the cast of SMC connections, we
-prefer to keep full SMC connections.
+1. Fallback when TCP established.
+2. Fallback before TCP established.
 
-Even so, the limits of full SMC connections still exists, see commits
-about half SMC connection below.
+In the first way, we need to wait and receive CLC messages that the
+client will potentially send, and then actively reply with a decline
+message, in a sense, which is also a sort of SMC handshake, affect the
+connections established time on its way.
 
-After this patch, the limits of backend connection shows like:
+In the second way, the only problem is that we need to inject SMC logic
+into TCP when it is about to reply the incoming SYN, since we already do
+that, it's seems not a problem anymore. And advantage is obvious, few
+additional processes are required to complete the fallback.
 
-For SMC:
+This patch use the second way.
 
-1. Client with SMC-capability can makes 2 * backlog full SMC connections
-   or 1 * backlog half SMC connections and 1 * backlog full SMC
-   connections at most.
-
-2. Client without SMC-capability can only makes 1 * backlog half TCP
-   connections and 1 * backlog full TCP connections.
-
+Link: https://lore.kernel.org/all/1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com/
 Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
 ---
- net/smc/af_smc.c | 43 +++++++++++++++++++++++++++++++++++++++++++
- net/smc/smc.h    |  4 ++++
- 2 files changed, 47 insertions(+)
+ include/linux/tcp.h  |  1 +
+ net/ipv4/tcp_input.c |  3 ++-
+ net/smc/Kconfig      | 12 ++++++++++++
+ net/smc/af_smc.c     | 22 ++++++++++++++++++++++
+ 4 files changed, 37 insertions(+), 1 deletion(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 1b40304..66a0e64 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -73,6 +73,34 @@ static void smc_set_keepalive(struct sock *sk, int val)
- 	smc->clcsock->sk->sk_prot->keepalive(smc->clcsock->sk, val);
+diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+index 78b91bb..1c4ae5d 100644
+--- a/include/linux/tcp.h
++++ b/include/linux/tcp.h
+@@ -394,6 +394,7 @@ struct tcp_sock {
+ 	bool	is_mptcp;
+ #endif
+ #if IS_ENABLED(CONFIG_SMC)
++	bool	(*smc_in_limited)(const struct sock *sk);
+ 	bool	syn_smc;	/* SYN includes SMC */
+ #endif
+ 
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index dc49a3d..9890de9 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6701,7 +6701,8 @@ static void tcp_openreq_init(struct request_sock *req,
+ 	ireq->ir_num = ntohs(tcp_hdr(skb)->dest);
+ 	ireq->ir_mark = inet_request_mark(sk, skb);
+ #if IS_ENABLED(CONFIG_SMC)
+-	ireq->smc_ok = rx_opt->smc_ok;
++	ireq->smc_ok = rx_opt->smc_ok && !(tcp_sk(sk)->smc_in_limited &&
++			tcp_sk(sk)->smc_in_limited(sk));
+ #endif
  }
  
-+static struct sock *smc_tcp_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
-+					  struct request_sock *req,
-+					  struct dst_entry *dst,
-+					  struct request_sock *req_unhash,
-+					  bool *own_req)
+diff --git a/net/smc/Kconfig b/net/smc/Kconfig
+index 1ab3c5a..1903927 100644
+--- a/net/smc/Kconfig
++++ b/net/smc/Kconfig
+@@ -19,3 +19,15 @@ config SMC_DIAG
+ 	  smcss.
+ 
+ 	  if unsure, say Y.
++
++if MPTCP
++
++config SMC_AUTO_FALLBACK
++	bool "SMC: automatic fallback to TCP"
++	default y
++	help
++	  Allow automatic fallback to TCP accroding to the pressure of SMC-R
++	  handshake process.
++
++	  If that's not what you except or unsure, say N.
++endif
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 66a0e64..49b8a29 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -101,6 +101,24 @@ static struct sock *smc_tcp_syn_recv_sock(const struct sock *sk, struct sk_buff
+ 	return NULL;
+ }
+ 
++#if IS_ENABLED(CONFIG_SMC_AUTO_FALLBACK)
++static bool smc_is_in_limited(const struct sock *sk)
 +{
-+	struct smc_sock *smc;
++	const struct smc_sock *smc;
 +
-+	smc = (struct smc_sock *)((uintptr_t)sk->sk_user_data & ~SK_USER_DATA_NOCOPY);
++	smc = (const struct smc_sock *)
++		((uintptr_t)sk->sk_user_data & ~SK_USER_DATA_NOCOPY);
 +
-+	if (READ_ONCE(sk->sk_ack_backlog) + atomic_read(&smc->smc_pendings) >
-+				sk->sk_max_ack_backlog)
-+		goto drop;
++	if (!smc)
++		return true;
 +
-+	if (sk_acceptq_is_full(&smc->sk)) {
-+		NET_INC_STATS(sock_net(sk), LINUX_MIB_LISTENOVERFLOWS);
-+		goto drop;
-+	}
++	if (workqueue_congested(WORK_CPU_UNBOUND, smc_hs_wq))
++		return true;
 +
-+	/* passthrough to origin syn recv sock fct */
-+	return smc->ori_af_ops->syn_recv_sock(sk, skb, req, dst, req_unhash, own_req);
-+
-+drop:
-+	dst_release(dst);
-+	tcp_listendrop(sk);
-+	return NULL;
++	return false;
 +}
++#endif
 +
  static struct smc_hashinfo smc_v4_hashinfo = {
  	.lock = __RW_LOCK_UNLOCKED(smc_v4_hashinfo.lock),
  };
-@@ -1491,6 +1519,9 @@ static void smc_listen_out(struct smc_sock *new_smc)
- 	struct smc_sock *lsmc = new_smc->listen_smc;
- 	struct sock *newsmcsk = &new_smc->sk;
+@@ -2206,6 +2224,10 @@ static int smc_listen(struct socket *sock, int backlog)
  
-+	if (tcp_sk(new_smc->clcsock->sk)->syn_smc)
-+		atomic_dec(&lsmc->smc_pendings);
-+
- 	if (lsmc->sk.sk_state == SMC_LISTEN) {
- 		lock_sock_nested(&lsmc->sk, SINGLE_DEPTH_NESTING);
- 		smc_accept_enqueue(&lsmc->sk, newsmcsk);
-@@ -2096,6 +2127,9 @@ static void smc_tcp_listen_work(struct work_struct *work)
- 		if (!new_smc)
- 			continue;
+ 	inet_csk(smc->clcsock->sk)->icsk_af_ops = &smc->af_ops;
  
-+		if (tcp_sk(new_smc->clcsock->sk)->syn_smc)
-+			atomic_inc(&lsmc->smc_pendings);
-+
- 		new_smc->listen_smc = lsmc;
- 		new_smc->use_fallback = lsmc->use_fallback;
- 		new_smc->fallback_rsn = lsmc->fallback_rsn;
-@@ -2163,6 +2197,15 @@ static int smc_listen(struct socket *sock, int backlog)
- 	smc->clcsock->sk->sk_data_ready = smc_clcsock_data_ready;
- 	smc->clcsock->sk->sk_user_data =
- 		(void *)((uintptr_t)smc | SK_USER_DATA_NOCOPY);
-+
-+	/* save origin ops */
-+	smc->ori_af_ops = inet_csk(smc->clcsock->sk)->icsk_af_ops;
-+
-+	smc->af_ops = *smc->ori_af_ops;
-+	smc->af_ops.syn_recv_sock = smc_tcp_syn_recv_sock;
-+
-+	inet_csk(smc->clcsock->sk)->icsk_af_ops = &smc->af_ops;
++#if IS_ENABLED(CONFIG_SMC_AUTO_FALLBACK)
++	tcp_sk(smc->clcsock->sk)->smc_in_limited = smc_is_in_limited;
++#endif
 +
  	rc = kernel_listen(smc->clcsock, backlog);
  	if (rc) {
  		smc->clcsock->sk->sk_data_ready = smc->clcsk_data_ready;
-diff --git a/net/smc/smc.h b/net/smc/smc.h
-index bd2f3dc..4366f24 100644
---- a/net/smc/smc.h
-+++ b/net/smc/smc.h
-@@ -240,6 +240,10 @@ struct smc_sock {				/* smc sock container */
- 	bool			use_fallback;	/* fallback to tcp */
- 	int			fallback_rsn;	/* reason for fallback */
- 	u32			peer_diagnosis; /* decline reason from peer */
-+	atomic_t                smc_pendings;   /* pending smc connections */
-+	struct inet_connection_sock_af_ops	af_ops;
-+	struct inet_connection_sock_af_ops	*ori_af_ops;
-+						/* origin af ops */
- 	int			sockopt_defer_accept;
- 						/* sockopt TCP_DEFER_ACCEPT
- 						 * value
 -- 
 1.8.3.1
 
