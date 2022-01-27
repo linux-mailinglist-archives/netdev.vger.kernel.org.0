@@ -2,95 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F26F49DB9E
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 08:31:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D238749DBB0
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 08:33:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234008AbiA0HbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 02:31:01 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:35436
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233852AbiA0HbA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 02:31:00 -0500
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
+        id S237364AbiA0HdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 02:33:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36288 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237363AbiA0HdU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 02:33:20 -0500
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCD9C061714;
+        Wed, 26 Jan 2022 23:33:19 -0800 (PST)
+Received: from [IPV6:2003:e9:d70e:d66f:5a35:69f1:72f5:373] (p200300e9d70ed66f5a3569f172f50373.dip0.t-ipconnect.de [IPv6:2003:e9:d70e:d66f:5a35:69f1:72f5:373])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 9E5FA3F1B4
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 07:30:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1643268659;
-        bh=K9pKlwHH8BUvXPsrFd23VascNmFC+AtE0oEE3TMapTw=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=BZW2BC3K3XnlunZaox4KNomDGAoDKzgU274awylWWG3k/EcBbXToqjhCsmVi8M7h1
-         gyB6JG8V+eHhFH7uHGXTgo6NCaug/zOOzC7tNW75/o9y4j3RPw3a4jJkCHLOu5z82S
-         BU0Z54/Ahjhy+SxZQCimKoX9V1/oH0A2QR0aLKZj86gXLoTAkEuzwfxdsYfhc4QBf/
-         axNJulK9KPryIJLf7nBmLz6PCjj0Ar/DUO15F0XeUJddE+6l5PWKSGn8AbUd7AL9YG
-         NPXJRSRkfwbPleYf0gxoiWBBU7kRcAzIv3WL5YZkwSbCrzSfMjaTeqvCRIxMBE54X8
-         DQydNiXVv4MmQ==
-Received: by mail-wm1-f72.google.com with SMTP id n7-20020a1c7207000000b0034ec3d8ce0aso1077655wmc.8
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 23:30:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=K9pKlwHH8BUvXPsrFd23VascNmFC+AtE0oEE3TMapTw=;
-        b=NZbU1YhCgk1LXy6gdiRLNyNWqDA4yLg6dISX8tgzHA4MorcT2fPwQpM57sIEq9D0xX
-         4bDjYjid8dvcFDX4i8CkeXM7Z8MY64yPeqaEqJsqkR+iy8wXXoC8Jh409f/AMAD6dEbf
-         0fe/VzyKbvZ6H03gKxbkNOyGtOzh3qPR/CZuR+5JPQSxB1+SQb4HP/T7dkX34Z7o73fU
-         TvnuQPEazURGvWofKWw4eTSeSYw0fI3oCmgUKKq2BDCBLtzT/HPj5r3abBYohYE2bclt
-         CPxSompeir320XXcfcT81JvGMZ89U5k7pgR0M2WAr/NeRcJ75i9h3BKSXhlD34B2fddT
-         lwIQ==
-X-Gm-Message-State: AOAM533JFfpZ6vRCK3mGLQ/L7xdxjL38qLmzP155YvAGu+8/aMo3+npq
-        Qb6KTdYV+M7eMalK0HzWewJxGN9Ct4qYvyinEuyrzUigd10rlpG+PzwHrGKeQ8KBMTJnH+wWhcM
-        ccxID9RdWN4beEXkEX1Jmba87Ccf/S8Uefg==
-X-Received: by 2002:a05:600c:507:: with SMTP id i7mr2063239wmc.40.1643268658657;
-        Wed, 26 Jan 2022 23:30:58 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJybPdicnDDdxpVWWLaPKezySdArk9jv1vKg2D4syhmvh36/k0jiyfRWNxQWRaLWX5jTO2cgxA==
-X-Received: by 2002:a05:600c:507:: with SMTP id i7mr2063226wmc.40.1643268658438;
-        Wed, 26 Jan 2022 23:30:58 -0800 (PST)
-Received: from [192.168.0.62] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id bg23sm1616501wmb.5.2022.01.26.23.30.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Jan 2022 23:30:58 -0800 (PST)
-Message-ID: <051a3220-e81b-fb91-a11b-7057f47a9beb@canonical.com>
-Date:   Thu, 27 Jan 2022 08:30:57 +0100
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id D3F62C0824;
+        Thu, 27 Jan 2022 08:33:16 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1643268797;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=y8DY7UBqf6EvdHkEUzasa8wET6ZUZeG8iI0Uuvl5nTI=;
+        b=Z4eDUn5CWJpCMSSSoq1djY+GR92eh3OzfS9IGd5ZdD3W1LsjLz4E5Nw6j9g8ocZyIOnm0s
+        EvtFfVDLekzK1ImBKI4O0RahG0he9drlZPUmCrClPYMij4PrgDJ4NDd/FGEd9iMG/QkFd+
+        kKGeHPP44A7+TZzX07jVptZgruSK2SnV1sGNweOK7xoxr9sO5y3V6HXYjFt5MvcjyzhJyh
+        H+vnBPx6GHIwhJb7D9oatZVLItB2pbdboLFd8pj6zfVoHxVX+ike+cL0gS5vug6aN2b4xh
+        wrH9h6Loz5l49R0LyIBUWxe+f7joApHrnLF+F5OJPZl4O1q750sEdBrXfN64cA==
+Message-ID: <344c7192-20b6-15f5-021c-092148f87bca@datenfreihafen.org>
+Date:   Thu, 27 Jan 2022 08:33:15 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net-next 02/15] nfc: use *_set_vendor_cmds() helpers
+ Thunderbird/91.3.0
+Subject: Re: [wpan v3 1/6] net: ieee802154: hwsim: Ensure proper channel
+ selection at probe time
 Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, wengjianfeng@yulong.com
-References: <20220126191109.2822706-1-kuba@kernel.org>
- <20220126191109.2822706-3-kuba@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220126191109.2822706-3-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+References: <20220125121426.848337-1-miquel.raynal@bootlin.com>
+ <20220125121426.848337-2-miquel.raynal@bootlin.com>
+ <d3cab1bb-184d-73f9-7bd8-8eefc5e7e70c@datenfreihafen.org>
+ <20220125174849.31501317@xps13>
+ <89726c29-bf7d-eaf1-2af0-da1914741bec@datenfreihafen.org>
+ <CAB_54W4TGvLeXdKLpxDwTrt4a19WPtSWDXq7kX4i-Ypd6euLnQ@mail.gmail.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <CAB_54W4TGvLeXdKLpxDwTrt4a19WPtSWDXq7kX4i-Ypd6euLnQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/01/2022 20:10, Jakub Kicinski wrote:
-> NCI and HCI wrappers for nfc_set_vendor_cmds() exist,
-> use them. We could also remove the helpers.
-> It's a coin toss.
+Hello.
+
+On 26.01.22 23:54, Alexander Aring wrote:
+> Hi,
 > 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: krzysztof.kozlowski@canonical.com
-> CC: wengjianfeng@yulong.com
-> ---
->  drivers/nfc/st-nci/vendor_cmds.c   | 2 +-
->  drivers/nfc/st21nfca/vendor_cmds.c | 4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
+> On Wed, Jan 26, 2022 at 8:38 AM Stefan Schmidt
+> <stefan@datenfreihafen.org> wrote:
+>>
+>>
+>> Hello.
+>>
+>> On 25.01.22 17:48, Miquel Raynal wrote:
+>>> Hi Stefan,
+>>>
+>>> stefan@datenfreihafen.org wrote on Tue, 25 Jan 2022 15:28:11 +0100:
+>>>
+>>>> Hello.
+>>>>
+>>>> On 25.01.22 13:14, Miquel Raynal wrote:
+>>>>> Drivers are expected to set the PHY current_channel and current_page
+>>>>> according to their default state. The hwsim driver is advertising being
+>>>>> configured on channel 13 by default but that is not reflected in its own
+>>>>> internal pib structure. In order to ensure that this driver consider the
+>>>>> current channel as being 13 internally, we at least need to set the
+>>>>> pib->channel field to 13.
+>>>>>
+>>>>> Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
+>>>>> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+>>>>> ---
+>>>>>     drivers/net/ieee802154/mac802154_hwsim.c | 1 +
+>>>>>     1 file changed, 1 insertion(+)
+>>>>>
+>>>>> diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
+>>>>> index 8caa61ec718f..00ec188a3257 100644
+>>>>> --- a/drivers/net/ieee802154/mac802154_hwsim.c
+>>>>> +++ b/drivers/net/ieee802154/mac802154_hwsim.c
+>>>>> @@ -786,6 +786,7 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
+>>>>>              goto err_pib;
+>>>>>      }
+>>>>>     > +      pib->page = 13;
+>>>>
+>>>> You want to set channel not page here.
+>>>
+>>> Oh crap /o\ I've messed that update badly. Of course I meant
+>>> pib->channel here, as it is in the commit log.
+>>>
+>>> I'll wait for Alexander's feedback before re-spinning. Unless the rest
+>>> looks good for you both, I don't know if your policy allows you to fix
+>>> it when applying, anyhow I'll do what is necessary.
+>>
+>> If Alex has nothing else and there is no re-spin I fix this when
+>> applying, no worries.
 > 
+> Everything is fine.
+> 
+> Acked-by: Alexander Aring <aahringo@redhat.com>
+> 
+> On the whole series. Thanks.
 
+Fixed up this commit and applied the whole patchset.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Next one we should look at would be the 3 split out cleanup patches.
 
-
-Best regards,
-Krzysztof
+regards
+Stefan Schmidt
