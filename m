@@ -2,70 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C30EF49DD99
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:15:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1488D49DD9D
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:16:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231691AbiA0JOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 04:14:49 -0500
-Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:33608 "EHLO
-        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238417AbiA0JOj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:14:39 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V2zNxYh_1643274875;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V2zNxYh_1643274875)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 27 Jan 2022 17:14:36 +0800
-Date:   Thu, 27 Jan 2022 17:14:35 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, kgraul@linux.ibm.com,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 0/6] net/smc: Spread workload over multiple
- cores
-Message-ID: <YfJieyROaAKE+ZO0@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <20220114054852.38058-1-tonylu@linux.alibaba.com>
- <YePesYRnrKCh1vFy@unreal>
- <YfD26mhGkM9DFBV+@TonyMac-Alibaba>
- <20220126152806.GN8034@ziepe.ca>
- <YfIOHZ7hSfogeTyS@TonyMac-Alibaba>
- <YfI50xqsv20KDpz9@unreal>
- <YfJQ6AwYMA/i4HvH@TonyMac-Alibaba>
- <YfJcDfkBZfeYA1Z/@unreal>
+        id S231163AbiA0JQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 04:16:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230114AbiA0JQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:16:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7802C061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 01:16:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66B1861B95
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 09:16:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D3E5C340E4;
+        Thu, 27 Jan 2022 09:16:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643274971;
+        bh=A9vp8c8ZpwHkWeD8WUMc5vPvhRV6/QMvKA5mN+Eiicg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=T4kIbO3JDeKw3Ug29f6ujSnzZVMTlvYsToDuGTrJrvh9kS6g0cjGIJF/SL0y4vkBt
+         RZuC6xH93SeM/gftrGovxlZ8KDRU/+9AGjvfxzISdhsQf1iYKeYED5p3KlYGt3tFFU
+         A0zzrm7nXvqaE8W4wr3IODpQZUz21KRJK7sTx0mqG3Qem+p9p562/EQtzLBHvbl4gc
+         V5GLM4Zx6N/H1HznZkUWrjF8bX7TsiL396T7YBdP70Qh2HeZ9wMeB4DZVCCx1BZ5zY
+         8R4zi8va6ObY4Xux2eOsbM9zScClUHlRNICWMsj4CVqsuiwg+RTGTW+CylUsRZic5H
+         ILf7D18jE5xSg==
+Date:   Thu, 27 Jan 2022 11:16:07 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jian Shen <shenjian15@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        hkallweit1@gmail.com, netdev@vger.kernel.org,
+        linuxarm@openeuler.org
+Subject: Re: [RFCv2 net-next 000/167] net: extend the netdev_features_t
+Message-ID: <YfJi10IcxtYQ7Ttr@unreal>
+References: <20210929155334.12454-1-shenjian15@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YfJcDfkBZfeYA1Z/@unreal>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210929155334.12454-1-shenjian15@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 10:47:09AM +0200, Leon Romanovsky wrote:
-> On Thu, Jan 27, 2022 at 03:59:36PM +0800, Tony Lu wrote:
-> > 
-> > Yes, I agree with you that the code is old. I think there are two
-> > problems, one for performance issue, the other one for API refactor.
-> > 
-> > We are running into the performance issues mentioned in patches in our
-> > cloud environment. So I think it is more urgent for a real world issue.
-> > 
-> > The current modification is less intrusive to the code. This makes
-> > changes simpler. And current implement works for now, this is why I put
-> > refactor behind.
-> 
-> We are not requesting to refactor the code, but properly use existing
-> in-kernel API, while implementing new feature ("Spread workload over
-> multiple cores").
+On Wed, Sep 29, 2021 at 11:50:47PM +0800, Jian Shen wrote:
+> For the prototype of netdev_features_t is u64, and the number
+> of netdevice feature bits is 64 now. So there is no space to
+> introduce new feature bit.
+>=20
+> This patchset try to solve it by change the prototype of
+> netdev_features_t from u64 to bitmap. With this change,
+> it's necessary to introduce a set of bitmap operation helpers
+> for netdev features. Meanwhile, the functions which use
+> netdev_features_t as return value are also need to be changed,
+> return the result as an output parameter.
+>=20
+> With above changes, it will affect hundreds of files, and all the
+> nic drivers. To make it easy to be reviewed, split the changes
+> to 167 patches to 5 parts.
+>=20
+> patch 1~22: convert the prototype which use netdev_features_t
+> as return value
+> patch 24: introduce fake helpers for bitmap operation
+> patch 25~165: use netdev_feature_xxx helpers
+> patch 166: use macro __DECLARE_NETDEV_FEATURE_MASK to replace
+> netdev_feature_t declaration.
+> patch 167: change the type of netdev_features_t to bitmap,
+> and rewrite the bitmap helpers.
+>=20
+> Sorry to send a so huge patchset, I wanna to get more suggestions
+> to finish this work, to make it much more reviewable and feasible.
+>=20
+> The former discussing for the changes, see [1]
+> [1]. https://www.spinics.net/lists/netdev/msg753528.html
+>=20
 
-Sorry for that if I missed something about properly using existing
-in-kernel API. I am not sure the proper API is to use ib_cq_pool_get()
-and ib_cq_pool_put()?
+------------------------------------------------
 
-If so, these APIs doesn't suit for current smc's usage, I have to
-refactor logic (tasklet and wr_id) in smc. I think it is a huge work
-and should do it with full discussion.
+Is anyone actively working on this task?
 
-Thanks,
-Tony Lu
+Thanks
