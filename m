@@ -2,83 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FBA249E7DC
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 17:43:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07C4549E802
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 17:50:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244008AbiA0Qnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 11:43:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52844 "EHLO
+        id S243940AbiA0QuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 11:50:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244079AbiA0Qmm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 11:42:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736ECC06174A;
-        Thu, 27 Jan 2022 08:42:25 -0800 (PST)
+        with ESMTP id S234585AbiA0QuL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 11:50:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5EF4C061714;
+        Thu, 27 Jan 2022 08:50:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EF31B80BD1;
-        Thu, 27 Jan 2022 16:42:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F092DC340E8;
-        Thu, 27 Jan 2022 16:42:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42AB061A40;
+        Thu, 27 Jan 2022 16:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id ABA68C340EB;
+        Thu, 27 Jan 2022 16:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643301742;
-        bh=TXAiXJs3qtaBb0dJ/MpNjqafjjmSK1BDR2g/RFuEQIw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XFhQD3n4txrlQjiqmBQhuEcOlBor8yCCMKV7JbjF9RBP9BsBzY/yrBjWLuVXgwF5I
-         PC9aZrrt2JgeCoJk15rAqamfKrGgxzraeDApR4+qEl+gHFdGDhXUr6mWUjooeT9ZSy
-         5NhMFaOLqXncr4QQchYjjQ6WHFUWXYcBSTGTiIhOD3bHIh1w9tP/KMG6d+FbvCKnpS
-         kPZ53DpAfdB3rYXobfVBsEoi93mJ6bsMeVoeqM7uFvUvqm9tIf65jTk4NfYHY0eGkV
-         MoXzGicWMPpUY+7LV/uN/D97p+7YgHZtfAWrfXyIYXReBQMXX3Z9oSuU/hxpanlLsC
-         A07KMwmdOydOg==
-Date:   Thu, 27 Jan 2022 08:42:20 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>, menglong8.dong@gmail.com
-Cc:     dsahern@kernel.org, rostedt@goodmis.org, mingo@redhat.com,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, edumazet@google.com,
-        pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        imagedong@tencent.com, alobakin@pm.me, pabeni@redhat.com,
-        cong.wang@bytedance.com, talalahmad@google.com, haokexin@gmail.com,
-        keescook@chromium.org, memxor@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        mengensun@tencent.com
-Subject: Re: [PATCH v2 net-next 1/8] net: socket: intrudoce
- SKB_DROP_REASON_SOCKET_FILTER
-Message-ID: <20220127084220.05c86ef5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <2512e358-f4d8-f85e-2a82-fbd5a97d1c2f@gmail.com>
-References: <20220127091308.91401-1-imagedong@tencent.com>
-        <20220127091308.91401-2-imagedong@tencent.com>
-        <2512e358-f4d8-f85e-2a82-fbd5a97d1c2f@gmail.com>
+        s=k20201202; t=1643302210;
+        bh=Cz6QMeKxN77A7aL8FqHZmINBlF/a0VxVjq8JBN3/TWQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Wl0EpUBG1Qc7pGf23lssSOMLEySR8X9nCa3q6oZGgnJHTxruUzb/PIIFVr08f6opb
+         znMEwLh4L7GMpoXzH7/KaBfSjfd0V/xMqWPV/A2RKdViO0HYDMMVJuJbCvEh+JjFhj
+         VmpPfwh+7vIasnFcA3owUZ0M8pP4RGP3mQahwY7h295/zNxBcXJkp0PENhqI2HW/wc
+         +e4ZrJr2bm0uTnKzu45pmHi6SJM+BUnXQK0lsVohROPJkDCLb9cecNZghnNnm5taum
+         naiJW8py9aIWVo+oHCbgpjjwmZgnq8E2leqwRzZFVMbm2tXAIek8dZLzbhfp6oT+Xi
+         jDCNuz8xFTW5Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8F3D6E5D07E;
+        Thu, 27 Jan 2022 16:50:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next] selftests: xsk: fix bpf_res cleanup test
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164330221058.9164.13990882355843912872.git-patchwork-notify@kernel.org>
+Date:   Thu, 27 Jan 2022 16:50:10 +0000
+References: <20220125082945.26179-1-magnus.karlsson@gmail.com>
+In-Reply-To: <20220125082945.26179-1-magnus.karlsson@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
+        bpf@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Jan 2022 08:37:06 -0700 David Ahern wrote:
-> On 1/27/22 2:13 AM, menglong8.dong@gmail.com wrote:
-> > From: Menglong Dong <imagedong@tencent.com>
-> > 
-> > Introduce SKB_DROP_REASON_SOCKET_FILTER, which is used as the reason
-> > of skb drop out of socket filter. Meanwhile, replace
-> > SKB_DROP_REASON_TCP_FILTER with it.
+Hello:
 
-> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > index bf11e1fbd69b..8a636e678902 100644
-> > --- a/include/linux/skbuff.h
-> > +++ b/include/linux/skbuff.h
-> > @@ -318,7 +318,7 @@ enum skb_drop_reason {
-> >  	SKB_DROP_REASON_NO_SOCKET,
-> >  	SKB_DROP_REASON_PKT_TOO_SMALL,
-> >  	SKB_DROP_REASON_TCP_CSUM,
-> > -	SKB_DROP_REASON_TCP_FILTER,
-> > +	SKB_DROP_REASON_SOCKET_FILTER,
-> >  	SKB_DROP_REASON_UDP_CSUM,
-> >  	SKB_DROP_REASON_MAX,
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
+
+On Tue, 25 Jan 2022 09:29:45 +0100 you wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
 > 
-> This should go to net, not net-next.
+> After commit 710ad98c363a ("veth: Do not record rx queue hint in
+> veth_xmit"), veth no longer receives traffic on the same queue as it
+> was sent on. This breaks the bpf_res test for the AF_XDP selftests as
+> the socket tied to queue 1 will not receive traffic anymore. Modify
+> the test so that two sockets are tied to queue id 0 using a shared
+> umem instead. When killing the first socket enter the second socket
+> into the xskmap so that traffic will flow to it. This will still test
+> that the resources are not cleaned up until after the second socket
+> dies, without having to rely on veth supporting rx_queue hints.
+> 
+> [...]
 
-Let me make an exception and apply this patch out of the series 
-to avoid a conflict / week long wait for another merge.
+Here is the summary with links:
+  - [bpf-next] selftests: xsk: fix bpf_res cleanup test
+    https://git.kernel.org/bpf/bpf-next/c/3b22523bca02
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
