@@ -2,63 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87ED749D714
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 02:00:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6998149D717
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 02:01:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234211AbiA0BAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 20:00:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35858 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234227AbiA0BAo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 20:00:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C66C061747
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 17:00:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A32061B7C
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 01:00:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15458C340E7;
-        Thu, 27 Jan 2022 01:00:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643245243;
-        bh=HyiG7TmXHQPsxbzrIxS1cOYK3PWCLliqZci+S+WBYB0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EBeOuxQ1RDRjPcHHYfXoUAj0mIVvO/C2jJG9XWjw2qpeCQ5bFPY5T0NnR9g8l77rn
-         +vD80dxWmyLT9SVI/0zDc8orJefYMy2NKwVnn96V39X450GbXJbeLShsdXAVVm7tVb
-         aYtbP1vuVaiH+t+rRLiXegvSwHvoHAYS4hOJ/RWZyAoXAc1nR2M/DrLjQT5tK30npF
-         PtR3nbqj6qIbW9vG/bYf4qGhHtyLaWWNS68DdbFzVSP2vz9rK6egHys6lR2OAffwOW
-         snhiGUI+ohN81nauvEJOH986JFmScEZCYdzWrSMFaVQ0sUsgVHkOauHkHbLOhbV36N
-         Efv8mgQeDqWWQ==
-Date:   Wed, 26 Jan 2022 17:00:42 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexey Sheplyakov <asheplyakov@basealt.ru>
-Cc:     netdev@vger.kernel.org,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Dmitry Dunaev <dmitry.dunaev@baikalelectronics.ru>
-Subject: Re: [PATCH 1/2] net: stmmac: added Baikal-T1/M SoCs glue layer
-Message-ID: <20220126170042.17ae0ad8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220126084456.1122873-1-asheplyakov@basealt.ru>
-References: <20220126084456.1122873-1-asheplyakov@basealt.ru>
+        id S234247AbiA0BBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 20:01:31 -0500
+Received: from mga01.intel.com ([192.55.52.88]:32193 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231296AbiA0BBa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jan 2022 20:01:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643245290; x=1674781290;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DAgA9YulK7fnXAcKv3+GS4wlxKo/uqt5AGyP2nVTVAI=;
+  b=Zm0WhWBi1Fb+u4nSNuSHmro3ChNFUEYCjrwCTK2DG55yFbgn2YscinSJ
+   PVU3D4e6lKXN4Lp39F5MEa1PyQrkw1cECl8rlQeZL9HYAhtwnvOGVL/Iy
+   3zM+Dh8n2ABWFq/nkfisWYa8f5aMej8sAVyYWWB2/gBuMUhABuTFr9k3W
+   ZUmg1udQetFLeIWcili3nxA527L/UodIOVwZ6j3JS9S2OR2GVLsnAJ5Wg
+   StUu4dBdw53cKMh4Z4jR7guRvsHBLpjE0RMLtKtyaooQD/a3mQP0QLWS3
+   pDgQ+hXzxjHsMPncSQGGaD0YhAjau4UFx2TbYrqVk7QOY3R/qlAwWb5qM
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="271160733"
+X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
+   d="scan'208";a="271160733"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 17:01:30 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,319,1635231600"; 
+   d="scan'208";a="532939487"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 26 Jan 2022 17:01:28 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nCtAF-000Lt7-BD; Thu, 27 Jan 2022 01:01:27 +0000
+Date:   Thu, 27 Jan 2022 09:00:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     kbuild-all@lists.01.org, David Ahern <dsahern@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Ray Che <xijiache@gmail.com>,
+        Geoff Alexander <alexandg@cs.unm.edu>, Willy Tarreau <w@1wt.eu>
+Subject: Re: [PATCH net 1/2] ipv4: tcp: send zero IPID in SYNACK messages
+Message-ID: <202201270807.HsUjGLC8-lkp@intel.com>
+References: <20220126200518.990670-2-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220126200518.990670-2-eric.dumazet@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 26 Jan 2022 12:44:55 +0400 Alexey Sheplyakov wrote:
-> The gigabit Ethernet controller available in Baikal-T1 and Baikal-M
-> SoCs is a Synopsys DesignWare MAC IP core, already supported by
-> the stmmac driver.
->=20
-> This patch implements some SoC specific operations (DMA reset and
-> speed fixup) necessary for Baikal-T1/M variants.
+Hi Eric,
 
-drivers/net/ethernet/stmicro/stmmac/dwmac-baikal.c:33:13: warning: unused v=
-ariable =E2=80=98err=E2=80=99 [-Wunused-variable]
-   33 |         int err;
-      |             ^~~
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on net/master]
+
+url:    https://github.com/0day-ci/linux/commits/Eric-Dumazet/ipv4-less-uses-of-shared-IP-generator/20220127-040810
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 429c3be8a5e2695b5b92a6a12361eb89eb185495
+config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220127/202201270807.HsUjGLC8-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/37d3b618591c7c736c2ad3b3febe12779e01369c
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Eric-Dumazet/ipv4-less-uses-of-shared-IP-generator/20220127-040810
+        git checkout 37d3b618591c7c736c2ad3b3febe12779e01369c
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash net/ipv4/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+>> net/ipv4/ip_output.c:175:33: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __be16 [usertype] id @@     got unsigned int @@
+   net/ipv4/ip_output.c:175:33: sparse:     expected restricted __be16 [usertype] id
+   net/ipv4/ip_output.c:175:33: sparse:     got unsigned int
+   net/ipv4/ip_output.c: note: in included file (through include/net/ip.h):
+   include/net/route.h:373:48: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected unsigned int [usertype] key @@     got restricted __be32 [usertype] daddr @@
+   include/net/route.h:373:48: sparse:     expected unsigned int [usertype] key
+   include/net/route.h:373:48: sparse:     got restricted __be32 [usertype] daddr
+   include/net/route.h:373:48: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected unsigned int [usertype] key @@     got restricted __be32 [usertype] daddr @@
+   include/net/route.h:373:48: sparse:     expected unsigned int [usertype] key
+   include/net/route.h:373:48: sparse:     got restricted __be32 [usertype] daddr
+
+vim +175 net/ipv4/ip_output.c
+
+   140	
+   141	/*
+   142	 *		Add an ip header to a skbuff and send it out.
+   143	 *
+   144	 */
+   145	int ip_build_and_send_pkt(struct sk_buff *skb, const struct sock *sk,
+   146				  __be32 saddr, __be32 daddr, struct ip_options_rcu *opt,
+   147				  u8 tos)
+   148	{
+   149		struct inet_sock *inet = inet_sk(sk);
+   150		struct rtable *rt = skb_rtable(skb);
+   151		struct net *net = sock_net(sk);
+   152		struct iphdr *iph;
+   153	
+   154		/* Build the IP header. */
+   155		skb_push(skb, sizeof(struct iphdr) + (opt ? opt->opt.optlen : 0));
+   156		skb_reset_network_header(skb);
+   157		iph = ip_hdr(skb);
+   158		iph->version  = 4;
+   159		iph->ihl      = 5;
+   160		iph->tos      = tos;
+   161		iph->ttl      = ip_select_ttl(inet, &rt->dst);
+   162		iph->daddr    = (opt && opt->opt.srr ? opt->opt.faddr : daddr);
+   163		iph->saddr    = saddr;
+   164		iph->protocol = sk->sk_protocol;
+   165		/* Do not bother generating IPID for small packets (eg SYNACK) */
+   166		if (skb->len <= IPV4_MIN_MTU || ip_dont_fragment(sk, &rt->dst)) {
+   167			iph->frag_off = htons(IP_DF);
+   168			iph->id = 0;
+   169		} else {
+   170			iph->frag_off = 0;
+   171			/* TCP packets here are SYNACK with fat IPv4/TCP options.
+   172			 * Avoid using the hashed IP ident generator.
+   173			 */
+   174			if (sk->sk_protocol == IPPROTO_TCP)
+ > 175				iph->id = prandom_u32();
+   176			else
+   177				__ip_select_ident(net, iph, 1);
+   178		}
+   179	
+   180		if (opt && opt->opt.optlen) {
+   181			iph->ihl += opt->opt.optlen>>2;
+   182			ip_options_build(skb, &opt->opt, daddr, rt, 0);
+   183		}
+   184	
+   185		skb->priority = sk->sk_priority;
+   186		if (!skb->mark)
+   187			skb->mark = sk->sk_mark;
+   188	
+   189		/* Send it out. */
+   190		return ip_local_out(net, skb->sk, skb);
+   191	}
+   192	EXPORT_SYMBOL_GPL(ip_build_and_send_pkt);
+   193	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
