@@ -2,152 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B933D49DF92
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 11:40:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 071BB49DF95
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 11:41:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239150AbiA0Kkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 05:40:55 -0500
-Received: from mga17.intel.com ([192.55.52.151]:20498 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232916AbiA0Kky (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 05:40:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643280054; x=1674816054;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=CwF4EuD+jK2sMYt/qd0W3G7JEKV2ORaBWovMhleYyHM=;
-  b=JYkYRWcOdtIX2T/D+V1Nh0MkMtUKq9cscpjwxF1faVduIz5pjtfEb//m
-   FMWT5AYi8L8jm9B38Hi8Cv2BT1yvnjc4qGXwLqUsFl779X1PDei3PCdtw
-   oc4xXfPfcUgmxgxoJVrWZH4x2eznRAnUnvURhMSBnknT8jSYFf394q01h
-   odPxsU6Dk22YTIex7GAIhaCNqlxaYS7WUG/MS7wDPoagwQrmcrd+GjDPU
-   Ta7DIT6tCPT+k0GbuecroWfnBDsdRfjwnzgiVtIvUeDkuFE0R9/UKMCMG
-   wsiXxfxCklbtpAuntRqiUyTZd4oU+/Vknhq7e4/bioKTnEPVGl0kN3162
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="227486671"
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="227486671"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 02:40:54 -0800
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="521179456"
-Received: from shochwel-mobl.ger.corp.intel.com ([10.249.44.153])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 02:40:48 -0800
-Date:   Thu, 27 Jan 2022 12:40:42 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com
-Subject: Re: [PATCH net-next v4 05/13] net: wwan: t7xx: Add control port
-In-Reply-To: <20220114010627.21104-6-ricardo.martinez@linux.intel.com>
-Message-ID: <7c1f1fe-fb19-fa95-10e3-776b81f5128@linux.intel.com>
-References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com> <20220114010627.21104-6-ricardo.martinez@linux.intel.com>
+        id S239379AbiA0Kld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 05:41:33 -0500
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:33258
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232804AbiA0Kld (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 05:41:33 -0500
+Received: from localhost.localdomain (unknown [222.129.35.96])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 83FAB3F131;
+        Thu, 27 Jan 2022 10:41:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643280091;
+        bh=7jJ2YW3SFFqaAmAarOJGscPOA+9KiH3eMmsHQ1TJANM=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=Qup1gY/hR5d7oiEx0HgpVFDRkFlL3cOr8Mf1T71DjFIq2ajkl3P1TXekuTeqzU2Uo
+         Qb8ZC7QoAxzV5xrLKQpXjjw8Y1AQXiEjwvFcQC8tTK1aZgM/NGKJXzldlFmXl0Baox
+         PSbqxeEMfwuBJkL46MFkjsjwy1P5NPSh3gOaQCohWd12EYRIzhvU36DS+nWTBj8JNc
+         RpQWaOTLSnzPdWEX1f53liw1vx0x2jE73r3NRfHL4J9qh9YRLJtrOLZAq87G3Jgie2
+         iGprM4nfevQkibM5E7EXhNUIMnOYSq3v//RGKY987aLpN6seP2CqGIHlhOw4kofCgE
+         xprM/5gNhscSQ==
+From:   Aaron Ma <aaron.ma@canonical.com>
+To:     Mario.Limonciello@amd.com, aaron.ma@canonical.com, kuba@kernel.org,
+        henning.schild@siemens.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gregkh@linuxfoundation.org
+Cc:     davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
+Subject: [PATCH v2] net: usb: r8152: Add MAC passthrough support for RTL8153BL
+Date:   Thu, 27 Jan 2022 18:41:12 +0800
+Message-Id: <20220127104112.13288-1-aaron.ma@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Jan 2022, Ricardo Martinez wrote:
+RTL8153-BL is used in Lenovo Thunderbolt4 dock.
+Add the support of MAC passthrough.
+This is ported from Realtek Outbox driver r8152.53.56-2.15.0.
 
-> From: Haijun Liu <haijun.liu@mediatek.com>
-> 
-> Control Port implements driver control messages such as modem-host
-> handshaking, controls port enumeration, and handles exception messages.
-> 
-> The handshaking process between the driver and the modem happens during
-> the init sequence. The process involves the exchange of a list of
-> supported runtime features to make sure that modem and host are ready
-> to provide proper feature lists including port enumeration. Further
-> features can be enabled and controlled in this handshaking process.
-> 
-> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
-> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> ---
+There are 2 kinds of rules for MAC passthrough of Lenovo products,
+1st USB vendor ID belongs to Lenovo, 2nd the chip of RTL8153-BL
+is dedicated for Lenovo. Check the ocp data first then set ACPI object
+names.
 
-> +	/* Fill runtime feature */
-> +	for (i = 0; i < FEATURE_COUNT; i++) {
-> +		u8 md_feature_mask = FIELD_GET(FEATURE_MSK, md_feature->feature_set[i]);
-> +
-> +		memset(&rt_feature, 0, sizeof(rt_feature));
-> +		rt_feature.feature_id = i;
-> +
-> +		switch (md_feature_mask) {
-> +		case MTK_FEATURE_DOES_NOT_EXIST:
-> +		case MTK_FEATURE_MUST_BE_SUPPORTED:
-> +			rt_feature.support_info = md_feature->feature_set[i];
-> +			break;
-> +
-> +		default:
-> +			break;
+Suggested-by: Hayes Wang <hayeswang@realtek.com>
+Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+---
+v1 -> v2: fix whitespace in definition.
+ drivers/net/usb/r8152.c | 44 ++++++++++++++++++++++-------------------
+ 1 file changed, 24 insertions(+), 20 deletions(-)
 
-Please remove empty default blocks from all patches.
-
-
-> +		}
-> +
-> +		if (FIELD_GET(FEATURE_MSK, rt_feature.support_info) !=
-> +		    MTK_FEATURE_MUST_BE_SUPPORTED) {
-> +			memcpy(rt_data, &rt_feature, sizeof(rt_feature));
-> +			rt_data += sizeof(rt_feature);
-> +		}
-> +
-> +		packet_size += sizeof(struct mtk_runtime_feature);
-> +	}
-
-Is it intentional these two additions (rt_data and packet_size) are on
-different sides of the if block?
-
-
-> +static int port_ctl_init(struct t7xx_port *port)
-> +{
-> +	struct t7xx_port_static *port_static = port->port_static;
-> +
-> +	port->skb_handler = &control_msg_handler;
-> +	port->thread = kthread_run(port_ctl_rx_thread, port, "%s", port_static->name);
-> +	if (IS_ERR(port->thread)) {
-> +		dev_err(port->dev, "Failed to start port control thread\n");
-> +		return PTR_ERR(port->thread);
-> +	}
-> +
-> +	port->rx_length_th = CTRL_QUEUE_MAXLEN;
-> +	return 0;
-> +}
-> +
-> +static void port_ctl_uninit(struct t7xx_port *port)
-> +{
-> +	unsigned long flags;
-> +	struct sk_buff *skb;
-> +
-> +	if (port->thread)
-> +		kthread_stop(port->thread);
-> +
-> +	spin_lock_irqsave(&port->rx_wq.lock, flags);
-> +	while ((skb = __skb_dequeue(&port->rx_skb_list)) != NULL)
-> +		dev_kfree_skb_any(skb);
-> +
-> +	spin_unlock_irqrestore(&port->rx_wq.lock, flags);
-> +}
-
-I wonder if the uninit should set rx_length_th to 0 to prevent
-further accumulation of skbs?
-
-> +	FSM_EVENT_AP_HS2_EXIT,
-
-Never used anywhere.
-
-
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index ee41088c5251..5812d52bf694 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -718,6 +718,7 @@ enum spd_duplex {
+ #define AD_MASK			0xfee0
+ #define BND_MASK		0x0004
+ #define BD_MASK			0x0001
++#define BL_MASK			BIT(3)
+ #define EFUSE			0xcfdb
+ #define PASS_THRU_MASK		0x1
+ 
+@@ -1606,31 +1607,34 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
+ 	acpi_object_type mac_obj_type;
+ 	int mac_strlen;
+ 
++	/* test for -AD variant of RTL8153 */
++	ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_MISC_0);
++	if ((ocp_data & AD_MASK) == 0x1000) {
++		/* test for MAC address pass-through bit */
++		ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, EFUSE);
++		if ((ocp_data & PASS_THRU_MASK) != 1) {
++			netif_dbg(tp, probe, tp->netdev,
++					"No efuse for RTL8153-AD MAC pass through\n");
++			return -ENODEV;
++		}
++	} else {
++		ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, USB_MISC_1);
++		if (tp->version == RTL_VER_09 && (ocp_data & BL_MASK)) {
++			/* test for RTL8153BL for Lenovo */
++			tp->lenovo_macpassthru = 1;
++		} else if ((ocp_data & BND_MASK) == 0 && (ocp_data & BD_MASK) == 0) {
++			/* test for RTL8153-BND and RTL8153-BD */
++			netif_dbg(tp, probe, tp->netdev,
++					"Invalid variant for MAC pass through\n");
++			return -ENODEV;
++		}
++	}
++
+ 	if (tp->lenovo_macpassthru) {
+ 		mac_obj_name = "\\MACA";
+ 		mac_obj_type = ACPI_TYPE_STRING;
+ 		mac_strlen = 0x16;
+ 	} else {
+-		/* test for -AD variant of RTL8153 */
+-		ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_MISC_0);
+-		if ((ocp_data & AD_MASK) == 0x1000) {
+-			/* test for MAC address pass-through bit */
+-			ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, EFUSE);
+-			if ((ocp_data & PASS_THRU_MASK) != 1) {
+-				netif_dbg(tp, probe, tp->netdev,
+-						"No efuse for RTL8153-AD MAC pass through\n");
+-				return -ENODEV;
+-			}
+-		} else {
+-			/* test for RTL8153-BND and RTL8153-BD */
+-			ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, USB_MISC_1);
+-			if ((ocp_data & BND_MASK) == 0 && (ocp_data & BD_MASK) == 0) {
+-				netif_dbg(tp, probe, tp->netdev,
+-						"Invalid variant for MAC pass through\n");
+-				return -ENODEV;
+-			}
+-		}
+-
+ 		mac_obj_name = "\\_SB.AMAC";
+ 		mac_obj_type = ACPI_TYPE_BUFFER;
+ 		mac_strlen = 0x17;
 -- 
- i.
+2.32.0
 
