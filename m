@@ -2,194 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10E1049DD13
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 09:57:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6576249DD4C
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:06:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238050AbiA0I4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 03:56:40 -0500
-Received: from mail-dm6nam10on2079.outbound.protection.outlook.com ([40.107.93.79]:61817
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238069AbiA0I4k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 03:56:40 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I9ccgg/hMKTyLHen3v60kTmSZR6C5jiymJ06u18xXv8/wAB4tFzX2JIVRG5q2KMFfAKmpA4K/+WMlV1NAq8rn/TPUTJdfwcZ6SR0E0sP/gdmL/8g1MzpiL0+GpIYklhmemT/cJljZLQIy8kZ3kXmzPm5VzESN8x5ucbcRwiw8EmrEvGjn7E2UK4DL0HPxRk+Put1KEBqccpIe0xHn2dUMRW5lHvQF+2arafT50bgISXIiZEmlFl8ViJ916pxittsV3C3Qwiu0FC+WQxOViCqoT0Wsy4ZXbtAvXfhLtGDnV9hd+QvaXtlEeQynlirjA2/72NWyR5hMF3Lf6Gra/rx8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=R5UMr3qPcggBchPXvDAGdqGFV+l1AVvSuFJT6uDuj+k=;
- b=EzHeKugKZ5HTYDIvD+n1BYBQEr+zidM8G7Wu0klHlJP1NmE1UbPLJzDW49hnWsJUEHYFJtyqftN926nQ1NrWVsSEfpWMPgmXjdhudW6bt8Bn1LA4OHt0LmO4uofwmv9ja6iTshVP0IL/C8iBKD/n3qV/pxsvRuCn/qweqDSsxG9I7eOwXMGL0B5ycvkZrr2qAQOF1DYQNODGsn7V5i96U42wykjxKjQMO4CwGbnLcwoA0AbCE9BvVHiDtMfY1X6mvbb+dQXJS7fTquDSS30BLkh/KM3yWl9cgz4U33DMfII3l3uKS0QOMs9PoNS1AN2SQHmRZT5+1yCPHhDcyfM7zg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R5UMr3qPcggBchPXvDAGdqGFV+l1AVvSuFJT6uDuj+k=;
- b=TNInmqen+FtMUYi6n57WCC02x64kwGjydA8+43aMKpLhjvEqEhribEVDbFImi3lcK+n4HKK/BeX4dcUkbZfjM92OLD/AVF82pXJz65/Xn4r0bCH3CpIw4+ogpjbkLNX38THpyvIbZfkMn0OWmlw6IXzlxLpugHh9/mWSb/yxza54wqt6qK5+MH7+1ZORaqbGs0jFST9f7jXh6G8LuEMKm+ioSKKTXJ9ESjG4V6+Xk6j9aVFcywCF0DbBOOjx5J3Rrm191j71AZPtRYRKBeuffuloT6y5mgHevce5yWQZkkjVqAQGNg76GC45HHVGFknhPcyarclzGOfVI6fj17B2/Q==
-Received: from BN0PR03CA0011.namprd03.prod.outlook.com (2603:10b6:408:e6::16)
- by CH2PR12MB4182.namprd12.prod.outlook.com (2603:10b6:610:ae::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.17; Thu, 27 Jan
- 2022 08:56:38 +0000
-Received: from BN8NAM11FT047.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e6:cafe::5a) by BN0PR03CA0011.outlook.office365.com
- (2603:10b6:408:e6::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15 via Frontend
- Transport; Thu, 27 Jan 2022 08:56:38 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT047.mail.protection.outlook.com (10.13.177.220) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4930.15 via Frontend Transport; Thu, 27 Jan 2022 08:56:38 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 27 Jan
- 2022 08:56:37 +0000
-Received: from [172.27.12.64] (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Thu, 27 Jan 2022
- 00:56:32 -0800
-Message-ID: <7501da6a-1956-6fcf-d55e-5a06a15eb0e3@nvidia.com>
-Date:   Thu, 27 Jan 2022 10:56:29 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH RFC net-next 3/5] bonding: add ip6_addr for bond_opt_value
-Content-Language: en-US
-To:     Hangbin Liu <liuhangbin@gmail.com>
-CC:     <netdev@vger.kernel.org>, Jay Vosburgh <j.vosburgh@gmail.com>,
-        "Veaceslav Falico" <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
+        id S238188AbiA0JGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 04:06:42 -0500
+Received: from mr85p00im-hyfv06021401.me.com ([17.58.23.190]:49756 "EHLO
+        mr85p00im-hyfv06021401.me.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234522AbiA0JGl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:06:41 -0500
+X-Greylist: delayed 382 seconds by postgrey-1.27 at vger.kernel.org; Thu, 27 Jan 2022 04:06:41 EST
+Received: from smtpclient.apple (97e56e08.skybroadband.com [151.229.110.8])
+        by mr85p00im-hyfv06021401.me.com (Postfix) with ESMTPSA id BE37B3038A54;
+        Thu, 27 Jan 2022 09:00:17 +0000 (UTC)
+Content-Type: multipart/signed;
+        boundary="Apple-Mail=_23930681-77CB-4129-A6DC-7F40F4DFE44C";
+        protocol="application/pgp-signature";
+        micalg=pgp-sha256
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.40.0.1.81\))
+Subject: Re: [PATCH net] sch_cake: diffserv8 CS1 should be bulk
+From:   Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+In-Reply-To: <87r18w3wvq.fsf@toke.dk>
+Date:   Thu, 27 Jan 2022 09:00:14 +0000
+Cc:     Matt Johnston <matt@codeconstruct.com.au>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Ahern <dsahern@gmail.com>
-References: <20220126073521.1313870-1-liuhangbin@gmail.com>
- <20220126073521.1313870-4-liuhangbin@gmail.com>
- <bc3403db-4380-9d84-b507-babdeb929664@nvidia.com>
- <YfJDm4f2xURqz5v8@Laptop-X1>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-In-Reply-To: <YfJDm4f2xURqz5v8@Laptop-X1>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: drhqmail203.nvidia.com (10.126.190.182) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a2f3e786-954b-4c5f-569a-08d9e172eddb
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4182:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR12MB41824998369B170EBAC44C69DF219@CH2PR12MB4182.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rNqOb7iZksBof7de8rsy7A3XztTzZ2p+/7LXqFyWAPk0m/yf2jsmOoF+ubmMJyDoKdgsG4M0femy/DZoiE20n/+byKP8RtpXjBZD6mOO+eKvfiDHP5rtF6Xdhz9TGrEA5i6nHp0bjrIuiXmuJFrPGmGVTlalBafrl+g6+q0WN5/6SE85HypJN9hP2tmNCErmx7b7Jz9fjalTD2Q03JDoPdPSQQTzBFqQBGmroFfZRS5ysEJKB+Aw8L7zrRQFWWfmeztx0ex8Tann2QYavUdr4olHYQ1h9FzrG9oUfKzt/AGMG5lXE9OLVbkcuvzrygFPCnmo0yr6ZNp+5KfWaDrqij7Grnu22w3Wy3hRaNZ4ZzLN4WZUH+B54EDLHLNKy7FXcMg6L82QxFCJRo1F6UHFEzfbI1XzqIorxpqjPYVyBe4fLBOL4OyukJyNR8q9LUBsM6n4ampANPLVaX4qjZ6eMQP6+yJMJalENl1b0Xb2ny6+vJcC5dMtmXkYbjXjQsHu8sHJBYTqcZhVq6Eab+kJX9G/l1lmRd9ORpv7RagIsGzuKJk71Hb0KjUCuTmGSkaTrz29ypPKJNXEmnp1Z3rn/LV8yw8fNr7Fu73GcYXdwakZ9FcCmy//nxv2bIonV0GmTc+7Pkj1+tiec/w17rYSpk7q8qvMejqQtfJd/y1n+0O1tETV2t1Pmyn0U0KheuhFigH1OG+eT6YjseWXGrIy466BmJfobDxk4Edv8OI/F9i+CJCVWoCSplEWrcNyd1Or
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(508600001)(86362001)(2906002)(36860700001)(54906003)(40460700003)(316002)(6916009)(356005)(5660300002)(16576012)(70206006)(70586007)(82310400004)(8936002)(81166007)(8676002)(4326008)(31696002)(83380400001)(36756003)(2616005)(426003)(336012)(31686004)(186003)(16526019)(26005)(47076005)(53546011)(6666004)(36900700001)(43740500002)(20210929001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2022 08:56:38.1013
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2f3e786-954b-4c5f-569a-08d9e172eddb
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT047.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4182
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        cake@lists.bufferbloat.net
+Message-Id: <177DD195-A9B2-4502-8DA8-7CC659EBBF3B@darbyshire-bryant.me.uk>
+References: <20220125060410.2691029-1-matt@codeconstruct.com.au>
+ <87r18w3wvq.fsf@toke.dk>
+To:     =?utf-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+X-Mailer: Apple Mail (2.3693.40.0.1.81)
+X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
+ =?UTF-8?Q?2903e8d5c8f:6.0.425,18.0.572,17.0.605.474.0000000_definitions?=
+ =?UTF-8?Q?=3D2022-01-14=5F01:2022-01-14=5F01,2020-02-14=5F11,2020-01-23?=
+ =?UTF-8?Q?=5F02_signatures=3D0?=
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
+ adultscore=0 malwarescore=0 spamscore=0 mlxscore=0 phishscore=0
+ suspectscore=0 clxscore=1030 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2201270053
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/01/2022 09:02, Hangbin Liu wrote:
-> On Wed, Jan 26, 2022 at 01:35:46PM +0200, Nikolay Aleksandrov wrote:
->>> diff --git a/include/net/bond_options.h b/include/net/bond_options.h
->>> index dd75c071f67e..a9e68e88ff73 100644
->>> --- a/include/net/bond_options.h
->>> +++ b/include/net/bond_options.h
->>> @@ -79,6 +79,7 @@ struct bond_opt_value {
->>>  	char *string;
->>>  	u64 value;
->>>  	u32 flags;
->>> +	struct in6_addr ip6_addr;
->>>  };
->>>  
->>>  struct bonding;
->>> @@ -118,17 +119,20 @@ const struct bond_opt_value *bond_opt_get_val(unsigned int option, u64 val);
->>>   * When value is ULLONG_MAX then string will be used.
->>>   */
->>>  static inline void __bond_opt_init(struct bond_opt_value *optval,
->>> -				   char *string, u64 value)
->>> +				   char *string, u64 value, struct in6_addr *addr)
->>>  {
->>>  	memset(optval, 0, sizeof(*optval));
->>>  	optval->value = ULLONG_MAX;
->>> -	if (value == ULLONG_MAX)
->>> +	if (string)
->>>  		optval->string = string;
->>> +	else if (addr)
->>> +		optval->ip6_addr = *addr;
->>>  	else
->>>  		optval->value = value;
->>>  }
->>> -#define bond_opt_initval(optval, value) __bond_opt_init(optval, NULL, value)
->>> -#define bond_opt_initstr(optval, str) __bond_opt_init(optval, str, ULLONG_MAX)
->>> +#define bond_opt_initval(optval, value) __bond_opt_init(optval, NULL, value, NULL)
->>> +#define bond_opt_initstr(optval, str) __bond_opt_init(optval, str, ULLONG_MAX, NULL)
->>> +#define bond_opt_initaddr(optval, addr) __bond_opt_init(optval, NULL, ULLONG_MAX, addr)
->>>  
->>>  void bond_option_arp_ip_targets_clear(struct bonding *bond);
->>>  
->>
->> Please don't add arbitrary fields to struct bond_opt_value. As the comment above it states:
->> /* This structure is used for storing option values and for passing option
->>  * values when changing an option. The logic when used as an arg is as follows:
->>  * - if string != NULL -> parse it, if the opt is RAW type then return it, else
->>  *   return the parse result
->>  * - if string == NULL -> parse value
->>  */
->>
->> You can use an anonymous union to extend value's size and use the extra room for storage
->> only, that should keep most of the current logic intact.
-> 
-> Hi Nikolay,
-> 
-> The current checking for string is (value == ULLONG_MAX). If we use
-> a union for IPv6 address and value, what about the address like
-> 
-> ffff:ffff:ffff:ffff::/64?
-> 
-> Thanks
-> Hangbin
 
-You're right in that we shouldn't overload value. My point was that bond_opt_val is supposed to be generic,
-also it wouldn't work as expected for bond_opt_parse(). Perhaps a better solution would be to add a generic
-extra storage field and length and initialize them with a helper that copies the needed bytes there. As for
-value in that case you can just set it to 0, since all of this would be used internally the options which
-support this new extra storage would expect it and should error out if it's missing (wrong/zero length).
-Maybe something like:
-static inline void __bond_opt_init(struct bond_opt_value *optval,
--				   char *string, u64 value)
-+				   char *string, u64 value,
-+				   void *extra, size_t extra_len)
+--Apple-Mail=_23930681-77CB-4129-A6DC-7F40F4DFE44C
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=utf-8
 
-with sanity and length checks of course, and:
-+#define bond_opt_initextra(optval, extra, len) __bond_opt_init(optval, NULL, 0, extra, len)
 
-It is similar to your solution, but it can be used by other options to store larger values and
-it uses the value field as indicator that string shouldn't be parsed.
 
-There are other alternatives like using the bond_opt_val flags to denote what has been set instead
-of using the current struct field checks, but they would cause much more changes that seems
-unnecessary just for this case.
+> On 25 Jan 2022, at 10:58, Toke H=C3=B8iland-J=C3=B8rgensen =
+<toke@redhat.com> wrote:
+>=20
+> Matt Johnston <matt@codeconstruct.com.au> writes:
+>=20
+>> The CS1 priority (index 0x08) was changed from 0 to 1 when LE (index
+>> 0x01) was added. This looks unintentional, it doesn't match the
+>> docs and CS1 shouldn't be the same tin as AF1x
+>=20
+> Hmm, Kevin, any comments?
+>=20
+> -Toke
+>=20
+
+I=E2=80=99ll have to find my thinking head & time machine :-)
+This would be a lot easier if we had =E2=80=98diffserv9=E2=80=99, LE =
+could have simply
+been added as the =E2=80=98if you=E2=80=99ve really nothing better to =
+do=E2=80=99 class that it
+is.  And it=E2=80=99s why I=E2=80=99ve personally argued for a =
+diffserv5: lowest;low;normal;high;highest
+moving on.
+
+I think I screwed up when LE was added to diffserv8 - Matt the CS1 =
+change from 0 to 1 IS intentional
+and IIRC I tried to bump everything else up 1 to compensate.. I may have =
+missed some things though.
+
 
 Cheers,
- Nik
+
+Kevin D-B
+
+gpg: 012C ACB2 28C6 C53E 9775  9123 B3A2 389B 9DE2 334A
 
 
+--Apple-Mail=_23930681-77CB-4129-A6DC-7F40F4DFE44C
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename=signature.asc
+Content-Type: application/pgp-signature;
+	name=signature.asc
+Content-Description: Message signed with OpenPGP
 
+-----BEGIN PGP SIGNATURE-----
 
+iQIzBAEBCAAdFiEEASyssijGxT6XdZEjs6I4m53iM0oFAmHyXx4ACgkQs6I4m53i
+M0qLmg//Zn/zu6gDtBF+S98hlUO6x5Ab3gXpbZ4GuC2X2VdZG3vi/zdPs4Lc4CD4
+V0kQKky9cyHqm0q4UjpvKIXMWQKlhi9JLHNWCXHK04tWKoivnyWmu3xDur5Pxeb6
+U8j9lF2iQiPCXS9VsLcD7kpl3SKpx0Bdm2vLVFFNBQ2mhFMORJ3dW6PwxW8JY3eW
+mPmjTOfJ0txLuAw2VwPvRo0gCGIquuMzMGuJfXzkUs2gnY9qrBXfOZu1TuCDIlP4
+DWtyDAx/zY20cicd6twp68Qyda6sLN1RQdMtbYBmRx/+opCnnBtYznbwaXCnH2vf
+5UKprnKURu/1NaXbzqMDA9BVUAs2JNGVI7cl7OmpWQLyEDcpisecnBdH4c8H/Vll
+8/0cga+dmgTP1bn6P7e31LdJYP+TlEswFRK7EDbSvtjw/eAmw47UlsJdupS7NhN6
+mFS81F7xoOkn0WuHh71vnK7M1vJ1vRAb80/IsOVACHT9teeFXKDf7AGKw361vNRj
+5z/K3XA3M7XR/Al2PBZqP8JueLETz2r0ztrXoWi4Uv5cXmZalRWBLN6kd7typg9s
+HdAoPc76N5MvGM/NP4naBtWLpIqllSlYIQ62QcxNGHzDTCPaawqw2jS8dvl5XNtd
+Tqlpc7URkR3VFz0YP2G3C5EsIC+kJlc7SYCCKUODZ0rvv4YjahI=
+=LwXr
+-----END PGP SIGNATURE-----
+
+--Apple-Mail=_23930681-77CB-4129-A6DC-7F40F4DFE44C--
