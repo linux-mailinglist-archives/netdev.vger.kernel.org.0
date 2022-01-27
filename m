@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC31C49E47D
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 15:20:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 661E949E47C
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 15:20:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242298AbiA0OUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 09:20:17 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57048 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230206AbiA0OUP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 09:20:15 -0500
+        id S242296AbiA0OUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 09:20:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36576 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233896AbiA0OUO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 09:20:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8417EB822B1;
-        Thu, 27 Jan 2022 14:20:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2BCA1C340EC;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C035E61CEC
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 14:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 26473C340EB;
         Thu, 27 Jan 2022 14:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1643293213;
-        bh=drD/99iubcEXh6VUfs07yNuLkBGqoS0MzBApa9Isd+8=;
+        bh=nCsHdbCHIqIx+tTyqIvhUNuOSQLX2ZL3GR3/U74hFPc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gwuuub6z2YY3ykgEqgP3TewRigaOF0Q/VB9SiF36HEMe0KiNG3C7E9otR645GDSXr
-         cr3lpAz7unm9NMFVR2/gLuNUn78JIXDnfFYksTZAZOKhqDffvwTXMGZ6u+1lcFbQQQ
-         OjTWwo4awjib10eg6he2O2hQY6ByB2hdHILyI45RxcHTsEVJYeongs0t+z2rzOv27g
-         GnEd2rHe7B02wboFktMwvCts6rKiYM+RWNnhM2DgDdIK1crILXHI+pX0TdVBas1x6N
-         xf/1r7o4Om75e2Yelu/eN+Sh8f5GrdKeei0KbTFJbCqbYCCHsyK0MYGpBgdkxKJr3q
-         qAk+P4pV/D5nA==
+        b=rLNQIKxpJ3Ytexeho3dSe62YA9YfUJThVFO4u0tCY23VJcTsi7UKyvQDKKDH2bk9u
+         o0l+zVaOwBPDKIRFw2M0B7qU1eEyoAaUueTjtvq+yuzbgpJkmLYZA0PdFSjJoCaBPu
+         ne7hCSfRNUkosuvf/PxR2G/waRu9buq9gtn+++7rTfxMcqKf0H6H0O4ptbmz+UaxbS
+         v9llgPAX3qPnACm481YHnT4Ww57ojvLaSqPrVuJ2ldZ/UmyuO0Yes1ucq9FVrETR1o
+         7POuojCazbRr3G1PGqxlgHC1hbt8yCvJ4/cZ/kShU85ihzrKlD5eXPh5ot6lSE4ds1
+         //IfgyZMChYZg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 19AA1E6BAC6;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 104B7E5D07E;
         Thu, 27 Jan 2022 14:20:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ptp: replace snprintf with sysfs_emit
+Subject: Re: [PATCH net-next] r8169: enable ASPM L1.2 if system vendor flags it as
+ safe
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164329321310.24382.11763650540218634087.git-patchwork-notify@kernel.org>
+Message-Id: <164329321306.24382.13408707226416697144.git-patchwork-notify@kernel.org>
 Date:   Thu, 27 Jan 2022 14:20:13 +0000
-References: <e4fa9680b8b939901adcf91123ab1778a0a7a38d.1643182187.git.yang.guang5@zte.com.cn>
-In-Reply-To: <e4fa9680b8b939901adcf91123ab1778a0a7a38d.1643182187.git.yang.guang5@zte.com.cn>
-To:     David Yang <davidcomponentone@gmail.com>
-Cc:     richardcochran@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yang.guang5@zte.com.cn,
-        zealci@zte.com.cn
+References: <6885d6db-fbd8-a13a-3315-209ad9562c0e@gmail.com>
+In-Reply-To: <6885d6db-fbd8-a13a-3315-209ad9562c0e@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, nic_swsd@realtek.com,
+        netdev@vger.kernel.org, hau@realtek.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -53,20 +53,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 27 Jan 2022 08:02:36 +0800 you wrote:
-> From: Yang Guang <yang.guang5@zte.com.cn>
-> 
-> coccinelle report:
-> ./drivers/ptp/ptp_sysfs.c:17:8-16:
-> WARNING: use scnprintf or sprintf
-> ./drivers/ptp/ptp_sysfs.c:390:8-16:
-> WARNING: use scnprintf or sprintf
+On Wed, 26 Jan 2022 20:49:59 +0100 you wrote:
+> On some systems there are compatibility issues with ASPM L1.2 and
+> RTL8125, therefore this state is disabled per default. To allow for
+> the L1.2 power saving on not affected systems, Realtek provides
+> vendors that successfully tested ASPM L1.2 the option to flag this
+> state as safe. According to Realtek this flag will be set first on
+> certain Chromebox devices.
 > 
 > [...]
 
 Here is the summary with links:
-  - ptp: replace snprintf with sysfs_emit
-    https://git.kernel.org/netdev/net-next/c/e2cf07654efb
+  - [net-next] r8169: enable ASPM L1.2 if system vendor flags it as safe
+    https://git.kernel.org/netdev/net-next/c/c217ab7a3961
 
 You are awesome, thank you!
 -- 
