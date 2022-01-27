@@ -2,72 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14C2049E476
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 15:19:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A06FB49E47B
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 15:20:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242030AbiA0OTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 09:19:39 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:57942 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237608AbiA0OTj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 09:19:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=cjKh8nU6Ws/EwFeJ4a3+ZytHvgkO0kh4RAs39+WpTkM=; b=bZm/yb+dks+bRU1iCSRMOtWtrM
-        E2mrRnyO4iBJ2SCCXt3v1ME9bQ5N4MNfRNuYDEFFmvjKf+aNbOaaKtVHdURgiL6P5wxuhbmuY3kxq
-        3mFrciXX+SH1rVc3ERWDh3+DamsCvotBp7NyJN09QcJwg5o17JTPnBLh5j3lT+JHcsLA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nD5cZ-002zus-NN; Thu, 27 Jan 2022 15:19:31 +0100
-Date:   Thu, 27 Jan 2022 15:19:31 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Aaron Ma <aaron.ma@canonical.com>
-Cc:     Mario.Limonciello@amd.com, kuba@kernel.org,
-        henning.schild@siemens.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
-Subject: Re: [PATCH] net: usb: r8152: Add MAC passthrough support for
- RTL8153BL
-Message-ID: <YfKp81yJWd95Jrg7@lunn.ch>
-References: <20220127100109.12979-1-aaron.ma@canonical.com>
+        id S237687AbiA0OUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 09:20:11 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36532 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230206AbiA0OUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 09:20:10 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2ED4561CEA
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 14:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8BA0DC340E8;
+        Thu, 27 Jan 2022 14:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643293209;
+        bh=fyZYLFJ8fCagaYqVu9JIAYAO9/j0Eds9yUSQeSE0iwA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=uSSh3JOHtumZC97RUJqNmzGp7EkRyVTtwav7Hrs9F2xsKUHwFCSOIyrrdZXcAYr6u
+         l21EEJ+KTfQiBjBTuV3AH4f45uRFRTsl9aoOeED0i5Z8QF70nbV/n+2p72NhtZqvb1
+         rUIu84GAKyKDuFurE62McfgO0BzZTvGhen/g0pWiOZWGfDl1TRQi3HtmdMyGP4OJi1
+         x06A3HVE+Fyp7XhbakaNCA6iNty/H7EpMCsSSwriGGVuHxRBNoxuNDx0WbxuvOpit4
+         7skb/cXei6J4ixwozO5TCBw/YC8f+eqvOQkC8vfOVFQqCcdxJiomriGPivxWo7d/wR
+         8lMESMHyjHnOw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 72773E5D08C;
+        Thu, 27 Jan 2022 14:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127100109.12979-1-aaron.ma@canonical.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] ipv4: raw: lock the socket in raw_bind()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164329320946.24382.9714626868081279512.git-patchwork-notify@kernel.org>
+Date:   Thu, 27 Jan 2022 14:20:09 +0000
+References: <20220127005116.1268532-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220127005116.1268532-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
+        netdev@vger.kernel.org, edumazet@google.com,
+        syzkaller@googlegroups.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 06:01:09PM +0800, Aaron Ma wrote:
-> RTL8153-BL is used in Lenovo Thunderbolt4 dock.
-> Add the support of MAC passthrough.
-> This is ported from Realtek Outbox driver r8152.53.56-2.15.0.
-> 
-> There are 2 kinds of rules for MAC passthrough of Lenovo products,
-> 1st USB vendor ID belongs to Lenovo, 2nd the chip of RTL8153-BL
-> is dedicated for Lenovo. Check the ocp data first then set ACPI object
-> names.
-> 
-> Suggested-by: Hayes Wang <hayeswang@realtek.com>
-> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
-> ---
->  drivers/net/usb/r8152.c | 44 ++++++++++++++++++++++-------------------
->  1 file changed, 24 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-> index ee41088c5251..df997b330ee4 100644
-> --- a/drivers/net/usb/r8152.c
-> +++ b/drivers/net/usb/r8152.c
-> @@ -718,6 +718,7 @@ enum spd_duplex {
->  #define AD_MASK			0xfee0
->  #define BND_MASK		0x0004
->  #define BD_MASK			0x0001
-> +#define BL_MASK                 BIT(3)
+Hello:
 
-Just to be sure, this is defined by Realtek? This is not just Lenovo
-just misusing a reserved bit?
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-     Andrew
+On Wed, 26 Jan 2022 16:51:16 -0800 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> For some reason, raw_bind() forgot to lock the socket.
+> 
+> BUG: KCSAN: data-race in __ip4_datagram_connect / raw_bind
+> 
+> write to 0xffff8881170d4308 of 4 bytes by task 5466 on cpu 0:
+>  raw_bind+0x1b0/0x250 net/ipv4/raw.c:739
+>  inet_bind+0x56/0xa0 net/ipv4/af_inet.c:443
+>  __sys_bind+0x14b/0x1b0 net/socket.c:1697
+>  __do_sys_bind net/socket.c:1708 [inline]
+>  __se_sys_bind net/socket.c:1706 [inline]
+>  __x64_sys_bind+0x3d/0x50 net/socket.c:1706
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] ipv4: raw: lock the socket in raw_bind()
+    https://git.kernel.org/netdev/net/c/153a0d187e76
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
