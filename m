@@ -2,214 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFE2E49DD3E
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:04:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44DFA49DD3F
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:04:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238171AbiA0JDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 04:03:41 -0500
-Received: from mail-mw2nam12on2048.outbound.protection.outlook.com ([40.107.244.48]:16065
+        id S238172AbiA0JDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 04:03:50 -0500
+Received: from mail-mw2nam12on2077.outbound.protection.outlook.com ([40.107.244.77]:5856
         "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238167AbiA0JDl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 04:03:41 -0500
+        id S238176AbiA0JDt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jan 2022 04:03:49 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OYXj6yuxxJ6SmFYMQp544iiD7vmkQ+JLaHYvsGH/gb26PrJ3r4DZgVwGzki2BSa9sjNSngj58BbuQXg8bLOJOptrgcVGfrjGMYgnHthmiAJALdemEzwXQn+/iZFHV9THemtFtfv6WOuTWhvkM0ziE7xSadD6h5BxbCNWgme0ldrc52ri+OmI5IRdEcoybNtGz8L58E53dNXpViGpiLB34t2Trdy7klrVCn7TEnsgD9UeOPVy10Sz8+Qxe086oVTX2a1zOncocZb8WZQ5EEnZy31Q8d1HKkgmHHn+bMZnfRCu9APQrV1gBdv4zimTiO/JDiLB8+Uhj7wWfqu3FvxOkg==
+ b=lAw9s7ojWHkeraa1MWwbGCBg1aWg/pRcVKx1pvHCvwlrB8rB7vCgYwY6EnkulDoBGbZUDfxDCAX9qHVRND16pSDVuk1p70OzRBfs9cazaK2RD/g0z/FVQG4uA7eRfv/LIoB03eaclBUwr5cZX/Hf3sEEaZBK2hwO93ApFBiGczAz0z76xnTGJatpWLLZRCS/5qcBZpVI2+lZvnB4p8RsnXkOh1veCpXvTEYdFMK7P/DWXBvDFlVxbO89i+xZyissdJvlaYV9GzZA/jhKUqXGm5XOwhCBgeAMyVgzljDGvgyngiYTNlaLbpb74zyUuquMaqmGiJKTck2gq5DciOtLHQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iJ6/GNy9zHQALWMhpYsvzZTt4fRZHu8jIF2uae6RorM=;
- b=NG+78/D975lrn0E+NnrvDMAvJg1tjaMl+yJQfc9W4vT5MDexqfPCuUnZ8Cy6cWaSdIE7lIuGh9Mqs/uyG2D8Lie/ZKmgH81iqTtdhj9qUMJzDuMSO7DSPfmLwM7YOw7+/nf09tRu64acuyXgX+/VC9KPlW46ZfHTERtsiubnMAOrw+s64nloXwtKF89bRuM5FkWTy3nNKvWTouGOfHpr3AjgDlcY3YM9GRcbqRFzLOSZSQSVDpectDIYuZpz6fsd4DcS/rOISN8beryYIwfggM9//85azg2HADzoTrUhmxh07GV1QfPxcBkUWifoef/tyJpMRdPushVSkQEE2VWNvA==
+ bh=eY0JjPZiFVm+7jzV7pxf3KHeXeLlC74bpNq7jCA6EoM=;
+ b=MtrPQITV9zK19GK6FiAyzwYWna5HvWe1PakwD/n6tTLbr311pmO/8ICoFgphFDkezRYCtPKzQxfmDyM9U6e8WmZf0ugoGt1tK5iwyj9YBuykaL5lEq94PmZJLKlEwvbqoy9VGbM5slRcDRDZRHq4CSkuX0O+oBHwkdRqubjpERon+EdysvrCfDTi6GGDoqVnMi3Q4CF/5dxUm8HCxEFC3nJ9JBSHNt227R7lUJhK15w6EUhSBabxiOCD5n5LWeM+atqFexaKO6ivF9GJIc12LvpIwgTfK6m0f9zWlrdPWl+hR+TNkJP5gsE7I/uzL3gsKGyQQi+tj2VjBQzidmFR2A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iJ6/GNy9zHQALWMhpYsvzZTt4fRZHu8jIF2uae6RorM=;
- b=Ighks/456Hxysk7kcFzQ1qd9VJEd9wcOxz8CZ0ef/ami5nHUnbFS1WxeTHaadO0dLDz6vypA2DA5+GXrAg9PdLO3Nq1ERhafmHE49tSDGUeKJIKU9ogymCLg5vY4bzEFavI6/wo3Tv3xcMer6HpFQw0rFFyWf8pdTsFMeNeP53rKgNrlcp8VIT1Qq+Xgv/mseYk79GCnELXE4pn3i9GuRoNpMvDs0EPraqRr6T0n1lTujrpzYAIiP8JYe4ZEH27YLAz8cPcW/9j0v8lMWqTTDUXM3iEZ3E0UOatNMc/1Uc9y8OeagCXYa+LDEwh34jH+Hcu4sTpGmxdIDt//lpXS2g==
+ bh=eY0JjPZiFVm+7jzV7pxf3KHeXeLlC74bpNq7jCA6EoM=;
+ b=E72XSpOHZQBEnyJxz5twXTwd7aAyoTEc31f7QzEBeznNXSZzMBXLPCU3KwQgkMsbzO3am3i+iQ1U6BMv82KWuAPQy/EZWZEYrMHwdKvcrIVgAt7j/ay7vaPSpPnI3dBy+/IF8xC+O6thp5fIZQvDUwpPtWS28+lzUcAAF9UjERQZlnQxzfPIu+TLFLYKOyHsB/1+kikiEloTNcu003CF+vzsi869FX0i1wVWVdRt0tbEr2fhs85PI/Nkut49qmOdiUQS4Goo3bxnqC6Dv/4GFC5qwdyzWrrO6CGvL7/KBsGgTg10QI81KTcDYf/C5Gpf0r885GQkKKLAlL8LF0/Oiw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from BYAPR12MB3527.namprd12.prod.outlook.com (2603:10b6:a03:13c::12)
  by BN9PR12MB5355.namprd12.prod.outlook.com (2603:10b6:408:104::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10; Thu, 27 Jan
- 2022 09:03:39 +0000
+ 2022 09:03:47 +0000
 Received: from BYAPR12MB3527.namprd12.prod.outlook.com
  ([fe80::3dfb:4df1:dcf1:4561]) by BYAPR12MB3527.namprd12.prod.outlook.com
  ([fe80::3dfb:4df1:dcf1:4561%5]) with mapi id 15.20.4909.019; Thu, 27 Jan 2022
- 09:03:39 +0000
+ 09:03:47 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
         jiri@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 6/7] mlxsw: spectrum: Guard against invalid local ports
-Date:   Thu, 27 Jan 2022 11:02:25 +0200
-Message-Id: <20220127090226.283442-7-idosch@nvidia.com>
+Subject: [PATCH net-next 7/7] mlxsw: spectrum_acl: Allocate default actions for internal TCAM regions
+Date:   Thu, 27 Jan 2022 11:02:26 +0200
+Message-Id: <20220127090226.283442-8-idosch@nvidia.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220127090226.283442-1-idosch@nvidia.com>
 References: <20220127090226.283442-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1P18901CA0023.EURP189.PROD.OUTLOOK.COM
- (2603:10a6:801::33) To BYAPR12MB3527.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1PR09CA0073.eurprd09.prod.outlook.com
+ (2603:10a6:802:29::17) To BYAPR12MB3527.namprd12.prod.outlook.com
  (2603:10b6:a03:13c::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ef0bdfc1-4441-4e0d-ba96-08d9e173e8e6
+X-MS-Office365-Filtering-Correlation-Id: cf892c39-e40a-44a3-71db-08d9e173ed42
 X-MS-TrafficTypeDiagnostic: BN9PR12MB5355:EE_
-X-Microsoft-Antispam-PRVS: <BN9PR12MB53555D872AE12409EFFB3B76B2219@BN9PR12MB5355.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Microsoft-Antispam-PRVS: <BN9PR12MB53550982D669B7D6C0076A2DB2219@BN9PR12MB5355.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ib+Tj+tzL4JRu8TDVHEhqSbqfypQcg8NqmlJAC/gd0X2g6732Me7+KAxHZhkmePcqmy+J4EFCTaDNbZDqxtsFkhsU6aQxG83L/bjh04aS2quiCEZm581mGIYPuTKHl9xbpkJ6QRH3G0JmBVKm5wSSq3/sl6PQoNP5sRlxsYqO1x1W61L55Qkke9ICmbwAjHkAxnXjS1wCHw1OfyTsJziuH1kBfZUr2+nAe6OHDYzp9/ppsN8732sGv9C72vx0DTnIq67B4JzX58ouO5+Mm7qM7dCbL6LFQt3Qy77+yv3aWKgQhp0GrKuREEwFrv/H+Oii2RtlEOcfOqMCBpLPfupPcJKXQ6dMUlGYVCLmQuwCbkLhQpqYgk6bS0pD3+ynBZaSD0qerLKy2rWOYdIUuEFerBAQN8FcIjMqGOgY/gSSzdf/44IWYEH2tYmetjPQgVuSDKmcYXHvi8PnVUblKel1ig1OOxknXjiWDbg5qGHycnht0HKP/5flDzAJ1H2nSVPXmoftTmlV1mf00dTgqF1UM8LKmheq9aiTftbMLgcE+tF67EBV2DLMUb2c0FPHlw8iZRpwL/xA1xW9sz1JFLXP6keTmlZtr7Iz6fxSSWAae4RvNVI1XVxB4MM4K0l3UYrxIhyb9cys7cmwgVoISsd5w==
+X-Microsoft-Antispam-Message-Info: zd5RYNxT/YC67xXCkjHbp7QVB60QkTzsu4c9VrUxST10jDEALlE+3MwJv+JsBeZeyxrkuGIhYzCiTRpot+7iDqgyfK0gM5Z7B2tsSXhsFFhmAGqB0AxQ1V7oZVauD7G5vKOGH4qOAjUaT6JNLTd8CM+h80M0a2Fo2v2g+ZO2lnDmKWE3CXp6WgsDXKIXvs0RvvI/er7tQVAvb9WTSBd48GDY8EeI5hSDDTVjFmy5iY2mC1JA865qj79TUowYhckI9/QhHgZTOKNJTv3HmV8/0L+A6/1QHkrwhvUtApnPeFGyhLh/h7xV8nY0E2Q/8B+XWJVZk0Te+/gPSh4+qqTBfOWPZWc1UyaZG8NYMvKbKpZgW/0y0OksXv1E0GQTHb3Z4ZmZhkA22xaDr6um1H4JAzU5tqP+pcJIsFeT5ka+RbGZsAJrmhqHx++1HeTWw0/WtwnJVLUvGq3wZETzd6W5A2yeWPvAIkpk5qlxx/uRqw80gBMZEuJHA69lY8NLUpp/tkOCCFadh970PnFZwVGGYmCsmNxg8vI0d9fWPuChsoerLP6YjlhTIjRn9astqwulK/v7yQj7arwlJJ8MPYhMdmm8bZpRYc3xFrB3DJv5ZOF9ROj9Bdeo3m1IWLzMOZfdRFpC6K/Ve5pAknX0PYVFWg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3527.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2906002)(6512007)(2616005)(6916009)(4326008)(8676002)(316002)(6486002)(66946007)(26005)(186003)(86362001)(1076003)(66476007)(107886003)(508600001)(8936002)(6666004)(66556008)(5660300002)(83380400001)(6506007)(36756003)(38100700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MhVfr9OHnRpHoNx0ExJdPokBtkzffWJOf3bRlWbqnntgaD3oTEMsst661Yqd?=
- =?us-ascii?Q?X/p0uo8YPEPO+xGDLBcYRn5ZTX191rIpNgrnWq3Kx8wcZBYUbQaIIu3bvDQ4?=
- =?us-ascii?Q?+lJNwOCVJQW/aD17G/qLmkRWRnbDoFDUo/YjXP3EnSLdGLAAHLH5TCVMcGxR?=
- =?us-ascii?Q?id3sAA3KMpDNf0dUbQjbjyHBCr9Ln87fEwunWyNqGLA1/j3Gvy73d+lBRFDW?=
- =?us-ascii?Q?imBqjYeI2k5pzccal8O9KysH8jzp+z8UVpbPAqg2rnMBgpYVNE1KvjIj2iA7?=
- =?us-ascii?Q?a8wBqNMuBFv1xDHjPym0LIqDp89jqQRWX2UeezIFfLB00gBG8sRgGup5InNj?=
- =?us-ascii?Q?zF7ffaf5cQAGGVITs+QW6/akCzo8H0cNV5t9yiHkXgUY66BFMiJVXTZIy4WI?=
- =?us-ascii?Q?dYKuYfGUKJv+e1V3pOSVRX1NAUYp6jvBAvKxkqEfUDZio5LEgNJB5zCMbWpR?=
- =?us-ascii?Q?veSKs2ZJ852gRj+U3ZguiwhHWWT1p8YnaQDNdHdvsHFtHC8ZSrsNSM0AM2ay?=
- =?us-ascii?Q?SoEPowutykDQ+QPokXUfWkNBnijkHB9Zf+LnCLVfiXSUMHt0WrNgrpcozeZy?=
- =?us-ascii?Q?M1mfr61rkMgZyjMlqa+XqPElIOaDJ2qy5tTZrtmLi7nd+gnahiHNuHCFU9rA?=
- =?us-ascii?Q?4eO7kRDQSDmijXr15UiB9TdVWEbs2zPhmYHPFwwX+lTOL6iiT2ZTa6sLEYlQ?=
- =?us-ascii?Q?5jZFgZw02wjA2qUWva4ocsznKtygvSA9lg5INGJQUMrxZZ2HOOHg/MMV1203?=
- =?us-ascii?Q?Hsijcdawap824ymFkcMFoCV4kI1Wi1etqK0XI4pBwyPBioa5qDiCdgIzK4jF?=
- =?us-ascii?Q?XWIcl/NthlXAUbg+HZrETvi/Mv0fJt7tiieC8r7ub4fdmyfd/Ijk3B1QWYJR?=
- =?us-ascii?Q?x3RayuUwyE9FzQjz5P0HzJI0IRC1pj9O+EQrfBzx6t292gyJlFB2DjQjAHnL?=
- =?us-ascii?Q?Ax1bky5595n0wrYry5JxBnPk3g8+otEaBEbgA6ye28QJT5vi+NIay1JklJ0w?=
- =?us-ascii?Q?eRbK9LFNNCqiiS9YJe6MTxcdFyRUsZwDl5mg+RlL4Y/a97uWnJwxJzQDCzYQ?=
- =?us-ascii?Q?wKeT6e9vnz+FYPItkrOcWwuOrSjPeWgGDLeeu+HUxnppwR5sDNLHL5P+fDfA?=
- =?us-ascii?Q?i+jJUCW4f4Oc3xsm3oldcuUeSw80HEtID1uZxs7hZ0PVpqPR7T4S+2GRyNqp?=
- =?us-ascii?Q?o90CBo5sWSELExXY9WCCDsvSgezSzG4zMYMmGD2nl0Z66uO1hKeXOLI1a3eG?=
- =?us-ascii?Q?OL9TGxzoFMg/Qhu/WUWHlLukcqSHvmSm1Xxvd8s5FpflgESGvnNR0VjYN6fD?=
- =?us-ascii?Q?RuwOZhzj5yYKATbblj7OSjGFQxX8qMUvqaI8lDC9dysz0oq61Qqrm9KtjMLM?=
- =?us-ascii?Q?cNHHOG5C8AKZ3OhyNYA3YNJKaxxbWQNPHUGpFNPz6DOdINWsZIPwOxafkYpm?=
- =?us-ascii?Q?pbVUCwv0MygWHgJbx8tsk4xdl1AyOCwIxNtDOREjHxUTJvfit7dtOBVqw+84?=
- =?us-ascii?Q?SN3OQ8NE5YJOXNp/GTkb/1AoIE75gV9yaDnGvbffkxd1MPoUJsuvQQVRYQJx?=
- =?us-ascii?Q?96PDnqdx+wdpXU0krrJ3UNqTWP8JptqTiGrx1MjuZCyd6Wa4/4PlWZXLtHWw?=
- =?us-ascii?Q?917BzTVE4WAir/CQQGAQUSQ=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?h1MKCs4XywehsMaKJgipK/E6BJ+gHtQGoZH8VUpmRE8HqiPUSJpTxid39+Jd?=
+ =?us-ascii?Q?ICIw+HvpU9b1hIjJtCsIswxuDJH5KDg/BbCbqdZuXuFQ3o6EJ0mpU4w3SLDP?=
+ =?us-ascii?Q?mbB7eR4DvklasVAbrzq4sCky3WGvv/gLIODaGZgUlBUjsi9Hk3lQ9GVZbxcB?=
+ =?us-ascii?Q?IBhX7QyDXX93sRvpwh4Ra1KwudMqm6ffZDElXpxREiRYBbhVJwPSinrSGoAR?=
+ =?us-ascii?Q?9BVSY5ObzGxj2/SM99wp5D5Q4M5tn4PtP/dEaYcd8jwWbY/RZoTpvzJmW/22?=
+ =?us-ascii?Q?YwFoE6Pp7mehtqAYbDMUA73WqCgSah6O6kgI6+jilUtauzbzbWL0VHcluW3O?=
+ =?us-ascii?Q?xDaJatWBdv3ST/jfNKunIs3BpgV2IOiL26Bc3TKaPTlXOKWo0CsN66KQDHXe?=
+ =?us-ascii?Q?vlmuEnMk6ggN6GuEnwchRGs6iB+OoazDNgpElplMrW5V5CM6PzkyU15X2rK7?=
+ =?us-ascii?Q?CiW+sPCko7G2ldt0Lqo3uGmK5M7bZLcwcF5L9ttgdo0qg9VsmJoI3D84QBw+?=
+ =?us-ascii?Q?Cm7LwAQgWZsiHmuPm7nQ3Gc9HuG9KQPlucCZqfwbFs7ZlNz6plvCQHC2Kt0z?=
+ =?us-ascii?Q?Z5giQM7LQmEI7SG36nHp/NIqzgJL5gwjh/1dRzLKeMwACEyeQjkMfb2lgVyA?=
+ =?us-ascii?Q?qNn9OkE2lEQZKCN4rWIB5C+0oISz0PPep87DIU4049mua7ujtExD4NsMWQJy?=
+ =?us-ascii?Q?PmiFmrCU+wGO4qseOsAFZPCqnDIZCmLLkYbB2z9zMyj5MzdMIMOYQVfjNxze?=
+ =?us-ascii?Q?y5a4h6uMq8hGMkKi4zG0TKlgnyPS5ANYcEUWJOpRekk/O47qdBwtzINsO4Wa?=
+ =?us-ascii?Q?jLzXrwsfOnY/TwOKtJ9Au7RxdzdGR9nLb6oHVzlfeOH+yTpIOe88rnlUhx7v?=
+ =?us-ascii?Q?aUnXfrEcdvzOEzofSEu2Pp/VBaL07BOgQlKwM7whS1gh3ShTQCNoOwyHzGBW?=
+ =?us-ascii?Q?ECe906y1v3OHtU7u6lujcJ5i6DU18WQOS4Z+oFUh4tKbcNZFHzwx9PEerGQm?=
+ =?us-ascii?Q?Un1iyLLxUo7p5co1NQywbsToMHzg1eaY9UyJpHqlDTfwx8vXMkcBtEQ/kWJh?=
+ =?us-ascii?Q?gXy7XbW8kFiuW5S0xGHdG/pAZN+Q6MfqoQctuc2xBIurvb4MRRrIkOVlNLrn?=
+ =?us-ascii?Q?piCnz08kZcX8kENfrF8Wc3K0Mcqhw6Y+FCrbvYV5YlmUsaElRGByfXlBJmv+?=
+ =?us-ascii?Q?ikMtUlCJTPtbVFH9WN7QUMp7JqKx4EMK3HxbXWsM/R7JYaC9Vd3wQULptsVd?=
+ =?us-ascii?Q?pcwImYx1VXFIxG4U6bBo4vHoJ3Dcqbg6UIMs3r1dODW19ibizxagl0SPTU/g?=
+ =?us-ascii?Q?lk9gkbcNmFArmACKluE9I8LU5kaedFkj3y0LBvEdGkcF2R4yNwx+p3i7H2AD?=
+ =?us-ascii?Q?32GaCEjh8dqAgZW4Zf2vEgfTZJov6zPJS6nwzP8HcPmEyTqvWEa0Ds7GC0Da?=
+ =?us-ascii?Q?AIhLs7ioC6lQnK9012Q2Hud0nkpwNiZ/egZ8BFYui6iXu0/LsbE5VSXY7/wI?=
+ =?us-ascii?Q?Dn095JtTnacQf1IUwwfYMTUOc360NsSx0P/wIxC9ZaH1gfs4i0hnN7hL88ly?=
+ =?us-ascii?Q?yxypUy35lXJDwEvJ4eV/XZiwRP2pSdmJGQVtMKWJRt5MiLDdqX+S7pyE+dW+?=
+ =?us-ascii?Q?5srN9OzkX1yQ3JITwJzvVUg=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef0bdfc1-4441-4e0d-ba96-08d9e173e8e6
+X-MS-Exchange-CrossTenant-Network-Message-Id: cf892c39-e40a-44a3-71db-08d9e173ed42
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3527.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2022 09:03:39.5809
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2022 09:03:47.0335
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1oBreIYQ1eP0TubNx1/EHgszq+MY0pt2BqwhKmUdNuSKn93qQFQwozrlLqJGSAA7GLCwgC6vVdkno4WEeQNQHw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: kBjtaqhNtAIMdIA6rMMBO2DsNVIllxql4p9pa1r+saHUyxx8r6XxKgmNBAKvg1TtR2GxOOV8up2tsj2tlFGaVg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5355
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+In Spectrum-2 and later ASICs, each TCAM region has a default action
+that is executed in case a packet did not match any rule in the region.
+The location of the action in the database (KVDL) is computed by adding
+the region's index to a base value.
 
-When processing events generated by the device's firmware, the driver
-protects itself from events reported for non-existent local ports, but
-not for the CPU port (local port 0), which exists, but does not have all
-the fields as any local port.
+Some TCAM regions are not exposed to the host and used internally by the
+device. Allocate KVDL entries for the default actions of these regions
+to avoid the host from overwriting them.
 
-This can result in a NULL pointer dereference when trying access
-'struct mlxsw_sp_port' fields which are not initialized for CPU port.
+With mlxsw, lookups in the internal regions are not currently performed,
+but it is a good practice not to overwrite their default actions.
 
-Commit 63b08b1f6834 ("mlxsw: spectrum: Protect driver from buggy firmware")
-already handled such issue by bailing early when processing a PUDE event
-reported for the CPU port.
-
-Generalize the approach by moving the check to a common function and
-making use of it in all relevant places.
-
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c           | 4 +---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.h           | 7 +++++++
- drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c       | 3 +--
- drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c | 3 +--
- 4 files changed, 10 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/resources.h      |  2 ++
+ .../net/ethernet/mellanox/mlxsw/spectrum2_acl_tcam.c | 12 +++++++++++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index a3f95744118f..a4b94eecea98 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -2148,13 +2148,11 @@ static void mlxsw_sp_pude_event_func(const struct mlxsw_reg_info *reg,
- 	struct mlxsw_sp *mlxsw_sp = priv;
- 	struct mlxsw_sp_port *mlxsw_sp_port;
- 	enum mlxsw_reg_pude_oper_status status;
--	unsigned int max_ports;
- 	u16 local_port;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/resources.h b/drivers/net/ethernet/mellanox/mlxsw/resources.h
+index c7fc650608eb..daacf6291253 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/resources.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/resources.h
+@@ -33,6 +33,7 @@ enum mlxsw_res_id {
+ 	MLXSW_RES_ID_ACL_MAX_REGIONS,
+ 	MLXSW_RES_ID_ACL_MAX_GROUPS,
+ 	MLXSW_RES_ID_ACL_MAX_GROUP_SIZE,
++	MLXSW_RES_ID_ACL_MAX_DEFAULT_ACTIONS,
+ 	MLXSW_RES_ID_ACL_FLEX_KEYS,
+ 	MLXSW_RES_ID_ACL_MAX_ACTION_PER_RULE,
+ 	MLXSW_RES_ID_ACL_ACTIONS_PER_SET,
+@@ -90,6 +91,7 @@ static u16 mlxsw_res_ids[] = {
+ 	[MLXSW_RES_ID_ACL_MAX_REGIONS] = 0x2903,
+ 	[MLXSW_RES_ID_ACL_MAX_GROUPS] = 0x2904,
+ 	[MLXSW_RES_ID_ACL_MAX_GROUP_SIZE] = 0x2905,
++	[MLXSW_RES_ID_ACL_MAX_DEFAULT_ACTIONS] = 0x2908,
+ 	[MLXSW_RES_ID_ACL_FLEX_KEYS] = 0x2910,
+ 	[MLXSW_RES_ID_ACL_MAX_ACTION_PER_RULE] = 0x2911,
+ 	[MLXSW_RES_ID_ACL_ACTIONS_PER_SET] = 0x2912,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum2_acl_tcam.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum2_acl_tcam.c
+index ad69913f19c1..5b0210862655 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum2_acl_tcam.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum2_acl_tcam.c
+@@ -77,7 +77,14 @@ static int mlxsw_sp2_acl_tcam_init(struct mlxsw_sp *mlxsw_sp, void *priv,
+ 	int i;
+ 	int err;
  
--	max_ports = mlxsw_core_max_ports(mlxsw_sp->core);
- 	local_port = mlxsw_reg_pude_local_port_get(pude_pl);
++	/* Some TCAM regions are not exposed to the host and used internally
++	 * by the device. Allocate KVDL entries for the default actions of
++	 * these regions to avoid the host from overwriting them.
++	 */
+ 	tcam->kvdl_count = _tcam->max_regions;
++	if (MLXSW_CORE_RES_VALID(mlxsw_sp->core, ACL_MAX_DEFAULT_ACTIONS))
++		tcam->kvdl_count = MLXSW_CORE_RES_GET(mlxsw_sp->core,
++						      ACL_MAX_DEFAULT_ACTIONS);
+ 	err = mlxsw_sp_kvdl_alloc(mlxsw_sp, MLXSW_SP_KVDL_ENTRY_TYPE_ACTSET,
+ 				  tcam->kvdl_count, &tcam->kvdl_index);
+ 	if (err)
+@@ -97,7 +104,10 @@ static int mlxsw_sp2_acl_tcam_init(struct mlxsw_sp *mlxsw_sp, void *priv,
+ 		goto err_afa_block_continue;
+ 	enc_actions = mlxsw_afa_block_cur_set(afa_block);
  
--	if (WARN_ON_ONCE(!local_port || local_port >= max_ports))
-+	if (WARN_ON_ONCE(!mlxsw_sp_local_port_is_valid(mlxsw_sp, local_port)))
- 		return;
- 	mlxsw_sp_port = mlxsw_sp->ports[local_port];
- 	if (!mlxsw_sp_port)
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index bb2442e1f705..30942b6ffcf9 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -481,6 +481,13 @@ int
- mlxsw_sp_port_vlan_classification_set(struct mlxsw_sp_port *mlxsw_sp_port,
- 				      bool is_8021ad_tagged,
- 				      bool is_8021q_tagged);
-+static inline bool
-+mlxsw_sp_local_port_is_valid(struct mlxsw_sp *mlxsw_sp, u16 local_port)
-+{
-+	unsigned int max_ports = mlxsw_core_max_ports(mlxsw_sp->core);
-+
-+	return local_port < max_ports && local_port;
-+}
- 
- /* spectrum_buffers.c */
- struct mlxsw_sp_hdroom_prio {
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-index 0ff163fbc775..35422e64d89f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-@@ -568,12 +568,11 @@ void mlxsw_sp1_ptp_got_timestamp(struct mlxsw_sp *mlxsw_sp, bool ingress,
- 				 u8 domain_number, u16 sequence_id,
- 				 u64 timestamp)
- {
--	unsigned int max_ports = mlxsw_core_max_ports(mlxsw_sp->core);
- 	struct mlxsw_sp_port *mlxsw_sp_port;
- 	struct mlxsw_sp1_ptp_key key;
- 	u8 types;
- 
--	if (WARN_ON_ONCE(local_port >= max_ports))
-+	if (WARN_ON_ONCE(!mlxsw_sp_local_port_is_valid(mlxsw_sp, local_port)))
- 		return;
- 	mlxsw_sp_port = mlxsw_sp->ports[local_port];
- 	if (!mlxsw_sp_port)
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-index 65c1724c63b0..bffdb41fc4ed 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-@@ -2616,7 +2616,6 @@ static void mlxsw_sp_fdb_notify_mac_process(struct mlxsw_sp *mlxsw_sp,
- 					    char *sfn_pl, int rec_index,
- 					    bool adding)
- {
--	unsigned int max_ports = mlxsw_core_max_ports(mlxsw_sp->core);
- 	struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan;
- 	struct mlxsw_sp_bridge_device *bridge_device;
- 	struct mlxsw_sp_bridge_port *bridge_port;
-@@ -2630,7 +2629,7 @@ static void mlxsw_sp_fdb_notify_mac_process(struct mlxsw_sp *mlxsw_sp,
- 
- 	mlxsw_reg_sfn_mac_unpack(sfn_pl, rec_index, mac, &fid, &local_port);
- 
--	if (WARN_ON_ONCE(local_port >= max_ports))
-+	if (WARN_ON_ONCE(!mlxsw_sp_local_port_is_valid(mlxsw_sp, local_port)))
- 		return;
- 	mlxsw_sp_port = mlxsw_sp->ports[local_port];
- 	if (!mlxsw_sp_port) {
+-	for (i = 0; i < tcam->kvdl_count; i++) {
++	/* Only write to KVDL entries used by TCAM regions exposed to the
++	 * host.
++	 */
++	for (i = 0; i < _tcam->max_regions; i++) {
+ 		mlxsw_reg_pefa_pack(pefa_pl, tcam->kvdl_index + i,
+ 				    true, enc_actions);
+ 		err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(pefa), pefa_pl);
 -- 
 2.33.1
 
