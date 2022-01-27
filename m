@@ -2,182 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6388B49EDFD
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 23:14:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4B1849EE07
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 23:23:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233600AbiA0WOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 17:14:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232422AbiA0WOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 17:14:41 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D808C061714
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 14:14:41 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id l35-20020a05600c1d2300b0034d477271c1so2750519wms.3
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 14:14:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:to:cc:content-language
-         :subject:content-transfer-encoding;
-        bh=/k3AmdaNagjESu+lzj4xALQ2hQci6vO/gRe2DHZ/D/s=;
-        b=KyOZsyiLulwcqARyiVTHpr5MFeuHTKaTN1FdiQz5wrJ31+ha8T7LFW3nwhDsjtRLeJ
-         qKBwlUDrkOQUd2zg6/gdr94L7SPVtlIIZVMVpv5o/vi5S75ARZJPCNWZH5w8H+J1GaYP
-         nzmCehBpATq8RqUVN3LUffNt6iMKmAViIYRZccIMAnoK62WbhoPOH7Pp+n9C9tjdUQWA
-         WgW6kWScPeBIElr8Xgzjqr+WjPEk6idKe72qFvqxdZbXlAS+ST4mYXkY34Ar/WaCIyLD
-         JuzVGhcSfjeL7iN3qNeNUEgk5AEW/jMHrRhGq7Q7pSFvxBKSIV2bizxO6SzRr196EcDa
-         LgCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from:to
-         :cc:content-language:subject:content-transfer-encoding;
-        bh=/k3AmdaNagjESu+lzj4xALQ2hQci6vO/gRe2DHZ/D/s=;
-        b=3unAQtg5+/I4XoXXDKeUnBooWvq7x7ukAUrLpfTWTSQRTH6a5zpD4wd00YOhgSiuXV
-         yLAqJxYASoDfKwmCCJ3OQfXgw8/ny/ooMDXc39BkCf98xTPf/2XXgI86FrhiZj5Fw+dY
-         j3dwvBj9PuXJhYwERLISNonlzV1tBZQO6vbv1h1vHDm5GEugeOqYl7A4fpYaW+d8LEd1
-         Nb4yU1Hf6TQGuIt9Qr455Th7mSlfEfByoLi4DF24eRFqr3S8pYS8kCF6CFdvj9zsizd4
-         sH71Ep/lm1g057kY8ZRRlOysLPcY24TJc9op8nc4RGkFdXqXnoGpB/x4ztLJBfi97RGs
-         HU3A==
-X-Gm-Message-State: AOAM530jhdmr8ZBGPSSTCVm+Q9vAEoFGThogOGyfi1ybb4HuNqbrhumI
-        M2ga66tWNjMSItiwOxfHvAgZPDstqnE=
-X-Google-Smtp-Source: ABdhPJyZJG6UDezFh2agfk3UTGxgC8aEdMD/Bn7PYy34Uhp+fc5hZLART6cajfSXtHrFCm8w3akICg==
-X-Received: by 2002:a1c:a9d7:: with SMTP id s206mr4890350wme.38.1643321679627;
-        Thu, 27 Jan 2022 14:14:39 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f4d:2b00:8bb:72c8:ebd4:2603? (p200300ea8f4d2b0008bb72c8ebd42603.dip0.t-ipconnect.de. [2003:ea:8f4d:2b00:8bb:72c8:ebd4:2603])
-        by smtp.googlemail.com with ESMTPSA id d7sm4466385wri.117.2022.01.27.14.14.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 14:14:39 -0800 (PST)
-Message-ID: <f448b546-5b0a-79e0-f09a-dcfabb4fc8a5@gmail.com>
-Date:   Thu, 27 Jan 2022 23:14:33 +0100
+        id S240714AbiA0WXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 17:23:34 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:58790 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238336AbiA0WXd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jan 2022 17:23:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=BrhrLCScphdHxRqIKBcsXZrBl9TaZ0+s6YRCLfYR0MU=; b=NNplkwFpGOvZmPiV6QhXNwdByN
+        p4Gh6EeWYu2oznqa5mQ1dZpPUEycwGivuAkboq/+0BD3eT3ineMyCljTX6Mzt5L1h8Yx8A/ox/8VE
+        eUVEOGOLe6TdyzwvRBkbA3YcZ85+0OhCed6Dlq77BdoZGTFNVi5vUf1l7Pze9HCP8duw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nDDAy-0033VB-12; Thu, 27 Jan 2022 23:23:32 +0100
+Date:   Thu, 27 Jan 2022 23:23:32 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next 5/5] net: lan743x: Add Clause-45 MDIO access
+Message-ID: <YfMbZC8PIZ/8vwGJ@lunn.ch>
+References: <20220127173055.308918-1-Raju.Lakkaraju@microchip.com>
+ <20220127173055.308918-6-Raju.Lakkaraju@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Chun-Hao Lin <hau@realtek.com>
-Content-Language: en-US
-Subject: [PATCH net-next] r8169: add rtl_disable_exit_l1()
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127173055.308918-6-Raju.Lakkaraju@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add rtl_disable_exit_l1() for ensuring that the chip doesn't
-inadvertently exit ASPM L1 when being in a low-power mode.
-The new function is called from rtl_prepare_power_down() which
-has to be moved in the code to avoid a forward declaration.
+On Thu, Jan 27, 2022 at 11:00:55PM +0530, Raju Lakkaraju wrote:
+> PCI1A011/PCI1A041 chip support the MDIO Clause-45 access
+> 
+> Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+> ---
+>  drivers/net/ethernet/microchip/lan743x_main.c | 110 +++++++++++++++++-
+>  drivers/net/ethernet/microchip/lan743x_main.h |  16 +++
+>  2 files changed, 123 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+> index 6f6655eb6438..98d346aaf627 100644
+> --- a/drivers/net/ethernet/microchip/lan743x_main.c
+> +++ b/drivers/net/ethernet/microchip/lan743x_main.c
+> @@ -793,6 +793,95 @@ static int lan743x_mdiobus_write(struct mii_bus *bus,
+>  	return ret;
+>  }
+>  
+> +static u32 lan743x_mac_mmd_access(int id, int index, int op, u8 freq)
+> +{
+> +	u16 dev_addr;
+> +	u32 ret;
+> +
+> +	dev_addr = (index >> 16) & 0x1f;
+> +	ret = (id << MAC_MII_ACC_PHY_ADDR_SHIFT_) &
+> +		MAC_MII_ACC_PHY_ADDR_MASK_;
+> +	ret |= (dev_addr << MAC_MII_ACC_MIIMMD_SHIFT_) &
+> +		MAC_MII_ACC_MIIMMD_MASK_;
+> +	if (freq)
+> +		ret |= (freq << MAC_MII_ACC_MDC_CYCLE_SHIFT_) &
+> +			MAC_MII_ACC_MDC_CYCLE_MASK_;
 
-According to Realtek OCP register 0xc0ac shadows ERI register 0xd4
-on RTL8168 versions from RTL8168g. This allows to simplify the
-code a little.
+All callers of this function appear to pass freq as 0. So you can
+remove this.
 
-Suggested-by: Chun-Hao Lin <hau@realtek.com>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 65 ++++++++++++++---------
- 1 file changed, 39 insertions(+), 26 deletions(-)
+> +	if (op == 1)
+> +		ret |= MAC_MII_ACC_MIICMD_WRITE_;
+> +	else if (op == 2)
+> +		ret |= MAC_MII_ACC_MIICMD_READ_;
+> +	else if (op == 3)
+> +		ret |= MAC_MII_ACC_MIICMD_READ_INC_;
+> +	else
+> +		ret |= MAC_MII_ACC_MIICMD_ADDR_;
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 3c3d1506b..104ebc0fb 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2231,28 +2231,6 @@ static int rtl_set_mac_address(struct net_device *dev, void *p)
- 	return 0;
- }
- 
--static void rtl_wol_enable_rx(struct rtl8169_private *tp)
--{
--	if (tp->mac_version >= RTL_GIGA_MAC_VER_25)
--		RTL_W32(tp, RxConfig, RTL_R32(tp, RxConfig) |
--			AcceptBroadcast | AcceptMulticast | AcceptMyPhys);
--}
--
--static void rtl_prepare_power_down(struct rtl8169_private *tp)
--{
--	if (tp->dash_type != RTL_DASH_NONE)
--		return;
--
--	if (tp->mac_version == RTL_GIGA_MAC_VER_32 ||
--	    tp->mac_version == RTL_GIGA_MAC_VER_33)
--		rtl_ephy_write(tp, 0x19, 0xff64);
--
--	if (device_may_wakeup(tp_to_dev(tp))) {
--		phy_speed_down(tp->phydev, false);
--		rtl_wol_enable_rx(tp);
--	}
--}
--
- static void rtl_init_rxcfg(struct rtl8169_private *tp)
- {
- 	switch (tp->mac_version) {
-@@ -2667,10 +2645,7 @@ static void rtl_enable_exit_l1(struct rtl8169_private *tp)
- 	case RTL_GIGA_MAC_VER_37 ... RTL_GIGA_MAC_VER_38:
- 		rtl_eri_set_bits(tp, 0xd4, 0x0c00);
- 		break;
--	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
--		rtl_eri_set_bits(tp, 0xd4, 0x1f80);
--		break;
--	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
-+	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_63:
- 		r8168_mac_ocp_modify(tp, 0xc0ac, 0, 0x1f80);
- 		break;
- 	default:
-@@ -2678,6 +2653,20 @@ static void rtl_enable_exit_l1(struct rtl8169_private *tp)
- 	}
- }
- 
-+static void rtl_disable_exit_l1(struct rtl8169_private *tp)
-+{
-+	switch (tp->mac_version) {
-+	case RTL_GIGA_MAC_VER_34 ... RTL_GIGA_MAC_VER_38:
-+		rtl_eri_clear_bits(tp, 0xd4, 0x1f00);
-+		break;
-+	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_63:
-+		r8168_mac_ocp_modify(tp, 0xc0ac, 0x1f80, 0);
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
- {
- 	/* Don't enable ASPM in the chip if OS can't control ASPM */
-@@ -4689,6 +4678,30 @@ static int r8169_phy_connect(struct rtl8169_private *tp)
- 	return 0;
- }
- 
-+static void rtl_wol_enable_rx(struct rtl8169_private *tp)
-+{
-+	if (tp->mac_version >= RTL_GIGA_MAC_VER_25)
-+		RTL_W32(tp, RxConfig, RTL_R32(tp, RxConfig) |
-+			AcceptBroadcast | AcceptMulticast | AcceptMyPhys);
-+}
-+
-+static void rtl_prepare_power_down(struct rtl8169_private *tp)
-+{
-+	if (tp->dash_type != RTL_DASH_NONE)
-+		return;
-+
-+	if (tp->mac_version == RTL_GIGA_MAC_VER_32 ||
-+	    tp->mac_version == RTL_GIGA_MAC_VER_33)
-+		rtl_ephy_write(tp, 0x19, 0xff64);
-+
-+	if (device_may_wakeup(tp_to_dev(tp))) {
-+		phy_speed_down(tp->phydev, false);
-+		rtl_wol_enable_rx(tp);
-+	} else {
-+		rtl_disable_exit_l1(tp);
-+	}
-+}
-+
- static void rtl8169_down(struct rtl8169_private *tp)
- {
- 	/* Clear all task flags */
--- 
-2.35.0
+> +		mmd_access = lan743x_mac_mmd_access(phy_id, index, 0, 0);
 
+It is pretty opaque what the 0 means here. How about you actually pass
+MAC_MII_ACC_MIICMD_ values?
+
+lan743x_mac_mmd_access(phy_id, index, );
+
+> +		if (adapter->mdiobus->probe_capabilities == MDIOBUS_C45)
+> +			phydev->c45_ids.devices_in_package &= ~BIT(0);
+>  	}
+
+A MAC driver should not be modifying the phydev structure.
+
+>  	/* MAC doesn't support 1000T Half */
+> @@ -2822,12 +2914,14 @@ static int lan743x_mdiobus_init(struct lan743x_adapter *adapter)
+>  			sgmii_ctl &= ~SGMII_CTL_SGMII_POWER_DN_;
+>  			lan743x_csr_write(adapter, SGMII_CTL, sgmii_ctl);
+>  			netif_info(adapter, drv, adapter->netdev, "SGMII operation\n");
+> +			adapter->mdiobus->probe_capabilities = MDIOBUS_C22_C45;
+>  		} else {
+>  			sgmii_ctl = lan743x_csr_read(adapter, SGMII_CTL);
+>  			sgmii_ctl &= ~SGMII_CTL_SGMII_ENABLE_;
+>  			sgmii_ctl |= SGMII_CTL_SGMII_POWER_DN_;
+>  			lan743x_csr_write(adapter, SGMII_CTL, sgmii_ctl);
+>  			netif_info(adapter, drv, adapter->netdev, "GMII operation\n");
+> +			adapter->mdiobus->probe_capabilities = MDIOBUS_C22;
+>  		}
+>  	} else {
+>  		chip_ver = lan743x_csr_read(adapter, STRAP_READ);
+> @@ -2839,19 +2933,29 @@ static int lan743x_mdiobus_init(struct lan743x_adapter *adapter)
+>  			sgmii_ctl &= ~SGMII_CTL_SGMII_POWER_DN_;
+>  			lan743x_csr_write(adapter, SGMII_CTL, sgmii_ctl);
+>  			netif_info(adapter, drv, adapter->netdev, "SGMII operation\n");
+> +			adapter->mdiobus->probe_capabilities = MDIOBUS_C22_C45;
+>  		} else {
+>  			sgmii_ctl = lan743x_csr_read(adapter, SGMII_CTL);
+>  			sgmii_ctl &= ~SGMII_CTL_SGMII_ENABLE_;
+>  			sgmii_ctl |= SGMII_CTL_SGMII_POWER_DN_;
+>  			lan743x_csr_write(adapter, SGMII_CTL, sgmii_ctl);
+>  			netif_info(adapter, drv, adapter->netdev, "GMII operation\n");
+> +			adapter->mdiobus->probe_capabilities = MDIOBUS_C22;
+
+This manipulation of adapter->mdiobus->probe_capabilities based on
+SGMII vs RGMII makes no sense. It should be set based on what the bus
+master can actually do. I assume the PCI1A011/PCI1A041 can do both C22
+and C45. So it should look at the reg value and either do a C45
+transaction, or a C22 transaction. Do the older chips not support C45?
+In that case, return -EOPNOTSUPP if asked to do a C45 transaction.
+
+	Andrew
