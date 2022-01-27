@@ -2,78 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 341B249D84F
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 03:48:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A651B49D819
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 03:34:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235369AbiA0CsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 21:48:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60376 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235350AbiA0CsO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 21:48:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C981C06161C;
-        Wed, 26 Jan 2022 18:48:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 372AA61514;
-        Thu, 27 Jan 2022 02:48:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54DC2C340E7;
-        Thu, 27 Jan 2022 02:48:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643251693;
-        bh=5ubN8J9eTXlOAhRffuZB09n0xdyHwozsE4Im9F3XpJI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qw1ms4SAHiuikXXf0p7hg0HuCWFa4DrxLBg0GA9v0kJlia9WRMp3tqy8pF/RRdXNX
-         yoxHSHgwI+fqNkylOl4jhNfJ4vMnQPeb6ZEamF9yh2nOtMueZhg9fX5oRcjj7C+8Vj
-         Q6j66Gj9v3NDyBtsXBqIYemCTjOV3Jy4rBx8vM0o0AC1PQptpmvQUduHUJFsQpu4v7
-         RfO5j79eHRQLsx8ogkC98dl1ueB8g+l3CJ0XHT2OlFtDcirUH6wL/TYWyr18M0aaMf
-         m6+vJnsjaPTgZh7VzGnJ6o6JOzqaZ/Q3IhfKYpFbco/IonAkUFRrdqBAJOPJzMkXXp
-         u5Tw2WyKw8FkA==
-Date:   Wed, 26 Jan 2022 18:48:12 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     menglong8.dong@gmail.com
-Cc:     nhorman@tuxdriver.com, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dsahern@kernel.org,
-        rostedt@goodmis.org, Menglong Dong <imagedong@tencent.com>
-Subject: Re: [PATCH v2 net-next] net: drop_monitor: support drop reason
-Message-ID: <20220126184812.32510ab4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220126072306.3218272-1-imagedong@tencent.com>
-References: <20220126072306.3218272-1-imagedong@tencent.com>
+        id S235191AbiA0Ce2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 21:34:28 -0500
+Received: from szxga08-in.huawei.com ([45.249.212.255]:32063 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232931AbiA0Ce1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 21:34:27 -0500
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Jkl1d4mkyz1FD4Y;
+        Thu, 27 Jan 2022 10:30:29 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
+ (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 27 Jan
+ 2022 10:34:24 +0800
+From:   Hou Tao <houtao1@huawei.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <houtao1@huawei.com>
+Subject: [PATCH bpf-next] selftests/bpf: use getpagesize() to initialize ring buffer size
+Date:   Thu, 27 Jan 2022 10:49:39 +0800
+Message-ID: <20220127024939.364016-1-houtao1@huawei.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 26 Jan 2022 15:23:06 +0800 menglong8.dong@gmail.com wrote:
-> @@ -606,12 +610,17 @@ static int net_dm_packet_report_in_port_put(struct sk_buff *msg, int ifindex,
->  static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
->  				     size_t payload_len)
->  {
-> -	u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
-> +	struct net_dm_skb_cb *cb = NET_DM_SKB_CB(skb);
->  	char buf[NET_DM_MAX_SYMBOL_LEN];
-> +	enum skb_drop_reason reason;
->  	struct nlattr *attr;
->  	void *hdr;
-> +	u64 pc;
->  	int rc;
->  
-> +	pc = (u64)(uintptr_t)cb->pc;
-> +	reason = cb->reason;
-> +
->  	hdr = genlmsg_put(msg, 0, 0, &net_drop_monitor_family, 0,
->  			  NET_DM_CMD_PACKET_ALERT);
->  	if (!hdr)
-> @@ -623,6 +632,9 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
->  	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
->  		goto nla_put_failure;
->  
-> +	if (nla_put_u32(msg, NET_DM_ATTR_REASON, reason))
+4096 is OK for x86-64, but for other archs with greater than 4KB
+page size (e.g. 64KB under arm64), test_verifier for test case
+"check valid spill/fill, ptr to mem" will fail, so just use
+getpagesize() to initialize the ring buffer size. Do this for
+test_progs as well.
 
-Why the temporary variable instead of referring to cb->reason directly?
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+---
+ tools/testing/selftests/bpf/prog_tests/d_path.c | 14 ++++++++++++--
+ .../testing/selftests/bpf/prog_tests/test_ima.c | 17 +++++++++++++----
+ tools/testing/selftests/bpf/progs/ima.c         |  1 -
+ .../bpf/progs/test_d_path_check_types.c         |  1 -
+ tools/testing/selftests/bpf/test_verifier.c     |  2 +-
+ 5 files changed, 26 insertions(+), 9 deletions(-)
 
-> +		goto nla_put_failure;
+diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
+index 911345c526e6..abfa3697e34d 100644
+--- a/tools/testing/selftests/bpf/prog_tests/d_path.c
++++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
+@@ -171,10 +171,20 @@ static void test_d_path_check_rdonly_mem(void)
+ static void test_d_path_check_types(void)
+ {
+ 	struct test_d_path_check_types *skel;
++	int err;
++
++	skel = test_d_path_check_types__open();
++	if (!ASSERT_OK_PTR(skel, "d_path_check_types open failed"))
++		return;
+ 
+-	skel = test_d_path_check_types__open_and_load();
+-	ASSERT_ERR_PTR(skel, "unexpected_load_passing_wrong_type");
++	err = bpf_map__set_max_entries(skel->maps.ringbuf, getpagesize());
++	if (!ASSERT_OK(err, "set max entries"))
++		goto cleanup;
+ 
++	err = test_d_path_check_types__load(skel);
++	ASSERT_EQ(err, -EACCES, "unexpected_load_passing_wrong_type");
++
++cleanup:
+ 	test_d_path_check_types__destroy(skel);
+ }
+ 
+diff --git a/tools/testing/selftests/bpf/prog_tests/test_ima.c b/tools/testing/selftests/bpf/prog_tests/test_ima.c
+index 97d8a6f84f4a..ffc4d8b6e753 100644
+--- a/tools/testing/selftests/bpf/prog_tests/test_ima.c
++++ b/tools/testing/selftests/bpf/prog_tests/test_ima.c
+@@ -48,11 +48,19 @@ void test_test_ima(void)
+ 	char cmd[256];
+ 
+ 	int err, duration = 0;
+-	struct ima *skel = NULL;
++	struct ima *skel;
+ 
+-	skel = ima__open_and_load();
+-	if (CHECK(!skel, "skel_load", "skeleton failed\n"))
+-		goto close_prog;
++	skel = ima__open();
++	if (!ASSERT_OK_PTR(skel, "skel open"))
++		return;
++
++	err = bpf_map__set_max_entries(skel->maps.ringbuf, getpagesize());
++	if (!ASSERT_OK(err, "set max entries"))
++		goto destroy_skel;
++
++	err = ima__load(skel);
++	if (!ASSERT_OK(err, "skel load"))
++		goto destroy_skel;
+ 
+ 	ringbuf = ring_buffer__new(bpf_map__fd(skel->maps.ringbuf),
+ 				   process_sample, NULL, NULL);
+@@ -86,5 +94,6 @@ void test_test_ima(void)
+ 	CHECK(err, "failed to run command", "%s, errno = %d\n", cmd, errno);
+ close_prog:
+ 	ring_buffer__free(ringbuf);
++destroy_skel:
+ 	ima__destroy(skel);
+ }
+diff --git a/tools/testing/selftests/bpf/progs/ima.c b/tools/testing/selftests/bpf/progs/ima.c
+index 96060ff4ffc6..e192a9f16aea 100644
+--- a/tools/testing/selftests/bpf/progs/ima.c
++++ b/tools/testing/selftests/bpf/progs/ima.c
+@@ -13,7 +13,6 @@ u32 monitored_pid = 0;
+ 
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_RINGBUF);
+-	__uint(max_entries, 1 << 12);
+ } ringbuf SEC(".maps");
+ 
+ char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/test_d_path_check_types.c b/tools/testing/selftests/bpf/progs/test_d_path_check_types.c
+index 7e02b7361307..1b68d4a65abb 100644
+--- a/tools/testing/selftests/bpf/progs/test_d_path_check_types.c
++++ b/tools/testing/selftests/bpf/progs/test_d_path_check_types.c
+@@ -8,7 +8,6 @@ extern const int bpf_prog_active __ksym;
+ 
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_RINGBUF);
+-	__uint(max_entries, 1 << 12);
+ } ringbuf SEC(".maps");
+ 
+ SEC("fentry/security_inode_getattr")
+diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
+index 29bbaa58233c..6acb5e747715 100644
+--- a/tools/testing/selftests/bpf/test_verifier.c
++++ b/tools/testing/selftests/bpf/test_verifier.c
+@@ -931,7 +931,7 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
+ 	}
+ 	if (*fixup_map_ringbuf) {
+ 		map_fds[20] = create_map(BPF_MAP_TYPE_RINGBUF, 0,
+-					   0, 4096);
++					   0, getpagesize());
+ 		do {
+ 			prog[*fixup_map_ringbuf].imm = map_fds[20];
+ 			fixup_map_ringbuf++;
+-- 
+2.29.2
+
