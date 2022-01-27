@@ -2,154 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B1E449E6B9
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 16:53:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80FC749E6B8
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 16:53:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243276AbiA0PxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S243270AbiA0PxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 27 Jan 2022 10:53:11 -0500
-Received: from mga07.intel.com ([134.134.136.100]:19587 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237754AbiA0PxJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 10:53:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643298789; x=1674834789;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QssZTDIf2fNZDmmpnhEA2kuDiKjwkOgEBw2ZdOUxWv0=;
-  b=H850MMN3c5un2IKK3Ur4EHIfAenUUhwceKAmzM6BqOp2s2Glmbez3Dgm
-   ih3fAB3Ehyn1UJhgbTfc5lwTvQX/jVCvurruCQ0zXA/3jkTLSjlpE6XMu
-   ngfHWQRohkg2Lm83ukfQBTYI+1INWSZoEP5hMR25iy0gIwpovfPMPwzb8
-   g+L49jG5EYb84ld/TquG9dTDo5JFzT96NI0Jv0fY8hsti2kqiTcP2Qoco
-   VhypcmfbbYFZA5JNImmp6ix0PamvERc6NoFilMfYxp+hgBaf/cg4q+ORo
-   pnlZGbpBP5R0mAtdU/mTdSXosfawK0fr5TgPPu0t6aHERwTmAZhrCMQbt
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="310205451"
-X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="310205451"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 07:53:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="533151794"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 27 Jan 2022 07:53:01 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nD753-000Mk9-9l; Thu, 27 Jan 2022 15:53:01 +0000
-Date:   Thu, 27 Jan 2022 23:52:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        "D. Wythe" <alibuda@linux.alibaba.com>
-Subject: Re: [PATCH net-next 2/3] net/smc: Limits backlog connections
-Message-ID: <202201272328.JtsPKLkq-lkp@intel.com>
-References: <9b52fc3f11a2ae6f23224a178fd4cff9f9dd4eaa.1643284658.git.alibuda@linux.alibaba.com>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41178 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243271AbiA0PxI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 10:53:08 -0500
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E718C06173B;
+        Thu, 27 Jan 2022 07:53:08 -0800 (PST)
+Received: by mail-il1-x134.google.com with SMTP id z4so2855194ilz.4;
+        Thu, 27 Jan 2022 07:53:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zYCnHem+yXsL+h430Le5ssJgbtLMHBH+MRHKqejQOZo=;
+        b=q7mfusPKYjow17ekmUngWUB2JDK5Z3A1oufO+WTYJbLB5GCS/XnxBWSz/rwIiZTifE
+         kugVXBn6BIrVOL/ALCec8NgGiP41zsG1CXKvjzjyFpv4AGG1nIn/A3vP24cGiWX2b6KV
+         TLrml1TmvuIUm5Wxptrg4vAxDipjGKdoIsrU/19zKRzUhyr9leDLnGEs9VdCNN6Vrvw8
+         kLy9G9omhYv4+BPPoBCrrdTqYclsQq5XJhbxJz9uCsntqom8OrgdPFYkAGUXFU/4q7Mo
+         m1d/i7x+Zzglo60wKj0ZgTjinoMeAlvxh+BMaN5LOJHNKN3SumWgQc2JAHxJDEQa261J
+         LIDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zYCnHem+yXsL+h430Le5ssJgbtLMHBH+MRHKqejQOZo=;
+        b=1B6KDYWn24OQl96ZrCLGd3ZykFD0zZRTA3COYpeUNbPZJXtrbINXNd73/PSPF+koCV
+         z9ikwVVnBnxDA0mysWkcWfOvQ22oeReAnXV+NDgOFQk6xtwHp73sydwbffxv/8e2/Zrb
+         xvqjXm7YX8cnf6JGI9qyMkSY3QUa1ReAgiDT/0urZkykoc3NZuQKbAW6s3+eyh6i8Bak
+         +Dsg79+OWna20hTVi6HuWP86fZEkd31W1hHlin1C7bYEMqCfhFk1GGC2hWuZAcHu+vU5
+         v2ddfB/a5HV4fCuIFWtpPH3NXzpjAusy3RXt0nafcrJvRE9QQq8owrGxwQjOwsVmGQEF
+         6t3w==
+X-Gm-Message-State: AOAM5333zyRm+jr22pyKiex8pQ+WU9s/EsTKnbzIgN2K3uggAYCfu3Tg
+        9TU+/9ZKGVsgmrVFoVQTe9k=
+X-Google-Smtp-Source: ABdhPJxp25laGvXo7rDMI9ih8GLOWcBs03tBEPo8Guy2LK+i3vuBOe5IYuhPMPlZ+iUj3jNsDq9yqA==
+X-Received: by 2002:a92:ca45:: with SMTP id q5mr2854645ilo.55.1643298787938;
+        Thu, 27 Jan 2022 07:53:07 -0800 (PST)
+Received: from ?IPV6:2601:282:800:dc80:182c:2e54:e650:90f5? ([2601:282:800:dc80:182c:2e54:e650:90f5])
+        by smtp.googlemail.com with ESMTPSA id i11sm12685619iow.9.2022.01.27.07.53.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Jan 2022 07:53:07 -0800 (PST)
+Message-ID: <cdb189e9-a804-bb02-9490-146acf8ca0a6@gmail.com>
+Date:   Thu, 27 Jan 2022 08:53:04 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9b52fc3f11a2ae6f23224a178fd4cff9f9dd4eaa.1643284658.git.alibuda@linux.alibaba.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH v3 net-next] net: drop_monitor: support drop reason
+Content-Language: en-US
+To:     menglong8.dong@gmail.com, kuba@kernel.org
+Cc:     nhorman@tuxdriver.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dsahern@kernel.org,
+        rostedt@goodmis.org, Menglong Dong <imagedong@tencent.com>,
+        Ido Schimmel <idosch@idosch.org>
+References: <20220127033356.4050072-1-imagedong@tencent.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220127033356.4050072-1-imagedong@tencent.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Wythe",
+On 1/26/22 8:33 PM, menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <imagedong@tencent.com>
+> 
+> In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()")
+> drop reason is introduced to the tracepoint of kfree_skb. Therefore,
+> drop_monitor is able to report the drop reason to users by netlink.
+> 
+> For now, the number of drop reason is passed to users ( seems it's
+> a little troublesome to pass the drop reason as string ). Therefore,
+> users can do some customized description of the reason.
+> 
+> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> ---
+> v3:
+> - referring to cb->reason and cb->pc directly in
+>   net_dm_packet_report_fill()
+> 
+> v2:
+> - get a pointer to struct net_dm_skb_cb instead of local var for
+>   each field
+> ---
+>  include/uapi/linux/net_dropmon.h |  1 +
+>  net/core/drop_monitor.c          | 16 ++++++++++++----
+>  2 files changed, 13 insertions(+), 4 deletions(-)
+> 
+> diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
+> index 66048cc5d7b3..b2815166dbc2 100644
+> --- a/include/uapi/linux/net_dropmon.h
+> +++ b/include/uapi/linux/net_dropmon.h
+> @@ -93,6 +93,7 @@ enum net_dm_attr {
+>  	NET_DM_ATTR_SW_DROPS,			/* flag */
+>  	NET_DM_ATTR_HW_DROPS,			/* flag */
+>  	NET_DM_ATTR_FLOW_ACTION_COOKIE,		/* binary */
+> +	NET_DM_ATTR_REASON,			/* u32 */
+>  
 
-Thank you for the patch! Yet something to improve:
+For userspace to properly convert reason from id to string, enum
+skb_drop_reason needs to be moved from skbuff.h to a uapi file.
+include/uapi/linux/net_dropmon.h seems like the best candidate to me.
+Maybe others have a better idea.
 
-[auto build test ERROR on net-next/master]
-
-url:    https://github.com/0day-ci/linux/commits/D-Wythe/Optimizing-performance-in-short-lived/20220127-200912
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git fbb8295248e1d6f576d444309fcf79356008eac1
-config: mips-buildonly-randconfig-r004-20220124 (https://download.01.org/0day-ci/archive/20220127/202201272328.JtsPKLkq-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f32dccb9a43b02ce4e540d6ba5dbbdb188f2dc7d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://github.com/0day-ci/linux/commit/718aff24f3fcc73ecb7bff17fcbe029b799c6624
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review D-Wythe/Optimizing-performance-in-short-lived/20220127-200912
-        git checkout 718aff24f3fcc73ecb7bff17fcbe029b799c6624
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/kernel/ net/smc/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> net/smc/af_smc.c:2202:18: error: assigning to 'struct inet_connection_sock_af_ops *' from 'const struct inet_connection_sock_af_ops *' discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
-           smc->ori_af_ops = inet_csk(smc->clcsock->sk)->icsk_af_ops;
-                           ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
-
-
-vim +2202 net/smc/af_smc.c
-
-  2166	
-  2167	static int smc_listen(struct socket *sock, int backlog)
-  2168	{
-  2169		struct sock *sk = sock->sk;
-  2170		struct smc_sock *smc;
-  2171		int rc;
-  2172	
-  2173		smc = smc_sk(sk);
-  2174		lock_sock(sk);
-  2175	
-  2176		rc = -EINVAL;
-  2177		if ((sk->sk_state != SMC_INIT && sk->sk_state != SMC_LISTEN) ||
-  2178		    smc->connect_nonblock)
-  2179			goto out;
-  2180	
-  2181		rc = 0;
-  2182		if (sk->sk_state == SMC_LISTEN) {
-  2183			sk->sk_max_ack_backlog = backlog;
-  2184			goto out;
-  2185		}
-  2186		/* some socket options are handled in core, so we could not apply
-  2187		 * them to the clc socket -- copy smc socket options to clc socket
-  2188		 */
-  2189		smc_copy_sock_settings_to_clc(smc);
-  2190		if (!smc->use_fallback)
-  2191			tcp_sk(smc->clcsock->sk)->syn_smc = 1;
-  2192	
-  2193		/* save original sk_data_ready function and establish
-  2194		 * smc-specific sk_data_ready function
-  2195		 */
-  2196		smc->clcsk_data_ready = smc->clcsock->sk->sk_data_ready;
-  2197		smc->clcsock->sk->sk_data_ready = smc_clcsock_data_ready;
-  2198		smc->clcsock->sk->sk_user_data =
-  2199			(void *)((uintptr_t)smc | SK_USER_DATA_NOCOPY);
-  2200	
-  2201		/* save origin ops */
-> 2202		smc->ori_af_ops = inet_csk(smc->clcsock->sk)->icsk_af_ops;
-  2203	
-  2204		smc->af_ops = *smc->ori_af_ops;
-  2205		smc->af_ops.syn_recv_sock = smc_tcp_syn_recv_sock;
-  2206	
-  2207		inet_csk(smc->clcsock->sk)->icsk_af_ops = &smc->af_ops;
-  2208	
-  2209		rc = kernel_listen(smc->clcsock, backlog);
-  2210		if (rc) {
-  2211			smc->clcsock->sk->sk_data_ready = smc->clcsk_data_ready;
-  2212			goto out;
-  2213		}
-  2214		sk->sk_max_ack_backlog = backlog;
-  2215		sk->sk_ack_backlog = 0;
-  2216		sk->sk_state = SMC_LISTEN;
-  2217	
-  2218	out:
-  2219		release_sock(sk);
-  2220		return rc;
-  2221	}
-  2222	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
