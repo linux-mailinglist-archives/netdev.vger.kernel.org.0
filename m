@@ -2,77 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E44B49DA86
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 07:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74E0449DA87
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 07:20:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236523AbiA0GS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 01:18:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47540 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236482AbiA0GSy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 01:18:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE5DC061714;
-        Wed, 26 Jan 2022 22:18:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        id S236482AbiA0GUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 01:20:51 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:57282 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233650AbiA0GUv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jan 2022 01:20:51 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id B222B2057A;
+        Thu, 27 Jan 2022 07:20:49 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 6O5qxejiMxxu; Thu, 27 Jan 2022 07:20:49 +0100 (CET)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B00A6618BF;
-        Thu, 27 Jan 2022 06:18:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D72EC340E4;
-        Thu, 27 Jan 2022 06:18:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643264333;
-        bh=JWnQY8Vldoj9hxONqmQ+vJa9OiQSxZzxdDUkq1+N79E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FAUl2LzrWlpwEP112G3UU/39C9EvdSXdFCcHOazdmJP/tuo4Zyb0jHXYwnI+UDR7z
-         Pipxzbt4zwcnyx0MXGLn7K3JbNCXObtFzXskYntgIX4Go/o/e4wExnoTSbUoxRrcyN
-         u9Z4WJaRytHg3Yd/Ozz0Zs624LNPcFApptbeUJKprSjda/pXX8gvTWcV7TIko1/ON/
-         e8mwTpisrMovyaU8ZE29xqenWofn3JHmsKCzpViEWbtScxQHQS0k5dUfNjWSDmQ21Q
-         pFJLpc6inFqrcWFsnEHGAORrtRURBa6JY+WyT47t8BEqnilplvqJJgIeL/YtksZnd8
-         s1q2HSiFL8vKg==
-Date:   Thu, 27 Jan 2022 08:18:48 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, kgraul@linux.ibm.com,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next 0/2] net/smc: Spread workload over multiple cores
-Message-ID: <YfI5SE4P+NPZVkaE@unreal>
-References: <20220126130140.66316-1-tonylu@linux.alibaba.com>
- <20220126152916.GO8034@ziepe.ca>
- <YfIPLn2AX774b6Wl@TonyMac-Alibaba>
+        by a.mx.secunet.com (Postfix) with ESMTPS id 4390D20539;
+        Thu, 27 Jan 2022 07:20:49 +0100 (CET)
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        by mailout1.secunet.com (Postfix) with ESMTP id 329EB80004A;
+        Thu, 27 Jan 2022 07:20:49 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 27 Jan 2022 07:20:48 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Thu, 27 Jan
+ 2022 07:20:48 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 2E37731805DC; Thu, 27 Jan 2022 07:20:48 +0100 (CET)
+Date:   Thu, 27 Jan 2022 07:20:48 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Yan Yan <evitayan@google.com>
+CC:     <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <lorenzo@google.com>,
+        <maze@google.com>, <nharold@google.com>, <benedictwong@google.com>
+Subject: Re: [PATCH v2 0/2] Fix issues in xfrm_migrate
+Message-ID: <20220127062048.GP1223722@gauss3.secunet.de>
+References: <20220119000014.1745223-1-evitayan@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <YfIPLn2AX774b6Wl@TonyMac-Alibaba>
+In-Reply-To: <20220119000014.1745223-1-evitayan@google.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 11:19:10AM +0800, Tony Lu wrote:
-> On Wed, Jan 26, 2022 at 11:29:16AM -0400, Jason Gunthorpe wrote:
-> > On Wed, Jan 26, 2022 at 09:01:39PM +0800, Tony Lu wrote:
-> > > Currently, SMC creates one CQ per IB device, and shares this cq among
-> > > all the QPs of links. Meanwhile, this CQ is always binded to the first
-> > > completion vector, the IRQ affinity of this vector binds to some CPU
-> > > core.
-> > 
-> > As we said in the RFC discussion this should be updated to use the
-> > proper core APIS, not re-implement them in a driver like this.
+On Tue, Jan 18, 2022 at 04:00:12PM -0800, Yan Yan wrote:
+> This patch series include two patches to fix two issues in xfrm_migrate.
 > 
-> Thanks for your advice. As I replied in the RFC, I will start to do that
-> after a clear plan is determined.
+> PATCH 1/2 enables distinguishing SAs and SPs based on if_id during the
+> xfrm_migrate flow. It fixes the problem that when there are multiple
+> existing SPs with the same direction, the same xfrm_selector and
+> different endpoint addresses, xfrm_migrate might fail.
 > 
-> Glad to hear your advice. 
-
-Please do right thing from the beginning.
-
-You are improving code from 2017 to be aligned with core code that
-exists from 2020.
-
-Thanks
-
+> PATCH 2/2 enables xfrm_migrate to handle address family change by
+> breaking the original xfrm_state_clone method into two steps so as to
+> update the props.family before running xfrm_init_state.
 > 
-> Tony Lu
+> V1 -> V2:
+> - Move xfrm_init_state() out of xfrm_state_clone()
+> and called it after updating the address family
 > 
+> Yan Yan (2):
+>   xfrm: Check if_id in xfrm_migrate
+>   xfrm: Fix xfrm migrate issues when address family changes
+
+Applied, thanks a lot Yan!
