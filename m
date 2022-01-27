@@ -2,65 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8198549EB79
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 21:00:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2370A49EC41
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 21:09:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343629AbiA0UAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 15:00:53 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45096 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343626AbiA0UAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 15:00:52 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62A306115B;
-        Thu, 27 Jan 2022 20:00:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BEEBFC340E4;
-        Thu, 27 Jan 2022 20:00:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643313651;
-        bh=BBdEh1lyM/dXPzFIbN9SmMID3gjR9YxbbIiFzdmkkPY=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=AJ9nYeFOjIjVMdxqj3wWkLnXqjmnL707fc5GQNeXzJqjuk4WtfHypYIVXLaMiNViq
-         lEm9tLgF/cbir9MsVQNbpF7+9jZLhXXD1lVLqEC2BkzPmoFl6FyE1N7H4chZItn5TT
-         LhF5bqIJ99Pu2FG77zYmfWOjdI/E3rIVw83QLGF4mTtQ/H92BugZhOmV0kh2rMqR/S
-         7sNgOwVcoolBwObnlvmNwSTu0Ez6dUZPHflM0+Or9zqxEUFru6C8DR+hO48WI+5rmQ
-         P1WzVImXWyv4k6aybnHKo2K6FOzH7Ivv4bOoHKYR/BePaw/w6ih10xeALPH2FfupgU
-         ME+jVbPqgwYBw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AD8A0E5D084;
-        Thu, 27 Jan 2022 20:00:51 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking for 5.17-rc2
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220127184519.2269399-1-kuba@kernel.org>
-References: <20220127184519.2269399-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220127184519.2269399-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.17-rc2
-X-PR-Tracked-Commit-Id: fd20d9738395cf8e27d0a17eba34169699fccdff
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 23a46422c56144939c091c76cf389aa863ce9c18
-Message-Id: <164331365170.18719.18015009539108722491.pr-tracker-bot@kernel.org>
-Date:   Thu, 27 Jan 2022 20:00:51 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        id S1343651AbiA0UJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 15:09:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240073AbiA0UJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 15:09:42 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCD6C06173B;
+        Thu, 27 Jan 2022 12:09:42 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id f8so3243577pgf.8;
+        Thu, 27 Jan 2022 12:09:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fT+b6INOFgJpXVBYjD5AMsoOSZs+vb7kY64VrdFYpaY=;
+        b=TYtLS1/y6ThrmGYt1q1IzcYKPbR90vwqzWo+pM+CTK4Nlkk5Zb+znVPcMFtLvN9Svy
+         7jp2M1VBbn+OvoCWCvDtVlAMqua2f6U7vQaxmoKol/Uyxsu1cp0r88GGF6/Mqgy5OxNY
+         pop2BzP+THuOiqSr30uvlHShKmEaTh/iSxxa/vIck3XXMlxfnAHWV0G8dklk9Q2Jewx2
+         6WXgRZloICnG2opaf1ZDuWuqmAyJiZnOx4MU3rjbvfR4rISCMCXqXhuJCeMyDr8tAKDy
+         V6CZ3Dm+jxoJwoRi3iAn6fOWps12OZ3QNYRe6qDkynnImWbUyvmb2NhJJRNgOHWUZCgf
+         Gblg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fT+b6INOFgJpXVBYjD5AMsoOSZs+vb7kY64VrdFYpaY=;
+        b=2Gr/s7IpkX6FJ2oE2XvsltYLG7cvK89u2IKsG45z+ZqpTATFVb/8rKA0fzZqFkhQbh
+         MfaqAXTF74XPIbkBjUFnUonKzOIUA55xA4XA1QY+SdQM7sFam/9+ESrDCsheqw+l0wye
+         oDkbqDwqevtcAXJmFiMAJaYwIgHibLXde/d7TzDrBKQjwos4VwtJFdaNZBDsMvaS8yXL
+         NZBB808nHb9upaLlH0UNWhM/m367PEn/RhlNn4tT2xoGCDzZufHqJrBsgxfwqnjQoJXV
+         6zPggIKBeWIhjAXH4NB5vbwbXkxGzuCN7KCs14xTJbnxA3yQzbJ1ZgZqrfQyh52RgOkX
+         FBbg==
+X-Gm-Message-State: AOAM5310a0kLbqKjwqRRRhfZhl4kp+7b9PApiLZFrTJAW8grcJmN0wOV
+        o06y+b2IW4EkKr04LxP3f9E=
+X-Google-Smtp-Source: ABdhPJysb9sobuVpahnTZixlk0tt6y/UUUPKWfb7qZyU5UTWjtc1x1+4Ubet5CgeWKi1okgrhJ2C/g==
+X-Received: by 2002:aa7:88c9:: with SMTP id k9mr4446913pff.58.1643314182421;
+        Thu, 27 Jan 2022 12:09:42 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:ab5e:9016:8c9e:ba75])
+        by smtp.gmail.com with ESMTPSA id y42sm5697892pfw.157.2022.01.27.12.09.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 12:09:42 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        linux-nfs <linux-nfs@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next 0/3] SUNRPC: add some netns refcount trackers
+Date:   Thu, 27 Jan 2022 12:09:34 -0800
+Message-Id: <20220127200937.2157402-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu, 27 Jan 2022 10:45:19 -0800:
+From: Eric Dumazet <edumazet@google.com>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.17-rc2
+Effort started in linux-5.17
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/23a46422c56144939c091c76cf389aa863ce9c18
+Our goal is to replace get_net()/put_net() pairs with
+get_net_track()/put_net_track() to get instant notifications
+of imbalance bugs in the future.
 
-Thank you!
+Patches were split from a bigger series sent one month ago.
+
+Eric Dumazet (3):
+  SUNRPC: add netns refcount tracker to struct svc_xprt
+  SUNRPC: add netns refcount tracker to struct gss_auth
+  SUNRPC: add netns refcount tracker to struct rpc_xprt
+
+ include/linux/sunrpc/svc_xprt.h |  1 +
+ include/linux/sunrpc/xprt.h     |  1 +
+ net/sunrpc/auth_gss/auth_gss.c  | 10 ++++++----
+ net/sunrpc/svc_xprt.c           |  4 ++--
+ net/sunrpc/xprt.c               |  4 ++--
+ 5 files changed, 12 insertions(+), 8 deletions(-)
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.35.0.rc0.227.g00780c9af4-goog
+
