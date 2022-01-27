@@ -2,99 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CDCF49DE3A
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:40:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7B249DE42
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:42:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234561AbiA0JkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 04:40:04 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:32066 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232155AbiA0JkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:40:04 -0500
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JkwSk6KQ1z1FD6b;
-        Thu, 27 Jan 2022 17:36:06 +0800 (CST)
-Received: from [10.67.103.87] (10.67.103.87) by dggpeml500022.china.huawei.com
- (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 27 Jan
- 2022 17:40:02 +0800
-Subject: Re: [RFCv2 net-next 000/167] net: extend the netdev_features_t
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
-        <hkallweit1@gmail.com>, <netdev@vger.kernel.org>,
-        <linuxarm@openeuler.org>
-References: <20210929155334.12454-1-shenjian15@huawei.com>
- <YfJi10IcxtYQ7Ttr@unreal>
-From:   "shenjian (K)" <shenjian15@huawei.com>
-Message-ID: <f49d8f3f-f9e9-574f-f41b-01d35a0a1b03@huawei.com>
-Date:   Thu, 27 Jan 2022 17:40:02 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        id S238720AbiA0Jl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 04:41:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37528 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238729AbiA0Jlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:41:55 -0500
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EAEC06173B
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 01:41:55 -0800 (PST)
+Received: by mail-yb1-xb44.google.com with SMTP id i62so6861359ybg.5
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 01:41:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=g0jVR8Mj0udwIGjx1TQh8k0ZGOTqHlu3e7Vl4aiPwxQ=;
+        b=YmxFU7qHBc+nZxAhwi3HX8T3ycPn/RPYPBAQ1Qa5HLAWi1OAugXMiHmxCtN6ls4GgN
+         TdtkdtjmwGbavtaSCXU6m1eOBK9++UGnuvRTV2zjKhU9uJ40UgXfhDuJg4mWRg79B0E8
+         sYpz36F1kxu4A6t3Jkcrj9JnIAXBT4soVsrehglADBfUvILp7IJt1QdWUIQnoQlKDsPO
+         qPZ+3GRs7urblQsDFittJ4m3nAEmFBfzg/clHDCtgjFdtRIsBRYZvbILQNgu18aGbj6w
+         7py+u1+hjGGxOGVmjHPnyDZ4dykM3Z1txbHDCZOCAanR0qEp6lBqV8U5O4tHFmsPUCvf
+         bGMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=g0jVR8Mj0udwIGjx1TQh8k0ZGOTqHlu3e7Vl4aiPwxQ=;
+        b=Z6afOgOvqSsDc0uB4cuLdPlxSgUlCRsNCjp9XbWAuIvo/T4wAXpyJ70Uih1oXu+V/D
+         4l/6s2IWoWan6eQIdMQpr6vxBHdlBJA4/0kSYSmmVj94n44DKG5Qg5P4VnQfhWuCucJw
+         3slOP4O4J7LcGyPcOnL7bkKGkwBuhU02J+uO23FjheB7vmBW1WSE5v4lZDFPlZc/d76P
+         57Y1OUx3MIsh+KZllBFIUOjhtO5+C21fR3BDC8s38wqxmWBvsePADnXEAvgxdoXCzcb+
+         ABYRtcjF1AusGPqhfs1T+9BrbfBDnjtkg83ZerBo6zvn3aPNHlk14vaWkEtyi4ihsmP0
+         jnDQ==
+X-Gm-Message-State: AOAM533RKIS6X0jSKF9umMSn6dUC3ejAZ2plv3m712zShy+GrVG6IY/v
+        IY8O6up02KA1dszamIysZedM4T2M5HIRopjWsZA=
+X-Google-Smtp-Source: ABdhPJxNgKSkk+G4gmb66aUrUVnkI5x8cWtwOe5sxAfxaeP7KBwekWqaMN9iUI3IePsJxFg+cPjTF33wBk+GdHNBqTs=
+X-Received: by 2002:a25:d855:: with SMTP id p82mr4047361ybg.575.1643276514291;
+ Thu, 27 Jan 2022 01:41:54 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <YfJi10IcxtYQ7Ttr@unreal>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.103.87]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500022.china.huawei.com (7.185.36.66)
-X-CFilter-Loop: Reflected
+Received: by 2002:a05:7011:209:b0:202:59ee:c4de with HTTP; Thu, 27 Jan 2022
+ 01:41:54 -0800 (PST)
+Reply-To: cathydampry@gmail.com
+From:   Cathy Dampry <valeriegrey67@gmail.com>
+Date:   Thu, 27 Jan 2022 10:41:54 +0100
+Message-ID: <CAM0sDc-sgLPdnV+rvH1sa_oqx6UNfJthF8si6zxvVgi8Ovf0tw@mail.gmail.com>
+Subject: CHARITY
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello.
 
+I am Cathy Dampry. I am a dying widow diagnosed with cancer. It's
+certain I don't have much time on my side and I have decided to donate
+all I have to charity;
+Total amount of USD $3,100,000. I need an honest and trust worthy
+individual or company to partner with my accountant and utilize this
+money in accordance with my wish and agreement.
+Your email came out victorious and trusted. I shall render all
+necessary help where needed.
+Contact me urgently if interested. Thank you.
 
-在 2022/1/27 17:16, Leon Romanovsky 写道:
-> On Wed, Sep 29, 2021 at 11:50:47PM +0800, Jian Shen wrote:
->> For the prototype of netdev_features_t is u64, and the number
->> of netdevice feature bits is 64 now. So there is no space to
->> introduce new feature bit.
->>
->> This patchset try to solve it by change the prototype of
->> netdev_features_t from u64 to bitmap. With this change,
->> it's necessary to introduce a set of bitmap operation helpers
->> for netdev features. Meanwhile, the functions which use
->> netdev_features_t as return value are also need to be changed,
->> return the result as an output parameter.
->>
->> With above changes, it will affect hundreds of files, and all the
->> nic drivers. To make it easy to be reviewed, split the changes
->> to 167 patches to 5 parts.
->>
->> patch 1~22: convert the prototype which use netdev_features_t
->> as return value
->> patch 24: introduce fake helpers for bitmap operation
->> patch 25~165: use netdev_feature_xxx helpers
->> patch 166: use macro __DECLARE_NETDEV_FEATURE_MASK to replace
->> netdev_feature_t declaration.
->> patch 167: change the type of netdev_features_t to bitmap,
->> and rewrite the bitmap helpers.
->>
->> Sorry to send a so huge patchset, I wanna to get more suggestions
->> to finish this work, to make it much more reviewable and feasible.
->>
->> The former discussing for the changes, see [1]
->> [1]. https://www.spinics.net/lists/netdev/msg753528.html
->>
-> ------------------------------------------------
->
-> Is anyone actively working on this task?
->
-> Thanks
-> .
-Hi Leon,
-
-I have sent RFCv4  [1] three months ago, and according Andrew' 
-suggestion， I'm trying to
-continue this work with semantic-patches, and waiting for more comments
-for the scheme.
-But I'm not familiar with it, and  busy with some other work recently, 
-so it got delayed.
-
-Sorry for this. I will speed up it.
-
-[1] https://lore.kernel.org/netdev/YYvKyruLcemj6J+i@lunn.ch/T/
-
-Thanks
-
-
+Mrs. Cathy Dampry.
