@@ -2,157 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1285949EDFC
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 23:13:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6388B49EDFD
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 23:14:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232316AbiA0WNj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 17:13:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45700 "EHLO
+        id S233600AbiA0WOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 17:14:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiA0WNi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 17:13:38 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911A9C061714
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 14:13:38 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id s13so9356687ejy.3
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 14:13:38 -0800 (PST)
+        with ESMTP id S232422AbiA0WOl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 17:14:41 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D808C061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 14:14:41 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id l35-20020a05600c1d2300b0034d477271c1so2750519wms.3
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 14:14:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=douOaaMonIIbHz1c4NHht9J6UfeQHbTJLt8li6hXv/0=;
-        b=S+az6aOFwxPSdQ8H/3X8jw4UFlfD0QYMIHgIpoK9Jk3L1P3ZxQSLRbJ+ttbS1hKl5M
-         uyEje0YKSpx2BMMQsuzCbDIMacnABpPHJwzsG4g3hWNVGQi3JK0fNsZNsuII+Kx5V5jO
-         Pb2btKCxZYbsLJbRIVtYrtpQWbj7YgPmx9jUzMv3zXc8BDPAOG2bxzQnyHjuavKjOw2J
-         6L4Kg5U5xzS2vdi6bsw/cYIzm7FodPoA/ZfPhfIFmLNnjDeDjD7wDnVIaPbNNcGXY4WP
-         54zSGZXI+cdOaAHfgWcQWe9sngYacG9igawh3+ruXhMpJmWCe/AOAAUi4jIWt3BcqqCc
-         AdKg==
+        h=message-id:date:mime-version:user-agent:from:to:cc:content-language
+         :subject:content-transfer-encoding;
+        bh=/k3AmdaNagjESu+lzj4xALQ2hQci6vO/gRe2DHZ/D/s=;
+        b=KyOZsyiLulwcqARyiVTHpr5MFeuHTKaTN1FdiQz5wrJ31+ha8T7LFW3nwhDsjtRLeJ
+         qKBwlUDrkOQUd2zg6/gdr94L7SPVtlIIZVMVpv5o/vi5S75ARZJPCNWZH5w8H+J1GaYP
+         nzmCehBpATq8RqUVN3LUffNt6iMKmAViIYRZccIMAnoK62WbhoPOH7Pp+n9C9tjdUQWA
+         WgW6kWScPeBIElr8Xgzjqr+WjPEk6idKe72qFvqxdZbXlAS+ST4mYXkY34Ar/WaCIyLD
+         JuzVGhcSfjeL7iN3qNeNUEgk5AEW/jMHrRhGq7Q7pSFvxBKSIV2bizxO6SzRr196EcDa
+         LgCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=douOaaMonIIbHz1c4NHht9J6UfeQHbTJLt8li6hXv/0=;
-        b=yizV6aBgtqawbdA/DVKUHLfuVoxqTq9ttkOqYBlyEy6/BztFtgdoTvbsf15rw0hCTf
-         hSuOwyklvGeKYwHAk6UMt475T2yQSTrMQ/409DSDK3VEBeUTgI3F+WxenmJABbRIePep
-         JaGsHXNKOmasSLCisbDmvWaQIOYoi0PqMsRVaTLWvXriNHMkxye8IrEeyOrEZrEjAZH+
-         BBX1SFBy456onTCM6sxp1R8NgG4wV0PAFxrOCKRQ9OedIG8UapnScS7316T5U85btY07
-         ejHxMoMDfNA3T/7qd+5gJvq39KIArq9aSIWANn932mPrGD0igAKmLpgZTQw6SuHmIhEG
-         uXBA==
-X-Gm-Message-State: AOAM533Uq1u1Px3/2gVzfHA7+zE7YCK4KbgN8zQqgiy6Ao9W5/xCXqvp
-        ZTkWZnghD9BpruLzLUtn1gdyt8VrmKCZO5lVqdYX9LTpsbxP5w==
-X-Google-Smtp-Source: ABdhPJzf0lgZwa1ZKo/FPbC27ZXsA+QA7vxl7Kwfzhc/N/ngcEInWGcy7AHZv3FtGgtxlYALo2jgVnL4vodFTNPCldc=
-X-Received: by 2002:a17:907:3ea9:: with SMTP id hs41mr4672800ejc.727.1643321616897;
- Thu, 27 Jan 2022 14:13:36 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from:to
+         :cc:content-language:subject:content-transfer-encoding;
+        bh=/k3AmdaNagjESu+lzj4xALQ2hQci6vO/gRe2DHZ/D/s=;
+        b=3unAQtg5+/I4XoXXDKeUnBooWvq7x7ukAUrLpfTWTSQRTH6a5zpD4wd00YOhgSiuXV
+         yLAqJxYASoDfKwmCCJ3OQfXgw8/ny/ooMDXc39BkCf98xTPf/2XXgI86FrhiZj5Fw+dY
+         j3dwvBj9PuXJhYwERLISNonlzV1tBZQO6vbv1h1vHDm5GEugeOqYl7A4fpYaW+d8LEd1
+         Nb4yU1Hf6TQGuIt9Qr455Th7mSlfEfByoLi4DF24eRFqr3S8pYS8kCF6CFdvj9zsizd4
+         sH71Ep/lm1g057kY8ZRRlOysLPcY24TJc9op8nc4RGkFdXqXnoGpB/x4ztLJBfi97RGs
+         HU3A==
+X-Gm-Message-State: AOAM530jhdmr8ZBGPSSTCVm+Q9vAEoFGThogOGyfi1ybb4HuNqbrhumI
+        M2ga66tWNjMSItiwOxfHvAgZPDstqnE=
+X-Google-Smtp-Source: ABdhPJyZJG6UDezFh2agfk3UTGxgC8aEdMD/Bn7PYy34Uhp+fc5hZLART6cajfSXtHrFCm8w3akICg==
+X-Received: by 2002:a1c:a9d7:: with SMTP id s206mr4890350wme.38.1643321679627;
+        Thu, 27 Jan 2022 14:14:39 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f4d:2b00:8bb:72c8:ebd4:2603? (p200300ea8f4d2b0008bb72c8ebd42603.dip0.t-ipconnect.de. [2003:ea:8f4d:2b00:8bb:72c8:ebd4:2603])
+        by smtp.googlemail.com with ESMTPSA id d7sm4466385wri.117.2022.01.27.14.14.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Jan 2022 14:14:39 -0800 (PST)
+Message-ID: <f448b546-5b0a-79e0-f09a-dcfabb4fc8a5@gmail.com>
+Date:   Thu, 27 Jan 2022 23:14:33 +0100
 MIME-Version: 1.0
-Received: by 2002:a17:907:86aa:0:0:0:0 with HTTP; Thu, 27 Jan 2022 14:13:36
- -0800 (PST)
-From:   Vadim Priluzkiy <oxyd76@gmail.com>
-Date:   Fri, 28 Jan 2022 01:13:36 +0300
-Message-ID: <CAO-kc_UnKm2+bwe_Ran5cyJ15jQ17mdgev=q4a8PuGtBFNrGcA@mail.gmail.com>
-Subject: Iproute2 v5.16.0 "ip address" issue
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Chun-Hao Lin <hau@realtek.com>
+Content-Language: en-US
+Subject: [PATCH net-next] r8169: add rtl_disable_exit_l1()
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi ppl!
+Add rtl_disable_exit_l1() for ensuring that the chip doesn't
+inadvertently exit ASPM L1 when being in a low-power mode.
+The new function is called from rtl_prepare_power_down() which
+has to be moved in the code to avoid a forward declaration.
 
-RFC 6943 (https://datatracker.ietf.org/doc/html/rfc6943#section-3.1.1) say:
+According to Realtek OCP register 0xc0ac shadows ERI register 0xd4
+on RTL8168 versions from RTL8168g. This allows to simplify the
+code a little.
 
-"In specifying the inet_addr() API, the Portable Operating System
-   Interface (POSIX) standard [IEEE-1003.1] defines "IPv4 dotted decimal
-   notation" as allowing not only strings of the form "10.0.1.2" but
-   also allowing octal and hexadecimal, and addresses with less than
-   four parts.  For example, "10.0.258", "0xA000102", and "012.0x102"
-   all represent the same IPv4 address in standard "IPv4 dotted decimal"
-   notation.  We will refer to this as the "loose" syntax of an IPv4
-   address literal."
+Suggested-by: Chun-Hao Lin <hau@realtek.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 65 ++++++++++++++---------
+ 1 file changed, 39 insertions(+), 26 deletions(-)
 
-Also "man 3 inet" say:
-
-"inet_aton()  converts  the  Internet host address cp from the IPv4
-numbers-and-dots notation into binary form (in network byte order) and
-stores it in the structure that inp points to.  inet_aton() returns
-nonzero if the address is valid, zero if not.  The address supplied in
-cp can have one  of  the following forms:
-
-       a.b.c.d   Each of the four numeric parts specifies a byte of
-the address; the bytes are assigned in left-to-right order to produce
-the binary address.
-
-       a.b.c     Parts  a  and  b  specify the first two bytes of the
-binary address.  Part c is interpreted as a 16-bit value that defines
-the rightmost two bytes of the binary address.  This notation is
-suitable for specifying (outmoded) Class B network addresses.
-
-       a.b       Part a specifies the first byte of the binary
-address.  Part b is interpreted as a 24-bit value that defines the
-rightmost  three  bytes  of the binary address.  This notation is
-suitable for specifying (outmoded) Class A network addresses.
-
-       a         The value a is interpreted as a 32-bit value that is
-stored directly into the binary address without any byte
-rearrangement.
-
-     In all of the above forms, components of the dotted address can
-be specified in decimal, octal (with a leading 0), or hexadecimal,
-with a leading 0X).
-    Addresses in any of these forms are collectively termed IPV4
-numbers-and-dots notation.  The form that uses exactly four decimal
-numbers  is  referred to as IPv4 dotted-decimal notation (or
-sometimes: IPv4 dotted-quad notation)."
-
-
-Okay! I know that many utilities (ping, curl, tracepath, browsers etc)
-support int, octal, hexadecimal notations very well.
-I tried assigning an address to an interface using "ip address" using
-various notations and that's what happened (test address: 10.8.0.5,
-removed after every test):
-
-Octal dotted notation:
-# ip a add 012.010.000.005/24 dev dummy0
-# ip a show dev dummy0
-6: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group
-default qlen 1000
-    inet 10.8.0.5/24 scope global dummy0
-
-Hexadecimal dotted notation:
-# ip a add 0xA.0x8.0x0.0x5/24 dev dummy0
-                                                               # ip -4
-a show dev dummy0
-
-6: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group
-default qlen 1000
-    inet 10.8.0.5/24 scope global dummy0
-
-Hexadecimal notation:
-# ip a add 0xA080005/24 dev dummy0
-
- Error: any valid prefix is expected rather than "0xA080005/24".
-
-Int notation:
-# ip a add 168296453/24 dev dummy0
-
-Error: any valid prefix is expected rather than "168296453/24".
-
-Hmm... Okay, let's try something simple. For example address 0.0.0.1:
-# ip a add 0x1/24 dev dummy0
-
- # ip -4 a show dev dummy0
-                                                              6:
-dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default
-qlen 1000
-    inet 1.0.0.0/24 scope global dummy0
-
-(similar effect on "ip a add 1/24 dev dummy0")
-
-WTF?
-ip, instead of counting values from the last octet, counts them from the first!
-Perhaps somewhere mixed up little/big endian?
-
-Testcase: Manjaro Linux, kernel version 5.15.16, iproute2 version 5.16.0
-
-PS: Legacy ifconfig works fine with any notation and assigns the
-address correctly.
-
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 3c3d1506b..104ebc0fb 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -2231,28 +2231,6 @@ static int rtl_set_mac_address(struct net_device *dev, void *p)
+ 	return 0;
+ }
+ 
+-static void rtl_wol_enable_rx(struct rtl8169_private *tp)
+-{
+-	if (tp->mac_version >= RTL_GIGA_MAC_VER_25)
+-		RTL_W32(tp, RxConfig, RTL_R32(tp, RxConfig) |
+-			AcceptBroadcast | AcceptMulticast | AcceptMyPhys);
+-}
+-
+-static void rtl_prepare_power_down(struct rtl8169_private *tp)
+-{
+-	if (tp->dash_type != RTL_DASH_NONE)
+-		return;
+-
+-	if (tp->mac_version == RTL_GIGA_MAC_VER_32 ||
+-	    tp->mac_version == RTL_GIGA_MAC_VER_33)
+-		rtl_ephy_write(tp, 0x19, 0xff64);
+-
+-	if (device_may_wakeup(tp_to_dev(tp))) {
+-		phy_speed_down(tp->phydev, false);
+-		rtl_wol_enable_rx(tp);
+-	}
+-}
+-
+ static void rtl_init_rxcfg(struct rtl8169_private *tp)
+ {
+ 	switch (tp->mac_version) {
+@@ -2667,10 +2645,7 @@ static void rtl_enable_exit_l1(struct rtl8169_private *tp)
+ 	case RTL_GIGA_MAC_VER_37 ... RTL_GIGA_MAC_VER_38:
+ 		rtl_eri_set_bits(tp, 0xd4, 0x0c00);
+ 		break;
+-	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
+-		rtl_eri_set_bits(tp, 0xd4, 0x1f80);
+-		break;
+-	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
++	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_63:
+ 		r8168_mac_ocp_modify(tp, 0xc0ac, 0, 0x1f80);
+ 		break;
+ 	default:
+@@ -2678,6 +2653,20 @@ static void rtl_enable_exit_l1(struct rtl8169_private *tp)
+ 	}
+ }
+ 
++static void rtl_disable_exit_l1(struct rtl8169_private *tp)
++{
++	switch (tp->mac_version) {
++	case RTL_GIGA_MAC_VER_34 ... RTL_GIGA_MAC_VER_38:
++		rtl_eri_clear_bits(tp, 0xd4, 0x1f00);
++		break;
++	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_63:
++		r8168_mac_ocp_modify(tp, 0xc0ac, 0x1f80, 0);
++		break;
++	default:
++		break;
++	}
++}
++
+ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+ {
+ 	/* Don't enable ASPM in the chip if OS can't control ASPM */
+@@ -4689,6 +4678,30 @@ static int r8169_phy_connect(struct rtl8169_private *tp)
+ 	return 0;
+ }
+ 
++static void rtl_wol_enable_rx(struct rtl8169_private *tp)
++{
++	if (tp->mac_version >= RTL_GIGA_MAC_VER_25)
++		RTL_W32(tp, RxConfig, RTL_R32(tp, RxConfig) |
++			AcceptBroadcast | AcceptMulticast | AcceptMyPhys);
++}
++
++static void rtl_prepare_power_down(struct rtl8169_private *tp)
++{
++	if (tp->dash_type != RTL_DASH_NONE)
++		return;
++
++	if (tp->mac_version == RTL_GIGA_MAC_VER_32 ||
++	    tp->mac_version == RTL_GIGA_MAC_VER_33)
++		rtl_ephy_write(tp, 0x19, 0xff64);
++
++	if (device_may_wakeup(tp_to_dev(tp))) {
++		phy_speed_down(tp->phydev, false);
++		rtl_wol_enable_rx(tp);
++	} else {
++		rtl_disable_exit_l1(tp);
++	}
++}
++
+ static void rtl8169_down(struct rtl8169_private *tp)
+ {
+ 	/* Clear all task flags */
 -- 
-Vadim (Oxyd) Priluzkiy
+2.35.0
+
