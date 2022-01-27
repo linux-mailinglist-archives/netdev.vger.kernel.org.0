@@ -2,74 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 744AB49D99F
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 05:30:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1600349D9A3
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 05:32:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236034AbiA0EaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 23:30:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46166 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236029AbiA0EaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 23:30:12 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4836B82150
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 04:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 83D8BC340E9;
-        Thu, 27 Jan 2022 04:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643257810;
-        bh=H6es6dNoLOO7ekNEEEgC4b98+5SJFJsimGYbsqjSRng=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KWRYEH5g4xsQU3obw73BZG4WY4OxeInDTMmWmlr6F31XDaRvWoQibhETTdEZLxjly
-         SzVpnDswaeKY7BOx7Seb2YH6oMJg5+7J7EmcWUQOuaXV3NqIxa3z1CKUUD8X1acBXI
-         6o3Em8mJGTTztVvFGNKsi9mkMuE4cCokm0dx/paGI8M5gvGM+AgFYY7/b699EehCts
-         tgJSuQk8iika/XP1Ugh8e4K3iPyacmqpyjM9fTUig8kwqqZqPSZuNPV5yv1XRkcU3K
-         As8bxvZjLm2/h00WT3BFCqBw2WQdYyxbNImdbXWJDESm2bMiaQ4sL3g4UkOLCpehL6
-         Y+frw1c9EHqLA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6C203E5D084;
-        Thu, 27 Jan 2022 04:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S236049AbiA0EcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 23:32:00 -0500
+Received: from mga05.intel.com ([192.55.52.43]:25405 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229750AbiA0EcA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jan 2022 23:32:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643257920; x=1674793920;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ImFF4Lw8kmaztuCjRooaXIXDzuNUFr1otHsVmxXtkds=;
+  b=MZV9ODBQY9vxFff05hbGLcQyXeFGdWuhMiDm2th3VQyTgLYxvx4r9YCj
+   QQTLDpKpItvKtoXvGY1rsin6iJBIBat6+ZhOEXooXnBzcvekYNNcumN7r
+   JanHHF17KKkRvYVd0J5ZSGyXXK9gAH5pftmjJdMZwMvQ5VapanGF1QWwG
+   7BQcWUlJQUQ0O6jiYfHtAlDR5BgFvVDsbJqZNFhwOKNlSZoWM+Os5USvP
+   rwrbMgFaUOeAiBEdqB2v4SRWhVIvU+vc9O2gMJY8hnqDftDjJBzfCQ4B8
+   tEgouzgi/MLN53uoPWmknHAWtQFh2y4bzMd0QrC79P0Co47786hnNdo9P
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="333099858"
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="333099858"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 20:31:59 -0800
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="535474058"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.171.72]) ([10.249.171.72])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 20:31:57 -0800
+Message-ID: <841c85a6-1b3b-0d13-55ce-a51ae55bf901@intel.com>
+Date:   Thu, 27 Jan 2022 12:31:55 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH iproute2 v2] dcb: app: Add missing "dcb app show dev X
- default-prio"
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164325781043.10851.1475698773516083038.git-patchwork-notify@kernel.org>
-Date:   Thu, 27 Jan 2022 04:30:10 +0000
-References: <f83e5480816bb050ff9005409ae2ae64b44d52de.1642668290.git.petrm@nvidia.com>
-In-Reply-To: <f83e5480816bb050ff9005409ae2ae64b44d52de.1642668290.git.petrm@nvidia.com>
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
-        stephen@networkplumber.org, maksymy@nvidia.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH V3 0/4] vDPA/ifcvf: implement shared IRQ feature
+Content-Language: en-US
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     jasowang@redhat.com, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+References: <20220126124912.90205-1-lingshan.zhu@intel.com>
+ <20220126091329-mutt-send-email-mst@kernel.org>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <20220126091329-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to iproute2/iproute2.git (main)
-by Stephen Hemminger <stephen@networkplumber.org>:
 
-On Thu, 20 Jan 2022 09:57:54 +0100 you wrote:
-> All the actual code exists, but we neglect to recognize "default-prio" as a
-> CLI key for selection of what to show.
-> 
-> Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-> Signed-off-by: Petr Machata <petrm@nvidia.com>
-> ---
->  dcb/dcb_app.c | 2 ++
->  1 file changed, 2 insertions(+)
+On 1/26/2022 10:14 PM, Michael S. Tsirkin wrote:
+> On Wed, Jan 26, 2022 at 08:49:08PM +0800, Zhu Lingshan wrote:
+>> It has been observed that on some platforms/devices, there may
+>> not be enough MSI vectors for virtqueues and the config change.
+>> Under such circumstances, the interrupt sources of a device
+>> have to share vectors/IRQs.
+>>
+>> This series implemented a shared IRQ feature for ifcvf.
+>>
+>> Please help review.
+> Given the history, can you please report which tests
+> were performed with this patchset? Which configs tested?
+> Thanks?
+Hi Michael,
 
-Here is the summary with links:
-  - [iproute2,v2] dcb: app: Add missing "dcb app show dev X default-prio"
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=924f6b4a5d2b
+It is ping and netperf tests, and I have set nvectors = 1 and 2 in
+ifcvf_request_irq(), after ifcvf_alloc_vectors(),
+to hard coded the number of the allocate vectors.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Thanks,
+Zhu Lingshan
+>
+>> Changes from V2:
+>> (1) Fix misuse of nvectors(in ifcvf_alloc_vectors return value)(Michael)
+>> (2) Fix misuse of irq = get_vq_irq() in setup irqbypass(Michael)
+>> (3) Coding style improvements(Michael)
+>> (4) Better naming of device shared irq/shared vq irq
+>>
+>> Changes from V1:
+>> (1) Enable config interrupt when only one vector is allocated(Michael)
+>> (2) Clean vectors/IRQs if failed to request config interrupt
+>> since config interrupt is a must(Michael)
+>> (3) Keep local vdpa_ops, disable irq_bypass by setting IRQ = -EINVAL
+>> for shared IRQ case(Michael)
+>> (4) Improvements on error messages(Michael)
+>> (5) Squash functions implementation patches to the callers(Michael)
+>>
+>> Zhu Lingshan (4):
+>>    vDPA/ifcvf: implement IO read/write helpers in the header file
+>>    vDPA/ifcvf: implement device MSIX vector allocator
+>>    vhost_vdpa: don't setup irq offloading when irq_num < 0
+>>    vDPA/ifcvf: implement shared IRQ feature
+>>
+>>   drivers/vdpa/ifcvf/ifcvf_base.c |  67 +++-----
+>>   drivers/vdpa/ifcvf/ifcvf_base.h |  60 +++++++-
+>>   drivers/vdpa/ifcvf/ifcvf_main.c | 260 ++++++++++++++++++++++++++++----
+>>   drivers/vhost/vdpa.c            |   4 +
+>>   4 files changed, 312 insertions(+), 79 deletions(-)
+>>
+>> -- 
+>> 2.27.0
 
