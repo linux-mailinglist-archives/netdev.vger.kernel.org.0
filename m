@@ -2,159 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61A7D49E20D
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 13:09:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A742749E211
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 13:09:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240976AbiA0MIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 07:08:53 -0500
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:37719 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240904AbiA0MIw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 07:08:52 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R691e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V2zmQsM_1643285329;
-Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V2zmQsM_1643285329)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 27 Jan 2022 20:08:49 +0800
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        "D. Wythe" <alibuda@linux.alibaba.com>
-Subject: [PATCH net-next 3/3] net/smc: Fallback when handshake workqueue congested
-Date:   Thu, 27 Jan 2022 20:08:03 +0800
-Message-Id: <ed4781cde8e3b9812d4a46ce676294a812c80e8f.1643284658.git.alibuda@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <cover.1643284658.git.alibuda@linux.alibaba.com>
-References: <cover.1643284658.git.alibuda@linux.alibaba.com>
+        id S240957AbiA0MJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 07:09:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233669AbiA0MJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 07:09:42 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5BCC061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 04:09:42 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id e6so2448302pfc.7
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 04:09:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kh6/IpxMasM5sK+RQE2LXlFptdFPJpwtkiMqWulNBFQ=;
+        b=PDYQ7VBIsUEHkjHUAJqrMjKDLRoC7vBqGjcKExYM15lHUlOcYLXs/xnkl1uUkZ/Zt0
+         rhIYdxwnCMzjZ+W9vWMSgu8j1Ena1nM2grlw7Cy18tTIXMM4it9NQeZG4x9ZZ+F8fccV
+         ybplxMBeegnkYgL25kX0taRXI/+D7w9D/YQ7qfdLNr0IAP5nTeLdyYciV65MMSwoQcN/
+         QBAhhox+bcMX1YVQTbJ6TuMPk4U+d+Mx4nnftpjWenSqQbF9haxgnnRKUc8sORTk3odU
+         IBLAF7J7yjj/w/VS1I6G29MAb4GcqQb9u2LLdyv5FgIyUTUqZnTUC9kZMVQiDz63o41P
+         L7Ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kh6/IpxMasM5sK+RQE2LXlFptdFPJpwtkiMqWulNBFQ=;
+        b=kJjVmN7QVdR7RO2Zz3QTho+iMgVj/0xOIL4a5l8z9R3dnV0+yEIKcXS5tXhDu/baXi
+         KePr8LlUI/QkyKHpbN1P3dVgDO9tYA2Ylqz1EYerbKzC0TeAhaLryfHBdETQnsG7Co3J
+         f5OC7w4WV7nybQffIypmUbFzbIV0Ay2QKPEQGsZD8H6WvoQNz3FgzLe4RgDqcpFp5sE3
+         cn8TUNO7G5REGXTuIvtEbS/DRox6R9FS57/WFaEY6Qol+bbqQXQuKHjyYMWJlRgr3o4t
+         BHaOwUTz7737FLIJQs9AYteXQtf2mdrD8Tkw14GHRj4VDwEjU53JjPzz0evLcD/nGBS+
+         JbMw==
+X-Gm-Message-State: AOAM531BdgiajDyAPjPCzoj0339O+ENpa+7chkUeAdWw1otsdfv7T321
+        hXyzjJ+QfC8GydFhe1+X5nKVCWmbWzO2Yb9q
+X-Google-Smtp-Source: ABdhPJw+D1cWErTloJjERMPW5g9YXcbpDyrTtpYEu/FX1reLjzQOTkDYT6WxHRXV3XO2aEJu9r0K0A==
+X-Received: by 2002:a63:50f:: with SMTP id 15mr2581866pgf.186.1643285382072;
+        Thu, 27 Jan 2022 04:09:42 -0800 (PST)
+Received: from Laptop-X1 ([103.152.34.77])
+        by smtp.gmail.com with ESMTPSA id v20sm4080802pfu.155.2022.01.27.04.09.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 04:09:41 -0800 (PST)
+Date:   Thu, 27 Jan 2022 20:09:36 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH RFC net-next 3/5] bonding: add ip6_addr for bond_opt_value
+Message-ID: <YfKLgL6qMDEQTS3Y@Laptop-X1>
+References: <20220126073521.1313870-1-liuhangbin@gmail.com>
+ <20220126073521.1313870-4-liuhangbin@gmail.com>
+ <bc3403db-4380-9d84-b507-babdeb929664@nvidia.com>
+ <YfJDm4f2xURqz5v8@Laptop-X1>
+ <7501da6a-1956-6fcf-d55e-5a06a15eb0e3@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7501da6a-1956-6fcf-d55e-5a06a15eb0e3@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "D. Wythe" <alibuda@linux.alibaba.com>
+On Thu, Jan 27, 2022 at 10:56:29AM +0200, Nikolay Aleksandrov wrote:
+> You're right in that we shouldn't overload value. My point was that bond_opt_val is supposed to be generic,
+> also it wouldn't work as expected for bond_opt_parse(). Perhaps a better solution would be to add a generic
+> extra storage field and length and initialize them with a helper that copies the needed bytes there. As for
 
-This patch intends to provide a mechanism to allow automatic fallback to
-TCP according to the pressure of SMC handshake process. At present,
-frequent visits will cause the incoming connections to be backlogged in
-SMC handshake queue, raise the connections established time. Which is
-quite unacceptable for those applications who base on short lived
-connections.
+Not sure if I understand your suggestion correctly. Do you mean add a field
+in bond_opt_value like:
 
-It should be optional for applications that don't care about connection
-established time. For now, this patch only provides the switch at the
-compile time.
+#define	MAX_LEN	128
 
-There are two ways to implement this mechanism:
+struct bond_opt_value {
+        char *string;
+        u64 value;
+        u32 flags;
+        char extra[MAX_LEN];
+};
 
-1. Fallback when TCP established.
-2. Fallback before TCP established.
+And init it before using?
 
-In the first way, we need to wait and receive CLC messages that the
-client will potentially send, and then actively reply with a decline
-message, in a sense, which is also a sort of SMC handshake, affect the
-connections established time on its way.
+or define a char *extra and alloc/init the memory when using it?
 
-In the second way, the only problem is that we need to inject SMC logic
-into TCP when it is about to reply the incoming SYN, since we already do
-that, it's seems not a problem anymore. And advantage is obvious, few
-additional processes are required to complete the fallback.
+Thanks
+Hangbin
 
-This patch use the second way.
-
-Link: https://lore.kernel.org/all/1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com/
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
----
- include/linux/tcp.h  |  1 +
- net/ipv4/tcp_input.c |  3 ++-
- net/smc/Kconfig      | 12 ++++++++++++
- net/smc/af_smc.c     | 22 ++++++++++++++++++++++
- 4 files changed, 37 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-index 78b91bb..1c4ae5d 100644
---- a/include/linux/tcp.h
-+++ b/include/linux/tcp.h
-@@ -394,6 +394,7 @@ struct tcp_sock {
- 	bool	is_mptcp;
- #endif
- #if IS_ENABLED(CONFIG_SMC)
-+	bool	(*smc_in_limited)(const struct sock *sk);
- 	bool	syn_smc;	/* SYN includes SMC */
- #endif
- 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index dc49a3d..9890de9 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6701,7 +6701,8 @@ static void tcp_openreq_init(struct request_sock *req,
- 	ireq->ir_num = ntohs(tcp_hdr(skb)->dest);
- 	ireq->ir_mark = inet_request_mark(sk, skb);
- #if IS_ENABLED(CONFIG_SMC)
--	ireq->smc_ok = rx_opt->smc_ok;
-+	ireq->smc_ok = rx_opt->smc_ok && !(tcp_sk(sk)->smc_in_limited &&
-+			tcp_sk(sk)->smc_in_limited(sk));
- #endif
- }
- 
-diff --git a/net/smc/Kconfig b/net/smc/Kconfig
-index 1ab3c5a..1903927 100644
---- a/net/smc/Kconfig
-+++ b/net/smc/Kconfig
-@@ -19,3 +19,15 @@ config SMC_DIAG
- 	  smcss.
- 
- 	  if unsure, say Y.
-+
-+if MPTCP
-+
-+config SMC_AUTO_FALLBACK
-+	bool "SMC: automatic fallback to TCP"
-+	default y
-+	help
-+	  Allow automatic fallback to TCP accroding to the pressure of SMC-R
-+	  handshake process.
-+
-+	  If that's not what you except or unsure, say N.
-+endif
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 66a0e64..49b8a29 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -101,6 +101,24 @@ static struct sock *smc_tcp_syn_recv_sock(const struct sock *sk, struct sk_buff
- 	return NULL;
- }
- 
-+#if IS_ENABLED(CONFIG_SMC_AUTO_FALLBACK)
-+static bool smc_is_in_limited(const struct sock *sk)
-+{
-+	const struct smc_sock *smc;
-+
-+	smc = (const struct smc_sock *)
-+		((uintptr_t)sk->sk_user_data & ~SK_USER_DATA_NOCOPY);
-+
-+	if (!smc)
-+		return true;
-+
-+	if (workqueue_congested(WORK_CPU_UNBOUND, smc_hs_wq))
-+		return true;
-+
-+	return false;
-+}
-+#endif
-+
- static struct smc_hashinfo smc_v4_hashinfo = {
- 	.lock = __RW_LOCK_UNLOCKED(smc_v4_hashinfo.lock),
- };
-@@ -2206,6 +2224,10 @@ static int smc_listen(struct socket *sock, int backlog)
- 
- 	inet_csk(smc->clcsock->sk)->icsk_af_ops = &smc->af_ops;
- 
-+#if IS_ENABLED(CONFIG_SMC_AUTO_FALLBACK)
-+	tcp_sk(smc->clcsock->sk)->smc_in_limited = smc_is_in_limited;
-+#endif
-+
- 	rc = kernel_listen(smc->clcsock, backlog);
- 	if (rc) {
- 		smc->clcsock->sk->sk_data_ready = smc->clcsk_data_ready;
--- 
-1.8.3.1
-
+> value in that case you can just set it to 0, since all of this would be used internally the options which
+> support this new extra storage would expect it and should error out if it's missing (wrong/zero length).
+> Maybe something like:
+> static inline void __bond_opt_init(struct bond_opt_value *optval,
+> -				   char *string, u64 value)
+> +				   char *string, u64 value,
+> +				   void *extra, size_t extra_len)
+> 
+> with sanity and length checks of course, and:
+> +#define bond_opt_initextra(optval, extra, len) __bond_opt_init(optval, NULL, 0, extra, len)
+> 
+> It is similar to your solution, but it can be used by other options to store larger values and
+> it uses the value field as indicator that string shouldn't be parsed.
+> 
+> There are other alternatives like using the bond_opt_val flags to denote what has been set instead
+> of using the current struct field checks, but they would cause much more changes that seems
+> unnecessary just for this case.
+> 
+> Cheers,
+>  Nik
+> 
+> 
+> 
+> 
