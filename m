@@ -2,94 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48D2049D780
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 02:34:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFCD149D781
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 02:35:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234538AbiA0BeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 20:34:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43456 "EHLO
+        id S234540AbiA0Bf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 20:35:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231771AbiA0BeL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 20:34:11 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79713C06161C
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 17:34:11 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id h14so1193668plf.1
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 17:34:11 -0800 (PST)
+        with ESMTP id S231694AbiA0Bf4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 20:35:56 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86DEC06161C
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 17:35:55 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id s5so2431387ejx.2
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 17:35:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dlLWVWHrYJR6rQuFsR27aG7SdKEXnQGF/3pN0GA8jwM=;
-        b=LqlEaxdbyOPi3KJK1yg+/kTHkq4P7icL6Hq9g3Ri0BS4Sfeth0Ql55Wmi8xF20RL+d
-         5eu4bCkSl2BQYHcuZwB+d+im4Zb9i88oDPOc3OnsBqKkzOQoeBXr8bCPRmbHvZUc+M3N
-         Pdx8tZG2z8i387wIzx0LTbPu5LsBBKZwINyWkMx9bA86CN8RfePGRYBsbySYJxAnddgZ
-         P+/qrui79YjCqIG8s3GItfLglrQ5LYbupqtWBZu2fIqOsA+uFzI1NDp9WMBT0U8xPv3u
-         rDiQgwpw7ttOSLxACnhyzNNqf0IdE29kiH83ikda7fi90Vho58JmLGi/VqFCaPxvtLwE
-         j0Vw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GVE97pjYi4gXDMbuBRSRMxS1wVu4ENITueD1TfQJKco=;
+        b=jBu+XIjqe7MAXwFNphEUcDL/u61Tw2ezGFawqlkCv3uRngzq2QfCd59ZUFwTtjZgeQ
+         Iz1k9NAoxUIWvVzc7MqrEDMdW6FYZ5cvAb0NCDW5L+IhcR7zFnQLDJej/FAeZHlLUyce
+         Iummv7sjFpwt+x9lX1YiMI3xhaRAWCSijaosWVdukOtWrjuwh6UlPl3H+Pg7618tnNM6
+         89EWcoU+xwgIKYxX3zj8+x5qOCkgpxrtBInyjYPqs+EqVXj8hAGTcbD4LLsvXNx3ibtv
+         xPmlen6mBWUYpMB0VlZaORkJGUtLKHJq7t9NwlHomURusFDiG81yDn/9lmW84xWdZAI2
+         EoiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dlLWVWHrYJR6rQuFsR27aG7SdKEXnQGF/3pN0GA8jwM=;
-        b=p0ay90CuV0qloOStNutYjUDBJAC2Scarbk/OjPPdzt9TR2k7HDrvQlOhfQSR/lHTXe
-         xyeO4+oPShb0lg3FtxBnA8yOJ1McjilKbpim8qb7LhoYJZjGLWBNqBy8e2hFvXHi67jS
-         WlR7Nv3f49ei1CtaACBuNK6+6AA1/yBIf5dFGGOBfIBcBMwWqQ5A4BFrmUPe3X/GNygy
-         NfI4Pn5sawlt41dJ83w/f2YT/Nn6o9DFJYVvB55XTykWnMD+xyP5HbhPGNiqfQJXk5jC
-         +V6cb2eTNzLHofwfukP0+RNR4+urN4RWYNoAj10ed0RQDxUkOlVrAEZkMqGmwYi/Bf2O
-         860Q==
-X-Gm-Message-State: AOAM530+5GUfisGaQMirEQoCTka1AE6xR3Scy9E4SyyAGampPQRP5DuB
-        tSiLJk/eoy5Y/BMJQT8hsOw=
-X-Google-Smtp-Source: ABdhPJwJJXxqOL2t08P4MPx69pvS5CgSUByMPMxsz+wtgH0zPQ5tmU78e+wZYWLY58Wc0qEwhJ1ddQ==
-X-Received: by 2002:a17:902:a708:: with SMTP id w8mr1618079plq.101.1643247250994;
-        Wed, 26 Jan 2022 17:34:10 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:cfcb:2c25:b567:59da])
-        by smtp.gmail.com with ESMTPSA id qe12sm4176940pjb.14.2022.01.26.17.34.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 17:34:10 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH net] ipv4: remove sparse error in ip_neigh_gw4()
-Date:   Wed, 26 Jan 2022 17:34:04 -0800
-Message-Id: <20220127013404.1279313-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GVE97pjYi4gXDMbuBRSRMxS1wVu4ENITueD1TfQJKco=;
+        b=pk8T7ehj4S/v6DbOyf5nYzJ/O4NX67bxriEVxqMs8rpjE9cXDlqFrwu20M5Y6njZMD
+         o2Gn2iVT01YeJ3R8s5muvai2z8iywBrzhEHAJLrMAKSVb4EaC0qwfOYWy+gP/ZwayxXb
+         JKhYaGgBypM+bwQbNILkKusOx8bHlq3Nc+JR0eOTSNXPIH8bpHuZ50cAm+WVkpt/ucLL
+         jhl1HZp9SpSUyZVesbT5paiK34hUEWcnRS+b8ErzhzvIKtX/zxg2LtfvyUgrY3JZz9sS
+         AfbAnJhKthXC4WhaLgOS03OZMsUGgDmLqcDSdnG0Vqa1rHOGI0sf9ns/Pv/fYkSnMByl
+         5qsA==
+X-Gm-Message-State: AOAM5308yN+mi/pIGV2M5CNZf5kdfHRhd1HT+BSPVWVk4ZsOn+RM+Hof
+        G199pdUZzCpHMK9Fw9KTNWsaRw5+5qpYidYXWu4=
+X-Google-Smtp-Source: ABdhPJzTFmqtL0/46/IrXdKtdM+sMmIXTycD+7HlkHZsH05BPaDB5L0yrQj6/xPZsks1Wqtz744TLGJ7ccy3FG90tKY=
+X-Received: by 2002:a17:907:948a:: with SMTP id dm10mr1141500ejc.61.1643247354362;
+ Wed, 26 Jan 2022 17:35:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211220123839.54664-1-xiangxia.m.yue@gmail.com>
+ <20211220123839.54664-2-xiangxia.m.yue@gmail.com> <87k0fn2pht.fsf@intel.com>
+ <CAMDZJNX=gEL0z13QA65Aw11Cp5Mik4HLtMLZUYO0-mppuKsuyg@mail.gmail.com> <CAM_iQpWcqPEhX6QMDycJWSkvKhhSs7OGmgqEi+yUj0BMDAWk3w@mail.gmail.com>
+In-Reply-To: <CAM_iQpWcqPEhX6QMDycJWSkvKhhSs7OGmgqEi+yUj0BMDAWk3w@mail.gmail.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Thu, 27 Jan 2022 09:35:17 +0800
+Message-ID: <CAMDZJNW3HgjBhtOUZtX3eOL9fmQjOwxbUwOw5VxiSYBk2qQXiw@mail.gmail.com>
+Subject: Re: [net-next v5 1/2] net: sched: use queue_mapping to pick tx queue
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Thu, Jan 27, 2022 at 3:59 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Wed, Dec 29, 2021 at 9:03 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> > Yes, I think this is key. In k8s, we can not control the priority of
+> > applications in Pod. and I think 2/2 patch
+>
+> Why not? Please be more specific.
+I mean the priority of skb can be set via the socket from
+applications. the application is running for a long time,
+There are so many applications in the company. we can't ask them to do
+that. there is a lot of workload.
+> > can provide more mechanisms to select queues from a range.
+>
+> Well, you just keep ignoring eBPF action which provides
+> literally infinitely more choices than yours. So, you want more
+> choices but still refuse using eBPF action, what point are you
+> trying to make?
+Maybe I can answer your question in another thread. In brief, this
+patch is only enhanced the tc-skbedit.
+> Thanks.
 
-./include/net/route.h:373:48: warning: incorrect type in argument 2 (different base types)
-./include/net/route.h:373:48:    expected unsigned int [usertype] key
-./include/net/route.h:373:48:    got restricted __be32 [usertype] daddr
 
-Fixes: 5c9f7c1dfc2e ("ipv4: Add helpers for neigh lookup for nexthop")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: David Ahern <dsahern@gmail.com>
----
- include/net/route.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/route.h b/include/net/route.h
-index 4c858dcf1aa8cd1988746e55eb698ad4425fd77b..25404fc2b48374c69081b8c72c2ea1dbbc09ed7f 100644
---- a/include/net/route.h
-+++ b/include/net/route.h
-@@ -370,7 +370,7 @@ static inline struct neighbour *ip_neigh_gw4(struct net_device *dev,
- {
- 	struct neighbour *neigh;
- 
--	neigh = __ipv4_neigh_lookup_noref(dev, daddr);
-+	neigh = __ipv4_neigh_lookup_noref(dev, (__force u32)daddr);
- 	if (unlikely(!neigh))
- 		neigh = __neigh_create(&arp_tbl, &daddr, dev, false);
- 
 -- 
-2.35.0.rc0.227.g00780c9af4-goog
-
+Best regards, Tonghao
