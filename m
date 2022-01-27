@@ -2,128 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D510D49DEA5
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 11:01:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77B7549DEC7
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 11:10:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238862AbiA0KBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 05:01:21 -0500
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:54716
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229956AbiA0KBU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 05:01:20 -0500
-Received: from localhost.localdomain (unknown [222.129.35.96])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S233697AbiA0KKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 05:10:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44128 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232527AbiA0KKR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 05:10:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24669C061714;
+        Thu, 27 Jan 2022 02:10:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 2E62B3F1DF;
-        Thu, 27 Jan 2022 10:01:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1643277678;
-        bh=8qVk/8nENltG8922gM4GA2ePp8dmOnZ8REpGta3pnW4=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=L5Cnh0OTboKGL+6Vxh4m5nGetvgvZIbJcTcobTZ7uCIYYh/olN26oewMJX/JJM9Tc
-         zPMbmaUSEv0ygDUA01peWmDueGVKOD5BPpBFE6Y8eQQRzzwY1TQcSgRcH5eQMCfQB0
-         CCkxRCfqKUj5vs62Welpuz0URvSslXlAw6q5PYOjoPtqrhYAQbrXkgA7oQPLSV6yiA
-         YuFVjAAemSP72Z0GHp7xnVSZLDwx5kh+oNVRhS39EFptaeFhWktxYpDnQpVmkaG1F2
-         mX51oUWTJkcvKykCrGV9E5JFg0Yov1ktr0eHESd4OyvV0ZytdH35dMgKH22mzO/LTx
-         iawH2w1GMSu+w==
-From:   Aaron Ma <aaron.ma@canonical.com>
-To:     Mario.Limonciello@amd.com, aaron.ma@canonical.com, kuba@kernel.org,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C2866106D;
+        Thu, 27 Jan 2022 10:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2788C340E4;
+        Thu, 27 Jan 2022 10:10:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643278215;
+        bh=Ap7drMT4Q1FIZCM2H6MmACkCe9woB02SORB5H3rkUkk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MbS4kQE5WQTvD43bPMFyF9w1teRK6VXYJaZlx4BeSciOHM+79VblvvYcSZPdioBTD
+         1TvCxaBZ9wnOcH1p8G/FuzGuPWHTQlnBzl4peAn3gB/4nQRIfiZlS5RDfoMsNRx4o4
+         1ZVjgtWfWnvnztsbLBNCrq4nuupb5mNMR5b5O48g=
+Date:   Thu, 27 Jan 2022 11:10:12 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Aaron Ma <aaron.ma@canonical.com>
+Cc:     Mario.Limonciello@amd.com, kuba@kernel.org,
         henning.schild@siemens.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
-Subject: [PATCH] net: usb: r8152: Add MAC passthrough support for RTL8153BL
-Date:   Thu, 27 Jan 2022 18:01:09 +0800
-Message-Id: <20220127100109.12979-1-aaron.ma@canonical.com>
-X-Mailer: git-send-email 2.34.1
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
+Subject: Re: [PATCH] net: usb: r8152: Add MAC passthrough support for
+ RTL8153BL
+Message-ID: <YfJvhItQAmRJrool@kroah.com>
+References: <20220127100109.12979-1-aaron.ma@canonical.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127100109.12979-1-aaron.ma@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RTL8153-BL is used in Lenovo Thunderbolt4 dock.
-Add the support of MAC passthrough.
-This is ported from Realtek Outbox driver r8152.53.56-2.15.0.
+On Thu, Jan 27, 2022 at 06:01:09PM +0800, Aaron Ma wrote:
+> RTL8153-BL is used in Lenovo Thunderbolt4 dock.
+> Add the support of MAC passthrough.
+> This is ported from Realtek Outbox driver r8152.53.56-2.15.0.
+> 
+> There are 2 kinds of rules for MAC passthrough of Lenovo products,
+> 1st USB vendor ID belongs to Lenovo, 2nd the chip of RTL8153-BL
+> is dedicated for Lenovo. Check the ocp data first then set ACPI object
+> names.
+> 
+> Suggested-by: Hayes Wang <hayeswang@realtek.com>
+> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+> ---
+>  drivers/net/usb/r8152.c | 44 ++++++++++++++++++++++-------------------
+>  1 file changed, 24 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+> index ee41088c5251..df997b330ee4 100644
+> --- a/drivers/net/usb/r8152.c
+> +++ b/drivers/net/usb/r8152.c
+> @@ -718,6 +718,7 @@ enum spd_duplex {
+>  #define AD_MASK			0xfee0
+>  #define BND_MASK		0x0004
+>  #define BD_MASK			0x0001
+> +#define BL_MASK                 BIT(3)
 
-There are 2 kinds of rules for MAC passthrough of Lenovo products,
-1st USB vendor ID belongs to Lenovo, 2nd the chip of RTL8153-BL
-is dedicated for Lenovo. Check the ocp data first then set ACPI object
-names.
-
-Suggested-by: Hayes Wang <hayeswang@realtek.com>
-Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
----
- drivers/net/usb/r8152.c | 44 ++++++++++++++++++++++-------------------
- 1 file changed, 24 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index ee41088c5251..df997b330ee4 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -718,6 +718,7 @@ enum spd_duplex {
- #define AD_MASK			0xfee0
- #define BND_MASK		0x0004
- #define BD_MASK			0x0001
-+#define BL_MASK                 BIT(3)
- #define EFUSE			0xcfdb
- #define PASS_THRU_MASK		0x1
- 
-@@ -1606,31 +1607,34 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
- 	acpi_object_type mac_obj_type;
- 	int mac_strlen;
- 
-+	/* test for -AD variant of RTL8153 */
-+	ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_MISC_0);
-+	if ((ocp_data & AD_MASK) == 0x1000) {
-+		/* test for MAC address pass-through bit */
-+		ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, EFUSE);
-+		if ((ocp_data & PASS_THRU_MASK) != 1) {
-+			netif_dbg(tp, probe, tp->netdev,
-+					"No efuse for RTL8153-AD MAC pass through\n");
-+			return -ENODEV;
-+		}
-+	} else {
-+		ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, USB_MISC_1);
-+		if (tp->version == RTL_VER_09 && (ocp_data & BL_MASK)) {
-+			/* test for RTL8153BL for Lenovo */
-+			tp->lenovo_macpassthru = 1;
-+		} else if ((ocp_data & BND_MASK) == 0 && (ocp_data & BD_MASK) == 0) {
-+			/* test for RTL8153-BND and RTL8153-BD */
-+			netif_dbg(tp, probe, tp->netdev,
-+					"Invalid variant for MAC pass through\n");
-+			return -ENODEV;
-+		}
-+	}
-+
- 	if (tp->lenovo_macpassthru) {
- 		mac_obj_name = "\\MACA";
- 		mac_obj_type = ACPI_TYPE_STRING;
- 		mac_strlen = 0x16;
- 	} else {
--		/* test for -AD variant of RTL8153 */
--		ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_MISC_0);
--		if ((ocp_data & AD_MASK) == 0x1000) {
--			/* test for MAC address pass-through bit */
--			ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, EFUSE);
--			if ((ocp_data & PASS_THRU_MASK) != 1) {
--				netif_dbg(tp, probe, tp->netdev,
--						"No efuse for RTL8153-AD MAC pass through\n");
--				return -ENODEV;
--			}
--		} else {
--			/* test for RTL8153-BND and RTL8153-BD */
--			ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, USB_MISC_1);
--			if ((ocp_data & BND_MASK) == 0 && (ocp_data & BD_MASK) == 0) {
--				netif_dbg(tp, probe, tp->netdev,
--						"Invalid variant for MAC pass through\n");
--				return -ENODEV;
--			}
--		}
--
- 		mac_obj_name = "\\_SB.AMAC";
- 		mac_obj_type = ACPI_TYPE_BUFFER;
- 		mac_strlen = 0x17;
--- 
-2.32.0
+No tab?  :(
 
