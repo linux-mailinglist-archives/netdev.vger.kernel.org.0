@@ -2,140 +2,386 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8E6D49DBE6
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 08:50:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3548249DC02
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 08:57:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237520AbiA0HuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 02:50:17 -0500
-Received: from mail-dm6nam10on2133.outbound.protection.outlook.com ([40.107.93.133]:13153
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229949AbiA0HuR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 02:50:17 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Qbu0+ig/5gog5gN8Sbe5bP4U8hdsHNeqPguHCeorW9enLLgorS2ufsy9p9nT0d7TmFGNOih3J9kHWB5uq2GA8V6pcyz/OtUA6/wOZwDFBuJ3GXPW+JZ1qUw5g1AmWPohVFoU4DVdZDqIqg7ZQpFLe5i56jP3aobiKtgWI+0Rdi2wxjRGCEJBVjbWHng1nogxL/tec24RwjWOO9PRbl3EXETgq36flmQzbd44K3YWKT8mz1TR/LOnh2X7xKI6gI8vLTzqGT97+rIsSpFimNFisFIAL1HhcRJYBCKdt4Vj6kh/FWu/y5eCWYgnV7MNI3BGuO4kc7ozwecC0AwDQ2PN+Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=V8iMB/tKXYAzchAuHpJxAZjpz3NDUudrGkTXPiq2oa4=;
- b=SwQRBmIMf3q/BmV1VEAmS3n0fF1RQIsOrmhZ860+sRhUZWj5UW8Glrk4jYXCZgHl//szJgMhxRbgWvHzk8DdiDy5zVj3OLNMRCJtFNhZXlskXIJDH4h/8DJzm6myfMQ7GiOPdiWWrFX/7QIOafwdZWDWGKzFcJIPQ0vvJsLx6FBhRYuKlI28VpYei5/ns/oETXM4OrhL88R3N6ovsh/eaDGz0d/RiEXtnIyl5VUoTrEZYZuSHcSlF/FLK3mRXMd+6sRuxj0qAT/EcnKAkSmMF9N8F+nOzCljce9o1WFGoilGY6r8Jb8i5nO9JcN6bJTAITjvye3/rueVv4q2x9Hh8g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=pica8com.onmicrosoft.com; s=selector2-pica8com-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V8iMB/tKXYAzchAuHpJxAZjpz3NDUudrGkTXPiq2oa4=;
- b=ZeZ0gbiYQnKHbRWFW6rWC9oIK9zImLsFk89Gi40P7WEzBdzJtd+usYcDaLT+8v9+bs+PEfuOQ+PqD6NDnM9RdcrcQAP+v8hzBp0spgdfYhvPxms4l+2zp1IL/5byyzSMihpcvcsEiiGU/neFqA1HLlLuAdukGFYjbHSNrPaqEwg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=pica8.com;
-Received: from DM6PR12MB4601.namprd12.prod.outlook.com (2603:10b6:5:163::16)
- by PH7PR12MB5620.namprd12.prod.outlook.com (2603:10b6:510:137::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Thu, 27 Jan
- 2022 07:50:14 +0000
-Received: from DM6PR12MB4601.namprd12.prod.outlook.com
- ([fe80::b4e3:1aaf:91f5:7cb7]) by DM6PR12MB4601.namprd12.prod.outlook.com
- ([fe80::b4e3:1aaf:91f5:7cb7%3]) with mapi id 15.20.4930.017; Thu, 27 Jan 2022
- 07:50:14 +0000
-From:   Tim Yi <tim.yi@pica8.com>
-To:     nikolay@nvidia.com
-Cc:     roopa@nvidia.com, davem@davemloft.net, kuba@kernel.org,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Tim Yi <tim.yi@pica8.com>
-Subject: [PATCH] net: bridge: vlan: fix memory leak in __allowed_ingress
-Date:   Thu, 27 Jan 2022 15:49:53 +0800
-Message-Id: <20220127074953.12632-1-tim.yi@pica8.com>
-X-Mailer: git-send-email 2.28.0.618.g9bc233ae1c
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR03CA0062.apcprd03.prod.outlook.com
- (2603:1096:202:17::32) To DM6PR12MB4601.namprd12.prod.outlook.com
- (2603:10b6:5:163::16)
+        id S237540AbiA0H5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 02:57:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:56785 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233765AbiA0H5M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 02:57:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643270231;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rKEofx388MJV155pb0uGfd/Ni4klHP4l0jjlBsgi5xc=;
+        b=AaKYZzavbiu5CvzC3O4KES0qV/INjgppJuoI//BFYsAuMXEv4Vmc7xa+b5N6/LBNobRpj1
+        qmo0Qz7mS2P/bq4LCfEFKwOJtCQjZV2Gaqo1W75NItDrW+kjDieGq0XGgknQ+leeJh0fYj
+        JI/qZvcbg5ubmTDTI492JCGQAd+FHc8=
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
+ [209.85.214.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-57-N7ZfDl5RMD6JTb66TtTzkg-1; Thu, 27 Jan 2022 02:57:10 -0500
+X-MC-Unique: N7ZfDl5RMD6JTb66TtTzkg-1
+Received: by mail-pl1-f197.google.com with SMTP id v14-20020a170902e8ce00b0014b48e8e498so1171636plg.2
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 23:57:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rKEofx388MJV155pb0uGfd/Ni4klHP4l0jjlBsgi5xc=;
+        b=zuB5C5FUHE58RzG95FHSTYbWoayR2OscJZg7dEk+Se5ySVA+C/pqG7Cp0ALM5KlQl5
+         7/Oj/pW+MaVWLOisbkNRjv3GLs3Q/Q6a17kJUS8+XpFDcQ2zokdvKT523sa4xpYDExD0
+         TopMmEzW+hsdhCurQIznE9WyW2Z1njXC+wp8IbA1PUi6Y0qN1B6fpqYEio0Lsl5pkRy/
+         VaNL0ccL5y7b2ztHHS5EMgq7XCDzZxAsBCzqAMuQH9zwV+2uRbt7r44NduOSkRjfxthL
+         iGxc5V9iP2F06iH1rg3UVPU2/5dIQPmdeAJtKRr8qbPJXmSS/QU7U3ilvDG2ZMoh15w2
+         E0XQ==
+X-Gm-Message-State: AOAM532RoIyZ/CKqpxcS6mBHny2I+YxwOL+KkDtrTzhwh1ENYiWSpmUe
+        9KolsEGpwrdU/eGCSExY2JWIFev8Nv7vbWrhL0PNasPiKV4mD7q8/3NSlSK12qKs2+wTPnWHNx7
+        cd/HixFS4cUHanrDT
+X-Received: by 2002:a63:6909:: with SMTP id e9mr1956801pgc.514.1643270229410;
+        Wed, 26 Jan 2022 23:57:09 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxV7sMkygjbaQB5ymNlWOzkapdgh0MOBiS+DFFML1YJa6qyG70uDcvA7KaRZ82ZwzXQKa6ngQ==
+X-Received: by 2002:a63:6909:: with SMTP id e9mr1956790pgc.514.1643270229114;
+        Wed, 26 Jan 2022 23:57:09 -0800 (PST)
+Received: from [10.72.13.149] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id k16sm19056702pgm.26.2022.01.26.23.57.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 23:57:08 -0800 (PST)
+Message-ID: <35221232-ae92-a532-8738-b6a93cb4638c@redhat.com>
+Date:   Thu, 27 Jan 2022 15:57:04 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 27d336a9-232a-492c-4ed3-08d9e169a6bc
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5620:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR12MB562033DC8D740E3108419875D8219@PH7PR12MB5620.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3276;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yI4dV0o1kGf0+AxV5xqU77z7OtnOiXHRypQ9icxwNZt8dQXz3jtVV4YzxtvCrr91utOl2buMNSTamNzoTWRZ362nLRIvU2DIAAJYNdhOwRPAQ4FmH+8+4mRTnXQIc80+t9g/z7Wpxb3HePEDdui+pOy8pFbz+EHOM3hmT/46VTjDvjkponGQyYybWjUwYVZmfO/9/9K/+gd3iwnWCqZ5wjW0i67w1wtfBQiLPMpkRmmasmpAL/YBzHDJz4Z9Xg2px7T6rYuZN3qDka0A8YrrUpgYtMSw9EWmXx9sANNoR+5oJptHjNx6lmxKJZroQdSCMTfvUu1d4L+XtPC61V5emJJdzEWueXAXAj3M0zT1mLtRQcuaQqYoPNtPClxK1YGHOmLE2x4c6zteVTNyaRCvMEa/QRrVXjPwYCFoBn8wA/DUc5274C+k4Myepwrox3km8h5PeDKMeSxqB0kfYcNFNbAb9Qq9Rdg3nmVHBj3bAPzt/jNqlTtJCEmFKZeikzrtLwGQ90Hir1QYmkspS0rWCN1MnPSjcHzkJF08DQ0o6MYoze+N4VTi2uGt28uw9dpZ0MXNyt72vP1Spzvh09KrwhKFGMjn31sKWEtg1Wz+dJIy2cX71p9B/tQORMA0TjDUQ0PylexpORn9WsQRvZQu5dDYK8rkJaDrFy+eMlrDJMRr4J8JhqRzNuFEkyQmuoPGPCxn1PAS7tNVQUJtT12zmg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4601.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(396003)(136003)(39830400003)(366004)(346002)(376002)(508600001)(52116002)(38350700002)(107886003)(38100700002)(44832011)(2906002)(86362001)(5660300002)(6666004)(6506007)(6512007)(4326008)(66946007)(66476007)(316002)(1076003)(36756003)(26005)(6916009)(8676002)(6486002)(8936002)(66556008)(2616005)(186003)(83380400001)(20210929001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?o8YMUNVYCE2UFVgePjjF5VEok1yqxRwhqjGOJUMDK1mN8U8kBA7RuKB1fIBU?=
- =?us-ascii?Q?OLBbfgp6jH1q5NadKIqhA88n2Pmc3ZYJDAGiXEcAcAP+jt6coQKyE2stWpH/?=
- =?us-ascii?Q?VxjHmPu8hNBA98x8pp2B/cszc1MVnNtDieZLzkS7SQiJ40cCGWCfgPOSbjKH?=
- =?us-ascii?Q?z+Q5rsp2WoOmS5t25VAdrF62hRbAZaZ55oDt0PNby3XidrxxIhf4Wcg7s4ob?=
- =?us-ascii?Q?u/uNZU14ZexQh1pl9QaNCc6bXvYd/mclj768ICQJYV4MJqpqg2//QIXWU+tT?=
- =?us-ascii?Q?ftK+4AiwDqVUeKFQ3A9VkHKr4/z8GTUnQr09j+uZ98Klt4eHgPFEHIBrimQq?=
- =?us-ascii?Q?TUZrRhMqqTe/yN2u7W53nmzCzrAJy7olrQRoXmxKOvLjv1i4befINQojdku1?=
- =?us-ascii?Q?7DEY8GZCp0jehV4ZTV9O459N/w+hwAVEf5EyiMWnLG9+wNAvxv4WS09o8LIS?=
- =?us-ascii?Q?/HexhAtilkagzHopU+ykl9BXNV3bx35SSpyFDyWHlWf+ZCTmkYEkcjz2wFB0?=
- =?us-ascii?Q?kf2eV3eMvA1aHOblHfYqg9GOFydxwRslPr+A+kk0bDa/X5xYAsMLQCP0sTO/?=
- =?us-ascii?Q?98IRsMSUEyl56zoskE+PUzRPrQmMGfiCI/vdYMyYK/5Jez37L/E+22U9kHum?=
- =?us-ascii?Q?4uQRAx3i2bnchsBq5rJ7om31kS64SY/rcXsnM8HOMI3Py24VMKvp+jhI2bAJ?=
- =?us-ascii?Q?WrbTSCQAt/qWiuk62gvB1GfhjeNyxRaWnP4YClhFdrOTlLN9iexgmBvG3T3J?=
- =?us-ascii?Q?h1nCXxtx7naMKL38aL/xMA7WezGAxjCXeEcMCDnvXGVYHIkqB0Io9Uw9nUOD?=
- =?us-ascii?Q?3P7hIcEOSOxOkQtDWusNxhMd6DgGLlTFGPNRKGnugL7KY8RboRtBtN0V+/sR?=
- =?us-ascii?Q?9InLAa5KJ8vxt3Y6NfmJFCvi6RN6EVRv3dV3/tFZwGz3haiAvumbNvsU9yX2?=
- =?us-ascii?Q?dEVUKaFtcXan6wT6s9541PwHfa5i4wG/Ixkw5w7tB+5U1DTSdHXiDXGGUA7A?=
- =?us-ascii?Q?n/wTYOPWEzMg2QOXfrHVbFBpLfDmDfDtbPh/SABjE6wjJV6dokZ4e7nRp2Yx?=
- =?us-ascii?Q?zQtf+WC/vbnRRVrR0DJSWgCEWCGG9/a0ZY5r2KlfvGOVyRe93Vvlu0sa5FIX?=
- =?us-ascii?Q?mq3EjNEbVI+ot9/BoKFQbo0GDIuHNyAI8OJSEuhTc1W5BUe/EOChwxeGv+8x?=
- =?us-ascii?Q?Ig3r21zij6riB+uifMSGZs79uUqq8ytriwZUUjhxpFFtvoaYQJKn8SzYW6sh?=
- =?us-ascii?Q?jMNzecTh/ne2t/a0wOWgmE9Y6j2e5oRWcZlXzGQKViiXZnOG1nyRZ9cDtnWU?=
- =?us-ascii?Q?YIw0CuFNKhP5Klxlk3pO4O/nVXcUZHnv9tHnjUt9qBn0Zt+5lAvT3KBTrQqO?=
- =?us-ascii?Q?GvGFWNferVuTGycBU8rr9G/zwudDveynrCyKxh0xkN7QBXew5JC35UNg7E9j?=
- =?us-ascii?Q?tFKpFMUY8Q+r2BEFIs4yX5f4UW/l+ZMnh/WwuDt56xn805KIfCdGZYjH0aA/?=
- =?us-ascii?Q?63RS7sshPy9HxBGBv+5glx6xpy3B63l5yvmb2pR8npmcExm32n4/b5p7llce?=
- =?us-ascii?Q?NYspvdIKgYXkD9ytemf+eg2bMekF4mNgl3IwjhpBe0H7DKmIh/YE71fg/gZl?=
- =?us-ascii?Q?tz1rL1QL27+4e2JpLWBH+ME=3D?=
-X-OriginatorOrg: pica8.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 27d336a9-232a-492c-4ed3-08d9e169a6bc
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4601.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2022 07:50:13.8716
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 1649697f-e494-4b71-8227-3f383d0979ad
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uigfEnUIAkWVPiQj8QDQCKMm2rTUz5kxegXPG/WtJHxzIWgqXnV3jCHQsREsK4RGzjnnB1f+Vr30A8et64BzdQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5620
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [PATCH v2 2/4] drivers/net/virtio_net: Added basic RSS support.
+Content-Language: en-US
+To:     Andrew Melnychenko <andrew@daynix.com>, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        mst@redhat.com
+Cc:     yan@daynix.com, yuri.benditovich@daynix.com
+References: <20220117080009.3055012-1-andrew@daynix.com>
+ <20220117080009.3055012-3-andrew@daynix.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220117080009.3055012-3-andrew@daynix.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using per-vlan state, if vlan snooping and stats are disabled,
-untagged or priority-tagged ingress frame will go to check pvid state.
-If the port state is forwarding and the pvid state is not
-learning/forwarding, untagged or priority-tagged frame will be dropped
-but skb memory is not freed.
-Should free skb when __allowed_ingress returns false.
 
-Signed-off-by: Tim Yi <tim.yi@pica8.com>
----
- net/bridge/br_vlan.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+在 2022/1/17 下午4:00, Andrew Melnychenko 写道:
+> Added features for RSS.
+> Added initialization, RXHASH feature and ethtool ops.
+> By default RSS/RXHASH is disabled.
+> Virtio RSS "IPv6 extensions" hashes disabled.
+> Added ethtools ops to set key and indirection table.
+>
+> Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
+> ---
+>   drivers/net/virtio_net.c | 193 +++++++++++++++++++++++++++++++++++++--
+>   1 file changed, 187 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 05fe5ba32187..9aae11cb568e 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -169,6 +169,24 @@ struct receive_queue {
+>   	struct xdp_rxq_info xdp_rxq;
+>   };
+>   
+> +/* This structure can contain rss message with maximum settings for indirection table and keysize
+> + * Note, that default structure that describes RSS configuration virtio_net_rss_config
+> + * contains same info but can't handle table values.
+> + * In any case, structure would be passed to virtio hw through sg_buf split by parts
+> + * because table sizes may be differ according to the device configuration.
+> + */
+> +#define VIRTIO_NET_RSS_MAX_KEY_SIZE     40
+> +#define VIRTIO_NET_RSS_MAX_TABLE_LEN    128
+> +struct virtio_net_ctrl_rss {
+> +	u32 hash_types;
+> +	u16 indirection_table_mask;
+> +	u16 unclassified_queue;
+> +	u16 indirection_table[VIRTIO_NET_RSS_MAX_TABLE_LEN];
+> +	u16 max_tx_vq;
+> +	u8 hash_key_length;
+> +	u8 key[VIRTIO_NET_RSS_MAX_KEY_SIZE];
+> +};
+> +
+>   /* Control VQ buffers: protected by the rtnl lock */
+>   struct control_buf {
+>   	struct virtio_net_ctrl_hdr hdr;
+> @@ -178,6 +196,7 @@ struct control_buf {
+>   	u8 allmulti;
+>   	__virtio16 vid;
+>   	__virtio64 offloads;
+> +	struct virtio_net_ctrl_rss rss;
+>   };
+>   
+>   struct virtnet_info {
+> @@ -206,6 +225,12 @@ struct virtnet_info {
+>   	/* Host will merge rx buffers for big packets (shake it! shake it!) */
+>   	bool mergeable_rx_bufs;
+>   
+> +	/* Host supports rss and/or hash report */
+> +	bool has_rss;
+> +	u8 rss_key_size;
+> +	u16 rss_indir_table_size;
+> +	u32 rss_hash_types_supported;
+> +
+>   	/* Has control virtqueue */
+>   	bool has_cvq;
+>   
+> @@ -2184,6 +2209,56 @@ static void virtnet_get_ringparam(struct net_device *dev,
+>   	ring->tx_pending = ring->tx_max_pending;
+>   }
+>   
+> +static bool virtnet_commit_rss_command(struct virtnet_info *vi)
+> +{
+> +	struct net_device *dev = vi->dev;
+> +	struct scatterlist sgs[4];
+> +	unsigned int sg_buf_size;
+> +
+> +	/* prepare sgs */
+> +	sg_init_table(sgs, 4);
+> +
+> +	sg_buf_size = offsetof(struct virtio_net_ctrl_rss, indirection_table);
+> +	sg_set_buf(&sgs[0], &vi->ctrl->rss, sg_buf_size);
+> +
+> +	sg_buf_size = sizeof(uint16_t) * vi->rss_indir_table_size;
+> +	sg_set_buf(&sgs[1], vi->ctrl->rss.indirection_table, sg_buf_size);
+> +
+> +	sg_buf_size = offsetof(struct virtio_net_ctrl_rss, key)
+> +			- offsetof(struct virtio_net_ctrl_rss, max_tx_vq);
+> +	sg_set_buf(&sgs[2], &vi->ctrl->rss.max_tx_vq, sg_buf_size);
+> +
+> +	sg_buf_size = vi->rss_key_size;
+> +	sg_set_buf(&sgs[3], vi->ctrl->rss.key, sg_buf_size);
+> +
+> +	if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_MQ,
+> +				  VIRTIO_NET_CTRL_MQ_RSS_CONFIG, sgs)) {
+> +		dev_warn(&dev->dev, "VIRTIONET issue with committing RSS sgs\n");
+> +		return false;
+> +	}
+> +	return true;
+> +}
+> +
+> +static void virtnet_init_default_rss(struct virtnet_info *vi)
+> +{
+> +	u32 indir_val = 0;
+> +	int i = 0;
+> +
+> +	vi->ctrl->rss.hash_types = vi->rss_hash_types_supported;
+> +	vi->ctrl->rss.indirection_table_mask = vi->rss_indir_table_size - 1;
+> +	vi->ctrl->rss.unclassified_queue = 0;
+> +
+> +	for (; i < vi->rss_indir_table_size; ++i) {
+> +		indir_val = ethtool_rxfh_indir_default(i, vi->curr_queue_pairs);
+> +		vi->ctrl->rss.indirection_table[i] = indir_val;
+> +	}
+> +
+> +	vi->ctrl->rss.max_tx_vq = vi->curr_queue_pairs;
+> +	vi->ctrl->rss.hash_key_length = vi->rss_key_size;
+> +
+> +	netdev_rss_key_fill(vi->ctrl->rss.key, vi->rss_key_size);
+> +}
+> +
+>   
+>   static void virtnet_get_drvinfo(struct net_device *dev,
+>   				struct ethtool_drvinfo *info)
+> @@ -2412,6 +2487,71 @@ static void virtnet_update_settings(struct virtnet_info *vi)
+>   		vi->duplex = duplex;
+>   }
+>   
+> +static u32 virtnet_get_rxfh_key_size(struct net_device *dev)
+> +{
+> +	return ((struct virtnet_info *)netdev_priv(dev))->rss_key_size;
+> +}
+> +
+> +static u32 virtnet_get_rxfh_indir_size(struct net_device *dev)
+> +{
+> +	return ((struct virtnet_info *)netdev_priv(dev))->rss_indir_table_size;
+> +}
+> +
+> +static int virtnet_get_rxfh(struct net_device *dev, u32 *indir, u8 *key, u8 *hfunc)
+> +{
+> +	struct virtnet_info *vi = netdev_priv(dev);
+> +	int i;
+> +
+> +	if (indir) {
+> +		for (i = 0; i < vi->rss_indir_table_size; ++i)
+> +			indir[i] = vi->ctrl->rss.indirection_table[i];
+> +	}
+> +
+> +	if (key)
+> +		memcpy(key, vi->ctrl->rss.key, vi->rss_key_size);
+> +
+> +	if (hfunc)
+> +		*hfunc = ETH_RSS_HASH_TOP;
+> +
+> +	return 0;
+> +}
+> +
+> +static int virtnet_set_rxfh(struct net_device *dev, const u32 *indir, const u8 *key, const u8 hfunc)
+> +{
+> +	struct virtnet_info *vi = netdev_priv(dev);
+> +	int i;
+> +
+> +	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (indir) {
+> +		for (i = 0; i < vi->rss_indir_table_size; ++i)
+> +			vi->ctrl->rss.indirection_table[i] = indir[i];
+> +	}
+> +	if (key)
+> +		memcpy(vi->ctrl->rss.key, key, vi->rss_key_size);
+> +
+> +	virtnet_commit_rss_command(vi);
+> +
+> +	return 0;
+> +}
+> +
+> +static int virtnet_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info, u32 *rule_locs)
+> +{
+> +	struct virtnet_info *vi = netdev_priv(dev);
+> +	int rc = 0;
+> +
+> +	switch (info->cmd) {
+> +	case ETHTOOL_GRXRINGS:
+> +		info->data = vi->curr_queue_pairs;
+> +		break;
+> +	default:
+> +		rc = -EOPNOTSUPP;
+> +	}
+> +
+> +	return rc;
+> +}
+> +
+>   static const struct ethtool_ops virtnet_ethtool_ops = {
+>   	.supported_coalesce_params = ETHTOOL_COALESCE_MAX_FRAMES,
+>   	.get_drvinfo = virtnet_get_drvinfo,
+> @@ -2427,6 +2567,11 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
+>   	.set_link_ksettings = virtnet_set_link_ksettings,
+>   	.set_coalesce = virtnet_set_coalesce,
+>   	.get_coalesce = virtnet_get_coalesce,
+> +	.get_rxfh_key_size = virtnet_get_rxfh_key_size,
+> +	.get_rxfh_indir_size = virtnet_get_rxfh_indir_size,
+> +	.get_rxfh = virtnet_get_rxfh,
+> +	.set_rxfh = virtnet_set_rxfh,
+> +	.get_rxnfc = virtnet_get_rxnfc,
+>   };
+>   
+>   static void virtnet_freeze_down(struct virtio_device *vdev)
+> @@ -2679,6 +2824,16 @@ static int virtnet_set_features(struct net_device *dev,
+>   		vi->guest_offloads = offloads;
+>   	}
+>   
+> +	if ((dev->features ^ features) & NETIF_F_RXHASH) {
+> +		if (features & NETIF_F_RXHASH)
+> +			vi->ctrl->rss.hash_types = vi->rss_hash_types_supported;
+> +		else
+> +			vi->ctrl->rss.hash_types = VIRTIO_NET_HASH_REPORT_NONE;
+> +
+> +		if (!virtnet_commit_rss_command(vi))
+> +			return -EINVAL;
+> +	}
+> +
+>   	return 0;
+>   }
+>   
+> @@ -3073,6 +3228,8 @@ static bool virtnet_validate_features(struct virtio_device *vdev)
+>   			     "VIRTIO_NET_F_CTRL_VQ") ||
+>   	     VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_MQ, "VIRTIO_NET_F_CTRL_VQ") ||
+>   	     VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_CTRL_MAC_ADDR,
+> +			     "VIRTIO_NET_F_CTRL_VQ") ||
+> +	     VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_RSS,
+>   			     "VIRTIO_NET_F_CTRL_VQ"))) {
+>   		return false;
+>   	}
+> @@ -3113,13 +3270,14 @@ static int virtnet_probe(struct virtio_device *vdev)
+>   	u16 max_queue_pairs;
+>   	int mtu;
+>   
+> -	/* Find if host supports multiqueue virtio_net device */
+> -	err = virtio_cread_feature(vdev, VIRTIO_NET_F_MQ,
+> -				   struct virtio_net_config,
+> -				   max_virtqueue_pairs, &max_queue_pairs);
+> +	/* Find if host supports multiqueue/rss virtio_net device */
+> +	max_queue_pairs = 0;
 
-diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index 84ba456a78cc..88c4297cddee 100644
---- a/net/bridge/br_vlan.c
-+++ b/net/bridge/br_vlan.c
-@@ -560,10 +560,10 @@ static bool __allowed_ingress(const struct net_bridge *br,
- 		    !br_opt_get(br, BROPT_VLAN_STATS_ENABLED)) {
- 			if (*state == BR_STATE_FORWARDING) {
- 				*state = br_vlan_get_pvid_state(vg);
--				return br_vlan_state_allowed(*state, true);
--			} else {
--				return true;
-+				if (!br_vlan_state_allowed(*state, true))
-+					goto drop;
- 			}
-+			return true;
- 		}
- 	}
- 	v = br_vlan_find(vg, *vid);
--- 
-2.28.0.618.g9bc233ae1c
+
+Do we need to initialize this to 1? Otherwise we won't pass the below 
+check against VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN.
+
+
+> +	if (virtio_has_feature(vdev, VIRTIO_NET_F_MQ) || virtio_has_feature(vdev, VIRTIO_NET_F_RSS))
+> +		max_queue_pairs =
+> +		     virtio_cread16(vdev, offsetof(struct virtio_net_config, max_virtqueue_pairs));
+>   
+>   	/* We need at least 2 queue's */
+> -	if (err || max_queue_pairs < VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN ||
+> +	if (max_queue_pairs < VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN ||
+>   	    max_queue_pairs > VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MAX ||
+>   	    !virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
+>   		max_queue_pairs = 1;
+> @@ -3207,6 +3365,25 @@ static int virtnet_probe(struct virtio_device *vdev)
+>   	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
+>   		vi->mergeable_rx_bufs = true;
+>   
+> +	if (virtio_has_feature(vdev, VIRTIO_NET_F_RSS)) {
+> +		vi->has_rss = true;
+> +		vi->rss_indir_table_size =
+> +			virtio_cread16(vdev, offsetof(struct virtio_net_config,
+> +						      rss_max_indirection_table_length));
+> +		vi->rss_key_size =
+> +			virtio_cread8(vdev, offsetof(struct virtio_net_config, rss_max_key_size));
+> +	}
+> +
+> +	if (vi->has_rss) {
+
+
+We don't need this check, we can simple reuse the above one.
+
+
+Thanks
+
+
+> +		vi->rss_hash_types_supported =
+> +		    virtio_cread32(vdev, offsetof(struct virtio_net_config, supported_hash_types));
+> +		vi->rss_hash_types_supported &=
+> +				~(VIRTIO_NET_RSS_HASH_TYPE_IP_EX |
+> +				  VIRTIO_NET_RSS_HASH_TYPE_TCP_EX |
+> +				  VIRTIO_NET_RSS_HASH_TYPE_UDP_EX);
+> +
+> +		dev->hw_features |= NETIF_F_RXHASH;
+> +	}
+>   	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF) ||
+>   	    virtio_has_feature(vdev, VIRTIO_F_VERSION_1))
+>   		vi->hdr_len = sizeof(struct virtio_net_hdr_mrg_rxbuf);
+> @@ -3275,6 +3452,9 @@ static int virtnet_probe(struct virtio_device *vdev)
+>   		}
+>   	}
+>   
+> +	if (vi->has_rss)
+> +		virtnet_init_default_rss(vi);
+> +
+>   	err = register_netdev(dev);
+>   	if (err) {
+>   		pr_debug("virtio_net: registering device failed\n");
+> @@ -3406,7 +3586,8 @@ static struct virtio_device_id id_table[] = {
+>   	VIRTIO_NET_F_GUEST_ANNOUNCE, VIRTIO_NET_F_MQ, \
+>   	VIRTIO_NET_F_CTRL_MAC_ADDR, \
+>   	VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
+> -	VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY
+> +	VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
+> +	VIRTIO_NET_F_RSS
+>   
+>   static unsigned int features[] = {
+>   	VIRTNET_FEATURES,
 
