@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C14A49EDCF
+	by mail.lfdr.de (Postfix) with ESMTP id 324A049EDCE
 	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 22:52:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240914AbiA0Vwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 16:52:51 -0500
+        id S240218AbiA0Vwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 16:52:49 -0500
 Received: from mga03.intel.com ([134.134.136.65]:32610 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244421AbiA0Vwo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 16:52:44 -0500
+        id S1344476AbiA0Vwp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jan 2022 16:52:45 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643320364; x=1674856364;
+  t=1643320365; x=1674856365;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GJG2cYEKQ0lKcEQFA2yiTsXbQBFgdcaA0v61ej5kOi4=;
-  b=VIf7PlkuGwBZBhaELX+/L7ikDvXH9iZHf3EmMrdjyNOYhU7XDHACgdjv
-   At92SOv8/ZW+s6o7vRGJBsjHsb8OzThMZaOsRZ6ZeiZYp+Et7BnxDKDyy
-   rGdZWGX6Ch6h1XQAFx//1B2O2Ok07FHiD+s3TOSmhoNnqFMeN4wF20q2a
-   weGK8quKVGplJJ9YKfqO2DSGRgoCBSY+xEEV8n8fNdmECcVdoOKF2pCGm
-   2h6raADyUdJs+yVOD9CsjF/htmxdTWiACFV/27xiBNl1RCTXE2a0HUENn
-   3AgqUGV5ysUUmmvWN8PJ/t7PRX7oQbwK0aKcNMUGBtHpo3eZO82fl2Euo
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="246918951"
+  bh=KgjUDI8NpyG1XM6jEklGTS+WolViKHcrD5QCl7K3s6M=;
+  b=U36nGJZKnN6ZbeQS1cufnjfK5Z24MPO3ZHu4aOxs5VSvIYafGebM93Do
+   l96CwZywGvueI1g0l/Pa+AI1kmyJsb+BNExVuokw5NYI4WZpBeYCN3wlX
+   IvYFAqFQNUseyQMN5hiw4DqIwqLQPpRVvi15fKtc6r7wqDy9KvvGLG1m/
+   Y3v3Y83wqcQINQd/RIjqE3xk/VharfD8AXvS8rCyTKSEvhIadYcKggLWc
+   Frdo+8BrFJGrP3IdOvIXdJblSOQeXGXFVZq7WYRe4MZcUUOjUx/X8EH8c
+   +fYP/gMRRsxFNGTYXMaGSrwnh6mYZkVG92vlEiWDN/bcpSGGzribLNxa1
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="246918953"
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="246918951"
+   d="scan'208";a="246918953"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 13:52:44 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="625391790"
+   d="scan'208";a="625391796"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga002.fm.intel.com with ESMTP; 27 Jan 2022 13:52:44 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com
-Subject: [PATCH net-next 08/10] igc: Remove useless DMA-32 fallback configuration
-Date:   Thu, 27 Jan 2022 13:52:22 -0800
-Message-Id: <20220127215224.422113-9-anthony.l.nguyen@intel.com>
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: [PATCH net-next 09/10] igb: Remove useless DMA-32 fallback configuration
+Date:   Thu, 27 Jan 2022 13:52:23 -0800
+Message-Id: <20220127215224.422113-10-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220127215224.422113-1-anthony.l.nguyen@intel.com>
 References: <20220127215224.422113-1-anthony.l.nguyen@intel.com>
@@ -64,23 +65,27 @@ Simplify code and remove some dead code accordingly.
 [1]: https://lkml.org/lkml/2021/6/7/398
 
 Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 19 ++++++-------------
+ drivers/net/ethernet/intel/igb/igb_main.c | 19 ++++++-------------
  1 file changed, 6 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 2f17f36e94fd..6b51baadee3d 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -6251,23 +6251,17 @@ static int igc_probe(struct pci_dev *pdev,
- 	struct net_device *netdev;
- 	struct igc_hw *hw;
- 	const struct igc_info *ei = igc_info_tbl[ent->driver_data];
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 38ba92022cd4..bfa321e4003f 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -3164,8 +3164,8 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	s32 ret_val;
+ 	static int global_quad_port_a; /* global quad port a indication */
+ 	const struct e1000_info *ei = igb_info_tbl[ent->driver_data];
 -	int err, pci_using_dac;
+ 	u8 part_str[E1000_PBANUM_LENGTH];
 +	int err;
  
- 	err = pci_enable_device_mem(pdev);
+ 	/* Catch broken hardware that put the wrong VF device ID in
+ 	 * the PCIe SR-IOV capability.
+@@ -3180,17 +3180,11 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  	if (err)
  		return err;
  
@@ -101,10 +106,10 @@ index 2f17f36e94fd..6b51baadee3d 100644
 +		goto err_dma;
  	}
  
- 	err = pci_request_mem_regions(pdev, igc_driver_name);
-@@ -6367,8 +6361,7 @@ static int igc_probe(struct pci_dev *pdev,
- 	netdev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX;
- 	netdev->hw_features |= netdev->features;
+ 	err = pci_request_mem_regions(pdev, igb_driver_name);
+@@ -3306,8 +3300,7 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (hw->mac.type >= e1000_i350)
+ 		netdev->hw_features |= NETIF_F_NTUPLE;
  
 -	if (pci_using_dac)
 -		netdev->features |= NETIF_F_HIGHDMA;
