@@ -2,96 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07FFD49DDE1
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:25:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CDCF49DE3A
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:40:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238532AbiA0JZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 04:25:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229892AbiA0JZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:25:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB8EC061714;
-        Thu, 27 Jan 2022 01:25:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2A53B820FC;
-        Thu, 27 Jan 2022 09:25:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2040C340E4;
-        Thu, 27 Jan 2022 09:25:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643275545;
-        bh=/TsNE9wrpevdjUVU/1n7bHxltY5w0diGCgkYNB0V404=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AptJwHAos3tNVeZx/kKj71W7Zf046QaSjw3F4BjdQZsd8Fx5J6xIwIoIKK78b0ilX
-         w6fH5ry2OjCUadeKy33Oml92xXO7cuFGrlvPrAOqMTQ7MuyhH6yrjU8xDF0Mskr7rM
-         x9Dm0VNyz0iC/U/l1iEBsLvm0jNVZfKWW6Iwkd5T3xNvFfhUTnJmssbbN56mky+jpM
-         0TL4ghJ90UVvrMI9os2U5qg0T/vkUkT3oQY+qQopFLoe31Kr2XlqECJuXu38Iu2wHp
-         PY854QWWl4zAxOVD984NnKHJ9B4nO5dCVFE3egC4wv8RZFSwUtnCSykEcgajJJ4GtC
-         kgnkDsKIpzhjA==
-Date:   Thu, 27 Jan 2022 11:25:41 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, kgraul@linux.ibm.com,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 0/6] net/smc: Spread workload over multiple
- cores
-Message-ID: <YfJlFe3p2ABbzoYI@unreal>
-References: <20220114054852.38058-1-tonylu@linux.alibaba.com>
- <YePesYRnrKCh1vFy@unreal>
- <YfD26mhGkM9DFBV+@TonyMac-Alibaba>
- <20220126152806.GN8034@ziepe.ca>
- <YfIOHZ7hSfogeTyS@TonyMac-Alibaba>
- <YfI50xqsv20KDpz9@unreal>
- <YfJQ6AwYMA/i4HvH@TonyMac-Alibaba>
- <YfJcDfkBZfeYA1Z/@unreal>
- <YfJieyROaAKE+ZO0@TonyMac-Alibaba>
+        id S234561AbiA0JkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 04:40:04 -0500
+Received: from szxga08-in.huawei.com ([45.249.212.255]:32066 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232155AbiA0JkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:40:04 -0500
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JkwSk6KQ1z1FD6b;
+        Thu, 27 Jan 2022 17:36:06 +0800 (CST)
+Received: from [10.67.103.87] (10.67.103.87) by dggpeml500022.china.huawei.com
+ (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 27 Jan
+ 2022 17:40:02 +0800
+Subject: Re: [RFCv2 net-next 000/167] net: extend the netdev_features_t
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
+        <hkallweit1@gmail.com>, <netdev@vger.kernel.org>,
+        <linuxarm@openeuler.org>
+References: <20210929155334.12454-1-shenjian15@huawei.com>
+ <YfJi10IcxtYQ7Ttr@unreal>
+From:   "shenjian (K)" <shenjian15@huawei.com>
+Message-ID: <f49d8f3f-f9e9-574f-f41b-01d35a0a1b03@huawei.com>
+Date:   Thu, 27 Jan 2022 17:40:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfJieyROaAKE+ZO0@TonyMac-Alibaba>
+In-Reply-To: <YfJi10IcxtYQ7Ttr@unreal>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.103.87]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500022.china.huawei.com (7.185.36.66)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 05:14:35PM +0800, Tony Lu wrote:
-> On Thu, Jan 27, 2022 at 10:47:09AM +0200, Leon Romanovsky wrote:
-> > On Thu, Jan 27, 2022 at 03:59:36PM +0800, Tony Lu wrote:
-> > > 
-> > > Yes, I agree with you that the code is old. I think there are two
-> > > problems, one for performance issue, the other one for API refactor.
-> > > 
-> > > We are running into the performance issues mentioned in patches in our
-> > > cloud environment. So I think it is more urgent for a real world issue.
-> > > 
-> > > The current modification is less intrusive to the code. This makes
-> > > changes simpler. And current implement works for now, this is why I put
-> > > refactor behind.
-> > 
-> > We are not requesting to refactor the code, but properly use existing
-> > in-kernel API, while implementing new feature ("Spread workload over
-> > multiple cores").
-> 
-> Sorry for that if I missed something about properly using existing
-> in-kernel API. I am not sure the proper API is to use ib_cq_pool_get()
-> and ib_cq_pool_put()?
-> 
-> If so, these APIs doesn't suit for current smc's usage, I have to
-> refactor logic (tasklet and wr_id) in smc. I think it is a huge work
-> and should do it with full discussion.
 
-This discussion is not going anywhere. Just to summarize, we (Jason and I)
-are asking to use existing API, from the beginning.
 
-You can try and convince netdev maintainers to merge the code despite
-our request.
+在 2022/1/27 17:16, Leon Romanovsky 写道:
+> On Wed, Sep 29, 2021 at 11:50:47PM +0800, Jian Shen wrote:
+>> For the prototype of netdev_features_t is u64, and the number
+>> of netdevice feature bits is 64 now. So there is no space to
+>> introduce new feature bit.
+>>
+>> This patchset try to solve it by change the prototype of
+>> netdev_features_t from u64 to bitmap. With this change,
+>> it's necessary to introduce a set of bitmap operation helpers
+>> for netdev features. Meanwhile, the functions which use
+>> netdev_features_t as return value are also need to be changed,
+>> return the result as an output parameter.
+>>
+>> With above changes, it will affect hundreds of files, and all the
+>> nic drivers. To make it easy to be reviewed, split the changes
+>> to 167 patches to 5 parts.
+>>
+>> patch 1~22: convert the prototype which use netdev_features_t
+>> as return value
+>> patch 24: introduce fake helpers for bitmap operation
+>> patch 25~165: use netdev_feature_xxx helpers
+>> patch 166: use macro __DECLARE_NETDEV_FEATURE_MASK to replace
+>> netdev_feature_t declaration.
+>> patch 167: change the type of netdev_features_t to bitmap,
+>> and rewrite the bitmap helpers.
+>>
+>> Sorry to send a so huge patchset, I wanna to get more suggestions
+>> to finish this work, to make it much more reviewable and feasible.
+>>
+>> The former discussing for the changes, see [1]
+>> [1]. https://www.spinics.net/lists/netdev/msg753528.html
+>>
+> ------------------------------------------------
+>
+> Is anyone actively working on this task?
+>
+> Thanks
+> .
+Hi Leon,
+
+I have sent RFCv4  [1] three months ago, and according Andrew' 
+suggestion， I'm trying to
+continue this work with semantic-patches, and waiting for more comments
+for the scheme.
+But I'm not familiar with it, and  busy with some other work recently, 
+so it got delayed.
+
+Sorry for this. I will speed up it.
+
+[1] https://lore.kernel.org/netdev/YYvKyruLcemj6J+i@lunn.ch/T/
 
 Thanks
 
-> 
-> Thanks,
-> Tony Lu
+
