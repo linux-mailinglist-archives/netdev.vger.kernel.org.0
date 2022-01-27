@@ -2,67 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 609A949E40E
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 15:02:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B3E649E413
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 15:03:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242155AbiA0OCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 09:02:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43116 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242154AbiA0OCk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 09:02:40 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C69C061751
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 06:02:39 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id h14so8878830ybe.12
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 06:02:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=4hMay+JAuCcxTH5jMZax3EOAyZhyTNJ51MAkVpSdHBs=;
-        b=kpVZma9R6J9c0+P0r7AcgR532LdaKxwRWCZjAThl+o7n34MBKHCkGk4IX4Eoiwj+WS
-         tBkE4lvUkTngDMhr9oRWSLIrwD0Mhf2aVlre0sLTyklPICSvOSgTuP4rRt7f8v22f7zh
-         v73un4SZKiNHQYpvcwloXy4eu2pLaOl6kWWC2a1syrRr9WVzph8stSZFjVY+dz+f1n0c
-         xkNf71DLgexrsyfTUGPzrASf/vujZLE7mAt7Ty9Hb3NAJuZG43nFCy8vdQGUtNE3ggF3
-         M58CLC0cu75S393E2XhW7HJKXlJCWmfrchKaJW8y+x8ntSGU0R7PyFKmvzAC8R7HrbkI
-         bb+w==
+        id S237342AbiA0ODL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 09:03:11 -0500
+Received: from mail-oi1-f169.google.com ([209.85.167.169]:42686 "EHLO
+        mail-oi1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234049AbiA0ODI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 09:03:08 -0500
+Received: by mail-oi1-f169.google.com with SMTP id v67so5985088oie.9;
+        Thu, 27 Jan 2022 06:03:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=4hMay+JAuCcxTH5jMZax3EOAyZhyTNJ51MAkVpSdHBs=;
-        b=2lv1bq4cwNCIMPKHj92wDkEy6o3yBsjyIo+6YhbRLjE2wQwoHDquXDvnw2X4Gm9ThG
-         B6DUovSJ1vDNjbP7qGCwWnNnuLrJxe3KBMgDXraGvOaq3jC9upUwJSZmnCVYtlXWPyqm
-         l2QKzNqmfpJZ3yrjvS5buyNFy5M08i704I+z96QDaE7sstDAabCLS6K2hVIwN2TNvxXZ
-         NFyVSvOhaYdiWahc9vNtEcOyeEkCqTzy8aOckAnD7GgxcAMOU/4xT5dWPqhffP7vJ3FK
-         kS/rqBy+QoAq8CzfsRK9Yd9wLVXGFo6Vl+HYECCSm54cH2hlSGkR+sMizThX/siOadni
-         3laQ==
-X-Gm-Message-State: AOAM530sUb7q/UOxyU0LrA6yI4XoTdweELRSWMVPBBjt3tEHbUu+Cqre
-        nLYh8TwU2tPyZiHk5eVCVaUJ2WmqfaSMr6jnVEw=
-X-Google-Smtp-Source: ABdhPJylDyO06wHPSrcoEjey+zasSeRYW4/MOBlgK1B91kfjH6wcT9IkHbWnOL0qO6gZFm/zFK7qx9wY81u0tIiAYpM=
-X-Received: by 2002:a05:6902:120e:: with SMTP id s14mr5736215ybu.359.1643292158229;
- Thu, 27 Jan 2022 06:02:38 -0800 (PST)
-MIME-Version: 1.0
-Sender: modumaajiyusufari@gmail.com
-Received: by 2002:a81:5689:0:0:0:0:0 with HTTP; Thu, 27 Jan 2022 06:02:37
- -0800 (PST)
-From:   Lisa Williams <lw2367585@gmail.com>
-Date:   Thu, 27 Jan 2022 14:02:37 +0000
-X-Google-Sender-Auth: 9dYoCKn40RyIGKeIJsx-235-O08
-Message-ID: <CAD5cse2JNgTOC4CJtZ9pA_NuxqX2e4c-yduA81+ENw+sh4i2bA@mail.gmail.com>
-Subject: My name is Lisa Williams
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=5tJ7fem3em4tFzd0KzWRxEgHSNls1XyM25Knzpl5oYI=;
+        b=fGIjpu4Bf89RCdp1N/ZGBXqMuZEjZzzUl/XJ5n76w3G+ZRCxcDqdud1snQu8htR2BE
+         z8utCkG2Q8QaAYlZBNc7cBLohXx6LnZvDxKVNMyglqcp4NHrr9MDllqLVESTe6yW7kmj
+         puuLuXMAg9inIZ7r7GWA0Z5E90J//D/sC/pbC2OwEpl3ThcPekKGsVPY7KQg0Lx0D79N
+         XPDB12/Qq3HOHXnIsy/KRrtOQx7o3IsjiG52sUS/+c3M/+K3iLE63fxYc7XYrnTh137V
+         v7YSECn1Qiy06fbKtW2PzEz8iM2IeMnsuRKF7BdNE1AAsUq3x3YatqpKh+p4q2ZjHdM/
+         Whbg==
+X-Gm-Message-State: AOAM53109szCJkWlmNNn3KAM+cVQY+pTrQAxebVn9BG1wyXhlBOfs68+
+        MAI9iY8Dw7um+eRFAJWEIQ==
+X-Google-Smtp-Source: ABdhPJzAYKYVqVv4q47AEw3MKa8RQm9DLHzNhgd8sifQ+jDvwjNarIbwspmijsWI1Nzg/NOVZ687XQ==
+X-Received: by 2002:a05:6808:f0a:: with SMTP id m10mr2297639oiw.65.1643292187754;
+        Thu, 27 Jan 2022 06:03:07 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id 6sm10591555oig.29.2022.01.27.06.03.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 06:03:06 -0800 (PST)
+Received: (nullmailer pid 3149358 invoked by uid 1000);
+        Thu, 27 Jan 2022 14:03:05 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kuba@kernel.org, robh+dt@kernel.org,
+        linus.walleij@linaro.org, devicetree@vger.kernel.org,
+        ulli.kroll@googlemail.com, netdev@vger.kernel.org
+In-Reply-To: <20220126211128.3663486-1-clabbe@baylibre.com>
+References: <20220126211128.3663486-1-clabbe@baylibre.com>
+Subject: Re: [PATCH] dt-bindings: net: convert net/cortina,gemini-ethernet to yaml
+Date:   Thu, 27 Jan 2022 08:03:05 -0600
+Message-Id: <1643292185.221187.3149357.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dear,
+On Wed, 26 Jan 2022 21:11:28 +0000, Corentin Labbe wrote:
+> Converts net/cortina,gemini-ethernet.txt to yaml
+> This permits to detect some missing properties like interrupts
+> 
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+>  .../bindings/net/cortina,gemini-ethernet.txt  |  92 ------------
+>  .../bindings/net/cortina,gemini-ethernet.yaml | 138 ++++++++++++++++++
+>  2 files changed, 138 insertions(+), 92 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
+> 
 
-My name is Lisa  Williams, I am from the United States of America, Its
-my pleasure to contact you for new and special friendship, I will be
-glad to see your reply for us to know each other better and exchange
-pictures.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Yours
-Lisa
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml: patternProperties:^ethernet-port@[0-9]+$:properties:reg: 'oneOf' conditional failed, one must be fixed:
+	[{'description': 'DMA/TOE memory'}, {'description': 'GMAC memory area of the port'}] is too long
+	[{'description': 'DMA/TOE memory'}, {'description': 'GMAC memory area of the port'}] is too short
+	False schema does not allow 2
+	1 was expected
+	hint: "minItems" is only needed if less than the "items" list length
+	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml: ignoring, error in schema: patternProperties: ^ethernet-port@[0-9]+$: properties: reg
+Documentation/devicetree/bindings/net/cortina,gemini-ethernet.example.dt.yaml:0:0: /example-0/ethernet@60000000: failed to match any schema with compatible: ['cortina,gemini-ethernet']
+Documentation/devicetree/bindings/net/cortina,gemini-ethernet.example.dt.yaml:0:0: /example-0/ethernet@60000000/ethernet-port@0: failed to match any schema with compatible: ['cortina,gemini-ethernet-port']
+Documentation/devicetree/bindings/net/cortina,gemini-ethernet.example.dt.yaml:0:0: /example-0/ethernet@60000000/ethernet-port@1: failed to match any schema with compatible: ['cortina,gemini-ethernet-port']
+
+doc reference errors (make refcheckdocs):
+MAINTAINERS: Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt
+
+See https://patchwork.ozlabs.org/patch/1584680
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
