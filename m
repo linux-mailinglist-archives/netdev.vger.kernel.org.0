@@ -2,113 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A2D049EC47
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 21:09:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F08049EC4E
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 21:11:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343856AbiA0UJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 15:09:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45344 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343849AbiA0UJt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 15:09:49 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825D3C06173B;
-        Thu, 27 Jan 2022 12:09:49 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id 192so3831420pfz.3;
-        Thu, 27 Jan 2022 12:09:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RkfqaIYdIflD5OrIVUZ3ltg7/5gsx64rX1PAV9PiRlk=;
-        b=PKuRIZiAC8lWuO37QCM7QnFpEOPwpVOh73ngLaxQvAKXM+TShrd+ZTVHeiukqdYc1G
-         FzhG9pxy4gjAtrO8vFCwZK75ZWZ/xT2UpDnYhNz256fQGoHJ1Q98vYbZmVtefLRvImon
-         yteO0HGSfrmowCJ9qt2l10nW7+9BduHDSo6hBL66Abj9+/6/iBYOl0qB5lnJnCqp/QCy
-         JrF/lF3vBXeDn1frlnLpdY1liCQc6rHKwZPY+wOhP0TwevpVSBKXjn2lJpYXXhjyg95L
-         u00IaBjupO3Y2WEbCe2eU1j9boEVPm8tyfFlgm1otPbE1CWRwesyqgNEOnG5TPzswkwA
-         tIfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RkfqaIYdIflD5OrIVUZ3ltg7/5gsx64rX1PAV9PiRlk=;
-        b=GwFCfg3SS6h7E1DPTtzbVR404o82gWtQhI/+DQhT57xEsp3Zv2AZagBDtDShLUHmjo
-         GPmcNx9J0lXrttEihZ+nowzPgm5dh48TKXNt+QIWJoT1g/cTNQwGQ3tH0/PVPH0/BfH5
-         oXg32vh0WeRtck74fKANLrjickavkTNTBoxIibvz9zn5U04q2Ts3jWFT2mwAD/75WPca
-         UFRW9+V+uJWjTrYDtTa5t+7vCyaF7k5PJ9lV2ZIuSF6oA6/ZF5zov2iet9NCZvq4eZg1
-         A7LnKoy1vMMcks/DDZFUsAFxek+4KH8/XsWucAMU5is6frrs4tpSWa8zBbnzngKBr0xe
-         unUQ==
-X-Gm-Message-State: AOAM532ltnhAioCjrRAqxjIBehMxq2Z9miiRZc/O6wwTloFH6w0YL6KK
-        2yvpQRWynoDWVp9XnTy0erk=
-X-Google-Smtp-Source: ABdhPJz2BlCJ7i72gol7bA35OiGHesJ9FTrIqhv2J8Y6ozbv1dNkYJVEgmuBB06Vm0aly4O2cCm8tA==
-X-Received: by 2002:aa7:8706:: with SMTP id b6mr4414467pfo.61.1643314189009;
-        Thu, 27 Jan 2022 12:09:49 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:ab5e:9016:8c9e:ba75])
-        by smtp.gmail.com with ESMTPSA id y42sm5697892pfw.157.2022.01.27.12.09.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 12:09:48 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        linux-nfs <linux-nfs@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 3/3] SUNRPC: add netns refcount tracker to struct rpc_xprt
-Date:   Thu, 27 Jan 2022 12:09:37 -0800
-Message-Id: <20220127200937.2157402-4-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-In-Reply-To: <20220127200937.2157402-1-eric.dumazet@gmail.com>
-References: <20220127200937.2157402-1-eric.dumazet@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1343886AbiA0ULx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 27 Jan 2022 15:11:53 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:38190 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229827AbiA0ULx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 15:11:53 -0500
+Received: from smtpclient.apple (p4ff9fc34.dip0.t-ipconnect.de [79.249.252.52])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 61E98CED25;
+        Thu, 27 Jan 2022 21:11:51 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.40.0.1.81\))
+Subject: Re: [PATCH v2 2/2] Bluetooth: btintel: surface Intel telemetry events
+ through mgmt
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20220127181738.v2.2.I63681490281b2392aa1ac05dff91a126394ab649@changeid>
+Date:   Thu, 27 Jan 2022 21:11:50 +0100
+Cc:     BlueZ <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        =?utf-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Joseph Hwang <josephsih@google.com>,
+        Archie Pusaka <apusaka@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <05486302-58D8-464D-A276-552DF63E9C57@holtmann.org>
+References: <20220127181738.v2.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
+ <20220127181738.v2.2.I63681490281b2392aa1ac05dff91a126394ab649@changeid>
+To:     Joseph Hwang <josephsih@chromium.org>
+X-Mailer: Apple Mail (2.3693.40.0.1.81)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Hi Jospeh,
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/linux/sunrpc/xprt.h | 1 +
- net/sunrpc/xprt.c           | 4 ++--
- 2 files changed, 3 insertions(+), 2 deletions(-)
+> When receiving a HCI vendor event, the kernel checks if it is an
+> Intel telemetry event. If yes, the event is sent to bluez user
+> space through the mgmt socket.
+> 
+> Signed-off-by: Joseph Hwang <josephsih@chromium.org>
+> Reviewed-by: Archie Pusaka <apusaka@chromium.org>
+> ---
+> 
+> Changes in v2:
+> - Drop the pull_quality_report_data function from hci_dev.
+>  Do not bother hci_dev with it. Do not bleed the details
+>  into the core.
+> 
+> drivers/bluetooth/btintel.c      | 27 ++++++++++++++++++++++++++-
+> drivers/bluetooth/btintel.h      |  7 +++++++
+> include/net/bluetooth/hci_core.h |  1 +
+> net/bluetooth/hci_event.c        | 12 ++++++++++++
+> 4 files changed, 46 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/bluetooth/btintel.c b/drivers/bluetooth/btintel.c
+> index 1a4f8b227eac..9e1fdb68b669 100644
+> --- a/drivers/bluetooth/btintel.c
+> +++ b/drivers/bluetooth/btintel.c
+> @@ -2401,8 +2401,9 @@ static int btintel_setup_combined(struct hci_dev *hdev)
+> 	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
+> 	set_bit(HCI_QUIRK_NON_PERSISTENT_DIAG, &hdev->quirks);
+> 
+> -	/* Set up the quality report callback for Intel devices */
+> +	/* Set up the quality report callbacks for Intel devices */
+> 	hdev->set_quality_report = btintel_set_quality_report;
+> +	hdev->is_quality_report_evt = btintel_is_quality_report_evt;
+> 
+> 	/* For Legacy device, check the HW platform value and size */
+> 	if (skb->len == sizeof(ver) && skb->data[1] == 0x37) {
+> @@ -2645,6 +2646,30 @@ void btintel_secure_send_result(struct hci_dev *hdev,
+> }
+> EXPORT_SYMBOL_GPL(btintel_secure_send_result);
+> 
+> +#define INTEL_PREFIX		0x8087
+> +#define TELEMETRY_CODE		0x03
+> +
+> +struct intel_prefix_evt_data {
+> +	__le16 vendor_prefix;
+> +	__u8 code;
+> +	__u8 data[];   /* a number of struct intel_tlv subevents */
+> +} __packed;
+> +
+> +bool btintel_is_quality_report_evt(struct sk_buff *skb)
+> +{
+> +	struct intel_prefix_evt_data *ev;
+> +	u16 vendor_prefix;
+> +
+> +	if (skb->len < sizeof(struct intel_prefix_evt_data))
+> +		return false;
+> +
+> +	ev = (struct intel_prefix_evt_data *)skb->data;
+> +	vendor_prefix = __le16_to_cpu(ev->vendor_prefix);
+> +
+> +	return vendor_prefix == INTEL_PREFIX && ev->code == TELEMETRY_CODE;
+> +}
+> +EXPORT_SYMBOL_GPL(btintel_is_quality_report_evt);
+> +
+> MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
+> MODULE_DESCRIPTION("Bluetooth support for Intel devices ver " VERSION);
+> MODULE_VERSION(VERSION);
+> diff --git a/drivers/bluetooth/btintel.h b/drivers/bluetooth/btintel.h
+> index c9b24e9299e2..6dd4695b8b86 100644
+> --- a/drivers/bluetooth/btintel.h
+> +++ b/drivers/bluetooth/btintel.h
+> @@ -210,6 +210,7 @@ void btintel_bootup(struct hci_dev *hdev, const void *ptr, unsigned int len);
+> void btintel_secure_send_result(struct hci_dev *hdev,
+> 				const void *ptr, unsigned int len);
+> int btintel_set_quality_report(struct hci_dev *hdev, bool enable);
+> +bool btintel_is_quality_report_evt(struct sk_buff *skb);
+> #else
+> 
+> static inline int btintel_check_bdaddr(struct hci_dev *hdev)
+> @@ -305,4 +306,10 @@ static inline int btintel_set_quality_report(struct hci_dev *hdev, bool enable)
+> {
+> 	return -ENODEV;
+> }
+> +
+> +static inline bool btintel_is_quality_report_evt(struct sk_buff *skb)
+> +{
+> +	return false;
+> +}
+> +
+> #endif
+> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+> index b726fd595895..9d855ac1cb29 100644
+> --- a/include/net/bluetooth/hci_core.h
+> +++ b/include/net/bluetooth/hci_core.h
+> @@ -632,6 +632,7 @@ struct hci_dev {
+> 	void (*cmd_timeout)(struct hci_dev *hdev);
+> 	bool (*wakeup)(struct hci_dev *hdev);
+> 	int (*set_quality_report)(struct hci_dev *hdev, bool enable);
+> +	bool (*is_quality_report_evt)(struct sk_buff *skb);
+> 	int (*get_data_path_id)(struct hci_dev *hdev, __u8 *data_path);
+> 	int (*get_codec_config_data)(struct hci_dev *hdev, __u8 type,
+> 				     struct bt_codec *codec, __u8 *vnd_len,
+> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+> index 1b69d3efd415..892a48d2f6be 100644
+> --- a/net/bluetooth/hci_event.c
+> +++ b/net/bluetooth/hci_event.c
+> @@ -4238,6 +4238,16 @@ static void aosp_quality_report_evt(struct hci_dev *hdev,  void *data,
+> 				    QUALITY_SPEC_AOSP_BQR);
+> }
+> 
+> +static void intel_vendor_evt(struct hci_dev *hdev,  void *data,
+> +			     struct sk_buff *skb)
+> +{
+> +	/* Only interested in the telemetry event for now. */
+> +	if (hdev->set_quality_report &&
+> +	    hdev->is_quality_report_evt && hdev->is_quality_report_evt(skb))
+> +		mgmt_quality_report(hdev, skb->data, skb->len,
+> +				    QUALITY_SPEC_INTEL_TELEMETRY);
+> +}
+> +
 
-diff --git a/include/linux/sunrpc/xprt.h b/include/linux/sunrpc/xprt.h
-index 955ea4d7af0b2fea1300a46fad963df35f25810c..3cdc8d878d81122e3318447df4770100500403e4 100644
---- a/include/linux/sunrpc/xprt.h
-+++ b/include/linux/sunrpc/xprt.h
-@@ -284,6 +284,7 @@ struct rpc_xprt {
- 	} stat;
- 
- 	struct net		*xprt_net;
-+	netns_tracker		ns_tracker;
- 	const char		*servername;
- 	const char		*address_strings[RPC_DISPLAY_MAX];
- #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
-diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
-index a02de2bddb28b48bb6798327c0814e769314621b..5af484d6ba5e8bfb871768122009ee330c708c04 100644
---- a/net/sunrpc/xprt.c
-+++ b/net/sunrpc/xprt.c
-@@ -1835,7 +1835,7 @@ EXPORT_SYMBOL_GPL(xprt_alloc);
- 
- void xprt_free(struct rpc_xprt *xprt)
- {
--	put_net(xprt->xprt_net);
-+	put_net_track(xprt->xprt_net, &xprt->ns_tracker);
- 	xprt_free_all_slots(xprt);
- 	xprt_free_id(xprt);
- 	rpc_sysfs_xprt_destroy(xprt);
-@@ -2027,7 +2027,7 @@ static void xprt_init(struct rpc_xprt *xprt, struct net *net)
- 
- 	xprt_init_xid(xprt);
- 
--	xprt->xprt_net = get_net(net);
-+	xprt->xprt_net = get_net_track(net, &xprt->ns_tracker, GFP_KERNEL);
- }
- 
- /**
--- 
-2.35.0.rc0.227.g00780c9af4-goog
+this is not workable like this. Intel specific stuff has to stay out of net/bluetooth/. Frankly I am also confused why this is this way in the first place.
+
+So if a driver sets aosp_capable, then we can check the AOSP range and hand it to net/bluetooth/aosp.c for further processing. For the MSFT extensions, we can already map them accordingly due to the event prefix. And everything other event has to go to the driver as raw event to do whatever it wants with it.
+
+Regards
+
+Marcel
 
