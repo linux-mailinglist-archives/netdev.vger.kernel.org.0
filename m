@@ -2,79 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6812E49F5D7
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 10:02:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75EF849F623
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 10:19:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234569AbiA1JCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 04:02:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230179AbiA1JCC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 04:02:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3D7C061714;
-        Fri, 28 Jan 2022 01:02:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CFA461DBD;
-        Fri, 28 Jan 2022 09:02:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B82AC340E0;
-        Fri, 28 Jan 2022 09:01:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643360521;
-        bh=31fx5tHLJzU+vPN38r10In2ER25EqDfino7bwR2/XmQ=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=a7PvePT63NftL8k5FWO7EKdFJ8RTHHZCTaOZAUX4PKNCJRvnmfcwraxBYzEQ/AlC0
-         N8ZgxSFEYClGxnQsX3rGbH722yPa3AaZ586WVc2gODL+Edn7dG3hErpDtWOXzL+bE5
-         aBgH0d9WSd2Ni/GePyYeAx7lvNT5XYfui8KgxGfE69oCuyHeBQ8MaeoMJZYX/SZj9f
-         HKhRjKu/p+sFpkT364DRGMYv2jzN7vzy0VgpwduTjP9rLhVfaeGtneo5ApEl3arqsz
-         say5ThVDp1GP98YY73xdRYIFS4QX+gsK3byT0r2IrrgXzpcbpt4ib+oy1u1U/5jQFx
-         +xnJyJNbZAgbQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     luciano.coelho@intel.com, davem@davemloft.net, kuba@kernel.org,
-        trix@redhat.com, johannes.berg@intel.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] dvm: use struct_size over open coded arithmetic
-References: <20220128080206.1211452-1-chi.minghao@zte.com.cn>
-Date:   Fri, 28 Jan 2022 11:01:54 +0200
-In-Reply-To: <20220128080206.1211452-1-chi.minghao@zte.com.cn> (cgel zte's
-        message of "Fri, 28 Jan 2022 08:02:06 +0000")
-Message-ID: <87o83wi67x.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1347567AbiA1JTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 04:19:55 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:17826 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238053AbiA1JTy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 04:19:54 -0500
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JlX1z2Y97z9sTp;
+        Fri, 28 Jan 2022 17:18:31 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
+ (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 28 Jan
+ 2022 17:19:37 +0800
+From:   Hou Tao <houtao1@huawei.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <houtao1@huawei.com>, Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Julien Thierry <jthierry@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH bpf-next v2 0/2] arm64, bpf: support more atomic ops
+Date:   Thu, 27 Jan 2022 15:53:20 +0800
+Message-ID: <20220127075322.675323-1-houtao1@huawei.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cgel.zte@gmail.com writes:
+Hi,
 
-> From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
->
-> Replace zero-length array with flexible-array member and make use
-> of the struct_size() helper in kmalloc(). For example:
->
-> struct iwl_wipan_noa_data {
-> 	...
-> 	u8 data[];
-> };
->
-> Make use of the struct_size() helper instead of an open-coded version
-> in order to avoid any potential type mistakes.
->
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
-> ---
->  drivers/net/wireless/intel/iwlwifi/dvm/rx.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Atomics support in bpf has already been done by "Atomics for eBPF"
+patch series [1], but it only adds support for x86, and this patchset
+adds support for arm64.
 
-The prefix should be "iwlwifi: dvm:".
+Patch #1 changes the type of test program from fentry/ to raw_tp/ for
+atomics test, because bpf trampoline is not available for arm64 now.
+After the change, atomics test will be available for arm64 and other
+archs.
+
+Patch #2 implements atomic[64]_fetch_add, atomic[64]_[fetch_]{and,or,xor}
+and atomic[64]_{xchg|cmpxchg} for arm64. For no-LSE-ATOMICS case and
+cpus_have_cap(ARM64_HAS_LSE_ATOMICS) case, both ./test_verifier and
+"./test_progs -t atomic" are exercised and passed correspondingly.
+
+Comments are always welcome.
+
+Regards,
+Tao
+
+[1]: https://lore.kernel.org/bpf/20210114181751.768687-2-jackmanb@google.com/
+
+Change Log:
+v2:
+  * patch #1: use two seperated ASSERT_OK() instead of ASSERT_TRUE()
+  * add Acked-by tag for both patches
+
+v1: https://lore.kernel.org/bpf/20220121135632.136976-1-houtao1@huawei.com/
+
+
+Hou Tao (2):
+  selftests/bpf: use raw_tp program for atomic test
+  arm64, bpf: support more atomic operations
+
+ arch/arm64/include/asm/insn.h                 |  45 +++-
+ arch/arm64/lib/insn.c                         | 155 +++++++++++--
+ arch/arm64/net/bpf_jit.h                      |  43 +++-
+ arch/arm64/net/bpf_jit_comp.c                 | 216 ++++++++++++++----
+ .../selftests/bpf/prog_tests/atomics.c        | 121 +++-------
+ tools/testing/selftests/bpf/progs/atomics.c   |  28 +--
+ 6 files changed, 444 insertions(+), 164 deletions(-)
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.27.0
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
