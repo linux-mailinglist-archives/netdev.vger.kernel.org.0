@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FAEB49D6C9
+	by mail.lfdr.de (Postfix) with ESMTP id 9890A49D6CA
 	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 01:36:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233925AbiA0Agk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S233937AbiA0Agk (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 26 Jan 2022 19:36:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58568 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229724AbiA0Agj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 19:36:39 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4111C06161C;
-        Wed, 26 Jan 2022 16:36:38 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id c24so1427257edy.4;
-        Wed, 26 Jan 2022 16:36:38 -0800 (PST)
+        with ESMTP id S233908AbiA0Agk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 19:36:40 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DA4C06173B;
+        Wed, 26 Jan 2022 16:36:39 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id n10so1444550edv.2;
+        Wed, 26 Jan 2022 16:36:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0AmekTP4r21rkMJ7bRtsO4g7zQcP+aSNIpQGg0GQSv0=;
-        b=fvlE3FDiaBlj44JWLlSKmuQjeuwYs4Iv6sic6KaupAGxfmXkX0tSd1sBUnvq6YBvyI
-         ISk4V5Yl8AiB9hU1U0WvS4Zk9V1XUlNth4S9AmgRBjY/93ASNNeajnyOtwACxRY/OmvN
-         CN+Fz+YhYkYMtPfYKtWDxZ0fACqN5Qr4WtHwBhlj4yrklD2vknkjIgw5uacV+zNxEdTS
-         CzzT34SIOLeiHKb9c1i+1sog4C1FQEqq0EI+Y0W//XrWSCgYP7EwQXpNJLTVlVPxdMlg
-         fcfVqNQ6NEow+jPeIAZ4WD4bG0wCE7LTGQhTG7hh3TuUAgL17cvZIRnQjHvTMWrAlQfZ
-         riYA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=BZekbOX/mBkxJ3VLK+5yn7uRMRqRi36JXBTZy8Qw+hU=;
+        b=aRARrOuufabe73tJxz7WsJYCFwSCAb0ziKrgi23PM7QAo7XrZCEecBr3jEc1RB4fkN
+         BL/twvydFqXcFIhS23ShhtTuMDmKGL2oei08Ld5C/2r/uib/H3/OSVzZhBm1/u8te4L+
+         VTPLM6tHwfdDvNVlEWNOKK9i9J8fo+LRDXSZqqySUPoHq8PLipA4F1miP4AP6SlLUmIU
+         GgNnXKdXXGiRAN734tNuO5tXiqcglbDZbICEsfZCFjF8yhfsxrtjvOuwJslsO+6vk3TB
+         iUh4jwO9iLpgLVD7JtfV2vy2UgFQkx3JY9wHyeNCflJozVCFR9eHATje8JBpsCKP1Bzt
+         DpuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0AmekTP4r21rkMJ7bRtsO4g7zQcP+aSNIpQGg0GQSv0=;
-        b=WMmIZOM3eE6jmN2In2BNCQq8q7foKK321dN42UgvOKjGttuCh2zIdl6cRKXh+y3Y61
-         tc8EeOHbaL3zD4ETh7ZAiLogpX+6ptJ31IBTxnvXpIX7EG1XOkoNbs5bszu4GT1ZtBpY
-         876JcKwatdI2lwqpZp53UUim+WyoCr5RfK1Djqh61dCZkJ8BdAfKhXyuftiFdSCa56sT
-         vKzFa9lVKKpC7Y8Yq1rGSbwCN8S3bD8RyloTcuXU3U7t5kPcPHqvYSsyEzyFLGxBiamu
-         ulLR5V87YBuluq14xtNJHW0lckYDWowAPQUz6E9eLRT+AdwRCpum9azDK6z5aHZD4ws6
-         SkPg==
-X-Gm-Message-State: AOAM5337PdcEB7b8STuCfSrEGRnd42RlDegLdOCsSvpG2G1vQt8Ut+6q
-        hIh+U/bz7B1jGehlUh3RwixA+dwAhsk=
-X-Google-Smtp-Source: ABdhPJzZD9jc5NkO18zKcLkWVyXpyBx7C8TJx38rETb3bU0mu9yNqercdqrq16y2yYJZi1ZOk4tRnA==
-X-Received: by 2002:a05:6402:548:: with SMTP id i8mr1457024edx.60.1643243797146;
-        Wed, 26 Jan 2022 16:36:37 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BZekbOX/mBkxJ3VLK+5yn7uRMRqRi36JXBTZy8Qw+hU=;
+        b=znz6VmydKrZShzBIvD1rZ+w/e71Uk9NJkl4obWTQPlWh0JOOfjCgwyAE9EzAaafgsW
+         JjU2EQjY/wczYmBnIFORy/SyTh/8NOmD0fkHnAw0GcbbwAtCqM2JsplLiSXNTLgZ0Hp6
+         NvN7gFmcF84yoS0gF9owzQiPQBRXDC+JQwy/uyxsKB7hxX6Ba9Ae9UAj1sNUy6nSQ9TQ
+         1j9kcnNAkCzfs6TR9KKaaj39uHAHlUc8aMx9/psvlS9nYAUTQHSisXzfKV6kYUudgkNp
+         F5QaJEk7WFPpw6/33Yyh0xKZ2ZkwhpBfnATImoK9RNqUJc5IPJzcPHIyf+JgPJH76vQp
+         GH1A==
+X-Gm-Message-State: AOAM531QZVK+hqNT8jPXWkxdRb36AjPU2PEtDdvPb4R12PRZfj3bcQJC
+        EXzmPXglCbWONFWOcxi84DiasnX+kQA=
+X-Google-Smtp-Source: ABdhPJz2DXu1wNwL31EPFWgvtRsZOMbsQKZRPkeiVPVq9FFjHYRhTDKCaan0+jb9U6gUdfOsthDKgg==
+X-Received: by 2002:a50:e616:: with SMTP id y22mr1353944edm.277.1643243798103;
+        Wed, 26 Jan 2022 16:36:38 -0800 (PST)
 Received: from 127.0.0.1localhost ([85.255.234.222])
-        by smtp.gmail.com with ESMTPSA id op27sm8039235ejb.103.2022.01.26.16.36.35
+        by smtp.gmail.com with ESMTPSA id op27sm8039235ejb.103.2022.01.26.16.36.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 16:36:36 -0800 (PST)
+        Wed, 26 Jan 2022 16:36:37 -0800 (PST)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -54,47 +54,56 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v2 00/10] udp/ipv6 optimisations
-Date:   Thu, 27 Jan 2022 00:36:21 +0000
-Message-Id: <cover.1643243772.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v2 01/10] ipv6: optimise dst refcounting on skb init
+Date:   Thu, 27 Jan 2022 00:36:22 +0000
+Message-Id: <647e136457fb586846933244448652547dd306f9.1643243772.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1643243772.git.asml.silence@gmail.com>
+References: <cover.1643243772.git.asml.silence@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Shed some weight from udp/ipv6. Zerocopy benchmarks over dummy showed
-~5% tx/s improvement, should be similar for small payload non-zc
-cases.
+__ip6_make_skb() gets a cork->dst ref, hands it over to skb and shortly
+after puts cork->dst. Save two atomics by stealing it without extra
+referencing, ip6_cork_release() handles NULL cork->dst.
 
-The performance comes from killing 4 atomics and a couple of big struct
-memcpy/memset. 1/10 removes a pair of atomics on dst refcounting for
-cork->skb setup, 9/10 saves another pair on cork init. 5/10 and 8/10
-kill extra 88B memset and memcpy respectively.
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+---
+ net/ipv6/ip6_output.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-v2: add a comment about setting dst early in ip6_setup_cork()
-    drop non-udp patches for now
-    add patch 10
-
-Pavel Begunkov (10):
-  ipv6: optimise dst refcounting on skb init
-  udp6: shuffle up->pending AF_INET bits
-  ipv6: remove daddr temp buffer in __ip6_make_skb
-  ipv6: clean up cork setup/release
-  ipv6: don't zero inet_cork_full::fl after use
-  ipv6: pass full cork into __ip6_append_data()
-  udp6: pass flow in ip6_make_skb together with cork
-  udp6: don't make extra copies of iflow
-  ipv6: optimise dst refcounting on cork init
-  ipv6: partially inline ipv6_fixup_options
-
- include/net/ipv6.h    |  14 ++++--
- net/ipv6/exthdrs.c    |   8 ++--
- net/ipv6/ip6_output.c |  99 ++++++++++++++++++++++------------------
- net/ipv6/udp.c        | 103 ++++++++++++++++++++----------------------
- 4 files changed, 118 insertions(+), 106 deletions(-)
-
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 2995f8d89e7e..14d607ccfeea 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1807,6 +1807,15 @@ int ip6_append_data(struct sock *sk,
+ }
+ EXPORT_SYMBOL_GPL(ip6_append_data);
+ 
++static void ip6_cork_steal_dst(struct sk_buff *skb, struct inet_cork_full *cork)
++{
++	struct dst_entry *dst = cork->base.dst;
++
++	cork->base.dst = NULL;
++	cork->base.flags &= ~IPCORK_ALLFRAG;
++	skb_dst_set(skb, dst);
++}
++
+ static void ip6_cork_release(struct inet_cork_full *cork,
+ 			     struct inet6_cork *v6_cork)
+ {
+@@ -1889,7 +1898,7 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
+ 
+ 	skb->tstamp = cork->base.transmit_time;
+ 
+-	skb_dst_set(skb, dst_clone(&rt->dst));
++	ip6_cork_steal_dst(skb, cork);
+ 	IP6_UPD_PO_STATS(net, rt->rt6i_idev, IPSTATS_MIB_OUT, skb->len);
+ 	if (proto == IPPROTO_ICMPV6) {
+ 		struct inet6_dev *idev = ip6_dst_idev(skb_dst(skb));
 -- 
 2.34.1
 
