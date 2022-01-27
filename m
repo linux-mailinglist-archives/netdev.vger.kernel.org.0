@@ -2,86 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6DAB49E6C2
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 16:54:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E547A49E7C2
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 17:41:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237754AbiA0Pys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 10:54:48 -0500
-Received: from proxima.lasnet.de ([78.47.171.185]:40244 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231455AbiA0Pys (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 10:54:48 -0500
-Received: from [IPV6:2003:e9:d724:a665:d7b5:f965:3476:16f8] (p200300e9d724a665d7b5f965347616f8.dip0.t-ipconnect.de [IPv6:2003:e9:d724:a665:d7b5:f965:3476:16f8])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 2812DC05FB;
-        Thu, 27 Jan 2022 16:54:46 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1643298886;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4LmIE/K7JuGngCTWD98Jb7WZn5BaQGZRHb1P/f7j/Tw=;
-        b=jwxQz0YEMDUyXH2x2j2NPvVB/Cd/iTUHrrqVhAZN57MaT0SthXjOk1Jl8yriOFOKHAadvp
-        thMYDBt+3tIuFtxUzRNx25JMDX/cOG6ghIO4j6wm2l0dlGt84CsPURwC4GF1vsPP9qMwgv
-        sfHN5h/BVWLbFkGquOPS1G+FBrD2T8k05iS0G7U+51P+Y5bqjwWnW4iE6kTGTCK/MT9ntw
-        wM7OfNW6TIQxFuxMw09PE2RuH/z3QbRlyJr+6kHmqBsAHb4S38Kse/kvdU2+RaoHVBHCTa
-        rAI++eOHnpYfFL7cu44zdinZdCHmu8ONSX2cqCxJvdbAiZUC4c2o54UgVQmMRA==
-Message-ID: <b07b446d-a48e-78bd-1841-2802e12cf1d1@datenfreihafen.org>
-Date:   Thu, 27 Jan 2022 16:54:43 +0100
+        id S238521AbiA0QlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 11:41:04 -0500
+Received: from trinity.trinnet.net ([96.78.144.185]:1186 "EHLO
+        trinity3.trinnet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229477AbiA0QlE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 11:41:04 -0500
+X-Greylist: delayed 2611 seconds by postgrey-1.27 at vger.kernel.org; Thu, 27 Jan 2022 11:41:03 EST
+Received: from trinity4.trinnet.net (trinity4.trinnet.net [192.168.0.11])
+        by trinity3.trinnet.net (TrinityOS Hardened/TrinityOS Hardened) with ESMTP id 20RFweo8016690;
+        Thu, 27 Jan 2022 07:58:40 -0800
+From:   David Ranch <linux-hams@trinnet.net>
+Subject: Re: [PATCH net-next 06/15] net: ax25: remove route refcount
+To:     Thomas Osterried <thomas@osterried.de>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20220126191109.2822706-1-kuba@kernel.org>
+ <20220126191109.2822706-7-kuba@kernel.org>
+ <20220127091858.GF18529@x-berg.in-berlin.de>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, ralf@linux-mips.org,
+        linux-hams@vger.kernel.org
+Message-ID: <f6749b58-ab8a-094c-5e07-c5a7ca5200c9@trinnet.net>
+Date:   Thu, 27 Jan 2022 07:58:40 -0800
+User-Agent: Mozilla/5.0 (X11; Linux i686; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [wpan-next v3 0/3] ieee802154: A bunch of light changes
-Content-Language: en-US
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        linux-wpan@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-References: <20220125122540.855604-1-miquel.raynal@bootlin.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220125122540.855604-1-miquel.raynal@bootlin.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <20220127091858.GF18529@x-berg.in-berlin.de>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-3.0 (trinity3.trinnet.net [192.168.0.1]); Thu, 27 Jan 2022 07:58:40 -0800 (GMT+8)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
 
-On 25.01.22 13:25, Miquel Raynal wrote:
-> Here are a few small cleanups and improvements in preparation of a wider
-> series bringing a lot of features. These are aside changes, hence they
-> have their own small series.
-> 
-> Changes in v3:
-> * Split the v2 into two series: fixes for the wpan branch and cleanups
->    for wpan-next. Here are random "cleanups".
-> * Reworded the ieee802154_wake/stop_queue helpers kdoc as discussed
->    with Alexander.
-> 
-> Miquel Raynal (3):
->    net: ieee802154: hwsim: Ensure frame checksum are valid
->    net: ieee802154: Use the IEEE802154_MAX_PAGE define when relevant
->    net: mac802154: Explain the use of ieee802154_wake/stop_queue()
-> 
->   drivers/net/ieee802154/mac802154_hwsim.c |  2 +-
->   include/net/mac802154.h                  | 12 ++++++++++++
->   net/ieee802154/nl-phy.c                  |  4 ++--
->   3 files changed, 15 insertions(+), 3 deletions(-)
-> 
+Curious, has this change been tested with an actual testbed to confirm 
+it doesn't break anything?  We *have* to stop allowing good intentioned 
+but naive developers from submitting patches when they've never tested 
+the resulting change.
 
-I am happy with all three of them now. Alex, let me know if there is 
-anything else you want to be adressed and ack if not so I can pull these in.
+--David
+KI6ZHD
 
-regards
-Stefan Schmidt
+
+On 01/27/2022 01:18 AM, Thomas Osterried wrote:
+> Hello,
+>
+>   think it's absolutely correct to state
+>    "Nothing takes the refcount since v4.9."
+> because in ax25_rt_add(),
+>    refcount_set(&ax25_rt->refcount, 1);
+> is used (for every new ax25_rt entry).
+>
+> But nothing does an increment.
+> There's one function in include/net/ax25.h ,
+>    ax25_hold_route() which would refcount_inc(&ax25_rt->refcount)
+> but it's not called from anywhere.
+>
+> => It's value is always 1, and the deleting function ax25_put_route() decrements it again before freeing.
+>     I also see no sense in this (anymore).
+>
+>
+> Every struct ax25_route_list operation is assured with either
+>    write_lock_bh(&ax25_route_lock);
+>    write_unlock_bh(&ax25_route_lock);
+> or
+>    the struct ax25_route returned from functions is assured by calling read_lock(&ax25_route_lock).
+>
+> -> No refcount is needed.
+>
+>
+> => It's good to tidy up stuff that's needed anymore.
+>
+> But keep in mind:
+> The code has strong similarities with include/net/x25.h and x25/x25_route.c ,
+> especially in the parts of ax25_hold_route() and ax25_rt_add().
+> This will get lost.
+>
+>
+> But there a things a bot does not know: human readable senteces.
+> ax25_get_route() is introduced with:
+>
+>    /*
+>     *      Find AX.25 route
+>     *
+>     *      Only routes with a reference count of zero can be destroyed.
+>     *      Must be called with ax25_route_lock read locked.
+>     */
+>
+> The first sentence informs: ax25_rt entries may be freed during the ax25_route_list operation.
+> It mentiones reference count (which will exist anymore).
+> The conclusion of the first sentence is "Must be called with ax25_route_lock read locked.". This is still true and assured.
+> I don't think it has to explain why the read lock is necessary (it's obvious, that routes could be deleted or added to the list). ->
+>
+>    /*
+>     *      Find AX.25 route
+>     *
+>     *      Must be called with ax25_route_lock read locked.
+>     */
+>
+> should be enough.
+>
+> ff-topic:
+> =========
+>
+> About read_lock)(): Inconsistent use.
+> It's
+>    directly called,
+> and by
+>    ax25_route_lock_use(), which calls read_lock():
+>    {
+>            read_lock(&ax25_route_lock);
+>    }
+>
+> This makes the code harder to read.
+> There's also a function ax25_rt_seq_stop() that calls read_unlock() instead of calling ax25_route_lock_unuse(), which does the same.
+>
+>
+> vy 73,
+> 	- Thomas  dl9sau
+>
+> On Wed, Jan 26, 2022 at 11:11:00AM -0800, Jakub Kicinski wrote:
+>> Nothing takes the refcount since v4.9.
+>>
+>> Signed-off-by: Jakub Kicinski<kuba@kernel.org>
+>> ---
+>> CC:ralf@linux-mips.org
+>> CC:linux-hams@vger.kernel.org
+>> ---
+>>   include/net/ax25.h    | 12 ------------
+>>   net/ax25/ax25_route.c |  5 ++---
+>>   2 files changed, 2 insertions(+), 15 deletions(-)
+>>
+>> diff --git a/include/net/ax25.h b/include/net/ax25.h
+>> index 526e49589197..cb628c5d7c5b 100644
+>> --- a/include/net/ax25.h
+>> +++ b/include/net/ax25.h
+>> @@ -187,18 +187,12 @@ typedef struct {
+>>   
+>>   typedef struct ax25_route {
+>>   	struct ax25_route	*next;
+>> -	refcount_t		refcount;
+>>   	ax25_address		callsign;
+>>   	struct net_device	*dev;
+>>   	ax25_digi		*digipeat;
+>>   	char			ip_mode;
+>>   } ax25_route;
+>>   
+>> -static inline void ax25_hold_route(ax25_route *ax25_rt)
+>> -{
+>> -	refcount_inc(&ax25_rt->refcount);
+>> -}
+>> -
+>>   void __ax25_put_route(ax25_route *ax25_rt);
+>>   
+>>   extern rwlock_t ax25_route_lock;
+>> @@ -213,12 +207,6 @@ static inline void ax25_route_lock_unuse(void)
+>>   	read_unlock(&ax25_route_lock);
+>>   }
+>>   
+>> -static inline void ax25_put_route(ax25_route *ax25_rt)
+>> -{
+>> -	if (refcount_dec_and_test(&ax25_rt->refcount))
+>> -		__ax25_put_route(ax25_rt);
+>> -}
+>> -
+>>   typedef struct {
+>>   	char			slave;			/* slave_mode?   */
+>>   	struct timer_list	slave_timer;		/* timeout timer */
+>> diff --git a/net/ax25/ax25_route.c b/net/ax25/ax25_route.c
+>> index d0b2e094bd55..be97dc6a53cb 100644
+>> --- a/net/ax25/ax25_route.c
+>> +++ b/net/ax25/ax25_route.c
+>> @@ -111,7 +111,6 @@ static int __must_check ax25_rt_add(struct ax25_routes_struct *route)
+>>   		return -ENOMEM;
+>>   	}
+>>   
+>> -	refcount_set(&ax25_rt->refcount, 1);
+>>   	ax25_rt->callsign     = route->dest_addr;
+>>   	ax25_rt->dev          = ax25_dev->dev;
+>>   	ax25_rt->digipeat     = NULL;
+>> @@ -160,12 +159,12 @@ static int ax25_rt_del(struct ax25_routes_struct *route)
+>>   		    ax25cmp(&route->dest_addr, &s->callsign) == 0) {
+>>   			if (ax25_route_list == s) {
+>>   				ax25_route_list = s->next;
+>> -				ax25_put_route(s);
+>> +				__ax25_put_route(s);
+>>   			} else {
+>>   				for (t = ax25_route_list; t != NULL; t = t->next) {
+>>   					if (t->next == s) {
+>>   						t->next = s->next;
+>> -						ax25_put_route(s);
+>> +						__ax25_put_route(s);
+>>   						break;
+>>   					}
+>>   				}
+>> -- 
+>> 2.34.1
+>>
+
