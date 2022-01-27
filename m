@@ -2,80 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E85BA49E172
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 12:46:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29D8E49E185
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 12:48:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240788AbiA0LqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 06:46:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:59095 "EHLO
+        id S240852AbiA0LsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 06:48:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50131 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240786AbiA0LqH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 06:46:07 -0500
+        by vger.kernel.org with ESMTP id S240168AbiA0LsG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 06:48:06 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643283966;
+        s=mimecast20190719; t=1643284085;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UDbTLHNTV72OAYvNxfm6AHdNXZ6OKHdc08mMN+K/M2g=;
-        b=FMeXdiZzEGz39bdh7t6RphM/Db5rLKYyxFuSd4bHWyC32QL79M3FFiATZk1FFOCJldFKS1
-        7DAJrfq9itw2HHOEvNBY5WZMW+U89WOOnZ0ChIxlHkQkQszsySMF8UnFIVvehKn8kfUp6O
-        KUFZF3wJ9eJpurs4mEniZpRkt9rmIBY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=HGE7gxF/PrZOO5rcFzZ+w+MYUdoGMxbWWIjy9mknwZE=;
+        b=i7jHfFD6GHIUq+GaqQH75gIOYuVAhNEoGoxpf4XsVhrkQuNpyQe9a3P55Q9djwgZjCYJIU
+        bv2VhUniS2H/Yx2v3W+EeGjrZbs5/r6pguZyWk+7spWldVDBhjmubI0RvNCdz7bM6gb1IP
+        WfhPjqd6oesvHid94oGYAVlfVboYxzs=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-315-BqH0NZfsPBeiSYBtx-DMWA-1; Thu, 27 Jan 2022 06:46:03 -0500
-X-MC-Unique: BqH0NZfsPBeiSYBtx-DMWA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 37E1B839A42;
-        Thu, 27 Jan 2022 11:46:02 +0000 (UTC)
-Received: from queeg.tpb.lab.eng.brq.redhat.com (unknown [10.43.135.229])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9E89D6E4A9;
-        Thu, 27 Jan 2022 11:45:55 +0000 (UTC)
-From:   Miroslav Lichvar <mlichvar@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH net-next 5/5] ptp: start virtual clocks at current system time.
-Date:   Thu, 27 Jan 2022 12:45:36 +0100
-Message-Id: <20220127114536.1121765-6-mlichvar@redhat.com>
-In-Reply-To: <20220127114536.1121765-1-mlichvar@redhat.com>
-References: <20220127114536.1121765-1-mlichvar@redhat.com>
+ us-mta-626-6E6fTpasNaG4LiRjn_Cr6Q-1; Thu, 27 Jan 2022 06:48:03 -0500
+X-MC-Unique: 6E6fTpasNaG4LiRjn_Cr6Q-1
+Received: by mail-ej1-f72.google.com with SMTP id m21-20020a1709061ed500b006b3003ec50dso1203310ejj.17
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 03:48:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HGE7gxF/PrZOO5rcFzZ+w+MYUdoGMxbWWIjy9mknwZE=;
+        b=LKfyvkjHDmcm/BRzZkKeGfEZDaz6SSK0YzoDZiiPFoK0zf27mI4LcIuBoC8moaPs3I
+         mP/Y+U5FyZxLkAmbMcSSTPEhhMyd0OMjeZOAzTTRhZYmehVEDU6Gds3W0lLeNA7/0fAC
+         qsinner9tU0bEXQHtOfeClKYnB8b9ec+QQSdjKSRk6ECpQajkIzaTgFsS0vqKWhoOA9j
+         hSXh49P9x0FPf7QEZ4Fmy/A/jlY33tsG03jFUVt1NgBesRaszmbu4BkD/u3DRtlCWANE
+         0H7Q7jIKf+K8pvmX8x6EUH6GBuDkYmixPMspC6fOoX+XFObOTebyw8hAbMjQKLY7M+Qq
+         abYg==
+X-Gm-Message-State: AOAM531tWerHqFwJ0dKVKIeh4p39Nq8py69FmbvODiC9cjnJ8Xn1lTWi
+        pRR/BZgdiPBC5x372uHp9Iw8I/w3v2nbiiBrcIc3RnoxsoAB97CfSe8ZlbAQl1g+Elg+IxcBSN+
+        d/gJU5GhP/wkiUyru
+X-Received: by 2002:a17:907:7241:: with SMTP id ds1mr2705653ejc.199.1643284082715;
+        Thu, 27 Jan 2022 03:48:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxALJ4orODysCyzf5OM83HGtMr7Bi36PqNUiGN5jpHNx9oPF+XO/JirOr44geRnmCZ4NtbP3g==
+X-Received: by 2002:a17:907:7241:: with SMTP id ds1mr2705630ejc.199.1643284082537;
+        Thu, 27 Jan 2022 03:48:02 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id cf13sm8735609ejb.141.2022.01.27.03.48.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Jan 2022 03:48:02 -0800 (PST)
+Message-ID: <bd44bba7-de30-bb65-a328-1bc3c44b53eb@redhat.com>
+Date:   Thu, 27 Jan 2022 12:48:01 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH 1/7] genirq: Provide generic_handle_irq_safe().
+Content-Language: en-US
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
+        Woojung Huh <woojung.huh@microchip.com>
+References: <20220127113303.3012207-1-bigeasy@linutronix.de>
+ <20220127113303.3012207-2-bigeasy@linutronix.de>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220127113303.3012207-2-bigeasy@linutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a virtual clock is being created, initialize the timecounter to the
-current system time instead of the Unix epoch to avoid very large steps
-when the clock will be synchronized.
+Hi,
 
-Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
-Cc: Yangbo Lu <yangbo.lu@nxp.com>
-Cc: Richard Cochran <richardcochran@gmail.com>
----
- drivers/ptp/ptp_vclock.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On 1/27/22 12:32, Sebastian Andrzej Siewior wrote:
+> Provide generic_handle_irq_safe() which can be used can used from any
+> context.
+> 
+> Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-diff --git a/drivers/ptp/ptp_vclock.c b/drivers/ptp/ptp_vclock.c
-index cb179a3ea508..5a24a5128013 100644
---- a/drivers/ptp/ptp_vclock.c
-+++ b/drivers/ptp/ptp_vclock.c
-@@ -187,7 +187,8 @@ struct ptp_vclock *ptp_vclock_register(struct ptp_clock *pclock)
- 		return NULL;
- 	}
- 
--	timecounter_init(&vclock->tc, &vclock->cc, 0);
-+	timecounter_init(&vclock->tc, &vclock->cc,
-+			 ktime_to_ns(ktime_get_real()));
- 	ptp_schedule_worker(vclock->clock, PTP_VCLOCK_REFRESH_INTERVAL);
- 
- 	return vclock;
--- 
-2.34.1
+Thanks, patch looks good to me:
+
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+Regards,
+
+Hans
+
+
+> ---
+>  include/linux/irqdesc.h |  1 +
+>  kernel/irq/irqdesc.c    | 21 +++++++++++++++++++++
+>  2 files changed, 22 insertions(+)
+> 
+> diff --git a/include/linux/irqdesc.h b/include/linux/irqdesc.h
+> index 93d270ca0c567..a77584593f7d1 100644
+> --- a/include/linux/irqdesc.h
+> +++ b/include/linux/irqdesc.h
+> @@ -160,6 +160,7 @@ static inline void generic_handle_irq_desc(struct irq_desc *desc)
+>  
+>  int handle_irq_desc(struct irq_desc *desc);
+>  int generic_handle_irq(unsigned int irq);
+> +int generic_handle_irq_safe(unsigned int irq);
+>  
+>  #ifdef CONFIG_IRQ_DOMAIN
+>  /*
+> diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
+> index 2267e6527db3c..97223df2f460e 100644
+> --- a/kernel/irq/irqdesc.c
+> +++ b/kernel/irq/irqdesc.c
+> @@ -662,6 +662,27 @@ int generic_handle_irq(unsigned int irq)
+>  }
+>  EXPORT_SYMBOL_GPL(generic_handle_irq);
+>  
+> +/**
+> + * generic_handle_irq_safe - Invoke the handler for a particular irq
+> + * @irq:	The irq number to handle
+> + *
+> + * Returns:	0 on success, or -EINVAL if conversion has failed
+> + *
+> + * This function must be called either from an IRQ context with irq regs
+> + * initialized or with care from any context.
+> + */
+> +int generic_handle_irq_safe(unsigned int irq)
+> +{
+> +	unsigned long flags;
+> +	int ret;
+> +
+> +	local_irq_save(flags);
+> +	ret = handle_irq_desc(irq_to_desc(irq));
+> +	local_irq_restore(flags);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(generic_handle_irq_safe);
+> +
+>  #ifdef CONFIG_IRQ_DOMAIN
+>  /**
+>   * generic_handle_domain_irq - Invoke the handler for a HW irq belonging
+> 
 
