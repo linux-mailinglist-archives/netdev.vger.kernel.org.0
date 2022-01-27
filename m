@@ -2,133 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A79F749D6DB
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 01:37:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B226549D6E3
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 01:39:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234029AbiA0Ag7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 19:36:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58608 "EHLO
+        id S230204AbiA0Ajk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 19:39:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234079AbiA0Ags (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 19:36:48 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55620C06175B;
-        Wed, 26 Jan 2022 16:36:48 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id k25so2186986ejp.5;
-        Wed, 26 Jan 2022 16:36:48 -0800 (PST)
+        with ESMTP id S229510AbiA0Ajk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 19:39:40 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B713CC06161C
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 16:39:39 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id t14so1897477ljh.8
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 16:39:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qenSIoAXZ6o9VOjrqRc2EOQyMOxrV68LqnhSggaVs6I=;
-        b=Czo+ENsmCpOPbGSPPdD9nN2KoWZnqE/IAEJ7gbZVSsPS6NR/v3zqkGBqNe/V9WVlVE
-         RfhQF5Tz/kzZpADsL4/V8tOAnHeFscEsasnOJLnP6C5Xxkg8KkcFjYrqIsXzx/7O2kee
-         uV+Jx5SNcqw77Utc0qio9q8HsG8hJVmKxXsYXacZ1lMfhhbYTlbDgG3O9dw2p4EWkERw
-         Zkj79vBK1iV/VCpWXojsHFBaWXnWZybQ/XBRxwBQUGWbL0Au/n05Ars+BdAU0dFQmwGv
-         Nk2PYphgsZlxUUpxDfNBSyYQfOd3CX73hw37DLIIOcW+W72J+zy3MYYo85sNOZN6EUC0
-         d6MA==
+        bh=F8Xah5G+DfbdEFyTYM82ikBKa0bVRidgPx7uFezw4qY=;
+        b=jVTyPizGJ5ZnKV2Ay9FmF86Ut3fsCB18VbISh4AMv/zavehTzXz+sEbRDRCAWcoH5k
+         /e+xuc6zYXuCX17GP+w6guDEq0n5d60KLlDYyV+wtH/eq5PvuoCiFPrIViwsqAJUIIvc
+         FB8CLCBNXWdvAWFBAwgR2v9SeLTuQIj6xx5x1eH7N/vvr1v+dMA8jBdaA7arQKTgv0vr
+         eGuLot9KJ7TJM0Ba42me1mQbwUEiO8pgG3CHiZ/0ZE+5q0rjkiNepTI/ECiLTrkm0lGY
+         ocrlOkJ4le6T5qpRLLjNI4K16O3GlbrPeYp0T7BXmaxRYj6jC03CFjqIZN3aaoYfy0Tw
+         JOZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qenSIoAXZ6o9VOjrqRc2EOQyMOxrV68LqnhSggaVs6I=;
-        b=qVBeqhJs758JjEoQjputXIBSla9U2UnKHeN4Snx/bsyacSTjCnJGjVy79S2aH2BBp6
-         E6laoUta2GHl/FxvAyCKCvD8eQF3u8+scDKdiAVHcs0VYdXB8UbWP/aSGxtbyeHfIGdO
-         quQzeMt0CKNSTh4GqfqGvWwWQBu40uprBHbm7+qWrsMHWPEJBnjk7+SZQLu8GrD6JAlS
-         QEMu3hO0cQcP+5QPpVX8ButBlj0PqRogbc9PXczzQNHPQdt8o5dfWcfxVKyjFQ4W1YOc
-         o8l5QHb4j90E9MdgijKE+M7P7JCBidU3AxLWOyklTkAY/ac4IYMTda+bbSoZMTKPs02V
-         wAxw==
-X-Gm-Message-State: AOAM5304KLHI/jmR+6BF4o1jVirMQUuuR+noFg/41KwiA2QZk09UdP1i
-        jj0Pm1pELqXoew/4q5a7M5KdfICpDwk=
-X-Google-Smtp-Source: ABdhPJyB36Kzr0C+6YwvLEkXBnQfdKBZ0Ds1xbfLzopBJQQw5iRj0AVgVxxERXvaRauDU2VTDIx8fQ==
-X-Received: by 2002:a17:907:6089:: with SMTP id ht9mr998920ejc.612.1643243806756;
-        Wed, 26 Jan 2022 16:36:46 -0800 (PST)
-Received: from 127.0.0.1localhost ([85.255.234.222])
-        by smtp.gmail.com with ESMTPSA id op27sm8039235ejb.103.2022.01.26.16.36.45
+        bh=F8Xah5G+DfbdEFyTYM82ikBKa0bVRidgPx7uFezw4qY=;
+        b=aI9Zo8iUYAdJozuIWhmECtUVl+sCqSmiQw3B/tDOS1SAcw8sfNRkgYerere7n1Drwh
+         FZNFomplxFYrinLb1BKFnCJo07Fc+5kwl3Za14FGIv5cplSVLIvIjZ+oyXvhuY2US2TY
+         DFkzQRX5dUi8qAXfoCWwhgVe2SKa2WDjn1dawb1jO4t591k1xiC6HNdeAa5eVn61uNYI
+         FLc53SY493QoFdRPaUFhdb1CuJ+dVIZutQcX3rjXn+7gnh4l7/GTFIJ124NY5NwDv1rq
+         7v1zcjPr+5KGY9uNlIKcuftX34V//yXLQbPIv3zPdOO6+EeKDkHhrjVNYeJ043F0VtSI
+         5I1A==
+X-Gm-Message-State: AOAM530UILy3JpKksHGRshGMLQqyqBQ/Mqr57+wju6UHc+R7SUsQ+VM0
+        oBS4vJpNTaej8gpNIr6XV8Bs3w==
+X-Google-Smtp-Source: ABdhPJzcGi98cszV+Y5HNdqKocofW2MNy3wTCNuLLHyE8r0/RZpU/6RxXblFfQ29ncoO6qmrgWerTw==
+X-Received: by 2002:a2e:bc29:: with SMTP id b41mr1244018ljf.42.1643243978101;
+        Wed, 26 Jan 2022 16:39:38 -0800 (PST)
+Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
+        by smtp.gmail.com with ESMTPSA id y28sm1989701lfa.226.2022.01.26.16.39.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 16:36:46 -0800 (PST)
-From:   Pavel Begunkov <asml.silence@gmail.com>
-To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v2 10/10] ipv6: partially inline ipv6_fixup_options
-Date:   Thu, 27 Jan 2022 00:36:31 +0000
-Message-Id: <5c6bda8c6f78228fd58586a4160edcc374011a26.1643243773.git.asml.silence@gmail.com>
+        Wed, 26 Jan 2022 16:39:37 -0800 (PST)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     linux-arm-kernel@lists.infradead.org,
+        Imre Kaloz <kaloz@openwrt.org>,
+        Krzysztof Halasa <khalasa@piap.pl>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH 08/13] net: ixp4xx_eth: Drop platform data support
+Date:   Thu, 27 Jan 2022 01:36:51 +0100
+Message-Id: <20220127003656.330161-9-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1643243772.git.asml.silence@gmail.com>
-References: <cover.1643243772.git.asml.silence@gmail.com>
+In-Reply-To: <20220127003656.330161-1-linus.walleij@linaro.org>
+References: <20220127003656.330161-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Inline a part of ipv6_fixup_options() to avoid extra overhead on
-function call if opt is NULL.
+All IXP4xx platforms are converted to device tree, the platform
+data path is no longer used. Drop the code and custom include,
+confine the driver in its own file.
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Depend on OF and remove ifdefs around this, as we are all probing
+from OF now.
+
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- include/net/ipv6.h | 12 ++++++++++--
- net/ipv6/exthdrs.c |  8 ++++----
- 2 files changed, 14 insertions(+), 6 deletions(-)
+Network maintainers: I'm looking for an ACK to take this
+change through ARM SoC along with other changes removing
+these accessor functions.
+---
+ drivers/net/ethernet/xscale/Kconfig      |  4 +-
+ drivers/net/ethernet/xscale/ixp4xx_eth.c | 69 +++++++-----------------
+ include/linux/platform_data/eth_ixp4xx.h | 21 --------
+ 3 files changed, 20 insertions(+), 74 deletions(-)
+ delete mode 100644 include/linux/platform_data/eth_ixp4xx.h
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index 5e0b56d66724..082f30256f59 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -437,8 +437,16 @@ struct ipv6_txoptions *ipv6_renew_options(struct sock *sk,
- 					  struct ipv6_txoptions *opt,
- 					  int newtype,
- 					  struct ipv6_opt_hdr *newopt);
--struct ipv6_txoptions *ipv6_fixup_options(struct ipv6_txoptions *opt_space,
--					  struct ipv6_txoptions *opt);
-+struct ipv6_txoptions *__ipv6_fixup_options(struct ipv6_txoptions *opt_space,
-+					    struct ipv6_txoptions *opt);
+diff --git a/drivers/net/ethernet/xscale/Kconfig b/drivers/net/ethernet/xscale/Kconfig
+index 0e878fa6e322..b33f64c54b0e 100644
+--- a/drivers/net/ethernet/xscale/Kconfig
++++ b/drivers/net/ethernet/xscale/Kconfig
+@@ -20,9 +20,9 @@ if NET_VENDOR_XSCALE
+ 
+ config IXP4XX_ETH
+ 	tristate "Intel IXP4xx Ethernet support"
+-	depends on ARM && ARCH_IXP4XX && IXP4XX_NPE && IXP4XX_QMGR
++	depends on ARM && ARCH_IXP4XX && IXP4XX_NPE && IXP4XX_QMGR && OF
+ 	select PHYLIB
+-	select OF_MDIO if OF
++	select OF_MDIO
+ 	select NET_PTP_CLASSIFY
+ 	help
+ 	  Say Y here if you want to use built-in Ethernet ports
+diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+index df77a22d1b81..577a24b3ad70 100644
+--- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
++++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+@@ -30,7 +30,6 @@
+ #include <linux/of.h>
+ #include <linux/of_mdio.h>
+ #include <linux/phy.h>
+-#include <linux/platform_data/eth_ixp4xx.h>
+ #include <linux/platform_device.h>
+ #include <linux/ptp_classify.h>
+ #include <linux/slab.h>
+@@ -38,6 +37,11 @@
+ #include <linux/soc/ixp4xx/npe.h>
+ #include <linux/soc/ixp4xx/qmgr.h>
+ #include <linux/soc/ixp4xx/cpu.h>
++#include <linux/types.h>
 +
-+static inline struct ipv6_txoptions *
-+ipv6_fixup_options(struct ipv6_txoptions *opt_space, struct ipv6_txoptions *opt)
-+{
-+	if (!opt)
-+		return NULL;
-+	return __ipv6_fixup_options(opt_space, opt);
-+}
++#define IXP4XX_ETH_NPEA		0x00
++#define IXP4XX_ETH_NPEB		0x10
++#define IXP4XX_ETH_NPEC		0x20
  
- bool ipv6_opt_accepted(const struct sock *sk, const struct sk_buff *skb,
- 		       const struct inet6_skb_parm *opt);
-diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index 77e34aec7e82..658d5eabaf7e 100644
---- a/net/ipv6/exthdrs.c
-+++ b/net/ipv6/exthdrs.c
-@@ -1344,14 +1344,14 @@ ipv6_renew_options(struct sock *sk, struct ipv6_txoptions *opt,
- 	return opt2;
- }
+ #include "ixp46x_ts.h"
  
--struct ipv6_txoptions *ipv6_fixup_options(struct ipv6_txoptions *opt_space,
--					  struct ipv6_txoptions *opt)
-+struct ipv6_txoptions *__ipv6_fixup_options(struct ipv6_txoptions *opt_space,
-+					    struct ipv6_txoptions *opt)
+@@ -147,6 +151,16 @@ typedef void buffer_t;
+ #define free_buffer_irq kfree
+ #endif
+ 
++/* Information about built-in Ethernet MAC interfaces */
++struct eth_plat_info {
++	u8 phy;		/* MII PHY ID, 0 - 31 */
++	u8 rxq;		/* configurable, currently 0 - 31 only */
++	u8 txreadyq;
++	u8 hwaddr[6];
++	u8 npe;		/* NPE instance used by this interface */
++	bool has_mdio;	/* If this instance has an MDIO bus */
++};
++
+ struct eth_regs {
+ 	u32 tx_control[2], __res1[2];		/* 000 */
+ 	u32 rx_control[2], __res2[2];		/* 010 */
+@@ -1366,7 +1380,6 @@ static const struct net_device_ops ixp4xx_netdev_ops = {
+ 	.ndo_validate_addr = eth_validate_addr,
+ };
+ 
+-#ifdef CONFIG_OF
+ static struct eth_plat_info *ixp4xx_of_get_platdata(struct device *dev)
  {
- 	/*
- 	 * ignore the dest before srcrt unless srcrt is being included.
- 	 * --yoshfuji
- 	 */
--	if (opt && opt->dst0opt && !opt->srcrt) {
-+	if (opt->dst0opt && !opt->srcrt) {
- 		if (opt_space != opt) {
- 			memcpy(opt_space, opt, sizeof(*opt_space));
- 			opt = opt_space;
-@@ -1362,7 +1362,7 @@ struct ipv6_txoptions *ipv6_fixup_options(struct ipv6_txoptions *opt_space,
+ 	struct device_node *np = dev->of_node;
+@@ -1417,12 +1430,6 @@ static struct eth_plat_info *ixp4xx_of_get_platdata(struct device *dev)
  
- 	return opt;
+ 	return plat;
  }
--EXPORT_SYMBOL_GPL(ipv6_fixup_options);
-+EXPORT_SYMBOL_GPL(__ipv6_fixup_options);
+-#else
+-static struct eth_plat_info *ixp4xx_of_get_platdata(struct device *dev)
+-{
+-	return NULL;
+-}
+-#endif
  
- /**
-  * fl6_update_dst - update flowi destination address with info given
+ static int ixp4xx_eth_probe(struct platform_device *pdev)
+ {
+@@ -1434,49 +1441,9 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
+ 	struct port *port;
+ 	int err;
+ 
+-	if (np) {
+-		plat = ixp4xx_of_get_platdata(dev);
+-		if (!plat)
+-			return -ENODEV;
+-	} else {
+-		plat = dev_get_platdata(dev);
+-		if (!plat)
+-			return -ENODEV;
+-		plat->npe = pdev->id;
+-		switch (plat->npe) {
+-		case IXP4XX_ETH_NPEA:
+-			/* If the MDIO bus is not up yet, defer probe */
+-			break;
+-		case IXP4XX_ETH_NPEB:
+-			/* On all except IXP43x, NPE-B is used for the MDIO bus.
+-			 * If there is no NPE-B in the feature set, bail out,
+-			 * else we have the MDIO bus here.
+-			 */
+-			if (!cpu_is_ixp43x()) {
+-				if (!(ixp4xx_read_feature_bits() &
+-				      IXP4XX_FEATURE_NPEB_ETH0))
+-					return -ENODEV;
+-				/* Else register the MDIO bus on NPE-B */
+-				plat->has_mdio = true;
+-			}
+-			break;
+-		case IXP4XX_ETH_NPEC:
+-			/* IXP43x lacks NPE-B and uses NPE-C for the MDIO bus
+-			 * access, if there is no NPE-C, no bus, nothing works,
+-			 * so bail out.
+-			 */
+-			if (cpu_is_ixp43x()) {
+-				if (!(ixp4xx_read_feature_bits() &
+-				      IXP4XX_FEATURE_NPEC_ETH))
+-					return -ENODEV;
+-				/* Else register the MDIO bus on NPE-B */
+-				plat->has_mdio = true;
+-			}
+-			break;
+-		default:
+-			return -ENODEV;
+-		}
+-	}
++	plat = ixp4xx_of_get_platdata(dev);
++	if (!plat)
++		return -ENODEV;
+ 
+ 	if (!(ndev = devm_alloc_etherdev(dev, sizeof(struct port))))
+ 		return -ENOMEM;
+diff --git a/include/linux/platform_data/eth_ixp4xx.h b/include/linux/platform_data/eth_ixp4xx.h
+deleted file mode 100644
+index 114b0940729f..000000000000
+--- a/include/linux/platform_data/eth_ixp4xx.h
++++ /dev/null
+@@ -1,21 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef __PLATFORM_DATA_ETH_IXP4XX
+-#define __PLATFORM_DATA_ETH_IXP4XX
+-
+-#include <linux/types.h>
+-
+-#define IXP4XX_ETH_NPEA		0x00
+-#define IXP4XX_ETH_NPEB		0x10
+-#define IXP4XX_ETH_NPEC		0x20
+-
+-/* Information about built-in Ethernet MAC interfaces */
+-struct eth_plat_info {
+-	u8 phy;		/* MII PHY ID, 0 - 31 */
+-	u8 rxq;		/* configurable, currently 0 - 31 only */
+-	u8 txreadyq;
+-	u8 hwaddr[6];
+-	u8 npe;		/* NPE instance used by this interface */
+-	bool has_mdio;	/* If this instance has an MDIO bus */
+-};
+-
+-#endif
 -- 
 2.34.1
 
