@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C9A649E8E2
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 18:24:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A032549E8E5
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 18:24:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238180AbiA0RYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 12:24:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34534 "EHLO
+        id S232315AbiA0RYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 12:24:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230193AbiA0RYv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 12:24:51 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C9AEC061714
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 09:24:51 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id s18so6067500wrv.7
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 09:24:51 -0800 (PST)
+        with ESMTP id S230193AbiA0RYx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 12:24:53 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4147C06173B
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 09:24:52 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id k18so6017557wrg.11
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 09:24:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fK+oJcKgMcWWWrq9i21ZgzQKrYXc3WUerqyecUfwfNk=;
-        b=jr16Oeqj4M6JLMyVsipYEVvVIvded5FfOcE157uvxzOGZxzmRP7rqcBG3dDr81ekz/
-         sHAlPRKtfRvcgblGgpNm673V9YLy7Dw/ENUP7bnqdidi9Fz8GU+jrCqTs2PeSinI/32f
-         lDca0Au5N4jWSqWgGXlsQsXFG6aSgywaF6gXI=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4OSnApzs5/dDYr7P92s+LuaWCqvDMi+S9AX1oUrs0vM=;
+        b=RP5892c78EVoktgEsHSpYsIIxek1kSg6BAuAOkqlPIjeFN4Hke/6UgjJcuElKoGQro
+         rEyR6H/9mi+lWFYwrMAVjP2SOscHXAeJ9QWyxzTZMTXThfoRxqIrJt+KMoSFgkEE9Bo4
+         trDshLbdFpQaJdVZNQPAM9T7bORJDYKkG19m8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fK+oJcKgMcWWWrq9i21ZgzQKrYXc3WUerqyecUfwfNk=;
-        b=TsJSiSwLRCy7SZqyW9uNzm5DFPXLRX0PAgKrlWR3vQBH4/2VtohUl1izNBPYtc0TVd
-         Efv3zxd+qVdS1ZnSnwXB9h1m+MkxD1Xt77bUQ8UTFuQLCVC1rn1PlPOBdHxvdd1LsRs1
-         2WQinuDTFm/P8g5Nq9We5/M5/eL3sQR/B12itif8foeDeTIdWaGqKN2X+yJFcvwKG72C
-         VzaHlT7ndGlgbaQCHu15ezdt9a8ruDpLsjySgvLOoMtWrMTUj2oMOp8JW+npG18XOhKg
-         M3znrBpHJjArpVtuntIo9/Sd5HAL+7I/pKsRGjQCUElyrQdEqSV8R3M23qTpgejyg7wX
-         WH+Q==
-X-Gm-Message-State: AOAM533UMPmxYHsYTon8crtcVtcXh06DP3ueXlWN+FMm0uJUDfFG14dD
-        ted8AhrEfaLMVdWU3vitKaHV8A==
-X-Google-Smtp-Source: ABdhPJz8mf34rI88UHVzNtKZTD75FOr4XOkhBAJyijwbCDSNNj+qrw51eCzG4JGmZAxB3m/KbIwXoA==
-X-Received: by 2002:a5d:6d05:: with SMTP id e5mr3779678wrq.398.1643304289766;
-        Thu, 27 Jan 2022 09:24:49 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4OSnApzs5/dDYr7P92s+LuaWCqvDMi+S9AX1oUrs0vM=;
+        b=lSi0nVdnp9neB90Zl8fkpEDnx053BG8TPcPuJ4h5eo2cT0Taa2nKOwx4P+hlV/oVGZ
+         tpQKprfgUyV3oJUUbDZY9F0qqu38Pbc3xiW3d/potm5IQv+No9BN82GGYO//ory5nodj
+         cvi4V6rr6AItRqPmja2c4eUuR/BzP9En/Ucjdcb5b3Bt5dY/LYaf4qK0gMO6xUSn7ZFz
+         7lPWJuD+PssN/YPSlwu3P3cygHqiq5yEbyGdFy/vMY82GOj+O03VkFtpickHGgfUpy8z
+         /Rd6exGq+eh7a6vkwJS10iHB0nkiAkYmKmTp2coJxmzs9B8lMIuB6FzL8fxQo3CIaHhJ
+         RmBA==
+X-Gm-Message-State: AOAM5304DBfuge7stNp74NPScU/pnoeNsDVtSbSPLwvErS1PDHIF/3qH
+        wOMAfUNux93mU2BfXD0UP6DSp7kdI5rtUA==
+X-Google-Smtp-Source: ABdhPJz2YtgCt08zK7860NiSbkhG3MAIfhq1ATrD6sxfcP/kdwwwciS3paoWT14BIFRhEKSB9Pjzyg==
+X-Received: by 2002:adf:e54e:: with SMTP id z14mr3924419wrm.490.1643304291093;
+        Thu, 27 Jan 2022 09:24:51 -0800 (PST)
 Received: from cloudflare.com ([2a01:110f:4809:d800::e00])
-        by smtp.gmail.com with ESMTPSA id az16sm2420578wmb.15.2022.01.27.09.24.49
+        by smtp.gmail.com with ESMTPSA id j3sm2538616wrb.57.2022.01.27.09.24.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 09:24:49 -0800 (PST)
+        Thu, 27 Jan 2022 09:24:50 -0800 (PST)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
@@ -51,39 +51,96 @@ Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Menglong Dong <imagedong@tencent.com>,
         Martin KaFai Lau <kafai@fb.com>
-Subject: [PATCH bpf-next 0/2] Split bpf_sock dst_port field
-Date:   Thu, 27 Jan 2022 18:24:46 +0100
-Message-Id: <20220127172448.155686-1-jakub@cloudflare.com>
+Subject: [PATCH bpf-next 1/2] bpf: Make dst_port field in struct bpf_sock 16-bit wide
+Date:   Thu, 27 Jan 2022 18:24:47 +0100
+Message-Id: <20220127172448.155686-2-jakub@cloudflare.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220127172448.155686-1-jakub@cloudflare.com>
+References: <20220127172448.155686-1-jakub@cloudflare.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a follow-up to discussion around the idea of making dst_port in struct
-bpf_sock a 16-bit field that happened in [1]. I have fleshed it out further:
+Menglong Dong reports that the documentation for the dst_port field in
+struct bpf_sock is inaccurate and confusing. From the BPF program PoV, the
+field is a zero-padded 16-bit integer in network byte order. The value
+appears to the BPF user as if laid out in memory as so:
 
-v1:
-- keep dst_field offset unchanged to prevent existing BPF program breakage
-  (Martin)
-- allow 8-bit loads from dst_port[0] and [1]
-- add test coverage for the verifier and the context access converter
+  offsetof(struct bpf_sock, dst_port) + 0  <port MSB>
+                                      + 8  <port LSB>
+                                      +16  0x00
+                                      +24  0x00
 
-[1] https://lore.kernel.org/bpf/87sftbobys.fsf@cloudflare.com/
+32-, 16-, and 8-bit wide loads from the field are all allowed, but only if
+the offset into the field is 0.
 
-Jakub Sitnicki (2):
-  bpf: Make dst_port field in struct bpf_sock 16-bit wide
-  selftests/bpf: Extend verifier and bpf_sock tests for dst_port loads
+32-bit wide loads from dst_port are especially confusing. The loaded value,
+after converting to host byte order with bpf_ntohl(dst_port), contains the
+port number in the upper 16-bits.
 
- include/uapi/linux/bpf.h                      |  3 +-
- net/core/filter.c                             |  9 ++-
- tools/include/uapi/linux/bpf.h                |  3 +-
- .../selftests/bpf/prog_tests/sock_fields.c    | 58 +++++++++----
- .../selftests/bpf/progs/test_sock_fields.c    | 41 ++++++++++
- tools/testing/selftests/bpf/verifier/sock.c   | 81 ++++++++++++++++++-
- 6 files changed, 172 insertions(+), 23 deletions(-)
+Remove the confusion by splitting the field into two 16-bit fields. For
+backward compatibility, allow 32-bit wide loads from offsetof(struct
+bpf_sock, dst_port).
 
+While at it, allow loads 8-bit loads at offset [0] and [1] from dst_port.
+
+Reported-by: Menglong Dong <imagedong@tencent.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+---
+ include/uapi/linux/bpf.h | 3 ++-
+ net/core/filter.c        | 9 ++++++++-
+ 2 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 4a2f7041ebae..027e84b18b51 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -5574,7 +5574,8 @@ struct bpf_sock {
+ 	__u32 src_ip4;
+ 	__u32 src_ip6[4];
+ 	__u32 src_port;		/* host byte order */
+-	__u32 dst_port;		/* network byte order */
++	__be16 dst_port;	/* network byte order */
++	__u16 zero_padding;
+ 	__u32 dst_ip4;
+ 	__u32 dst_ip6[4];
+ 	__u32 state;
+diff --git a/net/core/filter.c b/net/core/filter.c
+index a06931c27eeb..ef8473163696 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -8265,6 +8265,7 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+ 			      struct bpf_insn_access_aux *info)
+ {
+ 	const int size_default = sizeof(__u32);
++	int field_size;
+ 
+ 	if (off < 0 || off >= sizeof(struct bpf_sock))
+ 		return false;
+@@ -8276,7 +8277,6 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+ 	case offsetof(struct bpf_sock, family):
+ 	case offsetof(struct bpf_sock, type):
+ 	case offsetof(struct bpf_sock, protocol):
+-	case offsetof(struct bpf_sock, dst_port):
+ 	case offsetof(struct bpf_sock, src_port):
+ 	case offsetof(struct bpf_sock, rx_queue_mapping):
+ 	case bpf_ctx_range(struct bpf_sock, src_ip4):
+@@ -8285,6 +8285,13 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+ 	case bpf_ctx_range_till(struct bpf_sock, dst_ip6[0], dst_ip6[3]):
+ 		bpf_ctx_record_field_size(info, size_default);
+ 		return bpf_ctx_narrow_access_ok(off, size, size_default);
++	case bpf_ctx_range(struct bpf_sock, dst_port):
++		field_size = size == size_default ?
++			size_default : sizeof_field(struct bpf_sock, dst_port);
++		bpf_ctx_record_field_size(info, field_size);
++		return bpf_ctx_narrow_access_ok(off, size, field_size);
++	case bpf_ctx_range(struct bpf_sock, zero_padding):
++		return false;
+ 	}
+ 
+ 	return size == size_default;
 -- 
 2.31.1
 
