@@ -2,116 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACDBE49E64B
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 16:39:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B66649E65C
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 16:42:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242616AbiA0Pjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 10:39:45 -0500
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:34005 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237455AbiA0Pjo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 10:39:44 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 26A1A580EB6;
-        Thu, 27 Jan 2022 10:39:44 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Thu, 27 Jan 2022 10:39:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=WaIfKB6L73BlPeNtlmOZwTQbsqShiIjBr2J2vT
-        exb+o=; b=kjxYAXUPvgtxdi3q7a5Uu7t9LhZ1vnb6czWe6Cr4hHD5TegHDG1Gor
-        GrspqmoX3jRcFlFZwBfcbh/Gp7I29ACZWMweu+DHoT2klDGURHr5gdLcUGwrTfQB
-        Ih5kmBc+DDWRbHO4ANUxga1LbAkU1xYTF/xc1632sgCrCj5qKafP1+wPp6gC6dSq
-        9f3R8z+enlhWkpe3ibSjZzyWo6vRzrQZdg/AeBefZ20quHUH+jyO+qWl9oBj4SwZ
-        qGbBCc4KCswhs/uBw+YX65lwFm7sxYFDF33hHu1SK06lsBK7ekKv7aFi8HTGdCF+
-        chVPF+n+ti/6OkGByQtr99T/sC/aQs2g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=WaIfKB6L73BlPeNtl
-        mOZwTQbsqShiIjBr2J2vTexb+o=; b=iOhqajQZ1Rche6XXQ1tGBzf2007JAojWc
-        3dO+f+Vpj8zAxhPM0r63LPqNXs5DKV5XG9NJFe2xM+R8cJltbHSDpIxiD7OMvXL+
-        PDk3Taykm2iIOAdu4Qgtoo88myMUNShlh/vLBjpQ9QsCw2vsdrcQtXdjnF9YAhJs
-        gacSk9PaWUfhvWofnU7FjXWhJCA59T+JG1U4E2/wI587ad+BGkLU3u2xmcGmirqD
-        mtowlkNdDypNvogW2y07LyjD5icANqBw0tRJ6zrsEDBSMq9+2hZdUFZBQvxc49Ke
-        EWdrO6QiWiCj1Ot7mzNz41wEZ6EaoSVtmqRLwm7UDiLpaXXqiHJJw==
-X-ME-Sender: <xms:v7zyYaI0l6pPq49-jvD7f4HAEPt5dR_ChUF2wv3JR4uzmRDP41oaUQ>
-    <xme:v7zyYSIR-cSmV9GufidZ-ocu-lrlFI9D5q_NonMx76JHDbiT1nfAylCUoDoDgqHaP
-    KLiWAma593TLA>
-X-ME-Received: <xmr:v7zyYasvKeIpWrMBvOnx4NBQc-NFgxt62UFSL_9ilv6uSyAZuVxqp0tlSKJoO1fuvsh58XaRsdn3WLb3837PdhD7m7fDL-9H>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrfeefgdejlecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghgucfm
-    jfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepveeuheejgf
-    ffgfeivddukedvkedtleelleeghfeljeeiueeggeevueduudekvdetnecuvehluhhsthgv
-    rhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorghhrd
-    gtohhm
-X-ME-Proxy: <xmx:v7zyYfZZ5MwGeKIFoJMnVuF4fcBdWjwMzTXkq-KmpSd19B-Fg_Wgvg>
-    <xmx:v7zyYRYWGeXNO0j0fCM5nDWbuxNQV-RQxbKPwkVKoS1Vj9T5dxlI0w>
-    <xmx:v7zyYbDHtAbGSZFfn1fY-e8AE1pIJUfamHz9pQlF4WTcYeN4eiddwA>
-    <xmx:wLzyYVSBf8TmN9c2eWwPwCJlUY0KcIFZ-e1cOVutDJbu_Zjj2548iA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 27 Jan 2022 10:39:42 -0500 (EST)
-Date:   Thu, 27 Jan 2022 16:39:41 +0100
-From:   Greg KH <greg@kroah.com>
-To:     Huang Guobin <huangguobin4@huawei.com>
-Cc:     nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
-        davem@davemloft.net, bridge@lists.linux-foundation.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 4.19 1/1] net: bridge: clear bridge's private skb space
- on xmit
-Message-ID: <YfK8vTvSJAT8i6F4@kroah.com>
-References: <20220126033639.909340-1-huangguobin4@huawei.com>
- <20220126033639.909340-2-huangguobin4@huawei.com>
+        id S242955AbiA0PmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 10:42:08 -0500
+Received: from mga05.intel.com ([192.55.52.43]:10340 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242931AbiA0PmH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jan 2022 10:42:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643298127; x=1674834127;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ilgXZaqxDA9kqy7YRB+bhcP2wz4pTOi+q3i19NEBc9w=;
+  b=GtivIG/xio5umHBeNYuAuZAcw1zjOSJr6SI1wwbYqTNGVmbLZcs1lNdZ
+   apxrLDoXwfAoEQg5STdbj9Ubm4MyKekgsgu4yV92yDm9bfHv9+sSBzOkY
+   SpUJcbfVRzjyHIOdB7AyUxa6DD7VeRXiRJs6m3+CLnrYXflOSa/o3bhpb
+   uGbZqL3j9o6NcyWq3vxcH1tlUMRdb7K/NkS0b8k63SGJIPB0FGfcC0R+S
+   hjbw2cHqq4RhH+od8Q7o5KiT2uunPoHNC/iJVwfl7DGCIZG9EF1cjFGZT
+   82wbV1jsK96HLeuh+7Kr/vzgECyQNZvk5RS+A/vWXQextXjIo13ukEWKh
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="333242522"
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="333242522"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 07:41:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="521282143"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga007.jf.intel.com with ESMTP; 27 Jan 2022 07:41:47 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20RFfjOn028674;
+        Thu, 27 Jan 2022 15:41:45 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net-next 0/4] ice: switch: debloat packet templates code
+Date:   Thu, 27 Jan 2022 16:40:05 +0100
+Message-Id: <20220127154009.623304-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126033639.909340-2-huangguobin4@huawei.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 11:36:39AM +0800, Huang Guobin wrote:
-> From: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-> 
-> [ Upstream commit fd65e5a95d08389444e8591a20538b3edece0e15 ]
-> 
-> We need to clear all of the bridge private skb variables as they can be
-> stale due to the packet being recirculated through the stack and then
-> transmitted through the bridge device. Similar memset is already done on
-> bridge's input. We've seen cases where proxyarp_replied was 1 on routed
-> multicast packets transmitted through the bridge to ports with neigh
-> suppress which were getting dropped. Same thing can in theory happen with
-> the port isolation bit as well.
-> 
-> Fixes: 821f1b21cabb ("bridge: add new BR_NEIGH_SUPPRESS port flag to suppress arp and nd flood")
-> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
-> ---
->  net/bridge/br_device.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-> index a350c05b7ff5..7c6b1024dd4b 100644
-> --- a/net/bridge/br_device.c
-> +++ b/net/bridge/br_device.c
-> @@ -42,6 +42,8 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
->  	struct ethhdr *eth;
->  	u16 vid = 0;
->  
-> +	memset(skb->cb, 0, sizeof(struct br_input_skb_cb));
-> +
->  	rcu_read_lock();
->  	nf_ops = rcu_dereference(nf_br_ops);
->  	if (nf_ops && nf_ops->br_dev_xmit_hook(skb)) {
-> -- 
-> 2.25.1
-> 
+This hunts down several places around packet templates/dummies for
+switch rules which are either repetitive, fragile or just not
+really readable code.
+It's a common need to add new packet templates and to review such
+changes as well, try to simplify both with the help of a pair
+macros and aliases.
 
-Now queued up, thanks.
+bloat-o-meter is happy about that (built w/ LLVM 13):
 
-greg k-h
+add/remove: 0/1 grow/shrink: 2/0 up/down: 148/-202 (-54)
+Function                                     old     new   delta
+ice_add_adv_rule                            2383    2529    +146
+ice_fill_adv_dummy_packet                    289     291      +2
+ice_adv_add_update_vsi_list                  202       -    -202
+Total: Before=395813, After=395759, chg -0.01%
+
+Diffstat also looks nice, and adding new packet templates now takes
+less lines.
+
+We'll probably come out with dynamic template crafting in a while,
+but for now let's improve what we have currently.
+
+Note: this will conflict with [1] going through net-next,
+a followup will be sent once accepted.
+
+From v1 ([0]):
+ - rebase on top of the latest next-queue (to fix #3 not applying);
+ - adjust the kdoc accordingly to the function proto changes in #3;
+ - no functional changes.
+
+[0] https://lore.kernel.org/netdev/20220124173116.739083-1-alexandr.lobakin@intel.com
+[1] https://lore.kernel.org/netdev/20220127125525.125805-1-marcin.szycik@linux.intel.com
+
+Alexander Lobakin (4):
+  ice: switch: add and use u16[] aliases to ice_adv_lkup_elem::{h,m}_u
+  ice: switch: unobscurify bitops loop in ice_fill_adv_dummy_packet()
+  ice: switch: use a struct to pass packet template params
+  ice: switch: use convenience macros to declare dummy pkt templates
+
+ drivers/net/ethernet/intel/ice/ice_switch.c | 273 ++++++++------------
+ drivers/net/ethernet/intel/ice/ice_switch.h |  12 +-
+ 2 files changed, 123 insertions(+), 162 deletions(-)
+
+-- 
+2.34.1
+
