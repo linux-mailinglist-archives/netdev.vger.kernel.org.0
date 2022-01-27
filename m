@@ -2,114 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D75E249E1BA
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 12:57:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 682AC49E1CB
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 13:00:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240995AbiA0L5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 06:57:07 -0500
-Received: from mga18.intel.com ([134.134.136.126]:62047 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241124AbiA0L5A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 06:57:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643284620; x=1674820620;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=DWnN5z/3/Ka4kDGpL0eM48NBXFbTbVUtYTk1y+OcQGI=;
-  b=enWi5wMmFl+1raU23meBjeRcXq5Q1PQOOuqO+y7ezGU0cC2FtCwExeHA
-   gNsZcF/BFx7oiqrrvLDomQFypw2q3EMXNX4zCDq3tQ104dYDuZ0O77d8z
-   Kfy68d23+wPX3tLGzk02UcGSXfap8oJDzzvH6J5ka0bp7ZkNuIz/lWtfC
-   /wbeyEh+lUZtawJq5fZApOFlD6dN+7GbzAOFBTig0+Z8FwsrYS0PZ2ga4
-   DY4goLRF6hIqaJKzjjHaqKP3gQ0Naeju3CXt5rBCLgWb6SjxGmwVrCFVD
-   WZv7sW+bXciewFQOUgO5jsIJn2vj/89JZ+17GsTV1NqciQVxkaHOQCOXY
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="230403147"
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="230403147"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 03:56:59 -0800
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="535620931"
-Received: from shochwel-mobl.ger.corp.intel.com ([10.249.44.153])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 03:56:54 -0800
-Date:   Thu, 27 Jan 2022 13:56:52 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com
-Subject: Re: [PATCH net-next v4 06/13] net: wwan: t7xx: Add AT and MBIM WWAN
- ports
-In-Reply-To: <20220114010627.21104-7-ricardo.martinez@linux.intel.com>
-Message-ID: <7f50bddd-194-711c-1072-df6d2793@linux.intel.com>
-References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com> <20220114010627.21104-7-ricardo.martinez@linux.intel.com>
+        id S231532AbiA0MAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 07:00:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232196AbiA0MAv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 07:00:51 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E244C061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 04:00:51 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nD3SE-000228-HS; Thu, 27 Jan 2022 13:00:42 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nD3SB-0001Rk-Jt; Thu, 27 Jan 2022 13:00:39 +0100
+Date:   Thu, 27 Jan 2022 13:00:39 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next v1 4/4] usbnet: add support for label from
+ device tree
+Message-ID: <20220127120039.GE9150@pengutronix.de>
+References: <20220127104905.899341-1-o.rempel@pengutronix.de>
+ <20220127104905.899341-5-o.rempel@pengutronix.de>
+ <YfJ6lhZMAEmetdad@kroah.com>
+ <20220127112305.GC9150@pengutronix.de>
+ <YfKCTG7N86yy74q+@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YfKCTG7N86yy74q+@kroah.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 12:48:04 up 47 days, 20:33, 86 users,  load average: 0.02, 0.06,
+ 0.13
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Jan 2022, Ricardo Martinez wrote:
-
-> From: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+On Thu, Jan 27, 2022 at 12:30:20PM +0100, Greg KH wrote:
+> On Thu, Jan 27, 2022 at 12:23:05PM +0100, Oleksij Rempel wrote:
+> > On Thu, Jan 27, 2022 at 11:57:26AM +0100, Greg KH wrote:
+> > > On Thu, Jan 27, 2022 at 11:49:05AM +0100, Oleksij Rempel wrote:
+> > > > Similar to the option to set a netdev name in device tree for switch
+> > > > ports by using the property "label" in the DSA framework, this patch
+> > > > adds this functionality to the usbnet infrastructure.
+> > > > 
+> > > > This will help to name the interfaces properly throughout supported
+> > > > devices. This provides stable interface names which are useful
+> > > > especially in embedded use cases.
+> > > 
+> > > Stable interface names are for userspace to set, not the kernel.
+> > > 
+> > > Why would USB care about this?  If you need something like this, get it
+> > > from the USB device itself, not DT, which should have nothing to do with
+> > > USB as USB is a dynamic, self-describing, bus.  Unlike DT.
+> > > 
+> > > So I do not think this is a good idea.
+> > 
+> > This is needed for embedded devices with integrated USB Ethernet
+> > controller. Currently I have following use cases to solve:
+> > - Board with one or multiple USB Ethernet controllers with external PHY.
+> >   The PHY need devicetree to describe IRQ, clock sources, label on board, etc.
 > 
-> Adds AT and MBIM ports to the port proxy infrastructure.
-> The initialization method is responsible for creating the corresponding
-> ports using the WWAN framework infrastructure. The implemented WWAN port
-> operations are start, stop, and TX.
+> The phy is for the USB controller, not the Ethernet controller, right?
+> If for the ethernet controller, ugh, that's a crazy design and I would
+> argue a broken one.  But whatever, DT should not be used to describe a
+> USB device itself.
 > 
-> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> ---
+> > - Board with USB Ethernet controller with DSA switch. The USB ethernet
+> >   controller is attached to the CPU port of DSA switch. In this case,
+> >   DSA switch is the sub-node of the USB device.
+> 
+> What do you mean exactly by "sub node"?  USB does not have such a term.
+
+Here are some examples:
+
+  - |
+    usb@11270000 {
+        reg = <0x11270000 0x1000>;
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        ethernet@1 {
+            compatible = "usb424,ec00";
+            reg = <1>;
+            label = "LAN0";
+	    // there is no internal eeprom, so MAC address is taken from
+	    // NVMEM of the SoC.
+            local-mac-address = [00 00 00 00 00 00];
+
+            mdio {
+		ethernet-phy@4 {
+			reg = <4>;
+			// Interrupt is attached to the SoC or the GPIO
+			// controller of the same USB devices.
+			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
+			// same about reset. It is attached to the SoC
+			// or GPIO controller of the USB device.
+			reset-gpios = <&gpio3 31 GPIO_ACTIVE_LOW>;
+			reset-assert-us = <10000>;
+			reset-deassert-us = <1000>;
+			// some external clock provider
+			clocks = <&clk>
+			qca,smarteee-tw-us-1g = <24>;
+			qca,clk-out-frequency = <125000000>;
+		};
+            };
+        };
+    };
+  - |
+    usb@11270000 {
+        reg = <0x11270000 0x1000>;
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        usb1@1 {
+            compatible = "usb424,9514";
+            reg = <1>;
+            #address-cells = <1>;
+            #size-cells = <0>;
+
+            eth0: ethernet@1 {
+               compatible = "usb424,ec00";
+               reg = <1>;
+               label = "cpu0";
+
+               fixed-link {
+                   speed = <1000>;
+                   full-duplex;
+               };
+
+               // managment interface of the switch is attached to the
+	       // MDIO bus of this USB device.
+               mdio {
+                switch@0 {
+                    compatible = "microchip,ksz9477";
+                    reg = <0>;
+		    // reset is controlled by the SoC or by the GPIO
+		    // controller of this USB device.
+                    reset-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
+
+                    ethernet-ports {
+                        #address-cells = <1>;
+                        #size-cells = <0>;
+                        port@0 {
+                            reg = <0>;
+                            label = "lan1";
+                        };
+                        port@1 {
+                            reg = <1>;
+                            label = "lan2";
+                        };
+                        port@2 {
+                            reg = <2>;
+                            label = "lan3";
+                        };
+                        port@3 {
+                            reg = <3>;
+                            label = "lan4";
+                        };
+                        port@4 {
+                            reg = <4>;
+                            label = "lan5";
+                        };
+                        port@5 {
+                            reg = <5>;
+                            label = "cpu";
+                            ethernet = <&eth0>;
+                            fixed-link {
+                                speed = <1000>;
+                                full-duplex;
+                            };
+                        };
+                    };
+                };
+               };
+            };
+        };
+    };
 
 
-> +		memcpy(skb_put(skb_ccci, actual_len), skb->data + i * (txq_mtu - CCCI_H_ELEN),
-> +		       actual_len);
-
-Use skb_put_data().
-
-> +		t7xx_port_proxy_set_seq_num(port_private, ccci_h);
-> +
-> +		ret = t7xx_port_send_skb_to_md(port_private, skb_ccci, true);
-> +		if (ret) {
-> +			dev_err(port_private->dev, "Write error on %s port, %d\n",
-> +				port_static->name, ret);
-> +			dev_kfree_skb_any(skb_ccci);
-
-Free first.
-
-> +static void t7xx_port_wwan_uninit(struct t7xx_port *port)
-> +{
-> +	if (port->wwan_port) {
-> +		if (port->chn_crt_stat) {
-...
-> +     if (port->chn_crt_stat != port->chan_enable)
-...
-> +     if (port->chn_crt_stat != port->chan_enable)
-
-I don't see anything that would ever make chn_crt_stat true.
-
-> +struct port_ops wwan_sub_port_ops = {
-> +	.init = &t7xx_port_wwan_init,
-> +	.recv_skb = &t7xx_port_wwan_recv_skb,
-> +	.uninit = &t7xx_port_wwan_uninit,
-> +	.enable_chl = &t7xx_port_wwan_enable_chl,
-> +	.disable_chl = &t7xx_port_wwan_disable_chl,
-> +	.md_state_notify = &t7xx_port_wwan_md_state_notify,
-
-Drop & from these (in all patches).
-
+> >  The CPU port should have
+> >   stable name for all device related to this product.
+> 
+> name for who to use?  Userspace?  Or within the kernel?
+> 
+> Naming is done by userspace, as USB is NOT determinisitic in numbering /
+> naming the devices attached to it, by design.  If you need to have a
+> stable name, do so in userspace please, we have loads of tools that
+> already do this there today.  Let's not reinvent the wheel.
+> 
+> > Using user space tools to name interfaces would double the maintenance
+> > of similar information: DT - describing the HW + udev scripts describing
+> > same HW again.
+> 
+> Not for the network name of the device, that belongs in userspace.
+> 
+> Do not be listing USB device ids in a DT file, that way lies madness.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
 -- 
- i.
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
