@@ -2,112 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14B3049DE6F
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:50:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CB0849DE6E
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:50:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238847AbiA0Juh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 04:50:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39550 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbiA0Jug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:50:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59A1C061714
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 01:50:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B556B8220C
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 09:50:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B182C340E4;
-        Thu, 27 Jan 2022 09:50:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643277033;
-        bh=9Qp2wZxmtf4fmNFWQUzF7YCHq9LIF9GGUNw8EtmqXRU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IyaiP9TbIo19yMWkPpXnTD1PeJjRzlDJt+u8bl9lWqabupVTN2xhSxSqAjoZmXyiT
-         2bBS5B4JkRp0vPqXvylBgp0dbPsjx2PK6k4GugHf6lgqY4as1hnUNYyAR0FDifmeFj
-         jqH3owOy3Xo1jZDMe4v3GdhudFzkxXmICxTeWAXPUXOFWJbDAzExKN8KVsQ/GWFddN
-         Opo3xuAhBR+biOZx/1p4CGJc5RUzKHjghWbDHTpAHkzoTWb+n5zvNEzA9jFg5stNjO
-         8WuvLqi704yXzYoG+3Td4JebMWi2p/u8s2UDXRTGQWAsiY1egpv+NDsQiYub1N3Rm1
-         D3tBAP0522kgA==
-Date:   Thu, 27 Jan 2022 11:50:28 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "shenjian (K)" <shenjian15@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linuxarm@openeuler.org
-Subject: Re: [RFCv2 net-next 000/167] net: extend the netdev_features_t
-Message-ID: <YfJq5IEsW8oSj46B@unreal>
-References: <20210929155334.12454-1-shenjian15@huawei.com>
- <YfJi10IcxtYQ7Ttr@unreal>
- <f49d8f3f-f9e9-574f-f41b-01d35a0a1b03@huawei.com>
+        id S238842AbiA0Juf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 04:50:35 -0500
+Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:38763 "EHLO
+        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229483AbiA0Jue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:50:34 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V2zUp2u_1643277031;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V2zUp2u_1643277031)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 27 Jan 2022 17:50:31 +0800
+Date:   Thu, 27 Jan 2022 17:50:30 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>, kgraul@linux.ibm.com,
+        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 0/6] net/smc: Spread workload over multiple
+ cores
+Message-ID: <YfJq5pygXS13XRhp@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20220114054852.38058-1-tonylu@linux.alibaba.com>
+ <YePesYRnrKCh1vFy@unreal>
+ <YfD26mhGkM9DFBV+@TonyMac-Alibaba>
+ <20220126152806.GN8034@ziepe.ca>
+ <YfIOHZ7hSfogeTyS@TonyMac-Alibaba>
+ <YfI50xqsv20KDpz9@unreal>
+ <YfJQ6AwYMA/i4HvH@TonyMac-Alibaba>
+ <YfJcDfkBZfeYA1Z/@unreal>
+ <YfJieyROaAKE+ZO0@TonyMac-Alibaba>
+ <YfJlFe3p2ABbzoYI@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f49d8f3f-f9e9-574f-f41b-01d35a0a1b03@huawei.com>
+In-Reply-To: <YfJlFe3p2ABbzoYI@unreal>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 05:40:02PM +0800, shenjian (K) wrote:
-> 
-> 
-> 在 2022/1/27 17:16, Leon Romanovsky 写道:
-> > On Wed, Sep 29, 2021 at 11:50:47PM +0800, Jian Shen wrote:
-> > > For the prototype of netdev_features_t is u64, and the number
-> > > of netdevice feature bits is 64 now. So there is no space to
-> > > introduce new feature bit.
-> > > 
-> > > This patchset try to solve it by change the prototype of
-> > > netdev_features_t from u64 to bitmap. With this change,
-> > > it's necessary to introduce a set of bitmap operation helpers
-> > > for netdev features. Meanwhile, the functions which use
-> > > netdev_features_t as return value are also need to be changed,
-> > > return the result as an output parameter.
-> > > 
-> > > With above changes, it will affect hundreds of files, and all the
-> > > nic drivers. To make it easy to be reviewed, split the changes
-> > > to 167 patches to 5 parts.
-> > > 
-> > > patch 1~22: convert the prototype which use netdev_features_t
-> > > as return value
-> > > patch 24: introduce fake helpers for bitmap operation
-> > > patch 25~165: use netdev_feature_xxx helpers
-> > > patch 166: use macro __DECLARE_NETDEV_FEATURE_MASK to replace
-> > > netdev_feature_t declaration.
-> > > patch 167: change the type of netdev_features_t to bitmap,
-> > > and rewrite the bitmap helpers.
-> > > 
-> > > Sorry to send a so huge patchset, I wanna to get more suggestions
-> > > to finish this work, to make it much more reviewable and feasible.
-> > > 
-> > > The former discussing for the changes, see [1]
-> > > [1]. https://www.spinics.net/lists/netdev/msg753528.html
-> > > 
-> > ------------------------------------------------
+On Thu, Jan 27, 2022 at 11:25:41AM +0200, Leon Romanovsky wrote:
+> On Thu, Jan 27, 2022 at 05:14:35PM +0800, Tony Lu wrote:
+> > On Thu, Jan 27, 2022 at 10:47:09AM +0200, Leon Romanovsky wrote:
+> > > On Thu, Jan 27, 2022 at 03:59:36PM +0800, Tony Lu wrote:
 > > 
-> > Is anyone actively working on this task?
+> > Sorry for that if I missed something about properly using existing
+> > in-kernel API. I am not sure the proper API is to use ib_cq_pool_get()
+> > and ib_cq_pool_put()?
 > > 
-> > Thanks
-> > .
-> Hi Leon,
+> > If so, these APIs doesn't suit for current smc's usage, I have to
+> > refactor logic (tasklet and wr_id) in smc. I think it is a huge work
+> > and should do it with full discussion.
 > 
-> I have sent RFCv4  [1] three months ago, and according Andrew' suggestion，
-> I'm trying to
-> continue this work with semantic-patches, and waiting for more comments
-> for the scheme.
-> But I'm not familiar with it, and  busy with some other work recently, so it
-> got delayed.
-> 
-> Sorry for this. I will speed up it.
+> This discussion is not going anywhere. Just to summarize, we (Jason and I)
+> are asking to use existing API, from the beginning.
 
-Thanks
+Yes, I can't agree more with you about using existing API and I have
+tried them earlier. The existing APIs are easy to use if I wrote a new
+logic. I also don't want to repeat the codes.
 
-> 
-> [1] https://lore.kernel.org/netdev/YYvKyruLcemj6J+i@lunn.ch/T/
-> 
-> Thanks
-> 
-> 
+The main obstacle is that the packet and wr processing of smc is
+tightly bound to the old API and not easy to replace with existing API.
+
+To solve a real issue, I have to fix it based on the old API. If using
+existing API in this patch, I have to refactor smc logics which needs
+more time. Our production tree is synced with smc next. So I choose to
+fix this issue first, then refactor these logic to fit existing API once
+and for all.
+ 
+> You can try and convince netdev maintainers to merge the code despite
+> our request.
+
+That's not my purpose to recklessly merge this patch. I appreciate that
+you can tell me existing APIs are available. So I listened to everyone
+and decided to go with a compromise, fix it first, then refactor. 
+
+Thanks for your advice.
+
+Tony Lu
