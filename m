@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 469FA49D6CE
+	by mail.lfdr.de (Postfix) with ESMTP id 9E01749D6CF
 	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 01:37:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233989AbiA0Agm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 19:36:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58578 "EHLO
+        id S234030AbiA0Agp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 19:36:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233952AbiA0Agl (ORCPT
+        with ESMTP id S233973AbiA0Agl (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 19:36:41 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE137C06161C;
-        Wed, 26 Jan 2022 16:36:40 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id p12so1391900edq.9;
-        Wed, 26 Jan 2022 16:36:40 -0800 (PST)
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9CBC06161C;
+        Wed, 26 Jan 2022 16:36:41 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id s5so2216336ejx.2;
+        Wed, 26 Jan 2022 16:36:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UxDNgTAE0cSB8ZQYqqnLx7ARkRkGdeZUWmVAeW7wE8w=;
-        b=UxNN2e4QMjiLRB3KjFk+d0964K5zS0bXfNJq5W2+9QhwH7rL8wHwommwe6im9aR0AW
-         d+tb1OD2FL48Ue8s8kgOEq0lGC1BKcGReMkE2NUl0EP2iHQmm6n+7cgzkchvY60mB7TX
-         CcGrk9IDvDPw/nKbBiEb3GmJF3FDr+PdQU0p2ogqN8nq3drU/dhrN3dsUG9+7+ysLRHc
-         3JNN8rFwme1Gw4O85Jv/U5yEB5JsVa0NYWM/2VBvI4cLSnYmdTaWBdQAt42v0OBEw8Xr
-         qhnlmOZUxIgwmp92EIscfExtu1NPReSGR1k0nAUlRtueAL6fA3tfQj/8TBysIjZO/7kO
-         ostg==
+        bh=PIyy1S882MJEdPQ345mTMhYul/4iG3UJWg4AQv8ZfsM=;
+        b=Vs+eFN3GvnoXPrSn/v5w2h17QddAImMR3zY6a+2yAQ6VLg7WZnc71MOtbzAKD0xwvK
+         QxVgP+VRshzGKldX7TwBTXQZ1AqIE3T50lfxHrR10kenB5njR2do3XRfXgwUN4xWEMIb
+         eNJhbRPy9iGXPPpt2YX7bdecUsgomSGwbLDhcM64VkHcjFI18aQy7dOIjC8ymwJB17os
+         BvX+wzwgl6WyVNEA+wD+QSCUsrPT93grzeXhAj3IY78YyOB022/d326ELOuPPvNc64Jh
+         aVNf+Weu6zv3sCP/hJ+otFQ7Fwyi1d+1HixSrfRu5quGR/k8OVUEx6Govl1Wx3kw04Zf
+         gMmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UxDNgTAE0cSB8ZQYqqnLx7ARkRkGdeZUWmVAeW7wE8w=;
-        b=nfNy/UyAvrGe91dPOAcU9R7ZLpwyH96kL4W/B8UfoxVGo0BjEEcIcOUG03K4GVxjKK
-         crQ3dYh5VwBxg6QzgE7m9j0Yo/VM1XD83b7hFEKV8s6KXvQ/te2jQNrf7yW3QtkIqJaZ
-         Wek214noTo3xBmoocz8vxO3Gj6g5x/J13J+a16GMGBYyhXsdREV+a1/ROYmUljcVh6bl
-         nbQlFtQUGc4/gxmmacJIP3oW+f2Ze/hGt0mZlZrd6su/CT+Lwp69ALOnKXAXXBDWVeK4
-         4hhoTXlqd39GWoZUtxv/yhuBjmGceFE6TQXQaJa3DOsYYbc5ElUrFijHJVaoJ5y3DXDo
-         ct7g==
-X-Gm-Message-State: AOAM531wtpUjBivDqd4IbxPRQL86w12wXZPRRywfz74LoLDBOUTUA94z
-        thTGyY+wqvXe+DbQjz3CofX2szqcqU8=
-X-Google-Smtp-Source: ABdhPJwshQN22vMvwSvlXUoR6HtvGLQALyZ8baZxG/wowQuClI85f3xbh7x0WKqRxzGhByAZEhZxjA==
-X-Received: by 2002:a05:6402:2898:: with SMTP id eg24mr1456329edb.142.1643243799013;
-        Wed, 26 Jan 2022 16:36:39 -0800 (PST)
+        bh=PIyy1S882MJEdPQ345mTMhYul/4iG3UJWg4AQv8ZfsM=;
+        b=XhnAkxhQcc9BWEq0hBS4s1gh+s3J3XFB1EU6ub5TVFffPBdOBaeUtZh1EWqKLITqj4
+         jLZCZzdrWzODNfNTQ3aYO0aHpXQJ0ulUsrrA0rp1wn9SpnYjQCQ0aMdzaD1M8roqv1Oa
+         z1P/1SlFgEnNPp7M4KNYPho3RvhoydLE6ZC8c+9yL2sJT1tyDfLTUNTyvkdEXduEBMot
+         ztxwqVHiDsMvPwS3fH3xdoPybqyMQXb08nNSn0Es7vh7xfr/LK1AdexSDdikP599vOYT
+         PmylskMSh1S0tSK6zVMdgGyi/cYCrvlydLsbVre87w6i0+4EWmxnIauyJoMRAVEBJuPo
+         e7Sw==
+X-Gm-Message-State: AOAM530sXVw63ViA8xgPIIWtmj59R7AxgpJc0WDSXRV1+nfj89XCVHLD
+        r6W56JRQlj8sLmPFQw4dMnlbPmAN3NM=
+X-Google-Smtp-Source: ABdhPJwT7dr42MSzLWWRj+EZ2vzWIe6zAxtvQU0DfaOJvqiWn+Fy6Z8OtOl2cHPSRlwi0dMUnC8aHg==
+X-Received: by 2002:a17:907:2d94:: with SMTP id gt20mr1085743ejc.118.1643243800011;
+        Wed, 26 Jan 2022 16:36:40 -0800 (PST)
 Received: from 127.0.0.1localhost ([85.255.234.222])
-        by smtp.gmail.com with ESMTPSA id op27sm8039235ejb.103.2022.01.26.16.36.38
+        by smtp.gmail.com with ESMTPSA id op27sm8039235ejb.103.2022.01.26.16.36.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 16:36:38 -0800 (PST)
+        Wed, 26 Jan 2022 16:36:39 -0800 (PST)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -54,9 +54,9 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v2 02/10] udp6: shuffle up->pending AF_INET bits
-Date:   Thu, 27 Jan 2022 00:36:23 +0000
-Message-Id: <54bfbd199f8e371333082a123de432211248eaae.1643243772.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v2 03/10] ipv6: remove daddr temp buffer in __ip6_make_skb
+Date:   Thu, 27 Jan 2022 00:36:24 +0000
+Message-Id: <e622cbe82ae21b740cb818abc9f6efe02cb0dede.1643243772.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1643243772.git.asml.silence@gmail.com>
 References: <cover.1643243772.git.asml.silence@gmail.com>
@@ -66,38 +66,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Corked AF_INET for ipv6 socket doesn't appear to be the hottest case,
-so move it out of the common path under up->pending check to remove
-overhead.
+ipv6_push_nfrag_opts() doesn't change passed daddr, and so
+__ip6_make_skb() doesn't actually need to keep an on-stack copy of
+fl6->daddr. Set initially final_dst to fl6->daddr,
+ipv6_push_nfrag_opts() will override it if needed, and get rid of extra
+copies.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/ipv6/udp.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ net/ipv6/ip6_output.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 528b81ef19c9..e221a6957b1f 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1363,9 +1363,6 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		}
- 	}
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 14d607ccfeea..4acd577d5ec5 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1843,7 +1843,7 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
+ {
+ 	struct sk_buff *skb, *tmp_skb;
+ 	struct sk_buff **tail_skb;
+-	struct in6_addr final_dst_buf, *final_dst = &final_dst_buf;
++	struct in6_addr *final_dst;
+ 	struct ipv6_pinfo *np = inet6_sk(sk);
+ 	struct net *net = sock_net(sk);
+ 	struct ipv6hdr *hdr;
+@@ -1873,9 +1873,9 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
  
--	if (up->pending == AF_INET)
--		return udp_sendmsg(sk, msg, len);
+ 	/* Allow local fragmentation. */
+ 	skb->ignore_df = ip6_sk_ignore_df(sk);
 -
- 	/* Rough check on arithmetic overflow,
- 	   better check is made in ip6_append_data().
- 	   */
-@@ -1374,6 +1371,8 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+-	*final_dst = fl6->daddr;
+ 	__skb_pull(skb, skb_network_header_len(skb));
++
++	final_dst = &fl6->daddr;
+ 	if (opt && opt->opt_flen)
+ 		ipv6_push_frag_opts(skb, opt, &proto);
+ 	if (opt && opt->opt_nflen)
+@@ -1895,7 +1895,6 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
  
- 	getfrag  =  is_udplite ?  udplite_getfrag : ip_generic_getfrag;
- 	if (up->pending) {
-+		if (up->pending == AF_INET)
-+			return udp_sendmsg(sk, msg, len);
- 		/*
- 		 * There are pending frames.
- 		 * The socket lock must be held while it's corked.
+ 	skb->priority = sk->sk_priority;
+ 	skb->mark = cork->base.mark;
+-
+ 	skb->tstamp = cork->base.transmit_time;
+ 
+ 	ip6_cork_steal_dst(skb, cork);
 -- 
 2.34.1
 
