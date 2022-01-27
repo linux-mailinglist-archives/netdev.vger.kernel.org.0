@@ -2,101 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B7F949D81A
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 03:34:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29C0349D820
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 03:36:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235197AbiA0Cej (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jan 2022 21:34:39 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50830 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232931AbiA0Cej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 21:34:39 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0CAA611B5;
-        Thu, 27 Jan 2022 02:34:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDC57C340E9;
-        Thu, 27 Jan 2022 02:34:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643250878;
-        bh=nBFR2KGBtdN545VFqzbmwbS9CsNlhehTCJbDm0jsjsM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oMhBjV5P/LoBEf6KnKmjvwIypsbknPvT2oll3FELCjE+6UE92FEUqYLyfEWAxDdom
-         s2cteejOWOk3V3qz9Sks+XQ/+HC0zoQ8Xh26OlHRCp79GEDkoM1zcH6FvB26dlmD7M
-         6rCqMRgkrfF/qWk1AEyFP9uvwj1SSw7H8pbyoLRIwX0+DGJ7x9Aht1JYpll+7qQkYz
-         kptbgUIp/SXiX20M2+LRhO5+qYhJdboVUMMFECXdTYDo8LMDqPovTrdiiDUuXtsdKE
-         VWcGkjQQaSh37kmyOZ+O9M3l5J4XitKGS3Qfq5wxz5GaUHp7xDKyYkJRqb3MI571W1
-         ySmhZyFV/EFDQ==
-Date:   Wed, 26 Jan 2022 18:34:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH v3 net-next 2/2] net: mscc: ocelot: use bulk reads for
- stats
-Message-ID: <20220126183436.063b467c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220125071531.1181948-3-colin.foster@in-advantage.com>
-References: <20220125071531.1181948-1-colin.foster@in-advantage.com>
-        <20220125071531.1181948-3-colin.foster@in-advantage.com>
+        id S235238AbiA0Cgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jan 2022 21:36:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57802 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231508AbiA0Cgw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jan 2022 21:36:52 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C36AC06173B
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 18:36:52 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id c188so1919654iof.6
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 18:36:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=TrIeda6M4M9lk0at+GG7zdWgmSnIp1weAu9IMqU+s08=;
+        b=l4A+UQhrk06bBi+wF2aJYmA4y8nQ+pNm+Rvr+7sGsyZLFxfYTsh08Il8FE+m/CPMwo
+         36dllpe44+bpOGwj0aWi58dBAEgfbjzOk7QbfK/BW5GigWJasMw1IJ/pisrjn7AGxv8w
+         gJWjk65XesHHi/ytL1i69oys+dl0tNeXV0arKUPpa31FaCpcVHx/LrgyrTyiYVtZ/kkd
+         S+hhwvhnV2jiAfbmjVUvHqq1mJiyP+K4c4MUjcFodiIrt99bj3PvyrD30WtxqGocrlMj
+         jJ5OCPa0ekoS2e76ncdTyDSToh+mo3y+B9L6qdE8nLEpdmFV+ucfQ17wtNC/5BgSErPN
+         2CbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TrIeda6M4M9lk0at+GG7zdWgmSnIp1weAu9IMqU+s08=;
+        b=e0q1+AibONFA1tc+ZqqnN23N7NDgCbA7IuSTPEYi/LvwpM6Az2b30F1WCX6yqMyGPI
+         WtDr/suvXV0VCUGtwsfPg6GXWxa3JxjEdzci4jqyyERyjYINRqYGNgFwfnXCNf+UcU09
+         xhXRiHHnhvtvO6Qu1Ziqhm6SjAE1QP8Ebh12m3SX8DJF9+XGJYppjQuOjux0reJzjQdh
+         CVfb5C3q7ydBY4EME1EECcPZLA77bZ7a7e42ksPQO2CM7vZHFPt+KzYY7SWy1bLNNMkr
+         aTFisr5sYatS7q+v0kXEp/PPSrSegWPHWMpG64S+a0psGLXws+qNj50+bRomxciLJcGm
+         gG8g==
+X-Gm-Message-State: AOAM532p2nfkUKmUGtVv1Jw2WLB7DxJm5U/IAqTpSp0maApuYkQx3jGd
+        D3C+RH28wIvXLwcQRDJRucA=
+X-Google-Smtp-Source: ABdhPJwcRTne4f7tFbMy5KoYb/GXM+y1AokfDAmXnys5EsOVZqIPbnIEQ5X6A0cgtqH+blZjEKnzuA==
+X-Received: by 2002:a02:9997:: with SMTP id a23mr847566jal.256.1643251011491;
+        Wed, 26 Jan 2022 18:36:51 -0800 (PST)
+Received: from ?IPV6:2601:282:800:dc80:a443:a1f0:524f:ffce? ([2601:282:800:dc80:a443:a1f0:524f:ffce])
+        by smtp.googlemail.com with ESMTPSA id k11sm10464529iob.23.2022.01.26.18.36.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 18:36:51 -0800 (PST)
+Message-ID: <640acb21-e5ed-49cb-ecce-34200f5af543@gmail.com>
+Date:   Wed, 26 Jan 2022 19:36:50 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH net] ipv4: remove sparse error in ip_neigh_gw4()
+Content-Language: en-US
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>, netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+References: <20220127013404.1279313-1-eric.dumazet@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220127013404.1279313-1-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 24 Jan 2022 23:15:31 -0800 Colin Foster wrote:
-> Create and utilize bulk regmap reads instead of single access for gathering
-> stats. The background reading of statistics happens frequently, and over
-> a few contiguous memory regions.
+On 1/26/22 6:34 PM, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> High speed PCIe buses and MMIO access will probably see negligible
-> performance increase. Lower speed buses like SPI and I2C could see
-> significant performance increase, since the bus configuration and register
-> access times account for a large percentage of data transfer time.
+> ./include/net/route.h:373:48: warning: incorrect type in argument 2 (different base types)
+> ./include/net/route.h:373:48:    expected unsigned int [usertype] key
+> ./include/net/route.h:373:48:    got restricted __be32 [usertype] daddr
 > 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Fixes: 5c9f7c1dfc2e ("ipv4: Add helpers for neigh lookup for nexthop")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: David Ahern <dsahern@gmail.com>
+> ---
+>  include/net/route.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/net/route.h b/include/net/route.h
+> index 4c858dcf1aa8cd1988746e55eb698ad4425fd77b..25404fc2b48374c69081b8c72c2ea1dbbc09ed7f 100644
+> --- a/include/net/route.h
+> +++ b/include/net/route.h
+> @@ -370,7 +370,7 @@ static inline struct neighbour *ip_neigh_gw4(struct net_device *dev,
+>  {
+>  	struct neighbour *neigh;
+>  
+> -	neigh = __ipv4_neigh_lookup_noref(dev, daddr);
+> +	neigh = __ipv4_neigh_lookup_noref(dev, (__force u32)daddr);
+>  	if (unlikely(!neigh))
+>  		neigh = __neigh_create(&arp_tbl, &daddr, dev, false);
+>  
 
-> +static int ocelot_prepare_stats_regions(struct ocelot *ocelot)
-> +{
-> +	struct ocelot_stats_region *region = NULL;
-> +	unsigned int last;
-> +	int i;
-> +
-> +	INIT_LIST_HEAD(&ocelot->stats_regions);
-> +
-> +	for (i = 0; i < ocelot->num_stats; i++) {
-> +		if (region && ocelot->stats_layout[i].offset == last + 1) {
-> +			region->count++;
-> +		} else {
-> +			region = devm_kzalloc(ocelot->dev, sizeof(*region),
-> +					      GFP_KERNEL);
-> +			if (!region)
-> +				return -ENOMEM;
-> +
-> +			region->offset = ocelot->stats_layout[i].offset;
-> +			region->count = 1;
-> +			list_add_tail(&region->node, &ocelot->stats_regions);
-> +		}
-> +
-> +		last = ocelot->stats_layout[i].offset;
-> +	}
-> +
-> +	list_for_each_entry(region, &ocelot->stats_regions, node) {
-> +		region->buf = devm_kzalloc(ocelot->dev,
-> +					   region->count * sizeof(*region->buf),
-> +					   GFP_KERNEL);
+I think __ipv4_neigh_lookup_noref can be changed to __be32 and remove
+the (__force u32) from a couple of callers, but more like net-next material.
 
-devm_kcalloc()
-
-> +
-
-unnecessary new line
-
-> +		if (!region->buf)
-> +			return -ENOMEM;
+Reviewed-by: David Ahern <dsahern@kernel.org>
