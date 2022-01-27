@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8DFA49E2FD
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 14:00:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F16349E2FF
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 14:00:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241433AbiA0NAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 08:00:33 -0500
-Received: from mga02.intel.com ([134.134.136.20]:52239 "EHLO mga02.intel.com"
+        id S241456AbiA0NAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 08:00:51 -0500
+Received: from mga17.intel.com ([192.55.52.151]:29584 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241450AbiA0NAc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 08:00:32 -0500
+        id S241454AbiA0NAu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jan 2022 08:00:50 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643288432; x=1674824432;
+  t=1643288450; x=1674824450;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=ynISfQGFkE0Pd3v8j9hwtGZ3p4Vm3qAMrOtfMEbwy3k=;
-  b=k4eLG29yEn9xsLRqgi8e+WkQRFoblqrzGboqgwQjIqzQG5Hi+FClHYaF
-   /RbT5omx9alb2CFLbftfYJG97x5ei/p67AnmVTvKW3qGkBPWlqH1DhKut
-   vmzOVsuGcKzL7hTzwtnyc8yFJFT+vDRIxSXq+o4uBfUqQ53yuc1IGhcfj
-   c55pfv1GV5zpbpoUVSog6UEwUgUQenx9kh9hTqcAoo0U4dxtA0gb/FiC6
-   GIl/7UFuQEo3578ZQwytQf3Igmv+igGpUlmUpE4DeB+RD0XeF88xt6cAm
-   WS6si36c/MdcAWhu+wNKFjnbuPbvbwoZBUUQbUkCVUh0e6BWu52C8WU4i
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="234217142"
+  bh=eRT8aluHyxpEpATiaOae772wQ58JP4T1Nq7yU3m45uM=;
+  b=c4ykYR2vHeCWI37q1FzqOZgaXK0f5/vRt2gVPgtwPHBgedmtlcr0uNnu
+   J2ZV/Ph2lYCppGNF0kwN6bUrkxfNqDjz2Rxvxmvh0QHvjOQA6lExym0Q3
+   nwJ7oDvAv/GI/PWpfxLwRWLstISSzMFWs16py9L1BWOV8wHWdbbcznowv
+   fDhDMGyRd3JlO8mzEKbndCfXMSG9SZLVhOrxt9bMdJxxyI/R6tKbrswX6
+   NsBY/s0UtWN/z9+TECrpOqSKo2Lvc4NtpWEijqoC3UUDfiNcxm04mNvKH
+   gho3h6IwMAvI6jWvqpRE9IQa5QB8+ivLY0AJuYSbO5ttCfCWN96oPejW2
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="227513628"
 X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="234217142"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 05:00:31 -0800
+   d="scan'208";a="227513628"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 05:00:50 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="618318441"
+   d="scan'208";a="495715696"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by FMSMGA003.fm.intel.com with ESMTP; 27 Jan 2022 05:00:29 -0800
+  by orsmga002.jf.intel.com with ESMTP; 27 Jan 2022 05:00:32 -0800
 Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20RD0S2t020405;
-        Thu, 27 Jan 2022 13:00:28 GMT
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20RD0UQr020408;
+        Thu, 27 Jan 2022 13:00:30 GMT
 From:   Marcin Szycik <marcin.szycik@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
         davem@davemloft.net, kuba@kernel.org,
-        intel-wired-lan@lists.osuosl.org
-Subject: [RFC PATCH net-next v2 4/5] ice: Fix FV offset searching
-Date:   Thu, 27 Jan 2022 13:57:38 +0100
-Message-Id: <20220127125738.126065-1-marcin.szycik@linux.intel.com>
+        intel-wired-lan@lists.osuosl.org,
+        Marcin Szycik <marcin.szycik@linux.intel.com>
+Subject: [RFC PATCH net-next v2 5/5] ice: Support GTP-U and GTP-C offload in switchdev
+Date:   Thu, 27 Jan 2022 13:57:40 +0100
+Message-Id: <20220127125740.126114-1-marcin.szycik@linux.intel.com>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -52,145 +53,1075 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Add support for creating filters for GTP-U and GTP-C in switchdev mode. Add
+support for parsing GTP-specific options (QFI and PDU type) and TEID.
 
-Checking only protocol ids while searching for correct FVs can lead to a
-situation, when incorrect FV will be added to the list. Incorrect means
-that FV has correct protocol id but incorrect offset.
+By default, a filter for GTP-U will be added. To add a filter for GTP-C,
+specify enc_dst_port = 2123, e.g.:
 
-Call ice_get_sw_fv_list with ice_prot_lkup_ext struct which contains all
-protocol ids with offsets.
+tc filter add dev $GTP0 ingress prio 1 flower enc_key_id 1337 \
+enc_dst_port 2123 action mirred egress redirect dev $VF1_PR
 
-With this modification allocating and collecting protocol ids list is
-not longer needed.
+Note: IPv6 offload is not supported yet.
+Note: GTP-U with no payload offload is not supported yet.
 
-Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Signed-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>
 ---
- .../net/ethernet/intel/ice/ice_flex_pipe.c    | 16 +++-----
- .../net/ethernet/intel/ice/ice_flex_pipe.h    |  2 +-
- drivers/net/ethernet/intel/ice/ice_switch.c   | 39 +------------------
- 3 files changed, 9 insertions(+), 48 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h          |   1 +
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    |  30 +-
+ .../net/ethernet/intel/ice/ice_flex_type.h    |   6 +-
+ .../ethernet/intel/ice/ice_protocol_type.h    |  19 +
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 591 +++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_switch.h   |   9 +
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 105 +++-
+ drivers/net/ethernet/intel/ice/ice_tc_lib.h   |   3 +
+ 8 files changed, 746 insertions(+), 18 deletions(-)
 
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index 4e16d185077d..77ecebbcce9c 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -51,6 +51,7 @@
+ #include <net/gre.h>
+ #include <net/udp_tunnel.h>
+ #include <net/vxlan.h>
++#include <net/gtp.h>
+ #if IS_ENABLED(CONFIG_DCB)
+ #include <scsi/iscsi_proto.h>
+ #endif /* CONFIG_DCB */
 diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-index 4deb2c9446ec..22072709cc4e 100644
+index 22072709cc4e..617f6470c867 100644
 --- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
 +++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-@@ -1781,7 +1781,7 @@ ice_get_sw_fv_bitmap(struct ice_hw *hw, enum ice_prof_type req_profs,
-  * allocated for every list entry.
-  */
- int
--ice_get_sw_fv_list(struct ice_hw *hw, u8 *prot_ids, u16 ids_cnt,
-+ice_get_sw_fv_list(struct ice_hw *hw, struct ice_prot_lkup_ext *lkups,
- 		   unsigned long *bm, struct list_head *fv_list)
- {
- 	struct ice_sw_fv_list_entry *fvl;
-@@ -1793,7 +1793,7 @@ ice_get_sw_fv_list(struct ice_hw *hw, u8 *prot_ids, u16 ids_cnt,
- 
- 	memset(&state, 0, sizeof(state));
- 
--	if (!ids_cnt || !hw->seg)
-+	if (!lkups->n_val_words || !hw->seg)
- 		return -EINVAL;
- 
- 	ice_seg = hw->seg;
-@@ -1812,20 +1812,16 @@ ice_get_sw_fv_list(struct ice_hw *hw, u8 *prot_ids, u16 ids_cnt,
- 		if (!test_bit((u16)offset, bm))
- 			continue;
- 
--		for (i = 0; i < ids_cnt; i++) {
-+		for (i = 0; i < lkups->n_val_words; i++) {
- 			int j;
- 
--			/* This code assumes that if a switch field vector line
--			 * has a matching protocol, then this line will contain
--			 * the entries necessary to represent every field in
--			 * that protocol header.
--			 */
- 			for (j = 0; j < hw->blk[ICE_BLK_SW].es.fvw; j++)
--				if (fv->ew[j].prot_id == prot_ids[i])
-+				if (fv->ew[j].prot_id == lkups->fv_words[i].prot_id &&
-+				    fv->ew[j].off == lkups->fv_words[i].off)
- 					break;
- 			if (j >= hw->blk[ICE_BLK_SW].es.fvw)
- 				break;
--			if (i + 1 == ids_cnt) {
-+			if (i + 1 == lkups->n_val_words) {
- 				fvl = devm_kzalloc(ice_hw_to_dev(hw),
- 						   sizeof(*fvl), GFP_KERNEL);
- 				if (!fvl)
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
-index 6cbc29bcb02f..c266655089f2 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
-@@ -87,7 +87,7 @@ ice_get_sw_fv_bitmap(struct ice_hw *hw, enum ice_prof_type type,
- void
- ice_init_prof_result_bm(struct ice_hw *hw);
- int
--ice_get_sw_fv_list(struct ice_hw *hw, u8 *prot_ids, u16 ids_cnt,
-+ice_get_sw_fv_list(struct ice_hw *hw, struct ice_prot_lkup_ext *lkups,
- 		   unsigned long *bm, struct list_head *fv_list);
- bool
- ice_get_open_tunnel_port(struct ice_hw *hw, u16 *port,
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 11ae0bee3590..49308a22a92c 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -4426,41 +4426,6 @@ ice_create_recipe_group(struct ice_hw *hw, struct ice_sw_recipe *rm,
- 	return status;
+@@ -1701,16 +1701,42 @@ static struct ice_buf_build *ice_pkg_buf_alloc(struct ice_hw *hw)
+ 	return bld;
  }
  
--/**
-- * ice_get_fv - get field vectors/extraction sequences for spec. lookup types
-- * @hw: pointer to hardware structure
-- * @lkups: lookup elements or match criteria for the advanced recipe, one
-- *	   structure per protocol header
-- * @lkups_cnt: number of protocols
-- * @bm: bitmap of field vectors to consider
-- * @fv_list: pointer to a list that holds the returned field vectors
-- */
--static int
--ice_get_fv(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
--	   unsigned long *bm, struct list_head *fv_list)
--{
--	u8 *prot_ids;
--	int status;
--	u16 i;
--
--	prot_ids = kcalloc(lkups_cnt, sizeof(*prot_ids), GFP_KERNEL);
--	if (!prot_ids)
--		return -ENOMEM;
--
--	for (i = 0; i < lkups_cnt; i++)
--		if (!ice_prot_type_to_id(lkups[i].type, &prot_ids[i])) {
--			status = -EIO;
--			goto free_mem;
--		}
--
--	/* Find field vectors that include all specified protocol types */
--	status = ice_get_sw_fv_list(hw, prot_ids, lkups_cnt, bm, fv_list);
--
--free_mem:
--	kfree(prot_ids);
--	return status;
--}
--
++static bool ice_is_gtp_u_profile(u16 prof_idx)
++{
++	return (prof_idx >= ICE_PROFID_IPV6_GTPU_TEID &&
++		prof_idx <= ICE_PROFID_IPV6_GTPU_IPV6_TCP_INNER) ||
++	       prof_idx == ICE_PROFID_IPV4_GTPU_TEID;
++}
++
++static bool ice_is_gtp_c_profile(u16 prof_idx)
++{
++	switch (prof_idx) {
++	case ICE_PROFID_IPV4_GTPC_TEID:
++	case ICE_PROFID_IPV4_GTPC_NO_TEID:
++	case ICE_PROFID_IPV6_GTPC_TEID:
++	case ICE_PROFID_IPV6_GTPC_NO_TEID:
++		return true;
++	default:
++		return false;
++	}
++}
++
  /**
-  * ice_tun_type_match_word - determine if tun type needs a match mask
-  * @tun_type: tunnel type
-@@ -4608,11 +4573,11 @@ ice_add_adv_recipe(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
+  * ice_get_sw_prof_type - determine switch profile type
+  * @hw: pointer to the HW structure
+  * @fv: pointer to the switch field vector
+  */
+ static enum ice_prof_type
+-ice_get_sw_prof_type(struct ice_hw *hw, struct ice_fv *fv)
++ice_get_sw_prof_type(struct ice_hw *hw, struct ice_fv *fv, u32 prof_idx)
+ {
+ 	u16 i;
  
- 	/* Get bitmap of field vectors (profiles) that are compatible with the
- 	 * rule request; only these will be searched in the subsequent call to
--	 * ice_get_fv.
-+	 * ice_get_sw_fv_list.
- 	 */
- 	ice_get_compat_fv_bitmap(hw, rinfo, fv_bitmap);
++	if (ice_is_gtp_c_profile(prof_idx))
++		return ICE_PROF_TUN_GTPC;
++
++	if (ice_is_gtp_u_profile(prof_idx))
++		return ICE_PROF_TUN_GTPU;
++
+ 	for (i = 0; i < hw->blk[ICE_BLK_SW].es.fvw; i++) {
+ 		/* UDP tunnel will have UDP_OF protocol ID and VNI offset */
+ 		if (fv->ew[i].prot_id == (u8)ICE_PROT_UDP_OF &&
+@@ -1757,7 +1783,7 @@ ice_get_sw_fv_bitmap(struct ice_hw *hw, enum ice_prof_type req_profs,
  
--	status = ice_get_fv(hw, lkups, lkups_cnt, fv_bitmap, &rm->fv_list);
-+	status = ice_get_sw_fv_list(hw, lkup_exts, fv_bitmap, &rm->fv_list);
- 	if (status)
- 		goto err_unroll;
+ 		if (fv) {
+ 			/* Determine field vector type */
+-			prof_type = ice_get_sw_prof_type(hw, fv);
++			prof_type = ice_get_sw_prof_type(hw, fv, offset);
  
+ 			if (req_profs & prof_type)
+ 				set_bit((u16)offset, bm);
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_type.h b/drivers/net/ethernet/intel/ice/ice_flex_type.h
+index fc087e0b5292..7322bd366172 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_flex_type.h
+@@ -416,6 +416,8 @@ enum ice_tunnel_type {
+ 	TNL_VXLAN = 0,
+ 	TNL_GENEVE,
+ 	TNL_GRETAP,
++	TNL_GTPC,
++	TNL_GTPU,
+ 	__TNL_TYPE_CNT,
+ 	TNL_LAST = 0xFF,
+ 	TNL_ALL = 0xFF,
+@@ -659,7 +661,9 @@ enum ice_prof_type {
+ 	ICE_PROF_NON_TUN = 0x1,
+ 	ICE_PROF_TUN_UDP = 0x2,
+ 	ICE_PROF_TUN_GRE = 0x4,
+-	ICE_PROF_TUN_ALL = 0x6,
++	ICE_PROF_TUN_GTPU = 0x8,
++	ICE_PROF_TUN_GTPC = 0x10,
++	ICE_PROF_TUN_ALL = 0x1E,
+ 	ICE_PROF_ALL = 0xFF,
+ };
+ #endif /* _ICE_FLEX_TYPE_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_protocol_type.h b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
+index dc1b0e9e6df5..bb3483df4186 100644
+--- a/drivers/net/ethernet/intel/ice/ice_protocol_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
+@@ -40,6 +40,8 @@ enum ice_protocol_type {
+ 	ICE_VXLAN,
+ 	ICE_GENEVE,
+ 	ICE_NVGRE,
++	ICE_GTP,
++	ICE_GTP_NO_PAY,
+ 	ICE_VXLAN_GPE,
+ 	ICE_SCTP_IL,
+ 	ICE_PROTOCOL_LAST
+@@ -50,6 +52,8 @@ enum ice_sw_tunnel_type {
+ 	ICE_SW_TUN_VXLAN,
+ 	ICE_SW_TUN_GENEVE,
+ 	ICE_SW_TUN_NVGRE,
++	ICE_SW_TUN_GTPU,
++	ICE_SW_TUN_GTPC,
+ 	ICE_ALL_TUNNELS /* All tunnel types including NVGRE */
+ };
+ 
+@@ -179,6 +183,20 @@ struct ice_udp_tnl_hdr {
+ 	__be32 vni;     /* only use lower 24-bits */
+ };
+ 
++struct ice_udp_gtp_hdr {
++	u8 flags;
++	u8 msg_type;
++	__be16 rsrvd_len;
++	__be32 teid;
++	__be16 rsrvd_seq_nbr;
++	u8 rsrvd_n_pdu_nbr;
++	u8 rsrvd_next_ext;
++	u8 rsvrd_ext_len;
++	u8 pdu_type;
++	u8 qfi;
++	u8 rsvrd;
++};
++
+ struct ice_nvgre_hdr {
+ 	__be16 flags;
+ 	__be16 protocol;
+@@ -195,6 +213,7 @@ union ice_prot_hdr {
+ 	struct ice_sctp_hdr sctp_hdr;
+ 	struct ice_udp_tnl_hdr tnl_hdr;
+ 	struct ice_nvgre_hdr nvgre_hdr;
++	struct ice_udp_gtp_hdr gtp_hdr;
+ };
+ 
+ /* This is mapping table entry that maps every word within a given protocol
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
+index 49308a22a92c..a2fa579211e6 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.c
++++ b/drivers/net/ethernet/intel/ice/ice_switch.c
+@@ -500,6 +500,495 @@ static const u8 dummy_vlan_udp_ipv6_packet[] = {
+ 	0x00, 0x00, /* 2 bytes for 4 byte alignment */
+ };
+ 
++/* Outer IPv4 + Outer UDP + GTP + Inner IPv4 + Inner TCP */
++static const
++struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv4_tcp_packet_offsets[] = {
++	{ ICE_MAC_OFOS,		0 },
++	{ ICE_IPV4_OFOS,	14 },
++	{ ICE_UDP_OF,		34 },
++	{ ICE_GTP,		42 },
++	{ ICE_IPV4_IL,		62 },
++	{ ICE_TCP_IL,		82 },
++	{ ICE_PROTOCOL_LAST,	0 },
++};
++
++static const u8 dummy_ipv4_gtpu_ipv4_tcp_packet[] = {
++	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x08, 0x00,
++
++	0x45, 0x00, 0x00, 0x58, /* IP 14 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x11, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x08, 0x68, /* UDP 34 */
++	0x00, 0x44, 0x00, 0x00,
++
++	0x34, 0xff, 0x00, 0x34, /* ICE_GTP Header 42 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x85,
++
++	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 54 */
++	0x00, 0x00, 0x00, 0x00,
++
++	0x45, 0x00, 0x00, 0x28, /* IP 62 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x06, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x00, 0x00, /* TCP 82 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x50, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, /* 2 bytes for 4 byte alignment */
++};
++
++/* Outer IPv4 + Outer UDP + GTP + Inner IPv4 + Inner UDP */
++static const
++struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv4_udp_packet_offsets[] = {
++	{ ICE_MAC_OFOS,		0 },
++	{ ICE_IPV4_OFOS,	14 },
++	{ ICE_UDP_OF,		34 },
++	{ ICE_GTP,		42 },
++	{ ICE_IPV4_IL,		62 },
++	{ ICE_UDP_ILOS,		82 },
++	{ ICE_PROTOCOL_LAST,	0 },
++};
++
++static const u8 dummy_ipv4_gtpu_ipv4_udp_packet[] = {
++	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x08, 0x00,
++
++	0x45, 0x00, 0x00, 0x4c, /* IP 14 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x11, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x08, 0x68, /* UDP 34 */
++	0x00, 0x38, 0x00, 0x00,
++
++	0x34, 0xff, 0x00, 0x28, /* ICE_GTP Header 42 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x85,
++
++	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 54 */
++	0x00, 0x00, 0x00, 0x00,
++
++	0x45, 0x00, 0x00, 0x1c, /* IP 62 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x11, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x00, 0x00, /* UDP 82 */
++	0x00, 0x08, 0x00, 0x00,
++
++	0x00, 0x00, /* 2 bytes for 4 byte alignment */
++};
++
++/* Outer IPv6 + Outer UDP + GTP + Inner IPv4 + Inner TCP */
++static const
++struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv6_tcp_packet_offsets[] = {
++	{ ICE_MAC_OFOS,		0 },
++	{ ICE_IPV4_OFOS,	14 },
++	{ ICE_UDP_OF,		34 },
++	{ ICE_GTP,		42 },
++	{ ICE_IPV6_IL,		62 },
++	{ ICE_TCP_IL,		102 },
++	{ ICE_PROTOCOL_LAST,	0 },
++};
++
++static const u8 dummy_ipv4_gtpu_ipv6_tcp_packet[] = {
++	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x08, 0x00,
++
++	0x45, 0x00, 0x00, 0x6c, /* IP 14 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x11, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x08, 0x68, /* UDP 34 */
++	0x00, 0x58, 0x00, 0x00,
++
++	0x34, 0xff, 0x00, 0x48, /* ICE_GTP Header 42 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x85,
++
++	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 54 */
++	0x00, 0x00, 0x00, 0x00,
++
++	0x60, 0x00, 0x00, 0x00, /* IPv6 62 */
++	0x00, 0x14, 0x06, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x00, 0x00, /* TCP 102 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x50, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, /* 2 bytes for 4 byte alignment */
++};
++
++static const
++struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv6_udp_packet_offsets[] = {
++	{ ICE_MAC_OFOS,		0 },
++	{ ICE_IPV4_OFOS,	14 },
++	{ ICE_UDP_OF,		34 },
++	{ ICE_GTP,		42 },
++	{ ICE_IPV6_IL,		62 },
++	{ ICE_UDP_ILOS,		102 },
++	{ ICE_PROTOCOL_LAST,	0 },
++};
++
++static const u8 dummy_ipv4_gtpu_ipv6_udp_packet[] = {
++	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x08, 0x00,
++
++	0x45, 0x00, 0x00, 0x60, /* IP 14 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x11, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x08, 0x68, /* UDP 34 */
++	0x00, 0x4c, 0x00, 0x00,
++
++	0x34, 0xff, 0x00, 0x3c, /* ICE_GTP Header 42 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x85,
++
++	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 54 */
++	0x00, 0x00, 0x00, 0x00,
++
++	0x60, 0x00, 0x00, 0x00, /* IPv6 62 */
++	0x00, 0x08, 0x11, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x00, 0x00, /* UDP 102 */
++	0x00, 0x08, 0x00, 0x00,
++
++	0x00, 0x00, /* 2 bytes for 4 byte alignment */
++};
++
++static const
++struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv4_tcp_packet_offsets[] = {
++	{ ICE_MAC_OFOS,		0 },
++	{ ICE_IPV6_OFOS,	14 },
++	{ ICE_UDP_OF,		54 },
++	{ ICE_GTP,		62 },
++	{ ICE_IPV4_IL,		82 },
++	{ ICE_TCP_IL,		102 },
++	{ ICE_PROTOCOL_LAST,	0 },
++};
++
++static const u8 dummy_ipv6_gtpu_ipv4_tcp_packet[] = {
++	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x86, 0xdd,
++
++	0x60, 0x00, 0x00, 0x00, /* IPv6 14 */
++	0x00, 0x44, 0x11, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x08, 0x68, /* UDP 54 */
++	0x00, 0x44, 0x00, 0x00,
++
++	0x34, 0xff, 0x00, 0x34, /* ICE_GTP Header 62 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x85,
++
++	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 74 */
++	0x00, 0x00, 0x00, 0x00,
++
++	0x45, 0x00, 0x00, 0x28, /* IP 82 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x06, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x00, 0x00, /* TCP 102 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x50, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, /* 2 bytes for 4 byte alignment */
++};
++
++static const
++struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv4_udp_packet_offsets[] = {
++	{ ICE_MAC_OFOS,		0 },
++	{ ICE_IPV6_OFOS,	14 },
++	{ ICE_UDP_OF,		54 },
++	{ ICE_GTP,		62 },
++	{ ICE_IPV4_IL,		82 },
++	{ ICE_UDP_ILOS,		102 },
++	{ ICE_PROTOCOL_LAST,	0 },
++};
++
++static const u8 dummy_ipv6_gtpu_ipv4_udp_packet[] = {
++	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x86, 0xdd,
++
++	0x60, 0x00, 0x00, 0x00, /* IPv6 14 */
++	0x00, 0x38, 0x11, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x08, 0x68, /* UDP 54 */
++	0x00, 0x38, 0x00, 0x00,
++
++	0x34, 0xff, 0x00, 0x28, /* ICE_GTP Header 62 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x85,
++
++	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 74 */
++	0x00, 0x00, 0x00, 0x00,
++
++	0x45, 0x00, 0x00, 0x1c, /* IP 82 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x11, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x00, 0x00, /* UDP 102 */
++	0x00, 0x08, 0x00, 0x00,
++
++	0x00, 0x00, /* 2 bytes for 4 byte alignment */
++};
++
++static const
++struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv6_tcp_packet_offsets[] = {
++	{ ICE_MAC_OFOS,		0 },
++	{ ICE_IPV6_OFOS,	14 },
++	{ ICE_UDP_OF,		54 },
++	{ ICE_GTP,		62 },
++	{ ICE_IPV6_IL,		82 },
++	{ ICE_TCP_IL,		122 },
++	{ ICE_PROTOCOL_LAST,	0 },
++};
++
++static const u8 dummy_ipv6_gtpu_ipv6_tcp_packet[] = {
++	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x86, 0xdd,
++
++	0x60, 0x00, 0x00, 0x00, /* IPv6 14 */
++	0x00, 0x58, 0x11, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x08, 0x68, /* UDP 54 */
++	0x00, 0x58, 0x00, 0x00,
++
++	0x34, 0xff, 0x00, 0x48, /* ICE_GTP Header 62 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x85,
++
++	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 74 */
++	0x00, 0x00, 0x00, 0x00,
++
++	0x60, 0x00, 0x00, 0x00, /* IPv6 82 */
++	0x00, 0x14, 0x06, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x00, 0x00, /* TCP 122 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x50, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, /* 2 bytes for 4 byte alignment */
++};
++
++static const
++struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv6_udp_packet_offsets[] = {
++	{ ICE_MAC_OFOS,		0 },
++	{ ICE_IPV6_OFOS,	14 },
++	{ ICE_UDP_OF,		54 },
++	{ ICE_GTP,		62 },
++	{ ICE_IPV6_IL,		82 },
++	{ ICE_UDP_ILOS,		122 },
++	{ ICE_PROTOCOL_LAST,	0 },
++};
++
++static const u8 dummy_ipv6_gtpu_ipv6_udp_packet[] = {
++	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x86, 0xdd,
++
++	0x60, 0x00, 0x00, 0x00, /* IPv6 14 */
++	0x00, 0x4c, 0x11, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x08, 0x68, /* UDP 54 */
++	0x00, 0x4c, 0x00, 0x00,
++
++	0x34, 0xff, 0x00, 0x3c, /* ICE_GTP Header 62 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x85,
++
++	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 74 */
++	0x00, 0x00, 0x00, 0x00,
++
++	0x60, 0x00, 0x00, 0x00, /* IPv6 82 */
++	0x00, 0x08, 0x11, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00, 0x00, 0x00, /* UDP 122 */
++	0x00, 0x08, 0x00, 0x00,
++
++	0x00, 0x00, /* 2 bytes for 4 byte alignment */
++};
++
++static const u8 dummy_ipv4_gtpu_ipv4_packet[] = {
++	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x08, 0x00,
++
++	0x45, 0x00, 0x00, 0x44, /* ICE_IPV4_OFOS 14 */
++	0x00, 0x00, 0x40, 0x00,
++	0x40, 0x11, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x08, 0x68, 0x08, 0x68, /* ICE_UDP_OF 34 */
++	0x00, 0x00, 0x00, 0x00,
++
++	0x34, 0xff, 0x00, 0x28, /* ICE_GTP 42 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x85,
++
++	0x02, 0x00, 0x00, 0x00, /* PDU Session extension header */
++	0x00, 0x00, 0x00, 0x00,
++
++	0x45, 0x00, 0x00, 0x14, /* ICE_IPV4_IL 62 */
++	0x00, 0x00, 0x40, 0x00,
++	0x40, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00,
++};
++
++static const
++struct ice_dummy_pkt_offsets dummy_ipv4_gtp_no_pay_packet_offsets[] = {
++	{ ICE_MAC_OFOS,		0 },
++	{ ICE_IPV4_OFOS,	14 },
++	{ ICE_UDP_OF,		34 },
++	{ ICE_GTP_NO_PAY,	42 },
++	{ ICE_PROTOCOL_LAST,	0 },
++};
++
++static const
++struct ice_dummy_pkt_offsets dummy_ipv6_gtp_no_pay_packet_offsets[] = {
++	{ ICE_MAC_OFOS,		0 },
++	{ ICE_IPV6_OFOS,	14 },
++	{ ICE_UDP_OF,		54 },
++	{ ICE_GTP_NO_PAY,	62 },
++	{ ICE_PROTOCOL_LAST,	0 },
++};
++
++static const u8 dummy_ipv6_gtp_packet[] = {
++	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x86, 0xdd,
++
++	0x60, 0x00, 0x00, 0x00, /* ICE_IPV6_OFOS 14 */
++	0x00, 0x6c, 0x11, 0x00, /* Next header UDP*/
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00,
++
++	0x08, 0x68, 0x08, 0x68, /* ICE_UDP_OF 54 */
++	0x00, 0x00, 0x00, 0x00,
++
++	0x30, 0x00, 0x00, 0x28, /* ICE_GTP 62 */
++	0x00, 0x00, 0x00, 0x00,
++
++	0x00, 0x00,
++};
++
+ #define ICE_SW_RULE_RX_TX_ETH_HDR_SIZE \
+ 	(offsetof(struct ice_aqc_sw_rules_elem, pdata.lkup_tx_rx.hdr) + \
+ 	 (DUMMY_ETH_HDR_LEN * \
+@@ -3767,7 +4256,9 @@ static const struct ice_prot_ext_tbl_entry ice_prot_ext[ICE_PROTOCOL_LAST] = {
+ 	{ ICE_UDP_ILOS,		{ 0, 2 } },
+ 	{ ICE_VXLAN,		{ 8, 10, 12, 14 } },
+ 	{ ICE_GENEVE,		{ 8, 10, 12, 14 } },
+-	{ ICE_NVGRE,            { 0, 2, 4, 6 } },
++	{ ICE_NVGRE,		{ 0, 2, 4, 6 } },
++	{ ICE_GTP,		{ 8, 10, 12, 14, 16, 18, 20, 22 } },
++	{ ICE_GTP_NO_PAY,	{ 8, 10, 12, 14 } },
+ };
+ 
+ static struct ice_protocol_entry ice_prot_id_tbl[ICE_PROTOCOL_LAST] = {
+@@ -3784,7 +4275,9 @@ static struct ice_protocol_entry ice_prot_id_tbl[ICE_PROTOCOL_LAST] = {
+ 	{ ICE_UDP_ILOS,		ICE_UDP_ILOS_HW },
+ 	{ ICE_VXLAN,		ICE_UDP_OF_HW },
+ 	{ ICE_GENEVE,		ICE_UDP_OF_HW },
+-	{ ICE_NVGRE,            ICE_GRE_OF_HW },
++	{ ICE_NVGRE,		ICE_GRE_OF_HW },
++	{ ICE_GTP,		ICE_UDP_OF_HW },
++	{ ICE_GTP_NO_PAY,	ICE_UDP_ILOS_HW },
+ };
+ 
+ /**
+@@ -4437,6 +4930,8 @@ static bool ice_tun_type_match_word(enum ice_sw_tunnel_type tun_type, u16 *mask)
+ 	case ICE_SW_TUN_GENEVE:
+ 	case ICE_SW_TUN_VXLAN:
+ 	case ICE_SW_TUN_NVGRE:
++	case ICE_SW_TUN_GTPU:
++	case ICE_SW_TUN_GTPC:
+ 		*mask = ICE_TUN_FLAG_MASK;
+ 		return true;
+ 
+@@ -4502,6 +4997,12 @@ ice_get_compat_fv_bitmap(struct ice_hw *hw, struct ice_adv_rule_info *rinfo,
+ 	case ICE_SW_TUN_NVGRE:
+ 		prof_type = ICE_PROF_TUN_GRE;
+ 		break;
++	case ICE_SW_TUN_GTPU:
++		prof_type = ICE_PROF_TUN_GTPU;
++		break;
++	case ICE_SW_TUN_GTPC:
++		prof_type = ICE_PROF_TUN_GTPC;
++		break;
+ 	default:
+ 		prof_type = ICE_PROF_ALL;
+ 		break;
+@@ -4701,16 +5202,17 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+ 		      const u8 **pkt, u16 *pkt_len,
+ 		      const struct ice_dummy_pkt_offsets **offsets)
+ {
+-	bool tcp = false, udp = false, ipv6 = false, vlan = false;
++	bool inner_tcp = false, inner_udp = false, outer_ipv6 = false;
++	bool vlan = false, inner_ipv6 = false, gtp_no_pay = false;
+ 	u16 i;
+ 
+ 	for (i = 0; i < lkups_cnt; i++) {
+ 		if (lkups[i].type == ICE_UDP_ILOS)
+-			udp = true;
++			inner_udp = true;
+ 		else if (lkups[i].type == ICE_TCP_IL)
+-			tcp = true;
++			inner_tcp = true;
+ 		else if (lkups[i].type == ICE_IPV6_OFOS)
+-			ipv6 = true;
++			outer_ipv6 = true;
+ 		else if (lkups[i].type == ICE_VLAN_OFOS)
+ 			vlan = true;
+ 		else if (lkups[i].type == ICE_ETYPE_OL &&
+@@ -4718,11 +5220,72 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+ 				cpu_to_be16(ICE_IPV6_ETHER_ID) &&
+ 			 lkups[i].m_u.ethertype.ethtype_id ==
+ 					cpu_to_be16(0xFFFF))
+-			ipv6 = true;
++			outer_ipv6 = true;
++		else if (lkups[i].type == ICE_IPV6_IL)
++			inner_ipv6 = true;
++		else if (lkups[i].type == ICE_GTP_NO_PAY)
++			gtp_no_pay = true;
++	}
++
++	if (tun_type == ICE_SW_TUN_GTPU || tun_type == ICE_SW_TUN_GTPC) {
++		if (outer_ipv6) {
++			if (gtp_no_pay) {
++				*pkt = dummy_ipv6_gtp_packet;
++				*pkt_len = sizeof(dummy_ipv6_gtp_packet);
++				*offsets = dummy_ipv6_gtp_no_pay_packet_offsets;
++			} else if (inner_ipv6) {
++				if (inner_udp) {
++					*pkt = dummy_ipv6_gtpu_ipv6_udp_packet;
++					*pkt_len = sizeof(dummy_ipv6_gtpu_ipv6_udp_packet);
++					*offsets = dummy_ipv6_gtpu_ipv6_udp_packet_offsets;
++				} else {
++					*pkt = dummy_ipv6_gtpu_ipv6_tcp_packet;
++					*pkt_len = sizeof(dummy_ipv6_gtpu_ipv6_tcp_packet);
++					*offsets = dummy_ipv6_gtpu_ipv6_tcp_packet_offsets;
++				}
++			} else {
++				if (inner_udp) {
++					*pkt = dummy_ipv6_gtpu_ipv4_udp_packet;
++					*pkt_len = sizeof(dummy_ipv6_gtpu_ipv4_udp_packet);
++					*offsets = dummy_ipv6_gtpu_ipv4_udp_packet_offsets;
++				} else {
++					*pkt = dummy_ipv6_gtpu_ipv4_tcp_packet;
++					*pkt_len = sizeof(dummy_ipv6_gtpu_ipv4_tcp_packet);
++					*offsets = dummy_ipv6_gtpu_ipv4_tcp_packet_offsets;
++				}
++			}
++		} else {
++			if (gtp_no_pay) {
++				*pkt = dummy_ipv4_gtpu_ipv4_packet;
++				*pkt_len = sizeof(dummy_ipv4_gtpu_ipv4_packet);
++				*offsets = dummy_ipv4_gtp_no_pay_packet_offsets;
++			} else if (inner_ipv6) {
++				if (inner_udp) {
++					*pkt = dummy_ipv4_gtpu_ipv6_udp_packet;
++					*pkt_len = sizeof(dummy_ipv4_gtpu_ipv6_udp_packet);
++					*offsets = dummy_ipv4_gtpu_ipv6_udp_packet_offsets;
++				} else {
++					*pkt = dummy_ipv4_gtpu_ipv6_tcp_packet;
++					*pkt_len = sizeof(dummy_ipv4_gtpu_ipv6_tcp_packet);
++					*offsets = dummy_ipv4_gtpu_ipv6_tcp_packet_offsets;
++				}
++			} else {
++				if (inner_udp) {
++					*pkt = dummy_ipv4_gtpu_ipv4_udp_packet;
++					*pkt_len = sizeof(dummy_ipv4_gtpu_ipv4_udp_packet);
++					*offsets = dummy_ipv4_gtpu_ipv4_udp_packet_offsets;
++				} else {
++					*pkt = dummy_ipv4_gtpu_ipv4_tcp_packet;
++					*pkt_len = sizeof(dummy_ipv4_gtpu_ipv4_tcp_packet);
++					*offsets = dummy_ipv4_gtpu_ipv4_tcp_packet_offsets;
++				}
++			}
++		}
++		return;
+ 	}
+ 
+ 	if (tun_type == ICE_SW_TUN_NVGRE) {
+-		if (tcp) {
++		if (inner_tcp) {
+ 			*pkt = dummy_gre_tcp_packet;
+ 			*pkt_len = sizeof(dummy_gre_tcp_packet);
+ 			*offsets = dummy_gre_tcp_packet_offsets;
+@@ -4737,7 +5300,7 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+ 
+ 	if (tun_type == ICE_SW_TUN_VXLAN ||
+ 	    tun_type == ICE_SW_TUN_GENEVE) {
+-		if (tcp) {
++		if (inner_tcp) {
+ 			*pkt = dummy_udp_tun_tcp_packet;
+ 			*pkt_len = sizeof(dummy_udp_tun_tcp_packet);
+ 			*offsets = dummy_udp_tun_tcp_packet_offsets;
+@@ -4750,7 +5313,7 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+ 		return;
+ 	}
+ 
+-	if (udp && !ipv6) {
++	if (inner_udp && !outer_ipv6) {
+ 		if (vlan) {
+ 			*pkt = dummy_vlan_udp_packet;
+ 			*pkt_len = sizeof(dummy_vlan_udp_packet);
+@@ -4761,7 +5324,7 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+ 		*pkt_len = sizeof(dummy_udp_packet);
+ 		*offsets = dummy_udp_packet_offsets;
+ 		return;
+-	} else if (udp && ipv6) {
++	} else if (inner_udp && outer_ipv6) {
+ 		if (vlan) {
+ 			*pkt = dummy_vlan_udp_ipv6_packet;
+ 			*pkt_len = sizeof(dummy_vlan_udp_ipv6_packet);
+@@ -4772,7 +5335,7 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+ 		*pkt_len = sizeof(dummy_udp_ipv6_packet);
+ 		*offsets = dummy_udp_ipv6_packet_offsets;
+ 		return;
+-	} else if ((tcp && ipv6) || ipv6) {
++	} else if ((inner_tcp && outer_ipv6) || outer_ipv6) {
+ 		if (vlan) {
+ 			*pkt = dummy_vlan_tcp_ipv6_packet;
+ 			*pkt_len = sizeof(dummy_vlan_tcp_ipv6_packet);
+@@ -4877,6 +5440,10 @@ ice_fill_adv_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+ 		case ICE_GENEVE:
+ 			len = sizeof(struct ice_udp_tnl_hdr);
+ 			break;
++		case ICE_GTP_NO_PAY:
++		case ICE_GTP:
++			len = sizeof(struct ice_udp_gtp_hdr);
++			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
+index d8334beaaa8a..d88a4092a8c5 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.h
++++ b/drivers/net/ethernet/intel/ice/ice_switch.h
+@@ -14,6 +14,15 @@
+ #define ICE_VSI_INVAL_ID 0xffff
+ #define ICE_INVAL_Q_HANDLE 0xFFFF
+ 
++/* Switch Profile IDs for Profile related switch rules */
++#define ICE_PROFID_IPV4_GTPC_TEID			41
++#define ICE_PROFID_IPV4_GTPC_NO_TEID			42
++#define ICE_PROFID_IPV4_GTPU_TEID			43
++#define ICE_PROFID_IPV6_GTPC_TEID			44
++#define ICE_PROFID_IPV6_GTPC_NO_TEID			45
++#define ICE_PROFID_IPV6_GTPU_TEID			46
++#define ICE_PROFID_IPV6_GTPU_IPV6_TCP_INNER		70
++
+ #define ICE_SW_RULE_RX_TX_NO_HDR_SIZE \
+ 	(offsetof(struct ice_aqc_sw_rules_elem, pdata.lkup_tx_rx.hdr))
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+index e8aab664270a..eb34db29cc08 100644
+--- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+@@ -24,6 +24,9 @@ ice_tc_count_lkups(u32 flags, struct ice_tc_flower_lyr_2_4_hdrs *headers,
+ 	if (flags & ICE_TC_FLWR_FIELD_TENANT_ID)
+ 		lkups_cnt++;
+ 
++	if (flags & ICE_TC_FLWR_FIELD_ENC_OPTS)
++		lkups_cnt++;
++
+ 	if (flags & (ICE_TC_FLWR_FIELD_ENC_SRC_IPV4 |
+ 		     ICE_TC_FLWR_FIELD_ENC_DEST_IPV4 |
+ 		     ICE_TC_FLWR_FIELD_ENC_SRC_IPV6 |
+@@ -96,6 +99,11 @@ ice_proto_type_from_tunnel(enum ice_tunnel_type type)
+ 		return ICE_GENEVE;
+ 	case TNL_GRETAP:
+ 		return ICE_NVGRE;
++	case TNL_GTPU:
++		/* NO_PAY profiles will not work with GTP-U */
++		return ICE_GTP;
++	case TNL_GTPC:
++		return ICE_GTP_NO_PAY;
+ 	default:
+ 		return 0;
+ 	}
+@@ -111,6 +119,10 @@ ice_sw_type_from_tunnel(enum ice_tunnel_type type)
+ 		return ICE_SW_TUN_GENEVE;
+ 	case TNL_GRETAP:
+ 		return ICE_SW_TUN_NVGRE;
++	case TNL_GTPU:
++		return ICE_SW_TUN_GTPU;
++	case TNL_GTPC:
++		return ICE_SW_TUN_GTPC;
+ 	default:
+ 		return ICE_NON_TUN;
+ 	}
+@@ -137,7 +149,15 @@ ice_tc_fill_tunnel_outer(u32 flags, struct ice_tc_flower_fltr *fltr,
+ 			break;
+ 		case TNL_GRETAP:
+ 			list[i].h_u.nvgre_hdr.tni_flow = fltr->tenant_id;
+-			memcpy(&list[i].m_u.nvgre_hdr.tni_flow, "\xff\xff\xff\xff", 4);
++			memcpy(&list[i].m_u.nvgre_hdr.tni_flow,
++			       "\xff\xff\xff\xff", 4);
++			i++;
++			break;
++		case TNL_GTPC:
++		case TNL_GTPU:
++			list[i].h_u.gtp_hdr.teid = fltr->tenant_id;
++			memcpy(&list[i].m_u.gtp_hdr.teid,
++			       "\xff\xff\xff\xff", 4);
+ 			i++;
+ 			break;
+ 		default:
+@@ -145,6 +165,24 @@ ice_tc_fill_tunnel_outer(u32 flags, struct ice_tc_flower_fltr *fltr,
+ 		}
+ 	}
+ 
++	if (flags & ICE_TC_FLWR_FIELD_ENC_OPTS &&
++	    (fltr->tunnel_type == TNL_GTPU || fltr->tunnel_type == TNL_GTPC)) {
++		list[i].type = ice_proto_type_from_tunnel(fltr->tunnel_type);
++
++		if (fltr->gtp_pdu_info_masks.pdu_type) {
++			list[i].h_u.gtp_hdr.pdu_type =
++				fltr->gtp_pdu_info_keys.pdu_type << 4;
++			memcpy(&list[i].m_u.gtp_hdr.pdu_type, "\xf0", 1);
++		}
++
++		if (fltr->gtp_pdu_info_masks.qfi) {
++			list[i].h_u.gtp_hdr.qfi = fltr->gtp_pdu_info_keys.qfi;
++			memcpy(&list[i].m_u.gtp_hdr.qfi, "\x3f", 1);
++		}
++
++		i++;
++	}
++
+ 	if (flags & (ICE_TC_FLWR_FIELD_ENC_SRC_IPV4 |
+ 		     ICE_TC_FLWR_FIELD_ENC_DEST_IPV4)) {
+ 		list[i].type = ice_proto_type_from_ipv4(false);
+@@ -344,6 +382,12 @@ static int ice_tc_tun_get_type(struct net_device *tunnel_dev)
+ 	if (netif_is_gretap(tunnel_dev) ||
+ 	    netif_is_ip6gretap(tunnel_dev))
+ 		return TNL_GRETAP;
++
++	/* Assume GTP-U by default in case of GTP netdev.
++	 * GTP-C may be selected later, based on enc_dst_port.
++	 */
++	if (netif_is_gtp(tunnel_dev))
++		return TNL_GTPU;
+ 	return TNL_LAST;
+ }
+ 
+@@ -743,6 +787,40 @@ ice_get_tunnel_device(struct net_device *dev, struct flow_rule *rule)
+ 	return NULL;
+ }
+ 
++/**
++ * ice_parse_gtp_type - Sets GTP tunnel type to GTP-U or GTP-C
++ * @match: Flow match structure
++ * @fltr: Pointer to filter structure
++ *
++ * GTP-C/GTP-U is selected based on destination port number (enc_dst_port).
++ * Before calling this funtcion, fltr->tunnel_type should be set to TNL_GTPU,
++ * therefore making GTP-U the default choice (when destination port number is
++ * not specified).
++ */
++static int
++ice_parse_gtp_type(struct flow_match_ports match,
++		   struct ice_tc_flower_fltr *fltr)
++{
++	u16 dst_port;
++
++	if (match.key->dst) {
++		dst_port = be16_to_cpu(match.key->dst);
++
++		switch (dst_port) {
++		case 2152:
++			break;
++		case 2123:
++			fltr->tunnel_type = TNL_GTPC;
++			break;
++		default:
++			NL_SET_ERR_MSG_MOD(fltr->extack, "Unsupported GTP port number");
++			return -EINVAL;
++		}
++	}
++
++	return 0;
++}
++
+ static int
+ ice_parse_tunnel_attr(struct net_device *dev, struct flow_rule *rule,
+ 		      struct ice_tc_flower_fltr *fltr)
+@@ -798,8 +876,28 @@ ice_parse_tunnel_attr(struct net_device *dev, struct flow_rule *rule,
+ 		struct flow_match_ports match;
+ 
+ 		flow_rule_match_enc_ports(rule, &match);
+-		if (ice_tc_set_port(match, fltr, headers, true))
+-			return -EINVAL;
++
++		if (fltr->tunnel_type != TNL_GTPU) {
++			if (ice_tc_set_port(match, fltr, headers, true))
++				return -EINVAL;
++		} else {
++			if (ice_parse_gtp_type(match, fltr))
++				return -EINVAL;
++		}
++	}
++
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_OPTS)) {
++		struct flow_match_enc_opts match;
++
++		flow_rule_match_enc_opts(rule, &match);
++
++		memcpy(&fltr->gtp_pdu_info_keys, &match.key->data[0],
++		       sizeof(struct gtp_pdu_session_info));
++
++		memcpy(&fltr->gtp_pdu_info_masks, &match.mask->data[0],
++		       sizeof(struct gtp_pdu_session_info));
++
++		fltr->flags |= ICE_TC_FLWR_FIELD_ENC_OPTS;
+ 	}
+ 
+ 	return 0;
+@@ -837,6 +935,7 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
+ 	      BIT(FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS) |
+ 	      BIT(FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS) |
+ 	      BIT(FLOW_DISSECTOR_KEY_ENC_PORTS) |
++	      BIT(FLOW_DISSECTOR_KEY_ENC_OPTS) |
+ 	      BIT(FLOW_DISSECTOR_KEY_ENC_IP) |
+ 	      BIT(FLOW_DISSECTOR_KEY_PORTS))) {
+ 		NL_SET_ERR_MSG_MOD(fltr->extack, "Unsupported key used");
+diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.h b/drivers/net/ethernet/intel/ice/ice_tc_lib.h
+index 319049477959..e25e958f4396 100644
+--- a/drivers/net/ethernet/intel/ice/ice_tc_lib.h
++++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.h
+@@ -22,6 +22,7 @@
+ #define ICE_TC_FLWR_FIELD_ENC_SRC_L4_PORT	BIT(15)
+ #define ICE_TC_FLWR_FIELD_ENC_DST_MAC		BIT(16)
+ #define ICE_TC_FLWR_FIELD_ETH_TYPE_ID		BIT(17)
++#define ICE_TC_FLWR_FIELD_ENC_OPTS		BIT(18)
+ 
+ #define ICE_TC_FLOWER_MASK_32   0xFFFFFFFF
+ 
+@@ -119,6 +120,8 @@ struct ice_tc_flower_fltr {
+ 	struct ice_tc_flower_lyr_2_4_hdrs inner_headers;
+ 	struct ice_vsi *src_vsi;
+ 	__be32 tenant_id;
++	struct gtp_pdu_session_info gtp_pdu_info_keys;
++	struct gtp_pdu_session_info gtp_pdu_info_masks;
+ 	u32 flags;
+ 	u8 tunnel_type;
+ 	struct ice_tc_flower_action	action;
 -- 
 2.31.1
 
