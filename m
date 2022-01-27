@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCFBA49EDCD
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 22:52:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5BC549EDD0
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 22:52:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239688AbiA0Vws (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 16:52:48 -0500
-Received: from mga03.intel.com ([134.134.136.65]:32610 "EHLO mga03.intel.com"
+        id S239875AbiA0Vwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 16:52:51 -0500
+Received: from mga03.intel.com ([134.134.136.65]:32606 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243708AbiA0Vwn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 16:52:43 -0500
+        id S243766AbiA0Vwo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jan 2022 16:52:44 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643320363; x=1674856363;
+  t=1643320364; x=1674856364;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Mkuu8zSaph5A19qMOnJs2RqERi6BfBqLSaY92OBLPt0=;
-  b=mHhMLLz5qBWHHRzuvkUEZKTvLwZOXY6AV1C7YHzkkzBf4o6luO27xJGn
-   FZVq1gvV5aZCn/sK2yUEIyiocW/E9a2nubqhlxTLuKnJk9vc4F0mu1iq+
-   0vBOcOu10ye5ngr++V4nbrsI0awqypj1pA1gQ0lprZwafUHaFFBRPtYek
-   PP6vuLShPWCi642S6q3y79PExgOS33Yy4d0dBzRFpamdCrYmKcC6EbWrZ
-   /njIN7oL6Rw7SjGCV3WV40Z8hKj8TZubBB6B7iQxAjNto56ICJ8KC7yAj
-   4eGgwxJqHTz/Z5y8ERY8uiyZPP4HTsbMGOP6VbGJk2g/aMlsf6CQtKpR/
+  bh=leqm2CcNpXDT8BUi6hRFno6MXuS1zxsK3GwXkRaS+hA=;
+  b=jTQbwDVCo6bNmCpF/SdFC4t/s9UtE0t4Rv9rD0ILHJ/GYubK/ug7X3uG
+   9R8cFTstSyV9qvMqVAzlp6VhJczyNbDxDddZZhcemO03lexlqVOyNPF9/
+   Y+MzF3kBlvsM+jlOFhbAoYYm14tEA4wnoapQFk9IeqYFMhR+5e4DMielq
+   ASif+OFgzC7j50AOjfmV1WHyKbx24QxCeSiWk0W4PBo2hrzW8Y+rqhJPB
+   in4mXiB/qy0p8B4gDCKKzHX47QWlRWisyFN0lto4KuRgDlNwx9n3sxZfa
+   3fOa+91mOFSFTU1Uo/gGe9frFE04c1saj9BzOZ/P8I/XMzySqtppwV0gJ
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="246918945"
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="246918947"
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="246918945"
+   d="scan'208";a="246918947"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 13:52:43 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="625391780"
+   d="scan'208";a="625391783"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga002.fm.intel.com with ESMTP; 27 Jan 2022 13:52:43 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Christoph Hellwig <hch@lst.de>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH net-next 05/10] e1000e: Remove useless DMA-32 fallback configuration
-Date:   Thu, 27 Jan 2022 13:52:19 -0800
-Message-Id: <20220127215224.422113-6-anthony.l.nguyen@intel.com>
+        sassmann@redhat.com, Christoph Hellwig <hch@lst.de>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: [PATCH net-next 06/10] iavf: Remove useless DMA-32 fallback configuration
+Date:   Thu, 27 Jan 2022 13:52:20 -0800
+Message-Id: <20220127215224.422113-7-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220127215224.422113-1-anthony.l.nguyen@intel.com>
 References: <20220127215224.422113-1-anthony.l.nguyen@intel.com>
@@ -58,9 +59,6 @@ As stated in [1], dma_set_mask() with a 64-bit mask never fails if
 dev->dma_mask is non-NULL.
 So, if it fails, the 32 bits case will also fail for the same reason.
 
-So, if dma_set_mask_and_coherent() succeeds, 'pci_using_dac' is known to be
-1.
-
 Simplify code and remove some dead code accordingly.
 
 [1]: https://lkml.org/lkml/2021/6/7/398
@@ -68,61 +66,32 @@ Simplify code and remove some dead code accordingly.
 Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/e1000e/netdev.c | 22 +++++++---------------
- 1 file changed, 7 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 635a95927e93..4f6ee5c44f75 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -7385,9 +7385,9 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	resource_size_t flash_start, flash_len;
- 	static int cards_found;
- 	u16 aspm_disable_flag = 0;
--	int bars, i, err, pci_using_dac;
- 	u16 eeprom_data = 0;
- 	u16 eeprom_apme_mask = E1000_EEPROM_APME;
-+	int bars, i, err;
- 	s32 ret_val = 0;
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 8125b9120615..b0bd95c85480 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -4368,12 +4368,9 @@ static int iavf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  
- 	if (ei->flags2 & FLAG2_DISABLE_ASPM_L0S)
-@@ -7401,17 +7401,11 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (err)
- 		return err;
- 
--	pci_using_dac = 0;
  	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
--	if (!err) {
--		pci_using_dac = 1;
--	} else {
+ 	if (err) {
 -		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
 -		if (err) {
 -			dev_err(&pdev->dev,
--				"No usable DMA configuration, aborting\n");
+-				"DMA configuration failed: 0x%x\n", err);
 -			goto err_dma;
 -		}
-+	if (err) {
 +		dev_err(&pdev->dev,
-+			"No usable DMA configuration, aborting\n");
++			"DMA configuration failed: 0x%x\n", err);
 +		goto err_dma;
  	}
  
- 	bars = pci_select_bars(pdev, IORESOURCE_MEM);
-@@ -7547,10 +7541,8 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	netdev->priv_flags |= IFF_UNICAST_FLT;
- 
--	if (pci_using_dac) {
--		netdev->features |= NETIF_F_HIGHDMA;
--		netdev->vlan_features |= NETIF_F_HIGHDMA;
--	}
-+	netdev->features |= NETIF_F_HIGHDMA;
-+	netdev->vlan_features |= NETIF_F_HIGHDMA;
- 
- 	/* MTU range: 68 - max_hw_frame_size */
- 	netdev->min_mtu = ETH_MIN_MTU;
+ 	err = pci_request_regions(pdev, iavf_driver_name);
 -- 
 2.31.1
 
