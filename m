@@ -2,118 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7194849E270
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 13:36:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9D9249E2B2
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 13:42:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241175AbiA0Mgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 07:36:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51202 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231901AbiA0Mge (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 07:36:34 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E3BC061714
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 04:36:34 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id b13so3520767edn.0
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 04:36:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7k9fDV9OkEyB6jl7dl2S84GHJ6DV0tH1HREFjQMT3Z0=;
-        b=IXpiU9/aoSnpgTOSxcQCQcJW2RH4ct6tPavKiNp1Up5IoPt5T8Q+IcZB8PDLglISW8
-         E85dz70lDIW3LOo79X5vnwyTJUNPbW7b1K8ctHSWgTK25lui+WfluGOjDNbYyfLgHBAn
-         x97kdsVjVPlt+fOMDvbH3JBK0dnaH0JAPixQ6GWYCrwbKvdufgQRthV429Jr7gwch/nD
-         Wr2ksLy+mii4gCqAOgcqFytgTfymbskPUApt4hpb4EsnEY6UT8TXk1G7nlT9jGU12oae
-         neuw74jOCK118S2w2w5sVm/TDrJomuFpBlqMpXprtXV1vBtc7xjTImB9dHrTQX7neO/P
-         wTpA==
+        id S241437AbiA0MmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 07:42:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52140 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236655AbiA0MmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 07:42:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643287332;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uNXpPtb2OXqXG9hmJBWkzD608J4s2s8/JsJidLVyecU=;
+        b=dGDNS6mI9GPE3Sh2E80c0kXgtlr2Zav50yLqxVtOS1IWZxCe9ohpCQ+34eNt1dtS6ZjUdA
+        MJIvez47mRYRVifwqnI9JpSs5gMydbMLA4cFdFe9s03Ob755HiRqKqz+lMCIngYUciZH5N
+        CFSxk7vj/gvgwn9tYHVzH3VEqD1qUbo=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-636-wI5Nayr3O_myUzE-YsaQaA-1; Thu, 27 Jan 2022 07:42:11 -0500
+X-MC-Unique: wI5Nayr3O_myUzE-YsaQaA-1
+Received: by mail-ej1-f69.google.com with SMTP id x16-20020a170906135000b006b5b4787023so1279299ejb.12
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 04:41:51 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=7k9fDV9OkEyB6jl7dl2S84GHJ6DV0tH1HREFjQMT3Z0=;
-        b=bscNarLthsNSDPCz+mF46c7Lk3BnJE6nMtg/rIdZp8IWCBonvmT9ClFB60mW32xL0E
-         yabknshcRe7Vq+6dpqiByhV98hnfdWz2Rq054AAmixLQCfxdQqhuXxWEtyKuz7iB0wqf
-         Ahd/+iK8HhwYExoPjXX6CzqVyo2tZy0Chi6FCIoYQYYyErWnB619v6Z6UYUl0yznb8oN
-         WWfeWAhxVLG8KvJWml2KTVy6InNfCUSeKurM1zgGnvYoQn4+2Mcdurxm9gL2BlFPH1lh
-         GMjXWqZUhH1plK21LhbLI3zJkvnd12XQvczbETg/LxswaRuZ0nIO9P+yplP3B9cPo8Ul
-         zd2Q==
-X-Gm-Message-State: AOAM532O2nhtjaumkpriB8C6FmvuiYpDuwZQ8Q2pyDPRFj/72DTfniHJ
-        vFh3iSkBLuY1Ne8/1/67XWdVzSdDLCU=
-X-Google-Smtp-Source: ABdhPJxzI1syXafWv3WFJ0NGJH9+PP2aZ3Y87P8of3b4kDl3s7jadCLkE7YMnduLgNFybVXxb0YEOg==
-X-Received: by 2002:a05:6402:1c95:: with SMTP id cy21mr3463699edb.172.1643286992758;
-        Thu, 27 Jan 2022 04:36:32 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id y5sm11422275edw.45.2022.01.27.04.36.31
+        bh=uNXpPtb2OXqXG9hmJBWkzD608J4s2s8/JsJidLVyecU=;
+        b=GSk9qhVEKSlyfzeZ1q7f6Fp12AyTKlIrnLsxf0Cj/1pnGYNU25aDehG1wd4hAPmwfi
+         xZDBYi64PVdUXELZFQXF+8PK8GRoWFFzrJo8qTJHJY/PMXPHIYNbEHhnYBYhm9iSzzkL
+         rqndBsE12omJqPyCjGSHPnPLaMqN9W0l/DFhc9zynkUhR7eNMT8gfaBDBeb+oUtyoRte
+         ZzKMD1WwwhAEFTCVf4WAwJMvK4rS3ADjmbqol/Da/xYM7XdcRUzH4Fzi5QtPwg4usXLS
+         LRxdrRxmBP6yICTJFyO+qlqSXYZ+PGZxnZwtNUMXH+liGcGT68veI9FDUn/3Z2vJOv23
+         cCyg==
+X-Gm-Message-State: AOAM533KDg/+tb8D7xxHZgCIb8DhfaiuUJ5QXE8MpX9tBb8kYfvgzFqS
+        wEIa5zfRWf2CoI6lWQIwFPuw4/pX8qnCP+RHKPiL1D0CbjZbQbVgDiVkoClCccJKOjYYed6Ciuk
+        eXa0+iu1ldf31DIAc
+X-Received: by 2002:a17:907:7d89:: with SMTP id oz9mr2684963ejc.400.1643287308392;
+        Thu, 27 Jan 2022 04:41:48 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyotloQ/8jLEyYVrL4x9QKTye3cSBEx1XpJh+giSQrDeyBAnixpRAjtIqNHOtrp8KFRexubOA==
+X-Received: by 2002:a17:907:7d89:: with SMTP id oz9mr2684950ejc.400.1643287308220;
+        Thu, 27 Jan 2022 04:41:48 -0800 (PST)
+Received: from redhat.com ([2.55.140.126])
+        by smtp.gmail.com with ESMTPSA id g9sm8674052ejf.98.2022.01.27.04.41.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 04:36:31 -0800 (PST)
-Date:   Thu, 27 Jan 2022 14:36:30 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next 01/15] mii: remove
- mii_lpa_to_linkmode_lpa_sgmii()
-Message-ID: <20220127123630.dcekgawusvmga6ay@skbuf>
-References: <20220126191109.2822706-1-kuba@kernel.org>
- <20220126191109.2822706-2-kuba@kernel.org>
+        Thu, 27 Jan 2022 04:41:47 -0800 (PST)
+Date:   Thu, 27 Jan 2022 07:41:44 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Yin Xiujiang <yinxiujiang@kylinos.cn>
+Cc:     jasowang@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost: Make use of the helper macro kthread_run()
+Message-ID: <20220127074050-mutt-send-email-mst@kernel.org>
+References: <20220127020807.844630-1-yinxiujiang@kylinos.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220126191109.2822706-2-kuba@kernel.org>
+In-Reply-To: <20220127020807.844630-1-yinxiujiang@kylinos.cn>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 11:10:55AM -0800, Jakub Kicinski wrote:
-> The only caller of mii_lpa_to_linkmode_lpa_sgmii()
-> disappeared in v5.10.
+On Thu, Jan 27, 2022 at 10:08:07AM +0800, Yin Xiujiang wrote:
+> Repalce kthread_create/wake_up_process() with kthread_run()
+> to simplify the code.
 > 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> --
-> CC: Vladimir Oltean <olteanv@gmail.com>
-> CC: Andrew Lunn <andrew@lunn.ch>
-> CC: Heiner Kallweit <hkallweit1@gmail.com>
-> CC: Russell King <linux@armlinux.org.uk>
+> Signed-off-by: Yin Xiujiang <yinxiujiang@kylinos.cn>
 > ---
->  include/linux/mii.h | 17 -----------------
->  1 file changed, 17 deletions(-)
+>  drivers/vhost/vhost.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> diff --git a/include/linux/mii.h b/include/linux/mii.h
-> index 12ea29e04293..b8a1a17a87dd 100644
-> --- a/include/linux/mii.h
-> +++ b/include/linux/mii.h
-> @@ -387,23 +387,6 @@ mii_lpa_mod_linkmode_lpa_sgmii(unsigned long *lp_advertising, u32 lpa)
->  			 speed_duplex == LPA_SGMII_10FULL);
->  }
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index 59edb5a1ffe2..19e9eda9fc71 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -595,7 +595,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
 >  
-> -/**
-> - * mii_lpa_to_linkmode_adv_sgmii
-> - * @advertising: pointer to destination link mode.
-> - * @lpa: value of the MII_LPA register
-> - *
-> - * A small helper function that translates MII_ADVERTISE bits
-> - * to linkmode advertisement settings when in SGMII mode.
-> - * Clears the old value of advertising.
-> - */
-> -static inline void mii_lpa_to_linkmode_lpa_sgmii(unsigned long *lp_advertising,
-> -						 u32 lpa)
-> -{
-> -	linkmode_zero(lp_advertising);
-> -
-> -	mii_lpa_mod_linkmode_lpa_sgmii(lp_advertising, lpa);
-> -}
-> -
+>  	dev->kcov_handle = kcov_common_handle();
+>  	if (dev->use_worker) {
+> -		worker = kthread_create(vhost_worker, dev,
+> +		worker = kthread_run(vhost_worker, dev,
+>  					"vhost-%d", current->pid);
+>  		if (IS_ERR(worker)) {
+>  			err = PTR_ERR(worker);
+> @@ -603,7 +603,6 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
+>  		}
+>  
+>  		dev->worker = worker;
+> -		wake_up_process(worker); /* avoid contributing to loadavg */
+>  
+>  		err = vhost_attach_cgroups(dev);
+>  		if (err)
 
-This is also the only caller of mii_lpa_mod_linkmode_lpa_sgmii(), so
-that function can be deleted too.
+I think if you do this, you need to set dev->worker earlier.
 
->  /**
->   * mii_adv_mod_linkmode_adv_t
->   * @advertising:pointer to destination link mode.
 > -- 
-> 2.34.1
-> 
+> 2.30.0
 
