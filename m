@@ -2,164 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 203E949EDD3
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 22:53:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B20149EDD9
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 22:55:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240951AbiA0VxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 16:53:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40912 "EHLO
+        id S236136AbiA0VzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 16:55:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234469AbiA0VxC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 16:53:02 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EC9C061714;
-        Thu, 27 Jan 2022 13:53:02 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id c24so5668582edy.4;
-        Thu, 27 Jan 2022 13:53:02 -0800 (PST)
+        with ESMTP id S230427AbiA0VzL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 16:55:11 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89EB6C061714;
+        Thu, 27 Jan 2022 13:55:11 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id h14so3992121plf.1;
+        Thu, 27 Jan 2022 13:55:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=d5LRRB0uqm/WR5U/+eN4GjzzHTNXrtcy+Y+FfjmNOg8=;
-        b=MCqfRrjSHkuK7W6k74FWNoXR16maAPl8kP2eOeRYCZ6qOuOm0Gg64dYj471IEp8QPN
-         J5zMO0GKccZY6MfQ+mxBTG9rK1+8HBnz2daAqonONnN4R+uzHYY//fwzjxB+cWjNzLyN
-         OP9zpuSvLXq6nnzxMqVow4bhR9Tv544ZkQKBqyEs9Zke7PQYPnuxdu8D0rqmFaJX+JvQ
-         0UaOsh2Bp/CT5Vwzcpnz2ecpwFaPmD1TPqfDAFuTo2zlTA2l8IaRZ05Oh3LydUiozvAz
-         obrM43ZGdBza30K8kVNpiLt8Fj9GSQIwCldizBURlN4UYHBYp+HDun1sLm3UYDHcENo2
-         FM2w==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=J35l0cCg0B8rjIasy2LKEQqHsevOK9wJkAphQcTelBM=;
+        b=gXggFjW0L8WwND6TSJoBMLmPMyJPqQenm/QUchL+bIXQSNgY9gln/iZgfzSYRWRHSF
+         C4+gw3+u7UkUx8tf8EXLkMKcpFNns8v3QTPd1LDlsiKA6xe/LGkk41mentNSsUAI+lIh
+         CQ5cIbV05U8Mr1hQHWsCrc2h3CSY6KYxoSHugRXwUpWyzhkwGWeiiP+3o0ARap7W70Yp
+         HwhWEi+x+BaaXXaMuLjOAsFd+zF+3nTKBFTRIwFyIz+4ViFHbO6kODYx7d08EL+59lLF
+         oOU+lvsPNcdR9W3Qxd67qm9JoN2mGKuKdQvG5bmcxkK95AmobHM5yH/mgz6JqKecxy8Y
+         hH4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=d5LRRB0uqm/WR5U/+eN4GjzzHTNXrtcy+Y+FfjmNOg8=;
-        b=7XRQMsOC/gXPUdCC54dikbmBci0+jZeH2uN3kGdyFNxN4spOPqv28Dg13ZxR5U5cR5
-         TPqrKFIyBouQzMUlK8nozhGJQzfc+uxe8kFhe0jWUVb4/joaQWHJdPa31OeJzqaVUxKn
-         cYpvZdMg5/WfXg8GHe/89TlwiRI4+pbx8B/AUF7tDvox6/5bUrJda1EzyMO0ubJOcu6d
-         rh23SgTO7EtBCsa92KpbvtPyEaLG79QMZn//nsVkm9AYwyLqruSScDMvby/y1K4c7gjg
-         UMCz7CEYUXxrBZE9akZ0/7/BnbGTf5NFnPhN4Gjxzjr7u/OcnzeM5E5m0X+FnY7VqYUW
-         Th2A==
-X-Gm-Message-State: AOAM533lgPTVVTn8BnefNnwwLM73d0CxWdKjo3uuMx4QyOfpU9GU00w+
-        9TfzBMMZeGXUpCvEf81j5GLUH8i3tvvTROgekHS2cdBgIWk=
-X-Google-Smtp-Source: ABdhPJzc2dhIVgVmPkviLDO7e/v7aguAYMhH6I/AnZjWb6ofb0HEACO5XoaOdWIFSiDLVLEy7t3jP4Hk+rLeNCv4ahU=
-X-Received: by 2002:a05:6402:510b:: with SMTP id m11mr5413186edd.290.1643320380653;
- Thu, 27 Jan 2022 13:53:00 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=J35l0cCg0B8rjIasy2LKEQqHsevOK9wJkAphQcTelBM=;
+        b=Wdukk3I76avFBsKYF/EWkAah0aBToeKWAhxy1JBt9cvisxntxXWs+BHpDK4tQT5gMB
+         GyMTREdPOg7BQDnmmV6arQLpv+zSfRQ8Jq38defLq7NonJW9EZ3lFEnBfUxqysr2sRgE
+         qfrylHKNRMkD9irxPECr+W2JB9fIZvDR/E45ctq2/RL/EPmH83KN/FLacfc8vR3VPHjl
+         jWuCUYrYunf4gp9yxJXnCaKS4fMxCwgrtcWBX2u6SlUgRCYznwyxKWswCV7FnfJ8AVjz
+         9wyPuhTO/a6Oh21J45aCKptQZWED2Xjn7seC+lz0Eh8y22HvLxi7tf4HC13QlsVjVm9s
+         blhQ==
+X-Gm-Message-State: AOAM531QI5zB8vwk6L9GYVlAFcZLTKigpn4nNkm8kMFZuYAV4tD3OybF
+        P26iBkUXtjJgDzjl9HXXnD85vrrDDFA=
+X-Google-Smtp-Source: ABdhPJy4vgrcRfk23HHwPcJELerizqx+pP+ue/IEMM+DbxEHGH8I10KwWyOnHyWDUNrRdz1GV1YFbQ==
+X-Received: by 2002:a17:90a:aa96:: with SMTP id l22mr6305571pjq.188.1643320510943;
+        Thu, 27 Jan 2022 13:55:10 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id e14sm6832478pfv.219.2022.01.27.13.55.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 13:55:10 -0800 (PST)
+Date:   Thu, 27 Jan 2022 13:55:08 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        robh+dt@kernel.org, UNGLinuxDriver@microchip.com,
+        linux@armlinux.org.uk, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, vladimir.oltean@nxp.com, andrew@lunn.ch
+Subject: Re: [PATCH net-next 4/7] net: lan966x: Implement SIOCSHWTSTAMP and
+ SIOCGHWTSTAMP
+Message-ID: <20220127215508.GA26514@hoboy.vegasvil.org>
+References: <20220127102333.987195-1-horatiu.vultur@microchip.com>
+ <20220127102333.987195-5-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
- <423f474e15c948eda4db5bc9a50fd391@realtek.com> <CAFBinCBVEndU0t-6d5atE31OFYHzPyk7pOe78v0XrrFWcBec9w@mail.gmail.com>
- <5ef8ab4f78e448df9f823385d0daed88@realtek.com>
-In-Reply-To: <5ef8ab4f78e448df9f823385d0daed88@realtek.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Thu, 27 Jan 2022 22:52:49 +0100
-Message-ID: <CAFBinCDjfKK3+WOXP2xbcAK-KToWof+kSzoxYztqRcc=7T1eyg@mail.gmail.com>
-Subject: Re: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
-To:     Pkshih <pkshih@realtek.com>
-Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Ed Swierk <eswierk@gh.st>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127102333.987195-5-horatiu.vultur@microchip.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ping-Ke,
+On Thu, Jan 27, 2022 at 11:23:30AM +0100, Horatiu Vultur wrote:
 
-On Mon, Jan 24, 2022 at 3:59 AM Pkshih <pkshih@realtek.com> wrote:
-[...]
-> > It seems to me that we should avoid using the mutex version of
-> > ieee80211_iterate_*() because it can lead to more of these issues. So
-> > from my point of view the general idea of the code from your attached
-> > patch looks good. That said, I'm still very new to mac80211/cfg80211
-> > so I'm also interested in other's opinions.
-> >
->
-> The attached patch can work "mostly", because both callers of iterate() and
-> ::remove_interface hold rtwdev->mutex. Theoretically, the exception is a caller
-> forks another work to iterate() between leaving ::remove_interface and mac80211
-> doesn't yet free the vif, but the work executes after mac80211 free the vif.
-> This will lead use-after-free, but I'm not sure if this scenario will happen.
-> I need time to dig this, or you can help to do this.
->
-> To avoid this, we can add a flag to struct rtw_vif, and set this flag
-> when ::remove_interface. Then, only collect vif without this flag into list
-> when we use iterate_actiom().
->
-> As well as ieee80211_sta can do similar fix.
->
-> > > So, I add wrappers to iterate rtw_iterate_stas() and rtw_iterate_vifs() that
-> > > use _atomic version to collect sta and vif, and use list_for_each() to iterate.
-> > > Reference code is attached, and I'm still thinking if we can have better method.
-> > With "better method" do you mean something like in patch #2 from this
-> > series (using unsigned int num_si and struct rtw_sta_info
-> > *si[RTW_MAX_MAC_ID_NUM] inside the iter_data) are you thinking of a
-> > better way in general?
-> >
->
-> I would like a straight method, for example, we can have another version of
-> ieee80211_iterate_xxx() and do things in iterator, like original, so we just
-> need to change the code slightly.
->
-> Initially, I have an idea we can hold driver lock, like rtwdev->mutex, in both
-> places where we use ieee80211_iterate_() and remove sta or vif. Hopefully,
-> this can ensure it's safe to run iterator without other locks. Then, we can
-> define another ieee80211_iterate_() version with a drv_lock argument, like
->
-> #define ieee80211_iterate_active_interfaces_drv_lock(hw, iter_flags, iterator, data, drv_lock) \
-> while (0) {     \
->         lockdep_assert_wiphy(drv_lock); \
->         ieee80211_iterate_active_interfaces_no_lock(hw, iter_flags, iterator, data); \
-> }
->
-> The driv_lock argument can avoid user forgetting to hold a lock, and we need
-> a helper of no_lock version:
->
-> void ieee80211_iterate_active_interfaces_no_lock(
->         struct ieee80211_hw *hw, u32 iter_flags,
->         void (*iterator)(void *data, u8 *mac,
->                          struct ieee80211_vif *vif),
->         void *data)
-> {
->         struct ieee80211_local *local = hw_to_local(hw);
->
->         __iterate_interfaces(local, iter_flags | IEEE80211_IFACE_ITER_ACTIVE,
->                              iterator, data);
-> }
->
-> However, as I mentioned theoretically it is not safe entirely.
->
-> So, I think the easiest way is to maintains the vif/sta lists in driver when
-> ::{add,remove }_interface/::sta_{add,remove}, and hold rtwdev->mutex lock to
-> access these lists. But, Johannes pointed out this is not a good idea [1].
-Thank you for this detailed explanation! I appreciate that you took
-the time to clearly explain this.
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
+> index 69d8f43e2b1b..9ff4d3fca5a1 100644
+> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
+> @@ -35,6 +35,90 @@ static u64 lan966x_ptp_get_nominal_value(void)
+>  	return res;
+>  }
+>  
+> +int lan966x_ptp_hwtstamp_set(struct lan966x_port *port, struct ifreq *ifr)
+> +{
+> +	struct lan966x *lan966x = port->lan966x;
+> +	bool l2 = false, l4 = false;
+> +	struct hwtstamp_config cfg;
+> +	struct lan966x_phc *phc;
+> +
+> +	/* For now don't allow to run ptp on ports that are part of a bridge,
+> +	 * because in case of transparent clock the HW will still forward the
+> +	 * frames, so there would be duplicate frames
+> +	 */
+> +	if (lan966x->bridge_mask & BIT(port->chip_port))
+> +		return -EINVAL;
+> +
+> +	if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
+> +		return -EFAULT;
+> +
+> +	switch (cfg.tx_type) {
+> +	case HWTSTAMP_TX_ON:
+> +		port->ptp_cmd = IFH_REW_OP_TWO_STEP_PTP;
+> +		break;
+> +	case HWTSTAMP_TX_ONESTEP_SYNC:
+> +		port->ptp_cmd = IFH_REW_OP_ONE_STEP_PTP;
+> +		break;
+> +	case HWTSTAMP_TX_OFF:
+> +		port->ptp_cmd = IFH_REW_OP_NOOP;
+> +		break;
+> +	default:
+> +		return -ERANGE;
+> +	}
+> +
+> +	mutex_lock(&lan966x->ptp_lock);
 
-For the sta use-case I thought about adding a dedicated rwlock
-(include/linux/rwlock.h) for rtw_dev->mac_id_map.
-rtw_sta_{add,remove} would take a write-lock.
-rtw_iterate_stas() takes the read-lock (the lock would be acquired
-before calling into ieee80211_iterate_...). Additionally
-rtw_iterate_stas() needs to check if the station is still valid
-according to mac_id_map - if not: skip/ignore it for that iteration.
-This could be combined with your
-0001-rtw88-use-atomic-to-collect-stas-and-does-iterators.patch.
+No need to lock stack variables.  Move locking down to ...
 
-For the interface use-case it's not clear to me how this works at all.
-rtw_ops_add_interface() has (in a simplified view):
-    u8 port = 0;
-    // the port variable is never changed
-    rtwvif->port = port;
-    rtwvif->conf = &rtw_vif_port[port];
-    rtw_info(rtwdev, "start vif %pM on port %d\n", vif->addr, rtwvif->port);
-How do multiple interfaces (vifs) work in rtw88 if the port is always
-zero? Is some kind of tracking of the used ports missing (similar to
-how we track the used station IDs - also called mac_id - in
-rtw_dev->mac_id_map)?
+> +	switch (cfg.rx_filter) {
+> +	case HWTSTAMP_FILTER_NONE:
+> +		break;
+> +	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
+> +	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
+> +	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
+> +		l4 = true;
+> +		break;
+> +	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
+> +	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
+> +	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
+> +		l2 = true;
+> +		break;
+> +	case HWTSTAMP_FILTER_PTP_V2_EVENT:
+> +	case HWTSTAMP_FILTER_PTP_V2_SYNC:
+> +	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
+> +		l2 = true;
+> +		l4 = true;
+> +		break;
+> +	default:
+> +		mutex_unlock(&lan966x->ptp_lock);
+> +		return -ERANGE;
+> +	}
+> +
+> +	if (l2 && l4)
+> +		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
+> +	else if (l2)
+> +		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
+> +	else if (l4)
+> +		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_L4_EVENT;
+> +	else
+> +		cfg.rx_filter = HWTSTAMP_FILTER_NONE;
+> +
+> +	/* Commit back the result & save it */
 
+... here
 
-Thank you again and best regards,
-Martin
+> +	phc = &lan966x->phc[LAN966X_PHC_PORT];
+> +	memcpy(&phc->hwtstamp_config, &cfg, sizeof(cfg));
+> +	mutex_unlock(&lan966x->ptp_lock);
+> +
+> +	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
+> +}
+
+Thanks,
+Richard
