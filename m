@@ -2,98 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B7BA49DB40
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 08:14:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F26F49DB9E
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 08:31:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237145AbiA0HNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 02:13:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237127AbiA0HNa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 02:13:30 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1F0C061714
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 23:13:30 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id z14-20020a17090ab10e00b001b6175d4040so944243pjq.0
-        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 23:13:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0+FLy4VlPHD8ULzDF1ai7GodNZWoMmiEa9tD/vQAMgo=;
-        b=kUJukYkWKaLeBv3RBQNHpbukc6mEKO22Ug8PZt5y6XGDm3QTik5y0h6wMpfMjTXuj/
-         RhggIXTrd9hLXcSxFuiMoxDZJxKyA1qUxt0U4M/zkmOg+BpkUF0VcuQ8QTVSnktDnSmv
-         S6wNH0HnumHM12TF5WVcVv8MCiEmgEF/9Hvib7mDKXDt5+sKbcRQ9IAhbG9SCXfk4Zka
-         VrCIfRBTdkTpIocfGqR/xLe/TG6vKEl4CpceVcI9Ig8FIHhTMZXMjEXwB0QTQLj8QlLf
-         /O5b/hHfcDH52Loe9dAguX15lzB074VQ0ptPVqeFyIY6J0W/33cCRy6iNwulYRw4PFqg
-         /8eQ==
+        id S234008AbiA0HbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 02:31:01 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:35436
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233852AbiA0HbA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 02:31:00 -0500
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 9E5FA3F1B4
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 07:30:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643268659;
+        bh=K9pKlwHH8BUvXPsrFd23VascNmFC+AtE0oEE3TMapTw=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=BZW2BC3K3XnlunZaox4KNomDGAoDKzgU274awylWWG3k/EcBbXToqjhCsmVi8M7h1
+         gyB6JG8V+eHhFH7uHGXTgo6NCaug/zOOzC7tNW75/o9y4j3RPw3a4jJkCHLOu5z82S
+         BU0Z54/Ahjhy+SxZQCimKoX9V1/oH0A2QR0aLKZj86gXLoTAkEuzwfxdsYfhc4QBf/
+         axNJulK9KPryIJLf7nBmLz6PCjj0Ar/DUO15F0XeUJddE+6l5PWKSGn8AbUd7AL9YG
+         NPXJRSRkfwbPleYf0gxoiWBBU7kRcAzIv3WL5YZkwSbCrzSfMjaTeqvCRIxMBE54X8
+         DQydNiXVv4MmQ==
+Received: by mail-wm1-f72.google.com with SMTP id n7-20020a1c7207000000b0034ec3d8ce0aso1077655wmc.8
+        for <netdev@vger.kernel.org>; Wed, 26 Jan 2022 23:30:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0+FLy4VlPHD8ULzDF1ai7GodNZWoMmiEa9tD/vQAMgo=;
-        b=ub7R0hwBJPmXhrJ6mRbcWLQLi7PmG0je0am9BQD+xIzRMeW83GGQwNuROg8AxQns6s
-         HqsTR3iTwPABpvraHAwGFREeAUh6dDuoY0xICQCI8Yp4I8Qc/1dbHeuAiIJzmrGkvdbl
-         clKgJd4zegf06aUnI7mNOjTLzQPjO72eDJC9UT5C63F0r4LZ3D69pF7GiVwPEri2GiiR
-         iDBcgGWq0K35fVhD0JU9wJ55ponffwrtiTBFIxkWSqXRwOlKpGTtzUQY/aa4evepQ26d
-         M1lt9oWJo0XNJrL2TBlPgFBBQMekaTnWX5r0TAoHUHr500zcTwFMWcY3N/h0tnWmKKO+
-         o0ZA==
-X-Gm-Message-State: AOAM531TARSuI/VYfEzPEEHVLke8AXLS05l1tqnhXDyWKqY+pkHmliRZ
-        saw6cMpN/I1JnJwNM3nBYZE=
-X-Google-Smtp-Source: ABdhPJwiBE6pI50+98dytWFEgeXP9XtIfBp5BVmlaz464xGNttTySnziKLm0zywczmqEa3PB/m43vQ==
-X-Received: by 2002:a17:90b:2251:: with SMTP id hk17mr2825803pjb.25.1643267609924;
-        Wed, 26 Jan 2022 23:13:29 -0800 (PST)
-Received: from Laptop-X1 ([8.218.113.75])
-        by smtp.gmail.com with ESMTPSA id t15sm10475193pgc.49.2022.01.26.23.13.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Jan 2022 23:13:29 -0800 (PST)
-Date:   Thu, 27 Jan 2022 15:13:24 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH RFC net-next 0/5] bonding: add IPv6 NS/NA monitor support
-Message-ID: <YfJGFHiiSBJdbxL3@Laptop-X1>
-References: <20220126073521.1313870-1-liuhangbin@gmail.com>
- <66d6c646-d71d-91d3-993c-fc542bf77e0f@nvidia.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=K9pKlwHH8BUvXPsrFd23VascNmFC+AtE0oEE3TMapTw=;
+        b=NZbU1YhCgk1LXy6gdiRLNyNWqDA4yLg6dISX8tgzHA4MorcT2fPwQpM57sIEq9D0xX
+         4bDjYjid8dvcFDX4i8CkeXM7Z8MY64yPeqaEqJsqkR+iy8wXXoC8Jh409f/AMAD6dEbf
+         0fe/VzyKbvZ6H03gKxbkNOyGtOzh3qPR/CZuR+5JPQSxB1+SQb4HP/T7dkX34Z7o73fU
+         TvnuQPEazURGvWofKWw4eTSeSYw0fI3oCmgUKKq2BDCBLtzT/HPj5r3abBYohYE2bclt
+         CPxSompeir320XXcfcT81JvGMZ89U5k7pgR0M2WAr/NeRcJ75i9h3BKSXhlD34B2fddT
+         lwIQ==
+X-Gm-Message-State: AOAM533JFfpZ6vRCK3mGLQ/L7xdxjL38qLmzP155YvAGu+8/aMo3+npq
+        Qb6KTdYV+M7eMalK0HzWewJxGN9Ct4qYvyinEuyrzUigd10rlpG+PzwHrGKeQ8KBMTJnH+wWhcM
+        ccxID9RdWN4beEXkEX1Jmba87Ccf/S8Uefg==
+X-Received: by 2002:a05:600c:507:: with SMTP id i7mr2063239wmc.40.1643268658657;
+        Wed, 26 Jan 2022 23:30:58 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJybPdicnDDdxpVWWLaPKezySdArk9jv1vKg2D4syhmvh36/k0jiyfRWNxQWRaLWX5jTO2cgxA==
+X-Received: by 2002:a05:600c:507:: with SMTP id i7mr2063226wmc.40.1643268658438;
+        Wed, 26 Jan 2022 23:30:58 -0800 (PST)
+Received: from [192.168.0.62] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id bg23sm1616501wmb.5.2022.01.26.23.30.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jan 2022 23:30:58 -0800 (PST)
+Message-ID: <051a3220-e81b-fb91-a11b-7057f47a9beb@canonical.com>
+Date:   Thu, 27 Jan 2022 08:30:57 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <66d6c646-d71d-91d3-993c-fc542bf77e0f@nvidia.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next 02/15] nfc: use *_set_vendor_cmds() helpers
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, wengjianfeng@yulong.com
+References: <20220126191109.2822706-1-kuba@kernel.org>
+ <20220126191109.2822706-3-kuba@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220126191109.2822706-3-kuba@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 01:47:45PM +0200, Nikolay Aleksandrov wrote:
-> Hi,
-> I'd imagine such option to work alongside ARP, i.e. to be able to have both
-> ARP and ND targets at the same time. On Rx you can choose which one to check
-> based on the protocol, at Tx the same. Then you can reuse and extend most of the
-> current arp procedures to handle IPv6 as well. And most of all remove these ifs
-> all around the code:
-> +		if (bond_slave_is_up(slave)) {
-> +			if (bond_do_ns_validate(bond))
-> +				bond_ns_send_all(bond, slave);
-> +			else
-> +				bond_arp_send_all(bond, slave);
-> +		}
+On 26/01/2022 20:10, Jakub Kicinski wrote:
+> NCI and HCI wrappers for nfc_set_vendor_cmds() exist,
+> use them. We could also remove the helpers.
+> It's a coin toss.
 > 
-> and just have one procedure that handles both if there are any targets for that protocol.
-> That will completely remove the need for bond_do_ns_validate() helper.
-
-Thanks, I will have a try.
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: krzysztof.kozlowski@canonical.com
+> CC: wengjianfeng@yulong.com
+> ---
+>  drivers/nfc/st-nci/vendor_cmds.c   | 2 +-
+>  drivers/nfc/st21nfca/vendor_cmds.c | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 > 
-> Also define BOND_MAX_ND_TARGETS as BOND_MAX_ARP_TARGETS just for the namesake.
 
-Ah, yes.
-> 
-> Another cosmetic nit: adjust for reverse xmas tree ordering of local variables all over.
 
-OK, I will.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-Thanks
-Hangbin
+
+Best regards,
+Krzysztof
