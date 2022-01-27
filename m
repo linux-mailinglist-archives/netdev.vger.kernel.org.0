@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7AE449DD86
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:14:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7B1F49DD8B
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 10:15:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238390AbiA0JOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 04:14:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59178 "EHLO
+        id S238405AbiA0JOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 04:14:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238378AbiA0JOA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:14:00 -0500
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D166C061714;
-        Thu, 27 Jan 2022 01:14:00 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id q63so2325133pja.1;
-        Thu, 27 Jan 2022 01:14:00 -0800 (PST)
+        with ESMTP id S230114AbiA0JOF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 04:14:05 -0500
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A244C06173B;
+        Thu, 27 Jan 2022 01:14:05 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id x11so1949194plg.6;
+        Thu, 27 Jan 2022 01:14:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=iNxRgqQKJNdJpC+mPAku5kVn5VXzltTyRgKSsRUN7zk=;
-        b=JyyijivxbUtsI0uAU5enFrSTkPGx1ng4RIe0DQA9xREDCNWKa2AiUOTFt8BwNRWT83
-         2+bMsSEv+Kq38zsd7FAflz1PN/9xdZmlZVYdx6AEXVKyieA4V5Nifq+xNYRBncS/NF8K
-         PJ4K1dLN1zsMMXtKh/QyVrrY7EkGsCixb/mwGf357LkDJrN7T5WmQSwuijMNc082YDwz
-         ou6Fj1bgdZo/b6fDR5+SnOa+Derg5Jh13QtcDK/q1/J+azxfiUo6I4KWUdfMoR33IHj1
-         r3j0EkELPbBoEYLvn4q42GYnRE/ula7wudShkSVxKOGfK/q33ILJXTg05fcIK4eDpDxV
-         q8kA==
+        bh=w3YfXYwf6leAIb9pOlV8H4EpsmXCP8MCeqEUbaPVjyc=;
+        b=Nfx1InlJYov9ejrIoKHTeUElTm321Q+oj8Op1IO3QL4XVO/ejbSFs7Ap1IB9cVSwHy
+         7Bsl++8888G0XZHlBplWHfT7ghJanVzEgeZn6DGB0CFqawTYaHiySuedQY9PXQs423gR
+         967Clu4cRcMPBVKbxaqWKBtITKAaWyrDxIBJvRX/cDx+VJqtYgsIx072XKsVNnAKZ2HX
+         RLoGnismV4pdjOd01xUtbYdB++gk7g6PEoo8u5zZpW+1yyG2phRymfpefa5TS0dNhqZl
+         P0pKkkFk4LYpLvUO7FG65Vvv1lAxgKDNC8qqMDNA0VGZvTnCcrtUT+Dde6IZQ8qL47Ma
+         V7rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=iNxRgqQKJNdJpC+mPAku5kVn5VXzltTyRgKSsRUN7zk=;
-        b=JExRULoJuVScjhyC6VG8/XzuHRmBAL4uCfRwUL6i2pc9PF2qbM7iBZqg2PTUFz3IU7
-         IweHsyPmzaPFr1Ybo/d0Y+ywOjpcZPyvUUS3q8Fx/6OcEd4mUdd8jLr4Obd64SzoCrC6
-         fEN9f9moml6nFkP+/mSjmbDm1edNpYliJe9lIaUfo78aOyPbkB2e93vFNq6NLgZAG/KK
-         PLQixlFdm5b/AAH9baqoutCSxkqnt1kHpW1uWTwV76+qgjkNzOn9aUUtLcb1/zvf/SRg
-         clpTtIv10Vr61gyMu3YCki1Gp8zgNDTkP8pwbk1foxUV/Mdn8RahnBwmAIFnjckfy7Yo
-         DlRQ==
-X-Gm-Message-State: AOAM5329UQgsBqMFU0gb7EdEt98jUU52F+SNE+OULtKjvlUbf1dCoy5U
-        eLTMlNDOk13qpvr0HJamupQ=
-X-Google-Smtp-Source: ABdhPJykzSoG4zvb/hqjgC6dgKVX17pCyFsC4UATiEKloQt6GG+6boq0kP1E2UbsXoTuYGh3/8EMsw==
-X-Received: by 2002:a17:902:c101:: with SMTP id 1mr2435921pli.70.1643274839685;
-        Thu, 27 Jan 2022 01:13:59 -0800 (PST)
+        bh=w3YfXYwf6leAIb9pOlV8H4EpsmXCP8MCeqEUbaPVjyc=;
+        b=J5FOjDEHWWayHrf7grqN07KLwZyQlFY2RME4riqHV49MvDlRXlzOoJdh7QqNJddXeq
+         pc46HueQ2wK6v5l17f27SDwDOtFSjvMkvZvy6hmGNTkGsqQQNv9jybD5emljOx/RcKhy
+         lCVFsEJHXPxdcXlmOGbTDrJktqf9KBADnRniNCSjimm/repl1DePB9RqgFXvOaVvAn5w
+         fJM4gu7GdfHVed6VtXuKLUmFRtl/gpzsxuPkfejzDyhAvc0jd6wdIGzhNEpJ0aCPhbEI
+         I8DFEc+T14vwNHoGb4jrAqeiU4SuZ+Xb972B6dkK+FxiQJVxczLMs38HVlIwZC28+gUF
+         Tb7g==
+X-Gm-Message-State: AOAM530dQJH6Ga6xdwzEu9Ymh1WUbw5LT+dtc9meUjkb2aKWGnFfZBiP
+        dJuh77ODOVTlBu8ZZXbc5Pg=
+X-Google-Smtp-Source: ABdhPJyWiAJ98iTWD8aNOHlUaj1FO5j2c1X66G6BCbP4ejaXIs8xRTuwx5dd9AZY47dPecpWgfmaEA==
+X-Received: by 2002:a17:902:e788:: with SMTP id cp8mr2331391plb.172.1643274844984;
+        Thu, 27 Jan 2022 01:14:04 -0800 (PST)
 Received: from localhost.localdomain ([43.132.141.8])
-        by smtp.gmail.com with ESMTPSA id j11sm2046338pjf.53.2022.01.27.01.13.55
+        by smtp.gmail.com with ESMTPSA id j11sm2046338pjf.53.2022.01.27.01.14.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 01:13:59 -0800 (PST)
+        Thu, 27 Jan 2022 01:14:04 -0800 (PST)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     dsahern@kernel.org, kuba@kernel.org
@@ -58,9 +58,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         memxor@gmail.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
         coreteam@netfilter.org, mengensun@tencent.com
-Subject: [PATCH v2 net-next 4/8] net: ipv4: use kfree_skb_reason() in ip_rcv_core()
-Date:   Thu, 27 Jan 2022 17:13:04 +0800
-Message-Id: <20220127091308.91401-5-imagedong@tencent.com>
+Subject: [PATCH v2 net-next 5/8] net: ipv4: use kfree_skb_reason() in ip_rcv_finish_core()
+Date:   Thu, 27 Jan 2022 17:13:05 +0800
+Message-Id: <20220127091308.91401-6-imagedong@tencent.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220127091308.91401-1-imagedong@tencent.com>
 References: <20220127091308.91401-1-imagedong@tencent.com>
@@ -72,97 +72,101 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Replace kfree_skb() with kfree_skb_reason() in ip_rcv_core(). Three new
-drop reasons are introduced:
+Replace kfree_skb() with kfree_skb_reason() in ip_rcv_finish_core(),
+following drop reasons are introduced:
 
-SKB_DROP_REASON_OTHERHOST
-SKB_DROP_REASON_IP_CSUM
-SKB_DROP_REASON_IP_INHDR
+SKB_DROP_REASON_IP_RPFILTER
+SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
 v2:
-- remove unrelated cleanup
-- add document for introduced drop reasons
+- remove SKB_DROP_REASON_EARLY_DEMUX and SKB_DROP_REASON_IP_ROUTE_INPUT
+- add document for SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST and
+  SKB_DROP_REASON_IP_RPFILTER
 ---
  include/linux/skbuff.h     |  9 +++++++++
  include/trace/events/skb.h |  3 +++
- net/ipv4/ip_input.c        | 11 +++++++++--
- 3 files changed, 21 insertions(+), 2 deletions(-)
+ net/ipv4/ip_input.c        | 14 ++++++++++----
+ 3 files changed, 22 insertions(+), 4 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 786ea2c2334e..2e87da91424f 100644
+index 2e87da91424f..2d712459d564 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -321,6 +321,15 @@ enum skb_drop_reason {
- 	SKB_DROP_REASON_SOCKET_FILTER,	/* dropped by socket filter */
- 	SKB_DROP_REASON_UDP_CSUM,	/* UDP checksum error */
- 	SKB_DROP_REASON_NETFILTER_DROP,	/* dropped by netfilter */
-+	SKB_DROP_REASON_OTHERHOST,	/* packet don't belong to current
-+					 * host (interface is in promisc
-+					 * mode)
+@@ -330,6 +330,15 @@ enum skb_drop_reason {
+ 					 * IP header (see
+ 					 * IPSTATS_MIB_INHDRERRORS)
+ 					 */
++	SKB_DROP_REASON_IP_RPFILTER,	/* IP rpfilter validate failed.
++					 * see the document for rp_filter
++					 * in ip-sysctl.rst for more
++					 * information
 +					 */
-+	SKB_DROP_REASON_IP_CSUM,	/* IP checksum error */
-+	SKB_DROP_REASON_IP_INHDR,	/* there is something wrong with
-+					 * IP header (see
-+					 * IPSTATS_MIB_INHDRERRORS)
-+					 */
++	SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST, /* destination address of L2
++						  * is multicast, but L3 is
++						  * unicast.
++						  */
  	SKB_DROP_REASON_MAX,
  };
  
 diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index 3d89f7b09a43..f2b1778485f0 100644
+index f2b1778485f0..485a1d3034a4 100644
 --- a/include/trace/events/skb.h
 +++ b/include/trace/events/skb.h
-@@ -17,6 +17,9 @@
- 	EM(SKB_DROP_REASON_SOCKET_FILTER, SOCKET_FILTER)	\
- 	EM(SKB_DROP_REASON_UDP_CSUM, UDP_CSUM)			\
- 	EM(SKB_DROP_REASON_NETFILTER_DROP, NETFILTER_DROP)	\
-+	EM(SKB_DROP_REASON_OTHERHOST, OTHERHOST)		\
-+	EM(SKB_DROP_REASON_IP_CSUM, IP_CSUM)			\
-+	EM(SKB_DROP_REASON_IP_INHDR, IP_INHDR)			\
+@@ -20,6 +20,9 @@
+ 	EM(SKB_DROP_REASON_OTHERHOST, OTHERHOST)		\
+ 	EM(SKB_DROP_REASON_IP_CSUM, IP_CSUM)			\
+ 	EM(SKB_DROP_REASON_IP_INHDR, IP_INHDR)			\
++	EM(SKB_DROP_REASON_IP_RPFILTER, IP_RPFILTER)		\
++	EM(SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST,		\
++	   UNICAST_IN_L2_MULTICAST)				\
  	EMe(SKB_DROP_REASON_MAX, MAX)
  
  #undef EM
 diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index 3a025c011971..7f64c5432cba 100644
+index 7f64c5432cba..184decb1c8eb 100644
 --- a/net/ipv4/ip_input.c
 +++ b/net/ipv4/ip_input.c
-@@ -436,13 +436,18 @@ static int ip_rcv_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
- static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
+@@ -318,8 +318,10 @@ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
  {
- 	const struct iphdr *iph;
-+	int drop_reason;
- 	u32 len;
- 
-+	drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ 	const struct iphdr *iph = ip_hdr(skb);
+ 	int (*edemux)(struct sk_buff *skb);
++	int err, drop_reason;
+ 	struct rtable *rt;
+-	int err;
 +
- 	/* When the interface is in promisc. mode, drop all the crap
- 	 * that it receives, do not try to analyse it.
- 	 */
--	if (skb->pkt_type == PACKET_OTHERHOST)
-+	if (skb->pkt_type == PACKET_OTHERHOST) {
-+		drop_reason = SKB_DROP_REASON_OTHERHOST;
- 		goto drop;
-+	}
++	drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
  
- 	__IP_UPD_PO_STATS(net, IPSTATS_MIB_IN, skb->len);
+ 	if (ip_can_use_hint(skb, iph, hint)) {
+ 		err = ip_route_use_hint(skb, iph->daddr, iph->saddr, iph->tos,
+@@ -396,19 +398,23 @@ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
+ 		 * so-called "hole-196" attack) so do it for both.
+ 		 */
+ 		if (in_dev &&
+-		    IN_DEV_ORCONF(in_dev, DROP_UNICAST_IN_L2_MULTICAST))
++		    IN_DEV_ORCONF(in_dev, DROP_UNICAST_IN_L2_MULTICAST)) {
++			drop_reason = SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST;
+ 			goto drop;
++		}
+ 	}
  
-@@ -516,11 +521,13 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
- 	return skb;
+ 	return NET_RX_SUCCESS;
  
- csum_error:
-+	drop_reason = SKB_DROP_REASON_IP_CSUM;
- 	__IP_INC_STATS(net, IPSTATS_MIB_CSUMERRORS);
- inhdr_error:
-+	drop_reason = drop_reason ?: SKB_DROP_REASON_IP_INHDR;
- 	__IP_INC_STATS(net, IPSTATS_MIB_INHDRERRORS);
  drop:
 -	kfree_skb(skb);
 +	kfree_skb_reason(skb, drop_reason);
- out:
- 	return NULL;
+ 	return NET_RX_DROP;
+ 
+ drop_error:
+-	if (err == -EXDEV)
++	if (err == -EXDEV) {
++		drop_reason = SKB_DROP_REASON_IP_RPFILTER;
+ 		__NET_INC_STATS(net, LINUX_MIB_IPRPFILTER);
++	}
+ 	goto drop;
  }
+ 
 -- 
 2.34.1
 
