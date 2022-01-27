@@ -2,109 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16FD849DC95
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 09:33:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B529649DC61
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 09:17:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237782AbiA0IcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 03:32:14 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:46366 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237759AbiA0IcN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 03:32:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643272333;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+hzsSfEt812B+qp8pLaEKXZY4iqaixHPcS2PC/AJjRY=;
-        b=MurpCxLX4MVfpLh+nEA96tThpLOhga6z7gnKh/XUDxLL+ELwWmcZzeRtvf6tuyONCxq+Ou
-        Azycl2Am14mXf/34nNrDFznt6XCwMW9zbLOPAv8rRrbN+Hemlq/9WHN1Lr/xaygnPKnGmq
-        IqhnfIrWIrNtvqavcD8pp2yEwxrqj9I=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-645-cO-1aPG7P82InuCGhBx9ag-1; Thu, 27 Jan 2022 03:32:11 -0500
-X-MC-Unique: cO-1aPG7P82InuCGhBx9ag-1
-Received: by mail-lf1-f69.google.com with SMTP id p31-20020a056512139f00b0043489d9cf38so773633lfa.23
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 00:32:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+hzsSfEt812B+qp8pLaEKXZY4iqaixHPcS2PC/AJjRY=;
-        b=T/LNb0jGhK/c2QP9YPeAKBvKRdl06e/kpMzuIhV/czg8au3jkT0mi0iS6WnkhqYsTF
-         kmkMNkRPP/gwGvo2iMi0LmrWpub5zu7Ew3ymZPjjT+oZYVTt8O4tQUrKi0culzn/PBhE
-         W0rLx3KEqB7dSXOo53t/AimdPw29zHBv7JTdpBMtgqrPF/CIcPpJHWc7r5O2K3snxCUU
-         Y81eWIyeXYO9+b2ADlCpi+xZqlDYEO+ZHNtziGGPAmXLl4PrFJrK37sPvVGX6VmgebhH
-         zmIfZXQq0/mQ6cf7/n+yjrsKiQkTtmgUYPho9d1cJwTicCBsOk2q2rERwYbo8fjWQ0tO
-         OPpw==
-X-Gm-Message-State: AOAM5319zRPVKR6LrckVRoLNl2CI0Ih+M2Fml0LYjo+bOWzbd3yM/VoE
-        lj368SehZFnflOf66f1Cj+S1rwVtS7f10t36lGCSE8534QMdI15g9vJj6EeMN7jcYCYcHZf48/y
-        xImk4GYdp1YA0MuSaR3r6mTwgrpaeGubB
-X-Received: by 2002:a19:6a12:: with SMTP id u18mr2163149lfu.348.1643272330165;
-        Thu, 27 Jan 2022 00:32:10 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzn9eSiGGfhLO0zjsI1+u0gJevThcq9mgdnntxuPkuBy9qCRRpx6z8S1fE44dsCdfLi8ZxWyEDp9ctCVdi+w8s=
-X-Received: by 2002:a19:6a12:: with SMTP id u18mr2163143lfu.348.1643272329966;
- Thu, 27 Jan 2022 00:32:09 -0800 (PST)
+        id S237703AbiA0IRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 03:17:30 -0500
+Received: from szxga08-in.huawei.com ([45.249.212.255]:32065 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237716AbiA0IR3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 03:17:29 -0500
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JktdQ6Ypfz1FD6m;
+        Thu, 27 Jan 2022 16:13:30 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
+ (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 27 Jan
+ 2022 16:17:25 +0800
+From:   Hou Tao <houtao1@huawei.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Brendan Jackman <jackmanb@google.com>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <houtao1@huawei.com>
+Subject: [PATCH bpf-next] bpf, x86: remove unnecessary handling of BPF_SUB atomic op
+Date:   Thu, 27 Jan 2022 16:32:40 +0800
+Message-ID: <20220127083240.1425481-1-houtao1@huawei.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-References: <20220127020807.844630-1-yinxiujiang@kylinos.cn>
-In-Reply-To: <20220127020807.844630-1-yinxiujiang@kylinos.cn>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 27 Jan 2022 16:31:58 +0800
-Message-ID: <CACGkMEtEYmVNWqaaEhLZgiv9HZGUAP6zwqXfpdDA_CM2_tav0Q@mail.gmail.com>
-Subject: Re: [PATCH] vhost: Make use of the helper macro kthread_run()
-To:     Yin Xiujiang <yinxiujiang@kylinos.cn>
-Cc:     mst <mst@redhat.com>, kvm <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 10:08 AM Yin Xiujiang <yinxiujiang@kylinos.cn> wrote:
->
-> Repalce kthread_create/wake_up_process() with kthread_run()
-> to simplify the code.
->
-> Signed-off-by: Yin Xiujiang <yinxiujiang@kylinos.cn>
-> ---
->  drivers/vhost/vhost.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 59edb5a1ffe2..19e9eda9fc71 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -595,7 +595,7 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
->
->         dev->kcov_handle = kcov_common_handle();
->         if (dev->use_worker) {
-> -               worker = kthread_create(vhost_worker, dev,
-> +               worker = kthread_run(vhost_worker, dev,
->                                         "vhost-%d", current->pid);
+According to the LLVM commit (https://reviews.llvm.org/D72184),
+sync_fetch_and_sub() is implemented as a negation followed by
+sync_fetch_and_add(), so there will be no BPF_SUB op and just
+remove it.
 
-Mike plans to introduce user_worker_create() to allow rlimit check[1].
-So this is probably not needed.
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+---
+ arch/x86/net/bpf_jit_comp.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Thanks
-
-[1] https://www.spinics.net/lists/kernel/msg4161030.html (I'm not sure
-this is the recent version, please check the list)
-
-
->                 if (IS_ERR(worker)) {
->                         err = PTR_ERR(worker);
-> @@ -603,7 +603,6 @@ long vhost_dev_set_owner(struct vhost_dev *dev)
->                 }
->
->                 dev->worker = worker;
-> -               wake_up_process(worker); /* avoid contributing to loadavg */
->
->                 err = vhost_attach_cgroups(dev);
->                 if (err)
-> --
-> 2.30.0
->
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index ce1f86f245c9..5d643ebb1e56 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -787,7 +787,6 @@ static int emit_atomic(u8 **pprog, u8 atomic_op,
+ 	/* emit opcode */
+ 	switch (atomic_op) {
+ 	case BPF_ADD:
+-	case BPF_SUB:
+ 	case BPF_AND:
+ 	case BPF_OR:
+ 	case BPF_XOR:
+-- 
+2.29.2
 
