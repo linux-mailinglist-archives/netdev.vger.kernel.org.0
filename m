@@ -2,90 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE69449ED3B
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 22:11:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1C3C49ED71
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 22:33:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344243AbiA0VL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 16:11:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
+        id S1344380AbiA0Vdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 16:33:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344232AbiA0VLz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 16:11:55 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29D3C061714
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 13:11:54 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id t7so6130500ljc.10
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 13:11:54 -0800 (PST)
+        with ESMTP id S1344376AbiA0Vdo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 16:33:44 -0500
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4064C06173B
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 13:33:43 -0800 (PST)
+Received: by mail-lj1-x229.google.com with SMTP id e9so6263974ljq.1
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 13:33:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=3NP886naQFIZy4hOu+mozQZtAsGAiRcomA5EwVdDex0=;
-        b=UZghS5AveaGm/Vu5fU6iApb7RjqrZ40IVW6Oej1MhNJSMEiWO9C/lKr/Miy5nWpQJU
-         xBRL/MBrh2m+Qu/6YBSWyGM47LEsIg15PloDskbBmafn35+tYrmAGsfmGzTXfKVAwoLw
-         z88gcuJMAUYlLoohFNt1BTiPwgHih9PwtmCJ4=
+        bh=Pj2ihRLwWcnkU2m8JuS/1g0rkYd31KOK39iBZzKRwHI=;
+        b=YAvfTELJOYXEq4lNEQ8SEGhnPrRLybHWBu8Vpq2+bMZSmjby8SbpSDDeLtAR6HOqZL
+         Cl+PtxIC9OzHDK4SFvYus8nUTgKScsyIvFBgzB3gOoQckincJ11yc8a+qVzOUqvrmu9w
+         SN6OQm+G2dYgK40N9Xy/V9nBrhNShxYRdSVroAeEEVgcoARYl0Ki2LdDtlCfK6WLmZEt
+         kMSaxKUydYOA5OCjE1dScNjnd80jfImbzwIX535aLEaLx1/NCq4QOs1Lmy/wvIOABraX
+         BWeGv53RG5+K+pAMieKbxeK0aPTBvW/+3ucW7eC+0y7Ne8ligRHSzE2eEEm6oSJrw3On
+         dRsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=3NP886naQFIZy4hOu+mozQZtAsGAiRcomA5EwVdDex0=;
-        b=CSo/4CCMyStWaIOPgoTQFaloXtMvKstx6bY3YC7/SixjjN+OUA0CEB1aWbSsWUnR3U
-         OGMaJMbYYvA0InRjSXgiolxH4cBjorRDPEI7v29NDe1P6AdBYEjyd0Tkxg2av5kxgAbx
-         yyktJQKnZEWatpikEdyjFDPsuXNPxlYin8QbFlUWLEOzrzb8P9OqgY3OBkxejwGF0O6z
-         XGAzn+yZaHjhcz0/8eCm6efJdQvQDPjm4B0yGcuvqhrYzbOJxUbkLUslDywWGmzCwQLj
-         zI7j6jQq5OuN4p82QdeZqrcDRj+9END5X719+OvGt3JMtVdOq17Uf1ymGQdgMqQmU+TW
-         Knsw==
-X-Gm-Message-State: AOAM530r4/3cTE1SDPQw5l6KRMIh1a5yltzxAeDFYRR+Y1e/IGhMS6fc
-        V+we8UqM06PScXz8CLehowpsvBA5vhHcElSxSIwtEw==
-X-Google-Smtp-Source: ABdhPJzg1X4GMR7jqcIPVHu84LASSmK09+KkawNVByetcdYF7Ys7J0wWnMh6xRRjkSuooNbIhaoeJA2TUHNcAVAIG6c=
-X-Received: by 2002:a2e:8756:: with SMTP id q22mr3819475ljj.93.1643317913014;
- Thu, 27 Jan 2022 13:11:53 -0800 (PST)
+        bh=Pj2ihRLwWcnkU2m8JuS/1g0rkYd31KOK39iBZzKRwHI=;
+        b=6cdo87zXsJn6CXdF2p80D1rtDaCy4K4O0tB39Bej+fr7G0sQoR/sWRIGi441INDZsH
+         sjXeBAGt2ykdAaTspQvIbEanBuOzEslV62ydNjA1uxefJ34Ma6tGSrtH8mBwWRTYzHWS
+         UbQMaybxKbMz9ZS8geMYnef6VIQPPwTSt6yMyc6wDUeOw10fJCbUTiRWnGRj5sw1ibW+
+         R9W1Cze5SjgF29MpcCJgaFMhmTbHwk1cfBVId1AyX0RW1U5pQ0uSZOlzk9+AVdG3vJm9
+         qQqGGsvXden5afbE4Iwu+86HMvFFuyhlrfAzYlg3y9DMQgRZoW/lHA7813Z9SUYo31OO
+         q6tA==
+X-Gm-Message-State: AOAM533G5S9727XvustqJixE4YbYuU51jXtoAcOH1UN6l9EqbVgi5SxP
+        g8xy/exvc9bbsI4SmwgO+okl46Agd/63HatVVLeWNg==
+X-Google-Smtp-Source: ABdhPJxrQrAeBZI2D8ISfWQYBlvwSSA/N/+ormQYDjRg8lr4ebaGO2ltoN+P/nUp2kUaa5X2JWYNcvdO614Uil7pvZY=
+X-Received: by 2002:a2e:2e16:: with SMTP id u22mr3869908lju.205.1643319221748;
+ Thu, 27 Jan 2022 13:33:41 -0800 (PST)
 MIME-Version: 1.0
-References: <1643237300-44904-1-git-send-email-jdamato@fastly.com>
- <1643237300-44904-2-git-send-email-jdamato@fastly.com> <20220127083214.39b80c20@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220127083214.39b80c20@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Joe Damato <jdamato@fastly.com>
-Date:   Thu, 27 Jan 2022 13:11:42 -0800
-Message-ID: <CALALjgy7MiubHg2TTqMpTeLtZ2bs9iFc1HRs4Rzy2B9252qyUQ@mail.gmail.com>
-Subject: Re: [PATCH 1/6] net: page_pool: Add alloc stats and fast path stat
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        ilias.apalodimas@linaro.org, hawk@kernel.org
+References: <20220124151146.376446-1-maximmi@nvidia.com> <20220124151146.376446-2-maximmi@nvidia.com>
+ <CACAyw98mbtZSH3yddaptKb4Qi7Grxzt80ihqiHA3qw9n4XwVjg@mail.gmail.com>
+In-Reply-To: <CACAyw98mbtZSH3yddaptKb4Qi7Grxzt80ihqiHA3qw9n4XwVjg@mail.gmail.com>
+From:   Petar Penkov <ppenkov@google.com>
+Date:   Thu, 27 Jan 2022 13:33:30 -0800
+Message-ID: <CAG4SDVUZTHzA9DD7bagig5UREMHOuVHh25hzezXJhb11TeHSoQ@mail.gmail.com>
+Subject: Re: [PATCH bpf v2 1/4] bpf: Use ipv6_only_sock in bpf_tcp_gen_syncookie
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Maxim Mikityanskiy <maximmi@nvidia.com>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 8:32 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Wed, Jan 26, 2022 at 1:46 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
 >
-> On Wed, 26 Jan 2022 14:48:15 -0800 Joe Damato wrote:
-> > Add a stats structure with a an internal alloc structure for holding
-> > allocation path related stats.
+> On Mon, 24 Jan 2022 at 15:13, Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
 > >
-> > The alloc structure contains the stat 'fast'. This stat tracks fast
-> > path allocations.
+> > Instead of querying the sk_ipv6only field directly, use the dedicated
+> > ipv6_only_sock helper.
 > >
-> > A static inline accessor function is exposed for accessing this stat.
+> > Fixes: 70d66244317e ("bpf: add bpf_tcp_gen_syncookie helper")
+> > Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+> > Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 >
-> > +/**
-> > + * stats for tracking page_pool events.
-> > + *
-> > + * accessor functions for these stats provided below.
-> > + *
-> > + * Note that it is the responsibility of the API consumer to ensure that
-> > + * the page_pool has not been destroyed while accessing stats fields.
-> > + */
-> > +struct page_pool_stats {
-> > +     struct {
-> > +             u64 fast; /* fast path allocations */
-> > +     } alloc;
-> > +};
->
-> scripts/kernel-doc says:
->
-> include/net/page_pool.h:75: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * stats for tracking page_pool events.
+> Acked-by: Lorenz Bauer <lmb@cloudflare.com>
 
-Thank you. I had only been running scripts/checkpatch, but will
-remember to also run kernel-doc in the future. I will correct the
-comments in the v2.
+Acked-by: Petar Penkov <ppenkov@google.com>
