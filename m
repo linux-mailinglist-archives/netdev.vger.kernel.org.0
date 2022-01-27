@@ -2,85 +2,297 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0ABD49E53D
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 15:54:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E478E49E54B
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 15:57:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236710AbiA0Oyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 09:54:36 -0500
-Received: from mga03.intel.com ([134.134.136.65]:59109 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236862AbiA0Oyg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 09:54:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643295276; x=1674831276;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=HU0r6hwaF27wWadQVn1JhJsILiBLP7WU7Pf4tcjIsig=;
-  b=jNxgscSmloMACfnvaWhfH5xyIcIVkGJGjUo8jHHQLuqhNnRVnCsdGNvp
-   J6trvcWh7+F2s0PIeTcdJY4L9h7l4HdbI9Kh+QWQ96x2Buw8Yy66ALuvJ
-   ld/pJRex1GaxNhNkwFtuwFdPEUA4aJZuLUIvOw3TNzhG5swpLhr167pBr
-   tHXfdiJHwwBweGqvzA4Q+TQyYklMBwm7ktkqN1UdzDmeJ4PUSvbHbFRsd
-   2NlLBtIcMnKqMYNki6GMMSTxiWaOgG+gPADVwYM/HE2iWsPR8tiRmpe1Y
-   VFOIR+HEohDWDW7wTEA2TfqCDUSImfGc94+mDa+wNh7Xsh7xOMLdgi5CZ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="246819953"
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="246819953"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 06:54:35 -0800
-X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="625245301"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 06:54:30 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nD69M-00F0yG-G4;
-        Thu, 27 Jan 2022 16:53:24 +0200
-Date:   Thu, 27 Jan 2022 16:53:24 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Ricardo Martinez <ricardo.martinez@linux.intel.com>,
-        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com
-Subject: Re: [PATCH net-next v4 05/13] net: wwan: t7xx: Add control port
-Message-ID: <YfKx5B2R12lYW9GZ@smile.fi.intel.com>
-References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com>
- <20220114010627.21104-6-ricardo.martinez@linux.intel.com>
- <7c1f1fe-fb19-fa95-10e3-776b81f5128@linux.intel.com>
+        id S235655AbiA0O5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 09:57:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56130 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230351AbiA0O5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 09:57:36 -0500
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD3D5C061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 06:57:36 -0800 (PST)
+Received: by mail-qk1-x730.google.com with SMTP id o25so2784493qkj.7
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 06:57:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=GkupAwxJm0a29Mm8StjfxHIH/gZyUWz57BAxYTMbt2U=;
+        b=NAUxbfJl6tlK1BO5dXtFqd0ftWHuZXlrq2mcOWuhB8pAS1oAEEy7KqIuD9ELxv9a4V
+         dnFgo7F/AONMFYn03mlx6zzUFZ67mKAvVx9bBqyBj1QvZAFiQNbYAL5wkQSs+/+CR/GU
+         InexKG/CARcAgz+71JPKLsk5letc6rX+3o8ordfiwpexSdD0+mBZ+o2rzA+lo5vwrEYT
+         i69LGTF8xElx7w5OP4KPeWghSWV2L7kRWOBBHmmMUBZi5G8WfmQSFnzcph+DgAwLHS2y
+         eq3/AQ7eCM2bwEfnW98M5h3EYJQbqm0dirm7DQ0tD1h9BCencgAeRxD7+Jj3yhWAZkS4
+         88IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=GkupAwxJm0a29Mm8StjfxHIH/gZyUWz57BAxYTMbt2U=;
+        b=NhS8ZoWq6vjiGzJmwu/zWKZzbsVCTTQoVoMKAbvrk2l8CTC2W8UF90kT5Nv/aCocuW
+         wVGoW2ZdSZ99rS4Zsv0gJK7M5EMJZjdIXk65Ot1W1b0zhj2vftPydy1kNukMezmV4lbZ
+         wVYR8Nk8iaVUsDlaGpYGbLhJ5rKBoipc8wjxHMa4yOUtaeC09iwyeazH0iIbHUS2dj2S
+         68x6aDPmun4EdWhwrHv+rhryfq0peBZK52KywP2ChSeS4V2c9VkyV1Uy/DE492U08MoF
+         yAWVjeUd83BgDdxyaLwCR8ptIPfh2h33Zor/ue1veuQA8TpmMbX4TEjghwmetPbHU0g/
+         3Mew==
+X-Gm-Message-State: AOAM530aNvOAZi0iFhVVYe/TtFwdprqw4/dx5rfjbFtb01V+6SoQee/w
+        zkjSQ1ZbAczXzNHifeoPCGk5k4jA2bFFBA==
+X-Google-Smtp-Source: ABdhPJxhtLGJbsOETYF3K/sYa6dAudglBvYpJAvVNFGEnb1MbWsQimjkIUmIbOKZb8v4YTGm7pY0sg==
+X-Received: by 2002:a05:620a:13d7:: with SMTP id g23mr2883251qkl.484.1643295455392;
+        Thu, 27 Jan 2022 06:57:35 -0800 (PST)
+Received: from localhost.localdomain ([2001:470:b:9c3:9e5c:8eff:fe4f:f2d0])
+        by smtp.gmail.com with ESMTPSA id h6sm1465128qtx.43.2022.01.27.06.57.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 06:57:34 -0800 (PST)
+Subject: [net-next PATCH v2] page_pool: Refactor page_pool to enable
+ fragmenting after allocation
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     alexander.duyck@gmail.com, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, davem@davemloft.net, kuba@kernel.org,
+        alexanderduyck@fb.com
+Date:   Thu, 27 Jan 2022 06:57:33 -0800
+Message-ID: <164329517024.130462.875087745767169286.stgit@localhost.localdomain>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7c1f1fe-fb19-fa95-10e3-776b81f5128@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 12:40:42PM +0200, Ilpo Järvinen wrote:
-> On Thu, 13 Jan 2022, Ricardo Martinez wrote:
+From: Alexander Duyck <alexanderduyck@fb.com>
 
-...
+This change is meant to permit a driver to perform "fragmenting" of the
+page from within the driver instead of the current model which requires
+pre-partitioning the page. The main motivation behind this is to support
+use cases where the page will be split up by the driver after DMA instead
+of before.
 
-> > +		default:
-> > +			break;
-> 
-> Please remove empty default blocks from all patches.
+With this change it becomes possible to start using page pool to replace
+some of the existing use cases where multiple references were being used
+for a single page, but the number needed was unknown as the size could be
+dynamic.
 
-Some (presumably old or with some warnings enabled, consider `make W=1`
-or `make W=2`) compilers would not be happy of a such decision.
+For example, with this code it would be possible to do something like
+the following to handle allocation:
+  page = page_pool_alloc_pages();
+  if (!page)
+    return NULL;
+  page_pool_fragment_page(page, DRIVER_PAGECNT_BIAS_MAX);
+  rx_buf->page = page;
+  rx_buf->pagecnt_bias = DRIVER_PAGECNT_BIAS_MAX;
 
--- 
-With Best Regards,
-Andy Shevchenko
+Then we would process a received buffer by handling it with:
+  rx_buf->pagecnt_bias--;
+
+Once the page has been fully consumed we could then flush the remaining
+instances with:
+  if (page_pool_defrag_page(page, rx_buf->pagecnt_bias))
+    continue;
+  page_pool_put_defragged_page(pool, page -1, !!budget);
+
+The general idea is that we want to have the ability to allocate a page
+with excess fragment count and then trim off the unneeded fragments.
+
+Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
+---
+
+v2: Added page_pool_is_last_frag
+    Moved comment about CONFIG_PAGE_POOL to page_pool_put_page
+    Wrapped statements for page_pool_is_last_frag in parenthesis
+
+ include/net/page_pool.h |   82 ++++++++++++++++++++++++++++++-----------------
+ net/core/page_pool.c    |   23 ++++++-------
+ 2 files changed, 62 insertions(+), 43 deletions(-)
+
+diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+index 79a805542d0f..fbed91469d42 100644
+--- a/include/net/page_pool.h
++++ b/include/net/page_pool.h
+@@ -201,21 +201,67 @@ static inline void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+ }
+ #endif
+ 
+-void page_pool_put_page(struct page_pool *pool, struct page *page,
+-			unsigned int dma_sync_size, bool allow_direct);
++void page_pool_put_defragged_page(struct page_pool *pool, struct page *page,
++				  unsigned int dma_sync_size,
++				  bool allow_direct);
+ 
+-/* Same as above but will try to sync the entire area pool->max_len */
+-static inline void page_pool_put_full_page(struct page_pool *pool,
+-					   struct page *page, bool allow_direct)
++static inline void page_pool_fragment_page(struct page *page, long nr)
++{
++	atomic_long_set(&page->pp_frag_count, nr);
++}
++
++static inline long page_pool_defrag_page(struct page *page, long nr)
++{
++	long ret;
++
++	/* If nr == pp_frag_count then we are have cleared all remaining
++	 * references to the page. No need to actually overwrite it, instead
++	 * we can leave this to be overwritten by the calling function.
++	 *
++	 * The main advantage to doing this is that an atomic_read is
++	 * generally a much cheaper operation than an atomic update,
++	 * especially when dealing with a page that may be partitioned
++	 * into only 2 or 3 pieces.
++	 */
++	if (atomic_long_read(&page->pp_frag_count) == nr)
++		return 0;
++
++	ret = atomic_long_sub_return(nr, &page->pp_frag_count);
++	WARN_ON(ret < 0);
++	return ret;
++}
++
++static inline bool page_pool_is_last_frag(struct page_pool *pool,
++					  struct page *page)
++{
++	/* If fragments aren't enabled or count is 0 we were the last user */
++	return !(pool->p.flags & PP_FLAG_PAGE_FRAG) ||
++	       (page_pool_defrag_page(page, 1) == 0);
++}
++
++static inline void page_pool_put_page(struct page_pool *pool,
++				      struct page *page,
++				      unsigned int dma_sync_size,
++				      bool allow_direct)
+ {
+ 	/* When page_pool isn't compiled-in, net/core/xdp.c doesn't
+ 	 * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
+ 	 */
+ #ifdef CONFIG_PAGE_POOL
+-	page_pool_put_page(pool, page, -1, allow_direct);
++	if (!page_pool_is_last_frag(pool, page))
++		return;
++
++	page_pool_put_defragged_page(pool, page, dma_sync_size, allow_direct);
+ #endif
+ }
+ 
++/* Same as above but will try to sync the entire area pool->max_len */
++static inline void page_pool_put_full_page(struct page_pool *pool,
++					   struct page *page, bool allow_direct)
++{
++	page_pool_put_page(pool, page, -1, allow_direct);
++}
++
+ /* Same as above but the caller must guarantee safe context. e.g NAPI */
+ static inline void page_pool_recycle_direct(struct page_pool *pool,
+ 					    struct page *page)
+@@ -243,30 +289,6 @@ static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
+ 		page->dma_addr_upper = upper_32_bits(addr);
+ }
+ 
+-static inline void page_pool_set_frag_count(struct page *page, long nr)
+-{
+-	atomic_long_set(&page->pp_frag_count, nr);
+-}
+-
+-static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
+-							  long nr)
+-{
+-	long ret;
+-
+-	/* As suggested by Alexander, atomic_long_read() may cover up the
+-	 * reference count errors, so avoid calling atomic_long_read() in
+-	 * the cases of freeing or draining the page_frags, where we would
+-	 * not expect it to match or that are slowpath anyway.
+-	 */
+-	if (__builtin_constant_p(nr) &&
+-	    atomic_long_read(&page->pp_frag_count) == nr)
+-		return 0;
+-
+-	ret = atomic_long_sub_return(nr, &page->pp_frag_count);
+-	WARN_ON(ret < 0);
+-	return ret;
+-}
+-
+ static inline bool is_page_pool_compiled_in(void)
+ {
+ #ifdef CONFIG_PAGE_POOL
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index bd62c01a2ec3..e25d359d84d9 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -423,11 +423,6 @@ static __always_inline struct page *
+ __page_pool_put_page(struct page_pool *pool, struct page *page,
+ 		     unsigned int dma_sync_size, bool allow_direct)
+ {
+-	/* It is not the last user for the page frag case */
+-	if (pool->p.flags & PP_FLAG_PAGE_FRAG &&
+-	    page_pool_atomic_sub_frag_count_return(page, 1))
+-		return NULL;
+-
+ 	/* This allocator is optimized for the XDP mode that uses
+ 	 * one-frame-per-page, but have fallbacks that act like the
+ 	 * regular page allocator APIs.
+@@ -471,8 +466,8 @@ __page_pool_put_page(struct page_pool *pool, struct page *page,
+ 	return NULL;
+ }
+ 
+-void page_pool_put_page(struct page_pool *pool, struct page *page,
+-			unsigned int dma_sync_size, bool allow_direct)
++void page_pool_put_defragged_page(struct page_pool *pool, struct page *page,
++				  unsigned int dma_sync_size, bool allow_direct)
+ {
+ 	page = __page_pool_put_page(pool, page, dma_sync_size, allow_direct);
+ 	if (page && !page_pool_recycle_in_ring(pool, page)) {
+@@ -480,7 +475,7 @@ void page_pool_put_page(struct page_pool *pool, struct page *page,
+ 		page_pool_return_page(pool, page);
+ 	}
+ }
+-EXPORT_SYMBOL(page_pool_put_page);
++EXPORT_SYMBOL(page_pool_put_defragged_page);
+ 
+ /* Caller must not use data area after call, as this function overwrites it */
+ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+@@ -491,6 +486,10 @@ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+ 	for (i = 0; i < count; i++) {
+ 		struct page *page = virt_to_head_page(data[i]);
+ 
++		/* It is not the last user for the page frag case */
++		if (!page_pool_is_last_frag(pool, page))
++			continue;
++
+ 		page = __page_pool_put_page(pool, page, -1, false);
+ 		/* Approved for bulk recycling in ptr_ring cache */
+ 		if (page)
+@@ -526,8 +525,7 @@ static struct page *page_pool_drain_frag(struct page_pool *pool,
+ 	long drain_count = BIAS_MAX - pool->frag_users;
+ 
+ 	/* Some user is still using the page frag */
+-	if (likely(page_pool_atomic_sub_frag_count_return(page,
+-							  drain_count)))
++	if (likely(page_pool_defrag_page(page, drain_count)))
+ 		return NULL;
+ 
+ 	if (page_ref_count(page) == 1 && !page_is_pfmemalloc(page)) {
+@@ -548,8 +546,7 @@ static void page_pool_free_frag(struct page_pool *pool)
+ 
+ 	pool->frag_page = NULL;
+ 
+-	if (!page ||
+-	    page_pool_atomic_sub_frag_count_return(page, drain_count))
++	if (!page || page_pool_defrag_page(page, drain_count))
+ 		return;
+ 
+ 	page_pool_return_page(pool, page);
+@@ -588,7 +585,7 @@ struct page *page_pool_alloc_frag(struct page_pool *pool,
+ 		pool->frag_users = 1;
+ 		*offset = 0;
+ 		pool->frag_offset = size;
+-		page_pool_set_frag_count(page, BIAS_MAX);
++		page_pool_fragment_page(page, BIAS_MAX);
+ 		return page;
+ 	}
+ 
 
 
