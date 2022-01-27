@@ -2,127 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE33849DF38
-	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 11:22:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B933D49DF92
+	for <lists+netdev@lfdr.de>; Thu, 27 Jan 2022 11:40:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239314AbiA0KWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 05:22:10 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:23804 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239316AbiA0KWA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 05:22:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643278920; x=1674814920;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7PP7ZVyTuXhMGT+ABjcLpIvrOZ7cdserPfEvLTmZS64=;
-  b=CtVIlUsm7GJG0G6b3ESoNfH2LZyjCYwGPqTO8zEs9yEKvM5KPZj8Ky7Q
-   3ZfjTv1sWTFhp6mUc0WYU3Viku773SgAJ5XLOwAVMmJh3MshD88eZ13y/
-   z66rI4PuRnO8CoGtvKOMu7mfXGh5T8kVA7DdhSM0lM01d8bsqbiA8EJwJ
-   PpkGcsYLTKXyO2WNuyykaBREdTHhoqbWCjwKqwAMdIedk7lTqJE3fCj2n
-   hQ/L+VXtoCVTogA10JK7OJd3zt428hs7pOTRCmiWVC+exIh3gTOyw7sY1
-   2ZPnTsgbXeyJBt3d9pnKeYCp9370LZ5C34XYOI20Nqt/y21tfyebqdpYv
-   w==;
-IronPort-SDR: PR1JP+SV55GijEV8dYY4Nv6pdR+vM6O5KAVTAag4CSOS9DVJ3SkQCcD7MpMdvOYJITCTBdOTu1
- fCLLPGiK07kesbQSqm/qp1bOPYb1pOoLYKZ9TTMtDRRsCEo74500YoUZ/UqN7DRFXZhLIqoBYY
- etbcE7IMWrFv1zhWoYkxy3RpnJ/SbKmb0oNkxajrYJptH/Wo7jcdifJga9eZCt410GXpvIAlRb
- Iot2qZZ8eJcG5emTCU5dFk6S3+3Xkilz492pvZk1khfVDe4phTlN0FDBuKpdsMKqw2r1/0lQgl
- oDfKeZTE7CKHpWI+Cv3BBTKX
+        id S239150AbiA0Kkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 05:40:55 -0500
+Received: from mga17.intel.com ([192.55.52.151]:20498 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232916AbiA0Kky (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jan 2022 05:40:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643280054; x=1674816054;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=CwF4EuD+jK2sMYt/qd0W3G7JEKV2ORaBWovMhleYyHM=;
+  b=JYkYRWcOdtIX2T/D+V1Nh0MkMtUKq9cscpjwxF1faVduIz5pjtfEb//m
+   FMWT5AYi8L8jm9B38Hi8Cv2BT1yvnjc4qGXwLqUsFl779X1PDei3PCdtw
+   oc4xXfPfcUgmxgxoJVrWZH4x2eznRAnUnvURhMSBnknT8jSYFf394q01h
+   odPxsU6Dk22YTIex7GAIhaCNqlxaYS7WUG/MS7wDPoagwQrmcrd+GjDPU
+   Ta7DIT6tCPT+k0GbuecroWfnBDsdRfjwnzgiVtIvUeDkuFE0R9/UKMCMG
+   wsiXxfxCklbtpAuntRqiUyTZd4oU+/Vknhq7e4/bioKTnEPVGl0kN3162
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="227486671"
 X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
-   d="scan'208";a="160173914"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jan 2022 03:21:59 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 27 Jan 2022 03:21:57 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 27 Jan 2022 03:21:55 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <linux@armlinux.org.uk>,
-        <richardcochran@gmail.com>, <f.fainelli@gmail.com>,
-        <vivien.didelot@gmail.com>, <vladimir.oltean@nxp.com>,
-        <andrew@lunn.ch>, Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 7/7] net: lan966x: Implement get_ts_info
-Date:   Thu, 27 Jan 2022 11:23:33 +0100
-Message-ID: <20220127102333.987195-8-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220127102333.987195-1-horatiu.vultur@microchip.com>
-References: <20220127102333.987195-1-horatiu.vultur@microchip.com>
+   d="scan'208";a="227486671"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 02:40:54 -0800
+X-IronPort-AV: E=Sophos;i="5.88,320,1635231600"; 
+   d="scan'208";a="521179456"
+Received: from shochwel-mobl.ger.corp.intel.com ([10.249.44.153])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 02:40:48 -0800
+Date:   Thu, 27 Jan 2022 12:40:42 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
+cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
+        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
+        sreehari.kancharla@intel.com
+Subject: Re: [PATCH net-next v4 05/13] net: wwan: t7xx: Add control port
+In-Reply-To: <20220114010627.21104-6-ricardo.martinez@linux.intel.com>
+Message-ID: <7c1f1fe-fb19-fa95-10e3-776b81f5128@linux.intel.com>
+References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com> <20220114010627.21104-6-ricardo.martinez@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement the function get_ts_info in ethtool_ops which is needed to get
-the HW capabilities for timestamping.
+On Thu, 13 Jan 2022, Ricardo Martinez wrote:
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../microchip/lan966x/lan966x_ethtool.c       | 36 +++++++++++++++++++
- 1 file changed, 36 insertions(+)
+> From: Haijun Liu <haijun.liu@mediatek.com>
+> 
+> Control Port implements driver control messages such as modem-host
+> handshaking, controls port enumeration, and handles exception messages.
+> 
+> The handshaking process between the driver and the modem happens during
+> the init sequence. The process involves the exchange of a list of
+> supported runtime features to make sure that modem and host are ready
+> to provide proper feature lists including port enumeration. Further
+> features can be enabled and controlled in this handshaking process.
+> 
+> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> ---
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_ethtool.c b/drivers/net/ethernet/microchip/lan966x/lan966x_ethtool.c
-index 614f12c2fe6a..1dd12e0c3b58 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_ethtool.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_ethtool.c
-@@ -545,6 +545,41 @@ static int lan966x_set_pauseparam(struct net_device *dev,
- 	return phylink_ethtool_set_pauseparam(port->phylink, pause);
- }
- 
-+static int lan966x_get_ts_info(struct net_device *dev,
-+			       struct ethtool_ts_info *info)
-+{
-+	struct lan966x_port *port = netdev_priv(dev);
-+	struct lan966x *lan966x = port->lan966x;
-+	struct lan966x_phc *phc;
-+
-+	if (!lan966x->ptp)
-+		return ethtool_op_get_ts_info(dev, info);
-+
-+	phc = &lan966x->phc[LAN966X_PHC_PORT];
-+
-+	info->phc_index = phc->clock ? ptp_clock_index(phc->clock) : -1;
-+	if (info->phc_index == -1) {
-+		info->so_timestamping |= SOF_TIMESTAMPING_TX_SOFTWARE |
-+					 SOF_TIMESTAMPING_RX_SOFTWARE |
-+					 SOF_TIMESTAMPING_SOFTWARE;
-+		return 0;
-+	}
-+	info->so_timestamping |= SOF_TIMESTAMPING_TX_SOFTWARE |
-+				 SOF_TIMESTAMPING_RX_SOFTWARE |
-+				 SOF_TIMESTAMPING_SOFTWARE |
-+				 SOF_TIMESTAMPING_TX_HARDWARE |
-+				 SOF_TIMESTAMPING_RX_HARDWARE |
-+				 SOF_TIMESTAMPING_RAW_HARDWARE;
-+	info->tx_types = BIT(HWTSTAMP_TX_OFF) | BIT(HWTSTAMP_TX_ON) |
-+			 BIT(HWTSTAMP_TX_ONESTEP_SYNC);
-+	info->rx_filters = BIT(HWTSTAMP_FILTER_NONE) |
-+			   BIT(HWTSTAMP_FILTER_PTP_V2_EVENT) |
-+			   BIT(HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
-+			   BIT(HWTSTAMP_FILTER_PTP_V2_L4_EVENT);
-+
-+	return 0;
-+}
-+
- const struct ethtool_ops lan966x_ethtool_ops = {
- 	.get_link_ksettings     = lan966x_get_link_ksettings,
- 	.set_link_ksettings     = lan966x_set_link_ksettings,
-@@ -556,6 +591,7 @@ const struct ethtool_ops lan966x_ethtool_ops = {
- 	.get_eth_mac_stats      = lan966x_get_eth_mac_stats,
- 	.get_rmon_stats		= lan966x_get_eth_rmon_stats,
- 	.get_link		= ethtool_op_get_link,
-+	.get_ts_info		= lan966x_get_ts_info,
- };
- 
- static void lan966x_check_stats_work(struct work_struct *work)
+> +	/* Fill runtime feature */
+> +	for (i = 0; i < FEATURE_COUNT; i++) {
+> +		u8 md_feature_mask = FIELD_GET(FEATURE_MSK, md_feature->feature_set[i]);
+> +
+> +		memset(&rt_feature, 0, sizeof(rt_feature));
+> +		rt_feature.feature_id = i;
+> +
+> +		switch (md_feature_mask) {
+> +		case MTK_FEATURE_DOES_NOT_EXIST:
+> +		case MTK_FEATURE_MUST_BE_SUPPORTED:
+> +			rt_feature.support_info = md_feature->feature_set[i];
+> +			break;
+> +
+> +		default:
+> +			break;
+
+Please remove empty default blocks from all patches.
+
+
+> +		}
+> +
+> +		if (FIELD_GET(FEATURE_MSK, rt_feature.support_info) !=
+> +		    MTK_FEATURE_MUST_BE_SUPPORTED) {
+> +			memcpy(rt_data, &rt_feature, sizeof(rt_feature));
+> +			rt_data += sizeof(rt_feature);
+> +		}
+> +
+> +		packet_size += sizeof(struct mtk_runtime_feature);
+> +	}
+
+Is it intentional these two additions (rt_data and packet_size) are on
+different sides of the if block?
+
+
+> +static int port_ctl_init(struct t7xx_port *port)
+> +{
+> +	struct t7xx_port_static *port_static = port->port_static;
+> +
+> +	port->skb_handler = &control_msg_handler;
+> +	port->thread = kthread_run(port_ctl_rx_thread, port, "%s", port_static->name);
+> +	if (IS_ERR(port->thread)) {
+> +		dev_err(port->dev, "Failed to start port control thread\n");
+> +		return PTR_ERR(port->thread);
+> +	}
+> +
+> +	port->rx_length_th = CTRL_QUEUE_MAXLEN;
+> +	return 0;
+> +}
+> +
+> +static void port_ctl_uninit(struct t7xx_port *port)
+> +{
+> +	unsigned long flags;
+> +	struct sk_buff *skb;
+> +
+> +	if (port->thread)
+> +		kthread_stop(port->thread);
+> +
+> +	spin_lock_irqsave(&port->rx_wq.lock, flags);
+> +	while ((skb = __skb_dequeue(&port->rx_skb_list)) != NULL)
+> +		dev_kfree_skb_any(skb);
+> +
+> +	spin_unlock_irqrestore(&port->rx_wq.lock, flags);
+> +}
+
+I wonder if the uninit should set rx_length_th to 0 to prevent
+further accumulation of skbs?
+
+> +	FSM_EVENT_AP_HS2_EXIT,
+
+Never used anywhere.
+
+
 -- 
-2.33.0
+ i.
 
