@@ -2,87 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F09D49F18B
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:55:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39B8F49F1A1
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 04:01:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345729AbiA1CzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 21:55:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52658 "EHLO
+        id S241918AbiA1DBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 22:01:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345672AbiA1Cy6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:54:58 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E179AC061756;
-        Thu, 27 Jan 2022 18:54:57 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id n17so6153522iod.4;
-        Thu, 27 Jan 2022 18:54:57 -0800 (PST)
+        with ESMTP id S241974AbiA1DBL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 22:01:11 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA118C06173B;
+        Thu, 27 Jan 2022 19:01:10 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id h7so11310795ejf.1;
+        Thu, 27 Jan 2022 19:01:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=5RICZwL9u/zTAxmOUojjtjT6pAJD/gLwWHz+0dS4t0I=;
-        b=Mc6srME6Bkt2Matuu2y8fgrRpiX+sWi5bqd/b8qB17EWTT+/xlC+254JGrqsEWpAbA
-         70Wb71FoxF2YeH1GwQ2qrp64IrLa6BOSeASJcCGhq+sDF9aLkJULMuC4s7wDF65Wcuf8
-         TMhulDitop0kfz3XPUkmsmi43c38Xn1hN/tnTbsPDwkEp1OWeLr5ZlD0hHrI3FoMqpbT
-         xwAFtFvuBYJXc2r5VXZmOgA/ET75zmFbBp4fw0V6fb5hEzDbP0UNx5dVXYC3M9qmPs5X
-         mQkvkUIQMoenPhfNTRgkK+1R5q0YajbLj5MBQPTSu2z88Jb5wOj9S0Z0V05G5qgBQ3s/
-         FZvg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=i/Z7JtNUmS+A5ZG7tJeCZuufyfEVlrrSo8W8DKMEiOA=;
+        b=TyXpg4MEOh5akexMN8QKeR/5kyDp4wz2Kb1vrvYAgOLphZhYpiOCqjCOH/GAnCVgG1
+         KH/rO+VPf45SEh7ShYTkngAx8LXq8P2BkH/aC7i3GqGWOpDhky1hOR6J0ke5S7A2/Ou2
+         0I4zXqujEAy/+WyFWRI7Ufz/vekjlqS0/lW9ts3ZtR9m/IGN9bVmBzp7LhfCR2jEC3OQ
+         Vp06shWT0J2SzwzYDUghUKq/YNND1/Zd7BEra+T3FmE3FIQtzSqE0ccoguvYmqZnyJx9
+         4kYJxN4/OPSCYWPdVK9r78H7RSOFuLBw8Jyy+823yjwphygqhaO28L0g/OXpGjZ1wGRy
+         w1GQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=5RICZwL9u/zTAxmOUojjtjT6pAJD/gLwWHz+0dS4t0I=;
-        b=TM4RKG/mkRdMvlDnMwN6cl5I00SjbCfrpV5MyQDk1q70FuIX41YTZGo0M4Op8yUn10
-         ET4GNSxiSAvpiY1iM4vSvKgks4RewdY/BXsn+KE3SqvpiRuTYV0/kKWuJ4gFjvqn45Ad
-         9IXJd9V9RRrjtaEMFajRNPf4pdnxBWKyI9hEwtLZd6TzH0hxz3PAPqhpKqUX220ypCM4
-         6StlmEdzjeKNPE3Xy0vM17Nef5hZBnPNnArj25Ll++wNbYlGzbdSiV4JoiSb2KU5imBe
-         LGOEgUGVrPKekWs6t1D93GX0byCGbIVxPprZqIEpfQ1SWHnWCTwI9cCcAbB5zjnRYLsj
-         Jn6Q==
-X-Gm-Message-State: AOAM5325F5hqwPloRrCMjvHaYotzgcl9HM7mGYwXMbleiX/x4Tj538yL
-        8ro8MD3oE9j/K1td7lI26As=
-X-Google-Smtp-Source: ABdhPJw/JCnqr2FK1HDAssAXm/vgnxqXNk2E+XaA1AGalDUq8hK311nXmz2QK/yla3R3nHLOjkKRRQ==
-X-Received: by 2002:a02:aa09:: with SMTP id r9mr3585057jam.199.1643338497409;
-        Thu, 27 Jan 2022 18:54:57 -0800 (PST)
-Received: from localhost ([99.197.200.79])
-        by smtp.gmail.com with ESMTPSA id t7sm11524793ilu.37.2022.01.27.18.54.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 18:54:57 -0800 (PST)
-Date:   Thu, 27 Jan 2022 18:54:50 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Mathieu Xhonneux <m.xhonneux@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        William Tu <u9012063@gmail.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Message-ID: <61f35afaeb9fa_738dc2086f@john.notmuch>
-In-Reply-To: <20220125081717.1260849-1-liuhangbin@gmail.com>
-References: <20220125081717.1260849-1-liuhangbin@gmail.com>
-Subject: RE: [PATCH bpf 0/7] selftests/bpf: use temp netns for testing
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i/Z7JtNUmS+A5ZG7tJeCZuufyfEVlrrSo8W8DKMEiOA=;
+        b=qiP+6udnY6RZtMNTmyv30zKrkmO8bf+ibi2NF3zhPM211cNUeL6BHRAVTqKcpPPCjm
+         Ha4TEJBaccCj8LsG+yP7JHgtNudSDCb+k6YZ1ZN6h1BYTgeOvdaja+wmwYQmQiCJ+aMa
+         sq1C9NTFSEHIZUn0fWq2VtBzQ4lNa5kgPfPIQ2fc2aetrhad4ehg5/3Cdh/xQd4TLRnN
+         FI7m8orls9slmngSAPaUKDMQRhJBjNPyHdUrUSlqzCvIFfjy2OfupWQNRrP5gOPuq/o/
+         VyGbg0WdoGD0uyD2IU5u1pM0Z6yjZC0pt035MG9okdbyAqDT4ey4uFSuO9ehYYmXUAAD
+         iY+A==
+X-Gm-Message-State: AOAM53252VwogUX8dbuFuN6/QhZ3PS/FYmHDElwsthSP0MtILuZRHK9Y
+        5a/6TtLTzp7iOqGpOKcUzQyKGKrO09tmQ5MBY/o=
+X-Google-Smtp-Source: ABdhPJxgO/qkaFT8kQ2R8bCAjOBxw37M3HjDcAQmXa6zla5lj/Gad+uIclOzTWl5/dpaVZwko4eBvvx33UbD2nUlkJw=
+X-Received: by 2002:a17:907:da3:: with SMTP id go35mr5179474ejc.456.1643338869274;
+ Thu, 27 Jan 2022 19:01:09 -0800 (PST)
+MIME-Version: 1.0
+References: <20220127033356.4050072-1-imagedong@tencent.com>
+ <cdb189e9-a804-bb02-9490-146acf8ca0a6@gmail.com> <YfLCMFXbGTgef5Uu@shredder>
+In-Reply-To: <YfLCMFXbGTgef5Uu@shredder>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Fri, 28 Jan 2022 10:56:38 +0800
+Message-ID: <CADxym3a7BLRo3r4dyPrG_dWikxrk288V6XLjktakZWtJx=g3eA@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next] net: drop_monitor: support drop reason
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Menglong Dong <imagedong@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin Liu wrote:
-> There are some bpf tests using hard code netns name like ns0, ns1, etc.
-> This kind of ns name is easily used by other tests or system. If there
-> is already a such netns, all the related tests will failed. So let's
-> use temp netns name for testing.
-> 
-> The first patch not only change to temp netns. But also fixed an interface
-> index issue. So I add fixes tag. For the later patches, I think that
-> should be an update instead of fixes, so the fixes tag is not added.
+On Fri, Jan 28, 2022 at 12:03 AM Ido Schimmel <idosch@idosch.org> wrote:
+>
+> On Thu, Jan 27, 2022 at 08:53:04AM -0700, David Ahern wrote:
+> > On 1/26/22 8:33 PM, menglong8.dong@gmail.com wrote:
+> > > From: Menglong Dong <imagedong@tencent.com>
+> > >
+> > > In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()")
+> > > drop reason is introduced to the tracepoint of kfree_skb. Therefore,
+> > > drop_monitor is able to report the drop reason to users by netlink.
+> > >
+> > > For now, the number of drop reason is passed to users ( seems it's
+> > > a little troublesome to pass the drop reason as string ). Therefore,
+> > > users can do some customized description of the reason.
+> > >
+> > > Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> > > ---
+> > > v3:
+> > > - referring to cb->reason and cb->pc directly in
+> > >   net_dm_packet_report_fill()
+> > >
+> > > v2:
+> > > - get a pointer to struct net_dm_skb_cb instead of local var for
+> > >   each field
+> > > ---
+> > >  include/uapi/linux/net_dropmon.h |  1 +
+> > >  net/core/drop_monitor.c          | 16 ++++++++++++----
+> > >  2 files changed, 13 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
+> > > index 66048cc5d7b3..b2815166dbc2 100644
+> > > --- a/include/uapi/linux/net_dropmon.h
+> > > +++ b/include/uapi/linux/net_dropmon.h
+> > > @@ -93,6 +93,7 @@ enum net_dm_attr {
+> > >     NET_DM_ATTR_SW_DROPS,                   /* flag */
+> > >     NET_DM_ATTR_HW_DROPS,                   /* flag */
+> > >     NET_DM_ATTR_FLOW_ACTION_COOKIE,         /* binary */
+> > > +   NET_DM_ATTR_REASON,                     /* u32 */
+> > >
+> >
+> > For userspace to properly convert reason from id to string, enum
+> > skb_drop_reason needs to be moved from skbuff.h to a uapi file.
+> > include/uapi/linux/net_dropmon.h seems like the best candidate to me.
+> > Maybe others have a better idea.
+>
+> I think the best option would be to convert it to a string in the kernel
+> (or report both). Then you don't need to update user space tools such as
+> the Wireshark dissector [1] and DropWatch every time a new reason is
+> added.
 
-For the series. Thanks for cleaning this up.
+I think reporting it as a string would be a good choice. Is it ok if we do like
+this (not tested yet)?
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -48,6 +48,16 @@
+ static int trace_state = TRACE_OFF;
+ static bool monitor_hw;
+
++#undef EM
++#undef EMe
++
++#define EM(a, b) [a] = #b,
++#define EMe(a, b) [a] = #b
++
++static const char *drop_reasons[SKB_DROP_REASON_MAX + 1] = {
++       TRACE_SKB_DROP_REASON
++};
++
+ /* net_dm_mutex
+  *
+  * An overall lock guarding every operation coming from userspace.
+@@ -628,7 +638,8 @@ static int net_dm_packet_report_fill(struct
+sk_buff *msg, struct sk_buff *skb,
+                              NET_DM_ATTR_PAD))
+                goto nla_put_failure;
+
+-       if (nla_put_u32(msg, NET_DM_ATTR_REASON, cb->reason))
++       if (nla_put_string(msg, NET_DM_ATTR_REASON,
++                          drop_reasons[cb->reason]))
+                goto nla_put_failure;
+
+        snprintf(buf, sizeof(buf), "%pS", cb->pc);
+
+Besides, I still think moving these reasons to uapi is necessary.
+@David Ahern Is it ok to create a new file (such as net_skbuff.h)
+for these reasons? Maybe other users need these enum in the
+feature, and this job is done the sooner the better.
+
+Thanks!
+Menglong Dong
+
+>
+> [1] https://www.wireshark.org/docs/dfref/n/net_dm.html
