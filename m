@@ -2,154 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 108C949FD9E
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 17:07:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81D4149FDB3
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 17:10:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239775AbiA1QHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 11:07:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37644 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234788AbiA1QHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 11:07:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5622EC061714
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 08:07:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAE5B61EC4
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 16:07:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 250F4C340E0;
-        Fri, 28 Jan 2022 16:07:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643386024;
-        bh=3Dt1tHzdKQA+cHDpI58JidXkWxE0sRS61B46CQDEOUQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Q4cMqa+dY5+euQkT3zzT+h7/5JF3uSa1QsRZTx2LbQBxC9uOGDyzbPDc2kwB30qVB
-         NZx2O36CSkEfuO703WfHFsNSuR+qZNRMiftWzO4zFedMx3HFRzPJMrl9s0/KV+hTGi
-         Q1s6Ee7DlDRr+Chm2GN0sf9vIdE0b9LHSCCi3nC6+/DQjHSUBqN7lbtcwy9J9dd7pv
-         3E0PAAD3VKrwSaS1KaTEvZKQA97K5M0rqHfMCeCI7lRXBG30+R2v3zXng1cIIzl3r9
-         6y+8BsQm+dZLcUHILUPxsQ/7RxisozGVmGGgyC0D3GxBlF/9dPUlzIjWBoz3+gw+iO
-         kyl973sRtLnKA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] ipv4: drop fragmentation code from ip_options_build()
-Date:   Fri, 28 Jan 2022 08:06:54 -0800
-Message-Id: <20220128160654.1860428-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        id S237576AbiA1QKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 11:10:51 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:60494 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229482AbiA1QKu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jan 2022 11:10:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=6nCWgy9m02hUt7uQpkNW9XdqKNY5FJhMDyIwqP/X4jo=; b=aT3qINVuUmb3KjB705OCgfFFZ/
+        oSWStzYSpeBw/pLB7Vq39BI057kZjR0PUIRzHaBfhtwpCXvifpo0bhIe8daVke8+nmQ8DhzCWe5VU
+        fUxAQmJ7U/dhDXR4FHCdx9LU7SECNXKb300ixHOY0I9qpblq9W8WUs+H91W8DeWAxiSQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nDTpj-003C6n-W8; Fri, 28 Jan 2022 17:10:43 +0100
+Date:   Fri, 28 Jan 2022 17:10:43 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     David Laight <David.Laight@aculab.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 0/2] net: dsa: mv88e6xxx: Improve indirect
+ addressing performance
+Message-ID: <YfQVg4mYYT9iop3x@lunn.ch>
+References: <20220128104938.2211441-1-tobias@waldekranz.com>
+ <c3bc08f82f1c435ca6fd47e30eb65405@AcuMS.aculab.com>
+ <87k0ejc0ol.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87k0ejc0ol.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since v2.5.44 and addition of ip_options_fragment()
-ip_options_build() does not render headers for fragments
-directly. @is_frag is always 0.
+On Fri, Jan 28, 2022 at 04:58:02PM +0100, Tobias Waldekranz wrote:
+> On Fri, Jan 28, 2022 at 14:10, David Laight <David.Laight@ACULAB.COM> wrote:
+> > From: Tobias Waldekranz
+> >> Sent: 28 January 2022 10:50
+> >> 
+> >> The individual patches have all the details. This work was triggered
+> >> by recent work on a platform that took 16s (sic) to load the mv88e6xxx
+> >> module.
+> >> 
+> >> The first patch gets rid of most of that time by replacing a very long
+> >> delay with a tighter poll loop to wait for the busy bit to clear.
+> >> 
+> >> The second patch shaves off some more time by avoiding redundant
+> >> busy-bit-checks, saving 1 out of 4 MDIO operations for every register
+> >> read/write in the optimal case.
+> >
+> > I don't think you should fast-poll for the entire timeout period.
+> > Much better to drop to a usleep_range() after the first 2 (or 3)
+> > reads fail.
+> 
+> You could, I suppose. Andrew, do you want a v3?
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- include/net/ip.h      |  2 +-
- net/ipv4/ip_options.c | 31 +++++++++----------------------
- net/ipv4/ip_output.c  |  6 +++---
- 3 files changed, 13 insertions(+), 26 deletions(-)
+You have i available, so it would be a simple change. So yes please.
 
-diff --git a/include/net/ip.h b/include/net/ip.h
-index b51bae43b0dd..fdbab0c00fca 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -712,7 +712,7 @@ int ip_forward(struct sk_buff *skb);
-  */
- 
- void ip_options_build(struct sk_buff *skb, struct ip_options *opt,
--		      __be32 daddr, struct rtable *rt, int is_frag);
-+		      __be32 daddr, struct rtable *rt);
- 
- int __ip_options_echo(struct net *net, struct ip_options *dopt,
- 		      struct sk_buff *skb, const struct ip_options *sopt);
-diff --git a/net/ipv4/ip_options.c b/net/ipv4/ip_options.c
-index da1b5038bdfd..a9e22a098872 100644
---- a/net/ipv4/ip_options.c
-+++ b/net/ipv4/ip_options.c
-@@ -42,7 +42,7 @@
-  */
- 
- void ip_options_build(struct sk_buff *skb, struct ip_options *opt,
--		      __be32 daddr, struct rtable *rt, int is_frag)
-+		      __be32 daddr, struct rtable *rt)
- {
- 	unsigned char *iph = skb_network_header(skb);
- 
-@@ -53,28 +53,15 @@ void ip_options_build(struct sk_buff *skb, struct ip_options *opt,
- 	if (opt->srr)
- 		memcpy(iph + opt->srr + iph[opt->srr + 1] - 4, &daddr, 4);
- 
--	if (!is_frag) {
--		if (opt->rr_needaddr)
--			ip_rt_get_source(iph + opt->rr + iph[opt->rr + 2] - 5, skb, rt);
--		if (opt->ts_needaddr)
--			ip_rt_get_source(iph + opt->ts + iph[opt->ts + 2] - 9, skb, rt);
--		if (opt->ts_needtime) {
--			__be32 midtime;
-+	if (opt->rr_needaddr)
-+		ip_rt_get_source(iph + opt->rr + iph[opt->rr + 2] - 5, skb, rt);
-+	if (opt->ts_needaddr)
-+		ip_rt_get_source(iph + opt->ts + iph[opt->ts + 2] - 9, skb, rt);
-+	if (opt->ts_needtime) {
-+		__be32 midtime;
- 
--			midtime = inet_current_timestamp();
--			memcpy(iph + opt->ts + iph[opt->ts + 2] - 5, &midtime, 4);
--		}
--		return;
--	}
--	if (opt->rr) {
--		memset(iph + opt->rr, IPOPT_NOP, iph[opt->rr + 1]);
--		opt->rr = 0;
--		opt->rr_needaddr = 0;
--	}
--	if (opt->ts) {
--		memset(iph + opt->ts, IPOPT_NOP, iph[opt->ts + 1]);
--		opt->ts = 0;
--		opt->ts_needaddr = opt->ts_needtime = 0;
-+		midtime = inet_current_timestamp();
-+		memcpy(iph + opt->ts + iph[opt->ts + 2] - 5, &midtime, 4);
- 	}
- }
- 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 139cec29ed06..0c0574eb5f5b 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -179,7 +179,7 @@ int ip_build_and_send_pkt(struct sk_buff *skb, const struct sock *sk,
- 
- 	if (opt && opt->opt.optlen) {
- 		iph->ihl += opt->opt.optlen>>2;
--		ip_options_build(skb, &opt->opt, daddr, rt, 0);
-+		ip_options_build(skb, &opt->opt, daddr, rt);
- 	}
- 
- 	skb->priority = sk->sk_priority;
-@@ -519,7 +519,7 @@ int __ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl,
- 
- 	if (inet_opt && inet_opt->opt.optlen) {
- 		iph->ihl += inet_opt->opt.optlen >> 2;
--		ip_options_build(skb, &inet_opt->opt, inet->inet_daddr, rt, 0);
-+		ip_options_build(skb, &inet_opt->opt, inet->inet_daddr, rt);
- 	}
- 
- 	ip_select_ident_segs(net, skb, sk,
-@@ -1541,7 +1541,7 @@ struct sk_buff *__ip_make_skb(struct sock *sk,
- 
- 	if (opt) {
- 		iph->ihl += opt->optlen >> 2;
--		ip_options_build(skb, opt, cork->addr, rt, 0);
-+		ip_options_build(skb, opt, cork->addr, rt);
- 	}
- 
- 	skb->priority = (cork->tos != -1) ? cork->priority: sk->sk_priority;
--- 
-2.34.1
+But saying that, it seems like if the switch does not complete within
+2 polls, it is likely to be dead and we are about to start a cascade
+of failures. We probably don't care about a bit of CPU usage when the
+devices purpose in being has just stopped working.
 
+	Andrew
