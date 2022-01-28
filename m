@@ -2,87 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 757B549FF93
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 18:30:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C34E49FFD2
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 18:58:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243310AbiA1Rao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 12:30:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57302 "EHLO
+        id S1344020AbiA1R6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 12:58:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242181AbiA1Rai (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 12:30:38 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F7FC06173B
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 09:30:37 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id k17so6726533plk.0
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 09:30:37 -0800 (PST)
+        with ESMTP id S244505AbiA1R6e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 12:58:34 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA79C06173B
+        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 09:58:34 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id a28so13292490lfl.7
+        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 09:58:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=awz6EipQU2fZgJnMEMkn6YHHN5Z72TRdxUQ+fR1WCOc=;
-        b=kDH10+UNxLtYGfmDetEjNCMBwURilYLgsdpadRJQiIavHFn5HmSBHoe/f1AlgCK77h
-         7I/q1dd7GnDF0F73nldpZcJDpJ6APnfUVsIcAyaCl5qgbDPUybxzea2ZzmXuloyilcXO
-         jJ63Yb94DFpqRjB9wnugi+UcFW0byGKnK4V6o519FKvxfbXTF2YKl72g5ZvB1fJvIomP
-         6/kfgC5ozVjoWE8qSwQq6hxoAZyMQrzjsNuWPZkbk8a5KmUjPfrnPyMfYg5CuWlUadd2
-         nlK59t5komggvR/FNYWf2BTIfHfodPe1Dy4FkCPEQLsjJ35al1k8LtvfTK94c7WtSEei
-         QPbg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=px8ft9YcMDwC+zrkkIg3YB+CkDqamT9CA53FOEGzs94=;
+        b=d7tZJxXjctGyAuZSFp2b6SG2kFuufrhf/7h1QBSIAzMsH/vREuVGebHctZMIANoEDK
+         ykGwTYPpdtWL+ImcPxZ0cv3paVshrH+r7ZaSXDXwFCjMsU70U6bYOuJEILUHbhtawprj
+         +5k0a9zppdjiO7oHTZ0yYZaIIGZZsbhrsGnOmsh4dPHtw0bXDwwlAzFPT0he6r7eH/hW
+         SOSUD86EKdzrSIJNIWH8IsltU29IRuLHeuHXrGDMC8xAFtDEg/WWwi4BuLmghTxSAXlo
+         cIC64eR9ERnKNnwr4MVnLX3l3GyTVYxPmKS2VFj2Dz9EKMxWRcblwlaGzYosMWznKpH4
+         R0FA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=awz6EipQU2fZgJnMEMkn6YHHN5Z72TRdxUQ+fR1WCOc=;
-        b=b9atr0JuTp3BOgZ0cgODL5TQBQluK3Cs9t/yBnoZOQFWQOtK83b+qXDmdaUszuHSUV
-         t92evBORt4vEyKEf6AlccXZU5sd/S4U2x983hYsNhnbppLq3IL2bx4LoSlKvuLgPOcL5
-         g0Ne6qmcItzZCC1fQdec5s+n95xCFxmPeyM5Rlw/DAF7kg6bKU2tso6NDhahd4QJzyAx
-         3ggP5IJ4F0YPTvhueeHL3UEPcpnVNgnbLYPmOy7IERE82lcGkZ/TFQ8E7c9FcsEX3uPp
-         7PUMfHJqywkEcc3Kejs7QKyersx1uLxmLIsJ07cLdeKvuaiesMuLv5pyfJLarTUDMxNV
-         jK/A==
-X-Gm-Message-State: AOAM531WFFRzeVI7Z+9LUbH+pmYfHpT96/7TPkC0oD3hxaHHp7nMoRZM
-        ePVX6lLF+N3rBGTIzlz3abg=
-X-Google-Smtp-Source: ABdhPJz0BGvkb9+ZhKkk68XFS5DxJzl5Dhe5CIfIadXH9du5Ak7z8bYvn2NbyjOPW5xlrHD/CQBFiA==
-X-Received: by 2002:a17:90a:eac5:: with SMTP id ev5mr20861934pjb.147.1643391037034;
-        Fri, 28 Jan 2022 09:30:37 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id c6sm10306788pfl.200.2022.01.28.09.30.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Jan 2022 09:30:36 -0800 (PST)
-Message-ID: <b6d47735-c638-3121-f66c-f08b4350f329@gmail.com>
-Date:   Fri, 28 Jan 2022 09:30:35 -0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=px8ft9YcMDwC+zrkkIg3YB+CkDqamT9CA53FOEGzs94=;
+        b=b2iZE46cJvr6lDzoZZ4mdIl71cwfAjKUG+OVaADPXTcQbTnOfL+qO4g7VkGTc51Dxo
+         kUCgunECJbuDdGRlcxhcQxdLAVuLsNSpoPZTcs/WM8PwSpJEVusTw32KHoOIKlYNEPiP
+         kbbCn0yXd8d6TGpd9DHWSGrByCWRXgg5gddET2YTIQ5hQy/pSn3AkBS91UHp0dKrXP+7
+         SnYqm/ihQvz1nyS9AG9YBVWH5R7YIJLCdgOtqunyke2JvUdaO/X4BzfGsoVuGn5GhXSf
+         oH0h/gcV2Ela6G5ERg3RcdPaR0PI8bNoGlGu06k8/Y9n3b5vLQnyzR9U+3f69b159a62
+         cYwQ==
+X-Gm-Message-State: AOAM532mMrhVYupM+yB2fX/41TgNLguhoJO/HHUY4ux1VN15GxcIFCeW
+        eVImcu4aS+B5jJ4dKIVk3NHPn14PpS0za3W3BQRgdQ==
+X-Google-Smtp-Source: ABdhPJyiegThx73CDTsWpTnQpLzaXaci4VbX29zh1HwZCHHQkFlE45EjCNs/o4A50hztD6CHRKhOYE6X9JKSuHf4dF4=
+X-Received: by 2002:a19:ee04:: with SMTP id g4mr6803130lfb.157.1643392712450;
+ Fri, 28 Jan 2022 09:58:32 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] net: dsa: mt7530: make NET_DSA_MT7530 select
- MEDIATEK_GE_PHY
-Content-Language: en-US
-To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>, erkin.bozoglu@xeront.com
-Cc:     netdev@vger.kernel.org
-References: <20220128170544.4131-1-arinc.unal@arinc9.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220128170544.4131-1-arinc.unal@arinc9.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220128014303.2334568-1-jannh@google.com> <CANn89iKWaERfs1iW8jVyRZT8K1LwWM9efiRsx8E1U3CDT39dyw@mail.gmail.com>
+ <CAG48ez0sXEjePefCthFdhDskCFhgcnrecEn2jFfteaqa2qwDnQ@mail.gmail.com> <CANn89iKmCYq+WBu_S4OvKOXqRSagTg=t8xKq0WC_Rrw+TpKsbw@mail.gmail.com>
+In-Reply-To: <CANn89iKmCYq+WBu_S4OvKOXqRSagTg=t8xKq0WC_Rrw+TpKsbw@mail.gmail.com>
+From:   Jann Horn <jannh@google.com>
+Date:   Fri, 28 Jan 2022 18:58:05 +0100
+Message-ID: <CAG48ez1-OyZETvrYAfaHicYW1LbrQUVp=C0EukSWqZrYMej73w@mail.gmail.com>
+Subject: Re: [PATCH net] net: dev: Detect dev_hold() after netdev_wait_allrefs()
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Oliver Neukum <oneukum@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jan 28, 2022 at 3:25 AM Eric Dumazet <edumazet@google.com> wrote:
+> On Thu, Jan 27, 2022 at 6:14 PM Jann Horn <jannh@google.com> wrote:
+> > On Fri, Jan 28, 2022 at 3:09 AM Eric Dumazet <edumazet@google.com> wrote:
+> > > On Thu, Jan 27, 2022 at 5:43 PM Jann Horn <jannh@google.com> wrote:
+> > > > I've run into a bug where dev_hold() was being called after
+> > > > netdev_wait_allrefs(). But at that point, the device is already going
+> > > > away, and dev_hold() can't stop that anymore.
+> > > >
+> > > > To make such problems easier to diagnose in the future:
+> > > >
+> > > >  - For CONFIG_PCPU_DEV_REFCNT builds: Recheck in free_netdev() whether
+> > > >    the net refcount has been elevated. If this is detected, WARN() and
+> > > >    leak the object (to prevent worse consequences from a
+> > > >    use-after-free).
+> > > >  - For builds without CONFIG_PCPU_DEV_REFCNT: Set the refcount to zero.
+> > > >    This signals to the generic refcount infrastructure that any attempt
+> > > >    to increment the refcount later is a bug.
+[...]
+> >         if (dev->reg_state == NETREG_UNREGISTERING) {
+> >                 ASSERT_RTNL();
+> >                 dev->needs_free_netdev = true;
+> >                 return;
+> >         }
+> >
+> >         /* Recheck in case someone called dev_hold() between
+> >          * netdev_wait_allrefs() and here.
+> >          */
+> >         if (WARN_ON(netdev_refcnt_read(dev) != 0))
+> >                 return; /* leak memory, otherwise we might get UAF */
+> >
+> >         netif_free_tx_queues(dev);
+> >         netif_free_rx_queues(dev);
+>
+> Maybe another solution would be to leverage the recent dev_hold_track().
+>
+> We could add a  dead boolean to 'struct  ref_tracker_dir ' (dev->refcnt_tracker)
+
+Hmm... actually, what even are the semantics of dev_hold()?
+
+Normal refcounts have the property that if you hold one reference,
+you're always allowed to add another reference. But from what I can
+tell, something like this:
+
+struct net_device *dev = dev_get_by_name(net, name);
+dev_hold(dev);
+dev_put(dev);
+dev_put(dev);
+
+would be buggy using the current CONFIG_PCPU_DEV_REFCNT implementation.
+Basically, if dev_hold() runs at the same time as
+netdev_refcnt_read(), it's a bug because netdev_refcnt_read() is
+non-atomic, and we could get the following race:
+
+task B: starts netdev_refcnt_read()
+task B: reads *per_cpu_ptr(dev->pcpu_refcnt, 0)
+task A, on CPU 0: dev_hold(dev) increments *per_cpu_ptr(dev->pcpu_refcnt, 0)
+task A: migrates from CPU 0 to CPU 1
+task A, on CPU 1: dev_put(dev) decrements *per_cpu_ptr(dev->pcpu_refcnt, 1)
+task B: reads *per_cpu_ptr(dev->pcpu_refcnt, 1)
+
+which would make task B miss one outstanding reference.
+
+(This is why the generic percpu refcounting code in
+lib/percpu-refcount.c has logic for switching the refcount to atomic
+mode with an RCU grace period.)
 
 
-On 1/28/2022 9:05 AM, Arınç ÜNAL wrote:
-> Make MediaTek MT753x DSA driver enable MediaTek Gigabit PHYs driver to
-> properly control MT7530 and MT7531 switch PHYs.
-> 
-> A noticeable change is that the behaviour of switchport interfaces going
-> up-down-up-down is no longer there.
-> 
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+If these are the intended semantics for dev_hold(), then I guess your
+approach of adding a new boolean flag somewhere is the right one - but
+we should be setting that flag *before* waiting for the refcount to
+drop to 1. Though maybe it shouldn't be in ref-tracker, since this is
+a peculiarity of the hand-rolled netdev refcount...
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Are these the intended semantics (and I should rewrite the patch to
+also catch dev_hold() racing with netdev_wait_allrefs()), or is this
+unintended (and the netdev refcount should be replaced)?
+
+This should probably be documented...
