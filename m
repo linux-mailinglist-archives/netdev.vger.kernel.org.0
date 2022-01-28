@@ -2,137 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F8E249FBFF
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 15:45:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5D8C49FC0F
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 15:48:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349401AbiA1OpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 09:45:13 -0500
-Received: from prt-mail.chinatelecom.cn ([42.123.76.222]:53241 "EHLO
-        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1349397AbiA1OpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 09:45:13 -0500
-HMM_SOURCE_IP: 172.18.0.48:39842.1715433666
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.38 (unknown [172.18.0.48])
-        by chinatelecom.cn (HERMES) with SMTP id 6B76A280029;
-        Fri, 28 Jan 2022 22:45:04 +0800 (CST)
-X-189-SAVE-TO-SEND: +sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.48])
-        by app0024 with ESMTP id 0df3d2047b33487fa1e6ddceffca084c for j.vosburgh@gmail.com;
-        Fri, 28 Jan 2022 22:45:07 CST
-X-Transaction-ID: 0df3d2047b33487fa1e6ddceffca084c
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.48
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
-To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jay.vosburgh@canonical.com, nikolay@nvidia.com,
-        huyd12@chinatelecom.cn, sunshouxin@chinatelecom.cn
-Subject: [PATCH v11] net: bonding: Add support for IPV6 ns/na to balance-alb/balance-tlb mode
-Date:   Fri, 28 Jan 2022 09:44:42 -0500
-Message-Id: <20220128144442.101289-1-sunshouxin@chinatelecom.cn>
-X-Mailer: git-send-email 2.27.0
+        id S1349458AbiA1OsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 09:48:16 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.165]:40053 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349456AbiA1OsP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 09:48:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643381291;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=iz8Ezjk18Z6wYZm+g6kbkcCyQRUTLyBEEhSEQinqcOw=;
+    b=ABaGBri3Bcgq05h/X9PBt42+pWoiBzEhuC8rjE/MM0BbND5U525ISO0fxInw8s1zhd
+    01pMDcyFeB/Of6dPkesCbi0WtuqaakUg8v+VqJ+73gvLF3N8qFfra2whGzl6/+7EPe2y
+    nt/ARaYCEwMr/VS6Rs+633anY2tLiJCf6tDk0CUCPCTRYAZYgDo/IxTypm4586F4Zisj
+    sTtc8k6bEsfqKc1N4ec63z3jFYKnwKv1cpHvX09qsbNEwT+Adwe9b9pWL8uGgnM54GDV
+    ba90xqgeUU+tt6WWQmyePmHfj7QRB/735pfaT6BGuakPIEmfjrK9+e0arza35weBhVGq
+    4J5w==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.38.0 AUTH)
+    with ESMTPSA id zaacbfy0SEmARaa
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Fri, 28 Jan 2022 15:48:10 +0100 (CET)
+Message-ID: <07c69ccd-dbc0-5c74-c68e-8636ec9179ef@hartkopp.net>
+Date:   Fri, 28 Jan 2022 15:48:05 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net] can: isotp: isotp_rcv_cf(): fix so->rx race problem
+Content-Language: en-US
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <eaafaca3-f003-ca56-c04c-baf6cf4f7627@hartkopp.net>
+ <890d8209-f400-a3b0-df9c-3e198e3834d6@huawei.com>
+ <1fb4407a-1269-ec50-0ad5-074e49f91144@hartkopp.net>
+ <2aba02d4-0597-1d55-8b3e-2c67386f68cf@huawei.com>
+ <64695483-ff75-4872-db81-ca55763f95cf@hartkopp.net>
+ <d7e69278-d741-c706-65e1-e87623d9a8e8@huawei.com>
+ <97339463-b357-3e0e-1cbf-c66415c08129@hartkopp.net>
+ <24e6da96-a3e5-7b4e-102b-b5676770b80e@hartkopp.net>
+ <20220128080704.ns5fzbyn72wfoqmx@pengutronix.de>
+ <72419ca8-b0cb-1e9d-3fcc-655defb662df@hartkopp.net>
+ <20220128084603.jvrvapqf5dt57yiq@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220128084603.jvrvapqf5dt57yiq@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since ipv6 neighbor solicitation and advertisement messages
-isn't handled gracefully in bond6 driver, we can see packet
-drop due to inconsistency between mac address in the option
-message and source MAC .
+Hello Marc, hello William,
 
-Another examples is ipv6 neighbor solicitation and advertisement
-messages from VM via tap attached to host bridge, the src mac
-might be changed through balance-alb mode, but it is not synced
-with Link-layer address in the option message.
+On 28.01.22 09:46, Marc Kleine-Budde wrote:
+> On 28.01.2022 09:32:40, Oliver Hartkopp wrote:
+>>
+>>
+>> On 28.01.22 09:07, Marc Kleine-Budde wrote:
+>>> On 28.01.2022 08:56:19, Oliver Hartkopp wrote:
+>>>> I've seen the frame processing sometimes freezes for one second when
+>>>> stressing the isotp_rcv() from multiple sources. This finally freezes
+>>>> the entire softirq which is either not good and not needed as we only
+>>>> need to fix this race for stress tests - and not for real world usage
+>>>> that does not create this case.
+>>>
+>>> Hmmm, this doesn't sound good. Can you test with LOCKDEP enabled?
 
-The patch implements bond6's tx handle for ipv6 neighbor
-solicitation and advertisement messages.
 
-Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
----
-v9->v10:
-- add IPv6 header pull in alb_determine_nd.
-- combine bond_xmit_alb_slave_get's IPv6 header
-pull with alb_determine_nd's
+>> #
+>> # Lock Debugging (spinlocks, mutexes, etc...)
+>> #
+>> CONFIG_LOCK_DEBUGGING_SUPPORT=y
+>> # CONFIG_PROVE_LOCKING is not set
+> CONFIG_PROVE_LOCKING=y
 
-v10->v11:
-- use pskb_network_may_pull insteading of pskb_may_pull in
-alb_determine_nd
-- remove __alb_determine_nd
----
- drivers/net/bonding/bond_alb.c | 30 ++++++++++++++++++++++++++++--
- 1 file changed, 28 insertions(+), 2 deletions(-)
+Now enabled even more locking (seen relevant kernel config at the end).
 
-diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-index 533e476988f2..c98a4b0a8453 100644
---- a/drivers/net/bonding/bond_alb.c
-+++ b/drivers/net/bonding/bond_alb.c
-@@ -1269,6 +1269,27 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
- 	return res;
- }
- 
-+/* determine if the packet is NA or NS */
-+static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
-+{
-+	struct ipv6hdr *ip6hdr;
-+	struct icmp6hdr *hdr;
-+
-+	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr)))
-+		return true;
-+
-+	ip6hdr = ipv6_hdr(skb);
-+	if (ip6hdr->nexthdr != IPPROTO_ICMPV6)
-+		return false;
-+
-+	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr) + sizeof(*hdr)))
-+		return true;
-+
-+	hdr = icmp6_hdr(skb);
-+	return hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
-+		hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION;
-+}
-+
- /************************ exported alb functions ************************/
- 
- int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
-@@ -1348,8 +1369,11 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
- 	/* Do not TX balance any multicast or broadcast */
- 	if (!is_multicast_ether_addr(eth_data->h_dest)) {
- 		switch (skb->protocol) {
--		case htons(ETH_P_IP):
- 		case htons(ETH_P_IPV6):
-+			if (alb_determine_nd(skb, bond))
-+				break;
-+			fallthrough;
-+		case htons(ETH_P_IP):
- 			hash_index = bond_xmit_hash(bond, skb);
- 			if (bond->params.tlb_dynamic_lb) {
- 				tx_slave = tlb_choose_channel(bond,
-@@ -1432,10 +1456,12 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
- 			break;
- 		}
- 
--		if (!pskb_network_may_pull(skb, sizeof(*ip6hdr))) {
-+		if (alb_determine_nd(skb, bond)) {
- 			do_tx_balance = false;
- 			break;
- 		}
-+
-+		/* The IPv6 header is pulled by alb_determine_nd */
- 		/* Additionally, DAD probes should not be tx-balanced as that
- 		 * will lead to false positives for duplicate addresses and
- 		 * prevent address configuration from working.
+It turns out that there is no visible difference when using spin_lock() 
+or spin_trylock().
 
-base-commit: 145d9b498fc827b79c1260b4caa29a8e59d4c2b9
--- 
-2.27.0
+I only got some of these kernel log entries
+
+Jan 28 11:13:14 silver kernel: [ 2396.323211] perf: interrupt took too 
+long (2549 > 2500), lowering kernel.perf_event_max_sample_rate to 78250
+Jan 28 11:25:49 silver kernel: [ 3151.172773] perf: interrupt took too 
+long (3188 > 3186), lowering kernel.perf_event_max_sample_rate to 62500
+Jan 28 11:45:24 silver kernel: [ 4325.583328] perf: interrupt took too 
+long (4009 > 3985), lowering kernel.perf_event_max_sample_rate to 49750
+Jan 28 12:15:46 silver kernel: [ 6148.238246] perf: interrupt took too 
+long (5021 > 5011), lowering kernel.perf_event_max_sample_rate to 39750
+Jan 28 13:01:45 silver kernel: [ 8907.303715] perf: interrupt took too 
+long (6285 > 6276), lowering kernel.perf_event_max_sample_rate to 31750
+
+But I get these sporadically anyway. No other LOCKDEP splat.
+
+At least the issue reported by William should be fixed now - but I'm 
+still unclear whether spin_lock() or spin_trylock() is the best approach 
+here in the NET_RX softirq?!?
+
+Best regards,
+Oliver
+
+
+$ grep LOCK .config | grep -v BLOCK | grep -v CLOCK
+CONFIG_LOCKDEP_SUPPORT=y
+# CONFIG_PM_WAKELOCKS is not set
+CONFIG_HAVE_HARDLOCKUP_DETECTOR_PERF=y
+# CONFIG_LOCK_EVENT_COUNTS is not set
+CONFIG_UNINLINE_SPIN_UNLOCK=y
+CONFIG_LOCK_SPIN_ON_OWNER=y
+CONFIG_ARCH_USE_QUEUED_SPINLOCKS=y
+CONFIG_QUEUED_SPINLOCKS=y
+CONFIG_ARCH_USE_QUEUED_RWLOCKS=y
+CONFIG_QUEUED_RWLOCKS=y
+CONFIG_SPLIT_PTLOCK_CPUS=4
+CONFIG_ARCH_ENABLE_SPLIT_PMD_PTLOCK=y
+CONFIG_PCI_LOCKLESS_CONFIG=y
+# CONFIG_DRM_DEBUG_MODESET_LOCK is not set
+CONFIG_HWSPINLOCK=y
+CONFIG_I8253_LOCK=y
+CONFIG_FILE_LOCKING=y
+# CONFIG_SECURITY_LOCKDOWN_LSM is not set
+# CONFIG_SECURITY_LANDLOCK is not set
+# CONFIG_CRYPTO_DEV_PADLOCK is not set
+CONFIG_ARCH_USE_CMPXCHG_LOCKREF=y
+CONFIG_LOCKUP_DETECTOR=y
+CONFIG_SOFTLOCKUP_DETECTOR=y
+# CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC is not set
+CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC_VALUE=0
+CONFIG_HARDLOCKUP_DETECTOR_PERF=y
+CONFIG_HARDLOCKUP_CHECK_TIMESTAMP=y
+CONFIG_HARDLOCKUP_DETECTOR=y
+# CONFIG_BOOTPARAM_HARDLOCKUP_PANIC is not set
+CONFIG_BOOTPARAM_HARDLOCKUP_PANIC_VALUE=0
+# CONFIG_TEST_LOCKUP is not set
+CONFIG_LOCK_DEBUGGING_SUPPORT=y
+CONFIG_PROVE_LOCKING=y
+CONFIG_PROVE_RAW_LOCK_NESTING=y
+# CONFIG_LOCK_STAT is not set
+CONFIG_DEBUG_SPINLOCK=y
+CONFIG_DEBUG_LOCK_ALLOC=y
+CONFIG_LOCKDEP=y
+CONFIG_LOCKDEP_BITS=15
+CONFIG_LOCKDEP_CHAINS_BITS=16
+CONFIG_LOCKDEP_STACK_TRACE_BITS=19
+CONFIG_LOCKDEP_STACK_TRACE_HASH_BITS=14
+CONFIG_LOCKDEP_CIRCULAR_QUEUE_BITS=12
+CONFIG_DEBUG_LOCKDEP=y
+# CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
+# CONFIG_LOCK_TORTURE_TEST is not set
+# CONFIG_CSD_LOCK_WAIT_DEBUG is not set
 
