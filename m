@@ -2,131 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8288749F97E
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 13:35:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB10949F9B0
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 13:41:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348504AbiA1MfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 07:35:08 -0500
-Received: from proxima.lasnet.de ([78.47.171.185]:45964 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244579AbiA1MfG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 07:35:06 -0500
-X-Greylist: delayed 73819 seconds by postgrey-1.27 at vger.kernel.org; Fri, 28 Jan 2022 07:35:03 EST
-Received: from [IPV6:2003:e9:d705:dc25:2cd1:34b0:e26d:e30d] (p200300e9d705dc252cd134b0e26de30d.dip0.t-ipconnect.de [IPv6:2003:e9:d705:dc25:2cd1:34b0:e26d:e30d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 297F1C0963;
-        Fri, 28 Jan 2022 13:35:01 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1643373301;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AJeVvZ+DIYl1JgLNYm2z0QjH/hGMl7a6Sf9zKj1vScY=;
-        b=WFngGqFmrxw9KFmD2OwFN36aO7fmEBgimAgAr76Gat1CVc01xLQpalgU+lXTL/tKThVvDu
-        HEvfDy8Mwl0RbIoxYAbyC4QbDPae/Q7Aony/7ZFwg7Z/W80PC1Vrc1QbW6eyx+VwzmP37q
-        IY2URmCiLrvGIqg4bJ9bIkjPtWqozzYZHftpmtf2RuFT+qLEe6Nmngwopu4yWnvUTvl5Ia
-        qtyfOSRG5GpwojFijxl3DDa7MkNdMl6Os+09ByCLGFcZg6x+cfYgjHIc2cXyuvtEG6VuV/
-        dk6mR5lWfsdXpUWjItnON88PgMnezph6OUjqeImf6H7ZBZtpT/TrWUQoiBF5qg==
-Message-ID: <431ac70b-40f8-0666-0919-e3dd20721794@datenfreihafen.org>
-Date:   Fri, 28 Jan 2022 13:35:00 +0100
+        id S1348625AbiA1MlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 07:41:25 -0500
+Received: from mga17.intel.com ([192.55.52.151]:60606 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1348612AbiA1MlZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jan 2022 07:41:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643373685; x=1674909685;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TljAc77cIYPobouXpV0TYuPSSZj/Npa/4BeXqUL/45g=;
+  b=SvDGT5EbKr26RzDw4SA16sDPv7WiVA53J9LTzwU2tds6ydxWzR3LNILH
+   Nxzb/mJaUnRG5jMya3B7gILWqGECSwrO25PnPJhs6lq943CrICWB8u/r+
+   HeSZy50nYIZUmcdWvjSdS4jg4SwlIpYebW+Pev4QGPLwm/30Een13lcC9
+   RJ4HkSRumfykbw9WgjAMY5YWqRts+R40gIBpfVwVBKfSGaE3eE/0tQFZ3
+   tVdQvmrs9fMtECd+YTbOeobo4xowW2fVeQt/4Bge2MU25r7lcvXBfeF8k
+   oUTvDVSvvM3j+p/fbJRg2+NSNOz8QTQK/w+Ie8WNtgyf5dB22lE9tHJab
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="227783727"
+X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
+   d="scan'208";a="227783727"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 04:41:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
+   d="scan'208";a="598197569"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 28 Jan 2022 04:41:20 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nDQZ6-000Nrr-4J; Fri, 28 Jan 2022 12:41:20 +0000
+Date:   Fri, 28 Jan 2022 20:40:48 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     cgel.zte@gmail.com, jiri@resnulli.us
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, ivecera@redhat.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] net/switchdev: use struct_size over open coded arithmetic
+Message-ID: <202201282035.8dNEcULs-lkp@intel.com>
+References: <20220128075729.1211352-1-chi.minghao@zte.com.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [wpan-next 2/4] net: mac802154: Include the softMAC stack inside
- the IEEE 802.15.4 menu
-Content-Language: en-US
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>, linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-References: <20220120004350.308866-1-miquel.raynal@bootlin.com>
- <20220120004350.308866-3-miquel.raynal@bootlin.com>
- <53c2d017-a7a5-3ed0-a68c-6b67c96b5b54@datenfreihafen.org>
- <20220127175409.777b9dff@xps13>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220127175409.777b9dff@xps13>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220128075729.1211352-1-chi.minghao@zte.com.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+Hi,
 
-On 27.01.22 17:54, Miquel Raynal wrote:
-> Hi Stefan,
-> 
-> stefan@datenfreihafen.org wrote on Thu, 27 Jan 2022 17:04:41 +0100:
-> 
->> Hello.
->>
->> On 20.01.22 01:43, Miquel Raynal wrote:
->>> From: David Girault <david.girault@qorvo.com>
->>>
->>> The softMAC stack has no meaning outside of the IEEE 802.15.4 stack and
->>> cannot be used without it.
->>>
->>> Signed-off-by: David Girault <david.girault@qorvo.com>
->>> [miquel.raynal@bootlin.com: Isolate this change from a bigger commit]
->>> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
->>> ---
->>>    net/Kconfig            | 1 -
->>>    net/ieee802154/Kconfig | 1 +
->>>    2 files changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/net/Kconfig b/net/Kconfig
->>> index 0da89d09ffa6..a5e31078fd14 100644
->>> --- a/net/Kconfig
->>> +++ b/net/Kconfig
->>> @@ -228,7 +228,6 @@ source "net/x25/Kconfig"
->>>    source "net/lapb/Kconfig"
->>>    source "net/phonet/Kconfig"
->>>    source "net/6lowpan/Kconfig"
->>> -source "net/mac802154/Kconfig"
->>>    source "net/sched/Kconfig"
->>>    source "net/dcb/Kconfig"
->>>    source "net/dns_resolver/Kconfig"
->>> diff --git a/net/ieee802154/Kconfig b/net/ieee802154/Kconfig
->>> index 31aed75fe62d..7e4b1d49d445 100644
->>> --- a/net/ieee802154/Kconfig
->>> +++ b/net/ieee802154/Kconfig
->>> @@ -36,6 +36,7 @@ config IEEE802154_SOCKET
->>>    	  for 802.15.4 dataframes. Also RAW socket interface to build MAC
->>>    	  header from userspace.
->>>    > +source "net/mac802154/Kconfig"
->>>    source "net/ieee802154/6lowpan/Kconfig"
->>>    >   endif
->>>    
->>
->> Please fold this patch into the previous one moving the Kconfig option around. This can be done in one go.
-> 
-> Sure.
-> 
-> By the way, I was questioning myself: why is the mac802154 folder
-> outside of ieee802154? I don't really understand the organization but
-> as it would massively prevent any of the future changes that I already
-> prepared to apply correctly, I haven't proposed such a move -yet. But
-> I would like to know what's the idea behind the current folder
-> hierarchy?
+Thank you for the patch! Yet something to improve:
 
-The directory structure has been in place from the initial merge of the 
-subsystem, before Alex and myself took on the maintainer roles.
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.17-rc1 next-20220128]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-I see no reason for a move though. The extra burden for backports, etc 
-outweigh the urge of cleanliness on the folder structure. :-)
+url:    https://github.com/0day-ci/linux/commits/cgel-zte-gmail-com/net-switchdev-use-struct_size-over-open-coded-arithmetic/20220128-155848
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 23a46422c56144939c091c76cf389aa863ce9c18
+config: arm-orion5x_defconfig (https://download.01.org/0day-ci/archive/20220128/202201282035.8dNEcULs-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 33b45ee44b1f32ffdbc995e6fec806271b4b3ba4)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/0day-ci/linux/commit/bf0e33a8c3deb700b95173a37dd16754341ba70e
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review cgel-zte-gmail-com/net-switchdev-use-struct_size-over-open-coded-arithmetic/20220128-155848
+        git checkout bf0e33a8c3deb700b95173a37dd16754341ba70e
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-The Kconfig cleanup and move of the file is worth doing, the move of the 
-whole source code folder not.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-regards
-Stefan Schmidt
+All errors (new ones prefixed by >>):
+
+>> net/switchdev/switchdev.c:88:19: error: member reference type 'struct switchdev_deferred_item' is not a pointer; did you mean to use '.'?
+           dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
+                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/overflow.h:194:18: note: expanded from macro 'struct_size'
+                       sizeof(*(p)->member) + __must_be_array((p)->member),\
+                               ~~~^
+>> net/switchdev/switchdev.c:88:19: error: indirection requires pointer operand ('unsigned long[]' invalid)
+           dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
+                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/overflow.h:194:14: note: expanded from macro 'struct_size'
+                       sizeof(*(p)->member) + __must_be_array((p)->member),\
+                              ^~~~~~~~~~~~
+>> net/switchdev/switchdev.c:88:19: error: member reference type 'struct switchdev_deferred_item' is not a pointer; did you mean to use '.'?
+           dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
+                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/overflow.h:194:49: note: expanded from macro 'struct_size'
+                       sizeof(*(p)->member) + __must_be_array((p)->member),\
+                                              ~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+   include/linux/compiler.h:258:59: note: expanded from macro '__must_be_array'
+   #define __must_be_array(a)      BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
+                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+   include/linux/compiler_types.h:287:63: note: expanded from macro '__same_type'
+   #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
+                                                                 ^
+   include/linux/build_bug.h:16:62: note: expanded from macro 'BUILD_BUG_ON_ZERO'
+   #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
+                                                                ^
+>> net/switchdev/switchdev.c:88:19: error: member reference type 'struct switchdev_deferred_item' is not a pointer; did you mean to use '.'?
+           dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
+                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/overflow.h:194:49: note: expanded from macro 'struct_size'
+                       sizeof(*(p)->member) + __must_be_array((p)->member),\
+                                              ~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+   include/linux/compiler.h:258:65: note: expanded from macro '__must_be_array'
+   #define __must_be_array(a)      BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
+                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+   include/linux/compiler_types.h:287:74: note: expanded from macro '__same_type'
+   #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
+                                                                            ^
+   include/linux/build_bug.h:16:62: note: expanded from macro 'BUILD_BUG_ON_ZERO'
+   #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
+                                                                ^
+>> net/switchdev/switchdev.c:88:19: error: indirection requires pointer operand ('struct switchdev_deferred_item' invalid)
+           dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
+                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/overflow.h:195:14: note: expanded from macro 'struct_size'
+                       sizeof(*(p)))
+                              ^~~~
+   5 errors generated.
+
+
+vim +88 net/switchdev/switchdev.c
+
+    81	
+    82	static int switchdev_deferred_enqueue(struct net_device *dev,
+    83					      const void *data, size_t data_len,
+    84					      switchdev_deferred_func_t *func)
+    85	{
+    86		struct switchdev_deferred_item *dfitem;
+    87	
+  > 88		dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
+    89		if (!dfitem)
+    90			return -ENOMEM;
+    91		dfitem->dev = dev;
+    92		dfitem->func = func;
+    93		memcpy(dfitem->data, data, data_len);
+    94		dev_hold_track(dev, &dfitem->dev_tracker, GFP_ATOMIC);
+    95		spin_lock_bh(&deferred_lock);
+    96		list_add_tail(&dfitem->list, &deferred);
+    97		spin_unlock_bh(&deferred_lock);
+    98		schedule_work(&deferred_process_work);
+    99		return 0;
+   100	}
+   101	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
