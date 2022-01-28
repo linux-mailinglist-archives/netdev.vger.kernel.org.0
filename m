@@ -2,123 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B804649F67D
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 10:38:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 247AA49F692
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 10:41:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347658AbiA1JiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 04:38:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39732 "EHLO
+        id S1347696AbiA1Jlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 04:41:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27971 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243726AbiA1JiE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 04:38:04 -0500
+        by vger.kernel.org with ESMTP id S243738AbiA1Jle (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 04:41:34 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643362683;
+        s=mimecast20190719; t=1643362894;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Bm7yntnZphNntlIzJBi7dLNf0/Xc6WFVcDglxuX1l/s=;
-        b=aFTWP+WHhD7wEd7pzcmPON/wed9pvTsnpBLYhEZo0FyfuZE6lfS/QQkpKwBU6F+RmGh9vN
-        6oPjdfEGRTz/zo/2+LdgoC2FHZo5tG0vUOlGcPtIJ2yHIUuJWctenctvSDFR+Umfa/ulWg
-        YxZ2GjFPgS7HP130HQn0FAZ8oZgsPFA=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=gm/zIaqxAUJ7weu5vueVLpk6KOEoe9UgJ0ELP0kscoU=;
+        b=ebdnjtyrBbFVDM8A59XDWW4FHeYME03yT5YEb2C5ay0gkoXJOr12xRvBG7Ud2xmOaHLC/z
+        XVKRgifivUJoyQgeP06V0ZSvs8LfzfLZT88MwrGZ7frsCRPO2/jRictzgjr+WxJMqt8ONd
+        i/Ax2zL5HLnhegQrABEPndEo2h/GvLs=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-548-3VmaSSbJMV-UwBGFAFCe9Q-1; Fri, 28 Jan 2022 04:38:01 -0500
-X-MC-Unique: 3VmaSSbJMV-UwBGFAFCe9Q-1
-Received: by mail-ej1-f72.google.com with SMTP id rl11-20020a170907216b00b006b73a611c1aso2597903ejb.22
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 01:38:00 -0800 (PST)
+ us-mta-266-bWygqYQkOIShUUFkYLJlkw-1; Fri, 28 Jan 2022 04:41:32 -0500
+X-MC-Unique: bWygqYQkOIShUUFkYLJlkw-1
+Received: by mail-wr1-f72.google.com with SMTP id z1-20020adfbbc1000000b001df54394cebso1207415wrg.20
+        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 01:41:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Bm7yntnZphNntlIzJBi7dLNf0/Xc6WFVcDglxuX1l/s=;
-        b=YlIrgeGIp6TjJWpncLa39EC/XrCu88DTxtpVtFwUr/FHVBDKaBWoiWb0ds9pO03Qw9
-         IyzqLHH2LbnHn3CQ4q5QH4ge3pLwkpi/+JBw8ZUtsycqPUcMzdRE6isi12ZVq7w3uir6
-         KRQyMKcpPU+pqOOZQIorUZYo6aikDc1+kyskyQvj5yoTO4XGPl6gk30kb9PXYv8LUJSy
-         e26Khfym0DvjO/JmjjdfTGAmFxwksekGZBKr2vWiSoxMm0UoyWV34PI2yGWcW27hRlgk
-         avjYW9LJncCdzAlmKdVB0mp0rfjzX+rjZayxNVfMCxSfmgZz54U+AuGSYVXBFRztLlym
-         M/dg==
-X-Gm-Message-State: AOAM532D8J2kCDP9oAJCBV+YI7JoSYR3GU3VpIivTruUQl48uefmRQVv
-        HvGtOfM+6a4nm6MjU1qnDvwG2UaS5qqeD2trqxgARZVigb7pLBsZVU6OXeHk20npom2XxFSGI+D
-        oc+S0khlIVX8qIJVt
-X-Received: by 2002:a05:6402:1d56:: with SMTP id dz22mr7685155edb.82.1643362679803;
-        Fri, 28 Jan 2022 01:37:59 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxKe5ZRNHAS83VQrBS/4wBXr4dcTtl5PfFvJSOQogMXJPMGg8ZrekzVaiQ6a5cLAX7JhbRYjQ==
-X-Received: by 2002:a05:6402:1d56:: with SMTP id dz22mr7685135edb.82.1643362679610;
-        Fri, 28 Jan 2022 01:37:59 -0800 (PST)
-Received: from krava ([83.240.63.12])
-        by smtp.gmail.com with ESMTPSA id v14sm9782631ejy.77.2022.01.28.01.37.58
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gm/zIaqxAUJ7weu5vueVLpk6KOEoe9UgJ0ELP0kscoU=;
+        b=NVdGotc5z6O1K6dTP18VaCa/PHPMQocrPzvkMsZDG/Sz45YYde8ZDiK08UKqGoMX7S
+         2SZLcXQ/ixbYoR9KAOb/QGgw6BD099ANf1dJ9SL8tHyyy32sVNiLij8heBDZxL6VkkZD
+         qi/GSc9m8MrSz4/SL4In7Nbc03ad7MydPY5gltgvQF5FxTqr80MYPEAWA51KC+xd00bR
+         4zY96lUD4/DzmfPWgCxACvvaSsZf3GqSLaVaM8eV0VtiJfCgAgn5vVGCJAjJP+g4d5nE
+         IUwHS/anqNAIjS97xJG+3pjKhm9ctwGgXHh3JP9DkdwTNv95D3rj9JQUWFECd1KH58zW
+         WRpQ==
+X-Gm-Message-State: AOAM533GCfhLzv+jG20Q8R+TiaQAUtjX6GixJbt+bssDVuA+xPInP3R8
+        RJQlB5lii5sIhYOw3hCBcm55VYFIdAlfDyf5TMW7gQqbU6AcSztuR6d5tz2qwPzLQ9lFHlRcpYs
+        QXMiwhBErzNbRWQ0d
+X-Received: by 2002:a5d:554b:: with SMTP id g11mr6278081wrw.168.1643362891422;
+        Fri, 28 Jan 2022 01:41:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyhT/5ouoGIlyIxVyr+Q5hXpBEiMOVIvHbdPHh42746reFTj6j3DnyqBWI059BBKWi7Vf/56w==
+X-Received: by 2002:a5d:554b:: with SMTP id g11mr6278075wrw.168.1643362891224;
+        Fri, 28 Jan 2022 01:41:31 -0800 (PST)
+Received: from steredhat.redhat.com (host-95-238-125-214.retail.telecomitalia.it. [95.238.125.214])
+        by smtp.gmail.com with ESMTPSA id o1sm683206wri.108.2022.01.28.01.41.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Jan 2022 01:37:58 -0800 (PST)
-Date:   Fri, 28 Jan 2022 10:37:56 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v5 1/9] ftrace: Add ftrace_set_filter_ips function
-Message-ID: <YfO5dLsrdRlN7D62@krava>
-References: <164311269435.1933078.6963769885544050138.stgit@devnote2>
- <164311270629.1933078.4596694198103138848.stgit@devnote2>
- <20220125110659.2cc8df29@gandalf.local.home>
- <YfApT8uAoCODPAGu@krava>
- <20220128110523.de0e36317a34d48b793a7f6b@kernel.org>
+        Fri, 28 Jan 2022 01:41:30 -0800 (PST)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        stefanha@redhat.com, Jason Wang <jasowang@redhat.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: [PATCH v3] vhost: cache avail index in vhost_enable_notify()
+Date:   Fri, 28 Jan 2022 10:41:29 +0100
+Message-Id: <20220128094129.40809-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220128110523.de0e36317a34d48b793a7f6b@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 11:05:23AM +0900, Masami Hiramatsu wrote:
+In vhost_enable_notify() we enable the notifications and we read
+the avail index to check if new buffers have become available in
+the meantime.
 
-SNIP
+We do not update the cached avail index value, so when the device
+will call vhost_get_vq_desc(), it will find the old value in the
+cache and it will read the avail index again.
 
-> 
-> So, I wrote a below change for the next version. Is that OK for you?
-> 
-> Thank you,
-> 
-> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-> index f305e18f699f..a28b1bdb234a 100644
-> --- a/kernel/trace/ftrace.c
-> +++ b/kernel/trace/ftrace.c
-> @@ -4985,8 +4985,13 @@ ftrace_match_addr(struct ftrace_hash *hash, unsigned long *ips,
->  
->  	for (i = 0; i < cnt; i++) {
->  		err = __ftrace_match_addr(hash, ips[i], remove);
-> -		if (err)
-> +		if (err) {
-> +			/*
-> +			 * This expects the @hash is a temporary hash and if this
-> +			 * fails the caller must free the @hash.
-> +			 */
->  			return err;
-> +		}
->  	}
->  	return 0;
->  }
-> @@ -5649,7 +5654,7 @@ int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
->  EXPORT_SYMBOL_GPL(ftrace_set_filter_ip);
->  
->  /**
-> - * ftrace_set_filter_ips - set a functions to filter on in ftrace by addresses
-> + * ftrace_set_filter_ips - set functions to filter on in ftrace by addresses
->   * @ops - the ops to set the filter with
->   * @ips - the array of addresses to add to or remove from the filter.
->   * @cnt - the number of addresses in @ips
+It would be better to refresh the cache every time we read avail
+index, so let's change vhost_enable_notify() caching the value in
+`avail_idx` and compare it with `last_avail_idx` to check if there
+are new buffers available.
 
-looks good, thanks
+We don't expect a significant performance boost because
+the above path is not very common, indeed vhost_enable_notify()
+is often called with unlikely(), expecting that avail index has
+not been updated.
 
-jirka
+We ran virtio-test/vhost-test and noticed minimal improvement as
+expected. To stress the patch more, we modified vhost_test.ko to
+call vhost_enable_notify()/vhost_disable_notify() on every cycle
+when calling vhost_get_vq_desc(); in this case we observed a more
+evident improvement, with a reduction of the test execution time
+of about 3.7%.
+
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+v3
+- reworded commit description [Stefan]
+---
+ drivers/vhost/vhost.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index 59edb5a1ffe2..07363dff559e 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -2543,8 +2543,9 @@ bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
+ 		       &vq->avail->idx, r);
+ 		return false;
+ 	}
++	vq->avail_idx = vhost16_to_cpu(vq, avail_idx);
+ 
+-	return vhost16_to_cpu(vq, avail_idx) != vq->avail_idx;
++	return vq->avail_idx != vq->last_avail_idx;
+ }
+ EXPORT_SYMBOL_GPL(vhost_enable_notify);
+ 
+-- 
+2.34.1
 
