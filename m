@@ -2,194 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5553C49F119
+	by mail.lfdr.de (Postfix) with ESMTP id 9E70C49F11A
 	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:37:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345455AbiA1ChX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 21:37:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48610 "EHLO
+        id S1345445AbiA1ChZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 21:37:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345450AbiA1ChW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:37:22 -0500
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4C5C061714
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:37:21 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id 10-20020a9d030a000000b0059f164f4a86so4412569otv.13
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:37:21 -0800 (PST)
+        with ESMTP id S1345452AbiA1ChZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:37:25 -0500
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F021BC061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:37:24 -0800 (PST)
+Received: by mail-ot1-x329.google.com with SMTP id w27-20020a9d5a9b000000b005a17d68ae89so4422359oth.12
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:37:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=sp47LOlAsfB5973Ph0ck7aZwprnpMq3VUyZRJRML42A=;
-        b=BUIJcimOgCsF7d4OJdPYcjr26a5neYAapTJRoqDrSd+wl+fHq/G1145XyxSoVuz/Ln
-         P3gTPtbVgXFs7GHOcWFnV7kH67/ZAcSz9WUaaZttbcXcF4lPJsu+JTFFb8LLH3rGZhST
-         taNcplzwn5loRP1f+jz2WRaHOs5AvoJtv6aKldASwUSk9g7PyS1Zd4cMqQO86O4LPt2q
-         aZAKdpgUl48qbKLTBK28F3wOM41mqAuNkU7iPw0xqx9ZvT87wLfNylvebLMxvpkOcxIU
-         cu4LkqYKa5FNzBCGJtHR+wW8G4B8KC/5ZxVW91za+anXyNVL2vjby1AHBEFt8Ohf6wcP
-         01kw==
+        bh=5LlZ9oCa+qe6HqXhfShIgFg5xKjOIO7wD57zX+WYsJ4=;
+        b=Jk3rPoY3AzUQigO5zDJOAB86MA5dSQlsohzxwKuZ5XbwC7aRZ0gX4Uage9ysj82QaH
+         Jfnf9FrQsDV4dtfFVAnmEGak8H1tg7pgCIHGhl2tRoQrbrLVtPer6QZpuxZDzUKRzruY
+         2LI/rjHJBKPLUO3WVL+e2XRn4WR0alOp1tuPoPXj3cABih83Za6K0cQGppWWbQXJAPci
+         viBvKcmIpaUKHWHmlfkSxOvcwnlfe2LP4uT7KqSmd3LHq95sllk6ZuqPPl75j/FSqyfg
+         TwWtsatUkuMIRFEGK0vFc2mdHfYh46mBpj7OyCXrZEXekAYH3a6dsVtczt4dZdyJ2bPb
+         ReWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=sp47LOlAsfB5973Ph0ck7aZwprnpMq3VUyZRJRML42A=;
-        b=c6m76iruIzage+DPJ81L/+Mvs2f1eLGUtCKGAtbIgR/X6P88rzmb7+JowwBJ8r7w5y
-         uZQLSSdeuA9pH5oeNLrSxQATR8/oHk4/Ikuu69Qb2MBsJ6ZtvCGBhSzZ7kg1UlbSGr5R
-         I+y8ZAn1q2gHwSIbkq5IT7MOwINsPI9T1IrbHUhTAxBW1QZG49jQhb4yoiE74cfrLK9b
-         0htHCNGHh79op4WJxDUAQPXU/Sm+KGvq1qYY2LpvrHB4pVjP8TzEs2ud+VvsYnIW1dtQ
-         Fp8l0rZp95OhypklPXLbGILnMr9u7f3OboFAQkIhT+a8rMXE3MKh21LFL9dpb8m8OqOS
-         NSIg==
-X-Gm-Message-State: AOAM533YH2Dc+Nn+Ln+aM0fpKZ3PaJgwT6fzZ0XnEz/hDnwibjXAagWq
-        YS4ylfvSqxtW/KuqazLjnH7ppR5bteRwYw==
-X-Google-Smtp-Source: ABdhPJy+ie2Sh1jTPyZQHPlVRAB1ubI/wznxwI9DJl9bzoiYOONEb4381tYK7QiMq8gEGrnbV1RJIw==
-X-Received: by 2002:a9d:6747:: with SMTP id w7mr3735886otm.238.1643337440839;
-        Thu, 27 Jan 2022 18:37:20 -0800 (PST)
+        bh=5LlZ9oCa+qe6HqXhfShIgFg5xKjOIO7wD57zX+WYsJ4=;
+        b=KZYLTvmXs1D0lMtN57QRgakho/zKFTk3yATu79kvgM1jK8Ia11xTfeZfzrO6oLGLQa
+         LrhVSBzYs+LziP3kDv5I9/BkvE0/vZPpCk8Jnf1vn7HT5YelkO+iFNsup9NERI7D6ydu
+         6OqH9Gp88G52V/YmMTlzHV7pHlRh0dGhbSWNTl7CiycD8ehbBnPQnFjG4dgE2fMu9b59
+         GY22vPcK06rKzJa4jhBb0//rCWKYjW64hlNVTBNMyyewAev/dbBUvXA/UvFKZCJBkQeZ
+         Y5p+CBRQIMzVNcdPyjPcCY4ZgXmCKULOj/tMIVgSov+g07376PFYJte+NeGRgFlo7tfX
+         HR0Q==
+X-Gm-Message-State: AOAM533ZUJNKEQYXQZgm6ccfaVhRHsrrYS9DufZtOZbwiEFv1eERtla4
+        JjsSNWTqL1acZ35AGZm/ygGIoQ3jpR75rg==
+X-Google-Smtp-Source: ABdhPJzjxHissXZnNp3rG1vKGHQIGDfU16NwIIj1lM6L+Uq6AqqVAFrUbKBjuDne2Yq60r6cywPCfw==
+X-Received: by 2002:a9d:ee1:: with SMTP id 88mr3763125otj.279.1643337443945;
+        Thu, 27 Jan 2022 18:37:23 -0800 (PST)
 Received: from tresc043793.tre-sc.gov.br ([187.94.103.218])
-        by smtp.gmail.com with ESMTPSA id p82sm2586920oib.25.2022.01.27.18.37.17
+        by smtp.gmail.com with ESMTPSA id p82sm2586920oib.25.2022.01.27.18.37.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 18:37:20 -0800 (PST)
+        Thu, 27 Jan 2022 18:37:23 -0800 (PST)
 From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, olteanv@gmail.com, alsi@bang-olufsen.dk,
         arinc.unal@arinc9.com, frank-w@public-files.de,
         Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: [PATCH net-next v5 10/11] net: dsa: realtek: rtl8365mb: add RTL8367S support
-Date:   Thu, 27 Jan 2022 23:36:10 -0300
-Message-Id: <20220128023611.2424-11-luizluca@gmail.com>
+Subject: [PATCH net-next v5 11/11] net: dsa: realtek: rtl8365mb: multiple cpu ports, non cpu extint
+Date:   Thu, 27 Jan 2022 23:36:11 -0300
+Message-Id: <20220128023611.2424-12-luizluca@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220128023611.2424-1-luizluca@gmail.com>
 References: <20220128023611.2424-1-luizluca@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Realtek's RTL8367S, a 5+2 port 10/100/1000M Ethernet switch.
-It shares the same driver family (RTL8367C) with other models
-as the RTL8365MB-VC. Its compatible string is "realtek,rtl8367s".
+Now CPU port is not limited to a single port. Also, extint can be used
+as non-cpu ports, as long as it defines relatek,ext-int. The last cpu
+port will be used as trap_port.
 
-It was tested only with MDIO interface (realtek-mdio), although it might
-work out-of-the-box with SMI interface (using realtek-smi).
+The CPU information was dropped from chip data as it was not used
+outside setup. The only other place it was used is when it wrongly
+checks for CPU port when it should check for extint.
 
-This patch was based on an unpublished patch from Alvin Šipraga
-<alsi@bang-olufsen.dk>.
+realtek_priv->cpu_port is now only used by rtl8366rb.c
 
 Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/realtek/Kconfig        |  2 +-
- drivers/net/dsa/realtek/realtek-mdio.c |  1 +
- drivers/net/dsa/realtek/realtek-smi.c  |  4 +++
- drivers/net/dsa/realtek/rtl8365mb.c    | 38 +++++++++++++++++++-------
- 4 files changed, 34 insertions(+), 11 deletions(-)
+ drivers/net/dsa/realtek/rtl8365mb.c | 53 +++++++++++++++--------------
+ 1 file changed, 27 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/net/dsa/realtek/Kconfig b/drivers/net/dsa/realtek/Kconfig
-index 73b26171fade..d0d6b5ba4bdd 100644
---- a/drivers/net/dsa/realtek/Kconfig
-+++ b/drivers/net/dsa/realtek/Kconfig
-@@ -31,7 +31,7 @@ config NET_DSA_REALTEK_RTL8365MB
- 	depends on NET_DSA_REALTEK_SMI || NET_DSA_REALTEK_MDIO
- 	select NET_DSA_TAG_RTL8_4
- 	help
--	  Select to enable support for Realtek RTL8365MB
-+	  Select to enable support for Realtek RTL8365MB-VC and RTL8367S.
- 
- config NET_DSA_REALTEK_RTL8366RB
- 	tristate "Realtek RTL8366RB switch subdriver"
-diff --git a/drivers/net/dsa/realtek/realtek-mdio.c b/drivers/net/dsa/realtek/realtek-mdio.c
-index b505f4d3c5f0..2bed65981c7d 100644
---- a/drivers/net/dsa/realtek/realtek-mdio.c
-+++ b/drivers/net/dsa/realtek/realtek-mdio.c
-@@ -199,6 +199,7 @@ static const struct of_device_id realtek_mdio_of_match[] = {
- #endif
- #if IS_ENABLED(CONFIG_NET_DSA_REALTEK_RTL8365MB)
- 	{ .compatible = "realtek,rtl8365mb", .data = &rtl8365mb_variant, },
-+	{ .compatible = "realtek,rtl8367s", .data = &rtl8365mb_variant, },
- #endif
- 	{ /* sentinel */ },
- };
-diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realtek/realtek-smi.c
-index 1f024e2520a6..c330a4d8ebf0 100644
---- a/drivers/net/dsa/realtek/realtek-smi.c
-+++ b/drivers/net/dsa/realtek/realtek-smi.c
-@@ -513,6 +513,10 @@ static const struct of_device_id realtek_smi_of_match[] = {
- 		.compatible = "realtek,rtl8365mb",
- 		.data = &rtl8365mb_variant,
- 	},
-+	{
-+		.compatible = "realtek,rtl8367s",
-+		.data = &rtl8365mb_variant,
-+	},
- #endif
- 	{ /* sentinel */ },
- };
 diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index adc72f0844ae..59e08b192c06 100644
+index 59e08b192c06..6a00a162b2ac 100644
 --- a/drivers/net/dsa/realtek/rtl8365mb.c
 +++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -102,14 +102,19 @@
- #include "realtek.h"
+@@ -556,7 +556,6 @@ struct rtl8365mb_port {
+  * @chip_ver: chip silicon revision
+  * @port_mask: mask of all ports
+  * @learn_limit_max: maximum number of L2 addresses the chip can learn
+- * @cpu: CPU tagging and CPU port configuration for this chip
+  * @mib_lock: prevent concurrent reads of MIB counters
+  * @ports: per-port data
+  * @jam_table: chip-specific initialization jam table
+@@ -571,7 +570,6 @@ struct rtl8365mb {
+ 	u32 chip_ver;
+ 	u32 port_mask;
+ 	u32 learn_limit_max;
+-	struct rtl8365mb_cpu cpu;
+ 	struct mutex mib_lock;
+ 	struct rtl8365mb_port ports[RTL8365MB_MAX_NUM_PORTS];
+ 	const struct rtl8365mb_jam_tbl_entry *jam_table;
+@@ -769,17 +767,20 @@ static int rtl8365mb_ext_config_rgmii(struct realtek_priv *priv, int port,
+ 	u32 val;
+ 	int ret;
  
- /* Chip-specific data and limits */
--#define RTL8365MB_CHIP_ID_8365MB_VC		0x6367
--#define RTL8365MB_LEARN_LIMIT_MAX_8365MB_VC	2112
-+#define RTL8365MB_CHIP_ID_8365MB_VC	0x6367
-+#define RTL8365MB_CHIP_VER_8365MB_VC	0x0040
+-	if (port != priv->cpu_port) {
+-		dev_err(priv->dev, "only one EXT interface is currently supported\n");
++	mb = priv->chip_data;
++	p = &mb->ports[port];
++	ext_int = p->ext_int;
 +
-+#define RTL8365MB_CHIP_ID_8367S		0x6367
-+#define RTL8365MB_CHIP_VER_8367S	0x00A0
++	if (ext_int == RTL8365MB_NOT_EXT) {
++		dev_err(priv->dev,
++			"Port %d is not identified as extenal interface.\n",
++			port);
+ 		return -EINVAL;
+ 	}
  
- /* Family-specific data and limits */
--#define RTL8365MB_PHYADDRMAX	7
--#define RTL8365MB_NUM_PHYREGS	32
--#define RTL8365MB_PHYREGMAX	(RTL8365MB_NUM_PHYREGS - 1)
--#define RTL8365MB_MAX_NUM_PORTS  7
-+#define RTL8365MB_PHYADDRMAX		7
-+#define RTL8365MB_NUM_PHYREGS		32
-+#define RTL8365MB_PHYREGMAX		(RTL8365MB_NUM_PHYREGS - 1)
-+/* RTL8370MB and RTL8310SR, possibly suportable by this driver, have 10 ports */
-+#define RTL8365MB_MAX_NUM_PORTS		10
-+#define RTL8365MB_LEARN_LIMIT_MAX	2112
+ 	dp = dsa_to_port(priv->ds, port);
+ 	dn = dp->dn;
  
- /* Chip identification registers */
- #define RTL8365MB_CHIP_ID_REG		0x1300
-@@ -1971,9 +1976,22 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
+-	mb = priv->chip_data;
+-	p = &mb->ports[port];
+-	ext_int = p->ext_int;
  
- 	switch (chip_id) {
- 	case RTL8365MB_CHIP_ID_8365MB_VC:
--		dev_info(priv->dev,
--			 "found an RTL8365MB-VC switch (ver=0x%04x)\n",
--			 chip_ver);
-+		switch (chip_ver) {
-+		case RTL8365MB_CHIP_VER_8365MB_VC:
-+			dev_info(priv->dev,
-+				 "found an RTL8365MB-VC switch (ver=0x%04x)\n",
-+				 chip_ver);
-+			break;
-+		case RTL8365MB_CHIP_VER_8367S:
-+			dev_info(priv->dev,
-+				 "found an RTL8367S switch (ver=0x%04x)\n",
-+				 chip_ver);
-+			break;
-+		default:
-+			dev_err(priv->dev, "unrecognized switch version (ver=0x%04x)",
-+				chip_ver);
-+			return -ENODEV;
-+		}
+ 	/* Set the RGMII TX/RX delay
+ 	 *
+@@ -859,15 +860,17 @@ static int rtl8365mb_ext_config_forcemode(struct realtek_priv *priv, int port,
+ 	int val;
+ 	int ret;
  
- 		priv->num_ports = RTL8365MB_MAX_NUM_PORTS;
+-	if (port != priv->cpu_port) {
+-		dev_err(priv->dev, "only one EXT interface is currently supported\n");
+-		return -EINVAL;
+-	}
+-
+ 	mb = priv->chip_data;
+ 	p = &mb->ports[port];
+ 	ext_int = p->ext_int;
  
-@@ -1981,7 +1999,7 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
- 		mb->chip_id = chip_id;
- 		mb->chip_ver = chip_ver;
- 		mb->port_mask = GENMASK(priv->num_ports - 1, 0);
--		mb->learn_limit_max = RTL8365MB_LEARN_LIMIT_MAX_8365MB_VC;
-+		mb->learn_limit_max = RTL8365MB_LEARN_LIMIT_MAX;
++	if (ext_int == RTL8365MB_NOT_EXT) {
++		dev_err(priv->dev,
++			"Port %d is not identified as extenal interface.\n",
++			port);
++		return -EINVAL;
++	}
++
+ 	if (link) {
+ 		/* Force the link up with the desired configuration */
+ 		r_link = 1;
+@@ -1734,10 +1737,8 @@ static void rtl8365mb_irq_teardown(struct realtek_priv *priv)
+ 	}
+ }
+ 
+-static int rtl8365mb_cpu_config(struct realtek_priv *priv)
++static int rtl8365mb_cpu_config(struct realtek_priv *priv, struct rtl8365mb_cpu *cpu)
+ {
+-	struct rtl8365mb *mb = priv->chip_data;
+-	struct rtl8365mb_cpu *cpu = &mb->cpu;
+ 	u32 val;
+ 	int ret;
+ 
+@@ -1839,11 +1840,17 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
+ 		dev_info(priv->dev, "no interrupt support\n");
+ 
+ 	/* Configure CPU tagging */
++	cpu.mask = 0;
+ 	dsa_switch_for_each_cpu_port(cpu_dp, priv->ds) {
+-		priv->cpu_port = cpu_dp->index;
+-		mb->cpu.mask = BIT(priv->cpu_port);
+-		mb->cpu.trap_port = priv->cpu_port;
+-		ret = rtl8365mb_cpu_config(priv);
++		cpu.enable = 1;
++		cpu.insert = RTL8365MB_CPU_INSERT_TO_ALL;
++		cpu.position = RTL8365MB_CPU_POS_AFTER_SA;
++		cpu.rx_length = RTL8365MB_CPU_RXLEN_64BYTES;
++		cpu.format = RTL8365MB_CPU_FORMAT_8BYTES;
++		cpu.trap_port = cpu_dp->index;
++		cpu.mask |= BIT(cpu_dp->index);
++
++		ret = rtl8365mb_cpu_config(priv, &cpu);
+ 		if (ret)
+ 			goto out_teardown_irq;
+ 
+@@ -1862,7 +1869,7 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
+ 		dn = dsa_to_port(priv->ds, i)->dn;
+ 
+ 		/* Forward only to the CPU */
+-		ret = rtl8365mb_port_set_isolation(priv, i, BIT(priv->cpu_port));
++		ret = rtl8365mb_port_set_isolation(priv, i, cpu.mask);
+ 		if (ret)
+ 			goto out_teardown_irq;
+ 
+@@ -2003,12 +2010,6 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
  		mb->jam_table = rtl8365mb_init_jam_8365mb_vc;
  		mb->jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc);
  
+-		mb->cpu.enable = 1;
+-		mb->cpu.insert = RTL8365MB_CPU_INSERT_TO_ALL;
+-		mb->cpu.position = RTL8365MB_CPU_POS_AFTER_SA;
+-		mb->cpu.rx_length = RTL8365MB_CPU_RXLEN_64BYTES;
+-		mb->cpu.format = RTL8365MB_CPU_FORMAT_8BYTES;
+-
+ 		break;
+ 	default:
+ 		dev_err(priv->dev,
 -- 
 2.34.1
 
