@@ -2,99 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0667049F379
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 07:22:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B565149F3CD
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 07:45:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346329AbiA1GWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 01:22:48 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:35880 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230048AbiA1GWr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 01:22:47 -0500
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JlS6B3261zcZxc;
-        Fri, 28 Jan 2022 14:21:54 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 28 Jan 2022 14:22:45 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <socketcan@hartkopp.net>,
-        <mkl@pengutronix.de>, <davem@davemloft.net>,
-        <stable@vger.kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-can@vger.kernel.org>
-Subject: [PATCH 4.9] can: bcm: fix UAF of bcm op
-Date:   Fri, 28 Jan 2022 14:40:54 +0800
-Message-ID: <20220128064054.2434068-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S1346571AbiA1Gpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 01:45:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47852 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233328AbiA1Gpw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 01:45:52 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1ABC061714;
+        Thu, 27 Jan 2022 22:45:52 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id e16so4422679pgn.4;
+        Thu, 27 Jan 2022 22:45:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nAT0rA7FuN5R5gzA7OzYDlUSNocIbJl3rW+ZNBQo+cs=;
+        b=Q+WJHrqm0dxKubz8iQtDX0jja7JPSO/PUnLBb674+lFtSPX1SlBaTYA4TrKjqhEaBE
+         clsRcx+EMkyl7GknBmZWV/xLFBi2zeXaQV2lIapQjWz2+7PwH1PCUjhdebOo0IwDbXn6
+         QKEvyeBHac8WrsMA1Wc7NNxXerm5FnpZKyiVZ3FTQplVlp1ZIQVi1B/VCmYQsXRnXLXb
+         tK7DO4njYc7xOp9IcAPPwYhmnoEhOC3VDCSu8BB8ffci/+UjGEX1Wyv2l8+tqPhX+qBc
+         xrhl9Gpss1IenOE4ukc8DqTWJNIY6+kSyHo4wnto8TDdNA4tNEVrYlENvy1+tDmSouKp
+         K+gw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nAT0rA7FuN5R5gzA7OzYDlUSNocIbJl3rW+ZNBQo+cs=;
+        b=hbklTjOqCXan8t8oLWOoIwggtpD7hPras67SiAoZ2GNVuPamah+LqEDfxRoL4a//pl
+         a0T6NPWYInGiMvpOJNauXbQ9OZz9gKouvdS/9IvNhldjvzP2rQxJaZaIF9Pspk3KFS46
+         YdgyzRyTyNDLz/wMNicBcBJPsp7aKGBt3M/d8wAMKgF4t8WncsRtxgp+9/EtbAyi09IL
+         g6FTvCG+b3Qjm1mDi7ztcVuqLAjoEyjriwpZQAM487JC2+9ny6c5MA7OGIdgWEsCAo/u
+         h8WzpxC9Nj23Syjj3/ZDjYWczg6cQXrmTOyuGOHkkwW2YgbjO49lySm+m5r4YRCZCjdL
+         MSFw==
+X-Gm-Message-State: AOAM531zQEGtvhC5tmUNNjvpBWNrhOmHYnm6LUzq+phwsH0I6LICy27o
+        iC6INNt+IMsx1uV/JH1mMv0=
+X-Google-Smtp-Source: ABdhPJzTjTxfGbqgUKCfPOMF7mIZ9h2+EjKi+mD8oMuJNw1SztmhFDWEY61eMSa7OWHuvFJYlrU7fA==
+X-Received: by 2002:a62:e304:: with SMTP id g4mr6984551pfh.61.1643352351965;
+        Thu, 27 Jan 2022 22:45:51 -0800 (PST)
+Received: from localhost.localdomain (61-231-106-36.dynamic-ip.hinet.net. [61.231.106.36])
+        by smtp.gmail.com with ESMTPSA id f8sm5460009pfv.24.2022.01.27.22.45.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 22:45:51 -0800 (PST)
+From:   Joseph CHAMG <josright123@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joseph CHANG <josright123@gmail.com>,
+        joseph_chang@davicom.com.tw
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com,
+        andrew@lunn.ch, leon@kernel.org
+Subject: [PATCH v15, 0/2] ADD DM9051 ETHERNET DRIVER
+Date:   Fri, 28 Jan 2022 14:45:30 +0800
+Message-Id: <20220128064532.2654-1-josright123@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stopping tasklet and hrtimer rely on the active state of tasklet and
-hrtimer sequentially in bcm_remove_op(), the op object will be freed
-if they are all unactive. Assume the hrtimer timeout is short, the
-hrtimer cb has been excuted after tasklet conditional judgment which
-must be false after last round tasklet_kill() and before condition
-hrtimer_active(), it is false when execute to hrtimer_active(). Bug
-is triggerd, because the stopping action is end and the op object
-will be freed, but the tasklet is scheduled. The resources of the op
-object will occur UAF bug.
+DM9051 is a spi interface chip,
+need cs/mosi/miso/clock with an interrupt gpio pin
 
-Move hrtimer_cancel() behind tasklet_kill() and switch 'while () {...}'
-to 'do {...} while ()' to fix the op UAF problem.
+Joseph CHAMG (1):
+  net: Add dm9051 driver
 
-Fixes: a06393ed0316 ("can: bcm: fix hrtimer/tasklet termination in bcm op removal")
-Reported-by: syzbot+5ca851459ed04c778d1d@syzkaller.appspotmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- net/can/bcm.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+JosephCHANG (1):
+  yaml: Add dm9051 SPI network yaml file
 
-diff --git a/net/can/bcm.c b/net/can/bcm.c
-index 369326715b9c..bfb507223468 100644
---- a/net/can/bcm.c
-+++ b/net/can/bcm.c
-@@ -761,21 +761,21 @@ static struct bcm_op *bcm_find_op(struct list_head *ops,
- static void bcm_remove_op(struct bcm_op *op)
- {
- 	if (op->tsklet.func) {
--		while (test_bit(TASKLET_STATE_SCHED, &op->tsklet.state) ||
--		       test_bit(TASKLET_STATE_RUN, &op->tsklet.state) ||
--		       hrtimer_active(&op->timer)) {
--			hrtimer_cancel(&op->timer);
-+		do {
- 			tasklet_kill(&op->tsklet);
--		}
-+			hrtimer_cancel(&op->timer);
-+		} while (test_bit(TASKLET_STATE_SCHED, &op->tsklet.state) ||
-+			 test_bit(TASKLET_STATE_RUN, &op->tsklet.state) ||
-+			 hrtimer_active(&op->timer));
- 	}
- 
- 	if (op->thrtsklet.func) {
--		while (test_bit(TASKLET_STATE_SCHED, &op->thrtsklet.state) ||
--		       test_bit(TASKLET_STATE_RUN, &op->thrtsklet.state) ||
--		       hrtimer_active(&op->thrtimer)) {
--			hrtimer_cancel(&op->thrtimer);
-+		do {
- 			tasklet_kill(&op->thrtsklet);
--		}
-+			hrtimer_cancel(&op->thrtimer);
-+		} while (test_bit(TASKLET_STATE_SCHED, &op->thrtsklet.state) ||
-+			 test_bit(TASKLET_STATE_RUN, &op->thrtsklet.state) ||
-+			 hrtimer_active(&op->thrtimer));
- 	}
- 
- 	if ((op->frames) && (op->frames != &op->sframe))
+ .../bindings/net/davicom,dm9051.yaml          |   62 +
+ drivers/net/ethernet/davicom/Kconfig          |   31 +
+ drivers/net/ethernet/davicom/Makefile         |    1 +
+ drivers/net/ethernet/davicom/dm9051.c         | 1162 +++++++++++++++++
+ drivers/net/ethernet/davicom/dm9051.h         |  159 +++
+ 5 files changed, 1415 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/davicom,dm9051.yaml
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.c
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.h
+
+
+base-commit: 9d922f5df53844228b9f7c62f2593f4f06c0b69b
 -- 
-2.25.1
+2.20.1
 
