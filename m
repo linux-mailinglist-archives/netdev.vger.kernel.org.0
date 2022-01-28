@@ -2,103 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06EC149F660
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 10:31:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B804649F67D
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 10:38:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347582AbiA1Jb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 04:31:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58018 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238330AbiA1Jb4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 04:31:56 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694A8C061714;
-        Fri, 28 Jan 2022 01:31:56 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id e16so4675420qtq.6;
-        Fri, 28 Jan 2022 01:31:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AP1h4mmbYl/TcSR22YZ3H/TBAUMfkHF801G8StLbLHc=;
-        b=C/xJnGSBeUPtZEo3oZ7dkTKSxGAVE5QdjPJ3cOF0XllUEzsU28PfeApgvtYq9Bwk0y
-         0p8UpZ8PN563gqWIR08/rK0ubUfX3qWVsyr7YsdIhCMIbeO6uE9d8ro+FMFJVqOfERHn
-         7+In7yrYxu7CqzHkNNa8hH36wDFJwsGMS45APF1qdGgobEBpbexqIEEB7yhu6kz3veyo
-         d+IaIc9nZJ95GkzFnO0gJl3hikix0scxHJXPJZT2Fyl8dZXLQBrh/YX8bKS5evoCXNYV
-         YrB3/Qx7sTOMg8eXpFnANVP4OlKMmnxaKBZWMNEacJc4tw6USdZG2YJeitcDRzVrhJZS
-         CeYw==
+        id S1347658AbiA1JiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 04:38:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39732 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243726AbiA1JiE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 04:38:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643362683;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Bm7yntnZphNntlIzJBi7dLNf0/Xc6WFVcDglxuX1l/s=;
+        b=aFTWP+WHhD7wEd7pzcmPON/wed9pvTsnpBLYhEZo0FyfuZE6lfS/QQkpKwBU6F+RmGh9vN
+        6oPjdfEGRTz/zo/2+LdgoC2FHZo5tG0vUOlGcPtIJ2yHIUuJWctenctvSDFR+Umfa/ulWg
+        YxZ2GjFPgS7HP130HQn0FAZ8oZgsPFA=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-548-3VmaSSbJMV-UwBGFAFCe9Q-1; Fri, 28 Jan 2022 04:38:01 -0500
+X-MC-Unique: 3VmaSSbJMV-UwBGFAFCe9Q-1
+Received: by mail-ej1-f72.google.com with SMTP id rl11-20020a170907216b00b006b73a611c1aso2597903ejb.22
+        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 01:38:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AP1h4mmbYl/TcSR22YZ3H/TBAUMfkHF801G8StLbLHc=;
-        b=OUY13tsl/bqc5Liqm+VlB6aPISjN4/lD/ZHST0kFNmCYc9bia/FIhqjEa0L1+O4Ekt
-         OAjPvPBTJOevrA00zZJCgkuaSQUS9Z1Z1hBUwL8YfSCe4uHUrPwU/C2sNWmDxFdileya
-         hTkCrxKWy6QsRbwszi59zsOqu7qpWXuPF98yeO5DMKyU20KsTzHUkc4giC8+nswZtWxD
-         0dqVfDgCIpGB4RPASmV5ASuXlhI56NfCGkbux7A6eyw7G6YX9zLQ1GTqqHWOTAb9xDat
-         cj09Y+AJN9gGdLwlwZ3ieZG7w1B2OtRcqNt/4tKJdx5HK0nySeUK0DBoQqmFo4HZy93U
-         lVPg==
-X-Gm-Message-State: AOAM532VMYKcR4wcHtj9RFNGeP2TjHPoMPozR1mbCYi62wmY37GXXilN
-        v3rPFBiqmWmNEDF2d+ylNyY=
-X-Google-Smtp-Source: ABdhPJxhDPY6e509Z8qHrHrl7jd2T9BzQD5YWgFk4lLfsSUrnLfPf/HVZdB7ShhIPEczziCn5Mx/uw==
-X-Received: by 2002:a05:622a:13cf:: with SMTP id p15mr5524945qtk.16.1643362315588;
-        Fri, 28 Jan 2022 01:31:55 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id y18sm2724302qtj.56.2022.01.28.01.31.51
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Bm7yntnZphNntlIzJBi7dLNf0/Xc6WFVcDglxuX1l/s=;
+        b=YlIrgeGIp6TjJWpncLa39EC/XrCu88DTxtpVtFwUr/FHVBDKaBWoiWb0ds9pO03Qw9
+         IyzqLHH2LbnHn3CQ4q5QH4ge3pLwkpi/+JBw8ZUtsycqPUcMzdRE6isi12ZVq7w3uir6
+         KRQyMKcpPU+pqOOZQIorUZYo6aikDc1+kyskyQvj5yoTO4XGPl6gk30kb9PXYv8LUJSy
+         e26Khfym0DvjO/JmjjdfTGAmFxwksekGZBKr2vWiSoxMm0UoyWV34PI2yGWcW27hRlgk
+         avjYW9LJncCdzAlmKdVB0mp0rfjzX+rjZayxNVfMCxSfmgZz54U+AuGSYVXBFRztLlym
+         M/dg==
+X-Gm-Message-State: AOAM532D8J2kCDP9oAJCBV+YI7JoSYR3GU3VpIivTruUQl48uefmRQVv
+        HvGtOfM+6a4nm6MjU1qnDvwG2UaS5qqeD2trqxgARZVigb7pLBsZVU6OXeHk20npom2XxFSGI+D
+        oc+S0khlIVX8qIJVt
+X-Received: by 2002:a05:6402:1d56:: with SMTP id dz22mr7685155edb.82.1643362679803;
+        Fri, 28 Jan 2022 01:37:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxKe5ZRNHAS83VQrBS/4wBXr4dcTtl5PfFvJSOQogMXJPMGg8ZrekzVaiQ6a5cLAX7JhbRYjQ==
+X-Received: by 2002:a05:6402:1d56:: with SMTP id dz22mr7685135edb.82.1643362679610;
+        Fri, 28 Jan 2022 01:37:59 -0800 (PST)
+Received: from krava ([83.240.63.12])
+        by smtp.gmail.com with ESMTPSA id v14sm9782631ejy.77.2022.01.28.01.37.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Jan 2022 01:31:55 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     kvalo@kernel.org
-Cc:     cgel.zte@gmail.com, chi.minghao@zte.com.cn, davem@davemloft.net,
-        johannes.berg@intel.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        luciano.coelho@intel.com, netdev@vger.kernel.org, trix@redhat.com,
-        zealci@zte.com.cn
-Subject: [PATCH v2] iwlwifi: dvm: use struct_size over open coded arithmetic
-Date:   Fri, 28 Jan 2022 09:31:47 +0000
-Message-Id: <20220128093147.1213351-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <87o83wi67x.fsf@kernel.org>
-References: <87o83wi67x.fsf@kernel.org>
+        Fri, 28 Jan 2022 01:37:58 -0800 (PST)
+Date:   Fri, 28 Jan 2022 10:37:56 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v5 1/9] ftrace: Add ftrace_set_filter_ips function
+Message-ID: <YfO5dLsrdRlN7D62@krava>
+References: <164311269435.1933078.6963769885544050138.stgit@devnote2>
+ <164311270629.1933078.4596694198103138848.stgit@devnote2>
+ <20220125110659.2cc8df29@gandalf.local.home>
+ <YfApT8uAoCODPAGu@krava>
+ <20220128110523.de0e36317a34d48b793a7f6b@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220128110523.de0e36317a34d48b793a7f6b@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+On Fri, Jan 28, 2022 at 11:05:23AM +0900, Masami Hiramatsu wrote:
 
-Replace zero-length array with flexible-array member and make use
-of the struct_size() helper in kmalloc(). For example:
+SNIP
 
-struct iwl_wipan_noa_data {
-	...
-	u8 data[];
-}
+> 
+> So, I wrote a below change for the next version. Is that OK for you?
+> 
+> Thank you,
+> 
+> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+> index f305e18f699f..a28b1bdb234a 100644
+> --- a/kernel/trace/ftrace.c
+> +++ b/kernel/trace/ftrace.c
+> @@ -4985,8 +4985,13 @@ ftrace_match_addr(struct ftrace_hash *hash, unsigned long *ips,
+>  
+>  	for (i = 0; i < cnt; i++) {
+>  		err = __ftrace_match_addr(hash, ips[i], remove);
+> -		if (err)
+> +		if (err) {
+> +			/*
+> +			 * This expects the @hash is a temporary hash and if this
+> +			 * fails the caller must free the @hash.
+> +			 */
+>  			return err;
+> +		}
+>  	}
+>  	return 0;
+>  }
+> @@ -5649,7 +5654,7 @@ int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
+>  EXPORT_SYMBOL_GPL(ftrace_set_filter_ip);
+>  
+>  /**
+> - * ftrace_set_filter_ips - set a functions to filter on in ftrace by addresses
+> + * ftrace_set_filter_ips - set functions to filter on in ftrace by addresses
+>   * @ops - the ops to set the filter with
+>   * @ips - the array of addresses to add to or remove from the filter.
+>   * @cnt - the number of addresses in @ips
 
-Make use of the struct_size() helper instead of an open-coded version
-in order to avoid any potential type mistakes.
+looks good, thanks
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
----
- drivers/net/wireless/intel/iwlwifi/dvm/rx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/rx.c b/drivers/net/wireless/intel/iwlwifi/dvm/rx.c
-index db0c41bbeb0e..d0d842b25b86 100644
---- a/drivers/net/wireless/intel/iwlwifi/dvm/rx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/dvm/rx.c
-@@ -915,7 +915,7 @@ static void iwlagn_rx_noa_notification(struct iwl_priv *priv,
- 		len += 1 + 2;
- 		copylen += 1 + 2;
- 
--		new_data = kmalloc(sizeof(*new_data) + len, GFP_ATOMIC);
-+		new_data = kmalloc(struct_size(*new_data, data, len), GFP_ATOMIC);
- 		if (new_data) {
- 			new_data->length = len;
- 			new_data->data[0] = WLAN_EID_VENDOR_SPECIFIC;
--- 
-2.25.1
+jirka
 
