@@ -2,147 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D0FF49F082
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 02:27:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3724D49F0A5
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 02:43:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345041AbiA1B1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 20:27:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32898 "EHLO
+        id S1345095AbiA1Bnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 20:43:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345053AbiA1B1E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 20:27:04 -0500
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B8BC061714
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 17:27:04 -0800 (PST)
-Received: by mail-vs1-xe2c.google.com with SMTP id v6so1210611vsp.11
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 17:27:04 -0800 (PST)
+        with ESMTP id S1345127AbiA1Bnk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 20:43:40 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC87FC061747
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 17:43:39 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id u15so7982585wrt.3
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 17:43:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PttnHobxbrNXm7CRPT8hxk8WeppawPWcyPhV5DsSOLA=;
-        b=qBDlMYS14e4kUT2cmx33e5dDZEL8k7RkraLxlfpBlXePm7UDaQrjeezim0DO7ndDy3
-         ZXauKtE4aP9LfAvT7/vGhv+W9YAG9MfK8eOppGqHqSs2R3bGpvUoBmPzhWWOO8JXu64K
-         hyCh8BELE4UktPLN5MW9TCCmn4DHu4sQ2tbAiV2z+g/EEsuDOqb+dQZLCpskYdKeeOkb
-         qMxIsVWe+L7NJhFmJw6EaUZlYAcS8BPgY9lXpKy+WRy0VaqEHuCGaNKkb90sdU4AvzAJ
-         7zaJvPJYXduUtgBuNZQUiHW2TIleybn4GhSosXAgXCEdETp8GorN7ta10Y5e51HiRQRj
-         EQhA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HPxukaaI+vBZceFwqPaqWSmknWB3EkzjOCzqNJeXZ6Y=;
+        b=MbuglyhJzGr5zJbIDXKc1BRjn3+qunjZnSYcTrv9Y93j/BhlkTmeMI9YN/xuwQluMO
+         VFSAhXFpENEXV8xKXKKrhCgsDt6ftUgtrjnTjQvmGQF59bmZWfhX31I7JPL9MM0uU/MP
+         ncHf5Hb/wgD7HKpM3FbEmCtqLYNUcUqpuJdGgeh51wP3umNBfITNpSI98FgOGsX+z5GR
+         McRsCzkVlCTPhX9o2q6WkHwAWfoIKJkoBtjEjQge3Duo4a16aIvfcoCymTbfrbOn++g0
+         efGKbnRNJkC7PcVDpVzufyMC1vvFJtrJoWLXxqcyZPPsqex9e47UCIDsz8mCBF/Tgucp
+         hokg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PttnHobxbrNXm7CRPT8hxk8WeppawPWcyPhV5DsSOLA=;
-        b=z0mQSoemjkBqGFDPcRUt7Buc5inhBT1J+vl8KuDl3RbAgID+gbkwpbV3C0tSKRO1Pk
-         PvhTmUKWDInoRFcrFU4N7mJzmaABTVV+8nT8obvT/FPmAvjKpOBG+TmlB/vtEj83aMEd
-         6Ez1sIUqzlP3tlQR/jFhYwRWRQ/x3/L3TijE9uT/XYuYkiF0W5193vDTBzPxdmC6qip8
-         BfUZ1U/YlisTKAN0fYYEVfRcOrswm3ztpWCukGJCR1oWFKWJ+LgztuxuYkwHM032MojW
-         dT9DtVLC87LqeNt3rB7MCf1pA5aiD5kEGRAp2t0A+4Ev1hkd0GpX3jMQeGL3vpifpRMl
-         xK0A==
-X-Gm-Message-State: AOAM531ZDeHeoDLc4bon+HlO/ApFumkwB5kMcNw6Iy8+dka94EmP7H3R
-        zV2p6S1SYDE3T7S/U0JHdj5nVpWFBRPjCUrvD1ZmWdfOgCDrWg==
-X-Google-Smtp-Source: ABdhPJz5pqAI4AAVdIJKudD5rF5gDHzbOLpMZaERpng0omVk/OxKL02I9gaYXj7tUX/1mg/9gBayxwGa0dtd+1So6Yw=
-X-Received: by 2002:a05:6102:6d1:: with SMTP id m17mr1695436vsg.51.1643333222361;
- Thu, 27 Jan 2022 17:27:02 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HPxukaaI+vBZceFwqPaqWSmknWB3EkzjOCzqNJeXZ6Y=;
+        b=HL8W1wLKX6NH4VoXRtddkovzAU5B7Y9sPWKrTnMAPCVlmGv9RXbvuGlsEXoMy6blzx
+         0xLF9oWXXusNKH8sm0wNT3AASPwgE3oABHyFNeV2P7er30UM4su7MBzEolysIxVewFF/
+         gT6lMg0PDZcHmYdd9UH35zlT8F3upSsF0n2s0j54HO5YHXdr9rB+KT1/X1XqWayJ7pPP
+         TGue+0b0Vi/sYOnQYKY11tZRB1c9YzOo/wfaSzZ4wOr1KJEigKnnGMNKqk98ttbmLhD/
+         OgTVTmOkAwWv+CNr+WLsjxdSG6MNDaPjHpEbUaxCBaKrt5GWyzzKdC9jlRKhnioHjoK4
+         RJdA==
+X-Gm-Message-State: AOAM532HaJjMD7gxf4jlTv2bXBSmBU217tliMMaaHEwVY0pGTU1W2iNA
+        ON3P5PHmZUqmhBnLETZSrsORAw==
+X-Google-Smtp-Source: ABdhPJx4aLp51dgoa/rTPnzaY8XZzRPLihFZM2WxONP9GdXAXygo9Fr2IIFDjQWSLbuDb3/2MB9JfA==
+X-Received: by 2002:a05:6000:1884:: with SMTP id a4mr5074731wri.165.1643334218107;
+        Thu, 27 Jan 2022 17:43:38 -0800 (PST)
+Received: from localhost ([2a02:168:96c5:1:55ed:514f:6ad7:5bcc])
+        by smtp.gmail.com with ESMTPSA id 14sm4428247wrz.100.2022.01.27.17.43.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 17:43:37 -0800 (PST)
+From:   Jann Horn <jannh@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>
+Cc:     linux-kernel@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
+        Jann Horn <jannh@google.com>
+Subject: [PATCH net] net: dev: Detect dev_hold() after netdev_wait_allrefs()
+Date:   Fri, 28 Jan 2022 02:43:03 +0100
+Message-Id: <20220128014303.2334568-1-jannh@google.com>
+X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
 MIME-Version: 1.0
-References: <20220127002605.4049593-1-maheshb@google.com> <25026.1643327669@famine>
-In-Reply-To: <25026.1643327669@famine>
-From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Date:   Thu, 27 Jan 2022 17:26:36 -0800
-Message-ID: <CAF2d9jgJ7NWQaUAbB-hOhCk7BSwj+ApwWZLDVG3_-zhqCgnvzw@mail.gmail.com>
-Subject: Re: [PATCH next] bonding: pair enable_port with slave_arr_updates
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mahesh Bandewar <mahesh@bandewar.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 3:54 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
->
-> Mahesh Bandewar <maheshb@google.com> wrote:
->
-> >When 803.2ad mode enables a participating port, it should update
-> >the slave-array. I have observed that the member links are participating
-> >and are part of the active aggregator while the traffic is egressing via
-> >only one member link (in a case where two links are participating). Via
-> >krpobes I discovered that that slave-arr has only one link added while
-> >the other participating link wasn't part of the slave-arr.
-> >
-> >I couldn't see what caused that situation but the simple code-walk
-> >through provided me hints that the enable_port wasn't always associated
-> >with the slave-array update.
-> >
-> >Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-> >---
-> > drivers/net/bonding/bond_3ad.c | 4 ++++
-> > 1 file changed, 4 insertions(+)
-> >
-> >diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-> >index 6006c2e8fa2b..f20bbc18a03f 100644
-> >--- a/drivers/net/bonding/bond_3ad.c
-> >+++ b/drivers/net/bonding/bond_3ad.c
-> >@@ -1024,6 +1024,8 @@ static void ad_mux_machine(struct port *port, bool *update_slave_arr)
-> >
-> >                                       __enable_port(port);
-> >                               }
-> >+                              /* Slave array needs update */
-> >+                              *update_slave_arr = true;
-> >                       }
->
->         Shouldn't this be in the same block as the __enable_port() call?
-absolutely! It's inefficient to have outside of that if-clause and
-would unnecessarily update slave-arr when it's not even needed. My
-bad, I'll fix it in v2
+I've run into a bug where dev_hold() was being called after
+netdev_wait_allrefs(). But at that point, the device is already going
+away, and dev_hold() can't stop that anymore.
 
-> If I'm reading the code correctly, as written this will trigger an
-> update of the array on every pass of the state machine (every 100ms) if
-> any port is in COLLECTING_DISTRIBUTING state, which is the usual case.
->
-> >                       break;
-> >               default:
-> >@@ -1779,6 +1781,8 @@ static void ad_agg_selection_logic(struct aggregator *agg,
-> >                            port = port->next_port_in_aggregator) {
-> >                               __enable_port(port);
-> >                       }
-> >+                      /* Slave array needs update. */
-> >+                      *update_slave_arr = true;
-> >               }
->
->         I suspect this change would only affect your issue if the port
-> in question was failing to partner (i.e., the peer wasn't running LACP
-> or there was some failure in the LACP negotiation).  If the ports in
-> your test were in the same aggregator, that shouldn't be the case, as I
-> believe unpartnered ports are always individual (not in an aggregator).
-The condition seems to manifest randomly on some machines and not
-always. All links are part of the same aggregator but some transient
-situation does break the bond and almost always it reforms but
-occasionally it gets into this state I mentioned.
+To make such problems easier to diagnose in the future:
 
-My primary motive behind this fix/patch is to update the slave-arr
-when LACP state is changing (for whatever reasons). Enabling port
-seems to be an event which must be associated with updating the array
-and found these two locations in the code where there is a chance that
-update_array may not happen when a port gets enabled.
+ - For CONFIG_PCPU_DEV_REFCNT builds: Recheck in free_netdev() whether
+   the net refcount has been elevated. If this is detected, WARN() and
+   leak the object (to prevent worse consequences from a
+   use-after-free).
+ - For builds without CONFIG_PCPU_DEV_REFCNT: Set the refcount to zero.
+   This signals to the generic refcount infrastructure that any attempt
+   to increment the refcount later is a bug.
 
->
->         Do you have a test?
->
-I'm not sure what triggers it and hence I don't have the exact repro
-steps / test.
+Signed-off-by: Jann Horn <jannh@google.com>
+---
+ net/core/dev.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
->         -J
->
-> >       }
-> >
-> >--
-> >2.35.0.rc0.227.g00780c9af4-goog
-> >
->
-> ---
->         -Jay Vosburgh, jay.vosburgh@canonical.com
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 1baab07820f6..f7916c0d226d 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9949,8 +9949,18 @@ void netdev_run_todo(void)
+=20
+ 		netdev_wait_allrefs(dev);
+=20
++		/* Drop the netdev refcount (which should be 1 at this point)
++		 * to zero. If we're using the generic refcount code, this will
++		 * tell it that any dev_hold() after this point is a bug.
++		 */
++#ifdef CONFIG_PCPU_DEV_REFCNT
++		this_cpu_dec(*dev->pcpu_refcnt);
++		BUG_ON(netdev_refcnt_read(dev) !=3D 0);
++#else
++		BUG_ON(!refcount_dec_and_test(&dev->dev_refcnt));
++#endif
++
+ 		/* paranoia */
+-		BUG_ON(netdev_refcnt_read(dev) !=3D 1);
+ 		BUG_ON(!list_empty(&dev->ptype_all));
+ 		BUG_ON(!list_empty(&dev->ptype_specific));
+ 		WARN_ON(rcu_access_pointer(dev->ip_ptr));
+@@ -10293,6 +10303,12 @@ void free_netdev(struct net_device *dev)
+ 	free_percpu(dev->xdp_bulkq);
+ 	dev->xdp_bulkq =3D NULL;
+=20
++	/* Recheck in case someone called dev_hold() between
++	 * netdev_wait_allrefs() and here.
++	 */
++	if (WARN_ON(netdev_refcnt_read(dev) !=3D 0))
++		return; /* leak memory, otherwise we might get UAF */
++
+ 	/*  Compatibility with error handling in drivers */
+ 	if (dev->reg_state =3D=3D NETREG_UNINITIALIZED) {
+ 		netdev_freemem(dev);
+
+base-commit: 23a46422c56144939c091c76cf389aa863ce9c18
+--=20
+2.35.0.rc0.227.g00780c9af4-goog
+
