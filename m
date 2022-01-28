@@ -2,95 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5B894A0434
-	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 00:23:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C7FD4A04AC
+	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 00:53:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344551AbiA1XXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 18:23:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52372 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233182AbiA1XXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 18:23:33 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71169C061714
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 15:23:32 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id b9so14736577lfq.6
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 15:23:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=BpeLydjX5mOwOQX9R670hKq9JulnJSBkl4SUh8O11MY=;
-        b=Hb+TGmMvM9ZaqMs0MXpw21TZWY5oc3Ca0AS9ceIyJLluSthVZQ1JTqlS/ZNVSPJJr1
-         Zqczd1tT+GAVHTJgDIOrm9BHXFDtBgjfCEPn67hv/Lkl0BGAIPCZugZ5u9h/AvwBhkbw
-         bm6dQf15V9sn3lU9zucftVhpeYNICN9fzkVMY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=BpeLydjX5mOwOQX9R670hKq9JulnJSBkl4SUh8O11MY=;
-        b=JcvNzm2q0ZlMa6Pnk1TIUbZF/RjjYdNq6qczaMbPpvDQcTEBZPmmh29OpTzudWdVq1
-         tA8JT0HMRKH8Unb15iBsmjWDOnFliKpKUr4P/nnRaRVCxVdILnNidoFkvKjMyfrxdbTk
-         UMQuua8zbG2BkX7/GqIPTCfc5flGi339I4lFDuyBsSNj/pMw5f0It4LtR7kcYcu04K28
-         RCC9dAXEWi8tnIchSO4I6PX89r1Dr8rTOT9DrCtTvDLVx0EQ1ywvOKYR472jecP/grSy
-         QGwofYXLdunmUo5N93lHR+rDVgCtHSlMUK7eR9dlsxRHCLmmm9Ii+FfSJWA4DGv7J4Ml
-         Jt/A==
-X-Gm-Message-State: AOAM533S2E0MLQUWvWwuj8jWl8kDGAPD282HzCjVJCX84ztQFqmxCd/L
-        o9ERtYhs+N4OjLixbimRjYrJq3/8LwXE8AsloH2j8dGMvBfwuQ==
-X-Google-Smtp-Source: ABdhPJwGKwWgwIXALKcMpTiqcG4Etcmn/HsEoinSQiEMWX2IckTTegVkfoHBs/bumIDZoektOJXBdxAc3TZT45uJ/II=
-X-Received: by 2002:a05:6512:3a95:: with SMTP id q21mr7280463lfu.569.1643412210624;
- Fri, 28 Jan 2022 15:23:30 -0800 (PST)
+        id S1344789AbiA1Xxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 18:53:53 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55626 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344851AbiA1Xxw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 18:53:52 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B5036176B
+        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 23:53:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA601C340E7;
+        Fri, 28 Jan 2022 23:53:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643414032;
+        bh=n/anSoyif3p2CvSANBI7muFScLpc4QzuxttmB0jc33o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DAOk4G4gRx032meKow/dwt1G3FNZked1uuHDV0oMxxKQIsXgOKz/Z3VZlLEGnEFx4
+         YAwhWEX2ghyao151MfDjSq74DJHFv7Lq9BYaCD/Fc2FX+Yw94NNtbfxeppBqcu+VaH
+         ilYYk/NpI5N9oeJ6Tiloq5ibmieKHg8tjygg3qcQF5qkMvf8tYVqrX+CjSe5/mY17Q
+         3801cxshy4InK0DRSIJx3N/7kAkmOqQWgSmAAg1SeERvXhUVWuucunz5lssxggZpjN
+         1JQlr2ZyPa1q7jc097uLSN3nySVoN4phUtHowAbWpW1+4NY0s7Ve3OlQOY8plawj/+
+         KzGgQx2WakylQ==
+From:   David Ahern <dsahern@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH net-next] ipv4: Make ip_idents_reserve static
+Date:   Fri, 28 Jan 2022 16:53:47 -0700
+Message-Id: <20220128235347.40666-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
-References: <20220128223312.1253169-1-mauricio@kinvolk.io> <20220128223312.1253169-10-mauricio@kinvolk.io>
-In-Reply-To: <20220128223312.1253169-10-mauricio@kinvolk.io>
-From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Date:   Fri, 28 Jan 2022 18:23:19 -0500
-Message-ID: <CAHap4zsWqpTezbzZn7TOWvFA4c2PbSum4vY1_9YB+XSfFor21g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 9/9] selftest/bpf: Implement tests for bpftool
- gen min_core_btf
-To:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 5:33 PM Mauricio V=C3=A1squez <mauricio@kinvolk.io>=
- wrote:
->
-> This commit implements some integration tests for "BTFGen". The goal
-> of such tests is to verify that the generated BTF file contains the
-> expected types.
->
+ip_idents_reserve is only used in net/ipv4/route.c. Make it static
+and remove the export.
 
-This is not an exhaustive list of test cases. I'm not sure if this is
-the approach we should follow to implement such tests, it seems to me
-that checking each generated BTF file by hand is a lot of work but I
-don't have other ideas to simplify it.
+Signed-off-by: David Ahern <dsahern@kernel.org>
+Cc: Eric Dumazet <edumazet@google.com>
+---
+ include/net/ip.h | 1 -
+ net/ipv4/route.c | 3 +--
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-I considered different options to write these tests:
-1. Use core_reloc_types.h to create a "source" BTF file with a lot of
-types, then run BTFGen for all test_core_reloc_*.o files and use the
-generated BTF file as btf_src_file in core_reloc.c. In other words,
-re-run all test_core_reloc tests using a generated BTF file as source
-instead of the "btf__core_reloc_" #name ".o" one. I think this test is
-great because it tests the full functionality and actually checks that
-the programs are able to run using the generated file. The problem is
-how do we test that the BTFGen is creating an optimized file? Just
-copying the source file without any modification will make all those
-tests pass. We could check that the generated file is small (by
-checking the size or the number of types) but it doesn't seem a very
-reliable approach to me.
-2. We could write some .c files with the types we expect to have on
-the generated file and compare it with the generated file. The issue
-here is that comparing those BTF files doesn't seem to be too
-trivial...
+diff --git a/include/net/ip.h b/include/net/ip.h
+index b51bae43b0dd..4fcb48598d2d 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -517,7 +517,6 @@ void ip_dst_metrics_put(struct dst_entry *dst)
+ 		kfree(p);
+ }
+ 
+-u32 ip_idents_reserve(u32 hash, int segs);
+ void __ip_select_ident(struct net *net, struct iphdr *iph, int segs);
+ 
+ static inline void ip_select_ident_segs(struct net *net, struct sk_buff *skb,
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index e42e283b5515..8b35075088e1 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -457,7 +457,7 @@ static u32 *ip_tstamps __read_mostly;
+  * if one generator is seldom used. This makes hard for an attacker
+  * to infer how many packets were sent between two points in time.
+  */
+-u32 ip_idents_reserve(u32 hash, int segs)
++static u32 ip_idents_reserve(u32 hash, int segs)
+ {
+ 	u32 bucket, old, now = (u32)jiffies;
+ 	atomic_t *p_id;
+@@ -478,7 +478,6 @@ u32 ip_idents_reserve(u32 hash, int segs)
+ 	 */
+ 	return atomic_add_return(segs + delta, p_id) - segs;
+ }
+-EXPORT_SYMBOL(ip_idents_reserve);
+ 
+ void __ip_select_ident(struct net *net, struct iphdr *iph, int segs)
+ {
+-- 
+2.25.1
 
-Do you have any suggestions about it? Thanks!
