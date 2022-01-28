@@ -2,171 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 195BE49F885
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 12:44:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8799049F891
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 12:45:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244360AbiA1Ln7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 06:43:59 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:60753 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244357AbiA1Ln5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 06:43:57 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20SBhaggF002939, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20SBhaggF002939
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 28 Jan 2022 19:43:36 +0800
-Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 28 Jan 2022 19:43:36 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 28 Jan 2022 03:43:36 -0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
- RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
- 15.01.2308.020; Fri, 28 Jan 2022 19:43:35 +0800
-From:   Hau <hau@realtek.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        nic_swsd <nic_swsd@realtek.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "grundler@chromium.org" <grundler@chromium.org>
-Subject: RE: [PATCH net-next] r8169: add rtl_disable_exit_l1()
-Thread-Topic: [PATCH net-next] r8169: add rtl_disable_exit_l1()
-Thread-Index: AQHYE8tKx0k4ipmO0kqGSvdLnpq0sKx4EyCQ//+mJACAAJP2gA==
-Date:   Fri, 28 Jan 2022 11:43:35 +0000
-Message-ID: <63a52057a21a42fb92f7bc09c9b7c540@realtek.com>
-References: <f448b546-5b0a-79e0-f09a-dcfabb4fc8a5@gmail.com>
- <0124f075142a458d91e5b41ce3b0ed5a@realtek.com>
- <ee4f20bd-f32d-ae2d-3767-b927cae9ef7f@gmail.com>
-In-Reply-To: <ee4f20bd-f32d-ae2d-3767-b927cae9ef7f@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.129]
-x-kse-serverinfo: RTEXDAG01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEvMjgg5LiK5Y2IIDEwOjAyOjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S244489AbiA1LpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 06:45:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348153AbiA1LpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 06:45:08 -0500
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2D4C061714;
+        Fri, 28 Jan 2022 03:45:08 -0800 (PST)
+Received: from localhost.localdomain.datenfreihafen.local (p200300e9d705dc252cd134b0e26de30d.dip0.t-ipconnect.de [IPv6:2003:e9:d705:dc25:2cd1:34b0:e26d:e30d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@sostec.de)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 29CC5C0220;
+        Fri, 28 Jan 2022 12:45:05 +0100 (CET)
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
+        netdev@vger.kernel.org
+Subject: pull-request: ieee802154 for net 2022-01-28
+Date:   Fri, 28 Jan 2022 12:45:01 +0100
+Message-Id: <20220128114501.2732329-1-stefan@datenfreihafen.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBPbiAyOC4wMS4yMDIyIDA5OjA5LCBIYXUgd3JvdGU6DQo+ID4NCj4gPg0KPiA+PiAtLS0tLU9y
-aWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+PiBGcm9tOiBIZWluZXIgS2FsbHdlaXQgW21haWx0bzpo
-a2FsbHdlaXQxQGdtYWlsLmNvbV0NCj4gPj4gU2VudDogRnJpZGF5LCBKYW51YXJ5IDI4LCAyMDIy
-IDY6MTUgQU0NCj4gPj4gVG86IEpha3ViIEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+OyBEYXZp
-ZCBNaWxsZXINCj4gPj4gPGRhdmVtQGRhdmVtbG9mdC5uZXQ+OyBuaWNfc3dzZCA8bmljX3N3c2RA
-cmVhbHRlay5jb20+DQo+ID4+IENjOiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBIYXUgPGhhdUBy
-ZWFsdGVrLmNvbT4NCj4gPj4gU3ViamVjdDogW1BBVENIIG5ldC1uZXh0XSByODE2OTogYWRkIHJ0
-bF9kaXNhYmxlX2V4aXRfbDEoKQ0KPiA+Pg0KPiA+PiBBZGQgcnRsX2Rpc2FibGVfZXhpdF9sMSgp
-IGZvciBlbnN1cmluZyB0aGF0IHRoZSBjaGlwIGRvZXNuJ3QNCj4gPj4gaW5hZHZlcnRlbnRseSBl
-eGl0IEFTUE0gTDEgd2hlbiBiZWluZyBpbiBhIGxvdy1wb3dlciBtb2RlLg0KPiA+PiBUaGUgbmV3
-IGZ1bmN0aW9uIGlzIGNhbGxlZCBmcm9tIHJ0bF9wcmVwYXJlX3Bvd2VyX2Rvd24oKSB3aGljaCBo
-YXMgdG8NCj4gPj4gYmUgbW92ZWQgaW4gdGhlIGNvZGUgdG8gYXZvaWQgYSBmb3J3YXJkIGRlY2xh
-cmF0aW9uLg0KPiA+Pg0KPiA+PiBBY2NvcmRpbmcgdG8gUmVhbHRlayBPQ1AgcmVnaXN0ZXIgMHhj
-MGFjIHNoYWRvd3MgRVJJIHJlZ2lzdGVyIDB4ZDQgb24NCj4gPj4gUlRMODE2OCB2ZXJzaW9ucyBm
-cm9tIFJUTDgxNjhnLiBUaGlzIGFsbG93cyB0byBzaW1wbGlmeSB0aGUgY29kZSBhIGxpdHRsZS4N
-Cj4gPj4NCj4gPj4gU3VnZ2VzdGVkLWJ5OiBDaHVuLUhhbyBMaW4gPGhhdUByZWFsdGVrLmNvbT4N
-Cj4gPj4gU2lnbmVkLW9mZi1ieTogSGVpbmVyIEthbGx3ZWl0IDxoa2FsbHdlaXQxQGdtYWlsLmNv
-bT4NCj4gPj4gLS0tDQo+ID4+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9yZWFsdGVrL3I4MTY5X21h
-aW4uYyB8IDY1DQo+ID4+ICsrKysrKysrKysrKysrLS0tLS0tLS0tDQo+ID4+ICAxIGZpbGUgY2hh
-bmdlZCwgMzkgaW5zZXJ0aW9ucygrKSwgMjYgZGVsZXRpb25zKC0pDQo+ID4+DQo+ID4+IGRpZmYg
-LS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9yZWFsdGVrL3I4MTY5X21haW4uYw0KPiA+PiBi
-L2RyaXZlcnMvbmV0L2V0aGVybmV0L3JlYWx0ZWsvcjgxNjlfbWFpbi5jDQo+ID4+IGluZGV4IDNj
-M2QxNTA2Yi4uMTA0ZWJjMGZiIDEwMDY0NA0KPiA+PiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5l
-dC9yZWFsdGVrL3I4MTY5X21haW4uYw0KPiA+PiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9y
-ZWFsdGVrL3I4MTY5X21haW4uYw0KPiA+PiBAQCAtMjIzMSwyOCArMjIzMSw2IEBAIHN0YXRpYyBp
-bnQgcnRsX3NldF9tYWNfYWRkcmVzcyhzdHJ1Y3QNCj4gPj4gbmV0X2RldmljZSAqZGV2LCB2b2lk
-ICpwKQ0KPiA+PiAgCXJldHVybiAwOw0KPiA+PiAgfQ0KPiA+Pg0KPiA+PiAtc3RhdGljIHZvaWQg
-cnRsX3dvbF9lbmFibGVfcngoc3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHApIC17DQo+ID4+IC0J
-aWYgKHRwLT5tYWNfdmVyc2lvbiA+PSBSVExfR0lHQV9NQUNfVkVSXzI1KQ0KPiA+PiAtCQlSVExf
-VzMyKHRwLCBSeENvbmZpZywgUlRMX1IzMih0cCwgUnhDb25maWcpIHwNCj4gPj4gLQkJCUFjY2Vw
-dEJyb2FkY2FzdCB8IEFjY2VwdE11bHRpY2FzdCB8IEFjY2VwdE15UGh5cyk7DQo+ID4+IC19DQo+
-ID4+IC0NCj4gPj4gLXN0YXRpYyB2b2lkIHJ0bF9wcmVwYXJlX3Bvd2VyX2Rvd24oc3RydWN0IHJ0
-bDgxNjlfcHJpdmF0ZSAqdHApIC17DQo+ID4+IC0JaWYgKHRwLT5kYXNoX3R5cGUgIT0gUlRMX0RB
-U0hfTk9ORSkNCj4gPj4gLQkJcmV0dXJuOw0KPiA+PiAtDQo+ID4+IC0JaWYgKHRwLT5tYWNfdmVy
-c2lvbiA9PSBSVExfR0lHQV9NQUNfVkVSXzMyIHx8DQo+ID4+IC0JICAgIHRwLT5tYWNfdmVyc2lv
-biA9PSBSVExfR0lHQV9NQUNfVkVSXzMzKQ0KPiA+PiAtCQlydGxfZXBoeV93cml0ZSh0cCwgMHgx
-OSwgMHhmZjY0KTsNCj4gPj4gLQ0KPiA+PiAtCWlmIChkZXZpY2VfbWF5X3dha2V1cCh0cF90b19k
-ZXYodHApKSkgew0KPiA+PiAtCQlwaHlfc3BlZWRfZG93bih0cC0+cGh5ZGV2LCBmYWxzZSk7DQo+
-ID4+IC0JCXJ0bF93b2xfZW5hYmxlX3J4KHRwKTsNCj4gPj4gLQl9DQo+ID4+IC19DQo+ID4+IC0N
-Cj4gPj4gIHN0YXRpYyB2b2lkIHJ0bF9pbml0X3J4Y2ZnKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUg
-KnRwKSAgew0KPiA+PiAgCXN3aXRjaCAodHAtPm1hY192ZXJzaW9uKSB7DQo+ID4+IEBAIC0yNjY3
-LDEwICsyNjQ1LDcgQEAgc3RhdGljIHZvaWQgcnRsX2VuYWJsZV9leGl0X2wxKHN0cnVjdA0KPiA+
-PiBydGw4MTY5X3ByaXZhdGUgKnRwKQ0KPiA+PiAgCWNhc2UgUlRMX0dJR0FfTUFDX1ZFUl8zNyAu
-Li4gUlRMX0dJR0FfTUFDX1ZFUl8zODoNCj4gPj4gIAkJcnRsX2VyaV9zZXRfYml0cyh0cCwgMHhk
-NCwgMHgwYzAwKTsNCj4gPj4gIAkJYnJlYWs7DQo+ID4+IC0JY2FzZSBSVExfR0lHQV9NQUNfVkVS
-XzQwIC4uLiBSVExfR0lHQV9NQUNfVkVSXzUzOg0KPiA+PiAtCQlydGxfZXJpX3NldF9iaXRzKHRw
-LCAweGQ0LCAweDFmODApOw0KPiA+PiAtCQlicmVhazsNCj4gPj4gLQljYXNlIFJUTF9HSUdBX01B
-Q19WRVJfNjAgLi4uIFJUTF9HSUdBX01BQ19WRVJfNjM6DQo+ID4+ICsJY2FzZSBSVExfR0lHQV9N
-QUNfVkVSXzQwIC4uLiBSVExfR0lHQV9NQUNfVkVSXzYzOg0KPiA+PiAgCQlyODE2OF9tYWNfb2Nw
-X21vZGlmeSh0cCwgMHhjMGFjLCAwLCAweDFmODApOw0KPiA+PiAgCQlicmVhazsNCj4gPj4gIAlk
-ZWZhdWx0Og0KPiA+PiBAQCAtMjY3OCw2ICsyNjUzLDIwIEBAIHN0YXRpYyB2b2lkIHJ0bF9lbmFi
-bGVfZXhpdF9sMShzdHJ1Y3QNCj4gPj4gcnRsODE2OV9wcml2YXRlICp0cCkNCj4gPj4gIAl9DQo+
-ID4+ICB9DQo+ID4+DQo+ID4+ICtzdGF0aWMgdm9pZCBydGxfZGlzYWJsZV9leGl0X2wxKHN0cnVj
-dCBydGw4MTY5X3ByaXZhdGUgKnRwKSB7DQo+ID4+ICsJc3dpdGNoICh0cC0+bWFjX3ZlcnNpb24p
-IHsNCj4gPj4gKwljYXNlIFJUTF9HSUdBX01BQ19WRVJfMzQgLi4uIFJUTF9HSUdBX01BQ19WRVJf
-Mzg6DQo+ID4+ICsJCXJ0bF9lcmlfY2xlYXJfYml0cyh0cCwgMHhkNCwgMHgxZjAwKTsNCj4gPj4g
-KwkJYnJlYWs7DQo+ID4+ICsJY2FzZSBSVExfR0lHQV9NQUNfVkVSXzQwIC4uLiBSVExfR0lHQV9N
-QUNfVkVSXzYzOg0KPiA+PiArCQlyODE2OF9tYWNfb2NwX21vZGlmeSh0cCwgMHhjMGFjLCAweDFm
-ODAsIDApOw0KPiA+PiArCQlicmVhazsNCj4gPj4gKwlkZWZhdWx0Og0KPiA+PiArCQlicmVhazsN
-Cj4gPj4gKwl9DQo+ID4+ICt9DQo+ID4+ICsNCj4gPj4gIHN0YXRpYyB2b2lkIHJ0bF9od19hc3Bt
-X2Nsa3JlcV9lbmFibGUoc3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHAsDQo+ID4+IGJvb2wNCj4g
-Pj4gZW5hYmxlKSAgew0KPiA+PiAgCS8qIERvbid0IGVuYWJsZSBBU1BNIGluIHRoZSBjaGlwIGlm
-IE9TIGNhbid0IGNvbnRyb2wgQVNQTSAqLyBAQCAtDQo+ID4+IDQ2ODksNiArNDY3OCwzMCBAQCBz
-dGF0aWMgaW50IHI4MTY5X3BoeV9jb25uZWN0KHN0cnVjdCBydGw4MTY5X3ByaXZhdGUNCj4gKnRw
-KQ0KPiA+PiAgCXJldHVybiAwOw0KPiA+PiAgfQ0KPiA+Pg0KPiA+PiArc3RhdGljIHZvaWQgcnRs
-X3dvbF9lbmFibGVfcngoc3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHApIHsNCj4gPj4gKwlpZiAo
-dHAtPm1hY192ZXJzaW9uID49IFJUTF9HSUdBX01BQ19WRVJfMjUpDQo+ID4+ICsJCVJUTF9XMzIo
-dHAsIFJ4Q29uZmlnLCBSVExfUjMyKHRwLCBSeENvbmZpZykgfA0KPiA+PiArCQkJQWNjZXB0QnJv
-YWRjYXN0IHwgQWNjZXB0TXVsdGljYXN0IHwgQWNjZXB0TXlQaHlzKTsgfQ0KPiA+PiArDQo+ID4+
-ICtzdGF0aWMgdm9pZCBydGxfcHJlcGFyZV9wb3dlcl9kb3duKHN0cnVjdCBydGw4MTY5X3ByaXZh
-dGUgKnRwKSB7DQo+ID4+ICsJaWYgKHRwLT5kYXNoX3R5cGUgIT0gUlRMX0RBU0hfTk9ORSkNCj4g
-Pj4gKwkJcmV0dXJuOw0KPiA+PiArDQo+ID4+ICsJaWYgKHRwLT5tYWNfdmVyc2lvbiA9PSBSVExf
-R0lHQV9NQUNfVkVSXzMyIHx8DQo+ID4+ICsJICAgIHRwLT5tYWNfdmVyc2lvbiA9PSBSVExfR0lH
-QV9NQUNfVkVSXzMzKQ0KPiA+PiArCQlydGxfZXBoeV93cml0ZSh0cCwgMHgxOSwgMHhmZjY0KTsN
-Cj4gPj4gKw0KPiA+PiArCWlmIChkZXZpY2VfbWF5X3dha2V1cCh0cF90b19kZXYodHApKSkgew0K
-PiA+PiArCQlwaHlfc3BlZWRfZG93bih0cC0+cGh5ZGV2LCBmYWxzZSk7DQo+ID4+ICsJCXJ0bF93
-b2xfZW5hYmxlX3J4KHRwKTsNCj4gPj4gKwl9IGVsc2Ugew0KPiA+PiArCQlydGxfZGlzYWJsZV9l
-eGl0X2wxKHRwKTsNCj4gPj4gKwl9DQo+ID4+ICt9DQo+ID4+ICsNCj4gPiBIaSBIZWluZXIsDQo+
-ID4NCj4gSGkgSGF1LA0KPiANCj4gPiBydGxfZGlzYWJsZV9leGl0X2wxKHRwKSBjYW4gYmUgY2Fs
-bGVkIGJlZm9yZSBkZXZpY2UgZW50ZXIgRDMgc3RhdGUuIEkgdGhpbmsNCj4geW91IGRvbuKAmXQg
-bmVlZCB0byBjaGVjayB3b2wgc3RhdHVzLg0KPiA+IFlvdSBtYXkgdXBkYXRlIHRoZSBjb2RlIGxp
-bmsgZm9sbG93aW5nLg0KPg0KPiBteSB0aG91Z2h0IHdhcyB0aGF0IGlmIERBU0ggb3IgV29MIGFy
-ZSBlbmFibGVkIHRoZW4gd2UgbWlnaHQgbWlzcw0KPiBzb21ldGhpbmcgb24gdGhlIGJ1cyBpZiBu
-b3Qgd2FraW5nIGZyb20gTDEgaW4gdGltZS4NCj4gWW91IHRoaW5rIHRoaXMgc2hvdWxkbid0IGJl
-IGEgcHJvYmxlbT8NCj4NCkkgdGhpbmsgaXQgc2hvdWxkIG5vdCBiZSBhIHByb2JsZW0uIA0KSWYg
-ZHJpdmVyIGRvZXMgbm90IGNhbGwgcnRsX2Rpc2FibGVfZXhpdF9sMSgpIHdoZW4gd29sIGlzIGVu
-YWJsZWQsIHRoZW4gaGFyZHdhcmUgd2lsbCBub3QgZ28gdG8gTDEuIA0KIA0KPiBCeSB0aGUgd2F5
-LCBiZWNhdXNlIEknbSBubyBEQVNIIGV4cGVydDoNCj4gU2hvdWxkIHdlIGdvIHRvIEQzIGF0IGFs
-bCBpZiBEQVNIIGlzIGVuYWJsZWQ/IFdpbGwgaXQgc3RpbGwgd29yaz8NCj4gDQpGb3IgaGFyZHdh
-cmUgdGhhdCBzdXBwb3J0IGRhc2gsIGRhc2ggd2lsbCB3b3JrIGluIEQzIHN0YXRlLiANCkJlZm9y
-ZSBEMyBzdGF0ZSwgZHJpdmVyIHdpbGwgZ2l2ZSBjb250cm9sIGJhY2sgdG8gZGFzaCBmaXJtd2Fy
-ZSBieSBjYWxsIHJ0bDgxNjhfZHJpdmVyX3N0b3AoKS4NCj4gPg0KPiA+IHN0YXRpYyB2b2lkIHJ0
-bF9wcmVwYXJlX3Bvd2VyX2Rvd24oc3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHApIHsNCj4gPiAJ
-cnRsX2Rpc2FibGVfZXhpdF9sMSh0cCk7DQo+ID4NCj4gPiAJaWYgKHRwLT5kYXNoX3R5cGUgIT0g
-UlRMX0RBU0hfTk9ORSkNCj4gPiAJCXJldHVybjsNCj4gPg0KPiA+IAlpZiAodHAtPm1hY192ZXJz
-aW9uID09IFJUTF9HSUdBX01BQ19WRVJfMzIgfHwNCj4gPiAJICAgIHRwLT5tYWNfdmVyc2lvbiA9
-PSBSVExfR0lHQV9NQUNfVkVSXzMzKQ0KPiA+IAkJcnRsX2VwaHlfd3JpdGUodHAsIDB4MTksIDB4
-ZmY2NCk7DQo+ID4NCj4gPiAJaWYgKGRldmljZV9tYXlfd2FrZXVwKHRwX3RvX2Rldih0cCkpKSB7
-DQo+ID4gCQlwaHlfc3BlZWRfZG93bih0cC0+cGh5ZGV2LCBmYWxzZSk7DQo+ID4gCQlydGxfd29s
-X2VuYWJsZV9yeCh0cCk7DQo+ID4gCX0NCj4gPiB9DQo+ID4NCj4gPiBUaGFua3MuDQo+ID4+ICBz
-dGF0aWMgdm9pZCBydGw4MTY5X2Rvd24oc3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHApICB7DQo+
-ID4+ICAJLyogQ2xlYXIgYWxsIHRhc2sgZmxhZ3MgKi8NCj4gPj4gLS0NCj4gPj4gMi4zNS4wDQo+
-ID4+DQo+ID4+IC0tLS0tLVBsZWFzZSBjb25zaWRlciB0aGUgZW52aXJvbm1lbnQgYmVmb3JlIHBy
-aW50aW5nIHRoaXMgZS1tYWlsLg0KDQo=
+Hello Dave, Jakub.
+
+An update from ieee802154 for your *net* tree.
+
+A bunch of fixes in drivers, all from Miquel Raynal.
+Clarifying the default channel in hwsim, leak fixes in at86rf230 and ca8210 as
+well as a symbol duration fix for mcr20a. Topping up the driver fixes with
+better error codes in nl802154 and a cleanup in MAINTAINERS for an orphaned
+driver.
+
+regards
+Stefan Schmidt
+
+
+The following changes since commit 2f61353cd2f789a4229b6f5c1c24a40a613357bb:
+
+  net: hns3: handle empty unknown interrupt for VF (2022-01-25 13:08:05 +0000)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan.git tags/ieee802154-for-net-2022-01-28
+
+for you to fetch changes up to 5d8a8b324ff48c9d9fe4f1634e33dc647d2481b4:
+
+  MAINTAINERS: Remove Harry Morris bouncing address (2022-01-27 08:20:54 +0100)
+
+----------------------------------------------------------------
+Miquel Raynal (6):
+      net: ieee802154: hwsim: Ensure proper channel selection at probe time
+      net: ieee802154: mcr20a: Fix lifs/sifs periods
+      net: ieee802154: at86rf230: Stop leaking skb's
+      net: ieee802154: ca8210: Stop leaking skb's
+      net: ieee802154: Return meaningful error codes from the netlink helpers
+      MAINTAINERS: Remove Harry Morris bouncing address
+
+ MAINTAINERS                              |  3 +--
+ drivers/net/ieee802154/at86rf230.c       | 13 +++++++++++--
+ drivers/net/ieee802154/ca8210.c          |  1 +
+ drivers/net/ieee802154/mac802154_hwsim.c |  1 +
+ drivers/net/ieee802154/mcr20a.c          |  4 ++--
+ net/ieee802154/nl802154.c                |  8 ++++----
+ 6 files changed, 20 insertions(+), 10 deletions(-)
