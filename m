@@ -2,106 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6760A49EFCF
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 01:35:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8567149EFF2
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 01:51:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238381AbiA1AfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 19:35:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49278 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236730AbiA1AfL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 19:35:11 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551E0C061714;
-        Thu, 27 Jan 2022 16:35:11 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id m26so700355wms.0;
-        Thu, 27 Jan 2022 16:35:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=m/g5IjygHJdyBKa2C2i5Lt6BGh/ss5sQbCSaGRICTRg=;
-        b=BWGnBi5+KKUxmMgIPzihbmEtdStfDql5LFNa3t7qhAkP4CzcuL3rc/v8NVx7h5x4rz
-         MGM+D0f9MfRJ2pdcH7EZ9TRm6B1KdSej8kSEykEeKGP/aaug1NpMh0wx7Uuj3wawpvP8
-         u30n0bkuBQcY162Ycig87EuDpHqx5M2SMDhsHoScaBXifbARLpNvzwZnVErfGH3Bc4XN
-         fltJ9Dw25vzOpLR6PJDtV5mkFH+cFH4wnzv/G6Qw7GrA9LPJ2PDjNiuuH5QAcryrlC+b
-         oAoCkA4I6bZxc837fX4qPkXq4Uglbio6/3WcNW/gg8jWBJiFiNKU2zIiTe6uQCUvvBS0
-         Phqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m/g5IjygHJdyBKa2C2i5Lt6BGh/ss5sQbCSaGRICTRg=;
-        b=bhI7qYg8Ps0G7uGIPyl4u+p5sdQcg02Dxl7xaIlKnoGn6WBquQjHySz6soMjsFcFPj
-         CBTO94R1Ib7FmnWugxhX/y/R1t3dHWqxHNemLwVmYIJiaZfB7TKssiLaVPen3ZvzDLA1
-         6aHlZ4ZfUclI2SJojYHB0X+1gL+jnW0apI4UExIVpXKu5MgXS3VzCGhAGmOd0ZtFzxNs
-         WxjHndxfKB5MsBHZ3RS/0bmXleUH4qNEoM9bSxqvZM9iqKBbyazR3Sh3MG3K1INl/+Rz
-         SY62RHTyJYghhevNo98As6KcCXUrEj0JrTPkZpoYb16Vyalp+RJfUGfdunsGOH/SivXj
-         3X/g==
-X-Gm-Message-State: AOAM530oLAdCdh6C8UGa6GL6KSaoO/3lf2KW1ja5xVjLbJ8W9EtJ9qUZ
-        0Qv50kJn3SYdoTW7OfJnRyyyRuDvSlMuOK3s2W8=
-X-Google-Smtp-Source: ABdhPJwt5kyj7zQQKu3804qzOAkMC2XQufGAyX7XIhycOJzEK2MZ3CX7s+dcYXK8SjRF689fQEaaLz+dyi/iLsBbtrw=
-X-Received: by 2002:a05:600c:3b90:: with SMTP id n16mr9129542wms.178.1643330109877;
- Thu, 27 Jan 2022 16:35:09 -0800 (PST)
+        id S1344654AbiA1Avh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 19:51:37 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:49293 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344612AbiA1Avh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 19:51:37 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20S0pCjT5017875, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20S0pCjT5017875
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 28 Jan 2022 08:51:12 +0800
+Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 28 Jan 2022 08:51:11 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 27 Jan 2022 16:51:11 -0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
+ RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
+ 15.01.2308.020; Fri, 28 Jan 2022 08:51:11 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Ed Swierk <eswierk@gh.st>
+Subject: RE: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
+Thread-Topic: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
+Thread-Index: AQHYBCp/WStseF16x0uJ7VAbWo+1y6xqJTFAgAMM/BCAA1dIAIAA+BTwgAWAeYCAALM9AA==
+Date:   Fri, 28 Jan 2022 00:51:11 +0000
+Message-ID: <53bea965043548539b995514d36f48e5@realtek.com>
+References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
+ <423f474e15c948eda4db5bc9a50fd391@realtek.com>
+ <CAFBinCBVEndU0t-6d5atE31OFYHzPyk7pOe78v0XrrFWcBec9w@mail.gmail.com>
+ <5ef8ab4f78e448df9f823385d0daed88@realtek.com>
+ <CAFBinCDjfKK3+WOXP2xbcAK-KToWof+kSzoxYztqRcc=7T1eyg@mail.gmail.com>
+In-Reply-To: <CAFBinCDjfKK3+WOXP2xbcAK-KToWof+kSzoxYztqRcc=7T1eyg@mail.gmail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEvMjcg5LiL5Y2IIDEwOjU1OjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220125122540.855604-1-miquel.raynal@bootlin.com> <b07b446d-a48e-78bd-1841-2802e12cf1d1@datenfreihafen.org>
-In-Reply-To: <b07b446d-a48e-78bd-1841-2802e12cf1d1@datenfreihafen.org>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Thu, 27 Jan 2022 19:34:58 -0500
-Message-ID: <CAB_54W6-z-k-sUkPsbWr5BuTOuAAD5YY=L=A9qpe5dgXWQ6rXA@mail.gmail.com>
-Subject: Re: [wpan-next v3 0/3] ieee802154: A bunch of light changes
-To:     Stefan Schmidt <stefan@datenfreihafen.org>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Thu, Jan 27, 2022 at 10:54 AM Stefan Schmidt
-<stefan@datenfreihafen.org> wrote:
->
-> Hello.
->
-> On 25.01.22 13:25, Miquel Raynal wrote:
-> > Here are a few small cleanups and improvements in preparation of a wider
-> > series bringing a lot of features. These are aside changes, hence they
-> > have their own small series.
-> >
-> > Changes in v3:
-> > * Split the v2 into two series: fixes for the wpan branch and cleanups
-> >    for wpan-next. Here are random "cleanups".
-> > * Reworded the ieee802154_wake/stop_queue helpers kdoc as discussed
-> >    with Alexander.
-> >
-> > Miquel Raynal (3):
-> >    net: ieee802154: hwsim: Ensure frame checksum are valid
-> >    net: ieee802154: Use the IEEE802154_MAX_PAGE define when relevant
-> >    net: mac802154: Explain the use of ieee802154_wake/stop_queue()
-> >
-> >   drivers/net/ieee802154/mac802154_hwsim.c |  2 +-
-> >   include/net/mac802154.h                  | 12 ++++++++++++
-> >   net/ieee802154/nl-phy.c                  |  4 ++--
-> >   3 files changed, 15 insertions(+), 3 deletions(-)
-> >
->
-> I am happy with all three of them now. Alex, let me know if there is
-> anything else you want to be adressed and ack if not so I can pull these in.
-
-Everything is fine.
-
-Acked-by: Alexander Aring <aahringo@redhat.com>
-
-Thanks.
-
-- Alex
+SGksDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTWFydGluIEJsdW1l
+bnN0aW5nbCA8bWFydGluLmJsdW1lbnN0aW5nbEBnb29nbGVtYWlsLmNvbT4NCj4gU2VudDogRnJp
+ZGF5LCBKYW51YXJ5IDI4LCAyMDIyIDU6NTMgQU0NCj4gVG86IFBrc2hpaCA8cGtzaGloQHJlYWx0
+ZWsuY29tPg0KPiBDYzogbGludXgtd2lyZWxlc3NAdmdlci5rZXJuZWwub3JnOyB0b255MDYyMGVt
+bWFAZ21haWwuY29tOyBrdmFsb0Bjb2RlYXVyb3JhLm9yZzsNCj4gam9oYW5uZXNAc2lwc29sdXRp
+b25zLm5ldDsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVs
+Lm9yZzsgTmVvIEpvdQ0KPiA8bmVvam91QGdtYWlsLmNvbT47IEplcm5laiBTa3JhYmVjIDxqZXJu
+ZWouc2tyYWJlY0BnbWFpbC5jb20+OyBFZCBTd2llcmsgPGVzd2llcmtAZ2guc3Q+DQo+IFN1Ympl
+Y3Q6IFJlOiBbUEFUQ0ggdjMgMC84XSBydHc4ODogcHJlcGFyZSBsb2NraW5nIGZvciBTRElPIHN1
+cHBvcnQNCj4gDQo+IEhpIFBpbmctS2UsDQo+IA0KPiBPbiBNb24sIEphbiAyNCwgMjAyMiBhdCAz
+OjU5IEFNIFBrc2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPiB3cm90ZToNCg0KWy4uLl0NCg0KPiA+
+DQo+ID4gVG8gYXZvaWQgdGhpcywgd2UgY2FuIGFkZCBhIGZsYWcgdG8gc3RydWN0IHJ0d192aWYs
+IGFuZCBzZXQgdGhpcyBmbGFnDQo+ID4gd2hlbiA6OnJlbW92ZV9pbnRlcmZhY2UuIFRoZW4sIG9u
+bHkgY29sbGVjdCB2aWYgd2l0aG91dCB0aGlzIGZsYWcgaW50byBsaXN0DQo+ID4gd2hlbiB3ZSB1
+c2UgaXRlcmF0ZV9hY3Rpb20oKS4NCj4gPg0KPiA+IEFzIHdlbGwgYXMgaWVlZTgwMjExX3N0YSBj
+YW4gZG8gc2ltaWxhciBmaXguDQo+ID4NCg0KSSB3b3VsZCBwcmVmZXIgbXkgbWV0aG9kIHRoYXQg
+YWRkcyBhICdib29sIGRpc2FibGVkJyBmbGFnIHRvIHN0cnVjdCBydHdfdmlmL3J0d19zdGENCmFu
+ZCBzZXQgaXQgd2hlbiA6OnJlbW92ZV9pbnRlcmZhY2UvOjpzdGFfcmVtb3ZlLiBUaGVuIHJ0d19p
+dGVyYXRlX3N0YXMoKSBjYW4NCmNoZWNrIHRoaXMgZmxhZyB0byBkZWNpZGUgd2hldGhlciBkb2Vz
+IHRoaW5nIG9yIG5vdC4NCg0KWy4uLl0NCg0KPiANCj4gRm9yIHRoZSBzdGEgdXNlLWNhc2UgSSB0
+aG91Z2h0IGFib3V0IGFkZGluZyBhIGRlZGljYXRlZCByd2xvY2sNCj4gKGluY2x1ZGUvbGludXgv
+cndsb2NrLmgpIGZvciBydHdfZGV2LT5tYWNfaWRfbWFwLg0KPiBydHdfc3RhX3thZGQscmVtb3Zl
+fSB3b3VsZCB0YWtlIGEgd3JpdGUtbG9jay4NCj4gcnR3X2l0ZXJhdGVfc3RhcygpIHRha2VzIHRo
+ZSByZWFkLWxvY2sgKHRoZSBsb2NrIHdvdWxkIGJlIGFjcXVpcmVkDQo+IGJlZm9yZSBjYWxsaW5n
+IGludG8gaWVlZTgwMjExX2l0ZXJhdGVfLi4uKS4gQWRkaXRpb25hbGx5DQo+IHJ0d19pdGVyYXRl
+X3N0YXMoKSBuZWVkcyB0byBjaGVjayBpZiB0aGUgc3RhdGlvbiBpcyBzdGlsbCB2YWxpZA0KPiBh
+Y2NvcmRpbmcgdG8gbWFjX2lkX21hcCAtIGlmIG5vdDogc2tpcC9pZ25vcmUgaXQgZm9yIHRoYXQg
+aXRlcmF0aW9uLg0KPiBUaGlzIGNvdWxkIGJlIGNvbWJpbmVkIHdpdGggeW91cg0KPiAwMDAxLXJ0
+dzg4LXVzZS1hdG9taWMtdG8tY29sbGVjdC1zdGFzLWFuZC1kb2VzLWl0ZXJhdG9ycy5wYXRjaC4N
+Cg0KVXNpbmcgYSAnZGlzYWJsZWQnIGZsYWcgd2l0aGluIHJ0d192aWYvcnR3X3N0YSB3aWxsIGJl
+IGludHVpdGl2ZSBhbmQNCmJldHRlciB0aGFuIGJpdG1hcCBvZiBtYWNfaWRfbWFwLiBQbGVhc2Ug
+cmVmZXJlbmNlIG15IG1lbnRpb24gYWJvdmUuDQoNCj4gDQo+IEZvciB0aGUgaW50ZXJmYWNlIHVz
+ZS1jYXNlIGl0J3Mgbm90IGNsZWFyIHRvIG1lIGhvdyB0aGlzIHdvcmtzIGF0IGFsbC4NCj4gcnR3
+X29wc19hZGRfaW50ZXJmYWNlKCkgaGFzIChpbiBhIHNpbXBsaWZpZWQgdmlldyk6DQo+ICAgICB1
+OCBwb3J0ID0gMDsNCj4gICAgIC8vIHRoZSBwb3J0IHZhcmlhYmxlIGlzIG5ldmVyIGNoYW5nZWQN
+Cj4gICAgIHJ0d3ZpZi0+cG9ydCA9IHBvcnQ7DQo+ICAgICBydHd2aWYtPmNvbmYgPSAmcnR3X3Zp
+Zl9wb3J0W3BvcnRdOw0KPiAgICAgcnR3X2luZm8ocnR3ZGV2LCAic3RhcnQgdmlmICVwTSBvbiBw
+b3J0ICVkXG4iLCB2aWYtPmFkZHIsIHJ0d3ZpZi0+cG9ydCk7DQo+IEhvdyBkbyBtdWx0aXBsZSBp
+bnRlcmZhY2VzICh2aWZzKSB3b3JrIGluIHJ0dzg4IGlmIHRoZSBwb3J0IGlzIGFsd2F5cw0KPiB6
+ZXJvPyBJcyBzb21lIGtpbmQgb2YgdHJhY2tpbmcgb2YgdGhlIHVzZWQgcG9ydHMgbWlzc2luZyAo
+c2ltaWxhciB0bw0KPiBob3cgd2UgdHJhY2sgdGhlIHVzZWQgc3RhdGlvbiBJRHMgLSBhbHNvIGNh
+bGxlZCBtYWNfaWQgLSBpbg0KPiBydHdfZGV2LT5tYWNfaWRfbWFwKT8NCg0KVGhlIHBvcnQgc2hv
+dWxkIGJlIGFsbG9jYXRlZCBkeW5hbWljYWxseSBpZiB3ZSBzdXBwb3J0IHR3byBvciBtb3JlIHZp
+ZnMuDQpXZSBoYXZlIGludGVybmFsIHRyZWUgdGhhdCBpcyBnb2luZyB0byBzdXBwb3J0IHAycCBi
+eSBzZWNvbmQgdmlmLg0KDQoNClBpbmctS2UNCg0K
