@@ -2,92 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6C0C49F1C7
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 04:24:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DF7649F1E1
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 04:30:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345717AbiA1DYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 22:24:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59286 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345716AbiA1DYB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 22:24:01 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44940C061714
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 19:24:01 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id v74so4903056pfc.1
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 19:24:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=F8qZzbLyMefXFLekS9EWzZDbHPpDVewfVnVbFGUE+gk=;
-        b=WRNLE+oCF+WPh6+G5LO5bF/6MeS8Sa2bHoQphIG/qoCP4jm0SnIcLaHcQ3WjvB5r2m
-         KPvBghTWZPgUwsCkL0N4n2svobEVpUwBUueUjpNKqjbPT3lZ3P8LgLqAwIwD3rQ+Q0DO
-         QV+eI0IbTLuuuiyZfv72b/FRCXdhO7f3Q15B/eMofiIWxiFSFiPzNsH+8BbPb70XHZlZ
-         0LGHhGWeQcMPiacOv1duR2AT4kFXB6BqdCxWj5oFHMtRk91dOEmEOCno0Q69mbpxfg23
-         fRrHzW8+kUUxWRN5FnBozeDh0XiqxQwdQE3EqsvmhrpVJf5tIAspnvLxCZcl07O9q3S+
-         QQVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=F8qZzbLyMefXFLekS9EWzZDbHPpDVewfVnVbFGUE+gk=;
-        b=qaXiD9lMxb2qeHJ8aGxzWOJ6in8ueVW3ojdv0NH6lHE3NaeWcJ7hgGGFZZQolkL07I
-         fOPakyk8qNW39ojDDEWZ+DM2y4uglXEH3FUBtjpBhxsZC2wn4wVJZWnVR7KgjwzhS8Uj
-         j+ZuCOrp9KszJ6D5gU6B3mm/gtM/kVU6J3F3JVT4ZpGE4BML0/CDxN6TB/xWZG7WJd8E
-         3EfQaStVE3n00k1uKHWFnrM/Q4g99gepgyZl6KbUnFXkBaJLmWIGh7auzyG9hW6Pe/GK
-         P6OWHhtanUutW+bZUwgYAwMWxJr5ky97mxIg8togMmidPe0GdpFxOU9RVWOy5DGT4bba
-         xbUw==
-X-Gm-Message-State: AOAM533x1WXCiWooufeY/gDflxlgki5GZXXFaFsxbGigNnI8NL2PcG6V
-        df941mBPoeFSEq7c0lFDE+SfqXdUZ74=
-X-Google-Smtp-Source: ABdhPJynUjJbDQhnzL+dI0gb8S2WdXyvarAyesowE51lFS93X7JWPQJAnnha03dXbUM8Wxp6j3t4xg==
-X-Received: by 2002:a63:84c7:: with SMTP id k190mr3547137pgd.354.1643340240823;
-        Thu, 27 Jan 2022 19:24:00 -0800 (PST)
-Received: from [192.168.86.21] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id mt14sm650869pjb.21.2022.01.27.19.24.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jan 2022 19:24:00 -0800 (PST)
-Message-ID: <76fb2bc3-9f9c-cf5c-02f5-3a5da2312ad1@gmail.com>
-Date:   Thu, 27 Jan 2022 19:23:59 -0800
+        id S1345794AbiA1DaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 22:30:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37862 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345589AbiA1DaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 22:30:13 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BB9261E13
+        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 03:30:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 96127C340EA;
+        Fri, 28 Jan 2022 03:30:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643340612;
+        bh=x7oFbEMXpQ0PjkL9yFLnFYTPqV0WhG3fLhcoslwt7NI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ceQqL3Jf4dkxfjenWZrIPAPbfFbWsh1gg5LUr03nKOllS3ADn/YUuocAqgnKPiAd6
+         HuFZRB4CAf61byRAtP1/wI8j6GbT5PNtHaU+lY3ky6xCQewATDRQhIRrHgMo3ZCczm
+         Lwg3aIDDQ01mwp0swBldt3YYB2Ire+AUyWr9HISQU8bYscJJOIo1LD/g059DvYqf9d
+         5SZznFc8cCejjlSif6LvqQ7RartDcDPaV70Z59X2IQSTClprg7Xp53BNwuWj9FAXIh
+         3rTeo1k5VFFTE7z29P7oerdcnl56J1U0296N2kqTFlkM0FMZXTBLtMvS8/1wwmz7Rz
+         BFGrySy7+59Ew==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 79DE9E5D07D;
+        Fri, 28 Jan 2022 03:30:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [Question] memory leaks related to TCP internal pacing in old
- kernel
-Content-Language: en-US
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     Network Development <netdev@vger.kernel.org>
-References: <a691ee96-4be3-a0dc-fadf-a14e4c0aed2f@huawei.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <a691ee96-4be3-a0dc-fadf-a14e4c0aed2f@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/7] mlxsw: Various updates
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164334061249.5963.14021766704763689043.git-patchwork-notify@kernel.org>
+Date:   Fri, 28 Jan 2022 03:30:12 +0000
+References: <20220127090226.283442-1-idosch@nvidia.com>
+In-Reply-To: <20220127090226.283442-1-idosch@nvidia.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        petrm@nvidia.com, jiri@nvidia.com, amcohen@nvidia.com,
+        mlxsw@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-On 1/27/22 19:22, Zhang Changzhong wrote:
-> Hi Eric,
->
-> We encountered a memory leak issue related to TCP internal pacing in linux-4.19.
->
-> After some searching, we found the discussion about same question [1], the fix you suggested
-> solved our problem, but this patch seems to have been forgotten.
->
-> I wonder if there are any other issues with this patch? If not, would you mind submitting it
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Thanks for the reminder.
+On Thu, 27 Jan 2022 11:02:19 +0200 you wrote:
+> This patchset contains miscellaneous updates for mlxsw. No user visible
+> changes that I am aware of.
+> 
+> Patches #1-#5 rework registration of internal traps in preparation of
+> line cards support.
+> 
+> Patch #6 improves driver resilience against a misbehaving device.
+> 
+> [...]
 
-I had this back on my plate two weeks ago but got distracted.
+Here is the summary with links:
+  - [net-next,1/7] mlxsw: spectrum: Set basic trap groups from an array
+    https://git.kernel.org/netdev/net-next/c/7aad5244f000
+  - [net-next,2/7] mlxsw: core: Move basic_trap_groups_set() call out of EMAD init code
+    https://git.kernel.org/netdev/net-next/c/74e0494d35ac
+  - [net-next,3/7] mlxsw: core: Move basic trap group initialization from spectrum.c
+    https://git.kernel.org/netdev/net-next/c/8ae89cf454b0
+  - [net-next,4/7] mlxsw: core: Move functions to register/unregister array of traps to core.c
+    https://git.kernel.org/netdev/net-next/c/981f1d18be40
+  - [net-next,5/7] mlxsw: core: Consolidate trap groups to a single event group
+    https://git.kernel.org/netdev/net-next/c/636d3ad23890
+  - [net-next,6/7] mlxsw: spectrum: Guard against invalid local ports
+    https://git.kernel.org/netdev/net-next/c/bcdfd615f83b
+  - [net-next,7/7] mlxsw: spectrum_acl: Allocate default actions for internal TCAM regions
+    https://git.kernel.org/netdev/net-next/c/ef14c298b5b0
 
-I will submit it.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-> for stable branch?
->
-> [1] https://lore.kernel.org/all/20200602080425.93712-1-kerneljasonxing@gmail.com/
->
-> Thanks,
-> Changzhong
