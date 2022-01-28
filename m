@@ -2,80 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6299D49F0E0
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:19:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00FAD49F0E3
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:19:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345262AbiA1CS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 21:18:58 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:59016 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345221AbiA1CS5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 21:18:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=2h4iTM+n+82xH0OyqPlHoMU120tLrCO+ovFn9Zti4+s=; b=zHEIr1WwJZYf2cAjyBXZS1UX01
-        2BAipTyD508sufc90nE34yrSmb4ivvYxSZGXE3tWE6NwJkSFYIZSb8IaQKj5IcVv4G13Da3k4WoYL
-        jPEpNsR6yQ0uj96mY7ryx53wZgpWngNnlF8Ywh0S0Xf0tUcqnblOwJHmNG5SSHVFxu7A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nDGqc-0034iv-CJ; Fri, 28 Jan 2022 03:18:46 +0100
-Date:   Fri, 28 Jan 2022 03:18:46 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joseph CHAMG <josright123@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com,
-        leon@kernel.org
-Subject: Re: [PATCH v14, 2/2] net: Add dm9051 driver
-Message-ID: <YfNShpsWZhbff/C4@lunn.ch>
-References: <20220127032701.23056-1-josright123@gmail.com>
- <20220127032701.23056-3-josright123@gmail.com>
+        id S1345270AbiA1CTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 21:19:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44516 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345221AbiA1CTd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:19:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBFFCC061714;
+        Thu, 27 Jan 2022 18:19:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EA9961DB4;
+        Fri, 28 Jan 2022 02:19:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81646C340E4;
+        Fri, 28 Jan 2022 02:19:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643336371;
+        bh=Aoj2Iv8DFQ9AdcHDqZfrHVewWKFn6QA7nOKH4pJfZME=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RTUdW5JFpLi6UJhFMkB9gjKt2wVV6Vk8Y1ktbFE/z3VnCGbrl4NY0pEnmqYS7I6cb
+         YZCEeVcE8D9XYhzjBDWzDTpMAnLxFr/OVRo1OmcPQe6ImYtjo1kT0/0hDJey67sMOh
+         MhVFZ090m8aMt4oiDdEAiIOuzh5KhFkG22KUDwblMhyZLSh8kh/eexC+GPCZKn6qAa
+         8OJKqR56qeWGnuW+M50LhuDwDcl7ILX9Qm0zgmo4gH3efcu+NL/KKiNHCuPN24nuOZ
+         Ovn9yrOVq1CYL8l9qYI3U1YtLZ2rRFqNGDnTReYREYSvuteHh/mi03XEeYb37i9TmO
+         kCuCyq89nl32g==
+Date:   Thu, 27 Jan 2022 18:19:30 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jann Horn <jannh@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Oliver Neukum <oneukum@suse.com>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>
+Subject: Re: [BUG] net_device UAF: linkwatch_fire_event() calls dev_hold()
+ after netdev_wait_allrefs() is done
+Message-ID: <20220127181930.355c8c82@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com>
+References: <CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127032701.23056-3-josright123@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static int dm9051_mdiobus_read(struct mii_bus *bus, int addr, int regnum)
-> +{
-> +	struct board_info *db = bus->priv;
-> +	unsigned int val = 0xffff;
-> +	int ret;
-> +
-> +	if (addr == DM9051_PHY_ID) {
+Interesting..
 
-Thanks for fixing the variable name. But don't you think it would of
-made sense to rename DM9051_PHY_ID as well? DM9051_PHY_ADDR?
+I don't know what link_reset does, but since it turns the carrier on it
+seems like something that should be flushed/canceled when the device
+goes down. unregister brings the device down under rtnl_lock.
 
-> +static int dm9051_set_pauseparam(struct net_device *ndev,
-> +				 struct ethtool_pauseparam *pause)
-> +{
-> +	struct board_info *db = to_dm9051_board(ndev);
-> +	u8 fcr = 0;
-> +	int ret;
-> +
-> +	db->eth_pause = *pause;
-> +
-> +	if (pause->autoneg)
-> +		db->phydev->autoneg = AUTONEG_ENABLE;
-> +	else
-> +		db->phydev->autoneg = AUTONEG_DISABLE;
-> +
+On Fri, 28 Jan 2022 02:51:24 +0100 Jann Horn wrote:
+> Is the bug that usbnet_disconnect() should be stopping &dev->kevent
+> before calling unregister_netdev()?
 
-pause->autoneg means that pause is negotiated as part of autoneg in
-general. But pause->autoneg does not mean turn on autoneg. The
-ksetting calls should be used for that.
+I'd say not this one, I think the generally agreed on semantics are that
+the netdev is under users control between register and unregister, we
+should not cripple it before unregister.
 
-If pause->autoneg is false, you write the pause settings direct to the
-MAC. If it is true, you should call phy_set_sym_pause(). Once
-negotiation has completed the link change callback will be called, and
-you program the MAC with what has been negotiated.
+> Or is the bug that ax88179_link_reset() doesn't take some kind of lock
+> and re-check that the netdev is still alive?
 
-    Andrew
+That'd not be an uncommon way to fix this.. taking rtnl_lock, not even 
+a driver lock in similar.
+
+> Or should netif_carrier_on() be doing that?
+> Or is it the responsibility of the linkwatch code to check whether the
+> netdev is already going away?
+
+Possibly, although we don't do much in the way of defensive programming
+in networking.
