@@ -2,115 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5665B49F7FE
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 12:12:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1C1F49F821
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 12:20:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244330AbiA1LMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 06:12:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53052 "EHLO
+        id S1348145AbiA1LUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 06:20:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232155AbiA1LMl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 06:12:41 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0331C061714
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 03:12:41 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nDPBH-0000zH-Ic; Fri, 28 Jan 2022 12:12:39 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nDPBG-00Be8S-D7; Fri, 28 Jan 2022 12:12:38 +0100
-Date:   Fri, 28 Jan 2022 12:12:38 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Oliver Neukum <oneukum@suse.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v1 1/1] usbnet: add devlink support
-Message-ID: <YfPPpkGjL2vcv4oH@pengutronix.de>
-References: <20220127110742.922752-1-o.rempel@pengutronix.de>
- <YfJ+ceEzvzMM1JsW@kroah.com>
- <20220127123152.GF9150@pengutronix.de>
- <YfKcqcq4Ii1qu2+8@kroah.com>
+        with ESMTP id S1348138AbiA1LUJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 06:20:09 -0500
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609FAC061714;
+        Fri, 28 Jan 2022 03:20:08 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 88878100008;
+        Fri, 28 Jan 2022 11:20:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1643368806;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=4nv991dysX9iy3/kfE7r4VZ21Vrlg+JMIFLIIetOjCg=;
+        b=c9ZU6Tl2i2lSiQAjTCUd4NK0SckfEeUBxcCoq+WXQiqhq8n0U1OcP98FuHhNyVp9DnE5QW
+        cgFilRfdVHKbdqVjCCRMsti/CNznJDPOzomvCZwqQGd+4FWwCFVu5gIAT8Q/9GgNqExN+/
+        DEgUlOuoSCDAjCRcEV+31pxod4Vdd9ypwMbbslzrhXH6whPWHKNxlud9ugMRZzrrVwJQcI
+        bH67sJ+VkVCVF1/sgB0uLd/vU3ajQOrl4gxsHg+MBSR8bqDA3bDWWIqxDMA5l1ltD+E0iU
+        sT0GqPv/SfxJeWTXkovAS6ykOaY3o/PrPAaiccO8zZJKuWhdaE9RHhQxUn3gEw==
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v2 0/2] ieee802154: Internal moves
+Date:   Fri, 28 Jan 2022 12:20:00 +0100
+Message-Id: <20220128112002.1121320-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YfKcqcq4Ii1qu2+8@kroah.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 12:08:10 up 92 days, 17:35, 116 users,  load average: 1.73, 2.96,
- 9.10
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 02:22:49PM +0100, Greg KH wrote:
-> On Thu, Jan 27, 2022 at 01:31:52PM +0100, Oleksij Rempel wrote:
-> > On Thu, Jan 27, 2022 at 12:13:53PM +0100, Greg KH wrote:
-> > > On Thu, Jan 27, 2022 at 12:07:42PM +0100, Oleksij Rempel wrote:
-> > > > The weakest link of usbnet devices is the USB cable.
-> > > 
-> > > The weakest link of any USB device is the cable, why is this somehow
-> > > special to usbnet devices?
-> > > 
-> > > > Currently there is
-> > > > no way to automatically detect cable related issues except of analyzing
-> > > > kernel log, which would differ depending on the USB host controller.
-> > > > 
-> > > > The Ethernet packet counter could potentially show evidence of some USB
-> > > > related issues, but can be Ethernet related problem as well.
-> > > > 
-> > > > To provide generic way to detect USB issues or HW issues on different
-> > > > levels we need to make use of devlink.
-> > > 
-> > > Please make this generic to all USB devices, usbnet is not special here
-> > > at all.
-> > 
-> > Ok. I'll need some help. What is the best place to attach devlink
-> > registration in the USB subsystem and the places to attach health
-> > reporters?
-> 
-> You tell us, you are the one that thinks this needs to be reported to
-> userspace. What is only being reported in kernel logs that userspace
-> somehow needs to see?  And what will userspace do with that information?
+I am sending just a couple of patches from David that can easily be
+reviewed outside of any other big patch series:
+* reorder a bit the Kconfig entries
+* move the ieee802154_addr structure and give it a kdoc before using it
+  in the scan procedure.
 
-The user space should get an event in case there is a problem with the
-USB transfers, i.e. the URB status is != 0.
+Changes since v1:
+* There were four patches merged into two as advised by Stefan.
 
-The use space then can decide if the USB device needs to be reset, power
-cycled and so on.
+David Girault (2):
+  net: ieee802154: Move the IEEE 802.15.4 Kconfig main entries
+  net: ieee802154: Move the address structure earlier and provide a kdoc
 
-What about calling a to-be-written devlink function that reports the USB
-status if the URB status is not 0:
+ include/net/cfg802154.h | 28 +++++++++++++++++++---------
+ net/Kconfig             |  3 +--
+ net/ieee802154/Kconfig  |  1 +
+ 3 files changed, 21 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
-index d0f45600b669..a90134854f32 100644
---- a/drivers/usb/core/hcd.c
-+++ b/drivers/usb/core/hcd.c
-@@ -1648,6 +1648,8 @@ static void __usb_hcd_giveback_urb(struct urb *urb)
- 	usb_unanchor_urb(urb);
- 	if (likely(status == 0))
- 		usb_led_activity(USB_LED_EVENT_HOST);
-+	else
-+		devlink_report_usb_status(urb, status);
- 
- 	/* pass ownership to the completion handler */
- 	urb->status = status;
-
-Regards,
-Oleksij & Marc
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.27.0
+
