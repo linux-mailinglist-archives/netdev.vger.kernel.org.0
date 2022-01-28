@@ -2,87 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C200149F0F7
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:30:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAEA749F10E
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:36:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345307AbiA1CaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 21:30:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46914 "EHLO
+        id S1345420AbiA1Cgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 21:36:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345255AbiA1CaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:30:12 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81156C06173B
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:30:12 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id c6so14404643ybk.3
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:30:12 -0800 (PST)
+        with ESMTP id S1345337AbiA1Cgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:36:50 -0500
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225E1C061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:36:50 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id b186so3542886oif.1
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:36:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DamQHfcfzoASoILm7XiX5cq6CR5MirC/axqcdaKZru8=;
-        b=i5pCtfIMsiigWJD7tXVJjlFvSir95TsPd2f/wfNZ7UnizIAK8p5N5YfX4mSoLL9Fv+
-         KEZKqGLZqCqMkvBwGwiIctxvFmeycsC9C76WOUWE9cFU6XUPjT6Ew+a39kOQsUGK92+i
-         zKYIsg1VZAI5D1BO3EFzncW8LNNKkTF+eSebbVxje6vbgI8q3YYmZOakQ9CCoAP2MDn7
-         b0yiR2VHCgKJp0Q3TGnQfQFoDNqEUMBhGPo3WPavflTE/eqyyPiICe5GAdI3X6e/i525
-         Q4OlcMbYMr/31ZdmcQEcF/G4B+21Yn+sfP4B7gO5mK3LaOnp2DKsr8gLgaN9hWTXHT/W
-         Qj9g==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=M8qNs7GpQzHfBZAU6o1idv4dd/5iCkDbh2+HDTKKKgM=;
+        b=dc6RjvcUPGt+eIYYlaqAtHU36xpQt+8+13gR74saDA5gw2prRaw61+lrCy9HDaiBfI
+         aqYPaK4uOJU/bTma4sNNDEgrnFACEWjJRT5XyAZ4N5tJUMPwM7fsEbAh8QXPOfZqlRZ0
+         qcuOfCaCLyR6DZ2wfRs2JoPAGREvDpDwVxCdanhdom5b8RpxqTWWhuOcHtLqXjullvOo
+         7OWGPxiGJmO4IQeXCBAeqQN0nbKXf8+Kg2Awus8NJ1oHJBIW7F4EQ5BvLEsG664fLvZK
+         0BBxXBO28uLD40RAkSUyUK09HgHLmQy48WRXINQUAEuMbKlfZAHeKpxl3X+FjmHumu8m
+         74lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DamQHfcfzoASoILm7XiX5cq6CR5MirC/axqcdaKZru8=;
-        b=hJYORYbUv7Uf733EBuxgc9dYSUKkvtrCf2lCMVJZPQyc6I49eZ48auPY9dj2zEbgzO
-         TW+k7hXncwGxzH1mkf0oNT7eXspz06O55O/v4YenV5smqYHMESqWDQg3IwRoCj1NITkO
-         qYnW5ltSo/Ioo54/w855u2w8tCfSS9Yk1HMqDb4IGCeyReeoLh5UFqkvDoLoewtfcX9q
-         fIQRLBNgJJrPcG4m8IdvvjhDjuBZGGLvq3cl2HrAE8BL6RegdjFe+mjfMk7Rn17vuh73
-         fOP7KTIhCvn8EE88tLvAwPigL6AfE9wkuTFozMRSURfdoyocNOJVhp0zB3vPQBM6TYPI
-         +jbA==
-X-Gm-Message-State: AOAM533bWlBGd0fG4MbTJbGL20d55Uir72WQQiTGLN3SpgVLS2X/00Yb
-        4J0BEeEKPsdGBK5dG8z7n4mNOv80eM7UehuMRDyJ0g==
-X-Google-Smtp-Source: ABdhPJx0WDYGuW8NyYrZWYUmYbRLJ4MjGYQsafMXy/Rgq/znTvBWVgE/qBEVbn9LpIURHoLqG50QlQwxWh1y7xcftxo=
-X-Received: by 2002:a25:d80f:: with SMTP id p15mr10098925ybg.753.1643337011182;
- Thu, 27 Jan 2022 18:30:11 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=M8qNs7GpQzHfBZAU6o1idv4dd/5iCkDbh2+HDTKKKgM=;
+        b=QtsF2KoM8VBrVDf405fNgRfQdhiU2UqJVclfPtZCG9623Pt+S5vW7NxYwgvuXTGkJc
+         i+fcnKvcIDy47kCM7CZIkXm5DR0emq9SOhUUSvfMugMT5TGp82zX5+5uLguMIL6HFhWz
+         L1/NI1rbkFUcwtUrMSZftUedqStccbHMKyV7OC3AhkA2HedkCcukxncIswAzM3LI8irp
+         GkBTmrsNz7aGKmtfNWivi8ph9Yeqkv8OECrrLQ88ajiwit1HHMFb6uBOwW3xkkimIk6z
+         D1dSAwwb+eSvO7m+Cv+fqcH06/jgfO2GdZUIW3DCPX2kehO9ajyO7N6J6u8acIjFjGzi
+         Cbkw==
+X-Gm-Message-State: AOAM532INioaxOVv++v0TKMDg0KWdCEamcXqbcnNKp8Rx8wBr2Qs+Qp7
+        pzzXEc0iKK6PoHQhdQh0LBR6SanLkUbGMw==
+X-Google-Smtp-Source: ABdhPJwfJdFN2JmouKTcoB1h/GTTKGgMc/VeIk1aYgzqKClFP1dlPwbX8SobLqTvLVLfXaV2ncoLcQ==
+X-Received: by 2002:a05:6808:1704:: with SMTP id bc4mr4041721oib.186.1643337409135;
+        Thu, 27 Jan 2022 18:36:49 -0800 (PST)
+Received: from tresc043793.tre-sc.gov.br ([187.94.103.218])
+        by smtp.gmail.com with ESMTPSA id p82sm2586920oib.25.2022.01.27.18.36.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 18:36:48 -0800 (PST)
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, alsi@bang-olufsen.dk,
+        arinc.unal@arinc9.com, frank-w@public-files.de
+Subject: [PATCH net-next v5 00/11] net: dsa: realtek: MDIO interface and RTL8367S,RTL8367RB-VB
+Date:   Thu, 27 Jan 2022 23:36:00 -0300
+Message-Id: <20220128023611.2424-1-luizluca@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220128014303.2334568-1-jannh@google.com> <CANn89iKWaERfs1iW8jVyRZT8K1LwWM9efiRsx8E1U3CDT39dyw@mail.gmail.com>
- <CAG48ez0sXEjePefCthFdhDskCFhgcnrecEn2jFfteaqa2qwDnQ@mail.gmail.com>
- <20220127182219.1da582f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANn89i+k4tiyQtb6fh8USDjhZGVwdx1puh8cr9NcDQECbvJvdg@mail.gmail.com> <CAG48ez3rhgWhELfeuTiTVNk5GP2hbzWZE2SE+-jmHPZxxg1hJQ@mail.gmail.com>
-In-Reply-To: <CAG48ez3rhgWhELfeuTiTVNk5GP2hbzWZE2SE+-jmHPZxxg1hJQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 27 Jan 2022 18:30:00 -0800
-Message-ID: <CANn89i+h-eQtPH=6dObjXO+k6WLc8vNo3MCjzmE4+4LLj2NYzw@mail.gmail.com>
-Subject: Re: [PATCH net] net: dev: Detect dev_hold() after netdev_wait_allrefs()
-To:     Jann Horn <jannh@google.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 6:27 PM Jann Horn <jannh@google.com> wrote:
->
-> I like that idea... but this_cpu_dec()/this_cpu_inc() use GS-relative
-> addressing, at least on X86-64, so NULL might make things worse, I
-> think? /proc/kallsyms on my machine starts with:
->
-> 0000000000000000 A fixed_percpu_data
-> 0000000000000000 A __per_cpu_start
-> 0000000000001000 A cpu_debug_store
-> 0000000000002000 A irq_stack_backing_store
-> 0000000000006000 A cpu_tss_rw
-> 000000000000b000 A gdt_page
-> 000000000000c000 A exception_stacks
-> 0000000000010000 A entry_stack_storage
-> 0000000000011000 A espfix_waddr
->
-> So we'd probably need some different placeholder instead of NULL to
-> actually crash...
+The old realtek-smi driver was linking subdrivers into a single
+realtek-smi.ko After this series, each subdriver will be an independent
+module required by either realtek-smi (platform driver) or the new
+realtek-mdio (mdio driver). Both interface drivers (SMI or MDIO) are
+independent, and they might even work side-by-side, although it will be
+difficult to find such device. The subdriver can be individually
+selected but only at buildtime, saving some storage space for custom
+embedded systems.
 
-Orthogonal problem, maybe we should make sure the first page of
-per-cpu data is un-mapped.
+Existing realtek-smi devices continue to work untouched during the
+tests. The realtek-smi was moved into a realtek subdirectory, but it
+normally does not break things.
+
+The rtl8365mb might now handle multiple CPU ports and extint ports not
+used as CPU ports. RTL8367S has an SGMII external interface, but my test
+device (TP-Link Archer C5v4) uses only the second RGMII interface. We
+need a test device with more external ports to test these features.
+The driver still cannot handle SGMII ports.
+
+RTL8367RB-VB support was added using information from Frank Wunderlich
+<frank-w@public-files.de> but I didn't test it myself.
+
+The rtl8365mb was tested with a MDIO-connected RTL8367S (TP-Link Acher
+C5v4) and a SMI-connected RTL8365MB-VC switch (Asus RT-AC88U)
+
+The rtl8366rb subdriver was not tested with this patch series, but it
+was only slightly touched. It would be nice to test it, especially in an
+MDIO-connected switch.
+
+Best,
+
+Luiz
+
+Changelog:
+
+v1-v2)
+- formatting fixes
+- dropped the rtl8365mb->rtl8367c rename
+- other suggestions
+
+v2-v3)
+* realtek-mdio.c:
+  - cleanup realtek-mdio.c (BUG_ON, comments and includes)   
+  - check devm_regmap_init return code
+  - removed realtek,rtl8366s string from realtek-mdio
+* realtek-smi.c:
+  - removed void* type cast
+* rtl8365mb.c:
+  - using macros to identify EXT interfaces
+  - rename some extra extport->extint cases
+  - allow extint as non cpu (not tested)
+  - allow multple cpu ports (not tested)
+  - dropped cpu info from struct rtl8365mb
+* dropped dt-bindings changes (dealing outside this series)
+* formatting issues fixed
+
+v3-v4)
+* fix cover message numbering 0/13 -> 0/11
+* use static for realtek_mdio_read_reg
+  - Reported-by: kernel test robot <lkp@intel.com>
+* use dsa_switch_for_each_cpu_port
+* mention realtek_smi_{variant,ops} to realtek_{variant,ops}
+  in commit message
+
+v4-v5)
+- added support for RTL8367RB-VB
+- cleanup mdio_{read,write}, removing misterious START_OP, checking and
+  returning errors
+- renamed priv->phy_id to priv->mdio_addr
+- duplicated priv->ds_ops into ds_ops_{smi,mdio}. ds_ops_smi must not
+  set
+  phy_read or else both dsa and this driver might free slave_mii.
+Dropped
+  401fd75c92f37
+- Map port to extint using code instead of device-tree property. Added
+  comment 
+  about port number, port description and external interfaces. Dropped
+  'realtek,ext-int' device-tree property
+- Redacted the non-cpu ext port commit message, not highlighting the
+  possibility of using multiple CPU ports as it was just a byproduct.
+- In a possible case of multiple cpu ports, use the first one as the
+  trap port.
+  Dropped 'realtek,trap-port' device-tree property
+- Some formatting fixes
+- BUG: rtl8365mb_phy_mode_supported was still checking for a cpu port
+  and not
+  an external interface
+- BUG: fix trapdoor masking for port>7. Got a compiler error with a
+  bigger
+  constant value
+- WARN: completed kdoc for rtl8366rb_drop_untagged()
+- WARN: removed marks from incomplete kdoc
+
+
