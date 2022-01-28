@@ -2,82 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99C184A03A5
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 23:29:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ECB14A03AA
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 23:30:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344651AbiA1W36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 17:29:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235188AbiA1W35 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 17:29:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C45FC061714;
-        Fri, 28 Jan 2022 14:29:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 166BA61EEF;
-        Fri, 28 Jan 2022 22:29:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 046FDC340E7;
-        Fri, 28 Jan 2022 22:29:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643408996;
-        bh=/0PcLhzM3o3gTPcTwW++SS6uCEned56O6MZTTXV0Kuk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SRpwUf0fs/Ep35ll5BhkOoDKUd0qzePeblFcn100koZFuBviowiqLMMMbvfzVAi+x
-         mdPIvRC4X8gVNpeU5aeNYbiK+aBYD+K71/SuzPQvGKyNzCOEtlEm6heFazznoiYuRZ
-         mFZb+ubE7OF1UFB2VMcS0O7wALN/ptxyoT1mLlNTMCjBxtP0HVKkoIax4Cu7nUPPBN
-         i0A2PIJ4NREwA0DS6TJPhFXYZsU59UgSzZazMlnL3nYciZVqFz8JPLMikclmp38dUk
-         KtNrJflFmwgCIo6yAsnaNTSrecmCKKvJdbWbDu3VcnSgE+macV9y2AOo3t7LQi523c
-         SoiPEjrhSry/A==
-Date:   Fri, 28 Jan 2022 14:29:55 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Camel Guo <camel.guo@axis.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        id S1351677AbiA1WaS convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 28 Jan 2022 17:30:18 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:58120 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351647AbiA1WaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 17:30:17 -0500
+Received: from smtpclient.apple (p4ff9fc34.dip0.t-ipconnect.de [79.249.252.52])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 0E659CED40;
+        Fri, 28 Jan 2022 23:30:15 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
+Subject: Re: pull request: bluetooth 2022-01-28
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20220128134951.3452f557@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Fri, 28 Jan 2022 23:30:14 +0100
+Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>, <kernel@axis.com>,
-        Camel Guo <camelg@axis.com>, <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: stmmac: dump gmac4 DMA registers correctly
-Message-ID: <20220128142955.047bd9d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220128153642.3129922-1-camel.guo@axis.com>
-References: <20220128153642.3129922-1-camel.guo@axis.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        BlueZ <linux-bluetooth@vger.kernel.org>, netdev@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <11903531-644D-434D-95CB-6F679368475C@holtmann.org>
+References: <20220128205915.3995760-1-luiz.dentz@gmail.com>
+ <20220128134951.3452f557@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+X-Mailer: Apple Mail (2.3693.60.0.1.1)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Jan 2022 16:36:42 +0100 Camel Guo wrote:
-> From: Camel Guo <camelg@axis.com>
-> 
-> Unlike gmac100, gmac1000, gmac4 has 27 DMA registers and they are
-> located at DMA_CHAN_BASE_ADDR (0x1100). In order for ethtool to dump
-> gmac4 DMA registers correctly, this commit checks if a net_device has
-> gmac4 and uses different logic to dump its DMA registers.
-> 
-> This fixes the following KASAN warning, which can normally be triggered
-> by a command similar like "ethtool -d eth0":
-> 
-> BUG: KASAN: vmalloc-out-of-bounds in dwmac4_dump_dma_regs+0x6d4/0xb30
-> Write of size 4 at addr ffffffc010177100 by task ethtool/1839
->  kasan_report+0x200/0x21c
->  __asan_report_store4_noabort+0x34/0x60
->  dwmac4_dump_dma_regs+0x6d4/0xb30
->  stmmac_ethtool_gregs+0x110/0x204
->  ethtool_get_regs+0x200/0x4b0
->  dev_ethtool+0x1dac/0x3800
->  dev_ioctl+0x7c0/0xb50
->  sock_ioctl+0x298/0x6c4
->  ...
-> 
-> Signed-off-by: Camel Guo <camelg@axis.com>
+Hi Jakub,
 
-Can we get a Fixes tag for this? If it was always broken the Fixes tag
-should point to the commit which added gmac4 support.
+>> The following changes since commit 8aaaf2f3af2ae212428f4db1af34214225f5cec3:
+>> 
+>>  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-01-09 17:00:17 -0800)
+>> 
+>> are available in the Git repository at:
+>> 
+>>  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2022-01-28
+>> 
+>> for you to fetch changes up to 91cb4c19118a19470a9d7d6dbdf64763bbbadcde:
+>> 
+>>  Bluetooth: Increment management interface revision (2022-01-27 12:35:13 -0800)
+>> 
+>> ----------------------------------------------------------------
+>> bluetooth-next pull request for net-next:
+>> 
+>> - Add support for RTL8822C hci_ver 0x08
+>> - Add support for RTL8852AE part 0bda:2852
+>> - Fix WBS setting for Intel legacy ROM products
+>> - Enable SCO over I2S ib mt7921s
+>> - Increment management interface revision
+> 
+> Thanks for fixing the warnings! :)
+> 
+> I presume this is for the net-next given the name of your tree, but 
+> a lot of patches here have fixes tags. What's your methodology on
+> separating fixes from new features?
+> 
+> I think it may be worth adjusting the filter there and send more 
+> stuff earlier to Linus's tree. Especially fixes with the right mix 
+> of confidence and impact or pure device ID additions.
+> 
+> To be clear - happy to pull this PR as is, I was meaning to ask about
+> this for a while.
+
+we started to add Fixes: tag whenever you can identify a faulty commit or
+can track down the original issue. This way we can later easily go back
+and check. It have to note that a lot of vendor trees cherrypick patches
+and this helps them picking the right ones.
+
+I reviewed the list of patches again, and frankly none of them are super
+critical to go to Linus right away. So if you don’t mind, please pull.
+
+Regards
+
+Marcel
+
