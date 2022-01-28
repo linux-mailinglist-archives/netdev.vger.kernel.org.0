@@ -2,77 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC6E54A03D6
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 23:40:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DE344A03E0
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 23:45:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351756AbiA1WkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 17:40:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42808 "EHLO
+        id S1351767AbiA1WpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 17:45:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232883AbiA1WkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 17:40:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4D6C061714;
-        Fri, 28 Jan 2022 14:40:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC376B8270F;
-        Fri, 28 Jan 2022 22:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 84DFFC340E8;
-        Fri, 28 Jan 2022 22:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643409611;
-        bh=7snEu6LNJs7WphEt2f/kDPq5YS+Nstd+e3ncyiqANqw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=IYOqtih/RSjrKujYz//Q6NZM/gRnKN4ItB88pA4gPw4Afx/NLHDQe/lGE0xuxI23N
-         JUtaGVLMD8nXMTpcdGkxFDg7hnfynXQz3BE0JGwrJJRiqHyE8uZj9Ar+XO+mzeIqxR
-         9EvD6VB1uoMrghlrIULsLHnv0xFPeAqqLBNI4g9DHQbyfKEzAHvP6crLi3sg/ze0jA
-         2FRJ8/SzeWHI9JiNiF1tMrX+uv9y0QoceIiVcLLr/0z+PH1lwF3TnN5AUWBpneMeiG
-         oIJOfY+aH5JK3qLUXbaW9jwa1ookoYMpvv6ig2jWezSPYnssyB+vvWtmdo3kpUq7qP
-         Dmu5qUPf/pRhg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 65980F60799;
-        Fri, 28 Jan 2022 22:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1351761AbiA1WpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 17:45:08 -0500
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31BF7C06173B
+        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 14:45:08 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id h14so7519472plf.1
+        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 14:45:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=r4uL6sckAnaCJM6MEQaHZL7fDy5zSQzjqi9SEPfLKhw=;
+        b=lwWzlnuX6vDO18w0OqzfCwBcEwCKxje9avHqcXITjyy4eN8F7RMiTiXO7Xda+pcBvg
+         RtpldGoaMRbL6EEYlf7d6LvdjTq8XEHnzCkql/TuKdbSt+lUB7M2fcJwuxWA463e8nZj
+         qbyDYXMtX6g7wwUQ79uEKvirGFH0lSm0hCQ0mb5ij5Ru6DSarQxTEfQ7gRJm1+YpNvU6
+         3+lTOhjvxaWa6jllfFq0CJFSAUuqVoeoMjIuE2H6KQEZ90wVagLBfkAeIjrF4l7TaV3i
+         UY2VXKqbSTaUUXTqSKWoF9zlONogpiplogXP7IeaQKjnHpj7Ke2msogRcTW+pyWfRRv8
+         j05Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=r4uL6sckAnaCJM6MEQaHZL7fDy5zSQzjqi9SEPfLKhw=;
+        b=zhIHd/8/4FvtW8Uw+I8PmICn/2BG8ZSh4Slow0DyuRzvDKP1CHHmKlFsed4saonG62
+         6d0RyykRK7Krze0o/WbpX6OehBhfjQp2qto98J/UIc/wdkcmqXXwa6LbOeEUPMZx9xOh
+         /26dQoDYKcLQq0itvdNj2FxEAtG9yWT3K2EhA9OlOhmogwLCSWQTdwntHXtDslyqt6i+
+         L9rsD0N1jl4GlK1OZ63rQI1+ehUSWdRxZsJuks7c4K7HW0Q85QzSSGJc2n/zQ6o9Yr+e
+         i+JBZX7DH+6chODO9SYesA3AXmBhqJT4aPF7PyftSRfgBedQ0IyqiWVECNiGgHt4o/Ta
+         XWZw==
+X-Gm-Message-State: AOAM531D5Pm13clOtekGOzfnE0R2XUeknb7HAyPfLU3OkHIcWFA8CLFC
+        vCyTyO8lgjPoEMmcZkM8ZEcdDC+dGbDtvQ5COhs=
+X-Google-Smtp-Source: ABdhPJwglo+bAGUulVbdL9bXWcdl1reX7aGaLLQPw99EjVMuTw9Q2rkiWVXzNccWoeX3OESWEPyIfDUVKsuhRALQB+I=
+X-Received: by 2002:a17:902:ab8a:: with SMTP id f10mr10766835plr.172.1643409907482;
+ Fri, 28 Jan 2022 14:45:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull request: bluetooth 2022-01-28
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164340961141.28814.8348334518671221460.git-patchwork-notify@kernel.org>
-Date:   Fri, 28 Jan 2022 22:40:11 +0000
-References: <20220128205915.3995760-1-luiz.dentz@gmail.com>
-In-Reply-To: <20220128205915.3995760-1-luiz.dentz@gmail.com>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Received: by 2002:a05:6a10:4416:0:0:0:0 with HTTP; Fri, 28 Jan 2022 14:45:06
+ -0800 (PST)
+Reply-To: mualixx22@gmail.com
+From:   MR MUSSA ALI <mussaalixxx11@gmail.com>
+Date:   Fri, 28 Jan 2022 14:45:06 -0800
+Message-ID: <CACWseWkn7k84US6EPTxUK_u8+cm_mpJ=gPbSWS7sqOBaOp+b5g@mail.gmail.com>
+Subject: Urgent Reply
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Dear  friend,
 
-This pull request was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+I know this means of communication may not be morally right to you as
+a person but I also have had a great thought about it and I have come
+to this conclusion which I am about to share with you.
 
-On Fri, 28 Jan 2022 12:59:15 -0800 you wrote:
-> The following changes since commit 8aaaf2f3af2ae212428f4db1af34214225f5cec3:
-> 
->   Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-01-09 17:00:17 -0800)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2022-01-28
-> 
-> [...]
+INTRODUCTION: I am a assistance  and in one way or the other was hoping
+you will cooperate with me as a partner in a project of transferring
+an abandoned fund of a late customer of the bank worth of $18,000,000
+(Eighteen Million Dollars US).
 
-Here is the summary with links:
-  - pull request: bluetooth 2022-01-28
-    https://git.kernel.org/netdev/net-next/c/0a78117213c4
+This will be disbursed or shared between the both of us in these
+percentages, 55% for me and 45% for you. Contact me immediately if
+that is alright for you so that we can enter in agreement before we
+start processing for the transfer of the funds. If you are satisfied
+with this proposal, please provide the below details for the Mutual
+Confidential Agreement:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+1. Full Name and Address
+2. Occupation and Country of Origin
+3. Telephone Number
 
+I wait for your response so that we can commence on this project as
+soon as possible.
 
+Regards,
+Mr. Mussa  Ali
