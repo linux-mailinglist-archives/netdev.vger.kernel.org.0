@@ -2,194 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A0424A00D2
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 20:26:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E11594A00F8
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 20:37:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350917AbiA1T0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 14:26:48 -0500
-Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:34564 "EHLO
-        forwardcorp1j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229968AbiA1T0r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 14:26:47 -0500
-X-Greylist: delayed 14985 seconds by postgrey-1.27 at vger.kernel.org; Fri, 28 Jan 2022 14:26:47 EST
-Received: from sas1-3cba3404b018.qloud-c.yandex.net (sas1-3cba3404b018.qloud-c.yandex.net [IPv6:2a02:6b8:c08:bd26:0:640:3cba:3404])
-        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id 871402E1A69;
-        Fri, 28 Jan 2022 22:26:45 +0300 (MSK)
-Received: from sas1-9d43635d01d6.qloud-c.yandex.net (sas1-9d43635d01d6.qloud-c.yandex.net [2a02:6b8:c08:793:0:640:9d43:635d])
-        by sas1-3cba3404b018.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id xw08lESJKd-QhHqL2sR;
-        Fri, 28 Jan 2022 22:26:45 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1643398005; bh=zeM4VT7DV7f9sUY5z9F/v8LoRXDZgO5Qn3SOuNsrgp8=;
-        h=Date:Subject:To:From:Message-Id:Cc;
-        b=wB9pHj8GYuLYTsT/l/McYf17CTCgiw3SCkhWa7EznlXLXZLmGW3MkUKEndWngkFvb
-         DlEDLF34A539xRHz3mrOAmJy48DoVTWZuQ/C/wYiyKaDLXFrxj/DureTwjEBHKN7m5
-         gCmmXLC5PLNtG4+zL4uGI7B094E0a6rArli127ww=
-Authentication-Results: sas1-3cba3404b018.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from vmhmukos.sas.yp-c.yandex.net (vmhmukos.sas.yp-c.yandex.net [2a02:6b8:c10:288:0:696:6af:0])
-        by sas1-9d43635d01d6.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id 6iZmY7zNav-QhICoCRs;
-        Fri, 28 Jan 2022 22:26:43 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-X-Yandex-Fwd: 2
-From:   Akhmat Karakotov <hmukos@yandex-team.ru>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        eric.dumazet@gmail.com, kafai@fb.com, ncardwell@google.com,
-        ycheng@google.com, brakmo@fb.com, hmukos@yandex-team.ru,
-        zeil@yandex-team.ru, mitradir@yandex-team.ru
-Subject: [PATCH net-next v4] tcp: Use BPF timeout setting for SYN ACK RTO
-Date:   Fri, 28 Jan 2022 22:26:21 +0300
-Message-Id: <20220128192621.29642-1-hmukos@yandex-team.ru>
+        id S1344294AbiA1Thf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 14:37:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57974 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350966AbiA1The (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 14:37:34 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5139FC06174E;
+        Fri, 28 Jan 2022 11:37:33 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id e9so10514337ljq.1;
+        Fri, 28 Jan 2022 11:37:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aiENhwM8k5s4CI1T29f+7g3ngGtWKHx/bWX81I/XFuo=;
+        b=VsehauSzbNf0n6Z/JkRnEEIXEmu5fPVfxgn01c1ll5kYNgwjlRcLEloqB4fUIcPxJt
+         GdWfe/XgkyzNkttXaf4aRo4s7sUlgvNyt69j5WJbMbArnqwuf1BUpEMr8TlmjgDNGybx
+         GPHmkyvIebgiAMcnbQPPsSM5jTsT7eb7SPBjnj0l58rV9Gv/qWKq+N4WB2sBRVWlnN+e
+         mI/b+m/izcdyzR9uwE/UxKgQIY2cJRrPxoP9E2aglmiokMSP32rwDDmwCMlpniTOG9bO
+         krI+E0b+sC7vs+YUAjpzDr1AQccTFkvb2PGASdFJcSplJN0FxuH5cvMj8AtcuzZQdoyc
+         O6Gw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aiENhwM8k5s4CI1T29f+7g3ngGtWKHx/bWX81I/XFuo=;
+        b=OMTM3pSDXOh1YCVaHwDqPbSDR/bBojtii7ebiBbqHxQkiCwoOmYsnyoxJa9axkA7Mb
+         309Nw39T++Ljk7W4x1Q2PCc2b1Gx1Rdip4YJDvTonKYsgUChSEiW89k7/6Ob50tSCja8
+         On0Ytw65j/BXR56A2skcAxLslCYrFzK4NlxPY/qXC1DZAQU0KO68Ba76YV5sk6vOGwUK
+         bjNrl4JpmTlBh50/egwCVwvdw11H3T8DJJXTBjQ0SB9ky6DrKPoiNyLNu/dNaVKH31tu
+         KaGEwAG8xai+cSdg3TaNZO/qtIy4m9nzYYMmTAkYWXXutF2Y/Z6052q9JJgQH8nCWPX3
+         I9uw==
+X-Gm-Message-State: AOAM533WIn0XdBCGveME3+Tpda9at9FqQGrP6uuiIDUFhYSDhJ8VZhwi
+        JuUD/oGn8Rh+dehWwADnHec=
+X-Google-Smtp-Source: ABdhPJwrjMI4ZpB5Ov1Fk2wbeI8iclUzrmf1/QctXusS4SbUXC0q/1kcZ3akLOrdfD9K15D7hbd1+A==
+X-Received: by 2002:a2e:a594:: with SMTP id m20mr6552416ljp.491.1643398651584;
+        Fri, 28 Jan 2022 11:37:31 -0800 (PST)
+Received: from [192.168.1.103] ([178.176.74.103])
+        by smtp.gmail.com with ESMTPSA id d15sm359077lft.202.2022.01.28.11.37.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Jan 2022 11:37:30 -0800 (PST)
+Subject: Re: [PATCH 4/7] mfd: hi6421-spmi-pmic: Use generic_handle_irq_safe().
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
+        Woojung Huh <woojung.huh@microchip.com>
+References: <20220127113303.3012207-1-bigeasy@linutronix.de>
+ <20220127113303.3012207-5-bigeasy@linutronix.de>
+ <44b42c37-67a4-1d20-e2ff-563d4f9bfae2@gmail.com>
+ <YfPwqfmrWEPm/9K0@google.com>
+ <d351e221-ddd4-eb34-5bbe-08314d26a2e0@gmail.com>
+ <YfQeuWk0S4bxPVCg@google.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <42d216c4-abf2-7937-1a99-0aecc4ef2222@gmail.com>
+Date:   Fri, 28 Jan 2022 22:37:28 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+MIME-Version: 1.0
+In-Reply-To: <YfQeuWk0S4bxPVCg@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When setting RTO through BPF program, some SYN ACK packets were unaffected
-and continued to use TCP_TIMEOUT_INIT constant. This patch adds timeout
-option to struct request_sock. Option is initialized with TCP_TIMEOUT_INIT
-and is reassigned through BPF using tcp_timeout_init call. SYN ACK
-retransmits now use newly added timeout option.
+On 1/28/22 7:50 PM, Lee Jones wrote:
 
-Signed-off-by: Akhmat Karakotov <hmukos@yandex-team.ru>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+[...]
+>>>>> generic_handle_irq() is invoked from a regular interrupt service
+>>>>> routing. This handler will become a forced-threaded handler on
+>>>>
+>>>>    s/routing/routine/?
+>>>>
+>>>>> PREEMPT_RT and will be invoked with enabled interrupts. The
+>>>>> generic_handle_irq() must be invoked with disabled interrupts in order
+>>>>> to avoid deadlocks.
+>>>>>
+>>>>> Instead of manually disabling interrupts before invoking use
+>>>>> generic_handle_irq() which can be invoked with enabled and disabled
+>>>>> interrupts.
+>>>>>
+>>>>> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>>>> [...]
+>>>>
+>>>> MBR, Sergey
+>>>
+>>> What does that mean?
+>>
+>>    Ah, you were asking about MBR! My best regards then. :-)
+> 
+> Yes this.  It's okay, Dan was kind enough to enlighten me.
+> 
+> Every day is a school day on the list! :)
 
-v2:
-	- Add timeout option to struct request_sock. Do not call
-	  tcp_timeout_init on every syn ack retransmit.
+   It's not exactly a well known phrase, I like it mainly because it also stands
+for the Master Boot Record. :-)
 
-v3:
-	- Use unsigned long for min. Bound tcp_timeout_init to TCP_RTO_MAX.
-
-v4:
-	- Refactor duplicate code by adding reqsk_timeout function.
----
- include/net/inet_connection_sock.h | 8 ++++++++
- include/net/request_sock.h         | 2 ++
- include/net/tcp.h                  | 2 +-
- net/ipv4/inet_connection_sock.c    | 5 +----
- net/ipv4/tcp_input.c               | 8 +++++---
- net/ipv4/tcp_minisocks.c           | 5 ++---
- 6 files changed, 19 insertions(+), 11 deletions(-)
-
-diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
-index 4ad47d9f9d27..3908296d103f 100644
---- a/include/net/inet_connection_sock.h
-+++ b/include/net/inet_connection_sock.h
-@@ -285,6 +285,14 @@ static inline int inet_csk_reqsk_queue_is_full(const struct sock *sk)
- bool inet_csk_reqsk_queue_drop(struct sock *sk, struct request_sock *req);
- void inet_csk_reqsk_queue_drop_and_put(struct sock *sk, struct request_sock *req);
- 
-+static inline unsigned long
-+reqsk_timeout(struct request_sock *req, unsigned long max_timeout)
-+{
-+	u64 timeout = (u64)req->timeout << req->num_timeout;
-+
-+	return (unsigned long)min_t(u64, timeout, max_timeout);
-+}
-+
- static inline void inet_csk_prepare_for_destroy_sock(struct sock *sk)
- {
- 	/* The below has to be done to allow calling inet_csk_destroy_sock */
-diff --git a/include/net/request_sock.h b/include/net/request_sock.h
-index 29e41ff3ec93..144c39db9898 100644
---- a/include/net/request_sock.h
-+++ b/include/net/request_sock.h
-@@ -70,6 +70,7 @@ struct request_sock {
- 	struct saved_syn		*saved_syn;
- 	u32				secid;
- 	u32				peer_secid;
-+	u32				timeout;
- };
- 
- static inline struct request_sock *inet_reqsk(const struct sock *sk)
-@@ -104,6 +105,7 @@ reqsk_alloc(const struct request_sock_ops *ops, struct sock *sk_listener,
- 	sk_node_init(&req_to_sk(req)->sk_node);
- 	sk_tx_queue_clear(req_to_sk(req));
- 	req->saved_syn = NULL;
-+	req->timeout = 0;
- 	req->num_timeout = 0;
- 	req->num_retrans = 0;
- 	req->sk = NULL;
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index b9fc978fb2ca..eff2487d972d 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -2358,7 +2358,7 @@ static inline u32 tcp_timeout_init(struct sock *sk)
- 
- 	if (timeout <= 0)
- 		timeout = TCP_TIMEOUT_INIT;
--	return timeout;
-+	return min_t(int, timeout, TCP_RTO_MAX);
- }
- 
- static inline u32 tcp_rwnd_init_bpf(struct sock *sk)
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index fc2a985f6064..1b92662664c6 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -866,12 +866,9 @@ static void reqsk_timer_handler(struct timer_list *t)
- 	    (!resend ||
- 	     !inet_rtx_syn_ack(sk_listener, req) ||
- 	     inet_rsk(req)->acked)) {
--		unsigned long timeo;
--
- 		if (req->num_timeout++ == 0)
- 			atomic_dec(&queue->young);
--		timeo = min(TCP_TIMEOUT_INIT << req->num_timeout, TCP_RTO_MAX);
--		mod_timer(&req->rsk_timer, jiffies + timeo);
-+		mod_timer(&req->rsk_timer, jiffies + reqsk_timeout(req, TCP_RTO_MAX));
- 
- 		if (!nreq)
- 			return;
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index dc49a3d551eb..302744bec59e 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6723,6 +6723,7 @@ struct request_sock *inet_reqsk_alloc(const struct request_sock_ops *ops,
- 		ireq->ireq_state = TCP_NEW_SYN_RECV;
- 		write_pnet(&ireq->ireq_net, sock_net(sk_listener));
- 		ireq->ireq_family = sk_listener->sk_family;
-+		req->timeout = TCP_TIMEOUT_INIT;
- 	}
- 
- 	return req;
-@@ -6939,9 +6940,10 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
- 		sock_put(fastopen_sk);
- 	} else {
- 		tcp_rsk(req)->tfo_listener = false;
--		if (!want_cookie)
--			inet_csk_reqsk_queue_hash_add(sk, req,
--				tcp_timeout_init((struct sock *)req));
-+		if (!want_cookie) {
-+			req->timeout = tcp_timeout_init((struct sock *)req);
-+			inet_csk_reqsk_queue_hash_add(sk, req, req->timeout);
-+		}
- 		af_ops->send_synack(sk, dst, &fl, req, &foc,
- 				    !want_cookie ? TCP_SYNACK_NORMAL :
- 						   TCP_SYNACK_COOKIE,
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 3977257f80d9..6366df7aaf2a 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -583,7 +583,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
- 			 * it can be estimated (approximately)
- 			 * from another data.
- 			 */
--			tmp_opt.ts_recent_stamp = ktime_get_seconds() - ((TCP_TIMEOUT_INIT/HZ)<<req->num_timeout);
-+			tmp_opt.ts_recent_stamp = ktime_get_seconds() - reqsk_timeout(req, TCP_RTO_MAX) / HZ;
- 			paws_reject = tcp_paws_reject(&tmp_opt, th->rst);
- 		}
- 	}
-@@ -622,8 +622,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
- 		    !inet_rtx_syn_ack(sk, req)) {
- 			unsigned long expires = jiffies;
- 
--			expires += min(TCP_TIMEOUT_INIT << req->num_timeout,
--				       TCP_RTO_MAX);
-+			expires += reqsk_timeout(req, TCP_RTO_MAX);
- 			if (!fastopen)
- 				mod_timer_pending(&req->rsk_timer, expires);
- 			else
--- 
-2.17.1
-
+MBR, Sergey
