@@ -2,100 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B46F749F4C6
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 08:58:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98CB449F4CB
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 09:01:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346870AbiA1H6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 02:58:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36332 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229656AbiA1H6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 02:58:15 -0500
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03C69C061714;
-        Thu, 27 Jan 2022 23:58:15 -0800 (PST)
-Received: by mail-qt1-x830.google.com with SMTP id o3so4517804qtm.12;
-        Thu, 27 Jan 2022 23:58:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/5HhBimjNoWs3dWyI50Lk0slVr7Jipa0Z/bMMBUtzHA=;
-        b=g13qFEEItG6X6sg/PdakSJkgV6hzeSRAl4NkP39ehB3t0YKihjR7u5OiLiP4SG0gwq
-         mxzB1OTJk02mmn3ILzfVOUI31favGFQuLR/0/fS0wyg5wIQo1pnXsrSowuxZr4fGh0hS
-         ljjKofmfdOWZTMlkY9lVUTxrUplFYv2gCPk0Sn3nOR8NehfshnySb7ghyI2E7xjkyD5D
-         i6kDDat8JdybeyMaQJ/70lcAILRlrDcefwBErWpiUE5ImuA7ooYmwQn7MiNSt7kcAHza
-         RgUJnJgvwKeZQ3TC2X9DenazrS1bQu2N8sUEdL4J/+oEKptJZtoMSLuzGdKf+IL5RD6P
-         pbkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/5HhBimjNoWs3dWyI50Lk0slVr7Jipa0Z/bMMBUtzHA=;
-        b=BoqvDVbpUZY8fkDx0MIX/lGIqn+aLcrBatW6IXbSFM6yH88Nkj6wIYugiqeL+6s5qh
-         gfd3Zzuoto8/uxC34yiy5UkRUsSj/fTU6KgxrI6RD91EeBElSTATqm42g6hUhIKL2bI0
-         7ttDIdt0tIlH2zgcMvgmTP0/Pb6CM8QvPcSqSD5b0co7+4349ALUapKDm3ohtTOEbwLs
-         x15F8MZIuCYbh3JQOP8Scn9x8UejbVAv5H47qROtJn9f6HNACTSAY9F5HD8supXunCyb
-         j8guBqV8BxsbOhX+1PUYB5PEEcvDdvL2qZ6wKrmxfX+0Dx2leVykTYrSlWq9ytBP+aXF
-         yx3A==
-X-Gm-Message-State: AOAM533XwJ76DCUt+o0uPA6T/0iTWcL7D3Y7n+wn6BJolQcr07F7bz9q
-        MWY5kLUa1Ukaqr7AepVwbNA=
-X-Google-Smtp-Source: ABdhPJzL4vdl7b84zi3Bkp4l11ujbRs9IP0YuxYNqU3rGURuPjFyrPhBLeQMPH+dbQ1JKw812QJtzA==
-X-Received: by 2002:ac8:5f88:: with SMTP id j8mr5204992qta.213.1643356694212;
-        Thu, 27 Jan 2022 23:58:14 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id s2sm2483457qti.14.2022.01.27.23.58.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 23:58:13 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     jiri@resnulli.us
-Cc:     ivecera@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] net/switchdev: use struct_size over open coded arithmetic
-Date:   Fri, 28 Jan 2022 07:57:29 +0000
-Message-Id: <20220128075729.1211352-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        id S1347015AbiA1IBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 03:01:42 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.164]:35363 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242948AbiA1IBl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 03:01:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643356894;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=SXWQbdv7n9eGH3R2pXxo3em0xAzOLFXJc61MSR7OjVY=;
+    b=lVOHvror/SLqs9qAyjew2OfSq1y++69MoFvZlXj/bGq4XqSkZo9xZigwgdNIV2sE65
+    jHJVdbmmzgTu26I2w0MqTw6GUoLLEONv4OGr+5p3ND2Tg/P6th+RzNJnbhTHdf1u0kAL
+    8NYeKKYGpnCFVbyD9IvllegDgx2mVCOR19iSMrLSEmg2ipb+wGeI3bsL7CBnZF+7l+xG
+    4Fj7J7jhJ+S9uTYd2VHLoPrqwhF9hRjfjb4Bo2quRmesOg83AOPo1ohvMIyuvVa2sXsl
+    VjUkLO4JuIN4WOdIZICpmiBze9KtiwQTC9T17p6VgnUSm2iqeT5ZtW9RY8KJ8aMgSD1D
+    sucw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.38.0 AUTH)
+    with ESMTPSA id zaacbfy0S81YPx6
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Fri, 28 Jan 2022 09:01:34 +0100 (CET)
+Message-ID: <476fedec-295c-cf14-2bfe-1d7369dcb0ef@hartkopp.net>
+Date:   Fri, 28 Jan 2022 09:01:34 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC][PATCH v2] can: isotp: fix CAN frame reception race in
+ isotp_rcv()
+Content-Language: en-US
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        william.xuanziyang@huawei.com,
+        syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com
+References: <20220128074327.52229-1-socketcan@hartkopp.net>
+ <20220128075632.ixy33y3cmbcmgh6f@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220128075632.ixy33y3cmbcmgh6f@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
 
-Replace zero-length array with flexible-array member and make use
-of the struct_size() helper in kmalloc(). For example:
 
-struct switchdev_deferred_item {
-	...
-	unsigned long data[];
-};
+On 28.01.22 08:56, Marc Kleine-Budde wrote:
+> On 28.01.2022 08:43:27, Oliver Hartkopp wrote:
+>> When receiving a CAN frame the current code logic does not consider
+>> concurrently receiving processes which do not show up in real world
+>> usage.
+>>
+>> Ziyang Xuan writes:
+>>
+>> The following syz problem is one of the scenarios. so->rx.len is
+>> changed by isotp_rcv_ff() during isotp_rcv_cf(), so->rx.len equals
+>> 0 before alloc_skb() and equals 4096 after alloc_skb(). That will
+>> trigger skb_over_panic() in skb_put().
+>>
+>> =======================================================
+>> CPU: 1 PID: 19 Comm: ksoftirqd/1 Not tainted 5.16.0-rc8-syzkaller #0
+>> RIP: 0010:skb_panic+0x16c/0x16e net/core/skbuff.c:113
+>> Call Trace:
+>>   <TASK>
+>>   skb_over_panic net/core/skbuff.c:118 [inline]
+>>   skb_put.cold+0x24/0x24 net/core/skbuff.c:1990
+>>   isotp_rcv_cf net/can/isotp.c:570 [inline]
+>>   isotp_rcv+0xa38/0x1e30 net/can/isotp.c:668
+>>   deliver net/can/af_can.c:574 [inline]
+>>   can_rcv_filter+0x445/0x8d0 net/can/af_can.c:635
+>>   can_receive+0x31d/0x580 net/can/af_can.c:665
+>>   can_rcv+0x120/0x1c0 net/can/af_can.c:696
+>>   __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5465
+>>   __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5579
+>>
+>> Therefore we make sure the state changes and data structures stay
+>> consistent at CAN frame reception time by adding a spin_lock in
+>> isotp_rcv(). This fixes the issue reported by syzkaller but does not
+>> affect real world operation.
+>>
+>> Link: https://lore.kernel.org/linux-can/d7e69278-d741-c706-65e1-e87623d9a8e8@huawei.com/T/
+>> Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+>> Reported-by: syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com
+>> Reported-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+>> Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+>> ---
+>>   net/can/isotp.c | 14 ++++++++++++++
+>>   1 file changed, 14 insertions(+)
+>>
+>> diff --git a/net/can/isotp.c b/net/can/isotp.c
+>> index 02cbcb2ecf0d..b5ba1a9a9e3b 100644
+>> --- a/net/can/isotp.c
+>> +++ b/net/can/isotp.c
+>> @@ -54,10 +54,11 @@
+>>    */
+>>   
+>>   #include <linux/module.h>
+>>   #include <linux/init.h>
+>>   #include <linux/interrupt.h>
+>> +#include <linux/spinlock.h>
+>>   #include <linux/hrtimer.h>
+>>   #include <linux/wait.h>
+>>   #include <linux/uio.h>
+>>   #include <linux/net.h>
+>>   #include <linux/netdevice.h>
+>> @@ -143,10 +144,11 @@ struct isotp_sock {
+>>   	u32 force_tx_stmin;
+>>   	u32 force_rx_stmin;
+>>   	struct tpcon rx, tx;
+>>   	struct list_head notifier;
+>>   	wait_queue_head_t wait;
+>> +	spinlock_t rx_lock;
+> 
+> I think checkpatch wants to have a comment describing the lock.
 
-Make use of the struct_size() helper instead of an open-coded version
-in order to avoid any potential type mistakes.
+Ok.
+> 
+>>   };
+>>   
+>>   static LIST_HEAD(isotp_notifier_list);
+>>   static DEFINE_SPINLOCK(isotp_notifier_lock);
+>>   static struct isotp_sock *isotp_busy_notifier;
+>> @@ -613,10 +615,19 @@ static void isotp_rcv(struct sk_buff *skb, void *data)
+>>   	if (ae && cf->data[0] != so->opt.rx_ext_address)
+>>   		return;
+>>   
+>>   	n_pci_type = cf->data[ae] & 0xF0;
+>>   
+>> +	/* Make sure the state changes and data structures stay consistent at
+>> +	 * CAN frame reception time. This locking is not needed in real world
+>> +	 * use cases but the inconsistency can be triggered with syzkaller.
+>> +	 *
+>> +	 * To not lock up the softirq just drop the frame in syzcaller case.
+>> +	 */
+>> +	if (!spin_trylock(&so->rx_lock))
+>> +		return;
+>> +
+>>   	if (so->opt.flags & CAN_ISOTP_HALF_DUPLEX) {
+>>   		/* check rx/tx path half duplex expectations */
+>>   		if ((so->tx.state != ISOTP_IDLE && n_pci_type != N_PCI_FC) ||
+>>   		    (so->rx.state != ISOTP_IDLE && n_pci_type == N_PCI_FC))
+>>   			return;
+>                          ^^^^^^
+>                          goto out_unlock;
+> 
+> Maybe there are more returns, which are not shown in the context of this
+> patch.
+> 
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
----
- net/switchdev/switchdev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Oh, yes! Thanks!
 
-diff --git a/net/switchdev/switchdev.c b/net/switchdev/switchdev.c
-index b62565278fac..b3aedd0ef4d0 100644
---- a/net/switchdev/switchdev.c
-+++ b/net/switchdev/switchdev.c
-@@ -85,7 +85,7 @@ static int switchdev_deferred_enqueue(struct net_device *dev,
- {
- 	struct switchdev_deferred_item *dfitem;
- 
--	dfitem = kmalloc(sizeof(*dfitem) + data_len, GFP_ATOMIC);
-+	dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
- 	if (!dfitem)
- 		return -ENOMEM;
- 	dfitem->dev = dev;
--- 
-2.25.1
+Will send a V3 soon.
 
+>> @@ -666,10 +677,12 @@ static void isotp_rcv(struct sk_buff *skb, void *data)
+>>   	case N_PCI_CF:
+>>   		/* rx path: consecutive frame */
+>>   		isotp_rcv_cf(sk, cf, ae, skb);
+>>   		break;
+>>   	}
+>> +
+> out_unlock:
+>> +	spin_unlock(&so->rx_lock);
+>>   }
+>>   
+>>   static void isotp_fill_dataframe(struct canfd_frame *cf, struct isotp_sock *so,
+>>   				 int ae, int off)
+>>   {
+>> @@ -1442,10 +1455,11 @@ static int isotp_init(struct sock *sk)
+>>   	so->rxtimer.function = isotp_rx_timer_handler;
+>>   	hrtimer_init(&so->txtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_SOFT);
+>>   	so->txtimer.function = isotp_tx_timer_handler;
+>>   
+>>   	init_waitqueue_head(&so->wait);
+>> +	spin_lock_init(&so->rx_lock);
+>>   
+>>   	spin_lock(&isotp_notifier_lock);
+>>   	list_add_tail(&so->notifier, &isotp_notifier_list);
+>>   	spin_unlock(&isotp_notifier_lock);
+> 
+> regards,
+> Marc
+> 
