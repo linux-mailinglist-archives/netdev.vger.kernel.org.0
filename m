@@ -2,281 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DD0F49F403
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 08:05:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE9DB49F437
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 08:17:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346642AbiA1HFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 02:05:33 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:50134 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S242660AbiA1HFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 02:05:32 -0500
-X-UUID: 239db7c3b33240db89b4a730e45ffa28-20220128
-X-UUID: 239db7c3b33240db89b4a730e45ffa28-20220128
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 199247826; Fri, 28 Jan 2022 15:05:30 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 28 Jan 2022 15:05:30 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 28 Jan 2022 15:05:27 +0800
-Message-ID: <2bdb6c9b5ec90b6c606b7db8c13f8acb34910b36.camel@mediatek.com>
-Subject: Re: [PATCH net-next v2 9/9] net: ethernet: mtk-star-emac: separate
- tx/rx handling with two NAPIs
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Fabien Parent <fparent@baylibre.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Yinghua Pan <ot_yinghua.pan@mediatek.com>,
-        <srv_heupstream@mediatek.com>,
-        Macpaul Lin <macpaul.lin@mediatek.com>
-Date:   Fri, 28 Jan 2022 15:05:27 +0800
-In-Reply-To: <20220127194338.01722b3c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220127015857.9868-1-biao.huang@mediatek.com>
-         <20220127015857.9868-10-biao.huang@mediatek.com>
-         <20220127194338.01722b3c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        id S1346733AbiA1HRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 02:17:47 -0500
+Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:55965 "EHLO
+        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242865AbiA1HRl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 02:17:41 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R281e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V31PeLV_1643354258;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V31PeLV_1643354258)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 28 Jan 2022 15:17:38 +0800
+Date:   Fri, 28 Jan 2022 15:17:37 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     "D. Wythe" <alibuda@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next 3/3] net/smc: Fallback when handshake workqueue
+ congested
+Message-ID: <YfOYkcJzpqFH/c6i@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <cover.1643284658.git.alibuda@linux.alibaba.com>
+ <ed4781cde8e3b9812d4a46ce676294a812c80e8f.1643284658.git.alibuda@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ed4781cde8e3b9812d4a46ce676294a812c80e8f.1643284658.git.alibuda@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Jakub,
-	Thanks for your comments!
+On Thu, Jan 27, 2022 at 08:08:03PM +0800, D. Wythe wrote:
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
+> 
+> This patch intends to provide a mechanism to allow automatic fallback to
+> TCP according to the pressure of SMC handshake process. At present,
+> frequent visits will cause the incoming connections to be backlogged in
+> SMC handshake queue, raise the connections established time. Which is
+> quite unacceptable for those applications who base on short lived
+> connections.
+> 
+> It should be optional for applications that don't care about connection
+> established time. For now, this patch only provides the switch at the
+> compile time.
+> 
+> There are two ways to implement this mechanism:
+> 
+> 1. Fallback when TCP established.
+> 2. Fallback before TCP established.
+> 
+> In the first way, we need to wait and receive CLC messages that the
+> client will potentially send, and then actively reply with a decline
+> message, in a sense, which is also a sort of SMC handshake, affect the
+> connections established time on its way.
+> 
+> In the second way, the only problem is that we need to inject SMC logic
+> into TCP when it is about to reply the incoming SYN, since we already do
+> that, it's seems not a problem anymore. And advantage is obvious, few
+> additional processes are required to complete the fallback.
+> 
+> This patch use the second way.
+> 
+> Link: https://lore.kernel.org/all/1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com/
+> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+> ---
+>  include/linux/tcp.h  |  1 +
+>  net/ipv4/tcp_input.c |  3 ++-
+>  net/smc/Kconfig      | 12 ++++++++++++
+>  net/smc/af_smc.c     | 22 ++++++++++++++++++++++
+>  4 files changed, 37 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+> index 78b91bb..1c4ae5d 100644
+> --- a/include/linux/tcp.h
+> +++ b/include/linux/tcp.h
+> @@ -394,6 +394,7 @@ struct tcp_sock {
+>  	bool	is_mptcp;
+>  #endif
+>  #if IS_ENABLED(CONFIG_SMC)
+> +	bool	(*smc_in_limited)(const struct sock *sk);
+>  	bool	syn_smc;	/* SYN includes SMC */
+>  #endif
+>  
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index dc49a3d..9890de9 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -6701,7 +6701,8 @@ static void tcp_openreq_init(struct request_sock *req,
+>  	ireq->ir_num = ntohs(tcp_hdr(skb)->dest);
+>  	ireq->ir_mark = inet_request_mark(sk, skb);
+>  #if IS_ENABLED(CONFIG_SMC)
+> -	ireq->smc_ok = rx_opt->smc_ok;
+> +	ireq->smc_ok = rx_opt->smc_ok && !(tcp_sk(sk)->smc_in_limited &&
+> +			tcp_sk(sk)->smc_in_limited(sk));
+>  #endif
+>  }
+>  
+> diff --git a/net/smc/Kconfig b/net/smc/Kconfig
+> index 1ab3c5a..1903927 100644
+> --- a/net/smc/Kconfig
+> +++ b/net/smc/Kconfig
+> @@ -19,3 +19,15 @@ config SMC_DIAG
+>  	  smcss.
+>  
+>  	  if unsure, say Y.
+> +
+> +if MPTCP
 
-On Thu, 2022-01-27 at 19:43 -0800, Jakub Kicinski wrote:
-> On Thu, 27 Jan 2022 09:58:57 +0800 Biao Huang wrote:
-> > Current driver may lost tx interrupts under bidirectional test with
-> > iperf3,
-> > which leads to some unexpected issues.
-> > 
-> > This patch let rx/tx interrupt enable/disable separately, and rx/tx
-> > are
-> > handled in different NAPIs.
-> > +/* mtk_star_handle_irq - Interrupt Handler.
-> > + * @irq: interrupt number.
-> > + * @data: pointer to a network interface device structure.
-> 
-> if you mean this to me a kdoc comment it needs to start with /**
-Yes, will fix in next send.
-> 
-> > + * Description : this is the driver interrupt service routine.
-> > + * it mainly handles:
-> > + *  1. tx complete interrupt for frame transmission.
-> > + *  2. rx complete interrupt for frame reception.
-> > + *  3. MAC Management Counter interrupt to avoid counter overflow.
-> >   */
-> >  static irqreturn_t mtk_star_handle_irq(int irq, void *data)
-> >  {
-> > -	struct mtk_star_priv *priv;
-> > -	struct net_device *ndev;
-> > +	struct net_device *ndev = data;
-> > +	struct mtk_star_priv *priv = netdev_priv(ndev);
-> > +	unsigned int intr_status = mtk_star_intr_ack_all(priv);
-> > +	unsigned long flags = 0;
-> > +
-> > +	if (intr_status & MTK_STAR_BIT_INT_STS_FNRC) {
-> > +		if (napi_schedule_prep(&priv->rx_napi)) {
-> > +			spin_lock_irqsave(&priv->lock, flags);
-> > +			/* mask Rx Complete interrupt */
-> > +			mtk_star_disable_dma_irq(priv, true, false);
-> > +			spin_unlock_irqrestore(&priv->lock, flags);
-> > +			__napi_schedule_irqoff(&priv->rx_napi);
-> > +		}
-> > +	}
-> >  
-> > -	ndev = data;
-> > -	priv = netdev_priv(ndev);
-> > +	if (intr_status & MTK_STAR_BIT_INT_STS_TNTC) {
-> > +		if (napi_schedule_prep(&priv->tx_napi)) {
-> > +			spin_lock_irqsave(&priv->lock, flags);
-> > +			/* mask Tx Complete interrupt */
-> > +			mtk_star_disable_dma_irq(priv, false, true);
-> > +			spin_unlock_irqrestore(&priv->lock, flags);
-> > +			__napi_schedule_irqoff(&priv->tx_napi);
-> > +		}
-> > +	}
-> 
-> Seems a little wasteful to retake the same lock twice if two IRQ
-> sources fire at the same time.
-The TX/RX irq control bits are in the same register,
-but they are triggered independently.
-So it seems necessary to protect the register
-access with a spin lock.
-> 
-> > @@ -1043,6 +1085,17 @@ static int mtk_star_netdev_start_xmit(struct
-> > sk_buff *skb,
-> >  	struct mtk_star_ring *ring = &priv->tx_ring;
-> >  	struct device *dev = mtk_star_get_dev(priv);
-> >  	struct mtk_star_ring_desc_data desc_data;
-> > +	int nfrags = skb_shinfo(skb)->nr_frags;
-> > +
-> > +	if (unlikely(mtk_star_tx_ring_avail(ring) < nfrags + 1)) {
-> > +		if (!netif_queue_stopped(ndev)) {
-> > +			netif_stop_queue(ndev);
-> > +			/* This is a hard error, log it. */
-> > +			netdev_err(priv->ndev, "%s: Tx Ring full when
-> > queue awake\n",
-> > +				   __func__);
-> 
-> This needs to be rate limited. Also no point printing the function
-> name, unless the same message appears in multiple places.
-OK, will fix in next send.
-> 
-> > +		}
-> > +		return NETDEV_TX_BUSY;
-> > +	}
-> >  
-> >  	desc_data.dma_addr = mtk_star_dma_map_tx(priv, skb);
-> >  	if (dma_mapping_error(dev, desc_data.dma_addr))
-> > @@ -1050,18 +1103,10 @@ static int
-> > mtk_star_netdev_start_xmit(struct sk_buff *skb,
-> >  
-> >  	desc_data.skb = skb;
-> >  	desc_data.len = skb->len;
-> > -
-> > -	spin_lock_bh(&priv->lock);
-> > 
-> >  	mtk_star_ring_push_head_tx(ring, &desc_data);
-> >  
-> >  	netdev_sent_queue(ndev, skb->len);
-> >  
-> > -	if (mtk_star_ring_full(ring))
-> > -		netif_stop_queue(ndev);
-> 
-> Are you stopping the queue in advance somewhere else now? Did you
-> only
-> test this with BQL enabled? Only place that stops the ring also
-> prints
-> a loud warning now AFAICS..
-No.
+If we really need MPTCP? According the context, this doesn't seem necessary.
 
-We modify the ring full condition, and will not invoke netif_stop_queue
-if queue is already stopped.
-Test pass no matter whether BQL is enabled or disabled.
+> +
+> +config SMC_AUTO_FALLBACK
+> +	bool "SMC: automatic fallback to TCP"
+> +	default y
+> +	help
+> +	  Allow automatic fallback to TCP accroding to the pressure of SMC-R
+> +	  handshake process.
+> +
+> +	  If that's not what you except or unsure, say N.
+> +endif
 
-It's much safer to judge queue is full or not at the beginning of
-start_xmit() to avoid invalid setting.
-> 
-> > -static void mtk_star_tx_complete_all(struct mtk_star_priv *priv)
-> > +static int mtk_star_tx_poll(struct napi_struct *napi, int budget)
-> >  {
-> > -	struct mtk_star_ring *ring = &priv->tx_ring;
-> > -	struct net_device *ndev = priv->ndev;
-> > -	int ret, pkts_compl, bytes_compl;
-> > +	int ret, pkts_compl = 0, bytes_compl = 0, count = 0;
-> > +	struct mtk_star_priv *priv;
-> > +	struct mtk_star_ring *ring;
-> > +	struct net_device *ndev;
-> > +	unsigned long flags = 0;
-> > +	unsigned int entry;
-> >  	bool wake = false;
-> >  
-> > -	spin_lock(&priv->lock);
-> > +	priv = container_of(napi, struct mtk_star_priv, tx_napi);
-> > +	ndev = priv->ndev;
-> >  
-> > -	for (pkts_compl = 0, bytes_compl = 0;;
-> > +	__netif_tx_lock_bh(netdev_get_tx_queue(priv->ndev, 0));
-> 
-> Do you really need to lock out the Tx while cleaning?
-> 
-> Drivers usually manage to implement concurrent Tx and cleanup with
-> just
-> a couple of memory barriers.
-We'll simplify the lock handling in next send,
-the lock should protect tx descriptor ring, which is accessed by xmit()
-and tx_complete().
-> 
-> > +	ring = &priv->tx_ring;
-> > +	entry = ring->tail;
-> > +	for (pkts_compl = 0, bytes_compl = 0;
-> > +	     (entry != ring->head) && (count < budget);
-> 
-> budget is not really relevant for Tx, you can clean the whole ring.
-> netpoll will pass a budget of 0 to clean up rings.
-OK, will fix in next send.
-> 
-> >  	     pkts_compl++, bytes_compl += ret, wake = true) {
-> > -		if (!mtk_star_ring_descs_available(ring))
-> > -			break;
-> >  
-> >  		ret = mtk_star_tx_complete_one(priv);
-> >  		if (ret < 0)
-> >  			break;
-> > +		count++;
-> > +		entry = ring->tail;
-> >  	}
-> >  
-> > @@ -1196,7 +1258,7 @@ static const struct ethtool_ops
-> > mtk_star_ethtool_ops = {
-> >  	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
-> >  };
-> >  
-> > -static int mtk_star_receive_packet(struct mtk_star_priv *priv)
-> > +static int mtk_star_rx(struct mtk_star_priv *priv, int budget)
-> >  {
-> >  	struct mtk_star_ring *ring = &priv->rx_ring;
-> >  	struct device *dev = mtk_star_get_dev(priv);
-> > @@ -1204,107 +1266,86 @@ static int mtk_star_receive_packet(struct
-> > mtk_star_priv *priv)
-> >  	struct net_device *ndev = priv->ndev;
-> >  	struct sk_buff *curr_skb, *new_skb;
-> >  	dma_addr_t new_dma_addr;
-> > -	int ret;
-> > +	int ret, count = 0;
-> >  
-> > -	spin_lock(&priv->lock);
-> > -	ret = mtk_star_ring_pop_tail(ring, &desc_data);
-> > -	spin_unlock(&priv->lock);
-> > -	if (ret)
-> > -		return -1;
-> > +	while (count < budget) {
-> > +		ret = mtk_star_ring_pop_tail(ring, &desc_data);
-> > +		if (ret)
-> > +			return -1;
-> > -static int mtk_star_process_rx(struct mtk_star_priv *priv, int
-> > budget)
-> > -{
-> > -	int received, ret;
-> > +		count++;
-> >  
-> > -	for (received = 0, ret = 0; received < budget && ret == 0;
-> > received++)
-> > -		ret = mtk_star_receive_packet(priv);
-> > +		desc_data.len = skb_tailroom(new_skb);
-> > +		desc_data.skb = new_skb;
-> > +		mtk_star_ring_push_head_rx(ring, &desc_data);
-> > +	}
-> >  
-> >  	mtk_star_dma_resume_rx(priv);
-> 
-> Again you can get a call with a budget of 0, not sure if it's okay to
-> resume DMA in that case..
-OK, we'll take it into consideration in next send.
-> 
-> > -	return received;
-> > +	return count;
-> >  }
-> 
-> 
-Regards!
-Biao
+Consider using a dynamic switch to enable or disable this feature? SMC
+currently have netlink interface in smc_netlink.c, we can extend this in
+userspace tool smc-tools.
 
+Thank you,
+Tony Lu
