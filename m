@@ -2,220 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4AC049F0CE
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:05:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D00F49F0D6
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:09:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345217AbiA1CFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 21:05:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41474 "EHLO
+        id S1345227AbiA1CJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 21:09:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235461AbiA1CFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:05:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8570CC061714;
-        Thu, 27 Jan 2022 18:05:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46577B8241F;
-        Fri, 28 Jan 2022 02:05:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E6D5C340E5;
-        Fri, 28 Jan 2022 02:05:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643335530;
-        bh=H0rwTxzxbzLWGDz4SbAOCgeCMcGp1dobsc6sNArg19M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=e+oA/NCl6QRJofHlgD5vvd5xXbHYr4qfUdSgkljV9Fgn89Ee6fcpGKHhtuAkw3uN5
-         vPTiL+445ULGsxf8xwENYpxnnTYatvHLDNH4v3sPsgC0+UW56ARRGipihSXmGzQnxT
-         4tLQ8B2V64c/qtmR8Qgcog6J5RP7vfPnzbnBS/1nXlaBKK3i7di5Gk2cINNpyWV7wv
-         STaeDTWVB7ouB4uoBBIZp73yUzcqpKNFzPx9EubETzXvwMi7q9Mc3gvCH+twrDWqk5
-         FWFd2yU5uha52Axa4GhfLvqhLh57vDvOwiyIH6LVPbg5ua+C8AAraFII9YOn60xkId
-         2Tc3srfCOzoLw==
-Date:   Fri, 28 Jan 2022 11:05:23 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v5 1/9] ftrace: Add ftrace_set_filter_ips function
-Message-Id: <20220128110523.de0e36317a34d48b793a7f6b@kernel.org>
-In-Reply-To: <YfApT8uAoCODPAGu@krava>
-References: <164311269435.1933078.6963769885544050138.stgit@devnote2>
-        <164311270629.1933078.4596694198103138848.stgit@devnote2>
-        <20220125110659.2cc8df29@gandalf.local.home>
-        <YfApT8uAoCODPAGu@krava>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S241836AbiA1CJZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:09:25 -0500
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6761CC061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:09:25 -0800 (PST)
+Received: by mail-yb1-xb2c.google.com with SMTP id k17so14237494ybk.6
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:09:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JwYc8EPwvZAfcok/i1klve6YvTvhdKKT/Z+jWLT+TpE=;
+        b=AFV/h3vfDaW2CsLcOAthS6sVAOM9fJPdNgsbXwxp8SIlkyBL1BNVUBYq+IALU5F4az
+         287USOxS/l81HnX9tNbFOOqevbQLtvbk2YxTZ08cHo8SxPNrlSUrodlV7EhvsxKqZARi
+         B5qp6TCDbBz956FdQ8/J2fhQra/NGr6LKuFNfJr9EyqNJNAygyOaoereO1OYrifdJEDP
+         jZsC4+9Dm7MADACbr6Epl2VZD3dJrgZIJB3KwDxCmOZo44Y77P1v4QSdlHe5AaKeeEVz
+         DLH+GxeTOg6Pq8OaU4bppoWl1EkjsOvIuIFJvACgNkJNbVhL+p+V1s8GmM2zt1tJadmq
+         Bytw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JwYc8EPwvZAfcok/i1klve6YvTvhdKKT/Z+jWLT+TpE=;
+        b=mvfkWH0uw98yTURFqxqYHVj5z/tOHchQ/ZvxSJ0Sn0emFeXCcNdTCK4IzR8J6arK5v
+         Fl4/rk5JEs9u/Pa9t2uCKMZ1Ccei949umJOCLheeydgLRGp3sxMtF0dDYP+m3agV4p85
+         sTJDShbJNETuv/ZCWu5/eg7hJmO2G4YPX31dCFGdTeNsHesXqMW5xnr7///XrEG2SGoM
+         thZkmcm03J19xDxQpfDL+EE9ClUMxvR9YjBPyISEywK/D7opfmxrVnvtplLQJoW20Nv6
+         hQVzPAYAsaaek5bau03aSEAKIfRsrUM/TSFCBGZpFIUA8HNdKY4pGKkh2iXNFOvG8NLi
+         wHzw==
+X-Gm-Message-State: AOAM532VIsiqZG9Eswn+rR/Xd3EO2w00ItWaRGVGkAMKOqfZXV5GOkhU
+        1LsE71hU/XEEVu5DQVY/cLFvAGVLhDJ40HPuV3qz4Q==
+X-Google-Smtp-Source: ABdhPJwluMLkd9agWvkuP70E+3PLIG5WMEHyD6L7q/gkeiEXh+mLKktF1XS8DxuLSxOrNrmSWLjSN3EhviGdDmo64NI=
+X-Received: by 2002:a25:d988:: with SMTP id q130mr9507569ybg.711.1643335764159;
+ Thu, 27 Jan 2022 18:09:24 -0800 (PST)
+MIME-Version: 1.0
+References: <20220128014303.2334568-1-jannh@google.com>
+In-Reply-To: <20220128014303.2334568-1-jannh@google.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 27 Jan 2022 18:09:13 -0800
+Message-ID: <CANn89iKWaERfs1iW8jVyRZT8K1LwWM9efiRsx8E1U3CDT39dyw@mail.gmail.com>
+Subject: Re: [PATCH net] net: dev: Detect dev_hold() after netdev_wait_allrefs()
+To:     Jann Horn <jannh@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Oliver Neukum <oneukum@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jiri,
+On Thu, Jan 27, 2022 at 5:43 PM Jann Horn <jannh@google.com> wrote:
+>
+> I've run into a bug where dev_hold() was being called after
+> netdev_wait_allrefs(). But at that point, the device is already going
+> away, and dev_hold() can't stop that anymore.
+>
+> To make such problems easier to diagnose in the future:
+>
+>  - For CONFIG_PCPU_DEV_REFCNT builds: Recheck in free_netdev() whether
+>    the net refcount has been elevated. If this is detected, WARN() and
+>    leak the object (to prevent worse consequences from a
+>    use-after-free).
+>  - For builds without CONFIG_PCPU_DEV_REFCNT: Set the refcount to zero.
+>    This signals to the generic refcount infrastructure that any attempt
+>    to increment the refcount later is a bug.
+>
+> Signed-off-by: Jann Horn <jannh@google.com>
+> ---
+>  net/core/dev.c | 18 +++++++++++++++++-
+>  1 file changed, 17 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 1baab07820f6..f7916c0d226d 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -9949,8 +9949,18 @@ void netdev_run_todo(void)
+>
+>                 netdev_wait_allrefs(dev);
+>
+> +               /* Drop the netdev refcount (which should be 1 at this point)
+> +                * to zero. If we're using the generic refcount code, this will
+> +                * tell it that any dev_hold() after this point is a bug.
+> +                */
+> +#ifdef CONFIG_PCPU_DEV_REFCNT
+> +               this_cpu_dec(*dev->pcpu_refcnt);
+> +               BUG_ON(netdev_refcnt_read(dev) != 0);
+> +#else
+> +               BUG_ON(!refcount_dec_and_test(&dev->dev_refcnt));
+> +#endif
+> +
+>                 /* paranoia */
+> -               BUG_ON(netdev_refcnt_read(dev) != 1);
+>                 BUG_ON(!list_empty(&dev->ptype_all));
+>                 BUG_ON(!list_empty(&dev->ptype_specific));
+>                 WARN_ON(rcu_access_pointer(dev->ip_ptr));
+> @@ -10293,6 +10303,12 @@ void free_netdev(struct net_device *dev)
+>         free_percpu(dev->xdp_bulkq);
+>         dev->xdp_bulkq = NULL;
+>
+> +       /* Recheck in case someone called dev_hold() between
+> +        * netdev_wait_allrefs() and here.
+> +        */
 
-On Tue, 25 Jan 2022 17:46:07 +0100
-Jiri Olsa <jolsa@redhat.com> wrote:
+At this point, dev->pcpu_refcnt per-cpu data has been freed already
+(CONFIG_PCPU_DEV_REFCNT=y)
 
-> On Tue, Jan 25, 2022 at 11:06:59AM -0500, Steven Rostedt wrote:
-> 
-> SNIP
-> 
-> > > diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-> > > index be5f6b32a012..39350aa38649 100644
-> > > --- a/kernel/trace/ftrace.c
-> > > +++ b/kernel/trace/ftrace.c
-> > > @@ -4958,7 +4958,7 @@ ftrace_notrace_write(struct file *file, const char __user *ubuf,
-> > >  }
-> > >  
-> > >  static int
-> > > -ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
-> > > +__ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
-> > >  {
-> > >  	struct ftrace_func_entry *entry;
-> > >  
-> > > @@ -4976,9 +4976,25 @@ ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
-> > >  	return add_hash_entry(hash, ip);
-> > >  }
-> > >  
-> > > +static int
-> > > +ftrace_match_addr(struct ftrace_hash *hash, unsigned long *ips,
-> > > +		  unsigned int cnt, int remove)
-> > > +{
-> > > +	unsigned int i;
-> > > +	int err;
-> > > +
-> > > +	for (i = 0; i < cnt; i++) {
-> > > +		err = __ftrace_match_addr(hash, ips[i], remove);
-> > > +		if (err)
-> > > +			return err;
-> > 
-> > On error should we revert what was done?
-> > 
-> > 			goto err;
-> > > +	}
-> > > +	return 0;
-> > 
-> > err:
-> > 	for (i--; i >= 0; i--)
-> > 		__ftrace_match_addr(hash, ips[i], !remove);
-> > 	return err;
-> > 
-> > Although it may not matter as it looks like it is only used on a temporary
-> > hash. But either it should be commented that is the case, or we do the above
-> > just to be more robust.
-> 
-> yes, that's the case.. it populates just the hash at this point
-> and if __ftrace_match_addr fails, the thehash is relased after
-> jumping to out_regex_unlock
-> 
-> > 
-> > > +}
-> > > +
-> > >  static int
-> > >  ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
-> > > -		unsigned long ip, int remove, int reset, int enable)
-> > > +		unsigned long *ips, unsigned int cnt,
-> > > +		int remove, int reset, int enable)
-> > >  {
-> > >  	struct ftrace_hash **orig_hash;
-> > >  	struct ftrace_hash *hash;
-> > > @@ -5008,8 +5024,8 @@ ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
-> > >  		ret = -EINVAL;
-> > >  		goto out_regex_unlock;
-> > >  	}
-> > > -	if (ip) {
-> > > -		ret = ftrace_match_addr(hash, ip, remove);
-> > > +	if (ips) {
-> > > +		ret = ftrace_match_addr(hash, ips, cnt, remove);
-> > >  		if (ret < 0)
-> > >  			goto out_regex_unlock;
-> > >  	}
-> > > @@ -5026,10 +5042,10 @@ ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
-> > >  }
-> > >  
-> > >  static int
-> > > -ftrace_set_addr(struct ftrace_ops *ops, unsigned long ip, int remove,
-> > > -		int reset, int enable)
-> > > +ftrace_set_addr(struct ftrace_ops *ops, unsigned long *ips, unsigned int cnt,
-> > > +		int remove, int reset, int enable)
-> > >  {
-> > > -	return ftrace_set_hash(ops, NULL, 0, ip, remove, reset, enable);
-> > > +	return ftrace_set_hash(ops, NULL, 0, ips, cnt, remove, reset, enable);
-> > >  }
-> > >  
-> > >  #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
-> > > @@ -5634,10 +5650,29 @@ int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
-> > >  			 int remove, int reset)
-> > >  {
-> > >  	ftrace_ops_init(ops);
-> > > -	return ftrace_set_addr(ops, ip, remove, reset, 1);
-> > > +	return ftrace_set_addr(ops, &ip, 1, remove, reset, 1);
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(ftrace_set_filter_ip);
-> > >  
-> > > +/**
-> > > + * ftrace_set_filter_ips - set a functions to filter on in ftrace by addresses
-> > 
-> > 		- set functions to filter on ...
-> 
-> will fix,
+So this should probably crash, or at least UAF ?
 
-So, I wrote a below change for the next version. Is that OK for you?
-
-Thank you,
-
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index f305e18f699f..a28b1bdb234a 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -4985,8 +4985,13 @@ ftrace_match_addr(struct ftrace_hash *hash, unsigned long *ips,
- 
- 	for (i = 0; i < cnt; i++) {
- 		err = __ftrace_match_addr(hash, ips[i], remove);
--		if (err)
-+		if (err) {
-+			/*
-+			 * This expects the @hash is a temporary hash and if this
-+			 * fails the caller must free the @hash.
-+			 */
- 			return err;
-+		}
- 	}
- 	return 0;
- }
-@@ -5649,7 +5654,7 @@ int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
- EXPORT_SYMBOL_GPL(ftrace_set_filter_ip);
- 
- /**
-- * ftrace_set_filter_ips - set a functions to filter on in ftrace by addresses
-+ * ftrace_set_filter_ips - set functions to filter on in ftrace by addresses
-  * @ops - the ops to set the filter with
-  * @ips - the array of addresses to add to or remove from the filter.
-  * @cnt - the number of addresses in @ips
-
-
-
-
-
-
-
-
-> 
-> thanks,
-> jirka
-> 
-
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+> +       if (WARN_ON(netdev_refcnt_read(dev) != 0))
+> +               return; /* leak memory, otherwise we might get UAF */
+> +
+>         /*  Compatibility with error handling in drivers */
+>         if (dev->reg_state == NETREG_UNINITIALIZED) {
+>                 netdev_freemem(dev);
+>
+> base-commit: 23a46422c56144939c091c76cf389aa863ce9c18
+> --
+> 2.35.0.rc0.227.g00780c9af4-goog
+>
