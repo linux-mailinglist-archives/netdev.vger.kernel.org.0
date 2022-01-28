@@ -2,132 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE9DB49F437
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 08:17:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C83749F474
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 08:36:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346733AbiA1HRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 02:17:47 -0500
-Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:55965 "EHLO
-        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242865AbiA1HRl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 02:17:41 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R281e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V31PeLV_1643354258;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V31PeLV_1643354258)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 28 Jan 2022 15:17:38 +0800
-Date:   Fri, 28 Jan 2022 15:17:37 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     "D. Wythe" <alibuda@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next 3/3] net/smc: Fallback when handshake workqueue
- congested
-Message-ID: <YfOYkcJzpqFH/c6i@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <cover.1643284658.git.alibuda@linux.alibaba.com>
- <ed4781cde8e3b9812d4a46ce676294a812c80e8f.1643284658.git.alibuda@linux.alibaba.com>
+        id S242746AbiA1Hfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 02:35:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59276 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233478AbiA1Hfm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 02:35:42 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEABC061714;
+        Thu, 27 Jan 2022 23:35:41 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id w25so7207957edt.7;
+        Thu, 27 Jan 2022 23:35:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BnufEEmkIUDP5e9fBWHGjnpSrvFgxcU5p60BJF+NL0U=;
+        b=Tf1f5/gi66t5ELzhAgRq42rBE0aij8GGNVpROmjOaODvorPu9AdbDdwTkdZ6Og4FgF
+         H0x2JeDGNcmQizN0INe4G7KoVQunNX6Mz4L5x4tiJqOvbXlmhIwy2mIbELUXP+rCUdDz
+         LYbQPt8WGYul+V+ZUO8qkFByZtFMHZ29tSHpyaVeai1yhEe8x8SqYQXUB0BmXDMMSxTo
+         5MS+Fg8BQh7Img0b5q2uCEqqbTPeVrpM/0zrUEuoyLt8SYUcc40NZGRwtKxH6Bscwt1a
+         hiu9MZad8nijGwDpEbdDWI5HLBcGvLNpFys/w6bVSkM2ggpJGTwEsWAsImbq5+DVQC/h
+         1q5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BnufEEmkIUDP5e9fBWHGjnpSrvFgxcU5p60BJF+NL0U=;
+        b=f3P1NIPTACxckunwy6G2cqInUNpqKDtPHpDg3/Yqp+R+Y7wk2sjhLQBU0aGqb2oCow
+         R+jDR/fC+eayQk9RyiW6zXZd6SJbe/sJbYohlD384Yw13lxUBgvSzzUzSsI2riSh7Wnz
+         5v61GSBf0BlyugnVq6W+ZWYdJPEMowOWcI0odW4HC4JhkFDD1CrHilA8eI4dCLnTqS9E
+         B8CrH5ttoc5VzseEHwoSauV8JbYRpDFqN57hCkc4Vp5h8lySlN3KefOAqhl4xTYSo64s
+         yxhFZhrKEdCzLUFVX733Dl1QShoNpz+0fweaW3rP3QyGmglhZlTgIdU3v5UT8HsAjeQc
+         dYFA==
+X-Gm-Message-State: AOAM531m2L8iprj6QCpmxtUmtKX+JCQSrmIs7pzrER6U/VIXoCV23T+8
+        UuTplBNET9Zk8AlATHaUvNbasnD9u92mokxkqjU=
+X-Google-Smtp-Source: ABdhPJw9iG+h6ZE7nDhbsSSoboe3FSp4c1TzA4JQ4VCXVNXZRdv7+jeKYCuxHyU70zleTwTE+EcwHBh3hI4mm/klufY=
+X-Received: by 2002:aa7:d1cd:: with SMTP id g13mr6977950edp.70.1643355340180;
+ Thu, 27 Jan 2022 23:35:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ed4781cde8e3b9812d4a46ce676294a812c80e8f.1643284658.git.alibuda@linux.alibaba.com>
+References: <20220127091308.91401-1-imagedong@tencent.com> <20220127091308.91401-2-imagedong@tencent.com>
+ <2512e358-f4d8-f85e-2a82-fbd5a97d1c2f@gmail.com> <20220127084220.05c86ef5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220127084220.05c86ef5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Fri, 28 Jan 2022 15:31:09 +0800
+Message-ID: <CADxym3ZuHRifkmMbnyDrKhpDKPqD7tVUgJ2OrnU6DOB_aw88wA@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 1/8] net: socket: intrudoce SKB_DROP_REASON_SOCKET_FILTER
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Eric Dumazet <edumazet@google.com>, pablo@netfilter.org,
+        kadlec@netfilter.org, Florian Westphal <fw@strlen.de>,
+        Menglong Dong <imagedong@tencent.com>, alobakin@pm.me,
+        Paolo Abeni <pabeni@redhat.com>,
+        Cong Wang <cong.wang@bytedance.com>, talalahmad@google.com,
+        haokexin@gmail.com, Kees Cook <keescook@chromium.org>,
+        memxor@gmail.com, LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, Mengen Sun <mengensun@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 08:08:03PM +0800, D. Wythe wrote:
-> From: "D. Wythe" <alibuda@linux.alibaba.com>
-> 
-> This patch intends to provide a mechanism to allow automatic fallback to
-> TCP according to the pressure of SMC handshake process. At present,
-> frequent visits will cause the incoming connections to be backlogged in
-> SMC handshake queue, raise the connections established time. Which is
-> quite unacceptable for those applications who base on short lived
-> connections.
-> 
-> It should be optional for applications that don't care about connection
-> established time. For now, this patch only provides the switch at the
-> compile time.
-> 
-> There are two ways to implement this mechanism:
-> 
-> 1. Fallback when TCP established.
-> 2. Fallback before TCP established.
-> 
-> In the first way, we need to wait and receive CLC messages that the
-> client will potentially send, and then actively reply with a decline
-> message, in a sense, which is also a sort of SMC handshake, affect the
-> connections established time on its way.
-> 
-> In the second way, the only problem is that we need to inject SMC logic
-> into TCP when it is about to reply the incoming SYN, since we already do
-> that, it's seems not a problem anymore. And advantage is obvious, few
-> additional processes are required to complete the fallback.
-> 
-> This patch use the second way.
-> 
-> Link: https://lore.kernel.org/all/1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com/
-> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
-> ---
->  include/linux/tcp.h  |  1 +
->  net/ipv4/tcp_input.c |  3 ++-
->  net/smc/Kconfig      | 12 ++++++++++++
->  net/smc/af_smc.c     | 22 ++++++++++++++++++++++
->  4 files changed, 37 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-> index 78b91bb..1c4ae5d 100644
-> --- a/include/linux/tcp.h
-> +++ b/include/linux/tcp.h
-> @@ -394,6 +394,7 @@ struct tcp_sock {
->  	bool	is_mptcp;
->  #endif
->  #if IS_ENABLED(CONFIG_SMC)
-> +	bool	(*smc_in_limited)(const struct sock *sk);
->  	bool	syn_smc;	/* SYN includes SMC */
->  #endif
->  
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index dc49a3d..9890de9 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -6701,7 +6701,8 @@ static void tcp_openreq_init(struct request_sock *req,
->  	ireq->ir_num = ntohs(tcp_hdr(skb)->dest);
->  	ireq->ir_mark = inet_request_mark(sk, skb);
->  #if IS_ENABLED(CONFIG_SMC)
-> -	ireq->smc_ok = rx_opt->smc_ok;
-> +	ireq->smc_ok = rx_opt->smc_ok && !(tcp_sk(sk)->smc_in_limited &&
-> +			tcp_sk(sk)->smc_in_limited(sk));
->  #endif
->  }
->  
-> diff --git a/net/smc/Kconfig b/net/smc/Kconfig
-> index 1ab3c5a..1903927 100644
-> --- a/net/smc/Kconfig
-> +++ b/net/smc/Kconfig
-> @@ -19,3 +19,15 @@ config SMC_DIAG
->  	  smcss.
->  
->  	  if unsure, say Y.
-> +
-> +if MPTCP
+On Fri, Jan 28, 2022 at 12:42 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 27 Jan 2022 08:37:06 -0700 David Ahern wrote:
+> > On 1/27/22 2:13 AM, menglong8.dong@gmail.com wrote:
+> > > From: Menglong Dong <imagedong@tencent.com>
+> > >
+> > > Introduce SKB_DROP_REASON_SOCKET_FILTER, which is used as the reason
+> > > of skb drop out of socket filter. Meanwhile, replace
+> > > SKB_DROP_REASON_TCP_FILTER with it.
+>
+> > > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > > index bf11e1fbd69b..8a636e678902 100644
+> > > --- a/include/linux/skbuff.h
+> > > +++ b/include/linux/skbuff.h
+> > > @@ -318,7 +318,7 @@ enum skb_drop_reason {
+> > >     SKB_DROP_REASON_NO_SOCKET,
+> > >     SKB_DROP_REASON_PKT_TOO_SMALL,
+> > >     SKB_DROP_REASON_TCP_CSUM,
+> > > -   SKB_DROP_REASON_TCP_FILTER,
+> > > +   SKB_DROP_REASON_SOCKET_FILTER,
+> > >     SKB_DROP_REASON_UDP_CSUM,
+> > >     SKB_DROP_REASON_MAX,
+> >
+> > This should go to net, not net-next.
+>
+> Let me make an exception and apply this patch out of the series
+> to avoid a conflict / week long wait for another merge.
 
-If we really need MPTCP? According the context, this doesn't seem necessary.
-
-> +
-> +config SMC_AUTO_FALLBACK
-> +	bool "SMC: automatic fallback to TCP"
-> +	default y
-> +	help
-> +	  Allow automatic fallback to TCP accroding to the pressure of SMC-R
-> +	  handshake process.
-> +
-> +	  If that's not what you except or unsure, say N.
-> +endif
-
-Consider using a dynamic switch to enable or disable this feature? SMC
-currently have netlink interface in smc_netlink.c, we can extend this in
-userspace tool smc-tools.
-
-Thank you,
-Tony Lu
+Thank you! I'll send v3 of this series patches without this one.
