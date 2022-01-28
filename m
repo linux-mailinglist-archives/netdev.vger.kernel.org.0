@@ -2,66 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC7E64A0001
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 19:19:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56FFD4A002B
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 19:32:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242827AbiA1STh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 13:19:37 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:60746 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233898AbiA1STf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jan 2022 13:19:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=JebKbbPd+zMYlJE7viIQgYSD3Jw7bxYDJhFYhebgro0=; b=qjewVYi6+Z6exyHxu2FbESfnkI
-        kn5oisyEGyIStU3RoQG5GB1JbmV0wuxm7uaxKtF0F2Gn6sKatL1P0MfGkFk+awPJW3FBTFY1I4a/b
-        xA9CEv76cRJUXsOUI2jqOcDIFoNQ4Azd+99ErXA1dWrx4Js4/rCu2AxJcEyLzesAwJoQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nDVqE-003DBo-OL; Fri, 28 Jan 2022 19:19:22 +0100
-Date:   Fri, 28 Jan 2022 19:19:22 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     cgel.zte@gmail.com
-Cc:     jiri@resnulli.us, ivecera@redhat.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] net/switchdev: use struct_size over open coded arithmetic
-Message-ID: <YfQzqqiw7O/iKUD0@lunn.ch>
-References: <20220128075729.1211352-1-chi.minghao@zte.com.cn>
+        id S1343981AbiA1Scr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 13:32:47 -0500
+Received: from mxout04.lancloud.ru ([45.84.86.114]:53992 "EHLO
+        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350616AbiA1Sco (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 13:32:44 -0500
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru EB81D209A655
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: [PATCH v2] phy: make phy_set_max_speed() *void*
+To:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+CC:     <linux-renesas-soc@vger.kernel.org>
+Organization: Open Mobile Platform
+Message-ID: <4889c4d5-cff8-5b15-bd50-8014b95b18e8@omp.ru>
+Date:   Fri, 28 Jan 2022 21:32:40 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220128075729.1211352-1-chi.minghao@zte.com.cn>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 07:57:29AM +0000, cgel.zte@gmail.com wrote:
-> From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
-> 
-> Replace zero-length array with flexible-array member and make use
-> of the struct_size() helper in kmalloc(). For example:
-> 
-> struct switchdev_deferred_item {
-> 	...
-> 	unsigned long data[];
-> };
-> 
-> Make use of the struct_size() helper instead of an open-coded version
-> in order to avoid any potential type mistakes.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
+After following the call tree of phy_set_max_speed(), it became clear
+that this function never returns anything but 0, so we can change its
+result type to *void* and drop the result checks from the three drivers
+that actually bothered to do it...
 
-Please could you train your bot to zealously compile test patches
-before submitting them?
+Found by Linux Verification Center (linuxtesting.org) with the SVACE static
+analysis tool.
 
-At the moment you seem to have more patches which fail to build then
-actually build. So you are wasting peoples time, which is not going to
-make Maintainers happy.
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-       Andrew
+---
+This patch is against the DaveM's 'net-next.git' repo.
+
+Changes in version 2:
+- added Andrew Lunn's tag.
+
+ drivers/net/ethernet/renesas/ravb_main.c |    8 +-------
+ drivers/net/ethernet/renesas/sh_eth.c    |   10 ++--------
+ drivers/net/phy/aquantia_main.c          |    4 +---
+ drivers/net/phy/phy-core.c               |   22 ++++++++--------------
+ include/linux/phy.h                      |    2 +-
+ 5 files changed, 13 insertions(+), 33 deletions(-)
+
+Index: net-next/drivers/net/ethernet/renesas/ravb_main.c
+===================================================================
+--- net-next.orig/drivers/net/ethernet/renesas/ravb_main.c
++++ net-next/drivers/net/ethernet/renesas/ravb_main.c
+@@ -1432,11 +1432,7 @@ static int ravb_phy_init(struct net_devi
+ 	 * at this time.
+ 	 */
+ 	if (soc_device_match(r8a7795es10)) {
+-		err = phy_set_max_speed(phydev, SPEED_100);
+-		if (err) {
+-			netdev_err(ndev, "failed to limit PHY to 100Mbit/s\n");
+-			goto err_phy_disconnect;
+-		}
++		phy_set_max_speed(phydev, SPEED_100);
+ 
+ 		netdev_info(ndev, "limited PHY to 100Mbit/s\n");
+ 	}
+@@ -1457,8 +1453,6 @@ static int ravb_phy_init(struct net_devi
+ 
+ 	return 0;
+ 
+-err_phy_disconnect:
+-	phy_disconnect(phydev);
+ err_deregister_fixed_link:
+ 	if (of_phy_is_fixed_link(np))
+ 		of_phy_deregister_fixed_link(np);
+Index: net-next/drivers/net/ethernet/renesas/sh_eth.c
+===================================================================
+--- net-next.orig/drivers/net/ethernet/renesas/sh_eth.c
++++ net-next/drivers/net/ethernet/renesas/sh_eth.c
+@@ -2026,14 +2026,8 @@ static int sh_eth_phy_init(struct net_de
+ 	}
+ 
+ 	/* mask with MAC supported features */
+-	if (mdp->cd->register_type != SH_ETH_REG_GIGABIT) {
+-		int err = phy_set_max_speed(phydev, SPEED_100);
+-		if (err) {
+-			netdev_err(ndev, "failed to limit PHY to 100 Mbit/s\n");
+-			phy_disconnect(phydev);
+-			return err;
+-		}
+-	}
++	if (mdp->cd->register_type != SH_ETH_REG_GIGABIT)
++		phy_set_max_speed(phydev, SPEED_100);
+ 
+ 	phy_attached_info(phydev);
+ 
+Index: net-next/drivers/net/phy/aquantia_main.c
+===================================================================
+--- net-next.orig/drivers/net/phy/aquantia_main.c
++++ net-next/drivers/net/phy/aquantia_main.c
+@@ -533,9 +533,7 @@ static int aqcs109_config_init(struct ph
+ 	 * PMA speed ability bits are the same for all members of the family,
+ 	 * AQCS109 however supports speeds up to 2.5G only.
+ 	 */
+-	ret = phy_set_max_speed(phydev, SPEED_2500);
+-	if (ret)
+-		return ret;
++	phy_set_max_speed(phydev, SPEED_2500);
+ 
+ 	return aqr107_set_downshift(phydev, MDIO_AN_VEND_PROV_DOWNSHIFT_DFLT);
+ }
+Index: net-next/drivers/net/phy/phy-core.c
+===================================================================
+--- net-next.orig/drivers/net/phy/phy-core.c
++++ net-next/drivers/net/phy/phy-core.c
+@@ -243,7 +243,7 @@ size_t phy_speeds(unsigned int *speeds,
+ 	return count;
+ }
+ 
+-static int __set_linkmode_max_speed(u32 max_speed, unsigned long *addr)
++static void __set_linkmode_max_speed(u32 max_speed, unsigned long *addr)
+ {
+ 	const struct phy_setting *p;
+ 	int i;
+@@ -254,13 +254,11 @@ static int __set_linkmode_max_speed(u32
+ 		else
+ 			break;
+ 	}
+-
+-	return 0;
+ }
+ 
+-static int __set_phy_supported(struct phy_device *phydev, u32 max_speed)
++static void __set_phy_supported(struct phy_device *phydev, u32 max_speed)
+ {
+-	return __set_linkmode_max_speed(max_speed, phydev->supported);
++	__set_linkmode_max_speed(max_speed, phydev->supported);
+ }
+ 
+ /**
+@@ -273,17 +271,11 @@ static int __set_phy_supported(struct ph
+  * is connected to a 1G PHY. This function allows the MAC to indicate its
+  * maximum speed, and so limit what the PHY will advertise.
+  */
+-int phy_set_max_speed(struct phy_device *phydev, u32 max_speed)
++void phy_set_max_speed(struct phy_device *phydev, u32 max_speed)
+ {
+-	int err;
+-
+-	err = __set_phy_supported(phydev, max_speed);
+-	if (err)
+-		return err;
++	__set_phy_supported(phydev, max_speed);
+ 
+ 	phy_advertise_supported(phydev);
+-
+-	return 0;
+ }
+ EXPORT_SYMBOL(phy_set_max_speed);
+ 
+@@ -440,7 +432,9 @@ int phy_speed_down_core(struct phy_devic
+ 	if (min_common_speed == SPEED_UNKNOWN)
+ 		return -EINVAL;
+ 
+-	return __set_linkmode_max_speed(min_common_speed, phydev->advertising);
++	__set_linkmode_max_speed(min_common_speed, phydev->advertising);
++
++	return 0;
+ }
+ 
+ static void mmd_phy_indirect(struct mii_bus *bus, int phy_addr, int devad,
+Index: net-next/include/linux/phy.h
+===================================================================
+--- net-next.orig/include/linux/phy.h
++++ net-next/include/linux/phy.h
+@@ -1661,7 +1661,7 @@ int phy_disable_interrupts(struct phy_de
+ void phy_request_interrupt(struct phy_device *phydev);
+ void phy_free_interrupt(struct phy_device *phydev);
+ void phy_print_status(struct phy_device *phydev);
+-int phy_set_max_speed(struct phy_device *phydev, u32 max_speed);
++void phy_set_max_speed(struct phy_device *phydev, u32 max_speed);
+ void phy_remove_link_mode(struct phy_device *phydev, u32 link_mode);
+ void phy_advertise_supported(struct phy_device *phydev);
+ void phy_support_sym_pause(struct phy_device *phydev);
