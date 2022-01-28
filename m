@@ -2,100 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BE7049FB05
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 14:46:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5774E49FB1C
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 14:55:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236047AbiA1Nqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 08:46:36 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:31240 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232870AbiA1Nqf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 08:46:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643377595; x=1674913595;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bDfnqX6+hpeWXzc/AVZDL/trniYBTrCP/mQvXnxNfqA=;
-  b=xsQELTyMVxSXjrD1qcE4OeMxiLAh1jmqhsAQvQaAyhmO0ZN1PjKDDitj
-   ZwFuppTI6xRNohCrOOsf/MXU8sPuy6cJV2Zb3XxFaCLUhzba2MtDpE9Gg
-   G9gUOoBwzkCZ3U9c9aJB1x6FRNF7ucQFh11nX8bGGNYQTenqYMdkQQeG3
-   uKmt4M3Zlf/8tzy5puYQ6ePP09gqv8lPMMNl4+H6VCu6cdGcwie2mz3CA
-   TxLhVSsWFmZMopKDRpbeILHpKjPd9F+iE6gjpvmLphJrMsVM409ILtO/S
-   FBbrjhYSDtRw1e6M8xnfufJOlAAk2ZlPmVbOuTEnvxyYXRBy/Q2Imkemv
-   Q==;
-IronPort-SDR: nJPr/vSfiDznuhXmEXxXslXnyXVkInzIZj2A8v/gsVBTl2+FQdWhjTue5MdpAl14NYsrMgB/FT
- VGxm2RtdJn9HPAj1O2BEj4vweUFzIF22gOG4NRir4+HflqGdIaM3JSCQbRSny+OGb0SvVeiYMw
- 3KQmuIEyVqKB7xN7qUm+CK9lOYvRymCcdQP9IxjLWgQBuO8DSpTuMSc+Z6yLp9M435wUK9Cw2L
- sLvaoDUBnqTpJ5HcLAPxZkdeBYCG/XKznOlGP+Hua2eznIvf9+i6kIWiwS84yv0biBhBtktBdn
- 0NiYonrsoAx296smfr8n4gGr
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
-   d="scan'208";a="84004966"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Jan 2022 06:46:30 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 28 Jan 2022 06:46:28 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 28 Jan 2022 06:46:28 -0700
-Date:   Fri, 28 Jan 2022 14:48:55 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <linux@armlinux.org.uk>,
-        <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
-        <vladimir.oltean@nxp.com>, <andrew@lunn.ch>
-Subject: Re: [PATCH net-next 3/7] net: lan966x: Add support for ptp clocks
-Message-ID: <20220128134855.cewcsuk77di6kahz@soft-dev3-1.localhost>
-References: <20220127102333.987195-1-horatiu.vultur@microchip.com>
- <20220127102333.987195-4-horatiu.vultur@microchip.com>
- <20220127152841.GC20642@hoboy.vegasvil.org>
+        id S235200AbiA1NzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 08:55:01 -0500
+Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:52916 "EHLO
+        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234965AbiA1NzA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 08:55:00 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R761e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V32luS0_1643378086;
+Received: from 192.168.1.13(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V32luS0_1643378086)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 28 Jan 2022 21:54:52 +0800
+Message-ID: <e0d9d02f-6863-5ee0-4353-cd4194fec1de@linux.alibaba.com>
+Date:   Fri, 28 Jan 2022 21:54:45 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20220127152841.GC20642@hoboy.vegasvil.org>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [PATCH net-next 3/3] net/smc: Fallback when handshake workqueue
+ congested
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>,
+        kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        MPTCP Upstream <mptcp@lists.linux.dev>
+References: <cover.1643284658.git.alibuda@linux.alibaba.com>
+ <ed4781cde8e3b9812d4a46ce676294a812c80e8f.1643284658.git.alibuda@linux.alibaba.com>
+ <1825f5e8-6d13-a317-4a96-f4a4fcf07409@tessares.net>
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+In-Reply-To: <1825f5e8-6d13-a317-4a96-f4a4fcf07409@tessares.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 01/27/2022 07:28, Richard Cochran wrote:
-> 
-> On Thu, Jan 27, 2022 at 11:23:29AM +0100, Horatiu Vultur wrote:
-> 
-> > +static int lan966x_ptp_phc_init(struct lan966x *lan966x,
-> > +                             int index,
-> > +                             struct ptp_clock_info *clock_info)
-> > +{
-> > +     struct lan966x_phc *phc = &lan966x->phc[index];
-> > +
-> > +     phc->info = *clock_info;
-> > +     phc->clock = ptp_clock_register(&phc->info, lan966x->dev);
-> > +     if (IS_ERR(phc->clock))
-> > +             return PTR_ERR(phc->clock);
-> > +
-> > +     phc->index = index;
-> > +     phc->lan966x = lan966x;
-> > +
-> > +     /* PTP Rx stamping is always enabled.  */
-> > +     phc->hwtstamp_config.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
-> 
-> Not true -- you allow it to be disabled in the next patch!
 
-Actually the other patch is wrong. The HW will timestamp all the frames.
-I will update the other patch in the next version.
+This is a spelling error, which has nothing to do with MPTCP. I'll fix 
+it soon.
 
-> 
-> Thanks,
-> Richard
-> 
-> 
-> > +
-> > +     return 0;
-> > +}
 
--- 
-/Horatiu
+在 2022/1/28 上午1:09, Matthieu Baerts 写道:
+> Hi,
+> 
+> (+cc MPTCP ML)
+> 
+> On 27/01/2022 13:08, D. Wythe wrote:
+>> From: "D. Wythe" <alibuda@linux.alibaba.com>
+>>
+>> This patch intends to provide a mechanism to allow automatic fallback to
+>> TCP according to the pressure of SMC handshake process. At present,
+>> frequent visits will cause the incoming connections to be backlogged in
+>> SMC handshake queue, raise the connections established time. Which is
+>> quite unacceptable for those applications who base on short lived
+>> connections.
+> 
+> (...)
+> 
+>> diff --git a/net/smc/Kconfig b/net/smc/Kconfig
+>> index 1ab3c5a..1903927 100644
+>> --- a/net/smc/Kconfig
+>> +++ b/net/smc/Kconfig
+>> @@ -19,3 +19,15 @@ config SMC_DIAG
+>>   	  smcss.
+>>   
+>>   	  if unsure, say Y.
+>> +
+>> +if MPTCP
+> 
+> After having read the code and the commit message, it is not clear to me
+>   why this new feature requires to have MPTCP enabled. May you share some
+> explanations about that please?
+> 
+>> +
+>> +config SMC_AUTO_FALLBACK
+>> +	bool "SMC: automatic fallback to TCP"
+>> +	default y
+>> +	help
+>> +	  Allow automatic fallback to TCP accroding to the pressure of SMC-R
+>> +	  handshake process.
+>> +
+>> +	  If that's not what you except or unsure, say N.
+>> +endif
+> 
+> Cheers,
+> Matt
