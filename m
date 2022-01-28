@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 672EF49F9AE
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 13:41:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A318F49FA19
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 13:51:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348619AbiA1MlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 07:41:25 -0500
-Received: from mga03.intel.com ([134.134.136.65]:25642 "EHLO mga03.intel.com"
+        id S1348759AbiA1MvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 07:51:24 -0500
+Received: from mga06.intel.com ([134.134.136.31]:56684 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237505AbiA1MlX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jan 2022 07:41:23 -0500
+        id S1348747AbiA1MvX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jan 2022 07:51:23 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643373683; x=1674909683;
+  t=1643374283; x=1674910283;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ztdVh+NZZ18Z6P1Aq48jKG/tZtlC6UcWlAOA5hHHMBE=;
-  b=VNEDUQg+GzWPgkLlXCYQvn76Xc5E8jQ0y9eQ2eRMFHuKFGoDEpdJlBuC
-   qeBwG8g+oKLpZ0yxIpNle/9FBwBWlVEeqZqfz8TCTHaVp68P39UmKn9aN
-   eY74dNI0YfKXyXq4PptkN4RFbh84Flna7HyangtzDuUWqbYKbz9VkYOIl
-   pLDFNoMAC3iKwBZl9+Mb5HWyvFNGy85Na9iBXqVV4nkHYAi/dtNVCc5rl
-   cdpXpxcwU3ASPWBxOQCGjvCn8jUVzwVdM1qH33DOWF65IcvqspSC/JadF
-   k3Sta5Qdxmgh7b1gDNjoaBwj6K63hT+rfZUpB/DHm6IcCDiJQGheOzhHj
+  bh=2MSnnwmn8vkD3zNXwCEuoiVTvH47x4daX/oVgUn/RIA=;
+  b=Y4wEBw/zhFZBofrymw0XuJNYdYF3WUgYes4YWwt3DEIEwf6RCoOXNXlh
+   liohZmdcAgAF+ZunyHhqq7Pxmekioopfg454Ssgh/fqRNHJGkbAZapKeV
+   F8FRivdNss4FC0TQgO+gn1D0UsusxHMqV75P1xCeK46ZBV8e67W65CBk0
+   blih8NiZJJ625hw+hrgauqyjikS0f8Fq3QTLBH5zNK3qWye8Mu6u6LD4L
+   aG3OYMucgN2caM12Ei/Xp5Cd32yfDZYVBhS8XjiVv3sW0CANpVEaGxefs
+   KHecm65iQgDsAqF8WWl7L7TFymdhvu28mtN/eEyha4U5ZwXPpk6QiT74N
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="247060504"
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="307829398"
 X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="247060504"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 04:41:23 -0800
+   d="scan'208";a="307829398"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 04:51:23 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="536118366"
+   d="scan'208";a="478276861"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 28 Jan 2022 04:41:20 -0800
+  by orsmga003.jf.intel.com with ESMTP; 28 Jan 2022 04:51:20 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nDQZ6-000Nrp-32; Fri, 28 Jan 2022 12:41:20 +0000
-Date:   Fri, 28 Jan 2022 20:40:51 +0800
+        id 1nDQim-000NsP-8Z; Fri, 28 Jan 2022 12:51:20 +0000
+Date:   Fri, 28 Jan 2022 20:51:12 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     cgel.zte@gmail.com, davem@davemloft.net
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
+Cc:     kbuild-all@lists.01.org, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
 Subject: Re: [PATCH] net/802: use struct_size over open coded arithmetic
-Message-ID: <202201282017.0TQvVTtf-lkp@intel.com>
+Message-ID: <202201282010.gkSF8kZF-lkp@intel.com>
 References: <20220128080541.1211668-1-chi.minghao@zte.com.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -68,163 +67,115 @@ https://git-scm.com/docs/git-format-patch]
 
 url:    https://github.com/0day-ci/linux/commits/cgel-zte-gmail-com/net-802-use-struct_size-over-open-coded-arithmetic/20220128-160925
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 72d044e4bfa6bd9096536e2e1c62aecfe1a525e4
-config: riscv-randconfig-r042-20220124 (https://download.01.org/0day-ci/archive/20220128/202201282017.0TQvVTtf-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 33b45ee44b1f32ffdbc995e6fec806271b4b3ba4)
+config: x86_64-randconfig-a015 (https://download.01.org/0day-ci/archive/20220128/202201282010.gkSF8kZF-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
 reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
         # https://github.com/0day-ci/linux/commit/9b64e5078d3d779fc56432d43129479f63996c74
         git remote add linux-review https://github.com/0day-ci/linux
         git fetch --no-tags linux-review cgel-zte-gmail-com/net-802-use-struct_size-over-open-coded-arithmetic/20220128-160925
         git checkout 9b64e5078d3d779fc56432d43129479f63996c74
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/net/wireless/ath/wcn36xx/ net/802/
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
->> net/802/garp.c:187:17: error: member reference type 'struct garp_attr' is not a pointer; did you mean to use '.'?
-           attr = kmalloc(struct_size(*attr, data, len), GFP_ATOMIC);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/overflow.h:194:18: note: expanded from macro 'struct_size'
-                       sizeof(*(p)->member) + __must_be_array((p)->member),\
-                               ~~~^
->> net/802/garp.c:187:17: error: indirection requires pointer operand ('unsigned char[]' invalid)
-           attr = kmalloc(struct_size(*attr, data, len), GFP_ATOMIC);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/overflow.h:194:14: note: expanded from macro 'struct_size'
-                       sizeof(*(p)->member) + __must_be_array((p)->member),\
-                              ^~~~~~~~~~~~
->> net/802/garp.c:187:17: error: member reference type 'struct garp_attr' is not a pointer; did you mean to use '.'?
-           attr = kmalloc(struct_size(*attr, data, len), GFP_ATOMIC);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/overflow.h:194:49: note: expanded from macro 'struct_size'
-                       sizeof(*(p)->member) + __must_be_array((p)->member),\
-                                              ~~~~~~~~~~~~~~~~~~~^~~~~~~~~
-   include/linux/compiler.h:258:59: note: expanded from macro '__must_be_array'
-   #define __must_be_array(a)      BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
-                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
-   include/linux/compiler_types.h:287:63: note: expanded from macro '__same_type'
-   #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
-                                                                 ^
-   include/linux/build_bug.h:16:62: note: expanded from macro 'BUILD_BUG_ON_ZERO'
-   #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
-                                                                ^
->> net/802/garp.c:187:17: error: member reference type 'struct garp_attr' is not a pointer; did you mean to use '.'?
-           attr = kmalloc(struct_size(*attr, data, len), GFP_ATOMIC);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/overflow.h:194:49: note: expanded from macro 'struct_size'
-                       sizeof(*(p)->member) + __must_be_array((p)->member),\
-                                              ~~~~~~~~~~~~~~~~~~~^~~~~~~~~
-   include/linux/compiler.h:258:65: note: expanded from macro '__must_be_array'
-   #define __must_be_array(a)      BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
-                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
-   include/linux/compiler_types.h:287:74: note: expanded from macro '__same_type'
-   #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
-                                                                            ^
-   include/linux/build_bug.h:16:62: note: expanded from macro 'BUILD_BUG_ON_ZERO'
-   #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
-                                                                ^
->> net/802/garp.c:187:17: error: indirection requires pointer operand ('struct garp_attr' invalid)
-           attr = kmalloc(struct_size(*attr, data, len), GFP_ATOMIC);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/overflow.h:195:14: note: expanded from macro 'struct_size'
-                       sizeof(*(p)))
-                              ^~~~
-   5 errors generated.
---
->> net/802/mrp.c:276:17: error: member reference type 'struct mrp_attr' is not a pointer; did you mean to use '.'?
-           attr = kmalloc(struct_size(*attr, value, len), GFP_ATOMIC);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/overflow.h:194:18: note: expanded from macro 'struct_size'
-                       sizeof(*(p)->member) + __must_be_array((p)->member),\
-                               ~~~^
->> net/802/mrp.c:276:17: error: indirection requires pointer operand ('unsigned char[]' invalid)
-           attr = kmalloc(struct_size(*attr, value, len), GFP_ATOMIC);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/overflow.h:194:14: note: expanded from macro 'struct_size'
-                       sizeof(*(p)->member) + __must_be_array((p)->member),\
-                              ^~~~~~~~~~~~
->> net/802/mrp.c:276:17: error: member reference type 'struct mrp_attr' is not a pointer; did you mean to use '.'?
-           attr = kmalloc(struct_size(*attr, value, len), GFP_ATOMIC);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/overflow.h:194:49: note: expanded from macro 'struct_size'
-                       sizeof(*(p)->member) + __must_be_array((p)->member),\
-                                              ~~~~~~~~~~~~~~~~~~~^~~~~~~~~
-   include/linux/compiler.h:258:59: note: expanded from macro '__must_be_array'
-   #define __must_be_array(a)      BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
-                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
-   include/linux/compiler_types.h:287:63: note: expanded from macro '__same_type'
-   #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
-                                                                 ^
-   include/linux/build_bug.h:16:62: note: expanded from macro 'BUILD_BUG_ON_ZERO'
-   #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
-                                                                ^
->> net/802/mrp.c:276:17: error: member reference type 'struct mrp_attr' is not a pointer; did you mean to use '.'?
-           attr = kmalloc(struct_size(*attr, value, len), GFP_ATOMIC);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/overflow.h:194:49: note: expanded from macro 'struct_size'
-                       sizeof(*(p)->member) + __must_be_array((p)->member),\
-                                              ~~~~~~~~~~~~~~~~~~~^~~~~~~~~
-   include/linux/compiler.h:258:65: note: expanded from macro '__must_be_array'
-   #define __must_be_array(a)      BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
-                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
-   include/linux/compiler_types.h:287:74: note: expanded from macro '__same_type'
-   #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
-                                                                            ^
-   include/linux/build_bug.h:16:62: note: expanded from macro 'BUILD_BUG_ON_ZERO'
-   #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
-                                                                ^
->> net/802/mrp.c:276:17: error: indirection requires pointer operand ('struct mrp_attr' invalid)
-           attr = kmalloc(struct_size(*attr, value, len), GFP_ATOMIC);
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/overflow.h:195:14: note: expanded from macro 'struct_size'
-                       sizeof(*(p)))
-                              ^~~~
-   5 errors generated.
+   In file included from include/linux/mm.h:30,
+                    from arch/x86/include/asm/cacheflush.h:5,
+                    from include/linux/cacheflush.h:5,
+                    from include/linux/highmem.h:8,
+                    from include/linux/bvec.h:10,
+                    from include/linux/skbuff.h:17,
+                    from net/802/mrp.c:12:
+   net/802/mrp.c: In function 'mrp_attr_create':
+>> include/linux/overflow.h:194:18: error: invalid type argument of '->' (have 'struct mrp_attr')
+     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
+         |                  ^~
+   net/802/mrp.c:276:17: note: in expansion of macro 'struct_size'
+     276 |  attr = kmalloc(struct_size(*attr, value, len), GFP_ATOMIC);
+         |                 ^~~~~~~~~~~
+   In file included from include/linux/container_of.h:5,
+                    from include/linux/kernel.h:21,
+                    from net/802/mrp.c:10:
+   include/linux/overflow.h:194:49: error: invalid type argument of '->' (have 'struct mrp_attr')
+     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
+         |                                                 ^~
+   include/linux/build_bug.h:16:62: note: in definition of macro 'BUILD_BUG_ON_ZERO'
+      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
+         |                                                              ^
+   include/linux/compiler.h:258:46: note: in expansion of macro '__same_type'
+     258 | #define __must_be_array(a) BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
+         |                                              ^~~~~~~~~~~
+   include/linux/overflow.h:194:30: note: in expansion of macro '__must_be_array'
+     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
+         |                              ^~~~~~~~~~~~~~~
+   net/802/mrp.c:276:17: note: in expansion of macro 'struct_size'
+     276 |  attr = kmalloc(struct_size(*attr, value, len), GFP_ATOMIC);
+         |                 ^~~~~~~~~~~
+   include/linux/overflow.h:194:49: error: invalid type argument of '->' (have 'struct mrp_attr')
+     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
+         |                                                 ^~
+   include/linux/build_bug.h:16:62: note: in definition of macro 'BUILD_BUG_ON_ZERO'
+      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
+         |                                                              ^
+   include/linux/compiler.h:258:46: note: in expansion of macro '__same_type'
+     258 | #define __must_be_array(a) BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
+         |                                              ^~~~~~~~~~~
+   include/linux/overflow.h:194:30: note: in expansion of macro '__must_be_array'
+     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
+         |                              ^~~~~~~~~~~~~~~
+   net/802/mrp.c:276:17: note: in expansion of macro 'struct_size'
+     276 |  attr = kmalloc(struct_size(*attr, value, len), GFP_ATOMIC);
+         |                 ^~~~~~~~~~~
+   include/linux/build_bug.h:16:51: error: bit-field '<anonymous>' width not an integer constant
+      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
+         |                                                   ^
+   include/linux/compiler.h:258:28: note: in expansion of macro 'BUILD_BUG_ON_ZERO'
+     258 | #define __must_be_array(a) BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
+         |                            ^~~~~~~~~~~~~~~~~
+   include/linux/overflow.h:194:30: note: in expansion of macro '__must_be_array'
+     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
+         |                              ^~~~~~~~~~~~~~~
+   net/802/mrp.c:276:17: note: in expansion of macro 'struct_size'
+     276 |  attr = kmalloc(struct_size(*attr, value, len), GFP_ATOMIC);
+         |                 ^~~~~~~~~~~
+   In file included from include/linux/mm.h:30,
+                    from arch/x86/include/asm/cacheflush.h:5,
+                    from include/linux/cacheflush.h:5,
+                    from include/linux/highmem.h:8,
+                    from include/linux/bvec.h:10,
+                    from include/linux/skbuff.h:17,
+                    from net/802/mrp.c:12:
+>> include/linux/overflow.h:195:14: error: invalid type argument of unary '*' (have 'struct mrp_attr')
+     195 |       sizeof(*(p)))
+         |              ^~~~
+   net/802/mrp.c:276:17: note: in expansion of macro 'struct_size'
+     276 |  attr = kmalloc(struct_size(*attr, value, len), GFP_ATOMIC);
+         |                 ^~~~~~~~~~~
 
 
-vim +187 net/802/garp.c
+vim +194 include/linux/overflow.h
 
-   166	
-   167	static struct garp_attr *garp_attr_create(struct garp_applicant *app,
-   168						  const void *data, u8 len, u8 type)
-   169	{
-   170		struct rb_node *parent = NULL, **p = &app->gid.rb_node;
-   171		struct garp_attr *attr;
-   172		int d;
-   173	
-   174		while (*p) {
-   175			parent = *p;
-   176			attr = rb_entry(parent, struct garp_attr, node);
-   177			d = garp_attr_cmp(attr, data, len, type);
-   178			if (d > 0)
-   179				p = &parent->rb_left;
-   180			else if (d < 0)
-   181				p = &parent->rb_right;
-   182			else {
-   183				/* The attribute already exists; re-use it. */
-   184				return attr;
-   185			}
-   186		}
- > 187		attr = kmalloc(struct_size(*attr, data, len), GFP_ATOMIC);
-   188		if (!attr)
-   189			return attr;
-   190		attr->state = GARP_APPLICANT_VO;
-   191		attr->type  = type;
-   192		attr->dlen  = len;
-   193		memcpy(attr->data, data, len);
-   194	
-   195		rb_link_node(&attr->node, parent, p);
-   196		rb_insert_color(&attr->node, &app->gid);
-   197		return attr;
-   198	}
-   199	
+610b15c50e86eb Kees Cook           2018-05-07  180  
+610b15c50e86eb Kees Cook           2018-05-07  181  /**
+610b15c50e86eb Kees Cook           2018-05-07  182   * struct_size() - Calculate size of structure with trailing array.
+610b15c50e86eb Kees Cook           2018-05-07  183   * @p: Pointer to the structure.
+610b15c50e86eb Kees Cook           2018-05-07  184   * @member: Name of the array member.
+b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  185   * @count: Number of elements in the array.
+610b15c50e86eb Kees Cook           2018-05-07  186   *
+610b15c50e86eb Kees Cook           2018-05-07  187   * Calculates size of memory needed for structure @p followed by an
+b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  188   * array of @count number of @member elements.
+610b15c50e86eb Kees Cook           2018-05-07  189   *
+610b15c50e86eb Kees Cook           2018-05-07  190   * Return: number of bytes needed or SIZE_MAX on overflow.
+610b15c50e86eb Kees Cook           2018-05-07  191   */
+b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  192  #define struct_size(p, member, count)					\
+b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  193  	__ab_c_size(count,						\
+610b15c50e86eb Kees Cook           2018-05-07 @194  		    sizeof(*(p)->member) + __must_be_array((p)->member),\
+610b15c50e86eb Kees Cook           2018-05-07 @195  		    sizeof(*(p)))
+610b15c50e86eb Kees Cook           2018-05-07  196  
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
