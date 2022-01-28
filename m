@@ -2,164 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5D8C49FC0F
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 15:48:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C709049FC49
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 15:59:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349458AbiA1OsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 09:48:16 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.165]:40053 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349456AbiA1OsP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 09:48:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643381291;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=iz8Ezjk18Z6wYZm+g6kbkcCyQRUTLyBEEhSEQinqcOw=;
-    b=ABaGBri3Bcgq05h/X9PBt42+pWoiBzEhuC8rjE/MM0BbND5U525ISO0fxInw8s1zhd
-    01pMDcyFeB/Of6dPkesCbi0WtuqaakUg8v+VqJ+73gvLF3N8qFfra2whGzl6/+7EPe2y
-    nt/ARaYCEwMr/VS6Rs+633anY2tLiJCf6tDk0CUCPCTRYAZYgDo/IxTypm4586F4Zisj
-    sTtc8k6bEsfqKc1N4ec63z3jFYKnwKv1cpHvX09qsbNEwT+Adwe9b9pWL8uGgnM54GDV
-    ba90xqgeUU+tt6WWQmyePmHfj7QRB/735pfaT6BGuakPIEmfjrK9+e0arza35weBhVGq
-    4J5w==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cfa:f900::b82]
-    by smtp.strato.de (RZmta 47.38.0 AUTH)
-    with ESMTPSA id zaacbfy0SEmARaa
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Fri, 28 Jan 2022 15:48:10 +0100 (CET)
-Message-ID: <07c69ccd-dbc0-5c74-c68e-8636ec9179ef@hartkopp.net>
-Date:   Fri, 28 Jan 2022 15:48:05 +0100
+        id S1346083AbiA1O7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 09:59:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50188 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232586AbiA1O7w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 09:59:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26059C061714;
+        Fri, 28 Jan 2022 06:59:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D25BCB824FE;
+        Fri, 28 Jan 2022 14:59:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E653EC340E0;
+        Fri, 28 Jan 2022 14:59:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643381989;
+        bh=/uP5vvPUBDipAzrUPDGSTlRiO2kQLT1St7WxjZjMoZk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=KaCJ79tkFQvlEpR301IzypviUYVubfPBjlOsca0nvdWG1Xn7aOKyWYO8nu+VHoOxq
+         z+7LbBCCoKKEoPiWkRzH7JvrtP/2RAr/8+tDGtKD1qjEs6ugWYyL2q8E5WvSMPRbuH
+         nVgt0gWpzAeqcjncb3w8WOh4EPmSsiC6YChX/bcEZpHX1hbcNehVJSUj1yk35f0+eD
+         BFBwIiUW7+cqgIzbMfoJTmuRom0tnBpATDnijlDpURSy40q8JWlFzHXqnBZaHN1Ngg
+         dfzl4tqGb9+fIWYKA289jDwwy8eA16SESsXYAUPhRMFWd6yBIbaclE5ycpq1M00KvA
+         EPczk6P2rUXkQ==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: stmmac: dwmac-sun8i: make clk really gated during rpm suspended
+Date:   Fri, 28 Jan 2022 22:52:13 +0800
+Message-Id: <20220128145213.2454-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net] can: isotp: isotp_rcv_cf(): fix so->rx race problem
-Content-Language: en-US
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <eaafaca3-f003-ca56-c04c-baf6cf4f7627@hartkopp.net>
- <890d8209-f400-a3b0-df9c-3e198e3834d6@huawei.com>
- <1fb4407a-1269-ec50-0ad5-074e49f91144@hartkopp.net>
- <2aba02d4-0597-1d55-8b3e-2c67386f68cf@huawei.com>
- <64695483-ff75-4872-db81-ca55763f95cf@hartkopp.net>
- <d7e69278-d741-c706-65e1-e87623d9a8e8@huawei.com>
- <97339463-b357-3e0e-1cbf-c66415c08129@hartkopp.net>
- <24e6da96-a3e5-7b4e-102b-b5676770b80e@hartkopp.net>
- <20220128080704.ns5fzbyn72wfoqmx@pengutronix.de>
- <72419ca8-b0cb-1e9d-3fcc-655defb662df@hartkopp.net>
- <20220128084603.jvrvapqf5dt57yiq@pengutronix.de>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20220128084603.jvrvapqf5dt57yiq@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Marc, hello William,
+Currently, the dwmac-sun8i's stmmaceth clk isn't disabled even if the
+the device has been runtime suspended. The reason is the driver gets
+the "stmmaceth" clk as tx_clk and enabling it during probe. But
+there's no other usage of tx_clk except preparing and enabling, so
+we can remove tx_clk and its usage then rely on the common routine
+stmmac_probe_config_dt() to prepare and enable the stmmaceth clk
+during driver initialization, and benefit from the runtime pm feature
+after probed.
 
-On 28.01.22 09:46, Marc Kleine-Budde wrote:
-> On 28.01.2022 09:32:40, Oliver Hartkopp wrote:
->>
->>
->> On 28.01.22 09:07, Marc Kleine-Budde wrote:
->>> On 28.01.2022 08:56:19, Oliver Hartkopp wrote:
->>>> I've seen the frame processing sometimes freezes for one second when
->>>> stressing the isotp_rcv() from multiple sources. This finally freezes
->>>> the entire softirq which is either not good and not needed as we only
->>>> need to fix this race for stress tests - and not for real world usage
->>>> that does not create this case.
->>>
->>> Hmmm, this doesn't sound good. Can you test with LOCKDEP enabled?
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+---
+ .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 30 +++++++------------
+ 1 file changed, 11 insertions(+), 19 deletions(-)
 
-
->> #
->> # Lock Debugging (spinlocks, mutexes, etc...)
->> #
->> CONFIG_LOCK_DEBUGGING_SUPPORT=y
->> # CONFIG_PROVE_LOCKING is not set
-> CONFIG_PROVE_LOCKING=y
-
-Now enabled even more locking (seen relevant kernel config at the end).
-
-It turns out that there is no visible difference when using spin_lock() 
-or spin_trylock().
-
-I only got some of these kernel log entries
-
-Jan 28 11:13:14 silver kernel: [ 2396.323211] perf: interrupt took too 
-long (2549 > 2500), lowering kernel.perf_event_max_sample_rate to 78250
-Jan 28 11:25:49 silver kernel: [ 3151.172773] perf: interrupt took too 
-long (3188 > 3186), lowering kernel.perf_event_max_sample_rate to 62500
-Jan 28 11:45:24 silver kernel: [ 4325.583328] perf: interrupt took too 
-long (4009 > 3985), lowering kernel.perf_event_max_sample_rate to 49750
-Jan 28 12:15:46 silver kernel: [ 6148.238246] perf: interrupt took too 
-long (5021 > 5011), lowering kernel.perf_event_max_sample_rate to 39750
-Jan 28 13:01:45 silver kernel: [ 8907.303715] perf: interrupt took too 
-long (6285 > 6276), lowering kernel.perf_event_max_sample_rate to 31750
-
-But I get these sporadically anyway. No other LOCKDEP splat.
-
-At least the issue reported by William should be fixed now - but I'm 
-still unclear whether spin_lock() or spin_trylock() is the best approach 
-here in the NET_RX softirq?!?
-
-Best regards,
-Oliver
-
-
-$ grep LOCK .config | grep -v BLOCK | grep -v CLOCK
-CONFIG_LOCKDEP_SUPPORT=y
-# CONFIG_PM_WAKELOCKS is not set
-CONFIG_HAVE_HARDLOCKUP_DETECTOR_PERF=y
-# CONFIG_LOCK_EVENT_COUNTS is not set
-CONFIG_UNINLINE_SPIN_UNLOCK=y
-CONFIG_LOCK_SPIN_ON_OWNER=y
-CONFIG_ARCH_USE_QUEUED_SPINLOCKS=y
-CONFIG_QUEUED_SPINLOCKS=y
-CONFIG_ARCH_USE_QUEUED_RWLOCKS=y
-CONFIG_QUEUED_RWLOCKS=y
-CONFIG_SPLIT_PTLOCK_CPUS=4
-CONFIG_ARCH_ENABLE_SPLIT_PMD_PTLOCK=y
-CONFIG_PCI_LOCKLESS_CONFIG=y
-# CONFIG_DRM_DEBUG_MODESET_LOCK is not set
-CONFIG_HWSPINLOCK=y
-CONFIG_I8253_LOCK=y
-CONFIG_FILE_LOCKING=y
-# CONFIG_SECURITY_LOCKDOWN_LSM is not set
-# CONFIG_SECURITY_LANDLOCK is not set
-# CONFIG_CRYPTO_DEV_PADLOCK is not set
-CONFIG_ARCH_USE_CMPXCHG_LOCKREF=y
-CONFIG_LOCKUP_DETECTOR=y
-CONFIG_SOFTLOCKUP_DETECTOR=y
-# CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC is not set
-CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC_VALUE=0
-CONFIG_HARDLOCKUP_DETECTOR_PERF=y
-CONFIG_HARDLOCKUP_CHECK_TIMESTAMP=y
-CONFIG_HARDLOCKUP_DETECTOR=y
-# CONFIG_BOOTPARAM_HARDLOCKUP_PANIC is not set
-CONFIG_BOOTPARAM_HARDLOCKUP_PANIC_VALUE=0
-# CONFIG_TEST_LOCKUP is not set
-CONFIG_LOCK_DEBUGGING_SUPPORT=y
-CONFIG_PROVE_LOCKING=y
-CONFIG_PROVE_RAW_LOCK_NESTING=y
-# CONFIG_LOCK_STAT is not set
-CONFIG_DEBUG_SPINLOCK=y
-CONFIG_DEBUG_LOCK_ALLOC=y
-CONFIG_LOCKDEP=y
-CONFIG_LOCKDEP_BITS=15
-CONFIG_LOCKDEP_CHAINS_BITS=16
-CONFIG_LOCKDEP_STACK_TRACE_BITS=19
-CONFIG_LOCKDEP_STACK_TRACE_HASH_BITS=14
-CONFIG_LOCKDEP_CIRCULAR_QUEUE_BITS=12
-CONFIG_DEBUG_LOCKDEP=y
-# CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
-# CONFIG_LOCK_TORTURE_TEST is not set
-# CONFIG_CSD_LOCK_WAIT_DEBUG is not set
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+index 09644ab0d87a..f86cc83003f2 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -16,6 +16,7 @@
+ #include <linux/of_net.h>
+ #include <linux/phy.h>
+ #include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/regmap.h>
+ #include <linux/stmmac.h>
+@@ -57,7 +58,6 @@ struct emac_variant {
+ };
+ 
+ /* struct sunxi_priv_data - hold all sunxi private data
+- * @tx_clk:	reference to MAC TX clock
+  * @ephy_clk:	reference to the optional EPHY clock for the internal PHY
+  * @regulator:	reference to the optional regulator
+  * @rst_ephy:	reference to the optional EPHY reset for the internal PHY
+@@ -68,7 +68,6 @@ struct emac_variant {
+  * @mux_handle:	Internal pointer used by mdio-mux lib
+  */
+ struct sunxi_priv_data {
+-	struct clk *tx_clk;
+ 	struct clk *ephy_clk;
+ 	struct regulator *regulator;
+ 	struct reset_control *rst_ephy;
+@@ -579,22 +578,14 @@ static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
+ 		}
+ 	}
+ 
+-	ret = clk_prepare_enable(gmac->tx_clk);
+-	if (ret) {
+-		dev_err(&pdev->dev, "Could not enable AHB clock\n");
+-		goto err_disable_regulator;
+-	}
+-
+ 	if (gmac->use_internal_phy) {
+ 		ret = sun8i_dwmac_power_internal_phy(netdev_priv(ndev));
+ 		if (ret)
+-			goto err_disable_clk;
++			goto err_disable_regulator;
+ 	}
+ 
+ 	return 0;
+ 
+-err_disable_clk:
+-	clk_disable_unprepare(gmac->tx_clk);
+ err_disable_regulator:
+ 	if (gmac->regulator)
+ 		regulator_disable(gmac->regulator);
+@@ -1043,8 +1034,6 @@ static void sun8i_dwmac_exit(struct platform_device *pdev, void *priv)
+ 	if (gmac->variant->soc_has_internal_phy)
+ 		sun8i_dwmac_unpower_internal_phy(gmac);
+ 
+-	clk_disable_unprepare(gmac->tx_clk);
+-
+ 	if (gmac->regulator)
+ 		regulator_disable(gmac->regulator);
+ }
+@@ -1167,12 +1156,6 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
+-	gmac->tx_clk = devm_clk_get(dev, "stmmaceth");
+-	if (IS_ERR(gmac->tx_clk)) {
+-		dev_err(dev, "Could not get TX clock\n");
+-		return PTR_ERR(gmac->tx_clk);
+-	}
+-
+ 	/* Optional regulator for PHY */
+ 	gmac->regulator = devm_regulator_get_optional(dev, "phy");
+ 	if (IS_ERR(gmac->regulator)) {
+@@ -1254,6 +1237,12 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 	ndev = dev_get_drvdata(&pdev->dev);
+ 	priv = netdev_priv(ndev);
+ 
++	/* the MAC is runtime suspended after stmmac_dvr_probe(), so we
++	 * need to ensure the MAC resume back before other operations such
++	 * as reset.
++	 */
++	pm_runtime_get_sync(&pdev->dev);
++
+ 	/* The mux must be registered after parent MDIO
+ 	 * so after stmmac_dvr_probe()
+ 	 */
+@@ -1272,12 +1261,15 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 			goto dwmac_remove;
+ 	}
+ 
++	pm_runtime_put(&pdev->dev);
++
+ 	return 0;
+ 
+ dwmac_mux:
+ 	reset_control_put(gmac->rst_ephy);
+ 	clk_put(gmac->ephy_clk);
+ dwmac_remove:
++	pm_runtime_put_noidle(&pdev->dev);
+ 	stmmac_dvr_remove(&pdev->dev);
+ dwmac_exit:
+ 	sun8i_dwmac_exit(pdev, gmac);
+-- 
+2.34.1
 
