@@ -2,98 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9117A49FCE0
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 16:33:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B40549FCF3
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 16:36:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349580AbiA1PdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 10:33:14 -0500
-Received: from netrider.rowland.org ([192.131.102.5]:36489 "HELO
-        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with SMTP id S1343568AbiA1PdN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 10:33:13 -0500
-Received: (qmail 206926 invoked by uid 1000); 28 Jan 2022 10:33:12 -0500
-Date:   Fri, 28 Jan 2022 10:33:12 -0500
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Oliver Neukum <oneukum@suse.com>,
+        id S237957AbiA1Pgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 10:36:55 -0500
+Received: from smtp2.axis.com ([195.60.68.18]:49468 "EHLO smtp2.axis.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231994AbiA1Pgz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jan 2022 10:36:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1643384215;
+  x=1674920215;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=QRa1Eccx+diOP5X9GiLVxGI3Jr2Yst13CY1xK607F/4=;
+  b=A9XtqF67HePwlIPYNlgeLyrvimfu01CEJNkOtQ0L6spX1it9pfK8CZFR
+   tADJcRr0Mjsru1E0b4Bt2q6dTwIsESwx7DYv1h+tHIyn9uE8Dvmm9xUA2
+   CE11f1Py8JyyMCGhYc8PRD1ukunDSx5D/gA7wWSRRFQw1YRWhcsiOgfRX
+   TSePbYRFz9KKkz/cruLvLA9KTFG+zlEhP5hDurnddq+1XFgYMuLY0AP5D
+   zL2cTiiYiBfuyl8sXVhcPSHcPkvRE9P8avvNJODat0L5zuoonn/GlFo6i
+   r6dkj4TzucxIrrU5lo4OVioItvi4CnrJfkeoIB5uZL0ZacqkYVoRvF8zN
+   Q==;
+From:   Camel Guo <camel.guo@axis.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/1] usbnet: add devlink support
-Message-ID: <YfQMuOYF8SdoykZJ@rowland.harvard.edu>
-References: <20220127110742.922752-1-o.rempel@pengutronix.de>
- <YfJ+ceEzvzMM1JsW@kroah.com>
- <YfLPvF6pmcL1UG2f@rowland.harvard.edu>
- <YfPTCmMDlXD1UHx9@pengutronix.de>
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+CC:     <kernel@axis.com>, Camel Guo <camelg@axis.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] net: stmmac: dump gmac4 DMA registers correctly
+Date:   Fri, 28 Jan 2022 16:36:42 +0100
+Message-ID: <20220128153642.3129922-1-camel.guo@axis.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfPTCmMDlXD1UHx9@pengutronix.de>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 12:27:06PM +0100, Oleksij Rempel wrote:
-> On Thu, Jan 27, 2022 at 12:00:44PM -0500, Alan Stern wrote:
-> > On Thu, Jan 27, 2022 at 12:13:53PM +0100, Greg KH wrote:
-> > > On Thu, Jan 27, 2022 at 12:07:42PM +0100, Oleksij Rempel wrote:
-> > > > To provide generic way to detect USB issues or HW issues on different
-> > > > levels we need to make use of devlink.
-> > > 
-> > > Please make this generic to all USB devices, usbnet is not special here
-> > > at all.
-> > 
-> > Even more basic question: How is the kernel supposed to tell the 
-> > difference between a USB issue and a HW issue?  That is, by what 
-> > criterion do you decide which category a particular issue falls under?
-> 
-> In case of networking device, from user space perspective, we have a
-> communication issue with some external device over the Ethernet.
-> So, depending on the health state of following chain:
-> cpu->hcd->USB cable->ethernet_controller->ethernet_cable-<...
-> 
-> We need to decide what to do, and what can be done automatically by
-> device itself,
+From: Camel Guo <camelg@axis.com>
 
-"Device"?  Do you mean "driver"?  I wouldn't expect the device to do 
-much of anything by itself.
+Unlike gmac100, gmac1000, gmac4 has 27 DMA registers and they are
+located at DMA_CHAN_BASE_ADDR (0x1100). In order for ethtool to dump
+gmac4 DMA registers correctly, this commit checks if a net_device has
+gmac4 and uses different logic to dump its DMA registers.
 
->  for example Mars rover :) The user space should get as
-> much information as possible what's going on in the system, to decide
-> the proper measures to fix or mitigate the problem.
+This fixes the following KASAN warning, which can normally be triggered
+by a command similar like "ethtool -d eth0":
 
-I disagree.  What you're talking about is a debugging facility.  
-Normally users do not want to get that much information.  Particularly 
-since most of it is usually useless.
+BUG: KASAN: vmalloc-out-of-bounds in dwmac4_dump_dma_regs+0x6d4/0xb30
+Write of size 4 at addr ffffffc010177100 by task ethtool/1839
+ kasan_report+0x200/0x21c
+ __asan_report_store4_noabort+0x34/0x60
+ dwmac4_dump_dma_regs+0x6d4/0xb30
+ stmmac_ethtool_gregs+0x110/0x204
+ ethtool_get_regs+0x200/0x4b0
+ dev_ethtool+0x1dac/0x3800
+ dev_ioctl+0x7c0/0xb50
+ sock_ioctl+0x298/0x6c4
+ ...
 
->  System designers
-> usually (hopefully) find out during testing what URB status and IP
-> uplink status for that hardware means and how to fix that.
+Signed-off-by: Camel Guo <camelg@axis.com>
+---
+ .../net/ethernet/stmicro/stmmac/dwmac_dma.h   |  1 +
+ .../ethernet/stmicro/stmmac/stmmac_ethtool.c  | 19 +++++++++++++++++--
+ 2 files changed, 18 insertions(+), 2 deletions(-)
 
-System designers generally have much different requirements from 
-ordinary users.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h b/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
+index 1914ad698cab..acd70b9a3173 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
+@@ -150,6 +150,7 @@
+ 
+ #define NUM_DWMAC100_DMA_REGS	9
+ #define NUM_DWMAC1000_DMA_REGS	23
++#define NUM_DWMAC4_DMA_REGS	27
+ 
+ void dwmac_enable_dma_transmission(void __iomem *ioaddr);
+ void dwmac_enable_dma_irq(void __iomem *ioaddr, u32 chan, bool rx, bool tx);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index 164dff5ec32e..abfb3cd5958d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -21,10 +21,18 @@
+ #include "dwxgmac2.h"
+ 
+ #define REG_SPACE_SIZE	0x1060
++#define GMAC4_REG_SPACE_SIZE	0x116C
+ #define MAC100_ETHTOOL_NAME	"st_mac100"
+ #define GMAC_ETHTOOL_NAME	"st_gmac"
+ #define XGMAC_ETHTOOL_NAME	"st_xgmac"
+ 
++/* Same as DMA_CHAN_BASE_ADDR defined in dwmac4_dma.h
++ *
++ * It is here because dwmac_dma.h and dwmac4_dam.h can not be included at the
++ * same time due to the conflicting macro names.
++ */
++#define GMAC4_DMA_CHAN_BASE_ADDR  0x00001100
++
+ #define ETHTOOL_DMA_OFFSET	55
+ 
+ struct stmmac_stats {
+@@ -434,6 +442,8 @@ static int stmmac_ethtool_get_regs_len(struct net_device *dev)
+ 
+ 	if (priv->plat->has_xgmac)
+ 		return XGMAC_REGSIZE * 4;
++	else if (priv->plat->has_gmac4)
++		return GMAC4_REG_SPACE_SIZE;
+ 	return REG_SPACE_SIZE;
+ }
+ 
+@@ -446,8 +456,13 @@ static void stmmac_ethtool_gregs(struct net_device *dev,
+ 	stmmac_dump_mac_regs(priv, priv->hw, reg_space);
+ 	stmmac_dump_dma_regs(priv, priv->ioaddr, reg_space);
+ 
+-	if (!priv->plat->has_xgmac) {
+-		/* Copy DMA registers to where ethtool expects them */
++	/* Copy DMA registers to where ethtool expects them */
++	if (priv->plat->has_gmac4) {
++		/* GMAC4 dumps its DMA registers at its DMA_CHAN_BASE_ADDR */
++		memcpy(&reg_space[ETHTOOL_DMA_OFFSET],
++		       &reg_space[GMAC4_DMA_CHAN_BASE_ADDR / 4],
++		       NUM_DWMAC4_DMA_REGS * 4);
++	} else if (!priv->plat->has_xgmac) {
+ 		memcpy(&reg_space[ETHTOOL_DMA_OFFSET],
+ 		       &reg_space[DMA_BUS_MODE / 4],
+ 		       NUM_DWMAC1000_DMA_REGS * 4);
+-- 
+2.30.2
 
-But let's go back to the chain you mentioned:
-
-	cpu->hcd->USB cable->ethernet_controller->ethernet_cable-> ...
-
-In general there is no way to tell at what stage something went wrong.  
-For example, if the kernel does not receive a response to an URB, the 
-program could be in the CPU, the HCD, the USB cable, or the ethernet 
-controller, with no way to tell where it really is.  (And that's 
-assuming the problem is a hardware failure, not a software bug!)
-
-All we can do in the real world is record error responses.  At the 
-moment we don't have any unified way of reporting them to userspace, 
-partly because nobody has asked for it and partly because error 
-responses don't always mean that something has failed.  (For example, 
-they might mean that the system has asked to a device to perform an 
-action it doesn't support, or they might mean the user has suddenly 
-unplugged a USB cable.)
-
-Greg's suggestion that you try it out and see how much signal you get 
-among all the noise is a good idea.
-
-Alan Stern
