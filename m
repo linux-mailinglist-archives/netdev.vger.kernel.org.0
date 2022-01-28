@@ -2,163 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55F6B49FBFE
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 15:45:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F8E249FBFF
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 15:45:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349389AbiA1OpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 09:45:09 -0500
-Received: from out199-10.us.a.mail.aliyun.com ([47.90.199.10]:50277 "EHLO
-        out199-10.us.a.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349404AbiA1OpG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 09:45:06 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V334mTe_1643381096;
-Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V334mTe_1643381096)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 28 Jan 2022 22:44:57 +0800
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        matthieu.baerts@tessares.net,
-        "D. Wythe" <alibuda@linux.alibaba.com>
-Subject: [PATCH v2 net-next 3/3] net/smc: Fallback when handshake workqueue congested
-Date:   Fri, 28 Jan 2022 22:44:38 +0800
-Message-Id: <2d3f81193fc7a245c50b30329d0e84ae98427a33.1643380219.git.alibuda@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <cover.1643380219.git.alibuda@linux.alibaba.com>
-References: <cover.1643380219.git.alibuda@linux.alibaba.com>
+        id S1349401AbiA1OpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 09:45:13 -0500
+Received: from prt-mail.chinatelecom.cn ([42.123.76.222]:53241 "EHLO
+        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1349397AbiA1OpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 09:45:13 -0500
+HMM_SOURCE_IP: 172.18.0.48:39842.1715433666
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-202.80.192.38 (unknown [172.18.0.48])
+        by chinatelecom.cn (HERMES) with SMTP id 6B76A280029;
+        Fri, 28 Jan 2022 22:45:04 +0800 (CST)
+X-189-SAVE-TO-SEND: +sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.48])
+        by app0024 with ESMTP id 0df3d2047b33487fa1e6ddceffca084c for j.vosburgh@gmail.com;
+        Fri, 28 Jan 2022 22:45:07 CST
+X-Transaction-ID: 0df3d2047b33487fa1e6ddceffca084c
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.48
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
+To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jay.vosburgh@canonical.com, nikolay@nvidia.com,
+        huyd12@chinatelecom.cn, sunshouxin@chinatelecom.cn
+Subject: [PATCH v11] net: bonding: Add support for IPV6 ns/na to balance-alb/balance-tlb mode
+Date:   Fri, 28 Jan 2022 09:44:42 -0500
+Message-Id: <20220128144442.101289-1-sunshouxin@chinatelecom.cn>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "D. Wythe" <alibuda@linux.alibaba.com>
+Since ipv6 neighbor solicitation and advertisement messages
+isn't handled gracefully in bond6 driver, we can see packet
+drop due to inconsistency between mac address in the option
+message and source MAC .
 
-This patch intends to provide a mechanism to allow automatic fallback to
-TCP according to the pressure of SMC handshake process. At present,
-frequent visits will cause the incoming connections to be backlogged in
-SMC handshake queue, raise the connections established time. Which is
-quite unacceptable for those applications who base on short lived
-connections.
+Another examples is ipv6 neighbor solicitation and advertisement
+messages from VM via tap attached to host bridge, the src mac
+might be changed through balance-alb mode, but it is not synced
+with Link-layer address in the option message.
 
-It should be optional for applications that don't care about connection
-established time. For now, this patch only provides the switch at the
-compile time.
+The patch implements bond6's tx handle for ipv6 neighbor
+solicitation and advertisement messages.
 
-There are two ways to implement this mechanism:
-
-1. Fallback when TCP established.
-2. Fallback before TCP established.
-
-In the first way, we need to wait and receive CLC messages that the
-client will potentially send, and then actively reply with a decline
-message, in a sense, which is also a sort of SMC handshake, affect the
-connections established time on its way.
-
-In the second way, the only problem is that we need to inject SMC logic
-into TCP when it is about to reply the incoming SYN, since we already do
-that, it's seems not a problem anymore. And advantage is obvious, few
-additional processes are required to complete the fallback.
-
-This patch use the second way.
-
-Link: https://lore.kernel.org/all/1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com/
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
 ---
-changelog:
-v2: fix invalid dependencies for kconfig 
----
- include/linux/tcp.h  |  1 +
- net/ipv4/tcp_input.c |  3 ++-
- net/smc/Kconfig      | 12 ++++++++++++
- net/smc/af_smc.c     | 22 ++++++++++++++++++++++
- 4 files changed, 37 insertions(+), 1 deletion(-)
+v9->v10:
+- add IPv6 header pull in alb_determine_nd.
+- combine bond_xmit_alb_slave_get's IPv6 header
+pull with alb_determine_nd's
 
-diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-index 78b91bb..1c4ae5d 100644
---- a/include/linux/tcp.h
-+++ b/include/linux/tcp.h
-@@ -394,6 +394,7 @@ struct tcp_sock {
- 	bool	is_mptcp;
- #endif
- #if IS_ENABLED(CONFIG_SMC)
-+	bool	(*smc_in_limited)(const struct sock *sk);
- 	bool	syn_smc;	/* SYN includes SMC */
- #endif
- 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index dc49a3d..9890de9 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6701,7 +6701,8 @@ static void tcp_openreq_init(struct request_sock *req,
- 	ireq->ir_num = ntohs(tcp_hdr(skb)->dest);
- 	ireq->ir_mark = inet_request_mark(sk, skb);
- #if IS_ENABLED(CONFIG_SMC)
--	ireq->smc_ok = rx_opt->smc_ok;
-+	ireq->smc_ok = rx_opt->smc_ok && !(tcp_sk(sk)->smc_in_limited &&
-+			tcp_sk(sk)->smc_in_limited(sk));
- #endif
+v10->v11:
+- use pskb_network_may_pull insteading of pskb_may_pull in
+alb_determine_nd
+- remove __alb_determine_nd
+---
+ drivers/net/bonding/bond_alb.c | 30 ++++++++++++++++++++++++++++--
+ 1 file changed, 28 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
+index 533e476988f2..c98a4b0a8453 100644
+--- a/drivers/net/bonding/bond_alb.c
++++ b/drivers/net/bonding/bond_alb.c
+@@ -1269,6 +1269,27 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
+ 	return res;
  }
  
-diff --git a/net/smc/Kconfig b/net/smc/Kconfig
-index 1ab3c5a..a4e1713 100644
---- a/net/smc/Kconfig
-+++ b/net/smc/Kconfig
-@@ -19,3 +19,15 @@ config SMC_DIAG
- 	  smcss.
- 
- 	  if unsure, say Y.
-+
-+if SMC
-+
-+config SMC_AUTO_FALLBACK
-+	bool "SMC: automatic fallback to TCP"
-+	default y
-+	help
-+	  Allow automatic fallback to TCP accroding to the pressure of SMC-R
-+	  handshake process.
-+
-+	  If that's not what you except or unsure, say N.
-+endif
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 66a0e64..49b8a29 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -101,6 +101,24 @@ static struct sock *smc_tcp_syn_recv_sock(const struct sock *sk, struct sk_buff
- 	return NULL;
- }
- 
-+#if IS_ENABLED(CONFIG_SMC_AUTO_FALLBACK)
-+static bool smc_is_in_limited(const struct sock *sk)
++/* determine if the packet is NA or NS */
++static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
 +{
-+	const struct smc_sock *smc;
++	struct ipv6hdr *ip6hdr;
++	struct icmp6hdr *hdr;
 +
-+	smc = (const struct smc_sock *)
-+		((uintptr_t)sk->sk_user_data & ~SK_USER_DATA_NOCOPY);
-+
-+	if (!smc)
++	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr)))
 +		return true;
 +
-+	if (workqueue_congested(WORK_CPU_UNBOUND, smc_hs_wq))
++	ip6hdr = ipv6_hdr(skb);
++	if (ip6hdr->nexthdr != IPPROTO_ICMPV6)
++		return false;
++
++	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr) + sizeof(*hdr)))
 +		return true;
 +
-+	return false;
++	hdr = icmp6_hdr(skb);
++	return hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
++		hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION;
 +}
-+#endif
 +
- static struct smc_hashinfo smc_v4_hashinfo = {
- 	.lock = __RW_LOCK_UNLOCKED(smc_v4_hashinfo.lock),
- };
-@@ -2206,6 +2224,10 @@ static int smc_listen(struct socket *sock, int backlog)
+ /************************ exported alb functions ************************/
  
- 	inet_csk(smc->clcsock->sk)->icsk_af_ops = &smc->af_ops;
+ int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+@@ -1348,8 +1369,11 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
+ 	/* Do not TX balance any multicast or broadcast */
+ 	if (!is_multicast_ether_addr(eth_data->h_dest)) {
+ 		switch (skb->protocol) {
+-		case htons(ETH_P_IP):
+ 		case htons(ETH_P_IPV6):
++			if (alb_determine_nd(skb, bond))
++				break;
++			fallthrough;
++		case htons(ETH_P_IP):
+ 			hash_index = bond_xmit_hash(bond, skb);
+ 			if (bond->params.tlb_dynamic_lb) {
+ 				tx_slave = tlb_choose_channel(bond,
+@@ -1432,10 +1456,12 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
+ 			break;
+ 		}
  
-+#if IS_ENABLED(CONFIG_SMC_AUTO_FALLBACK)
-+	tcp_sk(smc->clcsock->sk)->smc_in_limited = smc_is_in_limited;
-+#endif
+-		if (!pskb_network_may_pull(skb, sizeof(*ip6hdr))) {
++		if (alb_determine_nd(skb, bond)) {
+ 			do_tx_balance = false;
+ 			break;
+ 		}
 +
- 	rc = kernel_listen(smc->clcsock, backlog);
- 	if (rc) {
- 		smc->clcsock->sk->sk_data_ready = smc->clcsk_data_ready;
++		/* The IPv6 header is pulled by alb_determine_nd */
+ 		/* Additionally, DAD probes should not be tx-balanced as that
+ 		 * will lead to false positives for duplicate addresses and
+ 		 * prevent address configuration from working.
+
+base-commit: 145d9b498fc827b79c1260b4caa29a8e59d4c2b9
 -- 
-1.8.3.1
+2.27.0
 
