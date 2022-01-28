@@ -2,188 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B5D849F868
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 12:39:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 195BE49F885
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 12:44:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238055AbiA1LjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 06:39:21 -0500
-Received: from mga02.intel.com ([134.134.136.20]:45251 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237846AbiA1LjU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jan 2022 06:39:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643369960; x=1674905960;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PN5o/kpKeDNPdKUsT9CVJhrOgWqfA5kU/QW51qp+kdw=;
-  b=CZ0TIM75DbYWSY9ioAr8AZHn0yYr0aWO/o21f+4ViL33qojOcPWtWpkF
-   43GSv+Cre9vmro+TFbisnPvr4gJb3bGuV0eARghf+TE5oqRKQ58vO+Mhw
-   2x4yYacqMGnPx1GjUvS26rmJuBhx0dREumgsYdfC6zkUkfv1jVZRfSgIZ
-   mkA7EGS0yCPST4qwTh7zHePE9zGvi5PJNHhG7poSD9TzRGuoO9yTbYusz
-   OC8CmGFxcldnakL9oBAJqUWYbGFR+hczFMoR2AoRda/+Z1+wJ/rAd6q2W
-   ps7u+uKro0MQxFgycKWvvPcf1lsXk2fGzjkiTMKTzpTJogud1y2CxhBbz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="234481919"
-X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="234481919"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 03:39:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,323,1635231600"; 
-   d="scan'208";a="564171994"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 28 Jan 2022 03:39:15 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nDPb0-000Nmz-O7; Fri, 28 Jan 2022 11:39:14 +0000
-Date:   Fri, 28 Jan 2022 19:38:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     cgel.zte@gmail.com, kvalo@kernel.org
-Cc:     kbuild-all@lists.01.org, davem@davemloft.net, kuba@kernel.org,
-        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] wcn36xx: use struct_size over open coded arithmetic
-Message-ID: <202201281936.Qhf4hXej-lkp@intel.com>
-References: <20220128080430.1211593-1-chi.minghao@zte.com.cn>
+        id S244360AbiA1Ln7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 06:43:59 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:60753 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244357AbiA1Ln5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 06:43:57 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20SBhaggF002939, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20SBhaggF002939
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 28 Jan 2022 19:43:36 +0800
+Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 28 Jan 2022 19:43:36 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 28 Jan 2022 03:43:36 -0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
+ RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
+ 15.01.2308.020; Fri, 28 Jan 2022 19:43:35 +0800
+From:   Hau <hau@realtek.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        nic_swsd <nic_swsd@realtek.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "grundler@chromium.org" <grundler@chromium.org>
+Subject: RE: [PATCH net-next] r8169: add rtl_disable_exit_l1()
+Thread-Topic: [PATCH net-next] r8169: add rtl_disable_exit_l1()
+Thread-Index: AQHYE8tKx0k4ipmO0kqGSvdLnpq0sKx4EyCQ//+mJACAAJP2gA==
+Date:   Fri, 28 Jan 2022 11:43:35 +0000
+Message-ID: <63a52057a21a42fb92f7bc09c9b7c540@realtek.com>
+References: <f448b546-5b0a-79e0-f09a-dcfabb4fc8a5@gmail.com>
+ <0124f075142a458d91e5b41ce3b0ed5a@realtek.com>
+ <ee4f20bd-f32d-ae2d-3767-b927cae9ef7f@gmail.com>
+In-Reply-To: <ee4f20bd-f32d-ae2d-3767-b927cae9ef7f@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.129]
+x-kse-serverinfo: RTEXDAG01.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEvMjgg5LiK5Y2IIDEwOjAyOjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220128080430.1211593-1-chi.minghao@zte.com.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on kvalo-wireless-drivers-next/master]
-[also build test ERROR on kvalo-wireless-drivers/master v5.17-rc1 next-20220128]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/cgel-zte-gmail-com/wcn36xx-use-struct_size-over-open-coded-arithmetic/20220128-160610
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git master
-config: arm-randconfig-c002-20220124 (https://download.01.org/0day-ci/archive/20220128/202201281936.Qhf4hXej-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/b6c0d24562c28f1e9a037c1aa7818c76854559e4
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review cgel-zte-gmail-com/wcn36xx-use-struct_size-over-open-coded-arithmetic/20220128-160610
-        git checkout b6c0d24562c28f1e9a037c1aa7818c76854559e4
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash drivers/firewire/ drivers/net/wireless/ath/wcn36xx/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from include/linux/mm.h:30,
-                    from arch/arm/include/asm/cacheflush.h:10,
-                    from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/linux/if_ether.h:19,
-                    from include/linux/etherdevice.h:20,
-                    from drivers/net/wireless/ath/wcn36xx/smd.c:20:
-   drivers/net/wireless/ath/wcn36xx/smd.c: In function 'wcn36xx_smd_rsp_process':
->> include/linux/overflow.h:194:32: error: invalid type argument of '->' (have 'struct wcn36xx_hal_ind_msg')
-     194 |                     sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                ^~
-   drivers/net/wireless/ath/wcn36xx/smd.c:3350:35: note: in expansion of macro 'struct_size'
-    3350 |                 msg_ind = kmalloc(struct_size(*msg_ind, msg, len), GFP_ATOMIC);
-         |                                   ^~~~~~~~~~~
-   In file included from include/linux/bitfield.h:10,
-                    from drivers/net/wireless/ath/wcn36xx/smd.c:19:
-   include/linux/overflow.h:194:63: error: invalid type argument of '->' (have 'struct wcn36xx_hal_ind_msg')
-     194 |                     sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                                               ^~
-   include/linux/build_bug.h:16:62: note: in definition of macro 'BUILD_BUG_ON_ZERO'
-      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
-         |                                                              ^
-   include/linux/compiler.h:258:51: note: in expansion of macro '__same_type'
-     258 | #define __must_be_array(a)      BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
-         |                                                   ^~~~~~~~~~~
-   include/linux/overflow.h:194:44: note: in expansion of macro '__must_be_array'
-     194 |                     sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                            ^~~~~~~~~~~~~~~
-   drivers/net/wireless/ath/wcn36xx/smd.c:3350:35: note: in expansion of macro 'struct_size'
-    3350 |                 msg_ind = kmalloc(struct_size(*msg_ind, msg, len), GFP_ATOMIC);
-         |                                   ^~~~~~~~~~~
-   include/linux/overflow.h:194:63: error: invalid type argument of '->' (have 'struct wcn36xx_hal_ind_msg')
-     194 |                     sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                                               ^~
-   include/linux/build_bug.h:16:62: note: in definition of macro 'BUILD_BUG_ON_ZERO'
-      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
-         |                                                              ^
-   include/linux/compiler.h:258:51: note: in expansion of macro '__same_type'
-     258 | #define __must_be_array(a)      BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
-         |                                                   ^~~~~~~~~~~
-   include/linux/overflow.h:194:44: note: in expansion of macro '__must_be_array'
-     194 |                     sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                            ^~~~~~~~~~~~~~~
-   drivers/net/wireless/ath/wcn36xx/smd.c:3350:35: note: in expansion of macro 'struct_size'
-    3350 |                 msg_ind = kmalloc(struct_size(*msg_ind, msg, len), GFP_ATOMIC);
-         |                                   ^~~~~~~~~~~
-   include/linux/build_bug.h:16:51: error: bit-field '<anonymous>' width not an integer constant
-      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
-         |                                                   ^
-   include/linux/compiler.h:258:33: note: in expansion of macro 'BUILD_BUG_ON_ZERO'
-     258 | #define __must_be_array(a)      BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
-         |                                 ^~~~~~~~~~~~~~~~~
-   include/linux/overflow.h:194:44: note: in expansion of macro '__must_be_array'
-     194 |                     sizeof(*(p)->member) + __must_be_array((p)->member),\
-         |                                            ^~~~~~~~~~~~~~~
-   drivers/net/wireless/ath/wcn36xx/smd.c:3350:35: note: in expansion of macro 'struct_size'
-    3350 |                 msg_ind = kmalloc(struct_size(*msg_ind, msg, len), GFP_ATOMIC);
-         |                                   ^~~~~~~~~~~
-   In file included from include/linux/mm.h:30,
-                    from arch/arm/include/asm/cacheflush.h:10,
-                    from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/linux/if_ether.h:19,
-                    from include/linux/etherdevice.h:20,
-                    from drivers/net/wireless/ath/wcn36xx/smd.c:20:
->> include/linux/overflow.h:195:28: error: invalid type argument of unary '*' (have 'struct wcn36xx_hal_ind_msg')
-     195 |                     sizeof(*(p)))
-         |                            ^~~~
-   drivers/net/wireless/ath/wcn36xx/smd.c:3350:35: note: in expansion of macro 'struct_size'
-    3350 |                 msg_ind = kmalloc(struct_size(*msg_ind, msg, len), GFP_ATOMIC);
-         |                                   ^~~~~~~~~~~
-
-
-vim +194 include/linux/overflow.h
-
-610b15c50e86eb Kees Cook           2018-05-07  180  
-610b15c50e86eb Kees Cook           2018-05-07  181  /**
-610b15c50e86eb Kees Cook           2018-05-07  182   * struct_size() - Calculate size of structure with trailing array.
-610b15c50e86eb Kees Cook           2018-05-07  183   * @p: Pointer to the structure.
-610b15c50e86eb Kees Cook           2018-05-07  184   * @member: Name of the array member.
-b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  185   * @count: Number of elements in the array.
-610b15c50e86eb Kees Cook           2018-05-07  186   *
-610b15c50e86eb Kees Cook           2018-05-07  187   * Calculates size of memory needed for structure @p followed by an
-b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  188   * array of @count number of @member elements.
-610b15c50e86eb Kees Cook           2018-05-07  189   *
-610b15c50e86eb Kees Cook           2018-05-07  190   * Return: number of bytes needed or SIZE_MAX on overflow.
-610b15c50e86eb Kees Cook           2018-05-07  191   */
-b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  192  #define struct_size(p, member, count)					\
-b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  193  	__ab_c_size(count,						\
-610b15c50e86eb Kees Cook           2018-05-07 @194  		    sizeof(*(p)->member) + __must_be_array((p)->member),\
-610b15c50e86eb Kees Cook           2018-05-07 @195  		    sizeof(*(p)))
-610b15c50e86eb Kees Cook           2018-05-07  196  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+PiBPbiAyOC4wMS4yMDIyIDA5OjA5LCBIYXUgd3JvdGU6DQo+ID4NCj4gPg0KPiA+PiAtLS0tLU9y
+aWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+PiBGcm9tOiBIZWluZXIgS2FsbHdlaXQgW21haWx0bzpo
+a2FsbHdlaXQxQGdtYWlsLmNvbV0NCj4gPj4gU2VudDogRnJpZGF5LCBKYW51YXJ5IDI4LCAyMDIy
+IDY6MTUgQU0NCj4gPj4gVG86IEpha3ViIEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+OyBEYXZp
+ZCBNaWxsZXINCj4gPj4gPGRhdmVtQGRhdmVtbG9mdC5uZXQ+OyBuaWNfc3dzZCA8bmljX3N3c2RA
+cmVhbHRlay5jb20+DQo+ID4+IENjOiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBIYXUgPGhhdUBy
+ZWFsdGVrLmNvbT4NCj4gPj4gU3ViamVjdDogW1BBVENIIG5ldC1uZXh0XSByODE2OTogYWRkIHJ0
+bF9kaXNhYmxlX2V4aXRfbDEoKQ0KPiA+Pg0KPiA+PiBBZGQgcnRsX2Rpc2FibGVfZXhpdF9sMSgp
+IGZvciBlbnN1cmluZyB0aGF0IHRoZSBjaGlwIGRvZXNuJ3QNCj4gPj4gaW5hZHZlcnRlbnRseSBl
+eGl0IEFTUE0gTDEgd2hlbiBiZWluZyBpbiBhIGxvdy1wb3dlciBtb2RlLg0KPiA+PiBUaGUgbmV3
+IGZ1bmN0aW9uIGlzIGNhbGxlZCBmcm9tIHJ0bF9wcmVwYXJlX3Bvd2VyX2Rvd24oKSB3aGljaCBo
+YXMgdG8NCj4gPj4gYmUgbW92ZWQgaW4gdGhlIGNvZGUgdG8gYXZvaWQgYSBmb3J3YXJkIGRlY2xh
+cmF0aW9uLg0KPiA+Pg0KPiA+PiBBY2NvcmRpbmcgdG8gUmVhbHRlayBPQ1AgcmVnaXN0ZXIgMHhj
+MGFjIHNoYWRvd3MgRVJJIHJlZ2lzdGVyIDB4ZDQgb24NCj4gPj4gUlRMODE2OCB2ZXJzaW9ucyBm
+cm9tIFJUTDgxNjhnLiBUaGlzIGFsbG93cyB0byBzaW1wbGlmeSB0aGUgY29kZSBhIGxpdHRsZS4N
+Cj4gPj4NCj4gPj4gU3VnZ2VzdGVkLWJ5OiBDaHVuLUhhbyBMaW4gPGhhdUByZWFsdGVrLmNvbT4N
+Cj4gPj4gU2lnbmVkLW9mZi1ieTogSGVpbmVyIEthbGx3ZWl0IDxoa2FsbHdlaXQxQGdtYWlsLmNv
+bT4NCj4gPj4gLS0tDQo+ID4+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9yZWFsdGVrL3I4MTY5X21h
+aW4uYyB8IDY1DQo+ID4+ICsrKysrKysrKysrKysrLS0tLS0tLS0tDQo+ID4+ICAxIGZpbGUgY2hh
+bmdlZCwgMzkgaW5zZXJ0aW9ucygrKSwgMjYgZGVsZXRpb25zKC0pDQo+ID4+DQo+ID4+IGRpZmYg
+LS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9yZWFsdGVrL3I4MTY5X21haW4uYw0KPiA+PiBi
+L2RyaXZlcnMvbmV0L2V0aGVybmV0L3JlYWx0ZWsvcjgxNjlfbWFpbi5jDQo+ID4+IGluZGV4IDNj
+M2QxNTA2Yi4uMTA0ZWJjMGZiIDEwMDY0NA0KPiA+PiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5l
+dC9yZWFsdGVrL3I4MTY5X21haW4uYw0KPiA+PiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9y
+ZWFsdGVrL3I4MTY5X21haW4uYw0KPiA+PiBAQCAtMjIzMSwyOCArMjIzMSw2IEBAIHN0YXRpYyBp
+bnQgcnRsX3NldF9tYWNfYWRkcmVzcyhzdHJ1Y3QNCj4gPj4gbmV0X2RldmljZSAqZGV2LCB2b2lk
+ICpwKQ0KPiA+PiAgCXJldHVybiAwOw0KPiA+PiAgfQ0KPiA+Pg0KPiA+PiAtc3RhdGljIHZvaWQg
+cnRsX3dvbF9lbmFibGVfcngoc3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHApIC17DQo+ID4+IC0J
+aWYgKHRwLT5tYWNfdmVyc2lvbiA+PSBSVExfR0lHQV9NQUNfVkVSXzI1KQ0KPiA+PiAtCQlSVExf
+VzMyKHRwLCBSeENvbmZpZywgUlRMX1IzMih0cCwgUnhDb25maWcpIHwNCj4gPj4gLQkJCUFjY2Vw
+dEJyb2FkY2FzdCB8IEFjY2VwdE11bHRpY2FzdCB8IEFjY2VwdE15UGh5cyk7DQo+ID4+IC19DQo+
+ID4+IC0NCj4gPj4gLXN0YXRpYyB2b2lkIHJ0bF9wcmVwYXJlX3Bvd2VyX2Rvd24oc3RydWN0IHJ0
+bDgxNjlfcHJpdmF0ZSAqdHApIC17DQo+ID4+IC0JaWYgKHRwLT5kYXNoX3R5cGUgIT0gUlRMX0RB
+U0hfTk9ORSkNCj4gPj4gLQkJcmV0dXJuOw0KPiA+PiAtDQo+ID4+IC0JaWYgKHRwLT5tYWNfdmVy
+c2lvbiA9PSBSVExfR0lHQV9NQUNfVkVSXzMyIHx8DQo+ID4+IC0JICAgIHRwLT5tYWNfdmVyc2lv
+biA9PSBSVExfR0lHQV9NQUNfVkVSXzMzKQ0KPiA+PiAtCQlydGxfZXBoeV93cml0ZSh0cCwgMHgx
+OSwgMHhmZjY0KTsNCj4gPj4gLQ0KPiA+PiAtCWlmIChkZXZpY2VfbWF5X3dha2V1cCh0cF90b19k
+ZXYodHApKSkgew0KPiA+PiAtCQlwaHlfc3BlZWRfZG93bih0cC0+cGh5ZGV2LCBmYWxzZSk7DQo+
+ID4+IC0JCXJ0bF93b2xfZW5hYmxlX3J4KHRwKTsNCj4gPj4gLQl9DQo+ID4+IC19DQo+ID4+IC0N
+Cj4gPj4gIHN0YXRpYyB2b2lkIHJ0bF9pbml0X3J4Y2ZnKHN0cnVjdCBydGw4MTY5X3ByaXZhdGUg
+KnRwKSAgew0KPiA+PiAgCXN3aXRjaCAodHAtPm1hY192ZXJzaW9uKSB7DQo+ID4+IEBAIC0yNjY3
+LDEwICsyNjQ1LDcgQEAgc3RhdGljIHZvaWQgcnRsX2VuYWJsZV9leGl0X2wxKHN0cnVjdA0KPiA+
+PiBydGw4MTY5X3ByaXZhdGUgKnRwKQ0KPiA+PiAgCWNhc2UgUlRMX0dJR0FfTUFDX1ZFUl8zNyAu
+Li4gUlRMX0dJR0FfTUFDX1ZFUl8zODoNCj4gPj4gIAkJcnRsX2VyaV9zZXRfYml0cyh0cCwgMHhk
+NCwgMHgwYzAwKTsNCj4gPj4gIAkJYnJlYWs7DQo+ID4+IC0JY2FzZSBSVExfR0lHQV9NQUNfVkVS
+XzQwIC4uLiBSVExfR0lHQV9NQUNfVkVSXzUzOg0KPiA+PiAtCQlydGxfZXJpX3NldF9iaXRzKHRw
+LCAweGQ0LCAweDFmODApOw0KPiA+PiAtCQlicmVhazsNCj4gPj4gLQljYXNlIFJUTF9HSUdBX01B
+Q19WRVJfNjAgLi4uIFJUTF9HSUdBX01BQ19WRVJfNjM6DQo+ID4+ICsJY2FzZSBSVExfR0lHQV9N
+QUNfVkVSXzQwIC4uLiBSVExfR0lHQV9NQUNfVkVSXzYzOg0KPiA+PiAgCQlyODE2OF9tYWNfb2Nw
+X21vZGlmeSh0cCwgMHhjMGFjLCAwLCAweDFmODApOw0KPiA+PiAgCQlicmVhazsNCj4gPj4gIAlk
+ZWZhdWx0Og0KPiA+PiBAQCAtMjY3OCw2ICsyNjUzLDIwIEBAIHN0YXRpYyB2b2lkIHJ0bF9lbmFi
+bGVfZXhpdF9sMShzdHJ1Y3QNCj4gPj4gcnRsODE2OV9wcml2YXRlICp0cCkNCj4gPj4gIAl9DQo+
+ID4+ICB9DQo+ID4+DQo+ID4+ICtzdGF0aWMgdm9pZCBydGxfZGlzYWJsZV9leGl0X2wxKHN0cnVj
+dCBydGw4MTY5X3ByaXZhdGUgKnRwKSB7DQo+ID4+ICsJc3dpdGNoICh0cC0+bWFjX3ZlcnNpb24p
+IHsNCj4gPj4gKwljYXNlIFJUTF9HSUdBX01BQ19WRVJfMzQgLi4uIFJUTF9HSUdBX01BQ19WRVJf
+Mzg6DQo+ID4+ICsJCXJ0bF9lcmlfY2xlYXJfYml0cyh0cCwgMHhkNCwgMHgxZjAwKTsNCj4gPj4g
+KwkJYnJlYWs7DQo+ID4+ICsJY2FzZSBSVExfR0lHQV9NQUNfVkVSXzQwIC4uLiBSVExfR0lHQV9N
+QUNfVkVSXzYzOg0KPiA+PiArCQlyODE2OF9tYWNfb2NwX21vZGlmeSh0cCwgMHhjMGFjLCAweDFm
+ODAsIDApOw0KPiA+PiArCQlicmVhazsNCj4gPj4gKwlkZWZhdWx0Og0KPiA+PiArCQlicmVhazsN
+Cj4gPj4gKwl9DQo+ID4+ICt9DQo+ID4+ICsNCj4gPj4gIHN0YXRpYyB2b2lkIHJ0bF9od19hc3Bt
+X2Nsa3JlcV9lbmFibGUoc3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHAsDQo+ID4+IGJvb2wNCj4g
+Pj4gZW5hYmxlKSAgew0KPiA+PiAgCS8qIERvbid0IGVuYWJsZSBBU1BNIGluIHRoZSBjaGlwIGlm
+IE9TIGNhbid0IGNvbnRyb2wgQVNQTSAqLyBAQCAtDQo+ID4+IDQ2ODksNiArNDY3OCwzMCBAQCBz
+dGF0aWMgaW50IHI4MTY5X3BoeV9jb25uZWN0KHN0cnVjdCBydGw4MTY5X3ByaXZhdGUNCj4gKnRw
+KQ0KPiA+PiAgCXJldHVybiAwOw0KPiA+PiAgfQ0KPiA+Pg0KPiA+PiArc3RhdGljIHZvaWQgcnRs
+X3dvbF9lbmFibGVfcngoc3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHApIHsNCj4gPj4gKwlpZiAo
+dHAtPm1hY192ZXJzaW9uID49IFJUTF9HSUdBX01BQ19WRVJfMjUpDQo+ID4+ICsJCVJUTF9XMzIo
+dHAsIFJ4Q29uZmlnLCBSVExfUjMyKHRwLCBSeENvbmZpZykgfA0KPiA+PiArCQkJQWNjZXB0QnJv
+YWRjYXN0IHwgQWNjZXB0TXVsdGljYXN0IHwgQWNjZXB0TXlQaHlzKTsgfQ0KPiA+PiArDQo+ID4+
+ICtzdGF0aWMgdm9pZCBydGxfcHJlcGFyZV9wb3dlcl9kb3duKHN0cnVjdCBydGw4MTY5X3ByaXZh
+dGUgKnRwKSB7DQo+ID4+ICsJaWYgKHRwLT5kYXNoX3R5cGUgIT0gUlRMX0RBU0hfTk9ORSkNCj4g
+Pj4gKwkJcmV0dXJuOw0KPiA+PiArDQo+ID4+ICsJaWYgKHRwLT5tYWNfdmVyc2lvbiA9PSBSVExf
+R0lHQV9NQUNfVkVSXzMyIHx8DQo+ID4+ICsJICAgIHRwLT5tYWNfdmVyc2lvbiA9PSBSVExfR0lH
+QV9NQUNfVkVSXzMzKQ0KPiA+PiArCQlydGxfZXBoeV93cml0ZSh0cCwgMHgxOSwgMHhmZjY0KTsN
+Cj4gPj4gKw0KPiA+PiArCWlmIChkZXZpY2VfbWF5X3dha2V1cCh0cF90b19kZXYodHApKSkgew0K
+PiA+PiArCQlwaHlfc3BlZWRfZG93bih0cC0+cGh5ZGV2LCBmYWxzZSk7DQo+ID4+ICsJCXJ0bF93
+b2xfZW5hYmxlX3J4KHRwKTsNCj4gPj4gKwl9IGVsc2Ugew0KPiA+PiArCQlydGxfZGlzYWJsZV9l
+eGl0X2wxKHRwKTsNCj4gPj4gKwl9DQo+ID4+ICt9DQo+ID4+ICsNCj4gPiBIaSBIZWluZXIsDQo+
+ID4NCj4gSGkgSGF1LA0KPiANCj4gPiBydGxfZGlzYWJsZV9leGl0X2wxKHRwKSBjYW4gYmUgY2Fs
+bGVkIGJlZm9yZSBkZXZpY2UgZW50ZXIgRDMgc3RhdGUuIEkgdGhpbmsNCj4geW91IGRvbuKAmXQg
+bmVlZCB0byBjaGVjayB3b2wgc3RhdHVzLg0KPiA+IFlvdSBtYXkgdXBkYXRlIHRoZSBjb2RlIGxp
+bmsgZm9sbG93aW5nLg0KPg0KPiBteSB0aG91Z2h0IHdhcyB0aGF0IGlmIERBU0ggb3IgV29MIGFy
+ZSBlbmFibGVkIHRoZW4gd2UgbWlnaHQgbWlzcw0KPiBzb21ldGhpbmcgb24gdGhlIGJ1cyBpZiBu
+b3Qgd2FraW5nIGZyb20gTDEgaW4gdGltZS4NCj4gWW91IHRoaW5rIHRoaXMgc2hvdWxkbid0IGJl
+IGEgcHJvYmxlbT8NCj4NCkkgdGhpbmsgaXQgc2hvdWxkIG5vdCBiZSBhIHByb2JsZW0uIA0KSWYg
+ZHJpdmVyIGRvZXMgbm90IGNhbGwgcnRsX2Rpc2FibGVfZXhpdF9sMSgpIHdoZW4gd29sIGlzIGVu
+YWJsZWQsIHRoZW4gaGFyZHdhcmUgd2lsbCBub3QgZ28gdG8gTDEuIA0KIA0KPiBCeSB0aGUgd2F5
+LCBiZWNhdXNlIEknbSBubyBEQVNIIGV4cGVydDoNCj4gU2hvdWxkIHdlIGdvIHRvIEQzIGF0IGFs
+bCBpZiBEQVNIIGlzIGVuYWJsZWQ/IFdpbGwgaXQgc3RpbGwgd29yaz8NCj4gDQpGb3IgaGFyZHdh
+cmUgdGhhdCBzdXBwb3J0IGRhc2gsIGRhc2ggd2lsbCB3b3JrIGluIEQzIHN0YXRlLiANCkJlZm9y
+ZSBEMyBzdGF0ZSwgZHJpdmVyIHdpbGwgZ2l2ZSBjb250cm9sIGJhY2sgdG8gZGFzaCBmaXJtd2Fy
+ZSBieSBjYWxsIHJ0bDgxNjhfZHJpdmVyX3N0b3AoKS4NCj4gPg0KPiA+IHN0YXRpYyB2b2lkIHJ0
+bF9wcmVwYXJlX3Bvd2VyX2Rvd24oc3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHApIHsNCj4gPiAJ
+cnRsX2Rpc2FibGVfZXhpdF9sMSh0cCk7DQo+ID4NCj4gPiAJaWYgKHRwLT5kYXNoX3R5cGUgIT0g
+UlRMX0RBU0hfTk9ORSkNCj4gPiAJCXJldHVybjsNCj4gPg0KPiA+IAlpZiAodHAtPm1hY192ZXJz
+aW9uID09IFJUTF9HSUdBX01BQ19WRVJfMzIgfHwNCj4gPiAJICAgIHRwLT5tYWNfdmVyc2lvbiA9
+PSBSVExfR0lHQV9NQUNfVkVSXzMzKQ0KPiA+IAkJcnRsX2VwaHlfd3JpdGUodHAsIDB4MTksIDB4
+ZmY2NCk7DQo+ID4NCj4gPiAJaWYgKGRldmljZV9tYXlfd2FrZXVwKHRwX3RvX2Rldih0cCkpKSB7
+DQo+ID4gCQlwaHlfc3BlZWRfZG93bih0cC0+cGh5ZGV2LCBmYWxzZSk7DQo+ID4gCQlydGxfd29s
+X2VuYWJsZV9yeCh0cCk7DQo+ID4gCX0NCj4gPiB9DQo+ID4NCj4gPiBUaGFua3MuDQo+ID4+ICBz
+dGF0aWMgdm9pZCBydGw4MTY5X2Rvd24oc3RydWN0IHJ0bDgxNjlfcHJpdmF0ZSAqdHApICB7DQo+
+ID4+ICAJLyogQ2xlYXIgYWxsIHRhc2sgZmxhZ3MgKi8NCj4gPj4gLS0NCj4gPj4gMi4zNS4wDQo+
+ID4+DQo+ID4+IC0tLS0tLVBsZWFzZSBjb25zaWRlciB0aGUgZW52aXJvbm1lbnQgYmVmb3JlIHBy
+aW50aW5nIHRoaXMgZS1tYWlsLg0KDQo=
