@@ -2,74 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81D4149FDB3
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 17:10:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2490D49FDB9
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 17:11:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237576AbiA1QKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 11:10:51 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:60494 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229482AbiA1QKu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jan 2022 11:10:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=6nCWgy9m02hUt7uQpkNW9XdqKNY5FJhMDyIwqP/X4jo=; b=aT3qINVuUmb3KjB705OCgfFFZ/
-        oSWStzYSpeBw/pLB7Vq39BI057kZjR0PUIRzHaBfhtwpCXvifpo0bhIe8daVke8+nmQ8DhzCWe5VU
-        fUxAQmJ7U/dhDXR4FHCdx9LU7SECNXKb300ixHOY0I9qpblq9W8WUs+H91W8DeWAxiSQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nDTpj-003C6n-W8; Fri, 28 Jan 2022 17:10:43 +0100
-Date:   Fri, 28 Jan 2022 17:10:43 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next 0/2] net: dsa: mv88e6xxx: Improve indirect
- addressing performance
-Message-ID: <YfQVg4mYYT9iop3x@lunn.ch>
-References: <20220128104938.2211441-1-tobias@waldekranz.com>
- <c3bc08f82f1c435ca6fd47e30eb65405@AcuMS.aculab.com>
- <87k0ejc0ol.fsf@waldekranz.com>
+        id S1349658AbiA1QLh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 11:11:37 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51902 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239183AbiA1QLh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 11:11:37 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93CAE61EED;
+        Fri, 28 Jan 2022 16:11:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FFFAC340E0;
+        Fri, 28 Jan 2022 16:11:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643386296;
+        bh=2xkH+1LgGol6+y7sPa8zttF8hI+fLxq5zVrB9XQOefs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lHHBqAb/2Z7ccloUIAG6e+FJZ1C/2YyzDNKNTpa02d9QD+DjSsw4dqpn5iHba9hXD
+         EApdoBdaeIM1UOnbTs5cOuK0eu2VUdHuHvPPfnZJo/QpdGlGyHWiZ1uwDMGbPtgBZe
+         +Y+vOlbuFveSdNqtcQAn/ymKWYFb4emEaoQQ513MrVUxM/3R1d/HSkozP+05oHVoZV
+         eKIcf858e5ILQmGQcsdxlRiGKYfJ+euNwWCYMxPVcFxIQ4hJJsCSkVfnPreY/hvdT/
+         vFEehNq/6G1x5JOkz2xRTmVmZT2GhyKrlisCcUU1Jb+DHqM9z1U+RcFDgElnk4Bw1k
+         rdre5tdIovTlA==
+Date:   Fri, 28 Jan 2022 08:11:34 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Akhmat Karakotov <hmukos@yandex-team.ru>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        eric.dumazet@gmail.com, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, tom@herbertland.com,
+        zeil@yandex-team.ru, mitradir@yandex-team.ru
+Subject: Re: [PATCH net-next v3 1/4] txhash: Make rethinking txhash behavior
+ configurable via sysctl
+Message-ID: <20220128081134.12023513@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220128151602.2748-2-hmukos@yandex-team.ru>
+References: <20220128151602.2748-1-hmukos@yandex-team.ru>
+        <20220128151602.2748-2-hmukos@yandex-team.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87k0ejc0ol.fsf@waldekranz.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 04:58:02PM +0100, Tobias Waldekranz wrote:
-> On Fri, Jan 28, 2022 at 14:10, David Laight <David.Laight@ACULAB.COM> wrote:
-> > From: Tobias Waldekranz
-> >> Sent: 28 January 2022 10:50
-> >> 
-> >> The individual patches have all the details. This work was triggered
-> >> by recent work on a platform that took 16s (sic) to load the mv88e6xxx
-> >> module.
-> >> 
-> >> The first patch gets rid of most of that time by replacing a very long
-> >> delay with a tighter poll loop to wait for the busy bit to clear.
-> >> 
-> >> The second patch shaves off some more time by avoiding redundant
-> >> busy-bit-checks, saving 1 out of 4 MDIO operations for every register
-> >> read/write in the optimal case.
-> >
-> > I don't think you should fast-poll for the entire timeout period.
-> > Much better to drop to a usleep_range() after the first 2 (or 3)
-> > reads fail.
-> 
-> You could, I suppose. Andrew, do you want a v3?
+On Fri, 28 Jan 2022 18:15:59 +0300 Akhmat Karakotov wrote:
+> Add a per ns sysctl that controls the txhash rethink behavior,
+> sk_rethink_txhash. When enabled, the same behavior is retained, when
+> disabled, rethink is not performed. Sysctl is enabled by default.
 
-You have i available, so it would be a simple change. So yes please.
+The new knob needs to be documented in
+Documentation/admin-guide/sysctl/net.rst.
 
-But saying that, it seems like if the switch does not complete within
-2 polls, it is likely to be dead and we are about to start a cascade
-of failures. We probably don't care about a bit of CPU usage when the
-devices purpose in being has just stopped working.
+The series also does not apply cleanly to net-next, could you rebase?
 
-	Andrew
+Thanks!
