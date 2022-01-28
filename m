@@ -2,84 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DE344A03E0
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 23:45:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5B894A0434
+	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 00:23:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351767AbiA1WpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 17:45:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43890 "EHLO
+        id S1344551AbiA1XXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 18:23:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351761AbiA1WpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 17:45:08 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31BF7C06173B
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 14:45:08 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id h14so7519472plf.1
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 14:45:08 -0800 (PST)
+        with ESMTP id S233182AbiA1XXd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 18:23:33 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71169C061714
+        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 15:23:32 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id b9so14736577lfq.6
+        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 15:23:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=r4uL6sckAnaCJM6MEQaHZL7fDy5zSQzjqi9SEPfLKhw=;
-        b=lwWzlnuX6vDO18w0OqzfCwBcEwCKxje9avHqcXITjyy4eN8F7RMiTiXO7Xda+pcBvg
-         RtpldGoaMRbL6EEYlf7d6LvdjTq8XEHnzCkql/TuKdbSt+lUB7M2fcJwuxWA463e8nZj
-         qbyDYXMtX6g7wwUQ79uEKvirGFH0lSm0hCQ0mb5ij5Ru6DSarQxTEfQ7gRJm1+YpNvU6
-         3+lTOhjvxaWa6jllfFq0CJFSAUuqVoeoMjIuE2H6KQEZ90wVagLBfkAeIjrF4l7TaV3i
-         UY2VXKqbSTaUUXTqSKWoF9zlONogpiplogXP7IeaQKjnHpj7Ke2msogRcTW+pyWfRRv8
-         j05Q==
+        d=kinvolk.io; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=BpeLydjX5mOwOQX9R670hKq9JulnJSBkl4SUh8O11MY=;
+        b=Hb+TGmMvM9ZaqMs0MXpw21TZWY5oc3Ca0AS9ceIyJLluSthVZQ1JTqlS/ZNVSPJJr1
+         Zqczd1tT+GAVHTJgDIOrm9BHXFDtBgjfCEPn67hv/Lkl0BGAIPCZugZ5u9h/AvwBhkbw
+         bm6dQf15V9sn3lU9zucftVhpeYNICN9fzkVMY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=r4uL6sckAnaCJM6MEQaHZL7fDy5zSQzjqi9SEPfLKhw=;
-        b=zhIHd/8/4FvtW8Uw+I8PmICn/2BG8ZSh4Slow0DyuRzvDKP1CHHmKlFsed4saonG62
-         6d0RyykRK7Krze0o/WbpX6OehBhfjQp2qto98J/UIc/wdkcmqXXwa6LbOeEUPMZx9xOh
-         /26dQoDYKcLQq0itvdNj2FxEAtG9yWT3K2EhA9OlOhmogwLCSWQTdwntHXtDslyqt6i+
-         L9rsD0N1jl4GlK1OZ63rQI1+ehUSWdRxZsJuks7c4K7HW0Q85QzSSGJc2n/zQ6o9Yr+e
-         i+JBZX7DH+6chODO9SYesA3AXmBhqJT4aPF7PyftSRfgBedQ0IyqiWVECNiGgHt4o/Ta
-         XWZw==
-X-Gm-Message-State: AOAM531D5Pm13clOtekGOzfnE0R2XUeknb7HAyPfLU3OkHIcWFA8CLFC
-        vCyTyO8lgjPoEMmcZkM8ZEcdDC+dGbDtvQ5COhs=
-X-Google-Smtp-Source: ABdhPJwglo+bAGUulVbdL9bXWcdl1reX7aGaLLQPw99EjVMuTw9Q2rkiWVXzNccWoeX3OESWEPyIfDUVKsuhRALQB+I=
-X-Received: by 2002:a17:902:ab8a:: with SMTP id f10mr10766835plr.172.1643409907482;
- Fri, 28 Jan 2022 14:45:07 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=BpeLydjX5mOwOQX9R670hKq9JulnJSBkl4SUh8O11MY=;
+        b=JcvNzm2q0ZlMa6Pnk1TIUbZF/RjjYdNq6qczaMbPpvDQcTEBZPmmh29OpTzudWdVq1
+         tA8JT0HMRKH8Unb15iBsmjWDOnFliKpKUr4P/nnRaRVCxVdILnNidoFkvKjMyfrxdbTk
+         UMQuua8zbG2BkX7/GqIPTCfc5flGi339I4lFDuyBsSNj/pMw5f0It4LtR7kcYcu04K28
+         RCC9dAXEWi8tnIchSO4I6PX89r1Dr8rTOT9DrCtTvDLVx0EQ1ywvOKYR472jecP/grSy
+         QGwofYXLdunmUo5N93lHR+rDVgCtHSlMUK7eR9dlsxRHCLmmm9Ii+FfSJWA4DGv7J4Ml
+         Jt/A==
+X-Gm-Message-State: AOAM533S2E0MLQUWvWwuj8jWl8kDGAPD282HzCjVJCX84ztQFqmxCd/L
+        o9ERtYhs+N4OjLixbimRjYrJq3/8LwXE8AsloH2j8dGMvBfwuQ==
+X-Google-Smtp-Source: ABdhPJwGKwWgwIXALKcMpTiqcG4Etcmn/HsEoinSQiEMWX2IckTTegVkfoHBs/bumIDZoektOJXBdxAc3TZT45uJ/II=
+X-Received: by 2002:a05:6512:3a95:: with SMTP id q21mr7280463lfu.569.1643412210624;
+ Fri, 28 Jan 2022 15:23:30 -0800 (PST)
 MIME-Version: 1.0
-Received: by 2002:a05:6a10:4416:0:0:0:0 with HTTP; Fri, 28 Jan 2022 14:45:06
- -0800 (PST)
-Reply-To: mualixx22@gmail.com
-From:   MR MUSSA ALI <mussaalixxx11@gmail.com>
-Date:   Fri, 28 Jan 2022 14:45:06 -0800
-Message-ID: <CACWseWkn7k84US6EPTxUK_u8+cm_mpJ=gPbSWS7sqOBaOp+b5g@mail.gmail.com>
-Subject: Urgent Reply
-To:     undisclosed-recipients:;
+References: <20220128223312.1253169-1-mauricio@kinvolk.io> <20220128223312.1253169-10-mauricio@kinvolk.io>
+In-Reply-To: <20220128223312.1253169-10-mauricio@kinvolk.io>
+From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
+Date:   Fri, 28 Jan 2022 18:23:19 -0500
+Message-ID: <CAHap4zsWqpTezbzZn7TOWvFA4c2PbSum4vY1_9YB+XSfFor21g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 9/9] selftest/bpf: Implement tests for bpftool
+ gen min_core_btf
+To:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
+        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
+        Leonardo Di Donato <leonardo.didonato@elastic.co>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear  friend,
+On Fri, Jan 28, 2022 at 5:33 PM Mauricio V=C3=A1squez <mauricio@kinvolk.io>=
+ wrote:
+>
+> This commit implements some integration tests for "BTFGen". The goal
+> of such tests is to verify that the generated BTF file contains the
+> expected types.
+>
 
-I know this means of communication may not be morally right to you as
-a person but I also have had a great thought about it and I have come
-to this conclusion which I am about to share with you.
+This is not an exhaustive list of test cases. I'm not sure if this is
+the approach we should follow to implement such tests, it seems to me
+that checking each generated BTF file by hand is a lot of work but I
+don't have other ideas to simplify it.
 
-INTRODUCTION: I am a assistance  and in one way or the other was hoping
-you will cooperate with me as a partner in a project of transferring
-an abandoned fund of a late customer of the bank worth of $18,000,000
-(Eighteen Million Dollars US).
+I considered different options to write these tests:
+1. Use core_reloc_types.h to create a "source" BTF file with a lot of
+types, then run BTFGen for all test_core_reloc_*.o files and use the
+generated BTF file as btf_src_file in core_reloc.c. In other words,
+re-run all test_core_reloc tests using a generated BTF file as source
+instead of the "btf__core_reloc_" #name ".o" one. I think this test is
+great because it tests the full functionality and actually checks that
+the programs are able to run using the generated file. The problem is
+how do we test that the BTFGen is creating an optimized file? Just
+copying the source file without any modification will make all those
+tests pass. We could check that the generated file is small (by
+checking the size or the number of types) but it doesn't seem a very
+reliable approach to me.
+2. We could write some .c files with the types we expect to have on
+the generated file and compare it with the generated file. The issue
+here is that comparing those BTF files doesn't seem to be too
+trivial...
 
-This will be disbursed or shared between the both of us in these
-percentages, 55% for me and 45% for you. Contact me immediately if
-that is alright for you so that we can enter in agreement before we
-start processing for the transfer of the funds. If you are satisfied
-with this proposal, please provide the below details for the Mutual
-Confidential Agreement:
-
-1. Full Name and Address
-2. Occupation and Country of Origin
-3. Telephone Number
-
-I wait for your response so that we can commence on this project as
-soon as possible.
-
-Regards,
-Mr. Mussa  Ali
+Do you have any suggestions about it? Thanks!
