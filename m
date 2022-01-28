@@ -2,64 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CACB549F908
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 13:17:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E41F849F971
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 13:32:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348368AbiA1MRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 07:17:03 -0500
-Received: from air.basealt.ru ([194.107.17.39]:45080 "EHLO air.basealt.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348333AbiA1MRC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jan 2022 07:17:02 -0500
-Received: by air.basealt.ru (Postfix, from userid 490)
-        id 1135E589436; Fri, 28 Jan 2022 12:17:00 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on
-        sa.local.altlinux.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=ham autolearn_force=no version=3.4.1
-Received: from asheplyakov-rocket.smb.basealt.ru (unknown [193.43.9.4])
-        by air.basealt.ru (Postfix) with ESMTPSA id 69FB8589849;
-        Fri, 28 Jan 2022 12:16:57 +0000 (UTC)
-From:   Alexey Sheplyakov <asheplyakov@basealt.ru>
-To:     netdev@vger.kernel.org
-Cc:     Alexey Sheplyakov <asheplyakov@basealt.ru>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH v2 2/2] dt-bindings: dwmac: Add bindings for Baikal-T1/M SoCs
-Date:   Fri, 28 Jan 2022 16:16:16 +0400
-Message-Id: <20220128121616.1463317-2-asheplyakov@basealt.ru>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220128121616.1463317-1-asheplyakov@basealt.ru>
-References: <20220126170042.17ae0ad8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20220128121616.1463317-1-asheplyakov@basealt.ru>
+        id S244641AbiA1Mck (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 07:32:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232014AbiA1Mcj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 07:32:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C18C061714;
+        Fri, 28 Jan 2022 04:32:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 685B961B08;
+        Fri, 28 Jan 2022 12:32:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5ADAC340E0;
+        Fri, 28 Jan 2022 12:32:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643373158;
+        bh=mqbTy9CsLz7Cz2KBshUwDl4dlexueqKy20esKjv4qhM=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=eou5gWcQ/FRrzLFCDXr5vWv4vCocX6fM1uLc7tO0L/2pISGj6RbfXXQ75VCkoe9Xr
+         0MaC4up0j6UWNaqSAMWaeHqPsD+kne0V4z3qAHv2HR2/rMlJQStk8vpiA4ozqtMXyE
+         ET/M+tYxABzRBYdc0W+fyvN1G8TlMuGOZFI1UvfaF8/7M1XgVEp6fdxMVvIuFG+ZVF
+         JQv8n8//oedwUDGV74VKIl2aHlqmcasFJCNePlnTkSEhuasOUlMgedo0SXFe51fUgR
+         Z8QDZv85zHTWPuSCXwBEKQeas/fz5FguxrSzPIXdD8ZkY6H0qRiYKUw90+fbbDWDXs
+         QU4Bj0sUVqHng==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath9k_htc: fix uninit value bugs
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220115122733.11160-1-paskripkin@gmail.com>
+References: <20220115122733.11160-1-paskripkin@gmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com,
+        vasanth@atheros.com, Sujith.Manoharan@atheros.com,
+        senthilkumar@atheros.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164337315159.4876.15861801637015517784.kvalo@kernel.org>
+Date:   Fri, 28 Jan 2022 12:32:35 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added dwmac bindings for Baikal-T1 and Baikal-M SoCs
+Pavel Skripkin <paskripkin@gmail.com> wrote:
 
-Signed-off-by: Alexey Sheplyakov <asheplyakov@basealt.ru>
----
- Documentation/devicetree/bindings/net/snps,dwmac.yaml | 1 +
- 1 file changed, 1 insertion(+)
+> Syzbot reported 2 KMSAN bugs in ath9k. All of them are caused by missing
+> field initialization.
+> 
+> In htc_connect_service() svc_meta_len and pad are not initialized. Based
+> on code it looks like in current skb there is no service data, so simply
+> initialize svc_meta_len to 0.
+> 
+> htc_issue_send() does not initialize htc_frame_hdr::control array. Based
+> on firmware code, it will initialize it by itself, so simply zero whole
+> array to make KMSAN happy
+> 
+> Fail logs:
+> 
+> BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
+>  usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
+>  hif_usb_send_regout drivers/net/wireless/ath/ath9k/hif_usb.c:127 [inline]
+>  hif_usb_send+0x5f0/0x16f0 drivers/net/wireless/ath/ath9k/hif_usb.c:479
+>  htc_issue_send drivers/net/wireless/ath/ath9k/htc_hst.c:34 [inline]
+>  htc_connect_service+0x143e/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:275
+> ...
+> 
+> Uninit was created at:
+>  slab_post_alloc_hook mm/slab.h:524 [inline]
+>  slab_alloc_node mm/slub.c:3251 [inline]
+>  __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
+>  kmalloc_reserve net/core/skbuff.c:354 [inline]
+>  __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+>  alloc_skb include/linux/skbuff.h:1126 [inline]
+>  htc_connect_service+0x1029/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:258
+> ...
+> 
+> Bytes 4-7 of 18 are uninitialized
+> Memory access of size 18 starts at ffff888027377e00
+> 
+> BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
+>  usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
+>  hif_usb_send_regout drivers/net/wireless/ath/ath9k/hif_usb.c:127 [inline]
+>  hif_usb_send+0x5f0/0x16f0 drivers/net/wireless/ath/ath9k/hif_usb.c:479
+>  htc_issue_send drivers/net/wireless/ath/ath9k/htc_hst.c:34 [inline]
+>  htc_connect_service+0x143e/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:275
+> ...
+> 
+> Uninit was created at:
+>  slab_post_alloc_hook mm/slab.h:524 [inline]
+>  slab_alloc_node mm/slub.c:3251 [inline]
+>  __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
+>  kmalloc_reserve net/core/skbuff.c:354 [inline]
+>  __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+>  alloc_skb include/linux/skbuff.h:1126 [inline]
+>  htc_connect_service+0x1029/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:258
+> ...
+> 
+> Bytes 16-17 of 18 are uninitialized
+> Memory access of size 18 starts at ffff888027377e00
+> 
+> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+> Reported-by: syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-index 7eb43707e601..a738059f03ef 100644
---- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -53,6 +53,7 @@ properties:
-         - allwinner,sun8i-r40-gmac
-         - allwinner,sun8i-v3s-emac
-         - allwinner,sun50i-a64-emac
-+        - baikal,dwmac
-         - loongson,ls2k-dwmac
-         - loongson,ls7a-dwmac
-         - amlogic,meson6-dwmac
+Patch applied to ath-next branch of ath.git, thanks.
+
+d1e0df1c57bd ath9k_htc: fix uninit value bugs
+
 -- 
-2.32.0
+https://patchwork.kernel.org/project/linux-wireless/patch/20220115122733.11160-1-paskripkin@gmail.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
