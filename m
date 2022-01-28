@@ -2,240 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E03F49F2A6
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 05:55:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25E2D49F2B0
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 05:57:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237388AbiA1Ezs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 23:55:48 -0500
-Received: from mail.zju.edu.cn ([61.164.42.155]:40514 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1346147AbiA1EzU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jan 2022 23:55:20 -0500
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app2 (Coremail) with SMTP id by_KCgBHTIRXdfNhomB5AQ--.44160S4;
-        Fri, 28 Jan 2022 12:47:26 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-hams@vger.kernel.org
-Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH 2/2] ax25: add refcount in ax25_dev to avoid UAF bugs
-Date:   Fri, 28 Jan 2022 12:47:16 +0800
-Message-Id: <855641b37699b6ff501c4bae8370d26f59da9c81.1643343397.git.duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1643343397.git.duoming@zju.edu.cn>
-References: <cover.1643343397.git.duoming@zju.edu.cn>
-In-Reply-To: <cover.1643343397.git.duoming@zju.edu.cn>
-References: <cover.1643343397.git.duoming@zju.edu.cn>
-X-CM-TRANSID: by_KCgBHTIRXdfNhomB5AQ--.44160S4
-X-Coremail-Antispam: 1UD129KBjvJXoW3AF4UWryxGFykGFyUKr1Dtrb_yoW7ur1rpF
-        W0kayrArZ7tFy7Ars5Wr1xWF1jyryjq39rAr1UuF1Skw15J3s8JF18tryUKry7GrW3AF18
-        X34DXr4UAr48ZF7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUka1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y
-        6r17McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
-        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr
-        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUp6wZUUUUU=
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/
+        id S237629AbiA1E5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 23:57:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51870 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231342AbiA1E5k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 23:57:40 -0500
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FABC061714;
+        Thu, 27 Jan 2022 20:57:40 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id h14so4860522plf.1;
+        Thu, 27 Jan 2022 20:57:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lu2lBnLkSAL0IiFHPYpn99EHRd8SVjxg+NkJ9e7Rdcs=;
+        b=kJKXMpphphatsAkFyChuwZdp2UWIgTH81dqCzDAFrMY9NQ6Ri1mE8hhoMlSgAmfJke
+         NhjCUHbxNXLZ8uzX48HwmYS1CTxu2N6LTlN5DNn4PUtiRyO/Knpq5HeIv9myBIUH1rFs
+         T/IfYJlM9Qxh47uks2Xa5V4u4z9UuB70hkDuz35xvpudOWJs/Yi2oiPwgZtX9glBbAdU
+         RvIHfwFQCFVGSHBXdXsFKvHQbk5DZSoLiIw5YJ3CS6617MBfLwbkxExGdWged0obTgN7
+         6XYefkPK8VoT+08eZhJU2vHYXD06lXqrKldFkj8j03wh+R1ipHfCJRSyuM7CGMVMlzAW
+         v1kA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lu2lBnLkSAL0IiFHPYpn99EHRd8SVjxg+NkJ9e7Rdcs=;
+        b=yT0f1v6CfkoMECixawvkYyQXAVwIzAtYA0dWXx34OQ0g9uif1QPyKlv3zG7RhKrpzs
+         dyU7LD70uRl9hPeWhXaCkeegqSqNM2mCv3z0Hhsox/J+AvTGrpoyO/Eh7q4tfOXf0eYk
+         3RpDBx2eS439jjNmDIvec4Xqx9ftGcO1IEJ/+SJsB+ENObY9F2a4FychFna9Yvk7bEj7
+         mArkXIisEvYtcs/5trRYysq+K9nbdr7lEc3SQhnAnBz8vfc2uZ8gjHkQnfQW0pF0EE4w
+         PFQ9tTEeeO3fRYpWwZjgwwgiqbf3wCxpZ2RMOj2ZCIy7HIiMkZxo6Yna5iRYbwwSTO1W
+         lUGg==
+X-Gm-Message-State: AOAM532Kcoohbd9WTExBi8py7JTnn3oC78tEAOx3Q2NYi10UtrEvmE21
+        7hwPmUDFP1lusuwInR+OLgk=
+X-Google-Smtp-Source: ABdhPJydETCpBRgl7eSTSnEC+FS0USXR2VBf8zlZmTmWXDsgsp/BPDXZxIWznrjI9FoCJ1wc9rgCOQ==
+X-Received: by 2002:a17:902:9a0a:: with SMTP id v10mr6518064plp.50.1643345859698;
+        Thu, 27 Jan 2022 20:57:39 -0800 (PST)
+Received: from localhost.localdomain ([43.132.141.8])
+        by smtp.gmail.com with ESMTPSA id b22sm7523964pfl.121.2022.01.27.20.57.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 20:57:39 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     kuba@kernel.org, rostedt@goodmis.org, idosch@idosch.org
+Cc:     nhorman@tuxdriver.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dsahern@kernel.org,
+        Menglong Dong <imagedong@tencent.com>
+Subject: [PATCH v4 net-next] net: drop_monitor: support drop reason
+Date:   Fri, 28 Jan 2022 12:57:27 +0800
+Message-Id: <20220128045727.910974-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If we dereference ax25_dev after we call kfree(ax25_dev) in
-ax25_dev_device_down(), it will lead to concurrency UAF bugs.
-There are eight syscall functions suffer from UAF bugs, include
-ax25_bind(), ax25_release(), ax25_connect(), ax25_ioctl(),
-ax25_getname(), ax25_sendmsg(), ax25_getsockopt() and
-ax25_info_show().
+From: Menglong Dong <imagedong@tencent.com>
 
-One of the concurrency UAF can be shown as below:
+In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()")
+drop reason is introduced to the tracepoint of kfree_skb. Therefore,
+drop_monitor is able to report the drop reason to users by netlink.
 
-  (USE)                       |    (FREE)
-                              |  ax25_device_event
-                              |    ax25_dev_device_down
-ax25_bind                     |    ...
-  ...                         |      kfree(ax25_dev)
-  ax25_fillin_cb()            |    ...
-    ax25_fillin_cb_from_dev() |
-  ...                         |
+The drop reasons are reported as string to users, which is exactly
+the same as what we do when reporting it to ftrace.
 
-The root cause of UAF bugs is that kfree(ax25_dev) in
-ax25_dev_device_down() is not protected by any locks.
-When ax25_dev, which there are still pointers point to,
-is released, the concurrency UAF bug will happen.
-
-This patch introduces refcount into ax25_dev in order to
-guarantee that there are no pointers point to it when ax25_dev
-is released.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/net/ax25.h    | 10 ++++++++++
- net/ax25/af_ax25.c    |  2 ++
- net/ax25/ax25_dev.c   | 12 ++++++++++--
- net/ax25/ax25_route.c |  3 +++
- 4 files changed, 25 insertions(+), 2 deletions(-)
+v4:
+- report drop reasons as string
 
-diff --git a/include/net/ax25.h b/include/net/ax25.h
-index 526e4958919..50b417df622 100644
---- a/include/net/ax25.h
-+++ b/include/net/ax25.h
-@@ -239,6 +239,7 @@ typedef struct ax25_dev {
- #if defined(CONFIG_AX25_DAMA_SLAVE) || defined(CONFIG_AX25_DAMA_MASTER)
- 	ax25_dama_info		dama;
- #endif
-+	refcount_t		refcount;
- } ax25_dev;
+v3:
+- referring to cb->reason and cb->pc directly in
+  net_dm_packet_report_fill()
+
+v2:
+- get a pointer to struct net_dm_skb_cb instead of local var for
+  each field
+---
+ include/uapi/linux/net_dropmon.h |  1 +
+ net/core/drop_monitor.c          | 27 +++++++++++++++++++++++----
+ 2 files changed, 24 insertions(+), 4 deletions(-)
+
+diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
+index 66048cc5d7b3..1bbea8f0681e 100644
+--- a/include/uapi/linux/net_dropmon.h
++++ b/include/uapi/linux/net_dropmon.h
+@@ -93,6 +93,7 @@ enum net_dm_attr {
+ 	NET_DM_ATTR_SW_DROPS,			/* flag */
+ 	NET_DM_ATTR_HW_DROPS,			/* flag */
+ 	NET_DM_ATTR_FLOW_ACTION_COOKIE,		/* binary */
++	NET_DM_ATTR_REASON,			/* string */
  
- typedef struct ax25_cb {
-@@ -293,6 +294,15 @@ static __inline__ void ax25_cb_put(ax25_cb *ax25)
- 	}
- }
+ 	__NET_DM_ATTR_MAX,
+ 	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index 7b288a121a41..e7ef678f9ee6 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -48,6 +48,16 @@
+ static int trace_state = TRACE_OFF;
+ static bool monitor_hw;
  
-+#define ax25_dev_hold(__ax25_dev) \
-+	refcount_inc(&((__ax25_dev)->refcount))
++#undef EM
++#undef EMe
 +
-+static __inline__ void ax25_dev_put(ax25_dev *ax25_dev)
-+{
-+	if (refcount_dec_and_test(&ax25_dev->refcount)) {
-+		kfree(ax25_dev);
-+	}
-+}
- static inline __be16 ax25_type_trans(struct sk_buff *skb, struct net_device *dev)
++#define EM(a, b)	[a] = #b,
++#define EMe(a, b)	[a] = #b
++
++static const char *drop_reasons[SKB_DROP_REASON_MAX + 1] = {
++	TRACE_SKB_DROP_REASON
++};
++
+ /* net_dm_mutex
+  *
+  * An overall lock guarding every operation coming from userspace.
+@@ -126,6 +136,7 @@ struct net_dm_skb_cb {
+ 		struct devlink_trap_metadata *hw_metadata;
+ 		void *pc;
+ 	};
++	enum skb_drop_reason reason;
+ };
+ 
+ #define NET_DM_SKB_CB(__skb) ((struct net_dm_skb_cb *)&((__skb)->cb[0]))
+@@ -498,6 +509,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
  {
- 	skb->dev      = dev;
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 44a8730c26a..32f61978ff2 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -91,6 +91,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- 			spin_unlock_bh(&ax25_list_lock);
- 			lock_sock(sk);
- 			s->ax25_dev = NULL;
-+			ax25_dev_put(ax25_dev);
- 			release_sock(sk);
- 			ax25_disconnect(s, ENETUNREACH);
- 			spin_lock_bh(&ax25_list_lock);
-@@ -439,6 +440,7 @@ static int ax25_ctl_ioctl(const unsigned int cmd, void __user *arg)
- 	  }
+ 	ktime_t tstamp = ktime_get_real();
+ 	struct per_cpu_dm_data *data;
++	struct net_dm_skb_cb *cb;
+ 	struct sk_buff *nskb;
+ 	unsigned long flags;
  
- out_put:
-+	ax25_dev_put(ax25_dev);
- 	ax25_cb_put(ax25);
- 	return ret;
- 
-diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
-index 256fadb94df..770b787fb7b 100644
---- a/net/ax25/ax25_dev.c
-+++ b/net/ax25/ax25_dev.c
-@@ -37,6 +37,7 @@ ax25_dev *ax25_addr_ax25dev(ax25_address *addr)
- 	for (ax25_dev = ax25_dev_list; ax25_dev != NULL; ax25_dev = ax25_dev->next)
- 		if (ax25cmp(addr, (const ax25_address *)ax25_dev->dev->dev_addr) == 0) {
- 			res = ax25_dev;
-+			ax25_dev_hold(ax25_dev);
- 		}
- 	spin_unlock_bh(&ax25_dev_lock);
- 
-@@ -56,6 +57,7 @@ void ax25_dev_device_up(struct net_device *dev)
+@@ -508,7 +520,9 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+ 	if (!nskb)
  		return;
- 	}
  
-+	refcount_set(&ax25_dev->refcount, 1);
- 	dev->ax25_ptr     = ax25_dev;
- 	ax25_dev->dev     = dev;
- 	dev_hold_track(dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
-@@ -83,6 +85,7 @@ void ax25_dev_device_up(struct net_device *dev)
- 	spin_lock_bh(&ax25_dev_lock);
- 	ax25_dev->next = ax25_dev_list;
- 	ax25_dev_list  = ax25_dev;
-+	ax25_dev_hold(ax25_dev);
- 	spin_unlock_bh(&ax25_dev_lock);
+-	NET_DM_SKB_CB(nskb)->pc = location;
++	cb = NET_DM_SKB_CB(nskb);
++	cb->reason = reason;
++	cb->pc = location;
+ 	/* Override the timestamp because we care about the time when the
+ 	 * packet was dropped.
+ 	 */
+@@ -606,7 +620,7 @@ static int net_dm_packet_report_in_port_put(struct sk_buff *msg, int ifindex,
+ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+ 				     size_t payload_len)
+ {
+-	u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
++	struct net_dm_skb_cb *cb = NET_DM_SKB_CB(skb);
+ 	char buf[NET_DM_MAX_SYMBOL_LEN];
+ 	struct nlattr *attr;
+ 	void *hdr;
+@@ -620,10 +634,15 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+ 	if (nla_put_u16(msg, NET_DM_ATTR_ORIGIN, NET_DM_ORIGIN_SW))
+ 		goto nla_put_failure;
  
- 	ax25_register_dev_sysctl(ax25_dev);
-@@ -112,20 +115,22 @@ void ax25_dev_device_down(struct net_device *dev)
+-	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
++	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, (u64)(uintptr_t)cb->pc,
++			      NET_DM_ATTR_PAD))
++		goto nla_put_failure;
++
++	if (nla_put_string(msg, NET_DM_ATTR_REASON,
++			   drop_reasons[cb->reason]))
+ 		goto nla_put_failure;
  
- 	if ((s = ax25_dev_list) == ax25_dev) {
- 		ax25_dev_list = s->next;
-+		ax25_dev_put(ax25_dev);
- 		spin_unlock_bh(&ax25_dev_lock);
- 		dev->ax25_ptr = NULL;
- 		dev_put_track(dev, &ax25_dev->dev_tracker);
--		kfree(ax25_dev);
-+		ax25_dev_put(ax25_dev);
- 		return;
- 	}
+-	snprintf(buf, sizeof(buf), "%pS", NET_DM_SKB_CB(skb)->pc);
++	snprintf(buf, sizeof(buf), "%pS", cb->pc);
+ 	if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
+ 		goto nla_put_failure;
  
- 	while (s != NULL && s->next != NULL) {
- 		if (s->next == ax25_dev) {
- 			s->next = ax25_dev->next;
-+			ax25_dev_put(ax25_dev);
- 			spin_unlock_bh(&ax25_dev_lock);
- 			dev->ax25_ptr = NULL;
- 			dev_put_track(dev, &ax25_dev->dev_tracker);
--			kfree(ax25_dev);
-+			ax25_dev_put(ax25_dev);
- 			return;
- 		}
- 
-@@ -133,6 +138,7 @@ void ax25_dev_device_down(struct net_device *dev)
- 	}
- 	spin_unlock_bh(&ax25_dev_lock);
- 	dev->ax25_ptr = NULL;
-+	ax25_dev_put(ax25_dev);
- }
- 
- int ax25_fwd_ioctl(unsigned int cmd, struct ax25_fwd_struct *fwd)
-@@ -149,6 +155,7 @@ int ax25_fwd_ioctl(unsigned int cmd, struct ax25_fwd_struct *fwd)
- 		if (ax25_dev->forward != NULL)
- 			return -EINVAL;
- 		ax25_dev->forward = fwd_dev->dev;
-+		ax25_dev_put(fwd_dev);
- 		break;
- 
- 	case SIOCAX25DELFWD:
-@@ -161,6 +168,7 @@ int ax25_fwd_ioctl(unsigned int cmd, struct ax25_fwd_struct *fwd)
- 		return -EINVAL;
- 	}
- 
-+	ax25_dev_put(ax25_dev);
- 	return 0;
- }
- 
-diff --git a/net/ax25/ax25_route.c b/net/ax25/ax25_route.c
-index d0b2e094bd5..1e32693833e 100644
---- a/net/ax25/ax25_route.c
-+++ b/net/ax25/ax25_route.c
-@@ -116,6 +116,7 @@ static int __must_check ax25_rt_add(struct ax25_routes_struct *route)
- 	ax25_rt->dev          = ax25_dev->dev;
- 	ax25_rt->digipeat     = NULL;
- 	ax25_rt->ip_mode      = ' ';
-+	ax25_dev_put(ax25_dev);
- 	if (route->digi_count != 0) {
- 		if ((ax25_rt->digipeat = kmalloc(sizeof(ax25_digi), GFP_ATOMIC)) == NULL) {
- 			write_unlock_bh(&ax25_route_lock);
-@@ -172,6 +173,7 @@ static int ax25_rt_del(struct ax25_routes_struct *route)
- 			}
- 		}
- 	}
-+	ax25_dev_put(ax25_dev);
- 	write_unlock_bh(&ax25_route_lock);
- 
- 	return 0;
-@@ -214,6 +216,7 @@ static int ax25_rt_opt(struct ax25_route_opt_struct *rt_option)
- 	}
- 
- out:
-+	ax25_dev_put(ax25_dev);
- 	write_unlock_bh(&ax25_route_lock);
- 	return err;
- }
 -- 
-2.17.1
+2.27.0
 
