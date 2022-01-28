@@ -2,75 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FB7049FBE2
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 15:40:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E58AD49FBEB
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 15:43:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245244AbiA1OkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 09:40:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52468 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349352AbiA1OkL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 09:40:11 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DCEACB825ED
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 14:40:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8BA14C340E7;
-        Fri, 28 Jan 2022 14:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643380809;
-        bh=rUX1JwQT+tn2Sh+RM3+EEVkFblkn0uh7bnzRBQEaxFY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=h/pLo1HW9Amko3Qq/YWjlvV4tQkySp+kHiFMF85rtyJ+o19D9xmYi6nYy/Bxpmmvb
-         0WUAkABILVKmlT0RjLlCBeazPwt76yHB4dWf6ngVcGjXK195siKURW7ynTlCC6YX82
-         RL0FcXouBNwa/P9Y1VLIXQzr19aRy7j57ywslN9mLi3Jj99YV94ZFr66UENRBs3L4T
-         3iD4MgDm+79CVnw7Y+lawONXsjT3rRWitsTU4H6EcJ+XrcnLzahS4/jDVzMW1nyKzB
-         c//WOdJoPE0azR/0fVZSYl6plw+HL54diBo0B3WB9yCfs0BYnbBvO7unbo8jRr46IP
-         rMKJQmwhrcxAg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73F3BF6079F;
-        Fri, 28 Jan 2022 14:40:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S236750AbiA1OnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 09:43:01 -0500
+Received: from www62.your-server.de ([213.133.104.62]:58490 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349397AbiA1Omz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 09:42:55 -0500
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nDSSX-0000FP-76; Fri, 28 Jan 2022 15:42:41 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nDSSW-000Tvp-Qt; Fri, 28 Jan 2022 15:42:40 +0100
+Subject: Re: [PATCH bpf-next v2 2/2] selftests/bpf: check whether s32 is
+ sufficient for kfunc offset
+To:     Hou Tao <houtao1@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ard.biesheuvel@arm.com>,
+        linux-arm-kernel@lists.infradead.org
+References: <20220127071532.384888-1-houtao1@huawei.com>
+ <20220127071532.384888-3-houtao1@huawei.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <ba562bf9-c328-1258-940f-b4d9a3169776@iogearbox.net>
+Date:   Fri, 28 Jan 2022 15:42:40 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: mvneta: remove unnecessary if condition in
- mvneta_xdp_submit_frame
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164338080947.20347.12794752870636413631.git-patchwork-notify@kernel.org>
-Date:   Fri, 28 Jan 2022 14:40:09 +0000
-References: <d7b846d1caf1f59612eead3d8760e7a6913695ba.1643294657.git.lorenzo@kernel.org>
-In-Reply-To: <d7b846d1caf1f59612eead3d8760e7a6913695ba.1643294657.git.lorenzo@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        thomas.petazzoni@bootlin.com, davem@davemloft.net, kuba@kernel.org,
-        dan.carpenter@oracle.com
+In-Reply-To: <20220127071532.384888-3-houtao1@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26436/Fri Jan 28 10:22:17 2022)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Thu, 27 Jan 2022 15:47:49 +0100 you wrote:
-> Get rid of unnecessary if check on tx_desc pointer in
-> mvneta_xdp_submit_frame routine since num_frames is always greater than
-> 0 and tx_desc pointer is always initialized.
+On 1/27/22 8:15 AM, Hou Tao wrote:
+> In add_kfunc_call(), bpf_kfunc_desc->imm with type s32 is used to
+> represent the offset of called kfunc from __bpf_call_base, so
+> add a test to ensure that the offset will not be overflowed.
 > 
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Signed-off-by: Hou Tao <houtao1@huawei.com>
+
+Thanks for looking into this!
+
+> ---
+>   .../selftests/bpf/prog_tests/ksyms_module.c   | 72 +++++++++++++++++++
+>   1 file changed, 72 insertions(+)
 > 
-> [...]
+> diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_module.c b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+> index d490ad80eccb..ce0cd3446931 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+> @@ -6,6 +6,76 @@
+>   #include "test_ksyms_module.lskel.h"
+>   #include "test_ksyms_module.skel.h"
+>   
+> +/* Most logic comes from bpf_object__read_kallsyms_file() */
+> +static int test_find_func_in_kallsyms(const char *func, unsigned long *addr)
+> +{
+> +	/* Same as KSYM_NAME_LEN */
+> +	char sym_name[128];
+> +	char sym_type;
+> +	unsigned long sym_addr;
+> +	int ret, err;
+> +	FILE *f;
+> +
+> +	f = fopen("/proc/kallsyms", "r");
+> +	if (!f)
+> +		return -errno;
+> +
+> +	err = -ENOENT;
+> +	while (true) {
+> +		ret = fscanf(f, "%lx %c %127s%*[^\n]\n",
+> +			     &sym_addr, &sym_type, sym_name);
+> +		if (ret == EOF && feof(f))
+> +			break;
+> +
+> +		if (ret != 3) {
+> +			err = -EINVAL;
+> +			break;
+> +		}
+> +
+> +		if ((sym_type == 't' || sym_type == 'T') &&
+> +		    !strcmp(sym_name, func)) {
+> +			*addr = sym_addr;
+> +			err = 0;
+> +			break;
+> +		}
+> +	}
+> +
+> +	fclose(f);
+> +	return err;
+> +}
 
-Here is the summary with links:
-  - [net-next] net: mvneta: remove unnecessary if condition in mvneta_xdp_submit_frame
-    https://git.kernel.org/netdev/net-next/c/c52db2461917
+Could we just reuse kallsyms_find() from trace_helpers.c which is also used
+in couple of other prog_tests already?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> +
+> +/*
+> + * Check whether or not s32 in bpf_kfunc_desc is sufficient
+> + * to represent the offset between bpf_testmod_test_mod_kfunc
+> + * and __bpf_call_base.
+> + */
+> +void test_ksyms_module_valid_offset(void)
+> +{
+> +	unsigned long kfunc_addr;
+> +	unsigned long base_addr;
+> +	int used_offset;
+> +	long actual_offset;
+> +	int err;
+> +
+> +	if (!env.has_testmod) {
+> +		test__skip();
+> +		return;
+> +	}
+> +
+> +	err = test_find_func_in_kallsyms("bpf_testmod_test_mod_kfunc",
+> +					 &kfunc_addr);
+> +	if (!ASSERT_OK(err, "find kfunc addr"))
+> +		return;
+> +
+> +	err = test_find_func_in_kallsyms("__bpf_call_base", &base_addr);
+> +	if (!ASSERT_OK(err, "find base addr"))
+> +		return;
+> +
+> +	used_offset = kfunc_addr - base_addr;
+> +	actual_offset = kfunc_addr - base_addr;
+> +	ASSERT_EQ((long)used_offset, actual_offset, "kfunc offset overflowed");
 
+Is the above also executed in case bpf_jit_supports_kfunc_call() falls back to
+the default __weak callback, returning false? If yes, then the ASSERT_EQ() may
+fail on archs like s390, ppc, etc where the offset may not be enough.
+
+> +}
+> +
+>   void test_ksyms_module_lskel(void)
+>   {
+>   	struct test_ksyms_module_lskel *skel;
+> @@ -55,6 +125,8 @@ void test_ksyms_module_libbpf(void)
+>   
+>   void test_ksyms_module(void)
+>   {
+> +	if (test__start_subtest("valid_offset"))
+> +		test_ksyms_module_valid_offset();
+>   	if (test__start_subtest("lskel"))
+>   		test_ksyms_module_lskel();
+>   	if (test__start_subtest("libbpf"))
+> 
 
