@@ -2,85 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0675549FB6B
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 15:13:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D18FD49FB95
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 15:23:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348647AbiA1ONS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 09:13:18 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:60190 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348556AbiA1ONR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jan 2022 09:13:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=J6m+Ueqcjj16kxL0/GFptwVxl+GUTQVJ3vrrj5TwdLM=; b=BFisTSJDNZXGzBHwBUPc0ksBrl
-        LTJyFTzIPjkyyHZXNjbkJZO4TMqeFkZmVQS3IeQe/39OLuC6iojWUzNaGMOt3nKmCpnXR3h7eIRnF
-        Tmhb0+oo6TdLC6gHtH5K48WN7NlXg8iFQ+omRwfvQiUYGkjybd/A4idj2/YVkXIDJC6o=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nDRzw-003BBq-Cs; Fri, 28 Jan 2022 15:13:08 +0100
-Date:   Fri, 28 Jan 2022 15:13:08 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 1/2] net: dsa: mv88e6xxx: Improve performance
- of busy bit polling
-Message-ID: <YfP59AkbUn5vVZRg@lunn.ch>
-References: <20220128104938.2211441-1-tobias@waldekranz.com>
- <20220128104938.2211441-2-tobias@waldekranz.com>
+        id S1346969AbiA1OX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 09:23:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48472 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245002AbiA1OX2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 09:23:28 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AAFF61DE7;
+        Fri, 28 Jan 2022 14:23:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4B10C340E0;
+        Fri, 28 Jan 2022 14:23:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643379807;
+        bh=LYhkprRvLrA3vMAJrEsv8ea57hE3swowf7ZT1KwKUis=;
+        h=From:To:Cc:Subject:Date:From;
+        b=FOcAls+kII9MJBiEqxP5cE3fjiFNDl5j2UVqjQs20U+O/Xb+ngjaFiCR9DuViLlll
+         oJrxof9wthaJWEV/9iAVIkrCqRieiJ7DMec9mwlze27CJQpqPUgT3suSTYpxu9zmpQ
+         u4d5lJAH9iAJ23JcaaebQknzQ6k5ybpQm9IsAYo1d0Jp3e8VzQPAUwYTrWx83pL1sM
+         UZwn6qPw+w/pwS/S1PjJsy9OZm0iw1MfA6ZI9FnzkopiYNOGTxrbFWrGEvmiQSNW/q
+         +BdNa9WJQ28ieom6DFC0IMYDWGvqzlxeKdVRczgrMq23JU+fXcSVrDpetvLMEHDJ3j
+         zFDVfjKw3mseA==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: stmmac: properly handle with runtime pm in stmmac_dvr_remove()
+Date:   Fri, 28 Jan 2022 22:15:50 +0800
+Message-Id: <20220128141550.2350-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220128104938.2211441-2-tobias@waldekranz.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 11:49:37AM +0100, Tobias Waldekranz wrote:
-> Avoid a long delay when a busy bit is still set and has to be polled
-> again.
-> 
-> Measurements on a system with 2 Opals (6097F) and one Agate (6352)
-> show that even with this much tighter loop, we have about a 50% chance
-> of the bit being cleared on the first poll, all other accesses see the
-> bit being cleared on the second poll.
-> 
-> On a standard MDIO bus running MDC at 2.5MHz, a single access with 32
-> bits of preamble plus 32 bits of data takes 64*(1/2.5MHz) = 25.6us.
-> 
-> This means that mv88e6xxx_smi_direct_wait took 26us + CPU overhead in
-> the fast scenario, but 26us + 1500us + 26us + CPU overhead in the slow
-> case - bringing the average close to 1ms.
-> 
-> With this change in place, the slow case is closer to 2*26us + CPU
-> overhead, with the average well below 100us - a 10x improvement.
-> 
-> This translates to real-world winnings. On a 3-chip 20-port system,
-> the modprobe time drops by 88%:
-> 
-> Before:
-> 
-> root@coronet:~# time modprobe mv88e6xxx
-> real    0m 15.99s
-> user    0m 0.00s
-> sys     0m 1.52s
-> 
-> After:
-> 
-> root@coronet:~# time modprobe mv88e6xxx
-> real    0m 2.21s
-> user    0m 0.00s
-> sys     0m 1.54s
-> 
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+There are two issues with runtime pm handling in stmmac_dvr_remove():
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+1. the mac is runtime suspended before stopping dma and rx/tx. We
+need to ensure the device is properly resumed back.
 
-    Andrew
+2. the stmmaceth clk enable/disable isn't balanced in both exit and
+error handling code path. Take the exit code path for example, when we
+unbind the driver or rmmod the driver module, the mac is runtime
+suspended as said above, so the stmmaceth clk is disabled, but
+	stmmac_dvr_remove()
+	  stmmac_remove_config_dt()
+	    clk_disable_unprepare()
+CCF will complain this time. The error handling code path suffers
+from the similar situtaion.
+
+Here are kernel warnings in error handling code path on Allwinner D1
+platform:
+
+[    1.604695] ------------[ cut here ]------------
+[    1.609328] bus-emac already disabled
+[    1.613015] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:952 clk_core_disable+0xcc/0xec
+[    1.621039] CPU: 0 PID: 38 Comm: kworker/u2:1 Not tainted 5.14.0-rc4#1
+[    1.627653] Hardware name: Allwinner D1 NeZha (DT)
+[    1.632443] Workqueue: events_unbound deferred_probe_work_func
+[    1.638286] epc : clk_core_disable+0xcc/0xec
+[    1.642561]  ra : clk_core_disable+0xcc/0xec
+[    1.646835] epc : ffffffff8023c2ec ra : ffffffff8023c2ec sp : ffffffd00411bb10
+[    1.654054]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : ffffffff80ed6a6f
+[    1.661272]  t1 : ffffffff80ed6a60 t2 : 0000000000000000 s0 : ffffffe001509e00
+[    1.668489]  s1 : 0000000000000001 a0 : 0000000000000019 a1 : ffffffff80e80bd8
+[    1.675707]  a2 : 00000000ffffefff a3 : 00000000000000f4 a4 : 0000000000000002
+[    1.682924]  a5 : 0000000000000001 a6 : 0000000000000030 a7 : 00000000028f5c29
+[    1.690141]  s2 : 0000000000000800 s3 : ffffffe001375000 s4 : ffffffe01fdf7a80
+[    1.697358]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
+[    1.704577]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
+[    1.711794]  s11: ffffffe001b80760 t3 : 0000000000000062 t4 : ffffffffffffffff
+[    1.719012]  t5 : ffffffff80e0f6d8 t6 : ffffffd00411b8f0
+[    1.724321] status: 8000000201800100 badaddr: 0000000000000000 cause: 0000000000000003
+[    1.732233] [<ffffffff8023c2ec>] clk_core_disable+0xcc/0xec
+[    1.737810] [<ffffffff80240430>] clk_disable+0x38/0x78
+[    1.742956] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
+[    1.748451] [<ffffffff8031a500>] stmmac_remove_config_dt+0x1c/0x4c
+[    1.754646] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
+[    1.760484] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
+[    1.765975] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
+[    1.771382] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
+[    1.777305] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
+[    1.783402] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
+[    1.789324] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
+[    1.795508] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
+[    1.802125] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
+[    1.807701] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
+[    1.813277] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
+[    1.818852] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
+[    1.825122] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
+[    1.830872] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
+[    1.836362] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+[    1.841335] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+[    1.846304] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
+[    1.852054] [<ffffffff80026564>] kthread+0x124/0x160
+[    1.857021] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
+[    1.862770] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
+[    1.868956] ---[ end trace 8d5c6046255f84a0 ]---
+[    1.873675] ------------[ cut here ]------------
+[    1.878366] bus-emac already unprepared
+[    1.882378] WARNING: CPU: 0 PID: 38 at drivers/clk/clk.c:810 clk_core_unprepare+0xe4/0x168
+[    1.890673] CPU: 0 PID: 38 Comm: kworker/u2:1 Tainted: G        W	5.14.0-rc4 #1
+[    1.898674] Hardware name: Allwinner D1 NeZha (DT)
+[    1.903464] Workqueue: events_unbound deferred_probe_work_func
+[    1.909305] epc : clk_core_unprepare+0xe4/0x168
+[    1.913840]  ra : clk_core_unprepare+0xe4/0x168
+[    1.918375] epc : ffffffff8023d6cc ra : ffffffff8023d6cc sp : ffffffd00411bb10
+[    1.925593]  gp : ffffffff80ec9988 tp : ffffffe00143a800 t0 : 0000000000000002
+[    1.932811]  t1 : ffffffe01f743be0 t2 : 0000000000000040 s0 : ffffffe001509e00
+[    1.940029]  s1 : 0000000000000001 a0 : 000000000000001b a1 : ffffffe00143a800
+[    1.947246]  a2 : 0000000000000000 a3 : 00000000000000f4 a4 : 0000000000000001
+[    1.954463]  a5 : 0000000000000000 a6 : 0000000005fce2a5 a7 : 0000000000000001
+[    1.961680]  s2 : 0000000000000800 s3 : ffffffff80afeb90 s4 : ffffffe01fdf7a80
+[    1.968898]  s5 : ffffffe001375010 s6 : ffffffff8001fc10 s7 : ffffffffffffffff
+[    1.976115]  s8 : 0000000000000001 s9 : ffffffff80ecb248 s10: ffffffe001b80000
+[    1.983333]  s11: ffffffe001b80760 t3 : ffffffff80b39120 t4 : 0000000000000001
+[    1.990550]  t5 : 0000000000000000 t6 : ffffffe001600002
+[    1.995859] status: 8000000201800120 badaddr: 0000000000000000 cause: 0000000000000003
+[    2.003771] [<ffffffff8023d6cc>] clk_core_unprepare+0xe4/0x168
+[    2.009609] [<ffffffff802403a0>] clk_unprepare+0x24/0x3c
+[    2.014929] [<ffffffff8031a508>] stmmac_remove_config_dt+0x24/0x4c
+[    2.021125] [<ffffffff8031c8ec>] sun8i_dwmac_probe+0x378/0x82c
+[    2.026965] [<ffffffff8001fc0c>] worker_thread+0x1a8/0x4d8
+[    2.032463] [<ffffffff8029a6c8>] platform_probe+0x64/0xf0
+[    2.037871] [<ffffffff8029833c>] really_probe.part.0+0x8c/0x30c
+[    2.043795] [<ffffffff8029865c>] __driver_probe_device+0xa0/0x148
+[    2.049892] [<ffffffff8029873c>] driver_probe_device+0x38/0x138
+[    2.055815] [<ffffffff802989cc>] __device_attach_driver+0xd0/0x170
+[    2.061999] [<ffffffff802988f8>] __driver_attach_async_helper+0xbc/0xc0
+[    2.068616] [<ffffffff802965ac>] bus_for_each_drv+0x68/0xb4
+[    2.074193] [<ffffffff80298d1c>] __device_attach+0xd8/0x184
+[    2.079769] [<ffffffff802967b0>] bus_probe_device+0x98/0xbc
+[    2.085345] [<ffffffff80297904>] deferred_probe_work_func+0x90/0xd4
+[    2.091616] [<ffffffff8001f8b8>] process_one_work+0x1e4/0x390
+[    2.097367] [<ffffffff8001fd80>] worker_thread+0x31c/0x4d8
+[    2.102858] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+[    2.107830] [<ffffffff80026bf4>] kthreadd+0x94/0x188
+[    2.112800] [<ffffffff8001fa60>] process_one_work+0x38c/0x390
+[    2.118551] [<ffffffff80026564>] kthread+0x124/0x160
+[    2.123520] [<ffffffff8002643c>] set_kthread_struct+0x5c/0x60
+[    2.129268] [<ffffffff80001f08>] ret_from_syscall_rejected+0x8/0xc
+[    2.135455] ---[ end trace 8d5c6046255f84a1 ]---
+
+Fixes: 5ec55823438e ("net: stmmac: add clocks management for gmac driver")
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 639a753266e6..bde76ea2deec 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -7252,6 +7252,10 @@ int stmmac_dvr_remove(struct device *dev)
+ 
+ 	netdev_info(priv->dev, "%s: removing driver", __func__);
+ 
++	pm_runtime_get_sync(dev);
++	pm_runtime_disable(dev);
++	pm_runtime_put_noidle(dev);
++
+ 	stmmac_stop_all_dma(priv);
+ 	stmmac_mac_set(priv, priv->ioaddr, false);
+ 	netif_carrier_off(ndev);
+@@ -7270,8 +7274,6 @@ int stmmac_dvr_remove(struct device *dev)
+ 	if (priv->plat->stmmac_rst)
+ 		reset_control_assert(priv->plat->stmmac_rst);
+ 	reset_control_assert(priv->plat->stmmac_ahb_rst);
+-	pm_runtime_put(dev);
+-	pm_runtime_disable(dev);
+ 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
+ 	    priv->hw->pcs != STMMAC_PCS_RTBI)
+ 		stmmac_mdio_unregister(ndev);
+-- 
+2.34.1
+
