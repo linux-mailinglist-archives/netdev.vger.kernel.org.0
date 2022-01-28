@@ -2,142 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECA2149F122
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:39:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1AA649F126
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:40:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345482AbiA1Cjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 21:39:55 -0500
-Received: from prt-mail.chinatelecom.cn ([42.123.76.228]:43064 "EHLO
-        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S241710AbiA1Cjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:39:54 -0500
-HMM_SOURCE_IP: 172.18.0.188:52266.46694565
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.39 (unknown [172.18.0.188])
-        by chinatelecom.cn (HERMES) with SMTP id 4F92E280177;
-        Fri, 28 Jan 2022 10:39:42 +0800 (CST)
-X-189-SAVE-TO-SEND: +sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.188])
-        by app0023 with ESMTP id a9e64b333e9c4f4eb3b632d49f176d02 for j.vosburgh@gmail.com;
-        Fri, 28 Jan 2022 10:39:49 CST
-X-Transaction-ID: a9e64b333e9c4f4eb3b632d49f176d02
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.188
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
-To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jay.vosburgh@canonical.com, nikolay@nvidia.com,
-        huyd12@chinatelecom.cn, sunshouxin@chinatelecom.cn
-Subject: [PATCH v10] net: bonding: Add support for IPV6 ns/na to balance-alb/balance-tlb mode
-Date:   Thu, 27 Jan 2022 21:39:16 -0500
-Message-Id: <20220128023916.100071-1-sunshouxin@chinatelecom.cn>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1345491AbiA1Ckt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 21:40:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49408 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241696AbiA1Cks (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:40:48 -0500
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1F43C061714;
+        Thu, 27 Jan 2022 18:40:47 -0800 (PST)
+Received: by mail-oi1-x236.google.com with SMTP id v67so9723052oie.9;
+        Thu, 27 Jan 2022 18:40:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=LCUpKL6Q4YVQB78FuL+ZiIfU1lE3NIMRMuq43Mlq/lU=;
+        b=bc7Ks/Qyk5hTF+gCMeDrnWUa0ihSQIEFjuKTmWMI3L6PIuX6YfhKHkpOCwgbJrHW/3
+         m/C9g3jBBiMMr1NJb6PiClASWBx0kNSmIAu7ICCU+Sd/IyDzxZn7We64ahiQOp0GXreW
+         t2S3nr6jVe+6hYql40I0zwYKIvjGdKIocEHuXwc6nD9XGSWTwMPA089Ar4ETV7FFk/dN
+         0GpKAlCu6nTC2iHYO/E8kMGe3tHq1xGJN/lgBaMX+vYS1triBE2H52YyhHAF4SNT/oMP
+         kfLC7OdodJUg3Vry7wO5BdVQa6bBxojGauPBcgiuvgo8wPa4wQkvCnN0ZZfZcfhaImUa
+         9PVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=LCUpKL6Q4YVQB78FuL+ZiIfU1lE3NIMRMuq43Mlq/lU=;
+        b=xDLioeL38CBGTI6ftUOm3IAKPbaROPw75WqLiAC05tQPZGPkCagcSIHLNYrWrZP55e
+         fRG73dyDB+UwId4hxbfB6OMPcowMbqCWzzGmx0bJnRDc0ea8lV4ZKxXMdyEy8zBMstvw
+         JFgcK5MVnLA57MY9IDO1t8okk1H3AyzIkY0eEx37izMOqLW0P7Fmu2TmRIJYJ9YnvyeX
+         TFB4u34oPqocEabijYyUeh0sOSP4N2EJ6ktfoaIYB2TuOvLJUckuY43xVfRnjoMI12VC
+         ri204a/cRBp1Uv8Su3mwb1KYsRwAjOaVR905eM6XwTbV+uCbQlLQ7fMpe0owFI0+BFZJ
+         tqsQ==
+X-Gm-Message-State: AOAM532VykTiNQGyiBXMojyjboHQ7tVxjgGw7kl/WvGSLT4Vja9wYvaT
+        AswFyqw5J0tZ34O/g5aQsZQ=
+X-Google-Smtp-Source: ABdhPJz3wjrAWC9bvqx7lWWx1bRRiA9vCcE4qb3sL8ZtEOFfAndAg77ALs1pVxh+ZHBDuSkEoeL9fA==
+X-Received: by 2002:a05:6808:1185:: with SMTP id j5mr4000156oil.75.1643337647283;
+        Thu, 27 Jan 2022 18:40:47 -0800 (PST)
+Received: from localhost ([99.197.200.79])
+        by smtp.gmail.com with ESMTPSA id h2sm2780353ots.51.2022.01.27.18.40.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jan 2022 18:40:46 -0800 (PST)
+Date:   Thu, 27 Jan 2022 18:40:39 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Brendan Jackman <jackmanb@google.com>,
+        Hou Tao <houtao1@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        bpf <bpf@vger.kernel.org>
+Message-ID: <61f357a749eef_738dc208ec@john.notmuch>
+In-Reply-To: <c0831a45-3d39-891b-b89c-36167421d28b@iogearbox.net>
+References: <20220127083240.1425481-1-houtao1@huawei.com>
+ <CA+i-1C2HBja-8Am4gHkcrYdkruw0+sOaGDejc9DS-HfYVXVfyQ@mail.gmail.com>
+ <c0831a45-3d39-891b-b89c-36167421d28b@iogearbox.net>
+Subject: Re: [PATCH bpf-next] bpf, x86: remove unnecessary handling of BPF_SUB
+ atomic op
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since ipv6 neighbor solicitation and advertisement messages
-isn't handled gracefully in bond6 driver, we can see packet
-drop due to inconsistency between mac address in the option
-message and source MAC .
+Daniel Borkmann wrote:
+> On 1/27/22 11:48 AM, Brendan Jackman wrote:
+> > Yep - BPF_SUB is also excluded in Documentation/networking/filter.rst,
+> > plus the interpreter and verifier don't support it.
+> > 
+> > Thanks,
+> > 
+> > Acked-by: Brendan Jackman <jackmanb@google.com>
+> 
+> I was wondering about verifier specifically as well. Added a note to the
+> commit log that verifier rejects BPF_SUB while applying, thanks!
+> 
 
-Another examples is ipv6 neighbor solicitation and advertisement
-messages from VM via tap attached to host bridge, the src mac
-might be changed through balance-alb mode, but it is not synced
-with Link-layer address in the option message.
-
-The patch implements bond6's tx handle for ipv6 neighbor
-solicitation and advertisement messages.
-
-Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
----
-v9->v10:
-- add IPv6 header pull in alb_determine_nd.
-- combine bond_xmit_alb_slave_get's IPv6 header
-pull with alb_determine_nd's
----
- drivers/net/bonding/bond_alb.c | 40 ++++++++++++++++++++++++++++++++--
- 1 file changed, 38 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-index 533e476988f2..d9da6eb7f5c2 100644
---- a/drivers/net/bonding/bond_alb.c
-+++ b/drivers/net/bonding/bond_alb.c
-@@ -1269,6 +1269,37 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
- 	return res;
- }
- 
-+/* determine if the packet is NA or NS */
-+static bool __alb_determine_nd(struct icmp6hdr *hdr)
-+{
-+	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
-+	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
-+		return true;
-+	}
-+
-+	return false;
-+}
-+
-+static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
-+{
-+	struct ipv6hdr *ip6hdr;
-+	struct icmp6hdr *hdr;
-+
-+	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr)))
-+		return true;
-+
-+	ip6hdr = ipv6_hdr(skb);
-+	if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
-+		if (!pskb_may_pull(skb, sizeof(*ip6hdr) + sizeof(*hdr)))
-+			return true;
-+
-+		hdr = icmp6_hdr(skb);
-+		return __alb_determine_nd(hdr);
-+	}
-+
-+	return false;
-+}
-+
- /************************ exported alb functions ************************/
- 
- int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
-@@ -1348,8 +1379,11 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
- 	/* Do not TX balance any multicast or broadcast */
- 	if (!is_multicast_ether_addr(eth_data->h_dest)) {
- 		switch (skb->protocol) {
--		case htons(ETH_P_IP):
- 		case htons(ETH_P_IPV6):
-+			if (alb_determine_nd(skb, bond))
-+				break;
-+			fallthrough;
-+		case htons(ETH_P_IP):
- 			hash_index = bond_xmit_hash(bond, skb);
- 			if (bond->params.tlb_dynamic_lb) {
- 				tx_slave = tlb_choose_channel(bond,
-@@ -1432,10 +1466,12 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
- 			break;
- 		}
- 
--		if (!pskb_network_may_pull(skb, sizeof(*ip6hdr))) {
-+		if (alb_determine_nd(skb, bond)) {
- 			do_tx_balance = false;
- 			break;
- 		}
-+
-+		/* The IPv6 header is pulled by alb_determine_nd */
- 		/* Additionally, DAD probes should not be tx-balanced as that
- 		 * will lead to false positives for duplicate addresses and
- 		 * prevent address configuration from working.
-
-base-commit: dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
--- 
-2.27.0
-
+Thanks for the follow up Hou/Brendan LGTM as well. After its been
+merged, but ACK from me as well.
