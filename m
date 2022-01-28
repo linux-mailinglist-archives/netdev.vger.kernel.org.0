@@ -2,118 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8567149EFF2
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 01:51:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D0FF49F082
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 02:27:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344654AbiA1Avh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 19:51:37 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:49293 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344612AbiA1Avh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 19:51:37 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20S0pCjT5017875, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20S0pCjT5017875
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 28 Jan 2022 08:51:12 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Fri, 28 Jan 2022 08:51:11 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 27 Jan 2022 16:51:11 -0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
- RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
- 15.01.2308.020; Fri, 28 Jan 2022 08:51:11 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Ed Swierk <eswierk@gh.st>
-Subject: RE: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
-Thread-Topic: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
-Thread-Index: AQHYBCp/WStseF16x0uJ7VAbWo+1y6xqJTFAgAMM/BCAA1dIAIAA+BTwgAWAeYCAALM9AA==
-Date:   Fri, 28 Jan 2022 00:51:11 +0000
-Message-ID: <53bea965043548539b995514d36f48e5@realtek.com>
-References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
- <423f474e15c948eda4db5bc9a50fd391@realtek.com>
- <CAFBinCBVEndU0t-6d5atE31OFYHzPyk7pOe78v0XrrFWcBec9w@mail.gmail.com>
- <5ef8ab4f78e448df9f823385d0daed88@realtek.com>
- <CAFBinCDjfKK3+WOXP2xbcAK-KToWof+kSzoxYztqRcc=7T1eyg@mail.gmail.com>
-In-Reply-To: <CAFBinCDjfKK3+WOXP2xbcAK-KToWof+kSzoxYztqRcc=7T1eyg@mail.gmail.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEvMjcg5LiL5Y2IIDEwOjU1OjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1345041AbiA1B1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 20:27:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345053AbiA1B1E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 20:27:04 -0500
+Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B8BC061714
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 17:27:04 -0800 (PST)
+Received: by mail-vs1-xe2c.google.com with SMTP id v6so1210611vsp.11
+        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 17:27:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PttnHobxbrNXm7CRPT8hxk8WeppawPWcyPhV5DsSOLA=;
+        b=qBDlMYS14e4kUT2cmx33e5dDZEL8k7RkraLxlfpBlXePm7UDaQrjeezim0DO7ndDy3
+         ZXauKtE4aP9LfAvT7/vGhv+W9YAG9MfK8eOppGqHqSs2R3bGpvUoBmPzhWWOO8JXu64K
+         hyCh8BELE4UktPLN5MW9TCCmn4DHu4sQ2tbAiV2z+g/EEsuDOqb+dQZLCpskYdKeeOkb
+         qMxIsVWe+L7NJhFmJw6EaUZlYAcS8BPgY9lXpKy+WRy0VaqEHuCGaNKkb90sdU4AvzAJ
+         7zaJvPJYXduUtgBuNZQUiHW2TIleybn4GhSosXAgXCEdETp8GorN7ta10Y5e51HiRQRj
+         EQhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PttnHobxbrNXm7CRPT8hxk8WeppawPWcyPhV5DsSOLA=;
+        b=z0mQSoemjkBqGFDPcRUt7Buc5inhBT1J+vl8KuDl3RbAgID+gbkwpbV3C0tSKRO1Pk
+         PvhTmUKWDInoRFcrFU4N7mJzmaABTVV+8nT8obvT/FPmAvjKpOBG+TmlB/vtEj83aMEd
+         6Ez1sIUqzlP3tlQR/jFhYwRWRQ/x3/L3TijE9uT/XYuYkiF0W5193vDTBzPxdmC6qip8
+         BfUZ1U/YlisTKAN0fYYEVfRcOrswm3ztpWCukGJCR1oWFKWJ+LgztuxuYkwHM032MojW
+         dT9DtVLC87LqeNt3rB7MCf1pA5aiD5kEGRAp2t0A+4Ev1hkd0GpX3jMQeGL3vpifpRMl
+         xK0A==
+X-Gm-Message-State: AOAM531ZDeHeoDLc4bon+HlO/ApFumkwB5kMcNw6Iy8+dka94EmP7H3R
+        zV2p6S1SYDE3T7S/U0JHdj5nVpWFBRPjCUrvD1ZmWdfOgCDrWg==
+X-Google-Smtp-Source: ABdhPJz5pqAI4AAVdIJKudD5rF5gDHzbOLpMZaERpng0omVk/OxKL02I9gaYXj7tUX/1mg/9gBayxwGa0dtd+1So6Yw=
+X-Received: by 2002:a05:6102:6d1:: with SMTP id m17mr1695436vsg.51.1643333222361;
+ Thu, 27 Jan 2022 17:27:02 -0800 (PST)
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+References: <20220127002605.4049593-1-maheshb@google.com> <25026.1643327669@famine>
+In-Reply-To: <25026.1643327669@famine>
+From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
+        <maheshb@google.com>
+Date:   Thu, 27 Jan 2022 17:26:36 -0800
+Message-ID: <CAF2d9jgJ7NWQaUAbB-hOhCk7BSwj+ApwWZLDVG3_-zhqCgnvzw@mail.gmail.com>
+Subject: Re: [PATCH next] bonding: pair enable_port with slave_arr_updates
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mahesh Bandewar <mahesh@bandewar.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGksDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTWFydGluIEJsdW1l
-bnN0aW5nbCA8bWFydGluLmJsdW1lbnN0aW5nbEBnb29nbGVtYWlsLmNvbT4NCj4gU2VudDogRnJp
-ZGF5LCBKYW51YXJ5IDI4LCAyMDIyIDU6NTMgQU0NCj4gVG86IFBrc2hpaCA8cGtzaGloQHJlYWx0
-ZWsuY29tPg0KPiBDYzogbGludXgtd2lyZWxlc3NAdmdlci5rZXJuZWwub3JnOyB0b255MDYyMGVt
-bWFAZ21haWwuY29tOyBrdmFsb0Bjb2RlYXVyb3JhLm9yZzsNCj4gam9oYW5uZXNAc2lwc29sdXRp
-b25zLm5ldDsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVs
-Lm9yZzsgTmVvIEpvdQ0KPiA8bmVvam91QGdtYWlsLmNvbT47IEplcm5laiBTa3JhYmVjIDxqZXJu
-ZWouc2tyYWJlY0BnbWFpbC5jb20+OyBFZCBTd2llcmsgPGVzd2llcmtAZ2guc3Q+DQo+IFN1Ympl
-Y3Q6IFJlOiBbUEFUQ0ggdjMgMC84XSBydHc4ODogcHJlcGFyZSBsb2NraW5nIGZvciBTRElPIHN1
-cHBvcnQNCj4gDQo+IEhpIFBpbmctS2UsDQo+IA0KPiBPbiBNb24sIEphbiAyNCwgMjAyMiBhdCAz
-OjU5IEFNIFBrc2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPiB3cm90ZToNCg0KWy4uLl0NCg0KPiA+
-DQo+ID4gVG8gYXZvaWQgdGhpcywgd2UgY2FuIGFkZCBhIGZsYWcgdG8gc3RydWN0IHJ0d192aWYs
-IGFuZCBzZXQgdGhpcyBmbGFnDQo+ID4gd2hlbiA6OnJlbW92ZV9pbnRlcmZhY2UuIFRoZW4sIG9u
-bHkgY29sbGVjdCB2aWYgd2l0aG91dCB0aGlzIGZsYWcgaW50byBsaXN0DQo+ID4gd2hlbiB3ZSB1
-c2UgaXRlcmF0ZV9hY3Rpb20oKS4NCj4gPg0KPiA+IEFzIHdlbGwgYXMgaWVlZTgwMjExX3N0YSBj
-YW4gZG8gc2ltaWxhciBmaXguDQo+ID4NCg0KSSB3b3VsZCBwcmVmZXIgbXkgbWV0aG9kIHRoYXQg
-YWRkcyBhICdib29sIGRpc2FibGVkJyBmbGFnIHRvIHN0cnVjdCBydHdfdmlmL3J0d19zdGENCmFu
-ZCBzZXQgaXQgd2hlbiA6OnJlbW92ZV9pbnRlcmZhY2UvOjpzdGFfcmVtb3ZlLiBUaGVuIHJ0d19p
-dGVyYXRlX3N0YXMoKSBjYW4NCmNoZWNrIHRoaXMgZmxhZyB0byBkZWNpZGUgd2hldGhlciBkb2Vz
-IHRoaW5nIG9yIG5vdC4NCg0KWy4uLl0NCg0KPiANCj4gRm9yIHRoZSBzdGEgdXNlLWNhc2UgSSB0
-aG91Z2h0IGFib3V0IGFkZGluZyBhIGRlZGljYXRlZCByd2xvY2sNCj4gKGluY2x1ZGUvbGludXgv
-cndsb2NrLmgpIGZvciBydHdfZGV2LT5tYWNfaWRfbWFwLg0KPiBydHdfc3RhX3thZGQscmVtb3Zl
-fSB3b3VsZCB0YWtlIGEgd3JpdGUtbG9jay4NCj4gcnR3X2l0ZXJhdGVfc3RhcygpIHRha2VzIHRo
-ZSByZWFkLWxvY2sgKHRoZSBsb2NrIHdvdWxkIGJlIGFjcXVpcmVkDQo+IGJlZm9yZSBjYWxsaW5n
-IGludG8gaWVlZTgwMjExX2l0ZXJhdGVfLi4uKS4gQWRkaXRpb25hbGx5DQo+IHJ0d19pdGVyYXRl
-X3N0YXMoKSBuZWVkcyB0byBjaGVjayBpZiB0aGUgc3RhdGlvbiBpcyBzdGlsbCB2YWxpZA0KPiBh
-Y2NvcmRpbmcgdG8gbWFjX2lkX21hcCAtIGlmIG5vdDogc2tpcC9pZ25vcmUgaXQgZm9yIHRoYXQg
-aXRlcmF0aW9uLg0KPiBUaGlzIGNvdWxkIGJlIGNvbWJpbmVkIHdpdGggeW91cg0KPiAwMDAxLXJ0
-dzg4LXVzZS1hdG9taWMtdG8tY29sbGVjdC1zdGFzLWFuZC1kb2VzLWl0ZXJhdG9ycy5wYXRjaC4N
-Cg0KVXNpbmcgYSAnZGlzYWJsZWQnIGZsYWcgd2l0aGluIHJ0d192aWYvcnR3X3N0YSB3aWxsIGJl
-IGludHVpdGl2ZSBhbmQNCmJldHRlciB0aGFuIGJpdG1hcCBvZiBtYWNfaWRfbWFwLiBQbGVhc2Ug
-cmVmZXJlbmNlIG15IG1lbnRpb24gYWJvdmUuDQoNCj4gDQo+IEZvciB0aGUgaW50ZXJmYWNlIHVz
-ZS1jYXNlIGl0J3Mgbm90IGNsZWFyIHRvIG1lIGhvdyB0aGlzIHdvcmtzIGF0IGFsbC4NCj4gcnR3
-X29wc19hZGRfaW50ZXJmYWNlKCkgaGFzIChpbiBhIHNpbXBsaWZpZWQgdmlldyk6DQo+ICAgICB1
-OCBwb3J0ID0gMDsNCj4gICAgIC8vIHRoZSBwb3J0IHZhcmlhYmxlIGlzIG5ldmVyIGNoYW5nZWQN
-Cj4gICAgIHJ0d3ZpZi0+cG9ydCA9IHBvcnQ7DQo+ICAgICBydHd2aWYtPmNvbmYgPSAmcnR3X3Zp
-Zl9wb3J0W3BvcnRdOw0KPiAgICAgcnR3X2luZm8ocnR3ZGV2LCAic3RhcnQgdmlmICVwTSBvbiBw
-b3J0ICVkXG4iLCB2aWYtPmFkZHIsIHJ0d3ZpZi0+cG9ydCk7DQo+IEhvdyBkbyBtdWx0aXBsZSBp
-bnRlcmZhY2VzICh2aWZzKSB3b3JrIGluIHJ0dzg4IGlmIHRoZSBwb3J0IGlzIGFsd2F5cw0KPiB6
-ZXJvPyBJcyBzb21lIGtpbmQgb2YgdHJhY2tpbmcgb2YgdGhlIHVzZWQgcG9ydHMgbWlzc2luZyAo
-c2ltaWxhciB0bw0KPiBob3cgd2UgdHJhY2sgdGhlIHVzZWQgc3RhdGlvbiBJRHMgLSBhbHNvIGNh
-bGxlZCBtYWNfaWQgLSBpbg0KPiBydHdfZGV2LT5tYWNfaWRfbWFwKT8NCg0KVGhlIHBvcnQgc2hv
-dWxkIGJlIGFsbG9jYXRlZCBkeW5hbWljYWxseSBpZiB3ZSBzdXBwb3J0IHR3byBvciBtb3JlIHZp
-ZnMuDQpXZSBoYXZlIGludGVybmFsIHRyZWUgdGhhdCBpcyBnb2luZyB0byBzdXBwb3J0IHAycCBi
-eSBzZWNvbmQgdmlmLg0KDQoNClBpbmctS2UNCg0K
+On Thu, Jan 27, 2022 at 3:54 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
+>
+> Mahesh Bandewar <maheshb@google.com> wrote:
+>
+> >When 803.2ad mode enables a participating port, it should update
+> >the slave-array. I have observed that the member links are participating
+> >and are part of the active aggregator while the traffic is egressing via
+> >only one member link (in a case where two links are participating). Via
+> >krpobes I discovered that that slave-arr has only one link added while
+> >the other participating link wasn't part of the slave-arr.
+> >
+> >I couldn't see what caused that situation but the simple code-walk
+> >through provided me hints that the enable_port wasn't always associated
+> >with the slave-array update.
+> >
+> >Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+> >---
+> > drivers/net/bonding/bond_3ad.c | 4 ++++
+> > 1 file changed, 4 insertions(+)
+> >
+> >diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+> >index 6006c2e8fa2b..f20bbc18a03f 100644
+> >--- a/drivers/net/bonding/bond_3ad.c
+> >+++ b/drivers/net/bonding/bond_3ad.c
+> >@@ -1024,6 +1024,8 @@ static void ad_mux_machine(struct port *port, bool *update_slave_arr)
+> >
+> >                                       __enable_port(port);
+> >                               }
+> >+                              /* Slave array needs update */
+> >+                              *update_slave_arr = true;
+> >                       }
+>
+>         Shouldn't this be in the same block as the __enable_port() call?
+absolutely! It's inefficient to have outside of that if-clause and
+would unnecessarily update slave-arr when it's not even needed. My
+bad, I'll fix it in v2
+
+> If I'm reading the code correctly, as written this will trigger an
+> update of the array on every pass of the state machine (every 100ms) if
+> any port is in COLLECTING_DISTRIBUTING state, which is the usual case.
+>
+> >                       break;
+> >               default:
+> >@@ -1779,6 +1781,8 @@ static void ad_agg_selection_logic(struct aggregator *agg,
+> >                            port = port->next_port_in_aggregator) {
+> >                               __enable_port(port);
+> >                       }
+> >+                      /* Slave array needs update. */
+> >+                      *update_slave_arr = true;
+> >               }
+>
+>         I suspect this change would only affect your issue if the port
+> in question was failing to partner (i.e., the peer wasn't running LACP
+> or there was some failure in the LACP negotiation).  If the ports in
+> your test were in the same aggregator, that shouldn't be the case, as I
+> believe unpartnered ports are always individual (not in an aggregator).
+The condition seems to manifest randomly on some machines and not
+always. All links are part of the same aggregator but some transient
+situation does break the bond and almost always it reforms but
+occasionally it gets into this state I mentioned.
+
+My primary motive behind this fix/patch is to update the slave-arr
+when LACP state is changing (for whatever reasons). Enabling port
+seems to be an event which must be associated with updating the array
+and found these two locations in the code where there is a chance that
+update_array may not happen when a port gets enabled.
+
+>
+>         Do you have a test?
+>
+I'm not sure what triggers it and hence I don't have the exact repro
+steps / test.
+
+>         -J
+>
+> >       }
+> >
+> >--
+> >2.35.0.rc0.227.g00780c9af4-goog
+> >
+>
+> ---
+>         -Jay Vosburgh, jay.vosburgh@canonical.com
