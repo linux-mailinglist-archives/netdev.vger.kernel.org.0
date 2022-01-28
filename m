@@ -2,209 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E70C49F11A
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:37:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB98F49F10D
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:36:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345445AbiA1ChZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 21:37:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48630 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345452AbiA1ChZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:37:25 -0500
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F021BC061714
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:37:24 -0800 (PST)
-Received: by mail-ot1-x329.google.com with SMTP id w27-20020a9d5a9b000000b005a17d68ae89so4422359oth.12
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:37:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5LlZ9oCa+qe6HqXhfShIgFg5xKjOIO7wD57zX+WYsJ4=;
-        b=Jk3rPoY3AzUQigO5zDJOAB86MA5dSQlsohzxwKuZ5XbwC7aRZ0gX4Uage9ysj82QaH
-         Jfnf9FrQsDV4dtfFVAnmEGak8H1tg7pgCIHGhl2tRoQrbrLVtPer6QZpuxZDzUKRzruY
-         2LI/rjHJBKPLUO3WVL+e2XRn4WR0alOp1tuPoPXj3cABih83Za6K0cQGppWWbQXJAPci
-         viBvKcmIpaUKHWHmlfkSxOvcwnlfe2LP4uT7KqSmd3LHq95sllk6ZuqPPl75j/FSqyfg
-         TwWtsatUkuMIRFEGK0vFc2mdHfYh46mBpj7OyCXrZEXekAYH3a6dsVtczt4dZdyJ2bPb
-         ReWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5LlZ9oCa+qe6HqXhfShIgFg5xKjOIO7wD57zX+WYsJ4=;
-        b=KZYLTvmXs1D0lMtN57QRgakho/zKFTk3yATu79kvgM1jK8Ia11xTfeZfzrO6oLGLQa
-         LrhVSBzYs+LziP3kDv5I9/BkvE0/vZPpCk8Jnf1vn7HT5YelkO+iFNsup9NERI7D6ydu
-         6OqH9Gp88G52V/YmMTlzHV7pHlRh0dGhbSWNTl7CiycD8ehbBnPQnFjG4dgE2fMu9b59
-         GY22vPcK06rKzJa4jhBb0//rCWKYjW64hlNVTBNMyyewAev/dbBUvXA/UvFKZCJBkQeZ
-         Y5p+CBRQIMzVNcdPyjPcCY4ZgXmCKULOj/tMIVgSov+g07376PFYJte+NeGRgFlo7tfX
-         HR0Q==
-X-Gm-Message-State: AOAM533ZUJNKEQYXQZgm6ccfaVhRHsrrYS9DufZtOZbwiEFv1eERtla4
-        JjsSNWTqL1acZ35AGZm/ygGIoQ3jpR75rg==
-X-Google-Smtp-Source: ABdhPJzjxHissXZnNp3rG1vKGHQIGDfU16NwIIj1lM6L+Uq6AqqVAFrUbKBjuDne2Yq60r6cywPCfw==
-X-Received: by 2002:a9d:ee1:: with SMTP id 88mr3763125otj.279.1643337443945;
-        Thu, 27 Jan 2022 18:37:23 -0800 (PST)
-Received: from tresc043793.tre-sc.gov.br ([187.94.103.218])
-        by smtp.gmail.com with ESMTPSA id p82sm2586920oib.25.2022.01.27.18.37.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Jan 2022 18:37:23 -0800 (PST)
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, alsi@bang-olufsen.dk,
-        arinc.unal@arinc9.com, frank-w@public-files.de,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: [PATCH net-next v5 11/11] net: dsa: realtek: rtl8365mb: multiple cpu ports, non cpu extint
-Date:   Thu, 27 Jan 2022 23:36:11 -0300
-Message-Id: <20220128023611.2424-12-luizluca@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220128023611.2424-1-luizluca@gmail.com>
-References: <20220128023611.2424-1-luizluca@gmail.com>
+        id S1345417AbiA1Cgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 21:36:35 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:17821 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345337AbiA1Cgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:36:35 -0500
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JlM4c0fYcz9sc9;
+        Fri, 28 Jan 2022 10:35:12 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 28 Jan 2022 10:36:28 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.21; Fri, 28 Jan
+ 2022 10:36:27 +0800
+Subject: Re: packet stuck in qdisc
+To:     Vincent Ray <vray@kalrayinc.com>, <vladimir.oltean@nxp.com>,
+        <kuba@kernel.org>, <davem@davemloft.ne>
+CC:     Samuel Jones <sjones@kalrayinc.com>, <netdev@vger.kernel.org>
+References: <1862202329.1457162.1643113633513.JavaMail.zimbra@kalray.eu>
+ <698739062.1462023.1643115337201.JavaMail.zimbra@kalray.eu>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <1c53c5c0-4e77-723b-4260-de83e8f8e40c@huawei.com>
+Date:   Fri, 28 Jan 2022 10:36:27 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
+In-Reply-To: <698739062.1462023.1643115337201.JavaMail.zimbra@kalray.eu>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme711-chm.china.huawei.com (10.1.199.107) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now CPU port is not limited to a single port. Also, extint can be used
-as non-cpu ports, as long as it defines relatek,ext-int. The last cpu
-port will be used as trap_port.
+On 2022/1/25 20:55, Vincent Ray wrote:
+> Dear kernel maintainers / developers,
+> 
+> I work at Kalray where we are developping an NVME-over-TCP target controller board.
+> My setup is as such :
+> - a development workstation running Linux 5.x.y (the host)
+> - sending NVME-TCP traffic to our board, to which it is connected through a Mellanox NIC (Connect-X-5) and a 100G ETH cable
+> 
+> While doing performance tests, using simple fio scenarios running over the regular kernel nvme-tcp driver on the host, we noticed important performance variations.
+> After some digging (using tcpdump on the host), we found that there were big "holes" in the tcp traffic sent by the host.
+> The scenario we observed is the following :
+> 1) a TCP segment gets lost (not sent by the host) on a particular TCP connection, leading to a gap in the seq numbers received by the board
+> 2) the board sends dup-acks and/or sacks (if configured) to signal this loss
+> 3) then, sometimes, the host stops emitting on that TCP connection for several seconds (as much as 14s observed)
+> 4) finally the host resumes emission, sending the missing packet
+> 5) then the TCP connection continues correctly with the appropriate throughput
+> 
+> Such a scenario can be observed in the attached tcpdump (+ comments).
 
-The CPU information was dropped from chip data as it was not used
-outside setup. The only other place it was used is when it wrongly
-checks for CPU port when it should check for extint.
+Hi,
+    Thanks for reporting the problem.
 
-realtek_priv->cpu_port is now only used by rtl8366rb.c
+> 
+> We noticed that this was happening only in recent versions of the kernel, so we dichotomized until we found the culprit commits :
+> we believe that the bug was introduced in qdisc updates for 5.14.rc1 by this set of commits, more precisely the middle one :
+> 
+> [2021-06-22] d3e0f57 Yunsheng Lin net: sched: remove qdisc->empty for lockless qdisc
+> [2021-06-22] c4fef01 Yunsheng Lin net: sched: implement TCQ_F_CAN_BYPASS for lockless qdisc    *=> KO*
+> [2021-06-22] dd25296 Yunsheng Lin net: sched: avoid unnecessary seqcount operation for lockless qdisc   *=> still OK*
+> 
+> As far as I can tell, the bug is still present in the mainline (at least it was in 5.16-rc4).
+> From what I understand / guess, some optimizations in lockless qdiscs have lead to a race making the qdisc unaware that a packet has been enqueued and is waiting for emission.
+> I suspect that, when this happens with TCP packets "to be retransmitted", the TCP stack will not timeout and try to retransmitt again because it uses skb_still_in_host_queue() to avoid useless re-retransmissions
+> From net/ipv4/ tcp_output.c :
+> //* Thanks to skb fast clones, we can detect if a prior transmit of                                                                                                                                                   /
+> / * a packet is still in a qdisc or driver queue.                                                                                                                                                                     /
+> / * In this case, there is very little point doing a retransmit !                                                                                                                                                     /
+> / */  /
+> I guess this plays a role in making these holes grow up to 14s, and an other layer than TCP might not experience it (?).
+> 
+> The interface through which my traffic is going is :
+> eth3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+>     link/ether b8:ce:f6:60:c9:97 brd ff:ff:ff:ff:ff:ff
+>     inet 10.20.0.254/24 scope global eth3
+> 
+> As you can see, it uses a mq qdisc. I did not try with other qdiscs yet.
+> 
+> Finally, if/when troubleshooting this problem in kernels older than 5.14.7, it's a good idea to first cherry-pick this patch :
+> [2021-09-09] ae66447 Keith Busch nvme-tcp: fix io_work priority inversion
+> because it fixes a nvme-tcp bug whose performance impact is itself so big that it "hides" the one we've discovered (bringing itself lots of holes at the nvme-tcp layer ...)
+> 
+> On impacted kernels, the "pkt_stuck_in_qdisc" bug shows up in the order of zero to a few occurences per minute per TCP connection.
 
-Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
----
- drivers/net/dsa/realtek/rtl8365mb.c | 53 +++++++++++++++--------------
- 1 file changed, 27 insertions(+), 26 deletions(-)
+It seems the problem can be reproduced easily. Is there some testcase without
+hw dependency, so that I can reproduce the problem myself?
 
-diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index 59e08b192c06..6a00a162b2ac 100644
---- a/drivers/net/dsa/realtek/rtl8365mb.c
-+++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -556,7 +556,6 @@ struct rtl8365mb_port {
-  * @chip_ver: chip silicon revision
-  * @port_mask: mask of all ports
-  * @learn_limit_max: maximum number of L2 addresses the chip can learn
-- * @cpu: CPU tagging and CPU port configuration for this chip
-  * @mib_lock: prevent concurrent reads of MIB counters
-  * @ports: per-port data
-  * @jam_table: chip-specific initialization jam table
-@@ -571,7 +570,6 @@ struct rtl8365mb {
- 	u32 chip_ver;
- 	u32 port_mask;
- 	u32 learn_limit_max;
--	struct rtl8365mb_cpu cpu;
- 	struct mutex mib_lock;
- 	struct rtl8365mb_port ports[RTL8365MB_MAX_NUM_PORTS];
- 	const struct rtl8365mb_jam_tbl_entry *jam_table;
-@@ -769,17 +767,20 @@ static int rtl8365mb_ext_config_rgmii(struct realtek_priv *priv, int port,
- 	u32 val;
- 	int ret;
- 
--	if (port != priv->cpu_port) {
--		dev_err(priv->dev, "only one EXT interface is currently supported\n");
-+	mb = priv->chip_data;
-+	p = &mb->ports[port];
-+	ext_int = p->ext_int;
-+
-+	if (ext_int == RTL8365MB_NOT_EXT) {
-+		dev_err(priv->dev,
-+			"Port %d is not identified as extenal interface.\n",
-+			port);
- 		return -EINVAL;
- 	}
- 
- 	dp = dsa_to_port(priv->ds, port);
- 	dn = dp->dn;
- 
--	mb = priv->chip_data;
--	p = &mb->ports[port];
--	ext_int = p->ext_int;
- 
- 	/* Set the RGMII TX/RX delay
- 	 *
-@@ -859,15 +860,17 @@ static int rtl8365mb_ext_config_forcemode(struct realtek_priv *priv, int port,
- 	int val;
- 	int ret;
- 
--	if (port != priv->cpu_port) {
--		dev_err(priv->dev, "only one EXT interface is currently supported\n");
--		return -EINVAL;
--	}
--
- 	mb = priv->chip_data;
- 	p = &mb->ports[port];
- 	ext_int = p->ext_int;
- 
-+	if (ext_int == RTL8365MB_NOT_EXT) {
-+		dev_err(priv->dev,
-+			"Port %d is not identified as extenal interface.\n",
-+			port);
-+		return -EINVAL;
-+	}
-+
- 	if (link) {
- 		/* Force the link up with the desired configuration */
- 		r_link = 1;
-@@ -1734,10 +1737,8 @@ static void rtl8365mb_irq_teardown(struct realtek_priv *priv)
- 	}
- }
- 
--static int rtl8365mb_cpu_config(struct realtek_priv *priv)
-+static int rtl8365mb_cpu_config(struct realtek_priv *priv, struct rtl8365mb_cpu *cpu)
- {
--	struct rtl8365mb *mb = priv->chip_data;
--	struct rtl8365mb_cpu *cpu = &mb->cpu;
- 	u32 val;
- 	int ret;
- 
-@@ -1839,11 +1840,17 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
- 		dev_info(priv->dev, "no interrupt support\n");
- 
- 	/* Configure CPU tagging */
-+	cpu.mask = 0;
- 	dsa_switch_for_each_cpu_port(cpu_dp, priv->ds) {
--		priv->cpu_port = cpu_dp->index;
--		mb->cpu.mask = BIT(priv->cpu_port);
--		mb->cpu.trap_port = priv->cpu_port;
--		ret = rtl8365mb_cpu_config(priv);
-+		cpu.enable = 1;
-+		cpu.insert = RTL8365MB_CPU_INSERT_TO_ALL;
-+		cpu.position = RTL8365MB_CPU_POS_AFTER_SA;
-+		cpu.rx_length = RTL8365MB_CPU_RXLEN_64BYTES;
-+		cpu.format = RTL8365MB_CPU_FORMAT_8BYTES;
-+		cpu.trap_port = cpu_dp->index;
-+		cpu.mask |= BIT(cpu_dp->index);
-+
-+		ret = rtl8365mb_cpu_config(priv, &cpu);
- 		if (ret)
- 			goto out_teardown_irq;
- 
-@@ -1862,7 +1869,7 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
- 		dn = dsa_to_port(priv->ds, i)->dn;
- 
- 		/* Forward only to the CPU */
--		ret = rtl8365mb_port_set_isolation(priv, i, BIT(priv->cpu_port));
-+		ret = rtl8365mb_port_set_isolation(priv, i, cpu.mask);
- 		if (ret)
- 			goto out_teardown_irq;
- 
-@@ -2003,12 +2010,6 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
- 		mb->jam_table = rtl8365mb_init_jam_8365mb_vc;
- 		mb->jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc);
- 
--		mb->cpu.enable = 1;
--		mb->cpu.insert = RTL8365MB_CPU_INSERT_TO_ALL;
--		mb->cpu.position = RTL8365MB_CPU_POS_AFTER_SA;
--		mb->cpu.rx_length = RTL8365MB_CPU_RXLEN_64BYTES;
--		mb->cpu.format = RTL8365MB_CPU_FORMAT_8BYTES;
--
- 		break;
- 	default:
- 		dev_err(priv->dev,
--- 
-2.34.1
+> 
+> I did not really have time to understand it thoroughly, nor am I a network stack expert, so I don't propose any particular patch for it but I'll be happy to help testing fix attempts if it can help.
+> Please feel free to ask any additional information.
 
+Which cpu is used in the testing? It seems the cpu arch's
+memory semantic is importance when handling the rare case.
+
+
+> Best regards,
+> 
+> 
+> *Vincent Ray*
+> *Senior Architect • Kalray*
+> Phone: +33 6 43 94 87 65
+> _vray@kalrayinc.com_ • _www.kalrayinc.com_ <https://www.kalrayinc.com>
+> 
+> Kalray logo <https://www.kalrayinc.com>
+> 	
+> Intelligent Data Processing
+> From Cloud to Edge
+> 
+> 
+> *Please consider the environment before printing this e-mail.*
+> This message contains information that may be privileged or confidential and is the property of Kalray S.A. It is intended only for the person to whom it is addressed. If you are not the intended recipient, you are not authorized to print, retain, copy, disseminate, distribute, or use this message or any part thereof. If you receive this message in error, please notify the sender immediately and delete all copies of this message.
+> 
