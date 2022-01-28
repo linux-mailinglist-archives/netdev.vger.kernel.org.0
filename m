@@ -2,87 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EC5049F14E
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:53:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A99249F152
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 03:53:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345552AbiA1Cx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jan 2022 21:53:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345549AbiA1Cx0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:53:26 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D623C061714
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:53:26 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id m6so14431672ybc.9
-        for <netdev@vger.kernel.org>; Thu, 27 Jan 2022 18:53:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NZSEsahTaMIlSofqaMZHvrGxDpUIJ7LxbR4idGwpdew=;
-        b=GjOTsPDJ93PhRReYYYL5QaX/G6LbckIbbxfENXB+nMNkcnTfI82ElvaQVQwxLvvZ8o
-         YawOPfZq8G5hKWVpPaGU9INFBQKv69tO4uEZKc2RlHGxPpli1b7YP8NAN0hvCcbEgitg
-         SJltmsme+M2ycoqwgoTxSLyVDnWgBClMZkltzZlLLD5UlIdwAVQickOtQUyWfN5Q6C5p
-         jw4cGjqzevSZDW3T/vwInaescNrnv8quUqOTBuD9rAGYqe9gjedAYmKuK6TONv/CCDXL
-         E4e8nqyX7E9moZPTFBM+IAEcyHTm52WokhjjCJAQ7kmj8JXCfqbQUKG3ONH4hDp70gRl
-         fEgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NZSEsahTaMIlSofqaMZHvrGxDpUIJ7LxbR4idGwpdew=;
-        b=J5X6NLUlgKe0wAJ4IWTWsWC/TlUJxHVeTCdVY8dYpHbLXVLc6QvfrKtUjJq4dv4b5T
-         +0FweTnnv0ig3Fn9D4z+OK1ZJv+MECmuz3abww3X1+0JRbL5WuWS1IlYeDq7pY9/7HKJ
-         cArFQzJE1CvqBchuFHacK1xeSqp/ifGEbOPWlt0807I0en8i8vFlvCE4txTFiZO0ROeS
-         Agspuw2O0KBERdnrFOGxB4tk5WU3yJfX5No7NOD6CMNaTXR9L7TeZ0VYwg1X45y2upzD
-         m18Oh63gO1/tzBMoWwMauLwbxtK+Vu716tciIvQA+ULe6e6OD0Eewkz4epVB67lzrlvR
-         xDpg==
-X-Gm-Message-State: AOAM531RTwy27QknCxHFwZeAShB6eRIsaUfvbLT0UXsM9R0e1q5ntcdD
-        +rHvE3+iVWuxrYgx+XbEWCY6xSQM0QXoGEgf2loolQ==
-X-Google-Smtp-Source: ABdhPJzf7c9PkzJz25VZAlwf3/CGlrXvPil3n5mlFwSgExkN4czsiChb2H83zO+Cy9bJb04apCSkp5l8W+EjiV959uQ=
-X-Received: by 2002:a25:d80f:: with SMTP id p15mr10191044ybg.753.1643338405485;
- Thu, 27 Jan 2022 18:53:25 -0800 (PST)
+        id S1345561AbiA1Cxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jan 2022 21:53:48 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56090 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345559AbiA1Cxs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jan 2022 21:53:48 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40AE7B82439
+        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 02:53:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 04FA1C340EA;
+        Fri, 28 Jan 2022 02:53:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643338426;
+        bh=fqBN3tZ7yzR4C7PWn/93Qz9+aa8L8wZw9FgoOWy2FyM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=PK36b/iXacA869wqvsPf8Z03cVI7Ak5/Iu0vbJYr3DV6MDn59+MM14mxAfyA93jBG
+         brfXeakqUqaPEqrk2yz7gjIWW3ahF+jPXn5Npo7FSgVsNrUOJcBY8GEu0va9ESVuTl
+         yRE/RDKLsOMU4Rc3slfW2kh6mpSxVLSTycyz781UZ7Dx/hJOaafcQYFPi6zrsrOmtm
+         S9uDHgFBRWymV8YaNJa/ZrgPgHYMYQUgZWcVcA8Yrb2XzR4Tth49MHkQSpsKxdpYcz
+         oWDJKFe68Vri12shePP5Di2Lz1AS9JGplJdd3JcZj5cUn2C1kaNFKLXnEoBA6z6CpV
+         PPXXMoxdVT9kg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DBF64E5D07E;
+        Fri, 28 Jan 2022 02:53:45 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220128014303.2334568-1-jannh@google.com> <CANn89iKWaERfs1iW8jVyRZT8K1LwWM9efiRsx8E1U3CDT39dyw@mail.gmail.com>
- <CAG48ez0sXEjePefCthFdhDskCFhgcnrecEn2jFfteaqa2qwDnQ@mail.gmail.com>
- <CANn89iKmCYq+WBu_S4OvKOXqRSagTg=t8xKq0WC_Rrw+TpKsbw@mail.gmail.com> <CAG48ez2wyQwc5XMKKw8835-4t6+x=X3kPY_CPUqZeh=xQ2krqQ@mail.gmail.com>
-In-Reply-To: <CAG48ez2wyQwc5XMKKw8835-4t6+x=X3kPY_CPUqZeh=xQ2krqQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 27 Jan 2022 18:53:14 -0800
-Message-ID: <CANn89iKVQBDoAwx+yuJ0P0OAV59bav_abh87BA6n7JuzMKMtCQ@mail.gmail.com>
-Subject: Re: [PATCH net] net: dev: Detect dev_hold() after netdev_wait_allrefs()
-To:     Jann Horn <jannh@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Oliver Neukum <oneukum@suse.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: amd-xgbe: Fix skb data length underflow
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164333842589.3422.3038399508263251234.git-patchwork-notify@kernel.org>
+Date:   Fri, 28 Jan 2022 02:53:45 +0000
+References: <20220127092003.2812745-1-Shyam-sundar.S-k@amd.com>
+In-Reply-To: <20220127092003.2812745-1-Shyam-sundar.S-k@amd.com>
+To:     Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+Cc:     thomas.lendacky@amd.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, Raju.Rangoju@amd.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 6:48 PM Jann Horn <jannh@google.com> wrote:
+Hello:
 
-> When someone is using NET_DEV_REFCNT_TRACKER for slow debugging, they
-> should also be able to take the performance hit of
-> CONFIG_PCPU_DEV_REFCNT and rely on the normal increment-from-zero
-> detection of the generic refcount code, right? (Maybe
-> NET_DEV_REFCNT_TRACKER should depend on !CONFIG_PCPU_DEV_REFCNT?)
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-NET_DEV_REFCNT_TRACKER is not slow, I think it has neglectable cost really.
-(I could not see any difference in my tests)
+On Thu, 27 Jan 2022 14:50:03 +0530 you wrote:
+> There will be BUG_ON() triggered in include/linux/skbuff.h leading to
+> intermittent kernel panic, when the skb length underflow is detected.
+> 
+> Fix this by dropping the packet if such length underflows are seen
+> because of inconsistencies in the hardware descriptors.
+> 
+> Fixes: 622c36f143fc ("amd-xgbe: Fix jumbo MTU processing on newer hardware")
+> Suggested-by: Tom Lendacky <thomas.lendacky@amd.com>
+> Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+> 
+> [...]
 
-Also getting a trap at the exact moment of the buggy dev_hold_track()
-is somewhat better than after-fact checking.
+Here is the summary with links:
+  - [net] net: amd-xgbe: Fix skb data length underflow
+    https://git.kernel.org/netdev/net/c/5aac9108a180
 
-In your case, linkwatch_add_event() already uses dev_hold_track() so
-my proposal would detect the issue right away.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
->
-> My intent with the extra check in free_netdev() was to get some
-> limited detection for production systems that don't use
-> NET_DEV_REFCNT_TRACKER.
 
-Understood
