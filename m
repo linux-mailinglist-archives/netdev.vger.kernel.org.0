@@ -2,78 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8799049F891
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 12:45:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B7B349F89F
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 12:46:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244489AbiA1LpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 06:45:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348153AbiA1LpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 06:45:08 -0500
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2D4C061714;
-        Fri, 28 Jan 2022 03:45:08 -0800 (PST)
-Received: from localhost.localdomain.datenfreihafen.local (p200300e9d705dc252cd134b0e26de30d.dip0.t-ipconnect.de [IPv6:2003:e9:d705:dc25:2cd1:34b0:e26d:e30d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@sostec.de)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 29CC5C0220;
-        Fri, 28 Jan 2022 12:45:05 +0100 (CET)
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
-        netdev@vger.kernel.org
-Subject: pull-request: ieee802154 for net 2022-01-28
-Date:   Fri, 28 Jan 2022 12:45:01 +0100
-Message-Id: <20220128114501.2732329-1-stefan@datenfreihafen.org>
-X-Mailer: git-send-email 2.31.1
+        id S1348197AbiA1LqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 06:46:19 -0500
+Received: from prt-mail.chinatelecom.cn ([42.123.76.227]:48082 "EHLO
+        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S237302AbiA1LqT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 06:46:19 -0500
+HMM_SOURCE_IP: 172.18.0.48:42312.634890243
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-112.38.63.33 (unknown [172.18.0.48])
+        by chinatelecom.cn (HERMES) with SMTP id 38D2928008D;
+        Fri, 28 Jan 2022 19:46:06 +0800 (CST)
+X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.48])
+        by app0024 with ESMTP id e97e0b239a5d42dd90dd67afb5d394c4 for kuba@kernel.org;
+        Fri, 28 Jan 2022 19:46:12 CST
+X-Transaction-ID: e97e0b239a5d42dd90dd67afb5d394c4
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.48
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+Message-ID: <85c5f9d7-ac78-509e-a1c4-4cb86544f423@chinatelecom.cn>
+Date:   Fri, 28 Jan 2022 19:46:05 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v10] net: bonding: Add support for IPV6 ns/na to
+ balance-alb/balance-tlb mode
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jay.vosburgh@canonical.com,
+        nikolay@nvidia.com, huyd12@chinatelecom.cn
+References: <20220125142418.96167-1-sunshouxin@chinatelecom.cn>
+ <20220127184722.60cdb806@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   =?UTF-8?B?5a2Z5a6I6ZGr?= <sunshouxin@chinatelecom.cn>
+In-Reply-To: <20220127184722.60cdb806@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dave, Jakub.
 
-An update from ieee802154 for your *net* tree.
-
-A bunch of fixes in drivers, all from Miquel Raynal.
-Clarifying the default channel in hwsim, leak fixes in at86rf230 and ca8210 as
-well as a symbol duration fix for mcr20a. Topping up the driver fixes with
-better error codes in nl802154 and a cleanup in MAINTAINERS for an orphaned
-driver.
-
-regards
-Stefan Schmidt
+Thanks your comment, I'll adjust it and send out v11 soon.
 
 
-The following changes since commit 2f61353cd2f789a4229b6f5c1c24a40a613357bb:
-
-  net: hns3: handle empty unknown interrupt for VF (2022-01-25 13:08:05 +0000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan.git tags/ieee802154-for-net-2022-01-28
-
-for you to fetch changes up to 5d8a8b324ff48c9d9fe4f1634e33dc647d2481b4:
-
-  MAINTAINERS: Remove Harry Morris bouncing address (2022-01-27 08:20:54 +0100)
-
-----------------------------------------------------------------
-Miquel Raynal (6):
-      net: ieee802154: hwsim: Ensure proper channel selection at probe time
-      net: ieee802154: mcr20a: Fix lifs/sifs periods
-      net: ieee802154: at86rf230: Stop leaking skb's
-      net: ieee802154: ca8210: Stop leaking skb's
-      net: ieee802154: Return meaningful error codes from the netlink helpers
-      MAINTAINERS: Remove Harry Morris bouncing address
-
- MAINTAINERS                              |  3 +--
- drivers/net/ieee802154/at86rf230.c       | 13 +++++++++++--
- drivers/net/ieee802154/ca8210.c          |  1 +
- drivers/net/ieee802154/mac802154_hwsim.c |  1 +
- drivers/net/ieee802154/mcr20a.c          |  4 ++--
- net/ieee802154/nl802154.c                |  8 ++++----
- 6 files changed, 20 insertions(+), 10 deletions(-)
+在 2022/1/28 10:47, Jakub Kicinski 写道:
+> On Tue, 25 Jan 2022 09:24:18 -0500 Sun Shouxin wrote:
+>> +/* determine if the packet is NA or NS */
+>> +static bool __alb_determine_nd(struct icmp6hdr *hdr)
+>> +{
+>> +	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
+>> +	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
+>> +		return true;
+>> +	}
+>> +
+>> +	return false;
+>> +}
+>> +
+>> +static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
+>> +{
+>> +	struct ipv6hdr *ip6hdr;
+>> +	struct icmp6hdr *hdr;
+>> +
+>> +	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr)))
+>> +		return true;
+>> +
+>> +	ip6hdr = ipv6_hdr(skb);
+>> +	if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
+> 	if (ip6hdr->nexthdr != IPPROTO_ICMPV6)
+> 		return false;
+>
+> This way there's no need to indent the rest of the function.
+>
+>> +		if (!pskb_may_pull(skb, sizeof(*ip6hdr) + sizeof(*hdr)))
+> What happened to the _network part? pskb_network_may_pull(), right?
+>
+>> +			return true;
+>> +
+>> +		hdr = icmp6_hdr(skb);
+>> +		return __alb_determine_nd(hdr);
+> Why create a full helper for this condition? Why not just:
+>
+> 	return hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
+> 	       hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION;
+>
+>
+>> +	}
+>> +
+>> +	return false;
+>> +}
