@@ -2,169 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E58AD49FBEB
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 15:43:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05EC449FBF7
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 15:45:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236750AbiA1OnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 09:43:01 -0500
-Received: from www62.your-server.de ([213.133.104.62]:58490 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349397AbiA1Omz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 09:42:55 -0500
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nDSSX-0000FP-76; Fri, 28 Jan 2022 15:42:41 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nDSSW-000Tvp-Qt; Fri, 28 Jan 2022 15:42:40 +0100
-Subject: Re: [PATCH bpf-next v2 2/2] selftests/bpf: check whether s32 is
- sufficient for kfunc offset
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ard.biesheuvel@arm.com>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220127071532.384888-1-houtao1@huawei.com>
- <20220127071532.384888-3-houtao1@huawei.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <ba562bf9-c328-1258-940f-b4d9a3169776@iogearbox.net>
-Date:   Fri, 28 Jan 2022 15:42:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20220127071532.384888-3-houtao1@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26436/Fri Jan 28 10:22:17 2022)
+        id S1349388AbiA1OpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 09:45:02 -0500
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:36586 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1349379AbiA1OpB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 09:45:01 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V32k65j_1643381091;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V32k65j_1643381091)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 28 Jan 2022 22:44:52 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        matthieu.baerts@tessares.net,
+        "D. Wythe" <alibuda@linux.alibaba.com>
+Subject: [PATCH v2 net-next 0/3] net/smc: Optimizing performance in
+Date:   Fri, 28 Jan 2022 22:44:35 +0800
+Message-Id: <cover.1643380219.git.alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/27/22 8:15 AM, Hou Tao wrote:
-> In add_kfunc_call(), bpf_kfunc_desc->imm with type s32 is used to
-> represent the offset of called kfunc from __bpf_call_base, so
-> add a test to ensure that the offset will not be overflowed.
-> 
-> Signed-off-by: Hou Tao <houtao1@huawei.com>
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-Thanks for looking into this!
+This patch set aims to optimizing performance of SMC in short-lived
+links scenarios, which is quite unsatisfactory right now.
 
-> ---
->   .../selftests/bpf/prog_tests/ksyms_module.c   | 72 +++++++++++++++++++
->   1 file changed, 72 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_module.c b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
-> index d490ad80eccb..ce0cd3446931 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
-> @@ -6,6 +6,76 @@
->   #include "test_ksyms_module.lskel.h"
->   #include "test_ksyms_module.skel.h"
->   
-> +/* Most logic comes from bpf_object__read_kallsyms_file() */
-> +static int test_find_func_in_kallsyms(const char *func, unsigned long *addr)
-> +{
-> +	/* Same as KSYM_NAME_LEN */
-> +	char sym_name[128];
-> +	char sym_type;
-> +	unsigned long sym_addr;
-> +	int ret, err;
-> +	FILE *f;
-> +
-> +	f = fopen("/proc/kallsyms", "r");
-> +	if (!f)
-> +		return -errno;
-> +
-> +	err = -ENOENT;
-> +	while (true) {
-> +		ret = fscanf(f, "%lx %c %127s%*[^\n]\n",
-> +			     &sym_addr, &sym_type, sym_name);
-> +		if (ret == EOF && feof(f))
-> +			break;
-> +
-> +		if (ret != 3) {
-> +			err = -EINVAL;
-> +			break;
-> +		}
-> +
-> +		if ((sym_type == 't' || sym_type == 'T') &&
-> +		    !strcmp(sym_name, func)) {
-> +			*addr = sym_addr;
-> +			err = 0;
-> +			break;
-> +		}
-> +	}
-> +
-> +	fclose(f);
-> +	return err;
-> +}
+In our benchmark, we test it with follow scripts:
 
-Could we just reuse kallsyms_find() from trace_helpers.c which is also used
-in couple of other prog_tests already?
+./wrk -c 10000 -t 4 -H 'Connection: Close' -d 20 http://smc-server
 
-> +
-> +/*
-> + * Check whether or not s32 in bpf_kfunc_desc is sufficient
-> + * to represent the offset between bpf_testmod_test_mod_kfunc
-> + * and __bpf_call_base.
-> + */
-> +void test_ksyms_module_valid_offset(void)
-> +{
-> +	unsigned long kfunc_addr;
-> +	unsigned long base_addr;
-> +	int used_offset;
-> +	long actual_offset;
-> +	int err;
-> +
-> +	if (!env.has_testmod) {
-> +		test__skip();
-> +		return;
-> +	}
-> +
-> +	err = test_find_func_in_kallsyms("bpf_testmod_test_mod_kfunc",
-> +					 &kfunc_addr);
-> +	if (!ASSERT_OK(err, "find kfunc addr"))
-> +		return;
-> +
-> +	err = test_find_func_in_kallsyms("__bpf_call_base", &base_addr);
-> +	if (!ASSERT_OK(err, "find base addr"))
-> +		return;
-> +
-> +	used_offset = kfunc_addr - base_addr;
-> +	actual_offset = kfunc_addr - base_addr;
-> +	ASSERT_EQ((long)used_offset, actual_offset, "kfunc offset overflowed");
+Current performance figures like that:
 
-Is the above also executed in case bpf_jit_supports_kfunc_call() falls back to
-the default __weak callback, returning false? If yes, then the ASSERT_EQ() may
-fail on archs like s390, ppc, etc where the offset may not be enough.
+Running 20s test @ http://11.213.45.6
+  4 threads and 10000 connections
+  4956 requests in 20.06s, 3.24MB read
+  Socket errors: connect 0, read 0, write 672, timeout 0
+Requests/sec:    247.07
+Transfer/sec:    165.28KB
 
-> +}
-> +
->   void test_ksyms_module_lskel(void)
->   {
->   	struct test_ksyms_module_lskel *skel;
-> @@ -55,6 +125,8 @@ void test_ksyms_module_libbpf(void)
->   
->   void test_ksyms_module(void)
->   {
-> +	if (test__start_subtest("valid_offset"))
-> +		test_ksyms_module_valid_offset();
->   	if (test__start_subtest("lskel"))
->   		test_ksyms_module_lskel();
->   	if (test__start_subtest("libbpf"))
-> 
+There are many reasons for this phenomenon, this patch set doesn't
+solve it all though, but it can be well alleviated with it in.
+
+Patch 1/3  (Make smc_tcp_listen_work() independent) :
+
+Separate smc_tcp_listen_work() from smc_listen_work(), make them
+independent of each other, the busy SMC handshake can not affect new TCP
+connections visit any more. Avoid discarding a large number of TCP
+connections after being overstock, which is undoubtedly raise the
+connection establishment time.
+
+Patch 2/3 (Limits SMC backlog connections):
+
+Since patch 1 has separated smc_tcp_listen_work() from
+smc_listen_work(), an unrestricted TCP accept have come into being. This
+patch try to put a limit on SMC backlog connections refers to
+implementation of TCP.
+
+Patch 3/3 (Fallback when SMC handshake workqueue congested):
+
+Considering the complexity of SMC handshake right now, in short-lived
+links scenarios, this may not be the main scenario of SMC though, it's
+performance is still quite poor. This Patch try to provide auto fallback
+case when SMC handshake workqueue congested, which is the sign of SMC
+handshake stacking in our opinion.
+
+Of course, it's optional.
+
+After this patch set, performance figures like that:
+
+Running 20s test @ http://11.213.45.6
+  4 threads and 10000 connections
+  693253 requests in 20.10s, 452.88MB read
+Requests/sec:  34488.13
+Transfer/sec:     22.53MB
+
+That's a quite well performance improvement, about to 6 to 7 times in my
+environment.
+
+---
+changelog:
+v2: fix compile warning and invalid dependencies for kconfig
+---
+D. Wythe (3):
+  net/smc: Make smc_tcp_listen_work() independent
+  net/smc: Limits backlog connections
+  net/smc: Fallback when handshake workqueue congested
+
+ include/linux/tcp.h  |  1 +
+ net/ipv4/tcp_input.c |  3 +-
+ net/smc/Kconfig      | 12 ++++++++
+ net/smc/af_smc.c     | 78 ++++++++++++++++++++++++++++++++++++++++++++++++++--
+ net/smc/smc.h        |  5 ++++
+ 5 files changed, 96 insertions(+), 3 deletions(-)
+
+-- 
+1.8.3.1
 
