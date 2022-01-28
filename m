@@ -2,79 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E15D49FEA8
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 18:08:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A228649FEB7
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 18:14:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350454AbiA1RIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 12:08:00 -0500
-Received: from sender4-op-o14.zoho.com ([136.143.188.14]:17442 "EHLO
-        sender4-op-o14.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350436AbiA1RH7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 12:07:59 -0500
-ARC-Seal: i=1; a=rsa-sha256; t=1643389665; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=JL7Y90evHESef3VA0PiFILPhGwxPuLcJBA9flmq3CkVLz26Wa8F3vTu8Hif2/zKtwGzvCueLJO0AJfV8yykBun0sa8AOTQTvs0ulv589V1Mw++HwLcRVdyqyanVzxoBJMbJrrh3L80jPtvlaIj+WeukJXqODt4dEDv1Zu3RrvMk=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1643389665; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=sHA+C43vpPAamMsaMDIKSmUN7JrM2grs2Osv03CtYMc=; 
-        b=ddJA0LZyZr1c4dotekhluHYqfaTN+qJXLQ6p+xhNWxBdmtHLKrqEx0sd2GsV35hPpuqs8dbcYdLI3/9K4TC48kJlZdQwx7OkiYegpcIAtHMyvRRq1Zvxd12HJbTn7v7IHWZAq+yeN/8Nb0fN5naAKEEzbfYqHzTEJ1jc6mZ2sug=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1643389665;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding;
-        bh=sHA+C43vpPAamMsaMDIKSmUN7JrM2grs2Osv03CtYMc=;
-        b=Whp4tgAK8FkMSje/M//SZ3DBtNN9dW3og0QsmLHc6nLTEZU6Ps+ZjPLe+aXCnsTm
-        g3/U5tEIrKbXzZrRuFx83jCWP4ffztJtcOHkt/YrZfSMz64MuwI9s5xGQXzbgVQ1DxI
-        U3Muk/ozLrjX8BtGpFzzA9y2TstvQd9TALsCoX/o=
-Received: from arinc9-PC.localdomain (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1643389663615595.4055395103865; Fri, 28 Jan 2022 09:07:43 -0800 (PST)
-From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>, erkin.bozoglu@xeront.com
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH] net: dsa: mt7530: make NET_DSA_MT7530 select MEDIATEK_GE_PHY
-Date:   Fri, 28 Jan 2022 20:05:45 +0300
-Message-Id: <20220128170544.4131-1-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.25.1
+        id S1350474AbiA1RNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 12:13:54 -0500
+Received: from mga06.intel.com ([134.134.136.31]:14665 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239932AbiA1RNx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jan 2022 12:13:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643390033; x=1674926033;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DlxeEj08eU3l+CcffcmNLw4TqlFei4v68U+XxbQa+Yo=;
+  b=M+p7axsouZH1tg+0P7l5IcP8wIIjHDbUcf2bM6uwZimJEaJcdWbOriXP
+   mOxlJ5PI7drFxSac9awhQ2zoYPAQyUcppRPZ1RhjAGB+622A8OcgiKtRR
+   5HOjwABqB08s0+uzJjcs1AgvN5FpopXQD0wISNUqeQCSR92Q+3us2+Chv
+   9hYRAbxIWB+BcugsdJQTBm+uGcXyXxefMit2jgBCbO2gPkRzcabv15Av9
+   /9jOi5T+umITp7aStfiZMxsS+49dMJcysTPuiGYwcs5OUWI6Xe7iyOBmD
+   Z8pw2gYY9uRij7OSTrkuMerhftxXoZAiQS1DIKx9S8S9CBMPoXrpUTN0H
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="307886910"
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
+   d="scan'208";a="307886910"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2022 09:06:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; 
+   d="scan'208";a="581909687"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 28 Jan 2022 09:06:38 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nDUhq-000O74-3o; Fri, 28 Jan 2022 17:06:38 +0000
+Date:   Sat, 29 Jan 2022 01:06:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     cgel.zte@gmail.com, jiri@resnulli.us
+Cc:     kbuild-all@lists.01.org, ivecera@redhat.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] net/switchdev: use struct_size over open coded arithmetic
+Message-ID: <202201290005.GR1IxnQb-lkp@intel.com>
+References: <20220128075729.1211352-1-chi.minghao@zte.com.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220128075729.1211352-1-chi.minghao@zte.com.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make MediaTek MT753x DSA driver enable MediaTek Gigabit PHYs driver to
-properly control MT7530 and MT7531 switch PHYs.
+Hi,
 
-A noticeable change is that the behaviour of switchport interfaces going
-up-down-up-down is no longer there.
+Thank you for the patch! Yet something to improve:
 
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.17-rc1 next-20220128]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/cgel-zte-gmail-com/net-switchdev-use-struct_size-over-open-coded-arithmetic/20220128-155848
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 23a46422c56144939c091c76cf389aa863ce9c18
+config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220129/202201290005.GR1IxnQb-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/0day-ci/linux/commit/bf0e33a8c3deb700b95173a37dd16754341ba70e
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review cgel-zte-gmail-com/net-switchdev-use-struct_size-over-open-coded-arithmetic/20220128-155848
+        git checkout bf0e33a8c3deb700b95173a37dd16754341ba70e
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from include/linux/mm.h:30,
+                    from arch/x86/include/asm/cacheflush.h:5,
+                    from include/linux/cacheflush.h:5,
+                    from include/linux/highmem.h:8,
+                    from include/linux/bvec.h:10,
+                    from include/linux/skbuff.h:17,
+                    from include/net/net_namespace.h:40,
+                    from include/linux/netdevice.h:37,
+                    from net/switchdev/switchdev.c:13:
+   net/switchdev/switchdev.c: In function 'switchdev_deferred_enqueue':
+>> include/linux/overflow.h:194:18: error: invalid type argument of '->' (have 'struct switchdev_deferred_item')
+     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
+         |                  ^~
+   net/switchdev/switchdev.c:88:19: note: in expansion of macro 'struct_size'
+      88 |  dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
+         |                   ^~~~~~~~~~~
+   In file included from include/linux/container_of.h:5,
+                    from include/linux/kernel.h:21,
+                    from net/switchdev/switchdev.c:8:
+   include/linux/overflow.h:194:49: error: invalid type argument of '->' (have 'struct switchdev_deferred_item')
+     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
+         |                                                 ^~
+   include/linux/build_bug.h:16:62: note: in definition of macro 'BUILD_BUG_ON_ZERO'
+      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
+         |                                                              ^
+   include/linux/compiler.h:258:46: note: in expansion of macro '__same_type'
+     258 | #define __must_be_array(a) BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
+         |                                              ^~~~~~~~~~~
+   include/linux/overflow.h:194:30: note: in expansion of macro '__must_be_array'
+     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
+         |                              ^~~~~~~~~~~~~~~
+   net/switchdev/switchdev.c:88:19: note: in expansion of macro 'struct_size'
+      88 |  dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
+         |                   ^~~~~~~~~~~
+   include/linux/overflow.h:194:49: error: invalid type argument of '->' (have 'struct switchdev_deferred_item')
+     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
+         |                                                 ^~
+   include/linux/build_bug.h:16:62: note: in definition of macro 'BUILD_BUG_ON_ZERO'
+      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
+         |                                                              ^
+   include/linux/compiler.h:258:46: note: in expansion of macro '__same_type'
+     258 | #define __must_be_array(a) BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
+         |                                              ^~~~~~~~~~~
+   include/linux/overflow.h:194:30: note: in expansion of macro '__must_be_array'
+     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
+         |                              ^~~~~~~~~~~~~~~
+   net/switchdev/switchdev.c:88:19: note: in expansion of macro 'struct_size'
+      88 |  dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
+         |                   ^~~~~~~~~~~
+   include/linux/build_bug.h:16:51: error: bit-field '<anonymous>' width not an integer constant
+      16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
+         |                                                   ^
+   include/linux/compiler.h:258:28: note: in expansion of macro 'BUILD_BUG_ON_ZERO'
+     258 | #define __must_be_array(a) BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
+         |                            ^~~~~~~~~~~~~~~~~
+   include/linux/overflow.h:194:30: note: in expansion of macro '__must_be_array'
+     194 |       sizeof(*(p)->member) + __must_be_array((p)->member),\
+         |                              ^~~~~~~~~~~~~~~
+   net/switchdev/switchdev.c:88:19: note: in expansion of macro 'struct_size'
+      88 |  dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
+         |                   ^~~~~~~~~~~
+   In file included from include/linux/mm.h:30,
+                    from arch/x86/include/asm/cacheflush.h:5,
+                    from include/linux/cacheflush.h:5,
+                    from include/linux/highmem.h:8,
+                    from include/linux/bvec.h:10,
+                    from include/linux/skbuff.h:17,
+                    from include/net/net_namespace.h:40,
+                    from include/linux/netdevice.h:37,
+                    from net/switchdev/switchdev.c:13:
+>> include/linux/overflow.h:195:14: error: invalid type argument of unary '*' (have 'struct switchdev_deferred_item')
+     195 |       sizeof(*(p)))
+         |              ^~~~
+   net/switchdev/switchdev.c:88:19: note: in expansion of macro 'struct_size'
+      88 |  dfitem = kmalloc(struct_size(*dfitem, data, data_len), GFP_ATOMIC);
+         |                   ^~~~~~~~~~~
+
+
+vim +194 include/linux/overflow.h
+
+610b15c50e86eb Kees Cook           2018-05-07  180  
+610b15c50e86eb Kees Cook           2018-05-07  181  /**
+610b15c50e86eb Kees Cook           2018-05-07  182   * struct_size() - Calculate size of structure with trailing array.
+610b15c50e86eb Kees Cook           2018-05-07  183   * @p: Pointer to the structure.
+610b15c50e86eb Kees Cook           2018-05-07  184   * @member: Name of the array member.
+b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  185   * @count: Number of elements in the array.
+610b15c50e86eb Kees Cook           2018-05-07  186   *
+610b15c50e86eb Kees Cook           2018-05-07  187   * Calculates size of memory needed for structure @p followed by an
+b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  188   * array of @count number of @member elements.
+610b15c50e86eb Kees Cook           2018-05-07  189   *
+610b15c50e86eb Kees Cook           2018-05-07  190   * Return: number of bytes needed or SIZE_MAX on overflow.
+610b15c50e86eb Kees Cook           2018-05-07  191   */
+b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  192  #define struct_size(p, member, count)					\
+b19d57d0f3cc6f Gustavo A. R. Silva 2020-06-08  193  	__ab_c_size(count,						\
+610b15c50e86eb Kees Cook           2018-05-07 @194  		    sizeof(*(p)->member) + __must_be_array((p)->member),\
+610b15c50e86eb Kees Cook           2018-05-07 @195  		    sizeof(*(p)))
+610b15c50e86eb Kees Cook           2018-05-07  196  
+
 ---
- drivers/net/dsa/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
-index 7b1457a6e327..c0c91440340a 100644
---- a/drivers/net/dsa/Kconfig
-+++ b/drivers/net/dsa/Kconfig
-@@ -36,6 +36,7 @@ config NET_DSA_LANTIQ_GSWIP
- config NET_DSA_MT7530
- 	tristate "MediaTek MT753x and MT7621 Ethernet switch support"
- 	select NET_DSA_TAG_MTK
-+	select MEDIATEK_GE_PHY
- 	help
- 	  This enables support for the MediaTek MT7530, MT7531, and MT7621
- 	  Ethernet switch chips.
--- 
-2.25.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
