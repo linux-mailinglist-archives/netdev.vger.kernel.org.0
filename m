@@ -2,134 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BED54A0239
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 21:42:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4D6F4A0251
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 21:52:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231439AbiA1Ulw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 15:41:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
+        id S238025AbiA1Uws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 15:52:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230245AbiA1Ulv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 15:41:51 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448E2C061714
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 12:41:51 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id l25so13007480wrb.13
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 12:41:51 -0800 (PST)
+        with ESMTP id S236318AbiA1Uwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 15:52:47 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8E4C061714;
+        Fri, 28 Jan 2022 12:52:46 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id bu18so14176090lfb.5;
+        Fri, 28 Jan 2022 12:52:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :content-language:content-transfer-encoding;
-        bh=jkTdM2UpYXtXlrQtx3IjKRC/TYgbA0fLNj7SrQVLlfI=;
-        b=ZfNugUut4xDh9abMxs5k1hdzoRIgJeZp4/+JsAkYckjyWeJ54OTq5MIhNm9ouqOffc
-         +XMGg8H3KJJP9AGplwJOYY7c4udAgQ2qH2vgkS7voyowaOQMJ1mF/VH7HhSS55Ufob0U
-         s+PAqm6jwQAkH24anJ7G6zwmZxDmof/0CUr3RnhcepVlCY0DOsPLhqJHyUCJJAp1eWeL
-         s2dKAmUTDgf051tqTw2xM1iQSDvodk02K8DSGD6/TYdQ4c434LeSzBc1KKFx+Fvz7vcy
-         8cTB+eVXM6R5AFjiLlBCgqU0XX6RIqq8Vk92eD8VOcGPpJuoeUEYbC2lEyhGuyY+4nSy
-         gxLQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=FxgoJ87HkOo4Sya7mWsI9Jkjvlhv0yv3YR69qNwYcgY=;
+        b=FASeYDqXNB7SNFPPSMjeNYgeeX65/uG3+UKBDXjBMIjiwA71UcIShrtJzoOijUNBxW
+         fd62G9kbA7ttoa4DPaUbg9B3M0xvk3MkVH8AiT6DgmjNm1Y4iBai0RrA9FhIhmqG7M24
+         5TO0XK0nW31E5zHyvFpgUbLsc/5VYC2Mq+0L8lj0YOEaiHdKUv8JN4O4ZSjmn5KCPF0b
+         OVobR2UcqH6/tjRleXAThquVCIrGv5qOLlGDjkSqBDzfICN6P4cbwWCYLo+sFFieDNXC
+         uaSGYsnWKU1WcHpHRI16xwMD03y1GYYOk9VHsP41ov5dN3AKBXv4ttrysDMlPsDuIa8C
+         u0dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:content-language:content-transfer-encoding;
-        bh=jkTdM2UpYXtXlrQtx3IjKRC/TYgbA0fLNj7SrQVLlfI=;
-        b=IObjVHlBXkt4nRZOdB2mGZkL24yBCdtP61UjF3az7lHc86rN1foyDx4ldfHlsAisSJ
-         DLHkjpsco8oZW3U7OfGpVosnuPi0MZXaAGEeT7uHmAmq5yT48sfRDXEnXRGTJzTYEB47
-         ooFOY5UimFaUZBlefrHsBs3ksyjnD8bLsyeIosFPJlwlgXJn06L4a+Jrni7viG7uIa88
-         y1lva+sAeelY6/846CCfbjAjZQguW2udYNA0aJZuTEVJD1hy2PVoJfguHT42zSSoaW12
-         noiXT0NpF06wYRsPx9f6JjOBtFgup/dZBYXgsVXfzo1bro1fz+Ck90qdBOri97cX1Mpe
-         p21g==
-X-Gm-Message-State: AOAM530pmYrc02rSsejsSSZCAOalgOtXxFxDOagTAb6whefaZ3DqjpUJ
-        p5SyQYMRS63p8d8bJYuc5nxpnRZTeH0=
-X-Google-Smtp-Source: ABdhPJx7RZRaZb51MbXvusljeWyXMWMG/6iWXyBs1SQNX70PjKggMNaYT6YldE8dS3nrgCZvJYXASg==
-X-Received: by 2002:a05:6000:15c5:: with SMTP id y5mr8942018wry.656.1643402509709;
-        Fri, 28 Jan 2022 12:41:49 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f4d:2b00:2ced:b45:1cf4:7a9e? (p200300ea8f4d2b002ced0b451cf47a9e.dip0.t-ipconnect.de. [2003:ea:8f4d:2b00:2ced:b45:1cf4:7a9e])
-        by smtp.googlemail.com with ESMTPSA id y3sm6196186wry.109.2022.01.28.12.41.48
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=FxgoJ87HkOo4Sya7mWsI9Jkjvlhv0yv3YR69qNwYcgY=;
+        b=c68TFuTzXGkuGQ4gLN26F3doZp69OuF6ODH7jmz+qH2/U6MyY0v1T2ZnI6cqQuTjCN
+         /Colzg2rABaNpVkD4GG94Ru0ToR0huM/Bw4qf/sOvXEqSlXK10uT6YpQq0TFBgMsec2c
+         o1GQmwBelhHl1I7NkohN8EWGJxGLUK++7L6KF7sVZEbfLWp5AyeH2HJuuJ8OScF0yDfW
+         XDveDO8MOQyQnnkbsLcRqfe9YplhQNWhayMgo9Sqv8nR457kB0rBV+BeMMOxmnd2BvrV
+         2daJsXyA/yy3q9WLDtyLC7x9mH6bm+CRee5oqVTz+a1Wu2aLHeLg7i9lU7cUT26y1i6p
+         ScdA==
+X-Gm-Message-State: AOAM533uQl2yT4IieP5mUU4o/DAm2GraBfUjTI7jnNLWNR7srt+l7saQ
+        lJyongi+fd9WsBSFz2FNwsY=
+X-Google-Smtp-Source: ABdhPJyljK+IMPeEvoQrkr8pES9R2ymfkjp48tGYsn/vuifjCmeWhNCPgqE8CaO/iUAYRBR04YeWWA==
+X-Received: by 2002:ac2:5604:: with SMTP id v4mr7184599lfd.284.1643403164687;
+        Fri, 28 Jan 2022 12:52:44 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.225.90])
+        by smtp.gmail.com with ESMTPSA id z13sm2651546lft.92.2022.01.28.12.52.43
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Jan 2022 12:41:49 -0800 (PST)
-Message-ID: <c92aeff4-e887-06e9-ecef-f458a9903ee8@gmail.com>
-Date:   Fri, 28 Jan 2022 21:41:42 +0100
+        Fri, 28 Jan 2022 12:52:44 -0800 (PST)
+Message-ID: <0647fd91-f0a7-4cf7-4f80-cd5dc3f2f6a2@gmail.com>
+Date:   Fri, 28 Jan 2022 23:52:42 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH v2 net-next] r8169: add rtl_disable_exit_l1()
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Chun-Hao Lin <hau@realtek.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] ath9k_htc: fix uninit value bugs
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com,
+        vasanth@atheros.com, Sujith.Manoharan@atheros.com,
+        senthilkumar@atheros.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
+References: <20220115122733.11160-1-paskripkin@gmail.com>
+ <164337315159.4876.15861801637015517784.kvalo@kernel.org>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <164337315159.4876.15861801637015517784.kvalo@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add rtl_disable_exit_l1() for ensuring that the chip doesn't
-inadvertently exit ASPM L1 when being in a low-power mode.
-The new function is called from rtl_prepare_power_down() which
-has to be moved in the code to avoid a forward declaration.
+Hi Kalle,
 
-According to Realtek OCP register 0xc0ac shadows ERI register 0xd4
-on RTL8168 versions from RTL8168g. This allows to simplify the
-code a little.
+On 1/28/22 15:32, Kalle Valo wrote:
+>> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+>> Reported-by: syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
+>> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+>> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+> 
+> Patch applied to ath-next branch of ath.git, thanks.
+> 
+> d1e0df1c57bd ath9k_htc: fix uninit value bugs
+> 
 
-v2:
-- call rtl_disable_exit_l1() also if DASH or WoL are enabled
+Thanks, Kalle! Can you also, please, check out this one too :)
+Quite old, but syzbot is getting mad with this bug (like 20k hits). Thanks!
 
-Suggested-by: Chun-Hao Lin <hau@realtek.com>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 65 +++++++++++++----------
- 1 file changed, 38 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 3c3d1506b..126d7322d 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2667,10 +2645,7 @@ static void rtl_enable_exit_l1(struct rtl8169_private *tp)
- 	case RTL_GIGA_MAC_VER_37 ... RTL_GIGA_MAC_VER_38:
- 		rtl_eri_set_bits(tp, 0xd4, 0x0c00);
- 		break;
--	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
--		rtl_eri_set_bits(tp, 0xd4, 0x1f80);
--		break;
--	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
-+	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_63:
- 		r8168_mac_ocp_modify(tp, 0xc0ac, 0, 0x1f80);
- 		break;
- 	default:
-@@ -2678,6 +2653,20 @@ static void rtl_enable_exit_l1(struct rtl8169_private *tp)
- 	}
- }
- 
-+static void rtl_disable_exit_l1(struct rtl8169_private *tp)
-+{
-+	switch (tp->mac_version) {
-+	case RTL_GIGA_MAC_VER_34 ... RTL_GIGA_MAC_VER_38:
-+		rtl_eri_clear_bits(tp, 0xd4, 0x1f00);
-+		break;
-+	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_63:
-+		r8168_mac_ocp_modify(tp, 0xc0ac, 0x1f80, 0);
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
- {
- 	/* Don't enable ASPM in the chip if OS can't control ASPM */
-@@ -4702,7 +4713,7 @@ static void rtl8169_down(struct rtl8169_private *tp)
- 	rtl_pci_commit(tp);
- 
- 	rtl8169_cleanup(tp, true);
--
-+	rtl_disable_exit_l1(tp);
- 	rtl_prepare_power_down(tp);
- }
- 
--- 
-2.35.0
+https://lore.kernel.org/all/20210922164204.32680-1-paskripkin@gmail.com/
 
+
+
+
+With regards,
+Pavel Skripkin
