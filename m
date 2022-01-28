@@ -2,108 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E156249F7A7
-	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 11:54:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7102C49F7A4
+	for <lists+netdev@lfdr.de>; Fri, 28 Jan 2022 11:54:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347926AbiA1Ky2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 05:54:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38881 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244101AbiA1Ky1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 05:54:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643367266;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=1OQl7XkliQ4yNH+1O9433V+T3kmdHJRLmXsz6UCb4Nw=;
-        b=UftmFMP1Dr2E0WrGZtGf31wKFnjeRToi92grI7PIHXxdX0mD6SJRVjA9P/twtL1oh8O2dS
-        vLxlUovEa4BbvxB2w9Uozqo7pflk6EgjnChS+kwZVtMaOUVMOaPO7NsV/Gn3p8AaTo98vk
-        DKHyfFHU2aGT0EzgdziTJKbwl+3QMOM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-222-z3ZxYjiWMJe4RI12KPOz8g-1; Fri, 28 Jan 2022 05:54:23 -0500
-X-MC-Unique: z3ZxYjiWMJe4RI12KPOz8g-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1347916AbiA1KyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 05:54:22 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52544 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244101AbiA1KyV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 05:54:21 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6D71F1923E22;
-        Fri, 28 Jan 2022 10:54:22 +0000 (UTC)
-Received: from tc2.station (unknown [10.39.195.138])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8430D1F451;
-        Fri, 28 Jan 2022 10:54:21 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com
-Subject: [PATCH iproute2] ss: use freecon() instead of free() when appropriate
-Date:   Fri, 28 Jan 2022 11:53:58 +0100
-Message-Id: <db01fe572f2ecd8720debf06d2b263f93e5fd205.1643367186.git.aclaudi@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D9F1B824E4;
+        Fri, 28 Jan 2022 10:54:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94362C340E6;
+        Fri, 28 Jan 2022 10:54:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643367259;
+        bh=7rB4RSw/YRUBhZ9iCDfvb/m75/M6d4KAVqINfmGPkzw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=s9st9bm2lwi5XX75r94Czbb6OZD7hCkWFHtI9P2YGfPdZA1bTdEzt7GKjIctmwVgb
+         gWTu2ABXs3fYYride+7/oC7AWoJGZ/RvRxuA7uQuuNStgummRF5JzWRkb+95DZwxhL
+         Z2aFsMML3D0gixKcVGeFTIVjCDwqmptAQCQoWYbs=
+Date:   Fri, 28 Jan 2022 11:54:15 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Zhou Qingyang <zhou1615@umn.edu>, kjlu@umn.edu,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Angus Ainslie <angus@akkea.ca>,
+        "Daniel (Deognyoun) Kim" <dekim@broadcom.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] brcmfmac: Fix a wild pointer dereference bug in
+ brcmf_chip_recognition()
+Message-ID: <YfPLVyo+4qvHASZm@kroah.com>
+References: <20220124164847.54002-1-zhou1615@umn.edu>
+ <YfPCahElneup1DJS@kroah.com>
+ <875yq4gnhr.fsf@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <875yq4gnhr.fsf@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to SELinux API, when resources are allocated using getpidcon()
-of getfilecon(), they should be freed using freecon().
+On Fri, Jan 28, 2022 at 12:31:44PM +0200, Kalle Valo wrote:
+> Greg KH <greg@kroah.com> writes:
+> 
+> > On Tue, Jan 25, 2022 at 12:48:45AM +0800, Zhou Qingyang wrote:
+> >> In brcmf_chip_recognition(), the return value of brcmf_chip_add_core()
+> >> is assigned to core and is passed to brcmf_chip_sb_corerev(). In
+> >> brcmf_chip_sb_corerev(), there exists dereference of core without check.
+> >> the return value of brcmf_chip_add_core() could be ERR_PTR on failure of
+> >> allocation, which could lead to a NULL pointer dereference bug.
+> >> 
+> >> Fix this bug by adding IS_ERR check for every variable core.
+> >> 
+> >> This bug was found by a static analyzer.
+> >> 
+> >> Builds with 'make allyesconfig' show no new warnings,
+> >> and our static analyzer no longer warns about this code
+> >> 
+> >> Fixes: cb7cf7be9eba ("brcmfmac: make chip related functions host
+> >> interface independent")
+> >> Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+> >> ---
+> >> The analysis employs differential checking to identify inconsistent 
+> >> security operations (e.g., checks or kfrees) between two code paths 
+> >> and confirms that the inconsistent operations are not recovered in the
+> >> current function or the callers, so they constitute bugs. 
+> >> 
+> >> Note that, as a bug found by static analysis, it can be a false
+> >> positive or hard to trigger. Multiple researchers have cross-reviewed
+> >> the bug.
+> >
+> > As stated before, umn.edu is still not allowed to contribute to the
+> > Linux kernel.  Please work with your administration to resolve this
+> > issue.
+> 
+> Thanks Greg, I didn't notice that this is from umn.edu. After seeing
+> what kind of "research" umn.edu does I will not even look at umn.edu
+> patches, they all will be automatically rejected without comments.
 
-This commit makes ss use freecon() where appropriate, defining a stub
-function executing a free() useful when iproute2 is compiled without
-SELinux support.
+Thank you.  We could just block their emails from the mailing lists, but
+then that would not let us see when they send a patch and cc: the
+relevant maintainers, so we have to live with this way for now.
 
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- misc/ss.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+I'll be contacting the umn.edu administration again and ask them what
+went wrong here.
 
-diff --git a/misc/ss.c b/misc/ss.c
-index b39f63fe..f7d36914 100644
---- a/misc/ss.c
-+++ b/misc/ss.c
-@@ -97,6 +97,11 @@ static int security_get_initial_context(char *name,  char **context)
- 	*context = NULL;
- 	return -1;
- }
-+
-+static void freecon(char *context)
-+{
-+	free(context);
-+}
- #endif
- 
- int preferred_family = AF_UNSPEC;
-@@ -618,7 +623,7 @@ static void user_ent_hash_build(void)
- 		snprintf(name + nameoff, sizeof(name) - nameoff, "%d/fd/", pid);
- 		pos = strlen(name);
- 		if ((dir1 = opendir(name)) == NULL) {
--			free(pid_context);
-+			freecon(pid_context);
- 			continue;
- 		}
- 
-@@ -667,9 +672,9 @@ static void user_ent_hash_build(void)
- 			}
- 			user_ent_add(ino, p, pid, fd,
- 					pid_context, sock_context);
--			free(sock_context);
-+			freecon(sock_context);
- 		}
--		free(pid_context);
-+		freecon(pid_context);
- 		closedir(dir1);
- 	}
- 	closedir(dir);
-@@ -4725,7 +4730,7 @@ static int netlink_show_one(struct filter *f,
- 			getpidcon(pid, &pid_context);
- 
- 		out(" proc_ctx=%s", pid_context ? : "unavailable");
--		free(pid_context);
-+		freecon(pid_context);
- 	}
- 
- 	if (show_details) {
--- 
-2.34.1
-
+greg k-h
