@@ -2,98 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA06B4A2FF9
-	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 15:07:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6CAA4A3052
+	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 16:40:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242555AbiA2OHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jan 2022 09:07:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
+        id S235067AbiA2PkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jan 2022 10:40:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234194AbiA2OHc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 09:07:32 -0500
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABE06C061714
-        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 06:07:32 -0800 (PST)
-Received: by mail-io1-xd42.google.com with SMTP id y84so11259945iof.0
-        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 06:07:32 -0800 (PST)
+        with ESMTP id S234398AbiA2PkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 10:40:18 -0500
+Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32233C061714
+        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 07:40:18 -0800 (PST)
+Received: by mail-vs1-xe44.google.com with SMTP id r20so6619610vsn.0
+        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 07:40:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=/gRHScMGOcqWfHhCJcR+16Delg1iStzbMk9qT/Uh7C0=;
-        b=IZCiyUFEBvWZ9dJKC0YjUSfbrZAEm8SAdYA/I/ZvYJv5BDT59tSNBEaMy7JyQ8twNy
-         FM2UkiPqDYSdpvuVifAd7Khnj8tJO2qp46krv72MaYuPucNnZapl/69w/jAVQvSZJbvm
-         o8itfuaMNQH8FHiVuLKV/pUgcwBkFh/tILOCSEBzGUbBY4SyCJOA1MRQ+9N9fAwuoEwb
-         o90ITsM9yrwNpzQCMHF0dcuRfoOn4890wqszQPDnQM9Gin4TxA3Pcj7OqkRcx/1vbvpR
-         QWwhRRQsHbC2TzG36xDCf6pk8eSqjlfkLjQP7QfgrHTiOV34H5sIqQqC+addw0pNk1ru
-         GWjA==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=DF9UmNfGnrYDhtKMt7WXfa1288InJPsKdF0BR5VR4Z4=;
+        b=IFgkTy42jiTGwNANVTiXJ6NXndLnse3hiDajmbQBscYGSHfrgzZ7M4vzunheHBTxcU
+         VL8NbCF8f9wB8R0tLJ/Xf7PCHp0ecBfGAGW/oZQF28keUgaVquf+WV5R9PgZVZcZwwjJ
+         2cfyhi4XRO7ToAn2cfP/EK1359OdaK6CMERahN1BqNLBK3LLQ89OIi/NrpBZrkbG0Ftp
+         +n8lIwQqbs+aF0cXwhteem4dR21C4QjAZb/j9fWFZLhsnl7oJ/6c6eKFUC/RwKmv4RLz
+         ezarvFpT+uVEEC40WoGO+Er1SdszsYn85qaNUfReKnlqn3pJ8f62zCddGIogfJJVx87M
+         RhsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=/gRHScMGOcqWfHhCJcR+16Delg1iStzbMk9qT/Uh7C0=;
-        b=PGaEJ+IhwqMpM988dgGiApxvaC+15BGoob6WndeY0OWkm6piOi8NI/uVLagWs+MPVu
-         AiIeDSow96fbJwRpd1cZrIY3fzYG+A4L+JZ36SMzp/DcESsG4D1O8NmkFbsOgayAVJLT
-         Yc6o3POswVYs11IM1zELaoDvAhJR76uodHB/PS5eKrIPxWANAlY4cCT6B09rH73s0LlC
-         5V9J7jIu0VPWl3bNKRdxW3vFT0+XMmeM+sBG5hl2hpg00wGUqAcKgnCkyAnAM36iKs0U
-         tM8UGOY/6Qny7UmPHOpW4nWT4fKxrefKi8GS+2vAWEfUIpU8ePBFH+M8a4lC4+/eJj0t
-         B6qA==
-X-Gm-Message-State: AOAM531iVy261vrbGq+4CAG14/+//RiAZNoG77XHRSv9CvGk7b0lGoIr
-        2O4zA1W0dsiAKqWWTKt1njBpcgsRCnzbFDwgZ78=
-X-Google-Smtp-Source: ABdhPJyMCsElMvvM31a2P9SSHVNB6q9vHeET3H91BQHsnhyTnX1+nvuiClQfgzR4C1NBiiqQd0iDwU4TIBDUB6pxQxU=
-X-Received: by 2002:a05:6602:2c8d:: with SMTP id i13mr7983515iow.181.1643465252022;
- Sat, 29 Jan 2022 06:07:32 -0800 (PST)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=DF9UmNfGnrYDhtKMt7WXfa1288InJPsKdF0BR5VR4Z4=;
+        b=oMy1wWqtxUBzP1bW/uM1h6ycIiipvn6HncqIKP4hHgf7fkNdgdQrxVpVXR5Ui4Kvv3
+         HaDXEF/RCHQxyE6T5gXK+0940eqEWFz1/YDaEAKG7CnYVz2hAVb5ib5ECGek+Wpr7WnI
+         6h8/Rl6NoakAnJmxotM6ylMj5xCqS4/konB4tYIaTieiEbKsWIh72ZRyG9qwDJtIo/lu
+         tjI/ic0Plkq3rfhZI5blifyBTDYC6vN0Q7Zx/u5bNCHIrxsiQWaDWY1WaKv4smc0vpoe
+         Yzt80diaHtvczNdg2eZNsrvTOu9BpyJJkeOgcF/GTp+NV/4mUavOGKVAHPjIpOwyhv/A
+         VBtg==
+X-Gm-Message-State: AOAM531/VQ3Fod8xgzzfZSBoPS1iyiEsctOVAQ0nxoqdaIJc5DUjythy
+        8ANtIPwQHCna2hxg4ARiUn59ruiH0ebIPpLkNA==
+X-Google-Smtp-Source: ABdhPJy7IT2nLDMw6wQ33+ALqEXz5j/+r/MVTx8GZt+zAgh/jUj9fWdnqbhSZTpKOjh9DVpiybXZO+HTmCJsnnRXfgE=
+X-Received: by 2002:a05:6102:f06:: with SMTP id v6mr2729610vss.71.1643470817294;
+ Sat, 29 Jan 2022 07:40:17 -0800 (PST)
 MIME-Version: 1.0
-Reply-To: mrsayakaazumi891@gmail.com
-Sender: kafandozida1@gmail.com
-Received: by 2002:a92:c7d3:0:0:0:0:0 with HTTP; Sat, 29 Jan 2022 06:07:31
- -0800 (PST)
-From:   "Mrs.  Ayaka  Azumi" <aeyuhlmy739@gmail.com>
-Date:   Sat, 29 Jan 2022 06:07:31 -0800
-X-Google-Sender-Auth: SB_WPW_VnyVZrxUyQCoXW-UaNAY
-Message-ID: <CAKAv60eH9s8Hekuhyyp6WX6dTHfLLfRicj58nqQke8YPD5whyA@mail.gmail.com>
-Subject: Greetings
+Received: by 2002:a59:bde6:0:b0:282:e5d0:6681 with HTTP; Sat, 29 Jan 2022
+ 07:40:17 -0800 (PST)
+Reply-To: dramirparnian1975@gmail.com
+From:   "Dr.Amir Parnian" <mrrocksteven505@gmail.com>
+Date:   Sat, 29 Jan 2022 07:40:17 -0800
+Message-ID: <CAAHk35MoxL7eGtYfSAs0HytbSb19vm5F5LL+-dh_H0irwQan1w@mail.gmail.com>
+Subject: READ AND REPLY
 To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Hello Dear,
-
-Please forgive me for stressing you with my predicaments as I know
-that this letter may come to you as a big surprise. Actually, I came
-across your E-mail from my personal search afterward I decided to
-email you directly believing that you will be honest to fulfil my
-final wish before i die.
-
-Meanwhile, I am Mrs.  Ayaka Azumi,  62 years old, from Japan, and I
-am suffering from a long time cancer and from all indication my
-condition is really deteriorating as my doctors have confirmed and
-courageously advised me that I may not live beyond two months from now
-for the reason that my tumour has reached a critical stage which has
-defiled all forms of medical treatment. As a matter of fact,
-registered nurse by profession while my husband was dealing on Gold
-Dust and Gold Dory Bars till his sudden death the year 2016 then I
-took over his business till date.
-
-In fact, at this moment I have a deposit sum of  Eight Million Three
-hundred thousand US dollars ($8,300,000.00) with one bank but
-unfortunately I cannot visit the bank since I m critically sick and
-powerless to do anything myself but my bank account officer advised me
-to assign any of my trustworthy relative, friends or partner with
-authorization letter to stand as the recipient of my money but
-Sadly, I don't have any reliable relatives and no children.
-
-Therefore, I want you to receive the money and take 50% to take care
-of yourself and family while 50% should be use basically on
-humanitarian purposes mostly to orphanages home, Motherless babies
-home, less privileged and disable citizens and widows around the
-world. and as soon as I receive your I shall send you my pictures,
-banking records and with full contacts of my banking institution to
-communicate with them on the matter.Please contact me with this email
-address.(mrsayakaazumi891@gmail.com)
-
-Hope to hear from you soon.
-Yours Faithfully,
-Mrs.  Ayaka  Azumi
+Dear Friend,
+My Name is Dr.Amir Parnian,I am a banker by profession. My reason for
+contacting you is to transfer abandoned $15.5 Million United States
+Dollars to your account.
+Further details of the transaction shall be forwarded to you as soon
+as I receive your return mail indicating your interest.
+Thanks and hope to hear from you soon.
+Dr.Amir Parnian
