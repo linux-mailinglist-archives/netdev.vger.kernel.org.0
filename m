@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FC2F4A30C5
-	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 17:44:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D591F4A30C7
+	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 17:44:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352803AbiA2QoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jan 2022 11:44:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54478 "EHLO
+        id S1352817AbiA2Qo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jan 2022 11:44:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243327AbiA2QoR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 11:44:17 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B255C061714;
-        Sat, 29 Jan 2022 08:44:17 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id z5so8857353plg.8;
-        Sat, 29 Jan 2022 08:44:17 -0800 (PST)
+        with ESMTP id S1352804AbiA2QoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 11:44:22 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BC1C061714;
+        Sat, 29 Jan 2022 08:44:22 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id e16so8088010pgn.4;
+        Sat, 29 Jan 2022 08:44:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Rc8EcuHrpVK/y37fKO3dTVt7uQivqrB0dxVBiWrZE24=;
-        b=cozgJuef4hZxJaExMhIiuTHhdnTWr3Eu0eW7x6yX3gUhv6ZPPJ8saSkpQug5Y6F3Vd
-         lGjdRoSqyqYonMkss4uzmHreRX6xQVvJ7rCegZlDbMqH5zBi/kjLdJa/drcAIXiE0hrI
-         6t++53V7dMfLQZr1QMrEe3dthzeLW+2NjHfA1IPNGJTf41+P+F6ySpGy0Gh8NFa5IfXR
-         Oq+8lS1PPqs4ZAbBcJoIQWQCbtfRnzZAiNACmlXqsDf1h38zPGIdM58EB33Mv5NDQakJ
-         AtWoifRLJEgpgLcSvKcEplrw5Hl2t3twGyphWOkLAkVNE6fjshOzgrQ2VelHnPSGF4zO
-         J4Yg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=pHZD/3m5dxJ6IF3Od83WC30BwhA/YhVb9CJ0r7xBZXQ=;
+        b=ofNXC6QFjz/JTDom4mngHhKeKNbZ+VSuywgqcc+3EW8ftmkaVdEQcCMlQDkNazm32Q
+         KXf+emEbUPB6r/Wv2+ocBjhkscv03eZauD8A0zaXH2AADteLo7+8fswzLDTOP9/ov93E
+         g//ghHWhyfHGTmO25cDsJp9HCNvhzhRwSWNoj9jhHMOgHWIeB5O766jum7Nsx5VocJi2
+         ii8wApoIlIYormOYRnRNOyJCL2vXwT5SQ2QkF+2stNeomTiDngBOqgDXJkcyp2uZuOan
+         CAgl2jY17ttRxya5SZYNAt+Be18KEZCZe2KSB+uhZG2G/N3OC4FK9++wHUk9gbVgN4Ls
+         9fzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Rc8EcuHrpVK/y37fKO3dTVt7uQivqrB0dxVBiWrZE24=;
-        b=FMU4na8ce2Q2QHeMWpm556XVn1ZJnmTeghHzdKGgB3QuUl3EPA7L+XuxI7iHHOKZmW
-         yxRUZTOHfZKyNo2G6Ylxk1ZNL3kIzp7wWLSviPGCuinRZMFl3Ut8J9Q6nLo1052anMED
-         95bnJi1JCM83XyreOZ+94ysp+mWb524bMAf3XgPgDpszwa7uMMsyzAA62W2da1c3SSwP
-         361/c2cJmnx56AztTxGq024I/B/wDb0waxd/hP0rIObFtOUVwCxAHoKMJR3B2aDEoczD
-         wglZKViO7Sziqih+44d0zqJBmLKHSr+WgICRifCePTQ50uwjsqC6imk9TrLs7VePLZ12
-         qDCQ==
-X-Gm-Message-State: AOAM532cOlvg6ncItyq4xGFRzGGRNmrsQETpCoN7Ex8eKZhAmO7faX4y
-        S4jXQLhAZMOrT0SeS7BwFwqYjaLBYEL2qQ==
-X-Google-Smtp-Source: ABdhPJyotzLeBHZ5BE3ny/lal0L2utOhWu1/HR9jc9Gp2DV9JjVevqoPDC6VKQpzqyjP2saNxUDiMQ==
-X-Received: by 2002:a17:902:d483:: with SMTP id c3mr13821273plg.141.1643474656674;
-        Sat, 29 Jan 2022 08:44:16 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=pHZD/3m5dxJ6IF3Od83WC30BwhA/YhVb9CJ0r7xBZXQ=;
+        b=z17u3Ji4Pp/nqS13GywztcqNX3JfVs6t+q1SzQtZn9l8tdOCjCQNTzxf1i0Wz3H0Jn
+         Z4vPjSR1HQ0/kH9t4sUSxZJCbjhYlhS6+2vObScfUKsmjZ0s91mlv7l6FxCjpnnd6xn6
+         xH0JxA0lfyGuKnYy1js8K7OXxqY1F7wqfAyb4TirfUN8TH4gQvJtwffsuR4jBsGfHNo9
+         vmHOpFqPGCxon+XY8A0ia4dDAhPAVrpOHovhG9QhbxFVRjXOkP7yd6qoJ4HrybOYdvWv
+         w9nXzXYOzwblPRdh1oH9QEPXsrN/y25dhV5KnkU1SBZe+gTOlWwxavvgT1R/FboLpl8V
+         zZAQ==
+X-Gm-Message-State: AOAM530DtSs69AxNZJfddX2JVdI3T2Bpf6GEWIgP2u2Xyz9DIjnAG1xG
+        BGR3cCdwMH3YOc8/0vwVBI+LDEW6a203gQ==
+X-Google-Smtp-Source: ABdhPJx52OJeDDNpUf1yW1NNs05N8I1gHA3rop3NP1vtyV7AstMjFnKkGytn5Va9dL3UM0qCl4OnUw==
+X-Received: by 2002:a63:4147:: with SMTP id o68mr10846206pga.476.1643474661484;
+        Sat, 29 Jan 2022 08:44:21 -0800 (PST)
 Received: from localhost.localdomain (111-243-37-162.dynamic-ip.hinet.net. [111.243.37.162])
-        by smtp.gmail.com with ESMTPSA id y193sm13770337pfb.7.2022.01.29.08.44.14
+        by smtp.gmail.com with ESMTPSA id y193sm13770337pfb.7.2022.01.29.08.44.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Jan 2022 08:44:16 -0800 (PST)
+        Sat, 29 Jan 2022 08:44:21 -0800 (PST)
 From:   Joseph CHAMG <josright123@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -55,38 +55,99 @@ To:     "David S . Miller" <davem@davemloft.net>,
         joseph_chang@davicom.com.tw
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com,
-        andrew@lunn.ch, leon@kernel.org
-Subject: [PATCH v16, 0/2] ADD DM9051 ETHERNET DRIVER
-Date:   Sun, 30 Jan 2022 00:43:44 +0800
-Message-Id: <20220129164346.5535-1-josright123@gmail.com>
+        andrew@lunn.ch, leon@kernel.org, Rob Herring <robh@kernel.org>
+Subject: [PATCH v16, 1/2] yaml: Add dm9051 SPI network yaml file
+Date:   Sun, 30 Jan 2022 00:43:45 +0800
+Message-Id: <20220129164346.5535-2-josright123@gmail.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220129164346.5535-1-josright123@gmail.com>
+References: <20220129164346.5535-1-josright123@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DM9051 is a spi interface chip,
-need cs/mosi/miso/clock with an interrupt gpio pin
+From: JosephCHANG <josright123@gmail.com>
 
-Joseph CHAMG (1):
-  net: Add dm9051 driver
+This is a new yaml base data file for configure davicom dm9051 with
+device tree
 
-JosephCHANG (1):
-  yaml: Add dm9051 SPI network yaml file
-
- .../bindings/net/davicom,dm9051.yaml          |   62 +
- drivers/net/ethernet/davicom/Kconfig          |   31 +
- drivers/net/ethernet/davicom/Makefile         |    1 +
- drivers/net/ethernet/davicom/dm9051.c         | 1165 +++++++++++++++++
- drivers/net/ethernet/davicom/dm9051.h         |  159 +++
- 5 files changed, 1418 insertions(+)
+Cc: Rob Herring <robh@kernel.org>
+Signed-off-by: JosephCHANG <josright123@gmail.com>
+---
+ .../bindings/net/davicom,dm9051.yaml          | 62 +++++++++++++++++++
+ 1 file changed, 62 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/net/davicom,dm9051.yaml
- create mode 100644 drivers/net/ethernet/davicom/dm9051.c
- create mode 100644 drivers/net/ethernet/davicom/dm9051.h
 
-
-base-commit: 9d922f5df53844228b9f7c62f2593f4f06c0b69b
+diff --git a/Documentation/devicetree/bindings/net/davicom,dm9051.yaml b/Documentation/devicetree/bindings/net/davicom,dm9051.yaml
+new file mode 100644
+index 000000000000..52e852fef753
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/davicom,dm9051.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/davicom,dm9051.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Davicom DM9051 SPI Ethernet Controller
++
++maintainers:
++  - Joseph CHANG <josright123@gmail.com>
++
++description: |
++  The DM9051 is a fully integrated and cost-effective low pin count single
++  chip Fast Ethernet controller with a Serial Peripheral Interface (SPI).
++
++allOf:
++  - $ref: ethernet-controller.yaml#
++
++properties:
++  compatible:
++    const: davicom,dm9051
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 45000000
++
++  interrupts:
++    maxItems: 1
++
++  local-mac-address: true
++
++  mac-address: true
++
++required:
++  - compatible
++  - reg
++  - spi-max-frequency
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  # Raspberry Pi platform
++  - |
++    /* for Raspberry Pi with pin control stuff for GPIO irq */
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/gpio/gpio.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        ethernet@0 {
++            compatible = "davicom,dm9051";
++            reg = <0>; /* spi chip select */
++            local-mac-address = [00 00 00 00 00 00];
++            interrupt-parent = <&gpio>;
++            interrupts = <26 IRQ_TYPE_LEVEL_LOW>;
++            spi-max-frequency = <31200000>;
++        };
++    };
 -- 
 2.20.1
 
