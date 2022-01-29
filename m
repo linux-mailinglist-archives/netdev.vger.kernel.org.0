@@ -2,129 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A605E4A3069
-	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 17:02:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 394F84A3084
+	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 17:22:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351649AbiA2QCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jan 2022 11:02:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44976 "EHLO
+        id S1352208AbiA2QWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jan 2022 11:22:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349121AbiA2QCo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 11:02:44 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1377DC061714;
-        Sat, 29 Jan 2022 08:02:44 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id s16so7924053pgs.13;
-        Sat, 29 Jan 2022 08:02:44 -0800 (PST)
+        with ESMTP id S242424AbiA2QWT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 11:22:19 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523FEC061714
+        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 08:22:19 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id y15so17827686lfa.9
+        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 08:22:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZgycSTmdEVS3UMK+SZ2VDh/3h8V+r6g5hyN2V5SrbbA=;
-        b=RgYQpG2FlQRNNSA5Sjc3zrPpVKbLhD8S9obualpBqIQROyqRvFji8mAC4hl1ogdEMs
-         qtoFisGkm4yrx4FASkNz6Swi+7x5FZ6ECPY8LdeEBfuusMoYC/qrswmY7iYA4+Fmrt/i
-         RUaXyKlafewNksonZwM5xrL+wxLB28kDUULTwhfo9NlLyUZk8KIJRQ/kuJeNyY1KmLVZ
-         N5CNcEB3cnUVJy7FWvn3NzrAtat1iT3FXHX8ZrFGyfWYpHWxAySN1EeLqJtD2ukOPrHX
-         3xT1byG8Va0po398d5LCCgtrQm09ko9ix+XE5HVLFTnlsqzRn7t/RRp0pSAOTmJx42Pb
-         AHyQ==
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=5rb2bYUGOsznXSQW2SbmZuAdFHz29bFHdL1+tYXBjRE=;
+        b=xyjzk67oTRcgtPhJGd7tLSYTTLRfEbpi//R7oE1aHRWfa1QgcQp/WV7AJ/R9C5TMKT
+         XJ/LwSs94kqzWcdAJaL9ukFL3gYOLRt3IxqwmcvrBdhGf75VQhuMYtNW8QKUU+gAkm5M
+         j180E8WNi414CAKfHgyjOkQqLM9wgnpxMFDcYix7Smx23fet/qFzudGUEwyqYRky0bbn
+         pWF6X8CLsVb4TmjrT7DJ5Q3ZiVJT96nlnZgzU1dVgQTinmFACr5f05rX3PQDJV1e3f+u
+         6l/Y8Be9t4F/OFstrmIrgjdYmERfTEUnPhp9I9ZWlJq5vso8lJeq/WUHkLh5u1IqCsPq
+         maWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZgycSTmdEVS3UMK+SZ2VDh/3h8V+r6g5hyN2V5SrbbA=;
-        b=6m00of3QvSRBU8bc93GtUrdLBfKqf9Rhh5ln/niLkqnqDfpPyDa8f6qEdjIQ+YWPAu
-         bnD5sdoe2lFt/jHwNJjMseH+3dV1UO9So+tGr+DbSZ9zyExvV5Dsfw/3dcpRaKS6ldLe
-         3NB0V11+CEgNqmA8qISrvpVR+Pw8uQGmLkER7ZSy1JCwVPKy68pUJLIS88lcqmn6hAZ3
-         Qb6sw7Y8ALZuXUErpfjtrbwg+mNGMxwp7T1sssfdZWBCPLDQoArP0Ua2R+m4gmPM0feL
-         aKiYGoPxjMj0bXCcz4y6vUARBjH0dtpec5uKxqk8tOa28Aa5ETfRZ784KK77nyPWfVq1
-         YSSg==
-X-Gm-Message-State: AOAM533RuUNUZ1MfxHjLcT2zKnIqQkdiJ2DK09niRjDqcq6hzzvwNHcI
-        nwjcASi/HBGDLrNlBkEa7OIlklbdG97CZOWNP/Q=
-X-Google-Smtp-Source: ABdhPJyjC4g+Cdo5ZCzR7r+CNDlmK0RK6WFO9bjmnYQ5k6P86MFmZRqhyG14Jb6Qn1949BAylSMMJx5nfxoZV5sa5vY=
-X-Received: by 2002:a62:190b:: with SMTP id 11mr12338535pfz.77.1643472163390;
- Sat, 29 Jan 2022 08:02:43 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=5rb2bYUGOsznXSQW2SbmZuAdFHz29bFHdL1+tYXBjRE=;
+        b=Qq2+7ryzlJbE73+rfzFkGsMwSu/9kAxJh7o163GBol6PuRQo4OFIUdkyuZm/AbewnM
+         Jhztv9EnducEdc7XmmecXGQEcI8TzZlbfMRR0cwqRfVJenfoCkhUtb9HrfaK7kLw6lN+
+         Esuz8MvLe9bFv4CYpo1GkynDOW/A/VwnjY3c9zoRONR4Gnk/KIoLHuWOF2K/M8csgzIu
+         zBSk/W+OfS7ZjsGZg2JRLXZyZ/uCZr8EB2sEX3HmESv8etaZfA+JW9R78OQmy5LElvmF
+         LI11fuXbqwxfTHF3uoKAHuiN/2wcYl75rIM9YnESrGH/yOe/fmtIl3r5UKyD8cLs3wQi
+         CJXQ==
+X-Gm-Message-State: AOAM531R3UZhSwzPEYkIr7LIW6eBJNBGb+8aj8z13yPumCmVNAG9SKKF
+        7A9pcTsTWs5OjOjRGboZeKr8kw==
+X-Google-Smtp-Source: ABdhPJzIZNvcLjZkozB6mcFfZUdLmxqeYij3PD8XD5vhpivDm86V/WTKy69WAarSKYUO8136NCRbww==
+X-Received: by 2002:a05:6512:e87:: with SMTP id bi7mr9946776lfb.550.1643473337320;
+        Sat, 29 Jan 2022 08:22:17 -0800 (PST)
+Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
+        by smtp.gmail.com with ESMTPSA id bq7sm2928931lfb.210.2022.01.29.08.22.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 29 Jan 2022 08:22:16 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Wei Yongjun <weiyongjun1@huawei.com>, weiyongjun1@huawei.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Markus Koch <markus@notsyncing.net>
+Cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Hulk Robot <hulkci@huawei.com>
+Subject: Re: [PATCH net-next] net/fsl: xgmac_mdio: fix return value check in
+ xgmac_mdio_probe()
+In-Reply-To: <20220129012702.3220704-1-weiyongjun1@huawei.com>
+References: <20220129012702.3220704-1-weiyongjun1@huawei.com>
+Date:   Sat, 29 Jan 2022 17:22:15 +0100
+Message-ID: <87czkabjgo.fsf@waldekranz.com>
 MIME-Version: 1.0
-References: <20211228072645.32341-1-luizluca@gmail.com> <Ydx4+o5TsWZkZd45@robh.at.kernel.org>
-In-Reply-To: <Ydx4+o5TsWZkZd45@robh.at.kernel.org>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Sat, 29 Jan 2022 13:02:32 -0300
-Message-ID: <CAJq09z4G40ttsTHXtOywjyusNLSjt_BQ9D78PhwSodJr=4p6OA@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: net: dsa: realtek-smi: convert to YAML schema
-To:     Rob Herring <robh@kernel.org>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc:     devicetree@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks Rob, now that the code side is merged, I'm back to docs.
-
-
-> > +      interrupt-controller:
-> > +        description: see interrupt-controller/interrupts.txt
+On Sat, Jan 29, 2022 at 01:27, Wei Yongjun <weiyongjun1@huawei.com> wrote:
+> In case of error, the function devm_ioremap() returns NULL pointer
+> not ERR_PTR(). The IS_ERR() test in the return value check should
+> be replaced with NULL test.
 >
-> Don't need generic descriptions. Just 'true' here is fine.
+> Fixes: 1d14eb15dc2c ("net/fsl: xgmac_mdio: Use managed device resources")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 
-Do you really mean quoted true, like in "description: 'true' "?
-Without quotes it will fail
->
-> > +
-> > +      interrupts:
-> > +        description: TODO
->
-> You have to define how many interrupts and what they are.
+Reviewed-by: Tobias Waldekranz <tobias@waldekranz.com>
 
-I didn't write the interruption code and Linus and Alvin might help here.
+Sorry about that. I started out by using devm_ioremap_resource, which
+uses the in-band error signaling, and forgot to match the guard when I
+changed it.
 
-The switch has a single interrupt pin that signals an interruption happened.
-The code reads a register to multiplex to these interruptions:
-
-INT_TYPE_LINK_STATUS = 0,
-INT_TYPE_METER_EXCEED,
-INT_TYPE_LEARN_LIMIT,
-INT_TYPE_LINK_SPEED,
-INT_TYPE_CONGEST,
-INT_TYPE_GREEN_FEATURE,
-INT_TYPE_LOOP_DETECT,
-INT_TYPE_8051,
-INT_TYPE_CABLE_DIAG,
-INT_TYPE_ACL,
-INT_TYPE_RESERVED, /* Unused */
-INT_TYPE_SLIENT,
-
-And most of them, but not all, multiplex again to each port.
-
-However, the linux driver today does not care about any of these
-interruptions but INT_TYPE_LINK_STATUS. So it simply multiplex only
-this the interruption to each port, in a n-cell map (n being number of
-ports).
-I don't know what to describe here as device-tree should be something
-independent of a particular OS or driver.
-
-Anyway, I doubt someone might want to plug one of these interruptions
-outside the switch driver. Could it be simple as this:
-
-      interrupts:
-       minItems: 3
-       maxItems: 10
-       description:
-         interrupt mapping one per switch port
-
-Once realtek-smi.yaml settles, I'll also send the realtek-mdio.yaml.
-
-Regards,
-
-Luiz
+I see that this was reported by your CI, do you mind me asking what it
+is running in the back-end? At least my version of sparse does not seem
+to catch this.
