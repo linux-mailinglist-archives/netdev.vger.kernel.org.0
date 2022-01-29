@@ -2,177 +2,519 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0423F4A2B2E
-	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 03:04:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 879944A2B42
+	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 03:26:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352128AbiA2CEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 21:04:47 -0500
-Received: from mail-dm6nam12on2094.outbound.protection.outlook.com ([40.107.243.94]:28512
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1352136AbiA2CEp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jan 2022 21:04:45 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XlC+nrjT8qKoRTthr3c24tXw0CCJZgS1ZBaMXFMu/nhwTkGhnJ6KsTONBZWDiBA8P9axIR0YSjZMTAsTA1Wt+b0sDcjiT2IfknSlSJCpPWvQIA5D1F09/X/TEyRZJmj3TNT/vefutRkwFZxROR854VS0BUX+zatoIkPX5CqhoM0rk6kN/kIbRSc3bMAU/3ZM5HtESZsNQB7XspbRfkYa68h9AcrlN4Deuw1vnvItLsxmXs+XwL+s6Q1nHxnraAOP4MZnBZLnrqcYp98JRUUY/DGOMb0faN7y7hJX7k2ApoxKU19zehx+Kp8ivukQNtwxOC+EepfamvAjq1Wmb7mijA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lBtUJ0WthM4WNS/PwB/119hMxcAj9Gvk1JO/v29ONRQ=;
- b=gRJ2kqpQHX91Gp2O8duo4N+Nlvit1chqhZPijTvuf9fnDX7Sn2erIWna7j081WY4IF7avv1pCX1+bsVQ28melrlD9/Dcoz4I8P0PQSDOxVudp4mdM1oqfQJDeBwLZOiID8QYslsHQwpyLfmL0jNZKmo8JN6W1wk/21TN1roVsr7HEbpJLn5O8ujEohZA8vqbquzIIM1gcpnTCTTab6rfNuv54pKZCoD8oKDDoPSVT7tB/1+zw4yy9/862JTO/tsSRkBWDDJP20ypABNexcONNbSByOXjQ8m5j0cLMIKvDTc6iKUx5lqVp5mB3iKei4VqS18lBZolrMFLZK7Z+5X8FQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lBtUJ0WthM4WNS/PwB/119hMxcAj9Gvk1JO/v29ONRQ=;
- b=Z2eD+DYLPyK9mBpO6bs7OcEl5wfWDoOMUQ7zzlG+a4DstmlRs9bX2Mo0iNQSM4ijl+Ya7hUOODfz0UJ+nkd9BOFaKFA7KMO3vRFOgqkUkt8cIvS8typ43FU71S9kjtz+wnnMsS8Az1mUAsFeWsfgu4LSRSAia7px3VmBHKfNiOw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-Received: from DM6PR21MB1340.namprd21.prod.outlook.com (2603:10b6:5:175::19)
- by MWHPR21MB0191.namprd21.prod.outlook.com (2603:10b6:300:79::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.7; Sat, 29 Jan
- 2022 02:04:40 +0000
-Received: from DM6PR21MB1340.namprd21.prod.outlook.com
- ([fe80::1d9b:cd14:e6bb:43fd]) by DM6PR21MB1340.namprd21.prod.outlook.com
- ([fe80::1d9b:cd14:e6bb:43fd%6]) with mapi id 15.20.4951.007; Sat, 29 Jan 2022
- 02:04:40 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
-Cc:     haiyangz@microsoft.com, decui@microsoft.com, kys@microsoft.com,
-        sthemmin@microsoft.com, paulros@microsoft.com,
-        shacharr@microsoft.com, olaf@aepfle.de, vkuznets@redhat.com,
-        davem@davemloft.net, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next, 3/3] net: mana: Reuse XDP dropped page
-Date:   Fri, 28 Jan 2022 18:03:38 -0800
-Message-Id: <1643421818-14259-4-git-send-email-haiyangz@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1643421818-14259-1-git-send-email-haiyangz@microsoft.com>
-References: <1643421818-14259-1-git-send-email-haiyangz@microsoft.com>
-Content-Type: text/plain
-X-ClientProxiedBy: MW4PR03CA0311.namprd03.prod.outlook.com
- (2603:10b6:303:dd::16) To DM6PR21MB1340.namprd21.prod.outlook.com
- (2603:10b6:5:175::19)
+        id S1345241AbiA2CYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 21:24:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35906 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240775AbiA2CYN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 21:24:13 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C323C061714;
+        Fri, 28 Jan 2022 18:24:13 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id ah7so22069644ejc.4;
+        Fri, 28 Jan 2022 18:24:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ioqlrOoxPOn1cJr5twTUz/ZAacFjKHM4+voE3E//iSs=;
+        b=CASHMVwCeM+4y3Jpl/vIYfS+zeNUNj8P+t636ctaFVdltdF7DciXVJ81svIRXkqbKm
+         ryjlV/HVnJqiR5mWaHlNYfTELn8xBnY+H+H3XTQRPvZ57PPOSX9UffHbphlpcbqWlzFj
+         bJqDT+4XzUe5LcG2dF2L8HM1ph3fmFQqi4O0IZCmdhjv1jPrnCDt5Fti18hMutCGC9d9
+         qH0DSqYXriorUuwX/Err82v1rflI1MRB40HNbUUi6+JayQXJgHHaJm0kaKRkNAzhlfPx
+         7le1un/agFwATjP1M9GbOUFbYJEQAOfUq69OrQS7yyUqQ5m4pW1HbjDT38KjPAd2WJjm
+         WJ+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ioqlrOoxPOn1cJr5twTUz/ZAacFjKHM4+voE3E//iSs=;
+        b=vvVUoepeY3+xhl5uyno3VZD4t4nHArn+NE4znQJGOem4dcVgVOHkCptPIdHs7ZcuF2
+         jVmNY8tVIXkrhmfWeeDCMY9oO6HX5nYWmT4qjrL9/R8oxFXXDX9vAO9ZVde+ULajw77W
+         Zo+CLkEIG6xFUn8WtyEuifxUhb2T1r3gOYkd7Iyuf9mXYfjqgs4XGVSTNGng23t3vpgA
+         RnllhO+yocn1dbuYXKESyAR0T5PgcP1cO0SOeMUmXBL3oNlIT7neWABhYra+w0HprJ3+
+         61KAQoo/Ne57NmMDVJziYCql3iuSzx61uQRpo81z5VIfLE0H+inCnoWqWMmsjRJ9YgnL
+         kmmQ==
+X-Gm-Message-State: AOAM530Lg0lZ8lkwJ7uxXg1NTZOBE0OjgGtWmaAhyUlO4CyX5ASti9Dt
+        2Ss9Wj6KRmELwhUTz5RW7zEUV5+zqiwU2y6Ylqd3bgJdd1qMsQ==
+X-Google-Smtp-Source: ABdhPJyzNuD+ImDU5MLhQEYrGVYT905Xsa2FNjWRM0pKSwOMW0QmGamaCXKqnOoNS+sWhtgs4rRYryTOGncUg3sokVM=
+X-Received: by 2002:a17:906:7712:: with SMTP id q18mr5202514ejm.434.1643423051190;
+ Fri, 28 Jan 2022 18:24:11 -0800 (PST)
 MIME-Version: 1.0
-Sender: LKML haiyangz <lkmlhyz@microsoft.com>
-X-MS-Exchange-MessageSentRepresentingType: 2
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2bf149a6-ed80-4069-7c9d-08d9e2cbb570
-X-MS-TrafficTypeDiagnostic: MWHPR21MB0191:EE_
-X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-X-MS-Exchange-AtpMessageProperties: SA|SL
-X-Microsoft-Antispam-PRVS: <MWHPR21MB0191BA8AFC8E1CDCBAAA9138AC239@MWHPR21MB0191.namprd21.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1060;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: K7r+T7CvNdaKP+AEatE9oyPgA8ifke7QLLdpV3YqCtQdXIlcnvVQ8rqkjlPUeUgB+ySJqMGuXzjcHC6HE3G1c3wmBd6/8LVCeRWbvQBpyabE7AM98gdr2yj0vOpbFVA75PaWABOsfAk4RleGD3Yk8nM5GYx3wYz15rSIV80UGhozEhtGIHDjaAw4ftVCtPkHwDv+Kx0b+iDBZXAm7+tznRY0IrFsFkxdkKZRgUoAG/MgmzE05v3DnKnYMBzdzMDwUEpkkFknrsKYlGzlIqpaNiB/YZr7oAi7+eItgYUYYxrCuyV1bXDWW1pNOk2EkqCp7Txy/4yferKkoEr7rItJRp/fqAuk9Ft72s+cNI1mHL9WjfnC8at3R2N8eqn8Bqa3itMJWeUzcU6sofEFfBUkp50vYI6ArC5wtXOyK983v+L2McXCh5mFsuYDj6bmWf5p+J6rEv6gDtttHF0g0lQe/11boXvUgsdj3MOhGmJI4qycjk6lh7PkXLHEV39XDgJnk09pwqI9wDKn/TCVHnZa5xeyedmBaGWkGm902EyfHLnf4OfI2vw7RJqkDFJAthoDq1tKM+nB3vDI35qjnILbyUUbzQEmcRHY8OMrEuZ3JMMEl74+gXd/YAGhajtcxe+3BUM0WWiQIQorA1kl1STYnKct1wBjZfv0auOuDdWQnBc8D0SRbYliLHbKoVtN2HoCx0PR/qkgOfmPExhp4Y9oGOCVvtTy58m7SwflNEEz1r1aqnOZZfSlPS9MMrQF7HiH
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1340.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66556008)(66946007)(4326008)(66476007)(8676002)(8936002)(5660300002)(38350700002)(38100700002)(82950400001)(316002)(82960400001)(186003)(6512007)(6506007)(26005)(2906002)(2616005)(508600001)(36756003)(7846003)(52116002)(83380400001)(6486002)(10290500003)(20210929001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?P/NMUhZLGkiOollksnYXfl+7KCLAmIvzCnKvSqF0c7EQD6TC/c+FtdDvc6Ye?=
- =?us-ascii?Q?Gwta2ew/Xv48ybU2f4io3GpGH8TLZTKzUbrEGWRAfQ0deJxxPH2SaYGsW2Nm?=
- =?us-ascii?Q?1pQ6F5UDfxwxHWYm/fFQvWSdu03z17wDMXKz3zFm4rufa1PHOrpQG0XMlaq/?=
- =?us-ascii?Q?GVBYUbQ1vAeonj4X3PnQfucYM3X8SCDTcJ0j6IvRNWBTjbq4st/liuCNB+v+?=
- =?us-ascii?Q?jchF93D8NLddcmA4aJuoeBtyOgwasSDhBj1w1ofHav85kjwyx/e+Q5F8yfrz?=
- =?us-ascii?Q?z6baF1g4fnpoRQVP3H7eMu99h9EimJBz2vcXpzrw3N89YIejWLCAVvqV8+TO?=
- =?us-ascii?Q?dCFSBmCuCrQMUSsLsD4x1u0G9iOgQoahXnQmwaNVZFe/sZiQh4og5jc5Pq/w?=
- =?us-ascii?Q?F1INxY/EzIz2xKolToU/Te8+TBSbbolUQnMT9qauW2YAgVZUqSR/NDqvu6m7?=
- =?us-ascii?Q?Jhdnq97pF6j/1B844YM0nK03L6qdVrMsRfH6fYrqdPW5/GYgsgenlCD3fyY5?=
- =?us-ascii?Q?5KY3FM8YZFCVzh8MtEacrYm1xzO61viHgfnIpSgJ8g6C0OLRIkBbZWHGMPUj?=
- =?us-ascii?Q?H0atVX7F4AlAR7Rjw6oUKkthy2rgzhSlaH0WMcF0nb8n3aRIpGjLqiQi4a1W?=
- =?us-ascii?Q?f/e2zZ3scTmsTvfetrnGeBCHIjeEQ5JtbhbfAJk9U0UYTOEeGXdY7NHPoMfl?=
- =?us-ascii?Q?8MxdU5A6JlEL+KvBrosnLYPV5Ab+Dl3gjqfu7KeR/PlhnEY62JHuEC2PwtKp?=
- =?us-ascii?Q?qw3rrmx5+lexISICnJVWusiXA6Bx0VwoT1Iq30K8SBk8j79K3HsXLnuc4IGT?=
- =?us-ascii?Q?TTiNJcUzQpdaCNY+FjhzsQxnGJKqGvyH8Y/H6ibS9/3alv+SMdbTP+mMAeVA?=
- =?us-ascii?Q?7CYuJl5eiSbA9iPOtbz+z4BKgAr0VvQ2AQ+nNldtoUA57aBMDVZdEaNQH3VH?=
- =?us-ascii?Q?aUwisS1+mG9/wkfkMJO8qriGNFpTH2UwTonb4ArvIHFYI3Es+e3mnDdiW3L6?=
- =?us-ascii?Q?mXcSzJ2vXG3Q3eDZKS3hVXpTTSk0rg5hdwNZonNrGi1Mg8WR1Xhrpx8OxVpo?=
- =?us-ascii?Q?86wWOCTNC+vBll/igOU7+66Hytm2bbFIkQteogSOn8wttuAt6q6FXxA+HJTx?=
- =?us-ascii?Q?aFygfuf5aBo0+9ZUthmtWAplYPGBofQikJxglJQhLD1YSLpBo7d8RHPvhkuO?=
- =?us-ascii?Q?8d+jXIRpiXiqfEJK5gec0i1nvAhuMrmpsUOaHsb4iDXYkYViYIIVtY1F43ct?=
- =?us-ascii?Q?o04C+nvJlFdxHMbPGiA/iczBpPE38ZrGM9TBfPCJkNg7D9CkVl0G1PbZulNd?=
- =?us-ascii?Q?YGn0yMnZUCO9Y94Hoa14+hnmvHQtoEC7sVF5Hot6LV74tKpwyEu7EDkfQLue?=
- =?us-ascii?Q?kvZq9jpBgwkqyLpAmJoeqxik99xVEHkVRSa2a82U4Q+YvQu460nX6khpOnXJ?=
- =?us-ascii?Q?nSctnt04O6go3u79kiA+ZRs9Eax2OtKdY2HMOFYEsOSotVY5rVBfA9lwhKhc?=
- =?us-ascii?Q?d4dv7dSPzrFL55IHZrEtOSwsq/1dHuzbipLIpK5qP+8RBAN36cdtSazhigmo?=
- =?us-ascii?Q?IEfcgzu/YjeKJ/KQBdvISO5GE7TYh3Zfa+90sRtnY7AOvM7NxGrivkKsk1kb?=
- =?us-ascii?Q?n9zhGwQUZRXhhX7aED9beek=3D?=
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2bf149a6-ed80-4069-7c9d-08d9e2cbb570
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1340.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jan 2022 02:04:40.0922
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0qJ/rC6Di8Lefd7FgFIBglfWJcaSOrm3EW+ejmCWBJpfnzASaXNYHLHhIHxrEl8uDXHIxUI5t/02zjRcM5SZ+g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR21MB0191
+References: <159db05f-539c-fe29-608b-91b036588033@molgen.mpg.de>
+In-Reply-To: <159db05f-539c-fe29-608b-91b036588033@molgen.mpg.de>
+From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
+Date:   Sat, 29 Jan 2022 10:23:59 +0800
+Message-ID: <CAABZP2xampOLo8k93OLgaOfv9LreJ+f0g0_1mXwqtrv_LKewQg@mail.gmail.com>
+Subject: Re: BUG: Kernel NULL pointer dereference on write at 0x00000000 (rtmsg_ifinfo_build_skb)
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        rcu <rcu@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reuse the dropped page in RX path to save page allocation
-overhead.
+Dear Paul
 
-Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
----
- drivers/net/ethernet/microsoft/mana/mana.h    |  1 +
- drivers/net/ethernet/microsoft/mana/mana_en.c | 15 +++++++++++++--
- 2 files changed, 14 insertions(+), 2 deletions(-)
+I don't have an IBM machine, but I tried to analyze the problem using
+my x86_64 kvm virtual machine, I can't reproduce the bug using my
+x86_64 kvm virtual machine.
 
-diff --git a/drivers/net/ethernet/microsoft/mana/mana.h b/drivers/net/ethernet/microsoft/mana/mana.h
-index 8ead960f898d..d36405af9432 100644
---- a/drivers/net/ethernet/microsoft/mana/mana.h
-+++ b/drivers/net/ethernet/microsoft/mana/mana.h
-@@ -310,6 +310,7 @@ struct mana_rxq {
- 
- 	struct bpf_prog __rcu *bpf_prog;
- 	struct xdp_rxq_info xdp_rxq;
-+	struct page *xdp_save_page;
- 
- 	/* MUST BE THE LAST MEMBER:
- 	 * Each receive buffer has an associated mana_recv_buf_oob.
-diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-index 12067bf5b7d6..69e791e6abc4 100644
---- a/drivers/net/ethernet/microsoft/mana/mana_en.c
-+++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -1059,7 +1059,9 @@ static void mana_rx_skb(void *buf_va, struct mana_rxcomp_oob *cqe,
- 	u64_stats_update_end(&rx_stats->syncp);
- 
- drop:
--	free_page((unsigned long)buf_va);
-+	WARN_ON_ONCE(rxq->xdp_save_page);
-+	rxq->xdp_save_page = virt_to_page(buf_va);
-+
- 	++ndev->stats.rx_dropped;
- 
- 	return;
-@@ -1116,7 +1118,13 @@ static void mana_process_rx_cqe(struct mana_rxq *rxq, struct mana_cq *cq,
- 	rxbuf_oob = &rxq->rx_oobs[curr];
- 	WARN_ON_ONCE(rxbuf_oob->wqe_inf.wqe_size_in_bu != 1);
- 
--	new_page = alloc_page(GFP_ATOMIC);
-+	/* Reuse XDP dropped page if available */
-+	if (rxq->xdp_save_page) {
-+		new_page = rxq->xdp_save_page;
-+		rxq->xdp_save_page = NULL;
-+	} else {
-+		new_page = alloc_page(GFP_ATOMIC);
-+	}
- 
- 	if (new_page) {
- 		da = dma_map_page(dev, new_page, XDP_PACKET_HEADROOM, rxq->datasize,
-@@ -1403,6 +1411,9 @@ static void mana_destroy_rxq(struct mana_port_context *apc,
- 
- 	mana_deinit_cq(apc, &rxq->rx_cq);
- 
-+	if (rxq->xdp_save_page)
-+		__free_page(rxq->xdp_save_page);
-+
- 	for (i = 0; i < rxq->num_rx_buf; i++) {
- 		rx_oob = &rxq->rx_oobs[i];
- 
--- 
-2.25.1
+I saw the panic is caused by registration of sit device (A sit device
+is a type of virtual network device that takes our IPv6 traffic,
+encapsulates/decapsulates it in IPv4 packets, and sends/receives it
+over the IPv4 Internet to another host)
 
+sit device is registered in function sit_init_net:
+1895    static int __net_init sit_init_net(struct net *net)
+1896    {
+1897        struct sit_net *sitn = net_generic(net, sit_net_id);
+1898        struct ip_tunnel *t;
+1899        int err;
+1900
+1901        sitn->tunnels[0] = sitn->tunnels_wc;
+1902        sitn->tunnels[1] = sitn->tunnels_l;
+1903        sitn->tunnels[2] = sitn->tunnels_r;
+1904        sitn->tunnels[3] = sitn->tunnels_r_l;
+1905
+1906        if (!net_has_fallback_tunnels(net))
+1907            return 0;
+1908
+1909        sitn->fb_tunnel_dev = alloc_netdev(sizeof(struct ip_tunnel), "sit0",
+1910                           NET_NAME_UNKNOWN,
+1911                           ipip6_tunnel_setup);
+1912        if (!sitn->fb_tunnel_dev) {
+1913            err = -ENOMEM;
+1914            goto err_alloc_dev;
+1915        }
+1916        dev_net_set(sitn->fb_tunnel_dev, net);
+1917        sitn->fb_tunnel_dev->rtnl_link_ops = &sit_link_ops;
+1918        /* FB netdevice is special: we have one, and only one per netns.
+1919         * Allowing to move it to another netns is clearly unsafe.
+1920         */
+1921        sitn->fb_tunnel_dev->features |= NETIF_F_NETNS_LOCAL;
+1922
+1923        err = register_netdev(sitn->fb_tunnel_dev);
+register_netdev on line 1923 will call if_nlmsg_size indirectly.
+
+On the other hand, the function that calls the paniced strlen is if_nlmsg_size:
+(gdb) disassemble if_nlmsg_size
+Dump of assembler code for function if_nlmsg_size:
+   0xffffffff81a0dc20 <+0>:    nopl   0x0(%rax,%rax,1)
+   0xffffffff81a0dc25 <+5>:    push   %rbp
+   0xffffffff81a0dc26 <+6>:    push   %r15
+   0xffffffff81a0dd04 <+228>:    je     0xffffffff81a0de20 <if_nlmsg_size+512>
+   0xffffffff81a0dd0a <+234>:    mov    0x10(%rbp),%rdi
+   ...
+ => 0xffffffff81a0dd0e <+238>:    callq  0xffffffff817532d0 <strlen>
+   0xffffffff81a0dd13 <+243>:    add    $0x10,%eax
+   0xffffffff81a0dd16 <+246>:    movslq %eax,%r12
+
+and the C code for 0xffffffff81a0dd0e is following (line 524):
+515    static size_t rtnl_link_get_size(const struct net_device *dev)
+516    {
+517        const struct rtnl_link_ops *ops = dev->rtnl_link_ops;
+518        size_t size;
+519
+520        if (!ops)
+521            return 0;
+522
+523        size = nla_total_size(sizeof(struct nlattr)) + /* IFLA_LINKINFO */
+524               nla_total_size(strlen(ops->kind) + 1);  /* IFLA_INFO_KIND */
+
+But ops is assigned the value of sit_link_ops in function sit_init_net
+line 1917, so I guess something must happened between the calls.
+
+Do we have KASAN in IBM machine? would KASAN help us find out what
+happened in between?
+
+Hope I can be of more helpful.
+
+Thanks
+Sincerely
+Zhouyi
+
+On Wed, Jan 26, 2022 at 3:24 PM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+>
+> Dear Linux folks,
+>
+>
+> I do not know, if this is an rcutorture issue, or if rcutorture found a
+> bug with `rtmsg_ifinfo_build_skb()`.
+>
+>
+> Building Linux 5.17-rc1+ (dd81e1c7d5fb) under Ubuntu 21.04 with
+>
+>      CONFIG_TORTURE_TEST=y
+>      CONFIG_RCU_TORTURE_TEST=y
+>
+> and
+>
+>      $ clang --version
+>      Ubuntu clang version 12.0.0-3ubuntu1~21.04.2
+>      Target: powerpc64le-unknown-linux-gnu
+>      Thread model: posix
+>      InstalledDir: /usr/bin
+>      $ make -j100 LLVM=1 LLVM_IAS=0 bindeb-pkg
+I build the kernel in LLVM/Clang also
+>
+> and booting it on an IBM S822LC, Linux paniced with a null pointer
+> dereference, and the watchdog rebooted, and I found the message below in
+> `/sys/fs/pstore/dmesg-nvram-2.enc.z`.
+>
+> ```
+> [    T1] Key type id_legacy registered
+> [    T1] SGI XFS with ACLs, security attributes, no debug enabled
+> [    T1] Block layer SCSI generic (bsg) driver version 0.4 loaded (major
+> 248)
+> [    T1] io scheduler mq-deadline registered
+> [    T1] io scheduler kyber registered
+> [  T198] cryptomgr_test (198) used greatest stack depth: 13536 bytes left
+> [    T1] pci 0021:10:00.0: enabling device (0141 -> 0143)
+> [    T1] Using unsupported 1024x768 (null) at 3fe882010000, depth=32,
+> pitch=4096
+> [    T1] Console: switching to colour frame buffer device 128x48
+> [    T1] fb0: Open Firmware frame buffer device on
+> /pciex@3fffe41100000/pci@0/pci@0/pci@b/pci@0/vga@0
+> [    T1] hvc0: raw protocol on /ibm,opal/consoles/serial@0 (boot console)
+> [    T1] hvc0: No interrupts property, using OPAL event
+> [    T1] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+> [    T1] Non-volatile memory driver v1.3
+> [    T1] brd: module loaded
+> [    T1] loop: module loaded
+> [    T1] ipr: IBM Power RAID SCSI Device Driver version: 2.6.4 (March
+> 14, 2017)
+> [    T1] ahci 0021:0e:00.0: version 3.0
+> [    T1] ahci 0021:0e:00.0: enabling device (0141 -> 0143)
+> [    T1] ahci 0021:0e:00.0: AHCI 0001.0000 32 slots 4 ports 6 Gbps 0xf
+> impl SATA mode
+> [    T1] ahci 0021:0e:00.0: flags: 64bit ncq sntf led only pmp fbs pio
+> slum part sxs
+> [    T1] scsi host0: ahci
+> [    T1] scsi host1: ahci
+> [    T1] scsi host2: ahci
+> [    T1] scsi host3: ahci
+> [    T1] ata1: SATA max UDMA/133 abar m2048@0x3fe881000000 port
+> 0x3fe881000100 irq 39
+> [    T1] ata2: SATA max UDMA/133 abar m2048@0x3fe881000000 port
+> 0x3fe881000180 irq 39
+> [    T1] ata3: SATA max UDMA/133 abar m2048@0x3fe881000000 port
+> 0x3fe881000200 irq 39
+> [    T1] ata4: SATA max UDMA/133 abar m2048@0x3fe881000000 port
+> 0x3fe881000280 irq 39
+> [    T1] e100: Intel(R) PRO/100 Network Driver
+> [    T1] e100: Copyright(c) 1999-2006 Intel Corporation
+> [    T1] e1000: Intel(R) PRO/1000 Network Driver
+> [    T1] e1000: Copyright (c) 1999-2006 Intel Corporation.
+> [    T1] e1000e: Intel(R) PRO/1000 Network Driver
+> [    T1] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+> [    T1] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+> [    T1] ehci-pci: EHCI PCI platform driver
+> [    T1] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+> [    T1] ohci-pci: OHCI PCI platform driver
+> [    T1] rtc-opal opal-rtc: registered as rtc0
+> [    T1] rtc-opal opal-rtc: setting system clock to 2022-01-24T18:21:45
+> UTC (1643048505)
+> [    T1] i2c_dev: i2c /dev entries driver
+> [    T1] device-mapper: uevent: version 1.0.3
+> [    T1] device-mapper: ioctl: 4.45.0-ioctl (2021-03-22) initialised:
+> dm-devel@redhat.com
+> [    T1] powernv-cpufreq: cpufreq pstate min 0xffffffd5 nominal
+> 0xffffffef max 0x0
+> [    T1] powernv-cpufreq: Workload Optimized Frequency is disabled in
+> the platform
+> [    T1] powernv_idle_driver registered
+> [    T1] nx_compress_powernv: coprocessor found on chip 0, CT 3 CI 1
+> [    T1] nx_compress_powernv: coprocessor found on chip 8, CT 3 CI 9
+> [    T1] usbcore: registered new interface driver usbhid
+> [    T1] usbhid: USB HID core driver
+> [    T1] ipip: IPv4 and MPLS over IPv4 tunneling driver
+> [    T1] NET: Registered PF_INET6 protocol family
+> [    T1] Segment Routing with IPv6
+> [    T1] In-situ OAM (IOAM) with IPv6
+> [    T1] sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+> [    T1] BUG: Kernel NULL pointer dereference on write at 0x00000000
+> [    T1] Faulting instruction address: 0xc0000000008e2400
+> [    T1] Oops: Kernel access of bad area, sig: 11 [#1]
+> [    T1] LE PAGE_SIZE=64K MMU=Hash PREEMPT SMP NR_CPUS=16 NUMA PowerNV
+> [    T1] Modules linked in:
+> [    T1] CPU: 11 PID: 1 Comm: swapper/0 Not tainted
+> 5.17.0-rc1-00032-gdd81e1c7d5fb #29
+> [    T1] NIP:  c0000000008e2400 LR: c000000000d65db0 CTR: c000000000f0bb60
+> [    T1] REGS: c0000000125033e0 TRAP: 0380   Not tainted
+> (5.17.0-rc1-00032-gdd81e1c7d5fb)
+> [    T1] MSR:  9000000000009033 <SF,HV,EE,ME,IR,DR,RI,LE>  CR: 42800c40
+> XER: 00000000
+> [    T1] CFAR: c000000000d65dac IRQMASK: 0
+> [    T1] GPR00: c000000000d65b40 c000000012503680 c00000000290c600
+> 0000000000000000
+> [    T1] GPR04: ffffffffffffffff 00000000ffffffff 0000000000000000
+> 0000000000000cc0
+> [    T1] GPR08: 0000000000000000 0000000000000000 ffffffffffffffff
+> 0000000000000001
+> [    T1] GPR12: 0000000000000000 c000007fffff6c00 c000000000012478
+> 0000000000000000
+> [    T1] GPR16: 0000000000000000 0000000000000000 0000000000000000
+> 0000000000000000
+> [    T1] GPR20: 0000000000000000 c000000002810100 0000000000000cc0
+> 0000000000000000
+> [    T1] GPR24: 0000000000000010 c00000000294cf50 0000000000000000
+> 0000000000000000
+> [    T1] GPR28: 0000000000000000 c00000001ec61000 0000000000000000
+> c000000012503680
+> [    T1] NIP [c0000000008e2400] strlen+0x10/0x30
+> [    T1] LR [c000000000d65db0] if_nlmsg_size+0x150/0x360
+> [    T1] Call Trace:
+> [    T1] [c000000012503680] [c0000000125036c0] 0xc0000000125036c0
+> (unreliable)
+> [    T1] [c0000000125036f0] [c000000000d65b40]
+> rtmsg_ifinfo_build_skb+0x80/0x1a0
+> [    T1] [c0000000125037b0] [c000000000d66be0] rtmsg_ifinfo+0x70/0xd0
+> [    T1] [c000000012503800] [c000000000d4de50]
+> register_netdevice+0x690/0x770
+> [    T1] [c000000012503890] [c000000000d4e2bc] register_netdev+0x4c/0x80
+> [    T1] [c0000000125038c0] [c000000000f4784c] sit_init_net+0x10c/0x1d0
+> [    T1] [c000000012503910] [c000000000d33c0c] ops_init+0x13c/0x1b0
+> [    T1] [c000000012503970] [c000000000d331bc]
+> register_pernet_operations+0xec/0x1e0
+> [    T1] [c0000000125039d0] [c000000000d33440]
+> register_pernet_device+0x60/0xd0
+> [    T1] [c000000012503a20] [c000000002085478] sit_init+0x54/0x160
+> [    T1] [c000000012503ab0] [c000000000011ba8] do_one_initcall+0xd8/0x3b0
+> [    T1] [c000000012503c70] [c000000002006064] do_initcall_level+0xe4/0x1c4
+> [    T1] [c000000012503cc0] [c000000002005f20] do_initcalls+0x84/0xe4
+> [    T1] [c000000012503d40] [c000000002005c7c]
+> kernel_init_freeable+0x160/0x1ec
+> [    T1] [c000000012503da0] [c0000000000124ac] kernel_init+0x3c/0x270
+> [    T1] [c000000012503e10] [c00000000000cd64]
+> ret_from_kernel_thread+0x5c/0x64
+> [    T1] Instruction dump:
+> [    T1] eb81ffe0 7c0803a6 4e800020 00000000 00000000 00000000 60000000
+> 60000000
+> [    T1] 3883ffff 60000000 60000000 60000000 <8ca40001> 28050000
+> 4082fff8 7c632050
+> [    T1] ---[ end trace 0000000000000000 ]---
+> [    T1]
+> [  T206] ata4: SATA link down (SStatus 0 SControl 300)
+> [  T204] ata3: SATA link down (SStatus 0 SControl 300)
+> [  T200] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+> [  T200] ata1.00: ATA-10: ST1000NX0313         00LY266 00LY265IBM, BE33,
+> max UDMA/133
+> [  T200] ata1.00: 1953525168 sectors, multi 0: LBA48 NCQ (depth 32), AA
+> [  T200] ata1.00: configured for UDMA/133
+> [    T7] scsi 0:0:0:0: Direct-Access     ATA      ST1000NX0313     BE33
+> PQ: 0 ANSI: 5
+> [    T7] sd 0:0:0:0: Attached scsi generic sg0 type 0
+> [  T209] sd 0:0:0:0: [sda] 1953525168 512-byte logical blocks: (1.00
+> TB/932 GiB)
+> [  T209] sd 0:0:0:0: [sda] 4096-byte physical blocks
+> [  T209] sd 0:0:0:0: [sda] Write Protect is off
+> [  T209] sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
+> [  T209] sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled,
+> doesn't support DPO or FUA
+> [  T209]  sda: sda1 sda2
+> [  T209] sd 0:0:0:0: [sda] Attached SCSI removable disk
+> [    T1] Kernel panic - not syncing: Attempted to kill init!
+> exitcode=0x0000000b
+> ```
+>
+>
+> Kind regards,
+>
+> Paul
+
+On Wed, Jan 26, 2022 at 3:24 PM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+>
+> Dear Linux folks,
+>
+>
+> I do not know, if this is an rcutorture issue, or if rcutorture found a
+> bug with `rtmsg_ifinfo_build_skb()`.
+>
+>
+> Building Linux 5.17-rc1+ (dd81e1c7d5fb) under Ubuntu 21.04 with
+>
+>      CONFIG_TORTURE_TEST=y
+>      CONFIG_RCU_TORTURE_TEST=y
+>
+> and
+>
+>      $ clang --version
+>      Ubuntu clang version 12.0.0-3ubuntu1~21.04.2
+>      Target: powerpc64le-unknown-linux-gnu
+>      Thread model: posix
+>      InstalledDir: /usr/bin
+>      $ make -j100 LLVM=1 LLVM_IAS=0 bindeb-pkg
+I build the kernel in LLVM/Clang also
+>
+> and booting it on an IBM S822LC, Linux paniced with a null pointer
+> dereference, and the watchdog rebooted, and I found the message below in
+> `/sys/fs/pstore/dmesg-nvram-2.enc.z`.
+>
+> ```
+> [    T1] Key type id_legacy registered
+> [    T1] SGI XFS with ACLs, security attributes, no debug enabled
+> [    T1] Block layer SCSI generic (bsg) driver version 0.4 loaded (major
+> 248)
+> [    T1] io scheduler mq-deadline registered
+> [    T1] io scheduler kyber registered
+> [  T198] cryptomgr_test (198) used greatest stack depth: 13536 bytes left
+> [    T1] pci 0021:10:00.0: enabling device (0141 -> 0143)
+> [    T1] Using unsupported 1024x768 (null) at 3fe882010000, depth=32,
+> pitch=4096
+> [    T1] Console: switching to colour frame buffer device 128x48
+> [    T1] fb0: Open Firmware frame buffer device on
+> /pciex@3fffe41100000/pci@0/pci@0/pci@b/pci@0/vga@0
+> [    T1] hvc0: raw protocol on /ibm,opal/consoles/serial@0 (boot console)
+> [    T1] hvc0: No interrupts property, using OPAL event
+> [    T1] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+> [    T1] Non-volatile memory driver v1.3
+> [    T1] brd: module loaded
+> [    T1] loop: module loaded
+> [    T1] ipr: IBM Power RAID SCSI Device Driver version: 2.6.4 (March
+> 14, 2017)
+> [    T1] ahci 0021:0e:00.0: version 3.0
+> [    T1] ahci 0021:0e:00.0: enabling device (0141 -> 0143)
+> [    T1] ahci 0021:0e:00.0: AHCI 0001.0000 32 slots 4 ports 6 Gbps 0xf
+> impl SATA mode
+> [    T1] ahci 0021:0e:00.0: flags: 64bit ncq sntf led only pmp fbs pio
+> slum part sxs
+> [    T1] scsi host0: ahci
+> [    T1] scsi host1: ahci
+> [    T1] scsi host2: ahci
+> [    T1] scsi host3: ahci
+> [    T1] ata1: SATA max UDMA/133 abar m2048@0x3fe881000000 port
+> 0x3fe881000100 irq 39
+> [    T1] ata2: SATA max UDMA/133 abar m2048@0x3fe881000000 port
+> 0x3fe881000180 irq 39
+> [    T1] ata3: SATA max UDMA/133 abar m2048@0x3fe881000000 port
+> 0x3fe881000200 irq 39
+> [    T1] ata4: SATA max UDMA/133 abar m2048@0x3fe881000000 port
+> 0x3fe881000280 irq 39
+> [    T1] e100: Intel(R) PRO/100 Network Driver
+> [    T1] e100: Copyright(c) 1999-2006 Intel Corporation
+> [    T1] e1000: Intel(R) PRO/1000 Network Driver
+> [    T1] e1000: Copyright (c) 1999-2006 Intel Corporation.
+> [    T1] e1000e: Intel(R) PRO/1000 Network Driver
+> [    T1] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+> [    T1] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+> [    T1] ehci-pci: EHCI PCI platform driver
+> [    T1] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+> [    T1] ohci-pci: OHCI PCI platform driver
+> [    T1] rtc-opal opal-rtc: registered as rtc0
+> [    T1] rtc-opal opal-rtc: setting system clock to 2022-01-24T18:21:45
+> UTC (1643048505)
+> [    T1] i2c_dev: i2c /dev entries driver
+> [    T1] device-mapper: uevent: version 1.0.3
+> [    T1] device-mapper: ioctl: 4.45.0-ioctl (2021-03-22) initialised:
+> dm-devel@redhat.com
+> [    T1] powernv-cpufreq: cpufreq pstate min 0xffffffd5 nominal
+> 0xffffffef max 0x0
+> [    T1] powernv-cpufreq: Workload Optimized Frequency is disabled in
+> the platform
+> [    T1] powernv_idle_driver registered
+> [    T1] nx_compress_powernv: coprocessor found on chip 0, CT 3 CI 1
+> [    T1] nx_compress_powernv: coprocessor found on chip 8, CT 3 CI 9
+> [    T1] usbcore: registered new interface driver usbhid
+> [    T1] usbhid: USB HID core driver
+> [    T1] ipip: IPv4 and MPLS over IPv4 tunneling driver
+> [    T1] NET: Registered PF_INET6 protocol family
+> [    T1] Segment Routing with IPv6
+> [    T1] In-situ OAM (IOAM) with IPv6
+> [    T1] sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+> [    T1] BUG: Kernel NULL pointer dereference on write at 0x00000000
+> [    T1] Faulting instruction address: 0xc0000000008e2400
+> [    T1] Oops: Kernel access of bad area, sig: 11 [#1]
+> [    T1] LE PAGE_SIZE=64K MMU=Hash PREEMPT SMP NR_CPUS=16 NUMA PowerNV
+> [    T1] Modules linked in:
+> [    T1] CPU: 11 PID: 1 Comm: swapper/0 Not tainted
+> 5.17.0-rc1-00032-gdd81e1c7d5fb #29
+> [    T1] NIP:  c0000000008e2400 LR: c000000000d65db0 CTR: c000000000f0bb60
+> [    T1] REGS: c0000000125033e0 TRAP: 0380   Not tainted
+> (5.17.0-rc1-00032-gdd81e1c7d5fb)
+> [    T1] MSR:  9000000000009033 <SF,HV,EE,ME,IR,DR,RI,LE>  CR: 42800c40
+> XER: 00000000
+> [    T1] CFAR: c000000000d65dac IRQMASK: 0
+> [    T1] GPR00: c000000000d65b40 c000000012503680 c00000000290c600
+> 0000000000000000
+> [    T1] GPR04: ffffffffffffffff 00000000ffffffff 0000000000000000
+> 0000000000000cc0
+> [    T1] GPR08: 0000000000000000 0000000000000000 ffffffffffffffff
+> 0000000000000001
+> [    T1] GPR12: 0000000000000000 c000007fffff6c00 c000000000012478
+> 0000000000000000
+> [    T1] GPR16: 0000000000000000 0000000000000000 0000000000000000
+> 0000000000000000
+> [    T1] GPR20: 0000000000000000 c000000002810100 0000000000000cc0
+> 0000000000000000
+> [    T1] GPR24: 0000000000000010 c00000000294cf50 0000000000000000
+> 0000000000000000
+> [    T1] GPR28: 0000000000000000 c00000001ec61000 0000000000000000
+> c000000012503680
+> [    T1] NIP [c0000000008e2400] strlen+0x10/0x30
+> [    T1] LR [c000000000d65db0] if_nlmsg_size+0x150/0x360
+> [    T1] Call Trace:
+> [    T1] [c000000012503680] [c0000000125036c0] 0xc0000000125036c0
+> (unreliable)
+> [    T1] [c0000000125036f0] [c000000000d65b40]
+> rtmsg_ifinfo_build_skb+0x80/0x1a0
+> [    T1] [c0000000125037b0] [c000000000d66be0] rtmsg_ifinfo+0x70/0xd0
+> [    T1] [c000000012503800] [c000000000d4de50]
+> register_netdevice+0x690/0x770
+> [    T1] [c000000012503890] [c000000000d4e2bc] register_netdev+0x4c/0x80
+> [    T1] [c0000000125038c0] [c000000000f4784c] sit_init_net+0x10c/0x1d0
+> [    T1] [c000000012503910] [c000000000d33c0c] ops_init+0x13c/0x1b0
+> [    T1] [c000000012503970] [c000000000d331bc]
+> register_pernet_operations+0xec/0x1e0
+> [    T1] [c0000000125039d0] [c000000000d33440]
+> register_pernet_device+0x60/0xd0
+> [    T1] [c000000012503a20] [c000000002085478] sit_init+0x54/0x160
+> [    T1] [c000000012503ab0] [c000000000011ba8] do_one_initcall+0xd8/0x3b0
+> [    T1] [c000000012503c70] [c000000002006064] do_initcall_level+0xe4/0x1c4
+> [    T1] [c000000012503cc0] [c000000002005f20] do_initcalls+0x84/0xe4
+> [    T1] [c000000012503d40] [c000000002005c7c]
+> kernel_init_freeable+0x160/0x1ec
+> [    T1] [c000000012503da0] [c0000000000124ac] kernel_init+0x3c/0x270
+> [    T1] [c000000012503e10] [c00000000000cd64]
+> ret_from_kernel_thread+0x5c/0x64
+> [    T1] Instruction dump:
+> [    T1] eb81ffe0 7c0803a6 4e800020 00000000 00000000 00000000 60000000
+> 60000000
+> [    T1] 3883ffff 60000000 60000000 60000000 <8ca40001> 28050000
+> 4082fff8 7c632050
+> [    T1] ---[ end trace 0000000000000000 ]---
+> [    T1]
+> [  T206] ata4: SATA link down (SStatus 0 SControl 300)
+> [  T204] ata3: SATA link down (SStatus 0 SControl 300)
+> [  T200] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+> [  T200] ata1.00: ATA-10: ST1000NX0313         00LY266 00LY265IBM, BE33,
+> max UDMA/133
+> [  T200] ata1.00: 1953525168 sectors, multi 0: LBA48 NCQ (depth 32), AA
+> [  T200] ata1.00: configured for UDMA/133
+> [    T7] scsi 0:0:0:0: Direct-Access     ATA      ST1000NX0313     BE33
+> PQ: 0 ANSI: 5
+> [    T7] sd 0:0:0:0: Attached scsi generic sg0 type 0
+> [  T209] sd 0:0:0:0: [sda] 1953525168 512-byte logical blocks: (1.00
+> TB/932 GiB)
+> [  T209] sd 0:0:0:0: [sda] 4096-byte physical blocks
+> [  T209] sd 0:0:0:0: [sda] Write Protect is off
+> [  T209] sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
+> [  T209] sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled,
+> doesn't support DPO or FUA
+> [  T209]  sda: sda1 sda2
+> [  T209] sd 0:0:0:0: [sda] Attached SCSI removable disk
+> [    T1] Kernel panic - not syncing: Attempted to kill init!
+> exitcode=0x0000000b
+> ```
+>
+>
+> Kind regards,
+>
+> Paul
