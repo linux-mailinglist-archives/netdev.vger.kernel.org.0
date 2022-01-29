@@ -2,98 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9ECF4A2FA8
-	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 14:06:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99A634A2FF8
+	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 15:07:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345390AbiA2NGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jan 2022 08:06:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34924 "EHLO
+        id S238070AbiA2OHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jan 2022 09:07:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344688AbiA2NG3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 08:06:29 -0500
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8029C061714
-        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 05:06:28 -0800 (PST)
-Received: by mail-lf1-x143.google.com with SMTP id a28so17208500lfl.7
-        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 05:06:28 -0800 (PST)
+        with ESMTP id S234194AbiA2OHR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 09:07:17 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B67C061714
+        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 06:07:16 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id ah7so26262722ejc.4
+        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 06:07:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=/gRHScMGOcqWfHhCJcR+16Delg1iStzbMk9qT/Uh7C0=;
-        b=KXKWT8jjVO3iqGHtFMh2dlUDwC+axevLb2GJccRElfyMy1ITHrRMBUJkkWfgCLDfwB
-         fD8BGYNtclajS4Lo5I0XUzxSge4b9bnYhynWtdJyr4zsgBK1kF49ucv+tO443uLUqu17
-         TEA7RrRT4wDumkJFE/5QN8wDe9nJg1ftL7LXRNn4AWaEHVxKbDM24jdiXStDsebmIHOk
-         qvgfDKy+J5/j5EbxDaBLCuZrmWOZ81UxBVdSLaoUQfHn9IuK66MyXAb+1oskmjxTzMKl
-         68nvgsP+vKwkyDFnX4VvJ+YS5kXT1iukH3O/UCvd6fL3REzJ9llDnSBtuj/nfPkp+aH6
-         2pyw==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0x3hajvhMdYrsBq4N/8zaKp4Mut67KNOt5i422OuXTU=;
+        b=rVg29X4p8dFhNEXgXWHVjnRl2MU4o7MwxT3nnCmpyjRYN9cmZv23WA6oAvy2mvop/b
+         TC1II/jqZknact3y1RF734JfAhRCL+G0jNlZXAHaDqC1SCi3j8HrKVuqIQlD6a2eiASF
+         IeM5AxYfPRd0iOC42ueQ+PWe6QVrcrtphdwgEAZ9hLftiT/53YyMlfcbA5I8VVdGUBmt
+         FGgjnVOtXmNxUx47BBFa4OBx1eJ4BfUkVaAejfzh3fUD76/PtJGhG1BNswmJPIbhjOY8
+         Ee/pTauCV662v8249DszLengRtyQGZLr5TG9JPEnCO76s6cHs1yHW2xrs6B+7oqpGbWW
+         RzJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=/gRHScMGOcqWfHhCJcR+16Delg1iStzbMk9qT/Uh7C0=;
-        b=lrfQx+zbhsflluaXZJymP+wxzB5p8+Du2P5f5BvKV8i/+rMTuEIVUap9IdCdAe5E+1
-         IX0wuz3Q0U0J61Enhn59/Z7B+o1823Rky/JDVB8YCVDmsrEKU7tToKwoV0A5WkN2ICQf
-         CrviC+BKZi03OnYjSTSNcGCbEa9+oldw/8qbbD2aFmuyUUNhbBMlq3zrX0zn6n8Fy/N8
-         1t65hO+w3brTNBgJlvgUncZcJvJO1i+bqgz0SjasFTSP1YRnfo1oE1z9AMMcp43h+ttM
-         OQ12QTpungrVNvH/eg5UBHrMUICe0N9kbCVSSr0pwg3w7gFOl/KpyUD0cIGO/jyFHifH
-         15Yg==
-X-Gm-Message-State: AOAM5324NT06m5X21dEljy4COuvsaycIgfy9A64+Rioajwr9qkRQC92q
-        XZ7RPilU4xJ5dRtWnk1xmaJHvz64rFM0BZ8CzoY=
-X-Google-Smtp-Source: ABdhPJyGuOqSCV7ccAAiLSr4Kpp6Bb1KV/SDydvJukeMWTn+0H6PdGTOHMfxBib7UvQGB6nJlGgGcH+oUe5dSn4bu/0=
-X-Received: by 2002:a19:6509:: with SMTP id z9mr9381882lfb.540.1643461587180;
- Sat, 29 Jan 2022 05:06:27 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0x3hajvhMdYrsBq4N/8zaKp4Mut67KNOt5i422OuXTU=;
+        b=Acwao/CM442O++iLoVzUHoMFnYrktbYUcQ6tS1AHw9RZDKoycLTlV99lHLwqgA5kbL
+         1L490sMaPQai+6PXAqh0zpmmkHQrJ/HKeFH/ydHe1JHQF/JTKHiACal+zmDdmwKErwNR
+         leyFiu8dR6e3kaqk0jW8IrFDN4FMIW4hLesW7BWMg58D1CHEByw3fZuoimuBlWx9FO9J
+         Z3HpT7wi6u0BUPtBM/Kv1+5i16TcXvPnT4QbTbdDzL6ZE0PxrtILdyj4lL95lu50yiZm
+         wAbPr3b28bkn4iqeCpzGxuIozPQFBLpkIqsLaY1S7GMYpx1i0Y9UjxnhRn9CuNThJyXq
+         Iemg==
+X-Gm-Message-State: AOAM5328CRPvVs40IRlaIcVIInZWBMo5oLS+DLQj13+41MQ1jgidfVBy
+        a4ILXqjH+6R1p8EOgsNCjuRK2mBAs/bcTyBe
+X-Google-Smtp-Source: ABdhPJwe/BavqVNs9S9EPzRz9Ipu9dbqKmB+l9ZoDHNXQyrDstoIUf/p4RrqC6w3CsZKz2Sjmc95og==
+X-Received: by 2002:a17:907:9688:: with SMTP id hd8mr10757732ejc.80.1643465234084;
+        Sat, 29 Jan 2022 06:07:14 -0800 (PST)
+Received: from hades (athedsl-4461669.home.otenet.gr. [94.71.4.85])
+        by smtp.gmail.com with ESMTPSA id s20sm2620650edq.55.2022.01.29.06.07.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 29 Jan 2022 06:07:13 -0800 (PST)
+Date:   Sat, 29 Jan 2022 16:07:11 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Joe Damato <jdamato@fastly.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        hawk@kernel.org
+Subject: Re: [PATCH net-next 0/6] net: page_pool: Add page_pool stat counters
+Message-ID: <YfVKDxenS5IWxCLX@hades>
+References: <1643237300-44904-1-git-send-email-jdamato@fastly.com>
+ <YfJhIpBGW6suBwkY@hades>
+ <CALALjgyosP7GeMZgiQ3c=TXP=wBJeOC4GYV3PtKY544JbQ72Hg@mail.gmail.com>
 MIME-Version: 1.0
-Reply-To: mrsayakaazumi891@gmail.com
-Sender: goodfriday765@gmail.com
-Received: by 2002:ab3:5f98:0:0:0:0:0 with HTTP; Sat, 29 Jan 2022 05:06:26
- -0800 (PST)
-From:   "Mrs.  Ayaka  Azumi" <aeyuhlmy739@gmail.com>
-Date:   Sat, 29 Jan 2022 05:06:26 -0800
-X-Google-Sender-Auth: X1FpdHrRaCp6hgAf-LlTpjZEBII
-Message-ID: <CAAtjvDxtWKnTO=yEsQKNHm=gLt4hOLhJmyp6M4cfayKZTYasYQ@mail.gmail.com>
-Subject: Greetings
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALALjgyosP7GeMZgiQ3c=TXP=wBJeOC4GYV3PtKY544JbQ72Hg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Hello Dear,
+Hi Joe!
 
-Please forgive me for stressing you with my predicaments as I know
-that this letter may come to you as a big surprise. Actually, I came
-across your E-mail from my personal search afterward I decided to
-email you directly believing that you will be honest to fulfil my
-final wish before i die.
+On Thu, Jan 27, 2022 at 03:55:03PM -0800, Joe Damato wrote:
+> On Thu, Jan 27, 2022 at 1:08 AM Ilias Apalodimas
+> <ilias.apalodimas@linaro.org> wrote:
+> >
+> > Hi Joe,
+> >
+> > On Wed, Jan 26, 2022 at 02:48:14PM -0800, Joe Damato wrote:
+> > > Greetings:
+> > >
+> > > This series adds some stat counters for the page_pool allocation path which
+> > > help to track:
+> > >
+> > >       - fast path allocations
+> > >       - slow path order-0 allocations
+> > >       - slow path high order allocations
+> > >       - refills which failed due to an empty ptr ring, forcing a slow
+> > >         path allocation
+> > >       - allocations fulfilled via successful refill
+> > >       - pages which cannot be added to the cache because of numa mismatch
+> > >         (i.e. waived)
+> > >
+> >
+> > Thanks for the patch.  Stats are something that's indeed missing from the
+> > API.  The patch  should work for Rx based allocations (which is what you
+> > currently cover),  since the RX side is usually protected by NAPI.  However
+> > we've added a few features recently,  which we would like to have stats on.
+> 
+> Thanks for taking a look at the patch.
+> 
 
-Meanwhile, I am Mrs.  Ayaka Azumi,  62 years old, from Japan, and I
-am suffering from a long time cancer and from all indication my
-condition is really deteriorating as my doctors have confirmed and
-courageously advised me that I may not live beyond two months from now
-for the reason that my tumour has reached a critical stage which has
-defiled all forms of medical treatment. As a matter of fact,
-registered nurse by profession while my husband was dealing on Gold
-Dust and Gold Dory Bars till his sudden death the year 2016 then I
-took over his business till date.
+yw
 
-In fact, at this moment I have a deposit sum of  Eight Million Three
-hundred thousand US dollars ($8,300,000.00) with one bank but
-unfortunately I cannot visit the bank since I m critically sick and
-powerless to do anything myself but my bank account officer advised me
-to assign any of my trustworthy relative, friends or partner with
-authorization letter to stand as the recipient of my money but
-Sadly, I don't have any reliable relatives and no children.
+> > commit 6a5bcd84e886("page_pool: Allow drivers to hint on SKB recycling"),
+> > introduces recycling capabilities on the API.  I think it would be far more
+> > interesting to be able to extend the statistics to recycled/non-recycled
+> > packets as well in the future.
+> 
+> I agree. Tracking recycling events would be both helpful and
+> interesting, indeed.
+> 
+> > But the recycling is asynchronous and we
+> > can't add locks just for the sake of accurate statistics.
+> 
+> Agreed.
+> 
+> > Can we instead
+> > convert that to a per-cpu structure for producers?
+> 
+> If my understanding of your proposal is accurate, moving the stats
+> structure to a per-cpu structure (instead of per-pool) would add
+> ambiguity as to the performance of a specific driver's page pool. In
+> exchange for the ambiguity, though, we'd get stats for additional
+> events, which could be interesting.
 
-Therefore, I want you to receive the money and take 50% to take care
-of yourself and family while 50% should be use basically on
-humanitarian purposes mostly to orphanages home, Motherless babies
-home, less privileged and disable citizens and widows around the
-world. and as soon as I receive your I shall send you my pictures,
-banking records and with full contacts of my banking institution to
-communicate with them on the matter.Please contact me with this email
-address.(mrsayakaazumi891@gmail.com)
+I was mostly thinking per pool using with 'struct percpu_counter' or 
+allocate __percpu variables,  but I haven't really checked if that's doable or 
+which of those is better suited for our case.
 
-Hope to hear from you soon.
-Yours Faithfully,
-Mrs.  Ayaka  Azumi
+> 
+> It seems like under load it might be very useful to know that a
+> particular driver's page pool is adding pressure to the buddy
+> allocator in the slow path. I suppose that a user could move softirqs
+> around on their system to alleviate some of the ambiguity and perhaps
+> that is good enough.
+> 
+
+[...]
+
+Cheers
+/Ilias
