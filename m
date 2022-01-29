@@ -2,154 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CE0B4A30D3
-	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 17:52:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D22EE4A3143
+	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 19:00:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352819AbiA2QwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jan 2022 11:52:20 -0500
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:50087 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233791AbiA2QwT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 Jan 2022 11:52:19 -0500
-Received: from [10.59.106.37] (unknown [77.235.169.38])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S1346278AbiA2SAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jan 2022 13:00:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40190 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232705AbiA2SAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 13:00:13 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 0FD3B61EA1926;
-        Sat, 29 Jan 2022 17:52:15 +0100 (CET)
-Message-ID: <3534d781-7d01-b42a-8974-0b1c367946f0@molgen.mpg.de>
-Date:   Sat, 29 Jan 2022 17:52:12 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F085B82807;
+        Sat, 29 Jan 2022 18:00:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 467E5C340E7;
+        Sat, 29 Jan 2022 18:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643479211;
+        bh=cUX6zyXABgaJLSeqvqit7V5xHgkY1/1m0+E62v1u1DU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZjqOLmMQal8bBl2isJl4BxXZKsQZ5HzhOPQRK1StFa/iXD/R4qZ+bZLdBtlxgLVZN
+         cx3t8t+sU53XreuVUdOgA2HwlDQ3T1zpRcspFuXw8B0Heyt5wmcSP9sZY374w8M2pn
+         XjBRiCPL+k5nBVHmje/UkJ2WGdSe1R/dqf0maga6qv/V3cVjXbDdDKteqTQV7eeT7I
+         HcSOlvRs+ReZKb4flMQC56rQAdXAVZRZiKeiNHsIu0ffhYU6qJjwRYAHJT+eBb1B7H
+         f+4NWV7mwwSecs6cPgYfsLVvaokThEIel95IPHb5TzWlUAfDDq6yTLVoMwwlKuucF+
+         MDrwgegw/Q2Fw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 28552E5D07E;
+        Sat, 29 Jan 2022 18:00:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: BUG: Kernel NULL pointer dereference on write at 0x00000000
- (rtmsg_ifinfo_build_skb)
-Content-Language: en-US
-To:     Zhouyi Zhou <zhouzhouyi@gmail.com>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        rcu <rcu@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <159db05f-539c-fe29-608b-91b036588033@molgen.mpg.de>
- <CAABZP2xampOLo8k93OLgaOfv9LreJ+f0g0_1mXwqtrv_LKewQg@mail.gmail.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <CAABZP2xampOLo8k93OLgaOfv9LreJ+f0g0_1mXwqtrv_LKewQg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v4 0/3] Cadence MACB/GEM support for ZynqMP SGMII
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164347921116.25331.17257056412700364820.git-patchwork-notify@kernel.org>
+Date:   Sat, 29 Jan 2022 18:00:11 +0000
+References: <20220127163736.3677478-1-robert.hancock@calian.com>
+In-Reply-To: <20220127163736.3677478-1-robert.hancock@calian.com>
+To:     Robert Hancock <robert.hancock@calian.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        robh+dt@kernel.org, michal.simek@xilinx.com,
+        nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
+        devicetree@vger.kernel.org, linux@armlinux.org.uk,
+        laurent.pinchart@ideasonboard.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Zhouyi,
+Hello:
 
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Thank you for taking the time.
-
-
-Am 29.01.22 um 03:23 schrieb Zhouyi Zhou:
-
-> I don't have an IBM machine, but I tried to analyze the problem using
-> my x86_64 kvm virtual machine, I can't reproduce the bug using my
-> x86_64 kvm virtual machine.
-
-No idea, if it’s architecture specific.
-
-> I saw the panic is caused by registration of sit device (A sit device
-> is a type of virtual network device that takes our IPv6 traffic,
-> encapsulates/decapsulates it in IPv4 packets, and sends/receives it
-> over the IPv4 Internet to another host)
+On Thu, 27 Jan 2022 10:37:33 -0600 you wrote:
+> Changes to allow SGMII mode to work properly in the GEM driver on the
+> Xilinx ZynqMP platform.
 > 
-> sit device is registered in function sit_init_net:
-> 1895    static int __net_init sit_init_net(struct net *net)
-> 1896    {
-> 1897        struct sit_net *sitn = net_generic(net, sit_net_id);
-> 1898        struct ip_tunnel *t;
-> 1899        int err;
-> 1900
-> 1901        sitn->tunnels[0] = sitn->tunnels_wc;
-> 1902        sitn->tunnels[1] = sitn->tunnels_l;
-> 1903        sitn->tunnels[2] = sitn->tunnels_r;
-> 1904        sitn->tunnels[3] = sitn->tunnels_r_l;
-> 1905
-> 1906        if (!net_has_fallback_tunnels(net))
-> 1907            return 0;
-> 1908
-> 1909        sitn->fb_tunnel_dev = alloc_netdev(sizeof(struct ip_tunnel), "sit0",
-> 1910                           NET_NAME_UNKNOWN,
-> 1911                           ipip6_tunnel_setup);
-> 1912        if (!sitn->fb_tunnel_dev) {
-> 1913            err = -ENOMEM;
-> 1914            goto err_alloc_dev;
-> 1915        }
-> 1916        dev_net_set(sitn->fb_tunnel_dev, net);
-> 1917        sitn->fb_tunnel_dev->rtnl_link_ops = &sit_link_ops;
-> 1918        /* FB netdevice is special: we have one, and only one per netns.
-> 1919         * Allowing to move it to another netns is clearly unsafe.
-> 1920         */
-> 1921        sitn->fb_tunnel_dev->features |= NETIF_F_NETNS_LOCAL;
-> 1922
-> 1923        err = register_netdev(sitn->fb_tunnel_dev);
-> register_netdev on line 1923 will call if_nlmsg_size indirectly.
+> Changes since v3:
+> -more code formatting and error handling fixes
 > 
-> On the other hand, the function that calls the paniced strlen is if_nlmsg_size:
-> (gdb) disassemble if_nlmsg_size
-> Dump of assembler code for function if_nlmsg_size:
->     0xffffffff81a0dc20 <+0>:    nopl   0x0(%rax,%rax,1)
->     0xffffffff81a0dc25 <+5>:    push   %rbp
->     0xffffffff81a0dc26 <+6>:    push   %r15
->     0xffffffff81a0dd04 <+228>:    je     0xffffffff81a0de20 <if_nlmsg_size+512>
->     0xffffffff81a0dd0a <+234>:    mov    0x10(%rbp),%rdi
->     ...
->   => 0xffffffff81a0dd0e <+238>:    callq  0xffffffff817532d0 <strlen>
->     0xffffffff81a0dd13 <+243>:    add    $0x10,%eax
->     0xffffffff81a0dd16 <+246>:    movslq %eax,%r12
-
-Excuse my ignorance, would that look the same for ppc64le? 
-Unfortunately, I didn’t save the problematic `vmlinuz` file, but on a 
-current build (without rcutorture) I have the line below, where strlen 
-shows up.
-
-     (gdb) disassemble if_nlmsg_size
-     […]
-     0xc000000000f7f82c <+332>:	bl      0xc000000000a10e30 <strlen>
-     […]
-
-> and the C code for 0xffffffff81a0dd0e is following (line 524):
-> 515    static size_t rtnl_link_get_size(const struct net_device *dev)
-> 516    {
-> 517        const struct rtnl_link_ops *ops = dev->rtnl_link_ops;
-> 518        size_t size;
-> 519
-> 520        if (!ops)
-> 521            return 0;
-> 522
-> 523        size = nla_total_size(sizeof(struct nlattr)) + /* IFLA_LINKINFO */
-> 524               nla_total_size(strlen(ops->kind) + 1);  /* IFLA_INFO_KIND */
-
-How do I connect the disassemby output with the corresponding line?
-
-> But ops is assigned the value of sit_link_ops in function sit_init_net
-> line 1917, so I guess something must happened between the calls.
+> Changes since v2:
+> -fixed missing includes in DT binding example
+> -fixed phy_init and phy_power_on error handling/cleanup, moved
+> phy_power_on to open rather than probe
 > 
-> Do we have KASAN in IBM machine? would KASAN help us find out what
-> happened in between?
+> [...]
 
-Unfortunately, KASAN is not support on Power, I have, as far as I can 
-see. From `arch/powerpc/Kconfig`:
+Here is the summary with links:
+  - [net-next,v4,1/3] dt-bindings: net: cdns,macb: added generic PHY and reset mappings for ZynqMP
+    https://git.kernel.org/netdev/net-next/c/f4ea385a16c5
+  - [net-next,v4,2/3] net: macb: Added ZynqMP-specific initialization
+    https://git.kernel.org/netdev/net-next/c/8b73fa3ae02b
+  - [net-next,v4,3/3] arm64: dts: zynqmp: Added GEM reset definitions
+    https://git.kernel.org/netdev/net-next/c/e461bd6f43f4
 
-         select HAVE_ARCH_KASAN                  if PPC32 && 
-PPC_PAGE_SHIFT <= 14
-         select HAVE_ARCH_KASAN_VMALLOC          if PPC32 && 
-PPC_PAGE_SHIFT <= 14
-
-> Hope I can be of more helpful.
-
-Some distributions support multi-arch, so they easily allow 
-crosscompiling for different architectures.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Kind regards,
-
-Paul
