@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98E044A32A7
+	by mail.lfdr.de (Postfix) with ESMTP id E2AE54A32A8
 	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 00:40:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353454AbiA2XkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jan 2022 18:40:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60114 "EHLO
+        id S1353459AbiA2XkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jan 2022 18:40:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353451AbiA2XkK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 18:40:10 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4175C061741
-        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 15:40:09 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id oa14-20020a17090b1bce00b001b61aed4a03so8673342pjb.5
-        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 15:40:09 -0800 (PST)
+        with ESMTP id S1353450AbiA2XkL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 18:40:11 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EE25C061714
+        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 15:40:11 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id s2-20020a17090ad48200b001b501977b23so14482226pju.2
+        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 15:40:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=fastly.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=5DfdEyld7StyWrFrpQh0H8+Y2uMglsDtEWNNoHSX1Uo=;
-        b=gaESIkclZWnWP67b8XocjXdfrgEqYGcIF2PUxbuovu52gXsAU+ol5/vJg+wA4PBH7s
-         QaUxhStioE9ukZgotQndKH1jQnYZ/xxu4W/BhZg2oiBQVhXB+ZKX+ck12Lhe58m5AQcu
-         g+Po1IWMOTwGUirdyLm6TDz44oPQlrkXFYPu8=
+        bh=NTd7TBI6abPTmN3I9QjdcpJvF3jv9TVetLryoOk/zcc=;
+        b=l6+WAZ1J1v9m0go2oG3ydFUB9vs2JlU+N8bbFq7akudwLtdCKuS4HFcjwrOUFUbUGm
+         1d7khlrkm7ok3VivLRe5osmCuMedNF4vYI5xROoly71XiVEwbZnA6Dsw2HFJDvNi07xg
+         hsWHE6Tw9EumLJWae+B7Ib59vsUK7w8xzeIc8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=5DfdEyld7StyWrFrpQh0H8+Y2uMglsDtEWNNoHSX1Uo=;
-        b=kRmY2YP/lk2HHryoxku/i29vSlg/lTHVa0IcZEbdEyeCgE7Ucda1M3bWtWA7Of6UbG
-         mIpj62btUjx6fAAweQ/MsfhUtKOSB+o3I1uuDPMpuIwqNDusYkd0yGzJYtptk7YzwQ2e
-         r2vw6LaVvozUd+9+2DLFcHQYlr0DaxxExR6+ZhRLmbI3/nHdCN7hSdNI7YPEc/259GzO
-         UtzcW0GK4UVHmk38sLjRPARXKerDcsc+sWN59ckPfEdHBId1OUuUv3UmeYI+Z7LCQDX1
-         r4KgPxgpYwKEzYA7ZegZvPBw4wK54mT7Ef/tGynUggDyKjSQEi3x6ex8MFNy8hZoz3pE
-         mdRA==
-X-Gm-Message-State: AOAM530Dr7qAmW6rlJ+RtPJdDMj2eb2+hJZBk6w0f1SNEvkmBq6nsdDD
-        U9DMUqvKCKHJZIqnQrOKXVUMf5mFaDy/7C/IJgvVTpJOvS5f44t4XNf/mssBAd5zBsnpaMnUU+q
-        TihbGWTZUVOVhFeGVUuQXS34CnwUFLPTiv63pTTejBx+SZtn/nbj1KY2peNfTb7uHIqbO
-X-Google-Smtp-Source: ABdhPJz1xIttczSbe4Nq5We3OJoNLXyut6taib8t5UQ+uAKlGeBCVNANLSaXqSaINNAKYO2QQ+Tsnw==
-X-Received: by 2002:a17:90a:601:: with SMTP id j1mr27292526pjj.192.1643499608831;
-        Sat, 29 Jan 2022 15:40:08 -0800 (PST)
+        bh=NTd7TBI6abPTmN3I9QjdcpJvF3jv9TVetLryoOk/zcc=;
+        b=eyH92HSNVlSmyzCn2ma84SQy+3YmON/3pgaD4rUjtNi8AZgiU+AACpID5w7zae8g3Y
+         7kN5MfJd4FY98GEupK3/sbOEqmzgD35wGfAFcBRRXvuwVv0tmcHQ0HhR0OQ2WIxFxldw
+         1HfnLYOTZiz9h6lSEevn5GgNh7BJqC91AY1YamHKtdl/oAU4FKOq8+wfNvnE7GUc1BLA
+         wzB8Z0KwPrJAIMdgvIk+pdvjGMHAuboPwux7vrslnGgN77rBIY/eTnwyZuBAdn/3XCFZ
+         mZ5FWKD/eFb49eaWthpdS4+h/h3QxOycmElmHLqjLUF8LbfB1o6IvHiR99K9LAHPFGtp
+         kb2A==
+X-Gm-Message-State: AOAM532b79dDFyl4ulhd1UgtxcBOmx0zZ3u8eRqo0UKBFgyw9fpTTTTZ
+        4MBOrbVfCHSKsXDmOThBmM9LrpIhPc6gQ8RuL8DpeO4apQQlwUAplfK/pXkxSuQwKlvJ5l7uW69
+        JWxUv/H8YH0ozM9Vl8XScCfxBeGzApRYcbKW6Ckc87DcLzIfO3N+zfhiwh6dyy+f67YsE
+X-Google-Smtp-Source: ABdhPJxBS71uCTS/7KDQjnP5KQLaQVhJ8bFMbshYbSP4uMBa84i8924bTYJkDp19EXyWPkWse5CvJQ==
+X-Received: by 2002:a17:90b:4b88:: with SMTP id lr8mr27032837pjb.166.1643499610430;
+        Sat, 29 Jan 2022 15:40:10 -0800 (PST)
 Received: from localhost.localdomain (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
-        by smtp.gmail.com with ESMTPSA id gb5sm6573276pjb.16.2022.01.29.15.40.07
+        by smtp.gmail.com with ESMTPSA id gb5sm6573276pjb.16.2022.01.29.15.40.08
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 29 Jan 2022 15:40:08 -0800 (PST)
+        Sat, 29 Jan 2022 15:40:09 -0800 (PST)
 From:   Joe Damato <jdamato@fastly.com>
 To:     netdev@vger.kernel.org, kuba@kernel.org,
         ilias.apalodimas@linaro.org, davem@davemloft.net, hawk@kernel.org
 Cc:     Joe Damato <jdamato@fastly.com>
-Subject: [net-next v2 04/10] page_pool: Add stat tracking fast path allocations
-Date:   Sat, 29 Jan 2022 15:38:54 -0800
-Message-Id: <1643499540-8351-5-git-send-email-jdamato@fastly.com>
+Subject: [net-next v2 05/10] page_pool: Add slow path order 0 allocation stat
+Date:   Sat, 29 Jan 2022 15:38:55 -0800
+Message-Id: <1643499540-8351-6-git-send-email-jdamato@fastly.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1643499540-8351-1-git-send-email-jdamato@fastly.com>
 References: <1643499540-8351-1-git-send-email-jdamato@fastly.com>
@@ -58,40 +58,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a counter to track successful fast-path allocations.
+Track order 0 allocations in the slow path which cause an interaction with
+the buddy allocator.
 
 Signed-off-by: Joe Damato <jdamato@fastly.com>
 ---
- include/net/page_pool.h | 3 +++
- net/core/page_pool.c    | 1 +
- 2 files changed, 4 insertions(+)
+ include/net/page_pool.h | 1 +
+ net/core/page_pool.c    | 6 ++++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index dae65f2..96949ad 100644
+index 96949ad..ab67e86 100644
 --- a/include/net/page_pool.h
 +++ b/include/net/page_pool.h
-@@ -142,6 +142,9 @@ struct page_pool {
-  * stats for tracking page_pool events.
-  */
+@@ -144,6 +144,7 @@ struct page_pool {
  struct page_pool_stats {
-+	struct {
-+		u64 fast; /* fast path allocations */
-+	} alloc;
+ 	struct {
+ 		u64 fast; /* fast path allocations */
++		u64 slow; /* slow-path order-0 allocations */
+ 	} alloc;
  };
  
- DECLARE_PER_CPU_ALIGNED(struct page_pool_stats, page_pool_stats);
 diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index b1a2599..6f692d9 100644
+index 6f692d9..554a40e 100644
 --- a/net/core/page_pool.c
 +++ b/net/core/page_pool.c
-@@ -180,6 +180,7 @@ static struct page *__page_pool_get_cached(struct page_pool *pool)
- 	if (likely(pool->alloc.count)) {
- 		/* Fast-path */
- 		page = pool->alloc.cache[--pool->alloc.count];
-+		page_pool_stat_alloc_inc(fast);
- 	} else {
- 		page = page_pool_refill_alloc_cache(pool);
+@@ -308,10 +308,12 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
  	}
+ 
+ 	/* Return last page */
+-	if (likely(pool->alloc.count > 0))
++	if (likely(pool->alloc.count > 0)) {
+ 		page = pool->alloc.cache[--pool->alloc.count];
+-	else
++		page_pool_stat_alloc_inc(slow);
++	} else {
+ 		page = NULL;
++	}
+ 
+ 	/* When page just alloc'ed is should/must have refcnt 1. */
+ 	return page;
 -- 
 2.7.4
 
