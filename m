@@ -2,87 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 394F84A3084
-	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 17:22:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FC2F4A30C5
+	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 17:44:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352208AbiA2QWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jan 2022 11:22:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49322 "EHLO
+        id S1352803AbiA2QoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jan 2022 11:44:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242424AbiA2QWT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 11:22:19 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523FEC061714
-        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 08:22:19 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id y15so17827686lfa.9
-        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 08:22:19 -0800 (PST)
+        with ESMTP id S243327AbiA2QoR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 11:44:17 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B255C061714;
+        Sat, 29 Jan 2022 08:44:17 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id z5so8857353plg.8;
+        Sat, 29 Jan 2022 08:44:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=5rb2bYUGOsznXSQW2SbmZuAdFHz29bFHdL1+tYXBjRE=;
-        b=xyjzk67oTRcgtPhJGd7tLSYTTLRfEbpi//R7oE1aHRWfa1QgcQp/WV7AJ/R9C5TMKT
-         XJ/LwSs94kqzWcdAJaL9ukFL3gYOLRt3IxqwmcvrBdhGf75VQhuMYtNW8QKUU+gAkm5M
-         j180E8WNi414CAKfHgyjOkQqLM9wgnpxMFDcYix7Smx23fet/qFzudGUEwyqYRky0bbn
-         pWF6X8CLsVb4TmjrT7DJ5Q3ZiVJT96nlnZgzU1dVgQTinmFACr5f05rX3PQDJV1e3f+u
-         6l/Y8Be9t4F/OFstrmIrgjdYmERfTEUnPhp9I9ZWlJq5vso8lJeq/WUHkLh5u1IqCsPq
-         maWQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rc8EcuHrpVK/y37fKO3dTVt7uQivqrB0dxVBiWrZE24=;
+        b=cozgJuef4hZxJaExMhIiuTHhdnTWr3Eu0eW7x6yX3gUhv6ZPPJ8saSkpQug5Y6F3Vd
+         lGjdRoSqyqYonMkss4uzmHreRX6xQVvJ7rCegZlDbMqH5zBi/kjLdJa/drcAIXiE0hrI
+         6t++53V7dMfLQZr1QMrEe3dthzeLW+2NjHfA1IPNGJTf41+P+F6ySpGy0Gh8NFa5IfXR
+         Oq+8lS1PPqs4ZAbBcJoIQWQCbtfRnzZAiNACmlXqsDf1h38zPGIdM58EB33Mv5NDQakJ
+         AtWoifRLJEgpgLcSvKcEplrw5Hl2t3twGyphWOkLAkVNE6fjshOzgrQ2VelHnPSGF4zO
+         J4Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=5rb2bYUGOsznXSQW2SbmZuAdFHz29bFHdL1+tYXBjRE=;
-        b=Qq2+7ryzlJbE73+rfzFkGsMwSu/9kAxJh7o163GBol6PuRQo4OFIUdkyuZm/AbewnM
-         Jhztv9EnducEdc7XmmecXGQEcI8TzZlbfMRR0cwqRfVJenfoCkhUtb9HrfaK7kLw6lN+
-         Esuz8MvLe9bFv4CYpo1GkynDOW/A/VwnjY3c9zoRONR4Gnk/KIoLHuWOF2K/M8csgzIu
-         zBSk/W+OfS7ZjsGZg2JRLXZyZ/uCZr8EB2sEX3HmESv8etaZfA+JW9R78OQmy5LElvmF
-         LI11fuXbqwxfTHF3uoKAHuiN/2wcYl75rIM9YnESrGH/yOe/fmtIl3r5UKyD8cLs3wQi
-         CJXQ==
-X-Gm-Message-State: AOAM531R3UZhSwzPEYkIr7LIW6eBJNBGb+8aj8z13yPumCmVNAG9SKKF
-        7A9pcTsTWs5OjOjRGboZeKr8kw==
-X-Google-Smtp-Source: ABdhPJzIZNvcLjZkozB6mcFfZUdLmxqeYij3PD8XD5vhpivDm86V/WTKy69WAarSKYUO8136NCRbww==
-X-Received: by 2002:a05:6512:e87:: with SMTP id bi7mr9946776lfb.550.1643473337320;
-        Sat, 29 Jan 2022 08:22:17 -0800 (PST)
-Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
-        by smtp.gmail.com with ESMTPSA id bq7sm2928931lfb.210.2022.01.29.08.22.15
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rc8EcuHrpVK/y37fKO3dTVt7uQivqrB0dxVBiWrZE24=;
+        b=FMU4na8ce2Q2QHeMWpm556XVn1ZJnmTeghHzdKGgB3QuUl3EPA7L+XuxI7iHHOKZmW
+         yxRUZTOHfZKyNo2G6Ylxk1ZNL3kIzp7wWLSviPGCuinRZMFl3Ut8J9Q6nLo1052anMED
+         95bnJi1JCM83XyreOZ+94ysp+mWb524bMAf3XgPgDpszwa7uMMsyzAA62W2da1c3SSwP
+         361/c2cJmnx56AztTxGq024I/B/wDb0waxd/hP0rIObFtOUVwCxAHoKMJR3B2aDEoczD
+         wglZKViO7Sziqih+44d0zqJBmLKHSr+WgICRifCePTQ50uwjsqC6imk9TrLs7VePLZ12
+         qDCQ==
+X-Gm-Message-State: AOAM532cOlvg6ncItyq4xGFRzGGRNmrsQETpCoN7Ex8eKZhAmO7faX4y
+        S4jXQLhAZMOrT0SeS7BwFwqYjaLBYEL2qQ==
+X-Google-Smtp-Source: ABdhPJyotzLeBHZ5BE3ny/lal0L2utOhWu1/HR9jc9Gp2DV9JjVevqoPDC6VKQpzqyjP2saNxUDiMQ==
+X-Received: by 2002:a17:902:d483:: with SMTP id c3mr13821273plg.141.1643474656674;
+        Sat, 29 Jan 2022 08:44:16 -0800 (PST)
+Received: from localhost.localdomain (111-243-37-162.dynamic-ip.hinet.net. [111.243.37.162])
+        by smtp.gmail.com with ESMTPSA id y193sm13770337pfb.7.2022.01.29.08.44.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Jan 2022 08:22:16 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Wei Yongjun <weiyongjun1@huawei.com>, weiyongjun1@huawei.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Markus Koch <markus@notsyncing.net>
-Cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Hulk Robot <hulkci@huawei.com>
-Subject: Re: [PATCH net-next] net/fsl: xgmac_mdio: fix return value check in
- xgmac_mdio_probe()
-In-Reply-To: <20220129012702.3220704-1-weiyongjun1@huawei.com>
-References: <20220129012702.3220704-1-weiyongjun1@huawei.com>
-Date:   Sat, 29 Jan 2022 17:22:15 +0100
-Message-ID: <87czkabjgo.fsf@waldekranz.com>
+        Sat, 29 Jan 2022 08:44:16 -0800 (PST)
+From:   Joseph CHAMG <josright123@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joseph CHANG <josright123@gmail.com>,
+        joseph_chang@davicom.com.tw
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com,
+        andrew@lunn.ch, leon@kernel.org
+Subject: [PATCH v16, 0/2] ADD DM9051 ETHERNET DRIVER
+Date:   Sun, 30 Jan 2022 00:43:44 +0800
+Message-Id: <20220129164346.5535-1-josright123@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 29, 2022 at 01:27, Wei Yongjun <weiyongjun1@huawei.com> wrote:
-> In case of error, the function devm_ioremap() returns NULL pointer
-> not ERR_PTR(). The IS_ERR() test in the return value check should
-> be replaced with NULL test.
->
-> Fixes: 1d14eb15dc2c ("net/fsl: xgmac_mdio: Use managed device resources")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+DM9051 is a spi interface chip,
+need cs/mosi/miso/clock with an interrupt gpio pin
 
-Reviewed-by: Tobias Waldekranz <tobias@waldekranz.com>
+Joseph CHAMG (1):
+  net: Add dm9051 driver
 
-Sorry about that. I started out by using devm_ioremap_resource, which
-uses the in-band error signaling, and forgot to match the guard when I
-changed it.
+JosephCHANG (1):
+  yaml: Add dm9051 SPI network yaml file
 
-I see that this was reported by your CI, do you mind me asking what it
-is running in the back-end? At least my version of sparse does not seem
-to catch this.
+ .../bindings/net/davicom,dm9051.yaml          |   62 +
+ drivers/net/ethernet/davicom/Kconfig          |   31 +
+ drivers/net/ethernet/davicom/Makefile         |    1 +
+ drivers/net/ethernet/davicom/dm9051.c         | 1165 +++++++++++++++++
+ drivers/net/ethernet/davicom/dm9051.h         |  159 +++
+ 5 files changed, 1418 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/davicom,dm9051.yaml
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.c
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.h
+
+
+base-commit: 9d922f5df53844228b9f7c62f2593f4f06c0b69b
+-- 
+2.20.1
+
