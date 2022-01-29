@@ -2,168 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9F474A2BA0
-	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 05:37:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99C684A2C0E
+	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 06:58:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352372AbiA2EhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 23:37:22 -0500
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:50572 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230242AbiA2EhV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 23:37:21 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R461e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V35ExhL_1643431037;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V35ExhL_1643431037)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sat, 29 Jan 2022 12:37:18 +0800
-Date:   Sat, 29 Jan 2022 12:37:17 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     "D. Wythe" <alibuda@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org, matthieu.baerts@tessares.net
-Subject: Re: [PATCH v2 net-next 2/3] net/smc: Limits backlog connections
-Message-ID: <YfTEfWBSCsxK0zyF@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <cover.1643380219.git.alibuda@linux.alibaba.com>
- <e22553bd881bcc3b455bad9d77b392ca3ced5c6e.1643380219.git.alibuda@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e22553bd881bcc3b455bad9d77b392ca3ced5c6e.1643380219.git.alibuda@linux.alibaba.com>
+        id S238920AbiA2F6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jan 2022 00:58:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53946 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238600AbiA2F6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 00:58:22 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3924AC061714
+        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 21:58:21 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id n198-20020a2540cf000000b00614c2ee23b7so16625274yba.9
+        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 21:58:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=OH2UJLHBmix7P6Lxls+8L2QjljD4+AgEDIvX54uxAqs=;
+        b=mjpJ/cvwOOqb/Lnw8nLIEMxtRUa3ZvPR59eG07Sc6HWZ/hDcE3zPAERZkSoYxO3o0e
+         VP4XHXTDR0JTykLB8NQFOZVR0UTktdO3E4TUIeQEUcTDBFN0V8bz30q9HHGwQkOGvC0Q
+         jd9QV+masPCfNdxNeXmXb0SLtMDQK0h7lHFvnGW1GrF6APlL7MS4paIlVQ64ru6fWMn0
+         UYBLaQvIYJL6iadoUGu5vGuARDBDFxM/JJrA+NpPRDDRcVx9tcrXtUU1kzj67FhMzqE7
+         llBj1vTyBwd1u4DCPlbeZf6IqIZCRjXtg78Z29ETB069JyDrr7NNZdbjiT+7rKt1GBz4
+         mTIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=OH2UJLHBmix7P6Lxls+8L2QjljD4+AgEDIvX54uxAqs=;
+        b=INlzJhVcE/Aucf5JbGtF4K5okGFRDDRF9dVCQdhqgwW2qUeuMYX47A/WDVdkVk1vlV
+         BXTcrO8msVBXWSvcnLBvGH2LUDPbT2Iq8BGhNsxHf5re5I5U4ps0yPneaEE7oKfFy9PH
+         un8t5F82bhnGRaYq4RoNR0DVCvLyH/bV8ZV51nkywV/f8N3+7us67Wg+FHePotOAZh5V
+         GanMjnrvsv9+qgzC7YrYvdXj7uCr9NepWp4h8upOD0ZBN1EVKxndOeO2dA3kIrKiGgLp
+         BVfXk9yhmfeF4hGFfHdMtWJH0uWjJJMGRkeez8gxdUCva1N0g5S9TpPZVDFKq4YIERhx
+         rsVw==
+X-Gm-Message-State: AOAM532rsY2bdTHIO1TT3Y6go+zCbZBj79ggfJNqOJb8eqCPYWqwEFy0
+        1TlEb1rFMWMWYPpO227k4L2isJf4ysXgemHv1B3d6MdnlUqfPCcTY741rOz9bkldDfEGMr9AmAw
+        gzNqb7QsAGl2qBzCQQ6oPI8oS8OwGJdUv7FTBTe+mwOWR/aiVWun3iUj6rp8tIOwQ
+X-Google-Smtp-Source: ABdhPJxjuGkc9nOjWTIoEzrwhJPQ8EI9TtZEYNrD2UeJeDXCISYdhaxwT7ATZ6NV4BrTtnw8oAlcwIEG8Fph
+X-Received: from coldfire2.svl.corp.google.com ([2620:15c:2c4:201:bdf1:aadb:57a:fc76])
+ (user=maheshb job=sendgmr) by 2002:a25:1845:: with SMTP id
+ 66mr4239230yby.196.1643435900317; Fri, 28 Jan 2022 21:58:20 -0800 (PST)
+Date:   Fri, 28 Jan 2022 21:58:15 -0800
+Message-Id: <20220129055815.694469-1-maheshb@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
+Subject: [PATCH v2 net-next] bonding: pair enable_port with slave_arr_updates
+From:   Mahesh Bandewar <maheshb@google.com>
+To:     Netdev <netdev@vger.kernel.org>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Veaceslav Falico <vfalico@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mahesh Bandewar <mahesh@bandewar.net>,
+        Mahesh Bandewar <maheshb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 10:44:37PM +0800, D. Wythe wrote:
-> From: "D. Wythe" <alibuda@linux.alibaba.com>
-> 
-> Current implementation does not handling backlog semantics, one
-> potential risk is that server will be flooded by infinite amount
-> connections, even if client was SMC-incapable.
-> 
-> This patch works to put a limit on backlog connections, referring to the
-> TCP implementation, we divides SMC connections into two categories:
-> 
-> 1. Half SMC connection, which includes all TCP established while SMC not
-> connections.
-> 
-> 2. Full SMC connection, which includes all SMC established connections.
-> 
-> For half SMC connection, since all half SMC connections starts with TCP
-> established, we can achieve our goal by put a limit before TCP
-> established. Refer to the implementation of TCP, this limits will based
-> on not only the half SMC connections but also the full connections,
-> which is also a constraint on full SMC connections.
-> 
-> For full SMC connections, although we know exactly where it starts, it's
-> quite hard to put a limit before it. The easiest way is to block wait
-> before receive SMC confirm CLC message, while it's under protection by
-> smc_server_lgr_pending, a global lock, which leads this limit to the
-> entire host instead of a single listen socket. Another way is to drop
-> the full connections, but considering the cast of SMC connections, we
-> prefer to keep full SMC connections.
-> 
-> Even so, the limits of full SMC connections still exists, see commits
-> about half SMC connection below.
-> 
-> After this patch, the limits of backend connection shows like:
-> 
-> For SMC:
-> 
-> 1. Client with SMC-capability can makes 2 * backlog full SMC connections
->    or 1 * backlog half SMC connections and 1 * backlog full SMC
->    connections at most.
-> 
-> 2. Client without SMC-capability can only makes 1 * backlog half TCP
->    connections and 1 * backlog full TCP connections.
-> 
-> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
-> ---
-> changelog:
-> v2: fix compile warning
-> ---
->  net/smc/af_smc.c | 43 +++++++++++++++++++++++++++++++++++++++++++
->  net/smc/smc.h    |  4 ++++
->  2 files changed, 47 insertions(+)
-> 
-> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-> index 1b40304..66a0e64 100644
-> --- a/net/smc/af_smc.c
-> +++ b/net/smc/af_smc.c
-> @@ -73,6 +73,34 @@ static void smc_set_keepalive(struct sock *sk, int val)
->  	smc->clcsock->sk->sk_prot->keepalive(smc->clcsock->sk, val);
->  }
->  
-> +static struct sock *smc_tcp_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
-> +					  struct request_sock *req,
-> +					  struct dst_entry *dst,
-> +					  struct request_sock *req_unhash,
-> +					  bool *own_req)
-> +{
-> +	struct smc_sock *smc;
-> +
-> +	smc = (struct smc_sock *)((uintptr_t)sk->sk_user_data & ~SK_USER_DATA_NOCOPY);
-> +
-> +	if (READ_ONCE(sk->sk_ack_backlog) + atomic_read(&smc->smc_pendings) >
-> +				sk->sk_max_ack_backlog)
-> +		goto drop;
-> +
-> +	if (sk_acceptq_is_full(&smc->sk)) {
-> +		NET_INC_STATS(sock_net(sk), LINUX_MIB_LISTENOVERFLOWS);
-> +		goto drop;
-> +	}
-> +
-> +	/* passthrough to origin syn recv sock fct */
-> +	return smc->ori_af_ops->syn_recv_sock(sk, skb, req, dst, req_unhash, own_req);
+When 803.2ad mode enables a participating port, it should update
+the slave-array. I have observed that the member links are participating
+and are part of the active aggregator while the traffic is egressing via
+only one member link (in a case where two links are participating). Via
+krpobes I discovered that that slave-arr has only one link added while
+the other participating link wasn't part of the slave-arr.
 
-I am wondering if there would introduce more overhead, compared with
-original implement?
+I couldn't see what caused that situation but the simple code-walk
+through provided me hints that the enable_port wasn't always associated
+with the slave-array update.
 
-> +
-> +drop:
-> +	dst_release(dst);
-> +	tcp_listendrop(sk);
-> +	return NULL;
-> +}
-> +
->  static struct smc_hashinfo smc_v4_hashinfo = {
->  	.lock = __RW_LOCK_UNLOCKED(smc_v4_hashinfo.lock),
->  };
-> @@ -1491,6 +1519,9 @@ static void smc_listen_out(struct smc_sock *new_smc)
->  	struct smc_sock *lsmc = new_smc->listen_smc;
->  	struct sock *newsmcsk = &new_smc->sk;
->  
-> +	if (tcp_sk(new_smc->clcsock->sk)->syn_smc)
-> +		atomic_dec(&lsmc->smc_pendings);
-> +
->  	if (lsmc->sk.sk_state == SMC_LISTEN) {
->  		lock_sock_nested(&lsmc->sk, SINGLE_DEPTH_NESTING);
->  		smc_accept_enqueue(&lsmc->sk, newsmcsk);
-> @@ -2096,6 +2127,9 @@ static void smc_tcp_listen_work(struct work_struct *work)
->  		if (!new_smc)
->  			continue;
->  
-> +		if (tcp_sk(new_smc->clcsock->sk)->syn_smc)
-> +			atomic_inc(&lsmc->smc_pendings);
-> +
->  		new_smc->listen_smc = lsmc;
->  		new_smc->use_fallback = lsmc->use_fallback;
->  		new_smc->fallback_rsn = lsmc->fallback_rsn;
-> @@ -2163,6 +2197,15 @@ static int smc_listen(struct socket *sock, int backlog)
->  	smc->clcsock->sk->sk_data_ready = smc_clcsock_data_ready;
->  	smc->clcsock->sk->sk_user_data =
->  		(void *)((uintptr_t)smc | SK_USER_DATA_NOCOPY);
-> +
-> +	/* save origin ops */
-> +	smc->ori_af_ops = inet_csk(smc->clcsock->sk)->icsk_af_ops;
-> +
-> +	smc->af_ops = *smc->ori_af_ops;
-> +	smc->af_ops.syn_recv_sock = smc_tcp_syn_recv_sock;
-> +
-> +	inet_csk(smc->clcsock->sk)->icsk_af_ops = &smc->af_ops;
+Change-Id: I6c9ed91b027d53580734f1198579e71deee60bbf
+Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+---
+ drivers/net/bonding/bond_3ad.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Consider to save syn_recv_sock this field only? There seems no need to
-save this ops all.
+diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+index 6006c2e8fa2b..4d876bfa0c00 100644
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -1021,8 +1021,9 @@ static void ad_mux_machine(struct port *port, bool *update_slave_arr)
+ 				if (port->aggregator &&
+ 				    port->aggregator->is_active &&
+ 				    !__port_is_enabled(port)) {
+-
+ 					__enable_port(port);
++					/* Slave array needs update */
++					*update_slave_arr = true;
+ 				}
+ 			}
+ 			break;
+@@ -1779,6 +1780,8 @@ static void ad_agg_selection_logic(struct aggregator *agg,
+ 			     port = port->next_port_in_aggregator) {
+ 				__enable_port(port);
+ 			}
++			/* Slave array needs update. */
++			*update_slave_arr = true;
+ 		}
+ 	}
+ 
+-- 
+2.35.0.rc2.247.g8bbb082509-goog
 
-Thank you,
-Tony Lu
