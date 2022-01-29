@@ -2,72 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1338A4A2A7A
-	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 01:14:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E76AB4A2AE9
+	for <lists+netdev@lfdr.de>; Sat, 29 Jan 2022 02:14:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346201AbiA2AOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jan 2022 19:14:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344659AbiA2AOp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 19:14:45 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28566C061714
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 16:14:45 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id c6so23286154ybk.3
-        for <netdev@vger.kernel.org>; Fri, 28 Jan 2022 16:14:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JlX1DFysl5yN+QKlRU9bEi86sJNl5gNacm9fEWk0J24=;
-        b=lzq3466kIPq2aR927eiKxclCahE3IXthSrSrgYqRznEHTqS8gBIpwyR1K2OlRY2olK
-         No3gnJ3qcbWi7QmhLVzhlfBS7M1hlnv0JiuEmEYuP2pUug38EIHpOXyzl9BVAI0TbwXz
-         hK2NARefoo2rcM7jSDpXVnuZCOOF2dLFm7l/MpWefimML7tH0+HmdZZfbi+tJRQUKtm+
-         IZOIuG2KabpQRg2siMGnULl87WXLUeUojmB7dYz1ODG4Vkp854VijTtzHoaSCFMDvnhG
-         1o3K0yyMvmTF+xL715MRcvmQaKUfQlX3w0CRp99LiLzt2DL2Kryy0WWL6wpcI6UDAHH2
-         Ni4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JlX1DFysl5yN+QKlRU9bEi86sJNl5gNacm9fEWk0J24=;
-        b=DXkMDQMZ4vKsO0CvtVyBPB9uy7HuEXLxmSuAarYlsZVBZE6j9Gqjd0QQNvzEI0eGev
-         e9xKGFf+mOmIaqViULtonWYbREPwvWFxBzBUCOAkDwfHKxw2JfWNDfVjAvFu1nSeMSjM
-         X33fQ0ydqQ8DRxpzjM7TyDcXQbeFjTuCCk/PmX3xihFB3l1kSBskEn1GhhxWobX3iSza
-         FFRAOCZDSUCv4nL7raRSl0HcYpwjPvPH3H3QYdzyi6H/tLhl9muuL+POFhryAhJCk4fb
-         2tMOucWeOTU1zIA+4aTte7A8aQe4/ZGNIvxvTAXl8PMJHbllijX9tvWXWQNlFP7fdZKo
-         egNA==
-X-Gm-Message-State: AOAM530WzWsWQdCcn/GKgAZo1rGO3dLRRQQMnkSGzLDS+yTLKHBnfhwe
-        KbCJBCoR6dvAdv1NfC7GFOa/a1XA5YhonJrd/qZotPpy93QsblDJ
-X-Google-Smtp-Source: ABdhPJwcQuSG88CE9GvvOxG4cOBWY8MV2KaGgATRd/NvywlkfXA8ztMM8x3SfnE8d81xCZn3K2iNu8uzCRhJwIDIqZo=
-X-Received: by 2002:a25:d988:: with SMTP id q130mr16064071ybg.711.1643415283884;
- Fri, 28 Jan 2022 16:14:43 -0800 (PST)
+        id S1351999AbiA2BOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jan 2022 20:14:19 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:32130 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229812AbiA2BOS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jan 2022 20:14:18 -0500
+Received: from kwepemi100001.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Jlx9J2Y0Rz8wWp;
+        Sat, 29 Jan 2022 09:11:16 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi100001.china.huawei.com (7.221.188.215) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 29 Jan 2022 09:14:16 +0800
+Received: from [10.67.102.67] (10.67.102.67) by kwepemm600016.china.huawei.com
+ (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 29 Jan
+ 2022 09:14:15 +0800
+Subject: Re: [RESEND PATCH net-next 2/2] net: hns3: add ethtool priv-flag for
+ TX push
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <wangjie125@huawei.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <chenhao288@hisilicon.com>
+References: <20220125072149.56604-1-huangguangbin2@huawei.com>
+ <20220125072149.56604-3-huangguangbin2@huawei.com>
+ <20220125195508.585b0c40@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
+Message-ID: <2b7029d4-c1a7-93af-1846-7b91703f9edf@huawei.com>
+Date:   Sat, 29 Jan 2022 09:14:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20220128235347.40666-1-dsahern@kernel.org>
-In-Reply-To: <20220128235347.40666-1-dsahern@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 28 Jan 2022 16:14:32 -0800
-Message-ID: <CANn89iJi7nhw0qXmF1D9=gqRW27NezPUQ_neC2nvfuYnnFycyg@mail.gmail.com>
-Subject: Re: [PATCH net-next] ipv4: Make ip_idents_reserve static
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220125195508.585b0c40@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.67]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 3:53 PM David Ahern <dsahern@kernel.org> wrote:
->
-> ip_idents_reserve is only used in net/ipv4/route.c. Make it static
-> and remove the export.
->
-> Signed-off-by: David Ahern <dsahern@kernel.org>
-> Cc: Eric Dumazet <edumazet@google.com>
-> ---
 
-Thanks, this came after
 
-commit 62f20e068ccc ipv6: use prandom_u32() for ID generation
-
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+On 2022/1/26 11:55, Jakub Kicinski wrote:
+> On Tue, 25 Jan 2022 15:21:49 +0800 Guangbin Huang wrote:
+>> From: Yufeng Mo <moyufeng@huawei.com>
+>>
+>> Add a control private flag in ethtool for enable/disable
+>> TX push feature.
+> 
+> I think it's a pretty standard feature for NICs which also support RDMA.
+> Mellanox/nVidia has it (or at least it the previous gen HW did),
+> Broadcom's bnxt driver does it as well.
+> 
+> Can we make this a standard knob via ethtool? Not entirely sure under
+> which switch, maybe it's okay to add it under -g? Perhaps we need a new
+> command similar to -k but for features contained entirely to the driver?
+> .
+> 
+Hi Jakub,
+We consider adding a new command for this feature. We will send RFC after we finish it.
