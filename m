@@ -2,102 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D85AB4A3380
-	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 04:24:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C8564A33FD
+	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 05:39:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346550AbiA3DYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jan 2022 22:24:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52228 "EHLO
+        id S1353821AbiA3EjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jan 2022 23:39:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233631AbiA3DYe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 22:24:34 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89745C061714;
-        Sat, 29 Jan 2022 19:24:34 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id x11so9601131plg.6;
-        Sat, 29 Jan 2022 19:24:34 -0800 (PST)
+        with ESMTP id S239246AbiA3EjO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 23:39:14 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC14C061714
+        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 20:39:14 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id m6so30439082ybc.9
+        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 20:39:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9FFTPRo1ckhhB49b7ONOxUt8kngEsKVIvbF1sVTmt/4=;
-        b=U89GNBjeWygL7EqhNjqrhmmPiksJpQDJKXhXK6hODoZQQJAZiELHz5SsAYNKRMnqsQ
-         4m22UVupd733icWt2/FVKrL89JZpVwnfjhMSDes/sfNJbEb5yTEhEp5RDRJgsztIgPWT
-         F5xx9rNvc1LPAo2Hfs6c5AdJnMn3vFb3iLZpCTrdTIcYSKEJrHZ0ziCB79MeBztqmXz4
-         QBOXq1iRat58ipcdw1pUcFdJbAFMJYtVdGd8c9T8WQwAv7q3RM3RzYj5oMrj359afWLh
-         kGLPaDG99xCEslQgubgLLniKmTjdAbQyHF8EQ7q6Y5e4gxeKsiQgytxMM91yGpZV4aGn
-         ubbA==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=B5teSI3NqSzeGu7ngV/22RiyR60khzQ8THYZDZ9DX3Q=;
+        b=SjzYYAeHT+gf032YjbOewqu+Khkaft+gBxjHgXj2xaPHmqHnTbl8AjW7TuU8xspZf4
+         gNv8V9fbAjr26vzJiWhyEQp8kc6udgBODVDj3ObFxaPhza/ucwN9IkdyL3QA9Xg4142O
+         GxDa8IBq889If8XIFyV+0kTrVXSd9S4+GZJw/Sqr1DOeWhbekF+gmcycxwG9oTZx2NQe
+         D1PQ4jT7DfcxzVkFRYl5KzQXBjZ5GPNMIOJHsEMJBU1NSy01xVM8iwTPP6J5FCdiYmob
+         o0/sjMn6NHdh7XH70kDQreEFlD/Oyz5RI1CsUQmCUCApCQ7O8ugVzJkoWXOZZIyKZuLw
+         mRXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9FFTPRo1ckhhB49b7ONOxUt8kngEsKVIvbF1sVTmt/4=;
-        b=0LWp3xAUbtMdIM8899fm2DrinoL6bsfkJvoDaaWBwqasRrJllBmGDclmUDmKVJ0LYt
-         RMwhCygIiQf4UIrz/hgHruyvRGA1l4IvNU3alRXpnUlA8CX6yyTsL12aYPQHXqa8Uc6f
-         1N+NYaKAvTfXw3YiknPJmiuKQdry/+tv8l2mngMjyJmgdsgW/6Qg1J7D9p9ufMkF3PUr
-         5szmDbzsCdTEWJatHpe8Ej71Fqr52hKiTg9fkm4mz4MgI4J7Z3JG0bP+1kcMpG573Ide
-         0zlUmwGRxQaHB2AGINir2mGy9Gp7zTQ7wTnA5xTnMQAgOPVWFJvN60JGucrNNaJzOuMY
-         u/1g==
-X-Gm-Message-State: AOAM533FvHgp0bw7klG8CTj0PaDmdYLzmu1CMitWlWw8tAYWsO1H70fr
-        7evFu+YVKeFsEmplwFGyYvqfUDg1G0hwiEOcS30=
-X-Google-Smtp-Source: ABdhPJww7iq0LVImSpVjIhrRV3uTdPmM26QE4/u/LWzFds87ER0EpkxN5SOIDtsWpLZSNQSMsXUbX4bmU2Kj6x4sGik=
-X-Received: by 2002:a17:902:b682:: with SMTP id c2mr14899085pls.126.1643513073847;
- Sat, 29 Jan 2022 19:24:33 -0800 (PST)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=B5teSI3NqSzeGu7ngV/22RiyR60khzQ8THYZDZ9DX3Q=;
+        b=JC8dRTo6oMAAEHcWdROhFoybdcqLaO3g4vU0LDLnUoRiG3tT5iKKCpvZITeKJTcd2m
+         sLkqUAtjA+fmjhtsQlzX7rUY7bUd1x/g2FijlRh1Z5XS+39A35lFgo+OoSWfi+gUn4k0
+         CODpJh/M+SH6B5nIkCvU6M2d1TpVEs/O7iAiVopcjTc6INdGaO95ksE3wPCuDWxgzH/R
+         XBTe5Cqp0ricP9+vncWEmtMHgUDHirHRBtFsIVKYdjxlzYqttKeSZEtl6e1CZCiJ90NM
+         79w6BmJhb1YpkAxRlX2vjPi8aBQ34dqokWffGRIRtBjFViOeAyLzvSs40VwgV22tSsqV
+         n+qg==
+X-Gm-Message-State: AOAM530+De7DHFHUEh5crb9TBMl2VTM/PIjcgcFTkfXn8nC/iNu3ARhB
+        Ll1R1lplm4kzRij/gRL9EYVw3kXT7gXFFhiwCDs=
+X-Google-Smtp-Source: ABdhPJwNCcYg8nHx9R4MZn+MMwhcAF5CAEDRf+TGwkz/pZGDR/LB3y4VsBVdfgMi60fJUO/N84sqlebimqKgDS0eSR8=
+X-Received: by 2002:a25:af52:: with SMTP id c18mr1512711ybj.19.1643517553259;
+ Sat, 29 Jan 2022 20:39:13 -0800 (PST)
 MIME-Version: 1.0
-References: <20220130030352.2710479-1-hefengqing@huawei.com>
-In-Reply-To: <20220130030352.2710479-1-hefengqing@huawei.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 29 Jan 2022 19:24:22 -0800
-Message-ID: <CAADnVQLsom4MQq2oonzfCqrHbhfg9y7YMPCk6Wg6r4bp3Su03g@mail.gmail.com>
-Subject: Re: [bpf-next] bpf: Add CAP_NET_ADMIN for sk_lookup program type
-To:     He Fengqing <hefengqing@huawei.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marek Majkowski <marek@cloudflare.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>
+Received: by 2002:a05:7010:2312:b0:201:cd76:102e with HTTP; Sat, 29 Jan 2022
+ 20:39:12 -0800 (PST)
+Reply-To: mrs.bill.chantalone01@gmail.com
+From:   "Mrs.Bill.Chantal" <grassroot309@gmail.com>
+Date:   Sun, 30 Jan 2022 05:39:12 +0100
+Message-ID: <CAO3iUMBb9OGbxso=arwoy6nyAStBDCHF9UJzyfgW_cMhoAsf6A@mail.gmail.com>
+Subject: Hello....
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 29, 2022 at 6:16 PM He Fengqing <hefengqing@huawei.com> wrote:
->
-> SK_LOOKUP program type was introduced in commit e9ddbb7707ff
-> ("bpf: Introduce SK_LOOKUP program type with a dedicated attach point"),
-> but the commit did not add SK_LOOKUP program type in net admin prog type.
-> I think SK_LOOKUP program type should need CAP_NET_ADMIN, so add SK_LOOKUP
-> program type in net_admin_prog_type.
+You have been compensated with the sum of 9.5 million dollars in this
+united nation the payment will be issue into atm visa  card and send
+to you from the santander bank we need your address and your
+Whatsapp number  + 1 6465853907  this my email.ID
+( mrs.bill.chantal.roland@gmail.com )  contact  me
 
-I'm afraid it's too late to change.
+Thanks my
 
-Jakub, Marek, wdyt?
-
-
-> Fixes: e9ddbb7707ff ("bpf: Introduce SK_LOOKUP program type with a dedicated attach point")
->
-> Signed-off-by: He Fengqing <hefengqing@huawei.com>
-> ---
->  kernel/bpf/syscall.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index 9befb1123770..2a8a4a5266fb 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -2163,6 +2163,7 @@ static bool is_net_admin_prog_type(enum bpf_prog_type prog_type)
->         case BPF_PROG_TYPE_SK_MSG:
->         case BPF_PROG_TYPE_LIRC_MODE2:
->         case BPF_PROG_TYPE_FLOW_DISSECTOR:
-> +       case BPF_PROG_TYPE_SK_LOOKUP:
->         case BPF_PROG_TYPE_CGROUP_DEVICE:
->         case BPF_PROG_TYPE_CGROUP_SOCK:
->         case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
-> --
-> 2.25.1
->
+mrs bill chantal
