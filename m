@@ -2,121 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 706FF4A36A5
-	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 15:30:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE44A4A3731
+	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 16:18:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354983AbiA3O2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Jan 2022 09:28:42 -0500
-Received: from mga14.intel.com ([192.55.52.115]:62415 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354988AbiA3O2m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 30 Jan 2022 09:28:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643552922; x=1675088922;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6AVMOcn04ZCi+J9KyCs5yeXM0u+KFFkUfqbBYPDoTOU=;
-  b=OB11U+8K5UR7HfHP7HGveEqEOFVYiEw+sNJ8Ic11v+blunem9K5G2qGJ
-   oEFrt7Ris11fq9ld5g7lBz2OeVcNcDsYSwx/jYJJ0te+IL7I3IVaPQ637
-   zeFSnKEcJYhmeBzVNjZ7pmZoHIQc8uZxY5wakvywHZ8gudk+/14C+eOma
-   z8G+f5S8Ne5UidMWn/qqdKmERbVd9nTtvHLQuNUpHsOZpwYaEWcYrkvwp
-   zBe/EutiEIY3JrnJjjoDr8sagF2s53ocCIDjF4IzMcgxMAl4OYdaDWxdz
-   fzWLOAsWRoRN3oBJXVQZJoapmZIEOUR/PWar/GjhEBm3jyGL5Qron+I7n
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10242"; a="247570399"
-X-IronPort-AV: E=Sophos;i="5.88,328,1635231600"; 
-   d="scan'208";a="247570399"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2022 06:28:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,328,1635231600"; 
-   d="scan'208";a="564686697"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 30 Jan 2022 06:28:38 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nEBC2-000QbE-9L; Sun, 30 Jan 2022 14:28:38 +0000
-Date:   Sun, 30 Jan 2022 22:27:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Paul Blakey <paulb@nvidia.com>, dev@openvswitch.org,
-        netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Pravin B Shelar <pshelar@ovn.org>, davem@davemloft.net,
-        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     kbuild-all@lists.01.org
-Subject: Re: [PATCH net-next 1/1] net/sched: Enable tc skb ext allocation on
- chain miss only when needed
-Message-ID: <202201302207.vQWCwrx8-lkp@intel.com>
-References: <20220130123141.10119-1-paulb@nvidia.com>
+        id S1355401AbiA3PSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Jan 2022 10:18:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355388AbiA3PSR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jan 2022 10:18:17 -0500
+Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 681F4C061714;
+        Sun, 30 Jan 2022 07:18:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
+        s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=uLe3+zbgWNDCe7o8/GaIi74HKEzqSq+sVOzQDKRTfp8=; b=IT/3QjsRBfNrX1y8XTauKVEIxx
+        Afh522PyiKeeuP5BtOAAo7uLeT8W9ODr3R9rHCrlEznE5patYFH0C848i997DvEBLRp3m5GI+acJz
+        hL5wWSqF9s5m9S27/k8r5v0xHNuzp8a7/nS5ySojLoht11FG/yK2/MJDSiK1PZOUDrRb1bRi104lu
+        vCE601OZV6Wi26wnNike1M6QB4nGtx3Q9VDDf1XBLXj6fybaJDftxjn0O0HAeN3UP0r6Gur4jJFvs
+        uNl3feFbLN2Rkhi0uZ2ADg2lRX6L3xs8pryL9+mnb3hycoy5R3YxkBxMGBqx1ry7NvwOgZJWD/Q9j
+        2oVXDvhg==;
+Received: from noodles by the.earth.li with local (Exim 4.94.2)
+        (envelope-from <noodles@earth.li>)
+        id 1nEBxy-00A9DP-OP; Sun, 30 Jan 2022 15:18:10 +0000
+Date:   Sun, 30 Jan 2022 15:18:10 +0000
+From:   Jonathan McDowell <noodles@earth.li>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Luo Jie <luoj@codeaurora.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Robert Marko <robimarko@gmail.com>
+Subject: Re: [PATCH net] net: phy: Fix qca8081 with speeds lower than 2.5Gb/s
+Message-ID: <YfasMniiA8wn+isu@earth.li>
+References: <YfZnmMteVry/A1XR@earth.li>
+ <YfaHWSe+FvZC7w/x@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220130123141.10119-1-paulb@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YfaHWSe+FvZC7w/x@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paul,
+On Sun, Jan 30, 2022 at 12:40:57PM +0000, Russell King (Oracle) wrote:
+> On Sun, Jan 30, 2022 at 10:25:28AM +0000, Jonathan McDowell wrote:
+> > A typo in qca808x_read_status means we try to set SMII mode on the port
+> > rather than SGMII when the link speed is not 2.5Gb/s. This results in no
+> > traffic due to the mismatch in configuration between the phy and the
+> > mac.
+> > 
+> > Fixes: 79c7bc0521545 ("net: phy: add qca8081 read_status")
+> > Signed-off-by: Jonathan McDowell <noodles@earth.li>
+> > ---
+> >  drivers/net/phy/at803x.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> > index 5b6c0d120e09..7077e3a92d31 100644
+> > --- a/drivers/net/phy/at803x.c
+> > +++ b/drivers/net/phy/at803x.c
+> > @@ -1691,7 +1691,7 @@ static int qca808x_read_status(struct phy_device *phydev)
+> >  	if (phydev->link && phydev->speed == SPEED_2500)
+> >  		phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
+> >  	else
+> > -		phydev->interface = PHY_INTERFACE_MODE_SMII;
+> > +		phydev->interface = PHY_INTERFACE_MODE_SGMII;
+> 
+> Is it intentional to set the interface to SGMII also when there is no
+> link?
 
-Thank you for the patch! Yet something to improve:
+My reading of the code is that if this was just a GigE capable phy the
+interface would be set once and never changed/unset. The only reason
+it happens here is because the link changes to support the 2.5G mode, so
+there's no problem with it defaulting to SGMII even when the external
+link isn't actually up. Perhap Luo can confirm if this is the case?
 
-[auto build test ERROR on net-next/master]
+J.
 
-url:    https://github.com/0day-ci/linux/commits/Paul-Blakey/net-sched-Enable-tc-skb-ext-allocation-on-chain-miss-only-when-needed/20220130-203224
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git ff58831fa02deb42fd731f830d8d9ec545573c7c
-config: csky-randconfig-r026-20220130 (https://download.01.org/0day-ci/archive/20220130/202201302207.vQWCwrx8-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/0bc6313c4ce18444ed88c99b19d0cb1682772988
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Paul-Blakey/net-sched-Enable-tc-skb-ext-allocation-on-chain-miss-only-when-needed/20220130-203224
-        git checkout 0bc6313c4ce18444ed88c99b19d0cb1682772988
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=csky SHELL=/bin/bash net/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> net/sched/cls_api.c:55:6: error: redefinition of 'tc_skb_ext_tc_ovs_enable'
-      55 | void tc_skb_ext_tc_ovs_enable(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from net/sched/cls_api.c:29:
-   include/net/pkt_cls.h:1037:20: note: previous definition of 'tc_skb_ext_tc_ovs_enable' with type 'void(void)'
-    1037 | static inline void tc_skb_ext_tc_ovs_enable(void) { }
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~~
->> net/sched/cls_api.c:61:6: error: redefinition of 'tc_skb_ext_tc_ovs_disable'
-      61 | void tc_skb_ext_tc_ovs_disable(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from net/sched/cls_api.c:29:
-   include/net/pkt_cls.h:1038:20: note: previous definition of 'tc_skb_ext_tc_ovs_disable' with type 'void(void)'
-    1038 | static inline void tc_skb_ext_tc_ovs_disable(void) { }
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/tc_skb_ext_tc_ovs_enable +55 net/sched/cls_api.c
-
-    54	
-  > 55	void tc_skb_ext_tc_ovs_enable(void)
-    56	{
-    57		static_branch_inc(&tc_skb_ext_tc_ovs);
-    58	}
-    59	EXPORT_SYMBOL(tc_skb_ext_tc_ovs_enable);
-    60	
-  > 61	void tc_skb_ext_tc_ovs_disable(void)
-    62	{
-    63		static_branch_dec(&tc_skb_ext_tc_ovs);
-    64	}
-    65	EXPORT_SYMBOL(tc_skb_ext_tc_ovs_disable);
-    66	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+Web [  101 things you can't have too much of : 30 - Comfy sofas.   ]
+site: https:// [                                          ]      Made by
+www.earth.li/~noodles/  [                      ]         HuggieTag 0.0.24
