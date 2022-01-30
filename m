@@ -2,67 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 883FD4A3625
-	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 13:14:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60B254A3634
+	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 13:25:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354749AbiA3MOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Jan 2022 07:14:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54292 "EHLO
+        id S1354772AbiA3MZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Jan 2022 07:25:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345500AbiA3MOh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jan 2022 07:14:37 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F22C061714
-        for <netdev@vger.kernel.org>; Sun, 30 Jan 2022 04:14:36 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id e8so20161691wrc.0
-        for <netdev@vger.kernel.org>; Sun, 30 Jan 2022 04:14:36 -0800 (PST)
+        with ESMTP id S1354766AbiA3MZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jan 2022 07:25:39 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E35C06173B
+        for <netdev@vger.kernel.org>; Sun, 30 Jan 2022 04:25:38 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id jx6so34335393ejb.0
+        for <netdev@vger.kernel.org>; Sun, 30 Jan 2022 04:25:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=cNodgbjOgXr1BDhVkjrjAzL4QZIsWT6muvz148l9XrU=;
-        b=XensoaJ+XLKX4aZ4wEo/lrJKDfh2+4A5DFMXPlC0Zzooia4urBdgUwrOu1tCWWGPjg
-         Umc7BLQZyLO+CKDOcF9/rKH/BGf0gJhAMhC09i99DijXRHM96kEvXRt/GV29QBWRJ9Ja
-         G4UYvGiKu+kQbZ1SEZs8KyVOEMn0+NMlsDw8F/ENWhEKzvu5V3wQExjZecI86Rfjr0EU
-         JvGLunFLI+2eENkflAoijlG2V74Omh2IVf4V/gHMaV5acq16zVqdGWw+/92n6jUN8atc
-         XpET2OYvZori19VP2zvFHoO3EFmQWFQnp9UFkWl+Ts94547Hec9Yh7Z+sLj0kvjMaImQ
-         wOMA==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=PMTYH8vYxJzYzIKQ4wJ1Cn/QVbnABT43BbzXgdJrWQI=;
+        b=apo0H/0Dyl2t3hk8E0D2z85aDd6iOJNXpJKyEbBY7/JTNGPCdkbdnzGkICjahHHvdg
+         ikbaCSmfvGWZBU6IZXUhNElfru0/txxioJdYFDH5e/cXST9poMaEGPF58kTHE38lu4h0
+         h8EdekFT0o5IRjk4tqQ0MYnPW0lGioEBYLaYk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=cNodgbjOgXr1BDhVkjrjAzL4QZIsWT6muvz148l9XrU=;
-        b=LiVZaHI2jwm9nwweUiKvrTOwHuFJq1sA+sfxnrrDSTdLuAlSDVFYb4zIzHYgyxihfr
-         vW7Bxc/6yaAof4dlqGHgARi3K79IjMEIlPMxO0oAtN42XTlHmcKpYoUOTZ2OWKjGupI9
-         ucbY2/Jrm0u7F8VcUhg6V05tS50DIb+WXFrY/RLlqOhl8RcETkG7NTvWKq1PCBzwqy6L
-         KTSW7LUTwEQRtdkWGeFNRfl0UCnwR6NZcMpW6/MAW/ET3Yotfxexf2ZxplsL7SPXEzhS
-         NZnmG7S6GMHhf0Ol1E01aRbGvjvbYN6aT3dSMK8C4eBgF8sPuFMhz+XCkdB993Vi/n7U
-         F2tQ==
-X-Gm-Message-State: AOAM532AvKhd6f8R9vPpY/Z5pkUQgzVeLVO2OUaop/dMQh7ooIgIQMns
-        XB7CmqbUDrKUk8mXbU6FqEAMQO6/J3UBDv1GQFI=
-X-Google-Smtp-Source: ABdhPJyYKz7g0iQ1NOAzxYnktS3yswpPoJ2PyvCtLBcP6wO1pk3aspI91/oY14mIWjIwgo5j0J8zjHvAtRw6kHEX3v4=
-X-Received: by 2002:a5d:6d83:: with SMTP id l3mr12755845wrs.203.1643544874835;
- Sun, 30 Jan 2022 04:14:34 -0800 (PST)
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=PMTYH8vYxJzYzIKQ4wJ1Cn/QVbnABT43BbzXgdJrWQI=;
+        b=NfZ+PqUsEKfYBAH8Scoxn7H2E5MMAQkT28I0Eb1r2sXohlrxnSp8WUnqnpFhU9fwpF
+         f7LxGEalbrjpkNYd5peAxTBDApYgK3rtMcBGAwHe/P5Z/NhKIj96vQpCw+bDk2AWatRV
+         s0HtkuAFcDrCylXT43F3InVE8Yqr1/nSyvad+SqHww6m0MuB94XHyuKTqejXiTmVLR+8
+         eBjgdqRNrRd9bZCyWPfrENmhmumtYI5ZBVoo6dxJ2QQoKkTemLumUDp9r1mcmN+92Ol5
+         XDRrGw6TMQ6YL1MgUM3/UHuLtjh0RfpgQgk8ChkqMGDPiyj7vi8CwEUfpHFrOaJcQSEx
+         /dbg==
+X-Gm-Message-State: AOAM532a8MHz9lehdnXYY38TkPMct2Spvd+VsMbgcW8H3uYyjRZVJKgA
+        FNjNsk+CDBBZtGAt9FHtR9rdTA==
+X-Google-Smtp-Source: ABdhPJy3rWsVAeaHCILbvxyPLUIcCktog468JC/fPRiLCOsjiBYoYIRU/3dSm2dhcMilSbKwZrs6iA==
+X-Received: by 2002:a17:906:730a:: with SMTP id di10mr13618818ejc.489.1643545536662;
+        Sun, 30 Jan 2022 04:25:36 -0800 (PST)
+Received: from cloudflare.com ([2a01:110f:4809:d800::e00])
+        by smtp.gmail.com with ESMTPSA id s19sm13891576edr.23.2022.01.30.04.25.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 30 Jan 2022 04:25:36 -0800 (PST)
+References: <20220130030352.2710479-1-hefengqing@huawei.com>
+ <CAADnVQLsom4MQq2oonzfCqrHbhfg9y7YMPCk6Wg6r4bp3Su03g@mail.gmail.com>
+User-agent: mu4e 1.1.0; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     He Fengqing <hefengqing@huawei.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [bpf-next] bpf: Add CAP_NET_ADMIN for sk_lookup program type
+In-reply-to: <CAADnVQLsom4MQq2oonzfCqrHbhfg9y7YMPCk6Wg6r4bp3Su03g@mail.gmail.com>
+Date:   Sun, 30 Jan 2022 13:25:35 +0100
+Message-ID: <87zgndqukg.fsf@cloudflare.com>
 MIME-Version: 1.0
-Received: by 2002:a5d:4ec8:0:0:0:0:0 with HTTP; Sun, 30 Jan 2022 04:14:34
- -0800 (PST)
-Reply-To: wijh555@gmail.com
-From:   "Dr. Irene Lam" <confianzayrentabilidad@gmail.com>
-Date:   Sun, 30 Jan 2022 04:14:34 -0800
-Message-ID: <CANrrfX5DhvQZ5bZ3aUasnuBeDNHZt+cCSH83UHZW+rgs7EXNZA@mail.gmail.com>
-Subject: Good Day,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-I'm Dr. Irene Lam, how are you doing ope you are in good health, the
-Board director
-try to reach you on phone several times Meanwhile, your number was not
-connecting. before he ask me to send you an email to hear from you if
-you are fine. hoping to hear from you soonest before the new
-development can be bring to your notice.
+On Sun, Jan 30, 2022 at 04:24 AM CET, Alexei Starovoitov wrote:
+> On Sat, Jan 29, 2022 at 6:16 PM He Fengqing <hefengqing@huawei.com> wrote:
+>>
+>> SK_LOOKUP program type was introduced in commit e9ddbb7707ff
+>> ("bpf: Introduce SK_LOOKUP program type with a dedicated attach point"),
+>> but the commit did not add SK_LOOKUP program type in net admin prog type.
+>> I think SK_LOOKUP program type should need CAP_NET_ADMIN, so add SK_LOOKUP
+>> program type in net_admin_prog_type.
+>
+> I'm afraid it's too late to change.
+>
+> Jakub, Marek, wdyt?
 
-Sincerely
-Dr. Irene Lam
+That's definitely an oversight on my side, considering that CAP_BPF came
+in 5.8, and sk_lookup program first appeared in 5.9.
+
+Today it's possible to build a usable sk_lookup program without
+CAP_NET_ADMIN if you go for REUSEPORT_SOCKARRAY map instead of
+SOCKMAP/HASH.
+
+Best I can come up is a "phase it out" approach. Put the CAP_NET_ADMIN
+load-time check behind a config option, defaulting to true?, and wait
+for it to become obsolete.
