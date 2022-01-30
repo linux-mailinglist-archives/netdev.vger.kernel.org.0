@@ -2,87 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 783854A32DF
-	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 01:31:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 455714A32F7
+	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 02:01:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353592AbiA3Abm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jan 2022 19:31:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43072 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353587AbiA3Abl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 19:31:41 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B0BC06173B
-        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 16:31:41 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id i10so29509015ybt.10
-        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 16:31:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pme32IFXRNHgrXZ/dj8GMepH+ska0RwjBdlk1fihJ0A=;
-        b=IltbbM1EQZqZOXk2OvOAxzFGYEGyIcXl0ze+Gd6uqe80Yl441IZCeUTU/rBTVpvJCF
-         KIXazu/IDMXkGcjo+FKTks/BRGXeuUCz+25eZD77PYKVmNBrXCcKb0UzTzGfGIS5/KsK
-         GJkAMdZSlu0tseCMyhAia/aB9i9WbvlP6lz9vmkAXtTeiWyunPOWGvGmz7UdePwIeZ/M
-         j4FN8lMJFu3P7EO8CWdKag9uzRC/ATVhyyZH3h479vSUSTqoYAGTiuh9r0CQJOHD10sh
-         Gh79f795EdnRlH6dlo4y4XRQkyUhWw8rJGLgOmWVdJRpEeoczaVsi0x2jBDHXgveJpES
-         viCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pme32IFXRNHgrXZ/dj8GMepH+ska0RwjBdlk1fihJ0A=;
-        b=sSd8vt/nKjtpt1HbnSnMo+LWrj5CGbORhmc7TblWd4t5PXUj2rHF62bMmy54PjoO8f
-         qgPVoy3IQ8HxKBf+C4hdfXmqjProA7L6WY5SWrcJpzskcshmdGfOPP9AE1sncBDA62j+
-         aAa1PMcAFeSsl4ZjchtHNX6ESPKjlfROzZLScUozV+nUCiPGPha9rJ/Zt8+KoS6rbuT1
-         Xchf6zOaSqMxSRkTwFwYYubUB9jvVKqhoznSxx1cjX7cOEbug/y+lJrAR29ndr/xxclk
-         PpjSteE7SMjkYhkkuNbgzJAFBy5DHul398tQpTSSGoJC+uT21BkuwF7F4ubpHaKe93kc
-         V8Bg==
-X-Gm-Message-State: AOAM531jun4TuaAW3rajV7J5BwgbbfbR+7TfGwYMN0TIGeR+Cr1vw8vB
-        J+5Z85HJHqN6QIO0hnKtXNy9YeoruT31JzldWjUOkA==
-X-Google-Smtp-Source: ABdhPJzxAbrXaVgDQ08MBW1JI8bn63pnojvyZBxce+CBlsONQJOt0o6ierYk3+5NsIeuVr0qUpocfIe0c5ve35EnJKw=
-X-Received: by 2002:a25:cfc6:: with SMTP id f189mr21205071ybg.322.1643502700641;
- Sat, 29 Jan 2022 16:31:40 -0800 (PST)
-MIME-Version: 1.0
-References: <20220129220221.2823127-1-colin.foster@in-advantage.com> <20220129220221.2823127-3-colin.foster@in-advantage.com>
-In-Reply-To: <20220129220221.2823127-3-colin.foster@in-advantage.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 30 Jan 2022 01:31:29 +0100
-Message-ID: <CACRpkdbXD0cA07zPQtVH1_hdc-aLq5ktm1DpUW=dB-i+B5dacw@mail.gmail.com>
-Subject: Re: [RFC v6 net-next 2/9] pinctrl: microchip-sgpio: allow sgpio
- driver to be used as a module
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S1353614AbiA3A66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jan 2022 19:58:58 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:17831 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233625AbiA3A66 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 19:58:58 -0500
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JmXq118Khz9sPH;
+        Sun, 30 Jan 2022 08:57:33 +0800 (CST)
+Received: from [10.174.178.165] (10.174.178.165) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sun, 30 Jan 2022 08:58:55 +0800
+Subject: Re: [PATCH net-next] net/fsl: xgmac_mdio: fix return value check in
+ xgmac_mdio_probe()
+To:     Tobias Waldekranz <tobias@waldekranz.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>, katie.morris@in-advantage.com
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Markus Koch <markus@notsyncing.net>
+CC:     <netdev@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        Hulk Robot <hulkci@huawei.com>
+References: <20220129012702.3220704-1-weiyongjun1@huawei.com>
+ <87czkabjgo.fsf@waldekranz.com>
+From:   "weiyongjun (A)" <weiyongjun1@huawei.com>
+Message-ID: <2855194d-9680-c78f-ad87-a2b789cc0363@huawei.com>
+Date:   Sun, 30 Jan 2022 08:58:55 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <87czkabjgo.fsf@waldekranz.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.165]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 29, 2022 at 11:02 PM Colin Foster
-<colin.foster@in-advantage.com> wrote:
 
-> As the commit message suggests, this simply adds the ability to select
-> SGPIO pinctrl as a module. This becomes more practical when the SGPIO
-> hardware exists on an external chip, controlled indirectly by I2C or SPI.
-> This commit enables that level of control.
+> On Sat, Jan 29, 2022 at 01:27, Wei Yongjun <weiyongjun1@huawei.com> wrote:
+>> In case of error, the function devm_ioremap() returns NULL pointer
+>> not ERR_PTR(). The IS_ERR() test in the return value check should
+>> be replaced with NULL test.
+>>
+>> Fixes: 1d14eb15dc2c ("net/fsl: xgmac_mdio: Use managed device resources")
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> Reviewed-by: Tobias Waldekranz <tobias@waldekranz.com>
 >
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Sorry about that. I started out by using devm_ioremap_resource, which
+> uses the in-band error signaling, and forgot to match the guard when I
+> changed it.
+>
+> I see that this was reported by your CI, do you mind me asking what it
+> is running in the back-end? At least my version of sparse does not seem
+> to catch this.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Yours,
-Linus Walleij
+It was reported by coccinelle with follow script:
+
+
+@@
+expression ret, E;
+@@
+ret = \(devm_ioport_map\|
+devm_ioremap\|
+devm_ioremap_wc\|
+devm_irq_alloc_generic_chip\|
+devm_kasprintf\|
+devm_kcalloc\|
+devm_kmalloc\|
+devm_kmalloc_array\|
+devm_kmemdup\|
+devm_kstrdup\|
+devm_kzalloc\|
+\)(...);
+... when != ret = E
+(
+- IS_ERR(ret)
++ !ret
+|
+- !IS_ERR(ret)
++ ret
+|
+- PTR_ERR(ret)
++ -ENOMEM
+)
+
+
+
+It seems smatch also can report this.
+
+
+Regards,
+
+Wei Yongjun
+
+
