@@ -2,88 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 519254A37F6
+	by mail.lfdr.de (Postfix) with ESMTP id 9C05F4A37F7
 	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 19:03:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245541AbiA3SDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Jan 2022 13:03:08 -0500
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:58703 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1355774AbiA3SDI (ORCPT
+        id S1355774AbiA3SDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Jan 2022 13:03:09 -0500
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:57639 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1354844AbiA3SDI (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 30 Jan 2022 13:03:08 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V3B8I4H_1643565783;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V3B8I4H_1643565783)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R731e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V3BCr70_1643565784;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V3BCr70_1643565784)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 31 Jan 2022 02:03:04 +0800
+          Mon, 31 Jan 2022 02:03:05 +0800
 From:   Tony Lu <tonylu@linux.alibaba.com>
 To:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: [PATCH net-next 0/3] net/smc: Improvements for TCP_CORK and sendfile()
-Date:   Mon, 31 Jan 2022 02:02:54 +0800
-Message-Id: <20220130180256.28303-1-tonylu@linux.alibaba.com>
+Subject: [PATCH net-next 1/3] net/smc: Send directly when TCP_CORK is cleared
+Date:   Mon, 31 Jan 2022 02:02:55 +0800
+Message-Id: <20220130180256.28303-2-tonylu@linux.alibaba.com>
 X-Mailer: git-send-email 2.35.0
+In-Reply-To: <20220130180256.28303-1-tonylu@linux.alibaba.com>
+References: <20220130180256.28303-1-tonylu@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, SMC use default implement for syscall sendfile() [1], which
-is wildly used in nginx and big data sences. Usually, applications use
-sendfile() with TCP_CORK:
+According to the man page of TCP_CORK [1], if set, don't send out
+partial frames. All queued partial frames are sent when option is
+cleared again.
 
-fstat(20, {st_mode=S_IFREG|0644, st_size=4096, ...}) = 0
-setsockopt(19, SOL_TCP, TCP_CORK, [1], 4) = 0
-writev(19, [{iov_base="HTTP/1.1 200 OK\r\nServer: nginx/1"..., iov_len=240}], 1) = 240
-sendfile(19, 20, [0] => [4096], 4096)   = 4096
-close(20)                               = 0
-setsockopt(19, SOL_TCP, TCP_CORK, [0], 4) = 0
+When applications call setsockopt to disable TCP_CORK, this call is
+protected by lock_sock(), and tries to mod_delayed_work() to 0, in order
+to send pending data right now. However, the delayed work smc_tx_work is
+also protected by lock_sock(). There introduces lock contention for
+sending data.
 
-The above is an example of Nginx, when sendfile() on, Nginx first
-enables TCP_CORK, write headers, the data will not be sent. Then call
-sendfile(), it reads file and write to sndbuf. When TCP_CORK is cleared,
-all pending data is sent out.
+To fix it, send pending data directly which acts like TCP, without
+lock_sock() protected in the context of setsockopt (already lock_sock()ed),
+and cancel unnecessary dealyed work, which is protected by lock.
 
-The performance of the default implement of sendfile is lower than when
-it is off. After investigation, it shows two parts to improve:
-- unnecessary lock contention of delayed work
-- less data per send than when sendfile off
+[1] https://linux.die.net/man/7/tcp
 
-Patch #1 tries to reduce lock_sock() contention in smc_tx_work().
-Patch #2 removes timed work for corking, and let applications control
-it. See TCP_CORK [2] MSG_MORE [3].
-Patch #3 adds MSG_SENDPAGE_NOTLAST for corking more data when
-sendfile().
+Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+---
+ net/smc/af_smc.c |  4 ++--
+ net/smc/smc_tx.c | 25 +++++++++++++++----------
+ net/smc/smc_tx.h |  1 +
+ 3 files changed, 18 insertions(+), 12 deletions(-)
 
-Test environments:
-- CPU Intel Xeon Platinum 8 core, mem 32 GiB, nic Mellanox CX4
-- socket sndbuf / rcvbuf: 16384 / 131072 bytes
-- server: smc_run nginx
-- client: smc_run ./wrk -c 100 -t 2 -d 30 http://192.168.100.1:8080/4k.html
-- payload: 4KB local disk file
-
-Items                     QPS
-sendfile off        272477.10
-sendfile on (orig)  223622.79
-sendfile on (this)  395847.21
-
-This benchmark shows +45.28% improvement compared with sendfile off, and
-+77.02% compared with original sendfile implement.
-
-[1] https://man7.org/linux/man-pages/man2/sendfile.2.html
-[2] https://linux.die.net/man/7/tcp
-[3] https://man7.org/linux/man-pages/man2/send.2.html
-
-Tony Lu (3):
-  net/smc: Send directly when TCP_CORK is cleared
-  net/smc: Remove corked dealyed work
-  net/smc: Cork when sendpage with MSG_SENDPAGE_NOTLAST flag
-
- net/smc/af_smc.c |  8 ++++---
- net/smc/smc_tx.c | 59 ++++++++++++++++++++++++++++++++----------------
- net/smc/smc_tx.h |  3 +++
- 3 files changed, 47 insertions(+), 23 deletions(-)
-
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index ffab9cee747d..ef021ec6b361 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -2600,8 +2600,8 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
+ 		    sk->sk_state != SMC_CLOSED) {
+ 			if (!val) {
+ 				SMC_STAT_INC(smc, cork_cnt);
+-				mod_delayed_work(smc->conn.lgr->tx_wq,
+-						 &smc->conn.tx_work, 0);
++				smc_tx_pending(&smc->conn);
++				cancel_delayed_work(&smc->conn.tx_work);
+ 			}
+ 		}
+ 		break;
+diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
+index be241d53020f..7b0b6e24582f 100644
+--- a/net/smc/smc_tx.c
++++ b/net/smc/smc_tx.c
+@@ -597,27 +597,32 @@ int smc_tx_sndbuf_nonempty(struct smc_connection *conn)
+ 	return rc;
+ }
+ 
+-/* Wakeup sndbuf consumers from process context
+- * since there is more data to transmit
+- */
+-void smc_tx_work(struct work_struct *work)
++void smc_tx_pending(struct smc_connection *conn)
+ {
+-	struct smc_connection *conn = container_of(to_delayed_work(work),
+-						   struct smc_connection,
+-						   tx_work);
+ 	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
+ 	int rc;
+ 
+-	lock_sock(&smc->sk);
+ 	if (smc->sk.sk_err)
+-		goto out;
++		return;
+ 
+ 	rc = smc_tx_sndbuf_nonempty(conn);
+ 	if (!rc && conn->local_rx_ctrl.prod_flags.write_blocked &&
+ 	    !atomic_read(&conn->bytes_to_rcv))
+ 		conn->local_rx_ctrl.prod_flags.write_blocked = 0;
++}
++
++/* Wakeup sndbuf consumers from process context
++ * since there is more data to transmit
++ */
++void smc_tx_work(struct work_struct *work)
++{
++	struct smc_connection *conn = container_of(to_delayed_work(work),
++						   struct smc_connection,
++						   tx_work);
++	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
+ 
+-out:
++	lock_sock(&smc->sk);
++	smc_tx_pending(conn);
+ 	release_sock(&smc->sk);
+ }
+ 
+diff --git a/net/smc/smc_tx.h b/net/smc/smc_tx.h
+index 07e6ad76224a..a59f370b8b43 100644
+--- a/net/smc/smc_tx.h
++++ b/net/smc/smc_tx.h
+@@ -27,6 +27,7 @@ static inline int smc_tx_prepared_sends(struct smc_connection *conn)
+ 	return smc_curs_diff(conn->sndbuf_desc->len, &sent, &prep);
+ }
+ 
++void smc_tx_pending(struct smc_connection *conn);
+ void smc_tx_work(struct work_struct *work);
+ void smc_tx_init(struct smc_sock *smc);
+ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len);
 -- 
 2.32.0.3.g01195cf9f
 
