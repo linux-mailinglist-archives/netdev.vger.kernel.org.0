@@ -2,90 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF3094A3861
-	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 20:06:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF3EC4A3903
+	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 21:34:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355805AbiA3TGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Jan 2022 14:06:02 -0500
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:58628 "EHLO
-        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231596AbiA3TFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jan 2022 14:05:18 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V3BCwlk_1643569515;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V3BCwlk_1643569515)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 31 Jan 2022 03:05:15 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: [PATCH net-next] net/smc: Allocate pages of SMC-R on ibdev NUMA node
-Date:   Mon, 31 Jan 2022 03:03:00 +0800
-Message-Id: <20220130190259.94593-1-tonylu@linux.alibaba.com>
-X-Mailer: git-send-email 2.35.0
+        id S1356132AbiA3U37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Jan 2022 15:29:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49492 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244727AbiA3U37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jan 2022 15:29:59 -0500
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46F6C061714
+        for <netdev@vger.kernel.org>; Sun, 30 Jan 2022 12:29:58 -0800 (PST)
+Received: by mail-oi1-x233.google.com with SMTP id q186so23065194oih.8
+        for <netdev@vger.kernel.org>; Sun, 30 Jan 2022 12:29:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=0FRjs1N+XUqcNBXTQ9PGsEznaY473WgoPmSy9bImqVU=;
+        b=pl/NYUEqpSXOFiyDOmT5mmoB0H8syk4dY7GDNpRtaF+wF4rAqHhe6p91UUqkjuIMCs
+         ZT+qrtYj2wLuTGy34ZHY6LJQFHKV8sY0DrHLpwkfhhLrHctWpR5jdWhcHRXJu9pRMQjP
+         3Osv5uNQv7MJM/yfJQxSYEt+d8uGLYksA5Ii3TnI5BK9eQB1aTQ7UsTuRTK95aKHK0xJ
+         UGP96Apm1W4h2ZvKyN7MFqSVluFU9jSyo8DDING/H1XSyHIRfa05N3MvqrpykX8ZamBo
+         Pt7SsFybizJkEPGIKMKaZaCKuO6jNpPmvMMKhWZFqt49ug2N0xNpsFoXautAtHjFpqs6
+         D96w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=0FRjs1N+XUqcNBXTQ9PGsEznaY473WgoPmSy9bImqVU=;
+        b=CepAct8GrHXOSPMaPQadc2FNlffAsBSYJRXwm3IvWgVyuccItEZxbBAMBKAdPkxXD7
+         srYKoXF27pl4zPWi95nnucdfXHqU4GgaN3E5ON7Rx2gjJ1UCAk1EZmaUg+DL2HakLRVb
+         zsEuZBqD1TUG+spCku9SHDPnqpEmjBuXL/Y2l1jnYS9BHppCck7M7F/39Zc7iJ0w7V6T
+         kCKFY+A1IiH9uTAp9hThrIxQhKoSjXsnsuiZQnf8PyCBS2EOSYbvuXC//bUN5y+A7nj1
+         JGNyv/LWlNe83jEYRugBsuqxvP/tI4g9UUTjl8Fj3GF57fQ2+2HtF3iKRGRJgnYj7lOS
+         JOyw==
+X-Gm-Message-State: AOAM531km1h8D1ndYa/vOZt1dbcRr4ZJloIqCH7H7NENTd0YbOybf/Ma
+        aBUSlIYsrpUhLL7kZlPAMbtCcNEWxpmBOFuSMr8=
+X-Google-Smtp-Source: ABdhPJy7JK6GVwGaYqh+hN5cVT0Xhdk6/xAOS0YXtVQIXBCitCiAV5PgbSQCJKN7WJOVFdyPZpGivhrIhk12Ulk/4Gg=
+X-Received: by 2002:aca:bb08:: with SMTP id l8mr16760423oif.316.1643574597876;
+ Sun, 30 Jan 2022 12:29:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Sender: stedoni745@gmail.com
+Received: by 2002:a05:6820:506:0:0:0:0 with HTTP; Sun, 30 Jan 2022 12:29:57
+ -0800 (PST)
+From:   "Mr.Sal kavar" <salkavar2@gmail.com>
+Date:   Sun, 30 Jan 2022 21:29:57 +0100
+X-Google-Sender-Auth: jOOpXDAPRH6T5_Vx9zsWf14wkHY
+Message-ID: <CAAWQ0g7+EF0T7fUV=cqa1jbwzsxvdkUxhUgpaqVsHrTB1fWj=Q@mail.gmail.com>
+Subject: Yours Faithful,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, pages are allocated in the process context, for its NUMA node
-isn't equal to ibdev's, which is not the best policy for performance.
+Dear friend.
 
-Applications will generally perform best when the processes are
-accessing memory on the same NUMA node. When numa_balancing enabled
-(which is enabled by most of OS distributions), it moves tasks closer to
-the memory of sndbuf or rmb and ibdev, meanwhile, the IRQs of ibdev bind
-to the same node usually. This reduces the latency when accessing remote
-memory.
+This being a wide world in which it can be difficult to make new
+acquaintances and because it is virtually impossible to know who is
+trustworthy and who can be believed, I have decided to repose
+confidence in you after much fasting and prayer. It is only because of
+this that I have decided to confide in you and to share with you this
+confidential business.
 
-According to our tests in different scenarios, there has up to 15.30%
-performance drop (Redis benchmark) when accessing remote memory.
+overdue and unclaimed sum of $15.5m, (Fifteen Million Five Hundred
+Thousand Dollars Only) when the account holder suddenly passed on he
+left no beneficiary who would be entitled to the receipt of this fund.
+For this reason, I have found it expedient to transfer this fund to a
+trustworthy individual with capacity to act as foreign business
+partner.
 
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
----
- net/smc/smc_core.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
-
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 8935ef4811b0..2a28b045edfa 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -2065,9 +2065,10 @@ int smcr_buf_reg_lgr(struct smc_link *lnk)
- 	return rc;
- }
- 
--static struct smc_buf_desc *smcr_new_buf_create(struct smc_link_group *lgr,
-+static struct smc_buf_desc *smcr_new_buf_create(struct smc_connection *conn,
- 						bool is_rmb, int bufsize)
- {
-+	int node = ibdev_to_node(conn->lnk->smcibdev->ibdev);
- 	struct smc_buf_desc *buf_desc;
- 
- 	/* try to alloc a new buffer */
-@@ -2076,10 +2077,10 @@ static struct smc_buf_desc *smcr_new_buf_create(struct smc_link_group *lgr,
- 		return ERR_PTR(-ENOMEM);
- 
- 	buf_desc->order = get_order(bufsize);
--	buf_desc->pages = alloc_pages(GFP_KERNEL | __GFP_NOWARN |
--				      __GFP_NOMEMALLOC | __GFP_COMP |
--				      __GFP_NORETRY | __GFP_ZERO,
--				      buf_desc->order);
-+	buf_desc->pages = alloc_pages_node(node, GFP_KERNEL | __GFP_NOWARN |
-+					   __GFP_NOMEMALLOC | __GFP_COMP |
-+					   __GFP_NORETRY | __GFP_ZERO,
-+					   buf_desc->order);
- 	if (!buf_desc->pages) {
- 		kfree(buf_desc);
- 		return ERR_PTR(-EAGAIN);
-@@ -2190,7 +2191,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
- 		if (is_smcd)
- 			buf_desc = smcd_new_buf_create(lgr, is_rmb, bufsize);
- 		else
--			buf_desc = smcr_new_buf_create(lgr, is_rmb, bufsize);
-+			buf_desc = smcr_new_buf_create(conn, is_rmb, bufsize);
- 
- 		if (PTR_ERR(buf_desc) == -ENOMEM)
- 			break;
--- 
-2.32.0.3.g01195cf9f
-
+Yours Faithful,
+Mr.Sal Kavar.
