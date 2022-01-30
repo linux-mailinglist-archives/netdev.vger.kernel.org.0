@@ -2,107 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BABEC4A3302
-	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 02:21:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD3184A332A
+	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 02:54:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353644AbiA3BVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jan 2022 20:21:16 -0500
-Received: from mga18.intel.com ([134.134.136.126]:26646 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353633AbiA3BVP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 Jan 2022 20:21:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643505675; x=1675041675;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=r+UndQ1T578rPOdJL5bqdLK8JUgvuQSEksEyo5ytApM=;
-  b=WwB8dIq4wqIdypTFkbQMTJlhCO/LXGuAHznxUmRltwXdaeNMMiy6c9e5
-   bg6Ar8cFRxIqZ7FxWhUWFZZfGOwPH2ln0IrUREgQ70ZWvIpd4qbxrcyO1
-   Ru2bOlDcv4djs0SL8NSOXXxLA7pAAQGlDeYFQ+kkzrX4VPkWs6LYIpNSJ
-   DPVUSlxegsEZxV6RXq5GbcV0hKSzZpjquIe4frOYDOMNCe7/gVRhYgfjy
-   oVRh+55kx+9zhv3QzHTRA0PG9VAbwxKo+dyWQ1idSnuK/37gNCPJUxDDv
-   E6EQ0yVFBthVaBYO1X9AESlSOytUOyGw6tASbzCz8QbnaOL2Nuz4nAMU2
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10242"; a="230882077"
-X-IronPort-AV: E=Sophos;i="5.88,327,1635231600"; 
-   d="scan'208";a="230882077"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2022 17:21:14 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,327,1635231600"; 
-   d="scan'208";a="478661771"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 29 Jan 2022 17:21:12 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nDytz-000Ps7-Kg; Sun, 30 Jan 2022 01:21:11 +0000
-Date:   Sun, 30 Jan 2022 09:20:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Joe Damato <jdamato@fastly.com>, netdev@vger.kernel.org,
-        kuba@kernel.org, ilias.apalodimas@linaro.org, davem@davemloft.net,
-        hawk@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Joe Damato <jdamato@fastly.com>
-Subject: Re: [net-next v2 10/10] net-procfs: Show page pool stats in proc
-Message-ID: <202201300928.UoQgv8PS-lkp@intel.com>
-References: <1643499540-8351-11-git-send-email-jdamato@fastly.com>
+        id S1353735AbiA3ByP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jan 2022 20:54:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60982 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353724AbiA3ByO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jan 2022 20:54:14 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BDBC061714
+        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 17:54:14 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id a19so3689661pfx.4
+        for <netdev@vger.kernel.org>; Sat, 29 Jan 2022 17:54:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uuv/aA7Fv1K1L0839tgYMOIoHNyD2R5i/0C4RiyS+JU=;
+        b=RrW68omIJIwLn/zYuINSuv6awci546gaG8ib6h8dWI9nNdR7fu8jXloawXKLPyN7AH
+         peNG5plCbpSgjJTdMuMZWptr69EnOdDELQWJ433RKv4l88b1rCSV/1Nhm+U9sRIY2UuR
+         LGfxTL1O3M5z9/EiEOtm+huBLNUfkQGcj4+ovd5dmv+7LNfydjTUAZP7QUoj+c7LdmeO
+         FLJvGfdt+HGnE1heYd9GVl2YJOXvrLUVLm5b3tZkqkdsI/W8JxDzi5Yb+c/YxyACMd+g
+         SDyP+vJcq2xypRfIIoBbX/urZq082ITjk0rfK+PIVQnlAGYEbTRBU2zwEHbjUbGt2r0C
+         KwiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uuv/aA7Fv1K1L0839tgYMOIoHNyD2R5i/0C4RiyS+JU=;
+        b=eAL5I7qU3bAxLy0bD4tANfeLNDOXVeInOeeo1vcycNF7vmvSjMKs+lrKYLKHt/VNMu
+         rlRZs1t88tX5meiy4W+7JGlN27UWJ8WKpzZkSCp8ZVp3lMKDtBJzPNiCffVqre6xNLch
+         CP8OpzXVhu3Z8PFSveEAHw0YYsPcNagf8SwkFr5vB2ZOdkUpbY0FlJfUhpkD/EIG5sBs
+         XixT3bOhbDAS7C5LFXVZIPQ3sBnc9frkHlJorgqPhDH9+wAOy8GJYWGT4CwfTHUb4HF+
+         hMUjtDTQDHWfxxsrFj/0mdkJTV6uWtuw+Z06+HXgMmTHimI59z7F7v8MOaxPRhKo+HRu
+         LqlQ==
+X-Gm-Message-State: AOAM530Fs0GSXzf2A/xdNkR2X9+Km0y2KJEe096eaBGlQGJL+EfiMSFh
+        zI5nS7iqpUu0pYXWLZDa4Xo2zXK61o1nW+Xkv4ppI5s4itib94Yo
+X-Google-Smtp-Source: ABdhPJwTm7GcMDchie3o7KWO7sCHt+CggxltjsgSRWxc22HrYihifwPH4SF6OAxP7VL0s+bCIrFkEbVC0eKSkTwYFZE=
+X-Received: by 2002:a62:190b:: with SMTP id 11mr13884948pfz.77.1643507653796;
+ Sat, 29 Jan 2022 17:54:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1643499540-8351-11-git-send-email-jdamato@fastly.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220105031515.29276-1-luizluca@gmail.com> <20220105031515.29276-12-luizluca@gmail.com>
+ <87ee5fd80m.fsf@bang-olufsen.dk> <trinity-ea8d98eb-9572-426a-a318-48406881dc7e-1641822815591@3c-app-gmx-bs62>
+ <87r19e5e8w.fsf@bang-olufsen.dk> <trinity-4b35f0dc-6bc6-400a-8d4e-deb26e626391-1641926734521@3c-app-gmx-bap14>
+ <87v8ynbylk.fsf@bang-olufsen.dk> <trinity-d858854a-ff84-4b28-81f4-f0becc878017-1642089370117@3c-app-gmx-bap49>
+ <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
+In-Reply-To: <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Sat, 29 Jan 2022 22:54:02 -0300
+Message-ID: <CAJq09z5sJJO_1ogPi5+PhHkBS9ry5_oYctMhxu68GRNqEr3xLw@mail.gmail.com>
+Subject: Re: Re: Re: Re: [PATCH net-next v4 11/11] net: dsa: realtek:
+ rtl8365mb: multiple cpu ports, non cpu extint
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joe,
+> I suggested it might be checksum problem because I'm also affected. In
+> my case, I have an mt7620a SoC connected to the rtl8367s switch. The
+> OS offloads checksum to HW but the mt7620a cannot calculate the
+> checksum with the (EtherType) Realtek CPU Tag in place. I'll try to
+> move the CPU tag to test if the mt7620a will then digest the frame
+> correctly.
 
-Thank you for the patch! Perhaps something to improve:
+I implemented a new DSA tag (rtl8_4t, with "t" as in trailing) that
+puts the DSA tag before the Ethernet CRC (the switch supports both).
+With no tag in the mac layer, mediatek correctly calculated the ip
+checksum. However, mediatek SoC included the extra bytes from the DSA
+tag in the TCP checksum, even if they are after the ip length.
 
-[auto build test WARNING on net-next/master]
+This is the packet leaving the OS:
 
-url:    https://github.com/0day-ci/linux/commits/Joe-Damato/page_pool-Add-page_pool-stat-counters/20220130-074147
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git ff58831fa02deb42fd731f830d8d9ec545573c7c
-config: arm-randconfig-r016-20220130 (https://download.01.org/0day-ci/archive/20220130/202201300928.UoQgv8PS-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 33b45ee44b1f32ffdbc995e6fec806271b4b3ba4)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/0day-ci/linux/commit/5f0fd838269d51e7a97662eaf54868a248b8bd42
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Joe-Damato/page_pool-Add-page_pool-stat-counters/20220130-074147
-        git checkout 5f0fd838269d51e7a97662eaf54868a248b8bd42
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash net/core/
+0000   04 0e 3c fc 4f aa 50 d4 f7 33 15 8a 08 00 45 10
+0010   00 3c 00 00 40 00 40 06 b7 58 c0 a8 01 01 c0 a8
+0020   01 02 00 16 a1 50 80 da 39 e9 b2 2a 23 cf a0 12
+0030   fe 88 83 82 00 00 02 04 05 b4 04 02 08 0a 01 64
+0040   fb 28 66 42 e0 79 01 03 03 03 88 99 04 00 00 20
+0050   00 08
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+TCP checksum is at 0x0032 with 0x8382 is the tcp checksum
+DSA Tag is at 0x4a with 8899040000200008
 
-All warnings (new ones prefixed by >>):
+This is what arrived at the other end:
 
->> net/core/net-procfs.c:399:1: warning: unused label 'out_ptype' [-Wunused-label]
-   out_ptype:
-   ^~~~~~~~~~
-   1 warning generated.
+0000   04 0e 3c fc 4f aa 50 d4 f7 33 15 8a 08 00 45 10
+0010   00 3c 00 00 40 00 40 06 b7 58 c0 a8 01 01 c0 a8
+0020   01 02 00 16 a1 50 80 da 39 e9 b2 2a 23 cf a0 12
+0030   fe 88 c3 e8 00 00 02 04 05 b4 04 02 08 0a 01 64
+0040   fb 28 66 42 e0 79 01 03 03 03
 
+TCP checksum is 0xc3e8, but the correct one should be 0x50aa
+If you calculate tcp checksum including 8899040000200008, you'll get exactly
+0xc3e8 (I did the math).
 
-vim +/out_ptype +399 net/core/net-procfs.c
+So, If we use a trailing DSA tag, we can leave the IP checksum offloading on
+and just turn off the TCP checksum offload. Is it worth it?
 
-5f0fd838269d51 Joe Damato 2022-01-29  398  
-900ff8c6321418 Cong Wang  2013-02-18 @399  out_ptype:
-900ff8c6321418 Cong Wang  2013-02-18  400  	remove_proc_entry("ptype", net->proc_net);
-900ff8c6321418 Cong Wang  2013-02-18  401  out_softnet:
-900ff8c6321418 Cong Wang  2013-02-18  402  	remove_proc_entry("softnet_stat", net->proc_net);
-900ff8c6321418 Cong Wang  2013-02-18  403  out_dev:
-900ff8c6321418 Cong Wang  2013-02-18  404  	remove_proc_entry("dev", net->proc_net);
-900ff8c6321418 Cong Wang  2013-02-18  405  	goto out;
-900ff8c6321418 Cong Wang  2013-02-18  406  }
-900ff8c6321418 Cong Wang  2013-02-18  407  
+Is it still interesting to have the rtl8_4t merged?
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Regards,
