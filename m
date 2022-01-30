@@ -2,372 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96B504A367C
-	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 14:25:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF94E4A368E
+	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 14:59:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354808AbiA3NZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Jan 2022 08:25:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41284 "EHLO
+        id S1354926AbiA3N7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Jan 2022 08:59:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347097AbiA3NY7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jan 2022 08:24:59 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB2C1C061714;
-        Sun, 30 Jan 2022 05:24:58 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id l5so21364595edv.3;
-        Sun, 30 Jan 2022 05:24:58 -0800 (PST)
+        with ESMTP id S1354916AbiA3N7P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jan 2022 08:59:15 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CC6C061714;
+        Sun, 30 Jan 2022 05:59:14 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id m11so21554921edi.13;
+        Sun, 30 Jan 2022 05:59:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=N1QmzdzCYsHC6SY/Q4WL1ZwoBgiRCfTctmBNhjjzljQ=;
-        b=mdYMVtJzc8Z/E0LfINUJPIDY8WrmdB/ulYFHU3gsQNdAkwpsFVtb9qVHFEI0FoTDu1
-         DI7MtPtmKoqCW4PPF7Qtv8VLnG44D2nqTJo6fyasXl0sQCPSzwduBkflu0HPTYPf9Rtp
-         tkWthv040BT0GEWOgU6UlN0C1tP3iMhVrBGHpjYajtfNeB/ycdlXGC7jXPs/L9qiE1mH
-         H0muOOW4wLtlylX5itjdR0mQEfIqPLRJ/23VOJSon2sKRt/OE2fAG9u+GD8ynjD/89zK
-         b1o5JoO2/9tuEVMZSlquxZwVauaSpXPkIK5wWUAnE5ySc/QSlU6s/wr099wou/6rJWLx
-         Xc7w==
+        h=date:from:to:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ycTbeWVF2k4ldeYij/DKOzznuWwYeGFWN8BJHoJuoyE=;
+        b=jN3jnwWsU9nD9Nd8JMncMCVZcuX311nzUmbsFxdvy7+gUZWQ3T3vz+y/AxQ2ejDvea
+         YXEBx+O9LdppbXvRVFLtMvuodYUaXCcJRtJ6+8maueSFcejgdlSn9rZL3tZLhM2fn7bZ
+         KUcIEzPCawuy++O2pmNl7TQOpyMH6Hfshc5EhPLCGSYwvVfQjXi7rVL6MET/3WPJt7Ur
+         LZaqR/2qYjLkoCsOn/MqhTGjujzxzCVpFA5fON7OwkVEJ/aOaiXUX1w5gUGNq/3x8jRU
+         4XtNQMcFkeYwaJvZXD7viueZeY2rmECgB6M0M932ztOGe1yG1PYw/YoESIW4d9Y+6Bex
+         +qKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=N1QmzdzCYsHC6SY/Q4WL1ZwoBgiRCfTctmBNhjjzljQ=;
-        b=1l8lGgRskr2YMgV8owHDhoZevgf/TvDhHCwSplqeGWrcJVRMU0D5U++cSEy6kvHh7F
-         8MTehHMIWE2mBVGMKrkqfHKKVl03stcM5384tmHdPX50pgwamOQ1RZLCzEGYxm/Bfkb4
-         99xPOIptaCNIPz2B/6TdgvJES6v3wpYfVm6WzA3XBTn3N4krn5Q4U61TLX6ackCAaczP
-         28bu1iZCaL9E5ElYiKYf/wwo1xQooc5XqbQ6W3UIYV0Z8YIzdEzG0hpvg1JV9gbnyxWE
-         Nz3sU5UGVFM36Q2aQ1NK7ElW2/rOYvbBuR1KKhxbc3QzHuRIF2mOmtV23tNG0HICyDon
-         jorg==
-X-Gm-Message-State: AOAM532dnVG/dfFn3uTJ6wZuvr8g4kUIMppZdC3ZnAV4X/cLMWKSd/KU
-        coTP/YWXsi6HuuhuqBpbx6dtarB8Sr2Fa/B0ebPd1eMsKCdb4g==
-X-Google-Smtp-Source: ABdhPJyXUdnxVeWth60dEXH6P1Jjy2c/+HfUHf4xpV4FSiZyAHXYh1wHV2irP0cMCp1sZT6TePlD6hfP6xOuA8lte48=
-X-Received: by 2002:aa7:c258:: with SMTP id y24mr16654168edo.288.1643549096917;
- Sun, 30 Jan 2022 05:24:56 -0800 (PST)
-MIME-Version: 1.0
-References: <159db05f-539c-fe29-608b-91b036588033@molgen.mpg.de>
- <CAABZP2xampOLo8k93OLgaOfv9LreJ+f0g0_1mXwqtrv_LKewQg@mail.gmail.com>
- <3534d781-7d01-b42a-8974-0b1c367946f0@molgen.mpg.de> <CAABZP2zFDY-hrZqE=-c0uW8vFMH+Q9XezYd2DcBX4Wm+sxzK1g@mail.gmail.com>
- <04a597dc-64aa-57e6-f7fb-17bd2ec58159@molgen.mpg.de>
-In-Reply-To: <04a597dc-64aa-57e6-f7fb-17bd2ec58159@molgen.mpg.de>
-From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
-Date:   Sun, 30 Jan 2022 21:24:44 +0800
-Message-ID: <CAABZP2yb7-xa4F_2c6tuzkv7x902wU-hqgD_pqRooGC6C7S20A@mail.gmail.com>
-Subject: Re: BUG: Kernel NULL pointer dereference on write at 0x00000000 (rtmsg_ifinfo_build_skb)
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        rcu <rcu@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ycTbeWVF2k4ldeYij/DKOzznuWwYeGFWN8BJHoJuoyE=;
+        b=ZSDrIjwuuE1LMfDlB2ePwK69WPiQXv+Vz/RU6SkQwTmvYkS77MXIWPtQGwPMXsMILy
+         WdZM+0hDP47TzDsjes7dLDtUElz/mMV9T5RB0LK2Jus1Ktp0t6yocbGnQJPTVZxCgzm4
+         t0qFtF8HaqtXnPK2GdhVVEQFsp8SKYNwo3v0Z4g8FRUf7UCpN6CfVD8fpXFvWo98NzuG
+         opZqYC4YJXZjMA9Y2GFKGWLxPD3c4gFsfHPGSBae0Di5zs0itmKXAWY3G6+qwgPMBT9q
+         EPqxHyJK+TuX+Z2hpdloKKQ+XwGKf+IwOaoqWYuYSvn+IexwH+seOUasqNuqd5OG4BjG
+         UJPA==
+X-Gm-Message-State: AOAM533Iw4J34aPEFzCORWBwj0SoEMAJm3M3t21/Gs7D3rlQF32imMcB
+        Bd8Us//1khmwWjlj8tM8u78=
+X-Google-Smtp-Source: ABdhPJxTV8e96JL/W7bqFfbr97rk0tU1Mt3imLw62b0KyMpOWnQ8gObZH/MTkScWlqyrvQkmLf4/Lw==
+X-Received: by 2002:a05:6402:430e:: with SMTP id m14mr16864890edc.86.1643551152898;
+        Sun, 30 Jan 2022 05:59:12 -0800 (PST)
+Received: from Ansuel-xps.localdomain ([87.13.143.9])
+        by smtp.gmail.com with ESMTPSA id bv2sm12176256ejb.154.2022.01.30.05.59.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 30 Jan 2022 05:59:12 -0800 (PST)
+Date:   Sun, 30 Jan 2022 14:59:10 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [RFC PATCH v7 00/16] Add support for qca8k mdio rw in Ethernet
+ packet
+Message-ID: <YfaZrsewBMhqr0Db@Ansuel-xps.localdomain>
+References: <20220123013337.20945-1-ansuelsmth@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220123013337.20945-1-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Paul
+On Sun, Jan 23, 2022 at 02:33:21AM +0100, Ansuel Smith wrote:
+> Hi, this is ready but require some additional test on a wider userbase.
+> 
+> The main reason for this is that we notice some routing problem in the
+> switch and it seems assisted learning is needed. Considering mdio is
+> quite slow due to the indirect write using this Ethernet alternative way
+> seems to be quicker.
+> 
+> The qca8k switch supports a special way to pass mdio read/write request
+> using specially crafted Ethernet packet.
+> This works by putting some defined data in the Ethernet header where the
+> mac source and dst should be placed. The Ethernet type header is set to qca
+> header and is set to a mdio read/write type.
+> This is used to communicate to the switch that this is a special packet
+> and should be parsed differently.
+> 
+> Currently we use Ethernet packet for
+> - MIB counter
+> - mdio read/write configuration
+> - phy read/write for each port
+> 
+> Current implementation of this use completion API to wait for the packet
+> to be processed by the tagger and has a timeout that fallback to the
+> legacy mdio way and mutex to enforce one transaction at time.
+> 
+> We now have connect()/disconnect() ops for the tagger. They are used to
+> allocate priv data in the dsa priv. The header still has to be put in
+> global include to make it usable by a dsa driver.
+> They are called when the tag is connect to the dst and the data is freed
+> using discconect on tagger change.
+> 
+> (if someone wonder why the bind function is put at in the general setup
+> function it's because tag is set in the cpu port where the notifier is
+> still not available and we require the notifier to sen the
+> tag_proto_connect() event.
+> 
+> We now have a tag_proto_connect() for the dsa driver used to put
+> additional data in the tagger priv (that is actually the dsa priv).
+> This is called using a switch event DSA_NOTIFIER_TAG_PROTO_CONNECT.
+> Current use for this is adding handler for the Ethernet packet to keep
+> the tagger code as dumb as possible.
+> 
+> The tagger priv implement only the handler for the special packet. All the
+> other stuff is placed in the qca8k_priv and the tagger has to access
+> it under lock.
+> 
+> We use the new API from Vladimir to track if the master port is
+> operational or not. We had to track many thing to reach a usable state.
+> Checking if the port is UP is not enough and tracking a NETDEV_CHANGE is
+> also not enough since it use also for other task. The correct way was
+> both track for interface UP and if a qdisc was assigned to the
+> interface. That tells us the port (and the tagger indirectly) is ready
+> to accept and process packet.
+> 
+> I tested this with multicpu port and with port6 set as the unique port and
+> it's sad.
+> It seems they implemented this feature in a bad way and this is only
+> supported with cpu port0. When cpu port6 is the unique port, the switch
+> doesn't send ack packet. With multicpu port, packet ack are not duplicated
+> and only cpu port0 sends them. This is the same for the MIB counter.
+> For this reason this feature is enabled only when cpu port0 is enabled and
+> operational.
+> 
+> 
+> 
+> 
+> Sorry if I missed any comments. This series is 2 month old so I think it
+> would be good to recheck everything. In the mean time this was tested on
+> and no regression are observed related to random port drop.
+> 
+> v7:
+> - Rebase on net-next changes
+> - Add bulk patches to speedup this even more
+> v6:
+> - Fix some error in ethtool handler caused by rebase/cleanup
+> v5:
+> - Adapt to new API fixes
+> - Fix a wrong logic for noop
+> - Add additional lock for master_state change
+> - Limit mdio Ethernet to cpu port0 (switch limitation)
+> - Add priority to these special packet
+> - Move mdio cache to qca8k_priv
+> v4:
+> - Remove duplicate patch sent by mistake.
+> v3:
+> - Include MIB with Ethernet packet.
+> - Include phy read/write with Ethernet packet.
+> - Reorganize code with new API.
+> - Introuce master tracking by Vladimir
+> v2:
+> - Address all suggestion from Vladimir.
+>   Try to generilize this with connect/disconnect function from the
+>   tagger and tag_proto_connect for the driver.
+> 
+> Ansuel Smith (14):
+>   net: dsa: tag_qca: convert to FIELD macro
+>   net: dsa: tag_qca: move define to include linux/dsa
+>   net: dsa: tag_qca: enable promisc_on_master flag
+>   net: dsa: tag_qca: add define for handling mgmt Ethernet packet
+>   net: dsa: tag_qca: add define for handling MIB packet
+>   net: dsa: tag_qca: add support for handling mgmt and MIB Ethernet
+>     packet
+>   net: dsa: qca8k: add tracking state of master port
+>   net: dsa: qca8k: add support for mgmt read/write in Ethernet packet
+>   net: dsa: qca8k: add support for mib autocast in Ethernet packet
+>   net: dsa: qca8k: add support for phy read/write with mgmt Ethernet
+>   net: dsa: qca8k: move page cache to driver priv
+>   net: dsa: qca8k: cache lo and hi for mdio write
+>   net: da: qca8k: add support for larger read/write size with mgmt
+>     Ethernet
+>   net: dsa: qca8k: introduce qca8k_bulk_read/write function
+> 
+> Vladimir Oltean (2):
+>   net: dsa: provide switch operations for tracking the master state
+>   net: dsa: replay master state events in
+>     dsa_tree_{setup,teardown}_master
+> 
+>  drivers/net/dsa/qca8k.c     | 709 +++++++++++++++++++++++++++++++++---
+>  drivers/net/dsa/qca8k.h     |  46 ++-
+>  include/linux/dsa/tag_qca.h |  82 +++++
+>  include/net/dsa.h           |  17 +
+>  net/dsa/dsa2.c              |  74 +++-
+>  net/dsa/dsa_priv.h          |  13 +
+>  net/dsa/slave.c             |  32 ++
+>  net/dsa/switch.c            |  15 +
+>  net/dsa/tag_qca.c           |  83 +++--
+>  9 files changed, 993 insertions(+), 78 deletions(-)
+>  create mode 100644 include/linux/dsa/tag_qca.h
+> 
+> -- 
+> 2.33.1
+> 
 
-On Sun, Jan 30, 2022 at 4:19 PM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
->
-> Dear Zhouyi,
->
->
-> Am 30.01.22 um 01:21 schrieb Zhouyi Zhou:
->
-> > Thank you for your instructions, I learned a lot from this process.
->
-> Same on my end.
->
-> > On Sun, Jan 30, 2022 at 12:52 AM Paul Menzel <pmenzel@molgen.mpg.de> wr=
-ote:
->
-> >> Am 29.01.22 um 03:23 schrieb Zhouyi Zhou:
-> >>
-> >>> I don't have an IBM machine, but I tried to analyze the problem using
-> >>> my x86_64 kvm virtual machine, I can't reproduce the bug using my
-> >>> x86_64 kvm virtual machine.
-> >>
-> >> No idea, if it=E2=80=99s architecture specific.
-> >>
-> >>> I saw the panic is caused by registration of sit device (A sit device
-> >>> is a type of virtual network device that takes our IPv6 traffic,
-> >>> encapsulates/decapsulates it in IPv4 packets, and sends/receives it
-> >>> over the IPv4 Internet to another host)
-> >>>
-> >>> sit device is registered in function sit_init_net:
-> >>> 1895    static int __net_init sit_init_net(struct net *net)
-> >>> 1896    {
-> >>> 1897        struct sit_net *sitn =3D net_generic(net, sit_net_id);
-> >>> 1898        struct ip_tunnel *t;
-> >>> 1899        int err;
-> >>> 1900
-> >>> 1901        sitn->tunnels[0] =3D sitn->tunnels_wc;
-> >>> 1902        sitn->tunnels[1] =3D sitn->tunnels_l;
-> >>> 1903        sitn->tunnels[2] =3D sitn->tunnels_r;
-> >>> 1904        sitn->tunnels[3] =3D sitn->tunnels_r_l;
-> >>> 1905
-> >>> 1906        if (!net_has_fallback_tunnels(net))
-> >>> 1907            return 0;
-> >>> 1908
-> >>> 1909        sitn->fb_tunnel_dev =3D alloc_netdev(sizeof(struct ip_tun=
-nel), "sit0",
-> >>> 1910                           NET_NAME_UNKNOWN,
-> >>> 1911                           ipip6_tunnel_setup);
-> >>> 1912        if (!sitn->fb_tunnel_dev) {
-> >>> 1913            err =3D -ENOMEM;
-> >>> 1914            goto err_alloc_dev;
-> >>> 1915        }
-> >>> 1916        dev_net_set(sitn->fb_tunnel_dev, net);
-> >>> 1917        sitn->fb_tunnel_dev->rtnl_link_ops =3D &sit_link_ops;
-> >>> 1918        /* FB netdevice is special: we have one, and only one per=
- netns.
-> >>> 1919         * Allowing to move it to another netns is clearly unsafe=
-.
-> >>> 1920         */
-> >>> 1921        sitn->fb_tunnel_dev->features |=3D NETIF_F_NETNS_LOCAL;
-> >>> 1922
-> >>> 1923        err =3D register_netdev(sitn->fb_tunnel_dev);
-> >>> register_netdev on line 1923 will call if_nlmsg_size indirectly.
-> >>>
-> >>> On the other hand, the function that calls the paniced strlen is if_n=
-lmsg_size:
-> >>> (gdb) disassemble if_nlmsg_size
-> >>> Dump of assembler code for function if_nlmsg_size:
-> >>>      0xffffffff81a0dc20 <+0>:    nopl   0x0(%rax,%rax,1)
-> >>>      0xffffffff81a0dc25 <+5>:    push   %rbp
-> >>>      0xffffffff81a0dc26 <+6>:    push   %r15
-> >>>      0xffffffff81a0dd04 <+228>:    je     0xffffffff81a0de20 <if_nlms=
-g_size+512>
-> >>>      0xffffffff81a0dd0a <+234>:    mov    0x10(%rbp),%rdi
-> >>>      ...
-> >>>    =3D> 0xffffffff81a0dd0e <+238>:    callq  0xffffffff817532d0 <strl=
-en>
-> >>>      0xffffffff81a0dd13 <+243>:    add    $0x10,%eax
-> >>>      0xffffffff81a0dd16 <+246>:    movslq %eax,%r12
-> >>
-> >> Excuse my ignorance, would that look the same for ppc64le?
-> >> Unfortunately, I didn=E2=80=99t save the problematic `vmlinuz` file, b=
-ut on a
-> >> current build (without rcutorture) I have the line below, where strlen
-> >> shows up.
-> >>
-> >>       (gdb) disassemble if_nlmsg_size
-> >>       [=E2=80=A6]
-> >>       0xc000000000f7f82c <+332>: bl      0xc000000000a10e30 <strlen>
-> >>       [=E2=80=A6]
-> >>
-> >>> and the C code for 0xffffffff81a0dd0e is following (line 524):
-> >>> 515    static size_t rtnl_link_get_size(const struct net_device *dev)
-> >>> 516    {
-> >>> 517        const struct rtnl_link_ops *ops =3D dev->rtnl_link_ops;
-> >>> 518        size_t size;
-> >>> 519
-> >>> 520        if (!ops)
-> >>> 521            return 0;
-> >>> 522
-> >>> 523        size =3D nla_total_size(sizeof(struct nlattr)) + /* IFLA_L=
-INKINFO */
-> >>> 524               nla_total_size(strlen(ops->kind) + 1);  /* IFLA_INF=
-O_KIND */
-> >>
-> >> How do I connect the disassemby output with the corresponding line?
-> > I use "make  ARCH=3Dpowerpc CC=3Dpowerpc64le-linux-gnu-gcc-9
-> > CROSS_COMPILE=3Dpowerpc64le-linux-gnu- -j 16" to cross compile kernel
-> > for powerpc64le in my Ubuntu 20.04 x86_64.
-> >
-> > gdb-multiarch ./vmlinux
-> > (gdb)disassemble if_nlmsg_size
-> > [...]
-> > 0xc00000000191bf40 <+112>:    bl      0xc000000001c28ad0 <strlen>
-> > [...]
-> > (gdb) break *0xc00000000191bf40
-> > Breakpoint 1 at 0xc00000000191bf40: file ./include/net/netlink.h, line =
-1112.
-> >
-> > But in include/net/netlink.h:1112, I can't find the call to strlen
-> > 1110static inline int nla_total_size(int payload)
-> > 1111{
-> > 1112        return NLA_ALIGN(nla_attr_size(payload));
-> > 1113}
-> > This may be due to the compiler wrongly encode the debug information, I=
- guess.
->
-> `rtnl_link_get_size()` contains:
->
->              size =3D nla_total_size(sizeof(struct nlattr)) + /*
-> IFLA_LINKINFO */
->                     nla_total_size(strlen(ops->kind) + 1);  /*
-> IFLA_INFO_KIND */
->
-> Is that inlined(?) and the code at fault?
-Yes, that is inlined! because
-(gdb) disassemble if_nlmsg_size
-Dump of assembler code for function if_nlmsg_size:
-[...]
-0xc00000000191bf38 <+104>:    beq     0xc00000000191c1f0 <if_nlmsg_size+800=
->
-0xc00000000191bf3c <+108>:    ld      r3,16(r31)
-0xc00000000191bf40 <+112>:    bl      0xc000000001c28ad0 <strlen>
-[...]
-(gdb)
-(gdb) break *0xc00000000191bf40
-Breakpoint 1 at 0xc00000000191bf40: file ./include/net/netlink.h, line 1112=
-.
-(gdb) break *0xc00000000191bf38
-Breakpoint 2 at 0xc00000000191bf38: file net/core/rtnetlink.c, line 520.
+Hi,
+sorry for the delay in sending v8, it's ready but I'm far from home and
+I still need to check some mdio improvement with pointer handling.
 
->
-> >>> But ops is assigned the value of sit_link_ops in function sit_init_ne=
-t
-> >>> line 1917, so I guess something must happened between the calls.
-> >>>
-> >>> Do we have KASAN in IBM machine? would KASAN help us find out what
-> >>> happened in between?
-> >>
-> >> Unfortunately, KASAN is not support on Power, I have, as far as I can
-> >> see. From `arch/powerpc/Kconfig`:
-> >>
-> >>           select HAVE_ARCH_KASAN                  if PPC32 && PPC_PAGE=
-_SHIFT <=3D 14
-> >>           select HAVE_ARCH_KASAN_VMALLOC          if PPC32 && PPC_PAGE=
-_SHIFT <=3D 14
-> >>
-> > en, agree, I invoke "make  menuconfig  ARCH=3Dpowerpc
-> > CC=3Dpowerpc64le-linux-gnu-gcc-9 CROSS_COMPILE=3Dpowerpc64le-linux-gnu-=
- -j
-> > 16", I can't find KASAN under Memory Debugging, I guess we should find
-> > the bug by bisecting instead.
->
-> I do not know, if it is a regression, as it was the first time I tried
-> to run a Linux kernel built with rcutorture on real hardware.
-I tried to add some debug statements to the kernel to locate the bug
-more accurately,  you can try it when you're not busy in the future,
-or just ignore it if the following patch looks not very effective ;-)
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 1baab07820f6..969ac7c540cc 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -9707,6 +9707,9 @@ int register_netdevice(struct net_device *dev)
-      *    Prevent userspace races by waiting until the network
-      *    device is fully setup before sending notifications.
-      */
-+    if (dev->rtnl_link_ops)
-+        printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", dev->rtnl_link_ops,
-+               dev->rtnl_link_ops->kind, __FUNCTION__);
-     if (!dev->rtnl_link_ops ||
-         dev->rtnl_link_state =3D=3D RTNL_LINK_INITIALIZED)
-         rtmsg_ifinfo(RTM_NEWLINK, dev, ~0U, GFP_KERNEL);
-@@ -9788,6 +9791,9 @@ int register_netdev(struct net_device *dev)
+Anyway I have some concern aboutall the skb alloc.
+I wonder if that part can be improved at the cost of some additional
+space used.
 
-     if (rtnl_lock_killable())
-         return -EINTR;
-+    if (dev->rtnl_link_ops)
-+        printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", dev->rtnl_link_ops,
-+               dev->rtnl_link_ops->kind, __FUNCTION__);
-     err =3D register_netdevice(dev);
-     rtnl_unlock();
-     return err;
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index e476403231f0..e08986ae6238 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -520,6 +520,8 @@ static size_t rtnl_link_get_size(const struct
-net_device *dev)
-     if (!ops)
-         return 0;
+The idea Is to use the cache stuff also for the eth skb (or duplicate
+it?) And use something like build_skb and recycle the skb space
+everytime...
+This comes from the fact that packet size is ALWAYS the same and it
+seems stupid to allocate and free it everytime. Considering we also
+enforce a one way transaction (we send packet and we wait for response)
+this makes the allocation process even more stupid.
 
-+    printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", ops,
-+           ops->kind, __FUNCTION__);
-     size =3D nla_total_size(sizeof(struct nlattr)) + /* IFLA_LINKINFO */
-            nla_total_size(strlen(ops->kind) + 1);  /* IFLA_INFO_KIND */
+So I wonder if we would have some perf improvement/less load by
+declaring the mgmt eth space and build an skb that always use that
+preallocate space and just modify data.
 
-@@ -1006,6 +1008,9 @@ static size_t rtnl_proto_down_size(const struct
-net_device *dev)
- static noinline size_t if_nlmsg_size(const struct net_device *dev,
-                      u32 ext_filter_mask)
- {
-+    if (dev->rtnl_link_ops)
-+        printk(KERN_INFO "%lx IFLA_INFO_KIND  %s %s\n", dev->rtnl_link_ops=
-,
-+               dev->rtnl_link_ops->kind, __FUNCTION__);
-     return NLMSG_ALIGN(sizeof(struct ifinfomsg))
-            + nla_total_size(IFNAMSIZ) /* IFLA_IFNAME */
-            + nla_total_size(IFALIASZ) /* IFLA_IFALIAS */
-@@ -3825,7 +3830,9 @@ struct sk_buff *rtmsg_ifinfo_build_skb(int type,
-struct net_device *dev,
-     struct net *net =3D dev_net(dev);
-     struct sk_buff *skb;
-     int err =3D -ENOBUFS;
--
-+    if (dev->rtnl_link_ops)
-+        printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", dev->rtnl_link_ops,
-+               dev->rtnl_link_ops->kind, __FUNCTION__);
-     skb =3D nlmsg_new(if_nlmsg_size(dev, 0), flags);
-     if (skb =3D=3D NULL)
-         goto errout;
-@@ -3861,7 +3868,9 @@ static void rtmsg_ifinfo_event(int type, struct
-net_device *dev,
+I would really love some feedback considering qca8k is also used in very
+low spec ath79 device where we need to reduce the load in every way
+possible. Also if anyone have more ideas on how to improve this to make
+it less heavy cpu side, feel free to point it out even if it would
+mean that my implemenation is complete sh*t.
 
-     if (dev->reg_state !=3D NETREG_REGISTERED)
-         return;
--
-+    if (dev->rtnl_link_ops)
-+        printk(KERN_INFO "%lx IFLA_INFO_KIND  %s %s\n", dev->rtnl_link_ops=
-,
-+               dev->rtnl_link_ops->kind, __FUNCTION__);
-     skb =3D rtmsg_ifinfo_build_skb(type, dev, change, event, flags, new_ns=
-id,
-                      new_ifindex);
-     if (skb)
-@@ -3871,6 +3880,9 @@ static void rtmsg_ifinfo_event(int type, struct
-net_device *dev,
- void rtmsg_ifinfo(int type, struct net_device *dev, unsigned int change,
-           gfp_t flags)
- {
-+    if (dev->rtnl_link_ops)
-+        printk(KERN_INFO "%lx IFLA_INFO_KIND  %s %s\n", dev->rtnl_link_ops=
-,
-+               dev->rtnl_link_ops->kind, __FUNCTION__);
-     rtmsg_ifinfo_event(type, dev, change, rtnl_get_event(0), flags,
-                NULL, 0);
- }
-diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-index c0b138c20992..fa5b2725811c 100644
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -1919,6 +1919,8 @@ static int __net_init sit_init_net(struct net *net)
-      * Allowing to move it to another netns is clearly unsafe.
-      */
-     sitn->fb_tunnel_dev->features |=3D NETIF_F_NETNS_LOCAL;
--
-+    printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n",
-+           sitn->fb_tunnel_dev->rtnl_link_ops,
-+           sitn->fb_tunnel_dev->rtnl_link_ops->kind, __FUNCTION__);
-     err =3D register_netdev(sitn->fb_tunnel_dev);
-     if (err)
-         goto err_reg_dev;
->
-> >>> Hope I can be of more helpful.
-> >>
-> >> Some distributions support multi-arch, so they easily allow
-> >> crosscompiling for different architectures.
-> > I use "make  ARCH=3Dpowerpc CC=3Dpowerpc64le-linux-gnu-gcc-9
-> > CROSS_COMPILE=3Dpowerpc64le-linux-gnu- -j 16" to cross compile kernel
-> > for powerpc64le in my Ubuntu 20.04 x86_64. But I can't boot the
-> > compiled kernel using "qemu-system-ppc64le -M pseries -nographic -smp
-> > 4 -net none -m 4G -kernel arch/powerpc/boot/zImage". I will continue
-> > to explore it.
->
-> Oh, that does not sound good. But I have not tried that in a long time
-> either. It=E2=80=99s a separate issue, but maybe some of the PPC
-> maintainers/folks could help.
-I will do further research on this later.
+(The use of caching the address would permit us to reduce the write to
+this preallocated space even more or ideally to send the same skb)
 
-Thanks for your time
-Kind regards
-Zhouyi
->
->
-> Kind regards,
->
-> Paul
+-- 
+	Ansuel
