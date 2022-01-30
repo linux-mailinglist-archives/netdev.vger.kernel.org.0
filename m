@@ -2,120 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DF644A37C8
-	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 17:52:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 106B54A37CF
+	for <lists+netdev@lfdr.de>; Sun, 30 Jan 2022 18:08:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355652AbiA3Qwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Jan 2022 11:52:49 -0500
-Received: from mga17.intel.com ([192.55.52.151]:5701 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355666AbiA3Qwr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 30 Jan 2022 11:52:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643561567; x=1675097567;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PHk+oaHZZiojjeI8TMX3SbWxPQ7wloJmh5lcnUZc440=;
-  b=dE9pCKDx5A09POjJJHFd1/Z5+nkZ01xBAI61M7jk1K7zd46GJidd9+IX
-   CuqEkFsOTGaVNnp/UlLA0ZGOcB93S2Shx41P/ro454v2wlohy/WcAl8g6
-   uvIlSQLWrfm4pA/PEPxFRrFRTl6gyxz/e5gknnAXmSJKspvNp3x3In6D+
-   LKVOn8OOMzl56aQ2kZeNwjtUUlYCluIMTsAIW3s0UdW/OHANtUu0KRh2S
-   25P7aGdyMkbXBWPBqxDjN2zOZiMDxK/c/UQYimp8NlvmCKgPLk6SPNCUo
-   QdYN4xLb9UbgaPLk1AkVqEzrpj6sZfYBZUzBxznwrb7ZQiRvk5jPZXbVe
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10242"; a="228025247"
-X-IronPort-AV: E=Sophos;i="5.88,329,1635231600"; 
-   d="scan'208";a="228025247"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2022 08:52:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,329,1635231600"; 
-   d="scan'208";a="481325382"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 30 Jan 2022 08:52:44 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nEDRT-000Qkf-AN; Sun, 30 Jan 2022 16:52:43 +0000
-Date:   Mon, 31 Jan 2022 00:52:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Paul Blakey <paulb@nvidia.com>, dev@openvswitch.org,
-        netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Pravin B Shelar <pshelar@ovn.org>, davem@davemloft.net,
-        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org
-Subject: Re: [PATCH net-next 1/1] net/sched: Enable tc skb ext allocation on
- chain miss only when needed
-Message-ID: <202201310016.Z4iqHnpx-lkp@intel.com>
-References: <20220130123141.10119-1-paulb@nvidia.com>
+        id S1355697AbiA3RHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Jan 2022 12:07:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33552 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232042AbiA3RHT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jan 2022 12:07:19 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7C7C061714;
+        Sun, 30 Jan 2022 09:07:18 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id z10-20020a17090acb0a00b001b520826011so15889409pjt.5;
+        Sun, 30 Jan 2022 09:07:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=YUtvVETQ4W7uTMzStV3psNo1qD2DtUJmtWqMjy6DR8w=;
+        b=NN78dhDDRCEpTpZpsQG+Py30WVC5QPnEcc9wfQwS/Xn61JzXnxToguU4FDz6MLYMQs
+         CkF/tiKlhPMk3rIMWS3d37W3awQAaHJH9LKh5c+Esjo1wh/mqVUuxmy++JGGOlC71bMx
+         8pDA12ap/dNnw+RpsoGwG+EDhJiGxal49NIr5HUNYLdwKPCJxUsBmofi5p2aEiUaJ+t5
+         nAIKTnC6rl9mk0R9qw4QjX7OW/6Vz4PJZW0+UjNwwV9d+JKYyKWx5hQVHUYIvM/Zc4Hb
+         bLAFk43QRdrQ55PWeTiDqjeGi1MMPolHV3xmHR7LE6VXlRtTN+INmysRfGn8A0IehWo3
+         EXAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=YUtvVETQ4W7uTMzStV3psNo1qD2DtUJmtWqMjy6DR8w=;
+        b=vKj0BRvX3Xs4bdhmfd1uVC0pZ0AqMeji7O5XQf2/F3M5D5JZtu973jeirmDO9T08in
+         +mSdGqjU7SutzBHkXyc3x3E0RDzZVS4Z4I197ZSX7PG8UEPpN+OfReIBNRIjVnD647iy
+         0XEH0EIPEaU3UFk0Py1Y+t3KYudBCa0otSEVOwPtF/8i4Bf1XFWsbJJgtXrhgEh50mDY
+         8H58OEGcy7g1qbaaCHHSO2kCckbP2Zi1qBoflDNEonf3TN6kObxDojkA8FV9XpnnWIiS
+         a4MQ9n6ziBgQ4pde1MlJryt/o3OC8lhyB1eQy/RKiMxLl30aKtQh1D3bt0i3xAOC0pQV
+         xTBQ==
+X-Gm-Message-State: AOAM532w6GKOj/RKBx5FbHy3TcjG11HpticeeNXVNz3hT5LldMN0jPKo
+        AHKQzuwq4Gk1/aOxxB1pHUU4obIzkrk=
+X-Google-Smtp-Source: ABdhPJwuQhw9UdnnedQW3xEP9QEFq8KZX6ReEl3AW4G0KVuH6AKWU2r5qjLG+rdP265OmBj2l1ZqJg==
+X-Received: by 2002:a17:90a:f198:: with SMTP id bv24mr18687467pjb.32.1643562438325;
+        Sun, 30 Jan 2022 09:07:18 -0800 (PST)
+Received: from ?IPV6:2600:8802:b00:4a48:31be:19f8:e4b4:84c8? ([2600:8802:b00:4a48:31be:19f8:e4b4:84c8])
+        by smtp.gmail.com with ESMTPSA id p4sm3187903pfw.133.2022.01.30.09.07.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 30 Jan 2022 09:07:17 -0800 (PST)
+Message-ID: <a8244311-175d-79d3-d61b-c7bb99ffdfb7@gmail.com>
+Date:   Sun, 30 Jan 2022 09:07:16 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220130123141.10119-1-paulb@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH v7 00/16] Add support for qca8k mdio rw in Ethernet
+ packet
+Content-Language: en-US
+To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220123013337.20945-1-ansuelsmth@gmail.com>
+ <YfaZrsewBMhqr0Db@Ansuel-xps.localdomain>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <YfaZrsewBMhqr0Db@Ansuel-xps.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paul,
-
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on net-next/master]
-
-url:    https://github.com/0day-ci/linux/commits/Paul-Blakey/net-sched-Enable-tc-skb-ext-allocation-on-chain-miss-only-when-needed/20220130-203224
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git ff58831fa02deb42fd731f830d8d9ec545573c7c
-config: x86_64-randconfig-a016 (https://download.01.org/0day-ci/archive/20220131/202201310016.Z4iqHnpx-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f1c18acb07aa40f42b87b70462a6d1ab77a4825c)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/0bc6313c4ce18444ed88c99b19d0cb1682772988
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Paul-Blakey/net-sched-Enable-tc-skb-ext-allocation-on-chain-miss-only-when-needed/20220130-203224
-        git checkout 0bc6313c4ce18444ed88c99b19d0cb1682772988
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> net/sched/cls_api.c:55:6: error: redefinition of 'tc_skb_ext_tc_ovs_enable'
-   void tc_skb_ext_tc_ovs_enable(void)
-        ^
-   include/net/pkt_cls.h:1037:20: note: previous definition is here
-   static inline void tc_skb_ext_tc_ovs_enable(void) { }
-                      ^
->> net/sched/cls_api.c:61:6: error: redefinition of 'tc_skb_ext_tc_ovs_disable'
-   void tc_skb_ext_tc_ovs_disable(void)
-        ^
-   include/net/pkt_cls.h:1038:20: note: previous definition is here
-   static inline void tc_skb_ext_tc_ovs_disable(void) { }
-                      ^
-   2 errors generated.
 
 
-vim +/tc_skb_ext_tc_ovs_enable +55 net/sched/cls_api.c
+On 1/30/2022 5:59 AM, Ansuel Smith wrote:
+>>
+> 
+> Hi,
+> sorry for the delay in sending v8, it's ready but I'm far from home and
+> I still need to check some mdio improvement with pointer handling.
+> 
+> Anyway I have some concern aboutall the skb alloc.
+> I wonder if that part can be improved at the cost of some additional
+> space used.
+> 
+> The idea Is to use the cache stuff also for the eth skb (or duplicate
+> it?) And use something like build_skb and recycle the skb space
+> everytime...
+> This comes from the fact that packet size is ALWAYS the same and it
+> seems stupid to allocate and free it everytime. Considering we also
+> enforce a one way transaction (we send packet and we wait for response)
+> this makes the allocation process even more stupid.
+> 
+> So I wonder if we would have some perf improvement/less load by
+> declaring the mgmt eth space and build an skb that always use that
+> preallocate space and just modify data.
+> 
+> I would really love some feedback considering qca8k is also used in very
+> low spec ath79 device where we need to reduce the load in every way
+> possible. Also if anyone have more ideas on how to improve this to make
+> it less heavy cpu side, feel free to point it out even if it would
+> mean that my implemenation is complete sh*t.
+> 
+> (The use of caching the address would permit us to reduce the write to
+> this preallocated space even more or ideally to send the same skb)
 
-    54	
-  > 55	void tc_skb_ext_tc_ovs_enable(void)
-    56	{
-    57		static_branch_inc(&tc_skb_ext_tc_ovs);
-    58	}
-    59	EXPORT_SYMBOL(tc_skb_ext_tc_ovs_enable);
-    60	
-  > 61	void tc_skb_ext_tc_ovs_disable(void)
-    62	{
-    63		static_branch_dec(&tc_skb_ext_tc_ovs);
-    64	}
-    65	EXPORT_SYMBOL(tc_skb_ext_tc_ovs_disable);
-    66	
+I would say first things first: get this patch series included since it 
+is very close from being suitable for inclusion in net-next. Then you 
+can profile the I/O accesses over the management Ethernet frames and 
+devise a strategy to optimize them to make as little CPU cycles 
+intensive as possible.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+build_skb() is not exactly a magic bullet that will solve all 
+performance problems, you still need the non-data portion of the skb to 
+be allocated, and also keep in mind that you need tail room at the end 
+of the data buffer in order for struct skb_shared_info to be written. 
+This means that the hardware is not allowed to write at the end of the 
+data buffer, or you must reduce the maximum RX length accordingly to 
+prevent that. Your frames are small enough here this is unlikely to be 
+an issue.
+
+Since the MDIO layer does not really allow more than one outstanding 
+transaction per MDIO device at a time, you might be just fine with just 
+have a front and back skb set of buffers and alternating between these two.
+-- 
+Florian
