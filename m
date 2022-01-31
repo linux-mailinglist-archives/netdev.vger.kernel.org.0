@@ -2,137 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55E234A4DB8
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 19:06:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DF744A4DBC
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 19:09:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238335AbiAaSGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 13:06:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58928 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232320AbiAaSGA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 13:06:00 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78DCC061714;
-        Mon, 31 Jan 2022 10:06:00 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id s18so17958810ioa.12;
-        Mon, 31 Jan 2022 10:06:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=endXrB2uhXskcRLRruqh/Q73nVn4E/GfzSTpU/fBQ4A=;
-        b=RelxbTsg6tKVtEgR5KL+97rLVbd/KJqLQsyRaMl/IO99XnhWIfqkZiiNwLWSGQjYxS
-         Q+RbvolYRdPOhkHI+cPRuqh/Yd+Go+tFlM8NMBbFlVG9STkx/Tdl0IOUb1EIJElpEp1e
-         gEdYpfmjdZJaJaM6MRA4Ck1GrP0PC6xvP+RiXKTZ/W4f6W7DncnvxeyZc8X0EL2OVJ9R
-         ChK24/1HoLzujenOYRzRmW4iAa8BoEks4AbIJkYNhPy3P+/d/OZq4jVzdLplK4fPz8Y4
-         DC04DHuOsarSaHjjtkGRkFis+1ohDQdbuJ2FR7rF4itg3C2o3VpVeieGiUaXNU+Z5Zxb
-         YYJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=endXrB2uhXskcRLRruqh/Q73nVn4E/GfzSTpU/fBQ4A=;
-        b=raJFj1cvVk2ledBhfO9upVSY4Ntl+mQuvwWdNzoyR4DXIACi76sG04FmZg7tFvNeBV
-         FRfEi98YjXId56Rzbpyewvtf5BGuNz/xelduGxVSLvnd5Avcg8PFtDuQZ0MuEXLrc6To
-         O0SNZYAR6jb3L0Zrt7EkM5EpxF5rGPAYk03d+ljby0O/7rupBGlMzMYG56JvM9Uan+SR
-         I0DZQQfVjWP1RwNHXQGR6oHAete+tBIWSaYIvLi46SWUQHofT2H6QPKjavgocfFyz81c
-         ZmsPjuyyX2ohHv3u7IwI4HQXnk8+Ipl9cC4YENKv/uNBkVad/ZekbUzmQPz+UC+9kJx4
-         cAbQ==
-X-Gm-Message-State: AOAM531wJDJxK2tWAv85x4E8gFnlBemA/ro86J0PATWluO4lgwHBLKIi
-        dWuiWsDFfaJgwH1Lo9CuotI=
-X-Google-Smtp-Source: ABdhPJz/pQFt73Z6yqgCIFUZpcvo/ZM19fBDHEJph1/12gQKJclHsZJ48Ao2TvDlGS2RSrymHxCL6A==
-X-Received: by 2002:a05:6638:18a:: with SMTP id a10mr7547247jaq.130.1643652360073;
-        Mon, 31 Jan 2022 10:06:00 -0800 (PST)
-Received: from ?IPV6:2601:282:800:dc80:8870:ce19:2c7:3513? ([2601:282:800:dc80:8870:ce19:2c7:3513])
-        by smtp.googlemail.com with ESMTPSA id r9sm10520744ill.52.2022.01.31.10.05.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 10:05:59 -0800 (PST)
-Message-ID: <16e8de51-6b56-3dfe-e9c4-524ab40cdea9@gmail.com>
-Date:   Mon, 31 Jan 2022 11:05:58 -0700
+        id S239563AbiAaSJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 13:09:50 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:27098 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232320AbiAaSJt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 13:09:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1643652588; x=1675188588;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=x6yaY4StNMdXrCgCbPbNcnBl/bpoaxGnZ4bhM97K7CM=;
+  b=D6fHT5lIcsojst8ixShsJ9hyST8XBV7rcU0kaj8+3YiGlq4fC9NAZgh0
+   BgHEFn2llHs9jsxNgtt2YlWhILuj6pa4by3w3YncYJVsj6pSuwr4U1eGY
+   UFU9fU6rjxJMpx88lAw4TFPXSm4Yyq+Ps92pCTttG1F6arOxiC0ycK25u
+   QdH8MVEe8J0kYdrTQrR4orklHhVk3AdQS+QtnGLkP5VUWETH0/LZkeGoh
+   OYen75ndPw3x5DiQiYxQu51tXrA0acYH/IvMElwiu6UWDK06fPG552Jom
+   CX+V4HttWcFUkiCtsvJvLcRcZEbV07q3NXtkf9hD3oIOGKoHc9VdLUpTW
+   w==;
+IronPort-SDR: HCx7xHhv6nLAa9Zw4alkD0PROjhcP6/VhOD9CkhAJ0UYqBaf+rkpVVsJX0BUPw3DerJDXMG6Wr
+ LgI7XzVGcPKkQ9iSkT3Ez9bUrTFqAYp74V7rT3N8OyzZXkTeo2a7791lw5Zk+8k17Vykd6hV1l
+ Symql/6LOxt1mCuoXKxk99uyAx3XtKXUWqhcAmaFYI9vASYl4UcCF0vOqHhZVF6BfjH6vOa0kU
+ SWtw3c55MyCdaybqpi0qHmlhR5KZ64iZmw20PbhubcEvf8gCuFEZB7camGMB00dp3/k5e+3DN4
+ fQmQc8HANmIoxDhuMFFk/ybT
+X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
+   d="scan'208";a="144431478"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Jan 2022 11:09:47 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 31 Jan 2022 11:09:47 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 31 Jan 2022 11:09:47 -0700
+Date:   Mon, 31 Jan 2022 23:39:46 +0530
+From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net-next 4/5] net: lan743x: Add support of selection
+ between SGMII and GMII Interface
+Message-ID: <20220131180946.sqxcbnhu54ajc5am@microsemi.com>
+References: <20220127173055.308918-1-Raju.Lakkaraju@microchip.com>
+ <20220127173055.308918-5-Raju.Lakkaraju@microchip.com>
+ <YfMX1ob3+1RT+d8/@lunn.ch>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH v3 net-next 3/7] net: ipv4: use kfree_skb_reason() in
- ip_rcv_core()
-Content-Language: en-US
-To:     menglong8.dong@gmail.com, dsahern@kernel.org, kuba@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, pablo@netfilter.org, kadlec@netfilter.org,
-        fw@strlen.de, imagedong@tencent.com, edumazet@google.com,
-        alobakin@pm.me, paulb@nvidia.com, keescook@chromium.org,
-        talalahmad@google.com, haokexin@gmail.com, memxor@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        cong.wang@bytedance.com, mengensun@tencent.com
-References: <20220128073319.1017084-1-imagedong@tencent.com>
- <20220128073319.1017084-4-imagedong@tencent.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220128073319.1017084-4-imagedong@tencent.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <YfMX1ob3+1RT+d8/@lunn.ch>
+User-Agent: NeoMutt/20180716-255-141487
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/28/22 12:33 AM, menglong8.dong@gmail.com wrote:
-\> diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-> index 3a025c011971..627fad437593 100644
-> --- a/net/ipv4/ip_input.c
-> +++ b/net/ipv4/ip_input.c
-> @@ -436,13 +436,18 @@ static int ip_rcv_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
->  static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
->  {
->  	const struct iphdr *iph;
-> +	int drop_reason;
->  	u32 len;
->  
-> +	drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+Hi Andrew,
 
-move this line down, right before:
+Thank you for review comments.
 
-	if (!pskb_may_pull(skb, sizeof(struct iphdr)))
-		goto inhdr_error;
+The 01/27/2022 23:08, Andrew Lunn wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> > +     /* GPY211 Interface enable */
+> > +     chip_ver = lan743x_csr_read(adapter, FPGA_REV);
+> > +     if (chip_ver) {
+> > +             netif_info(adapter, drv, adapter->netdev,
+> > +                        "FPGA Image version: 0x%08X\n", chip_ver);
+> 
+> We try to avoid spamming the kernel logs, so:
+> 
+> netif_dbg()
+> 
 
-> +
->  	/* When the interface is in promisc. mode, drop all the crap
->  	 * that it receives, do not try to analyse it.
->  	 */
-> -	if (skb->pkt_type == PACKET_OTHERHOST)
-> +	if (skb->pkt_type == PACKET_OTHERHOST) {
-> +		drop_reason = SKB_DROP_REASON_OTHERHOST;
->  		goto drop;
-> +	}
->  
->  	__IP_UPD_PO_STATS(net, IPSTATS_MIB_IN, skb->len);
->  
-> @@ -488,6 +493,7 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
->  
->  	len = ntohs(iph->tot_len);
->  	if (skb->len < len) {
-> +		drop_reason = SKB_DROP_REASON_PKT_TOO_SMALL;
->  		__IP_INC_STATS(net, IPSTATS_MIB_INTRUNCATEDPKTS);
->  		goto drop;
->  	} else if (len < (iph->ihl*4))
-> @@ -516,11 +522,13 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
->  	return skb;
->  
->  csum_error:
-> +	drop_reason = SKB_DROP_REASON_IP_CSUM;
->  	__IP_INC_STATS(net, IPSTATS_MIB_CSUMERRORS);
->  inhdr_error:
-> +	drop_reason = drop_reason ?: SKB_DROP_REASON_IP_INHDR;
+Accepted. I will change
 
-That makes assumptions about the value of SKB_DROP_REASON_NOT_SPECIFIED.
-Make that line:
-	if (drop_reason != SKB_DROP_REASON_NOT_SPECIFIED)
-		drop_reason = SKB_DROP_REASON_IP_INHDR;
+> > +             if (chip_ver & FPGA_SGMII_OP) {
+> > +                     sgmii_ctl = lan743x_csr_read(adapter, SGMII_CTL);
+> > +                     sgmii_ctl |= SGMII_CTL_SGMII_ENABLE_;
+> > +                     sgmii_ctl &= ~SGMII_CTL_SGMII_POWER_DN_;
+> > +                     lan743x_csr_write(adapter, SGMII_CTL, sgmii_ctl);
+> > +                     netif_info(adapter, drv, adapter->netdev, "SGMII operation\n");
+> > +             } else {
+> > +                     sgmii_ctl = lan743x_csr_read(adapter, SGMII_CTL);
+> > +                     sgmii_ctl &= ~SGMII_CTL_SGMII_ENABLE_;
+> > +                     sgmii_ctl |= SGMII_CTL_SGMII_POWER_DN_;
+> > +                     lan743x_csr_write(adapter, SGMII_CTL, sgmii_ctl);
+> > +                     netif_info(adapter, drv, adapter->netdev, "GMII operation\n");
+> > +             }
+> > +     } else {
+> > +             chip_ver = lan743x_csr_read(adapter, STRAP_READ);
+> > +             netif_info(adapter, drv, adapter->netdev,
+> > +                        "ASIC Image version: 0x%08X\n", chip_ver);
+> 
+> Here as well
+> 
 
->  	__IP_INC_STATS(net, IPSTATS_MIB_INHDRERRORS);
->  drop:
-> -	kfree_skb(skb);
-> +	kfree_skb_reason(skb, drop_reason);
->  out:
->  	return NULL;
->  }
+Accepted. I will change.
+
+> > +             if (chip_ver & STRAP_READ_SGMII_EN_) {
+> > +                     sgmii_ctl = lan743x_csr_read(adapter, SGMII_CTL);
+> > +                     sgmii_ctl |= SGMII_CTL_SGMII_ENABLE_;
+> > +                     sgmii_ctl &= ~SGMII_CTL_SGMII_POWER_DN_;
+> > +                     lan743x_csr_write(adapter, SGMII_CTL, sgmii_ctl);
+> > +                     netif_info(adapter, drv, adapter->netdev, "SGMII operation\n");
+> 
+> And def initially this and the next one.
+> 
+
+I did not get "def initially" means ?
+Can you please some more information about this comment ?
+
+
+> > +             } else {
+> > +                     sgmii_ctl = lan743x_csr_read(adapter, SGMII_CTL);
+> > +                     sgmii_ctl &= ~SGMII_CTL_SGMII_ENABLE_;
+> > +                     sgmii_ctl |= SGMII_CTL_SGMII_POWER_DN_;
+> > +                     lan743x_csr_write(adapter, SGMII_CTL, sgmii_ctl);
+> > +                     netif_info(adapter, drv, adapter->netdev, "GMII operation\n");
+> > +             }
+> > +     }
+> 
+>   Andrew
+
+-- 
+
+Thanks,
+Raju
 
