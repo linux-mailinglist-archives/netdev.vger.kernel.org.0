@@ -2,84 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C099A4A4861
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 14:38:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 152294A4863
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 14:38:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378992AbiAaNiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 08:38:16 -0500
-Received: from mail-mw2nam12on2088.outbound.protection.outlook.com ([40.107.244.88]:31840
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        id S1379009AbiAaNiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 08:38:20 -0500
+Received: from mail-dm6nam12on2042.outbound.protection.outlook.com ([40.107.243.42]:22112
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1378978AbiAaNhq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Jan 2022 08:37:46 -0500
+        id S1379021AbiAaNiB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 Jan 2022 08:38:01 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ThjSenZrHkjHrAzWfu3ULBBbEFyr3n4WLSPMKVVqJGqk20Z/o/HStgpJu5N9KT9t3YcD0CwQNTi8dz2J1ehnrLx2rtUEiXjFt3Y6OX40nnOqavc2+EoU/OdyzRwqQf/VQeqqWqKlMTujpkAUtYd2IRimHw0lRIs4Qu9zyVQY6n9Tb7gKy+zEIfLYdh8CDGrpGKKA6PfuPMtVFeDP/MFfVorCB8rQrnyfWjsSsF0ObPyOjO4JtnsiNnXdxDoaNqwRyWKX/r2psvrku/cfpWkVq8tqoqipNgELckzTnbGY7SO4tnzqkD1eNMfuSz0c96JpDu8INEZvND0CN9slorvZHQ==
+ b=INmGoJd0A1ffXtQ7qKHJ1WYz6x6hbGwfT4gdWFdvR9KvhzurwmFWfGZkmOdHeVWFWB8PGcTyxHN/E8kqdeTdYVrphmW5VYTrYXjNKAod+QHWreVMLKFL3Hq/T8Y/5VwB4gcczgJpmCSd1ANA4SNzE+ayo+re+MsO/YOeWRspQoCCulwvdaPHzpcRC9satnmuVBIH0W1J8dYGqQLUoGmU/K9yfXJGP0rMXBQfWAXeCBHezlmvJ4Q5/plmQniTGnxOn+eabNqceJ4AtDXcuy51cGZbD4IafuvLHKKmU2tn4Mk476gJFLu5CNCN74Mjka0P48sjPmPSINGbOdAZtTcuJA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=msWukM0POXrsPZOxr97ZcuIQuhAiGd5e//rLapmLt+s=;
- b=LjqwNKfHzepeCEjfabSvGuM6d5kk1i74AQhB4T/9WUa75UJqn1SMfnD4FbzavWZqRC9v8xLL/7W2lZ+WvhaZvKFuSNc3AcpgTaL4vbKxpIxBMdP9EwvQ0U0cucp29pphOMcqZnp8YD2lA9alWyJIyQaWG7hr/gXtgg1RrQ3DvF5qA8P1Ff2V9/seDTXkxlO/YSeVg+Ded9dEPaOhG5ox8qgnAUCWRWIxVNMoPoVmzI94Ii2knpKpfXcQMeXYm8bEklmU/88+lT70uVB25+uV3DCfYIObjyA2CP6zVLfoudYTDMpAnxh21oolvRD88Ae73bZJFQ7851nmys5waa9NIA==
+ bh=xElgux6BmgiP3E8QHmkO7CYpOBQZzIRl9G86QN75/xQ=;
+ b=GDdX4gL9QG+sjmgpOZDa7Klejej5+irKC8Jqm6VrzJSLzieVXWYYUamHy3yMIocalsS33xo8Hbutja7HdvAIj5t4TRP9SGmarM1YXE/djNTgtSk4c3TFZk2IgFrx64Fb71RvHqXhqIK+mVwhoDKFUFz3MakIi1p1oa8BnSHt5CvXDJg0LSE1TqRXvhuz9+a9jB3XkHKYgk1a8maRQInb0VjK7yF/wb14xIP9Hl7slPg5w5DGdsE+Ix/g2c3zlG9ibUjw65bUi0FkVvDBpTSPcFMzjRzQA57EwhqAQ5N2MQsAqjjwXm8SIr59NC/JMU37YgpBdHVCVRG2jDq5WP93kQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=msWukM0POXrsPZOxr97ZcuIQuhAiGd5e//rLapmLt+s=;
- b=bOj8277p0YTiHS6KFHslHUIXHXJshBaCEEftWFCjzGVLMUjdCN3e4Z/8GVt+14+6kwj+Yv6Sil0Nvn39pXH+zDiRffgJVvySeeZQc2dlxc/vAxExq6aiIoTJr6AQJne4ZZ3th2M56BoA4swCkK1snsmleiTxRracpoAlJKLsjUKfrBOO8PtebyW6FLjfthxZsnb4xjrrprpEpNhG6MsGI0ztxndKfVBK9rBuxuw8s2htkhRSTVETtGHqxqptlGoN+tj9Wpl5gds4lltlfYRAQO22xQ5T5cRvUxdISotDgsQOAA5wMmEWHU2bPWnVN7QsemI2vLxDhwZcyi15h8Ur3g==
-Received: from BN6PR16CA0001.namprd16.prod.outlook.com (2603:10b6:404:f5::11)
- by BN9PR12MB5381.namprd12.prod.outlook.com (2603:10b6:408:102::24) with
+ bh=xElgux6BmgiP3E8QHmkO7CYpOBQZzIRl9G86QN75/xQ=;
+ b=lMw5qJWhiNB5NAkBxQvYOFBgdBC6n3yPlGPLH1/d08lS/cXGJo6WW56DeZk2/+l/S+pXEAFvVkU+i8v9KjmPnc/Qfx1SjqsypMNUdMwH+O37ZGO2yfV7kmH+hp0XTS+WyT12Q4TLh2JLI7EjD5BMBm/iLyvdzDGP6Pgg6BB27wrfxdEL8/5YiHGj1FlDpVdBX9phFPwd+4faNxwksB6K/ryTw7adGkG+XngSGctYawm+287W+04g76WeWNnpPAmqMqpqV6T+CDaMVfSTT7HSXfF+s+w1f6yXLN7Ag4HBjgDE5iJbn6g7fD7hd0h9LeISvMD7qpokL8soF7QWvOAu2w==
+Received: from BN9PR03CA0504.namprd03.prod.outlook.com (2603:10b6:408:130::29)
+ by BN6PR1201MB2499.namprd12.prod.outlook.com (2603:10b6:404:b2::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Mon, 31 Jan
- 2022 13:37:44 +0000
-Received: from BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:f5:cafe::79) by BN6PR16CA0001.outlook.office365.com
- (2603:10b6:404:f5::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.21 via Frontend
- Transport; Mon, 31 Jan 2022 13:37:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.17; Mon, 31 Jan
+ 2022 13:37:59 +0000
+Received: from BN8NAM11FT014.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:130:cafe::c8) by BN9PR03CA0504.outlook.office365.com
+ (2603:10b6:408:130::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15 via Frontend
+ Transport; Mon, 31 Jan 2022 13:37:59 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT049.mail.protection.outlook.com (10.13.177.157) with Microsoft SMTP
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT014.mail.protection.outlook.com (10.13.177.142) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4930.15 via Frontend Transport; Mon, 31 Jan 2022 13:37:43 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 31 Jan
- 2022 13:37:41 +0000
+ 15.20.4930.15 via Frontend Transport; Mon, 31 Jan 2022 13:37:59 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 31 Jan
+ 2022 13:37:58 +0000
 Received: from [172.27.13.98] (10.126.230.35) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Mon, 31 Jan 2022
- 05:37:35 -0800
-Message-ID: <fefefc43-1912-c1e5-7f50-76f5f68f9386@nvidia.com>
-Date:   Mon, 31 Jan 2022 15:37:32 +0200
+ 05:37:52 -0800
+Message-ID: <5090da78-305c-dc42-65a6-ef0b2927db51@nvidia.com>
+Date:   Mon, 31 Jan 2022 15:37:49 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH bpf v2 3/4] bpf: Use EOPNOTSUPP in bpf_tcp_check_syncookie
+Subject: Re: [PATCH bpf v2 4/4] bpf: Fix documentation of th_len in
+ bpf_tcp_{gen,check}_syncookie
 Content-Language: en-US
-To:     John Fastabend <john.fastabend@gmail.com>
-CC:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+To:     Lorenz Bauer <lmb@cloudflare.com>
+CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
         Tariq Toukan <tariqt@nvidia.com>,
-        Martin KaFai Lau <kafai@fb.com>,
+        "Martin KaFai Lau" <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Petar Penkov <ppenkov@google.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
         Eric Dumazet <edumazet@google.com>
 References: <20220124151146.376446-1-maximmi@nvidia.com>
- <20220124151146.376446-4-maximmi@nvidia.com>
- <61efa17548a0_274ca2089c@john.notmuch>
+ <20220124151146.376446-5-maximmi@nvidia.com>
+ <CACAyw9_5-T5Y9AQpAmCe=aj9A0Q=SMyx1cMz6TRQvnW=NU9ygA@mail.gmail.com>
 From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-In-Reply-To: <61efa17548a0_274ca2089c@john.notmuch>
+In-Reply-To: <CACAyw9_5-T5Y9AQpAmCe=aj9A0Q=SMyx1cMz6TRQvnW=NU9ygA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.126.230.35]
@@ -87,78 +89,53 @@ X-ClientProxiedBy: drhqmail203.nvidia.com (10.126.190.182) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ed96ccc7-8a26-48cf-0d35-08d9e4bedc47
-X-MS-TrafficTypeDiagnostic: BN9PR12MB5381:EE_
-X-Microsoft-Antispam-PRVS: <BN9PR12MB53815E200077BC27C5B79D20DC259@BN9PR12MB5381.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2887;
+X-MS-Office365-Filtering-Correlation-Id: 6d1f3692-2bae-4c83-7b88-08d9e4bee57e
+X-MS-TrafficTypeDiagnostic: BN6PR1201MB2499:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR1201MB2499085651EE12AFAA7EC4C4DC259@BN6PR1201MB2499.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AoXJ1dVcoM7ncQowpc/QM4y27i2S3BO6KLjBdXr/tbD6awqhna6LfdfffOd5blk6GwuqU2WgR3CBdmKcl4EBLEpBkaMC5xzDGR53t/Uxer6/lstTa9AOZ2qLlio0hq2gtiWKnRsyYfQQP5MmNAWOIuv7mgzzhsbKq6Ytplx4wIgKU0XFATPB/PBQdWkyvqUpimkEd+vadEBnjdmAXcTsuHfo8YJ6na3jREDl40O4jTeQhVD7ZNng8dqhBqZCr3D1RmWzSVuFi57iJfu03BytpAJ4I8KAPUhVh/AxS2Oz/TMcXwrrmBmNwSMFc6TWEjcZvqW2o6s397VNbFVCnuWcziveNrcm/wFd9ziCQnt/WQ7IswagttVjAprdrDHT6gGgtHzywbbDAYUyVKpDJNi6Uyw642cFIy36UZi0g/rJUlOslVPylk+qc4NeZAPF3MpirV/DYQDeEvLLcykYt+G4IfV92NXSMoRRKCGhrEQ4CqHMogNSlnzPrCSZUibKi68PDtbCJJFrpkyUJ7lQNSSPxjKCMgnwcAavxq1Lzl4fp3xXVCujTQf01Aw/hxZraORM4ylsIum2Pj130iwvgPlOhxYeTdGn6QMDTvGXxFkxXijhggo9AoPx7S7Sk2MVolmVKKUEUMIVRNApsez/v0AeG8NTMrDOmwH+iImKV970ObekBE0jb3nj5F2Q5q9J2LTo2zq/oUjlMfPJ1AxlDkl0ZPMS/3PAaH/ZyZpoHGsvAiKQdNQu46GeP0l7/0pXn4E9WIPBrA6caBlIC75WMBtAFQsyauKi1iDtZlaeE3G1LwfmlkGfMTLzwqVTHUEzATPxQKpkdFpFn4LZk2AcDQUSakAErpzAwJ2CafjzTzDKJWVab42N55nGaY7V0bAa8ISOBJwFm4708q3TehdVasPM/bq0/vz2DTE1HQjdZpFi00A=
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(36840700001)(40470700004)(46966006)(7416002)(6916009)(316002)(426003)(5660300002)(16576012)(31696002)(36860700001)(47076005)(2616005)(86362001)(966005)(8676002)(70586007)(40460700003)(70206006)(4326008)(336012)(81166007)(186003)(82310400004)(8936002)(83380400001)(54906003)(2906002)(53546011)(6666004)(16526019)(356005)(26005)(508600001)(31686004)(36756003)(36900700001)(43740500002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: H2PGwsmtUfbxUH9sliN6xOBdxoiv/P+pgZi+3N4HyOnfshCusPsgh5Sf0BxYtJzrD+L4sh1iuj3Jgq9UajMdwo4uQbLa57MEbKofE1RpqGWC//ApiGVBM7FwcgCIwVCGnbWCiu4O9/fa0dW6K9bSxsbH4Fs3OpMFz7xKF0C/bnWxrxra3gUQ0309MEed2X0oCeTHdUmnkLisje4iEyqWOeCCOl9GABjv20sR7o5EOvRC0oVshYiLFuNfYFVJYxUfv2RuSJr/4hz+4QcpACkEQSJPKLdkAMZQSO+AH8AynJCyo0Pzo+vzldm65aQZbV5bO6BQDx2K8ju9lK4mqZlL7GvHJiwlHHeqoooCu1lVRfLGp78JGe9rjBV+y2bbVJnF+wCd6zNv4k/MisvMIgqNC7iLI6AnmwnHmv5AGz9D7sIoL17ekEDk8fDXgSZxXjoX8L5QEgKpgXDemEUb+g6Bs/c7id95D1cDyxkNzORspked4vb3+5Lh+UJUupP5BIKTqc6hyRaBt646ZOqxnPJNpZffeutp+UHh5846+WPNlBIyE0HpoDvH4lm29raKLBjZ86bAdV0r+r2+V3f7E0JmvWkpd7qTlv4ygL8MliwGqxN31+DF5Ra0ekvUDm/tylw69fR3cgoiUO+ILB/gOrU9X6cqZFHXr57g8M0VH/dldqYiXOa7HwfQ2CuI8AMFxTIBxDCVZtYweRinTvO7OCrCMosAfk9TtiHvm+eX/hgU6E0=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(86362001)(6916009)(508600001)(31696002)(70586007)(70206006)(54906003)(356005)(316002)(81166007)(16576012)(31686004)(36860700001)(4326008)(8936002)(8676002)(36756003)(26005)(16526019)(5660300002)(2616005)(2906002)(7416002)(6666004)(53546011)(47076005)(336012)(426003)(40460700003)(83380400001)(82310400004)(186003)(43740500002)(36900700001)(20210929001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jan 2022 13:37:43.8324
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jan 2022 13:37:59.3108
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ed96ccc7-8a26-48cf-0d35-08d9e4bedc47
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6d1f3692-2bae-4c83-7b88-08d9e4bee57e
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT014.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5381
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB2499
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-01-25 09:06, John Fastabend wrote:
-> Maxim Mikityanskiy wrote:
->> When CONFIG_SYN_COOKIES is off, bpf_tcp_check_syncookie returns
->> ENOTSUPP. It's a non-standard and deprecated code. The related function
->> bpf_tcp_gen_syncookie and most of the other functions use EOPNOTSUPP if
->> some feature is not available. This patch changes ENOTSUPP to EOPNOTSUPP
->> in bpf_tcp_check_syncookie.
+On 2022-01-26 11:45, Lorenz Bauer wrote:
+> On Mon, 24 Jan 2022 at 15:13, Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
 >>
->> Fixes: 399040847084 ("bpf: add helper to check for a valid SYN cookie")
->> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
->> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+>> bpf_tcp_gen_syncookie and bpf_tcp_check_syncookie expect the full length
+>> of the TCP header (with all extensions). Fix the documentation that says
+>> it should be sizeof(struct tcphdr).
 > 
-> This came up in another thread? Or was it the same and we lost the context
-> in the commit msg. Either way I don't think we should start one-off
-> changing these user facing error codes. Its not the only spot we do this
-> and its been this way for sometime.
+> I don't understand this change, sorry. Are you referring to the fact
+> that the check is len < sizeof(*th) instead of len != sizeof(*th)?
 > 
-> Is it causing a real problem?
+> Your commit message makes me think that the helpers will access data
+> in the extension headers, which isn't true as far as I can tell.
 
-I'm not aware of anyone complaining about it. It's just a cleanup to use 
-the proper error code, since ENOTSUPP is a non-standard one (used in 
-NFS?), for example, strerror() returns "Unknown error 524" instead of 
-"Operation not supported".
+Yes, they will. See bpf_tcp_gen_syncookie -> tcp_v4_get_syncookie -> 
+tcp_get_syncookie_mss -> tcp_parse_mss_option, which iterates over the 
+TCP options ("extensions" wasn't the best word I used here). Moreover, 
+bpf_tcp_gen_syncookie even checks that th_len == th->doff * 4.
 
-Source: Documentation/dev-tools/checkpatch.rst:
+Although bpf_tcp_check_syncookie doesn't need the TCP options and 
+doesn't enforce them to be passed, it's still allowed.
 
- > ENOTSUPP is not a standard error code and should be avoided in new
- > patches. EOPNOTSUPP should be used instead.
- >
- > See: https://lore.kernel.org/netdev/20200510182252.GA411829@lunn.ch/
+> That
+> would be a problem in fact, since it could be used to read memory that
+> the verifier hasn't deemed safe.
 
->> ---
->>   net/core/filter.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/net/core/filter.c b/net/core/filter.c
->> index 780e635fb52a..2c9106704821 100644
->> --- a/net/core/filter.c
->> +++ b/net/core/filter.c
->> @@ -6814,7 +6814,7 @@ BPF_CALL_5(bpf_tcp_check_syncookie, struct sock *, sk, void *, iph, u32, iph_len
->>   
->>   	return -ENOENT;
->>   #else
->> -	return -ENOTSUPP;
->> +	return -EOPNOTSUPP;
->>   #endif
->>   }
->>   
->> -- 
->> 2.30.2
->>
-
+It's safe, because bpf_tcp_gen_syncookie reads up to th_len, which is 
+ARG_CONST_SIZE for the TCP header.
