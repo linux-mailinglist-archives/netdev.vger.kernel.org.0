@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3AA84A3EB4
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 09:38:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D6BD4A3EB7
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 09:38:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231321AbiAaIiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 03:38:04 -0500
-Received: from smtp1.axis.com ([195.60.68.17]:28346 "EHLO smtp1.axis.com"
+        id S1344067AbiAaIiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 03:38:52 -0500
+Received: from smtp1.axis.com ([195.60.68.17]:28385 "EHLO smtp1.axis.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229753AbiAaIiE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Jan 2022 03:38:04 -0500
+        id S229753AbiAaIiv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 Jan 2022 03:38:51 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1643618284;
-  x=1675154284;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1643618331;
+  x=1675154331;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=jxljYyNjfpZP8zfj4i6WDdtObvA8GitwPZ+7kLxPR0U=;
-  b=Kl1yAE3SNfHoNwLR9BDAZLYpH2q+6mnrzh+lXgycW1ZKaNN5njlSSdoX
-   W5SCA9zn2hsDUQDDgE4uOP30PVDI6COJhGgPWsD7qPSHfccvv6L2Vi3Vj
-   JSexEDSeBY7OvABJQI1qXY6eC0xopXDP6WiaJG+jAEgIJ0MXPv2jGXZ7b
-   BOF6D9dSpES3waYSffznKi/zTbFueBPMUL/y+XZBtV2i5r8KQNkbcdHCG
-   QWMoMJx0GECemCDYOmY2GuaLfbsU4Xwrs3pmTCwsemrqLluxAH/hGTtS7
-   /lPbZY7O4hAS7s5LMTZhbGzt3f+HDv3PExFFmbiviTXWC/f0T2QmpJNwi
-   Q==;
+  bh=H5mu6uWOtB+s9blOpQPA4wOezesa9SJ2ziJDv5UtNvU=;
+  b=dE0pR054alWIWennzAMaGq+DQAmw1O21DFK28GnYedaXoHHQJkN5ZApv
+   awwXrFJ8YjRqQ5f0Wl8/o9qzVoKE3OWUcibXGowuLsA45Iv2Nj5pLXSOZ
+   Q8tsTc+t1ZJlVIMtQV9Vz0HYGW1ga/I2NHw7BGJchws6HdzbrZ9DBee35
+   2QrzGcHlFSYo9O4qNYZ36RuOsCyzWgM8CXgi/QZUYDlkQG6zllbVY+r11
+   YZv62y/l3kQ3zJv7M8SdGscCFC1i17vrQoZ30fRaNp4kcVX696Q5nMNpr
+   6RquVSKHqv/9xb5eIFc5DZlLMiufbx/J5X2BxuV3jAKRicrGv/se+r2O6
+   A==;
 From:   Camel Guo <camel.guo@axis.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -37,9 +37,9 @@ CC:     <kernel@axis.com>, Camel Guo <camelg@axis.com>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH] net: stmmac: dump gmac4 DMA registers correctly
-Date:   Mon, 31 Jan 2022 09:37:56 +0100
-Message-ID: <20220131083756.3346506-1-camel.guo@axis.com>
+Subject: [PATCH v2] net: stmmac: dump gmac4 DMA registers correctly
+Date:   Mon, 31 Jan 2022 09:38:40 +0100
+Message-ID: <20220131083841.3346801-1-camel.guo@axis.com>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -73,6 +73,10 @@ Write of size 4 at addr ffffffc010177100 by task ethtool/1839
 Fixes: fbf68229ffe7 ("net: stmmac: unify registers dumps methods")
 Signed-off-by: Camel Guo <camelg@axis.com>
 ---
+
+Notes:
+    v2: add Fixes footnote
+
  .../net/ethernet/stmicro/stmmac/dwmac_dma.h   |  1 +
  .../ethernet/stmicro/stmmac/stmmac_ethtool.c  | 19 +++++++++++++++++--
  2 files changed, 18 insertions(+), 2 deletions(-)
