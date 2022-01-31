@@ -2,106 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46EBC4A4F92
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 20:40:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A3C44A4F94
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 20:40:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241087AbiAaTkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 14:40:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230238AbiAaTkp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 14:40:45 -0500
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9B0C061714
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 11:40:45 -0800 (PST)
-Received: by mail-qk1-x734.google.com with SMTP id j24so10790341qkk.10
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 11:40:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=RUiNyOIBBjmijdWjG+pP4fLDPA7sZdvUwUWwld+weuc=;
-        b=pysog4ms94wK+bvLBuh4xYIsKmIoN0MlZQvXHv1I4SXSRPW+AARxsHpHjWAMt+Oqt/
-         wKhVz4SarxVzg0QegGGxtNg26z/y4i2d2oRcZ/N76aKOSc3lQmfgLZwq965t6B/dZx91
-         lHX674rZYiGCtXZAl1mV79xoMrHXceD8YyhYwFAz0W++WHgxajgShaHZUUv0SyEPuPZl
-         fszeyGG2dThBQc/Kg5kG3e0E7Y1matuAx8Mz+kg5ZM4lVKXP/HLlg40H0DeYPA6zOlO2
-         hfyn9GnNvEoQTbqMqLKgktfVU2OlfBvG6zZV1L1PO4YYbEbdgMsFg4R0K+ROFBA3/tyW
-         dStQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RUiNyOIBBjmijdWjG+pP4fLDPA7sZdvUwUWwld+weuc=;
-        b=Jav528FWXF3d4Eqi3A8ita1KpT3AvCQPmivxfWsbxM6VLNJ8VqtHDcOZ1zcF1TyYwP
-         DQgSOC40k5GXeJXxb0uoQ/zTJdZNdl5ix5DMbsAs5LRNFAmEoq61MIl7l8/qsFfjel5x
-         qypNohggD7iJZ+NMVgbRI7OQeFQerTMlruelUraFQezUzBU9qF7VyLu57MObntS5HDsM
-         gNcO1CwTpg+tiGwj6IJ0XgX/XtNbVr6hKntwpWko5a6ZTtniHqdpiNr31Q10LBf24VzG
-         uyc0tL92YOET2G/4EtfRmkJ3aHD7n6lmexHXhlwXRCelVh8aHtounEgLjhN3t2goJlIk
-         BQrw==
-X-Gm-Message-State: AOAM531K+Y659p3mokOUnpTk6jUtT4dxXVE/pkFfeghkIvX52XyYT5K3
-        2k0+42JWk8B71JA5bWuywA/I/Q==
-X-Google-Smtp-Source: ABdhPJyemglDmaFMPAWeqzCDEMusz4U0gQRFBizDeEVKcZHj1CIlxQ/XJNMDWuo7C8O/UrV1yPejFQ==
-X-Received: by 2002:a05:620a:2890:: with SMTP id j16mr14414411qkp.437.1643658044596;
-        Mon, 31 Jan 2022 11:40:44 -0800 (PST)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-74.dsl.bell.ca. [184.148.47.74])
-        by smtp.googlemail.com with ESMTPSA id br30sm7566318qkb.67.2022.01.31.11.40.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 11:40:44 -0800 (PST)
-Message-ID: <b24054ae-7267-b5ca-363b-9c219fb05a98@mojatatu.com>
-Date:   Mon, 31 Jan 2022 14:40:43 -0500
-MIME-Version: 1.0
+        id S243147AbiAaTk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 14:40:57 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:64104 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230238AbiAaTk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 14:40:57 -0500
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20VJU1As030962;
+        Mon, 31 Jan 2022 19:40:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=1yjwJXH69A6OJPu4EaMuUsdQEykVrKv84jkBq4e/4oU=;
+ b=ONYeTxY0jpFpIWQE9dAD8qxezRWp4SIqlHh5oBNpVrUzSCbyhB4P6AVDJQtbMlKT57lI
+ 8aNDHZ9u/T6HGGA8bi6WRqHJkoU3tjLrqb1ktbHREO8+736/90ASIO5oHVN5v2hCHBiJ
+ B7qseAfBM7Cu1/bbHUCB53pHr3NgCZ0DqCpxqkOemkOEbMLeYDHO4XQxPTrfhyXkPwZt
+ 6naVG9XY9o7vI1u4IY3mUg/LJjuY6GZkZncERzi471Djjf8OIbvk1slYGnLcoGPl4Ncb
+ PwQqP+NICUsC23v7l5Pj/IRrcJAUMQQgAB+bRPcwLC4jCh768fzupOaixo4q5jJKC8Yg 0Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dxfduaah3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 19:40:53 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20VJNsLW016766;
+        Mon, 31 Jan 2022 19:40:52 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dxfduaagj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 19:40:52 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20VJMRKZ021916;
+        Mon, 31 Jan 2022 19:40:50 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma03fra.de.ibm.com with ESMTP id 3dvw79ds5p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 19:40:50 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20VJV19Z45941042
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 31 Jan 2022 19:31:01 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2ABB611C05B;
+        Mon, 31 Jan 2022 19:40:48 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D09EC11C052;
+        Mon, 31 Jan 2022 19:40:47 +0000 (GMT)
+Received: from [9.171.28.92] (unknown [9.171.28.92])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 31 Jan 2022 19:40:47 +0000 (GMT)
+Message-ID: <becbfd54-5a42-9867-f3ac-b347b561985f@linux.ibm.com>
+Date:   Mon, 31 Jan 2022 20:40:47 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH iproute2-next v2] tc: add skip_hw and skip_sw to control
- action offload
+ Thunderbird/91.3.0
+Subject: Re: [PATCH net-next 2/3] net/smc: Remove corked dealyed work
 Content-Language: en-US
-To:     Victor Nogueira <victor@mojatatu.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, Simon Horman <simon.horman@corigine.com>
-References: <1643180079-17097-1-git-send-email-baowen.zheng@corigine.com>
- <CA+NMeC_RKJXwbpjejTXKViUzUjDi0N-ZKoSa9fun=ySfThV5gA@mail.gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <CA+NMeC_RKJXwbpjejTXKViUzUjDi0N-ZKoSa9fun=ySfThV5gA@mail.gmail.com>
+To:     Tony Lu <tonylu@linux.alibaba.com>, kgraul@linux.ibm.com,
+        kuba@kernel.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org
+References: <20220130180256.28303-1-tonylu@linux.alibaba.com>
+ <20220130180256.28303-3-tonylu@linux.alibaba.com>
+From:   Stefan Raspl <raspl@linux.ibm.com>
+In-Reply-To: <20220130180256.28303-3-tonylu@linux.alibaba.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: GkieSeVXFjA0d3o9V4xA9yXMOUGdLyBk
+X-Proofpoint-ORIG-GUID: li5k-J7izJp8hqlJ1-O49wrMIL4i9Rhz
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-31_07,2022-01-31_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ lowpriorityscore=0 adultscore=0 spamscore=0 malwarescore=0 mlxscore=0
+ priorityscore=1501 mlxlogscore=999 bulkscore=0 impostorscore=0
+ clxscore=1015 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2201310125
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-01-26 08:41, Victor Nogueira wrote:
-> On Wed, Jan 26, 2022 at 3:55 AM Baowen Zheng <baowen.zheng@corigine.com> wrote:
->>
->> Add skip_hw and skip_sw flags for user to control whether
->> offload action to hardware.
->>
->> Also we add hw_count to show how many hardwares accept to offload
->> the action.
->>
->> Change man page to describe the usage of skip_sw and skip_hw flag.
->>
->> An example to add and query action as below.
->>
->> $ tc actions add action police rate 1mbit burst 100k index 100 skip_sw
->>
->> $ tc -s -d actions list action police
->> total acts 1
->>      action order 0:  police 0x64 rate 1Mbit burst 100Kb mtu 2Kb action reclassify overhead 0b linklayer ethernet
->>      ref 1 bind 0  installed 2 sec used 2 sec
->>      Action statistics:
->>      Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
->>      backlog 0b 0p requeues 0
->>      skip_sw in_hw in_hw_count 1
->>      used_hw_stats delayed
->>
->> Signed-off-by: baowen zheng <baowen.zheng@corigine.com>
->> Signed-off-by: Simon Horman <simon.horman@corigine.com>
+On 1/30/22 19:02, Tony Lu wrote:
+> Based on the manual of TCP_CORK [1] and MSG_MORE [2], these two options
+> have the same effect. Applications can set these options and informs the
+> kernel to pend the data, and send them out only when the socket or
+> syscall does not specify this flag. In other words, there's no need to
+> send data out by a delayed work, which will queue a lot of work.
 > 
-> I applied this version, tested it and can confirm the breakage in tdc is gone.
-> Tested-by: Victor Nogueira <victor@mojatatu.com>
+> This removes corked delayed work with SMC_TX_CORK_DELAY (250ms), and the
+> applications control how/when to send them out. It improves the
+> performance for sendfile and throughput, and remove unnecessary race of
+> lock_sock(). This also unlocks the limitation of sndbuf, and try to fill
+> it up before sending.
+> 
+> [1] https://linux.die.net/man/7/tcp
+> [2] https://man7.org/linux/man-pages/man2/send.2.html
+> 
+> Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+> ---
+>   net/smc/smc_tx.c | 15 ++++++---------
+>   1 file changed, 6 insertions(+), 9 deletions(-)
+> 
+> diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
+> index 7b0b6e24582f..9cec62cae7cb 100644
+> --- a/net/smc/smc_tx.c
+> +++ b/net/smc/smc_tx.c
+> @@ -31,7 +31,6 @@
+>   #include "smc_tracepoint.h"
+>   
+>   #define SMC_TX_WORK_DELAY	0
+> -#define SMC_TX_CORK_DELAY	(HZ >> 2)	/* 250 ms */
+>   
+>   /***************************** sndbuf producer *******************************/
+>   
+> @@ -237,15 +236,13 @@ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len)
+>   		if ((msg->msg_flags & MSG_OOB) && !send_remaining)
+>   			conn->urg_tx_pend = true;
+>   		if ((msg->msg_flags & MSG_MORE || smc_tx_is_corked(smc)) &&
+> -		    (atomic_read(&conn->sndbuf_space) >
+> -						(conn->sndbuf_desc->len >> 1)))
+> -			/* for a corked socket defer the RDMA writes if there
+> -			 * is still sufficient sndbuf_space available
+> +		    (atomic_read(&conn->sndbuf_space)))
+> +			/* for a corked socket defer the RDMA writes if
+> +			 * sndbuf_space is still available. The applications
+> +			 * should known how/when to uncork it.
+>   			 */
+> -			queue_delayed_work(conn->lgr->tx_wq, &conn->tx_work,
+> -					   SMC_TX_CORK_DELAY);
+> -		else
+> -			smc_tx_sndbuf_nonempty(conn);
+> +			continue;
 
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+In case we just corked the final bytes in this call, wouldn't this 'continue' 
+prevent us from accounting the Bytes that we just staged to be sent out later in 
+the trace_smc_tx_sendmsg() call below?
 
-cheers,
-jamal
+> +		smc_tx_sndbuf_nonempty(conn);
+>   
+>   		trace_smc_tx_sendmsg(smc, copylen);
+
+
