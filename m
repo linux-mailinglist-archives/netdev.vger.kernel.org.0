@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C42A4A4FA1
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 20:43:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E25BA4A4FA3
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 20:43:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377322AbiAaTnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 14:43:35 -0500
+        id S1377332AbiAaTnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 14:43:37 -0500
 Received: from mga03.intel.com ([134.134.136.65]:38309 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229992AbiAaTne (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Jan 2022 14:43:34 -0500
+        id S1377303AbiAaTnf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 Jan 2022 14:43:35 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643658214; x=1675194214;
+  t=1643658215; x=1675194215;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8zj3z4ViCR7+aurmIgZ2hKrZ63yRgLcTztXaX4N2X10=;
-  b=mAV+izyF9izJEqK2mzE/z8Rj4AnXHHQqr0pooOnsuC4IIStvoC7NCBX/
-   mq48IXU/IClD84RZHC0P5qmbgo61kBBKhg8wNWJ/u4vnz1UidcgLY2CZS
-   maab6OM4EZbmzBRETupQfH+idAhN2Hy2KIjNfjdqznrbPjPslk8yIgPQe
-   BTMEPeoBbIcnyvQyXBo6Sm2yfYJQsbgX6dDcbSaTaLHVZwKIMegZX5U5j
-   l0IVmohMugDNi+a97C8vUQtU7ZRWS7ubaWkUoKxBfor6tnY9fLz21cFo/
-   SMKgqv+R1JdInT6gD08WB6j1pRvkCcmowKjIUnA2G6pvbfFHHppx+mqgg
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="247489714"
+  bh=xu2gapw8EGonEKPfGsLDqB5BWECojNkQnvRqX7oXxr8=;
+  b=lKLZL4mq5RcxEFSWj8uDq6kGSpIlwlokfm5odV70bBSVOHZNLH6NvoSP
+   bqP+s4dmJ7Q6l5pCCIpPwL5GfJTfo1IsJbI+puxY8ZMEwqX3lcnP6iYub
+   UjrE3O7SEaDfxiagIaKBJXdZBZTSVtYPHopbdiX6MlDTUzPkV4dc9/GhI
+   qScTuEpQ8x0lbmE74KfoBNTP9kEcye2A7IYi7sATb02KOHmHDZleGushH
+   9dIR1hkupTagW9xjnnok8xxVrnurYDkM8jm7dJrgQ8DkfugCuy9ryzwXV
+   gpe7f1qJGT35QumhYhQUo3CSRRmMXDvaFnoRgDan/EP5n4oE8yqROmdpC
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="247489715"
 X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="247489714"
+   d="scan'208";a="247489715"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 11:43:34 -0800
 X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="537448422"
+   d="scan'208";a="537448434"
 Received: from ssaleem-mobl.amr.corp.intel.com ([10.255.33.15])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 11:43:33 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 11:43:34 -0800
 From:   Shiraz Saleem <shiraz.saleem@intel.com>
 To:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Mustafa Ismail <mustafa.ismail@intel.com>,
         Shiraz Saleem <shiraz.saleem@intel.com>
-Subject: [PATCH for-next 2/3] RDMA/irdma: Refactor DCB bits in prep for DSCP support
-Date:   Mon, 31 Jan 2022 13:43:15 -0600
-Message-Id: <20220131194316.1528-3-shiraz.saleem@intel.com>
+Subject: [PATCH for-next 3/3] RDMA/irdma: Add support for DSCP
+Date:   Mon, 31 Jan 2022 13:43:16 -0600
+Message-Id: <20220131194316.1528-4-shiraz.saleem@intel.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220131194316.1528-1-shiraz.saleem@intel.com>
 References: <20220131194316.1528-1-shiraz.saleem@intel.com>
@@ -51,182 +51,173 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mustafa Ismail <mustafa.ismail@intel.com>
 
-Rename dcb flag to dcb_vlan_mode in irdma_device struct.
-Add a new helper function, irdma_set_qos_info, to set
-the VSI QoS information passed by the PCI driver.
+Add DSCP support for the Intel Ethernet 800 Series devices.
+Setup VSI DSCP info when PCI driver indicates DSCP mode during
+driver probe or as notification event.
 
 Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
 Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
 ---
- drivers/infiniband/hw/irdma/cm.c       |  4 ++--
- drivers/infiniband/hw/irdma/ctrl.c     | 33 +++++++++++++++++++++------------
- drivers/infiniband/hw/irdma/i40iw_if.c |  2 +-
- drivers/infiniband/hw/irdma/main.c     |  6 +++++-
- drivers/infiniband/hw/irdma/main.h     |  2 +-
- drivers/infiniband/hw/irdma/verbs.c    |  4 ++--
- 6 files changed, 32 insertions(+), 19 deletions(-)
+ drivers/infiniband/hw/irdma/cm.c    | 20 ++++++++++++++++----
+ drivers/infiniband/hw/irdma/cm.h    |  7 +++++++
+ drivers/infiniband/hw/irdma/ctrl.c  |  6 ++++++
+ drivers/infiniband/hw/irdma/main.c  |  8 ++++++--
+ drivers/infiniband/hw/irdma/osdep.h |  1 +
+ drivers/infiniband/hw/irdma/type.h  |  4 ++++
+ 6 files changed, 40 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
-index 6dea0a4..6ff1800 100644
+index 6ff1800..abc101b 100644
 --- a/drivers/infiniband/hw/irdma/cm.c
 +++ b/drivers/infiniband/hw/irdma/cm.c
-@@ -2200,7 +2200,7 @@ static void irdma_cm_free_ah(struct irdma_cm_node *cm_node)
- 	/* set our node specific transport info */
- 	cm_node->ipv4 = cm_info->ipv4;
- 	cm_node->vlan_id = cm_info->vlan_id;
--	if (cm_node->vlan_id >= VLAN_N_VID && iwdev->dcb)
-+	if (cm_node->vlan_id >= VLAN_N_VID && iwdev->dcb_vlan_mode)
- 		cm_node->vlan_id = 0;
- 	cm_node->tos = cm_info->tos;
- 	cm_node->user_pri = cm_info->user_pri;
-@@ -3959,7 +3959,7 @@ int irdma_create_listen(struct iw_cm_id *cm_id, int backlog)
- 		}
- 	}
- 
--	if (cm_info.vlan_id >= VLAN_N_VID && iwdev->dcb)
-+	if (cm_info.vlan_id >= VLAN_N_VID && iwdev->dcb_vlan_mode)
- 		cm_info.vlan_id = 0;
- 	cm_info.backlog = backlog;
+@@ -2209,8 +2209,12 @@ static void irdma_cm_free_ah(struct irdma_cm_node *cm_node)
+ 			ibdev_warn(&iwdev->ibdev,
+ 				   "application TOS[%d] and remote client TOS[%d] mismatch\n",
+ 				   listener->tos, cm_info->tos);
+-		cm_node->tos = max(listener->tos, cm_info->tos);
+-		cm_node->user_pri = rt_tos2priority(cm_node->tos);
++		if (iwdev->vsi.dscp_mode) {
++			cm_node->user_pri = listener->user_pri;
++		} else {
++			cm_node->tos = max(listener->tos, cm_info->tos);
++			cm_node->user_pri = rt_tos2priority(cm_node->tos);
++		}
+ 		ibdev_dbg(&iwdev->ibdev,
+ 			  "DCB: listener: TOS:[%d] UP:[%d]\n", cm_node->tos,
+ 			  cm_node->user_pri);
+@@ -3835,7 +3839,11 @@ int irdma_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
  	cm_info.cm_id = cm_id;
-diff --git a/drivers/infiniband/hw/irdma/ctrl.c b/drivers/infiniband/hw/irdma/ctrl.c
-index 3141a9c..ef1d6ad 100644
---- a/drivers/infiniband/hw/irdma/ctrl.c
-+++ b/drivers/infiniband/hw/irdma/ctrl.c
-@@ -70,6 +70,25 @@ void irdma_sc_suspend_resume_qps(struct irdma_sc_vsi *vsi, u8 op)
- 	}
- }
+ 	cm_info.qh_qpid = iwdev->vsi.ilq->qp_id;
+ 	cm_info.tos = cm_id->tos;
+-	cm_info.user_pri = rt_tos2priority(cm_id->tos);
++	if (iwdev->vsi.dscp_mode)
++		cm_info.user_pri =
++			iwqp->sc_qp.vsi->dscp_map[irdma_tos2dscp(cm_info.tos)];
++	else
++		cm_info.user_pri = rt_tos2priority(cm_id->tos);
  
-+static void irdma_set_qos_info(struct irdma_sc_vsi  *vsi,
-+			       struct irdma_l2params *l2p)
-+{
-+	u8 i;
+ 	if (iwqp->sc_qp.dev->ws_add(iwqp->sc_qp.vsi, cm_info.user_pri))
+ 		return -ENOMEM;
+@@ -3977,7 +3985,11 @@ int irdma_create_listen(struct iw_cm_id *cm_id, int backlog)
+ 	cm_id->provider_data = cm_listen_node;
+ 
+ 	cm_listen_node->tos = cm_id->tos;
+-	cm_listen_node->user_pri = rt_tos2priority(cm_id->tos);
++	if (iwdev->vsi.dscp_mode)
++		cm_listen_node->user_pri =
++			iwdev->vsi.dscp_map[irdma_tos2dscp(cm_id->tos)];
++	else
++		cm_listen_node->user_pri = rt_tos2priority(cm_id->tos);
+ 	cm_info.user_pri = cm_listen_node->user_pri;
+ 	if (!cm_listen_node->reused_node) {
+ 		if (wildcard) {
+diff --git a/drivers/infiniband/hw/irdma/cm.h b/drivers/infiniband/hw/irdma/cm.h
+index 3bf4272..19c2849 100644
+--- a/drivers/infiniband/hw/irdma/cm.h
++++ b/drivers/infiniband/hw/irdma/cm.h
+@@ -384,6 +384,13 @@ int irdma_schedule_cm_timer(struct irdma_cm_node *cm_node,
+ 			    struct irdma_puda_buf *sqbuf,
+ 			    enum irdma_timer_type type, int send_retrans,
+ 			    int close_when_complete);
 +
-+	vsi->qos_rel_bw = l2p->vsi_rel_bw;
-+	vsi->qos_prio_type = l2p->vsi_prio_type;
-+	for (i = 0; i < IRDMA_MAX_USER_PRIORITY; i++) {
-+		if (vsi->dev->hw_attrs.uk_attrs.hw_rev == IRDMA_GEN_1)
-+			vsi->qos[i].qs_handle = l2p->qs_handle_list[i];
-+		vsi->qos[i].traffic_class = l2p->up2tc[i];
-+		vsi->qos[i].rel_bw =
-+			l2p->tc_info[vsi->qos[i].traffic_class].rel_bw;
-+		vsi->qos[i].prio_type =
-+			l2p->tc_info[vsi->qos[i].traffic_class].prio_type;
-+		vsi->qos[i].valid = false;
-+	}
++static inline u8 irdma_tos2dscp(u8 tos)
++{
++#define IRDMA_DSCP_VAL GENMASK(7, 2)
++	return (u8)FIELD_GET(IRDMA_DSCP_VAL, tos);
 +}
 +
- /**
-  * irdma_change_l2params - given the new l2 parameters, change all qp
-  * @vsi: RDMA VSI pointer
-@@ -88,6 +107,7 @@ void irdma_change_l2params(struct irdma_sc_vsi *vsi,
- 		return;
+ int irdma_accept(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param);
+ int irdma_reject(struct iw_cm_id *cm_id, const void *pdata, u8 pdata_len);
+ int irdma_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param);
+diff --git a/drivers/infiniband/hw/irdma/ctrl.c b/drivers/infiniband/hw/irdma/ctrl.c
+index ef1d6ad..94a9c26 100644
+--- a/drivers/infiniband/hw/irdma/ctrl.c
++++ b/drivers/infiniband/hw/irdma/ctrl.c
+@@ -77,6 +77,12 @@ static void irdma_set_qos_info(struct irdma_sc_vsi  *vsi,
  
- 	vsi->tc_change_pending = false;
-+	irdma_set_qos_info(vsi, l2params);
- 	irdma_sc_suspend_resume_qps(vsi, IRDMA_OP_RESUME);
- }
- 
-@@ -1845,7 +1865,6 @@ static void irdma_null_ws_reset(struct irdma_sc_vsi *vsi)
- void irdma_sc_vsi_init(struct irdma_sc_vsi  *vsi,
- 		       struct irdma_vsi_init_info *info)
- {
--	struct irdma_l2params *l2p;
- 	int i;
- 
- 	vsi->dev = info->dev;
-@@ -1858,18 +1877,8 @@ void irdma_sc_vsi_init(struct irdma_sc_vsi  *vsi,
- 	if (vsi->dev->hw_attrs.uk_attrs.hw_rev == IRDMA_GEN_1)
- 		vsi->fcn_id = info->dev->hmc_fn_id;
- 
--	l2p = info->params;
--	vsi->qos_rel_bw = l2p->vsi_rel_bw;
--	vsi->qos_prio_type = l2p->vsi_prio_type;
-+	irdma_set_qos_info(vsi, info->params);
+ 	vsi->qos_rel_bw = l2p->vsi_rel_bw;
+ 	vsi->qos_prio_type = l2p->vsi_prio_type;
++	vsi->dscp_mode = l2p->dscp_mode;
++	if (l2p->dscp_mode) {
++		memcpy(vsi->dscp_map, l2p->dscp_map, sizeof(vsi->dscp_map));
++		for (i = 0; i < IRDMA_MAX_USER_PRIORITY; i++)
++			l2p->up2tc[i] = i;
++	}
  	for (i = 0; i < IRDMA_MAX_USER_PRIORITY; i++) {
--		if (vsi->dev->hw_attrs.uk_attrs.hw_rev == IRDMA_GEN_1)
--			vsi->qos[i].qs_handle = l2p->qs_handle_list[i];
--		vsi->qos[i].traffic_class = info->params->up2tc[i];
--		vsi->qos[i].rel_bw =
--			l2p->tc_info[vsi->qos[i].traffic_class].rel_bw;
--		vsi->qos[i].prio_type =
--			l2p->tc_info[vsi->qos[i].traffic_class].prio_type;
--		vsi->qos[i].valid = false;
- 		mutex_init(&vsi->qos[i].qos_mutex);
- 		INIT_LIST_HEAD(&vsi->qos[i].qplist);
- 	}
-diff --git a/drivers/infiniband/hw/irdma/i40iw_if.c b/drivers/infiniband/hw/irdma/i40iw_if.c
-index 43e962b..8b5bd77 100644
---- a/drivers/infiniband/hw/irdma/i40iw_if.c
-+++ b/drivers/infiniband/hw/irdma/i40iw_if.c
-@@ -138,7 +138,7 @@ static int i40iw_open(struct i40e_info *cdev_info, struct i40e_client *client)
- 		if (last_qset == IRDMA_NO_QSET)
- 			last_qset = qset;
- 		else if ((qset != last_qset) && (qset != IRDMA_NO_QSET))
--			iwdev->dcb = true;
-+			iwdev->dcb_vlan_mode = true;
- 	}
- 
- 	if (irdma_rt_init_hw(iwdev, &l2params)) {
+ 		if (vsi->dev->hw_attrs.uk_attrs.hw_rev == IRDMA_GEN_1)
+ 			vsi->qos[i].qs_handle = l2p->qs_handle_list[i];
 diff --git a/drivers/infiniband/hw/irdma/main.c b/drivers/infiniband/hw/irdma/main.c
-index 9fab290..179667b 100644
+index 179667b..9762526 100644
 --- a/drivers/infiniband/hw/irdma/main.c
 +++ b/drivers/infiniband/hw/irdma/main.c
-@@ -108,8 +108,9 @@ static void irdma_iidc_event_handler(struct ice_pf *pf, struct iidc_event *event
- 		l2params.tc_changed = true;
- 		ibdev_dbg(&iwdev->ibdev, "CLNT: TC Change\n");
+@@ -79,6 +79,10 @@ static void irdma_fill_qos_info(struct irdma_l2params *l2params,
+ 	}
+ 	for (i = 0; i < IIDC_MAX_USER_PRIORITY; i++)
+ 		l2params->up2tc[i] = qos_info->up2tc[i];
++	if (qos_info->pfc_mode == IIDC_DSCP_PFC_MODE) {
++		l2params->dscp_mode = true;
++		memcpy(l2params->dscp_map, qos_info->dscp_map, sizeof(l2params->dscp_map));
++	}
+ }
+ 
+ static void irdma_iidc_event_handler(struct ice_pf *pf, struct iidc_event *event)
+@@ -110,7 +114,7 @@ static void irdma_iidc_event_handler(struct ice_pf *pf, struct iidc_event *event
  		ice_get_qos_params(pf, &qos_info);
--		iwdev->dcb = qos_info.num_tc > 1;
  		irdma_fill_qos_info(&l2params, &qos_info);
-+		if (iwdev->rf->protocol_used != IRDMA_IWARP_PROTOCOL_ONLY)
-+			iwdev->dcb_vlan_mode = qos_info.num_tc > 1;
+ 		if (iwdev->rf->protocol_used != IRDMA_IWARP_PROTOCOL_ONLY)
+-			iwdev->dcb_vlan_mode = qos_info.num_tc > 1;
++			iwdev->dcb_vlan_mode = qos_info.num_tc > 1 && !l2params.dscp_mode;
  		irdma_change_l2params(&iwdev->vsi, &l2params);
  	} else if (*event->type & BIT(IIDC_EVENT_CRIT_ERR)) {
  		ibdev_warn(&iwdev->ibdev, "ICE OICR event notification: oicr = 0x%08x\n",
-@@ -283,6 +284,9 @@ static int irdma_probe(struct auxiliary_device *aux_dev, const struct auxiliary_
- 	l2params.mtu = iwdev->netdev->mtu;
+@@ -285,7 +289,7 @@ static int irdma_probe(struct auxiliary_device *aux_dev, const struct auxiliary_
  	ice_get_qos_params(pf, &qos_info);
  	irdma_fill_qos_info(&l2params, &qos_info);
-+	if (iwdev->rf->protocol_used != IRDMA_IWARP_PROTOCOL_ONLY)
-+		iwdev->dcb_vlan_mode = l2params.num_tc > 1;
-+
+ 	if (iwdev->rf->protocol_used != IRDMA_IWARP_PROTOCOL_ONLY)
+-		iwdev->dcb_vlan_mode = l2params.num_tc > 1;
++		iwdev->dcb_vlan_mode = l2params.num_tc > 1 && !l2params.dscp_mode;
+ 
  	if (irdma_rt_init_hw(iwdev, &l2params)) {
  		err = -EIO;
- 		goto err_rt_init;
-diff --git a/drivers/infiniband/hw/irdma/main.h b/drivers/infiniband/hw/irdma/main.h
-index cb218ca..cf6732b 100644
---- a/drivers/infiniband/hw/irdma/main.h
-+++ b/drivers/infiniband/hw/irdma/main.h
-@@ -345,7 +345,7 @@ struct irdma_device {
- 	u8 iw_status;
- 	bool roce_mode:1;
- 	bool roce_dcqcn_en:1;
--	bool dcb:1;
-+	bool dcb_vlan_mode:1;
- 	bool iw_ooo:1;
- 	enum init_completion_state init_state;
+diff --git a/drivers/infiniband/hw/irdma/osdep.h b/drivers/infiniband/hw/irdma/osdep.h
+index 63d8bb3..6e28e43 100644
+--- a/drivers/infiniband/hw/irdma/osdep.h
++++ b/drivers/infiniband/hw/irdma/osdep.h
+@@ -5,6 +5,7 @@
  
-diff --git a/drivers/infiniband/hw/irdma/verbs.c b/drivers/infiniband/hw/irdma/verbs.c
-index 460e757..7b144e5 100644
---- a/drivers/infiniband/hw/irdma/verbs.c
-+++ b/drivers/infiniband/hw/irdma/verbs.c
-@@ -1189,7 +1189,7 @@ int irdma_modify_qp_roce(struct ib_qp *ibqp, struct ib_qp_attr *attr,
- 		if (ret)
- 			return ret;
+ #include <linux/pci.h>
+ #include <linux/bitfield.h>
++#include <linux/net/intel/iidc.h>
+ #include <crypto/hash.h>
+ #include <rdma/ib_verbs.h>
  
--		if (vlan_id >= VLAN_N_VID && iwdev->dcb)
-+		if (vlan_id >= VLAN_N_VID && iwdev->dcb_vlan_mode)
- 			vlan_id = 0;
- 		if (vlan_id < VLAN_N_VID) {
- 			udp_info->insert_vlan_tag = true;
-@@ -4229,7 +4229,7 @@ static int irdma_create_ah(struct ib_ah *ibah,
- 		goto error;
- 	}
+diff --git a/drivers/infiniband/hw/irdma/type.h b/drivers/infiniband/hw/irdma/type.h
+index 9483bb3..4290a2c 100644
+--- a/drivers/infiniband/hw/irdma/type.h
++++ b/drivers/infiniband/hw/irdma/type.h
+@@ -611,6 +611,8 @@ struct irdma_sc_vsi {
+ 				struct irdma_ws_node *tc_node);
+ 	u8 qos_rel_bw;
+ 	u8 qos_prio_type;
++	u8 dscp_map[IIDC_MAX_DSCP_MAPPING];
++	bool dscp_mode:1;
+ };
  
--	if (ah_info->vlan_tag >= VLAN_N_VID && iwdev->dcb)
-+	if (ah_info->vlan_tag >= VLAN_N_VID && iwdev->dcb_vlan_mode)
- 		ah_info->vlan_tag = 0;
+ struct irdma_sc_dev {
+@@ -735,11 +737,13 @@ struct irdma_l2params {
+ 	u16 qs_handle_list[IRDMA_MAX_USER_PRIORITY];
+ 	u16 mtu;
+ 	u8 up2tc[IRDMA_MAX_USER_PRIORITY];
++	u8 dscp_map[IIDC_MAX_DSCP_MAPPING];
+ 	u8 num_tc;
+ 	u8 vsi_rel_bw;
+ 	u8 vsi_prio_type;
+ 	bool mtu_changed:1;
+ 	bool tc_changed:1;
++	bool dscp_mode:1;
+ };
  
- 	if (ah_info->vlan_tag < VLAN_N_VID) {
+ struct irdma_vsi_init_info {
 -- 
 1.8.3.1
 
