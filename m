@@ -2,57 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5FA64A4DA7
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 18:59:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AD474A4DB3
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 19:04:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235177AbiAaR7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 12:59:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57366 "EHLO
+        id S237177AbiAaSEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 13:04:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiAaR7K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 12:59:10 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C6EC06173D
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 09:59:10 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id s2-20020a17090ad48200b001b501977b23so19079272pju.2
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 09:59:10 -0800 (PST)
+        with ESMTP id S230425AbiAaSEu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 13:04:50 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A4D7C061714
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 10:04:50 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id g11-20020a17090a7d0b00b001b2c12c7273so355666pjl.0
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 10:04:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GTfk5dtnofD+DwQSBTggrf944TpHjURpGaUt6sHxP1Q=;
-        b=zo7PV8Zd2Z7HIVMtmOiMcabS1N6sxBbjo3wwW81zQa4IENFd+3e1qlBJHlUZq9ntz+
-         XqfG3FiwQvk7BkMKzEkrTK8KhKl8bZCQp61R1xdJf1S9wF/56YoXbTILPq45QQEx1fSh
-         qDbMCmpmLx42v5eiBQi+snTnumsDFMmyNi7p2J7qmEpf/Q0W+tWRSYxd7R6rXO23yKNp
-         eMGd4RXtD6PUL8AwbxNTR7tmpDMAYcRkYwTmmCgt3rFO3CXoS8g4hf8QkYIQwr1yPT2W
-         YKmY+awyasNFLlw+dtDGpSReBp1a0X8b4c5W4Zbb1H5Li7iemUtlEkg083LPRVdpWVvw
-         ce3Q==
+        d=pensando.io; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=c4Q5GbHlG477GDu8eKVa3wxvGBbayrQI0q4Ora6UJKM=;
+        b=tqRPGJPSBTirucVoZRcW3Pfn8BwsifiN/2zFudpAcytP87mX6mRx+Z2+R8wpSJO6rJ
+         E21sG6i5x1UJi7SIERlnMvo8Jw0MLeFM6mvgDhxTj45ED5x+ylbmR3r1yaZ8mJx2fzpx
+         udWsOYVxp3K/E4/g+A1Uv/ovIRjY7g5AdBlMS01qOGp/RnNoU+KHggkPTU0eVD0DU8s9
+         0BeQOAnHzHWADyIK4Vu+WAIlTn0apQDnBPfgCcsWeZOXKK9/5IWZ2oh4MKVGtqnRvPWe
+         5941r9GmvDJ9BaTRBHT9nHnwJ9e+INLC12aBfS+Ob2isiRQG967ObJegi9wJYUDWinQX
+         qgZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GTfk5dtnofD+DwQSBTggrf944TpHjURpGaUt6sHxP1Q=;
-        b=3jUl1PRnhIxLCGn75is5tmzGeAWymJOSNkzGqAOQuA4dZ1DcYWtRi0bqyk00RQchNj
-         kH4N7n2BzWSlRo9xZ2g12AXb+CdNiDl+BUDLE3w9/z3B88sz4Qcbhc97iVt9KxbBq7IA
-         JdGgdI1FDSTHddMO6b2hrXSEZOQanA09+0rsHLnUFigbNLPynT4XmwlWO08QhN+5FAR4
-         LQp3M3NGQ8dU1x98qtPAWZ3CqtVO16UamKggxiopPlE7eSb3LeQTWAasR7/V3XoJF/yh
-         7OHiztWrb/t8esSKmncYRULo6QiGwDiYrIeUtnKJwzqUOvTXayPuITJJcpVC7eUKEjqX
-         YJCQ==
-X-Gm-Message-State: AOAM5306BvWn1m+NzwPKI6kVpzLCeBbcDsN1jK46iwD42S6h99Si/x66
-        CcXsGMrr+NPA+Pt01dQlHDxJxA==
-X-Google-Smtp-Source: ABdhPJwUpbKpp1BF/RE/P7pFaFs95WxKDdCWSlLhnXYDb8ikckCTeUYHjKtVxjHYzKFZsy5bOe8h5g==
-X-Received: by 2002:a17:90b:1d8d:: with SMTP id pf13mr35398210pjb.232.1643651949935;
-        Mon, 31 Jan 2022 09:59:09 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id o1sm20431282pfu.88.2022.01.31.09.59.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 09:59:09 -0800 (PST)
-Date:   Mon, 31 Jan 2022 09:59:05 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mark Einon <mark.einon@gmail.com>,
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=c4Q5GbHlG477GDu8eKVa3wxvGBbayrQI0q4Ora6UJKM=;
+        b=LBmY/MvtZ3RliTMQBr6a5YsJWc+wKxhYtGzch9B4digF4QG4qs6v2Wq/wcLCxXIFdW
+         6XPsv033eDmIppc9u9QOJeHmzbPVKtlK9X3cmiaDO8c3At3rpFGaQNI+F9cxaFrsVVQp
+         +zeUttOZNXQi3fq9b4Hvuo3lJVaSYqgp1m2sPnNzu3y5TONFGPntI14D/dHE3XOEjnyq
+         7ecN1J1SpRiOLXFeJ5gRQuEWXT6rHnso89WuWWohOMZKTFKh1UXG6UKiRV2rPkIt2R6K
+         lYramQooXqwt/by4mAzUZHqGn5JQVq8Sp4L2Y2Rq9NDi/cIDEI7SrBzxjjpHLjoTcC3F
+         8bhQ==
+X-Gm-Message-State: AOAM531cmG3NNDEWtEwPszeP/jd4GW5+JowVxAS7z3OLdf5TdoG4XahO
+        wBW2qY5wphmMZPcJSVmseZXaMQ==
+X-Google-Smtp-Source: ABdhPJwiCZ3y7ls9K5IfS1T6T0ClceNUAK7SZtIbNYVDQUzoxeIbETevQnD06wi4x9WLSkmqa1d5tw==
+X-Received: by 2002:a17:902:d2c3:: with SMTP id n3mr21984876plc.45.1643652289541;
+        Mon, 31 Jan 2022 10:04:49 -0800 (PST)
+Received: from [192.168.0.2] ([50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id y42sm19810173pfa.5.2022.01.31.10.04.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Jan 2022 10:04:49 -0800 (PST)
+Message-ID: <e9e124b0-4ea0-e84c-cd8e-1c6ad4df9d74@pensando.io>
+Date:   Mon, 31 Jan 2022 10:04:40 -0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [PATCH net-next] net: kbuild: Don't default net vendor configs to
+ y
+Content-Language: en-US
+To:     Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Mark Einon <mark.einon@gmail.com>,
         Lino Sanfilippo <LinoSanfilippo@gmx.de>,
         Maxime Ripard <mripard@kernel.org>,
         Chen-Yu Tsai <wens@csie.org>,
@@ -84,8 +91,7 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         UNGLinuxDriver@microchip.com, Jon Mason <jdmason@kudzu.us>,
         Simon Horman <simon.horman@corigine.com>,
         Rain River <rain.1986.08.12@gmail.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Shannon Nelson <snelson@pensando.io>, drivers@pensando.io,
+        Zhu Yanjun <zyjzyj2000@gmail.com>, drivers@pensando.io,
         Sergey Shtylyov <s.shtylyov@omp.ru>,
         Jiri Pirko <jiri@resnulli.us>,
         Edward Cree <ecree.xilinx@gmail.com>,
@@ -129,33 +135,29 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         linux-hyperv@vger.kernel.org, oss-drivers@corigine.com,
         linux-renesas-soc@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH net-next] net: kbuild: Don't default net vendor configs
- to y
-Message-ID: <20220131095905.08722670@hermes.local>
-In-Reply-To: <20220131172450.4905-1-saeed@kernel.org>
 References: <20220131172450.4905-1-saeed@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From:   Shannon Nelson <snelson@pensando.io>
+In-Reply-To: <20220131172450.4905-1-saeed@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 31 Jan 2022 09:24:50 -0800
-Saeed Mahameed <saeed@kernel.org> wrote:
-
+On 1/31/22 9:24 AM, Saeed Mahameed wrote:
 > From: Saeed Mahameed <saeedm@nvidia.com>
-> 
+>
 > NET_VENDOR_XYZ were defaulted to 'y' for no technical reason.
-> 
+>
 > Since all drivers belonging to a vendor are supposed to default to 'n',
 > defaulting all vendors to 'n' shouldn't be an issue, and aligns well
 > with the 'no new drivers' by default mentality.
-> 
+>
 > Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+>
 
-This was done back when vendors were introduced in the network drivers tree.
-The default of Y allowed older configurations to just work.
+Is there a particular reason to change this?
+Broken compiles?  Bad drivers?  Over-sized output?
 
-So there was a reason, not sure if it matters anymore.
-But it seems like useless repainting to change it now.
+sln
+
