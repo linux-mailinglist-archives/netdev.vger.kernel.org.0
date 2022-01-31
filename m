@@ -2,424 +2,708 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FDF34A3C6B
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 02:08:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27CFB4A3C87
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 03:08:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357290AbiAaBIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Jan 2022 20:08:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54114 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230269AbiAaBIy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jan 2022 20:08:54 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D09C061714;
-        Sun, 30 Jan 2022 17:08:54 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id d10so37525957eje.10;
-        Sun, 30 Jan 2022 17:08:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=/d/1F9joOfYdE7Tjusc7U3ydwf04rVdyD/sh2o80Dvc=;
-        b=Uo+HMKLcTJoLkKZKJE3EMGnbXY5T/7RWOMYM1Y3RdkVoaTqfiP9EADcaJ25rlD7TSY
-         3GQCxrmUGSSOlJy2IAP9jwp61J1d86GqacffCGJwigPeN+Qk1TA4jTwaLVOuuvT9+0si
-         L80dMWdrqgFRTKtucEpH878HQegKZPNGs4KaDvXI/kzU7kqfDh9xuUgZHuEzfhb2G5Vn
-         S7y9Dc5CLRMIybMNCsRbpdOYKdz/Z8G49rf9nRJ9v9JoL7WxxdAKckoopI0x6tjADyAS
-         AsZXxDvATj0ecqXslDxo8IKjHVvQYxYFL870Yqhj6cpIDa2UChsOlEVvoO7tYRJEnqKv
-         7KvQ==
+        id S1357344AbiAaCI2 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 30 Jan 2022 21:08:28 -0500
+Received: from mail-yb1-f171.google.com ([209.85.219.171]:42516 "EHLO
+        mail-yb1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357336AbiAaCI1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jan 2022 21:08:27 -0500
+Received: by mail-yb1-f171.google.com with SMTP id m6so36013148ybc.9;
+        Sun, 30 Jan 2022 18:08:24 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/d/1F9joOfYdE7Tjusc7U3ydwf04rVdyD/sh2o80Dvc=;
-        b=J/EMmpFVmBi3kEPlQu9oSVG/EIWlCeEhLFE2k82lt8Y1x+8gv0FpS8OwL9hssAcPGi
-         kMumkkXe1En0HP4ee7N5IBVOJVFB97e2aTfSnaAJsvcIC+19TeQ9mklo0PMJtL3oswOO
-         R1NOYkTFR8Fuy2PzWMzdNb+PDoDM+6aifyta9R328MtyADw2LZsKsBTIL1YbEMiTC3fB
-         IQnO4LouSUM+WEBo0Nz6M7prADACLtchpz3lQrO+O+QoR8U1mID/9BSLCODjPg54qsce
-         TjpmTnJNmJrjJbylneRgfzanyFXtL/iWNlzU/J806OeUE4B0q+7CRAuoY5zJk9i8h/al
-         frKQ==
-X-Gm-Message-State: AOAM533N1k5DV4YFMDlbKoo6ho22hnGyjS9NM5U6DB5CU93DjCAvVbfS
-        vV+YfzfMe4prYWN0Y5nyM9hLnvSnIXBENFIkiNU=
-X-Google-Smtp-Source: ABdhPJxZPWV48CWMD0JcMgf4O5xrEqYDt3d6X2bH4YPowqblA+Awh3Kk37P4F4PPZjRpu3XFXV9ss0C39yYenx+HzeA=
-X-Received: by 2002:a17:907:7ea4:: with SMTP id qb36mr14642721ejc.551.1643591332413;
- Sun, 30 Jan 2022 17:08:52 -0800 (PST)
+        bh=33bP2s/jJ4ZB1dP838Vc4hDzG23sjpY4lXxWwA+ENBo=;
+        b=jR+6Qw6lFqACOhi0trUEUKzYRjQbLY1WhUPggUdFFGRqYxeM2OIGmouoDhzLU9siZL
+         wr8tpN9FaMGMKpKvVOJg0F/Y7L4LNLwsVAQef5LjaMm7xj4bRGBmUxb+EoZEREbvg3p7
+         NxqwKM4g8u4qchp1BoUJS+AfVfoQ1WPryluntbV5TPsrrqPhvd15c/uhSilDwcQxN2S+
+         FDAwcCXO9iuuA5p9Ej+KcPbsjziFrW51GssojEvz5CZT3Sp134N5C8hosQFM4+QRAi6h
+         FkN01KQ8Mjtv/DimPwm6IRvIVD+w0po46MFIvz9LymRtwFHejEWQBuxBrSQIiBwELa3M
+         ZCOA==
+X-Gm-Message-State: AOAM533WhhdTS6us5NqEbusWfKPyV/CX9dJova5/9jE5HkqC2gj/0L56
+        oSU9jtxDdARqGWqolhSMkyTKMyVofY3ZnY60hp0=
+X-Google-Smtp-Source: ABdhPJwoVkDwA8Rex8p6HiU2hJv9JmlC9gmOlyeOBTcjjXQSXBmifMD08+orj9uNtmEULsCD1LQXg0lNPf1tZdp2Ceo=
+X-Received: by 2002:a25:9f83:: with SMTP id u3mr27352175ybq.474.1643594904069;
+ Sun, 30 Jan 2022 18:08:24 -0800 (PST)
 MIME-Version: 1.0
-References: <159db05f-539c-fe29-608b-91b036588033@molgen.mpg.de>
- <CAABZP2xampOLo8k93OLgaOfv9LreJ+f0g0_1mXwqtrv_LKewQg@mail.gmail.com>
- <3534d781-7d01-b42a-8974-0b1c367946f0@molgen.mpg.de> <CAABZP2zFDY-hrZqE=-c0uW8vFMH+Q9XezYd2DcBX4Wm+sxzK1g@mail.gmail.com>
- <04a597dc-64aa-57e6-f7fb-17bd2ec58159@molgen.mpg.de> <CAABZP2yb7-xa4F_2c6tuzkv7x902wU-hqgD_pqRooGC6C7S20A@mail.gmail.com>
- <20220130174421.GS4285@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20220130174421.GS4285@paulmck-ThinkPad-P17-Gen-1>
-From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
-Date:   Mon, 31 Jan 2022 09:08:40 +0800
-Message-ID: <CAABZP2w8ysVFmxRo7CMSHunnU0GqtS=+bU6tLqcsXDUyf60-Dw@mail.gmail.com>
-Subject: Re: BUG: Kernel NULL pointer dereference on write at 0x00000000 (rtmsg_ifinfo_build_skb)
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        Josh Triplett <josh@joshtriplett.org>,
-        rcu <rcu@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+References: <20220111162231.10390-1-uli+renesas@fpond.eu> <20220111162231.10390-3-uli+renesas@fpond.eu>
+In-Reply-To: <20220111162231.10390-3-uli+renesas@fpond.eu>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Mon, 31 Jan 2022 11:08:12 +0900
+Message-ID: <CAMZ6RqKr06KSMrKaB2h7iSDzOtgVKS+grPtf+bVrfpFaBai74w@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] can: rcar_canfd: Add support for r8a779a0 SoC
+To:     Ulrich Hecht <uli+renesas@fpond.eu>
+Cc:     linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, linux-can@vger.kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, wsa@kernel.org,
+        yoshihiro.shimoda.uh@renesas.com, wg@grandegger.com,
+        mkl@pengutronix.de, kuba@kernel.org, socketcan@hartkopp.net,
+        geert@linux-m68k.org, kieran.bingham@ideasonboard.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thank Paul for joining us!
+  Hi Ulrich,
 
-On Mon, Jan 31, 2022 at 1:44 AM Paul E. McKenney <paulmck@kernel.org> wrote=
-:
+On Wed. 12 Jan 2022 at 01:22, Ulrich Hecht <uli+renesas@fpond.eu> a wrote:
 >
-> On Sun, Jan 30, 2022 at 09:24:44PM +0800, Zhouyi Zhou wrote:
-> > Dear Paul
-> >
-> > On Sun, Jan 30, 2022 at 4:19 PM Paul Menzel <pmenzel@molgen.mpg.de> wro=
-te:
-> > >
-> > > Dear Zhouyi,
-> > >
-> > >
-> > > Am 30.01.22 um 01:21 schrieb Zhouyi Zhou:
-> > >
-> > > > Thank you for your instructions, I learned a lot from this process.
-> > >
-> > > Same on my end.
-> > >
-> > > > On Sun, Jan 30, 2022 at 12:52 AM Paul Menzel <pmenzel@molgen.mpg.de=
-> wrote:
-> > >
-> > > >> Am 29.01.22 um 03:23 schrieb Zhouyi Zhou:
-> > > >>
-> > > >>> I don't have an IBM machine, but I tried to analyze the problem u=
-sing
-> > > >>> my x86_64 kvm virtual machine, I can't reproduce the bug using my
-> > > >>> x86_64 kvm virtual machine.
-> > > >>
-> > > >> No idea, if it=E2=80=99s architecture specific.
-> > > >>
-> > > >>> I saw the panic is caused by registration of sit device (A sit de=
-vice
-> > > >>> is a type of virtual network device that takes our IPv6 traffic,
-> > > >>> encapsulates/decapsulates it in IPv4 packets, and sends/receives =
-it
-> > > >>> over the IPv4 Internet to another host)
-> > > >>>
-> > > >>> sit device is registered in function sit_init_net:
-> > > >>> 1895    static int __net_init sit_init_net(struct net *net)
-> > > >>> 1896    {
-> > > >>> 1897        struct sit_net *sitn =3D net_generic(net, sit_net_id)=
-;
-> > > >>> 1898        struct ip_tunnel *t;
-> > > >>> 1899        int err;
-> > > >>> 1900
-> > > >>> 1901        sitn->tunnels[0] =3D sitn->tunnels_wc;
-> > > >>> 1902        sitn->tunnels[1] =3D sitn->tunnels_l;
-> > > >>> 1903        sitn->tunnels[2] =3D sitn->tunnels_r;
-> > > >>> 1904        sitn->tunnels[3] =3D sitn->tunnels_r_l;
-> > > >>> 1905
-> > > >>> 1906        if (!net_has_fallback_tunnels(net))
-> > > >>> 1907            return 0;
-> > > >>> 1908
-> > > >>> 1909        sitn->fb_tunnel_dev =3D alloc_netdev(sizeof(struct ip=
-_tunnel), "sit0",
-> > > >>> 1910                           NET_NAME_UNKNOWN,
-> > > >>> 1911                           ipip6_tunnel_setup);
-> > > >>> 1912        if (!sitn->fb_tunnel_dev) {
-> > > >>> 1913            err =3D -ENOMEM;
-> > > >>> 1914            goto err_alloc_dev;
-> > > >>> 1915        }
-> > > >>> 1916        dev_net_set(sitn->fb_tunnel_dev, net);
-> > > >>> 1917        sitn->fb_tunnel_dev->rtnl_link_ops =3D &sit_link_ops;
-> > > >>> 1918        /* FB netdevice is special: we have one, and only one=
- per netns.
-> > > >>> 1919         * Allowing to move it to another netns is clearly un=
-safe.
-> > > >>> 1920         */
-> > > >>> 1921        sitn->fb_tunnel_dev->features |=3D NETIF_F_NETNS_LOCA=
-L;
-> > > >>> 1922
-> > > >>> 1923        err =3D register_netdev(sitn->fb_tunnel_dev);
-> > > >>> register_netdev on line 1923 will call if_nlmsg_size indirectly.
-> > > >>>
-> > > >>> On the other hand, the function that calls the paniced strlen is =
-if_nlmsg_size:
-> > > >>> (gdb) disassemble if_nlmsg_size
-> > > >>> Dump of assembler code for function if_nlmsg_size:
-> > > >>>      0xffffffff81a0dc20 <+0>:    nopl   0x0(%rax,%rax,1)
-> > > >>>      0xffffffff81a0dc25 <+5>:    push   %rbp
-> > > >>>      0xffffffff81a0dc26 <+6>:    push   %r15
-> > > >>>      0xffffffff81a0dd04 <+228>:    je     0xffffffff81a0de20 <if_=
-nlmsg_size+512>
-> > > >>>      0xffffffff81a0dd0a <+234>:    mov    0x10(%rbp),%rdi
-> > > >>>      ...
-> > > >>>    =3D> 0xffffffff81a0dd0e <+238>:    callq  0xffffffff817532d0 <=
-strlen>
-> > > >>>      0xffffffff81a0dd13 <+243>:    add    $0x10,%eax
-> > > >>>      0xffffffff81a0dd16 <+246>:    movslq %eax,%r12
-> > > >>
-> > > >> Excuse my ignorance, would that look the same for ppc64le?
-> > > >> Unfortunately, I didn=E2=80=99t save the problematic `vmlinuz` fil=
-e, but on a
-> > > >> current build (without rcutorture) I have the line below, where st=
-rlen
-> > > >> shows up.
-> > > >>
-> > > >>       (gdb) disassemble if_nlmsg_size
-> > > >>       [=E2=80=A6]
-> > > >>       0xc000000000f7f82c <+332>: bl      0xc000000000a10e30 <strle=
-n>
-> > > >>       [=E2=80=A6]
-> > > >>
-> > > >>> and the C code for 0xffffffff81a0dd0e is following (line 524):
-> > > >>> 515    static size_t rtnl_link_get_size(const struct net_device *=
-dev)
-> > > >>> 516    {
-> > > >>> 517        const struct rtnl_link_ops *ops =3D dev->rtnl_link_ops=
-;
-> > > >>> 518        size_t size;
-> > > >>> 519
-> > > >>> 520        if (!ops)
-> > > >>> 521            return 0;
-> > > >>> 522
-> > > >>> 523        size =3D nla_total_size(sizeof(struct nlattr)) + /* IF=
-LA_LINKINFO */
-> > > >>> 524               nla_total_size(strlen(ops->kind) + 1);  /* IFLA=
-_INFO_KIND */
-> > > >>
-> > > >> How do I connect the disassemby output with the corresponding line=
-?
-> > > > I use "make  ARCH=3Dpowerpc CC=3Dpowerpc64le-linux-gnu-gcc-9
-> > > > CROSS_COMPILE=3Dpowerpc64le-linux-gnu- -j 16" to cross compile kern=
-el
-> > > > for powerpc64le in my Ubuntu 20.04 x86_64.
-> > > >
-> > > > gdb-multiarch ./vmlinux
-> > > > (gdb)disassemble if_nlmsg_size
-> > > > [...]
-> > > > 0xc00000000191bf40 <+112>:    bl      0xc000000001c28ad0 <strlen>
-> > > > [...]
-> > > > (gdb) break *0xc00000000191bf40
-> > > > Breakpoint 1 at 0xc00000000191bf40: file ./include/net/netlink.h, l=
-ine 1112.
-> > > >
-> > > > But in include/net/netlink.h:1112, I can't find the call to strlen
-> > > > 1110static inline int nla_total_size(int payload)
-> > > > 1111{
-> > > > 1112        return NLA_ALIGN(nla_attr_size(payload));
-> > > > 1113}
-> > > > This may be due to the compiler wrongly encode the debug informatio=
-n, I guess.
-> > >
-> > > `rtnl_link_get_size()` contains:
-> > >
-> > >              size =3D nla_total_size(sizeof(struct nlattr)) + /*
-> > > IFLA_LINKINFO */
-> > >                     nla_total_size(strlen(ops->kind) + 1);  /*
-> > > IFLA_INFO_KIND */
-> > >
-> > > Is that inlined(?) and the code at fault?
-> > Yes, that is inlined! because
-> > (gdb) disassemble if_nlmsg_size
-> > Dump of assembler code for function if_nlmsg_size:
-> > [...]
-> > 0xc00000000191bf38 <+104>:    beq     0xc00000000191c1f0 <if_nlmsg_size=
-+800>
-> > 0xc00000000191bf3c <+108>:    ld      r3,16(r31)
-> > 0xc00000000191bf40 <+112>:    bl      0xc000000001c28ad0 <strlen>
-> > [...]
-> > (gdb)
-> > (gdb) break *0xc00000000191bf40
-> > Breakpoint 1 at 0xc00000000191bf40: file ./include/net/netlink.h, line =
-1112.
-> > (gdb) break *0xc00000000191bf38
-> > Breakpoint 2 at 0xc00000000191bf38: file net/core/rtnetlink.c, line 520=
-.
+> Adds support for the CANFD IP variant in the V3U SoC.
 >
-> I suggest building your kernel with CONFIG_DEBUG_INFO=3Dy if you are not
-> already doing so.  That gives gdb a lot more information about things
-> like inlining.
-I check my .config file, CONFIG_DEBUG_INFO=3Dy is here:
-linux-next$ grep CONFIG_DEBUG_INFO .config
-CONFIG_DEBUG_INFO=3Dy
-Then I invoke "make clean" and rebuild the kernel, the behavior of gdb
-and vmlinux remain unchanged, sorry for that
+> Differences to controllers in other SoCs are limited to an increase in
+> the number of channels from two to eight, an absence of dedicated
+> registers for "classic" CAN mode, and a number of differences in magic
+> numbers (register offsets and layouts).
+>
+> Inspired by BSP patch by Kazuya Mizuguchi.
+>
+> Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+> ---
+>  drivers/net/can/rcar/rcar_canfd.c | 231 ++++++++++++++++++++----------
+>  1 file changed, 153 insertions(+), 78 deletions(-)
+>
+> diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+> index ff9d0f5ae0dd..b1c9870d2a82 100644
+> --- a/drivers/net/can/rcar/rcar_canfd.c
+> +++ b/drivers/net/can/rcar/rcar_canfd.c
+> @@ -44,10 +44,13 @@
+>  enum rcanfd_chip_id {
+>         RENESAS_RCAR_GEN3 = 0,
+>         RENESAS_RZG2L,
+> +       RENESAS_R8A779A0,
+>  };
+>
+>  /* Global register bits */
+>
+> +#define IS_V3U (gpriv->chip_id == RENESAS_R8A779A0)
+> +
+>  /* RSCFDnCFDGRMCFG */
+>  #define RCANFD_GRMCFG_RCMC             BIT(0)
+>
+> @@ -79,6 +82,7 @@ enum rcanfd_chip_id {
+>  #define RCANFD_GSTS_GNOPM              (BIT(0) | BIT(1) | BIT(2) | BIT(3))
+>
+>  /* RSCFDnCFDGERFL / RSCFDnGERFL */
+> +#define RCANFD_GERFL_EEF0_7            GENMASK(23, 16)
+>  #define RCANFD_GERFL_EEF1              BIT(17)
+>  #define RCANFD_GERFL_EEF0              BIT(16)
+>  #define RCANFD_GERFL_CMPOF             BIT(3)  /* CAN FD only */
+> @@ -86,20 +90,24 @@ enum rcanfd_chip_id {
+>  #define RCANFD_GERFL_MES               BIT(1)
+>  #define RCANFD_GERFL_DEF               BIT(0)
+>
 
-I am trying to reproduce the bug on my bare metal x86_64 machines in
-the coming days, and am also trying to work with Mr Menzel after he
-comes back to the office.
+I have a couple of comments *in addition* to Mark’s one on the IS_V3U.
 
-Thanks
-Zhouyi
 >
->                                                         Thanx, Paul
+> -#define RCANFD_GERFL_ERR(gpriv, x)     ((x) & (RCANFD_GERFL_EEF1 |\
+> -                                       RCANFD_GERFL_EEF0 | RCANFD_GERFL_MES |\
+> -                                       (gpriv->fdmode ?\
+> -                                        RCANFD_GERFL_CMPOF : 0)))
+> +#define RCANFD_GERFL_ERR(gpriv, x)     ((x) & ((IS_V3U ? RCANFD_GERFL_EEF0_7 : \
+> +                                       (RCANFD_GERFL_EEF0 | RCANFD_GERFL_EEF1)) | \
+> +                                       RCANFD_GERFL_MES | ((gpriv)->fdmode ? \
+> +                                       RCANFD_GERFL_CMPOF : 0)))
+
+The indentation is hard to read. Here you follow the 80
+characters per line, but the indentation does not highlight
+the logic of the different branches of the ternary operator.
+
+Does something in this fashion make more sense?
+
++#define RCANFD_GERFL_ERR(gpriv, x)                                     \
++(                                                                      \
++        (x) & ((IS_V3U ? RCANFD_GERFL_EEF0_7 :                          \
++                         RCANFD_GERFL_EEF0 | RCANFD_GERFL_EEF1) |       \
++               RCANFD_GERFL_MES |                                       \
++               ((gpriv)->fdmode ? RCANFD_GERFL_CMPOF : 0))              \
++)
+
+(I guess that my mailer will break all the tabulations, sorry for that).
+
+>  /* AFL Rx rules registers */
 >
-> > > >>> But ops is assigned the value of sit_link_ops in function sit_ini=
-t_net
-> > > >>> line 1917, so I guess something must happened between the calls.
-> > > >>>
-> > > >>> Do we have KASAN in IBM machine? would KASAN help us find out wha=
-t
-> > > >>> happened in between?
-> > > >>
-> > > >> Unfortunately, KASAN is not support on Power, I have, as far as I =
-can
-> > > >> see. From `arch/powerpc/Kconfig`:
-> > > >>
-> > > >>           select HAVE_ARCH_KASAN                  if PPC32 && PPC_=
-PAGE_SHIFT <=3D 14
-> > > >>           select HAVE_ARCH_KASAN_VMALLOC          if PPC32 && PPC_=
-PAGE_SHIFT <=3D 14
-> > > >>
-> > > > en, agree, I invoke "make  menuconfig  ARCH=3Dpowerpc
-> > > > CC=3Dpowerpc64le-linux-gnu-gcc-9 CROSS_COMPILE=3Dpowerpc64le-linux-=
-gnu- -j
-> > > > 16", I can't find KASAN under Memory Debugging, I guess we should f=
-ind
-> > > > the bug by bisecting instead.
-> > >
-> > > I do not know, if it is a regression, as it was the first time I trie=
-d
-> > > to run a Linux kernel built with rcutorture on real hardware.
-> > I tried to add some debug statements to the kernel to locate the bug
-> > more accurately,  you can try it when you're not busy in the future,
-> > or just ignore it if the following patch looks not very effective ;-)
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index 1baab07820f6..969ac7c540cc 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -9707,6 +9707,9 @@ int register_netdevice(struct net_device *dev)
-> >       *    Prevent userspace races by waiting until the network
-> >       *    device is fully setup before sending notifications.
-> >       */
-> > +    if (dev->rtnl_link_ops)
-> > +        printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", dev->rtnl_link_=
-ops,
-> > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> >      if (!dev->rtnl_link_ops ||
-> >          dev->rtnl_link_state =3D=3D RTNL_LINK_INITIALIZED)
-> >          rtmsg_ifinfo(RTM_NEWLINK, dev, ~0U, GFP_KERNEL);
-> > @@ -9788,6 +9791,9 @@ int register_netdev(struct net_device *dev)
-> >
-> >      if (rtnl_lock_killable())
-> >          return -EINTR;
-> > +    if (dev->rtnl_link_ops)
-> > +        printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", dev->rtnl_link_=
-ops,
-> > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> >      err =3D register_netdevice(dev);
-> >      rtnl_unlock();
-> >      return err;
-> > diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> > index e476403231f0..e08986ae6238 100644
-> > --- a/net/core/rtnetlink.c
-> > +++ b/net/core/rtnetlink.c
-> > @@ -520,6 +520,8 @@ static size_t rtnl_link_get_size(const struct
-> > net_device *dev)
-> >      if (!ops)
-> >          return 0;
-> >
-> > +    printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", ops,
-> > +           ops->kind, __FUNCTION__);
-> >      size =3D nla_total_size(sizeof(struct nlattr)) + /* IFLA_LINKINFO =
-*/
-> >             nla_total_size(strlen(ops->kind) + 1);  /* IFLA_INFO_KIND *=
-/
-> >
-> > @@ -1006,6 +1008,9 @@ static size_t rtnl_proto_down_size(const struct
-> > net_device *dev)
-> >  static noinline size_t if_nlmsg_size(const struct net_device *dev,
-> >                       u32 ext_filter_mask)
-> >  {
-> > +    if (dev->rtnl_link_ops)
-> > +        printk(KERN_INFO "%lx IFLA_INFO_KIND  %s %s\n", dev->rtnl_link=
-_ops,
-> > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> >      return NLMSG_ALIGN(sizeof(struct ifinfomsg))
-> >             + nla_total_size(IFNAMSIZ) /* IFLA_IFNAME */
-> >             + nla_total_size(IFALIASZ) /* IFLA_IFALIAS */
-> > @@ -3825,7 +3830,9 @@ struct sk_buff *rtmsg_ifinfo_build_skb(int type,
-> > struct net_device *dev,
-> >      struct net *net =3D dev_net(dev);
-> >      struct sk_buff *skb;
-> >      int err =3D -ENOBUFS;
-> > -
-> > +    if (dev->rtnl_link_ops)
-> > +        printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", dev->rtnl_link_=
-ops,
-> > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> >      skb =3D nlmsg_new(if_nlmsg_size(dev, 0), flags);
-> >      if (skb =3D=3D NULL)
-> >          goto errout;
-> > @@ -3861,7 +3868,9 @@ static void rtmsg_ifinfo_event(int type, struct
-> > net_device *dev,
-> >
-> >      if (dev->reg_state !=3D NETREG_REGISTERED)
-> >          return;
-> > -
-> > +    if (dev->rtnl_link_ops)
-> > +        printk(KERN_INFO "%lx IFLA_INFO_KIND  %s %s\n", dev->rtnl_link=
-_ops,
-> > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> >      skb =3D rtmsg_ifinfo_build_skb(type, dev, change, event, flags, ne=
-w_nsid,
-> >                       new_ifindex);
-> >      if (skb)
-> > @@ -3871,6 +3880,9 @@ static void rtmsg_ifinfo_event(int type, struct
-> > net_device *dev,
-> >  void rtmsg_ifinfo(int type, struct net_device *dev, unsigned int chang=
-e,
-> >            gfp_t flags)
-> >  {
-> > +    if (dev->rtnl_link_ops)
-> > +        printk(KERN_INFO "%lx IFLA_INFO_KIND  %s %s\n", dev->rtnl_link=
-_ops,
-> > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> >      rtmsg_ifinfo_event(type, dev, change, rtnl_get_event(0), flags,
-> >                 NULL, 0);
-> >  }
-> > diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-> > index c0b138c20992..fa5b2725811c 100644
-> > --- a/net/ipv6/sit.c
-> > +++ b/net/ipv6/sit.c
-> > @@ -1919,6 +1919,8 @@ static int __net_init sit_init_net(struct net *ne=
-t)
-> >       * Allowing to move it to another netns is clearly unsafe.
-> >       */
-> >      sitn->fb_tunnel_dev->features |=3D NETIF_F_NETNS_LOCAL;
-> > -
-> > +    printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n",
-> > +           sitn->fb_tunnel_dev->rtnl_link_ops,
-> > +           sitn->fb_tunnel_dev->rtnl_link_ops->kind, __FUNCTION__);
-> >      err =3D register_netdev(sitn->fb_tunnel_dev);
-> >      if (err)
-> >          goto err_reg_dev;
-> > >
-> > > >>> Hope I can be of more helpful.
-> > > >>
-> > > >> Some distributions support multi-arch, so they easily allow
-> > > >> crosscompiling for different architectures.
-> > > > I use "make  ARCH=3Dpowerpc CC=3Dpowerpc64le-linux-gnu-gcc-9
-> > > > CROSS_COMPILE=3Dpowerpc64le-linux-gnu- -j 16" to cross compile kern=
-el
-> > > > for powerpc64le in my Ubuntu 20.04 x86_64. But I can't boot the
-> > > > compiled kernel using "qemu-system-ppc64le -M pseries -nographic -s=
-mp
-> > > > 4 -net none -m 4G -kernel arch/powerpc/boot/zImage". I will continu=
-e
-> > > > to explore it.
-> > >
-> > > Oh, that does not sound good. But I have not tried that in a long tim=
-e
-> > > either. It=E2=80=99s a separate issue, but maybe some of the PPC
-> > > maintainers/folks could help.
-> > I will do further research on this later.
-> >
-> > Thanks for your time
-> > Kind regards
-> > Zhouyi
-> > >
-> > >
-> > > Kind regards,
-> > >
-> > > Paul
+>  /* RSCFDnCFDGAFLCFG0 / RSCFDnGAFLCFG0 */
+> -#define RCANFD_GAFLCFG_SETRNC(n, x)    (((x) & 0xff) << (24 - n * 8))
+> -#define RCANFD_GAFLCFG_GETRNC(n, x)    (((x) >> (24 - n * 8)) & 0xff)
+> +#define RCANFD_GAFLCFG_SETRNC(n, x)    (((x) & (IS_V3U ? 0x1ff : 0xff)) << \
+> +                                        ((IS_V3U ? 16 : 24) - (n) * (IS_V3U ? \
+> +                                        16 : 8)))
+> +#define RCANFD_GAFLCFG_GETRNC(n, x)    (((x) >> ((IS_V3U ? 16 : 24) - (n) * \
+> +                                        (IS_V3U ? 16 : 8))) & \
+> +                                        (IS_V3U ? 0x1ff : 0xff))
+
+Similarly, here, you try to factorize all the code, but this is not
+helping readability.
+
+What do you think of doing this instead:
+
++/* RSCFDnCFDGAFLCFG0 / RSCFDnGAFLCFG0 */
++#define RCANFD_GAFLCFG_SETRNC(n, x)                                    \
++        (IS_V3U ?                                                       \
++                ((x) & 0x1ff) << (16 - n * 16) :                        \
++                ((x) & 0xff) << (24 - n * 8))
+
+Same comments apply to other macros as well.
+
+>  /* RSCFDnCFDGAFLECTR / RSCFDnGAFLECTR */
+>  #define RCANFD_GAFLECTR_AFLDAE         BIT(8)
+> -#define RCANFD_GAFLECTR_AFLPN(x)       ((x) & 0x1f)
+> +#define RCANFD_GAFLECTR_AFLPN(x)       ((x) & (IS_V3U ? 0x7f : 0x1f))
+>
+>  /* RSCFDnCFDGAFLIDj / RSCFDnGAFLIDj */
+>  #define RCANFD_GAFLID_GAFLLB           BIT(29)
+> @@ -116,9 +124,12 @@ enum rcanfd_chip_id {
+>  #define RCANFD_CFG_BRP(x)              (((x) & 0x3ff) << 0)
+>
+>  /* RSCFDnCFDCmNCFG - CAN FD only */
+> -#define RCANFD_NCFG_NTSEG2(x)          (((x) & 0x1f) << 24)
+> -#define RCANFD_NCFG_NTSEG1(x)          (((x) & 0x7f) << 16)
+> -#define RCANFD_NCFG_NSJW(x)            (((x) & 0x1f) << 11)
+> +#define RCANFD_NCFG_NTSEG2(x)          (((x) & (IS_V3U ? 0x7f : 0x1f)) << \
+> +                                        (IS_V3U ? 25 : 24))
+> +#define RCANFD_NCFG_NTSEG1(x)          (((x) & (IS_V3U ? 0xff : 0x7f)) << \
+> +                                        (IS_V3U ? 17 : 16))
+> +#define RCANFD_NCFG_NSJW(x)            (((x) & (IS_V3U ? 0x7f : 0x1f)) << \
+> +                                        (IS_V3U ? 10 : 11))
+>  #define RCANFD_NCFG_NBRP(x)            (((x) & 0x3ff) << 0)
+>
+>  /* RSCFDnCFDCmCTR / RSCFDnCmCTR */
+> @@ -180,11 +191,15 @@ enum rcanfd_chip_id {
+>
+>  /* RSCFDnCFDCmDCFG */
+>  #define RCANFD_DCFG_DSJW(x)            (((x) & 0x7) << 24)
+> -#define RCANFD_DCFG_DTSEG2(x)          (((x) & 0x7) << 20)
+> -#define RCANFD_DCFG_DTSEG1(x)          (((x) & 0xf) << 16)
+> +#define RCANFD_DCFG_DTSEG2(x)          (((x) & (IS_V3U ? 0x0f : 0x7)) << \
+> +                                        (IS_V3U ? 16 : 20))
+> +#define RCANFD_DCFG_DTSEG1(x)          (((x) & (IS_V3U ? 0x1f : 0xf)) << \
+> +                                        (IS_V3U ? 8 : 16))
+>  #define RCANFD_DCFG_DBRP(x)            (((x) & 0xff) << 0)
+>
+>  /* RSCFDnCFDCmFDCFG */
+> +#define RCANFD_FDCFG_CLOE              BIT(30)
+> +#define RCANFD_FDCFG_FDOE              BIT(28)
+>  #define RCANFD_FDCFG_TDCE              BIT(9)
+>  #define RCANFD_FDCFG_TDCOC             BIT(8)
+>  #define RCANFD_FDCFG_TDCO(x)           (((x) & 0x7f) >> 16)
+> @@ -219,10 +234,10 @@ enum rcanfd_chip_id {
+>  /* Common FIFO bits */
+>
+>  /* RSCFDnCFDCFCCk */
+> -#define RCANFD_CFCC_CFTML(x)           (((x) & 0xf) << 20)
+> -#define RCANFD_CFCC_CFM(x)             (((x) & 0x3) << 16)
+> +#define RCANFD_CFCC_CFTML(x)           (((x) & 0xf) << (IS_V3U ? 16 : 20))
+> +#define RCANFD_CFCC_CFM(x)             (((x) & 0x3) << (IS_V3U ? 8 : 16))
+>  #define RCANFD_CFCC_CFIM               BIT(12)
+> -#define RCANFD_CFCC_CFDC(x)            (((x) & 0x7) << 8)
+> +#define RCANFD_CFCC_CFDC(x)            (((x) & 0x7) << (IS_V3U ? 21 : 8))
+>  #define RCANFD_CFCC_CFPLS(x)           (((x) & 0x7) << 4)
+>  #define RCANFD_CFCC_CFTXIE             BIT(2)
+>  #define RCANFD_CFCC_CFE                        BIT(0)
+> @@ -282,33 +297,32 @@ enum rcanfd_chip_id {
+>  #define RCANFD_GTSC                    (0x0094)
+>  /* RSCFDnCFDGAFLECTR / RSCFDnGAFLECTR */
+>  #define RCANFD_GAFLECTR                        (0x0098)
+> -/* RSCFDnCFDGAFLCFG0 / RSCFDnGAFLCFG0 */
+> -#define RCANFD_GAFLCFG0                        (0x009c)
+> -/* RSCFDnCFDGAFLCFG1 / RSCFDnGAFLCFG1 */
+> -#define RCANFD_GAFLCFG1                        (0x00a0)
+> +/* RSCFDnCFDGAFLCFG / RSCFDnGAFLCFG */
+> +#define RCANFD_GAFLCFG(ch)             (0x009c + (0x04 * ((ch) / 2)))
+>  /* RSCFDnCFDRMNB / RSCFDnRMNB */
+>  #define RCANFD_RMNB                    (0x00a4)
+>  /* RSCFDnCFDRMND / RSCFDnRMND */
+>  #define RCANFD_RMND(y)                 (0x00a8 + (0x04 * (y)))
+>
+>  /* RSCFDnCFDRFCCx / RSCFDnRFCCx */
+> -#define RCANFD_RFCC(x)                 (0x00b8 + (0x04 * (x)))
+> +#define RCANFD_RFCC(x)                 ((IS_V3U ? 0x00c0 : 0x00b8) + \
+> +                                        (0x04 * (x)))
+>  /* RSCFDnCFDRFSTSx / RSCFDnRFSTSx */
+> -#define RCANFD_RFSTS(x)                        (0x00d8 + (0x04 * (x)))
+> +#define RCANFD_RFSTS(x)                        (RCANFD_RFCC(x) + 0x20)
+>  /* RSCFDnCFDRFPCTRx / RSCFDnRFPCTRx */
+> -#define RCANFD_RFPCTR(x)               (0x00f8 + (0x04 * (x)))
+> +#define RCANFD_RFPCTR(x)               (RCANFD_RFCC(x) + 0x40)
+>
+>  /* Common FIFO Control registers */
+>
+>  /* RSCFDnCFDCFCCx / RSCFDnCFCCx */
+> -#define RCANFD_CFCC(ch, idx)           (0x0118 + (0x0c * (ch)) + \
+> -                                        (0x04 * (idx)))
+> +#define RCANFD_CFCC(ch, idx)           ((IS_V3U ? 0x0120 : 0x0118) + \
+> +                                        (0x0c * (ch)) + (0x04 * (idx)))
+>  /* RSCFDnCFDCFSTSx / RSCFDnCFSTSx */
+> -#define RCANFD_CFSTS(ch, idx)          (0x0178 + (0x0c * (ch)) + \
+> -                                        (0x04 * (idx)))
+> +#define RCANFD_CFSTS(ch, idx)          ((IS_V3U ? 0x01e0 : 0x0178) + \
+> +                                        (0x0c * (ch)) + (0x04 * (idx)))
+>  /* RSCFDnCFDCFPCTRx / RSCFDnCFPCTRx */
+> -#define RCANFD_CFPCTR(ch, idx)         (0x01d8 + (0x0c * (ch)) + \
+> -                                        (0x04 * (idx)))
+> +#define RCANFD_CFPCTR(ch, idx)         ((IS_V3U ? 0x0240 : 0x01d8) + \
+> +                                        (0x0c * (ch)) + (0x04 * (idx)))
+>
+>  /* RSCFDnCFDFESTS / RSCFDnFESTS */
+>  #define RCANFD_FESTS                   (0x0238)
+> @@ -415,6 +429,12 @@ enum rcanfd_chip_id {
+>  /* RSCFDnRPGACCr */
+>  #define RCANFD_C_RPGACC(r)             (0x1900 + (0x04 * (r)))
+>
+> +/* R-Car V3U Classical and CAN FD mode specific register map */
+> +#define RCANFD_V3U_CFDCFG              (0x1314)
+> +#define RCANFD_V3U_DCFG(m)             (0x1400 + (0x20 * (m)))
+> +
+> +#define RCANFD_V3U_GAFL_OFFSET         (0x1800)
+> +
+>  /* CAN FD mode specific register map */
+>
+>  /* RSCFDnCFDCmXXX -> RCANFD_F_XXX(m) */
+> @@ -434,7 +454,7 @@ enum rcanfd_chip_id {
+>  #define RCANFD_F_RMDF(q, b)            (0x200c + (0x04 * (b)) + (0x20 * (q)))
+>
+>  /* RSCFDnCFDRFXXx -> RCANFD_F_RFXX(x) */
+> -#define RCANFD_F_RFOFFSET              (0x3000)
+> +#define RCANFD_F_RFOFFSET              (IS_V3U ? 0x6000 : 0x3000)
+>  #define RCANFD_F_RFID(x)               (RCANFD_F_RFOFFSET + (0x80 * (x)))
+>  #define RCANFD_F_RFPTR(x)              (RCANFD_F_RFOFFSET + 0x04 + \
+>                                          (0x80 * (x)))
+> @@ -444,7 +464,7 @@ enum rcanfd_chip_id {
+>                                          (0x80 * (x)) + (0x04 * (df)))
+>
+>  /* RSCFDnCFDCFXXk -> RCANFD_F_CFXX(ch, k) */
+> -#define RCANFD_F_CFOFFSET              (0x3400)
+> +#define RCANFD_F_CFOFFSET              (IS_V3U ? 0x6400 : 0x3400)
+>  #define RCANFD_F_CFID(ch, idx)         (RCANFD_F_CFOFFSET + (0x180 * (ch)) + \
+>                                          (0x80 * (idx)))
+>  #define RCANFD_F_CFPTR(ch, idx)                (RCANFD_F_CFOFFSET + 0x04 + \
+> @@ -470,7 +490,7 @@ enum rcanfd_chip_id {
+>  #define RCANFD_FIFO_DEPTH              8       /* Tx FIFO depth */
+>  #define RCANFD_NAPI_WEIGHT             8       /* Rx poll quota */
+>
+> -#define RCANFD_NUM_CHANNELS            2       /* Two channels max */
+> +#define RCANFD_NUM_CHANNELS            8       /* Eight channels max */
+>  #define RCANFD_CHANNELS_MASK           BIT((RCANFD_NUM_CHANNELS) - 1)
+>
+>  #define RCANFD_GAFL_PAGENUM(entry)     ((entry) / 16)
+> @@ -522,6 +542,7 @@ struct rcar_canfd_global {
+>         struct reset_control *rstc1;
+>         struct reset_control *rstc2;
+>         enum rcanfd_chip_id chip_id;
+> +       u32 max_channels;
+>  };
+>
+>  /* CAN FD mode nominal rate constants */
+> @@ -629,6 +650,25 @@ static void rcar_canfd_tx_failure_cleanup(struct net_device *ndev)
+>                 can_free_echo_skb(ndev, i, NULL);
+>  }
+>
+> +static void rcar_canfd_set_mode(struct rcar_canfd_global *gpriv)
+> +{
+> +       if (gpriv->chip_id == RENESAS_R8A779A0) {
+> +               if (gpriv->fdmode)
+> +                       rcar_canfd_set_bit(gpriv->base, RCANFD_V3U_CFDCFG,
+> +                                          RCANFD_FDCFG_FDOE);
+> +               else
+> +                       rcar_canfd_set_bit(gpriv->base, RCANFD_V3U_CFDCFG,
+> +                                          RCANFD_FDCFG_CLOE);
+> +       } else {
+> +               if (gpriv->fdmode)
+> +                       rcar_canfd_set_bit(gpriv->base, RCANFD_GRMCFG,
+> +                                          RCANFD_GRMCFG_RCMC);
+> +               else
+> +                       rcar_canfd_clear_bit(gpriv->base, RCANFD_GRMCFG,
+> +                                            RCANFD_GRMCFG_RCMC);
+> +       }
+> +}
+> +
+>  static int rcar_canfd_reset_controller(struct rcar_canfd_global *gpriv)
+>  {
+>         u32 sts, ch;
+> @@ -661,15 +701,10 @@ static int rcar_canfd_reset_controller(struct rcar_canfd_global *gpriv)
+>         rcar_canfd_write(gpriv->base, RCANFD_GERFL, 0x0);
+>
+>         /* Set the controller into appropriate mode */
+> -       if (gpriv->fdmode)
+> -               rcar_canfd_set_bit(gpriv->base, RCANFD_GRMCFG,
+> -                                  RCANFD_GRMCFG_RCMC);
+> -       else
+> -               rcar_canfd_clear_bit(gpriv->base, RCANFD_GRMCFG,
+> -                                    RCANFD_GRMCFG_RCMC);
+> +       rcar_canfd_set_mode(gpriv);
+>
+>         /* Transition all Channels to reset mode */
+> -       for_each_set_bit(ch, &gpriv->channels_mask, RCANFD_NUM_CHANNELS) {
+> +       for_each_set_bit(ch, &gpriv->channels_mask, gpriv->max_channels) {
+>                 rcar_canfd_clear_bit(gpriv->base,
+>                                      RCANFD_CCTR(ch), RCANFD_CCTR_CSLPR);
+>
+> @@ -710,7 +745,7 @@ static void rcar_canfd_configure_controller(struct rcar_canfd_global *gpriv)
+>         rcar_canfd_set_bit(gpriv->base, RCANFD_GCFG, cfg);
+>
+>         /* Channel configuration settings */
+> -       for_each_set_bit(ch, &gpriv->channels_mask, RCANFD_NUM_CHANNELS) {
+> +       for_each_set_bit(ch, &gpriv->channels_mask, gpriv->max_channels) {
+>                 rcar_canfd_set_bit(gpriv->base, RCANFD_CCTR(ch),
+>                                    RCANFD_CCTR_ERRD);
+>                 rcar_canfd_update_bit(gpriv->base, RCANFD_CCTR(ch),
+> @@ -730,7 +765,7 @@ static void rcar_canfd_configure_afl_rules(struct rcar_canfd_global *gpriv,
+>                 start = 0; /* Channel 0 always starts from 0th rule */
+>         } else {
+>                 /* Get number of Channel 0 rules and adjust */
+> -               cfg = rcar_canfd_read(gpriv->base, RCANFD_GAFLCFG0);
+> +               cfg = rcar_canfd_read(gpriv->base, RCANFD_GAFLCFG(ch));
+>                 start = RCANFD_GAFLCFG_GETRNC(0, cfg);
+>         }
+>
+> @@ -741,12 +776,16 @@ static void rcar_canfd_configure_afl_rules(struct rcar_canfd_global *gpriv,
+>                             RCANFD_GAFLECTR_AFLDAE));
+>
+>         /* Write number of rules for channel */
+> -       rcar_canfd_set_bit(gpriv->base, RCANFD_GAFLCFG0,
+> +       rcar_canfd_set_bit(gpriv->base, RCANFD_GAFLCFG(ch),
+>                            RCANFD_GAFLCFG_SETRNC(ch, num_rules));
+> -       if (gpriv->fdmode)
+> -               offset = RCANFD_F_GAFL_OFFSET;
+> -       else
+> -               offset = RCANFD_C_GAFL_OFFSET;
+> +       if (gpriv->chip_id == RENESAS_R8A779A0) {
+> +               offset = RCANFD_V3U_GAFL_OFFSET;
+> +       } else {
+> +               if (gpriv->fdmode)
+> +                       offset = RCANFD_F_GAFL_OFFSET;
+> +               else
+> +                       offset = RCANFD_C_GAFL_OFFSET;
+> +       }
+>
+>         /* Accept all IDs */
+>         rcar_canfd_write(gpriv->base, RCANFD_GAFLID(offset, start), 0);
+> @@ -755,8 +794,8 @@ static void rcar_canfd_configure_afl_rules(struct rcar_canfd_global *gpriv,
+>         /* Any data length accepted */
+>         rcar_canfd_write(gpriv->base, RCANFD_GAFLP0(offset, start), 0);
+>         /* Place the msg in corresponding Rx FIFO entry */
+> -       rcar_canfd_write(gpriv->base, RCANFD_GAFLP1(offset, start),
+> -                        RCANFD_GAFLP1_GAFLFDP(ridx));
+> +       rcar_canfd_set_bit(gpriv->base, RCANFD_GAFLP1(offset, start),
+> +                          RCANFD_GAFLP1_GAFLFDP(ridx));
+>
+>         /* Disable write access to page */
+>         rcar_canfd_clear_bit(gpriv->base,
+> @@ -1041,6 +1080,7 @@ static void rcar_canfd_error(struct net_device *ndev, u32 cerfl,
+>  static void rcar_canfd_tx_done(struct net_device *ndev)
+>  {
+>         struct rcar_canfd_channel *priv = netdev_priv(ndev);
+> +       struct rcar_canfd_global *gpriv = priv->gpriv;
+>         struct net_device_stats *stats = &ndev->stats;
+>         u32 sts;
+>         unsigned long flags;
+> @@ -1096,7 +1136,7 @@ static irqreturn_t rcar_canfd_global_err_interrupt(int irq, void *dev_id)
+>         struct rcar_canfd_global *gpriv = dev_id;
+>         u32 ch;
+>
+> -       for_each_set_bit(ch, &gpriv->channels_mask, RCANFD_NUM_CHANNELS)
+> +       for_each_set_bit(ch, &gpriv->channels_mask, gpriv->max_channels)
+>                 rcar_canfd_handle_global_err(gpriv, ch);
+>
+>         return IRQ_HANDLED;
+> @@ -1126,7 +1166,7 @@ static irqreturn_t rcar_canfd_global_receive_fifo_interrupt(int irq, void *dev_i
+>         struct rcar_canfd_global *gpriv = dev_id;
+>         u32 ch;
+>
+> -       for_each_set_bit(ch, &gpriv->channels_mask, RCANFD_NUM_CHANNELS)
+> +       for_each_set_bit(ch, &gpriv->channels_mask, gpriv->max_channels)
+>                 rcar_canfd_handle_global_receive(gpriv, ch);
+>
+>         return IRQ_HANDLED;
+> @@ -1140,7 +1180,7 @@ static irqreturn_t rcar_canfd_global_interrupt(int irq, void *dev_id)
+>         /* Global error interrupts still indicate a condition specific
+>          * to a channel. RxFIFO interrupt is a global interrupt.
+>          */
+> -       for_each_set_bit(ch, &gpriv->channels_mask, RCANFD_NUM_CHANNELS) {
+> +       for_each_set_bit(ch, &gpriv->channels_mask, gpriv->max_channels) {
+>                 rcar_canfd_handle_global_err(gpriv, ch);
+>                 rcar_canfd_handle_global_receive(gpriv, ch);
+>         }
+> @@ -1198,7 +1238,7 @@ static irqreturn_t rcar_canfd_channel_tx_interrupt(int irq, void *dev_id)
+>         struct rcar_canfd_global *gpriv = dev_id;
+>         u32 ch;
+>
+> -       for_each_set_bit(ch, &gpriv->channels_mask, RCANFD_NUM_CHANNELS)
+> +       for_each_set_bit(ch, &gpriv->channels_mask, gpriv->max_channels)
+>                 rcar_canfd_handle_channel_tx(gpriv, ch);
+>
+>         return IRQ_HANDLED;
+> @@ -1230,7 +1270,7 @@ static irqreturn_t rcar_canfd_channel_err_interrupt(int irq, void *dev_id)
+>         struct rcar_canfd_global *gpriv = dev_id;
+>         u32 ch;
+>
+> -       for_each_set_bit(ch, &gpriv->channels_mask, RCANFD_NUM_CHANNELS)
+> +       for_each_set_bit(ch, &gpriv->channels_mask, gpriv->max_channels)
+>                 rcar_canfd_handle_channel_err(gpriv, ch);
+>
+>         return IRQ_HANDLED;
+> @@ -1242,7 +1282,7 @@ static irqreturn_t rcar_canfd_channel_interrupt(int irq, void *dev_id)
+>         u32 ch;
+>
+>         /* Common FIFO is a per channel resource */
+> -       for_each_set_bit(ch, &gpriv->channels_mask, RCANFD_NUM_CHANNELS) {
+> +       for_each_set_bit(ch, &gpriv->channels_mask, gpriv->max_channels) {
+>                 rcar_canfd_handle_channel_err(gpriv, ch);
+>                 rcar_canfd_handle_channel_tx(gpriv, ch);
+>         }
+> @@ -1253,6 +1293,7 @@ static irqreturn_t rcar_canfd_channel_interrupt(int irq, void *dev_id)
+>  static void rcar_canfd_set_bittiming(struct net_device *dev)
+>  {
+>         struct rcar_canfd_channel *priv = netdev_priv(dev);
+> +       struct rcar_canfd_global *gpriv = priv->gpriv;
+>         const struct can_bittiming *bt = &priv->can.bittiming;
+>         const struct can_bittiming *dbt = &priv->can.data_bittiming;
+>         u16 brp, sjw, tseg1, tseg2;
+> @@ -1288,8 +1329,17 @@ static void rcar_canfd_set_bittiming(struct net_device *dev)
+>                            brp, sjw, tseg1, tseg2);
+>         } else {
+>                 /* Classical CAN only mode */
+> -               cfg = (RCANFD_CFG_TSEG1(tseg1) | RCANFD_CFG_BRP(brp) |
+> -                       RCANFD_CFG_SJW(sjw) | RCANFD_CFG_TSEG2(tseg2));
+> +               if (gpriv->chip_id == RENESAS_R8A779A0) {
+> +                       cfg = (RCANFD_NCFG_NTSEG1(tseg1) |
+> +                              RCANFD_NCFG_NBRP(brp) |
+> +                              RCANFD_NCFG_NSJW(sjw) |
+> +                              RCANFD_NCFG_NTSEG2(tseg2));
+> +               } else {
+> +                       cfg = (RCANFD_CFG_TSEG1(tseg1) |
+> +                              RCANFD_CFG_BRP(brp) |
+> +                              RCANFD_CFG_SJW(sjw) |
+> +                              RCANFD_CFG_TSEG2(tseg2));
+> +               }
+>
+>                 rcar_canfd_write(priv->base, RCANFD_CCFG(ch), cfg);
+>                 netdev_dbg(priv->ndev,
+> @@ -1301,6 +1351,7 @@ static void rcar_canfd_set_bittiming(struct net_device *dev)
+>  static int rcar_canfd_start(struct net_device *ndev)
+>  {
+>         struct rcar_canfd_channel *priv = netdev_priv(ndev);
+> +       struct rcar_canfd_global *gpriv = priv->gpriv;
+>         int err = -EOPNOTSUPP;
+>         u32 sts, ch = priv->channel;
+>         u32 ridx = ch + RCANFD_RFFIFO_IDX;
+> @@ -1372,6 +1423,7 @@ static int rcar_canfd_open(struct net_device *ndev)
+>  static void rcar_canfd_stop(struct net_device *ndev)
+>  {
+>         struct rcar_canfd_channel *priv = netdev_priv(ndev);
+> +       struct rcar_canfd_global *gpriv = priv->gpriv;
+>         int err;
+>         u32 sts, ch = priv->channel;
+>         u32 ridx = ch + RCANFD_RFFIFO_IDX;
+> @@ -1415,6 +1467,7 @@ static netdev_tx_t rcar_canfd_start_xmit(struct sk_buff *skb,
+>                                          struct net_device *ndev)
+>  {
+>         struct rcar_canfd_channel *priv = netdev_priv(ndev);
+> +       struct rcar_canfd_global *gpriv = priv->gpriv;
+>         struct canfd_frame *cf = (struct canfd_frame *)skb->data;
+>         u32 sts = 0, id, dlc;
+>         unsigned long flags;
+> @@ -1435,13 +1488,15 @@ static netdev_tx_t rcar_canfd_start_xmit(struct sk_buff *skb,
+>
+>         dlc = RCANFD_CFPTR_CFDLC(can_fd_len2dlc(cf->len));
+>
+> -       if (priv->can.ctrlmode & CAN_CTRLMODE_FD) {
+> +       if ((priv->can.ctrlmode & CAN_CTRLMODE_FD) ||
+> +           gpriv->chip_id == RENESAS_R8A779A0) {
+>                 rcar_canfd_write(priv->base,
+>                                  RCANFD_F_CFID(ch, RCANFD_CFFIFO_IDX), id);
+>                 rcar_canfd_write(priv->base,
+>                                  RCANFD_F_CFPTR(ch, RCANFD_CFFIFO_IDX), dlc);
+>
+> -               if (can_is_canfd_skb(skb)) {
+> +               if ((priv->can.ctrlmode & CAN_CTRLMODE_FD) &&
+> +                   can_is_canfd_skb(skb)) {
+
+Could you explain why this additional check is needed?
+My understanding is that can_is_canfd_skb(skb) being true implies
+that the CAN_CTRLMODE_FD flag is set.
+
+>                         /* CAN FD frame format */
+>                         sts |= RCANFD_CFFDCSTS_CFFDF;
+>                         if (cf->flags & CANFD_BRS)
+> @@ -1488,22 +1543,29 @@ static netdev_tx_t rcar_canfd_start_xmit(struct sk_buff *skb,
+>  static void rcar_canfd_rx_pkt(struct rcar_canfd_channel *priv)
+>  {
+>         struct net_device_stats *stats = &priv->ndev->stats;
+> +       struct rcar_canfd_global *gpriv = priv->gpriv;
+>         struct canfd_frame *cf;
+>         struct sk_buff *skb;
+>         u32 sts = 0, id, dlc;
+>         u32 ch = priv->channel;
+>         u32 ridx = ch + RCANFD_RFFIFO_IDX;
+>
+> -       if (priv->can.ctrlmode & CAN_CTRLMODE_FD) {
+> +       if ((priv->can.ctrlmode & CAN_CTRLMODE_FD) ||
+> +           gpriv->chip_id == RENESAS_R8A779A0) {
+
+I guess that this is linked to the above comment. Does the
+R8A779A0 chip support CAN-FD? If yes, why not simply use the
+CAN_CTRLMODE_FD instead of adding this additional check?
+
+>                 id = rcar_canfd_read(priv->base, RCANFD_F_RFID(ridx));
+>                 dlc = rcar_canfd_read(priv->base, RCANFD_F_RFPTR(ridx));
+>
+>                 sts = rcar_canfd_read(priv->base, RCANFD_F_RFFDSTS(ridx));
+> -               if (sts & RCANFD_RFFDSTS_RFFDF)
+> -                       skb = alloc_canfd_skb(priv->ndev, &cf);
+> -               else
+> +               if (priv->can.ctrlmode & CAN_CTRLMODE_FD) {
+> +                       if (sts & RCANFD_RFFDSTS_RFFDF)
+> +                               skb = alloc_canfd_skb(priv->ndev, &cf);
+> +                       else
+> +                               skb = alloc_can_skb(priv->ndev,
+> +                                                   (struct can_frame **)&cf);
+> +               } else {
+>                         skb = alloc_can_skb(priv->ndev,
+>                                             (struct can_frame **)&cf);
+> +               }
+>         } else {
+>                 id = rcar_canfd_read(priv->base, RCANFD_C_RFID(ridx));
+>                 dlc = rcar_canfd_read(priv->base, RCANFD_C_RFPTR(ridx));
+> @@ -1541,10 +1603,16 @@ static void rcar_canfd_rx_pkt(struct rcar_canfd_channel *priv)
+>                 }
+>         } else {
+>                 cf->len = can_cc_dlc2len(RCANFD_RFPTR_RFDLC(dlc));
+> -               if (id & RCANFD_RFID_RFRTR)
+> +               if (id & RCANFD_RFID_RFRTR) {
+>                         cf->can_id |= CAN_RTR_FLAG;
+> -               else
+> -                       rcar_canfd_get_data(priv, cf, RCANFD_C_RFDF(ridx, 0));
+> +               } else {
+> +                       if (gpriv->chip_id == RENESAS_R8A779A0)
+> +                               rcar_canfd_get_data(priv, cf,
+> +                                                   RCANFD_F_RFDF(ridx, 0));
+> +                       else
+> +                               rcar_canfd_get_data(priv, cf,
+> +                                                   RCANFD_C_RFDF(ridx, 0));
+> +               }
+>         }
+>
+>         /* Write 0xff to RFPC to increment the CPU-side
+> @@ -1563,6 +1631,7 @@ static int rcar_canfd_rx_poll(struct napi_struct *napi, int quota)
+>  {
+>         struct rcar_canfd_channel *priv =
+>                 container_of(napi, struct rcar_canfd_channel, napi);
+> +       struct rcar_canfd_global *gpriv = priv->gpriv;
+>         int num_pkts;
+>         u32 sts;
+>         u32 ch = priv->channel;
+> @@ -1762,21 +1831,25 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+>         int g_err_irq, g_recc_irq;
+>         bool fdmode = true;                     /* CAN FD only mode - default */
+>         enum rcanfd_chip_id chip_id;
+> +       int max_channels;
+> +       char name[9];
+> +       int i;
+>
+>         chip_id = (uintptr_t)of_device_get_match_data(&pdev->dev);
+> +       max_channels = chip_id == RENESAS_R8A779A0 ? 8 : 2;
+>
+>         if (of_property_read_bool(pdev->dev.of_node, "renesas,no-can-fd"))
+>                 fdmode = false;                 /* Classical CAN only mode */
+>
+> -       of_child = of_get_child_by_name(pdev->dev.of_node, "channel0");
+> -       if (of_child && of_device_is_available(of_child))
+> -               channels_mask |= BIT(0);        /* Channel 0 */
+> -
+> -       of_child = of_get_child_by_name(pdev->dev.of_node, "channel1");
+> -       if (of_child && of_device_is_available(of_child))
+> -               channels_mask |= BIT(1);        /* Channel 1 */
+> +       strcpy(name, "channelX");
+> +       for (i = 0; i < max_channels; ++i) {
+> +               name[7] = '0' + i;
+> +               of_child = of_get_child_by_name(pdev->dev.of_node, name);
+> +               if (of_child && of_device_is_available(of_child))
+> +                       channels_mask |= BIT(i);
+> +       }
+>
+> -       if (chip_id == RENESAS_RCAR_GEN3) {
+> +       if (chip_id != RENESAS_RZG2L) {
+>                 ch_irq = platform_get_irq_byname_optional(pdev, "ch_int");
+>                 if (ch_irq < 0) {
+>                         /* For backward compatibility get irq by index */
+> @@ -1812,6 +1885,7 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+>         gpriv->channels_mask = channels_mask;
+>         gpriv->fdmode = fdmode;
+>         gpriv->chip_id = chip_id;
+> +       gpriv->max_channels = max_channels;
+>
+>         if (gpriv->chip_id == RENESAS_RZG2L) {
+>                 gpriv->rstc1 = devm_reset_control_get_exclusive(&pdev->dev, "rstp_n");
+> @@ -1853,7 +1927,7 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+>         }
+>         fcan_freq = clk_get_rate(gpriv->can_clk);
+>
+> -       if (gpriv->fcan == RCANFD_CANFDCLK && gpriv->chip_id == RENESAS_RCAR_GEN3)
+> +       if (gpriv->fcan == RCANFD_CANFDCLK && gpriv->chip_id != RENESAS_RZG2L)
+>                 /* CANFD clock is further divided by (1/2) within the IP */
+>                 fcan_freq /= 2;
+>
+> @@ -1865,7 +1939,7 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+>         gpriv->base = addr;
+>
+>         /* Request IRQ that's common for both channels */
+> -       if (gpriv->chip_id == RENESAS_RCAR_GEN3) {
+> +       if (gpriv->chip_id != RENESAS_RZG2L) {
+>                 err = devm_request_irq(&pdev->dev, ch_irq,
+>                                        rcar_canfd_channel_interrupt, 0,
+>                                        "canfd.ch_int", gpriv);
+> @@ -1931,7 +2005,7 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+>         rcar_canfd_configure_controller(gpriv);
+>
+>         /* Configure per channel attributes */
+> -       for_each_set_bit(ch, &gpriv->channels_mask, RCANFD_NUM_CHANNELS) {
+> +       for_each_set_bit(ch, &gpriv->channels_mask, max_channels) {
+>                 /* Configure Channel's Rx fifo */
+>                 rcar_canfd_configure_rx(gpriv, ch);
+>
+> @@ -1957,7 +2031,7 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+>                 goto fail_mode;
+>         }
+>
+> -       for_each_set_bit(ch, &gpriv->channels_mask, RCANFD_NUM_CHANNELS) {
+> +       for_each_set_bit(ch, &gpriv->channels_mask, max_channels) {
+>                 err = rcar_canfd_channel_probe(gpriv, ch, fcan_freq);
+>                 if (err)
+>                         goto fail_channel;
+> @@ -1969,7 +2043,7 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+>         return 0;
+>
+>  fail_channel:
+> -       for_each_set_bit(ch, &gpriv->channels_mask, RCANFD_NUM_CHANNELS)
+> +       for_each_set_bit(ch, &gpriv->channels_mask, max_channels)
+>                 rcar_canfd_channel_remove(gpriv, ch);
+>  fail_mode:
+>         rcar_canfd_disable_global_interrupts(gpriv);
+> @@ -1990,7 +2064,7 @@ static int rcar_canfd_remove(struct platform_device *pdev)
+>         rcar_canfd_reset_controller(gpriv);
+>         rcar_canfd_disable_global_interrupts(gpriv);
+>
+> -       for_each_set_bit(ch, &gpriv->channels_mask, RCANFD_NUM_CHANNELS) {
+> +       for_each_set_bit(ch, &gpriv->channels_mask, gpriv->max_channels) {
+>                 rcar_canfd_disable_channel_interrupts(gpriv->ch[ch]);
+>                 rcar_canfd_channel_remove(gpriv, ch);
+>         }
+> @@ -2020,6 +2094,7 @@ static SIMPLE_DEV_PM_OPS(rcar_canfd_pm_ops, rcar_canfd_suspend,
+>  static const __maybe_unused struct of_device_id rcar_canfd_of_table[] = {
+>         { .compatible = "renesas,rcar-gen3-canfd", .data = (void *)RENESAS_RCAR_GEN3 },
+>         { .compatible = "renesas,rzg2l-canfd", .data = (void *)RENESAS_RZG2L },
+> +       { .compatible = "renesas,r8a779a0-canfd", .data = (void *)RENESAS_R8A779A0 },
+>         { }
+>  };
+
+
+Yours sincerely,
+Vincent Mailhol
