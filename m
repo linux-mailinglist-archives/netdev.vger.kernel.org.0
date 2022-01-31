@@ -2,141 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06BB14A4FD1
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 21:06:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 942924A4FDA
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 21:10:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229664AbiAaUGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 15:06:08 -0500
-Received: from mail-eopbgr140041.outbound.protection.outlook.com ([40.107.14.41]:6768
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229534AbiAaUGH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Jan 2022 15:06:07 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y0ANX9no67En4cl59lJ1mDS6m0o21pepeXQ6tAKUrgsHvCpU77I5etiOYysJWowQrL65m6b8YtbEBhLzBcJsAGb8QIng67D7tMvbU0EXfkNrSPne+xZXGlXI2sToO5WdSiHDEwFa/RUTFd6b98ssmNtvUHJTtTsOqfl4O4+1cneYBZ+ZOiBsalsE455zxrS3B5Ng/aE6icj583HGQiUy+EM887pNYF+UR5PbIJbBVq3pN7a4lIuw+azbh+B9w6bF74cKAWhHZBrU8X2bwfSM4w+x2laG8szRrQiVpzWTyqz/HucYFZb/XRTEx+kDRSswUPpQMRDwdu+sSMBRy99A4Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=L/l75HWt94P3qDYDnOa/lHyZABvTI2YpDUfRu7q19zY=;
- b=eQCyHFd7iB/nCdqJyiBZk97ULdvE09Ks+JMzcqKRP+v86ERVnpBjQN2/H6kozWOsqpx7nNhQocUXqrkm17r2AqdyNosqlUE6xquDqZtNr2hI4X589UFr71vyNwDD4a0s4OLM9FhZLIZztSWlVKQSJE9KztQnxBjy2QbsGsD4FqD9CMUXKgHjuHLqeq8wCYYQy6hURlkbJmFiNqMXZ9uzZAytWfub4KhsecbKFPpCqCYrk/gM8Gi8kbFhCSPG6j4jJpXQCtmQQ5Vte3IFzcXdoGJGhyIBKkUO3f1C5HqBFjl0K+VOiW8eHe7hL9gu5fJ0QW8WYq5Ce8FSQwU8Jbxg6g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L/l75HWt94P3qDYDnOa/lHyZABvTI2YpDUfRu7q19zY=;
- b=jhYJLgORNJiZp5Eeibjf/hfxK1hyuRW8vq+UM3SHn5xB2kMNXgvrVE1o86bLaFqVAKZNJx81tk2F/8YNAtFGX8JnjTp0xHqMfaCBFXGBg3e0y9JJHgczGZsJQx9d5vVNLQRTOQBLc6CIOXaG8CBolc6GhxwzZvgG3vlQeAS8PrY=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM0PR04MB6977.eurprd04.prod.outlook.com (2603:10a6:208:189::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.22; Mon, 31 Jan
- 2022 20:06:05 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::f4d7:e110:4789:67b1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::f4d7:e110:4789:67b1%5]) with mapi id 15.20.4930.021; Mon, 31 Jan 2022
- 20:06:05 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Colin Foster <colin.foster@in-advantage.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        id S1347038AbiAaUKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 15:10:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59356 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229534AbiAaUKc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 15:10:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5972C061714;
+        Mon, 31 Jan 2022 12:10:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28BE161483;
+        Mon, 31 Jan 2022 20:10:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CED1C340E8;
+        Mon, 31 Jan 2022 20:10:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643659831;
+        bh=db3019ER3yHKwYvfr1vDrkC0pSuWFsBGKycjXxPwonk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=b0BjUSE02/Lk9W7l6kNn8GCVBmeFqqRvSdMJB07B0CUhVQyPW1NURhoB+dnhBiU+W
+         JBtWhDM36yQbPoBdEN96aO+suz6byn7zIJ6Eq6jO2bocu5K/blX9MyRaU/oaLJB92y
+         FIro4AT9qeG6/0KFZv/ZvSlzM9COMAqqAY9MkSpSUmHGDdcSwzONr1LAsQAXgUAgEo
+         9wi374x5enP+6A2x50TIBWRdDa34SvB37UqbV2NfGYIcWDP1OykvHH5AlrFFKGZbyU
+         I7Zfogab/rvVHRDnpTn5D9o0mHdsCIV5+zCngZSy+ddRUPNUUW3TOomCt/K7JOMzTc
+         ljRqLy0jmlm9w==
+Date:   Mon, 31 Jan 2022 12:10:27 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Saeed Mahameed <saeed@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Shay Agroskin <shayagr@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        David Arinzon <darinzon@amazon.com>,
+        Noam Dagan <ndagan@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jeroen de Borst <jeroendb@google.com>,
+        Catherine Sullivan <csully@google.com>,
+        David Awogbemila <awogbemila@google.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "K . Y . Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: Re: [PATCH v4 net-next 0/2] use bulk reads for ocelot statistics
-Thread-Topic: [PATCH v4 net-next 0/2] use bulk reads for ocelot statistics
-Thread-Index: AQHYFIJ8ACyf1j3JaEubMb+rEidhLqx9kDeAgAACtwA=
-Date:   Mon, 31 Jan 2022 20:06:05 +0000
-Message-ID: <20220131200604.orl7da2oyljh626c@skbuf>
-References: <20220128200549.1634446-1-colin.foster@in-advantage.com>
- <20220131115621.50296adf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220131115621.50296adf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 84f88152-6ea4-4b10-ce2f-08d9e4f51d20
-x-ms-traffictypediagnostic: AM0PR04MB6977:EE_
-x-microsoft-antispam-prvs: <AM0PR04MB697758C10A2B4C3BDB35E99AE0259@AM0PR04MB6977.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: KHzymhapRqFn9e0olWM3hurdwg2KuB9OJZzeU4C6oNs9Y5aO3ptjKOjpUtojrVemtjQDjUA46MqUFx0GoMUi3EnIrX52TCWnIu4ak7gKMTv/tR7QYtEwy1RJz3MP3CaAQu3hgeTRN6wmqDjGD4AOr+Y4LSteO/6dWFGXEPqKbiRkC/FUJjS95z4OUspoCAcd3umtisceo1Q3WuiI0fnOONOhKsMmZpDxc/qXWH7wWwTmqcGTCSAkHxwwWMV8uu47lu1HDFDYMLIXuOVGvglEVr6F7pXaFguo0ekuWjFz1rgffrV+gOQi7KSEGSnp23VgHOkLUbYfwy3iR77mOt3oAIFOC+tQ01YsUYx4vEGfm6At6ztcAvbcAh4x7opmhwyYaqc8gzYszZiE8JDTPUPuU6EFCELaGn02O2BwrdujxjsYlKWbP2n5SeGLFeuwHtENmG2lKSrrJBHXXxSzULxBwd1DeacpHxlgu0SZNXhMekBC2Vc37VG9k2p1FlsgicSgSrvuTuY2kQ1w+YDD5wJzrnEZscwDmZmaZ6959Ik3eyxz56pBy/n6Zrur+qEBFhddBv22B/ugf8BnwOE/6Gq6ZSBzOvFp65nK8i8pWnqpBasGzROTyG+bTb2DzgMyeZTJ2vWUHyKLWwqpIOCnghqD/DT2Mikfo7/nyeJ4w85AXQIKjs077A3YhfkoZDxolOlJcE/wplo2Bhe/abPY9j1mzL4CVSs3Yplm3kCJJ1q4dqC86zx0wojxZ6DItWlgYXh1gxT/D+ZRGytsEZPbjZapgiFaXbOidWZAnm5f2rTP//M=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(6506007)(6512007)(9686003)(38070700005)(71200400001)(508600001)(5660300002)(44832011)(2906002)(122000001)(1076003)(186003)(83380400001)(26005)(76116006)(66946007)(54906003)(91956017)(38100700002)(66556008)(66476007)(6486002)(966005)(86362001)(4326008)(66446008)(64756008)(8936002)(316002)(33716001)(8676002)(6916009)(20210929001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?jRlLcHQ70YyEteVnlnZPLy4DpMqghzAYDgbKykTQ4WdFKsNXZwqiJbc7+sqp?=
- =?us-ascii?Q?yBLON7lMG/0eId9Yzd8SqdHzhRm5ImC3Xoi9ncy2Lk0cprIrXk3+B5Z1whDF?=
- =?us-ascii?Q?tcThxf3muNUm8oxFVYgumUeuoXVgvtAXOlQzk0kmveKWgnu/VtaCZv3Pb/zw?=
- =?us-ascii?Q?HDmk2v5tAUAMO4xzNSLpNSygHlskDc5Msp4VKExd8fBw/SJNKBsElH+7EIaj?=
- =?us-ascii?Q?L5I6HaawbfoSCoxDvGo6gUK2N/Ez60hKdJroa6NrtEQG7ymshDIGACFnCgsM?=
- =?us-ascii?Q?beB9J0yPXJkDN1xo3rD392Th0H6gA2iIf8Z625m6l7XIipMFeGUgSV54MLP8?=
- =?us-ascii?Q?vSfaGAHCxSLWhSlrq+4D6zLvY73AXMbvG7zI2qoHt2TKSDgx0nyiFbSCFx5x?=
- =?us-ascii?Q?VFrbNsj48rYdSRG3ck7rgD1edSh0kVTCrcakuhpwjfExLw6OZbVO2e6v5ux3?=
- =?us-ascii?Q?9dRzjIcr9URjXYGHf/OuHkvC8dhHUTWVgvPY5E8zj0lK/MOMnDyu23dC8M4D?=
- =?us-ascii?Q?3/3V08g1s1S4YVPdK34eR5vSJqJZXoxOsHLZUhCUVU8G+xhLG2oaGDrx/66i?=
- =?us-ascii?Q?4Zscn38WTRikXlLEVOCqzILHcADT/fDj/nSYqwpn5X8XPNDxEx4wjVl5uSCj?=
- =?us-ascii?Q?kCfi4entySbRPVgnrfE21WH5aBmyCA4iW4yyvSZFdjLB4Nxb53MTRhI2TWg8?=
- =?us-ascii?Q?W8OvYTP2mjlxYa9ZV7GD4An6m4uDbaMcUPk+55vW/3KGL1BoD4nzSuBSTRMV?=
- =?us-ascii?Q?TN1nVzUc4CIyWLBCSADxD19UUZcay08Ynm9gtAvrqEX9EqKd8+WQn5V8cZif?=
- =?us-ascii?Q?/2feVMM5ZHBNEl6++4/EEefU/B4Mecrp1oAybojqimseiZ8Dg+i4H2xCiRk9?=
- =?us-ascii?Q?uXZ9pMLSdZ7RZ7oxWX2Jno6q86uIBxUY5wZsyKq97b5t7SyYpFG0lFl0vrYs?=
- =?us-ascii?Q?iZnDw1iwlF+zmDzHa/gtPGjAs/NQ5wyICJARlUQz56Rbmh4rA3qAkvJl+60n?=
- =?us-ascii?Q?yqSHcX1KIyLrkdeymQq3Dkrpz5T02KVlQNXm36VH95xNlfgbJdd/EdQGg+j0?=
- =?us-ascii?Q?HIyv7EHEwAByFGLAzoO+mEY3RdoVm1MKFoixWFlCf/1q30qYW6u0XEESWb3d?=
- =?us-ascii?Q?/O87QjT+XPKQoojqt87hgis+XaUEC6OqGK7/lPegR14aoE6qaYXnJMU/lAT3?=
- =?us-ascii?Q?pjhSkzrakMWONkuoBbL0IbjLurr/Lr2ZLxCe+8IJyNeIAY4mIc/aBlBpHs2P?=
- =?us-ascii?Q?Y5vD8JwR5qTLm/4vxwAQ6Yji/lBsWUCF+Wq50jNYVwCcNhsGaKypa2YzXT46?=
- =?us-ascii?Q?EeEkKRZKWP2XvfKobyy/zuGOTAfzUEs6+16cdKeztW7hqPlgjsCpm4Jk8PDC?=
- =?us-ascii?Q?9X0bO7QX2dbDE8sgX4h9PHMfrjp7hHYT+0SIdYfpdxJTf3sw7FxXzQtvoV5F?=
- =?us-ascii?Q?PqVrSYUVZtGPMUEoSc3bF9CtCMgGLllMKV/jt9RjZhJYYTzb4JHlvgLbnEsJ?=
- =?us-ascii?Q?RHaaNpu/lc92CJIJj64AiDHr/aUymw7MQ++zOTLo3TLmcKaH3/qlsj+s8Fsl?=
- =?us-ascii?Q?SfLOKHgmL4rv1g5T5dT83jjctXpdkQz5kTzI8xLb42ghktJaN6AayqAiQdrb?=
- =?us-ascii?Q?xu/EizyQMYoknbTsnMeSbNI=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <933FB3B4C9FF0C4CB60B42316FC2FF73@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Jon Mason <jdmason@kudzu.us>,
+        Simon Horman <simon.horman@corigine.com>,
+        Rain River <rain.1986.08.12@gmail.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>,
+        Shannon Nelson <snelson@pensando.io>, drivers@pensando.io,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Rob Herring <robh@kernel.org>, l.stelmach@samsung.com,
+        rafal@milecki.pl, Edwin Peer <edwin.peer@broadcom.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Joel Stanley <joel@jms.id.au>, Slark Xiao <slark_xiao@163.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Liming Sun <limings@nvidia.com>,
+        David Thompson <davthompson@nvidia.com>,
+        Asmaa Mnebhi <asmaa@nvidia.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>,
+        Omkar Kulkarni <okulkarni@marvell.com>,
+        Shai Malin <smalin@marvell.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Gary Guo <gary@garyguo.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, intel-wired-lan@lists.osuosl.org,
+        linux-hyperv@vger.kernel.org, oss-drivers@corigine.com,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH net-next] net: kbuild: Don't default net vendor configs
+ to y
+Message-ID: <20220131121027.4fe3e8dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <30ed8220-e24d-4b40-c7a6-4b09c84f9a1f@gmail.com>
+References: <20220131172450.4905-1-saeed@kernel.org>
+        <20220131095905.08722670@hermes.local>
+        <CAMuHMdU17cBzivFm9q-VwF9EG5MX75Qct=is=F2h+Kc+VddZ4g@mail.gmail.com>
+        <20220131183540.6ekn3z7tudy5ocdl@sx1>
+        <30ed8220-e24d-4b40-c7a6-4b09c84f9a1f@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 84f88152-6ea4-4b10-ce2f-08d9e4f51d20
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jan 2022 20:06:05.5195
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Ffxb5K0dCRtCB2YZ/gIyxkvMg5rrgjnmq5+EzA9/XbGIsS3U1v3YL+nyge4O2WBO968H3rv7tfvIIZn5DIG3QA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6977
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 11:56:21AM -0800, Jakub Kicinski wrote:
-> On Fri, 28 Jan 2022 12:05:47 -0800 Colin Foster wrote:
-> > Ocelot loops over memory regions to gather stats on different ports.
-> > These regions are mostly continuous, and are ordered. This patch set
-> > uses that information to break the stats reads into regions that can ge=
-t
-> > read in bulk.
-> >=20
-> > The motiviation is for general cleanup, but also for SPI. Performing tw=
-o
-> > back-to-back reads on a SPI bus require toggling the CS line, holding,
-> > re-toggling the CS line, sending 3 address bytes, sending N padding
-> > bytes, then actually performing the read. Bulk reads could reduce almos=
-t
-> > all of that overhead, but require that the reads are performed via
-> > regmap_bulk_read.
->=20
-> This got into Changes Requested state in patchwork, I'm not sure why.
->=20
-> I revived it and will apply it by the end of the day PST if nobody
-> raises comments.
+On Mon, 31 Jan 2022 10:40:38 -0800 Florian Fainelli wrote:
+> >> And changing the defaults means all defconfigs must be updated first,
+> >> else the user's configs will end up without drivers needed.
+> >>  
+> > 
+> > As I understand correctly, at least for most common net drivers, having 
+> > NET_VENDOR_XYZ=y doesn't actually build anything, we have flags per
+> > module for each vendor and those are defaulted to N.  
+> 
+> Right, but once you start hiding NET_VENDOR_DRIVER_XYZ under a 
+> NET_VENDOR_XYZ Kconfig symbol dependency, if NET_VENDOR_XYZ is not set 
+> to Y, then you have no way to select NET_VENDOR_DRIVER_XYZ and so your 
+> old defconfig breaks.
 
-Maybe this is the reason?
-https://patchwork.kernel.org/project/netdevbpf/patch/20220125071531.1181948=
--3-colin.foster@in-advantage.com/#24717872=
+To be clear do we actually care about *old* configs or *def* configs?
+
+Breaking defconfigs seems bad, but I don't think we can break
+reasonable oldconfigs at this point?
+
+> >> It might make sense to tune some of the defaults (i.e. change to
+> >> "default y if ARCH_*") for drivers with clear platform dependencies.
+> >>  
+> > 
+> > either set hard default to 'n' or just keep it as is, anything else is just
+> > more confusion.  
+> 
+> Maybe the rule should go like this: any new driver vendor defaults to n, 
+> and existing ones remain set to y, until we deprecate doing that and 
+> switching them all off to n by 5.18?
+
+I'd be afraid that given the work of fixing up defconfigs is
+non-trivial we may end up never switching old drivers. And then we'd
+have a semi-random soup of defaults :(
