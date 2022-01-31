@@ -2,204 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 324274A4E9F
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 19:40:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 102824A4EBE
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 19:45:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354624AbiAaSks (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 13:40:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38934 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234175AbiAaSks (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 13:40:48 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9869C061714;
-        Mon, 31 Jan 2022 10:40:47 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id t32so13026846pgm.7;
-        Mon, 31 Jan 2022 10:40:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=vUcVq5xhDtsVnawQOYBHe0I2uMjtSwKHFuB7P9A9ZPE=;
-        b=Qks15jLuTdFfJB7Yimcf6CFubiKZSrG+lgYbEXhv5CmcREhbsO9I3sHSkFpZJtXCKr
-         92ULlrJ1jbtZTyDNycEEatYwo/lYVGPSpPf1Eb96b6UbfuVheN/P13CAiMWNG2SWTU/7
-         3kMaW8gywhhLuK1ffBR6cWAnDfHfkbkT4gdENSpeUmj5WtcK+xKXA3d7Ir+6P1b6ySez
-         5aKGnhEZanxzbauIs3sIeQq7luxkHgr8QY9yfq7EiP8YuRrN+QQlfEvf8cqeTrWlxUPM
-         eHVw4/o/IfeCDvEz6RYo2vuKGwnbY5xuw8UU3STuPVmvw/DN71+Hg6YDgx6nHJknnlYG
-         GImA==
+        id S1357310AbiAaSpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 13:45:40 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:38112
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1357347AbiAaSpi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 13:45:38 -0500
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A02063F19C
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 18:45:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643654737;
+        bh=rRIMto31EBKAWHmHUDOdPEW+19zWxepmKSVRYr0rOGU=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=QKdoHes3rhJDTbs+2kyesV3xeVShmIz7S5Fj69wKNMG88tTVrgDRhene5UKxuvEee
+         4tWKah00Z0BCPfZ60DcT6mbkSnr3TBGtklgYA5gP2rVIxQlNK1GRrxGFk9sCJnY9gf
+         QxFYg4S6HDMTj8q+9CqxyZTEDf678Jziin9QpfK8xcdheUNFfjICuhw4kK+8RZESpi
+         tq12gEns3//zXkWYgrsU351Tl+lXo6dLGi35cnjIZSBpCnNaAJe2YodPaZgVVrynwj
+         oyuR3mdOi69w4fbY570+1boc203RWdblt64LB/i10d/DshuTK/m0KWjcq+aTLPpjVi
+         +aSBdMIK4HZuQ==
+Received: by mail-pl1-f199.google.com with SMTP id y3-20020a1709029b8300b0014c8bcb70a1so4364893plp.3
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 10:45:37 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vUcVq5xhDtsVnawQOYBHe0I2uMjtSwKHFuB7P9A9ZPE=;
-        b=ia+G/kkMpdhlz7I34OSZZZ3D+DWS+OOAC5m5QUYrVmpW6pMAfypjCxeVFCT63GL/r+
-         KmUyh0phqGNg3lLvPVKGrAOj2xGxBUACokTZYqTlfPznj56qfFPhIKB4MQ0MQ8IiZqXE
-         pcrG8N8pTD3j6ffHe6T8B4D/W9K2fvcVmBbt61ZcMIrwmQkAtOI63CBuTGSQtOGjRI6u
-         1bxbl/8aCPGOQMHkAHWu6RwB9M+m8vA89NN8TDWlnBANP1DQylh99GgP0Srr3SkuDL0G
-         fpsg4Eh0jtoAL+74Ai2CExcAiVWMVXX8F8R5AmhNnoTWotNHHfxTgytyxjvvtjEIo6Bv
-         ft3g==
-X-Gm-Message-State: AOAM532o2l7kBberK9UmucXY561EzaplpD4DvfVUEQurCi3lQ3gu4imN
-        2FjE4S3AAOhyZOZDbaeJXbk=
-X-Google-Smtp-Source: ABdhPJwFcPJi/t2hparKLY2t08LTiTgjCaME1xBLmUfnatI03eGBlVkElbTxSt6cAsqmyFb4Kfa8FA==
-X-Received: by 2002:a05:6a00:b51:: with SMTP id p17mr12524853pfo.35.1643654447151;
-        Mon, 31 Jan 2022 10:40:47 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id s14sm18562705pfk.65.2022.01.31.10.40.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 10:40:45 -0800 (PST)
-Message-ID: <30ed8220-e24d-4b40-c7a6-4b09c84f9a1f@gmail.com>
-Date:   Mon, 31 Jan 2022 10:40:38 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net-next] net: kbuild: Don't default net vendor configs to
- y
-Content-Language: en-US
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mark Einon <mark.einon@gmail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jeroen de Borst <jeroendb@google.com>,
-        Catherine Sullivan <csully@google.com>,
-        David Awogbemila <awogbemila@google.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "K . Y . Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Jon Mason <jdmason@kudzu.us>,
-        Simon Horman <simon.horman@corigine.com>,
-        Rain River <rain.1986.08.12@gmail.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Shannon Nelson <snelson@pensando.io>, drivers@pensando.io,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
+         :comments:mime-version:content-id:content-transfer-encoding:date
+         :message-id;
+        bh=rRIMto31EBKAWHmHUDOdPEW+19zWxepmKSVRYr0rOGU=;
+        b=qpZ/gu6tQRM96tGgW2LtTYQirgC/HTRqefr1I0BJVYqwY5nTndVaSCTN/JukaabqsN
+         NzU45eata+N0ajaBq5VrE5kfPo81qcgXiyuCY4rterkS1cuPNazt05a3H9x5x+3Pgv4C
+         NQwL8g19kMc17e3cqcWgaploovIo+pER9fE+ymfpvUXq0rnPCOcv4A9oV+1ZhWORHDli
+         EjLZhy0JcplgqVp/yKO6PpMHdwQHcYSywD9BEFC05ToHTGNOM0f6CLq+t9+8Eumob/x4
+         Epvlfx1ItNdhpOwqxWbWU7EQzKXtytL14vT1SZSq3+8h4T0wUjUZ9utuQBTOjUW+oX0x
+         1csA==
+X-Gm-Message-State: AOAM53204BH6Vfb9rMmSXFL5SaOTYlFWgpdMGSLo9fbqTFgG9lrVn1SU
+        hKI2wPdDmK5GxJI5dKErMrLI+9IscN7uuG1nbx5+bS4jbNjZA/Kw6S2lcbCoIhfZUDJLMV6wy18
+        qHnxvww4RURi5Z5Vyn5KQFAWHHXOGd9n++w==
+X-Received: by 2002:a63:2a46:: with SMTP id q67mr1921133pgq.595.1643654736424;
+        Mon, 31 Jan 2022 10:45:36 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyj1XUuJdA5NLLdAIfIRnyZPnD/UGuhEbKrN3YnyeQlaJJGva6P6myg4Bkm5naFcI2Oiymk2g==
+X-Received: by 2002:a63:2a46:: with SMTP id q67mr1921110pgq.595.1643654736111;
+        Mon, 31 Jan 2022 10:45:36 -0800 (PST)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id g8sm18916240pfc.193.2022.01.31.10.45.35
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 31 Jan 2022 10:45:35 -0800 (PST)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 135E25FDEE; Mon, 31 Jan 2022 10:45:35 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 0D9F8A0B26;
+        Mon, 31 Jan 2022 10:45:35 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Mahesh Bandewar <maheshb@google.com>
+cc:     Netdev <netdev@vger.kernel.org>,
         Andy Gospodarek <andy@greyhouse.net>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Rob Herring <robh@kernel.org>, l.stelmach@samsung.com,
-        rafal@milecki.pl, Edwin Peer <edwin.peer@broadcom.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Joel Stanley <joel@jms.id.au>, Slark Xiao <slark_xiao@163.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Liming Sun <limings@nvidia.com>,
-        David Thompson <davthompson@nvidia.com>,
-        Asmaa Mnebhi <asmaa@nvidia.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>,
-        Omkar Kulkarni <okulkarni@marvell.com>,
-        Shai Malin <smalin@marvell.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Gary Guo <gary@garyguo.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, intel-wired-lan@lists.osuosl.org,
-        linux-hyperv@vger.kernel.org, oss-drivers@corigine.com,
-        linux-renesas-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-References: <20220131172450.4905-1-saeed@kernel.org>
- <20220131095905.08722670@hermes.local>
- <CAMuHMdU17cBzivFm9q-VwF9EG5MX75Qct=is=F2h+Kc+VddZ4g@mail.gmail.com>
- <20220131183540.6ekn3z7tudy5ocdl@sx1>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220131183540.6ekn3z7tudy5ocdl@sx1>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Veaceslav Falico <vfalico@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mahesh Bandewar <mahesh@bandewar.net>
+Subject: Re: [PATCH v2 net-next] bonding: pair enable_port with slave_arr_updates
+In-reply-to: <20220129055815.694469-1-maheshb@google.com>
+References: <20220129055815.694469-1-maheshb@google.com>
+Comments: In-reply-to Mahesh Bandewar <maheshb@google.com>
+   message dated "Fri, 28 Jan 2022 21:58:15 -0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <15938.1643654735.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Mon, 31 Jan 2022 10:45:35 -0800
+Message-ID: <15939.1643654735@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Mahesh Bandewar <maheshb@google.com> wrote:
 
+>When 803.2ad mode enables a participating port, it should update
+>the slave-array. I have observed that the member links are participating
+>and are part of the active aggregator while the traffic is egressing via
+>only one member link (in a case where two links are participating). Via
+>krpobes I discovered that that slave-arr has only one link added while
+>the other participating link wasn't part of the slave-arr.
+>
+>I couldn't see what caused that situation but the simple code-walk
+>through provided me hints that the enable_port wasn't always associated
+>with the slave-array update.
+>
+>Change-Id: I6c9ed91b027d53580734f1198579e71deee60bbf
+>Signed-off-by: Mahesh Bandewar <maheshb@google.com>
 
-On 1/31/2022 10:35 AM, Saeed Mahameed wrote:
-> On 31 Jan 19:30, Geert Uytterhoeven wrote:
->> On Mon, Jan 31, 2022 at 6:59 PM Stephen Hemminger
->> <stephen@networkplumber.org> wrote:
->>> On Mon, 31 Jan 2022 09:24:50 -0800
->>> Saeed Mahameed <saeed@kernel.org> wrote:
->>>
->>> > From: Saeed Mahameed <saeedm@nvidia.com>
->>> >
->>> > NET_VENDOR_XYZ were defaulted to 'y' for no technical reason.
->>> >
->>> > Since all drivers belonging to a vendor are supposed to default to 
->>> 'n',
->>> > defaulting all vendors to 'n' shouldn't be an issue, and aligns well
->>> > with the 'no new drivers' by default mentality.
->>> >
->>> > Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
->>>
->>> This was done back when vendors were introduced in the network 
->>> drivers tree.
->>> The default of Y allowed older configurations to just work.
->>
->> And changing the defaults means all defconfigs must be updated first,
->> else the user's configs will end up without drivers needed.
->>
-> 
-> As I understand correctly, at least for most common net drivers, having 
-> NET_VENDOR_XYZ=y doesn't actually build anything, we have flags per
-> module for each vendor and those are defaulted to N.
+	Please remove the Change-Id line.
 
-Right, but once you start hiding NET_VENDOR_DRIVER_XYZ under a 
-NET_VENDOR_XYZ Kconfig symbol dependency, if NET_VENDOR_XYZ is not set 
-to Y, then you have no way to select NET_VENDOR_DRIVER_XYZ and so your 
-old defconfig breaks.
+>---
+> drivers/net/bonding/bond_3ad.c | 5 ++++-
+> 1 file changed, 4 insertions(+), 1 deletion(-)
+>
+>diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3a=
+d.c
+>index 6006c2e8fa2b..4d876bfa0c00 100644
+>--- a/drivers/net/bonding/bond_3ad.c
+>+++ b/drivers/net/bonding/bond_3ad.c
+>@@ -1021,8 +1021,9 @@ static void ad_mux_machine(struct port *port, bool =
+*update_slave_arr)
+> 				if (port->aggregator &&
+> 				    port->aggregator->is_active &&
+> 				    !__port_is_enabled(port)) {
+>-
+> 					__enable_port(port);
+>+					/* Slave array needs update */
+>+					*update_slave_arr =3D true;
 
-> 
->>> So there was a reason, not sure if it matters anymore.
->>> But it seems like useless repainting to change it now.
->>
->> It might make sense to tune some of the defaults (i.e. change to
->> "default y if ARCH_*") for drivers with clear platform dependencies.
->>
-> 
-> either set hard default to 'n' or just keep it as is, anything else is just
-> more confusion.
+	Given the name of the variable here, I think the comment is
+superfluous (both here and the change below).
 
-Maybe the rule should go like this: any new driver vendor defaults to n, 
-and existing ones remain set to y, until we deprecate doing that and 
-switching them all off to n by 5.18?
--- 
-Florian
+	Functionally, though, I think the change is reasonable.  Could
+you fix these two nits and repost?
+
+	-J
+
+> 				}
+> 			}
+> 			break;
+>@@ -1779,6 +1780,8 @@ static void ad_agg_selection_logic(struct aggregato=
+r *agg,
+> 			     port =3D port->next_port_in_aggregator) {
+> 				__enable_port(port);
+> 			}
+>+			/* Slave array needs update. */
+>+			*update_slave_arr =3D true;
+> 		}
+> 	}
+> =
+
+>-- =
+
+>2.35.0.rc2.247.g8bbb082509-goog
+>
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
