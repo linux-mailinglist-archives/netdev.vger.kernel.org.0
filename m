@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C76CB4A4C1D
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 17:29:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4244E4A4C02
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 17:28:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380428AbiAaQ3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 11:29:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35884 "EHLO
+        id S1380394AbiAaQ2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 11:28:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380486AbiAaQ2R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 11:28:17 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3DCC061401;
-        Mon, 31 Jan 2022 08:28:16 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id r10so28040231edt.1;
-        Mon, 31 Jan 2022 08:28:16 -0800 (PST)
+        with ESMTP id S1380370AbiAaQ2e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 11:28:34 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED60C06173B;
+        Mon, 31 Jan 2022 08:28:33 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id p7so27757180edc.12;
+        Mon, 31 Jan 2022 08:28:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=SRGWD5HujtGaIfy6YI6sQxXDCuS1sXnoBeyNAfdeYfw=;
-        b=ChnztWGFCtrmF8AR1r+RxPbBgCvUh0CFlJUcnaF52cf5G1sjhuI7GzfAEFXFuzTQkM
-         JxycPhTVhoZtFs7XinEr+TOKblJu49ps9qXeBjK0ScLdwojro28qNzmRh10OqkWGwHhV
-         vtBa+0kLeIc6limAZBPJAZC9EgPv4VCTLX07epyDEu+yiwKgbL9tsOV0KKnmC5ZnAHvn
-         uH0fE/7Il/g8fhtNHrIh1RMxTB06zccccFG7TUwimrwW0oFiMF4+B9DkJlFQzDG04Sk9
-         CxTtObvrEBHH9Cb9TRsJY4DhJHo9u5ENG96hEs47e66AFhqodn6kekntyKOXZRDPHCEY
-         nqfA==
+        bh=dwt+S+xaQOb5oolekdBKMH+fGFi5CzTZ33U4PJNpXnE=;
+        b=XbUONObw9m3FeEzG8kzzGOJWeQjOCK9wirykP4FDExl5B/1dbMR8BtSh9kkOYF3yQe
+         eUJfi+QOYsFQnKvZJZmBR2+gm3vdnl5dGuvjC4RaV3LPOwFiNi25VQpe2kw4ikxgJvqi
+         r5oEJSbkV7qby8nT8R0fhesITOQShBmhjsrTYlraw2qpoNgDHH9q0567RyXRDIQrvzpW
+         WiTMf4ODMq//41ZC0RbVpi3jhxUZfeV+oJlNM5+xOHspbVD0yOYbBBGze5iTRBgf9Ssq
+         oXaOYs6eCQn0mHh7MarPkl2a28yjSULvkoD8A3j/mxP+7gZgyGTI1IqYErNLJ+SVg0UX
+         OfnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=SRGWD5HujtGaIfy6YI6sQxXDCuS1sXnoBeyNAfdeYfw=;
-        b=T1aG/0uPrrDJp4vfq+mKAMaGTA77ov1vzrTLtiNd7XWrQts0QYgbvnBasn/+aUAnr7
-         xkHhvYNXs7uFSMHXS9UGBnsopwN9T65OFxvm2V+RMMnkK27QsPLJE2J46UgvcGnc9i3N
-         QNQfKLkXxujvSS77a+yuvWmdgrF8SFOXf6ye2qIPlyTaha6s8Rbcd+BnJ0OYxo88JKsM
-         csii3ZoeebIDq+uCbBCIC9xrqe2JIBUkcx76ypsac2xGzMWqrPUROFphprxLm9YztLJy
-         yOxAymO/tp8+8E5UaGQQRHou5Qy+1BQ6VnWpSMKK/Fpjp1gTpDyu/hvD6sBNIZYcxv4U
-         X/gg==
-X-Gm-Message-State: AOAM530GuvSnHY2NtfjxNxvwbT7zySvKplP5Vs5XWpQjCetsQP1qh1PI
-        u1zDdFcSfhp7k18lKi4Zp4KlEiet5ALJVlIA3A0=
-X-Google-Smtp-Source: ABdhPJxN6zodTFR1sUdARmDocQ6DqGl7M4lBjebz7UFYoBxZ4kMltyMXUVtIA2lfAdrmFf2GE2DGhFAXGCGauiLOqqI=
-X-Received: by 2002:aa7:d6c5:: with SMTP id x5mr20979293edr.29.1643646494962;
- Mon, 31 Jan 2022 08:28:14 -0800 (PST)
+        bh=dwt+S+xaQOb5oolekdBKMH+fGFi5CzTZ33U4PJNpXnE=;
+        b=VgBqXY5xEobCQJzAiN7z9iy5SovzNVCmb1a4sQWPKYcrR2oxMMl4PWGSb0bWMydUPW
+         w097uFX/4yuHrIgdus4cOcNjTS9P3iAcNGuxM9C+B+P9cG4e0sHGQZasVqNXdH74ZvTS
+         owHGJGP4fAvCnb4OcGVkwAqxcf1w3cqKHr/URtFBn+sxk9GxgsZVsjbe5GJZO9ayN2mu
+         gn12p/ZR71bNwHdp/QCRgSpi9/ptU+T97f0wcZSp/j25tWRwApKURzXk0FL0IGAAxCV8
+         cbbx8pnTsCCpfI6BvqPOyPVlxsY/CtE+lMRWrgWf2lUUJmQd93SZxjKy+HLxRv0lENkG
+         Oyng==
+X-Gm-Message-State: AOAM5303PK83iaxBpiSfvQHIGBEAWLSDGkp16AZPqyJPfa4y9KUEiRNl
+        3N6h4wrMDz6w7KIrOLK+zYWe9Eki934mX7kkuZU=
+X-Google-Smtp-Source: ABdhPJxSBz18NwyW86CThCeoCdkkXwq6+Gjg58B4suZ/8V/WkVaJw3IipwwO7vMKIpFbTBJGMyRYHQ29vDLeDxuWYeg=
+X-Received: by 2002:aa7:d1d4:: with SMTP id g20mr21531766edp.296.1643646512457;
+ Mon, 31 Jan 2022 08:28:32 -0800 (PST)
 MIME-Version: 1.0
-References: <20220131160713.245637-1-marcan@marcan.st> <20220131160713.245637-3-marcan@marcan.st>
-In-Reply-To: <20220131160713.245637-3-marcan@marcan.st>
+References: <20220131160713.245637-1-marcan@marcan.st> <20220131160713.245637-2-marcan@marcan.st>
+In-Reply-To: <20220131160713.245637-2-marcan@marcan.st>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 31 Jan 2022 18:26:39 +0200
-Message-ID: <CAHp75Vd8Yut7fSnyVnr-rYcK22DiZdnfofb+-DCJ6A5M9Y_VDg@mail.gmail.com>
-Subject: Re: [PATCH v4 2/9] brcmfmac: firmware: Allocate space for default
- boardrev in nvram
+Date:   Mon, 31 Jan 2022 18:26:56 +0200
+Message-ID: <CAHp75VcQ=BRkVb3QT0brAO7P_L47tyaymfkM-syOPDMAKG5R3A@mail.gmail.com>
+Subject: Re: [PATCH v4 1/9] brcmfmac: pcie: Release firmwares in the
+ brcmf_pcie_setup error path
 To:     Hector Martin <marcan@marcan.st>
 Cc:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -89,33 +89,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Jan 31, 2022 at 6:07 PM Hector Martin <marcan@marcan.st> wrote:
 >
-> If boardrev is missing from the NVRAM we add a default one, but this
-> might need more space in the output buffer than was allocated. Ensure
-> we have enough padding for this in the buffer.
+> This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
+> the CLM blob is released in the device remove path.
 
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-> Fixes: 46f2b38a91b0 ("brcmfmac: insert default boardrev in nvram data if missing")
+
+> Fixes: 82f93cf46d60 ("brcmfmac: get chip's default RAM info during PCIe setup")
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 > Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
 > Cc: stable@vger.kernel.org
 > Signed-off-by: Hector Martin <marcan@marcan.st>
 > ---
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c | 2 ++
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 2 ++
 >  1 file changed, 2 insertions(+)
 >
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-> index 0eb13e5df517..1001c8888bfe 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-> @@ -207,6 +207,8 @@ static int brcmf_init_nvram_parser(struct nvram_parser *nvp,
->                 size = BRCMF_FW_MAX_NVRAM_SIZE;
->         else
->                 size = data_len;
-> +       /* Add space for properties we may add */
-> +       size += strlen(BRCMF_FW_DEFAULT_BOARDREV) + 1;
->         /* Alloc for extra 0 byte + roundup by 4 + length field */
->         size += 1 + 3 + sizeof(u32);
->         nvp->nvram = kzalloc(size, GFP_KERNEL);
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> index 8b149996fc00..f876b1d8d00d 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> @@ -1777,6 +1777,8 @@ static void brcmf_pcie_setup(struct device *dev, int ret,
+>         ret = brcmf_chip_get_raminfo(devinfo->ci);
+>         if (ret) {
+>                 brcmf_err(bus, "Failed to get RAM info\n");
+> +               release_firmware(fw);
+> +               brcmf_fw_nvram_free(nvram);
+>                 goto fail;
+>         }
+>
 > --
 > 2.33.0
 >
