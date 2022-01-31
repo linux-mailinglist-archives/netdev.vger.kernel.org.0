@@ -2,137 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 272134A4C16
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 17:29:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 890F84A4C2A
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 17:32:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380442AbiAaQ3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 11:29:14 -0500
-Received: from marcansoft.com ([212.63.210.85]:40322 "EHLO mail.marcansoft.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1380381AbiAaQ3J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Jan 2022 11:29:09 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 4DC93419BC;
-        Mon, 31 Jan 2022 16:28:59 +0000 (UTC)
-Subject: Re: [PATCH v2 33/35] brcmfmac: common: Add support for downloading
- TxCap blobs
-To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20220104072658.69756-1-marcan@marcan.st>
- <20220104072658.69756-34-marcan@marcan.st>
- <45d5d6c1-f03f-d7ff-3d03-70bc45a36bfd@broadcom.com>
-From:   Hector Martin <marcan@marcan.st>
-Message-ID: <ff2232c8-fdf2-0a34-783b-5a5c8596f272@marcan.st>
-Date:   Tue, 1 Feb 2022 01:28:57 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S1349947AbiAaQct (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 11:32:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350040AbiAaQcs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 11:32:48 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8165CC06173D
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 08:32:48 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id i30so13293148pfk.8
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 08:32:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=jrmCnw1vWbPG3vz+B6LPTNIGeWcQyoJjyMn1cPywoW0=;
+        b=BLDLfU5xiPEST4k+7rKwaIBto82ggkKMBj1VsQuz/7WQj5EDZjJBX1DvXVtJ/OQ/Re
+         WcanpYChyFlDDySnX/x7z0hs7Kqu5V94fwNk8cGdwLAs/YkyL0Syt+mDvv+MQTyuOfeH
+         uLCvHWyYZZ7+1SAJC1CSGdkFTxkyK+09724WME18Abdl+pNoxgNjgj53Krx/7z/zKwPT
+         aRehDxttuSsbWTGFbeZojvukKZy2FvkX8b5hf7KVaL/0uGCi2FMSllHNmSiRVhxj0wbP
+         uJ17BKJSC+eNkMXqjmtejlKYZGVL4WqWYRK/UAeuTy4C5tNOvoahGKD7PFpy5fTwxEhg
+         /9+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=jrmCnw1vWbPG3vz+B6LPTNIGeWcQyoJjyMn1cPywoW0=;
+        b=dT6DP4gTUlEqQ/iGAo3B5aGhSpssCv+OPs0V8NDGvfAOq9q2Hcx+Z9NfMBkkEMqtoc
+         TEac/xvGzzzgEWH7iifb8xEA0ZGm3t7Y/lbSW8ABwE5/BZIg6tjxTKQRGgrIfm7UpXEC
+         SAQKvw2p6u+hOK1SDO/BXpzT7xJIXln6rhnvtNzriRTCOO6k16ekQI9l+9BmivEllHSJ
+         WUzRDojH63UD2ocRyxUypNCPtgDACaqJw52ueAMM4oNXeRM9Z5z/rSnQIDAZFMrbDGiU
+         cRTrIFQT+CmnsSM4K8hhrUNInb07dw8QGt08SiW20b9s0j3hNtKxT5Nxb5Sayn4TYyzv
+         hyIg==
+X-Gm-Message-State: AOAM532e5Y4yoYSh8CRK/R7cK1MOgDkPbiwP+I0NnnzAAzyOlTTDfbYI
+        vVtmdZjhIsGgS2RsyIcShZk6MkOzeoc=
+X-Google-Smtp-Source: ABdhPJxWeAOFqTFc1z6NDk7dS2Nx647umStBvyoKiHvQ4bh+44xt9UND9STECbjrqP4BCkv73CVfKA==
+X-Received: by 2002:a63:f942:: with SMTP id q2mr17500139pgk.573.1643646767996;
+        Mon, 31 Jan 2022 08:32:47 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id nl12sm12999194pjb.1.2022.01.31.08.32.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jan 2022 08:32:47 -0800 (PST)
+Date:   Mon, 31 Jan 2022 08:32:40 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Miroslav Lichvar <mlichvar@redhat.com>
+Cc:     netdev@vger.kernel.org, Yangbo Lu <yangbo.lu@nxp.com>
+Subject: Re: [PATCH net-next 5/5] ptp: start virtual clocks at current system
+ time.
+Message-ID: <20220131163240.GA22495@hoboy.vegasvil.org>
+References: <20220127114536.1121765-1-mlichvar@redhat.com>
+ <20220127114536.1121765-6-mlichvar@redhat.com>
+ <20220127220116.GB26514@hoboy.vegasvil.org>
+ <Yfe4FPHbFjc6FoTa@localhost>
 MIME-Version: 1.0
-In-Reply-To: <45d5d6c1-f03f-d7ff-3d03-70bc45a36bfd@broadcom.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: es-ES
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yfe4FPHbFjc6FoTa@localhost>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21/01/2022 16.36, Arend van Spriel wrote:
-> On 1/4/2022 8:26 AM, Hector Martin wrote:
->> The TxCap blobs are additional data blobs used on Apple devices, and
->> are uploaded analogously to CLM blobs. Add core support for doing this.
-> 
-> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
->> Acked-by: Linus Walleij <linus.walleij@linaro.org>
->> Signed-off-by: Hector Martin <marcan@marcan.st>
->> ---
->>   .../broadcom/brcm80211/brcmfmac/bus.h         |  1 +
->>   .../broadcom/brcm80211/brcmfmac/common.c      | 97 +++++++++++++------
->>   2 files changed, 71 insertions(+), 27 deletions(-)
->>
->> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h
->> index b13af8f631f3..f4bd98da9761 100644
->> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h
->> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h
->> @@ -39,6 +39,7 @@ enum brcmf_bus_protocol_type {
->>   /* Firmware blobs that may be available */
->>   enum brcmf_blob_type {
->>   	BRCMF_BLOB_CLM,
->> +	BRCMF_BLOB_TXCAP,
->>   };
->>   
->>   struct brcmf_mp_device;
->> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
->> index c84c48e49fde..d65308c3f070 100644
->> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
->> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-> 
-> [...]
-> 
->> @@ -165,20 +157,64 @@ static int brcmf_c_process_clm_blob(struct brcmf_if *ifp)
->>   	} while ((datalen > 0) && (err == 0));
->>   
-> 
-> [...]
-> 
->> +static int brcmf_c_process_txcap_blob(struct brcmf_if *ifp)
->> +{
->> +	struct brcmf_pub *drvr = ifp->drvr;
->> +	struct brcmf_bus *bus = drvr->bus_if;
->> +	const struct firmware *fw = NULL;
->> +	s32 err;
->> +
->> +	brcmf_dbg(TRACE, "Enter\n");
->> +
->> +	err = brcmf_bus_get_blob(bus, &fw, BRCMF_BLOB_TXCAP);
->> +	if (err || !fw) {
->> +		brcmf_info("no txcap_blob available (err=%d)\n", err);
->> +		return 0;
->> +	}
->> +
->> +	brcmf_info("TxCap blob found, loading\n");
->> +	err = brcmf_c_download_blob(ifp, fw->data, fw->size,
->> +				    "txcapload", "txcapload_status");
-> 
-> Although unlikely that we end up here with a firmware that does not 
-> support this command it is not impossible. Should we handle that here or 
-> introduce a feature flag for txcap loading?
+On Mon, Jan 31, 2022 at 11:21:08AM +0100, Miroslav Lichvar wrote:
+> I tried to find the discussion around this decision, but failed. Do
+> you have a link?
 
-Hmm, like trying to read txcapload_status to set the feature flag?
+I'll dig it up for you.
+ 
+> To me, it seems very strange to start the PHC at 0. It makes the
+> initial clock correction unnecessarily larger by ~7 orders of
+> magnitude. The system clock is initialized from the RTC, which can
+> have an error comparable to the TAI-UTC offset, especially if the
+> machine was turned off for a longer period of time, so why not
+> initialize the PHC from the system time? The error is much smaller
+> than billions of seconds.
 
-Honestly though, if we end up here on an unsupported firmware that
-sounds like a firmware loading error, since if we have a TxCap blob for
-a given board we better have a firmware that supports it. So it doesn't
-feel too wrong to just error out entirely so the user knows something is
-horribly wrong, instead of trying to use what is probably the wrong
-firmware.
+When the clock reads Jan 1, 1970, then that is clearly wrong, and so a
+user might suspect that it is uninititalized.
 
--- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+When the clock is off by 37 seconds, the user will likely post a vague
+complaint to linuxptp-users asking why linuxptp doesn't handle leap
+seconds.
+
+I prefer the clarity of the first case.
+
+Thanks,
+Richard
