@@ -2,145 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D6BD4A3EB7
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 09:38:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18E844A3EB9
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 09:40:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344067AbiAaIiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 03:38:52 -0500
-Received: from smtp1.axis.com ([195.60.68.17]:28385 "EHLO smtp1.axis.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229753AbiAaIiv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Jan 2022 03:38:51 -0500
+        id S1344194AbiAaIkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 03:40:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39090 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229753AbiAaIkj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 03:40:39 -0500
+Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B59C061714
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 00:40:39 -0800 (PST)
+Received: by mail-ua1-x92c.google.com with SMTP id w21so11382329uan.7
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 00:40:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1643618331;
-  x=1675154331;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=H5mu6uWOtB+s9blOpQPA4wOezesa9SJ2ziJDv5UtNvU=;
-  b=dE0pR054alWIWennzAMaGq+DQAmw1O21DFK28GnYedaXoHHQJkN5ZApv
-   awwXrFJ8YjRqQ5f0Wl8/o9qzVoKE3OWUcibXGowuLsA45Iv2Nj5pLXSOZ
-   Q8tsTc+t1ZJlVIMtQV9Vz0HYGW1ga/I2NHw7BGJchws6HdzbrZ9DBee35
-   2QrzGcHlFSYo9O4qNYZ36RuOsCyzWgM8CXgi/QZUYDlkQG6zllbVY+r11
-   YZv62y/l3kQ3zJv7M8SdGscCFC1i17vrQoZ30fRaNp4kcVX696Q5nMNpr
-   6RquVSKHqv/9xb5eIFc5DZlLMiufbx/J5X2BxuV3jAKRicrGv/se+r2O6
-   A==;
-From:   Camel Guo <camel.guo@axis.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-CC:     <kernel@axis.com>, Camel Guo <camelg@axis.com>,
-        LABBE Corentin <clabbe.montjoie@gmail.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] net: stmmac: dump gmac4 DMA registers correctly
-Date:   Mon, 31 Jan 2022 09:38:40 +0100
-Message-ID: <20220131083841.3346801-1-camel.guo@axis.com>
-X-Mailer: git-send-email 2.30.2
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=E7DjwvpK8fKU+n0BvI0K3vZtJI6EGSLZ3tJ9NtovK9I=;
+        b=X5FHyi87XbmTTaM5j4wdbF7wUUytt34f0joTTZkdt09e8O3s+dyr8Pk6mXJy0PtAFy
+         GG6hIZuu/nX6mGce5Q38afnINAKfnrVhTOha3Tq9HAQhrP4sWzhXILmw34yVomalBBjv
+         lV4QnBXBhopgJYgLL7uBLSUecbYyAO+5OQ5WOnwN4HA1HyxKQsFEv9wfBa54cdgZa0sO
+         Wb44TFQB0Kz68WNSmhs+SApwuYui4lWeGGQaaaUWIb5sTOkA6/cyh4IMuNYEUCk6BH9j
+         pxEpMB1U6VBiN1N8WFyCzv0LBTOqXsM9VyVHPIiJ7wpaKfxDwfPVlpxQOv/l7sGdbwdv
+         vY7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=E7DjwvpK8fKU+n0BvI0K3vZtJI6EGSLZ3tJ9NtovK9I=;
+        b=dlztO0Ufxel7d5TiIvzoSAuYJvAH1z5pvbkRJ+BA3nHZmvUnLDZpPsQBdqlZp6NHkP
+         DL1d8W6v0g8h9pVKJWrigrJKPai0rb/Bk0RJXoX0HUGwxSw6p9JeAgpVWSHro/oeiTiJ
+         C56xswOiIXG7JkMVbOpRHWbQvkxI1XoY/DyLPhTxUjnE3z2x5yGTa0CiXkLQGkt2aAnp
+         5Q2qZTyp3jOK6QpQt5TfzVHVHEOigL7Cc//PSCNOwav8FDtcvfc8ZJvXP8SrBYtWouYh
+         OkBZ5Ac2P9t0KTMnrGSl0NBbBkySGT1uP/I8ug+BGiCdxdNLE188kwffMDcciLZ1wFQ9
+         okBA==
+X-Gm-Message-State: AOAM531Q9EZ3AL09meZTwXeWfRehC/9rdKxu8xQ7hrdKndS7wNrtmk6s
+        TgkuoYvATTjaZBGmPd6ZZPI9P4xiCrde4OF3pAcpk7PDpwPRmg==
+X-Google-Smtp-Source: ABdhPJxCdSlzPHfaHKbKklZbRmVuG/mtAIVHBBtroIQ0euoggAjUpQmMSGG8FiCwogjXThAguFS9+Uioqu0oMJEBlqU=
+X-Received: by 2002:ab0:6294:: with SMTP id z20mr7146049uao.11.1643618438861;
+ Mon, 31 Jan 2022 00:40:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Received: by 2002:a59:8fc5:0:b0:282:56bb:311c with HTTP; Mon, 31 Jan 2022
+ 00:40:38 -0800 (PST)
+Reply-To: orlandomoris56@gmail.com
+From:   orlando moris <barristermusa32@gmail.com>
+Date:   Mon, 31 Jan 2022 08:40:38 +0000
+Message-ID: <CA+gLmc8OS0v_MQV=Dvwc2bF8CQ85sQ_EUtBc1dzary4oHM+SQw@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Camel Guo <camelg@axis.com>
-
-Unlike gmac100, gmac1000, gmac4 has 27 DMA registers and they are
-located at DMA_CHAN_BASE_ADDR (0x1100). In order for ethtool to dump
-gmac4 DMA registers correctly, this commit checks if a net_device has
-gmac4 and uses different logic to dump its DMA registers.
-
-This fixes the following KASAN warning, which can normally be triggered
-by a command similar like "ethtool -d eth0":
-
-BUG: KASAN: vmalloc-out-of-bounds in dwmac4_dump_dma_regs+0x6d4/0xb30
-Write of size 4 at addr ffffffc010177100 by task ethtool/1839
- kasan_report+0x200/0x21c
- __asan_report_store4_noabort+0x34/0x60
- dwmac4_dump_dma_regs+0x6d4/0xb30
- stmmac_ethtool_gregs+0x110/0x204
- ethtool_get_regs+0x200/0x4b0
- dev_ethtool+0x1dac/0x3800
- dev_ioctl+0x7c0/0xb50
- sock_ioctl+0x298/0x6c4
- ...
-
-Fixes: fbf68229ffe7 ("net: stmmac: unify registers dumps methods")
-Signed-off-by: Camel Guo <camelg@axis.com>
----
-
-Notes:
-    v2: add Fixes footnote
-
- .../net/ethernet/stmicro/stmmac/dwmac_dma.h   |  1 +
- .../ethernet/stmicro/stmmac/stmmac_ethtool.c  | 19 +++++++++++++++++--
- 2 files changed, 18 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h b/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
-index 1914ad698cab..acd70b9a3173 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
-@@ -150,6 +150,7 @@
- 
- #define NUM_DWMAC100_DMA_REGS	9
- #define NUM_DWMAC1000_DMA_REGS	23
-+#define NUM_DWMAC4_DMA_REGS	27
- 
- void dwmac_enable_dma_transmission(void __iomem *ioaddr);
- void dwmac_enable_dma_irq(void __iomem *ioaddr, u32 chan, bool rx, bool tx);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index 164dff5ec32e..abfb3cd5958d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -21,10 +21,18 @@
- #include "dwxgmac2.h"
- 
- #define REG_SPACE_SIZE	0x1060
-+#define GMAC4_REG_SPACE_SIZE	0x116C
- #define MAC100_ETHTOOL_NAME	"st_mac100"
- #define GMAC_ETHTOOL_NAME	"st_gmac"
- #define XGMAC_ETHTOOL_NAME	"st_xgmac"
- 
-+/* Same as DMA_CHAN_BASE_ADDR defined in dwmac4_dma.h
-+ *
-+ * It is here because dwmac_dma.h and dwmac4_dam.h can not be included at the
-+ * same time due to the conflicting macro names.
-+ */
-+#define GMAC4_DMA_CHAN_BASE_ADDR  0x00001100
-+
- #define ETHTOOL_DMA_OFFSET	55
- 
- struct stmmac_stats {
-@@ -434,6 +442,8 @@ static int stmmac_ethtool_get_regs_len(struct net_device *dev)
- 
- 	if (priv->plat->has_xgmac)
- 		return XGMAC_REGSIZE * 4;
-+	else if (priv->plat->has_gmac4)
-+		return GMAC4_REG_SPACE_SIZE;
- 	return REG_SPACE_SIZE;
- }
- 
-@@ -446,8 +456,13 @@ static void stmmac_ethtool_gregs(struct net_device *dev,
- 	stmmac_dump_mac_regs(priv, priv->hw, reg_space);
- 	stmmac_dump_dma_regs(priv, priv->ioaddr, reg_space);
- 
--	if (!priv->plat->has_xgmac) {
--		/* Copy DMA registers to where ethtool expects them */
-+	/* Copy DMA registers to where ethtool expects them */
-+	if (priv->plat->has_gmac4) {
-+		/* GMAC4 dumps its DMA registers at its DMA_CHAN_BASE_ADDR */
-+		memcpy(&reg_space[ETHTOOL_DMA_OFFSET],
-+		       &reg_space[GMAC4_DMA_CHAN_BASE_ADDR / 4],
-+		       NUM_DWMAC4_DMA_REGS * 4);
-+	} else if (!priv->plat->has_xgmac) {
- 		memcpy(&reg_space[ETHTOOL_DMA_OFFSET],
- 		       &reg_space[DMA_BUS_MODE / 4],
- 		       NUM_DWMAC1000_DMA_REGS * 4);
--- 
-2.30.2
-
+Sveiki, informuojame, kad =C5=A1is el. lai=C5=A1kas, kuris atkeliavo =C4=AF=
+ j=C5=ABs=C5=B3
+pa=C5=A1to d=C4=97=C5=BEut=C4=99, n=C4=97ra klaida, bet buvo skirtas konkre=
+=C4=8Diai jums, kad
+gal=C4=97tum=C4=97te apsvarstyti. Turiu pasi=C5=ABlym=C4=85 (7 500 000,00 U=
+SD) mano
+velionio kliento in=C5=BEinieriaus Carloso, turin=C4=8Dio t=C4=85 pat=C4=AF=
+ vard=C4=85 su
+jumis, kuris dirbo ir gyveno =C4=8Dia, Lome Toge Mano velionis klientas ir
+=C5=A1eima pateko =C4=AF automobilio avarij=C4=85, kuri nusine=C5=A1=C4=97 =
+j=C5=B3 gyvybes. .
+Kreipiuosi =C4=AF jus kaip =C4=AF artim=C4=85 mirusiojo giminait=C4=AF, kad=
+ gal=C4=97tum=C4=97te
+gauti l=C4=97=C5=A1as pagal pretenzijas. Gav=C4=99s greit=C4=85 atsakym=C4=
+=85, informuosiu apie
+re=C5=BEimus
+=C5=A1ios sutarties vykdym=C4=85. Susisiekite su manimi =C5=A1iais el
+(orlandomoris56@gmail.com )
