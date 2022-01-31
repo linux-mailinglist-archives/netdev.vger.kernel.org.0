@@ -2,170 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B26C84A4E33
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 19:26:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC7EC4A4E54
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 19:31:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237899AbiAaS0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 13:26:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35444 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348806AbiAaS0I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 13:26:08 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74FAFC061714
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 10:26:08 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id b1-20020a17090a990100b001b14bd47532so8171pjp.0
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 10:26:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rCLlUtnQH35gT8+FRgjKzZzhP4/g6CX5X/m+IUNUKh4=;
-        b=eMhUOpC2JI6Wq5eT7y2RU1LLZy0XBVJ43BQpIq37Wt9V8CMQQrM2ceDqN9LCLgmgVX
-         eJSJM4tIvDyMqcJ7/yZBnajR67ksso0LPX4WTFk+9JIpkhbHFsJmZbPSYqkME8CWISjb
-         xDh1CogE1X6+xbXm/cXI+125Qh06Sy1bHrWg59ahJtnake+74qeX4PQy0rj6ozts5qdn
-         IwSdsQdRxMpjWehWhRMrsBCCZTiPLBXkDKo80w9YXNjKbd+L8lJbEtDUFo0HhMIl6bpm
-         A9EqUmuSuEyckLfUkUhjMa4fGwStl3usgroq9zmB+PherTc4819KfkZkhwKMT27D9lV9
-         uV0g==
+        id S1356050AbiAaSbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 13:31:15 -0500
+Received: from mail-qv1-f53.google.com ([209.85.219.53]:46982 "EHLO
+        mail-qv1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350610AbiAaSbO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 13:31:14 -0500
+Received: by mail-qv1-f53.google.com with SMTP id o9so13594767qvy.13;
+        Mon, 31 Jan 2022 10:31:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rCLlUtnQH35gT8+FRgjKzZzhP4/g6CX5X/m+IUNUKh4=;
-        b=6T5loE4+tMDKOu4B05PJAHeedoLO1+yrYmllpgsS1WtA4Xmg9xwGeClzSL/4kk/GA8
-         puM7ujO2dPnenwPW9UvlwIaVVXvJrD1Symkmt4Z+lH7A7Jfb0cKnEq1mNtp9f/7yHp2q
-         xAXJf1GaPB7nCW2GdovUsVeh2Ylc7FXjxwi2SSRWXVyAeHqalt7E01JgzOrQlMvsG9O8
-         kugHE3OnAIrnfwqxeD5gMRa3tZIUcWh1SdtNSRKJFIo6v17dvuwsClvchEuYx4+eU+21
-         38AMxxySdxbd3iqnT5sFKqvJ92UIsN3sDLbRf3w1SfojRxv5kuVNoZPXgcLH7obfN7du
-         j67g==
-X-Gm-Message-State: AOAM532uPUxiv5LBOuXhsT6NS4uihGrJrPX7OyqRDg8p0EWX20tYfqTy
-        NlHnjuwI91SmUfxw0E1yW5o=
-X-Google-Smtp-Source: ABdhPJyjyFtlsbY81/KbpceCiLVOgbkG2/bQNf6h55NGHFsxdm7hMpTE0rIT5CU1k9SvE0aTH7lg/w==
-X-Received: by 2002:a17:902:8496:: with SMTP id c22mr21855149plo.147.1643653568055;
-        Mon, 31 Jan 2022 10:26:08 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4c2d:864b:dd30:3c5e])
-        by smtp.gmail.com with ESMTPSA id m21sm19619673pfk.26.2022.01.31.10.26.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 10:26:07 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jason Xing <kerneljasonxing@gmail.com>,
-        Zhang Changzhong <zhangchangzhong@huawei.com>,
-        liweishi <liweishi@kuaishou.com>,
-        Shujin Li <lishujin@kuaishou.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH v4.19] tcp: fix possible socket leaks in internal pacing mode
-Date:   Mon, 31 Jan 2022 10:26:03 -0800
-Message-Id: <20220131182603.3804056-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tAq3Aw1ybEeRSqT/qCBaoBSWDhM07pp4fGD0hDfaeXE=;
+        b=2QDsW5SuXyhmGB5cv8ZmX9skjTH/M49/cHeOcwnPvrfZLhwwqwaKTU4XWblXcEnJSG
+         8uDjjTgbRAYo4QxbioNFGGqsLZzPDgpVuKCJej7bURZ3Z/3uttqY8E7RoFBT129xQGf+
+         XHHN/QF+c29yu6zhc05aFQ2iypz4Ci0tQiMZYp8Z4UCfs8ZVeVXwI+lHaE1fs/RHRw+8
+         RASZCcdLpHgySwb7Kigjvxnmmi8HTJKoJqrmyZeYFnO6ylRKbUH83ZwSVFJ5/CcvfFLB
+         FMjXjT2C9YTyfF4/3tBX2L/CdLLjLy8jfTPXvOYSBRgB+DB2Gj5ULKibQpRm7SlSNBoD
+         IcLg==
+X-Gm-Message-State: AOAM5300Q5dPHAsp5rirDcRcHZ9DGK2Sx3QaJ9vRM5n3Zj4JAITYMzKE
+        2+uaBR59/p4DoLgJld6AF+eIZTGooW+bt2nV
+X-Google-Smtp-Source: ABdhPJzq3enqzJRFLnEFxdmRVXs7d2EFm9ZdR0EM+sF3t6B/7H7vYeqs0ppP1jup2uQa0T66JLyLlA==
+X-Received: by 2002:a05:6214:d0c:: with SMTP id 12mr19148531qvh.93.1643653873140;
+        Mon, 31 Jan 2022 10:31:13 -0800 (PST)
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
+        by smtp.gmail.com with ESMTPSA id s14sm8459533qkp.79.2022.01.31.10.31.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Jan 2022 10:31:12 -0800 (PST)
+Received: by mail-yb1-f179.google.com with SMTP id c6so43286968ybk.3;
+        Mon, 31 Jan 2022 10:31:11 -0800 (PST)
+X-Received: by 2002:ab0:44c:: with SMTP id 70mr9021725uav.78.1643653861178;
+ Mon, 31 Jan 2022 10:31:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220131172450.4905-1-saeed@kernel.org> <20220131095905.08722670@hermes.local>
+In-Reply-To: <20220131095905.08722670@hermes.local>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 31 Jan 2022 19:30:48 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdU17cBzivFm9q-VwF9EG5MX75Qct=is=F2h+Kc+VddZ4g@mail.gmail.com>
+Message-ID: <CAMuHMdU17cBzivFm9q-VwF9EG5MX75Qct=is=F2h+Kc+VddZ4g@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: kbuild: Don't default net vendor configs to y
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mark Einon <mark.einon@gmail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Shay Agroskin <shayagr@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        David Arinzon <darinzon@amazon.com>,
+        Noam Dagan <ndagan@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jeroen de Borst <jeroendb@google.com>,
+        Catherine Sullivan <csully@google.com>,
+        David Awogbemila <awogbemila@google.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "K . Y . Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Jon Mason <jdmason@kudzu.us>,
+        Simon Horman <simon.horman@corigine.com>,
+        Rain River <rain.1986.08.12@gmail.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>,
+        Shannon Nelson <snelson@pensando.io>, drivers@pensando.io,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Rob Herring <robh@kernel.org>, l.stelmach@samsung.com,
+        rafal@milecki.pl, Florian Fainelli <f.fainelli@gmail.com>,
+        Edwin Peer <edwin.peer@broadcom.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Joel Stanley <joel@jms.id.au>, Slark Xiao <slark_xiao@163.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Liming Sun <limings@nvidia.com>,
+        David Thompson <davthompson@nvidia.com>,
+        Asmaa Mnebhi <asmaa@nvidia.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>,
+        Omkar Kulkarni <okulkarni@marvell.com>,
+        Shai Malin <smalin@marvell.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Gary Guo <gary@garyguo.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, intel-wired-lan@lists.osuosl.org,
+        linux-hyperv@vger.kernel.org, oss-drivers@corigine.com,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Mon, Jan 31, 2022 at 6:59 PM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+> On Mon, 31 Jan 2022 09:24:50 -0800
+> Saeed Mahameed <saeed@kernel.org> wrote:
+>
+> > From: Saeed Mahameed <saeedm@nvidia.com>
+> >
+> > NET_VENDOR_XYZ were defaulted to 'y' for no technical reason.
+> >
+> > Since all drivers belonging to a vendor are supposed to default to 'n',
+> > defaulting all vendors to 'n' shouldn't be an issue, and aligns well
+> > with the 'no new drivers' by default mentality.
+> >
+> > Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+>
+> This was done back when vendors were introduced in the network drivers tree.
+> The default of Y allowed older configurations to just work.
 
-This patch is addressing an issue in stable linux-4.19 only.
+And changing the defaults means all defconfigs must be updated first,
+else the user's configs will end up without drivers needed.
 
-In linux-4.20, TCP stack adopted EDT (Earliest Departure
-Time) model and this issue was incidentally fixed.
+> So there was a reason, not sure if it matters anymore.
+> But it seems like useless repainting to change it now.
 
-Issue at hand was an extra sock_hold() from tcp_internal_pacing()
-in paths not using tcp_xmit_retransmit_queue()
+It might make sense to tune some of the defaults (i.e. change to
+"default y if ARCH_*") for drivers with clear platform dependencies.
 
-Jason Xing reported this leak and provided a patch stopping
-the extra sock_hold() to happen.
+Gr{oetje,eeting}s,
 
-This patch is more complete and makes sure to avoid
-unnecessary extra delays, by reprogramming the high
-resolution timer.
+                        Geert
 
-Fixes: 73a6bab5aa2a ("tcp: switch pacing timer to softirq based hrtimer")
-Reference: https://lore.kernel.org/all/CANn89i+7-wE4xr5D9DpH+N-xkL1SB8oVghCKgz+CT5eG1ODQhA@mail.gmail.com/
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Jason Xing <kerneljasonxing@gmail.com>
-Reported-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc: liweishi <liweishi@kuaishou.com>
-Cc: Shujin Li <lishujin@kuaishou.com>
-Cc: Neal Cardwell <ncardwell@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/ipv4/tcp_output.c | 31 +++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 941c655cad91713f2e6ede178a8f1e5f4b5e7f51..c97c027a8d7734ac857e6b3680a809cd007f37de 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -968,6 +968,8 @@ enum hrtimer_restart tcp_pace_kick(struct hrtimer *timer)
- 
- static void tcp_internal_pacing(struct sock *sk, const struct sk_buff *skb)
- {
-+	struct tcp_sock *tp = tcp_sk(sk);
-+	ktime_t expire, now;
- 	u64 len_ns;
- 	u32 rate;
- 
-@@ -979,12 +981,28 @@ static void tcp_internal_pacing(struct sock *sk, const struct sk_buff *skb)
- 
- 	len_ns = (u64)skb->len * NSEC_PER_SEC;
- 	do_div(len_ns, rate);
--	hrtimer_start(&tcp_sk(sk)->pacing_timer,
--		      ktime_add_ns(ktime_get(), len_ns),
-+	now = ktime_get();
-+	/* If hrtimer is already armed, then our caller has not
-+	 * used tcp_pacing_check().
-+	 */
-+	if (unlikely(hrtimer_is_queued(&tp->pacing_timer))) {
-+		expire = hrtimer_get_softexpires(&tp->pacing_timer);
-+		if (ktime_after(expire, now))
-+			now = expire;
-+		if (hrtimer_try_to_cancel(&tp->pacing_timer) == 1)
-+			__sock_put(sk);
-+	}
-+	hrtimer_start(&tp->pacing_timer, ktime_add_ns(now, len_ns),
- 		      HRTIMER_MODE_ABS_PINNED_SOFT);
- 	sock_hold(sk);
- }
- 
-+static bool tcp_pacing_check(const struct sock *sk)
-+{
-+	return tcp_needs_internal_pacing(sk) &&
-+	       hrtimer_is_queued(&tcp_sk(sk)->pacing_timer);
-+}
-+
- static void tcp_update_skb_after_send(struct tcp_sock *tp, struct sk_buff *skb)
- {
- 	skb->skb_mstamp = tp->tcp_mstamp;
-@@ -2121,6 +2139,9 @@ static int tcp_mtu_probe(struct sock *sk)
- 	if (!tcp_can_coalesce_send_queue_head(sk, probe_size))
- 		return -1;
- 
-+	if (tcp_pacing_check(sk))
-+		return -1;
-+
- 	/* We're allowed to probe.  Build it now. */
- 	nskb = sk_stream_alloc_skb(sk, probe_size, GFP_ATOMIC, false);
- 	if (!nskb)
-@@ -2194,12 +2215,6 @@ static int tcp_mtu_probe(struct sock *sk)
- 	return -1;
- }
- 
--static bool tcp_pacing_check(const struct sock *sk)
--{
--	return tcp_needs_internal_pacing(sk) &&
--	       hrtimer_is_queued(&tcp_sk(sk)->pacing_timer);
--}
--
- /* TCP Small Queues :
-  * Control number of packets in qdisc/devices to two packets / or ~1 ms.
-  * (These limits are doubled for retransmits)
--- 
-2.35.0.rc2.247.g8bbb082509-goog
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
