@@ -2,154 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 736704A488A
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 14:46:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40DD74A489C
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 14:49:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240816AbiAaNqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 08:46:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55218 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiAaNqW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 08:46:22 -0500
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C3FC061714;
-        Mon, 31 Jan 2022 05:46:21 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id D0F0520010;
-        Mon, 31 Jan 2022 13:46:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1643636780;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=z9AZC57V8aDIMgaYrrpTASAli0lviVYKgdahqGrxweQ=;
-        b=Z+SH49WL7BKLKn4+jq4JIkPfwW+aciazRgN1ASnEN8hwXJbSzkqNwGBzGJl5j2V0hi35kY
-        eE9YzkC63JuOFNI86XwOKJqfAueIXZlqJ7chospAM9bvsQmoRaEK2EWZyc+QcXqJuqyf4f
-        ez/IuS7xQK/aspBhYBTtzfseD67DE0ZnMrEXSETEAdkjDPhoQAlH9yHLu10cEwbcTBCA16
-        Tsw/dMmlAdbVDIpABSktsu0i0DcER8CQf/OviXRP2zXH+nEUL35gccZs1NogdKO1sYPGdF
-        iCGd99IGx5hkaHIhNyr7SkJMGKMACPzVv7naMCDYFdl7c+7+EXa6sTryujb0zg==
-Date:   Mon, 31 Jan 2022 14:46:17 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>
-Subject: Re: [PATCH wpan-next v2 1/2] net: ieee802154: Move the IEEE
- 802.15.4 Kconfig main entries
-Message-ID: <20220131144617.3c762cfb@xps13>
-In-Reply-To: <CAB_54W45Hht8OVLDhKTKkfORYUJ30oWBz2psxX2m8OB4foK=0Q@mail.gmail.com>
-References: <20220128112002.1121320-1-miquel.raynal@bootlin.com>
- <20220128112002.1121320-2-miquel.raynal@bootlin.com>
- <CAB_54W45Hht8OVLDhKTKkfORYUJ30oWBz2psxX2m8OB4foK=0Q@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1379139AbiAaNtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 08:49:15 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:54294 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1379136AbiAaNtN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 08:49:13 -0500
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20VDcnUU015318;
+        Mon, 31 Jan 2022 13:49:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Sxh7o1iAKLCMsfWCRBQwf9so06hyTCNc37KOGh7foHY=;
+ b=BV2eW+3pPWeCxJOxN/Lju5kUqd+snBvwcevFdo0dC5sOe248x/l55zGafWZn5dKwxnOu
+ 6wvFJAmnJI5eMApq8y3hw9TWiWFDCPs76vKENt4API9+7TaCTncSGLD6XrZonLaIT3+E
+ JbamMhjUwsY2NiwIk4vA6ler0FPloUhYaayUNxWzAR+mUFz8by3D1xLtM03FQrD5+2f2
+ +nTc5bA7cEK99WvZe5SmJB6+RAoNw0tU3WYL8zKLViFAWnRDd22NhtbbTF28s9EBbXoQ
+ P9e1copgLsRawR0ZaSQaoNhFGCKwIh+oxqTvjAvkLrKDvMk4X9QVnGipS6QB9TD4LgnE FQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dx66bb7qa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 13:49:03 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20VDeg4t025665;
+        Mon, 31 Jan 2022 13:49:03 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dx66bb7p8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 13:49:03 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20VDmBbp007404;
+        Mon, 31 Jan 2022 13:49:00 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04ams.nl.ibm.com with ESMTP id 3dvw79byc6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 13:49:00 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20VDmwGM12517878
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 31 Jan 2022 13:48:58 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 915A511C050;
+        Mon, 31 Jan 2022 13:48:58 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1EDDC11C052;
+        Mon, 31 Jan 2022 13:48:58 +0000 (GMT)
+Received: from [9.145.79.147] (unknown [9.145.79.147])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 31 Jan 2022 13:48:58 +0000 (GMT)
+Message-ID: <521e3f2a-8b00-43d4-b296-1253c351a3d2@linux.ibm.com>
+Date:   Mon, 31 Jan 2022 14:49:13 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 2/4] net/smc: Add netlink net namespace support
+Content-Language: en-US
+To:     "Dmitry V. Levin" <ldv@altlinux.org>,
+        Tony Lu <tonylu@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-api@vger.kernel.org
+References: <20211228130611.19124-1-tonylu@linux.alibaba.com>
+ <20211228130611.19124-3-tonylu@linux.alibaba.com>
+ <20220131002453.GA7599@altlinux.org>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20220131002453.GA7599@altlinux.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Q4L5XAycyIYWTBb2iAa0tMTYqsCrYQyi
+X-Proofpoint-ORIG-GUID: 0hntWQwo8aXJg7QmSotzx_D0sS_ptxr4
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-31_05,2022-01-31_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 clxscore=1011
+ impostorscore=0 lowpriorityscore=0 suspectscore=0 bulkscore=0 spamscore=0
+ mlxscore=0 mlxlogscore=999 priorityscore=1501 phishscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2201310088
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+On 31/01/2022 01:24, Dmitry V. Levin wrote:
+> On Tue, Dec 28, 2021 at 09:06:10PM +0800, Tony Lu wrote:
+>> This adds net namespace ID to diag of linkgroup, helps us to distinguish
+>> different namespaces, and net_cookie is unique in the whole system.
+>>
+> 
+> I'm sorry but this is an ABI regression.
+> 
+> Since struct smc_diag_lgrinfo contains an object of type "struct smc_diag_linkinfo",
+> offset of all subsequent members of struct smc_diag_lgrinfo is changed by
+> this patch.
+> 
+> As result, applications compiled with the old version of struct smc_diag_linkinfo
+> will receive garbage in struct smc_diag_lgrinfo.role if the kernel implements
+> this new version of struct smc_diag_linkinfo.
+> 
 
-alex.aring@gmail.com wrote on Sun, 30 Jan 2022 16:07:53 -0500:
+Good catch! This patch adds 2 ways to provide the net_cookie to user space, one is over the new
+netlink interface, and the other is using the old smc_diag way. 
+Imho to use the new netlink interface is good enough, there is no need to touch the smc_diag ABI.
+We already started adding new fields to the netlink interface only, this flexibility is 
+the reason why we added this interface initially.
 
-> Hi,
->=20
-> I will do this review again because I messed up with other series.
->=20
-> On Fri, Jan 28, 2022 at 6:20 AM Miquel Raynal <miquel.raynal@bootlin.com>=
- wrote:
-> >
-> > From: David Girault <david.girault@qorvo.com>
-> >
-> > It makes certainly more sense to have all the low-range wireless
-> > protocols such as Bluetooth, IEEE 802.11 (WiFi) and IEEE 802.15.4
-> > together, so let's move the main IEEE 802.15.4 stack Kconfig entry at a
-> > better location.
-> >
-> > As the softMAC layer has no meaning outside of the IEEE 802.15.4 stack
-> > and cannot be used without it, also move the mac802154 menu inside
-> > ieee802154/.
-> > =20
->=20
-> That's why there is a "depends on".
->=20
-> > Signed-off-by: David Girault <david.girault@qorvo.com>
-> > [miquel.raynal@bootlin.com: Isolate this change from a bigger commit and
-> > rewrite the commit message.]
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> >  net/Kconfig            | 3 +--
-> >  net/ieee802154/Kconfig | 1 +
-> >  2 files changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/net/Kconfig b/net/Kconfig
-> > index 8a1f9d0287de..a5e31078fd14 100644
-> > --- a/net/Kconfig
-> > +++ b/net/Kconfig
-> > @@ -228,8 +228,6 @@ source "net/x25/Kconfig"
-> >  source "net/lapb/Kconfig"
-> >  source "net/phonet/Kconfig"
-> >  source "net/6lowpan/Kconfig"
-> > -source "net/ieee802154/Kconfig" =20
->=20
-> I would argue here that IEEE 802.15.4 is no "network option". However
-> I was talking once about moving it, but people don't like to move
-> things there around.
-> In my opinion there is no formal place to "have all the low-range
-> wireless such as Bluetooth, IEEE 802.11 (WiFi) and IEEE 802.15.4
-> together". If you bring all subsystems together and put them into an
-> own menuentry this would look different.
->=20
-> If nobody else complains about moving Kconfig entries here around it
-> looks okay for me.
->=20
-> > -source "net/mac802154/Kconfig"
-> >  source "net/sched/Kconfig"
-> >  source "net/dcb/Kconfig"
-> >  source "net/dns_resolver/Kconfig"
-> > @@ -380,6 +378,7 @@ source "net/mac80211/Kconfig"
-> >
-> >  endif # WIRELESS
-> >
-> > +source "net/ieee802154/Kconfig"
-> >  source "net/rfkill/Kconfig"
-> >  source "net/9p/Kconfig"
-> >  source "net/caif/Kconfig"
-> > diff --git a/net/ieee802154/Kconfig b/net/ieee802154/Kconfig
-> > index 31aed75fe62d..7e4b1d49d445 100644
-> > --- a/net/ieee802154/Kconfig
-> > +++ b/net/ieee802154/Kconfig
-> > @@ -36,6 +36,7 @@ config IEEE802154_SOCKET
-> >           for 802.15.4 dataframes. Also RAW socket interface to build M=
-AC
-> >           header from userspace.
-> >
-> > +source "net/mac802154/Kconfig" =20
->=20
-> The next person in a year will probably argue "but wireless do source
-> of wireless/mac80211 in net/Kconfig... so this is wrong".
-> To avoid this issue maybe we should take out the menuentry here and do
-> whatever wireless is doing without questioning it?
+So a patch that removes
+	__aligned_u64	net_cookie;
+and
+	.lnk[0].net_cookie = net->net_cookie,
+should solve the issue. 
 
-Without discussing the cleanliness of the wireless subsystem, I don't
-feel bad proposing alternatives :)
-
-I'm fine adapting to your preferred solution either way, so could you
-clarify what should I do:
-- Drop that commit entirely.
-- Move things into their own submenu (we can discuss the naming,
-  "Low range wireless Networks" might be a good start).
-- Keep it like it is.
-
-Thanks,
-Miqu=C3=A8l
+Thoughts?
