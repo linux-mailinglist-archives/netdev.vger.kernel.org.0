@@ -2,61 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 766164A4AE0
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 16:47:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51E304A4AE3
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 16:47:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379816AbiAaPrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 10:47:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54568 "EHLO
+        id S1379866AbiAaPrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 10:47:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379810AbiAaPrJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 10:47:09 -0500
+        with ESMTP id S1379821AbiAaPrN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 10:47:13 -0500
 Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28600C061714
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 07:47:09 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id t9so19946368lji.12
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 07:47:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CCCC06173B
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 07:47:12 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id t9so19946567lji.12
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 07:47:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:organization:content-transfer-encoding;
-        bh=J8azPKw6fGS+HND9Kjsz3s+Jgbh9IVkU4laM4Xl6KxI=;
-        b=MPrALNL1pv0pz1YMPRz04EYCNwsgmMrmhYUkkSHFURKw3MnC/7Nd/Cga3BIVetBnGR
-         GW+ZtDoNdlLTeMfTeqUKKf8S72GrZ+81m/KHgwMWSobK525gnY8qDaN3w4eBm/wlC00w
-         XV2Dmxcy39LXMapfA47N55Fyj6V2xpmgNobIvvfibWmK+x1QseFAY7UK2gg4mDNqiMzv
-         AXRNMfzK2lmIUma9TGVaEGB28q5WwDqGptVyfPaNn3YQdhs4vf+RbfqsLdxe0TCYWWul
-         B6bNy2Um6fHbFgO0KpPwusRjb5Fc7OZM8VtEwRFWcSHVxicOjzcb+wmnjFMF/pI3ZXff
-         dnxg==
+        bh=oi9yvU3XKTdc5uhXdMEKWVeiea3s3v3BWMJvFWzqoII=;
+        b=TAh0C2wliAYjMd4G1rAPxd/DFTr3IOIZa1naAEywf9trhKvRPRrNYFhN+R2+nFtnnf
+         9dC8Fxiv09pGPLaUC7kv4Qb2jWaeOUFfpc8zhviw7bSWy2EnvMVIF5MFFheCw4LFob7N
+         BqX9W2bCzfIa2Am3hkOr5nYSbkC/Eo1kNXWPBX0XHfFv0jBNvqo5KhFG8JmVtGZVd52A
+         ih8KTtrXhhbTtizICgog7Kk9GEE8DO/PS8PL8eBKnXwCaYRRzuHoEA4aDHDwmZ3rnh0s
+         Y0dR6NwKUGZnj+JSbwOXd+fJfs/2jclqvGudIcMNoCTfrKiMoNEfNN/Xbu1JkCAf6oKp
+         ApSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:organization:content-transfer-encoding;
-        bh=J8azPKw6fGS+HND9Kjsz3s+Jgbh9IVkU4laM4Xl6KxI=;
-        b=BRmXOygiG64fI0H8s/uworsuRZePlRj44SkzI9FfnynpqiAbz3danv97KSRCTpcGoR
-         Qy5Tu2EPXvMOslRxWkSolm6ydo6lN309yHgdca0R+IAz0XS/bYU9BYtgfdYJ7hf7LATF
-         /eOwIgmkq/YwIn6Ps3qbxyEQ0qjwxc3G/Vj5lHNmrBeBNB6CiZCfc5gSGQFVPFeW4Kg0
-         UB1QSQtSzFI/diu2XSiU7Bp0sD5l5bRlQA1ZrS97D2NElsBLmaDlqQ0kRZKewYCDUR4l
-         8RZ3XjjmktesItk911d/aZq3lqXvv3nUCioSeRivGclaXXCdwvY7XmkDYiQUyaWYxDGw
-         LVFQ==
-X-Gm-Message-State: AOAM533fRbqQm1TFTjAL8EjLJpQ4JxfY/RkBaragxMJ3KE+tsihg8Zri
-        kzORrOh3gdeyi1fsnWesC++MkQ==
-X-Google-Smtp-Source: ABdhPJzxef0rNjIQJ7dy6S5Dn6MgpCjUMBQxFhoKa0uZLPdThEoS3LtY6fOJqBz2XBOwkpaMHrhFBg==
-X-Received: by 2002:a2e:88da:: with SMTP id a26mr13206527ljk.256.1643644027465;
-        Mon, 31 Jan 2022 07:47:07 -0800 (PST)
+        bh=oi9yvU3XKTdc5uhXdMEKWVeiea3s3v3BWMJvFWzqoII=;
+        b=4FlYGiQ5EEGXMLTNTU25RtUppPCNLhvQfLNCHFVPzrpxT8WfmKg058UNQlKU3hYpZ/
+         6d4QJ6DnVXQqcFE01zI380M7uppUTM8S0rE7/AEVsEJAbFpdZUt5BDD1Vxmz783wVLPh
+         B3wxl3OWBX2+5x71cVANq7+JhICy93zvZ5ZsFIWu47guuAo/LOD0b20C6IQJkyXKMp88
+         r2FEQgK+uX+2fFHIuvAzQlhtAb3vWmeZ17iQm1eohhF/27EnC9xHaboGaHvnqey9fdvl
+         RpIagwc/VYEgE/yxcocF+IRRcaAUXqwmJ5Wc1mRg0t7LkIdFiyrrpCZqdyidpTSwBkpJ
+         wwZA==
+X-Gm-Message-State: AOAM5322dlATIkK4e32MsondX2OWRhRGfCLxnK6ddThhtkhqXFw7/4Le
+        rMoOajSxpuzBDt5Fa010BX9MpQ==
+X-Google-Smtp-Source: ABdhPJyQQfbSWV9V3EsbXhsuEJCNUlwB19GG+Vcl3voDZSZwcVMWvgDaeQzvVe++yfXD/cZJKwGaaw==
+X-Received: by 2002:a2e:9d96:: with SMTP id c22mr10537327ljj.293.1643644030741;
+        Mon, 31 Jan 2022 07:47:10 -0800 (PST)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id y36sm3374769lfa.82.2022.01.31.07.47.06
+        by smtp.gmail.com with ESMTPSA id y36sm3374769lfa.82.2022.01.31.07.47.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 07:47:07 -0800 (PST)
+        Mon, 31 Jan 2022 07:47:10 -0800 (PST)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+Cc:     netdev@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        David Ahern <dsahern@kernel.org>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Stephen Suryaputra <ssuryaextr@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 4/5] net: dsa: mv88e6xxx: Improve multichip isolation of standalone ports
-Date:   Mon, 31 Jan 2022 16:46:54 +0100
-Message-Id: <20220131154655.1614770-5-tobias@waldekranz.com>
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Po-Hsu Lin <po-hsu.lin@canonical.com>,
+        Danielle Ratson <danieller@nvidia.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 5/5] selftests: net: bridge: Parameterize ageing timeout
+Date:   Mon, 31 Jan 2022 16:46:55 +0100
+Message-Id: <20220131154655.1614770-6-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220131154655.1614770-1-tobias@waldekranz.com>
 References: <20220131154655.1614770-1-tobias@waldekranz.com>
@@ -67,146 +76,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Given that standalone ports are now configured to bypass the ATU and
-forward all frames towards the upstream port, extend the ATU bypass to
-multichip systems.
-
-Load VID 0 (standalone) into the VTU with the policy bit set. Since
-VID 4095 (bridged) is already loaded, we now know that all VIDs in use
-are always available in all VTUs. Therefore, we can safely enable
-802.1Q on DSA ports.
-
-Setting the DSA ports' VTU policy to TRAP means that all incoming
-frames on VID 0 will be classified as MGMT - as a result, the ATU is
-bypassed on all subsequent switches.
-
-With this isolation in place, we are able to support configurations
-that are simultaneously very quirky and very useful. Quirky because it
-involves looping cables between local switchports like in this
-example:
-
-   CPU
-    |     .------.
-.---0---. | .----0----.
-|  sw0  | | |   sw1   |
-'-1-2-3-' | '-1-2-3-4-'
-  $ @ '---'   $ @ % %
-
-We have three physically looped pairs ($, @, and %).
-
-This is very useful because it allows us to run the kernel's
-kselftests for the bridge on mv88e6xxx hardware.
+Allow the ageing timeout that is set on bridges to be customized from
+forwarding.config. This allows the tests to be run on hardware which
+does not support a 10s timeout (e.g. mv88e6xxx).
 
 Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 63 ++++++++++++++++++++++----------
- 1 file changed, 44 insertions(+), 19 deletions(-)
+ tools/testing/selftests/net/forwarding/bridge_vlan_aware.sh  | 5 +++--
+ .../testing/selftests/net/forwarding/bridge_vlan_unaware.sh  | 5 +++--
+ .../selftests/net/forwarding/forwarding.config.sample        | 2 ++
+ tools/testing/selftests/net/forwarding/lib.sh                | 1 +
+ 4 files changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 8896709b9103..d0d766354669 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1630,21 +1630,11 @@ static int mv88e6xxx_fid_map_vlan(struct mv88e6xxx_chip *chip,
+diff --git a/tools/testing/selftests/net/forwarding/bridge_vlan_aware.sh b/tools/testing/selftests/net/forwarding/bridge_vlan_aware.sh
+index b90dff8d3a94..64bd00fe9a4f 100755
+--- a/tools/testing/selftests/net/forwarding/bridge_vlan_aware.sh
++++ b/tools/testing/selftests/net/forwarding/bridge_vlan_aware.sh
+@@ -28,8 +28,9 @@ h2_destroy()
  
- int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *fid_bitmap)
+ switch_create()
  {
--	int i, err;
--	u16 fid;
--
- 	bitmap_zero(fid_bitmap, MV88E6XXX_N_FID);
+-	# 10 Seconds ageing time.
+-	ip link add dev br0 type bridge vlan_filtering 1 ageing_time 1000 \
++	ip link add dev br0 type bridge \
++		vlan_filtering 1 \
++		ageing_time $LOW_AGEING_TIME \
+ 		mcast_snooping 0
  
--	/* Set every FID bit used by the (un)bridged ports */
--	for (i = 0; i < mv88e6xxx_num_ports(chip); ++i) {
--		err = mv88e6xxx_port_get_fid(chip, i, &fid);
--		if (err)
--			return err;
--
--		set_bit(fid, fid_bitmap);
--	}
--
--	/* Set every FID bit used by the VLAN entries */
-+	/* Every FID has an associated VID, so walking the VTU
-+	 * will discover the full set of FIDs in use.
-+	 */
- 	return mv88e6xxx_vtu_walk(chip, mv88e6xxx_fid_map_vlan, fid_bitmap);
- }
+ 	ip link set dev $swp1 master br0
+diff --git a/tools/testing/selftests/net/forwarding/bridge_vlan_unaware.sh b/tools/testing/selftests/net/forwarding/bridge_vlan_unaware.sh
+index c15c6c85c984..1c8a26046589 100755
+--- a/tools/testing/selftests/net/forwarding/bridge_vlan_unaware.sh
++++ b/tools/testing/selftests/net/forwarding/bridge_vlan_unaware.sh
+@@ -27,8 +27,9 @@ h2_destroy()
  
-@@ -1657,10 +1647,7 @@ static int mv88e6xxx_atu_new(struct mv88e6xxx_chip *chip, u16 *fid)
- 	if (err)
- 		return err;
+ switch_create()
+ {
+-	# 10 Seconds ageing time.
+-	ip link add dev br0 type bridge ageing_time 1000 mcast_snooping 0
++	ip link add dev br0 type bridge \
++		ageing_time $LOW_AGEING_TIME \
++		mcast_snooping 0
  
--	/* The reset value 0x000 is used to indicate that multiple address
--	 * databases are not needed. Return the next positive available.
--	 */
--	*fid = find_next_zero_bit(fid_bitmap, MV88E6XXX_N_FID, 1);
-+	*fid = find_first_zero_bit(fid_bitmap, MV88E6XXX_N_FID);
- 	if (unlikely(*fid >= mv88e6xxx_num_databases(chip)))
- 		return -ENOSPC;
+ 	ip link set dev $swp1 master br0
+ 	ip link set dev $swp2 master br0
+diff --git a/tools/testing/selftests/net/forwarding/forwarding.config.sample b/tools/testing/selftests/net/forwarding/forwarding.config.sample
+index b0980a2efa31..4a546509de90 100644
+--- a/tools/testing/selftests/net/forwarding/forwarding.config.sample
++++ b/tools/testing/selftests/net/forwarding/forwarding.config.sample
+@@ -41,6 +41,8 @@ NETIF_CREATE=yes
+ # Timeout (in seconds) before ping exits regardless of how many packets have
+ # been sent or received
+ PING_TIMEOUT=5
++# Minimum ageing_time (in centiseconds) supported by hardware
++LOW_AGEING_TIME=1000
+ # Flag for tc match, supposed to be skip_sw/skip_hw which means do not process
+ # filter by software/hardware
+ TC_FLAG=skip_hw
+diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
+index 7da783d6f453..e7e434a4758b 100644
+--- a/tools/testing/selftests/net/forwarding/lib.sh
++++ b/tools/testing/selftests/net/forwarding/lib.sh
+@@ -24,6 +24,7 @@ PING_COUNT=${PING_COUNT:=10}
+ PING_TIMEOUT=${PING_TIMEOUT:=5}
+ WAIT_TIMEOUT=${WAIT_TIMEOUT:=20}
+ INTERFACE_TIMEOUT=${INTERFACE_TIMEOUT:=600}
++LOW_AGEING_TIME=${LOW_AGEING_TIME:=1000}
+ REQUIRE_JQ=${REQUIRE_JQ:=yes}
+ REQUIRE_MZ=${REQUIRE_MZ:=yes}
  
-@@ -2152,6 +2139,9 @@ static int mv88e6xxx_port_vlan_join(struct mv88e6xxx_chip *chip, int port,
- 	if (!vlan.valid) {
- 		memset(&vlan, 0, sizeof(vlan));
- 
-+		if (vid == MV88E6XXX_VID_STANDALONE)
-+			vlan.policy = true;
-+
- 		err = mv88e6xxx_atu_new(chip, &vlan.fid);
- 		if (err)
- 			return err;
-@@ -2949,8 +2939,43 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- 	if (err)
- 		return err;
- 
-+	/* On chips that support it, set all DSA ports' VLAN policy to
-+	 * TRAP. In combination with loading MV88E6XXX_VID_STANDALONE
-+	 * as a policy entry in the VTU, this provides a better
-+	 * isolation barrier between standalone ports, as the ATU is
-+	 * bypassed on any intermediate switches between the incoming
-+	 * port and the CPU.
-+	 */
-+	if (!dsa_is_user_port(ds, port) && chip->info->ops->port_set_policy) {
-+		err = chip->info->ops->port_set_policy(chip, port,
-+						MV88E6XXX_POLICY_MAPPING_VTU,
-+						MV88E6XXX_POLICY_ACTION_TRAP);
-+		if (err)
-+			return err;
-+	}
-+
-+	/* User ports start out in standalone mode and 802.1Q is
-+	 * therefore disabled. On DSA ports, all valid VIDs are always
-+	 * loaded in the VTU - therefore, enable 802.1Q in order to take
-+	 * advantage of VLAN policy on chips that supports it.
-+	 */
- 	err = mv88e6xxx_port_set_8021q_mode(chip, port,
--				MV88E6XXX_PORT_CTL2_8021Q_MODE_DISABLED);
-+				dsa_is_user_port(ds, port) ?
-+				MV88E6XXX_PORT_CTL2_8021Q_MODE_DISABLED :
-+				MV88E6XXX_PORT_CTL2_8021Q_MODE_SECURE);
-+	if (err)
-+		return err;
-+
-+	/* Bind MV88E6XXX_VID_STANDALONE to MV88E6XXX_FID_STANDALONE by
-+	 * virtue of the fact that mv88e6xxx_atu_new() will pick it as
-+	 * the first free FID. This will be used as the private PVID for
-+	 * unbridged ports. Shared (DSA and CPU) ports must also be
-+	 * members of this VID, in order to trap all frames assigned to
-+	 * it to the CPU.
-+	 */
-+	err = mv88e6xxx_port_vlan_join(chip, port, MV88E6XXX_VID_STANDALONE,
-+				       MV88E6XXX_G1_VTU_DATA_MEMBER_TAG_UNMODIFIED,
-+				       false);
- 	if (err)
- 		return err;
- 
-@@ -2963,7 +2988,7 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- 	 * relying on their port default FID.
- 	 */
- 	err = mv88e6xxx_port_vlan_join(chip, port, MV88E6XXX_VID_BRIDGED,
--				       MV88E6XXX_G1_VTU_DATA_MEMBER_TAG_UNTAGGED,
-+				       MV88E6XXX_G1_VTU_DATA_MEMBER_TAG_UNMODIFIED,
- 				       false);
- 	if (err)
- 		return err;
 -- 
 2.25.1
 
