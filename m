@@ -2,125 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 428184A3E24
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 08:21:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A12734A3E47
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 08:39:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348050AbiAaHVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 02:21:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49682 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244130AbiAaHU7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 02:20:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF25C061714;
-        Sun, 30 Jan 2022 23:20:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F2A06128E;
-        Mon, 31 Jan 2022 07:20:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1FA4C340E8;
-        Mon, 31 Jan 2022 07:20:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643613657;
-        bh=dOH4qTrfCAlGRwNf4g1KYdZmXGQX8HlE2W5ZivxPsgQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GhMis8+ppudLodJ5Oc5DG8qUQyfcLn0gijgAHMcVHU+umIKXKj3Etf9S8Uqotqv4E
-         Tl+G7Xwum4WxNkkEJhLTgX3HblKiZR+uYcFdpvTjAGQ8iFpTmXvDC5oAkchG3OqJLY
-         qRyOcuZNHnsOjNwlTyqTjrZABLL9oGkq6vx5EtPNtwp23ysSnhaYyDW0IXRZJvXLRW
-         EhmeQOAFbSTjZQ3kaBujs8VzIP88UXn/WIBCFvYiOp6r7LCwfIc/J7tpkiB0xOhfSs
-         ppl/D2LNkp7aQFQa9a7Ju0Sgdk5E5gX2Qja0aH/t0J72M+Fu6ji6xPKlR83pQQlc9n
-         d3ycME0hRJtKw==
-Date:   Mon, 31 Jan 2022 09:20:52 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH net-next] net/smc: Allocate pages of SMC-R on ibdev NUMA
- node
-Message-ID: <YfeN1BfPqhVz8mvy@unreal>
-References: <20220130190259.94593-1-tonylu@linux.alibaba.com>
+        id S237904AbiAaHjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 02:39:53 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:10272 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S235089AbiAaHjx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 02:39:53 -0500
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20V7XuvW027604;
+        Mon, 31 Jan 2022 07:39:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=7iwIc/0uE4CQI9sIaooSotPFRwTQ6Q0TOGBw0+rbzVI=;
+ b=V4Bnui0et6VzYKWMi/2UscyssXNBi5osQvrON9KGYXca9XkSElmm60w1RyZhhKW4vEUl
+ whM6ZZG4xv+hE0XROjl/5Tn0TOmAHksOwGSt2itaYdSk4fiNTnHmbLad7ufkwNyjgkWL
+ HMHX0zivavhBEkE07zKa+sDFkbB6IDoWtnr3NA1SfK3VVyNUO9ddSHsp77FO9U7ymaGI
+ ODnImXapRkcPbDoQhpZxWGRDVakbvUzGFgJUBJTKTHsY/R7dSXUe4k1XKx5tTUd3Df08
+ Do1Nw82gd+ZLd4PG2l5LbITyqIu58ceWSYkxsqITW5NSbL95LMrKuoRREBrJTeDgOhaW AQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dwexp4q9g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 07:39:42 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20V7Z6uJ030865;
+        Mon, 31 Jan 2022 07:39:41 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dwexp4q98-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 07:39:41 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20V7cF5h030563;
+        Mon, 31 Jan 2022 07:39:39 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 3dvw798tbx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 07:39:39 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20V7dbFk41943450
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 31 Jan 2022 07:39:37 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 550A611C052;
+        Mon, 31 Jan 2022 07:39:37 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F386111C050;
+        Mon, 31 Jan 2022 07:39:36 +0000 (GMT)
+Received: from [9.145.79.147] (unknown [9.145.79.147])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 31 Jan 2022 07:39:36 +0000 (GMT)
+Message-ID: <a11cc19d-a2c0-32e0-7534-11dac5f6753e@linux.ibm.com>
+Date:   Mon, 31 Jan 2022 08:39:52 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220130190259.94593-1-tonylu@linux.alibaba.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net] net/smc: Forward wakeup to smc socket waitqueue after
+ fallback
+Content-Language: en-US
+To:     Wen Gu <guwen@linux.alibaba.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1643211184-53645-1-git-send-email-guwen@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <1643211184-53645-1-git-send-email-guwen@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: MU1qctkQpv0rWYqh9LbEmKUDcYOrsmCD
+X-Proofpoint-ORIG-GUID: 8yjufBpds7F-sxT2dp7SXWLbUdxFUSlD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-31_02,2022-01-28_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 lowpriorityscore=0 mlxscore=0 impostorscore=0 clxscore=1015
+ phishscore=0 malwarescore=0 adultscore=0 bulkscore=0 spamscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201310050
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 03:03:00AM +0800, Tony Lu wrote:
-> Currently, pages are allocated in the process context, for its NUMA node
-> isn't equal to ibdev's, which is not the best policy for performance.
+On 26/01/2022 16:33, Wen Gu wrote:
+> When we replace TCP with SMC and a fallback occurs, there may be
+> some socket waitqueue entries remaining in smc socket->wq, such
+> as eppoll_entries inserted by userspace applications.
 > 
-> Applications will generally perform best when the processes are
-> accessing memory on the same NUMA node. When numa_balancing enabled
-> (which is enabled by most of OS distributions), it moves tasks closer to
-> the memory of sndbuf or rmb and ibdev, meanwhile, the IRQs of ibdev bind
-> to the same node usually. This reduces the latency when accessing remote
-> memory.
+> After the fallback, data flows over TCP/IP and only clcsocket->wq
+> will be woken up. Applications can't be notified by the entries
+> which were inserted in smc socket->wq before fallback. So we need
+> a mechanism to wake up smc socket->wq at the same time if some
+> entries remaining in it.
 
-It is very subjective per-specific test. I would expect that
-application will control NUMA memory policies (set_mempolicy(), ...)
-by itself without kernel setting NUMA node.
-
-Various *_alloc_node() APIs are applicable for in-kernel allocations
-where user can't control memory policy.
-
-I don't know SMC-R enough, but if I judge from your description, this
-allocation is controlled by the application.
-
-Thanks
-
-> 
-> According to our tests in different scenarios, there has up to 15.30%
-> performance drop (Redis benchmark) when accessing remote memory.
-> 
-> Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
-> ---
->  net/smc/smc_core.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-> index 8935ef4811b0..2a28b045edfa 100644
-> --- a/net/smc/smc_core.c
-> +++ b/net/smc/smc_core.c
-> @@ -2065,9 +2065,10 @@ int smcr_buf_reg_lgr(struct smc_link *lnk)
->  	return rc;
->  }
->  
-> -static struct smc_buf_desc *smcr_new_buf_create(struct smc_link_group *lgr,
-> +static struct smc_buf_desc *smcr_new_buf_create(struct smc_connection *conn,
->  						bool is_rmb, int bufsize)
->  {
-> +	int node = ibdev_to_node(conn->lnk->smcibdev->ibdev);
->  	struct smc_buf_desc *buf_desc;
->  
->  	/* try to alloc a new buffer */
-> @@ -2076,10 +2077,10 @@ static struct smc_buf_desc *smcr_new_buf_create(struct smc_link_group *lgr,
->  		return ERR_PTR(-ENOMEM);
->  
->  	buf_desc->order = get_order(bufsize);
-> -	buf_desc->pages = alloc_pages(GFP_KERNEL | __GFP_NOWARN |
-> -				      __GFP_NOMEMALLOC | __GFP_COMP |
-> -				      __GFP_NORETRY | __GFP_ZERO,
-> -				      buf_desc->order);
-> +	buf_desc->pages = alloc_pages_node(node, GFP_KERNEL | __GFP_NOWARN |
-> +					   __GFP_NOMEMALLOC | __GFP_COMP |
-> +					   __GFP_NORETRY | __GFP_ZERO,
-> +					   buf_desc->order);
->  	if (!buf_desc->pages) {
->  		kfree(buf_desc);
->  		return ERR_PTR(-EAGAIN);
-> @@ -2190,7 +2191,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
->  		if (is_smcd)
->  			buf_desc = smcd_new_buf_create(lgr, is_rmb, bufsize);
->  		else
-> -			buf_desc = smcr_new_buf_create(lgr, is_rmb, bufsize);
-> +			buf_desc = smcr_new_buf_create(conn, is_rmb, bufsize);
->  
->  		if (PTR_ERR(buf_desc) == -ENOMEM)
->  			break;
-> -- 
-> 2.32.0.3.g01195cf9f
-> 
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
