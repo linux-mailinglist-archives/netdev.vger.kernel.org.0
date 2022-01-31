@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50FC04A4E66
+	by mail.lfdr.de (Postfix) with ESMTP id 9B1CE4A4E67
 	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 19:32:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356396AbiAaScT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1356454AbiAaScT (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 31 Jan 2022 13:32:19 -0500
-Received: from mga07.intel.com ([134.134.136.100]:38004 "EHLO mga07.intel.com"
+Received: from mga07.intel.com ([134.134.136.100]:38008 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356305AbiAaScQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Jan 2022 13:32:16 -0500
+        id S1356196AbiAaScR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 Jan 2022 13:32:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643653936; x=1675189936;
+  t=1643653937; x=1675189937;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=XxLWtDWt+xejv9wOu97zqtbPR+YGNEwJOApele4Re6Y=;
-  b=dAxzouFzv8uw2hPO1t4wkJMmvtjFNM8N4VJSXV3M9VbvLhAgZHxIWFrB
-   Qtr8cerwqCErryFwM3UCsejkU2+cnP8nOeFiPbrFVv2q+9YTSjDOIFycv
-   ArxqocVvakyDvkBF+SIaXaM+tJ/KaYz16mzQXttx4ZCs0pjl7xmFfidFA
-   JN2Ey4/SPz7UeAaW3NItPoVrE0IIwUmGsnWGwVpNcyE3hnMZc61GEZ+T9
-   KEUJ59Nu/cGnCyMUGqZDvg1R/q+Brm4BDkUcs2H+4XjoyRdob1ZPabnMy
-   G7zB8PwyqWjI+dkZ3f0oVIy2Mncr6jDhstqmuPPE4r2tvmiNc7OfxHnn5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="310833056"
+  bh=q0ksm/ElaKvrEbBPS/jhkwY9kHEbpqPeF9w5ZVA8qAE=;
+  b=extEKA9ERn60ctu3eqfOStb09a35FUclVgvF86HN4TGMSluyTz81gvYP
+   /pd59DreVmtkmuDr6SUqji8I2wV8T+GN/nUocAls7oVHb99bEz8aTmZg2
+   j1SY9UJbDhJ0EDSh0k8qNl6a+MJEuz5K9pcGwL2s3JzLFxaDECofjYW7F
+   js//+Hp8UPqxtJO6vD6a4ZzDNeliY/O3qt7UVIEWH9CnVX4nnGq3QpuNB
+   4zkav+MFLoJRnHe8SeXUuHBtRHhufkYgmECaO9p0N8k2T/3rfTTWMtLQU
+   9GAtYCVJAbjdjFRPM1vpO/7l8uae9LZCRhfeKMdlILqBsrkKHtEvGEZWy
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="310833062"
 X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="310833056"
+   d="scan'208";a="310833062"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 10:32:16 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="598920406"
+   d="scan'208";a="598920409"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga004.fm.intel.com with ESMTP; 31 Jan 2022 10:32:15 -0800
+  by fmsmga004.fm.intel.com with ESMTP; 31 Jan 2022 10:32:16 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
@@ -43,11 +43,10 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         michal.swiatkowski@linux.intel.com, kafai@fb.com,
         songliubraving@fb.com, kpsingh@kernel.org, yhs@fb.com,
         andrii@kernel.org, bpf@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
         Kiran Bhandare <kiranx.bhandare@intel.com>
-Subject: [PATCH net-next 3/9] ice: respect metadata in legacy-rx/ice_construct_skb()
-Date:   Mon, 31 Jan 2022 10:31:46 -0800
-Message-Id: <20220131183152.3085432-4-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 4/9] ice: don't reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+Date:   Mon, 31 Jan 2022 10:31:47 -0800
+Message-Id: <20220131183152.3085432-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220131183152.3085432-1-anthony.l.nguyen@intel.com>
 References: <20220131183152.3085432-1-anthony.l.nguyen@intel.com>
@@ -59,66 +58,49 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-In "legacy-rx" mode represented by ice_construct_skb(), we can
-still use XDP (and XDP metadata), but after XDP_PASS the metadata
-will be lost as it doesn't get copied to the skb.
-Copy it along with the frame headers. Account its size on skb
-allocation, and when copying just treat it as a part of the frame
-and do a pull after to "move" it to the "reserved" zone.
-Point net_prefetch() to xdp->data_meta instead of data. This won't
-change anything when the meta is not here, but will save some cache
-misses otherwise.
+{__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
++ NET_IP_ALIGN for any skb.
+OTOH, ice_construct_skb_zc() currently allocates and reserves
+additional `xdp->data - xdp->data_hard_start`, which is
+XDP_PACKET_HEADROOM for XSK frames.
+There's no need for that at all as the frame is post-XDP and will
+go only to the networking stack core.
+Pass the size of the actual data only to __napi_alloc_skb() and
+don't reserve anything. This will give enough headroom for stack
+processing.
 
-Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Fixes: 2d4238f55697 ("ice: Add support for AF_XDP")
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_txrx.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_xsk.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index 3e38695f1c9d..c2258bee8ecb 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -983,15 +983,17 @@ static struct sk_buff *
- ice_construct_skb(struct ice_rx_ring *rx_ring, struct ice_rx_buf *rx_buf,
- 		  struct xdp_buff *xdp)
+diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+index 2388837d6d6c..8fd8052edf09 100644
+--- a/drivers/net/ethernet/intel/ice/ice_xsk.c
++++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+@@ -428,17 +428,15 @@ static void ice_bump_ntc(struct ice_rx_ring *rx_ring)
+ static struct sk_buff *
+ ice_construct_skb_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp)
  {
-+	unsigned int metasize = xdp->data - xdp->data_meta;
- 	unsigned int size = xdp->data_end - xdp->data;
- 	unsigned int headlen;
+-	unsigned int datasize_hard = xdp->data_end - xdp->data_hard_start;
+ 	unsigned int metasize = xdp->data - xdp->data_meta;
+ 	unsigned int datasize = xdp->data_end - xdp->data;
  	struct sk_buff *skb;
  
- 	/* prefetch first cache line of first page */
--	net_prefetch(xdp->data);
-+	net_prefetch(xdp->data_meta);
- 
- 	/* allocate a skb to store the frags */
--	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, ICE_RX_HDR_SIZE,
-+	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
-+			       ICE_RX_HDR_SIZE + metasize,
+-	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize_hard,
++	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
  			       GFP_ATOMIC | __GFP_NOWARN);
  	if (unlikely(!skb))
  		return NULL;
-@@ -1003,8 +1005,13 @@ ice_construct_skb(struct ice_rx_ring *rx_ring, struct ice_rx_buf *rx_buf,
- 		headlen = eth_get_headlen(skb->dev, xdp->data, ICE_RX_HDR_SIZE);
  
- 	/* align pull length to size of long to optimize memcpy performance */
--	memcpy(__skb_put(skb, headlen), xdp->data, ALIGN(headlen,
--							 sizeof(long)));
-+	memcpy(__skb_put(skb, headlen + metasize), xdp->data_meta,
-+	       ALIGN(headlen + metasize, sizeof(long)));
-+
-+	if (metasize) {
-+		skb_metadata_set(skb, metasize);
-+		__skb_pull(skb, metasize);
-+	}
- 
- 	/* if we exhaust the linear part then add what is left as a frag */
- 	size -= headlen;
+-	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+ 	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
+ 	if (metasize)
+ 		skb_metadata_set(skb, metasize);
 -- 
 2.31.1
 
