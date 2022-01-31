@@ -2,109 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C3934A50A2
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 21:55:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC75E4A5127
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 22:11:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350960AbiAaUzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 15:55:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41470 "EHLO
+        id S231348AbiAaVL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 16:11:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344276AbiAaUzf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 15:55:35 -0500
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26726C061714;
-        Mon, 31 Jan 2022 12:55:35 -0800 (PST)
-Received: by mail-io1-xd2f.google.com with SMTP id w7so18620287ioj.5;
-        Mon, 31 Jan 2022 12:55:35 -0800 (PST)
+        with ESMTP id S230317AbiAaVLy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 16:11:54 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA067C06173D
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 13:11:53 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id p15so46962773ejc.7
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 13:11:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=5kNmkiY95htMxis87BZj4aB+Vg+dJl3ZdaQFip6DWEQ=;
-        b=pN/17mPsuJOyEEdSt0X/vJqjI6tKLG3hYissQTLdEDU6j/KIS8GTwE37f3c+EbReXX
-         vYGV2bFvnJ4Pzb4OyxXcGYHyI0FUb72u0AS9/Qs2Bubo1uc1fnaLrEU54hZNF+MQJKzj
-         ZAAb0aD6ATWCj72yPIJsPoFO89t8yWHSGOpW9VlfImiB7fjgJslOYxr7F8O29GNJi7cd
-         cu3P3XmxteySIcZiinUadkLcGbNJO5aR++C5hg3IfrTYhs4TLrGjaFl49rqjsme1NOpt
-         49ZcafCflw8gPyEdNYMs+DmVrfumfnfICAw4xRqf2NjTIgblyLfOaom2DhOWiLZqQh8h
-         bXkg==
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MdCZbv14Z5XAFJctoKNC66b5ZahRctJW82gWnIDWamc=;
+        b=r/d/Y9rmQJxcKXCD/yTdCc3NTTLycDAMEM7xO/SFin+VVgZee5pNX2IIM6oJS9IvWA
+         QA/mb20m6xJqXN9PivqEOLKLr6/IN7iCkIyIVdYnLnEzhOscRg/yL5WkMDwtm1PCCv4A
+         uUmvXaf+o4KcRlsEcG+TS2l2lme8i0SqVgJ9KP5PwDaLESahYwanp8OSuALlWJSlk/u4
+         ORzFwHq9/rpEplrDuYPaY5Lb9xRzV7skgXHOfssqhoSYAFWZgtP5jRuaHbbHBj/8AcDF
+         oR7AplFDJ7i5Mfw0k9WRKHLz3yD1QtW04RmEgkl+pWCzMuPv5wShPvJeB6cY6oI6BYyk
+         VdSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=5kNmkiY95htMxis87BZj4aB+Vg+dJl3ZdaQFip6DWEQ=;
-        b=hsIccTtRp2yt2FLgfUG2O3u6FACemH/jLSKknRsSOgM+kV1uCDr0xLiCQsN/EAZf7/
-         d+M9bHB+nZ2PaVcLD7N5VfdAWl3lnuxskCg4pQ+8oQSi/nli6eJ6eutg99bnJSo0DbwS
-         lPyXLGPYR9dC+KCiWE/JiR6eWbr1TjSXIDtrFUSnnpyZa8LzXj3T/ikkXZLJnSJ1XyLB
-         woiqEJ/4Ej4yki5HySp2FnWMyxCj0UcwZtw/zWCN8R0KVgJ20uWitROjNk+mO3sgfVDK
-         X4BQhTBr93u7YRVrkf80VEXW4HOolzmnkLAXvd27lOFfNOpU1yB8TUJ3rbLf3Tea0ntn
-         zing==
-X-Gm-Message-State: AOAM533mMMjNqHY6G/gedlj5JVOHwnVUCO9DtMAIuA2Bt/S/05JA+7as
-        WY8BWTelcIKEujFpA797EhU=
-X-Google-Smtp-Source: ABdhPJxV2bsZwcY6SKPRlm+e7F28/YQMTs0Cbp4THTPtNTXW7jrxXM9W7wmeWVqRoPAKLdeQlRoAYA==
-X-Received: by 2002:a5e:a906:: with SMTP id c6mr11848811iod.117.1643662534557;
-        Mon, 31 Jan 2022 12:55:34 -0800 (PST)
-Received: from localhost ([99.197.200.79])
-        by smtp.gmail.com with ESMTPSA id x11sm9325508iow.8.2022.01.31.12.55.33
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MdCZbv14Z5XAFJctoKNC66b5ZahRctJW82gWnIDWamc=;
+        b=Ocfq62gGtX8KIibwdELOl9L/LlwOIIJc8MP0qeYeAKWV+DMU+/17bPkHNxXoG0MM90
+         Hw9IM89E3FGuq5y0JQ1AmKUwrbRH91noeB8NX51ICZHjnLcaAJIhynQl03R4Vb9GwJIk
+         NAf+ziqvB48GmQ1Vddex3tR/sTz8GD964w2n/D50gCpcKaj0XYx4qP6+dFquAbCmmaps
+         ouvUM3A/+GnxleswL228H0AtZVR3L0bvSC4fonwDzTX8OxFNgafMIPwHTuXps8SiULh/
+         wDs4vtRFU3SRFLcuBLIDCmT4Z2LUA7OeuNlXTYPnfzyQcS+SOskBLNQqaTzhxyV2Ie9L
+         FFlg==
+X-Gm-Message-State: AOAM5319KElEnTSH0IgbcjgBzjfMOiotmUEdeQ6PxvDtBoyJHTVmS2Js
+        P8W4qRDCavEi+pB27d5E6Subew==
+X-Google-Smtp-Source: ABdhPJw11DUBE5iuw3BvYGBoIK/5vPYE6RZ4MU4jwoa7TI8BdKRuViLL6bw7mP+i3mzi0orlMo3M/w==
+X-Received: by 2002:a17:906:cc54:: with SMTP id mm20mr17787957ejb.313.1643663512531;
+        Mon, 31 Jan 2022 13:11:52 -0800 (PST)
+Received: from localhost.localdomain ([149.86.79.138])
+        by smtp.gmail.com with ESMTPSA id v5sm13763947ejc.40.2022.01.31.13.11.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 12:55:34 -0800 (PST)
-Date:   Mon, 31 Jan 2022 12:55:25 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Mon, 31 Jan 2022 13:11:51 -0800 (PST)
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Petar Penkov <ppenkov@google.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Eric Dumazet <edumazet@google.com>
-Message-ID: <61f84cbddf60a_859720818@john.notmuch>
-In-Reply-To: <fefefc43-1912-c1e5-7f50-76f5f68f9386@nvidia.com>
-References: <20220124151146.376446-1-maximmi@nvidia.com>
- <20220124151146.376446-4-maximmi@nvidia.com>
- <61efa17548a0_274ca2089c@john.notmuch>
- <fefefc43-1912-c1e5-7f50-76f5f68f9386@nvidia.com>
-Subject: Re: [PATCH bpf v2 3/4] bpf: Use EOPNOTSUPP in bpf_tcp_check_syncookie
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next 0/3] bpftool: Switch to independent versioning scheme
+Date:   Mon, 31 Jan 2022 21:11:33 +0000
+Message-Id: <20220131211136.71010-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maxim Mikityanskiy wrote:
-> On 2022-01-25 09:06, John Fastabend wrote:
-> > Maxim Mikityanskiy wrote:
-> >> When CONFIG_SYN_COOKIES is off, bpf_tcp_check_syncookie returns
-> >> ENOTSUPP. It's a non-standard and deprecated code. The related function
-> >> bpf_tcp_gen_syncookie and most of the other functions use EOPNOTSUPP if
-> >> some feature is not available. This patch changes ENOTSUPP to EOPNOTSUPP
-> >> in bpf_tcp_check_syncookie.
-> >>
-> >> Fixes: 399040847084 ("bpf: add helper to check for a valid SYN cookie")
-> >> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-> >> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-> > 
-> > This came up in another thread? Or was it the same and we lost the context
-> > in the commit msg. Either way I don't think we should start one-off
-> > changing these user facing error codes. Its not the only spot we do this
-> > and its been this way for sometime.
-> > 
-> > Is it causing a real problem?
-> 
-> I'm not aware of anyone complaining about it. It's just a cleanup to use 
-> the proper error code, since ENOTSUPP is a non-standard one (used in 
-> NFS?), for example, strerror() returns "Unknown error 524" instead of 
-> "Operation not supported".
-> 
-> Source: Documentation/dev-tools/checkpatch.rst:
+Hi, this set aims at updating the way bpftool versions are numbered.
+Instead of copying the version from the kernel (given that the sources for
+the kernel and bpftool are shipped together), introduce an independent
+versioning scheme. We start at v6.0.0 - incrementing the major version
+number - and the idea is to update this number from time to time, as new
+features or bug fixes make their way into bpftool. Please refer to the
+description of the third commit for details on the motivations.
 
-iirc we didn't change the other ones so I see no reason to change this. Its
-not great, but anything using it has already figured it out and it is
-user facing.
+The patchset also adds the number of the version of libbpf that was used to
+compile to the output of "bpftool version".
+
+Quentin Monnet (3):
+  libbpf: Add "libbpversion" make target to print version
+  bpftool: Add libbpf's version number to "bpftool version" output
+  bpftool: Update versioning scheme
+
+ tools/bpf/bpftool/Documentation/common_options.rst | 3 ++-
+ tools/bpf/bpftool/Makefile                         | 7 ++++---
+ tools/bpf/bpftool/main.c                           | 3 +++
+ tools/lib/bpf/Makefile                             | 3 +++
+ 4 files changed, 12 insertions(+), 4 deletions(-)
+
+-- 
+2.32.0
+
