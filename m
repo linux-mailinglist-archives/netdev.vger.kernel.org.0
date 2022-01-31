@@ -2,99 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D25174A480E
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 14:26:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8EB84A4831
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 14:33:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378753AbiAaN0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 08:26:53 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53714 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348839AbiAaN0v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 08:26:51 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FAE361265
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 13:26:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07CABC340E8;
-        Mon, 31 Jan 2022 13:26:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643635610;
-        bh=nvEQWZFWzrI8gPCU/2Pwv3uOpwyscgKKyDukE/ORsgs=;
-        h=In-Reply-To:References:From:To:Cc:Subject:Date:From;
-        b=faX3Yxji8ndZk1Q2j0wXT40+0nN97AzKrYIXJf01F3tWAu8IV7/D54zeTK0MdgvmH
-         nqUvlrLROI9OM3aBEI7/AklI1Ak6LfBxqfALa5boTObxgA9A/Sp13eCqfNe1zdqqVh
-         bUcd32OlO+/uSflsyl/fv1/hh0nuW3LHxP9DU+az9HsbbnVkNVO9krVd/DmgxSUIgQ
-         62+zbgpbAjD3qpJ0S/kUpXshSPEwlihm6msnOyI5TrH/J9ZJSncST+zM4PtxycMcAL
-         e5g3oJ+qETHsDf3e4obMDbThZq9RiF8em5Bc+7CcojiPhdOEmArZAI0lTzLHrKxRGX
-         YMx9gD91eILgg==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <ygnhsft4p2mg.fsf@nvidia.com>
-References: <20210325153533.770125-1-atenart@kernel.org> <20210325153533.770125-2-atenart@kernel.org> <ygnhh79yluw2.fsf@nvidia.com> <164267447125.4497.8151505359440130213@kwain> <ygnhee52lg2d.fsf@nvidia.com> <164338929382.4461.13062562289533632448@kwain> <ygnhsft4p2mg.fsf@nvidia.com>
-From:   Antoine Tenart <atenart@kernel.org>
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, echaudro@redhat.com,
-        sbrivio@redhat.com, netdev@vger.kernel.org, pshelar@ovn.org
-Subject: Re: [PATCH net 1/2] vxlan: do not modify the shared tunnel info when PMTU triggers an ICMP reply
-Message-ID: <164363560725.4133.7633393991691247425@kwain>
-Date:   Mon, 31 Jan 2022 14:26:47 +0100
+        id S1378780AbiAaNdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 08:33:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52072 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379086AbiAaNcy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 08:32:54 -0500
+Received: from forwardcorp1o.mail.yandex.net (forwardcorp1o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3379C061714
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 05:32:53 -0800 (PST)
+Received: from sas1-3cba3404b018.qloud-c.yandex.net (sas1-3cba3404b018.qloud-c.yandex.net [IPv6:2a02:6b8:c08:bd26:0:640:3cba:3404])
+        by forwardcorp1o.mail.yandex.net (Yandex) with ESMTP id 6F9872E0C6A;
+        Mon, 31 Jan 2022 16:31:40 +0300 (MSK)
+Received: from sas1-9d43635d01d6.qloud-c.yandex.net (sas1-9d43635d01d6.qloud-c.yandex.net [2a02:6b8:c08:793:0:640:9d43:635d])
+        by sas1-3cba3404b018.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id 50xm73fQr6-VaGiP9N4;
+        Mon, 31 Jan 2022 16:31:40 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1643635900; bh=/QTiU1RXcrb5KfRgFKqKXsNjxtJAMyFB7TOvTGUsdCk=;
+        h=Date:Subject:To:From:Message-Id:Cc;
+        b=eLj6tEpTScTeJWaxbo0zVoiA7ZeYuvn3xN3RjyD9SpBIx2/lnKLNMjCzWnr5WA0/4
+         BejLm7DnhFmnBem2l/t/N5Q50wIrbw8rTH/sKen57DIxWJzrAExAuYg10WmfCEE/oX
+         Tt0ncmqHiqPqLeB7qnVBBr7CJ9tGfmgQizZGRfSI=
+Authentication-Results: sas1-3cba3404b018.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from vmhmukos.sas.yp-c.yandex.net (vmhmukos.sas.yp-c.yandex.net [2a02:6b8:c10:288:0:696:6af:0])
+        by sas1-9d43635d01d6.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id KT3glRaQ9Z-VaIONEH0;
+        Mon, 31 Jan 2022 16:31:36 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 2
+From:   Akhmat Karakotov <hmukos@yandex-team.ru>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        eric.dumazet@gmail.com, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, tom@herbertland.com,
+        hmukos@yandex-team.ru, zeil@yandex-team.ru, mitradir@yandex-team.ru
+Subject: [PATCH net-next v5 0/5] Make hash rethink configurable
+Date:   Mon, 31 Jan 2022 16:31:20 +0300
+Message-Id: <20220131133125.32007-1-hmukos@yandex-team.ru>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Vlad Buslov (2022-01-31 12:26:47)
-> On Fri 28 Jan 2022 at 19:01, Antoine Tenart <atenart@kernel.org> wrote:
-> >
-> > I finally had some time to look at this. Does the diff below fix your
-> > issue?
->=20
-> Yes, with the patch applied I'm no longer able to reproduce memory leak.
-> Thanks for fixing this!
+As it was shown in the report by Alexander Azimov, hash rethink at the
+client-side may lead to connection timeout toward stateful anycast
+services. Tom Herbert created a patchset to address this issue by applying
+hash rethink only after a negative routing event (3RTOs) [1]. This change
+also affects server-side behavior, which we found undesirable. This
+patchset changes defaults in a way to make them safe: hash rethink at the
+client-side is disabled and enabled at the server-side upon each RTO
+event or in case of duplicate acknowledgments.
 
-Thanks for testing. I'll send a formal patch, can I add your Tested-by?
+This patchset provides two options to change default behaviour. The hash
+rethink may be disabled at the server-side by the new sysctl option.
+Changes in the sysctl option don't affect default behavior at the
+client-side.
 
-Also, do you know how to trigger the following code path in OVS
-https://elixir.bootlin.com/linux/latest/source/net/openvswitch/actions.c#L9=
-44
-? Would be good (not required) to test it, to ensure the fix doesn't
-break it.
+Hash rethink can also be enabled/disabled with socket option or bpf
+syscalls which ovewrite both default and sysctl settings. This socket
+option is available on both client and server-side. This should provide
+mechanics to enable hash rethink inside administrative domain, such as DC,
+where hash rethink at the client-side can be desirable.
 
-Thanks,
-Antoine
+[1] https://lore.kernel.org/netdev/20210809185314.38187-1-tom@herbertland.com/
 
-> > diff --git a/include/net/dst_metadata.h b/include/net/dst_metadata.h
-> > index 14efa0ded75d..90a7a4daea9c 100644
-> > --- a/include/net/dst_metadata.h
-> > +++ b/include/net/dst_metadata.h
-> > @@ -110,8 +110,8 @@ static inline struct metadata_dst *tun_rx_dst(int m=
-d_size)
-> >  static inline struct metadata_dst *tun_dst_unclone(struct sk_buff *skb)
-> >  {
-> >         struct metadata_dst *md_dst =3D skb_metadata_dst(skb);
-> > -       int md_size;
-> >         struct metadata_dst *new_md;
-> > +       int md_size, ret;
-> > =20
-> >         if (!md_dst || md_dst->type !=3D METADATA_IP_TUNNEL)
-> >                 return ERR_PTR(-EINVAL);
-> > @@ -123,8 +123,15 @@ static inline struct metadata_dst *tun_dst_unclone=
-(struct sk_buff *skb)
-> > =20
-> >         memcpy(&new_md->u.tun_info, &md_dst->u.tun_info,
-> >                sizeof(struct ip_tunnel_info) + md_size);
-> > +#ifdef CONFIG_DST_CACHE
-> > +       ret =3D dst_cache_init(&new_md->u.tun_info.dst_cache, GFP_ATOMI=
-C);
-> > +       if (ret) {
-> > +               metadata_dst_free(new_md);
-> > +               return ERR_PTR(ret);
-> > +       }
-> > +#endif
-> > +
-> >         skb_dst_drop(skb);
-> > -       dst_hold(&new_md->dst);
-> >         skb_dst_set(skb, &new_md->dst);
-> >         return new_md;
-> >  }
+v2:
+	- Changed sysctl default to ENABLED in all patches. Reduced sysctl
+	  and socket option size to u8. Fixed netns bug reported by kernel
+	  test robot.
+
+v3:
+	- Fixed bug with bad u8 comparison. Moved sk_txrehash to use less
+	  bytes in struct. Added WRITE_ONCE() in setsockopt in and
+	  READ_ONCE() in tcp_rtx_synack.
+
+v4:
+	- Rebase and add documentation for sysctl option.
+
+v5:
+	- Move sk_txrehash out of busy poll ifdef.
+
+
+Akhmat Karakotov (5):
+  txhash: Make rethinking txhash behavior configurable via sysctl
+  txhash: Add socket option to control TX hash rethink behavior
+  txhash: Add txrehash sysctl description
+  bpf: Add SO_TXREHASH setsockopt
+  tcp: Change SYN ACK retransmit behaviour to account for rehash
+
+ Documentation/admin-guide/sysctl/net.rst |  9 ++++++++
+ arch/alpha/include/uapi/asm/socket.h     |  2 ++
+ arch/mips/include/uapi/asm/socket.h      |  2 ++
+ arch/parisc/include/uapi/asm/socket.h    |  2 ++
+ arch/sparc/include/uapi/asm/socket.h     |  2 ++
+ include/net/netns/core.h                 |  1 +
+ include/net/sock.h                       | 28 +++++++++++++-----------
+ include/uapi/asm-generic/socket.h        |  2 ++
+ include/uapi/linux/socket.h              |  4 ++++
+ net/core/filter.c                        | 10 +++++++++
+ net/core/net_namespace.c                 |  2 ++
+ net/core/sock.c                          | 14 ++++++++++++
+ net/core/sysctl_net_core.c               | 14 ++++++++++--
+ net/ipv4/inet_connection_sock.c          |  3 +++
+ net/ipv4/tcp_output.c                    |  4 +++-
+ 15 files changed, 83 insertions(+), 16 deletions(-)
+
+-- 
+2.17.1
+
