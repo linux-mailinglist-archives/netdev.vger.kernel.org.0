@@ -2,103 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 647D74A493F
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 15:23:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A93774A4984
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 15:42:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234254AbiAaOXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 09:23:53 -0500
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:50523 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233565AbiAaOXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 09:23:50 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 1A05A6000A;
-        Mon, 31 Jan 2022 14:23:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1643639028;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1J1iSHwA0jGHFy0j25b8SdmnmmiziMUJ96pXDRWTDpM=;
-        b=plZl53NfOGgrzbDK6qi7JeMPNPp3OnN/9/Z8EI9WdIPeJ16L0s6rwksepGCro7kWdhWRCZ
-        z6P3AgRkRDOIvrHstjs6jPFTinkU017Ph9IoKYf2ro/U2PgKsfOqmez6IR6CPave6jXa7Y
-        JTVWKPRRgQr4L8RjnUp5N5VVhKWOsQaTBP+wX0PMmweXoRPO3Qdw9E1zz8mQK1aXVyBDrm
-        qZyin612Trby5pkAVThsKYTZDXboKW0M9/4XZeg2pvA5Yc7hJlK9DKZd7r9Rtnp/fPc3Rw
-        BUH4DaDnYhxvF86cWK7gvEzsV9588TvJljQw+onVehIYwjOLC/13uT+dfmAXOw==
-Date:   Mon, 31 Jan 2022 15:23:45 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>
-Subject: Re: [PATCH wpan-next v2 1/5] net: ieee802154: Improve the way
- supported channels are declared
-Message-ID: <20220131152345.3fefa3aa@xps13>
-In-Reply-To: <CAB_54W60OiGmjLQ2dAvnraq6fkZ6GGTLMVzjVbVAobcvNsaWtQ@mail.gmail.com>
-References: <20220128110825.1120678-1-miquel.raynal@bootlin.com>
-        <20220128110825.1120678-2-miquel.raynal@bootlin.com>
-        <CAB_54W60OiGmjLQ2dAvnraq6fkZ6GGTLMVzjVbVAobcvNsaWtQ@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S239163AbiAaOmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 09:42:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39202 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236916AbiAaOmK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 09:42:10 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D69AB82B57
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 14:42:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1306C340E8;
+        Mon, 31 Jan 2022 14:42:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643640128;
+        bh=NhGktzfN0r0xurR7x2ZVthm1YtYnY6JKbczj1R0xz0I=;
+        h=In-Reply-To:References:From:To:Cc:Subject:Date:From;
+        b=jsfqopQIi9AZ0CyP6ABd87ShbHnIi8mWytQPVKFzOsv+kJ6dEEUavXrQdKLDbF7cv
+         YDUgy0CWW2OkHxurg8WaiuKkVr6OHzaS/2QXVsGXIjipQnXsE9QtsbHlPKCPNshh7/
+         /sBZsbPKmDo7yoyLXJn5H+6Jgeour+rnxLMmYNzixBhl/D1huMgP9lPD1SUFm+oGKc
+         /9hdjJUpL287cB848l8iT1ADa74sCq3vPUcGocXfZ1hSGBUuMpf0v1lUc9MMXAUmxO
+         cOZNRZ1oNZrQFKRd50nbgTMEDajq6TKzFOWwzYVqxUuN/EWGQZy9UY8gr/zy5TRi2F
+         K2VKU0iW7w1nw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220131150418.0fabd263@elisabeth>
+References: <20210325153533.770125-1-atenart@kernel.org> <20210325153533.770125-2-atenart@kernel.org> <ygnhh79yluw2.fsf@nvidia.com> <164267447125.4497.8151505359440130213@kwain> <ygnhee52lg2d.fsf@nvidia.com> <164338929382.4461.13062562289533632448@kwain> <ygnhsft4p2mg.fsf@nvidia.com> <164363560725.4133.7633393991691247425@kwain> <20220131150418.0fabd263@elisabeth>
+From:   Antoine Tenart <atenart@kernel.org>
+To:     Stefano Brivio <sbrivio@redhat.com>
+Cc:     Vlad Buslov <vladbu@nvidia.com>, davem@davemloft.net,
+        kuba@kernel.org, echaudro@redhat.com, netdev@vger.kernel.org,
+        pshelar@ovn.org
+Subject: Re: [PATCH net 1/2] vxlan: do not modify the shared tunnel info when PMTU triggers an ICMP reply
+Message-ID: <164364012498.4133.407913680953084949@kwain>
+Date:   Mon, 31 Jan 2022 15:42:04 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+Hi Stefano,
 
-alex.aring@gmail.com wrote on Sun, 30 Jan 2022 16:35:35 -0500:
-
-> Hi,
+Quoting Stefano Brivio (2022-01-31 15:04:18)
+> On Mon, 31 Jan 2022 14:26:47 +0100
+> Antoine Tenart <atenart@kernel.org> wrote:
+> > Quoting Vlad Buslov (2022-01-31 12:26:47)
+> > > On Fri 28 Jan 2022 at 19:01, Antoine Tenart <atenart@kernel.org> wrot=
+e: =20
+> > > >
+> > > > I finally had some time to look at this. Does the diff below fix yo=
+ur
+> > > > issue? =20
+> > >=20
+> > > Yes, with the patch applied I'm no longer able to reproduce memory le=
+ak.
+> > > Thanks for fixing this! =20
+> >=20
+> > Thanks for testing. I'll send a formal patch, can I add your Tested-by?
+> >=20
+> > Also, do you know how to trigger the following code path in OVS
+> > https://elixir.bootlin.com/linux/latest/source/net/openvswitch/actions.=
+c#L944
 >=20
-> On Fri, Jan 28, 2022 at 6:08 AM Miquel Raynal <miquel.raynal@bootlin.com>=
- wrote:
-> >
-> > The idea here is to create a structure per set of channels so that we
-> > can define much more than basic bitfields for these.
-> >
-> > The structure is currently almost empty on purpose because this change
-> > is supposed to be a mechanical update without additional information but
-> > more details will be added in the following commits.
-> > =20
+> I guess the selftests pmtu_ipv{4,6}_ovs_vxlan{4,6}_exception and
+> pmtu_ipv{4,6}_ovs_geneve{4,6}_exception from net/pmtu.sh:
 >=20
-> In my opinion you want to put more information in this structure which
-> is not necessary and force the driver developer to add information
-> which is already there encoded in the page/channel bitfields.
+>         https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
+t/tree/tools/testing/selftests/net/pmtu.sh?id=3Dece1278a9b81bdfc088f087f837=
+2a072b7010956#n81
+>=20
+> should trigger that path once or twice per test, but I haven't tried
+> recently.
 
-The information I am looking forward to add is clearly not encoded in
-the page/channel bitfields (these information are added in the
-following patches). At least I don't see anywhere in the spec a
-paragraph telling which protocol and band must be used as a function of
-the page and channel information. So I improved the way channels are
-declared to give more information than what we currently have.
+Thanks for the suggestion! I did run all 8 ptmu_*_ovs_* tests, they all
+passed but didn't trigger a call to dev_fill_metadata_dst in
+net/openvswitch/actions.c.
 
-BTW I see the wpan tools actually derive the protocol/band from the
-channel/page information and I _really_ don't get it. I believe it only
-works with hwsim but if it's not the case I would like to hear
-more about it.
-
-> Why not
-> add helper functionality and get your "band" and "protocol" for a
-> page/channel combination?
-
-This information is as static as the channel/page information, so why
-using two different channels to get it? This means two different places
-where the channels must be described, which IMHO hardens the work for
-device driver writers.
-
-I however agree that the final presentation looks a bit more heavy to
-the eyes, but besides the extra fat that this change brings, it is
-rather easy to give the core all the information it needs in a rather
-detailed and understandable way.
+To be sure there wasn't a misunderstanding: I did test the PTMU code
+path in Geneve/VXLAN (while one of the endpoint is an OVS port); but the
+net/openvswitch/actions.c code path is something different, used to
+retrieve tunnel egress info. I don't know when/how this is used by OVS.
 
 Thanks,
-Miqu=C3=A8l
+Antoine
