@@ -2,156 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9FA64A4F3A
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 20:13:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 773544A4F3E
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 20:14:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236801AbiAaTNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 14:13:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46500 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230501AbiAaTNe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 14:13:34 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5EE1C061714;
-        Mon, 31 Jan 2022 11:13:33 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id s61-20020a17090a69c300b001b4d0427ea2so79050pjj.4;
-        Mon, 31 Jan 2022 11:13:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=YZVTL02trY93bXBvFab8GWC4SGTBEHx7xoM5zz31pOg=;
-        b=eI59J5vvr0A8RKxUqyE9NUAu6vFBo9JLnOmw0puMQZUEm4dF2MWwJqfR/ZL08CAxWZ
-         BnWoSz1sTio7BAV9whmwWT6xUhgWC6Lo5BK4+b2sM6VIImC2/K/OnoTgvKSA94C7mdon
-         itSGEALfsQg4ZMdAZ+hZz6HnPPJcZllFKFyICnD2+E8AyYxfPrqC9UOqTS0CeUtdusV1
-         D4fD1+rjOl4c4TOP+xFamd2c429GVwsIuvmsUAgjkAklhb5p0GonFbMhGG1gbEVHUG3W
-         T9o9E6puaKCHgmEkfQ64cDBJQP0R4HnPSY65B2EhBCUypXC4/lvWzE2EgRcc1SWQbOpz
-         19og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=YZVTL02trY93bXBvFab8GWC4SGTBEHx7xoM5zz31pOg=;
-        b=tMwOS60CYJSxnMF/9HU/pNASKNCaxS0wnSwG/xP3O9xaKN8uOYMFSFYjxpeCHegtBJ
-         uy4VOzgllGRHfNcvvGCoW4sQRCzoJl8Fe+/K7Sp10Cl34rcc23xIcqVtCI3DaKPNJYUG
-         IpqUi0ABLz1iNdAOkAsXtRY4YLwwaraEVz60aZEBGxotqhUiKqu6rY4zMJLiBCIz8f+O
-         pj1mQoOeHlBxZVSIIN6fqGNnpXGsG4kFRj8He5RX7nBt5hUk6jE2AGoYw/zcymjBWxlr
-         J67/tGEzGLlQ0P2t1LySEQous7A5LKCBfbn66BJ/6pfQYuEux7PgevaYLLdM8IXx4+/H
-         WwYQ==
-X-Gm-Message-State: AOAM5338CrTSd3g9i0zFsEVF+WKG3A2TWzAJIfUsDF8IDHDmfd5Sym4s
-        rUdBL8NTKbyn9LAm6SsYGwM=
-X-Google-Smtp-Source: ABdhPJxZc+Bj3ecmVnKia223vAFW8JsKNa9KxQkDpM9AJ8KxEqdBZ0FJgWcicwws5wLqU29X67c1ZA==
-X-Received: by 2002:a17:902:e885:: with SMTP id w5mr22303795plg.155.1643656413464;
-        Mon, 31 Jan 2022 11:13:33 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id mj23sm95941pjb.54.2022.01.31.11.13.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 11:13:32 -0800 (PST)
-Date:   Mon, 31 Jan 2022 11:13:20 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mark Einon <mark.einon@gmail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jeroen de Borst <jeroendb@google.com>,
-        Catherine Sullivan <csully@google.com>,
-        David Awogbemila <awogbemila@google.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "K . Y . Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Jon Mason <jdmason@kudzu.us>,
-        Simon Horman <simon.horman@corigine.com>,
-        Rain River <rain.1986.08.12@gmail.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>, drivers@pensando.io,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Rob Herring <robh@kernel.org>, l.stelmach@samsung.com,
-        rafal@milecki.pl, Florian Fainelli <f.fainelli@gmail.com>,
-        Edwin Peer <edwin.peer@broadcom.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Joel Stanley <joel@jms.id.au>, Slark Xiao <slark_xiao@163.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Liming Sun <limings@nvidia.com>,
-        David Thompson <davthompson@nvidia.com>,
-        Asmaa Mnebhi <asmaa@nvidia.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>,
-        Omkar Kulkarni <okulkarni@marvell.com>,
-        Shai Malin <smalin@marvell.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Gary Guo <gary@garyguo.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, intel-wired-lan@lists.osuosl.org,
-        linux-hyperv@vger.kernel.org, oss-drivers@corigine.com,
-        linux-renesas-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH net-next] net: kbuild: Don't default net vendor configs
- to y
-Message-ID: <20220131191320.GA24296@hoboy.vegasvil.org>
-References: <20220131172450.4905-1-saeed@kernel.org>
- <e9e124b0-4ea0-e84c-cd8e-1c6ad4df9d74@pensando.io>
+        id S1359248AbiAaTOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 14:14:04 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:5134 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230501AbiAaTOD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 14:14:03 -0500
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20VGcNhf009118;
+        Mon, 31 Jan 2022 19:13:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=/clznWryst0rmQYx66ZluWia5b2RsqBFb0qilzlKL/s=;
+ b=Aw3Lm7582v2ziy5vlAdfq4I8+p6hMKGaLR7LTptubUaa3/eaXRwhpacoSqMwgByTH0FS
+ xkn8HxfKj1vzyXMEJo4tXGyXaUyETyvVzJCSim/cy0jwidcv3arynpFzFqysGAfzlQ5x
+ qUoJmY+QRzW6ShBAVNd8kyJVSzuByaLeg8xBcOjFyljmCVJ+Jdg2Lc2eQms+KWZdN4m6
+ DzBHQhsZSwKt/K61An6QxdseaQk0WBzcE+hk51mPI6EOYQ0B4HmAODwetLdGpsR6Ecy/
+ 68qjnDZiEGZDR2WG8BmzUxGdYpLkzjRyGsJgajTS9IorOEgEqjcJ5szCJje83sN4o6Rv dA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dxk0nmjs7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 19:13:58 +0000
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20VIn2xT022913;
+        Mon, 31 Jan 2022 19:13:58 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dxk0nmjrn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 19:13:57 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20VJ8U8p005457;
+        Mon, 31 Jan 2022 19:13:56 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma03ams.nl.ibm.com with ESMTP id 3dvw79eeh1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 19:13:56 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20VJDrlC30474712
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 31 Jan 2022 19:13:54 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DB3EE11C04A;
+        Mon, 31 Jan 2022 19:13:53 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9603911C050;
+        Mon, 31 Jan 2022 19:13:53 +0000 (GMT)
+Received: from [9.171.28.92] (unknown [9.171.28.92])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 31 Jan 2022 19:13:53 +0000 (GMT)
+Message-ID: <74aaa8ce-81a4-b048-cee2-b137279d13d5@linux.ibm.com>
+Date:   Mon, 31 Jan 2022 20:13:53 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH net-next 1/3] net/smc: Send directly when TCP_CORK is
+ cleared
+Content-Language: en-US
+To:     Tony Lu <tonylu@linux.alibaba.com>, kgraul@linux.ibm.com,
+        kuba@kernel.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org
+References: <20220130180256.28303-1-tonylu@linux.alibaba.com>
+ <20220130180256.28303-2-tonylu@linux.alibaba.com>
+From:   Stefan Raspl <raspl@linux.ibm.com>
+In-Reply-To: <20220130180256.28303-2-tonylu@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: Br_g-0b0g3KL7vtmlrQPw7gdtTRtoyrS
+X-Proofpoint-GUID: qmtZgZUE6-uDiiY1lg52DXSeXDlH2g3T
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e9e124b0-4ea0-e84c-cd8e-1c6ad4df9d74@pensando.io>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-31_07,2022-01-31_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ spamscore=0 priorityscore=1501 mlxlogscore=999 phishscore=0 adultscore=0
+ malwarescore=0 clxscore=1015 impostorscore=0 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201310124
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 10:04:40AM -0800, Shannon Nelson wrote:
-> Is there a particular reason to change this?
-> Broken compiles?  Bad drivers?  Over-sized output?
+On 1/30/22 19:02, Tony Lu wrote:
+> According to the man page of TCP_CORK [1], if set, don't send out
+> partial frames. All queued partial frames are sent when option is
+> cleared again.
+> 
+> When applications call setsockopt to disable TCP_CORK, this call is
+> protected by lock_sock(), and tries to mod_delayed_work() to 0, in order
+> to send pending data right now. However, the delayed work smc_tx_work is
+> also protected by lock_sock(). There introduces lock contention for
+> sending data.
+> 
+> To fix it, send pending data directly which acts like TCP, without
+> lock_sock() protected in the context of setsockopt (already lock_sock()ed),
+> and cancel unnecessary dealyed work, which is protected by lock.
+> 
+> [1] https://linux.die.net/man/7/tcp
+> 
+> Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+> ---
+>   net/smc/af_smc.c |  4 ++--
+>   net/smc/smc_tx.c | 25 +++++++++++++++----------
+>   net/smc/smc_tx.h |  1 +
+>   3 files changed, 18 insertions(+), 12 deletions(-)
+> 
+> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> index ffab9cee747d..ef021ec6b361 100644
+> --- a/net/smc/af_smc.c
+> +++ b/net/smc/af_smc.c
+> @@ -2600,8 +2600,8 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
+>   		    sk->sk_state != SMC_CLOSED) {
+>   			if (!val) {
+>   				SMC_STAT_INC(smc, cork_cnt);
+> -				mod_delayed_work(smc->conn.lgr->tx_wq,
+> -						 &smc->conn.tx_work, 0);
+> +				smc_tx_pending(&smc->conn);
+> +				cancel_delayed_work(&smc->conn.tx_work);
+>   			}
+>   		}
+>   		break;
+> diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
+> index be241d53020f..7b0b6e24582f 100644
+> --- a/net/smc/smc_tx.c
+> +++ b/net/smc/smc_tx.c
+> @@ -597,27 +597,32 @@ int smc_tx_sndbuf_nonempty(struct smc_connection *conn)
+>   	return rc;
+>   }
+>   
+> -/* Wakeup sndbuf consumers from process context
+> - * since there is more data to transmit
+> - */
+> -void smc_tx_work(struct work_struct *work)
+> +void smc_tx_pending(struct smc_connection *conn)
 
-Having default Y is a PITA to people working on an embedded design
-that has just one working MAC.  It means having to scroll through tons
-of empty stuff when doing `make menuconfig`
+Could you add a comment that we're expecting lock_sock() to be held when calling 
+this function?
 
 Thanks,
-Richard
+Stefan
