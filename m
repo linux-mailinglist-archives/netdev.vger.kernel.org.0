@@ -2,98 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D69AA4A4677
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 12:58:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 007D64A4613
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 12:49:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376413AbiAaL6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 06:58:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378545AbiAaL6C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 06:58:02 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F41EEC06175A;
-        Mon, 31 Jan 2022 03:46:12 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id k17so12181738plk.0;
-        Mon, 31 Jan 2022 03:46:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2LshZ+k3yxfozJYiL0Vvmb7zr16k7OxfcJf3YiQB8OU=;
-        b=gVEqmyYpS4E5wGPfzb+OCHerQ0kpTF2TUYWo5J3fb+FenZtuWOpANbT8qkI1PiWehd
-         kvzfB8SbZV5QSs6t8BEaQHotxt6Lj3FyRQ67IdsU3D1t6+rSK3v6uA1tG0Ob/zkfeYw6
-         PvV5G6dL/QNzshf9MQyz3bKRhM7ON3i307Nz2SMaPNdivLPQ48HKv8Cw+WfTdNZIL8va
-         c0qpxsXtRTn2gqMH/t7BUSt9akPP6nwHjeg3YVLmIF4aomGuGd3EPDl+XiLGlro9IM9L
-         4t+9GdSBkFCB32armWBE6doeh3m573hrBR2+x2HvUKN9V/ZRD+dQrG/UAHfXNzcz5RC1
-         112Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2LshZ+k3yxfozJYiL0Vvmb7zr16k7OxfcJf3YiQB8OU=;
-        b=qKcD49QgQS2o/9//Jh0JQlBXzi2Nkts3JtgJblwEBsTpGDqQPrg7DG3O0j5s4dOM14
-         lKy07II3wS48M32HzITBmrzMTHT7jRC0AqnWCo/OOEejAYAmTAk92Lgj85xOwLL0e5gN
-         4jlibbmV1Tce/idBT2VOkl1AteqBUn1GqPzZK/GS1rqGYqFUdmm9/xHO+mKfQUB/Vrmm
-         uffG110bi+7HibD5yADllz45sB0ZxOXKCa92N+jCfkhDdRzrJjiIFYmLYlUrVoz4Qzco
-         sBmc0aP2cB0rogGQE4Ko+fY0jj/r8XlfkFq4rp6QWmmNW0z3veK9HMEWqXqOcIkYxJ34
-         /C5w==
-X-Gm-Message-State: AOAM533pvuyceEeTZBEhvBKe5cMl4S1oDq+C+aMSkXBaUprSzfavhv1Y
-        WAN7H2djFyhInBFrSTrZfumsM8ZacCClzA==
-X-Google-Smtp-Source: ABdhPJyrokr21nAAo8ywhF0RHkt/UlLAJ7G1HaG4SUfaJepDBODWmTOxwC3WSvMa1eRD2ZLDwwaCSg==
-X-Received: by 2002:a17:903:188:: with SMTP id z8mr1147290plg.119.1643629572454;
-        Mon, 31 Jan 2022 03:46:12 -0800 (PST)
-Received: from localhost (61-223-193-169.dynamic-ip.hinet.net. [61.223.193.169])
-        by smtp.gmail.com with ESMTPSA id nn4sm11123246pjb.39.2022.01.31.03.46.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 03:46:11 -0800 (PST)
-From:   Hou Tao <hotforest@gmail.com>
-X-Google-Original-From: Hou Tao <houtao1@huawei.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, houtao1@huawei.com
-Subject: [PATCH bpf-next] bpf: use VM_MAP instead of VM_ALLOC for ringbuf
-Date:   Mon, 31 Jan 2022 19:46:00 +0800
-Message-Id: <20220131114600.21849-1-houtao1@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S1377293AbiAaLtW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 06:49:22 -0500
+Received: from mga04.intel.com ([192.55.52.120]:5841 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1377354AbiAaLrY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:47:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643629644; x=1675165644;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JgrmgKu2ltoPrTRYP35s5M5YCdv3Ln8H/OSyyhoOzFU=;
+  b=fiGjendbQI4KyccXTUZztZ5H2JzjDF7it9RuZa6avCXEzgEtf+0NP7dy
+   AUBaaWtg3myjTWs883nn1Sqm27ZkzNMQVO9wsk6DLL999ruiUBcOPoq1V
+   Se9MzAnyOfRYMI49eWzeiqP4KjcQ8jPrlyTp53e14Bvtsnjqxgp63IH4E
+   XalIbpysDlx4gCfb7GRIK0xemQB9I2PTIfLIV56n3roeqS4UpgArZG58v
+   gISK1UkDnrx/i8wisRKi4YlLAAgZQH6BEUUGNaA8SdMbjj1p2LIBPtS2v
+   bgGmH7NhH5fhEcF7lsdqedOFSKqLvH5S+Lt2qfShvPfdTf/ttmE7ouEku
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="246278270"
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="246278270"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:47:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="675703348"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 31 Jan 2022 03:47:23 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nEV9W-000Rrb-Bs; Mon, 31 Jan 2022 11:47:22 +0000
+Date:   Mon, 31 Jan 2022 19:46:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Juhee Kang <claudiajkang@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, arvid.brodin@alten.se
+Cc:     kbuild-all@lists.01.org
+Subject: Re: [PATCH net-next] net: hsr: use hlist_head instead of list_head
+ for mac addresses
+Message-ID: <202201311904.frzcODO4-lkp@intel.com>
+References: <20220131090307.2654-1-claudiajkang@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220131090307.2654-1-claudiajkang@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now the ringbuf area in /proc/vmallocinfo is showed as vmalloc,
-but VM_ALLOC is only used for vmalloc(), and for the ringbuf area
-it is created by mapping allocated pages, so use VM_MAP instead.
+Hi Juhee,
 
-After the change, ringbuf info in /proc/vmallocinfo will changed from:
-  [start]-[end]   24576 ringbuf_map_alloc+0x171/0x290 vmalloc user
-to
-  [start]-[end]   24576 ringbuf_map_alloc+0x171/0x290 vmap user
+Thank you for the patch! Perhaps something to improve:
 
-Signed-off-by: Hou Tao <houtao1@huawei.com>
+[auto build test WARNING on net-next/master]
+
+url:    https://github.com/0day-ci/linux/commits/Juhee-Kang/net-hsr-use-hlist_head-instead-of-list_head-for-mac-addresses/20220131-170414
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git ff58831fa02deb42fd731f830d8d9ec545573c7c
+config: nios2-randconfig-s031-20220131 (https://download.01.org/0day-ci/archive/20220131/202201311904.frzcODO4-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/4610359df4a1f524fe7c2b85702a561ebf53fee8
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Juhee-Kang/net-hsr-use-hlist_head-instead-of-list_head-for-mac-addresses/20220131-170414
+        git checkout 4610359df4a1f524fe7c2b85702a561ebf53fee8
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=nios2 SHELL=/bin/bash net/hsr/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+>> net/hsr/hsr_framereg.c:52:17: sparse: sparse: cast removes address space '__rcu' of expression
+   net/hsr/hsr_framereg.c:101:33: sparse: sparse: cast removes address space '__rcu' of expression
+   net/hsr/hsr_framereg.c:122:25: sparse: sparse: cast removes address space '__rcu' of expression
+   net/hsr/hsr_framereg.c:595:25: sparse: sparse: cast removes address space '__rcu' of expression
+
+vim +/__rcu +52 net/hsr/hsr_framereg.c
+
+    46	
+    47	bool hsr_addr_is_self(struct hsr_priv *hsr, unsigned char *addr)
+    48	{
+    49		struct hsr_node *node;
+    50	
+    51		node = hlist_empty(&hsr->self_node_db) ? NULL :
+  > 52			hlist_entry(hlist_first_rcu(&hsr->self_node_db),
+    53				    struct hsr_node, mac_list);
+    54		if (!node) {
+    55			WARN_ONCE(1, "HSR: No self node\n");
+    56			return false;
+    57		}
+    58	
+    59		if (ether_addr_equal(addr, node->macaddress_A))
+    60			return true;
+    61		if (ether_addr_equal(addr, node->macaddress_B))
+    62			return true;
+    63	
+    64		return false;
+    65	}
+    66	
+
 ---
- kernel/bpf/ringbuf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
-index 638d7fd7b375..710ba9de12ce 100644
---- a/kernel/bpf/ringbuf.c
-+++ b/kernel/bpf/ringbuf.c
-@@ -104,7 +104,7 @@ static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
- 	}
- 
- 	rb = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
--		  VM_ALLOC | VM_USERMAP, PAGE_KERNEL);
-+		  VM_MAP | VM_USERMAP, PAGE_KERNEL);
- 	if (rb) {
- 		kmemleak_not_leak(pages);
- 		rb->pages = pages;
--- 
-2.20.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
