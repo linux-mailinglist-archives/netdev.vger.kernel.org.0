@@ -2,93 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 890F84A4C2A
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 17:32:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C124A4C43
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 17:37:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349947AbiAaQct (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 11:32:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37280 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350040AbiAaQcs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 11:32:48 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8165CC06173D
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 08:32:48 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id i30so13293148pfk.8
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 08:32:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=jrmCnw1vWbPG3vz+B6LPTNIGeWcQyoJjyMn1cPywoW0=;
-        b=BLDLfU5xiPEST4k+7rKwaIBto82ggkKMBj1VsQuz/7WQj5EDZjJBX1DvXVtJ/OQ/Re
-         WcanpYChyFlDDySnX/x7z0hs7Kqu5V94fwNk8cGdwLAs/YkyL0Syt+mDvv+MQTyuOfeH
-         uLCvHWyYZZ7+1SAJC1CSGdkFTxkyK+09724WME18Abdl+pNoxgNjgj53Krx/7z/zKwPT
-         aRehDxttuSsbWTGFbeZojvukKZy2FvkX8b5hf7KVaL/0uGCi2FMSllHNmSiRVhxj0wbP
-         uJ17BKJSC+eNkMXqjmtejlKYZGVL4WqWYRK/UAeuTy4C5tNOvoahGKD7PFpy5fTwxEhg
-         /9+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=jrmCnw1vWbPG3vz+B6LPTNIGeWcQyoJjyMn1cPywoW0=;
-        b=dT6DP4gTUlEqQ/iGAo3B5aGhSpssCv+OPs0V8NDGvfAOq9q2Hcx+Z9NfMBkkEMqtoc
-         TEac/xvGzzzgEWH7iifb8xEA0ZGm3t7Y/lbSW8ABwE5/BZIg6tjxTKQRGgrIfm7UpXEC
-         SAQKvw2p6u+hOK1SDO/BXpzT7xJIXln6rhnvtNzriRTCOO6k16ekQI9l+9BmivEllHSJ
-         WUzRDojH63UD2ocRyxUypNCPtgDACaqJw52ueAMM4oNXeRM9Z5z/rSnQIDAZFMrbDGiU
-         cRTrIFQT+CmnsSM4K8hhrUNInb07dw8QGt08SiW20b9s0j3hNtKxT5Nxb5Sayn4TYyzv
-         hyIg==
-X-Gm-Message-State: AOAM532e5Y4yoYSh8CRK/R7cK1MOgDkPbiwP+I0NnnzAAzyOlTTDfbYI
-        vVtmdZjhIsGgS2RsyIcShZk6MkOzeoc=
-X-Google-Smtp-Source: ABdhPJxWeAOFqTFc1z6NDk7dS2Nx647umStBvyoKiHvQ4bh+44xt9UND9STECbjrqP4BCkv73CVfKA==
-X-Received: by 2002:a63:f942:: with SMTP id q2mr17500139pgk.573.1643646767996;
-        Mon, 31 Jan 2022 08:32:47 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id nl12sm12999194pjb.1.2022.01.31.08.32.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 08:32:47 -0800 (PST)
-Date:   Mon, 31 Jan 2022 08:32:40 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Miroslav Lichvar <mlichvar@redhat.com>
-Cc:     netdev@vger.kernel.org, Yangbo Lu <yangbo.lu@nxp.com>
-Subject: Re: [PATCH net-next 5/5] ptp: start virtual clocks at current system
- time.
-Message-ID: <20220131163240.GA22495@hoboy.vegasvil.org>
-References: <20220127114536.1121765-1-mlichvar@redhat.com>
- <20220127114536.1121765-6-mlichvar@redhat.com>
- <20220127220116.GB26514@hoboy.vegasvil.org>
- <Yfe4FPHbFjc6FoTa@localhost>
+        id S1380532AbiAaQhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 11:37:16 -0500
+Received: from marcansoft.com ([212.63.210.85]:42382 "EHLO mail.marcansoft.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1376682AbiAaQhP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 Jan 2022 11:37:15 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 57D0341982;
+        Mon, 31 Jan 2022 16:37:06 +0000 (UTC)
+Subject: Re: [PATCH v2 27/35] brcmfmac: pcie: Add IDs/properties for BCM4387
+To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20220104072658.69756-1-marcan@marcan.st>
+ <20220104072658.69756-28-marcan@marcan.st>
+ <1f37951b-aed7-64ca-7452-7332df791931@broadcom.com>
+From:   Hector Martin <marcan@marcan.st>
+Message-ID: <dbf841a7-a848-fed0-484d-1c7c8ced94d6@marcan.st>
+Date:   Tue, 1 Feb 2022 01:37:04 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yfe4FPHbFjc6FoTa@localhost>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1f37951b-aed7-64ca-7452-7332df791931@broadcom.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: es-ES
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 11:21:08AM +0100, Miroslav Lichvar wrote:
-> I tried to find the discussion around this decision, but failed. Do
-> you have a link?
+On 21/01/2022 16.35, Arend van Spriel wrote:
+> On 1/4/2022 8:26 AM, Hector Martin wrote:
+>> @@ -96,6 +97,7 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
+>>   	BRCMF_FW_ENTRY(BRCM_CC_4371_CHIP_ID, 0xFFFFFFFF, 4371),
+>>   	BRCMF_FW_ENTRY(BRCM_CC_4377_CHIP_ID, 0xFFFFFFFF, 4377B3), /* 4 */
+>>   	BRCMF_FW_ENTRY(BRCM_CC_4378_CHIP_ID, 0xFFFFFFFF, 4378B1), /* 3 */
+>> +	BRCMF_FW_ENTRY(BRCM_CC_4387_CHIP_ID, 0xFFFFFFFF, 4387C2), /* 7 */
+> 
+> Regarding the revmask in this firmware mapping table my common practice 
+> was to disable older revisions and enable for given revision and newer 
+> until proven otherwise. So for the 4387c2 that would have to following 
+> mask 0xFFFFFF80 (if rev 7 indeed matches with c2).
+> 
 
-I'll dig it up for you.
- 
-> To me, it seems very strange to start the PHC at 0. It makes the
-> initial clock correction unnecessarily larger by ~7 orders of
-> magnitude. The system clock is initialized from the RTC, which can
-> have an error comparable to the TAI-UTC offset, especially if the
-> machine was turned off for a longer period of time, so why not
-> initialize the PHC from the system time? The error is much smaller
-> than billions of seconds.
+Makes sense, I changed it to that for all the additions :)
 
-When the clock reads Jan 1, 1970, then that is clearly wrong, and so a
-user might suspect that it is uninititalized.
-
-When the clock is off by 37 seconds, the user will likely post a vague
-complaint to linuxptp-users asking why linuxptp doesn't handle leap
-seconds.
-
-I prefer the clarity of the first case.
-
-Thanks,
-Richard
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
