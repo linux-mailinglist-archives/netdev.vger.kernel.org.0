@@ -2,687 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AC4C4A3F03
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 10:03:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 341504A3F17
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 10:15:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233655AbiAaJDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 04:03:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44140 "EHLO
+        id S234465AbiAaJPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 04:15:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234358AbiAaJDP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 04:03:15 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A55CC06173E
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 01:03:15 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id a19so6369955pfx.4
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 01:03:15 -0800 (PST)
+        with ESMTP id S234151AbiAaJPY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 04:15:24 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B133C061714
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 01:15:24 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id p63so14996842iod.11
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 01:15:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
+        h=mime-version:reply-to:from:date:message-id:subject:to
          :content-transfer-encoding;
-        bh=XLpdKXETjIKuvRSXedES5CtK9s5Rpb4uSS8yKsTlQXg=;
-        b=fiu69xUhOBKt3Rqua0RZNRfDwJLkHm6P+UCfQv9wDS6Z1/CvAsSC7GOyUHBzykQBRK
-         E/ZUidWwjUBroJ4EW51biMxK+D+vs8QgtIRMQi+oBXRbYr05FpPtgUCKMhDk+ckH2YUi
-         i9nH9hlm2/6GYVc2BKZA8dBFsU+kdDzjF+voSrU1p4VtGSzUQfbBXKbN0vj/k+n2Crtc
-         /lITs0rrGMkUnqlkb7/4FSM5GhS51qJ64mxxF6iAZbgYHLUNVyZdZ5DTIoebE8kNIKqd
-         UkcM7Kyp+o1la1SKUERY6IBck9aT1lNllnF6dKSmpIPXPSCSi0l9gKt5NbATI/PEIFUw
-         Y8iw==
+        bh=Mdw9iR6T+Us9hkUM76ryD8ctZaANeXwD5LuOS3M78pE=;
+        b=TjUvOh9Lu2HZTOcMcfWO1M8gxuEZyWnlvs9ZRL/DTpW7xgQsBXKTuPOVENcWFJXF5/
+         6Qh8R2xzoXZu/NRksFU+he9hgxpZtot9xMO5pgaI9WQIedIVGzFmqrrTw7Pl1xwXxl+l
+         M/qZLQ7nk3Qpc2lMaSOJiV7oAAB4bG8+S3Ci+Cft6sYEkopOGh7ceiizApOsCmMEAwEW
+         z2T3WDfhPoniYyUy+H+8vWePq9S4n0nrdBjKSozx8fq/oduqaIlxAnMiiRumJvx9xiGe
+         MJIOiqkzpw9sJFID63w0Z7+ZuJ2rA7IyLGV4eXZ0bvOHwEJEdnafpS7gG7uRnG3CZIkq
+         8dXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XLpdKXETjIKuvRSXedES5CtK9s5Rpb4uSS8yKsTlQXg=;
-        b=fyDRzBmajafaPPgJFDk1N52vwZwYHavaJIy6vSGA7VIzr7DUy568XPXOAtMJfZRRF7
-         4D3dvVMMnafZe/9+vCd0S/UFjcWPGmc/kKG43o6aq5hpTWXsY4Zy2AGASsuMbzxYIHRg
-         Qn/bqCS9BXCY+fzqykirdl4TPbF4Ugkj4h38dC7oPqxd+oXgfVsZVBNtgCHzzUPMsGvD
-         vFriQX3t6VCrIbk8t0/J6sEiMtJ3NXXvYjGTGqq9H/qHNrB5sB8vg0l2dtYRwr+gg1ru
-         yvdRybzwjnp02RhNUlSsLptcbi8WyjNTDoA1KTpimgSvb/QRYjx6tFu+hXMppVdbzJXN
-         EI9g==
-X-Gm-Message-State: AOAM531O748JTMoYg8AhbIodP+UjTaxVxnb7KWhyx6eWaw/imCZSXWRv
-        Ju3CMDgx7eui9C7Dn8UmyAg=
-X-Google-Smtp-Source: ABdhPJz3Rdg98A0ObLUHhB+OPeznbxraDnLR4on63nE1v0T/1UJaLDO10rpr5wSg+GcMGcxTol3eRQ==
-X-Received: by 2002:a65:6659:: with SMTP id z25mr15846295pgv.367.1643619794471;
-        Mon, 31 Jan 2022 01:03:14 -0800 (PST)
-Received: from localhost.localdomain ([58.76.185.115])
-        by smtp.gmail.com with ESMTPSA id n2sm6162364pgf.74.2022.01.31.01.03.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 01:03:14 -0800 (PST)
-From:   Juhee Kang <claudiajkang@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        arvid.brodin@alten.se
-Subject: [PATCH net-next] net: hsr: use hlist_head instead of list_head for mac addresses
-Date:   Mon, 31 Jan 2022 09:03:07 +0000
-Message-Id: <20220131090307.2654-1-claudiajkang@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=Mdw9iR6T+Us9hkUM76ryD8ctZaANeXwD5LuOS3M78pE=;
+        b=rBk0ODaKxA4W+88tI0/ShHUwlaQyhR2L69gHQlVu9SvjvkdSdg7lc/6zN7MFmDdAfm
+         I9VmDg4tefU6kZq1lmTeult2+ujJmpUFcjugbKmth1XL5xkIY4LYktUlQOz5llpqnPvY
+         czMkMaYgRuTIftEwUlQ3z6QnABWxUznF2dZ0v/0lLZ6nY69vbl0LyJBVfAFG8xsoWk9h
+         V6wNI1ViW7lAH0LBMJzDnb7C9P0a17jiEEZDYfqMT4OnmiCuqFOsJmnyvfljZp9CbOiL
+         sIo+oTG8++ScsE452z8zIeELo98JFcw0xYc9bvovrluWsVkl6chIv1hWY5v7lHRXtsCL
+         IXFA==
+X-Gm-Message-State: AOAM531KwjVc/GlY/vsDRAttPEgzfGyFV+JGPBzU09hjVgRjnQd+ThUq
+        nrigCGYlCQEVjbrBq0hu7mZP+RC+ZPwSSbcSMD4=
+X-Google-Smtp-Source: ABdhPJx5+X6BawLg1h/5x4G/R1rD/yzeSW3e63hSBM3Vp3nPO/g5IVkskO89HIBgRLJitDKTwsBqah67NXdP3jwgW+A=
+X-Received: by 2002:a5d:9d01:: with SMTP id j1mr10649343ioj.195.1643620523589;
+ Mon, 31 Jan 2022 01:15:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a05:6e02:1c02:0:0:0:0 with HTTP; Mon, 31 Jan 2022 01:15:23
+ -0800 (PST)
+Reply-To: CEOjohnhermanoil@bellair.net
+From:   Mrs Katerina Herman <barristermartinezchambers01@gmail.com>
+Date:   Mon, 31 Jan 2022 10:15:23 +0100
+Message-ID: <CAM+wYX_v0tW2UU8hjcNvA-XO05VvukeFAmkD=B+EJ5jdYeNQQg@mail.gmail.com>
+Subject: Happy new year 2022 to you and your family.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, HSR manages mac addresses of known HSR nodes by using list_head.
-It takes a lot of time when there are a lot of registered nodes due to 
-finding specific mac address nodes by using linear search. We can be 
-reducing the time by using hlist. Thus, this patch moves list_head to 
-hlist_head for mac addresses and this allows for further improvement of 
-network performance.
+Happy new year 2022 to you and your family.
 
-    Condition: registered 10,000 known HSR nodes
-    Before:
-    # iperf3 -c 192.168.10.1 -i 1 -t 10
-    Connecting to host 192.168.10.1, port 5201
-    [  5] local 192.168.10.2 port 59442 connected to 192.168.10.1 port 5201
-    [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-    [  5]   0.00-1.49   sec  3.75 MBytes  21.1 Mbits/sec    0    158 KBytes
-    [  5]   1.49-2.05   sec  1.25 MBytes  18.7 Mbits/sec    0    166 KBytes
-    [  5]   2.05-3.06   sec  2.44 MBytes  20.3 Mbits/sec   56   16.9 KBytes
-    [  5]   3.06-4.08   sec  1.43 MBytes  11.7 Mbits/sec   11   38.0 KBytes
-    [  5]   4.08-5.00   sec   951 KBytes  8.49 Mbits/sec    0   56.3 KBytes
+I am writing this mail with tears and sorrow seeking your assistance
+due to my medical situation here in the United States. I am Mrs
+Katerina Herman, a citizen of Finland and am 46years old. I was an
+Orphan, adopted by my late father, Engr John Herman, Chairman/CEO of
+John Herman Oil and Gas Services. After the death of my father Late
+Engr. John Herman, I took over his company management and also decided
+not to get married since I am her only Child.
 
-    After:
-    # iperf3 -c 192.168.10.1 -i 1 -t 10
-    Connecting to host 192.168.10.1, port 5201
-    [  5] local 192.168.10.2 port 41756 connected to 192.168.10.1 port 5201
-    [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-    [  5]   0.00-1.16   sec  8.75 MBytes  63.2 Mbits/sec    4   95.8 KBytes
-    [  5]   1.16-2.17   sec  7.50 MBytes  62.3 Mbits/sec   13   78.9 KBytes
-    [  5]   2.17-3.03   sec  7.50 MBytes  73.2 Mbits/sec    0    125 KBytes
-    [  5]   3.03-4.14   sec  7.93 MBytes  60.1 Mbits/sec   35   69.0 KBytes
-    [  5]   4.14-5.00   sec  6.25 MBytes  60.8 Mbits/sec   18   19.7 KBytes
-    [  5]   5.00-6.17   sec  7.93 MBytes  57.0 Mbits/sec   14    161 KBytes
+Since then, I started suffering from Coronary heart disease which has
+cost me a lot and also affected every part of my body and brain cells
+due to complications. Just 5 days ago, the British doctors told me
+that I may die any time because my condition has gotten to a critical
+and life threatening stage. Having known my medical critical status, I
+therefore decided to seek your urgent assistance/ cooperation to use
+my inheritance of $18.3 Million USD to Build Orphanage
+homes/motherless babies in memory of me when I am gone.
 
-Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
----
- net/hsr/hsr_debugfs.c  |  39 +++++----
- net/hsr/hsr_device.c   |  10 ++-
- net/hsr/hsr_forward.c  |   7 +-
- net/hsr/hsr_framereg.c | 190 ++++++++++++++++++++++++-----------------
- net/hsr/hsr_framereg.h |   7 +-
- net/hsr/hsr_main.h     |   9 +-
- net/hsr/hsr_netlink.c  |   4 +-
- 7 files changed, 162 insertions(+), 104 deletions(-)
+I took this bold decision because I do not have a husband, family or
+children that can inherit these funds when I am gone. If you are
+interested, you shall take 35% out of the total funds $18.3 Million
+USD for your assistance, and also use the balance to build Orphanage
+homes/motherless babies in memory of me.=C2=A0 If you are interested and
+willing to handle this project, get back to me urgently for more
+details and to proceed. Immediately I hear from you through this email
+[=C2=A0CEOjohnhermanoil@bellair.net], I shall issue you a Certificate of
+Deposit and my father's death certificate for your confirmation before
+we proceed, to establish you as my legal beneficiary in receiving the
+money on my behalf.
 
-diff --git a/net/hsr/hsr_debugfs.c b/net/hsr/hsr_debugfs.c
-index 99f3af1a9d4d..4d50e9b3055d 100644
---- a/net/hsr/hsr_debugfs.c
-+++ b/net/hsr/hsr_debugfs.c
-@@ -17,6 +17,7 @@
- #include <linux/module.h>
- #include <linux/errno.h>
- #include <linux/debugfs.h>
-+#include <linux/jhash.h>
- #include "hsr_main.h"
- #include "hsr_framereg.h"
- 
-@@ -28,6 +29,7 @@ hsr_node_table_show(struct seq_file *sfp, void *data)
- {
- 	struct hsr_priv *priv = (struct hsr_priv *)sfp->private;
- 	struct hsr_node *node;
-+	int i;
- 
- 	seq_printf(sfp, "Node Table entries for (%s) device\n",
- 		   (priv->prot_version == PRP_V1 ? "PRP" : "HSR"));
-@@ -39,22 +41,27 @@ hsr_node_table_show(struct seq_file *sfp, void *data)
- 		seq_puts(sfp, "DAN-H\n");
- 
- 	rcu_read_lock();
--	list_for_each_entry_rcu(node, &priv->node_db, mac_list) {
--		/* skip self node */
--		if (hsr_addr_is_self(priv, node->macaddress_A))
--			continue;
--		seq_printf(sfp, "%pM ", &node->macaddress_A[0]);
--		seq_printf(sfp, "%pM ", &node->macaddress_B[0]);
--		seq_printf(sfp, "%10lx, ", node->time_in[HSR_PT_SLAVE_A]);
--		seq_printf(sfp, "%10lx, ", node->time_in[HSR_PT_SLAVE_B]);
--		seq_printf(sfp, "%14x, ", node->addr_B_port);
--
--		if (priv->prot_version == PRP_V1)
--			seq_printf(sfp, "%5x, %5x, %5x\n",
--				   node->san_a, node->san_b,
--				   (node->san_a == 0 && node->san_b == 0));
--		else
--			seq_printf(sfp, "%5x\n", 1);
-+
-+	for (i = 0 ; i < priv->hash_buckets; i++) {
-+		hlist_for_each_entry_rcu(node, &priv->node_db[i], mac_list) {
-+			/* skip self node */
-+			if (hsr_addr_is_self(priv, node->macaddress_A))
-+				continue;
-+			seq_printf(sfp, "%pM ", &node->macaddress_A[0]);
-+			seq_printf(sfp, "%pM ", &node->macaddress_B[0]);
-+			seq_printf(sfp, "%10lx, ",
-+				   node->time_in[HSR_PT_SLAVE_A]);
-+			seq_printf(sfp, "%10lx, ",
-+				   node->time_in[HSR_PT_SLAVE_B]);
-+			seq_printf(sfp, "%14x, ", node->addr_B_port);
-+
-+			if (priv->prot_version == PRP_V1)
-+				seq_printf(sfp, "%5x, %5x, %5x\n",
-+					   node->san_a, node->san_b,
-+					(node->san_a == 0 && node->san_b == 0));
-+			else
-+				seq_printf(sfp, "%5x\n", 1);
-+		}
- 	}
- 	rcu_read_unlock();
- 	return 0;
-diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
-index e57fdad9ef94..7f250216433d 100644
---- a/net/hsr/hsr_device.c
-+++ b/net/hsr/hsr_device.c
-@@ -485,12 +485,16 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],
- {
- 	bool unregister = false;
- 	struct hsr_priv *hsr;
--	int res;
-+	int res, i;
- 
- 	hsr = netdev_priv(hsr_dev);
- 	INIT_LIST_HEAD(&hsr->ports);
--	INIT_LIST_HEAD(&hsr->node_db);
--	INIT_LIST_HEAD(&hsr->self_node_db);
-+	INIT_HLIST_HEAD(&hsr->self_node_db);
-+	hsr->hash_buckets = HSR_HSIZE;
-+	get_random_bytes(&hsr->hash_seed, sizeof(hsr->hash_seed));
-+	for (i = 0; i < hsr->hash_buckets; i++)
-+		INIT_HLIST_HEAD(&hsr->node_db[i]);
-+
- 	spin_lock_init(&hsr->list_lock);
- 
- 	eth_hw_addr_set(hsr_dev, slave[0]->dev_addr);
-diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
-index e59cbb4f0cd1..5bf357734b11 100644
---- a/net/hsr/hsr_forward.c
-+++ b/net/hsr/hsr_forward.c
-@@ -570,20 +570,23 @@ static int fill_frame_info(struct hsr_frame_info *frame,
- 	struct ethhdr *ethhdr;
- 	__be16 proto;
- 	int ret;
-+	u32 hash;
- 
- 	/* Check if skb contains ethhdr */
- 	if (skb->mac_len < sizeof(struct ethhdr))
- 		return -EINVAL;
- 
- 	memset(frame, 0, sizeof(*frame));
-+
-+	ethhdr = (struct ethhdr *)skb_mac_header(skb);
-+	hash = hsr_mac_hash(port->hsr, ethhdr->h_source);
- 	frame->is_supervision = is_supervision_frame(port->hsr, skb);
--	frame->node_src = hsr_get_node(port, &hsr->node_db, skb,
-+	frame->node_src = hsr_get_node(port, &hsr->node_db[hash], skb,
- 				       frame->is_supervision,
- 				       port->type);
- 	if (!frame->node_src)
- 		return -1; /* Unknown node and !is_supervision, or no mem */
- 
--	ethhdr = (struct ethhdr *)skb_mac_header(skb);
- 	frame->is_vlan = false;
- 	proto = ethhdr->h_proto;
- 
-diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
-index 0775f0f95dbf..6960808edbf0 100644
---- a/net/hsr/hsr_framereg.c
-+++ b/net/hsr/hsr_framereg.c
-@@ -15,11 +15,17 @@
- #include <linux/etherdevice.h>
- #include <linux/slab.h>
- #include <linux/rculist.h>
-+#include <linux/jhash.h>
- #include "hsr_main.h"
- #include "hsr_framereg.h"
- #include "hsr_netlink.h"
- 
--/*	TODO: use hash lists for mac addresses (linux/jhash.h)?    */
-+u32 hsr_mac_hash(struct hsr_priv *hsr, const unsigned char *addr)
-+{
-+	u32 hash = jhash(addr, ETH_ALEN, hsr->hash_seed);
-+
-+	return reciprocal_scale(hash, hsr->hash_buckets);
-+}
- 
- /* seq_nr_after(a, b) - return true if a is after (higher in sequence than) b,
-  * false otherwise.
-@@ -42,8 +48,9 @@ bool hsr_addr_is_self(struct hsr_priv *hsr, unsigned char *addr)
- {
- 	struct hsr_node *node;
- 
--	node = list_first_or_null_rcu(&hsr->self_node_db, struct hsr_node,
--				      mac_list);
-+	node = hlist_empty(&hsr->self_node_db) ? NULL :
-+		hlist_entry(hlist_first_rcu(&hsr->self_node_db),
-+			    struct hsr_node, mac_list);
- 	if (!node) {
- 		WARN_ONCE(1, "HSR: No self node\n");
- 		return false;
-@@ -59,12 +66,12 @@ bool hsr_addr_is_self(struct hsr_priv *hsr, unsigned char *addr)
- 
- /* Search for mac entry. Caller must hold rcu read lock.
-  */
--static struct hsr_node *find_node_by_addr_A(struct list_head *node_db,
-+static struct hsr_node *find_node_by_addr_A(struct hlist_head *node_db,
- 					    const unsigned char addr[ETH_ALEN])
- {
- 	struct hsr_node *node;
- 
--	list_for_each_entry_rcu(node, node_db, mac_list) {
-+	hlist_for_each_entry_rcu(node, node_db, mac_list) {
- 		if (ether_addr_equal(node->macaddress_A, addr))
- 			return node;
- 	}
-@@ -79,7 +86,7 @@ int hsr_create_self_node(struct hsr_priv *hsr,
- 			 const unsigned char addr_a[ETH_ALEN],
- 			 const unsigned char addr_b[ETH_ALEN])
- {
--	struct list_head *self_node_db = &hsr->self_node_db;
-+	struct hlist_head *self_node_db = &hsr->self_node_db;
- 	struct hsr_node *node, *oldnode;
- 
- 	node = kmalloc(sizeof(*node), GFP_KERNEL);
-@@ -90,14 +97,15 @@ int hsr_create_self_node(struct hsr_priv *hsr,
- 	ether_addr_copy(node->macaddress_B, addr_b);
- 
- 	spin_lock_bh(&hsr->list_lock);
--	oldnode = list_first_or_null_rcu(self_node_db,
--					 struct hsr_node, mac_list);
-+	oldnode = hlist_empty(self_node_db) ? NULL :
-+				hlist_entry(hlist_first_rcu(self_node_db),
-+					    struct hsr_node, mac_list);
- 	if (oldnode) {
--		list_replace_rcu(&oldnode->mac_list, &node->mac_list);
-+		hlist_replace_rcu(&oldnode->mac_list, &node->mac_list);
- 		spin_unlock_bh(&hsr->list_lock);
- 		kfree_rcu(oldnode, rcu_head);
- 	} else {
--		list_add_tail_rcu(&node->mac_list, self_node_db);
-+		hlist_add_tail_rcu(&node->mac_list, self_node_db);
- 		spin_unlock_bh(&hsr->list_lock);
- 	}
- 
-@@ -106,25 +114,27 @@ int hsr_create_self_node(struct hsr_priv *hsr,
- 
- void hsr_del_self_node(struct hsr_priv *hsr)
- {
--	struct list_head *self_node_db = &hsr->self_node_db;
-+	struct hlist_head *self_node_db = &hsr->self_node_db;
- 	struct hsr_node *node;
- 
- 	spin_lock_bh(&hsr->list_lock);
--	node = list_first_or_null_rcu(self_node_db, struct hsr_node, mac_list);
-+	node = hlist_empty(self_node_db) ? NULL :
-+			hlist_entry(hlist_first_rcu(self_node_db),
-+				    struct hsr_node, mac_list);
- 	if (node) {
--		list_del_rcu(&node->mac_list);
-+		hlist_del_rcu(&node->mac_list);
- 		kfree_rcu(node, rcu_head);
- 	}
- 	spin_unlock_bh(&hsr->list_lock);
- }
- 
--void hsr_del_nodes(struct list_head *node_db)
-+void hsr_del_nodes(struct hlist_head *node_db)
- {
- 	struct hsr_node *node;
--	struct hsr_node *tmp;
-+	struct hlist_node *tmp;
- 
--	list_for_each_entry_safe(node, tmp, node_db, mac_list)
--		kfree(node);
-+	hlist_for_each_entry_safe(node, tmp, node_db, mac_list)
-+		kfree_rcu(node, rcu_head);
- }
- 
- void prp_handle_san_frame(bool san, enum hsr_port_type port,
-@@ -145,7 +155,7 @@ void prp_handle_san_frame(bool san, enum hsr_port_type port,
-  * originating from the newly added node.
-  */
- static struct hsr_node *hsr_add_node(struct hsr_priv *hsr,
--				     struct list_head *node_db,
-+				     struct hlist_head *node_db,
- 				     unsigned char addr[],
- 				     u16 seq_out, bool san,
- 				     enum hsr_port_type rx_port)
-@@ -175,14 +185,14 @@ static struct hsr_node *hsr_add_node(struct hsr_priv *hsr,
- 		hsr->proto_ops->handle_san_frame(san, rx_port, new_node);
- 
- 	spin_lock_bh(&hsr->list_lock);
--	list_for_each_entry_rcu(node, node_db, mac_list,
-+	hlist_for_each_entry_rcu(node, node_db, mac_list,
- 				lockdep_is_held(&hsr->list_lock)) {
- 		if (ether_addr_equal(node->macaddress_A, addr))
- 			goto out;
- 		if (ether_addr_equal(node->macaddress_B, addr))
- 			goto out;
- 	}
--	list_add_tail_rcu(&new_node->mac_list, node_db);
-+	hlist_add_tail_rcu(&new_node->mac_list, node_db);
- 	spin_unlock_bh(&hsr->list_lock);
- 	return new_node;
- out:
-@@ -202,7 +212,7 @@ void prp_update_san_info(struct hsr_node *node, bool is_sup)
- 
- /* Get the hsr_node from which 'skb' was sent.
-  */
--struct hsr_node *hsr_get_node(struct hsr_port *port, struct list_head *node_db,
-+struct hsr_node *hsr_get_node(struct hsr_port *port, struct hlist_head *node_db,
- 			      struct sk_buff *skb, bool is_sup,
- 			      enum hsr_port_type rx_port)
- {
-@@ -218,7 +228,7 @@ struct hsr_node *hsr_get_node(struct hsr_port *port, struct list_head *node_db,
- 
- 	ethhdr = (struct ethhdr *)skb_mac_header(skb);
- 
--	list_for_each_entry_rcu(node, node_db, mac_list) {
-+	hlist_for_each_entry_rcu(node, node_db, mac_list) {
- 		if (ether_addr_equal(node->macaddress_A, ethhdr->h_source)) {
- 			if (hsr->proto_ops->update_san_info)
- 				hsr->proto_ops->update_san_info(node, is_sup);
-@@ -268,11 +278,12 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
- 	struct hsr_sup_tlv *hsr_sup_tlv;
- 	struct hsr_node *node_real;
- 	struct sk_buff *skb = NULL;
--	struct list_head *node_db;
-+	struct hlist_head *node_db;
- 	struct ethhdr *ethhdr;
- 	int i;
- 	unsigned int pull_size = 0;
- 	unsigned int total_pull_size = 0;
-+	u32 hash;
- 
- 	/* Here either frame->skb_hsr or frame->skb_prp should be
- 	 * valid as supervision frame always will have protocol
-@@ -310,11 +321,13 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
- 	hsr_sp = (struct hsr_sup_payload *)skb->data;
- 
- 	/* Merge node_curr (registered on macaddress_B) into node_real */
--	node_db = &port_rcv->hsr->node_db;
--	node_real = find_node_by_addr_A(node_db, hsr_sp->macaddress_A);
-+	node_db = port_rcv->hsr->node_db;
-+	hash = hsr_mac_hash(hsr, hsr_sp->macaddress_A);
-+	node_real = find_node_by_addr_A(&node_db[hash], hsr_sp->macaddress_A);
- 	if (!node_real)
- 		/* No frame received from AddrA of this node yet */
--		node_real = hsr_add_node(hsr, node_db, hsr_sp->macaddress_A,
-+		node_real = hsr_add_node(hsr, &node_db[hash],
-+					 hsr_sp->macaddress_A,
- 					 HSR_SEQNR_START - 1, true,
- 					 port_rcv->type);
- 	if (!node_real)
-@@ -348,7 +361,8 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
- 		hsr_sp = (struct hsr_sup_payload *)skb->data;
- 
- 		/* Check if redbox mac and node mac are equal. */
--		if (!ether_addr_equal(node_real->macaddress_A, hsr_sp->macaddress_A)) {
-+		if (!ether_addr_equal(node_real->macaddress_A,
-+				      hsr_sp->macaddress_A)) {
- 			/* This is a redbox supervision frame for a VDAN! */
- 			goto done;
- 		}
-@@ -368,7 +382,7 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
- 	node_real->addr_B_port = port_rcv->type;
- 
- 	spin_lock_bh(&hsr->list_lock);
--	list_del_rcu(&node_curr->mac_list);
-+	hlist_del_rcu(&node_curr->mac_list);
- 	spin_unlock_bh(&hsr->list_lock);
- 	kfree_rcu(node_curr, rcu_head);
- 
-@@ -406,6 +420,7 @@ void hsr_addr_subst_dest(struct hsr_node *node_src, struct sk_buff *skb,
- 			 struct hsr_port *port)
- {
- 	struct hsr_node *node_dst;
-+	u32 hash;
- 
- 	if (!skb_mac_header_was_set(skb)) {
- 		WARN_ONCE(1, "%s: Mac header not set\n", __func__);
-@@ -415,7 +430,8 @@ void hsr_addr_subst_dest(struct hsr_node *node_src, struct sk_buff *skb,
- 	if (!is_unicast_ether_addr(eth_hdr(skb)->h_dest))
- 		return;
- 
--	node_dst = find_node_by_addr_A(&port->hsr->node_db,
-+	hash = hsr_mac_hash(port->hsr, eth_hdr(skb)->h_dest);
-+	node_dst = find_node_by_addr_A(&port->hsr->node_db[hash],
- 				       eth_hdr(skb)->h_dest);
- 	if (!node_dst) {
- 		if (net_ratelimit())
-@@ -491,59 +507,72 @@ static struct hsr_port *get_late_port(struct hsr_priv *hsr,
- void hsr_prune_nodes(struct timer_list *t)
- {
- 	struct hsr_priv *hsr = from_timer(hsr, t, prune_timer);
-+	struct hlist_node *tmp;
- 	struct hsr_node *node;
--	struct hsr_node *tmp;
- 	struct hsr_port *port;
- 	unsigned long timestamp;
- 	unsigned long time_a, time_b;
-+	int i;
- 
- 	spin_lock_bh(&hsr->list_lock);
--	list_for_each_entry_safe(node, tmp, &hsr->node_db, mac_list) {
--		/* Don't prune own node. Neither time_in[HSR_PT_SLAVE_A]
--		 * nor time_in[HSR_PT_SLAVE_B], will ever be updated for
--		 * the master port. Thus the master node will be repeatedly
--		 * pruned leading to packet loss.
--		 */
--		if (hsr_addr_is_self(hsr, node->macaddress_A))
--			continue;
--
--		/* Shorthand */
--		time_a = node->time_in[HSR_PT_SLAVE_A];
--		time_b = node->time_in[HSR_PT_SLAVE_B];
--
--		/* Check for timestamps old enough to risk wrap-around */
--		if (time_after(jiffies, time_a + MAX_JIFFY_OFFSET / 2))
--			node->time_in_stale[HSR_PT_SLAVE_A] = true;
--		if (time_after(jiffies, time_b + MAX_JIFFY_OFFSET / 2))
--			node->time_in_stale[HSR_PT_SLAVE_B] = true;
--
--		/* Get age of newest frame from node.
--		 * At least one time_in is OK here; nodes get pruned long
--		 * before both time_ins can get stale
--		 */
--		timestamp = time_a;
--		if (node->time_in_stale[HSR_PT_SLAVE_A] ||
--		    (!node->time_in_stale[HSR_PT_SLAVE_B] &&
--		    time_after(time_b, time_a)))
--			timestamp = time_b;
--
--		/* Warn of ring error only as long as we get frames at all */
--		if (time_is_after_jiffies(timestamp +
--				msecs_to_jiffies(1.5 * MAX_SLAVE_DIFF))) {
--			rcu_read_lock();
--			port = get_late_port(hsr, node);
--			if (port)
--				hsr_nl_ringerror(hsr, node->macaddress_A, port);
--			rcu_read_unlock();
--		}
- 
--		/* Prune old entries */
--		if (time_is_before_jiffies(timestamp +
-+	for (i = 0; i < hsr->hash_buckets; i++) {
-+		hlist_for_each_entry_safe(node, tmp, &hsr->node_db[i],
-+					  mac_list) {
-+			/* Don't prune own node.
-+			 * Neither time_in[HSR_PT_SLAVE_A]
-+			 * nor time_in[HSR_PT_SLAVE_B], will ever be updated
-+			 * for the master port. Thus the master node will be
-+			 * repeatedly pruned leading to packet loss.
-+			 */
-+			if (hsr_addr_is_self(hsr, node->macaddress_A))
-+				continue;
-+
-+			/* Shorthand */
-+			time_a = node->time_in[HSR_PT_SLAVE_A];
-+			time_b = node->time_in[HSR_PT_SLAVE_B];
-+
-+			/* Check for timestamps old enough to
-+			 * risk wrap-around
-+			 */
-+			if (time_after(jiffies, time_a + MAX_JIFFY_OFFSET / 2))
-+				node->time_in_stale[HSR_PT_SLAVE_A] = true;
-+			if (time_after(jiffies, time_b + MAX_JIFFY_OFFSET / 2))
-+				node->time_in_stale[HSR_PT_SLAVE_B] = true;
-+
-+			/* Get age of newest frame from node.
-+			 * At least one time_in is OK here; nodes get pruned
-+			 * long before both time_ins can get stale
-+			 */
-+			timestamp = time_a;
-+			if (node->time_in_stale[HSR_PT_SLAVE_A] ||
-+			    (!node->time_in_stale[HSR_PT_SLAVE_B] &&
-+			time_after(time_b, time_a)))
-+				timestamp = time_b;
-+
-+			/* Warn of ring error only as long as we get
-+			 * frames at all
-+			 */
-+			if (time_is_after_jiffies(timestamp +
-+				msecs_to_jiffies(1.5 * MAX_SLAVE_DIFF))) {
-+				rcu_read_lock();
-+				port = get_late_port(hsr, node);
-+				if (port)
-+					hsr_nl_ringerror(hsr,
-+							 node->macaddress_A, port);
-+				rcu_read_unlock();
-+			}
-+
-+			/* Prune old entries */
-+			if (time_is_before_jiffies(timestamp +
- 				msecs_to_jiffies(HSR_NODE_FORGET_TIME))) {
--			hsr_nl_nodedown(hsr, node->macaddress_A);
--			list_del_rcu(&node->mac_list);
--			/* Note that we need to free this entry later: */
--			kfree_rcu(node, rcu_head);
-+				hsr_nl_nodedown(hsr, node->macaddress_A);
-+				hlist_del_rcu(&node->mac_list);
-+				/* Note that we need to free this
-+				 * entry later:
-+				 */
-+				kfree_rcu(node, rcu_head);
-+			}
- 		}
- 	}
- 	spin_unlock_bh(&hsr->list_lock);
-@@ -557,9 +586,13 @@ void *hsr_get_next_node(struct hsr_priv *hsr, void *_pos,
- 			unsigned char addr[ETH_ALEN])
- {
- 	struct hsr_node *node;
-+	u32 hash;
-+
-+	hash = hsr_mac_hash(hsr, addr);
- 
- 	if (!_pos) {
--		node = list_first_or_null_rcu(&hsr->node_db,
-+		node = hlist_empty(&hsr->node_db[hash]) ? NULL :
-+			hlist_entry(hlist_first_rcu(&hsr->node_db[hash]),
- 					      struct hsr_node, mac_list);
- 		if (node)
- 			ether_addr_copy(addr, node->macaddress_A);
-@@ -567,7 +600,7 @@ void *hsr_get_next_node(struct hsr_priv *hsr, void *_pos,
- 	}
- 
- 	node = _pos;
--	list_for_each_entry_continue_rcu(node, &hsr->node_db, mac_list) {
-+	hlist_for_each_entry_continue_rcu(node, mac_list) {
- 		ether_addr_copy(addr, node->macaddress_A);
- 		return node;
- 	}
-@@ -587,8 +620,11 @@ int hsr_get_node_data(struct hsr_priv *hsr,
- 	struct hsr_node *node;
- 	struct hsr_port *port;
- 	unsigned long tdiff;
-+	u32 hash;
-+
-+	hash = hsr_mac_hash(hsr, addr);
- 
--	node = find_node_by_addr_A(&hsr->node_db, addr);
-+	node = find_node_by_addr_A(&hsr->node_db[hash], addr);
- 	if (!node)
- 		return -ENOENT;
- 
-diff --git a/net/hsr/hsr_framereg.h b/net/hsr/hsr_framereg.h
-index bdbb8c822ba1..d297873a3395 100644
---- a/net/hsr/hsr_framereg.h
-+++ b/net/hsr/hsr_framereg.h
-@@ -28,9 +28,10 @@ struct hsr_frame_info {
- 	bool is_from_san;
- };
- 
-+u32 hsr_mac_hash(struct hsr_priv *hsr, const unsigned char *addr);
- void hsr_del_self_node(struct hsr_priv *hsr);
--void hsr_del_nodes(struct list_head *node_db);
--struct hsr_node *hsr_get_node(struct hsr_port *port, struct list_head *node_db,
-+void hsr_del_nodes(struct hlist_head *node_db);
-+struct hsr_node *hsr_get_node(struct hsr_port *port, struct hlist_head *node_db,
- 			      struct sk_buff *skb, bool is_sup,
- 			      enum hsr_port_type rx_port);
- void hsr_handle_sup_frame(struct hsr_frame_info *frame);
-@@ -68,7 +69,7 @@ void prp_handle_san_frame(bool san, enum hsr_port_type port,
- void prp_update_san_info(struct hsr_node *node, bool is_sup);
- 
- struct hsr_node {
--	struct list_head	mac_list;
-+	struct hlist_node	mac_list;
- 	unsigned char		macaddress_A[ETH_ALEN];
- 	unsigned char		macaddress_B[ETH_ALEN];
- 	/* Local slave through which AddrB frames are received from this node */
-diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
-index 043e4e9a1694..1465346bd235 100644
---- a/net/hsr/hsr_main.h
-+++ b/net/hsr/hsr_main.h
-@@ -63,6 +63,9 @@ struct hsr_tag {
- 
- #define HSR_V1_SUP_LSDUSIZE		52
- 
-+#define HSR_HSIZE_SHIFT	8
-+#define HSR_HSIZE	BIT(HSR_HSIZE_SHIFT)
-+
- /* The helper functions below assumes that 'path' occupies the 4 most
-  * significant bits of the 16-bit field shared by 'path' and 'LSDU_size' (or
-  * equivalently, the 4 most significant bits of HSR tag byte 14).
-@@ -201,8 +204,8 @@ struct hsr_proto_ops {
- struct hsr_priv {
- 	struct rcu_head		rcu_head;
- 	struct list_head	ports;
--	struct list_head	node_db;	/* Known HSR nodes */
--	struct list_head	self_node_db;	/* MACs of slaves */
-+	struct hlist_head	node_db[HSR_HSIZE];	/* Known HSR nodes */
-+	struct hlist_head	self_node_db;	/* MACs of slaves */
- 	struct timer_list	announce_timer;	/* Supervision frame dispatch */
- 	struct timer_list	prune_timer;
- 	int announce_count;
-@@ -212,6 +215,8 @@ struct hsr_priv {
- 	spinlock_t seqnr_lock;	/* locking for sequence_nr */
- 	spinlock_t list_lock;	/* locking for node list */
- 	struct hsr_proto_ops	*proto_ops;
-+	u32 hash_buckets;
-+	u32 hash_seed;
- #define PRP_LAN_ID	0x5     /* 0x1010 for A and 0x1011 for B. Bit 0 is set
- 				 * based on SLAVE_A or SLAVE_B
- 				 */
-diff --git a/net/hsr/hsr_netlink.c b/net/hsr/hsr_netlink.c
-index f3c8f91dbe2c..1405c037cf7a 100644
---- a/net/hsr/hsr_netlink.c
-+++ b/net/hsr/hsr_netlink.c
-@@ -105,6 +105,7 @@ static int hsr_newlink(struct net *src_net, struct net_device *dev,
- static void hsr_dellink(struct net_device *dev, struct list_head *head)
- {
- 	struct hsr_priv *hsr = netdev_priv(dev);
-+	int i;
- 
- 	del_timer_sync(&hsr->prune_timer);
- 	del_timer_sync(&hsr->announce_timer);
-@@ -113,7 +114,8 @@ static void hsr_dellink(struct net_device *dev, struct list_head *head)
- 	hsr_del_ports(hsr);
- 
- 	hsr_del_self_node(hsr);
--	hsr_del_nodes(&hsr->node_db);
-+	for (i = 0; i < hsr->hash_buckets; i++)
-+		hsr_del_nodes(&hsr->node_db[i]);
- 
- 	unregister_netdevice_queue(dev, head);
- }
--- 
-2.25.1
-
+I am waiting to hear from you urgently.
+Regards,
+Mrs Katerina Herman
