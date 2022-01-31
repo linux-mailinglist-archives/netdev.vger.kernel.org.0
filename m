@@ -2,167 +2,345 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC45A4A4F2C
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 20:06:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC9D04A4F30
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 20:08:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351445AbiAaTGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 14:06:48 -0500
-Received: from mail.i8u.org ([75.148.87.25]:51535 "EHLO chris.i8u.org"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235245AbiAaTGq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Jan 2022 14:06:46 -0500
-X-Greylist: delayed 691 seconds by postgrey-1.27 at vger.kernel.org; Mon, 31 Jan 2022 14:06:46 EST
-Received: by chris.i8u.org (Postfix, from userid 1000)
-        id B353F16C9535; Mon, 31 Jan 2022 10:55:14 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by chris.i8u.org (Postfix) with ESMTP id AE22316C92D6;
-        Mon, 31 Jan 2022 10:55:14 -0800 (PST)
-Date:   Mon, 31 Jan 2022 10:55:14 -0800 (PST)
-From:   Hisashi T Fujinaka <htodd@twofifty.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        David Awogbemila <awogbemila@google.com>,
-        Linus Walleij <linus.walleij@linaro.org>, rafal@milecki.pl,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Edwin Peer <edwin.peer@broadcom.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-sunxi@lists.linux.dev, Jiri Pirko <jiri@resnulli.us>,
-        l.stelmach@samsung.com, Shay Agroskin <shayagr@amazon.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-kernel@vger.kernel.org, Jon Mason <jdmason@kudzu.us>,
-        Shannon Nelson <snelson@pensando.io>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Rain River <rain.1986.08.12@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Shai Malin <smalin@marvell.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>, drivers@pensando.io,
-        Omkar Kulkarni <okulkarni@marvell.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        linux-renesas-soc@vger.kernel.org,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Catherine Sullivan <csully@google.com>,
-        linux-hyperv@vger.kernel.org, oss-drivers@corigine.com,
-        Noam Dagan <ndagan@amazon.com>, Rob Herring <robh@kernel.org>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Chen-Yu Tsai <wens@csie.org>, Joel Stanley <joel@jms.id.au>,
-        Simon Horman <simon.horman@corigine.com>,
-        Asmaa Mnebhi <asmaa@nvidia.com>, Arnd Bergmann <arnd@arndb.de>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Liming Sun <limings@nvidia.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Slark Xiao <slark_xiao@163.com>, Gary Guo <gary@garyguo.net>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Jeroen de Borst <jeroendb@google.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>,
-        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        David Thompson <davthompson@nvidia.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        netdev@vger.kernel.org,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [Intel-wired-lan] [PATCH net-next] net: kbuild: Don't default
- net vendor configs to y
-In-Reply-To: <30ed8220-e24d-4b40-c7a6-4b09c84f9a1f@gmail.com>
-Message-ID: <09c97169-5f9a-fc8f-dea5-5423e7bfef34@twofifty.com>
-References: <20220131172450.4905-1-saeed@kernel.org> <20220131095905.08722670@hermes.local> <CAMuHMdU17cBzivFm9q-VwF9EG5MX75Qct=is=F2h+Kc+VddZ4g@mail.gmail.com> <20220131183540.6ekn3z7tudy5ocdl@sx1> <30ed8220-e24d-4b40-c7a6-4b09c84f9a1f@gmail.com>
+        id S1358905AbiAaTIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 14:08:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45400 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235245AbiAaTIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 14:08:37 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49819C061714
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 11:08:37 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id c6so43604886ybk.3
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 11:08:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aVbO5sJrxG/5+eJGLjeSPFjJnQ+x7+ygbYa0wfX5srg=;
+        b=SAHto4jsO8YsHkfMVdQO52NwRbGIDcsTFptySm0SeZBhp8CWoF9DUrHxzZWfOb9mEs
+         Sp+czhQGgRyzlcsSsmjOLh2jkqX45ge2/iN9M3WiH+ILO9JlX1eCr4vb4G3Uh09brH+y
+         mXCho5ZIT4vsOfFj+kjBtLqS8r2fE+n9yJ/O8N5vI/H5Wyoj9Ry1q0USWRmoFzD5dfrX
+         8rDffrjeEAbu2BMnQnVCg6rZSwjAc2hFso5VuHq3B5Ol0QPLD/iYM588jeWVPpHiArR9
+         TqnLBiKuIpdflZ2B2dGlZTkBm6mUriQDlCEHIPJsRpnC3iOUYpE1u7ZDv1uBqQSVnYvR
+         Li8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aVbO5sJrxG/5+eJGLjeSPFjJnQ+x7+ygbYa0wfX5srg=;
+        b=nuVGzZTnf1b9kBKxDZx59LuYQb7jKOZ9S4Awt88CdcBYygDu2DRuK5T99ZUCzCsb5O
+         i1mmCC64uSnLdcjhVATXb3XuYgTh5dnVCxe5DH1qXPYsslR9d7GVij3h9W39+5UPZS7k
+         b3hOMNr/u8SPBq+gHnMS60T3Fh/jNPl95XY4FuqMXir1yEWpzxt8usVVpGzEQsLqmNvT
+         zENUaOCWBV4/3fRH6u2hPv6nythOFrRiElE0z8oovUF3df1OU+gc0B1IjCQbwGFmplTQ
+         YqFp4qyEIh2dPDOObsM1uOr9De02sDYgbzvnN8lvrrXtX7ICP57pkQHlXlhSnx//7n8V
+         Od7Q==
+X-Gm-Message-State: AOAM530PxwIcR2kHW/fb1abNDDjr3zBgkHkFmhNXPJdmE80nFy/nS5SJ
+        AbATPYDopzzJ1Xe7B64Wr6q+0Q1WChygWP8favNGbQ==
+X-Google-Smtp-Source: ABdhPJzQzlT2Ldsf3fD6yd2duhykXppsy7H+yNB2XdLdEKGdh1v4lVpqcqoR9/Tv6SNvPPbjDx1twAL79qFzZia/jXk=
+X-Received: by 2002:a25:3444:: with SMTP id b65mr22321177yba.5.1643656115904;
+ Mon, 31 Jan 2022 11:08:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+References: <20220131172018.3704490-1-eric.dumazet@gmail.com> <ygnh1r0npwiy.fsf@nvidia.com>
+In-Reply-To: <ygnh1r0npwiy.fsf@nvidia.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 31 Jan 2022 11:08:24 -0800
+Message-ID: <CANn89iKpv-6uHXCvSHzPrrPc8eD2wEDvO39yQ4OEQ1t0+NK1Lw@mail.gmail.com>
+Subject: Re: [PATCH net] net: sched: fix use-after-free in tc_new_tfilter()
+To:     Vlad Buslov <vladbu@nvidia.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 31 Jan 2022, Florian Fainelli wrote:
-
-> On 1/31/2022 10:35 AM, Saeed Mahameed wrote:
->> On 31 Jan 19:30, Geert Uytterhoeven wrote:
->>> On Mon, Jan 31, 2022 at 6:59 PM Stephen Hemminger
->>> <stephen@networkplumber.org> wrote:
->>>> On Mon, 31 Jan 2022 09:24:50 -0800
->>>> Saeed Mahameed <saeed@kernel.org> wrote:
->>>> 
->>>> > From: Saeed Mahameed <saeedm@nvidia.com>
->>>> >
->>>> > NET_VENDOR_XYZ were defaulted to 'y' for no technical reason.
->>>> >
->>>> > Since all drivers belonging to a vendor are supposed to default to 'n',
->>>> > defaulting all vendors to 'n' shouldn't be an issue, and aligns well
->>>> > with the 'no new drivers' by default mentality.
->>>> >
->>>> > Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
->>>> 
->>>> This was done back when vendors were introduced in the network drivers 
->>>> tree.
->>>> The default of Y allowed older configurations to just work.
->>> 
->>> And changing the defaults means all defconfigs must be updated first,
->>> else the user's configs will end up without drivers needed.
->>> 
->> 
->> As I understand correctly, at least for most common net drivers, having 
->> NET_VENDOR_XYZ=y doesn't actually build anything, we have flags per
->> module for each vendor and those are defaulted to N.
+On Mon, Jan 31, 2022 at 10:53 AM Vlad Buslov <vladbu@nvidia.com> wrote:
 >
-> Right, but once you start hiding NET_VENDOR_DRIVER_XYZ under a NET_VENDOR_XYZ 
-> Kconfig symbol dependency, if NET_VENDOR_XYZ is not set to Y, then you have 
-> no way to select NET_VENDOR_DRIVER_XYZ and so your old defconfig breaks.
+> Hi Eric,
 >
->> 
->>>> So there was a reason, not sure if it matters anymore.
->>>> But it seems like useless repainting to change it now.
->>> 
->>> It might make sense to tune some of the defaults (i.e. change to
->>> "default y if ARCH_*") for drivers with clear platform dependencies.
->>> 
->> 
->> either set hard default to 'n' or just keep it as is, anything else is just
->> more confusion.
+> On Mon 31 Jan 2022 at 19:20, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > Whenever tc_new_tfilter() jumps back to replay: label,
+> > we need to make sure @q and @chain local variables are cleared again,
+> > or risk use-after-free as in [1]
+> >
+> > For consistency, apply the same fix in tc_ctl_chain()
+> >
+> > BUG: KASAN: use-after-free in mini_qdisc_pair_swap+0x1b9/0x1f0 net/sched/sch_generic.c:1581
+> > Write of size 8 at addr ffff8880985c4b08 by task syz-executor.4/1945
+> >
+> > CPU: 0 PID: 1945 Comm: syz-executor.4 Not tainted 5.17.0-rc1-syzkaller-00495-gff58831fa02d #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > Call Trace:
+> >  <TASK>
+> >  __dump_stack lib/dump_stack.c:88 [inline]
+> >  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+> >  print_address_description.constprop.0.cold+0x8d/0x336 mm/kasan/report.c:255
+> >  __kasan_report mm/kasan/report.c:442 [inline]
+> >  kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+> >  mini_qdisc_pair_swap+0x1b9/0x1f0 net/sched/sch_generic.c:1581
+> >  tcf_chain_head_change_item net/sched/cls_api.c:372 [inline]
+> >  tcf_chain0_head_change.isra.0+0xb9/0x120 net/sched/cls_api.c:386
+> >  tcf_chain_tp_insert net/sched/cls_api.c:1657 [inline]
+> >  tcf_chain_tp_insert_unique net/sched/cls_api.c:1707 [inline]
+> >  tc_new_tfilter+0x1e67/0x2350 net/sched/cls_api.c:2086
+> >  rtnetlink_rcv_msg+0x80d/0xb80 net/core/rtnetlink.c:5583
+> >  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+> >  netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
+> >  netlink_unicast+0x539/0x7e0 net/netlink/af_netlink.c:1343
+> >  netlink_sendmsg+0x904/0xe00 net/netlink/af_netlink.c:1919
+> >  sock_sendmsg_nosec net/socket.c:705 [inline]
+> >  sock_sendmsg+0xcf/0x120 net/socket.c:725
+> >  ____sys_sendmsg+0x331/0x810 net/socket.c:2413
+> >  ___sys_sendmsg+0xf3/0x170 net/socket.c:2467
+> >  __sys_sendmmsg+0x195/0x470 net/socket.c:2553
+> >  __do_sys_sendmmsg net/socket.c:2582 [inline]
+> >  __se_sys_sendmmsg net/socket.c:2579 [inline]
+> >  __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2579
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > RIP: 0033:0x7f2647172059
+> > Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> > RSP: 002b:00007f2645aa5168 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+> > RAX: ffffffffffffffda RBX: 00007f2647285100 RCX: 00007f2647172059
+> > RDX: 040000000000009f RSI: 00000000200002c0 RDI: 0000000000000006
+> > RBP: 00007f26471cc08d R08: 0000000000000000 R09: 0000000000000000
+> > R10: 9e00000000000000 R11: 0000000000000246 R12: 0000000000000000
+> > R13: 00007fffb3f7f02f R14: 00007f2645aa5300 R15: 0000000000022000
+> >  </TASK>
+> >
+> > Allocated by task 1944:
+> >  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+> >  kasan_set_track mm/kasan/common.c:45 [inline]
+> >  set_alloc_info mm/kasan/common.c:436 [inline]
+> >  ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+> >  ____kasan_kmalloc mm/kasan/common.c:474 [inline]
+> >  __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
+> >  kmalloc_node include/linux/slab.h:604 [inline]
+> >  kzalloc_node include/linux/slab.h:726 [inline]
+> >  qdisc_alloc+0xac/0xa10 net/sched/sch_generic.c:941
+> >  qdisc_create.constprop.0+0xce/0x10f0 net/sched/sch_api.c:1211
+> >  tc_modify_qdisc+0x4c5/0x1980 net/sched/sch_api.c:1660
+> >  rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5592
+> >  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+> >  netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
+> >  netlink_unicast+0x539/0x7e0 net/netlink/af_netlink.c:1343
+> >  netlink_sendmsg+0x904/0xe00 net/netlink/af_netlink.c:1919
+> >  sock_sendmsg_nosec net/socket.c:705 [inline]
+> >  sock_sendmsg+0xcf/0x120 net/socket.c:725
+> >  ____sys_sendmsg+0x331/0x810 net/socket.c:2413
+> >  ___sys_sendmsg+0xf3/0x170 net/socket.c:2467
+> >  __sys_sendmmsg+0x195/0x470 net/socket.c:2553
+> >  __do_sys_sendmmsg net/socket.c:2582 [inline]
+> >  __se_sys_sendmmsg net/socket.c:2579 [inline]
+> >  __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2579
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> >
+> > Freed by task 3609:
+> >  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+> >  kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+> >  kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+> >  ____kasan_slab_free mm/kasan/common.c:366 [inline]
+> >  ____kasan_slab_free+0x130/0x160 mm/kasan/common.c:328
+> >  kasan_slab_free include/linux/kasan.h:236 [inline]
+> >  slab_free_hook mm/slub.c:1728 [inline]
+> >  slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1754
+> >  slab_free mm/slub.c:3509 [inline]
+> >  kfree+0xcb/0x280 mm/slub.c:4562
+> >  rcu_do_batch kernel/rcu/tree.c:2527 [inline]
+> >  rcu_core+0x7b8/0x1540 kernel/rcu/tree.c:2778
+> >  __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+> >
+> > Last potentially related work creation:
+> >  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+> >  __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
+> >  __call_rcu kernel/rcu/tree.c:3026 [inline]
+> >  call_rcu+0xb1/0x740 kernel/rcu/tree.c:3106
+> >  qdisc_put_unlocked+0x6f/0x90 net/sched/sch_generic.c:1109
+> >  tcf_block_release+0x86/0x90 net/sched/cls_api.c:1238
+> >  tc_new_tfilter+0xc0d/0x2350 net/sched/cls_api.c:2148
+> >  rtnetlink_rcv_msg+0x80d/0xb80 net/core/rtnetlink.c:5583
+> >  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+> >  netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
+> >  netlink_unicast+0x539/0x7e0 net/netlink/af_netlink.c:1343
+> >  netlink_sendmsg+0x904/0xe00 net/netlink/af_netlink.c:1919
+> >  sock_sendmsg_nosec net/socket.c:705 [inline]
+> >  sock_sendmsg+0xcf/0x120 net/socket.c:725
+> >  ____sys_sendmsg+0x331/0x810 net/socket.c:2413
+> >  ___sys_sendmsg+0xf3/0x170 net/socket.c:2467
+> >  __sys_sendmmsg+0x195/0x470 net/socket.c:2553
+> >  __do_sys_sendmmsg net/socket.c:2582 [inline]
+> >  __se_sys_sendmmsg net/socket.c:2579 [inline]
+> >  __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2579
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> >
+> > The buggy address belongs to the object at ffff8880985c4800
+> >  which belongs to the cache kmalloc-1k of size 1024
+> > The buggy address is located 776 bytes inside of
+> >  1024-byte region [ffff8880985c4800, ffff8880985c4c00)
+> > The buggy address belongs to the page:
+> > page:ffffea0002617000 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x985c0
+> > head:ffffea0002617000 order:3 compound_mapcount:0 compound_pincount:0
+> > flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+> > raw: 00fff00000010200 0000000000000000 dead000000000122 ffff888010c41dc0
+> > raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
+> > page dumped because: kasan: bad access detected
+> > page_owner tracks the page as allocated
+> > page last allocated via order 3, migratetype Unmovable, gfp_mask 0x1d20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC|__GFP_HARDWALL), pid 1941, ts 1038999441284, free_ts 1033444432829
+> >  prep_new_page mm/page_alloc.c:2434 [inline]
+> >  get_page_from_freelist+0xa72/0x2f50 mm/page_alloc.c:4165
+> >  __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5389
+> >  alloc_pages+0x1aa/0x310 mm/mempolicy.c:2271
+> >  alloc_slab_page mm/slub.c:1799 [inline]
+> >  allocate_slab mm/slub.c:1944 [inline]
+> >  new_slab+0x28a/0x3b0 mm/slub.c:2004
+> >  ___slab_alloc+0x87c/0xe90 mm/slub.c:3018
+> >  __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3105
+> >  slab_alloc_node mm/slub.c:3196 [inline]
+> >  slab_alloc mm/slub.c:3238 [inline]
+> >  __kmalloc+0x2fb/0x340 mm/slub.c:4420
+> >  kmalloc include/linux/slab.h:586 [inline]
+> >  kzalloc include/linux/slab.h:715 [inline]
+> >  __register_sysctl_table+0x112/0x1090 fs/proc/proc_sysctl.c:1335
+> >  neigh_sysctl_register+0x2c8/0x5e0 net/core/neighbour.c:3787
+> >  devinet_sysctl_register+0xb1/0x230 net/ipv4/devinet.c:2618
+> >  inetdev_init+0x286/0x580 net/ipv4/devinet.c:278
+> >  inetdev_event+0xa8a/0x15d0 net/ipv4/devinet.c:1532
+> >  notifier_call_chain+0xb5/0x200 kernel/notifier.c:84
+> >  call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1919
+> >  call_netdevice_notifiers_extack net/core/dev.c:1931 [inline]
+> >  call_netdevice_notifiers net/core/dev.c:1945 [inline]
+> >  register_netdevice+0x1073/0x1500 net/core/dev.c:9698
+> >  veth_newlink+0x59c/0xa90 drivers/net/veth.c:1722
+> > page last free stack trace:
+> >  reset_page_owner include/linux/page_owner.h:24 [inline]
+> >  free_pages_prepare mm/page_alloc.c:1352 [inline]
+> >  free_pcp_prepare+0x374/0x870 mm/page_alloc.c:1404
+> >  free_unref_page_prepare mm/page_alloc.c:3325 [inline]
+> >  free_unref_page+0x19/0x690 mm/page_alloc.c:3404
+> >  release_pages+0x748/0x1220 mm/swap.c:956
+> >  tlb_batch_pages_flush mm/mmu_gather.c:50 [inline]
+> >  tlb_flush_mmu_free mm/mmu_gather.c:243 [inline]
+> >  tlb_flush_mmu+0xe9/0x6b0 mm/mmu_gather.c:250
+> >  zap_pte_range mm/memory.c:1441 [inline]
+> >  zap_pmd_range mm/memory.c:1490 [inline]
+> >  zap_pud_range mm/memory.c:1519 [inline]
+> >  zap_p4d_range mm/memory.c:1540 [inline]
+> >  unmap_page_range+0x1d1d/0x2a30 mm/memory.c:1561
+> >  unmap_single_vma+0x198/0x310 mm/memory.c:1606
+> >  unmap_vmas+0x16b/0x2f0 mm/memory.c:1638
+> >  exit_mmap+0x201/0x670 mm/mmap.c:3178
+> >  __mmput+0x122/0x4b0 kernel/fork.c:1114
+> >  mmput+0x56/0x60 kernel/fork.c:1135
+> >  exit_mm kernel/exit.c:507 [inline]
+> >  do_exit+0xa3c/0x2a30 kernel/exit.c:793
+> >  do_group_exit+0xd2/0x2f0 kernel/exit.c:935
+> >  __do_sys_exit_group kernel/exit.c:946 [inline]
+> >  __se_sys_exit_group kernel/exit.c:944 [inline]
+> >  __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:944
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> >
+> > Memory state around the buggy address:
+> >  ffff8880985c4a00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> >  ffff8880985c4a80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> >>ffff8880985c4b00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> >                       ^
+> >  ffff8880985c4b80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> >  ffff8880985c4c00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> >
+> > Fixes: 470502de5bdb ("net: sched: unlock rules update API")
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Cc: Vlad Buslov <vladbu@mellanox.com>
+> > Cc: Jiri Pirko <jiri@mellanox.com>
+> > Cc: Cong Wang <xiyou.wangcong@gmail.com>
+> > Reported-by: syzbot <syzkaller@googlegroups.com>
+> > ---
+> >  net/sched/cls_api.c | 11 +++++++----
+> >  1 file changed, 7 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+> > index d4e27c679123f0f62d033c3ad0eeda838e83cb49..5f0f346b576fc0f52a5b8de21758af5425285c2c 100644
+> > --- a/net/sched/cls_api.c
+> > +++ b/net/sched/cls_api.c
+> > @@ -1945,9 +1945,9 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+> >       bool prio_allocate;
+> >       u32 parent;
+> >       u32 chain_index;
+> > -     struct Qdisc *q = NULL;
+> > +     struct Qdisc *q;
+> >       struct tcf_chain_info chain_info;
+> > -     struct tcf_chain *chain = NULL;
+> > +     struct tcf_chain *chain;
+> >       struct tcf_block *block;
+> >       struct tcf_proto *tp;
+> >       unsigned long cl;
+> > @@ -1976,6 +1976,8 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+> >       tp = NULL;
+> >       cl = 0;
+> >       block = NULL;
+> > +     q = NULL;
 >
-> Maybe the rule should go like this: any new driver vendor defaults to n, and 
-> existing ones remain set to y, until we deprecate doing that and switching 
-> them all off to n by 5.18?
+> First of all, thanks for fixing this!
+> Maybe it would be better to change __tcf_qdisc_find() to always set q to
+> NULL at the start instead of fixing all users. WDYT?
 
-Forgive my ignorance, but isn't it a regression if things quit working
-even if it's just a configuration change?
+I guess that would be another way to fix the issue.
 
-From a user perspective I like having everything turned on initially so
-it just works. Pruning things down is a lot easier than trying to figure
-out what all to turn on. Especially in graphics.
+But the patch seemed a bit more invasive and not really to review.
 
--- 
-Hisashi T Fujinaka - htodd@twofifty.com
+
+>
+> > +     chain = NULL;
+> >       flags = 0;
+> >
+> >       if (prio == 0) {
+> > @@ -2798,8 +2800,8 @@ static int tc_ctl_chain(struct sk_buff *skb, struct nlmsghdr *n,
+> >       struct tcmsg *t;
+> >       u32 parent;
+> >       u32 chain_index;
+> > -     struct Qdisc *q = NULL;
+> > -     struct tcf_chain *chain = NULL;
+> > +     struct Qdisc *q;
+> > +     struct tcf_chain *chain;
+>
+> What is the code path that can reuse old chain value on replay here or
+> in tcf_new_tfilter()? I read the code several times and didn't get it.
+
+As explained in the changelog, it is done for consistency with the
+other function
+doing this dangerous replay stuff.
+
+People are very often copying/pasting code.
+
+
+>
+> >       struct tcf_block *block;
+> >       unsigned long cl;
+> >       int err;
+> > @@ -2809,6 +2811,7 @@ static int tc_ctl_chain(struct sk_buff *skb, struct nlmsghdr *n,
+> >               return -EPERM;
+> >
+> >  replay:
+> > +     q = NULL;
+> >       err = nlmsg_parse_deprecated(n, sizeof(*t), tca, TCA_MAX,
+> >                                    rtm_tca_policy, extack);
+> >       if (err < 0)
+>
