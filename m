@@ -2,123 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9E6D4A3ECD
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 09:44:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDF1A4A3ED3
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 09:47:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344458AbiAaIod (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 03:44:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
+        id S1343991AbiAaIrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 03:47:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232241AbiAaIod (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 03:44:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA9BC061714;
-        Mon, 31 Jan 2022 00:44:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8319CB829D4;
-        Mon, 31 Jan 2022 08:44:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D526DC340E8;
-        Mon, 31 Jan 2022 08:44:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643618670;
-        bh=saJIIIE6VKH0mPHcJf9BDEM/BezCCYAr1aM541i3RVY=;
-        h=In-Reply-To:References:From:To:Cc:Subject:Date:From;
-        b=cGHPRpQLR7DxXwRgYOsUDBy8VcoMeIZ3r0XZCRYuINs8wnBtiuwPw8qrIwCryKQYW
-         wN1q/OMpizzEpAqwOd3ztPVlTl7pgGjF6K+fFgKvWoD3T7VYz+yofZ2tOKnbnjvEZa
-         NuuHx+v33K7DW6s1pf9oXzhO1oyUIQyb0whvhNWyOCr4REuNYX7/VnD3AOT1eejhbl
-         8yqIXjyX6XaoWbI/Gdn3eYvfkRl7yTmLQhTs6FoDUHkHodSWjSDq8Y5W/Ipx6VEfnI
-         RU4bKoFtucW1M8zwphRO3INT2iAdL8RayOwD54x+12SkoWLYbj8sPgSq2RNUXc8ynk
-         HSkVUE7WQlc8w==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231689AbiAaIrh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 03:47:37 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F377C061714
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 00:47:37 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id e2so23947548wra.2
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 00:47:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=t7jPwPhPro6Iv9HSiNOKR1rT0o1K1FCdRP2oY2jpf+w=;
+        b=QzZYqxiaPC9Nq5ye22er2udgF5fExREUxs03Oa7WhWa6T3IpYz+t8negIwYhl+jGHa
+         CgdYaW+6E75ONwCsuBQZMdPmo8762DvgwHsw8SGZ9ywzd0fQedjjAtVEZrI77yxMZhbq
+         4kZAR8qrJmQ2GmQ3iqLVH9jgpMX072Clf65RoR/S/diKjC/XHFDc5ZBR7ad2bARR7vnv
+         FQV+AnulBMJz0XfAWygjxA3XSv5YnwRhjn/Bl+NggIK97vEu6PXPUoN8nzhp6hs5unP5
+         hBSH8uwTk13nzmkUZCwsPV9VJ3XXmCNpySljO21CZHxJxBwdwh9xtSjnfyAwemnt22n6
+         Z3Zw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=t7jPwPhPro6Iv9HSiNOKR1rT0o1K1FCdRP2oY2jpf+w=;
+        b=37b9zwDJ0rybNWQhx34Gp6n9ypQOEcm3wqShEtdwDieYvNwqolI3ubpZwvInXXSiJ4
+         szcGQWTrQVomok8C1Ld17D5YSS/FhEizUykOidNS37yW7tflIaPRk0b9xqirkIJ67teh
+         PCWqBE2p9Ii8K+jmZ+9REwlieVrugqVmK4MMCXJeNJVSJdEW1xO4X1E07AKw5eZ+ZgZk
+         FQSL/W29Ktja9YgKfqPk1NH3itIVFY1XdFOLeVucMg7CiEXJYpkyTyp2wceHg3tWt8g2
+         yjvWaT6ncoe2JHdY4oB24HC/078bQfvR2rWnEVOrnJbaqdBUKsyvx0Qah/QkxOzh0dBa
+         KOYQ==
+X-Gm-Message-State: AOAM530M1P7MZC0tQO4QGDoCZqrTZbTIrYYmiIjqqEDtt4I01bMryJnL
+        ngMsZF2WO7AVb1tXGw9T7aMC1g==
+X-Google-Smtp-Source: ABdhPJyyc+x7qpUHDAy6jWDjoouaxef+ekdgY+9XelsF9wARb21PUz7MLztASeLFL5087U3C0mFR5A==
+X-Received: by 2002:a05:6000:1848:: with SMTP id c8mr10310760wri.241.1643618855967;
+        Mon, 31 Jan 2022 00:47:35 -0800 (PST)
+Received: from google.com (cpc106310-bagu17-2-0-cust853.1-3.cable.virginm.net. [86.15.223.86])
+        by smtp.gmail.com with ESMTPSA id a14sm13421217wri.25.2022.01.31.00.47.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jan 2022 00:47:35 -0800 (PST)
+Date:   Mon, 31 Jan 2022 08:47:33 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        katie.morris@in-advantage.com
+Subject: Re: [RFC v6 net-next 5/9] mfd: add interface to check whether a
+ device is mfd
+Message-ID: <YfeiJVmAbLa497Ht@google.com>
+References: <20220129220221.2823127-1-colin.foster@in-advantage.com>
+ <20220129220221.2823127-6-colin.foster@in-advantage.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <1643542141-28956-1-git-send-email-raeds@nvidia.com>
-References: <1643542141-28956-1-git-send-email-raeds@nvidia.com>
-From:   Antoine Tenart <atenart@kernel.org>
-To:     Raed Salem <raeds@nvidia.com>, kuba@kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lior Nahmanson <liorna@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>
-Subject: Re: [PATCH net] net: macsec: Fix offload support for NETDEV_UNREGISTER event
-Message-ID: <164361866706.4133.9367433003115932230@kwain>
-Date:   Mon, 31 Jan 2022 09:44:27 +0100
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220129220221.2823127-6-colin.foster@in-advantage.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Raed Salem (2022-01-30 12:29:01)
-> From: Lior Nahmanson <liorna@nvidia.com>
->=20
-> Current macsec netdev notify handler handles NETDEV_UNREGISTER event by
-> releasing relevant SW resources only, this causes resources leak in case
-> of macsec HW offload, as the underlay driver was not notified to clean
-> it's macsec offload resources.
->=20
-> Fix by calling the underlay driver to clean it's relevant resources
-> by moving offload handling from macsec_dellink() to macsec_common_dellink=
-()
-> when handling NETDEV_UNREGISTER event.
->=20
-> Fixes: 3cf3227a21d1 ("net: macsec: hardware offloading infrastructure")
-> Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
-> Reviewed-by: Raed Salem <raeds@nvidia.com>
-> Signed-off-by: Raed Salem <raeds@nvidia.com>
+On Sat, 29 Jan 2022, Colin Foster wrote:
 
-Reviewed-by: Antoine Tenart <atenart@kernel.org>
-
-Thanks!
-Antoine
-
+> Some drivers will need to create regmaps differently based on whether they
+> are a child of an MFD or a standalone device. An example of this would be
+> if a regmap were directly memory-mapped or an external bus. In the
+> memory-mapped case a call to devm_regmap_init_mmio would return the correct
+> regmap. In the case of an MFD, the regmap would need to be requested from
+> the parent device.
+> 
+> This addition allows the driver to correctly reason about these scenarios.
+> 
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 > ---
->  drivers/net/macsec.c | 24 ++++++++++++------------
->  1 file changed, 12 insertions(+), 12 deletions(-)
->=20
-> diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-> index 16aa3a4..33ff33c 100644
-> --- a/drivers/net/macsec.c
-> +++ b/drivers/net/macsec.c
-> @@ -3870,6 +3870,18 @@ static void macsec_common_dellink(struct net_devic=
-e *dev, struct list_head *head
->         struct macsec_dev *macsec =3D macsec_priv(dev);
->         struct net_device *real_dev =3D macsec->real_dev;
-> =20
-> +       /* If h/w offloading is available, propagate to the device */
-> +       if (macsec_is_offloaded(macsec)) {
-> +               const struct macsec_ops *ops;
-> +               struct macsec_context ctx;
+>  drivers/mfd/mfd-core.c   |  6 ++++++
+>  include/linux/mfd/core.h | 10 ++++++++++
+>  2 files changed, 16 insertions(+)
+> 
+> diff --git a/drivers/mfd/mfd-core.c b/drivers/mfd/mfd-core.c
+> index 684a011a6396..2ba6a692499b 100644
+> --- a/drivers/mfd/mfd-core.c
+> +++ b/drivers/mfd/mfd-core.c
+> @@ -33,6 +33,12 @@ static struct device_type mfd_dev_type = {
+>  	.name	= "mfd_device",
+>  };
+>  
+> +int device_is_mfd(struct platform_device *pdev)
+> +{
+> +	return (!strcmp(pdev->dev.type->name, mfd_dev_type.name));
+> +}
+> +EXPORT_SYMBOL(device_is_mfd);
+
+As I said before, I really don't want MFDness leaking out into other
+parts of the kernel.  Please find another way to differentiate between
+devices registered via the MFD API and by other means.
+
+I'm happy to help here.
+
+How else could these devices be enumerated? 
+
+>  int mfd_cell_enable(struct platform_device *pdev)
+>  {
+>  	const struct mfd_cell *cell = mfd_get_cell(pdev);
+> diff --git a/include/linux/mfd/core.h b/include/linux/mfd/core.h
+> index 0bc7cba798a3..c0719436b652 100644
+> --- a/include/linux/mfd/core.h
+> +++ b/include/linux/mfd/core.h
+> @@ -10,6 +10,7 @@
+>  #ifndef MFD_CORE_H
+>  #define MFD_CORE_H
+>  
+> +#include <generated/autoconf.h>
+>  #include <linux/platform_device.h>
+>  
+>  #define MFD_RES_SIZE(arr) (sizeof(arr) / sizeof(struct resource))
+> @@ -123,6 +124,15 @@ struct mfd_cell {
+>  	int			num_parent_supplies;
+>  };
+>  
+> +#ifdef CONFIG_MFD_CORE
+> +int device_is_mfd(struct platform_device *pdev);
+> +#else
+> +static inline int device_is_mfd(struct platform_device *pdev)
+> +{
+> +	return 0;
+> +}
+> +#endif
 > +
-> +               ops =3D macsec_get_ops(netdev_priv(dev), &ctx);
-> +               if (ops) {
-> +                       ctx.secy =3D &macsec->secy;
-> +                       macsec_offload(ops->mdo_del_secy, &ctx);
-> +               }
-> +       }
-> +
->         unregister_netdevice_queue(dev, head);
->         list_del_rcu(&macsec->secys);
->         macsec_del_dev(macsec);
-> @@ -3884,18 +3896,6 @@ static void macsec_dellink(struct net_device *dev,=
- struct list_head *head)
->         struct net_device *real_dev =3D macsec->real_dev;
->         struct macsec_rxh_data *rxd =3D macsec_data_rtnl(real_dev);
-> =20
-> -       /* If h/w offloading is available, propagate to the device */
-> -       if (macsec_is_offloaded(macsec)) {
-> -               const struct macsec_ops *ops;
-> -               struct macsec_context ctx;
-> -
-> -               ops =3D macsec_get_ops(netdev_priv(dev), &ctx);
-> -               if (ops) {
-> -                       ctx.secy =3D &macsec->secy;
-> -                       macsec_offload(ops->mdo_del_secy, &ctx);
-> -               }
-> -       }
-> -
->         macsec_common_dellink(dev, head);
-> =20
->         if (list_empty(&rxd->secys)) {
-> --=20
-> 1.8.3.1
->=20
+>  /*
+>   * Convenience functions for clients using shared cells.  Refcounting
+>   * happens automatically, with the cell's enable/disable callbacks
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
