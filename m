@@ -2,322 +2,1190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE9AC4A4D06
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 18:20:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B6C64A4D23
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 18:25:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380881AbiAaRUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 12:20:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48410 "EHLO
+        id S1380854AbiAaRZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 12:25:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380882AbiAaRUX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 12:20:23 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A8FC06173D
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 09:20:23 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id x11so12985572plg.6
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 09:20:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w0TPFtK+EEskg/SiMgCdWayTx1sHddWp0fL2/9fKbNY=;
-        b=muUGphM7h+TgokZNae0l2OrwT35E5gJ2zff/CKc/hOdlErgtvTP1FZgwJpeD3CBAR2
-         ZHRFnSeTDzWgeeQUDhgVdviXAkINtrups+kT/XB4jqqzhwRoGAutvQRlApl7rELvWHnZ
-         p+we04xGTc3Olf+v5rzUvUa18OE58xpaZWRa7txPGv8J/ZOA+r3q75N4y6rwDwX+a3p8
-         4USBIBR0EET9+wAy6o9Ic8KtELsSQsPkAff1gdz8w5kCEDGKPs92lGZTB2TCOnA7Kdxg
-         8e70EHo202oX3pEv67Sathdfq2h9eeBjvrHjnabBg5HtTHOidaf1GsKHvM9vjOQaf+gK
-         rneQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w0TPFtK+EEskg/SiMgCdWayTx1sHddWp0fL2/9fKbNY=;
-        b=hb8gW1qpcCYxYMSgRQ2edxbwFvvU9H76Sm9o21PmxaP/Ozf/w6otyZ2gK4YbDzPZ+w
-         /3mC06h8irUxotyIqJg0M63GDk/5h7PXEEjxgnOpXGU7fFUNNR99b++A/I+JVRvq0dsr
-         FM2kAscl7DU4hhINrXhVwIJjk6lh1Bo5TRwRyGICS4Hr+/uGotxtBAAmIg7bxwC4pQqs
-         J1Q7a9ZCe4gcYbyWxmP3dIobnY0ukg3rKhMqGRKnPY/rhE5MLcT0JW9ZM3gpu+zmbKIi
-         4BApHG4M4H3DncJSZwGlNOVOzbDK++P6S4o/nspwvk/Iz8HumbxdDeT8jEDBKZaCbRi/
-         fnYQ==
-X-Gm-Message-State: AOAM533UvjRecu+5K7Z5IdzrhhbHWWvVj30nugMlO3bwrC2IBTaYWfGm
-        i/eOu1a+bq1Cf/mHUsDyX8s=
-X-Google-Smtp-Source: ABdhPJwvksslTeiKiNggxCpl4TV9qdTaFFn+04abxb9pJe8nWF5LEySg43mFeEUbiaRVp9CAP2/zlQ==
-X-Received: by 2002:a17:90b:1983:: with SMTP id mv3mr25742190pjb.222.1643649622722;
-        Mon, 31 Jan 2022 09:20:22 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4c2d:864b:dd30:3c5e])
-        by smtp.gmail.com with ESMTPSA id u33sm19520286pfg.195.2022.01.31.09.20.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 09:20:22 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S1380913AbiAaRZY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 12:25:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34699C06174A;
+        Mon, 31 Jan 2022 09:25:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B925660FE5;
+        Mon, 31 Jan 2022 17:25:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E931C340E8;
+        Mon, 31 Jan 2022 17:25:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643649919;
+        bh=XSduWaK481QLOHIWwc3CoeiVv92KkSUihbEuADOZqQA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=TA/nuxt77ACTVa2Vmbl9pwM3b1YMULE82qg6XvniluNqw59+Z51PGrqHHkXID++nI
+         QAh6KO2mKJBkMViv8RsGIqXjkhs2U6RvPQwQtYb2lSw+eiXnZBGLU+rKpERzDIu1yn
+         H55aLdRu0CJtI0uaiap8wGcw1aRK+OxwiD94W6hiTAexRdM/gyA5YgjElDWpNY6N0V
+         eD2Zc9FaNcVBZuK+hNkh+vPy0jRlYtgK/U+au4SpLGn/m4w0OjCb8e9tKUs0/p+jgt
+         iIcZyCZ8t8w6TXR8+w7dyzQ7lxQIXNk5d3mXchmPlTaQNcQYbfnXltjccCDYZRX7e3
+         7PRC0YDHErmNA==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] net: sched: fix use-after-free in tc_new_tfilter()
-Date:   Mon, 31 Jan 2022 09:20:18 -0800
-Message-Id: <20220131172018.3704490-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
+Cc:     Mark Einon <mark.einon@gmail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Shay Agroskin <shayagr@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        David Arinzon <darinzon@amazon.com>,
+        Noam Dagan <ndagan@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jeroen de Borst <jeroendb@google.com>,
+        Catherine Sullivan <csully@google.com>,
+        David Awogbemila <awogbemila@google.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "K . Y . Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Jon Mason <jdmason@kudzu.us>,
+        Simon Horman <simon.horman@corigine.com>,
+        Rain River <rain.1986.08.12@gmail.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>,
+        Shannon Nelson <snelson@pensando.io>, drivers@pensando.io,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Rob Herring <robh@kernel.org>, l.stelmach@samsung.com,
+        rafal@milecki.pl, Florian Fainelli <f.fainelli@gmail.com>,
+        Edwin Peer <edwin.peer@broadcom.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Joel Stanley <joel@jms.id.au>, Slark Xiao <slark_xiao@163.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Liming Sun <limings@nvidia.com>,
+        David Thompson <davthompson@nvidia.com>,
+        Asmaa Mnebhi <asmaa@nvidia.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>,
+        Omkar Kulkarni <okulkarni@marvell.com>,
+        Shai Malin <smalin@marvell.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Gary Guo <gary@garyguo.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, intel-wired-lan@lists.osuosl.org,
+        linux-hyperv@vger.kernel.org, oss-drivers@corigine.com,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: [PATCH net-next] net: kbuild: Don't default net vendor configs to y
+Date:   Mon, 31 Jan 2022 09:24:50 -0800
+Message-Id: <20220131172450.4905-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Whenever tc_new_tfilter() jumps back to replay: label,
-we need to make sure @q and @chain local variables are cleared again,
-or risk use-after-free as in [1]
+NET_VENDOR_XYZ were defaulted to 'y' for no technical reason.
 
-For consistency, apply the same fix in tc_ctl_chain()
+Since all drivers belonging to a vendor are supposed to default to 'n',
+defaulting all vendors to 'n' shouldn't be an issue, and aligns well
+with the 'no new drivers' by default mentality.
 
-BUG: KASAN: use-after-free in mini_qdisc_pair_swap+0x1b9/0x1f0 net/sched/sch_generic.c:1581
-Write of size 8 at addr ffff8880985c4b08 by task syz-executor.4/1945
-
-CPU: 0 PID: 1945 Comm: syz-executor.4 Not tainted 5.17.0-rc1-syzkaller-00495-gff58831fa02d #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0x8d/0x336 mm/kasan/report.c:255
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- mini_qdisc_pair_swap+0x1b9/0x1f0 net/sched/sch_generic.c:1581
- tcf_chain_head_change_item net/sched/cls_api.c:372 [inline]
- tcf_chain0_head_change.isra.0+0xb9/0x120 net/sched/cls_api.c:386
- tcf_chain_tp_insert net/sched/cls_api.c:1657 [inline]
- tcf_chain_tp_insert_unique net/sched/cls_api.c:1707 [inline]
- tc_new_tfilter+0x1e67/0x2350 net/sched/cls_api.c:2086
- rtnetlink_rcv_msg+0x80d/0xb80 net/core/rtnetlink.c:5583
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
- netlink_unicast+0x539/0x7e0 net/netlink/af_netlink.c:1343
- netlink_sendmsg+0x904/0xe00 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:725
- ____sys_sendmsg+0x331/0x810 net/socket.c:2413
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2467
- __sys_sendmmsg+0x195/0x470 net/socket.c:2553
- __do_sys_sendmmsg net/socket.c:2582 [inline]
- __se_sys_sendmmsg net/socket.c:2579 [inline]
- __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2579
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f2647172059
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f2645aa5168 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 00007f2647285100 RCX: 00007f2647172059
-RDX: 040000000000009f RSI: 00000000200002c0 RDI: 0000000000000006
-RBP: 00007f26471cc08d R08: 0000000000000000 R09: 0000000000000000
-R10: 9e00000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fffb3f7f02f R14: 00007f2645aa5300 R15: 0000000000022000
- </TASK>
-
-Allocated by task 1944:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:45 [inline]
- set_alloc_info mm/kasan/common.c:436 [inline]
- ____kasan_kmalloc mm/kasan/common.c:515 [inline]
- ____kasan_kmalloc mm/kasan/common.c:474 [inline]
- __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
- kmalloc_node include/linux/slab.h:604 [inline]
- kzalloc_node include/linux/slab.h:726 [inline]
- qdisc_alloc+0xac/0xa10 net/sched/sch_generic.c:941
- qdisc_create.constprop.0+0xce/0x10f0 net/sched/sch_api.c:1211
- tc_modify_qdisc+0x4c5/0x1980 net/sched/sch_api.c:1660
- rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5592
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
- netlink_unicast+0x539/0x7e0 net/netlink/af_netlink.c:1343
- netlink_sendmsg+0x904/0xe00 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:725
- ____sys_sendmsg+0x331/0x810 net/socket.c:2413
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2467
- __sys_sendmmsg+0x195/0x470 net/socket.c:2553
- __do_sys_sendmmsg net/socket.c:2582 [inline]
- __se_sys_sendmmsg net/socket.c:2579 [inline]
- __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2579
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Freed by task 3609:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track+0x21/0x30 mm/kasan/common.c:45
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
- ____kasan_slab_free mm/kasan/common.c:366 [inline]
- ____kasan_slab_free+0x130/0x160 mm/kasan/common.c:328
- kasan_slab_free include/linux/kasan.h:236 [inline]
- slab_free_hook mm/slub.c:1728 [inline]
- slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1754
- slab_free mm/slub.c:3509 [inline]
- kfree+0xcb/0x280 mm/slub.c:4562
- rcu_do_batch kernel/rcu/tree.c:2527 [inline]
- rcu_core+0x7b8/0x1540 kernel/rcu/tree.c:2778
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
-
-Last potentially related work creation:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
- __call_rcu kernel/rcu/tree.c:3026 [inline]
- call_rcu+0xb1/0x740 kernel/rcu/tree.c:3106
- qdisc_put_unlocked+0x6f/0x90 net/sched/sch_generic.c:1109
- tcf_block_release+0x86/0x90 net/sched/cls_api.c:1238
- tc_new_tfilter+0xc0d/0x2350 net/sched/cls_api.c:2148
- rtnetlink_rcv_msg+0x80d/0xb80 net/core/rtnetlink.c:5583
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
- netlink_unicast+0x539/0x7e0 net/netlink/af_netlink.c:1343
- netlink_sendmsg+0x904/0xe00 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:725
- ____sys_sendmsg+0x331/0x810 net/socket.c:2413
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2467
- __sys_sendmmsg+0x195/0x470 net/socket.c:2553
- __do_sys_sendmmsg net/socket.c:2582 [inline]
- __se_sys_sendmmsg net/socket.c:2579 [inline]
- __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2579
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The buggy address belongs to the object at ffff8880985c4800
- which belongs to the cache kmalloc-1k of size 1024
-The buggy address is located 776 bytes inside of
- 1024-byte region [ffff8880985c4800, ffff8880985c4c00)
-The buggy address belongs to the page:
-page:ffffea0002617000 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x985c0
-head:ffffea0002617000 order:3 compound_mapcount:0 compound_pincount:0
-flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000010200 0000000000000000 dead000000000122 ffff888010c41dc0
-raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 3, migratetype Unmovable, gfp_mask 0x1d20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC|__GFP_HARDWALL), pid 1941, ts 1038999441284, free_ts 1033444432829
- prep_new_page mm/page_alloc.c:2434 [inline]
- get_page_from_freelist+0xa72/0x2f50 mm/page_alloc.c:4165
- __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5389
- alloc_pages+0x1aa/0x310 mm/mempolicy.c:2271
- alloc_slab_page mm/slub.c:1799 [inline]
- allocate_slab mm/slub.c:1944 [inline]
- new_slab+0x28a/0x3b0 mm/slub.c:2004
- ___slab_alloc+0x87c/0xe90 mm/slub.c:3018
- __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3105
- slab_alloc_node mm/slub.c:3196 [inline]
- slab_alloc mm/slub.c:3238 [inline]
- __kmalloc+0x2fb/0x340 mm/slub.c:4420
- kmalloc include/linux/slab.h:586 [inline]
- kzalloc include/linux/slab.h:715 [inline]
- __register_sysctl_table+0x112/0x1090 fs/proc/proc_sysctl.c:1335
- neigh_sysctl_register+0x2c8/0x5e0 net/core/neighbour.c:3787
- devinet_sysctl_register+0xb1/0x230 net/ipv4/devinet.c:2618
- inetdev_init+0x286/0x580 net/ipv4/devinet.c:278
- inetdev_event+0xa8a/0x15d0 net/ipv4/devinet.c:1532
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:84
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1919
- call_netdevice_notifiers_extack net/core/dev.c:1931 [inline]
- call_netdevice_notifiers net/core/dev.c:1945 [inline]
- register_netdevice+0x1073/0x1500 net/core/dev.c:9698
- veth_newlink+0x59c/0xa90 drivers/net/veth.c:1722
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1352 [inline]
- free_pcp_prepare+0x374/0x870 mm/page_alloc.c:1404
- free_unref_page_prepare mm/page_alloc.c:3325 [inline]
- free_unref_page+0x19/0x690 mm/page_alloc.c:3404
- release_pages+0x748/0x1220 mm/swap.c:956
- tlb_batch_pages_flush mm/mmu_gather.c:50 [inline]
- tlb_flush_mmu_free mm/mmu_gather.c:243 [inline]
- tlb_flush_mmu+0xe9/0x6b0 mm/mmu_gather.c:250
- zap_pte_range mm/memory.c:1441 [inline]
- zap_pmd_range mm/memory.c:1490 [inline]
- zap_pud_range mm/memory.c:1519 [inline]
- zap_p4d_range mm/memory.c:1540 [inline]
- unmap_page_range+0x1d1d/0x2a30 mm/memory.c:1561
- unmap_single_vma+0x198/0x310 mm/memory.c:1606
- unmap_vmas+0x16b/0x2f0 mm/memory.c:1638
- exit_mmap+0x201/0x670 mm/mmap.c:3178
- __mmput+0x122/0x4b0 kernel/fork.c:1114
- mmput+0x56/0x60 kernel/fork.c:1135
- exit_mm kernel/exit.c:507 [inline]
- do_exit+0xa3c/0x2a30 kernel/exit.c:793
- do_group_exit+0xd2/0x2f0 kernel/exit.c:935
- __do_sys_exit_group kernel/exit.c:946 [inline]
- __se_sys_exit_group kernel/exit.c:944 [inline]
- __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:944
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Memory state around the buggy address:
- ffff8880985c4a00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880985c4a80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff8880985c4b00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                      ^
- ffff8880985c4b80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880985c4c00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-
-Fixes: 470502de5bdb ("net: sched: unlock rules update API")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Vlad Buslov <vladbu@mellanox.com>
-Cc: Jiri Pirko <jiri@mellanox.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- net/sched/cls_api.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/3com/Kconfig          | 1 -
+ drivers/net/ethernet/8390/Kconfig          | 1 -
+ drivers/net/ethernet/adaptec/Kconfig       | 1 -
+ drivers/net/ethernet/agere/Kconfig         | 1 -
+ drivers/net/ethernet/alacritech/Kconfig    | 1 -
+ drivers/net/ethernet/allwinner/Kconfig     | 1 -
+ drivers/net/ethernet/alteon/Kconfig        | 1 -
+ drivers/net/ethernet/amazon/Kconfig        | 1 -
+ drivers/net/ethernet/amd/Kconfig           | 1 -
+ drivers/net/ethernet/apple/Kconfig         | 1 -
+ drivers/net/ethernet/aquantia/Kconfig      | 1 -
+ drivers/net/ethernet/arc/Kconfig           | 1 -
+ drivers/net/ethernet/asix/Kconfig          | 1 -
+ drivers/net/ethernet/atheros/Kconfig       | 1 -
+ drivers/net/ethernet/broadcom/Kconfig      | 1 -
+ drivers/net/ethernet/brocade/Kconfig       | 1 -
+ drivers/net/ethernet/cadence/Kconfig       | 1 -
+ drivers/net/ethernet/cavium/Kconfig        | 1 -
+ drivers/net/ethernet/chelsio/Kconfig       | 1 -
+ drivers/net/ethernet/cirrus/Kconfig        | 1 -
+ drivers/net/ethernet/cisco/Kconfig         | 1 -
+ drivers/net/ethernet/cortina/Kconfig       | 1 -
+ drivers/net/ethernet/dec/Kconfig           | 1 -
+ drivers/net/ethernet/dlink/Kconfig         | 1 -
+ drivers/net/ethernet/emulex/Kconfig        | 1 -
+ drivers/net/ethernet/engleder/Kconfig      | 1 -
+ drivers/net/ethernet/ezchip/Kconfig        | 1 -
+ drivers/net/ethernet/faraday/Kconfig       | 1 -
+ drivers/net/ethernet/freescale/Kconfig     | 1 -
+ drivers/net/ethernet/fujitsu/Kconfig       | 1 -
+ drivers/net/ethernet/google/Kconfig        | 1 -
+ drivers/net/ethernet/hisilicon/Kconfig     | 1 -
+ drivers/net/ethernet/huawei/Kconfig        | 1 -
+ drivers/net/ethernet/i825xx/Kconfig        | 1 -
+ drivers/net/ethernet/ibm/Kconfig           | 1 -
+ drivers/net/ethernet/intel/Kconfig         | 1 -
+ drivers/net/ethernet/litex/Kconfig         | 1 -
+ drivers/net/ethernet/marvell/Kconfig       | 1 -
+ drivers/net/ethernet/mellanox/Kconfig      | 1 -
+ drivers/net/ethernet/micrel/Kconfig        | 1 -
+ drivers/net/ethernet/microchip/Kconfig     | 1 -
+ drivers/net/ethernet/microsoft/Kconfig     | 1 -
+ drivers/net/ethernet/moxa/Kconfig          | 1 -
+ drivers/net/ethernet/mscc/Kconfig          | 1 -
+ drivers/net/ethernet/myricom/Kconfig       | 1 -
+ drivers/net/ethernet/natsemi/Kconfig       | 1 -
+ drivers/net/ethernet/neterion/Kconfig      | 1 -
+ drivers/net/ethernet/netronome/Kconfig     | 1 -
+ drivers/net/ethernet/ni/Kconfig            | 1 -
+ drivers/net/ethernet/nvidia/Kconfig        | 1 -
+ drivers/net/ethernet/oki-semi/Kconfig      | 1 -
+ drivers/net/ethernet/packetengines/Kconfig | 1 -
+ drivers/net/ethernet/pasemi/Kconfig        | 1 -
+ drivers/net/ethernet/pensando/Kconfig      | 1 -
+ drivers/net/ethernet/qlogic/Kconfig        | 1 -
+ drivers/net/ethernet/qualcomm/Kconfig      | 1 -
+ drivers/net/ethernet/rdc/Kconfig           | 1 -
+ drivers/net/ethernet/realtek/Kconfig       | 1 -
+ drivers/net/ethernet/renesas/Kconfig       | 1 -
+ drivers/net/ethernet/rocker/Kconfig        | 1 -
+ drivers/net/ethernet/samsung/Kconfig       | 1 -
+ drivers/net/ethernet/seeq/Kconfig          | 1 -
+ drivers/net/ethernet/sfc/Kconfig           | 1 -
+ drivers/net/ethernet/sgi/Kconfig           | 1 -
+ drivers/net/ethernet/silan/Kconfig         | 1 -
+ drivers/net/ethernet/sis/Kconfig           | 1 -
+ drivers/net/ethernet/smsc/Kconfig          | 1 -
+ drivers/net/ethernet/socionext/Kconfig     | 1 -
+ drivers/net/ethernet/stmicro/Kconfig       | 1 -
+ drivers/net/ethernet/sun/Kconfig           | 1 -
+ drivers/net/ethernet/synopsys/Kconfig      | 1 -
+ drivers/net/ethernet/tehuti/Kconfig        | 1 -
+ drivers/net/ethernet/ti/Kconfig            | 1 -
+ drivers/net/ethernet/toshiba/Kconfig       | 1 -
+ drivers/net/ethernet/tundra/Kconfig        | 1 -
+ drivers/net/ethernet/vertexcom/Kconfig     | 1 -
+ drivers/net/ethernet/via/Kconfig           | 1 -
+ drivers/net/ethernet/wiznet/Kconfig        | 1 -
+ drivers/net/ethernet/xilinx/Kconfig        | 1 -
+ drivers/net/ethernet/xircom/Kconfig        | 1 -
+ drivers/net/ethernet/xscale/Kconfig        | 1 -
+ 81 files changed, 81 deletions(-)
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index d4e27c679123f0f62d033c3ad0eeda838e83cb49..5f0f346b576fc0f52a5b8de21758af5425285c2c 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -1945,9 +1945,9 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
- 	bool prio_allocate;
- 	u32 parent;
- 	u32 chain_index;
--	struct Qdisc *q = NULL;
-+	struct Qdisc *q;
- 	struct tcf_chain_info chain_info;
--	struct tcf_chain *chain = NULL;
-+	struct tcf_chain *chain;
- 	struct tcf_block *block;
- 	struct tcf_proto *tp;
- 	unsigned long cl;
-@@ -1976,6 +1976,8 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
- 	tp = NULL;
- 	cl = 0;
- 	block = NULL;
-+	q = NULL;
-+	chain = NULL;
- 	flags = 0;
+diff --git a/drivers/net/ethernet/3com/Kconfig b/drivers/net/ethernet/3com/Kconfig
+index 706bd59bf645..a48e879b941e 100644
+--- a/drivers/net/ethernet/3com/Kconfig
++++ b/drivers/net/ethernet/3com/Kconfig
+@@ -5,7 +5,6 @@
  
- 	if (prio == 0) {
-@@ -2798,8 +2800,8 @@ static int tc_ctl_chain(struct sk_buff *skb, struct nlmsghdr *n,
- 	struct tcmsg *t;
- 	u32 parent;
- 	u32 chain_index;
--	struct Qdisc *q = NULL;
--	struct tcf_chain *chain = NULL;
-+	struct Qdisc *q;
-+	struct tcf_chain *chain;
- 	struct tcf_block *block;
- 	unsigned long cl;
- 	int err;
-@@ -2809,6 +2811,7 @@ static int tc_ctl_chain(struct sk_buff *skb, struct nlmsghdr *n,
- 		return -EPERM;
+ config NET_VENDOR_3COM
+ 	bool "3Com devices"
+-	default y
+ 	depends on ISA || EISA || PCI || PCMCIA
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/8390/Kconfig b/drivers/net/ethernet/8390/Kconfig
+index a4130e643342..e2fd9bd0bf15 100644
+--- a/drivers/net/ethernet/8390/Kconfig
++++ b/drivers/net/ethernet/8390/Kconfig
+@@ -5,7 +5,6 @@
  
- replay:
-+	q = NULL;
- 	err = nlmsg_parse_deprecated(n, sizeof(*t), tca, TCA_MAX,
- 				     rtm_tca_policy, extack);
- 	if (err < 0)
+ config NET_VENDOR_8390
+ 	bool "National Semiconductor 8390 devices"
+-	default y
+ 	depends on NET_VENDOR_NATSEMI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/adaptec/Kconfig b/drivers/net/ethernet/adaptec/Kconfig
+index c96edc2e582f..06664de54b34 100644
+--- a/drivers/net/ethernet/adaptec/Kconfig
++++ b/drivers/net/ethernet/adaptec/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_ADAPTEC
+ 	bool "Adaptec devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/agere/Kconfig b/drivers/net/ethernet/agere/Kconfig
+index 9cd750184947..623cedaeba4a 100644
+--- a/drivers/net/ethernet/agere/Kconfig
++++ b/drivers/net/ethernet/agere/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_AGERE
+ 	bool "Agere devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/alacritech/Kconfig b/drivers/net/ethernet/alacritech/Kconfig
+index 5f285e18faf7..7ed4dbb6a4b2 100644
+--- a/drivers/net/ethernet/alacritech/Kconfig
++++ b/drivers/net/ethernet/alacritech/Kconfig
+@@ -1,7 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config NET_VENDOR_ALACRITECH
+ 	bool "Alacritech devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/allwinner/Kconfig b/drivers/net/ethernet/allwinner/Kconfig
+index 3e81059f8693..c5e86a908e89 100644
+--- a/drivers/net/ethernet/allwinner/Kconfig
++++ b/drivers/net/ethernet/allwinner/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_ALLWINNER
+ 	bool "Allwinner devices"
+-	default y
+ 
+ 	depends on ARCH_SUNXI
+ 	help
+diff --git a/drivers/net/ethernet/alteon/Kconfig b/drivers/net/ethernet/alteon/Kconfig
+index cfe1f3159d61..eebf3a225f05 100644
+--- a/drivers/net/ethernet/alteon/Kconfig
++++ b/drivers/net/ethernet/alteon/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_ALTEON
+ 	bool "Alteon devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/amazon/Kconfig b/drivers/net/ethernet/amazon/Kconfig
+index c37fa393b99e..9d0a862feace 100644
+--- a/drivers/net/ethernet/amazon/Kconfig
++++ b/drivers/net/ethernet/amazon/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_AMAZON
+ 	bool "Amazon Devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) device belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/amd/Kconfig b/drivers/net/ethernet/amd/Kconfig
+index 899c8a2a34b6..78b8fcddf734 100644
+--- a/drivers/net/ethernet/amd/Kconfig
++++ b/drivers/net/ethernet/amd/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_AMD
+ 	bool "AMD devices"
+-	default y
+ 	depends on DIO || MACH_DECSTATION || MVME147 || ATARI || SUN3 || \
+ 		   SUN3X || SBUS || PCI || ZORRO || (ISA && ISA_DMA_API) || \
+ 		   ISA || EISA || PCMCIA || ARM64
+diff --git a/drivers/net/ethernet/apple/Kconfig b/drivers/net/ethernet/apple/Kconfig
+index a4176d2ecec6..769411fad5f0 100644
+--- a/drivers/net/ethernet/apple/Kconfig
++++ b/drivers/net/ethernet/apple/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_APPLE
+ 	bool "Apple devices"
+-	default y
+ 	depends on (PPC_PMAC && PPC32) || MAC
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/aquantia/Kconfig b/drivers/net/ethernet/aquantia/Kconfig
+index cec2018c84a9..8db49cd12cfb 100644
+--- a/drivers/net/ethernet/aquantia/Kconfig
++++ b/drivers/net/ethernet/aquantia/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_AQUANTIA
+ 	bool "aQuantia devices"
+-	default y
+ 	help
+ 	  Set this to y if you have an Ethernet network cards that uses the aQuantia
+ 	  AQC107/AQC108 chipset.
+diff --git a/drivers/net/ethernet/arc/Kconfig b/drivers/net/ethernet/arc/Kconfig
+index 0a67612af228..2b94bd928772 100644
+--- a/drivers/net/ethernet/arc/Kconfig
++++ b/drivers/net/ethernet/arc/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_ARC
+ 	bool "ARC devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/asix/Kconfig b/drivers/net/ethernet/asix/Kconfig
+index eed02453314c..8c03ef3b1852 100644
+--- a/drivers/net/ethernet/asix/Kconfig
++++ b/drivers/net/ethernet/asix/Kconfig
+@@ -4,7 +4,6 @@
+ 
+ config NET_VENDOR_ASIX
+ 	bool "Asix devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet, non-USB, not NE2000 compatible)
+ 	  interface based on a chip from ASIX, say Y.
+diff --git a/drivers/net/ethernet/atheros/Kconfig b/drivers/net/ethernet/atheros/Kconfig
+index 482c58c4c584..27719e5a2898 100644
+--- a/drivers/net/ethernet/atheros/Kconfig
++++ b/drivers/net/ethernet/atheros/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_ATHEROS
+ 	bool "Atheros devices"
+-	default y
+ 	depends on (PCI || ATH79)
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/broadcom/Kconfig b/drivers/net/ethernet/broadcom/Kconfig
+index 56e0fb07aec7..b4634c175091 100644
+--- a/drivers/net/ethernet/broadcom/Kconfig
++++ b/drivers/net/ethernet/broadcom/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_BROADCOM
+ 	bool "Broadcom devices"
+-	default y
+ 	depends on (SSB_POSSIBLE && HAS_DMA) || PCI || BCM63XX || \
+ 		   SIBYTE_SB1xxx_SOC
+ 	help
+diff --git a/drivers/net/ethernet/brocade/Kconfig b/drivers/net/ethernet/brocade/Kconfig
+index fb4c3cdf7233..b8c71e98d81e 100644
+--- a/drivers/net/ethernet/brocade/Kconfig
++++ b/drivers/net/ethernet/brocade/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_BROCADE
+ 	bool "QLogic BR-series devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/cadence/Kconfig b/drivers/net/ethernet/cadence/Kconfig
+index 5b2a461dfd28..9e1698fccd2c 100644
+--- a/drivers/net/ethernet/cadence/Kconfig
++++ b/drivers/net/ethernet/cadence/Kconfig
+@@ -6,7 +6,6 @@
+ config NET_VENDOR_CADENCE
+ 	bool "Cadence devices"
+ 	depends on HAS_IOMEM
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/cavium/Kconfig b/drivers/net/ethernet/cavium/Kconfig
+index 1c76c95b0b27..0ee3f99e0b68 100644
+--- a/drivers/net/ethernet/cavium/Kconfig
++++ b/drivers/net/ethernet/cavium/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_CAVIUM
+ 	bool "Cavium ethernet drivers"
+-	default y
+ 	help
+ 	  Select this option if you want enable Cavium network support.
+ 
+diff --git a/drivers/net/ethernet/chelsio/Kconfig b/drivers/net/ethernet/chelsio/Kconfig
+index c931ec8cac40..6377430f519a 100644
+--- a/drivers/net/ethernet/chelsio/Kconfig
++++ b/drivers/net/ethernet/chelsio/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_CHELSIO
+ 	bool "Chelsio devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/cirrus/Kconfig b/drivers/net/ethernet/cirrus/Kconfig
+index 5bdf731d9503..bebfc95fae0f 100644
+--- a/drivers/net/ethernet/cirrus/Kconfig
++++ b/drivers/net/ethernet/cirrus/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_CIRRUS
+ 	bool "Cirrus devices"
+-	default y
+ 	depends on ISA || EISA || ARM || MAC || COMPILE_TEST
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/cisco/Kconfig b/drivers/net/ethernet/cisco/Kconfig
+index 18c3a0718d6f..64353561fb52 100644
+--- a/drivers/net/ethernet/cisco/Kconfig
++++ b/drivers/net/ethernet/cisco/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_CISCO
+ 	bool "Cisco devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/cortina/Kconfig b/drivers/net/ethernet/cortina/Kconfig
+index aaf9e294b70b..0da6ddd9ac89 100644
+--- a/drivers/net/ethernet/cortina/Kconfig
++++ b/drivers/net/ethernet/cortina/Kconfig
+@@ -3,7 +3,6 @@
+ 
+ config NET_VENDOR_CORTINA
+ 	bool "Cortina Gemini devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y
+ 	  and read the Ethernet-HOWTO, available from
+diff --git a/drivers/net/ethernet/dec/Kconfig b/drivers/net/ethernet/dec/Kconfig
+index 9e5e5f10bd19..1cfe23876f70 100644
+--- a/drivers/net/ethernet/dec/Kconfig
++++ b/drivers/net/ethernet/dec/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_DEC
+ 	bool "Digital Equipment devices"
+-	default y
+ 	depends on PCI || EISA || CARDBUS
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/dlink/Kconfig b/drivers/net/ethernet/dlink/Kconfig
+index 0d77f84c8e7b..f383aaabfa10 100644
+--- a/drivers/net/ethernet/dlink/Kconfig
++++ b/drivers/net/ethernet/dlink/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_DLINK
+ 	bool "D-Link devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/emulex/Kconfig b/drivers/net/ethernet/emulex/Kconfig
+index 5797a76dc731..18ec22423d79 100644
+--- a/drivers/net/ethernet/emulex/Kconfig
++++ b/drivers/net/ethernet/emulex/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_EMULEX
+ 	bool "Emulex devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/engleder/Kconfig b/drivers/net/ethernet/engleder/Kconfig
+index f4e2b1102d8f..dbbc6b8943e3 100644
+--- a/drivers/net/ethernet/engleder/Kconfig
++++ b/drivers/net/ethernet/engleder/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_ENGLEDER
+ 	bool "Engleder devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/ezchip/Kconfig b/drivers/net/ethernet/ezchip/Kconfig
+index 9241b9b1c7a3..411217ba51ea 100644
+--- a/drivers/net/ethernet/ezchip/Kconfig
++++ b/drivers/net/ethernet/ezchip/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_EZCHIP
+ 	bool "EZchip devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) device belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/faraday/Kconfig b/drivers/net/ethernet/faraday/Kconfig
+index 3d1e9a302148..c6f2ac2bb153 100644
+--- a/drivers/net/ethernet/faraday/Kconfig
++++ b/drivers/net/ethernet/faraday/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_FARADAY
+ 	bool "Faraday devices"
+-	default y
+ 	depends on ARM || NDS32 || COMPILE_TEST
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/freescale/Kconfig b/drivers/net/ethernet/freescale/Kconfig
+index e04e1c5cb013..336fee3bb012 100644
+--- a/drivers/net/ethernet/freescale/Kconfig
++++ b/drivers/net/ethernet/freescale/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_FREESCALE
+ 	bool "Freescale devices"
+-	default y
+ 	depends on FSL_SOC || QUICC_ENGINE || CPM1 || CPM2 || PPC_MPC512x || \
+ 		   M523x || M527x || M5272 || M528x || M520x || M532x || \
+ 		   ARCH_MXC || ARCH_MXS || (PPC_MPC52xx && PPC_BESTCOMM) || \
+diff --git a/drivers/net/ethernet/fujitsu/Kconfig b/drivers/net/ethernet/fujitsu/Kconfig
+index 0a1400cb410a..435037e34efd 100644
+--- a/drivers/net/ethernet/fujitsu/Kconfig
++++ b/drivers/net/ethernet/fujitsu/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_FUJITSU
+ 	bool "Fujitsu devices"
+-	default y
+ 	depends on PCMCIA
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/google/Kconfig b/drivers/net/ethernet/google/Kconfig
+index 8641a00f8e63..ababdcb01bbb 100644
+--- a/drivers/net/ethernet/google/Kconfig
++++ b/drivers/net/ethernet/google/Kconfig
+@@ -4,7 +4,6 @@
+ 
+ config NET_VENDOR_GOOGLE
+ 	bool "Google Devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) device belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/hisilicon/Kconfig b/drivers/net/ethernet/hisilicon/Kconfig
+index 3312e1d93c3b..0445aa064a20 100644
+--- a/drivers/net/ethernet/hisilicon/Kconfig
++++ b/drivers/net/ethernet/hisilicon/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_HISILICON
+ 	bool "Hisilicon devices"
+-	default y
+ 	depends on OF || ACPI
+ 	depends on ARM || ARM64 || COMPILE_TEST
+ 	help
+diff --git a/drivers/net/ethernet/huawei/Kconfig b/drivers/net/ethernet/huawei/Kconfig
+index c05fce15eb51..a5b2f00403df 100644
+--- a/drivers/net/ethernet/huawei/Kconfig
++++ b/drivers/net/ethernet/huawei/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_HUAWEI
+ 	bool "Huawei devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 	  Note that the answer to this question doesn't directly affect the
+diff --git a/drivers/net/ethernet/i825xx/Kconfig b/drivers/net/ethernet/i825xx/Kconfig
+index 3b5fab123824..3812783a804b 100644
+--- a/drivers/net/ethernet/i825xx/Kconfig
++++ b/drivers/net/ethernet/i825xx/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_I825XX
+ 	bool "Intel (82586/82593/82596) devices"
+-	default y
+ 	depends on NET_VENDOR_INTEL
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/ibm/Kconfig b/drivers/net/ethernet/ibm/Kconfig
+index c0c112d95b89..dc2098fb1c8f 100644
+--- a/drivers/net/ethernet/ibm/Kconfig
++++ b/drivers/net/ethernet/ibm/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_IBM
+ 	bool "IBM devices"
+-	default y
+ 	depends on PPC_PSERIES || PPC_DCR || (IBMEBUS && SPARSEMEM)
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
+index 3facb55b7161..b9fdf2a835b0 100644
+--- a/drivers/net/ethernet/intel/Kconfig
++++ b/drivers/net/ethernet/intel/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_INTEL
+ 	bool "Intel devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/litex/Kconfig b/drivers/net/ethernet/litex/Kconfig
+index f99adbf26ab4..417129027b9a 100644
+--- a/drivers/net/ethernet/litex/Kconfig
++++ b/drivers/net/ethernet/litex/Kconfig
+@@ -4,7 +4,6 @@
+ 
+ config NET_VENDOR_LITEX
+ 	bool "LiteX devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/marvell/Kconfig b/drivers/net/ethernet/marvell/Kconfig
+index fe0989c0fc25..2a3f06b9f4f7 100644
+--- a/drivers/net/ethernet/marvell/Kconfig
++++ b/drivers/net/ethernet/marvell/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_MARVELL
+ 	bool "Marvell devices"
+-	default y
+ 	depends on PCI || CPU_PXA168 || PPC32 || PLAT_ORION || INET || COMPILE_TEST
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/mellanox/Kconfig b/drivers/net/ethernet/mellanox/Kconfig
+index b4f66eb9ddb9..d2dd728bb016 100644
+--- a/drivers/net/ethernet/mellanox/Kconfig
++++ b/drivers/net/ethernet/mellanox/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_MELLANOX
+ 	bool "Mellanox devices"
+-	default y
+ 	depends on PCI || I2C
+ 	help
+ 	  If you have a network (Ethernet or RDMA) device belonging to this
+diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
+index 93df3049cdc0..bf0c84117f8b 100644
+--- a/drivers/net/ethernet/micrel/Kconfig
++++ b/drivers/net/ethernet/micrel/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_MICREL
+ 	bool "Micrel devices"
+-	default y
+ 	depends on (HAS_IOMEM && DMA_ENGINE) || SPI || PCI || HAS_IOMEM
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/microchip/Kconfig b/drivers/net/ethernet/microchip/Kconfig
+index ed7a35c3ceac..cfcd4cf3e14b 100644
+--- a/drivers/net/ethernet/microchip/Kconfig
++++ b/drivers/net/ethernet/microchip/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_MICROCHIP
+ 	bool "Microchip devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/microsoft/Kconfig b/drivers/net/ethernet/microsoft/Kconfig
+index fe4e7a7d9c0b..b651441c83b6 100644
+--- a/drivers/net/ethernet/microsoft/Kconfig
++++ b/drivers/net/ethernet/microsoft/Kconfig
+@@ -4,7 +4,6 @@
+ 
+ config NET_VENDOR_MICROSOFT
+ 	bool "Microsoft Network Devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) device belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/moxa/Kconfig b/drivers/net/ethernet/moxa/Kconfig
+index 134802b521cb..0cccb1a39ef5 100644
+--- a/drivers/net/ethernet/moxa/Kconfig
++++ b/drivers/net/ethernet/moxa/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_MOXART
+ 	bool "MOXA ART devices"
+-	default y
+ 	depends on (ARM && ARCH_MOXART)
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/mscc/Kconfig b/drivers/net/ethernet/mscc/Kconfig
+index 8dd8c7f425d2..8d3e50e253d6 100644
+--- a/drivers/net/ethernet/mscc/Kconfig
++++ b/drivers/net/ethernet/mscc/Kconfig
+@@ -1,7 +1,6 @@
+ # SPDX-License-Identifier: (GPL-2.0 OR MIT)
+ config NET_VENDOR_MICROSEMI
+ 	bool "Microsemi devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/myricom/Kconfig b/drivers/net/ethernet/myricom/Kconfig
+index 81267fd72dbf..fd3497219b14 100644
+--- a/drivers/net/ethernet/myricom/Kconfig
++++ b/drivers/net/ethernet/myricom/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_MYRI
+ 	bool "Myricom devices"
+-	default y
+ 	depends on PCI && INET
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/natsemi/Kconfig b/drivers/net/ethernet/natsemi/Kconfig
+index 0a92101aa3f1..8938ac439257 100644
+--- a/drivers/net/ethernet/natsemi/Kconfig
++++ b/drivers/net/ethernet/natsemi/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_NATSEMI
+ 	bool "National Semiconductor devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/neterion/Kconfig b/drivers/net/ethernet/neterion/Kconfig
+index 0c0d127906dd..27e3dd441e31 100644
+--- a/drivers/net/ethernet/neterion/Kconfig
++++ b/drivers/net/ethernet/neterion/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_NETERION
+ 	bool "Neterion (Exar) devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/netronome/Kconfig b/drivers/net/ethernet/netronome/Kconfig
+index 8844d1ac053a..c48999fd1bf0 100644
+--- a/drivers/net/ethernet/netronome/Kconfig
++++ b/drivers/net/ethernet/netronome/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_NETRONOME
+ 	bool "Netronome(R) devices"
+-	default y
+ 	help
+ 	  If you have a Netronome(R) network (Ethernet) card or device, say Y.
+ 
+diff --git a/drivers/net/ethernet/ni/Kconfig b/drivers/net/ethernet/ni/Kconfig
+index dcfbfa516e67..63edc754e4ec 100644
+--- a/drivers/net/ethernet/ni/Kconfig
++++ b/drivers/net/ethernet/ni/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_NI
+ 	bool "National Instruments Devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) device belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/nvidia/Kconfig b/drivers/net/ethernet/nvidia/Kconfig
+index c653786b1d05..80ea04280302 100644
+--- a/drivers/net/ethernet/nvidia/Kconfig
++++ b/drivers/net/ethernet/nvidia/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_NVIDIA
+ 	bool "NVIDIA devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/oki-semi/Kconfig b/drivers/net/ethernet/oki-semi/Kconfig
+index c2fff04ba7b6..6965467a4250 100644
+--- a/drivers/net/ethernet/oki-semi/Kconfig
++++ b/drivers/net/ethernet/oki-semi/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_OKI
+ 	bool "OKI Semiconductor devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/packetengines/Kconfig b/drivers/net/ethernet/packetengines/Kconfig
+index de91331dcb7d..05a185bc5e3c 100644
+--- a/drivers/net/ethernet/packetengines/Kconfig
++++ b/drivers/net/ethernet/packetengines/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_PACKET_ENGINES
+ 	bool "Packet Engines devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/pasemi/Kconfig b/drivers/net/ethernet/pasemi/Kconfig
+index cd68ebcf3e47..8b2c89961562 100644
+--- a/drivers/net/ethernet/pasemi/Kconfig
++++ b/drivers/net/ethernet/pasemi/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_PASEMI
+ 	bool "PA Semi devices"
+-	default y
+ 	depends on PPC_PASEMI && PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/pensando/Kconfig b/drivers/net/ethernet/pensando/Kconfig
+index 3f7519e435b8..332cb71061d8 100644
+--- a/drivers/net/ethernet/pensando/Kconfig
++++ b/drivers/net/ethernet/pensando/Kconfig
+@@ -6,7 +6,6 @@
+ 
+ config NET_VENDOR_PENSANDO
+ 	bool "Pensando devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/qlogic/Kconfig b/drivers/net/ethernet/qlogic/Kconfig
+index 1203353238e5..8c0605424406 100644
+--- a/drivers/net/ethernet/qlogic/Kconfig
++++ b/drivers/net/ethernet/qlogic/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_QLOGIC
+ 	bool "QLogic devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/qualcomm/Kconfig b/drivers/net/ethernet/qualcomm/Kconfig
+index a4434eb38950..c764d73bca24 100644
+--- a/drivers/net/ethernet/qualcomm/Kconfig
++++ b/drivers/net/ethernet/qualcomm/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_QUALCOMM
+ 	bool "Qualcomm devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/rdc/Kconfig b/drivers/net/ethernet/rdc/Kconfig
+index 6884c7864bb9..59e4f08b5840 100644
+--- a/drivers/net/ethernet/rdc/Kconfig
++++ b/drivers/net/ethernet/rdc/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_RDC
+ 	bool "RDC devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/realtek/Kconfig b/drivers/net/ethernet/realtek/Kconfig
+index 93d9df55b361..62d4ed369dcd 100644
+--- a/drivers/net/ethernet/realtek/Kconfig
++++ b/drivers/net/ethernet/realtek/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_REALTEK
+ 	bool "Realtek devices"
+-	default y
+ 	depends on PCI || (PARPORT && X86)
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/renesas/Kconfig b/drivers/net/ethernet/renesas/Kconfig
+index 8008b2f45934..09f406d80e51 100644
+--- a/drivers/net/ethernet/renesas/Kconfig
++++ b/drivers/net/ethernet/renesas/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_RENESAS
+ 	bool "Renesas devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/rocker/Kconfig b/drivers/net/ethernet/rocker/Kconfig
+index 2318811ff75a..e3c28ecca99c 100644
+--- a/drivers/net/ethernet/rocker/Kconfig
++++ b/drivers/net/ethernet/rocker/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_ROCKER
+ 	bool "Rocker devices"
+-	default y
+ 	help
+ 	  If you have a network device belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/samsung/Kconfig b/drivers/net/ethernet/samsung/Kconfig
+index 2a6c2658d284..d6646b2c85fd 100644
+--- a/drivers/net/ethernet/samsung/Kconfig
++++ b/drivers/net/ethernet/samsung/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_SAMSUNG
+ 	bool "Samsung Ethernet devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) chipset belonging to this class,
+ 	  say Y.
+diff --git a/drivers/net/ethernet/seeq/Kconfig b/drivers/net/ethernet/seeq/Kconfig
+index ad1df37571dd..f3b7d0e71032 100644
+--- a/drivers/net/ethernet/seeq/Kconfig
++++ b/drivers/net/ethernet/seeq/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_SEEQ
+ 	bool "SEEQ devices"
+-	default y
+ 	depends on HAS_IOMEM
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/sfc/Kconfig b/drivers/net/ethernet/sfc/Kconfig
+index 97ce64079855..29c79a42b2ac 100644
+--- a/drivers/net/ethernet/sfc/Kconfig
++++ b/drivers/net/ethernet/sfc/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_SOLARFLARE
+ 	bool "Solarflare devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/sgi/Kconfig b/drivers/net/ethernet/sgi/Kconfig
+index af66bb0a20d1..49ea41c80fbc 100644
+--- a/drivers/net/ethernet/sgi/Kconfig
++++ b/drivers/net/ethernet/sgi/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_SGI
+ 	bool "SGI devices"
+-	default y
+ 	depends on (PCI && SGI_MFD_IOC3) ||  SGI_IP32
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/silan/Kconfig b/drivers/net/ethernet/silan/Kconfig
+index 7ed08d588ac2..fe85c23ebf86 100644
+--- a/drivers/net/ethernet/silan/Kconfig
++++ b/drivers/net/ethernet/silan/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_SILAN
+ 	bool "Silan devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/sis/Kconfig b/drivers/net/ethernet/sis/Kconfig
+index 775d76d9890e..5aa21a750add 100644
+--- a/drivers/net/ethernet/sis/Kconfig
++++ b/drivers/net/ethernet/sis/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_SIS
+ 	bool "Silicon Integrated Systems (SiS) devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/smsc/Kconfig b/drivers/net/ethernet/smsc/Kconfig
+index 72e42a868346..ed7c3d0b4bbb 100644
+--- a/drivers/net/ethernet/smsc/Kconfig
++++ b/drivers/net/ethernet/smsc/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_SMSC
+ 	bool "SMC (SMSC)/Western Digital devices"
+-	default y
+ 	depends on ARM || ARM64 || ATARI_ETHERNAT || COLDFIRE || \
+ 		   ISA || MAC || MIPS || NIOS2 || PCI || \
+ 		   PCMCIA || SUPERH || XTENSA || H8300 || COMPILE_TEST
+diff --git a/drivers/net/ethernet/socionext/Kconfig b/drivers/net/ethernet/socionext/Kconfig
+index 48298389851d..f00270bcd93c 100644
+--- a/drivers/net/ethernet/socionext/Kconfig
++++ b/drivers/net/ethernet/socionext/Kconfig
+@@ -1,7 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config NET_VENDOR_SOCIONEXT
+ 	bool "Socionext ethernet drivers"
+-	default y
+ 	help
+ 	  Option to select ethernet drivers for Socionext platforms.
+ 
+diff --git a/drivers/net/ethernet/stmicro/Kconfig b/drivers/net/ethernet/stmicro/Kconfig
+index cc136b4c9afd..d9bd40d0b4a4 100644
+--- a/drivers/net/ethernet/stmicro/Kconfig
++++ b/drivers/net/ethernet/stmicro/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_STMICRO
+ 	bool "STMicroelectronics devices"
+-	default y
+ 	depends on HAS_IOMEM
+ 	help
+ 	  If you have a network (Ethernet) card based on Synopsys Ethernet IP
+diff --git a/drivers/net/ethernet/sun/Kconfig b/drivers/net/ethernet/sun/Kconfig
+index b0d3f9a2950c..a7c7ac62c909 100644
+--- a/drivers/net/ethernet/sun/Kconfig
++++ b/drivers/net/ethernet/sun/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_SUN
+ 	bool "Sun devices"
+-	default y
+ 	depends on SUN3 || SBUS || PCI || SUN_LDOMS
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/synopsys/Kconfig b/drivers/net/ethernet/synopsys/Kconfig
+index f2a4287c48b8..ba48dc425d35 100644
+--- a/drivers/net/ethernet/synopsys/Kconfig
++++ b/drivers/net/ethernet/synopsys/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_SYNOPSYS
+ 	bool "Synopsys devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) device belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/tehuti/Kconfig b/drivers/net/ethernet/tehuti/Kconfig
+index 8735633765a1..1e1adf005732 100644
+--- a/drivers/net/ethernet/tehuti/Kconfig
++++ b/drivers/net/ethernet/tehuti/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_TEHUTI
+ 	bool "Tehuti devices"
+-	default y
+ 	depends on PCI
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+index affcf92cd3aa..cff101c1b822 100644
+--- a/drivers/net/ethernet/ti/Kconfig
++++ b/drivers/net/ethernet/ti/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_TI
+ 	bool "Texas Instruments (TI) devices"
+-	default y
+ 	depends on PCI || EISA || AR7 || ARCH_DAVINCI || ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/toshiba/Kconfig b/drivers/net/ethernet/toshiba/Kconfig
+index 701e9b7c1c3b..710eab65312b 100644
+--- a/drivers/net/ethernet/toshiba/Kconfig
++++ b/drivers/net/ethernet/toshiba/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_TOSHIBA
+ 	bool "Toshiba devices"
+-	default y
+ 	depends on PCI && (PPC_IBM_CELL_BLADE || MIPS) || PPC_PS3
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/tundra/Kconfig b/drivers/net/ethernet/tundra/Kconfig
+index edd52b2bd135..f0f5598610ff 100644
+--- a/drivers/net/ethernet/tundra/Kconfig
++++ b/drivers/net/ethernet/tundra/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_TUNDRA
+ 	bool "Tundra devices"
+-	default y
+ 	depends on TSI108_BRIDGE
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/vertexcom/Kconfig b/drivers/net/ethernet/vertexcom/Kconfig
+index 4184a635fe01..f0a2c2a68059 100644
+--- a/drivers/net/ethernet/vertexcom/Kconfig
++++ b/drivers/net/ethernet/vertexcom/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_VERTEXCOM
+ 	bool "Vertexcom devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/via/Kconfig b/drivers/net/ethernet/via/Kconfig
+index da287ef65be7..7021eac0403b 100644
+--- a/drivers/net/ethernet/via/Kconfig
++++ b/drivers/net/ethernet/via/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_VIA
+ 	bool "VIA devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/wiznet/Kconfig b/drivers/net/ethernet/wiznet/Kconfig
+index 4bac2ad2d6a1..1f4749bde571 100644
+--- a/drivers/net/ethernet/wiznet/Kconfig
++++ b/drivers/net/ethernet/wiznet/Kconfig
+@@ -6,7 +6,6 @@
+ config NET_VENDOR_WIZNET
+ 	bool "WIZnet devices"
+ 	depends on HAS_IOMEM
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
+index 911b5ef9e680..85b18c7b3fac 100644
+--- a/drivers/net/ethernet/xilinx/Kconfig
++++ b/drivers/net/ethernet/xilinx/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_XILINX
+ 	bool "Xilinx devices"
+-	default y
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+diff --git a/drivers/net/ethernet/xircom/Kconfig b/drivers/net/ethernet/xircom/Kconfig
+index 7497b9bea511..985b23591f44 100644
+--- a/drivers/net/ethernet/xircom/Kconfig
++++ b/drivers/net/ethernet/xircom/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_XIRCOM
+ 	bool "Xircom devices"
+-	default y
+ 	depends on PCMCIA
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/xscale/Kconfig b/drivers/net/ethernet/xscale/Kconfig
+index 0e878fa6e322..bfe23ceaacad 100644
+--- a/drivers/net/ethernet/xscale/Kconfig
++++ b/drivers/net/ethernet/xscale/Kconfig
+@@ -5,7 +5,6 @@
+ 
+ config NET_VENDOR_XSCALE
+ 	bool "Intel XScale IXP devices"
+-	default y
+ 	depends on NET_VENDOR_INTEL && (ARM && ARCH_IXP4XX && \
+ 		   IXP4XX_NPE && IXP4XX_QMGR)
+ 	help
 -- 
-2.35.0.rc2.247.g8bbb082509-goog
+2.34.1
 
