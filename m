@@ -2,124 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70E264A4795
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 13:54:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE5EF4A4796
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 13:54:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376989AbiAaMy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 07:54:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43188 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239602AbiAaMy0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 07:54:26 -0500
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB04FC061714
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 04:54:25 -0800 (PST)
-Received: by mail-qt1-x82d.google.com with SMTP id k25so6292376qtp.4
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 04:54:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=rv/l0iR88alaV0E0PKHjXHkAUudNqhKjqbuycOIch9Q=;
-        b=iHVT48IqlNbeuYIjWPJb6ynAwg4idbdp8oC0oAHm8/oFmqMyrvZS04InIuqaUqc58O
-         apNEJeljxcfaGC9CUMlBr19wZRvqto/dKwDzUnxAE0rDXpREBomxA742ZXBehNRMw0mr
-         bvJppg/hnybdp3MN+ZzrTF9/FCA3EUPUjNQCD0Kn/gv+l+N9gqQ9DuB7E71SttJ/zJrp
-         /TJ07dEAyWlKOpFTqN3k/rP08QtLc+6C3OGhwHvWx44sGn4t5kgglqeDOW4oQN9RkvXn
-         z/JJfkayWGaCIWL9Vp2D0MwtoBaVwW4vkGH1zKFQyV7WtvCICFDfxLgZ7lZuOy5c3YqG
-         V8EA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rv/l0iR88alaV0E0PKHjXHkAUudNqhKjqbuycOIch9Q=;
-        b=WGHY+uWnf8xe4ZZtir67SV+L2qSIje942qikVuDk5hsHbQLnmUH5dcp3IbjxC8+qPJ
-         37hL6tmcL1CIZEzaFVhZJ7AFvgKgwCq2XSpLLzufYJdyfAitRP37horMU78zUDFkfjTU
-         qMVHVh+ie0qIBrmfvDMfBUNGeLeBPqDL98t8Do/vuoOuuH+Yx9GfngV4fuJbKMdor9BX
-         HEuH4zwHOEJFmV0YmNTSOY5coqRpZgC5SyGvqHQH9MAp8JebNfVmX4GbtSpeJZtHksu9
-         EWbsk3TP5X6UDD04HHiZN5mGiq7YBOQusoCFRqDVG9R33MFvlWD/urP7Cxn5tAGGAu42
-         +ARQ==
-X-Gm-Message-State: AOAM530/2xw0xJ2fELlFQEp+sUtrgMtamXpz/cziyeQNZVbvrEmQAfjA
-        OPDn+XudPNhOZke7hIK3EN1Qeg==
-X-Google-Smtp-Source: ABdhPJwW8RLPBsuSTx2b9dAlYGrWKDVcSMMdZea0z0pFihmnEt/Y/Xc1fV2T/DlMQcjE5Jv3XYel7A==
-X-Received: by 2002:a05:622a:215:: with SMTP id b21mr14539181qtx.199.1643633664983;
-        Mon, 31 Jan 2022 04:54:24 -0800 (PST)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-74.dsl.bell.ca. [184.148.47.74])
-        by smtp.googlemail.com with ESMTPSA id k20sm8354187qtx.64.2022.01.31.04.54.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 04:54:24 -0800 (PST)
-Message-ID: <78ac271a-7d00-7526-54b5-2aabb5b3a3ba@mojatatu.com>
-Date:   Mon, 31 Jan 2022 07:54:23 -0500
+        id S1348697AbiAaMyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 07:54:40 -0500
+Received: from mga03.intel.com ([134.134.136.65]:3837 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1377086AbiAaMyf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 Jan 2022 07:54:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643633675; x=1675169675;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LYq+R6puBiP7cCArkzGv+IBkDy2JJj4EJwpPFwlVEAc=;
+  b=JJDEyyA75anA1Y7FRVssm8zoOfR26RfoS16T7pIrh4b9mYbHaQnrXdzp
+   SVm6BYxLxQsN1WT8vl2p6N5RtynjVChSjUVPbOhv8UqDzWX4/OC4Jh+xV
+   LMqNIOzrzMVo+HtYgmrMjGdvqS6QUjXX1UIEoZm5GyQE2Nx3c+PDW9O4u
+   ZkSO3QizLsYoXtQJq0lnqZ4VXXipvP2z4yc6AIWAORl1QRL+T3w20qvIc
+   qNXXfVxlh8yzypmVnev6c2FizJavUJweqOIRIYHBZlmOt58HsoBhGG0AL
+   LnOla5eGGDHnGSYhwLlIoFQAuph10kWctRlyN/70TZG+3QmPDW7ECC8/Y
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="247407394"
+X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
+   d="scan'208";a="247407394"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 04:54:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
+   d="scan'208";a="697994665"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by orsmga005.jf.intel.com with ESMTP; 31 Jan 2022 04:54:31 -0800
+Date:   Mon, 31 Jan 2022 13:54:31 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     "Maurice Baijens (Ellips B.V.)" <maurice.baijens@ellips.com>
+Cc:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [External] ixgbe driver link down causes 100% load in ksoftirqd/x
+Message-ID: <YffcB2YZ1h5SRyEP@boxer>
+References: <VI1PR02MB4142A638EC38107B262DB32F885A9@VI1PR02MB4142.eurprd02.prod.outlook.com>
+ <YfQMQWsFqCIPBBqO@boxer>
+ <VI1PR02MB41424341E3E7BA3166E043BD88229@VI1PR02MB4142.eurprd02.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH iproute2 v3 1/2] tc: u32: add support for json output
-Content-Language: en-US
-To:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Andrea Claudi <aclaudi@redhat.com>
-Cc:     netdev@vger.kernel.org, Wen Liang <wenliang@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Victor Nogueira <victor@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>
-References: <cover.1641493556.git.liangwen12year@gmail.com>
- <0670d2ea02d2cbd6d1bc755a814eb8bca52ccfba.1641493556.git.liangwen12year@gmail.com>
- <20220106143013.63e5a910@hermes.local> <Ye7vAmKjAQVEDhyQ@tc2>
- <20220124105016.66e3558c@hermes.local> <Ye8abWbX5TZngvIS@tc2>
- <20220124164354.7be21b1c@hermes.local>
- <848d9baa-76d1-0a60-c9e4-7d59efbc5cbc@mojatatu.com>
- <a7ec49d5-8969-7999-43c4-12247decae9e@gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <a7ec49d5-8969-7999-43c4-12247decae9e@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR02MB41424341E3E7BA3166E043BD88229@VI1PR02MB4142.eurprd02.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-01-26 10:50, David Ahern wrote:
-> On 1/26/22 6:52 AM, Jamal Hadi Salim wrote:
->>
->> Makes sense in particular if we have formal output format like json.
->> If this breaks tdc it would be worth to fix tdc (and not be backward
->> compatible)
->>
->> So: Since none of the tc maintainers was Cced in this thread, can we
->> please impose a rule where any changes to tc subdir needs to have tdc
->> tests run (and hopefully whoever is making the change will be gracious
->> to contribute an additional testcase)?
+On Fri, Jan 28, 2022 at 03:53:25PM +0000, Maurice Baijens (Ellips B.V.) wrote:
+> Hello,
 > 
-> I can try to remember to run tdc tests for tc patches. I looked into it
-> a few days ago and seems straightforward to run tdc.sh.
-
-Note tdc.sh is meant for the bot. It skips a lot things per Davide's
-comment that he was worried the robot will end up spending too many
-cycles. Good source at the moment is the README.
-
-> The output of
-> those tests could be simplified - when all is good you get the one line
-> summary of the test name with PASS/FAIL with an option to run in verbose
-> mode to get the details of failures. As it is, the person running the
-> tests has to wade through a lot of output.
 > 
-
-We are going to put some cycles improving things. Your input is useful.
-
->> Do you need a patch for that in some documentation?
->>
+> > -----Original Message-----
+> > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com> 
+> > Sent: Friday, January 28, 2022 4:31 PM
+> > To: Maurice Baijens (Ellips B.V.) <maurice.baijens@ellips.com>
+> > Cc: intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org
+> > Subject: Re: [External] ixgbe driver link down causes 100% load in ksoftirqd/x
+> >
+> > On Thu, Jan 20, 2022 at 09:23:06AM +0000, Maurice Baijens (Ellips B.V.) wrote:
+> > > Hello,
+> > > 
+> > > 
+> > > I have an issue with the ixgbe driver and X550Tx network adapter.
+> > > When I disconnect the network cable I end up with 100% load in ksoftirqd/x. I am running the adapter in
+> > > xdp mode (XDP_FLAGS_DRV_MODE). Problem seen in linux kernel 5.15.x and also 5.16.0+ (head).
+> >
+> > Hello,
+> >
+> > a stupid question - why do you disconnect the cable when running traffic? :)
 > 
-> How about adding some comments to README.devel?
+> The answer is even more stupid. Due to supply problems we sometimes have to use
+> dual adapters instead of single once, and if one by accident enables the wrong port,
+> the bug is triggered.
+> 
+> > If you plug this back in then what happens?
+> 
+> Then everything works normal again.
+> 
+> >
+> > > 
+> > > I traced the problem down to function ixgbe_xmit_zc in ixgbe_xsk.c:
+> > > 
+> > > if (unlikely(!ixgbe_desc_unused(xdp_ring)) ||
+> > >     !netif_carrier_ok(xdp_ring->netdev)) {
+> > >             work_done = false;
+> > >             break;
+> > > }
+> >
+> > This was done in commit c685c69fba71 ("ixgbe: don't do any AF_XDP
+> > zero-copy transmit if netif is not OK") - it was addressing the transient
+> > state when configuring the xsk pool on particular queue pair.
+> >
+> > > 
+> > > This function is called from ixgbe_poll() function via ixgbe_clean_xdp_tx_irq(). It sets
+> > > work_done to false if netif_carrier_ok() returns false (so if link is down). Because work_done
+> > > is always false, ixgbe_poll keeps on polling forever.
+> > > 
+> > > I made a fix by checking link in ixgbe_poll() function and if no link exiting polling mode:
+> > > 
+> > > /* If all work not completed, return budget and keep polling */
+> > > if ((!clean_complete) && netif_carrier_ok(adapter->netdev))
+> > >             return budget;
+> >
+> > Not sure about the correctness of this. Question is how should we act for
+> > link down - should we say that we are done with processing or should we
+> > wait until the link gets back?
+> >
+> > Instead of setting the work_done to false immediately for
+> >!netif_carrier_ok(), I'd rather break out the checks that are currently
+> > combined into the single statement, something like this:
+> >
+> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> > index b3fd8e5cd85b..6a5e9cf6b5da 100644
+> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> > @@ -390,12 +390,14 @@ static bool ixgbe_xmit_zc(struct ixgbe_ring *xdp_ring, unsigned int budget)
+> >  	u32 cmd_type;
+> >  
+> >  	while (budget-- > 0) {
+> > -		if (unlikely(!ixgbe_desc_unused(xdp_ring)) ||
+> > -		    !netif_carrier_ok(xdp_ring->netdev)) {
+> > +		if (unlikely(!ixgbe_desc_unused(xdp_ring))) {
+> >  			work_done = false;
+> >  			break;
+> >  		}
+> >  
+> > +		if (!netif_carrier_ok(xdp_ring->netdev))
+> > +			break;
+> > +
+> >  		if (!xsk_tx_peek_desc(pool, &desc))
+> >  			break;
+> >
+> >
+> > > 
+> > > This is probably fine for our application as we only run in xdpdrv mode, however I am not sure this
+> >
+> > By xdpdrv I would understand that you're running XDP in standard native
+> > mode, however you refer to the AF_XDP Zero Copy implementation in the
+> > driver. But I don't think it changes anything in this thread.
+> >
+> > In the end I see some outstanding issues with ixgbe_xmit_zc(), so this
+> > probably might need some attention.
+> >
+> > Thanks!
+> > Maciej
+> 
+> Your suggestion for a fix sounds ok. (I have not tested it). Is someone going to fix it in the next version of the kernel,
+> so we don't have to apply a patch here forever? Or how should we proceed to get it fixed in the kernel?
 
+Could you test it then? If it's fine then I'll send it as a fix. I just
+don't currently have ixgbe HW around me.
 
-Sure - but it wont be sufficient IMO.
-Best course of action is for the maintainers to remind people to run
-tests.
-
-BTW: We found out that Stephen's patches still break the latest -next.
-
-cheers,
-jamal
+> 
+> Thank you,
+> Maurice
+> 
+> 
+> >
+> > > is the correct way to fix this issue and the behaviour of the normal skb mode operation is 
+> > > also affected by my fix.
+> > > 
+> > > So hopefully my observations are correct and someone here can fix the issue and push it upstream.
+> > > 
+> > > 
+> > > Best regards,
+> > > 	Maurice Baijens
+> 
+> 
+> 
