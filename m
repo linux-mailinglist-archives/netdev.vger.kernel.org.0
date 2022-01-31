@@ -2,18 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B07F4A474C
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 13:34:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4F9D4A4758
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 13:35:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378168AbiAaMeq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 07:34:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377777AbiAaMej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 07:34:39 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBBDC06173E;
-        Mon, 31 Jan 2022 04:34:39 -0800 (PST)
+        id S1378400AbiAaMez (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 07:34:55 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:59550 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377753AbiAaMek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 07:34:40 -0500
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020; t=1643632478;
@@ -21,21 +18,21 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=An8sejACWdvpFe+0xRHo7AseACg3JQzOaIfRXUshpP4=;
-        b=BhXM3NIKleAXz7EGWrjwvCWxgHP1I7/JRcmil3tRIKBabUstjQSOcdpTUg/m1lF7oIrZ1h
-        GJQLNmXozK1A5vIYoXb9v6UwJ+KBsJYrcfFqHHqs3Jlf4o0dVx3Tlx0AnT0+RwiHef/FLW
-        oMURGOimO/W1lbtVUCoPppCqASjKnZW4wEWGjga/vAVPYkdg3nR3ugHAEHk5RML5kIVyMY
-        Gty+/hsNQDZxptez8/F9kHJ9CIEhSlGtoStcscQndHdMqYawAVkTTVPavXkShJCe60pzjk
-        57Ytrkn7GG824ZYP/vJ05PKC8JowBftEL1ohiaYtp/Yas8PUNYKV2mO/FZPpvg==
+        bh=45fS8vZOqc3z6GIbrRMqB22H177VtG9qYEYyo0HBgug=;
+        b=s7WadyoZF5Sm9aaIEUp7kcaweY2hKcBKO88OOavIAopkRL10Nt7FOV5J+c23vnEm9z/o/V
+        NY0FQv7nQoJnqUHyedftx6xK+BjgEnZv1lUidebwgEF8yfbwzhuQH6aeLDsMIByAjuBCa6
+        Qsl2cNjhZ5tHzwi8dTpL7rPOdrFw/Iicfku5w+YCglwtxBQqCubQ7OMR8Q4Cu016Bw8px0
+        AIeREKk2CwpO5uWITVZac8FKU+W/4X47EEyEx+SJ+92R5Ra67j+E5M8z95Rv7BAepyNiEn
+        Y2kKvSlmlpCeWxZux585HWzFHAhckLmJlZd4ktSvL/PAf/G8zIU7tlo31EwSPQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020e; t=1643632478;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=An8sejACWdvpFe+0xRHo7AseACg3JQzOaIfRXUshpP4=;
-        b=VXjZDiLALUI90SjNiUr6gENIIBLtiru6j97WSlG+HLfibjq+XKc+wXT5Hl2CyD+y6EqoQW
-        lUdbLPTu09+heCCA==
+        bh=45fS8vZOqc3z6GIbrRMqB22H177VtG9qYEYyo0HBgug=;
+        b=N7JagwoELEftXltgPzO9ztt5Cb2k5Lk3suG9RV9lzuvY1GsaRGr3uEvMh+UpZduAJed78V
+        4uxodkd49PAOXABg==
 To:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
         linux-usb@vger.kernel.org, netdev@vger.kernel.org
@@ -51,9 +48,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
         Woojung Huh <woojung.huh@microchip.com>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v2 6/7] net: usb: lan78xx: Use generic_handle_irq_safe().
-Date:   Mon, 31 Jan 2022 13:34:03 +0100
-Message-Id: <20220131123404.175438-7-bigeasy@linutronix.de>
+Subject: [PATCH v2 7/7] staging: greybus: gpio: Use generic_handle_irq_safe().
+Date:   Mon, 31 Jan 2022 13:34:04 +0100
+Message-Id: <20220131123404.175438-8-bigeasy@linutronix.de>
 In-Reply-To: <20220131123404.175438-1-bigeasy@linutronix.de>
 References: <20220131123404.175438-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -68,28 +65,26 @@ interrupts.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/net/usb/lan78xx.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/staging/greybus/gpio.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
-index b8e20a3f2b84e..415f16662f88e 100644
---- a/drivers/net/usb/lan78xx.c
-+++ b/drivers/net/usb/lan78xx.c
-@@ -1537,11 +1537,8 @@ static void lan78xx_status(struct lan78xx_net *dev, =
-struct urb *urb)
- 		netif_dbg(dev, link, dev->net, "PHY INTR: 0x%08x\n", intdata);
- 		lan78xx_defer_kevent(dev, EVENT_LINK_RESET);
+diff --git a/drivers/staging/greybus/gpio.c b/drivers/staging/greybus/gpio.c
+index 7e6347fe93f99..8a7cf1d0e9688 100644
+--- a/drivers/staging/greybus/gpio.c
++++ b/drivers/staging/greybus/gpio.c
+@@ -391,10 +391,7 @@ static int gb_gpio_request_handler(struct gb_operation=
+ *op)
+ 		return -EINVAL;
+ 	}
 =20
--		if (dev->domain_data.phyirq > 0) {
--			local_irq_disable();
--			generic_handle_irq(dev->domain_data.phyirq);
--			local_irq_enable();
--		}
-+		if (dev->domain_data.phyirq > 0)
-+			generic_handle_irq_safe(dev->domain_data.phyirq);
- 	} else {
- 		netdev_warn(dev->net,
- 			    "unexpected interrupt: 0x%08x\n", intdata);
+-	local_irq_disable();
+-	ret =3D generic_handle_irq(irq);
+-	local_irq_enable();
+-
++	ret =3D generic_handle_irq_safe(irq);
+ 	if (ret)
+ 		dev_err(dev, "failed to invoke irq handler\n");
+=20
 --=20
 2.34.1
 
