@@ -2,91 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08ABD4A3EC7
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 09:43:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9E6D4A3ECD
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 09:44:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345019AbiAaInX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 03:43:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39698 "EHLO
+        id S1344458AbiAaIod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 03:44:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344458AbiAaInU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 03:43:20 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34269C061714;
-        Mon, 31 Jan 2022 00:43:20 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id c190-20020a1c9ac7000000b0035081bc722dso8793510wme.5;
-        Mon, 31 Jan 2022 00:43:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Qi/zABG7gb+Ye7V/MnSI6gU9BC7CUhBAHbHLsfakjjg=;
-        b=ilm+gX1nWIdPMtjzH4LqVjrzofZ696k8Ch3KNgYXZKsWOwDCQliegGhpCKO2KtUlI1
-         w8mEhQFXfpPBy1U8LHO+wUpJ8Kg5aQ0Uz25gOjpOYezx9RU4rRNp6E6LHFZPQHE4ex8E
-         ECSs5dRtIR6oo06ArkejwMwzqFvza6d8gmenHBOQCHYU/+3+Q2frrRXKH820dspOD5yz
-         BQmSm0E/rVkfBXh+5U+UVRqpQdhdIC+VMkPdc9od71bmjUDKEA17RXrshciYIKOAKVYR
-         W9yWnWKJ4GGqzkqVOiW/ShdECI85UdS/7q166dF8//izRTORCSOWNAITEaR0fUHNcx+C
-         BpnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Qi/zABG7gb+Ye7V/MnSI6gU9BC7CUhBAHbHLsfakjjg=;
-        b=qS20DZuZC4a1KV8aqgR6yP19IXv9r/oiOIH0xB5Zf4H6cpVHa9SGdkE372FuwXkoFy
-         tkkWun5d3wSIzS36ijtvVzOrkZYJi7qRHSq3fIepBLpSTHlSPa4Jy0Q/amZCqQNAKrgQ
-         NDtfI69yGNga1HVXz87SvPErq6mtLp7xP9xUkpcFezw7eKnzxC2/6ThB7eu2nf5Ooh2n
-         lxf/LJDm4lDWHB3Xzdeg5IZjoOZvzl5IcvUMdPvtyS0QfSglg8zzgdD/DvxC3rm5TTF/
-         efNwH0cjLHytuQQbCPWecB7uWKEEsCA50wu1q7GGO/zlTnHBxlejqc7VsWm/QINUzdNi
-         x78Q==
-X-Gm-Message-State: AOAM533e6myjUqYaWyJJSs7RKhsRROwlzyDGG191w9PBs50+nfJ6ZXxo
-        BhktLP62dxYdmTOFtwbE9ZQ=
-X-Google-Smtp-Source: ABdhPJzHvE1IQ6rmKoRZ07ClcR/2PZ+8R8gDBkyt60+ezc0zvMeoI+wS/4xKMMpqZzZ70aREXPwukg==
-X-Received: by 2002:a1c:1dd2:: with SMTP id d201mr17530355wmd.141.1643618598742;
-        Mon, 31 Jan 2022 00:43:18 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id n15sm13421102wrf.37.2022.01.31.00.43.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 00:43:18 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Roi Dayan <roid@nvidia.com>,
-        Oz Shlomo <ozsh@nvidia.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] net/mlx5e: Fix spelling mistake "supoported" -> "supported"
-Date:   Mon, 31 Jan 2022 08:43:17 +0000
-Message-Id: <20220131084317.8058-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
+        with ESMTP id S232241AbiAaIod (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 03:44:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA9BC061714;
+        Mon, 31 Jan 2022 00:44:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8319CB829D4;
+        Mon, 31 Jan 2022 08:44:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D526DC340E8;
+        Mon, 31 Jan 2022 08:44:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643618670;
+        bh=saJIIIE6VKH0mPHcJf9BDEM/BezCCYAr1aM541i3RVY=;
+        h=In-Reply-To:References:From:To:Cc:Subject:Date:From;
+        b=cGHPRpQLR7DxXwRgYOsUDBy8VcoMeIZ3r0XZCRYuINs8wnBtiuwPw8qrIwCryKQYW
+         wN1q/OMpizzEpAqwOd3ztPVlTl7pgGjF6K+fFgKvWoD3T7VYz+yofZ2tOKnbnjvEZa
+         NuuHx+v33K7DW6s1pf9oXzhO1oyUIQyb0whvhNWyOCr4REuNYX7/VnD3AOT1eejhbl
+         8yqIXjyX6XaoWbI/Gdn3eYvfkRl7yTmLQhTs6FoDUHkHodSWjSDq8Y5W/Ipx6VEfnI
+         RU4bKoFtucW1M8zwphRO3INT2iAdL8RayOwD54x+12SkoWLYbj8sPgSq2RNUXc8ynk
+         HSkVUE7WQlc8w==
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1643542141-28956-1-git-send-email-raeds@nvidia.com>
+References: <1643542141-28956-1-git-send-email-raeds@nvidia.com>
+From:   Antoine Tenart <atenart@kernel.org>
+To:     Raed Salem <raeds@nvidia.com>, kuba@kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lior Nahmanson <liorna@nvidia.com>,
+        Raed Salem <raeds@nvidia.com>
+Subject: Re: [PATCH net] net: macsec: Fix offload support for NETDEV_UNREGISTER event
+Message-ID: <164361866706.4133.9367433003115932230@kwain>
+Date:   Mon, 31 Jan 2022 09:44:27 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a spelling mistake in a NL_SET_ERR_MSG_MOD error
-message.  Fix it.
+Quoting Raed Salem (2022-01-30 12:29:01)
+> From: Lior Nahmanson <liorna@nvidia.com>
+>=20
+> Current macsec netdev notify handler handles NETDEV_UNREGISTER event by
+> releasing relevant SW resources only, this causes resources leak in case
+> of macsec HW offload, as the underlay driver was not notified to clean
+> it's macsec offload resources.
+>=20
+> Fix by calling the underlay driver to clean it's relevant resources
+> by moving offload handling from macsec_dellink() to macsec_common_dellink=
+()
+> when handling NETDEV_UNREGISTER event.
+>=20
+> Fixes: 3cf3227a21d1 ("net: macsec: hardware offloading infrastructure")
+> Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
+> Reviewed-by: Raed Salem <raeds@nvidia.com>
+> Signed-off-by: Raed Salem <raeds@nvidia.com>
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Antoine Tenart <atenart@kernel.org>
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
-index 85f0cb88127f..9fb1a9a8bc02 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
-@@ -21,7 +21,7 @@ tc_act_can_offload_ct(struct mlx5e_tc_act_parse_state *parse_state,
- 	}
- 
- 	if (parse_state->ct && !clear_action) {
--		NL_SET_ERR_MSG_MOD(extack, "Multiple CT actions are not supoported");
-+		NL_SET_ERR_MSG_MOD(extack, "Multiple CT actions are not supported");
- 		return false;
- 	}
- 
--- 
-2.34.1
+Thanks!
+Antoine
 
+> ---
+>  drivers/net/macsec.c | 24 ++++++++++++------------
+>  1 file changed, 12 insertions(+), 12 deletions(-)
+>=20
+> diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+> index 16aa3a4..33ff33c 100644
+> --- a/drivers/net/macsec.c
+> +++ b/drivers/net/macsec.c
+> @@ -3870,6 +3870,18 @@ static void macsec_common_dellink(struct net_devic=
+e *dev, struct list_head *head
+>         struct macsec_dev *macsec =3D macsec_priv(dev);
+>         struct net_device *real_dev =3D macsec->real_dev;
+> =20
+> +       /* If h/w offloading is available, propagate to the device */
+> +       if (macsec_is_offloaded(macsec)) {
+> +               const struct macsec_ops *ops;
+> +               struct macsec_context ctx;
+> +
+> +               ops =3D macsec_get_ops(netdev_priv(dev), &ctx);
+> +               if (ops) {
+> +                       ctx.secy =3D &macsec->secy;
+> +                       macsec_offload(ops->mdo_del_secy, &ctx);
+> +               }
+> +       }
+> +
+>         unregister_netdevice_queue(dev, head);
+>         list_del_rcu(&macsec->secys);
+>         macsec_del_dev(macsec);
+> @@ -3884,18 +3896,6 @@ static void macsec_dellink(struct net_device *dev,=
+ struct list_head *head)
+>         struct net_device *real_dev =3D macsec->real_dev;
+>         struct macsec_rxh_data *rxd =3D macsec_data_rtnl(real_dev);
+> =20
+> -       /* If h/w offloading is available, propagate to the device */
+> -       if (macsec_is_offloaded(macsec)) {
+> -               const struct macsec_ops *ops;
+> -               struct macsec_context ctx;
+> -
+> -               ops =3D macsec_get_ops(netdev_priv(dev), &ctx);
+> -               if (ops) {
+> -                       ctx.secy =3D &macsec->secy;
+> -                       macsec_offload(ops->mdo_del_secy, &ctx);
+> -               }
+> -       }
+> -
+>         macsec_common_dellink(dev, head);
+> =20
+>         if (list_empty(&rxd->secys)) {
+> --=20
+> 1.8.3.1
+>=20
