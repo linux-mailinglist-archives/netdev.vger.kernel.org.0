@@ -2,143 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DD6E4A507B
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 21:48:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80DB64A5086
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 21:51:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243943AbiAaUsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 15:48:30 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:43879 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239845AbiAaUs3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 15:48:29 -0500
-Received: by mail-il1-f198.google.com with SMTP id t8-20020a92c0c8000000b002bc1dbe3a04so3905395ilf.10
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 12:48:29 -0800 (PST)
+        id S1355803AbiAaUvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 15:51:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231301AbiAaUvR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 15:51:17 -0500
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBAAC061714
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 12:51:17 -0800 (PST)
+Received: by mail-il1-x12f.google.com with SMTP id z7so12524591ilb.6
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 12:51:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=J7Z4frfkNygPo6FHbFDcIBQYjHYPOVKaL1K52NaFr7Y=;
+        b=BjAQxP8L1k/qkssM57Eeqh/iZuhxpcsYtp+qHi/65avwheRcz6i7eo/vACvPVXPvT9
+         XVBxaKx3LbYT0pBh+ewN2IcfEH1cCdc9Se7Jcov1/klW9k2ShPE6VhfQvLvTeFmOjasg
+         2RdAbkHjHJ3KEqwwQxJOjJvsmswijGquoarMxgcujVRXvO9iUR28SFswB5R81HzdmadL
+         FD8rwIANj9NmF6wbWyf4EhpdOTAwdtuoqmJR1B3vdLzoEJnP8Km9g7Dk0dwar6SL+JSt
+         kmQ91wF/48s5ZaUeLtEg17R1FGg146zhnY/GKcbxhqjJsxrrToHZybYOB87ia8O0A7b1
+         Q4WA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=T9rjZ+M8Y1i2lpTl6W7/0kER7Ge+gG5iNvXt/wJcle8=;
-        b=d6CK0Ev0oj9A1e8Sn8y91M4E32XQn4csi1u1+XOPhI/ZCc05kfYL9WMZeHTi2bvtIX
-         08n+IC5yLmZswltC8Awif55yc6tXgTJR5vkt4h+bt0h5o5f7vpMDLLITAXQYm8UTrboY
-         CPFH6ZlrS1Utp6utbCM3MECEU00qsoNKJH32UFsdJH4KAzRTcnBjLg5DVvCw7QZpgiF9
-         vR+bM/RLMJtzu+G0do/z5ws2ldLa+dvM4wrdWBu4cjx/apXy12L88Bz1FO+VJPQ4lttI
-         CYPNFb7jEcanCBWTLq3JtWlbVr4AuDBzpUDiNEEwsc+09NnZERBU8OrPAlg1i64yT5LY
-         sDAw==
-X-Gm-Message-State: AOAM533YA6c230Cq4g4qw9udAZdh/ZSmO27AfhjTcgfnp05Tg0a0N3T7
-        x4Ih9HSjylplBRyg+FTcSuaVZO9/908kynhfAMMg77pVbV9/
-X-Google-Smtp-Source: ABdhPJz5pmOYq4Mwfg2X0YrpgIxDTixme3aXabI5umXBhD6whhdooP7V0wMm+BCJr4cJWlhDmfwSOk6TYCpHIJGtRaMYO4A/uTVY
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=J7Z4frfkNygPo6FHbFDcIBQYjHYPOVKaL1K52NaFr7Y=;
+        b=h1KHVjPzpLPSACQN8KCaLpwPjerX65vikt+x5zt/SwwMo9vbsjWB4X+4U84yn3jaiK
+         mAs+u2Ms9VCcgN/9JY4zbiiDrAgOB9T8KjHFXXoZ2iLDFFsJgMZBzdve/4rwHDyQAtvi
+         2L8ee3FQBkj+yPAUKJKWTOog4J3BPnLRg7rrzpytn79HE4g3XsbbDHCE7bkZZiYItY3L
+         dCe6QHkIPx7+hfpdWCGCpQtJcVj3O/sEosEvjdjZCP2K2AMTNxJ1YDQlHJEdPRGGpWNF
+         L8sH3XS51kM09+s5gY2ThR0fQdvluZ+XXtxmx+94MfOIn7cHyKfLCa1H33GjiEMfEfbR
+         G+Fg==
+X-Gm-Message-State: AOAM533E2uVVxva/WARrmUCyR1nQJIfQSIduEY0ZYC9Ed1AY3/TYg9EQ
+        QGbB8QhROVI78tIXxtaJ7vbFTc1WsEsYLxiMY4g=
+X-Google-Smtp-Source: ABdhPJyaDcWe+S/lDBqV1n9pNbr5XdePhC4MHCJPFf4VDuG9KRdaEbgAXGQecPW6PSZLFsD0PvoPGOx+asPc+WUekQI=
+X-Received: by 2002:a05:6e02:1c0f:: with SMTP id l15mr1945015ilh.241.1643662276767;
+ Mon, 31 Jan 2022 12:51:16 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:24d5:: with SMTP id y21mr5149211jat.115.1643662109299;
- Mon, 31 Jan 2022 12:48:29 -0800 (PST)
-Date:   Mon, 31 Jan 2022 12:48:29 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000027db6705d6e6e88a@google.com>
-Subject: [syzbot] possible deadlock in ___neigh_create
-From:   syzbot <syzbot+5239d0e1778a500d477a@syzkaller.appspotmail.com>
-To:     daniel@iogearbox.net, davem@davemloft.net, dsahern@kernel.org,
-        edumazet@google.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, roopa@nvidia.com,
-        syzkaller-bugs@googlegroups.com
+Received: by 2002:a05:6638:240a:0:0:0:0 with HTTP; Mon, 31 Jan 2022 12:51:16
+ -0800 (PST)
+Reply-To: ayishagddafio@mail.ru
+From:   Aisha Gaddafi <marroncoulibaly@gmail.com>
+Date:   Mon, 31 Jan 2022 12:51:16 -0800
+Message-ID: <CAFSXqed1G8vDx7JogidT24pTaDtxCyTKJqA7Tn711-O7DdFnnA@mail.gmail.com>
+Subject: Liebster Freund,?
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Liebster Freund,
 
-syzbot found the following issue on:
+Im Namen Gottes, des gn=C3=A4digsten, barmherzigsten.
 
-HEAD commit:    6449520391df net: stmmac: properly handle with runtime pm ..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=111187e0700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a6620d0aab7dd315
-dashboard link: https://syzkaller.appspot.com/bug?extid=5239d0e1778a500d477a
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Friede sei mit dir und Barmherzigkeit sei mit dir und Segen sei mit dir.
+Ich habe die Summe von 27,5 Millionen USD f=C3=BCr Investitionen, ich
+interessiere mich f=C3=BCr Sie f=C3=BCr die Unterst=C3=BCtzung von
+Investitionsprojekten in Ihrem Land. Mein Name ist Aisha Gaddafi und
+lebe derzeit im Oman, ich bin eine Witwe und alleinerziehende Mutter
+mit drei Kindern, die einzige leibliche Tochter des verstorbenen
+libyschen Pr=C3=A4sidenten (dem verstorbenen Oberst Muammar Gaddafi) und
+stehe derzeit unter politischem Asylschutz der omanischen Regierung.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Bitte antworten Sie dringend f=C3=BCr weitere Details.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5239d0e1778a500d477a@syzkaller.appspotmail.com
-
-============================================
-WARNING: possible recursive locking detected
-5.17.0-rc1-syzkaller-00210-g6449520391df #0 Not tainted
---------------------------------------------
-kworker/0:16/14617 is trying to acquire lock:
-ffffffff8d4dd370 (&tbl->lock){++-.}-{2:2}, at: ___neigh_create+0x9e1/0x2990 net/core/neighbour.c:652
-
-but task is already holding lock:
-ffffffff8d4dd370 (&tbl->lock){++-.}-{2:2}, at: neigh_managed_work+0x35/0x250 net/core/neighbour.c:1572
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&tbl->lock);
-  lock(&tbl->lock);
-
- *** DEADLOCK ***
-
- May be due to missing lock nesting notation
-
-5 locks held by kworker/0:16/14617:
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:631 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:658 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: process_one_work+0x890/0x1650 kernel/workqueue.c:2278
- #1: ffffc9000293fdb8 ((work_completion)(&(&tbl->managed_work)->work)){+.+.}-{0:0}, at: process_one_work+0x8c4/0x1650 kernel/workqueue.c:2282
- #2: ffffffff8d4dd370 (&tbl->lock){++-.}-{2:2}, at: neigh_managed_work+0x35/0x250 net/core/neighbour.c:1572
- #3: ffffffff8bb83ae0 (rcu_read_lock){....}-{1:2}, at: ip6_nd_hdr net/ipv6/ndisc.c:466 [inline]
- #3: ffffffff8bb83ae0 (rcu_read_lock){....}-{1:2}, at: ndisc_send_skb+0x84b/0x17f0 net/ipv6/ndisc.c:502
- #4: ffffffff8bb83a80 (rcu_read_lock_bh){....}-{1:2}, at: lwtunnel_xmit_redirect include/net/lwtunnel.h:95 [inline]
- #4: ffffffff8bb83a80 (rcu_read_lock_bh){....}-{1:2}, at: ip6_finish_output2+0x2ad/0x14f0 net/ipv6/ip6_output.c:112
-
-stack backtrace:
-CPU: 0 PID: 14617 Comm: kworker/0:16 Not tainted 5.17.0-rc1-syzkaller-00210-g6449520391df #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events_power_efficient neigh_managed_work
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_deadlock_bug kernel/locking/lockdep.c:2956 [inline]
- check_deadlock kernel/locking/lockdep.c:2999 [inline]
- validate_chain kernel/locking/lockdep.c:3788 [inline]
- __lock_acquire.cold+0x149/0x3ab kernel/locking/lockdep.c:5027
- lock_acquire kernel/locking/lockdep.c:5639 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5604
- __raw_write_lock_bh include/linux/rwlock_api_smp.h:202 [inline]
- _raw_write_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:334
- ___neigh_create+0x9e1/0x2990 net/core/neighbour.c:652
- ip6_finish_output2+0x1070/0x14f0 net/ipv6/ip6_output.c:123
- __ip6_finish_output net/ipv6/ip6_output.c:191 [inline]
- __ip6_finish_output+0x61e/0xe90 net/ipv6/ip6_output.c:170
- ip6_finish_output+0x32/0x200 net/ipv6/ip6_output.c:201
- NF_HOOK_COND include/linux/netfilter.h:296 [inline]
- ip6_output+0x1e4/0x530 net/ipv6/ip6_output.c:224
- dst_output include/net/dst.h:451 [inline]
- NF_HOOK include/linux/netfilter.h:307 [inline]
- ndisc_send_skb+0xa99/0x17f0 net/ipv6/ndisc.c:508
- ndisc_send_ns+0x3a9/0x840 net/ipv6/ndisc.c:650
- ndisc_solicit+0x2cd/0x4f0 net/ipv6/ndisc.c:742
- neigh_probe+0xc2/0x110 net/core/neighbour.c:1040
- __neigh_event_send+0x37d/0x1570 net/core/neighbour.c:1201
- neigh_event_send include/net/neighbour.h:470 [inline]
- neigh_managed_work+0x162/0x250 net/core/neighbour.c:1574
- process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
- worker_thread+0x657/0x1110 kernel/workqueue.c:2454
- kthread+0x2e9/0x3a0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+meine E-Mail-Adresse unten: ayishagddafio@mail.ru
+Vielen Dank
+Mit freundlichen Gr=C3=BC=C3=9Fen Aisha
