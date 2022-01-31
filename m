@@ -2,128 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF7C84A476A
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 13:41:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E4FF4A4774
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 13:45:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378041AbiAaMll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 07:41:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377988AbiAaMlj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 07:41:39 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D69D1C061714
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 04:41:38 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id p15so42646591ejc.7
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 04:41:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uOMDqM7nFHBhMqUx1OOBgYD4V9GViIpEqxbn5gfAz2s=;
-        b=LNNtcyJFL1OOqiEf0ymER4Lytjbai2AVh6Ymh34CIAwDGhYcFsoS8UUxHmoAb/ztRO
-         nXUKqt0oSWOt96edT4TCJjA+IS1n1Q72nu7xgX9Pjm0YwYwsTNLIAnwKFIKqwsx/Z8W1
-         h4VAYhifPza9ZZAyTJvVHIF8H23myhgwvLX559EozC18WRw8+ABziI7rrC07qm/tTpi6
-         byh+9xwLnxHwlu0v6UNBGXw57pwzP9Y0V1amZ4QJ8bYf90QQfFzea73F/qAusH3mEy9H
-         DMYdIzYDVJv37J4MvUQcmHCcOqfAVdWEa6J0YVPO1Pzr4Hv1cUss7IL0Gnc3P18YT8nQ
-         bYfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uOMDqM7nFHBhMqUx1OOBgYD4V9GViIpEqxbn5gfAz2s=;
-        b=hG1qH7VgpUPYTwMhRWvR2zGjWKjSFowIYr4CLeNodasS5XkatfTgsUEMv4tUbN/wQU
-         iaaEwFoeiGidpZO8XxI2mXSL90GLw+GhPOuavpXJNRgPBEYJY9fCxyZjCEO5eRpDTR5z
-         cGndb3h5eB3IIboITR0opIE3aQ8HQdabZF5Bp8zCtkGPFrV2IjWXy9EggMf/N9tV0Zq4
-         HhIXbsXrLSAWY6rv38ee9qFd8KhRUZO4CN8lnLvIfUNcJOjHDDZ7rkehvJsjH4G9GjPB
-         0gzU0vOWuPToi79v7hNgqC8SwzOUxXZ38rHoGSSugBBGaUd4k+OaN586ZLCY/eNDcpym
-         2SPA==
-X-Gm-Message-State: AOAM531upfFpxArcShWh0hqcAceEK/KLq24uQH6zHij9KAwz0sNts7SM
-        U30pvkv8UKTbW8w6MROK/DQ=
-X-Google-Smtp-Source: ABdhPJysp81o5zSm4ibeDfPldlz3rwa2yD+W1sPRtGPwjbQbxH7Vo14uopiNgEDnTdTlgkc7g3oW5A==
-X-Received: by 2002:a17:907:3f26:: with SMTP id hq38mr1687590ejc.431.1643632896845;
-        Mon, 31 Jan 2022 04:41:36 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id q10sm13451582ejn.3.2022.01.31.04.41.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 04:41:36 -0800 (PST)
-Date:   Mon, 31 Jan 2022 14:41:35 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Miroslav Lichvar <mlichvar@redhat.com>
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        netdev@vger.kernel.org, Yangbo Lu <yangbo.lu@nxp.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH net-next 1/5] ptp: unregister virtual clocks when
- unregistering physical clock.
-Message-ID: <20220131124135.62khcaehujxrlhbf@skbuf>
-References: <20220127114536.1121765-1-mlichvar@redhat.com>
- <20220127114536.1121765-2-mlichvar@redhat.com>
- <87czkcn33p.fsf@intel.com>
- <Yfe0+N2cMJaWNbo7@localhost>
+        id S1377686AbiAaMp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 07:45:57 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:58732 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237795AbiAaMp4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 07:45:56 -0500
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20VAW3Wd002646;
+        Mon, 31 Jan 2022 12:45:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=/OsTF9SJkYAu207G1ekmBdpbvs3JYQQljIoeEwnOH0I=;
+ b=ih7UbMKTfMdaxx6qnN9sUkiX3IQvswa0xovzyAmdXTSCqQQzuCm1AzROuurZdzOUC5jd
+ ++sjQ4oUFzR9sNRUaZl8Le9Q2Wh1FMYevj++DLIC24ufns1jYFbWUqn7ITxo6npo1o+v
+ BgzhaCYDsSch7gQ3noe4c8CjZKWf+Yyd/rTuvWEI0BdknNsr2lYNCBrQAhxN+ebD24vA
+ q9911/PqGxjdAEYeB4412Gfk1QvyDsrANwrUoNf6lyL3fpuCa2fRSHpcJFNSpR4IwSZU
+ dAQOtYmIZNTmu8sUgWY4Y0MLW6EwJ5TDNMUVXI5fEFvVtsKAkGORgK+wce/j9jccabgt 2Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dxe3ptm6r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 12:45:45 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20VCUIKl024511;
+        Mon, 31 Jan 2022 12:45:45 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dxe3ptm68-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 12:45:45 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20VCgM1K011710;
+        Mon, 31 Jan 2022 12:45:43 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma03fra.de.ibm.com with ESMTP id 3dvw79aqjs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 12:45:42 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20VCjeHJ36635086
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 31 Jan 2022 12:45:40 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 805E411C05E;
+        Mon, 31 Jan 2022 12:45:40 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 27E2511C054;
+        Mon, 31 Jan 2022 12:45:40 +0000 (GMT)
+Received: from [9.145.79.147] (unknown [9.145.79.147])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 31 Jan 2022 12:45:40 +0000 (GMT)
+Message-ID: <0b99dc4d-319e-e4fa-b4bf-ddce5005be47@linux.ibm.com>
+Date:   Mon, 31 Jan 2022 13:45:55 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 net-next 1/3] net/smc: Make smc_tcp_listen_work()
+ independent
+Content-Language: en-US
+To:     "D. Wythe" <alibuda@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        matthieu.baerts@tessares.net
+References: <cover.1643380219.git.alibuda@linux.alibaba.com>
+ <53383b68f056b4c6d697935d2ea1c170618eebbe.1643380219.git.alibuda@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <53383b68f056b4c6d697935d2ea1c170618eebbe.1643380219.git.alibuda@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 9IhOtLglKAFp9Wg4JeacZKxDFX1s9vHT
+X-Proofpoint-ORIG-GUID: GIbkTT_ul5vJdf_bFZ6FkDf4fIh_j-iP
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yfe0+N2cMJaWNbo7@localhost>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-31_05,2022-01-28_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 clxscore=1011
+ priorityscore=1501 mlxlogscore=999 impostorscore=0 mlxscore=0 spamscore=0
+ adultscore=0 bulkscore=0 lowpriorityscore=0 suspectscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2201310083
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Mon, Jan 31, 2022 at 11:07:52AM +0100, Miroslav Lichvar wrote:
-> On Thu, Jan 27, 2022 at 03:58:02PM -0800, Vinicius Costa Gomes wrote:
-> > Miroslav Lichvar <mlichvar@redhat.com> writes:
-> > 
-> > > When unregistering a physical clock which has some virtual clocks,
-> > > unregister the virtual clocks with it.
+On 28/01/2022 15:44, D. Wythe wrote:
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
 > 
-> > I am not against this change, but I think this problem was discussed
-> > before and the suggestions were to fix it differently:
-> > 
-> > https://lore.kernel.org/all/20210807144332.szyazdfl42abwzmd@skbuf/
+> In multithread and 10K connections benchmark, the backend TCP connection
+> established very slowly, and lots of TCP connections stay in SYN_SENT
+> state.
 > 
-> Is a linked device supposed to be unregistered automatically before
-> the parent? The referenced document mentions only suspending
-> and resuming, nothing about unregistering.
+> Client: smc_run wrk -c 10000 -t 4 http://server
 > 
-> I tried
+> the netstate of server host shows like:
+>     145042 times the listen queue of a socket overflowed
+>     145042 SYNs to LISTEN sockets dropped
 > 
-> 	device_link_add(parent, &ptp->dev, DL_FLAG_AUTOREMOVE_CONSUMER);
+> One reason of this issue is that, since the smc_tcp_listen_work() shared
+> the same workqueue (smc_hs_wq) with smc_listen_work(), while the
+> smc_listen_work() do blocking wait for smc connection established. Once
+> the workqueue became congested, it's will block the accpet() from TCP
+                                                      ^^^
+                                                      accept()
+> listen.
 > 
-> and also with no flags specified, but it didn't seem to do anything
-> for the vclock. It was still oopsing.
+> This patch creates a independent workqueue(smc_tcp_ls_wq) for
+> smc_tcp_listen_work(), separate it from smc_listen_work(), which is
+> quite acceptable considering that smc_tcp_listen_work() runs very fast.
 > 
-> Any hints?
+> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+> ---
+>  net/smc/af_smc.c | 13 +++++++++++--
+>  net/smc/smc.h    |  1 +
+>  2 files changed, 12 insertions(+), 2 deletions(-)
 > 
-> -- 
-> Miroslav Lichvar
-> 
+> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> index d5ea62b..1b40304 100644
+> --- a/net/smc/af_smc.c
+> +++ b/net/smc/af_smc.c
+> @@ -59,6 +59,7 @@
+>  						 * creation on client
+>  						 */
+>  
+> +struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work */
+>  struct workqueue_struct	*smc_hs_wq;	/* wq for handshake work */
+>  struct workqueue_struct	*smc_close_wq;	/* wq for close work */
+>  
+> @@ -2124,7 +2125,7 @@ static void smc_clcsock_data_ready(struct sock *listen_clcsock)
+>  	lsmc->clcsk_data_ready(listen_clcsock);
+>  	if (lsmc->sk.sk_state == SMC_LISTEN) {
+>  		sock_hold(&lsmc->sk); /* sock_put in smc_tcp_listen_work() */
+> -		if (!queue_work(smc_hs_wq, &lsmc->tcp_listen_work))
+> +		if (!queue_work(smc_tcp_ls_wq, &lsmc->tcp_listen_work))
+>  			sock_put(&lsmc->sk);
+>  	}
+>  }
+> @@ -2919,9 +2920,14 @@ static int __init smc_init(void)
+>  		goto out_nl;
+>  
+>  	rc = -ENOMEM;
+> +
+> +	smc_tcp_ls_wq = alloc_workqueue("smc_tcp_ls_wq", 0, 0);
+> +	if (!smc_tcp_ls_wq)
+> +		goto out_pnet;
+> +
+>  	smc_hs_wq = alloc_workqueue("smc_hs_wq", 0, 0);
+>  	if (!smc_hs_wq)
+> -		goto out_pnet;
+> +		goto out_alloc_tcp_ls_wq;
+>  
+>  	smc_close_wq = alloc_workqueue("smc_close_wq", 0, 0);
+>  	if (!smc_close_wq)
+> @@ -2992,6 +2998,8 @@ static int __init smc_init(void)
+>  	destroy_workqueue(smc_close_wq);
+>  out_alloc_hs_wq:
+>  	destroy_workqueue(smc_hs_wq);
+> +out_alloc_tcp_ls_wq:
+> +	destroy_workqueue(smc_tcp_ls_wq);
+>  out_pnet:
+>  	smc_pnet_exit();
+>  out_nl:
+> @@ -3010,6 +3018,7 @@ static void __exit smc_exit(void)
+>  	smc_core_exit();
+>  	smc_ib_unregister_client();
+>  	destroy_workqueue(smc_close_wq);
+> +	destroy_workqueue(smc_tcp_ls_wq);
+>  	destroy_workqueue(smc_hs_wq);
+>  	proto_unregister(&smc_proto6);
+>  	proto_unregister(&smc_proto);
+> diff --git a/net/smc/smc.h b/net/smc/smc.h
+> index 3d0b8e3..bd2f3dc 100644
+> --- a/net/smc/smc.h
+> +++ b/net/smc/smc.h
+> @@ -264,6 +264,7 @@ static inline struct smc_sock *smc_sk(const struct sock *sk)
+>  	return (struct smc_sock *)sk;
+>  }
+>  
+> +extern struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work */
 
-First of all, I was wrong about the device hierarchy created by the PTP
-subsystem, and as such, device links won't work.
+I don't think this extern is needed, the work queue is only used within af_smc.c, right?
+Even the smc_hs_wq would not need to be extern, but this would be a future cleanup.
 
-When you unbind a physical PTP clock, what you actually unbind is the
-driver from its parent device (the parent->parent, i.e. what is passed
-as "parent" to the parent's ptp_clock_register call).
+>  extern struct workqueue_struct	*smc_hs_wq;	/* wq for handshake work */
+>  extern struct workqueue_struct	*smc_close_wq;	/* wq for close work */
+>  
 
-But since the PTP subsystem doesn't register its devices with the device
-hierarchy (of device_register(), it only calls the first half:
-device_initialize(), it doesn't call device_add), so the dev->kobj
-doesn't get added to the devices_kset. The documentation says:
-
-| The earliest point in time when device links can be added is after
-| device_add() has been called for the supplier and device_initialize()
-| has been called for the consumer.
-
-Furthermore, PTP devices don't have a driver bound to them, with probe()
-and remove() callbacks. The only driver is that of the parent of the
-physical PHC. So no driver for the vclock => no hook to call
-ptp_vclock_unregister() from, even if a device link from ptp->dev to
-parent->parent can be added.
-
-So your solution appears to be the correct one given the structure - call
-unregister_vclock() manually.
-
-Secondly, you got the arguments in reverse: the consumer is the first
-argument, and that is &ptp->dev, and the supplier is "parent".
