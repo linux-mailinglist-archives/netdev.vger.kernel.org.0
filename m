@@ -2,183 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8CF14A4DD9
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 19:15:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8841D4A4DDA
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 19:15:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241999AbiAaSPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 13:15:00 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:29059 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237774AbiAaSO7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 13:14:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643652900; x=1675188900;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mDEoL8aQufpdgsTsSCCRElc7xa5gLInyDUWuNlFFguo=;
-  b=gHRmLV7kMm1UStS3DeQTg0EnRMb9MLUJm0G7TcKrYfllilV4KbzIcA6R
-   Q4PZqeBmiZ3UxzZY5sKbVfiVuxB8U8YQ5B+YvenHKCM/JzsytrXGKpiJl
-   bWPHN75lelxcPYSBErHp1JLunKYBWY455ZP2siCTKfPYmPSD+QvuspCEH
-   aEaMMLw/4QMflzpX9gLNzf5LrBvm2yOybnbpeE/i7FgF1y3EguC1im7uF
-   p6JT/FwdV1An8A0bklwwl2WxkDMBSCpfJW69gLoEjFTh0TKD0L0miWtU5
-   9sLJOVSmR/2FxCsVCDyuXt053t4LzCU+aYw0tifp4Igkt1bZuLZdEZe3s
-   A==;
-IronPort-SDR: fgjD7IKRRfOms0MuPlpz2/57prxNaM64qqLN3lkchd0SWHQrWHo/CflODMeL9p+4DP6y1/elQo
- ozbEuEXeNrIHSZUBtC2fj9cBuc0NOrqa45T4RXNslwYE7+Y2Dy9hwihrF/fB17lZHypgdxoHsH
- 8EIlAZVVLVx2k9m9DpNt9or3qbaUkrZUkLI4mxrXiqjuNsOsxnYpuIKEVXbvSzvFdeftHdzzYu
- mt4E+DNL7U5DY7wo7YHmVZUspiDnPzZaUKNDJwvH643FbCVRvSvEFG2066dBAKgYoHKc3xPSDH
- wCb3IQu2xJvRWyxYbtGARJy1
-X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="151482077"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Jan 2022 11:14:59 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 31 Jan 2022 11:14:58 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 31 Jan 2022 11:14:58 -0700
-Date:   Mon, 31 Jan 2022 23:44:57 +0530
-From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next 5/5] net: lan743x: Add Clause-45 MDIO access
-Message-ID: <20220131181457.v6sqhvv2jrewisxm@microsemi.com>
-References: <20220127173055.308918-1-Raju.Lakkaraju@microchip.com>
- <20220127173055.308918-6-Raju.Lakkaraju@microchip.com>
- <YfMbZC8PIZ/8vwGJ@lunn.ch>
+        id S244357AbiAaSPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 13:15:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237774AbiAaSPO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 13:15:14 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6048CC061714;
+        Mon, 31 Jan 2022 10:15:14 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id f8so12965935pgf.8;
+        Mon, 31 Jan 2022 10:15:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EYqIJEyyNz7ujllAdswrFOBF9LLHgV1FGx3WtXiHrHQ=;
+        b=Kc5RCjufDrTav5PatyCfqH7PgOTjWS/V5RUQ88x5YhSOBy4moEY+GueyzGjhzx4GZj
+         ftAWXmIphIbMK9frljtnbLUPfO8ouUfefnOabUN2MSOVFML5gmQI+juTf2l+xEc2AtVx
+         7fWL246FoqQS4BaRTM4n5UA9v9wMeE6qOC4qs038uoXbzLPzkvqsA0tOm+6K19kfCxL8
+         LLytE3dYGqh84+hb4OQ3cXeTgB2BFzAzf9v2CxnRijGN4sQWoGdPz+UWOb9u58w4GPqS
+         OTof75YFh0FcSNYlpxnxBY7IMxvGxdB/b431VfWpfwhKQP0Vh2KAo8ouQl5+fgoH58vT
+         8XAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EYqIJEyyNz7ujllAdswrFOBF9LLHgV1FGx3WtXiHrHQ=;
+        b=WMWKeYGtj0eWGC8M52i82MbVfrrmA9neLjKPZUTX2EPykPahL12sTH63EHPr0AH3kH
+         hgOYWB6svNmu9TO7kdj37PzlH+WEpLfi0PNW2iym0lKHN2nL2y1Y9TJe2XPfkDZHkvpl
+         5PJLQ7azEcu2ZNad6ddYpUzBrnROAPQnPjPfP1MSTPjTexFiKbqqVj/gvRtHxosnqD2R
+         wEzB/dPLq41iOp+cBGTIzHxhXtIXRzr0FaQniWGZKpiEE1MlsXxsKWN+EyPjDHBRrvDH
+         OJhNfgozivMonxLToUmoF+wHB6PbpfZXsWO4qnM2LrcAGFbDi0evKk91R0fFrfsmFl1z
+         FsoQ==
+X-Gm-Message-State: AOAM533fhLi2p+CUxMKfNbW9m8t99Z0kSk/gVvz32Z552CukfxkhWzGJ
+        Ne6+lfCo3VWKZNsRsTjcvzI=
+X-Google-Smtp-Source: ABdhPJwxpDb9R9dDaCIYuXhbqIk9bI1RdMp8l6svviau6i4yQd+D3BHqLdnbwMEYU5OfeBDMhkFl4Q==
+X-Received: by 2002:a63:2bc9:: with SMTP id r192mr7494518pgr.298.1643652913890;
+        Mon, 31 Jan 2022 10:15:13 -0800 (PST)
+Received: from jeffreyji1.c.googlers.com.com (173.84.105.34.bc.googleusercontent.com. [34.105.84.173])
+        by smtp.gmail.com with ESMTPSA id w11sm19244282pfu.50.2022.01.31.10.15.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jan 2022 10:15:13 -0800 (PST)
+From:   Jeffrey Ji <jeffreyjilinux@gmail.com>
+X-Google-Original-From: Jeffrey Ji <jeffreyji@google.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Brian Vazquez <brianvv@google.com>, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jeffreyji <jeffreyji@google.com>
+Subject: [PATCH v5 net-next] net-core: add InMacErrors counter
+Date:   Mon, 31 Jan 2022 18:15:07 +0000
+Message-Id: <20220131181507.3470388-1-jeffreyji@google.com>
+X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <YfMbZC8PIZ/8vwGJ@lunn.ch>
-User-Agent: NeoMutt/20180716-255-141487
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+From: jeffreyji <jeffreyji@google.com>
 
-Thank you for review comments.
+Increment InMacErrors counter when packet dropped due to incorrect dest
+MAC addr.
 
-The 01/27/2022 23:23, Andrew Lunn wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> On Thu, Jan 27, 2022 at 11:00:55PM +0530, Raju Lakkaraju wrote:
-> > PCI1A011/PCI1A041 chip support the MDIO Clause-45 access
-> >
-> > Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-> > ---
-> >  drivers/net/ethernet/microchip/lan743x_main.c | 110 +++++++++++++++++-
-> >  drivers/net/ethernet/microchip/lan743x_main.h |  16 +++
-> >  2 files changed, 123 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-> > index 6f6655eb6438..98d346aaf627 100644
-> > --- a/drivers/net/ethernet/microchip/lan743x_main.c
-> > +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-> > @@ -793,6 +793,95 @@ static int lan743x_mdiobus_write(struct mii_bus *bus,
-> >       return ret;
-> >  }
-> >
-> > +static u32 lan743x_mac_mmd_access(int id, int index, int op, u8 freq)
-> > +{
-> > +     u16 dev_addr;
-> > +     u32 ret;
-> > +
-> > +     dev_addr = (index >> 16) & 0x1f;
-> > +     ret = (id << MAC_MII_ACC_PHY_ADDR_SHIFT_) &
-> > +             MAC_MII_ACC_PHY_ADDR_MASK_;
-> > +     ret |= (dev_addr << MAC_MII_ACC_MIIMMD_SHIFT_) &
-> > +             MAC_MII_ACC_MIIMMD_MASK_;
-> > +     if (freq)
-> > +             ret |= (freq << MAC_MII_ACC_MDC_CYCLE_SHIFT_) &
-> > +                     MAC_MII_ACC_MDC_CYCLE_MASK_;
-> 
-> All callers of this function appear to pass freq as 0. So you can
-> remove this.
-> 
+An example when this drop can occur is when manually crafting raw
+packets that will be consumed by a user space application via a tap
+device. For testing purposes local traffic was generated using trafgen
+for the client and netcat to start a server
 
-Accepted.
-Yes. Currently frequency is not programming.
-I will change.
+example output from nstat:
+\~# nstat -a | grep InMac
+Ip6InMacErrors                  0                  0.0
+IpExtInMacErrors                1                  0.0
 
-> > +     if (op == 1)
-> > +             ret |= MAC_MII_ACC_MIICMD_WRITE_;
-> > +     else if (op == 2)
-> > +             ret |= MAC_MII_ACC_MIICMD_READ_;
-> > +     else if (op == 3)
-> > +             ret |= MAC_MII_ACC_MIICMD_READ_INC_;
-> > +     else
-> > +             ret |= MAC_MII_ACC_MIICMD_ADDR_;
-> 
-> > +             mmd_access = lan743x_mac_mmd_access(phy_id, index, 0, 0);
-> 
-> It is pretty opaque what the 0 means here. How about you actually pass
-> MAC_MII_ACC_MIICMD_ values?
-> 
-> lan743x_mac_mmd_access(phy_id, index, );
-> 
+Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
+counter was incremented.
 
-Accepted. I will change
+changelog:
 
-> > +             if (adapter->mdiobus->probe_capabilities == MDIOBUS_C45)
-> > +                     phydev->c45_ids.devices_in_package &= ~BIT(0);
-> >       }
-> 
-> A MAC driver should not be modifying the phydev structure.
-> 
+v5:
+Change from SKB_DROP_REASON_BAD_DEST_MAC to SKB_DROP_REASON_OTHERHOST
 
-Accepted. I will remove this change.
+v3-4:
+Remove Change-Id
 
-> >       /* MAC doesn't support 1000T Half */
-> > @@ -2822,12 +2914,14 @@ static int lan743x_mdiobus_init(struct lan743x_adapter *adapter)
-> >                       sgmii_ctl &= ~SGMII_CTL_SGMII_POWER_DN_;
-> >                       lan743x_csr_write(adapter, SGMII_CTL, sgmii_ctl);
-> >                       netif_info(adapter, drv, adapter->netdev, "SGMII operation\n");
-> > +                     adapter->mdiobus->probe_capabilities = MDIOBUS_C22_C45;
-> >               } else {
-> >                       sgmii_ctl = lan743x_csr_read(adapter, SGMII_CTL);
-> >                       sgmii_ctl &= ~SGMII_CTL_SGMII_ENABLE_;
-> >                       sgmii_ctl |= SGMII_CTL_SGMII_POWER_DN_;
-> >                       lan743x_csr_write(adapter, SGMII_CTL, sgmii_ctl);
-> >                       netif_info(adapter, drv, adapter->netdev, "GMII operation\n");
-> > +                     adapter->mdiobus->probe_capabilities = MDIOBUS_C22;
-> >               }
-> >       } else {
-> >               chip_ver = lan743x_csr_read(adapter, STRAP_READ);
-> > @@ -2839,19 +2933,29 @@ static int lan743x_mdiobus_init(struct lan743x_adapter *adapter)
-> >                       sgmii_ctl &= ~SGMII_CTL_SGMII_POWER_DN_;
-> >                       lan743x_csr_write(adapter, SGMII_CTL, sgmii_ctl);
-> >                       netif_info(adapter, drv, adapter->netdev, "SGMII operation\n");
-> > +                     adapter->mdiobus->probe_capabilities = MDIOBUS_C22_C45;
-> >               } else {
-> >                       sgmii_ctl = lan743x_csr_read(adapter, SGMII_CTL);
-> >                       sgmii_ctl &= ~SGMII_CTL_SGMII_ENABLE_;
-> >                       sgmii_ctl |= SGMII_CTL_SGMII_POWER_DN_;
-> >                       lan743x_csr_write(adapter, SGMII_CTL, sgmii_ctl);
-> >                       netif_info(adapter, drv, adapter->netdev, "GMII operation\n");
-> > +                     adapter->mdiobus->probe_capabilities = MDIOBUS_C22;
-> 
-> This manipulation of adapter->mdiobus->probe_capabilities based on
-> SGMII vs RGMII makes no sense. It should be set based on what the bus
-> master can actually do. I assume the PCI1A011/PCI1A041 can do both C22
-> and C45. So it should look at the reg value and either do a C45
-> transaction, or a C22 transaction. Do the older chips not support C45?
-> In that case, return -EOPNOTSUPP if asked to do a C45 transaction.
-> 
+v2:
+Use skb_free_reason() for tracing
+Add real-life example in patch msg
 
-Yes, Older chip does not suuport C45.
-I will change code such that without upate the
-"adapter->mdiobus->probe_capabilities" variable, assign the read/write
-functions based chip id.
+Signed-off-by: jeffreyji <jeffreyji@google.com>
+---
+ include/linux/skbuff.h    |  1 +
+ include/uapi/linux/snmp.h |  1 +
+ net/ipv4/ip_input.c       |  7 +++++--
+ net/ipv4/proc.c           |  1 +
+ net/ipv6/ip6_input.c      | 12 +++++++-----
+ net/ipv6/proc.c           |  1 +
+ 6 files changed, 16 insertions(+), 7 deletions(-)
 
->         Andrew
-
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index bf11e1fbd69b..c831e3a502f2 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -320,6 +320,7 @@ enum skb_drop_reason {
+ 	SKB_DROP_REASON_TCP_CSUM,
+ 	SKB_DROP_REASON_TCP_FILTER,
+ 	SKB_DROP_REASON_UDP_CSUM,
++	SKB_DROP_REASON_OTHERHOST,
+ 	SKB_DROP_REASON_MAX,
+ };
+ 
+diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
+index 904909d020e2..ac2fac12dd7d 100644
+--- a/include/uapi/linux/snmp.h
++++ b/include/uapi/linux/snmp.h
+@@ -57,6 +57,7 @@ enum
+ 	IPSTATS_MIB_ECT0PKTS,			/* InECT0Pkts */
+ 	IPSTATS_MIB_CEPKTS,			/* InCEPkts */
+ 	IPSTATS_MIB_REASM_OVERLAPS,		/* ReasmOverlaps */
++	IPSTATS_MIB_INMACERRORS,		/* InMacErrors */
+ 	__IPSTATS_MIB_MAX
+ };
+ 
+diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+index 3a025c011971..780892526166 100644
+--- a/net/ipv4/ip_input.c
++++ b/net/ipv4/ip_input.c
+@@ -441,8 +441,11 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
+ 	/* When the interface is in promisc. mode, drop all the crap
+ 	 * that it receives, do not try to analyse it.
+ 	 */
+-	if (skb->pkt_type == PACKET_OTHERHOST)
+-		goto drop;
++	if (skb->pkt_type == PACKET_OTHERHOST) {
++		__IP_INC_STATS(net, IPSTATS_MIB_INMACERRORS);
++		kfree_skb_reason(skb, SKB_DROP_REASON_OTHERHOST);
++		return NULL;
++	}
+ 
+ 	__IP_UPD_PO_STATS(net, IPSTATS_MIB_IN, skb->len);
+ 
+diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
+index f30273afb539..dfe0a1dbf8e9 100644
+--- a/net/ipv4/proc.c
++++ b/net/ipv4/proc.c
+@@ -117,6 +117,7 @@ static const struct snmp_mib snmp4_ipextstats_list[] = {
+ 	SNMP_MIB_ITEM("InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
+ 	SNMP_MIB_ITEM("InCEPkts", IPSTATS_MIB_CEPKTS),
+ 	SNMP_MIB_ITEM("ReasmOverlaps", IPSTATS_MIB_REASM_OVERLAPS),
++	SNMP_MIB_ITEM("InMacErrors", IPSTATS_MIB_INMACERRORS),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 80256717868e..da18d9159647 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -149,15 +149,17 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
+ 	u32 pkt_len;
+ 	struct inet6_dev *idev;
+ 
+-	if (skb->pkt_type == PACKET_OTHERHOST) {
+-		kfree_skb(skb);
+-		return NULL;
+-	}
+-
+ 	rcu_read_lock();
+ 
+ 	idev = __in6_dev_get(skb->dev);
+ 
++	if (skb->pkt_type == PACKET_OTHERHOST) {
++		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INMACERRORS);
++		rcu_read_unlock();
++		kfree_skb_reason(skb, SKB_DROP_REASON_OTHERHOST);
++		return NULL;
++	}
++
+ 	__IP6_UPD_PO_STATS(net, idev, IPSTATS_MIB_IN, skb->len);
+ 
+ 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL ||
+diff --git a/net/ipv6/proc.c b/net/ipv6/proc.c
+index d6306aa46bb1..76e6119ba558 100644
+--- a/net/ipv6/proc.c
++++ b/net/ipv6/proc.c
+@@ -84,6 +84,7 @@ static const struct snmp_mib snmp6_ipstats_list[] = {
+ 	SNMP_MIB_ITEM("Ip6InECT1Pkts", IPSTATS_MIB_ECT1PKTS),
+ 	SNMP_MIB_ITEM("Ip6InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
+ 	SNMP_MIB_ITEM("Ip6InCEPkts", IPSTATS_MIB_CEPKTS),
++	SNMP_MIB_ITEM("Ip6InMacErrors", IPSTATS_MIB_INMACERRORS),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
 -- 
-
-Thanks,
-Raju
+2.35.0.rc2.247.g8bbb082509-goog
 
