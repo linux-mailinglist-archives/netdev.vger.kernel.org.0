@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 337C14A3D04
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 06:00:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 931874A3D07
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 06:00:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231395AbiAaFAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 00:00:38 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49314 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiAaFAc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 00:00:32 -0500
+        id S233287AbiAaFAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 00:00:55 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37980 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232498AbiAaFAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 00:00:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97F1C611CB;
-        Mon, 31 Jan 2022 05:00:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FECFC340E8;
-        Mon, 31 Jan 2022 05:00:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD2F6B829FB;
+        Mon, 31 Jan 2022 05:00:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B568C340E8;
+        Mon, 31 Jan 2022 05:00:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643605231;
-        bh=SPlApvXmSAF/EmHfhsNx/9J8MUckNRlaZjFc5d87Irk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=beHhSAPAUaVm4tVLK4IevjpquuaPE3nPWHRczFcRIYwQE0s7WPVVCz2LOZo7HLCGG
-         +NsIbKvzULUzHLcGOjQXblFkfGhLXXf8qV6Ymm3X6XfTRZzyJzfY3OgHwVvYMba3ED
-         zpkqPW+wRTG9me68utz+JLOQhOdFEazdLhKSRil/i6lt/FcSZMrLepHzZtdwbWZphT
-         6AlvyUQO2bFhI6HTcL4VihXnv7IHyDULNRjN2lJEX4+aGCAdOlQ1kY9uUkXQGSnEpC
-         AEyigayX7pJG8Q9Nm2oqj7S+KO67Iwth5nOo40lT1zgKKyUqyrUbv9daULlKJMj+4E
-         1OIeKDTyivDIw==
+        s=k20201202; t=1643605242;
+        bh=BB1zt2QPRCNo1YQ4q2R9YMSE5n8crsmlD0x6g+S4hXg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LKl/sysIY88pgLqay9ttb/FWOe+OiCCB5P6whfpu0TIUwAh59PIIp0eI7coQqxgPn
+         uZ9/JCwvrs2SuBnjSgyK9878O38B7N19dBD+0xoM84/skpBFrAZxdUPdu1LIH+PVij
+         WYcNqNqF0HFi5m16wAZWfIHH6pKTSMc+VljyS5LObXZJG7BKyBd6vyYkCK1GbNaJut
+         mCUlmKpC9VWOPw4FsuJlSMOGyIihGg3p1VVAcVau7Fp2kE8qQhZs6j8oMCL/zU8O2u
+         Z+WcVO8Z+/Mb+U/Wlt97X9B/VMx9cUZw39IVPGa5Uvl9LXVs0DCK7BpFwBxeXv2ndV
+         Wbejwo6qXuNRg==
 From:   Masami Hiramatsu <mhiramat@kernel.org>
 To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
@@ -42,10 +42,12 @@ Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
         Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
         "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v7 00/10] fprobe: Introduce fprobe function entry/exit probe 
-Date:   Mon, 31 Jan 2022 14:00:24 +0900
-Message-Id: <164360522462.65877.1891020292202285106.stgit@devnote2>
+Subject: [PATCH v7 01/10] ftrace: Add ftrace_set_filter_ips function
+Date:   Mon, 31 Jan 2022 14:00:36 +0900
+Message-Id: <164360523642.65877.2910927913807016348.stgit@devnote2>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <164360522462.65877.1891020292202285106.stgit@devnote2>
+References: <164360522462.65877.1891020292202285106.stgit@devnote2>
 User-Agent: StGit/0.19
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -54,96 +56,156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Jiri Olsa <jolsa@redhat.com>
 
-Here is the 7th version of fprobe. This version fixes unregister_fprobe()
-ensures that exit_handler is not called after returning from the
-unregister_fprobe(), and fixes some comments and documents.
+Adding ftrace_set_filter_ips function to be able to set filter on
+multiple ip addresses at once.
 
-The previous version is here[1];
+With the kprobe multi attach interface we have cases where we need to
+initialize ftrace_ops object with thousands of functions, so having
+single function diving into ftrace_hash_move_and_update_ops with
+ftrace_lock is faster.
 
-[1] https://lore.kernel.org/all/164338031590.2429999.6203979005944292576.stgit@devnote2/T/#u
+The functions ips are passed as unsigned long array with count.
 
-This series introduces the fprobe, the function entry/exit probe
-with multiple probe point support. This also introduces the rethook
-for hooking function return as same as the kretprobe does. This
-abstraction will help us to generalize the fgraph tracer,
-because we can just switch to it from the rethook in fprobe,
-depending on the kernel configuration.
-
-The patch [1/10] is from Jiri's series[2].
-
-[2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
-
-And the patch [9/10] adds the FPROBE_FL_KPROBE_SHARED flag for the case
-if user wants to share the same code (or share a same resource) on the
-fprobe and the kprobes.
-
-Thank you,
-
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
+ Changes in v6: [Masami]
+  - Fix a typo and add a comment.
+---
+ include/linux/ftrace.h |    3 ++
+ kernel/trace/ftrace.c  |   58 +++++++++++++++++++++++++++++++++++++++++-------
+ 2 files changed, 52 insertions(+), 9 deletions(-)
 
-Jiri Olsa (1):
-      ftrace: Add ftrace_set_filter_ips function
+diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
+index 9999e29187de..60847cbce0da 100644
+--- a/include/linux/ftrace.h
++++ b/include/linux/ftrace.h
+@@ -512,6 +512,8 @@ struct dyn_ftrace {
+ 
+ int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
+ 			 int remove, int reset);
++int ftrace_set_filter_ips(struct ftrace_ops *ops, unsigned long *ips,
++			  unsigned int cnt, int remove, int reset);
+ int ftrace_set_filter(struct ftrace_ops *ops, unsigned char *buf,
+ 		       int len, int reset);
+ int ftrace_set_notrace(struct ftrace_ops *ops, unsigned char *buf,
+@@ -802,6 +804,7 @@ static inline unsigned long ftrace_location(unsigned long ip)
+ #define ftrace_regex_open(ops, flag, inod, file) ({ -ENODEV; })
+ #define ftrace_set_early_filter(ops, buf, enable) do { } while (0)
+ #define ftrace_set_filter_ip(ops, ip, remove, reset) ({ -ENODEV; })
++#define ftrace_set_filter_ips(ops, ips, cnt, remove, reset) ({ -ENODEV; })
+ #define ftrace_set_filter(ops, buf, len, reset) ({ -ENODEV; })
+ #define ftrace_set_notrace(ops, buf, len, reset) ({ -ENODEV; })
+ #define ftrace_free_filter(ops) do { } while (0)
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index b01e1fa62193..a28b1bdb234a 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -4958,7 +4958,7 @@ ftrace_notrace_write(struct file *file, const char __user *ubuf,
+ }
+ 
+ static int
+-ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
++__ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
+ {
+ 	struct ftrace_func_entry *entry;
+ 
+@@ -4976,9 +4976,30 @@ ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
+ 	return add_hash_entry(hash, ip);
+ }
+ 
++static int
++ftrace_match_addr(struct ftrace_hash *hash, unsigned long *ips,
++		  unsigned int cnt, int remove)
++{
++	unsigned int i;
++	int err;
++
++	for (i = 0; i < cnt; i++) {
++		err = __ftrace_match_addr(hash, ips[i], remove);
++		if (err) {
++			/*
++			 * This expects the @hash is a temporary hash and if this
++			 * fails the caller must free the @hash.
++			 */
++			return err;
++		}
++	}
++	return 0;
++}
++
+ static int
+ ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
+-		unsigned long ip, int remove, int reset, int enable)
++		unsigned long *ips, unsigned int cnt,
++		int remove, int reset, int enable)
+ {
+ 	struct ftrace_hash **orig_hash;
+ 	struct ftrace_hash *hash;
+@@ -5008,8 +5029,8 @@ ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
+ 		ret = -EINVAL;
+ 		goto out_regex_unlock;
+ 	}
+-	if (ip) {
+-		ret = ftrace_match_addr(hash, ip, remove);
++	if (ips) {
++		ret = ftrace_match_addr(hash, ips, cnt, remove);
+ 		if (ret < 0)
+ 			goto out_regex_unlock;
+ 	}
+@@ -5026,10 +5047,10 @@ ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
+ }
+ 
+ static int
+-ftrace_set_addr(struct ftrace_ops *ops, unsigned long ip, int remove,
+-		int reset, int enable)
++ftrace_set_addr(struct ftrace_ops *ops, unsigned long *ips, unsigned int cnt,
++		int remove, int reset, int enable)
+ {
+-	return ftrace_set_hash(ops, NULL, 0, ip, remove, reset, enable);
++	return ftrace_set_hash(ops, NULL, 0, ips, cnt, remove, reset, enable);
+ }
+ 
+ #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
+@@ -5628,10 +5649,29 @@ int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
+ 			 int remove, int reset)
+ {
+ 	ftrace_ops_init(ops);
+-	return ftrace_set_addr(ops, ip, remove, reset, 1);
++	return ftrace_set_addr(ops, &ip, 1, remove, reset, 1);
+ }
+ EXPORT_SYMBOL_GPL(ftrace_set_filter_ip);
+ 
++/**
++ * ftrace_set_filter_ips - set functions to filter on in ftrace by addresses
++ * @ops - the ops to set the filter with
++ * @ips - the array of addresses to add to or remove from the filter.
++ * @cnt - the number of addresses in @ips
++ * @remove - non zero to remove ips from the filter
++ * @reset - non zero to reset all filters before applying this filter.
++ *
++ * Filters denote which functions should be enabled when tracing is enabled
++ * If @ips array or any ip specified within is NULL , it fails to update filter.
++ */
++int ftrace_set_filter_ips(struct ftrace_ops *ops, unsigned long *ips,
++			  unsigned int cnt, int remove, int reset)
++{
++	ftrace_ops_init(ops);
++	return ftrace_set_addr(ops, ips, cnt, remove, reset, 1);
++}
++EXPORT_SYMBOL_GPL(ftrace_set_filter_ips);
++
+ /**
+  * ftrace_ops_set_global_filter - setup ops to use global filters
+  * @ops - the ops which will use the global filters
+@@ -5653,7 +5693,7 @@ static int
+ ftrace_set_regex(struct ftrace_ops *ops, unsigned char *buf, int len,
+ 		 int reset, int enable)
+ {
+-	return ftrace_set_hash(ops, buf, len, 0, 0, reset, enable);
++	return ftrace_set_hash(ops, buf, len, NULL, 0, 0, reset, enable);
+ }
+ 
+ /**
 
-Masami Hiramatsu (9):
-      fprobe: Add ftrace based probe APIs
-      rethook: Add a generic return hook
-      rethook: x86: Add rethook x86 implementation
-      ARM: rethook: Add rethook arm implementation
-      arm64: rethook: Add arm64 rethook implementation
-      fprobe: Add exit_handler support
-      fprobe: Add sample program for fprobe
-      fprobe: Introduce FPROBE_FL_KPROBE_SHARED flag for fprobe
-      docs: fprobe: Add fprobe description to ftrace-use.rst
-
-
- Documentation/trace/fprobe.rst                |  171 +++++++++++++
- Documentation/trace/index.rst                 |    1 
- arch/arm/Kconfig                              |    1 
- arch/arm/include/asm/stacktrace.h             |    4 
- arch/arm/kernel/stacktrace.c                  |    6 
- arch/arm/probes/Makefile                      |    1 
- arch/arm/probes/rethook.c                     |   71 +++++
- arch/arm64/Kconfig                            |    1 
- arch/arm64/include/asm/stacktrace.h           |    2 
- arch/arm64/kernel/probes/Makefile             |    1 
- arch/arm64/kernel/probes/rethook.c            |   25 ++
- arch/arm64/kernel/probes/rethook_trampoline.S |   87 ++++++
- arch/arm64/kernel/stacktrace.c                |    7 -
- arch/x86/Kconfig                              |    1 
- arch/x86/include/asm/unwind.h                 |    8 +
- arch/x86/kernel/Makefile                      |    1 
- arch/x86/kernel/kprobes/common.h              |    1 
- arch/x86/kernel/rethook.c                     |  115 ++++++++
- include/linux/fprobe.h                        |   97 +++++++
- include/linux/ftrace.h                        |    3 
- include/linux/kprobes.h                       |    3 
- include/linux/rethook.h                       |  100 +++++++
- include/linux/sched.h                         |    3 
- kernel/exit.c                                 |    2 
- kernel/fork.c                                 |    3 
- kernel/trace/Kconfig                          |   26 ++
- kernel/trace/Makefile                         |    2 
- kernel/trace/fprobe.c                         |  341 +++++++++++++++++++++++++
- kernel/trace/ftrace.c                         |   58 ++++
- kernel/trace/rethook.c                        |  313 +++++++++++++++++++++++
- samples/Kconfig                               |    7 +
- samples/Makefile                              |    1 
- samples/fprobe/Makefile                       |    3 
- samples/fprobe/fprobe_example.c               |  120 +++++++++
- 34 files changed, 1572 insertions(+), 14 deletions(-)
- create mode 100644 Documentation/trace/fprobe.rst
- create mode 100644 arch/arm/probes/rethook.c
- create mode 100644 arch/arm64/kernel/probes/rethook.c
- create mode 100644 arch/arm64/kernel/probes/rethook_trampoline.S
- create mode 100644 arch/x86/kernel/rethook.c
- create mode 100644 include/linux/fprobe.h
- create mode 100644 include/linux/rethook.h
- create mode 100644 kernel/trace/fprobe.c
- create mode 100644 kernel/trace/rethook.c
- create mode 100644 samples/fprobe/Makefile
- create mode 100644 samples/fprobe/fprobe_example.c
-
---
-Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
