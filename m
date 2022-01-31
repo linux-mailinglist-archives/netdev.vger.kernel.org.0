@@ -2,94 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BC604A52FB
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 00:12:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DEE34A5302
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 00:13:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237634AbiAaXMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 18:12:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237496AbiAaXMV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 18:12:21 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80BDDC061714;
-        Mon, 31 Jan 2022 15:12:21 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id x11so13864581plg.6;
-        Mon, 31 Jan 2022 15:12:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=SJizipcR4GYK9nZ18E+KFW96TyLTsYwihcN1C/AM448=;
-        b=aWcXVKRxL+6ZRKa44EMDdVBXQi/0d5gY3CC0jRPi0ZLah6xWVOcPeCvcWa6ToGjzAX
-         GumvRzizw2AWbmS9gVIUcY4rZzeY45R6mxL1c0tvHm96/gDQAIT/j9weywQ1Iui6ntzJ
-         1Iqa1Q/UI+f/0iZPMwTmVHiYFM3PpQltIQuJFe50NgwNWf8DDjMV3md5V4+658HfMz3T
-         1+41XUufuKEMVyxiGx8Xr+Q0+Wl7IaIt+XwDVK5fa1QiK5whCfdwuLbSylX5bUxpmXQf
-         rxjZJekm49lpXhOfL5d2GiACLHCEM5tWafMcdhmgVQ0Oe7wNMcuAC+bu5Yj48Vhfx90X
-         5NGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=SJizipcR4GYK9nZ18E+KFW96TyLTsYwihcN1C/AM448=;
-        b=apRVKccIdWo1jVoDMrISMf44vL1xioIB44kkirM8wP3USxnZryyPoxDwDcPlMEqU1D
-         2IRMaS9guE+LB6FIwi0uuoTWiGsmgJlEPCpDw10xLpZ1B6T7s2FkprsUT7fl+N5ZI9Xf
-         jsicSj6k7vBq9lkFwg6xsTn+O/HcWD/BAGE2n/RwS3XUZKiwlnKNGOvbJUNI1j0LfKOQ
-         oKGIj60sBl+IT3FFtNT96QBWR+SV1Jtfzjb9TQ3ndFEgaGQg8F9F7BHMKlI8g7BS3jbG
-         z7MAJT8FRV+oPKHa4dwwGiAU1xe9nALAqwgJ0ARLn4lAjo0GkqjOIFtxF/iR+Vfip1LQ
-         J/CA==
-X-Gm-Message-State: AOAM533MDfN4rXm+LK3HCnbsBpEFaY+G8n6cFgARb50bPVHLxuALudTb
-        uKGKKRzs4TkHI5AeKiXTd8U=
-X-Google-Smtp-Source: ABdhPJzzRA8kg9q+xkPzZK046dUYTxAY+zYEU2m/UOB49ny4N0aYJ8rvgEAf+IQD1BWOoAwe65eTyQ==
-X-Received: by 2002:a17:902:b414:: with SMTP id x20mr23623108plr.14.1643670741027;
-        Mon, 31 Jan 2022 15:12:21 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id t11sm4581778pgi.90.2022.01.31.15.12.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 15:12:20 -0800 (PST)
-Message-ID: <f7860ae9-4cdf-206e-a0d9-31ced5bb21e7@gmail.com>
-Date:   Mon, 31 Jan 2022 15:12:18 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC v6 net-next 3/9] net: mdio: mscc-miim: add local dev
- variable to cleanup probe function
-Content-Language: en-US
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S237694AbiAaXNX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 18:13:23 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57272 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237496AbiAaXNW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 18:13:22 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15A8AB82CC6;
+        Mon, 31 Jan 2022 23:13:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93EF1C340E8;
+        Mon, 31 Jan 2022 23:13:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643670799;
+        bh=3qFSuUKUP32If9vkUAh7+Qa4t/86G61Dz7klzbTOZIA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IeYmosIheVuVTUo8TbFb42UxdN1/uJoNP+EbfjiSm2MkeSo6BfXFwSuLDx5lb1De1
+         KIAVWr3dMYWV+oVY6i8Xrs8OVh8/UKXM6RfUdXMrosGM0viyNH0MIQXNRkLJvVInDO
+         1SmGwAvIA2AMzJLEJETvv/RUbca9pnH9yda62Wxqtbw7m8neBTLLKidDvRoBeM891Z
+         7YMJk0If2vdvZegbHkI/+ajhc2tAR1s7O6Z7g9oqcXmqnuimV/1l+xB8WbPzyBcdb5
+         H+VNEnflBc5Gms8USCZQW2rN4gV04YZ7iT0lGiGRw8Bkc3tMId0hqqhPIDY9lY5+Iy
+         UrrAc0Zg68K4g==
+Date:   Mon, 31 Jan 2022 15:13:15 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Saeed Mahameed <saeed@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Shay Agroskin <shayagr@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        David Arinzon <darinzon@amazon.com>,
+        Noam Dagan <ndagan@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jeroen de Borst <jeroendb@google.com>,
+        Catherine Sullivan <csully@google.com>,
+        David Awogbemila <awogbemila@google.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "K . Y . Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>, katie.morris@in-advantage.com
-References: <20220129220221.2823127-1-colin.foster@in-advantage.com>
- <20220129220221.2823127-4-colin.foster@in-advantage.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220129220221.2823127-4-colin.foster@in-advantage.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Jon Mason <jdmason@kudzu.us>,
+        Simon Horman <simon.horman@corigine.com>,
+        Rain River <rain.1986.08.12@gmail.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>,
+        Shannon Nelson <snelson@pensando.io>, drivers@pensando.io,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Rob Herring <robh@kernel.org>, l.stelmach@samsung.com,
+        rafal@milecki.pl, Edwin Peer <edwin.peer@broadcom.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Joel Stanley <joel@jms.id.au>, Slark Xiao <slark_xiao@163.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Liming Sun <limings@nvidia.com>,
+        David Thompson <davthompson@nvidia.com>,
+        Asmaa Mnebhi <asmaa@nvidia.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>,
+        Omkar Kulkarni <okulkarni@marvell.com>,
+        Shai Malin <smalin@marvell.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Gary Guo <gary@garyguo.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, intel-wired-lan@lists.osuosl.org,
+        linux-hyperv@vger.kernel.org, oss-drivers@corigine.com,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH net-next] net: kbuild: Don't default net vendor configs
+ to y
+Message-ID: <20220131151315.4ec5f2d3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <7dc930c6-4ffc-0dd0-8385-d7956e7d16ff@gmail.com>
+References: <20220131172450.4905-1-saeed@kernel.org>
+        <20220131095905.08722670@hermes.local>
+        <CAMuHMdU17cBzivFm9q-VwF9EG5MX75Qct=is=F2h+Kc+VddZ4g@mail.gmail.com>
+        <20220131183540.6ekn3z7tudy5ocdl@sx1>
+        <30ed8220-e24d-4b40-c7a6-4b09c84f9a1f@gmail.com>
+        <20220131121027.4fe3e8dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <7dc930c6-4ffc-0dd0-8385-d7956e7d16ff@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/29/2022 2:02 PM, Colin Foster wrote:
-> Create a local device *dev in order to not dereference the platform_device
-> several times throughout the probe function.
+On Mon, 31 Jan 2022 15:06:01 -0800 Florian Fainelli wrote:
+> >> Right, but once you start hiding NET_VENDOR_DRIVER_XYZ under a
+> >> NET_VENDOR_XYZ Kconfig symbol dependency, if NET_VENDOR_XYZ is not set
+> >> to Y, then you have no way to select NET_VENDOR_DRIVER_XYZ and so your
+> >> old defconfig breaks.  
+> > 
+> > To be clear do we actually care about *old* configs or *def* configs?  
 > 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> I think we care about oldconfig but maybe less so about defconfigs which 
+> are in tree and can be updated.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+The oldconfigs would have to not be updated on any intervening kernel
+in the last 10+ years to break, right? Or is there another way that an
+oldconfig would not have the vendor config set to y at this point?
