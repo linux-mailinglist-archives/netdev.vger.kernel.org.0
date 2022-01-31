@@ -2,128 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8727C4A4778
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 13:46:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 429CD4A4776
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 13:46:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378045AbiAaMqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 07:46:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377935AbiAaMqq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 07:46:46 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F178C061714
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 04:46:46 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id k25so6276777qtp.4
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 04:46:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ha8RQLsU/O+VZwRh4lQFBRJE2m9AraEHmiwYGuGwr9s=;
-        b=5LwwU/MfDFoYY87dbmlQ2NeHobu+ZJIdlRqZJ35r6roQhUYUCT4fyjZSo9dl43Zw98
-         nxL8qR/GMMG/FOa1K/dne6OPXYxDHk/FkVdLmFZLiiD/I7T0rEMpyWVbV0islA4vSoF0
-         WUyJKBin27DL9oe6wlz1jMIVutwwuDVsLvYnOaYylQxL9yrResDc3+0t0QI+Th+Yr4MD
-         fODRpucE9NYsXvMgJC70b8H3ny1/r3rbiTukZvubd9nOL+C/IaF0v/15ahMqp9DzLGic
-         bGX6WDlgjwAp/vdsGli35G9V9K4x6RM8NgUfDWBc+VTzotx5xdUynHPMf2orhGamLcRK
-         5pgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ha8RQLsU/O+VZwRh4lQFBRJE2m9AraEHmiwYGuGwr9s=;
-        b=vnogAUhhuXhLeiXpxVhSd79UVmMrt64JLAVEX4v+Jm6/tuaTngkkDR1TZQx9PuciBv
-         JLhUyauDOSyyVjA6R98sbEuJDpPlVx9gTaVyoFv+VNjjZXap6WiW+7WFdtWdF3MXwIWN
-         Mfsoi5IAziYJf2IPmxsJSmQHDvXZHWNjflM1angZ6ZpTzi8FAqhX9W7rp0nqTuykyHu4
-         Ju0znPP07vzoyecrQRpjz0uHFk4nJSNqiUHjUyQGKoKL5iFVcGXr3mbWOrymPJH0JB2A
-         vwAukZ8AXxLgqpUXTp4oOhDV906yJzmIZJi/zfuQmuu2TQw5VtdRDn9jc+BoSJIJz+xO
-         +YVQ==
-X-Gm-Message-State: AOAM532EWLKyeiNb+DLM+jDCQIopXv4eWZCMRJ5O8EVB3p2jJQWigM4H
-        WtUvzguef1NnBpNElSol3SbrUw==
-X-Google-Smtp-Source: ABdhPJzCb8z6Ar4lM3gzy0tgSjVv6RfG3XmK9cXnj4O14Bt2fgss8PoRyqqVSPxxFuJo5QHQx88jYw==
-X-Received: by 2002:ac8:5b89:: with SMTP id a9mr14237214qta.681.1643633205508;
-        Mon, 31 Jan 2022 04:46:45 -0800 (PST)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-74.dsl.bell.ca. [184.148.47.74])
-        by smtp.googlemail.com with ESMTPSA id c127sm8260123qkf.36.2022.01.31.04.46.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 04:46:44 -0800 (PST)
-Message-ID: <53506df1-feed-57e4-48f2-7444922e9bc2@mojatatu.com>
-Date:   Mon, 31 Jan 2022 07:46:33 -0500
+        id S1377995AbiAaMqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 07:46:35 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:8276 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1377935AbiAaMqb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 07:46:31 -0500
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20VCbqif036194;
+        Mon, 31 Jan 2022 12:46:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=nh+RVENpbA1r3RMZCSSKROR/LLLUwDVrN3w9Pumuon8=;
+ b=Bc+nFuL5dQ9Em0ZXdRak04eTq4eJojGzJlpJoqpo7VgxW3mPndw12fpRcQoT70ZU5aE0
+ 6MwpZNxT+d9gGkPIoH2VqitYQVMbezRfozmJIxlfDJeUtpkZfASoo/d5dNX485XTmC7R
+ uLESJ/QynnaO/BrX6+XB8C5vrgJb2K6WKOTgnC5csqDdG3kgvVFXvTvCso8CZslavNF8
+ 4I2YRS4ZELZP9EFWGBhSQPULfzu1yj45gb2anYNHF253EBHmCK91wlKhFTlSNSQ3s+xT
+ 8qrW5WAzKM9vyN6JX/PJwh9NgE3w/2KtwcONDtzZNoMjDp5Fs/EJwNozRP64fQVn8s71 uw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dx5a6tuah-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 12:46:28 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20VCfQ1b008949;
+        Mon, 31 Jan 2022 12:46:28 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dx5a6tu9s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 12:46:28 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20VCgCl2002823;
+        Mon, 31 Jan 2022 12:46:25 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04ams.nl.ibm.com with ESMTP id 3dvw79bdqa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Jan 2022 12:46:25 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20VCkNcK39387484
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 31 Jan 2022 12:46:23 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9C31C11C052;
+        Mon, 31 Jan 2022 12:46:23 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2A55511C04C;
+        Mon, 31 Jan 2022 12:46:23 +0000 (GMT)
+Received: from [9.145.79.147] (unknown [9.145.79.147])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 31 Jan 2022 12:46:23 +0000 (GMT)
+Message-ID: <83f520b1-d272-cafc-37b1-d086d68f2e9c@linux.ibm.com>
+Date:   Mon, 31 Jan 2022 13:46:38 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: tdc errors
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 net-next 0/3] net/smc: Optimizing performance in
 Content-Language: en-US
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Davide Caratti <dcaratti@redhat.com>
-Cc:     Victor Nogueira <victor@mojatatu.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        David Ahern <dsahern@gmail.com>, shuah@kernel.org
-References: <CA+NMeC-xsHvQ5KPybDUV02UW_zyy02k6fQXBy3YOBg8Qnp=LZQ@mail.gmail.com>
- <c4983694-0564-edca-7695-984f1d72367f@mojatatu.com>
- <CAKa-r6teP-fL63MWZzEWfG4XzugN-dY4ZabNfTBubfetwDS-Rg@mail.gmail.com>
- <a0051dc2-e626-915a-8925-416ff7effb94@mojatatu.com>
- <69c4581e-09bd-4218-4d5f-d39564bce9bc@linuxfoundation.org>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <69c4581e-09bd-4218-4d5f-d39564bce9bc@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     "D. Wythe" <alibuda@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        matthieu.baerts@tessares.net
+References: <cover.1643380219.git.alibuda@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <cover.1643380219.git.alibuda@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: jp6sQAvkvPGwbrZFyc7RIG3WTR821-lw
+X-Proofpoint-GUID: WezDvuRvtofA6cZSN92KaH3o9r5641GK
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-31_05,2022-01-28_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 spamscore=0
+ lowpriorityscore=0 adultscore=0 clxscore=1015 priorityscore=1501
+ bulkscore=0 phishscore=0 suspectscore=0 malwarescore=0 mlxscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201310083
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-01-21 11:27, Shuah Khan wrote:
-> On 1/21/22 7:11 AM, Jamal Hadi Salim wrote:
->> On 2022-01-21 04:36, Davide Caratti wrote:
->>> On Thu, Jan 20, 2022 at 8:34 PM Jamal Hadi Salim <jhs@mojatatu.com> 
->>> wrote:
-
-[..]
-
-
-> 
-> Several tests check for config support for their dependencies in their
-> test code - I don't see any of those in tc-testing. Individual tests
-> are supposed to check for not just the config dependencies, but also
-> any feature dependency e.g syscall/ioctl.
-> 
-> Couple of way to fix this problem for tc-testing - enhance the test to
-> check for dependencies and skip with a clear message on why test is
-> skipped.
-> 
-> A second option is enhancing the tools/testing/selftests/kselftest_deps.sh
-> script that checks for build depedencies. This tool can be enhanced easily
-> to check for run-time dependencies and use this in your automation.
-> 
-> Usage: ./kselftest_deps.sh -[p] <compiler> [test_name]
-> 
->      kselftest_deps.sh [-p] gcc
->      kselftest_deps.sh [-p] gcc vm
->      kselftest_deps.sh [-p] aarch64-linux-gnu-gcc
->      kselftest_deps.sh [-p] aarch64-linux-gnu-gcc vm
-> 
-> - Should be run in selftests directory in the kernel repo.
-> - Checks if Kselftests can be built/cross-built on a system.
-> - Parses all test/sub-test Makefile to find library dependencies.
-> - Runs compile test on a trivial C file with LDLIBS specified
->    in the test Makefiles to identify missing library dependencies.
-> - Prints suggested target list for a system filtering out tests
->    failed the build dependency check from the TARGETS in Selftests
->    main Makefile when optional -p is specified.
-> - Prints pass/fail dependency check for each tests/sub-test.
-> - Prints pass/fail targets and libraries.
-> - Default: runs dependency checks on all tests.
-> - Optional test name can be specified to check dependencies for it.
+On 28/01/2022 15:44, D. Wythe wrote:
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
 > 
 
-Thanks Shuah. We'll look at this approach.
-Question: How do we get reports when the bot finds a regression?
-
-
-cheers,
-jamal
+Cover letter subject: "Optimizing performance in" ??
