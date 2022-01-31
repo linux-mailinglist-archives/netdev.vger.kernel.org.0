@@ -2,109 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5038F4A4C24
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 17:30:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D02204A4C15
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 17:29:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233395AbiAaQaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 11:30:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36632 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232284AbiAaQaD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 11:30:03 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C37C061714;
-        Mon, 31 Jan 2022 08:30:03 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id k25so44437396ejp.5;
-        Mon, 31 Jan 2022 08:30:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vRDplifUhsb5m6qIz40Anhg2xj6DslUkXFz6GsVymy4=;
-        b=D93WKL0bH3y0DsemI7NcPaBG2KnCtuCJsu1Kw+N+S/H4CUAQsHVB2XSUXCiMQXeqJp
-         vSdxRC6Lp34sxJEQZaapbcutOoLdIpe6q0qqcvGnEXInFE/3jRUl2dFKFFAxwCrcsvQz
-         R9OaaN0daXTLHr27vJo3gSJlzS8kcXWUc5yjsuiylmQLpnk6jPlx60odaFILHliLwy2N
-         LMuaJrLRjx+ioy1WHnxzDNgEnu8Zqg7uOl+3phVC4d3EwYl8PyB5dgt8JTyEdy6EemdL
-         th8OghN8ysl/lzJV1BeGWvu/BSp8KfEpWjw5hd17vz26Se44IzXpg2BN3SM9LeLRpORx
-         XREw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vRDplifUhsb5m6qIz40Anhg2xj6DslUkXFz6GsVymy4=;
-        b=adz9dvfYFwxHLCb3+6bW7gS8i6tSDL1bwN7f5oFEn+ca1TMtSZYkIhVnjH2Tiu9F0L
-         4VGQl7uo8cHECy2F+50Dte/hFyv83TBr/Be2lDz0H38h4Y77kkyYhJNDU9eAzsKBLy1e
-         4sdrQUD5bfjZ3hcDT3ZiPzsRE7KsHxnMLf+V1h7tA5Rk7fhJ70EAVM6sjkebm35U+WEV
-         /uoVO+g9Nd4s0xQdPmZl4jV9lMpeAvVYvK/R7x+Z+hLcy3k3bLuSxgXZkgXr4MtIBGLq
-         G5SjBI/6QzrEiHGTkRxqctsykuWQbess1xFylUxytTEM3PwUN5iS3YgF2Zg9sW+Wtbhi
-         Kfxg==
-X-Gm-Message-State: AOAM530juDAlGqrjSMEK7/gPwVIcU2TUGxhadM3s5+SUCF9nlr+5WiS3
-        awZLvV5W9ALn1A/sh1yLC9Xc9KTTMHYeI8yJ7bI=
-X-Google-Smtp-Source: ABdhPJwH3lAp3JlumSNQ61ldPCI4Vyq+OLtFCZ0qJsy2dxhZ6fQQm1lW9Qqm6EetQhoC0xmpiPhNQt1zsrbA/2qNhWo=
-X-Received: by 2002:a17:906:7948:: with SMTP id l8mr17420594ejo.636.1643646601634;
- Mon, 31 Jan 2022 08:30:01 -0800 (PST)
-MIME-Version: 1.0
-References: <20220131160713.245637-1-marcan@marcan.st> <20220131160713.245637-4-marcan@marcan.st>
-In-Reply-To: <20220131160713.245637-4-marcan@marcan.st>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 31 Jan 2022 18:28:25 +0200
-Message-ID: <CAHp75VdgXdYXio8pTDdxsYy-iCXMvVpZM1T6gNmcxo3c1V+uJA@mail.gmail.com>
-Subject: Re: [PATCH v4 3/9] brcmfmac: firmware: Do not crash on a NULL board_type
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1380423AbiAaQ3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 11:29:13 -0500
+Received: from www62.your-server.de ([213.133.104.62]:53016 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380402AbiAaQ3J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 11:29:09 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nEZXu-000EEk-9M; Mon, 31 Jan 2022 17:28:50 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nEZXu-000IGM-0X; Mon, 31 Jan 2022 17:28:50 +0100
+Subject: Re: [PATCH bpf-next] bpf: use VM_MAP instead of VM_ALLOC for ringbuf
+To:     Hou Tao <hotforest@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, houtao1@huawei.com
+References: <20220131114600.21849-1-houtao1@huawei.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <36954dbd-beab-9599-3579-105037822045@iogearbox.net>
+Date:   Mon, 31 Jan 2022 17:28:45 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20220131114600.21849-1-houtao1@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26439/Mon Jan 31 10:24:40 2022)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 6:07 PM Hector Martin <marcan@marcan.st> wrote:
->
-> This unbreaks support for USB devices, which do not have a board_type
-> to create an alt_path out of and thus were running into a NULL
-> dereference.
+On 1/31/22 12:46 PM, Hou Tao wrote:
+> Now the ringbuf area in /proc/vmallocinfo is showed as vmalloc,
+> but VM_ALLOC is only used for vmalloc(), and for the ringbuf area
+> it is created by mapping allocated pages, so use VM_MAP instead.
+> 
+> After the change, ringbuf info in /proc/vmallocinfo will changed from:
+>    [start]-[end]   24576 ringbuf_map_alloc+0x171/0x290 vmalloc user
+> to
+>    [start]-[end]   24576 ringbuf_map_alloc+0x171/0x290 vmap user
 
-...
+Could you elaborate in the commit msg if this also has some other internal
+effect aside from the /proc/vmallocinfo listing? Thanks!
 
-> @@ -599,6 +599,9 @@ static char *brcm_alt_fw_path(const char *path, const char *board_type)
->         char alt_path[BRCMF_FW_NAME_LEN];
->         char suffix[5];
->
-> +       if (!board_type)
-> +               return NULL;
+> Signed-off-by: Hou Tao <houtao1@huawei.com>
+> ---
+>   kernel/bpf/ringbuf.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
+> index 638d7fd7b375..710ba9de12ce 100644
+> --- a/kernel/bpf/ringbuf.c
+> +++ b/kernel/bpf/ringbuf.c
+> @@ -104,7 +104,7 @@ static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
+>   	}
+>   
+>   	rb = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
+> -		  VM_ALLOC | VM_USERMAP, PAGE_KERNEL);
+> +		  VM_MAP | VM_USERMAP, PAGE_KERNEL);
+>   	if (rb) {
+>   		kmemleak_not_leak(pages);
+>   		rb->pages = pages;
+> 
 
-I still think it's better to have both callers do the same thing.
-
-Now it will be the double check in one case,
-
--- 
-With Best Regards,
-Andy Shevchenko
