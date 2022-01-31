@@ -2,100 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3B084A4AD6
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 16:42:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DDFF4A4ADB
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 16:47:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379793AbiAaPmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 10:42:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39975 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1350284AbiAaPmO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 10:42:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643643734;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1JlgLZscDoIFop5dBhXgA1KNuotqIeX45MP+1J3nAYY=;
-        b=YeFsNng0zShieqie30KAPYmGtfDhnkTyhyjyaoxkaXQDD6rUrPOC4gPkKFjm/x6O+QoZnw
-        Y6lLduTuQsnWqJLcTWbcw8QaBT5tS/9hMGpBTCMR5owlN/CF3Gq40ppbzNV4BN9es2qNEQ
-        lcf8VhOXfLzbJ40+C7ex1hSZJsZlsf0=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-440-btatH3vsNJyKAT-dZ1qVIQ-1; Mon, 31 Jan 2022 10:42:13 -0500
-X-MC-Unique: btatH3vsNJyKAT-dZ1qVIQ-1
-Received: by mail-wm1-f69.google.com with SMTP id m3-20020a7bcb83000000b0034f75d92f27so5922276wmi.2
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 07:42:13 -0800 (PST)
+        id S1379795AbiAaPrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 10:47:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359646AbiAaPrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 10:47:06 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97091C061714
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 07:47:05 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id f10so1216577lfu.8
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 07:47:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=6M2X69Hd7uZi6fdki1j3o9xgw/QMymlrIfHzRngcXRc=;
+        b=dYU7bbOX70JlaAur732Yln/Nv66hZCgzcNXOfUnoabTktpj81j3p2A2kVmYS6UXurJ
+         8w/4CJNWKDwHBdwzS/N1HD+RwlFqjkB8Jeov0jZvyHvXvVlS3Fr4h90Op/d4/4OFypDR
+         0Xpq/jHjKz68yHDXHFTnz3m+7AoL4pO7IGqDsZUeMYHVJQKxaD3OBVTbLiegc5HS+MX5
+         UfuXXLsbsKkBv07ipbShDwKna72dvAG/fNwfxaIyPDdwUP2BY/3sar7s3kw6D0RMYSYl
+         zeErevO4ZAOVK2m245KhHIhfSeZ+pb9GpNV8RrOy0/G7MvY9p7neYr/Dq65ADgjHz8D+
+         DGDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1JlgLZscDoIFop5dBhXgA1KNuotqIeX45MP+1J3nAYY=;
-        b=8H/KxlsLn6pOH7+6U0//emxdqjjGhe8sojvk6pM+l2utwojzL0W3ofVUHcbi5TsfYn
-         fOIiNqu/O1LpCrjijSy8AXgIJ5HtGKYl+esiP0tpvB56xl6P5mB4vqMKF22eYcQ7Y5tQ
-         YRHoxxJA+I+OYKEV5JJziHlKWCkGYjoDpV49G6rBbbNFlGrJKvcTnhVBL8H3rsnfi7DB
-         VKtWiGNgSwqQPkK3gK8qIOgYAJ/Hlo60kbTvfaItLwfoEh9y8lc7xRIOWsYulJPr593b
-         gKU2gQd8VKiFTy0Uqm1/tBGfqXgCCgP+uz6+vzQMZlm/EAWtEOnogJlLrEctMS4tpg1S
-         dCZg==
-X-Gm-Message-State: AOAM533H0y/BQ+C+oJmXudJL6s/JSuO2LK6X1tKVpsKFYwYmns9hOXuR
-        qpbIc11KbK1ZsFDYhA/QIVUNejikHm35A6QSIbZeVdJnwWTS8ziMogco0xgQ0hz08QIYN0IJpmT
-        5j7T/+gUaLELfJC2K
-X-Received: by 2002:a05:6000:15c5:: with SMTP id y5mr19027260wry.656.1643643731547;
-        Mon, 31 Jan 2022 07:42:11 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJygQlVQ+YgRpR5xEHj4gvtNZSfcyjb7bmNGvYeSOgWRfcZ4vdWME0LKdI1icjsxp88B6wNo3A==
-X-Received: by 2002:a05:6000:15c5:: with SMTP id y5mr19027244wry.656.1643643731344;
-        Mon, 31 Jan 2022 07:42:11 -0800 (PST)
-Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id f13sm10379789wmq.29.2022.01.31.07.42.10
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=6M2X69Hd7uZi6fdki1j3o9xgw/QMymlrIfHzRngcXRc=;
+        b=LfULsFa0A33+zOz/ABbD+5M9By4hpEewbrAW9UFFe1VElGmfpmODobLpSO9W9G4a34
+         YWCOscFYtiFORiOno5uwg2/eNwSQ7RssQPaf2aJBH71O3knoPsIRpSycHXiLiTloCs1B
+         ovk+58dwV3rWQ6XrRsnYOMzMvHll5+fWj4NmmRoKaLsZBTqRR3/+pWFtN1ELSOJsEw8V
+         DCYShv40Ac5IhLDm7BTmZorp7h5FIIP55fviTwUt6SesaCTTM+A9zuVP4gw7hwJGwsxx
+         XBunNbOvtGdk2sciKy6LVL37ro2fvS16DFbHlFbK6z7b4n5KOq35IjwDjbIXOGiWVFhR
+         +RlA==
+X-Gm-Message-State: AOAM531WuEYSal5ULElbW/ncxCrS7YvBMzKapBSdI9XXMHR+zw4a7pTz
+        DnYTfoooe/59exA0nbkRwGq7yv8T+3HttQ==
+X-Google-Smtp-Source: ABdhPJwLqsOXjkBCBsjQkcBoHE+lpuDUr23KW+vsDQHb2AySR8l5Ygf85BKF864XJhEi/JFxDEl9JA==
+X-Received: by 2002:a05:6512:c09:: with SMTP id z9mr15828223lfu.147.1643644023592;
+        Mon, 31 Jan 2022 07:47:03 -0800 (PST)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id y36sm3374769lfa.82.2022.01.31.07.47.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 07:42:10 -0800 (PST)
-Date:   Mon, 31 Jan 2022 16:42:09 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net-next 4/4] selftests: fib rule: Don't echo modified sysctls
-Message-ID: <6baa96248e33682166fa295ec98a472d02f4767a.1643643083.git.gnault@redhat.com>
-References: <cover.1643643083.git.gnault@redhat.com>
+        Mon, 31 Jan 2022 07:47:03 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next 0/5] net: dsa: mv88e6xxx: Improve standalone port isolation
+Date:   Mon, 31 Jan 2022 16:46:50 +0100
+Message-Id: <20220131154655.1614770-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1643643083.git.gnault@redhat.com>
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Run sysctl in quiet mode. Echoing the modified sysctl doesn't bring any
-useful information.
+The ideal isolation between standalone ports satisfies two properties:
+1. Packets from one standalone port must not be forwarded to any other
+   port.
+2. Packets from a standalone port must be sent to the CPU port.
 
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- tools/testing/selftests/net/fib_rule_tests.sh | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+mv88e6xxx solves (1) by isolating standalone ports using the PVT. Up
+to this point though, (2) has not guaranteed; as the ATU is still
+consulted, there is a chance that incoming packets never reach the CPU
+if its DA has previously been used as the SA of an earlier packet (see
+1/5 for more details). This is typically not a problem, except for one
+very useful setup in which switch ports are looped in order to run the
+bridge kselftests in tools/testing/selftests/net/forwarding. This
+series attempts to solve (2).
 
-diff --git a/tools/testing/selftests/net/fib_rule_tests.sh b/tools/testing/selftests/net/fib_rule_tests.sh
-index 6a05e81fc81d..3b0489910422 100755
---- a/tools/testing/selftests/net/fib_rule_tests.sh
-+++ b/tools/testing/selftests/net/fib_rule_tests.sh
-@@ -200,11 +200,11 @@ fib_rule4_test()
- 
- 	# need enable forwarding and disable rp_filter temporarily as all the
- 	# addresses are in the same subnet and egress device == ingress device.
--	ip netns exec testns sysctl -w net.ipv4.ip_forward=1
--	ip netns exec testns sysctl -w net.ipv4.conf.$DEV.rp_filter=0
-+	ip netns exec testns sysctl -qw net.ipv4.ip_forward=1
-+	ip netns exec testns sysctl -qw net.ipv4.conf.$DEV.rp_filter=0
- 	match="from $SRC_IP iif $DEV"
- 	fib_rule4_test_match_n_redirect "$match" "$match" "iif redirect to table"
--	ip netns exec testns sysctl -w net.ipv4.ip_forward=0
-+	ip netns exec testns sysctl -qw net.ipv4.ip_forward=0
- 
- 	match="tos 0x10"
- 	fib_rule4_test_match_n_redirect "$match" "$match" "tos redirect to table"
+Ideally, we could simply use the "ForceMap" bit of more modern chips
+(Agate and newer) to classify all incoming packets as MGMT. This is
+not available on older silicon that is still widely used (Opal Plus
+chips like the 6097 for example).
+
+Instead, this series takes a two pronged approach:
+
+1/5: Always clear MapDA on standalone ports to make sure that no ATU
+     entry can lead packets astray. This solves (2) for single-chip
+     systems.
+
+2/5: Trivial prep work for 4/5.
+3/5: Trivial prep work for 4/5.
+
+4/5: On multi-chip systems though, this is not enough. On the incoming
+     chip, the packet will be forced out towards the CPU thanks to
+     1/5, but on any intermediate chips the ATU is still consulted. We
+     override this behavior by marking the reserved standalone VID (0)
+     as a policy VID, the DSA ports' VID policy is set to TRAP. This
+     will cause the packet to be reclassified as MGMT on the first
+     intermediate chip, after which it's a straight shot towards the
+     CPU.
+
+Finally, we allow more tests to be run on mv88e6xxx:
+
+5/5: The bridge_vlan{,un}aware suites sets an ageing_time of 10s on
+     the bridge it creates, but mv88e6xxx has a minimum supported time
+     of 15s. Allow this time to be overridden in forwarding.config.
+
+With this series in place, mv88e6xxx passes the following kselftest
+suites:
+
+- bridge_port_isolation.sh
+- bridge_sticky_fdb.sh
+- bridge_vlan_aware.sh
+- bridge_vlan_unaware.sh
+
+Tobias Waldekranz (5):
+  net: dsa: mv88e6xxx: Improve isolation of standalone ports
+  net: dsa: mv88e6xxx: Support policy entries in the VTU
+  net: dsa: mv88e6xxx: Enable port policy support on 6097
+  net: dsa: mv88e6xxx: Improve multichip isolation of standalone ports
+  selftests: net: bridge: Parameterize ageing timeout
+
+ drivers/net/dsa/mv88e6xxx/chip.c              | 96 ++++++++++++++-----
+ drivers/net/dsa/mv88e6xxx/chip.h              |  1 +
+ drivers/net/dsa/mv88e6xxx/global1.h           |  1 +
+ drivers/net/dsa/mv88e6xxx/global1_vtu.c       |  5 +-
+ drivers/net/dsa/mv88e6xxx/port.c              |  7 +-
+ drivers/net/dsa/mv88e6xxx/port.h              |  2 +-
+ include/net/dsa.h                             | 12 +++
+ .../net/forwarding/bridge_vlan_aware.sh       |  5 +-
+ .../net/forwarding/bridge_vlan_unaware.sh     |  5 +-
+ .../net/forwarding/forwarding.config.sample   |  2 +
+ tools/testing/selftests/net/forwarding/lib.sh |  1 +
+ 11 files changed, 103 insertions(+), 34 deletions(-)
+
 -- 
-2.21.3
+2.25.1
 
