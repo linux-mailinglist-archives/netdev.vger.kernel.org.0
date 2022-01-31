@@ -2,90 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B79234A5246
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 23:22:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B75404A5297
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 23:48:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233093AbiAaWWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 17:22:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33724 "EHLO
+        id S234804AbiAaWsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 17:48:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233043AbiAaWWy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 17:22:54 -0500
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE885C06173D
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 14:22:54 -0800 (PST)
-Received: by mail-oi1-x243.google.com with SMTP id s185so29643346oie.3
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 14:22:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=RcCyF58LaRxi/j1nHAT0ApLeXmQ9s66f3iMVqhPacvY=;
-        b=IncZYNxz5/GjFNdLOn725dmdn013BZqWkg5z/C0u23YjcNZQXsH5xXBCr7HV1Gmis2
-         RF0bLbahF2yhBJ9w742QOTtUrQgCt0fDJeGnTZYQQsqoJ9qCgKY1Tm0vuEJ9kxO/Cx77
-         BHlV//nJSHhR0WzQBNDlAEbOLrygNdB5t0SwGufT7uS48ocJcXwnyzLzljRdXQQpS4Y1
-         37D9j5k8v/uB0sapxHNrzmyiAstvSayNKv/uO+cdCgPaKKrMpD24PQXz/JRmUnmzE7Ty
-         6RI0ef5Z9iZsAbX3o1JGEw8EhMjKFo6p5janOpGukfKsCsENOR9zxXf/JZvxX81mmNMt
-         HA8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=RcCyF58LaRxi/j1nHAT0ApLeXmQ9s66f3iMVqhPacvY=;
-        b=51Nhyc5EWURF7LMW32JH9rL9rgK1crIQe3mMkAVjoIPkPc3Sr8DCbciNglk+2J7xQt
-         Fx5e8ZxWgeLbTU9eI8D0kCeSGUlPnGmiF/PjA5zpC50GkWE0lEsAJZdLvJ6jsl9oCIes
-         aIF5IiwQWjD3orgHcC5fgMAmxritfdutQuop76QZdb0SyKUW09ivXkOoaAPNB1PlqN6t
-         zVsLc12xfApe62sRAXmS+DLDq2lsR3C/EbKiqsF9SY2N+oDWAD8PhqkKAiI39BFtUaAj
-         m7PB8UFdz8KU2LBp3qpCAR59XQLXnuOah/cTFfqeARu7mUtL4UvZvnTovDqyWRpmi3io
-         1tsw==
-X-Gm-Message-State: AOAM530Wfa0vIAe8jWviM5rRtAJKO68qx42IrF091Qw06LKv9mws6vxY
-        kiuZOiz8KD55xmRRldar71DDxxEY5w00vghAXcA=
-X-Google-Smtp-Source: ABdhPJyjdCwPd4PfZodpKvqbO6emQ+SkTYTQyfNzekZhvHUIwObIIbT+SxMo657P1Sn57kO005c2pGHTdHe7fPZxvgg=
-X-Received: by 2002:a05:6808:7cc:: with SMTP id f12mr14465470oij.143.1643667774081;
- Mon, 31 Jan 2022 14:22:54 -0800 (PST)
+        with ESMTP id S229890AbiAaWsx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 17:48:53 -0500
+X-Greylist: delayed 485 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 31 Jan 2022 14:48:53 PST
+Received: from mail.maslowski.xyz (maslowski.xyz [IPv6:2001:19f0:5:5b98:5400:3ff:fe59:951d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7D4C061714;
+        Mon, 31 Jan 2022 14:48:53 -0800 (PST)
+Received: from [127.0.0.1] (public-gprs393678.centertel.pl [37.47.169.15])
+        by mail.maslowski.xyz (Postfix) with ESMTPSA id 5337580D85;
+        Mon, 31 Jan 2022 22:40:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=maslowski.xyz;
+        s=mail; t=1643668846;
+        bh=TVxdwUFTFyZUGl5grFYYrubbq4iOCQK2FORp//gZCWQ=;
+        h=Date:From:To:CC:Subject:In-Reply-To:From;
+        b=ZHN9iu0VBNRr4GAmTWjz1PzN+9N5/KhB2v75W9esIAXrtOE3mLJf9LcSyjbd9W402
+         j9TufTpzHeFhr1C5JWNIwuwhGvp7FCiDQ1NJMA4Ojqh2OvIzfpF2ZGhAuX/SuRzgGc
+         BuaUrvUABoxKRvIDZrlfl+vDiPdPLixB1j7PK2JCQ0NUV0TU0zCUijnLLsPNNE7cO6
+         joiQE+SnKdJwHDxzyo5tZI0+/ggte9qpOL2uWAfps04OBo3hjuBw6nY9OMi4ExKpnl
+         0J4d49RUVHTpq0JmYo1m6yzAlqxbSw1rvuurnBo5FTrPESszvzFlX4IxF2lpvlxp/e
+         aB0TwWroU9nqA==
+Date:   Mon, 31 Jan 2022 23:33:49 +0100
+From:   =?UTF-8?Q?Piotr_Mas=C5=82owski?= <piotr@maslowski.xyz>
+To:     marcan@marcan.st
+CC:     SHA-cyfmac-dev-list@infineon.com, alyssa@rosenzweig.io,
+        andy.shevchenko@gmail.com, arend.vanspriel@broadcom.com,
+        aspriel@gmail.com, brcm80211-dev-list.pdl@broadcom.com,
+        davem@davemloft.net, devicetree@vger.kernel.org, digetx@gmail.com,
+        franky.lin@broadcom.com, hante.meuleman@broadcom.com,
+        hdegoede@redhat.com, kettenis@openbsd.org, kuba@kernel.org,
+        kvalo@codeaurora.org, lenb@kernel.org, linus.walleij@linaro.org,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linville@tuxdriver.com,
+        netdev@vger.kernel.org, pieter-paul.giesberts@broadcom.com,
+        rafael@kernel.org, robh+dt@kernel.org,
+        sandals@crustytoothpaste.net, sven@svenpeter.dev,
+        wright.feng@infineon.com, zajec5@gmail.com
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v4_7/9=5D_brcmfmac=3A_of=3A_Use_devm?= =?US-ASCII?Q?=5Fkstrdup_for_board=5Ftype_=26_check_for_errors?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20220131160713.245637-8-marcan@marcan.st>
+Message-ID: <5E81748D-C6A8-4904-9A03-F61512AF22E5@maslowski.xyz>
 MIME-Version: 1.0
-Received: by 2002:a4a:c30d:0:0:0:0:0 with HTTP; Mon, 31 Jan 2022 14:22:53
- -0800 (PST)
-Reply-To: westerunion909@gmail.com
-From:   "Antonia Lloyd." <anthonylloydatmxxx04@gmail.com>
-Date:   Mon, 31 Jan 2022 14:22:53 -0800
-Message-ID: <CAExPwBAFWC43sdJpThRzZ10PTExuziYtGkEw157wQDELwf80Rg@mail.gmail.com>
-Subject: Dear Email ID Owner.(USD$4000 IMF COMPENSATION FUND TO PICK UP TODAY).
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Email ID Owner.
+On Mon, Jan 31, 2022 at 5:07 PM Hector Martin <marcan@marcan=2Est> wrote:
+>
+>This was missing a NULL check, and we can collapse the strlen/alloc/copy
+>into a devm_kstrdup()=2E
 
-The IMF is compensating all the email address that was funds as one of
-the ward win Victims and your email address and your name is among the
-listed one of approved to pay the sum of $3.6 million U.S Dollars. We
-have concluded to effect your own payment through Western Union Money
-Transfer for easy pick-up of those funds in good condition,$4000 twice
-daily,till the $3.6 million is completely transferred to you.We now
-need your information where we will be sending the funds,such
-as;Receiver name(Your full Name)address and phone number.Contact
-Western Union agent with this Email: ( westerunion995@gmail.com  ) for
-your payment fund.
+=2E=2E=2E
+=20
+> 		/* get rid of '/' in the compatible string to be able to find the FW *=
+/
+> 		len =3D strlen(tmp) + 1;
+>-		board_type =3D devm_kzalloc(dev, len, >GFP_KERNEL);
+>-		strscpy(board_type, tmp, len);
+>+		board_type =3D devm_kstrdup(dev, tmp, GFP_KERNEL);
 
-Ms.Maria Zatto
-E-mail:westerunion995@gmail.com
-Telephone: +229 682 97 169
+Also `len` can be dropped, since it is now unused=2E
 
-Contact Ms.Maria,immediately you get this mail through western union
-email address above to enable her speed-up.your payment and release
-the $4000 dollars MTCN today for you to pick up the payment OK.
-
-You are expected to provide us with the details as prescribed below to
-enable safe and easy release of your funds today.
-
-(1)Your Full name:
-(2)Your Phone number:
-(3)Your Country:
-(4)Your Age:
-
-Thank you,
-Dr.Antonia Lloyd.
-Contact Dir.Western Union Money Transfer,
-Cotonou-Benin Republic.
+--
+Best regards,
+Piotr Mas=C5=82owski
