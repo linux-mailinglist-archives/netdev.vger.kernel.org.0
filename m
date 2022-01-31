@@ -2,131 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05A454A4AC8
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 16:40:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF084A4ACD
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 16:42:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379771AbiAaPk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 10:40:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53050 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379767AbiAaPk0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 10:40:26 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B86BC061714
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 07:40:26 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id d188so17366755iof.7
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 07:40:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=saE7kpVCpxo95s4+s2LGJEO7SIPJkZjVRqCwzU+SfUE=;
-        b=D4KYKk1xRaN4dv4lrZ2G9kxZpb5fTACp43Shio+YjUXs44O2svyZlQsMdkXY7SPfr/
-         x44O8XGo1dxkBfdAcpiG/U5jeItbz8gjcth5fPSX8AwiNsVbubXrdRNjpwJ622Eu32dZ
-         7Y1Pk2rAsLq6BbdTygGrW8r0zrAcS+3e200N8=
+        id S242966AbiAaPmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 10:42:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:24685 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236278AbiAaPmA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 10:42:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643643719;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=1C6Hmt87vWzjWxqoVkiCorkigZnguA91Obr4BW1inuA=;
+        b=X0wfa4AuzBgmR42f4VShBu9NpfQ8BjNL+E6Tu8yWcHMvknRm71fbXGjBkOeVawfDQ7tgPz
+        rNDVJGL0FWymYqCgmUt1LfV24LQVCWQNd4lm/q5ryybuxCP/QnPFqRkaMfl4saXoJnKLYx
+        JnI0rM4L0N1YFnK2x2qEfiOC+Eb1qdY=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-149-YHu6A2rtNUmqJ55ylLmoyg-1; Mon, 31 Jan 2022 10:41:58 -0500
+X-MC-Unique: YHu6A2rtNUmqJ55ylLmoyg-1
+Received: by mail-wr1-f70.google.com with SMTP id k12-20020adfe3cc000000b001d6806dfde1so4954104wrm.16
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 07:41:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=saE7kpVCpxo95s4+s2LGJEO7SIPJkZjVRqCwzU+SfUE=;
-        b=hV0KlJEBX+JjMSIXqQUmF5Kxzhkft/YQdMxo908+//aIvdo8yqLz4grvTFaXuCb5Jq
-         ylxFoGcggRarJl+Hh6V0V0xUtIWk0jKHAtNCRdDx1qI6qmUNmVoIHPXtHhNzxpt9cJrv
-         42lGgR4WXENkCzUE89LfEm8nUJIi5tFCqduszODYZcfZA6nYPncqDhStbKwNmHQYPfU0
-         W9ZjPPoG5Rojv5cNoLBDG9AfrVm1mnCNpHQk9n6GRWzR7P1Io7u+IxCm7/+xFRRoqnTG
-         ZBX0czwHLgtjk1YeO4nNTfpku2Gt8NEclmzY1nFuJSnwEojK4a8XDDqaAPYhX0pZsbKJ
-         9tlA==
-X-Gm-Message-State: AOAM531XX6cJr1oEgZGXSnEll/zYErn5tCUPDQh2poJ4+iP1k+fQ7ShS
-        HsfMRQsPmoSndv7cjuBmC373YA==
-X-Google-Smtp-Source: ABdhPJyKq1rKAJ/Lxq/Vg92Hv5BbtFsUbtCCKiChERafGqzSauSpNIKPktqEMaUuwRzC2Hq7K3xdGQ==
-X-Received: by 2002:a05:6638:3781:: with SMTP id w1mr9570775jal.26.1643643625498;
-        Mon, 31 Jan 2022 07:40:25 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id 193sm12875466iob.17.2022.01.31.07.40.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 07:40:25 -0800 (PST)
-Subject: Re: tdc errors
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Davide Caratti <dcaratti@redhat.com>
-Cc:     Victor Nogueira <victor@mojatatu.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        David Ahern <dsahern@gmail.com>, shuah@kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <CA+NMeC-xsHvQ5KPybDUV02UW_zyy02k6fQXBy3YOBg8Qnp=LZQ@mail.gmail.com>
- <c4983694-0564-edca-7695-984f1d72367f@mojatatu.com>
- <CAKa-r6teP-fL63MWZzEWfG4XzugN-dY4ZabNfTBubfetwDS-Rg@mail.gmail.com>
- <a0051dc2-e626-915a-8925-416ff7effb94@mojatatu.com>
- <69c4581e-09bd-4218-4d5f-d39564bce9bc@linuxfoundation.org>
- <53506df1-feed-57e4-48f2-7444922e9bc2@mojatatu.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <b1a013a9-0f67-3723-d524-0210ca8cbe9a@linuxfoundation.org>
-Date:   Mon, 31 Jan 2022 08:40:23 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=1C6Hmt87vWzjWxqoVkiCorkigZnguA91Obr4BW1inuA=;
+        b=lL2ypC6GjhdXaE8PYC6AUcCYuUi6XRkUMXXXevQMj1KvwfuJU/34YnHBGL9OB/3ikW
+         TwNYxyoydvIYlIFMcUwp9KRfJOtrM1E83L2w8zzigSNjzJMubGUBsXTNK4EZpCEa8FY4
+         yJeME7ZYvpnFb/0VCfqFfVjrst4MzX5Ql0ZsQN/H1NPvHAXBoVh2pPKUyGzbKrBCOs28
+         k+mFiY284kcUXiaHMUx7lmpmbUKC24IdmOz+B+n99MjbyCH9zWYk/ZFT5Q24Dq1tlsO1
+         pyFVe8kPYk15ImK4sMdJ7YyHqDijc2931RTkHETSZhEei6w26cTnZT9ZReTsAI/wd+o9
+         TkCg==
+X-Gm-Message-State: AOAM531Grx4pDP1M/Df34xf4DpObD40YtylfkJqp02jc9rpU7jiGjoDE
+        c1OQ37bfu+jPYrqoznyf7LfIXYbvtB8EU7PL2GMJfvRVx8hlOn0f+fG7Sh6ZQV8z0Uwmy+rym5x
+        PdpdtO96kun0ghJo+
+X-Received: by 2002:a5d:67cf:: with SMTP id n15mr7577959wrw.673.1643643717425;
+        Mon, 31 Jan 2022 07:41:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy22KrqgW3Xz3v8qnHlD9gcRIZxiGHVoXvKPYyNXVgwkhNMPpOBlchmZYI+ec9lVTV5v52bqA==
+X-Received: by 2002:a5d:67cf:: with SMTP id n15mr7577948wrw.673.1643643717269;
+        Mon, 31 Jan 2022 07:41:57 -0800 (PST)
+Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id i6sm9239390wma.22.2022.01.31.07.41.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jan 2022 07:41:56 -0800 (PST)
+Date:   Mon, 31 Jan 2022 16:41:54 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net-next 0/4] selftests: fib rule: Small internal and test
+ output improvments
+Message-ID: <cover.1643643083.git.gnault@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <53506df1-feed-57e4-48f2-7444922e9bc2@mojatatu.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/31/22 5:46 AM, Jamal Hadi Salim wrote:
-> On 2022-01-21 11:27, Shuah Khan wrote:
->> On 1/21/22 7:11 AM, Jamal Hadi Salim wrote:
->>> On 2022-01-21 04:36, Davide Caratti wrote:
->>>> On Thu, Jan 20, 2022 at 8:34 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> 
-> [..]
-> 
-> 
->>
->> Several tests check for config support for their dependencies in their
->> test code - I don't see any of those in tc-testing. Individual tests
->> are supposed to check for not just the config dependencies, but also
->> any feature dependency e.g syscall/ioctl.
->>
->> Couple of way to fix this problem for tc-testing - enhance the test to
->> check for dependencies and skip with a clear message on why test is
->> skipped.
->>
->> A second option is enhancing the tools/testing/selftests/kselftest_deps.sh
->> script that checks for build depedencies. This tool can be enhanced easily
->> to check for run-time dependencies and use this in your automation.
->>
->> Usage: ./kselftest_deps.sh -[p] <compiler> [test_name]
->>
->>      kselftest_deps.sh [-p] gcc
->>      kselftest_deps.sh [-p] gcc vm
->>      kselftest_deps.sh [-p] aarch64-linux-gnu-gcc
->>      kselftest_deps.sh [-p] aarch64-linux-gnu-gcc vm
->>
->> - Should be run in selftests directory in the kernel repo.
->> - Checks if Kselftests can be built/cross-built on a system.
->> - Parses all test/sub-test Makefile to find library dependencies.
->> - Runs compile test on a trivial C file with LDLIBS specified
->>    in the test Makefiles to identify missing library dependencies.
->> - Prints suggested target list for a system filtering out tests
->>    failed the build dependency check from the TARGETS in Selftests
->>    main Makefile when optional -p is specified.
->> - Prints pass/fail dependency check for each tests/sub-test.
->> - Prints pass/fail targets and libraries.
->> - Default: runs dependency checks on all tests.
->> - Optional test name can be specified to check dependencies for it.
->>
-> 
-> Thanks Shuah. We'll look at this approach.
-> Question: How do we get reports when the bot finds a regression?
-> 
-> 
+The first half of these patch set improves the code logic and has no
+user visible effect. The second half improves the script output, to
+make it clearer and nicer to read.
 
-You might be able to subscribe to test ring notification or subscribe
-to Linux stable mailing list.
+Guillaume Nault (4):
+  selftests: fib rule: Make 'getmatch' and 'match' local variables
+  selftests: fib rule: Drop erroneous TABLE variable
+  selftests: fib rule: Log test description
+  selftests: fib rule: Don't echo modified sysctls
 
-thanks,
--- Shuah
+ tools/testing/selftests/net/fib_rule_tests.sh | 26 ++++++++++++-------
+ 1 file changed, 17 insertions(+), 9 deletions(-)
+
+-- 
+2.21.3
+
