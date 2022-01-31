@@ -2,173 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BDC34A52B9
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 23:58:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D25A54A52E1
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 00:06:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235335AbiAaW6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 17:58:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41648 "EHLO
+        id S236986AbiAaXGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 18:06:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233548AbiAaW6K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 17:58:10 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB426C061714;
-        Mon, 31 Jan 2022 14:58:09 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id h21so28353386wrb.8;
-        Mon, 31 Jan 2022 14:58:09 -0800 (PST)
+        with ESMTP id S235258AbiAaXGI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 18:06:08 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 953C7C061714;
+        Mon, 31 Jan 2022 15:06:08 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id i186so11714587pfe.0;
+        Mon, 31 Jan 2022 15:06:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lU1G9+dkgu85ynTOI5duAG/YVK2yiYMVuxleih31VWQ=;
-        b=WykjLdPIQhu+boQyH2Ffsyq0If/EgomKYiHHiYUPdWSri2xlCbIhZCTrhykLd3S12g
-         BLg56tIPmi0jPGqPQlZDq7qdmJEnWg7IAm7dbjZCVFOYP4UfF9qTPkehSAP5Bq/Gm29K
-         HdgI5jreR2lfrdHTsAo2r1Bk1Ed2qtRZ3hhJLBbEEgVBFC+GvhxxmlyhGhC03HdEp1ta
-         RfA5X1NRgndyc7DQyoUrCT0892+XUUiz4spgpIWwIaRDd5P7DSaLIrVXbBDRvxUUQfB7
-         FH7D4NwaYbmInlflNJV52Kfblhlse6Ox4MIn0tBR3ZF1u2f6L0sEdtJvuFZ1Dtoyfjh4
-         slVg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=v5RcyeeHHXW9j3hXHNrkcObjXy4CdCazV/xa6UgsjRk=;
+        b=FuLO1unfVDoVExaEbAXmMG9VT/XrOxSzURa4tb2lWs/3zb6PQsqobF2i9HNgnVWIcZ
+         6TEtH+pMj/eZ1ZbIrdxWCmJ7akU6yPujMiyI27+AQj4RgErAG05Yejjm0B5E0kINMMpJ
+         PUPEIzwCcqDYsP53mzCSk2flxEPLDTCLy3MxEVCQ0Cc9Lj+h1pija49ucqBL85K5GzNB
+         +3S+rtiU+gSpJFO8H2sRj80O6cuUCz0wg2mIUj1OTcnA4BKaLNG/+6h0VNq9FtPjuukX
+         bBs2XgOgHjsrEldPoKWc6dxLTS0NM9vTBwwCoq1OEfeQMbBG1j/K/AyPKMobKYpDJoN4
+         RmXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lU1G9+dkgu85ynTOI5duAG/YVK2yiYMVuxleih31VWQ=;
-        b=8PWDt+WOjs8O1sT13yjrS6lSXJ4g9+B8ZMYcj173EkTMz2yTXEG3+wrNViU0Po/VG6
-         MnbWGRd8W2u+sQAT6HZrag85oLww62juist5KbE/dEzApjXXPb+cL4iNQ7rcoXVPLCTr
-         fa3cbQExEGw0ihX2NQ6AgtJkF47PY9fH1CIn6PE90ckt3IKqksPtJhPJQ1d4zak+MWgZ
-         yvl2kGlIrxrk0duK65iGt4zmw0fDVYnCFcsRMhipR8K9bKcUHZ0/iJpZvuADk2NcI8wE
-         qWunRuB3CFEnK/AE9MSp8WMQTON8lSBOubQLdV6Ks5BIhENTfZ+nLwXkQQuw78xUaBF1
-         idrg==
-X-Gm-Message-State: AOAM532NUk2fpVe5tCcEZK3ISVAy2/Ya3dlrP+7o43hPI+dCPp49ZnXH
-        1kMQ6VdcN9oVmVnPpJ1mE1yvQ5/4za5cA0T+UZvVsLwtga4=
-X-Google-Smtp-Source: ABdhPJyD2fM3BtNInKv4oMf21T2wHQTDvfV7IYnED6scoOKURuDGAnDosQBESke9fj3fkXJAT8VE8vi2sXjcIegvvq4=
-X-Received: by 2002:a5d:6f10:: with SMTP id ay16mr19726478wrb.205.1643669888313;
- Mon, 31 Jan 2022 14:58:08 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=v5RcyeeHHXW9j3hXHNrkcObjXy4CdCazV/xa6UgsjRk=;
+        b=G4/YBZgFTSui22vivbmr5Adf+r8LymQjv/Dnwzem0y5ai9KPx76PznlKr2CWhdN5YO
+         paDlJfOelPwfzN/OpF0OCsQkEAgA1NT9S3BYlp4jGS5k9D+bmiFrNWOe4RUzZ0gSnW/l
+         yJXBvdqutrFntFaivxXuQGSAR6BqeurrGo0hm+xQibnubIb3zTuR9yTio53Yxln7y6wn
+         Qa9dN7WBapLvo14+QGSpFSRWdNeByJQ37KIlbA4G7il2m30ussqQw0QqB7U3xglT8DBd
+         DwBeQsoVQ0j5qlJZY4FTOkV3vfcKdnPCWPwLyrEt/FGIk0dW6TDIUMdR23AI6Q1uMoPv
+         hOiw==
+X-Gm-Message-State: AOAM532hpqGg0djmLEqHSNFW2tzemTvzcnpTKiyyA99Vkg+O8hl6hAcs
+        61e4Nu7qy8cctgNJO0fTwqM=
+X-Google-Smtp-Source: ABdhPJxMwfga3XoB5eRlYJq/i2A2qtV8l3tyBpCJBLUAjc8jZ8QlVgn8/0C8xDn+lZCxVhz2OOPsEQ==
+X-Received: by 2002:a63:8ac9:: with SMTP id y192mr18240787pgd.409.1643670367856;
+        Mon, 31 Jan 2022 15:06:07 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id gb5sm366101pjb.16.2022.01.31.15.06.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Jan 2022 15:06:07 -0800 (PST)
+Message-ID: <7dc930c6-4ffc-0dd0-8385-d7956e7d16ff@gmail.com>
+Date:   Mon, 31 Jan 2022 15:06:01 -0800
 MIME-Version: 1.0
-References: <20220128112002.1121320-1-miquel.raynal@bootlin.com>
- <20220128112002.1121320-2-miquel.raynal@bootlin.com> <CAB_54W45Hht8OVLDhKTKkfORYUJ30oWBz2psxX2m8OB4foK=0Q@mail.gmail.com>
- <20220131144617.3c762cfb@xps13>
-In-Reply-To: <20220131144617.3c762cfb@xps13>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Mon, 31 Jan 2022 17:57:57 -0500
-Message-ID: <CAB_54W7WTpJ+G2VMzL9d49aKejj9P4=f=BS4ryLHrpX1hnfxZw@mail.gmail.com>
-Subject: Re: [PATCH wpan-next v2 1/2] net: ieee802154: Move the IEEE 802.15.4
- Kconfig main entries
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next] net: kbuild: Don't default net vendor configs to
+ y
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Saeed Mahameed <saeed@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mark Einon <mark.einon@gmail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Shay Agroskin <shayagr@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        David Arinzon <darinzon@amazon.com>,
+        Noam Dagan <ndagan@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jeroen de Borst <jeroendb@google.com>,
+        Catherine Sullivan <csully@google.com>,
+        David Awogbemila <awogbemila@google.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "K . Y . Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Jon Mason <jdmason@kudzu.us>,
+        Simon Horman <simon.horman@corigine.com>,
+        Rain River <rain.1986.08.12@gmail.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>,
+        Shannon Nelson <snelson@pensando.io>, drivers@pensando.io,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Rob Herring <robh@kernel.org>, l.stelmach@samsung.com,
+        rafal@milecki.pl, Edwin Peer <edwin.peer@broadcom.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Joel Stanley <joel@jms.id.au>, Slark Xiao <slark_xiao@163.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Liming Sun <limings@nvidia.com>,
+        David Thompson <davthompson@nvidia.com>,
+        Asmaa Mnebhi <asmaa@nvidia.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>,
+        Omkar Kulkarni <okulkarni@marvell.com>,
+        Shai Malin <smalin@marvell.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Gary Guo <gary@garyguo.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, intel-wired-lan@lists.osuosl.org,
+        linux-hyperv@vger.kernel.org, oss-drivers@corigine.com,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com
+References: <20220131172450.4905-1-saeed@kernel.org>
+ <20220131095905.08722670@hermes.local>
+ <CAMuHMdU17cBzivFm9q-VwF9EG5MX75Qct=is=F2h+Kc+VddZ4g@mail.gmail.com>
+ <20220131183540.6ekn3z7tudy5ocdl@sx1>
+ <30ed8220-e24d-4b40-c7a6-4b09c84f9a1f@gmail.com>
+ <20220131121027.4fe3e8dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220131121027.4fe3e8dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-On Mon, Jan 31, 2022 at 8:46 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> Hi Alexander,
->
-> alex.aring@gmail.com wrote on Sun, 30 Jan 2022 16:07:53 -0500:
->
-> > Hi,
-> >
-> > I will do this review again because I messed up with other series.
-> >
-> > On Fri, Jan 28, 2022 at 6:20 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > >
-> > > From: David Girault <david.girault@qorvo.com>
-> > >
-> > > It makes certainly more sense to have all the low-range wireless
-> > > protocols such as Bluetooth, IEEE 802.11 (WiFi) and IEEE 802.15.4
-> > > together, so let's move the main IEEE 802.15.4 stack Kconfig entry at a
-> > > better location.
-> > >
-> > > As the softMAC layer has no meaning outside of the IEEE 802.15.4 stack
-> > > and cannot be used without it, also move the mac802154 menu inside
-> > > ieee802154/.
-> > >
-> >
-> > That's why there is a "depends on".
-> >
-> > > Signed-off-by: David Girault <david.girault@qorvo.com>
-> > > [miquel.raynal@bootlin.com: Isolate this change from a bigger commit and
-> > > rewrite the commit message.]
-> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > ---
-> > >  net/Kconfig            | 3 +--
-> > >  net/ieee802154/Kconfig | 1 +
-> > >  2 files changed, 2 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/net/Kconfig b/net/Kconfig
-> > > index 8a1f9d0287de..a5e31078fd14 100644
-> > > --- a/net/Kconfig
-> > > +++ b/net/Kconfig
-> > > @@ -228,8 +228,6 @@ source "net/x25/Kconfig"
-> > >  source "net/lapb/Kconfig"
-> > >  source "net/phonet/Kconfig"
-> > >  source "net/6lowpan/Kconfig"
-> > > -source "net/ieee802154/Kconfig"
-> >
-> > I would argue here that IEEE 802.15.4 is no "network option". However
-> > I was talking once about moving it, but people don't like to move
-> > things there around.
-> > In my opinion there is no formal place to "have all the low-range
-> > wireless such as Bluetooth, IEEE 802.11 (WiFi) and IEEE 802.15.4
-> > together". If you bring all subsystems together and put them into an
-> > own menuentry this would look different.
-> >
-> > If nobody else complains about moving Kconfig entries here around it
-> > looks okay for me.
-> >
-> > > -source "net/mac802154/Kconfig"
-> > >  source "net/sched/Kconfig"
-> > >  source "net/dcb/Kconfig"
-> > >  source "net/dns_resolver/Kconfig"
-> > > @@ -380,6 +378,7 @@ source "net/mac80211/Kconfig"
-> > >
-> > >  endif # WIRELESS
-> > >
-> > > +source "net/ieee802154/Kconfig"
-> > >  source "net/rfkill/Kconfig"
-> > >  source "net/9p/Kconfig"
-> > >  source "net/caif/Kconfig"
-> > > diff --git a/net/ieee802154/Kconfig b/net/ieee802154/Kconfig
-> > > index 31aed75fe62d..7e4b1d49d445 100644
-> > > --- a/net/ieee802154/Kconfig
-> > > +++ b/net/ieee802154/Kconfig
-> > > @@ -36,6 +36,7 @@ config IEEE802154_SOCKET
-> > >           for 802.15.4 dataframes. Also RAW socket interface to build MAC
-> > >           header from userspace.
-> > >
-> > > +source "net/mac802154/Kconfig"
-> >
-> > The next person in a year will probably argue "but wireless do source
-> > of wireless/mac80211 in net/Kconfig... so this is wrong".
-> > To avoid this issue maybe we should take out the menuentry here and do
-> > whatever wireless is doing without questioning it?
->
-> Without discussing the cleanliness of the wireless subsystem, I don't
-> feel bad proposing alternatives :)
->
-> I'm fine adapting to your preferred solution either way, so could you
-> clarify what should I do:
-> - Drop that commit entirely.
-> - Move things into their own submenu (we can discuss the naming,
->   "Low range wireless Networks" might be a good start).
-> - Keep it like it is.
 
-I think we should move things around to end in a situation like
-wireless has it in net/Kconfig. This will avoid other movements
-whoever declares what's wrong and right of handling Kconfig entries.
+On 1/31/2022 12:10 PM, Jakub Kicinski wrote:
+> On Mon, 31 Jan 2022 10:40:38 -0800 Florian Fainelli wrote:
+>>>> And changing the defaults means all defconfigs must be updated first,
+>>>> else the user's configs will end up without drivers needed.
+>>>>   
+>>>
+>>> As I understand correctly, at least for most common net drivers, having
+>>> NET_VENDOR_XYZ=y doesn't actually build anything, we have flags per
+>>> module for each vendor and those are defaulted to N.
+>>
+>> Right, but once you start hiding NET_VENDOR_DRIVER_XYZ under a
+>> NET_VENDOR_XYZ Kconfig symbol dependency, if NET_VENDOR_XYZ is not set
+>> to Y, then you have no way to select NET_VENDOR_DRIVER_XYZ and so your
+>> old defconfig breaks.
+> 
+> To be clear do we actually care about *old* configs or *def* configs?
 
-Sure you can do follow up patches which introduce "Low range wireless
-Networks" and ask for acks for doing such change.
+I think we care about oldconfig but maybe less so about defconfigs which 
+are in tree and can be updated.
 
-- A;ex
+> 
+> Breaking defconfigs seems bad, but I don't think we can break
+> reasonable oldconfigs at this point?
+
+No preference either way for me, just like Richard, all of the systems I 
+typically work with either require a carefully curated configuration 
+file to strip out unwanted features. I do like Geert's suggestion of 
+adding default ARCH_ for slightly esoteric controllers that are not 
+found in off the shelf hardware.
+
+> 
+>>>> It might make sense to tune some of the defaults (i.e. change to
+>>>> "default y if ARCH_*") for drivers with clear platform dependencies.
+>>>>   
+>>>
+>>> either set hard default to 'n' or just keep it as is, anything else is just
+>>> more confusion.
+>>
+>> Maybe the rule should go like this: any new driver vendor defaults to n,
+>> and existing ones remain set to y, until we deprecate doing that and
+>> switching them all off to n by 5.18?
+> 
+> I'd be afraid that given the work of fixing up defconfigs is
+> non-trivial we may end up never switching old drivers. And then we'd
+> have a semi-random soup of defaults :(
+
+Fair enough.
+-- 
+Florian
