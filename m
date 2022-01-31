@@ -2,92 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 429CD4A4776
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 13:46:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70E264A4795
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 13:54:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377995AbiAaMqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 07:46:35 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:8276 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1377935AbiAaMqb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 07:46:31 -0500
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20VCbqif036194;
-        Mon, 31 Jan 2022 12:46:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=nh+RVENpbA1r3RMZCSSKROR/LLLUwDVrN3w9Pumuon8=;
- b=Bc+nFuL5dQ9Em0ZXdRak04eTq4eJojGzJlpJoqpo7VgxW3mPndw12fpRcQoT70ZU5aE0
- 6MwpZNxT+d9gGkPIoH2VqitYQVMbezRfozmJIxlfDJeUtpkZfASoo/d5dNX485XTmC7R
- uLESJ/QynnaO/BrX6+XB8C5vrgJb2K6WKOTgnC5csqDdG3kgvVFXvTvCso8CZslavNF8
- 4I2YRS4ZELZP9EFWGBhSQPULfzu1yj45gb2anYNHF253EBHmCK91wlKhFTlSNSQ3s+xT
- 8qrW5WAzKM9vyN6JX/PJwh9NgE3w/2KtwcONDtzZNoMjDp5Fs/EJwNozRP64fQVn8s71 uw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dx5a6tuah-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 31 Jan 2022 12:46:28 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20VCfQ1b008949;
-        Mon, 31 Jan 2022 12:46:28 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dx5a6tu9s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 31 Jan 2022 12:46:28 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20VCgCl2002823;
-        Mon, 31 Jan 2022 12:46:25 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04ams.nl.ibm.com with ESMTP id 3dvw79bdqa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 31 Jan 2022 12:46:25 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20VCkNcK39387484
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 31 Jan 2022 12:46:23 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9C31C11C052;
-        Mon, 31 Jan 2022 12:46:23 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2A55511C04C;
-        Mon, 31 Jan 2022 12:46:23 +0000 (GMT)
-Received: from [9.145.79.147] (unknown [9.145.79.147])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 31 Jan 2022 12:46:23 +0000 (GMT)
-Message-ID: <83f520b1-d272-cafc-37b1-d086d68f2e9c@linux.ibm.com>
-Date:   Mon, 31 Jan 2022 13:46:38 +0100
+        id S1376989AbiAaMy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 07:54:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43188 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239602AbiAaMy0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 07:54:26 -0500
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB04FC061714
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 04:54:25 -0800 (PST)
+Received: by mail-qt1-x82d.google.com with SMTP id k25so6292376qtp.4
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 04:54:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rv/l0iR88alaV0E0PKHjXHkAUudNqhKjqbuycOIch9Q=;
+        b=iHVT48IqlNbeuYIjWPJb6ynAwg4idbdp8oC0oAHm8/oFmqMyrvZS04InIuqaUqc58O
+         apNEJeljxcfaGC9CUMlBr19wZRvqto/dKwDzUnxAE0rDXpREBomxA742ZXBehNRMw0mr
+         bvJppg/hnybdp3MN+ZzrTF9/FCA3EUPUjNQCD0Kn/gv+l+N9gqQ9DuB7E71SttJ/zJrp
+         /TJ07dEAyWlKOpFTqN3k/rP08QtLc+6C3OGhwHvWx44sGn4t5kgglqeDOW4oQN9RkvXn
+         z/JJfkayWGaCIWL9Vp2D0MwtoBaVwW4vkGH1zKFQyV7WtvCICFDfxLgZ7lZuOy5c3YqG
+         V8EA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rv/l0iR88alaV0E0PKHjXHkAUudNqhKjqbuycOIch9Q=;
+        b=WGHY+uWnf8xe4ZZtir67SV+L2qSIje942qikVuDk5hsHbQLnmUH5dcp3IbjxC8+qPJ
+         37hL6tmcL1CIZEzaFVhZJ7AFvgKgwCq2XSpLLzufYJdyfAitRP37horMU78zUDFkfjTU
+         qMVHVh+ie0qIBrmfvDMfBUNGeLeBPqDL98t8Do/vuoOuuH+Yx9GfngV4fuJbKMdor9BX
+         HEuH4zwHOEJFmV0YmNTSOY5coqRpZgC5SyGvqHQH9MAp8JebNfVmX4GbtSpeJZtHksu9
+         EWbsk3TP5X6UDD04HHiZN5mGiq7YBOQusoCFRqDVG9R33MFvlWD/urP7Cxn5tAGGAu42
+         +ARQ==
+X-Gm-Message-State: AOAM530/2xw0xJ2fELlFQEp+sUtrgMtamXpz/cziyeQNZVbvrEmQAfjA
+        OPDn+XudPNhOZke7hIK3EN1Qeg==
+X-Google-Smtp-Source: ABdhPJwW8RLPBsuSTx2b9dAlYGrWKDVcSMMdZea0z0pFihmnEt/Y/Xc1fV2T/DlMQcjE5Jv3XYel7A==
+X-Received: by 2002:a05:622a:215:: with SMTP id b21mr14539181qtx.199.1643633664983;
+        Mon, 31 Jan 2022 04:54:24 -0800 (PST)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-74.dsl.bell.ca. [184.148.47.74])
+        by smtp.googlemail.com with ESMTPSA id k20sm8354187qtx.64.2022.01.31.04.54.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Jan 2022 04:54:24 -0800 (PST)
+Message-ID: <78ac271a-7d00-7526-54b5-2aabb5b3a3ba@mojatatu.com>
+Date:   Mon, 31 Jan 2022 07:54:23 -0500
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 net-next 0/3] net/smc: Optimizing performance in
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH iproute2 v3 1/2] tc: u32: add support for json output
 Content-Language: en-US
-To:     "D. Wythe" <alibuda@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        matthieu.baerts@tessares.net
-References: <cover.1643380219.git.alibuda@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <cover.1643380219.git.alibuda@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
+To:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Andrea Claudi <aclaudi@redhat.com>
+Cc:     netdev@vger.kernel.org, Wen Liang <wenliang@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Victor Nogueira <victor@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@nvidia.com>
+References: <cover.1641493556.git.liangwen12year@gmail.com>
+ <0670d2ea02d2cbd6d1bc755a814eb8bca52ccfba.1641493556.git.liangwen12year@gmail.com>
+ <20220106143013.63e5a910@hermes.local> <Ye7vAmKjAQVEDhyQ@tc2>
+ <20220124105016.66e3558c@hermes.local> <Ye8abWbX5TZngvIS@tc2>
+ <20220124164354.7be21b1c@hermes.local>
+ <848d9baa-76d1-0a60-c9e4-7d59efbc5cbc@mojatatu.com>
+ <a7ec49d5-8969-7999-43c4-12247decae9e@gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+In-Reply-To: <a7ec49d5-8969-7999-43c4-12247decae9e@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: jp6sQAvkvPGwbrZFyc7RIG3WTR821-lw
-X-Proofpoint-GUID: WezDvuRvtofA6cZSN92KaH3o9r5641GK
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-31_05,2022-01-28_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 spamscore=0
- lowpriorityscore=0 adultscore=0 clxscore=1015 priorityscore=1501
- bulkscore=0 phishscore=0 suspectscore=0 malwarescore=0 mlxscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201310083
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/01/2022 15:44, D. Wythe wrote:
-> From: "D. Wythe" <alibuda@linux.alibaba.com>
+On 2022-01-26 10:50, David Ahern wrote:
+> On 1/26/22 6:52 AM, Jamal Hadi Salim wrote:
+>>
+>> Makes sense in particular if we have formal output format like json.
+>> If this breaks tdc it would be worth to fix tdc (and not be backward
+>> compatible)
+>>
+>> So: Since none of the tc maintainers was Cced in this thread, can we
+>> please impose a rule where any changes to tc subdir needs to have tdc
+>> tests run (and hopefully whoever is making the change will be gracious
+>> to contribute an additional testcase)?
+> 
+> I can try to remember to run tdc tests for tc patches. I looked into it
+> a few days ago and seems straightforward to run tdc.sh.
+
+Note tdc.sh is meant for the bot. It skips a lot things per Davide's
+comment that he was worried the robot will end up spending too many
+cycles. Good source at the moment is the README.
+
+> The output of
+> those tests could be simplified - when all is good you get the one line
+> summary of the test name with PASS/FAIL with an option to run in verbose
+> mode to get the details of failures. As it is, the person running the
+> tests has to wade through a lot of output.
 > 
 
-Cover letter subject: "Optimizing performance in" ??
+We are going to put some cycles improving things. Your input is useful.
+
+>> Do you need a patch for that in some documentation?
+>>
+> 
+> How about adding some comments to README.devel?
+
+
+Sure - but it wont be sufficient IMO.
+Best course of action is for the maintainers to remind people to run
+tests.
+
+BTW: We found out that Stephen's patches still break the latest -next.
+
+cheers,
+jamal
