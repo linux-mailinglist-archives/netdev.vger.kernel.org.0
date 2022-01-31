@@ -2,166 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 247B14A4E93
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 19:37:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64F7F4A4E94
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 19:38:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356737AbiAaShN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 13:37:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38106 "EHLO
+        id S1356707AbiAaShz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 13:37:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356944AbiAaShH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 13:37:07 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF961C06173E;
-        Mon, 31 Jan 2022 10:37:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=2moysldpF3D0YrY9nWIgUUodshHFtQk8RLnSpJ4W8gk=; b=R4VYhISoOa7xhPwQXhM5O6QUPn
-        sBWyA1OAHDZAZcX25S6RnLZms7pB4zxmzlGAbH2v615Fyhq7blFxBH5IEQtWYCu0p5epom0MGb+ml
-        jh0aDOdxyTf/cYxhmLTJRjwAPLVfBCgTWvnanY8yuls0mgk7MUv6OUB8hFwaVYjOBGOpC5JIbEkFC
-        6A4x4rOI2wtW+oEJDFx9w9cn83WZKztl/Rk3ir3zwu9z1nEJOplIg1WfCH6Bz/c8gLJe6hX/zEz5j
-        vE6wCdq8wFMBY+a55ipNumVgQQf423XUoNq43RRAEz7cLA/tWxigJ0jQCDE7qTa46U2h6qBlFvqTk
-        yfndph2w==;
-Received: from [2001:4bb8:191:327d:83ae:cf0e:db3c:eb79] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nEbXr-00AOuy-7n; Mon, 31 Jan 2022 18:36:55 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-doc@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 5/5] bpf, docs: Better document the atomic instructions
-Date:   Mon, 31 Jan 2022 19:36:38 +0100
-Message-Id: <20220131183638.3934982-6-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220131183638.3934982-1-hch@lst.de>
-References: <20220131183638.3934982-1-hch@lst.de>
+        with ESMTP id S1356713AbiAaSh3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 13:37:29 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3D6C061714
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 10:37:28 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id l25so27114237wrb.13
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 10:37:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:to:cc:content-language
+         :subject:content-transfer-encoding;
+        bh=lKtA3DhtaWtkIH5UsQ9oQVxQxSpvvO/J7hzm8/3EI5U=;
+        b=ZWDdLOVh4lAihtGTx1X/+Awqa78dUOH7IBlp+c3Gpyxo3cKKhdSXeZNqoV4PkHk1EB
+         QKPulhHVRbOXMof6YTMlZ282RdN7nWqlXQRlmiQDbMnVFktCL93JpSZnAryf4aa4E32s
+         p4WQ4VfarrRKuWWwAISaxRrZ+5OaXqa2Rftr5bNtkXqi/BO4XTOmcDa+GOczKI7SsHsv
+         Lw4fbo826HpEuKjLeq6n237Fym9tG4FXixRyWDuYQrj88WXEnYlQHBmgq8RaFab3xR6E
+         NA6eoybB6gmvbV7EngsHP0UFqT2CuuKXI9fg2fxFDyTHc4OUcw81NxcV6YQHLUl1OIA2
+         c8EQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from:to
+         :cc:content-language:subject:content-transfer-encoding;
+        bh=lKtA3DhtaWtkIH5UsQ9oQVxQxSpvvO/J7hzm8/3EI5U=;
+        b=7enV/hXMGdJsLRVYO10Dh1huLw3gRyfj5+WYyJhJ0uX4MQjgmLk7W0LgHcB9Q0+Q5g
+         1AcifPSPKQbHcG+joF8WEDIG6QZK/o2GewE3xWyiNNvnuV/Y7+2ErhTLE2MqxzYZhh1U
+         syQuJJ/IzYBLHD4yeywSzIPkAOv+oytsGFGj5rTzkfQqlpV7M9sSV+vrYlM71CpCqsUd
+         mYTVy2i+Lav9NIWf8VBhPBwocC4UZOXSLtYySRftNJrEwxE7UmyE/+ni620IBtEGYCpz
+         EkCb/zCmgHpiAl7DZu6joo6Hj8zAx/oWawTAW+eWHFjkpPzokatbznpVxXYDkwB+5/Cb
+         EA9w==
+X-Gm-Message-State: AOAM531i60xFso6miC0mTFNGT8nF7CZRw0y+VGqtpRKANPE+x41ATsp/
+        bfmHGwqs+2I8NHWRFXsmCZ5BFh0yRsY=
+X-Google-Smtp-Source: ABdhPJx/4f1pe3YuuM4sJcxNpDhZfSUOp7UJRag/GMXyCJ/iYEhYv3BXlekaKf45gknfheTxvwpxCg==
+X-Received: by 2002:adf:dfcd:: with SMTP id q13mr18714773wrn.648.1643654247345;
+        Mon, 31 Jan 2022 10:37:27 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f4d:2b00:5999:1eb2:814b:f0be? (p200300ea8f4d2b0059991eb2814bf0be.dip0.t-ipconnect.de. [2003:ea:8f4d:2b00:5999:1eb2:814b:f0be])
+        by smtp.googlemail.com with ESMTPSA id e9sm6573821wrg.60.2022.01.31.10.37.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Jan 2022 10:37:26 -0800 (PST)
+Message-ID: <4784d5ce-38ac-046a-cbfa-5fdd9773f820@gmail.com>
+Date:   Mon, 31 Jan 2022 19:37:22 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Language: en-US
+Subject: [PATCH net-next] r8169: support L1.2 control on RTL8168h
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use proper tables and RST markup to document the atomic instructions
-in a structured way.
+According to Realtek RTL8168h supports the same L1.2 control as RTL8125.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- Documentation/bpf/instruction-set.rst | 76 +++++++++++++++++----------
- 1 file changed, 49 insertions(+), 27 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/bpf/instruction-set.rst b/Documentation/bpf/instruction-set.rst
-index 048aea0952a2e..4e79a77febd43 100644
---- a/Documentation/bpf/instruction-set.rst
-+++ b/Documentation/bpf/instruction-set.rst
-@@ -249,39 +249,65 @@ Where size is one of: ``BPF_B``, ``BPF_H``, ``BPF_W``, or ``BPF_DW``.
- Atomic operations
- -----------------
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 3c3d1506b..7a3d489ca 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -2686,6 +2686,7 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+ 		RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
  
--eBPF includes atomic operations, which use the immediate field for extra
--encoding::
-+Atomic operations are operations that operate on memory and can not be
-+interrupted or corrupted by other access to the same memory region
-+by other eBPF programs or means outside of this specification.
- 
--   .imm = BPF_ADD, .code = BPF_ATOMIC | BPF_W  | BPF_STX: lock xadd *(u32 *)(dst_reg + off16) += src_reg
--   .imm = BPF_ADD, .code = BPF_ATOMIC | BPF_DW | BPF_STX: lock xadd *(u64 *)(dst_reg + off16) += src_reg
-+All atomic operations supported by eBPF are encoded as store operations
-+that use the ``BPF_ATOMIC`` mode modifier as follows:
- 
--The basic atomic operations supported are::
-+  * ``BPF_ATOMIC | BPF_W | BPF_STX`` for 32-bit operations
-+  * ``BPF_ATOMIC | BPF_DW | BPF_STX`` for 64-bit operations
-+  * 8-bit and 16-bit wide atomic operations are not supported.
- 
--    BPF_ADD
--    BPF_AND
--    BPF_OR
--    BPF_XOR
-+The imm field is used to encode the actual atomic operation.
-+Simple atomic operation use a subset of the values defined to encode
-+arithmetic operations in the imm field to encode the atomic operation:
- 
--Each having equivalent semantics with the ``BPF_ADD`` example, that is: the
--memory location addresed by ``dst_reg + off`` is atomically modified, with
--``src_reg`` as the other operand. If the ``BPF_FETCH`` flag is set in the
--immediate, then these operations also overwrite ``src_reg`` with the
--value that was in memory before it was modified.
-+  ========  =====  ===========
-+  imm       value  description
-+  ========  =====  ===========
-+  BPF_ADD   0x00   atomic add
-+  BPF_OR    0x40   atomic or
-+  BPF_AND   0x50   atomic and
-+  BPF_XOR   0xa0   atomic xor
-+  ========  =====  ===========
- 
--The more special operations are::
- 
--    BPF_XCHG
-+``BPF_ATOMIC | BPF_W  | BPF_STX`` with imm = BPF_ADD means::
- 
--This atomically exchanges ``src_reg`` with the value addressed by ``dst_reg +
--off``. ::
-+  *(u32 *)(dst_reg + off16) += src_reg
- 
--    BPF_CMPXCHG
-+``BPF_ATOMIC | BPF_DW | BPF_STX`` with imm = BPF ADD means::
- 
--This atomically compares the value addressed by ``dst_reg + off`` with
--``R0``. If they match it is replaced with ``src_reg``. In either case, the
--value that was there before is zero-extended and loaded back to ``R0``.
-+  *(u64 *)(dst_reg + off16) += src_reg
- 
--Note that 1 and 2 byte atomic operations are not supported.
-+``BPF_XADD`` is a deprecated name for ``BPF_ATOMIC | BPF_ADD``.
-+
-+In addition to the simple atomic operations, there also is a modifier and
-+two complex atomic operations:
-+
-+  ===========  ================  ===========================
-+  imm          value             description
-+  ===========  ================  ===========================
-+  BPF_FETCH    0x01              modifier: return old value
-+  BPF_XCHG     0xe0 | BPF_FETCH  atomic exchange
-+  BPF_CMPXCHG  0xf0 | BPF_FETCH  atomic compare and exchange
-+  ===========  ================  ===========================
-+
-+The ``BPF_FETCH`` modifier is optional for simple atomic operations, and
-+always set for the complex atomic operations.  If the ``BPF_FETCH`` flag
-+is set, then the operation also overwrites ``src_reg`` with the value that
-+was in memory before it was modified.
-+
-+The ``BPF_XCHG`` operation atomically exchanges ``src_reg`` with the value
-+addressed by ``dst_reg + off``.
-+
-+The ``BPF_CMPXCHG`` operation atomically compares the value addressed by
-+``dst_reg + off`` with ``R0``. If they match, the value addressed by
-+``dst_reg + off`` is replaced with ``src_reg``. In either case, the
-+value that was at ``dst_reg + off`` before the operation is zero-extended
-+and loaded back to ``R0``.
- 
- Clang can generate atomic instructions by default when ``-mcpu=v3`` is
- enabled. If a lower version for ``-mcpu`` is set, the only atomic instruction
-@@ -289,10 +315,6 @@ Clang can generate is ``BPF_ADD`` *without* ``BPF_FETCH``. If you need to enable
- the atomics features, while keeping a lower ``-mcpu`` version, you can use
- ``-Xclang -target-feature -Xclang +alu32``.
- 
--You may encounter ``BPF_XADD`` - this is a legacy name for ``BPF_ATOMIC``,
--referring to the exclusive-add operation encoded when the immediate field is
--zero.
--
- 64-bit immediate instructions
- -----------------------------
- 
+ 		switch (tp->mac_version) {
++		case RTL_GIGA_MAC_VER_45 ... RTL_GIGA_MAC_VER_48:
+ 		case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
+ 			/* reset ephy tx/rx disable timer */
+ 			r8168_mac_ocp_modify(tp, 0xe094, 0xff00, 0);
+@@ -2697,6 +2698,7 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+ 		}
+ 	} else {
+ 		switch (tp->mac_version) {
++		case RTL_GIGA_MAC_VER_45 ... RTL_GIGA_MAC_VER_48:
+ 		case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
+ 			r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, 0);
+ 			break;
 -- 
-2.30.2
+2.35.0
 
