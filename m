@@ -2,15 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2BC64A4740
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 13:34:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 953E14A4746
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 13:34:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377788AbiAaMek (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 07:34:40 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:59484 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377681AbiAaMei (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 07:34:38 -0500
+        id S1378072AbiAaMeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 07:34:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38668 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377728AbiAaMej (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 07:34:39 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24481C06173D;
+        Mon, 31 Jan 2022 04:34:39 -0800 (PST)
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020; t=1643632477;
@@ -18,21 +21,21 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xJWvr65dKavzLpT9wk8poZEoprQ5XoEoPP+pD1dTjoU=;
-        b=Z/KGWakY3YQlkXWWU17c/U6IyXfQ2ddGu2eAM1wSlkX5J3cDhZ/2sw01mwLlFcckDsouWb
-        6DQIC8M/NmorkRzCyc4PAaOaZAUR9X3K7NumnAmRwAAbUUktaHsL8Ya2glWuNNY3Ner0R+
-        B624oJtvIdvwqA0J4mJNppn96yQ04dJ7PtlWVG1SLpP68xYftg6aTWuZaFVXM62pEfN/wo
-        +ivNf1zd/2FL3+dtp1JTFrpaBsBtgkC5eww1zsh1fzhS4Uz7bJNeJAqDQDXfdoFkqEKaFM
-        +NQflqvo3TspLnpeEAgXit6O7IiqKmpVYpn4KdJDfHic9T8O2PEGqOYKf32EBA==
+        bh=3Rf56x1+Ad9rEt91/emuxS1F2pB4aiqCl6htULN1OW8=;
+        b=NItl7Sm8Sv5ZaZ5pyGetxkOE/XosAyw1Dhafd35BWYF3AZ2wlMF0JlE014D8ZkIWfl13cz
+        rcS815gCwV/KsKUNNBwuB0iGRs2ZpGX0NJyyYTxZLtGSrqQYVOio1CabZXCdYcRkMp3PWo
+        iZFVXBfcJbKCc9drgMh1h8oUD7jS/7Ys12c7yOm0WNjcegWdJtPUy2CklxnxxJgZBnPFgp
+        ZKE6I7MFgk2a8cbEuOHg+JZHgyNMqxfaOkiF0BVcHv9aE8aHwy7H7YCJC0Yq+sViS6aABI
+        9QESDEJ5YTamladmXXncEIluMmNgNr5ZdTyfIOYxSeLV6CR/8K2XLP1WWd4+uQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020e; t=1643632477;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xJWvr65dKavzLpT9wk8poZEoprQ5XoEoPP+pD1dTjoU=;
-        b=1FiRpdEpOIKmEaDN1Ok6OZsrGcwa2CFIdZD9jXw4HkbjamLiJUBykx5vbsIIS/XPmAktwm
-        /+0hNxq/DdZqnyDg==
+        bh=3Rf56x1+Ad9rEt91/emuxS1F2pB4aiqCl6htULN1OW8=;
+        b=sM8TDHdyAIVrrUiRyNvRG/FFsmdPiet8KBnHDjkQYPlM/VPUyDAcs0VgIPboQLk4/Zp2ED
+        Sl8ssbU1jFbAFPBw==
 To:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
         linux-usb@vger.kernel.org, netdev@vger.kernel.org
@@ -48,9 +51,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
         Woojung Huh <woojung.huh@microchip.com>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v2 4/7] mfd: hi6421-spmi-pmic: Use generic_handle_irq_safe().
-Date:   Mon, 31 Jan 2022 13:34:01 +0100
-Message-Id: <20220131123404.175438-5-bigeasy@linutronix.de>
+Subject: [PATCH v2 5/7] mfd: ezx-pcap: Use generic_handle_irq_safe().
+Date:   Mon, 31 Jan 2022 13:34:02 +0100
+Message-Id: <20220131123404.175438-6-bigeasy@linutronix.de>
 In-Reply-To: <20220131123404.175438-1-bigeasy@linutronix.de>
 References: <20220131123404.175438-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -59,47 +62,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-generic_handle_irq() is invoked from a regular interrupt service
-routine. This handler will become a forced-threaded handler on
-PREEMPT_RT and will be invoked with enabled interrupts. The
-generic_handle_irq() must be invoked with disabled interrupts in order
-to avoid deadlocks.
-
 Instead of manually disabling interrupts before invoking use
 generic_handle_irq_safe() which can be invoked with enabled and disabled
 interrupts.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/misc/hi6421v600-irq.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/mfd/ezx-pcap.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/misc/hi6421v600-irq.c b/drivers/misc/hi6421v600-irq.c
-index 1c763796cf1fa..caa3de37698b0 100644
---- a/drivers/misc/hi6421v600-irq.c
-+++ b/drivers/misc/hi6421v600-irq.c
-@@ -117,8 +117,8 @@ static irqreturn_t hi6421v600_irq_handler(int irq, void=
- *__priv)
- 			 * If both powerkey down and up IRQs are received,
- 			 * handle them at the right order
- 			 */
--			generic_handle_irq(priv->irqs[POWERKEY_DOWN]);
--			generic_handle_irq(priv->irqs[POWERKEY_UP]);
-+			generic_handle_irq_safe(priv->irqs[POWERKEY_DOWN]);
-+			generic_handle_irq_safe(priv->irqs[POWERKEY_UP]);
- 			pending &=3D ~HISI_IRQ_POWERKEY_UP_DOWN;
+diff --git a/drivers/mfd/ezx-pcap.c b/drivers/mfd/ezx-pcap.c
+index 70fa18b04ad2b..b14d3f98e1ebd 100644
+--- a/drivers/mfd/ezx-pcap.c
++++ b/drivers/mfd/ezx-pcap.c
+@@ -193,13 +193,11 @@ static void pcap_isr_work(struct work_struct *work)
+ 		ezx_pcap_write(pcap, PCAP_REG_MSR, isr | msr);
+ 		ezx_pcap_write(pcap, PCAP_REG_ISR, isr);
+=20
+-		local_irq_disable();
+ 		service =3D isr & ~msr;
+ 		for (irq =3D pcap->irq_base; service; service >>=3D 1, irq++) {
+ 			if (service & 1)
+-				generic_handle_irq(irq);
++				generic_handle_irq_safe(irq);
  		}
-=20
-@@ -126,7 +126,7 @@ static irqreturn_t hi6421v600_irq_handler(int irq, void=
- *__priv)
- 			continue;
-=20
- 		for_each_set_bit(offset, &pending, BITS_PER_BYTE) {
--			generic_handle_irq(priv->irqs[offset + i * BITS_PER_BYTE]);
-+			generic_handle_irq_safe(priv->irqs[offset + i * BITS_PER_BYTE]);
- 		}
- 	}
-=20
+-		local_irq_enable();
+ 		ezx_pcap_write(pcap, PCAP_REG_MSR, pcap->msr);
+ 	} while (gpio_get_value(pdata->gpio));
+ }
 --=20
 2.34.1
 
