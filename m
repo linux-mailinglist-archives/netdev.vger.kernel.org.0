@@ -2,121 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 521FA4A47D3
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 14:12:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6B544A47E1
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 14:16:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378076AbiAaNMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 08:12:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358421AbiAaNMV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 08:12:21 -0500
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05198C061714
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 05:12:21 -0800 (PST)
-Received: by mail-qv1-xf31.google.com with SMTP id k9so12667286qvv.9
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 05:12:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=yk/hZJEK5aH8a04vWqCu+2I5aOFFiRB2QsnueOnHzl0=;
-        b=l/E8NxnHxWIQMf5LX1/ZrvmSk35Np6ocVnQJoyJZtCUDotTRT74b9N903QoEktT11A
-         0rV7/Vkf4Sjxcu8qi3HtPLy2Gdw9KRV/kcVbyLZSUO0h5Sln3lB0J2PAOCTT2tgkiZ4W
-         HkpuBKPp2ZAxDysZmpzy4YIVe0miCaUkr1mKlL1dxQBOemDI+moU1wKYgDr5m+Amisz1
-         SyTd02rY9fYWyL+m+rvZ1A/KeEsy1KdmehjO+IFHAbne3gq8bgXrZ8Mx14NxYvOTu8cC
-         fuFb7GOm0mbKla8aLojHYD/RVa5CcNiOR5uIFz0bLnooY15tPW/IP1tP4pMi7loxQMnr
-         QDOQ==
+        id S1378623AbiAaNQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 08:16:10 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58331 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1377213AbiAaNQJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 08:16:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643634968;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4FeGLRifRzLE6TznX8Ku8/uOBOutTsIkvk9v4ykgx0E=;
+        b=DgISt2jRHxXwwjWoqb2M4+OqOWTIQetAnjRj6OGP0QEJ27LHLHtx52/dyprFO6TKQn6r+z
+        lVEsgw85dlkRST348X5vn3WEf7Eiuvth8pWndV8gvc7IZSRrYS8/6/8/3uM9jSElmCYMkv
+        AnKkW3kSaXBKdLCAZwrKySKLIxTCuZc=
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
+ [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-638-12pqXlxhND6LtbIovbvobw-1; Mon, 31 Jan 2022 08:15:13 -0500
+X-MC-Unique: 12pqXlxhND6LtbIovbvobw-1
+Received: by mail-oo1-f72.google.com with SMTP id s10-20020a4ab54a000000b002ea051bad32so4835260ooo.14
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 05:15:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=yk/hZJEK5aH8a04vWqCu+2I5aOFFiRB2QsnueOnHzl0=;
-        b=zQWJZ8lYlK0hyC/PjCo6HQjJjHJpCdTP36mLms4wOPVXaY5kCeMJLPitLAkiksGc34
-         oUg5jh5VMlfDpyOSITj99Rlf/ojuFAu7gcpfJ+M1gfm0RfZPosrRxmCWw1Qu7LW7wsod
-         VeQzV9mCa1PSiQXR9nz20mnGVmIeosfJ2TBLTtZqlyBk6LSl+R1d4IxXTsGm+xLBi47G
-         RwnxbLVSBoay+fZn3SNke3ml0BAA8K1Pe1+7hAdkU0zyCTxfrE1WOipfgmg76F5gN/40
-         +bB9fXBksIk1Mj73mrTAIr8sBLtuMHyF4Nm1KTb4KjOiM8LfLKXyF9Aqk8Ac+7Fxs5cq
-         rCfQ==
-X-Gm-Message-State: AOAM532HAqMpalxgtd12DL6x8ma0EDRDIA5z6McXcG9IOENwx2lnLfAj
-        9r9fuBgpnC7bL9G8kk4g8qF5wg==
-X-Google-Smtp-Source: ABdhPJxXM6i4nOiOMis1ZjihvfUEaeKtrwcZRBNbMqMJGbmuATsPKJWAjYSyVMhAwfKKICiHaLlziA==
-X-Received: by 2002:a05:6214:d6a:: with SMTP id 10mr17213162qvs.59.1643634740124;
-        Mon, 31 Jan 2022 05:12:20 -0800 (PST)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-74.dsl.bell.ca. [184.148.47.74])
-        by smtp.googlemail.com with ESMTPSA id w14sm8841481qtc.29.2022.01.31.05.12.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 05:12:19 -0800 (PST)
-Message-ID: <a2ecd27f-f5b5-0de4-19df-9c30671f4a9f@mojatatu.com>
-Date:   Mon, 31 Jan 2022 08:12:18 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [net-next v8 2/2] net: sched: support hash/classid/cpuid
- selecting tx queue
-Content-Language: en-US
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=4FeGLRifRzLE6TznX8Ku8/uOBOutTsIkvk9v4ykgx0E=;
+        b=JbxTIasoSEAP3SckTFikcUbEx2FagVZQo2Fvonj9JNdAb6D9eBHaTNTGZqExs7UvNt
+         FBOUaN5qUZDSaK72AfPyDiVDZfmSTgWNIYtBtBA3Lp+aS3cH5+36/h4Lcubc8YlN5qnF
+         TK5vTXiAtN00puAzIF41aXm8pq+ZjJ0dnxgpRgASq0ru3M0HrVruAIecqlwJjvFLO7Mn
+         h0IF9dziLRveALfYNwuq/+Sjj936FlFcFdzFUQYj87ey1ODUqwVhN7DO/UBGJvfF4aEu
+         Oc/rXebv9ruouycA7n1s4NOqVK7flOYarfLadVtefyhm5BriOGcjM9bY5/wKsB9fGTHg
+         6eYQ==
+X-Gm-Message-State: AOAM533wtYiT2VgtTNIETUVM1R7lMWxOu/trRFhTvydzDPb+oqEOd3/C
+        S1G7cVdz3ocHedxeKVnrwTePu2UbuVsJ0s5hmR69dd4DzB8BjpYrXiPBo5ybYIkF2t2Li5U3UsK
+        vmwqTnAGCWHZGhAmv
+X-Received: by 2002:a05:6808:23c6:: with SMTP id bq6mr17754653oib.99.1643634912233;
+        Mon, 31 Jan 2022 05:15:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwg+PlgnvIqsLU9wdXdToRYaNCz/5k5B8bAtO1B3Ld/EJlpN9xGPW04bWDX+KnYUCyo0PUyZg==
+X-Received: by 2002:a05:6808:23c6:: with SMTP id bq6mr17754636oib.99.1643634911837;
+        Mon, 31 Jan 2022 05:15:11 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id e5sm13714981oti.59.2022.01.31.05.15.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jan 2022 05:15:11 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 87CF81806B4; Mon, 31 Jan 2022 14:15:07 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-References: <20220126143206.23023-1-xiangxia.m.yue@gmail.com>
- <20220126143206.23023-3-xiangxia.m.yue@gmail.com>
- <CAM_iQpU3yK2bft7gvPkf+pEkqDUOPhkBSJH1y+rqM44bw2sNVg@mail.gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <CAM_iQpU3yK2bft7gvPkf+pEkqDUOPhkBSJH1y+rqM44bw2sNVg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [RFC] failing selftests/bpf/test_offload.py
+In-Reply-To: <20220130225101.47514-1-jolsa@kernel.org>
+References: <20220130225101.47514-1-jolsa@kernel.org>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 31 Jan 2022 14:15:07 +0100
+Message-ID: <87k0egt5b8.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-01-26 14:52, Cong Wang wrote:
-> You really should just use eBPF, with eBPF code you don't even need
-> to send anything to upstream, you can do whatever you want without
-> arguing with anyone. It is a win-win.
+Jiri Olsa <jolsa@redhat.com> writes:
 
-Cong,
+> hi,
+> I have failing test_offload.py with following output:
+>
+>   # ./test_offload.py
+>   ...
+>   Test bpftool bound info reporting (own ns)...
+>   FAIL: 3 BPF maps loaded, expected 2
+>     File "/root/bpf-next/tools/testing/selftests/bpf/./test_offload.py", line 1177, in <module>
+>       check_dev_info(False, "")
+>     File "/root/bpf-next/tools/testing/selftests/bpf/./test_offload.py", line 645, in check_dev_info
+>       maps = bpftool_map_list(expected=2, ns=ns)
+>     File "/root/bpf-next/tools/testing/selftests/bpf/./test_offload.py", line 190, in bpftool_map_list
+>       fail(True, "%d BPF maps loaded, expected %d" %
+>     File "/root/bpf-next/tools/testing/selftests/bpf/./test_offload.py", line 86, in fail
+>       tb = "".join(traceback.extract_stack().format())
+>
+> it fails to detect maps from bpftool's feature detection,
+> that did not make it yet through deferred removal
+>
+> with the fix below I have this subtest passed, but it fails
+> further on:
+>
+>   # ./test_offload.py
+>   ...
+>   Test bpftool bound info reporting (own ns)...
+>   Test bpftool bound info reporting (other ns)...
+>   Test bpftool bound info reporting (remote ns)...
+>   Test bpftool bound info reporting (back to own ns)...
+>   Test bpftool bound info reporting (removed dev)...
+>   Test map update (no flags)...
+>   Test map update (exists)...
+>   Test map update (noexist)...
+>   Test map dump...
+>   Test map dump...
+>   Traceback (most recent call last):
+>     File "/root/bpf-next/tools/testing/selftests/bpf/./test_offload.py", line 1251, in <module>
+>       _, entries = bpftool("map dump id %d" % (m["id"]))
+>     File "/root/bpf-next/tools/testing/selftests/bpf/./test_offload.py", line 169, in bpftool
+>       return tool("bpftool", args, {"json":"-p"}, JSON=JSON, ns=ns,
+>     File "/root/bpf-next/tools/testing/selftests/bpf/./test_offload.py", line 155, in tool
+>       ret, stdout = cmd(ns + name + " " + params + args,
+>     File "/root/bpf-next/tools/testing/selftests/bpf/./test_offload.py", line 109, in cmd
+>       return cmd_result(proc, include_stderr=include_stderr, fail=fail)
+>     File "/root/bpf-next/tools/testing/selftests/bpf/./test_offload.py", line 131, in cmd_result
+>       raise Exception("Command failed: %s\n%s" % (proc.args, stderr))
+>   Exception: Command failed: bpftool -p map dump id 4325
+>
+> the test seems to expect maps having BTF loaded, which for some reason
+> did not happen, so the test fails with bpftool pretty dump fail
+>
+> the test loads the object with 'ip link ...', which I never touched,
+> so I wanted ask first before I dive in, perhaps I miss some setup
+>
+> thoughts? ;-)
 
-This doesnt work in some environments. Example:
+It looks like the test_offload.py has been using 'bpftool -p' since its
+inception (in commit: 417ec26477a5 ("selftests/bpf: add offload test
+based on netdevsim") introduced in December 2017), so this sounds like a
+regression in bpftool?
 
-1) Some data centres (telco large and medium sized enteprises that
-i have personally encountered) dont allow for anything that requires
-compilation to be introduced (including ebpf).
-They depend on upstream - if something is already in the kernel and
-requires a script it becomes an operational issue which is a simpler
-process.
-This is unlike large organizations who have staff of developers
-dedicated to coding stuff. Most of the folks i am talking about
-have zero developers in house. But even if they did have a few,
-introducing code into the kernel that has to be vetted by a
-multitude of internal organizations tends to be a very
-long process.
+-Toke
 
-2) In some cases adding new code voids the distro vendor's
-support warranty and you have to pay the distro vendor to
-vet and put your changes via their regression testing.
-Most of these organizations are tied to one or other distro
-vendor and they dont want to mess with the warranty or pay
-extra fees which causes more work for them (a lot of them
-have their own vetting process after the distro vendors vetting).
-
-I am not sure what the OP's situation is - but what i described
-above is _real_. If there is some extension to existing features like
-skbedit and there is a good use case IMO we should allow for it.
-
-cheers,
-jamal
