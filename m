@@ -2,83 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB2A84A5148
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 22:18:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92AC84A5149
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 22:18:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351171AbiAaVSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1351142AbiAaVSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 31 Jan 2022 16:18:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60080 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243070AbiAaVSC (ORCPT
+Received: from www62.your-server.de ([213.133.104.62]:57804 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241083AbiAaVSC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 16:18:02 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85C656154B
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 21:18:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0EFAC340E8;
-        Mon, 31 Jan 2022 21:18:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643663881;
-        bh=zOb4dyXxHOXdGppQPilNWBTbPYiR9esbAaqNh1GJ1j8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=U+1DbB8Y48+uNoCJUKma3x+Ex/AYqFr0tHqu8e6XuAeagbr6uHlBIMx0Ig0IObNdg
-         JgQC1rqAtExR0C3xbF4Sp7NC65XAqkM+4Z01y05f+ZxWvZtrt1zsCwowEbx7RM0bzI
-         LvWIvO3iDg2tcUTnK3d4YMGuQeiDyae3JxkjpaPlTbt+4FzLExRH96G2ontoHt+uWV
-         m7bMcQckg8l8wV+AT9oCdT28DEH3FIJKk04gN0nSk+mAY1tZ5qh8Z4LB5J8GZNaZn2
-         2d3zWw4Edmy/e2JN0+9Hmcf+kP2zjCaqye+bpyjqf1UTJzRBXdYRIpY5tzWTo7QXlW
-         LbN4euBsgzfKw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH net] ethernet: smc911x: fix indentation in get/set EEPROM
-Date:   Mon, 31 Jan 2022 13:17:30 -0800
-Message-Id: <20220131211730.3940875-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.34.1
+Received: from [78.46.152.42] (helo=sslproxy04.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nEe3e-0008dE-5l; Mon, 31 Jan 2022 22:17:54 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nEe3d-000FrK-SR; Mon, 31 Jan 2022 22:17:53 +0100
+Subject: Re: [PATCH net-next 4/4] net, neigh: Add NTF_MANAGED flag for managed
+ neighbor entries
+To:     Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     roopa@nvidia.com, dsahern@kernel.org, m@lambda.lt,
+        john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20211011121238.25542-1-daniel@iogearbox.net>
+ <20211011121238.25542-5-daniel@iogearbox.net>
+ <949e2f20-5eef-ac9b-2583-f3937cf032d1@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <d431eb12-0625-a9c4-802d-dd7fa7719662@iogearbox.net>
+Date:   Mon, 31 Jan 2022 22:17:53 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <949e2f20-5eef-ac9b-2583-f3937cf032d1@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26439/Mon Jan 31 10:24:40 2022)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Build bot produced a smatch indentation warning,
-the code looks correct but it mixes spaces and tabs.
+On 1/31/22 9:43 PM, Eric Dumazet wrote:
+[...]
+>> @@ -1539,6 +1564,20 @@ int neigh_direct_output(struct neighbour *neigh, struct sk_buff *skb)
+>>   }
+>>   EXPORT_SYMBOL(neigh_direct_output);
+>> +static void neigh_managed_work(struct work_struct *work)
+>> +{
+>> +    struct neigh_table *tbl = container_of(work, struct neigh_table,
+>> +                           managed_work.work);
+>> +    struct neighbour *neigh;
+>> +
+>> +    write_lock_bh(&tbl->lock);
+>> +    list_for_each_entry(neigh, &tbl->managed_list, managed_list)
+>> +        neigh_event_send(neigh, NULL);
+> 
+> neigh_event_send() can need to lock tbl->lock, leading to a deadlock ?
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/ethernet/smsc/smc911x.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Thanks for forwarding the syzbot report! I'll take a look.
 
-diff --git a/drivers/net/ethernet/smsc/smc911x.c b/drivers/net/ethernet/smsc/smc911x.c
-index dd6f69ced4ee..fc9cef9dcefc 100644
---- a/drivers/net/ethernet/smsc/smc911x.c
-+++ b/drivers/net/ethernet/smsc/smc911x.c
-@@ -1648,7 +1648,7 @@ static int smc911x_ethtool_geteeprom(struct net_device *dev,
- 			return ret;
- 		if ((ret=smc911x_ethtool_read_eeprom_byte(dev, &eebuf[i]))!=0)
- 			return ret;
--		}
-+	}
- 	memcpy(data, eebuf+eeprom->offset, eeprom->len);
- 	return 0;
- }
-@@ -1667,11 +1667,11 @@ static int smc911x_ethtool_seteeprom(struct net_device *dev,
- 			return ret;
- 		/* write byte */
- 		if ((ret=smc911x_ethtool_write_eeprom_byte(dev, *data))!=0)
--			 return ret;
-+			return ret;
- 		if ((ret=smc911x_ethtool_write_eeprom_cmd(dev, E2P_CMD_EPC_CMD_WRITE_, i ))!=0)
- 			return ret;
--		}
--	 return 0;
-+	}
-+	return 0;
- }
- 
- static int smc911x_ethtool_geteeprom_len(struct net_device *dev)
--- 
-2.34.1
-
+> __raw_write_lock_bh include/linux/rwlock_api_smp.h:202 [inline]
+>   _raw_write_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:334
+>   ___neigh_create+0x9e1/0x2990 net/core/neighbour.c:652
+>   ip6_finish_output2+0x1070/0x14f0 net/ipv6/ip6_output.c:123
+>   __ip6_finish_output net/ipv6/ip6_output.c:191 [inline]
+>   __ip6_finish_output+0x61e/0xe90 net/ipv6/ip6_output.c:170
+>   ip6_finish_output+0x32/0x200 net/ipv6/ip6_output.c:201
+>   NF_HOOK_COND include/linux/netfilter.h:296 [inline]
+>   ip6_output+0x1e4/0x530 net/ipv6/ip6_output.c:224
+>   dst_output include/net/dst.h:451 [inline]
+>   NF_HOOK include/linux/netfilter.h:307 [inline]
+>   ndisc_send_skb+0xa99/0x17f0 net/ipv6/ndisc.c:508
+>   ndisc_send_ns+0x3a9/0x840 net/ipv6/ndisc.c:650
+>   ndisc_solicit+0x2cd/0x4f0 net/ipv6/ndisc.c:742
+>   neigh_probe+0xc2/0x110 net/core/neighbour.c:1040
+>   __neigh_event_send+0x37d/0x1570 net/core/neighbour.c:1201
+>   neigh_event_send include/net/neighbour.h:470 [inline]
+>   neigh_managed_work+0x162/0x250 net/core/neighbour.c:1574
+>   process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
+>   worker_thread+0x657/0x1110 kernel/workqueue.c:2454
+>   kthread+0x2e9/0x3a0 kernel/kthread.c:377
+>   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+> 
+>> +    queue_delayed_work(system_power_efficient_wq, &tbl->managed_work,
+>> +               NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME));
+>> +    write_unlock_bh(&tbl->lock);
+>> +}
+>> +
+>>   static void neigh_proxy_process(struct timer_list *t)
+>>   {
+>>       struct neigh_table *tbl = from_timer(tbl, t, proxy_timer);
+>> @@ -1685,6 +1724,8 @@ void neigh_table_init(int index, struct neigh_table *tbl)
+>>       INIT_LIST_HEAD(&tbl->parms_list);
+>>       INIT_LIST_HEAD(&tbl->gc_list);
+>> +    INIT_LIST_HEAD(&tbl->managed_list);
+>> +
