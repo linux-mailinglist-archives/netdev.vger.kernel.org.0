@@ -2,75 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 496184A4670
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 12:56:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B6404A44A9
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 12:33:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359304AbiAaL4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 06:56:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
+        id S1359305AbiAaLb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 06:31:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379359AbiAaLxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 06:53:46 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC3EC08ED78;
-        Mon, 31 Jan 2022 03:16:12 -0800 (PST)
-Date:   Mon, 31 Jan 2022 12:16:09 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643627771;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ll9KYARRuBZxRo09tM644QKrs5m7bsyeSqNKNu1Ai5c=;
-        b=QJK53clJumtX9s0dxa4QZmUp1wdIpcTFOVfNRju6Mii59Nhxumj5PbxnCD4YIG6qIWTVVG
-        9L7zxyNwgikDsUUyIwuFK79UyAeB34C+zuMtZVMYKBmjkuR9krx0gpQDlQPK4+LdR/hKIO
-        glESyBcvyQY/QjgcDDId0hHYsvzPtwUcRjmBx6KqGp8v/FiZfC/U1uDAy8SOrpX4zhIQlZ
-        7cbm/5T0Ho6nnUB/CjuX0+tMSEIVp+RcWNWYTuPWnyoNOgoq9jUcEt0XYk+6vRxVBq2GUG
-        lYIpoR7WuPpkoKOyFN212omM6hjlz6bith9xh+KRpvxYnyQJZncfYA0ZyoDiaA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643627771;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ll9KYARRuBZxRo09tM644QKrs5m7bsyeSqNKNu1Ai5c=;
-        b=3nJZTRll2KKofcUlVbQaYLwLfUrkueiuloW8jj5eVHwVhU6NIL3VsqQeF07eMJyqEHZJnY
-        e4MwZh8L7xEN4GCQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Cc:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH 4/7] mfd: hi6421-spmi-pmic: Use generic_handle_irq_safe().
-Message-ID: <YffE+XxLpFKw+7HS@linutronix.de>
-References: <20220127113303.3012207-1-bigeasy@linutronix.de>
- <20220127113303.3012207-5-bigeasy@linutronix.de>
- <44b42c37-67a4-1d20-e2ff-563d4f9bfae2@gmail.com>
+        with ESMTP id S1379419AbiAaLaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 06:30:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F38BC06173D;
+        Mon, 31 Jan 2022 03:20:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF07CB82A60;
+        Mon, 31 Jan 2022 11:20:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9E7D9C340F3;
+        Mon, 31 Jan 2022 11:20:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643628035;
+        bh=slJQhhIF1yugtff6Mq8MOTUVyIvIlTYUiNSbLsEt32c=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=U5H/J6gyB5De+L98jmh8CMbi4gVmNLyY6i8vVCCYLCg1qj7/PLvmwWcgzifLq9dL7
+         Vl7dLQ0s1XLeqKWB1iEzmKD+Qe6khLUqUN7CXnHbDBYbDL6Vk8+uS9CrHSI9/m6heV
+         QM5prsznIE+qjTazj7+CXQSahpc7WEsWWAfNvTyO3lzmvf/W45k13EP0G5OOtmvG3r
+         ao3cNTjD0RMNU8gFP3cfuAaD0FY+YyBYyzciSHEGk0394CmHVwBEZU3Ebhc27RkXGn
+         OJ+yepN90m89vMgDjBUrHYPqx6TmZ4uwQVje/qsooStS4xg1WcfVQESCy47GszvZIm
+         HzJReDVFmAZkA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 89005E6BAC6;
+        Mon, 31 Jan 2022 11:20:35 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <44b42c37-67a4-1d20-e2ff-563d4f9bfae2@gmail.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net/smc: Forward wakeup to smc socket waitqueue after
+ fallback
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164362803555.29436.10145818429007332261.git-patchwork-notify@kernel.org>
+Date:   Mon, 31 Jan 2022 11:20:35 +0000
+References: <1643211184-53645-1-git-send-email-guwen@linux.alibaba.com>
+In-Reply-To: <1643211184-53645-1-git-send-email-guwen@linux.alibaba.com>
+To:     Wen Gu <guwen@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-01-28 13:23:08 [+0300], Sergei Shtylyov wrote:
-> On 1/27/22 2:33 PM, Sebastian Andrzej Siewior wrote:
-> 
-> > generic_handle_irq() is invoked from a regular interrupt service
-> > routing. This handler will become a forced-threaded handler on
-> 
->    s/routing/routine/?
+Hello:
 
-Yes, thank you.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Sebastian
+On Wed, 26 Jan 2022 23:33:04 +0800 you wrote:
+> When we replace TCP with SMC and a fallback occurs, there may be
+> some socket waitqueue entries remaining in smc socket->wq, such
+> as eppoll_entries inserted by userspace applications.
+> 
+> After the fallback, data flows over TCP/IP and only clcsocket->wq
+> will be woken up. Applications can't be notified by the entries
+> which were inserted in smc socket->wq before fallback. So we need
+> a mechanism to wake up smc socket->wq at the same time if some
+> entries remaining in it.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] net/smc: Forward wakeup to smc socket waitqueue after fallback
+    https://git.kernel.org/netdev/net/c/341adeec9ada
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
