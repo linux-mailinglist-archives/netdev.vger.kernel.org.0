@@ -2,267 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25DBF4A3D1D
-	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 06:03:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9BA54A3D77
+	for <lists+netdev@lfdr.de>; Mon, 31 Jan 2022 06:40:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357674AbiAaFC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 00:02:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47790 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357745AbiAaFCn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 00:02:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88BF9C06173B;
-        Sun, 30 Jan 2022 21:02:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44E16B80ADD;
-        Mon, 31 Jan 2022 05:02:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA649C340E8;
-        Mon, 31 Jan 2022 05:02:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643605346;
-        bh=oB3OHV7PT9qKuceHnY4r/cZGELfQzY+D6DiCbhHAX1w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=stcJQUVqdMu01XowloYJx3Jf29eO7j7FCgn1lX2GsQ7/cHHT0NujCfEXtOmgP659G
-         Ngy1ZmZGe/OqEATUU0m7h0ds1iBWLYFrgOI8cxNc2yH/TwRJpZrECzng/2iALrnnTl
-         w90Nd54DmZCigZPJ44EA72wRG6H4yfMaMxBudidrs2TTVnDAQ48JVbgomLozAJFs0l
-         SOE/PEH2YU6vSX6XuH/QPaEqA5EBLM2d9rbvk0j/3KVEL4UsgkgM0gBqbHiqFjSYfI
-         Uw0F3L0yQGe3rVufvzzt8bug3IOetbS+18ek4W91VraGFlZb9r4SYDx+vCl/XE6Bdm
-         cP1wK4cfvkCNQ==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v7 10/10] docs: fprobe: Add fprobe description to ftrace-use.rst
-Date:   Mon, 31 Jan 2022 14:02:20 +0900
-Message-Id: <164360534036.65877.17482125933683080.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164360522462.65877.1891020292202285106.stgit@devnote2>
-References: <164360522462.65877.1891020292202285106.stgit@devnote2>
-User-Agent: StGit/0.19
+        id S232297AbiAaFkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 00:40:19 -0500
+Received: from mga02.intel.com ([134.134.136.20]:38141 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229711AbiAaFkQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 Jan 2022 00:40:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643607616; x=1675143616;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=yeJElFuWT6FuEkGgE7Mj6IqOiLW//OS8suwDonQfTJg=;
+  b=D7fFlVfCNckjKNhf1R/DCC5KCmUlwLB6ddXVMTcMGEVOGBQAaEMX05Cf
+   15SEUUIBqsGTHn1Iz72WmhfrWjiu445WgYoc8p8j1596BD/57kRiy04oG
+   ypPrRjPNQcv6W3gLQtX2sjgirjkZM6yByf/TCn2GT635zXeeccpyZ1Rgj
+   2kNJaj8zkNiONCv2ddGdTHxHxFlOzorcqe5YptjKUnWjQ1ji+NMTTZsrm
+   fn+g7pPTOfIP5WLZxpGi83S7dYMKghS3tXmzn8iOlzYrBzlxaqp1OI+B8
+   MP24yQDwiEIODNw5eYoEKCsBm+skCOXh3PYtrc4NAOHiotMi/Gkcjjply
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="234795491"
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="234795491"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2022 21:40:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="697890316"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga005.jf.intel.com with ESMTP; 30 Jan 2022 21:40:02 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Sun, 30 Jan 2022 21:40:02 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20 via Frontend Transport; Sun, 30 Jan 2022 21:40:02 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.20; Sun, 30 Jan 2022 21:40:02 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Pv4DNWUOHpr2s+eejWv74Jf0QJItQq/bpR/IrvAHiCrFKUwmZOAK3390SfvDT0yx/bdWYSz1OQECwbKPVHTDonOA1O2Wgh1xUPb2bLUgd0fZbZreIedgnZ1+5UHF1TRn2zU0769kiK8V4kHQxeLLxwY3w0pg4oGuNeZOLDEk2sKsef9dUhmvVs+6wZos4Ui4NaTE7BO0lo7LjyIQx6XB93hP3n+MX9T9Qz5TnDgnGB4y80bto5VezGi0sT6VYB046BcMbcuFrBHZmnmqY1n3GMYrmgcZDhY1p0mWFsVweBKii2G8Q4895zyM7mvLqHASDG1LKGTOjua/8JsNEL4cGw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=thWJLu45BTB6DJ3hQ6OZxVRf0PY9KuLcQUSxoUAebOg=;
+ b=AQAtbMkzTYsFQVKqoVd1mcEl4lyK7ehLZ2GSc64w00dPuNUCsqVSK509BLeYQ8qVRWw2L442fvPjvhbNWEuCQHO+o6Xd1eAzlT4VJdbcXb0WZklu9frIjYvstIf2z8GqJXEBGjyRNchrN6HgaM5u9HFWKOypy5z8zOhvg1CxD1l3Ptv0I03xI7xPVUL68fSdzyhiDRfqyZYYAvrovQhHs4v3dPdVVNWwKd0+ZrCKpwagH+Jx+VmoWfh6eMmAELVBGZumBhrDl6UgsqsX9Im6fNQvYM6yTJyOx9BmAEtB4dPVPWB9qI18HiRdZq1yOUIe71CYt5pY1xBtzVvn2pwqbw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com (2603:10b6:a03:79::29)
+ by MWHPR11MB2030.namprd11.prod.outlook.com (2603:10b6:300:28::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.17; Mon, 31 Jan
+ 2022 05:39:59 +0000
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::3162:31b:8e9c:173b]) by BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::3162:31b:8e9c:173b%4]) with mapi id 15.20.4930.019; Mon, 31 Jan 2022
+ 05:39:59 +0000
+From:   "G, GurucharanX" <gurucharanx.g@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>
+Subject: RE: [Intel-wired-lan] [PATCH] i40e: remove enum i40e_client_state
+Thread-Topic: [Intel-wired-lan] [PATCH] i40e: remove enum i40e_client_state
+Thread-Index: AQHYEua23+W8TcVWAE+31SuA3Et2zqx8o/MA
+Date:   Mon, 31 Jan 2022 05:39:59 +0000
+Message-ID: <BYAPR11MB3367D6CDC65D197042554D7CFC259@BYAPR11MB3367.namprd11.prod.outlook.com>
+References: <20220126185544.2787111-1-kuba@kernel.org>
+In-Reply-To: <20220126185544.2787111-1-kuba@kernel.org>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0fd16413-400d-4b5a-b0cd-08d9e47c1ef0
+x-ms-traffictypediagnostic: MWHPR11MB2030:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <MWHPR11MB2030AE90AE6C1C0C78981AB2FC259@MWHPR11MB2030.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:225;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: WCv/DougXsp0Fa2tnehPmpQy/R/RwuCTjhSv+20cpmww9xY3b7kmKbFuL5/gDdX9nFpQSRha8g3trwQgsYrY/CPpfKurDTgPZO3tLDIVdt4fUQKTOQZ3y/fNohT2d+7lzWBl9U98Qg2keMMXP1rABp52LpXw98gF9OW7BzlGljOEkC6OIHD1EhkIKHbiZ8L9cXfz5o5HwazfgNGiaYvxgyH4lN+lZGT6yHvm6C8inIpwztXq4YirnVk/TPkcNk8+6FVlpm1L2Pu1yGGoztpy25H2j8znu8xOxvVaKxhIbSPYAJJsteLuL2XK4ZjCWFNxZqXnRtVmkNr7sHjgMHZfhwPgnk6uZYja2sY5ibWG1NU2h1YixhbzoE1+1eY4m+LzoSgRSVfvUfFDKUADAABWba8XjbPlWTqk3xEMQXQqNI/Yy8Y/VL9I2ajIojajbjdloNGiOIAzTxMmStNJbWL/74Bxka6GxdRMwXfjuYA6U3ItVqWS60CEEUx8TtLrfmXfJS61Z3Gha3zM8y7gYIRfNM/2SW/D+HpcGYRwubK80kBT327LbQ6tvPiv2kmKO5a84Xg7JcHwnRtYTHFhJ8E7iiEf8sM8CxWrTx25veyhN3J7MzTIc84pUTefV7k7hOsJMm1i2yb37VG6m4QbGmF/P7CjuCDS07zfRS/Vb/ocQXDXw2ZaKcH1y1ZUarR1eKji+UiXW7rO7rAkfx8KKiEUXQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3367.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66476007)(4326008)(66446008)(8936002)(66946007)(76116006)(8676002)(55016003)(38070700005)(86362001)(82960400001)(122000001)(64756008)(38100700002)(66556008)(33656002)(71200400001)(53546011)(52536014)(9686003)(5660300002)(7696005)(6506007)(508600001)(110136005)(83380400001)(6636002)(54906003)(316002)(2906002)(4744005)(107886003)(186003)(26005)(20210929001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?WI2JoLQ4crWlFYGODoL44jsyhsgGeGrtenofOBbFdAjvnZf0xoBm5N3kvcqk?=
+ =?us-ascii?Q?11duy4h0X86X0ISGQv4uGq74qRsxHW8YFny83WkzehTODI34Sihkj5cj9sUB?=
+ =?us-ascii?Q?0WaPujXw5E6me37Qh+ng3hU0FfMH6aXtSchyiHSipp0NrvL47LO02GYFb1R2?=
+ =?us-ascii?Q?Qd7l1AoEnBcfDS8Iwnz2UVZgl7nlYAUgl8pJ7srCBK+G3AiH86H4hur64bLF?=
+ =?us-ascii?Q?XuskD1aRoKZPKskU3IbDx7E56oUwSqj1JkInZOexK0h4MkTBzWx8j77ClyXK?=
+ =?us-ascii?Q?GUpBN6NPCqNJiwnxe6YHt1SYrlIObLC46e22/UFJtU/cQ09/zzXGqDBoA/xM?=
+ =?us-ascii?Q?1vGURPX88/5LOWTu2hBZRWsXol5JfOHe2mst+cEiz4fURvtgKm2x3/wNk6Rk?=
+ =?us-ascii?Q?8taJULmMc3OSsdhPUt4+YF0JoTM/XxU7bgX8D7EEYCVMk5lV0iSns/4moYVU?=
+ =?us-ascii?Q?KgEmld0glgLjWmytfueqH5VwDxOZ/Z26L4MTWeDHhhpLX5LMgAHaRZKCN5Ek?=
+ =?us-ascii?Q?BXkDG+P+wgYgR2Oc2NaRpWYmgFi0fAjTUwO7wRfxw/c7Qyu947y/eLBk1cgj?=
+ =?us-ascii?Q?MyLpjcvRe7cfxGJv32N0XgM5hsBZw3Pv6vcpDA/0PSg6CiMcnullp/PPUsu8?=
+ =?us-ascii?Q?3AdPv+Z/6tONIhej5HaSrRglW/P6iGzhgrq3ArX4qYpoAlymaEJtBrWHfoC8?=
+ =?us-ascii?Q?BENz+cDNQFa4Qsr0Qiyz5TAWa5jejJKbwO1Z2IKkKIMs/AuXYTYulQUWB9j4?=
+ =?us-ascii?Q?ATFim43C4m+mU1LiOHt7qKBgljHsFbmmst6nMdXV9P8NwjbHBp0Ffp+87Lan?=
+ =?us-ascii?Q?CqZoAe6Z3J6xC1aC3t4kFr1uT4f4ElR0fpdrefk+y8kbzB+oqKAMJCx5B+TJ?=
+ =?us-ascii?Q?YCV6N2cL42uXtnFY3RNh6ZFp92OmtiHWazJyXdon6JJkbaiFqVJsh2YXABvG?=
+ =?us-ascii?Q?J1H6RBYj3LMZorVXAZxwonuiJBIzKU8wq2XVpVW7MZCtSxhExlwm0OhYmD6q?=
+ =?us-ascii?Q?xpykOQrxqqfbLj6Cepy8O+vkIJZ+Yehlof6fybpQaNBXgs+wnw+PTYFXAkEn?=
+ =?us-ascii?Q?od0MGZv1eJDmbdNEe5bqJsVEeIaLvn2RvEGvzsvR9VpFGudyQpGOqcOmARch?=
+ =?us-ascii?Q?8PyRTqWo5ZisU//VD5NosdFFn922LO9sOJYLumyEBFudDcfkSb+ljFPBec8b?=
+ =?us-ascii?Q?3LB3qR50XxXQC0zVAjRM/islmAq75VwHW+xzq4649f9cbQq+vpmjDTWmQj0g?=
+ =?us-ascii?Q?h8UKbXJHyYl0z+KPsw1tGbfzh7rY5fWW6sSY4bxkoZ7XqIF34wUTXxyjH+qT?=
+ =?us-ascii?Q?0bSGE1Q3wD0qKjhmnza2ArvJ+FH0vbRwACbG7teRMeO8czsfVPA35qMUI1qc?=
+ =?us-ascii?Q?fdK6APAFVHFmY3lQK6JzkRfRo5iRLdlk4yBjTPD32JClAN96H2W2A26vGCfc?=
+ =?us-ascii?Q?BLQsXqtbqU9Xf8z+8ruZbNGIfdDp5tg5bDkAZPIyHg5uFK3bz0g4PD8Vte75?=
+ =?us-ascii?Q?6r5Z3lZ8VK6dp3RpCmwBeNT39+UPbTbYTlSlYMlqJmy9e6rPgT3vKNXyggl+?=
+ =?us-ascii?Q?WkLdB5f4fKHh2f5uAuhWhWeDWUNS0bs5cbrkMqnvueMXnwbKcrcoI9fmGkSC?=
+ =?us-ascii?Q?jQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3367.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0fd16413-400d-4b5a-b0cd-08d9e47c1ef0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jan 2022 05:39:59.4710
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5v4E9Q4ijd34h+TMrp9ly/iu4Pl7FCKHqvQy2MH3a6pbtwAHRkdu+48FLPXUHMsSXqVrAaT0h7+GlFg5ZYHHQw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB2030
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a documentation of fprobe for the user who needs
-this interface.
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- Changes in v7:
-  - Clarify unregister_fprobe() guarantee the callbacks will no
-    longer being called after that.
-  - Fix some wording.
- Changes in v6:
-  - Update document according to the latest spec.
----
- Documentation/trace/fprobe.rst |  171 ++++++++++++++++++++++++++++++++++++++++
- Documentation/trace/index.rst  |    1 
- 2 files changed, 172 insertions(+)
- create mode 100644 Documentation/trace/fprobe.rst
 
-diff --git a/Documentation/trace/fprobe.rst b/Documentation/trace/fprobe.rst
-new file mode 100644
-index 000000000000..4275e95e16bc
---- /dev/null
-+++ b/Documentation/trace/fprobe.rst
-@@ -0,0 +1,171 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+==================================
-+Fprobe - Function entry/exit probe
-+==================================
-+
-+.. Author: Masami Hiramatsu <mhiramat@kernel.org>
-+
-+Introduction
-+============
-+
-+Instead of using ftrace full feature, if you only want to attach callbacks
-+on function entry and exit, similar to the kprobes and kretprobes, you can
-+use fprobe. Compared with kprobes and kretprobes, fprobe gives faster
-+instrumentation for multiple functions with single handler. This document
-+describes how to use fprobe.
-+
-+The usage of fprobe
-+===================
-+
-+The fprobe is a wrapper of ftrace (+ kretprobe-like return callback) to
-+attach callbacks to multiple function entry and exit. User needs to set up
-+the `struct fprobe` and pass it to `register_fprobe()`.
-+
-+Typically, `fprobe` data structure is initialized with the `entry_handler`
-+and/or `exit_handler` as below.
-+
-+.. code-block:: c
-+
-+ struct fprobe fp = {
-+        .entry_handler  = my_entry_callback,
-+        .exit_handler   = my_exit_callback,
-+ };
-+
-+To enable the fprobe, call one of register_fprobe(), register_fprobe_ips(), and
-+register_fprobe_syms(). These register the fprobe with different type of
-+parameters.
-+
-+The register_fprobe() enables a fprobe by function-name filters.
-+E.g. this enables @fp on "func*()" function except "func2()".::
-+
-+  register_fprobe(&fp, "func*", "func2");
-+
-+The register_fprobe_ips() enables a fprobe by ftrace-location addresses.
-+E.g.
-+
-+.. code-block:: c
-+
-+  unsigned long ips[] = { 0x.... };
-+
-+  register_fprobe_ips(&fp, ips, ARRAY_SIZE(ips));
-+
-+And the register_fprobe_syms() enables a fprobe by symbol names.
-+E.g.
-+
-+.. code-block:: c
-+
-+  char syms[] = {"func1", "func2", "func3"};
-+
-+  register_fprobe_syms(&fp, syms, ARRAY_SIZE(syms));
-+
-+To disable (remove from functions) this fprobe, call::
-+
-+  unregister_fprobe(&fp);
-+
-+You can temporally (soft) disable the fprobe by::
-+
-+  disable_fprobe(&fp);
-+
-+and resume by::
-+
-+  enable_fprobe(&fp);
-+
-+The above is defined by including the header::
-+
-+  #include <linux/fprobe.h>
-+
-+Same as ftrace, the registered callback will start being called some time
-+after the register_fprobe() is called and before it returns. See
-+:file:`Documentation/trace/ftrace.rst`.
-+
-+Also, the unregister_fprobe() will guarantee that the both enter and exit
-+handlers are no longer being called by functions after unregister_fprobe()
-+returns as same as unregister_ftrace_function().
-+
-+The fprobe entry/exit handler
-+=============================
-+
-+The prototype of the entry/exit callback function is as follows:
-+
-+.. code-block:: c
-+
-+ void callback_func(struct fprobe *fp, unsigned long entry_ip, struct pt_regs *regs);
-+
-+Note that both entry and exit callback has same ptototype. The @entry_ip is
-+saved at function entry and passed to exit handler.
-+
-+@fp
-+        This is the address of `fprobe` data structure related to this handler.
-+        You can embed the `fprobe` to your data structure and get it by
-+        container_of() macro from @fp. The @fp must not be NULL.
-+
-+@entry_ip
-+        This is the entry address of the traced function (both entry and exit).
-+
-+@regs
-+        This is the `pt_regs` data structure at the entry and exit. Note that
-+        the instruction pointer of @regs may be different from the @entry_ip
-+        in the entry_handler. If you need traced instruction pointer, you need
-+        to use @entry_ip. On the other hand, in the exit_handler, the instruction
-+        pointer of @regs is set to the currect return address.
-+
-+Share the callbacks with kprobes
-+================================
-+
-+Since the recursion safety of the fprobe (and ftrace) is a bit different
-+from the kprobes, this may cause an issue if user wants to run the same
-+code from the fprobe and the kprobes.
-+
-+The kprobes has per-cpu 'current_kprobe' variable which protects the
-+kprobe handler from recursion in any case. On the other hand, the fprobe
-+uses only ftrace_test_recursion_trylock(), which will allow interrupt
-+context calls another (or same) fprobe during the fprobe user handler is
-+running.
-+
-+This is not a matter in cases if the common callback shared among the
-+kprobes and the fprobe has its own recursion detection, or it can handle
-+the recursion in the different contexts (normal/interrupt/NMI.)
-+But if it relies on the 'current_kprobe' recursion lock, it has to check
-+kprobe_running() and use kprobe_busy_*() APIs.
-+
-+Fprobe has FPROBE_FL_KPROBE_SHARED flag to do this. If your common callback
-+code will be shared with kprobes, please set FPROBE_FL_KPROBE_SHARED
-+*before* registering the fprobe, like:
-+
-+.. code-block:: c
-+
-+ fprobe.flags = FPROBE_FL_KPROBE_SHARED;
-+
-+ register_fprobe(&fprobe, "func*", NULL);
-+
-+This will protect your common callback from the nested call.
-+
-+The missed counter
-+==================
-+
-+The `fprobe` data structure has `fprobe::nmissed` counter field as same as
-+kprobes.
-+This counter counts up when;
-+
-+ - fprobe fails to take ftrace_recursion lock. This usually means that a function
-+   which is traced by other ftrace users is called from the entry_handler.
-+
-+ - fprobe fails to setup the function exit because of the shortage of rethook
-+   (the shadow stack for hooking the function return.)
-+
-+Since `fprobe::nmissed` field is counted up in both case, the former case
-+will skip both of entry and exit callback, and the latter case will skip exit
-+callback, but in both case the counter is just increased by 1.
-+
-+Note that if you set the FTRACE_OPS_FL_RECURSION and/or FTRACE_OPS_FL_RCU to
-+`fprobe::ops::flags` (ftrace_ops::flags) when registering the fprobe, this
-+counter may not work correctly, because those will skip fprobe's callback.
-+
-+
-+Functions and structures
-+========================
-+
-+.. kernel-doc:: include/linux/fprobe.h
-+.. kernel-doc:: kernel/trace/fprobe.c
-+
-diff --git a/Documentation/trace/index.rst b/Documentation/trace/index.rst
-index 3769b9b7aed8..b9f3757f8269 100644
---- a/Documentation/trace/index.rst
-+++ b/Documentation/trace/index.rst
-@@ -9,6 +9,7 @@ Linux Tracing Technologies
-    tracepoint-analysis
-    ftrace
-    ftrace-uses
-+   fprobe
-    kprobes
-    kprobetrace
-    uprobetracer
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Jakub Kicinski
+> Sent: Thursday, January 27, 2022 12:26 AM
+> To: Nguyen, Anthony L <anthony.l.nguyen@intel.com>
+> Cc: netdev@vger.kernel.org; intel-wired-lan@lists.osuosl.org; Saleem, Shi=
+raz
+> <shiraz.saleem@intel.com>; Jakub Kicinski <kuba@kernel.org>
+> Subject: [Intel-wired-lan] [PATCH] i40e: remove enum i40e_client_state
+>=20
+> It's not used.
+>=20
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  include/linux/net/intel/i40e_client.h | 10 ----------
+>  1 file changed, 10 deletions(-)
+>=20
 
+Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at I=
+ntel)
