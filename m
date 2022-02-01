@@ -2,75 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 003124A5710
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 06:50:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E96A64A5749
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 07:34:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233711AbiBAFuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 00:50:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50328 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233640AbiBAFuL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 00:50:11 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD709B82D0A;
-        Tue,  1 Feb 2022 05:50:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6B15BC340F0;
-        Tue,  1 Feb 2022 05:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643694609;
-        bh=GU5Ibm5TNI3Rd9juV28zmB6oREvTqyPiwFkXtQsQXNk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EEQBeH34J7E6pOtOOa1FNRl9Kr/aBVxlxy/ZJiOyTAe8Ypu69Qg8Kkhvi1xI/lWvL
-         uXlUrRosyxVUJu3WjmmeC3gBIYYnlp4IHhUO4EPqkPmlAW5DsgC2rhAY0aWNIm9N2a
-         FqE/x12Kh1KMOVqpdOoCsZ20j/QGKtKTpCnFPsfLgMF/0W2W+ypLGQc23KYBYaBlRY
-         rZ6IK3jTTrBJLffKNAAPtuPlQ/9iYKdPAxGXNg3Up8wlmAt7QoHsWSssvQR/MARLjR
-         JfTB4Ku06imtSvgVVrUJpmhchgbVAb/NJmFe3tncRLM1WxErasK7oHxYj7PRFL+dPV
-         7pXfES0mNqM5Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 495E1E6BB3D;
-        Tue,  1 Feb 2022 05:50:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234333AbiBAGeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 01:34:36 -0500
+Received: from mail.zju.edu.cn ([61.164.42.155]:5170 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234377AbiBAGe3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Feb 2022 01:34:29 -0500
+X-Greylist: delayed 467 seconds by postgrey-1.27 at vger.kernel.org; Tue, 01 Feb 2022 01:34:27 EST
+Received: by ajax-webmail-mail-app3 (Coremail) ; Tue, 1 Feb 2022 14:26:23
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.190.67.66]
+Date:   Tue, 1 Feb 2022 14:26:23 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   =?UTF-8?B?5ZGo5aSa5piO?= <22021233@zju.edu.cn>
+To:     "Dan Carpenter" <dan.carpenter@oracle.com>
+Cc:     linux-hams@vger.kernel.org, jreuter@yaina.de, ralf@linux-mips.org,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: Re: [PATCH 2/2] ax25: add refcount in ax25_dev to avoid UAF
+ bugs
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <20220131173729.GN1951@kadam>
+References: <cover.1643343397.git.duoming@zju.edu.cn>
+ <855641b37699b6ff501c4bae8370d26f59da9c81.1643343397.git.duoming@zju.edu.cn>
+ <20220131173729.GN1951@kadam>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] sh_eth: kill useless initializers in
- sh_eth_{suspend|resume}()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164369460929.12551.11792109303822725872.git-patchwork-notify@kernel.org>
-Date:   Tue, 01 Feb 2022 05:50:09 +0000
-References: <f09d7c64-4a2b-6973-09a4-10d759ed0df4@omp.ru>
-In-Reply-To: <f09d7c64-4a2b-6973-09a4-10d759ed0df4@omp.ru>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
+Message-ID: <70763230.8debd.17eb3f680eb.Coremail.22021233@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cC_KCgCHODyP0vhhKmSDDA--.6799W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgEIAVZdtYB1zAABsM
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW7Jw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sat, 29 Jan 2022 21:45:45 +0300 you wrote:
-> sh_eth_{suspend|resume}() initialize their local variable 'ret' to 0 but
-> this value is never really used, thus we can kill those intializers...
-> 
-> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-> 
-> ---
-> This patch is against DaveM's 'net-next.git' repo.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next] sh_eth: kill useless initializers in sh_eth_{suspend|resume}()
-    https://git.kernel.org/netdev/net-next/c/9a90986efcff
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+VGhhbmsgeW91IHZlcnkgbXVjaCBmb3IgeW91ciB0aW1lIGFuZCBwb2ludGluZyBvdXQgcHJvYmxl
+bXMgaW4gbXkgcGF0Y2guCgpUaGUgZGVjcmVtZW50IG9mIGF4MjVfYmluZCgpIGlzIGluIGF4MjVf
+a2lsbF9ieV9kZXZpY2UoKS4gSWYgd2UgZG9uJ3QKY2FsbCBheDI1X2JpbmQoKSBiZWZvcmUgYXgy
+NV9raWxsX2J5X2RldmljZSgpLCB0aGUgYXgyNV9saXN0IHdpbGwgYmUKZW1wdHkgYW5kIGF4MjVf
+ZGV2X3B1dCgpIGluIGF4MjVfa2lsbF9ieV9kZXZpY2UoKSB3aWxsIG5vdCBleGVjdXRlLgoKPiBA
+QCAtOTEsNiArOTEsNyBAQCBzdGF0aWMgdm9pZCBheDI1X2tpbGxfYnlfZGV2aWNlKHN0cnVjdCBu
+ZXRfZGV2aWNlICpkZXYpCj4gIAkJCXNwaW5fdW5sb2NrX2JoKCZheDI1X2xpc3RfbG9jayk7Cj4g
+IAkJCWxvY2tfc29jayhzayk7Cj4gIAkJCXMtPmF4MjVfZGV2ID0gTlVMTDsKPiArCQkJYXgyNV9k
+ZXZfcHV0KGF4MjVfZGV2KTsKPiAgCQkJcmVsZWFzZV9zb2NrKHNrKTsKPiAgCQkJYXgyNV9kaXNj
+b25uZWN0KHMsIEVORVRVTlJFQUNIKTsKPiAgCQkJc3Bpbl9sb2NrX2JoKCZheDI1X2xpc3RfbG9j
+ayk7CgpJIHdpbGwgc2VuZCB0aGUgaW1wcm92ZWQgcGF0Y2ggYXMgc29vbiBhcyBwb3NzaWJsZS4K
+CgpCZXN0IHdpc2hlcywKRHVvbWluZyBaaG91Cg==
