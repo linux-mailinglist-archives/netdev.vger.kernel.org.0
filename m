@@ -2,101 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3915D4A5C40
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 13:28:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 392DB4A5C42
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 13:28:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238069AbiBAM2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 07:28:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58702 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237630AbiBAM2A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 07:28:00 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0192F61524;
-        Tue,  1 Feb 2022 12:27:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD77EC340EB;
-        Tue,  1 Feb 2022 12:27:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643718462;
-        bh=JbkAYC/M1v6wy+velggKtiIsj1hfd2OT5WgmxqSpRmo=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=MvrZsek1b6VXbur1sjrSrW9r5HERM81Yh71gmHzYA9DzrL4MGX45gsGNTkUS2FCCv
-         Uk2LK0Ly8BTw9MdkDWc4CANUy0x8xK8FNWg81k3HA9UKjOvX1WLvFe8aEXIyUoE7HO
-         zZQCBOKH1AV1a6C7Jw/xokCSENcxjaOIJ3glevudARnyyvtU2lD/EFlCVy0kDGicoH
-         ke6CONaBXhJ+yYQ9hBO01aWYGgUG5sdtY2z7T+Sr8xJQGgdLRpGd1j7CSRuikONVLZ
-         7CE1k1DuL0yLZeoo6CtFFia21ojZFhRFUaXQP0SxiPfyP2RaUR1q6Pu4ECPsrxZinZ
-         iana8DFBgKVqQ==
-Content-Type: text/plain; charset="utf-8"
+        id S238124AbiBAM2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 07:28:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53814 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238134AbiBAM2K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 07:28:10 -0500
+Received: from smtp-42ab.mail.infomaniak.ch (smtp-42ab.mail.infomaniak.ch [IPv6:2001:1600:3:17::42ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9465C061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 04:28:09 -0800 (PST)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Jp42s5bPyzMqBgQ;
+        Tue,  1 Feb 2022 13:28:05 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4Jp42s0BylzlhMBb;
+        Tue,  1 Feb 2022 13:28:04 +0100 (CET)
+Message-ID: <9442f950-4d9e-cd76-0fc1-1c5f68f7f909@digikod.net>
+Date:   Tue, 1 Feb 2022 13:28:07 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v4 1/9] brcmfmac: pcie: Release firmwares in the
- brcmf_pcie_setup error path
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220131160713.245637-2-marcan@marcan.st>
-References: <20220131160713.245637-2-marcan@marcan.st>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?utf-8?b?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        stable@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164371845418.16633.10070643455446160726.kvalo@kernel.org>
-Date:   Tue,  1 Feb 2022 12:27:35 +0000 (UTC)
+User-Agent: 
+Content-Language: en-US
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com
+References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
+ <20220124080215.265538-2-konstantin.meskhidze@huawei.com>
+ <CA+FuTSf4EjgjBCCOiu-PHJcTMia41UkTh8QJ0+qdxL_J8445EA@mail.gmail.com>
+ <0934a27a-d167-87ea-97d2-b3ac952832ff@huawei.com>
+ <CA+FuTSc8ZAeaHWVYf-zmn6i5QLJysYGJppAEfb7tRbtho7_DKA@mail.gmail.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [RFC PATCH 1/2] landlock: TCP network hooks implementation
+In-Reply-To: <CA+FuTSc8ZAeaHWVYf-zmn6i5QLJysYGJppAEfb7tRbtho7_DKA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hector Martin <marcan@marcan.st> wrote:
 
-> This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
-> the CLM blob is released in the device remove path.
+On 26/01/2022 15:15, Willem de Bruijn wrote:
+> On Wed, Jan 26, 2022 at 3:06 AM Konstantin Meskhidze
+> <konstantin.meskhidze@huawei.com> wrote:
+>>
+>>
+>>
+>> 1/25/2022 5:17 PM, Willem de Bruijn пишет:
+>>> On Mon, Jan 24, 2022 at 3:02 AM Konstantin Meskhidze
+>>> <konstantin.meskhidze@huawei.com> wrote:
+>>>>
+>>>> Support of socket_bind() and socket_connect() hooks.
+>>>> Current prototype can restrict binding and connecting of TCP
+>>>> types of sockets. Its just basic idea how Landlock could support
+>>>> network confinement.
+>>>>
+>>>> Changes:
+>>>> 1. Access masks array refactored into 1D one and changed
+>>>> to 32 bits. Filesystem masks occupy 16 lower bits and network
+>>>> masks reside in 16 upper bits.
+>>>> 2. Refactor API functions in ruleset.c:
+>>>>       1. Add void *object argument.
+>>>>       2. Add u16 rule_type argument.
+>>>> 3. Use two rb_trees in ruleset structure:
+>>>>       1. root_inode - for filesystem objects
+>>>>       2. root_net_port - for network port objects
+>>>>
+>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>
+>>>> +static int hook_socket_connect(struct socket *sock, struct sockaddr *address, int addrlen)
+>>>> +{
+>>>> +       short socket_type;
+>>>> +       struct sockaddr_in *sockaddr;
+>>>> +       u16 port;
+>>>> +       const struct landlock_ruleset *const dom = landlock_get_current_domain();
+>>>> +
+>>>> +       /* Check if the hook is AF_INET* socket's action */
+>>>> +       if ((address->sa_family != AF_INET) && (address->sa_family != AF_INET6))
+>>>> +               return 0;
+>>>
+>>> Should this be a check on the socket family (sock->ops->family)
+>>> instead of the address family?
+>>
+>> Actually connect() function checks address family:
+>>
+>> int __inet_stream_connect(... ,struct sockaddr *uaddr ,...) {
+>> ...
+>>          if (uaddr) {
+>>                  if (addr_len < sizeof(uaddr->sa_family))
+>>                  return -EINVAL;
+>>
+>>                  if (uaddr->sa_family == AF_UNSPEC) {
+>>                          err = sk->sk_prot->disconnect(sk, flags);
+>>                          sock->state = err ? SS_DISCONNECTING :
+>>                          SS_UNCONNECTED;
+>>                  goto out;
+>>                  }
+>>          }
+>>
+>> ...
+>> }
 > 
-> Fixes: 82f93cf46d60 ("brcmfmac: get chip's default RAM info during PCIe setup")
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Right. My question is: is the intent of this feature to be limited to
+> sockets of type AF_INET(6) or to addresses?
 
-8 patches applied to wireless-next.git, thanks.
+This feature should handle all "TCP" sockets/ports, IPv4 or IPv6 or 
+unspecified, the same way. What do you suggest to not miss corner cases? 
+What are the guarantees about socket types we can trust/rely on?
 
-5e90f0f3ead0 brcmfmac: pcie: Release firmwares in the brcmf_pcie_setup error path
-d19d8e3ba256 brcmfmac: firmware: Allocate space for default boardrev in nvram
-6d766d8cb505 brcmfmac: pcie: Declare missing firmware files in pcie.c
-9466987f2467 brcmfmac: pcie: Replace brcmf_pcie_copy_mem_todev with memcpy_toio
-b50255c83b91 brcmfmac: pcie: Fix crashes due to early IRQs
-9cf6d7f2c554 brcmfmac: of: Use devm_kstrdup for board_type & check for errors
-e7191182adc5 brcmfmac: fwil: Constify iovar name arguments
-b4bb8469e90e brcmfmac: pcie: Read the console on init and shutdown
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220131160713.245637-2-marcan@marcan.st/
+> 
+> I would think the first. Then you also want to catch operations on
+> such sockets that may pass a different address family. AF_UNSPEC is
+> the known offender that will effect a state change on AF_INET(6)
+> sockets.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Indeed, Landlock needs to handle this case to avoid bypasses. This must 
+be part of the tests.
 
+
+> 
+>>>
+>>> It is valid to pass an address with AF_UNSPEC to a PF_INET(6) socket.
+>>> And there are legitimate reasons to want to deny this. Such as passing
+>>> a connection to a unprivileged process and disallow it from disconnect
+>>> and opening a different new connection.
+>>
+>> As far as I know using AF_UNSPEC to unconnect takes effect on
+>> UDP(DATAGRAM) sockets.
+>> To unconnect a UDP socket, we call connect but set the family member of
+>> the socket address structure (sin_family for IPv4 or sin6_family for
+>> IPv6) to AF_UNSPEC. It is the process of calling connect on an already
+>> connected UDP socket that causes the socket to become unconnected.
+>>
+>> This RFC patch just supports TCP connections. I need to check the logic
+>> if AF_UNSPEC provided in connenct() function for TCP(STREAM) sockets.
+>> Does it disconnect already established TCP connection?
+>>
+>> Thank you for noticing about this issue. Need to think through how
+>> to manage it with Landlock network restrictions for both TCP and UDP
+>> sockets.
+> 
+> AF_UNSPEC also disconnects TCP.
+> 
+>>>
+>>>> +
+>>>> +       socket_type = sock->type;
+>>>> +       /* Check if it's a TCP socket */
+>>>> +       if (socket_type != SOCK_STREAM)
+>>>> +               return 0;
+>>>> +
+>>>> +       if (!dom)
+>>>> +               return 0;
+>>>> +
+>>>> +       /* Get port value in host byte order */
+>>>> +       sockaddr = (struct sockaddr_in *)address;
+>>>> +       port = ntohs(sockaddr->sin_port);
+>>>> +
+>>>> +       return check_socket_access(dom, port, LANDLOCK_ACCESS_NET_CONNECT_TCP);
+>>>> +}
+>>> .
