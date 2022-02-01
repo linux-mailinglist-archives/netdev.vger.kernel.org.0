@@ -2,129 +2,277 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F6804A61E2
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 18:06:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC1C44A61E6
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 18:07:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241404AbiBARGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 12:06:22 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:63012 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231877AbiBARGV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 12:06:21 -0500
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 211H0Ybq016152;
-        Tue, 1 Feb 2022 17:06:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=onrqYIOKUr4RNTR6BCf3mCF2S16T7nddg5AP40Dp79A=;
- b=YLMWhhuQIxEJwuegzaz1nfJaXranP7f6aHyrOA8ZQ65v6TMLjlXuNOgkyi4xL8Gxesuy
- oZ9SrQ6UATj3vM99z3hhXU8cWNobev2MF6X2INhmaxlYR9On9afD9dYy6xHPxarFQELd
- Yyfqk49+YHvRdWlE4dZqFkiIqZ+Pd0GQigjqHk1vNtCn5PNnb+A9PujY3pbNVxoMaw8s
- cevaQ6psMWy9DbMEEqPJsuzu2AhoPbqxlEm3BuDYjQQ28qlZihDKL3aWNRAg1HNTh7Jp
- E4Rma38RiAggfaVy/XygAFCaixpBzY1Ze7GgWneE3Jd23Qc0xVGEuyiHCjwTA9aB1nFf NQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dy6q4kght-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Feb 2022 17:06:17 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 211G0jIi028915;
-        Tue, 1 Feb 2022 17:06:17 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dy6q4kgha-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Feb 2022 17:06:16 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 211Gl9KU025334;
-        Tue, 1 Feb 2022 17:06:15 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3dvvujer20-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Feb 2022 17:06:15 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 211H6Dpb47579530
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 1 Feb 2022 17:06:13 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ECC8A42047;
-        Tue,  1 Feb 2022 17:06:12 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7E88942045;
-        Tue,  1 Feb 2022 17:06:12 +0000 (GMT)
-Received: from [9.145.64.14] (unknown [9.145.64.14])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  1 Feb 2022 17:06:12 +0000 (GMT)
-Message-ID: <0936d5f3-aef2-0553-408b-07b3bb47e36b@linux.ibm.com>
-Date:   Tue, 1 Feb 2022 18:06:12 +0100
+        id S241420AbiBARGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 12:06:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33408 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231877AbiBARGj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 12:06:39 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A15CC061714;
+        Tue,  1 Feb 2022 09:06:38 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id me13so56303977ejb.12;
+        Tue, 01 Feb 2022 09:06:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=8e+cxsOAoD4wNMf4OwhcmsqMgJkqG3wiGoLyD7fqu/g=;
+        b=InNOyM08H7YL/I26IDo0bEZ6tgouuU9ALxGxDQzuD4qXtdUfY2pkwg5V8ZMPuCr5xD
+         PATNvojFwuEcr9N/sdfAsKHqDk6c5NL9C+EMErHZ2QxepE+9C1v1fCrAg+2Hj2lXCBQR
+         O+wvg5NI56u/QikA51uNhJnasmMuI+Se0dRrx3cX2RlRplC4Ct2ZqcmsUiO1bMRNv1C+
+         hMeNBTCkg+bEX8wVlFFrpLB5XL4jTUZp+/R0lRS5H0eSbuNK17XVFwaW6Ei4I6juvvnk
+         dAeIHFJqssmrGWDsP6TXtM/I/OJ7188kuml9qRAdAdIRDbYKW/pKOtPSVhNhwztCvnZq
+         3FWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8e+cxsOAoD4wNMf4OwhcmsqMgJkqG3wiGoLyD7fqu/g=;
+        b=W9spf5zxwkX9Sfy6q6jZ74Tx+77BYqIa4w8il+atCEXZIuvp+LX8OhvbciaW/giq2I
+         7KbSZsSdG/DDZSio91Ijg1t1dxBvqBWzd8qy5y2yX9T3oh/NYrsTKOz6iLvpAnSxPEfV
+         JWWZ1FGiXx8Kw1Og86QOOud6EwKWac8ouiQtbICuwZ5tlW2+OzpV1rO9G6iS0ZBUly/Q
+         HbbNtfgsUQEat8j4CSfUTAL95h8o17AIgdFUVvz33X4R1fNWevLQo5YtHGdCwBD2tHpv
+         Q6GGZ7+kSB4AbNayQmyiTU8Wo+tOjk5HLX9Hq++Ge0s0JAg3ICOS3Gasn7ToxWQxADLI
+         R/fg==
+X-Gm-Message-State: AOAM532+aLu6phx+WuPr6SuNJn0PULiS44TER+1xQH+S7k0egGvyMUaJ
+        npPEm1OzeAsWdLufWiI0WZYPcsD9QzI=
+X-Google-Smtp-Source: ABdhPJymqnXI4V9i32WmqWx4KQk5uxFdvNeXHzg6ysgfcqGCLOeyZe4YosHk7AnSKGnlo0qjefuOUg==
+X-Received: by 2002:a17:907:629f:: with SMTP id nd31mr5838675ejc.693.1643735196655;
+        Tue, 01 Feb 2022 09:06:36 -0800 (PST)
+Received: from skbuf ([188.27.184.105])
+        by smtp.gmail.com with ESMTPSA id r10sm14947171ejy.148.2022.02.01.09.06.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 09:06:36 -0800 (PST)
+Date:   Tue, 1 Feb 2022 19:06:34 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/5] net: dsa: mv88e6xxx: Improve isolation of
+ standalone ports
+Message-ID: <20220201170634.wnxy3s7f6jnmt737@skbuf>
+References: <20220131154655.1614770-1-tobias@waldekranz.com>
+ <20220131154655.1614770-2-tobias@waldekranz.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [BUG] net: smc: possible deadlock in smc_lgr_free() and
- smc_link_down_work()
-Content-Language: en-US
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <11fe65b8-eda4-121e-ec32-378b918d0909@gmail.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <11fe65b8-eda4-121e-ec32-378b918d0909@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: pea68IG5Bj1ccet02yEexdujcsm8MwYP
-X-Proofpoint-ORIG-GUID: wR9E2Ty2RNbiLvkCityV-vItCyHpBkeq
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-01_08,2022-02-01_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 lowpriorityscore=0 bulkscore=0 mlxlogscore=999
- clxscore=1015 suspectscore=0 mlxscore=0 adultscore=0 malwarescore=0
- impostorscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202010095
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220131154655.1614770-2-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/02/2022 08:51, Jia-Ju Bai wrote:
-> Hello,
+Hi Tobias,
+
+On Mon, Jan 31, 2022 at 04:46:51PM +0100, Tobias Waldekranz wrote:
+> Clear MapDA on standalone ports to bypass any ATU lookup that might
+> point the packet in the wrong direction. This means that all packets
+> are flooded using the PVT config. So make sure that standalone ports
+> are only allowed to communicate with the CPU port.
+
+Actually "CPU port" != "upstream port" (the latter can be an
+upstream-facing DSA port). The distinction is quite important.
+
 > 
-> My static analysis tool reports a possible deadlock in the smc module in Linux 5.16:
+> Here is a scenario in which this is needed:
 > 
-> smc_lgr_free()
->   mutex_lock(&lgr->llc_conf_mutex); --> Line 1289 (Lock A)
->   smcr_link_clear()
->     smc_wr_free_link()
->       wait_event(lnk->wr_tx_wait, ...); --> Line 648 (Wait X)
+>    CPU
+>     |     .----.
+> .---0---. | .--0--.
+> |  sw0  | | | sw1 |
+> '-1-2-3-' | '-1-2-'
+>       '---'
 > 
-> smc_link_down_work()
->   mutex_lock(&lgr->llc_conf_mutex); --> Line 1683 (Lock A)
->   smcr_link_down()
->     smcr_link_clear()
->       smc_wr_free_link()
->         smc_wr_wakeup_tx_wait()
->           wake_up_all(&lnk->wr_tx_wait); --> Line 78 (Wake X)
+> - sw0p1 and sw1p1 are bridged
+
+Do sw0p1 and sw1p1 even matter?
+
+> - sw0p2 and sw1p2 are in standalone mode
+> - Learning must be enabled on sw0p3 in order for hardware forwarding
+>   to work properly between bridged ports
 > 
-> When smc_lgr_free() is executed, "Wait X" is performed by holding "Lock A". If smc_link_down_work() is executed at this time, "Wake X" cannot be performed to wake up "Wait X" in smc_lgr_free(), because "Lock A" has been already hold by smc_lgr_free(), causing a possible deadlock.
+> 1. A packet with SA :aa comes in on sw1p2
+>    1a. Egresses sw1p0
+>    1b. Ingresses sw0p3, ATU adds an entry for :aa towards port 3
+>    1c. Egresses sw0p0
 > 
-> I am not quite sure whether this possible problem is real and how to fix it if it is real.
-> Any feedback would be appreciated, thanks :)
+> 2. A packet with DA :aa comes in on sw0p2
+>    2a. If an ATU lookup is done at this point, the packet will be
+>        incorrectly forwarded towards sw0p3. With this change in place,
+>        the ATU is pypassed and the packet is forwarded in accordance
 
-A deeper analysis showed up that this reported possible deadlock is actually not a problem.
+s/pypassed/bypassed/
 
-The wait on line 648 in smc_wr.c
-	wait_event(lnk->wr_tx_wait, (!atomic_read(&lnk->wr_tx_refcnt)));
-waits as long as the refcount wr_tx_refcnt is not zero.
+>        whith the PVT, which only contains the CPU port.
 
-Every time when a caller stops using a link wr_tx_refcnt is decreased, and when it reaches 
-zero the wr_tx_wait is woken up in smc_wr_tx_link_put() in smc_wr.h, line 70:
-		if (atomic_dec_and_test(&link->wr_tx_refcnt))
-			wake_up_all(&link->wr_tx_wait);
+s/whith/with/
 
-Multiple callers of smc_wr_tx_link_put() do not run under the llc_conf_mutex lock, and those
-who run under this mutex are saved against the wait_event() in smc_wr_free_link().
+What you describe is a bit convoluted, so let me try to rephrase it.
+The mv88e6xxx driver configures all standalone ports to use the same
+DefaultVID(0)/FID(0), and configures standalone user ports with no
+learning via the Port Association Vector. Shared (cascade + CPU) ports
+have learning enabled so that cross-chip bridging works without floods.
+But since learning is per port and not per FID, it means that we enable
+learning in FID 0, the one where the ATU was supposed to be always empty.
+So we may end up taking wrong forwarding decisions for standalone ports,
+notably when we should do software forwarding between ports of different
+switches. By clearing MapDA, we force standalone ports to bypass any ATU
+entries that might exist.
 
+Question: can we disable learning per FID? I searched for this in the
+limited documentation that I have, but I didn't see such option.
+Doing this would be advantageous because we'd end up with a bit more
+space in the ATU. With your solution we're just doing damage control.
 
-Thank you for reporting this finding! Which tool did you use for this analysis?
+> 
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> ---
+>  drivers/net/dsa/mv88e6xxx/chip.c | 32 +++++++++++++++++++++++++-------
+>  drivers/net/dsa/mv88e6xxx/port.c |  7 +++++--
+>  drivers/net/dsa/mv88e6xxx/port.h |  2 +-
+>  include/net/dsa.h                | 12 ++++++++++++
+>  4 files changed, 43 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> index 1023e4549359..dde6a8d0ca36 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> @@ -1290,8 +1290,15 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
+>  
+>  	pvlan = 0;
+>  
+> -	/* Frames from user ports can egress any local DSA links and CPU ports,
+> -	 * as well as any local member of their bridge group.
+> +	/* Frames from standalone user ports can only egress on the
+> +	 * CPU port.
+> +	 */
+> +	if (!dsa_port_bridge_dev_get(dp))
+> +		return BIT(dsa_switch_upstream_port(ds));
+> +
+> +	/* Frames from bridged user ports can egress any local DSA
+> +	 * links and CPU ports, as well as any local member of their
+> +	 * bridge group.
+>  	 */
+>  	dsa_switch_for_each_port(other_dp, ds)
+>  		if (other_dp->type == DSA_PORT_TYPE_CPU ||
+> @@ -2487,6 +2494,10 @@ static int mv88e6xxx_port_bridge_join(struct dsa_switch *ds, int port,
+>  	if (err)
+>  		goto unlock;
+>  
+> +	err = mv88e6xxx_port_set_map_da(chip, port, true);
+> +	if (err)
+> +		return err;
+> +
+>  	err = mv88e6xxx_port_commit_pvid(chip, port);
+>  	if (err)
+>  		goto unlock;
+> @@ -2521,6 +2532,12 @@ static void mv88e6xxx_port_bridge_leave(struct dsa_switch *ds, int port,
+>  	    mv88e6xxx_port_vlan_map(chip, port))
+>  		dev_err(ds->dev, "failed to remap in-chip Port VLAN\n");
+>  
+> +	err = mv88e6xxx_port_set_map_da(chip, port, false);
+> +	if (err)
+> +		dev_err(ds->dev,
+> +			"port %d failed to restore map-DA: %pe\n",
+> +			port, ERR_PTR(err));
+> +
+>  	err = mv88e6xxx_port_commit_pvid(chip, port);
+>  	if (err)
+>  		dev_err(ds->dev,
+> @@ -2918,12 +2935,13 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
+>  		return err;
+>  
+>  	/* Port Control 2: don't force a good FCS, set the MTU size to
+> -	 * 10222 bytes, disable 802.1q tags checking, don't discard tagged or
+> -	 * untagged frames on this port, do a destination address lookup on all
+> -	 * received packets as usual, disable ARP mirroring and don't send a
+> -	 * copy of all transmitted/received frames on this port to the CPU.
+> +	 * 10222 bytes, disable 802.1q tags checking, don't discard
+> +	 * tagged or untagged frames on this port, skip destination
+> +	 * address lookup on user ports, disable ARP mirroring and don't
+> +	 * send a copy of all transmitted/received frames on this port
+> +	 * to the CPU.
+>  	 */
+> -	err = mv88e6xxx_port_set_map_da(chip, port);
+> +	err = mv88e6xxx_port_set_map_da(chip, port, !dsa_is_user_port(ds, port));
+>  	if (err)
+>  		return err;
+>  
+> diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+> index ab41619a809b..ceb450113f88 100644
+> --- a/drivers/net/dsa/mv88e6xxx/port.c
+> +++ b/drivers/net/dsa/mv88e6xxx/port.c
+> @@ -1278,7 +1278,7 @@ int mv88e6xxx_port_drop_untagged(struct mv88e6xxx_chip *chip, int port,
+>  	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL2, new);
+>  }
+>  
+> -int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port)
+> +int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port, bool map)
+>  {
+>  	u16 reg;
+>  	int err;
+> @@ -1287,7 +1287,10 @@ int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port)
+>  	if (err)
+>  		return err;
+>  
+> -	reg |= MV88E6XXX_PORT_CTL2_MAP_DA;
+> +	if (map)
+> +		reg |= MV88E6XXX_PORT_CTL2_MAP_DA;
+> +	else
+> +		reg &= ~MV88E6XXX_PORT_CTL2_MAP_DA;
+>  
+>  	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL2, reg);
+>  }
+> diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+> index 03382b66f800..5c347cc58baf 100644
+> --- a/drivers/net/dsa/mv88e6xxx/port.h
+> +++ b/drivers/net/dsa/mv88e6xxx/port.h
+> @@ -425,7 +425,7 @@ int mv88e6185_port_get_cmode(struct mv88e6xxx_chip *chip, int port, u8 *cmode);
+>  int mv88e6352_port_get_cmode(struct mv88e6xxx_chip *chip, int port, u8 *cmode);
+>  int mv88e6xxx_port_drop_untagged(struct mv88e6xxx_chip *chip, int port,
+>  				 bool drop_untagged);
+> -int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port);
+> +int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port, bool map);
+>  int mv88e6095_port_set_upstream_port(struct mv88e6xxx_chip *chip, int port,
+>  				     int upstream_port);
+>  int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index 57b3e4e7413b..30f3192616e5 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -581,6 +581,18 @@ static inline bool dsa_is_upstream_port(struct dsa_switch *ds, int port)
+>  	return port == dsa_upstream_port(ds, port);
+>  }
+>  
+> +/* Return the local port used to reach the CPU port */
+> +static inline unsigned int dsa_switch_upstream_port(struct dsa_switch *ds)
+> +{
+> +	int p;
+> +
+> +	for (p = 0; p < ds->num_ports; p++)
+> +		if (!dsa_is_unused_port(ds, p))
+> +			return dsa_upstream_port(ds, p);
+
+dsa_switch_for_each_available_port
+
+Although to be honest, the caller already has a dp, I wonder why you
+need to complicate things and don't just call dsa_upstream_port(ds,
+dp->index) directly.
+
+> +
+> +	return ds->num_ports;
+> +}
+> +
+>  /* Return true if @upstream_ds is an upstream switch of @downstream_ds, meaning
+>   * that the routing port from @downstream_ds to @upstream_ds is also the port
+>   * which @downstream_ds uses to reach its dedicated CPU.
+> -- 
+> 2.25.1
+> 
 
