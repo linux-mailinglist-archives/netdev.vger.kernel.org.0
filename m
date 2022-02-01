@@ -2,104 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C65D44A6827
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 23:46:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2B924A6853
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 00:01:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236451AbiBAWqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 17:46:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiBAWqp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 17:46:45 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1B6C061714
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 14:46:45 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id z19so36759088lfq.13
-        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 14:46:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZB6sZygULvONH287KY9xbyCmvq2QLSmoH4jTsAJE8qE=;
-        b=ZKDJtql7NA05u1FVTY6GG02i9d03ssYSRIpXA9b3B5C9OaC9xCd/dcIKWRSql+EipR
-         IR2nMqELtUlil4mXNXDdKLO2VSyXGQTEK+n9xXAgBUuxLFdCf4WJ930LM+wRo2Jf9NZa
-         P4HGHdFGTF9MI3S8d7vTnsBfrdNUl87gpx/6PR8iwTGS0I9LI+dTOrhTNHsU2gEUNaJd
-         XZNAJGoGJ+BsiHgtKr2qPKog0Iqd3o9GgLQ11rrjtVfZMZRlEosXi0RAKz0ZAbz0ByMF
-         5YNp2082rPQaR98wRBm8986U3UFSx9zTolozdHkESH66ezgSZ4Rjv+VZ/CMwtm3lvJQl
-         3oJw==
+        id S242548AbiBAXBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 18:01:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46716 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234815AbiBAXBL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 18:01:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643756470;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZZQsFy9xaSL/C+8tHxnl069hXf8XB97MOyjVaLm6KWA=;
+        b=gPL4po6fTkOJxZ3jS15cGUu9Hk4q4r600itP89dn9uTHPjB3reWGyPK9Nv3NSjGTak+ciJ
+        bCocr7JzzMNLljAZnH/TsI2y7nXpgRyw8O0Jj/SqFxjk7UoVPDh+63/z03cEbLg2E+8Sr0
+        ZPwrUK+Y8pA2PRi98IohowQrzW8UNIw=
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
+ [209.85.161.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-278-n_gIf7J6Nb6fpckIRTPKUg-1; Tue, 01 Feb 2022 18:01:09 -0500
+X-MC-Unique: n_gIf7J6Nb6fpckIRTPKUg-1
+Received: by mail-oo1-f71.google.com with SMTP id h19-20020a4a6f13000000b002e3c2ae2affso7460535ooc.3
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 15:01:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZB6sZygULvONH287KY9xbyCmvq2QLSmoH4jTsAJE8qE=;
-        b=25GajSHbt4Tx/f4Rc1hHb/VT9jqMY86rq8axwV9pP18c37WHY7PnZ2mF1vSjpOweaf
-         EQffh8eenem4A25fpNThAi8Lo7ZYe8zAvTtYMbZra3+x5gyqHKVU1saXSPBoUC+CUfZd
-         s13LN732RZOuerG41QfOxjHVbDs2Sbd5rsKBdZcROVmPWzlmCyuVUCi83gX74aUh9VDn
-         AXp3Be6TQo2BbXOv6yaEO4nrBZMKbR1ucNO6aYMB9brJ3k2P/sfNgmv/ieQI9faEOAJk
-         WvbNlcNk4RiERpzvoJfgsFGYNYFvId24sBQkNN4qdHJXr/WDssYJOMfCLx3xm+OKUVri
-         xSIQ==
-X-Gm-Message-State: AOAM533THb3k000uLt06UPKUxu1oDZguqbJDn+smFViGEQ6kppfY/yek
-        AQ4yLPrqQm4JAtQWAG2qSWuqyETSlBPAnujhICIa+Q==
-X-Google-Smtp-Source: ABdhPJy8vDwNzwEaIeOFhfQo+M8s8+6OPdW3QljaSF0UIWy3xrqGjbVn3CVyx1pcLUx2R3waVBl9XZcgeNt+vnxOlUA=
-X-Received: by 2002:a05:6512:3e07:: with SMTP id i7mr18315112lfv.283.1643755603060;
- Tue, 01 Feb 2022 14:46:43 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ZZQsFy9xaSL/C+8tHxnl069hXf8XB97MOyjVaLm6KWA=;
+        b=OMAKT+mdK1SX6TVX1QNU+f7IPj/d2Rn2HfQ+R9aHB+6Toscs80KM3s7fogKBIbOL8c
+         pvnAwqPOWk2ebPqHwfw4gX5b7Fu4+JvUYGMdU3fUurkc3MIdHQKFVlX/Dy+fFBjHrvjB
+         2oB8iHgCOEqjKxUiQBaJBSMlN9jGkErjY1DIlqegCDlYZkO6dWpYZ370wuTfBVwjHTzV
+         rtvzcEBad7uWf+bKpVZlkn/vDlH1dMhh0wG9NyNGGibPjip8OAurwvQw2LUHgtbHeErb
+         P1kUQ0uRjycuZn0IEAg5a/E+ZDqG3Clkq9/8PgaGxO3Y5Jj4TDIr5g/vD8F/yD56/nw8
+         b5LQ==
+X-Gm-Message-State: AOAM531pq4ug7KW0wDEa25WA41thMKf8s84nM8l2iVhx+m5bIldOeN7s
+        Aw6JhZ3OfLnamN9OGbMKDuX3A9jFIjdkIgXQwLVqhEecp9MZZe0Jovn4TPOZqt71lyTeAd079Cp
+        Ch3N1V3NhfBhKa5Qk
+X-Received: by 2002:a05:6808:20a7:: with SMTP id s39mr2718312oiw.306.1643756468633;
+        Tue, 01 Feb 2022 15:01:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxcB506OEAhqOJI745n4wG5GysVpVVMM9JD8hrzIrz8J+sFhUk3i/Fjf/mS8Hij0DFXWZZ5bQ==
+X-Received: by 2002:a05:6808:20a7:: with SMTP id s39mr2718298oiw.306.1643756468405;
+        Tue, 01 Feb 2022 15:01:08 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id bf15sm1581295oib.32.2022.02.01.15.01.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 15:01:08 -0800 (PST)
+Date:   Tue, 1 Feb 2022 16:01:06 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Cornelia Huck <cohuck@redhat.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com
+Subject: Re: [PATCH V6 mlx5-next 10/15] vfio: Remove migration protocol v1
+Message-ID: <20220201160106.0760bfea.alex.williamson@redhat.com>
+In-Reply-To: <87sft2yd50.fsf@redhat.com>
+References: <20220130160826.32449-1-yishaih@nvidia.com>
+        <20220130160826.32449-11-yishaih@nvidia.com>
+        <874k5izv8m.fsf@redhat.com>
+        <20220201121325.GB1786498@nvidia.com>
+        <87sft2yd50.fsf@redhat.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-References: <CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com>
- <20220127181930.355c8c82@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220127181930.355c8c82@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Jann Horn <jannh@google.com>
-Date:   Tue, 1 Feb 2022 23:46:16 +0100
-Message-ID: <CAG48ez0sa2+eEAnS3UMLmLbDRfM6iC4K3vRcUdA9LpDbSJF0XA@mail.gmail.com>
-Subject: Re: [BUG] net_device UAF: linkwatch_fire_event() calls dev_hold()
- after netdev_wait_allrefs() is done
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 3:19 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> Interesting..
->
-> I don't know what link_reset does, but since it turns the carrier on it
-> seems like something that should be flushed/canceled when the device
-> goes down. unregister brings the device down under rtnl_lock.
->
-> On Fri, 28 Jan 2022 02:51:24 +0100 Jann Horn wrote:
-> > Is the bug that usbnet_disconnect() should be stopping &dev->kevent
-> > before calling unregister_netdev()?
->
-> I'd say not this one, I think the generally agreed on semantics are that
-> the netdev is under users control between register and unregister, we
-> should not cripple it before unregister.
->
-> > Or is the bug that ax88179_link_reset() doesn't take some kind of lock
-> > and re-check that the netdev is still alive?
->
-> That'd not be an uncommon way to fix this.. taking rtnl_lock, not even
-> a driver lock in similar.
+On Tue, 01 Feb 2022 13:39:23 +0100
+Cornelia Huck <cohuck@redhat.com> wrote:
 
-Ah, I found a comment with a bit of explanation on how this is
-supposed to work... usbnet_stop() explains:
+> On Tue, Feb 01 2022, Jason Gunthorpe <jgg@nvidia.com> wrote:
+> 
+> > On Tue, Feb 01, 2022 at 12:23:05PM +0100, Cornelia Huck wrote:  
+> >> On Sun, Jan 30 2022, Yishai Hadas <yishaih@nvidia.com> wrote:
+> >>   
+> >> > From: Jason Gunthorpe <jgg@nvidia.com>
+> >> >
+> >> > v1 was never implemented and is replaced by v2.
+> >> >
+> >> > The old uAPI definitions are removed from the header file. As per Linus's
+> >> > past remarks we do not have a hard requirement to retain compilation
+> >> > compatibility in uapi headers and qemu is already following Linus's
+> >> > preferred model of copying the kernel headers.  
+> >> 
+> >> If we are all in agreement that we will replace v1 with v2 (and I think
+> >> we are), we probably should remove the x-enable-migration stuff in QEMU
+> >> sooner rather than later, to avoid leaving a trap for the next
+> >> unsuspecting person trying to update the headers.  
+> >
+> > Once we have agreement on the kernel patch we plan to send a QEMU
+> > patch making it support the v2 interface and the migration
+> > non-experimental. We are also working to fixing the error paths, at
+> > least least within the limitations of the current qemu design.  
+> 
+> I'd argue that just ripping out the old interface first would be easier,
+> as it does not require us to synchronize with a headers sync (and does
+> not require to synchronize a headers sync with ripping it out...)
+> 
+> > The v1 support should remain in old releases as it is being used in
+> > the field "experimentally".  
+> 
+> Of course; it would be hard to rip it out retroactively :)
+> 
+> But it should really be gone in QEMU 7.0.
+> 
+> Considering adding the v2 uapi, we might get unlucky: The Linux 5.18
+> merge window will likely be in mid-late March (and we cannot run a
+> headers sync before the patches hit Linus' tree), while QEMU 7.0 will
+> likely enter freeze in mid-late March as well. So there's a non-zero
+> chance that the new uapi will need to be deferred to 7.1.
 
-    /* deferred work (task, timer, softirq) must also stop.
-     * can't flush_scheduled_work() until we drop rtnl (later),
-     * else workers could deadlock; so make workers a NOP.
-     */
 
-And usbnet_stop() is ->ndo_stop(), which indeed runs under RTNL.
+Agreed that v1 migration TYPE/SUBTYPE should live in infamy as
+reserved, but I'm not sure why we need to make the rest of it a big
+complicated problem.  On one hand, leaving stubs for the necessary
+structure and macros until QEMU gets updated doesn't seem so terrible.
+Nor actually does letting the next QEMU header update cause build
+breakages, which would probably frustrate the person submitting that
+update, but it's not like QEMU hasn't done selective header updates in
+the past.  The former is probably the more friendly approach if we
+don't outrage someone in the kernel community in the meantime.  Thanks,
 
-I wonder what the work items can do that'd conflict with RTNL... or is
-the comment just talking about potential issues if a bunch of *other*
-work items need RTNL and clog up the system_wq so that
-flush_scheduled_work() blocks forever?
+Alex
 
-If it's the latter case, I guess we could instead do cancel_work_sync() and
-then maybe re-run the work function's handler one more time
-synchronously?
