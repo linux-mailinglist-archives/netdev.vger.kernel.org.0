@@ -2,94 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 356804A5D55
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 14:20:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 750F74A5D67
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 14:26:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238315AbiBANUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 08:20:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54656 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231549AbiBANUN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 08:20:13 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S238596AbiBAN0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 08:26:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:41592 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238435AbiBAN0h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 08:26:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643721996;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=t4DZwBWjH4KMtaPN0r4y8wXSGSfdg/Ee8aiJ79lHN9s=;
+        b=GXH0JeuHxJo3EKtLBdB4sRkRCeFErh9kwi1o5LVejiq9n9MXOT9yD/6nmfXJqtvkXDSAV6
+        cpg63kHTImYVBe+FYnylVQSRYdfmdxPOhgBuQYWsRetkJCWYERVZWsMLucxjkt/dB9Mcoy
+        KSB0K/G6BXsz2y8S0a4iWSpFFhiVyV8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-605-Ps4YUhxlNiGFYKnj5GBr2g-1; Tue, 01 Feb 2022 08:26:33 -0500
+X-MC-Unique: Ps4YUhxlNiGFYKnj5GBr2g-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86B0561515;
-        Tue,  1 Feb 2022 13:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D33FCC340EE;
-        Tue,  1 Feb 2022 13:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643721611;
-        bh=4y4Phd2U5ftYs0K8pGGutMcJt1KLSnDxZm8YfPNTjLc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=iWhqBRHVWqnxHmLK+iN4SyZe8VceVOtIdbqEtzBqr+KowWU4C+CrQlfK4GQmTmDN1
-         CBp+jxjFTJDorrZhnG0BR5uRJyaTYGP74N6ic9IN0bYyNVy5mgJHBPIJ6TJqRfH1h2
-         DgfGvGCfybIzHikdEskroEdb/8wUi4v29CRGRCCMKpX8756L1hpiaghyjv/fTuiOAK
-         9DCS5RpEuIyMyhlTWS5MnyEnItE403JjzvL4ze3ahK66/ynLDwcgNHpgWwGqgZ63F2
-         yZiKjKYxqnNk6FfnRHwgvU32JBxOUEdLmTIZJTZe8QgnlAjZ7jRR7wpUP2l6RIXgFm
-         OwJ6J1qCZHo4Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BA9F2E6BAC6;
-        Tue,  1 Feb 2022 13:20:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9E1D81091DA3;
+        Tue,  1 Feb 2022 13:26:31 +0000 (UTC)
+Received: from localhost (unknown [10.39.194.79])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 38EF978DDD;
+        Tue,  1 Feb 2022 13:26:31 +0000 (UTC)
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, alex.williamson@redhat.com,
+        bhelgaas@google.com, saeedm@nvidia.com, linux-pci@vger.kernel.org,
+        kvm@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
+        leonro@nvidia.com, kwankhede@nvidia.com, mgurtovoy@nvidia.com,
+        maorg@nvidia.com
+Subject: Re: [PATCH V6 mlx5-next 10/15] vfio: Remove migration protocol v1
+In-Reply-To: <20220201125444.GE1786498@nvidia.com>
+Organization: Red Hat GmbH
+References: <20220130160826.32449-1-yishaih@nvidia.com>
+ <20220130160826.32449-11-yishaih@nvidia.com> <874k5izv8m.fsf@redhat.com>
+ <20220201121325.GB1786498@nvidia.com> <87sft2yd50.fsf@redhat.com>
+ <20220201125444.GE1786498@nvidia.com>
+User-Agent: Notmuch/0.34 (https://notmuchmail.org)
+Date:   Tue, 01 Feb 2022 14:26:29 +0100
+Message-ID: <87mtjayayi.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/9][pull request] 10GbE Intel Wired LAN Driver
- Updates 2022-01-31
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164372161176.4494.1723540477448355962.git-patchwork-notify@kernel.org>
-Date:   Tue, 01 Feb 2022 13:20:11 +0000
-References: <20220131183152.3085432-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220131183152.3085432-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        alexandr.lobakin@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, bjorn@kernel.org,
-        maciej.fijalkowski@intel.com, michal.swiatkowski@linux.intel.com,
-        kafai@fb.com, songliubraving@fb.com, kpsingh@kernel.org,
-        yhs@fb.com, andrii@kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Feb 01 2022, Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-This series was applied to netdev/net-next.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+> On Tue, Feb 01, 2022 at 01:39:23PM +0100, Cornelia Huck wrote:
+>> On Tue, Feb 01 2022, Jason Gunthorpe <jgg@nvidia.com> wrote:
+>> 
+>> > On Tue, Feb 01, 2022 at 12:23:05PM +0100, Cornelia Huck wrote:
+>> >> On Sun, Jan 30 2022, Yishai Hadas <yishaih@nvidia.com> wrote:
+>> >> 
+>> >> > From: Jason Gunthorpe <jgg@nvidia.com>
+>> >> >
+>> >> > v1 was never implemented and is replaced by v2.
+>> >> >
+>> >> > The old uAPI definitions are removed from the header file. As per Linus's
+>> >> > past remarks we do not have a hard requirement to retain compilation
+>> >> > compatibility in uapi headers and qemu is already following Linus's
+>> >> > preferred model of copying the kernel headers.
+>> >> 
+>> >> If we are all in agreement that we will replace v1 with v2 (and I think
+>> >> we are), we probably should remove the x-enable-migration stuff in QEMU
+>> >> sooner rather than later, to avoid leaving a trap for the next
+>> >> unsuspecting person trying to update the headers.
+>> >
+>> > Once we have agreement on the kernel patch we plan to send a QEMU
+>> > patch making it support the v2 interface and the migration
+>> > non-experimental. We are also working to fixing the error paths, at
+>> > least least within the limitations of the current qemu design.
+>> 
+>> I'd argue that just ripping out the old interface first would be easier,
+>> as it does not require us to synchronize with a headers sync (and does
+>> not require to synchronize a headers sync with ripping it out...)
+>
+> We haven't worked out the best way to organize the qemu patch series,
+> currently it is just one patch that updates everything together, but
+> that is perhaps a bit too big...
+>
+> I have thought that a 3 patch series deleting the existing v1 code and
+> then readding it is a potential option, but we don't change
+> everything, just almost everything..
 
-On Mon, 31 Jan 2022 10:31:43 -0800 you wrote:
-> Alexander Lobakin says:
-> 
-> This is an interpolation of [0] to other Intel Ethernet drivers
-> (and is (re)based on its code).
-> The main aim is to keep XDP metadata not only in case with
-> build_skb(), but also when we do napi_alloc_skb() + memcpy().
-> 
-> [...]
+Even in that case, removing the old code and adding the new one is
+probably much easier to review. (Also, you obviously need to have the
+header update in between those two stages.)
 
-Here is the summary with links:
-  - [net-next,1/9] i40e: don't reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
-    https://git.kernel.org/netdev/net-next/c/bc97f9c6f988
-  - [net-next,2/9] i40e: respect metadata on XSK Rx to skb
-    https://git.kernel.org/netdev/net-next/c/6dba29537c0f
-  - [net-next,3/9] ice: respect metadata in legacy-rx/ice_construct_skb()
-    https://git.kernel.org/netdev/net-next/c/ee803dca967a
-  - [net-next,4/9] ice: don't reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
-    https://git.kernel.org/netdev/net-next/c/dc44572d195e
-  - [net-next,5/9] ice: respect metadata on XSK Rx to skb
-    https://git.kernel.org/netdev/net-next/c/45a34ca68070
-  - [net-next,6/9] igc: don't reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
-    https://git.kernel.org/netdev/net-next/c/f9e61d365baf
-  - [net-next,7/9] ixgbe: pass bi->xdp to ixgbe_construct_skb_zc() directly
-    https://git.kernel.org/netdev/net-next/c/1fbdaa133868
-  - [net-next,8/9] ixgbe: don't reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
-    https://git.kernel.org/netdev/net-next/c/8f405221a73a
-  - [net-next,9/9] ixgbe: respect metadata on XSK Rx to skb
-    https://git.kernel.org/netdev/net-next/c/f322a620be69
+>
+>> > The v1 support should remain in old releases as it is being used in
+>> > the field "experimentally".
+>> 
+>> Of course; it would be hard to rip it out retroactively :)
+>> 
+>> But it should really be gone in QEMU 7.0.
+>
+> Seems like you are arguing from both sides, we can't put the v2 in to
+> 7.0 because Linus has not accepted it but we have to rip the v1 out
+> even though Linus hasn't accepted that?
+>
+> We can certainly defer the kernels removal patch for a release if it
+> makes qemu's life easier?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+No, I'm only talking about the QEMU implementation (i.e. the code that
+uses the v1 definitions and exposes x-enable-migration). Any change in
+the headers needs to be done via a sync with upstream Linux.
 
+>
+>> Considering adding the v2 uapi, we might get unlucky: The Linux 5.18
+>> merge window will likely be in mid-late March (and we cannot run a
+>> headers sync before the patches hit Linus' tree), while QEMU 7.0 will
+>> likely enter freeze in mid-late March as well. So there's a non-zero
+>> chance that the new uapi will need to be deferred to 7.1.
+>
+> Usually in rdma land we start advancing the user side once the kernel
+> patches hit the kernel maintainer tree, not Linus's. I run a
+> non-rebasing tree so that gives a permanent git hash. It works well
+> enough and avoids these kinds of artificial delays.
+
+QEMU policy is "it must be in Linus' tree [*]", because we run a full
+header sync. We have been bitten by premature updates in the
+past. Updates of only parts of the headers are only acceptable during
+development of a patch series, and must be marked as "will be replaced
+with a proper header sync".
+
+[*] Preferrably a (full or -rc) release, but the very minimum is a git
+hash from his tree.
 
