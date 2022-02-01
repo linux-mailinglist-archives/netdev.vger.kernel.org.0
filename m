@@ -2,93 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D8344A634B
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 19:12:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 670634A63C7
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 19:28:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241809AbiBASMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 13:12:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48364 "EHLO
+        id S234457AbiBAS1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 13:27:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241811AbiBASKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 13:10:37 -0500
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3995EC06174A;
-        Tue,  1 Feb 2022 10:09:59 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id CD51020003;
-        Tue,  1 Feb 2022 18:09:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1643738998;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=yXIa3ExOVBkzifV8ouWzWmNKHpEdLShDhSj8hkfZVbU=;
-        b=TqW1v46NxKCARFvm4bPGdfVVhMb5QTmoR6krIXSMC2q+6dEF073SIzRKMyNewGdyfXe9BM
-        H4Ju2cY+MG0Ilemzpn3vkrqIql/H6a9LzwiIKn+SlqUIvL2nnQXgKeWVGztsvMupy93S+l
-        JMa9hiKSh/a6ogHT+L4DKO/leKiWCI3D9YKzQKZ8V5NAJS02sbUiJ1ddPMFN6WK9Rog+Sj
-        3qMJPo6s0Nh6BLt7Ur0aC471Z3s84ss5TMzcH4lTxY+z6f8XFqu0IbSJJBHgGtBf6F0swj
-        +vij1GiRHDmr2ZcwAnMUsp20z48Ml0j/GDFN1neSrI5azzsYxtEMkfF0OpNK8w==
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v3] net: ieee802154: Provide a kdoc to the address structure
-Date:   Tue,  1 Feb 2022 19:09:56 +0100
-Message-Id: <20220201180956.93581-1-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S233343AbiBAS1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 13:27:16 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68EA7C061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 10:27:16 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id r59so17885514pjg.4
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 10:27:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=WaHT5G4W7cT3JPHoX5MjKgjz/AkX75nlv8l2WpBPp0A=;
+        b=3Jun483IukzD3W6qfx7ohNnDUbzGlr9hr4T03rxGtHM8iciKY2RoQtLjhj75z+oivG
+         58XGo0L7lK0xwtXmO7h+rp8SHJR5214+3+nbWTcpfFmMyPmNaIjaWHb7cxt2xj4/HoOf
+         rHDIiYsXrCGQ+zz0iGBoSTi0RSeb6kjGmhwXr7AVLs5zHguo2L3N+QUsDNW+E1ouYKdH
+         cbokzIFO63K+4EMoDiHtkxPUPd29tOfLbu2SnxBvoHJvoQLpFcr561bDNXybVlnIq9Gy
+         HBXuHIiJzHYGqTCYgfFIjsnf36tLp0ANFclxc0zVBZaByU73a8IzOMkml47CLTV/qRgs
+         RsHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=WaHT5G4W7cT3JPHoX5MjKgjz/AkX75nlv8l2WpBPp0A=;
+        b=h9XikbyzmDNzWDmKU7ft+Yd38GjAvyyUz0C4uFxFBmdlHX1NBZGJ9Oerfw0Rw/BXAy
+         5z8OwcG4rgj0fRJEHCB45JWpvkcxWz5HyCXO5EY/KyYckWefSyUQ9evTNUCvcuEObpWN
+         nwBVW/BVQj1oupdH9iz9nl8tHuewsYbmrSXcAbQDGl+xW1EbvYTBarHdTBkGyclvKxkR
+         ERI6CAPaVXjvqtkAqUS3bbf/fZhOM4NHA5V670vY5b4zIax07wkpL+9mv7KSJ+HcXBST
+         46Nbab5huKpWLmA54GUEd1xV04aJTSsIedQkvEnzjWih/poMRygB9M/hMdwIT2SAuXOT
+         pz+g==
+X-Gm-Message-State: AOAM532ai/lb6S5bVpNSM1OhQ8bX2mRN6EYuDCzJijPHLTasuULPCOgl
+        GtDrMAjwn/z3AhPBvppSpkBbYw==
+X-Google-Smtp-Source: ABdhPJyc53HmK8JT1iSit3+qFbTsVR7fdxcgi4pKuWbz00y10pksWJhT+FOSFtaHBn9t73AYSIqr3A==
+X-Received: by 2002:a17:90a:1383:: with SMTP id i3mr3796706pja.40.1643740035835;
+        Tue, 01 Feb 2022 10:27:15 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id lj3sm3327802pjb.37.2022.02.01.10.27.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 10:27:15 -0800 (PST)
+Date:   Tue, 1 Feb 2022 10:27:12 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Andrea Claudi <aclaudi@redhat.com>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com, markzhang@nvidia.com,
+        leonro@nvidia.com
+Subject: Re: [PATCH iproute2 1/3] lib/fs: fix memory leak in get_task_name()
+Message-ID: <20220201102712.1390ae4d@hermes.local>
+In-Reply-To: <c7d57346ddc4d9eaaabc0f004911d038c95238af.1643736038.git.aclaudi@redhat.com>
+References: <cover.1643736038.git.aclaudi@redhat.com>
+        <c7d57346ddc4d9eaaabc0f004911d038c95238af.1643736038.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Girault <david.girault@qorvo.com>
+On Tue,  1 Feb 2022 18:39:24 +0100
+Andrea Claudi <aclaudi@redhat.com> wrote:
 
-Give this structure a header to better explain its content.
+> +	if (fscanf(f, "%ms\n", &comm) != 1) {
+> +		free(comm);
+> +		return NULL;
 
-Signed-off-by: David Girault <david.girault@qorvo.com>
-[miquel.raynal@bootlin.com: Isolate this change from a bigger commit and
-                            reword the comment]
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
+This is still leaking the original comm.
 
-Changes since v2:
-* Stopped moving the structure location, we can keep it there, just add
-  the kdoc.
-
- include/net/cfg802154.h | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-index 49b4bcc24032..85f9e8417688 100644
---- a/include/net/cfg802154.h
-+++ b/include/net/cfg802154.h
-@@ -227,6 +227,16 @@ static inline void wpan_phy_net_set(struct wpan_phy *wpan_phy, struct net *net)
- 	write_pnet(&wpan_phy->_net, net);
- }
- 
-+/**
-+ * struct ieee802154_addr - IEEE802.15.4 device address
-+ * @mode: Address mode from frame header. Can be one of:
-+ *        - @IEEE802154_ADDR_NONE
-+ *        - @IEEE802154_ADDR_SHORT
-+ *        - @IEEE802154_ADDR_LONG
-+ * @pan_id: The PAN ID this address belongs to
-+ * @short_addr: address if @mode is @IEEE802154_ADDR_SHORT
-+ * @extended_addr: address if @mode is @IEEE802154_ADDR_LONG
-+ */
- struct ieee802154_addr {
- 	u8 mode;
- 	__le16 pan_id;
--- 
-2.27.0
-
+Why not change it to use a local variable for the path
+(avoid asprintf) and not reuse comm for both pathname
+and return value.
