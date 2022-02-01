@@ -2,103 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B87144A58CD
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 09:52:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 467C54A58D3
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 09:55:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235773AbiBAIw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 03:52:26 -0500
-Received: from www62.your-server.de ([213.133.104.62]:60382 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231912AbiBAIwZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 03:52:25 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nEote-0003N7-C3; Tue, 01 Feb 2022 09:52:18 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nEote-00059S-1o; Tue, 01 Feb 2022 09:52:18 +0100
-Subject: Re: [PATCH v3 bpf-next 0/4] libbpf: name-based u[ret]probe attach
-To:     Alan Maguire <alan.maguire@oracle.com>, andrii@kernel.org,
-        ast@kernel.org
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, jolsa@kernel.org,
-        sunyucong@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <1643645554-28723-1-git-send-email-alan.maguire@oracle.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <a74d3ab8-152a-b81b-54f3-9a46d6ba682d@iogearbox.net>
-Date:   Tue, 1 Feb 2022 09:52:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S234082AbiBAIzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 03:55:35 -0500
+Received: from mail-vk1-f176.google.com ([209.85.221.176]:46948 "EHLO
+        mail-vk1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231912AbiBAIzf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 03:55:35 -0500
+Received: by mail-vk1-f176.google.com with SMTP id z15so9947969vkp.13;
+        Tue, 01 Feb 2022 00:55:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2RuOMLMz4bnyUYfxcxLnbEyL44qsRLFQ8j/HdFTX00k=;
+        b=yhi+8Fq42rcsY9O4l/VYgaP6N9KiIkHQjvkpy31kKNEh/rkA5r+GVIdr7tI9OQTtiM
+         beqsQQtKJec+q3a8mDriQwy6G3+OOlxX+Unqxcbxatl3K84tO4AT3/AZFCrVfWVp1tc5
+         sd3ByeNnplfEk/9CthyRJxl2Fta0hLGyaGOhbWSRWsS948CKYL4uqyDdw5XnlRsdEh3V
+         Iovr+9Z59b38r+MQbnkniMeNqGHqCudPHB8QVlM8QeUkBVifGl0ZspQmWapNRMm71v1e
+         gl5Vv/gD6w7idgItJztsnQKWGOAnMfQY0CXJyW1IgUb5YgpFo5kN6ltsDpGwZ5E+4Ulx
+         o5Jw==
+X-Gm-Message-State: AOAM533EY0Dd0koG4cGjhjsi3F8xQAq0yErUV9CBPD6r0eHV5MLbZnUe
+        AbW3kvnGZzT+7QJxDjOtr/itE5E9RuO66g==
+X-Google-Smtp-Source: ABdhPJzYVjNJ4MsTE7ES+lFfzk1fLUD4hjg5f/4A6SYOdCiqthKWu5peXHX/a5g6JFrxMzvCF5HLpg==
+X-Received: by 2002:a05:6122:792:: with SMTP id k18mr9587633vkr.15.1643705734263;
+        Tue, 01 Feb 2022 00:55:34 -0800 (PST)
+Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
+        by smtp.gmail.com with ESMTPSA id w6sm3858481uap.12.2022.02.01.00.55.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Feb 2022 00:55:33 -0800 (PST)
+Received: by mail-ua1-f46.google.com with SMTP id w21so13418015uan.7;
+        Tue, 01 Feb 2022 00:55:33 -0800 (PST)
+X-Received: by 2002:ab0:44c:: with SMTP id 70mr10103974uav.78.1643705733378;
+ Tue, 01 Feb 2022 00:55:33 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <1643645554-28723-1-git-send-email-alan.maguire@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26439/Mon Jan 31 10:24:40 2022)
+References: <20220129115517.11891-1-s.shtylyov@omp.ru> <20220129115517.11891-2-s.shtylyov@omp.ru>
+In-Reply-To: <20220129115517.11891-2-s.shtylyov@omp.ru>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 1 Feb 2022 09:55:22 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWfCjb+ZzTFLw1a8g2o5oGfLG_qTr702eq7z0bE0f3Yjw@mail.gmail.com>
+Message-ID: <CAMuHMdWfCjb+ZzTFLw1a8g2o5oGfLG_qTr702eq7z0bE0f3Yjw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] ravb: ravb_close() always returns 0
+To:     Sergey Shtylyov <s.shtylyov@omp.ru>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alan,
+On Tue, Feb 1, 2022 at 3:00 AM Sergey Shtylyov <s.shtylyov@omp.ru> wrote:
+> ravb_close() always returns 0, hence the check in ravb_wol_restore() is
+> pointless (however, we cannot change the prototype of ravb_close() as it
+> implements the driver's ndo_stop() method).
+>
+> Found by Linux Verification Center (linuxtesting.org) with the SVACE static
+> analysis tool.
+>
+> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-On 1/31/22 5:12 PM, Alan Maguire wrote:
-> This patch series is a refinement of the RFC patchset [1], focusing
-> on support for attach by name for uprobes and uretprobes. v3
-> because there was an earlier RFC [2].
-> 
-> Currently attach for such probes is done by determining the offset
-> manually, so the aim is to try and mimic the simplicity of kprobe
-> attach, making use of uprobe opts to specify a name string.
-> Patch 1 adds the "func_name" option to allow uprobe attach by
-> name; the mechanics are described there.
-> 
-> Having name-based support allows us to support auto-attach for
-> uprobes; patch 2 adds auto-attach support while attempting
-> to handle backwards-compatibility issues that arise.  The format
-> supported is
-> 
-> u[ret]probe//path/2/binary:[raw_offset|function[+offset]]
-> 
-> For example, to attach to libc malloc:
-> 
-> SEC("uprobe//usr/lib64/libc.so.6:malloc")
-> 
-> Patch 3 introduces a helper function to trace_helpers, allowing
-> us to retrieve the path to a library by reading /proc/self/maps.
-> 
-> Finally patch 4 add tests to the attach_probe selftests covering
-> attach by name, auto-attach and auto-attach failure.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Looks like the selftest in the series fails the BPF CI (test_progs & test_progs-no_alu32):
+Gr{oetje,eeting}s,
 
-https://github.com/kernel-patches/bpf/runs/5012260907?check_suite_focus=true
+                        Geert
 
-   [...]
-   test_attach_probe:PASS:uprobe_offset 0 nsec
-   test_attach_probe:PASS:ref_ctr_offset 0 nsec
-   test_attach_probe:PASS:skel_open 0 nsec
-   test_attach_probe:PASS:check_bss 0 nsec
-   test_attach_probe:PASS:attach_kprobe 0 nsec
-   test_attach_probe:PASS:attach_kretprobe 0 nsec
-   test_attach_probe:PASS:uprobe_ref_ctr_before 0 nsec
-   test_attach_probe:PASS:attach_uprobe 0 nsec
-   test_attach_probe:PASS:uprobe_ref_ctr_after 0 nsec
-   test_attach_probe:PASS:attach_uretprobe 0 nsec
-   test_attach_probe:PASS:auto-attach should fail for old-style name 0 nsec
-   test_attach_probe:PASS:attach_uprobe_byname 0 nsec
-   test_attach_probe:PASS:attach_uretprobe_byname 0 nsec
-   test_attach_probe:PASS:get path to libc 0 nsec
-   test_attach_probe:PASS:find libc path in /proc/self/maps 0 nsec
-   libbpf: failed to open 7f55b225c000-7f55b2282000 r--p 00000000 fe:00 3381                       /usr/lib/libc-2.32.so: No such file or directory
-   test_attach_probe:FAIL:attach_uprobe_byname2 unexpected error: -2
-   test_attach_probe:PASS:uprobe_ref_ctr_cleanup 0 nsec
-   #4 attach_probe:FAIL
-   [...]
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Thanks,
-Daniel
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
