@@ -2,183 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEAD24A6575
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 21:11:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 250784A6579
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 21:12:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238471AbiBAULq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 15:11:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
+        id S239904AbiBAUMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 15:12:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233479AbiBAULp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 15:11:45 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1852DC061714;
-        Tue,  1 Feb 2022 12:11:45 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id w14so36873484edd.10;
-        Tue, 01 Feb 2022 12:11:45 -0800 (PST)
+        with ESMTP id S239763AbiBAUMm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 15:12:42 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D653AC061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 12:12:41 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id n40-20020a05600c3ba800b00353958feb16so2200553wms.1
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 12:12:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=25BbSoOyUpsJcIYoR3DGgpuM4qtStz40iTH8mSV/Eoc=;
-        b=HEp+QedGqS/4+uDFEy5FHMNfS3HLnTuCJDsUi81HvzWOoi4TX8L4SOg+hW1DZkFMy7
-         /mFL4xZeSMUgY1lf0BkTPceA08zKbX4Zv/L6ytSCQhdLWePKw9m+/y3SUI+d7XEwiIKq
-         d5R4RyDzCbzZRpKmmnfzz62/tPPzqPv/RpgLmwJAKk5/ex3xRyNlGXnBTJekITt0B7qy
-         aJejN0N2EfDuqG47LNMzGXWn0wkJxvyermWmW+DP3Dj42txnKhedpbCz4oLAg2XY3aQE
-         8uxRl7Zq/7dNOovvQhlBE4QcflqXtfvXB6c+mZ9CT+UyD1mWB0YcolSwiSjzqhzUedVD
-         Zyrg==
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=pfoJSqUJqsGCmKEC9ZJtPKmunb6j3CTpdimjTdrcI9o=;
+        b=gN7la6WhB9fX25f5iMq/3MKNU4VegMYZ39NVSVxDhCib2Un+Bwdv/sgWFQ5KZTbYmy
+         Fmxwsft1nMA0qcdwtdcmJGb9Ott5WRCUl5koJ6DbfmbuXRSW769LYS4vu7UJMy1J+Ke3
+         dmFVBB4Vz9uYo3o+KYgF3YwHtXdHAVK0Dhwgebyng1UHIEf4NE4QW5TSwrDiCFfpGkCZ
+         hihBFzjNyfMPXIUsOfyKD47gmrngwdqW9w4SS9xbrUw8sYX7iISLbvwBhvtoewP3F0Kj
+         F+mNxgBXa8ZQGBRIvH1ybKiD73/1cdqhBnqqVWd/UM8J75OX93XtqNmeDEerPdMFYWEf
+         colw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=25BbSoOyUpsJcIYoR3DGgpuM4qtStz40iTH8mSV/Eoc=;
-        b=vlXgVFOmuzNvR43VfLcTelwXOmhGxNQTwNWDQ1OtoMgfvRTFoZLFDnVguAqLe/Jh1D
-         SCBwi2aYt1P7mnnI+rWwtmdPNnlOiEIhGHnQdPjCHSPYEGNjfW5QUYlHP2W7oUxfMklC
-         eVzv4EqmixRZXxeTLFNgFLkMP5v7lnBq6VnNkJFAnYmBChQUQHIXMs42B8GwxJG3C/M8
-         A0RyvDlI1zVHodtKNNV5psIUywYsPjdrLme2Rabx76AjKmYbnZnd/GEepmK/L6pG1fSH
-         Ba+yZh8w23udioHTUTTJNK8bl/cdka13fGNIx1aB49OtKnsaEXkLAv7mzRqzAldAGJLM
-         Uplw==
-X-Gm-Message-State: AOAM531aV/iAfkSlsMBTRkSZES0JsEIOm3lNn5KGyXm3CJqt/z8jQLcW
-        AgCd0dfSTzqlMLmBPkXX9fY=
-X-Google-Smtp-Source: ABdhPJxnGUBvl2WZxKVwy2tYcwsUu91CyvG/EeFJcZEVkuuxlwcon6dKk49HiHYrF+1fEhsI9EOy8Q==
-X-Received: by 2002:a05:6402:5209:: with SMTP id s9mr26770589edd.154.1643746303447;
-        Tue, 01 Feb 2022 12:11:43 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id f18sm14874777ejh.97.2022.02.01.12.11.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 12:11:43 -0800 (PST)
-Date:   Tue, 1 Feb 2022 22:11:41 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/5] net: dsa: mv88e6xxx: Improve isolation of
- standalone ports
-Message-ID: <20220201201141.u3qhhq75bo3xmpiq@skbuf>
-References: <20220131154655.1614770-1-tobias@waldekranz.com>
- <20220131154655.1614770-2-tobias@waldekranz.com>
- <20220201170634.wnxy3s7f6jnmt737@skbuf>
- <87a6fabbtb.fsf@waldekranz.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=pfoJSqUJqsGCmKEC9ZJtPKmunb6j3CTpdimjTdrcI9o=;
+        b=r1UZNZ4QbdW2Yad24DsSAhaoocMV6vZfBKzRynFQ0ZFLjnd8ukRFqemnsoPgm7p71V
+         Dqg/C7TQnJJVQYaEf2rvEbnSdSfDthyDuWsOyUqqRb8wiaETfm3lTJELuZRSjiFVRdnD
+         zpSPkJSUi1FE4Nv6iCin23RYiozNsgJaOhe4M42uXI/9lsZMWJUrWeIlra27sCuJRR1Z
+         Xh0Yb2E+yQZkXxAXt/pDMdAzXCOM3Ls7WROErG5zcfrAg77PjrQKqbwGwkbKHuYcX+bz
+         nO7dhEEbonHgACkn+sXpOG6pdUSVABOooJv9x9ZWNE9YX/RvUp/Q4GuiVq9FiGDl6+2J
+         DZNQ==
+X-Gm-Message-State: AOAM532xFnEDFDtMoRQTWOc9AJbWqKW4TREQfqAkGHuczEmPXIGOh9i8
+        nq62RhMMhR9Z2/j3/r0UwARwoPihqrDC0bemCjRr4g==
+X-Google-Smtp-Source: ABdhPJwsX1hsMHtqAEpTGOi5lnfcq0WkcArcwt29wPYYWJEgU9sEACiPWvPCksdPKfCIWLUkXL18m2Soth++TljycTU=
+X-Received: by 2002:a7b:c759:: with SMTP id w25mr3175443wmk.10.1643746360413;
+ Tue, 01 Feb 2022 12:12:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87a6fabbtb.fsf@waldekranz.com>
+References: <20220201200353.1331443-1-rad@semihalf.ocm>
+In-Reply-To: <20220201200353.1331443-1-rad@semihalf.ocm>
+From:   =?UTF-8?Q?Rados=C5=82aw_Biernacki?= <rad@semihalf.com>
+Date:   Tue, 1 Feb 2022 21:12:32 +0100
+Message-ID: <CAOs-w0LmVOS-UMSmebeB9XzU_WVCortUrvJVA4Ek3jk18_7WVQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] Bluetooth: Fix skb handling in net/bluetooth/mgmt.c
+To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        upstream@semihalf.com, Angela Czubak <acz@semihalf.com>,
+        Marek Maslanka <mm@semihalf.com>,
+        Radoslaw Biernacki <rad@semihalf.ocm>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 08:56:32PM +0100, Tobias Waldekranz wrote:
-> >> - sw0p1 and sw1p1 are bridged
-> >
-> > Do sw0p1 and sw1p1 even matter?
-> 
-> Strictly speaking, no - it was just to illustrate...
-> 
-> >> - sw0p2 and sw1p2 are in standalone mode
-> >> - Learning must be enabled on sw0p3 in order for hardware forwarding
-> >>   to work properly between bridged ports
-> 
-> ... this point, i.e. a clear example of why learning can't be disabled
-> on DSA ports.
+Hey, please ignore this one as I made a typo in the domain name :|
 
-Ok, I understand now. It wasn't too clear.
-
-> >> 1. A packet with SA :aa comes in on sw1p2
-> >>    1a. Egresses sw1p0
-> >>    1b. Ingresses sw0p3, ATU adds an entry for :aa towards port 3
-> >>    1c. Egresses sw0p0
-> >> 
-> >> 2. A packet with DA :aa comes in on sw0p2
-> >>    2a. If an ATU lookup is done at this point, the packet will be
-> >>        incorrectly forwarded towards sw0p3. With this change in place,
-> >>        the ATU is pypassed and the packet is forwarded in accordance
-> >
-> > s/pypassed/bypassed/
-> >
-> >>        whith the PVT, which only contains the CPU port.
-> >
-> > s/whith/with/
-> >
-> > What you describe is a bit convoluted, so let me try to rephrase it.
-> > The mv88e6xxx driver configures all standalone ports to use the same
-> > DefaultVID(0)/FID(0), and configures standalone user ports with no
-> > learning via the Port Association Vector. Shared (cascade + CPU) ports
-> > have learning enabled so that cross-chip bridging works without floods.
-> > But since learning is per port and not per FID, it means that we enable
-> > learning in FID 0, the one where the ATU was supposed to be always empty.
-> > So we may end up taking wrong forwarding decisions for standalone ports,
-> > notably when we should do software forwarding between ports of different
-> > switches. By clearing MapDA, we force standalone ports to bypass any ATU
-> > entries that might exist.
-> 
-> Are you saying you want me to replace the initial paragraph with your
-> version, or are you saying the the example is convoluted and should be
-> replaced by this text? Or is it only for the benefit of other readers?
-
-Just for the sake of discussion, I wanted to make sure I understand what
-you describe.
-
-> > Question: can we disable learning per FID? I searched for this in the
-> > limited documentation that I have, but I didn't see such option.
-> > Doing this would be advantageous because we'd end up with a bit more
-> > space in the ATU. With your solution we're just doing damage control.
-> 
-> As you discovered, and as I tried to lay out in the cover, this is only
-> one part of the whole solution.
-
-I'm not copied to the cover letter :) and I have some issues with my
-email client / vger, where emails that I receive through the mailing list
-sometimes take days to reach my inbox, whereas emails sent directly to
-me reach my inbox instantaneously. So don't assume I read email that
-wasn't targeted directly to me, sorry.
-
-> >> diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-> >> index 03382b66f800..5c347cc58baf 100644
-> >> --- a/drivers/net/dsa/mv88e6xxx/port.h
-> >> +++ b/drivers/net/dsa/mv88e6xxx/port.h
-> >> @@ -425,7 +425,7 @@ int mv88e6185_port_get_cmode(struct mv88e6xxx_chip *chip, int port, u8 *cmode);
-> >>  int mv88e6352_port_get_cmode(struct mv88e6xxx_chip *chip, int port, u8 *cmode);
-> >>  int mv88e6xxx_port_drop_untagged(struct mv88e6xxx_chip *chip, int port,
-> >>  				 bool drop_untagged);
-> >> -int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port);
-> >> +int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port, bool map);
-> >>  int mv88e6095_port_set_upstream_port(struct mv88e6xxx_chip *chip, int port,
-> >>  				     int upstream_port);
-> >>  int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
-> >> diff --git a/include/net/dsa.h b/include/net/dsa.h
-> >> index 57b3e4e7413b..30f3192616e5 100644
-> >> --- a/include/net/dsa.h
-> >> +++ b/include/net/dsa.h
-> >> @@ -581,6 +581,18 @@ static inline bool dsa_is_upstream_port(struct dsa_switch *ds, int port)
-> >>  	return port == dsa_upstream_port(ds, port);
-> >>  }
-> >>  
-> >> +/* Return the local port used to reach the CPU port */
-> >> +static inline unsigned int dsa_switch_upstream_port(struct dsa_switch *ds)
-> >> +{
-> >> +	int p;
-> >> +
-> >> +	for (p = 0; p < ds->num_ports; p++)
-> >> +		if (!dsa_is_unused_port(ds, p))
-> >> +			return dsa_upstream_port(ds, p);
-> >
-> > dsa_switch_for_each_available_port
-> >
-> > Although to be honest, the caller already has a dp, I wonder why you
-> > need to complicate things and don't just call dsa_upstream_port(ds,
-> > dp->index) directly.
-> 
-> Because dp refers to the port we are determining the permissions _for_,
-> and ds refers to the chip we are configuring the PVT _on_.
-> 
-> I think other_dp and dp should swap names with each other. Because it is
-> very easy to get confused. Or maybe s/dp/remote_dp/ and s/other_dp/dp/?
-
-Sorry, my mistake, I was looking at the patch in the email client and
-didn't recognize from the context that this is mv88e6xxx_port_vlan(),
-and that the port is remote. So I retract the part about calling
-dsa_upstream_port() directly, but please still consider using a more
-appropriate port iterator for the implementation of dsa_switch_upstream_port().
+wt., 1 lut 2022 o 21:03 Radoslaw Biernacki <rad@semihalf.com> napisa=C5=82(=
+a):
+>
+> Here is second version of the fix for skb handling in net/bluetooth/mgmt.=
+c
+> First patch is fixing the skb allocation which theoretically might push s=
+kb
+> tail beyond its end.
+> Second patch simplifies operations on eir while using skb.
+> Patches adds two helper functions to eir.h to align to the goal of
+> eliminating the necessity of intermediary buffers, which can be achieved
+> with additional changes done in this spirit.
+>
+> v1->v2:
+>  - fix mgmt_device_connected()
+>  - add eir_skb_put_data() - function for skb handing with eir
+>
+> Radoslaw Biernacki (2):
+>   Bluetooth: Fix skb allocation in mgmt_remote_name() &
+>     mgmt_device_connected()
+>   Bluetooth: Improve skb handling in mgmt_device_connected()
+>
+>  net/bluetooth/eir.h  | 20 ++++++++++++++++++++
+>  net/bluetooth/mgmt.c | 43 ++++++++++++++++---------------------------
+>  2 files changed, 36 insertions(+), 27 deletions(-)
+>
+> --
+> 2.35.0.rc2.247.g8bbb082509-goog
+>
