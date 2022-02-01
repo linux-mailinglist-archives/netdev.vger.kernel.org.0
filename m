@@ -2,322 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67FBC4A6757
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 22:49:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C91894A67FF
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 23:29:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235984AbiBAVtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 16:49:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:59168 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235863AbiBAVtW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 16:49:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643752161;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=a5WqlN/Vt3/poLxTRygvp8Var//X1m9eHee1pCfKA+k=;
-        b=R8F6jlTa4e8bLuxkqRbjXiUp3FnUHDoQ3YDyd+uOg37SOiPtMs3JCQwCU91D57X3Fo98Po
-        dB0OqzGGIKBMlXCuBCjeoCGDErOStI41qwL/4TXqyxqFkmOTYS4pJPddQRSjKAC+b2bsAM
-        MXG8NsdlJTyM2d2N7v6EUv/ABdSdpuM=
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
- [209.85.210.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-131-GwH5Vr3CMGqAhHPplhW67Q-1; Tue, 01 Feb 2022 16:49:20 -0500
-X-MC-Unique: GwH5Vr3CMGqAhHPplhW67Q-1
-Received: by mail-ot1-f69.google.com with SMTP id j2-20020a9d7d82000000b005a12a0fb4b0so10162513otn.5
-        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 13:49:20 -0800 (PST)
+        id S240865AbiBAW31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 17:29:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237935AbiBAW31 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 17:29:27 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C8FC061714;
+        Tue,  1 Feb 2022 14:29:27 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id s2-20020a17090ad48200b001b501977b23so4862642pju.2;
+        Tue, 01 Feb 2022 14:29:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nfh9neXAUEzcShXHBoAZTFYIWM5MQnmj1xRT6suzivE=;
+        b=HQj0tnz3VHrnn5pC/MIU8NCa/Sb5qfbS7hvjpIgQv7lyFVsTieWCrbhrmGVViqJ0XC
+         38BlVG8MZDWXDEACzsTphnACxUe+Rs6B20tGzCtQtzjmPVRQjTKmtVBrc/QUNfIesyUa
+         SfvgWsv6s92KVd3DwwVVTh5v7n5Db4Iql8EYio6Bd4bubpNCJWqbZGWg2MGlmfeHTHth
+         30eLmFZuckUF2J8L0/JppFrbOz74B+lzTVVrsc6SglgamDmoXrx4xzetMM2ieI6qwpPK
+         lkQf1cKc5UGdQ8eFzt8tzYwA659hpyN7g/eOi/pOgpXu3yTLSseQK/pTGtG5UNYiVr1i
+         nQGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=a5WqlN/Vt3/poLxTRygvp8Var//X1m9eHee1pCfKA+k=;
-        b=LdMuBuJzTbuPldWMPrr+Ce82bFCEKx033kzc/A7drrdS+yd5obf3kmjQS4zZyt1EVY
-         InyHflyHIyMWGWZ+Sj+I1Rsofc/P4anmEAMXu2/ERYRluUZBBis+STfF2IN98euD3oO5
-         1lDdFTLXpvhVd9eoBZ4o5F614hpNDoa3OqKzzoSyC7ERM2StA5wOzA2lmFtcWpgcQUM1
-         dn3p0FiOpf/lswugoFP3STBZkCqRLnq60NvR9QvC9kcDsgRp9DOJ0FUIm66Dd893OXFi
-         5BgFPYdtioEJWMoIMEw+KKniD8AJ1DMIcUjnu8VBygNdESLLtL5I81LRbSj8TY/PoPg1
-         OwqA==
-X-Gm-Message-State: AOAM530W4TnUw0nL2bgoQOT9oUockjvltkHvhHZXb3gKRJfHzlYiazVn
-        CgtsBJJ++7xB+2B5FwJ4z7JD1KPjxKdKAOL7zVDyO2HoI3XMszbYuP+HGY4vqj+q41pnTrh0Cxo
-        BeSMYO9rkr96MbHi7
-X-Received: by 2002:a05:6808:16a7:: with SMTP id bb39mr2650826oib.108.1643752159250;
-        Tue, 01 Feb 2022 13:49:19 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxGgQnF49PRqfEYF4qSSLQEJXF6QJ0lb4qGPlxPxVP+UmZ8uLWHoPy6yySkRPVvAMVRzrIMqQ==
-X-Received: by 2002:a05:6808:16a7:: with SMTP id bb39mr2650806oib.108.1643752158861;
-        Tue, 01 Feb 2022 13:49:18 -0800 (PST)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id e7sm4281385oow.47.2022.02.01.13.49.18
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nfh9neXAUEzcShXHBoAZTFYIWM5MQnmj1xRT6suzivE=;
+        b=GJDIy+66pHl8Mfdg5DgNGBqAsHRTzaGWsMyhipgTqTJlfIV1yaRNqSHnAKawXnij+H
+         GwFMmS5/3vzSxFQEm4Q2S4KiyVJulWvWuzFZrlcCIVihfsa+FqoIO/tgoN1TwqlSk5/A
+         KOqsr2P2dJrPTR1Zwr2wFyIcOTnyvy7TlM4FCWcKjBgAl7dMzleke7S0jRLwpDujFt58
+         KPrnmAT9GtobAMoxLINYS6h1WP3jR3j/WM0wELzziqBO2Fv6YHKgJJBb+hPRVy1+j/hj
+         OUSqzmf/NXXfQTU/8Cc3jU5VZBs724v8RU5WJ2ISMC/Qm4aeZV0eaHVgzIBWjZzUTBEj
+         c60A==
+X-Gm-Message-State: AOAM531rDRaAs7WI6KgFmxdeLF+5eiqHC0NTdna/0omKve6XQVUYRiuC
+        zUQ1ecgj5CDmD6r+HrApfhY=
+X-Google-Smtp-Source: ABdhPJzb+5yQKUrK8g6dncCc1Be8kOufnjj7MEBAUO522MrakPqpJXzf2ELqGyrBi+x5NJpdYYQEcA==
+X-Received: by 2002:a17:90a:a503:: with SMTP id a3mr4786119pjq.88.1643754566986;
+        Tue, 01 Feb 2022 14:29:26 -0800 (PST)
+Received: from jeffreyji1.c.googlers.com.com (173.84.105.34.bc.googleusercontent.com. [34.105.84.173])
+        by smtp.gmail.com with ESMTPSA id ck21sm3576018pjb.51.2022.02.01.14.29.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 13:49:18 -0800 (PST)
-Date:   Tue, 1 Feb 2022 14:49:16 -0700
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com
-Subject: Re: [PATCH V6 mlx5-next 08/15] vfio: Define device migration
- protocol v2
-Message-ID: <20220201144916.14f75ca5.alex.williamson@redhat.com>
-In-Reply-To: <20220201183620.GL1786498@nvidia.com>
-References: <20220130160826.32449-1-yishaih@nvidia.com>
-        <20220130160826.32449-9-yishaih@nvidia.com>
-        <20220131164318.3da9eae5.alex.williamson@redhat.com>
-        <20220201003124.GZ1786498@nvidia.com>
-        <20220201100408.4a68df09.alex.williamson@redhat.com>
-        <20220201183620.GL1786498@nvidia.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        Tue, 01 Feb 2022 14:29:26 -0800 (PST)
+From:   Jeffrey Ji <jeffreyjilinux@gmail.com>
+X-Google-Original-From: Jeffrey Ji <jeffreyji@google.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Brian Vazquez <brianvv@google.com>, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org, jeffreyjilinux@gmail.com,
+        jeffreyji <jeffreyji@google.com>
+Subject: [PATCH v6 net-next] net-core: add InMacErrors counter
+Date:   Tue,  1 Feb 2022 22:28:45 +0000
+Message-Id: <20220201222845.3640041-1-jeffreyji@google.com>
+X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Feb 2022 14:36:20 -0400
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+From: jeffreyji <jeffreyji@google.com>
 
-> On Tue, Feb 01, 2022 at 10:04:08AM -0700, Alex Williamson wrote:
-> 
-> > Ok, let me parrot back to see if I understand.  -ENOTTY will be
-> > returned if the ioctl doesn't exist, in which case device_state is
-> > untouched and cannot be trusted.  At the same time, we expect the user
-> > to use the feature ioctl to make sure the ioctl exists, so it would
-> > seem that we've reclaimed that errno if we believe the user should
-> > follow the protocol.  
-> 
-> I don't follow - the documentation says what the code does, if you get
-> ENOTTY returned then you don't get the device_state too. Saying the
-> user shouldn't have called it in the first place is completely
-> correct, but doesn't change the device_state output.
+Increment InMacErrors counter when packet dropped due to incorrect dest
+MAC addr.
 
-The documentation says "...the device state output is not reliable", and
-I have to question whether this qualifies as a well specified,
-interoperable spec with such language.  We're essentially asking users
-to keep track that certain errnos result in certain fields of the
-structure _maybe_ being invalid.
+An example when this drop can occur is when manually crafting raw
+packets that will be consumed by a user space application via a tap
+device. For testing purposes local traffic was generated using trafgen
+for the client and netcat to start a server
 
-> > +       if (!device->ops->migration_set_state)
-> > +               return -EOPNOTSUPP;
-> > 
-> > Should return -ENOTTY, just as the feature does.    
-> 
-> As far as I know the kernel 'standard' is:
->  - ENOTTY if the ioctl cmd # itself is not understood
->  - E2BIG if the ioctl arg is longer than the kernel understands
->  - EOPNOTSUPP if the ioctl arg contains data the kernel doesn't
->    understand (eg flags the kernel doesn't know about), or the
->    kernel understands the request but cannot support it for some
->    reason.
->  - EINVAL if the ioctl arg contains data the kernel knows about but
->    rejects (ie invalid combinations of flags)
-> 
-> VFIO kind of has its own thing, but I'm not entirely sure what the
-> rules are, eg you asked for EOPNOTSUPP in the other patch, and here we
-> are asking for ENOTTY?
-> 
-> But sure, lets make it ENOTTY.
+example output from nstat:
+\~# nstat -a | grep InMac
+Ip6InMacErrors                  0                  0.0
+IpExtInMacErrors                1                  0.0
 
-I'd move your first example of EOPNOTSUPP to EINVAL.  To me, the user
-providing bits/fields/values that are undefined in an invalid argument.
-I've typically steered away from the extended errnos in favor of things
-in the base set, so as you noted, there are currently no instances of
-EOPNOTSUPP in vfio.  In the case we discussed of a user trying to do
-SET/GET on a feature that only supports GET/SET could go either way,
-it's an invalid argument for the feature and in this case the user can
-determine the supported arguments via the PROBE interface.  But when I
-start seeing multiple tests that all result in an EINVAL return, then I
-wonder if a different errno might help user debugging.  EINVAL is
-acceptable in the case I noted, but maybe another errno could be more
-descriptive.
+Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
+counter was incremented.
 
-In the immediate example here, userspace really has no reason to see a
-difference in the ioctl between lack of kernel support for migration
-altogether and lack of device support for migration.  So I'd fall back
-to the ioctl is not known "for this device", -ENOTTY.
+changelog:
+v6: rebase onto net-next
 
-Now you're making me wonder how much I care to invest in semantic
-arguments over extended errnos :-\
+v5:
+Change from SKB_DROP_REASON_BAD_DEST_MAC to SKB_DROP_REASON_OTHERHOST
+
+v3-4:
+Remove Change-Id
+
+v2:
+Use skb_free_reason() for tracing
+Add real-life example in patch msg
+
+Signed-off-by: jeffreyji <jeffreyji@google.com>
+---
+ include/linux/skbuff.h    |  1 +
+ include/uapi/linux/snmp.h |  1 +
+ net/ipv4/ip_input.c       |  7 +++++--
+ net/ipv4/proc.c           |  1 +
+ net/ipv6/ip6_input.c      | 12 +++++++-----
+ net/ipv6/proc.c           |  1 +
+ 6 files changed, 16 insertions(+), 7 deletions(-)
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index a27bcc4f7e9a..1b1114f5c68e 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -320,6 +320,7 @@ enum skb_drop_reason {
+ 	SKB_DROP_REASON_TCP_CSUM,
+ 	SKB_DROP_REASON_SOCKET_FILTER,
+ 	SKB_DROP_REASON_UDP_CSUM,
++	SKB_DROP_REASON_OTHERHOST,
+ 	SKB_DROP_REASON_MAX,
+ };
  
-> > But it's also for future unsupported ops, but couldn't we also
-> > specify that the driver must fill final_state with the current
-> > device state for any such case.  We also have this:
-> > 
-> > +       if (set_state.argsz < minsz || set_state.flags)
-> > +               return -EOPNOTSUPP;
-> > 
-> > Which I think should be -EINVAL.  
-> 
-> That would match the majority of other VFIO tests.
-> 
-> > That leaves -EFAULT, for example:
-> > 
-> > +       if (copy_from_user(&set_state, arg, minsz))
-> > +               return -EFAULT;
-> > 
-> > Should we be able to know the current device state in core code such
-> > that we can fill in device state here?  
-> 
-> There is no point in doing a copy_to_user() to the same memory if a
-> copy_from_user() failed, so device_state will still not be returned.
-
-Duh, good point.
+diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
+index 904909d020e2..ac2fac12dd7d 100644
+--- a/include/uapi/linux/snmp.h
++++ b/include/uapi/linux/snmp.h
+@@ -57,6 +57,7 @@ enum
+ 	IPSTATS_MIB_ECT0PKTS,			/* InECT0Pkts */
+ 	IPSTATS_MIB_CEPKTS,			/* InCEPkts */
+ 	IPSTATS_MIB_REASM_OVERLAPS,		/* ReasmOverlaps */
++	IPSTATS_MIB_INMACERRORS,		/* InMacErrors */
+ 	__IPSTATS_MIB_MAX
+ };
  
-> We don't know the device_state in the core code because it can only be
-> read under locking that is controlled by the driver. I hope when we
-> get another driver merged that we can hoist the locking, but right now
-> I'm not really sure - it is a complicated lock.
-
-The device cannot self transition to a new state, so if the core were
-to serialize this ioctl then the device_state provided by the driver is
-valid, regardless of its internal locking.
-
-Whether this ioctl should be serialized anyway is probably another good
-topic to breach.  Should a user be able to have concurrent ioctls
-setting conflicting states?
-
-> > I think those changes would go a ways towards fully specified behavior
-> > instead of these wishy washy unreliable return values.  Then we could  
-> 
-> Huh? It is fully specified already. These changes just removed
-> EOPNOTSUPP from the list where device_state isn't filled in. It is OK,
-> but it is not really different...
-
-Hmm, "output is not reliable" is fully specified?  We can't really make
-use of return flags to identify valid fields either since the copy-out
-might fault.  I'd suggest that ioctl return structure is only valid at
-all on success and we add a GET interface to return the current device
-state on errno given the argument above that driver locking is
-irrelevant because the device cannot self transition.
-
-> >  "If this function fails and returns -1 then..."
-> > 
-> > Could we clarify that to s/function/ioctl/?  It caused me a moment of
-> > confusion for the returned -errnos.  
-> 
-> Sure.
-> 
-> > > > Should we be bumping a reference on the device FD such that we can't
-> > > > have outstanding migration FDs with the device closed (and
-> > > > re-assigned to a new user)?    
-> > > 
-> > > The driver must ensure any activity triggered by the migration FD
-> > > against the vfio_device is halted before close_device() returns, just
-> > > like basically everything else connected to open/close_device(). mlx5
-> > > does this by using the same EOF sanitizing the FSM logic uses.
-> > > 
-> > > Once sanitized the f_ops should not be touching the vfio_device, or
-> > > even have a pointer to it, so there is no reason to connect the two
-> > > FDs together. I'd say it is a red flag if a driver proposes to do
-> > > this, likely it means it has a problem with the open/close_device()
-> > > lifetime model.  
-> > 
-> > Maybe we just need a paragraph somewhere to describe the driver
-> > responsibilities and expectations in managing the migration FD,
-> > including disconnecting it after end of stream and access relative to
-> > the open state of the vfio_device.  Seems an expanded descriptions
-> > somewhere near the declaration in vfio_device_ops would be appropriate.  
-> 
-> Yes that is probably better than in the uapi header.
-> 
-> > > I'm not sure what the overall VFIO vision is here.. Are we abandoning
-> > > traditional ioctls in favour of a multiplexer? Calling the multiplexer
-> > > ioctl "feature" is a bit odd..  
-> > 
-> > Is it really?  VF Token support is a feature that a device might have
-> > and we can use the same interface to probe that it exists as well as
-> > set the UUID token.  We're using it to manipulate the state of a device
-> > feature.
-> > 
-> > If we're only looking for a means to expose that a device has support
-> > for something, our options are a flag bit on the vfio_device_info or a
-> > capability on that ioctl.  It's arguable that the latter might be a
-> > better option for VFIO_DEVICE_FEATURE_MIGRATION since its purpose is
-> > only to return a flags field, ie. we're not interacting with a feature,
-> > we're exposing a capability with fixed properties.  
-> 
-> I looked at this, and decided against it on practical reasons.
-> 
-> I've organized this so the core code can do more work for the driver,
-> which means the core code supplies the support info back to
-> userspace. VFIO_DEVICE_INFO is currently open coded in every single
-> driver and lifting that to get the same support looks like a huge
-> pain. Even if we try to work it backwards somehow, we'd need to
-> re-organize vfio-pci so other drivers can contribute to the cap chain -
-> which is another ugly looking thing.
-> 
-> On top of that, qemu becomes much less straightforward as we have to
-> piggy back on the existing vfio code instead of just doing a simple
-> ioctl to get back the small support info back. There is even an
-> unpleasing mandatory user/kernel memory allocation and double ioctl in
-> the caps path.
-> 
-> The feature approach is much better, it has a much cleaner
-> implementation in user/kernel. I think we should focus on it going
-> forward and freeze caps.
-
-Ok, I'm not demanding a capability interface.
+diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+index 3a025c011971..780892526166 100644
+--- a/net/ipv4/ip_input.c
++++ b/net/ipv4/ip_input.c
+@@ -441,8 +441,11 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
+ 	/* When the interface is in promisc. mode, drop all the crap
+ 	 * that it receives, do not try to analyse it.
+ 	 */
+-	if (skb->pkt_type == PACKET_OTHERHOST)
+-		goto drop;
++	if (skb->pkt_type == PACKET_OTHERHOST) {
++		__IP_INC_STATS(net, IPSTATS_MIB_INMACERRORS);
++		kfree_skb_reason(skb, SKB_DROP_REASON_OTHERHOST);
++		return NULL;
++	}
  
-> > > It complicates the user code a bit, it is more complicated to invoke the
-> > > VFIO_DEVICE_FEATURE (check the qemu patch to see the difference).  
-> > 
-> > Is it really any more than some wrapper code?  Are there objections to
-> > this sort of multiplexer?  
-> 
-> There isn't too much reason to do this kind of stuff. Each subsystem
-> gets something like 4 million ioctl numbers within its type, we will
-> never run out of unique ioctls.
-> 
-> Normal ioctls have a nice simplicity to them, adding layers creates
-> complexity, feature is defiantly more complex to implement, and cap
-> is a whole other level of more complex. None of this is necessary.
-> 
-> I don't know what "cluttering" means here, I'd prefer we focus on
-> things that give clean code and simple implementations than arbitary
-> aesthetics.
-
-It's entirely possible that I'm overly averse to ioctl proliferation,
-but for every new ioctl we need to take a critical look at the proposed
-API, use case, applicability, and extensibility.  That isn't entirely
-removed when we use something like this generic feature ioctl, but I
-consider it substantially reduced since we're working within an
-existing framework.  A direct ioctl might be able to slightly
-streamline the interface (I don't think that significantly matters in
-this case), but on the other hand, defining this as a feature within an
-existing interface provides consistency and compartmentalization.
-
-> > > Either way I don't have a strong opinion, please have a think and let
-> > > us know which you'd like to follow.  
-> > 
-> > I'm leaning towards a capability for migration support flags and a
-> > feature for setting the state, but let me know if this looks like a bad
-> > idea for some reason.  Thanks,  
-> 
-> I don't want to touch capabilities, but we can try to use feature for
-> set state. Please confirm this is what you want.
-
-It's a team sport, but to me it seems like it fits well both in my
-mental model of interacting with a device feature, without
-significantly altering the uAPI you're defining anyway.
+ 	__IP_UPD_PO_STATS(net, IPSTATS_MIB_IN, skb->len);
  
-> You'll want the same for the PRE_COPY related information too?
-
-I hadn't gotten there yet.  It seems like a discontinuity to me that
-we're handing out new FDs for data transfer sessions, but then we
-require the user to come back to the device to query about the data its
-reading through that other FD.  Should that be an ioctl on the data
-stream FD itself?  Is there a use case for also having it on the
-STOP_COPY FD?
+diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
+index 28836071f0a6..2be4189197f3 100644
+--- a/net/ipv4/proc.c
++++ b/net/ipv4/proc.c
+@@ -117,6 +117,7 @@ static const struct snmp_mib snmp4_ipextstats_list[] = {
+ 	SNMP_MIB_ITEM("InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
+ 	SNMP_MIB_ITEM("InCEPkts", IPSTATS_MIB_CEPKTS),
+ 	SNMP_MIB_ITEM("ReasmOverlaps", IPSTATS_MIB_REASM_OVERLAPS),
++	SNMP_MIB_ITEM("InMacErrors", IPSTATS_MIB_INMACERRORS),
+ 	SNMP_MIB_SENTINEL
+ };
  
-> If we are into these very minor nitpicks does this mean you are OK
-> with all the big topics now?
-
-I'm not hating it, but I'd like to see buy-in from others who have a
-vested interest in supporting migration.  I don't see Intel or Huawei
-on the Cc list and the original collaborators of the v1 interface from
-NVIDIA have been silent through this redesign.  Thanks,
-
-Alex
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 80256717868e..da18d9159647 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -149,15 +149,17 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
+ 	u32 pkt_len;
+ 	struct inet6_dev *idev;
+ 
+-	if (skb->pkt_type == PACKET_OTHERHOST) {
+-		kfree_skb(skb);
+-		return NULL;
+-	}
+-
+ 	rcu_read_lock();
+ 
+ 	idev = __in6_dev_get(skb->dev);
+ 
++	if (skb->pkt_type == PACKET_OTHERHOST) {
++		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INMACERRORS);
++		rcu_read_unlock();
++		kfree_skb_reason(skb, SKB_DROP_REASON_OTHERHOST);
++		return NULL;
++	}
++
+ 	__IP6_UPD_PO_STATS(net, idev, IPSTATS_MIB_IN, skb->len);
+ 
+ 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL ||
+diff --git a/net/ipv6/proc.c b/net/ipv6/proc.c
+index d6306aa46bb1..76e6119ba558 100644
+--- a/net/ipv6/proc.c
++++ b/net/ipv6/proc.c
+@@ -84,6 +84,7 @@ static const struct snmp_mib snmp6_ipstats_list[] = {
+ 	SNMP_MIB_ITEM("Ip6InECT1Pkts", IPSTATS_MIB_ECT1PKTS),
+ 	SNMP_MIB_ITEM("Ip6InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
+ 	SNMP_MIB_ITEM("Ip6InCEPkts", IPSTATS_MIB_CEPKTS),
++	SNMP_MIB_ITEM("Ip6InMacErrors", IPSTATS_MIB_INMACERRORS),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
+-- 
+2.35.0.rc2.247.g8bbb082509-goog
 
