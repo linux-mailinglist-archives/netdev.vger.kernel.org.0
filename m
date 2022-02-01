@@ -2,141 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC294A53A8
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 01:02:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD3524A53B0
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 01:04:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229906AbiBAACN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 19:02:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56172 "EHLO
+        id S230002AbiBAAEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 19:04:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229933AbiBAACN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 19:02:13 -0500
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D624FC061714;
-        Mon, 31 Jan 2022 16:02:12 -0800 (PST)
-Received: by mail-io1-xd2f.google.com with SMTP id q204so19105978iod.8;
-        Mon, 31 Jan 2022 16:02:12 -0800 (PST)
+        with ESMTP id S229933AbiBAAEy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 19:04:54 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB52C06173B;
+        Mon, 31 Jan 2022 16:04:53 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id c23so28573765wrb.5;
+        Mon, 31 Jan 2022 16:04:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=QyO86vvXrvsnYbM9ePprWtNUgK1VSac7vXnAuMxRjnM=;
-        b=Nk/quBFO1BELsTpfs58wjw7GKNvRtuEERY8EEMkyufCHwI2PCskskqPpAm1e7YY2LA
-         Ju9nKgNhP2TdLdrj98SoMcGxSu4esv/MKDYp5j79Q7y8oj7XmADeUwMfuvnmkzfJcY6v
-         L1WQ5Jbd71ANVfnFu4VlJc0SyxOEjJZHE2eGAD/gVlSTROS89xJs/xQvmX+l4f2AeHth
-         SW0HWKrC/rlTDn5YARGwXsrFH9ImkxNknd+MxzNH6oLG892ssGiUUgYdbTUKAkg1SP0e
-         IFoMvb1nS7EvxoOYYySbxZ5vc3GqeQ619PlmqgiOw5+gHORZGZwvAv/8LWQ2UT+5hlt3
-         7c8Q==
+        bh=cBTkWatVoRf7mAdGB+dxqdrFr+qHLJMbIjv4D9cDcgo=;
+        b=TBJ927R42fEKQRHDCZwUtOu36hzRyfRJsPlcE/1UdzjrlxTJFtVUPuLSlgDZjUQ+2W
+         Z3W+dB7jP1VfW6t3WrYC+M5vxkr5YYLN4zoGmqLdo09tV1KIciPgD9CB2uT7RZePT6Cl
+         hsXmYPCUl4B3dFzZBC38bLeGTy+68fYdt6Szm584Bm85cCtUuLOgPHqyq1NXfJci0xeS
+         ofKg054YZTGxbzRKliDMUfgi2wDWIHr/XFwxsgKau0mqHW0Fho1arsqpNxUVSYs/FyM8
+         dNBICrxyTFwJ4mzrt68vgOpGqozqK/WuANPgcegmwlHH7omsKEdPUCaJCQOwm1cGKC6n
+         mSKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QyO86vvXrvsnYbM9ePprWtNUgK1VSac7vXnAuMxRjnM=;
-        b=yfJ8tob5briuBES+oi0c92zgLC5ApsyuyITnvTRGuE3dfoMmjRQz0GMChmTM0Fb2U0
-         HJDGfQ6kjCBpzUSLJmfaXex2tfpLkxYmdJSlEyBFkR/t56yw9Sd9HKwiNivjg3m7+l2a
-         Wg9sWOI4LPyrXi64N7iXcfFSfBBDEopxQkea5n9lKuPzWjE4vsagYyWVtPo4gKtfVCNj
-         aaKIaZd35cBAK+vYhQJkcUEEoVLuoBOzDtqW5Bybzfka3R1euVr7LmGqu3jwdEu/bE1D
-         fDUDq22U5GQNM6oXWaKjgmIgmeyknTenWP1KJGKHuVtVs/fEodJnFCgxeweXoIxKKroL
-         BwJg==
-X-Gm-Message-State: AOAM531xF6urFBYGHjz0IKZ4YXXOckqdzYm33JMHWqy+xB3O/ag5Vy74
-        1fpTTtzQTv4aeJUEs6WPjsM9CFJ79MskLt69wcw=
-X-Google-Smtp-Source: ABdhPJynksQgC7hnEFS7wyoTCvzTvG+zpxsgeWJTLDNUTwXwHDGfkGrUcngSUD+tLEGMr2L0wm31ZD9wy7WzgIMRFbw=
-X-Received: by 2002:a05:6638:d88:: with SMTP id l8mr5018495jaj.234.1643673732190;
- Mon, 31 Jan 2022 16:02:12 -0800 (PST)
+        bh=cBTkWatVoRf7mAdGB+dxqdrFr+qHLJMbIjv4D9cDcgo=;
+        b=lGhTashChUKzCLV1VAtpWlVYinLJJPmspIEhIux7YBmjgd9/hTmP+JAmdZpGEfyW1+
+         86B4Z7Je8Xa7dSannP9hOVyaImpQiM1PmdYSvdygvCW7eNpC1uY9aPdGxR5x71yEx8Tg
+         C4f+tCN6R38gi2jxnTSMD8xRAa1E2Y/60TliHc5b+h5EVNsiL0TwZGftotaAuYnOL1I+
+         qIwWFJXnmxFFqaibMWr4+6rz9tvJ2deb6y+mxRofd9hXgz+RCXEvQRGV/ajIUuR3wLSh
+         HYHWqieAfrxxWk4zMnZfx5cWjiJaitv4RPupI33YLqXPNIJGZf+T2Wj/DhS/JD4zaS/n
+         LoEQ==
+X-Gm-Message-State: AOAM531i7fLzCU5NHtVs+usy0EIKqwo8yAX1aXD41I0H5E1kiBS3Psh5
+        iIrhalKJOxJ77XQiqhCzRMN3WZTNTjYwDDTc26U=
+X-Google-Smtp-Source: ABdhPJzGV4y3Ta1GE0TKjv9FhswpUz4QxbLaboPqV49koQL/GO1e6pYU1VRUkwW2oJZhJMONypsZH7NsIq4Ll5FPnYs=
+X-Received: by 2002:a5d:47c2:: with SMTP id o2mr19465998wrc.81.1643673892365;
+ Mon, 31 Jan 2022 16:04:52 -0800 (PST)
 MIME-Version: 1.0
-References: <20220127024939.364016-1-houtao1@huawei.com>
-In-Reply-To: <20220127024939.364016-1-houtao1@huawei.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 31 Jan 2022 16:02:00 -0800
-Message-ID: <CAEf4BzYHggCfbSGb8autEDcHhZXabK-n36rggyjJeL0uLEr+DQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: use getpagesize() to initialize
- ring buffer size
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+References: <20220128110825.1120678-1-miquel.raynal@bootlin.com>
+ <20220128110825.1120678-2-miquel.raynal@bootlin.com> <CAB_54W60OiGmjLQ2dAvnraq6fkZ6GGTLMVzjVbVAobcvNsaWtQ@mail.gmail.com>
+ <20220131152345.3fefa3aa@xps13>
+In-Reply-To: <20220131152345.3fefa3aa@xps13>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Mon, 31 Jan 2022 19:04:40 -0500
+Message-ID: <CAB_54W7SZmgU=2_HEm=_agE0RWfsXxEs_4MHmnAPPFb+iVvxsQ@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v2 1/5] net: ieee802154: Improve the way
+ supported channels are declared
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 6:34 PM Hou Tao <houtao1@huawei.com> wrote:
+Hi,
+
+On Mon, Jan 31, 2022 at 9:23 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> 4096 is OK for x86-64, but for other archs with greater than 4KB
-> page size (e.g. 64KB under arm64), test_verifier for test case
-> "check valid spill/fill, ptr to mem" will fail, so just use
-> getpagesize() to initialize the ring buffer size. Do this for
-> test_progs as well.
+> Hi Alexander,
 >
-> Signed-off-by: Hou Tao <houtao1@huawei.com>
-> ---
->  tools/testing/selftests/bpf/prog_tests/d_path.c | 14 ++++++++++++--
->  .../testing/selftests/bpf/prog_tests/test_ima.c | 17 +++++++++++++----
->  tools/testing/selftests/bpf/progs/ima.c         |  1 -
->  .../bpf/progs/test_d_path_check_types.c         |  1 -
->  tools/testing/selftests/bpf/test_verifier.c     |  2 +-
->  5 files changed, 26 insertions(+), 9 deletions(-)
+> alex.aring@gmail.com wrote on Sun, 30 Jan 2022 16:35:35 -0500:
+>
+> > Hi,
+> >
+> > On Fri, Jan 28, 2022 at 6:08 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > >
+> > > The idea here is to create a structure per set of channels so that we
+> > > can define much more than basic bitfields for these.
+> > >
+> > > The structure is currently almost empty on purpose because this change
+> > > is supposed to be a mechanical update without additional information but
+> > > more details will be added in the following commits.
+> > >
+> >
+> > In my opinion you want to put more information in this structure which
+> > is not necessary and force the driver developer to add information
+> > which is already there encoded in the page/channel bitfields.
+>
+> The information I am looking forward to add is clearly not encoded in
+> the page/channel bitfields (these information are added in the
+> following patches). At least I don't see anywhere in the spec a
+> paragraph telling which protocol and band must be used as a function of
+> the page and channel information. So I improved the way channels are
+> declared to give more information than what we currently have.
 >
 
-[...]
+This makes no sense for me, because you are telling right now that a
+page/channel combination depends on the transceiver.
 
-> @@ -86,5 +94,6 @@ void test_test_ima(void)
->         CHECK(err, "failed to run command", "%s, errno = %d\n", cmd, errno);
->  close_prog:
->         ring_buffer__free(ringbuf);
-> +destroy_skel:
->         ima__destroy(skel);
->  }
-> diff --git a/tools/testing/selftests/bpf/progs/ima.c b/tools/testing/selftests/bpf/progs/ima.c
-> index 96060ff4ffc6..e192a9f16aea 100644
-> --- a/tools/testing/selftests/bpf/progs/ima.c
-> +++ b/tools/testing/selftests/bpf/progs/ima.c
-> @@ -13,7 +13,6 @@ u32 monitored_pid = 0;
+> BTW I see the wpan tools actually derive the protocol/band from the
+> channel/page information and I _really_ don't get it. I believe it only
+> works with hwsim but if it's not the case I would like to hear
+> more about it.
 >
->  struct {
->         __uint(type, BPF_MAP_TYPE_RINGBUF);
-> -       __uint(max_entries, 1 << 12);
 
-Should we just bump it to 64/128/256KB instead? It's quite annoying to
-do a split open and then load just due to this...
+No, I remember the discussion with Christoffer Holmstedt, he described
+it in his commit message "8.1.2 in IEEE 802.15.4-2011".
+See wpan-tools commit 0af3e40bbd6da60cc000cfdfd13b9cdd8a20d717 ("info:
+add frequency to channel listing for phy capabilities").
 
-I'm also wondering if we should either teach kernel to round up to
-closes power-of-2 of page_size internally, or teach libbpf to do this
-for RINGBUF maps. Thoughts?
+I think it is the chapter "Channel assignments"?
 
+> > Why not
+> > add helper functionality and get your "band" and "protocol" for a
+> > page/channel combination?
+>
+> This information is as static as the channel/page information, so why
+> using two different channels to get it? This means two different places
+> where the channels must be described, which IMHO hardens the work for
+> device driver writers.
+>
 
->  } ringbuf SEC(".maps");
->
->  char _license[] SEC("license") = "GPL";
-> diff --git a/tools/testing/selftests/bpf/progs/test_d_path_check_types.c b/tools/testing/selftests/bpf/progs/test_d_path_check_types.c
-> index 7e02b7361307..1b68d4a65abb 100644
-> --- a/tools/testing/selftests/bpf/progs/test_d_path_check_types.c
-> +++ b/tools/testing/selftests/bpf/progs/test_d_path_check_types.c
-> @@ -8,7 +8,6 @@ extern const int bpf_prog_active __ksym;
->
->  struct {
->         __uint(type, BPF_MAP_TYPE_RINGBUF);
-> -       __uint(max_entries, 1 << 12);
->  } ringbuf SEC(".maps");
->
->  SEC("fentry/security_inode_getattr")
-> diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-> index 29bbaa58233c..6acb5e747715 100644
-> --- a/tools/testing/selftests/bpf/test_verifier.c
-> +++ b/tools/testing/selftests/bpf/test_verifier.c
-> @@ -931,7 +931,7 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
->         }
->         if (*fixup_map_ringbuf) {
->                 map_fds[20] = create_map(BPF_MAP_TYPE_RINGBUF, 0,
-> -                                          0, 4096);
-> +                                          0, getpagesize());
->                 do {
->                         prog[*fixup_map_ringbuf].imm = map_fds[20];
->                         fixup_map_ringbuf++;
-> --
-> 2.29.2
->
+device drivers writers can make mistakes here, they probably can only
+set page/channel registers in their hardware and have no idea about
+other things.
+
+> I however agree that the final presentation looks a bit more heavy to
+> the eyes, but besides the extra fat that this change brings, it is
+> rather easy to give the core all the information it needs in a rather
+> detailed and understandable way.
+
+On the driver layer it should be as simple as possible. If you want to
+have a static array for that init it in the phy register
+functionality, however I think a simple lookup table should be enough
+for that.
+To make it more understandable I guess some people can introduce some
+defines/etc to make a more sense behind setting static hex values.
+
+- Alex
