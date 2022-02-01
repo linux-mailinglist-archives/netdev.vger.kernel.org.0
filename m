@@ -2,379 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DC0F4A62F5
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 18:50:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6F794A6301
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 18:53:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233658AbiBARu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 12:50:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43734 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233237AbiBARu2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 12:50:28 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5FEDC061714;
-        Tue,  1 Feb 2022 09:50:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D4AB9CE1A59;
-        Tue,  1 Feb 2022 17:50:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01DB8C340EB;
-        Tue,  1 Feb 2022 17:50:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643737824;
-        bh=pcBEAiJy6A2HwZd9563pmFy1sMOqcq7pdb7o0wdfzXo=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=RbHdVZP+VOfh7KRE4SV9zaHdcI1rgB4sPMRViFMIXguabKu8oSQBwQXK4MNHlW4Di
-         6Kih+Wqx5s6rrrwnAxGLTlDbLklvU6fWfBoTgvYvavS69I/gibOznMN3zg0nIihEn7
-         J6+oOhazAyi4Iy9vBFYXyYdNBWfqC6W6ZqrHQMvujP1yX/WHoZ35moGFwzwCMjte8I
-         nZllRIhcXlUz++1R1NzLBl3X9LYuf6WMXopkH8U320kqbxcWKR5LP232PLqHRqXy2e
-         BiqkUcsJf5vVIOP/vhgbEEPfvY3ZMA3Oh9JVtYIhafP08+75tc9YboDGJQfZfPuec3
-         shL8qYq6OVMnA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id BAEBB5C0326; Tue,  1 Feb 2022 09:50:23 -0800 (PST)
-Date:   Tue, 1 Feb 2022 09:50:23 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Zhouyi Zhou <zhouzhouyi@gmail.com>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        Josh Triplett <josh@joshtriplett.org>,
-        rcu <rcu@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: BUG: Kernel NULL pointer dereference on write at 0x00000000
- (rtmsg_ifinfo_build_skb)
-Message-ID: <20220201175023.GW4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <159db05f-539c-fe29-608b-91b036588033@molgen.mpg.de>
- <CAABZP2xampOLo8k93OLgaOfv9LreJ+f0g0_1mXwqtrv_LKewQg@mail.gmail.com>
- <3534d781-7d01-b42a-8974-0b1c367946f0@molgen.mpg.de>
- <CAABZP2zFDY-hrZqE=-c0uW8vFMH+Q9XezYd2DcBX4Wm+sxzK1g@mail.gmail.com>
- <04a597dc-64aa-57e6-f7fb-17bd2ec58159@molgen.mpg.de>
- <CAABZP2yb7-xa4F_2c6tuzkv7x902wU-hqgD_pqRooGC6C7S20A@mail.gmail.com>
- <20220130174421.GS4285@paulmck-ThinkPad-P17-Gen-1>
- <CAABZP2w8ysVFmxRo7CMSHunnU0GqtS=+bU6tLqcsXDUyf60-Dw@mail.gmail.com>
+        id S233867AbiBARw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 12:52:58 -0500
+Received: from mail-dm6nam12on2065.outbound.protection.outlook.com ([40.107.243.65]:30176
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233089AbiBARw5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Feb 2022 12:52:57 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C62eyYwLr2ZI2mXU5ueLgr3fXhF8hEQ7HsJezPsne2fiHhz+hOamPOmW+0Hifv/EJYmEfDAffbj2EM1tZTCpr3umai2fXqUQKWqXsV5CEPkyQEIepm9Fdmm+CviU0ECK+AoknJ1e9WKPCsyvhpK7EhXXfyjmRCX8jf0xbOoCl9D82TCOguXNARnAqAxeFxjQ7VFWkd51pI9NaMAykvMldW+3ZFhiBUcygPV6r8CHOTqWL2k8Is4+f7nwf2o6SVH0Qphz1zxezWQnsQqKJ7pS8IH6b2wkB8oVEFK0R05fvIjaupdI8DGs9L2JpR7KzwJk3tQXhqYHAl3mc/+rYR7fqw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=89YMor6SdbU+FEB/sn62JMOWApSo2sS99XTFMkxrZ7g=;
+ b=bvmvd28rjZj3Wmpx8i3XLsMQ3t0YvLaAv5wg7QEcI1lAZPUXgdHyPLMU/5TndV+hnssVnckGlmN2/0cXQXN+VroMPKKv4wY7twmxDkNv5QJ6Kdc0Ma6w0nwQcdYNj2MhS6YzovzLAOMAyArazoBllcwEao/3Uh1pg5Auos+BZHhBxNFb06PsBsXVA1Ja8YUSLpwKO/x0e9Zul8CaE5QUzAUt3yaMSbuKHXzQzLIIr9evlqNmRbvCZy6uNIgzFGbf/RcJWkMjElzNKcGlzzZt9rRlZav5+/tAkdou+TYW3fYHtyFBYyicbt8KU2Mha59U5Foqqi6f67YXuuHCfGIoUA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=89YMor6SdbU+FEB/sn62JMOWApSo2sS99XTFMkxrZ7g=;
+ b=IKOsnZc8yn2MFsRUDFOJXSwEjB14t1Y5uULaD68e9zcz4JCtSfafYAQ6HMQx9wedfIkSPo6NU9voi1/AQrTWLTSIeZYFGsfsWNq28uYfRxxj7fLUVCX0Lw3FMKXaF9ojmgert8oAgczHKpskoHyzrZr98ivXIahEgswSOwycOt2fpvob1nCPlgHP0/YqqtSPf1hmX51EjxN652N4SDwGHHjSBel9jSHX6XpIb9DELtnxqWkaQJ6WqLZdLcPNuisqoQ6/0x79CJqZlyxQFbIgcqzsSbBuJJ8Zkk8gQrXfffN6favv5+pIXsfMM9pyQo6fDCouFJ+H+Rreh4ik1LxdwA==
+Received: from CO2PR04CA0108.namprd04.prod.outlook.com (2603:10b6:104:6::34)
+ by DM6PR12MB2972.namprd12.prod.outlook.com (2603:10b6:5:39::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.17; Tue, 1 Feb
+ 2022 17:52:55 +0000
+Received: from CO1NAM11FT040.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:104:6:cafe::a3) by CO2PR04CA0108.outlook.office365.com
+ (2603:10b6:104:6::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.22 via Frontend
+ Transport; Tue, 1 Feb 2022 17:52:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT040.mail.protection.outlook.com (10.13.174.140) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4951.12 via Frontend Transport; Tue, 1 Feb 2022 17:52:53 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 1 Feb
+ 2022 17:52:52 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Tue, 1 Feb 2022
+ 09:52:51 -0800
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.127.8.11) by
+ mail.nvidia.com (10.129.68.9) with Microsoft SMTP Server id 15.2.986.9 via
+ Frontend Transport; Tue, 1 Feb 2022 09:52:47 -0800
+From:   Paul Blakey <paulb@nvidia.com>
+To:     Paul Blakey <paulb@nvidia.com>, <dev@openvswitch.org>,
+        <netdev@vger.kernel.org>, Cong Wang <xiyou.wangcong@gmail.com>,
+        "Jamal Hadi Salim" <jhs@mojatatu.com>,
+        Pravin B Shelar <pshelar@ovn.org>, <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+CC:     Saeed Mahameed <saeedm@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
+        "Vlad Buslov" <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>
+Subject: [PATCH net-next v2 1/1] net/sched: Enable tc skb ext allocation on chain miss only when needed
+Date:   Tue, 1 Feb 2022 19:52:20 +0200
+Message-ID: <20220201175220.7680-1-paulb@nvidia.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAABZP2w8ysVFmxRo7CMSHunnU0GqtS=+bU6tLqcsXDUyf60-Dw@mail.gmail.com>
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d9876939-bb86-4580-fb53-08d9e5abac20
+X-MS-TrafficTypeDiagnostic: DM6PR12MB2972:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB29729E219F9A3B976CD6AEEBC2269@DM6PR12MB2972.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:475;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qcLovo/FnXvBoODQkRX7xbW63GTXEsldhEZhEq9ISLDQ7d/0d0oR7TuTBP29BsV9JLwtyCvf7OhKIcjLXaXoCbzSQZrh3hEaqfe/7aXp4+hq761bScZ9/6D3ulncgtOUbZD6pGcJQ6nIn4KBUxXAvaNhBzgp5z7Mz63lK/xFjseHJm2jIKAMveU5H3eqB5Q869TRkISYQr0Fq6KGVQIX57Fi8m5Jv+xZ/sTYnEOREZtMCnaw22E95HGHa8h6hvhlU95UGCpVdOstvz9D0kQxfly6p+7V4s1M4Fo6cVpQ9eaoxgx1ImPEsxti8JInGN6XeY+aPG69O/hIdZo1dkI2GVD7Ju6PMLmXCfWlYxgoaItNjggWgDOumg1KA+gQvvEfZGOFLQp/Raer/6fuuz0DlPQGMGp7WMahZ9kPbu8G6pZAAuuYEVIgsdwQyrLaMxdaQrzGAV45g4Qv7uvgtL+5BlIpabK9/PkxzbczEIWrYA5urbqO5Wgr65C3RVvWWAftR3eq4Nlew/TV/UOizYxcve0G9ae8TZ0dTquZ4t4hlL8NSajsc4LKYSo/VgKgjgWrGksTXVPkJ6ogqtUSHF5MBbhJV4vQ0zos+4j+VS46k6ADrzVS9n66qO+RZJ0lfJo69cvdjEU8AbQM3DWCPYn/voBi3I9H5BQG15S//rEAmJ7YZ03zpvztMYVAL07eYqTJrwiBo9Y7VOqTdfbzWtEEREVY4yR2ejjESHCOIm+C9ig=
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(47076005)(36860700001)(356005)(86362001)(81166007)(83380400001)(40460700003)(70586007)(70206006)(921005)(316002)(36756003)(508600001)(8936002)(110136005)(4326008)(8676002)(54906003)(2906002)(2616005)(5660300002)(336012)(6666004)(82310400004)(107886003)(1076003)(186003)(26005)(426003)(36900700001)(20210929001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2022 17:52:53.8396
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d9876939-bb86-4580-fb53-08d9e5abac20
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT040.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2972
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 09:08:40AM +0800, Zhouyi Zhou wrote:
-> Thank Paul for joining us!
-> 
-> On Mon, Jan 31, 2022 at 1:44 AM Paul E. McKenney <paulmck@kernel.org> wrote:
-> >
-> > On Sun, Jan 30, 2022 at 09:24:44PM +0800, Zhouyi Zhou wrote:
-> > > Dear Paul
-> > >
-> > > On Sun, Jan 30, 2022 at 4:19 PM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
-> > > >
-> > > > Dear Zhouyi,
-> > > >
-> > > >
-> > > > Am 30.01.22 um 01:21 schrieb Zhouyi Zhou:
-> > > >
-> > > > > Thank you for your instructions, I learned a lot from this process.
-> > > >
-> > > > Same on my end.
-> > > >
-> > > > > On Sun, Jan 30, 2022 at 12:52 AM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
-> > > >
-> > > > >> Am 29.01.22 um 03:23 schrieb Zhouyi Zhou:
-> > > > >>
-> > > > >>> I don't have an IBM machine, but I tried to analyze the problem using
-> > > > >>> my x86_64 kvm virtual machine, I can't reproduce the bug using my
-> > > > >>> x86_64 kvm virtual machine.
-> > > > >>
-> > > > >> No idea, if it’s architecture specific.
-> > > > >>
-> > > > >>> I saw the panic is caused by registration of sit device (A sit device
-> > > > >>> is a type of virtual network device that takes our IPv6 traffic,
-> > > > >>> encapsulates/decapsulates it in IPv4 packets, and sends/receives it
-> > > > >>> over the IPv4 Internet to another host)
-> > > > >>>
-> > > > >>> sit device is registered in function sit_init_net:
-> > > > >>> 1895    static int __net_init sit_init_net(struct net *net)
-> > > > >>> 1896    {
-> > > > >>> 1897        struct sit_net *sitn = net_generic(net, sit_net_id);
-> > > > >>> 1898        struct ip_tunnel *t;
-> > > > >>> 1899        int err;
-> > > > >>> 1900
-> > > > >>> 1901        sitn->tunnels[0] = sitn->tunnels_wc;
-> > > > >>> 1902        sitn->tunnels[1] = sitn->tunnels_l;
-> > > > >>> 1903        sitn->tunnels[2] = sitn->tunnels_r;
-> > > > >>> 1904        sitn->tunnels[3] = sitn->tunnels_r_l;
-> > > > >>> 1905
-> > > > >>> 1906        if (!net_has_fallback_tunnels(net))
-> > > > >>> 1907            return 0;
-> > > > >>> 1908
-> > > > >>> 1909        sitn->fb_tunnel_dev = alloc_netdev(sizeof(struct ip_tunnel), "sit0",
-> > > > >>> 1910                           NET_NAME_UNKNOWN,
-> > > > >>> 1911                           ipip6_tunnel_setup);
-> > > > >>> 1912        if (!sitn->fb_tunnel_dev) {
-> > > > >>> 1913            err = -ENOMEM;
-> > > > >>> 1914            goto err_alloc_dev;
-> > > > >>> 1915        }
-> > > > >>> 1916        dev_net_set(sitn->fb_tunnel_dev, net);
-> > > > >>> 1917        sitn->fb_tunnel_dev->rtnl_link_ops = &sit_link_ops;
-> > > > >>> 1918        /* FB netdevice is special: we have one, and only one per netns.
-> > > > >>> 1919         * Allowing to move it to another netns is clearly unsafe.
-> > > > >>> 1920         */
-> > > > >>> 1921        sitn->fb_tunnel_dev->features |= NETIF_F_NETNS_LOCAL;
-> > > > >>> 1922
-> > > > >>> 1923        err = register_netdev(sitn->fb_tunnel_dev);
-> > > > >>> register_netdev on line 1923 will call if_nlmsg_size indirectly.
-> > > > >>>
-> > > > >>> On the other hand, the function that calls the paniced strlen is if_nlmsg_size:
-> > > > >>> (gdb) disassemble if_nlmsg_size
-> > > > >>> Dump of assembler code for function if_nlmsg_size:
-> > > > >>>      0xffffffff81a0dc20 <+0>:    nopl   0x0(%rax,%rax,1)
-> > > > >>>      0xffffffff81a0dc25 <+5>:    push   %rbp
-> > > > >>>      0xffffffff81a0dc26 <+6>:    push   %r15
-> > > > >>>      0xffffffff81a0dd04 <+228>:    je     0xffffffff81a0de20 <if_nlmsg_size+512>
-> > > > >>>      0xffffffff81a0dd0a <+234>:    mov    0x10(%rbp),%rdi
-> > > > >>>      ...
-> > > > >>>    => 0xffffffff81a0dd0e <+238>:    callq  0xffffffff817532d0 <strlen>
-> > > > >>>      0xffffffff81a0dd13 <+243>:    add    $0x10,%eax
-> > > > >>>      0xffffffff81a0dd16 <+246>:    movslq %eax,%r12
-> > > > >>
-> > > > >> Excuse my ignorance, would that look the same for ppc64le?
-> > > > >> Unfortunately, I didn’t save the problematic `vmlinuz` file, but on a
-> > > > >> current build (without rcutorture) I have the line below, where strlen
-> > > > >> shows up.
-> > > > >>
-> > > > >>       (gdb) disassemble if_nlmsg_size
-> > > > >>       […]
-> > > > >>       0xc000000000f7f82c <+332>: bl      0xc000000000a10e30 <strlen>
-> > > > >>       […]
-> > > > >>
-> > > > >>> and the C code for 0xffffffff81a0dd0e is following (line 524):
-> > > > >>> 515    static size_t rtnl_link_get_size(const struct net_device *dev)
-> > > > >>> 516    {
-> > > > >>> 517        const struct rtnl_link_ops *ops = dev->rtnl_link_ops;
-> > > > >>> 518        size_t size;
-> > > > >>> 519
-> > > > >>> 520        if (!ops)
-> > > > >>> 521            return 0;
-> > > > >>> 522
-> > > > >>> 523        size = nla_total_size(sizeof(struct nlattr)) + /* IFLA_LINKINFO */
-> > > > >>> 524               nla_total_size(strlen(ops->kind) + 1);  /* IFLA_INFO_KIND */
-> > > > >>
-> > > > >> How do I connect the disassemby output with the corresponding line?
-> > > > > I use "make  ARCH=powerpc CC=powerpc64le-linux-gnu-gcc-9
-> > > > > CROSS_COMPILE=powerpc64le-linux-gnu- -j 16" to cross compile kernel
-> > > > > for powerpc64le in my Ubuntu 20.04 x86_64.
-> > > > >
-> > > > > gdb-multiarch ./vmlinux
-> > > > > (gdb)disassemble if_nlmsg_size
-> > > > > [...]
-> > > > > 0xc00000000191bf40 <+112>:    bl      0xc000000001c28ad0 <strlen>
-> > > > > [...]
-> > > > > (gdb) break *0xc00000000191bf40
-> > > > > Breakpoint 1 at 0xc00000000191bf40: file ./include/net/netlink.h, line 1112.
-> > > > >
-> > > > > But in include/net/netlink.h:1112, I can't find the call to strlen
-> > > > > 1110static inline int nla_total_size(int payload)
-> > > > > 1111{
-> > > > > 1112        return NLA_ALIGN(nla_attr_size(payload));
-> > > > > 1113}
-> > > > > This may be due to the compiler wrongly encode the debug information, I guess.
-> > > >
-> > > > `rtnl_link_get_size()` contains:
-> > > >
-> > > >              size = nla_total_size(sizeof(struct nlattr)) + /*
-> > > > IFLA_LINKINFO */
-> > > >                     nla_total_size(strlen(ops->kind) + 1);  /*
-> > > > IFLA_INFO_KIND */
-> > > >
-> > > > Is that inlined(?) and the code at fault?
-> > > Yes, that is inlined! because
-> > > (gdb) disassemble if_nlmsg_size
-> > > Dump of assembler code for function if_nlmsg_size:
-> > > [...]
-> > > 0xc00000000191bf38 <+104>:    beq     0xc00000000191c1f0 <if_nlmsg_size+800>
-> > > 0xc00000000191bf3c <+108>:    ld      r3,16(r31)
-> > > 0xc00000000191bf40 <+112>:    bl      0xc000000001c28ad0 <strlen>
-> > > [...]
-> > > (gdb)
-> > > (gdb) break *0xc00000000191bf40
-> > > Breakpoint 1 at 0xc00000000191bf40: file ./include/net/netlink.h, line 1112.
-> > > (gdb) break *0xc00000000191bf38
-> > > Breakpoint 2 at 0xc00000000191bf38: file net/core/rtnetlink.c, line 520.
-> >
-> > I suggest building your kernel with CONFIG_DEBUG_INFO=y if you are not
-> > already doing so.  That gives gdb a lot more information about things
-> > like inlining.
-> I check my .config file, CONFIG_DEBUG_INFO=y is here:
-> linux-next$ grep CONFIG_DEBUG_INFO .config
-> CONFIG_DEBUG_INFO=y
-> Then I invoke "make clean" and rebuild the kernel, the behavior of gdb
-> and vmlinux remain unchanged, sorry for that
+Tc skb extension is used to send miss info from tc to ovs datapath
+module, and is currently always allocated even if it will not
+be used by ovs datapath (as it depends on a requested feature).
 
-Glad you were already on top of this one!
+Export the static key which is used by openvswitch module to
+guard this code path as well, so it will be skipped if ovs
+datapath doesn't need it. Enable this code path once
+ovs datapath needs it.
 
-> I am trying to reproduce the bug on my bare metal x86_64 machines in
-> the coming days, and am also trying to work with Mr Menzel after he
-> comes back to the office.
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
+---
+ Changelog:
+   v1->v2:
+     Added ifdef on exports so inline stubs won't be duplicated in !CLS_ACT case
 
-This URL used to allow community members such as yourself to request
-access to Power systems: https://osuosl.org/services/powerdev/
+ include/net/pkt_cls.h      | 11 ++++++++++
+ net/openvswitch/datapath.c | 18 +++++++++------
+ net/openvswitch/datapath.h |  2 --
+ net/openvswitch/flow.c     |  3 ++-
+ net/sched/cls_api.c        | 45 +++++++++++++++++++++++++++-----------
+ 5 files changed, 56 insertions(+), 23 deletions(-)
 
-In case that helps.
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index 676cb8ea9e15..b4a34d3325d2 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -1028,4 +1028,15 @@ struct tc_fifo_qopt_offload {
+ 	};
+ };
+ 
++#ifdef CONFIG_NET_CLS_ACT
++DECLARE_STATIC_KEY_FALSE(tc_skb_ext_tc_ovs);
++void tc_skb_ext_tc_ovs_enable(void);
++void tc_skb_ext_tc_ovs_disable(void);
++#define tc_skb_ext_tc_ovs_enabled() static_branch_unlikely(&tc_skb_ext_tc_ovs)
++#else /* CONFIG_NET_CLS_ACT */
++static inline void tc_skb_ext_tc_ovs_enable(void) { }
++static inline void tc_skb_ext_tc_ovs_disable(void) { }
++#define tc_skb_ext_tc_ovs_enabled() false
++#endif
++
+ #endif
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index 67ad08320886..4c73a768abc5 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -37,6 +37,7 @@
+ #include <net/genetlink.h>
+ #include <net/net_namespace.h>
+ #include <net/netns/generic.h>
++#include <net/pkt_cls.h>
+ 
+ #include "datapath.h"
+ #include "flow.h"
+@@ -1601,8 +1602,6 @@ static void ovs_dp_reset_user_features(struct sk_buff *skb,
+ 	dp->user_features = 0;
+ }
+ 
+-DEFINE_STATIC_KEY_FALSE(tc_recirc_sharing_support);
+-
+ static int ovs_dp_set_upcall_portids(struct datapath *dp,
+ 			      const struct nlattr *ids)
+ {
+@@ -1657,7 +1656,7 @@ u32 ovs_dp_get_upcall_portid(const struct datapath *dp, uint32_t cpu_id)
+ 
+ static int ovs_dp_change(struct datapath *dp, struct nlattr *a[])
+ {
+-	u32 user_features = 0;
++	u32 user_features = 0, old_features = dp->user_features;
+ 	int err;
+ 
+ 	if (a[OVS_DP_ATTR_USER_FEATURES]) {
+@@ -1696,10 +1695,12 @@ static int ovs_dp_change(struct datapath *dp, struct nlattr *a[])
+ 			return err;
+ 	}
+ 
+-	if (dp->user_features & OVS_DP_F_TC_RECIRC_SHARING)
+-		static_branch_enable(&tc_recirc_sharing_support);
+-	else
+-		static_branch_disable(&tc_recirc_sharing_support);
++	if ((dp->user_features & OVS_DP_F_TC_RECIRC_SHARING) &&
++	    !(old_features & OVS_DP_F_TC_RECIRC_SHARING))
++		tc_skb_ext_tc_ovs_enable();
++	else if (!(dp->user_features & OVS_DP_F_TC_RECIRC_SHARING) &&
++		 (old_features & OVS_DP_F_TC_RECIRC_SHARING))
++		tc_skb_ext_tc_ovs_disable();
+ 
+ 	return 0;
+ }
+@@ -1839,6 +1840,9 @@ static void __dp_destroy(struct datapath *dp)
+ 	struct flow_table *table = &dp->table;
+ 	int i;
+ 
++	if (dp->user_features & OVS_DP_F_TC_RECIRC_SHARING)
++		tc_skb_ext_tc_ovs_disable();
++
+ 	for (i = 0; i < DP_VPORT_HASH_BUCKETS; i++) {
+ 		struct vport *vport;
+ 		struct hlist_node *n;
+diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
+index fcfe6cb46441..0cd29971a907 100644
+--- a/net/openvswitch/datapath.h
++++ b/net/openvswitch/datapath.h
+@@ -253,8 +253,6 @@ static inline struct datapath *get_dp(struct net *net, int dp_ifindex)
+ extern struct notifier_block ovs_dp_device_notifier;
+ extern struct genl_family dp_vport_genl_family;
+ 
+-DECLARE_STATIC_KEY_FALSE(tc_recirc_sharing_support);
+-
+ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key);
+ void ovs_dp_detach_port(struct vport *);
+ int ovs_dp_upcall(struct datapath *, struct sk_buff *,
+diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
+index 02096f2ec678..5839b00c99bc 100644
+--- a/net/openvswitch/flow.c
++++ b/net/openvswitch/flow.c
+@@ -34,6 +34,7 @@
+ #include <net/mpls.h>
+ #include <net/ndisc.h>
+ #include <net/nsh.h>
++#include <net/pkt_cls.h>
+ #include <net/netfilter/nf_conntrack_zones.h>
+ 
+ #include "conntrack.h"
+@@ -895,7 +896,7 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+ 	key->mac_proto = res;
+ 
+ #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+-	if (static_branch_unlikely(&tc_recirc_sharing_support)) {
++	if (tc_skb_ext_tc_ovs_enabled()) {
+ 		tc_ext = skb_ext_find(skb, TC_SKB_EXT);
+ 		key->recirc_id = tc_ext ? tc_ext->chain : 0;
+ 		OVS_CB(skb)->mru = tc_ext ? tc_ext->mru : 0;
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index d4e27c679123..781dbabdb0df 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -49,6 +49,23 @@ static LIST_HEAD(tcf_proto_base);
+ /* Protects list of registered TC modules. It is pure SMP lock. */
+ static DEFINE_RWLOCK(cls_mod_lock);
+ 
++#ifdef CONFIG_NET_CLS_ACT
++DEFINE_STATIC_KEY_FALSE(tc_skb_ext_tc_ovs);
++EXPORT_SYMBOL(tc_skb_ext_tc_ovs);
++
++void tc_skb_ext_tc_ovs_enable(void)
++{
++	static_branch_inc(&tc_skb_ext_tc_ovs);
++}
++EXPORT_SYMBOL(tc_skb_ext_tc_ovs_enable);
++
++void tc_skb_ext_tc_ovs_disable(void)
++{
++	static_branch_dec(&tc_skb_ext_tc_ovs);
++}
++EXPORT_SYMBOL(tc_skb_ext_tc_ovs_disable);
++#endif
++
+ static u32 destroy_obj_hashfn(const struct tcf_proto *tp)
+ {
+ 	return jhash_3words(tp->chain->index, tp->prio,
+@@ -1615,19 +1632,21 @@ int tcf_classify(struct sk_buff *skb,
+ 	ret = __tcf_classify(skb, tp, orig_tp, res, compat_mode,
+ 			     &last_executed_chain);
+ 
+-	/* If we missed on some chain */
+-	if (ret == TC_ACT_UNSPEC && last_executed_chain) {
+-		struct tc_skb_cb *cb = tc_skb_cb(skb);
+-
+-		ext = tc_skb_ext_alloc(skb);
+-		if (WARN_ON_ONCE(!ext))
+-			return TC_ACT_SHOT;
+-		ext->chain = last_executed_chain;
+-		ext->mru = cb->mru;
+-		ext->post_ct = cb->post_ct;
+-		ext->post_ct_snat = cb->post_ct_snat;
+-		ext->post_ct_dnat = cb->post_ct_dnat;
+-		ext->zone = cb->zone;
++	if (tc_skb_ext_tc_ovs_enabled()) {
++		/* If we missed on some chain */
++		if (ret == TC_ACT_UNSPEC && last_executed_chain) {
++			struct tc_skb_cb *cb = tc_skb_cb(skb);
++
++			ext = tc_skb_ext_alloc(skb);
++			if (WARN_ON_ONCE(!ext))
++				return TC_ACT_SHOT;
++			ext->chain = last_executed_chain;
++			ext->mru = cb->mru;
++			ext->post_ct = cb->post_ct;
++			ext->post_ct_snat = cb->post_ct_snat;
++			ext->post_ct_dnat = cb->post_ct_dnat;
++			ext->zone = cb->zone;
++		}
+ 	}
+ 
+ 	return ret;
+-- 
+2.30.1
 
-							Thanx, Paul
-
-> Thanks
-> Zhouyi
-> >
-> >                                                         Thanx, Paul
-> >
-> > > > >>> But ops is assigned the value of sit_link_ops in function sit_init_net
-> > > > >>> line 1917, so I guess something must happened between the calls.
-> > > > >>>
-> > > > >>> Do we have KASAN in IBM machine? would KASAN help us find out what
-> > > > >>> happened in between?
-> > > > >>
-> > > > >> Unfortunately, KASAN is not support on Power, I have, as far as I can
-> > > > >> see. From `arch/powerpc/Kconfig`:
-> > > > >>
-> > > > >>           select HAVE_ARCH_KASAN                  if PPC32 && PPC_PAGE_SHIFT <= 14
-> > > > >>           select HAVE_ARCH_KASAN_VMALLOC          if PPC32 && PPC_PAGE_SHIFT <= 14
-> > > > >>
-> > > > > en, agree, I invoke "make  menuconfig  ARCH=powerpc
-> > > > > CC=powerpc64le-linux-gnu-gcc-9 CROSS_COMPILE=powerpc64le-linux-gnu- -j
-> > > > > 16", I can't find KASAN under Memory Debugging, I guess we should find
-> > > > > the bug by bisecting instead.
-> > > >
-> > > > I do not know, if it is a regression, as it was the first time I tried
-> > > > to run a Linux kernel built with rcutorture on real hardware.
-> > > I tried to add some debug statements to the kernel to locate the bug
-> > > more accurately,  you can try it when you're not busy in the future,
-> > > or just ignore it if the following patch looks not very effective ;-)
-> > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > index 1baab07820f6..969ac7c540cc 100644
-> > > --- a/net/core/dev.c
-> > > +++ b/net/core/dev.c
-> > > @@ -9707,6 +9707,9 @@ int register_netdevice(struct net_device *dev)
-> > >       *    Prevent userspace races by waiting until the network
-> > >       *    device is fully setup before sending notifications.
-> > >       */
-> > > +    if (dev->rtnl_link_ops)
-> > > +        printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", dev->rtnl_link_ops,
-> > > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> > >      if (!dev->rtnl_link_ops ||
-> > >          dev->rtnl_link_state == RTNL_LINK_INITIALIZED)
-> > >          rtmsg_ifinfo(RTM_NEWLINK, dev, ~0U, GFP_KERNEL);
-> > > @@ -9788,6 +9791,9 @@ int register_netdev(struct net_device *dev)
-> > >
-> > >      if (rtnl_lock_killable())
-> > >          return -EINTR;
-> > > +    if (dev->rtnl_link_ops)
-> > > +        printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", dev->rtnl_link_ops,
-> > > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> > >      err = register_netdevice(dev);
-> > >      rtnl_unlock();
-> > >      return err;
-> > > diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> > > index e476403231f0..e08986ae6238 100644
-> > > --- a/net/core/rtnetlink.c
-> > > +++ b/net/core/rtnetlink.c
-> > > @@ -520,6 +520,8 @@ static size_t rtnl_link_get_size(const struct
-> > > net_device *dev)
-> > >      if (!ops)
-> > >          return 0;
-> > >
-> > > +    printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", ops,
-> > > +           ops->kind, __FUNCTION__);
-> > >      size = nla_total_size(sizeof(struct nlattr)) + /* IFLA_LINKINFO */
-> > >             nla_total_size(strlen(ops->kind) + 1);  /* IFLA_INFO_KIND */
-> > >
-> > > @@ -1006,6 +1008,9 @@ static size_t rtnl_proto_down_size(const struct
-> > > net_device *dev)
-> > >  static noinline size_t if_nlmsg_size(const struct net_device *dev,
-> > >                       u32 ext_filter_mask)
-> > >  {
-> > > +    if (dev->rtnl_link_ops)
-> > > +        printk(KERN_INFO "%lx IFLA_INFO_KIND  %s %s\n", dev->rtnl_link_ops,
-> > > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> > >      return NLMSG_ALIGN(sizeof(struct ifinfomsg))
-> > >             + nla_total_size(IFNAMSIZ) /* IFLA_IFNAME */
-> > >             + nla_total_size(IFALIASZ) /* IFLA_IFALIAS */
-> > > @@ -3825,7 +3830,9 @@ struct sk_buff *rtmsg_ifinfo_build_skb(int type,
-> > > struct net_device *dev,
-> > >      struct net *net = dev_net(dev);
-> > >      struct sk_buff *skb;
-> > >      int err = -ENOBUFS;
-> > > -
-> > > +    if (dev->rtnl_link_ops)
-> > > +        printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", dev->rtnl_link_ops,
-> > > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> > >      skb = nlmsg_new(if_nlmsg_size(dev, 0), flags);
-> > >      if (skb == NULL)
-> > >          goto errout;
-> > > @@ -3861,7 +3868,9 @@ static void rtmsg_ifinfo_event(int type, struct
-> > > net_device *dev,
-> > >
-> > >      if (dev->reg_state != NETREG_REGISTERED)
-> > >          return;
-> > > -
-> > > +    if (dev->rtnl_link_ops)
-> > > +        printk(KERN_INFO "%lx IFLA_INFO_KIND  %s %s\n", dev->rtnl_link_ops,
-> > > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> > >      skb = rtmsg_ifinfo_build_skb(type, dev, change, event, flags, new_nsid,
-> > >                       new_ifindex);
-> > >      if (skb)
-> > > @@ -3871,6 +3880,9 @@ static void rtmsg_ifinfo_event(int type, struct
-> > > net_device *dev,
-> > >  void rtmsg_ifinfo(int type, struct net_device *dev, unsigned int change,
-> > >            gfp_t flags)
-> > >  {
-> > > +    if (dev->rtnl_link_ops)
-> > > +        printk(KERN_INFO "%lx IFLA_INFO_KIND  %s %s\n", dev->rtnl_link_ops,
-> > > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> > >      rtmsg_ifinfo_event(type, dev, change, rtnl_get_event(0), flags,
-> > >                 NULL, 0);
-> > >  }
-> > > diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-> > > index c0b138c20992..fa5b2725811c 100644
-> > > --- a/net/ipv6/sit.c
-> > > +++ b/net/ipv6/sit.c
-> > > @@ -1919,6 +1919,8 @@ static int __net_init sit_init_net(struct net *net)
-> > >       * Allowing to move it to another netns is clearly unsafe.
-> > >       */
-> > >      sitn->fb_tunnel_dev->features |= NETIF_F_NETNS_LOCAL;
-> > > -
-> > > +    printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n",
-> > > +           sitn->fb_tunnel_dev->rtnl_link_ops,
-> > > +           sitn->fb_tunnel_dev->rtnl_link_ops->kind, __FUNCTION__);
-> > >      err = register_netdev(sitn->fb_tunnel_dev);
-> > >      if (err)
-> > >          goto err_reg_dev;
-> > > >
-> > > > >>> Hope I can be of more helpful.
-> > > > >>
-> > > > >> Some distributions support multi-arch, so they easily allow
-> > > > >> crosscompiling for different architectures.
-> > > > > I use "make  ARCH=powerpc CC=powerpc64le-linux-gnu-gcc-9
-> > > > > CROSS_COMPILE=powerpc64le-linux-gnu- -j 16" to cross compile kernel
-> > > > > for powerpc64le in my Ubuntu 20.04 x86_64. But I can't boot the
-> > > > > compiled kernel using "qemu-system-ppc64le -M pseries -nographic -smp
-> > > > > 4 -net none -m 4G -kernel arch/powerpc/boot/zImage". I will continue
-> > > > > to explore it.
-> > > >
-> > > > Oh, that does not sound good. But I have not tried that in a long time
-> > > > either. It’s a separate issue, but maybe some of the PPC
-> > > > maintainers/folks could help.
-> > > I will do further research on this later.
-> > >
-> > > Thanks for your time
-> > > Kind regards
-> > > Zhouyi
-> > > >
-> > > >
-> > > > Kind regards,
-> > > >
-> > > > Paul
