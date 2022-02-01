@@ -2,95 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFEF34A6501
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 20:27:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 696684A6518
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 20:40:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242411AbiBAT1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 14:27:34 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:37850 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242278AbiBAT1d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Feb 2022 14:27:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=wz74ecBRRy5osiptH6mAHo5InVXq8xkawwUnzut97j4=; b=h892aCtiyDGLi3SODvyrRwY9yS
-        E+hNgBBdBFQs19EYya29T5I+/kReGFQhXiXfXi8MM94CBLfzjq+qteCzC5X0WUKApFy5a4d6pwxXh
-        EufxTcUUHNRFE/jT64WlV5CXWM4RRiEd/TMTpsQEs3I+z0JbfxAoeXyAjC8zZWchYvY8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nEyoE-003qai-HN; Tue, 01 Feb 2022 20:27:22 +0100
-Date:   Tue, 1 Feb 2022 20:27:22 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Sunil Goutham <sgoutham@marvell.com>,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>
-Subject: Re: [PATCH] drivers: net: Replace acpi_bus_get_device()
-Message-ID: <YfmJmgE/KuS8G92w@lunn.ch>
-References: <3151721.aeNJFYEL58@kreacher>
+        id S229907AbiBATkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 14:40:08 -0500
+Received: from www62.your-server.de ([213.133.104.62]:35272 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229446AbiBATkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 14:40:08 -0500
+Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nEz0X-000AWp-Jy; Tue, 01 Feb 2022 20:40:05 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, roopa@nvidia.com, edumazet@google.com,
+        dsahern@kernel.org, john.fastabend@gmail.com,
+        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        syzbot+5239d0e1778a500d477a@syzkaller.appspotmail.com
+Subject: [PATCH net] net, neigh: Do not trigger immediate probes on NUD_FAILED from neigh_managed_work
+Date:   Tue,  1 Feb 2022 20:39:42 +0100
+Message-Id: <20220201193942.5055-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3151721.aeNJFYEL58@kreacher>
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26440/Tue Feb  1 10:29:16 2022)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 08:07:08PM +0100, Rafael J. Wysocki wrote:
-> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> 
-> Replace acpi_bus_get_device() that is going to be dropped with
-> acpi_fetch_acpi_dev().
-> 
-> No intentional functional impact.
-> 
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> ---
->  drivers/net/ethernet/cavium/thunder/thunder_bgx.c |    4 ++--
->  drivers/net/fjes/fjes_main.c                      |   10 +++-------
->  drivers/net/mdio/mdio-xgene.c                     |    8 +++-----
->  3 files changed, 8 insertions(+), 14 deletions(-)
-> 
-> Index: linux-pm/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-> ===================================================================
-> --- linux-pm.orig/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-> +++ linux-pm/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-> @@ -1407,9 +1407,9 @@ static acpi_status bgx_acpi_register_phy
->  {
->  	struct bgx *bgx = context;
->  	struct device *dev = &bgx->pdev->dev;
-> -	struct acpi_device *adev;
-> +	struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
+syzkaller was able to trigger a deadlock for NTF_MANAGED entries [0]:
 
-Hi Rafael
+  kworker/0:16/14617 is trying to acquire lock:
+  ffffffff8d4dd370 (&tbl->lock){++-.}-{2:2}, at: ___neigh_create+0x9e1/0x2990 net/core/neighbour.c:652
+  [...]
+  but task is already holding lock:
+  ffffffff8d4dd370 (&tbl->lock){++-.}-{2:2}, at: neigh_managed_work+0x35/0x250 net/core/neighbour.c:1572
 
-Since this is part of the networking subsystem, reverse christmas tree
-applies. Yes, this driver gets is wrong here, but we should not make
-it even worse. Please put this variable first.
+The neighbor entry turned to NUD_FAILED state, where __neigh_event_send()
+triggered an immediate probe as per commit cd28ca0a3dd1 ("neigh: reduce
+arp latency") via neigh_probe() given table lock was held.
 
-> Index: linux-pm/drivers/net/mdio/mdio-xgene.c
-> ===================================================================
-> --- linux-pm.orig/drivers/net/mdio/mdio-xgene.c
-> +++ linux-pm/drivers/net/mdio/mdio-xgene.c
-> @@ -280,15 +280,13 @@ static acpi_status acpi_register_phy(acp
->  				     void *context, void **ret)
->  {
->  	struct mii_bus *mdio = context;
-> -	struct acpi_device *adev;
-> +	struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
+One option to fix this situation is to defer the neigh_probe() back to
+the neigh_timer_handler() similarly as pre cd28ca0a3dd1. For the case
+of NTF_MANAGED, this deferral is acceptable given this only happens on
+actual failure state and regular / expected state is NUD_VALID with the
+entry already present.
 
-Here as well please.
+The fix adds a parameter to __neigh_event_send() in order to communicate
+whether immediate probe is allowed or disallowed. Existing call-sites
+of neigh_event_send() default as-is to immediate probe. However, the
+neigh_managed_work() disables it via use of neigh_event_send_probe().
 
-With those changes, you can add my Reviewed-by:
+[0] <TASK>
+  __dump_stack lib/dump_stack.c:88 [inline]
+  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+  print_deadlock_bug kernel/locking/lockdep.c:2956 [inline]
+  check_deadlock kernel/locking/lockdep.c:2999 [inline]
+  validate_chain kernel/locking/lockdep.c:3788 [inline]
+  __lock_acquire.cold+0x149/0x3ab kernel/locking/lockdep.c:5027
+  lock_acquire kernel/locking/lockdep.c:5639 [inline]
+  lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5604
+  __raw_write_lock_bh include/linux/rwlock_api_smp.h:202 [inline]
+  _raw_write_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:334
+  ___neigh_create+0x9e1/0x2990 net/core/neighbour.c:652
+  ip6_finish_output2+0x1070/0x14f0 net/ipv6/ip6_output.c:123
+  __ip6_finish_output net/ipv6/ip6_output.c:191 [inline]
+  __ip6_finish_output+0x61e/0xe90 net/ipv6/ip6_output.c:170
+  ip6_finish_output+0x32/0x200 net/ipv6/ip6_output.c:201
+  NF_HOOK_COND include/linux/netfilter.h:296 [inline]
+  ip6_output+0x1e4/0x530 net/ipv6/ip6_output.c:224
+  dst_output include/net/dst.h:451 [inline]
+  NF_HOOK include/linux/netfilter.h:307 [inline]
+  ndisc_send_skb+0xa99/0x17f0 net/ipv6/ndisc.c:508
+  ndisc_send_ns+0x3a9/0x840 net/ipv6/ndisc.c:650
+  ndisc_solicit+0x2cd/0x4f0 net/ipv6/ndisc.c:742
+  neigh_probe+0xc2/0x110 net/core/neighbour.c:1040
+  __neigh_event_send+0x37d/0x1570 net/core/neighbour.c:1201
+  neigh_event_send include/net/neighbour.h:470 [inline]
+  neigh_managed_work+0x162/0x250 net/core/neighbour.c:1574
+  process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
+  worker_thread+0x657/0x1110 kernel/workqueue.c:2454
+  kthread+0x2e9/0x3a0 kernel/kthread.c:377
+  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+  </TASK>
 
-Thanks
-     Andrew
+Fixes: 7482e3841d52 ("net, neigh: Add NTF_MANAGED flag for managed neighbor entries")
+Reported-by: syzbot+5239d0e1778a500d477a@syzkaller.appspotmail.com
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Roopa Prabhu <roopa@nvidia.com>
+---
+ include/net/neighbour.h | 18 +++++++++++++-----
+ net/core/neighbour.c    | 18 ++++++++++++------
+ 2 files changed, 25 insertions(+), 11 deletions(-)
+
+diff --git a/include/net/neighbour.h b/include/net/neighbour.h
+index 937389e04c8e..87419f7f5421 100644
+--- a/include/net/neighbour.h
++++ b/include/net/neighbour.h
+@@ -350,7 +350,8 @@ static inline struct neighbour *neigh_create(struct neigh_table *tbl,
+ 	return __neigh_create(tbl, pkey, dev, true);
+ }
+ void neigh_destroy(struct neighbour *neigh);
+-int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb);
++int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb,
++		       const bool immediate_ok);
+ int neigh_update(struct neighbour *neigh, const u8 *lladdr, u8 new, u32 flags,
+ 		 u32 nlmsg_pid);
+ void __neigh_set_probe_once(struct neighbour *neigh);
+@@ -460,17 +461,24 @@ static inline struct neighbour * neigh_clone(struct neighbour *neigh)
+ 
+ #define neigh_hold(n)	refcount_inc(&(n)->refcnt)
+ 
+-static inline int neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
++static __always_inline int neigh_event_send_probe(struct neighbour *neigh,
++						  struct sk_buff *skb,
++						  const bool immediate_ok)
+ {
+ 	unsigned long now = jiffies;
+-	
++
+ 	if (READ_ONCE(neigh->used) != now)
+ 		WRITE_ONCE(neigh->used, now);
+-	if (!(neigh->nud_state&(NUD_CONNECTED|NUD_DELAY|NUD_PROBE)))
+-		return __neigh_event_send(neigh, skb);
++	if (!(neigh->nud_state & (NUD_CONNECTED | NUD_DELAY | NUD_PROBE)))
++		return __neigh_event_send(neigh, skb, immediate_ok);
+ 	return 0;
+ }
+ 
++static inline int neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
++{
++	return neigh_event_send_probe(neigh, skb, true);
++}
++
+ #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+ static inline int neigh_hh_bridge(struct hh_cache *hh, struct sk_buff *skb)
+ {
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 213cb7b26b7a..088d10e4f1c0 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -1133,7 +1133,8 @@ static void neigh_timer_handler(struct timer_list *t)
+ 	neigh_release(neigh);
+ }
+ 
+-int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
++int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb,
++		       const bool immediate_ok)
+ {
+ 	int rc;
+ 	bool immediate_probe = false;
+@@ -1154,12 +1155,17 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
+ 			atomic_set(&neigh->probes,
+ 				   NEIGH_VAR(neigh->parms, UCAST_PROBES));
+ 			neigh_del_timer(neigh);
+-			neigh->nud_state     = NUD_INCOMPLETE;
++			neigh->nud_state = NUD_INCOMPLETE;
+ 			neigh->updated = now;
+-			next = now + max(NEIGH_VAR(neigh->parms, RETRANS_TIME),
+-					 HZ/100);
++			if (!immediate_ok) {
++				next = now + 1;
++			} else {
++				immediate_probe = true;
++				next = now + max(NEIGH_VAR(neigh->parms,
++							   RETRANS_TIME),
++						 HZ / 100);
++			}
+ 			neigh_add_timer(neigh, next);
+-			immediate_probe = true;
+ 		} else {
+ 			neigh->nud_state = NUD_FAILED;
+ 			neigh->updated = jiffies;
+@@ -1571,7 +1577,7 @@ static void neigh_managed_work(struct work_struct *work)
+ 
+ 	write_lock_bh(&tbl->lock);
+ 	list_for_each_entry(neigh, &tbl->managed_list, managed_list)
+-		neigh_event_send(neigh, NULL);
++		neigh_event_send_probe(neigh, NULL, false);
+ 	queue_delayed_work(system_power_efficient_wq, &tbl->managed_work,
+ 			   NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME));
+ 	write_unlock_bh(&tbl->lock);
+-- 
+2.27.0
+
