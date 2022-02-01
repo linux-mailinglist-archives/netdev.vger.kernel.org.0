@@ -2,68 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDBBA4A581E
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 08:53:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 973C54A5883
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 09:27:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235263AbiBAHxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 02:53:15 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49032 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234313AbiBAHxP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 02:53:15 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42542B82C0A
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 07:53:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62281C340EB;
-        Tue,  1 Feb 2022 07:53:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643701992;
-        bh=uaW9qAVFxjBGB8/pAocH71Fvm7l2OtnUkktpxgYo+hE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Iv5KI8hs96hlVGXpoFAqdbGgw3DKyqP5SjN4RT8hwGHQsgIP1aLHU3wDRtchHThan
-         I1zl1JAc4/D5XyGz3B55Iv4qJRpCVV1+OontWP2xWhr2mjK+3yEJ/rMenO48LCcJHe
-         hwZVlf55NavzKUinsAFMIJ9a8Oyilx4fEGOzvPmwRxm/sXLl3UymFVYm53mKBgXlY5
-         Q0aBx6Cr3pRvhzVwSrzjIoFsqOtZI1HtOz96V0Tfp2VRSCQMTyaywrfXjoMLTSgQri
-         xgsf1VazhF85usPVnjIq/ip0Tw+QAaa0qu4FF1n1SeacEvaED6/ZlfUX/wy956V333
-         rqo6tBuQjMyrw==
-Date:   Tue, 1 Feb 2022 09:53:08 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH ipsec-next] xfrm: delete not-used XFRM_OFFLOAD_IPV6 define
-Message-ID: <Yfjm5FKAc65whUAc@unreal>
-References: <31811e3cf276ae2af01574f4fbcb127b88d9c6b5.1643307803.git.leonro@nvidia.com>
- <20220201065836.GT1223722@gauss3.secunet.de>
- <YfjfqWRVr4KpkQC8@unreal>
+        id S235499AbiBAI1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 03:27:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235487AbiBAI1P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 03:27:15 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CBEC06173B
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 00:27:15 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id i62so48444368ybg.5
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 00:27:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=suhKPa/GhWuZlIaSuVAiryesgoPzo2u/NTw0KZ4ThEQ=;
+        b=MGWLoOBmTaOjus9jZX+Sl/SfYnSYpL3blUtKKHgwSWbVcKjQNsj1w3ll2AaGMdT6hn
+         Z2Rtq2QwqMo9xo+W/jak6ob7oktQNcRvnqT4LtcTL5kd8XVMZhPAOQOY5m+r7S+jnuTu
+         Q2azzig+BH19bLDtnyts8BgOrenBybJfTBbWJZ5L6kznEuBXb01S5Ncc810rL76hgT5W
+         5xPYyG7VMQw6/3a294haBbsNAdFGGg8unsJ8buW86Uuj9X9o9n8Lfc2YetF4i/0Eztnt
+         VZCLDuRkVxZVivYCUefEhNQPbjqDWrnh6xIgygMgeS/RXg9obS/tTCAY5QUMicOeCn2v
+         0+QQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=suhKPa/GhWuZlIaSuVAiryesgoPzo2u/NTw0KZ4ThEQ=;
+        b=bGWvoguhbB3gtEtYwLhr20P6xcb3WOtfslVBMviCIe3/SZAKmQGZx61zRThZaKTUYm
+         o0x93uoBntWunhcymJS5LpywBqGiopd3ct6k/HnHNmyLLx2Wez3KXeYU8r8gNqDscQBP
+         iwwbRsQAQ70Xw8gUTvsyS+npuE67N+67SWsAk+fOmiFoRey6UjhAvHtQhgGhnCB03Bky
+         RMkwhVDwLbVkpAICloD65Ssow8eW6S4A1C2viFV2uAvuH0Gw8QpjPIC7ZtPybGgviZ3L
+         GwONGGXw7G3UZb7aSR9c9dEk7bcwOmTA3j50zcdk/AXew81YSVW3mcXYMa8mRlvVKeEM
+         s5VQ==
+X-Gm-Message-State: AOAM530CEKRgO1P6eflBq1uxE88dQi0IpUNK90uksjLZNexKfDMh8+Sm
+        yvVVYDBjArYYZsWOfZEfw45L5ab43Ret7l6FhkQ=
+X-Google-Smtp-Source: ABdhPJzkMxr0JOs1Wh+fSvIUovuDLcBThdhbcHuFQA7zcjsjuWqYrqLB0HBybViEdT1+8KDoeGPtKUbxpbdiJpFmUqs=
+X-Received: by 2002:a25:cb12:: with SMTP id b18mr35250009ybg.439.1643704034477;
+ Tue, 01 Feb 2022 00:27:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfjfqWRVr4KpkQC8@unreal>
+Received: by 2002:a05:7110:4701:b0:126:1673:85a4 with HTTP; Tue, 1 Feb 2022
+ 00:27:13 -0800 (PST)
+Reply-To: sulemansolomonkante@gmail.com
+From:   "Mr. Suleman Solomon kante" <akinakanbi59@gmail.com>
+Date:   Tue, 1 Feb 2022 08:27:13 +0000
+Message-ID: <CADG6xhFQuV_Wn9KZfqOSBWoDRos4XN41gG-ZZF5vpi-eBocKPg@mail.gmail.com>
+Subject: Good Day To You
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 09:22:17AM +0200, Leon Romanovsky wrote:
-> On Tue, Feb 01, 2022 at 07:58:36AM +0100, Steffen Klassert wrote:
-> > On Thu, Jan 27, 2022 at 08:24:58PM +0200, Leon Romanovsky wrote:
-> > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > 
-> > > XFRM_OFFLOAD_IPV6 define was exposed in the commit mentioned in the
-> > > fixes line, but it is never been used both in the kernel and in the
-> > > user space. So delete it.
-> > 
-> > How can you be sure that is is not used in userspace? At least some
-> > versions of strongswan set that flag. So even if it is meaningless
-> > in the kernel, we can't remove it.
-> 
-> I looked over all net/* and include/uapi/* code with "git log -p" and didn't
-> see any use of this flag ever. 
+-- 
+Good Day To You
 
-And in my search on github, I didn't see anyone except strongswan who
-used this flag.
-
-Thanks
+Please i need your kind Assistance. I will be very glad if you can
+assist me to receive this sum of ( $22. Million US dollars.) into your
+bank account for the benefit of our both families, reply me if you are
+ready to receive this fund.
+solomon Kante
