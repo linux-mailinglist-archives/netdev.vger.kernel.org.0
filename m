@@ -2,61 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C32B64A6282
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 18:33:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41C764A62A0
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 18:38:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238033AbiBARd1 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 1 Feb 2022 12:33:27 -0500
-Received: from 200-35-77-146.static.telcel.net.ve ([200.35.77.146]:8327 "EHLO
-        svmailsar00.saren.gob.ve" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S233776AbiBARd0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 12:33:26 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by svmailsar00.saren.gob.ve (Postfix) with ESMTP id 11266183C63;
-        Tue,  1 Feb 2022 12:36:25 -0400 (-04)
-Received: from svmailsar00.saren.gob.ve ([127.0.0.1])
-        by localhost (svmailsar00.saren.gob.ve [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id KUVYG7FB86hD; Tue,  1 Feb 2022 12:36:24 -0400 (-04)
-Received: from localhost (localhost [127.0.0.1])
-        by svmailsar00.saren.gob.ve (Postfix) with ESMTP id 942D6183C74;
-        Tue,  1 Feb 2022 12:36:24 -0400 (-04)
-X-Virus-Scanned: amavisd-new at saren.gob.ve
-Received: from svmailsar00.saren.gob.ve ([127.0.0.1])
-        by localhost (svmailsar00.saren.gob.ve [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id lizavN4CZGwI; Tue,  1 Feb 2022 12:36:24 -0400 (-04)
-Received: from [100.93.54.123] (unknown [117.97.246.133])
-        by svmailsar00.saren.gob.ve (Postfix) with ESMTPSA id 91E9E183C63;
-        Tue,  1 Feb 2022 12:36:03 -0400 (-04)
-Content-Type: text/plain; charset="iso-8859-1"
+        id S241567AbiBARiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 12:38:09 -0500
+Received: from mga02.intel.com ([134.134.136.20]:11148 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241546AbiBARiJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Feb 2022 12:38:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643737089; x=1675273089;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=f6JJ74Do55mLqnLA7cDVFqNZSX5AA3VKgPum7Ymxq8A=;
+  b=Y21cW+cAnJjoIe+/AuwnaxE9uSuWouDgYesoAaS4q5dl+5GXgSGie9ef
+   UhM9TXOBayU7GFPUUbCOsRhGpm1BlyuSOP/6dclvzk1NA3h1kx//rPzHn
+   io0ciceH7MfARQ1n0Ab1wV7oTfihGVmbpKQa7r0+YeOZ5dXZGs1OHZL3v
+   Yws8V1OnbQyKEmeuoazrG3y0lcs1FlxHaA4LKdcnm4IyLFB9u3ldfjGVk
+   xo4hYJQipgASopvVNi+pogcM0L83v8FDE7mnIcEf6qoTPwBzmC3wqspvg
+   1juEgOxj5IBsIJrzlJ1FovzwauoBoLexCMdvF+QLQQdAVsidwOSiKPkpw
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="235141799"
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="235141799"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 09:38:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="482465887"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga006.jf.intel.com with ESMTP; 01 Feb 2022 09:38:07 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sasha.neftin@intel.com, vitaly.lifshits@intel.com
+Subject: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates 2022-02-01
+Date:   Tue,  1 Feb 2022 09:37:52 -0800
+Message-Id: <20220201173754.580305-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: =?utf-8?b?QVRFTkNJw5NO?=
-To:     Recipients <siglas@saren.gob.ve>
-From:   Correo administrador <siglas@saren.gob.ve>
-Date:   Tue, 01 Feb 2022 23:02:41 +0530
-Reply-To: sistemassadmins@mail2engineer.com
-Message-Id: <20220201163603.91E9E183C63@svmailsar00.saren.gob.ve>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ATENCIÓN;
+This series contains updates to e1000e driver only.
 
-Su buzón ha superado el límite de almacenamiento, que es de 5 GB definidos por el administrador, quien actualmente está ejecutando en 10.9GB, no puede ser capaz de enviar o recibir correo nuevo hasta que vuelva a validar su buzón de correo electrónico. Para revalidar su buzón de correo, envíe la siguiente información a continuación:
+Sasha removes CSME handshake with TGL platform as this is not supported
+and is causing hardware unit hangs to be reported.
 
-nombre:
-Nombre de usuario:
-contraseña:
-Confirmar contraseña:
-E-mail:
-teléfono:
+The following are changes since commit 881cc731df6af99a21622e9be25a23b81adcd10b:
+  net: phy: Fix qca8081 with speeds lower than 2.5Gb/s
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 1GbE
 
-Si usted no puede revalidar su buzón, el buzón se deshabilitará!
+Sasha Neftin (2):
+  e1000e: Separate ADP board type from TGP
+  e1000e: Handshake with CSME starts from ADL platforms
 
-Disculpa las molestias.
-Código de verificación: es:75439@2022
-Correo Soporte Técnico © 2022
+ drivers/net/ethernet/intel/e1000e/e1000.h   |  4 ++-
+ drivers/net/ethernet/intel/e1000e/ich8lan.c | 20 +++++++++++
+ drivers/net/ethernet/intel/e1000e/netdev.c  | 39 +++++++++++----------
+ 3 files changed, 44 insertions(+), 19 deletions(-)
 
-¡gracias
-Sistemas administrador
+-- 
+2.31.1
+
