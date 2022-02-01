@@ -2,104 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1CB54A665C
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 21:51:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B61434A6683
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 21:55:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240076AbiBAUvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 15:51:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
+        id S230006AbiBAUzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 15:55:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiBAUvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 15:51:08 -0500
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF74C061714;
-        Tue,  1 Feb 2022 12:51:08 -0800 (PST)
-Received: from [IPV6:2003:e9:d731:20df:8d81:5815:ac7:f110] (p200300e9d73120df8d8158150ac7f110.dip0.t-ipconnect.de [IPv6:2003:e9:d731:20df:8d81:5815:ac7:f110])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 54835C0438;
-        Tue,  1 Feb 2022 21:51:04 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1643748664;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3HDTHgdBGxYnR3NuSwzN7b6LwcRQTmdN3eI6HEnKCik=;
-        b=Nv2jprboaB8eFB7abg3NG+97frSogVpFvWhAkIn3SxHgG9E2uaBA27m8VJR26L9kxxML1t
-        13YkPItXmYBV52SQ8PY0j7qFMg4U2Q/JJKNXRx6J4gkuqArqsLVvN7HkNK+Nv4Tr3Hh8IB
-        factAh/S/eaTEnacEwqHxetF6ihatea0yoYkJUzZeTWuKtnr5PtnpNMTTwkXxH1zE3aECF
-        KSr5MqOsM0TzD13Ivg540hcecb8yasn0SHQBA3x8dADgXoU8Q2NZCuXGuLhUOpd9ywi8QA
-        4C4FYmf/y4ayjXo6vbZSED/NlxRtHaap3FATlXvOgnWfHNsAuWzAgWWlB+0MOQ==
-Message-ID: <fab37d38-0239-8be3-81aa-98d163bf5ca4@datenfreihafen.org>
-Date:   Tue, 1 Feb 2022 21:51:04 +0100
+        with ESMTP id S230014AbiBAUyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 15:54:54 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E98BC06173E
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 12:54:54 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id h12so18259002pjq.3
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 12:54:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GIsDKDJJ906n8rDktoO+wzfQ/bQlOPoH/WhlGNdvSuQ=;
+        b=C1rgX19uCzxC26eMC121f6fLG7IdfYgVgd8fIENIEreQseymkVryt/S0SPPJWuMpz9
+         Nir5/NsGwF9yH+73oYdsaH/3/MJBuVDELgZ4AEteh+/dLWJNIoxCjDW8D32ej5NqJNbO
+         Stvj1+NZmfubXFxuq7ofodQdbNbVAJzEOc3LaLGUC0hXv/OYD2tA8tddEiB4y6O5Blva
+         NXsIzj5paRcLX+ppnCftBWUJbRGN5XtAHdAxPVRn+E3hPl2AxZfNHYrXAscDlvZK74vv
+         Ui9akpOcaPeeo6+NOo8fzCUh+jLx6vJhBjV3Fy87FAiIQwfDgl88G/z4R5Vd87KTZcIB
+         UXRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GIsDKDJJ906n8rDktoO+wzfQ/bQlOPoH/WhlGNdvSuQ=;
+        b=oE8zf8qGpa/yZhESxvDFWLziFxW+kVg9udJ3G8PtV9N5bTk/C0eK9t0sh5Lx4oFqNa
+         Qf5NzH/g/NH5scEtiOuSq6D3YZROHsICGOoRjk+KzPI/zRiukmel7akoB/8BOASqtRG1
+         FQ5K/W26UK8P3OMtZrBDRttdIbsBUKaAQE2JkNXYCMU+MdSjPVxCp68XS48S3nyK16sm
+         nc4cYShw8RvY5AjPuChffSoY1gWTWa1RCK5ktpabKt5vlkS9PtwUwMqxuzzIHaR8Wodb
+         D2vC3/Q1g20D74uGlHpzYFff1XyGnEOhlgjX+1Yso78ZcKXeobWKp4qLmAoe5EMUXVck
+         GtEQ==
+X-Gm-Message-State: AOAM531u7AHMIq6Ahg8EN9+si87DrN1qOHDzpf4Xce97QW2nAd9e0eGP
+        m1UDqfqYcTjTMN184e66xDnPp2OYfUvg8l4ORDO9ig==
+X-Google-Smtp-Source: ABdhPJx2NTejkgNqXQMmFipMRsSvcla9sPcdEThKkmQFcOnG0Ds22smuJafHrYqLtk3n5gJx4vASYs1J/guDJ4lt5nM=
+X-Received: by 2002:a17:90b:4a82:: with SMTP id lp2mr4426203pjb.179.1643748893933;
+ Tue, 01 Feb 2022 12:54:53 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH wpan-next v2 5/5] net: ieee802154: Drop duration settings
- when the core does it already
-Content-Language: en-US
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        linux-wpan@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>
-References: <20220128110825.1120678-1-miquel.raynal@bootlin.com>
- <20220128110825.1120678-6-miquel.raynal@bootlin.com>
- <20220201184014.72b3d9a3@xps13>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220201184014.72b3d9a3@xps13>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20210421055047.22858-1-ms@dev.tdt.de>
+In-Reply-To: <20210421055047.22858-1-ms@dev.tdt.de>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Tue, 1 Feb 2022 12:54:42 -0800
+Message-ID: <CAJ+vNU1=4sDmGXEzPwp0SCq4_p0J-odw-GLM=Qyi7zQnVHwQRA@mail.gmail.com>
+Subject: Re: [PATCH net v3] net: phy: intel-xway: enable integrated led functions
+To:     Martin Schiller <ms@dev.tdt.de>
+Cc:     Hauke Mehrtens <hauke@hauke-m.de>,
+        martin.blumenstingl@googlemail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, hkallweit1@gmail.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Apr 20, 2021 at 10:51 PM Martin Schiller <ms@dev.tdt.de> wrote:
+>
+> The Intel xway phys offer the possibility to deactivate the integrated
+> LED function and to control the LEDs manually.
+> If this was set by the bootloader, it must be ensured that the
+> integrated LED function is enabled for all LEDs when loading the driver.
+>
+> Before commit 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+> the LEDs were enabled by a soft-reset of the PHY (using
+> genphy_soft_reset). Initialize the XWAY_MDIO_LED with it's default
+> value (which is applied during a soft reset) instead of adding back
+> the soft reset. This brings back the default LED configuration while
+> still preventing an excessive amount of soft resets.
+>
+> Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+> ---
+>
+> Changes to v2:
+> o Fixed commit message
+> o Fixed email recipients once again.
+>
+> Changes to v1:
+> Added additional email recipients.
+>
+> ---
+>  drivers/net/phy/intel-xway.c | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
+>
+> diff --git a/drivers/net/phy/intel-xway.c b/drivers/net/phy/intel-xway.c
+> index 6eac50d4b42f..d453ec016168 100644
+> --- a/drivers/net/phy/intel-xway.c
+> +++ b/drivers/net/phy/intel-xway.c
+> @@ -11,6 +11,18 @@
+>
+>  #define XWAY_MDIO_IMASK                        0x19    /* interrupt mask */
+>  #define XWAY_MDIO_ISTAT                        0x1A    /* interrupt status */
+> +#define XWAY_MDIO_LED                  0x1B    /* led control */
+> +
+> +/* bit 15:12 are reserved */
+> +#define XWAY_MDIO_LED_LED3_EN          BIT(11) /* Enable the integrated function of LED3 */
+> +#define XWAY_MDIO_LED_LED2_EN          BIT(10) /* Enable the integrated function of LED2 */
+> +#define XWAY_MDIO_LED_LED1_EN          BIT(9)  /* Enable the integrated function of LED1 */
+> +#define XWAY_MDIO_LED_LED0_EN          BIT(8)  /* Enable the integrated function of LED0 */
+> +/* bit 7:4 are reserved */
+> +#define XWAY_MDIO_LED_LED3_DA          BIT(3)  /* Direct Access to LED3 */
+> +#define XWAY_MDIO_LED_LED2_DA          BIT(2)  /* Direct Access to LED2 */
+> +#define XWAY_MDIO_LED_LED1_DA          BIT(1)  /* Direct Access to LED1 */
+> +#define XWAY_MDIO_LED_LED0_DA          BIT(0)  /* Direct Access to LED0 */
+>
+>  #define XWAY_MDIO_INIT_WOL             BIT(15) /* Wake-On-LAN */
+>  #define XWAY_MDIO_INIT_MSRE            BIT(14)
+> @@ -159,6 +171,15 @@ static int xway_gphy_config_init(struct phy_device *phydev)
+>         /* Clear all pending interrupts */
+>         phy_read(phydev, XWAY_MDIO_ISTAT);
+>
+> +       /* Ensure that integrated led function is enabled for all leds */
+> +       err = phy_write(phydev, XWAY_MDIO_LED,
+> +                       XWAY_MDIO_LED_LED0_EN |
+> +                       XWAY_MDIO_LED_LED1_EN |
+> +                       XWAY_MDIO_LED_LED2_EN |
+> +                       XWAY_MDIO_LED_LED3_EN);
+> +       if (err)
+> +               return err;
+> +
+>         phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LEDCH,
+>                       XWAY_MMD_LEDCH_NACS_NONE |
+>                       XWAY_MMD_LEDCH_SBF_F02HZ |
+> --
+> 2.20.1
+>
 
-Hello.
+Hi Martin,
 
-On 01.02.22 18:40, Miquel Raynal wrote:
-> Hi,
-> 
->> --- a/drivers/net/ieee802154/ca8210.c
->> +++ b/drivers/net/ieee802154/ca8210.c
->> @@ -2978,7 +2978,6 @@ static void ca8210_hw_setup(struct ieee802154_hw *ca8210_hw)
->>   	ca8210_hw->phy->cca.mode = NL802154_CCA_ENERGY_CARRIER;
->>   	ca8210_hw->phy->cca.opt = NL802154_CCA_OPT_ENERGY_CARRIER_AND;
->>   	ca8210_hw->phy->cca_ed_level = -9800;
->> -	ca8210_hw->phy->symbol_duration = 16 * NSEC_PER_USEC;
->>   	ca8210_hw->phy->lifs_period = 40;
->>   	ca8210_hw->phy->sifs_period = 12;
-> 
-> I've missed that error                ^^
-> 
-> This driver should be fixed first (that's probably a copy/paste of the
-> error from the other driver which did the same).
-> 
-> As the rest of the series will depend on this fix (or conflict) we could
-> merge it through wpan-next anyway, if you don't mind, as it was there
-> since 2017 and these numbers had no real impact so far (I believe).
+Similar to my response in another thread to how be393dd685d2 ("net:
+phy: intel-xway: Add RGMII internal delay configuration") which
+changes the tx/rx interna delays to default values of 2ns if the
+common delay properties are not found in the dt and thus may override
+what boot firmware configured, I do not like the fact that this patch
+just overrides LED configuration that boot firmware may have setup.
 
-Not sure I follow this logic. The fix you do is being removed in 4/4 of 
-your v3 set again. So it would only be in place for these two in between 
-commits.
+I am aware that there is not much consistency in PHY's for LED
+configuration which makes coming up with common dt bindings impossible
+but I feel that if PHY drivers add LED configuration they should only
+apply it if new bindings are found instructing it to. Perhaps it makes
+sense to at least create a common binding that allows configuration of
+LED's here?
 
-As you laid out above this has been in place since 2017 and the number 
-have no real impact. Getting the fix in wpan-next to remove it again two 
-patches later would not be needed here.
+As a person responsible for boot firmware through kernel for a set of
+boards I continue to do the following to keep Linux from mucking with
+various PHY configurations:
+- remove PHY reset pins from Linux DT's to keep Linux from hard resetting PHY's
+- disabling PHY drivers
 
-If you would like to have this fixed for 5.16 and older stable kernels I 
-could go ahead and apply it to wpan and let it trickle down into stable 
-trees. We would have to deal with either a merge of net into net-next or 
-with a merge conflicts when sending the pull request. Both can be done.
+What are your thoughts about this?
 
-But given the circumstances above I have no problem to drop this fix 
-completely and have it fixed implicitly with the rest of the patchset.
+Best regards,
 
-regards
-Stefan Schmidt
+Tim
