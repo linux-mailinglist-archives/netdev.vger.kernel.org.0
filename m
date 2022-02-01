@@ -2,141 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 750F74A5D67
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 14:26:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BAF04A5DB5
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 14:52:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238596AbiBAN0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 08:26:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:41592 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238435AbiBAN0h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 08:26:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643721996;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=t4DZwBWjH4KMtaPN0r4y8wXSGSfdg/Ee8aiJ79lHN9s=;
-        b=GXH0JeuHxJo3EKtLBdB4sRkRCeFErh9kwi1o5LVejiq9n9MXOT9yD/6nmfXJqtvkXDSAV6
-        cpg63kHTImYVBe+FYnylVQSRYdfmdxPOhgBuQYWsRetkJCWYERVZWsMLucxjkt/dB9Mcoy
-        KSB0K/G6BXsz2y8S0a4iWSpFFhiVyV8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-605-Ps4YUhxlNiGFYKnj5GBr2g-1; Tue, 01 Feb 2022 08:26:33 -0500
-X-MC-Unique: Ps4YUhxlNiGFYKnj5GBr2g-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9E1D81091DA3;
-        Tue,  1 Feb 2022 13:26:31 +0000 (UTC)
-Received: from localhost (unknown [10.39.194.79])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 38EF978DDD;
-        Tue,  1 Feb 2022 13:26:31 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
+        id S238917AbiBANwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 08:52:35 -0500
+Received: from mail-mw2nam10on2088.outbound.protection.outlook.com ([40.107.94.88]:42346
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230073AbiBANwe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Feb 2022 08:52:34 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f7xTOyBgEWWqP6tAYKRrs1Uk5El7zL8B+WH+aGzhME4dUkwE/pIeyuH0oVPvgky6c4hBKSzv7pxdl4kEV+Lij1LKfGCGsW3vMFIz8lD9rNwOpE1m16TNVYop0xiQn/TJP/M1om8qFSDQ9eLwmCOXmu7oJURMMQkmQEvcz+9Ucb9sOW1Q6YoTzvXxnH1lqd37leZ1GYEze3HN2WR2vsolk1PbNVrZOxdRk1QM9NZegNds9lUwRP8B8v8nKU74ZiHjNRtRWt5r2Z8DZgXUNeEldpkPDqIgngt8dIapBoNB9tAO0aYlGFvlcCWSLaatnqRXBm4HqO0KqZht4diLE1f6Tw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1uwUmdNPzFOR6HUIUrRfFN7oDasYymCdrJqOyWkbgjk=;
+ b=njfyJLMIrdnjiEvbPknev+NXIybZ7nzVeSESm9o7QGaO/h3VQbMF2z45IncmD+9ZSeiClAl09VauQRAKNt2RXzTHo8Ih/itQ8kr8n85YrqZutd/5pb7CIz3vAipbY21ecn+jWdW6NFsyfToa0ajddDhlxxzRtpuSIYDSgzAwDtJfmMKQ3m4vNZd2zGovVXRAZR0F7mZJXawpAdbVzyZt7O8x0Ots/rdPyl5+A+wPHk9PtvHj5zUyzs6rIDlRmbHK9lz61WNJxS6q/gGcJWzs5Kihn+FTq6kfzwK29ql1LRTF17t/R/JgybETdbr2PujmFVDmCg/ic/Evl1RSk2X9Nw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1uwUmdNPzFOR6HUIUrRfFN7oDasYymCdrJqOyWkbgjk=;
+ b=uGbHrQeZjNAi+1PrdpKW2Occ5X1A9nKU2A5CQzCS+F8pjYxfmv+FQq1ajqKvGzqKGL17ph5a+IdAnXV9iNrHqGm81+wXG+oggMY8XptCDYSws4m4Mcb0hDRgMCBM3vPhOeXhkV7ZX/KcPhk5+kEO1ufHWq4DbPmCRihQ0fagzQcC8aE5AcUWz8M9dTn4QcYDPVXFNwaHBAKHs0G2m2fA+oPvPa1UieRJ5Bu3MqEXrXsBv5Ill7CUyQAtTK53JoVgQSGl8nM+Ae2QVNtPpd7XwDqz5TkwgcVtZCYftCrtjDLZ1I+sw7jCFGtsGutFZcQBiATvJhLtXDqH5gvC+E0q6w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DM5PR12MB1740.namprd12.prod.outlook.com (2603:10b6:3:10f::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Tue, 1 Feb
+ 2022 13:52:33 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3%4]) with mapi id 15.20.4930.022; Tue, 1 Feb 2022
+ 13:52:33 +0000
+Date:   Tue, 1 Feb 2022 09:52:31 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Cornelia Huck <cohuck@redhat.com>
 Cc:     Yishai Hadas <yishaih@nvidia.com>, alex.williamson@redhat.com,
         bhelgaas@google.com, saeedm@nvidia.com, linux-pci@vger.kernel.org,
         kvm@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
         leonro@nvidia.com, kwankhede@nvidia.com, mgurtovoy@nvidia.com,
         maorg@nvidia.com
 Subject: Re: [PATCH V6 mlx5-next 10/15] vfio: Remove migration protocol v1
-In-Reply-To: <20220201125444.GE1786498@nvidia.com>
-Organization: Red Hat GmbH
+Message-ID: <20220201135231.GF1786498@nvidia.com>
 References: <20220130160826.32449-1-yishaih@nvidia.com>
- <20220130160826.32449-11-yishaih@nvidia.com> <874k5izv8m.fsf@redhat.com>
- <20220201121325.GB1786498@nvidia.com> <87sft2yd50.fsf@redhat.com>
+ <20220130160826.32449-11-yishaih@nvidia.com>
+ <874k5izv8m.fsf@redhat.com>
+ <20220201121325.GB1786498@nvidia.com>
+ <87sft2yd50.fsf@redhat.com>
  <20220201125444.GE1786498@nvidia.com>
-User-Agent: Notmuch/0.34 (https://notmuchmail.org)
-Date:   Tue, 01 Feb 2022 14:26:29 +0100
-Message-ID: <87mtjayayi.fsf@redhat.com>
+ <87mtjayayi.fsf@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87mtjayayi.fsf@redhat.com>
+X-ClientProxiedBy: BLAPR03CA0100.namprd03.prod.outlook.com
+ (2603:10b6:208:32a::15) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ac5b44db-db98-4f4f-1136-08d9e58a1872
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1740:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB1740EB3B86B9EF2E0A440DA4C2269@DM5PR12MB1740.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: X2lNUIJHa4KYMpwk6Q1dIboA2R90kysPXmnR7EzACY2jDMVmBcHjC2YHEX4GPQFu5BabDY6cNuui9MtDy8iFNF+eNqqGZEjaTjsnd3sKFsrcOgXGM8aT86fCuXXtWPmQUrDDs9FDgwYMYqzUPfuuOLLPMZhQ6NQ+i1AHF/LciT1bLqA+Io1SqrtODi68woYRoeW1HtwN6dOu+tqpMmXM/MMsajpV9kYjm+2yhUnzZS0PSijlAQTzMvoeTnJxRIDSXrPv6/e07aTuD5ZXN2w7YZAA3ckU6Qbo7QYgfF0U/Vu07ArZ/SO4p9lo5E23WGJEk8DH2i5BtA8vLj3sgc/VYJmQK7jxuOXmQiAaPz5oHZee/kPLp6Bs0rzgc751PiUxRncBg+z+8VtK1cFt+/11cAMnQBwozd0OCDqVAjBB4s121lKObHycXldJs4PwAytyxuYrykFmZDtSSCYCnasX4SK27vUT1/p4Rl5AZTv9xLyao1wvFUYT8w14EQFla8Al5UwAfn7AktZdNDqz0gjmvNBzxWAaOfQDvXE4Uj6bQuT+GUsY82SzRCCHnwBLv29JpKBqUE2y0pyJMe6U/cdIJZqm3LOCfcfaOKOY8zsT+i/cTy6oQhBfmWGuxyA3Rmn0ymulJf4ZOUpENzTFy+6M4Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(66476007)(66556008)(6486002)(316002)(86362001)(508600001)(4326008)(36756003)(66946007)(8936002)(8676002)(6916009)(6506007)(5660300002)(1076003)(186003)(26005)(6512007)(107886003)(4744005)(2616005)(2906002)(83380400001)(33656002)(20210929001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0rQejb23VY8rUAw2uUc5jgdFpkt0i3rFOzsCF1MERnceY7lALK8HGESoYRov?=
+ =?us-ascii?Q?5VZlp3/LX1I9LL2EbKCVm+RM1Nl5jpPk+6gUoRnxpKycGNzfcw5FDRgXgoTS?=
+ =?us-ascii?Q?hjZ9uI4Hc7gHHjqxR6Es4giNis+7pr6meC2FzYhMSqw5Dkx8m6lzKa06dCyA?=
+ =?us-ascii?Q?+geAz6UZQ2LXQqZpqdT8sGqiTGbFRNTLkYWwzKTvd8N4KflRI5JzQQrgLSOh?=
+ =?us-ascii?Q?IAEYWR5vjlcmqekUiLvIBh++hHUvBAEd1Jk+I7VH0Vne/oNL0cC6sH3cUydi?=
+ =?us-ascii?Q?2iSGO00hDSTdMLZvhQOfjZMLBnicBcoFX46ZB876VF7vhepmbayNDEdX3xZX?=
+ =?us-ascii?Q?uglER2l0yiLVsVGUGlVzjdBEd9NXRbabfSQC3CKtfOgMKvkcvMp2vCexK70d?=
+ =?us-ascii?Q?ju5EWvXDjGAoVgk5jpWoWO8Zm2jQCZdpNB89PuA1pwTfuwLC7SPeFE2SQCLK?=
+ =?us-ascii?Q?yIShae1ErPYMdg62qVZZVtUXBc0lY02Opr7PWLI13TqI9neMqAxQfrY97sn/?=
+ =?us-ascii?Q?q/WXnyBVHkwnSEfpwN+ddwswdgNjSL+lt+gLEbkHG3LY+KH7RnrcgEnt7wM5?=
+ =?us-ascii?Q?8wt1I56tmeNqNNf+nLwiHYBYBII1qLEkUcIm6Bd2n0pZFqvzpo5fjg+lDxAO?=
+ =?us-ascii?Q?mwnN1PHdAw1v4m0CCn9LuiuTTUxC64SuN7ISX7NIdhy+sCl/ijqz6GHnGzU7?=
+ =?us-ascii?Q?4uvzM7V/zK59Y3naa3k8QZlMuAbRno8k07D5x7L6MtIXj6U4xrGGpVamddor?=
+ =?us-ascii?Q?hplM+7YsHhhkMTGjIzhiTdjVaK0I9ivkKD82uZYTu9d0Br7vv+joCW022OQb?=
+ =?us-ascii?Q?fExXJFgIGQ8X3aUsv1pnie3shgRSDWGlf5CUO8GW3NCBvaAv+AwOFb1b1/QL?=
+ =?us-ascii?Q?Hb1ozTG4qjqR1kHkidCTpA3nuMCBJOM6GvbPkznYCMbGIAMA5NI//w3c6tP5?=
+ =?us-ascii?Q?PeIKy4nuggXnKSdzYPV6jOjxO7LyaIPUPAyxfntxmkhS0M5oWe0N0gy/fpZQ?=
+ =?us-ascii?Q?XJJ+1AotVAX11Oyw0Oc02kbSSBE3Q4fKNsaH3wZHwO5ZhjuunkmSKQShRR+r?=
+ =?us-ascii?Q?y1FzWerEgASnGOsSKzj8omJsE7+/X97zcTP6ykvCW82tw+odwt2LWtMGK22D?=
+ =?us-ascii?Q?9QAhKB35fj4wx8eJWyFOwRCQgt/E5z3UGmNAjfqCwJltd/DTUYYKGZOANYrf?=
+ =?us-ascii?Q?1aNJvvVnpLIgwpHyTShxe6QzImejeogszZ6VIdjkVV4vRGMDSgphXpV8V1gQ?=
+ =?us-ascii?Q?cVhMqmZi/lSWJiTyXzg9RDBT7BNehbHD8bQWdf7K2O+t/+FCpRzcxNlxbs4A?=
+ =?us-ascii?Q?W8nxRInn3i6V4+r2K0Q9eLYjKKStJeU8klZP4oVErUIlYUHATNh+URQjrTlM?=
+ =?us-ascii?Q?30S3IUdLOtH+itMBOhPk5x8pbfPaUn7pRngtTQU8lqnPE2PEJGn+S9hwS+ZA?=
+ =?us-ascii?Q?Kyhe8XgOMekkfODPVUsyb/a8uXewNUFLWUEwbIWcJWTKhdEbFISF/A21AQ7b?=
+ =?us-ascii?Q?2cHmxwm3EQ4qYQIn3l8Z26Jbky34aAVqwb9n5rICA7OVy/aWkfgdtObQLAuh?=
+ =?us-ascii?Q?+TekNDLVzIDZv3bj4r8=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ac5b44db-db98-4f4f-1136-08d9e58a1872
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2022 13:52:32.9574
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LUO0nZzLR30PN41wLm73MA48c742aTrPwB8SUIxglS0Q/AK/D+GL5cZQ4/Hd1GXi
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1740
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 01 2022, Jason Gunthorpe <jgg@nvidia.com> wrote:
+On Tue, Feb 01, 2022 at 02:26:29PM +0100, Cornelia Huck wrote:
 
-> On Tue, Feb 01, 2022 at 01:39:23PM +0100, Cornelia Huck wrote:
->> On Tue, Feb 01 2022, Jason Gunthorpe <jgg@nvidia.com> wrote:
->> 
->> > On Tue, Feb 01, 2022 at 12:23:05PM +0100, Cornelia Huck wrote:
->> >> On Sun, Jan 30 2022, Yishai Hadas <yishaih@nvidia.com> wrote:
->> >> 
->> >> > From: Jason Gunthorpe <jgg@nvidia.com>
->> >> >
->> >> > v1 was never implemented and is replaced by v2.
->> >> >
->> >> > The old uAPI definitions are removed from the header file. As per Linus's
->> >> > past remarks we do not have a hard requirement to retain compilation
->> >> > compatibility in uapi headers and qemu is already following Linus's
->> >> > preferred model of copying the kernel headers.
->> >> 
->> >> If we are all in agreement that we will replace v1 with v2 (and I think
->> >> we are), we probably should remove the x-enable-migration stuff in QEMU
->> >> sooner rather than later, to avoid leaving a trap for the next
->> >> unsuspecting person trying to update the headers.
->> >
->> > Once we have agreement on the kernel patch we plan to send a QEMU
->> > patch making it support the v2 interface and the migration
->> > non-experimental. We are also working to fixing the error paths, at
->> > least least within the limitations of the current qemu design.
->> 
->> I'd argue that just ripping out the old interface first would be easier,
->> as it does not require us to synchronize with a headers sync (and does
->> not require to synchronize a headers sync with ripping it out...)
->
-> We haven't worked out the best way to organize the qemu patch series,
-> currently it is just one patch that updates everything together, but
-> that is perhaps a bit too big...
->
-> I have thought that a 3 patch series deleting the existing v1 code and
-> then readding it is a potential option, but we don't change
-> everything, just almost everything..
+> > We can certainly defer the kernels removal patch for a release if it
+> > makes qemu's life easier?
+> 
+> No, I'm only talking about the QEMU implementation (i.e. the code that
+> uses the v1 definitions and exposes x-enable-migration). Any change in
+> the headers needs to be done via a sync with upstream Linux.
 
-Even in that case, removing the old code and adding the new one is
-probably much easier to review. (Also, you obviously need to have the
-header update in between those two stages.)
+If we leave the v1 and v2 defs in the kernel header then qemu can sync
+and do the trivial rename and keep going as-is.
 
->
->> > The v1 support should remain in old releases as it is being used in
->> > the field "experimentally".
->> 
->> Of course; it would be hard to rip it out retroactively :)
->> 
->> But it should really be gone in QEMU 7.0.
->
-> Seems like you are arguing from both sides, we can't put the v2 in to
-> 7.0 because Linus has not accepted it but we have to rip the v1 out
-> even though Linus hasn't accepted that?
->
-> We can certainly defer the kernels removal patch for a release if it
-> makes qemu's life easier?
+Then we can come with the patches to qemu update to v2, however that
+looks.
 
-No, I'm only talking about the QEMU implementation (i.e. the code that
-uses the v1 definitions and exposes x-enable-migration). Any change in
-the headers needs to be done via a sync with upstream Linux.
+We'll clean the kernel header in the next cylce.
 
->
->> Considering adding the v2 uapi, we might get unlucky: The Linux 5.18
->> merge window will likely be in mid-late March (and we cannot run a
->> headers sync before the patches hit Linus' tree), while QEMU 7.0 will
->> likely enter freeze in mid-late March as well. So there's a non-zero
->> chance that the new uapi will need to be deferred to 7.1.
->
-> Usually in rdma land we start advancing the user side once the kernel
-> patches hit the kernel maintainer tree, not Linus's. I run a
-> non-rebasing tree so that gives a permanent git hash. It works well
-> enough and avoids these kinds of artificial delays.
+OK?
 
-QEMU policy is "it must be in Linus' tree [*]", because we run a full
-header sync. We have been bitten by premature updates in the
-past. Updates of only parts of the headers are only acceptable during
-development of a patch series, and must be marked as "will be replaced
-with a proper header sync".
-
-[*] Preferrably a (full or -rc) release, but the very minimum is a git
-hash from his tree.
-
+Jason
