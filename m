@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADBE64A5ECB
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 16:02:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F19094A5ECF
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 16:02:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239630AbiBAPCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 10:02:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60930 "EHLO
+        id S239635AbiBAPCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 10:02:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239623AbiBAPCK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 10:02:10 -0500
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDAC4C06173E
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 07:02:09 -0800 (PST)
-Received: by mail-il1-x12c.google.com with SMTP id w5so14522443ilo.2
-        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 07:02:09 -0800 (PST)
+        with ESMTP id S239636AbiBAPCL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 10:02:11 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51703C06173D
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 07:02:11 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id d188so21505775iof.7
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 07:02:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=60gQPScJR3F303GKBNMY8mtN9axjs8XpxQhhJU+IfXI=;
-        b=BeHoCfQFH13Y7FrzpMVBH4Hp1elpnOhRVdRJ7eNs4HOmOfNybE78UTbsbJZDpjgx8n
-         bHNK1qh7ZNhXF1JkFzWjABXasSl6PnQHMyxuYiAxdJrVeKeJTkWkeJJaBMm+X6SjltGw
-         5ieiqByBaC52N8ZUseDBjTr7v3kdacx9+dam1D0oChEyLJjgfenBGkCDLC3r+ZisdAJE
-         kEDCumgHNMRUP7Gy7dqOXpsz/rcInOP9CvDrOoaYKsK5k2hmi50TSdDYKK6RdGgY5wIU
-         Z2wvFdX81+bYeeBemAWtUQDfpk+tW+duVuzyFXVpYkO+1GH/1R7QKxTTlHnNDdqvO/VE
-         iGFQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=MLEfOvs0XYTBMi37IYE0nxh2vKRdvGYr4hL4oQxHa8M=;
+        b=ytR9ybKf78e9r81Jz1vLmp3ngHBYNuUbyHoXl0+O4rFQB6Vs/4C7C1Ecd9rXJcbbig
+         YGojHqXI/UcsZAlFVi6QT0jyJprhWEoJ6mM0GBmachNrlLMrvkuvaaDBJMcnJOtb+MT1
+         l/l+UU9EAaIk/tCTmy7F6tUZhTEaJ8+KclYhuj/Xs013OY7RIcrqq6nrmGk0hw4+Evc6
+         u7F+0nn+IuRWx+0lSZkx9VQXlzcutd7lJ5T+adOPdCBOQF9tSkOa/D/O5zwX5+h4p3Dw
+         noH1d0V7Iv04n5Hh97cQJFj4fs1S7GK59N6L8HHZzcFNI0Uo16GuaDszeSV3e4vl1pDY
+         QUdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=60gQPScJR3F303GKBNMY8mtN9axjs8XpxQhhJU+IfXI=;
-        b=vVAZiS2ID5CFk54+H5c6OKo18xCenCX/iJ0OGU7ZxIVY+ZsEi+hi+DNMSJTMpEjjCp
-         J89X0ZzW91GCWuZO4qtBYM/XMVbtAHERi0JZpNz/c3zk3I/g/+wxwX0jY6Zqzqgd6NMP
-         SIQfb/urOdh894j/VwsHWYoTvBS55TUIFIYR+sBswQlA2sC34yhGzjr/rEpw1Oyvxv16
-         Oweb6wCW65/9tcdoSSaVgXbB0fv/mbZFMmQp9JFmlufFWhbeYt2aiAbVJ/ua4PvBrbt1
-         HrZrkuacw3ynvtgrV0e6srCcCfN4Fite1+DB2T9mXTmoZ+Yq0XJ2Q5mprNRMHmDhBx/D
-         LH8A==
-X-Gm-Message-State: AOAM530wZnf8UG46MCib0NEvzW9y78MS42+EruIMFMgUyDW3CAHVHkX0
-        Vpk4RFIyAkc2bptaKfKBgRwNFg==
-X-Google-Smtp-Source: ABdhPJypuovSNprWPJ4ZfTl29TUgR71NXnWLIVyDddhhtr4F/46MzzD+HZ0yqoYQRPLnrfq1tQzi4A==
-X-Received: by 2002:a05:6e02:20c9:: with SMTP id 9mr11694728ilq.267.1643727729279;
-        Tue, 01 Feb 2022 07:02:09 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=MLEfOvs0XYTBMi37IYE0nxh2vKRdvGYr4hL4oQxHa8M=;
+        b=vgwS3eMHlNk++apnXx4fD9yrvfHHzOipZcel8zzlaZSExd3uiYOWBqpHkwqzd25ESh
+         8oA9b9UmgAQbjyR1CJ7sOaVscE+7AOuNscl5I1lUJxVnnD17gJaEKUdJy+q9VoRnWxQL
+         soRrtFNP5UmsLI7psjI9xVTPWuXSL7siS46C0/0+nGXo+EWeg2nk9Wdp0dASPqvn2RhS
+         LUS2CKdulf0+nHlU/X/y6NBCxxYyjpuQfQqk1Lvt4r/9RfKxBq1vlwOFNRAHzhbWbU61
+         3sks6c5ADL1jo96WErsq9qy4AjHcNtq7XAi1NWCaBNc4q3YF05ArmsTIyXWtS7BDXWTw
+         8y4Q==
+X-Gm-Message-State: AOAM531AmW+K37mWSjmGJaOmZPPC/KfiuJO7pchA042xkC08PgXObvtl
+        aay5i/ZFiGCNvmk64InZuEFOsg==
+X-Google-Smtp-Source: ABdhPJx88GjpHLi9TGbQVzWh0R/FUwA9VTi13g/mfPQwP/mDrRHrsVDnZ9O+iWUbx3B492hm38AOZA==
+X-Received: by 2002:a02:9645:: with SMTP id c63mr12719886jai.260.1643727730766;
+        Tue, 01 Feb 2022 07:02:10 -0800 (PST)
 Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id e17sm19141307ilm.67.2022.02.01.07.02.07
+        by smtp.gmail.com with ESMTPSA id e17sm19141307ilm.67.2022.02.01.07.02.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 07:02:08 -0800 (PST)
+        Tue, 01 Feb 2022 07:02:10 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     robh+dt@kernel.org, davem@davemloft.net, kuba@kernel.org
 Cc:     bjorn.andersson@linaro.org, agross@kernel.org, mka@chromium.org,
@@ -55,36 +55,52 @@ Cc:     bjorn.andersson@linaro.org, agross@kernel.org, mka@chromium.org,
         subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net v2 0/2] net: ipa: enable register retention
-Date:   Tue,  1 Feb 2022 09:02:03 -0600
-Message-Id: <20220201150205.468403-1-elder@linaro.org>
+Subject: [PATCH net v2 1/2] dt-bindings: net: qcom,ipa: add optional qcom,qmp property
+Date:   Tue,  1 Feb 2022 09:02:04 -0600
+Message-Id: <20220201150205.468403-2-elder@linaro.org>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220201150205.468403-1-elder@linaro.org>
+References: <20220201150205.468403-1-elder@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With runtime power management in place, we sometimes need to issue
-a command to enable retention of IPA register values before power
-collapse.  This requires a new Device Tree property, whose presence
-will also be used to signal that the command is required.
+For some systems, the IPA driver must make a request to ensure that
+its registers are retained across power collapse of the IPA hardware.
+On such systems, we'll use the existence of the "qcom,qmp" property
+as a signal that this request is required.
 
-Version 2 is exactly the same as version 1, but this version is
-also being sent to the devicetree mailing list.
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ Documentation/devicetree/bindings/net/qcom,ipa.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-					-Alex
-
-Alex Elder (2):
-  dt-bindings: net: qcom,ipa: add optional qcom,qmp property
-  net: ipa: request IPA register values be retained
-
- .../devicetree/bindings/net/qcom,ipa.yaml     |  6 +++
- drivers/net/ipa/ipa_power.c                   | 52 +++++++++++++++++++
- drivers/net/ipa/ipa_power.h                   |  7 +++
- drivers/net/ipa/ipa_uc.c                      |  5 ++
- 4 files changed, 70 insertions(+)
-
+diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+index b86edf67ce626..58ecc62adfaae 100644
+--- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
++++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+@@ -107,6 +107,10 @@ properties:
+           - const: imem
+           - const: config
+ 
++  qcom,qmp:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: phandle to the AOSS side-channel message RAM
++
+   qcom,smem-states:
+     $ref: /schemas/types.yaml#/definitions/phandle-array
+     description: State bits used in by the AP to signal the modem.
+@@ -222,6 +226,8 @@ examples:
+                                      "imem",
+                                      "config";
+ 
++                qcom,qmp = <&aoss_qmp>;
++
+                 qcom,smem-states = <&ipa_smp2p_out 0>,
+                                    <&ipa_smp2p_out 1>;
+                 qcom,smem-state-names = "ipa-clock-enabled-valid",
 -- 
 2.32.0
 
