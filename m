@@ -2,106 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43ADE4A60CA
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 16:54:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 693E24A60CC
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 16:55:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240700AbiBAPyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 10:54:50 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:40030 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237158AbiBAPyt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 10:54:49 -0500
-Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 8ECAC8030834;
-        Tue,  1 Feb 2022 18:54:40 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 8ECAC8030834
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1643730881;
-        bh=q7p/ERkbzTvBtExsgEoM33+CP/S9E+0x3HKFUadi6y8=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To:From;
-        b=iTKSzGgEyOGAxVI90jaGFGlhexAc0jzav9EuDs8/ru4cqqD6GGWirWYDJYagfeQB5
-         uq955UsnETah28HseAig1ZqgBn4d1rvuql/vowCkf8R+t2T67j/HKwzSsOgXuPfG1J
-         xPdj8ha5gHVoCWl8FbYKLcTEZeC1wWGgzQNlQq+4=
-Received: from mobilestation (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 1 Feb 2022 18:53:39 +0300
-Date:   Tue, 1 Feb 2022 18:54:39 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Alexey Sheplyakov <asheplyakov@basealt.ru>,
-        <netdev@vger.kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Evgeny Sinelnikov <sin@basealt.ru>,
-        Serge Semin <fancer.lancer@gmail.com>
-Subject: Re: [PATCH 1/2] net: stmmac: added Baikal-T1/M SoCs glue layer
-Message-ID: <20220201155439.hv42mqed2n7wekuo@mobilestation>
-References: <20220126084456.1122873-1-asheplyakov@basealt.ru>
- <20220128150642.qidckst5mzkpuyr3@mobilestation>
- <YfQ8De5OMLDLKF6g@asheplyakov-rocket>
- <20220128122718.686912e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S240730AbiBAPzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 10:55:25 -0500
+Received: from mail-oi1-f180.google.com ([209.85.167.180]:33558 "EHLO
+        mail-oi1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237158AbiBAPzY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 10:55:24 -0500
+Received: by mail-oi1-f180.google.com with SMTP id x193so34252776oix.0;
+        Tue, 01 Feb 2022 07:55:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=BIOHVYrkUV2xJeNiNC056YPJOZ8/TdHWrOUE5wcAtsg=;
+        b=6IcQLbT6/nx9LqGyJ04IzCHtbtbGt0MCoLefPPvTO9QrPquMpeDyCu+hoBL3ez3JnI
+         i9cRumQxyWlKIt1+/QalEzeIp9q74WV4Dah8e0oCr+PkAYOjWt4ddOkMSNc92m9rxk6p
+         8LUy6LclqJn0QVbu+VREj3mzGH2kDrKPucpji5YqwLf5MCaag+LZLjJIZDgnvPDgEz96
+         tF2SPOv1omzRDrsUNvT0mhCVU6l9nhDflTsKAJAg8/HtXlG5jeSleQDDnTMkn/nczQwj
+         b18KwuBdbusfVwbaxLpVL5zf1DNU3IKRGJE/oBc1oIQVzRgdu+PEcRrz+Q2AhZNDohwM
+         ui9A==
+X-Gm-Message-State: AOAM531VTiOF+Gt6ko9s9BHLkGdf+Rl5joHuPMGr/uvdwb0t2Rwda59Q
+        RvShVQrrYfqnqB9Y+z4qcw==
+X-Google-Smtp-Source: ABdhPJxBrh/ir0cmOW9wJ0tFhEtPE2+p0SLWpOeItg+jaohY58A/07Nx1NrilC1u3e7v5UKhgu1fBQ==
+X-Received: by 2002:a05:6808:3098:: with SMTP id bl24mr1677697oib.312.1643730924088;
+        Tue, 01 Feb 2022 07:55:24 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id q14sm17568505otg.77.2022.02.01.07.55.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 07:55:23 -0800 (PST)
+Received: (nullmailer pid 100417 invoked by uid 1000);
+        Tue, 01 Feb 2022 15:55:22 -0000
+Date:   Tue, 1 Feb 2022 09:55:22 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Michael Walle <michael@walle.cc>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Subject: Re: [PATCH REBASED 2/2] dt-bindings: nvmem: cells: add MAC address
+ cell
+Message-ID: <YflX6kxWTD6qMnhJ@robh.at.kernel.org>
+References: <20220125180114.12286-1-zajec5@gmail.com>
+ <20220126070745.32305-1-zajec5@gmail.com>
+ <20220126070745.32305-2-zajec5@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220128122718.686912e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220126070745.32305-2-zajec5@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub,
-
-On Fri, Jan 28, 2022 at 12:27:18PM -0800, Jakub Kicinski wrote:
-> On Fri, 28 Jan 2022 22:55:09 +0400 Alexey Sheplyakov wrote:
-> > On Fri, Jan 28, 2022 at 06:06:42PM +0300, Serge Semin wrote:
-> > > Hello Alexey and network folks
-> > > 
-> > > First of all thanks for sharing this patchset with the community. The
-> > > changes indeed provide a limited support for the DW GMAC embedded into
-> > > the Baikal-T1/M1 SoCs. But the problem is that they don't cover all
-> > > the IP-blocks/Platform-setup peculiarities  
-> > 
-> > In general quite a number of Linux drivers (GPUs, WiFi chips, foreign
-> > filesystems, you name it) provide a limited support for the corresponding
-> > hardware (filesystem, protocol, etc) and don't cover all peculiarities.
-> > Yet having such a limited support in the mainline kernel is much more
-> > useful than no support at all (or having to use out-of-tree drivers,
-> > obosolete vendor kernels, binary blobs, etc).
-> > 
-> > Therefore "does not cover all peculiarities" does not sound like a valid
-> > reason for rejecting this driver. That said it's definitely up to stmmac
-> > maintainers to decide if the code meets the quality standards, does not
-> > cause excessive maintanence burden, etc.
+On Wed, Jan 26, 2022 at 08:07:45AM +0100, Rafał Miłecki wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> Sounds sensible, Serge please take a look at the v2 and let us know if
-> there are any bugs in there. Or any differences in DT bindings or user
-> visible behaviors with what you're planning to do. If the driver is
-> functional and useful it can evolve and gain support for features and
-> platforms over time.
+> This adds support for describing details of NVMEM cell containing MAC
+> address. Those are often device specific and could be nicely stored in
+> DT.
+> 
+> Initial documentation includes support for describing:
+> 1. Cell data format (e.g. Broadcom's NVRAM uses ASCII to store MAC)
+> 2. Reversed bytes flash (required for i.MX6/i.MX7 OCOTP support)
+> 3. Source for multiple addresses (very common in home routers)
+> 
+> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> ---
+>  .../bindings/nvmem/cells/mac-address.yaml     | 94 +++++++++++++++++++
+>  1 file changed, 94 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/nvmem/cells/mac-address.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/nvmem/cells/mac-address.yaml b/Documentation/devicetree/bindings/nvmem/cells/mac-address.yaml
+> new file mode 100644
+> index 000000000000..f8d19e87cdf0
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/nvmem/cells/mac-address.yaml
+> @@ -0,0 +1,94 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/nvmem/cells/mac-address.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: NVMEM cell containing a MAC address
+> +
+> +maintainers:
+> +  - Rafał Miłecki <rafal@milecki.pl>
+> +
+> +properties:
+> +  compatible:
+> +    const: mac-address
+> +
+> +  format:
+> +    description: |
+> +      Some NVMEM cells contain MAC in a non-binary format.
+> +
+> +      ASCII should be specified if MAC is string formatted like:
+> +      - "01:23:45:67:89:AB" (30 31 3a 32 33 3a 34 35 3a 36 37 3a 38 39 3a 41 42)
+> +      - "01-23-45-67-89-AB"
+> +      - "0123456789AB"
+> +    enum:
+> +      - ascii
+> +
+> +  reversed-bytes:
+> +    type: boolean
+> +    description: |
+> +      MAC is stored in reversed bytes order. Example:
+> +      Stored value: AB 89 67 45 23 01
+> +      Actual MAC: 01 23 45 67 89 AB
+> +
+> +  base-address:
+> +    type: boolean
+> +    description: |
+> +      Marks NVMEM cell as provider of multiple addresses that are relative to
+> +      the one actually stored physically. Respective addresses can be requested
+> +      by specifying cell index of NVMEM cell.
 
-I've already posted my comments in this thread regarding the main
-problematic issues of the driver, but Alexey for some reason ignored
-them (dropped from his reply). Do you want me to copy my comments to
-v2 and to proceed with review there?
+While a base address is common, aren't there different ways the base is 
+modified. 
 
-Regarding the DT-bindings and the user-visible behavior. Right, I'll
-add my comments in this matter. Thanks for suggesting. This was one of
-the problems why I was against the driver integrating into the kernel.
-One of our patchset brings a better organization to the current
-DT-bindings of the Synopsys DW *MAC devices. In particular it splits
-up the generic bindings for the vendor-specific MACs to use and the
-bindings for the pure DW MAC compatible devices. In addition the
-patchset will add the generic Tx/Rx clocks DT-bindings and the
-DT-bindings for the AXI/MTL nodes. All of that and the rest of our
-work will be posted a bit later as a set of the incremental patchsets
-with small changes, one by one, for an easier review. We just need
-some more time to finish the left of the work. The reason why the
-already developed patches hasn't been delivered yet is that the rest
-of the work may cause adding changes into the previous patches. In
-order to decrease a number of the patches to review and present a
-complete work for the community, we decided to post the patchsets
-after the work is fully done.
+The problem with these properties is every new variation results in a 
+new property and the end result is something not well designed. A unique
+compatible string, "#nvmem-cell-cells" and code to interpret the data is 
+more flexible.
 
--Sergey
+For something like this to fly, I need some level of confidence this is 
+enough for everyone for some time (IOW, find all the previous attempts 
+and get those people's buy-in). You have found at least 3 cases, but I 
+seem to recall more.
+
+Rob
