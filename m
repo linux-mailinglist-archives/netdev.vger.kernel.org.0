@@ -2,91 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08ADD4A5E4F
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 15:30:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B70964A5E57
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 15:32:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239314AbiBAOaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 09:30:15 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:36550 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239277AbiBAOaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 09:30:12 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6300161601;
-        Tue,  1 Feb 2022 14:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BFD29C340ED;
-        Tue,  1 Feb 2022 14:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643725810;
-        bh=HqRSxpkZqoWU/dNr1mUkUpRcK8ShpkNiF0WwpKJc1Hc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fPadu+UgvDdEX++01hcjaQ5Bwmq7+lgU4cU7WMsjkvL7TnnKaKthWVYokG629cPLX
-         ERiDBuFPU9cbWKHpasjfDog4ablUeDkP42/FWjcEQKTfq/wsurisM45HptQd4ig65w
-         Zi857XSkyaRmkx2IzoO+4CUI+kbzjGtueyjqV6m37Wpwa92pwv7VIVLa1U6XPKFXkf
-         X0E0Ir2WiGrzHmNBK00zIpjUI3qbleV8a0GJaMgMNu/aILdyW0rbLEjhq3zuD6rUZR
-         vnrUCDRuBrROpL6YBzwl90ZIB4LHlJ5cOudO+7N+nFXBgcuzig6MRxhlj59gxR2HZ7
-         RQ/v1JbKMY2EA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AE834E6BAC6;
-        Tue,  1 Feb 2022 14:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S239339AbiBAOca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 09:32:30 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:22637 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239245AbiBAOc3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 09:32:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1643725949; x=1675261949;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=cvx6rDpgo2S07AWukGYA/bvd35FN6fHtN9yNaCsXVc8=;
+  b=w1Guz+k/IM8XWLOL6Z1QsilDovJIXZrwxH3vAdWSkdKl+lrH0VWeZS8x
+   47wjs3NOgoWFtVlnEeMYTuSR4mZL45Bso7mtgpZ3VGbX2jIcQxGXpOPYT
+   pSQ5JG73cC9FwC97Vc+NXFbbReTiQDsmJDedjHHDjoZhGL2wcTY4M8+9F
+   dak1+KpeTfrzrQxrNVW4BqWvhu1LCYwRaRHaagMSQZQT+UJ8geeaGtlyF
+   Ddvny7zxXfaae7IxzynutVxj8Ut+aNFji/r1nMDYztBTGy3SakryByF58
+   W7Q0CEvki6hq1spPZD+GAE+XDkMAr7Y1YpT94NXsb3eV7px3uwORIOGwT
+   A==;
+IronPort-SDR: ssFcxKs/aaimKr6x/JkrDr27s2loVvXUIBxzJ23jxGWgIIDRR+wWus+W8sEMpOy9UMGhrqf4PH
+ HbfxvALRKhmSDpWKKFG/KEAlWSIiGX78SimCUtAK9Zlq+FXVeOAgSGpM3kDUDLnPL9aTMi/Iht
+ S5u8vh9GI1jr160eW1wngmqv4vjFwsGVlOW9nfmutOk6k/iMPWrXyXzB3q7a9CdFEIA8V/tg55
+ qKZp6Op9MjNTNrZzuVKxJqaF2Imz05iItn289zCxBSsGFCVnikdKtUBvxIKspJvxj9VKMvUM7D
+ OUncKledePvanQI/DloNdLA5
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="152105173"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Feb 2022 07:32:28 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 1 Feb 2022 07:32:28 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 1 Feb 2022 07:32:26 -0700
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        "Dan Carpenter" <dan.carpenter@oracle.com>
+CC:     Steen Hegelund <steen.hegelund@microchip.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH net] net: sparx5: do not refer to skb after passing it on
+Date:   Tue, 1 Feb 2022 15:30:57 +0100
+Message-ID: <20220201143057.3533830-1-steen.hegelund@microchip.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/7] net: lan966x: Add PTP Hardward Clock support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164372581071.3866.12987877077214392601.git-patchwork-notify@kernel.org>
-Date:   Tue, 01 Feb 2022 14:30:10 +0000
-References: <20220131100122.423164-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20220131100122.423164-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        robh+dt@kernel.org, UNGLinuxDriver@microchip.com,
-        linux@armlinux.org.uk, richardcochran@gmail.com,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        vladimir.oltean@nxp.com, andrew@lunn.ch
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Do not try to use any SKB fields after the packet has been passed up in the
+receive stack.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+This error was reported as shown below:
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-On Mon, 31 Jan 2022 11:01:15 +0100 you wrote:
-> Add support for PTP Hardware Clock (PHC) for lan966x. The switch supports
-> both PTP 1-step and 2-step modes.
-> 
-> v1->v2:
-> - fix commit messages
-> - reduce the scope of the lock ptp_lock inside the function
->   lan966x_ptp_hwtstamp_set
-> - the rx timestamping is always enabled for all packages
-> 
-> [...]
+Fixes: f3cad2611a77 (net: sparx5: add hostmode with phylink support)
 
-Here is the summary with links:
-  - [net-next,v2,1/7] dt-bindings: net: lan966x: Extend with the ptp interrupt
-    https://git.kernel.org/netdev/net-next/c/2f92512e1c52
-  - [net-next,v2,2/7] net: lan966x: Add registers that are use for ptp functionality
-    https://git.kernel.org/netdev/net-next/c/d700dff41d92
-  - [net-next,v2,3/7] net: lan966x: Add support for ptp clocks
-    https://git.kernel.org/netdev/net-next/c/d096459494a8
-  - [net-next,v2,4/7] net: lan966x: Implement SIOCSHWTSTAMP and SIOCGHWTSTAMP
-    https://git.kernel.org/netdev/net-next/c/735fec995b21
-  - [net-next,v2,5/7] net: lan966x: Update extraction/injection for timestamping
-    https://git.kernel.org/netdev/net-next/c/77eecf25bd9d
-  - [net-next,v2,6/7] net: lan966x: Add support for ptp interrupts
-    https://git.kernel.org/netdev/net-next/c/e85a96e48e33
-  - [net-next,v2,7/7] net: lan966x: Implement get_ts_info
-    https://git.kernel.org/netdev/net-next/c/966f2e1a4a34
+Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+---
+ drivers/net/ethernet/microchip/sparx5/sparx5_packet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+index dc7e5ea6ec15..ebdce4b35686 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+@@ -145,8 +145,8 @@ static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
+ 	skb_put(skb, byte_cnt - ETH_FCS_LEN);
+ 	eth_skb_pad(skb);
+ 	skb->protocol = eth_type_trans(skb, netdev);
+-	netif_rx(skb);
+ 	netdev->stats.rx_bytes += skb->len;
++	netif_rx(skb);
+ 	netdev->stats.rx_packets++;
+ }
 
+--
+2.35.1
 
