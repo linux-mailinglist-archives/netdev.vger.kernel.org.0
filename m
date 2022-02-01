@@ -2,74 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54D684A58C8
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 09:51:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B87144A58CD
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 09:52:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235616AbiBAIvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 03:51:11 -0500
-Received: from mail-ua1-f48.google.com ([209.85.222.48]:43557 "EHLO
-        mail-ua1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233828AbiBAIvJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 03:51:09 -0500
-Received: by mail-ua1-f48.google.com with SMTP id r2so4567140uae.10;
-        Tue, 01 Feb 2022 00:51:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kQaxXxX2TEhzmOUyxZ8RJ1jCaru/41Ti8LVSzxlH72g=;
-        b=uXHD3EsFN89G9uXUgSAzOoSjCX/9LOLwyIww+vyajjPeKKTMMEVyqJQFgJQnnMmzrL
-         GBJ09x4BfG5Zt3qbOkMATQ6QHoZATANinqccWoSyM/FZ+ukvUAbjtqxrgDe0pD8s2MZ2
-         rN4kuvYBKSNrysreatL5VCsRGD5QcKWiw/so5YPH1qZ4WndJqK4gpQzkAbm3DwZAATsY
-         3BgcFasmeXko917mW0iKA3g6qCdI/Syj9f6E7oFT8/qWiFh0dcDw8KO6WNzjPrEl68gK
-         1fFx4CAd6ndarcVKYTAt4LmRDPjduAJpOkU3y+uYI64H2apI00u9wssfmnqy75Tl+hbf
-         wD9A==
-X-Gm-Message-State: AOAM53203uMgBqic/Qbipu37I8jSmR5mrVKG+1d1Uhj4FFSeUwEeJkbM
-        wc+5pE42vOTVCbGNwbasf+ZR0+Pbuk4mdQ==
-X-Google-Smtp-Source: ABdhPJzCuUf5alGU7I/vcI1g44zVfVIGbphZenden1NCI+S7NNVuxmUKQHm8yW81Vk2kuhLpHbZnPw==
-X-Received: by 2002:ab0:184a:: with SMTP id j10mr9440265uag.124.1643705469093;
-        Tue, 01 Feb 2022 00:51:09 -0800 (PST)
-Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com. [209.85.222.50])
-        by smtp.gmail.com with ESMTPSA id v129sm1959184vsb.15.2022.02.01.00.51.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Feb 2022 00:51:08 -0800 (PST)
-Received: by mail-ua1-f50.google.com with SMTP id n15so13438012uaq.5;
-        Tue, 01 Feb 2022 00:51:08 -0800 (PST)
-X-Received: by 2002:a9f:2c0a:: with SMTP id r10mr9851777uaj.89.1643705467496;
- Tue, 01 Feb 2022 00:51:07 -0800 (PST)
+        id S235773AbiBAIw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 03:52:26 -0500
+Received: from www62.your-server.de ([213.133.104.62]:60382 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231912AbiBAIwZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 03:52:25 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nEote-0003N7-C3; Tue, 01 Feb 2022 09:52:18 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nEote-00059S-1o; Tue, 01 Feb 2022 09:52:18 +0100
+Subject: Re: [PATCH v3 bpf-next 0/4] libbpf: name-based u[ret]probe attach
+To:     Alan Maguire <alan.maguire@oracle.com>, andrii@kernel.org,
+        ast@kernel.org
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, jolsa@kernel.org,
+        sunyucong@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <1643645554-28723-1-git-send-email-alan.maguire@oracle.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <a74d3ab8-152a-b81b-54f3-9a46d6ba682d@iogearbox.net>
+Date:   Tue, 1 Feb 2022 09:52:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <f09d7c64-4a2b-6973-09a4-10d759ed0df4@omp.ru>
-In-Reply-To: <f09d7c64-4a2b-6973-09a4-10d759ed0df4@omp.ru>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 1 Feb 2022 09:50:56 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUyeiHyPcHNFMGWOTtVWUwN8cv8r7anmX-bwEpy9DLSYA@mail.gmail.com>
-Message-ID: <CAMuHMdUyeiHyPcHNFMGWOTtVWUwN8cv8r7anmX-bwEpy9DLSYA@mail.gmail.com>
-Subject: Re: [PATCH net-next] sh_eth: kill useless initializers in sh_eth_{suspend|resume}()
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1643645554-28723-1-git-send-email-alan.maguire@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26439/Mon Jan 31 10:24:40 2022)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 1, 2022 at 9:24 AM Sergey Shtylyov <s.shtylyov@omp.ru> wrote:
-> sh_eth_{suspend|resume}() initialize their local variable 'ret' to 0 but
-> this value is never really used, thus we can kill those intializers...
->
-> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Hi Alan,
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+On 1/31/22 5:12 PM, Alan Maguire wrote:
+> This patch series is a refinement of the RFC patchset [1], focusing
+> on support for attach by name for uprobes and uretprobes. v3
+> because there was an earlier RFC [2].
+> 
+> Currently attach for such probes is done by determining the offset
+> manually, so the aim is to try and mimic the simplicity of kprobe
+> attach, making use of uprobe opts to specify a name string.
+> Patch 1 adds the "func_name" option to allow uprobe attach by
+> name; the mechanics are described there.
+> 
+> Having name-based support allows us to support auto-attach for
+> uprobes; patch 2 adds auto-attach support while attempting
+> to handle backwards-compatibility issues that arise.  The format
+> supported is
+> 
+> u[ret]probe//path/2/binary:[raw_offset|function[+offset]]
+> 
+> For example, to attach to libc malloc:
+> 
+> SEC("uprobe//usr/lib64/libc.so.6:malloc")
+> 
+> Patch 3 introduces a helper function to trace_helpers, allowing
+> us to retrieve the path to a library by reading /proc/self/maps.
+> 
+> Finally patch 4 add tests to the attach_probe selftests covering
+> attach by name, auto-attach and auto-attach failure.
 
-Gr{oetje,eeting}s,
+Looks like the selftest in the series fails the BPF CI (test_progs & test_progs-no_alu32):
 
-                        Geert
+https://github.com/kernel-patches/bpf/runs/5012260907?check_suite_focus=true
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+   [...]
+   test_attach_probe:PASS:uprobe_offset 0 nsec
+   test_attach_probe:PASS:ref_ctr_offset 0 nsec
+   test_attach_probe:PASS:skel_open 0 nsec
+   test_attach_probe:PASS:check_bss 0 nsec
+   test_attach_probe:PASS:attach_kprobe 0 nsec
+   test_attach_probe:PASS:attach_kretprobe 0 nsec
+   test_attach_probe:PASS:uprobe_ref_ctr_before 0 nsec
+   test_attach_probe:PASS:attach_uprobe 0 nsec
+   test_attach_probe:PASS:uprobe_ref_ctr_after 0 nsec
+   test_attach_probe:PASS:attach_uretprobe 0 nsec
+   test_attach_probe:PASS:auto-attach should fail for old-style name 0 nsec
+   test_attach_probe:PASS:attach_uprobe_byname 0 nsec
+   test_attach_probe:PASS:attach_uretprobe_byname 0 nsec
+   test_attach_probe:PASS:get path to libc 0 nsec
+   test_attach_probe:PASS:find libc path in /proc/self/maps 0 nsec
+   libbpf: failed to open 7f55b225c000-7f55b2282000 r--p 00000000 fe:00 3381                       /usr/lib/libc-2.32.so: No such file or directory
+   test_attach_probe:FAIL:attach_uprobe_byname2 unexpected error: -2
+   test_attach_probe:PASS:uprobe_ref_ctr_cleanup 0 nsec
+   #4 attach_probe:FAIL
+   [...]
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks,
+Daniel
