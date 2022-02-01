@@ -2,175 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63C814A61CA
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 18:01:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72B964A61D1
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 18:03:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238005AbiBARBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 12:01:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60426 "EHLO
+        id S241363AbiBARDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 12:03:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230115AbiBARBe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 12:01:34 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABA3C061714;
-        Tue,  1 Feb 2022 09:01:34 -0800 (PST)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 413A1223E9;
-        Tue,  1 Feb 2022 18:01:29 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1643734891;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5X2u4lEgQtTxZHB9dZgOZUr72b3urORwKvx6DLRKSKo=;
-        b=Xtwf8qsIL/iNo12NTMXqIzHHDHIMlkd3us+sYRK/KL/0QshdHLNBm68CR9CFPom2rpXGes
-        1pfpPO/70vqybvrgKiyw5Jcr6FRpPiGjL8KBnyMFrDuiQ8Rk86YSYlKyTnnpqAdYk0vXes
-        b123jqaWMyTKTN/bVJITivH86FGKwHk=
+        with ESMTP id S241368AbiBARDF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 12:03:05 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9118C061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 09:03:04 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id t7so25017696ljc.10
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 09:03:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ka8pYyC0GHWoeLpCYw/LWy4USejRJXtfOSInUudnWSU=;
+        b=rS1qZ0MOxeIwPmmzR+xQL1U2O7aHayJsuJjFuIAJ0B9BZDFJh9uBFRVq3Bjz558NrU
+         mCd0QaMCyYLA7HCvj1f2WvxtmX4W1IxjHDbOOmD80ZWCsStxMawsl7ejifNbPOL3f7HD
+         D3J5lSRrhUmvmp6Z8NwJCI5H0DV0Dh0HmYfIA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ka8pYyC0GHWoeLpCYw/LWy4USejRJXtfOSInUudnWSU=;
+        b=7VYOoSJpPvsm2Tc92/vWQe0COaH2u1JLZAgsGFs7DSpZ0L2aVjtlXH2pWGfU6w1KUB
+         +SiP5S/XzHRQ3GvDupJxRsY/47VOqQflXnIWMcDD8b1m7mXGHg6hudsFAyjn0cN2bk/S
+         4nTZbhyuGvlXno76VHmDTVsUOvsxgVLHKYeIhZSn4BON9TM5uLscP9BG9/iL05t5s1xn
+         cwZgkigKZ61XQyS1UM2gJOA8hB97cWwfJxchb14x9vMzxC9v+ojN1MWSvvOZDrdJLCF7
+         lXuYdeVKbypinevPkIx2I0SeoHXg3KYG6ccjjwn60uWQz52cvIczGZTMIcruQdBoosu6
+         v+5A==
+X-Gm-Message-State: AOAM532foauaNGVIKIYq3lbWUB3jTK9I6ZwigGZ3E+51Exp5PZwGihyi
+        I9dBHCO4DHgdNNPJ99cdqJ3E3PhTo92WYpp3D4+Opw==
+X-Google-Smtp-Source: ABdhPJwVfxRmzCAilvAQPZlCwmMAtiCGJT37qvg1iWJ9Elg0tjJBVdNw4pveunQ9Laf20RIRO7WSqHq8U60qJGAsC8s=
+X-Received: by 2002:a2e:99cf:: with SMTP id l15mr17334894ljj.298.1643734982959;
+ Tue, 01 Feb 2022 09:03:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Tue, 01 Feb 2022 18:01:28 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Rob Herring <robh@kernel.org>
-Cc:     =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <zajec5@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+References: <20220124151146.376446-1-maximmi@nvidia.com> <20220124151146.376446-5-maximmi@nvidia.com>
+ <CACAyw9_5-T5Y9AQpAmCe=aj9A0Q=SMyx1cMz6TRQvnW=NU9ygA@mail.gmail.com> <5090da78-305c-dc42-65a6-ef0b2927db51@nvidia.com>
+In-Reply-To: <5090da78-305c-dc42-65a6-ef0b2927db51@nvidia.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Tue, 1 Feb 2022 17:02:51 +0000
+Message-ID: <CACAyw99rvHp8FEn9_kjvcVBWB84DSXRSmad+bLDKcBk-E+BaHA@mail.gmail.com>
+Subject: Re: [PATCH bpf v2 4/4] bpf: Fix documentation of th_len in bpf_tcp_{gen,check}_syncookie
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        =?UTF-8?Q?R?= =?UTF-8?Q?afa=C5=82_Mi=C5=82ecki?= 
-        <rafal@milecki.pl>
-Subject: Re: [PATCH REBASED 2/2] dt-bindings: nvmem: cells: add MAC address
- cell
-In-Reply-To: <YflX6kxWTD6qMnhJ@robh.at.kernel.org>
-References: <20220125180114.12286-1-zajec5@gmail.com>
- <20220126070745.32305-1-zajec5@gmail.com>
- <20220126070745.32305-2-zajec5@gmail.com>
- <YflX6kxWTD6qMnhJ@robh.at.kernel.org>
-User-Agent: Roundcube Webmail/1.4.12
-Message-ID: <0b7b8f7ea6569f79524aea1a3d783665@walle.cc>
-X-Sender: michael@walle.cc
+        Petar Penkov <ppenkov@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-02-01 16:55, schrieb Rob Herring:
-> On Wed, Jan 26, 2022 at 08:07:45AM +0100, Rafał Miłecki wrote:
->> From: Rafał Miłecki <rafal@milecki.pl>
->> 
->> This adds support for describing details of NVMEM cell containing MAC
->> address. Those are often device specific and could be nicely stored in
->> DT.
->> 
->> Initial documentation includes support for describing:
->> 1. Cell data format (e.g. Broadcom's NVRAM uses ASCII to store MAC)
->> 2. Reversed bytes flash (required for i.MX6/i.MX7 OCOTP support)
->> 3. Source for multiple addresses (very common in home routers)
->> 
->> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
->> ---
->>  .../bindings/nvmem/cells/mac-address.yaml     | 94 
->> +++++++++++++++++++
->>  1 file changed, 94 insertions(+)
->>  create mode 100644 
->> Documentation/devicetree/bindings/nvmem/cells/mac-address.yaml
->> 
->> diff --git 
->> a/Documentation/devicetree/bindings/nvmem/cells/mac-address.yaml 
->> b/Documentation/devicetree/bindings/nvmem/cells/mac-address.yaml
->> new file mode 100644
->> index 000000000000..f8d19e87cdf0
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/nvmem/cells/mac-address.yaml
->> @@ -0,0 +1,94 @@
->> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/nvmem/cells/mac-address.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: NVMEM cell containing a MAC address
->> +
->> +maintainers:
->> +  - Rafał Miłecki <rafal@milecki.pl>
->> +
->> +properties:
->> +  compatible:
->> +    const: mac-address
->> +
->> +  format:
->> +    description: |
->> +      Some NVMEM cells contain MAC in a non-binary format.
->> +
->> +      ASCII should be specified if MAC is string formatted like:
->> +      - "01:23:45:67:89:AB" (30 31 3a 32 33 3a 34 35 3a 36 37 3a 38 
->> 39 3a 41 42)
->> +      - "01-23-45-67-89-AB"
->> +      - "0123456789AB"
->> +    enum:
->> +      - ascii
->> +
->> +  reversed-bytes:
->> +    type: boolean
->> +    description: |
->> +      MAC is stored in reversed bytes order. Example:
->> +      Stored value: AB 89 67 45 23 01
->> +      Actual MAC: 01 23 45 67 89 AB
->> +
->> +  base-address:
->> +    type: boolean
->> +    description: |
->> +      Marks NVMEM cell as provider of multiple addresses that are 
->> relative to
->> +      the one actually stored physically. Respective addresses can be 
->> requested
->> +      by specifying cell index of NVMEM cell.
-> 
-> While a base address is common, aren't there different ways the base is
-> modified.
-> 
-> The problem with these properties is every new variation results in a
-> new property and the end result is something not well designed. A 
-> unique
-> compatible string, "#nvmem-cell-cells" and code to interpret the data 
-> is
-> more flexible.
+On Mon, 31 Jan 2022 at 13:38, Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+>
+> On 2022-01-26 11:45, Lorenz Bauer wrote:
+> > On Mon, 24 Jan 2022 at 15:13, Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+> >>
+> >> bpf_tcp_gen_syncookie and bpf_tcp_check_syncookie expect the full length
+> >> of the TCP header (with all extensions). Fix the documentation that says
+> >> it should be sizeof(struct tcphdr).
+> >
+> > I don't understand this change, sorry. Are you referring to the fact
+> > that the check is len < sizeof(*th) instead of len != sizeof(*th)?
+> >
+> > Your commit message makes me think that the helpers will access data
+> > in the extension headers, which isn't true as far as I can tell.
+>
+> Yes, they will. See bpf_tcp_gen_syncookie -> tcp_v4_get_syncookie ->
+> tcp_get_syncookie_mss -> tcp_parse_mss_option, which iterates over the
+> TCP options ("extensions" wasn't the best word I used here). Moreover,
+> bpf_tcp_gen_syncookie even checks that th_len == th->doff * 4.
+>
+> Although bpf_tcp_check_syncookie doesn't need the TCP options and
+> doesn't enforce them to be passed, it's still allowed.
 
-I actually like having a unique compatible for anything but the basic
-operations. For example, the sl28 vpd area also has a checksum, which
-could be handled if there is an own compatible. I don't think this is
-possible with this proposal. Also there is a version field, what if
-we change the layout of that thing? Am I supposed to change the
-device tree? The more I think about Rob's proposal to have a compatible
-the more I like it.
+Sorry, I was only looking at bpf_tcp_check_syncookie indeed.
+Unfortunate, it would be better if that function had a th->doff check
+as well. :(
 
-One of Rafałs concerns are code duplication. I.e. if everything needs
-its own compatible string, the driver will also have to have all of 
-these.
-But I'd say, this is a common thing in most drivers.
+Acked-by: Lorenz Bauer <lmb@cloudflare.com>
 
-That being said, I'd really like to have a consens here as this topic
-is open like forever and I was under the impression that at least we
-were clear on the device tree side.
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
--michael
-
-> For something like this to fly, I need some level of confidence this is
-> enough for everyone for some time (IOW, find all the previous attempts
-> and get those people's buy-in). You have found at least 3 cases, but I
-> seem to recall more.
-> 
-> Rob
+www.cloudflare.com
