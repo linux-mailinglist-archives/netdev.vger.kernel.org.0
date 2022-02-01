@@ -2,166 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02A5D4A53B9
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 01:05:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2936C4A53BE
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 01:06:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230030AbiBAAFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 19:05:39 -0500
-Received: from mga02.intel.com ([134.134.136.20]:8412 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230006AbiBAAFi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Jan 2022 19:05:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643673938; x=1675209938;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=b1ekPsjQ8T1ginKITxL+KF1t3aY6L2kATiH1QZWne8U=;
-  b=d8KE3tXN6jmJQkNtkOoILEIzaFFhOiRArrBMggAKy407lr0YmF08QWh3
-   4YN0HeOBmyTG2UpCiaBKhaet90X7kyXGAcq2K7ZYUTWvm6t+fuwwUwV2m
-   eCxHlq5oohIebZMlAx4Ofn1xFSbI4Bzrs5H1yUKOw7viJLwIRSn+0Z+fL
-   CIALrIsjuTI3UL/NO7VTeZSPVXowhscCVi0vwEbsB+5XRdKvsvC4Yraaa
-   FOr9CyRkx6PyPrMpCBAwsolm8aCdqA1lIZRHWexefPQZbtlNhGVNPdO3L
-   xBwjHDNp3m/sOgM46gOt2G3/IknKJb53yI8/CW6yiwZ9L8Bdn+OVw8EST
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="234975876"
-X-IronPort-AV: E=Sophos;i="5.88,332,1635231600"; 
-   d="scan'208";a="234975876"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 16:05:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,332,1635231600"; 
-   d="scan'208";a="698209561"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga005.jf.intel.com with ESMTP; 31 Jan 2022 16:05:37 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Karen Sornek <karen.sornek@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, sassmann@redhat.com,
-        Slawomir Laba <slawomirx.laba@intel.com>,
-        Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net 2/2] i40e: Fix reset path while removing the driver
-Date:   Mon, 31 Jan 2022 16:05:22 -0800
-Message-Id: <20220201000522.505909-3-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220201000522.505909-1-anthony.l.nguyen@intel.com>
-References: <20220201000522.505909-1-anthony.l.nguyen@intel.com>
+        id S230060AbiBAAGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 19:06:06 -0500
+Received: from www62.your-server.de ([213.133.104.62]:55566 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230062AbiBAAGG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 19:06:06 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nEggN-00065t-Jt; Tue, 01 Feb 2022 01:06:03 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nEggN-000N71-9E; Tue, 01 Feb 2022 01:06:03 +0100
+Subject: Re: [PATCH v7 bpf-next 7/9] bpf: introduce bpf_prog_pack allocator
+To:     Song Liu <song@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     ast@kernel.org, andrii@kernel.org, kernel-team@fb.com,
+        peterz@infradead.org, x86@kernel.org, iii@linux.ibm.com,
+        npiggin@gmail.com
+References: <20220128234517.3503701-1-song@kernel.org>
+ <20220128234517.3503701-8-song@kernel.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <ab7e0a98-fced-23b3-6876-01ce711bd579@iogearbox.net>
+Date:   Tue, 1 Feb 2022 01:06:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220128234517.3503701-8-song@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26439/Mon Jan 31 10:24:40 2022)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Karen Sornek <karen.sornek@intel.com>
+On 1/29/22 12:45 AM, Song Liu wrote:
+> Most BPF programs are small, but they consume a page each. For systems
+> with busy traffic and many BPF programs, this could add significant
+> pressure to instruction TLB.
+> 
+> Introduce bpf_prog_pack allocator to pack multiple BPF programs in a huge
+> page. The memory is then allocated in 64 byte chunks.
+> 
+> Memory allocated by bpf_prog_pack allocator is RO protected after initial
+> allocation. To write to it, the user (jit engine) need to use text poke
+> API.
 
-Fix the crash in kernel while dereferencing the NULL pointer,
-when the driver is unloaded and simultaneously the VSI rings
-are being stopped.
+Did you benchmark the program load times under this API, e.g. how much
+overhead is expected for very large programs?
 
-The hardware requires 50msec in order to finish RX queues
-disable. For this purpose the driver spins in mdelay function
-for the operation to be completed.
+> Signed-off-by: Song Liu <song@kernel.org>
+> ---
+>   kernel/bpf/core.c | 127 ++++++++++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 127 insertions(+)
+> 
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index dc0142e20c72..25e34caa9a95 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -805,6 +805,133 @@ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
+>   	return slot;
+>   }
+>   
+> +/*
+> + * BPF program pack allocator.
+> + *
+> + * Most BPF programs are pretty small. Allocating a hole page for each
+> + * program is sometime a waste. Many small bpf program also adds pressure
+> + * to instruction TLB. To solve this issue, we introduce a BPF program pack
+> + * allocator. The prog_pack allocator uses HPAGE_PMD_SIZE page (2MB on x86)
+> + * to host BPF programs.
+> + */
+> +#define BPF_PROG_PACK_SIZE	HPAGE_PMD_SIZE
+> +#define BPF_PROG_CHUNK_SHIFT	6
+> +#define BPF_PROG_CHUNK_SIZE	(1 << BPF_PROG_CHUNK_SHIFT)
+> +#define BPF_PROG_CHUNK_MASK	(~(BPF_PROG_CHUNK_SIZE - 1))
+> +#define BPF_PROG_CHUNK_COUNT	(BPF_PROG_PACK_SIZE / BPF_PROG_CHUNK_SIZE)
+> +
+> +struct bpf_prog_pack {
+> +	struct list_head list;
+> +	void *ptr;
+> +	unsigned long bitmap[BITS_TO_LONGS(BPF_PROG_CHUNK_COUNT)];
+> +};
+> +
+> +#define BPF_PROG_MAX_PACK_PROG_SIZE	HPAGE_PMD_SIZE
+> +#define BPF_PROG_SIZE_TO_NBITS(size)	(round_up(size, BPF_PROG_CHUNK_SIZE) / BPF_PROG_CHUNK_SIZE)
+> +
+> +static DEFINE_MUTEX(pack_mutex);
+> +static LIST_HEAD(pack_list);
+> +
+> +static struct bpf_prog_pack *alloc_new_pack(void)
+> +{
+> +	struct bpf_prog_pack *pack;
+> +
+> +	pack = kzalloc(sizeof(*pack), GFP_KERNEL);
+> +	if (!pack)
+> +		return NULL;
+> +	pack->ptr = module_alloc(BPF_PROG_PACK_SIZE);
+> +	if (!pack->ptr) {
+> +		kfree(pack);
+> +		return NULL;
+> +	}
+> +	bitmap_zero(pack->bitmap, BPF_PROG_PACK_SIZE / BPF_PROG_CHUNK_SIZE);
+> +	list_add_tail(&pack->list, &pack_list);
+> +
+> +	set_vm_flush_reset_perms(pack->ptr);
+> +	set_memory_ro((unsigned long)pack->ptr, BPF_PROG_PACK_SIZE / PAGE_SIZE);
+> +	set_memory_x((unsigned long)pack->ptr, BPF_PROG_PACK_SIZE / PAGE_SIZE);
+> +	return pack;
+> +}
+> +
+> +static void *bpf_prog_pack_alloc(u32 size)
+> +{
+> +	unsigned int nbits = BPF_PROG_SIZE_TO_NBITS(size);
+> +	struct bpf_prog_pack *pack;
+> +	unsigned long pos;
+> +	void *ptr = NULL;
+> +
+> +	if (size > BPF_PROG_MAX_PACK_PROG_SIZE) {
+> +		size = round_up(size, PAGE_SIZE);
+> +		ptr = module_alloc(size);
+> +		if (ptr) {
+> +			set_vm_flush_reset_perms(ptr);
+> +			set_memory_ro((unsigned long)ptr, size / PAGE_SIZE);
+> +			set_memory_x((unsigned long)ptr, size / PAGE_SIZE);
+> +		}
+> +		return ptr;
+> +	}
+> +	mutex_lock(&pack_mutex);
+> +	list_for_each_entry(pack, &pack_list, list) {
+> +		pos = bitmap_find_next_zero_area(pack->bitmap, BPF_PROG_CHUNK_COUNT, 0,
+> +						 nbits, 0);
+> +		if (pos < BPF_PROG_CHUNK_COUNT)
+> +			goto found_free_area;
+> +	}
+> +
+> +	pack = alloc_new_pack();
+> +	if (!pack)
+> +		goto out;
 
-For example changing number of queues which requires reset would
-fail in the following call stack:
+Will this effectively disable the JIT for all bpf_prog_pack_alloc requests <=
+BPF_PROG_MAX_PACK_PROG_SIZE when vmap_allow_huge is false (e.g. boot param via
+nohugevmalloc) ?
 
-1) i40e_prep_for_reset
-2) i40e_pf_quiesce_all_vsi
-3) i40e_quiesce_vsi
-4) i40e_vsi_close
-5) i40e_down
-6) i40e_vsi_stop_rings
-7) i40e_vsi_control_rx -> disable requires the delay of 50msecs
-8) continue back in i40e_down function where
-   i40e_clean_tx_ring(vsi->tx_rings[i]) is going to crash
-
-When the driver was spinning vsi_release called
-i40e_vsi_free_arrays where the vsi->tx_rings resources
-were freed and the pointer was set to NULL.
-
-Fixes: 5b6d4a7f20b0 ("i40e: Fix crash during removing i40e driver")
-Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
-Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
-Signed-off-by: Karen Sornek <karen.sornek@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/i40e/i40e.h      |  1 +
- drivers/net/ethernet/intel/i40e/i40e_main.c | 19 ++++++++++++++++++-
- 2 files changed, 19 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
-index 2e02cc68cd3f..80c5cecaf2b5 100644
---- a/drivers/net/ethernet/intel/i40e/i40e.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e.h
-@@ -144,6 +144,7 @@ enum i40e_state_t {
- 	__I40E_VIRTCHNL_OP_PENDING,
- 	__I40E_RECOVERY_MODE,
- 	__I40E_VF_RESETS_DISABLED,	/* disable resets during i40e_remove */
-+	__I40E_IN_REMOVE,
- 	__I40E_VFS_RELEASING,
- 	/* This must be last as it determines the size of the BITMAP */
- 	__I40E_STATE_SIZE__,
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 5cb4dc69fe87..0c4b7dfb3b35 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -10863,6 +10863,9 @@ static void i40e_reset_and_rebuild(struct i40e_pf *pf, bool reinit,
- 				   bool lock_acquired)
- {
- 	int ret;
-+
-+	if (test_bit(__I40E_IN_REMOVE, pf->state))
-+		return;
- 	/* Now we wait for GRST to settle out.
- 	 * We don't have to delete the VEBs or VSIs from the hw switch
- 	 * because the reset will make them disappear.
-@@ -12222,6 +12225,8 @@ int i40e_reconfig_rss_queues(struct i40e_pf *pf, int queue_count)
- 
- 		vsi->req_queue_pairs = queue_count;
- 		i40e_prep_for_reset(pf);
-+		if (test_bit(__I40E_IN_REMOVE, pf->state))
-+			return pf->alloc_rss_size;
- 
- 		pf->alloc_rss_size = new_rss_size;
- 
-@@ -13048,6 +13053,10 @@ static int i40e_xdp_setup(struct i40e_vsi *vsi, struct bpf_prog *prog,
- 	if (need_reset)
- 		i40e_prep_for_reset(pf);
- 
-+	/* VSI shall be deleted in a moment, just return EINVAL */
-+	if (test_bit(__I40E_IN_REMOVE, pf->state))
-+		return -EINVAL;
-+
- 	old_prog = xchg(&vsi->xdp_prog, prog);
- 
- 	if (need_reset) {
-@@ -15938,8 +15947,13 @@ static void i40e_remove(struct pci_dev *pdev)
- 	i40e_write_rx_ctl(hw, I40E_PFQF_HENA(0), 0);
- 	i40e_write_rx_ctl(hw, I40E_PFQF_HENA(1), 0);
- 
--	while (test_bit(__I40E_RESET_RECOVERY_PENDING, pf->state))
-+	/* Grab __I40E_RESET_RECOVERY_PENDING and set __I40E_IN_REMOVE
-+	 * flags, once they are set, i40e_rebuild should not be called as
-+	 * i40e_prep_for_reset always returns early.
-+	 */
-+	while (test_and_set_bit(__I40E_RESET_RECOVERY_PENDING, pf->state))
- 		usleep_range(1000, 2000);
-+	set_bit(__I40E_IN_REMOVE, pf->state);
- 
- 	if (pf->flags & I40E_FLAG_SRIOV_ENABLED) {
- 		set_bit(__I40E_VF_RESETS_DISABLED, pf->state);
-@@ -16138,6 +16152,9 @@ static void i40e_pci_error_reset_done(struct pci_dev *pdev)
- {
- 	struct i40e_pf *pf = pci_get_drvdata(pdev);
- 
-+	if (test_bit(__I40E_IN_REMOVE, pf->state))
-+		return;
-+
- 	i40e_reset_and_rebuild(pf, false, false);
- }
- 
--- 
-2.31.1
+> +	pos = 0;
+> +
+> +found_free_area:
+> +	bitmap_set(pack->bitmap, pos, nbits);
+> +	ptr = (void *)(pack->ptr) + (pos << BPF_PROG_CHUNK_SHIFT);
+> +
+> +out:
+> +	mutex_unlock(&pack_mutex);
+> +	return ptr;
+> +}
+> +
+> +static void bpf_prog_pack_free(struct bpf_binary_header *hdr)
+> +{
+> +	struct bpf_prog_pack *pack = NULL, *tmp;
+> +	unsigned int nbits;
+> +	unsigned long pos;
+> +	void *pack_ptr;
+> +
+> +	if (hdr->size > BPF_PROG_MAX_PACK_PROG_SIZE) {
+> +		module_memfree(hdr);
+> +		return;
+> +	}
+> +
+> +	pack_ptr = (void *)((unsigned long)hdr & ~(BPF_PROG_PACK_SIZE - 1));
+> +	mutex_lock(&pack_mutex);
+> +
+> +	list_for_each_entry(tmp, &pack_list, list) {
+> +		if (tmp->ptr == pack_ptr) {
+> +			pack = tmp;
+> +			break;
+> +		}
+> +	}
+> +
+> +	if (WARN_ONCE(!pack, "bpf_prog_pack bug\n"))
+> +		goto out;
+> +
+> +	nbits = BPF_PROG_SIZE_TO_NBITS(hdr->size);
+> +	pos = ((unsigned long)hdr - (unsigned long)pack_ptr) >> BPF_PROG_CHUNK_SHIFT;
+> +
+> +	bitmap_clear(pack->bitmap, pos, nbits);
+> +	if (bitmap_find_next_zero_area(pack->bitmap, BPF_PROG_CHUNK_COUNT, 0,
+> +				       BPF_PROG_CHUNK_COUNT, 0) == 0) {
+> +		list_del(&pack->list);
+> +		module_memfree(pack->ptr);
+> +		kfree(pack);
+> +	}
+> +out:
+> +	mutex_unlock(&pack_mutex);
+> +}
+> +
+>   static atomic_long_t bpf_jit_current;
+>   
+>   /* Can be overridden by an arch's JIT compiler if it has a custom,
+> 
 
