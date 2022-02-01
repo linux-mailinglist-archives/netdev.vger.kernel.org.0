@@ -2,134 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEDBF4A6545
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 21:01:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F91E4A654C
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 21:04:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234737AbiBAUBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 15:01:24 -0500
-Received: from mga06.intel.com ([134.134.136.31]:53356 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234295AbiBAUBY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Feb 2022 15:01:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643745684; x=1675281684;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=8pFfyb6Db6eeLbrqPdLT4F/jozq5PXnfq7n93BhoWxA=;
-  b=FkmgEDaBZ83Zokecc2Fa13e3ZegfDKkEs3jrIkyqoHgY/j2KHnP0DbJ/
-   nMm7j3eSxhIoFAqzKRemFKV3dnxKs8KNMwVdUR4hION0OtTcW6RhVV3Gh
-   JPSsKNyZpfJmtllyjP+mzj4vv07gTnR1EaPMxgtzC6hcGT+FRa5JyBtYs
-   xY92+bNVi2XOOtu5Jgq5BuLRq71gujl+h7q3fyKMCclegzxKkkEXIPduR
-   lzly/vTY/PgBZzOe8wb1v4s7fLQyE90S8VLnKInQZmGAjRsbO4qlYxNAU
-   6IilsSaUfrTuzQeIdJ5KnECjLWiLrfAIDdCb1TIt5/IcIrRCrBkZQEtDM
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="308506519"
-X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
-   d="scan'208";a="308506519"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 12:01:23 -0800
-X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
-   d="scan'208";a="482512107"
-Received: from ekebedex-mobl1.amr.corp.intel.com ([10.251.14.93])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 12:01:23 -0800
-Date:   Tue, 1 Feb 2022 12:01:23 -0800 (PST)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     Soheil Hassas Yeganeh <soheil@google.com>
-cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S235846AbiBAUD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 15:03:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46990 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234665AbiBAUD6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 15:03:58 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D969C061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 12:03:58 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id a13so34173334wrh.9
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 12:03:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fkSgioWMLTkoGqDIWLCMutKn9jLySdUQ1z5vlGZxV6U=;
+        b=YpXqGIV2xajDvz/AyCf84Z84DIJMY5LWHcF7m1Wl+JNx9uLVn99PhIm02pgkxdNJci
+         WQUhQlO5O5TL7tKJJtepsJDxS7TpCxfoW6UjSf7tiiCtlbcon42ptbIyMUEuy+J/BTqU
+         U9mtJEm9935C9ygtdwfRa1JKqjOPxCyFYBs5EYb4uf8NHp03nuJC3DW7u55CYxJbbHle
+         0YmaEQYu8rGxRJbhJtHJCk9VIpR1sRsnv7jTEggIbYpQkPdXRPQ7Vk1DFtuUuWwmUQN5
+         uHSW+rpsKydP6AFn5Rk4HpL0wxv7P9rzbJ7OJvv2f1bHAzGsuCu6H1rHWYDY9mXZpz77
+         ZnJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fkSgioWMLTkoGqDIWLCMutKn9jLySdUQ1z5vlGZxV6U=;
+        b=3kYuGwb+bM/aH1GT8HrFuqReCWD0mf6/BhvOnVvc5mAyBT2dXDXnfQnRrsOc0V+ZxS
+         G265mTOfx+mm2zJCV0M/2puy9VtrwyEHk/blQeg5YO/dQb1kDGq7SJRIkcg2g83xm3Kf
+         IN/MOeZfma/IKN+5+S2jSng570YRln8LzrTIfB8G1JocQQpwx0J2HzXUW0tHlkF3bWnR
+         zeN9YTX7k7oQIk3Dh+t/aj9Y3WQBdJmFphrdlCvWRlxUP1+zG0yjOgX1wJTX/ICffqmt
+         WUzLm4WiOnIrlX3IggGrEnVNp5dvS7FYLWXqoLPMqBjcqUPvvYLPZUuyOB5PFYzuM91+
+         Ff2w==
+X-Gm-Message-State: AOAM531nPpJQLJG9W0SncTMoDLXDtyI6Q7TVxt07OSVH0Wuuvu4hTplz
+        Eadk6MZVDB46RwQId98GqiG2pw==
+X-Google-Smtp-Source: ABdhPJwBVoJ+wrFxx/APcr+nBCT9totWanxEoRnTZs35TqYnQamUL6C8DYh7A9BoM5v+B7XbfZgvvg==
+X-Received: by 2002:adf:e6c9:: with SMTP id y9mr23944872wrm.389.1643745836719;
+        Tue, 01 Feb 2022 12:03:56 -0800 (PST)
+Received: from biernacki.c.googlers.com.com (105.168.195.35.bc.googleusercontent.com. [35.195.168.105])
+        by smtp.gmail.com with ESMTPSA id m6sm3367280wmq.6.2022.02.01.12.03.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 12:03:56 -0800 (PST)
+From:   Radoslaw Biernacki <rad@semihalf.com>
+X-Google-Original-From: Radoslaw Biernacki <rad@semihalf.ocm>
+To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Arjun Roy <arjunroy@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Davide Caratti <dcaratti@redhat.com>
-Subject: Re: [PATCH net] tcp: add missing tcp_skb_can_collapse() test in
- tcp_shift_skb_data()
-In-Reply-To: <CACSApvZ8vXXJ_zKf_HpoVgACwWxS2UvBw9QCv1ZnPX9ZpF3D_g@mail.gmail.com>
-Message-ID: <62ad3eb-cbb6-a59e-f5fe-5c439d21e760@linux.intel.com>
-References: <20220201184640.756716-1-eric.dumazet@gmail.com> <CACSApvZ8vXXJ_zKf_HpoVgACwWxS2UvBw9QCv1ZnPX9ZpF3D_g@mail.gmail.com>
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        upstream@semihalf.com, Radoslaw Biernacki <rad@semihalf.com>,
+        Angela Czubak <acz@semihalf.com>,
+        Marek Maslanka <mm@semihalf.com>,
+        Radoslaw Biernacki <rad@semihalf.ocm>
+Subject: [PATCH v2 0/2] Bluetooth: Fix skb handling in net/bluetooth/mgmt.c
+Date:   Tue,  1 Feb 2022 20:03:51 +0000
+Message-Id: <20220201200353.1331443-1-rad@semihalf.ocm>
+X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Feb 2022, Soheil Hassas Yeganeh wrote:
+Here is second version of the fix for skb handling in net/bluetooth/mgmt.c
+First patch is fixing the skb allocation which theoretically might push skb
+tail beyond its end.
+Second patch simplifies operations on eir while using skb.
+Patches adds two helper functions to eir.h to align to the goal of
+eliminating the necessity of intermediary buffers, which can be achieved
+with additional changes done in this spirit.
 
-> On Tue, Feb 1, 2022 at 1:46 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>
->> From: Eric Dumazet <edumazet@google.com>
->>
->> tcp_shift_skb_data() might collapse three packets into a larger one.
->>
->> P_A, P_B, P_C  -> P_ABC
->>
->> Historically, it used a single tcp_skb_can_collapse_to(P_A) call,
->> because it was enough.
->>
->> In commit 85712484110d ("tcp: coalesce/collapse must respect MPTCP extensions"),
->> this call was replaced by a call to tcp_skb_can_collapse(P_A, P_B)
->>
->> But the now needed test over P_C has been missed.
->>
->> This probably broke MPTCP.
->>
->> Then later, commit 9b65b17db723 ("net: avoid double accounting for pure zerocopy skbs")
->> added an extra condition to tcp_skb_can_collapse(), but the missing call
->> from tcp_shift_skb_data() is also breaking TCP zerocopy, because P_A and P_C
->> might have different skb_zcopy_pure() status.
->>
->> Fixes: 85712484110d ("tcp: coalesce/collapse must respect MPTCP extensions")
->> Fixes: 9b65b17db723 ("net: avoid double accounting for pure zerocopy skbs")
->> Signed-off-by: Eric Dumazet <edumazet@google.com>
->> Cc: Paolo Abeni <pabeni@redhat.com>
->> Cc: Mat Martineau <mathew.j.martineau@linux.intel.com>
->> Cc: Talal Ahmad <talalahmad@google.com>
->> Cc: Arjun Roy <arjunroy@google.com>
->> Cc: Soheil Hassas Yeganeh <soheil@google.com>
->> Cc: Willem de Bruijn <willemb@google.com>
->
-> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
->
-> I wish there were some packetdrill tests for MPTCP. Thank you for the fix!
->
+v1->v2:
+ - fix mgmt_device_connected()
+ - add eir_skb_put_data() - function for skb handing with eir
 
-Soheil -
+Radoslaw Biernacki (2):
+  Bluetooth: Fix skb allocation in mgmt_remote_name() &
+    mgmt_device_connected()
+  Bluetooth: Improve skb handling in mgmt_device_connected()
 
-I have good news, there are packetdrill tests for MPTCP:
+ net/bluetooth/eir.h  | 20 ++++++++++++++++++++
+ net/bluetooth/mgmt.c | 43 ++++++++++++++++---------------------------
+ 2 files changed, 36 insertions(+), 27 deletions(-)
 
-https://github.com/multipath-tcp/packetdrill
+-- 
+2.35.0.rc2.247.g8bbb082509-goog
 
-This is still in a fork. I think Davide has talked to Neal about 
-upstreaming the MPTCP changes before but there may be some code that needs 
-refactoring before that could happen.
-
-
->> ---
->>  net/ipv4/tcp_input.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
->> index dc49a3d551eb919baf5ad812ef21698c5c7b9679..bfe4112e000c09ba9d7d8b64392f52337b9053e9 100644
->> --- a/net/ipv4/tcp_input.c
->> +++ b/net/ipv4/tcp_input.c
->> @@ -1660,6 +1660,8 @@ static struct sk_buff *tcp_shift_skb_data(struct sock *sk, struct sk_buff *skb,
->>             (mss != tcp_skb_seglen(skb)))
->>                 goto out;
->>
->> +       if (!tcp_skb_can_collapse(prev, skb))
->> +               goto out;
->>         len = skb->len;
->>         pcount = tcp_skb_pcount(skb);
->>         if (tcp_skb_shift(prev, skb, pcount, len))
->> --
->> 2.35.0.rc2.247.g8bbb082509-goog
->>
->
-
---
-Mat Martineau
-Intel
