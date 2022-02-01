@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDFF44A66B3
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 21:58:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42AC34A66B4
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 21:58:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230492AbiBAU5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 15:57:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60044 "EHLO
+        id S242716AbiBAU56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 15:57:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242670AbiBAU5v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 15:57:51 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E58BC061714
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 12:57:51 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id o30-20020a05600c511e00b0034f4c3186f4so2982579wms.3
-        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 12:57:51 -0800 (PST)
+        with ESMTP id S242674AbiBAU55 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 15:57:57 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905F3C061744
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 12:57:55 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id bg21-20020a05600c3c9500b0035283e7a012so2515606wmb.0
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 12:57:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=eR2Mb81Uzw7DmorSfGv9kkqmMO2Jny5dCS0Z4jWCMXw=;
-        b=l4/wTGwEIRuMVAIR7nUukbL4NlbCNvDS6lEpH5okLsxOmbAxEsBH9p0r0fITRburza
-         l0v2aki3r2Iw8PcWZnt4M6dXf9wa+mV4co1xd4V6SwpE37N5/zub7tIDLdEfSkZJfk66
-         hm+iXadxZQPpQcyekMGaJzglm6M0mBd/cyCA8+BsCi7ORBD3N2LeTDHsZywc6WA4dYER
-         uqqCkQVavGR8PPPC8Jf9k7xzhr0yfWf78eKWTOWwJJsew21WUv+gma1atVo+nDL+jipc
-         CKl3d4pG+80ZOYDlIglbC7OyfIIwLOg4sDhdwnjVygbo+25QplpiFC7cga9PSX/OZ+wu
-         KhBg==
+        bh=6ryE+dCAEy+HtNDOnQjsgxlloDkHSKCHtP3WwpU7TLg=;
+        b=PxuikIQkR0REoqg2a7eZ3HfsivzeiwdyqKGww73Wo4k1ltY3Ab4c0XmEBRwglfgQkj
+         w875eNrVNMV+Sz6/tP9DV2ryzC5LtENg33GbpeCyF4TnohgAjj+VSrbBBtKCRdYkFOaF
+         dMNTpu8WHAcXmbNE62SMch3zxDdeVermlnIOenLtoezq7IGBMAPaRymkqt7jxz+FaZZE
+         euQubwAL0WsZp8fQxmsxk3h6X1MH8R1meTJFyHuYOtLrd0NKHWgRq7Jj2i3reHY4g3Hu
+         PQaNl/jou9aU8AWG6Jz95WameoyyjeHY86bYUsf9mhyZljkChMbm1fTwls/zfanQ2JoZ
+         2PaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=eR2Mb81Uzw7DmorSfGv9kkqmMO2Jny5dCS0Z4jWCMXw=;
-        b=PQPZCsW3OC02X4wpZUduiPzQOt5EmGD75VP1lUJ2AAL6u0hZ3X/k+j6hu3zm+9PLSf
-         DMgJRFUr06t0Rm9zxUJCCggAWwj/L9R/XfPVhDXybTgZYTeFsy1oHSN96RfDzRahN5OR
-         alNbJGiMRVn3JwM4H7Cl8m8mVWq6kGI/W/sJDrtGpMjApoAQ6n59z2jGYlT1qc5sZG4G
-         8na4loD4UKHVeP3rLsGld2zUWvNhMhTH0YGHzdzVwmo7NT1WbiWmUegzzoPrsxgMu3P9
-         pdjWxBkZ+XGpkumZD7a7evyIXarA784NOQ8tgvLmaesh5GMuHgRLM1hMy/9dQpOdY5R4
-         GQkw==
-X-Gm-Message-State: AOAM533SmTeMKXoNlrzyunLo6htRP6cnEoOUaR+wm1PcLVFsbZVkT49+
-        P5sNgKMuwmbA4MfQRFZAgoqlPg==
-X-Google-Smtp-Source: ABdhPJwK5GSSeUqrlZmwi6J1zqn8wGFOLY/N+jqqBxz+/evagetwm3/+8QcD1Vtpj5cYXPBJUZUQAA==
-X-Received: by 2002:a05:600c:20d3:: with SMTP id y19mr3360656wmm.1.1643749069847;
-        Tue, 01 Feb 2022 12:57:49 -0800 (PST)
+        bh=6ryE+dCAEy+HtNDOnQjsgxlloDkHSKCHtP3WwpU7TLg=;
+        b=cJME360zYUt/EFP94vLb9eXE3ukhDEkWCBLQpRoJeVXU+krBUKoUmnAzlBU+adaah1
+         ofQoxCTwzZ34Hv30eokeLVuM4/KlmyY8eme+nH1gPDFHK+HfBxaGTLazfeDxS7uEyAsD
+         D8U5Za39hRp0PCs1g56aECUebHHkww+1eNhD7nUjeJwyi/jYSkQnuOHvfCtL4omhS0vm
+         s4GOu7BCPGq4xKL2hACazg6nSMjQBKaxgXXsxABspFnC9gmi/lKWtU+xMOrRKu0z/wPB
+         i9kR0awLZYsweIk0eS1n2PYqdhPF3g7O+Cwmh1MNMa275Lptf90Ikqzm9Ify9PvRThOO
+         RmuA==
+X-Gm-Message-State: AOAM530x6+uWbwdQ3jcC3FxAIpmNePE/ufzptyX10E2xTb1bG0Tdh/Sd
+        i6cL6bG30eJBIOx4ti3dgDhazA==
+X-Google-Smtp-Source: ABdhPJyATHrRFBZVgj3xDvxtilB++SVPoU95BK2ICwXcpMNtKDkDHLz/iLGDvbHqKBgr2Xg5hc4CKQ==
+X-Received: by 2002:a05:600c:414a:: with SMTP id h10mr3387273wmm.89.1643749074189;
+        Tue, 01 Feb 2022 12:57:54 -0800 (PST)
 Received: from [192.168.1.8] ([149.86.72.139])
-        by smtp.gmail.com with ESMTPSA id o21sm2942469wmh.36.2022.02.01.12.57.48
+        by smtp.gmail.com with ESMTPSA id y6sm2815561wma.48.2022.02.01.12.57.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Feb 2022 12:57:49 -0800 (PST)
-Message-ID: <2a0371dc-19c0-3e2b-8b31-b9d3c942ec4f@isovalent.com>
-Date:   Tue, 1 Feb 2022 20:57:48 +0000
+        Tue, 01 Feb 2022 12:57:53 -0800 (PST)
+Message-ID: <013a33d5-622e-b503-7a25-c77fbf1be1de@isovalent.com>
+Date:   Tue, 1 Feb 2022 20:57:52 +0000
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH bpf-next v5 8/9] bpftool: gen min_core_btf explanation and
- examples
+Subject: Re: [PATCH bpf-next v5 9/9] selftest/bpf: Implement tests for bpftool
+ gen min_core_btf
 Content-Language: en-GB
 To:     =?UTF-8?Q?Mauricio_V=c3=a1squez?= <mauricio@kinvolk.io>,
         netdev@vger.kernel.org, bpf@vger.kernel.org
@@ -65,9 +65,9 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Lorenzo Fontana <lorenzo.fontana@elastic.co>,
         Leonardo Di Donato <leonardo.didonato@elastic.co>
 References: <20220128223312.1253169-1-mauricio@kinvolk.io>
- <20220128223312.1253169-9-mauricio@kinvolk.io>
+ <20220128223312.1253169-10-mauricio@kinvolk.io>
 From:   Quentin Monnet <quentin@isovalent.com>
-In-Reply-To: <20220128223312.1253169-9-mauricio@kinvolk.io>
+In-Reply-To: <20220128223312.1253169-10-mauricio@kinvolk.io>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -75,182 +75,76 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 2022-01-28 17:33 UTC-0500 ~ Mauricio Vásquez <mauricio@kinvolk.io>
-> From: Rafael David Tinoco <rafaeldtinoco@gmail.com>
-> 
-> Add "min_core_btf" feature explanation and one example of how to use it
-> to bpftool-gen man page.
+> This commit implements some integration tests for "BTFGen". The goal
+> of such tests is to verify that the generated BTF file contains the
+> expected types.
 > 
 > Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
 > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
 > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
 > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
-
-Thanks for this, and for the bash completion!
-
 > ---
->  .../bpf/bpftool/Documentation/bpftool-gen.rst | 85 +++++++++++++++++++
->  1 file changed, 85 insertions(+)
+>  tools/testing/selftests/bpf/.gitignore        |   1 +
+>  tools/testing/selftests/bpf/Makefile          |   4 +-
+>  .../selftests/bpf/progs/btfgen_btf_source.c   |  12 +
+>  .../bpf/progs/btfgen_primitives_array.c       |  39 +++
+>  .../bpf/progs/btfgen_primitives_struct.c      |  40 +++
+>  .../bpf/progs/btfgen_primitives_struct2.c     |  44 ++++
+>  .../bpf/progs/btfgen_primitives_union.c       |  32 +++
+>  tools/testing/selftests/bpf/test_bpftool.c    | 228 ++++++++++++++++++
+>  8 files changed, 399 insertions(+), 1 deletion(-)
+>  create mode 100644 tools/testing/selftests/bpf/progs/btfgen_btf_source.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/btfgen_primitives_array.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/btfgen_primitives_struct.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/btfgen_primitives_struct2.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/btfgen_primitives_union.c
+>  create mode 100644 tools/testing/selftests/bpf/test_bpftool.c
 > 
-> diff --git a/tools/bpf/bpftool/Documentation/bpftool-gen.rst b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-> index bc276388f432..7aa3c29c2da0 100644
-> --- a/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-> +++ b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-> @@ -25,6 +25,7 @@ GEN COMMANDS
->  
->  |	**bpftool** **gen object** *OUTPUT_FILE* *INPUT_FILE* [*INPUT_FILE*...]
->  |	**bpftool** **gen skeleton** *FILE* [**name** *OBJECT_NAME*]
-> +|	**bpftool** **gen min_core_btf** *INPUT* *OUTPUT* *OBJECTS(S)*
->  |	**bpftool** **gen help**
->  
->  DESCRIPTION
-> @@ -149,6 +150,24 @@ DESCRIPTION
->  		  (non-read-only) data from userspace, with same simplicity
->  		  as for BPF side.
->  
-> +	**bpftool** **gen min_core_btf** *INPUT* *OUTPUT* *OBJECT(S)*
-> +		  Given one, or multiple, eBPF *OBJECT* files, generate a
-> +		  smaller BTF file, in the *OUTPUT* directory, to each existing
+> diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
+> index 1dad8d617da8..308cd5b9cfc4 100644
+> --- a/tools/testing/selftests/bpf/.gitignore
+> +++ b/tools/testing/selftests/bpf/.gitignore
+> @@ -41,3 +41,4 @@ test_cpp
+>  *.tmp
+>  xdpxceiver
+>  xdp_redirect_multi
+> +test_bpftool
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index 945f92d71db3..afc9bff6545d 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -38,7 +38,8 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
+>  	test_sock test_sockmap get_cgroup_id_user \
+>  	test_cgroup_storage \
+>  	test_tcpnotify_user test_sysctl \
+> -	test_progs-no_alu32
+> +	test_progs-no_alu32 \
+> +	test_bpftool
 
-“directory” -> “directory or file”?
-
-> +		  BTF files in the *INPUT* directory, using the same name.
-
-(same)
-
-Regarding INPUT/OUTPUT I would try to remain generic in the first
-paragraph, and explodes below into more cases, like you did in the
-following paragraph.
-
-“If *INPUT* is a file...”
-
-“If *INPUT* is a directory...”
-
-Also for OUTPUT (I don't think this doc mentions that OUTPUT can be a
-simple file, by the way).
-
-> +
-> +		  If *INPUT* is a file, then the result BTF will be saved as a
-> +		  single file, with the same name, in *OUTPUT* directory.
-> +
-> +		  Generated BTF files will only contain the BTF types used by
-> +		  the given eBPF objects.
-
-Suggestion: I'd split here and merge the last two paragraphs on the
-motivations. I would also reword them a little (“Full external BTF files
-are big”: How comes? Users may not know they have all kernel symbols.
-“This [...] maximized eBPF portability (CO-RE)”: What does this mean?).
-Try to keep in mind that the readers for the man page are people trying
-to understand how bpftool work and who barely have any idea what BTF is.
-
-> +               Idea behind this is simple: Full
-> +		  external BTF files are big. This allows customized external
-> +		  BTF files generation and maximizes eBPF portability (CO-RE).
-> +
-> +		  This feature allows a particular eBPF project to embed
-> +		  customized BTF files in order to support older kernels,
-> +		  allowing code to be portable among kernels that don't support
-> +		  embedded BTF files but still support eBPF.
-> +
->  	**bpftool gen help**
->  		  Print short help message.
->  
-> @@ -215,7 +234,9 @@ This is example BPF application with two BPF programs and a mix of BPF maps
->  and global variables. Source code is split across two source code files.
->  
->  **$ clang -target bpf -g example1.bpf.c -o example1.bpf.o**
-> +
->  **$ clang -target bpf -g example2.bpf.c -o example2.bpf.o**
-> +
->  **$ bpftool gen object example.bpf.o example1.bpf.o example2.bpf.o**
-
-Good catch, thank you
+Do you think we could rename this file to something like
+“test_bpftool_min_core_btf”? We already have a “test_bpftool.py” and I
+fear it might lead to confusion.
 
 >  
->  This set of commands compiles *example1.bpf.c* and *example2.bpf.c*
-> @@ -329,3 +350,67 @@ BPF ELF object file *example.bpf.o*.
->    my_static_var: 7
+>  # Also test bpf-gcc, if present
+>  ifneq ($(BPF_GCC),)
+> @@ -212,6 +213,7 @@ $(OUTPUT)/xdping: $(TESTING_HELPERS)
+>  $(OUTPUT)/flow_dissector_load: $(TESTING_HELPERS)
+>  $(OUTPUT)/test_maps: $(TESTING_HELPERS)
+>  $(OUTPUT)/test_verifier: $(TESTING_HELPERS)
+> +$(OUTPUT)/test_bpftool:
 >  
->  This is a stripped-out version of skeleton generated for above example code.
-> +
-> +*MIN_CORE_BTF*
-> +
-> +::
-> +
+>  BPFTOOL ?= $(DEFAULT_BPFTOOL)
+>  $(DEFAULT_BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile)    \
 
-And thanks for the example!
+> diff --git a/tools/testing/selftests/bpf/test_bpftool.c b/tools/testing/selftests/bpf/test_bpftool.c
+> new file mode 100644
+> index 000000000000..ca7facc582d5
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/test_bpftool.c
+> @@ -0,0 +1,228 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
 
-Note that you place everything into one literal block; this does not
-follow the syntax of the rest of the document. I understand you want to
-group the different commands related to min_core_btf together. To do
-that, I'd suggest adding a subsection in the document:
-
-min_core_btf
-------------
-
-**$ bpftool btf dump file ./... format raw**
-
-::
-
-  [1] INT ...
-  [2] ...
-
-> +  $ bpftool btf dump file ./input/5.4.0-91-generic.btf format raw
-> +
-> +  [1] INT 'long unsigned int' size=8 bits_offset=0 nr_bits=64 encoding=(none)
-> +  [2] CONST '(anon)' type_id=1
-> +  [3] VOLATILE '(anon)' type_id=1
-> +  [4] ARRAY '(anon)' type_id=1 index_type_id=21 nr_elems=2
-> +  [5] PTR '(anon)' type_id=8
-> +  [6] CONST '(anon)' type_id=5
-> +  [7] INT 'char' size=1 bits_offset=0 nr_bits=8 encoding=(none)
-> +  [8] CONST '(anon)' type_id=7
-> +  [9] INT 'unsigned int' size=4 bits_offset=0 nr_bits=32 encoding=(none)
-> +  <long output>
-> +
-> +  $ bpftool btf dump file ./one.bpf.o format raw
-> +
-> +  [1] PTR '(anon)' type_id=2
-> +  [2] STRUCT 'trace_event_raw_sys_enter' size=64 vlen=4
-> +        'ent' type_id=3 bits_offset=0
-> +        'id' type_id=7 bits_offset=64
-> +        'args' type_id=9 bits_offset=128
-> +        '__data' type_id=12 bits_offset=512
-> +  [3] STRUCT 'trace_entry' size=8 vlen=4
-> +        'type' type_id=4 bits_offset=0
-> +        'flags' type_id=5 bits_offset=16
-> +        'preempt_count' type_id=5 bits_offset=24
-> +  <long output>
-> +
-> +  $ bpftool gen min_core_btf ./input/ ./output ./one.bpf.o
-> +
-> +  $ bpftool btf dump file ./output/5.4.0-91-generic.btf format raw
-> +
-> +  [1] TYPEDEF 'pid_t' type_id=6
-> +  [2] STRUCT 'trace_event_raw_sys_enter' size=64 vlen=1
-> +        'args' type_id=4 bits_offset=128
-> +  [3] STRUCT 'task_struct' size=9216 vlen=2
-> +        'pid' type_id=1 bits_offset=17920
-> +        'real_parent' type_id=7 bits_offset=18048
-> +  [4] ARRAY '(anon)' type_id=5 index_type_id=8 nr_elems=6
-> +  [5] INT 'long unsigned int' size=8 bits_offset=0 nr_bits=64 encoding=(none)
-> +  [6] TYPEDEF '__kernel_pid_t' type_id=8
-> +  [7] PTR '(anon)' type_id=3
-> +  [8] INT 'int' size=4 bits_offset=0 nr_bits=32 encoding=SIGNED
-> +  <end>
-> +
-> +  Now, one may use ./output/5.4.0-91-generic.btf generated file as an external
-> +  BTF file fed to libbpf during eBPF object opening:
-> +
-> +  struct bpf_object *obj = NULL;
-> +  struct bpf_object_open_opts openopts = {};
-> +
-> +  openopts.sz = sizeof(struct bpf_object_open_opts);
-> +  openopts.btf_custom_path = strdup("./output/5.4.0-91-generic.btf");
-> +
-> +  obj = bpf_object__open_file("./one.bpf.o", &openopts);
-> +
-> +  ...
-> +
-> +  and allow libbpf to do all needed CO-RE relocations, to "one.bpf.o" object,
-> +  based on the small external BTF file.
-
+Not sure if it is intentional to use “GPL-2.0-only” where the other
+files in your patch have “GPL-2.0”. But I don't believe it matters much
+anyway.
