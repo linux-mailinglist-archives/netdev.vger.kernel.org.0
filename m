@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80A824A5C16
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 13:20:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 953C04A5C21
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 13:23:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237874AbiBAMUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 07:20:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51862 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236263AbiBAMUE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 07:20:04 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5456CC061714;
-        Tue,  1 Feb 2022 04:20:04 -0800 (PST)
+        id S237842AbiBAMXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 07:23:07 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:52758 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229892AbiBAMXG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 07:23:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C8D84CE1854;
-        Tue,  1 Feb 2022 12:20:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46B17C340ED;
-        Tue,  1 Feb 2022 12:19:59 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 98BABCE180E;
+        Tue,  1 Feb 2022 12:23:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1798FC340EE;
+        Tue,  1 Feb 2022 12:22:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643718001;
-        bh=hRvqAaJafSB7JM7vkxQW5UN6K4O0gDJkhTpA26IZPwE=;
+        s=k20201202; t=1643718180;
+        bh=Xn1NaOZeL2KYasB+5TrvzSGa5oNuP13JS2EpilRaenc=;
         h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=DgD9gHF4dbe5av/ULrVQc7az4gwaMXHibzLukCPxYdgq6Yv9l/uG+ubulAUmPtd3g
-         cB5cpQePFCGYiTn38QO4fKBYGX/wRvudP3llwz4IeuoRhsfbereF/VsVGDW3mljesc
-         iXGV5P6HSp/NwXSa5pMEwkhghe00S08HBjA8Y9PHF2hJcsnjUym6OPgs/eUqh/O+BV
-         NqTnoQzPRi961xotMsevar0wVZsLy8bk50biiC1M+3b/QnUwBraERIDhi3rZiYFMKE
-         /lAd819+mYQZNozd1a1BHj/DiECRcnKLt3V84IMUDEnvlTJ2D1tByt1cz+yTNb3qT3
-         7ZBJZPRcvAFxg==
+        b=ci04/5wV3mVvdTf9b2/rpwEh/dfHzJ4kqorC89/systczkUhKJAvupkUkRg11tucw
+         p1RaA8E9kJ9ax1Rr/khzQQzP5eA4Ua1vX4EEcpqRKUHkTm9aX2UM8OCEXlgDGHHcGb
+         Yu6U+DUA2pqDecDQuONHZxt+PYSZTpNuS9NellT+HAWdDDiiB/+srbwiaIdZHQIBH+
+         QE9dAqGwPNNYGmaqtFHUhxkWXMhMxTEkjBXlw3A22ypLlxtlJg1NB75xBlHR0ujAal
+         sf2WH+SMq8EONEl6QdwgdxI/iJMBAHDpBx7iDGb2FCulMXWcxx2WD0GCuk7NO+Gx/v
+         rjnEyynO62WNQ==
 From:   Kalle Valo <kvalo@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] drivers/net/wireless: remove redundant ret variable
-References: <20220112080715.667254-1-chi.minghao@zte.com.cn>
-Date:   Tue, 01 Feb 2022 14:19:57 +0200
-In-Reply-To: <20220112080715.667254-1-chi.minghao@zte.com.cn> (cgel zte's
-        message of "Wed, 12 Jan 2022 08:07:15 +0000")
-Message-ID: <87tudidbiq.fsf@kernel.org>
+To:     Pkshih <pkshih@realtek.com>
+Cc:     "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "colin.i.king\@gmail.com" <colin.i.king@gmail.com>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "kuba\@kernel.org" <kuba@kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-janitors\@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] rtlwifi: remove redundant initialization of variable ul_encalgo
+References: <20220130223714.6999-1-colin.i.king@gmail.com>
+        <55f8c7f2c75b18cd628d02a25ed96fae676eace2.camel@realtek.com>
+Date:   Tue, 01 Feb 2022 14:22:57 +0200
+In-Reply-To: <55f8c7f2c75b18cd628d02a25ed96fae676eace2.camel@realtek.com>
+        (Pkshih's message of "Mon, 31 Jan 2022 02:53:40 +0000")
+Message-ID: <87pmo6dbdq.fsf@kernel.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -51,53 +51,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cgel.zte@gmail.com writes:
+Pkshih <pkshih@realtek.com> writes:
 
-> From: Minghao Chi <chi.minghao@zte.com.cn>
+> On Sun, 2022-01-30 at 22:37 +0000, Colin Ian King wrote:
+>> Variable ul_encalgo is initialized with a value that is never read,
+>> it is being re-assigned a new value in every case in the following
+>> switch statement. The initialization is redundant and can be removed.
+>> 
+>> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 >
-> Return value directly instead of taking this in another redundant
-> variable.
+> Acked-by: Ping-Ke Shih <pkshih@realtek.com>
 >
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
-> ---
->  drivers/net/wireless/marvell/libertas/cfg.c | 14 +++-----------
->  1 file changed, 3 insertions(+), 11 deletions(-)
+>> ---
+>>  drivers/net/wireless/realtek/rtlwifi/cam.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> 
+>> diff --git a/drivers/net/wireless/realtek/rtlwifi/cam.c
+>> b/drivers/net/wireless/realtek/rtlwifi/cam.c
+>> index 7a0355dc6bab..32970ea4b4e7 100644
+>> --- a/drivers/net/wireless/realtek/rtlwifi/cam.c
+>> +++ b/drivers/net/wireless/realtek/rtlwifi/cam.c
+>> @@ -208,7 +208,7 @@ void rtl_cam_empty_entry(struct ieee80211_hw *hw, u8 uc_index)
+>>  
+>>  	u32 ul_command;
+>>  	u32 ul_content;
+>> -	u32 ul_encalgo = rtlpriv->cfg->maps[SEC_CAM_AES];
+>> +	u32 ul_encalgo;
+>>  	u8 entry_i;
+>>  
+>>  	switch (rtlpriv->sec.pairwise_enc_algorithm) {
+>> -- 
 >
-> diff --git a/drivers/net/wireless/marvell/libertas/cfg.c b/drivers/net/wireless/marvell/libertas/cfg.c
-> index 4e3de684928b..f160c258805e 100644
-> --- a/drivers/net/wireless/marvell/libertas/cfg.c
-> +++ b/drivers/net/wireless/marvell/libertas/cfg.c
-> @@ -854,16 +854,13 @@ void lbs_send_mic_failureevent(struct lbs_private *priv, u32 event)
->  static int lbs_remove_wep_keys(struct lbs_private *priv)
->  {
->  	struct cmd_ds_802_11_set_wep cmd;
-> -	int ret;
+> When I check this patch, I find there is no 'break' for default case.
+> Do we need one? like
+>
+> @@ -226,6 +226,7 @@ void rtl_cam_empty_entry(struct ieee80211_hw *hw, u8 uc_index)
+>                 break;
+>         default:
+>                 ul_encalgo = rtlpriv->cfg->maps[SEC_CAM_AES];
+> +               break;
+>         }
 >  
->  	memset(&cmd, 0, sizeof(cmd));
->  	cmd.hdr.size = cpu_to_le16(sizeof(cmd));
->  	cmd.keyindex = cpu_to_le16(priv->wep_tx_key);
->  	cmd.action = cpu_to_le16(CMD_ACT_REMOVE);
->  
-> -	ret = lbs_cmd_with_response(priv, CMD_802_11_SET_WEP, &cmd);
-> -
-> -	return ret;
-> +	return lbs_cmd_with_response(priv, CMD_802_11_SET_WEP, &cmd);
->  }
->  
->  /*
-> @@ -949,9 +946,7 @@ static int lbs_enable_rsn(struct lbs_private *priv, int enable)
->  	cmd.action = cpu_to_le16(CMD_ACT_SET);
->  	cmd.enable = cpu_to_le16(enable);
->  
-> -	ret = lbs_cmd_with_response(priv, CMD_802_11_ENABLE_RSN, &cmd);
-> -
-> -	return ret;
-> +	return lbs_cmd_with_response(priv, CMD_802_11_ENABLE_RSN, &cmd);
->  }
+>         for (entry_i = 0; entry_i < CAM_CONTENT_COUNT; entry_i++) {
 
-In lbs_enable_rsn() ret variable is now unused.
+Yeah, it would be good to have break for consistency. Can someone send a
+separate patch for that?
 
 -- 
 https://patchwork.kernel.org/project/linux-wireless/list/
