@@ -2,144 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C905C4A653D
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 20:58:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEDBF4A6545
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 21:01:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234118AbiBAT6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 14:58:39 -0500
-Received: from cloudserver094114.home.pl ([79.96.170.134]:44428 "EHLO
-        cloudserver094114.home.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231815AbiBAT6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 14:58:39 -0500
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 4.0.0)
- id 48eb9971b89e43b8; Tue, 1 Feb 2022 20:58:38 +0100
-Received: from kreacher.localnet (unknown [213.134.162.64])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id 0DC1266B390;
-        Tue,  1 Feb 2022 20:58:37 +0100 (CET)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     netdev@vger.kernel.org
-Cc:     Sunil Goutham <sgoutham@marvell.com>,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S234737AbiBAUBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 15:01:24 -0500
+Received: from mga06.intel.com ([134.134.136.31]:53356 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234295AbiBAUBY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Feb 2022 15:01:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643745684; x=1675281684;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=8pFfyb6Db6eeLbrqPdLT4F/jozq5PXnfq7n93BhoWxA=;
+  b=FkmgEDaBZ83Zokecc2Fa13e3ZegfDKkEs3jrIkyqoHgY/j2KHnP0DbJ/
+   nMm7j3eSxhIoFAqzKRemFKV3dnxKs8KNMwVdUR4hION0OtTcW6RhVV3Gh
+   JPSsKNyZpfJmtllyjP+mzj4vv07gTnR1EaPMxgtzC6hcGT+FRa5JyBtYs
+   xY92+bNVi2XOOtu5Jgq5BuLRq71gujl+h7q3fyKMCclegzxKkkEXIPduR
+   lzly/vTY/PgBZzOe8wb1v4s7fLQyE90S8VLnKInQZmGAjRsbO4qlYxNAU
+   6IilsSaUfrTuzQeIdJ5KnECjLWiLrfAIDdCb1TIt5/IcIrRCrBkZQEtDM
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="308506519"
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="308506519"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 12:01:23 -0800
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="482512107"
+Received: from ekebedex-mobl1.amr.corp.intel.com ([10.251.14.93])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 12:01:23 -0800
+Date:   Tue, 1 Feb 2022 12:01:23 -0800 (PST)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Soheil Hassas Yeganeh <soheil@google.com>
+cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>
-Subject: [PATCH v2] drivers: net: Replace acpi_bus_get_device()
-Date:   Tue, 01 Feb 2022 20:58:36 +0100
-Message-ID: <11918902.O9o76ZdvQC@kreacher>
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Arjun Roy <arjunroy@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Davide Caratti <dcaratti@redhat.com>
+Subject: Re: [PATCH net] tcp: add missing tcp_skb_can_collapse() test in
+ tcp_shift_skb_data()
+In-Reply-To: <CACSApvZ8vXXJ_zKf_HpoVgACwWxS2UvBw9QCv1ZnPX9ZpF3D_g@mail.gmail.com>
+Message-ID: <62ad3eb-cbb6-a59e-f5fe-5c439d21e760@linux.intel.com>
+References: <20220201184640.756716-1-eric.dumazet@gmail.com> <CACSApvZ8vXXJ_zKf_HpoVgACwWxS2UvBw9QCv1ZnPX9ZpF3D_g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.162.64
-X-CLIENT-HOSTNAME: 213.134.162.64
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrgeefgddufeduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpefhgedtffejheekgeeljeevvedtuefgffeiieejuddutdekgfejvdehueejjeetvdenucfkphepvddufedrudefgedrudeivddrieegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudeivddrieegpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeduuddprhgtphhtthhopehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehsghhouhhthhgrmhesmhgrrhhvvghllhdrtghomhdprhgtphhtthhopehihigrphhprghnsehoshdrrghmphgvrhgvtghomhhpuhhtihhnghdrtghomhdprhgtphhtthhopegrnhgurhgvfieslhhunhhnrdgthhdprhgtphhtthhopegurghvvghmsegurghvvghmlhho
- fhhtrdhnvghtpdhrtghpthhtohepkhhusggrsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehkvgihuhhrsehoshdrrghmphgvrhgvtghomhhpuhhtihhnghdrtghomhdprhgtphhtthhopehquhgrnhesohhsrdgrmhhpvghrvggtohhmphhuthhinhhgrdgtohhmpdhrtghpthhtohephhhkrghllhifvghithdusehgmhgrihhlrdgtohhmpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhg
-X-DCC--Metrics: v370.home.net.pl 1024; Body=11 Fuz1=11 Fuz2=11
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Subject: [PATCH] drivers: net: Replace acpi_bus_get_device()
+On Tue, 1 Feb 2022, Soheil Hassas Yeganeh wrote:
 
-Replace acpi_bus_get_device() that is going to be dropped with
-acpi_fetch_acpi_dev().
+> On Tue, Feb 1, 2022 at 1:46 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>
+>> From: Eric Dumazet <edumazet@google.com>
+>>
+>> tcp_shift_skb_data() might collapse three packets into a larger one.
+>>
+>> P_A, P_B, P_C  -> P_ABC
+>>
+>> Historically, it used a single tcp_skb_can_collapse_to(P_A) call,
+>> because it was enough.
+>>
+>> In commit 85712484110d ("tcp: coalesce/collapse must respect MPTCP extensions"),
+>> this call was replaced by a call to tcp_skb_can_collapse(P_A, P_B)
+>>
+>> But the now needed test over P_C has been missed.
+>>
+>> This probably broke MPTCP.
+>>
+>> Then later, commit 9b65b17db723 ("net: avoid double accounting for pure zerocopy skbs")
+>> added an extra condition to tcp_skb_can_collapse(), but the missing call
+>> from tcp_shift_skb_data() is also breaking TCP zerocopy, because P_A and P_C
+>> might have different skb_zcopy_pure() status.
+>>
+>> Fixes: 85712484110d ("tcp: coalesce/collapse must respect MPTCP extensions")
+>> Fixes: 9b65b17db723 ("net: avoid double accounting for pure zerocopy skbs")
+>> Signed-off-by: Eric Dumazet <edumazet@google.com>
+>> Cc: Paolo Abeni <pabeni@redhat.com>
+>> Cc: Mat Martineau <mathew.j.martineau@linux.intel.com>
+>> Cc: Talal Ahmad <talalahmad@google.com>
+>> Cc: Arjun Roy <arjunroy@google.com>
+>> Cc: Soheil Hassas Yeganeh <soheil@google.com>
+>> Cc: Willem de Bruijn <willemb@google.com>
+>
+> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+>
+> I wish there were some packetdrill tests for MPTCP. Thank you for the fix!
+>
 
-While at it, rearrange the local variable definitions in
-bgx_acpi_register_phy() and mdio-xgene.c:acpi_register_phy() so as
-to put them in the reverse xmas tree order.
+Soheil -
 
-No intentional functional impact.
+I have good news, there are packetdrill tests for MPTCP:
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
+https://github.com/multipath-tcp/packetdrill
 
--> v2: Put local variable definitions in two functions the reverse xmas tree
-       order (Andrew Lunn).
-
----
- drivers/net/ethernet/cavium/thunder/thunder_bgx.c |    6 +++---
- drivers/net/fjes/fjes_main.c                      |   10 +++-------
- drivers/net/mdio/mdio-xgene.c                     |   10 ++++------
- 3 files changed, 10 insertions(+), 16 deletions(-)
-
-Index: linux-pm/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-===================================================================
---- linux-pm.orig/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-+++ linux-pm/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-@@ -1405,11 +1405,11 @@ static int acpi_get_mac_address(struct d
- static acpi_status bgx_acpi_register_phy(acpi_handle handle,
- 					 u32 lvl, void *context, void **rv)
- {
--	struct bgx *bgx = context;
-+	struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
- 	struct device *dev = &bgx->pdev->dev;
--	struct acpi_device *adev;
-+	struct bgx *bgx = context;
- 
--	if (acpi_bus_get_device(handle, &adev))
-+	if (!adev)
- 		goto out;
- 
- 	acpi_get_mac_address(dev, adev, bgx->lmac[bgx->acpi_lmac_idx].mac);
-Index: linux-pm/drivers/net/fjes/fjes_main.c
-===================================================================
---- linux-pm.orig/drivers/net/fjes/fjes_main.c
-+++ linux-pm/drivers/net/fjes/fjes_main.c
-@@ -1512,15 +1512,11 @@ static acpi_status
- acpi_find_extended_socket_device(acpi_handle obj_handle, u32 level,
- 				 void *context, void **return_value)
- {
--	struct acpi_device *device;
-+	struct acpi_device *device = acpi_fetch_acpi_dev(obj_handle);
- 	bool *found = context;
--	int result;
- 
--	result = acpi_bus_get_device(obj_handle, &device);
--	if (result)
--		return AE_OK;
--
--	if (strcmp(acpi_device_hid(device), ACPI_MOTHERBOARD_RESOURCE_HID))
-+	if (!device ||
-+	    strcmp(acpi_device_hid(device), ACPI_MOTHERBOARD_RESOURCE_HID))
- 		return AE_OK;
- 
- 	if (!is_extended_socket_device(device))
-Index: linux-pm/drivers/net/mdio/mdio-xgene.c
-===================================================================
---- linux-pm.orig/drivers/net/mdio/mdio-xgene.c
-+++ linux-pm/drivers/net/mdio/mdio-xgene.c
-@@ -279,16 +279,14 @@ EXPORT_SYMBOL(xgene_enet_phy_register);
- static acpi_status acpi_register_phy(acpi_handle handle, u32 lvl,
- 				     void *context, void **ret)
- {
-+	struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
- 	struct mii_bus *mdio = context;
--	struct acpi_device *adev;
--	struct phy_device *phy_dev;
- 	const union acpi_object *obj;
-+	struct phy_device *phy_dev;
- 	u32 phy_addr;
- 
--	if (acpi_bus_get_device(handle, &adev))
--		return AE_OK;
--
--	if (acpi_dev_get_property(adev, "phy-channel", ACPI_TYPE_INTEGER, &obj))
-+	if (!adev ||
-+	    acpi_dev_get_property(adev, "phy-channel", ACPI_TYPE_INTEGER, &obj))
- 		return AE_OK;
- 	phy_addr = obj->integer.value;
- 
+This is still in a fork. I think Davide has talked to Neal about 
+upstreaming the MPTCP changes before but there may be some code that needs 
+refactoring before that could happen.
 
 
+>> ---
+>>  net/ipv4/tcp_input.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+>> index dc49a3d551eb919baf5ad812ef21698c5c7b9679..bfe4112e000c09ba9d7d8b64392f52337b9053e9 100644
+>> --- a/net/ipv4/tcp_input.c
+>> +++ b/net/ipv4/tcp_input.c
+>> @@ -1660,6 +1660,8 @@ static struct sk_buff *tcp_shift_skb_data(struct sock *sk, struct sk_buff *skb,
+>>             (mss != tcp_skb_seglen(skb)))
+>>                 goto out;
+>>
+>> +       if (!tcp_skb_can_collapse(prev, skb))
+>> +               goto out;
+>>         len = skb->len;
+>>         pcount = tcp_skb_pcount(skb);
+>>         if (tcp_skb_shift(prev, skb, pcount, len))
+>> --
+>> 2.35.0.rc2.247.g8bbb082509-goog
+>>
+>
 
+--
+Mat Martineau
+Intel
