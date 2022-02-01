@@ -2,118 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77D1F4A610A
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 17:11:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF4544A6168
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 17:32:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240863AbiBAQLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 11:11:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48942 "EHLO
+        id S241111AbiBAQcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 11:32:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240802AbiBAQLT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 11:11:19 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB89C061714
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 08:11:19 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id b13so35563010edn.0
-        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 08:11:18 -0800 (PST)
+        with ESMTP id S241086AbiBAQcP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 11:32:15 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8520CC061714;
+        Tue,  1 Feb 2022 08:32:14 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id j10so15795375pgc.6;
+        Tue, 01 Feb 2022 08:32:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=r72ipMSsw585C/2Ak7zqzoxsFblCJRuLe89NXnXj3nE=;
-        b=oeELatbZwXdmHmH40WvUNgJCxyD/wZQJVZbMj8PqZbXGpWl/S7uboXRH7EDJ8igz6X
-         sZ8giAeVkYfOol1mG7aagGqY9H4K6QJjWHAMrb/LU3FdtD0mXt1LKVmuQAC+9iC03hws
-         IB0UM86ooX7Sp3ZHgrAp8eix3ju1WYYuOywvAcvdXxZk/wzyqqaINUxqwKqj4Gd7xH34
-         PhE9DytwpMo/U6R+jimOYS/WeWDdaW40XP2/gXvPI3Sdpcfdv521/l8DAzJiQOIVTfHS
-         TOrsU+1jYHVyfxsE8bdyj25qvzTQXJyuXRKjFw9kXOBzB0Ha3NImTv5ly6OG0svOKvVX
-         A5cQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6xhI2zbG0jNZ5yz1fLORa/ua0vNztHYbX/bz96VcvOU=;
+        b=q2ZAeuPodxwJQU2rztwogjbHdGzMD0vXKNmluHDiGxY4gtRzIlQdJAWWWWWjXUSV2s
+         sGBRGBuiR3MLuht7jztdnvcbWjncBC4pE7MSdoXTXEmhvXqE1YL03UhOlqmEicbtmEW3
+         dttGWBz6b0XBsS4vyD/PbuGMxQIlrRMNmA+6rKW0csnsIKjValSTr588y9+Y73EefhH9
+         rfLZ4sBttt02feGAlBaiVpMyZrVVUFIWbEtGK3tOgBBiHxXtZ3P7J71Tahy9yrX8xbBa
+         II0n4I93snxUBwmOMUlUNpjqrSGoLwevzi+sR1ogid7z+9OZjQAJbBAGLh/X/b8FnysZ
+         uiGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=r72ipMSsw585C/2Ak7zqzoxsFblCJRuLe89NXnXj3nE=;
-        b=p2lqu7MZ0RbfD/NQRb6Xo+RaGS0sGDT+CfOgMK//FyX8zT4iIOclWerfsRvOrlOxlY
-         y57zbgFgqLQUJ855tKWSYzOv6ANQxxB+EsPo8/IlZyxp/ErcZoN9RRcemg7KQUIriKtn
-         qdVQPoxNuMxs6Kb/f4Z+RubE4+UwLtLf/Dksy2uTkpdSv6wX+bCPolaf19HPjVoT4Gvr
-         02HUP8BAKw9/wHN6z4HYN/MqyciP7MV1Nd25W0LLjRFvTD1zc6NujjPpBhHO9RTbCUwO
-         sMvlOCFBAP8zW8d9w4n8iOs2yGU74iz+omttVjt84pjMQR7/50FAm2dHlW3RtINoKFlN
-         4fnQ==
-X-Gm-Message-State: AOAM5338cPSAYn39whjrUGV1VycUtHYW7cGjh9PozmDG9PmdsWuf3dhb
-        Hk+T0En+lZJsQ6FzS3Vzr17C7ZjxLaBqnjDZy1UnhQ==
-X-Google-Smtp-Source: ABdhPJyiKCwvKgDnktp5gf1G1nmb4zd44sF0WRj/TZfazLlsytd+QHNFrCpxH8w6G4+e/QAhd8Og0zxDgUmvelX9ThY=
-X-Received: by 2002:a05:6402:5ca:: with SMTP id n10mr26114193edx.341.1643731877182;
- Tue, 01 Feb 2022 08:11:17 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6xhI2zbG0jNZ5yz1fLORa/ua0vNztHYbX/bz96VcvOU=;
+        b=Dl7hVXkpvlcCimWjMUbJt7bz/y8tbugyEfj87QE+1fcmPrvhgpIGzEHLhRYrgoEbLO
+         lDZaQ4CVMbxMdOkrrHH9yTDsFniH8SrJYkvtMp5jEz8kSRuHOIeTor3agEsR7VNpx0rX
+         bSjHut3dHAXUiHFcE4yrCYrVXva1FmM1lPE/FFYuyM06GllFr+oneI46/r7U3OZlabuk
+         123SD85CsOYOPFDCi5KXlRFvxQoaIMGUae9Ze8GNhZqGoVZCHhpNEKkxQ1pJEq0uJCBK
+         UlUv5IS0NBT9FwgHSSpGe8680cKKnqdtR3X/WUj+ANoxRrWZfMbmk7wPISnmQYg35bV7
+         VAcQ==
+X-Gm-Message-State: AOAM531Xw1Dq/+KsDhTU4U/fCIwBYZVWrg50uK6BPvPtt+xTnODuJGr1
+        H05pidYnhWPi1j9jELJFbzg=
+X-Google-Smtp-Source: ABdhPJw+7LhIPln247qncqytiFgNPjhSAYA88YoV7GKl+p94CA5gb2dWEyZdTkrxr+/JsoKMGn4OLw==
+X-Received: by 2002:aa7:8c02:: with SMTP id c2mr25899849pfd.81.1643733134011;
+        Tue, 01 Feb 2022 08:32:14 -0800 (PST)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:38:1876:8c7:1622:c2a0])
+        by smtp.gmail.com with ESMTPSA id e17sm21659800pfj.168.2022.02.01.08.32.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 08:32:13 -0800 (PST)
+From:   Tianyu Lan <ltykernel@gmail.com>
+To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, davem@davemloft.net,
+        kuba@kernel.org, hch@infradead.org, m.szyprowski@samsung.com,
+        robin.murphy@arm.com, michael.h.kelley@microsoft.com
+Cc:     Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        iommu@lists.linux-foundation.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] Netvsc: Call hv_unmap_memory() in the netvsc_device_remove()
+Date:   Tue,  1 Feb 2022 11:32:11 -0500
+Message-Id: <20220201163211.467423-1-ltykernel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220201065254.680532-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220201065254.680532-1-eric.dumazet@gmail.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Tue, 1 Feb 2022 11:10:40 -0500
-Message-ID: <CACSApvbwWH2LQPKSU9Re2WFbO2ERCCEkN0LphO808XMCMfW6ig@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: fix mem under-charging with zerocopy sendmsg()
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Arjun Roy <arjunroy@google.com>,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 1, 2022 at 1:53 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> We got reports of following warning in inet_sock_destruct()
->
->         WARN_ON(sk_forward_alloc_get(sk));
->
-> Whenever we add a non zero-copy fragment to a pure zerocopy skb,
-> we have to anticipate that whole skb->truesize will be uncharged
-> when skb is finally freed.
->
-> skb->data_len is the payload length. But the memory truesize
-> estimated by __zerocopy_sg_from_iter() is page aligned.
->
-> Fixes: 9b65b17db723 ("net: avoid double accounting for pure zerocopy skbs")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Talal Ahmad <talalahmad@google.com>
-> Cc: Arjun Roy <arjunroy@google.com>
-> Cc: Soheil Hassas Yeganeh <soheil@google.com>
-> Cc: Willem de Bruijn <willemb@google.com>
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+netvsc_device_remove() calls vunmap() inside which should not be
+called in the interrupt context. Current code calls hv_unmap_memory()
+in the free_netvsc_device() which is rcu callback and maybe called
+in the interrupt context. This will trigger BUG_ON(in_interrupt())
+in the vunmap(). Fix it via moving hv_unmap_memory() to netvsc_device_
+remove().
 
-Nice catch! and thank you for the fix!
+Fixes: 846da38de0e8 ("net: netvsc: Add Isolation VM support for netvsc driver")
+Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+---
+ drivers/net/hyperv/netvsc.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+index afa81a9480cc..f989f920d4ce 100644
+--- a/drivers/net/hyperv/netvsc.c
++++ b/drivers/net/hyperv/netvsc.c
+@@ -154,19 +154,15 @@ static void free_netvsc_device(struct rcu_head *head)
+ 
+ 	kfree(nvdev->extension);
+ 
+-	if (nvdev->recv_original_buf) {
+-		hv_unmap_memory(nvdev->recv_buf);
++	if (nvdev->recv_original_buf)
+ 		vfree(nvdev->recv_original_buf);
+-	} else {
++	else
+ 		vfree(nvdev->recv_buf);
+-	}
+ 
+-	if (nvdev->send_original_buf) {
+-		hv_unmap_memory(nvdev->send_buf);
++	if (nvdev->send_original_buf)
+ 		vfree(nvdev->send_original_buf);
+-	} else {
++	else
+ 		vfree(nvdev->send_buf);
+-	}
+ 
+ 	bitmap_free(nvdev->send_section_map);
+ 
+@@ -765,6 +761,12 @@ void netvsc_device_remove(struct hv_device *device)
+ 		netvsc_teardown_send_gpadl(device, net_device, ndev);
+ 	}
+ 
++	if (net_device->recv_original_buf)
++		hv_unmap_memory(net_device->recv_buf);
++
++	if (net_device->send_original_buf)
++		hv_unmap_memory(net_device->send_buf);
++
+ 	/* Release all resources */
+ 	free_netvsc_device_rcu(net_device);
+ }
+-- 
+2.25.1
 
-> ---
->  net/ipv4/tcp.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
->
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 78e81465f5f3632f54093495d2f2a064e60c7237..bdf108f544a45a2aa24bc962fb81dfd0ca1e0682 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -1322,10 +1322,13 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
->
->                         /* skb changing from pure zc to mixed, must charge zc */
->                         if (unlikely(skb_zcopy_pure(skb))) {
-> -                               if (!sk_wmem_schedule(sk, skb->data_len))
-> +                               u32 extra = skb->truesize -
-> +                                           SKB_TRUESIZE(skb_end_offset(skb));
-> +
-> +                               if (!sk_wmem_schedule(sk, extra))
->                                         goto wait_for_space;
->
-> -                               sk_mem_charge(sk, skb->data_len);
-> +                               sk_mem_charge(sk, extra);
->                                 skb_shinfo(skb)->flags &= ~SKBFL_PURE_ZEROCOPY;
->                         }
->
-> --
-> 2.35.0.rc2.247.g8bbb082509-goog
->
