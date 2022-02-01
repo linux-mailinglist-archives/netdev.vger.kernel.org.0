@@ -2,102 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A3E74A5E1A
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 15:19:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 194CD4A5E1E
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 15:20:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239159AbiBAOTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 09:19:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41145 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239002AbiBAOT3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 09:19:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643725169;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kYjnMC9tPGNeYuQS/9IzugsptRNBQAJSLzF0SEucIUg=;
-        b=C398VwF2ErYD/oTb45xWTydO///2QvZpra32lq7ectYrAtx+1iLYUN/YfZ1wBy+bFxTpCs
-        4gWmwWIBEWWmVd9IQCx/Yce6Zznzu8UXvlMqYT8Y7+9eTDyOBAxKAwZ5KMIbR9RzqFJ14K
-        tqnf8DwaKkWt1E+5TMMjisbG07w65IU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-636-w-Zc9dibPL6gj8-g7kb4IA-1; Tue, 01 Feb 2022 09:19:25 -0500
-X-MC-Unique: w-Zc9dibPL6gj8-g7kb4IA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S239167AbiBAOUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 09:20:13 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39170 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239151AbiBAOUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 09:20:12 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B68DD8144E4;
-        Tue,  1 Feb 2022 14:19:23 +0000 (UTC)
-Received: from localhost (unknown [10.39.194.79])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3A7A4708D3;
-        Tue,  1 Feb 2022 14:19:20 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, alex.williamson@redhat.com,
-        bhelgaas@google.com, saeedm@nvidia.com, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
-        leonro@nvidia.com, kwankhede@nvidia.com, mgurtovoy@nvidia.com,
-        maorg@nvidia.com
-Subject: Re: [PATCH V6 mlx5-next 10/15] vfio: Remove migration protocol v1
-In-Reply-To: <20220201135231.GF1786498@nvidia.com>
-Organization: Red Hat GmbH
-References: <20220130160826.32449-1-yishaih@nvidia.com>
- <20220130160826.32449-11-yishaih@nvidia.com> <874k5izv8m.fsf@redhat.com>
- <20220201121325.GB1786498@nvidia.com> <87sft2yd50.fsf@redhat.com>
- <20220201125444.GE1786498@nvidia.com> <87mtjayayi.fsf@redhat.com>
- <20220201135231.GF1786498@nvidia.com>
-User-Agent: Notmuch/0.34 (https://notmuchmail.org)
-Date:   Tue, 01 Feb 2022 15:19:18 +0100
-Message-ID: <87k0eey8ih.fsf@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 503D3B82E3E;
+        Tue,  1 Feb 2022 14:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D14E4C340ED;
+        Tue,  1 Feb 2022 14:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643725209;
+        bh=Na67gv+49YjqY2yngHBViPya9GdQ6ph1gdzIMuK4dh4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YP9cfGLbJG1t7YYGe4cskZ45CDqBS0WF1vd7WAA+9UaR6LlRL1FvljgundvN3rFig
+         BkplXUrKdP5JmTua9bc5gw/JqUZNXrQhOxbYN32wlWDyaBhCnyuzRG/KKoRSlIuy6N
+         fEvQZ7hM74TGEO93FC2PGH31l2PHGGFShGPXoaZyiC+r7jK8XXHD65WLyNsLB1ciQq
+         NTsBAFh+OMOU74UZByMkE2wp4bDQXFngm1/l04T1oF/BPDSBzkj7vmfHHV5NZ2cwUt
+         k/hOXkwuWNg0fAP4K2FT562ck8+wi9sXdT7RmSS0HSaTaNUg5YCycbjTYYtlfaxxqS
+         YvP6umA1uVzww==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B969CE5D07D;
+        Tue,  1 Feb 2022 14:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/4] selftests: fib rule: Small internal and test
+ output improvments
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164372520975.31623.1854554114084409693.git-patchwork-notify@kernel.org>
+Date:   Tue, 01 Feb 2022 14:20:09 +0000
+References: <cover.1643643083.git.gnault@redhat.com>
+In-Reply-To: <cover.1643643083.git.gnault@redhat.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        shuah@kernel.org, linux-kselftest@vger.kernel.org,
+        roopa@cumulusnetworks.com, liuhangbin@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 01 2022, Jason Gunthorpe <jgg@nvidia.com> wrote:
+Hello:
 
-> On Tue, Feb 01, 2022 at 02:26:29PM +0100, Cornelia Huck wrote:
->
->> > We can certainly defer the kernels removal patch for a release if it
->> > makes qemu's life easier?
->> 
->> No, I'm only talking about the QEMU implementation (i.e. the code that
->> uses the v1 definitions and exposes x-enable-migration). Any change in
->> the headers needs to be done via a sync with upstream Linux.
->
-> If we leave the v1 and v2 defs in the kernel header then qemu can sync
-> and do the trivial rename and keep going as-is.
->
-> Then we can come with the patches to qemu update to v2, however that
-> looks.
->
-> We'll clean the kernel header in the next cylce.
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-I'm not sure we're talking about the same things here...
+On Mon, 31 Jan 2022 16:41:54 +0100 you wrote:
+> The first half of these patch set improves the code logic and has no
+> user visible effect. The second half improves the script output, to
+> make it clearer and nicer to read.
+> 
+> Guillaume Nault (4):
+>   selftests: fib rule: Make 'getmatch' and 'match' local variables
+>   selftests: fib rule: Drop erroneous TABLE variable
+>   selftests: fib rule: Log test description
+>   selftests: fib rule: Don't echo modified sysctls
+> 
+> [...]
 
-My proposal is:
+Here is the summary with links:
+  - [net-next,1/4] selftests: fib rule: Make 'getmatch' and 'match' local variables
+    https://git.kernel.org/netdev/net-next/c/8af2ba9a7811
+  - [net-next,2/4] selftests: fib rule: Drop erroneous TABLE variable
+    https://git.kernel.org/netdev/net-next/c/2e2521136327
+  - [net-next,3/4] selftests: fib rule: Log test description
+    https://git.kernel.org/netdev/net-next/c/21f25cd43672
+  - [net-next,4/4] selftests: fib rule: Don't echo modified sysctls
+    https://git.kernel.org/netdev/net-next/c/9f397dd5f155
 
-- remove the current QEMU implementation of vfio migration for 7.0 (it's
-  experimental, and if there's anybody experimenting with that, they can
-  stay on 6.2)
-- continue with getting this proposal for the kernel into good shape, so
-  that it can hopefully make the next merge window
-(- also continue to get the documentation into good shape)
-- have an RFC for QEMU that contains a provisional update of the
-  relevant vfio headers so that we can discuss the QEMU side (and maybe
-  shoot down any potential problems in the uapi before they are merged
-  in the kernel)
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-I don't think a "dual version header" would really help here. If we
-don't want to rip out the old QEMU implementation yet, I can certainly
-also live with that. We just need to be mindful once the changes hit
-Linus' tree, but it is quite likely that QEMU would be in freeze by
-then. As long as updating the headers leads to an obvious failure, it's
-managable (although the removal would still be my preferred approach.)
-
-Alex, what do you think?
 
