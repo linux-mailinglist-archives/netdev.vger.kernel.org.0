@@ -2,78 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50B304A6105
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 17:10:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77D1F4A610A
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 17:11:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240855AbiBAQKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 11:10:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48682 "EHLO
+        id S240863AbiBAQLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 11:11:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240802AbiBAQKM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 11:10:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D6BC061714
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 08:10:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67ACAB82D36
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 16:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 23835C340ED;
-        Tue,  1 Feb 2022 16:10:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643731810;
-        bh=8JpoqqnYke4QgBWIf4+rjvEKW7OFpg9Kt7kGpd9OR4c=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=o+KymFmWheon1ilvxoVAHTM22rF+EmLS0WnJ//viFdRimfIhm9g+/Ey3m6rSqN93q
-         rcT01sBU7ta0MOY2fIliV2WFMZ78DEAB0UqCypGHOYhlSxLT8oBtLvSBwaJprPK8My
-         p8OT4iEUfh+S8oHC4tOZvJrQESSK6wiUyYV6fW3xpFx/rDyZxjY3Od6rE9NQpIZvHf
-         UqUIez5Lbd0Yx/BdkkGuVMdpmPc4AibbEbx1f7dJSxFBh2qFmHaTAoiugLsuFSFysM
-         TSt/gsVSmYcqklwfzgEauY8NfF2sJ/Em7ihOLSQdhuXSdADddLOeytd3wIaAYvodVb
-         t+/y+mikg+7xQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0F6C4E5D08C;
-        Tue,  1 Feb 2022 16:10:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S240802AbiBAQLT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 11:11:19 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB89C061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 08:11:19 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id b13so35563010edn.0
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 08:11:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=r72ipMSsw585C/2Ak7zqzoxsFblCJRuLe89NXnXj3nE=;
+        b=oeELatbZwXdmHmH40WvUNgJCxyD/wZQJVZbMj8PqZbXGpWl/S7uboXRH7EDJ8igz6X
+         sZ8giAeVkYfOol1mG7aagGqY9H4K6QJjWHAMrb/LU3FdtD0mXt1LKVmuQAC+9iC03hws
+         IB0UM86ooX7Sp3ZHgrAp8eix3ju1WYYuOywvAcvdXxZk/wzyqqaINUxqwKqj4Gd7xH34
+         PhE9DytwpMo/U6R+jimOYS/WeWDdaW40XP2/gXvPI3Sdpcfdv521/l8DAzJiQOIVTfHS
+         TOrsU+1jYHVyfxsE8bdyj25qvzTQXJyuXRKjFw9kXOBzB0Ha3NImTv5ly6OG0svOKvVX
+         A5cQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=r72ipMSsw585C/2Ak7zqzoxsFblCJRuLe89NXnXj3nE=;
+        b=p2lqu7MZ0RbfD/NQRb6Xo+RaGS0sGDT+CfOgMK//FyX8zT4iIOclWerfsRvOrlOxlY
+         y57zbgFgqLQUJ855tKWSYzOv6ANQxxB+EsPo8/IlZyxp/ErcZoN9RRcemg7KQUIriKtn
+         qdVQPoxNuMxs6Kb/f4Z+RubE4+UwLtLf/Dksy2uTkpdSv6wX+bCPolaf19HPjVoT4Gvr
+         02HUP8BAKw9/wHN6z4HYN/MqyciP7MV1Nd25W0LLjRFvTD1zc6NujjPpBhHO9RTbCUwO
+         sMvlOCFBAP8zW8d9w4n8iOs2yGU74iz+omttVjt84pjMQR7/50FAm2dHlW3RtINoKFlN
+         4fnQ==
+X-Gm-Message-State: AOAM5338cPSAYn39whjrUGV1VycUtHYW7cGjh9PozmDG9PmdsWuf3dhb
+        Hk+T0En+lZJsQ6FzS3Vzr17C7ZjxLaBqnjDZy1UnhQ==
+X-Google-Smtp-Source: ABdhPJyiKCwvKgDnktp5gf1G1nmb4zd44sF0WRj/TZfazLlsytd+QHNFrCpxH8w6G4+e/QAhd8Og0zxDgUmvelX9ThY=
+X-Received: by 2002:a05:6402:5ca:: with SMTP id n10mr26114193edx.341.1643731877182;
+ Tue, 01 Feb 2022 08:11:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH iproute2-next 1/2] tc_util: fix breakage from clang changes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164373181005.26399.969187929948949421.git-patchwork-notify@kernel.org>
-Date:   Tue, 01 Feb 2022 16:10:10 +0000
-References: <20220201042819.322106-1-stephen@networkplumber.org>
-In-Reply-To: <20220201042819.322106-1-stephen@networkplumber.org>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org, victor@mojatatu.com,
-        jhs@mojatatu.com
+References: <20220201065254.680532-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220201065254.680532-1-eric.dumazet@gmail.com>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Tue, 1 Feb 2022 11:10:40 -0500
+Message-ID: <CACSApvbwWH2LQPKSU9Re2WFbO2ERCCEkN0LphO808XMCMfW6ig@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: fix mem under-charging with zerocopy sendmsg()
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Arjun Roy <arjunroy@google.com>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Feb 1, 2022 at 1:53 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+>
+> We got reports of following warning in inet_sock_destruct()
+>
+>         WARN_ON(sk_forward_alloc_get(sk));
+>
+> Whenever we add a non zero-copy fragment to a pure zerocopy skb,
+> we have to anticipate that whole skb->truesize will be uncharged
+> when skb is finally freed.
+>
+> skb->data_len is the payload length. But the memory truesize
+> estimated by __zerocopy_sg_from_iter() is page aligned.
+>
+> Fixes: 9b65b17db723 ("net: avoid double accounting for pure zerocopy skbs")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Talal Ahmad <talalahmad@google.com>
+> Cc: Arjun Roy <arjunroy@google.com>
+> Cc: Soheil Hassas Yeganeh <soheil@google.com>
+> Cc: Willem de Bruijn <willemb@google.com>
 
-This series was applied to iproute2/iproute2-next.git (main)
-by David Ahern <dsahern@kernel.org>:
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
-On Mon, 31 Jan 2022 20:28:18 -0800 you wrote:
-> This fixes the indentation of types with newline flag.
-> 
-> Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+Nice catch! and thank you for the fix!
+
+
 > ---
-> The clang changes merged an earlier version of the changes
-> to print_masked_type.
-> 
-> [...]
-
-Here is the summary with links:
-  - [iproute2-next,1/2] tc_util: fix breakage from clang changes
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=9948b6cb92c5
-  - [iproute2-next,2/2] tc/f_flower: fix indentation
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=5f44590ddec5
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+>  net/ipv4/tcp.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 78e81465f5f3632f54093495d2f2a064e60c7237..bdf108f544a45a2aa24bc962fb81dfd0ca1e0682 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -1322,10 +1322,13 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+>
+>                         /* skb changing from pure zc to mixed, must charge zc */
+>                         if (unlikely(skb_zcopy_pure(skb))) {
+> -                               if (!sk_wmem_schedule(sk, skb->data_len))
+> +                               u32 extra = skb->truesize -
+> +                                           SKB_TRUESIZE(skb_end_offset(skb));
+> +
+> +                               if (!sk_wmem_schedule(sk, extra))
+>                                         goto wait_for_space;
+>
+> -                               sk_mem_charge(sk, skb->data_len);
+> +                               sk_mem_charge(sk, extra);
+>                                 skb_shinfo(skb)->flags &= ~SKBFL_PURE_ZEROCOPY;
+>                         }
+>
+> --
+> 2.35.0.rc2.247.g8bbb082509-goog
+>
