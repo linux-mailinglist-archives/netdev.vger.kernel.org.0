@@ -2,156 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 181544A5EAC
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 15:55:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADBE64A5ECB
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 16:02:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239560AbiBAOzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 09:55:13 -0500
-Received: from relay12.mail.gandi.net ([217.70.178.232]:49613 "EHLO
-        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238121AbiBAOzM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 09:55:12 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 8860720000A;
-        Tue,  1 Feb 2022 14:55:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1643727310;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wbdHYI1SSzsfrkur3P9CPNzzCnN5wxlGLkcwLujboyQ=;
-        b=fjsdUmJ1rdplyj8IfHjf62TEeOv28eEv5OcWOZbW9bLCum8fLGSm3cGs97lOGBjKTOMLSM
-        910RrK9RW+5mRHCleJeAtMj0MFyYgliyNSC3JoNSdPzUpsvxrzer/hoU1vxRUdth7aUZgw
-        4KgaZA4CoCWpKxU8TyGiJ/2/Mqv/mE3NIyKfV0gY0TU55xkPysxO4H+JSx9kUv6Mo5tHFt
-        UzTfaWEBy8AKjXDzBOzBuxZoFMRrFmvnhmMFlkF7uyeRlDk7Ze6MuFX87Y1TBnADm45PNw
-        tx0m2YXZCjs8XgjBKxAZLDSUjWewzC8vSMIuihKJeLo2HB+88dBI/BXA55nZRA==
-Date:   Tue, 1 Feb 2022 15:55:07 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>
-Subject: Re: [PATCH wpan-next v2 1/5] net: ieee802154: Improve the way
- supported channels are declared
-Message-ID: <20220201155507.549cd2e3@xps13>
-In-Reply-To: <CAB_54W7SZmgU=2_HEm=_agE0RWfsXxEs_4MHmnAPPFb+iVvxsQ@mail.gmail.com>
-References: <20220128110825.1120678-1-miquel.raynal@bootlin.com>
-        <20220128110825.1120678-2-miquel.raynal@bootlin.com>
-        <CAB_54W60OiGmjLQ2dAvnraq6fkZ6GGTLMVzjVbVAobcvNsaWtQ@mail.gmail.com>
-        <20220131152345.3fefa3aa@xps13>
-        <CAB_54W7SZmgU=2_HEm=_agE0RWfsXxEs_4MHmnAPPFb+iVvxsQ@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S239630AbiBAPCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 10:02:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60930 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239623AbiBAPCK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 10:02:10 -0500
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDAC4C06173E
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 07:02:09 -0800 (PST)
+Received: by mail-il1-x12c.google.com with SMTP id w5so14522443ilo.2
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 07:02:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=60gQPScJR3F303GKBNMY8mtN9axjs8XpxQhhJU+IfXI=;
+        b=BeHoCfQFH13Y7FrzpMVBH4Hp1elpnOhRVdRJ7eNs4HOmOfNybE78UTbsbJZDpjgx8n
+         bHNK1qh7ZNhXF1JkFzWjABXasSl6PnQHMyxuYiAxdJrVeKeJTkWkeJJaBMm+X6SjltGw
+         5ieiqByBaC52N8ZUseDBjTr7v3kdacx9+dam1D0oChEyLJjgfenBGkCDLC3r+ZisdAJE
+         kEDCumgHNMRUP7Gy7dqOXpsz/rcInOP9CvDrOoaYKsK5k2hmi50TSdDYKK6RdGgY5wIU
+         Z2wvFdX81+bYeeBemAWtUQDfpk+tW+duVuzyFXVpYkO+1GH/1R7QKxTTlHnNDdqvO/VE
+         iGFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=60gQPScJR3F303GKBNMY8mtN9axjs8XpxQhhJU+IfXI=;
+        b=vVAZiS2ID5CFk54+H5c6OKo18xCenCX/iJ0OGU7ZxIVY+ZsEi+hi+DNMSJTMpEjjCp
+         J89X0ZzW91GCWuZO4qtBYM/XMVbtAHERi0JZpNz/c3zk3I/g/+wxwX0jY6Zqzqgd6NMP
+         SIQfb/urOdh894j/VwsHWYoTvBS55TUIFIYR+sBswQlA2sC34yhGzjr/rEpw1Oyvxv16
+         Oweb6wCW65/9tcdoSSaVgXbB0fv/mbZFMmQp9JFmlufFWhbeYt2aiAbVJ/ua4PvBrbt1
+         HrZrkuacw3ynvtgrV0e6srCcCfN4Fite1+DB2T9mXTmoZ+Yq0XJ2Q5mprNRMHmDhBx/D
+         LH8A==
+X-Gm-Message-State: AOAM530wZnf8UG46MCib0NEvzW9y78MS42+EruIMFMgUyDW3CAHVHkX0
+        Vpk4RFIyAkc2bptaKfKBgRwNFg==
+X-Google-Smtp-Source: ABdhPJypuovSNprWPJ4ZfTl29TUgR71NXnWLIVyDddhhtr4F/46MzzD+HZ0yqoYQRPLnrfq1tQzi4A==
+X-Received: by 2002:a05:6e02:20c9:: with SMTP id 9mr11694728ilq.267.1643727729279;
+        Tue, 01 Feb 2022 07:02:09 -0800 (PST)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id e17sm19141307ilm.67.2022.02.01.07.02.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 07:02:08 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     robh+dt@kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, agross@kernel.org, mka@chromium.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org,
+        avuyyuru@codeaurora.org, jponduru@codeaurora.org,
+        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net v2 0/2] net: ipa: enable register retention
+Date:   Tue,  1 Feb 2022 09:02:03 -0600
+Message-Id: <20220201150205.468403-1-elder@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+With runtime power management in place, we sometimes need to issue
+a command to enable retention of IPA register values before power
+collapse.  This requires a new Device Tree property, whose presence
+will also be used to signal that the command is required.
 
-alex.aring@gmail.com wrote on Mon, 31 Jan 2022 19:04:40 -0500:
+Version 2 is exactly the same as version 1, but this version is
+also being sent to the devicetree mailing list.
 
-> Hi,
->=20
-> On Mon, Jan 31, 2022 at 9:23 AM Miquel Raynal <miquel.raynal@bootlin.com>=
- wrote:
-> >
-> > Hi Alexander,
-> >
-> > alex.aring@gmail.com wrote on Sun, 30 Jan 2022 16:35:35 -0500:
-> > =20
-> > > Hi,
-> > >
-> > > On Fri, Jan 28, 2022 at 6:08 AM Miquel Raynal <miquel.raynal@bootlin.=
-com> wrote: =20
-> > > >
-> > > > The idea here is to create a structure per set of channels so that =
-we
-> > > > can define much more than basic bitfields for these.
-> > > >
-> > > > The structure is currently almost empty on purpose because this cha=
-nge
-> > > > is supposed to be a mechanical update without additional informatio=
-n but
-> > > > more details will be added in the following commits.
-> > > > =20
-> > >
-> > > In my opinion you want to put more information in this structure which
-> > > is not necessary and force the driver developer to add information
-> > > which is already there encoded in the page/channel bitfields. =20
-> >
-> > The information I am looking forward to add is clearly not encoded in
-> > the page/channel bitfields (these information are added in the
-> > following patches). At least I don't see anywhere in the spec a
-> > paragraph telling which protocol and band must be used as a function of
-> > the page and channel information. So I improved the way channels are
-> > declared to give more information than what we currently have.
-> > =20
->=20
-> This makes no sense for me, because you are telling right now that a
-> page/channel combination depends on the transceiver.
+					-Alex
 
-That is exactly what I meant, and you made me realize that I overlooked
-that information from the spec.
+Alex Elder (2):
+  dt-bindings: net: qcom,ipa: add optional qcom,qmp property
+  net: ipa: request IPA register values be retained
 
-> > BTW I see the wpan tools actually derive the protocol/band from the
-> > channel/page information and I _really_ don't get it. I believe it only
-> > works with hwsim but if it's not the case I would like to hear
-> > more about it.
-> > =20
->=20
-> No, I remember the discussion with Christoffer Holmstedt, he described
-> it in his commit message "8.1.2 in IEEE 802.15.4-2011".
-> See wpan-tools commit 0af3e40bbd6da60cc000cfdfd13b9cdd8a20d717 ("info:
-> add frequency to channel listing for phy capabilities").
->=20
-> I think it is the chapter "Channel assignments"?
+ .../devicetree/bindings/net/qcom,ipa.yaml     |  6 +++
+ drivers/net/ipa/ipa_power.c                   | 52 +++++++++++++++++++
+ drivers/net/ipa/ipa_power.h                   |  7 +++
+ drivers/net/ipa/ipa_uc.c                      |  5 ++
+ 4 files changed, 70 insertions(+)
 
-Oh yeah, now I get it. It's gonna be much simpler than what I thought.
+-- 
+2.32.0
 
-In the 2020 spec this is =C2=A7 "10.1.3 Channel assignments".
-
-> > > Why not
-> > > add helper functionality and get your "band" and "protocol" for a
-> > > page/channel combination? =20
-> >
-> > This information is as static as the channel/page information, so why
-> > using two different channels to get it? This means two different places
-> > where the channels must be described, which IMHO hardens the work for
-> > device driver writers.
-> > =20
->=20
-> device drivers writers can make mistakes here, they probably can only
-> set page/channel registers in their hardware and have no idea about
-> other things.
->=20
-> > I however agree that the final presentation looks a bit more heavy to
-> > the eyes, but besides the extra fat that this change brings, it is
-> > rather easy to give the core all the information it needs in a rather
-> > detailed and understandable way. =20
->=20
-> On the driver layer it should be as simple as possible. If you want to
-> have a static array for that init it in the phy register
-> functionality, however I think a simple lookup table should be enough
-> for that.
-
-Given the new information that I am currently processing, I believe the
-array is not needed anymore, we can live with a minimal number of
-additional helpers, like the one getting the PRF value for the UWB
-PHYs. It's the only one I have in mind so far.
-
-> To make it more understandable I guess some people can introduce some
-> defines/etc to make a more sense behind setting static hex values.
-
-I'll propose a new approach soon.
-
-Thanks,
-Miqu=C3=A8l
