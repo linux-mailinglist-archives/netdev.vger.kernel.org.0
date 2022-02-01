@@ -2,93 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F7C84A62A2
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 18:38:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D395A4A62AD
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 18:40:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241545AbiBARiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 12:38:10 -0500
-Received: from mga02.intel.com ([134.134.136.20]:11148 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241555AbiBARiJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Feb 2022 12:38:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643737089; x=1675273089;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Qs5CypaTnYnz6I96G/ki7zBlZguwBlhWTTc2nfEzyk4=;
-  b=NVoA8oy5LMH470cARyWbEpOvn+Izl7AF5H89E4FY6gm5gK/aqJCFcvM0
-   nWJaRLwk/1ZMfwsWqbxYkq2kDLAUUAD6cKbi9GEIs8C75AjtBr5OdaCVb
-   LUGqYY2rPnQP56Jms4ChmWwnHIT97ajCmGDE+rIR7FjpdbzYdkHFpDisr
-   BCoAbGVuPsRmCmBghg4sR0gTsk/8265F0sJBlQRPeuaxgJ9MkYAIqcW4m
-   L8OgA9VWtOB0+xKV/tJ5ZxDl9O88XWRvIFm3Qc1c+NgurgXyLFyXuItGx
-   J1X5p09elBltQvgtyWT8TeLQVuIY/ErFX5EOSPl0VB+BqwGib07InFqfd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="235141802"
-X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
-   d="scan'208";a="235141802"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 09:38:07 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
-   d="scan'208";a="482465894"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga006.jf.intel.com with ESMTP; 01 Feb 2022 09:38:07 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, vitaly.lifshits@intel.com,
-        Nechama Kraus <nechamax.kraus@linux.intel.com>
-Subject: [PATCH net 2/2] e1000e: Handshake with CSME starts from ADL platforms
-Date:   Tue,  1 Feb 2022 09:37:54 -0800
-Message-Id: <20220201173754.580305-3-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220201173754.580305-1-anthony.l.nguyen@intel.com>
-References: <20220201173754.580305-1-anthony.l.nguyen@intel.com>
+        id S241521AbiBARkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 12:40:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:54568 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233255AbiBARkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 12:40:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643737215;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ghdV4c06hG1RAsae/AvPlycwKm6jozOy2iveBFu5C94=;
+        b=R0Qzc7bVyEKdYgDstDqSOpV8vc1Y0e4P8/w4XX9c8IeoZ2EYjKWQQLXwA7jhjJgrw59wt4
+        XvwQG1UrnneGHM/Oa2syHUBKnYIxYS6p6gJqVkbJqlZ6EoukGYCMYLiOKWIb+JHvi/ZJw3
+        DaN34VCALXTSUYlrGmtgFj3mcbsiFzY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-382-bzqKz0aIMnCCnTM93B50aA-1; Tue, 01 Feb 2022 12:40:12 -0500
+X-MC-Unique: bzqKz0aIMnCCnTM93B50aA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4215B81F031;
+        Tue,  1 Feb 2022 17:39:52 +0000 (UTC)
+Received: from tc2.redhat.com (unknown [10.39.195.81])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 10C64D1908;
+        Tue,  1 Feb 2022 17:39:50 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com,
+        markzhang@nvidia.com, leonro@nvidia.com
+Subject: [PATCH iproute2 0/3] some memory leak fixes
+Date:   Tue,  1 Feb 2022 18:39:23 +0100
+Message-Id: <cover.1643736038.git.aclaudi@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+This series fixes some memory leaks related to the usage of the
+get_task_name() function from lib/fs.c.
 
-Handshake with CSME/AMT on none provisioned platforms during S0ix flow
-is not supported on TGL platform and can cause to HW unit hang. Update
-the handshake with CSME flow to start from the ADL platform.
+Patch 3/3 addresses a coverity warning related to this memory leak,
+making the code a bit more readable by humans and coverity.
 
-Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/e1000e/netdev.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Andrea Claudi (3):
+  lib/fs: fix memory leak in get_task_name()
+  rdma: stat: fix memory leak in res_counter_line()
+  rdma: RES_PID and RES_KERN_NAME are alternatives to each other
 
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index d2de8bc4c3b7..a42aeb555f34 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -6342,7 +6342,8 @@ static void e1000e_s0ix_entry_flow(struct e1000_adapter *adapter)
- 	u32 mac_data;
- 	u16 phy_data;
- 
--	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID) {
-+	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
-+	    hw->mac.type >= e1000_pch_adp) {
- 		/* Request ME configure the device for S0ix */
- 		mac_data = er32(H2ME);
- 		mac_data |= E1000_H2ME_START_DPG;
-@@ -6491,7 +6492,8 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
- 	u16 phy_data;
- 	u32 i = 0;
- 
--	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID) {
-+	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
-+	    hw->mac.type >= e1000_pch_adp) {
- 		/* Request ME unconfigure the device from S0ix */
- 		mac_data = er32(H2ME);
- 		mac_data &= ~E1000_H2ME_START_DPG;
+ lib/fs.c        | 10 +++++--
+ rdma/res-cmid.c | 10 +++----
+ rdma/res-cq.c   |  9 +++---
+ rdma/res-ctx.c  |  9 +++---
+ rdma/res-mr.c   |  8 ++---
+ rdma/res-pd.c   |  9 +++---
+ rdma/res-qp.c   |  9 +++---
+ rdma/res-srq.c  | 10 +++----
+ rdma/stat.c     | 79 ++++++++++++++++++++++++++++++++-----------------
+ 9 files changed, 88 insertions(+), 65 deletions(-)
+
 -- 
-2.31.1
+2.34.1
 
