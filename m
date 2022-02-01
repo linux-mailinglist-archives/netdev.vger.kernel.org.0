@@ -2,112 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFEB54A64A5
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 20:08:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFAC94A64AD
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 20:10:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242298AbiBATIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 14:08:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
+        id S238635AbiBATKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 14:10:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241933AbiBATIm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 14:08:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07D2C061714
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 11:08:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FA00B82F4F
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 19:08:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB373C340EB;
-        Tue,  1 Feb 2022 19:08:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643742520;
-        bh=smVpuvsONHH3zfWXkFPGZ3q/UWmE2+7+snavaAr1zaI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=faRw/wC7XeXlEiBGJQh9xmfBVWl4zIXbfz7hRIeOxSnsZ70TN0BJb3AJdRXSzBS3F
-         mocuE/AYA8Bk7EqgNAlG+b5NqPKcfARZi8tD5moeapVqjlFAbfxTlTC1PfPh8fptV/
-         MdUV6CYEcATYNDi5IylbL0s34DJTL/VHXo7YT9XK7nQI3B4zKhWJ2OBrT0t4xY7X+x
-         jH93rkYP8NQZBYvP3ezZSVfgJCnzUnt5nISpnyQaCSoLqLIZe/pRGxbONIFbnIOzbF
-         AzS3zBWJnPChWqnM5vQ/A1tALLqVwutW+yGHpZle1GR97cWbJEzzX6H04cQomQtYn8
-         OZletVNe8q6AA==
-Date:   Tue, 1 Feb 2022 11:08:38 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Alexey Sheplyakov <asheplyakov@basealt.ru>,
-        <netdev@vger.kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Evgeny Sinelnikov <sin@basealt.ru>,
-        Serge Semin <fancer.lancer@gmail.com>
-Subject: Re: [PATCH 1/2] net: stmmac: added Baikal-T1/M SoCs glue layer
-Message-ID: <20220201110838.7d626862@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220201155439.hv42mqed2n7wekuo@mobilestation>
-References: <20220126084456.1122873-1-asheplyakov@basealt.ru>
-        <20220128150642.qidckst5mzkpuyr3@mobilestation>
-        <YfQ8De5OMLDLKF6g@asheplyakov-rocket>
-        <20220128122718.686912e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20220201155439.hv42mqed2n7wekuo@mobilestation>
+        with ESMTP id S230158AbiBATKt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 14:10:49 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0818C061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 11:10:48 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id j10so16230534pgc.6
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 11:10:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=7t7ALTdh7Ppeybwpj8PcPIYayRUvHKINDo+m4qdsdMs=;
+        b=l8cPoYUUEDNtTgVpqsfREwtzQs6f1td0KnwnvZ/VzXJY4utnsBHUzVKxso4DQt5/LX
+         fch4RUKPJ+cl2qRWSkRjlRkpxxVvQGU2y209dLayRGY5pMtK3nt8JTI00cxcoK8iB/tP
+         R4rPy9EZuX8Oc2OJJgyTe1uzIWT8FcqV9ucPcN6i3gZBtODoUyIefbecDHfIZD8gQr38
+         J2Z512zgG3QTJrhvsSyscEXWfuo/93nu3i9yzvhGmUmaxJ4n1153+wWSfZJSqItQvoJc
+         Ud5XcJfqghM17U/Q11mDX501xyzj7s3zGhXv4j1BwQUV5ecqXcIHl8K5RZDqCgpilGa/
+         9SPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=7t7ALTdh7Ppeybwpj8PcPIYayRUvHKINDo+m4qdsdMs=;
+        b=W6rAwpnSMQLZ0/wdgikYIudgXarW7ohNhdeBLisGlM3T3wbuxzKqbUb64vw47/xCRm
+         GlyGBD/NlSu38h4Mwpk92xqHr/uVbmoab7NSvRYH82FwUocOxIkHVhlTxH+lQhH13t8P
+         NvJQX906SlhadmT/TuzGGcYSHkJ6b7T1XOw2evfQ11aCO9GjWBZSCDlF5oWprE7GmJsC
+         V4xXZ8DIgeRwxYMSjF7VnlXtL/ZGi+7vEa3gybsCo8DJekDLkEoE+sbuSo6E+xLTbKX3
+         IvCiR/se4EVxvk8vPpxVIi8wsamqSW3xn48N60EgwlCR6cVzSXgfJH7j/qm8x8porHyK
+         p1VQ==
+X-Gm-Message-State: AOAM530cGhnFQDyssOZ3yYJdi22RPKY/L1A4C+GlofzmyeNg6fqJdVPu
+        n22+a7Fa9VxkFcMkzkPLvvIiiEttcKDlpA==
+X-Google-Smtp-Source: ABdhPJwKAb7So6AaQKyJrxbqw/9VaeD0bumSO1kh9x12SFTfeqJH2y8poK2wetpHehTDM1aYi0/EpA==
+X-Received: by 2002:a63:e704:: with SMTP id b4mr21748440pgi.315.1643742648527;
+        Tue, 01 Feb 2022 11:10:48 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id 6sm11449750pgx.36.2022.02.01.11.10.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 11:10:48 -0800 (PST)
+Date:   Tue, 1 Feb 2022 11:10:41 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Miroslav Lichvar <mlichvar@redhat.com>
+Cc:     netdev@vger.kernel.org, Yangbo Lu <yangbo.lu@nxp.com>
+Subject: Re: [PATCH net-next 5/5] ptp: start virtual clocks at current system
+ time.
+Message-ID: <20220201191041.GB7009@hoboy.vegasvil.org>
+References: <20220127114536.1121765-1-mlichvar@redhat.com>
+ <20220127114536.1121765-6-mlichvar@redhat.com>
+ <20220127220116.GB26514@hoboy.vegasvil.org>
+ <Yfe4FPHbFjc6FoTa@localhost>
+ <20220131163240.GA22495@hoboy.vegasvil.org>
+ <YfjyX893NV2Hga35@localhost>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfjyX893NV2Hga35@localhost>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Feb 2022 18:54:39 +0300 Serge Semin wrote:
-> On Fri, Jan 28, 2022 at 12:27:18PM -0800, Jakub Kicinski wrote:
-> > On Fri, 28 Jan 2022 22:55:09 +0400 Alexey Sheplyakov wrote:  
-> > > In general quite a number of Linux drivers (GPUs, WiFi chips, foreign
-> > > filesystems, you name it) provide a limited support for the corresponding
-> > > hardware (filesystem, protocol, etc) and don't cover all peculiarities.
-> > > Yet having such a limited support in the mainline kernel is much more
-> > > useful than no support at all (or having to use out-of-tree drivers,
-> > > obosolete vendor kernels, binary blobs, etc).
-> > > 
-> > > Therefore "does not cover all peculiarities" does not sound like a valid
-> > > reason for rejecting this driver. That said it's definitely up to stmmac
-> > > maintainers to decide if the code meets the quality standards, does not
-> > > cause excessive maintanence burden, etc.  
+On Tue, Feb 01, 2022 at 09:42:07AM +0100, Miroslav Lichvar wrote:
+> On Mon, Jan 31, 2022 at 08:32:40AM -0800, Richard Cochran wrote:
+> > On Mon, Jan 31, 2022 at 11:21:08AM +0100, Miroslav Lichvar wrote:
+> > > To me, it seems very strange to start the PHC at 0. It makes the
+> > > initial clock correction unnecessarily larger by ~7 orders of
+> > > magnitude. The system clock is initialized from the RTC, which can
+> > > have an error comparable to the TAI-UTC offset, especially if the
+> > > machine was turned off for a longer period of time, so why not
+> > > initialize the PHC from the system time? The error is much smaller
+> > > than billions of seconds.
 > > 
-> > Sounds sensible, Serge please take a look at the v2 and let us know if
-> > there are any bugs in there. Or any differences in DT bindings or user
-> > visible behaviors with what you're planning to do. If the driver is
-> > functional and useful it can evolve and gain support for features and
-> > platforms over time.  
+> > When the clock reads Jan 1, 1970, then that is clearly wrong, and so a
+> > user might suspect that it is uninititalized.
 > 
-> I've already posted my comments in this thread regarding the main
-> problematic issues of the driver, but Alexey for some reason ignored
-> them (dropped from his reply). Do you want me to copy my comments to
-> v2 and to proceed with review there?
+> FWIW, my first thought when I saw the huge offset in ptp4l was that
+> something is horribly broken. 
 
-Right, on a closer look there are indeed comments you raised that were
-not addressed and not constrained to future compatibility. 
+Yes, that is my point!  Although you may have jumped to conclusions
+about the root cause, still the zero value got your attention.
 
-Alexey, please take another look at those and provide a changelog in
-your next posting so we can easily check what was addressed.
+It is just too easy for people to see the correct date and time (down
+to the minute) and assume all is okay.
+ 
+> I'd prefer smaller initial error and consistency. The vast majority of
+> existing drivers seem to initialize the clock at current system time.
+> Drivers starting at 0 now create confusion. If this is the right way,
+> shouldn't be all existing drivers patched to follow that?
 
-> Regarding the DT-bindings and the user-visible behavior. Right, I'll
-> add my comments in this matter. Thanks for suggesting. This was one of
-> the problems why I was against the driver integrating into the kernel.
-> One of our patchset brings a better organization to the current
-> DT-bindings of the Synopsys DW *MAC devices. In particular it splits
-> up the generic bindings for the vendor-specific MACs to use and the
-> bindings for the pure DW MAC compatible devices. In addition the
-> patchset will add the generic Tx/Rx clocks DT-bindings and the
-> DT-bindings for the AXI/MTL nodes. All of that and the rest of our
-> work will be posted a bit later as a set of the incremental patchsets
-> with small changes, one by one, for an easier review. We just need
-> some more time to finish the left of the work. The reason why the
-> already developed patches hasn't been delivered yet is that the rest
-> of the work may cause adding changes into the previous patches. In
-> order to decrease a number of the patches to review and present a
-> complete work for the community, we decided to post the patchsets
-> after the work is fully done.
+I agree that consistency is good, and I would love to get rid of all
+that ktime_get usage, but maybe people will argue against it for their
+beloved driver.
 
-TBH starting to post stuff is probably best choice you can make,
-for example the DT rework you mention sounds like a refactoring 
-you can perform without posting any Baikal support.
+Going forward, I'm asking that new drivers start from zero for an
+"uninitialized" clock.
+
+Thanks,
+Richard
