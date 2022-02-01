@@ -2,88 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9803C4A5BDD
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 13:07:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC9CB4A5BE4
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 13:10:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237745AbiBAMHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 07:07:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46990 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237585AbiBAMG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 07:06:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643717218;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lqxgPfRTdQipPkPYZsZgmVQEbuVRLygE82y+uWGakJI=;
-        b=FV067d9+8kzLm6sNa7K15rgcTE9pc8/qo9jAtWaTM3gapRBwFOkpU815dvz+M+6PkCuq/U
-        GcpwP8dhqELXvAhJ/jnDA0jL9bnjCy8qJ18AwyynR89Nlr9fuB65NcLK1B8fwuP+KjjMzO
-        j03kdvXgoiVUjv9N7BBtEYFk7eHcr8M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-344-IjW4YP0yPFaVZwo0Yj1jtA-1; Tue, 01 Feb 2022 07:06:55 -0500
-X-MC-Unique: IjW4YP0yPFaVZwo0Yj1jtA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S237773AbiBAMKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 07:10:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49600 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237767AbiBAMKj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 07:10:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16DB7C061714;
+        Tue,  1 Feb 2022 04:10:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2B26985EE60;
-        Tue,  1 Feb 2022 12:06:54 +0000 (UTC)
-Received: from localhost (unknown [10.39.194.79])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B2E51108F845;
-        Tue,  1 Feb 2022 12:06:53 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Yishai Hadas <yishaih@nvidia.com>, alex.williamson@redhat.com,
-        bhelgaas@google.com, jgg@nvidia.com, saeedm@nvidia.com
-Cc:     linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, yishaih@nvidia.com,
-        maorg@nvidia.com
-Subject: Re: [PATCH V6 mlx5-next 08/15] vfio: Define device migration
- protocol v2
-In-Reply-To: <20220130160826.32449-9-yishaih@nvidia.com>
-Organization: Red Hat GmbH
-References: <20220130160826.32449-1-yishaih@nvidia.com>
- <20220130160826.32449-9-yishaih@nvidia.com>
-User-Agent: Notmuch/0.34 (https://notmuchmail.org)
-Date:   Tue, 01 Feb 2022 13:06:51 +0100
-Message-ID: <87y22uyen8.fsf@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5256B82D62;
+        Tue,  1 Feb 2022 12:10:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A10C0C340EE;
+        Tue,  1 Feb 2022 12:10:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643717436;
+        bh=3azHlEwFXQa4HPop+6S2a+JgDDMa2vBsSzhJ0/6FWLI=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=enYSIDtYzrHSJBw3FlVmTirIlRmclLABo9R6vG3nQxnGs/AT0nM1jzt56guJtsGPK
+         6M9BXJAGHOdpNXglCSRqV51O+jLVs4hjBgLNcp4kOHX69LZw/WQOWhYCwLwwRnHbhP
+         8VP3JuICo3qiqI2VhXjSyGUiXGA03hN1L7FNUZ/bHT9kGuRhYNsOd3Bc8eO9ZeQNkr
+         Rj+p3EE4mPzUCXgiwiD2lgMQshxkNTk3Ajj2GDzAfuMxWeTadD+OD6rpVPtkKSqNfi
+         6oYw6212iOikn3cdCJ3QNbPQJ/zDv4xUOLqLOYQ0XTmraNIHHBMCS8qgHpd+/ndMw1
+         MeueyCR4VAgLA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Zekun Shen <bruceshenzk@gmail.com>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, brendandg@nyu.edu
+Subject: Re: [PATCH] rsi: fix oob in rsi_prepare_skb
+References: <YcnFiGzk67p0PSgd@b-10-27-92-143.dynapool.vpn.nyu.edu>
+Date:   Tue, 01 Feb 2022 14:10:31 +0200
+In-Reply-To: <YcnFiGzk67p0PSgd@b-10-27-92-143.dynapool.vpn.nyu.edu> (Zekun
+        Shen's message of "Mon, 27 Dec 2021 08:54:16 -0500")
+Message-ID: <87y22udbyg.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 30 2022, Yishai Hadas <yishaih@nvidia.com> wrote:
+Zekun Shen <bruceshenzk@gmail.com> writes:
 
-> @@ -1582,6 +1760,10 @@ static int vfio_ioctl_device_feature(struct vfio_device *device,
->  		return -EINVAL;
+> We found this bug while fuzzing the rsi_usb driver.
+> rsi_prepare_skb does not check for OOB memcpy. We
+> add the check in the caller to fix.
+>
+> Although rsi_prepare_skb checks if length is larger
+> than (4 * RSI_RCV_BUFFER_LEN), it really can't because
+> length is 0xfff maximum. So the check in patch is sufficient.
+>
+> This patch is created upon ath-next branch. It is
+> NOT tested with real device, but with QEMU emulator.
+>
+> Following is the bug report
+>
+> BUG: KASAN: use-after-free in rsi_read_pkt
+> (/linux/drivers/net/wireless/rsi/rsi_91x_main.c:206) rsi_91x
+> Read of size 3815 at addr ffff888031da736d by task RX-Thread/204
+>
+> CPU: 0 PID: 204 Comm: RX-Thread Not tainted 5.6.0 #5
+> Call Trace:
+> dump_stack (/linux/lib/dump_stack.c:120)
+>  ? rsi_read_pkt (/linux/drivers/net/wireless/rsi/rsi_91x_main.c:206) rsi_91x
+>  print_address_description.constprop.6 (/linux/mm/kasan/report.c:377)
+>  ? rsi_read_pkt (/linux/drivers/net/wireless/rsi/rsi_91x_main.c:206) rsi_91x
+>  ? rsi_read_pkt (/linux/drivers/net/wireless/rsi/rsi_91x_main.c:206) rsi_91x
+>  __kasan_report.cold.9 (/linux/mm/kasan/report.c:510)
+>  ? syscall_return_via_sysret (/linux/arch/x86/entry/entry_64.S:253)
+>  ? rsi_read_pkt (/linux/drivers/net/wireless/rsi/rsi_91x_main.c:206) rsi_91x
+>  kasan_report (/linux/arch/x86/include/asm/smap.h:69 /linux/mm/kasan/common.c:644)
+>  check_memory_region (/linux/mm/kasan/generic.c:186 /linux/mm/kasan/generic.c:192)
+>  memcpy (/linux/mm/kasan/common.c:130)
+>  rsi_read_pkt (/linux/drivers/net/wireless/rsi/rsi_91x_main.c:206) rsi_91x
+>  ? skb_dequeue (/linux/net/core/skbuff.c:3042)
+>  rsi_usb_rx_thread (/linux/drivers/net/wireless/rsi/rsi_91x_usb_ops.c:47) rsi_usb
+>
+> Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+> Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+> ---
+>  drivers/net/wireless/rsi/rsi_91x_main.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/drivers/net/wireless/rsi/rsi_91x_main.c b/drivers/net/wireless/rsi/rsi_91x_main.c
+> index 5d1490fc3..41d3c12e0 100644
+> --- a/drivers/net/wireless/rsi/rsi_91x_main.c
+> +++ b/drivers/net/wireless/rsi/rsi_91x_main.c
+> @@ -193,6 +193,10 @@ int rsi_read_pkt(struct rsi_common *common, u8 *rx_pkt, s32 rcv_pkt_len)
+>  			break;
 >  
->  	switch (feature.flags & VFIO_DEVICE_FEATURE_MASK) {
-> +	case VFIO_DEVICE_FEATURE_MIGRATION:
-> +		return vfio_ioctl_device_feature_migration(
-> +			device, feature.flags, arg->data,
-> +			feature.argsz - minsz);
->  	default:
->  		if (unlikely(!device->ops->device_feature))
->  			return -EINVAL;
-> @@ -1597,6 +1779,8 @@ static long vfio_device_fops_unl_ioctl(struct file *filep,
->  	struct vfio_device *device = filep->private_data;
->  
->  	switch (cmd) {
-> +	case VFIO_DEVICE_MIG_SET_STATE:
-> +		return vfio_ioctl_mig_set_state(device, (void __user *)arg);
->  	case VFIO_DEVICE_FEATURE:
->  		return vfio_ioctl_device_feature(device, (void __user *)arg);
->  	default:
+>  		case RSI_WIFI_DATA_Q:
+> +			if (!rcv_pkt_len && offset + length >
+> +				RSI_MAX_RX_USB_PKT_SIZE)
+> +				goto fail;
+> +
+>  			skb = rsi_prepare_skb(common,
+>  					      (frame_desc + offset),
+>  					      length,
 
-Not really a critique of this patch, but have we considered how mediated
-devices will implement migration?
+Why are you doing the check here? In the beginning of the function we
+have:
 
-I.e. what parts of the ops will need to be looped through the mdev ops?
-Do we need to consider the scope of some queries/operations (whole
-device vs subdivisions etc.)? Not trying to distract from the whole new
-interface here, but I think we should have at least an idea.
+		frame_desc = &rx_pkt[index];
+		actual_length = *(u16 *)&frame_desc[0];
+		offset = *(u16 *)&frame_desc[2];
+		if (!rcv_pkt_len && offset >
+			RSI_MAX_RX_USB_PKT_SIZE - FRAME_DESC_SZ)
+			goto fail;
 
+Wouldn't it make more sense to fix that check?
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
