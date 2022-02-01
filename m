@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E52134A6698
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 21:56:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A4294A669B
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 21:57:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233207AbiBAU4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 15:56:52 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58270 "EHLO
+        id S242561AbiBAU5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 15:57:07 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58332 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236893AbiBAU4w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 15:56:52 -0500
+        with ESMTP id S236893AbiBAU44 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 15:56:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DC086170B;
-        Tue,  1 Feb 2022 20:56:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F67FC340EB;
-        Tue,  1 Feb 2022 20:56:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD67161756;
+        Tue,  1 Feb 2022 20:56:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CDE7C340ED;
+        Tue,  1 Feb 2022 20:56:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643749011;
-        bh=YNLaFGpLiYW1mW5iigIdq1hinXTGB9hBww4Mtt3ZsLI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mzFEXTHE68CCzVTIyf9bOLQRdGLMgzDH6ikuwLs8IZdl453QF50KFPaB6E5LwtUCw
-         V05i3JC0ATUAp70WYnUpt6K2t9ULV3JPpSYvfdL4Rv0U0wuBH9SAh8R1eQi5IevQH/
-         0FUU/v2QCnrwp/rglruujQN94bHD5YgLrNUwhLYeVJPrgGPhAKSzvsgKOL2CeiGjb+
-         y1zsJw7urffKklQ3MZhOk0/5MhsXuvqMKsC/+jOmSV0YVW/ZlDmnhjJvEyKFyojBHS
-         TEQTHwxMEtY+BYzvcmxkNs2Bk/KOivuZtLDzY6pBzqVJeGfGKAM63uUxiRED3ELYXe
-         DGBcsx8ZPAYdQ==
+        s=k20201202; t=1643749015;
+        bh=JjYwktbzWgaZZwjKwRtnb1xc51qgqbnt81floObI+Ww=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=to+G9Qb5eqyzP8rsE+Jwnl3XgQEegaYvKjtUIXNeNSdePMOyhgkbmNe4/Yx5mSAuq
+         G68kspeColB3L2HTB7TAqyf6eZZemWF9yeowZbU+4A3Esammaiyc77KDKspyPrB/CU
+         lVXJsY8RN5ChGncKVo5b+ZqwK+Y56Sc6FuolYua270Hqy39EDWvWtipJ1lizK2Jda7
+         bfgK2XZvMTR7kMh+pIx8RL+RkRCQWQtO2gxcTvAsGctAMZeIfukeoGRK1OGFyNnow5
+         d0RSVaqHzoVD+kouQdPshWdBO/7wIBX7MMi+tNKBgiUHNVWsZaIdi72AUxHdFK9ugN
+         kRTFBcGZAn1Kg==
 From:   Nathan Chancellor <nathan@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -40,50 +40,39 @@ Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
         Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH bpf-next 0/5] Allow CONFIG_DEBUG_INFO_DWARF5=y + CONFIG_DEBUG_INFO_BTF=y
-Date:   Tue,  1 Feb 2022 13:56:19 -0700
-Message-Id: <20220201205624.652313-1-nathan@kernel.org>
+Subject: [PATCH bpf-next 1/5] MAINTAINERS: Add scripts/pahole-flags.sh to BPF section
+Date:   Tue,  1 Feb 2022 13:56:20 -0700
+Message-Id: <20220201205624.652313-2-nathan@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220201205624.652313-1-nathan@kernel.org>
+References: <20220201205624.652313-1-nathan@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+Currently, scripts/pahole-flags.sh has no formal maintainer. Add it to
+the BPF section so that patches to it can be properly reviewed and
+picked up.
 
-This series allows CONFIG_DEBUG_INFO_DWARF5 to be selected with
-CONFIG_DEBUG_INFO_BTF=y by checking the pahole version.
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-The first four patches add CONFIG_PAHOLE_VERSION and
-scripts/pahole-version.sh to clean up all the places that pahole's
-version is transformed into a 3-digit form.
-
-The fourth patch adds a PAHOLE_VERSION dependency to DEBUG_INFO_DWARF5
-so that there are no build errors when it is selected with
-DEBUG_INFO_BTF.
-
-I build tested Fedora's aarch64 and x86_64 config with ToT clang 14.0.0
-and GCC 11 with CONFIG_DEBUG_INFO_DWARF5 enabled with both pahole 1.21
-and 1.23.
-
-Nathan Chancellor (5):
-  MAINTAINERS: Add scripts/pahole-flags.sh to BPF section
-  kbuild: Add CONFIG_PAHOLE_VERSION
-  scripts/pahole-flags.sh: Use pahole-version.sh
-  lib/Kconfig.debug: Use CONFIG_PAHOLE_VERSION
-  lib/Kconfig.debug: Allow BTF + DWARF5 with pahole 1.21+
-
- MAINTAINERS               |  2 ++
- init/Kconfig              |  4 ++++
- lib/Kconfig.debug         |  6 +++---
- scripts/pahole-flags.sh   |  2 +-
- scripts/pahole-version.sh | 13 +++++++++++++
- 5 files changed, 23 insertions(+), 4 deletions(-)
- create mode 100755 scripts/pahole-version.sh
-
-
-base-commit: 533de4aea6a91eb670ff8ff2b082bb34f2c5d6ab
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 0d7883977e9b..0d422452c8ff 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3523,6 +3523,7 @@ F:	net/sched/act_bpf.c
+ F:	net/sched/cls_bpf.c
+ F:	samples/bpf/
+ F:	scripts/bpf_doc.py
++F:	scripts/pahole-flags.sh
+ F:	tools/bpf/
+ F:	tools/lib/bpf/
+ F:	tools/testing/selftests/bpf/
 -- 
 2.35.1
 
