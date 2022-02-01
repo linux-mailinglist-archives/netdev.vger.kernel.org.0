@@ -2,308 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 558E84A57DB
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 08:36:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB1984A57FC
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 08:43:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235038AbiBAHg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 02:36:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44216 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233079AbiBAHg0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 02:36:26 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8F4C061714
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 23:36:25 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id c23so30133246wrb.5
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 23:36:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Bb6Mga8U7K4glRZ6MmtVlPXAX6IIPgGD3C6UTBEFxHU=;
-        b=Ahq7jif3/GDZalygQ6KbDff2Y7Dn6Zh26zZBI/jiyAdElTrO/SSvFV7SCpPjKoWt5g
-         hI+7EPZ+BHYlw21dR2EzdcWdHDt9eqSqKaYK9X/RO9aX2CeDYLot8Ro+/LzCJa1IovPc
-         ZU6I4uP//AAniwRZHOYDYnhMl4gVGG5MqVwZHSVKdlOQUB/PjBpS7gfAu7MZJk9wGz2S
-         i05ByWDb4ie8AQ142sd3m67EBW/v5+dk3Y4J2S4UfY9FDrd5PCWyIzxcnIoyKEd8PIr0
-         UA6UFRdfO3pGykYvR0eKAyaIC+QLHlD8abJ0+08XRqYdZtcpPHqjhMaMWep+rNPelcJm
-         fyyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Bb6Mga8U7K4glRZ6MmtVlPXAX6IIPgGD3C6UTBEFxHU=;
-        b=jhah4xwfPXyUpZwGZJFyZAqMk0y85Q8C1woWizGm+oQzz9l/Dvqt1YMrW6vpC983EY
-         1mgmOpOeW6JpUF3dD1yVgbbHNfCz54ZWiZAQldQTH85ozp3058aQff6h3iacLrO7NpzX
-         wnYEFILdeU98JPWvBVB0AyZulqtDRIllY9CHd3OBO8Uf+XLRsXeGCQLRNpwOAqo6jDZ1
-         b8uSRsPvv1WPvQWNWL5XA0NThYuwvHtxVEdramRgx3U6blb092mp+WSMoYzGzoczpH2N
-         IOwztdReym0bAKoeM/bjQosClIz5mbwAPea8LBbyyG3BKg0guD8o34N7N72Czq0QCdqG
-         V0uw==
-X-Gm-Message-State: AOAM533EheUMbqqGcietW/FYclRBWI2Wyg/3J0IXY11VqCkB7a2Ug6oU
-        w7zhlz8s414HKX+iqOGwiSddiQ==
-X-Google-Smtp-Source: ABdhPJw0te5xOcbBzC+a3jqrrIgxBT+vb9ApuO2zXf7MyjEmiqExE7WWqNHRMqZA2vyoiNlbCKfslQ==
-X-Received: by 2002:a05:6000:1885:: with SMTP id a5mr19750194wri.705.1643700984292;
-        Mon, 31 Jan 2022 23:36:24 -0800 (PST)
-Received: from google.com (cpc106310-bagu17-2-0-cust853.1-3.cable.virginm.net. [86.15.223.86])
-        by smtp.gmail.com with ESMTPSA id 1sm16170216wry.52.2022.01.31.23.36.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 23:36:23 -0800 (PST)
-Date:   Tue, 1 Feb 2022 07:36:21 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        katie.morris@in-advantage.com
-Subject: Re: [RFC v6 net-next 6/9] mfd: ocelot: add support for external mfd
- control over SPI for the VSC7512
-Message-ID: <Yfji9Yy/VtrVv+Js@google.com>
-References: <20220129220221.2823127-1-colin.foster@in-advantage.com>
- <20220129220221.2823127-7-colin.foster@in-advantage.com>
- <Yfer/qJmwRdShv4y@google.com>
- <20220131172934.GB28107@COLIN-DESKTOP1.localdomain>
+        id S235145AbiBAHn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 02:43:29 -0500
+Received: from mail-bn8nam08on2086.outbound.protection.outlook.com ([40.107.100.86]:56256
+        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229975AbiBAHn1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Feb 2022 02:43:27 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JVWaAmy2V6AT5xtqfBinlyT9oeU12yKzVrBfLlkH4YmHkxKdxkD1FOW6f13CpVkGb606alo6WX5I7C6jiEOqOIY6sWZ/sM9A14WLzb5MMd74qH//vxNolm8q+1XxIfAxjz6cXrhLgPce6qvSukcHbiIiPyoa94GNhhmUvHDP4slLyzmg5tn2aZMhlVg6DitAS4G+AjESr/cnTGbR55o4FL7twP05oF5OcNzxM4ZL+vP4ubQLmJLOkkxiT+EJaEYSEKHCWkNrRRRvHCew/B9mNAvDLgT13rB9qZmNBsk2O9OOcAmUBSLccNyR97g9rzwrk4THBKxpVRDcSr5y4H+8DQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lv0ejKix+fJ1Fj1w1ac5Tje2ICV5sqz04oR5H6gTyAo=;
+ b=hdNX5+sW8/MiScxoIqancYwtUIo8OID0z4sDIu917c7jamZUWUkAz0Ox0YlYQKNjT5ggpJ23MJTLaFrYInE1xeMgV82UvPJ/FYzjEFaUf5SuyNEPNQaAh4xaDrL48bfSqGwQRpN2SIL9NijJHh7/DzpU9Hz91D7BWOkk11CJmHkWF8uJfH37ybFN7iUezECDBRBJFgL2LQJYIBj3Pa3SQXK4bqzIVps9x9Qjp21DZFzjlid5WdGnNUKYWUIAGQkBZNqs11MV8U/wyxteGhbeILx0SH2Gldd4ePdAt4bRf2N3HIkddo/FnkrbZAC3KyTK/3MPC2c51IEhouNvhDbPsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lv0ejKix+fJ1Fj1w1ac5Tje2ICV5sqz04oR5H6gTyAo=;
+ b=QZ3FTJkN7wN24SmCNU8J2MWiwdVRY+EGZRSVDYCfQ3MKxfEUgvvBfRBYWrJLn0/mmW0a1KZACJtY6piAyW8ZLySJg0NuoEp6gjYzF6H0sftCnp8pJItvMg74jbYZZ1N5GWQhOWpeNVArkTJLWPyg9WKS4AgdHQ5W9uL8QOqkeVKH7kKr/nOHFTtAjv3Y0yGaSQwU/ixQ95RS/NuKSzAWPUHCj2nXEIkc6JA7z15eAbTg7WxgOKLcKkQ+LDNdZirl+v1GOETCL+SK5N5sqve+y2LA27y1+k7iGy1frylKIblcXNjkIH55EGwPetnY2TFONyR5MHC03Fm4vZHlhPW5OQ==
+Received: from BN8PR12CA0023.namprd12.prod.outlook.com (2603:10b6:408:60::36)
+ by DM6PR12MB4545.namprd12.prod.outlook.com (2603:10b6:5:2a3::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Tue, 1 Feb
+ 2022 07:43:26 +0000
+Received: from BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:60:cafe::18) by BN8PR12CA0023.outlook.office365.com
+ (2603:10b6:408:60::36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15 via Frontend
+ Transport; Tue, 1 Feb 2022 07:43:26 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT030.mail.protection.outlook.com (10.13.177.146) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4930.15 via Frontend Transport; Tue, 1 Feb 2022 07:43:25 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 1 Feb
+ 2022 07:43:24 +0000
+Received: from [172.27.15.136] (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Mon, 31 Jan 2022
+ 23:43:20 -0800
+Message-ID: <2df0d488-36c9-1f2b-8d27-7ada36ad3f4f@nvidia.com>
+Date:   Tue, 1 Feb 2022 09:43:18 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220131172934.GB28107@COLIN-DESKTOP1.localdomain>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101
+ Thunderbird/97.0
+Subject: Re: [PATCH][next] net/mlx5e: Fix spelling mistake "supoported" ->
+ "supported"
+Content-Language: en-US
+To:     Colin Ian King <colin.i.king@gmail.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Oz Shlomo <ozsh@nvidia.com>,
+        <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>
+CC:     <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20220131084317.8058-1-colin.i.king@gmail.com>
+From:   Roi Dayan <roid@nvidia.com>
+In-Reply-To: <20220131084317.8058-1-colin.i.king@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c7f1c571-3724-49ff-bc38-08d9e55687c8
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4545:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB45452A2EF5BC8DC66EECCE0CB8269@DM6PR12MB4545.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:262;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yXzpOnpmJzRS4vdH+kbzEbmRBFtQNUUvCJOVe0555yzOQrybp+owWFWIKePnwv/xtsZ5HCicHjUI7YrVyQ+vgVokWXaaGNwY4RRjTYqTUfnGlhgJybcvAvCF8v9k7fSSnpQTjwDeC/cuQoNlLIoqayQiwqvF6ZzyHLSSKRWcGvKDfFMv2hL68sv6MEQkWtFLaoN9f26Ty2taENyJ7I08/qjnCHWoeT/iXablnd5HYAuOrwPW9MJIpAdMR279aSTTcT1jD20/RsH/MyS8AXmq3Txl2jKfaJGMmygu1/DyQVqduCbJqhdfMOm/jm8aiaIEPip62THN0WyWe+GcN9FUfuoiB2lCN72zvu21j0bj6QVneYo6cEDDx652nxwLXVNRlvkH56uTq2zI8Iz3g4HPGeqd8ngnpOmwT1MkXYJNUQEDQVGRwgkDR7+IQ+fQs9dLSXV6M0v6ADL8QHTItU6m59I5eklLvJe1ACm7GBiDjPGatGY0dL/wVcqJ/0tzMgotlc6GosR181IZCxpf9ycg4ongBXABNczpX/N5pqPcIZ51t2phciBpJGRtdwrViiTiOT711WEgPwMP1TAf7BsHFA8XVnmh/f7ORznjxApTEQTwUB6/OKi7iV502UMMobJQCzhi+9lwpSJQ4nLMeDkDZg5gI08piE2eZRWlGYgkswge60Y4MoAkWC8sNMUHLUIr/+jqKDBkHaJzowyggg+fhw8mc7OdHYSgp29ql4C3dusBN+fcu2LghM0147Fc70cD
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(54906003)(70206006)(70586007)(16526019)(508600001)(336012)(40460700003)(5660300002)(426003)(31686004)(2616005)(316002)(186003)(16576012)(53546011)(110136005)(36756003)(26005)(47076005)(82310400004)(86362001)(8936002)(4326008)(2906002)(8676002)(36860700001)(83380400001)(31696002)(356005)(81166007)(36900700001)(43740500002)(20210929001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2022 07:43:25.6101
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c7f1c571-3724-49ff-bc38-08d9e55687c8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4545
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 31 Jan 2022, Colin Foster wrote:
 
-> Hi Lee,
+
+On 2022-01-31 10:43 AM, Colin Ian King wrote:
+> There is a spelling mistake in a NL_SET_ERR_MSG_MOD error
+> message.  Fix it.
 > 
-> Thank you very much for your time / feedback.
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>   drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> On Mon, Jan 31, 2022 at 09:29:34AM +0000, Lee Jones wrote:
-> > On Sat, 29 Jan 2022, Colin Foster wrote:
-> > 
-> > > Create a single SPI MFD ocelot device that manages the SPI bus on the
-> > > external chip and can handle requests for regmaps. This should allow any
-> > > ocelot driver (pinctrl, miim, etc.) to be used externally, provided they
-> > > utilize regmaps.
-> > > 
-> > > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> > > ---
-> > >  drivers/mfd/Kconfig                       |  19 ++
-> > >  drivers/mfd/Makefile                      |   3 +
-> > >  drivers/mfd/ocelot-core.c                 | 165 +++++++++++
-> > >  drivers/mfd/ocelot-spi.c                  | 325 ++++++++++++++++++++++
-> > >  drivers/mfd/ocelot.h                      |  36 +++
-> > 
-> > >  drivers/net/mdio/mdio-mscc-miim.c         |  21 +-
-> > >  drivers/pinctrl/pinctrl-microchip-sgpio.c |  22 +-
-> > >  drivers/pinctrl/pinctrl-ocelot.c          |  29 +-
-> > >  include/soc/mscc/ocelot.h                 |  11 +
-> > 
-> > Please avoid mixing subsystems in patches if at all avoidable.
-> > 
-> > If there are not build time dependencies/breakages, I'd suggest
-> > firstly applying support for this into MFD *then* utilising that
-> > support in subsequent patches.
-> 
-> My last RFC did this, and you had suggested to squash the commits. To
-> clarify, are you suggesting the MFD / Pinctrl get applied in a single
-> patch, then the MIIM get applied in a separate one? Because I had
-> started with what sounds like you're describing - an "empty" MFD with
-> subsequent patches rolling in each subsystem.
-> 
-> Perhaps I misinterpreted your initial feedback.
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
+> index 85f0cb88127f..9fb1a9a8bc02 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
+> @@ -21,7 +21,7 @@ tc_act_can_offload_ct(struct mlx5e_tc_act_parse_state *parse_state,
+>   	}
+>   
+>   	if (parse_state->ct && !clear_action) {
+> -		NL_SET_ERR_MSG_MOD(extack, "Multiple CT actions are not supoported");
+> +		NL_SET_ERR_MSG_MOD(extack, "Multiple CT actions are not supported");
+>   		return false;
+>   	}
+>   
 
-I want you to add all device support into the MFD driver at once.
+thanks
+you can add a fixes line if needed
 
-The associated drivers, the ones that live in other subsystems, should
-be applied as separate patches.  There seldom exist any *build time*
-dependencies between the device side and the driver side.
+Fixes: fd7ab32d19b6 ("net/mlx5e: TC, Reject rules with multiple CT actions")
 
-> > >  9 files changed, 614 insertions(+), 17 deletions(-)
-> > >  create mode 100644 drivers/mfd/ocelot-core.c
-> > >  create mode 100644 drivers/mfd/ocelot-spi.c
-> > >  create mode 100644 drivers/mfd/ocelot.h
-> > > 
-> > > diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> > > index ba0b3eb131f1..57bbf2d11324 100644
-> > > --- a/drivers/mfd/Kconfig
-> > > +++ b/drivers/mfd/Kconfig
-> > > @@ -948,6 +948,25 @@ config MFD_MENF21BMC
-> > >  	  This driver can also be built as a module. If so the module
-> > >  	  will be called menf21bmc.
-> > >  
-> > > +config MFD_OCELOT
-> > > +	tristate "Microsemi Ocelot External Control Support"
-> > 
-> > Please explain exactly what an ECS is in the help below.
-> 
-> I thought I had by way of the second paragraph below. I'm trying to
-> think of what extra information could be of use at this point... 
-> 
-> I could describe how they have internal processors and using this level
-> of control would basically bypass that functionality.
 
-Yes please.
-
-Also provide details about what the device actually does.
-
-> > > +static struct regmap *ocelot_devm_regmap_init(struct ocelot_core *core,
-> > > +					      struct device *dev,
-> > > +					      const struct resource *res)
-> > > +{
-> > > +	struct regmap *regmap;
-> > > +
-> > > +	regmap = dev_get_regmap(dev, res->name);
-> > > +	if (!regmap)
-> > > +		regmap = ocelot_spi_devm_get_regmap(core, dev, res);
-> > 
-> > Why are you making SPI specific calls from the Core driver?
-> 
-> This was my interpretation of your initial feedback. It was initially
-> implemented as a config->get_regmap() function pointer so that core
-> didn't need to know anything about ocelot_spi.
-> 
-> If function pointers aren't used, it seems like core would have to know
-> about all possible bus types... Maybe my naming led to some
-> misunderstandings. Specifically I'd used "init_bus" which was intended
-> to be "set up the chip to be able to properly communicate via SPI" but
-> could have been interpreted as "tell the user of this driver that the
-> bus is being initialized by way of a callback"?
-
-Okay, I see what's happening now.
-
-Please add a comment to describe why you're calling one helper, what
-failure means in the first instance and what you hope to achieve by
-calling the subsequent one.
-
-> > > +	return regmap;
-> > > +}
-> > > +
-> > > +struct regmap *ocelot_get_regmap_from_resource(struct device *dev,
-> > > +					       const struct resource *res)
-> > > +{
-> > > +	struct ocelot_core *core = dev_get_drvdata(dev);
-> > > +
-> > > +	return ocelot_devm_regmap_init(core, dev, res);
-> > > +}
-> > > +EXPORT_SYMBOL(ocelot_get_regmap_from_resource);
-> > 
-> > Why don't you always call ocelot_devm_regmap_init() with the 'core'
-> > parameter dropped and just do dev_get_drvdata() inside of there?
-> > 
-> > You're passing 'dev' anyway.
-> 
-> This might be an error. I'll look into this, but I changed the intended
-> behavior of this between v5 and v6.
-> 
-> In v5 I had intended to attach all regmaps to the spi_device. This way
-> they could be shared amongst child devices of spi->dev. I think that was
-> a bad design decision on my part, so I abandoned it. If the child
-> devices are to share regmaps, they should explicitly do so by way of
-> syscon, not implicitly by name.
-> 
-> In v6 my intent is to have every regmap be devm-linked to the children.
-> This way the regmap would be destroyed and recreated by rmmod / insmod,
-> of the sub-modules, instead of being kept around the MFD module.
-
-What's the reason for using an MFD to handle the Regmap(s) if you're
-going to have per-device ones anyway?  Why not handle them in the
-children?
-
-> So perhaps to clear this up I should rename "dev" to "child" because it
-> seems that the naming has already gotten too confusing. What I intended
-> to do was:
-> 
-> struct regmap *ocelot_get_regmap_from_resource(struct device *parent,
-> 					       struct device *child,
-> 					       const struct resource *res)
-> {
-> 	struct ocelot_core *core = dev_get_drvdata(parent);
-> 
-> 	return ocelot_devm_regmap_init(core, child, res);
-> }
-> 
-> Or maybe even:
-> struct regmap *ocelot_get_regmap_from_resource(struct device *child,
-> 					       const struct resource *res)
-> {
-> 	struct ocelot_core *core = dev_get_drvdata(child->parent);
-> 
-> 	return ocelot_devm_regmap_init(core, child, res);
-> }
-
-Or just call:
-
-  ocelot_devm_regmap_init(core, dev->parent, res);
-
-... from the original call-site?
-
-Or, as I previously suggested:
-
-  ocelot_devm_regmap_init(dev->parent, res);
-
-[...]
-
-> > > +	ret = devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE, vsc7512_devs,
-> > 
-> > Why NONE?
-> 
-> I dont know the implication here. Example taken from
-> drivers/mfd/madera-core.c. I imagine PLATFORM_DEVID_AUTO is the correct
-> macro to use here?
-
-That's why I asked.  Please read-up on the differences and use the
-correct one for your device instead of just blindly copy/pasting from
-other sources. :)
-
-[...]
-
-> > > +	WARN_ON(!val);
-> > 
-> > Is this possible?
-> 
-> Hmm... I don't know if regmap_read guards against val == NULL. It
-> doesn't look like it does. It is very much a "this should never happen"
-> moment...
-> 
-> I can remove it, or change this to return an error if !val, which is
-> what I probably should have done in the first place. Thoughts?
-
-Not really.  Just make sure whatever you decide to do is informed.
-
-[...]
-
-> > > -	regs = devm_platform_ioremap_resource(pdev, 0);
-> > > -	if (IS_ERR(regs))
-> > > -		return PTR_ERR(regs);
-> > > +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > > +
-> > > +	if (!device_is_mfd(pdev)) {
-> > > +		regs = devm_ioremap_resource(dev, res);
-> > 
-> > What happens if you call this if the device was registered via MFD?
-> 
-> I don't recall if it was your suggestion, but I tried this.
-> devm_ioremap_resource on the MFD triggered a kernel crash. I didn't look
-> much more into things than that, but if trying devm_ioremap_resource and
-> falling back to ocelot_get_regmap_from_resource is the desired path, I
-> can investigate further.
-
-Yes please.  It should never crash.  That's probably a bug.
-
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Reviewed-by: Roi Dayan <roid@nvidia.com>
