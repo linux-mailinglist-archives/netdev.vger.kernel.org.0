@@ -2,203 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C91894A67FF
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 23:29:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C65D44A6827
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 23:46:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240865AbiBAW31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 17:29:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52728 "EHLO
+        id S236451AbiBAWqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 17:46:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237935AbiBAW31 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 17:29:27 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C8FC061714;
-        Tue,  1 Feb 2022 14:29:27 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id s2-20020a17090ad48200b001b501977b23so4862642pju.2;
-        Tue, 01 Feb 2022 14:29:27 -0800 (PST)
+        with ESMTP id S229501AbiBAWqp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 17:46:45 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1B6C061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 14:46:45 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id z19so36759088lfq.13
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 14:46:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nfh9neXAUEzcShXHBoAZTFYIWM5MQnmj1xRT6suzivE=;
-        b=HQj0tnz3VHrnn5pC/MIU8NCa/Sb5qfbS7hvjpIgQv7lyFVsTieWCrbhrmGVViqJ0XC
-         38BlVG8MZDWXDEACzsTphnACxUe+Rs6B20tGzCtQtzjmPVRQjTKmtVBrc/QUNfIesyUa
-         SfvgWsv6s92KVd3DwwVVTh5v7n5Db4Iql8EYio6Bd4bubpNCJWqbZGWg2MGlmfeHTHth
-         30eLmFZuckUF2J8L0/JppFrbOz74B+lzTVVrsc6SglgamDmoXrx4xzetMM2ieI6qwpPK
-         lkQf1cKc5UGdQ8eFzt8tzYwA659hpyN7g/eOi/pOgpXu3yTLSseQK/pTGtG5UNYiVr1i
-         nQGQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZB6sZygULvONH287KY9xbyCmvq2QLSmoH4jTsAJE8qE=;
+        b=ZKDJtql7NA05u1FVTY6GG02i9d03ssYSRIpXA9b3B5C9OaC9xCd/dcIKWRSql+EipR
+         IR2nMqELtUlil4mXNXDdKLO2VSyXGQTEK+n9xXAgBUuxLFdCf4WJ930LM+wRo2Jf9NZa
+         P4HGHdFGTF9MI3S8d7vTnsBfrdNUl87gpx/6PR8iwTGS0I9LI+dTOrhTNHsU2gEUNaJd
+         XZNAJGoGJ+BsiHgtKr2qPKog0Iqd3o9GgLQ11rrjtVfZMZRlEosXi0RAKz0ZAbz0ByMF
+         5YNp2082rPQaR98wRBm8986U3UFSx9zTolozdHkESH66ezgSZ4Rjv+VZ/CMwtm3lvJQl
+         3oJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nfh9neXAUEzcShXHBoAZTFYIWM5MQnmj1xRT6suzivE=;
-        b=GJDIy+66pHl8Mfdg5DgNGBqAsHRTzaGWsMyhipgTqTJlfIV1yaRNqSHnAKawXnij+H
-         GwFMmS5/3vzSxFQEm4Q2S4KiyVJulWvWuzFZrlcCIVihfsa+FqoIO/tgoN1TwqlSk5/A
-         KOqsr2P2dJrPTR1Zwr2wFyIcOTnyvy7TlM4FCWcKjBgAl7dMzleke7S0jRLwpDujFt58
-         KPrnmAT9GtobAMoxLINYS6h1WP3jR3j/WM0wELzziqBO2Fv6YHKgJJBb+hPRVy1+j/hj
-         OUSqzmf/NXXfQTU/8Cc3jU5VZBs724v8RU5WJ2ISMC/Qm4aeZV0eaHVgzIBWjZzUTBEj
-         c60A==
-X-Gm-Message-State: AOAM531rDRaAs7WI6KgFmxdeLF+5eiqHC0NTdna/0omKve6XQVUYRiuC
-        zUQ1ecgj5CDmD6r+HrApfhY=
-X-Google-Smtp-Source: ABdhPJzb+5yQKUrK8g6dncCc1Be8kOufnjj7MEBAUO522MrakPqpJXzf2ELqGyrBi+x5NJpdYYQEcA==
-X-Received: by 2002:a17:90a:a503:: with SMTP id a3mr4786119pjq.88.1643754566986;
-        Tue, 01 Feb 2022 14:29:26 -0800 (PST)
-Received: from jeffreyji1.c.googlers.com.com (173.84.105.34.bc.googleusercontent.com. [34.105.84.173])
-        by smtp.gmail.com with ESMTPSA id ck21sm3576018pjb.51.2022.02.01.14.29.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 14:29:26 -0800 (PST)
-From:   Jeffrey Ji <jeffreyjilinux@gmail.com>
-X-Google-Original-From: Jeffrey Ji <jeffreyji@google.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Brian Vazquez <brianvv@google.com>, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, netdev@vger.kernel.org, jeffreyjilinux@gmail.com,
-        jeffreyji <jeffreyji@google.com>
-Subject: [PATCH v6 net-next] net-core: add InMacErrors counter
-Date:   Tue,  1 Feb 2022 22:28:45 +0000
-Message-Id: <20220201222845.3640041-1-jeffreyji@google.com>
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZB6sZygULvONH287KY9xbyCmvq2QLSmoH4jTsAJE8qE=;
+        b=25GajSHbt4Tx/f4Rc1hHb/VT9jqMY86rq8axwV9pP18c37WHY7PnZ2mF1vSjpOweaf
+         EQffh8eenem4A25fpNThAi8Lo7ZYe8zAvTtYMbZra3+x5gyqHKVU1saXSPBoUC+CUfZd
+         s13LN732RZOuerG41QfOxjHVbDs2Sbd5rsKBdZcROVmPWzlmCyuVUCi83gX74aUh9VDn
+         AXp3Be6TQo2BbXOv6yaEO4nrBZMKbR1ucNO6aYMB9brJ3k2P/sfNgmv/ieQI9faEOAJk
+         WvbNlcNk4RiERpzvoJfgsFGYNYFvId24sBQkNN4qdHJXr/WDssYJOMfCLx3xm+OKUVri
+         xSIQ==
+X-Gm-Message-State: AOAM533THb3k000uLt06UPKUxu1oDZguqbJDn+smFViGEQ6kppfY/yek
+        AQ4yLPrqQm4JAtQWAG2qSWuqyETSlBPAnujhICIa+Q==
+X-Google-Smtp-Source: ABdhPJy8vDwNzwEaIeOFhfQo+M8s8+6OPdW3QljaSF0UIWy3xrqGjbVn3CVyx1pcLUx2R3waVBl9XZcgeNt+vnxOlUA=
+X-Received: by 2002:a05:6512:3e07:: with SMTP id i7mr18315112lfv.283.1643755603060;
+ Tue, 01 Feb 2022 14:46:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com>
+ <20220127181930.355c8c82@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220127181930.355c8c82@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jann Horn <jannh@google.com>
+Date:   Tue, 1 Feb 2022 23:46:16 +0100
+Message-ID: <CAG48ez0sa2+eEAnS3UMLmLbDRfM6iC4K3vRcUdA9LpDbSJF0XA@mail.gmail.com>
+Subject: Re: [BUG] net_device UAF: linkwatch_fire_event() calls dev_hold()
+ after netdev_wait_allrefs() is done
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Oliver Neukum <oneukum@suse.com>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: jeffreyji <jeffreyji@google.com>
+On Fri, Jan 28, 2022 at 3:19 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> Interesting..
+>
+> I don't know what link_reset does, but since it turns the carrier on it
+> seems like something that should be flushed/canceled when the device
+> goes down. unregister brings the device down under rtnl_lock.
+>
+> On Fri, 28 Jan 2022 02:51:24 +0100 Jann Horn wrote:
+> > Is the bug that usbnet_disconnect() should be stopping &dev->kevent
+> > before calling unregister_netdev()?
+>
+> I'd say not this one, I think the generally agreed on semantics are that
+> the netdev is under users control between register and unregister, we
+> should not cripple it before unregister.
+>
+> > Or is the bug that ax88179_link_reset() doesn't take some kind of lock
+> > and re-check that the netdev is still alive?
+>
+> That'd not be an uncommon way to fix this.. taking rtnl_lock, not even
+> a driver lock in similar.
 
-Increment InMacErrors counter when packet dropped due to incorrect dest
-MAC addr.
+Ah, I found a comment with a bit of explanation on how this is
+supposed to work... usbnet_stop() explains:
 
-An example when this drop can occur is when manually crafting raw
-packets that will be consumed by a user space application via a tap
-device. For testing purposes local traffic was generated using trafgen
-for the client and netcat to start a server
+    /* deferred work (task, timer, softirq) must also stop.
+     * can't flush_scheduled_work() until we drop rtnl (later),
+     * else workers could deadlock; so make workers a NOP.
+     */
 
-example output from nstat:
-\~# nstat -a | grep InMac
-Ip6InMacErrors                  0                  0.0
-IpExtInMacErrors                1                  0.0
+And usbnet_stop() is ->ndo_stop(), which indeed runs under RTNL.
 
-Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
-with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
-counter was incremented.
+I wonder what the work items can do that'd conflict with RTNL... or is
+the comment just talking about potential issues if a bunch of *other*
+work items need RTNL and clog up the system_wq so that
+flush_scheduled_work() blocks forever?
 
-changelog:
-v6: rebase onto net-next
-
-v5:
-Change from SKB_DROP_REASON_BAD_DEST_MAC to SKB_DROP_REASON_OTHERHOST
-
-v3-4:
-Remove Change-Id
-
-v2:
-Use skb_free_reason() for tracing
-Add real-life example in patch msg
-
-Signed-off-by: jeffreyji <jeffreyji@google.com>
----
- include/linux/skbuff.h    |  1 +
- include/uapi/linux/snmp.h |  1 +
- net/ipv4/ip_input.c       |  7 +++++--
- net/ipv4/proc.c           |  1 +
- net/ipv6/ip6_input.c      | 12 +++++++-----
- net/ipv6/proc.c           |  1 +
- 6 files changed, 16 insertions(+), 7 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index a27bcc4f7e9a..1b1114f5c68e 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -320,6 +320,7 @@ enum skb_drop_reason {
- 	SKB_DROP_REASON_TCP_CSUM,
- 	SKB_DROP_REASON_SOCKET_FILTER,
- 	SKB_DROP_REASON_UDP_CSUM,
-+	SKB_DROP_REASON_OTHERHOST,
- 	SKB_DROP_REASON_MAX,
- };
- 
-diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
-index 904909d020e2..ac2fac12dd7d 100644
---- a/include/uapi/linux/snmp.h
-+++ b/include/uapi/linux/snmp.h
-@@ -57,6 +57,7 @@ enum
- 	IPSTATS_MIB_ECT0PKTS,			/* InECT0Pkts */
- 	IPSTATS_MIB_CEPKTS,			/* InCEPkts */
- 	IPSTATS_MIB_REASM_OVERLAPS,		/* ReasmOverlaps */
-+	IPSTATS_MIB_INMACERRORS,		/* InMacErrors */
- 	__IPSTATS_MIB_MAX
- };
- 
-diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index 3a025c011971..780892526166 100644
---- a/net/ipv4/ip_input.c
-+++ b/net/ipv4/ip_input.c
-@@ -441,8 +441,11 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
- 	/* When the interface is in promisc. mode, drop all the crap
- 	 * that it receives, do not try to analyse it.
- 	 */
--	if (skb->pkt_type == PACKET_OTHERHOST)
--		goto drop;
-+	if (skb->pkt_type == PACKET_OTHERHOST) {
-+		__IP_INC_STATS(net, IPSTATS_MIB_INMACERRORS);
-+		kfree_skb_reason(skb, SKB_DROP_REASON_OTHERHOST);
-+		return NULL;
-+	}
- 
- 	__IP_UPD_PO_STATS(net, IPSTATS_MIB_IN, skb->len);
- 
-diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
-index 28836071f0a6..2be4189197f3 100644
---- a/net/ipv4/proc.c
-+++ b/net/ipv4/proc.c
-@@ -117,6 +117,7 @@ static const struct snmp_mib snmp4_ipextstats_list[] = {
- 	SNMP_MIB_ITEM("InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
- 	SNMP_MIB_ITEM("InCEPkts", IPSTATS_MIB_CEPKTS),
- 	SNMP_MIB_ITEM("ReasmOverlaps", IPSTATS_MIB_REASM_OVERLAPS),
-+	SNMP_MIB_ITEM("InMacErrors", IPSTATS_MIB_INMACERRORS),
- 	SNMP_MIB_SENTINEL
- };
- 
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index 80256717868e..da18d9159647 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -149,15 +149,17 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
- 	u32 pkt_len;
- 	struct inet6_dev *idev;
- 
--	if (skb->pkt_type == PACKET_OTHERHOST) {
--		kfree_skb(skb);
--		return NULL;
--	}
--
- 	rcu_read_lock();
- 
- 	idev = __in6_dev_get(skb->dev);
- 
-+	if (skb->pkt_type == PACKET_OTHERHOST) {
-+		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INMACERRORS);
-+		rcu_read_unlock();
-+		kfree_skb_reason(skb, SKB_DROP_REASON_OTHERHOST);
-+		return NULL;
-+	}
-+
- 	__IP6_UPD_PO_STATS(net, idev, IPSTATS_MIB_IN, skb->len);
- 
- 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL ||
-diff --git a/net/ipv6/proc.c b/net/ipv6/proc.c
-index d6306aa46bb1..76e6119ba558 100644
---- a/net/ipv6/proc.c
-+++ b/net/ipv6/proc.c
-@@ -84,6 +84,7 @@ static const struct snmp_mib snmp6_ipstats_list[] = {
- 	SNMP_MIB_ITEM("Ip6InECT1Pkts", IPSTATS_MIB_ECT1PKTS),
- 	SNMP_MIB_ITEM("Ip6InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
- 	SNMP_MIB_ITEM("Ip6InCEPkts", IPSTATS_MIB_CEPKTS),
-+	SNMP_MIB_ITEM("Ip6InMacErrors", IPSTATS_MIB_INMACERRORS),
- 	SNMP_MIB_SENTINEL
- };
- 
--- 
-2.35.0.rc2.247.g8bbb082509-goog
-
+If it's the latter case, I guess we could instead do cancel_work_sync() and
+then maybe re-run the work function's handler one more time
+synchronously?
