@@ -2,114 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 154E64A5761
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 07:53:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB9F74A5766
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 07:58:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234439AbiBAGw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 01:52:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34458 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233800AbiBAGw7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 01:52:59 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4470C061714
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 22:52:58 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id c3so14626981pls.5
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 22:52:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sfT02dMqmRPeDYcfBW4Ot6Mw3ohaVZKOvepx1gDsRC8=;
-        b=ILrrhmkTDlch0ybz09BtmP88ZLA75l+bjsC/C/ImUq6zbir2eW/4JxF1EtHZ54fEDL
-         X8x54e7HKruzdFB+5Ar8SC/gZnO+xSTlk10P1WQ64YzG1SF0xCDZEhvVGlnVHU8/y+C9
-         SRktLFzzkTJo+xEZt32sWAp0+577BYTz1hGB1vdjkhNjxgbWiZzs11ew1x8j/TzXYQfq
-         GRG5xeys7tWhFpIuYmeJIGbx1wTRrS0qmQuMfzRRY3cPpzBvz7GilJJIcm0mfBbSIiUF
-         ZDVqUaX3dkn1pCgBFIikCCVCA00COOB8DAz+/5aWuMjOGb4b+IAbLEBTbEMZWoV+DCrM
-         NYkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sfT02dMqmRPeDYcfBW4Ot6Mw3ohaVZKOvepx1gDsRC8=;
-        b=1uk76l9iJOFwlaUgh0bF1MTMjpb1yaNvFtpYeu2KF5u3D42Z58qWSuNuIDDaR5DtiV
-         M4bcgRhqaE+/ZPQSUV+q5vyTdMaRPqtmp1dBBjKE8HAw/k9lXnYe61Usn+0xveyDZf74
-         Uk+n+hjpqBfNYXgAagwZcnxQvdblOzj9V908RJXBy8g3GBbWsae5rjSul4/c3FkMc7WL
-         4Xp+cnt1Zmxkn9FPD75I5T9+AnOgxANTnXj69FBF5nvVijXbMYfjoE7BMxEBQiDxJgYs
-         zD+9ul8TDVGTQk75Q/h+mykl51+WPkRKDav8TLrRQtVwn0iOC/dyrVtsejy0cpzt7/EY
-         RtQA==
-X-Gm-Message-State: AOAM531lOWJfjyCHPPhOhI8hV/BbUBYgqffyKuBZH5TxEeHCDV+R5si3
-        kVJSDkZY/IADZbfter0rTfc=
-X-Google-Smtp-Source: ABdhPJyzAAcxrt+U5W8UtcWI+WCyX4Q8ERSUrT5w+PmBlZWPrG8218xOzjsZpHqg+X20pD0er6lmTA==
-X-Received: by 2002:a17:902:7e83:: with SMTP id z3mr20884502pla.122.1643698378478;
-        Mon, 31 Jan 2022 22:52:58 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4c2d:864b:dd30:3c5e])
-        by smtp.gmail.com with ESMTPSA id l13sm30610546pgs.16.2022.01.31.22.52.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 22:52:58 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Arjun Roy <arjunroy@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net] tcp: fix mem under-charging with zerocopy sendmsg()
-Date:   Mon, 31 Jan 2022 22:52:54 -0800
-Message-Id: <20220201065254.680532-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
+        id S232657AbiBAG6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 01:58:40 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:37438 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231231AbiBAG6j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Feb 2022 01:58:39 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id BB63F20536;
+        Tue,  1 Feb 2022 07:58:37 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id S05fe4wkJHs4; Tue,  1 Feb 2022 07:58:37 +0100 (CET)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 4A214201D3;
+        Tue,  1 Feb 2022 07:58:37 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 445F080004A;
+        Tue,  1 Feb 2022 07:58:37 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 1 Feb 2022 07:58:37 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Tue, 1 Feb
+ 2022 07:58:36 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 6B1B6318303F; Tue,  1 Feb 2022 07:58:36 +0100 (CET)
+Date:   Tue, 1 Feb 2022 07:58:36 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Leon Romanovsky <leonro@nvidia.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH ipsec-next] xfrm: delete not-used XFRM_OFFLOAD_IPV6 define
+Message-ID: <20220201065836.GT1223722@gauss3.secunet.de>
+References: <31811e3cf276ae2af01574f4fbcb127b88d9c6b5.1643307803.git.leonro@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <31811e3cf276ae2af01574f4fbcb127b88d9c6b5.1643307803.git.leonro@nvidia.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Thu, Jan 27, 2022 at 08:24:58PM +0200, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> XFRM_OFFLOAD_IPV6 define was exposed in the commit mentioned in the
+> fixes line, but it is never been used both in the kernel and in the
+> user space. So delete it.
 
-We got reports of following warning in inet_sock_destruct()
+How can you be sure that is is not used in userspace? At least some
+versions of strongswan set that flag. So even if it is meaningless
+in the kernel, we can't remove it.
 
-	WARN_ON(sk_forward_alloc_get(sk));
-
-Whenever we add a non zero-copy fragment to a pure zerocopy skb,
-we have to anticipate that whole skb->truesize will be uncharged
-when skb is finally freed.
-
-skb->data_len is the payload length. But the memory truesize
-estimated by __zerocopy_sg_from_iter() is page aligned.
-
-Fixes: 9b65b17db723 ("net: avoid double accounting for pure zerocopy skbs")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Talal Ahmad <talalahmad@google.com>
-Cc: Arjun Roy <arjunroy@google.com>
-Cc: Soheil Hassas Yeganeh <soheil@google.com>
-Cc: Willem de Bruijn <willemb@google.com>
----
- net/ipv4/tcp.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 78e81465f5f3632f54093495d2f2a064e60c7237..bdf108f544a45a2aa24bc962fb81dfd0ca1e0682 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1322,10 +1322,13 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 
- 			/* skb changing from pure zc to mixed, must charge zc */
- 			if (unlikely(skb_zcopy_pure(skb))) {
--				if (!sk_wmem_schedule(sk, skb->data_len))
-+				u32 extra = skb->truesize -
-+					    SKB_TRUESIZE(skb_end_offset(skb));
-+
-+				if (!sk_wmem_schedule(sk, extra))
- 					goto wait_for_space;
- 
--				sk_mem_charge(sk, skb->data_len);
-+				sk_mem_charge(sk, extra);
- 				skb_shinfo(skb)->flags &= ~SKBFL_PURE_ZEROCOPY;
- 			}
- 
--- 
-2.35.0.rc2.247.g8bbb082509-goog
-
+> 
+> Fixes: d77e38e612a0 ("xfrm: Add an IPsec hardware offloading API")
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  include/uapi/linux/xfrm.h | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
+> index 4e29d7851890..2c822671cc32 100644
+> --- a/include/uapi/linux/xfrm.h
+> +++ b/include/uapi/linux/xfrm.h
+> @@ -511,7 +511,6 @@ struct xfrm_user_offload {
+>  	int				ifindex;
+>  	__u8				flags;
+>  };
+> -#define XFRM_OFFLOAD_IPV6	1
+>  #define XFRM_OFFLOAD_INBOUND	2
+>  
+>  struct xfrm_userpolicy_default {
+> -- 
+> 2.34.1
