@@ -2,199 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD2404A66F2
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 22:22:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CF684A66F9
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 22:23:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231969AbiBAVWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 16:22:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37382 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiBAVWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 16:22:17 -0500
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5C1C06173D
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 13:22:16 -0800 (PST)
-Received: by mail-lj1-x234.google.com with SMTP id c7so25458688ljr.13
-        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 13:22:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=Oex2OjPBU+g23gPxYBdZdkU42gjulLum1J0L/GI9cY4=;
-        b=6JdyE30eEKA6UHiPWDRKnjIzt/wtfLfJRqA2WjKgBix9sry7OHqv9SxQedYjfhFQBx
-         KnqnmBQ4UUKSZl/dMHPWb6+bnTW35k6v5VJ+9zzzMw4S/NbmpRbiKPmCriF7j7zVovxw
-         9dtJ1OojCMuER8iKJOsHCvX1kFLtAsW+qmXytGWWhHQRDlMDI/VUDOWQNHIrTTiUDV1D
-         CFrO+/9CVl4hzSbdeX0Zw5H7KfYmeeircXkMZ3+QWbZWW3uoa2PzNgkizD5bPSTN2AA8
-         i+IN9Sf6WoQmx8OTt+R9TIRii1C/KqvblK13+jsOW7uCPyDeIYhGHq0izSSbb6HJpSUG
-         uYyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=Oex2OjPBU+g23gPxYBdZdkU42gjulLum1J0L/GI9cY4=;
-        b=C07L75768DHb/eH46S7fEaQuSUOxDBVqV2eSNSWHGCewzfY6mi+h/Cy05uCyKgUuZc
-         mDvWIEtSiZg37gJgG56PlJw3ZCO8xnHGd1CSfdsCAsDWecLmyFnulxst+HzCAtmOE/w1
-         YjlN9R3hcZE7sKCE6ZaaahQUeyBan1ZLoZ227bdR2TeKfLNoiyhADQgOk7hxC807llj/
-         iViTjpR+JcNaKQLp9K315bCpgx53dJzHqRyS2cgKp7lWbzVsv9WRZ9bqUFxWq4GcmGmc
-         c8idNSqv9dBRUm3DdfbIAnzOluDFoWrYMo0wIiwHtfPd1cd6XE9+EZFmyHDMbvIqRKG0
-         iL6Q==
-X-Gm-Message-State: AOAM530P55kDtE9m2/kB4PDv77j6lD5NrXaphNci5oahs91f+A+Q0ZMB
-        95RAbPMTa7mI5vZOUUWcazsiXg==
-X-Google-Smtp-Source: ABdhPJyG6jq7qJyaC+wEFwkYxWs0qiy+j0QgMe8Cvr/4LBdwGfSGOvUJhDKsXpFtt2Xl0k1XzEHbDw==
-X-Received: by 2002:a2e:bc26:: with SMTP id b38mr17733313ljf.54.1643750534794;
-        Tue, 01 Feb 2022 13:22:14 -0800 (PST)
-Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
-        by smtp.gmail.com with ESMTPSA id v3sm2960507lfi.114.2022.02.01.13.22.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 13:22:14 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/5] net: dsa: mv88e6xxx: Improve isolation of
- standalone ports
-In-Reply-To: <20220201201141.u3qhhq75bo3xmpiq@skbuf>
-References: <20220131154655.1614770-1-tobias@waldekranz.com>
- <20220131154655.1614770-2-tobias@waldekranz.com>
- <20220201170634.wnxy3s7f6jnmt737@skbuf> <87a6fabbtb.fsf@waldekranz.com>
- <20220201201141.u3qhhq75bo3xmpiq@skbuf>
-Date:   Tue, 01 Feb 2022 22:22:13 +0100
-Message-ID: <8735l2b7ui.fsf@waldekranz.com>
+        id S231181AbiBAVXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 16:23:38 -0500
+Received: from mga14.intel.com ([192.55.52.115]:4207 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229513AbiBAVXh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Feb 2022 16:23:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643750617; x=1675286617;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=IW7c6JlxfTUwLpLHT1vGdzYi4KXkjnbl+DcCDOPZDUA=;
+  b=QQULpo/YtYzNbCCakcqRagjs1YIr2F9OmAnfv8klfNAWy8jDc7coEznY
+   Jsxp8y9/keCiOGo20ioVyz5QyShoHN5xVeeNTBon2HHApTXaFBP9FTDzt
+   Gr8vZIj3CvHDySqgVA6Q2ZTHifkS8pAPWVUyQtWTCSIiTj7Ivji3HmjNe
+   G93sUHpTA8+TvWAKRvylzWRwWc1PvCxPhswk4TIDFznr0AL8i8zbkJ5gF
+   8GJNPsAgkWnkLiP9ot3zSwD1GVVhOjmVh7VbvaRfAXm2KzA8d+kafuuZo
+   Q8+l/qmVZ08MKJwTFdnzL289H1v6ckzTd8woR8CwuF2D8UJCRSQaUdE2f
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="248017253"
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="248017253"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 13:23:37 -0800
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="771246576"
+Received: from mdroper-desk1.fm.intel.com (HELO mdroper-desk1.amr.corp.intel.com) ([10.1.27.134])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 13:23:37 -0800
+Date:   Tue, 1 Feb 2022 13:23:36 -0800
+From:   Matt Roper <matthew.d.roper@intel.com>
+To:     Lucas De Marchi <lucas.demarchi@intel.com>
+Cc:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        linux-security-module@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
+        Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Leo Li <sunpeng.li@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [Intel-gfx] [PATCH v2 04/11] drm/i915: Use str_enable_disable()
+Message-ID: <Yfmk2F0WxOlroZ2V@mdroper-desk1.amr.corp.intel.com>
+References: <20220126093951.1470898-1-lucas.demarchi@intel.com>
+ <20220126093951.1470898-5-lucas.demarchi@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220126093951.1470898-5-lucas.demarchi@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 22:11, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Tue, Feb 01, 2022 at 08:56:32PM +0100, Tobias Waldekranz wrote:
->> >> - sw0p1 and sw1p1 are bridged
->> >
->> > Do sw0p1 and sw1p1 even matter?
->> 
->> Strictly speaking, no - it was just to illustrate...
->> 
->> >> - sw0p2 and sw1p2 are in standalone mode
->> >> - Learning must be enabled on sw0p3 in order for hardware forwarding
->> >>   to work properly between bridged ports
->> 
->> ... this point, i.e. a clear example of why learning can't be disabled
->> on DSA ports.
->
-> Ok, I understand now. It wasn't too clear.
->
->> >> 1. A packet with SA :aa comes in on sw1p2
->> >>    1a. Egresses sw1p0
->> >>    1b. Ingresses sw0p3, ATU adds an entry for :aa towards port 3
->> >>    1c. Egresses sw0p0
->> >> 
->> >> 2. A packet with DA :aa comes in on sw0p2
->> >>    2a. If an ATU lookup is done at this point, the packet will be
->> >>        incorrectly forwarded towards sw0p3. With this change in place,
->> >>        the ATU is pypassed and the packet is forwarded in accordance
->> >
->> > s/pypassed/bypassed/
->> >
->> >>        whith the PVT, which only contains the CPU port.
->> >
->> > s/whith/with/
->> >
->> > What you describe is a bit convoluted, so let me try to rephrase it.
->> > The mv88e6xxx driver configures all standalone ports to use the same
->> > DefaultVID(0)/FID(0), and configures standalone user ports with no
->> > learning via the Port Association Vector. Shared (cascade + CPU) ports
->> > have learning enabled so that cross-chip bridging works without floods.
->> > But since learning is per port and not per FID, it means that we enable
->> > learning in FID 0, the one where the ATU was supposed to be always empty.
->> > So we may end up taking wrong forwarding decisions for standalone ports,
->> > notably when we should do software forwarding between ports of different
->> > switches. By clearing MapDA, we force standalone ports to bypass any ATU
->> > entries that might exist.
->> 
->> Are you saying you want me to replace the initial paragraph with your
->> version, or are you saying the the example is convoluted and should be
->> replaced by this text? Or is it only for the benefit of other readers?
->
-> Just for the sake of discussion, I wanted to make sure I understand what
-> you describe.
->
->> > Question: can we disable learning per FID? I searched for this in the
->> > limited documentation that I have, but I didn't see such option.
->> > Doing this would be advantageous because we'd end up with a bit more
->> > space in the ATU. With your solution we're just doing damage control.
->> 
->> As you discovered, and as I tried to lay out in the cover, this is only
->> one part of the whole solution.
->
-> I'm not copied to the cover letter :) and I have some issues with my
-> email client / vger, where emails that I receive through the mailing list
-> sometimes take days to reach my inbox, whereas emails sent directly to
-> me reach my inbox instantaneously. So don't assume I read email that
-> wasn't targeted directly to me, sorry.
+On Wed, Jan 26, 2022 at 01:39:44AM -0800, Lucas De Marchi wrote:
+> Remove the local enabledisable() implementation and adopt the
+> str_enable_disable() from linux/string_helpers.h.
+> 
+> Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
+> Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+> Acked-by: Jani Nikula <jani.nikula@intel.com>
 
-No worries. I have recently started using get_maintainers.pl to auto
-generate the recipient list, with the result that the cover is only sent
-to the list. Ideally I would like send-email to use the union of all
-recipients for the cover letter, but I haven't figured that one out yet.
+There's an open-coded version of this in display/intel_pps.c,
+intel_pps_backlight_power().  Up to you whether you squash it into this
+patch or convert it as a follow-up.  Either way.
 
-I actually gave up on getting my mailinglists from my email provider,
-now I just download it directly from lore. I hacked together a script
-that will scrape a public-inbox repo and convert it to a Maildir:
+Reviewed-by: Matt Roper <matthew.d.roper@intel.com>
 
-https://github.com/wkz/notmuch-lore
 
-As you can tell from the name, it is tailored for plugging into notmuch,
-but the guts are pretty generic.
+> ---
+>  drivers/gpu/drm/i915/display/intel_ddi.c           | 4 +++-
+>  drivers/gpu/drm/i915/display/intel_display_power.c | 4 +++-
+>  drivers/gpu/drm/i915/display/intel_dp.c            | 8 ++++----
+>  drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c          | 3 ++-
+>  drivers/gpu/drm/i915/gt/uc/intel_guc_rc.c          | 4 +++-
+>  drivers/gpu/drm/i915/i915_utils.h                  | 5 -----
+>  6 files changed, 15 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/i915/display/intel_ddi.c b/drivers/gpu/drm/i915/display/intel_ddi.c
+> index 2f20abc5122d..4b35a8597632 100644
+> --- a/drivers/gpu/drm/i915/display/intel_ddi.c
+> +++ b/drivers/gpu/drm/i915/display/intel_ddi.c
+> @@ -25,6 +25,8 @@
+>   *
+>   */
+>  
+> +#include <linux/string_helpers.h>
+> +
+>  #include <drm/drm_privacy_screen_consumer.h>
+>  #include <drm/drm_scdc_helper.h>
+>  
+> @@ -2152,7 +2154,7 @@ static void intel_dp_sink_set_msa_timing_par_ignore_state(struct intel_dp *intel
+>  			       enable ? DP_MSA_TIMING_PAR_IGNORE_EN : 0) <= 0)
+>  		drm_dbg_kms(&i915->drm,
+>  			    "Failed to %s MSA_TIMING_PAR_IGNORE in the sink\n",
+> -			    enabledisable(enable));
+> +			    str_enable_disable(enable));
+>  }
+>  
+>  static void intel_dp_sink_set_fec_ready(struct intel_dp *intel_dp,
+> diff --git a/drivers/gpu/drm/i915/display/intel_display_power.c b/drivers/gpu/drm/i915/display/intel_display_power.c
+> index 369317805d24..1f77cb9edddf 100644
+> --- a/drivers/gpu/drm/i915/display/intel_display_power.c
+> +++ b/drivers/gpu/drm/i915/display/intel_display_power.c
+> @@ -3,6 +3,8 @@
+>   * Copyright © 2019 Intel Corporation
+>   */
+>  
+> +#include <linux/string_helpers.h>
+> +
+>  #include "i915_drv.h"
+>  #include "i915_irq.h"
+>  #include "intel_cdclk.h"
+> @@ -5302,7 +5304,7 @@ static void gen9_dbuf_slice_set(struct drm_i915_private *dev_priv,
+>  	state = intel_de_read(dev_priv, reg) & DBUF_POWER_STATE;
+>  	drm_WARN(&dev_priv->drm, enable != state,
+>  		 "DBuf slice %d power %s timeout!\n",
+> -		 slice, enabledisable(enable));
+> +		 slice, str_enable_disable(enable));
+>  }
+>  
+>  void gen9_dbuf_slices_update(struct drm_i915_private *dev_priv,
+> diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
+> index 62c1535d696d..933fc316ea53 100644
+> --- a/drivers/gpu/drm/i915/display/intel_dp.c
+> +++ b/drivers/gpu/drm/i915/display/intel_dp.c
+> @@ -1987,7 +1987,7 @@ void intel_dp_sink_set_decompression_state(struct intel_dp *intel_dp,
+>  	if (ret < 0)
+>  		drm_dbg_kms(&i915->drm,
+>  			    "Failed to %s sink decompression state\n",
+> -			    enabledisable(enable));
+> +			    str_enable_disable(enable));
+>  }
+>  
+>  static void
+> @@ -2463,7 +2463,7 @@ void intel_dp_configure_protocol_converter(struct intel_dp *intel_dp,
+>  	if (drm_dp_dpcd_writeb(&intel_dp->aux,
+>  			       DP_PROTOCOL_CONVERTER_CONTROL_0, tmp) != 1)
+>  		drm_dbg_kms(&i915->drm, "Failed to %s protocol converter HDMI mode\n",
+> -			    enabledisable(intel_dp->has_hdmi_sink));
+> +			    str_enable_disable(intel_dp->has_hdmi_sink));
+>  
+>  	tmp = crtc_state->output_format == INTEL_OUTPUT_FORMAT_YCBCR444 &&
+>  		intel_dp->dfp.ycbcr_444_to_420 ? DP_CONVERSION_TO_YCBCR420_ENABLE : 0;
+> @@ -2472,7 +2472,7 @@ void intel_dp_configure_protocol_converter(struct intel_dp *intel_dp,
+>  			       DP_PROTOCOL_CONVERTER_CONTROL_1, tmp) != 1)
+>  		drm_dbg_kms(&i915->drm,
+>  			    "Failed to %s protocol converter YCbCr 4:2:0 conversion mode\n",
+> -			    enabledisable(intel_dp->dfp.ycbcr_444_to_420));
+> +			    str_enable_disable(intel_dp->dfp.ycbcr_444_to_420));
+>  
+>  	tmp = 0;
+>  	if (intel_dp->dfp.rgb_to_ycbcr) {
+> @@ -2510,7 +2510,7 @@ void intel_dp_configure_protocol_converter(struct intel_dp *intel_dp,
+>  	if (drm_dp_pcon_convert_rgb_to_ycbcr(&intel_dp->aux, tmp) < 0)
+>  		drm_dbg_kms(&i915->drm,
+>  			   "Failed to %s protocol converter RGB->YCbCr conversion mode\n",
+> -			   enabledisable(tmp));
+> +			   str_enable_disable(tmp));
+>  }
+>  
+>  
+> diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c
+> index de89d40abd38..31c3c3bceb95 100644
+> --- a/drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c
+> +++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c
+> @@ -6,6 +6,7 @@
+>  #include <linux/circ_buf.h>
+>  #include <linux/ktime.h>
+>  #include <linux/time64.h>
+> +#include <linux/string_helpers.h>
+>  #include <linux/timekeeping.h>
+>  
+>  #include "i915_drv.h"
+> @@ -170,7 +171,7 @@ static int ct_control_enable(struct intel_guc_ct *ct, bool enable)
+>  				     GUC_CTB_CONTROL_ENABLE : GUC_CTB_CONTROL_DISABLE);
+>  	if (unlikely(err))
+>  		CT_PROBE_ERROR(ct, "Failed to control/%s CTB (%pe)\n",
+> -			       enabledisable(enable), ERR_PTR(err));
+> +			       str_enable_disable(enable), ERR_PTR(err));
+>  
+>  	return err;
+>  }
+> diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_rc.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_rc.c
+> index fc805d466d99..f8fc90ea71e7 100644
+> --- a/drivers/gpu/drm/i915/gt/uc/intel_guc_rc.c
+> +++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_rc.c
+> @@ -3,6 +3,8 @@
+>   * Copyright © 2021 Intel Corporation
+>   */
+>  
+> +#include <linux/string_helpers.h>
+> +
+>  #include "intel_guc_rc.h"
+>  #include "gt/intel_gt.h"
+>  #include "i915_drv.h"
+> @@ -59,7 +61,7 @@ static int __guc_rc_control(struct intel_guc *guc, bool enable)
+>  	ret = guc_action_control_gucrc(guc, enable);
+>  	if (ret) {
+>  		drm_err(drm, "Failed to %s GuC RC (%pe)\n",
+> -			enabledisable(enable), ERR_PTR(ret));
+> +			str_enable_disable(enable), ERR_PTR(ret));
+>  		return ret;
+>  	}
+>  
+> diff --git a/drivers/gpu/drm/i915/i915_utils.h b/drivers/gpu/drm/i915/i915_utils.h
+> index c62b64012369..06aac2be49ee 100644
+> --- a/drivers/gpu/drm/i915/i915_utils.h
+> +++ b/drivers/gpu/drm/i915/i915_utils.h
+> @@ -404,11 +404,6 @@ static inline const char *onoff(bool v)
+>  	return v ? "on" : "off";
+>  }
+>  
+> -static inline const char *enabledisable(bool v)
+> -{
+> -	return v ? "enable" : "disable";
+> -}
+> -
+>  static inline const char *enableddisabled(bool v)
+>  {
+>  	return v ? "enabled" : "disabled";
+> -- 
+> 2.34.1
+> 
 
->> >> diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
->> >> index 03382b66f800..5c347cc58baf 100644
->> >> --- a/drivers/net/dsa/mv88e6xxx/port.h
->> >> +++ b/drivers/net/dsa/mv88e6xxx/port.h
->> >> @@ -425,7 +425,7 @@ int mv88e6185_port_get_cmode(struct mv88e6xxx_chip *chip, int port, u8 *cmode);
->> >>  int mv88e6352_port_get_cmode(struct mv88e6xxx_chip *chip, int port, u8 *cmode);
->> >>  int mv88e6xxx_port_drop_untagged(struct mv88e6xxx_chip *chip, int port,
->> >>  				 bool drop_untagged);
->> >> -int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port);
->> >> +int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port, bool map);
->> >>  int mv88e6095_port_set_upstream_port(struct mv88e6xxx_chip *chip, int port,
->> >>  				     int upstream_port);
->> >>  int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
->> >> diff --git a/include/net/dsa.h b/include/net/dsa.h
->> >> index 57b3e4e7413b..30f3192616e5 100644
->> >> --- a/include/net/dsa.h
->> >> +++ b/include/net/dsa.h
->> >> @@ -581,6 +581,18 @@ static inline bool dsa_is_upstream_port(struct dsa_switch *ds, int port)
->> >>  	return port == dsa_upstream_port(ds, port);
->> >>  }
->> >>  
->> >> +/* Return the local port used to reach the CPU port */
->> >> +static inline unsigned int dsa_switch_upstream_port(struct dsa_switch *ds)
->> >> +{
->> >> +	int p;
->> >> +
->> >> +	for (p = 0; p < ds->num_ports; p++)
->> >> +		if (!dsa_is_unused_port(ds, p))
->> >> +			return dsa_upstream_port(ds, p);
->> >
->> > dsa_switch_for_each_available_port
->> >
->> > Although to be honest, the caller already has a dp, I wonder why you
->> > need to complicate things and don't just call dsa_upstream_port(ds,
->> > dp->index) directly.
->> 
->> Because dp refers to the port we are determining the permissions _for_,
->> and ds refers to the chip we are configuring the PVT _on_.
->> 
->> I think other_dp and dp should swap names with each other. Because it is
->> very easy to get confused. Or maybe s/dp/remote_dp/ and s/other_dp/dp/?
->
-> Sorry, my mistake, I was looking at the patch in the email client and
-> didn't recognize from the context that this is mv88e6xxx_port_vlan(),
-> and that the port is remote. So I retract the part about calling
-> dsa_upstream_port() directly, but please still consider using a more
-> appropriate port iterator for the implementation of dsa_switch_upstream_port().
-
-Will do!
+-- 
+Matt Roper
+Graphics Software Engineer
+VTT-OSGC Platform Enablement
+Intel Corporation
+(916) 356-2795
