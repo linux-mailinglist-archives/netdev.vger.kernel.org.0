@@ -2,114 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD9B74A588A
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 09:31:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 617B34A58A2
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 09:42:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235467AbiBAIbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 03:31:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56498 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231880AbiBAIbJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 03:31:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A161CC061714;
-        Tue,  1 Feb 2022 00:31:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S235563AbiBAImP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 03:42:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46040 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235486AbiBAImO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 03:42:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643704934;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vxfgpW13YgAvN++vE21sBscAoqw0yNwitRZUk5D8Ba8=;
+        b=D89BmQe432HAsF13P5sG7WfqVKI5dpyPxRUHrx/pz3Bh7q9G0LdzyeZkb2SXucm9/QFM+S
+        xLqODsaWiPfBiKIK97MXlHxCAXb4EbaD7bmZmTHiSj4/n31EzqPeywb8Z+afYW3afD2voO
+        7zGqd9CgSApE/63nuK5yc3lkZyJBy+Y=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-638-k-mbE_yKNbKzYEsk2mMfqA-1; Tue, 01 Feb 2022 03:42:11 -0500
+X-MC-Unique: k-mbE_yKNbKzYEsk2mMfqA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3FE7614D3;
-        Tue,  1 Feb 2022 08:31:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EBCAC340EB;
-        Tue,  1 Feb 2022 08:31:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643704268;
-        bh=kQ46Ld07qE+xeaABEjqRpOmPW7m7DLTp4Eeg620JFg0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ttDKeXS87gVeGUzyVxh+e1q40/7TDlvJ4giqg5t1Y5dtyL5su2iiw1XNL2u37IjfS
-         YTpH8qO3l855FQezeOWbr9a3PFXs/qjr3l+dEMFqU6T4OXZkIEVfR2XQ5mia/ZaGp+
-         1wD2flgm6Jh/asHRvLEiLfZeNI/WcN4sJeWjO1x1f6/iyUTOw4pBoidZom65t/xCKg
-         TVdPZP0vNfIv8USPmB8aIWBhUoV/0REb3P4DYjM7TyIoXN/P/rAW0iSUax52TkP1O+
-         zle2FZ+0INL+pOOiFgIHxHW6Xs1P+HfHFLSETUgbdcG/Fo2mtHyg/oJm5A3FWmR6fK
-         52zeriBnmxitQ==
-Date:   Tue, 1 Feb 2022 10:31:03 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Shiraz Saleem <shiraz.saleem@intel.com>
-Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Dave Ertman <david.m.ertman@intel.com>
-Subject: Re: [PATCH for-next 1/3] net/ice: add support for DSCP QoS for IIDC
-Message-ID: <YfjvxwcoBKTRe1co@unreal>
-References: <20220131194316.1528-1-shiraz.saleem@intel.com>
- <20220131194316.1528-2-shiraz.saleem@intel.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 020E51091DAA;
+        Tue,  1 Feb 2022 08:42:10 +0000 (UTC)
+Received: from localhost (unknown [10.43.135.229])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1FA5A5ED51;
+        Tue,  1 Feb 2022 08:42:08 +0000 (UTC)
+Date:   Tue, 1 Feb 2022 09:42:07 +0100
+From:   Miroslav Lichvar <mlichvar@redhat.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, Yangbo Lu <yangbo.lu@nxp.com>
+Subject: Re: [PATCH net-next 5/5] ptp: start virtual clocks at current system
+ time.
+Message-ID: <YfjyX893NV2Hga35@localhost>
+References: <20220127114536.1121765-1-mlichvar@redhat.com>
+ <20220127114536.1121765-6-mlichvar@redhat.com>
+ <20220127220116.GB26514@hoboy.vegasvil.org>
+ <Yfe4FPHbFjc6FoTa@localhost>
+ <20220131163240.GA22495@hoboy.vegasvil.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220131194316.1528-2-shiraz.saleem@intel.com>
+In-Reply-To: <20220131163240.GA22495@hoboy.vegasvil.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 01:43:14PM -0600, Shiraz Saleem wrote:
-> From: Dave Ertman <david.m.ertman@intel.com>
+On Mon, Jan 31, 2022 at 08:32:40AM -0800, Richard Cochran wrote:
+> On Mon, Jan 31, 2022 at 11:21:08AM +0100, Miroslav Lichvar wrote:
+> > To me, it seems very strange to start the PHC at 0. It makes the
+> > initial clock correction unnecessarily larger by ~7 orders of
+> > magnitude. The system clock is initialized from the RTC, which can
+> > have an error comparable to the TAI-UTC offset, especially if the
+> > machine was turned off for a longer period of time, so why not
+> > initialize the PHC from the system time? The error is much smaller
+> > than billions of seconds.
 > 
-> The ice driver provides QoS information to auxiliary drivers through
-> the exported function ice_get_qos_params. This function doesn't
-> currently support L3 DSCP QoS.
-> 
-> Add the necessary defines, structure elements and code to support DSCP
-> QoS through the IIDC functions.
-> 
-> Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_idc.c | 5 +++++
->  include/linux/net/intel/iidc.h           | 5 +++++
->  2 files changed, 10 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
-> index fc35801..263a2e7 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_idc.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_idc.c
-> @@ -227,6 +227,11 @@ void ice_get_qos_params(struct ice_pf *pf, struct iidc_qos_params *qos)
->  
->  	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++)
->  		qos->tc_info[i].rel_bw = dcbx_cfg->etscfg.tcbwtable[i];
-> +
-> +	qos->pfc_mode = dcbx_cfg->pfc_mode;
-> +	if (qos->pfc_mode == IIDC_DSCP_PFC_MODE)
-> +		for (i = 0; i < IIDC_MAX_DSCP_MAPPING; i++)
-> +			qos->dscp_map[i] = dcbx_cfg->dscp_map[i];
->  }
->  EXPORT_SYMBOL_GPL(ice_get_qos_params);
->  
-> diff --git a/include/linux/net/intel/iidc.h b/include/linux/net/intel/iidc.h
-> index 1289593..fee9180 100644
-> --- a/include/linux/net/intel/iidc.h
-> +++ b/include/linux/net/intel/iidc.h
-> @@ -32,6 +32,9 @@ enum iidc_rdma_protocol {
->  };
->  
->  #define IIDC_MAX_USER_PRIORITY		8
-> +#define IIDC_MAX_DSCP_MAPPING          64
-> +#define IIDC_VLAN_PFC_MODE             0x0
+> When the clock reads Jan 1, 1970, then that is clearly wrong, and so a
+> user might suspect that it is uninititalized.
 
-This define is not used in any of the patches in the series.
+FWIW, my first thought when I saw the huge offset in ptp4l was that
+something is horribly broken. 
 
-Thanks
+> I prefer the clarity of the first case.
 
-> +#define IIDC_DSCP_PFC_MODE             0x1
->  
->  /* Struct to hold per RDMA Qset info */
->  struct iidc_rdma_qset_params {
-> @@ -60,6 +63,8 @@ struct iidc_qos_params {
->  	u8 vport_relative_bw;
->  	u8 vport_priority_type;
->  	u8 num_tc;
-> +	u8 pfc_mode;
-> +	u8 dscp_map[IIDC_MAX_DSCP_MAPPING];
->  };
->  
->  struct iidc_event {
-> -- 
-> 1.8.3.1
-> 
+I'd prefer smaller initial error and consistency. The vast majority of
+existing drivers seem to initialize the clock at current system time.
+Drivers starting at 0 now create confusion. If this is the right way,
+shouldn't be all existing drivers patched to follow that?
+
+-- 
+Miroslav Lichvar
+
