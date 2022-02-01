@@ -2,117 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB08D4A57B6
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 08:27:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04C8E4A57C1
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 08:31:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234867AbiBAH1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 02:27:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42176 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233720AbiBAH1m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 02:27:42 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2FFC061714;
-        Mon, 31 Jan 2022 23:27:41 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id s16so14437070pgs.13;
-        Mon, 31 Jan 2022 23:27:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-transfer-encoding:content-language;
-        bh=gb6FpjDviXqkxJ6tLKBKooggf+e2HvpPzlaYq1JqIm4=;
-        b=bnc/76N1EHpYnVPW0XvmUduROAoPN/BPMdfuK+CbCaGMaDLhq9vVyYnoauw4VUy74M
-         goJr9Vz1HZ/knFlNZl3LdsRqn5exiyvIQX7oF1Klbm8vRves0iepp3npexp9I0RM91z6
-         B+LVOWEg0833b+k8LBpD4jzy5z172K9hHkAqbLSsiEPsJYn3p0mCW2DI7wau+ryZ7GAv
-         /petSKnTeBErJ1rtmG2aMKvd4oGx5YWsRRQMFqZXPK9PMXvU7nq2iXYnCREQ71USITOc
-         9b2uZN2O8lkx+N1A0KzvnJUIuU8do4nHw6v+WxEBj2+IGY8z32n9ioLMVuuRVxWTmSIZ
-         c9vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-transfer-encoding:content-language;
-        bh=gb6FpjDviXqkxJ6tLKBKooggf+e2HvpPzlaYq1JqIm4=;
-        b=FlV30beL7BmElpn7vHv1FPVFMrECdswllyJi+YVjTSHOxXXbvENHa+OqE63bSGQc9S
-         he8iVIwjD78qr2c0jEyvYiGJrpgHfZtk6CHpuSK9No4T2lEUh/aCJxvC1tgEm+hpSvFB
-         99lfN3vTVk1xKk1GKqTQAOPbfdmSBE6T2ns6IfglHRZTHEvLbJVdMwyx1irIk3kvFnBk
-         QU1auH5UX4syHPpryGs/70hMcVEAXdaMoLPqser/Gt5BxoPmom+o9SCTky3e4JN7Dk2S
-         UNr6E+efLavckOEtrkjvi3ehiq4UCfR/KanPsWANm6SFUPNlcjO7YlwlN2W0OImIfICG
-         VUrQ==
-X-Gm-Message-State: AOAM5302QhI8LFasHiAyZgfvtZWCtqJF6izTR7aXwsa8FVP5s11RQ/fV
-        GAmmgnAoFw++Ro0ro0C7BFxFrdqKjYs=
-X-Google-Smtp-Source: ABdhPJwE6FampCug81yvTDRInbet6MFgiUScRXkZxzKvq4ickx/7NOJpJQ0E7JVRTT0yev9CkhIFKw==
-X-Received: by 2002:a63:1a21:: with SMTP id a33mr19938856pga.35.1643700460589;
-        Mon, 31 Jan 2022 23:27:40 -0800 (PST)
-Received: from [10.59.0.6] ([85.203.23.80])
-        by smtp.gmail.com with ESMTPSA id c14sm19908190pfm.169.2022.01.31.23.27.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 23:27:39 -0800 (PST)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [BUG] vhost: two possible deadlocks involving locking and waiting
-To:     jasowang@redhat.com
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
-Message-ID: <22f57c53-1a0b-ced9-b36e-1b4de8d55572@gmail.com>
-Date:   Tue, 1 Feb 2022 15:27:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S234887AbiBAHbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 02:31:52 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:46616 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233720AbiBAHbv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 02:31:51 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 038C1CE172D
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 07:31:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE684C340EB;
+        Tue,  1 Feb 2022 07:31:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643700708;
+        bh=Gfz/IyQeHhfIN3yvGC3lAVrGkBwjXoAf3UsomFaNtio=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=On3CcmYaeWcWRpHFeZkymIwfQs4pwKGJHcl8ylbeUr27U76qv4DaZhCf+QRUxIo6T
+         49Vb3qA9DeO9PmW9YqKYVTtgf9kqHHVUVuv+m5xyXXTqcOJdv6dvzrVDeJFcN20u2p
+         sUNZdPo2HVKkijPrfEsHK5/rE+vtaOWldJ+MaVt531CvkzD3oDCZ8fjgyRiMw7d/I8
+         Kg88zm+gq1LnfwSwJN50rAevbYFeRczpZLkLZPiIzhGEkVBB2Ybe17swceVdv8INfO
+         bG6UGGUKmAxXmR3Id6Hk27d1OxY4Pdq/VwMl0DsnijZ9cIJOtcVHOb62d8fLo3jy8n
+         eBrwT3+km1qpQ==
+Date:   Tue, 1 Feb 2022 09:31:44 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Shannon Nelson <shannon.nelson@oracle.com>
+Subject: Re: [PATCH ipsec-next] xfrm: delete duplicated functions that calls
+ same xfrm_api_check()
+Message-ID: <Yfjh4FqmN3Xe1umR@unreal>
+References: <5f9d6820e0548cb3304cbb49bcb84bedb15d7403.1643274380.git.leonro@nvidia.com>
+ <20220201070701.GU1223722@gauss3.secunet.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220201070701.GU1223722@gauss3.secunet.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Feb 01, 2022 at 08:07:01AM +0100, Steffen Klassert wrote:
+> On Thu, Jan 27, 2022 at 11:08:40AM +0200, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > The xfrm_dev_register() and xfrm_dev_feat_change() have same
+> > implementation of one call to xfrm_api_check(). Instead of doing such
+> > indirection, call to xfrm_api_check() directly and delete duplicated
+> > functions.
+> > 
+> > Fixes: 92a2320697f7 ("xfrm: check for xdo_dev_ops add and delete")
+> 
+> There was nothing broken here, just a suboptimal implementation.
+> So please remove the Fixes tag, otherwise it gets backported
+> without a need.
 
-My static analysis tool reports two possible deadlocks in the vhost 
-driver in Linux 5.16:
+No problem, I will remove.
 
-#BUG 1
-vhost_net_set_backend()
-   mutex_lock(&n->dev.mutex); --> Line 1511(Lock A)
-   vhost_net_ubuf_put_wait_and_free()
-     vhost_net_ubuf_put_and_wait()
-     wait_event(ubufs->wait ...); --> Line 260 (Wait X)
-
-vhost_net_ioctl()
-   mutex_lock(&n->dev.mutex); --> Line 1734 (Lock A)
-   vhost_net_flush()
-     vhost_net_ubuf_put_and_wait()
-       vhost_net_ubuf_put()
-         wake_up(&ubufs->wait); --> Line 253 (Wake X)
-
-When vhost_net_set_backend() is executed, "Wait X" is performed by 
-holding "Lock A". If vhost_net_ioctl() is executed at this time, "Wake 
-X" cannot be performed to wake up "Wait X" in vhost_net_set_backend(), 
-because "Lock A" has been already hold by vhost_net_set_backend(), 
-causing a possible deadlock.
-
-#BUG2
-vhost_net_set_backend()
-   mutex_lock(&vq->mutex); --> Line 1522(Lock A)
-   vhost_net_ubuf_put_wait_and_free()
-     vhost_net_ubuf_put_and_wait()
-     wait_event(ubufs->wait ...); --> Line 260 (Wait X)
-
-handle_tx()
-   mutex_lock_nested(&vq->mutex, ...); --> Line 966 (Lock A)
-   handle_tx_zerocopy()
-     vhost_net_ubuf_put()
-       wake_up(&ubufs->wait); --> Line 253 (Wake X)
-
-When vhost_net_set_backend() is executed, "Wait X" is performed by 
-holding "Lock A". If handle_tx() is executed at this time, "Wake X" 
-cannot be performed to wake up "Wait X" in vhost_net_set_backend(), 
-because "Lock A" has been already hold by vhost_net_set_backend(), 
-causing a possible deadlock.
-
-I am not quite sure whether these possible problems are real and how to 
-fix them if they are real.
-Any feedback would be appreciated, thanks :)
-
-
-Best wishes,
-Jia-Ju Bai
-
+> 
+> Thanks!
+> 
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> >  net/xfrm/xfrm_device.c | 14 ++------------
+> >  1 file changed, 2 insertions(+), 12 deletions(-)
+> > 
+> > diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
+> > index 3fa066419d37..36d6c1835844 100644
+> > --- a/net/xfrm/xfrm_device.c
+> > +++ b/net/xfrm/xfrm_device.c
+> > @@ -380,16 +380,6 @@ static int xfrm_api_check(struct net_device *dev)
+> >  	return NOTIFY_DONE;
+> >  }
+> >  
+> > -static int xfrm_dev_register(struct net_device *dev)
+> > -{
+> > -	return xfrm_api_check(dev);
+> > -}
+> > -
+> > -static int xfrm_dev_feat_change(struct net_device *dev)
+> > -{
+> > -	return xfrm_api_check(dev);
+> > -}
+> > -
+> >  static int xfrm_dev_down(struct net_device *dev)
+> >  {
+> >  	if (dev->features & NETIF_F_HW_ESP)
+> > @@ -404,10 +394,10 @@ static int xfrm_dev_event(struct notifier_block *this, unsigned long event, void
+> >  
+> >  	switch (event) {
+> >  	case NETDEV_REGISTER:
+> > -		return xfrm_dev_register(dev);
+> > +		return xfrm_api_check(dev);
+> >  
+> >  	case NETDEV_FEAT_CHANGE:
+> > -		return xfrm_dev_feat_change(dev);
+> > +		return xfrm_api_check(dev);
+> >  
+> >  	case NETDEV_DOWN:
+> >  	case NETDEV_UNREGISTER:
+> > -- 
+> > 2.34.1
