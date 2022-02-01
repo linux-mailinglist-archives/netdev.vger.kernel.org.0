@@ -2,282 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D53224A640A
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 19:36:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D7A44A640D
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 19:37:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241954AbiBASgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 13:36:25 -0500
-Received: from mail-co1nam11on2055.outbound.protection.outlook.com ([40.107.220.55]:13040
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241935AbiBASgZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Feb 2022 13:36:25 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YMa1Sidyym5E866DO4C4ai/eR7rr6j026M6gpzhv9VmkLqoBO+oEmudph37TzCN27ac43X+H6vS+lBESliri3XLLB+WFjTQsWdzHHU09839GM8ZBaMIYEFZO3h6MSBHQ6J7CSd/FQCp+BsJOGdUWH/TQT3IoNTP7cdD5wTp3XrNzSbY4KaIl/WQc9IC9dsUkzx0ilkymVAz/kGaXWZ8xq9PG+ROHr65LtVV8mapN7PGjJPWcxyeJE+OVTrN4FQT2RrVycU/Ic72eFQTMCOwQxZvzJwd/7CncO5NuPqP8wY5fcWmNfy4t8yfRk52D9YfzgCvken7GPg+OAjReMKN1/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=a9Es9WE6VFu481BbUccO5mkkqJouxZowOQnCJQ/cU/w=;
- b=cCbwzeK531yYVEpgNzXjGTCw4mwTxBlyF2xo4znjsPUOUjaW1I1fYodROvEAh5JOJyhb84lGMYmZzThQovAIxwey3cn4iRKEAK9RaVxzxkZG2ksOhNVoPkkMr0bZicq2yU82Az/CfCrZh59UBIPQXTVhQOQSazpobPKEXXBfjzyBegotJ6NQK6E30cP3vHYCp6Ihfs4tzfWrkgNn0NbuXqpElnJlgSaRgnRufeUypCTysMMiaT9TFJ4zbCLncVeBlZotC6PEbIFG6WyopP9NwAcuE9JbXLqkzvUbwiO25coUI4llJUTgIdfzsV8ccojMC5dX0J7bry5Hm8uiS1QAzg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a9Es9WE6VFu481BbUccO5mkkqJouxZowOQnCJQ/cU/w=;
- b=gECTaT7zjn+kh1/tu+WNXbo2fmCIu4d/TQ/toOFkmmuruFMIFWnvNeqtaeBKTUikJT4Bhr6Hx7RTZxkog5AgST5GezPq1Qk7WDuheRvFtTe4mhOuJb5TM6TMuv0o5n6+EUR97aRsTC2gJxHMBmOiMgYC5dTDXcfdRA1id2EHf/JMxm+iQj/8yubt83wn6StvBvKbjGWtjfYyY7Gd+SdxF1bNfJY5bEP1xVUatd5AbRKhr1gvcFeijDLr65DxLjvf1ishVKeTntl+HkZH4QVrhLAlHoom6ZNS4Dq6sZ/FEzORuTj7sUE1x4O118OqwZX653V+M3sM/g+BPYBG1ONjJg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BN6PR12MB1297.namprd12.prod.outlook.com (2603:10b6:404:14::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.18; Tue, 1 Feb
- 2022 18:36:22 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::e8f4:9793:da37:1bd3]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::e8f4:9793:da37:1bd3%4]) with mapi id 15.20.4930.022; Tue, 1 Feb 2022
- 18:36:21 +0000
-Date:   Tue, 1 Feb 2022 14:36:20 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com
-Subject: Re: [PATCH V6 mlx5-next 08/15] vfio: Define device migration
- protocol v2
-Message-ID: <20220201183620.GL1786498@nvidia.com>
-References: <20220130160826.32449-1-yishaih@nvidia.com>
- <20220130160826.32449-9-yishaih@nvidia.com>
- <20220131164318.3da9eae5.alex.williamson@redhat.com>
- <20220201003124.GZ1786498@nvidia.com>
- <20220201100408.4a68df09.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220201100408.4a68df09.alex.williamson@redhat.com>
-X-ClientProxiedBy: BL1P222CA0018.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:208:2c7::23) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        id S241966AbiBAShB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 13:37:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55014 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233263AbiBAShA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 13:37:00 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25462C061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 10:37:00 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id s18so33712748wrv.7
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 10:37:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=DI1x5+Wihj4SQ70P5LSVw+8H1DmmobNWAEhS7drOCTA=;
+        b=FODfQEB3+VrZ5tKcYc+CWcrD2hHYrFmADtl0dJMx5xXMl9RKo6eBF3lT/Sow792Z+Q
+         f8ZlSAACHtERHUoXHY1d2ecJjnB8wS/Q87qex3WylrZWuf1L4j5yHLHcNxaZVAyB4VVm
+         P6FiTB21uMDQPGS7O92SNJ6SXBTeFUVskTYpP0zcPV0blQxwnVptj7/dNOH+EaoFnNyr
+         79N8tEK+nSLcBIrjROxswMd5MknwJm5re8cehiZwo0Cio2Ty4Q3RhaQEMfGuLH5IXJQ/
+         riAlhibal7ZCvPd9Yc+vYrN969ElkfpTQPUZNpDBsSUk+pVx4QIFxvJsMjxH9C2pVKn5
+         FY9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=DI1x5+Wihj4SQ70P5LSVw+8H1DmmobNWAEhS7drOCTA=;
+        b=CW2FbA8QKea1oL5xITXsvAkqsoX3NLBrM7ZhE4L7q9T1w+wzto502ZdUULnA3Tdq/h
+         izSjFTV6c3jciUTSE1sEke7S6Hs6gbN4NJZltMuvXzFrqmPUaf5rWUJh+FYcS+vTWRKI
+         /0f1O8LN1Bzd26Iqdfo6VE/o5vEbOc06233EPqDPXoS/wGU/U7c+yRqrKZSaCJ3R44oj
+         FyEJ21IbS7S5+BFhfGtX99u4VgpP+EJlcZTnKeoLfpixMKNk6/opWZwGIA0zGeng3iMQ
+         5bJ6Wv0BGY2fT58viz7BikNomRDurXzIZTvg4pqF60zR1aLko7LWE+Pra7+9s3V3n5xb
+         90Lw==
+X-Gm-Message-State: AOAM5320TjE5U4nls4zpjpdwY5IksChSwvkwN6nB4ANhpXWdmZY1+Ga+
+        /Huy+Xd4GXXn5pkhKYe3TveCJPc6zYikqwR1vqZ0aw==
+X-Google-Smtp-Source: ABdhPJykR69e7xynNf/2GwFt8xXKISZXw11Lu8sKsZOzgS4SZNut8V2WY0EwKSIQS5tWWaFjpg+UUAKzXkbQfOnBvCs=
+X-Received: by 2002:adf:f1c7:: with SMTP id z7mr13384515wro.198.1643740618703;
+ Tue, 01 Feb 2022 10:36:58 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d5452b68-ee5e-4f0d-bbfc-08d9e5b1be51
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1297:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR12MB129712B21E1D45F398E0A660C2269@BN6PR12MB1297.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Lyv5HlMMnR5Fuu5cf3F+Xpqma35qcNgXkfmnLBj0eUEyPJ2pO4abs14libTo1vP955h6PHG74K1+tq2rl1rARGePnhlR35TKxs5En2e3hVZZqB5H7kohLL1BApOx8Z6ldCRfwFlkXtley44tKRkd5PLw4r7LwL6fB1Mvzw/reUm1moBnCtWgVTu2a3CaryXKGZNnvwb/K3fG7hj/+no7kOBkPee+pPCZYToIRS8SUay7NVZ8auEnQ9i8a9hBpQZTnaNVOjtUDpvUnkM1CGjwhaXQS86yeKXinka+yrJ05U1R1ZHKFleg71inkJnRLbcjX6BkehecgqIB4Cu0Q4aYE7loqtsewmc6y5dpvJ1+Gsb6Ft0Gko8MAPovon9IrvJk8SHLhOZgIfUUdKjQze2cmNetknWl3NMC2ad/wwxDYQ8R9x+Vf3x4JKwRPuHV39Xiq+nb+I0GlaE+vXd/rcEFYxB7s7tU8MhOby6nyVIlJd8OzOTHeuGM+2v30JE/hmVAlmKwcifQstOdzpbLLlaE9CsUQBw1XsRGwo76iQoO+vraSLL+n/EWK0xeN+fLzNeJPQmcWaku9rTjmgV2MFx7RJkczFyewoBaZ8hM7O4TO+4ZNbihgcKvK4uIoHxGIE1IvtTBf6DcbiV0O85Y2izlxw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(33656002)(316002)(107886003)(2906002)(83380400001)(38100700002)(5660300002)(1076003)(186003)(26005)(2616005)(6916009)(66476007)(4326008)(6506007)(8676002)(66946007)(66556008)(508600001)(6486002)(8936002)(86362001)(36756003)(6512007)(20210929001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?z+UrjRoWOsDTCUUgOljUwraKMVK0mu5z6rGJ7P3c3kJTlJiJHlqvRr6h+wjp?=
- =?us-ascii?Q?I+x2tjgtS5eA0G15NS+pSh4itzg4uZ5GcL3f/tM2UfuEnxQzunqh4dxUXoZN?=
- =?us-ascii?Q?pYShMaRTvbUVWF1J51FIvuCTu51Tl+GoE/t+xkj2iRmQVgVH7+kbzm1PCVU4?=
- =?us-ascii?Q?1nD1edxbl0256sS7HjzGnPhSUMJrBSdCWb6yIfV9olAFJw9pjK7EITQpkPLR?=
- =?us-ascii?Q?RggBWxN8TSIhIfJ/zMLsOtUvbmFs+mXqCYggbv76C/LgR43EOzJLzYTeXBRO?=
- =?us-ascii?Q?6uR1LiutniEU1J1bu2C66cveP6IQY+/A/gMGVxfX/2gFz1SMSK0KwVdLRgnV?=
- =?us-ascii?Q?vrjY1OH6S1B3yT2Bhx6ed3wyJw0N8unvhaO0ANsyfTrx6+jP3cOqpJT316WH?=
- =?us-ascii?Q?jrzgNIqS3JCGRnRbjsj6loh/DZp85Z5+f14mHHIfWGPDqX6i/sv+Td9BW5+M?=
- =?us-ascii?Q?LgJ49gJZnP3/EOGJCJlz2yS7PNFN3KOQ7K4wsKmCGaMVBKsuksDcR2WboZ4P?=
- =?us-ascii?Q?S3Jp6G0waSkPVjnkpVsLwV4vxKghwd1bDmDXaoLZ3SsYqhkb1ToGk0P5Ape9?=
- =?us-ascii?Q?amFKqNHWeAzLvkKLpm2W3L6x7oAuHzVXHc8PVwHQ9WUYgpVr8/1lGzFcu3eg?=
- =?us-ascii?Q?GHmNveUJy6QN+VbJXvmfq9kFK5TPDhOyPUYMxAZ+Z8VWq666dfwLqKcXUdzY?=
- =?us-ascii?Q?ER2N7t5GoAaIMQQ44M4hnm9XvS+CoKRCfIfIUd0x8LcSyhjtVS4TuRUfXmLT?=
- =?us-ascii?Q?rEm10QRgALKxCzEoCkU8EFIlp8Olt62wztuOhbtEZBvaxArRMWV/GWGc7OG9?=
- =?us-ascii?Q?bb7PGf9djsL8Ut+2hwOY7G3Am09xFyM8SKgKA1ET+0Jm8t5vikxVUx/7cryC?=
- =?us-ascii?Q?jslZg7god0S1hi4oluf1k+U2mRMtJdPqCkENK9dyfQpjGxMgsa0mszu+FpiB?=
- =?us-ascii?Q?GTjOay/Cyyw1W8izI8ESNgy/4PuNB2IO3en83phf967ggKXjfr+nxnb9RYOH?=
- =?us-ascii?Q?W2mD7aBraTj1aicICFq1niGI+csfjSJzO7Zx/klucLer/qr064QDXQDAQebR?=
- =?us-ascii?Q?aoD5ljKOE7ObI6g06PnbDvIwmXXuqiNqPGObfgI6QoNDX0B8JLmAU9rGrCEl?=
- =?us-ascii?Q?F9lGRn4cnJQMFN8a4XCasdoLj7vQFPyWORtm2Kv+XPNcgr8FT7Nc1Ut5DBJb?=
- =?us-ascii?Q?yotFceFxfbpCsfwAoKUE1NRYmq9N6jNgB3+N2BFDahZslm7LR8S1/DsN4pTz?=
- =?us-ascii?Q?JIkHyfnwFL9MlyyEHy2FEwwnyeUfPjzKfFi2SMNvirqHPxJDQ6Ec05Df2dn8?=
- =?us-ascii?Q?XqKCL25DdDnjbmqyILkhvhxd6Es4kUzrKtbSDwtWDBRtZKFEQD/jS8Sed/dX?=
- =?us-ascii?Q?FbLCfG456uRzHIXy8/Q1Cjhp5nSmqLK0ay/kUIo10s6OYYAN+o7KCYKyHQ9v?=
- =?us-ascii?Q?MUnaxILJG3U9F1AhN+Hj5jeZ8SxxvU5QkoFQThiDuvvbb4gtZaqlo4xhRWdh?=
- =?us-ascii?Q?dE1jk8lCkd8zIfiOjvv3i6PjHxg+ncUeFM1de9gl26H4ucam5H7Hb6cVNjEz?=
- =?us-ascii?Q?uBnuOUzZVkfktCzwUYI=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d5452b68-ee5e-4f0d-bbfc-08d9e5b1be51
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2022 18:36:21.7603
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CcEwqC60IK7BtNQtTvY9b+izEQATqi5EjbV8ZO1yUFiSTB5xY0hr8zmaQBURhn9p
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1297
+References: <20220113150846.1570738-1-rad@semihalf.ocm> <CABBYNZJn1ej18ERtgnF_wvbvBEm0N=cBRHHtr8bu+nfAotjg2Q@mail.gmail.com>
+ <CAOs-w0+W_BHTdZkOnu-EPme2dpoO_6bQi_2LRH7Xw0Ge=i9TOA@mail.gmail.com>
+ <CABBYNZLinzOxJWgHwVbeEWe2zkz_y4BrXVYX4e0op580YO1OeA@mail.gmail.com> <CABBYNZL3ozczAK2mWXVd+x2NtZhaAbfnUFoA3ot1AQLNHSeL5w@mail.gmail.com>
+In-Reply-To: <CABBYNZL3ozczAK2mWXVd+x2NtZhaAbfnUFoA3ot1AQLNHSeL5w@mail.gmail.com>
+From:   =?UTF-8?Q?Rados=C5=82aw_Biernacki?= <rad@semihalf.com>
+Date:   Tue, 1 Feb 2022 19:36:50 +0100
+Message-ID: <CAOs-w0+T1Dcwsx-dy28v_6RxyQZidFoxOBts4++j8h5N5sY6mA@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: Fix skb allocation in mgmt_remote_name()
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        upstream@semihalf.com, Angela Czubak <acz@semihalf.com>,
+        Marek Maslanka <mm@semihalf.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 10:04:08AM -0700, Alex Williamson wrote:
+Hey Luiz.
+Sorry for keeping you waiting. I will send it today.
 
-> Ok, let me parrot back to see if I understand.  -ENOTTY will be
-> returned if the ioctl doesn't exist, in which case device_state is
-> untouched and cannot be trusted.  At the same time, we expect the user
-> to use the feature ioctl to make sure the ioctl exists, so it would
-> seem that we've reclaimed that errno if we believe the user should
-> follow the protocol.
-
-I don't follow - the documentation says what the code does, if you get
-ENOTTY returned then you don't get the device_state too. Saying the
-user shouldn't have called it in the first place is completely
-correct, but doesn't change the device_state output.
-
-> +       if (!device->ops->migration_set_state)
-> +               return -EOPNOTSUPP;
-> 
-> Should return -ENOTTY, just as the feature does.  
-
-As far as I know the kernel 'standard' is:
- - ENOTTY if the ioctl cmd # itself is not understood
- - E2BIG if the ioctl arg is longer than the kernel understands
- - EOPNOTSUPP if the ioctl arg contains data the kernel doesn't
-   understand (eg flags the kernel doesn't know about), or the
-   kernel understands the request but cannot support it for some
-   reason.
- - EINVAL if the ioctl arg contains data the kernel knows about but
-   rejects (ie invalid combinations of flags)
-
-VFIO kind of has its own thing, but I'm not entirely sure what the
-rules are, eg you asked for EOPNOTSUPP in the other patch, and here we
-are asking for ENOTTY?
-
-But sure, lets make it ENOTTY.
-
-> But it's also for future unsupported ops, but couldn't we also
-> specify that the driver must fill final_state with the current
-> device state for any such case.  We also have this:
-> 
-> +       if (set_state.argsz < minsz || set_state.flags)
-> +               return -EOPNOTSUPP;
-> 
-> Which I think should be -EINVAL.
-
-That would match the majority of other VFIO tests.
-
-> That leaves -EFAULT, for example:
-> 
-> +       if (copy_from_user(&set_state, arg, minsz))
-> +               return -EFAULT;
-> 
-> Should we be able to know the current device state in core code such
-> that we can fill in device state here?
-
-There is no point in doing a copy_to_user() to the same memory if a
-copy_from_user() failed, so device_state will still not be returned.
-
-We don't know the device_state in the core code because it can only be
-read under locking that is controlled by the driver. I hope when we
-get another driver merged that we can hoist the locking, but right now
-I'm not really sure - it is a complicated lock.
-
-> I think those changes would go a ways towards fully specified behavior
-> instead of these wishy washy unreliable return values.  Then we could
-
-Huh? It is fully specified already. These changes just removed
-EOPNOTSUPP from the list where device_state isn't filled in. It is OK,
-but it is not really different...
-
->  "If this function fails and returns -1 then..."
-> 
-> Could we clarify that to s/function/ioctl/?  It caused me a moment of
-> confusion for the returned -errnos.
-
-Sure.
-
-> > > Should we be bumping a reference on the device FD such that we can't
-> > > have outstanding migration FDs with the device closed (and
-> > > re-assigned to a new user)?  
-> > 
-> > The driver must ensure any activity triggered by the migration FD
-> > against the vfio_device is halted before close_device() returns, just
-> > like basically everything else connected to open/close_device(). mlx5
-> > does this by using the same EOF sanitizing the FSM logic uses.
-> > 
-> > Once sanitized the f_ops should not be touching the vfio_device, or
-> > even have a pointer to it, so there is no reason to connect the two
-> > FDs together. I'd say it is a red flag if a driver proposes to do
-> > this, likely it means it has a problem with the open/close_device()
-> > lifetime model.
-> 
-> Maybe we just need a paragraph somewhere to describe the driver
-> responsibilities and expectations in managing the migration FD,
-> including disconnecting it after end of stream and access relative to
-> the open state of the vfio_device.  Seems an expanded descriptions
-> somewhere near the declaration in vfio_device_ops would be appropriate.
-
-Yes that is probably better than in the uapi header.
-
-> > I'm not sure what the overall VFIO vision is here.. Are we abandoning
-> > traditional ioctls in favour of a multiplexer? Calling the multiplexer
-> > ioctl "feature" is a bit odd..
-> 
-> Is it really?  VF Token support is a feature that a device might have
-> and we can use the same interface to probe that it exists as well as
-> set the UUID token.  We're using it to manipulate the state of a device
-> feature.
-> 
-> If we're only looking for a means to expose that a device has support
-> for something, our options are a flag bit on the vfio_device_info or a
-> capability on that ioctl.  It's arguable that the latter might be a
-> better option for VFIO_DEVICE_FEATURE_MIGRATION since its purpose is
-> only to return a flags field, ie. we're not interacting with a feature,
-> we're exposing a capability with fixed properties.
-
-I looked at this, and decided against it on practical reasons.
-
-I've organized this so the core code can do more work for the driver,
-which means the core code supplies the support info back to
-userspace. VFIO_DEVICE_INFO is currently open coded in every single
-driver and lifting that to get the same support looks like a huge
-pain. Even if we try to work it backwards somehow, we'd need to
-re-organize vfio-pci so other drivers can contribute to the cap chain -
-which is another ugly looking thing.
-
-On top of that, qemu becomes much less straightforward as we have to
-piggy back on the existing vfio code instead of just doing a simple
-ioctl to get back the small support info back. There is even an
-unpleasing mandatory user/kernel memory allocation and double ioctl in
-the caps path.
-
-The feature approach is much better, it has a much cleaner
-implementation in user/kernel. I think we should focus on it going
-forward and freeze caps.
-
-> > It complicates the user code a bit, it is more complicated to invoke the
-> > VFIO_DEVICE_FEATURE (check the qemu patch to see the difference).
-> 
-> Is it really any more than some wrapper code?  Are there objections to
-> this sort of multiplexer?
-
-There isn't too much reason to do this kind of stuff. Each subsystem
-gets something like 4 million ioctl numbers within its type, we will
-never run out of unique ioctls.
-
-Normal ioctls have a nice simplicity to them, adding layers creates
-complexity, feature is defiantly more complex to implement, and cap
-is a whole other level of more complex. None of this is necessary.
-
-I don't know what "cluttering" means here, I'd prefer we focus on
-things that give clean code and simple implementations than arbitary
-aesthetics.
-
-> > Either way I don't have a strong opinion, please have a think and let
-> > us know which you'd like to follow.
-> 
-> I'm leaning towards a capability for migration support flags and a
-> feature for setting the state, but let me know if this looks like a bad
-> idea for some reason.  Thanks,
-
-I don't want to touch capabilities, but we can try to use feature for
-set state. Please confirm this is what you want.
-
-You'll want the same for the PRE_COPY related information too?
-
-If we are into these very minor nitpicks does this mean you are OK
-with all the big topics now?
-
-Jason
+pon., 31 sty 2022 o 19:47 Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> napisa=C5=82(a):
+>
+> Hi Rados=C5=82aw,
+>
+> On Thu, Jan 13, 2022 at 2:23 PM Luiz Augusto von Dentz
+> <luiz.dentz@gmail.com> wrote:
+> >
+> > Hi Rados=C5=82aw,
+> >
+> > On Thu, Jan 13, 2022 at 2:07 PM Rados=C5=82aw Biernacki <rad@semihalf.c=
+om> wrote:
+> > >
+> > > Hi Luiz,
+> > >
+> > > czw., 13 sty 2022 o 17:17 Luiz Augusto von Dentz
+> > > <luiz.dentz@gmail.com> napisa=C5=82(a):
+> > > >
+> > > > Hi Radoslaw,
+> > > >
+> > > > On Thu, Jan 13, 2022 at 7:09 AM Radoslaw Biernacki <rad@semihalf.co=
+m> wrote:
+> > > > >
+> > > > > From: Radoslaw Biernacki <rad@semihalf.com>
+> > > > >
+> > > > > This patch fixes skb allocation, as lack of space for ev might pu=
+sh skb
+> > > > > tail beyond its end.
+> > > > > Also introduce eir_precalc_len() that can be used instead of magi=
+c
+> > > > > numbers for similar eir operations on skb.
+> > > > >
+> > > > > Fixes: cf1bce1de7eeb ("Bluetooth: mgmt: Make use of mgmt_send_eve=
+nt_skb in MGMT_EV_DEVICE_FOUND")
+> > > > > Signed-off-by: Angela Czubak <acz@semihalf.com>
+> > > > > Signed-off-by: Marek Maslanka <mm@semihalf.com>
+> > > > > Signed-off-by: Radoslaw Biernacki <rad@semihalf.com>
+> > > > > ---
+> > > > >  net/bluetooth/eir.h  |  5 +++++
+> > > > >  net/bluetooth/mgmt.c | 12 ++++--------
+> > > > >  2 files changed, 9 insertions(+), 8 deletions(-)
+> > > > >
+> > > > > diff --git a/net/bluetooth/eir.h b/net/bluetooth/eir.h
+> > > > > index 05e2e917fc25..e5876751f07e 100644
+> > > > > --- a/net/bluetooth/eir.h
+> > > > > +++ b/net/bluetooth/eir.h
+> > > > > @@ -15,6 +15,11 @@ u8 eir_create_scan_rsp(struct hci_dev *hdev, u=
+8 instance, u8 *ptr);
+> > > > >  u8 eir_append_local_name(struct hci_dev *hdev, u8 *eir, u8 ad_le=
+n);
+> > > > >  u8 eir_append_appearance(struct hci_dev *hdev, u8 *ptr, u8 ad_le=
+n);
+> > > > >
+> > > > > +static inline u16 eir_precalc_len(u8 data_len)
+> > > > > +{
+> > > > > +       return sizeof(u8) * 2 + data_len;
+> > > > > +}
+> > > > > +
+> > > > >  static inline u16 eir_append_data(u8 *eir, u16 eir_len, u8 type,
+> > > > >                                   u8 *data, u8 data_len)
+> > > > >  {
+> > > > > diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+> > > > > index 37087cf7dc5a..d517fd847730 100644
+> > > > > --- a/net/bluetooth/mgmt.c
+> > > > > +++ b/net/bluetooth/mgmt.c
+> > > > > @@ -9680,13 +9680,11 @@ void mgmt_remote_name(struct hci_dev *hde=
+v, bdaddr_t *bdaddr, u8 link_type,
+> > > > >  {
+> > > > >         struct sk_buff *skb;
+> > > > >         struct mgmt_ev_device_found *ev;
+> > > > > -       u16 eir_len;
+> > > > > -       u32 flags;
+> > > > > +       u16 eir_len =3D 0;
+> > > > > +       u32 flags =3D 0;
+> > > > >
+> > > > > -       if (name_len)
+> > > > > -               skb =3D mgmt_alloc_skb(hdev, MGMT_EV_DEVICE_FOUND=
+, 2 + name_len);
+> > > > > -       else
+> > > > > -               skb =3D mgmt_alloc_skb(hdev, MGMT_EV_DEVICE_FOUND=
+, 0);
+> > > > > +       skb =3D mgmt_alloc_skb(hdev, MGMT_EV_DEVICE_FOUND,
+> > > > > +                            sizeof(*ev) + (name ? eir_precalc_le=
+n(name_len) : 0));
+> > > >
+> > > > Looks like mgmt_device_connected also has a similar problem.
+> > >
+> > > Yes, I was planning to send a patch to this one though it will not be=
+ as slick.
+> > > It would be nice to have a helper which will call skb_put() and add
+> > > eir data at once.
+> > > Basically skb operation in pair to, what eir_append_data() does with
+> > > help of eir_len but without awkwardness when passing return value to
+> > > skb_put() (as it returns offset not size).
+> >
+> > Hmm, that might be a good idea indeed something like eir_append_skb,
+> > if only we could grow the skb with skb_put directly that would
+> > eliminate the problem with having to reserve enough space for the
+> > worse case.
+> >
+> > > I will send V2 with two patches. I hope they will align with your
+> > > original goal of eliminating the necessity of intermediary buffers at
+> > > some point in future.
+>
+> Are you still planning to send the v2?
+>
+> > > >
+> > > > >         ev =3D skb_put(skb, sizeof(*ev));
+> > > > >         bacpy(&ev->addr.bdaddr, bdaddr);
+> > > > > @@ -9696,10 +9694,8 @@ void mgmt_remote_name(struct hci_dev *hdev=
+, bdaddr_t *bdaddr, u8 link_type,
+> > > > >         if (name) {
+> > > > >                 eir_len =3D eir_append_data(ev->eir, 0, EIR_NAME_=
+COMPLETE, name,
+> > > > >                                           name_len);
+> > > > > -               flags =3D 0;
+> > > > >                 skb_put(skb, eir_len);
+> > > > >         } else {
+> > > > > -               eir_len =3D 0;
+> > > > >                 flags =3D MGMT_DEV_FOUND_NAME_REQUEST_FAILED;
+> > > > >         }
+> > > >
+> > > > These changes would leave flags and eir_len uninitialized.
+> > >
+> > > Both are initialized to 0 by this patch.
+> >
+> > Sorry, I must be blind that I didn't see you had changed that to be
+> > initialized in their declaration.
+> >
+> > > >
+> > > > > --
+> > > > > 2.34.1.703.g22d0c6ccf7-goog
+> > > > >
+> > > >
+> > > >
+> > > > --
+> > > > Luiz Augusto von Dentz
+> >
+> >
+> >
+> > --
+> > Luiz Augusto von Dentz
+>
+>
+>
+> --
+> Luiz Augusto von Dentz
