@@ -2,108 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DC264A659F
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 21:25:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 291E74A65A2
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 21:25:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231180AbiBAUZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 15:25:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51974 "EHLO
+        id S233448AbiBAUZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 15:25:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiBAUZI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 15:25:08 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB46C061714;
-        Tue,  1 Feb 2022 12:25:08 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id c19so25738562ybf.2;
-        Tue, 01 Feb 2022 12:25:08 -0800 (PST)
+        with ESMTP id S229793AbiBAUZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 15:25:53 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFD0C061714;
+        Tue,  1 Feb 2022 12:25:53 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id 132so5409965pga.5;
+        Tue, 01 Feb 2022 12:25:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=NQxBh7W6WQoopd/1GYZljiEFB/ShqPgFHLn5gnNvn8Y=;
-        b=eef4eipwpvsL3TFJxxFdmb4L8ZoICrM8iScWq6tOGrxMFYvddvijvxioe1BqimVZjF
-         zTxsmOqEWVCWAY9+ljLnftiZEr3qB6atVvG5B6HoLzXW9gcPBgXLSQxYllXa0qwvFBJ2
-         3Bgbwo3aF32NYbRzzZ7Twm7RLSpxWMSDOoFAVz01CTJbYtAb03oXc6CiMms5Sv/eX+4X
-         vO/IBz1JFEcwD+l02ewZnypRgup2+Va27nOIN8/FplZmyMtqy1nrLlz/p0nyRsphwJrK
-         29YI3Ovhcvrh6GkZKwLJLrKxMsb0WTfUzfk6shVmqBJfWny8lYNQkGC3sGqeXvNcRUv0
-         9abA==
+        bh=ExdrZIgp39XVpTkA829D6pTDC2kNpI9DYEfWRWuVVbU=;
+        b=ITc9Q24cgjgfgZIRPMUETmA1BvsoPuDTxd8akeVWC6NEkNr5mwgVfkTYcLFmbMbZ8W
+         pyiO7xU2fLRPcNVKQ3o1N4+zzRWyjhUf+Vcaa4e1+8OjJOHEFGAXSujp/zo6rnD1g/zL
+         QlEe0OP66UsZK0/9jwRVsB102DGV6VLSPYMbb2D4QfIBhOumzCEJsSFJXtkHDsn2c/LK
+         9qolP4HxL1Ty1zxhk0TB+/KmY+9XlG7Alsrq/MeLK0v5XSnG8rruw879bv0WYQQYCVsn
+         HZmPL8cv9HcJRmll17chuNrjnLe24BPDwcHjHgvr3fVxsBXwpuWolwqRWzlkkbt/ANhO
+         9tSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=NQxBh7W6WQoopd/1GYZljiEFB/ShqPgFHLn5gnNvn8Y=;
-        b=F+SEbEloE90L80+VA3g0o5g2a1f4db0JABHAkBBzNJIsyyEqYQApOoo17hJ47RFvBR
-         DZ/zmnJYLTxDs6DQ5LzDMWly0MvRUaEOJwm2r0dUyV5EpBEcoav+zf3FMjMheVwMwaRL
-         mPva5QQ6Mk5s/GPJtgSxcovs8tSdW8XFZ+Z333IqU2NKeIgCow0Z3qSzLM9VNQyPTTke
-         jMbhlzw/0QhanZY9F6TVUXEi3aUub5m424hE7BcPvX6/vc9DoT+UJCvUJLIBNOPPLQXe
-         uzbulDG9KZnp2WQzYv9aUDaR8a4IsSkWHG1IYTRd6xC9homSqz2iOJIxrbw2aXWgdo8P
-         VDUQ==
-X-Gm-Message-State: AOAM5308wqNOZjk2sk9Ei0VG9biwLJdvp47ICzCOwFSleS1XiJsaLBrL
-        kZ2Hly6HzdGaNHSr9Xs94PIr1KTkD8S2cz9WVhg=
-X-Google-Smtp-Source: ABdhPJzc9Eqbhc8KooDpwUj/fmwXhyfk2NIiX2gE3LH5W4yJw1W0sv5950Z38giEOj+JUOPs3+zTNJgZcQX4aHD/gUo=
-X-Received: by 2002:a25:cccb:: with SMTP id l194mr37620366ybf.752.1643747107364;
- Tue, 01 Feb 2022 12:25:07 -0800 (PST)
+        bh=ExdrZIgp39XVpTkA829D6pTDC2kNpI9DYEfWRWuVVbU=;
+        b=US7D3np/sjN7X3UUlrWjuqeHstvg5EAVfcax7Y/DqAR6TG+ZztxpL0NC2DIIsPHBu/
+         mcAoenlW4dubGKpTPaMl+oa/EDBM1sx/B4EJpVgRFvN2hO6R5+DyV37YjQbpM7rHA5ER
+         gkzkY+OhqmVAh3HfQ9oytwGbqDDeFdw+a9DlONaJVtdFB17jstAXDrCNSATR/3YOGDBg
+         kOAvB2cpCuoNFXBcqehRLAteEq9PLcaCA0pEcJTMxrka4mN2etE/1+OTuSlhYo8SSvxx
+         C+Vng5U7gcoDW/S1BnZpgZ1kkDWJF51nir21423byUYIheG8SNVW3GJWzC9B/koJxXLq
+         qnXg==
+X-Gm-Message-State: AOAM532lrep4A1jmguI+7BVuqi5trdVEHIHTLsn3uHsU/7ozmD0wkDXY
+        d3G6TH+ZQtOFb9LT/XAcT/8i8yg5h6lnfmkW4ac=
+X-Google-Smtp-Source: ABdhPJy0q73D2jETQlZoAmIweTsGb4uPIiFseF1cAdCI2gLgedABAXPmVvU8fXTFwpCRy5HnbjEWYEaeEDiJ1HOoBhU=
+X-Received: by 2002:aa7:888e:: with SMTP id z14mr26785456pfe.46.1643747152532;
+ Tue, 01 Feb 2022 12:25:52 -0800 (PST)
 MIME-Version: 1.0
-References: <20220201174256.1690515-1-trix@redhat.com>
-In-Reply-To: <20220201174256.1690515-1-trix@redhat.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Tue, 1 Feb 2022 12:24:56 -0800
-Message-ID: <CABBYNZJx0Yye2f7ZE7d0WeZ6QQTQGUDHhqeobWZHE3PZGmG72A@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: hci_sync: fix undefined return of hci_disconnect_all_sync()
-To:     trix@redhat.com
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, nathan@kernel.org,
-        ndesaulniers@google.com,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
+References: <20220130030352.2710479-1-hefengqing@huawei.com>
+ <CAADnVQLsom4MQq2oonzfCqrHbhfg9y7YMPCk6Wg6r4bp3Su03g@mail.gmail.com> <87zgndqukg.fsf@cloudflare.com>
+In-Reply-To: <87zgndqukg.fsf@cloudflare.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 1 Feb 2022 12:25:41 -0800
+Message-ID: <CAADnVQKAeP3RB_F-isOdRJNaKns5RBEfs1aYw=_fCtBro64Amw@mail.gmail.com>
+Subject: Re: [bpf-next] bpf: Add CAP_NET_ADMIN for sk_lookup program type
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     He Fengqing <hefengqing@huawei.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tom,
+On Sun, Jan 30, 2022 at 4:25 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> On Sun, Jan 30, 2022 at 04:24 AM CET, Alexei Starovoitov wrote:
+> > On Sat, Jan 29, 2022 at 6:16 PM He Fengqing <hefengqing@huawei.com> wrote:
+> >>
+> >> SK_LOOKUP program type was introduced in commit e9ddbb7707ff
+> >> ("bpf: Introduce SK_LOOKUP program type with a dedicated attach point"),
+> >> but the commit did not add SK_LOOKUP program type in net admin prog type.
+> >> I think SK_LOOKUP program type should need CAP_NET_ADMIN, so add SK_LOOKUP
+> >> program type in net_admin_prog_type.
+> >
+> > I'm afraid it's too late to change.
+> >
+> > Jakub, Marek, wdyt?
+>
+> That's definitely an oversight on my side, considering that CAP_BPF came
+> in 5.8, and sk_lookup program first appeared in 5.9.
+>
+> Today it's possible to build a usable sk_lookup program without
+> CAP_NET_ADMIN if you go for REUSEPORT_SOCKARRAY map instead of
+> SOCKMAP/HASH.
+>
+> Best I can come up is a "phase it out" approach. Put the CAP_NET_ADMIN
+> load-time check behind a config option, defaulting to true?, and wait
+> for it to become obsolete.
 
-On Tue, Feb 1, 2022 at 9:43 AM <trix@redhat.com> wrote:
->
-> From: Tom Rix <trix@redhat.com>
->
-> clang static analysis reports this problem
-> hci_sync.c:4428:2: warning: Undefined or garbage value
->   returned to caller
->         return err;
->         ^~~~~~~~~~
->
-> If there are no connections this function is a noop but
-> err is never set and a false error could be reported.
-> Return 0 as other hci_* functions do.
->
-> Fixes: 182ee45da083 ("Bluetooth: hci_sync: Rework hci_suspend_notifier")
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  net/bluetooth/hci_sync.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-> index 6e71aa6b6feae..9327737da6003 100644
-> --- a/net/bluetooth/hci_sync.c
-> +++ b/net/bluetooth/hci_sync.c
-> @@ -4425,7 +4425,7 @@ static int hci_disconnect_all_sync(struct hci_dev *hdev, u8 reason)
->                         return err;
->         }
->
-> -       return err;
-> +       return 0;
->  }
->
->  /* This function perform power off HCI command sequence as follows:
-> --
-> 2.26.3
-
-Applied, thanks.
-
--- 
-Luiz Augusto von Dentz
+I would keep it as-is then. The trouble doesn't feel worth it.
