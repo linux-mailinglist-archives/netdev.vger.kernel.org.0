@@ -2,127 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC1AA4A64A0
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 20:08:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFEB54A64A5
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 20:08:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242321AbiBATHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 14:07:12 -0500
-Received: from cloudserver094114.home.pl ([79.96.170.134]:45970 "EHLO
-        cloudserver094114.home.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241933AbiBATHM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 14:07:12 -0500
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 4.0.0)
- id 21f654da68e8f2ef; Tue, 1 Feb 2022 20:07:10 +0100
-Received: from kreacher.localnet (unknown [213.134.162.64])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S242298AbiBATIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 14:08:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241933AbiBATIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 14:08:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07D2C061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 11:08:42 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id 7735366B3BC;
-        Tue,  1 Feb 2022 20:07:09 +0100 (CET)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Sunil Goutham <sgoutham@marvell.com>,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>
-Subject: [PATCH] drivers: net: Replace acpi_bus_get_device()
-Date:   Tue, 01 Feb 2022 20:07:08 +0100
-Message-ID: <3151721.aeNJFYEL58@kreacher>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FA00B82F4F
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 19:08:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB373C340EB;
+        Tue,  1 Feb 2022 19:08:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643742520;
+        bh=smVpuvsONHH3zfWXkFPGZ3q/UWmE2+7+snavaAr1zaI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=faRw/wC7XeXlEiBGJQh9xmfBVWl4zIXbfz7hRIeOxSnsZ70TN0BJb3AJdRXSzBS3F
+         mocuE/AYA8Bk7EqgNAlG+b5NqPKcfARZi8tD5moeapVqjlFAbfxTlTC1PfPh8fptV/
+         MdUV6CYEcATYNDi5IylbL0s34DJTL/VHXo7YT9XK7nQI3B4zKhWJ2OBrT0t4xY7X+x
+         jH93rkYP8NQZBYvP3ezZSVfgJCnzUnt5nISpnyQaCSoLqLIZe/pRGxbONIFbnIOzbF
+         AzS3zBWJnPChWqnM5vQ/A1tALLqVwutW+yGHpZle1GR97cWbJEzzX6H04cQomQtYn8
+         OZletVNe8q6AA==
+Date:   Tue, 1 Feb 2022 11:08:38 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Alexey Sheplyakov <asheplyakov@basealt.ru>,
+        <netdev@vger.kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Evgeny Sinelnikov <sin@basealt.ru>,
+        Serge Semin <fancer.lancer@gmail.com>
+Subject: Re: [PATCH 1/2] net: stmmac: added Baikal-T1/M SoCs glue layer
+Message-ID: <20220201110838.7d626862@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220201155439.hv42mqed2n7wekuo@mobilestation>
+References: <20220126084456.1122873-1-asheplyakov@basealt.ru>
+        <20220128150642.qidckst5mzkpuyr3@mobilestation>
+        <YfQ8De5OMLDLKF6g@asheplyakov-rocket>
+        <20220128122718.686912e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20220201155439.hv42mqed2n7wekuo@mobilestation>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.162.64
-X-CLIENT-HOSTNAME: 213.134.162.64
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrgeefgdduvddtucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpefhgedtffejheekgeeljeevvedtuefgffeiieejuddutdekgfejvdehueejjeetvdenucfkphepvddufedrudefgedrudeivddrieegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudeivddrieegpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeduuddprhgtphhtthhopehsghhouhhthhgrmhesmhgrrhhvvghllhdrtghomhdprhgtphhtthhopehihigrphhprghnsehoshdrrghmphgvrhgvtghomhhpuhhtihhnghdrtghomhdprhgtphhtthhopegrnhgurhgvfieslhhunhhnrdgthhdprhgtphhtthhopegurghvvghmsegurghvvghmlhhofhhtrdhnvghtpdhrtghpthhtohepkhhusggrsehkvghrnhgvlhdrohhrghdp
- rhgtphhtthhopehkvgihuhhrsehoshdrrghmphgvrhgvtghomhhpuhhtihhnghdrtghomhdprhgtphhtthhopehquhgrnhesohhsrdgrmhhpvghrvggtohhmphhuthhinhhgrdgtohhmpdhrtghpthhtohephhhkrghllhifvghithdusehgmhgrihhlrdgtohhmpdhrtghpthhtohepnhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhg
-X-DCC--Metrics: v370.home.net.pl 1024; Body=11 Fuz1=11 Fuz2=11
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+On Tue, 1 Feb 2022 18:54:39 +0300 Serge Semin wrote:
+> On Fri, Jan 28, 2022 at 12:27:18PM -0800, Jakub Kicinski wrote:
+> > On Fri, 28 Jan 2022 22:55:09 +0400 Alexey Sheplyakov wrote:  
+> > > In general quite a number of Linux drivers (GPUs, WiFi chips, foreign
+> > > filesystems, you name it) provide a limited support for the corresponding
+> > > hardware (filesystem, protocol, etc) and don't cover all peculiarities.
+> > > Yet having such a limited support in the mainline kernel is much more
+> > > useful than no support at all (or having to use out-of-tree drivers,
+> > > obosolete vendor kernels, binary blobs, etc).
+> > > 
+> > > Therefore "does not cover all peculiarities" does not sound like a valid
+> > > reason for rejecting this driver. That said it's definitely up to stmmac
+> > > maintainers to decide if the code meets the quality standards, does not
+> > > cause excessive maintanence burden, etc.  
+> > 
+> > Sounds sensible, Serge please take a look at the v2 and let us know if
+> > there are any bugs in there. Or any differences in DT bindings or user
+> > visible behaviors with what you're planning to do. If the driver is
+> > functional and useful it can evolve and gain support for features and
+> > platforms over time.  
+> 
+> I've already posted my comments in this thread regarding the main
+> problematic issues of the driver, but Alexey for some reason ignored
+> them (dropped from his reply). Do you want me to copy my comments to
+> v2 and to proceed with review there?
 
-Replace acpi_bus_get_device() that is going to be dropped with
-acpi_fetch_acpi_dev().
+Right, on a closer look there are indeed comments you raised that were
+not addressed and not constrained to future compatibility. 
 
-No intentional functional impact.
+Alexey, please take another look at those and provide a changelog in
+your next posting so we can easily check what was addressed.
 
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
- drivers/net/ethernet/cavium/thunder/thunder_bgx.c |    4 ++--
- drivers/net/fjes/fjes_main.c                      |   10 +++-------
- drivers/net/mdio/mdio-xgene.c                     |    8 +++-----
- 3 files changed, 8 insertions(+), 14 deletions(-)
+> Regarding the DT-bindings and the user-visible behavior. Right, I'll
+> add my comments in this matter. Thanks for suggesting. This was one of
+> the problems why I was against the driver integrating into the kernel.
+> One of our patchset brings a better organization to the current
+> DT-bindings of the Synopsys DW *MAC devices. In particular it splits
+> up the generic bindings for the vendor-specific MACs to use and the
+> bindings for the pure DW MAC compatible devices. In addition the
+> patchset will add the generic Tx/Rx clocks DT-bindings and the
+> DT-bindings for the AXI/MTL nodes. All of that and the rest of our
+> work will be posted a bit later as a set of the incremental patchsets
+> with small changes, one by one, for an easier review. We just need
+> some more time to finish the left of the work. The reason why the
+> already developed patches hasn't been delivered yet is that the rest
+> of the work may cause adding changes into the previous patches. In
+> order to decrease a number of the patches to review and present a
+> complete work for the community, we decided to post the patchsets
+> after the work is fully done.
 
-Index: linux-pm/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-===================================================================
---- linux-pm.orig/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-+++ linux-pm/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-@@ -1407,9 +1407,9 @@ static acpi_status bgx_acpi_register_phy
- {
- 	struct bgx *bgx = context;
- 	struct device *dev = &bgx->pdev->dev;
--	struct acpi_device *adev;
-+	struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
- 
--	if (acpi_bus_get_device(handle, &adev))
-+	if (!adev)
- 		goto out;
- 
- 	acpi_get_mac_address(dev, adev, bgx->lmac[bgx->acpi_lmac_idx].mac);
-Index: linux-pm/drivers/net/fjes/fjes_main.c
-===================================================================
---- linux-pm.orig/drivers/net/fjes/fjes_main.c
-+++ linux-pm/drivers/net/fjes/fjes_main.c
-@@ -1512,15 +1512,11 @@ static acpi_status
- acpi_find_extended_socket_device(acpi_handle obj_handle, u32 level,
- 				 void *context, void **return_value)
- {
--	struct acpi_device *device;
-+	struct acpi_device *device = acpi_fetch_acpi_dev(obj_handle);
- 	bool *found = context;
--	int result;
- 
--	result = acpi_bus_get_device(obj_handle, &device);
--	if (result)
--		return AE_OK;
--
--	if (strcmp(acpi_device_hid(device), ACPI_MOTHERBOARD_RESOURCE_HID))
-+	if (!device ||
-+	    strcmp(acpi_device_hid(device), ACPI_MOTHERBOARD_RESOURCE_HID))
- 		return AE_OK;
- 
- 	if (!is_extended_socket_device(device))
-Index: linux-pm/drivers/net/mdio/mdio-xgene.c
-===================================================================
---- linux-pm.orig/drivers/net/mdio/mdio-xgene.c
-+++ linux-pm/drivers/net/mdio/mdio-xgene.c
-@@ -280,15 +280,13 @@ static acpi_status acpi_register_phy(acp
- 				     void *context, void **ret)
- {
- 	struct mii_bus *mdio = context;
--	struct acpi_device *adev;
-+	struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
- 	struct phy_device *phy_dev;
- 	const union acpi_object *obj;
- 	u32 phy_addr;
- 
--	if (acpi_bus_get_device(handle, &adev))
--		return AE_OK;
--
--	if (acpi_dev_get_property(adev, "phy-channel", ACPI_TYPE_INTEGER, &obj))
-+	if (!adev ||
-+	    acpi_dev_get_property(adev, "phy-channel", ACPI_TYPE_INTEGER, &obj))
- 		return AE_OK;
- 	phy_addr = obj->integer.value;
- 
-
-
-
+TBH starting to post stuff is probably best choice you can make,
+for example the DT rework you mention sounds like a refactoring 
+you can perform without posting any Baikal support.
