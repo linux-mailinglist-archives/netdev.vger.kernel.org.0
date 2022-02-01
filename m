@@ -2,107 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFAC94A64AD
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 20:10:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0E3D4A64B4
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 20:12:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238635AbiBATKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 14:10:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34950 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230158AbiBATKt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 14:10:49 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0818C061714
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 11:10:48 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id j10so16230534pgc.6
-        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 11:10:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=7t7ALTdh7Ppeybwpj8PcPIYayRUvHKINDo+m4qdsdMs=;
-        b=l8cPoYUUEDNtTgVpqsfREwtzQs6f1td0KnwnvZ/VzXJY4utnsBHUzVKxso4DQt5/LX
-         fch4RUKPJ+cl2qRWSkRjlRkpxxVvQGU2y209dLayRGY5pMtK3nt8JTI00cxcoK8iB/tP
-         R4rPy9EZuX8Oc2OJJgyTe1uzIWT8FcqV9ucPcN6i3gZBtODoUyIefbecDHfIZD8gQr38
-         J2Z512zgG3QTJrhvsSyscEXWfuo/93nu3i9yzvhGmUmaxJ4n1153+wWSfZJSqItQvoJc
-         Ud5XcJfqghM17U/Q11mDX501xyzj7s3zGhXv4j1BwQUV5ecqXcIHl8K5RZDqCgpilGa/
-         9SPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=7t7ALTdh7Ppeybwpj8PcPIYayRUvHKINDo+m4qdsdMs=;
-        b=W6rAwpnSMQLZ0/wdgikYIudgXarW7ohNhdeBLisGlM3T3wbuxzKqbUb64vw47/xCRm
-         GlyGBD/NlSu38h4Mwpk92xqHr/uVbmoab7NSvRYH82FwUocOxIkHVhlTxH+lQhH13t8P
-         NvJQX906SlhadmT/TuzGGcYSHkJ6b7T1XOw2evfQ11aCO9GjWBZSCDlF5oWprE7GmJsC
-         V4xXZ8DIgeRwxYMSjF7VnlXtL/ZGi+7vEa3gybsCo8DJekDLkEoE+sbuSo6E+xLTbKX3
-         IvCiR/se4EVxvk8vPpxVIi8wsamqSW3xn48N60EgwlCR6cVzSXgfJH7j/qm8x8porHyK
-         p1VQ==
-X-Gm-Message-State: AOAM530cGhnFQDyssOZ3yYJdi22RPKY/L1A4C+GlofzmyeNg6fqJdVPu
-        n22+a7Fa9VxkFcMkzkPLvvIiiEttcKDlpA==
-X-Google-Smtp-Source: ABdhPJwKAb7So6AaQKyJrxbqw/9VaeD0bumSO1kh9x12SFTfeqJH2y8poK2wetpHehTDM1aYi0/EpA==
-X-Received: by 2002:a63:e704:: with SMTP id b4mr21748440pgi.315.1643742648527;
-        Tue, 01 Feb 2022 11:10:48 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id 6sm11449750pgx.36.2022.02.01.11.10.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 11:10:48 -0800 (PST)
-Date:   Tue, 1 Feb 2022 11:10:41 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Miroslav Lichvar <mlichvar@redhat.com>
-Cc:     netdev@vger.kernel.org, Yangbo Lu <yangbo.lu@nxp.com>
-Subject: Re: [PATCH net-next 5/5] ptp: start virtual clocks at current system
- time.
-Message-ID: <20220201191041.GB7009@hoboy.vegasvil.org>
-References: <20220127114536.1121765-1-mlichvar@redhat.com>
- <20220127114536.1121765-6-mlichvar@redhat.com>
- <20220127220116.GB26514@hoboy.vegasvil.org>
- <Yfe4FPHbFjc6FoTa@localhost>
- <20220131163240.GA22495@hoboy.vegasvil.org>
- <YfjyX893NV2Hga35@localhost>
+        id S242150AbiBATMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 14:12:33 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57458 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239989AbiBATMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 14:12:33 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3AC061628
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 19:12:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD35BC340EB;
+        Tue,  1 Feb 2022 19:12:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643742752;
+        bh=pUWFJ0BWJcaCBjuF2MPEedAC1RRfF9STO3jpqTWpsRE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=l9BTnSnJR0Zkh8i66xwOlsTWco7QQX4+W9a/9ND10Nsy2Vs8FqosYSah5Ct8khSwt
+         VPF9KQdJNBCSFKIQ05U87bJ0itL/B7NYfoDWtNapZvsiJkM+bSCdnmtEjvpudmylvt
+         72IMKdOxqTJutCYUpSBQl70pMRPYlfzHO/nDF0t9Z7CnrozEVB98qrchzS/Ig0sauQ
+         3RD7Z6g4oEPfafY+CpVh0XpYW9w3YGj8wxrN++ORUt94kAX2Je4M/YpRuzd1SrM9j1
+         3Bkl+vdrWKSqiGtEOalRY6s/Lm5p8TWYv9R8NPvq3iRV1xj6cwuJiFnCZcuaH8WujY
+         J5oZt1VOtTEOA==
+Date:   Tue, 1 Feb 2022 11:12:30 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yannick Vignon <yannick.vignon@oss.nxp.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, mingkai.hu@nxp.com,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        sebastien.laveze@nxp.com, Yannick Vignon <yannick.vignon@nxp.com>
+Subject: Re: [PATCH net-next] net: stmmac: optimize locking around PTP clock
+ reads
+Message-ID: <20220201111230.7141ee8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <8da4d928-d7a1-9239-4c11-957b108b0184@oss.nxp.com>
+References: <20220128170257.42094-1-yannick.vignon@oss.nxp.com>
+        <20220131214200.168f3c60@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <8da4d928-d7a1-9239-4c11-957b108b0184@oss.nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfjyX893NV2Hga35@localhost>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 09:42:07AM +0100, Miroslav Lichvar wrote:
-> On Mon, Jan 31, 2022 at 08:32:40AM -0800, Richard Cochran wrote:
-> > On Mon, Jan 31, 2022 at 11:21:08AM +0100, Miroslav Lichvar wrote:
-> > > To me, it seems very strange to start the PHC at 0. It makes the
-> > > initial clock correction unnecessarily larger by ~7 orders of
-> > > magnitude. The system clock is initialized from the RTC, which can
-> > > have an error comparable to the TAI-UTC offset, especially if the
-> > > machine was turned off for a longer period of time, so why not
-> > > initialize the PHC from the system time? The error is much smaller
-> > > than billions of seconds.
+On Tue, 1 Feb 2022 18:54:15 +0100 Yannick Vignon wrote:
+> On 2/1/2022 6:42 AM, Jakub Kicinski wrote:
+> > On Fri, 28 Jan 2022 18:02:57 +0100 Yannick Vignon wrote:  
+> >> Reading the PTP clock is a simple operation requiring only 2 register
+> >> reads. Under a PREEMPT_RT kernel, protecting those reads by a spin_lock is
+> >> counter-productive:
+> >>   * if the task is preempted in-between the 2 reads, the return time value
+> >> could become inconsistent,
+> >>   * if the 2nd task preempting the 1st has a higher prio but needs to
+> >> read time as well, it will require 2 context switches, which will pretty
+> >> much always be more costly than just disabling preemption for the duration
+> >> of the 2 reads.
+> >>
+> >> Improve the above situation by:
+> >> * replacing the PTP spinlock by a rwlock, and using read_lock for PTP
+> >> clock reads so simultaneous reads do not block each other,  
 > > 
-> > When the clock reads Jan 1, 1970, then that is clearly wrong, and so a
-> > user might suspect that it is uninititalized.
+> > Are you sure the reads don't latch the other register? Otherwise this
+> > code is buggy, it should check for wrap around. (e.g. during 1.99 ->
+> > 2.00 transition driver can read .99, then 2, resulting in 2.99).
 > 
-> FWIW, my first thought when I saw the huge offset in ptp4l was that
-> something is horribly broken. 
+> Well, we did observe the issue on another device (micro-controller, not 
+> running Linux) using the same IP, and we were wondering how the Linux 
+> driver could work and why we didn't observe the issue... I experimented 
+> again today, and I did observe the problem, so I guess we didn't try 
+> hard enough before. (this time I bypassed the kernel by doing tight read 
+> loops from user-space after mmap'ing the registers).
+> Going to add another commit to this patch-queue to fix that.
 
-Yes, that is my point!  Although you may have jumped to conclusions
-about the root cause, still the zero value got your attention.
-
-It is just too easy for people to see the correct date and time (down
-to the minute) and assume all is okay.
- 
-> I'd prefer smaller initial error and consistency. The vast majority of
-> existing drivers seem to initialize the clock at current system time.
-> Drivers starting at 0 now create confusion. If this is the right way,
-> shouldn't be all existing drivers patched to follow that?
-
-I agree that consistency is good, and I would love to get rid of all
-that ktime_get usage, but maybe people will argue against it for their
-beloved driver.
-
-Going forward, I'm asking that new drivers start from zero for an
-"uninitialized" clock.
-
-Thanks,
-Richard
+That's a fix tho, it needs to be a separate change containing a Fixes
+tag and targeted at the netdev/net tree. We'd first apply that, and
+then the optimizations on top of it into the net-next tree.
