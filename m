@@ -2,84 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 408124A55A1
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 04:30:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83E2E4A55B0
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 04:50:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233081AbiBADaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 22:30:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46632 "EHLO
+        id S233130AbiBADuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 22:50:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232970AbiBADap (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 22:30:45 -0500
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E6DFC061714
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 19:30:45 -0800 (PST)
-Received: by mail-io1-xd35.google.com with SMTP id c188so19568748iof.6
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 19:30:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ghrORYb0cplBa3jCtIM6MutvzcQJp3YrsjucCfWqaN0=;
-        b=LXuHTNioCiMVU11Vmwobl0dIytDV1jXburULKeTuSLzIxllQK+VmYkAskdH1jsqoqX
-         2djXf3e/af077uylcw360tCu1v/+49oGqdnfvV59zGnsKLyiHxZtBvIguRlSRNKNIeTi
-         DQ+yW+n45r5QVXYicAUjBeXkD4Pe/ABOQKyX97CLNGBA+BSuYocEyv/yMFwEsxO9DOuU
-         Z26j1NLfDYK/tYOLxqyA7ZCQY8fIomzidSOs0r4bmdhZrh0p1Bgo0Zt95CSZGYaft6LJ
-         ZhXjOBxKYSdSl3PjumpimjiZnVnpnyQW2V59Q7nF8Yh9gcliEpKCLCVS/hvA7MmihyUc
-         hQ9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ghrORYb0cplBa3jCtIM6MutvzcQJp3YrsjucCfWqaN0=;
-        b=N3NLNSNcD7EDXxZ3ryncQBfMsOQL/dIUD70G7bN0VMzWt1ff2W1itYJCZArzBebuaO
-         Lwk5yb3feNO7wEK2jn12yp+s2Dk/vEFA41Y3UVJEGX3D0sfNz1JunPSBt0k3ThUc5jE9
-         a1FRugaeQQrZJEUsR4TO04k2kC4Ua1+GXY1UJbWUnlnDxVinKTqmt0ezSBDOMgnKU/JF
-         LdKFGSr/SjOFXQUVfT7F475DEzLeVMFwOYCtgC5uxDE/n7RzaURnuncDY8VU6sy4I49A
-         d5TnjY7Rd9MwD0fESQcGC8/R7ktIxBzYXJ7RkuAqOPBb2f5I3+exiBnw8OAnIzyiKjdD
-         NUdg==
-X-Gm-Message-State: AOAM5314RmU54Y+XHpuwudzl/krPPu1Ev/mgXMhDJZ2903xtXc96f5qk
-        ZouJON0gZTx4taOnhF5ld3aiP6MhCNo=
-X-Google-Smtp-Source: ABdhPJxKcSGGEz3z3HpVXG39usScfqfh0E3qC9jNpd8RFYh7iHg4ui73gLGnPVzDEZefu0zyizs/WQ==
-X-Received: by 2002:a02:70c3:: with SMTP id f186mr12840306jac.155.1643686244904;
-        Mon, 31 Jan 2022 19:30:44 -0800 (PST)
-Received: from ?IPV6:2601:282:800:dc80:8870:ce19:2c7:3513? ([2601:282:800:dc80:8870:ce19:2c7:3513])
-        by smtp.googlemail.com with ESMTPSA id n9sm20451756ilk.27.2022.01.31.19.30.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 19:30:44 -0800 (PST)
-Message-ID: <c259be90-9aca-bf98-4553-7080c6ef1940@gmail.com>
-Date:   Mon, 31 Jan 2022 20:30:42 -0700
+        with ESMTP id S231984AbiBADuN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 22:50:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D59BC061714
+        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 19:50:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C69A9B82CA3
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 03:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 95D77C340EE;
+        Tue,  1 Feb 2022 03:50:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643687410;
+        bh=cx8esFmTJ370Cy1ElviyUgoTQT+FF8ZQEf8fNv7SdJM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Qm8G810Cxvmny8PYqGnBz08lpDjvdb9PokvPKqIl+3cqUPOcFqwHvM3OY2/PgTkPh
+         SVOSoCBn8g9j6sINL4j5B42B6D01tcgs4LcfyUmdMPVcF3ewr6MB/5B+1d09RkV1mh
+         /LoqDDC0RXkmfiAPUokb7cjp8AM1CK1DfevCWLHeyrXPKA7LoiQZ5CsXkzldIOg4tV
+         9zc0gid/57Xs6vZckMJz2k3o/pg9QvFSbD9No1mOrk1hQgloboc6h9PSMeIFEK1HdW
+         4rW2RhKJ+8hXdFsig6KB4JwFI0JwT0tUTQ80NJHOqpd0JFA1ksYWgrc1IiEE0arU9o
+         POYqDelweVIxQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7EAE1E5D08C;
+        Tue,  1 Feb 2022 03:50:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH net-next] net: allow SO_MARK with CAP_NET_RAW via cmsg
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, maze@google.com
-References: <20220131233357.52964-1-kuba@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220131233357.52964-1-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH iproute2-next v2] tc: add skip_hw and skip_sw to control
+ action offload
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164368741051.29164.7274079279797936323.git-patchwork-notify@kernel.org>
+Date:   Tue, 01 Feb 2022 03:50:10 +0000
+References: <1643180079-17097-1-git-send-email-baowen.zheng@corigine.com>
+In-Reply-To: <1643180079-17097-1-git-send-email-baowen.zheng@corigine.com>
+To:     Baowen Zheng <baowen.zheng@corigine.com>
+Cc:     dsahern@gmail.com, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, jhs@mojatatu.com, victor@mojatatu.com,
+        simon.horman@corigine.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/31/22 4:33 PM, Jakub Kicinski wrote:
-> There's not reason SO_MARK would be allowed via setsockopt()
-> and not via cmsg, let's keep the two consistent. See
-> commit 079925cce1d0 ("net: allow SO_MARK with CAP_NET_RAW")
-> for justification why NET_RAW -> SO_MARK is safe.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> --
-> CC: maze@google.com
-> ---
->  net/core/sock.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
+Hello:
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+This patch was applied to iproute2/iproute2-next.git (main)
+by David Ahern <dsahern@kernel.org>:
+
+On Wed, 26 Jan 2022 14:54:39 +0800 you wrote:
+> Add skip_hw and skip_sw flags for user to control whether
+> offload action to hardware.
+> 
+> Also we add hw_count to show how many hardwares accept to offload
+> the action.
+> 
+> Change man page to describe the usage of skip_sw and skip_hw flag.
+> 
+> [...]
+
+Here is the summary with links:
+  - [iproute2-next,v2] tc: add skip_hw and skip_sw to control action offload
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=f4cd4f127047
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
