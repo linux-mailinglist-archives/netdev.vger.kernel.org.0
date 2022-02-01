@@ -2,141 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A00104A5536
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 03:24:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90DE44A5539
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 03:25:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231862AbiBACYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 21:24:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60278 "EHLO
+        id S232296AbiBACZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 21:25:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbiBACYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 21:24:02 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C87C061714
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 18:24:02 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id o11so15754669pjf.0
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 18:24:02 -0800 (PST)
+        with ESMTP id S229816AbiBACZU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 21:25:20 -0500
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BD5C061714;
+        Mon, 31 Jan 2022 18:25:20 -0800 (PST)
+Received: by mail-lj1-x231.google.com with SMTP id z20so22039331ljo.6;
+        Mon, 31 Jan 2022 18:25:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PqdkSLIPHKG09rij8095Neto1Dybiy5A9lBeuZ993bo=;
-        b=VrBSLvE1hSsWMvlIa8i7Mp0VTizmgVtcXabNODqPDnaTPx8mudYYQrqvPNDxUv+XiD
-         a8A7NHtlx0BPLz3phDVwTMgXolOezYZjnrpNfCaW/wfWM1HcM6NyBhQXr0mTtmP9JaeH
-         W7D1PdvZxfS2xB/IA3rs3DLi6P0Z921Vxl6YXmz4RnWHkLY8kd2NJeCzTLsEzIIhyPQ6
-         KiXvJV3xjzUfJBU53kEbtDcNEJKi6ooiM/2orrUjH2nw6f14znNXcfeF74nc5ia9Gt5l
-         Y1xXEIBfQ2o55/V0lwg268G94H0Eqiahx9gIOOjEjlw4CugjpEBox4JUU3/2zx/htG22
-         YAHg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3NFcpSNbn5N8Qa2Q7ec108f+HMS/1rOzdxpFaqBQx3Y=;
+        b=Zf7933wUxyldB+3Qj26LgRwrkn3jZN981YT1o/kND9/6oRNwee7M12QtzvDRG19HkP
+         WGehHovTmgHSYvn1+vx/TwmF3aymj5Yu/3dEeok5PDSCz9cym7t0MV9oSKPKoAfcVKPU
+         l51C0HGBTgkFA2I1VOcGjvz/Jx/YjtjHRd/0HnpfRfF/9MvSkgW8vuSGSL1c3m+L8Ew6
+         flrPnTiUVf3KT6HvvYSkm6cFT1+tQdcT8rJB08DBHsGPkUOX4NkShccufmDN6ZOjfAm4
+         uvEMlUyxDSWBJ/gQWY0L/uoQmpIi679IJw79qIIK857NxOs3r4wvnIEWsZ25IAFfiD6r
+         jL5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PqdkSLIPHKG09rij8095Neto1Dybiy5A9lBeuZ993bo=;
-        b=IZzREvqPmUT5HcUi+GqDs0fyUekAR7OL+VHRoQPcHgTCWQ3J5j2TQ8F7E8kfwc2mHf
-         OQp4lggg8nNxqaImURqhBMLcaeRArtNjjfJCiMD1k8Vi0IAU+zPgg39QUtTVPfqoEjeX
-         glYfZuRj7kBoWJp/ftVVNqwsC4bAEPHwtgcOZUn9jzhYUXRnuaEukLZCnUtF2OucS3GG
-         j2ainDkuWe2+LfLmUIMgQZrXewpyexsTOOEiQ2sqWERx/+2pvIqdOZ85TPYEp5IK8yNu
-         G6Z7h3BCQroHg1dzvBYdpUe03go5Q+ZEGv2tm5jBb6vl1UYmwYEsRMu2rxSvSqHwFwWL
-         pGMw==
-X-Gm-Message-State: AOAM531M2wsAiP3nCKn+G7x3m/FT6ExdLPirj6JR64ili1ppKtfGkjKl
-        6PkkfpkLUp1A+CMLFnGuYgY=
-X-Google-Smtp-Source: ABdhPJxD1ajD3/e+1W7C4PinraCK5ijZmQDPpm5a9e6V4vev/Occ2jUYTwFLuohYKErn9/ZyP+QChg==
-X-Received: by 2002:a17:903:28c:: with SMTP id j12mr23491294plr.6.1643682241790;
-        Mon, 31 Jan 2022 18:24:01 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4c2d:864b:dd30:3c5e])
-        by smtp.gmail.com with ESMTPSA id pi9sm617626pjb.46.2022.01.31.18.24.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 18:24:01 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] af_packet: fix data-race in packet_setsockopt / packet_setsockopt
-Date:   Mon, 31 Jan 2022 18:23:58 -0800
-Message-Id: <20220201022358.330621-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3NFcpSNbn5N8Qa2Q7ec108f+HMS/1rOzdxpFaqBQx3Y=;
+        b=8QWSt6nmWUw7ieQA8WyE6wvGqbskzmF1akD87Ecoxktq/f46iTYAm0MpTdM3PwFLeN
+         QMfD/2ZCpKK1zS6ch/onmcBPxmfQrapLU+5j9edVGr442qEb27CS/B0iguPZeieXO3X9
+         HP4lGW0TZkY64noMrf/CaQ/C6iDpUWvLmD8DmZW/eSWqhYo17C1FKRiTtfvBY+BPeOB6
+         O2Q1HXVlR5Ix8cYrh5rkLWIwPe3rsSQHSGfXe5UFa/QBaUT1TsjtBRbKyAWI/mPXBiQg
+         8kqe10u6wJF17i8teJ87gtCzWyPXmxwQhaj96DqxmWjNACGEotQOpCgqbWJcTm/x3LK/
+         R1wQ==
+X-Gm-Message-State: AOAM530VNsb7n8mg40zWezzcMOSeRHZXgWvLyKek5LUir8ziKzpswTrv
+        PPhaR7/QAma7V8QrIsQM6KPGaNK+a2MejKYt5Og=
+X-Google-Smtp-Source: ABdhPJyU2s2NAFGnCYn+is4A64/LbHpz8swj5c9UlhKMBGs6BaQqdbFMID0H3hoo6ZTnlbOhy7ypqY/ZpKcvuLQc3Zw=
+X-Received: by 2002:a2e:9b8c:: with SMTP id z12mr9531343lji.476.1643682318491;
+ Mon, 31 Jan 2022 18:25:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220131114600.21849-1-houtao1@huawei.com> <36954dbd-beab-9599-3579-105037822045@iogearbox.net>
+In-Reply-To: <36954dbd-beab-9599-3579-105037822045@iogearbox.net>
+From:   htbegin <hotforest@gmail.com>
+Date:   Tue, 1 Feb 2022 10:25:06 +0800
+Message-ID: <CANUnq3ZneUy1LZBsR59s-QwzqK0pfRrf-2DPL7nQ3rgCnANJ6A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: use VM_MAP instead of VM_ALLOC for ringbuf
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Hou Tao <houtao1@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Hi,
 
-When packet_setsockopt( PACKET_FANOUT_DATA ) reads po->fanout,
-no lock is held, meaning that another thread can change po->fanout.
+On Tue, Feb 1, 2022 at 12:28 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 1/31/22 12:46 PM, Hou Tao wrote:
+> > Now the ringbuf area in /proc/vmallocinfo is showed as vmalloc,
+> > but VM_ALLOC is only used for vmalloc(), and for the ringbuf area
+> > it is created by mapping allocated pages, so use VM_MAP instead.
+> >
+> > After the change, ringbuf info in /proc/vmallocinfo will changed from:
+> >    [start]-[end]   24576 ringbuf_map_alloc+0x171/0x290 vmalloc user
+> > to
+> >    [start]-[end]   24576 ringbuf_map_alloc+0x171/0x290 vmap user
+>
+> Could you elaborate in the commit msg if this also has some other internal
+> effect aside from the /proc/vmallocinfo listing? Thanks!
+>
+For now, the VM_MAP flag only affects the output in /proc/vmallocinfo.
 
-Given that po->fanout can only be set once during the socket lifetime
-(it is only cleared from fanout_release()), we can use
-READ_ONCE()/WRITE_ONCE() to document the race.
-
-BUG: KCSAN: data-race in packet_setsockopt / packet_setsockopt
-
-write to 0xffff88813ae8e300 of 8 bytes by task 14653 on cpu 0:
- fanout_add net/packet/af_packet.c:1791 [inline]
- packet_setsockopt+0x22fe/0x24a0 net/packet/af_packet.c:3931
- __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
- __do_sys_setsockopt net/socket.c:2191 [inline]
- __se_sys_setsockopt net/socket.c:2188 [inline]
- __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff88813ae8e300 of 8 bytes by task 14654 on cpu 1:
- packet_setsockopt+0x691/0x24a0 net/packet/af_packet.c:3935
- __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
- __do_sys_setsockopt net/socket.c:2191 [inline]
- __se_sys_setsockopt net/socket.c:2188 [inline]
- __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x0000000000000000 -> 0xffff888106f8c000
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 14654 Comm: syz-executor.3 Not tainted 5.16.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 47dceb8ecdc1 ("packet: add classic BPF fanout mode")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/packet/af_packet.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 85ea7ddb48db6a50228ae2b9a255bd161d5b12ed..ab87f22cc7ecde517ba4cd0b3804a28c3cccfc85 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -1789,7 +1789,10 @@ static int fanout_add(struct sock *sk, struct fanout_args *args)
- 		err = -ENOSPC;
- 		if (refcount_read(&match->sk_ref) < match->max_num_members) {
- 			__dev_remove_pack(&po->prot_hook);
--			po->fanout = match;
-+
-+			/* Paired with packet_setsockopt(PACKET_FANOUT_DATA) */
-+			WRITE_ONCE(po->fanout, match);
-+
- 			po->rollover = rollover;
- 			rollover = NULL;
- 			refcount_set(&match->sk_ref, refcount_read(&match->sk_ref) + 1);
-@@ -3934,7 +3937,8 @@ packet_setsockopt(struct socket *sock, int level, int optname, sockptr_t optval,
- 	}
- 	case PACKET_FANOUT_DATA:
- 	{
--		if (!po->fanout)
-+		/* Paired with the WRITE_ONCE() in fanout_add() */
-+		if (!READ_ONCE(po->fanout))
- 			return -EINVAL;
- 
- 		return fanout_set_data(po, optval, optlen);
--- 
-2.35.0.rc2.247.g8bbb082509-goog
-
+Thanks,
+Tao
+> > Signed-off-by: Hou Tao <houtao1@huawei.com>
+> > ---
+> >   kernel/bpf/ringbuf.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
+> > index 638d7fd7b375..710ba9de12ce 100644
+> > --- a/kernel/bpf/ringbuf.c
+> > +++ b/kernel/bpf/ringbuf.c
+> > @@ -104,7 +104,7 @@ static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
+> >       }
+> >
+> >       rb = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
+> > -               VM_ALLOC | VM_USERMAP, PAGE_KERNEL);
+> > +               VM_MAP | VM_USERMAP, PAGE_KERNEL);
+> >       if (rb) {
+> >               kmemleak_not_leak(pages);
+> >               rb->pages = pages;
+> >
+>
