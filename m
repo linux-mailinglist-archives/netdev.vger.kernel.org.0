@@ -2,193 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 696684A6518
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 20:40:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29D684A6531
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 20:50:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229907AbiBATkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 14:40:08 -0500
-Received: from www62.your-server.de ([213.133.104.62]:35272 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiBATkI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 14:40:08 -0500
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nEz0X-000AWp-Jy; Tue, 01 Feb 2022 20:40:05 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, roopa@nvidia.com, edumazet@google.com,
-        dsahern@kernel.org, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        syzbot+5239d0e1778a500d477a@syzkaller.appspotmail.com
-Subject: [PATCH net] net, neigh: Do not trigger immediate probes on NUD_FAILED from neigh_managed_work
-Date:   Tue,  1 Feb 2022 20:39:42 +0100
-Message-Id: <20220201193942.5055-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S232935AbiBATuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 14:50:07 -0500
+Received: from mail-co1nam11on2052.outbound.protection.outlook.com ([40.107.220.52]:21504
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231716AbiBATuH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Feb 2022 14:50:07 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gWSVtJ1BB4ak4c1JD2zXFB6Osft3n9O6IzcKpO6kAPisxDrKAqCJSKgvBSnPYzxqb7qT5BhKTkWJvgvIFmVS3ilq3WC5MWNodiLu7ZWkEzSxEcYIdL53Gj+RzvhqtQixzDVTRwWoqNp7Oc/1i4Vc++06qx9d/EChBlvYcvosrMwOP7Tlxc0QHkTyo5yUjcj/fD2TzQ++X1UspQq2nl0KC0/lOoPar4ntS0xAf5eNO6cyFhhmczWuf5bKXzugPj1cV2p0+Rx1HtquUUbc2ryp3r2423h15Abw7RsdLG8nUP6ejDXTVABL2avDjArIQw7/h9Dt0pG2sjplYhxZ7FQW5w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NJvFfqTNI8x/4yjkmH6OeF3Ek1QaF1XoylhcACSe/9k=;
+ b=lyrRvf3GASOYZOhs9HzhjafzrcQo+aDVI5ufRYP+pxakl74JN8EyBZOk2ihKQYdLJQiy73r5T3w5jN+rLwgXuCvkIEhUYwRZbaqwhCAmlWGH/+LWaIF+I0tOCMC3cseP5KRPZowIf9P01soTckCbzmru8GBf9VB145Kttr9SyNVAZEIULH+YJcdh/Eyl/kj/ydVXRyvKZqJgW8uTG4HZhYjojixuEHGyibXFksRmSyqjI00aza37eYQS2vAyKHAQaFOaYNPHawgRg/xVjjEYsYgrPkjezD9n3zdiQJOzw493TNzofkK/MtL8hjaQsoAYu9ZfesScS7I+HV2TIhumuA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NJvFfqTNI8x/4yjkmH6OeF3Ek1QaF1XoylhcACSe/9k=;
+ b=nrExDWBUufIL6di0QRYoeDfzfYFuUpOleFPlc0uSl7euxVeAt35WfMzsD4vN9eZkfUIk1Jrt4ehykEmJ4tcGFyw2P6Uo1mcdfEZc30KhEIoclhQtDSfQRtfVyRV4bfeaFz0+xQkWwu/ygxvzwpvQ6igVRZZDq5ggolMfUv345epOaTaRbLIXl8GcUPeZ3BLrO8jqgyEzog0mrdROnwyDx1yxDeWsP+IhGCAVXRDzGqGIA/G/ycXzafndJUbOCMCdK6AmPtpg8z3gT06vzcp9Ol14nKaXKCKv9B8izpIUXfe2dlREgMl98LjaATU1prA16LBmApRBSudfbUENKC8ilA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DM6PR12MB4249.namprd12.prod.outlook.com (2603:10b6:5:223::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.18; Tue, 1 Feb
+ 2022 19:50:05 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3%4]) with mapi id 15.20.4930.022; Tue, 1 Feb 2022
+ 19:50:05 +0000
+Date:   Tue, 1 Feb 2022 15:50:03 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com
+Subject: Re: [PATCH V6 mlx5-next 09/15] vfio: Extend the device migration
+ protocol with RUNNING_P2P
+Message-ID: <20220201195003.GN1786498@nvidia.com>
+References: <20220130160826.32449-1-yishaih@nvidia.com>
+ <20220130160826.32449-10-yishaih@nvidia.com>
+ <20220201113144.0c8dfaa5.alex.williamson@redhat.com>
+ <20220201185321.GM1786498@nvidia.com>
+ <20220201121322.2f3ceaf2.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220201121322.2f3ceaf2.alex.williamson@redhat.com>
+X-ClientProxiedBy: MN2PR11CA0018.namprd11.prod.outlook.com
+ (2603:10b6:208:23b::23) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26440/Tue Feb  1 10:29:16 2022)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c115454c-6d05-4f83-747f-08d9e5bc0b48
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4249:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB42494DE67FDD006DADF16C68C2269@DM6PR12MB4249.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UTTgzOFrkww65ebgTTeW3xK9IWIYBHHhSnCIyjXQRP1QGmFfatT5fRYxd6g+3FfU/xIA6641j4ToKP8GOGRmvBkoPiUleoQARTCg1bzlHwtIC6pccGJUBlQcpqdLCnbfiX4G4tdVUFgsUTPzAlgXU0qGdfmTLb5oaYznROHWsO8OLEHnaFskluQre0b8Lg0I6A2cP/wqaWXhdh/lm80DRRdWhW81GT4EFyfP9r9294oPkNM4Hi+/pHTI/LEbaXa0MqVacLpMxE3p2vc59K1BgkRv9YbUN7lNi5RiKXPM9wmLe+B6Grr7ovbd0fveD8j5ZCIDFxf+sth7OqqKHXjQrCa5rXHh5OIUFnGdlKE7ydjOenq0CJS6j82v0kLviUkvf+9j/DMsHoQ8iBDZQ84d2RFH23j+nTq53sjjf8rF5O420Rwb6qURdCSt4UyMRoQrqBlgRw+kWQHxC3pcXXPxlPCP8npg4Ai2TpyzGij3E7jKXnjJSE5Y5sy/5+xXK6oHcluQ2wEwb5oQzczW94+r4N9t33TpbjutDthF947o+sYX3AqKIFo99nz+VGTq/vjHM/n8BFwJ13gorwDl0gPMtlmv5KBMR1CpkD8TKUnBZCrkIeVrp4exjL9o7MiBNcynJldaioYxEAgFrm3yZgb4Rw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(33656002)(66476007)(4326008)(66946007)(8676002)(508600001)(66556008)(5660300002)(8936002)(6486002)(38100700002)(36756003)(83380400001)(6512007)(6916009)(1076003)(2616005)(186003)(86362001)(26005)(107886003)(2906002)(316002)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?w5rsaQEsHXBPlciOTe7lBRUNxfKO781Ehqji0s6u8h+P1UM3jnpJZN2UHnWQ?=
+ =?us-ascii?Q?S/hyRmtmt0uUaPyIBEfrHZAalkHBnbqcfOe860n2UC+kPN+5iA7aZoXNryXZ?=
+ =?us-ascii?Q?s5pctaqxTYI4YsB4PoiHk6KG1yVUdKMHo1mCLW1+duejXeK6/twsdWASRekJ?=
+ =?us-ascii?Q?eGvbLGmUt03CIpkp8mkzz6lWtaYK9//+NCh5QjY2RSzxLX+iSt78N0LLqh52?=
+ =?us-ascii?Q?CoyUpI8dTpn76PzOJRO8hpRM5S6G3HV7tbfyhSiNwYL20T+OE+jwX123Gyvc?=
+ =?us-ascii?Q?RTXLuJOv81Lr6OIOyA679aaDmLByHlacezHzVOpFKgvQ+aXdSbHJXegdHlT6?=
+ =?us-ascii?Q?kg6rn6KS/7D0m8xTld2hY1kAWML5lE6VIh+pjK/abhNXtqTckoOpuaXsZMEt?=
+ =?us-ascii?Q?w80uIzYAUIYoS6GpGLSCcjt6aDeFY1U9uTkDvo8aUa+jVT4FwiB7DwtDBrx0?=
+ =?us-ascii?Q?GbWPltQn6oyrMW+4uj1eUd22+WaWCJtnmSsMrNhIs34St6H8I0dC8IRPSc3t?=
+ =?us-ascii?Q?foV8xSP4IZ5afPAzfVXlVjgxfem1smLsgV9kVBjr1DWZPmhupHWN4GCVQplg?=
+ =?us-ascii?Q?JU+yJ6smmi4Easf9K+JgK2/lDKNedvAYb+lSaD1LYaAHx9EDSefrcdNVEaSW?=
+ =?us-ascii?Q?ie1X1of/CQHFM0W1LVFzSGOEH2m7aLetosTrG/jz6ZO3kqDKkA7GZ8d4lFZD?=
+ =?us-ascii?Q?gNG32Iz4m2YRu46THSvSPVqDr/GU8zscNrGDXG/DDaJakgezluoZ9Nez7Qlm?=
+ =?us-ascii?Q?f/DwdR2oFojZOYgBKcmMpj9qQVzjL6nWf9iAQL8yzZgK+4S+0IjZ1YG7Qh3x?=
+ =?us-ascii?Q?t9R49Wugq6fQw1ZVPEtkivVFvfMANEtJ0dKj76SoiGgM0AG3Fh2dTPxwCslH?=
+ =?us-ascii?Q?aVbR5z0Y8po8ku7cWzR1Co6DTbVZ+OHZ8nYkYlb26w7Kk45o/hifsgO8YPtU?=
+ =?us-ascii?Q?08CyjE31HA+dvbQZ7KwZfMun9BZXCbyIYPai4y6Rqh9vVjHYOkQA/AhuA6Qj?=
+ =?us-ascii?Q?YKjAgl9v5DXnviBZYMPf95Ewf/Xj1DsVyHFzJVVkdpY2KwTOR7OkgLoDgA/t?=
+ =?us-ascii?Q?dykByT4iwuQZ8NCRGfYXpDT2F5IKRFgbRgFp8FgDexf+Fsutj4KVvJ8GETxT?=
+ =?us-ascii?Q?PbpE5PVcd9CM38QZokK8OQGPX0PaI5EuW/HKlEcZIMx+92ih166jqjhX8SdX?=
+ =?us-ascii?Q?6YWdDfQWgiafdv3GJLYHwtESQqwqD64r55YG9cQ6Mq/uXiHU+5vB3Ijrd3LR?=
+ =?us-ascii?Q?CkRw5ZlnmQd1iUSi1UesBZqKd+iF2gX2IKPiMszKkwq+k10/4JWvxcd1ZHbA?=
+ =?us-ascii?Q?EJ8dLmXd/oGTWFWKmr4GBCPFVeX/wH3Hp+sGtTjZEsh/0sHHS4hLt9yzxaBH?=
+ =?us-ascii?Q?wvb6uA9Nd62NQJ3BXYd5/VhNpYz/YWOW7XvV3kxeXdp+YRx8cO8GSNDLdjTE?=
+ =?us-ascii?Q?5RH5diiL0or4W1j90TQHfTvJcVKrv9vZGm6QmeoNyeiogHaYTSZm7g7OJ6yt?=
+ =?us-ascii?Q?yAR6mwvcWfDqSDd1FokgAUs1f/qIlNkEdbVdislaL2sdSHiexQNdku2Et/E1?=
+ =?us-ascii?Q?b0vMourGEhDi8lsb6Kw=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c115454c-6d05-4f83-747f-08d9e5bc0b48
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2022 19:50:05.7733
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ePbH5nwr5RCBbUcMXYspaYoz00nUiEjyBMzKcgT10+XJoUsv722lAfudYmjUNInx
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4249
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzkaller was able to trigger a deadlock for NTF_MANAGED entries [0]:
+On Tue, Feb 01, 2022 at 12:13:22PM -0700, Alex Williamson wrote:
+> On Tue, 1 Feb 2022 14:53:21 -0400
+> Jason Gunthorpe <jgg@nvidia.com> wrote:
+> 
+> > On Tue, Feb 01, 2022 at 11:31:44AM -0700, Alex Williamson wrote:
+> > > > +	bool have_p2p = device->migration_flags & VFIO_MIGRATION_P2P;
+> > > > +
+> > > >  	if (cur_fsm >= ARRAY_SIZE(vfio_from_fsm_table) ||
+> > > >  	    new_fsm >= ARRAY_SIZE(vfio_from_fsm_table))
+> > > >  		return VFIO_DEVICE_STATE_ERROR;
+> > > >  
+> > > > -	return vfio_from_fsm_table[cur_fsm][new_fsm];
+> > > > +	if (!have_p2p && (new_fsm == VFIO_DEVICE_STATE_RUNNING_P2P ||
+> > > > +			  cur_fsm == VFIO_DEVICE_STATE_RUNNING_P2P))
+> > > > +		return VFIO_DEVICE_STATE_ERROR;  
+> > > 
+> > > new_fsm is provided by the user, we pass set_state.device_state
+> > > directly to .migration_set_state.  We should do bounds checking and
+> > > compatibility testing on the end state in the core so that we can  
+> > 
+> > This is the core :)
+> 
+> But this is the wrong place, we need to do it earlier rather than when
+> we're already iterating next states.  I only mention core to avoid that
+> I'm suggesting a per driver responsibility.
 
-  kworker/0:16/14617 is trying to acquire lock:
-  ffffffff8d4dd370 (&tbl->lock){++-.}-{2:2}, at: ___neigh_create+0x9e1/0x2990 net/core/neighbour.c:652
-  [...]
-  but task is already holding lock:
-  ffffffff8d4dd370 (&tbl->lock){++-.}-{2:2}, at: neigh_managed_work+0x35/0x250 net/core/neighbour.c:1572
+Only the first vfio_mig_get_next_state() can return ERROR, once it
+succeeds the subsequent ones must also succeed.
 
-The neighbor entry turned to NUD_FAILED state, where __neigh_event_send()
-triggered an immediate probe as per commit cd28ca0a3dd1 ("neigh: reduce
-arp latency") via neigh_probe() given table lock was held.
+This is the earliest can be. It is done directly after taking the lock
+that allows us to read the current state to call this function to
+determine if the requested transition is acceptable.
 
-One option to fix this situation is to defer the neigh_probe() back to
-the neigh_timer_handler() similarly as pre cd28ca0a3dd1. For the case
-of NTF_MANAGED, this deferral is acceptable given this only happens on
-actual failure state and regular / expected state is NUD_VALID with the
-entry already present.
+> > Userspace can never put the device into error. As the function comment
+> > says VFIO_DEVICE_STATE_ERROR is returned to indicate the arc is not
+> > permitted. The driver is required to reflect that back as an errno
+> > like mlx5 shows:
+> > 
+> > +		next_state = vfio_mig_get_next_state(vdev, mvdev->mig_state,
+> > +						     new_state);
+> > +		if (next_state == VFIO_DEVICE_STATE_ERROR) {
+> > +			res = ERR_PTR(-EINVAL);
+> > +			break;
+> > +		}
+> > 
+> > We never get the driver into error, userspaces gets an EINVAL and no
+> > change to the device state.
+> 
+> Hmm, subtle.  I'd argue that if we do a bounds and support check of the
+> end state in vfio_ioctl_mig_set_state() before calling
+> .migration_set_state() then we could remove ERROR from
+> vfio_from_fsm_table[] altogether and simply begin
+> vfio_mig_get_next_state() with:
 
-The fix adds a parameter to __neigh_event_send() in order to communicate
-whether immediate probe is allowed or disallowed. Existing call-sites
-of neigh_event_send() default as-is to immediate probe. However, the
-neigh_managed_work() disables it via use of neigh_event_send_probe().
+Then we can't reject blocked arcs like STOP_COPY -> PRE_COPY.
 
-[0] <TASK>
-  __dump_stack lib/dump_stack.c:88 [inline]
-  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-  print_deadlock_bug kernel/locking/lockdep.c:2956 [inline]
-  check_deadlock kernel/locking/lockdep.c:2999 [inline]
-  validate_chain kernel/locking/lockdep.c:3788 [inline]
-  __lock_acquire.cold+0x149/0x3ab kernel/locking/lockdep.c:5027
-  lock_acquire kernel/locking/lockdep.c:5639 [inline]
-  lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5604
-  __raw_write_lock_bh include/linux/rwlock_api_smp.h:202 [inline]
-  _raw_write_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:334
-  ___neigh_create+0x9e1/0x2990 net/core/neighbour.c:652
-  ip6_finish_output2+0x1070/0x14f0 net/ipv6/ip6_output.c:123
-  __ip6_finish_output net/ipv6/ip6_output.c:191 [inline]
-  __ip6_finish_output+0x61e/0xe90 net/ipv6/ip6_output.c:170
-  ip6_finish_output+0x32/0x200 net/ipv6/ip6_output.c:201
-  NF_HOOK_COND include/linux/netfilter.h:296 [inline]
-  ip6_output+0x1e4/0x530 net/ipv6/ip6_output.c:224
-  dst_output include/net/dst.h:451 [inline]
-  NF_HOOK include/linux/netfilter.h:307 [inline]
-  ndisc_send_skb+0xa99/0x17f0 net/ipv6/ndisc.c:508
-  ndisc_send_ns+0x3a9/0x840 net/ipv6/ndisc.c:650
-  ndisc_solicit+0x2cd/0x4f0 net/ipv6/ndisc.c:742
-  neigh_probe+0xc2/0x110 net/core/neighbour.c:1040
-  __neigh_event_send+0x37d/0x1570 net/core/neighbour.c:1201
-  neigh_event_send include/net/neighbour.h:470 [inline]
-  neigh_managed_work+0x162/0x250 net/core/neighbour.c:1574
-  process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
-  worker_thread+0x657/0x1110 kernel/workqueue.c:2454
-  kthread+0x2e9/0x3a0 kernel/kthread.c:377
-  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-  </TASK>
+It is setup this way to allow the core code to assert all policy, not
+just a simple validation of the next_fsm.
 
-Fixes: 7482e3841d52 ("net, neigh: Add NTF_MANAGED flag for managed neighbor entries")
-Reported-by: syzbot+5239d0e1778a500d477a@syzkaller.appspotmail.com
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Roopa Prabhu <roopa@nvidia.com>
----
- include/net/neighbour.h | 18 +++++++++++++-----
- net/core/neighbour.c    | 18 ++++++++++++------
- 2 files changed, 25 insertions(+), 11 deletions(-)
+> Then we only get to ERROR by the driver placing us in ERROR and things
+> feel a bit more sane to me.
 
-diff --git a/include/net/neighbour.h b/include/net/neighbour.h
-index 937389e04c8e..87419f7f5421 100644
---- a/include/net/neighbour.h
-+++ b/include/net/neighbour.h
-@@ -350,7 +350,8 @@ static inline struct neighbour *neigh_create(struct neigh_table *tbl,
- 	return __neigh_create(tbl, pkey, dev, true);
- }
- void neigh_destroy(struct neighbour *neigh);
--int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb);
-+int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb,
-+		       const bool immediate_ok);
- int neigh_update(struct neighbour *neigh, const u8 *lladdr, u8 new, u32 flags,
- 		 u32 nlmsg_pid);
- void __neigh_set_probe_once(struct neighbour *neigh);
-@@ -460,17 +461,24 @@ static inline struct neighbour * neigh_clone(struct neighbour *neigh)
- 
- #define neigh_hold(n)	refcount_inc(&(n)->refcnt)
- 
--static inline int neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
-+static __always_inline int neigh_event_send_probe(struct neighbour *neigh,
-+						  struct sk_buff *skb,
-+						  const bool immediate_ok)
- {
- 	unsigned long now = jiffies;
--	
-+
- 	if (READ_ONCE(neigh->used) != now)
- 		WRITE_ONCE(neigh->used, now);
--	if (!(neigh->nud_state&(NUD_CONNECTED|NUD_DELAY|NUD_PROBE)))
--		return __neigh_event_send(neigh, skb);
-+	if (!(neigh->nud_state & (NUD_CONNECTED | NUD_DELAY | NUD_PROBE)))
-+		return __neigh_event_send(neigh, skb, immediate_ok);
- 	return 0;
- }
- 
-+static inline int neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
-+{
-+	return neigh_event_send_probe(neigh, skb, true);
-+}
-+
- #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
- static inline int neigh_hh_bridge(struct hh_cache *hh, struct sk_buff *skb)
- {
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 213cb7b26b7a..088d10e4f1c0 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -1133,7 +1133,8 @@ static void neigh_timer_handler(struct timer_list *t)
- 	neigh_release(neigh);
- }
- 
--int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
-+int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb,
-+		       const bool immediate_ok)
- {
- 	int rc;
- 	bool immediate_probe = false;
-@@ -1154,12 +1155,17 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
- 			atomic_set(&neigh->probes,
- 				   NEIGH_VAR(neigh->parms, UCAST_PROBES));
- 			neigh_del_timer(neigh);
--			neigh->nud_state     = NUD_INCOMPLETE;
-+			neigh->nud_state = NUD_INCOMPLETE;
- 			neigh->updated = now;
--			next = now + max(NEIGH_VAR(neigh->parms, RETRANS_TIME),
--					 HZ/100);
-+			if (!immediate_ok) {
-+				next = now + 1;
-+			} else {
-+				immediate_probe = true;
-+				next = now + max(NEIGH_VAR(neigh->parms,
-+							   RETRANS_TIME),
-+						 HZ / 100);
-+			}
- 			neigh_add_timer(neigh, next);
--			immediate_probe = true;
- 		} else {
- 			neigh->nud_state = NUD_FAILED;
- 			neigh->updated = jiffies;
-@@ -1571,7 +1577,7 @@ static void neigh_managed_work(struct work_struct *work)
- 
- 	write_lock_bh(&tbl->lock);
- 	list_for_each_entry(neigh, &tbl->managed_list, managed_list)
--		neigh_event_send(neigh, NULL);
-+		neigh_event_send_probe(neigh, NULL, false);
- 	queue_delayed_work(system_power_efficient_wq, &tbl->managed_work,
- 			   NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME));
- 	write_unlock_bh(&tbl->lock);
--- 
-2.27.0
+This is already true.
 
+Perhaps it is confusing using ERROR to indicate that
+vfio_mig_get_next_state() failed. Would you be happier with a -errno
+return?
+
+> > It is organized this way because the driver controls the locking for
+> > its current state and thus the core code caller along the ioctl path
+> > cannot validate the arc before passing it to the driver. The code is
+> > shared by having the driver callback to the core to validate the
+> > entire fsm arc under its lock.
+> 
+> P2P is defined in a way that if the endpoint is valid then the arc is
+> valid.  We skip intermediate unsupported states.  We need to do that
+> for compatibility.  So why do we care about driver locking to do
+> that?
+
+Without the driver locking we can't identify the arc because we don't
+know the curent state the driver is in. We only know the target
+state.
+
+Jason
