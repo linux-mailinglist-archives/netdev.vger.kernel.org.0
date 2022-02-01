@@ -2,214 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3FCE4A686F
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 00:20:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 322A24A6883
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 00:27:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242802AbiBAXUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 18:20:16 -0500
-Received: from mail-eus2azon11021020.outbound.protection.outlook.com ([52.101.57.20]:55319
-        "EHLO na01-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229626AbiBAXUP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Feb 2022 18:20:15 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZgOmay9Hg462Nzs2FeVCItiiGbHCj5tULyIiPtSLeGTLdQ8YY16QoNYBZ2UJRvpsyeXir3V0Q1pCZGjv29QGZ9rAJsw6/dKabZrxSDhGvxX/m5SvH70dkpKAfhkbVAs30MeQr4oZbXu/DkpDNG6o7Y9TUs2M7l/hKrV1coWv6tU03IFmD7HStz3inu7pNSL0N4pevZdlM//LJOh+NBNutYK+OcHT815zHkpoyorJ4QtM5XCoRydQrhKrrGXL4UCJBXQ9YXEqN/5pPEK8EMkcNe+62UrP/lIPO5OmuDm+6bCkbcP8uvQOdvKp8L3lXQ+CRPS72DG6j7XZaDNtjE1jWw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=buZHvy4yZtocVYUlrc9/IDwi9GBPiCTUZpS60jumck0=;
- b=WSI8J57bfwO+4//zh1fxoR6y1FnlcoVUBD0syTW6H7kGKfydy/LTI6DuIHZvAs1KckLGN4t3y83KT0i0iUUsferPRPgrIwDByRrFCtHt4y2X7jyCQZiAtqQMV4s36AxWfIxgZLCHWSmUc3VPZt9K084mz5yB5J7/e2kZ8i+SWQafFNFqwC374sn12klyCiQppV+KzXyX7418pLJ8+2FCTi+nrZQQRm8fHAN8b538+xsQq8Ib6j5/41QkYXVz/HDNAk2iW+iRv0LMG/w+0rjZ68G15P+E15NqvON8q/QWTnsq0xv74fqOXYQuhO4cf31UFlInoRGgqdIvS0AA2MJbBA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=buZHvy4yZtocVYUlrc9/IDwi9GBPiCTUZpS60jumck0=;
- b=XbCoWZpOiWyk5hmH0gatbIu1rH2ZZ9U1DZwEPDXpfGWUXJl91UBoVnVGWdx/IEVQ5dmg80KwQnfPX/deOtKadJUetcgsB0ghF8a+TUxZjiV9AfFqDvnGfpNyPmvM6/28aVFf9zcdmfVcQJLLRgJ+AOtUEaK6RDYkrjcwQ/QILkk=
-Received: from MN2PR21MB1295.namprd21.prod.outlook.com (2603:10b6:208:3e::25)
- by BYAPR21MB1687.namprd21.prod.outlook.com (2603:10b6:a02:c9::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.4; Tue, 1 Feb
- 2022 23:20:09 +0000
-Received: from MN2PR21MB1295.namprd21.prod.outlook.com
- ([fe80::e081:f6e4:67eb:4704]) by MN2PR21MB1295.namprd21.prod.outlook.com
- ([fe80::e081:f6e4:67eb:4704%5]) with mapi id 15.20.4975.004; Tue, 1 Feb 2022
- 23:20:09 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     Tianyu Lan <ltykernel@gmail.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-CC:     Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH] Netvsc: Call hv_unmap_memory() in the
- netvsc_device_remove()
-Thread-Topic: [PATCH] Netvsc: Call hv_unmap_memory() in the
- netvsc_device_remove()
-Thread-Index: AQHYF4lItKgPG5VAM0quxqK4NaKG06x/VWFA
-Date:   Tue, 1 Feb 2022 23:20:09 +0000
-Message-ID: <MN2PR21MB1295D29EC97A4BEB9B6FA4A3CA269@MN2PR21MB1295.namprd21.prod.outlook.com>
-References: <20220201163211.467423-1-ltykernel@gmail.com>
-In-Reply-To: <20220201163211.467423-1-ltykernel@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=930b1b05-0e3a-42ab-9af8-c5c554d86332;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-02-01T23:19:57Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6031131c-e032-4436-003e-08d9e5d963fa
-x-ms-traffictypediagnostic: BYAPR21MB1687:EE_
-x-ms-exchange-atpmessageproperties: SA|SL
-x-microsoft-antispam-prvs: <BYAPR21MB16870953BF03207D20D57000CA269@BYAPR21MB1687.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1284;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: nd/D6idaDZGx3dXYNTeiPvCerId8WWuEeQcFn/8SurAnI/PLv8hNsbhI5OpBXF8dWeuRgAWqoPT+hJ14hC4eufMv0rliZPJtnlaWg6BMGR1299ANNNZ953rDaH9/Y2u2TRFrsaGduXzGS6ahJnmJleRVMYycBNKWhm3ZWLuBwzKeyokjZ6QwreE1XQfr/C4MPB53WJQC13EuZ4DUOJ9MRbl1mByiJpB0Ab5pqprjnbpMZz3vBALhbOqVTThn3m9VN0ffUNLiGvkQ5Azt55gCInistWaAvcSU42XoBzRi77b/jOS8oum0rA11AjLPbxF0KI/OsY0gMqaN51X+OjBvNjNhAQb7L++m9c2ryvXQ3IF3LYlMJuNxeb4NJgJXtUvNAD7I+bChXJR/yPljoqdc9GUj63szen8k+uDzsLiSGoNF9sJwdE1gcmtjz6KjBHnar5SpsRpbhkae4SN8pDZ/u0y26uXn39swki+7qvXUlwGe/goMMCncDhuZi33XnSdbfgyR86bS6T3Rv+BmpL6tEFIKSXwvJm2hcPq788vwSkKZKwMMMUbdP7EaV01DLwN39buotHDPWz9HKnJtxGLWUQT5j04tOIlcHKU5kHNj8YmBs8GCULeP+rVRkf153OhtKH++ziDBhNyR/J7ItK5PQAKSkI71y+SkwpOoT8PSaZGYvE9YsJQ+s9TR+k0SGlJto+mxxbqv7YTOjGwOaTRn1LPlzicUkXp3nIUEY5geUomleQvpFDPCaMYSk7inTSe3+8RkXlPm+UxzIPsO1LZqfQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR21MB1295.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(54906003)(71200400001)(52536014)(82960400001)(7696005)(6506007)(38070700005)(53546011)(110136005)(8990500004)(6636002)(9686003)(83380400001)(86362001)(55016003)(8936002)(921005)(8676002)(66556008)(82950400001)(66446008)(66476007)(4326008)(122000001)(508600001)(66946007)(64756008)(5660300002)(76116006)(7416002)(186003)(2906002)(33656002)(38100700002)(10290500003)(26005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?/70tPy19bnMFWNWH2y/vwIbUc1SaCtQUErSgsF8bRu7PAt9vs+5InBqy+GaB?=
- =?us-ascii?Q?tiYEOlWLd0UYC8y63U6GsPZJZLtul53CsNhD0H1JfC8Fof9sVECOQJ2F/P/5?=
- =?us-ascii?Q?gAACYhnVqrFQZrpCd+VwmhE9ZxJkmOdqfDxp9ZesVrxsmuScxluj9G6fXGsO?=
- =?us-ascii?Q?QMxMfQ0uD7crSd8Gy597hvo380ZGEOlghu3edSLmikUMnqitNP3GwJw/mErP?=
- =?us-ascii?Q?dUxW500UYQLPuGJY1mRTMi654YAwU5KQ6AzdTwpQ8Qf/WT1UnJC7x3ekhCPq?=
- =?us-ascii?Q?cLReSACQPfZz5tQUOnkzzwqa9k+1TXYSsuuXDYfHu4rvOEshh3dF+zRwL1kb?=
- =?us-ascii?Q?DPUZhoM7aosIcW9vR6y5/3RPRCMD4kBLyc3ZNmo5uXsDaTOezflQbWrbltSY?=
- =?us-ascii?Q?OwDX0pInRCTLlBXY61DEdUb9+EwX8LhUsViIy5ba9jHjuRHZ6uyo03qr7wzR?=
- =?us-ascii?Q?F9AJ0rn7ZoB0APrmvQQbTx7C/jKAILmynhMirj4+RlYtBgADl5sbtba0YmUh?=
- =?us-ascii?Q?DjSwMoWRnjt9ObkmnJGq+uVWScNehvDeGp7aCGdAHUa0tetHYrQkFPOIAS/T?=
- =?us-ascii?Q?a9ii3er7eXjeipRCGCEbtY2EVQ26EghOSFe3Ln6zJf3KDOo1zK2pDwUzafQs?=
- =?us-ascii?Q?Uzgmle3xk7l55JijIlMDENgVVmj5IUaoUE4fjWBtP7fvjRf62S31dBABR0Jo?=
- =?us-ascii?Q?uc1MYNalZTVCTHYFCYxFBiAlU2wPOGgtuTFmaoyiuo3d1ts3KbMhUht3GSpL?=
- =?us-ascii?Q?42Stpzhau06oi+onxaDxx8XU5UqrCsyVGMWz8dElEb8ildW7K78N9I33tTvh?=
- =?us-ascii?Q?Vlfeok//LuUSpI5xDCVKoqnxWDfES3Okw9hJlL372F/8unnOrmRmBSZJz0D8?=
- =?us-ascii?Q?pKZ/OHCogU2EVp6t3sUcsiHtre/2aQzMjmpdmn5DWj6/lM6GjbX3nWnSGNhS?=
- =?us-ascii?Q?wL4rkHF7mjK59EhZE4Hh+H9TBu9R13x2TxdJZAGPPLFkiKr3S/yex0i7Mpu7?=
- =?us-ascii?Q?3cv+au+DnT7Ml3/+faLthwbr1hSgICxFsfo7UM77EPLdaF9Lv8j5wu33eQk9?=
- =?us-ascii?Q?YKXeBb0+5ss04/lD0zFRGexYgklHvaD0cr6ogNcG0poEMZtEpZfJNPdINFSy?=
- =?us-ascii?Q?8boMMaQz1CWN3S0LgCOlz27Q4iS5krcYBkUFx/PsLGYniw7n0nyUNH5DNlxJ?=
- =?us-ascii?Q?yykg1o+XRkKqNYAYhVgj3huaMz9d660dvvRhdBmYa59i91ckVFuEYx8hWFSN?=
- =?us-ascii?Q?mYKfiOzZvlWj9Gbaq4wyuAAoa86ZmkhLsS8VS7AGuUxgzWg6PQ0XfhB1T4oC?=
- =?us-ascii?Q?pPMHy1G5A3oFj+lmL+VX7MCaaq3LJHBgRC8s0ILE9SG0gtRELLjn9PnaQHMC?=
- =?us-ascii?Q?q8hjHGiBsigSoDvg4kB3HjeX4YKjPhDK5gotUmbIYPmmXWnvIE3gQCVMQEGO?=
- =?us-ascii?Q?kBS3tbATAVFHBB75rGGkODIZEWcVtSuIICk75N5qnLH/Uf/rCbaECtfHxCHu?=
- =?us-ascii?Q?t57dpGu57ea7uwl5hbZW1AP2509u2A1dr0qJBn0NXD3jF0ddxbswPAM+Rcgq?=
- =?us-ascii?Q?YYG3EtF+JkiKZmW2h0fuXLkNTwZlsOKnsNC84Hpf1hORxWCBv5DF2OLJn5SJ?=
- =?us-ascii?Q?gA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S242865AbiBAX1V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 18:27:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229798AbiBAX1V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 18:27:21 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294E7C061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 15:27:21 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id g15-20020a17090a67cf00b001b7d5b6bedaso4204301pjm.4
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 15:27:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HCn+JW60iWRBoW7wvDSSQRafZvHDzZZ+sxZcvrzv0Sw=;
+        b=N8NXbdFCQYKc0Z6JtqLjbQvq90pvTie1VaKn7kc9I4In7RU34G/w2sVtwVrkqW6hR0
+         Fbimmf8NQy7MtNAS8AyxUgD6U/3l1xQLg4Fmu+u89B9gnYgNYoJwpU9mLbWxP/DLtWEs
+         +sy3pQTUBwkDIGmTcEkZoH34Bp9dnAQ2G1onxv3jjD4FF8WhwT2eBQfI6woVjoy8VpGj
+         oyBzx3uiR2JO09z2qolQRMoZMDghrmlvhgzyEssrzyD5NgLOEXJb59aPRL3QgttYpFQx
+         mnXJ4iZPu9EXNbPh8RR4ijrWp7SHQNd20lQQ4FfsCd/pEq0rQUcHAuh1yPlFBEa1Q550
+         IStg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HCn+JW60iWRBoW7wvDSSQRafZvHDzZZ+sxZcvrzv0Sw=;
+        b=3hRNXKDbQ3GHMVwGV53j3srkVclQ9gyBugz69oEg5hkKnUlTZZXu0Qq21g5v3red5K
+         FPtc5bgV9zA3n0d7UCMWQx1Amc5zC+7vNDdv2r+QZ4LZlrTpxXrwjkjXD2oxiFtNxbzP
+         xpXujWFc7CAw5obvg2K5wi36otmKPzTVwkn5kYbzMlqI6oIvqjXWc4vUFFpKf+yjc7ho
+         zPBX0hApVyri5DKJBCoBagwUT9NV2psbek2VXcBfRQXxjhtV8upKa8Y8T3luBLomm64L
+         za28IeT5KW0s0fiw3xGh90w7DKb79ReyVR28E818MyO1SMbeDe3oJKboHPbvOQf269xd
+         fFIw==
+X-Gm-Message-State: AOAM532r3iAB0S+CRNZNn4+wRyLiL3oaWJuN6tt9dLrNSqVK5oh2sdBJ
+        2nvDacp3XpBksaHgCSeig2I=
+X-Google-Smtp-Source: ABdhPJxCofb0nhRRaJpajyRMw39XkG5H72yZIQO1oikfHe17PGU6itGk2c+N5u3avPEq5i/VcpkucA==
+X-Received: by 2002:a17:903:2449:: with SMTP id l9mr6379752pls.116.1643758040596;
+        Tue, 01 Feb 2022 15:27:20 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:13fc:305f:6f9b:9f4d])
+        by smtp.gmail.com with ESMTPSA id mq15sm4395450pjb.8.2022.02.01.15.27.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 15:27:19 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Coco Li <lixiaoyan@google.com>
+Subject: [PATCH iproute2] iplink: add gro_max_size attribute handling
+Date:   Tue,  1 Feb 2022 15:27:15 -0800
+Message-Id: <20220201232715.1585390-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR21MB1295.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6031131c-e032-4436-003e-08d9e5d963fa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Feb 2022 23:20:09.6073
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Ieok/W4FyOMw8e3zWdachTDzYU7vXkf/jVWwZQxB+VtOwl0Zt4fevRF+5w/WWq77XrxUicLKzNlMOxl1IK+QXg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR21MB1687
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Coco Li <lixiaoyan@google.com>
 
+Add the ability to display or change the gro_max_size attribute.
 
-> -----Original Message-----
-> From: Tianyu Lan <ltykernel@gmail.com>
-> Sent: Tuesday, February 1, 2022 11:32 AM
-> To: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang <haiyangz@microsoft.=
-com>; Stephen
-> Hemminger <sthemmin@microsoft.com>; wei.liu@kernel.org; Dexuan Cui <decui=
-@microsoft.com>;
-> tglx@linutronix.de; mingo@redhat.com; bp@alien8.de; dave.hansen@linux.int=
-el.com;
-> x86@kernel.org; hpa@zytor.com; davem@davemloft.net; kuba@kernel.org; hch@=
-infradead.org;
-> m.szyprowski@samsung.com; robin.murphy@arm.com; Michael Kelley (LINUX)
-> <mikelley@microsoft.com>
-> Cc: Tianyu Lan <Tianyu.Lan@microsoft.com>; iommu@lists.linux-foundation.o=
-rg; linux-
-> hyperv@vger.kernel.org; linux-kernel@vger.kernel.org; netdev@vger.kernel.=
-org
-> Subject: [PATCH] Netvsc: Call hv_unmap_memory() in the netvsc_device_remo=
-ve()
->=20
-> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
->=20
-> netvsc_device_remove() calls vunmap() inside which should not be
-> called in the interrupt context. Current code calls hv_unmap_memory()
-> in the free_netvsc_device() which is rcu callback and maybe called
-> in the interrupt context. This will trigger BUG_ON(in_interrupt())
-> in the vunmap(). Fix it via moving hv_unmap_memory() to netvsc_device_
-> remove().
->=20
-> Fixes: 846da38de0e8 ("net: netvsc: Add Isolation VM support for netvsc dr=
-iver")
-> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> ---
->  drivers/net/hyperv/netvsc.c | 18 ++++++++++--------
->  1 file changed, 10 insertions(+), 8 deletions(-)
->=20
-> diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-> index afa81a9480cc..f989f920d4ce 100644
-> --- a/drivers/net/hyperv/netvsc.c
-> +++ b/drivers/net/hyperv/netvsc.c
-> @@ -154,19 +154,15 @@ static void free_netvsc_device(struct rcu_head *hea=
-d)
->=20
->  	kfree(nvdev->extension);
->=20
-> -	if (nvdev->recv_original_buf) {
-> -		hv_unmap_memory(nvdev->recv_buf);
-> +	if (nvdev->recv_original_buf)
->  		vfree(nvdev->recv_original_buf);
-> -	} else {
-> +	else
->  		vfree(nvdev->recv_buf);
-> -	}
->=20
-> -	if (nvdev->send_original_buf) {
-> -		hv_unmap_memory(nvdev->send_buf);
-> +	if (nvdev->send_original_buf)
->  		vfree(nvdev->send_original_buf);
-> -	} else {
-> +	else
->  		vfree(nvdev->send_buf);
-> -	}
->=20
->  	bitmap_free(nvdev->send_section_map);
->=20
-> @@ -765,6 +761,12 @@ void netvsc_device_remove(struct hv_device *device)
->  		netvsc_teardown_send_gpadl(device, net_device, ndev);
->  	}
->=20
-> +	if (net_device->recv_original_buf)
-> +		hv_unmap_memory(net_device->recv_buf);
-> +
-> +	if (net_device->send_original_buf)
-> +		hv_unmap_memory(net_device->send_buf);
-> +
->  	/* Release all resources */
->  	free_netvsc_device_rcu(net_device);
->  }
+ip link set dev eth1 gro_max_size 60000
+ip -d link show eth1
+5: eth1: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 9198 qdisc mq master eth0 state UP mode DEFAULT group default qlen 1000
+    link/ether bc:ae:c5:39:69:66 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 46 maxmtu 9600
+    <...> gro_max_size 60000
 
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
+Signed-off-by: Coco Li <lixiaoyan@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ ip/ipaddress.c |  5 +++++
+ ip/iplink.c    | 10 ++++++++++
+ 2 files changed, 15 insertions(+)
+
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index 4109d8bd2c43640bee40656c124ea6393d95a345..583c41a94a8ec964779c1e3a8305be80e43907e7 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -904,6 +904,11 @@ static int print_linkinfo_brief(FILE *fp, const char *name,
+ 						   ifi->ifi_type,
+ 						   b1, sizeof(b1)));
+ 		}
++		if (tb[IFLA_GRO_MAX_SIZE])
++			print_uint(PRINT_ANY,
++				   "gro_max_size",
++				   "gro_max_size %u ",
++				   rta_getattr_u32(tb[IFLA_GRO_MAX_SIZE]));
+ 	}
+ 
+ 	if (filter.family == AF_PACKET) {
+diff --git a/ip/iplink.c b/ip/iplink.c
+index a3ea775d2b23c47916e9554b8615d430a58c6a55..c0a3a9ad3e629986ee2da0ee80eaf758f98aee5f 100644
+--- a/ip/iplink.c
++++ b/ip/iplink.c
+@@ -118,6 +118,7 @@ void iplink_usage(void)
+ 		"		[ protodown { on | off } ]\n"
+ 		"		[ protodown_reason PREASON { on | off } ]\n"
+ 		"		[ gso_max_size BYTES ] | [ gso_max_segs PACKETS ]\n"
++		"		[ gro_max_size BYTES ]\n"
+ 		"\n"
+ 		"	ip link show [ DEVICE | group GROUP ] [up] [master DEV] [vrf NAME] [type TYPE]\n"
+ 		"		[nomaster]\n"
+@@ -942,6 +943,15 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
+ 				       *argv);
+ 			addattr32(&req->n, sizeof(*req),
+ 				  IFLA_GSO_MAX_SEGS, max_segs);
++		}  else if (strcmp(*argv, "gro_max_size") == 0) {
++			unsigned int max_size;
++
++			NEXT_ARG();
++			if (get_unsigned(&max_size, *argv, 0))
++				invarg("Invalid \"gro_max_size\" value\n",
++				       *argv);
++			addattr32(&req->n, sizeof(*req),
++				  IFLA_GRO_MAX_SIZE, max_size);
+ 		} else if (strcmp(*argv, "parentdev") == 0) {
+ 			NEXT_ARG();
+ 			addattr_l(&req->n, sizeof(*req), IFLA_PARENT_DEV_NAME,
+-- 
+2.35.0.rc2.247.g8bbb082509-goog
+
