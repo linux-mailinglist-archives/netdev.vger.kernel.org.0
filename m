@@ -2,150 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C06A74A53A3
-	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 01:01:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DC294A53A8
+	for <lists+netdev@lfdr.de>; Tue,  1 Feb 2022 01:02:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229899AbiBAAB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Jan 2022 19:01:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56096 "EHLO
+        id S229906AbiBAACN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Jan 2022 19:02:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbiBAAB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 19:01:57 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C64FC06173B
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 16:01:57 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id t199so13413471oie.10
-        for <netdev@vger.kernel.org>; Mon, 31 Jan 2022 16:01:57 -0800 (PST)
+        with ESMTP id S229933AbiBAACN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Jan 2022 19:02:13 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D624FC061714;
+        Mon, 31 Jan 2022 16:02:12 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id q204so19105978iod.8;
+        Mon, 31 Jan 2022 16:02:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+K0sdjVgE8b9JIGeLK3zlSmhetjfYt5wptsU1dduQWU=;
-        b=vMrk+bnZ3dHQtvC3W1oFNPjflb9kzhUMAjufeAZHnmI7Vu88S7YF2E87jHe2UZioQG
-         +1Uq7x27YbAYEQx0kOQ2AoCRXUd0saUKkNoUQKgBEoICHSt74sgMlyR2gIli/sTnhfkK
-         yn/n2XfTovcIfL5IY51W3xI6IYeYMnuq2slatW0xeBYGxO0LN2IxYbKLQJxx3jsYFwvD
-         ImAWteHOjgYyw0eSevIgYFoZ+4CZB/mznEkRYASUCcBpiDb+x6CWi/EXCIt3p8o3CzEl
-         9WM+v6aCSfXChHlK0xD/G6h9OwxM57RN90jo9ESdQpNredzL65By4Q1WgDJEc/7Hp8OL
-         bjng==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QyO86vvXrvsnYbM9ePprWtNUgK1VSac7vXnAuMxRjnM=;
+        b=Nk/quBFO1BELsTpfs58wjw7GKNvRtuEERY8EEMkyufCHwI2PCskskqPpAm1e7YY2LA
+         Ju9nKgNhP2TdLdrj98SoMcGxSu4esv/MKDYp5j79Q7y8oj7XmADeUwMfuvnmkzfJcY6v
+         L1WQ5Jbd71ANVfnFu4VlJc0SyxOEjJZHE2eGAD/gVlSTROS89xJs/xQvmX+l4f2AeHth
+         SW0HWKrC/rlTDn5YARGwXsrFH9ImkxNknd+MxzNH6oLG892ssGiUUgYdbTUKAkg1SP0e
+         IFoMvb1nS7EvxoOYYySbxZ5vc3GqeQ619PlmqgiOw5+gHORZGZwvAv/8LWQ2UT+5hlt3
+         7c8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+K0sdjVgE8b9JIGeLK3zlSmhetjfYt5wptsU1dduQWU=;
-        b=Ivfa/xxLENBrm9H6t+5u1BMvfYt44zwwD/x38e6NxOOFM0l79LbZnjn8hZq4rqsCum
-         wxB64kk/fuuoFHf7EY7xhODLVrtoL3oBmjqPbJCzRNJ7vxxAjy0YzYrCIB+5OlJv5jEf
-         VLa+9PdZTXs+PnArvJzFs802sNz7jv5a0E072COTa0wMvJ3drWHfJ+8Z5wwDbNXubIym
-         hTK27wnedHFgp9kYqT/8XIMYJhxmE16rUD9iMhZoCspuypNghT13wkTmrr0M1uMeOcyU
-         1rGp+7XBfVOxTMF0Ks5RZusei36UxkbXuLQM1+gvUVyYTGr/HGV6jWLLmFfuK+uPqBf5
-         pDzQ==
-X-Gm-Message-State: AOAM533rgYC9LPYS4U5b4RgGsuqxEIAddzZcqbHnxgEVu6nISoWa0CN8
-        NL6P/nhFkRhJ6YGEMZCzHK1AHg==
-X-Google-Smtp-Source: ABdhPJzO24VPxQcjAKmUBB3MG9Mw6uIY2nODDpPG6z75wv77dxIhSjmAeC92adM94ApCurJYxwtqQQ==
-X-Received: by 2002:aca:5c04:: with SMTP id q4mr8221769oib.142.1643673716339;
-        Mon, 31 Jan 2022 16:01:56 -0800 (PST)
-Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id n4sm12533610otq.63.2022.01.31.16.01.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 16:01:55 -0800 (PST)
-Date:   Mon, 31 Jan 2022 18:01:53 -0600
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, bhupesh.linux@gmail.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, agross@kernel.org, sboyd@kernel.org,
-        tdas@codeaurora.org, mturquette@baylibre.com,
-        linux-clk@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 7/8] clk: qcom: gcc-sm8150: use runtime PM for the clock
- controller
-Message-ID: <Yfh4cahRIdkY4KWg@builder.lan>
-References: <20220126221725.710167-1-bhupesh.sharma@linaro.org>
- <20220126221725.710167-8-bhupesh.sharma@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QyO86vvXrvsnYbM9ePprWtNUgK1VSac7vXnAuMxRjnM=;
+        b=yfJ8tob5briuBES+oi0c92zgLC5ApsyuyITnvTRGuE3dfoMmjRQz0GMChmTM0Fb2U0
+         HJDGfQ6kjCBpzUSLJmfaXex2tfpLkxYmdJSlEyBFkR/t56yw9Sd9HKwiNivjg3m7+l2a
+         Wg9sWOI4LPyrXi64N7iXcfFSfBBDEopxQkea5n9lKuPzWjE4vsagYyWVtPo4gKtfVCNj
+         aaKIaZd35cBAK+vYhQJkcUEEoVLuoBOzDtqW5Bybzfka3R1euVr7LmGqu3jwdEu/bE1D
+         fDUDq22U5GQNM6oXWaKjgmIgmeyknTenWP1KJGKHuVtVs/fEodJnFCgxeweXoIxKKroL
+         BwJg==
+X-Gm-Message-State: AOAM531xF6urFBYGHjz0IKZ4YXXOckqdzYm33JMHWqy+xB3O/ag5Vy74
+        1fpTTtzQTv4aeJUEs6WPjsM9CFJ79MskLt69wcw=
+X-Google-Smtp-Source: ABdhPJynksQgC7hnEFS7wyoTCvzTvG+zpxsgeWJTLDNUTwXwHDGfkGrUcngSUD+tLEGMr2L0wm31ZD9wy7WzgIMRFbw=
+X-Received: by 2002:a05:6638:d88:: with SMTP id l8mr5018495jaj.234.1643673732190;
+ Mon, 31 Jan 2022 16:02:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126221725.710167-8-bhupesh.sharma@linaro.org>
+References: <20220127024939.364016-1-houtao1@huawei.com>
+In-Reply-To: <20220127024939.364016-1-houtao1@huawei.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 31 Jan 2022 16:02:00 -0800
+Message-ID: <CAEf4BzYHggCfbSGb8autEDcHhZXabK-n36rggyjJeL0uLEr+DQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: use getpagesize() to initialize
+ ring buffer size
+To:     Hou Tao <houtao1@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 26 Jan 16:17 CST 2022, Bhupesh Sharma wrote:
-
-> On sm8150 emac clk registers are powered up by the GDSC power
-> domain. Use runtime PM calls to make sure that required power domain is
-> powered on while we access clock controller's registers.
-> 
-
-Typically the GCC registers need only "cx" enabled for us to much around
-with its registers and I don't see you add any references to additional
-resources, so can you please elaborate on how this affects the state of
-the system to enable you to operate the emac registers?
-
-Regards,
-Bjorn
-
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+On Wed, Jan 26, 2022 at 6:34 PM Hou Tao <houtao1@huawei.com> wrote:
+>
+> 4096 is OK for x86-64, but for other archs with greater than 4KB
+> page size (e.g. 64KB under arm64), test_verifier for test case
+> "check valid spill/fill, ptr to mem" will fail, so just use
+> getpagesize() to initialize the ring buffer size. Do this for
+> test_progs as well.
+>
+> Signed-off-by: Hou Tao <houtao1@huawei.com>
 > ---
->  drivers/clk/qcom/gcc-sm8150.c | 27 +++++++++++++++++++++++++--
->  1 file changed, 25 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/clk/qcom/gcc-sm8150.c b/drivers/clk/qcom/gcc-sm8150.c
-> index ada755ad55f7..2e71afed81fd 100644
-> --- a/drivers/clk/qcom/gcc-sm8150.c
-> +++ b/drivers/clk/qcom/gcc-sm8150.c
-> @@ -5,6 +5,7 @@
->  #include <linux/bitops.h>
->  #include <linux/err.h>
->  #include <linux/platform_device.h>
-> +#include <linux/pm_runtime.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
->  #include <linux/of_device.h>
-> @@ -3792,19 +3793,41 @@ static const struct of_device_id gcc_sm8150_match_table[] = {
->  };
->  MODULE_DEVICE_TABLE(of, gcc_sm8150_match_table);
->  
-> +static void gcc_sm8150_pm_runtime_disable(void *data)
-> +{
-> +	pm_runtime_disable(data);
-> +}
-> +
->  static int gcc_sm8150_probe(struct platform_device *pdev)
->  {
->  	struct regmap *regmap;
-> +	int ret;
-> +
-> +	pm_runtime_enable(&pdev->dev);
-> +
-> +	ret = devm_add_action_or_reset(&pdev->dev, gcc_sm8150_pm_runtime_disable, &pdev->dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = pm_runtime_resume_and_get(&pdev->dev);
-> +	if (ret)
-> +		return ret;
->  
->  	regmap = qcom_cc_map(pdev, &gcc_sm8150_desc);
-> -	if (IS_ERR(regmap))
-> +	if (IS_ERR(regmap)) {
-> +		pm_runtime_put(&pdev->dev);
->  		return PTR_ERR(regmap);
-> +	}
->  
->  	/* Disable the GPLL0 active input to NPU and GPU via MISC registers */
->  	regmap_update_bits(regmap, 0x4d110, 0x3, 0x3);
->  	regmap_update_bits(regmap, 0x71028, 0x3, 0x3);
->  
-> -	return qcom_cc_really_probe(pdev, &gcc_sm8150_desc, regmap);
-> +	ret = qcom_cc_really_probe(pdev, &gcc_sm8150_desc, regmap);
-> +
-> +	pm_runtime_put(&pdev->dev);
-> +
-> +	return ret;
+>  tools/testing/selftests/bpf/prog_tests/d_path.c | 14 ++++++++++++--
+>  .../testing/selftests/bpf/prog_tests/test_ima.c | 17 +++++++++++++----
+>  tools/testing/selftests/bpf/progs/ima.c         |  1 -
+>  .../bpf/progs/test_d_path_check_types.c         |  1 -
+>  tools/testing/selftests/bpf/test_verifier.c     |  2 +-
+>  5 files changed, 26 insertions(+), 9 deletions(-)
+>
+
+[...]
+
+> @@ -86,5 +94,6 @@ void test_test_ima(void)
+>         CHECK(err, "failed to run command", "%s, errno = %d\n", cmd, errno);
+>  close_prog:
+>         ring_buffer__free(ringbuf);
+> +destroy_skel:
+>         ima__destroy(skel);
 >  }
->  
->  static struct platform_driver gcc_sm8150_driver = {
-> -- 
-> 2.34.1
-> 
+> diff --git a/tools/testing/selftests/bpf/progs/ima.c b/tools/testing/selftests/bpf/progs/ima.c
+> index 96060ff4ffc6..e192a9f16aea 100644
+> --- a/tools/testing/selftests/bpf/progs/ima.c
+> +++ b/tools/testing/selftests/bpf/progs/ima.c
+> @@ -13,7 +13,6 @@ u32 monitored_pid = 0;
+>
+>  struct {
+>         __uint(type, BPF_MAP_TYPE_RINGBUF);
+> -       __uint(max_entries, 1 << 12);
+
+Should we just bump it to 64/128/256KB instead? It's quite annoying to
+do a split open and then load just due to this...
+
+I'm also wondering if we should either teach kernel to round up to
+closes power-of-2 of page_size internally, or teach libbpf to do this
+for RINGBUF maps. Thoughts?
+
+
+>  } ringbuf SEC(".maps");
+>
+>  char _license[] SEC("license") = "GPL";
+> diff --git a/tools/testing/selftests/bpf/progs/test_d_path_check_types.c b/tools/testing/selftests/bpf/progs/test_d_path_check_types.c
+> index 7e02b7361307..1b68d4a65abb 100644
+> --- a/tools/testing/selftests/bpf/progs/test_d_path_check_types.c
+> +++ b/tools/testing/selftests/bpf/progs/test_d_path_check_types.c
+> @@ -8,7 +8,6 @@ extern const int bpf_prog_active __ksym;
+>
+>  struct {
+>         __uint(type, BPF_MAP_TYPE_RINGBUF);
+> -       __uint(max_entries, 1 << 12);
+>  } ringbuf SEC(".maps");
+>
+>  SEC("fentry/security_inode_getattr")
+> diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
+> index 29bbaa58233c..6acb5e747715 100644
+> --- a/tools/testing/selftests/bpf/test_verifier.c
+> +++ b/tools/testing/selftests/bpf/test_verifier.c
+> @@ -931,7 +931,7 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
+>         }
+>         if (*fixup_map_ringbuf) {
+>                 map_fds[20] = create_map(BPF_MAP_TYPE_RINGBUF, 0,
+> -                                          0, 4096);
+> +                                          0, getpagesize());
+>                 do {
+>                         prog[*fixup_map_ringbuf].imm = map_fds[20];
+>                         fixup_map_ringbuf++;
+> --
+> 2.29.2
+>
