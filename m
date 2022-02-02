@@ -2,470 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FBFE4A78BA
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 20:31:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DBC24A78C7
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 20:34:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346839AbiBBTbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 14:31:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240428AbiBBTba (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 14:31:30 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD6EC061714;
-        Wed,  2 Feb 2022 11:31:30 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id 9so400571iou.2;
-        Wed, 02 Feb 2022 11:31:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=OMwY2wvMhB1DUTy+ksrjre4+0Cp7BW70VPY8FVvDBuQ=;
-        b=KTiQh8MMq4dFPx6Tg3XeOVyNDouee91qkWEzPSdc8AdZZlBfBykqfsDdSZue6Oswgs
-         suIbT6RWQ+yuYf0f0OGBSE0YWc2Qv3Mek2B29OEnRjjroX0SPMu9w5HVerUJcpaxW4ts
-         D0/aeZttXnGoBjNTYdEk7zQVAJ3IGWozHdxWcW+20huIXIbPDedVDiqk9J9IAhCo7Gjl
-         fTYSSXWWv/eMI2DoakwZp9RMMJqvAwP52+mzDJhvN6TZTpAfSrRBYJBE9nmpVwWQjERZ
-         K09TDmQxYVqg4xJcbWOGeV7WR/FukoQY0BRElgQJ+LJhBLbOyggcCWDY/0tWJ7OhrM/p
-         11hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OMwY2wvMhB1DUTy+ksrjre4+0Cp7BW70VPY8FVvDBuQ=;
-        b=H4iyJRSpaaJAMqtcxk2BmpNyolhmjQc8fpvYT/osTT5XIIlhPFu6peHvd+cgyekGtH
-         zFmmNJkgKfovAbqpPUwzWOFflReIdt0ojPBHjx1K+CD+FFK/PAzOVXDIs8143n6ITngW
-         M3tiN3TBa1jLfAdrWbcGtQ8rkAZXVYKZlTnLkdX7Y3Ue7v5LVb3XjGfKOnHMpYGRKsWY
-         pvB3DbPIziPBwpH2AEzOggBjgGloA/B12c4Gt71YU7nEc1R7GZ91SFfMzHVgZ8t/uKJl
-         sF2zdAj8ro56uF6qn1OKBPWa7vJYmJdYr6gbdA9aCselMOC0ftW9PyWZv9iDTNKje3iG
-         bhiw==
-X-Gm-Message-State: AOAM53291cp7gcMfbLjXwRdBaVHoPZGmm0FHTxvVRTN4INMcsdj/ORtv
-        IfWVlv4gxTd8zdZb5KNJaylMnRgwSOg121ekRptLq/Rh
-X-Google-Smtp-Source: ABdhPJxNi75fc8x9/UorufjmjpEc+kwNQ/0nI6k7Joi7LCUPloTkEKV9h513unRd58bxRIvDvU6l3UjibpG42TfXNJ4=
-X-Received: by 2002:a5e:a806:: with SMTP id c6mr16759145ioa.112.1643830290154;
- Wed, 02 Feb 2022 11:31:30 -0800 (PST)
-MIME-Version: 1.0
-References: <20220128223312.1253169-1-mauricio@kinvolk.io> <20220128223312.1253169-7-mauricio@kinvolk.io>
-In-Reply-To: <20220128223312.1253169-7-mauricio@kinvolk.io>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 2 Feb 2022 11:31:19 -0800
-Message-ID: <CAEf4BzZu-u1WXGScPZKVQZc+RGjmnYm45mcOGkzXyFLMKS-5gA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 6/9] bpftool: Implement relocations recording
- for BTFGen
-To:     =?UTF-8?Q?Mauricio_V=C3=A1squez?= <mauricio@kinvolk.io>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
-Content-Type: text/plain; charset="UTF-8"
+        id S1346913AbiBBTeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 14:34:37 -0500
+Received: from mga06.intel.com ([134.134.136.31]:48049 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242712AbiBBTeg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Feb 2022 14:34:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643830476; x=1675366476;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=nzxyXDDz9qgVuuDzP7aKXtLeZab23R+D3sjfpgvcl9Q=;
+  b=bGdgRj6vZPvl8ng+CCCiIC6DMTHC16VCauNh73/W7x3NhmZFoBebMHud
+   L0gpoYkqkiMoqJw1uPVfrlZGDYEmfAuUIIP/uI/DXerSOdfMy2FadRhHE
+   AuswYZHmswq+gghUMrpnTrbHemJqb/ppYz1c1k22kPZPYHk+1RSN0Yg+i
+   81r1bvLX3WAmiAe+FgEZHeENHQWyCL5rCyzxONQ/OFaxFGyFjtaNjmVk0
+   /6NRQTnCv4GG7+y/09ll5sUNmW0X8+k3Boi68Y1IiuVdQQ3jwmn1SgQgd
+   6pBWzB0a1UhYF4UoS4hySRgt+F3XfUqC4gb9nxHYt8nbCkrtjbbhX4obU
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="308734038"
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="308734038"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 11:34:36 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="771548458"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga005.fm.intel.com with ESMTP; 02 Feb 2022 11:34:36 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 2 Feb 2022 11:34:35 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20 via Frontend Transport; Wed, 2 Feb 2022 11:34:35 -0800
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.40) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.20; Wed, 2 Feb 2022 11:34:35 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YIwZoZrxhiriBaII16Nhymdso9dL1qE+7+237hIhVgR2801C9HB4MaIZknUbGgM+5DG41ypwqP0T9S2qc4O6TxZ+JefDQBMDtahFVf/cNveiMVpbmK1x0+cTbKMUwELIX6EdvErTEDdFZNYsPN2SyOvpxCaos77iNKdDbX7wqFp9hoEpwNDNj8LMr+G26JZNZpaoQJRnHo8cCbUDpRGEx5C0lADSqx/Sk+TzJSsGEXsLxd9fc6TREjoZrmtANjJQXwt+qbzw79R9QHnJ8jXcDIXcXOnc6bUIMgKC2J+xXlcRgHg+QyktAv4wETwktHKcW/l/R597aSPjufJPyalxZg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4v+akhOXy2hrQIgAW1tKkHaFeqHFs+MOuaoGIBbl4m4=;
+ b=Y9OWrI5k0GxTLMdtDXIJ7Ptw7GVbWiwxyAf6GgXgNEEdwj7b6sLCHc53XO5fO8sU3JxFKjBf6XcnBOV7Uc+m8zU+np5y/M6ZlXofAVYSFbaSc0BstfYgRVNFGkAaTlNagnDz58skMO4+OU+Xnlr9mZ+pvTvHb9kZt2dgsL5aE8bHo+PGZcQbs/MGAQDwdS540Dk2LjGYrUkiVCWWjRU94/e4/7gXg2UHRfuHDjKX/lblK4LcpxruVcdYxkC12tL0oH+9CcE3JvmMj8oJxhy5aN6rdmlfDyU5hKZAs44U3DQWy7OZpYxVQkyhlQds4TuduBO3VvOIBd3GH35oDwTN3g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from DM8PR11MB5621.namprd11.prod.outlook.com (2603:10b6:8:38::14) by
+ DM6PR11MB4009.namprd11.prod.outlook.com (2603:10b6:5:193::14) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4951.12; Wed, 2 Feb 2022 19:34:33 +0000
+Received: from DM8PR11MB5621.namprd11.prod.outlook.com
+ ([fe80::fcc9:90bb:b249:e2e9]) by DM8PR11MB5621.namprd11.prod.outlook.com
+ ([fe80::fcc9:90bb:b249:e2e9%7]) with mapi id 15.20.4930.022; Wed, 2 Feb 2022
+ 19:34:33 +0000
+From:   "Jankowski, Konrad0" <konrad0.jankowski@intel.com>
+To:     Samuel Mendoza-Jonas <samjonas@amazon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC:     "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net] ixgbevf: Require large buffers for build_skb on
+ 82599VF
+Thread-Topic: [PATCH net] ixgbevf: Require large buffers for build_skb on
+ 82599VF
+Thread-Index: AQHYCAzJTdC6rocnTUaIwyNO+ZIFB6yAx5hA
+Date:   Wed, 2 Feb 2022 19:34:33 +0000
+Message-ID: <DM8PR11MB56216C0BF94DFA7D96DF1C98AB279@DM8PR11MB5621.namprd11.prod.outlook.com>
+References: <20220112233231.317259-1-samjonas@amazon.com>
+In-Reply-To: <20220112233231.317259-1-samjonas@amazon.com>
+Accept-Language: pl-PL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.6.200.16
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6aa1d980-51e0-4e8e-70cf-08d9e6830a47
+x-ms-traffictypediagnostic: DM6PR11MB4009:EE_
+x-microsoft-antispam-prvs: <DM6PR11MB4009AA6D5B793EC9338801C9AB279@DM6PR11MB4009.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: MeUiva25c+7IHm77hxu0CsBN1/1vZ3wb/PtyBa1TdUHREMkwqjfhhkzy8PCt+CzqAu7rxC2iWUL0iN0SAYkLeVzpgMJZwiuGtOFEhvPFG8LX7Z3+5ntkqAvyUbx115fjrBrJ/xPXBCBPW1JXtX2eEI1PAIsfG6swat0kFBdPalDIybxKx0VB8xr+H4sI8st/pKASDyDziIqSNtsb9pIbScaFtFHmsa6Hm4iND2X076LzqEmTkxWzELFF6aryWdDl3W115OxZRwGbRAmfzgTS3TLKvEEpwBER/Lfs3tCji/HmXbKfSxjH79BIbMbPEy3QmvOWUWntm+8BW8YuSkpragP6/hp/7vt2wD2XxzlkhPGPnExzOUD4bUSixRr0MyQHtriWFMG77Ipl5u5l3dxoS0X3pJASuYskvl8n3qRWUCNO21tfVbHgxDzZiQr5fRHVWkaI2AJnbRrdPvSTepZevr9MMwVbx+Ll7SrubLjgB3vTl+Ff8iYPnUVmKv5HLPASmU0Caj4ceGCA6+Ofryj0Ez2kKx0mUcW2QnBl4BnC3/C11Z6xqyIXRjBtXOUiRZ4BqaN9mSzBh3ZafDLl6bO+3gorqkURaSwvgbK8hc8wEMZm4i/el6+Eok5mzs/Y7ic7hpbXZzP6JcSGcGSWpgIiLxaPa1kaqK4XI2vjDiCjqhjubiGT+VKnw3zzyiohja4gmyprGNDFYr+hM4EVQwBARQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR11MB5621.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(86362001)(316002)(66476007)(66446008)(64756008)(5660300002)(82960400001)(122000001)(110136005)(66556008)(54906003)(4326008)(38070700005)(8676002)(8936002)(52536014)(66946007)(76116006)(38100700002)(53546011)(2906002)(186003)(26005)(83380400001)(508600001)(7696005)(55016003)(6506007)(9686003)(71200400001)(33656002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?N2jXqJPGfPd992gjH1bEmYyUt+d/okpbysP+PUCYiP6izws9ppVpqFjIVhCL?=
+ =?us-ascii?Q?EG811r5BIPxkW9sVE+VkDJcUTRsP3Inw5XkebOw9U7Kcic6MyQA8o/BVYXMX?=
+ =?us-ascii?Q?DEW3S8IoLjaj57F9bAMcn+Ca+74DZQ5xjon8auiMvVioC71gEO60Bv7gOPoi?=
+ =?us-ascii?Q?O4GgcM2rPYRJM/bgHLrsnOBl1RvJflNo8vThDoYHMPQzfWyllO0MSKYybB0f?=
+ =?us-ascii?Q?l7uwCt4lD2P52ooMNLbvHERmjuNpu0Ww8mRVe0t9T/1jibCRb16p+TSv1eX3?=
+ =?us-ascii?Q?sL/qTm1+Sj9hZ18PVoh7no3DyIJlghUCVHuiygNEig9tJQMoDlh3HzPmiodk?=
+ =?us-ascii?Q?9mkCHZGSMXb2gIn5+QFh6U3LNfpXpx0u75zhByKqw+LoRaJHzTKuSWALxJeh?=
+ =?us-ascii?Q?kMLIUT/7rwXBTnZAGfDhxgFMcWllTZmGfdg40Nw7rQhI+Fq0BHyfd3FDtyN4?=
+ =?us-ascii?Q?1SCdF/PhjMQa7TBNUvJJBMywpJbHGDv0UYjcBCsLHg5IUXbhd1nnHPD2YaOw?=
+ =?us-ascii?Q?i8l6TieBwAlAdRzKsKOwWG1bYuEKwoEMBHdCYNQH2Kcfh4dw0I9CAmlHR78p?=
+ =?us-ascii?Q?/du/PngzleddPcB6k4b7xyxJ3z+pB+ndy6Hvi9EOwllJu94omZAH11L7wzYN?=
+ =?us-ascii?Q?iQt4xQmDzhSUyVVmMyfSNBCFb47HCSjq+At0WYMPNlAsYtZmQ9T6sr6QI8YM?=
+ =?us-ascii?Q?I4Bqcsva9sbaPmqIYEQ6w5jS5xWeO7YLPwUpD6DqZ1v9tN2vLoVxnkHJYnuY?=
+ =?us-ascii?Q?F1ScEsa+/DPAzGXS1nYWDkzfvFtNfZhkzbNp0ful7GoWReAI4JXoOP8Pyohi?=
+ =?us-ascii?Q?0+Y+ITno4XZRHh7AqNrtG0wWu5EYPto0V221uOgIz4smSWFsyFGDtVj1vnIg?=
+ =?us-ascii?Q?QkCqYAUBLjt1G/sKWjtpR009xiebuaNQ/CkBJGGulyRXTG7aBlkpH+OFPdFz?=
+ =?us-ascii?Q?21dYS/FrgSm1o/DtI9M1EqkvxUAgmsMd2W0ZZ2yNj+tb45PbUml6cioggmcE?=
+ =?us-ascii?Q?mCGBAXHTU+AjUDMorZS/TRuZ7kEutdX/IhBzanNSscsc5NcM1prz3BUn4l5C?=
+ =?us-ascii?Q?GgLheZ0E/HYBImDO5bsf9LME+H3Rn9cU4nLBpd4CH6e/k+dPx4f9SCJRD5lp?=
+ =?us-ascii?Q?l7lPtsCLGNgLlv8gG7FtRnnShEcl8ZsbkQ4dtzvDpXmHSrPxB4wopkmqylr4?=
+ =?us-ascii?Q?iZ/1VbhqsMM6LiBSog9U9LmMDqOarlS/0eavAx/KyHuygX0Frc90ijlE8d/j?=
+ =?us-ascii?Q?JtNrR/dJhbt2kk3k8ZX6BAv0epgb84woudt/z3IAPH5J/QOVMhZWwLHMiYdg?=
+ =?us-ascii?Q?jFSFj0X8t9loQf38JbICiMqmZCvZ1Y/QNkk7STS4Et2O1B0jTUau/kkFvxIl?=
+ =?us-ascii?Q?lzmZxxi70xU1grrUyiIJLpre0Q0hOTNHxpBnmJngQ0V2UhoSkSa7UKCUQ4lV?=
+ =?us-ascii?Q?D0Dx73xGDJfWKu1P0KT+7gQt/A0ey/eEbPLv6FxW2oZLD1pslTdGGRzoaySH?=
+ =?us-ascii?Q?D0X6rFKePVDexQc6L96brjYpJteXsd3eoN4968MWg/3tMArxwVIaKyjubztz?=
+ =?us-ascii?Q?ZyeaPBvr2xDKRjReD0GN9l77azEpOai9serXEU072GmBZ0ZWp+EJqZx1rd6z?=
+ =?us-ascii?Q?XYUR6Gmf1gFwZE1ZETgyI2gBCkadwXSUH9AqTL1vIG/t3jz9koXyewsWp2Qm?=
+ =?us-ascii?Q?K8OR0A=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR11MB5621.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6aa1d980-51e0-4e8e-70cf-08d9e6830a47
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Feb 2022 19:34:33.5944
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GowbB0hzmdNscO6oq9pPjOodrTTQT7way0wUcIEEgHEV5EkxJb/l5ANNmAtE+WYMPVTRRO5sD7LFrJOUn7jt2M+hbHmL0vBlPa0gNcKSDzk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4009
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 2:33 PM Mauricio V=C3=A1squez <mauricio@kinvolk.io>=
- wrote:
->
-> This commit implements the logic to record the relocation information
-> for the different kind of relocations.
->
-> btfgen_record_field_relo() uses the target specification to save all the
-> types that are involved in a field-based CO-RE relocation. In this case
-> types resolved and added recursively (using btfgen_put_type()).
-> Only the struct and union members and their types) involved in the
-> relocation are added to optimize the size of the generated BTF file.
->
-> On the other hand, btfgen_record_type_relo() saves the types involved in
-> a type-based CO-RE relocation. In this case all the members for the
 
-Do I understand correctly that if someone does
-bpf_core_type_size(struct task_struct), you'll save not just
-task_struct, but also any type that directly and indirectly referenced
-from any task_struct's field, even if that is through a pointer. As
-in, do you substitute forward declarations for types that are never
-directly used? If not, that's going to be very suboptimal for
-something like task_struct and any other type that's part of a big
-cluster of types.
 
-> struct and union types are added. This is not strictly required since
-> libbpf doesn't use them while performing this kind of relocation,
-> however that logic could change on the future. Additionally, we expect
-> that the number of this kind of relocations in an BPF object to be very
-> low, hence the impact on the size of the generated BTF should be
-> negligible.
->
-> Finally, btfgen_record_enumval_relo() saves the whole enum type for
-> enum-based relocations.
->
-> Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
-> Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
-> Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
-> Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
+> -----Original Message-----
+> From: Samuel Mendoza-Jonas <samjonas@amazon.com>
+> Sent: Thursday, January 13, 2022 12:33 AM
+> To: netdev@vger.kernel.org; intel-wired-lan@lists.osuosl.org
+> Cc: Samuel Mendoza-Jonas <samjonas@amazon.com>; Brandeburg, Jesse
+> <jesse.brandeburg@intel.com>; David S . Miller <davem@davemloft.net>;
+> Nguyen, Anthony L <anthony.l.nguyen@intel.com>; Jakub Kicinski
+> <kuba@kernel.org>; linux-kernel@vger.kernel.org
+> Subject: [PATCH net] ixgbevf: Require large buffers for build_skb on 8259=
+9VF
+>=20
+> From 4.17 onwards the ixgbevf driver uses build_skb() to build an skb aro=
+und
+> new data in the page buffer shared with the ixgbe PF.
+> This uses either a 2K or 3K buffer, and offsets the DMA mapping by
+> NET_SKB_PAD + NET_IP_ALIGN. When using a smaller buffer RXDCTL is set
+> to ensure the PF does not write a full 2K bytes into the buffer, which is
+> actually 2K minus the offset.
+>=20
+> However on the 82599 virtual function, the RXDCTL mechanism is not
+> available. The driver attempts to work around this by using the SET_LPE
+> mailbox method to lower the maximm frame size, but the ixgbe PF driver
+> ignores this in order to keep the PF and all VFs in sync[0].
+>=20
+> This means the PF will write up to the full 2K set in SRRCTL, causing it =
+to write
+> NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the buffer.
+> With 4K pages split into two buffers, this means it either writes
+> NET_SKB_PAD + NET_IP_ALIGN bytes past the first buffer (and into the
+> second), or NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the DMA
+> mapping.
+>=20
+> Avoid this by only enabling build_skb when using "large" buffers (3K).
+> These are placed in each half of an order-1 page, preventing the PF from
+> writing past the end of the mapping.
+>=20
+> [0]: Technically it only ever raises the max frame size, see
+> ixgbe_set_vf_lpe() in ixgbe_sriov.c
+>=20
+> Signed-off-by: Samuel Mendoza-Jonas <samjonas@amazon.com>
 > ---
->  tools/bpf/bpftool/gen.c | 260 +++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 257 insertions(+), 3 deletions(-)
->
-> diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-> index bb9c56401ee5..7413ec808a80 100644
-> --- a/tools/bpf/bpftool/gen.c
-> +++ b/tools/bpf/bpftool/gen.c
-> @@ -1119,9 +1119,17 @@ static int btf_save_raw(const struct btf *btf, con=
-st char *path)
->         return err;
->  }
->
-> +struct btfgen_member {
-> +       struct btf_member *member;
-> +       int idx;
-> +};
-> +
->  struct btfgen_type {
->         struct btf_type *type;
->         unsigned int id;
-> +       bool all_members;
-> +
-> +       struct hashmap *members;
->  };
->
->  struct btfgen_info {
-> @@ -1151,6 +1159,19 @@ static void *u32_as_hash_key(__u32 x)
->
->  static void btfgen_free_type(struct btfgen_type *type)
->  {
-> +       struct hashmap_entry *entry;
-> +       size_t bkt;
-> +
-> +       if (!type)
-> +               return;
-> +
-> +       if (!IS_ERR_OR_NULL(type->members)) {
-> +               hashmap__for_each_entry(type->members, entry, bkt) {
-> +                       free(entry->value);
-> +               }
-> +               hashmap__free(type->members);
-> +       }
-> +
->         free(type);
->  }
->
-> @@ -1199,19 +1220,252 @@ btfgen_new_info(const char *targ_btf_path)
->         return info;
->  }
->
-> +static int btfgen_add_member(struct btfgen_type *btfgen_type,
-> +                            struct btf_member *btf_member, int idx)
-> +{
-> +       struct btfgen_member *btfgen_member;
-> +       int err;
-> +
-> +       /* create new members hashmap for this btfgen type if needed */
-> +       if (!btfgen_type->members) {
-> +               btfgen_type->members =3D hashmap__new(btfgen_hash_fn, btf=
-gen_equal_fn, NULL);
-> +               if (IS_ERR(btfgen_type->members))
-> +                       return PTR_ERR(btfgen_type->members);
-> +       }
-> +
-> +       btfgen_member =3D calloc(1, sizeof(*btfgen_member));
-> +       if (!btfgen_member)
-> +               return -ENOMEM;
-> +       btfgen_member->member =3D btf_member;
-> +       btfgen_member->idx =3D idx;
-> +       /* add btf_member as member to given btfgen_type */
-> +       err =3D hashmap__add(btfgen_type->members, uint_as_hash_key(btfge=
-n_member->idx),
-> +                          btfgen_member);
-> +       if (err) {
-> +               free(btfgen_member);
-> +               if (err !=3D -EEXIST)
+>  drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 13 +++++++------
+>  1 file changed, 7 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+> b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+> index 0015fcf1df2b..0f293acd17e8 100644
+> --- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+> +++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
 
-why not check that such a member exists before doing btfgen_member allocati=
-on?
-
-> +                       return err;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static struct btfgen_type *btfgen_get_type(struct btfgen_info *info, int=
- id)
-> +{
-> +       struct btfgen_type *type =3D NULL;
-> +
-> +       hashmap__find(info->types, uint_as_hash_key(id), (void **)&type);
-
-if (!hashmap__find(...))
-   return NULL;
-
-> +
-> +       return type;
-> +}
-> +
-> +static struct btfgen_type *
-> +_btfgen_put_type(struct btf *btf, struct btfgen_info *info, struct btf_t=
-ype *btf_type,
-> +                unsigned int id, bool all_members)
-> +{
-> +       struct btfgen_type *btfgen_type, *tmp;
-> +       struct btf_array *array;
-> +       unsigned int child_id;
-> +       struct btf_member *m;
-> +       int err, i, n;
-> +
-> +       /* check if we already have this type */
-> +       if (hashmap__find(info->types, uint_as_hash_key(id), (void **) &b=
-tfgen_type)) {
-> +               if (!all_members || btfgen_type->all_members)
-> +                       return btfgen_type;
-> +       } else {
-> +               btfgen_type =3D calloc(1, sizeof(*btfgen_type));
-> +               if (!btfgen_type)
-> +                       return NULL;
-> +
-> +               btfgen_type->type =3D btf_type;
-> +               btfgen_type->id =3D id;
-> +
-> +               /* append this type to the types list before anything els=
-e */
-
-what do you mean by "before anything else"?
-
-> +               err =3D hashmap__add(info->types, uint_as_hash_key(btfgen=
-_type->id), btfgen_type);
-> +               if (err) {
-> +                       free(btfgen_type);
-> +                       return NULL;
-> +               }
-> +       }
-> +
-> +       /* avoid infinite recursion and yet be able to add all
-> +        * fields/members for types also managed by this function
-> +        */
-> +       btfgen_type->all_members =3D all_members;
-> +
-> +       /* recursively add other types needed by it */
-> +       switch (btf_kind(btfgen_type->type)) {
-> +       case BTF_KIND_UNKN:
-> +       case BTF_KIND_INT:
-> +       case BTF_KIND_FLOAT:
-> +       case BTF_KIND_ENUM:
-> +               break;
-> +       case BTF_KIND_STRUCT:
-> +       case BTF_KIND_UNION:
-> +               /* doesn't need resolution if not adding all members */
-> +               if (!all_members)
-> +                       break;
-> +
-> +               n =3D btf_vlen(btf_type);
-> +               m =3D btf_members(btf_type);
-> +               for (i =3D 0; i < n; i++, m++) {
-> +                       btf_type =3D (struct btf_type *) btf__type_by_id(=
-btf, m->type);
-
-why `const struct btf_type *` doesn't work everywhere? You are not
-modifying btf_type itself, no?
-
-> +
-> +                       /* add all member types */
-> +                       tmp =3D _btfgen_put_type(btf, info, btf_type, m->=
-type, all_members);
-> +                       if (!tmp)
-> +                               return NULL;
-> +
-> +                       /* add all members */
-> +                       err =3D btfgen_add_member(btfgen_type, m, i);
-> +                       if (err)
-> +                               return NULL;
-> +               }
-> +               break;
-> +       case BTF_KIND_PTR:
-> +               if (!all_members)
-> +                       break;
-> +       /* fall through */
-> +       /* Also add the type it's pointing to when adding all members */
-> +       case BTF_KIND_CONST:
-> +       case BTF_KIND_VOLATILE:
-> +       case BTF_KIND_TYPEDEF:
-> +               child_id =3D btf_type->type;
-> +               btf_type =3D (struct btf_type *) btf__type_by_id(btf, chi=
-ld_id);
-> +
-> +               tmp =3D _btfgen_put_type(btf, info, btf_type, child_id, a=
-ll_members);
-> +               if (!tmp)
-> +                       return NULL;
-> +               break;
-> +       case BTF_KIND_ARRAY:
-> +               array =3D btf_array(btfgen_type->type);
-> +
-> +               /* add type for array type */
-> +               btf_type =3D (struct btf_type *) btf__type_by_id(btf, arr=
-ay->type);
-> +               tmp =3D _btfgen_put_type(btf, info, btf_type, array->type=
-, all_members);
-> +               if (!tmp)
-> +                       return NULL;
-> +
-> +               /* add type for array's index type */
-> +               btf_type =3D (struct btf_type *) btf__type_by_id(btf, arr=
-ay->index_type);
-> +               tmp =3D _btfgen_put_type(btf, info, btf_type, array->inde=
-x_type, all_members);
-> +               if (!tmp)
-> +                       return NULL;
-> +               break;
-> +       /* tells if some other type needs to be handled */
-> +       default:
-> +               p_err("unsupported kind: %s (%d)",
-> +                     btf_kind_str(btfgen_type->type), btfgen_type->id);
-> +               errno =3D EINVAL;
-> +               return NULL;
-> +       }
-> +
-> +       return btfgen_type;
-> +}
-> +
-> +/* Put type in the list. If the type already exists it's returned, other=
-wise a
-> + * new one is created and added to the list. This is called recursively =
-adding
-> + * all the types that are needed for the current one.
-> + */
-> +static struct btfgen_type *
-> +btfgen_put_type(struct btf *btf, struct btfgen_info *info, struct btf_ty=
-pe *btf_type,
-> +               unsigned int id)
-> +{
-> +       return _btfgen_put_type(btf, info, btf_type, id, false);
-> +}
-> +
-> +/* Same as btfgen_put_type, but adding all members, from given complex t=
-ype, recursively */
-> +static struct btfgen_type *
-> +btfgen_put_type_all(struct btf *btf, struct btfgen_info *info,
-> +                   struct btf_type *btf_type, unsigned int id)
-> +{
-> +       return _btfgen_put_type(btf, info, btf_type, id, true);
-> +}
-
-these wrappers seem unnecessary, just pass false/true in 5 call sites
-below without extra wrapping of _btfgen_put_type (and call it
-btfgen_put_type then)
-
-> +
->  static int btfgen_record_field_relo(struct btfgen_info *info, struct bpf=
-_core_spec *targ_spec)
->  {
-> -       return -EOPNOTSUPP;
-> +       struct btf *btf =3D (struct btf *) info->src_btf;
-> +       struct btfgen_type *btfgen_type;
-> +       struct btf_member *btf_member;
-> +       struct btf_type *btf_type;
-> +       struct btf_array *array;
-> +       unsigned int id;
-> +       int idx, err;
-> +
-> +       btf_type =3D (struct btf_type *) btf__type_by_id(btf, targ_spec->=
-root_type_id);
-> +
-> +       /* create btfgen_type for root type */
-> +       btfgen_type =3D btfgen_put_type(btf, info, btf_type, targ_spec->r=
-oot_type_id);
-> +       if (!btfgen_type)
-> +               return -errno;
-> +
-> +       /* add types for complex types (arrays, unions, structures) */
-> +       for (int i =3D 1; i < targ_spec->raw_len; i++) {
-> +               /* skip typedefs and mods */
-> +               while (btf_is_mod(btf_type) || btf_is_typedef(btf_type)) =
-{
-> +                       id =3D btf_type->type;
-> +                       btfgen_type =3D btfgen_get_type(info, id);
-> +                       if (!btfgen_type)
-> +                               return -ENOENT;
-> +                       btf_type =3D (struct btf_type *) btf__type_by_id(=
-btf, id);
-> +               }
-> +
-> +               switch (btf_kind(btf_type)) {
-> +               case BTF_KIND_STRUCT:
-> +               case BTF_KIND_UNION:
-> +                       idx =3D targ_spec->raw_spec[i];
-> +                       btf_member =3D btf_members(btf_type) + idx;
-> +                       btf_type =3D (struct btf_type *) btf__type_by_id(=
-btf, btf_member->type);
-> +
-> +                       /* add member to relocation type */
-> +                       err =3D btfgen_add_member(btfgen_type, btf_member=
-, idx);
-> +                       if (err)
-> +                               return err;
-> +                       /* put btfgen type */
-> +                       btfgen_type =3D btfgen_put_type(btf, info, btf_ty=
-pe, btf_member->type);
-> +                       if (!btfgen_type)
-> +                               return -errno;
-> +                       break;
-> +               case BTF_KIND_ARRAY:
-> +                       array =3D btf_array(btf_type);
-> +                       btfgen_type =3D btfgen_get_type(info, array->type=
-);
-> +                       if (!btfgen_type)
-> +                               return -ENOENT;
-> +                       btf_type =3D (struct btf_type *) btf__type_by_id(=
-btf, array->type);
-
-should index_type be added as well?
-
-> +                       break;
-> +               default:
-> +                       p_err("unsupported kind: %s (%d)",
-> +                             btf_kind_str(btf_type), btf_type->type);
-> +                       return -EINVAL;
-> +               }
-> +       }
-> +
-> +       return 0;
->  }
->
->  static int btfgen_record_type_relo(struct btfgen_info *info, struct bpf_=
-core_spec *targ_spec)
->  {
-> -       return -EOPNOTSUPP;
-> +       struct btf *btf =3D (struct btf *) info->src_btf;
-> +       struct btfgen_type *btfgen_type;
-> +       struct btf_type *btf_type;
-> +
-> +       btf_type =3D (struct btf_type *) btf__type_by_id(btf, targ_spec->=
-root_type_id);
-> +
-> +       btfgen_type =3D btfgen_put_type_all(btf, info, btf_type, targ_spe=
-c->root_type_id);
-> +       return btfgen_type ? 0 : -errno;
->  }
->
->  static int btfgen_record_enumval_relo(struct btfgen_info *info, struct b=
-pf_core_spec *targ_spec)
->  {
-> -       return -EOPNOTSUPP;
-> +       struct btf *btf =3D (struct btf *) info->src_btf;
-> +       struct btfgen_type *btfgen_type;
-> +       struct btf_type *btf_type;
-> +
-> +       btf_type =3D (struct btf_type *) btf__type_by_id(btf, targ_spec->=
-root_type_id);
-> +
-> +       btfgen_type =3D btfgen_put_type_all(btf, info, btf_type, targ_spe=
-c->root_type_id);
-> +       return btfgen_type ? 0 : -errno;
->  }
->
->  static int btfgen_record_reloc(struct btfgen_info *info, struct bpf_core=
-_spec *res)
-> --
-> 2.25.1
->
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
