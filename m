@@ -2,71 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC4864A6E7B
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 11:17:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B843B4A6E94
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 11:22:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245546AbiBBKRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 05:17:10 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:50907 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232156AbiBBKRI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 05:17:08 -0500
-Received: by mail-il1-f198.google.com with SMTP id m9-20020a92cac9000000b002bafb712945so10533182ilq.17
-        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 02:17:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=T4JU1DoNJxSChrqfuHiopIuSM4M9SJ+2CDXtqoAN2Pk=;
-        b=bofKQmU7VGxWpFwwKYo70Y0qvDxYlI0R1Xq8pvO/VTNMHUih8L3dr8DjdB0Q7wahlf
-         u+3d+SVPyzO3jkYhAl+ueJkJYreaBbnumQxnCZIZgFaWNkH0BTmjbS0ZCrNi2L4LcbiK
-         aJrHtO+ZKSA4iTKasBDjkhIrd0XSN7FpzY9eWfVq2CepbSDM+ohr3MnhafgbXVAHtUnD
-         gEYlvJjypW2aVpcKMRlQvUN2CKgleENfroUA+dcqJ+C/y7OmWSzcUAqI+xuoF2tMTPOA
-         edRiGNXY7vU2aDTtYUUrytVfkoWXhEXsEvvO/W0ol+Q4L3kBeLmaPIOhyGwAIcYjNa1s
-         UItw==
-X-Gm-Message-State: AOAM53127CHaYe9N/wH+I8c2T7QculZxv4wkRRaJ34/ByPKZghaqLlyp
-        SpgK/NxaWxaCwiF4vVNqII2DB5lXPkL2hTaw460j1/WT/Zg+
-X-Google-Smtp-Source: ABdhPJw4KeUmCBVwdZfxRK0hXg1ocwqu6RnrmCRYKKNjNwZR7QIHqD5U3iE9JlZq3uGjGDOB4y0gjrFGMpmgO6wluB+daBCTCT/6
+        id S232287AbiBBKWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 05:22:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240469AbiBBKWQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 05:22:16 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27885C061714
+        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 02:22:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=XwUxtnKYG2jArWYF92TkBdTO8kZwuDfFJDjdNO7fptg=; b=1+TZxzs1b2CaM6TZgM8/MD/EUQ
+        CA9F1J6LOAtLAN2LIMieDlYzLhBWdi/k9gtZOPD0e+twmbHfObEVFznujN3NLGp+ZiZ8JD4ZxTRl+
+        5fa18YUZd4CHR2Da3aWXIadqHmw+eq8IMSw+/XMnr3RdB/Z5XyasJoh3THl95XdgOw/TbOFrEvFeY
+        X2/uuV9Ss7x/giVe69Ekvus7SXm634xSqRxzm9DhYrrekAjPVWkHs/J+zsPsj7l6LUvgwmF1ac9fq
+        JwKOEd7nsQpP+uv5bJ2dLqZ5aW+Rr8q8IM1zbvPt/eV+neto8rJeTn6lQIg12/DuahKFD232DQNZH
+        YhXnxcGw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56994)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nFCmA-0001TM-E9; Wed, 02 Feb 2022 10:22:10 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nFCm7-0002xt-JP; Wed, 02 Feb 2022 10:22:07 +0000
+Date:   Wed, 2 Feb 2022 10:22:07 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: [PATCH net-next 0/5] Trivial DSA conversions to
+ phylink_generic_validate()
+Message-ID: <YfpbTzsE1MWz5Lr/@shell.armlinux.org.uk>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1561:: with SMTP id k1mr18620390ilu.146.1643797028546;
- Wed, 02 Feb 2022 02:17:08 -0800 (PST)
-Date:   Wed, 02 Feb 2022 02:17:08 -0800
-In-Reply-To: <0000000000000560cc05d4bce058@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f82ecc05d706513d@google.com>
-Subject: Re: [syzbot] general protection fault in hidraw_release
-From:   syzbot <syzbot+953a33deaf38c66a915e@syzkaller.appspotmail.com>
-To:     benjamin.tissoires@redhat.com, changbin.du@intel.com,
-        christian.brauner@ubuntu.com, daniel@iogearbox.net,
-        davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
-        jikos@kernel.org, kuba@kernel.org, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yajun.deng@linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+Hi,
 
-commit e4b8954074f6d0db01c8c97d338a67f9389c042f
-Author: Eric Dumazet <edumazet@google.com>
-Date:   Tue Dec 7 01:30:37 2021 +0000
+This series converts five DSA drivers to use phylink_generic_validate().
+No feedback or testing reports were received from the CFT posting.
 
-    netlink: add net device refcount tracker to struct ethnl_req_info
+ drivers/net/dsa/bcm_sf2.c           | 54 +++++++++---------------------
+ drivers/net/dsa/microchip/ksz8795.c | 45 +++++++------------------
+ drivers/net/dsa/qca/ar9331.c        | 45 ++++++-------------------
+ drivers/net/dsa/qca8k.c             | 66 +++++++++++----------------------=
+----
+ drivers/net/dsa/xrs700x/xrs700x.c   | 29 +++++++---------
+ 5 files changed, 67 insertions(+), 172 deletions(-)
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15179fa8700000
-start commit:   9f7fb8de5d9b Merge tag 'spi-fix-v5.17-rc2' of git://git.ke..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=17179fa8700000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13179fa8700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3e56c9b92aaaee24
-dashboard link: https://syzkaller.appspot.com/bug?extid=953a33deaf38c66a915e
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15fff530700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=106469f0700000
-
-Reported-by: syzbot+953a33deaf38c66a915e@syzkaller.appspotmail.com
-Fixes: e4b8954074f6 ("netlink: add net device refcount tracker to struct ethnl_req_info")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+--=20
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
