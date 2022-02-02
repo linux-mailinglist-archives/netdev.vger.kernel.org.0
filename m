@@ -2,77 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 610D24A6B0F
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 05:50:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A04A4A6B14
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 05:51:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244600AbiBBEuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 23:50:12 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41762 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231669AbiBBEuM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 23:50:12 -0500
+        id S244628AbiBBEv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 23:51:28 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42098 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231474AbiBBEv1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 23:51:27 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1CCD8B83009
-        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 04:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D4C67C340EC;
-        Wed,  2 Feb 2022 04:50:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B3AE6170A;
+        Wed,  2 Feb 2022 04:51:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 603D8C004E1;
+        Wed,  2 Feb 2022 04:51:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643777409;
-        bh=YUGqJcXGOr7/xJDGTmzpu4Xo+5FAf7313XBgeg76Wwg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kFQZXgIY9TS4fb72Fc1INt1MsTJ7nKtGlYrplLJlHwNnnloSVnPZ1MhdjVeSqKnFe
-         xeZiLMOyrwUBIOHCpH5P49sf60KvCABO3tI2+jsFRH/W2VT1cPtDA6TFoff0R5JYZ6
-         resdRgtROun3RTL05Wgh/JsvAG6Lgy9lmMQLCvecWgiOoPo28/JjJXKE8V9z7A3Joz
-         QtaNW1S/GnBJ7h9cXxsb9yBbyjJJDqD4Di4mW4oEhZHJNR5xOB3HsPYQJicbzieyZM
-         O6KxACI2cbzzxnn68+azksCZ64wQrDHkCkungg72Nj3jYVMKBEqrKVEUuZuaYsEVD/
-         G0tkLVz4tmT9A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BBA4BE5D091;
-        Wed,  2 Feb 2022 04:50:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1643777486;
+        bh=jAsmf+yg+yTEjfozNxKTPJAkY11OeZStMsb+udKaqnM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qkm/nWUO6J9yVevumHHkYMrdh/l/btpaE1dGYxWOqAUHmlhoJcNPsQ5znOEC80PWS
+         FEAHHyBFTD2uIpsTj/b5qgkmp1h+h8VoII7oyMXQQ+qoLwhEE5lRv6t8UQdtBYRDEk
+         AyS6nh8FIhwkaAmFX7S5CGEPR3ChGscERPZZ2WtB143oympV9iOnhqXtH0jTsoG1U/
+         vNcoZfYlctdF2sjUgW7b+aYlx8t4lSoeKkKDdZk7yepCtTqg9lrJmttZ9oKPQyORwX
+         5Z+fmwlVJzeIAUkRD+7pw3bFDmCiJEWyaoyyACqMQyOO8K/0ADts0VbyMpsrtdDlFv
+         kH2+5ANxQE4Qg==
+Date:   Tue, 1 Feb 2022 20:51:25 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Joseph CHAMG <josright123@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com,
+        andrew@lunn.ch, leon@kernel.org
+Subject: Re: [PATCH v16, 2/2] net: Add dm9051 driver
+Message-ID: <20220201205125.54a28bca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220129164346.5535-3-josright123@gmail.com>
+References: <20220129164346.5535-1-josright123@gmail.com>
+        <20220129164346.5535-3-josright123@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates
- 2022-01-31
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164377740976.22410.8031500159418958196.git-patchwork-notify@kernel.org>
-Date:   Wed, 02 Feb 2022 04:50:09 +0000
-References: <20220201000522.505909-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220201000522.505909-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sun, 30 Jan 2022 00:43:46 +0800 Joseph CHAMG wrote:
+> +		rdptr = skb_put(skb, rxlen - 4);
+> +		ret = regmap_noinc_read(db->regmap_dm, DM_SPI_MRCMD, rdptr, rxlen);
+> +		if (ret) {
 
-This series was applied to netdev/net.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+should be counted as rx_error
 
-On Mon, 31 Jan 2022 16:05:20 -0800 you wrote:
-> This series contains updates to i40e driver only.
-> 
-> Jedrzej fixes a condition check which would cause an error when
-> resetting bandwidth when DCB is active with one TC.
-> 
-> Karen resolves a null pointer dereference that could occur when removing
-> the driver while VSI rings are being disabled.
-> 
-> [...]
+> +			dev_kfree_skb(skb);
+> +			return ret;
+> +		}
+> +
+> +		ret = regmap_write(db->regmap_dm, DM9051_ISR, 0xff); /* to stop mrcmd */
+> +		if (ret)
+> +			return ret;
 
-Here is the summary with links:
-  - [net,1/2] i40e: Fix reset bw limit when DCB enabled with 1 TC
-    https://git.kernel.org/netdev/net/c/3d2504663c41
-  - [net,2/2] i40e: Fix reset path while removing the driver
-    https://git.kernel.org/netdev/net/c/6533e558c650
+leaks skb, also should be counted as rx_error
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> +		skb->protocol = eth_type_trans(skb, db->ndev);
+> +		if (db->ndev->features & NETIF_F_RXCSUM)
+> +			skb_checksum_none_assert(skb);
+> +		netif_rx_ni(skb);
+> +		db->ndev->stats.rx_bytes += rxlen;
+> +		db->ndev->stats.rx_packets++;
+> +		scanrr++;
+> +	} while (!ret);
+> +
+> +	return scanrr;
+> +}
+> +
+> +/* transmit a packet,
+> + * return value,
+> + *   0 - succeed
+> + *  -ETIMEDOUT - timeout error
+> + */
+> +static int dm9051_single_tx(struct board_info *db, u8 *buff, unsigned int len)
+> +{
+> +	int ret;
+> +
+> +	ret = dm9051_map_xmitpoll(db);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_noinc_write(db->regmap_dm, DM_SPI_MWCMD, buff, len);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_bulk_write(db->regmap_dmbulk, DM9051_TXPLL, &len, 2);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return regmap_write(db->regmap_dm, DM9051_TCR, TCR_TXREQ);
+> +}
+> +
+> +static int dm9051_loop_tx(struct board_info *db)
+> +{
+> +	struct net_device *ndev = db->ndev;
+> +	int ntx = 0;
+> +	int ret;
+> +
+> +	while (!skb_queue_empty(&db->txq)) {
+> +		struct sk_buff *skb;
+> +
+> +		skb = skb_dequeue(&db->txq);
+> +		if (skb) {
+> +			ntx++;
+> +			ret = dm9051_single_tx(db, skb->data, skb->len);
+> +			dev_kfree_skb(skb);
+> +			if (ret < 0)
+> +				return 0;
 
+Should be counted as tx error?
+
+> +			ndev->stats.tx_bytes += skb->len;
+> +			ndev->stats.tx_packets++;
+> +		}
+> +
+> +		if (netif_queue_stopped(ndev) &&
+> +		    (skb_queue_len(&db->txq) < DM9051_TX_QUE_LO_WATER))
+> +			netif_wake_queue(ndev);
+> +	}
+> +
+> +	return ntx;
 
