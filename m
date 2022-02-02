@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D84464A70C5
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 13:28:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E979F4A70C7
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 13:28:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344067AbiBBM24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1344143AbiBBM24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 2 Feb 2022 07:28:56 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:46532 "EHLO
+Received: from Galois.linutronix.de ([193.142.43.55]:46540 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229955AbiBBM24 (ORCPT
+        with ESMTP id S231841AbiBBM24 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 07:28:56 -0500
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643804934;
+        s=2020; t=1643804935;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uxK2Br+YSRgI8layahcCJx/qLAO0UkG+gJh96tUahN0=;
-        b=kaTIMGt1u8YwJHjfZz40FPcEepCRDvWM2zASqyzskNmcFdvhgLpgXEXQj+xSYbfCMAaC/n
-        meBxkx7tkzWLx7WYmHOkUVc3iN0qpFsXk1TIh/EcJv+HHYZjZUKyfN76xc9UN/UCz+pI39
-        ZAuPGMHWbtpEs3sNpzDSD+6Xqub8PMUhAKyzXARrFT2TOw4iv/nWcRAL24Q212rR4q47SN
-        g5Vsm8HOVIf3WdDAeIUkN/0Hp4JzDhypOlIa69Mw16e0J1XrONTERAZzTbplMv9FMzJhjo
-        AVubCJSnfDKKF7Xp31Tz8EOCT51piP6V51WhThsoHEoI6jP4D1XzfFPMXtJGzQ==
+        bh=3gaE2CnG9k+LQIe/sH7m2AqTnxKkca6kKPvnnhRPdxM=;
+        b=bYeYj6+w1Ct/bV2eTxYhNSovUyZ+ayN2RRd1RIarP9MFtEftJJnMMlCFyOO9Paagv34K6k
+        XR/lhf6oro1Ph0+qRYFwfKZnAL9zj3aXXYdEgAbOMs9rbqv8PQcAmyLn+gj6Z9R4akqNCB
+        LV8uweL4En0cl41PsMlbO7+tlQqKC7TBNpWOkfRmngeNNflHoxkeIaQSN3q2MdbRUkZOYm
+        efe+bRxRppKxjBYSCIDKt7hmhvUaBN2srq4xMdhEgpCk9ZJISloxMf1XyLWG5vMbkSI5SD
+        6JX3nJThkCR2EK181CTcfZ/F78X9n3DNegcgIt6UwR2X84AI1XP8ngzP/DJF5w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643804934;
+        s=2020e; t=1643804935;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uxK2Br+YSRgI8layahcCJx/qLAO0UkG+gJh96tUahN0=;
-        b=dcOMhmhZoxT1bMa0qCKsJ14XIaEdRnOin1N4DHVjjYpOpJFnE7TP59FA08b7F5CRmZuvMU
-        Und4qPBKeZqRQqDg==
+        bh=3gaE2CnG9k+LQIe/sH7m2AqTnxKkca6kKPvnnhRPdxM=;
+        b=+tXhZooXTRVTAjLmkAbTv9Ws669/LWZMNyqfUdsHNFh84X9t0IvoXngzfHR9SvSPIiV7Ge
+        2U+ApwRXbBRvMLAA==
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -43,9 +43,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         John Fastabend <john.fastabend@gmail.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH net-next 3/4] net: dev: Makes sure netif_rx() can be invoked in any context.
-Date:   Wed,  2 Feb 2022 13:28:47 +0100
-Message-Id: <20220202122848.647635-4-bigeasy@linutronix.de>
+Subject: [PATCH net-next 4/4] net: dev: Make rps_lock() disable interrupts.
+Date:   Wed,  2 Feb 2022 13:28:48 +0100
+Message-Id: <20220202122848.647635-5-bigeasy@linutronix.de>
 In-Reply-To: <20220202122848.647635-1-bigeasy@linutronix.de>
 References: <20220202122848.647635-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -54,151 +54,192 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dave suggested a while ago (eleven years by now) "Let's make netif_rx()
-work in all contexts and get rid of netif_rx_ni()". Eric agreed and
-pointed out that modern devices should use netif_receive_skb() to avoid
-the overhead.
-In the meantime someone added another variant, netif_rx_any_context(),
-which behaves as suggested.
+Disabling interrupts and in the RPS case locking input_pkt_queue is
+split into local_irq_disable() and optional spin_lock().
 
-netif_rx() must be invoked with disabled bottom halves to ensure that
-pending softirqs, which were raised within the function, are handled.
-netif_rx_ni() can be invoked only from process context (bottom halves
-must be enabled) because the function handles pending softirqs without
-checking if bottom halves were disabled or not.
-netif_rx_any_context() invokes on the former functions by checking
-in_interrupts().
+This breaks on PREEMPT_RT because the spinlock_t typed lock can not be
+acquired with disabled interrupts.
+The sections in which the lock is acquired is usually short in a sense that=
+ it
+is not causing long und unbounded latiencies. One exception is the
+skb_flow_limit() invocation which may invoke a BPF program (and may
+require sleeping locks).
 
-netif_rx() could be taught to handle both cases (disabled and enabled
-bottom halves) by simply disabling bottom halves while invoking
-netif_rx_internal(). The local_bh_enable() invocation will then invoke
-pending softirqs only if the BH-disable counter drops to zero.
+By moving local_irq_disable() + spin_lock() into rps_lock(), we can keep
+interrupts disabled on !PREEMPT_RT and enabled on PREEMPT_RT kernels.
+Without RPS on a PREEMPT_RT kernel, the needed synchronisation happens
+as part of local_bh_disable() on the local CPU.
+Since interrupts remain enabled, enqueue_to_backlog() needs to disable
+interrupts for ____napi_schedule().
 
-Add a local_bh_disable() section in netif_rx() to ensure softirqs are
-handled if needed. Make netif_rx_ni() and netif_rx_any_context() invoke
-netif_rx() so they can be removed once they are no more users left.
-
-Link: https://lkml.kernel.org/r/20100415.020246.218622820.davem@davemloft.n=
-et
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- include/linux/netdevice.h  | 13 +++++++++++--
- include/trace/events/net.h | 14 --------------
- net/core/dev.c             | 34 ++--------------------------------
- 3 files changed, 13 insertions(+), 48 deletions(-)
+ net/core/dev.c | 72 ++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 44 insertions(+), 28 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index e490b84732d16..4086f312f814e 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3669,8 +3669,17 @@ u32 bpf_prog_run_generic_xdp(struct sk_buff *skb, st=
-ruct xdp_buff *xdp,
- void generic_xdp_tx(struct sk_buff *skb, struct bpf_prog *xdp_prog);
- int do_xdp_generic(struct bpf_prog *xdp_prog, struct sk_buff *skb);
- int netif_rx(struct sk_buff *skb);
--int netif_rx_ni(struct sk_buff *skb);
--int netif_rx_any_context(struct sk_buff *skb);
-+
-+static inline int netif_rx_ni(struct sk_buff *skb)
-+{
-+	return netif_rx(skb);
-+}
-+
-+static inline int netif_rx_any_context(struct sk_buff *skb)
-+{
-+	return netif_rx(skb);
-+}
-+
- int netif_receive_skb(struct sk_buff *skb);
- int netif_receive_skb_core(struct sk_buff *skb);
- void netif_receive_skb_list_internal(struct list_head *head);
-diff --git a/include/trace/events/net.h b/include/trace/events/net.h
-index 78c448c6ab4c5..032b431b987b6 100644
---- a/include/trace/events/net.h
-+++ b/include/trace/events/net.h
-@@ -260,13 +260,6 @@ DEFINE_EVENT(net_dev_rx_verbose_template, netif_rx_ent=
-ry,
- 	TP_ARGS(skb)
- );
-=20
--DEFINE_EVENT(net_dev_rx_verbose_template, netif_rx_ni_entry,
--
--	TP_PROTO(const struct sk_buff *skb),
--
--	TP_ARGS(skb)
--);
--
- DECLARE_EVENT_CLASS(net_dev_rx_exit_template,
-=20
- 	TP_PROTO(int ret),
-@@ -312,13 +305,6 @@ DEFINE_EVENT(net_dev_rx_exit_template, netif_rx_exit,
- 	TP_ARGS(ret)
- );
-=20
--DEFINE_EVENT(net_dev_rx_exit_template, netif_rx_ni_exit,
--
--	TP_PROTO(int ret),
--
--	TP_ARGS(ret)
--);
--
- DEFINE_EVENT(net_dev_rx_exit_template, netif_receive_skb_list_exit,
-=20
- 	TP_PROTO(int ret),
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 0d13340ed4054..f43d0580fa11d 100644
+index f43d0580fa11d..e9ea56daee2f0 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -4834,47 +4834,17 @@ int netif_rx(struct sk_buff *skb)
- {
- 	int ret;
-=20
-+	local_bh_disable();
- 	trace_netif_rx_entry(skb);
-=20
- 	ret =3D netif_rx_internal(skb);
- 	trace_netif_rx_exit(ret);
-+	local_bh_enable();
-=20
- 	return ret;
+@@ -216,18 +216,38 @@ static inline struct hlist_head *dev_index_hash(struc=
+t net *net, int ifindex)
+ 	return &net->dev_index_head[ifindex & (NETDEV_HASHENTRIES - 1)];
  }
- EXPORT_SYMBOL(netif_rx);
 =20
--int netif_rx_ni(struct sk_buff *skb)
--{
--	int err;
--
--	trace_netif_rx_ni_entry(skb);
--
--	preempt_disable();
--	err =3D netif_rx_internal(skb);
--	if (local_softirq_pending())
--		do_softirq();
--	preempt_enable();
--	trace_netif_rx_ni_exit(err);
--
--	return err;
--}
--EXPORT_SYMBOL(netif_rx_ni);
--
--int netif_rx_any_context(struct sk_buff *skb)
--{
--	/*
--	 * If invoked from contexts which do not invoke bottom half
--	 * processing either at return from interrupt or when softrqs are
--	 * reenabled, use netif_rx_ni() which invokes bottomhalf processing
--	 * directly.
--	 */
--	if (in_interrupt())
--		return netif_rx(skb);
--	else
--		return netif_rx_ni(skb);
--}
--EXPORT_SYMBOL(netif_rx_any_context);
--
- static __latent_entropy void net_tx_action(struct softirq_action *h)
+-static inline void rps_lock(struct softnet_data *sd)
++static inline void rps_lock_irqsave(struct softnet_data *sd,
++				    unsigned long *flags)
  {
- 	struct softnet_data *sd =3D this_cpu_ptr(&softnet_data);
+-#ifdef CONFIG_RPS
+-	spin_lock(&sd->input_pkt_queue.lock);
+-#endif
++	if (IS_ENABLED(CONFIG_RPS))
++		spin_lock_irqsave(&sd->input_pkt_queue.lock, *flags);
++	else if (!IS_ENABLED(CONFIG_PREEMPT_RT))
++		local_irq_save(*flags);
+ }
+=20
+-static inline void rps_unlock(struct softnet_data *sd)
++static inline void rps_lock_irq_disable(struct softnet_data *sd)
+ {
+-#ifdef CONFIG_RPS
+-	spin_unlock(&sd->input_pkt_queue.lock);
+-#endif
++	if (IS_ENABLED(CONFIG_RPS))
++		spin_lock_irq(&sd->input_pkt_queue.lock);
++	else if (!IS_ENABLED(CONFIG_PREEMPT_RT))
++		local_irq_disable();
++}
++
++static inline void rps_unlock_irq_restore(struct softnet_data *sd,
++					  unsigned long *flags)
++{
++	if (IS_ENABLED(CONFIG_RPS))
++		spin_unlock_irqrestore(&sd->input_pkt_queue.lock, *flags);
++	else if (!IS_ENABLED(CONFIG_PREEMPT_RT))
++		local_irq_restore(*flags);
++}
++
++static inline void rps_unlock_irq_enable(struct softnet_data *sd)
++{
++	if (IS_ENABLED(CONFIG_RPS))
++		spin_unlock_irq(&sd->input_pkt_queue.lock);
++	else if (!IS_ENABLED(CONFIG_PREEMPT_RT))
++		local_irq_enable();
+ }
+=20
+ static struct netdev_name_node *netdev_name_node_alloc(struct net_device *=
+dev,
+@@ -4525,9 +4545,7 @@ static int enqueue_to_backlog(struct sk_buff *skb, in=
+t cpu,
+=20
+ 	sd =3D &per_cpu(softnet_data, cpu);
+=20
+-	local_irq_save(flags);
+-
+-	rps_lock(sd);
++	rps_lock_irqsave(sd, &flags);
+ 	if (!netif_running(skb->dev))
+ 		goto drop;
+ 	qlen =3D skb_queue_len(&sd->input_pkt_queue);
+@@ -4536,26 +4554,30 @@ static int enqueue_to_backlog(struct sk_buff *skb, =
+int cpu,
+ enqueue:
+ 			__skb_queue_tail(&sd->input_pkt_queue, skb);
+ 			input_queue_tail_incr_save(sd, qtail);
+-			rps_unlock(sd);
+-			local_irq_restore(flags);
++			rps_unlock_irq_restore(sd, &flags);
+ 			return NET_RX_SUCCESS;
+ 		}
+=20
+ 		/* Schedule NAPI for backlog device
+ 		 * We can use non atomic operation since we own the queue lock
++		 * PREEMPT_RT needs to disable interrupts here for
++		 * synchronisation needed in napi_schedule.
+ 		 */
++		if (IS_ENABLED(CONFIG_PREEMPT_RT))
++			local_irq_disable();
++
+ 		if (!__test_and_set_bit(NAPI_STATE_SCHED, &sd->backlog.state)) {
+ 			if (!rps_ipi_queued(sd))
+ 				____napi_schedule(sd, &sd->backlog);
+ 		}
++		if (IS_ENABLED(CONFIG_PREEMPT_RT))
++			local_irq_enable();
+ 		goto enqueue;
+ 	}
+=20
+ drop:
+ 	sd->dropped++;
+-	rps_unlock(sd);
+-
+-	local_irq_restore(flags);
++	rps_unlock_irq_restore(sd, &flags);
+=20
+ 	atomic_long_inc(&skb->dev->rx_dropped);
+ 	kfree_skb(skb);
+@@ -5617,8 +5639,7 @@ static void flush_backlog(struct work_struct *work)
+ 	local_bh_disable();
+ 	sd =3D this_cpu_ptr(&softnet_data);
+=20
+-	local_irq_disable();
+-	rps_lock(sd);
++	rps_lock_irq_disable(sd);
+ 	skb_queue_walk_safe(&sd->input_pkt_queue, skb, tmp) {
+ 		if (skb->dev->reg_state =3D=3D NETREG_UNREGISTERING) {
+ 			__skb_unlink(skb, &sd->input_pkt_queue);
+@@ -5626,8 +5647,7 @@ static void flush_backlog(struct work_struct *work)
+ 			input_queue_head_incr(sd);
+ 		}
+ 	}
+-	rps_unlock(sd);
+-	local_irq_enable();
++	rps_unlock_irq_enable(sd);
+=20
+ 	skb_queue_walk_safe(&sd->process_queue, skb, tmp) {
+ 		if (skb->dev->reg_state =3D=3D NETREG_UNREGISTERING) {
+@@ -5645,16 +5665,14 @@ static bool flush_required(int cpu)
+ 	struct softnet_data *sd =3D &per_cpu(softnet_data, cpu);
+ 	bool do_flush;
+=20
+-	local_irq_disable();
+-	rps_lock(sd);
++	rps_lock_irq_disable(sd);
+=20
+ 	/* as insertion into process_queue happens with the rps lock held,
+ 	 * process_queue access may race only with dequeue
+ 	 */
+ 	do_flush =3D !skb_queue_empty(&sd->input_pkt_queue) ||
+ 		   !skb_queue_empty_lockless(&sd->process_queue);
+-	rps_unlock(sd);
+-	local_irq_enable();
++	rps_unlock_irq_enable(sd);
+=20
+ 	return do_flush;
+ #endif
+@@ -5769,8 +5787,7 @@ static int process_backlog(struct napi_struct *napi, =
+int quota)
+=20
+ 		}
+=20
+-		local_irq_disable();
+-		rps_lock(sd);
++		rps_lock_irq_disable(sd);
+ 		if (skb_queue_empty(&sd->input_pkt_queue)) {
+ 			/*
+ 			 * Inline a custom version of __napi_complete().
+@@ -5786,8 +5803,7 @@ static int process_backlog(struct napi_struct *napi, =
+int quota)
+ 			skb_queue_splice_tail_init(&sd->input_pkt_queue,
+ 						   &sd->process_queue);
+ 		}
+-		rps_unlock(sd);
+-		local_irq_enable();
++		rps_unlock_irq_enable(sd);
+ 	}
+=20
+ 	return work;
 --=20
 2.34.1
 
