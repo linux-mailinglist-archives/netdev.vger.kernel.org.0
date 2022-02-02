@@ -2,213 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35A354A707E
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 13:10:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C7764A7081
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 13:11:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240243AbiBBMK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 07:10:29 -0500
-Received: from mga01.intel.com ([192.55.52.88]:4817 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232109AbiBBMK2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Feb 2022 07:10:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643803828; x=1675339828;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YmxMLJ95REGy0bqVN5sejcHYM1laIC+RS0DJHm4FlWs=;
-  b=gsM19nT0/cXJi4kGjBsGyBNNALdL76FHiWqWdXGRwZC1n3FD41EBc5FP
-   1cobBGMaLv2eJXwosWE7TkDglYVHNRM+MPBsE7pMdevruvOXaXcKqrw64
-   XTYv/ypg8AkNxcqhaa8vid/SRD7LyktgUd2DQC+YhJn0OFucjWMdvImfF
-   saPBpuKuIxAMF7bcYe/Pu7Qz4CBlhz9ctGCBbeRhT44XC6Ozuk1VijkWv
-   hLW6pvehuKDQ4img7S14bxeSLQlYGprTCUhLBA5s8sVJOVqbOfpmOq8mv
-   wLsYkCuDJjRT3zPx6Om2R6Se2PA4tAx1DBQMFVS76XTA+Y7UA9ixQOhfF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="272385841"
-X-IronPort-AV: E=Sophos;i="5.88,336,1635231600"; 
-   d="scan'208";a="272385841"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 04:10:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,336,1635231600"; 
-   d="scan'208";a="534832246"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga007.fm.intel.com with ESMTP; 02 Feb 2022 04:10:26 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 212CAPlH013636;
-        Wed, 2 Feb 2022 12:10:25 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [RFC PATCH 2/3] net: gro: minor optimization for dev_gro_receive()
-Date:   Wed,  2 Feb 2022 13:08:27 +0100
-Message-Id: <20220202120827.23716-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <7bbab59c6d6cd2eb4e6d2fb7b2c2636b7d03445d.camel@redhat.com>
-References: <cover.1642519257.git.pabeni@redhat.com> <35d722e246b7c4afb6afb03760df6f664db4ef05.1642519257.git.pabeni@redhat.com> <20220118155620.27706-1-alexandr.lobakin@intel.com> <c262125543e39d6b869e522da0ed59044eb07722.camel@redhat.com> <20220118173903.31823-1-alexandr.lobakin@intel.com> <7bbab59c6d6cd2eb4e6d2fb7b2c2636b7d03445d.camel@redhat.com>
+        id S245663AbiBBML3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 07:11:29 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:52750 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231596AbiBBML0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 07:11:26 -0500
+Received: by mail-il1-f197.google.com with SMTP id m3-20020a056e02158300b002b6e3d1f97cso13884616ilu.19
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 04:11:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=r1mdQGyWTemvOjpoJlyypcNoWRaGad2twbriXxSKjAE=;
+        b=GBr73qOUpyX5U8YCfyrneDGwuu+cPzatnGLB/mhURp7+JrgBNo57nHdQghhsw8BFt9
+         rEudABU9qdVsv/JgRBRiN/ivemMSVfuA8xD3U/a4SiX7vBVR8KWZu9Lhukbjlv4UxJcp
+         ZdNGnDfV8A+OjF/8S65qJKwmyFjVd1E9pXqhD9Pg+fBFBFy1UTU2l8VFYucx7c2Z9G7Y
+         93sO9Rnyct9j18PmJQCUpsvv/jR6eUbpISzna7m0juVtKw+5GyPHzsKWCCdN8ODfe/yx
+         Jpgrsg1K02QXk/SMT4kby9v8KHboyW0jIdB7kCAE8J1Ra7vaaaWkKs1pcSWGoVa1KT0L
+         bdrA==
+X-Gm-Message-State: AOAM531Zhxtb1Mi9Va9q/Cwx42kILNkwm+1wO3b5ovNTNQ9f/8ZvtUsR
+        1fpI1FiZ5afjhvMoFB5jCSpV3fgBTT6iUblk9Z0/MBM/ji2Q
+X-Google-Smtp-Source: ABdhPJzuZ/5x/JPXp+PKC/4oY8hh4XkKP40OR0bMQlLRUBQ9Je4Pqg44TDuDGTEGAFTxyiu99NUMsXIikRTy6Vi2eEHJUqrwyM/z
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a02:94e9:: with SMTP id x96mr15751317jah.80.1643803886048;
+ Wed, 02 Feb 2022 04:11:26 -0800 (PST)
+Date:   Wed, 02 Feb 2022 04:11:26 -0800
+In-Reply-To: <0000000000000a9b7d05d6ee565f@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b559f905d707ea15@google.com>
+Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Write in ringbuf_map_alloc
+From:   syzbot <syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hotforest@gmail.com,
+        houtao1@huawei.com, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
-Date: Wed, 02 Feb 2022 11:09:41 +0100
+syzbot has found a reproducer for the following issue on:
 
-> Hello,
+HEAD commit:    6abab1b81b65 Add linux-next specific files for 20220202
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=13f4b900700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b8d8750556896349
+dashboard link: https://syzkaller.appspot.com/bug?extid=5ad567a418794b9b5983
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1450d9f0700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=130ef35bb00000
 
-Hi!
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com
 
-> 
-> On Tue, 2022-01-18 at 18:39 +0100, Alexander Lobakin wrote:
-> > From: Paolo Abeni <pabeni@redhat.com>
-> > Date: Tue, 18 Jan 2022 17:31:00 +0100
-> > 
-> > > On Tue, 2022-01-18 at 16:56 +0100, Alexander Lobakin wrote:
-> > > > From: Paolo Abeni <pabeni@redhat.com>
-> > > > Date: Tue, 18 Jan 2022 16:24:19 +0100
-> > > > 
-> > > > > While inspecting some perf report, I noticed that the compiler
-> > > > > emits suboptimal code for the napi CB initialization, fetching
-> > > > > and storing multiple times the memory for flags bitfield.
-> > > > > This is with gcc 10.3.1, but I observed the same with older compiler
-> > > > > versions.
-> > > > > 
-> > > > > We can help the compiler to do a nicer work e.g. initially setting
-> > > > > all the bitfield to 0 using an u16 alias. The generated code is quite
-> > > > > smaller, with the same number of conditional
-> > > > > 
-> > > > > Before:
-> > > > > objdump -t net/core/gro.o | grep " F .text"
-> > > > > 0000000000000bb0 l     F .text	0000000000000357 dev_gro_receive
-> > > > > 
-> > > > > After:
-> > > > > 0000000000000bb0 l     F .text	000000000000033c dev_gro_receive
-> > > > > 
-> > > > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > > > > ---
-> > > > >  include/net/gro.h | 13 +++++++++----
-> > > > >  net/core/gro.c    | 16 +++++-----------
-> > > > >  2 files changed, 14 insertions(+), 15 deletions(-)
-> > > > > 
-> > > > > diff --git a/include/net/gro.h b/include/net/gro.h
-> > > > > index 8f75802d50fd..a068b27d341f 100644
-> > > > > --- a/include/net/gro.h
-> > > > > +++ b/include/net/gro.h
-> > > > > @@ -29,14 +29,17 @@ struct napi_gro_cb {
-> > > > >  	/* Number of segments aggregated. */
-> > > > >  	u16	count;
-> > > > >  
-> > > > > -	/* Start offset for remote checksum offload */
-> > > > > -	u16	gro_remcsum_start;
-> > > > > +	/* Used in ipv6_gro_receive() and foo-over-udp */
-> > > > > +	u16	proto;
-> > > > >  
-> > > > >  	/* jiffies when first packet was created/queued */
-> > > > >  	unsigned long age;
-> > > > >  
-> > > > > -	/* Used in ipv6_gro_receive() and foo-over-udp */
-> > > > > -	u16	proto;
-> > > > > +	/* portion of the cb set to zero at every gro iteration */
-> > > > > +	u32	zeroed_start[0];
-> > > > > +
-> > > > > +	/* Start offset for remote checksum offload */
-> > > > > +	u16	gro_remcsum_start;
-> > > > >  
-> > > > >  	/* This is non-zero if the packet may be of the same flow. */
-> > > > >  	u8	same_flow:1;
-> > > > > @@ -70,6 +73,8 @@ struct napi_gro_cb {
-> > > > >  	/* GRO is done by frag_list pointer chaining. */
-> > > > >  	u8	is_flist:1;
-> > > > >  
-> > > > > +	u32	zeroed_end[0];
-> > > > 
-> > > > This should be wrapped in struct_group() I believe, or compilers
-> > > > will start complaining soon. See [0] for the details.
-> > > > Adding Kees to the CCs.
-> > > 
-> > > Thank you for the reference. That really slipped-off my mind.
-> > > 
-> > > This patch does not use memcpy() or similar, just a single direct
-> > > assignement. Would that still require struct_group()?
-> > 
-> > Oof, sorry, I saw start/end and overlooked that it's only for
-> > a single assignment.
-> > Then it shouldn't cause warnings, but maybe use an anonymous
-> > union instead?
-> > 
-> > 	union {
-> > 		u32 zeroed;
-> > 		struct {
-> > 			u16 gro_remcsum_start;
-> > 			...
-> > 		};
-> > 	};
-> > 	__wsum csum;
-> > 
-> > Use can still use a BUILD_BUG_ON() in this case, like
-> > sizeof(zeroed) != offsetof(csum) - offsetof(zeroed).
-> 
-> Please forgive me for the very long delay. I'm looking again at this
-> stuff for formal non-rfc submission.
+==================================================================
+BUG: KASAN: vmalloc-out-of-bounds in bpf_ringbuf_area_alloc kernel/bpf/ringbuf.c:110 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in bpf_ringbuf_alloc kernel/bpf/ringbuf.c:133 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in ringbuf_map_alloc kernel/bpf/ringbuf.c:172 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in ringbuf_map_alloc+0x725/0x7b0 kernel/bpf/ringbuf.c:148
+Write of size 8 at addr ffffc9000c7a9078 by task syz-executor070/3595
 
-Sure, not a problem at all (:
+CPU: 0 PID: 3595 Comm: syz-executor070 Not tainted 5.17.0-rc2-next-20220202-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xf/0x3e0 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ bpf_ringbuf_area_alloc kernel/bpf/ringbuf.c:110 [inline]
+ bpf_ringbuf_alloc kernel/bpf/ringbuf.c:133 [inline]
+ ringbuf_map_alloc kernel/bpf/ringbuf.c:172 [inline]
+ ringbuf_map_alloc+0x725/0x7b0 kernel/bpf/ringbuf.c:148
+ find_and_alloc_map kernel/bpf/syscall.c:128 [inline]
+ map_create kernel/bpf/syscall.c:863 [inline]
+ __sys_bpf+0xc0f/0x5f10 kernel/bpf/syscall.c:4622
+ __do_sys_bpf kernel/bpf/syscall.c:4744 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:4742 [inline]
+ __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4742
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f26ddd0a029
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fff911fde88 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f26ddd0a029
+RDX: 0000000000000048 RSI: 0000000020000280 RDI: 0000000000000000
+RBP: 00007f26ddcce010 R08: 0000000000000000 R09: 0000000000000000
+R10: 00000000ffffffff R11: 0000000000000246 R12: 00007f26ddcce0a0
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
 
-> 
-> I like the anonymous union less, because it will move around much more
-> code - making the patch less readable - and will be more fragile e.g.
-> some comment alike "please don't move around 'csum'" would be needed.
 
-We still need comments around zeroed_{start,end}[0] for now.
-I used offsetof(csum) as offsetofend(is_flist) which I'd prefer here
-unfortunately expands to offsetof(is_flist) + sizeof(is_flist), and
-the latter causes an error of using sizeof() against a bitfield.
+Memory state around the buggy address:
+ ffffc9000c7a8f00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffc9000c7a8f80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>ffffc9000c7a9000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+                                                                ^
+ ffffc9000c7a9080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffc9000c7a9100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+==================================================================
 
-> 
-> No strong opinion anyway, so if you really prefer that way I can adapt.
-> Please let me know.
-
-I don't really have a strong preference here, I just suspect that
-zero-length array will produce or already produce -Warray-bounds
-warnings, and empty-struct constructs like
-
-	struct { } zeroed_start;
-	u16 gro_remcsum_start;
-	...
-	struct { } zeroed_end;
-
-	memset(NAPI_GRO_CB(skb)->zeroed_start, 0,
-	       offsetofend(zeroed_end) - offsetsof(zeroed_start));
-
-will trigger Fortify compile-time errors from Kees' KSPP tree.
-
-I think we could use
-
-	__struct_group(/* no tag */, zeroed, /* no attrs */,
-		u16 gro_remcsum_start;
-		...
-		u8 is_flist:1;
-	);
-	__wsum csum;
-
-	BUILD_BUG_ON(sizeof_field(struct napi_gro_cb, zeroed) != sizeof(u32));
-	BUILD_BUG_ON(!IS_ALIGNED(offsetof(struct napi_gro_cb, zeroed),
-				 sizeof(u32))); /* Avoid slow unaligned acc */
-
-	*(u32 *)&NAPI_GRO_CB(skb)->zeroed = 0;
-
-This doesn't depend on `csum`, doesn't need `struct { }` or
-`struct zero[0]` markers and still uses a direct assignment.
-
-Also adding Gustavo, maybe he'd like to leave a comment here.
-
-> 
-> Thanks!
-> 
-> Paolo
-
-Thanks,
-Al
