@@ -2,168 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 589EA4A7246
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 14:53:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 657344A7240
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 14:53:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344356AbiBBNxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 08:53:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26386 "EHLO
+        id S238147AbiBBNxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 08:53:38 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35167 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237086AbiBBNxH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 08:53:07 -0500
+        by vger.kernel.org with ESMTP id S229529AbiBBNxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 08:53:37 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643809987;
+        s=mimecast20190719; t=1643810017;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dzs3pmpsecqWwS28UKT/9n4YfyBZy50vlVYoCws6yUE=;
-        b=Z1C4nylYj5BpS6MbkJffKjGwySKJMVJOh5lLnQiJWrOXZChxc47Famx5vV+MgjD3zsVyto
-        N4CJzzOaTuCG2r1gifAanXvsRzcqLhoSKSG18TvjVfqhy9C8CGSH9TKS8aHcIRRtvKKZes
-        enEth73mhdZb6K/nJf/NjpaZsoRU180=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=eoBEdHsWn1QD68AtpyuWojbCmpscK/IojyHyc83t4H4=;
+        b=Kyg41tsyHLBnmnxineNG5CpHXa6hSr+hnUy8sC6uvTVhvLMsbVYiAruj36N1uX5ivhW51P
+        84VMPHNGbLV3XVHfF9zVJOWcLeNWQb/FX3s4S3y1mxPXDmUpNR4MKfEJItdHGj8/IhSeYC
+        0GyDzcDPEG8nE54WPTRFJCEg/Cmcsu8=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-610-8YiNR16wOXiI1SYEKXlRUQ-1; Wed, 02 Feb 2022 08:53:06 -0500
-X-MC-Unique: 8YiNR16wOXiI1SYEKXlRUQ-1
-Received: by mail-qt1-f198.google.com with SMTP id h22-20020ac85696000000b002d258f68e98so15443739qta.22
-        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 05:53:06 -0800 (PST)
+ us-mta-643-gu83IQUaN2qx7ef3pzVPRA-1; Wed, 02 Feb 2022 08:53:36 -0500
+X-MC-Unique: gu83IQUaN2qx7ef3pzVPRA-1
+Received: by mail-ed1-f69.google.com with SMTP id en7-20020a056402528700b00404aba0a6ffso10436457edb.5
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 05:53:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dzs3pmpsecqWwS28UKT/9n4YfyBZy50vlVYoCws6yUE=;
-        b=uxmYLZnv8mTpuxhkUHDHT2oWW65fNbd7SkO5HvqFt4V1gwWDHSfaB7lhDAEEHOPt0B
-         VrjVjQgkMfK2qF5VANV00IDAJJIibEbgrFvyfvjxswgc0Qx6XSCibVFp1XpRo8UEJeDG
-         cM372fM2yiuZi5lVdnB4MkqwR3IWFdZyM1IkU5JzR2is/Ma1XIqUni5/XGHBczjqjven
-         LaX+u253svjylgzVsZN84izU6Gzn9jrNIUO3oTnjRxp0WWhTKmKRI1bqgUt5/AWBHL6s
-         OyImBm4zaH7xeoxS032KXFTY6pJ+DXnT98g1lB6pyRYSY3Jt43vYxAkLea/VjyyqsjlY
-         Eqog==
-X-Gm-Message-State: AOAM533iAnowXvc8+KIsp09NOf9lEgEXP+WVjQSZSwN9kZmpZdvo4EHx
-        wCARYnNqfubDAQPvFHdUz8wG85avp6DsqH87geJJH9/aWrmxASpsN+xHwJ/k4VH3r+v9wiRWD6k
-        It8H+4wNxreFE90Vm
-X-Received: by 2002:ad4:5dc4:: with SMTP id m4mr26516019qvh.17.1643809985995;
-        Wed, 02 Feb 2022 05:53:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy97PB6hOF6XRVh0laZSCO/T0ng/aOceXJMUfGN81RQHfwOdZhjN5x8YkGsaZRSWfCtenz6QA==
-X-Received: by 2002:ad4:5dc4:: with SMTP id m4mr26516006qvh.17.1643809985739;
-        Wed, 02 Feb 2022 05:53:05 -0800 (PST)
-Received: from steredhat (host-95-238-125-214.retail.telecomitalia.it. [95.238.125.214])
-        by smtp.gmail.com with ESMTPSA id c14sm10955065qtc.31.2022.02.02.05.53.03
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eoBEdHsWn1QD68AtpyuWojbCmpscK/IojyHyc83t4H4=;
+        b=e7E2RFaRrQ4cx7DdazhwtH63sXY0SMdO+Kt2PevATRqvfnzctx4B7YqLAKcRB+KbPp
+         s0Jdc2bjvQoLtNHOlml9I4zrqaKSUdfJIGHfol9eXR9yjRALiTCyaogei3Jtufe2XyCz
+         qq53I2Te9b7Gbyc07vaxEnTvB7qHnGQ3ZLE45cR4wv4ghZZHrd/FsFzrEROYMNdGxo46
+         Wi/Ugds85SAGer8hpsixQrdVjkDwitlLBQU+Q2+9mnpuXuzJFvWipCVcsE1J0YhDNij4
+         BNNXPumU45pifwiEGxa+IP+j89LQW8SSoyVC1yMyfM1LbqZAjcbmONzctrBHA8Pf/RfQ
+         1lMw==
+X-Gm-Message-State: AOAM533XtiY5I5zz2mEWHt37h0xbH6XW0HpPCDHs/x+9dYTJxOXqm/nq
+        J4QBHvWc3PSvCeBxYyxM1qzIsL3ZjIXFuTDi5pv8pZKIrk4O7ij6ibL4DVaatbtKpbp7NC+xKje
+        IuCxhorq7nC6x5Jox
+X-Received: by 2002:a17:907:d04:: with SMTP id gn4mr20014764ejc.86.1643810014727;
+        Wed, 02 Feb 2022 05:53:34 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx0ihpwMn3oeTT6GSsLeNjEcThx+Ms7gLQ06aOCGXUesXTCBrEMC4UM29cpjBQ86+98ggGceg==
+X-Received: by 2002:a17:907:d04:: with SMTP id gn4mr20014745ejc.86.1643810014525;
+        Wed, 02 Feb 2022 05:53:34 -0800 (PST)
+Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id fn3sm15672986ejc.47.2022.02.02.05.53.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 05:53:05 -0800 (PST)
-Date:   Wed, 2 Feb 2022 14:53:00 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: Re: [PATCH v3] vhost: cache avail index in vhost_enable_notify()
-Message-ID: <20220202135300.5b366wk35ysqehgm@steredhat>
-References: <20220128094129.40809-1-sgarzare@redhat.com>
- <Yfpnlv2GudpPFwok@stefanha-x1.localdomain>
- <20220202062340-mutt-send-email-mst@kernel.org>
+        Wed, 02 Feb 2022 05:53:34 -0800 (PST)
+From:   Jiri Olsa <jolsa@redhat.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Olsa <olsajiri@gmail.com>
+Subject: [PATCH 0/8] bpf: Add fprobe link
+Date:   Wed,  2 Feb 2022 14:53:25 +0100
+Message-Id: <20220202135333.190761-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220202062340-mutt-send-email-mst@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 06:24:05AM -0500, Michael S. Tsirkin wrote:
->On Wed, Feb 02, 2022 at 11:14:30AM +0000, Stefan Hajnoczi wrote:
->> On Fri, Jan 28, 2022 at 10:41:29AM +0100, Stefano Garzarella wrote:
->> > In vhost_enable_notify() we enable the notifications and we read
->> > the avail index to check if new buffers have become available in
->> > the meantime.
->> >
->> > We do not update the cached avail index value, so when the device
->> > will call vhost_get_vq_desc(), it will find the old value in the
->> > cache and it will read the avail index again.
->> >
->> > It would be better to refresh the cache every time we read avail
->> > index, so let's change vhost_enable_notify() caching the value in
->> > `avail_idx` and compare it with `last_avail_idx` to check if there
->> > are new buffers available.
->> >
->> > We don't expect a significant performance boost because
->> > the above path is not very common, indeed vhost_enable_notify()
->> > is often called with unlikely(), expecting that avail index has
->> > not been updated.
->> >
->> > We ran virtio-test/vhost-test and noticed minimal improvement as
->> > expected. To stress the patch more, we modified vhost_test.ko to
->> > call vhost_enable_notify()/vhost_disable_notify() on every cycle
->> > when calling vhost_get_vq_desc(); in this case we observed a more
->> > evident improvement, with a reduction of the test execution time
->> > of about 3.7%.
->> >
->> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
->> > ---
->> > v3
->> > - reworded commit description [Stefan]
->> > ---
->> >  drivers/vhost/vhost.c | 3 ++-
->> >  1 file changed, 2 insertions(+), 1 deletion(-)
->> >
->> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
->> > index 59edb5a1ffe2..07363dff559e 100644
->> > --- a/drivers/vhost/vhost.c
->> > +++ b/drivers/vhost/vhost.c
->> > @@ -2543,8 +2543,9 @@ bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
->> >  		       &vq->avail->idx, r);
->> >  		return false;
->> >  	}
->> > +	vq->avail_idx = vhost16_to_cpu(vq, avail_idx);
->> >
->> > -	return vhost16_to_cpu(vq, avail_idx) != vq->avail_idx;
->> > +	return vq->avail_idx != vq->last_avail_idx;
->> >  }
->> >  EXPORT_SYMBOL_GPL(vhost_enable_notify);
->>
->> This changes behavior (fixes a bug?): previously the function returned
->> false when called with avail buffers still pending (vq->last_avail_idx <
->> vq->avail_idx). Now it returns true because we compare against
->> vq->last_avail_idx and I think that's reasonable.
+hi,
+this patchset adds new link type BPF_LINK_TYPE_FPROBE that attaches kprobe
+program through fprobe API [1] instroduced by Masami.
 
-Good catch!
+The fprobe API allows to attach probe on multiple functions at once very
+fast, because it works on top of ftrace. On the other hand this limits
+the probe point to the function entry or return.
 
->>
->> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
->
->I don't see the behaviour change... could you explain the
->scanario in more detail pls?
+With bpftrace support I see following attach speed:
 
-IIUC the behavior is different only when the device calls 
-vhost_enable_notify() with pending buffers (vq->avail_idx != 
-vq->last_avail_idx).
+  # perf stat --null -r 5 ./src/bpftrace -e 'kprobe:x* { } i:ms:1 { exit(); } '
+  Attaching 2 probes...
+  Attaching 3342 functions
+  ...
 
-Let's suppose that driver has not added new available buffers, so value 
-in cache (vq->avail_idx) is equal to the one we read back from the 
-guest, but the device has not consumed all available buffers 
-(vq->avail_idx != vq->last_avail_idx).
+  1.4960 +- 0.0285 seconds time elapsed  ( +-  1.91% )
 
-Now if the device call vhost_enable_notify(), before this patch it 
-returned false, because there are no new buffers added (even if there 
-are some pending), with this patch it returns true, because there are 
-still some pending buffers (vq->avail_idx != vq->last_avail_idx).
+Also available at:
+  https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+  bpf/fprobe_link
 
-IIUC the right behavior should be the one with the patch applied.
-However this difference would be seen only if we call 
-vhost_enable_notify() when vq->avail_idx != vq->last_avail_idx and 
-checking vhost-net, vhost-scsi and vhost-vsock, we use the return value 
-of vhost_enable_notify() only when there are not available buffers, so 
-vq->avail_idx == vq->last_avail_idx.
+thanks,
+jirka
 
-So I think Stefan is right, but we should never experience the buggy 
-scenario.
 
-it seems that we used to check vq->last_avail_idx but we changed it 
-since commit 8dd014adfea6 ("vhost-net: mergeable buffers support"), 
-honestly I don't understand if it was intended or not.
+[1] https://lore.kernel.org/bpf/20220202162925.bd74e7970fc35cb4236eef48@kernel.org/T/#t
+---
+Jiri Olsa (8):
+      bpf: Add support to attach kprobe program with fprobe
+      bpf: Add bpf_get_func_ip kprobe helper for fprobe link
+      bpf: Add bpf_cookie support to fprobe
+      libbpf: Add libbpf__kallsyms_parse function
+      libbpf: Add bpf_link_create support for multi kprobes
+      libbpf: Add bpf_program__attach_kprobe_opts for multi kprobes
+      selftest/bpf: Add fprobe attach test
+      selftest/bpf: Add fprobe test for bpf_cookie values
 
-Do you see any reason?
-
-Thanks,
-Stefano
+ include/linux/bpf.h                                   |   2 +
+ include/linux/bpf_types.h                             |   1 +
+ include/uapi/linux/bpf.h                              |  14 +++++
+ kernel/bpf/syscall.c                                  | 327 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ kernel/bpf/verifier.c                                 |  19 +++++-
+ kernel/trace/bpf_trace.c                              |  32 +++++++++-
+ tools/include/uapi/linux/bpf.h                        |  14 +++++
+ tools/lib/bpf/bpf.c                                   |   7 +++
+ tools/lib/bpf/bpf.h                                   |   9 ++-
+ tools/lib/bpf/libbpf.c                                | 198 +++++++++++++++++++++++++++++++++++++++++++++++++++--------
+ tools/lib/bpf/libbpf_internal.h                       |   5 ++
+ tools/testing/selftests/bpf/prog_tests/bpf_cookie.c   |  73 ++++++++++++++++++++++
+ tools/testing/selftests/bpf/prog_tests/fprobe_test.c  | 117 +++++++++++++++++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/fprobe.c            |  58 ++++++++++++++++++
+ tools/testing/selftests/bpf/progs/fprobe_bpf_cookie.c |  62 +++++++++++++++++++
+ 15 files changed, 902 insertions(+), 36 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/fprobe_test.c
+ create mode 100644 tools/testing/selftests/bpf/progs/fprobe.c
+ create mode 100644 tools/testing/selftests/bpf/progs/fprobe_bpf_cookie.c
 
