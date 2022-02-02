@@ -2,70 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B93F4A72F2
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 15:26:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 202094A72F5
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 15:26:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344919AbiBBO0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1344911AbiBBO0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 2 Feb 2022 09:26:10 -0500
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:57156 "EHLO
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:57160 "EHLO
         serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344905AbiBBO0J (ORCPT
+        with ESMTP id S1344907AbiBBO0J (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 09:26:09 -0500
 Received: from ubuntu.home (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 5F0C4200F827;
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 91B71200F82E;
         Wed,  2 Feb 2022 15:26:07 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 5F0C4200F827
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 91B71200F82E
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
         s=ulg20190529; t=1643811967;
-        bh=rS6Zj4XOuxkbE47QLxsSv9GiPzJiuGynTucwTs+u4AQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Ir6DtPku7Svo/3iLDv7Vy3cUW26OxC3WMQEP6Qp6u/WcAJfqY6z1U4LWmuMvQiP57
-         MnlNA8+DKThGv3Wd/ZR37hV2bQllFGDArLfPCiJ+9/u0TGu9TraBpf6ZToe8pLEJdu
-         ydu43jj0CVVT9GBWeQtaAOgWe5YXpkB7rnimQBL+6LSfrVXnF3CM55fxapb717QBsk
-         wBEjwMpNc1chFr6Msxnk0Stu0hAAQMChFVix3E9qwz2qeWKTRbBGhN/BM/SmtIZmbx
-         rnbEF9a/uSROGeK39SFfROiYxG8CURjqlEhlONdPWfIN7XeMKHUOGHMw9pcxJDN6rn
-         vGYC3o2eKDryQ==
+        bh=LSjutnclx8bl8zi9N2/zUTZ9BGMAOKDBc0sO7vmFshw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rIj1TPt1WvrarKhMU04SpZQDNKTAQAJjWEFZgisnVnlgR9p43MJZMpCl+WiKdU2mS
+         t2Qer8WDbd1+dnVhE0y4M0NyYXq+PjV0Q4Fbp3HQ9LYcbIOhot37ST4bUBfLl85wwD
+         xCNtLV/LGy+zkmmDehN04IDfC5i9s7PcUDyrcgUYHtR+mC4UJQdfx2AczSpxgylGXI
+         5q/qpf5w03vx8JANqLHW8/oPkcXVX84edjFh9J5ca2wJgO86/cLbaFWktZ3bmsvniC
+         /j1XwhjSiHVun650EMm6v0ycuBNgdY7QaGqs2T0eA7ylDfLTR2GO8o0TT5InhwAtl0
+         d+tcuttqDS6vA==
 From:   Justin Iurman <justin.iurman@uliege.be>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
         dsahern@kernel.org, justin.iurman@uliege.be
-Subject: [PATCH net-next v2 0/2] Support for the IOAM insertion frequency
-Date:   Wed,  2 Feb 2022 15:25:52 +0100
-Message-Id: <20220202142554.9691-1-justin.iurman@uliege.be>
+Subject: [PATCH net-next v2 1/2] uapi: ioam: Insertion frequency
+Date:   Wed,  2 Feb 2022 15:25:53 +0100
+Message-Id: <20220202142554.9691-2-justin.iurman@uliege.be>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220202142554.9691-1-justin.iurman@uliege.be>
+References: <20220202142554.9691-1-justin.iurman@uliege.be>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v2:
- - signed -> unsigned (for "k" and "n")
- - keep binary compatibility by moving "k" and "n" at the end of uapi
+Add the insertion frequency uapi for IOAM lwtunnels.
 
-The insertion frequency is represented as "k/n", meaning IOAM will be
-added to {k} packets over {n} packets, with 0 < k <= n and 1 <= {k,n} <=
-1000000. Therefore, it provides the following percentages of insertion
-frequency: [0.0001% (min) ... 100% (max)].
+Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
+---
+ include/uapi/linux/ioam6_iptunnel.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Not only this solution allows an operator to apply dynamic frequencies
-based on the current traffic load, but it also provides some
-flexibility, i.e., by distinguishing similar cases (e.g., "1/2" and
-"2/4").
-
-"1/2" = Y N Y N Y N Y N ...
-"2/4" = Y Y N N Y Y N N ...
-
-Justin Iurman (2):
-  uapi: ioam: Insertion frequency
-  ipv6: ioam: Insertion frequency in lwtunnel output
-
- include/uapi/linux/ioam6_iptunnel.h |  9 +++++
- net/ipv6/ioam6_iptunnel.c           | 59 ++++++++++++++++++++++++++++-
- 2 files changed, 66 insertions(+), 2 deletions(-)
-
+diff --git a/include/uapi/linux/ioam6_iptunnel.h b/include/uapi/linux/ioam6_iptunnel.h
+index 829ffdfcacca..38f6a8fdfd34 100644
+--- a/include/uapi/linux/ioam6_iptunnel.h
++++ b/include/uapi/linux/ioam6_iptunnel.h
+@@ -41,6 +41,15 @@ enum {
+ 	/* IOAM Trace Header */
+ 	IOAM6_IPTUNNEL_TRACE,		/* struct ioam6_trace_hdr */
+ 
++	/* Insertion frequency:
++	 * "k over n" packets (0 < k <= n)
++	 * [0.0001% ... 100%]
++	 */
++#define IOAM6_IPTUNNEL_FREQ_MIN 1
++#define IOAM6_IPTUNNEL_FREQ_MAX 1000000
++	IOAM6_IPTUNNEL_FREQ_K,		/* u32 */
++	IOAM6_IPTUNNEL_FREQ_N,		/* u32 */
++
+ 	__IOAM6_IPTUNNEL_MAX,
+ };
+ 
 -- 
 2.25.1
 
