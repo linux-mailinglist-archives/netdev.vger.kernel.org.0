@@ -2,112 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 488914A7B05
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 23:20:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D4F24A7B1C
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 23:31:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234521AbiBBWUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 17:20:42 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56112 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244848AbiBBWUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 17:20:36 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A13ACB832BB
-        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 22:20:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6E9FC004E1;
-        Wed,  2 Feb 2022 22:20:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643840434;
-        bh=5XO/olIeWXfdfY/SiNPeeyJHb7sxBh2UNHaTw3PFX/M=;
-        h=From:To:Cc:Subject:Date:From;
-        b=BY2qfoc/3t8tR1VSIB1x6WORVVgX6G/PGCpUPYQFRtAgQRdCSiX5R9LP49y2HfcDd
-         A/zs6FDyKutPKx/FTq3Bf/0prbZFRc0+ZZeiQG6S/oLXn88AwQWP1XYcG2oFMBGDB8
-         33pOLPJ7RxS0vK7H4CFUBIrfVOg9F4y5SORcgsQmkNfptjs99K/jA15UoTxZCAQi+9
-         xq/HIXVNXWckbSUfVDBWpSZPyh/Atsqkq6RmiAaKSx3kPhaS44CNBkbSEtkDWMxZ8k
-         WBl5U5xoLkdtpwLpNvnUPK/5Wlt18yHQTy1LV4X0GfQqOE4GnaJ0efxIsE0rG0EDGS
-         /gzxUgXhZ52gg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, viro@zeniv.linux.org.uk, borisp@nvidia.com,
-        john.fastabend@gmail.com, daniel@iogearbox.net,
-        vfedorenko@novek.ru, kernel-team@fb.com, axboe@kernel.dk,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] tls: cap the output scatter list to something reasonable
-Date:   Wed,  2 Feb 2022 14:20:31 -0800
-Message-Id: <20220202222031.2174584-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        id S1347890AbiBBWbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 17:31:22 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:29553 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232942AbiBBWbV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 17:31:21 -0500
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-189-u6-xB4myOu-enAlbP3Q5bQ-1; Wed, 02 Feb 2022 22:31:19 +0000
+X-MC-Unique: u6-xB4myOu-enAlbP3Q5bQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Wed, 2 Feb 2022 22:31:19 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Wed, 2 Feb 2022 22:31:19 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Dan Williams' <dcbw@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     David Ahern <dsahern@kernel.org>
+Subject: RE: Getting the IPv6 'prefix_len' for DHCP6 assigned addresses.
+Thread-Topic: Getting the IPv6 'prefix_len' for DHCP6 assigned addresses.
+Thread-Index: AdgYVDaKcmxvhRE6TKuESvE9KYEi9QAEiiiAAAc+UwA=
+Date:   Wed, 2 Feb 2022 22:31:18 +0000
+Message-ID: <dc141b3c07fa4d51ad48ac87718f7c98@AcuMS.aculab.com>
+References: <58dfe4b57faa4ead8a90c3fe924850c2@AcuMS.aculab.com>
+ <7c6ddb66d278cbf7c946994605cbd3c57f3a2508.camel@redhat.com>
+In-Reply-To: <7c6ddb66d278cbf7c946994605cbd3c57f3a2508.camel@redhat.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TLS recvmsg() passes user pages as destination for decrypt.
-The decrypt operation is repeated record by record, each
-record being 16kB, max. TLS allocates an sg_table and uses
-iov_iter_get_pages() to populate it with enough pages to
-fit the decrypted record.
-
-Even though we decrypt a single message at a time we size
-the sg_table based on the entire length of the iovec.
-This leads to unnecessarily large allocations, risking
-triggering OOM conditions.
-
-Use iov_iter_truncate() / iov_iter_reexpand() to construct
-a "capped" version of iov_iter_npages(). Alternatively we
-could parametrize iov_iter_npages() to take the size as
-arg instead of using i->count, or do something else..
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- include/linux/uio.h | 17 +++++++++++++++++
- net/tls/tls_sw.c    |  3 ++-
- 2 files changed, 19 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/uio.h b/include/linux/uio.h
-index 1198a2bfc9bf..739285fe5a2f 100644
---- a/include/linux/uio.h
-+++ b/include/linux/uio.h
-@@ -273,6 +273,23 @@ static inline void iov_iter_reexpand(struct iov_iter *i, size_t count)
- 	i->count = count;
- }
- 
-+static inline int
-+iov_iter_npages_cap(struct iov_iter *i, int maxpages, size_t max_bytes)
-+{
-+	size_t shorted = 0;
-+	int npages;
-+
-+	if (iov_iter_count(i) > max_bytes) {
-+		shorted = iov_iter_count(i) - max_bytes;
-+		iov_iter_truncate(i, max_bytes);
-+	}
-+	npages = iov_iter_npages(i, INT_MAX);
-+	if (shorted)
-+		iov_iter_reexpand(i, iov_iter_count(i) + shorted);
-+
-+	return npages;
-+}
-+
- struct csum_state {
- 	__wsum csum;
- 	size_t off;
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index efc84845bb6b..0024a692f0f8 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -1433,7 +1433,8 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
- 
- 	if (*zc && (out_iov || out_sg)) {
- 		if (out_iov)
--			n_sgout = iov_iter_npages(out_iov, INT_MAX) + 1;
-+			n_sgout = 1 +
-+				iov_iter_npages_cap(out_iov, INT_MAX, data_len);
- 		else
- 			n_sgout = sg_nents(out_sg);
- 		n_sgin = skb_nsg(skb, rxm->offset + prot->prepend_size,
--- 
-2.34.1
+RnJvbTogRGFuIFdpbGxpYW1zDQo+IFNlbnQ6IDAyIEZlYnJ1YXJ5IDIwMjIgMTg6NTUNCj4gDQo+
+IE9uIFdlZCwgMjAyMi0wMi0wMiBhdCAxNjo1OCArMDAwMCwgRGF2aWQgTGFpZ2h0IHdyb3RlOg0K
+PiA+IEknbSB0cnlpbmcgdG8gd29yayBvdXQgaG93IERIQ1A2IGlzIHN1cHBvc2VkIHRvIHdvcmsu
+DQo+ID4NCj4gPiBJJ3ZlIGEgdGVzdCBuZXR3b3JrIHdpdGggdGhlIElTQyBkaGNwNiBzZXJ2ZXIg
+YW5kIHJhZHZkIHJ1bm5pbmcuDQo+ID4gSWYgSSBlbmFibGUgJ2F1dG9jb25mJyBJIGdldCBhIG5p
+Y2UgYWRkcmVzcyB3aXRoIHRoZSBwcmVmaXggZnJvbQ0KPiA+IHJhZHZkIGFuZCB0aGUgbGFzdCA4
+IGJ5dGVzIGZyb20gbXkgbWFjIGFkZHJlc3MsIHByZWZpeF9sZW4gNjQuDQo+ID4gSSBnZXQgYSBu
+aWNlIGFkZHJlc3MgZnJvbSBkaGNwNiAoYnVzeWJveCB1ZGhjcGM2KSB3aXRoIHRoZSBzYW1lIHBy
+ZWZpeC4NCj4gPg0KPiA+IHVkaGNwYzYgcnVucyBteSBzY3JpcHRzIGFuZCAnaXAgYWRkICRpcHY2
+IGRldiAkaW50ZXJmYWNlJyBhZGRzIHRoZQ0KPiA+IGFkZHJlc3MuDQo+ID4gQnV0IHRoZSBhc3Nv
+Y2lhdGVkIHByZWZpeF9sZW4gaXMgLzEyOC4NCj4gPg0KPiA+IEFsbCB0aGUgZG9jdW1lbnRhdGlv
+biBmb3IgREhDUDYgc2F5cyB0aGUgcHJlZml4X2xlbiAoYW5kIHByb2JhYmx5IHRoZQ0KPiA+IGRl
+ZmF1bHQgcm91dGUgLSBidXQgSSd2ZSBub3QgZ290IHRoYXQgZmFyKSBzaG91bGQgY29tZSBmcm9t
+IHRoZSBuZXR3b3JrDQo+ID4gKEkgdGhpbmsgZnJvbSBSQSBtZXNzYWdlcykuDQo+ID4NCj4gPiBC
+dXQgSSBjYW4ndCBnZXQgaXQgdG8gd29yaywgYW5kIGdvb2dsZSBzZWFyY2hlcyBqdXN0IHNlZW0g
+dG8gc2hvdw0KPiA+IGV2ZXJ5b25lIGVsc2UgaGF2aW5nIHRoZSBzYW1lIHByb2JsZW0uDQo+ID4N
+Cj4gPiBUaGUgb25seSBjb2RlIEkndmUgZm91bmQgdGhhdCBsb29rcyBhdCB0aGUgcHJlZml4X2xl
+biBmcm9tIFJBIG1lc3NhZ2VzDQo+ID4gaXMgdGhhdCB3aGljaCBhZGRzIHRvICdhdXRvY29uZicg
+YWRkcmVzc2VzIC0gYW5kIHRoYXQgcmVmdXNlcyB0byBkbw0KPiA+IGFueXRoaW5nIHVubGVzcyB0
+aGUgcHJlZml4X2xlbiBpcyA2NC4NCj4gPg0KPiA+IEkgY2FuJ3Qgc2VlIGFueXRoaW5nIHRoYXQg
+d291bGQgY2hhbmdlIHRoZSBwcmVmaXhfbGVuIG9mIGFuIGFkZHJlc3MNCj4gPiB0aGF0IGRoY3A2
+IGFkZGVkLg0KPiA+DQo+ID4gSGFzIHNvbWV0aGluZyBmYWxsZW4gZG93biBhIGJpZyBjcmFjaz8N
+Cj4gDQo+IEknbSBmYXIgZnJvbSBhbiBleHBlcnQsIGJ1dCBJIGRvbid0IHRoaW5rIGFueXRoaW5n
+IGhhcyBmYWxsZW4gZG93biBhDQo+IGNyYWNrLiBJJ20gc3VyZSBEYXZpZCBBaGVybiBvciBzb21l
+Ym9keSBlbHNlIHdpbGwgY29ycmVjdCBtZSwgYnV0IGhlcmUNCj4gZ29lczoNCj4gDQo+IFRoaW5n
+cyBhcmUgd29ya2luZyBhcyBpbnRlbmRlZC4NCj4gDQo+IERIQ1B2NiBpcyBub3QgYSBjb21wbGV0
+ZSBJUHY2IGFkZHJlc3Npbmcgc29sdXRpb24uIEl0IG11c3QgYmUgdXNlZCBpbg0KPiBjb21iaW5h
+dGlvbiB3aXRoIFJvdXRlciBBZHZlcnRpc2VtZW50cyB0byBkbyBnZW5lcmFsbHkgdXNlZnVsIHRo
+aW5ncy4NCj4gDQo+IGh0dHBzOi8vZGF0YXRyYWNrZXIuaWV0Zi5vcmcvZG9jL2h0bWwvcmZjODQx
+NSNzZWN0aW9uLTIxLjYNCj4gDQo+IDIxLjYuICBJQSBBZGRyZXNzIE9wdGlvbg0KPiANCj4gICAg
+ICAgSVB2Ni1hZGRyZXNzICAgICAgICAgQW4gSVB2NiBhZGRyZXNzLiAgQSBjbGllbnQgTVVTVCBO
+T1QgZm9ybSBhbg0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICBpbXBsaWNpdCBwcmVmaXgg
+d2l0aCBhIGxlbmd0aCBvdGhlciB0aGFuIDEyOA0KPiAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICBmb3IgdGhpcyBhZGRyZXNzLiAgQSAxNi1vY3RldCBmaWVsZC4NCj4gDQo+IERIQ1B2NiBpbnRl
+bnRpb25hbGx5IGRvZXNuJ3QgdGVsbCB5b3Ugd2hvIHlvdXIgSVB2NiByb3V0ZXIgKGdhdGV3YXkg
+aW4NCj4gdjQtbGFuZCkgaXMuIFRoYXQncyB3aGF0IHRoZSBSb3V0ZXIgQWR2ZXJ0aXNlbWVudCBp
+cyBmb3IuDQo+IA0KPiBESENQdjYgaW50ZW50aW9uYWxseSBkb2Vzbid0IHRlbGwgeW91IGFueXRo
+aW5nIGFib3V0IHdoYXQgcHJlZml4ZXMgYXJlDQo+ICJvbi1saW5rIiBsaWtlIHdoYXQgdGhlIHN1
+Ym5ldCBtYXNrIGltcGxpZXMgZm9yIElQdjQuIFRoYXQncyB3aGF0IHRoZQ0KPiBSb3V0ZXIgQWR2
+ZXJ0aXNlbWVudCBpcyBmb3IuDQoNClRoYXQncyB3aGF0IEknZCBnYXRoZXJlZC4NCg0KPiBJZiB0
+aGUgcm91dGVyIHNlbmRzIGFuIFJBIHdpdGggYSBQcmVmaXggSW5mb3JtYXRpb24gT3B0aW9uIChQ
+SU8pIHdpdGgNCj4gdGhlICJvbi1saW5rIiAoTCkgYml0IHNldCB0aGVuIHRoZSBrZXJuZWwgc2hv
+dWxkIGluc3RhbGwgb24tbGluayByb3V0ZXMNCj4gZm9yIHRoYXQgcHJlZml4LiBJZiB5b3VyIERI
+Q1B2Ni1wcm92aWRlZCBhZGRyZXNzIGZhbGxzIHdpdGhpbiBvbmUgb2YNCj4gdGhvc2UgcHJlZml4
+ZXMgdGhlbiBrZXJuZWwgcm91dGluZyB0YWtlcyBvdmVyIGFuZCBwYWNrZXRzIGdvIHdoZXJlIHRo
+ZXkNCj4gc2hvdWxkIHJlZ2FyZGxlc3Mgb2YgdGhlIC8xMjguDQo+IA0KPiBJZiB5b3UgZG9uJ3Qg
+aGF2ZSBSQXMsIG9yIGRvbid0IGhhdmUgdGhvc2Ugcm91dGVzIGluc3RhbGxlZCBiZWNhdXNlIHRo
+ZQ0KPiByb3V0ZXIgd2Fzbid0IHNlbmRpbmcgYSBQSU8rTCBmb3IgdGhlIERIQ1AtcHJvdmlkZWQg
+cHJlZml4ZXMsIHRoZW4geWVhaA0KPiB0aGluZ3MgYXJlbid0IGdvaW5nIHRvIHdvcmsgbGlrZSB5
+b3UgbWlnaHQgZXhwZWN0Lg0KDQpUaGV5IGFyZSBiZWluZyBzZW50LCBiZWNhdXNlIGlmIEkgZW5h
+YmxlICJhdXRvY29uZiIgSSBnZXQgdGhlIHByZWZpeA0KYWRkcmVzcyBiYXNlZCBvbiBteSBNQUMg
+YWRkcmVzcy4NCkJ1dCBJIGRvbid0IHdhbnQgdGhhdCAiYXV0b2NvbmYiIGFkZHJlZXNzLCBJIG9u
+bHkgd2FudCB0aGUgZGhjcDYgYWRkcmVzcy4NCg0KSXQgaGFzIHRvIGJlIHNhaWQgSSB3YXMgcHJv
+YmFibHkgbG9va2luZyBhdCB0aGUgb3V0cHV0IGZyb20gJ2lwIGFkZHInDQpub3QgJ2lwIHJvdXRl
+IHNob3cnLg0KQ2hlY2tpbmcgdGhpbmdzIG9uIHRoZSB0ZXN0IHN5c3RlbSBpcyBhIGJpdCBvZiBh
+IFBJVEEgZHVlIHRvIGl0cw0KbGltaXRlZCB1c2Vyc3BhY2UsIGJ1dCBhdCBsZWFzdCBJJ3ZlIHN0
+b3BwZWQgZGhjcDYgZGVsZXRpbmcgdGhlIElQdjQNCmFkZHJlc3MhDQoNCkJ1dCBJIChwcm9iYWJs
+eSkgZm91bmQgdGhlIGNvZGUgdGhhdCBhZGRzIHRoZSAiYXV0b2NvbmYiIGFkZHJlc3MgYW5kDQpy
+b3V0ZSAtIGl0IGhhcyBhIGNoZWNrIHRoYXQgdGhlIHByZWZpeF9sZW4gaXMgNjQuDQoNCkl0IG1h
+eSB3ZWxsIGJlIHRoYXQgeW91IG5lZWQgdG8gdXNlIGRoY3A2IHdpdGggYSAvODAgcHJlZml4IGJl
+Y2F1c2UNCnlvdXIgaXNwIGhhcyBvbmx5IGRlY2lkZWQgdG8gZ2l2ZSB5b3UgYSBzaW5nbGUgLzY0
+IGFkZHJlc3MuDQoNCj4gSSdtIHN1cmUgRGF2aWQgd2lsbCBiZSBhbG9uZyB0byBjb3JyZWN0IG1l
+IHNvb24gdGhvdWdoLi4uDQoNCkluZGVlZC4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRk
+cmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBN
+SzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
