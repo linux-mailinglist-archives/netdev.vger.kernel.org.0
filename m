@@ -2,61 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DD894A694E
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 01:43:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C13F4A696E
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 01:57:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243447AbiBBAnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 19:43:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54334 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231265AbiBBAm7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 19:42:59 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F305C061714
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 16:42:59 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so4357210pjb.1
-        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 16:42:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=e82YHr2cr+IdwIwy16WCVzGIEKJz2KbUmBzvc6MyDCA=;
-        b=OKIbDkpIHGlG2lwP3IjswkexgsFoA4tAQvoaWtWI7M6g7RA9r6JUr/O2EkiUyRo2pN
-         sqmLp90ZMBbo+1fHqZzfa6htaJyfPShGB/wZtJXKIu5VxIJ3Qhmy3D1MqbgMg3y+gp2Q
-         +cqshrJEwcFnRBjMdxOHbr7fcGs5MMqxkIwlPY7ZQO+zojEKqOLJYlxMtmkzAixSJ0/q
-         PDy8wErhbXAmjrdHlL4vmt2PUzdLiGvIar36sHuuqsXFgkVMLhk9Wli3UhNmARgeb+RU
-         qXp/uy+5c9zhTolXRqwBiW6XL/eF64r9GFBCuVA66AQ9ehOTPGirWvRz7OXLELEUINls
-         n+cA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=e82YHr2cr+IdwIwy16WCVzGIEKJz2KbUmBzvc6MyDCA=;
-        b=DtCLiMiUer1+wnxIPKUVsUi1fj2mLlrj7XGl6SCY5MKiakErWZlqF016sw3Z8NOSHE
-         pRbuA+1TiB4CK8tcIodcLE5XimY0exGXjgds4j6oze11/+6/AQIH+MODJPij6seL11JO
-         V0GvjfXDQwNmyiAg8C53jQCyan9cyC8SXSynE9fgZqFfLD6m6QlH+ugc+EWPQ66y9ltG
-         I+U2LE/mxxymtfMaHBvPeV41q+tL5j6T6C1ZkzmoGVoch33IEB6pk3up7uFarNr8zllO
-         mVzmjJzBu7YiBH8xeXodbKkxIL+u06VfA283aIazdmBoHlvDqgwh2VWyQTWPBGNyGiNS
-         xvkw==
-X-Gm-Message-State: AOAM533t/6CeXmJlI43Z2aBjx8GBdwUl8cQ8Op8RSJHQDNyuizWhGnca
-        Hz9jp6SkItjW/gn2mjPFvujHlUgXE/TgFkg9
-X-Google-Smtp-Source: ABdhPJyVyoiQmhTMyV1jKVmAxYkaik9eoW03OANfAWBKPNuAbpAGi/gPCigdRbJ+LLU4GTm6Bk8D/w==
-X-Received: by 2002:a17:902:da81:: with SMTP id j1mr29057625plx.14.1643762579028;
-        Tue, 01 Feb 2022 16:42:59 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id z1sm20381313pfh.137.2022.02.01.16.42.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 16:42:58 -0800 (PST)
-Date:   Tue, 1 Feb 2022 16:42:56 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>,
+        id S232081AbiBBA5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 19:57:34 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55294 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229994AbiBBA5e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 19:57:34 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03D3AB82FE3;
+        Wed,  2 Feb 2022 00:57:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C0ADC340E9;
+        Wed,  2 Feb 2022 00:57:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643763451;
+        bh=98nNxIicM+eGuu2qldo7Nd5//SGeL28ZWSKsTcZhXvg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rrb7mWmgANB3YX7E0kRwUuTkiTUHTOibbHQW75C/iE427FdDW0TIl9W0vZe0yTAl/
+         l6OehIROUaAMRSb5qXriC4+CE8vL+eFgUxyYMutR/zE4O74GlkVXiFTjLt0yq/O0f2
+         p2YRXN+WVg5QVOB16Zc+fdZMOSdh+PreyFzTKi5vRZnCRfdVhEyAdAgeha5yFpcsKQ
+         IVfwd9QsLPi/vLAc9/HcgHoC4IKZQNslnq8pJGdbqpjrPyBLnDwK9tMA5IZkOPRJCx
+         RBkGe6h1WJyGRioMz8Gdj7GVNDpRDdhpmgbEE1dbJAcVj/ZuG2MldWTLz6OZ17esSe
+         tgjiAVi9/0LOQ==
+Date:   Tue, 1 Feb 2022 16:57:30 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jann Horn <jannh@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Oliver Neukum <oneukum@suse.com>,
+        kernel list <linux-kernel@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Coco Li <lixiaoyan@google.com>
-Subject: Re: [PATCH iproute2] iplink: add gro_max_size attribute handling
-Message-ID: <20220201164256.5a640359@hermes.local>
-In-Reply-To: <20220201232715.1585390-1-eric.dumazet@gmail.com>
-References: <20220201232715.1585390-1-eric.dumazet@gmail.com>
+        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>
+Subject: Re: [BUG] net_device UAF: linkwatch_fire_event() calls dev_hold()
+ after netdev_wait_allrefs() is done
+Message-ID: <20220201165730.1adb7e66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAG48ez0sa2+eEAnS3UMLmLbDRfM6iC4K3vRcUdA9LpDbSJF0XA@mail.gmail.com>
+References: <CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com>
+        <20220127181930.355c8c82@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAG48ez0sa2+eEAnS3UMLmLbDRfM6iC4K3vRcUdA9LpDbSJF0XA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -64,22 +51,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  1 Feb 2022 15:27:15 -0800
-Eric Dumazet <eric.dumazet@gmail.com> wrote:
-
-> From: Coco Li <lixiaoyan@google.com>
+On Tue, 1 Feb 2022 23:46:16 +0100 Jann Horn wrote:
+> On Fri, Jan 28, 2022 at 3:19 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > Interesting..
+> >
+> > I don't know what link_reset does, but since it turns the carrier on it
+> > seems like something that should be flushed/canceled when the device
+> > goes down. unregister brings the device down under rtnl_lock.
+> >
+> > On Fri, 28 Jan 2022 02:51:24 +0100 Jann Horn wrote:  
+> > > Is the bug that usbnet_disconnect() should be stopping &dev->kevent
+> > > before calling unregister_netdev()?  
+> >
+> > I'd say not this one, I think the generally agreed on semantics are that
+> > the netdev is under users control between register and unregister, we
+> > should not cripple it before unregister.
+> >  
+> > > Or is the bug that ax88179_link_reset() doesn't take some kind of lock
+> > > and re-check that the netdev is still alive?  
+> >
+> > That'd not be an uncommon way to fix this.. taking rtnl_lock, not even
+> > a driver lock in similar.  
 > 
-> Add the ability to display or change the gro_max_size attribute.
+> Ah, I found a comment with a bit of explanation on how this is
+> supposed to work... usbnet_stop() explains:
 > 
-> ip link set dev eth1 gro_max_size 60000
-> ip -d link show eth1
-> 5: eth1: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 9198 qdisc mq master eth0 state UP mode DEFAULT group default qlen 1000
->     link/ether bc:ae:c5:39:69:66 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 46 maxmtu 9600
->     <...> gro_max_size 60000
+>     /* deferred work (task, timer, softirq) must also stop.
+>      * can't flush_scheduled_work() until we drop rtnl (later),
+>      * else workers could deadlock; so make workers a NOP.
+>      */
 > 
-> Signed-off-by: Coco Li <lixiaoyan@google.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> And usbnet_stop() is ->ndo_stop(), which indeed runs under RTNL.
+> 
+> I wonder what the work items can do that'd conflict with RTNL... or is
+> the comment just talking about potential issues if a bunch of *other*
+> work items need RTNL and clog up the system_wq so that
+> flush_scheduled_work() blocks forever?
 
+Good question. Nothing that would explicitly take rtnl_lock jumps out
+in the usbnet code or the link_reset handler. The code is ancient, too:
 
-Looks good, could you send update to man page as well?
+/* work that cannot be done in interrupt context uses keventd.
+ *
+ * NOTE:  with 2.5 we could do more of this using completion callbacks,
 
+:)
+
+> If it's the latter case, I guess we could instead do cancel_work_sync() and
+> then maybe re-run the work function's handler one more time
+> synchronously?
+
+cancel_sync() sounds good, lan78xx.c does that plus clearing the event
+bits. I don't think you need to call the link_reset handler manually,
+the stop function should shut down the link, anyway.
