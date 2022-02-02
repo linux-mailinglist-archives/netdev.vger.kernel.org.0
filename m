@@ -2,66 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36CB24A70FF
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 13:47:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5A154A7115
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 13:54:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344197AbiBBMqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 07:46:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232457AbiBBMqY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 07:46:24 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC154C061714;
-        Wed,  2 Feb 2022 04:46:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=CJoixGrdUfzo89tGyrCYH8LDrTl3PpFUUUVFOmxRJs8=; b=xrwx6V9NbV324ljCKU+U0MjR0n
-        OWjSfqypUeNWKD3Dl8bovQbkdpvN/TKXdm/L/mstHB5lXPRcRAUUSTIxDjO/qh1gV/zX/GD2EUaYG
-        ZLZfT2LvOyiOmnxn4OYCXiRdXmoopfvYOFlpHi5fjgc7eubRpVKe8jFWH4iLFmkdlm+uXBQ0qlSIy
-        BC0wlSmPAPf0FfVX4Zf4ZSUk+E53hXLaSTUyUK+hglZm2bLv963O40odoLIMkQ6VS3MuL6UeLyiY9
-        x0V2lMz35bR3pp2T4oRm+Pp2PUgfshnC9MIjpXuizXUD7QSPGA3jdZejD7Lg2P0yonynw/Bu7Q3Gp
-        V0VYgZTQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56998)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nFF1i-0001Zw-Dp; Wed, 02 Feb 2022 12:46:22 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nFF1h-00033R-2A; Wed, 02 Feb 2022 12:46:21 +0000
-Date:   Wed, 2 Feb 2022 12:46:21 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, davem@davemloft.net, kuba@kernel.org
-Subject: Re: [PATCH net-next] net: lan966x: use .mac_select_pcs() interface
-Message-ID: <Yfp9HfKhqYb9o95G@shell.armlinux.org.uk>
-References: <20220202114949.833075-1-horatiu.vultur@microchip.com>
+        id S1344225AbiBBMyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 07:54:03 -0500
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:42243 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233535AbiBBMyC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 07:54:02 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V3S.Kr4_1643806438;
+Received: from 30.236.29.213(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V3S.Kr4_1643806438)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 02 Feb 2022 20:54:00 +0800
+Message-ID: <0c4ab79c-5f46-5e56-5326-631a9bc1d4a7@linux.alibaba.com>
+Date:   Wed, 2 Feb 2022 20:53:58 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220202114949.833075-1-horatiu.vultur@microchip.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [PATCH v2 net-next 1/3] net/smc: Make smc_tcp_listen_work()
+ independent
+To:     Karsten Graul <kgraul@linux.ibm.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        matthieu.baerts@tessares.net
+References: <cover.1643380219.git.alibuda@linux.alibaba.com>
+ <53383b68f056b4c6d697935d2ea1c170618eebbe.1643380219.git.alibuda@linux.alibaba.com>
+ <0b99dc4d-319e-e4fa-b4bf-ddce5005be47@linux.ibm.com>
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+In-Reply-To: <0b99dc4d-319e-e4fa-b4bf-ddce5005be47@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 12:49:49PM +0100, Horatiu Vultur wrote:
-> Convert lan966x to use the mac_select_interface instead of
-> phylink_set_pcs.
->=20
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+That's right, 'extern' is unnecessary, I'll remove it soon.
 
-Thanks!
+Looking forward for more advise.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Thanks.
 
---=20
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
+>>   
+>> +extern struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work */
+> 
+> I don't think this extern is needed, the work queue is only used within af_smc.c, right?
+> Even the smc_hs_wq would not need to be extern, but this would be a future cleanup.
+> 
+>>   extern struct workqueue_struct	*smc_hs_wq;	/* wq for handshake work */
+>>   extern struct workqueue_struct	*smc_close_wq;	/* wq for close work */
+>>   
