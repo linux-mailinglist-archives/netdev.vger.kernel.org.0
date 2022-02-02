@@ -2,154 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C01DB4A6ED2
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 11:35:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E18F4A6F1D
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 11:46:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343572AbiBBKfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 05:35:44 -0500
-Received: from pop36.abv.bg ([194.153.145.227]:47376 "EHLO pop36.abv.bg"
+        id S234846AbiBBKq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 05:46:57 -0500
+Received: from mga02.intel.com ([134.134.136.20]:8663 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343559AbiBBKfn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Feb 2022 05:35:43 -0500
-Received: from smtp.abv.bg (localhost [127.0.0.1])
-        by pop36.abv.bg (Postfix) with ESMTP id 7A4AB1805D2D;
-        Wed,  2 Feb 2022 12:35:35 +0200 (EET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=abv.bg; s=smtp-out;
-        t=1643798135; bh=LJ2bSPclt4CDkpG3k+w2M34FMl19qOebAQleIeO3j9I=;
-        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
-        b=mX8csLmiBLqAAq7f88AoxyszlnFNhZIKKrGKCG04QORhP9NJMwsELUUyo0pIFkACm
-         YtcTYzdqtwNyvBVqEpTOrA+xRt3qLNZbxllNGQUNgnaFBX561+RK1x3JFZxb4uWQkm
-         LlvNEBg9ev7115kZbxC0C9aJCULDxDKHiWaCO/f4=
-X-HELO: smtpclient.apple
-Authentication-Results: smtp.abv.bg; auth=pass (plain) smtp.auth=gvalkov@abv.bg
-Received: from 212-39-89-111.ip.btc-net.bg (HELO smtpclient.apple) (212.39.89.111)
- by smtp.abv.bg (qpsmtpd/0.96) with ESMTPSA (ECDHE-RSA-AES256-GCM-SHA384 encrypted); Wed, 02 Feb 2022 12:35:35 +0200
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: [PATCH v2 0/1] ipheth URB overflow fix
-From:   Georgi Valkov <gvalkov@abv.bg>
-In-Reply-To: <0414e435e29d4ddf53d189d86fae2c55ed0f81ac.camel@corsac.net>
-Date:   Wed, 2 Feb 2022 12:35:31 +0200
-Cc:     Jan Kiszka <jan.kiszka@siemens.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-usb <linux-usb@vger.kernel.org>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "stable @ vger . kernel . org" <stable@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <CE7AE1A3-51E9-45CE-A4EE-DACB03B96D9C@abv.bg>
-References: <cover.1643699778.git.jan.kiszka@siemens.com>
- <0414e435e29d4ddf53d189d86fae2c55ed0f81ac.camel@corsac.net>
-To:     Yves-Alexis Perez <corsac@corsac.net>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
+        id S229631AbiBBKq4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Feb 2022 05:46:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643798816; x=1675334816;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+0frq3/pxSbf/XvLi5+RhsXZXIGjY/DHMNgJEUnWoi4=;
+  b=gRmgf1IK5BVtkK15hHmJ+WR14VFeMffOQ+ETP0t6KlkMkIx4c5H3kQsp
+   aTnvjdP2T0EqT06RCHThUiRnwyEFDMmVj7BeJCSO5ZAlAji85GLl6Cicg
+   pvJy3xj+OnCsUi4cVRH5of5ui1MJgQQmKJ+Xy29iXZzOhD2q1cd2q9W0T
+   1Avufh5+1wezQhOGZcsn2M7NzPJZ4LJLdpjEjLf47kbkmpKX5UK0VuX1C
+   ruWtn4WdFbRAywyL5o73zloGMs9unD3W8tNbm8dZ0SZpCWx2+ofBRagky
+   v+ePj2L9Jn5/5HeScP8e7NbdDfVdT57M/dtNAwV5eYQ2E1hBQH73OVny9
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="235287987"
+X-IronPort-AV: E=Sophos;i="5.88,336,1635231600"; 
+   d="scan'208";a="235287987"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 02:46:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,336,1635231600"; 
+   d="scan'208";a="771401008"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 02 Feb 2022 02:46:52 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nFDA3-000UTg-UZ; Wed, 02 Feb 2022 10:46:51 +0000
+Date:   Wed, 2 Feb 2022 18:46:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>, netdev@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux ACPI <linux-acpi@vger.kernel.org>
+Subject: Re: [PATCH v2] drivers: net: Replace acpi_bus_get_device()
+Message-ID: <202202021810.82z7OPTR-lkp@intel.com>
+References: <11918902.O9o76ZdvQC@kreacher>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <11918902.O9o76ZdvQC@kreacher>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi "Rafael,
+
+I love your patch! Yet something to improve:
+
+[auto build test ERROR on net/master]
+[also build test ERROR on net-next/master horms-ipvs/master linus/master v5.17-rc2 next-20220202]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Rafael-J-Wysocki/drivers-net-Replace-acpi_bus_get_device/20220202-035902
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 881cc731df6af99a21622e9be25a23b81adcd10b
+config: x86_64-allmodconfig (https://download.01.org/0day-ci/archive/20220202/202202021810.82z7OPTR-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 6b1e844b69f15bb7dffaf9365cd2b355d2eb7579)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/1d2a29e30eb391a02f25f551e6f4242e32f5b01f
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Rafael-J-Wysocki/drivers-net-Replace-acpi_bus_get_device/20220202-035902
+        git checkout 1d2a29e30eb391a02f25f551e6f4242e32f5b01f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/media/cec/platform/seco/ drivers/net/ethernet/cavium/thunder/ drivers/net/wireless/ath/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/net/ethernet/cavium/thunder/thunder_bgx.c:1409:24: error: use of undeclared identifier 'bgx'
+           struct device *dev = &bgx->pdev->dev;
+                                 ^
+   1 error generated.
 
 
-> On 2022-02-02, at 10:09 AM, Yves-Alexis Perez <corsac@corsac.net> =
-wrote:
->=20
-> On Tue, 2022-02-01 at 08:16 +0100, Jan Kiszka wrote:
->> Georgi Valkov (1):
->>   ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
->>=20
->>  drivers/net/usb/ipheth.c | 6 +++---
->>  1 file changed, 3 insertions(+), 3 deletions(-)
->=20
-> Hi,
->=20
-> sorry for the extra-long delay. I finally tested the patch, and it =
-seems to
-> work fine. I've tried it on my laptop for few hours without issue, but =
-to be
-> fair it was working just fine before, I never experienced the =
-EOVERFLOW
-> myself.
+vim +/bgx +1409 drivers/net/ethernet/cavium/thunder/thunder_bgx.c
 
-Thank you for testing and committing the patch!
+46b903a01c053d0 David Daney       2015-08-10  1403  
+46b903a01c053d0 David Daney       2015-08-10  1404  /* Currently only sets the MAC address. */
+46b903a01c053d0 David Daney       2015-08-10  1405  static acpi_status bgx_acpi_register_phy(acpi_handle handle,
+46b903a01c053d0 David Daney       2015-08-10  1406  					 u32 lvl, void *context, void **rv)
+46b903a01c053d0 David Daney       2015-08-10  1407  {
+1d2a29e30eb391a Rafael J. Wysocki 2022-02-01  1408  	struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
+1d82efaca87ecf5 Robert Richter    2016-02-11 @1409  	struct device *dev = &bgx->pdev->dev;
+1d2a29e30eb391a Rafael J. Wysocki 2022-02-01  1410  	struct bgx *bgx = context;
+46b903a01c053d0 David Daney       2015-08-10  1411  
+1d2a29e30eb391a Rafael J. Wysocki 2022-02-01  1412  	if (!adev)
+46b903a01c053d0 David Daney       2015-08-10  1413  		goto out;
+46b903a01c053d0 David Daney       2015-08-10  1414  
+7aa4865506a26c6 Vadim Lomovtsev   2017-01-12  1415  	acpi_get_mac_address(dev, adev, bgx->lmac[bgx->acpi_lmac_idx].mac);
+46b903a01c053d0 David Daney       2015-08-10  1416  
+7aa4865506a26c6 Vadim Lomovtsev   2017-01-12  1417  	SET_NETDEV_DEV(&bgx->lmac[bgx->acpi_lmac_idx].netdev, dev);
+46b903a01c053d0 David Daney       2015-08-10  1418  
+7aa4865506a26c6 Vadim Lomovtsev   2017-01-12  1419  	bgx->lmac[bgx->acpi_lmac_idx].lmacid = bgx->acpi_lmac_idx;
+7aa4865506a26c6 Vadim Lomovtsev   2017-01-12  1420  	bgx->acpi_lmac_idx++; /* move to next LMAC */
+46b903a01c053d0 David Daney       2015-08-10  1421  out:
+46b903a01c053d0 David Daney       2015-08-10  1422  	return AE_OK;
+46b903a01c053d0 David Daney       2015-08-10  1423  }
+46b903a01c053d0 David Daney       2015-08-10  1424  
 
-Hi Yves!
-In order to experience the EOVERFLOW, the iPhone has to receive a large =
-packet
-of size 1514 bytes. Note that it is common for ISPs to limit the MTU, =
-which results
-in dropping large packets before they arrive at the iPhone. For example =
-if I run
-
-mtr 8.8.8.8 -n
-
- 1. 172.20.10.1
- 2. (waiting for reply)
- 3. 10.98.8.1
- 4. 10.98.8.253
- 5. 46.10.207.99
- 6. 212.39.69.106
- 7. 212.39.66.222
- 8. 216.239.59.239
- 9. 74.125.251.185
-10. 8.8.8.8
-
-Host 5 drops large packets, while 3 and 4 replay. Now run
-ping 10.98.8.1 -D -s 1472
-
-Without the patch I get EOVERFLOW and there is no further communication.
-It would be nice if a failsafe mechanism is implemented to recover from =
-faults
-like that or in the event that no communication is detected over a =
-certain period.
-With the patch applied, everything works fine:
-1480 bytes from 10.98.8.1: icmp_seq=3D0 ttl=3D253 time=3D50.234 ms
-
-There is another issue with my iPhone 7 Plus, which is unrelated to this =
-patch:
-If an iPhone is tethered to a MacBook, the next time it gets connected =
-to an
-OpenWRT router the USB Ethernet interface appears, but there is no
-communication. Hence I would assume this issue has to be fixed in =
-another
-patch. I can confirm that in this state macOS and Windows are able to =
-use
-USB tethering, only OpenWRT is affected. So far I found the following
-workarounds:
-* reboot the phone or run:
-* usbreset 002/002 && /etc/init.d/usbmuxd restart
-* or in macOS disable the USB Ethernet interface, before the iPhone is
-unplugged: e.g. Settings, Network, iPhone USB: check Disable unless =
-needed,
-then connect over wifi. The USB interface gets disabled.
-* the same effect can also be achieved using QuickTime, File,
-New Movie Recording. Selecting the iPhone, causes the USB Ethernet =
-interface
-to disappear. If we unplug and tether to OpenWRT now, it works fine. =
-This looks
-like an incomplete initialisation, likely in usbmuxd or ipheth, which =
-needs to switch
-the iPhone to the proper mode.
-
-The same happens if the phone is powered off, and then restarted while =
-tethered,
-or if it reboots due to extreme cold temperatures or low battery. =
-Finally there is
-also a bug or possible hardware/baseband fault in my phone where every =
-few
-days the modem reboots: the LTE icon disappears for a few seconds, and
-tethering is turned off. In the last case Personal Hotspot disappears in =
-Settings,
-but can still be accessed under Mobile Data. This is likely another iOS =
-bug.
-
-Either way, running the commands mentioned above re-enable tethering and
-restore the communication instantly. There is no need to unlock the =
-iPhone with
-a passcode after it restarts. It would be nice if a watchdog is =
-integrated
-in ipheth to trigger recovery automatically.
-
-Any ideas how to implement a watchdog to fix this separate issue?
---
-Georgi Valkov
-
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
