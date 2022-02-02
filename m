@@ -2,103 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DAE74A794B
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 21:16:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E3C14A7950
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 21:18:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235957AbiBBUQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 15:16:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:53378 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233085AbiBBUQZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 15:16:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643832985;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M34YrIYRx5HngPKL98NElbcSHiHeIbaZHCpXvZfxrIA=;
-        b=ZEcTjaQmHmp+wvpA41RTF7UZsabZP+OQ6Y4VTtBdQgTfgnMqkvfFkrBy8IU6WEs6kDsMNh
-        RRP3n8a4q4QPLGa8b1hdfp4Ys12U88dMuWhEGb19c76Ir+NqOvqLsP9LsyXcYCdlW1Erfh
-        0PkbuBpiwW+mOrLzr4CJCTK+EGkhsu4=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-299-8rETmtkPMja3f9_wD4dm8Q-1; Wed, 02 Feb 2022 15:16:24 -0500
-X-MC-Unique: 8rETmtkPMja3f9_wD4dm8Q-1
-Received: by mail-wr1-f71.google.com with SMTP id b3-20020a5d4b83000000b001d676462248so37221wrt.17
-        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 12:16:23 -0800 (PST)
+        id S239670AbiBBUSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 15:18:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37986 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233085AbiBBUSd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 15:18:33 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175ADC061714
+        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 12:18:33 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id v186so2249851ybg.1
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 12:18:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=FfUHJtnMrup0bTy5QIVCTjRbmyyUJk08CV6nq2NKHqg=;
+        b=TLwLI1/8D+wB+/Wr0I0gHd39+JvOlc6CWnC6LZy/7NWtelzTUJ37jQyubuCUPyXQXw
+         m2c4jPqDfnK1Rlkw36QQPhLf6JyHcM+bSVMYjRMsQF35Alb/hPRJnW9VgxjwSBAnLVc4
+         GwPwq/QFjLpRG7YfPYB2TGOO5l6xrjdDibInCm1zP+6QDi0WOcZ6DlOROlnQUUc1ChCQ
+         EDR6r9o4+3T8voDjGpsjIf2OSw49Dcj6LUQSonHlmtc0Gse4DudkA3Ng8HMi0o1NkBH4
+         QFRxhYxvOhmRMp9A+Gf00OL8NIMSAMsnXNNxwSMmGgEHlzhqNPNaHuJnUDlNxD7HPb+5
+         fFMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=M34YrIYRx5HngPKL98NElbcSHiHeIbaZHCpXvZfxrIA=;
-        b=8Fj3cPP+I5oyeWQGQ1JjY4X9iSbni3kCrtv2DQYyTRV6DDdNldsitPx1wEtQX681AO
-         bs58KKTDnkWxshL4p7TnMbA2rLfDZYVQOTIBUmY9nOSDsOnv9q4jU0cHzYw3Kbtr0Okk
-         96Y5S7RY900PbEgUR9JAdcTyf0cV79Q2UIOIJ/4qtcZbUQOZe4Le6nKKmNoBDJeDJdSH
-         nFLeXg/5F7D+EZtxbuYnErm1vcLnRPT1fYCazqQqwgNAfpa0Jw9Y75bb3frEeDNliNnE
-         xKHx4TWqutMFGe8GyDCwlMvA0kUX46rAmEhVvOznFGWwYYnsESouvfTBN8KGdbLdA/eH
-         Gonw==
-X-Gm-Message-State: AOAM531TKhfb2doSTpb0Lvy4Mwn7MtwcXMrqgL1aeiKmcTxULPt9dVFA
-        TRZ1g5mHa4KdAo5II+F1aCX1kOJ+2lqWRBHGXBdhxb/6Wy3aYEExDY64wKEPbUrE+Wz3lfXW4QG
-        hRZfrBJMDeqrm0A3n
-X-Received: by 2002:a05:600c:219:: with SMTP id 25mr7491244wmi.68.1643832982374;
-        Wed, 02 Feb 2022 12:16:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJznM6hdgXQKcOhe6meRwxJx1EhhNNyS49Jthx0+vJQbr68vmdKFg7oX84c6XqbFBP9VWLPZeQ==
-X-Received: by 2002:a05:600c:219:: with SMTP id 25mr7491233wmi.68.1643832982208;
-        Wed, 02 Feb 2022 12:16:22 -0800 (PST)
-Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id f16sm7475036wmg.28.2022.02.02.12.16.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 12:16:19 -0800 (PST)
-Date:   Wed, 2 Feb 2022 21:16:14 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH net-next] selftests: fib offload: use sensible tos values
-Message-ID: <20220202201614.GB15826@pc-4.home>
-References: <5e43b343720360a1c0e4f5947d9e917b26f30fbf.1643826556.git.gnault@redhat.com>
- <54a7071e-71ad-0c7d-ccc4-0f85dbe1e077@linuxfoundation.org>
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=FfUHJtnMrup0bTy5QIVCTjRbmyyUJk08CV6nq2NKHqg=;
+        b=vDphqG0oyqOQ+b7JCozYDrcXTbAtGTnj6veXC41zqGsYDCT5fBibXh03cCPwxvfxx7
+         /CxnKsWQgTyiMF+PedB8AwdCFXEz/UvZYhlVjeMOJce1hvq89Nc3FCrRWEF54bOdAHOv
+         J80Jm3W/U4tolPy7tQg7JuNsjCXMjtNgZSonlI+e3MG/mrXXYYPv1XxWhrJDzy2zkRfK
+         8bi+H4XNuiGVhUXkyWXzMKAUgoJ+ibiVyAgt50VKqmqWBhmSd4QUxCPQVdtBOxxH8Iei
+         FYhFrWXB/KrAUkJ2Hl1swMSS1KtaIyADAYnhC5ZUqGwXbFioBuxdu8IuhnzQ1zYKh+Jm
+         a1cQ==
+X-Gm-Message-State: AOAM532YHqQ9fpuvdrSuBHEzIryFKQaeQKN5tzit8bnGsO9myguQSEcI
+        NwBWZPa0Crx5d1WwrP+DrgcfMOyZtw9jlkFqHqUJO7nY
+X-Google-Smtp-Source: ABdhPJyL4pIDzAMFYfRocB+O88iiha+++LBpNHA2QnoO+pdIe//+SkDgQYnCHznsEOfX2wkIS0ogi0JCDKTJMMV5ZV0=
+X-Received: by 2002:a81:84:: with SMTP id 126mr2163168ywa.80.1643833112144;
+ Wed, 02 Feb 2022 12:18:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54a7071e-71ad-0c7d-ccc4-0f85dbe1e077@linuxfoundation.org>
+From:   Erico Nunes <nunes.erico@gmail.com>
+Date:   Wed, 2 Feb 2022 21:18:21 +0100
+Message-ID: <CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com>
+Subject: net: stmmac: dwmac-meson8b: interface sometimes does not come up at boot
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 12:46:10PM -0700, Shuah Khan wrote:
-> On 2/2/22 11:30 AM, Guillaume Nault wrote:
-> > Although both iproute2 and the kernel accept 1 and 2 as tos values for
-> > new routes, those are invalid. These values only set ECN bits, which
-> > are ignored during IPv4 fib lookups. Therefore, no packet can actually
-> > match such routes. This selftest therefore only succeeds because it
-> > doesn't verify that the new routes do actually work in practice (it
-> > just checks if the routes are offloaded or not).
-> > 
-> > It makes more sense to use tos values that don't conflict with ECN.
-> > This way, the selftest won't be affected if we later decide to warn or
-> > even reject invalid tos configurations for new routes.
-> 
-> Wouldn't it make sense to leave these invalid values in the test though.
-> Removing these makes this test out of sync withe kernel.
+Hello,
 
-Do you mean keeping the test as is and only modify it when (if) we
-decide to reject such invalid values? Or to write two versions of the
-test, one with invalid values, the other with correct ones?
+I've been tracking down an issue with network interfaces from
+meson8b-dwmac sometimes not coming up properly at boot.
+The target systems are AML-S805X-CC boards (Amlogic S805X SoC), I have
+a group of them as part of a CI test farm that uses nfsroot.
 
-I don't get what keeping a test with the invalid values could bring us.
-It's confusing for the reader, and might break in the future. This
-patch makes the test future proof, without altering its intent and code
-coverage. It still works on current (and past) kernels, so I don't see
-what this patch could make out of sync.
+After hopefully ruling out potential platform/firmware and network
+issues I managed to bisect this commit in the kernel to make a big
+difference:
 
-Or did I misunderstand something?
+  46f69ded988d2311e3be2e4c3898fc0edd7e6c5a net: stmmac: Use resolved
+link config in mac_link_up()
 
-> thanks,
-> -- Shuah
-> 
+With a kernel before that commit, I am able to submit hundreds of test
+jobs and the boards always start the network interface properly.
 
+After that commit, around 30% of the jobs start hitting this:
+
+  [    2.178078] meson8b-dwmac c9410000.ethernet eth0: PHY
+[0.e40908ff:08] driver [Meson GXL Internal PHY] (irq=48)
+  [    2.183505] meson8b-dwmac c9410000.ethernet eth0: Register
+MEM_TYPE_PAGE_POOL RxQ-0
+  [    2.200784] meson8b-dwmac c9410000.ethernet eth0: No Safety
+Features support found
+  [    2.202713] meson8b-dwmac c9410000.ethernet eth0: PTP not supported by HW
+  [    2.209825] meson8b-dwmac c9410000.ethernet eth0: configuring for
+phy/rmii link mode
+  [    3.762108] meson8b-dwmac c9410000.ethernet eth0: Link is Up -
+100Mbps/Full - flow control off
+  [    3.783162] Sending DHCP requests ...... timed out!
+  [   93.680402] meson8b-dwmac c9410000.ethernet eth0: Link is Down
+  [   93.685712] IP-Config: Retrying forever (NFS root)...
+  [   93.756540] meson8b-dwmac c9410000.ethernet eth0: PHY
+[0.e40908ff:08] driver [Meson GXL Internal PHY] (irq=48)
+  [   93.763266] meson8b-dwmac c9410000.ethernet eth0: Register
+MEM_TYPE_PAGE_POOL RxQ-0
+  [   93.779340] meson8b-dwmac c9410000.ethernet eth0: No Safety
+Features support found
+  [   93.781336] meson8b-dwmac c9410000.ethernet eth0: PTP not supported by HW
+  [   93.788088] meson8b-dwmac c9410000.ethernet eth0: configuring for
+phy/rmii link mode
+  [   93.807459] random: fast init done
+  [   95.353076] meson8b-dwmac c9410000.ethernet eth0: Link is Up -
+100Mbps/Full - flow control off
+
+This still happens with a kernel from master, currently 5.17-rc2 (less
+frequently but still often hit by CI test jobs).
+The jobs still usually get to work after restarting the interface a
+couple of times, but sometimes it takes 3-4 attempts.
+
+Here is one example and full dmesg:
+https://gitlab.freedesktop.org/enunes/mesa/-/jobs/16452399/raw
+
+Note that DHCP does not seem to be an issue here, besides the fact
+that the problem only happens since the mentioned commit under the
+same setup, I did try to set up the boards to use a static ip but then
+the interfaces just don't communicate at all from boot.
+
+For test purposes I attempted to revert
+46f69ded988d2311e3be2e4c3898fc0edd7e6c5a on top of master but that
+does not apply trivially anymore, and by trying to revert it manually
+I haven't been able to get a working interface.
+
+Any advice on how to further debug or fix this?
+
+Thanks
+
+Erico
