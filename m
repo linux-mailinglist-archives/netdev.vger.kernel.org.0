@@ -2,95 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A7BF4A7395
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 15:49:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CF394A739B
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 15:50:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345112AbiBBOtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 09:49:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46586 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345102AbiBBOtv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 09:49:51 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D95C06173D
-        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 06:49:51 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id x193so40230728oix.0
-        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 06:49:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RqpgNSQqEtvHDhtnLQpmx4vhCkM9OOPAYGCYwN/UpUA=;
-        b=ABpJD8ClxeKSd60j9HNanNhLdkhkcGR6JgMCxv9C9NF9SyXyOofNQr1kSDq2TBfkDz
-         9BzwLvHlk0StPgaF7r5NYoVEg0/vgjoQZIA+zkhvgAcv4gxqER9nDaYjx37jFV8/dFBf
-         zLC880EnBvtuSeH7MuN4QD8Bi5xHD7c3UKO0pNYoycyTJBRNU3NLxzPmk2zexOizaWus
-         XP42NQJzMffcO62LtfYx017tx+hN31+VDJkdYDz9b85+iqTcsc2XXNBcwHrDx+OweCdW
-         lGKajBieBwDhgx5WYARzW0WogpCcFSx+HByAUq5idX+pl3r+5aUTijvEdkk1h1WWYoPR
-         xKSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RqpgNSQqEtvHDhtnLQpmx4vhCkM9OOPAYGCYwN/UpUA=;
-        b=rcH+3NDQDaHvPw7ZtRVTEfk7vdMVdM6IdTXcwZFZjudtXhj/7JomobVgpmeE/rLayv
-         ldyAp65L5dgwFgYUHBCYXEzZ+Q4BMhcYvJqRTNNztTIMYf7lki1aaidHWgJt0EojpXOJ
-         vW9UslFyzB3mbMB7qDEyOvPp/GcWDKSETgh/ZFuRjjA0dJMcXEHi7536MD1p5uCP5DGk
-         ZSz3L/dRZtCA2EXOJBsbnmouTVof99TXn3kr0D1uykJ6VMnqMs3M3yiV2CxD7Luwk6pz
-         SGWSYFz3Hdm3y33UnJfkCPyM81pDmoUILn2swCSkGBg+o8j6kVaRKHY/YMD6TWXsUO/3
-         y8zw==
-X-Gm-Message-State: AOAM531jCpc5TPzMcZhE/prRN8QwfzNU4de6i468TaPinE43n3aOP4cy
-        GE+Wq5qkLbdbs+STTK/Bkinz1X5zsilZABK7k+SWlg==
-X-Google-Smtp-Source: ABdhPJxfI3zeLQ82ebGntwsMBQogioG4IwPuBvXRXbKc9toTzCugtUBpEDYfxQYd62QKGYxc6fRtiLhzvugCS3v4GvY=
-X-Received: by 2002:a05:6808:1901:: with SMTP id bf1mr4642177oib.197.1643813390322;
- Wed, 02 Feb 2022 06:49:50 -0800 (PST)
+        id S1345126AbiBBOuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 09:50:15 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56036 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239892AbiBBOuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 09:50:15 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 981C360B8B
+        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 14:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EE443C340F0;
+        Wed,  2 Feb 2022 14:50:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643813414;
+        bh=6HYQ47Hl6TH8Pa9/Hfq7LgNYBd1Q9EL2gPphCu/1elg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=pLvmRHjd3PsXtUiQyk9RRoC61qkcC3rNtGnH4Yd4w8SCcFu6sNqSSPsHOcGQkuTYf
+         2FDdQhMa/7UH9pWn4i1qUW2L6kOVA/UXTgLOW4kcffOYP8PaPZLoL6HVTPnAOhMkdV
+         To50qLoMvP5Jkuq50npqgMG1y4iNjSe6DURHP1GqPyJX5CLVDEHv0wxoSUQJ+mzMQR
+         KjDfchZbD1kDVsfKtE6ZwYGkDMh1Vuy/K7TSNyz5Yu8P4wAGILwyKsteYkwNy+hHY1
+         dE6po7Yvv7Kmr9jc6q6hFh0ga2s5IWRo1ZXTUemoRWCpP1ycyx5eBtb39xLCF69mNC
+         RdaptNSoFm2Ew==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D25C9E6BB76;
+        Wed,  2 Feb 2022 14:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <0000000000000a9b7d05d6ee565f@google.com> <0000000000004cc7f905d709f0f6@google.com>
-In-Reply-To: <0000000000004cc7f905d709f0f6@google.com>
-From:   Marco Elver <elver@google.com>
-Date:   Wed, 2 Feb 2022 15:49:38 +0100
-Message-ID: <CANpmjNPL-12uWHk+EDPdz=6rs2+n2zJWX1zMAbsfUm=dbZJ4qQ@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Write in ringbuf_map_alloc
-To:     syzbot <syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com>
-Cc:     akpm@linux-foundation.org, andreyknvl@google.com,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, glider@google.com,
-        hotforest@gmail.com, houtao1@huawei.com, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        sfr@canb.auug.org.au, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v4] tcp: Use BPF timeout setting for SYN ACK RTO
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164381341385.24396.15980481535136045718.git-patchwork-notify@kernel.org>
+Date:   Wed, 02 Feb 2022 14:50:13 +0000
+References: <20220128192621.29642-1-hmukos@yandex-team.ru>
+In-Reply-To: <20220128192621.29642-1-hmukos@yandex-team.ru>
+To:     Akhmat Karakotov <hmukos@yandex-team.ru>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, eric.dumazet@gmail.com, kafai@fb.com,
+        ncardwell@google.com, ycheng@google.com, brakmo@fb.com,
+        zeil@yandex-team.ru, mitradir@yandex-team.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Feb 2022 at 15:36, syzbot
-<syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com> wrote:
->
-> syzbot has bisected this issue to:
->
-> commit c34cdf846c1298de1c0f7fbe04820fe96c45068c
-> Author: Andrey Konovalov <andreyknvl@google.com>
-> Date:   Wed Feb 2 01:04:27 2022 +0000
->
->     kasan, vmalloc: unpoison VM_ALLOC pages after mapping
+Hello:
 
-Is this a case of a new bug surfacing due to KASAN improvements? But
-it's not quite clear to me why this commit.
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Andrey, any thoughts?
+On Fri, 28 Jan 2022 22:26:21 +0300 you wrote:
+> When setting RTO through BPF program, some SYN ACK packets were unaffected
+> and continued to use TCP_TIMEOUT_INIT constant. This patch adds timeout
+> option to struct request_sock. Option is initialized with TCP_TIMEOUT_INIT
+> and is reassigned through BPF using tcp_timeout_init call. SYN ACK
+> retransmits now use newly added timeout option.
+> 
+> Signed-off-by: Akhmat Karakotov <hmukos@yandex-team.ru>
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
+> 
+> [...]
 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=128cb900700000
-> start commit:   6abab1b81b65 Add linux-next specific files for 20220202
-> git tree:       linux-next
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=118cb900700000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=168cb900700000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=b8d8750556896349
-> dashboard link: https://syzkaller.appspot.com/bug?extid=5ad567a418794b9b5983
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1450d9f0700000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=130ef35bb00000
->
-> Reported-by: syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com
-> Fixes: c34cdf846c12 ("kasan, vmalloc: unpoison VM_ALLOC pages after mapping")
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Here is the summary with links:
+  - [net-next,v4] tcp: Use BPF timeout setting for SYN ACK RTO
+    https://git.kernel.org/netdev/net-next/c/5903123f662e
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
