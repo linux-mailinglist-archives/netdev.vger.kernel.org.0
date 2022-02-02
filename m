@@ -2,105 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD6A04A7B8C
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 00:13:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C21C4A7BAD
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 00:26:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235256AbiBBXMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 18:12:21 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:35834 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233905AbiBBXMV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 18:12:21 -0500
-Received: by mail-il1-f200.google.com with SMTP id h8-20020a056e021b8800b002ba614f7c5dso556110ili.2
-        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 15:12:21 -0800 (PST)
+        id S1348081AbiBBX0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 18:26:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51564 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234266AbiBBX0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 18:26:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643844360;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=V1irmvN4zP19hk1c37XkrsxWt5n5A/h9HErqCh9egyM=;
+        b=aRFrQwzscodg8Mm9sOCbthJiJaV2ivSEqCEnAKK2fokZUO1XUSHL2W3a7V6lflnP9FsIjj
+        SsI1VqSeWKwxGFb8EgmSWI+DP/dVSKwPShhjbA3iabflVtiK2dK/D1NuxFI9rIIHvihRwN
+        6R93PNiBqfbjGwsQthX9N10RusreRsA=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-58-IkYUec5YPQKQbIH9qVSplg-1; Wed, 02 Feb 2022 18:25:59 -0500
+X-MC-Unique: IkYUec5YPQKQbIH9qVSplg-1
+Received: by mail-wm1-f71.google.com with SMTP id i204-20020a1c3bd5000000b00352cf8b74dcso644598wma.0
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 15:25:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=htmVlWGuHKKb3tjIfvhIeE41rcc33nqlNcOJ/WR1NFg=;
-        b=BDp9jk3IeGKeYj2uQtVIP8t9lS/s2AJV7s+sqIhLinL/LF4DOZTsa25xdP3KPR0VTt
-         DEGxFG/CBYlWMy3bo2mSAXdPg9uyZfFX1ZnqiF0/0F3j3SrLRlD2k4BVOpOddWjP7C3D
-         8+viHSsThL8BxHlvXxyk7e18hICkM+eND8rkWNUs0YjVu0AOOwr9p2claZ2zS7NGT0V2
-         E4SWZiSRN9BdI08jirJ3QERzIuXos033xdtoMJgmSzL7qk3hpqVw4Va8W+JYB6+/4UqR
-         UASyzUzMP9IeCvmb3+5dlAczZ/PeTxHekIr3uK1NZeOMkEWmfZd40DlurfqmT7aJkZeF
-         1Chg==
-X-Gm-Message-State: AOAM531uZ8kOHlmUG8kx9/+doXLFUN79djTAKqUZz1CrxIQn0bgNtOec
-        tp6TcRPdnm5MU2AGDUQWG7jaUGpPvqiRoQS4WSETqmyMUjYG
-X-Google-Smtp-Source: ABdhPJwfLeBxifdPwKYe9fuxoJzEo+ppyRuD/M/W85+SkRlpjuuPSlnJBOjJ4+VpsKr+HEvsxw1SN6i8HmPmbinpLwQ5GEtxpIJv
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=V1irmvN4zP19hk1c37XkrsxWt5n5A/h9HErqCh9egyM=;
+        b=vxuLsU6mgYkMsGvzihQav5rm17g8eBnu87Qr7Xqd0iXOT1r7AMYb+m/VJED7MbkCNt
+         8al3MsedoSKCTXj7bdPMY0oI0/UI/MdQmkTyj5rQPD5sUDSXQMiWWQ9pbF5mUoWlPPG9
+         diadx/giw/iHDooKCuI02FdFk/iP/zNkJbLo/t3pqkUjjOuHt6JWvZBuP+Or0tuA1OHu
+         lI/jGO7nowl/EjID/WWzgEVcQiR7ftKGHbSz6625jJCT0IZqtwZGfbAEhFGlSxY/IS8B
+         7OuQlnQ9Q+qcPcF//xEGzAeH6+/QELxBOAyDdcSxUpGYJU0aaH5FJphPAMB2HpfliPDZ
+         y1ew==
+X-Gm-Message-State: AOAM533IttKPuYGeUFq3eo98a2vdltjGSrXBBuCCFQolUlooLd953Dj5
+        a1QVXNdKgHZuKOy/7VsoUrkOYj1FAbRVEMGOXZgcAzJy/WkOm49NtxEomHgl3MZOrH/UOUXfmIh
+        KGUIMNDcWNWce/q5P
+X-Received: by 2002:adf:d1c1:: with SMTP id b1mr3372353wrd.194.1643844358084;
+        Wed, 02 Feb 2022 15:25:58 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwSO9KG6tY7otJ9gS+2Z7WctCTNZopwe1OQIFeR8JPQvW0ZC6+xdYbw6EQuMBsj+bGuZ0jFQw==
+X-Received: by 2002:adf:d1c1:: with SMTP id b1mr3372344wrd.194.1643844357867;
+        Wed, 02 Feb 2022 15:25:57 -0800 (PST)
+Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id s22sm5584046wmj.38.2022.02.02.15.25.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Feb 2022 15:25:57 -0800 (PST)
+Date:   Thu, 3 Feb 2022 00:25:55 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+        Ido Schimmel <idosch@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH net-next] selftests: fib offload: use sensible tos values
+Message-ID: <20220202232555.GC15826@pc-4.home>
+References: <5e43b343720360a1c0e4f5947d9e917b26f30fbf.1643826556.git.gnault@redhat.com>
+ <54a7071e-71ad-0c7d-ccc4-0f85dbe1e077@linuxfoundation.org>
+ <20220202201614.GB15826@pc-4.home>
+ <c5be299d-35e9-9ae9-185f-2faa6eccb149@linuxfoundation.org>
 MIME-Version: 1.0
-X-Received: by 2002:a02:70c3:: with SMTP id f186mr17553128jac.155.1643843539556;
- Wed, 02 Feb 2022 15:12:19 -0800 (PST)
-Date:   Wed, 02 Feb 2022 15:12:19 -0800
-In-Reply-To: <00000000000061d7eb05d7057144@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003de3e105d7112674@google.com>
-Subject: Re: [syzbot] WARNING in bpf_prog_test_run_xdp
-From:   syzbot <syzbot+79fd1ab62b382be6f337@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c5be299d-35e9-9ae9-185f-2faa6eccb149@linuxfoundation.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On Wed, Feb 02, 2022 at 02:10:15PM -0700, Shuah Khan wrote:
+> On 2/2/22 1:16 PM, Guillaume Nault wrote:
+> > On Wed, Feb 02, 2022 at 12:46:10PM -0700, Shuah Khan wrote:
+> > > On 2/2/22 11:30 AM, Guillaume Nault wrote:
+> > > > Although both iproute2 and the kernel accept 1 and 2 as tos values for
+> > > > new routes, those are invalid. These values only set ECN bits, which
+> > > > are ignored during IPv4 fib lookups. Therefore, no packet can actually
+> > > > match such routes. This selftest therefore only succeeds because it
+> > > > doesn't verify that the new routes do actually work in practice (it
+> > > > just checks if the routes are offloaded or not).
+> > > > 
+> > > > It makes more sense to use tos values that don't conflict with ECN.
+> > > > This way, the selftest won't be affected if we later decide to warn or
+> > > > even reject invalid tos configurations for new routes.
+> > > 
+> > > Wouldn't it make sense to leave these invalid values in the test though.
+> > > Removing these makes this test out of sync withe kernel.
+> > 
+> > Do you mean keeping the test as is and only modify it when (if) we
+> > decide to reject such invalid values?
+> 
+> This is for sure. Remove the invalid values in sync with the kernel code.
+> 
+> > Or to write two versions of the
+> > test, one with invalid values, the other with correct ones?
+> > 
+> 
+> This one makes sense if it adds value in testing to make sure we continue
+> to reject invalid values.
+> 
+> > I don't get what keeping a test with the invalid values could bring us.
+> > It's confusing for the reader, and might break in the future. This
+> > patch makes the test future proof, without altering its intent and code
+> > coverage. It still works on current (and past) kernels, so I don't see
+> > what this patch could make out of sync.
+> > 
+> 
+> If kernel still accepts these values, then the test is valid as long as
+> kernel still doesn't flag these values as invalid.
+> 
+> I might be missing something. Don't you want to test with invalid values
+> so make sure they are indeed rejected?
 
-HEAD commit:    dd5152ab338c Merge branch 'bpf-btf-dwarf5'
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=138d300c700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b210f94c3ec14b22
-dashboard link: https://syzkaller.appspot.com/bug?extid=79fd1ab62b382be6f337
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17d37f00700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14745624700000
+Testing invalid values makes sense, but in another selftest IMHO. This
+file is used to test hardware offload behaviour (although it lives
+under selftests/net/, it's only called from other scripts living under
+selftests/drivers/). Testing for accepted/rejected values should be
+done in a network generic selftest, not in driver specific ones.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+79fd1ab62b382be6f337@syzkaller.appspotmail.com
+I'm currently working on a patch series that'd include such tests (as
+part of a larger project aimed at fixing conflicting interpretations of
+ECN bits). But for fib_offload_lib.sh, I'd really prefer if we could
+keep it focused on testing driver features.
 
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 3596 at include/linux/thread_info.h:230 check_copy_size include/linux/thread_info.h:230 [inline]
-WARNING: CPU: 1 PID: 3596 at include/linux/thread_info.h:230 copy_from_user include/linux/uaccess.h:191 [inline]
-WARNING: CPU: 1 PID: 3596 at include/linux/thread_info.h:230 bpf_prog_test_run_xdp+0xec7/0x1150 net/bpf/test_run.c:978
-Modules linked in:
-CPU: 1 PID: 3596 Comm: syz-executor589 Not tainted 5.16.0-syzkaller-11587-gdd5152ab338c #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:check_copy_size include/linux/thread_info.h:230 [inline]
-RIP: 0010:copy_from_user include/linux/uaccess.h:191 [inline]
-RIP: 0010:bpf_prog_test_run_xdp+0xec7/0x1150 net/bpf/test_run.c:978
-Code: fd 06 48 c1 e5 0c 48 01 c5 e8 b5 71 0d fa 49 81 fe ff ff ff 7f 0f 86 08 fe ff ff 4c 8b 74 24 60 4c 8b 7c 24 68 e8 09 6f 0d fa <0f> 0b 41 bc f2 ff ff ff e9 02 fb ff ff 4c 8b 74 24 60 4c 8b 7c 24
-RSP: 0018:ffffc90002acfb40 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 00000000fffff0de RCX: 0000000000000000
-RDX: ffff88801ad5ba00 RSI: ffffffff876ae697 RDI: 0000000000000003
-RBP: ffff88801e32b000 R08: 000000007fffffff R09: ffffffff8d9399d7
-R10: ffffffff876ae67b R11: 000000000000001f R12: 0000000000000dc0
-R13: ffff888019342000 R14: 0000000000000000 R15: ffffc90000d6e000
-FS:  00005555560c8300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000280 CR3: 000000001df60000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- bpf_prog_test_run kernel/bpf/syscall.c:3356 [inline]
- __sys_bpf+0x1858/0x59a0 kernel/bpf/syscall.c:4658
- __do_sys_bpf kernel/bpf/syscall.c:4744 [inline]
- __se_sys_bpf kernel/bpf/syscall.c:4742 [inline]
- __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4742
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fd2338db1d9
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd14e00248 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fd2338db1d9
-RDX: 0000000000000048 RSI: 00000000200013c0 RDI: 000000000000000a
-RBP: 00007fd23389f1c0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fd23389f250
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
+> 
+> thanks,
+> -- Shuah
+> 
 
