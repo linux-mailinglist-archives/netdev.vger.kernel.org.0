@@ -2,69 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E8AB4A6CB3
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 09:09:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDD664A6CCB
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 09:19:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243310AbiBBIJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 03:09:35 -0500
-Received: from molly.corsac.net ([82.66.73.9]:42054 "EHLO mail.corsac.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243222AbiBBIJf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Feb 2022 03:09:35 -0500
-Received: from scapa.corsac.net (unknown [IPv6:2a01:e0a:2ff:c170:6af7:28ff:fe8d:2119])
-        by mail.corsac.net (Postfix) with ESMTPS id C611E9A
-        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 09:09:31 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=corsac.net; s=2021;
-        t=1643789371; bh=cwIF7F/SraYRZ1XqJOwvVwfaQlEYV0phYUPLhFULyt4=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=dNCsRHjRZcCnbCMENn3tYnv3dB5mf26YBqEkJF4Ngcy4Mh8Y1KQNW7Hzjf8P9AGUC
-         /SsRYjclabhS113SgGH19GEZUXsjgVSTXILsARw3ovSxPWGHR05ERbfdzh2DNqIo+9
-         OcZK4KvqPbclrug3tiwjvX6QMKwE/VM28OVa99PM71YxbvjuU643yp50v7fP0atFM+
-         5/vLUVDaCfeyit1SpdZISO7W9TsxHj78ejCuq7Qm5WzZN7PwTCFsaILdZC/TknLeA7
-         dCVUyS2v2ndsNzRTt6BJbDqGFXogb79rX5k9R6956ywWXsAzA2Ls5J6xvfIt54Rss7
-         ZdDhZQT1aERrA==
-Received: from corsac (uid 1000)
-        (envelope-from corsac@corsac.net)
-        id a0060
-        by scapa.corsac.net (DragonFly Mail Agent v0.13);
-        Wed, 02 Feb 2022 09:09:30 +0100
-Message-ID: <0414e435e29d4ddf53d189d86fae2c55ed0f81ac.camel@corsac.net>
-Subject: Re: [PATCH v2 0/1] ipheth URB overflow fix
-From:   Yves-Alexis Perez <corsac@corsac.net>
-To:     Jan Kiszka <jan.kiszka@siemens.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Georgi Valkov <gvalkov@abv.bg>
-Cc:     linux-usb <linux-usb@vger.kernel.org>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "stable @ vger . kernel . org" <stable@vger.kernel.org>
-Date:   Wed, 02 Feb 2022 09:09:30 +0100
-In-Reply-To: <cover.1643699778.git.jan.kiszka@siemens.com>
-References: <cover.1643699778.git.jan.kiszka@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.42.3-1 
+        id S244434AbiBBIT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 03:19:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:46009 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231628AbiBBITW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 03:19:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643789962;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+wyReEkn4/Cn9YjwteiaH1K4UQsIlCcH3PhcqVdM9/k=;
+        b=b/H3V5QAvyjps6abiUObI1VE7RjtSou9Y/ULdyMizxBue+NByh6+H3cjX9HO+sgCVvGL4d
+        9O+sIh2lLmtsNiFB5ubKy9RnP8VSip4zSrl2nlAD8UgXhmCJfC9OuV3odT6+lSYjuOAn5U
+        rIQRJrBBIbPQAf0kvwdIUwj6KN32B6Q=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-155-4lGgE_b0O0ms6EbLxnf6jg-1; Wed, 02 Feb 2022 03:19:20 -0500
+X-MC-Unique: 4lGgE_b0O0ms6EbLxnf6jg-1
+Received: by mail-ed1-f70.google.com with SMTP id c23-20020a056402159700b00406aa42973eso10015816edv.2
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 00:19:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+wyReEkn4/Cn9YjwteiaH1K4UQsIlCcH3PhcqVdM9/k=;
+        b=zj5NsFwPjWunywtq9flZEio3mAeBmhUTvHJy3WJJzrzMF7Yd08MPLstvsP7+UigLQ3
+         X4nOYTp4xueRKAvOMqAOw3CMHQH/uTFHmXU2Q9prJc61OyEEF78pAF40gG48NO28EjW2
+         1fANNDxG469HbiH7n0WiLhVwpOhFRVDO0IZYl94KgvxhOY6C6bFYpNh0FV+fMCv/LUct
+         jVP0PqBehdDIlWDPklslT3bNDwLktWK4ErtHv1GzU5syP4HolZTHWHeGB8j3ncOJaQKs
+         L7hio4pZVETax9Pg8r5tMRwi2p5X2hBk3gqBlcxcOgCRp0lt8pC89DGo05z/O6i3Au1c
+         /dug==
+X-Gm-Message-State: AOAM531B7MyI1pkasn1lXLy5ModUuwBIMtT1StyY1XFBdLhRpoMXlTAy
+        u4z2gEoEIcM+r4q67pERvDoalSHKlWh+nK4ChYttTlQwgXEYooJIRZ1cjP7E+PZ9cx1SWmCSlKg
+        Zf9YFTpLD8KaufhF5pUgbzSEMuKX+CR6OtoQnOYTOx3vQzkq0fnss/YURReiLuS//02o2
+X-Received: by 2002:a17:907:97cd:: with SMTP id js13mr24040069ejc.365.1643789959569;
+        Wed, 02 Feb 2022 00:19:19 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzWlPidqeGWSjLbqV6r7BsSahIDJSL1QXn1MChsAjaMmOfP+6XhzTND6XmbFDVjYb/cTiZjSA==
+X-Received: by 2002:a17:907:97cd:: with SMTP id js13mr24040053ejc.365.1643789959200;
+        Wed, 02 Feb 2022 00:19:19 -0800 (PST)
+Received: from localhost (net-93-71-98-74.cust.vodafonedsl.it. [93.71.98.74])
+        by smtp.gmail.com with ESMTPSA id lf16sm15302731ejc.25.2022.02.02.00.19.18
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Feb 2022 00:19:18 -0800 (PST)
+Date:   Wed, 2 Feb 2022 09:19:17 +0100
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     netdev@vger.kernel.org
+Subject: Re: [RFC PATCH net-next] selftests: tc-testing: Increase timeout in
+ tdc config file
+Message-ID: <Yfo+hfsmAhCpXhBK@dcaratti.users.ipa.redhat.com>
+References: <20220201151920.13140-1-victor@mojatatu.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220201151920.13140-1-victor@mojatatu.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-02-01 at 08:16 +0100, Jan Kiszka wrote:
-> Georgi Valkov (1):
-> =C2=A0 ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
->=20
-> =C2=A0drivers/net/usb/ipheth.c | 6 +++---
-> =C2=A01 file changed, 3 insertions(+), 3 deletions(-)
+On Tue, Feb 01, 2022 at 12:19:20PM -0300, Victor Nogueira wrote:
+> Some tests, such as Test d052: Add 1M filters with the same action, may
+> not work with a small timeout value.
+> 
+> Increase timeout to 24 seconds.
+> 
+> Signed-off-by: Victor Nogueira <victor@mojatatu.com> 
 
-Hi,
+Acked-by: Davide Caratti <dcaratti@redhat.com>
 
-sorry for the extra-long delay. I finally tested the patch, and it seems to
-work fine. I've tried it on my laptop for few hours without issue, but to b=
-e
-fair it was working just fine before, I never experienced the EOVERFLOW
-myself.
+thanks!
+ 
 
-Regards,
---=20
-Yves-Alexis
