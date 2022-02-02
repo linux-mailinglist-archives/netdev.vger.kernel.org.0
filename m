@@ -2,84 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 955C34A6A62
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 03:57:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A7F14A6A6D
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 04:09:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243910AbiBBC5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 21:57:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55960 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232917AbiBBC5v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 21:57:51 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C28DC061714;
-        Tue,  1 Feb 2022 18:57:51 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id o64so18997229pjo.2;
-        Tue, 01 Feb 2022 18:57:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=4lpa46JOOI9+V6m/Wzg81wuGZMW8WCd8g9diUYRKJRo=;
-        b=bEeMQnuvWJ1aGbO//Fc/wxTCCioVLMfDGrIyOiBtWiBzXHmtxFHe4d7edEzrp1aiGH
-         fSAre48ZdUbFByceEC6Bnib8R6vIUI/MGPSgiWwOQ353VCbHVqoJTAx/f2f4RnNnBN4V
-         BKZra8NzIpoyD8OqlV5uSHBnY8tqQ8jZI1U7S2w4tC8zX+n+A9Wmd4xCM/1/9Ct2blGV
-         YWR5SYV/09eJfowAyt2f7/wsGNMGzxmAYDwE/O6/RAJi45CgAOApoumieJPuRbszyzee
-         WPvSwS6m0rGGIPhvxu04PPIN8fFPQjZxU1xtBY/nYUQ3bRj6dGLYlV1CzORupnLNRO73
-         r2pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4lpa46JOOI9+V6m/Wzg81wuGZMW8WCd8g9diUYRKJRo=;
-        b=lf+0JQl87Ahtb/qjGmD+eWg1Z82T2lavIyAhPqsNuPrP4bySr/fCoSOt4l2HgRCegA
-         zITylr3jIQMDIxfiXRDch59MzFWIpLX8uyVxIYeKm+DFUk8xAj0dquLsp+lVtl9YM4Ni
-         WkoajfFXHDGR9qOy842iJLskwhXX00trbzlg5sL+jOqeafqco1FxDxbBDuZKPdXkLHXi
-         fB4uLV9wqADoFXcY/CLJ1LIgpJtaQyUwykks8dFKw/0xiYr1AvvpH+EaeFjHa978SaYg
-         A7MbwbjNa282BvGVDZgxaQrT2/gro60uyeN1EyLFop4bO2WiuMddlYt7JSgKsKMKAtF4
-         zBhw==
-X-Gm-Message-State: AOAM530PAH5jOqPPf2LUpGf1EER7C296+PPFvcAEUWMUVabu3H0RLGWt
-        gbUZvakzGMnDjjMKn/aoykk=
-X-Google-Smtp-Source: ABdhPJyMqKtVMrpgb3NQq4XodSedpDTNMaLHjedEHjkl/sUBM3iUP1hWQ1pr5NRRrlcTgFJICJg4fw==
-X-Received: by 2002:a17:90a:70c8:: with SMTP id a8mr5850615pjm.184.1643770670940;
-        Tue, 01 Feb 2022 18:57:50 -0800 (PST)
-Received: from ?IPV6:2600:8802:b00:4a48:a52e:6781:7ca4:b203? ([2600:8802:b00:4a48:a52e:6781:7ca4:b203])
-        by smtp.gmail.com with ESMTPSA id r4sm4093936pjj.56.2022.02.01.18.57.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Feb 2022 18:57:50 -0800 (PST)
-Message-ID: <d7e25f71-69e0-1f84-215a-422c7ee4388e@gmail.com>
-Date:   Tue, 1 Feb 2022 18:57:49 -0800
+        id S243936AbiBBDJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 22:09:07 -0500
+Received: from vmicros1.altlinux.org ([194.107.17.57]:35664 "EHLO
+        vmicros1.altlinux.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230342AbiBBDJG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 22:09:06 -0500
+Received: from mua.local.altlinux.org (mua.local.altlinux.org [192.168.1.14])
+        by vmicros1.altlinux.org (Postfix) with ESMTP id EC7A172C8FA;
+        Wed,  2 Feb 2022 06:09:04 +0300 (MSK)
+Received: by mua.local.altlinux.org (Postfix, from userid 508)
+        id DA5887CCAAC; Wed,  2 Feb 2022 06:09:04 +0300 (MSK)
+Date:   Wed, 2 Feb 2022 06:09:04 +0300
+From:   "Dmitry V. Levin" <ldv@altlinux.org>
+To:     Karsten Graul <kgraul@linux.ibm.com>
+Cc:     Tony Lu <tonylu@linux.alibaba.com>, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-api@vger.kernel.org
+Subject: [PATCH] Partially revert "net/smc: Add netlink net namespace support"
+Message-ID: <20220202030904.GA9742@altlinux.org>
+References: <20211228130611.19124-1-tonylu@linux.alibaba.com>
+ <20211228130611.19124-3-tonylu@linux.alibaba.com>
+ <20220131002453.GA7599@altlinux.org>
+ <521e3f2a-8b00-43d4-b296-1253c351a3d2@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [net-next PATCH v8 13/16] net: dsa: qca8k: move page cache to
- driver priv
-Content-Language: en-US
-To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220202000335.19296-1-ansuelsmth@gmail.com>
- <20220202000335.19296-14-ansuelsmth@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220202000335.19296-14-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <521e3f2a-8b00-43d4-b296-1253c351a3d2@linux.ibm.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The change of sizeof(struct smc_diag_linkinfo) by commit 79d39fc503b4
+("net/smc: Add netlink net namespace support") introduced an ABI
+regression: since struct smc_diag_lgrinfo contains an object of
+type "struct smc_diag_linkinfo", offset of all subsequent members
+of struct smc_diag_lgrinfo was changed by that change.
 
+As result, applications compiled with the old version
+of struct smc_diag_linkinfo will receive garbage in
+struct smc_diag_lgrinfo.role if the kernel implements
+this new version of struct smc_diag_linkinfo.
 
-On 2/1/2022 4:03 PM, Ansuel Smith wrote:
-> There can be multiple qca8k switch on the same system. Move the static
-> qca8k_current_page to qca8k_priv and make it specific for each switch.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Fix this regression by reverting the part of commit 79d39fc503b4 that
+changes struct smc_diag_linkinfo.  After all, there is SMC_GEN_NETLINK
+interface which is good enough, so there is probably no need to touch
+the smc_diag ABI in the first place.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: 79d39fc503b4 ("net/smc: Add netlink net namespace support")
+Signed-off-by: Dmitry V. Levin <ldv@altlinux.org>
+---
+ include/uapi/linux/smc_diag.h | 11 +++++------
+ net/smc/smc_diag.c            |  2 --
+ 2 files changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/include/uapi/linux/smc_diag.h b/include/uapi/linux/smc_diag.h
+index c7008d87f1a4..8cb3a6fef553 100644
+--- a/include/uapi/linux/smc_diag.h
++++ b/include/uapi/linux/smc_diag.h
+@@ -84,12 +84,11 @@ struct smc_diag_conninfo {
+ /* SMC_DIAG_LINKINFO */
+ 
+ struct smc_diag_linkinfo {
+-	__u8		link_id;		    /* link identifier */
+-	__u8		ibname[IB_DEVICE_NAME_MAX]; /* name of the RDMA device */
+-	__u8		ibport;			    /* RDMA device port number */
+-	__u8		gid[40];		    /* local GID */
+-	__u8		peer_gid[40];		    /* peer GID */
+-	__aligned_u64	net_cookie;                 /* RDMA device net namespace */
++	__u8 link_id;			/* link identifier */
++	__u8 ibname[IB_DEVICE_NAME_MAX]; /* name of the RDMA device */
++	__u8 ibport;			/* RDMA device port number */
++	__u8 gid[40];			/* local GID */
++	__u8 peer_gid[40];		/* peer GID */
+ };
+ 
+ struct smc_diag_lgrinfo {
+diff --git a/net/smc/smc_diag.c b/net/smc/smc_diag.c
+index b8898c787d23..1fca2f90a9c7 100644
+--- a/net/smc/smc_diag.c
++++ b/net/smc/smc_diag.c
+@@ -146,13 +146,11 @@ static int __smc_diag_dump(struct sock *sk, struct sk_buff *skb,
+ 	    (req->diag_ext & (1 << (SMC_DIAG_LGRINFO - 1))) &&
+ 	    !list_empty(&smc->conn.lgr->list)) {
+ 		struct smc_link *link = smc->conn.lnk;
+-		struct net *net = read_pnet(&link->smcibdev->ibdev->coredev.rdma_net);
+ 
+ 		struct smc_diag_lgrinfo linfo = {
+ 			.role = smc->conn.lgr->role,
+ 			.lnk[0].ibport = link->ibport,
+ 			.lnk[0].link_id = link->link_id,
+-			.lnk[0].net_cookie = net->net_cookie,
+ 		};
+ 
+ 		memcpy(linfo.lnk[0].ibname,
 -- 
-Florian
+ldv
