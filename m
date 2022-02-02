@@ -2,135 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BF984A7054
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 12:52:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35A354A707E
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 13:10:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233669AbiBBLv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 06:51:29 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:54240 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232437AbiBBLv2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 06:51:28 -0500
-Received: by mail-il1-f197.google.com with SMTP id e15-20020a92de4f000000b002b930c4d727so13846599ilr.20
-        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 03:51:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=Czam2PfI+vECvmB19D4+RWWem8qSnvaySN3xSaozTXs=;
-        b=D7bK7p2u21VVkeAH0jm+CmVg5cCq1gC3DB0TMTX6pBTPtDJ6bYaBVtCdeNPmKu3Y92
-         /i4eHODtY5ctd57UVZYVMedEnepueJwDdQoTNPuAwFFlv5H9705NrYNiJl+oqvRLYGPE
-         LrlLaizfMVcb3ITMqbrNL0JyMlat0GCzvpHovADEcOnQg9FCIoX40gJa0s+ES84swbP+
-         zTKV0d6lS/6XMKu01S5eb2XTU6Z3amNOJi92rhPsNkG8Id+evFNjnrghi3q+JiGrhi6C
-         5c5OrA5TbYh5Vu3NxpkBrGy+3JcmntSMjTHiUIcSeunGJolWN6M4xb/5BmkP3jpmbW81
-         UVVA==
-X-Gm-Message-State: AOAM5302s3BzI+jWlW0cxvyVQaOS0JPspC7VknUPHIYV9Wt5gBPV4pKn
-        JTF2C03EXVJGlEUTh4hH9D7GVXwKGrvU+okwIL2+AYVVV1Xz
-X-Google-Smtp-Source: ABdhPJzCjl2H/uG6VFwYRBIsNpqHTNX0x+oXtlYAGckAIJXlV+ich9wb3aySHYdPpjGigirpYnmfjxDN26ADh8P+f6NktX0xDGwC
+        id S240243AbiBBMK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 07:10:29 -0500
+Received: from mga01.intel.com ([192.55.52.88]:4817 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232109AbiBBMK2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Feb 2022 07:10:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643803828; x=1675339828;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=YmxMLJ95REGy0bqVN5sejcHYM1laIC+RS0DJHm4FlWs=;
+  b=gsM19nT0/cXJi4kGjBsGyBNNALdL76FHiWqWdXGRwZC1n3FD41EBc5FP
+   1cobBGMaLv2eJXwosWE7TkDglYVHNRM+MPBsE7pMdevruvOXaXcKqrw64
+   XTYv/ypg8AkNxcqhaa8vid/SRD7LyktgUd2DQC+YhJn0OFucjWMdvImfF
+   saPBpuKuIxAMF7bcYe/Pu7Qz4CBlhz9ctGCBbeRhT44XC6Ozuk1VijkWv
+   hLW6pvehuKDQ4img7S14bxeSLQlYGprTCUhLBA5s8sVJOVqbOfpmOq8mv
+   wLsYkCuDJjRT3zPx6Om2R6Se2PA4tAx1DBQMFVS76XTA+Y7UA9ixQOhfF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="272385841"
+X-IronPort-AV: E=Sophos;i="5.88,336,1635231600"; 
+   d="scan'208";a="272385841"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 04:10:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,336,1635231600"; 
+   d="scan'208";a="534832246"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga007.fm.intel.com with ESMTP; 02 Feb 2022 04:10:26 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 212CAPlH013636;
+        Wed, 2 Feb 2022 12:10:25 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [RFC PATCH 2/3] net: gro: minor optimization for dev_gro_receive()
+Date:   Wed,  2 Feb 2022 13:08:27 +0100
+Message-Id: <20220202120827.23716-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <7bbab59c6d6cd2eb4e6d2fb7b2c2636b7d03445d.camel@redhat.com>
+References: <cover.1642519257.git.pabeni@redhat.com> <35d722e246b7c4afb6afb03760df6f664db4ef05.1642519257.git.pabeni@redhat.com> <20220118155620.27706-1-alexandr.lobakin@intel.com> <c262125543e39d6b869e522da0ed59044eb07722.camel@redhat.com> <20220118173903.31823-1-alexandr.lobakin@intel.com> <7bbab59c6d6cd2eb4e6d2fb7b2c2636b7d03445d.camel@redhat.com>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:9507:: with SMTP id r7mr16328334ioj.199.1643802687773;
- Wed, 02 Feb 2022 03:51:27 -0800 (PST)
-Date:   Wed, 02 Feb 2022 03:51:27 -0800
-In-Reply-To: <00000000000027db6705d6e6e88a@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004923a605d707a31a@google.com>
-Subject: Re: [syzbot] possible deadlock in ___neigh_create
-From:   syzbot <syzbot+5239d0e1778a500d477a@syzkaller.appspotmail.com>
-To:     daniel@iogearbox.net, davem@davemloft.net, dsahern@kernel.org,
-        edumazet@google.com, john.fastabend@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        roopa@nvidia.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+From: Paolo Abeni <pabeni@redhat.com>
+Date: Wed, 02 Feb 2022 11:09:41 +0100
 
-HEAD commit:    9f7fb8de5d9b Merge tag 'spi-fix-v5.17-rc2' of git://git.ke..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12b5fcf4700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b4a89edfcc8f7c74
-dashboard link: https://syzkaller.appspot.com/bug?extid=5239d0e1778a500d477a
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10dd62bfb00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10581cbfb00000
+> Hello,
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5239d0e1778a500d477a@syzkaller.appspotmail.com
+Hi!
 
-============================================
-WARNING: possible recursive locking detected
-5.17.0-rc2-syzkaller-00039-g9f7fb8de5d9b #0 Not tainted
---------------------------------------------
-kworker/0:1/7 is trying to acquire lock:
-ffffffff8d4dd130 (&tbl->lock){+.-.}-{2:2}, at: ___neigh_create+0x9e1/0x2990 net/core/neighbour.c:652
+> 
+> On Tue, 2022-01-18 at 18:39 +0100, Alexander Lobakin wrote:
+> > From: Paolo Abeni <pabeni@redhat.com>
+> > Date: Tue, 18 Jan 2022 17:31:00 +0100
+> > 
+> > > On Tue, 2022-01-18 at 16:56 +0100, Alexander Lobakin wrote:
+> > > > From: Paolo Abeni <pabeni@redhat.com>
+> > > > Date: Tue, 18 Jan 2022 16:24:19 +0100
+> > > > 
+> > > > > While inspecting some perf report, I noticed that the compiler
+> > > > > emits suboptimal code for the napi CB initialization, fetching
+> > > > > and storing multiple times the memory for flags bitfield.
+> > > > > This is with gcc 10.3.1, but I observed the same with older compiler
+> > > > > versions.
+> > > > > 
+> > > > > We can help the compiler to do a nicer work e.g. initially setting
+> > > > > all the bitfield to 0 using an u16 alias. The generated code is quite
+> > > > > smaller, with the same number of conditional
+> > > > > 
+> > > > > Before:
+> > > > > objdump -t net/core/gro.o | grep " F .text"
+> > > > > 0000000000000bb0 l     F .text	0000000000000357 dev_gro_receive
+> > > > > 
+> > > > > After:
+> > > > > 0000000000000bb0 l     F .text	000000000000033c dev_gro_receive
+> > > > > 
+> > > > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > > > > ---
+> > > > >  include/net/gro.h | 13 +++++++++----
+> > > > >  net/core/gro.c    | 16 +++++-----------
+> > > > >  2 files changed, 14 insertions(+), 15 deletions(-)
+> > > > > 
+> > > > > diff --git a/include/net/gro.h b/include/net/gro.h
+> > > > > index 8f75802d50fd..a068b27d341f 100644
+> > > > > --- a/include/net/gro.h
+> > > > > +++ b/include/net/gro.h
+> > > > > @@ -29,14 +29,17 @@ struct napi_gro_cb {
+> > > > >  	/* Number of segments aggregated. */
+> > > > >  	u16	count;
+> > > > >  
+> > > > > -	/* Start offset for remote checksum offload */
+> > > > > -	u16	gro_remcsum_start;
+> > > > > +	/* Used in ipv6_gro_receive() and foo-over-udp */
+> > > > > +	u16	proto;
+> > > > >  
+> > > > >  	/* jiffies when first packet was created/queued */
+> > > > >  	unsigned long age;
+> > > > >  
+> > > > > -	/* Used in ipv6_gro_receive() and foo-over-udp */
+> > > > > -	u16	proto;
+> > > > > +	/* portion of the cb set to zero at every gro iteration */
+> > > > > +	u32	zeroed_start[0];
+> > > > > +
+> > > > > +	/* Start offset for remote checksum offload */
+> > > > > +	u16	gro_remcsum_start;
+> > > > >  
+> > > > >  	/* This is non-zero if the packet may be of the same flow. */
+> > > > >  	u8	same_flow:1;
+> > > > > @@ -70,6 +73,8 @@ struct napi_gro_cb {
+> > > > >  	/* GRO is done by frag_list pointer chaining. */
+> > > > >  	u8	is_flist:1;
+> > > > >  
+> > > > > +	u32	zeroed_end[0];
+> > > > 
+> > > > This should be wrapped in struct_group() I believe, or compilers
+> > > > will start complaining soon. See [0] for the details.
+> > > > Adding Kees to the CCs.
+> > > 
+> > > Thank you for the reference. That really slipped-off my mind.
+> > > 
+> > > This patch does not use memcpy() or similar, just a single direct
+> > > assignement. Would that still require struct_group()?
+> > 
+> > Oof, sorry, I saw start/end and overlooked that it's only for
+> > a single assignment.
+> > Then it shouldn't cause warnings, but maybe use an anonymous
+> > union instead?
+> > 
+> > 	union {
+> > 		u32 zeroed;
+> > 		struct {
+> > 			u16 gro_remcsum_start;
+> > 			...
+> > 		};
+> > 	};
+> > 	__wsum csum;
+> > 
+> > Use can still use a BUILD_BUG_ON() in this case, like
+> > sizeof(zeroed) != offsetof(csum) - offsetof(zeroed).
+> 
+> Please forgive me for the very long delay. I'm looking again at this
+> stuff for formal non-rfc submission.
 
-but task is already holding lock:
-ffffffff8d4dd130 (&tbl->lock){+.-.}-{2:2}, at: neigh_managed_work+0x35/0x250 net/core/neighbour.c:1572
+Sure, not a problem at all (:
 
-other info that might help us debug this:
- Possible unsafe locking scenario:
+> 
+> I like the anonymous union less, because it will move around much more
+> code - making the patch less readable - and will be more fragile e.g.
+> some comment alike "please don't move around 'csum'" would be needed.
 
-       CPU0
-       ----
-  lock(&tbl->lock);
-  lock(&tbl->lock);
+We still need comments around zeroed_{start,end}[0] for now.
+I used offsetof(csum) as offsetofend(is_flist) which I'd prefer here
+unfortunately expands to offsetof(is_flist) + sizeof(is_flist), and
+the latter causes an error of using sizeof() against a bitfield.
 
- *** DEADLOCK ***
+> 
+> No strong opinion anyway, so if you really prefer that way I can adapt.
+> Please let me know.
 
- May be due to missing lock nesting notation
+I don't really have a strong preference here, I just suspect that
+zero-length array will produce or already produce -Warray-bounds
+warnings, and empty-struct constructs like
 
-5 locks held by kworker/0:1/7:
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:631 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:658 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: process_one_work+0x890/0x1650 kernel/workqueue.c:2278
- #1: ffffc90000cc7db8 ((work_completion)(&(&tbl->managed_work)->work)){+.+.}-{0:0}, at: process_one_work+0x8c4/0x1650 kernel/workqueue.c:2282
- #2: ffffffff8d4dd130 (&tbl->lock){+.-.}-{2:2}, at: neigh_managed_work+0x35/0x250 net/core/neighbour.c:1572
- #3: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: ip6_nd_hdr net/ipv6/ndisc.c:466 [inline]
- #3: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: ndisc_send_skb+0x84b/0x17f0 net/ipv6/ndisc.c:502
- #4: ffffffff8bb83bc0 (rcu_read_lock_bh){....}-{1:2}, at: lwtunnel_xmit_redirect include/net/lwtunnel.h:95 [inline]
- #4: ffffffff8bb83bc0 (rcu_read_lock_bh){....}-{1:2}, at: ip6_finish_output2+0x2ad/0x14f0 net/ipv6/ip6_output.c:112
+	struct { } zeroed_start;
+	u16 gro_remcsum_start;
+	...
+	struct { } zeroed_end;
 
-stack backtrace:
-CPU: 0 PID: 7 Comm: kworker/0:1 Not tainted 5.17.0-rc2-syzkaller-00039-g9f7fb8de5d9b #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events_power_efficient neigh_managed_work
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_deadlock_bug kernel/locking/lockdep.c:2956 [inline]
- check_deadlock kernel/locking/lockdep.c:2999 [inline]
- validate_chain kernel/locking/lockdep.c:3788 [inline]
- __lock_acquire.cold+0x149/0x3ab kernel/locking/lockdep.c:5027
- lock_acquire kernel/locking/lockdep.c:5639 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5604
- __raw_write_lock_bh include/linux/rwlock_api_smp.h:202 [inline]
- _raw_write_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:334
- ___neigh_create+0x9e1/0x2990 net/core/neighbour.c:652
- ip6_finish_output2+0x1070/0x14f0 net/ipv6/ip6_output.c:123
- __ip6_finish_output net/ipv6/ip6_output.c:191 [inline]
- __ip6_finish_output+0x61e/0xe90 net/ipv6/ip6_output.c:170
- ip6_finish_output+0x32/0x200 net/ipv6/ip6_output.c:201
- NF_HOOK_COND include/linux/netfilter.h:296 [inline]
- ip6_output+0x1e4/0x530 net/ipv6/ip6_output.c:224
- dst_output include/net/dst.h:451 [inline]
- NF_HOOK include/linux/netfilter.h:307 [inline]
- ndisc_send_skb+0xa99/0x17f0 net/ipv6/ndisc.c:508
- ndisc_send_ns+0x3a9/0x840 net/ipv6/ndisc.c:650
- ndisc_solicit+0x2cd/0x4f0 net/ipv6/ndisc.c:742
- neigh_probe+0xc2/0x110 net/core/neighbour.c:1040
- __neigh_event_send+0x37d/0x1570 net/core/neighbour.c:1201
- neigh_event_send include/net/neighbour.h:470 [inline]
- neigh_managed_work+0x162/0x250 net/core/neighbour.c:1574
- process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
- worker_thread+0x657/0x1110 kernel/workqueue.c:2454
- kthread+0x2e9/0x3a0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
+	memset(NAPI_GRO_CB(skb)->zeroed_start, 0,
+	       offsetofend(zeroed_end) - offsetsof(zeroed_start));
 
+will trigger Fortify compile-time errors from Kees' KSPP tree.
+
+I think we could use
+
+	__struct_group(/* no tag */, zeroed, /* no attrs */,
+		u16 gro_remcsum_start;
+		...
+		u8 is_flist:1;
+	);
+	__wsum csum;
+
+	BUILD_BUG_ON(sizeof_field(struct napi_gro_cb, zeroed) != sizeof(u32));
+	BUILD_BUG_ON(!IS_ALIGNED(offsetof(struct napi_gro_cb, zeroed),
+				 sizeof(u32))); /* Avoid slow unaligned acc */
+
+	*(u32 *)&NAPI_GRO_CB(skb)->zeroed = 0;
+
+This doesn't depend on `csum`, doesn't need `struct { }` or
+`struct zero[0]` markers and still uses a direct assignment.
+
+Also adding Gustavo, maybe he'd like to leave a comment here.
+
+> 
+> Thanks!
+> 
+> Paolo
+
+Thanks,
+Al
