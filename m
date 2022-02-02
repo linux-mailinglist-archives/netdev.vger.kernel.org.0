@@ -2,222 +2,470 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC9774A78A1
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 20:19:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FBFE4A78BA
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 20:31:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346899AbiBBTTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 14:19:36 -0500
-Received: from mga05.intel.com ([192.55.52.43]:29370 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345693AbiBBTTe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Feb 2022 14:19:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643829574; x=1675365574;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xu2gapw8EGonEKPfGsLDqB5BWECojNkQnvRqX7oXxr8=;
-  b=MPXvDH+KHe2dUz0ntQyKUyjOrS+uNlD/c8XtRg2cb1+YUW5gYaVMBogb
-   RtFhXOw750pT+2ChrhRdxuwFIrD2bNk5DjGCxpNE5KtnB6NHF8Fxe2LUb
-   7mHpeuUt0EPXi1O0htOGMw4b07R0sqozbev2dyebMPR6+pEc8yp1G0NPi
-   HZqrmeUH56tRuPR6Pd7NkKNgzr0ZRxKjbIRYdSeue2+4W0GNo1pO0mCJg
-   BHPxz6d39wXgJD33Z9G83Zl0k4Dc5bujB8cf4PsKtnDpo8FVM5u7Th5MF
-   u86Gfmj8Bi3EN6gN/pK5wSSNrZXCQffX9h87IhWr/IDdPh2HIWHXkXgyg
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="334360870"
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="334360870"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 11:19:32 -0800
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="538413525"
-Received: from ssaleem-mobl.amr.corp.intel.com ([10.255.33.248])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 11:19:32 -0800
-From:   Shiraz Saleem <shiraz.saleem@intel.com>
-To:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Mustafa Ismail <mustafa.ismail@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>
-Subject: [PATCH v1 for-next 3/3] RDMA/irdma: Add support for DSCP
-Date:   Wed,  2 Feb 2022 13:19:21 -0600
-Message-Id: <20220202191921.1638-4-shiraz.saleem@intel.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220202191921.1638-1-shiraz.saleem@intel.com>
-References: <20220202191921.1638-1-shiraz.saleem@intel.com>
+        id S1346839AbiBBTbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 14:31:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240428AbiBBTba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 14:31:30 -0500
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD6EC061714;
+        Wed,  2 Feb 2022 11:31:30 -0800 (PST)
+Received: by mail-io1-xd2a.google.com with SMTP id 9so400571iou.2;
+        Wed, 02 Feb 2022 11:31:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=OMwY2wvMhB1DUTy+ksrjre4+0Cp7BW70VPY8FVvDBuQ=;
+        b=KTiQh8MMq4dFPx6Tg3XeOVyNDouee91qkWEzPSdc8AdZZlBfBykqfsDdSZue6Oswgs
+         suIbT6RWQ+yuYf0f0OGBSE0YWc2Qv3Mek2B29OEnRjjroX0SPMu9w5HVerUJcpaxW4ts
+         D0/aeZttXnGoBjNTYdEk7zQVAJ3IGWozHdxWcW+20huIXIbPDedVDiqk9J9IAhCo7Gjl
+         fTYSSXWWv/eMI2DoakwZp9RMMJqvAwP52+mzDJhvN6TZTpAfSrRBYJBE9nmpVwWQjERZ
+         K09TDmQxYVqg4xJcbWOGeV7WR/FukoQY0BRElgQJ+LJhBLbOyggcCWDY/0tWJ7OhrM/p
+         11hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=OMwY2wvMhB1DUTy+ksrjre4+0Cp7BW70VPY8FVvDBuQ=;
+        b=H4iyJRSpaaJAMqtcxk2BmpNyolhmjQc8fpvYT/osTT5XIIlhPFu6peHvd+cgyekGtH
+         zFmmNJkgKfovAbqpPUwzWOFflReIdt0ojPBHjx1K+CD+FFK/PAzOVXDIs8143n6ITngW
+         M3tiN3TBa1jLfAdrWbcGtQ8rkAZXVYKZlTnLkdX7Y3Ue7v5LVb3XjGfKOnHMpYGRKsWY
+         pvB3DbPIziPBwpH2AEzOggBjgGloA/B12c4Gt71YU7nEc1R7GZ91SFfMzHVgZ8t/uKJl
+         sF2zdAj8ro56uF6qn1OKBPWa7vJYmJdYr6gbdA9aCselMOC0ftW9PyWZv9iDTNKje3iG
+         bhiw==
+X-Gm-Message-State: AOAM53291cp7gcMfbLjXwRdBaVHoPZGmm0FHTxvVRTN4INMcsdj/ORtv
+        IfWVlv4gxTd8zdZb5KNJaylMnRgwSOg121ekRptLq/Rh
+X-Google-Smtp-Source: ABdhPJxNi75fc8x9/UorufjmjpEc+kwNQ/0nI6k7Joi7LCUPloTkEKV9h513unRd58bxRIvDvU6l3UjibpG42TfXNJ4=
+X-Received: by 2002:a5e:a806:: with SMTP id c6mr16759145ioa.112.1643830290154;
+ Wed, 02 Feb 2022 11:31:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220128223312.1253169-1-mauricio@kinvolk.io> <20220128223312.1253169-7-mauricio@kinvolk.io>
+In-Reply-To: <20220128223312.1253169-7-mauricio@kinvolk.io>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 2 Feb 2022 11:31:19 -0800
+Message-ID: <CAEf4BzZu-u1WXGScPZKVQZc+RGjmnYm45mcOGkzXyFLMKS-5gA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 6/9] bpftool: Implement relocations recording
+ for BTFGen
+To:     =?UTF-8?Q?Mauricio_V=C3=A1squez?= <mauricio@kinvolk.io>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
+        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
+        Leonardo Di Donato <leonardo.didonato@elastic.co>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mustafa Ismail <mustafa.ismail@intel.com>
+On Fri, Jan 28, 2022 at 2:33 PM Mauricio V=C3=A1squez <mauricio@kinvolk.io>=
+ wrote:
+>
+> This commit implements the logic to record the relocation information
+> for the different kind of relocations.
+>
+> btfgen_record_field_relo() uses the target specification to save all the
+> types that are involved in a field-based CO-RE relocation. In this case
+> types resolved and added recursively (using btfgen_put_type()).
+> Only the struct and union members and their types) involved in the
+> relocation are added to optimize the size of the generated BTF file.
+>
+> On the other hand, btfgen_record_type_relo() saves the types involved in
+> a type-based CO-RE relocation. In this case all the members for the
 
-Add DSCP support for the Intel Ethernet 800 Series devices.
-Setup VSI DSCP info when PCI driver indicates DSCP mode during
-driver probe or as notification event.
+Do I understand correctly that if someone does
+bpf_core_type_size(struct task_struct), you'll save not just
+task_struct, but also any type that directly and indirectly referenced
+from any task_struct's field, even if that is through a pointer. As
+in, do you substitute forward declarations for types that are never
+directly used? If not, that's going to be very suboptimal for
+something like task_struct and any other type that's part of a big
+cluster of types.
 
-Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
----
- drivers/infiniband/hw/irdma/cm.c    | 20 ++++++++++++++++----
- drivers/infiniband/hw/irdma/cm.h    |  7 +++++++
- drivers/infiniband/hw/irdma/ctrl.c  |  6 ++++++
- drivers/infiniband/hw/irdma/main.c  |  8 ++++++--
- drivers/infiniband/hw/irdma/osdep.h |  1 +
- drivers/infiniband/hw/irdma/type.h  |  4 ++++
- 6 files changed, 40 insertions(+), 6 deletions(-)
+> struct and union types are added. This is not strictly required since
+> libbpf doesn't use them while performing this kind of relocation,
+> however that logic could change on the future. Additionally, we expect
+> that the number of this kind of relocations in an BPF object to be very
+> low, hence the impact on the size of the generated BTF should be
+> negligible.
+>
+> Finally, btfgen_record_enumval_relo() saves the whole enum type for
+> enum-based relocations.
+>
+> Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
+> Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
+> Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
+> Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
+> ---
+>  tools/bpf/bpftool/gen.c | 260 +++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 257 insertions(+), 3 deletions(-)
+>
+> diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
+> index bb9c56401ee5..7413ec808a80 100644
+> --- a/tools/bpf/bpftool/gen.c
+> +++ b/tools/bpf/bpftool/gen.c
+> @@ -1119,9 +1119,17 @@ static int btf_save_raw(const struct btf *btf, con=
+st char *path)
+>         return err;
+>  }
+>
+> +struct btfgen_member {
+> +       struct btf_member *member;
+> +       int idx;
+> +};
+> +
+>  struct btfgen_type {
+>         struct btf_type *type;
+>         unsigned int id;
+> +       bool all_members;
+> +
+> +       struct hashmap *members;
+>  };
+>
+>  struct btfgen_info {
+> @@ -1151,6 +1159,19 @@ static void *u32_as_hash_key(__u32 x)
+>
+>  static void btfgen_free_type(struct btfgen_type *type)
+>  {
+> +       struct hashmap_entry *entry;
+> +       size_t bkt;
+> +
+> +       if (!type)
+> +               return;
+> +
+> +       if (!IS_ERR_OR_NULL(type->members)) {
+> +               hashmap__for_each_entry(type->members, entry, bkt) {
+> +                       free(entry->value);
+> +               }
+> +               hashmap__free(type->members);
+> +       }
+> +
+>         free(type);
+>  }
+>
+> @@ -1199,19 +1220,252 @@ btfgen_new_info(const char *targ_btf_path)
+>         return info;
+>  }
+>
+> +static int btfgen_add_member(struct btfgen_type *btfgen_type,
+> +                            struct btf_member *btf_member, int idx)
+> +{
+> +       struct btfgen_member *btfgen_member;
+> +       int err;
+> +
+> +       /* create new members hashmap for this btfgen type if needed */
+> +       if (!btfgen_type->members) {
+> +               btfgen_type->members =3D hashmap__new(btfgen_hash_fn, btf=
+gen_equal_fn, NULL);
+> +               if (IS_ERR(btfgen_type->members))
+> +                       return PTR_ERR(btfgen_type->members);
+> +       }
+> +
+> +       btfgen_member =3D calloc(1, sizeof(*btfgen_member));
+> +       if (!btfgen_member)
+> +               return -ENOMEM;
+> +       btfgen_member->member =3D btf_member;
+> +       btfgen_member->idx =3D idx;
+> +       /* add btf_member as member to given btfgen_type */
+> +       err =3D hashmap__add(btfgen_type->members, uint_as_hash_key(btfge=
+n_member->idx),
+> +                          btfgen_member);
+> +       if (err) {
+> +               free(btfgen_member);
+> +               if (err !=3D -EEXIST)
 
-diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
-index 6ff1800..abc101b 100644
---- a/drivers/infiniband/hw/irdma/cm.c
-+++ b/drivers/infiniband/hw/irdma/cm.c
-@@ -2209,8 +2209,12 @@ static void irdma_cm_free_ah(struct irdma_cm_node *cm_node)
- 			ibdev_warn(&iwdev->ibdev,
- 				   "application TOS[%d] and remote client TOS[%d] mismatch\n",
- 				   listener->tos, cm_info->tos);
--		cm_node->tos = max(listener->tos, cm_info->tos);
--		cm_node->user_pri = rt_tos2priority(cm_node->tos);
-+		if (iwdev->vsi.dscp_mode) {
-+			cm_node->user_pri = listener->user_pri;
-+		} else {
-+			cm_node->tos = max(listener->tos, cm_info->tos);
-+			cm_node->user_pri = rt_tos2priority(cm_node->tos);
-+		}
- 		ibdev_dbg(&iwdev->ibdev,
- 			  "DCB: listener: TOS:[%d] UP:[%d]\n", cm_node->tos,
- 			  cm_node->user_pri);
-@@ -3835,7 +3839,11 @@ int irdma_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
- 	cm_info.cm_id = cm_id;
- 	cm_info.qh_qpid = iwdev->vsi.ilq->qp_id;
- 	cm_info.tos = cm_id->tos;
--	cm_info.user_pri = rt_tos2priority(cm_id->tos);
-+	if (iwdev->vsi.dscp_mode)
-+		cm_info.user_pri =
-+			iwqp->sc_qp.vsi->dscp_map[irdma_tos2dscp(cm_info.tos)];
-+	else
-+		cm_info.user_pri = rt_tos2priority(cm_id->tos);
- 
- 	if (iwqp->sc_qp.dev->ws_add(iwqp->sc_qp.vsi, cm_info.user_pri))
- 		return -ENOMEM;
-@@ -3977,7 +3985,11 @@ int irdma_create_listen(struct iw_cm_id *cm_id, int backlog)
- 	cm_id->provider_data = cm_listen_node;
- 
- 	cm_listen_node->tos = cm_id->tos;
--	cm_listen_node->user_pri = rt_tos2priority(cm_id->tos);
-+	if (iwdev->vsi.dscp_mode)
-+		cm_listen_node->user_pri =
-+			iwdev->vsi.dscp_map[irdma_tos2dscp(cm_id->tos)];
-+	else
-+		cm_listen_node->user_pri = rt_tos2priority(cm_id->tos);
- 	cm_info.user_pri = cm_listen_node->user_pri;
- 	if (!cm_listen_node->reused_node) {
- 		if (wildcard) {
-diff --git a/drivers/infiniband/hw/irdma/cm.h b/drivers/infiniband/hw/irdma/cm.h
-index 3bf4272..19c2849 100644
---- a/drivers/infiniband/hw/irdma/cm.h
-+++ b/drivers/infiniband/hw/irdma/cm.h
-@@ -384,6 +384,13 @@ int irdma_schedule_cm_timer(struct irdma_cm_node *cm_node,
- 			    struct irdma_puda_buf *sqbuf,
- 			    enum irdma_timer_type type, int send_retrans,
- 			    int close_when_complete);
-+
-+static inline u8 irdma_tos2dscp(u8 tos)
-+{
-+#define IRDMA_DSCP_VAL GENMASK(7, 2)
-+	return (u8)FIELD_GET(IRDMA_DSCP_VAL, tos);
-+}
-+
- int irdma_accept(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param);
- int irdma_reject(struct iw_cm_id *cm_id, const void *pdata, u8 pdata_len);
- int irdma_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param);
-diff --git a/drivers/infiniband/hw/irdma/ctrl.c b/drivers/infiniband/hw/irdma/ctrl.c
-index ef1d6ad..94a9c26 100644
---- a/drivers/infiniband/hw/irdma/ctrl.c
-+++ b/drivers/infiniband/hw/irdma/ctrl.c
-@@ -77,6 +77,12 @@ static void irdma_set_qos_info(struct irdma_sc_vsi  *vsi,
- 
- 	vsi->qos_rel_bw = l2p->vsi_rel_bw;
- 	vsi->qos_prio_type = l2p->vsi_prio_type;
-+	vsi->dscp_mode = l2p->dscp_mode;
-+	if (l2p->dscp_mode) {
-+		memcpy(vsi->dscp_map, l2p->dscp_map, sizeof(vsi->dscp_map));
-+		for (i = 0; i < IRDMA_MAX_USER_PRIORITY; i++)
-+			l2p->up2tc[i] = i;
-+	}
- 	for (i = 0; i < IRDMA_MAX_USER_PRIORITY; i++) {
- 		if (vsi->dev->hw_attrs.uk_attrs.hw_rev == IRDMA_GEN_1)
- 			vsi->qos[i].qs_handle = l2p->qs_handle_list[i];
-diff --git a/drivers/infiniband/hw/irdma/main.c b/drivers/infiniband/hw/irdma/main.c
-index 179667b..9762526 100644
---- a/drivers/infiniband/hw/irdma/main.c
-+++ b/drivers/infiniband/hw/irdma/main.c
-@@ -79,6 +79,10 @@ static void irdma_fill_qos_info(struct irdma_l2params *l2params,
- 	}
- 	for (i = 0; i < IIDC_MAX_USER_PRIORITY; i++)
- 		l2params->up2tc[i] = qos_info->up2tc[i];
-+	if (qos_info->pfc_mode == IIDC_DSCP_PFC_MODE) {
-+		l2params->dscp_mode = true;
-+		memcpy(l2params->dscp_map, qos_info->dscp_map, sizeof(l2params->dscp_map));
-+	}
- }
- 
- static void irdma_iidc_event_handler(struct ice_pf *pf, struct iidc_event *event)
-@@ -110,7 +114,7 @@ static void irdma_iidc_event_handler(struct ice_pf *pf, struct iidc_event *event
- 		ice_get_qos_params(pf, &qos_info);
- 		irdma_fill_qos_info(&l2params, &qos_info);
- 		if (iwdev->rf->protocol_used != IRDMA_IWARP_PROTOCOL_ONLY)
--			iwdev->dcb_vlan_mode = qos_info.num_tc > 1;
-+			iwdev->dcb_vlan_mode = qos_info.num_tc > 1 && !l2params.dscp_mode;
- 		irdma_change_l2params(&iwdev->vsi, &l2params);
- 	} else if (*event->type & BIT(IIDC_EVENT_CRIT_ERR)) {
- 		ibdev_warn(&iwdev->ibdev, "ICE OICR event notification: oicr = 0x%08x\n",
-@@ -285,7 +289,7 @@ static int irdma_probe(struct auxiliary_device *aux_dev, const struct auxiliary_
- 	ice_get_qos_params(pf, &qos_info);
- 	irdma_fill_qos_info(&l2params, &qos_info);
- 	if (iwdev->rf->protocol_used != IRDMA_IWARP_PROTOCOL_ONLY)
--		iwdev->dcb_vlan_mode = l2params.num_tc > 1;
-+		iwdev->dcb_vlan_mode = l2params.num_tc > 1 && !l2params.dscp_mode;
- 
- 	if (irdma_rt_init_hw(iwdev, &l2params)) {
- 		err = -EIO;
-diff --git a/drivers/infiniband/hw/irdma/osdep.h b/drivers/infiniband/hw/irdma/osdep.h
-index 63d8bb3..6e28e43 100644
---- a/drivers/infiniband/hw/irdma/osdep.h
-+++ b/drivers/infiniband/hw/irdma/osdep.h
-@@ -5,6 +5,7 @@
- 
- #include <linux/pci.h>
- #include <linux/bitfield.h>
-+#include <linux/net/intel/iidc.h>
- #include <crypto/hash.h>
- #include <rdma/ib_verbs.h>
- 
-diff --git a/drivers/infiniband/hw/irdma/type.h b/drivers/infiniband/hw/irdma/type.h
-index 9483bb3..4290a2c 100644
---- a/drivers/infiniband/hw/irdma/type.h
-+++ b/drivers/infiniband/hw/irdma/type.h
-@@ -611,6 +611,8 @@ struct irdma_sc_vsi {
- 				struct irdma_ws_node *tc_node);
- 	u8 qos_rel_bw;
- 	u8 qos_prio_type;
-+	u8 dscp_map[IIDC_MAX_DSCP_MAPPING];
-+	bool dscp_mode:1;
- };
- 
- struct irdma_sc_dev {
-@@ -735,11 +737,13 @@ struct irdma_l2params {
- 	u16 qs_handle_list[IRDMA_MAX_USER_PRIORITY];
- 	u16 mtu;
- 	u8 up2tc[IRDMA_MAX_USER_PRIORITY];
-+	u8 dscp_map[IIDC_MAX_DSCP_MAPPING];
- 	u8 num_tc;
- 	u8 vsi_rel_bw;
- 	u8 vsi_prio_type;
- 	bool mtu_changed:1;
- 	bool tc_changed:1;
-+	bool dscp_mode:1;
- };
- 
- struct irdma_vsi_init_info {
--- 
-1.8.3.1
+why not check that such a member exists before doing btfgen_member allocati=
+on?
 
+> +                       return err;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +static struct btfgen_type *btfgen_get_type(struct btfgen_info *info, int=
+ id)
+> +{
+> +       struct btfgen_type *type =3D NULL;
+> +
+> +       hashmap__find(info->types, uint_as_hash_key(id), (void **)&type);
+
+if (!hashmap__find(...))
+   return NULL;
+
+> +
+> +       return type;
+> +}
+> +
+> +static struct btfgen_type *
+> +_btfgen_put_type(struct btf *btf, struct btfgen_info *info, struct btf_t=
+ype *btf_type,
+> +                unsigned int id, bool all_members)
+> +{
+> +       struct btfgen_type *btfgen_type, *tmp;
+> +       struct btf_array *array;
+> +       unsigned int child_id;
+> +       struct btf_member *m;
+> +       int err, i, n;
+> +
+> +       /* check if we already have this type */
+> +       if (hashmap__find(info->types, uint_as_hash_key(id), (void **) &b=
+tfgen_type)) {
+> +               if (!all_members || btfgen_type->all_members)
+> +                       return btfgen_type;
+> +       } else {
+> +               btfgen_type =3D calloc(1, sizeof(*btfgen_type));
+> +               if (!btfgen_type)
+> +                       return NULL;
+> +
+> +               btfgen_type->type =3D btf_type;
+> +               btfgen_type->id =3D id;
+> +
+> +               /* append this type to the types list before anything els=
+e */
+
+what do you mean by "before anything else"?
+
+> +               err =3D hashmap__add(info->types, uint_as_hash_key(btfgen=
+_type->id), btfgen_type);
+> +               if (err) {
+> +                       free(btfgen_type);
+> +                       return NULL;
+> +               }
+> +       }
+> +
+> +       /* avoid infinite recursion and yet be able to add all
+> +        * fields/members for types also managed by this function
+> +        */
+> +       btfgen_type->all_members =3D all_members;
+> +
+> +       /* recursively add other types needed by it */
+> +       switch (btf_kind(btfgen_type->type)) {
+> +       case BTF_KIND_UNKN:
+> +       case BTF_KIND_INT:
+> +       case BTF_KIND_FLOAT:
+> +       case BTF_KIND_ENUM:
+> +               break;
+> +       case BTF_KIND_STRUCT:
+> +       case BTF_KIND_UNION:
+> +               /* doesn't need resolution if not adding all members */
+> +               if (!all_members)
+> +                       break;
+> +
+> +               n =3D btf_vlen(btf_type);
+> +               m =3D btf_members(btf_type);
+> +               for (i =3D 0; i < n; i++, m++) {
+> +                       btf_type =3D (struct btf_type *) btf__type_by_id(=
+btf, m->type);
+
+why `const struct btf_type *` doesn't work everywhere? You are not
+modifying btf_type itself, no?
+
+> +
+> +                       /* add all member types */
+> +                       tmp =3D _btfgen_put_type(btf, info, btf_type, m->=
+type, all_members);
+> +                       if (!tmp)
+> +                               return NULL;
+> +
+> +                       /* add all members */
+> +                       err =3D btfgen_add_member(btfgen_type, m, i);
+> +                       if (err)
+> +                               return NULL;
+> +               }
+> +               break;
+> +       case BTF_KIND_PTR:
+> +               if (!all_members)
+> +                       break;
+> +       /* fall through */
+> +       /* Also add the type it's pointing to when adding all members */
+> +       case BTF_KIND_CONST:
+> +       case BTF_KIND_VOLATILE:
+> +       case BTF_KIND_TYPEDEF:
+> +               child_id =3D btf_type->type;
+> +               btf_type =3D (struct btf_type *) btf__type_by_id(btf, chi=
+ld_id);
+> +
+> +               tmp =3D _btfgen_put_type(btf, info, btf_type, child_id, a=
+ll_members);
+> +               if (!tmp)
+> +                       return NULL;
+> +               break;
+> +       case BTF_KIND_ARRAY:
+> +               array =3D btf_array(btfgen_type->type);
+> +
+> +               /* add type for array type */
+> +               btf_type =3D (struct btf_type *) btf__type_by_id(btf, arr=
+ay->type);
+> +               tmp =3D _btfgen_put_type(btf, info, btf_type, array->type=
+, all_members);
+> +               if (!tmp)
+> +                       return NULL;
+> +
+> +               /* add type for array's index type */
+> +               btf_type =3D (struct btf_type *) btf__type_by_id(btf, arr=
+ay->index_type);
+> +               tmp =3D _btfgen_put_type(btf, info, btf_type, array->inde=
+x_type, all_members);
+> +               if (!tmp)
+> +                       return NULL;
+> +               break;
+> +       /* tells if some other type needs to be handled */
+> +       default:
+> +               p_err("unsupported kind: %s (%d)",
+> +                     btf_kind_str(btfgen_type->type), btfgen_type->id);
+> +               errno =3D EINVAL;
+> +               return NULL;
+> +       }
+> +
+> +       return btfgen_type;
+> +}
+> +
+> +/* Put type in the list. If the type already exists it's returned, other=
+wise a
+> + * new one is created and added to the list. This is called recursively =
+adding
+> + * all the types that are needed for the current one.
+> + */
+> +static struct btfgen_type *
+> +btfgen_put_type(struct btf *btf, struct btfgen_info *info, struct btf_ty=
+pe *btf_type,
+> +               unsigned int id)
+> +{
+> +       return _btfgen_put_type(btf, info, btf_type, id, false);
+> +}
+> +
+> +/* Same as btfgen_put_type, but adding all members, from given complex t=
+ype, recursively */
+> +static struct btfgen_type *
+> +btfgen_put_type_all(struct btf *btf, struct btfgen_info *info,
+> +                   struct btf_type *btf_type, unsigned int id)
+> +{
+> +       return _btfgen_put_type(btf, info, btf_type, id, true);
+> +}
+
+these wrappers seem unnecessary, just pass false/true in 5 call sites
+below without extra wrapping of _btfgen_put_type (and call it
+btfgen_put_type then)
+
+> +
+>  static int btfgen_record_field_relo(struct btfgen_info *info, struct bpf=
+_core_spec *targ_spec)
+>  {
+> -       return -EOPNOTSUPP;
+> +       struct btf *btf =3D (struct btf *) info->src_btf;
+> +       struct btfgen_type *btfgen_type;
+> +       struct btf_member *btf_member;
+> +       struct btf_type *btf_type;
+> +       struct btf_array *array;
+> +       unsigned int id;
+> +       int idx, err;
+> +
+> +       btf_type =3D (struct btf_type *) btf__type_by_id(btf, targ_spec->=
+root_type_id);
+> +
+> +       /* create btfgen_type for root type */
+> +       btfgen_type =3D btfgen_put_type(btf, info, btf_type, targ_spec->r=
+oot_type_id);
+> +       if (!btfgen_type)
+> +               return -errno;
+> +
+> +       /* add types for complex types (arrays, unions, structures) */
+> +       for (int i =3D 1; i < targ_spec->raw_len; i++) {
+> +               /* skip typedefs and mods */
+> +               while (btf_is_mod(btf_type) || btf_is_typedef(btf_type)) =
+{
+> +                       id =3D btf_type->type;
+> +                       btfgen_type =3D btfgen_get_type(info, id);
+> +                       if (!btfgen_type)
+> +                               return -ENOENT;
+> +                       btf_type =3D (struct btf_type *) btf__type_by_id(=
+btf, id);
+> +               }
+> +
+> +               switch (btf_kind(btf_type)) {
+> +               case BTF_KIND_STRUCT:
+> +               case BTF_KIND_UNION:
+> +                       idx =3D targ_spec->raw_spec[i];
+> +                       btf_member =3D btf_members(btf_type) + idx;
+> +                       btf_type =3D (struct btf_type *) btf__type_by_id(=
+btf, btf_member->type);
+> +
+> +                       /* add member to relocation type */
+> +                       err =3D btfgen_add_member(btfgen_type, btf_member=
+, idx);
+> +                       if (err)
+> +                               return err;
+> +                       /* put btfgen type */
+> +                       btfgen_type =3D btfgen_put_type(btf, info, btf_ty=
+pe, btf_member->type);
+> +                       if (!btfgen_type)
+> +                               return -errno;
+> +                       break;
+> +               case BTF_KIND_ARRAY:
+> +                       array =3D btf_array(btf_type);
+> +                       btfgen_type =3D btfgen_get_type(info, array->type=
+);
+> +                       if (!btfgen_type)
+> +                               return -ENOENT;
+> +                       btf_type =3D (struct btf_type *) btf__type_by_id(=
+btf, array->type);
+
+should index_type be added as well?
+
+> +                       break;
+> +               default:
+> +                       p_err("unsupported kind: %s (%d)",
+> +                             btf_kind_str(btf_type), btf_type->type);
+> +                       return -EINVAL;
+> +               }
+> +       }
+> +
+> +       return 0;
+>  }
+>
+>  static int btfgen_record_type_relo(struct btfgen_info *info, struct bpf_=
+core_spec *targ_spec)
+>  {
+> -       return -EOPNOTSUPP;
+> +       struct btf *btf =3D (struct btf *) info->src_btf;
+> +       struct btfgen_type *btfgen_type;
+> +       struct btf_type *btf_type;
+> +
+> +       btf_type =3D (struct btf_type *) btf__type_by_id(btf, targ_spec->=
+root_type_id);
+> +
+> +       btfgen_type =3D btfgen_put_type_all(btf, info, btf_type, targ_spe=
+c->root_type_id);
+> +       return btfgen_type ? 0 : -errno;
+>  }
+>
+>  static int btfgen_record_enumval_relo(struct btfgen_info *info, struct b=
+pf_core_spec *targ_spec)
+>  {
+> -       return -EOPNOTSUPP;
+> +       struct btf *btf =3D (struct btf *) info->src_btf;
+> +       struct btfgen_type *btfgen_type;
+> +       struct btf_type *btf_type;
+> +
+> +       btf_type =3D (struct btf_type *) btf__type_by_id(btf, targ_spec->=
+root_type_id);
+> +
+> +       btfgen_type =3D btfgen_put_type_all(btf, info, btf_type, targ_spe=
+c->root_type_id);
+> +       return btfgen_type ? 0 : -errno;
+>  }
+>
+>  static int btfgen_record_reloc(struct btfgen_info *info, struct bpf_core=
+_spec *res)
+> --
+> 2.25.1
+>
