@@ -2,75 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBD854A6C68
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 08:43:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E8AB4A6CB3
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 09:09:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239137AbiBBHnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 02:43:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34190 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231256AbiBBHnC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 02:43:02 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5502C061714
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 23:43:01 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id x23so38997206lfc.0
-        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 23:43:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=CMzdAZWvSREUxL9gyi7ZDNRKXhnPhof45SdOgpKoP4Q=;
-        b=T5japaqb6v4nyVxRmZ9QNh8OGTShfxuRdVEgUOhi/hLC5RKElbc9/3x8tu5ujsgRr+
-         F5jGbcbz5RjiSe8iuFxz/NX8zmHXmax8RAbig0s707pdxfrb50ObN0J4OL395MBqzOUy
-         m+2MRVVnX5wiYy9AqgU+tPQL2ilHmdm7NRIm59BdaCb5MSPSw5M7OsoB7a23GnnDBoyL
-         vIMkTLYDkcHKc3tm09VYQxtKN/5wtvmZYQn1XczJ0v1NNqupJtWUg/wKXMXHlPvz9Yn2
-         hzIl0TD6Ed5+02a50eZGgxno5883vTXB/xO5KCzIvb/SYINnQbxzg5/IkL3QUkRYW9e0
-         cZoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=CMzdAZWvSREUxL9gyi7ZDNRKXhnPhof45SdOgpKoP4Q=;
-        b=7sbQweQZMP6JX+4J/Dr2oOTXUes33eZV8CSnp9KR6977tKaHW6fbSHaAMWSgoYBn4g
-         mtNW5E31FVKFfh889bZyJGF/71rTxFKHJBodAwQ1hrziVeu098QFci70H6ZwmYFntTQb
-         PrB/Z6UdSPgLgLBSV6DCJtESh9ksxCRxuc0rqKrOoAhH1H4jCqmmFxpoB1ZSmzIEXKG8
-         5wpamQLcf0lUK71qJymrvFU+RYtp5DgwC9l4f5i7rxkxRGPBpau/wKFRZU32dfkNPDan
-         N+euGWuf3omuRiDKYYXVSrYBvItr1mc/cNL2d0U+iOto1JdfEZJT7KR/20aXAolY4oFc
-         Jsyw==
-X-Gm-Message-State: AOAM532uvoDGjbH/dZwaPIQmB2Fy2MK4boudStZSqc4VJiTq1JTbmXnf
-        /5xpvqMC73V3MUCNuaorZpR0/iDn4oeg6kOhlsY=
-X-Google-Smtp-Source: ABdhPJzHrBuoyKPjGwaUjOY9Il+82DaL2OyGeTGAPBebjmYMgcy+N4tUiZDYeEucU+2TRhq/xV4RUfl4DohZtlzdjXs=
-X-Received: by 2002:a19:4302:: with SMTP id q2mr22682383lfa.449.1643787780127;
- Tue, 01 Feb 2022 23:43:00 -0800 (PST)
-MIME-Version: 1.0
-Received: by 2002:a05:6512:3d01:0:0:0:0 with HTTP; Tue, 1 Feb 2022 23:42:59
- -0800 (PST)
-Reply-To: lisahugh159@gmail.com
-From:   Ms Lisa Hugh <lisahugh531@gmail.com>
-Date:   Wed, 2 Feb 2022 08:42:59 +0100
-Message-ID: <CAFnQ+S5QHThNhPirNjUejKWaJA_rj7eNMTmZN+Vur6V-RqD7yw@mail.gmail.com>
-Subject: FROM Ms Lisa Hugh.
-To:     undisclosed-recipients:;
+        id S243310AbiBBIJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 03:09:35 -0500
+Received: from molly.corsac.net ([82.66.73.9]:42054 "EHLO mail.corsac.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243222AbiBBIJf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Feb 2022 03:09:35 -0500
+Received: from scapa.corsac.net (unknown [IPv6:2a01:e0a:2ff:c170:6af7:28ff:fe8d:2119])
+        by mail.corsac.net (Postfix) with ESMTPS id C611E9A
+        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 09:09:31 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=corsac.net; s=2021;
+        t=1643789371; bh=cwIF7F/SraYRZ1XqJOwvVwfaQlEYV0phYUPLhFULyt4=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=dNCsRHjRZcCnbCMENn3tYnv3dB5mf26YBqEkJF4Ngcy4Mh8Y1KQNW7Hzjf8P9AGUC
+         /SsRYjclabhS113SgGH19GEZUXsjgVSTXILsARw3ovSxPWGHR05ERbfdzh2DNqIo+9
+         OcZK4KvqPbclrug3tiwjvX6QMKwE/VM28OVa99PM71YxbvjuU643yp50v7fP0atFM+
+         5/vLUVDaCfeyit1SpdZISO7W9TsxHj78ejCuq7Qm5WzZN7PwTCFsaILdZC/TknLeA7
+         dCVUyS2v2ndsNzRTt6BJbDqGFXogb79rX5k9R6956ywWXsAzA2Ls5J6xvfIt54Rss7
+         ZdDhZQT1aERrA==
+Received: from corsac (uid 1000)
+        (envelope-from corsac@corsac.net)
+        id a0060
+        by scapa.corsac.net (DragonFly Mail Agent v0.13);
+        Wed, 02 Feb 2022 09:09:30 +0100
+Message-ID: <0414e435e29d4ddf53d189d86fae2c55ed0f81ac.camel@corsac.net>
+Subject: Re: [PATCH v2 0/1] ipheth URB overflow fix
+From:   Yves-Alexis Perez <corsac@corsac.net>
+To:     Jan Kiszka <jan.kiszka@siemens.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Georgi Valkov <gvalkov@abv.bg>
+Cc:     linux-usb <linux-usb@vger.kernel.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "stable @ vger . kernel . org" <stable@vger.kernel.org>
+Date:   Wed, 02 Feb 2022 09:09:30 +0100
+In-Reply-To: <cover.1643699778.git.jan.kiszka@siemens.com>
+References: <cover.1643699778.git.jan.kiszka@siemens.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.42.3-1 
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+On Tue, 2022-02-01 at 08:16 +0100, Jan Kiszka wrote:
+> Georgi Valkov (1):
+> =C2=A0 ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
+>=20
+> =C2=A0drivers/net/usb/ipheth.c | 6 +++---
+> =C2=A01 file changed, 3 insertions(+), 3 deletions(-)
 
-I am Ms Lisa Hugh accountant and files keeping by profession with the bank.
+Hi,
 
-I need your co-operation for the  transferring of
-($4,500,000,00,U.S.DOLLARS)to your bank account for both of us
-benefit.
+sorry for the extra-long delay. I finally tested the patch, and it seems to
+work fine. I've tried it on my laptop for few hours without issue, but to b=
+e
+fair it was working just fine before, I never experienced the EOVERFLOW
+myself.
 
-Please send the follow below,
-
-1)AGE....
-2)TELEPHONE NUMBER,,,,,...
-3)COUNTRY.....
-4)OCCUPATION..
-....
-Thanks.
-
-Ms Lisa Hugh
+Regards,
+--=20
+Yves-Alexis
