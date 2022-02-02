@@ -2,124 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E1674A77F5
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 19:32:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AECE44A7818
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 19:38:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346606AbiBBSaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 13:30:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:57719 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242873AbiBBSae (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 13:30:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643826633;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=VxSphhwkRTd5EsHLOOcvZP0sk5rc5kz4nLvAGye4isI=;
-        b=TMdULIE0hw4oa6SCEajgnlNmyaifXAzrCjFH9zX3t77VIJ4m4bdNhmOv6A6K7Fqc82qEPN
-        DxpeWkoFRWbCkFRiE3GSb6c+QLntKYKI3PsvFXtcKpenpvk3wzTwvoetJ0qcLuwrR8KCHb
-        wK50nsb6UwxB+raatMvD6AepYNtUe0I=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-632-uhSV1_SOMHqOx89u9YDWEg-1; Wed, 02 Feb 2022 13:30:32 -0500
-X-MC-Unique: uhSV1_SOMHqOx89u9YDWEg-1
-Received: by mail-wm1-f69.google.com with SMTP id t2-20020a7bc3c2000000b003528fe59cb9so133478wmj.5
-        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 10:30:32 -0800 (PST)
+        id S238248AbiBBSip (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 13:38:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43596 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231148AbiBBSio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 13:38:44 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1822BC061714
+        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 10:38:44 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id i186so88690pfe.0
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 10:38:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=ZrU+HXf+Cus3bgLZmDghzg/2n6fVwqk1Fwx6nejaGw4=;
+        b=YMq/SY7jQPIlpNcy2KD4ETgIr0abyP5/ob9SPWtuNNPgt/H8/reigVfNEtwj1mR8gP
+         XmemIJoy/LNU3tDobSVDupnYGLMttXUPkf9fuXsloyq+DJjKl147Vx4TvCYsiThCJPkg
+         sbVsUQZKttJ9nhW12tolRQ/vMeTREM7H9CndTB0LgXZXK2OHzEu+G3aX6O0GgU0CElgo
+         B+1R2oqiEnn+9i19+qO+qtucQVO2xSbLfnJ++Up5ttOut/ecxCdIsl7uJ6+xVcDiIFfj
+         +/A/A+AlAd8VhB6+VPZ4V5AoKbQKbgF/cl0sXbDpVR2P38YkeWQxblYgDYt2Ra3xand7
+         5f4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=VxSphhwkRTd5EsHLOOcvZP0sk5rc5kz4nLvAGye4isI=;
-        b=34Wlev1R45XHLrZl08IBalwGLynRvGPVpM1aQjmaaw5OaP08qEUb0+7N2uTDOc0WSr
-         Q0lmnzBYs8055TjUoTrGJkRNqApADo+6u96K21WKm2iK8ahemGiTSjJDLlW1jM+4nHoR
-         ajBRsgaduVP9GHjD1nlOITav2/UgOQrVRsW36Zj2SMYiOOJbto0EERoSdJ3mP2xklR4V
-         5WDWk942pzfu/amiINTBhYfGW9tuPuyNjSFSDuKJnQG+X1MW8Xbx6F5pOwszNZl3akNY
-         B2lFVilWhsu3lRFbRSCuJoRUK7Fk27vPcrGG1GQ8j0gXweBpgHD+3AQtsx/yXLzI2H8m
-         UHuA==
-X-Gm-Message-State: AOAM5323qjVLlVJ4yC+GVMldjFMaHT4zPXwq2zhHqVwP+OFN02gE8I6J
-        u+6WsmdxOYkDuZ+aT/PI86GdsrKqVKTKm0rS4FaIGo8gLUtuW2WyaqJZSErbOEYFsxxHAXFZZ/t
-        fO1+UP7Pq8BvFwzt4
-X-Received: by 2002:a05:600c:4f84:: with SMTP id n4mr7320064wmq.106.1643826631383;
-        Wed, 02 Feb 2022 10:30:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxhD8sTsx9eQnXlioUloGmSteV3B4XUzje0NCeKuYa6y9Qof9hYUm0WZtNSoEMdZVPHwHFBwA==
-X-Received: by 2002:a05:600c:4f84:: with SMTP id n4mr7320037wmq.106.1643826631142;
-        Wed, 02 Feb 2022 10:30:31 -0800 (PST)
-Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id o21sm5374675wmh.36.2022.02.02.10.30.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 10:30:30 -0800 (PST)
-Date:   Wed, 2 Feb 2022 19:30:28 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next] selftests: fib offload: use sensible tos values
-Message-ID: <5e43b343720360a1c0e4f5947d9e917b26f30fbf.1643826556.git.gnault@redhat.com>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=ZrU+HXf+Cus3bgLZmDghzg/2n6fVwqk1Fwx6nejaGw4=;
+        b=SbKHbnsWxeGT0OHMxB8aLsIWBkKFflE06FLMSso8pfwAz3lvVma0Qr2O4SEnsJcD3q
+         jvK5R306La+HxlGZk/pk8aCCr4jIb31PFDfl2q78zRz3361/6x++y1xWD8It3TYJu7vo
+         ynFLkkq6i6pkvR4RnBJCx0nvueIelQNXqKjxS+BrubO8sbNk5+CMTTlvqmnn2gNnT7jK
+         LmnLwvOB6IGKgdsg9vvnJdw0sT8lYxjkyqH68v0XMy4gFrzzCMPau0Jfk6vByIw0b8Ou
+         18rvJQtRhzX2AlB4/6XvndzfJlUOafAdVXgkONdOs1XDlXcQnEj4C2aRvfiC4IrbA66Z
+         MNVA==
+X-Gm-Message-State: AOAM531QASA3mTf1igYmG/B3wEKGz2CmkZUXHDiNzk/EsddcSGtKkani
+        Z18mFxhppsVDRm2asuu6UQP6vpHGX1cNZWdqWf0=
+X-Google-Smtp-Source: ABdhPJzoVaHMXc/amVfywttFMk1dtFNL4F4z8FY0j8ak5w9K8Mb9S5+gcNk2NYuT3x7pyU+4G+XX7OLm7INfYRXlmnc=
+X-Received: by 2002:a62:7650:: with SMTP id r77mr30633891pfc.85.1643827122873;
+ Wed, 02 Feb 2022 10:38:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Received: by 2002:a05:7300:80cf:b0:53:aa9:b763 with HTTP; Wed, 2 Feb 2022
+ 10:38:42 -0800 (PST)
+Reply-To: sule.mohamed2@aol.com
+From:   Mr sule mohamed <drorresebon90@gmail.com>
+Date:   Wed, 2 Feb 2022 10:38:42 -0800
+Message-ID: <CAFM2OLNTNT1dp4jFcer5N_=ua-zHEC7Zms=mHqMV3YfOeQvx5g@mail.gmail.com>
+Subject: Say me well to the family as I wait to read from you soon.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Although both iproute2 and the kernel accept 1 and 2 as tos values for
-new routes, those are invalid. These values only set ECN bits, which
-are ignored during IPv4 fib lookups. Therefore, no packet can actually
-match such routes. This selftest therefore only succeeds because it
-doesn't verify that the new routes do actually work in practice (it
-just checks if the routes are offloaded or not).
+Greetings,
 
-It makes more sense to use tos values that don't conflict with ECN.
-This way, the selftest won't be affected if we later decide to warn or
-even reject invalid tos configurations for new routes.
+How are you and the family? My contacting you is based on my
+investment establishment I intend to invest in your country.
 
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- .../selftests/net/forwarding/fib_offload_lib.sh      | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Be aware that I am in a desire of any investments establishment that
+will guaranty safe and secured profitable returns in terms of energy
+renewals, transportation, agriculture, aviation, oil and gas, real
+estates, hotel resorts, casinos etc. Or any other business or
+investment interest of your choice that you believe will be
+encouraging enough for us to establish in your home town and I will be
+very ready to cooperate and partner with you.
 
-diff --git a/tools/testing/selftests/net/forwarding/fib_offload_lib.sh b/tools/testing/selftests/net/forwarding/fib_offload_lib.sh
-index e134a5f529c9..1b3b46292179 100644
---- a/tools/testing/selftests/net/forwarding/fib_offload_lib.sh
-+++ b/tools/testing/selftests/net/forwarding/fib_offload_lib.sh
-@@ -99,15 +99,15 @@ fib_ipv4_tos_test()
- 	fib4_trap_check $ns "192.0.2.0/24 dev dummy1 tos 0 metric 1024" false
- 	check_err $? "Route not in hardware when should"
- 
--	ip -n $ns route add 192.0.2.0/24 dev dummy1 tos 2 metric 1024
--	fib4_trap_check $ns "192.0.2.0/24 dev dummy1 tos 2 metric 1024" false
-+	ip -n $ns route add 192.0.2.0/24 dev dummy1 tos 8 metric 1024
-+	fib4_trap_check $ns "192.0.2.0/24 dev dummy1 tos 8 metric 1024" false
- 	check_err $? "Highest TOS route not in hardware when should"
- 
- 	fib4_trap_check $ns "192.0.2.0/24 dev dummy1 tos 0 metric 1024" true
- 	check_err $? "Lowest TOS route still in hardware when should not"
- 
--	ip -n $ns route add 192.0.2.0/24 dev dummy1 tos 1 metric 1024
--	fib4_trap_check $ns "192.0.2.0/24 dev dummy1 tos 1 metric 1024" true
-+	ip -n $ns route add 192.0.2.0/24 dev dummy1 tos 4 metric 1024
-+	fib4_trap_check $ns "192.0.2.0/24 dev dummy1 tos 4 metric 1024" true
- 	check_err $? "Middle TOS route in hardware when should not"
- 
- 	log_test "IPv4 routes with TOS"
-@@ -277,11 +277,11 @@ fib_ipv4_replay_tos_test()
- 	ip -n $ns link set dev dummy1 up
- 
- 	ip -n $ns route add 192.0.2.0/24 dev dummy1 tos 0
--	ip -n $ns route add 192.0.2.0/24 dev dummy1 tos 1
-+	ip -n $ns route add 192.0.2.0/24 dev dummy1 tos 4
- 
- 	devlink -N $ns dev reload $devlink_dev
- 
--	fib4_trap_check $ns "192.0.2.0/24 dev dummy1 tos 1" false
-+	fib4_trap_check $ns "192.0.2.0/24 dev dummy1 tos 4" false
- 	check_err $? "Highest TOS route not in hardware when should"
- 
- 	fib4_trap_check $ns "192.0.2.0/24 dev dummy1 tos 0" true
--- 
-2.21.3
+Please contact me immediately you read this message to enable me give
+you more details about the investment establishment plans and how much
+is the total amount that I am intending to invest in your country.
 
+Say me well to the family as I wait to read from you soon.
+
+Regards,
+Mr sule mohamed
+Financial Advisory/Banker
+Federal Ministry of Finance
+Ouagadougou Burkina Faso
+In West Africa
