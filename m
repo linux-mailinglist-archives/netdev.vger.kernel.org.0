@@ -2,127 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFAAD4A71CB
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 14:45:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B0CD4A7225
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 14:51:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344394AbiBBNpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 08:45:02 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38530 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbiBBNpB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 08:45:01 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC256B830D1
-        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 13:45:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12BF0C004E1;
-        Wed,  2 Feb 2022 13:44:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643809499;
-        bh=SNB8llWIEaSpYGZp9oQynt1JowJJNwaOvZ9tBu/Zu+Y=;
-        h=In-Reply-To:References:From:Subject:Cc:To:Date:From;
-        b=f1HF8J+c86sFUGPGlsXspDhyAR9CaNI8vB24mId0ZW/YnRZUNvpYcn6XFhi9okts2
-         /zIsEqVJXnNKCTzgeFNuZJTCUFp60PyZNvnJLP5/YLv/xcl48o8PNlarZOk7nzSDKx
-         qgkzJTU6t22BMvzT727xCCx5UyiS6VWdVGAy0Q/p5XCP2rNxZyJ7R6Qp3B7ifdUz84
-         k+CnNC6YiHzDf+lc9XNA7BBfNgiriBZJqwcfot8Tkd+coatmhetz6V/ipCBeJ7OoGT
-         4FJwlrpea/gnL0COH9S+nWBhwXO+sNsP3Wt3tYbqawJ31RerIUXgwR+JmsOTIyG1J2
-         WciFG4O+yWrJQ==
-Content-Type: text/plain; charset="utf-8"
+        id S1344703AbiBBNu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 08:50:56 -0500
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:53251 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344737AbiBBNum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 08:50:42 -0500
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 9447E6000D;
+        Wed,  2 Feb 2022 13:50:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1643809841;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UhOm+HGT2TvQNz0Cij+moD/CsXOWHG18qYnI0MFlAck=;
+        b=inf9rbXwfM08jQCxkjl5EDviAJuF+lCJYDChgrG06Khd90PHLZEHu027tkvSB1YrApJLCV
+        ZpM5ZJmWd+j7UiaiWmv1yWSdR6J7EIJTPYGu3MWADhN4hV+I6Kqv5hwIkJApBTSTQkVYvh
+        TNvTlkga7kDNtBO2h/Rw9S4Ry6ZSIMMiwYnybZh578G747DsFv81gNpP7MzmnNe2EoRViG
+        G0gn1ZF6gZ0RWsjSbKq5aFHNvkeX9LYUmah8UJsEWozerrpB8Y5v7/RXZ7kLqFXF27hTTO
+        kRRluSnlmJYFGKxgbbT+JFxpcXJHDXZHCAZ0Dbgod8TyWcg67p5a4o32hF1Mgw==
+Date:   Wed, 2 Feb 2022 14:50:34 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     Alexander Aring <alex.aring@gmail.com>, linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>
+Subject: Re: [PATCH wpan-next v2 5/5] net: ieee802154: Drop duration
+ settings when the core does it already
+Message-ID: <20220202145034.13a34e98@xps13>
+In-Reply-To: <026d499d-2814-2d5a-b148-fd7ec8ae9eb6@datenfreihafen.org>
+References: <20220128110825.1120678-1-miquel.raynal@bootlin.com>
+        <20220128110825.1120678-6-miquel.raynal@bootlin.com>
+        <20220201184014.72b3d9a3@xps13>
+        <fab37d38-0239-8be3-81aa-98d163bf5ca4@datenfreihafen.org>
+        <20220202084017.7a88f20d@xps13>
+        <026d499d-2814-2d5a-b148-fd7ec8ae9eb6@datenfreihafen.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <8585630f-f68c-ecea-a6b5-9a2ca8323566@iogearbox.net>
-References: <20220202110137.470850-1-atenart@kernel.org> <20220202110137.470850-2-atenart@kernel.org> <8585630f-f68c-ecea-a6b5-9a2ca8323566@iogearbox.net>
-From:   Antoine Tenart <atenart@kernel.org>
-Subject: Re: [PATCH net 1/2] net: do not keep the dst cache when uncloning an skb dst and its metadata
-Cc:     netdev@vger.kernel.org, vladbu@nvidia.com, pabeni@redhat.com,
-        pshelar@ovn.org
-To:     Daniel Borkmann <daniel@iogearbox.net>, davem@davemloft.net,
-        kuba@kernel.org
-Message-ID: <164380949615.380114.13546587453907068231@kwain>
-Date:   Wed, 02 Feb 2022 14:44:56 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Daniel Borkmann (2022-02-02 13:13:30)
-> On 2/2/22 12:01 PM, Antoine Tenart wrote:
-> > When uncloning an skb dst and its associated metadata a new dst+metadata
-> > is allocated and the tunnel information from the old metadata is copied
-> > over there.
-> >=20
-> > The issue is the tunnel metadata has references to cached dst, which are
-> > copied along the way. When a dst+metadata refcount drops to 0 the
-> > metadata is freed including the cached dst entries. As they are also
-> > referenced in the initial dst+metadata, this ends up in UaFs.
-> >=20
-> > In practice the above did not happen because of another issue, the
-> > dst+metadata was never freed because its refcount never dropped to 0
-> > (this will be fixed in a subsequent patch).
-> >=20
-> > Fix this by initializing the dst cache after copying the tunnel
-> > information from the old metadata to also unshare the dst cache.
-> >=20
-> > Fixes: d71785ffc7e7 ("net: add dst_cache to ovs vxlan lwtunnel")
-> > Cc: Paolo Abeni <pabeni@redhat.com>
-> > Reported-by: Vlad Buslov <vladbu@nvidia.com>
-> > Tested-by: Vlad Buslov <vladbu@nvidia.com>
-> > Signed-off-by: Antoine Tenart <atenart@kernel.org>
-> > ---
-> >   include/net/dst_metadata.h | 13 ++++++++++++-
-> >   1 file changed, 12 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/include/net/dst_metadata.h b/include/net/dst_metadata.h
-> > index 14efa0ded75d..c8f8b7b56bba 100644
-> > --- a/include/net/dst_metadata.h
-> > +++ b/include/net/dst_metadata.h
-> > @@ -110,8 +110,8 @@ static inline struct metadata_dst *tun_rx_dst(int m=
-d_size)
-> >   static inline struct metadata_dst *tun_dst_unclone(struct sk_buff *sk=
-b)
-> >   {
-> >       struct metadata_dst *md_dst =3D skb_metadata_dst(skb);
-> > -     int md_size;
-> >       struct metadata_dst *new_md;
-> > +     int md_size, ret;
-> >  =20
-> >       if (!md_dst || md_dst->type !=3D METADATA_IP_TUNNEL)
-> >               return ERR_PTR(-EINVAL);
-> > @@ -123,6 +123,17 @@ static inline struct metadata_dst *tun_dst_unclone=
-(struct sk_buff *skb)
-> >  =20
-> >       memcpy(&new_md->u.tun_info, &md_dst->u.tun_info,
-> >              sizeof(struct ip_tunnel_info) + md_size);
-> > +#ifdef CONFIG_DST_CACHE
-> > +     ret =3D dst_cache_init(&new_md->u.tun_info.dst_cache, GFP_ATOMIC);
-> > +     if (ret) {
-> > +             /* We can't call metadata_dst_free directly as the still =
-shared
-> > +              * dst cache would be released.
-> > +              */
-> > +             kfree(new_md);
-> > +             return ERR_PTR(ret);
-> > +     }
-> > +#endif
+Hi Stefan,
+
+stefan@datenfreihafen.org wrote on Wed, 2 Feb 2022 13:17:39 +0100:
+
+> Hello.
 >=20
-> Could you elaborate (e.g. also in commit message) how this interacts
-> or whether it is needed for TUNNEL_NOCACHE users? (Among others,
-> latter is used by BPF, for example.)
+> On 02.02.22 08:40, Miquel Raynal wrote:
+> > Hi Stefan,
+> >=20
+> > stefan@datenfreihafen.org wrote on Tue, 1 Feb 2022 21:51:04 +0100:
+> >  =20
+> >> Hello.
+> >>
+> >> On 01.02.22 18:40, Miquel Raynal wrote: =20
+> >>> Hi, =20
+> >>>    >>>> --- a/drivers/net/ieee802154/ca8210.c =20
+> >>>> +++ b/drivers/net/ieee802154/ca8210.c
+> >>>> @@ -2978,7 +2978,6 @@ static void ca8210_hw_setup(struct ieee802154_=
+hw *ca8210_hw)
+> >>>>    	ca8210_hw->phy->cca.mode =3D NL802154_CCA_ENERGY_CARRIER;
+> >>>>    	ca8210_hw->phy->cca.opt =3D NL802154_CCA_OPT_ENERGY_CARRIER_AND;
+> >>>>    	ca8210_hw->phy->cca_ed_level =3D -9800;
+> >>>> -	ca8210_hw->phy->symbol_duration =3D 16 * NSEC_PER_USEC;
+> >>>>    	ca8210_hw->phy->lifs_period =3D 40;
+> >>>>    	ca8210_hw->phy->sifs_period =3D 12; =20
+> >>>
+> >>> I've missed that error                ^^
+> >>>
+> >>> This driver should be fixed first (that's probably a copy/paste of the
+> >>> error from the other driver which did the same).
+> >>>
+> >>> As the rest of the series will depend on this fix (or conflict) we co=
+uld
+> >>> merge it through wpan-next anyway, if you don't mind, as it was there
+> >>> since 2017 and these numbers had no real impact so far (I believe). =
+=20
+> >>
+> >> Not sure I follow this logic. The fix you do is being removed in 4/4 o=
+f your v3 set again. So it would only be in place for these two in between =
+commits. =20
+> >=20
+> > Exactly.
+> >  =20
+> >> As you laid out above this has been in place since 2017 and the number=
+ have no real impact. Getting the fix in wpan-next to remove it again two p=
+atches later would not be needed here.
+> >>
+> >> If you would like to have this fixed for 5.16 and older stable kernels=
+ I could go ahead and apply it to wpan and let it trickle down into stable =
+trees. =20
+> >=20
+> > I'm fine "ignoring" the issue in stable kernels, it was just a warning
+> > for you that this would happen otherwise, given the fact that this is
+> > the second driver doing so (first fix has already been merged) and that
+> > I just realized it now.
+> >  =20
+> >> We would have to deal with either a merge of net into net-next or with
+> >> a merge conflicts when sending the pull request. Both can be done.
+> >>
+> >> But given the circumstances above I have no problem to drop this fix c=
+ompletely and have it fixed implicitly with the rest of the patchset. =20
+> >=20
+> > Fine by me! =20
+>=20
+> Let's do it like this.
+> You drop it from this series against wpan-next.
+> I will pull it out of the series and apply to wpan directly. That way we =
+get it into the stable kernels as well. You already did the work so we shou=
+ld not waste it.
+> I will deal with the merge conflict get get between wpan/net and wpan-nex=
+t/net-next on my side. Nothing to worry for you.
 
-My understanding is that TUNNEL_NOCACHE is used to decide whether or not
-to use a dst cache, that might or might not come from the tunnel info
-attached to an skb. The dst cache being allocated in a tunnel info is
-orthogonal to the use of TUNNEL_NOCACHE. While looking around I actually
-found a code path explicitly setting both, in nft_tunnel_obj_init (that
-might need to be investigated though but it is another topic).
+That's very kind, but don't feel forced to do that, I won't turn mad if
+you finally decide that this requires too much handling for such a
+short-in-time improvement ;)
 
-It doesn't look like initializing the dst cache would break
-TUNNEL_NOCACHE users as ip_tunnel_dst_cache_usable would return false
-anyway. Having said that, we probably want to unshare the dst cache only
-if there is one already, checking for
-'md_dst->u.tun_info.dst_cache.cache !=3D NULL' first.
-
-Does that make sense?
-
-Thanks!
-Antoine
+Thanks,
+Miqu=C3=A8l
