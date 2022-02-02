@@ -2,143 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA40C4A75C7
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 17:29:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63E1E4A75F6
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 17:32:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233375AbiBBQ3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 11:29:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41702 "EHLO
+        id S233032AbiBBQck (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 11:32:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiBBQ3b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 11:29:31 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409E3C061714
-        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 08:29:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=dX1e3Nz967zNd88Noseq10yvF2rReoRyJ/7uQ0W9LaM=; b=TLpVFMdsbaXGRV7v7hk1FF/IP8
-        FdfAG4AMfplLVEyQvuZ4ELjg1l3ZOkYi5OEj6K00kl0zZ7TnZmaYM40F8amXpHm92DCy3eFVK/LNk
-        YpS/VJlXChUpDpPRIYzDXuBGVruPCPO7LVJfECwFjVia3xy5+tLTWOqWVVN9NFVmDCY74LBmUR5Xn
-        bf7nHWxTqIfcILBJzMeXeFhFqlUJ+s2g5m1GSN++s1Dao4Xikxul+5/MBG1wcdOTM/o3CkCan0qXJ
-        GE+xy83Zl15aie78ypDNgV9E9b36/okzgS5CSlFEP96FHEQGCGqgdNq+HOWQc6VClAiyNQrsOTxFl
-        9J4vs6Sw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:49410 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1nFIVZ-0001m6-Ng; Wed, 02 Feb 2022 16:29:25 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1nFIVZ-006Lgp-0o; Wed, 02 Feb 2022 16:29:25 +0000
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next] net: dsa: realtek: convert to
- phylink_generic_validate()
+        with ESMTP id S235145AbiBBQcj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 11:32:39 -0500
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FCFC06173B
+        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 08:32:39 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id e79so26116883iof.13
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 08:32:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=L6uHa25soSNU4QOKbFsIhaKgXpD/9sEmsvqnDiDY4jY=;
+        b=ox1En8z+HRfXrZBQnNK7kpzeZTH3LhJl2TH/KvrKCEs9vWilkD/wB5JNtaaujNnWHY
+         /IF0eyEKjjg+OQzZeXb6zh5rHZEoQzngy+WmdIg3Fik44DWMMkOs9nohAN+Jng0AXh7n
+         Aq9uZmhM7UBliaJspW/pkpVEsEZo9o7dB5itZZ93N2ycMa2EeHWmFBlmkOXN5nTnxfxW
+         5t1Zf4BOGjp/twNW3zeJxqIRvauW4axaSpW8t8NKJgkcJb/qHLSXKhb2svGXjHDQx0vy
+         M4FfWs7a3t2YPwJsmFLfYnIDPnrXjWDWa9dvPmcZJ8V3AxgR6hYJHAG4h3TySq2UENI/
+         0+5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=L6uHa25soSNU4QOKbFsIhaKgXpD/9sEmsvqnDiDY4jY=;
+        b=HnPYjeDsaoSGIKGjdpy15l/hNIDp+d0VYiR+EJu78JKnJkh1aXyxMM59CDgb9jYiu4
+         2L5fq/Z/2JIdr27Gxz8+48dtQVNtgJh7P4d3sgkhVx07eQvogbOc+qv8CrPPSR3bh0t9
+         KHvVoBR0xzFKRB1STKAgtHp8OwH2yhHzO3+5NqO6N3MJfD92CBgLixh/HG0+2wdXqE3t
+         g+qWO+BP20VFYn9cZBjzhYu8ZC0lmTESSFanuEhbu45j+2O7YqL9u0W/tFFa3bcL+bGC
+         nFpUZ30z1LPCZwRXPpwdNMSCtzwIkLq5mvxxBMiB6DaRhYeU2VGrEkCUuaAAt4Zy46WD
+         eg6g==
+X-Gm-Message-State: AOAM531pJ1sZp56pyrZw7G7aIacE4ZkiT5w5B0UvB89m5pLV7YuJxOzk
+        5qv6y1dcmMH4+TohljwN6lw=
+X-Google-Smtp-Source: ABdhPJxJmqLepHR3NbGdGyNKFYt7HeeCFk77jOlaZOCtUEKJKyuhJfVE28uc/vOvhWXLAurWpg9uIA==
+X-Received: by 2002:a05:6638:687:: with SMTP id i7mr16271793jab.222.1643819558745;
+        Wed, 02 Feb 2022 08:32:38 -0800 (PST)
+Received: from ?IPV6:2601:282:800:dc80:8870:ce19:2c7:3513? ([2601:282:800:dc80:8870:ce19:2c7:3513])
+        by smtp.googlemail.com with ESMTPSA id j12sm2748942ilk.21.2022.02.02.08.32.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Feb 2022 08:32:38 -0800 (PST)
+Message-ID: <dcdce9ce-6c04-b340-18e8-0ab5c6879022@gmail.com>
+Date:   Wed, 2 Feb 2022 09:32:37 -0700
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1nFIVZ-006Lgp-0o@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 02 Feb 2022 16:29:25 +0000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH net] net, neigh: Do not trigger immediate probes on
+ NUD_FAILED from neigh_managed_work
+Content-Language: en-US
+To:     Daniel Borkmann <daniel@iogearbox.net>, davem@davemloft.net
+Cc:     kuba@kernel.org, roopa@nvidia.com, edumazet@google.com,
+        dsahern@kernel.org, john.fastabend@gmail.com,
+        netdev@vger.kernel.org,
+        syzbot+5239d0e1778a500d477a@syzkaller.appspotmail.com
+References: <20220201193942.5055-1-daniel@iogearbox.net>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220201193942.5055-1-daniel@iogearbox.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Populate the supported interfaces and MAC capabilities for the Realtek
-rtl8365 DSA switch and remove the old validate implementation to allow
-DSA to use phylink_generic_validate() for this switch driver.
+On 2/1/22 12:39 PM, Daniel Borkmann wrote:
+> syzkaller was able to trigger a deadlock for NTF_MANAGED entries [0]:
+> 
+>   kworker/0:16/14617 is trying to acquire lock:
+>   ffffffff8d4dd370 (&tbl->lock){++-.}-{2:2}, at: ___neigh_create+0x9e1/0x2990 net/core/neighbour.c:652
+>   [...]
+>   but task is already holding lock:
+>   ffffffff8d4dd370 (&tbl->lock){++-.}-{2:2}, at: neigh_managed_work+0x35/0x250 net/core/neighbour.c:1572
+> 
+> The neighbor entry turned to NUD_FAILED state, where __neigh_event_send()
+> triggered an immediate probe as per commit cd28ca0a3dd1 ("neigh: reduce
+> arp latency") via neigh_probe() given table lock was held.
+> 
+> One option to fix this situation is to defer the neigh_probe() back to
+> the neigh_timer_handler() similarly as pre cd28ca0a3dd1. For the case
+> of NTF_MANAGED, this deferral is acceptable given this only happens on
+> actual failure state and regular / expected state is NUD_VALID with the
+> entry already present.
+> 
+> The fix adds a parameter to __neigh_event_send() in order to communicate
+> whether immediate probe is allowed or disallowed. Existing call-sites
+> of neigh_event_send() default as-is to immediate probe. However, the
+> neigh_managed_work() disables it via use of neigh_event_send_probe().
+> 
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
-I seem to have missed this driver, so here's an update for it - but only
-build tested.
+...
 
- drivers/net/dsa/realtek/rtl8365mb.c | 46 ++++++++---------------------
- 1 file changed, 12 insertions(+), 34 deletions(-)
+> 
+> Fixes: 7482e3841d52 ("net, neigh: Add NTF_MANAGED flag for managed neighbor entries")
+> Reported-by: syzbot+5239d0e1778a500d477a@syzkaller.appspotmail.com
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: David Ahern <dsahern@kernel.org>
+> Cc: Roopa Prabhu <roopa@nvidia.com>
+> ---
+>  include/net/neighbour.h | 18 +++++++++++++-----
+>  net/core/neighbour.c    | 18 ++++++++++++------
+>  2 files changed, 25 insertions(+), 11 deletions(-)
+> 
 
-diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index e1c5a67a21c4..2ed592147c20 100644
---- a/drivers/net/dsa/realtek/rtl8365mb.c
-+++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -952,39 +952,17 @@ static bool rtl8365mb_phy_mode_supported(struct dsa_switch *ds, int port,
- 	return false;
- }
- 
--static void rtl8365mb_phylink_validate(struct dsa_switch *ds, int port,
--				       unsigned long *supported,
--				       struct phylink_link_state *state)
-+static void rtl8365mb_phylink_get_caps(struct dsa_switch *ds, int port,
-+				       struct phylink_config *config)
- {
--	struct realtek_priv *priv = ds->priv;
--	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0 };
--
--	/* include/linux/phylink.h says:
--	 *     When @state->interface is %PHY_INTERFACE_MODE_NA, phylink
--	 *     expects the MAC driver to return all supported link modes.
--	 */
--	if (state->interface != PHY_INTERFACE_MODE_NA &&
--	    !rtl8365mb_phy_mode_supported(ds, port, state->interface)) {
--		dev_err(priv->dev, "phy mode %s is unsupported on port %d\n",
--			phy_modes(state->interface), port);
--		linkmode_zero(supported);
--		return;
--	}
--
--	phylink_set_port_modes(mask);
--
--	phylink_set(mask, Autoneg);
--	phylink_set(mask, Pause);
--	phylink_set(mask, Asym_Pause);
--
--	phylink_set(mask, 10baseT_Half);
--	phylink_set(mask, 10baseT_Full);
--	phylink_set(mask, 100baseT_Half);
--	phylink_set(mask, 100baseT_Full);
--	phylink_set(mask, 1000baseT_Full);
--
--	linkmode_and(supported, supported, mask);
--	linkmode_and(state->advertising, state->advertising, mask);
-+	if (dsa_is_user_port(ds, port))
-+		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-+			  config->supported_interfaces);
-+	else if (dsa_is_cpu_port(ds, port))
-+		phy_interface_set_rgmii(config->supported_interfaces);
-+
-+	config->mac_capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
-+				   MAC_10 | MAC_100 | MAC_1000FD;
- }
- 
- static void rtl8365mb_phylink_mac_config(struct dsa_switch *ds, int port,
-@@ -2020,7 +1998,7 @@ static const struct dsa_switch_ops rtl8365mb_switch_ops_smi = {
- 	.get_tag_protocol = rtl8365mb_get_tag_protocol,
- 	.setup = rtl8365mb_setup,
- 	.teardown = rtl8365mb_teardown,
--	.phylink_validate = rtl8365mb_phylink_validate,
-+	.phylink_get_caps = rtl8365mb_phylink_get_caps,
- 	.phylink_mac_config = rtl8365mb_phylink_mac_config,
- 	.phylink_mac_link_down = rtl8365mb_phylink_mac_link_down,
- 	.phylink_mac_link_up = rtl8365mb_phylink_mac_link_up,
-@@ -2038,7 +2016,7 @@ static const struct dsa_switch_ops rtl8365mb_switch_ops_mdio = {
- 	.get_tag_protocol = rtl8365mb_get_tag_protocol,
- 	.setup = rtl8365mb_setup,
- 	.teardown = rtl8365mb_teardown,
--	.phylink_validate = rtl8365mb_phylink_validate,
-+	.phylink_get_caps = rtl8365mb_phylink_get_caps,
- 	.phylink_mac_config = rtl8365mb_phylink_mac_config,
- 	.phylink_mac_link_down = rtl8365mb_phylink_mac_link_down,
- 	.phylink_mac_link_up = rtl8365mb_phylink_mac_link_up,
--- 
-2.30.2
+
+Reviewed-by: David Ahern <dsahern@kernel.org>
+
 
