@@ -2,86 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34C1D4A69E0
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 03:19:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C4E14A69F2
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 03:36:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243784AbiBBCQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 21:16:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46584 "EHLO
+        id S243811AbiBBCgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 21:36:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231835AbiBBCQZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 21:16:25 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B907C061714
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 18:16:25 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id m6so56565136ybc.9
-        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 18:16:25 -0800 (PST)
+        with ESMTP id S230424AbiBBCgV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 21:36:21 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44A54C061714;
+        Tue,  1 Feb 2022 18:36:21 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id a8so17549393pfa.6;
+        Tue, 01 Feb 2022 18:36:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=xNFShH8FV5WH4zkRL3TKCYjBCqRM+aXoyhedA6Bdeec=;
-        b=b3rjJaMPDW0a2tGuMkDtvC+GauknzfDbkvXjWkFCBtdKl1or4kPnQ9Rocudzyn8H2n
-         xARqfAA6hmI4cI+xFcmwYw1PjVhKd3lfj11INl6jlsQ63yhBhpk+Lqky3gqQoGPefWs3
-         +/ZoabDQVMxl5y24JMgJYaFgDKrJbMzinSHEU9yJgtPhVumtZQ6at/V0SpVUA60cv+X3
-         CsI9sSGRjhMq+reqfsu3RsNqO1btxFHnLxaQqqozGeZZjI/0jovdhumws6Uaon330kZ5
-         UlpnYlYHJThASK+woupE5AlhxtHhQYFQIGE53E3j0c9KB2BjzSubdxcfUEr4N3e5FiRp
-         3GFQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=3ZLPo0nlJ5OLb78RiOW/2Pc242N/LxLnGhGMQatS21Y=;
+        b=YNBySn61t/1JAYchGjEbmwoGrVBU6aAWK/Fx1bZfoaPtnyPd9SB4qx6lNGJ5Gg9qli
+         OfTcxytKc/gmgXxl3KDIxXdmo9xgYD1X3QKtNF9MuhzWQFQs3fSIj1byb3nkKzq3jbnL
+         wvxNylwFqIHGihSbaY71tZTI5im4qLd/oc2yzAM+TOIsJ0fuzMiY2mNDEZpsDfZQVvO0
+         onnhtbeGe2Qhra4LDDBU3C3Vn/lG92SMBvB7xkM56ItTN0Zd4EoZ6npy67XcTbcJj4XQ
+         toD9EVDfzw+nwGmUFm3fl99SblgYUU6GHEe6sZ84StksbfVQQbFcIkfqbZRwEUPrBFlK
+         EwLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=xNFShH8FV5WH4zkRL3TKCYjBCqRM+aXoyhedA6Bdeec=;
-        b=gvNMxbEv2vEX4JexCjSMjz9kMoXWLS2tUrraEAiXCvDHhOgzcA3mR8Maqi/kC+Fw6Y
-         TUg08Gl0MS8eWZ9fuvpD61usXTwA8syGNQYzQm4iHAUFDdDtcDaYGZofJlQfZwbWeOfG
-         7yOmpTi8w5dp035papcDyubjxpkMtq1LbkEwMjl2BRriM7MO0IhsDW3Xc8i7h/q80ixz
-         q9WCbFSX/NkDrUj1VUJgNJitF4OtSFxG6QeRTHNF0s/ylIqPtQqxp0xPPLF/KZ5Olpvb
-         vfjyWVt4IMDz/5fLqIl0GRiuL+ui0e8zdiExmbBEko1JP3/wbR26Ih7Ghvt8addVopdx
-         qOIA==
-X-Gm-Message-State: AOAM53264Tlrbom5R8GGgWBtx/HhLf9V9Bo96+DMh3dlI/E3uDRYiTp6
-        vksmhAWdiC2H6vAeIpNBsD+K77JsX/e3fcg8Eqo=
-X-Google-Smtp-Source: ABdhPJxgoIRPMmZbc8DmYU0b1FN0vuhPxCSgwg55PIldXneXnyTeFSGfKbeQApuTRYWsdoWq2XeE6LTpcZJpDqa2uqI=
-X-Received: by 2002:a25:6055:: with SMTP id u82mr16857243ybb.566.1643768184378;
- Tue, 01 Feb 2022 18:16:24 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=3ZLPo0nlJ5OLb78RiOW/2Pc242N/LxLnGhGMQatS21Y=;
+        b=YJ/RLLkkvAdZWqMsTIy2RwCiXGSJkyEuf+nYJZQroDE6UezZHMoxi+muxigLeyuAjx
+         HiIkBA5OpIaVuXHlSlZzrf0nmFkxYuNt9i9/aDIifOxjSOmbMypeGJ1oy9eGq8MVjshj
+         zJR7erSb+yfRfu0bp2QxLsYLYXr9KFdxAGF3PgAmL7Xu/0HhZ3PE5gcKkfoz2qvRTks/
+         xSJov2VryrBQI8PBi3O6kCxCaNrYWi0zJcvq+edVYSEhxmieauZ2UwnRliwzMDEZX1h+
+         3pR7KNE92TAqSYqROKCD3gfgSlwqwYQsFDz7DJLPHpBZKuJhHgA65WQfBIxaghouVbJm
+         vbtg==
+X-Gm-Message-State: AOAM532uLSmd3a3K2S++B4LvhoPhbfReuF15cD14UcJAaGxUm4Y4RF+8
+        saTijdNPtqSo4dICq463dBM=
+X-Google-Smtp-Source: ABdhPJzkhl9S/s7YYrro5597oUF2U5SnUCF78PhYlHGzl9AcxNwezM52CwG6g2vjjD1mlxskpKa8nw==
+X-Received: by 2002:aa7:8e89:: with SMTP id a9mr28441564pfr.64.1643769380813;
+        Tue, 01 Feb 2022 18:36:20 -0800 (PST)
+Received: from localhost (61-223-193-169.dynamic-ip.hinet.net. [61.223.193.169])
+        by smtp.gmail.com with ESMTPSA id u17sm32376740pgi.14.2022.02.01.18.36.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 18:36:20 -0800 (PST)
+From:   Hou Tao <hotforest@gmail.com>
+X-Google-Original-From: Hou Tao <houtao1@huawei.com>
+To:     andrii.nakryiko@gmail.com
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hotforest@gmail.com,
+        houtao1@huawei.com, kafai@fb.com, kuba@kernel.org,
+        netdev@vger.kernel.org, yhs@fb.com
+Subject: Re: [PATCH bpf-next] selftests/bpf: use getpagesize() to initialize ring buffer size
+Date:   Wed,  2 Feb 2022 10:36:16 +0800
+Message-Id: <20220202023616.4687-1-houtao1@huawei.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <CAEf4BzYbbPT_og-_GGQYpsRmpBGRC-c1Xe8=QDybK243DhiKAQ@mail.gmail.com>
+References: <CAEf4BzYbbPT_og-_GGQYpsRmpBGRC-c1Xe8=QDybK243DhiKAQ@mail.gmail.com>
 MIME-Version: 1.0
-Sender: mrrnra.kabore@gmail.com
-Received: by 2002:a05:7000:92d6:0:0:0:0 with HTTP; Tue, 1 Feb 2022 18:16:23
- -0800 (PST)
-From:   Ann William <annwilliam372@gmail.com>
-Date:   Tue, 1 Feb 2022 18:16:23 -0800
-X-Google-Sender-Auth: R5gl4amzmEhLpRHpLJl3fpYsMW4
-Message-ID: <CAObd1cqjuqq6Rw-V800iZ+dOjB+2ptFgBZkXHpWdPutgebSU8A@mail.gmail.com>
-Subject: Re: Greetings My Dear,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings,
+Hi,
 
-I sent this mail praying it will find you in a good condition, since I
-myself am in a very critical health condition in which I sleep every
-night  without knowing if I may be alive to see the next day. I am
-Mrs.William Ann, a widow suffering from a long time illness. I have
-some funds I  inherited from my late husband, the sum of
-($11,000,000.00, Eleven Million Dollars) my Doctor told me recently
-that I have serious sickness which is a cancer problem. What disturbs
-me most is my stroke sickness. Having known my condition, I decided to
-donate this fund to a good person that will utilize it the way I am
-going to instruct herein. I need a very honest God.
+> >
+> > Hi Andrii,
+> >
+> > > >
+> > > > 4096 is OK for x86-64, but for other archs with greater than 4KB
+> > > > page size (e.g. 64KB under arm64), test_verifier for test case
+> > > > "check valid spill/fill, ptr to mem" will fail, so just use
+> > > > getpagesize() to initialize the ring buffer size. Do this for
+> > > > test_progs as well.
+> > > >
+> > [...]
+> >
+> > > > diff --git a/tools/testing/selftests/bpf/progs/ima.c b/tools/testing/selftests/bpf/progs/ima.c
+> > > > index 96060ff4ffc6..e192a9f16aea 100644
+> > > > --- a/tools/testing/selftests/bpf/progs/ima.c
+> > > > +++ b/tools/testing/selftests/bpf/progs/ima.c
+> > > > @@ -13,7 +13,6 @@ u32 monitored_pid = 0;
+> > > >
+> > > >  struct {
+> > > >         __uint(type, BPF_MAP_TYPE_RINGBUF);
+> > > > -       __uint(max_entries, 1 << 12);
+> > >
+> > > Should we just bump it to 64/128/256KB instead? It's quite annoying to
+> > > do a split open and then load just due to this...
+> > >
+> > Agreed.
+> >
+> > > I'm also wondering if we should either teach kernel to round up to
+> > > closes power-of-2 of page_size internally, or teach libbpf to do this
+> > > for RINGBUF maps. Thoughts?
+> > >
+> > It seems that max_entries doesn't need to be page-aligned. For example
+> > if max_entries is 4096 and page size is 65536, we can allocate a
+> > 65536-sized page and set rb->mask 4095 and it will work. The only
+> > downside is 60KB memory is waster, but it is the implementation
+> > details and can be improved if subpage mapping can be supported.
+> >
+> > So how about removing the page-aligned restraint in kernel ?
+> >
+> 
+> No, if you read BPF ringbuf code carefully you'll see that we map the
+> entire ringbuf data twice in the memory (see [0] for lame ASCII
+> diagram), so that records that are wrapped at the end of the ringbuf
+> and go back to the start are still accessible as a linear array. It's
+> a very important guarantee, so it has to be page size multiple. But
+> auto-increasing it to the closest power-of-2 of page size seems like a
+> pretty low-impact change. Hard to imagine breaking anything except
+> some carefully crafted tests for ENOSPC behavior.
+>
 
-fearing a person who can claim this money and use it for Charity
-works, for orphanages, widows and also build schools for less
-privileges that will be named after my late husband if possible and to
-promote the word of God and the effort that the house of God is
-maintained. I do not want a situation where this money will be used in
-an ungodly manner. That's why I'm making this decision. I'm not afraid
-of death so I know where I'm going. I accept this decision because I
-do not have any child who will inherit this money after I die. Please
-I want your sincere and urgent answer to know if you will be able to
-execute this project, and I will give you more information on how the
-fund will be transferred to your bank account. I am waiting for your
-reply.
+Yes, i know the double map trick. What i tried to say is that:
+(1) remove the page-aligned restrain for max_entries
+(2) still allocate page-aligned memory for ringbuf
 
-May God Bless you,
-Mrs.William Ann,
+instead of rounding max_entries up to closest power-of-2 page size
+directly, so max_entries from userspace is unchanged and double map trick
+still works.
+
+> [0] https://github.com/torvalds/linux/blob/master/kernel/bpf/ringbuf.c#L73-L89
+
+> > Regards,
+> > Tao
+
