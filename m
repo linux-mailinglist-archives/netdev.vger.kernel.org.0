@@ -2,113 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE4364A6C4C
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 08:27:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 281C74A6C53
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 08:29:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236735AbiBBH1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 02:27:06 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:12492 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236259AbiBBH1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 02:27:05 -0500
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2126AUm7007360;
-        Wed, 2 Feb 2022 07:26:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=yT3X4c6tQ/1ef0u43R/g9DgpTmo2R3pXG5hCixEiG24=;
- b=VOER8oCNyE1kR1sp6tr+jWJSlbu8DKdYKgtMI+o2HsfzjBzppsyfDKzQnFGjIBV4KZxC
- bmyf2Z2B5lertHdu63YHe0FBuBHRHmsQX+B9O9X4HvZrwEtsUHOxB4aSVKPt021s4HcX
- gLaoDL9CFSR8fjQ5NrPrYuKBTks1hhxvK1MysG4Y7XU1fPwc2ZJhohQqmtAd1TP8MDq3
- uyPbaRvAKxBazM0Whp2ovwq+tRMaxZ8rqbxgV8iyu6Qh7J4y126IJ+mky8Ef5gtRNXOU
- yFPf7LKmjnq34KQ5etCDaYJ+/bhqi6o1wDrhvLR5zDco1lx8pmPewB/VyKU3vnp28G/u EQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dyjs6ag7v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Feb 2022 07:26:59 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2126KLAt035461;
-        Wed, 2 Feb 2022 07:26:58 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dyjs6ag7c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Feb 2022 07:26:58 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2127EPu1007318;
-        Wed, 2 Feb 2022 07:26:56 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma05fra.de.ibm.com with ESMTP id 3dyaetb39y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Feb 2022 07:26:56 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2127Qs4141484622
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 2 Feb 2022 07:26:54 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 290C1A4040;
-        Wed,  2 Feb 2022 07:26:54 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B8EEFA404D;
-        Wed,  2 Feb 2022 07:26:53 +0000 (GMT)
-Received: from [9.145.78.145] (unknown [9.145.78.145])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  2 Feb 2022 07:26:53 +0000 (GMT)
-Message-ID: <4ace582e-8438-6e56-40d5-763309e93368@linux.ibm.com>
-Date:   Wed, 2 Feb 2022 08:26:54 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] Partially revert "net/smc: Add netlink net namespace
- support"
-Content-Language: en-US
-To:     "Dmitry V. Levin" <ldv@altlinux.org>
-Cc:     Tony Lu <tonylu@linux.alibaba.com>, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-api@vger.kernel.org
-References: <20211228130611.19124-1-tonylu@linux.alibaba.com>
- <20211228130611.19124-3-tonylu@linux.alibaba.com>
- <20220131002453.GA7599@altlinux.org>
- <521e3f2a-8b00-43d4-b296-1253c351a3d2@linux.ibm.com>
- <20220202030904.GA9742@altlinux.org>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20220202030904.GA9742@altlinux.org>
-Content-Type: text/plain; charset=UTF-8
+        id S237523AbiBBH3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 02:29:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34794 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236750AbiBBH3b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 02:29:31 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB9BB6178D;
+        Wed,  2 Feb 2022 07:29:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D5DBC004E1;
+        Wed,  2 Feb 2022 07:29:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643786970;
+        bh=26oHZ8vPtcOPyXKDjLAHkT61kFVbwnkIgRev3TI/TwA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vFkk5g2vuLW3BYdhspWsCLkp8cirZrU+YVzDQbWcw/nj/LfdPDhBK06B+vaCXqUl+
+         QusglW40WUHWbnW+t6EExHqg5DojLIPkHiKkJdbaubsdhOl2EYMIWnQlM8NYnN1lkE
+         OOx6Utx8ZbtaNe7qQyl+41U/11380DdLNJ08Dgvc+xV5rI4tQF6qOuu4wYV1/BsqpD
+         qxgEIcIOyvFarHhNWnQUafx+SIjf+XXUes6YAdAssjrYW6QU8vmHZz50R311TrT0+Z
+         4i190mTE8Dnge+5Ld1Dhwos46dYgSg0iI9yzrkPnczVVJtzzLa0HcyS6QqC/+m5V1D
+         PIKO0js96J0Gw==
+Date:   Wed, 2 Feb 2022 16:29:25 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v7 00/10] fprobe: Introduce fprobe function entry/exit
+ probe
+Message-Id: <20220202162925.bd74e7970fc35cb4236eef48@kernel.org>
+In-Reply-To: <YfnKIyTwi+F3IPdI@krava>
+References: <164360522462.65877.1891020292202285106.stgit@devnote2>
+        <YfnKIyTwi+F3IPdI@krava>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 7pihlwHkGGSJg5ItcXYpdQIcPhYadcLq
-X-Proofpoint-ORIG-GUID: 2lBB1xK6qcEnycd-8iecEtDRiGiOqJkh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-02_02,2022-02-01_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=999
- malwarescore=0 adultscore=0 impostorscore=0 bulkscore=0 suspectscore=0
- mlxscore=0 priorityscore=1501 spamscore=0 phishscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202020035
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/02/2022 04:09, Dmitry V. Levin wrote:
-> The change of sizeof(struct smc_diag_linkinfo) by commit 79d39fc503b4
-> ("net/smc: Add netlink net namespace support") introduced an ABI
-> regression: since struct smc_diag_lgrinfo contains an object of
-> type "struct smc_diag_linkinfo", offset of all subsequent members
-> of struct smc_diag_lgrinfo was changed by that change.
-> 
-> As result, applications compiled with the old version
-> of struct smc_diag_linkinfo will receive garbage in
-> struct smc_diag_lgrinfo.role if the kernel implements
-> this new version of struct smc_diag_linkinfo.
-> 
-> Fix this regression by reverting the part of commit 79d39fc503b4 that
-> changes struct smc_diag_linkinfo.  After all, there is SMC_GEN_NETLINK
-> interface which is good enough, so there is probably no need to touch
-> the smc_diag ABI in the first place.
+Hi Jiri,
 
-Reviewed-by: Karsten Graul <kgraul@linux.ibm.com>
+On Wed, 2 Feb 2022 01:02:43 +0100
+Jiri Olsa <jolsa@redhat.com> wrote:
 
-Thank you Dmitry.
+> On Mon, Jan 31, 2022 at 02:00:24PM +0900, Masami Hiramatsu wrote:
+> > Hi,
+> > 
+> > Here is the 7th version of fprobe. This version fixes unregister_fprobe()
+> > ensures that exit_handler is not called after returning from the
+> > unregister_fprobe(), and fixes some comments and documents.
+> > 
+> > The previous version is here[1];
+> > 
+> > [1] https://lore.kernel.org/all/164338031590.2429999.6203979005944292576.stgit@devnote2/T/#u
+> > 
+> > This series introduces the fprobe, the function entry/exit probe
+> > with multiple probe point support. This also introduces the rethook
+> > for hooking function return as same as the kretprobe does. This
+> > abstraction will help us to generalize the fgraph tracer,
+> > because we can just switch to it from the rethook in fprobe,
+> > depending on the kernel configuration.
+> > 
+> > The patch [1/10] is from Jiri's series[2].
+> > 
+> > [2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
+> > 
+> > And the patch [9/10] adds the FPROBE_FL_KPROBE_SHARED flag for the case
+> > if user wants to share the same code (or share a same resource) on the
+> > fprobe and the kprobes.
+> 
+> hi,
+> it works fine for bpf selftests, but when I use it through bpftrace
+> to attach more probes with:
+> 
+>   # ./src/bpftrace -e 'kprobe:ksys_* { }'
+>   Attaching 27 probes
+> 
+> I'm getting stalls like:
+> 
+> krava33 login: [  988.574069] INFO: task bpftrace:4137 blocked for more than 122 seconds.
+> [  988.577577]       Not tainted 5.16.0+ #89
+> [  988.580173] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> [  988.585538] task:bpftrace        state:D stack:    0 pid: 4137 ppid:  4123 flags:0x00004004
+> [  988.589869] Call Trace:
+> [  988.591312]  <TASK>
+> [  988.592577]  __schedule+0x3a8/0xd30
+> [  988.594469]  ? wait_for_completion+0x84/0x110
+> [  988.596753]  schedule+0x4e/0xc0
+> [  988.598480]  schedule_timeout+0xed/0x130
+> [  988.600524]  ? rcu_read_lock_sched_held+0x12/0x70
+> [  988.602901]  ? lock_release+0x253/0x4a0
+> [  988.604935]  ? lock_acquired+0x1b7/0x410
+> [  988.607041]  ? trace_hardirqs_on+0x1b/0xe0
+> [  988.609202]  wait_for_completion+0xae/0x110
+> [  988.613762]  __wait_rcu_gp+0x127/0x130
+> [  988.615787]  synchronize_rcu_tasks_generic+0x46/0xa0
+> [  988.618329]  ? call_rcu_tasks+0x20/0x20
+> [  988.620600]  ? rcu_tasks_pregp_step+0x10/0x10
+> [  988.623232]  ftrace_shutdown.part.0+0x174/0x210
+> [  988.625820]  unregister_ftrace_function+0x37/0x60
+> [  988.628480]  unregister_fprobe+0x2d/0x50
+> [  988.630928]  bpf_link_free+0x4e/0x70
+> [  988.633126]  bpf_link_release+0x11/0x20
+> [  988.635249]  __fput+0xae/0x270
+> [  988.637022]  task_work_run+0x5c/0xa0
+> [  988.639016]  exit_to_user_mode_prepare+0x251/0x260
+> [  988.641294]  syscall_exit_to_user_mode+0x16/0x50
+> [  988.646249]  do_syscall_64+0x48/0x90
+> [  988.648218]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> [  988.650787] RIP: 0033:0x7f9079e95fbb
+> [  988.652761] RSP: 002b:00007ffd474fa3b0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
+> [  988.656718] RAX: 0000000000000000 RBX: 00000000011bf8d0 RCX: 00007f9079e95fbb
+> [  988.660110] RDX: 0000000000000000 RSI: 00007ffd474fa3b0 RDI: 0000000000000019
+> [  988.663512] RBP: 00007ffd474faaf0 R08: 0000000000000000 R09: 000000000000001a
+> [  988.666673] R10: 0000000000000064 R11: 0000000000000293 R12: 0000000000000001
+> [  988.669770] R13: 00000000004a19a1 R14: 00007f9083428c00 R15: 00000000008c02d8
+> [  988.672601]  </TASK>
+> [  988.675763] INFO: lockdep is turned off.
+> 
+> I have't investigated yet, any idea?
+
+Hmm, no, as far as I tested with my example module, it works well as below;
+
+ # insmod fprobe_example.ko symbol='ksys_*' && ls && sleep 1 && rmmod  fprobe_example.ko 
+[  125.820113] fprobe_init: Planted fprobe at ksys_*
+[  125.823153] sample_entry_handler: Enter <ksys_write+0x0/0xf0> ip = 0x000000008d8da91f
+[  125.824247]                          fprobe_handler.part.0+0xb1/0x150
+[  125.825024]                          fprobe_handler+0x1e/0x20
+[  125.825799]                          0xffffffffa000e0e3
+[  125.826540]                          ksys_write+0x5/0xf0
+[  125.827344]                          do_syscall_64+0x3b/0x90
+[  125.828144]                          entry_SYSCALL_64_after_hwframe+0x44/0xae
+fprobe_example.ko
+[  125.829178] sample_exit_handler: Return from <ksys_write+0x0/0xf0> ip = 0x000000008d8da91f to rip = 0x00000000be5e197e (__x64_sys_write+0x1a/0x20)
+[  125.830707]                          fprobe_exit_handler+0x29/0x30
+[  125.831415]                          rethook_trampoline_handler+0x99/0x140
+[  125.832259]                          arch_rethook_trampoline_callback+0x3f/0x50
+[  125.833110]                          arch_rethook_trampoline+0x2f/0x50
+[  125.833803]                          __x64_sys_write+0x1a/0x20
+[  125.834448]                          do_syscall_64+0x3b/0x90
+[  125.835055]                          entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  126.878825] fprobe_exit: fprobe at ksys_* unregistered
+#
+
+Even with NR_CPUS=3, it didn't cause the stall. But maybe you'd better test
+with Paul's fix as Andrii pointed.
+
+Thank you,
+
+
+
+
+> 
+> thanks,
+> jirka
+> 
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
