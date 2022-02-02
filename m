@@ -2,207 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 928D34A6B1A
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 05:58:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F1074A6B23
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 06:03:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244683AbiBBE61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 23:58:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231474AbiBBE6Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 23:58:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71BCCC061714;
-        Tue,  1 Feb 2022 20:58:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B0C2B83004;
-        Wed,  2 Feb 2022 04:58:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BC50C004E1;
-        Wed,  2 Feb 2022 04:58:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643777902;
-        bh=3R1brSBq8s2swVV3kMHwHt7HZxFvwsGSwnLUB8YoKTk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qYPsl6kmBXicSMJRej/pS/2fURkTz2mm+tAC3SA3enCS27v0Yj+scLV7zlGMfZfxD
-         QbB4FpDEvQnoWpm5JFro5DS1cE+tYzdRGCXbVNfY6h7ED8/9iZB1OsU74z9oKtMPjF
-         qoAGLExZziJMB8zSCuSp3Y60vcRh9kG1j8q75s3zeQ2BUyl/zO7dy+H4q9ffRHFKv2
-         ZCkMwxmyzQW+L3j0QG3Sh/NZe5VbqmK0spmcTiaNg0OD1RsGH68vM3Yt0K81J7IML+
-         ENvyz35TnKgkFlj2O03s12dvc2k4GdL5DU/miCODdF9IgLZhJzf7FLRJPV95s+UjMi
-         L8ydXhJozy31Q==
-Date:   Tue, 1 Feb 2022 20:58:18 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mark Einon <mark.einon@gmail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jeroen de Borst <jeroendb@google.com>,
-        Catherine Sullivan <csully@google.com>,
-        David Awogbemila <awogbemila@google.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "K . Y . Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Jon Mason <jdmason@kudzu.us>,
-        Simon Horman <simon.horman@corigine.com>,
-        Rain River <rain.1986.08.12@gmail.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Shannon Nelson <snelson@pensando.io>, drivers@pensando.io,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Rob Herring <robh@kernel.org>, l.stelmach@samsung.com,
-        rafal@milecki.pl, Edwin Peer <edwin.peer@broadcom.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Joel Stanley <joel@jms.id.au>, Slark Xiao <slark_xiao@163.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Liming Sun <limings@nvidia.com>,
-        David Thompson <davthompson@nvidia.com>,
-        Asmaa Mnebhi <asmaa@nvidia.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>,
-        Omkar Kulkarni <okulkarni@marvell.com>,
-        Shai Malin <smalin@marvell.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Gary Guo <gary@garyguo.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, intel-wired-lan@lists.osuosl.org,
-        linux-hyperv@vger.kernel.org, oss-drivers@corigine.com,
-        linux-renesas-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH net-next] net: kbuild: Don't default net vendor configs
- to y
-Message-ID: <20220201205818.2f28cfe5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220202044603.tuchbk72iujdyxi4@sx1>
-References: <20220131172450.4905-1-saeed@kernel.org>
-        <20220131095905.08722670@hermes.local>
-        <CAMuHMdU17cBzivFm9q-VwF9EG5MX75Qct=is=F2h+Kc+VddZ4g@mail.gmail.com>
-        <20220131183540.6ekn3z7tudy5ocdl@sx1>
-        <30ed8220-e24d-4b40-c7a6-4b09c84f9a1f@gmail.com>
-        <20220131121027.4fe3e8dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <7dc930c6-4ffc-0dd0-8385-d7956e7d16ff@gmail.com>
-        <20220131151315.4ec5f2d3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <dd1497ca-b1da-311a-e5fc-7c7265eb3ddf@gmail.com>
-        <20220202044603.tuchbk72iujdyxi4@sx1>
+        id S229756AbiBBFDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 00:03:07 -0500
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:45898 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229458AbiBBFDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 00:03:06 -0500
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2120DNHx008544;
+        Wed, 2 Feb 2022 05:02:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=yEJz5i4wgrqG1yaFRSy2oJPnZOWTi/+4rRC1Y5a8P/8=;
+ b=P5sh6z6me6aaIRHa5nrjboTAJhhPCrCC3r+161q2SqX2HO+idvDR2ckqg0b5VMTdssHn
+ /y4ehw+Jzp5zbj5mJHSyl4dk8iYqQWZMt6F6nt0QLY/V1uVaBjDv2xrjQsVRRnG0mACN
+ Y/hp1ubwGzM4f2drEMmqAYcPEHtkf/bdGDb3hIqNDBPYz8YXka6KHFpGpiBqEfWUaYsh
+ UxeLxXR/tYdiMFJwcZD6MHWpuR19p0rtN2NIiGdEE0iS2hQb/0HF/a4IRRrjSASlyiYU
+ 2TikGd2pDYdIFXtzDHVCN0p9dN0OimszSO1KspnBgxTkVmTF/aHXD7/8fRsolxaRnFZ/ Qg== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dxjatw0j7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 02 Feb 2022 05:02:55 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 2124thPY173546;
+        Wed, 2 Feb 2022 05:02:54 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2171.outbound.protection.outlook.com [104.47.55.171])
+        by aserp3030.oracle.com with ESMTP id 3dvumgmu8e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 02 Feb 2022 05:02:54 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hXTaLBnbVMx/5FeOdF3kmx3CW4ihF02PjS00pmmEUaaJmYI5EtvarGOVRHitsre6FdsStlxpQ+Wt+1m6EXexiEus16yNrtLXhPEGjMy83sfS3hIsHPDav1FZG8uPdUFyRK0gDRDXHFQ0B1lAtHJFtJphv1IBJjDLfqDqUhp1g3ymU+FV7YdscHeOmzC84G9vBoTfb6xqVE0ohq4V5pTNoUHK+YioGg80xDzekDBxCPEGyARWBkG4zceuKzeHJz1d3ySBmr1jD0IIt2SeGEPFlf2DD1O/R6OEmbGw54cRWFHCC/Hv6Y0SySb9q7X/U5buiY/Yy1ZYieeXzmDCTo3tuA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yEJz5i4wgrqG1yaFRSy2oJPnZOWTi/+4rRC1Y5a8P/8=;
+ b=lGNHiwhRExoiyf9pTUTmBbHtnXxcyEZ+RlT70tRe8eUU5thojxDNb2aVIqLw2w/WkLwseY6oUekwO7043uWmZL91F4qhBKLAM/j7rpfrh1Fm8g8DuMkECZhDuwJVNHeauFGyNuHnQKv2R+ptzd8dXNlFg1Bi7W2ZOYgK3mW/VNHugtnMQougC8EYC49SYCwIKAfjiIjeR7V/VuQnU1toN6uLRF5ddwncVHtHZKSMHfwbR6KNhzpzKPcDP6yv+5cVKnha9YIfEIFf64t1Lti8EKKQGfdUcxqnpSTGpqSgH+KqBTwRC5OJjVdCQHMocQBtJmOSsI4wddttdF2eZPyo6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yEJz5i4wgrqG1yaFRSy2oJPnZOWTi/+4rRC1Y5a8P/8=;
+ b=VYLYLhviqsks3PIWIbr3QIC5u1hTZPHH1BDCPDpFrVq4GfGWqo6ePtrDkKyGdvA2LDR0BlKA3yv/rwKuX5WZGR+puETaouHxCfCcMOM+hFTM5PVxLjq+XdhBLUW1TmTprZ8AH4jBBkVh4K8ypPqZB/EW1Gl5myOaqb/4I/zDz5c=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by CH2PR10MB4056.namprd10.prod.outlook.com
+ (2603:10b6:610:10::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.19; Wed, 2 Feb
+ 2022 05:02:52 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::e5a5:8f49:7ec4:b7b8]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::e5a5:8f49:7ec4:b7b8%5]) with mapi id 15.20.4930.021; Wed, 2 Feb 2022
+ 05:02:51 +0000
+Date:   Wed, 2 Feb 2022 08:02:30 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Pkshih <pkshih@realtek.com>
+Cc:     "kvalo@kernel.org" <kvalo@kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "colin.i.king@gmail.com" <colin.i.king@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] rtlwifi: remove redundant initialization of variable
+ ul_encalgo
+Message-ID: <20220202050229.GS1951@kadam>
+References: <20220130223714.6999-1-colin.i.king@gmail.com>
+ <55f8c7f2c75b18cd628d02a25ed96fae676eace2.camel@realtek.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <55f8c7f2c75b18cd628d02a25ed96fae676eace2.camel@realtek.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JN2P275CA0012.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:3::24)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b98b9954-5c44-4444-08b4-08d9e609437f
+X-MS-TrafficTypeDiagnostic: CH2PR10MB4056:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR10MB40568E5F1D0D5C790A81C9138E279@CH2PR10MB4056.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: i2STso6A04Ue49iYlMrtZYSpT8WA7BJ47bJNwdIzqb3TTK3uZLEBCehWMxAgDwvGc/rNI0GrWSBySqm8JtGdbHsccZ6bBOJkkcHB8ll+vCULGMC2C1vk/VUthlVU0mJb3i/pVN7jXUwbUphk1QjWSMcNAcsM9uLj+I6GDcqBGdwoDlfWA2Mym/yVDigcokDCtA6UGQreUvhWCmj7GPZMA1gpoHxZlfeyjeRs0u/Qjmswvn8rv34KZXJ1X49rCD9VjVj07i69dYMNW0hlUnRCFCmnzmk1S9NJw3VtLzbHwxYf8uxhPxdkfwfNcqdoBgiCy9ceJS9k/get3RpKJmiInoO6Yl24mZv0h+aCFdA393cll06g2DTkwUAQm2+PQhBkMqshffLkglnbfvqeRjVqepyh11qMZ7B76PskLeyKk5uKng5Fu/DgaA+1rt5777xJOWLATQwImoJsxvvl/MbSIaBYVm1OJ3zJjyp5sY1q+6mhEzIgPEkUi05T+GI40tNz3+rjmynvhZ+TI85V/WjyZhfcSyOOHN2mBR8/aFwJ4GTLraIUPzkZDMhalpa99T+gVwDu7XwqS97CgnQaRRfIfQ6sdrNd1EV53ceWo0H8WO2jgiKXcNbfs+IZLU8mdk/lS6jQjcjmHtEPy+OVh/1ksd11FU8do0a/4/+Oytj5h7MZ43qTjL9L+sKqO59j5qhKkkbKq/nsBSpQg3yloYOGow==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(33656002)(52116002)(38100700002)(8936002)(38350700002)(9686003)(66476007)(66556008)(33716001)(2906002)(26005)(1076003)(54906003)(6916009)(316002)(44832011)(508600001)(4744005)(86362001)(4326008)(8676002)(6506007)(6512007)(5660300002)(66946007)(6666004)(186003)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FYG0e/8v9ZNgD8jcGYZTD/uHhREQNeFct1Ur3CLYTuHYr4CqIeppL2XBhwUK?=
+ =?us-ascii?Q?DDwchYiCTUBlzBr2NOiH68VCZ3KUwzp53dTvdLHf6tgmYE+zPdSI6mS2MvP7?=
+ =?us-ascii?Q?hXch4Iuk7WI5RHT9q3i1Fw1g05WFo4PzmuRgBUlFU6RkL9h8Lm7kzwkQiawa?=
+ =?us-ascii?Q?Uad9pBvpbeTzSvmUDV0tHTgQdS8AdAaTb3uAwxql+w7JZbiUMvmKOV/hdaTX?=
+ =?us-ascii?Q?MAM2eVqx6NGADT00F5BY/JQ3xLefA7sYHbmCS+f/Ter99h+Y6okMwsYP4eaw?=
+ =?us-ascii?Q?cWP5Zykvlfz9mHKzBBTWBkaAihQQS8rFM6bzD93LRgpgqe0gtokU1c8UpvCT?=
+ =?us-ascii?Q?EQF4TX4pVS2LYBaqwP2DmzneMNOUXBKwjvtaQVJ0gtnpxFpGINTFlkxDhjHe?=
+ =?us-ascii?Q?zJ/AOai42hWFk9tIQw6Q/A95HjtMZ2z96ECUGo3uIK5tWWvyTqZopXW+fxq9?=
+ =?us-ascii?Q?HV4NwNO9M8LkqQCKdG42w1xvaHqPL0YaeAHGhFZ/lN8aqffZkRPgpshZaiMf?=
+ =?us-ascii?Q?bEID/ZNWPORxvCzXS2PRuOVgvEa+aFJkGjQliSenvpt7zg1sntIUPtF/lmq0?=
+ =?us-ascii?Q?0h4NsmvI7jtE+oqE3Pr2ua8RMfO1qfZbBLp1gaHZIe+ps3z2jzlupzofc+Db?=
+ =?us-ascii?Q?ekLvxXgrKCsLqps6+jjt1Tnu7bwqGXwcy/w214rFLC+SX5+98io2J2RtCreU?=
+ =?us-ascii?Q?pFbS1Q2cl/Gx6FeA6+oPH00s1p/5MR4y3hF7hUFqqi416Ha7OgG47npW30SN?=
+ =?us-ascii?Q?IoKpxiQhjzqoy/yI8PUYD5JfXRM7IkbMT3K3DoNJ+olNNgSXJfRfQznRW00k?=
+ =?us-ascii?Q?JBUmJU7tbtQ9UPBZAvGBmfkLS5YWGXX6JEXqOHiFdvbohnj3NUIshOmvoVFl?=
+ =?us-ascii?Q?HqaBaQVwaJsxVnsJrjNhBclUrn5lpFWTBWaquSExt4Fr70jASuzfeaI7fuRb?=
+ =?us-ascii?Q?y0u0Qb1LT74KkmNhGXCpkHit9ubWCUGh5Co0EWTr+nohUhkYL2VMV0dtODvI?=
+ =?us-ascii?Q?zITleZqcHA7WBcQ0xtaWM3LXSJSUXc4GKM5pDS2aWjQb8gJ00LpRM5HYusZR?=
+ =?us-ascii?Q?CwpNFkzN8W7Ob7OmBz/wSRUYU3hnknjvCwEzB2kISddMhoPf1Iv1GxlaPIji?=
+ =?us-ascii?Q?HUr2kgmubH+YLLoCy0IFyMpxKc0xh7yITplY2wbKBT2JLlNEYMhsBJ87729D?=
+ =?us-ascii?Q?0VhxWZmG9e2MhdGqBbMbBV9i3kDYVho3vWpQ7xD9g2iyUw9JBVBTGtYA+PcJ?=
+ =?us-ascii?Q?TkiL22RimngYkn+2zZQv4BkirDKYX44bd26cp2Izi5tOc3pCyPd7LTIQdCrI?=
+ =?us-ascii?Q?osA25IjX7xrLORlPPBxbURh3oFi3C7l0u7IkqIGIVPf9iaLnZNNFpi0Uj2F2?=
+ =?us-ascii?Q?z+vqq0DwdASyBwJfmQOR2OgodRPndA9Qc8eAO2NfWhtewDxe4OgNO4DvwCc+?=
+ =?us-ascii?Q?3aGe1huija1g8grnIS3oALkzviJBfVNAtzIU2B0yq127H5F/hhRW8qSz65or?=
+ =?us-ascii?Q?YF7SpFWBcCHF+klsHgJrNSuQGDwiPLkukqfUzCD6RNAxuQlU3uieQSs9aPhh?=
+ =?us-ascii?Q?ZJjWgttGABOAWs4xckWikoZNsDgBztSwDqhjTKgXB9wAMfkUqbNDu4vIMpN5?=
+ =?us-ascii?Q?VRmeoOnyax2pKaCQfQ+sltTeVzhdeV4StdoHj8RxwRF9ndZqDRu9qDMGcJoW?=
+ =?us-ascii?Q?+rzzMfsHnglklfkV7kduTp2C8yQ=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b98b9954-5c44-4444-08b4-08d9e609437f
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2022 05:02:51.3628
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DMkFyesoFal9IL133M/qa8BIAZFpH3JQQ5Lfmwynbt/LuFXnEZP1NCnGGQHZr4eH3Ues/kc3pMtMbD5buvo2yARga5DPNiuexV6MbozmpyE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR10MB4056
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10245 signatures=673430
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 phishscore=0
+ mlxscore=0 adultscore=0 suspectscore=0 mlxlogscore=999 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202020023
+X-Proofpoint-GUID: vBOastZIo5SwHjSD9hhytGqhH_a_GWtQ
+X-Proofpoint-ORIG-GUID: vBOastZIo5SwHjSD9hhytGqhH_a_GWtQ
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Feb 2022 20:46:03 -0800 Saeed Mahameed wrote:
-> I am getting mixed messages here, on one hand we know that this patch
-> might break some old or def configs, but on the other hand people claim
-> that they have to manually fixup their own configs every time 
-> "something in configs" changes and they are fine with that. 
+On Mon, Jan 31, 2022 at 02:53:40AM +0000, Pkshih wrote:
+> On Sun, 2022-01-30 at 22:37 +0000, Colin Ian King wrote:
 > 
-> Obviously I belong to the 2nd camp, hence this patch..
+> When I check this patch, I find there is no 'break' for default case.
+> Do we need one? like
 > 
-> I can sum it up with "it's fine to controllably break *some* .configs for 
-> the greater good" .. that's my .2cent.
+> @@ -226,6 +226,7 @@ void rtl_cam_empty_entry(struct ieee80211_hw *hw, u8 uc_index)
+>                 break;
+>         default:
+>                 ul_encalgo = rtlpriv->cfg->maps[SEC_CAM_AES];
+> +               break;
 
-I think we agree that we don't care about oldconfigs IOW someone's
-random config.
+No, it's not necessary.  The choice of style is up to the original
+developer.
 
-But we do care about defconfigs in the tree, if those indeed include
-ethernet drivers which would get masked out by vendor=n - they need
-fixin':
+regards,
+dan carpenter
 
-$ find arch/ | grep defconfig
-arch/x86/configs/i386_defconfig
-arch/x86/configs/x86_64_defconfig
-arch/ia64/configs/generic_defconfig
-arch/ia64/configs/gensparse_defconfig
-...
-
-First one from the top:
-
-$ make O=build_tmp/ i386_defconfig
-$ $EDITOR drivers/net/ethernet/intel/Kconfig
-$ git diff
-diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
-index 3facb55b7161..b9fdf2a835b0 100644
---- a/drivers/net/ethernet/intel/Kconfig
-+++ b/drivers/net/ethernet/intel/Kconfig
-@@ -5,7 +5,6 @@
- 
- config NET_VENDOR_INTEL
-        bool "Intel devices"
--       default y
-        help
-          If you have a network (Ethernet) card belonging to this class, say Y.
- 
-$ make O=build_tmp/ i386_defconfig
-$ diff -urpb build_tmp/.config.old build_tmp/.config
---- build_tmp/.config.old	2022-02-01 20:55:37.087373905 -0800
-+++ build_tmp/.config	2022-02-01 20:56:32.126044628 -0800
-@@ -1784,22 +1784,7 @@ CONFIG_NET_VENDOR_GOOGLE=y
- # CONFIG_GVE is not set
- CONFIG_NET_VENDOR_HUAWEI=y
- # CONFIG_HINIC is not set
--CONFIG_NET_VENDOR_I825XX=y
--CONFIG_NET_VENDOR_INTEL=y
--CONFIG_E100=y
--CONFIG_E1000=y
--CONFIG_E1000E=y
--CONFIG_E1000E_HWTS=y
--# CONFIG_IGB is not set
--# CONFIG_IGBVF is not set
--# CONFIG_IXGB is not set
--# CONFIG_IXGBE is not set
--# CONFIG_IXGBEVF is not set
--# CONFIG_I40E is not set
--# CONFIG_I40EVF is not set
--# CONFIG_ICE is not set
--# CONFIG_FM10K is not set
--# CONFIG_IGC is not set
-+# CONFIG_NET_VENDOR_INTEL is not set
- CONFIG_NET_VENDOR_MICROSOFT=y
- # CONFIG_JME is not set
- CONFIG_NET_VENDOR_LITEX=y
