@@ -2,85 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3D294A7249
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 14:54:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28D804A7280
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 15:01:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344660AbiBBNya (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 08:54:30 -0500
-Received: from mail-yb1-f179.google.com ([209.85.219.179]:46676 "EHLO
-        mail-yb1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344688AbiBBNyW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 08:54:22 -0500
-Received: by mail-yb1-f179.google.com with SMTP id p5so61129876ybd.13;
-        Wed, 02 Feb 2022 05:54:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KF5lsBDVHuWJh2maqXVzoYWsWumISdu8x7CYgh0GO0Q=;
-        b=6Ni0Lc89It5hRO69mB8xAhYoK7z6qnU61195oBLF93ae2NvjVkG2amD4k7cdFwyFFg
-         4Ezd3Kh1hm7MWmmdAfckQpuOf067rNiLndGv+eclxdT1TsABTdtukmFVvBytZ8bGiOjU
-         mZlrb8499HMqtN3GLCNrLKhHYpYrmS6ReDZYKzU1+AX4OeNrneTYDJMR3jZ3n2z+yfsM
-         uYmIhMnnJbK93Q5IY9j1BaCcFYBLjRSZmP7yMj+NK3U9GHnxzrQ+V2gPD1Xd/pvulM95
-         cEEz37hxfLX301ZJPFNVFFMc/OtxW52ESMe9F/BFnqgK4QVfW1UwzLTL+64qt8FEgPuC
-         PeCA==
-X-Gm-Message-State: AOAM530Pi9iZOFGDoTe0qKsIA2bTA0wK0vh9WKJKZz6ME9cDbxr5hqCc
-        alzrIEcmYGU38uNnw+HTXMqIj/PKJ66Oqio3h14=
-X-Google-Smtp-Source: ABdhPJwWl3u2e+Brk6HodWZLquLvBayn7SaGfS0dXze63T7PPuhBAJCBWwxxLMTEXAdOZ8xcWSNxT9/rLQoMWzEnnR0=
-X-Received: by 2002:a05:6902:1507:: with SMTP id q7mr44563918ybu.343.1643810062027;
- Wed, 02 Feb 2022 05:54:22 -0800 (PST)
+        id S1344676AbiBBOBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 09:01:51 -0500
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:35303 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344673AbiBBOBu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 09:01:50 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V3Rtt6E_1643810506;
+Received: from 192.168.0.104(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V3Rtt6E_1643810506)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 02 Feb 2022 22:01:47 +0800
+Message-ID: <6e91332f-6d40-1e72-ea90-319a49c759ac@linux.alibaba.com>
+Date:   Wed, 2 Feb 2022 22:01:46 +0800
 MIME-Version: 1.0
-References: <11918902.O9o76ZdvQC@kreacher> <20220201201418.67ae9005@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220201201418.67ae9005@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 2 Feb 2022 14:54:11 +0100
-Message-ID: <CAJZ5v0jQ3u-sbF8F1kSDOFbPoG24yOBSADWvwp0Tgmysm8CuFA@mail.gmail.com>
-Subject: Re: [PATCH v2] drivers: net: Replace acpi_bus_get_device()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        netdev <netdev@vger.kernel.org>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [PATCH v2 net-next 2/3] net/smc: Limits backlog connections
+To:     Tony Lu <tonylu@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org, matthieu.baerts@tessares.net
+References: <cover.1643380219.git.alibuda@linux.alibaba.com>
+ <e22553bd881bcc3b455bad9d77b392ca3ced5c6e.1643380219.git.alibuda@linux.alibaba.com>
+ <YfTEfWBSCsxK0zyF@TonyMac-Alibaba>
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+In-Reply-To: <YfTEfWBSCsxK0zyF@TonyMac-Alibaba>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 2, 2022 at 5:20 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 01 Feb 2022 20:58:36 +0100 Rafael J. Wysocki wrote:
-> > -     struct bgx *bgx = context;
-> > +     struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
-> >       struct device *dev = &bgx->pdev->dev;
-> > -     struct acpi_device *adev;
-> > +     struct bgx *bgx = context;
->
-> Compiler says you can't move bgx before dev.
+The overhead will certainly exist, but compared with the benefits, I 
+think it should be acceptable. If you do care, maybe we can add a switch 
+to control it.
 
-Right, I've obviously missed that.
 
-> Venturing deeper into the bikesheeding territory but I'd leave the
-> variable declarations be and move init of adev before the check.
-> Matter of preference but calling something that needs to be error
-> checked in variable init breaks the usual
->
->         ret = func(some, arguments);
->         if (ret)
->                 goto explosions;
->
-> flow.
+> I am wondering if there would introduce more overhead, compared with
+> original implement?
+> 
+>> +
+>> +drop:
+>> +	dst_release(dst);
+>> +	tcp_listendrop(sk);
+>> +	return NULL;
+>> +}
+>> +
+>>   static struct smc_hashinfo smc_v4_hashinfo = {
+>>   	.lock = __RW_LOCK_UNLOCKED(smc_v4_hashinfo.lock),
+>>   };
+>> @@ -1491,6 +1519,9 @@ static void smc_listen_out(struct smc_sock *new_smc)
+>>   	struct smc_sock *lsmc = new_smc->listen_smc;
+>>   	struct sock *newsmcsk = &new_smc->sk;
+>>   
+>> +	if (tcp_sk(new_smc->clcsock->sk)->syn_smc)
+>> +		atomic_dec(&lsmc->smc_pendings);
+>> +
+>>   	if (lsmc->sk.sk_state == SMC_LISTEN) {
+>>   		lock_sock_nested(&lsmc->sk, SINGLE_DEPTH_NESTING);
+>>   		smc_accept_enqueue(&lsmc->sk, newsmcsk);
+>> @@ -2096,6 +2127,9 @@ static void smc_tcp_listen_work(struct work_struct *work)
+>>   		if (!new_smc)
+>>   			continue;
+>>   
+>> +		if (tcp_sk(new_smc->clcsock->sk)->syn_smc)
+>> +			atomic_inc(&lsmc->smc_pendings);
+>> +
+>>   		new_smc->listen_smc = lsmc;
+>>   		new_smc->use_fallback = lsmc->use_fallback;
+>>   		new_smc->fallback_rsn = lsmc->fallback_rsn;
+>> @@ -2163,6 +2197,15 @@ static int smc_listen(struct socket *sock, int backlog)
+>>   	smc->clcsock->sk->sk_data_ready = smc_clcsock_data_ready;
+>>   	smc->clcsock->sk->sk_user_data =
+>>   		(void *)((uintptr_t)smc | SK_USER_DATA_NOCOPY);
+>> +
+>> +	/* save origin ops */
+>> +	smc->ori_af_ops = inet_csk(smc->clcsock->sk)->icsk_af_ops;
+>> +
+>> +	smc->af_ops = *smc->ori_af_ops;
+>> +	smc->af_ops.syn_recv_sock = smc_tcp_syn_recv_sock;
+>> +
+>> +	inet_csk(smc->clcsock->sk)->icsk_af_ops = &smc->af_ops;
+> 
 
-It doesn't for me, but let me send a v3.
 
-Thanks!
+Only save syn_recv_sock? Maybe this comment is confusing，
+  ‘Copy the origin ops’ is better, the origin ops is pointer to a const 
+structure, we must copy it all, and repointer it to our structure. so 
+the copy/save is necessary.
 
-> > -     if (acpi_bus_get_device(handle, &adev))
-> > +     if (!adev)
-> >               goto out;
+Thanks.
+
+> Consider to save syn_recv_sock this field only? There seems no need to
+> save this ops all.
+> 
+> Thank you,
+> Tony Lu
