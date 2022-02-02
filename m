@@ -2,285 +2,351 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BEF64A7BCB
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 00:38:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 545EC4A7C36
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 01:03:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235830AbiBBXhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 18:37:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56349 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243354AbiBBXhG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 18:37:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643845025;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8Myt2UuUCiXyRDsU5d06lDAE5LKcz4J1lOiDKKvfEUQ=;
-        b=SVys9bvZy6mUKN0/63EoX79BbbBzh0eukCb/0uQxuD9d1mPDzG9ptn1ybAH29qU9jdvYzt
-        7L8yIIE0qOZnaEFAsVVvIRJAkUCW9Uv5T6dbrLsiT32QQItqTjXy9QtJyGI4h5mibvG8o5
-        Tsqhu3KzXKeQN8JFbSgWyjJLXhgj4m4=
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
- [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-492-m9oFMDKdNHmbBYLf40ZrSw-1; Wed, 02 Feb 2022 18:37:05 -0500
-X-MC-Unique: m9oFMDKdNHmbBYLf40ZrSw-1
-Received: by mail-oo1-f69.google.com with SMTP id bb33-20020a056820162100b0031619149c44so516276oob.5
-        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 15:37:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8Myt2UuUCiXyRDsU5d06lDAE5LKcz4J1lOiDKKvfEUQ=;
-        b=bpA6rlX8AVAn7FfyXLSV1IQ0xMJOR0Hti7Ep4PO3DjfiARHQIJNyzxPtqNGd9e11cQ
-         EmjuER7Jr66soiqjgbwkGfEJakuyqK7031Tq1hCZFHNDCaPVMEQzLnhCLFhwYtPG3KHj
-         5iEn7q67l6BIXvPZlK3p9lM+Mnv3cQkafaWqnA/VKUsSV4yA3L2XJa3jVvaIzaUpADs7
-         Sn0ppDk0N+Ta3UzOCwkPUHGPJWhgJKf8RfDu0OV8ro14FdMtpUV65FX4TQTXTYqUYte3
-         ue34X9cdNDsOTBZUlecav/L54AyhBoTvZFjOhDeeb2hccyPjPtlMBDyCBtRu6KI8Wm5z
-         NdlA==
-X-Gm-Message-State: AOAM533XQ1pAmfO+m5MLJH8o05OUf8Rr1BJtc6/fL0MPIPaQRGhn8Dgv
-        f8l+VJylXLciR2DdeMoofONeXfhlZqWJtIyLt3Kg4q2KVxgC5CALwbDy35j3YxWqO91z1teFHhD
-        l/FRgSgKYqDiC+S8L
-X-Received: by 2002:a05:6808:1414:: with SMTP id w20mr6042631oiv.7.1643845019315;
-        Wed, 02 Feb 2022 15:36:59 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxQv4HvvB0UNAIDsNvwJn4kAWviB8Gtiws57m3WKKCECSGGUjz8ATPDGn91pJCdxqCkUIUk+g==
-X-Received: by 2002:a05:6808:1414:: with SMTP id w20mr6042609oiv.7.1643845019004;
-        Wed, 02 Feb 2022 15:36:59 -0800 (PST)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id d65sm13247013otb.17.2022.02.02.15.36.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 15:36:58 -0800 (PST)
-Date:   Wed, 2 Feb 2022 16:36:56 -0700
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com
-Subject: Re: [PATCH V6 mlx5-next 08/15] vfio: Define device migration
- protocol v2
-Message-ID: <20220202163656.4c0cc386.alex.williamson@redhat.com>
-In-Reply-To: <20220202002459.GP1786498@nvidia.com>
-References: <20220130160826.32449-1-yishaih@nvidia.com>
-        <20220130160826.32449-9-yishaih@nvidia.com>
-        <20220131164318.3da9eae5.alex.williamson@redhat.com>
-        <20220201003124.GZ1786498@nvidia.com>
-        <20220201100408.4a68df09.alex.williamson@redhat.com>
-        <20220201183620.GL1786498@nvidia.com>
-        <20220201144916.14f75ca5.alex.williamson@redhat.com>
-        <20220202002459.GP1786498@nvidia.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        id S233771AbiBCADM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 19:03:12 -0500
+Received: from sonic311-31.consmr.mail.ne1.yahoo.com ([66.163.188.212]:44987
+        "EHLO sonic311-31.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232944AbiBCADL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 19:03:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1643846591; bh=dO+uGR09uRVBZct0wGFemFXV8/PJpFqP6Hvb4gSqVwk=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=ewUB4WR6U2hAQ3eQV1Dg57fFcrUDKZz2Dbn9umPSEjJMZAjfElZtjJHVDMstX64830aEuqoFRu6pQEOdXd6s1p8dJDrOkQFOofPoxYnvJIP66N+sTq2GAMzL7JcbKqVogPYk+apUIKT8vWAhddWRodYLYhuLfH/Ggs80StU3EkLiTJ/YefF3Z0ygMKbjCfQdRPKpq4zQ9uZjRWBEAyIs9twtGRXOuzC2Nw9Kc+Sc96Y9xV0bzSCxHmQ3kE1Kze3gD3Ax2/aCCvARHQjA7002r+XX0AM5+RodeZOPPY0XYPuhIGuQl+TLSv29M3XdkyF62aTgPP967zcRz0M9IWhn3Q==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1643846591; bh=341sz0TDnhbFtGoWwVXxgmrFzqB3h9qyOVml8UhOKrK=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=BRsagEzWq7o+v2Fj8BGH+XvnD1Va4zVnWMvjRhPy82uIeFSeJVFclePVR/WDSm8UB/Mu7qMQTjLCYLj4ScgOUVx64P+VnHycIG+I/eM9wyEe0BOuufTxSqBRsF0RVfBgx5KofeXsp3GEsBdwl+qNcftGXaUE5oVdUhPAdtbILn4HvcCPIKw8XyS653CSMWzXO68BjyZCoKgZTbWW1+leXZS1BrzHebbKe4s3NtGlWjrufT973ITpsnakOXTmBnR3GOjX4BXFnVq8L2M8NBBP2mvmBt4OCXHqKHScGtR+QeyjQcZ5mblzgE59qFrtst/VkCOY6cqZ4ZtN0tJTYSlLKg==
+X-YMail-OSG: oc4bBWQVM1k8AFO.4xZNrYXv.G9N8Rrn3zDmmafnBnTTsvBGAMPBAs1KIF49gXx
+ VanoH3e3ZX4nUfmLG6D5Go8gy14vogcebw9C_NdHKZrvogBbXyrwoxSwBFiPkzC2N2SGBo8XzeHy
+ J6fT__EdS9MLk4JE0F5zy8.QyBOqtbunY0JRTZbIe9QthQwoVeVXlhCgg.GfMNw5qPEl8XYasab0
+ uN3gwrq8q_gTg.ShmYQwZq6EvfvPA8X6I3ETFs4ny2hWgBEcP.ot2ZfGAr7DBbmQlnjH1oujRHzQ
+ eJnd_.2QyP5C54Czobygx78tQn438lVvnuBtUBkGWZ3RO8kCxm2JpH.oVWCozOGhEclFzmQLqC8x
+ mVRNCzlbURgqGgF0xcqMhIxRSTLhljVGDqHNMKjl9AgOZbGlZT2B5YqyFwUB4a1uoVrOQmZdsKyb
+ _YUXITvZuklY_1WsikPZFOGAfDK_..El8Og9EXcfS1SZmAE2kW.ysP_Lnjor6ONoNoRYHxgR7qLV
+ 65_AxfcOxMaWKaUksfu_2U4PTDN3L.pGScYTsZ5Nb6So0gXWvokMyYcNcGM_pjy76GZaJSQd1IYK
+ djQ8YAN6.dC0xfwT47QHtdaRf7UaltP4sMTVrDlW0Sy7MWHyvF3Hk4fIVEn3feUXqhrXrMEqOLKl
+ z5Kh4UmwLSlZYJMzaxJxfcpAG1cncZb.FY9DqVb.F10X7aZGkxw2jRjC11BHE3VD9YA8YxnxKb_0
+ s6dMdTGxlKy2b1_tOFPbaNP7HqqDE7hYwc.kpnYZrQdKrqqbdK_jUfRcrz6g.4oFDlxI3LDFJUMc
+ D3YnEITDas4_Rg8utGtX4GuEqkz1M3zZvP590rE19vZCPmTcT.sitpVq.9w5ezAvdhdoZWzE41zr
+ n58wg61QYin7IQyJ1X9j9YPe91SabXrHCdDPzY43p2MBGQxdwcKjN3pTWQopNupinYd8EvSTVbbP
+ 80WuYgyN0W7bhfIttiHTTvemjs5Wg0xSkZKDG_jkzqkKsR3Vv5ai.bl9fAs59CCjiUfH.66eQXvc
+ HZSf6bXPuSifI8pnk_MWiBMu86LGGJtJaW7ThzDQykQ5_yXVKE0iAnKUQvDYsV_jX6WukTr6H.xi
+ SNLjd9gqfkPfI5.rQ1BNUIDwjMen4FZUeAdzZAycm1DIBByRSzo_GNuchD2S6IZxXBK7dn73ZSn5
+ 9sV1FlVDQCQpB3wdqEjts7K2QyB3g_RNPJD4Kcsu_E7l5z_Yn4JbtamDYuGDaCL4BM1NwFOkzXYl
+ NGfWRyAkMNRLpZxKSGAWqafj8UIukd9s9g3TmzUEAF.GPPToVGDby.ooyHr1rOvLVkIw9FbCMjBG
+ f304uR2ykXow.znw27IV8HgN_Jr2LeUhYbpCXWpmPrwguHTMRZPjdp.aBDfP0SFVpWAB8IAomMrE
+ zrOYBLjBvuAZdiIqauLtud1O73eUtXNhOEj8cMZZq5Na1GqpM8UY_QX8ciXM84TTSTI_4h05UxxC
+ MaakJkStOLkO4eRswOnJyu8vzZuBtew4VeGY2tmrZrjnOJloij0R0Ew._CJz.7uEyFwUg1RVwsZr
+ J1cssYvortx9kcU20vcWiyZ9f_.piLNZoI5S7TloRyEs_9fccM3OPFW4NYu2AkeEvHQKMUF2_RXO
+ JXNBUBb1JnwIpTfDZYpmOJQS9PLkfszhVSZySm.ETr_Ffa1qsL_cqlf90CxJIYGiK_CR.v6nXhKw
+ q121ULilAvDhX9OUAQzcDbtu9JmrJfaAVIx8CzVYIcq0sH8wlI0WGbnT8iWDhWukUClQHjZFeuKX
+ ApvQhjRjWAsDSbMBjwHm9OongVkb0r6bBEppD9drl2vsE03Yq9_Z4dH5RWa5R1L.Nnl9LINHKTnM
+ qCypwmh7dS9epBqwAxNLVZkLg4N30u0u02iRWHLzrF1ZnVW7TZAs.iytlKXp4H7Wud.aU5LuShO3
+ LRVVtWdIJNnvR9Ra7fkYnr0UCgauszRhW7ks2VPP1re3ijsYEDknEEuzIFfHq9kQ6wgyDljt3fr_
+ ZB6gNDReOfbu6PQlvWCnlQjviojUvOlV0snjo_lw8lcgPT4v6KFcHjTpfimKaUGpX00LtXTLtNUr
+ uLKLLuIKa4Iyfp8xuc.krj4S.fWHyUnJAT1K0XbTHzA6JhghHZMeMvEUAZ4vRBLAOKWpwcWfGaMg
+ 4ee7n0LY0EXD.q6EV5Z2yWHPGKDghFgOCJQ4JYg704DTnl2KVMsiPvjrqnMBvhlY79njkof0ub4Y
+ bqsrzeN0Zwhozua2DZc7TkkGTjokGyNs4n1bE_cGDK7ZABxRTrW.mJioMSLPJgfdsKwcdAFrfng-
+ -
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic311.consmr.mail.ne1.yahoo.com with HTTP; Thu, 3 Feb 2022 00:03:11 +0000
+Received: by kubenode518.mail-prod1.omega.gq1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 92c78fe2d759d98c8b61fd921c126114;
+          Thu, 03 Feb 2022 00:03:06 +0000 (UTC)
+From:   Casey Schaufler <casey@schaufler-ca.com>
+To:     casey.schaufler@intel.com, jmorris@namei.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
+        keescook@chromium.org, john.johansen@canonical.com,
+        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
+        sds@tycho.nsa.gov, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: [PATCH v32 08/28] LSM: Use lsmblob in security_secctx_to_secid
+Date:   Wed,  2 Feb 2022 15:53:03 -0800
+Message-Id: <20220202235323.23929-9-casey@schaufler-ca.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220202235323.23929-1-casey@schaufler-ca.com>
+References: <20220202235323.23929-1-casey@schaufler-ca.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Feb 2022 20:24:59 -0400
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+Change the security_secctx_to_secid interface to use a lsmblob
+structure in place of the single u32 secid in support of
+module stacking. Change its callers to do the same.
 
-> On Tue, Feb 01, 2022 at 02:49:16PM -0700, Alex Williamson wrote:
-> > On Tue, 1 Feb 2022 14:36:20 -0400
-> > Jason Gunthorpe <jgg@nvidia.com> wrote:
-> >   
-> > > On Tue, Feb 01, 2022 at 10:04:08AM -0700, Alex Williamson wrote:
-> > >   
-> > > > Ok, let me parrot back to see if I understand.  -ENOTTY will be
-> > > > returned if the ioctl doesn't exist, in which case device_state is
-> > > > untouched and cannot be trusted.  At the same time, we expect the user
-> > > > to use the feature ioctl to make sure the ioctl exists, so it would
-> > > > seem that we've reclaimed that errno if we believe the user should
-> > > > follow the protocol.    
-> > > 
-> > > I don't follow - the documentation says what the code does, if you get
-> > > ENOTTY returned then you don't get the device_state too. Saying the
-> > > user shouldn't have called it in the first place is completely
-> > > correct, but doesn't change the device_state output.  
-> > 
-> > The documentation says "...the device state output is not reliable", and
-> > I have to question whether this qualifies as a well specified,
-> > interoperable spec with such language.  We're essentially asking users
-> > to keep track that certain errnos result in certain fields of the
-> > structure _maybe_ being invalid.  
-> 
-> So you are asking to remove "is not reliable" and just phrase is as:
-> 
-> "device_state is updated to the current value when -1 is returned,
-> except when these XXX errnos are returned?
-> 
-> (actually userspace can tell directly without checking the errno - as
-> if -1 is returned the device_state cannot be the requested target
-> state anyhow)
+The security module hook is unchanged, still passing back a secid.
+The infrastructure passes the correct entry from the lsmblob.
 
-If we decide to keep the existing code, then yes the spec should
-indicate the device_state is invalid, not just unreliable for those
-errnos, but I'm also of the opinion that returning an error condition
-AND providing valid data in the return structure for all but a few
-errnos and expecting userspace to get this correct is not a good API.
+Acked-by: Paul Moore <paul@paul-moore.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+Cc: netdev@vger.kernel.org
+Cc: netfilter-devel@vger.kernel.org
+To: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ include/linux/security.h          | 26 ++++++++++++++++++--
+ kernel/cred.c                     |  4 +---
+ net/netfilter/nft_meta.c          | 10 ++++----
+ net/netfilter/xt_SECMARK.c        |  7 +++++-
+ net/netlabel/netlabel_unlabeled.c | 23 +++++++++++-------
+ security/security.c               | 40 ++++++++++++++++++++++++++-----
+ 6 files changed, 85 insertions(+), 25 deletions(-)
+
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 4a256d302d97..085565914515 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -198,6 +198,27 @@ static inline bool lsmblob_equal(struct lsmblob *bloba, struct lsmblob *blobb)
+ extern int lsm_name_to_slot(char *name);
+ extern const char *lsm_slot_to_name(int slot);
  
-> > Now you're making me wonder how much I care to invest in semantic
-> > arguments over extended errnos :-\  
-> 
-> Well, I know I don't :) We don't have consistency in the kernel and
-> userspace is hard pressed to make any sense of it most of the time,
-> IMHO. It just doesn't practically matter..
-> 
-> > > We don't know the device_state in the core code because it can only be
-> > > read under locking that is controlled by the driver. I hope when we
-> > > get another driver merged that we can hoist the locking, but right now
-> > > I'm not really sure - it is a complicated lock.  
-> > 
-> > The device cannot self transition to a new state, so if the core were
-> > to serialize this ioctl then the device_state provided by the driver is
-> > valid, regardless of its internal locking.  
-> 
-> It is allowed to transition to RUNNING due to reset events it captures
-> and since we capture the reset through the PCI hook, not from VFIO,
-> the core code doesn't synchronize well. See patch 14
-
-Looking... your .reset_done() function sets a deferred_reset flag and
-attempts to grab the state_mutex.  If there's contention on that mutex,
-exit since the lock holder will perform the state transition when
-dropping that mutex, otherwise reset_done will itself drop the mutex to
-do that state change.  The reset_lock assures that we cannot race as the
-state_mutex is being released.
-
-So the scenario is that the user MUST be performing a reset coincident
-to accessing the device_state and the solution is that the user's
-SET_STATE returns success and a new device state that's already bogus
-due to the reset.  Why wouldn't the solution here be to return -EAGAIN
-to the user or reattempt the SET_STATE since the user is clearly now
-disconnected from the actual device_state?
-
-> > Whether this ioctl should be serialized anyway is probably another good
-> > topic to breach.  Should a user be able to have concurrent ioctls
-> > setting conflicting states?  
-> 
-> The driver is required to serialize, the core code doesn't touch any
-> global state and doesn't need serializing.
-> 
-> > I'd suggest that ioctl return structure is only valid at all on
-> > success and we add a GET interface to return the current device  
-> 
-> We can do this too, but it is a bunch of code to achieve this and I
-> don't have any use case to read back the device_state beyond debugging
-> and debugging is fine with this. IMHO
-
-A bunch of code?  If we use a FEATURE ioctl, it just extends the
-existing implementation to add GET support.  That looks rather trivial.
-That seems like a selling point for using the FEATURE ioctl TBH.
++/**
++ * lsmblob_value - find the first non-zero value in an lsmblob structure.
++ * @blob: Pointer to the data
++ *
++ * This needs to be used with extreme caution, as the cases where
++ * it is appropriate are rare.
++ *
++ * Return the first secid value set in the lsmblob.
++ * There should only be one.
++ */
++static inline u32 lsmblob_value(const struct lsmblob *blob)
++{
++	int i;
++
++	for (i = 0; i < LSMBLOB_ENTRIES; i++)
++		if (blob->secid[i])
++			return blob->secid[i];
++
++	return 0;
++}
++
+ /* These functions are in security/commoncap.c */
+ extern int cap_capable(const struct cred *cred, struct user_namespace *ns,
+ 		       int cap, unsigned int opts);
+@@ -528,7 +549,8 @@ int security_setprocattr(const char *lsm, const char *name, void *value,
+ int security_netlink_send(struct sock *sk, struct sk_buff *skb);
+ int security_ismaclabel(const char *name);
+ int security_secid_to_secctx(u32 secid, char **secdata, u32 *seclen);
+-int security_secctx_to_secid(const char *secdata, u32 seclen, u32 *secid);
++int security_secctx_to_secid(const char *secdata, u32 seclen,
++			     struct lsmblob *blob);
+ void security_release_secctx(char *secdata, u32 seclen);
+ void security_inode_invalidate_secctx(struct inode *inode);
+ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -1383,7 +1405,7 @@ static inline int security_secid_to_secctx(u32 secid, char **secdata, u32 *secle
  
-> > It's entirely possible that I'm overly averse to ioctl proliferation,
-> > but for every new ioctl we need to take a critical look at the proposed
-> > API, use case, applicability, and extensibility.    
-> 
-> This is all basicly the same no matter where it is put, the feature
-> multiplexer is just an ioctl in some semi-standard format, but the
-> vfio pattern of argsz/flags is also a standard format that is
-> basically the same thing.
-> 
-> We still need to think about extensibility, alignment, etc..
-> 
-> The problem I usually see with ioctls is not proliferation, but ending
-> up with too many choices and a big ?? when it comes to adding
-> something new.
-> 
-> Clear rules where things should go and why is the best, it matters
-> less what the rules actually are IMHO.
-> 
-> > > I don't want to touch capabilities, but we can try to use feature for
-> > > set state. Please confirm this is what you want.  
-> > 
-> > It's a team sport, but to me it seems like it fits well both in my
-> > mental model of interacting with a device feature, without
-> > significantly altering the uAPI you're defining anyway.  
-> 
-> Well, my advice is that ioctls are fine, and a bit easier all around.
-> eg strace and syzkaller are a bit easier if everything neatly maps
-> into one struct per ioctl - their generator tools are optimized for
-> this common case.
-> 
-> Simple multiplexors are next-best-fine, but there should be a clear
-> idea when to use the multiplexer, or not.
-> 
-> Things like the cap chains enter a whole world of adventure for
-> strace/syzkaller :)
-
-vfio's argsz/flags is not only a standard framework, but it's one that
-promotes extensions.  We were able to add capability chains with
-backwards compatibility because of this design.  IMO, that's avoided
-ioctl sprawl; we've been able to maintain a fairly small set of core
-ioctls rather than add add a new ioctl every time we want to describe
-some new property of a device or region or IOMMU.  I think that
-improves the usability of the uAPI.  I certainly wouldn't want to
-program to a uAPI with a million ioctls.  A counter argument is that
-we're making the interface more complex, but at the same time we're
-adding shared infrastructure for dealing with that complexity.
-
-Of course we do continue to add new ioctls as necessary, including this
-FEATURE ioctl, and I recognize that with such a generic multiplexer we
-run the risk of over using it, ie. everything looks like a nail.  You
-initially did not see the fit for setting device state as interacting
-with a device feature, but it doesn't seem like you had a strong
-objection to my explanation of it in that context.
-
-So I think if the FEATURE ioctl has an ongoing place in our uAPI (using
-it to expose migration flags would seem to be a point in that
-direction) and it doesn't require too many contortions to think of the
-operation we're trying to perform on the device as interacting with a
-device FEATURE, and there are no functional or performance implications
-of it, I would think we should use it.  To do otherwise would suggest
-that we should consider the FEATURE ioctl a failed experiment and not
-continue to expand its use.
-
-I'd be interested to hear more input on this from the community.
+ static inline int security_secctx_to_secid(const char *secdata,
+ 					   u32 seclen,
+-					   u32 *secid)
++					   struct lsmblob *blob)
+ {
+ 	return -EOPNOTSUPP;
+ }
+diff --git a/kernel/cred.c b/kernel/cred.c
+index e5e41bd4efc3..a112ea708b6e 100644
+--- a/kernel/cred.c
++++ b/kernel/cred.c
+@@ -796,14 +796,12 @@ EXPORT_SYMBOL(set_security_override);
+ int set_security_override_from_ctx(struct cred *new, const char *secctx)
+ {
+ 	struct lsmblob blob;
+-	u32 secid;
+ 	int ret;
  
-> > > You'll want the same for the PRE_COPY related information too?  
-> > 
-> > I hadn't gotten there yet.  It seems like a discontinuity to me that
-> > we're handing out new FDs for data transfer sessions, but then we
-> > require the user to come back to the device to query about the data its
-> > reading through that other FD.    
-> 
-> An earlier draft of this put it on the data FD, but v6 made it fully
-> optional with no functional impact on the data FD. The values decrease
-> as the data FD progresses and increases as the VM dirties data - ie it
-> is 50/50 data_fd/device behavior.
-> 
-> It doesn't matter which way, but it feels quite weird to have the main
-> state function is a FEATURE and the precopy query is an ioctl.
-
-If the main state function were a FEATURE ioctl on the device and the
-data transfer query was an ioctl on the FD returned from that feature
-ioctl, I don't see how that's weird at all.  Different FDs, different
-interfaces.
-
-To me, the device has provided a separate FD for data transfer, so the
-fact that we consume the data via that FD, but monitor our progress in
-consuming that data back on the device FD is a bit strange.
+-	ret = security_secctx_to_secid(secctx, strlen(secctx), &secid);
++	ret = security_secctx_to_secid(secctx, strlen(secctx), &blob);
+ 	if (ret < 0)
+ 		return ret;
  
-> > Should that be an ioctl on the data stream FD itself?    
-> 
-> I can be. Implementation wise it is about a wash.
-> 
-> > Is there a use case for also having it on the STOP_COPY FD?  
-> 
-> I didn't think of one worthwhile enough to mandate implementing it in
-> every driver.
-
-Can the user perform an lseek(2) on the migration FD?  Maybe that would
-be the difference between what we need for PRE_COPY vs STOP_COPY.  In
-the latter case the data should be a fixes size and perhaps we don't
-need another interface to know how much data to expect.
-
-One use case would be that we want to be able to detect whether we can
-meet service guarantees as quickly as possible with the minimum
-resource consumption and downtime.  If we can determine from the device
-that we can't possibly transfer its state in the required time, we can
-abort immediately without waiting for a downtime exception or flooding
-the migration link.  Thanks,
-
-Alex
+-	lsmblob_init(&blob, secid);
+ 	return set_security_override(new, &blob);
+ }
+ EXPORT_SYMBOL(set_security_override_from_ctx);
+diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
+index 5ab4df56c945..6763188169a3 100644
+--- a/net/netfilter/nft_meta.c
++++ b/net/netfilter/nft_meta.c
+@@ -861,21 +861,21 @@ static const struct nla_policy nft_secmark_policy[NFTA_SECMARK_MAX + 1] = {
+ 
+ static int nft_secmark_compute_secid(struct nft_secmark *priv)
+ {
+-	u32 tmp_secid = 0;
++	struct lsmblob blob;
+ 	int err;
+ 
+-	err = security_secctx_to_secid(priv->ctx, strlen(priv->ctx), &tmp_secid);
++	err = security_secctx_to_secid(priv->ctx, strlen(priv->ctx), &blob);
+ 	if (err)
+ 		return err;
+ 
+-	if (!tmp_secid)
++	if (!lsmblob_is_set(&blob))
+ 		return -ENOENT;
+ 
+-	err = security_secmark_relabel_packet(tmp_secid);
++	err = security_secmark_relabel_packet(lsmblob_value(&blob));
+ 	if (err)
+ 		return err;
+ 
+-	priv->secid = tmp_secid;
++	priv->secid = lsmblob_value(&blob);
+ 	return 0;
+ }
+ 
+diff --git a/net/netfilter/xt_SECMARK.c b/net/netfilter/xt_SECMARK.c
+index 498a0bf6f044..87ca3a537d1c 100644
+--- a/net/netfilter/xt_SECMARK.c
++++ b/net/netfilter/xt_SECMARK.c
+@@ -42,13 +42,14 @@ secmark_tg(struct sk_buff *skb, const struct xt_secmark_target_info_v1 *info)
+ 
+ static int checkentry_lsm(struct xt_secmark_target_info_v1 *info)
+ {
++	struct lsmblob blob;
+ 	int err;
+ 
+ 	info->secctx[SECMARK_SECCTX_MAX - 1] = '\0';
+ 	info->secid = 0;
+ 
+ 	err = security_secctx_to_secid(info->secctx, strlen(info->secctx),
+-				       &info->secid);
++				       &blob);
+ 	if (err) {
+ 		if (err == -EINVAL)
+ 			pr_info_ratelimited("invalid security context \'%s\'\n",
+@@ -56,6 +57,10 @@ static int checkentry_lsm(struct xt_secmark_target_info_v1 *info)
+ 		return err;
+ 	}
+ 
++	/* xt_secmark_target_info can't be changed to use lsmblobs because
++	 * it is exposed as an API. Use lsmblob_value() to get the one
++	 * value that got set by security_secctx_to_secid(). */
++	info->secid = lsmblob_value(&blob);
+ 	if (!info->secid) {
+ 		pr_info_ratelimited("unable to map security context \'%s\'\n",
+ 				    info->secctx);
+diff --git a/net/netlabel/netlabel_unlabeled.c b/net/netlabel/netlabel_unlabeled.c
+index 8490e46359ae..f3e2cde76919 100644
+--- a/net/netlabel/netlabel_unlabeled.c
++++ b/net/netlabel/netlabel_unlabeled.c
+@@ -880,7 +880,7 @@ static int netlbl_unlabel_staticadd(struct sk_buff *skb,
+ 	void *addr;
+ 	void *mask;
+ 	u32 addr_len;
+-	u32 secid;
++	struct lsmblob blob;
+ 	struct netlbl_audit audit_info;
+ 
+ 	/* Don't allow users to add both IPv4 and IPv6 addresses for a
+@@ -904,13 +904,18 @@ static int netlbl_unlabel_staticadd(struct sk_buff *skb,
+ 	ret_val = security_secctx_to_secid(
+ 		                  nla_data(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+ 				  nla_len(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+-				  &secid);
++				  &blob);
+ 	if (ret_val != 0)
+ 		return ret_val;
+ 
++	/* netlbl_unlhsh_add will be changed to pass a struct lsmblob *
++	 * instead of a u32 later in this patch set. security_secctx_to_secid()
++	 * will only be setting one entry in the lsmblob struct, so it is
++	 * safe to use lsmblob_value() to get that one value. */
++
+ 	return netlbl_unlhsh_add(&init_net,
+-				 dev_name, addr, mask, addr_len, secid,
+-				 &audit_info);
++				 dev_name, addr, mask, addr_len,
++				 lsmblob_value(&blob), &audit_info);
+ }
+ 
+ /**
+@@ -931,7 +936,7 @@ static int netlbl_unlabel_staticadddef(struct sk_buff *skb,
+ 	void *addr;
+ 	void *mask;
+ 	u32 addr_len;
+-	u32 secid;
++	struct lsmblob blob;
+ 	struct netlbl_audit audit_info;
+ 
+ 	/* Don't allow users to add both IPv4 and IPv6 addresses for a
+@@ -953,13 +958,15 @@ static int netlbl_unlabel_staticadddef(struct sk_buff *skb,
+ 	ret_val = security_secctx_to_secid(
+ 		                  nla_data(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+ 				  nla_len(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+-				  &secid);
++				  &blob);
+ 	if (ret_val != 0)
+ 		return ret_val;
+ 
++	/* security_secctx_to_secid() will only put one secid into the lsmblob
++	 * so it's safe to use lsmblob_value() to get the secid. */
+ 	return netlbl_unlhsh_add(&init_net,
+-				 NULL, addr, mask, addr_len, secid,
+-				 &audit_info);
++				 NULL, addr, mask, addr_len,
++				 lsmblob_value(&blob), &audit_info);
+ }
+ 
+ /**
+diff --git a/security/security.c b/security/security.c
+index 2178235529eb..0fc75d355e9d 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -2198,10 +2198,22 @@ int security_secid_to_secctx(u32 secid, char **secdata, u32 *seclen)
+ }
+ EXPORT_SYMBOL(security_secid_to_secctx);
+ 
+-int security_secctx_to_secid(const char *secdata, u32 seclen, u32 *secid)
++int security_secctx_to_secid(const char *secdata, u32 seclen,
++			     struct lsmblob *blob)
+ {
+-	*secid = 0;
+-	return call_int_hook(secctx_to_secid, 0, secdata, seclen, secid);
++	struct security_hook_list *hp;
++	int rc;
++
++	lsmblob_init(blob, 0);
++	hlist_for_each_entry(hp, &security_hook_heads.secctx_to_secid, list) {
++		if (WARN_ON(hp->lsmid->slot < 0 || hp->lsmid->slot >= lsm_slot))
++			continue;
++		rc = hp->hook.secctx_to_secid(secdata, seclen,
++					      &blob->secid[hp->lsmid->slot]);
++		if (rc != 0)
++			return rc;
++	}
++	return 0;
+ }
+ EXPORT_SYMBOL(security_secctx_to_secid);
+ 
+@@ -2352,10 +2364,26 @@ int security_socket_getpeersec_stream(struct socket *sock, char __user *optval,
+ 				optval, optlen, len);
+ }
+ 
+-int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid)
++int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb,
++				     u32 *secid)
+ {
+-	return call_int_hook(socket_getpeersec_dgram, -ENOPROTOOPT, sock,
+-			     skb, secid);
++	struct security_hook_list *hp;
++	int rc = -ENOPROTOOPT;
++
++	/*
++	 * Only one security module should provide a real hook for
++	 * this. A stub or bypass like is used in BPF should either
++	 * (somehow) leave rc unaltered or return -ENOPROTOOPT.
++	 */
++	hlist_for_each_entry(hp, &security_hook_heads.socket_getpeersec_dgram,
++			     list) {
++		if (WARN_ON(hp->lsmid->slot < 0 || hp->lsmid->slot >= lsm_slot))
++			continue;
++		rc = hp->hook.socket_getpeersec_dgram(sock, skb, secid);
++		if (rc != -ENOPROTOOPT)
++			break;
++	}
++	return rc;
+ }
+ EXPORT_SYMBOL(security_socket_getpeersec_dgram);
+ 
+-- 
+2.31.1
 
