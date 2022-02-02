@@ -2,1567 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 844104A7795
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 19:14:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9FBA4A779E
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 19:15:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346527AbiBBSNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 13:13:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37634 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346509AbiBBSNY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 13:13:24 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB259C061714;
-        Wed,  2 Feb 2022 10:13:23 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id v15-20020a17090a4ecf00b001b82db48754so277833pjl.2;
-        Wed, 02 Feb 2022 10:13:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0min62bmkYiJiUZe5KU4IGortwSsfxT3ANNymoCIgQ0=;
-        b=gt/KQihcESICCR5atxBdghDNqIA154wvAN+dcbEnu54LFQPTLMBR26DY0IsQk6ZPhB
-         M/FUx5YOpkj9nD57/+B+gF/+29GjXfXPitjrcOJYkhbdA8JTiXugXZNKWZKjFC02839/
-         zm3QheCXq7+nSqokxkjWZixu1jAK0o65vSk3O1qT1u+26gUbvkYVZ/etcw+LIxfC9tyN
-         22o4282iQO16TMisnF4aIqtGXlPuzAo0GpXntsf2KeZMYF5tslYZjWw59pwlETcqfKTw
-         4TxwITLcvKVfd/xtMHCC8VYc8GJ1oEwzQAIZORCiP3GMjEwK3O6+YAAZfHeyIYbAbQIM
-         XC9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0min62bmkYiJiUZe5KU4IGortwSsfxT3ANNymoCIgQ0=;
-        b=zh2ewvPQJMkb94p9e+Asxwoh19hvfP6Xz2odkxZssptu5zHfhIhomdpg50Zdz0nRld
-         vNwWDAl5ifFJn4JL5SoLxsR7WC0LmdvCGXc5LMqhr7xyqLYvg35y2LhllbkqTovBg5Uc
-         VNiVPy8JbdO/TrrMdF//k7PRlu6oNhVWXW51XvmqNWENdIR3gMBVY17B4XYBFGB+2ygL
-         FqNn1L35oCQOtrV0EG3BUWX/sCsDaU/6/+G2b7gfPO9jXl7TPQk0uo7/XTIlfbWFWMG7
-         P5IUEisCsYR0kPgW8yAtEP3Za7YDUbvyUhRkKt6snboxqFAPOmxZXCOj+kvfnTqgJ6Qw
-         /WsA==
-X-Gm-Message-State: AOAM533YNj/dB6SRVyvmMFxrbM9Ctt0LIW2PVdGdQUYaczBo+oSoTDKD
-        8pBp4IUkVo0lmHKle7UaLI4=
-X-Google-Smtp-Source: ABdhPJwFU9fgL+bGekD6rRUwhJjNKckOw1E5+hXMeD434cyxgoD9bKDyv6XIteU9V6SLDio5/pI03w==
-X-Received: by 2002:a17:902:70ca:: with SMTP id l10mr28191443plt.174.1643825603127;
-        Wed, 02 Feb 2022 10:13:23 -0800 (PST)
-Received: from localhost.localdomain (101-137-118-25.mobile.dynamic.aptg.com.tw. [101.137.118.25])
-        by smtp.gmail.com with ESMTPSA id 22sm9803716pgf.11.2022.02.02.10.13.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 10:13:22 -0800 (PST)
-From:   Joseph CHAMG <josright123@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Joseph CHANG <josright123@gmail.com>,
-        joseph_chang@davicom.com.tw
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com,
-        andrew@lunn.ch, leon@kernel.org
-Subject: [PATCH v17, 2/2] net: Add dm9051 driver
-Date:   Thu,  3 Feb 2022 02:12:48 +0800
-Message-Id: <20220202181248.18344-3-josright123@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220202181248.18344-1-josright123@gmail.com>
-References: <20220202181248.18344-1-josright123@gmail.com>
+        id S234397AbiBBSPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 13:15:04 -0500
+Received: from mx0a-002e3701.pphosted.com ([148.163.147.86]:35858 "EHLO
+        mx0a-002e3701.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229707AbiBBSPD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 13:15:03 -0500
+Received: from pps.filterd (m0148663.ppops.net [127.0.0.1])
+        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 212H41Ym031505;
+        Wed, 2 Feb 2022 18:15:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=pps0720;
+ bh=CLRgkx6tS0unhcfLsbT1wYeVWshYsD96dXD1lD1cYAc=;
+ b=SfTYP2fLgNYKqOJ5FiJQRepC1edmD9UCONAfv3zuNq+N9kotArdNhlCgksCfW32iIimJ
+ 6twGfg0I9y4h2nJ+EStNuNlwS/eIcHMsKqBTWvUcHnOBf7dY3cb7oYPjCeSz8Ogs08eo
+ h8dpYnX9d3fpuo6g7cfWnLQ9EMNSbLA5mrw4sQ9yDq5aZta6aH4ATlz2FTwt/nAQW8a4
+ iF/oz7ZjEkazfpILdoOM715d5nTWm9VbuXK14+zmXBWbu21ytCNfqvgiH80UW/bYJ4MN
+ HzvCQLeJt15kA4jNlw3Qw29CfFYqYgWSXhSpVo4koz/GLex9D1MqIkf6KjwRO6rPQUpo eg== 
+Received: from g2t2353.austin.hpe.com (g2t2353.austin.hpe.com [15.233.44.26])
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3dyx1brn1p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 02 Feb 2022 18:15:03 +0000
+Received: from G9W8454.americas.hpqcorp.net (exchangepmrr1.us.hpecorp.net [16.216.161.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by g2t2353.austin.hpe.com (Postfix) with ESMTPS id 21DDD8F;
+        Wed,  2 Feb 2022 18:14:59 +0000 (UTC)
+Received: from G4W9121.americas.hpqcorp.net (2002:10d2:1510::10d2:1510) by
+ G9W8454.americas.hpqcorp.net (2002:10d8:a104::10d8:a104) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.23; Wed, 2 Feb 2022 18:15:00 +0000
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (15.241.52.10) by
+ G4W9121.americas.hpqcorp.net (16.210.21.16) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.23 via Frontend Transport; Wed, 2 Feb 2022 18:14:59 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZjwYKVQWJeKQS+8pIW7yu+ubl2orwH+ZVm/kcQQC3u0PzsWDvVNPE9hdhAky5FFQOgSZJntbh1BK5/7dhnh9bJBoeXYkyEs9l8LjrPMxSqqeJgGBguzRgaSqb55ERxoBeAKThP0RBfUbGqnA7AvKgdqpwB2T1TVO3cbAw33MFwPM6brGXYIzEcPbHbsk+2WIK0oSUEVxxSDM2EUrjOLZ0o4Xa08gAef7IoVYlGenVajctPH7W/koKNvQmG9nVYGPZWCyuzX4ccseNsmzi5ziyUWK8e/4walLMP3JHyZlU/6j2EAob3snxB5sPDqDGXv05T/FOm2aLZ7H0alcBB5/nA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CLRgkx6tS0unhcfLsbT1wYeVWshYsD96dXD1lD1cYAc=;
+ b=OrwTfcJ5jQuEMRYjN4Nonb/zgKcP0g0OGA3TALTlO9sreFL2auD7Olk686Ghp2rq+2bOOy6hzGIq6svk0cE4oSO07ayFLwNq/Uy6j7L6g9qNskG0b9WGGCooJgBiC6Z+YK9wyTIewPI+5HRbQRgtR0j4Sn8lXsXvzaVC43ySKogkvYoYiMOp6rzdUyMdfoa2kFGlTEARE+I8BfiaaDARLgzdWB3r0uVdtfpprjGFzyjDUXxnaUPSehv0pSbCUuZlzPdYZ6KTwZJRtXsRnKDE1efet+1UwsnKqlmsfccZvPxyhkejI2tpUAsJOevZqIfJBvtD1sNXsifnbiEH0rvebQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from DM4PR84MB1976.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:8:4f::17) by
+ PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:510:154::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4951.12; Wed, 2 Feb 2022 18:14:57 +0000
+Received: from DM4PR84MB1976.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::b84a:b07:81c9:881f]) by DM4PR84MB1976.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::b84a:b07:81c9:881f%4]) with mapi id 15.20.4951.012; Wed, 2 Feb 2022
+ 18:14:57 +0000
+From:   "Verdun, Jean-Marie" <verdun@hpe.com>
+To:     "minyard@acm.org" <minyard@acm.org>,
+        "Hawkins, Nick" <nick.hawkins@hpe.com>
+CC:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        "Vignesh Raghavendra" <vigneshr@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Lee Jones" <lee.jones@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        "soc@kernel.org" <soc@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        "Stanislav Jakubek" <stano.jakubek@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Hao Fang <fanghao11@huawei.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        "Ard Biesheuvel" <ardb@kernel.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Wang Kefeng <wangkefeng.wang@huawei.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "openipmi-developer@lists.sourceforge.net" 
+        <openipmi-developer@lists.sourceforge.net>,
+        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] HPE BMC GXP SUPPORT
+Thread-Topic: [PATCH] HPE BMC GXP SUPPORT
+Thread-Index: AQHYGFWhalWR7e0Ubkq65+wBTOCNhayAi8SA//9/BAA=
+Date:   Wed, 2 Feb 2022 18:14:57 +0000
+Message-ID: <3E9905F2-1576-4826-ADC2-85796DE0F4DB@hpe.com>
+References: <nick.hawkins@hpe.com>
+ <20220202165315.18282-1-nick.hawkins@hpe.com>
+ <20220202175635.GC2091156@minyard.net>
+In-Reply-To: <20220202175635.GC2091156@minyard.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a5affd52-18e3-4b94-5c28-08d9e677eb95
+x-ms-traffictypediagnostic: PH7PR84MB1838:EE_
+x-microsoft-antispam-prvs: <PH7PR84MB1838205F69B7A48EE5684AB0D6279@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: aI9tVZr34Qmti54EcvjZnv7p2LPOu+76Mb9H5IQEyCkYvushiiiqn/bIrPAT9ZhnvDJ6Vta3HuldZGnz3EBN75I0/zQahfkjY8dDyf4BU9WM1xnn/Sz/QDky4OuOjcY5ekUzU4QJmMI3Y2+HVXA11QDz6ylYF0q+pqFXixujQbC6RVI6TgN8W86zw3J7G7XGGV/H6g0q34DLf3n1H4DO+a0yoBrqz7jkwAr4+a57oIzeDa6cHR3/OGggzSsvZ50txYrhSSFOPUg1Dv8gh8jspn11/QMpLY38tYxHRbcigWPXFChQuMylfFTdQeamEg81719NublUGQFa8k2krmcrclZJdyit8DI2yMThWBhvoBIK2wu8z/RsLwJtNSsZAyGUFuOP27kmTWYptn5pp6+TyJm22HT5GxKE7NjI0j4p6AFwi/SWdI7F24L8W9j8B3xteOgx1ySLK9GTsotq0K8XXeLgrrfis0R30yeYcsnryQpQBryM67jz+TwNPRcziff248zQcXqSJMPUQdyXvQHZOjVqAmW+BlEwJyXN7ouEZcr1626rw7h1B/HCM0urzQcl+CK9GJPD4OT7543jpDRYkrwuN913+KjoWzUo/J4BDFBAzMcG03Z52upf1XYXeNmDt8shGvjecM/SVbZOfPGcth+Dg7Dx+y0mxRP4V6jPG/ia1cno9mEK9NbaCljuceH9ng56GKF2wquQa5NryVTcMUHmG1KnpSOzpu+HhSTo0i4AW7skUgaNTI3dsggmpS7Z
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR84MB1976.NAMPRD84.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(366004)(122000001)(2906002)(316002)(7416002)(508600001)(33656002)(6512007)(71200400001)(7366002)(7406005)(5660300002)(110136005)(6506007)(6636002)(54906003)(6486002)(36756003)(4326008)(38100700002)(86362001)(2616005)(38070700005)(64756008)(66946007)(76116006)(83380400001)(91956017)(82960400001)(66446008)(66476007)(186003)(8936002)(8676002)(66556008)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?aUFsRnVhMXFEZnZIOWZaYXpGMmUzZ3VvRGFZZDRHRGR2eXI5K1czR1QzMDNW?=
+ =?utf-8?B?amVldWIrWE9xLzZBSWZWVWtydStBY3B1cXU3WmdiV3hPS0ljalorcWhhSWYv?=
+ =?utf-8?B?ZkJ5OE1VNVFPZFI0UklGN29CQUVIVnQxQmlHWGgraWN1cEZ3WmJJRCs0M2Vp?=
+ =?utf-8?B?Z05tV3hodWNpRlloU2I2RmIvUldwRk4zbTRabUpyeGRRRCtzUU9rbnVkdERs?=
+ =?utf-8?B?bi83UTVJWjBJd1lPUDJvRmE5MW5FN1hKdnV4ZFVlZzVpZ2lDYW54UjBabWpl?=
+ =?utf-8?B?dkorQnNFd1RPOWVVSVZiaUx6TVNiTElORitBZ1BqVk9Za2hCeFU0UjIzSzl4?=
+ =?utf-8?B?OFRiZ3dSdnozU0xFWlBMQ3RhTThCUXBNMGl3dmhMSlBSTFd1S3JyNEVqU3FP?=
+ =?utf-8?B?UFVVcmlrZmpFbm9idldhclQ1V3dJTmJpNEduVkpIQU42QnZUcFk5M0tBSlJv?=
+ =?utf-8?B?NWpXRnRzSUtNNEswTlpHaisxWFoweDgvRWpTdUZZSFlhWWhMc2ltY1BwYjkx?=
+ =?utf-8?B?Ynk1cURLRVNpckMwaG9CYlRGYlFoclpWRzBFM09kWXkyTG5Ndk1BcFMyV3hi?=
+ =?utf-8?B?L3VTM2dJMjVhNVg5bHR1R1N3a1JsVW5WSytTMHNkcGNMWHpMSXZLMUpRYS9y?=
+ =?utf-8?B?Y2pEd3YyRXJVNHB5cDN2UEhuTjUxdG1IaVVGTldYUUZ0dFJVQ1NISEkrVlFt?=
+ =?utf-8?B?UlpnS3ZnZUR1OUxnM24rZ2s4K2h5MmFsSFRwd3cyUUI2NkQyUm5iMlNIekZ3?=
+ =?utf-8?B?MTEzWXRFeWNGUmllQW1ZZC9ZTWMydmlEM2JEbWZYU21TTHBJc2RDREo1eGdI?=
+ =?utf-8?B?bExGNHV2RUw1NG5xekQwaXB0S1Q1L3NPMGJtdGl5SmR1b0hocmdpSHJKVmJG?=
+ =?utf-8?B?VlMyYWNoaGQrUXlZRXVsczhoV2FJZlBJcGR0KzZaOFhvbU50eENpNWNkU2wy?=
+ =?utf-8?B?MC9HWHpvY3pYSGdtcVQxN2hMNWNMdkx5cVBWa2hudDhSM0p6ckxZcURUNzFS?=
+ =?utf-8?B?bk1NbjQvb0xHUkVldlNJcnlCRUFORlVKZll3dFlrMThEMlh1ZXlmczNTR2tU?=
+ =?utf-8?B?ZytId2ZGMFBpVy9xK0tURExwSDEzdUxGNjNCZDNBNWpRaGlYbmRLT1J1aVpJ?=
+ =?utf-8?B?ekNvc1NYV2tvQ0hrTWZDdnZhYWxkTU9jVUVEbGF0Mi8yM1cwUXNEa1MyaXJR?=
+ =?utf-8?B?b1F2ZTB3bDVLTjBmdGVvMXNVNm9tUHNWRHVLQ3VKOWtuSmZFangvL3h6cjRr?=
+ =?utf-8?B?K2xqaE8yeDFyeXRUR3ZtaUJ3aE41ZDAreWRURXFnVFJZdHhSMFlHZDFKd2R0?=
+ =?utf-8?B?c01lT3JrOCtObXcyWkFnY0x4UkdlWVR6SzV6Q0xQR2R0YnFlakQ4VWh4eW5Y?=
+ =?utf-8?B?VCtCNWpFOTU2bGF6Rml6U3cyT1FxdjRBWjFwbUFHUHQwNkh4UGlNdW9HdnF1?=
+ =?utf-8?B?Z3VDL1NOcGpSWGpmaXl5UzYxclFpZGFWZnZPVEVmTkxSTE84NU05a3NKdjJy?=
+ =?utf-8?B?K2Q5VGZOVFdtRDlNWC9xb2paMklVZnUrOFEzcGhWL0xHQ3h4OFZ1YVlHakNP?=
+ =?utf-8?B?QXhZb2VJYkNnR2tKKzhpQjAzQ1dZeVlsUlpDcHMvUTZZN3RRbDkwNUpCNVIz?=
+ =?utf-8?B?bWRHVmdPY01VWXRvNzhKNFd3VXRFT21kaUFPQlU2eHNVREhhZXNrMms0OXN1?=
+ =?utf-8?B?WEtnd0UvQTNxOVdmeCtuK3JlVm1mclFWbnpkVlhDeFkrKy9sa2tiVzM4dmhr?=
+ =?utf-8?B?OGh3dGlxVXNQN0FhK3JaMjA0Vk1CL3dHRWdsa2hYNlc4MUxjTDl3R1RrVUJw?=
+ =?utf-8?B?ZC9Zd0V1aTVhS3JuN1ZmQldudWI3YzRNVmZRY2l3a2dRakhGdU9pK00vVjBv?=
+ =?utf-8?B?TDhjOXNiUTdDcGRKUlhBMVBkeTdGODZsZE1pcEIwSEJGUkMrVElxYzIxLzFF?=
+ =?utf-8?B?WDJVa2k4WURtdE1tcU9iN0xoVGUwYlN2VmtyaHFIYzVXdDdHSXU5dUVYbTIw?=
+ =?utf-8?B?R1BtQklaUTYvMHVsYWtPYTNGajRTb1Q0Y05WcXA4ZCs5UVZJSGxKSTdwN2dv?=
+ =?utf-8?B?YkpQTVlwUU5xRXFSSnUzNE15RWUxb2paWmRvWmkyQUZNdTI3R1pHcXRmOUlr?=
+ =?utf-8?B?REUyMXV5cFRYY1R1dWx2K0tkZU9zYk9oNCt5ZFZLQVRKaUJPbytBMEVlc0ty?=
+ =?utf-8?Q?6ZGR6snc05Kznf3b1ZtAy58=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DBC89AE5DFE8BB49813143761EEE77DE@NAMPRD84.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR84MB1976.NAMPRD84.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: a5affd52-18e3-4b94-5c28-08d9e677eb95
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Feb 2022 18:14:57.6941
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 105b2061-b669-4b31-92ac-24d304d195dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cxZJ6aTk3DlhkIheggfv7I6wWLJiCv5ZU2htq1tM4EKT3nZr2I7tIJc2kWKNMeSu
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR84MB1838
+X-OriginatorOrg: hpe.com
+X-Proofpoint-GUID: SofmSrxeNRPBGJnhLISvX2XpqUK4ZXCY
+X-Proofpoint-ORIG-GUID: SofmSrxeNRPBGJnhLISvX2XpqUK4ZXCY
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-02_08,2022-02-01_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
+ malwarescore=0 clxscore=1011 mlxscore=0 spamscore=0 adultscore=0
+ priorityscore=1501 phishscore=0 lowpriorityscore=0 mlxlogscore=999
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202020102
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add davicom dm9051 spi ethernet driver, The driver work for the
-device platform which has the spi master
-
-Signed-off-by: Joseph CHAMG <josright123@gmail.com>
----
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Leon Romanovsky <leon@kernel.org>
-Cc: andy Shevchenko <andy.shevchenko@gmail.com>
-
-v1-v4
-
-Test ok with raspberry pi 2 and pi 4
-
-v5
-
-swapped to phylib for phy connection tasks
-
-v6
-
-remove the redundant code that phylib has support
-
-v7
-
-read/write registers must return error code to the caller
-
-v8
-
-not parmanently set MAC by .ndo_set_mac_address
-
-v9
-
-improve the registers read/write so that error code
-return as far as possible up the call stack.
-
-v10
-
-use regmap APIs for SPI and MDIO
-
-v11
-
-use regmap_read_poll_timeout
-use corresponding regmap APIs, i.e. SPI, MDIO
-
-v12
-
-use mdiobus API instead of regmap MDIO APIs
-
-v13
-
-Simply all regmap APIs return value checked
-Clear the fifo reset report
-Eliminate redundant comments
-
-Comment that DM9051_GPR register bit 0 function for power-up
-the internal phy, if this bit is updated from 1 to 0, then the
-whole dm9051 chip registers could not be accessed within 1 ms,
-so that has mdelay(1) to wait 1 ms
-
-v14
-
-To eliminate touching PHY registers, instead take advantage of phy_start
-to have it
-Make neat to be readable exactly
-
-v15
-
-Process the mac address function to be exactly right
-Re-arrange functions for better style
-Handle to auto negotiation to be right procedure
-
-v16
-
-Let netif_wake_queue at the bottom of dm9051_open
-Add draining tx queue in dm9051_stop
-
-v17
-
-Chnage from kthread_work to work_struct 
-
- drivers/net/ethernet/davicom/Kconfig  |   31 +
- drivers/net/ethernet/davicom/Makefile |    1 +
- drivers/net/ethernet/davicom/dm9051.c | 1181 +++++++++++++++++++++++++
- drivers/net/ethernet/davicom/dm9051.h |  159 ++++
- 4 files changed, 1372 insertions(+)
- create mode 100644 drivers/net/ethernet/davicom/dm9051.c
- create mode 100644 drivers/net/ethernet/davicom/dm9051.h
-
-diff --git a/drivers/net/ethernet/davicom/Kconfig b/drivers/net/ethernet/davicom/Kconfig
-index 7af86b6d4150..02e0caff98e3 100644
---- a/drivers/net/ethernet/davicom/Kconfig
-+++ b/drivers/net/ethernet/davicom/Kconfig
-@@ -3,6 +3,19 @@
- # Davicom device configuration
- #
- 
-+config NET_VENDOR_DAVICOM
-+	bool "Davicom devices"
-+	default y
-+	help
-+	  If you have a network (Ethernet) card belonging to this class, say Y.
-+
-+	  Note that the answer to this question doesn't directly affect the
-+	  kernel: saying N will just cause the configurator to skip all
-+	  the questions about Davicom devices. If you say Y, you will be asked
-+	  for your specific card in the following selections.
-+
-+if NET_VENDOR_DAVICOM
-+
- config DM9000
- 	tristate "DM9000 support"
- 	depends on ARM || MIPS || COLDFIRE || NIOS2 || COMPILE_TEST
-@@ -22,3 +35,21 @@ config DM9000_FORCE_SIMPLE_PHY_POLL
- 	  bit to determine if the link is up or down instead of the more
- 	  costly MII PHY reads. Note, this will not work if the chip is
- 	  operating with an external PHY.
-+
-+config DM9051
-+	tristate "DM9051 SPI support"
-+	depends on SPI
-+	select CRC32
-+	select MDIO
-+	select PHYLIB
-+	select REGMAP_SPI
-+	help
-+	  Support for DM9051 SPI chipset.
-+
-+	  To compile this driver as a module, choose M here.  The module
-+	  will be called dm9051.
-+
-+	  The SPI mode for the host's SPI master to access DM9051 is mode
-+	  0 on the SPI bus.
-+
-+endif # NET_VENDOR_DAVICOM
-diff --git a/drivers/net/ethernet/davicom/Makefile b/drivers/net/ethernet/davicom/Makefile
-index 173c87d21076..225f85bc1f53 100644
---- a/drivers/net/ethernet/davicom/Makefile
-+++ b/drivers/net/ethernet/davicom/Makefile
-@@ -4,3 +4,4 @@
- #
- 
- obj-$(CONFIG_DM9000) += dm9000.o
-+obj-$(CONFIG_DM9051) += dm9051.o
-diff --git a/drivers/net/ethernet/davicom/dm9051.c b/drivers/net/ethernet/davicom/dm9051.c
-new file mode 100644
-index 000000000000..a62fa6cc8aa0
---- /dev/null
-+++ b/drivers/net/ethernet/davicom/dm9051.c
-@@ -0,0 +1,1181 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (c) 2022 Davicom Semiconductor,Inc.
-+ * Davicom DM9051 SPI Fast Ethernet Linux driver
-+ */
-+
-+#include <linux/etherdevice.h>
-+#include <linux/ethtool.h>
-+#include <linux/interrupt.h>
-+#include <linux/iopoll.h>
-+#include <linux/mii.h>
-+#include <linux/module.h>
-+#include <linux/netdevice.h>
-+#include <linux/phy.h>
-+#include <linux/regmap.h>
-+#include <linux/skbuff.h>
-+#include <linux/spinlock.h>
-+#include <linux/spi/spi.h>
-+#include <linux/types.h>
-+
-+#include "dm9051.h"
-+
-+#define DRVNAME_9051	"dm9051"
-+
-+/**
-+ * struct rx_ctl_mach - rx activities record
-+ * @status_err_counter: rx status error counter
-+ * @large_err_counter: rx get large packet length error counter
-+ * @fifo_rst_counter: reset operation counter
-+ *
-+ * To keep track for the driver operation statistics
-+ */
-+struct rx_ctl_mach {
-+	u16				status_err_counter;
-+	u16				large_err_counter;
-+	u16				fifo_rst_counter;
-+};
-+
-+/**
-+ * struct dm9051_rxctrl - dm9051 driver rx control
-+ * @hash_table: Multicast hash-table data
-+ * @rcr_all: KS_RXCR1 register setting
-+ *
-+ * The settings needs to control the receive filtering
-+ * such as the multicast hash-filter and the receive register settings
-+ */
-+struct dm9051_rxctrl {
-+	u16	hash_table[4];
-+	u8	rcr_all;
-+};
-+
-+/**
-+ * struct dm9051_rxhdr - rx packet data header
-+ * @headbyte: lead byte is 0x01 tell a valid packet
-+ * @status: status bits for the received packet
-+ * @rxlen: packet length
-+ *
-+ * The Rx packed, entered into the FIFO memory, start with these
-+ * four bytes which is the Rx header, followed by the ethernet
-+ * packet data and ends with an appended 4-byte CRC data.
-+ * Both Rx packet and CRC data are for check purpose and finally
-+ * are dropped by this driver
-+ */
-+struct dm9051_rxhdr {
-+	u8				headbyte;
-+	u8				status;
-+	__le16				rxlen;
-+};
-+
-+/**
-+ * struct board_info - maintain the saved data
-+ * @spidev: spi device structure
-+ * @ndev: net device structure
-+ * @mdiobus: mii bus structure
-+ * @phydev: phy device structure
-+ * @txq: tx queue structure
-+ * @regmap_dm: regmap for register read/write
-+ * @regmap_dmbulk: extra regmap for bulk read/write
-+ * @rxctrl_work: Work queue for updating RX mode and multicast lists
-+ * @tx_work: Work queue for tx packets
-+ * @pause: ethtool pause parameter structure
-+ * @spi_lockm: between threads lock structure
-+ * @reg_mutex: regmap access lock structure
-+ * @bc: rx control statistics structure
-+ * @rxhdr: rx header structure
-+ * @rctl: rx control setting structure
-+ * @msg_enable: message level value
-+ * @imr_all: to store operating imr value for register DM9051_IMR
-+ * @lcr_all: to store operating rcr value for register DM9051_LMCR
-+ *
-+ * The saved data variables, keep up to date for retrieval back to use
-+ */
-+struct board_info {
-+	u32				msg_enable;
-+	struct spi_device		*spidev;
-+	struct net_device		*ndev;
-+	struct mii_bus			*mdiobus;
-+	struct phy_device		*phydev;
-+	struct sk_buff_head		txq;
-+	struct regmap			*regmap_dm;
-+	struct regmap			*regmap_dmbulk;
-+	struct work_struct		rxctrl_work;
-+	struct work_struct		tx_work;
-+	struct ethtool_pauseparam	pause;
-+	struct mutex			spi_lockm;
-+	struct mutex			reg_mutex;
-+	struct rx_ctl_mach		bc;
-+	struct dm9051_rxhdr		rxhdr;
-+	struct dm9051_rxctrl		rctl;
-+	u8				imr_all;
-+	u8				lcr_all;
-+};
-+
-+/* waiting tx-end rather than tx-req
-+ * got faster
-+ */
-+static int dm9051_map_xmitpoll(struct board_info *db)
-+{
-+	unsigned int mval;
-+	int ret;
-+
-+	ret = regmap_read_poll_timeout(db->regmap_dm, DM9051_NSR, mval,
-+				       mval & (NSR_TX2END | NSR_TX1END), 1, 20);
-+	if (ret)
-+		netdev_err(db->ndev, "timeout in checking for tx ends\n");
-+	return ret;
-+}
-+
-+static int dm9051_map_ee_phypoll(struct board_info *db)
-+{
-+	unsigned int mval;
-+	int ret;
-+
-+	ret = regmap_read_poll_timeout(db->regmap_dm, DM9051_EPCR, mval,
-+				       !(mval & EPCR_ERRE), 100, 10000);
-+	if (ret)
-+		netdev_err(db->ndev, "eeprom/phy in processing get timeout\n");
-+	return ret;
-+}
-+
-+static int dm9051_map_eeread(struct board_info *db, int offset, u8 *to)
-+{
-+	int ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPAR, offset);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPCR, EPCR_ERPRR);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_map_ee_phypoll(db);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPCR, 0x0);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_bulk_read(db->regmap_dmbulk, DM9051_EPDRL, to, 2);
-+}
-+
-+static int dm9051_map_eewrite(struct board_info *db, int offset, u8 *data)
-+{
-+	int ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPAR, offset);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_bulk_write(db->regmap_dmbulk, DM9051_EPDRL, data, 2);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPCR, EPCR_WEP | EPCR_ERPRW);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_map_ee_phypoll(db);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(db->regmap_dm, DM9051_EPCR, 0);
-+}
-+
-+static int ctrl_dm9051_phyread(void *context, unsigned int reg, unsigned int *val)
-+{
-+	struct board_info *db = context;
-+	int ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPAR, DM9051_PHY | reg);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPCR, EPCR_ERPRR | EPCR_EPOS);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_map_ee_phypoll(db);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPCR, 0x0);
-+	if (ret)
-+		return ret;
-+
-+	/* this is a 4 bytes data, clear to zero since following regmap_bulk_read
-+	 * only fill lower 2 bytes
-+	 */
-+	*val = 0;
-+	return regmap_bulk_read(db->regmap_dmbulk, DM9051_EPDRL, val, 2);
-+}
-+
-+static int ctrl_dm9051_phywrite(void *context, unsigned int reg, unsigned int val)
-+{
-+	struct board_info *db = context;
-+	int ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPAR, DM9051_PHY | reg);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_bulk_write(db->regmap_dmbulk, DM9051_EPDRL, &val, 2);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPCR, EPCR_EPOS | EPCR_ERPRW);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_map_ee_phypoll(db);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(db->regmap_dm, DM9051_EPCR, 0x0);
-+}
-+
-+static int dm9051_mdiobus_read(struct mii_bus *bus, int addr, int regnum)
-+{
-+	struct board_info *db = bus->priv;
-+	unsigned int val = 0xffff;
-+	int ret;
-+
-+	if (addr == DM9051_PHY_ADDR) {
-+		ret = ctrl_dm9051_phyread(db, regnum, &val);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return val;
-+}
-+
-+static int dm9051_mdiobus_write(struct mii_bus *bus, int addr, int regnum, u16 val)
-+{
-+	struct board_info *db = bus->priv;
-+
-+	if (addr == DM9051_PHY_ADDR)
-+		return ctrl_dm9051_phywrite(db, regnum, val);
-+
-+	return -ENODEV;
-+}
-+
-+static int dm9051_update_fcr(struct board_info *db)
-+{
-+	u8 fcr = 0;
-+	int ret;
-+
-+	if (db->pause.rx_pause)
-+		fcr |= FCR_BKPM | FCR_FLCE;
-+	if (db->pause.tx_pause)
-+		fcr |= FCR_TXPEN;
-+
-+	ret = regmap_update_bits(db->regmap_dm, DM9051_FCR, 0xff, fcr);
-+	if (ret)
-+		netif_err(db, drv, db->ndev, "%s: error %d update bits reg %02x\n",
-+			  __func__, ret, DM9051_FCR);
-+	return ret;
-+}
-+
-+static int dm9051_set_fcr(struct board_info *db)
-+{
-+	u8 fcr = 0;
-+	int ret;
-+
-+	if (db->pause.rx_pause)
-+		fcr |= FCR_BKPM | FCR_FLCE;
-+	if (db->pause.tx_pause)
-+		fcr |= FCR_TXPEN;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_FCR, fcr);
-+	if (ret)
-+		netif_err(db, drv, db->ndev, "%s: error %d write reg %02x\n",
-+			  __func__, ret, DM9051_FCR);
-+	return ret;
-+}
-+
-+static void dm9051_reg_lock_mutex(void *dbcontext)
-+{
-+	struct board_info *db = dbcontext;
-+
-+	mutex_lock(&db->reg_mutex);
-+}
-+
-+static void dm9051_reg_unlock_mutex(void *dbcontext)
-+{
-+	struct board_info *db = dbcontext;
-+
-+	mutex_unlock(&db->reg_mutex);
-+}
-+
-+static struct regmap_config regconfigdm = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = 0xff,
-+	.reg_stride = 1,
-+	.cache_type = REGCACHE_NONE,
-+	.read_flag_mask = 0,
-+	.write_flag_mask = DM_SPI_WR,
-+	.val_format_endian = REGMAP_ENDIAN_LITTLE,
-+	.lock = dm9051_reg_lock_mutex,
-+	.unlock = dm9051_reg_unlock_mutex,
-+};
-+
-+static struct regmap_config regconfigdmbulk = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = 0xff,
-+	.reg_stride = 1,
-+	.cache_type = REGCACHE_NONE,
-+	.read_flag_mask = 0,
-+	.write_flag_mask = DM_SPI_WR,
-+	.val_format_endian = REGMAP_ENDIAN_LITTLE,
-+	.lock = dm9051_reg_lock_mutex,
-+	.unlock = dm9051_reg_unlock_mutex,
-+	.use_single_read = true,
-+	.use_single_write = true,
-+};
-+
-+static int dm9051_map_init(struct spi_device *spi, struct board_info *db)
-+{
-+	/* create two regmap instances,
-+	 * split read/write and bulk_read/bulk_write to individual regmap
-+	 * to resolve regmap execution confliction problem
-+	 */
-+	regconfigdm.lock_arg = db;
-+	db->regmap_dm = devm_regmap_init_spi(db->spidev, &regconfigdm);
-+	if (IS_ERR(db->regmap_dm))
-+		return PTR_ERR(db->regmap_dm);
-+
-+	regconfigdmbulk.lock_arg = db;
-+	db->regmap_dmbulk = devm_regmap_init_spi(db->spidev, &regconfigdmbulk);
-+	if (IS_ERR(db->regmap_dmbulk))
-+		return PTR_ERR(db->regmap_dmbulk);
-+
-+	return 0;
-+}
-+
-+static int dm9051_map_chipid(struct board_info *db)
-+{
-+	struct device *dev = &db->spidev->dev;
-+	unsigned int ret;
-+	unsigned short wid;
-+	u8 buff[6];
-+
-+	ret = regmap_bulk_read(db->regmap_dmbulk, DM9051_VIDL, buff, 6);
-+	if (ret < 0) {
-+		netif_err(db, drv, db->ndev, "%s: error %d bulk_read reg %02x\n",
-+			  __func__, ret, DM9051_VIDL);
-+		return ret;
-+	}
-+
-+	wid = buff[3] << 8 | buff[2];
-+	if (wid != DM9051_ID) {
-+		dev_err(dev, "chipid error as %04x !\n", wid);
-+		return -ENODEV;
-+	}
-+
-+	dev_info(dev, "chip %04x found\n", wid);
-+	return 0;
-+}
-+
-+/* Read DM9051_PAR registers which is the mac address loaded from EEPROM while power-on
-+ */
-+static int dm9051_map_etherdev_par(struct net_device *ndev, struct board_info *db)
-+{
-+	u8 addr[ETH_ALEN];
-+	int ret;
-+
-+	ret = regmap_bulk_read(db->regmap_dmbulk, DM9051_PAR, addr, ETH_ALEN);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (!is_valid_ether_addr(addr)) {
-+		eth_hw_addr_random(ndev);
-+
-+		ret = regmap_bulk_write(db->regmap_dmbulk, DM9051_PAR, ndev->dev_addr, ETH_ALEN);
-+		if (ret < 0)
-+			return ret;
-+
-+		dev_dbg(&db->spidev->dev, "Use random MAC address\n");
-+		return 0;
-+	}
-+
-+	eth_hw_addr_set(ndev, addr);
-+	return 0;
-+}
-+
-+static int dm9051_mdio_register(struct board_info *db)
-+{
-+	struct spi_device *spi = db->spidev;
-+	int ret;
-+
-+	db->mdiobus = devm_mdiobus_alloc(&spi->dev);
-+	if (!db->mdiobus)
-+		return -ENOMEM;
-+
-+	db->mdiobus->priv = db;
-+	db->mdiobus->read = dm9051_mdiobus_read;
-+	db->mdiobus->write = dm9051_mdiobus_write;
-+	db->mdiobus->name = "dm9051-mdiobus";
-+	db->mdiobus->phy_mask = (u32)~GENMASK(1, 1);
-+	db->mdiobus->parent = &spi->dev;
-+	snprintf(db->mdiobus->id, MII_BUS_ID_SIZE,
-+		 "dm9051-%s.%u", dev_name(&spi->dev), spi->chip_select);
-+
-+	ret = devm_mdiobus_register(&spi->dev, db->mdiobus);
-+	if (ret)
-+		dev_err(&spi->dev, "Could not register MDIO bus\n");
-+
-+	return 0;
-+}
-+
-+static void dm9051_handle_link_change(struct net_device *ndev)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+	int lcl_adv, rmt_adv;
-+
-+	phy_print_status(db->phydev);
-+
-+	/* only write pause settings to mac. since mac and phy are integrated
-+	 * together, such as link state, speed and duplex are sync already
-+	 */
-+	if (db->phydev->link) {
-+		if (db->pause.autoneg == AUTONEG_ENABLE) {
-+			lcl_adv = linkmode_adv_to_mii_adv_t(db->phydev->advertising);
-+			rmt_adv = linkmode_adv_to_mii_adv_t(db->phydev->lp_advertising);
-+
-+			if (lcl_adv & rmt_adv & ADVERTISE_PAUSE_CAP) {
-+				db->pause.rx_pause = true;
-+				db->pause.tx_pause = true;
-+			}
-+		}
-+
-+		dm9051_update_fcr(db);
-+	}
-+}
-+
-+/* phy connect as poll mode
-+ */
-+static int dm9051_phy_connect(struct board_info *db)
-+{
-+	char phy_id[MII_BUS_ID_SIZE + 3];
-+
-+	snprintf(phy_id, MII_BUS_ID_SIZE + 3, PHY_ID_FMT,
-+		 db->mdiobus->id, DM9051_PHY_ADDR);
-+
-+	db->phydev = phy_connect(db->ndev, phy_id, dm9051_handle_link_change,
-+				 PHY_INTERFACE_MODE_MII);
-+	if (IS_ERR(db->phydev))
-+		return PTR_ERR(db->phydev);
-+	return 0;
-+}
-+
-+/* ethtool-ops
-+ */
-+static void dm9051_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
-+{
-+	strscpy(info->driver, DRVNAME_9051, sizeof(info->driver));
-+}
-+
-+static void dm9051_set_msglevel(struct net_device *ndev, u32 value)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+
-+	db->msg_enable = value;
-+}
-+
-+static u32 dm9051_get_msglevel(struct net_device *ndev)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+
-+	return db->msg_enable;
-+}
-+
-+static int dm9051_get_eeprom_len(struct net_device *dev)
-+{
-+	return 128;
-+}
-+
-+static int dm9051_get_eeprom(struct net_device *ndev,
-+			     struct ethtool_eeprom *ee, u8 *data)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+	int offset = ee->offset;
-+	int len = ee->len;
-+	int i, ret;
-+
-+	if ((len | offset) & 1)
-+		return -EINVAL;
-+
-+	ee->magic = DM_EEPROM_MAGIC;
-+
-+	for (i = 0; i < len; i += 2) {
-+		ret = dm9051_map_eeread(db, (offset + i) / 2, data + i);
-+		if (ret)
-+			break;
-+	}
-+	return ret;
-+}
-+
-+static int dm9051_set_eeprom(struct net_device *ndev,
-+			     struct ethtool_eeprom *ee, u8 *data)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+	int offset = ee->offset;
-+	int len = ee->len;
-+	int i, ret;
-+
-+	if ((len | offset) & 1)
-+		return -EINVAL;
-+
-+	if (ee->magic != DM_EEPROM_MAGIC)
-+		return -EINVAL;
-+
-+	for (i = 0; i < len; i += 2) {
-+		ret = dm9051_map_eewrite(db, (offset + i) / 2, data + i);
-+		if (ret)
-+			break;
-+	}
-+	return ret;
-+}
-+
-+static void dm9051_get_pauseparam(struct net_device *ndev,
-+				  struct ethtool_pauseparam *pause)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+
-+	*pause = db->pause;
-+}
-+
-+static int dm9051_set_pauseparam(struct net_device *ndev,
-+				 struct ethtool_pauseparam *pause)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+
-+	db->pause = *pause;
-+
-+	if (pause->autoneg == AUTONEG_DISABLE) {
-+		db->phydev->autoneg = AUTONEG_DISABLE;
-+		return dm9051_update_fcr(db);
-+	}
-+
-+	db->phydev->autoneg = AUTONEG_ENABLE;
-+	phy_set_sym_pause(db->phydev, pause->rx_pause, pause->tx_pause,
-+			  pause->autoneg);
-+	phy_start_aneg(db->phydev);
-+	return 0;
-+}
-+
-+static const struct ethtool_ops dm9051_ethtool_ops = {
-+	.get_drvinfo = dm9051_get_drvinfo,
-+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
-+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
-+	.get_msglevel = dm9051_get_msglevel,
-+	.set_msglevel = dm9051_set_msglevel,
-+	.nway_reset = phy_ethtool_nway_reset,
-+	.get_link = ethtool_op_get_link,
-+	.get_eeprom_len = dm9051_get_eeprom_len,
-+	.get_eeprom = dm9051_get_eeprom,
-+	.set_eeprom = dm9051_set_eeprom,
-+	.get_pauseparam = dm9051_get_pauseparam,
-+	.set_pauseparam = dm9051_set_pauseparam,
-+};
-+
-+static int dm9051_direct_reset_code(struct board_info *db)
-+{
-+	int ret;
-+
-+	db->bc.fifo_rst_counter++;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_NCR, NCR_RST); /* NCR reset */
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(db->regmap_dm, DM9051_MBNDRY, MBNDRY_BYTE); /* MemBound */
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(db->regmap_dm, DM9051_PPCR, PPCR_PAUSE_COUNT); /* Pause Count */
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(db->regmap_dm, DM9051_LMCR, db->lcr_all); /* LEDMode1 */
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(db->regmap_dm, DM9051_INTCR, INTCR_POL_LOW); /* INTCR */
-+}
-+
-+/* reset while rx error found
-+ */
-+static int dm9051_direct_fifo_reset(struct board_info *db)
-+{
-+	struct net_device *ndev = db->ndev;
-+	int ret;
-+
-+	ret = dm9051_direct_reset_code(db);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_set_fcr(db);
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(db->regmap_dm, DM9051_IMR, db->imr_all); /* enable int */
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(db->regmap_dm, DM9051_RCR, db->rctl.rcr_all); /* enable rx */
-+	if (ret)
-+		return ret;
-+
-+	netdev_dbg(ndev, " rxstatus_Er & rxlen_Er %d, RST_c %d\n",
-+		   db->bc.status_err_counter + db->bc.large_err_counter,
-+		   db->bc.fifo_rst_counter);
-+
-+	return ret;
-+}
-+
-+/* skb buffer exhausted, just discard the received data
-+ */
-+static int dm9051_map_dumpblk(struct board_info *db, u8 reg, size_t count)
-+{
-+	struct net_device *ndev = db->ndev;
-+	unsigned int rb;
-+	int ret;
-+
-+	/* no skb buffer,
-+	 * both reg and &rb must be noinc,
-+	 * read once one byte via regmap_read
-+	 */
-+	do {
-+		ret = regmap_read(db->regmap_dm, reg, &rb);
-+		if (ret) {
-+			netif_err(db, drv, ndev, "%s: error %d dumping read reg %02x\n",
-+				  __func__, ret, reg);
-+			break;
-+		}
-+	} while (--count);
-+
-+	return ret;
-+}
-+
-+/* read packets from the fifo memory
-+ * return value,
-+ *  > 0 - read packet number, caller can repeat the rx operation
-+ *    0 - no error, caller need stop further rx operation
-+ *  -EBUSY - read data error, caller escape from rx operation
-+ */
-+static int dm9051_loop_rx(struct board_info *db)
-+{
-+	struct net_device *ndev = db->ndev;
-+	unsigned int rxbyte;
-+	int ret, rxlen;
-+	struct sk_buff *skb;
-+	u8 *rdptr;
-+	int scanrr = 0;
-+
-+	do {
-+		ret = regmap_noinc_read(db->regmap_dm, DM_SPI_MRCMDX, &rxbyte, 2);
-+		if (ret) {
-+			netif_err(db, drv, ndev, "%s: error %d noinc reading reg %02x, len %d\n",
-+				  __func__, ret, DM_SPI_MRCMDX, 2);
-+			return ret;
-+		}
-+
-+		if ((rxbyte & 0xff) != DM9051_PKT_RDY)
-+			break; /* exhaust-empty */
-+
-+		ret = regmap_noinc_read(db->regmap_dm, DM_SPI_MRCMD, &db->rxhdr, DM_RXHDR_SIZE);
-+		if (ret)
-+			return ret;
-+
-+		ret = regmap_write(db->regmap_dm, DM9051_ISR, 0xff); /* to stop mrcmd */
-+		if (ret)
-+			return ret;
-+
-+		rxlen = le16_to_cpu(db->rxhdr.rxlen);
-+		if (db->rxhdr.status & RSR_ERR_BITS || rxlen > DM9051_PKT_MAX) {
-+			netdev_dbg(ndev, "rxhdr-byte (%02x)\n",
-+				   db->rxhdr.headbyte);
-+
-+			if (db->rxhdr.status & RSR_ERR_BITS) {
-+				db->bc.status_err_counter++;
-+				netdev_dbg(ndev, "check rxstatus-eror (%02x)\n",
-+					   db->rxhdr.status);
-+			} else {
-+				db->bc.large_err_counter++;
-+				netdev_dbg(ndev, "check rxlen large-eror (%d > %d)\n",
-+					   rxlen, DM9051_PKT_MAX);
-+			}
-+			return dm9051_direct_fifo_reset(db);
-+		}
-+
-+		skb = dev_alloc_skb(rxlen);
-+		if (!skb) {
-+			ret = dm9051_map_dumpblk(db, DM_SPI_MRCMD, rxlen);
-+			if (ret)
-+				return ret;
-+			return scanrr;
-+		}
-+
-+		rdptr = skb_put(skb, rxlen - 4);
-+		ret = regmap_noinc_read(db->regmap_dm, DM_SPI_MRCMD, rdptr, rxlen);
-+		if (ret) {
-+			dev_kfree_skb(skb);
-+			return ret;
-+		}
-+
-+		ret = regmap_write(db->regmap_dm, DM9051_ISR, 0xff); /* to stop mrcmd */
-+		if (ret)
-+			return ret;
-+
-+		skb->protocol = eth_type_trans(skb, db->ndev);
-+		if (db->ndev->features & NETIF_F_RXCSUM)
-+			skb_checksum_none_assert(skb);
-+		netif_rx_ni(skb);
-+		db->ndev->stats.rx_bytes += rxlen;
-+		db->ndev->stats.rx_packets++;
-+		scanrr++;
-+	} while (!ret);
-+
-+	return scanrr;
-+}
-+
-+/* transmit a packet,
-+ * return value,
-+ *   0 - succeed
-+ *  -ETIMEDOUT - timeout error
-+ */
-+static int dm9051_single_tx(struct board_info *db, u8 *buff, unsigned int len)
-+{
-+	int ret;
-+
-+	ret = dm9051_map_xmitpoll(db);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_noinc_write(db->regmap_dm, DM_SPI_MWCMD, buff, len);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_bulk_write(db->regmap_dmbulk, DM9051_TXPLL, &len, 2);
-+	if (ret < 0)
-+		return ret;
-+
-+	return regmap_write(db->regmap_dm, DM9051_TCR, TCR_TXREQ);
-+}
-+
-+static int dm9051_loop_tx(struct board_info *db)
-+{
-+	struct net_device *ndev = db->ndev;
-+	int ntx = 0;
-+	int ret;
-+
-+	while (!skb_queue_empty(&db->txq)) {
-+		struct sk_buff *skb;
-+
-+		skb = skb_dequeue(&db->txq);
-+		if (skb) {
-+			ntx++;
-+			ret = dm9051_single_tx(db, skb->data, skb->len);
-+			dev_kfree_skb(skb);
-+			if (ret < 0)
-+				return 0;
-+			ndev->stats.tx_bytes += skb->len;
-+			ndev->stats.tx_packets++;
-+		}
-+
-+		if (netif_queue_stopped(ndev) &&
-+		    (skb_queue_len(&db->txq) < DM9051_TX_QUE_LO_WATER))
-+			netif_wake_queue(ndev);
-+	}
-+
-+	return ntx;
-+}
-+
-+static irqreturn_t dm9051_rx_threaded_irq(int irq, void *pw)
-+{
-+	struct board_info *db = pw;
-+	int result, result_tx;
-+
-+	mutex_lock(&db->spi_lockm);
-+	if (netif_carrier_ok(db->ndev)) {
-+		result = regmap_write(db->regmap_dm, DM9051_IMR, IMR_PAR); /* disable int */
-+		if (result)
-+			goto spi_err;
-+
-+		do {
-+			result = dm9051_loop_rx(db); /* threaded irq rx */
-+			if (result < 0)
-+				goto spi_err;
-+			result_tx = dm9051_loop_tx(db); /* more tx better performance */
-+			if (result_tx < 0)
-+				goto spi_err;
-+		} while (result > 0);
-+
-+		result = regmap_write(db->regmap_dm, DM9051_IMR, db->imr_all); /* enable int */
-+		if (result)
-+			goto spi_err;
-+	}
-+spi_err:
-+	mutex_unlock(&db->spi_lockm);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static void dm9051_tx_delay(struct work_struct *work)
-+{
-+	struct board_info *db = container_of(work, struct board_info, tx_work);
-+	int result;
-+
-+	mutex_lock(&db->spi_lockm);
-+
-+	result = dm9051_loop_tx(db);
-+	if (result < 0)
-+		netdev_err(db->ndev, "transmit packet error\n");
-+
-+	mutex_unlock(&db->spi_lockm);
-+}
-+
-+static void dm9051_rxctl_delay(struct work_struct *work)
-+{
-+	struct board_info *db = container_of(work, struct board_info, rxctrl_work);
-+	struct net_device *ndev = db->ndev;
-+	int result;
-+
-+	mutex_lock(&db->spi_lockm);
-+	result = regmap_bulk_write(db->regmap_dmbulk, DM9051_PAR, ndev->dev_addr, ETH_ALEN);
-+	if (result < 0) {
-+		netif_err(db, drv, ndev, "%s: error %d bulk writing reg %02x, len %d\n",
-+			  __func__, result, DM9051_PAR, ETH_ALEN);
-+		goto spi_err;
-+	}
-+
-+	result = regmap_bulk_write(db->regmap_dmbulk, DM9051_MAR, db->rctl.hash_table, 8);
-+	if (result < 0) {
-+		netif_err(db, drv, ndev, "%s: error %d bulk writing reg %02x, len %d\n",
-+			  __func__, result, DM9051_MAR, 8);
-+		goto spi_err;
-+	}
-+
-+	result = regmap_write(db->regmap_dm, DM9051_RCR, db->rctl.rcr_all); /* enable rx */
-+	if (result)
-+		netif_err(db, drv, ndev, "%s: error %d write reg %02x\n",
-+			  __func__, result, DM9051_RCR);
-+spi_err:
-+	mutex_unlock(&db->spi_lockm);
-+}
-+
-+static int dm9051_all_start(struct board_info *db)
-+{
-+	int ret;
-+
-+	/* GPR power on of the internal phy
-+	 */
-+	ret = regmap_write(db->regmap_dm, DM9051_GPR, 0);
-+	if (ret)
-+		return ret;
-+
-+	/* The whole dm9051 chip registers could not be accessed within 1 ms
-+	 * after above GPR power on control
-+	 */
-+	mdelay(1);
-+
-+	ret = dm9051_direct_reset_code(db);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(db->regmap_dm, DM9051_IMR, db->imr_all); /* enable int */
-+}
-+
-+static int dm9051_all_stop(struct board_info *db)
-+{
-+	int ret;
-+
-+	/* GPR power off of the internal phy,
-+	 * The internal phy still could be accessed after this GPR power off control
-+	 */
-+	ret = regmap_write(db->regmap_dm, DM9051_GPR, GPR_PHY_OFF);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(db->regmap_dm, DM9051_RCR, RCR_RX_DISABLE);
-+}
-+
-+/* Open network device
-+ * Called when the network device is marked active, such as a user executing
-+ * 'ifconfig up' on the device
-+ */
-+static int dm9051_open(struct net_device *ndev)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+	struct spi_device *spi = db->spidev;
-+	int ret;
-+
-+	db->imr_all = IMR_PAR | IMR_PRM;
-+	db->lcr_all = LMCR_MODE1;
-+	db->rctl.rcr_all = RCR_DIS_LONG | RCR_DIS_CRC | RCR_RXEN;
-+
-+	ndev->irq = spi->irq; /* by dts */
-+	ret = request_threaded_irq(spi->irq, NULL, dm9051_rx_threaded_irq,
-+				   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
-+				   ndev->name, db);
-+	if (ret < 0) {
-+		netdev_err(ndev, "failed to get irq\n");
-+		return ret;
-+	}
-+
-+	phy_support_sym_pause(db->phydev);
-+	phy_start(db->phydev);
-+
-+	/* flow control parameters init */
-+	db->pause.rx_pause = true;
-+	db->pause.tx_pause = true;
-+	db->pause.autoneg = AUTONEG_DISABLE;
-+
-+	if (db->phydev->autoneg)
-+		db->pause.autoneg = AUTONEG_ENABLE;
-+
-+	ret = dm9051_all_start(db);
-+	if (ret) {
-+		phy_stop(db->phydev);
-+		free_irq(spi->irq, db);
-+		return ret;
-+	}
-+
-+	netif_wake_queue(ndev);
-+
-+	return 0;
-+}
-+
-+/* Close network device
-+ * Called to close down a network device which has been active. Cancel any
-+ * work, shutdown the RX and TX process and then place the chip into a low
-+ * power state while it is not being used
-+ */
-+static int dm9051_stop(struct net_device *ndev)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+	int ret;
-+
-+	ret = dm9051_all_stop(db);
-+	if (ret)
-+		return ret;
-+
-+	flush_work(&db->tx_work);
-+	flush_work(&db->rxctrl_work);
-+
-+	phy_stop(db->phydev);
-+
-+	free_irq(db->spidev->irq, db);
-+
-+	netif_stop_queue(ndev);
-+
-+	skb_queue_purge(&db->txq);
-+
-+	return 0;
-+}
-+
-+/* event: play a schedule starter in condition
-+ */
-+static netdev_tx_t dm9051_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+
-+	skb_queue_tail(&db->txq, skb);
-+	if (skb_queue_len(&db->txq) > DM9051_TX_QUE_HI_WATER)
-+		netif_stop_queue(ndev); /* enforce limit queue size */
-+
-+	schedule_work(&db->tx_work);
-+
-+	return NETDEV_TX_OK;
-+}
-+
-+/* event: play with a schedule starter
-+ */
-+static void dm9051_set_rx_mode(struct net_device *ndev)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+	struct dm9051_rxctrl rxctrl;
-+	struct netdev_hw_addr *ha;
-+	u8 rcr = RCR_DIS_LONG | RCR_DIS_CRC | RCR_RXEN;
-+	u32 hash_val;
-+
-+	memset(&rxctrl, 0, sizeof(rxctrl));
-+
-+	/* rx control */
-+	if (ndev->flags & IFF_PROMISC) {
-+		rcr |= RCR_PRMSC;
-+		netdev_dbg(ndev, "set_multicast rcr |= RCR_PRMSC, rcr= %02x\n", rcr);
-+	}
-+
-+	if (ndev->flags & IFF_ALLMULTI) {
-+		rcr |= RCR_ALL;
-+		netdev_dbg(ndev, "set_multicast rcr |= RCR_ALLMULTI, rcr= %02x\n", rcr);
-+	}
-+
-+	rxctrl.rcr_all = rcr;
-+
-+	/* broadcast address */
-+	rxctrl.hash_table[0] = 0;
-+	rxctrl.hash_table[1] = 0;
-+	rxctrl.hash_table[2] = 0;
-+	rxctrl.hash_table[3] = 0x8000;
-+
-+	/* the multicast address in Hash Table : 64 bits */
-+	netdev_for_each_mc_addr(ha, ndev) {
-+		hash_val = ether_crc_le(ETH_ALEN, ha->addr) & 0x3f;
-+		rxctrl.hash_table[hash_val / 16] |= 1U << (hash_val % 16);
-+	}
-+
-+	/* schedule work to do the actual set of the data if needed */
-+
-+	if (memcmp(&db->rctl, &rxctrl, sizeof(rxctrl))) {
-+		memcpy(&db->rctl, &rxctrl, sizeof(rxctrl));
-+		schedule_work(&db->rxctrl_work);
-+	}
-+}
-+
-+/* event: write into the mac registers and eeprom directly
-+ */
-+static int dm9051_set_mac_address(struct net_device *ndev, void *p)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+	int ret;
-+
-+	ret = eth_prepare_mac_addr_change(ndev, p);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_bulk_write(db->regmap_dmbulk, DM9051_PAR, ndev->dev_addr, ETH_ALEN);
-+	if (ret < 0) {
-+		netif_err(db, drv, ndev, "%s: error %d bulk writing reg %02x, len %d\n",
-+			  __func__, ret, DM9051_PAR, ETH_ALEN);
-+		return ret;
-+	}
-+
-+	eth_commit_mac_addr_change(ndev, p);
-+
-+	return 0;
-+}
-+
-+/* netdev-ops
-+ */
-+static const struct of_device_id dm9051_match_table[] = {
-+	{ .compatible = "davicom,dm9051", },
-+	{}
-+};
-+
-+static const struct spi_device_id dm9051_id_table[] = {
-+	{ "dm9051", 0 },
-+	{}
-+};
-+
-+static
-+const struct net_device_ops dm9051_netdev_ops = {
-+	.ndo_open = dm9051_open,
-+	.ndo_stop = dm9051_stop,
-+	.ndo_start_xmit = dm9051_start_xmit,
-+	.ndo_set_rx_mode = dm9051_set_rx_mode,
-+	.ndo_validate_addr = eth_validate_addr,
-+	.ndo_set_mac_address = dm9051_set_mac_address,
-+};
-+
-+/* probe subs
-+ */
-+static void dm9051_operation_clear(struct board_info *db)
-+{
-+	db->bc.status_err_counter = 0;
-+	db->bc.large_err_counter = 0;
-+	db->bc.fifo_rst_counter = 0;
-+}
-+
-+static int dm9051_probe(struct spi_device *spi)
-+{
-+	struct device *dev = &spi->dev;
-+	struct net_device *ndev;
-+	struct board_info *db;
-+	int ret = 0;
-+
-+	ndev = devm_alloc_etherdev(dev, sizeof(struct board_info));
-+	if (!ndev)
-+		return -ENOMEM;
-+
-+	SET_NETDEV_DEV(ndev, dev);
-+	dev_set_drvdata(dev, ndev);
-+
-+	db = netdev_priv(ndev);
-+
-+	db->msg_enable = 0;
-+	db->spidev = spi;
-+	db->ndev = ndev;
-+
-+	ndev->netdev_ops = &dm9051_netdev_ops;
-+	ndev->ethtool_ops = &dm9051_ethtool_ops;
-+
-+	mutex_init(&db->spi_lockm);
-+	mutex_init(&db->reg_mutex);
-+
-+	INIT_WORK(&db->rxctrl_work, dm9051_rxctl_delay);
-+	INIT_WORK(&db->tx_work, dm9051_tx_delay);
-+
-+	ret = dm9051_map_init(spi, db);
-+	if (ret)
-+		goto err_stopthread;
-+
-+	ret = dm9051_map_chipid(db);
-+	if (ret)
-+		goto err_stopthread;
-+
-+	ret = dm9051_map_etherdev_par(ndev, db);
-+	if (ret < 0)
-+		goto err_stopthread;
-+
-+	ret = dm9051_mdio_register(db);
-+	if (ret)
-+		goto err_stopthread;
-+
-+	ret = dm9051_phy_connect(db);
-+	if (ret)
-+		goto err_stopthread;
-+
-+	dm9051_operation_clear(db);
-+	skb_queue_head_init(&db->txq);
-+
-+	ret = devm_register_netdev(dev, ndev);
-+	if (ret) {
-+		dev_err(dev, "failed to register network device\n");
-+		phy_disconnect(db->phydev);
-+		return ret;
-+	}
-+
-+	return 0;
-+
-+err_stopthread:
-+	return ret;
-+}
-+
-+static int dm9051_drv_remove(struct spi_device *spi)
-+{
-+	struct device *dev = &spi->dev;
-+	struct net_device *ndev = dev_get_drvdata(dev);
-+	struct board_info *db = to_dm9051_board(ndev);
-+
-+	phy_disconnect(db->phydev);
-+
-+	return 0;
-+}
-+
-+static struct spi_driver dm9051_driver = {
-+	.driver = {
-+		.name = DRVNAME_9051,
-+		.of_match_table = dm9051_match_table,
-+	},
-+	.probe = dm9051_probe,
-+	.remove = dm9051_drv_remove,
-+	.id_table = dm9051_id_table,
-+};
-+
-+module_spi_driver(dm9051_driver);
-+
-+MODULE_AUTHOR("Joseph CHANG <joseph_chang@davicom.com.tw>");
-+MODULE_DESCRIPTION("Davicom DM9051 network SPI driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/net/ethernet/davicom/dm9051.h b/drivers/net/ethernet/davicom/dm9051.h
-new file mode 100644
-index 000000000000..4ae74a7b73f8
---- /dev/null
-+++ b/drivers/net/ethernet/davicom/dm9051.h
-@@ -0,0 +1,159 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (c) 2022 Davicom Semiconductor,Inc.
-+ * Davicom DM9051 SPI Fast Ethernet Linux driver
-+ */
-+
-+#ifndef _DM9051_H_
-+#define _DM9051_H_
-+
-+#include <linux/netdevice.h>
-+#include <linux/mii.h>
-+#include <linux/types.h>
-+
-+#define DM9051_ID		0x9051
-+
-+#define DM9051_NCR		0x00
-+#define DM9051_NSR		0x01
-+#define DM9051_TCR		0x02
-+#define DM9051_RCR		0x05
-+#define DM9051_BPTR		0x08
-+#define DM9051_FCR		0x0A
-+#define DM9051_EPCR		0x0B
-+#define DM9051_EPAR		0x0C
-+#define DM9051_EPDRL		0x0D
-+#define DM9051_EPDRH		0x0E
-+#define DM9051_PAR		0x10
-+#define DM9051_MAR		0x16
-+#define DM9051_GPCR		0x1E
-+#define DM9051_GPR		0x1F
-+
-+#define DM9051_VIDL		0x28
-+#define DM9051_VIDH		0x29
-+#define DM9051_PIDL		0x2A
-+#define DM9051_PIDH		0x2B
-+#define DM9051_SMCR		0x2F
-+#define	DM9051_ATCR		0x30
-+#define	DM9051_SPIBCR		0x38
-+#define DM9051_INTCR		0x39
-+#define DM9051_PPCR		0x3D
-+
-+#define DM9051_MPCR		0x55
-+#define DM9051_LMCR		0x57
-+#define DM9051_MBNDRY		0x5E
-+
-+#define DM9051_MRRL		0x74
-+#define DM9051_MRRH		0x75
-+#define DM9051_MWRL		0x7A
-+#define DM9051_MWRH		0x7B
-+#define DM9051_TXPLL		0x7C
-+#define DM9051_TXPLH		0x7D
-+#define DM9051_ISR		0x7E
-+#define DM9051_IMR		0x7F
-+
-+#define DM_SPI_MRCMDX		0x70
-+#define DM_SPI_MRCMD		0x72
-+#define DM_SPI_MWCMD		0x78
-+
-+#define DM_SPI_WR		0x80
-+
-+/* dm9051 Ethernet
-+ */
-+/* 0x00 */
-+#define NCR_WAKEEN		BIT(6)
-+#define NCR_FDX			BIT(3)
-+#define NCR_RST			BIT(0)
-+/* 0x01 */
-+#define NSR_SPEED		BIT(7)
-+#define NSR_LINKST		BIT(6)
-+#define NSR_WAKEST		BIT(5)
-+#define NSR_TX2END		BIT(3)
-+#define NSR_TX1END		BIT(2)
-+/* 0x02 */
-+#define TCR_DIS_JABBER_TIMER	BIT(6) /* for Jabber Packet support */
-+#define TCR_TXREQ		BIT(0)
-+/* 0x05 */
-+#define RCR_DIS_WATCHDOG_TIMER	BIT(6)  /* for Jabber Packet support */
-+#define RCR_DIS_LONG		BIT(5)
-+#define RCR_DIS_CRC		BIT(4)
-+#define RCR_ALL			BIT(3)
-+#define RCR_PRMSC		BIT(1)
-+#define RCR_RXEN		BIT(0)
-+#define RCR_RX_DISABLE		(RCR_DIS_LONG | RCR_DIS_CRC)
-+/* 0x06 */
-+#define RSR_RF			BIT(7)
-+#define RSR_MF			BIT(6)
-+#define RSR_LCS			BIT(5)
-+#define RSR_RWTO		BIT(4)
-+#define RSR_PLE			BIT(3)
-+#define RSR_AE			BIT(2)
-+#define RSR_CE			BIT(1)
-+#define RSR_FOE			BIT(0)
-+#define	RSR_ERR_BITS		(RSR_RF | RSR_LCS | RSR_RWTO | RSR_PLE | \
-+				 RSR_AE | RSR_CE | RSR_FOE)
-+/* 0x0A */
-+#define FCR_TXPEN		BIT(5)
-+#define FCR_BKPM		BIT(3)
-+#define FCR_FLCE		BIT(0)
-+#define FCR_RXTX_ENABLE		(FCR_TXPEN | FCR_BKPM | FCR_FLCE)
-+/* 0x0B */
-+#define EPCR_WEP		BIT(4)
-+#define EPCR_EPOS		BIT(3)
-+#define EPCR_ERPRR		BIT(2)
-+#define EPCR_ERPRW		BIT(1)
-+#define EPCR_ERRE		BIT(0)
-+/* 0x1E */
-+#define GPCR_GEP_CNTL		BIT(0)
-+/* 0x1F */
-+#define GPR_PHY_OFF		BIT(0)
-+/* 0x30 */
-+#define	ATCR_AUTO_TX		BIT(7)
-+/* 0x39 */
-+#define INTCR_POL_LOW		BIT(0)
-+#define INTCR_POL_HIGH		(0 << 0)
-+/* 0x3D */
-+/* Pause Packet Control Register - default = 1 */
-+#define PPCR_PAUSE_COUNT	0x08
-+/* 0x55 */
-+#define MPCR_RSTTX		BIT(1)
-+#define MPCR_RSTRX		BIT(0)
-+/* 0x57 */
-+/* LEDMode Control Register - LEDMode1 */
-+/* Value 0x81 : bit[7] = 1, bit[2] = 0, bit[1:0] = 01b */
-+#define LMCR_NEWMOD		BIT(7)
-+#define LMCR_TYPED1		BIT(1)
-+#define LMCR_TYPED0		BIT(0)
-+#define LMCR_MODE1		(LMCR_NEWMOD | LMCR_TYPED0)
-+/* 0x5E */
-+#define MBNDRY_BYTE		BIT(7)
-+/* 0xFE */
-+#define ISR_MBS			BIT(7)
-+#define ISR_ROOS		BIT(3)
-+#define ISR_ROS			BIT(2)
-+#define ISR_PTS			BIT(1)
-+#define ISR_PRS			BIT(0)
-+#define ISR_CLR_STATUS		(ISR_ROOS | ISR_ROS | ISR_PTS | ISR_PRS)
-+/* 0xFF */
-+#define IMR_PAR			BIT(7)
-+#define IMR_LNKCHGI		BIT(5)
-+#define IMR_PTM			BIT(1)
-+#define IMR_PRM			BIT(0)
-+
-+/* Const
-+ */
-+#define DM9051_PHY_ADDR			1	/* PHY id */
-+#define DM9051_PHY			0x40	/* PHY address 0x01 */
-+#define DM9051_PKT_RDY			0x01	/* Packet ready to receive */
-+#define DM9051_PKT_MAX			1536	/* Received packet max size */
-+#define DM9051_TX_QUE_HI_WATER		50
-+#define DM9051_TX_QUE_LO_WATER		25
-+#define DM_EEPROM_MAGIC			0x9051
-+
-+#define	DM_RXHDR_SIZE			sizeof(struct dm9051_rxhdr)
-+
-+static inline struct board_info *to_dm9051_board(struct net_device *ndev)
-+{
-+	return netdev_priv(ndev);
-+}
-+
-+#endif /* _DM9051_H_ */
--- 
-2.20.1
-
+PiBUaGlzIGlzIGZhciB0b28gYmlnIGZvciBhIHNpbmdsZSBwYXRjaC4gIEl0IG5lZWRzIHRvIGJl
+IGJyb2tlbiBpbnRvDQo+IGZ1bmN0aW9uYWwgY2h1bmtzIHRoYXQgY2FuIGJlIHJldmlld2VkIGlu
+ZGl2aWR1YWxseS4gIEVhY2ggZHJpdmVyIGFuZA0KPiBlYWNoIGRldmljZSB0cmVlIGNoYW5nZSBh
+bG9uZyB3aXRoIGl0J3MgYWNjb21wYW55aW5nIGNvZGUgbmVlZCB0byBiZQ0KPiBkb25lIGluIGlu
+ZGl2aWR1YWwgcGF0Y2hlcy4gIFRoZSB3YXkgaXQgaXMgaXQgY2FuJ3QgYmUgcmV2aWV3ZWQgaW4g
+YW55DQo+IHNhbmUgbWFubmVyLg0KDQo+IC1jb3JleQ0KDQpUaGFua3MgZm9yIHlvdXIgZmVlZGJh
+Y2suIFdlIGFyZSBnZXR0aW5nIGEgbGl0dGxlIGJpdCBsb3N0IGhlcmUsIGFzIG91ciBwbGFuIHdh
+cyB0byBzdWJtaXQgaW5pdGlhbA0KDQotIGJpbmRpbmdzDQotIGR0cyBmb3IgU29DIGFuZCAxIGJv
+YXJkDQotIGluaXRpYWwgcGxhdGZvcm0gaW5pdCBjb2RlDQoNClRoZW4gZHJpdmVycyBjb2RlIGF2
+b2lkaW5nIHRvIHNlbmQgbWFueSBkdHMgdXBkYXRlcyB3aGljaCBtaWdodCBjb21wbGV4aWZ5IHRo
+ZSByZXZpZXcuIFdlIHdhbnRlZCB0byBzZW5kIGFsbCBkcml2ZXJzIGNvZGUgdG8gcmVsZXZhbnQg
+cmV2aWV3ZXJzIGJ5IHRvbW9ycm93Lg0KDQpTbywgd2hhdCB5b3UgYXJlIGFza2luZyAoIGRvIG5v
+dCB3b3JyeSBJIGFtIG5vdCB0cnlpbmcgdG8gbmVnb3RpYXRlLCBJIGp1c3Qgd2FudCB0byBhdm9p
+ZCBFbmdsaXNoIG1pc3VuZGVyc3RhbmRpbmdzIGFzIEkgYW0gRnJlbmNoKSBpcyB0byBzZW5kIHBl
+ciBkcml2ZXINCg0KLSBiaW5kaW5nDQotIGR0cyB1cGRhdGUNCi0gZHJpdmVyIGNvZGUNCg0KRm9y
+IGVhY2ggZHJpdmVyIHRocm91Z2ggZGlmZmVyZW50IHN1Ym1pc3Npb24gKHdpdGggZWFjaCBvZiB0
+aGVtIGNvbnRhaW5pbmcgdGhlIDMgYXNzb2NpYXRlZCBwYXJ0cykgPw0KDQpXaGF0IHNoYWxsIGJl
+IHRoZSBpbml0aWFsIG9uZSBpbiBvdXIgY2FzZSBhcyB3ZSBhcmUgaW50cm9kdWNpbmcgYSBwbGF0
+Zm9ybSA/IEFuIGVtcHR5IGR0cyBpbmZyYXN0cnVjdHVyZSBhbmQgdGhlbiB3ZSBtYWtlIGl0IGdy
+b3cgb25lIHN0ZXAgYXQgYSB0aW1lID8NCg0KdmVqbWFyaWUNCg0K77u/DQogDQoNCg==
