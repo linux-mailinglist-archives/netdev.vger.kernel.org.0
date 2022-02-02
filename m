@@ -2,105 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C13F4A696E
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 01:57:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF96D4A6980
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 02:13:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232081AbiBBA5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 19:57:34 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55294 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229994AbiBBA5e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 19:57:34 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03D3AB82FE3;
-        Wed,  2 Feb 2022 00:57:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C0ADC340E9;
-        Wed,  2 Feb 2022 00:57:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643763451;
-        bh=98nNxIicM+eGuu2qldo7Nd5//SGeL28ZWSKsTcZhXvg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rrb7mWmgANB3YX7E0kRwUuTkiTUHTOibbHQW75C/iE427FdDW0TIl9W0vZe0yTAl/
-         l6OehIROUaAMRSb5qXriC4+CE8vL+eFgUxyYMutR/zE4O74GlkVXiFTjLt0yq/O0f2
-         p2YRXN+WVg5QVOB16Zc+fdZMOSdh+PreyFzTKi5vRZnCRfdVhEyAdAgeha5yFpcsKQ
-         IVfwd9QsLPi/vLAc9/HcgHoC4IKZQNslnq8pJGdbqpjrPyBLnDwK9tMA5IZkOPRJCx
-         RBkGe6h1WJyGRioMz8Gdj7GVNDpRDdhpmgbEE1dbJAcVj/ZuG2MldWTLz6OZ17esSe
-         tgjiAVi9/0LOQ==
-Date:   Tue, 1 Feb 2022 16:57:30 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jann Horn <jannh@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>
-Subject: Re: [BUG] net_device UAF: linkwatch_fire_event() calls dev_hold()
- after netdev_wait_allrefs() is done
-Message-ID: <20220201165730.1adb7e66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAG48ez0sa2+eEAnS3UMLmLbDRfM6iC4K3vRcUdA9LpDbSJF0XA@mail.gmail.com>
-References: <CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com>
-        <20220127181930.355c8c82@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAG48ez0sa2+eEAnS3UMLmLbDRfM6iC4K3vRcUdA9LpDbSJF0XA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S243613AbiBBBNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 20:13:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32808 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229994AbiBBBNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 20:13:08 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D12C061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 17:13:08 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id o64so18797685pjo.2
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 17:13:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fastly.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=jzh/HKtd4byW+ldSIIcqiy5Qewt2FVTYc3J2xUHR0v0=;
+        b=mEgtoHgNNjFYqvtKyo1lIzJUeNRE1L9RSK9gxYFvxxD3b1fbLB+VyvAcLsbCYV8F2R
+         Ed1ADMLD3WytnJtHTG6denyKrcfDXWpwEp24oVwlYtFIWEnjBiK75Ape2T4bvmm7fuNQ
+         YtIZCg+CRaZzU0Hcno7yrTDxjzgHRdz934RCg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=jzh/HKtd4byW+ldSIIcqiy5Qewt2FVTYc3J2xUHR0v0=;
+        b=Yycfry7/LI61xqet8UHZ+2DPNVjnnfuTUo1LP16sIXPQzXPLUby2zUH/rTHA5E76GT
+         BWLwmalFML1l3bW7/xKjjNUCzIRAJ3OojrPr0IDMUohirBcXdj5QD/JLwQzzhNzmPpGk
+         RWx+D/v0oqHkN3bSxyrhS0BEzgBe6CM5MDOD2KfBomK9v/104qgjEIKt/Ac4Hd9GuyF/
+         yCkxNAZqxhUPDQwd2Bl+9u5dlODG6tz1tWYxj7FVQq8RBXUsCGrKy/fcIFht0NhhBIiB
+         gVa78CQ6nJ7NPhVAwFsTFLjyrVeZEpXLCUWQanIjeIhLh1R6YBCADMDUlbr8V/J5SPns
+         eiqQ==
+X-Gm-Message-State: AOAM5304ypmMBL7T+rTR9QRG8g3Bk9N5yXPh0FLR/rSdnq9TLZGk3yXO
+        8UzUbUNjLYmvcVG5UZ5xk+Ez2ysY7D3t4YcUKFFBjZyg8f1/IaUNfqet9EBsPwSqh3XDSFy0eJC
+        TGqjUGNgll6Hx/2WLmAviUbPEA25q/hZO/HvUUb4qaGbbXE9iK7nJoW1NLn88tTViCzff
+X-Google-Smtp-Source: ABdhPJxJGOM0OToQa9blbG8mMJgLplN0DhxBhix1pDlHUYU9Ho0Kd20eGnlhm2d1MSngbqYOja4J5g==
+X-Received: by 2002:a17:902:9883:: with SMTP id s3mr29180761plp.41.1643764387612;
+        Tue, 01 Feb 2022 17:13:07 -0800 (PST)
+Received: from localhost.localdomain (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
+        by smtp.gmail.com with ESMTPSA id a125sm15170025pfa.205.2022.02.01.17.13.05
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 01 Feb 2022 17:13:06 -0800 (PST)
+From:   Joe Damato <jdamato@fastly.com>
+To:     netdev@vger.kernel.org, kuba@kernel.org,
+        ilias.apalodimas@linaro.org, davem@davemloft.net, hawk@kernel.org
+Cc:     Joe Damato <jdamato@fastly.com>
+Subject: [net-next v3 00/10] page_pool: Add page_pool stat counters
+Date:   Tue,  1 Feb 2022 17:12:06 -0800
+Message-Id: <1643764336-63864-1-git-send-email-jdamato@fastly.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Feb 2022 23:46:16 +0100 Jann Horn wrote:
-> On Fri, Jan 28, 2022 at 3:19 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > Interesting..
-> >
-> > I don't know what link_reset does, but since it turns the carrier on it
-> > seems like something that should be flushed/canceled when the device
-> > goes down. unregister brings the device down under rtnl_lock.
-> >
-> > On Fri, 28 Jan 2022 02:51:24 +0100 Jann Horn wrote:  
-> > > Is the bug that usbnet_disconnect() should be stopping &dev->kevent
-> > > before calling unregister_netdev()?  
-> >
-> > I'd say not this one, I think the generally agreed on semantics are that
-> > the netdev is under users control between register and unregister, we
-> > should not cripple it before unregister.
-> >  
-> > > Or is the bug that ax88179_link_reset() doesn't take some kind of lock
-> > > and re-check that the netdev is still alive?  
-> >
-> > That'd not be an uncommon way to fix this.. taking rtnl_lock, not even
-> > a driver lock in similar.  
-> 
-> Ah, I found a comment with a bit of explanation on how this is
-> supposed to work... usbnet_stop() explains:
-> 
->     /* deferred work (task, timer, softirq) must also stop.
->      * can't flush_scheduled_work() until we drop rtnl (later),
->      * else workers could deadlock; so make workers a NOP.
->      */
-> 
-> And usbnet_stop() is ->ndo_stop(), which indeed runs under RTNL.
-> 
-> I wonder what the work items can do that'd conflict with RTNL... or is
-> the comment just talking about potential issues if a bunch of *other*
-> work items need RTNL and clog up the system_wq so that
-> flush_scheduled_work() blocks forever?
+Greetings:
 
-Good question. Nothing that would explicitly take rtnl_lock jumps out
-in the usbnet code or the link_reset handler. The code is ancient, too:
+Sending a v3 as I noted some issues with the procfs code in patch 10 I
+submit in v2 (thanks, kernel test robot) and fixing the placement of the
+refill stat increment in patch 8.
 
-/* work that cannot be done in interrupt context uses keventd.
- *
- * NOTE:  with 2.5 we could do more of this using completion callbacks,
+I only modified the placement of the refill stat, but decided to re-run the
+benchmarks used in the v2 [1], and the results are:
 
-:)
+Test system:
+	- 2x Intel(R) Xeon(R) Gold 6140 CPU @ 2.30GHz
+	- 2 NUMA zones, with 18 cores per zone and 2 threads per core
 
-> If it's the latter case, I guess we could instead do cancel_work_sync() and
-> then maybe re-run the work function's handler one more time
-> synchronously?
+bench_page_pool_simple results:
+test name			stats enabled		stats disabled
+				cycles	nanosec		cycles	nanosec
 
-cancel_sync() sounds good, lan78xx.c does that plus clearing the event
-bits. I don't think you need to call the link_reset handler manually,
-the stop function should shut down the link, anyway.
+for_loop			0	0.335		0	0.334
+atomic_inc 			13	6.028		13	6.035
+lock				32	14.017		31	13.552
+
+no-softirq-page_pool01		45	19.832		46	20.193
+no-softirq-page_pool02		44	19.478		46	20.083
+no-softirq-page_pool03		110	48.365		109	47.699
+
+tasklet_page_pool01_fast_path	14	6.204		13	6.021
+tasklet_page_pool02_ptr_ring	41	18.115		42	18.699
+tasklet_page_pool03_slow	110	48.085		108	47.395
+
+bench_page_pool_cross_cpu results:
+test name			stats enabled		stats disabled
+				cycles	nanosec		cycles	nanosec
+
+page_pool_cross_cpu CPU(0)	2216	966.179		2101	915.692
+page_pool_cross_cpu CPU(1)	2211	963.914		2159	941.087
+page_pool_cross_cpu CPU(2)	1108	483.097		1079	470.573
+
+page_pool_cross_cpu average	1845	-		1779	-
+
+v2 -> v3:
+	- patch 8/10 ("Add stat tracking cache refill") fixed placement of
+	  counter increment.
+	- patch 10/10 ("net-procfs: Show page pool stats in proc") updated:
+		- fix unused label warning from kernel test robot,
+		- fixed page_pool_seq_show to only display the refill stat
+		  once,
+		- added a remove_proc_entry for page_pool_stat to
+		  dev_proc_net_exit.
+
+v1 -> v2:
+	- A new kernel config option has been added, which defaults to N,
+	   preventing this code from being compiled in by default
+	- The stats structure has been converted to a per-cpu structure
+	- The stats are now exported via proc (/proc/net/page_pool_stat)
+
+Thanks.
+
+[1]:
+https://lore.kernel.org/all/1643499540-8351-1-git-send-email-jdamato@fastly.com/T/#md82c6d5233e35bb518bc40c8fd7dff7a7a17e199
+
+Joe Damato (10):
+  page_pool: kconfig: Add flag for page pool stats
+  page_pool: Add per-cpu page_pool_stats struct
+  page_pool: Add a macro for incrementing stats
+  page_pool: Add stat tracking fast path allocations
+  page_pool: Add slow path order 0 allocation stat
+  page_pool: Add slow path high order allocation stat
+  page_pool: Add stat tracking empty ring
+  page_pool: Add stat tracking cache refill
+  page_pool: Add a stat tracking waived pages
+  net-procfs: Show page pool stats in proc
+
+ include/net/page_pool.h | 20 +++++++++++++++
+ net/Kconfig             | 12 +++++++++
+ net/core/net-procfs.c   | 67 +++++++++++++++++++++++++++++++++++++++++++++++++
+ net/core/page_pool.c    | 28 ++++++++++++++++++---
+ 4 files changed, 124 insertions(+), 3 deletions(-)
+
+-- 
+2.7.4
+
