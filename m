@@ -2,158 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 915264A694D
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 01:41:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DD894A694E
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 01:43:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243435AbiBBAlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 19:41:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54052 "EHLO
+        id S243447AbiBBAnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 19:43:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231265AbiBBAls (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 19:41:48 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347C4C061714
-        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 16:41:48 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id e79so23403225iof.13
-        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 16:41:48 -0800 (PST)
+        with ESMTP id S231265AbiBBAm7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 19:42:59 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F305C061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 16:42:59 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so4357210pjb.1
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 16:42:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Z3YfcE0O70ahEFtWdxsdPNPSuf2lkAj+HbIgBHrwfAY=;
-        b=z26GnIRJRCu8XOs/4V81gAqzi0BwF3MXwld6alRjs0t1u8ipdm4mmfTqDumgz1JJlE
-         Y1jm66QEztAKOjQQblVr0EQQ9Nxl7RkJu6QtM84TBdQw0baCcAv6gPrXw/qU3iy2+pem
-         UTkIzDlwSeQV8i0P/yrjpXPa4A9N8CKhCbVDj0g+aJIs8d9UaaVbRNl07o1tx6J/hc8f
-         yBbKYOEg7Rpqc0BJeje9BUy9af7HN4OgyDPXvqpGubvfvN6g0/HQHCfanLiAHTke1/kP
-         NFnC8CTgKMnPw+Wa7td0pwno59WD5Hfiq8mDaE2Knd9j4KfQ876/XeqW48xQC3Q0dlbB
-         uSkA==
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=e82YHr2cr+IdwIwy16WCVzGIEKJz2KbUmBzvc6MyDCA=;
+        b=OKIbDkpIHGlG2lwP3IjswkexgsFoA4tAQvoaWtWI7M6g7RA9r6JUr/O2EkiUyRo2pN
+         sqmLp90ZMBbo+1fHqZzfa6htaJyfPShGB/wZtJXKIu5VxIJ3Qhmy3D1MqbgMg3y+gp2Q
+         +cqshrJEwcFnRBjMdxOHbr7fcGs5MMqxkIwlPY7ZQO+zojEKqOLJYlxMtmkzAixSJ0/q
+         PDy8wErhbXAmjrdHlL4vmt2PUzdLiGvIar36sHuuqsXFgkVMLhk9Wli3UhNmARgeb+RU
+         qXp/uy+5c9zhTolXRqwBiW6XL/eF64r9GFBCuVA66AQ9ehOTPGirWvRz7OXLELEUINls
+         n+cA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Z3YfcE0O70ahEFtWdxsdPNPSuf2lkAj+HbIgBHrwfAY=;
-        b=efRk7scLvWJDdxO53yKVYZffKZl95rJwCjNeSYodN+FHEy2JsEEtYZCzeMb5WTaY3f
-         O6gX2yY3gIWkdtCW8i7rAvUjw1vMHgTf/uHiguWon7aBK7FNcOKwfeO5o9OtKmV5f6rt
-         sQsbO0tSt8zIzApnEK+j9z2z8GpLiNXpfhuAFM28XHFScpI3kC/HraDgolDeEeaquP6Z
-         pwGLlBBUvuK8MisFm/mQbmYuS9HR8EqA69Abx96rbtItkC+e5uzOvJP3yvyKf/XNnfKt
-         hW7wqGkQOCmt4Ja8tPO2nnuFn8Sh/qwr0AGYsumsARcGWgSc99o0w6hgQ0MTbs+lm8GR
-         nYgw==
-X-Gm-Message-State: AOAM530VKT8ITbzkMTHDOwrv62WiJjqzo9Hkl3BzezF7YN1mt/91eMQf
-        YF1PVnUv4lOePTl3bCfruFrYBQ==
-X-Google-Smtp-Source: ABdhPJwWXyIZ4cAVqVtlBqGLMNwLZqKGZzkkXchanMNyqg4mOq5LJ2pDJE8nmftAJ+1tFFEGP5H8Ww==
-X-Received: by 2002:a05:6638:2050:: with SMTP id t16mr11498892jaj.144.1643762507514;
-        Tue, 01 Feb 2022 16:41:47 -0800 (PST)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id k8sm4598520ilu.58.2022.02.01.16.41.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Feb 2022 16:41:46 -0800 (PST)
-Message-ID: <cadf424a-6d67-cfd0-03e8-810233f7712d@linaro.org>
-Date:   Tue, 1 Feb 2022 18:41:45 -0600
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=e82YHr2cr+IdwIwy16WCVzGIEKJz2KbUmBzvc6MyDCA=;
+        b=DtCLiMiUer1+wnxIPKUVsUi1fj2mLlrj7XGl6SCY5MKiakErWZlqF016sw3Z8NOSHE
+         pRbuA+1TiB4CK8tcIodcLE5XimY0exGXjgds4j6oze11/+6/AQIH+MODJPij6seL11JO
+         V0GvjfXDQwNmyiAg8C53jQCyan9cyC8SXSynE9fgZqFfLD6m6QlH+ugc+EWPQ66y9ltG
+         I+U2LE/mxxymtfMaHBvPeV41q+tL5j6T6C1ZkzmoGVoch33IEB6pk3up7uFarNr8zllO
+         mVzmjJzBu7YiBH8xeXodbKkxIL+u06VfA283aIazdmBoHlvDqgwh2VWyQTWPBGNyGiNS
+         xvkw==
+X-Gm-Message-State: AOAM533t/6CeXmJlI43Z2aBjx8GBdwUl8cQ8Op8RSJHQDNyuizWhGnca
+        Hz9jp6SkItjW/gn2mjPFvujHlUgXE/TgFkg9
+X-Google-Smtp-Source: ABdhPJyVyoiQmhTMyV1jKVmAxYkaik9eoW03OANfAWBKPNuAbpAGi/gPCigdRbJ+LLU4GTm6Bk8D/w==
+X-Received: by 2002:a17:902:da81:: with SMTP id j1mr29057625plx.14.1643762579028;
+        Tue, 01 Feb 2022 16:42:59 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id z1sm20381313pfh.137.2022.02.01.16.42.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 16:42:58 -0800 (PST)
+Date:   Tue, 1 Feb 2022 16:42:56 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Coco Li <lixiaoyan@google.com>
+Subject: Re: [PATCH iproute2] iplink: add gro_max_size attribute handling
+Message-ID: <20220201164256.5a640359@hermes.local>
+In-Reply-To: <20220201232715.1585390-1-eric.dumazet@gmail.com>
+References: <20220201232715.1585390-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: IPA monitor (Final RFC)
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-References: <384e168b-8266-cb9b-196b-347a513c0d36@linaro.org>
- <e666e0cb-5b65-1fe9-61ae-a3a3cea54ea0@linaro.org>
- <9da2f1f6-fc7c-e131-400d-97ac3b8cdadc@linaro.org> <YeLk3STfx2DO4+FO@lunn.ch>
- <c9db7b36-3855-1ac1-41b6-f7e9b91e2074@linaro.org>
- <20220118103017.158ede27@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <f02ad768-2c8e-c8ed-e5f6-6ee79bf97c06@linaro.org>
- <36491c9e-c9fb-6740-9e51-58c23737318f@linaro.org> <YfnOFpUcOgAGeqln@lunn.ch>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <YfnOFpUcOgAGeqln@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/1/22 6:19 PM, Andrew Lunn wrote:
-> Hi Alex
+On Tue,  1 Feb 2022 15:27:15 -0800
+Eric Dumazet <eric.dumazet@gmail.com> wrote:
+
+> From: Coco Li <lixiaoyan@google.com>
 > 
-> This looks good in general.
+> Add the ability to display or change the gro_max_size attribute.
 > 
+> ip link set dev eth1 gro_max_size 60000
+> ip -d link show eth1
+> 5: eth1: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 9198 qdisc mq master eth0 state UP mode DEFAULT group default qlen 1000
+>     link/ether bc:ae:c5:39:69:66 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 46 maxmtu 9600
+>     <...> gro_max_size 60000
 > 
->>      - If any monitor packet received from hardware is bad, it--along
->>
->>        with everything beyond it in its page--will be discarded.
->>
->>          - The received data must be big enough to hold a status
->>
->>            header.
->>
->>          - The received data must contain the packet data, meaning
->>
->>            packet length in the status header lies within range.
->   
-> So bad in just the sense that capturing the packet and passing it to
-> the application processor somehow went wrong.
+> Signed-off-by: Coco Li <lixiaoyan@google.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-All I'm saying is that the driver will take a little responsibility
-for ensuring the stuff delivered to user space isn't complete crap.
-To a certain extent that's to protect itself.  It would be easiest
-to pass exactly what was received up to user space, without doing
-any interpretation of it whatsoever.  But I think the kernel can
-add this value at very little net cost.
 
-The reality is, this should not happen.
-
-> What about packets with bad CRC? Since the application processor is
-> not involved, i assume something in the APA architecture is validating
-> L2 and L3 CRCs. Do they get dropped, or can they be seen in the
-
-The hardware can offload things like CRC calculation, but in that case
-it's up to the receiving code to be told "this has a bad CRC" and
-then decide to drop the received packet.  I think the replication
-occurs early--possibly before hardware CRC calculations, so the
-replica just gets delivered out this special endpoint just the way
-it arrived.
-
-> monitor stream? Does the header contain any indication of CRC errors,
-> since if the packet has been truncated, it won't be possible to
-> validate them. And you said L2 headers are not present anyway.
-
- From what I can tell, CRC errors are not indicated in the status
-header.  The status seems to be more oriented toward "this is
-the processing that the IPA hardware performed on this packet."
-Including "it entered IPA on this 'port' and matched this
-filter rule and got routed out this other 'port'."  But to be
-honest my focus has been more on providing the feature than
-what exactly those bits represent...
-
-> Do you look at various libpcap-ng implementations? Since this is
-> debugfs you are not defining a stable ABI, you can change it any time
-> you want and break userspace. But maybe there could be small changes
-> in the API which make it easier to feed to wireshark via libpcap.
-
-I considered that.  That was really the interface I was envisioning
-at first.  Those things don't really align perfectly with the
-information that's made available here though.  This is more like
-"what is the hardware doing to each packet" (so we can maybe
-understand behavior, or identify a bug).  Rather than "what is
-the content of packets flowing through?"  It might be useful
-to use the powerful capabilities of things like wireshark for
-analysis, but I kind of concluded the purpose of exposing this
-information is a little different.
-
-I've got most of the code buffering received data and making
-it available through a file interface done.  But I have some
-fine tuning to do before I'll be ready to post it for review.
-
-Yes, the non-stable API means I can tweak it a bit even after
-it's merged.  But we'll see.  It might be reasonable as-is.
-
-Thanks a lot.
-
-					-Alex
-
-> 
-> 	Andrew
+Looks good, could you send update to man page as well?
 
