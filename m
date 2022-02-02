@@ -2,482 +2,2174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD67F4A7711
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 18:47:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6362C4A7754
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 18:58:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234923AbiBBRrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 12:47:42 -0500
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:42130 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229747AbiBBRrl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 12:47:41 -0500
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 212HY84K000892;
-        Wed, 2 Feb 2022 17:47:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=X3LRawdiu+q/Ctvp53dn9yHstWqyzhqA99pUAZzo8EI=;
- b=iCuh9LpSrkk/QtB+t8f4Re3v/MeLtlrw+CdSdBTu4DJE6VIcdd+o+GWG/LFYkq7ISTfX
- qCRyfV68WpMrDeIuDC7dwuGHM70eSyZAV3iPRvIndsuBUwio8Aa40Rv3ky4ViTwuc0F9
- TLyO6ttejTI9nvI82yADmHugk0FBTWTNG1bmx/jj679J9WxVaxzhFJgm+EosdbyeJgWM
- 3de7UC1peiEL+5RtDWvPNiXdxB6f/Vwf0NWZIAblEbVhvEzuFhaOBAJtbQSjhkye2CTE
- lC+pL1hB5mSREw0vxo5G3Hun8Fq2YnQz1Mg9YqnRQdh4BAqgP1yyw63pzL8u+6YVT3eZ hg== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dxj9vew0b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Feb 2022 17:47:34 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 212HjvJD140369;
-        Wed, 2 Feb 2022 17:47:33 GMT
-Received: from nam04-bn8-obe.outbound.protection.outlook.com (mail-bn8nam08lp2044.outbound.protection.outlook.com [104.47.74.44])
-        by userp3020.oracle.com with ESMTP id 3dvy1sxagp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Feb 2022 17:47:32 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LGqyxaqfoXpN6H847AAKSYphFJiuwGK8zkOTNv6RC1Ymk1nNV7ECJPNS45MoBwleGkxGl2HBN0KPGJhfWz37Nmi4qlqDqjsTN5vzDSCNU7Bm+fI1I8JZjhsXts8efbIhOsNCjkv1Xzk1/UuAYdWi06nCuFmtCZtD7K7/iCZOvQ3fZKzYmXuBY6Eyrtqh+XDkXyIQmn8B/X+MwnTal+2HGhzw0Fo/yTfTVoupCkmUjbB3lt9s9FsPIffCUYv2EQi6dMWftYxc/CTIAeb20RqArFVD8Z0q3PzfDtjYhlrX17azB0pgRhPtLLEk3wBITuUNm4YJHxX2O351Vxn1ljenFA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X3LRawdiu+q/Ctvp53dn9yHstWqyzhqA99pUAZzo8EI=;
- b=I3mbQ3xWWUA94UuazVYv/xmEtzI09sEbTMCdkIA0W5gK3S/+4idt7dt8zUhJYXIhuj3RyuJLGbVmJYW4bXVtF91iAiyiZuDssxEa+l/KYiUoQCP4xuocnGkuJHX/WnYqV06zi3wh27SUb6Z+5EYTJ1olK/DTLoUPde33AbbBma+OZ4QNz8O0dIVJTfq27up9+aFHWsM+GS4EbN/YUd/wZtFJB4w9kRE6OFVFPEkAZRf11L/ct4OYpFBNlgWROxsQt82ro5KvQJHxJ5JNZcBLWX5LOMCemhKsmU9/aHwAZh/SG/+oYzd/AMexxhWHTHc7VU3p8w2UrHPsLlwtcN9IoQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
+        id S1346398AbiBBR4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 12:56:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33684 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244060AbiBBR4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 12:56:41 -0500
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53CDC06173B;
+        Wed,  2 Feb 2022 09:56:40 -0800 (PST)
+Received: by mail-qk1-x729.google.com with SMTP id j24so302353qkk.10;
+        Wed, 02 Feb 2022 09:56:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X3LRawdiu+q/Ctvp53dn9yHstWqyzhqA99pUAZzo8EI=;
- b=bkZ77os/Zd3iE15vWnT8A9GTYv7DFV2MxpAzkQ3Dc2bJVx+VsVpYnuH+kUTezNl/LHGpUkjwQqbHlDWot+qJkzhmronq1KeFzEzHQ9Q1MIZkm68rka9LEX5kOx4DXImHKqkfQWwdn1wJQanh7IheqjnOo3lByY6Rn/PoAAotaCA=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by SJ0PR10MB4560.namprd10.prod.outlook.com
- (2603:10b6:a03:2d3::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.18; Wed, 2 Feb
- 2022 17:47:30 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::e5a5:8f49:7ec4:b7b8]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::e5a5:8f49:7ec4:b7b8%5]) with mapi id 15.20.4930.021; Wed, 2 Feb 2022
- 17:47:30 +0000
-Date:   Wed, 2 Feb 2022 20:47:09 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     linux-hams@vger.kernel.org, jreuter@yaina.de, ralf@linux-mips.org,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [Fixes] ax25: add refcount in ax25_dev to avoid UAF bugs
-Message-ID: <20220202174709.GY1978@kadam>
-References: <20220202161846.26198-1-duoming@zju.edu.cn>
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:reply-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=L2RvPhfBDbtngGpkGJK+A4RgKoBNV9y6Rrp7rFd6VTo=;
+        b=qcpcXQzD8FQUrWCRUcjewsoV6gy35z+NW5lPzLWNHGc2SFXlngYObDY72qX9jnzOwU
+         kP/oHwSUZeYqCZHP1H0BNKHlS4GlFFGxHWxmsjk3B5tzBOTK5x6byuexGu14Z4S33QVd
+         VnDg2hx2XzxFdmPkSWvidp/eDQu8okjqrDfaucJ8PMBYXZeVD4NmU9QMyZeOz8K/owX4
+         N9rA6cJ/grf3DIAMKknxSVnnoD0FvlNTYfDJx5tKQ8SGVyFG3RKS0h+nMT4Av2Ht3DUi
+         sHTtE5LQ04amb8nxD8cHkiBpBCAj+K70RYua9gJjBBiM3cc9VQqK5YEAhWNCG9Gmh5vd
+         b/YA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :reply-to:references:mime-version:content-disposition:in-reply-to;
+        bh=L2RvPhfBDbtngGpkGJK+A4RgKoBNV9y6Rrp7rFd6VTo=;
+        b=P3i5a4oNdFxTcEm0snvr4EkcbNepWFFHXGFYeEpromrjexE9x04HDzQboVlzhkk9CG
+         x1ZCBn/q8jpBaMiQB4QZqgt+AysqtqFhnFwwWK0b6caxeFzP4dX/mbrrmH766UQHOGkE
+         y4XpU5GkACGGmRolefsR04BXC3bzcLqLQKITXyem4phB15WLuSJJZX0YvdZdLiphHhho
+         OJiVBQMKcp3bbi5KASX3JlflbJTfpwVy93x5bUV09vU5E16u6YbAWKWYar01zlkBREsa
+         6+yOsiFsN65KdtZclJlhU5EltMLUSKRouUK0dfdI69rwIPE2duIGbYjGGwRJ6OWoFvnd
+         R7pA==
+X-Gm-Message-State: AOAM532TXSgHiL5Ur4uNuc8MgdspFin7afXhDZkrbHvR5D1DwJIZolyF
+        KmUyVVc1yhfkVIHOVHAw/iU2ucvTJmRO
+X-Google-Smtp-Source: ABdhPJzWQFHNANHxEnAmw3dqmxQUiDHM1QiwBGa4mu9uBzWHqbF1/lBLLaySEY2V7li3pK1bAvPuig==
+X-Received: by 2002:a05:620a:15b3:: with SMTP id f19mr20676270qkk.182.1643824598908;
+        Wed, 02 Feb 2022 09:56:38 -0800 (PST)
+Received: from serve.minyard.net (serve.minyard.net. [2001:470:b8f6:1b::1])
+        by smtp.gmail.com with ESMTPSA id i4sm11827367qkn.13.2022.02.02.09.56.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Feb 2022 09:56:38 -0800 (PST)
+Sender: Corey Minyard <tcminyard@gmail.com>
+Received: from minyard.net (unknown [IPv6:2001:470:b8f6:1b:c4e6:e49c:6958:ac58])
+        by serve.minyard.net (Postfix) with ESMTPSA id CFA611800B9;
+        Wed,  2 Feb 2022 17:56:36 +0000 (UTC)
+Date:   Wed, 2 Feb 2022 11:56:35 -0600
+From:   Corey Minyard <minyard@acm.org>
+To:     nick.hawkins@hpe.com
+Cc:     verdun@hpe.com, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org, Shawn Guo <shawnguo@kernel.org>,
+        Stanislav Jakubek <stano.jakubek@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Hao Fang <fanghao11@huawei.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Wang Kefeng <wangkefeng.wang@huawei.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-i2c@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] HPE BMC GXP SUPPORT
+Message-ID: <20220202175635.GC2091156@minyard.net>
+Reply-To: minyard@acm.org
+References: <nick.hawkins@hpe.com>
+ <20220202165315.18282-1-nick.hawkins@hpe.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220202161846.26198-1-duoming@zju.edu.cn>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0033.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4d::14)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d7e83f65-9ec2-47fa-e4e5-08d9e6741590
-X-MS-TrafficTypeDiagnostic: SJ0PR10MB4560:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR10MB4560219EC9DBC340D9CA762D8E279@SJ0PR10MB4560.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:268;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Rw5cvoW5M9+exkgxlTl9v2b9Hk8hx2Gf8KO7ZuFwQUdZDPmXRJ70Ar7QVA74vEJ8fxq0yaxaTDEO19oTmTDr7dVzDmt8QZ4By4JlYKmWjb/uRbW73nW+o+dSz4esS0iX67LUF+7hrivBgm6XIPsszg5jS82CRDZACX0hPOAxb+yojSITBNqcWjz7h6R8RsXpyPbrpcAhzCRC1vnn0ONzZ/HmDtMKnAUQ7Nmxto8EDU04RCGeSDn7QSwhUy9LE3Nt7RNQNi6Go2N+gOmqrXJpt+f0C3xN6z/3y41LY1uzHu/NsPbEVTV41juB2NN4DZpKVM4PnJmIifxJBs89He45t3KaQLUxliSZl7RnYdJD34D7X3XWuOLgopuPcE2nKpf65llcRs8JKXnR9y0W3fJp65/8UDGJGVgahOwwDk7ehrlbyZHG94Ydyojn/HQdMirMG5pj6UMoF1cM1Ao53axdj1s+FNphJuVBOCqBbO/kUcpoBErzSM3RJE8QiRILFuk//vCMIH0s1ODvaXRPeYQaB2N3jovpDTYvs7KgcEV6MlIoaIw/stu3hGL5rjrcJ3elc0o3Cxq9h/atiiTHPEUXQQAk/OcwO5NWrEDK8c2CIhILsOinlhoW+QjADUjwr3nwZxh/g092BAngvlgL3L8WSo22dZ6BjWLjilMvUbZwtQRAoa83h9b3lvSccsUTn7RnOu+GTljGeL1+T1GWCr0Sbw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(66476007)(66946007)(33716001)(4326008)(6486002)(8936002)(86362001)(66556008)(38350700002)(508600001)(38100700002)(8676002)(6916009)(316002)(6512007)(5660300002)(9686003)(44832011)(26005)(33656002)(186003)(1076003)(2906002)(6666004)(83380400001)(52116002)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HU3YEKyQIgkRW4/UQDX98BQ4kCnbApSk/iVZ/PyMaJmDzcd+WU04IEvRg2nd?=
- =?us-ascii?Q?LJQVtjfqUYHlIfF0VmjjtOGJnCnFbNAdEPmYla2kF93thmX4AI8wzfEVf6xl?=
- =?us-ascii?Q?Ubr5Gal6+x5GuDs7fpfKVk/FIE5wf6gWpk2FOJj4e9P32+T8rJ5WXqQuQRwp?=
- =?us-ascii?Q?ZDQzs25H29qJ7zHYAfDkarMWHylNUm+0+9IKSUHVe5JIpqAFBvJYXw5FJ+CG?=
- =?us-ascii?Q?bM5oxUCYJdSX5/nJxMC2YTgVejqJfXNxmrN52aN17fdD9nKCvPlkv3kCVzuj?=
- =?us-ascii?Q?kD3cOXtT4AxjxxSZMwCHVWBUbqSHksU+ZZ1tpO2p4thQUz52sUQrWrg+HsDO?=
- =?us-ascii?Q?U0pP2HgaCJ6swZqqS3mLEhrt2l9MfJKb709U20C9RdDtMrk5VFWc/vnblZK+?=
- =?us-ascii?Q?nHawceraj7DH89lSawXQCtNaNvBEM5ezTslnfMNL/7ol6Q6EdZd5mzput18u?=
- =?us-ascii?Q?UmTHsEvexLxni8hbhDZrgZAbVLXhzfy7jqw/rlynSW84BWYWkKNq3bAt0Dso?=
- =?us-ascii?Q?KkFQZU3lNR7EahsZUVw+Y53ZJhH+W0l+xHJSyQhvzrSacoyhLR78UUpx844x?=
- =?us-ascii?Q?iOJ6mfOC+uZMHuCX2lrJeJzrBAoQnYkdQRu6w8HJUqfbXaBeVtxqTpMLRlei?=
- =?us-ascii?Q?nKHDHXg7kov0bb/AnoCwIMnUjwgptAqfRjKIuakFx8Mf/5I7ITwFAZ97Ts8T?=
- =?us-ascii?Q?OC0bWA4YHyWqOiX5yvp+1Aa2I7G/jvdHu11KMah3ztJcGOXRIDP5SWC+jYtC?=
- =?us-ascii?Q?kNpkzwDIrW5aUHVtvec+OWVLCrzfsdcB987zSDGKNMFGzUWxM9tJ7MUCAR6g?=
- =?us-ascii?Q?pWey5eLp8CsvnK3qETN68CCWZJ3+qt6LfI+j3SUItT8sIYLIK7pcVAD4cD6+?=
- =?us-ascii?Q?FJoUWYyv7pOAIFDglRs1dFEdKHLEYF7Elomwxi6z4a/q8Z52uS5K8GCaUb+Y?=
- =?us-ascii?Q?hVvdkL++I8md1zwta2mvu/+C+DPFog3VXhtG5OizgwpALE0sicJLEpSFgIbK?=
- =?us-ascii?Q?kzms0OkvlntSIeg63q5rkBQiBQ5HBc+KIJLoe7UcHHNEhcN7Mum87hlQy8+K?=
- =?us-ascii?Q?aMMW9/XRnnAOeaq/nqHTmzTaVfnHG9n7MTiyag9AliqCIbZ8cFn12Nyc0GT5?=
- =?us-ascii?Q?wFJf7+xHvPekUTkZ1QjyDeEcNlAafHFVhytGqtK9lXjuDAHsPe8N2/j0+3cb?=
- =?us-ascii?Q?fuH9YEbkqgYKlF7Bh9ObYVhK1X+AriFkcon6Allx1qRxqawG+rYB14ROyN1E?=
- =?us-ascii?Q?4KEULYVXo7ZxzdDy6yELeeawWIclmOtG0lB+WzGmtvNYqxCBCVgGkdfNAjc0?=
- =?us-ascii?Q?aXtLcAUo5LVk7wk2Ns1JC3f7CsH7JIu2UwdAEwKv1FxpNaid7x9OSc6q0Pk4?=
- =?us-ascii?Q?ungfsznOuzy57QWuBeQ0fEx0Tqi2YEI1z+L7Uvlkt+L/RI8wZofnZpK+ej16?=
- =?us-ascii?Q?+4lHd0UlMulciyYD402M0tMjtPVdkQ0PzSjB1Sr5r+eXz/reIk8Vnue7EgUV?=
- =?us-ascii?Q?xx9OoOee5SpJ546oNM8pz15SExXXFu1KTW9zV5uOtLgueTwEKvVsPXJ/YREh?=
- =?us-ascii?Q?xFv9IXtA/tkm1/4ixSMTaKZ2LaspErt6cVKgADXWwbLxe/1T6YSMxKcxg88d?=
- =?us-ascii?Q?ry5TE+b5w+rnk428fPKXsWawTVyZVTkKdpuidqSnM380H4Ajgqxeti0eOUY8?=
- =?us-ascii?Q?Lrh5E6x0+aEAlWOyxIwIdbo8CPA=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d7e83f65-9ec2-47fa-e4e5-08d9e6741590
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2022 17:47:30.5953
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: i7cJkllUcQnVkVYkgBI6viYvsdKHGgLsAvkupgpLO4iy/axckYrTiGtNyInc4cGC5bLkSGMf+WiKynlezf+g79VV+9JPHyFc+xGdT2+t/7E=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB4560
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10246 signatures=673430
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxscore=0 spamscore=0
- bulkscore=0 adultscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202020099
-X-Proofpoint-ORIG-GUID: HnzHLR8cMhshtZoesUKYb6vwJ8xPyLmK
-X-Proofpoint-GUID: HnzHLR8cMhshtZoesUKYb6vwJ8xPyLmK
+In-Reply-To: <20220202165315.18282-1-nick.hawkins@hpe.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Duoming Zhou,
-
-The original patch was already applied so you need to just send the
-fixes by themselves on top of the net-next git tree.
-
-> ---
->  include/net/ax25.h    | 12 ++++++++++++
->  net/ax25/af_ax25.c    | 20 ++++++++++++++++----
->  net/ax25/ax25_dev.c   | 33 +++++++++++++++++++++++++++------
->  net/ax25/ax25_route.c | 27 ++++++++++++++++++++++-----
->  4 files changed, 77 insertions(+), 15 deletions(-)
+On Wed, Feb 02, 2022 at 10:52:50AM -0600, nick.hawkins@hpe.com wrote:
+> From: Nick Hawkins <nick.hawkins@hpe.com>
 > 
-> diff --git a/include/net/ax25.h b/include/net/ax25.h
-> index 526e4958919..1a38b1ad529 100644
-> --- a/include/net/ax25.h
-> +++ b/include/net/ax25.h
-> @@ -239,6 +239,7 @@ typedef struct ax25_dev {
->  #if defined(CONFIG_AX25_DAMA_SLAVE) || defined(CONFIG_AX25_DAMA_MASTER)
->  	ax25_dama_info		dama;
->  #endif
-> +	refcount_t		refcount;
->  } ax25_dev;
+> GXP is the name of the HPE SoC.
+> This SoC is used to implement BMC features of HPE servers
+> (all ProLiant, Synergy, and many Apollo, and Superdome machines)
+> It does support many features including:
+> 	ARMv7 architecture, and it is based on a Cortex A9 core
+> 	Use an AXI bus to which
+> 		a memory controller is attached, as well as
+>                  multiple SPI interfaces to connect boot flash,
+>                  and ROM flash, a 10/100/1000 Mac engine which
+>                  supports SGMII (2 ports) and RMII
+> 		Multiple I2C engines to drive connectivity with a host infrastructure
+> 		A video engine which support VGA and DP, as well as
+>                  an hardware video encoder
+> 		Multiple PCIe ports
+> 		A PECI interface, and LPC eSPI
+> 		Multiple UART for debug purpose, and Virtual UART for host connectivity
+> 		A GPIO engine
+> This Patch Includes:
+> 	Documentation for device tree bindings
+> 	Device Tree Bindings
+> 	GXP Timer Support
+> 	GXP Architecture Support
+
+This is far too big for a single patch.  It needs to be broken into
+functional chunks that can be reviewed individually.  Each driver and
+each device tree change along with it's accompanying code need to be
+done in individual patches.  The way it is it can't be reviewed in any
+sane manner.
+
+-corey
+
+> 
+> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+> ---
+>  .../bindings/display/hpe,gxp-thumbnail.txt    |  21 +
+>  .../devicetree/bindings/gpio/hpe,gxp-gpio.txt |  16 +
+>  .../devicetree/bindings/i2c/hpe,gxp-i2c.txt   |  19 +
+>  .../bindings/ipmi/hpegxp-kcs-bmc-cfg.txt      |  13 +
+>  .../bindings/ipmi/hpegxp-kcs-bmc.txt          |  21 +
+>  .../memory-controllers/hpe,gxp-srom.txt       |  13 +
+>  .../devicetree/bindings/mtd/hpe,gxp.txt       |  16 +
+>  .../bindings/net/hpe,gxp-umac-mdio.txt        |  21 +
+>  .../devicetree/bindings/net/hpe,gxp-umac.txt  |  20 +
+>  .../devicetree/bindings/pwm/hpe,gxp-fan.txt   |  15 +
+>  .../bindings/serial/hpe,gxp-vuart-cfg.txt     |  17 +
+>  .../bindings/serial/hpe,gxp-vuart.txt         |  23 +
+>  .../bindings/soc/hpe/hpe,gxp-chif.txt         |  16 +
+>  .../bindings/soc/hpe/hpe,gxp-csm.txt          |  14 +
+>  .../bindings/soc/hpe/hpe,gxp-dbg.txt          |  18 +
+>  .../bindings/soc/hpe/hpe,gxp-fn2.txt          |  20 +
+>  .../bindings/soc/hpe/hpe,gxp-xreg.txt         |  19 +
+>  .../devicetree/bindings/spi/hpe,gxp-spifi.txt |  76 +++
+>  .../bindings/thermal/hpe,gxp-coretemp.txt     |  14 +
+>  .../bindings/timer/hpe,gxp-timer.txt          |  18 +
+>  .../devicetree/bindings/usb/hpe,gxp-udc.txt   |  21 +
+>  .../devicetree/bindings/vendor-prefixes.yaml  |   4 +-
+>  .../bindings/watchdog/hpe,gxp-wdt.txt         |  11 +
+>  MAINTAINERS                                   |  14 +
+>  arch/arm/Kconfig                              |   2 +
+>  arch/arm/boot/dts/Makefile                    |   2 +
+>  arch/arm/boot/dts/hpe-bmc-dl360gen10.dts      | 207 +++++++
+>  arch/arm/boot/dts/hpe-gxp.dtsi                | 555 ++++++++++++++++++
+>  arch/arm/configs/gxp_defconfig                | 243 ++++++++
+>  arch/arm/mach-hpe/Kconfig                     |  21 +
+>  arch/arm/mach-hpe/Makefile                    |   1 +
+>  arch/arm/mach-hpe/gxp.c                       |  62 ++
+>  drivers/clocksource/Kconfig                   |   8 +
+>  drivers/clocksource/Makefile                  |   1 +
+>  drivers/clocksource/gxp_timer.c               | 158 +++++
+>  35 files changed, 1719 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/devicetree/bindings/display/hpe,gxp-thumbnail.txt
+>  create mode 100644 Documentation/devicetree/bindings/gpio/hpe,gxp-gpio.txt
+>  create mode 100644 Documentation/devicetree/bindings/i2c/hpe,gxp-i2c.txt
+>  create mode 100644 Documentation/devicetree/bindings/ipmi/hpegxp-kcs-bmc-cfg.txt
+>  create mode 100644 Documentation/devicetree/bindings/ipmi/hpegxp-kcs-bmc.txt
+>  create mode 100644 Documentation/devicetree/bindings/memory-controllers/hpe,gxp-srom.txt
+>  create mode 100644 Documentation/devicetree/bindings/mtd/hpe,gxp.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/hpe,gxp-umac-mdio.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/hpe,gxp-umac.txt
+>  create mode 100644 Documentation/devicetree/bindings/pwm/hpe,gxp-fan.txt
+>  create mode 100644 Documentation/devicetree/bindings/serial/hpe,gxp-vuart-cfg.txt
+>  create mode 100644 Documentation/devicetree/bindings/serial/hpe,gxp-vuart.txt
+>  create mode 100644 Documentation/devicetree/bindings/soc/hpe/hpe,gxp-chif.txt
+>  create mode 100644 Documentation/devicetree/bindings/soc/hpe/hpe,gxp-csm.txt
+>  create mode 100644 Documentation/devicetree/bindings/soc/hpe/hpe,gxp-dbg.txt
+>  create mode 100644 Documentation/devicetree/bindings/soc/hpe/hpe,gxp-fn2.txt
+>  create mode 100644 Documentation/devicetree/bindings/soc/hpe/hpe,gxp-xreg.txt
+>  create mode 100644 Documentation/devicetree/bindings/spi/hpe,gxp-spifi.txt
+>  create mode 100644 Documentation/devicetree/bindings/thermal/hpe,gxp-coretemp.txt
+>  create mode 100644 Documentation/devicetree/bindings/timer/hpe,gxp-timer.txt
+>  create mode 100644 Documentation/devicetree/bindings/usb/hpe,gxp-udc.txt
+>  create mode 100644 Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.txt
+>  create mode 100644 arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
+>  create mode 100644 arch/arm/boot/dts/hpe-gxp.dtsi
+>  create mode 100644 arch/arm/configs/gxp_defconfig
+>  create mode 100644 arch/arm/mach-hpe/Kconfig
+>  create mode 100644 arch/arm/mach-hpe/Makefile
+>  create mode 100644 arch/arm/mach-hpe/gxp.c
+>  create mode 100644 drivers/clocksource/gxp_timer.c
+> 
+> diff --git a/Documentation/devicetree/bindings/display/hpe,gxp-thumbnail.txt b/Documentation/devicetree/bindings/display/hpe,gxp-thumbnail.txt
+> new file mode 100644
+> index 000000000000..e6d37ecce72b
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/display/hpe,gxp-thumbnail.txt
+> @@ -0,0 +1,21 @@
+> +* GXP HPE VIDEO THUMBNAIL DRIVER
+> +
+> +Required properties:
+> +- compatible: Must be "hpe,gxp-thumbnail".
+> +- reg       : Physical base address and length of the controller's registers.
+> +- clocks    : phandle + clock specifier pair of the FB reference clock.
+> +- bits-per-pixel: Bits per pixel, must be 32.
+> +- width: Width in pixels, must be 800.
+> +- height: Height in pixels, must be 600.
+> +
+> +Optional properties:
+> +- lcd-supply: Regulator for LCD supply voltage.
+> +
+> +Example:
+> +	thumbnail: thumbnail@c0000500 {
+> +		compatible = "hpe,gxp-thumbnail";
+> +		reg = <0xc0000500 0x20>;
+> +		bits-per-pixel = <32>;
+> +		width = <800>;
+> +		height = <600>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/gpio/hpe,gxp-gpio.txt b/Documentation/devicetree/bindings/gpio/hpe,gxp-gpio.txt
+> new file mode 100644
+> index 000000000000..568d26d785d2
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/gpio/hpe,gxp-gpio.txt
+> @@ -0,0 +1,16 @@
+> +*HPE GXP GPIO INTERFACE
+> +
+> +Required properties:
+> +- compatible: Must be "hpe,gxp-gpio".
+> +- #gpio-cells: The number of cells to describe a GPIO, this should be 2.
+> +- csm: Phandle to the GXP PCI CSM Controller.
+> +- vuch0_handle:	Phandle to the Virtual USB Hub Controller (VUHC).
+> +
+> +Example of gpio-controller nodes for a MPC8347 SoC:
+> +
+> +	gpio: gpio {
+> +		compatible = "hpe,gxp-gpio";
+> +		#gpio-cells = <2>;
+> +		csm_handle = <&csm>;
+> +		vuhc0_handle = <&vuhc0>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/i2c/hpe,gxp-i2c.txt b/Documentation/devicetree/bindings/i2c/hpe,gxp-i2c.txt
+> new file mode 100644
+> index 000000000000..cdca203f8c3b
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/i2c/hpe,gxp-i2c.txt
+> @@ -0,0 +1,19 @@
+> +* HPE GXP I2C Interface
+> +
+> +Required Properties:
+> +
+> +  - compatible: Must be "hpe,gxp-i2c"
+> +  - reg: The I2C address of the device.
+> +  - interrupts: The interrupt number.
+> +  - interrupt-parent: Interrupt controller to which the I2C bus is reporting
+> +  - i2cg-handle: I2C Global interrupt status register handler
+> +
+> +Example:
+> +
+> +	i2c0: i2c@c0002000 {
+> +		compatible = "hpe,gxp-i2c";
+> +		reg = <0xc0002000 0x70>;
+> +		interrupts = <9>;
+> +		interrupt-parent = <&vic0>;
+> +		i2cg-handle = <&i2cg>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/ipmi/hpegxp-kcs-bmc-cfg.txt b/Documentation/devicetree/bindings/ipmi/hpegxp-kcs-bmc-cfg.txt
+> new file mode 100644
+> index 000000000000..20deef7a6be2
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/ipmi/hpegxp-kcs-bmc-cfg.txt
+> @@ -0,0 +1,13 @@
+> +* HPE GXP KCS IPMI DRIVER
+> +
+> +Required properties:
+> +- compatible : Must contain "hpe,gxp-kcs-bmc-cfg", "simple-mfd", "syscon".
+> +- reg : Specifies base physical address and size of the configuration registers.
+> +
+> +Example:
+> +
+> +	kcs_conf: kcs_conf@80fc0430 {
+> +			compatible = "hpe,gxp-kcs-bmc-cfg", "simple-mfd", "syscon";
+> +			reg = <0x80fc0430 0x100>;
+> +	};
+> +
+> diff --git a/Documentation/devicetree/bindings/ipmi/hpegxp-kcs-bmc.txt b/Documentation/devicetree/bindings/ipmi/hpegxp-kcs-bmc.txt
+> new file mode 100644
+> index 000000000000..137411243f3f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/ipmi/hpegxp-kcs-bmc.txt
+> @@ -0,0 +1,21 @@
+> +* HPE GXP KCS IPMI DRIVER
+> +
+> +Required properties:
+> +- compatible : Must contain "hpe,gxp-kcs-bmc".
+> +- interrupts : The interrupt number.
+> +- reg : Specifies base physical address and size of the control registers.
+> +- kcs_chan : The KCS channel number in the controller.
+> +- status: The status signal from the controller.
+> +- kcs-bmc-cfg = Phandle to the KCS Configuration registers.
+> +
+> +Example:
+> +
+> +	kcs_reg: kcs_reg@80fd0400 {
+> +		compatible = "hpe,gxp-kcs-bmc";
+> +		reg = <0x80fd0400 0x8>;
+> +		interrupts = <6>;
+> +		interrupt-parent = <&vic1>;
+> +		kcs_chan = <1>;
+> +		status = "okay";
+> +		kcs-bmc-cfg = <&kcs_conf>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/memory-controllers/hpe,gxp-srom.txt b/Documentation/devicetree/bindings/memory-controllers/hpe,gxp-srom.txt
+> new file mode 100644
+> index 000000000000..027cb6fbc93c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/memory-controllers/hpe,gxp-srom.txt
+> @@ -0,0 +1,13 @@
+> +* HPE GXP SROM CONTROLLER
+> +
+> +Required properties:
+> +
+> +- compatible: Must be one of "hpe,gxp-srom", "simple-mfd", "syscon".
+> +- reg: Specifies base physical address and size of the control registers.
+> +
+> +Example:
+> +
+> +	srom@80fc0000 {
+> +		compatible = "hpe,gxp-srom", "simple-mfd", "syscon";
+> +		reg = <0x80fc0000 0x100>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/mtd/hpe,gxp.txt b/Documentation/devicetree/bindings/mtd/hpe,gxp.txt
+> new file mode 100644
+> index 000000000000..8c6f54af0260
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mtd/hpe,gxp.txt
+> @@ -0,0 +1,16 @@
+> +
+> +* HPE GXP BMC
+> +
+> +HPE GXP SoC definition
+> +
+> +Required properties:
+> +  - compatible : Must contain: "HPE,GXP"
+> +
+> +Example:
+> +/ {
+> +	model = "Hewlett Packard Enterprise GXP BMC";
+> +	compatible = "HPE,GXP";
+> +	#address-cells = <1>;
+> +	#size-cells = <1>;
+> +
+> +}
+> diff --git a/Documentation/devicetree/bindings/net/hpe,gxp-umac-mdio.txt b/Documentation/devicetree/bindings/net/hpe,gxp-umac-mdio.txt
+> new file mode 100644
+> index 000000000000..fa48ecb22c92
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/hpe,gxp-umac-mdio.txt
+> @@ -0,0 +1,21 @@
+> +* HPE GXP UMAC MDIO Interface Controller
+> +
+> +Required properties:
+> +- compatible: Must contain "hpe,gxp-umac-mdio".
+> +- reg:  Specifies base physical address and size of the registers.
+> +- interrupts: The interrupt number.
+> +- Cells which are configuring the external phy interfaces. Numbered through relative addressing each phy is compatible with a standard ethernet-phy-ieee802.3 phy.
+> +
+> +Example:
+> +
+> +	mdio0: mdio@c0004080 {
+> +		compatible = "hpe,gxp-umac-mdio";
+> +		reg = <0xc0004080 0x10>;
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +		ext_phy0: ethernt-phy@0 {
+> +			compatible = "ethernet-phy-ieee802.3-c22";
+> +			phy-mode = "sgmii";
+> +			reg = <0>;
+> +		};
+> +	};
+> diff --git a/Documentation/devicetree/bindings/net/hpe,gxp-umac.txt b/Documentation/devicetree/bindings/net/hpe,gxp-umac.txt
+> new file mode 100644
+> index 000000000000..3a620b4ad999
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/hpe,gxp-umac.txt
+> @@ -0,0 +1,20 @@
+> +* HPE GXP UMAC Controller
+> +
+> +Required properties:
+> +- compatible: Must contain "hpe,gxp-umac".
+> +- reg:  Specifies base physical address and size of the registers.
+> +- interrupts: The interrupt number.
+> +- interrupt-parent: specify main interrupt controller handler
+> +- phy-handle: Phandle to a PHY on the MDIO bus.
+> +- int-phy-handle: Phandle to PHY interrupt handler.
+> +
+> +Example:
+> +
+> +	umac0: umac@c0004000 {
+> +		compatible = "hpe,gxp-umac";
+> +		reg = <0xc0004000 0x80>;
+> +		interrupts = <10>;
+> +		interrupt-parent = <&vic0>;
+> +		phy-handle = <&ext_phy0>;
+> +		int-phy-handle = <&int_phy0>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/pwm/hpe,gxp-fan.txt b/Documentation/devicetree/bindings/pwm/hpe,gxp-fan.txt
+> new file mode 100644
+> index 000000000000..21446b7cafd9
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/hpe,gxp-fan.txt
+> @@ -0,0 +1,15 @@
+> +* HPE GXP Fan Controller
+> +
+> +Required properties:
+> +- compatible: Must contain "hpe,gxp-fan-ctrl".
+> +- reg: Physical base address and length of the controller's registers.
+> +- xreg_handle: Phandle to the xregister controller for fan control.
+> +- fn2_handle: Phandle to the FN2 interface.
+> +
+> +Example:
+> +	fanctrl: fanctrl@c1000c00 {
+> +			compatible = "hpe,gxp-fan-ctrl";
+> +			reg = <0xc1000c00 0x200>;
+> +			xreg_handle = <&xreg>;
+> +			fn2_handle = <&fn2>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/serial/hpe,gxp-vuart-cfg.txt b/Documentation/devicetree/bindings/serial/hpe,gxp-vuart-cfg.txt
+> new file mode 100644
+> index 000000000000..8bad8c39d044
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/hpe,gxp-vuart-cfg.txt
+> @@ -0,0 +1,17 @@
+> +*HPE Virtual UART Controller CONFIGURATION
+> +
+> +This controller is used to forward host serial to BMC chip
+> +
+> +Required properties:
+> +
+> +- compatible : Must contain "hpe,gxp-vuarta_cfg", "simple-mfd", "syscon".
+> +- reg : Specifies base physical address and size of the configuration register.
+> +- reg-io-width: io register width in bytes, must be 1.
+> +
+> +Example:
+> +
+> +	vuart_a_cfg: vuarta_cfg@80fc0230 {
+> +		compatible = "hpe,gxp-vuarta_cfg", "simple-mfd", "syscon";
+> +		reg = <0x80fc0230 0x100>;
+> +		reg-io-width = <1>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/serial/hpe,gxp-vuart.txt b/Documentation/devicetree/bindings/serial/hpe,gxp-vuart.txt
+> new file mode 100644
+> index 000000000000..9c5cc14d9474
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/hpe,gxp-vuart.txt
+> @@ -0,0 +1,23 @@
+> +*HPE VUART Controller port
+> +
+> +Required properties:
+> +
+> +- compatible :  Must contain "hpe,gxp-vuart".
+> +- reg        :  Specifies base physical address and size of the registers.
+> +- interrupts :  The interrupt number.
+> +- clock-frequency: The frequency of the clock input to the UART in Hz.
+> +- status: The status signal from the controller.
+> +
+> +Example:
+> +
+> +	vuart_a: vuart_a@80fd0200 {
+> +		compatible = "hpe,gxp-vuart";
+> +		reg = <0x80fd0200 0x100>;
+> +		interrupts = <2>;
+> +		interrupt-parent = <&vic1>;
+> +		clock-frequency = <1846153>;
+> +		reg-shift = <0>;
+> +		status = "okay";
+> +		serial-line = <3>;
+> +		vuart_cfg = <&vuart_a_cfg>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-chif.txt b/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-chif.txt
+> new file mode 100644
+> index 000000000000..9d5a8763ca22
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-chif.txt
+> @@ -0,0 +1,16 @@
+> +* HPE GXP CHIF INTERFACE
+> +
+> +Define the basic CHannel InterFace (CHIF) communication path between BMC and Host through PCI.
+> +Interrupts are handled through PCI function 2
+> +
+> +Required parent device properties:
+> +- compatible : Should be "hpe,gxp-chif".
+> +- interrupts : The interrupt number.
+> +
+> +Example:
+> +
+> +	chif {
+> +			compatible = "hpe,gxp-chif";
+> +			interrupts = <12>;
+> +		};
+> +	};
+> diff --git a/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-csm.txt b/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-csm.txt
+> new file mode 100644
+> index 000000000000..8d28fd1ec46a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-csm.txt
+> @@ -0,0 +1,14 @@
+> +* HPE GXP PCI CSM INTERFACE
+> +
+> +Required parent device properties:
+> +- compatible : Should be "hpe,gxp-csm", "simple-mfd", "syscon".
+> +- reg : Specifies base physical address and size of control registers.
+> +
+> +Example:
+> +
+> +	csm: csm@8000005c {
+> +		compatible = "hpe,gxp-csm", "simple-mfd", "syscon";
+> +		reg = <0x8000005c 0x2>, <0x800000de 0x1>, <0x800000e7 0x1>;
+> +	};
+> +
+> +
+> diff --git a/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-dbg.txt b/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-dbg.txt
+> new file mode 100644
+> index 000000000000..39e3ed68a34d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-dbg.txt
+> @@ -0,0 +1,18 @@
+> +* HPE GXP DBG INTERFACE
+> +
+> +Specify host debug interface. Used presently to report ROM POST code during host initialization phases
+> +
+> +Required parent device properties:
+> +- compatible : Should be "hpe,gxp-dbg".
+> +- reg : Specifies base physical address and size of the control/data registers.
+> +- interrupts: The interrupt number.
+> +- interrupt-parent: The interrupt controller to which the interface is wired to
+> +
+> +Example:
+> +
+> +	post@800000a0 {
+> +		compatible = "hpe,gxp-dbg";
+> +		reg = <0x800000a0 0x20>;
+> +		interrupts = <10>;
+> +		interrupt-parent = <&vic1>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-fn2.txt b/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-fn2.txt
+> new file mode 100644
+> index 000000000000..eb8328f59eda
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-fn2.txt
+> @@ -0,0 +1,20 @@
+> +* HPE GXP PCI FN2 INTERFACE CONTROLLER
+> +
+> +Required parent device properties:
+> +- compatible : Should be "hpe,gxp-fn2", "simple-mfd", "syscon".
+> +- reg : Specifies base physical address and size of the control/data/memory mapped registers.
+> +- xreg_handle : Phandle to the xregister controller interface.
+> +- #gpio-cells : The number of cells to describe a GPIO, this should be 2.
+> +- interrupts : interrupt number to which PCI FN2 is connected to
+> +- interrupt-parets : interrupt controller to which PCI FN2 is connected to
+> +
+> +Example:
+> +
+> +	fn2: fn2@80200000 {
+> +		compatible = "hpe,gxp-fn2", "simple-mfd", "syscon";
+> +		reg = <0x80200000 0x100000>;
+> +		xreg_handle = <&xreg>;
+> +		interrupts = <0>;
+> +		interrupt-parent = <&vic1>;
+> +		#gpio-cells = <2>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-xreg.txt b/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-xreg.txt
+> new file mode 100644
+> index 000000000000..3ec86a478302
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/soc/hpe/hpe,gxp-xreg.txt
+> @@ -0,0 +1,19 @@
+> +* HPE GXP XREG INTERFACE
+> +
+> +Required parent device properties:
+> +- compatible : Should be "hpe,gxp-fn2", "simple-mfd", "syscon".
+> +- reg : Specifies base physical address and size of the control registers.
+> +- interrupts: The interrupt number.
+> +- interrupt-parent: main interrupt controller to which xreg is connected to
+> +- #gpio-cells : The number of cells to describe a GPIO, this should be 2.
+> +
+> +Example:
+> +
+> +	xreg: xreg@d1000300 {
+> +		compatible = "hpe,gxp-xreg", "simple-mfd", "syscon";
+> +		reg = <0xd1000300 0xFF>;
+> +		interrupts = <26>;
+> +		interrupt-parent = <&vic0>;
+> +		#gpio-cells = <2>;
+> +	};
+> +
+> diff --git a/Documentation/devicetree/bindings/spi/hpe,gxp-spifi.txt b/Documentation/devicetree/bindings/spi/hpe,gxp-spifi.txt
+> new file mode 100644
+> index 000000000000..78eac0ac82f4
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/spi/hpe,gxp-spifi.txt
+> @@ -0,0 +1,76 @@
+> +* HPE GXP SPI FLASH INTERFACE
+> +
+> +Required properties:
+> +  - compatible : Must contain: "hpe,gxp-spifi"
+> +  - reg : the first contains the control register location and length,
+> +          the second contains the memory window mapping address and length,
+> +		  the third contains the configuration register location and length
+> +  - interrupts: The interrupt number.
+> +  - #address-cells : must be 1 corresponding to chip select child binding
+> +  - #size-cells : must be 0 corresponding to chip select child binding
+> +
+> +The child nodes are the SPI flash modules which must have a compatible
+> +property as specified in bindings/mtd/jedec,spi-nor.txt
+> +
+> +Example:
+> +	spifi0: spifi@c0000200 {
+> +		compatible = "hpe,gxp-spifi";
+> +		reg = <0xc0000200 0x80>, <0xc000c000 0x100>, <0xf8000000 0x8000000>;
+> +		interrupts = <20>;
+> +		interrupt-parent = <&vic0>;
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		flash@0 {
+> +			compatible = "jedec,spi-nor";
+> +			reg = <0>;
+> +			partitions {
+> +				compatible = "fixed-partitions";
+> +				#address-cells = <1>;
+> +				#size-cells = <1>;
+> +
+> +				u-boot@0 {
+> +					label = "u-boot";
+> +					reg = <0x0 0x60000>;
+> +				};
+> +				u-boot-env@60000 {
+> +					label = "u-boot-env";
+> +					reg = <0x60000 0x20000>;
+> +				};
+> +				kernel@80000 {
+> +					label = "kernel";
+> +					reg = <0x80000 0x4c0000>;
+> +				};
+> +				rofs@540000 {
+> +					label = "rofs";
+> +					reg = <0x540000 0x1740000>;
+> +				};
+> +				rwfs@1c80000 {
+> +					label = "rwfs";
+> +					reg = <0x1c80000 0x250000>;
+> +				};
+> +				section@1edf000{
+> +					label = "section";
+> +					reg = <0x1ed0000 0x130000>;
+> +				};
+> +			};
+> +		};
+> +
+> +		flash@1 {
+> +			compatible = "jedec,spi-nor";
+> +			reg = <1>;
+> +			partitions {
+> +				compatible = "fixed-partitions";
+> +				#address-cells = <1>;
+> +				#size-cells = <1>;
+> +				host-prime@0 {
+> +					label = "host-prime";
+> +					reg = <0x0 0x02000000>;
+> +				};
+> +				host-second@2000000 {
+> +					label = "host-second";
+> +					reg = <0x02000000 0x02000000>;
+> +				};
+> +			};
+> +		};
+> +	};
+> diff --git a/Documentation/devicetree/bindings/thermal/hpe,gxp-coretemp.txt b/Documentation/devicetree/bindings/thermal/hpe,gxp-coretemp.txt
+> new file mode 100644
+> index 000000000000..bc83db03166a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/thermal/hpe,gxp-coretemp.txt
+> @@ -0,0 +1,14 @@
+> +* HPE GXP CORETEMP INTERFACE
+> +
+> +Required parent device properties:
+> +- compatible : Should be "hpe,gxp-coretemp".
+> +- reg : Specifies base physical address and size of the control register.
+> +
+> +Example:
+> +
+> +	coretemp: coretemp@c0000130 {
+> +		compatible = "hpe,gxp-coretemp";
+> +		reg = <0xc0000130 0x8>;
+> +	};
+> +
+> +
+> diff --git a/Documentation/devicetree/bindings/timer/hpe,gxp-timer.txt b/Documentation/devicetree/bindings/timer/hpe,gxp-timer.txt
+> new file mode 100644
+> index 000000000000..3e491b8ea740
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/timer/hpe,gxp-timer.txt
+> @@ -0,0 +1,18 @@
+> +*HPE GXP TIMER
+> +
+> +Required properties:
+> +
+> +- compatible : Must be "hpe,gxp-timer"
+> +- reg : The GXP Timer Control Registers (Addresses + size) tuples list.
+> +- interrupts : The interrupt number.
+> +- clock-frequency : The frequency of the clock that drives the counter, in Hz.
+> +
+> +Example:
+> +
+> +	timer0: timer@c0000080 {
+> +		compatible = "hpe,gxp-timer";
+> +		reg = <0xc0000080 0x1>, <0xc0000094 0x01>, <0xc0000088 0x08>;
+> +		interrupts = <0>;
+> +		interrupt-parent = <&vic0>;
+> +		clock-frequency = <400000000>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/usb/hpe,gxp-udc.txt b/Documentation/devicetree/bindings/usb/hpe,gxp-udc.txt
+> new file mode 100644
+> index 000000000000..ed764d64a169
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/usb/hpe,gxp-udc.txt
+> @@ -0,0 +1,21 @@
+> +* HPE USB Device Port Controller
+> +
+> +Required properties:
+> +- compatible: Must be "hpe,gxp-udc".
+> +- reg: Specifies base physical address and size of the registers.
+> +- interrupts: The interrupt number.
+> +- vdevnum: The particular usb device controller port.
+> +- fepnum: The particular usb device controller options.
+> +- udcg-handle: The usb device controller hub.
+> +
+> +Example:
+> +
+> +	udc0: udc@80401000 {
+> +		compatible = "hpe,gxp-udc";
+> +		reg = <0x80401000 0x1000>;
+> +		interrupts = <13>;
+> +		interrupt-parent = <&vic1>;
+> +		vdevnum = <0>;
+> +		fepnum = <7>;
+> +		udcg-handle = <&udcg>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> index 294093d45a23..913f722a6b8d 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> @@ -514,7 +514,9 @@ patternProperties:
+>    "^hoperun,.*":
+>      description: Jiangsu HopeRun Software Co., Ltd.
+>    "^hp,.*":
+> -    description: Hewlett Packard
+> +    description: Hewlett Packard Inc.
+> +  "^hpe,.*":
+> +    description: Hewlett Packard Enterprise
+>    "^hsg,.*":
+>      description: HannStar Display Co.
+>    "^holtek,.*":
+> diff --git a/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.txt b/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.txt
+> new file mode 100644
+> index 000000000000..3f17c1a00a5c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.txt
+> @@ -0,0 +1,11 @@
+> +* HPE GXP Controlled Watchdog
+> +
+> +Required Properties:
+> +- compatible: Should contain "hpe,gxp-wdt".
+> +- reg: The GXP Watchdog Control Registers (Addresses + size) tuples list.
+> +
+> +Example:
+> +	watchdog: watchdog@c0000090 {
+> +		compatible = "hpe,gxp-wdt";
+> +		reg = <0xc0000090 0x02>, <0xc0000096 0x01>;
+> +	};
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index f41088418aae..2a4fcfff0104 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -8385,6 +8385,20 @@ L:	linux-efi@vger.kernel.org
+>  S:	Maintained
+>  F:	block/partitions/efi.*
 >  
->  typedef struct ax25_cb {
-> @@ -293,6 +294,17 @@ static __inline__ void ax25_cb_put(ax25_cb *ax25)
->  	}
->  }
+> +GXP ARCHITECTURE
+> +M:	Jean-Marie Verdun <verdun@hpe.com>
+> +M:	Nick Hawkins <nick.hawkins@hpe.com>
+> +S:	Maintained
+> +F:	arch/arm/boot/dts/gxp.dts
+> +F:	arch/arm/configs/gxp_defconfig
+> +F:	arch/arm/mach-hpe/gxp.c
+> +
+> +GXP TIMER
+> +M:	Jean-Marie Verdun <verdun@hpe.com>
+> +M:	Nick Hawkins <nick.hawkins@hpe.com>
+> +S:	Maintained
+> +F:	drivers/clocksource/gxp_timer.c
+> +
+>  H8/300 ARCHITECTURE
+>  M:	Yoshinori Sato <ysato@users.sourceforge.jp>
+>  L:	uclinux-h8-devel@lists.sourceforge.jp (moderated for non-subscribers)
+> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> index 4c97cb40eebb..6998b5b5f59e 100644
+> --- a/arch/arm/Kconfig
+> +++ b/arch/arm/Kconfig
+> @@ -618,6 +618,8 @@ source "arch/arm/mach-highbank/Kconfig"
 >  
-> +static inline void ax25_dev_hold(ax25_dev *ax25_dev)
+>  source "arch/arm/mach-hisi/Kconfig"
+>  
+> +source "arch/arm/mach-hpe/Kconfig"
+> +
+>  source "arch/arm/mach-imx/Kconfig"
+>  
+>  source "arch/arm/mach-integrator/Kconfig"
+> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+> index 235ad559acb2..a96b4d5b7f68 100644
+> --- a/arch/arm/boot/dts/Makefile
+> +++ b/arch/arm/boot/dts/Makefile
+> @@ -1549,3 +1549,5 @@ dtb-$(CONFIG_ARCH_ASPEED) += \
+>  	aspeed-bmc-vegman-n110.dtb \
+>  	aspeed-bmc-vegman-rx20.dtb \
+>  	aspeed-bmc-vegman-sx20.dtb
+> +dtb-$(CONFIG_ARCH_HPE_GXP) += \
+> +	hpe-bmc-dl360gen10.dtb
+> diff --git a/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts b/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
+> new file mode 100644
+> index 000000000000..278bf2bca2c8
+> --- /dev/null
+> +++ b/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
+> @@ -0,0 +1,207 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Device Tree file for HPE DL360Gen10
+> + */
+> +
+> +/include/ "hpe-gxp.dtsi"
+> +
+> +/ {
+> +	#address-cells = <1>;
+> +	#size-cells = <1>;
+> +	compatible = "hpe,gxp";
+> +	model = "Hewlett Packard Enterprise ProLiant dl360 Gen10";
+> +
+> +	chosen {
+> +		bootargs = "earlyprintk console=ttyS0,115200 user_debug=31";
+> +	};
+> +
+> +	aliases {
+> +		ethernet0 = &umac0;
+> +		ethernet1 = &umac1;
+> +	};
+> +
+> +	memory@40000000 {
+> +		device_type = "memory";
+> +		reg = <0x40000000 0x20000000>;
+> +	};
+> +
+> +	ahb {
+> +		umac0: umac@c0004000 {
+> +			mac-address = [94 18 82 16 04 d8];
+> +		};
+> +
+> +		umac1: umac@c0005000 {
+> +			mac-address = [94 18 82 16 04 d9];
+> +		};
+> +
+> +		udc0: udc@80401000 {
+> +			compatible = "hpe,gxp-udc";
+> +			reg = <0x80401000 0x1000>;
+> +			interrupts = <13>;
+> +			interrupt-parent = <&vic1>;
+> +			vdevnum = <0>;
+> +			fepnum = <7>;
+> +			udcg-handle = <&udcg>;
+> +		};
+> +
+> +		udc1: udc@80402000 {
+> +			compatible = "hpe,gxp-udc";
+> +			reg = <0x80402000 0x1000>;
+> +			interrupts = <13>;
+> +			interrupt-parent = <&vic1>;
+> +			vdevnum = <1>;
+> +			fepnum = <7>;
+> +			udcg-handle = <&udcg>;
+> +		};
+> +
+> +		udc2: udc@80403000 {
+> +			compatible = "hpe,gxp-udc";
+> +			reg = <0x80403000 0x1000>;
+> +			interrupts = <13>;
+> +			interrupt-parent = <&vic1>;
+> +			vdevnum = <2>;
+> +			fepnum = <4>;
+> +			udcg-handle = <&udcg>;
+> +		};
+> +
+> +		fn2: fn2@80200000 {
+> +			gpio-line-names =
+> +				"POWER_OUT", "PS_PWROK", "PCIERST", "POST_COMPLETE", "", "",
+> +				"", "", "", "", "", "", "", "", "", "",
+> +				"", "", "", "", "", "", "", "", "", "",
+> +				"", "", "", "", "", "", "", "", "", "",
+> +				"", "", "", "", "", "", "", "", "", "",
+> +				"", "", "", "", "", "", "", "", "", "",
+> +				"", "", "", "", "", "", "", "", "", "",
+> +				"", "", "", "", "", "", "", "", "", "",
+> +				"", "", "", "", "", "", "", "", "", "",
+> +				"", "", "", "", "", "", "", "", "", "",
+> +				"", "", "", "";
+> +		};
+> +
+> +		xreg: xreg@d1000300 {
+> +			gpio-line-names =
+> +				"", "", "", "", "", "", "POWER", "HEARTBEAT", "FAN1_INST",
+> +				"FAN2_INST","FAN3_INST", "FAN4_INST", "FAN5_INST",
+> +				"FAN6_INST", "FAN7_INST", "FAN8_INST", "FAN9_INST",
+> +				"FAN10_INST", "FAN11_INST", "FAN12_INST","FAN13_INST",
+> +				"FAN14_INST", "FAN15_INST", "FAN16_INST", "FAN1_FAIL",
+> +				"FAN2_FAIL", "FAN3_FAIL", "FAN4_FAIL", "FAN5_FAIL",
+> +				"FAN6_FAIL", "FAN7_FAIL", "FAN8_FAIL", "FAN9_FAIL",
+> +				"FAN10_FAIL", "FAN11_FAIL", "FAN12_FAIL", "FAN13_FAIL",
+> +				"FAN14_FAIL", "FAN15_FAIL", "FAN16_FAIL","", "", "", "",
+> +				"", "", "", "", "", "", "", "", "", "", "", "", "IDENTIFY",
+> +				"HEALTH_RED", "HEALTH_AMBER", "POWER_BUTTON", "",
+> +				"SIO_POWER_GOOD", "NMI_BUTTON", "RESET_BUTTON", "SIO_S5",
+> +				"SIO_ONCONTROL", "", "", "", "", "", "", "", "", "", "",
+> +				"", "", "", "", "", "", "", "", "", "", "", "", "", "",
+> +				"", "", "", "", "", "", "", "", "", "";
+> +		};
+> +
+> +		i2c2: i2c@c0002200 {
+> +			24c02@50 {
+> +				compatible = "atmel,24c02";
+> +				pagesize = <8>;
+> +				reg = <0x50>;
+> +			};
+> +		};
+> +	};
+> +
+> +	vuhc: vuhc {
+> +		compatible = "gpio-keys-polled";
+> +		poll-interval = <100>;
+> +
+> +		PortOwner0 {
+> +			label = "Port Owner";
+> +			linux,code = <200>;
+> +			gpios = <&gpio 250 1>;
+> +		};
+> +
+> +		PortOwner1 {
+> +			label = "Port Owner";
+> +			linux,code = <201>;
+> +			gpios = <&gpio 251 1>;
+> +		};
+> +
+> +		PortOwner2 {
+> +			label = "Port Owner";
+> +			linux,code = <202>;
+> +			gpios = <&gpio 252 1>;
+> +		};
+> +	};
+> +
+> +	gpio: gpio {
+> +		gpio-line-names =
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "RESET_OUT", "NMI_OUT", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "",
+> +			"", "", "", "", "", "", "", "", "", "";
+> +	};
+> +
+> +	xreg_keys: xreg_keys {
+> +		compatible = "gpio-keys-polled";
+> +		poll-interval = <100>;
+> +
+> +		IdButton {
+> +			label = "ID Button";
+> +			linux,code = <200>;
+> +			gpios = <&xreg 60 1>;
+> +		};
+> +	};
+> +
+> +	leds: leds {
+> +		compatible = "gpio-leds";
+> +
+> +		power {
+> +			gpios = <&xreg 6 0>;
+> +			default-state = "off";
+> +		};
+> +
+> +		heartbeat {
+> +			gpios = <&xreg 7 0>;
+> +			default-state = "off";
+> +		};
+> +
+> +		identify {
+> +			gpios = <&xreg 56 0>;
+> +			default-state = "off";
+> +		};
+> +
+> +		health_red {
+> +			gpios = <&xreg 57 0>;
+> +			default-state = "off";
+> +		};
+> +
+> +		health_amber {
+> +			gpios = <&xreg 58 0>;
+> +			default-state = "off";
+> +		};
+> +	};
+> +
+> +};
+> diff --git a/arch/arm/boot/dts/hpe-gxp.dtsi b/arch/arm/boot/dts/hpe-gxp.dtsi
+> new file mode 100644
+> index 000000000000..1a16840bb72f
+> --- /dev/null
+> +++ b/arch/arm/boot/dts/hpe-gxp.dtsi
+> @@ -0,0 +1,555 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Device Tree file for HPE GXP
+> + */
+> +
+> +/dts-v1/;
+> +/ {
+> +	model = "Hewlett Packard Enterprise GXP BMC";
+> +	compatible = "hpe,gxp";
+> +	#address-cells = <1>;
+> +	#size-cells = <1>;
+> +
+> +	cpus {
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		cpu@0 {
+> +			compatible = "arm,armv7";
+> +			device_type = "cpu";
+> +			reg = <0>;
+> +		};
+> +	};
+> +
+> +	memory@40000000 {
+> +		device_type = "memory";
+> +		reg = <0x40000000 0x20000000>;
+> +	};
+> +
+> +	ahb {
+> +		compatible = "simple-bus";
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +		device_type = "soc";
+> +		ranges;
+> +
+> +		vic0: interrupt-controller@ceff0000 {
+> +			compatible = "arm,pl192-vic";
+> +			#address-cells = <1>;
+> +			interrupt-controller;
+> +			reg = <0xceff0000 0x1000>;
+> +			#interrupt-cells = <1>;
+> +		};
+> +
+> +		vic1: vic@80f00000 {
+> +			compatible = "arm,pl192-vic";
+> +			#address-cells = <1>;
+> +			interrupt-controller;
+> +			reg = <0x80f00000 0x1000>;
+> +			#interrupt-cells = <1>;
+> +		};
+> +
+> +		timer0: timer@c0000080 {
+> +			compatible = "hpe,gxp-timer";
+> +			reg = <0xc0000080 0x1>, <0xc0000094 0x01>, <0xc0000088 0x08>;
+> +			interrupts = <0>;
+> +			interrupt-parent = <&vic0>;
+> +			clock-frequency = <400000000>;
+> +		};
+> +
+> +		watchdog: watchdog@c0000090 {
+> +			compatible = "hpe,gxp-wdt";
+> +			reg = <0xc0000090 0x02>, <0xc0000096 0x01>;
+> +		};
+> +
+> +		uartc: serial@c00000f0 {
+> +			compatible = "ns16550a";
+> +			reg = <0xc00000f0 0x8>;
+> +			interrupts = <19>;
+> +			interrupt-parent = <&vic0>;
+> +			clock-frequency = <1846153>;
+> +			reg-shift = <0>;
+> +		};
+> +
+> +		uarta: serial@c00000e0 {
+> +			compatible = "ns16550a";
+> +			reg = <0xc00000e0 0x8>;
+> +			interrupts = <17>;
+> +			interrupt-parent = <&vic0>;
+> +			clock-frequency = <1846153>;
+> +			reg-shift = <0>;
+> +		};
+> +
+> +		uartb: serial@c00000e8 {
+> +			compatible = "ns16550a";
+> +			reg = <0xc00000e8 0x8>;
+> +			interrupts = <18>;
+> +			interrupt-parent = <&vic0>;
+> +			clock-frequency = <1846153>;
+> +			reg-shift = <0>;
+> +		};
+> +
+> +		vuart_a_cfg: vuarta_cfg@80fc0230 {
+> +			compatible = "hpe,gxp-vuarta_cfg", "simple-mfd", "syscon";
+> +			reg = <0x80fc0230 0x100>;
+> +			reg-io-width = <1>;
+> +		};
+> +
+> +		vuart_a: vuart_a@80fd0200 {
+> +			compatible = "hpe,gxp-vuart";
+> +			reg = <0x80fd0200 0x100>;
+> +			interrupts = <2>;
+> +			interrupt-parent = <&vic1>;
+> +			clock-frequency = <1846153>;
+> +			reg-shift = <0>;
+> +			status = "okay";
+> +			serial-line = <3>;
+> +			vuart_cfg = <&vuart_a_cfg>;
+> +		};
+> +
+> +		usb0: ehci@cefe0000 {
+> +			compatible = "generic-ehci";
+> +			reg = <0xcefe0000 0x100>;
+> +			interrupts = <7>;
+> +			interrupt-parent = <&vic0>;
+> +		};
+> +
+> +		usb1: ohci@cefe0100 {
+> +			compatible = "generic-ohci";
+> +			reg = <0xcefe0100 0x110>;
+> +			interrupts = <6>;
+> +			interrupt-parent = <&vic0>;
+> +		};
+> +
+> +		spifi0: spifi@c0000200 {
+> +			compatible = "hpe,gxp-spifi";
+> +			reg = <0xc0000200 0x80>, <0xc000c000 0x100>, <0xf8000000 0x8000000>;
+> +			interrupts = <20>;
+> +			interrupt-parent = <&vic0>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			flash@0 {
+> +				compatible = "jedec,spi-nor";
+> +				reg = <0>;
+> +				partitions {
+> +					compatible = "fixed-partitions";
+> +					#address-cells = <1>;
+> +					#size-cells = <1>;
+> +
+> +					u-boot@0 {
+> +						label = "u-boot";
+> +						reg = <0x0 0x60000>;
+> +					};
+> +					u-boot-env@60000 {
+> +						label = "u-boot-env";
+> +						reg = <0x60000 0x20000>;
+> +					};
+> +					kernel@80000 {
+> +						label = "kernel";
+> +						reg = <0x80000 0x4c0000>;
+> +					};
+> +					rofs@540000 {
+> +						label = "rofs";
+> +						reg = <0x540000 0x1740000>;
+> +					};
+> +					rwfs@1c80000 {
+> +						label = "rwfs";
+> +						reg = <0x1c80000 0x250000>;
+> +					};
+> +					section@1edf000{
+> +						label = "section";
+> +						reg = <0x1ed0000 0x130000>;
+> +					};
+> +				};
+> +			};
+> +
+> +			flash@1 {
+> +				compatible = "jedec,spi-nor";
+> +				reg = <1>;
+> +				partitions {
+> +					compatible = "fixed-partitions";
+> +					#address-cells = <1>;
+> +					#size-cells = <1>;
+> +					host-prime@0 {
+> +						label = "host-prime";
+> +						reg = <0x0 0x02000000>;
+> +					};
+> +					host-second@2000000 {
+> +						label = "host-second";
+> +						reg = <0x02000000 0x02000000>;
+> +					};
+> +				};
+> +			};
+> +		};
+> +
+> +		sram@d0000000 {
+> +			compatible = "mtd-ram";
+> +			reg = <0xd0000000 0x80000>;
+> +			bank-width = <1>;
+> +			erase-size =<1>;
+> +			#address-cells = <1>;
+> +			#size-cells = <1>;
+> +			partition@0 {
+> +				label = "host-reserved";
+> +				reg = <0x0 0x10000>;
+> +			};
+> +			partition@10000 {
+> +				label = "nvram";
+> +				reg = <0x10000 0x70000>;
+> +			};
+> +		};
+> +
+> +		srom@80fc0000 {
+> +			compatible = "hpe,gxp-srom", "simple-mfd", "syscon";
+> +			reg = <0x80fc0000 0x100>;
+> +		};
+> +
+> +		vrom@58000000 {
+> +			compatible = "mtd-ram";
+> +			bank-width = <4>;
+> +			reg = <0x58000000 0x4000000>;
+> +			#address-cells = <1>;
+> +			#size-cells = <1>;
+> +			partition@0 {
+> +				label = "vrom-prime";
+> +				reg = <0x0 0x2000000>;
+> +			};
+> +			partition@2000000 {
+> +				label = "vrom-second";
+> +				reg = <0x2000000 0x2000000>;
+> +			};
+> +		};
+> +
+> +		i2cg: i2cg@c00000f8 {
+> +			compatible = "syscon";
+> +			reg = <0xc00000f8 0x08>;
+> +		};
+> +
+> +		i2c0: i2c@c0002000 {
+> +			compatible = "hpe,gxp-i2c";
+> +			reg = <0xc0002000 0x70>;
+> +			interrupts = <9>;
+> +			interrupt-parent = <&vic0>;
+> +			i2cg-handle = <&i2cg>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +		};
+> +
+> +		i2c1: i2c@c0002100 {
+> +			compatible = "hpe,gxp-i2c";
+> +			reg = <0xc0002100 0x70>;
+> +			interrupts = <9>;
+> +			interrupt-parent = <&vic0>;
+> +			i2cg-handle = <&i2cg>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +		};
+> +
+> +		i2c2: i2c@c0002200 {
+> +			compatible = "hpe,gxp-i2c";
+> +			reg = <0xc0002200 0x70>;
+> +			interrupts = <9>;
+> +			interrupt-parent = <&vic0>;
+> +			i2cg-handle = <&i2cg>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +		};
+> +
+> +		i2c3: i2c@c0002300 {
+> +			compatible = "hpe,gxp-i2c";
+> +			reg = <0xc0002300 0x70>;
+> +			interrupts = <9>;
+> +			interrupt-parent = <&vic0>;
+> +			i2cg-handle = <&i2cg>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +		};
+> +
+> +		i2c4: i2c@c0002400 {
+> +			compatible = "hpe,gxp-i2c";
+> +			reg = <0xc0002400 0x70>;
+> +			interrupts = <9>;
+> +			interrupt-parent = <&vic0>;
+> +			i2cg-handle = <&i2cg>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +		};
+> +
+> +		i2c5: i2c@c0002500 {
+> +			compatible = "hpe,gxp-i2c";
+> +			reg = <0xc0002500 0x70>;
+> +			interrupts = <9>;
+> +			interrupt-parent = <&vic0>;
+> +			i2cg-handle = <&i2cg>;
+> +		};
+> +
+> +		i2c6: i2c@c0002600 {
+> +			compatible = "hpe,gxp-i2c";
+> +			reg = <0xc0002600 0x70>;
+> +			interrupts = <9>;
+> +			interrupt-parent = <&vic0>;
+> +			i2cg-handle = <&i2cg>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +		};
+> +
+> +		i2c7: i2c@c0002700 {
+> +			compatible = "hpe,gxp-i2c";
+> +			reg = <0xc0002700 0x70>;
+> +			interrupts = <9>;
+> +			interrupt-parent = <&vic0>;
+> +			i2cg-handle = <&i2cg>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +		};
+> +
+> +		i2c8: i2c@c0002800 {
+> +			compatible = "hpe,gxp-i2c";
+> +			reg = <0xc0002800 0x70>;
+> +			interrupts = <9>;
+> +			interrupt-parent = <&vic0>;
+> +			i2cg-handle = <&i2cg>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +		};
+> +
+> +		i2c9: i2c@c0002900 {
+> +			compatible = "hpe,gxp-i2c";
+> +			reg = <0xc0002900 0x70>;
+> +			interrupts = <9>;
+> +			interrupt-parent = <&vic0>;
+> +			i2cg-handle = <&i2cg>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +		};
+> +
+> +		i2cmux@d1000074 {
+> +			compatible = "i2c-mux-reg";
+> +			i2c-parent = <&i2c4>;
+> +			reg = <0xd1000074 1>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			i2c4@1 {
+> +				reg = <1>;
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +			};
+> +
+> +			i2c4@2 {
+> +				reg = <2>;
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +			};
+> +
+> +			i2c4@3 {
+> +				reg = <3>;
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +			};
+> +
+> +			i2c4@4 {
+> +				reg = <4>;
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +			};
+> +		};
+> +
+> +		i2cmux@d1000076 {
+> +			compatible = "i2c-mux-reg";
+> +			i2c-parent = <&i2c6>;
+> +			reg = <0xd1000076 1>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			i2c6@1 {
+> +				reg = <1>;
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +			};
+> +
+> +			i2c6@2 {
+> +				reg = <2>;
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +			};
+> +
+> +			i2c6@3 {
+> +				reg = <3>;
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +			};
+> +
+> +			i2c6@4 {
+> +				reg = <4>;
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +			};
+> +
+> +			i2c6@5 {
+> +				reg = <5>;
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +			};
+> +		};
+> +
+> +		mdio0: mdio@c0004080 {
+> +			compatible = "hpe,gxp-umac-mdio";
+> +			reg = <0xc0004080 0x10>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +			ext_phy0: ethernt-phy@0 {
+> +				compatible = "ethernet-phy-ieee802.3-c22";
+> +				phy-mode = "sgmii";
+> +				reg = <0>;
+> +			};
+> +		};
+> +
+> +		mdio1: mdio@c0005080 {
+> +			compatible = "hpe,gxp-umac-mdio";
+> +			reg = <0xc0005080 0x10>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +			int_phy0: ethernt-phy@0 {
+> +				compatible = "ethernet-phy-ieee802.3-c22";
+> +				phy-mode = "gmii";
+> +				reg = <0>;
+> +			};
+> +
+> +			int_phy1: ethernt-phy@1 {
+> +				compatible = "ethernet-phy-ieee802.3-c22";
+> +				phy-mode = "gmii";
+> +				reg = <1>;
+> +			};
+> +		};
+> +
+> +		umac0: umac@c0004000 {
+> +			compatible = "hpe,gxp-umac";
+> +			reg = <0xc0004000 0x80>;
+> +			interrupts = <10>;
+> +			interrupt-parent = <&vic0>;
+> +			phy-handle = <&ext_phy0>;
+> +			int-phy-handle = <&int_phy0>;
+> +		};
+> +
+> +		umac1: umac@c0005000 {
+> +			compatible = "hpe,gxp-umac";
+> +			use-ncsi;
+> +			reg = <0xc0005000 0x80>;
+> +			interrupts = <11>;
+> +			interrupt-parent = <&vic0>;
+> +			phy-handle = <&int_phy1>;
+> +		};
+> +
+> +		kcs_conf: kcs_conf@80fc0430 {
+> +			compatible = "hpe,gxp-kcs-bmc-cfg", "simple-mfd", "syscon";
+> +			reg = <0x80fc0430 0x100>;
+> +		};
+> +
+> +		kcs_reg: kcs_reg@80fd0400 {
+> +			compatible = "hpe,gxp-kcs-bmc";
+> +			reg = <0x80fd0400 0x8>;
+> +			interrupts = <6>;
+> +			interrupt-parent = <&vic1>;
+> +			kcs_chan = <1>;
+> +			status = "okay";
+> +			kcs-bmc-cfg = <&kcs_conf>;
+> +		};
+> +
+> +		thumbnail: thumbnail@c0000500 {
+> +			compatible = "hpe,gxp-thumbnail";
+> +			reg = <0xc0000500 0x20>;
+> +			bits-per-pixel = <32>;
+> +			width = <800>;
+> +			height = <600>;
+> +		};
+> +
+> +		fanctrl: fanctrl@c1000c00 {
+> +			compatible = "hpe,gxp-fan-ctrl";
+> +			reg = <0xc1000c00 0x200>;
+> +			xreg_handle = <&xreg>;
+> +			fn2_handle = <&fn2>;
+> +		};
+> +
+> +		fn2: fn2@80200000 {
+> +			compatible = "hpe,gxp-fn2", "simple-mfd", "syscon";
+> +			reg = <0x80200000 0x100000>;
+> +			xreg_handle = <&xreg>;
+> +			interrupts = <0>;
+> +			interrupt-parent = <&vic1>;
+> +			#gpio-cells = <2>;
+> +			chif {
+> +				compatible = "hpe,gxp-chif";
+> +				interrupts = <12>;
+> +			};
+> +		};
+> +
+> +		xreg: xreg@d1000300 {
+> +			compatible = "hpe,gxp-xreg", "simple-mfd", "syscon";
+> +			reg = <0xd1000300 0xFF>;
+> +			interrupts = <26>;
+> +			interrupt-parent = <&vic0>;
+> +			#gpio-cells = <2>;
+> +		};
+> +
+> +		csm: csm@8000005c {
+> +			compatible = "hpe,gxp-csm", "simple-mfd", "syscon";
+> +			reg = <0x8000005c 0x2>, <0x800000de 0x1>, <0x800000e7 0x1>;
+> +		};
+> +
+> +		vuhc0: vuhc@80400000 {
+> +			compatible = "syscon";
+> +			reg = <0x80400000 0x80>;
+> +		};
+> +
+> +		udcg: udcg@80400800 {
+> +			compatible = "syscon";
+> +			reg = <0x80400800 0x200>;
+> +		};
+> +
+> +		post@800000a0 {
+> +			compatible = "hpe,gxp-dbg";
+> +			reg = <0x800000a0 0x20>;
+> +			interrupts = <10>;
+> +			interrupt-parent = <&vic1>;
+> +		};
+> +
+> +		coretemp: coretemp@c0000130 {
+> +			compatible = "hpe,gxp-coretemp";
+> +			reg = <0xc0000130 0x8>;
+> +		};
+> +	};
+> +
+> +	gpio: gpio {
+> +		compatible = "hpe,gxp-gpio";
+> +		#gpio-cells = <2>;
+> +		csm_handle = <&csm>;
+> +		vuhc0_handle = <&vuhc0>;
+> +	};
+> +
+> +	clocks {
+> +		osc: osc {
+> +			compatible = "fixed-clock";
+> +			#clock-cells = <0>;
+> +			clock-output-names = "osc";
+> +			clock-frequency = <33333333>;
+> +		};
+> +
+> +		iopclk: iopclk {
+> +			compatible = "fixed-clock";
+> +			#clock-cells = <0>;
+> +			clocks = <&osc>;
+> +			clock-out-put-names = "iopclk";
+> +			clock-frequency = <400000000>;
+> +		};
+> +
+> +		memclk: memclk {
+> +			compatible = "fixed-clock";
+> +			#clock-cells = <0>;
+> +			clocks = <&osc>;
+> +			clock-out-put-names = "memclk";
+> +			clock-frequency = <800000000>;
+> +		};
+> +	};
+> +};
+> diff --git a/arch/arm/configs/gxp_defconfig b/arch/arm/configs/gxp_defconfig
+> new file mode 100644
+> index 000000000000..f37c6630e06d
+> --- /dev/null
+> +++ b/arch/arm/configs/gxp_defconfig
+> @@ -0,0 +1,243 @@
+> +CONFIG_KERNEL_XZ=y
+> +CONFIG_DEFAULT_HOSTNAME="gxp"
+> +CONFIG_SYSVIPC=y
+> +CONFIG_NO_HZ=y
+> +CONFIG_HIGH_RES_TIMERS=y
+> +CONFIG_BSD_PROCESS_ACCT=y
+> +CONFIG_BSD_PROCESS_ACCT_V3=y
+> +CONFIG_LOG_BUF_SHIFT=18
+> +CONFIG_CFS_BANDWIDTH=y
+> +CONFIG_RT_GROUP_SCHED=y
+> +CONFIG_CGROUP_FREEZER=y
+> +CONFIG_CGROUP_DEVICE=y
+> +CONFIG_CGROUP_CPUACCT=y
+> +CONFIG_NAMESPACES=y
+> +CONFIG_SCHED_AUTOGROUP=y
+> +CONFIG_RELAY=y
+> +CONFIG_BLK_DEV_INITRD=y
+> +CONFIG_CC_OPTIMIZE_FOR_SIZE=y
+> +CONFIG_KALLSYMS_ALL=y
+> +CONFIG_EMBEDDED=y
+> +# CONFIG_COMPAT_BRK is not set
+> +CONFIG_SLAB=y
+> +CONFIG_ARCH_MULTI_V6=y
+> +CONFIG_ARCH_HPE=y
+> +CONFIG_ARCH_HPE_GXP=y
+> +CONFIG_SECCOMP=y
+> +# CONFIG_ATAGS is not set
+> +CONFIG_ZBOOT_ROM_TEXT=0x0
+> +CONFIG_ZBOOT_ROM_BSS=0x0
+> +# CONFIG_SUSPEND is not set
+> +CONFIG_JUMP_LABEL=y
+> +# CONFIG_STRICT_KERNEL_RWX is not set
+> +# CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
+> +CONFIG_KSM=y
+> +CONFIG_CLEANCACHE=y
+> +CONFIG_NET=y
+> +CONFIG_PACKET=y
+> +CONFIG_PACKET_DIAG=y
+> +CONFIG_UNIX=y
+> +CONFIG_UNIX_DIAG=y
+> +CONFIG_XFRM_USER=y
+> +CONFIG_XFRM_STATISTICS=y
+> +CONFIG_INET=y
+> +CONFIG_VLAN_8021Q=y
+> +CONFIG_NETLINK_DIAG=y
+> +CONFIG_NET_NCSI=y
+> +# CONFIG_WIRELESS is not set
+> +CONFIG_DEVTMPFS=y
+> +CONFIG_DEVTMPFS_MOUNT=y
+> +# CONFIG_STANDALONE is not set
+> +CONFIG_MTD=y
+> +CONFIG_MTD_BLOCK=y
+> +CONFIG_MTD_PHYSMAP=y
+> +CONFIG_MTD_PHYSMAP_OF=y
+> +CONFIG_MTD_PLATRAM=y
+> +CONFIG_MTD_SPI_NOR=y
+> +CONFIG_SPI_GXP_SPIFI=y
+> +CONFIG_BLK_DEV_NULL_BLK=y
+> +CONFIG_BLK_DEV_LOOP=y
+> +CONFIG_BLK_DEV_NBD=y
+> +CONFIG_BLK_DEV_RAM=y
+> +CONFIG_EEPROM_AT24=y
+> +CONFIG_SCSI=y
+> +CONFIG_BLK_DEV_SD=y
+> +# CONFIG_SCSI_LOWLEVEL is not set
+> +CONFIG_NETDEVICES=y
+> +# CONFIG_NET_VENDOR_ALACRITECH is not set
+> +# CONFIG_NET_VENDOR_AMAZON is not set
+> +# CONFIG_NET_VENDOR_AQUANTIA is not set
+> +# CONFIG_NET_VENDOR_ARC is not set
+> +# CONFIG_NET_VENDOR_AURORA is not set
+> +# CONFIG_NET_VENDOR_BROADCOM is not set
+> +# CONFIG_NET_VENDOR_CADENCE is not set
+> +# CONFIG_NET_VENDOR_CAVIUM is not set
+> +# CONFIG_NET_VENDOR_CIRRUS is not set
+> +# CONFIG_NET_VENDOR_CORTINA is not set
+> +# CONFIG_NET_VENDOR_EZCHIP is not set
+> +# CONFIG_NET_VENDOR_FARADAY is not set
+> +# CONFIG_NET_VENDOR_GOOGLE is not set
+> +# CONFIG_NET_VENDOR_HISILICON is not set
+> +# CONFIG_NET_VENDOR_HUAWEI is not set
+> +# CONFIG_NET_VENDOR_INTEL is not set
+> +# CONFIG_NET_VENDOR_MARVELL is not set
+> +# CONFIG_NET_VENDOR_MELLANOX is not set
+> +# CONFIG_NET_VENDOR_MICREL is not set
+> +# CONFIG_NET_VENDOR_MICROCHIP is not set
+> +# CONFIG_NET_VENDOR_MICROSEMI is not set
+> +# CONFIG_NET_VENDOR_NATSEMI is not set
+> +# CONFIG_NET_VENDOR_NETRONOME is not set
+> +# CONFIG_NET_VENDOR_NI is not set
+> +# CONFIG_NET_VENDOR_QUALCOMM is not set
+> +# CONFIG_NET_VENDOR_RENESAS is not set
+> +# CONFIG_NET_VENDOR_ROCKER is not set
+> +# CONFIG_NET_VENDOR_SAMSUNG is not set
+> +# CONFIG_NET_VENDOR_SEEQ is not set
+> +# CONFIG_NET_VENDOR_SOLARFLARE is not set
+> +# CONFIG_NET_VENDOR_SMSC is not set
+> +# CONFIG_NET_VENDOR_SOCIONEXT is not set
+> +# CONFIG_NET_VENDOR_STMICRO is not set
+> +# CONFIG_NET_VENDOR_SYNOPSYS is not set
+> +# CONFIG_NET_VENDOR_VIA is not set
+> +# CONFIG_NET_VENDOR_WIZNET is not set
+> +# CONFIG_NET_VENDOR_XILINX is not set
+> +CONFIG_UMAC=y
+> +# CONFIG_USB_NET_DRIVERS is not set
+> +# CONFIG_WLAN is not set
+> +# CONFIG_INPUT_LEDS is not set
+> +CONFIG_INPUT_EVDEV=y
+> +# CONFIG_KEYBOARD_ATKBD is not set
+> +CONFIG_KEYBOARD_GPIO=y
+> +CONFIG_KEYBOARD_GPIO_POLLED=y
+> +# CONFIG_INPUT_MOUSE is not set
+> +CONFIG_SERIO_LIBPS2=y
+> +CONFIG_VT_HW_CONSOLE_BINDING=y
+> +# CONFIG_LEGACY_PTYS is not set
+> +CONFIG_SERIAL_8250=y
+> +# CONFIG_SERIAL_8250_DEPRECATED_OPTIONS is not set
+> +CONFIG_SERIAL_8250_CONSOLE=y
+> +CONFIG_SERIAL_8250_NR_UARTS=6
+> +CONFIG_SERIAL_8250_RUNTIME_UARTS=6
+> +CONFIG_SERIAL_8250_EXTENDED=y
+> +CONFIG_SERIAL_8250_SHARE_IRQ=y
+> +CONFIG_SERIAL_8250_GXP_VUART=y
+> +CONFIG_SERIAL_OF_PLATFORM=y
+> +CONFIG_TTY_PRINTK=y
+> +CONFIG_IPMI_HANDLER=y
+> +CONFIG_IPMI_DEVICE_INTERFACE=y
+> +CONFIG_IPMI_SI=y
+> +CONFIG_IPMI_SSIF=y
+> +CONFIG_HPE_KCS_IPMI_BMC=y
+> +CONFIG_HW_RANDOM_TIMERIOMEM=y
+> +CONFIG_I2C_CHARDEV=y
+> +CONFIG_I2C_GXP=y
+> +CONFIG_I2C_SLAVE=y
+> +CONFIG_I2C_SLAVE_EEPROM=y
+> +CONFIG_SPI=y
+> +CONFIG_GPIOLIB=y
+> +CONFIG_GPIO_SYSFS=y
+> +CONFIG_GPIO_GXP=y
+> +CONFIG_SENSORS_EMC1403=y
+> +CONFIG_SENSORS_GXP_FAN_CTRL=y
+> +CONFIG_SENSORS_GXP_CORETEMP=y
+> +CONFIG_SENSORS_GXP_PSU=y
+> +CONFIG_SENSORS_GXP_POWER=y
+> +CONFIG_WATCHDOG=y
+> +CONFIG_GXP_WATCHDOG=y
+> +CONFIG_MFD_SYSCON=y
+> +CONFIG_FB=y
+> +CONFIG_FB_THUMBNAIL=y
+> +CONFIG_FB_SIMPLE=y
+> +CONFIG_USB=y
+> +CONFIG_USB_ANNOUNCE_NEW_DEVICES=y
+> +CONFIG_USB_EHCI_HCD=y
+> +CONFIG_USB_EHCI_ROOT_HUB_TT=y
+> +CONFIG_USB_OHCI_HCD=y
+> +CONFIG_USB_OHCI_HCD_PLATFORM=y
+> +CONFIG_USB_STORAGE=y
+> +CONFIG_USB_GADGET=y
+> +CONFIG_USB_GXP_UDC=y
+> +CONFIG_USB_CONFIGFS=y
+> +CONFIG_USB_CONFIGFS_SERIAL=y
+> +CONFIG_USB_CONFIGFS_ACM=y
+> +CONFIG_USB_CONFIGFS_OBEX=y
+> +CONFIG_USB_CONFIGFS_NCM=y
+> +CONFIG_USB_CONFIGFS_ECM=y
+> +CONFIG_USB_CONFIGFS_ECM_SUBSET=y
+> +CONFIG_USB_CONFIGFS_RNDIS=y
+> +CONFIG_USB_CONFIGFS_EEM=y
+> +CONFIG_USB_CONFIGFS_MASS_STORAGE=y
+> +CONFIG_USB_CONFIGFS_F_LB_SS=y
+> +CONFIG_USB_CONFIGFS_F_FS=y
+> +CONFIG_USB_CONFIGFS_F_HID=y
+> +CONFIG_USB_CONFIGFS_F_PRINTER=y
+> +CONFIG_NEW_LEDS=y
+> +CONFIG_LEDS_CLASS=y
+> +CONFIG_LEDS_GPIO=y
+> +CONFIG_LEDS_TRIGGERS=y
+> +CONFIG_LEDS_TRIGGER_TIMER=y
+> +CONFIG_LEDS_TRIGGER_ONESHOT=y
+> +CONFIG_LEDS_TRIGGER_MTD=y
+> +CONFIG_LEDS_TRIGGER_HEARTBEAT=y
+> +CONFIG_LEDS_TRIGGER_CPU=y
+> +CONFIG_LEDS_TRIGGER_GPIO=y
+> +CONFIG_LEDS_TRIGGER_DEFAULT_ON=y
+> +CONFIG_LEDS_TRIGGER_TRANSIENT=y
+> +CONFIG_LEDS_TRIGGER_PANIC=y
+> +# CONFIG_VIRTIO_MENU is not set
+> +# CONFIG_IOMMU_SUPPORT is not set
+> +CONFIG_HPE_GXP_XREG=y
+> +CONFIG_HPE_GXP_FN2=y
+> +CONFIG_HPE_GXP_CSM=y
+> +CONFIG_HPE_GXP_SROM=y
+> +CONFIG_FANOTIFY=y
+> +CONFIG_OVERLAY_FS=y
+> +CONFIG_OVERLAY_FS_REDIRECT_DIR=y
+> +CONFIG_TMPFS=y
+> +CONFIG_TMPFS_POSIX_ACL=y
+> +CONFIG_JFFS2_FS=y
+> +# CONFIG_JFFS2_FS_WRITEBUFFER is not set
+> +CONFIG_JFFS2_SUMMARY=y
+> +CONFIG_JFFS2_FS_XATTR=y
+> +# CONFIG_JFFS2_FS_POSIX_ACL is not set
+> +# CONFIG_JFFS2_FS_SECURITY is not set
+> +CONFIG_SQUASHFS=y
+> +CONFIG_SQUASHFS_XZ=y
+> +CONFIG_SQUASHFS_4K_DEVBLK_SIZE=y
+> +# CONFIG_NETWORK_FILESYSTEMS is not set
+> +CONFIG_NLS_CODEPAGE_437=y
+> +CONFIG_NLS_ASCII=y
+> +CONFIG_NLS_ISO8859_1=y
+> +CONFIG_NLS_UTF8=y
+> +CONFIG_CRYPTO_CCM=y
+> +CONFIG_CRYPTO_GCM=y
+> +CONFIG_CRYPTO_CRC32C=y
+> +CONFIG_CRYPTO_ARC4=y
+> +CONFIG_CRYPTO_DEFLATE=y
+> +CONFIG_CRYPTO_LZO=y
+> +CONFIG_CRYPTO_ZSTD=y
+> +CONFIG_CRYPTO_USER_API_HASH=y
+> +# CONFIG_CRYPTO_HW is not set
+> +CONFIG_CRC16=y
+> +# CONFIG_XZ_DEC_ARM is not set
+> +# CONFIG_XZ_DEC_ARMTHUMB is not set
+> +CONFIG_DMA_API_DEBUG=y
+> +CONFIG_PRINTK_TIME=y
+> +CONFIG_BOOT_PRINTK_DELAY=y
+> +CONFIG_DYNAMIC_DEBUG=y
+> +CONFIG_DEBUG_INFO=y
+> +# CONFIG_ENABLE_MUST_CHECK is not set
+> +CONFIG_MAGIC_SYSRQ=y
+> +CONFIG_PANIC_ON_OOPS=y
+> +CONFIG_FUNCTION_PROFILER=y
+> +CONFIG_STACK_TRACER=y
+> +CONFIG_SCHED_TRACER=y
+> +CONFIG_STRICT_DEVMEM=y
+> +CONFIG_DEBUG_USER=y
+> +CONFIG_DEBUG_LL=y
+> +CONFIG_DEBUG_LL_UART_8250=y
+> +CONFIG_DEBUG_UART_PHYS=0xC00000F0
+> +CONFIG_DEBUG_UART_VIRT=0xF00000F0
+> +CONFIG_DEBUG_UART_8250_SHIFT=0
+> +CONFIG_EARLY_PRINTK=y
+> +CONFIG_TEST_KSTRTOX=y
+> diff --git a/arch/arm/mach-hpe/Kconfig b/arch/arm/mach-hpe/Kconfig
+> new file mode 100644
+> index 000000000000..cc63f2be6c9c
+> --- /dev/null
+> +++ b/arch/arm/mach-hpe/Kconfig
+> @@ -0,0 +1,21 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +menuconfig ARCH_HPE
+> +	bool "HPE SoC support"
+> +	help
+> +	  This enables support for HPE ARM based SoC chips
+> +if ARCH_HPE
+> +
+> +config ARCH_HPE_GXP
+> +	bool "HPE GXP SoC"
+> +	select ARM_VIC
+> +	select PINCTRL
+> +	select IRQ_DOMAIN
+> +	select GENERIC_IRQ_CHIP
+> +	select MULTI_IRQ_HANDLER
+> +	select SPARSE_IRQ
+> +	select CLKSRC_MMIO
+> +	depends on ARCH_MULTI_V7
+> +	help
+> +	  Support for GXP SoCs
+> +
+> +endif
+> diff --git a/arch/arm/mach-hpe/Makefile b/arch/arm/mach-hpe/Makefile
+> new file mode 100644
+> index 000000000000..8b0a91234df4
+> --- /dev/null
+> +++ b/arch/arm/mach-hpe/Makefile
+> @@ -0,0 +1 @@
+> +obj-$(CONFIG_ARCH_HPE_GXP) += gxp.o
+> diff --git a/arch/arm/mach-hpe/gxp.c b/arch/arm/mach-hpe/gxp.c
+> new file mode 100644
+> index 000000000000..a37838247948
+> --- /dev/null
+> +++ b/arch/arm/mach-hpe/gxp.c
+> @@ -0,0 +1,62 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (C) 2022 Hewlett-Packard Enterprise Development Company, L.P.
+> + *
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + */
+> +
+> +
+> +#include <linux/init.h>
+> +#include <asm/mach/arch.h>
+> +#include <asm/mach/map.h>
+> +#include <linux/of.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/clk-provider.h>
+> +#include <linux/clocksource.h>
+> +
+> +#define IOP_REGS_PHYS_BASE 0xc0000000
+> +#define IOP_REGS_VIRT_BASE 0xf0000000
+> +#define IOP_REGS_SIZE (240*SZ_1M)
+> +
+> +#define IOP_EHCI_USBCMD 0x0efe0010
+> +
+> +static struct map_desc gxp_io_desc[] __initdata = {
+> +	{
+> +	.virtual	= (unsigned long)IOP_REGS_VIRT_BASE,
+> +	.pfn		= __phys_to_pfn(IOP_REGS_PHYS_BASE),
+> +	.length		= IOP_REGS_SIZE,
+> +	.type		= MT_DEVICE,
+> +	},
+> +};
+> +
+> +void __init gxp_map_io(void)
 > +{
-> +	refcount_inc(&ax25_dev->refcount);
+> +	iotable_init(gxp_io_desc, ARRAY_SIZE(gxp_io_desc));
 > +}
 > +
-> +static inline void ax25_dev_put(ax25_dev *ax25_dev)
+> +static void __init gxp_dt_init(void)
 > +{
-> +	if (refcount_dec_and_test(&ax25_dev->refcount))
-> +		kfree(ax25_dev);
+> +	/*reset EHCI host controller for clear start*/
+> +	__raw_writel(0x00080002,
+> +		(void __iomem *)(IOP_REGS_VIRT_BASE + IOP_EHCI_USBCMD));
+> +	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
 > +}
 > +
-
-Forget about these cleanups for now.  Just fix the reference leaks on
-error.
-
->  static inline __be16 ax25_type_trans(struct sk_buff *skb, struct net_device *dev)
->  {
->  	skb->dev      = dev;
-> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-> index 44a8730c26a..7463bbd4e63 100644
-> --- a/net/ax25/af_ax25.c
-> +++ b/net/ax25/af_ax25.c
-> @@ -91,6 +91,7 @@ static void ax25_kill_by_device(struct net_device *dev)
->  			spin_unlock_bh(&ax25_list_lock);
->  			lock_sock(sk);
->  			s->ax25_dev = NULL;
-> +			ax25_dev_put(ax25_dev);
->  			release_sock(sk);
->  			ax25_disconnect(s, ENETUNREACH);
->  			spin_lock_bh(&ax25_list_lock);
-> @@ -358,21 +359,31 @@ static int ax25_ctl_ioctl(const unsigned int cmd, void __user *arg)
->  	if (copy_from_user(&ax25_ctl, arg, sizeof(ax25_ctl)))
->  		return -EFAULT;
+> +static void gxp_restart(enum reboot_mode mode, const char *cmd)
+> +{
+> +	__raw_writel(1, (void __iomem *) IOP_REGS_VIRT_BASE);
+> +}
+> +
+> +static const char * const gxp_board_dt_compat[] = {
+> +	"HPE,GXP",
+> +	NULL,
+> +};
+> +
+> +DT_MACHINE_START(GXP_DT, "HPE GXP")
+> +	.init_machine	= gxp_dt_init,
+> +	.map_io		= gxp_map_io,
+> +	.restart	= gxp_restart,
+> +	.dt_compat	= gxp_board_dt_compat,
+> +MACHINE_END
+> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
+> index cfb8ea0df3b1..5916dade7608 100644
+> --- a/drivers/clocksource/Kconfig
+> +++ b/drivers/clocksource/Kconfig
+> @@ -617,6 +617,14 @@ config CLKSRC_ST_LPC
+>  	  Enable this option to use the Low Power controller timer
+>  	  as clocksource.
 >  
-> -	if ((ax25_dev = ax25_addr_ax25dev(&ax25_ctl.port_addr)) == NULL)
-> +	ax25_dev = ax25_addr_ax25dev(&ax25_ctl.port_addr);
-> +	if (ax25_dev == NULL) {
-> +		ax25_dev_put(ax25_dev);
-
-This one will lead to a NULL dereference.  These NULL dereferences are
-
->  		return -ENODEV;
+> +config GXP_TIMER
+> +	bool "GXP timer driver"
+> +	depends on ARCH_HPE
+> +	default y
+> +	help
+> +	  Provides a driver for the timer control found on HPE
+> +	  GXP SOCs. This is required for all GXP SOCs.
+> +
+>  config ATCPIT100_TIMER
+>  	bool "ATCPIT100 timer driver"
+>  	depends on NDS32 || COMPILE_TEST
+> diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
+> index fa5f624eadb6..ffca09ec34de 100644
+> --- a/drivers/clocksource/Makefile
+> +++ b/drivers/clocksource/Makefile
+> @@ -89,3 +89,4 @@ obj-$(CONFIG_GX6605S_TIMER)		+= timer-gx6605s.o
+>  obj-$(CONFIG_HYPERV_TIMER)		+= hyperv_timer.o
+>  obj-$(CONFIG_MICROCHIP_PIT64B)		+= timer-microchip-pit64b.o
+>  obj-$(CONFIG_MSC313E_TIMER)		+= timer-msc313e.o
+> +obj-$(CONFIG_GXP_TIMER)			+= gxp_timer.o
+> diff --git a/drivers/clocksource/gxp_timer.c b/drivers/clocksource/gxp_timer.c
+> new file mode 100644
+> index 000000000000..e3c617036e0d
+> --- /dev/null
+> +++ b/drivers/clocksource/gxp_timer.c
+> @@ -0,0 +1,158 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (C) 2022 Hewlett-Packard Enterprise Development Company, L.P.
+> + *
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + */
+> +
+> +#include <linux/bitops.h>
+> +#include <linux/clockchips.h>
+> +#include <linux/clocksource.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/irqreturn.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/of_address.h>
+> +#include <linux/of_irq.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/slab.h>
+> +#include <linux/string.h>
+> +#include <linux/sched_clock.h>
+> +
+> +#include <asm/irq.h>
+> +
+> +#define TIMER0_FREQ 1000000
+> +#define TIMER1_FREQ 1000000
+> +
+> +#define MASK_TCS_ENABLE		0x01
+> +#define MASK_TCS_PERIOD		0x02
+> +#define MASK_TCS_RELOAD		0x04
+> +#define MASK_TCS_TC		0x80
+> +
+> +struct gxp_timer {
+> +	void __iomem *counter;
+> +	void __iomem *control;
+> +	struct clock_event_device evt;
+> +};
+> +
+> +static void __iomem *system_clock __read_mostly;
+> +
+> +static u64 notrace gxp_sched_read(void)
+> +{
+> +	return readl_relaxed(system_clock);
+> +}
+> +
+> +static int gxp_time_set_next_event(unsigned long event,
+> +					struct clock_event_device *evt_dev)
+> +{
+> +	struct gxp_timer *timer = container_of(evt_dev, struct gxp_timer, evt);
+> +	/*clear TC by write 1 and disable timer int and counting*/
+> +	writeb_relaxed(MASK_TCS_TC, timer->control);
+> +	/*update counter value*/
+> +	writel_relaxed(event, timer->counter);
+> +	/*enable timer counting and int*/
+> +	writeb_relaxed(MASK_TCS_TC|MASK_TCS_ENABLE, timer->control);
+> +
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t gxp_time_interrupt(int irq, void *dev_id)
+> +{
+> +	struct gxp_timer *timer = dev_id;
+> +	void (*event_handler)(struct clock_event_device *timer);
+> +
+> +
+> +	if (readb_relaxed(timer->control) & MASK_TCS_TC) {
+> +		writeb_relaxed(MASK_TCS_TC, timer->control);
+> +
+> +		event_handler = READ_ONCE(timer->evt.event_handler);
+> +		if (event_handler)
+> +			event_handler(&timer->evt);
+> +		return IRQ_HANDLED;
+> +	} else {
+> +		return IRQ_NONE;
 > +	}
->  
-> -	if (ax25_ctl.digi_count > AX25_MAX_DIGIS)
-> +	if (ax25_ctl.digi_count > AX25_MAX_DIGIS) {
-> +		ax25_dev_put(ax25_dev);
->  		return -EINVAL;
+> +}
+> +
+> +static int __init gxp_timer_init(struct device_node *node)
+> +{
+> +	void __iomem *base_counter;
+> +	void __iomem *base_control;
+> +	u32 freq;
+> +	int ret, irq;
+> +	struct gxp_timer *gxp_timer;
+> +
+> +	base_counter = of_iomap(node, 0);
+> +	if (!base_counter) {
+> +		pr_err("Can't remap counter registers");
+> +		return -ENXIO;
 > +	}
->  
-> -	if (ax25_ctl.arg > ULONG_MAX / HZ && ax25_ctl.cmd != AX25_KILL)
-> +	if (ax25_ctl.arg > ULONG_MAX / HZ && ax25_ctl.cmd != AX25_KILL) {
-> +		ax25_dev_put(ax25_dev);
->  		return -EINVAL;
+> +
+> +	base_control = of_iomap(node, 1);
+> +	if (!base_control) {
+> +		pr_err("Can't remap control registers");
+> +		return -ENXIO;
 > +	}
->  
->  	digi.ndigi = ax25_ctl.digi_count;
->  	for (k = 0; k < digi.ndigi; k++)
->  		digi.calls[k] = ax25_ctl.digi_addr[k];
->  
-> -	if ((ax25 = ax25_find_cb(&ax25_ctl.source_addr, &ax25_ctl.dest_addr, &digi, ax25_dev->dev)) == NULL)
-> +	ax25 = ax25_find_cb(&ax25_ctl.source_addr, &ax25_ctl.dest_addr, &digi, ax25_dev->dev);
-> +	if (ax25 == NULL) {
-> +		ax25_dev_put(ax25_dev);
-
-Don't do this.
-
->  		return -ENOTCONN;
+> +
+> +	system_clock = of_iomap(node, 2);
+> +	if (!system_clock) {
+> +		pr_err("Can't remap control registers");
+> +		return -ENXIO;
 > +	}
->  
->  	switch (ax25_ctl.cmd) {
->  	case AX25_KILL:
-> @@ -439,6 +450,7 @@ static int ax25_ctl_ioctl(const unsigned int cmd, void __user *arg)
->  	  }
->  
->  out_put:
-> +	ax25_dev_put(ax25_dev);
->  	ax25_cb_put(ax25);
->  	return ret;
->  
-> diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
-> index 256fadb94df..77d9aa2ccab 100644
-> --- a/net/ax25/ax25_dev.c
-> +++ b/net/ax25/ax25_dev.c
-> @@ -37,6 +37,7 @@ ax25_dev *ax25_addr_ax25dev(ax25_address *addr)
->  	for (ax25_dev = ax25_dev_list; ax25_dev != NULL; ax25_dev = ax25_dev->next)
->  		if (ax25cmp(addr, (const ax25_address *)ax25_dev->dev->dev_addr) == 0) {
->  			res = ax25_dev;
-> +			ax25_dev_hold(ax25_dev);
->  		}
->  	spin_unlock_bh(&ax25_dev_lock);
->  
-> @@ -56,6 +57,7 @@ void ax25_dev_device_up(struct net_device *dev)
->  		return;
->  	}
->  
-> +	refcount_set(&ax25_dev->refcount, 1);
->  	dev->ax25_ptr     = ax25_dev;
->  	ax25_dev->dev     = dev;
->  	dev_hold_track(dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
-> @@ -83,6 +85,7 @@ void ax25_dev_device_up(struct net_device *dev)
->  	spin_lock_bh(&ax25_dev_lock);
->  	ax25_dev->next = ax25_dev_list;
->  	ax25_dev_list  = ax25_dev;
-> +	ax25_dev_hold(ax25_dev);
->  	spin_unlock_bh(&ax25_dev_lock);
->  
->  	ax25_register_dev_sysctl(ax25_dev);
-> @@ -111,21 +114,23 @@ void ax25_dev_device_down(struct net_device *dev)
->  			s->forward = NULL;
->  
->  	if ((s = ax25_dev_list) == ax25_dev) {
-> +		ax25_dev_put(ax25_dev_list);
-
-Just leave the style changes until later.  I'm sorry I brought it up.
-
->  		ax25_dev_list = s->next;
->  		spin_unlock_bh(&ax25_dev_lock);
->  		dev->ax25_ptr = NULL;
->  		dev_put_track(dev, &ax25_dev->dev_tracker);
-> -		kfree(ax25_dev);
-> +		ax25_dev_put(ax25_dev);
->  		return;
->  	}
->  
->  	while (s != NULL && s->next != NULL) {
->  		if (s->next == ax25_dev) {
-> +			ax25_dev_put(s->next);
->  			s->next = ax25_dev->next;
->  			spin_unlock_bh(&ax25_dev_lock);
->  			dev->ax25_ptr = NULL;
->  			dev_put_track(dev, &ax25_dev->dev_tracker);
-> -			kfree(ax25_dev);
-> +			ax25_dev_put(ax25_dev);
->  			return;
->  		}
->  
-> @@ -133,31 +138,47 @@ void ax25_dev_device_down(struct net_device *dev)
->  	}
->  	spin_unlock_bh(&ax25_dev_lock);
->  	dev->ax25_ptr = NULL;
-> +	ax25_dev_put(ax25_dev);
->  }
->  
->  int ax25_fwd_ioctl(unsigned int cmd, struct ax25_fwd_struct *fwd)
->  {
->  	ax25_dev *ax25_dev, *fwd_dev;
->  
-> -	if ((ax25_dev = ax25_addr_ax25dev(&fwd->port_from)) == NULL)
-> +	ax25_dev = ax25_addr_ax25dev(&fwd->port_from);
-> +	if (ax25_dev == NULL) {
-> +		ax25_dev_put(ax25_dev);
-
-NULL dereference.
-
->  		return -EINVAL;
+> +
+> +	if (of_property_read_u32(node, "clock-frequency", &freq)) {
+> +		pr_err("Can't read clock-frequency\n");
+> +		goto err_iounmap;
 > +	}
->  
->  	switch (cmd) {
->  	case SIOCAX25ADDFWD:
-> -		if ((fwd_dev = ax25_addr_ax25dev(&fwd->port_to)) == NULL)
-> +		fwd_dev = ax25_addr_ax25dev(&fwd->port_to);
-> +		if (fwd_dev == NULL) {
-> +			ax25_dev_put(fwd_dev);
-
-NULL dereference.
-
-> +			ax25_dev_put(ax25_dev);
->  			return -EINVAL;
-> -		if (ax25_dev->forward != NULL)
-> +		}
-> +		if (ax25_dev->forward != NULL) {
-> +			ax25_dev_put(ax25_dev);
-
-Drop the fwd_dev reference as well.
-
->  			return -EINVAL;
-> +		}
->  		ax25_dev->forward = fwd_dev->dev;
-> +		ax25_dev_put(fwd_dev);
-> +		ax25_dev_put(ax25_dev);
->  		break;
->  
->  	case SIOCAX25DELFWD:
-> -		if (ax25_dev->forward == NULL)
-> +		if (ax25_dev->forward == NULL) {
-> +			ax25_dev_put(ax25_dev);
->  			return -EINVAL;
-> +		}
->  		ax25_dev->forward = NULL;
-> +		ax25_dev_put(ax25_dev);
->  		break;
->  
->  	default:
-> +		ax25_dev_put(ax25_dev);
->  		return -EINVAL;
->  	}
->  
-> diff --git a/net/ax25/ax25_route.c b/net/ax25/ax25_route.c
-> index d0b2e094bd5..7fe7a83b2a3 100644
-> --- a/net/ax25/ax25_route.c
-> +++ b/net/ax25/ax25_route.c
-> @@ -75,10 +75,15 @@ static int __must_check ax25_rt_add(struct ax25_routes_struct *route)
->  	ax25_dev *ax25_dev;
->  	int i;
->  
-> -	if ((ax25_dev = ax25_addr_ax25dev(&route->port_addr)) == NULL)
-> +	ax25_dev = ax25_addr_ax25dev(&route->port_addr);
-> +	if (ax25_dev == NULL) {
-> +		ax25_dev_put(ax25_dev);
-
-NULL dereference.
-
->  		return -EINVAL;
-> -	if (route->digi_count > AX25_MAX_DIGIS)
+> +
+> +	sched_clock_register(gxp_sched_read, 32, freq);
+> +	clocksource_mmio_init(system_clock, node->name, freq,
+> +				300, 32, clocksource_mmio_readl_up);
+> +
+> +	irq = irq_of_parse_and_map(node, 0);
+> +	if (irq <= 0) {
+> +		ret = -EINVAL;
+> +		pr_err("GXP Timer Can't parse IRQ %d", irq);
+> +		goto err_iounmap;
 > +	}
-> +	if (route->digi_count > AX25_MAX_DIGIS) {
-> +		ax25_dev_put(ax25_dev);
->  		return -EINVAL;
+> +
+> +	gxp_timer = kzalloc(sizeof(*gxp_timer), GFP_KERNEL);
+> +	if (!gxp_timer) {
+> +		ret = -ENOMEM;
+> +		goto err_iounmap;
 > +	}
->  
->  	write_lock_bh(&ax25_route_lock);
->  
-> @@ -91,6 +96,7 @@ static int __must_check ax25_rt_add(struct ax25_routes_struct *route)
->  			if (route->digi_count != 0) {
->  				if ((ax25_rt->digipeat = kmalloc(sizeof(ax25_digi), GFP_ATOMIC)) == NULL) {
->  					write_unlock_bh(&ax25_route_lock);
-> +					ax25_dev_put(ax25_dev);
->  					return -ENOMEM;
->  				}
->  				ax25_rt->digipeat->lastrepeat = -1;
-> @@ -101,6 +107,7 @@ static int __must_check ax25_rt_add(struct ax25_routes_struct *route)
->  				}
->  			}
->  			write_unlock_bh(&ax25_route_lock);
-> +			ax25_dev_put(ax25_dev);
->  			return 0;
->  		}
->  		ax25_rt = ax25_rt->next;
-> @@ -108,6 +115,7 @@ static int __must_check ax25_rt_add(struct ax25_routes_struct *route)
->  
->  	if ((ax25_rt = kmalloc(sizeof(ax25_route), GFP_ATOMIC)) == NULL) {
->  		write_unlock_bh(&ax25_route_lock);
-> +		ax25_dev_put(ax25_dev);
->  		return -ENOMEM;
->  	}
->  
-> @@ -120,6 +128,7 @@ static int __must_check ax25_rt_add(struct ax25_routes_struct *route)
->  		if ((ax25_rt->digipeat = kmalloc(sizeof(ax25_digi), GFP_ATOMIC)) == NULL) {
->  			write_unlock_bh(&ax25_route_lock);
->  			kfree(ax25_rt);
-> +			ax25_dev_put(ax25_dev);
->  			return -ENOMEM;
->  		}
->  		ax25_rt->digipeat->lastrepeat = -1;
-> @@ -132,6 +141,7 @@ static int __must_check ax25_rt_add(struct ax25_routes_struct *route)
->  	ax25_rt->next   = ax25_route_list;
->  	ax25_route_list = ax25_rt;
->  	write_unlock_bh(&ax25_route_lock);
-> +	ax25_dev_put(ax25_dev);
->  
->  	return 0;
->  }
-> @@ -147,8 +157,11 @@ static int ax25_rt_del(struct ax25_routes_struct *route)
->  	ax25_route *s, *t, *ax25_rt;
->  	ax25_dev *ax25_dev;
->  
-> -	if ((ax25_dev = ax25_addr_ax25dev(&route->port_addr)) == NULL)
-> +	ax25_dev = ax25_addr_ax25dev(&route->port_addr);
-> +	if (ax25_dev == NULL) {
-> +		ax25_dev_put(ax25_dev);
-
-NULL dereference.
-
->  		return -EINVAL;
+> +
+> +	gxp_timer->counter = base_counter;
+> +	gxp_timer->control = base_control;
+> +	gxp_timer->evt.name = node->name;
+> +	gxp_timer->evt.rating = 300;
+> +	gxp_timer->evt.features = CLOCK_EVT_FEAT_ONESHOT;
+> +	gxp_timer->evt.set_next_event = gxp_time_set_next_event;
+> +	gxp_timer->evt.cpumask = cpumask_of(0);
+> +
+> +	if (request_irq(irq, gxp_time_interrupt, IRQF_TIMER | IRQF_SHARED,
+> +		node->name, gxp_timer)) {
+> +		pr_err("%s: request_irq() failed\n", "GXP Timer Tick");
+> +		goto err_timer_free;
 > +	}
->  
->  	write_lock_bh(&ax25_route_lock);
->  
-> @@ -173,7 +186,7 @@ static int ax25_rt_del(struct ax25_routes_struct *route)
->  		}
->  	}
->  	write_unlock_bh(&ax25_route_lock);
-> -
-> +	ax25_dev_put(ax25_dev);
->  	return 0;
->  }
->  
-> @@ -183,8 +196,11 @@ static int ax25_rt_opt(struct ax25_route_opt_struct *rt_option)
->  	ax25_dev *ax25_dev;
->  	int err = 0;
->  
-> -	if ((ax25_dev = ax25_addr_ax25dev(&rt_option->port_addr)) == NULL)
-> +	ax25_dev = ax25_addr_ax25dev(&rt_option->port_addr);
-> +	if (ax25_dev == NULL) {
-> +		ax25_dev_put(ax25_dev);
-
-NULL dereference.
-
->  		return -EINVAL;
-> +	}
->  
->  	write_lock_bh(&ax25_route_lock);
->  
-> @@ -215,6 +231,7 @@ static int ax25_rt_opt(struct ax25_route_opt_struct *rt_option)
->  
->  out:
->  	write_unlock_bh(&ax25_route_lock);
-> +	ax25_dev_put(ax25_dev);
->  	return err;
->  }
-
-Thanks for this, but please can you resend with the above issues fixed
-and based on top of net-next.
-
-regards,
-dan carpenter
-
+> +
+> +	clockevents_config_and_register(&gxp_timer->evt, TIMER0_FREQ,
+> +					0xf, 0xffffffff);
+> +
+> +	pr_info("gxp: system timer (irq = %d)\n", irq);
+> +	return 0;
+> +
+> +
+> +err_timer_free:
+> +	kfree(gxp_timer);
+> +
+> +err_iounmap:
+> +	iounmap(system_clock);
+> +	iounmap(base_control);
+> +	iounmap(base_counter);
+> +	return ret;
+> +}
+> +
+> +TIMER_OF_DECLARE(gxp, "hpe,gxp-timer", gxp_timer_init);
+> -- 
+> 2.17.1
+> 
