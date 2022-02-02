@@ -2,138 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80B024A78EE
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 20:50:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DAE74A794B
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 21:16:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346994AbiBBTuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 14:50:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346983AbiBBTue (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 14:50:34 -0500
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17653C061714;
-        Wed,  2 Feb 2022 11:50:34 -0800 (PST)
-Received: by mail-il1-x12a.google.com with SMTP id x6so268949ilg.9;
-        Wed, 02 Feb 2022 11:50:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=reFpY/nGEqbODh2C3Y1S9N9DI33hc54Qf2pLCwPc5Lc=;
-        b=VXgajZ+4M55hMA9KfW8qel22D5zpO8LMLO/7Na8AqeVmOMEdxS2E5r+aHk4ZrY1ZiX
-         OptZ5J+Dib4AihcIUQpQjmG0VwKTBQl8bijXPHHtolYbn30QIY6VHsLoonXdydkJ5ZoH
-         m/7+ARO01Wq8q1zx1KH/cpZEpen6qzuX75fXQ8DZXPhm4lxcAd7Q1xxK3XiORd0SECFs
-         aQ91byqjYllBQbj2iy3GtK1llrdoKtmUDrq3SRCekv7ic3UvjMiZwfBY7CafOptYlgNh
-         lG8m0xIryoen/2/1zpTbQl9XtrfkHMzXyAoOVVrPLiKgXxwsKMgUJ0J2Wl9iGBKveFrS
-         h+Xw==
+        id S235957AbiBBUQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 15:16:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:53378 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233085AbiBBUQZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 15:16:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643832985;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=M34YrIYRx5HngPKL98NElbcSHiHeIbaZHCpXvZfxrIA=;
+        b=ZEcTjaQmHmp+wvpA41RTF7UZsabZP+OQ6Y4VTtBdQgTfgnMqkvfFkrBy8IU6WEs6kDsMNh
+        RRP3n8a4q4QPLGa8b1hdfp4Ys12U88dMuWhEGb19c76Ir+NqOvqLsP9LsyXcYCdlW1Erfh
+        0PkbuBpiwW+mOrLzr4CJCTK+EGkhsu4=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-299-8rETmtkPMja3f9_wD4dm8Q-1; Wed, 02 Feb 2022 15:16:24 -0500
+X-MC-Unique: 8rETmtkPMja3f9_wD4dm8Q-1
+Received: by mail-wr1-f71.google.com with SMTP id b3-20020a5d4b83000000b001d676462248so37221wrt.17
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 12:16:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=reFpY/nGEqbODh2C3Y1S9N9DI33hc54Qf2pLCwPc5Lc=;
-        b=ql616+yZ/4l7lHoAME+dKVyOYgC7BjTsMZUmSpWFb5GpN8du/Qll73l+LyQZvCgfe5
-         m2f07+EhfiOCjhJL31NF7Wtq+cYm1tDG5DF0IjVnDGCycuLZJE+wAoUPpF2oDpjDv06s
-         m2axw6GGVR2OkhvjBGw7IOtsIq/q7WjWeKX8PxxsffzwcdacCSkHtP/18ipUE38is2Os
-         SDeJngUqvPclv6McJcVCDW/iEjWqv70me5q6TDk3mhu0JI0Ia6QzLo3v0JHAcuQjiqnz
-         Y/bmfpcBlCuZE4YFpeECcWDGJR8LHfqYuBPK5zZ0l0XuAaMdxaKSLuP7z1FxlvMzpQqT
-         np2w==
-X-Gm-Message-State: AOAM533mAlahpw4XLHv/nGuNsfVewmKJZ/KdYtyZ010WCHgYXTkoR4oN
-        i01WqonqIZjvrShkvtZgEzrEYB/nT3Du1lr+08M=
-X-Google-Smtp-Source: ABdhPJwSBox0u3RfcOb/n7tzGCrw9ura9DRPCKY7Woc+BGKYOBB7j5TujoaYpiJiSCw9WwUgp/kn+UTZqPky92ybYMI=
-X-Received: by 2002:a05:6e02:1bc7:: with SMTP id x7mr17619061ilv.98.1643831433071;
- Wed, 02 Feb 2022 11:50:33 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=M34YrIYRx5HngPKL98NElbcSHiHeIbaZHCpXvZfxrIA=;
+        b=8Fj3cPP+I5oyeWQGQ1JjY4X9iSbni3kCrtv2DQYyTRV6DDdNldsitPx1wEtQX681AO
+         bs58KKTDnkWxshL4p7TnMbA2rLfDZYVQOTIBUmY9nOSDsOnv9q4jU0cHzYw3Kbtr0Okk
+         96Y5S7RY900PbEgUR9JAdcTyf0cV79Q2UIOIJ/4qtcZbUQOZe4Le6nKKmNoBDJeDJdSH
+         nFLeXg/5F7D+EZtxbuYnErm1vcLnRPT1fYCazqQqwgNAfpa0Jw9Y75bb3frEeDNliNnE
+         xKHx4TWqutMFGe8GyDCwlMvA0kUX46rAmEhVvOznFGWwYYnsESouvfTBN8KGdbLdA/eH
+         Gonw==
+X-Gm-Message-State: AOAM531TKhfb2doSTpb0Lvy4Mwn7MtwcXMrqgL1aeiKmcTxULPt9dVFA
+        TRZ1g5mHa4KdAo5II+F1aCX1kOJ+2lqWRBHGXBdhxb/6Wy3aYEExDY64wKEPbUrE+Wz3lfXW4QG
+        hRZfrBJMDeqrm0A3n
+X-Received: by 2002:a05:600c:219:: with SMTP id 25mr7491244wmi.68.1643832982374;
+        Wed, 02 Feb 2022 12:16:22 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJznM6hdgXQKcOhe6meRwxJx1EhhNNyS49Jthx0+vJQbr68vmdKFg7oX84c6XqbFBP9VWLPZeQ==
+X-Received: by 2002:a05:600c:219:: with SMTP id 25mr7491233wmi.68.1643832982208;
+        Wed, 02 Feb 2022 12:16:22 -0800 (PST)
+Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id f16sm7475036wmg.28.2022.02.02.12.16.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Feb 2022 12:16:19 -0800 (PST)
+Date:   Wed, 2 Feb 2022 21:16:14 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+        Ido Schimmel <idosch@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH net-next] selftests: fib offload: use sensible tos values
+Message-ID: <20220202201614.GB15826@pc-4.home>
+References: <5e43b343720360a1c0e4f5947d9e917b26f30fbf.1643826556.git.gnault@redhat.com>
+ <54a7071e-71ad-0c7d-ccc4-0f85dbe1e077@linuxfoundation.org>
 MIME-Version: 1.0
-References: <20220128223312.1253169-1-mauricio@kinvolk.io> <20220128223312.1253169-10-mauricio@kinvolk.io>
- <CAHap4zsWqpTezbzZn7TOWvFA4c2PbSum4vY1_9YB+XSfFor21g@mail.gmail.com>
-In-Reply-To: <CAHap4zsWqpTezbzZn7TOWvFA4c2PbSum4vY1_9YB+XSfFor21g@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 2 Feb 2022 11:50:21 -0800
-Message-ID: <CAEf4BzZipPWByN-JND=Djhhw+vpEjQScxJEPW5QTyWXozecfcg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 9/9] selftest/bpf: Implement tests for bpftool
- gen min_core_btf
-To:     =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <54a7071e-71ad-0c7d-ccc4-0f85dbe1e077@linuxfoundation.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 3:23 PM Mauricio V=C3=A1squez Bernal
-<mauricio@kinvolk.io> wrote:
->
-> On Fri, Jan 28, 2022 at 5:33 PM Mauricio V=C3=A1squez <mauricio@kinvolk.i=
-o> wrote:
-> >
-> > This commit implements some integration tests for "BTFGen". The goal
-> > of such tests is to verify that the generated BTF file contains the
-> > expected types.
-> >
->
-> This is not an exhaustive list of test cases. I'm not sure if this is
-> the approach we should follow to implement such tests, it seems to me
-> that checking each generated BTF file by hand is a lot of work but I
-> don't have other ideas to simplify it.
->
-> I considered different options to write these tests:
-> 1. Use core_reloc_types.h to create a "source" BTF file with a lot of
-> types, then run BTFGen for all test_core_reloc_*.o files and use the
-> generated BTF file as btf_src_file in core_reloc.c. In other words,
-> re-run all test_core_reloc tests using a generated BTF file as source
-> instead of the "btf__core_reloc_" #name ".o" one. I think this test is
-> great because it tests the full functionality and actually checks that
-> the programs are able to run using the generated file. The problem is
-> how do we test that the BTFGen is creating an optimized file? Just
-> copying the source file without any modification will make all those
-> tests pass. We could check that the generated file is small (by
-> checking the size or the number of types) but it doesn't seem a very
-> reliable approach to me.
+On Wed, Feb 02, 2022 at 12:46:10PM -0700, Shuah Khan wrote:
+> On 2/2/22 11:30 AM, Guillaume Nault wrote:
+> > Although both iproute2 and the kernel accept 1 and 2 as tos values for
+> > new routes, those are invalid. These values only set ECN bits, which
+> > are ignored during IPv4 fib lookups. Therefore, no packet can actually
+> > match such routes. This selftest therefore only succeeds because it
+> > doesn't verify that the new routes do actually work in practice (it
+> > just checks if the routes are offloaded or not).
+> > 
+> > It makes more sense to use tos values that don't conflict with ECN.
+> > This way, the selftest won't be affected if we later decide to warn or
+> > even reject invalid tos configurations for new routes.
+> 
+> Wouldn't it make sense to leave these invalid values in the test though.
+> Removing these makes this test out of sync withe kernel.
 
-I think this second run after minimizing BTF is a good idea. I
-wouldn't bother to check for "minimal BTF" for this case.
+Do you mean keeping the test as is and only modify it when (if) we
+decide to reject such invalid values? Or to write two versions of the
+test, one with invalid values, the other with correct ones?
 
-> 2. We could write some .c files with the types we expect to have on
-> the generated file and compare it with the generated file. The issue
-> here is that comparing those BTF files doesn't seem to be too
-> trivial...
+I don't get what keeping a test with the invalid values could bring us.
+It's confusing for the reader, and might break in the future. This
+patch makes the test future proof, without altering its intent and code
+coverage. It still works on current (and past) kernels, so I don't see
+what this patch could make out of sync.
 
-But I would add few realistic examples that use various combinations
-of CO-RE relocations against Linux types. Then minimize BTF and
-validate that BTF is what we expect.
+Or did I misunderstand something?
 
-As for how to compare BTFs. I've been wanting to do something like
-btf__normalize() API to renumber and resort all the BTF types into
-some "canonical" order, so that two BTFs can be actually compared and
-diffed. It might be finally the time to do that.
+> thanks,
+> -- Shuah
+> 
 
-The big complication is your decision to dump all the fields of types
-that are used by type-based relocations. I'm not convinced that's the
-best way to do this. I'd keep empty struct/union for such cases,
-actually. That would minimize the number of types and thus BTF in
-general. It also will simplify the logic of emitting minimized BTF a
-bit (all_types checks won't be necessary, I think).
-
-As I also mentioned in previous patches, for types that are only
-referenced through pointer, I'd emit FWD declaration only. Or at best
-empty struct/union.
-
-With all that, after btf__minimize() operation, comparing BTFs would
-be actually pretty easy, because we'll know the order of each type, so
-using the
-VALIDATE_RAW_BTF() (see prog_tests/btf_dedup_split.c) the tests will
-be easy and clean.
-
-
-One last thing, let's not add a new test binary (test_bpftool), let's
-keep adding more tests into test_progs.
-
->
-> Do you have any suggestions about it? Thanks!
