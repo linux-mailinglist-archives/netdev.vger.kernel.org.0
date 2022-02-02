@@ -2,300 +2,372 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 710824A78CE
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 20:37:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C3094A78DE
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 20:46:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346937AbiBBThB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 14:37:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56828 "EHLO
+        id S1346948AbiBBTqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 14:46:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbiBBThB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 14:37:01 -0500
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B0FC061714;
-        Wed,  2 Feb 2022 11:37:01 -0800 (PST)
-Received: by mail-io1-xd2c.google.com with SMTP id w7so398438ioj.5;
-        Wed, 02 Feb 2022 11:37:01 -0800 (PST)
+        with ESMTP id S229889AbiBBTqv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 14:46:51 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38943C061714;
+        Wed,  2 Feb 2022 11:46:51 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id b13so819495edn.0;
+        Wed, 02 Feb 2022 11:46:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=B1Nrhw+BlYiE7E7WmRuxZJpP8KhLxv9y9+FUzKrhRGQ=;
-        b=eREbdTvplXNrDWzyMkvMYYcvXnrTJapx9ADLhA8wpyR38REepNGbmPLtp3se2ZagGs
-         d//7BQwp+x6og0nVgO6wHf+QUGm+hvCaLXceHuHqIPogLOyjBT96O3fO9xtB44lHRi7z
-         7syuz7Uv32FU2XSdrfDNiybL6AiOOhfP4rH9J8b9i+fu/tXDgoO3QAk9fp2yyNuTW0Nu
-         /kTpDoxLjFPep2kJV1rfVir2/+SDPWvjYeBkodPH00xE2FQMgbHljKkmH1IoX2BddoaX
-         r7SIfXow6hDO/dbVmGFQ0hyeAejqXr9eQXRKUA64QkvTFCD8sqJRHUzH+L8Y6x87IFxj
-         kRcw==
+         :cc;
+        bh=rnmPw/OuvT5nnEtXmJqegdwVhZuNfh1sLakxnaRWZtU=;
+        b=iagGXqbnA+/6CPbz6jGozukFarqUd+V88acZVpP4hERalD6uejXfAcY73H+/dboFpw
+         1Pc3X46l4+FLyndDBx97RwsGO9mOU+EAAWk59xaLe07nTyuVm/2u36KPP8Ees3MmnIFc
+         FXIZIQXKYc8xcEsv6crEHugs/WbMJz07GYh81Ws/XVJ4sJEPzFWslDiJK4fGXvsMNdXU
+         PgttMXxfxTMvUMuYw+FGGdZ7LePhseUv75bP/7kcH/SqMRsfeRSsMXBlfKUwjHjThlE7
+         0FoGW8hpkogZ11SutO1U9iHasnHzu8IuPAP+hudUyiEKmy4mcw83q6mM45UzN8sWW1pV
+         rR/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=B1Nrhw+BlYiE7E7WmRuxZJpP8KhLxv9y9+FUzKrhRGQ=;
-        b=LURXiCRJT2XeD5c8cgb35UgN4QNaFxeNYCaGhcKeJ6TDVnDkT6YJb28be/zMxdZGTD
-         9BVKp3ELWJsa6QKRD5WHeNnKAtsIECceWC442Gx/t5qc+T9EHqV2/3dDaH2TsaxBCJyf
-         zUIb3v6pt9g2lK1Y2h+G/W2O3i8vvM2BcKcRlMt6Z8XOJvz1BYWpOEBMGPtm1aMg5MCQ
-         97hU+uES3y6A1Dr16nHGwb7rP6uyZ6cwsmoUI231k/865fLJYsKjiww7rxwnNOlSXh9J
-         fsNtFH0yR3fTP6MzSZx9r+SMb/oF319yxtOycDeSrYnP590U1JzvlnU3vGytNGMoIyDP
-         dmGg==
-X-Gm-Message-State: AOAM531AbwXySU/DmNpLREI8tvFNevqyhj0ndk7cl82icIj3JonebU9v
-        uCWWinzPmwaOZOV2QB6N+9sIZ3pLLFIi/1zJJhY=
-X-Google-Smtp-Source: ABdhPJxislD3cXxoJshXHyMXKUVjnPq/erpgf3nIl4c8bmdRxQETATVXrCYokp7vibWRFmGlUudEoCGKLDxAIREqOrI=
-X-Received: by 2002:a05:6638:304d:: with SMTP id u13mr14475725jak.103.1643830620751;
- Wed, 02 Feb 2022 11:37:00 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=rnmPw/OuvT5nnEtXmJqegdwVhZuNfh1sLakxnaRWZtU=;
+        b=FvUhGQqKYWMZFBFAdcphM7+VNNKLT7djXivn8xpJaxLjXEqc6yIJcfaz/x5WUUsbHU
+         87Kf2J6v+BjMiFBAraAajhrbnlOfWD/1SGOpTwEhdVT6MC3yJoVfpWU2/b00pgp2aRor
+         TY1TYmBeUeeKcfRe9LuYBFjLMdgpRqymC1RaA5HL/y8P/mo6EJjMhzbg7jRxU2xYvvjc
+         HoB2IP9VNnlvOmNXqOZulQs3iI+UDYhtk+SGjG8ewoYueblgFW1PGXTFyVfX1BcVGR2e
+         GyvS7xHp0OalOC6QFBMuw3T/BP6aOyygQGQOky2O7qoTc7d6G3BMBH/1A7HNZHxHKSjC
+         NhUg==
+X-Gm-Message-State: AOAM530/HnsI7iHqSO/5oOtFAdLiGEs3QyZkare6uFkHgX7HHPqFTZq3
+        J5zpclz9RqFOZI8BtlWgtvOI+soaUP7J9YIXVXM=
+X-Google-Smtp-Source: ABdhPJyXVxqNMmfb2b4TgCMxti9E2qhIYKGuf0BCS0PaAUFncuGmQK6OxuuSbLsJX1AM6ivknDuRZDLOUoSgmZZPRWs=
+X-Received: by 2002:a05:6402:1705:: with SMTP id y5mr31690498edu.200.1643831209595;
+ Wed, 02 Feb 2022 11:46:49 -0800 (PST)
 MIME-Version: 1.0
-References: <20220128223312.1253169-1-mauricio@kinvolk.io> <20220128223312.1253169-8-mauricio@kinvolk.io>
-In-Reply-To: <20220128223312.1253169-8-mauricio@kinvolk.io>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 2 Feb 2022 11:36:49 -0800
-Message-ID: <CAEf4BzaQ-hwdgqxYro5DjdY_=nnXTJVravt0D9qHW=PQZe-Lfg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 7/9] bpftool: Implement btfgen_get_btf()
-To:     =?UTF-8?Q?Mauricio_V=C3=A1squez?= <mauricio@kinvolk.io>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
+References: <20220202181248.18344-1-josright123@gmail.com> <20220202181248.18344-3-josright123@gmail.com>
+In-Reply-To: <20220202181248.18344-3-josright123@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 2 Feb 2022 21:45:13 +0200
+Message-ID: <CAHp75VeRoG3+UmPm41O0+5YmxDgDr3ESFtvMzn2c-SGpUePETw@mail.gmail.com>
+Subject: Re: [PATCH v17, 2/2] net: Add dm9051 driver
+To:     Joseph CHAMG <josright123@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Leon Romanovsky <leon@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 2:33 PM Mauricio V=C3=A1squez <mauricio@kinvolk.io>=
- wrote:
+On Wed, Feb 2, 2022 at 8:13 PM Joseph CHAMG <josright123@gmail.com> wrote:
 >
-> The last part of the BTFGen algorithm is to create a new BTF object with
-> all the types that were recorded in the previous steps.
->
-> This function performs two different steps:
-> 1. Add the types to the new BTF object by using btf__add_type(). Some
-> special logic around struct and unions is implemented to only add the
-> members that are really used in the field-based relocations. The type
-> ID on the new and old BTF objects is stored on a map.
-> 2. Fix all the type IDs on the new BTF object by using the IDs saved in
-> the previous step.
->
-> Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
-> Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
-> Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
-> Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
-> ---
->  tools/bpf/bpftool/gen.c | 158 +++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 157 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-> index 7413ec808a80..55e6f640cbbb 100644
-> --- a/tools/bpf/bpftool/gen.c
-> +++ b/tools/bpf/bpftool/gen.c
-> @@ -1599,10 +1599,166 @@ static int btfgen_record_obj(struct btfgen_info =
-*info, const char *obj_path)
->         return err;
->  }
->
-> +static unsigned int btfgen_get_id(struct hashmap *ids, unsigned int old)
+> Add davicom dm9051 spi ethernet driver, The driver work for the
+> device platform which has the spi master
+
+...
+
+> +       ret = regmap_write(db->regmap_dm, DM9051_EPCR, 0x0);
+
+0x0 --> 0
+
+
+> +       if (ret)
+> +               return ret;
+
+...
+
+> +       return regmap_write(db->regmap_dm, DM9051_EPCR, 0x0);
+
+Ditto.
+
+...
+
+> +       ret = regmap_update_bits(db->regmap_dm, DM9051_FCR, 0xff, fcr);
+
+GENMASK(7, 0) ?
+
+...
+
+> +static int dm9051_map_chipid(struct board_info *db)
 > +{
-> +       uintptr_t new =3D 0;
+> +       struct device *dev = &db->spidev->dev;
+> +       unsigned int ret;
+> +       unsigned short wid;
+> +       u8 buff[6];
 > +
-> +       /* deal with BTF_KIND_VOID */
-> +       if (old =3D=3D 0)
-> +               return 0;
-> +
-> +       if (!hashmap__find(ids, uint_as_hash_key(old), (void **)&new)) {
-> +               /* return id for void as it's possible that the ID we're =
-looking for is
-> +                * the type of a pointer that we're not adding.
-> +                */
-> +               return 0;
+> +       ret = regmap_bulk_read(db->regmap_dmbulk, DM9051_VIDL, buff, 6);
+
+sizeof(buff)
+
+> +       if (ret < 0) {
+> +               netif_err(db, drv, db->ndev, "%s: error %d bulk_read reg %02x\n",
+> +                         __func__, ret, DM9051_VIDL);
+> +               return ret;
+> +       }
+
+> +       wid = buff[3] << 8 | buff[2];
+
+get_unaligned_le16()
+
+> +       if (wid != DM9051_ID) {
+> +               dev_err(dev, "chipid error as %04x !\n", wid);
+> +               return -ENODEV;
 > +       }
 > +
-> +       return (unsigned int)(uintptr_t)new;
+> +       dev_info(dev, "chip %04x found\n", wid);
+> +       return 0;
 > +}
-> +
-> +static int btfgen_add_id(struct hashmap *ids, unsigned int old, unsigned=
- int new)
+
+...
+
+> +static int dm9051_map_etherdev_par(struct net_device *ndev, struct board_info *db)
 > +{
-> +       return hashmap__add(ids, uint_as_hash_key(old), uint_as_hash_key(=
-new));
+> +       u8 addr[ETH_ALEN];
+> +       int ret;
+> +
+> +       ret = regmap_bulk_read(db->regmap_dmbulk, DM9051_PAR, addr, ETH_ALEN);
+
+sizeof(addr)
+
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       if (!is_valid_ether_addr(addr)) {
+> +               eth_hw_addr_random(ndev);
+
+> +               ret = regmap_bulk_write(db->regmap_dmbulk, DM9051_PAR, ndev->dev_addr, ETH_ALEN);
+
+Ditto.
+
+> +               if (ret < 0)
+> +                       return ret;
+> +
+> +               dev_dbg(&db->spidev->dev, "Use random MAC address\n");
+> +               return 0;
+> +       }
+> +
+> +       eth_hw_addr_set(ndev, addr);
+> +       return 0;
 > +}
+
+...
+
+> +       db->mdiobus->phy_mask = (u32)~GENMASK(1, 1);
+
+For a single bit it might be better to use BIT(1)
+
+...
+
+> +       ret = devm_mdiobus_register(&spi->dev, db->mdiobus);
+> +       if (ret)
+> +               dev_err(&spi->dev, "Could not register MDIO bus\n");
 > +
->  /* Generate BTF from relocation information previously recorded */
->  static struct btf *btfgen_get_btf(struct btfgen_info *info)
->  {
-> -       return ERR_PTR(-EOPNOTSUPP);
-> +       struct hashmap_entry *entry;
-> +       struct btf *btf_new =3D NULL;
-> +       struct hashmap *ids =3D NULL;
-> +       size_t bkt;
-> +       int err =3D 0;
+
+> +       return 0;
+
+return ret; ?
+
+...
+
+> +       snprintf(phy_id, MII_BUS_ID_SIZE + 3, PHY_ID_FMT,
+
+sizeof(phy_id) + 3
+
+> +                db->mdiobus->id, DM9051_PHY_ADDR);
+
+...
+
+> +       if (IS_ERR(db->phydev))
+> +               return PTR_ERR(db->phydev);
+> +       return 0;
+
+return PTR_ERR_OR_ZERO();
+
+...
+
+> +               if ((rxbyte & 0xff) != DM9051_PKT_RDY)
+
+GENMASK(7, 0) ?
+
+> +                       break; /* exhaust-empty */
+
+...
+
+> +               ret = regmap_write(db->regmap_dm, DM9051_ISR, 0xff); /* to stop mrcmd */
+
+
+Ditto.
+
+> +               if (ret)
+> +                       return ret;
+
+...
+
+> +               ret = regmap_write(db->regmap_dm, DM9051_ISR, 0xff); /* to stop mrcmd */
+
+Ditto.
+
+Perhaps it needs its own definition after all?
+
+> +               if (ret)
+> +                       return ret;
+
+...
+
+> +spi_err:
+
+out_unlock:
+
+> +       mutex_unlock(&db->spi_lockm);
 > +
-> +       btf_new =3D btf__new_empty();
-> +       if (libbpf_get_error(btf_new))
-> +               goto err_out;
-> +
-> +       ids =3D hashmap__new(btfgen_hash_fn, btfgen_equal_fn, NULL);
-> +       if (IS_ERR(ids)) {
-> +               errno =3D -PTR_ERR(ids);
-> +               goto err_out;
+> +       return IRQ_HANDLED;
+
+...
+
+> +       result = regmap_bulk_write(db->regmap_dmbulk, DM9051_MAR, db->rctl.hash_table, 8);
+
+Is hash_table an array? Then sizeof() or ARRAY_SIZE() should work.
+
+> +       if (result < 0) {
+> +               netif_err(db, drv, ndev, "%s: error %d bulk writing reg %02x, len %d\n",
+> +                         __func__, result, DM9051_MAR, 8);
+
+Ditto.
+
+> +               goto spi_err;
 > +       }
-> +
-> +       /* first pass: add all types and add their new ids to the ids map=
- */
-> +       hashmap__for_each_entry(info->types, entry, bkt) {
-> +               struct btfgen_type *btfgen_type =3D entry->value;
-> +               struct btf_type *btf_type =3D btfgen_type->type;
-> +               int new_id;
-> +
-> +               /* we're adding BTF_KIND_VOID to the list but it can't be=
- added to
-> +                * the generated BTF object, hence we skip it here.
-> +                */
-> +               if (btfgen_type->id =3D=3D 0)
-> +                       continue;
-> +
-> +               /* add members for struct and union */
-> +               if (btf_is_struct(btf_type) || btf_is_union(btf_type)) {
-> +                       struct hashmap_entry *member_entry;
-> +                       struct btf_type *btf_type_cpy;
-> +                       int nmembers, index;
-> +                       size_t new_size;
-> +
-> +                       nmembers =3D btfgen_type->members ? hashmap__size=
-(btfgen_type->members) : 0;
-> +                       new_size =3D sizeof(struct btf_type) + nmembers *=
- sizeof(struct btf_member);
-> +
-> +                       btf_type_cpy =3D malloc(new_size);
-> +                       if (!btf_type_cpy)
-> +                               goto err_out;
-> +
-> +                       /* copy header */
-> +                       memcpy(btf_type_cpy, btf_type, sizeof(*btf_type_c=
-py));
-> +
-> +                       /* copy only members that are needed */
-> +                       index =3D 0;
-> +                       if (nmembers > 0) {
-> +                               size_t bkt2;
-> +
-> +                               hashmap__for_each_entry(btfgen_type->memb=
-ers, member_entry, bkt2) {
-> +                                       struct btfgen_member *btfgen_memb=
-er;
-> +                                       struct btf_member *btf_member;
-> +
-> +                                       btfgen_member =3D member_entry->v=
-alue;
-> +                                       btf_member =3D btf_members(btf_ty=
-pe) + btfgen_member->idx;
-> +
-> +                                       memcpy(btf_members(btf_type_cpy) =
-+ index, btf_member,
-> +                                              sizeof(struct btf_member))=
-;
 
-you know that you are working with btf_type and btf_member, each have
-just a few well known fields, why memcpy instead of just setting each
-field individually? I think that would make code much easier to follow
-and understand what transformations it's doing (and what it doesn't do
-either).
+...
 
-> +
-> +                                       index++;
-> +                               }
-> +                       }
-> +
-> +                       /* set new vlen */
-> +                       btf_type_cpy->info =3D btf_type_info(btf_kind(btf=
-_type_cpy), nmembers,
-> +                                                          btf_kflag(btf_=
-type_cpy));
-> +
-> +                       err =3D btf__add_type(btf_new, info->src_btf, btf=
-_type_cpy);
-> +                       free(btf_type_cpy);
-> +               } else {
-> +                       err =3D btf__add_type(btf_new, info->src_btf, btf=
-_type);
-> +               }
-> +
-> +               if (err < 0)
-> +                       goto err_out;
-> +
-> +               new_id =3D err;
-> +
-> +               /* add ID mapping */
-> +               err =3D btfgen_add_id(ids, btfgen_type->id, new_id);
-> +               if (err)
-> +                       goto err_out;
+> +spi_err:
+
+out_unlock:
+
+You need to describe what will be done if one goes to the label.
+
+> +       mutex_unlock(&db->spi_lockm);
+
+...
+
+> +       /* The whole dm9051 chip registers could not be accessed within 1 ms
+> +        * after above GPR power on control
+> +        */
+> +       mdelay(1);
+
+Why atomic?
+
+...
+
+> +       ret = request_threaded_irq(spi->irq, NULL, dm9051_rx_threaded_irq,
+> +                                  IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+
+Why do you ignore IRQ flags from DT?
+
+> +                                  ndev->name, db);
+
+...
+
+> +       /* the multicast address in Hash Table : 64 bits */
+> +       netdev_for_each_mc_addr(ha, ndev) {
+> +               hash_val = ether_crc_le(ETH_ALEN, ha->addr) & 0x3f;
+
+GENMASK() ?
+
+> +               rxctrl.hash_table[hash_val / 16] |= 1U << (hash_val % 16);
+
+BIT() ?
+
 > +       }
-> +
-> +       /* second pass: fix up type ids */
-> +       for (unsigned int i =3D 0; i < btf__type_cnt(btf_new); i++) {
-> +               struct btf_member *btf_member;
-> +               struct btf_type *btf_type;
-> +               struct btf_param *params;
-> +               struct btf_array *array;
-> +
-> +               btf_type =3D (struct btf_type *) btf__type_by_id(btf_new,=
- i);
-> +
-> +               switch (btf_kind(btf_type)) {
-> +               case BTF_KIND_STRUCT:
-> +               case BTF_KIND_UNION:
-> +                       for (unsigned short j =3D 0; j < btf_vlen(btf_typ=
-e); j++) {
-> +                               btf_member =3D btf_members(btf_type) + j;
-> +                               btf_member->type =3D btfgen_get_id(ids, b=
-tf_member->type);
-> +                       }
-> +                       break;
-> +               case BTF_KIND_PTR:
-> +               case BTF_KIND_TYPEDEF:
-> +               case BTF_KIND_VOLATILE:
-> +               case BTF_KIND_CONST:
-> +               case BTF_KIND_RESTRICT:
-> +               case BTF_KIND_FUNC:
-> +               case BTF_KIND_VAR:
-> +                       btf_type->type =3D btfgen_get_id(ids, btf_type->t=
-ype);
-> +                       break;
-> +               case BTF_KIND_ARRAY:
-> +                       array =3D btf_array(btf_type);
-> +                       array->index_type =3D btfgen_get_id(ids, array->i=
-ndex_type);
-> +                       array->type =3D btfgen_get_id(ids, array->type);
-> +                       break;
-> +               case BTF_KIND_FUNC_PROTO:
-> +                       btf_type->type =3D btfgen_get_id(ids, btf_type->t=
-ype);
-> +                       params =3D btf_params(btf_type);
-> +                       for (unsigned short j =3D 0; j < btf_vlen(btf_typ=
-e); j++)
-> +                               params[j].type =3D btfgen_get_id(ids, par=
-ams[j].type);
-> +                       break;
 
-did you try using btf_type_visit_type_ids() instead of this entire loop?
+...
 
-> +               default:
-> +                       break;
-> +               }
+> +       /* schedule work to do the actual set of the data if needed */
+
+> +       if (memcmp(&db->rctl, &rxctrl, sizeof(rxctrl))) {
+> +               memcpy(&db->rctl, &rxctrl, sizeof(rxctrl));
+
+Hmm... This is interesting...
+
+> +               schedule_work(&db->rxctrl_work);
 > +       }
+
+...
+
+> +       ret = regmap_bulk_write(db->regmap_dmbulk, DM9051_PAR, ndev->dev_addr, ETH_ALEN);
+
+sizeof() ?
+
+...
+
+> +       int ret = 0;
+
+Redundant assignment.
+
+...
+
+> +       ret = devm_register_netdev(dev, ndev);
+> +       if (ret) {
+
+> +               dev_err(dev, "failed to register network device\n");
+> +               phy_disconnect(db->phydev);
+> +               return ret;
+
+phy_disconnect();
+return dev_err_probe();
+
+> +       }
+
+...
+
+> +err_stopthread:
+> +       return ret;
+
+Useless. Return in-place.
+
+...
+
+> +static struct spi_driver dm9051_driver = {
+> +       .driver = {
+> +               .name = DRVNAME_9051,
+> +               .of_match_table = dm9051_match_table,
+> +       },
+> +       .probe = dm9051_probe,
+> +       .remove = dm9051_drv_remove,
+> +       .id_table = dm9051_id_table,
+> +};
+
 > +
-> +       hashmap__free(ids);
-> +       return btf_new;
-> +
-> +err_out:
-> +       btf__free(btf_new);
-> +       hashmap__free(ids);
-> +       return NULL;
->  }
->
->  /* Create BTF file for a set of BPF objects.
-> --
-> 2.25.1
->
+
+Redundant blank line.
+
+> +module_spi_driver(dm9051_driver);
+
+...
+
++ bits.h
+
+> +#include <linux/netdevice.h>
+
+> +#include <linux/mii.h>
+
+How is that header being used in this header?
+
+> +#include <linux/types.h>
+
+...
+
+> +#define INTCR_POL_LOW          BIT(0)
+> +#define INTCR_POL_HIGH         (0 << 0)
+
+In this case, be consistent:
+
+#define INTCR_POL_LOW          (1 << 0)
+#define INTCR_POL_HIGH         (0 << 0)
+
+-- 
+With Best Regards,
+Andy Shevchenko
