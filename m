@@ -2,174 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 353C34A7327
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 15:31:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FB0E4A7350
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 15:36:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238857AbiBBObt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 09:31:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44824 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1345011AbiBBObr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 09:31:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643812306;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UEv10nAkQ//1KDJ0Efo18Nsdi9wgtpf0l44uT8UYDm8=;
-        b=WW8hfyCXLm0OS1DvKnPLcsXBGpF24xozCnwLQexh/C2zBXSZ2oUcD28ixDiA+CInkq803V
-        f3smTsMZetxqEhEAkAx0TqjaEIXnR6dg4PrxjguLGHpAp7NJpkiGVJ5fUA9ii/lfhoAZXt
-        dNchHORmSDy0T3CtBztdYd3tZtAdvsg=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-442-36CCuJNFO628g1I98TzvHA-1; Wed, 02 Feb 2022 09:31:44 -0500
-X-MC-Unique: 36CCuJNFO628g1I98TzvHA-1
-Received: by mail-ed1-f69.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso10475416edt.20
-        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 06:31:43 -0800 (PST)
+        id S1344906AbiBBOgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 09:36:10 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:33322 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231445AbiBBOgK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 09:36:10 -0500
+Received: by mail-il1-f197.google.com with SMTP id h9-20020a92d849000000b002bc4b7993fbso6129224ilq.0
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 06:36:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
-         :content-transfer-encoding;
-        bh=UEv10nAkQ//1KDJ0Efo18Nsdi9wgtpf0l44uT8UYDm8=;
-        b=yODziMoEr1aufckxNPF7mAtN3ykdiqr8NBu5NXAXGQrgJLMj4fmeQbvh+thLEvXOwY
-         02TNTLqt8gQa1vFuISUySAscvXnEoQ1OzTyL/jpkb+yvx7Xct0Y56f4KrtbgV/wfI8L9
-         3tDK4cPBO3sujTyM7Yb5KxoKxhUy8ONhS11zB5DazXh+GrHoSvLOgl3itPK1C6k4Pr9Z
-         JF0QEywcjAhhfm9TXJFuIZgs0Y8+kriMcjg6CN4miCaOVYo4+n8UibX/9hSr/bBmYB3V
-         /S1FXvRnsVe3pnZ1AhD0BxCRS0wEdkq0GrmaVXwQonIl04xTmlZki8jopFBeGJ1sazBy
-         Yo1A==
-X-Gm-Message-State: AOAM531HldAkmfmsfMy1l1SBl20u3I5FF0R7emppeZrwt+/asBf3GYEN
-        yzSrjAypJK+EzJChamI/BEE86e5v6hhVdQ2fHPJWAz9x6sWjeEamkcBWkKc7nCGr0TfLHsCnmX2
-        L625UOpTDVhrIoiwr
-X-Received: by 2002:a17:907:a412:: with SMTP id sg18mr25871171ejc.68.1643812302482;
-        Wed, 02 Feb 2022 06:31:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwLLzCCkLGJ9rGc2I9DfJlmiLofrp+9MCNN6QYlbt3IhIKSL5kDDdyN6X/tOoF3Q62vxSxLdw==
-X-Received: by 2002:a17:907:a412:: with SMTP id sg18mr25871156ejc.68.1643812302220;
-        Wed, 02 Feb 2022 06:31:42 -0800 (PST)
-Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
-        by smtp.gmail.com with ESMTPSA id cz6sm15791340edb.4.2022.02.02.06.31.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Feb 2022 06:31:41 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <bb50fffb-afa8-b258-5382-fe56294cd7b0@redhat.com>
-Date:   Wed, 2 Feb 2022 15:31:40 +0100
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Eymh4pHURRqeuFwS8adn0p8QhOCEykcqbl9dEc138NY=;
+        b=AhJC5FpocAJaIwELrCmRaomDt+HQZbU9ZaY8BCR3tChipzWrPhrVnkk8isqNkW5kzB
+         RJVhs55ht8DTvsrRjEYn7twniD/Hi5Zwuvo4/E+TGn2WMx+nLvvlKdPBcEZXFSpEQp0I
+         pZg47EVJ3DN57C8ZNX2omgB+TVp+zaX18NuVjoVY/0DD7L0AZH+R5VFul85rHw2ynhUC
+         sdOvZYVa3VLEEDVrlmuZwsbFomk61kylZwDpXyoN+NcgZU1Vv0OQWvPlnwM2GHd182jn
+         b05Y1S617Leh0wqKZuVrfKYwGtnUla4SA8YornVQwco4hygUfz4qyrUOe0+fNQYxNvP3
+         +/2w==
+X-Gm-Message-State: AOAM531SmiLhOcM+3bfeI5eC+BOL0lcylIY1ZJOtmmamftPcX9iPYldp
+        s/zZsS6UaZ53TVE95O70nd2ljf2a/y+SL8dJ2jjRqr0UcuEX
+X-Google-Smtp-Source: ABdhPJwGogskVKanVKmmmO1deCNQWTYAR4unUVwG5nX2dggT73jsD2XxfgJcLs4y20Iwprc8IHZ1DEukzWl+iHfMi84JlWn5xHSa
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Cc:     brouer@redhat.com
-Subject: Re: [net-next v3 00/10] page_pool: Add page_pool stat counters
-Content-Language: en-US
-To:     Joe Damato <jdamato@fastly.com>, netdev@vger.kernel.org,
-        kuba@kernel.org, ilias.apalodimas@linaro.org, davem@davemloft.net,
-        hawk@kernel.org, Tariq Toukan <ttoukan.linux@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>
-References: <1643764336-63864-1-git-send-email-jdamato@fastly.com>
-In-Reply-To: <1643764336-63864-1-git-send-email-jdamato@fastly.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6602:2e90:: with SMTP id m16mr16733470iow.74.1643812569793;
+ Wed, 02 Feb 2022 06:36:09 -0800 (PST)
+Date:   Wed, 02 Feb 2022 06:36:09 -0800
+In-Reply-To: <0000000000000a9b7d05d6ee565f@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004cc7f905d709f0f6@google.com>
+Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Write in ringbuf_map_alloc
+From:   syzbot <syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, andreyknvl@google.com,
+        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, elver@google.com,
+        glider@google.com, hotforest@gmail.com, houtao1@huawei.com,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, sfr@canb.auug.org.au,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+syzbot has bisected this issue to:
 
-Adding Cc. Tariq and Saeed, as they wanted page_pool stats in the past.
+commit c34cdf846c1298de1c0f7fbe04820fe96c45068c
+Author: Andrey Konovalov <andreyknvl@google.com>
+Date:   Wed Feb 2 01:04:27 2022 +0000
 
-On 02/02/2022 02.12, Joe Damato wrote:
-> Greetings:
-> 
-> Sending a v3 as I noted some issues with the procfs code in patch 10 I
-> submit in v2 (thanks, kernel test robot) and fixing the placement of the
-> refill stat increment in patch 8.
+    kasan, vmalloc: unpoison VM_ALLOC pages after mapping
 
-Could you explain why a single global stats (/proc/net/page_pool_stat) 
-for all page_pool instances for all RX-queues makes sense?
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=128cb900700000
+start commit:   6abab1b81b65 Add linux-next specific files for 20220202
+git tree:       linux-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=118cb900700000
+console output: https://syzkaller.appspot.com/x/log.txt?x=168cb900700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b8d8750556896349
+dashboard link: https://syzkaller.appspot.com/bug?extid=5ad567a418794b9b5983
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1450d9f0700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=130ef35bb00000
 
-I think this argument/explanation belongs in the cover letter.
+Reported-by: syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com
+Fixes: c34cdf846c12 ("kasan, vmalloc: unpoison VM_ALLOC pages after mapping")
 
-What are you using this for?
-
-And do Tariq and Saeeds agree with this single global stats approach?
-
-
-> I only modified the placement of the refill stat, but decided to re-run the
-> benchmarks used in the v2 [1], and the results are:
-
-I appreciate that you are running the benchmarks.
-
-> Test system:
-> 	- 2x Intel(R) Xeon(R) Gold 6140 CPU @ 2.30GHz
-> 	- 2 NUMA zones, with 18 cores per zone and 2 threads per core
-> 
-> bench_page_pool_simple results:
-> test name			stats enabled		stats disabled
-> 				cycles	nanosec		cycles	nanosec
-> 
-> for_loop			0	0.335		0	0.334
-
-I think you can drop the 'for_loop' results, we can see that the 
-overhead is insignificant.
-
-> atomic_inc 			13	6.028		13	6.035
-> lock				32	14.017		31	13.552
-> 
-> no-softirq-page_pool01		45	19.832		46	20.193
-> no-softirq-page_pool02		44	19.478		46	20.083
-> no-softirq-page_pool03		110	48.365		109	47.699
-> 
-> tasklet_page_pool01_fast_path	14	6.204		13	6.021
-> tasklet_page_pool02_ptr_ring	41	18.115		42	18.699
-> tasklet_page_pool03_slow	110	48.085		108	47.395
-> 
-> bench_page_pool_cross_cpu results:
-> test name			stats enabled		stats disabled
-> 				cycles	nanosec		cycles	nanosec
-> 
-> page_pool_cross_cpu CPU(0)	2216	966.179		2101	915.692
-> page_pool_cross_cpu CPU(1)	2211	963.914		2159	941.087
-> page_pool_cross_cpu CPU(2)	1108	483.097		1079	470.573
-> 
-> page_pool_cross_cpu average	1845	-		1779	-
-> 
-> v2 -> v3:
-> 	- patch 8/10 ("Add stat tracking cache refill") fixed placement of
-> 	  counter increment.
-> 	- patch 10/10 ("net-procfs: Show page pool stats in proc") updated:
-> 		- fix unused label warning from kernel test robot,
-> 		- fixed page_pool_seq_show to only display the refill stat
-> 		  once,
-> 		- added a remove_proc_entry for page_pool_stat to
-> 		  dev_proc_net_exit.
-> 
-> v1 -> v2:
-> 	- A new kernel config option has been added, which defaults to N,
-> 	   preventing this code from being compiled in by default
-> 	- The stats structure has been converted to a per-cpu structure
-> 	- The stats are now exported via proc (/proc/net/page_pool_stat)
-> 
-> Thanks.
-> 
-> [1]:
-> https://lore.kernel.org/all/1643499540-8351-1-git-send-email-jdamato@fastly.com/T/#md82c6d5233e35bb518bc40c8fd7dff7a7a17e199
-> 
-> Joe Damato (10):
->    page_pool: kconfig: Add flag for page pool stats
->    page_pool: Add per-cpu page_pool_stats struct
->    page_pool: Add a macro for incrementing stats
->    page_pool: Add stat tracking fast path allocations
->    page_pool: Add slow path order 0 allocation stat
->    page_pool: Add slow path high order allocation stat
->    page_pool: Add stat tracking empty ring
->    page_pool: Add stat tracking cache refill
->    page_pool: Add a stat tracking waived pages
->    net-procfs: Show page pool stats in proc
-> 
->   include/net/page_pool.h | 20 +++++++++++++++
->   net/Kconfig             | 12 +++++++++
->   net/core/net-procfs.c   | 67 +++++++++++++++++++++++++++++++++++++++++++++++++
->   net/core/page_pool.c    | 28 ++++++++++++++++++---
->   4 files changed, 124 insertions(+), 3 deletions(-)
-> 
-
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
