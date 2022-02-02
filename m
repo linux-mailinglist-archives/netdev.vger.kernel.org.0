@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0979C4A68ED
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 01:04:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18E5B4A68F7
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 01:05:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243100AbiBBAE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 19:04:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45556 "EHLO
+        id S243135AbiBBAEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 19:04:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243096AbiBBAEP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 19:04:15 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CBFC061401;
-        Tue,  1 Feb 2022 16:04:14 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id k25so58968981ejp.5;
-        Tue, 01 Feb 2022 16:04:14 -0800 (PST)
+        with ESMTP id S243110AbiBBAER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 19:04:17 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA4FC06173B;
+        Tue,  1 Feb 2022 16:04:16 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id p7so37891411edc.12;
+        Tue, 01 Feb 2022 16:04:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wxmu/gNVJ7h2u3cs1goD2sfMFY17LzbinXKr2isRlQY=;
-        b=E6DPJF/0VYmTw1gDfXghVUUH/Fpv7ldh1aVKODmjSjS2joscYq/MYVJNthmUky49C1
-         C9RfRkbHpmZudYxdfvPo6sFaiJHQWXhMoVu6xquq5EuWdmLoRpp97pbyNFfr4iLna+ED
-         Tl++4b7Ab7hAQ82F9COOQHs4DzZ9xziwB761+WcolQP9gQYWuLCaJd1vxZiAaqy0VzVR
-         OEFNZ3LDfYWiLbXQFmWgmifLlrG9X7aDVvBznog2qm5VA4A679SP1SoIpSWcNsarXkaF
-         ANvwFJivMIMMlYxxkONepL9uhPmIrY9meBr+fXagi3Ko9qISUAT1b4mz3dBWn0FgmmnS
-         YsSA==
+        bh=Z9VGchsPoiNssfykfKpnr6kDcC1pZ+R5aD7drdmLAPA=;
+        b=KM9JOsJ3pWyyciBhOdnBGiUF9l0FW4I1jbD85meOFBdc9aqV2Y18RVwTeUNn3U66R/
+         dyLqheEMv8LQ00yPSQxuZ2ifLxDkCKaY7bEf8TqSwgnf097W+dU53XeBQnYr9A2S7q24
+         PmFhu/rmLw99oaB4V9mfc1ZplPkwE5tyivdu/QwaMG/CSG6Fsr94xW+gSaAmdpErYrwr
+         s9iyC7C4YPIAQF4tXn8sTzo9LfI841/WON3nwjdiPgt62vTeZ+jPVvE+gAEoJKP6hEMv
+         tTq4v6LZN48jxEFfGnFncCWgcU9BUEp2+mWZ1aRMsPJbST/bBAY53TXjMVvJnpYhzuE4
+         2EnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wxmu/gNVJ7h2u3cs1goD2sfMFY17LzbinXKr2isRlQY=;
-        b=XKFdPKIl4wMCN5N7dZYHk1lDQaxaqINJWgHPmTvIEmFLAe87i+3Nv7TPPpxz8oSfi1
-         SHpNhXBG3GQrALaOpKZxymeDBimoqjhIufH2ULU7pvp07M8xsRolQomjuYKJhBgI7Nf6
-         DOS2ELGhPMwaqyF4xTCD4Am3yfg+JW/75VbyBClodvDshvjRjXzhTs21QQSX8VzLuG8H
-         /dwAPxRHeJfGD0aL6+utHEKyD0ddew2waTux3j0HIN7CL1TRuzi+rMQPn9OvCBjV1fkq
-         pO/36pfkhGlWm9bU037XnHLb8+hpdmWVJ2VYGw9BTU1HHzkYlqvSkq7Y9gJAugrPXGd9
-         AGGg==
-X-Gm-Message-State: AOAM530isUPSsFChP0lK/0Mx6yjMCapCqpj7r03xkXxdP3NZU0Eq6JIm
-        7APWwFXu0eIsg8sqm9PYOzg=
-X-Google-Smtp-Source: ABdhPJxFRql/fj+MDE3qSueAuN9kgPkyhDoVYnhjRpahDzIYpAPY1YlKib+1ZaStVevFIv3a+yXmHQ==
-X-Received: by 2002:a17:907:7f04:: with SMTP id qf4mr22824503ejc.152.1643760253286;
-        Tue, 01 Feb 2022 16:04:13 -0800 (PST)
+        bh=Z9VGchsPoiNssfykfKpnr6kDcC1pZ+R5aD7drdmLAPA=;
+        b=lFvz7uZ1oGbSQ0n9PLANFvdfMUteUmM9Ts5vnsjdNBY0rytNZf4YnlB1oOi+XW4Xxj
+         5g/Xs3p0cuwhltXaGnTU+2Q5R6unOHB6azL2c7Qx7eylE8wHwpmM11BsSTzwAMYMgUie
+         XeZZesOjSmRkr8hLhFrZ0CFyyamWetDIJs46WDwbq+PHTpFFdqcAcinnXlufEHZpXdbU
+         KHcfKk7XTvS/GslXthPcxdklXyYcDvPXmXpQQ8N1oWeYKSzndqYYMXu1jACbvVRPsDq7
+         i95MzYKJf4iny130M1jCekalQJU+dISSelO3D8U//9nQG+Mw/xA4be5+Q9MfLtFMswOH
+         Txjg==
+X-Gm-Message-State: AOAM533zuvwkLZp8k0LRHPYQUsksynNV83W/sVMAPGkvTxjM/YNf2rF1
+        0NGRy0ziP37xcLGAM3ZkbpQ=
+X-Google-Smtp-Source: ABdhPJz+5joJ7I4Seo3Ebr8vtIviOmthgO16WXP1vN5/rD94n8BkNhbI04od638o9PXUrdLOXKRxXw==
+X-Received: by 2002:a05:6402:190d:: with SMTP id e13mr28068962edz.38.1643760255449;
+        Tue, 01 Feb 2022 16:04:15 -0800 (PST)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id n3sm3590451ejr.6.2022.02.01.16.04.11
+        by smtp.googlemail.com with ESMTPSA id n3sm3590451ejr.6.2022.02.01.16.04.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 16:04:12 -0800 (PST)
+        Tue, 01 Feb 2022 16:04:15 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,9 +56,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v8 04/16] net: dsa: tag_qca: move define to include linux/dsa
-Date:   Wed,  2 Feb 2022 01:03:23 +0100
-Message-Id: <20220202000335.19296-5-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v8 05/16] net: dsa: tag_qca: enable promisc_on_master flag
+Date:   Wed,  2 Feb 2022 01:03:24 +0100
+Message-Id: <20220202000335.19296-6-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220202000335.19296-1-ansuelsmth@gmail.com>
 References: <20220202000335.19296-1-ansuelsmth@gmail.com>
@@ -68,76 +68,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move tag_qca define to include dir linux/dsa as the qca8k require access
-to the tagger define to support in-band mdio read/write using ethernet
-packet.
+Ethernet MDIO packets are non-standard and DSA master expects the first
+6 octets to be the MAC DA. To address these kind of packet, enable
+promisc_on_master flag for the tagger.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- include/linux/dsa/tag_qca.h | 21 +++++++++++++++++++++
- net/dsa/tag_qca.c           | 16 +---------------
- 2 files changed, 22 insertions(+), 15 deletions(-)
- create mode 100644 include/linux/dsa/tag_qca.h
+ net/dsa/tag_qca.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/dsa/tag_qca.h b/include/linux/dsa/tag_qca.h
-new file mode 100644
-index 000000000000..c02d2d39ff4a
---- /dev/null
-+++ b/include/linux/dsa/tag_qca.h
-@@ -0,0 +1,21 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#ifndef __TAG_QCA_H
-+#define __TAG_QCA_H
-+
-+#define QCA_HDR_LEN	2
-+#define QCA_HDR_VERSION	0x2
-+
-+#define QCA_HDR_RECV_VERSION		GENMASK(15, 14)
-+#define QCA_HDR_RECV_PRIORITY		GENMASK(13, 11)
-+#define QCA_HDR_RECV_TYPE		GENMASK(10, 6)
-+#define QCA_HDR_RECV_FRAME_IS_TAGGED	BIT(3)
-+#define QCA_HDR_RECV_SOURCE_PORT	GENMASK(2, 0)
-+
-+#define QCA_HDR_XMIT_VERSION		GENMASK(15, 14)
-+#define QCA_HDR_XMIT_PRIORITY		GENMASK(13, 11)
-+#define QCA_HDR_XMIT_CONTROL		GENMASK(10, 8)
-+#define QCA_HDR_XMIT_FROM_CPU		BIT(7)
-+#define QCA_HDR_XMIT_DP_BIT		GENMASK(6, 0)
-+
-+#endif /* __TAG_QCA_H */
 diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
-index 55fa6b96b4eb..34e565e00ece 100644
+index 34e565e00ece..f8df49d5956f 100644
 --- a/net/dsa/tag_qca.c
 +++ b/net/dsa/tag_qca.c
-@@ -5,24 +5,10 @@
+@@ -68,6 +68,7 @@ static const struct dsa_device_ops qca_netdev_ops = {
+ 	.xmit	= qca_tag_xmit,
+ 	.rcv	= qca_tag_rcv,
+ 	.needed_headroom = QCA_HDR_LEN,
++	.promisc_on_master = true,
+ };
  
- #include <linux/etherdevice.h>
- #include <linux/bitfield.h>
-+#include <linux/dsa/tag_qca.h>
- 
- #include "dsa_priv.h"
- 
--#define QCA_HDR_LEN	2
--#define QCA_HDR_VERSION	0x2
--
--#define QCA_HDR_RECV_VERSION		GENMASK(15, 14)
--#define QCA_HDR_RECV_PRIORITY		GENMASK(13, 11)
--#define QCA_HDR_RECV_TYPE		GENMASK(10, 6)
--#define QCA_HDR_RECV_FRAME_IS_TAGGED	BIT(3)
--#define QCA_HDR_RECV_SOURCE_PORT	GENMASK(2, 0)
--
--#define QCA_HDR_XMIT_VERSION		GENMASK(15, 14)
--#define QCA_HDR_XMIT_PRIORITY		GENMASK(13, 11)
--#define QCA_HDR_XMIT_CONTROL		GENMASK(10, 8)
--#define QCA_HDR_XMIT_FROM_CPU		BIT(7)
--#define QCA_HDR_XMIT_DP_BIT		GENMASK(6, 0)
--
- static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ MODULE_LICENSE("GPL");
 -- 
 2.33.1
 
