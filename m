@@ -2,133 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B0CD4A7225
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 14:51:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 589EA4A7246
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 14:53:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344703AbiBBNu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 08:50:56 -0500
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:53251 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344737AbiBBNum (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 08:50:42 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 9447E6000D;
-        Wed,  2 Feb 2022 13:50:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1643809841;
+        id S1344356AbiBBNxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 08:53:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26386 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237086AbiBBNxH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 08:53:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643809987;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UhOm+HGT2TvQNz0Cij+moD/CsXOWHG18qYnI0MFlAck=;
-        b=inf9rbXwfM08jQCxkjl5EDviAJuF+lCJYDChgrG06Khd90PHLZEHu027tkvSB1YrApJLCV
-        ZpM5ZJmWd+j7UiaiWmv1yWSdR6J7EIJTPYGu3MWADhN4hV+I6Kqv5hwIkJApBTSTQkVYvh
-        TNvTlkga7kDNtBO2h/Rw9S4Ry6ZSIMMiwYnybZh578G747DsFv81gNpP7MzmnNe2EoRViG
-        G0gn1ZF6gZ0RWsjSbKq5aFHNvkeX9LYUmah8UJsEWozerrpB8Y5v7/RXZ7kLqFXF27hTTO
-        kRRluSnlmJYFGKxgbbT+JFxpcXJHDXZHCAZ0Dbgod8TyWcg67p5a4o32hF1Mgw==
-Date:   Wed, 2 Feb 2022 14:50:34 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Stefan Schmidt <stefan@datenfreihafen.org>
-Cc:     Alexander Aring <alex.aring@gmail.com>, linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>
-Subject: Re: [PATCH wpan-next v2 5/5] net: ieee802154: Drop duration
- settings when the core does it already
-Message-ID: <20220202145034.13a34e98@xps13>
-In-Reply-To: <026d499d-2814-2d5a-b148-fd7ec8ae9eb6@datenfreihafen.org>
-References: <20220128110825.1120678-1-miquel.raynal@bootlin.com>
-        <20220128110825.1120678-6-miquel.raynal@bootlin.com>
-        <20220201184014.72b3d9a3@xps13>
-        <fab37d38-0239-8be3-81aa-98d163bf5ca4@datenfreihafen.org>
-        <20220202084017.7a88f20d@xps13>
-        <026d499d-2814-2d5a-b148-fd7ec8ae9eb6@datenfreihafen.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        bh=dzs3pmpsecqWwS28UKT/9n4YfyBZy50vlVYoCws6yUE=;
+        b=Z1C4nylYj5BpS6MbkJffKjGwySKJMVJOh5lLnQiJWrOXZChxc47Famx5vV+MgjD3zsVyto
+        N4CJzzOaTuCG2r1gifAanXvsRzcqLhoSKSG18TvjVfqhy9C8CGSH9TKS8aHcIRRtvKKZes
+        enEth73mhdZb6K/nJf/NjpaZsoRU180=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-610-8YiNR16wOXiI1SYEKXlRUQ-1; Wed, 02 Feb 2022 08:53:06 -0500
+X-MC-Unique: 8YiNR16wOXiI1SYEKXlRUQ-1
+Received: by mail-qt1-f198.google.com with SMTP id h22-20020ac85696000000b002d258f68e98so15443739qta.22
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 05:53:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dzs3pmpsecqWwS28UKT/9n4YfyBZy50vlVYoCws6yUE=;
+        b=uxmYLZnv8mTpuxhkUHDHT2oWW65fNbd7SkO5HvqFt4V1gwWDHSfaB7lhDAEEHOPt0B
+         VrjVjQgkMfK2qF5VANV00IDAJJIibEbgrFvyfvjxswgc0Qx6XSCibVFp1XpRo8UEJeDG
+         cM372fM2yiuZi5lVdnB4MkqwR3IWFdZyM1IkU5JzR2is/Ma1XIqUni5/XGHBczjqjven
+         LaX+u253svjylgzVsZN84izU6Gzn9jrNIUO3oTnjRxp0WWhTKmKRI1bqgUt5/AWBHL6s
+         OyImBm4zaH7xeoxS032KXFTY6pJ+DXnT98g1lB6pyRYSY3Jt43vYxAkLea/VjyyqsjlY
+         Eqog==
+X-Gm-Message-State: AOAM533iAnowXvc8+KIsp09NOf9lEgEXP+WVjQSZSwN9kZmpZdvo4EHx
+        wCARYnNqfubDAQPvFHdUz8wG85avp6DsqH87geJJH9/aWrmxASpsN+xHwJ/k4VH3r+v9wiRWD6k
+        It8H+4wNxreFE90Vm
+X-Received: by 2002:ad4:5dc4:: with SMTP id m4mr26516019qvh.17.1643809985995;
+        Wed, 02 Feb 2022 05:53:05 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy97PB6hOF6XRVh0laZSCO/T0ng/aOceXJMUfGN81RQHfwOdZhjN5x8YkGsaZRSWfCtenz6QA==
+X-Received: by 2002:ad4:5dc4:: with SMTP id m4mr26516006qvh.17.1643809985739;
+        Wed, 02 Feb 2022 05:53:05 -0800 (PST)
+Received: from steredhat (host-95-238-125-214.retail.telecomitalia.it. [95.238.125.214])
+        by smtp.gmail.com with ESMTPSA id c14sm10955065qtc.31.2022.02.02.05.53.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Feb 2022 05:53:05 -0800 (PST)
+Date:   Wed, 2 Feb 2022 14:53:00 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: Re: [PATCH v3] vhost: cache avail index in vhost_enable_notify()
+Message-ID: <20220202135300.5b366wk35ysqehgm@steredhat>
+References: <20220128094129.40809-1-sgarzare@redhat.com>
+ <Yfpnlv2GudpPFwok@stefanha-x1.localdomain>
+ <20220202062340-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220202062340-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stefan,
+On Wed, Feb 02, 2022 at 06:24:05AM -0500, Michael S. Tsirkin wrote:
+>On Wed, Feb 02, 2022 at 11:14:30AM +0000, Stefan Hajnoczi wrote:
+>> On Fri, Jan 28, 2022 at 10:41:29AM +0100, Stefano Garzarella wrote:
+>> > In vhost_enable_notify() we enable the notifications and we read
+>> > the avail index to check if new buffers have become available in
+>> > the meantime.
+>> >
+>> > We do not update the cached avail index value, so when the device
+>> > will call vhost_get_vq_desc(), it will find the old value in the
+>> > cache and it will read the avail index again.
+>> >
+>> > It would be better to refresh the cache every time we read avail
+>> > index, so let's change vhost_enable_notify() caching the value in
+>> > `avail_idx` and compare it with `last_avail_idx` to check if there
+>> > are new buffers available.
+>> >
+>> > We don't expect a significant performance boost because
+>> > the above path is not very common, indeed vhost_enable_notify()
+>> > is often called with unlikely(), expecting that avail index has
+>> > not been updated.
+>> >
+>> > We ran virtio-test/vhost-test and noticed minimal improvement as
+>> > expected. To stress the patch more, we modified vhost_test.ko to
+>> > call vhost_enable_notify()/vhost_disable_notify() on every cycle
+>> > when calling vhost_get_vq_desc(); in this case we observed a more
+>> > evident improvement, with a reduction of the test execution time
+>> > of about 3.7%.
+>> >
+>> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>> > ---
+>> > v3
+>> > - reworded commit description [Stefan]
+>> > ---
+>> >  drivers/vhost/vhost.c | 3 ++-
+>> >  1 file changed, 2 insertions(+), 1 deletion(-)
+>> >
+>> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+>> > index 59edb5a1ffe2..07363dff559e 100644
+>> > --- a/drivers/vhost/vhost.c
+>> > +++ b/drivers/vhost/vhost.c
+>> > @@ -2543,8 +2543,9 @@ bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
+>> >  		       &vq->avail->idx, r);
+>> >  		return false;
+>> >  	}
+>> > +	vq->avail_idx = vhost16_to_cpu(vq, avail_idx);
+>> >
+>> > -	return vhost16_to_cpu(vq, avail_idx) != vq->avail_idx;
+>> > +	return vq->avail_idx != vq->last_avail_idx;
+>> >  }
+>> >  EXPORT_SYMBOL_GPL(vhost_enable_notify);
+>>
+>> This changes behavior (fixes a bug?): previously the function returned
+>> false when called with avail buffers still pending (vq->last_avail_idx <
+>> vq->avail_idx). Now it returns true because we compare against
+>> vq->last_avail_idx and I think that's reasonable.
 
-stefan@datenfreihafen.org wrote on Wed, 2 Feb 2022 13:17:39 +0100:
+Good catch!
 
-> Hello.
->=20
-> On 02.02.22 08:40, Miquel Raynal wrote:
-> > Hi Stefan,
-> >=20
-> > stefan@datenfreihafen.org wrote on Tue, 1 Feb 2022 21:51:04 +0100:
-> >  =20
-> >> Hello.
-> >>
-> >> On 01.02.22 18:40, Miquel Raynal wrote: =20
-> >>> Hi, =20
-> >>>    >>>> --- a/drivers/net/ieee802154/ca8210.c =20
-> >>>> +++ b/drivers/net/ieee802154/ca8210.c
-> >>>> @@ -2978,7 +2978,6 @@ static void ca8210_hw_setup(struct ieee802154_=
-hw *ca8210_hw)
-> >>>>    	ca8210_hw->phy->cca.mode =3D NL802154_CCA_ENERGY_CARRIER;
-> >>>>    	ca8210_hw->phy->cca.opt =3D NL802154_CCA_OPT_ENERGY_CARRIER_AND;
-> >>>>    	ca8210_hw->phy->cca_ed_level =3D -9800;
-> >>>> -	ca8210_hw->phy->symbol_duration =3D 16 * NSEC_PER_USEC;
-> >>>>    	ca8210_hw->phy->lifs_period =3D 40;
-> >>>>    	ca8210_hw->phy->sifs_period =3D 12; =20
-> >>>
-> >>> I've missed that error                ^^
-> >>>
-> >>> This driver should be fixed first (that's probably a copy/paste of the
-> >>> error from the other driver which did the same).
-> >>>
-> >>> As the rest of the series will depend on this fix (or conflict) we co=
-uld
-> >>> merge it through wpan-next anyway, if you don't mind, as it was there
-> >>> since 2017 and these numbers had no real impact so far (I believe). =
-=20
-> >>
-> >> Not sure I follow this logic. The fix you do is being removed in 4/4 o=
-f your v3 set again. So it would only be in place for these two in between =
-commits. =20
-> >=20
-> > Exactly.
-> >  =20
-> >> As you laid out above this has been in place since 2017 and the number=
- have no real impact. Getting the fix in wpan-next to remove it again two p=
-atches later would not be needed here.
-> >>
-> >> If you would like to have this fixed for 5.16 and older stable kernels=
- I could go ahead and apply it to wpan and let it trickle down into stable =
-trees. =20
-> >=20
-> > I'm fine "ignoring" the issue in stable kernels, it was just a warning
-> > for you that this would happen otherwise, given the fact that this is
-> > the second driver doing so (first fix has already been merged) and that
-> > I just realized it now.
-> >  =20
-> >> We would have to deal with either a merge of net into net-next or with
-> >> a merge conflicts when sending the pull request. Both can be done.
-> >>
-> >> But given the circumstances above I have no problem to drop this fix c=
-ompletely and have it fixed implicitly with the rest of the patchset. =20
-> >=20
-> > Fine by me! =20
->=20
-> Let's do it like this.
-> You drop it from this series against wpan-next.
-> I will pull it out of the series and apply to wpan directly. That way we =
-get it into the stable kernels as well. You already did the work so we shou=
-ld not waste it.
-> I will deal with the merge conflict get get between wpan/net and wpan-nex=
-t/net-next on my side. Nothing to worry for you.
+>>
+>> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+>
+>I don't see the behaviour change... could you explain the
+>scanario in more detail pls?
 
-That's very kind, but don't feel forced to do that, I won't turn mad if
-you finally decide that this requires too much handling for such a
-short-in-time improvement ;)
+IIUC the behavior is different only when the device calls 
+vhost_enable_notify() with pending buffers (vq->avail_idx != 
+vq->last_avail_idx).
+
+Let's suppose that driver has not added new available buffers, so value 
+in cache (vq->avail_idx) is equal to the one we read back from the 
+guest, but the device has not consumed all available buffers 
+(vq->avail_idx != vq->last_avail_idx).
+
+Now if the device call vhost_enable_notify(), before this patch it 
+returned false, because there are no new buffers added (even if there 
+are some pending), with this patch it returns true, because there are 
+still some pending buffers (vq->avail_idx != vq->last_avail_idx).
+
+IIUC the right behavior should be the one with the patch applied.
+However this difference would be seen only if we call 
+vhost_enable_notify() when vq->avail_idx != vq->last_avail_idx and 
+checking vhost-net, vhost-scsi and vhost-vsock, we use the return value 
+of vhost_enable_notify() only when there are not available buffers, so 
+vq->avail_idx == vq->last_avail_idx.
+
+So I think Stefan is right, but we should never experience the buggy 
+scenario.
+
+it seems that we used to check vq->last_avail_idx but we changed it 
+since commit 8dd014adfea6 ("vhost-net: mergeable buffers support"), 
+honestly I don't understand if it was intended or not.
+
+Do you see any reason?
 
 Thanks,
-Miqu=C3=A8l
+Stefano
+
