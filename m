@@ -2,191 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 560924A6F8A
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 12:07:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70AE24A6F9E
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 12:10:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230187AbiBBLGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 06:06:32 -0500
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:65528 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229552AbiBBLGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 06:06:31 -0500
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2129makG008551;
-        Wed, 2 Feb 2022 11:06:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=R1GHe0oltkH2lpXeC/k+h87hlMLF7f1pEJwt5W37xWQ=;
- b=Rj4C+Gd/TAr4gfnimQlCYxCXHjHhKOlZJdADC0+S34olbUdi8hVxzIPtzxfOm5zA5dQG
- fCLgUnRLd/J2m7OzySI4Qmilh7LF8HfBXg43+XKgeY5dUW6dW5Ymmq0UqZksm+zKOQ4A
- mTgC+lZb9Gge74dLKFZ7AYUEZYH1wLxGlhiKHfPfIuKgIDVgFcuyc44BwwRd4BtNoFoY
- vpJsBuhPKKLLfs2Ih3YGNfbcH1WYSAYTchZjC3RFg1ZtODyVvw9sxmrvaPiOLgefA4fu
- ws2uTrYzD3eKVdmShQ8P6i35Iw07J12TLkfCHfnqcwMiDIaC8CRSrCdU6cBS/+xQYIlP 8Q== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dxjatwspk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Feb 2022 11:06:20 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 212B0uv2166342;
-        Wed, 2 Feb 2022 11:06:19 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2104.outbound.protection.outlook.com [104.47.55.104])
-        by userp3020.oracle.com with ESMTP id 3dvy1s0sqg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Feb 2022 11:06:19 +0000
+        id S1343734AbiBBLKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 06:10:32 -0500
+Received: from mail-bn7nam10on2048.outbound.protection.outlook.com ([40.107.92.48]:32608
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232171AbiBBLKb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Feb 2022 06:10:31 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i6DSyr30SS9clffN3YfykUzLf1k/vdvcvQQyeR5IjuBZHnAohzdX0Pr6d5hFjLGTH60si/WeQtNavfEtKrVYGBmvaVxMj7PYotAPc+Yxch/opKp8pNKM+r2caTGPbd/Y4ySt4R+ZfAftS9lF1KxBv4kyTih1yX4xat6ByFzzts5xYqZTrU6oyVU1LTQMaOFkpIHZsaFNIeJVaD0Vh/lu44nhPrjleD3ATu63Tf0ihIGEC/B4DSIcQ52Wq1cXVZ854k1tBjWeImwYH5ekF6/8pTfraxLILnJjoYRCgVv0BeenyS2/UIg2lqnTPs941LnleAWrjDRND7m/ucZqYjoP/Q==
+ b=fAw0m6JTA9uhtbm1KcGLqKuFeCu3b2uwMytKfiRRrUpempRv1yDiSVNLdg75TPRMXgXbV5Nxca4K0t8vvbGzyqF9YwwYBdC+BFDdvwNXQOPchh91cUxSlKhjHaQaVQ9fw3DhnD3GlmLI6OmcCS76xT1dfN7dWTcACIPLj9rRYkDHTaW5co3v6n0nhxOnbYrB8wN+WEs9YHbooNWqEdN8lpj6sP1j5Kh//Vjj95thGK0Zoh+0eipVa+1tj32Muzd/UumiiaPuUJJ/ZRG2NBelPgweGfwowNHi1WcrXiotXaQCEotjaIeMeTZt+gfy8k+QDnUJ4ZSjZMK3cjJUpyGUrg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=R1GHe0oltkH2lpXeC/k+h87hlMLF7f1pEJwt5W37xWQ=;
- b=drFeusx/ezc/XD0kIu7MrYpcSeKfNmplnKG4sDBth3LFZRlMuZhxVbvTEveyjEzrajoSQ8tWqc5o7sxfPL4PVXh310H5ql4/qw9kVRXl8wv03fXnjFJVtIu3pJTHdK6E6C2zOdOBk7I4e9+my9t+ngGvh/Mh34rb8bFAYn6oXx3VEh6Zws9hKxAXpT9QG/3SF/cg/iPNxvLrl+4C0xIKR70OSDKcI2UkZniFgpG7YY/y1+azVdB2Iv1Y77Ghsxw4tRXAuHULhqbUo5gtshYnoZIeYUR7lPQteQXyWKtm7FULrhDlgi3aTIlfEr54Bu44JS59KGzqiIHoaEzP0xeHGA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ bh=KNO4bsO9WT6j4yLrwnJPoSbRY/+GY8G0nn75kNBTcCQ=;
+ b=Js2dDU28NDCjr8OZH60BEsytkiuyB14UnZ/eUsAcHBXEj0WIxZE2T0KH8LcajszhbAzouI9tu+Nv3oaNe6uGwaUbVqrN4ZlF0hWaX/Bk0CdTJRXn/QdxlWaiBsB7LbGmRFy9CoTm0n2D8et6ASt9XQULj0j9L8idUxbXYQCU/h4Uvx5XucHCgdYn+uSLRKCoYsHrzdlzDKYo998gG7WcK0Xtntvwno9FImMcc8YhLra+Bqb8H2amJ1gupR1iuNwidwJnanF/6U9jjdz7hv64E9fcgUJPNkiQQriGLnGAkGPdBUBgB7tHoxpCpCSDo8wwHkhrlMr2VO+BuGmYacBENw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=fb.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R1GHe0oltkH2lpXeC/k+h87hlMLF7f1pEJwt5W37xWQ=;
- b=eTRq0T7UOUNZcvHx+Tzcnvun4xj0layv+81aB/GyMZKul8kgtCF6YLo47CTXPJDi3X7DkpKPjTFmiOZ5L7ikYd3KHVKUrYv45UaFMlh8JAwrmNywbFB5GN4X/YzzmBHxl8wlpVsy/psBOPgOwwvKfHoHCdafYTy6Rn4TyqmC+U0=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by MWHPR1001MB2111.namprd10.prod.outlook.com
- (2603:10b6:301:34::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.19; Wed, 2 Feb
- 2022 11:06:17 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::e5a5:8f49:7ec4:b7b8]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::e5a5:8f49:7ec4:b7b8%5]) with mapi id 15.20.4930.021; Wed, 2 Feb 2022
- 11:06:17 +0000
-Date:   Wed, 2 Feb 2022 14:05:54 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Joe Perches <joe@perches.com>, Kees Cook <keescook@chromium.org>
-Cc:     Pkshih <pkshih@realtek.com>, "kvalo@kernel.org" <kvalo@kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "colin.i.king@gmail.com" <colin.i.king@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] rtlwifi: remove redundant initialization of variable
- ul_encalgo
-Message-ID: <20220202110554.GT1978@kadam>
-References: <20220130223714.6999-1-colin.i.king@gmail.com>
- <55f8c7f2c75b18cd628d02a25ed96fae676eace2.camel@realtek.com>
- <20220202050229.GS1951@kadam>
- <90e40bb19320dcc2f2099b97b4b9d7d23325eaac.camel@perches.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <90e40bb19320dcc2f2099b97b4b9d7d23325eaac.camel@perches.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JN2P275CA0018.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:3::30)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+ bh=KNO4bsO9WT6j4yLrwnJPoSbRY/+GY8G0nn75kNBTcCQ=;
+ b=cAkq7X59wIKr/jM8xmxot2lDnlTOjiBQgU/w5pHfa0N/YGPoogmDC2sPB1fTG6fT7BjMlXstd0Hh6+p1uzsR4q3xudy3JfyDXPvSmE/7cK3V8xBUzNQKUwny6mI7YbtkhGuHp54puSyRageBggK40dzsZRy+y3CVIgRnxwXpU93W30dj6VF+6d6uSRXORsXFtJ37pQNRwqMt/31mHUHGz+4JUm9MY72Wx7Np88Rl3wXcSkuT0ExhDcH6AfZB4xWPXYcwwDmHVC/z3WkXwjgsI4uhyZyfUez4HSkn8YeCYSLrBdkuaH14JVlrU5eRkbGAULB1xhjPTNUmmEvVOGJE8A==
+Received: from MWHPR14CA0064.namprd14.prod.outlook.com (2603:10b6:300:81::26)
+ by CH0PR12MB5089.namprd12.prod.outlook.com (2603:10b6:610:bc::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Wed, 2 Feb
+ 2022 11:10:28 +0000
+Received: from CO1NAM11FT046.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:81:cafe::75) by MWHPR14CA0064.outlook.office365.com
+ (2603:10b6:300:81::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12 via Frontend
+ Transport; Wed, 2 Feb 2022 11:10:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ CO1NAM11FT046.mail.protection.outlook.com (10.13.174.203) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4951.12 via Frontend Transport; Wed, 2 Feb 2022 11:10:27 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 2 Feb
+ 2022 11:10:12 +0000
+Received: from [172.27.13.7] (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Wed, 2 Feb 2022
+ 03:10:02 -0800
+Message-ID: <9cef58de-1f84-5988-92f8-fcdd3c61f689@nvidia.com>
+Date:   Wed, 2 Feb 2022 13:09:59 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH bpf-next v2 2/3] bpf: Add helpers to issue and check SYN
+ cookies in XDP
+Content-Language: en-US
+To:     John Fastabend <john.fastabend@gmail.com>
+CC:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Petar Penkov <ppenkov@google.com>,
+        "Lorenz Bauer" <lmb@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "Hideaki YOSHIFUJI" <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        "Shuah Khan" <shuah@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "Nathan Chancellor" <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joe Stringer <joe@cilium.io>,
+        Florent Revest <revest@chromium.org>,
+        <linux-kselftest@vger.kernel.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
+        "Kumar Kartikeya Dwivedi" <memxor@gmail.com>,
+        Florian Westphal <fw@strlen.de>
+References: <20220124151340.376807-1-maximmi@nvidia.com>
+ <20220124151340.376807-3-maximmi@nvidia.com>
+ <61efacc6980f4_274ca2083e@john.notmuch>
+ <8f5fecac-ce6e-adc8-305b-a2ee76328bce@nvidia.com>
+ <61f850bdf1b23_8597208f8@john.notmuch> <61f852711e15a_92e0208ac@john.notmuch>
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+In-Reply-To: <61f852711e15a_92e0208ac@john.notmuch>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6f57e2be-b51b-4ac6-5752-08d9e63c0899
-X-MS-TrafficTypeDiagnostic: MWHPR1001MB2111:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR1001MB21114538DD25FF7D70C0B34F8E279@MWHPR1001MB2111.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Office365-Filtering-Correlation-Id: 4871d3c3-9e84-4dcc-932e-08d9e63c9e27
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5089:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR12MB5089A11F949DDAC05B541DB5DC279@CH0PR12MB5089.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UOsFn7LznaNsa5nc0TvNknINnsLnSNNex9gxO7r8zyEOwpsm49e8WwEFjZOg7W0gj8hOeSDS5vG6XzV35ZoskXBkDMysqslASVEcsqJTbj2dm0RrwEcewSKZlm9/xKbF0DlUedzgzZXRR4B/8y9rc5CV8/OlbcH+mLhmp0nPGdSYoovilDXOI0DUG1hx7yuPU2bg/uSF4ChvVJ/MDSbtfBNlVqqHhife608AE4N5IRjJOZ1y45naSDyYFm2I9w7Ixww5oq8ifXyOuqmavCFzoFhb9fL/bKQj1u+1Z5EXi5+k9S/88nzHnuKsifv6ydh1jmapneRlHD3Cm5e6qWlkM0U/EGO0GXG7kqZ1PLmD+zJIn5vaR7C/lsfUSUJm0spIqmmRkEn2p3NM08QMBGrW7tgWWGgFDu8sATRhm8vLBI+LOvhV+LXmtxuOqCEuxO7dr95MwmH0vAKBl/Q4JWlVQRsyE7hMgRbDkrZFbgs8lCHpihqZd6DHCapB1aRkHDdFw1ssQKIv4n5WlMztLHKqO0wI/HoQP+lpcfkliC926Deh163CktJahybSYMjkJquNAudA67BvMudtFunxz7LEVTikFypZ9Vchc6oTx2nC9TpxNILpDqm73V8uvtY9okqEkzmlQJ0Z69EeNyuAtVS1wqV/nd1Q/32SfyuRdYeYT02QDOuz+wVPeRTtE684jEqPp9WYvSMZ/LlwXkP5Aj+kag==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(66556008)(54906003)(8936002)(7416002)(66476007)(110136005)(38100700002)(2906002)(38350700002)(6512007)(5660300002)(66946007)(9686003)(6666004)(6506007)(186003)(86362001)(316002)(8676002)(44832011)(4326008)(508600001)(6486002)(26005)(83380400001)(33656002)(52116002)(33716001)(1076003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XaL7bXcqhgmJ+SEeyp2n76ezEWhkFoQSzycOBMm79HmyVMfKHrJXYAq4xa5u?=
- =?us-ascii?Q?SwbLQh+ezY0FZFHgraeZ5Tfxkr/5ysO6Ofzer8ITcrNNFNXb+WEoEhHOCrE6?=
- =?us-ascii?Q?vUS3d010KpDSDT2SfimoZF/DwwC4kSvaUh+/AvWqT36/tplwF+0Kccp3MtmZ?=
- =?us-ascii?Q?U1G/SmceogdqWAqjwwIcFPKFRDht/9TtyObFHHMEtjtQJaytoB6FUBZhikWh?=
- =?us-ascii?Q?533xXsYF/fqP7EB1IGNE9IM/uT7kucw8B7oNbs34h8EYuH55mlZJX1iB/6J5?=
- =?us-ascii?Q?YlZg+Mdhrpmv7fKppLIuUenBOrRkiJNJJ0DONtHkuZrJ9M8gkgAe3hxND9KQ?=
- =?us-ascii?Q?uSc961RDhQFZ6qGnVwrR2EnIOOj+VA/5Is0xTA804N3n+JtA4JflM3frPfmG?=
- =?us-ascii?Q?7b+U9evAmkYNwuAQTAkpatLWWTIydk5Q0cirW6ro4jY99A9OYHZ2h/kJNDIw?=
- =?us-ascii?Q?u9/r7i7ybuW889s3AY6IqcusSOkFPbDqcRJatmghYxCNVCqDNktXbkPXNWPY?=
- =?us-ascii?Q?jQMdeSvd7sGRU+oQR0jFdSLFdcrwmFaBPvaePjncqwj+GbsWRw5wqDN/FOuu?=
- =?us-ascii?Q?E0HdVShWr7H6s9uG6hf38Fe+3gtl8lfmcIIjTMwdlnT2rSQ5/cWJ3NrHg7oi?=
- =?us-ascii?Q?CWgZwQJ0VFWq4n0TIlNrFfYnwpUkK8EUx3mglaEJcwrnOHRvSHIu/5K4333K?=
- =?us-ascii?Q?bFtPzcMSm76918CXLpZD4DJ3afsmdrtkaVgZK5jvqybOAuy05RsInW9vYK5w?=
- =?us-ascii?Q?fqG0xmNL+X0w6OfG74XS1OeyghqS3uFhIJHokQE9Uer9LygY3UnpaLagGXbD?=
- =?us-ascii?Q?H71DpWzMxIUqHotLqlmkDPl22Yk3gqFQ4icPTlmfEfK97aCosguy9XDnycnS?=
- =?us-ascii?Q?dtz+zZjzs1D07VwQDEiMQ+Fei0IgW5XPxqfY0YSnrNNW5gTSr6zlt5Dx6SDC?=
- =?us-ascii?Q?2V9wunN3ykGKSsP/HtI5HdKIPbePqP5O4MpyOqrzL8zJUbINrgGCbdycbgiB?=
- =?us-ascii?Q?vHOvythO26F1R6QrkBiKSgzXxGISoQO9GFfrm9vhCsWPlB8B23Iy3AG73t4K?=
- =?us-ascii?Q?tMe5PxBGKqtv3E1AURrrNcB9zDByWI5JHOthAN2R87HM41zWSOt63iRS8TUM?=
- =?us-ascii?Q?AH3CGMffML0lyCIjNmZeTLhW6+D95unV949JnGGLqRNzYDUM0mB3DIjdsSb2?=
- =?us-ascii?Q?6x6fGszlYWpw1ZehpLLwBOo6aW45jRkb3sBG7QhqLAAGUBDh7fci4YQSYNRi?=
- =?us-ascii?Q?+l5+WT3tXQaiR4VrbnCWpO0DEPXocdpUKBjjgxv4B93ME4LadKC/kB3/WVGB?=
- =?us-ascii?Q?MKWBYp98ucfyPwG6upLIKLc1h8mGIeZXmG3T27Tco0ONnFJYcAcCTA2VlJCW?=
- =?us-ascii?Q?itFW9Or7N2jr6t84Z8rBKCSVsiVWnBDEFgRojblPFyI1VIMLYTlriyAO8D1W?=
- =?us-ascii?Q?66dwyn0TxzoLrLcCZ7MlS35jiDbvB3p30LlUhBCNmpaenIoqj6MRyUWQ1/ZC?=
- =?us-ascii?Q?VXxci51lf8LGtsVwACb31Q9RCe0YzS6ztxhfnM68evNBgXQ3NCCtWsP5fGm9?=
- =?us-ascii?Q?ygZDm205Fk1ySUecu2Tak7YSZZxuTMtRXDKRSKPwssGJbTLZH0nL+ZHRmVRU?=
- =?us-ascii?Q?0SRGUQBkK1NOTu25du68nvbsUz4GqCYSfJucnbGXE47CtJ6RI1anjJHJR3Z6?=
- =?us-ascii?Q?Sj7tPVlpajsjhzL/mIPeiZWFhps=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6f57e2be-b51b-4ac6-5752-08d9e63c0899
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2022 11:06:17.1328
+X-Microsoft-Antispam-Message-Info: llv3SAEQADS4LIHCGy8fZeKjsrSWu6sQehT9w4ktKD/6h6DiERU/J02TEar+uCprEoSMoRZ3UYxyrXeoagBvwdREGNtz3wI25n5N0lh9I8nBAbomxSJNyY91QFOuY4bARapWzZVxnR7WawKrVSfmujuUDGG+KSJaGuWeSQJ98c7ZtgjfJkIMZbzlGhcX6u2e1JiFSBtFDIoCLn/HWfRB49WxVkGf3EpWypBzO3vMD8q/EmHrta5EvbAgRplTvlqyhfhHqUn6H0QfSh7oLqR2C9UiklCVscjPR0GRLjzOwqevHPoOCJ13sjNV4iI1zt/TNj5QHmdb+ZA44wciq90sw+fU9laOZ1SS2xUfUc80/Sim8pqLx//LYqvoHEvHwE5df74QXaTcPUrqwD6jNBXma+lyPYJ/f0FfYWyDkYNFB7x8qqOkLvAnnukOcyqzMgskFJZPB29z6agSZ2likS+tw5dzVjWDSTciIDwBS0AkRzpX4LrAJex3HuI5kLuyGOIMZnRmZNZsVyn1Pk1ZgWZOpPppmdtnQDsktByI/Agg6woo9T4FVDMkriHGwNCIid/iHdJq+q/LvbxE0tQicUGiR3+m/aP35xRVp+N5YiTnc5pp5bP4pkm7i61VF+ozj7wK5cqAkgWQsbZXGzNRNzYLUvIF1QKAmgZf7a8EhsrKoeqSIzypXh69fwozcuCH9yPe+VIWVfJLZesOCCO+cpOwL+LHaE3+QDqHlZzyx2JC2mhxye4vRxXzQ64Rw68bxi8E
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(54906003)(53546011)(47076005)(36860700001)(2616005)(86362001)(31696002)(16526019)(26005)(6916009)(508600001)(31686004)(6666004)(186003)(16576012)(316002)(36756003)(5660300002)(4326008)(426003)(7416002)(356005)(336012)(81166007)(8936002)(8676002)(82310400004)(40460700003)(70206006)(70586007)(83380400001)(2906002)(43740500002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2022 11:10:27.4205
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: a+EokbtuxFNU8HRaZOrx30ZV6aUbxqJyBdjhDS2orcvRg6edJlu/kh9Jhf4//aA6RyWTdUE1LYGMNmrbkIzCW49BRKCe1uEMQHwIYleu6D8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1001MB2111
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10245 signatures=673430
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxscore=0 spamscore=0
- bulkscore=0 adultscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202020059
-X-Proofpoint-GUID: Es9NMPL71DIJp6gVpDwSKCgejQSoZ-JZ
-X-Proofpoint-ORIG-GUID: Es9NMPL71DIJp6gVpDwSKCgejQSoZ-JZ
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4871d3c3-9e84-4dcc-932e-08d9e63c9e27
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT046.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5089
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 02:10:40AM -0800, Joe Perches wrote:
-> On Wed, 2022-02-02 at 08:02 +0300, Dan Carpenter wrote:
-> > On Mon, Jan 31, 2022 at 02:53:40AM +0000, Pkshih wrote:
-> > > On Sun, 2022-01-30 at 22:37 +0000, Colin Ian King wrote:
-> > > 
-> > > When I check this patch, I find there is no 'break' for default case.
-> > > Do we need one? like
-> > > 
-> > > @@ -226,6 +226,7 @@ void rtl_cam_empty_entry(struct ieee80211_hw *hw, u8 uc_index)
-> > >                 break;
-> > >         default:
-> > >                 ul_encalgo = rtlpriv->cfg->maps[SEC_CAM_AES];
-> > > +               break;
-> > 
-> > No, it's not necessary.  The choice of style is up to the original
-> > developer.
+On 2022-01-31 23:19, John Fastabend wrote:
+> John Fastabend wrote:
+>> Maxim Mikityanskiy wrote:
+>>> On 2022-01-25 09:54, John Fastabend wrote:
+>>>> Maxim Mikityanskiy wrote:
+>>>>> The new helpers bpf_tcp_raw_{gen,check}_syncookie allow an XDP program
+>>>>> to generate SYN cookies in response to TCP SYN packets and to check
+>>>>> those cookies upon receiving the first ACK packet (the final packet of
+>>>>> the TCP handshake).
+>>>>>
+>>>>> Unlike bpf_tcp_{gen,check}_syncookie these new helpers don't need a
+>>>>> listening socket on the local machine, which allows to use them together
+>>>>> with synproxy to accelerate SYN cookie generation.
+>>>>>
+>>>>> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+>>>>> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+>>>>> ---
+>>>>
+>>>> [...]
+>>>>
+>>>>> +
+>>>>> +BPF_CALL_4(bpf_tcp_raw_check_syncookie, void *, iph, u32, iph_len,
+>>>>> +	   struct tcphdr *, th, u32, th_len)
+>>>>> +{
+>>>>> +#ifdef CONFIG_SYN_COOKIES
+>>>>> +	u32 cookie;
+>>>>> +	int ret;
+>>>>> +
+>>>>> +	if (unlikely(th_len < sizeof(*th)))
+>>>>> +		return -EINVAL;
+>>>>> +
+>>>>> +	if (!th->ack || th->rst || th->syn)
+>>>>> +		return -EINVAL;
+>>>>> +
+>>>>> +	if (unlikely(iph_len < sizeof(struct iphdr)))
+>>>>> +		return -EINVAL;
+>>>>> +
+>>>>> +	cookie = ntohl(th->ack_seq) - 1;
+>>>>> +
+>>>>> +	/* Both struct iphdr and struct ipv6hdr have the version field at the
+>>>>> +	 * same offset so we can cast to the shorter header (struct iphdr).
+>>>>> +	 */
+>>>>> +	switch (((struct iphdr *)iph)->version) {
+>>>>> +	case 4:
+>>>>
+>>>> Did you consider just exposing __cookie_v4_check() and __cookie_v6_check()?
+>>>
+>>> No, I didn't, I just implemented it consistently with
+>>> bpf_tcp_check_syncookie, but let's consider it.
+>>>
+>>> I can't just pass a pointer from BPF without passing the size, so I
+>>> would need some wrappers around __cookie_v{4,6}_check anyway. The checks
+>>> for th_len and iph_len would have to stay in the helpers. The check for
+>>> TCP flags (ACK, !RST, !SYN) could be either in the helper or in BPF. The
+>>> switch would obviously be gone.
+>>
+>> I'm not sure you would need the len checks in helper, they provide
+>> some guarantees I guess, but the void * is just memory I don't see
+>> any checks on its size. It could be the last byte of a value for
+>> example?
+
+The verifier makes sure that the packet pointer and the size come 
+together in function parameters (see check_arg_pair_ok). It also makes 
+sure that the memory region defined by these two parameters is valid, 
+i.e. in our case it belongs to packet data.
+
+Now that the helper got a valid memory region, its length is still 
+arbitrary. The helper has to check it's big enough to contain a TCP 
+header, before trying to access its fields. Hence the checks in the helper.
+
+> I suspect we need to add verifier checks here anyways to ensure we don't
+> walk off the end of a value unless something else is ensuring the iph
+> is inside a valid memory block.
+
+The verifier ensures that the [iph; iph+iph_len) is valid memory, but 
+the helper still has to check that struct iphdr fits into this region. 
+Otherwise iph_len could be too small, and the helper would access memory 
+outside of the valid region.
+
+>>
+>>>
+>>> The bottom line is that it would be the same code, but without the
+>>> switch, and repeated twice. What benefit do you see in this approach?
+>>
+>> The only benefit would be to shave some instructions off the program.
+>> XDP is about performance so I figure we shouldn't be adding arbitrary
+>> stuff here. OTOH you're already jumping into a helper so it might
+>> not matter at all.
+>>
+>>>   From my side, I only see the ability to drop one branch at the expense
+>>> of duplicating the code above the switch (th_len and iph_len checks).
+>>
+>> Just not sure you need the checks either, can you just assume the user
+>> gives good data?
+
+No, since the BPF program would be able to trick the kernel into reading 
+from an invalid location (see the explanation above).
+
+>>>
+>>>> My code at least has already run the code above before it would ever call
+>>>> this helper so all the other bits are duplicate.
+>>>
+>>> Sorry, I didn't quite understand this part. What "your code" are you
+>>> referring to?
+>>
+>> Just that the XDP code I maintain has a if ipv4 {...} else ipv6{...}
+>> structure
+
+Same for my code (see the last patch in the series).
+
+Splitting into two helpers would allow to drop the extra switch in the 
+helper, however:
+
+1. The code will be duplicated for the checks.
+
+2. It won't be consistent with bpf_tcp_check_syncookie (and all other 
+existing helpers - as far as I see, there is no split for IPv4/IPv6).
+
+3. It's easier to misuse, e.g., pass an IPv6 header to the IPv4 helper. 
+This point is controversial, since it shouldn't pose any additional 
+security threat, but in my opinion, it's better to be foolproof. That 
+means, I'd add the IP version check even to the separate helpers, which 
+defeats the purpose of separating them.
+
+Given these points, I'd prefer to keep it a single helper. However, if 
+you have strong objections, I can split it.
+
+>> in it so could use a v4_check... and v6_check... then call
+>> the correct version directly, removing the switch from the helper.
+>>
+>> Do you think there could be a performance reason to drop out those
+>> instructions or is it just hid by the hash itself. Also it seems
+>> a bit annoying if user is calling multiple helpers and they keep
+>> doing the same checks over and over.
 > 
-> every case should have one.
-> 
-> Documentation/process/deprecated.rst:
-> 
-> All switch/case blocks must end in one of:
-> 
-> * break;
-> * fallthrough;
-> * continue;
-> * goto <label>;
-> * return [expression];
 > 
 
-I doubt that's what Kees had in mind when he wrote that.
-
-The extra break statement doesn't improve readability.  It also doesn't
-hurt readability.
-
-There is no reason to add a break statement after a default case.  No
-one is going to add another case after the default case.  And if they
-do then a dozen static analysis tools will complain about the missing
-break.
-
-I looked through the code to see if break statements were more common
-than non-break statement code.  Both seem pretty common.  I got bored
-really quickly though and my sample might not have been representative.
-
-regards,
-dan carpenter
