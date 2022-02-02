@@ -2,141 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F0E84A6BFD
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 07:59:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E7CC4A6C0F
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 08:05:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236833AbiBBG70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 01:59:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52518 "EHLO
+        id S244763AbiBBHF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 02:05:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234901AbiBBG7Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 01:59:25 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D62C061714;
-        Tue,  1 Feb 2022 22:59:25 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id h7so24264792iof.3;
-        Tue, 01 Feb 2022 22:59:25 -0800 (PST)
+        with ESMTP id S239384AbiBBHFZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 02:05:25 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3F4C061714;
+        Tue,  1 Feb 2022 23:05:25 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id n17so24271589iod.4;
+        Tue, 01 Feb 2022 23:05:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=2IxjCPSQamGn0ge0aPL35vxu066qywElzYY00Z/1OAk=;
-        b=ZrvVtULuaeeLO4AOigmHAWR8nqGHwfgHlzYHaa3Wu2xBMXmFIXp+oaSD2oeMCnU6KL
-         R0rNdOTvPZYQ8udc9clKDrSkuHg6XrnbfcbMB+jffQM6wPrOQ7M5VpcQNFTR+d4YvjSy
-         kMlcjK7SWaoMjlVv/0c9U7YhRYZNx+aKgK/8RmAgjH4NMI3bXxcP2jyR/1ekFnDmJhky
-         F+ZRBnUy14/PL6LdEnSJJg6ZchzbWJlJb3UyyY8FOJm0WlFmc8jxYYkVQB7rmmJDWkcr
-         DuD6H8PXC754fUenmha8suX2/uXIlpXlBEjlTEoQ0AtYMJJdzo48e2RILoHyiShq5x/Z
-         ok+w==
+        bh=SpryQOT2uTRwsdibcfsESI84DVoBT/VezHdCUqIw1nM=;
+        b=Yh8JER6t2u+rs0xm1gDMhpppjo8c55JDcz4lc1HhglDS5vddc25oWSMVv5dafoq2tL
+         X0EqeQ14PSrUBuQkDiKHBefLoTCrIPMhBcMLC4RBUJhmE816dG1uZB9z3Sk6BbJklR3D
+         Y6a17cBDceerLRMxU8JtWsbkJrqxlp3m1OZNOmBvDWxdv1i3Z4SOTXFxfqYAnKryxNoS
+         Fhjl60AsaagVaNs1saZNbjsF9Vh7z04r7CWdRI6Fo4GCYvqXXp2ewZeDC79N66/yVUo6
+         LsUtUpHgRc6Rdk5tsGhSvgH2C2oCIAVi7+2HyASUyd7UtuupMDN9XfJnLBhHxs3Doeed
+         rmlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=2IxjCPSQamGn0ge0aPL35vxu066qywElzYY00Z/1OAk=;
-        b=O1kKoZNGzOgp8qSBAPB0Zu3jwC0JzPJnf6Wc+tqt6z6zpJPA7qA7nFshlW4QXjLN9S
-         p8k8fskva93+BdObRzO0IjS3dl0BrdvntcQkeJrLsxpH5HD/WSTiweXXy0kD1Lq9RKN8
-         Hbc1eMMNOMhFZwk++2pducWYGmfq+kHiqIMnOZHyJadxc05Kgo1OwBJdAvsUa0KXLRvX
-         ZhBTGpcq9Wq52K7UuQfKFFfV9M1Oon5cTP39Vw3JCqF6bYz2wvzw9GX3YEcmvheRt0l/
-         XbZE55Eh6JlCRNQoe/QMN9POJkGDMsxkppVRJSNGJKBaaWv9jc6shL7XG6QLXc0SRsPm
-         htCg==
-X-Gm-Message-State: AOAM532j6y4dLJpecRN1xDdjlcgmRIzLJC3dxvMQauJ12vhzPyLtIeYL
-        aQUB0Bu9dWpp6z0uKIPI4f+XKSfQnrrrWUrtqZztrPoC
-X-Google-Smtp-Source: ABdhPJwd6S9clhB+0Mbd33bHueQo3HbGsCCthRhXPgrjhBWcWc6fIFwMXbwk9RHBefw2gTyekBK5hQny85KWB4/4ufU=
-X-Received: by 2002:a02:2422:: with SMTP id f34mr14953219jaa.237.1643785165272;
- Tue, 01 Feb 2022 22:59:25 -0800 (PST)
+        bh=SpryQOT2uTRwsdibcfsESI84DVoBT/VezHdCUqIw1nM=;
+        b=n7dBvnRJnjhyILduExkcn0unr80g4Bm7z3kXxCHYd+8CVwovS1gtEHbOP81Z/oGut4
+         C0ILWy3Qfgk2b0v1XZp0fMkpoCOePkGZJgOr7q6t3iobs9UOlLXe9jsIBsd8qW3cH/op
+         IZR3K13m6acyQAWhqTGcb9jkX4bMb8L+GKXSirnK6X/HXZP+k05zyHmlp4ZDONecz2+2
+         fJVn2RiZETIfcA0GxOgnc3oGbStWMdIwzxr016JG9pxtyOjdzjTwffvN6+pdFaKYiKM4
+         taQ/HjGxHDXTjsSR7DK+fV0U5uuhuc+ZP31MUMuYqb3zGkYR8krdzAbYjXRIA/rRuipb
+         OE6w==
+X-Gm-Message-State: AOAM533c5qjCKBr2AcCokzC8UJe3TSd5MDZsXIxgiV+uI1cxZS9edYtt
+        JXpblPQjcfo9fZHM5Lu+d4x/pN9gs8Ho3XZuq+8=
+X-Google-Smtp-Source: ABdhPJyR0STyeIw70QHeReGkVxZkBvrSHZI1p+33uA5B2bkuVWZRQTmlR4YBRQ37MslJVt1AuMhh4dGDaT+Tp8C9mTQ=
+X-Received: by 2002:a02:2422:: with SMTP id f34mr14962916jaa.237.1643785524885;
+ Tue, 01 Feb 2022 23:05:24 -0800 (PST)
 MIME-Version: 1.0
-References: <20220131211136.71010-1-quentin@isovalent.com> <20220131211136.71010-4-quentin@isovalent.com>
-In-Reply-To: <20220131211136.71010-4-quentin@isovalent.com>
+References: <20220201205624.652313-1-nathan@kernel.org>
+In-Reply-To: <20220201205624.652313-1-nathan@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 1 Feb 2022 22:59:14 -0800
-Message-ID: <CAEf4BzbB3PDGTXuCou7cSbWHpKiTzZWA52UFTxzM1=Z1o4+Qjw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/3] bpftool: Update versioning scheme
-To:     Quentin Monnet <quentin@isovalent.com>
+Date:   Tue, 1 Feb 2022 23:05:13 -0800
+Message-ID: <CAEf4BzbLwMCHDncHW-hH2kgOWc9jQK7QVkcH9aOKm7n7YC2LgQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/5] Allow CONFIG_DEBUG_INFO_DWARF5=y + CONFIG_DEBUG_INFO_BTF=y
+To:     Nathan Chancellor <nathan@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 1:11 PM Quentin Monnet <quentin@isovalent.com> wrote:
+On Tue, Feb 1, 2022 at 12:56 PM Nathan Chancellor <nathan@kernel.org> wrote:
 >
-> Since the notion of versions was introduced for bpftool, it has been
-> following the version number of the kernel (using the version number
-> corresponding to the tree in which bpftool's sources are located). The
-> rationale was that bpftool's features are loosely tied to BPF features
-> in the kernel, and that we could defer versioning to the kernel
-> repository itself.
+> Hi all,
 >
-> But this versioning scheme is confusing today, because a bpftool binary
-> should be able to work with both older and newer kernels, even if some
-> of its recent features won't be available on older systems. Furthermore,
-> if bpftool is ported to other systems in the future, keeping a
-> Linux-based version number is not a good option.
+> This series allows CONFIG_DEBUG_INFO_DWARF5 to be selected with
+> CONFIG_DEBUG_INFO_BTF=y by checking the pahole version.
 >
-> It would make more sense to align bpftool's number on libbpf, maybe.
-> When versioning was introduced in bpftool, libbpf was in its initial
-> phase at v0.0.1. Now it moves faster, with regular version bumps. But
-> there are two issues if we want to pick the same numbers. First, that
-> would mean going backward on the numbering, and will be a huge pain for
-> every script trying to determine which bpftool binary is the most
-> recent (not to mention some possible overlap of the numbers in a distant
-> future). Then, bpftool could get new features or bug fixes between two
-> versions libbpf, so maybe we should not completely tie its versions to
-> libbpf, either.
+> The first four patches add CONFIG_PAHOLE_VERSION and
+> scripts/pahole-version.sh to clean up all the places that pahole's
+> version is transformed into a 3-digit form.
 >
-> Therefore, this commit introduces an independent versioning scheme for
-> bpftool. The new version is v6.0.0, with its major number incremented
-> over the current 5.16.* returned from the kernel's Makefile. The plan is
-> to update this new number from time to time when bpftool gets new
-> features or new bug fixes. These updates could possibly lead to new
-> releases being tagged on the recently created out-of-tree mirror, at
-> https://github.com/libbpf/bpftool.
+> The fourth patch adds a PAHOLE_VERSION dependency to DEBUG_INFO_DWARF5
+> so that there are no build errors when it is selected with
+> DEBUG_INFO_BTF.
 >
-> Version number is moved higher in the Makefile, to make it more visible.
+> I build tested Fedora's aarch64 and x86_64 config with ToT clang 14.0.0
+> and GCC 11 with CONFIG_DEBUG_INFO_DWARF5 enabled with both pahole 1.21
+> and 1.23.
 >
-> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
-> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-> ---
->  tools/bpf/bpftool/Makefile | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
+> Nathan Chancellor (5):
+>   MAINTAINERS: Add scripts/pahole-flags.sh to BPF section
+>   kbuild: Add CONFIG_PAHOLE_VERSION
+>   scripts/pahole-flags.sh: Use pahole-version.sh
+>   lib/Kconfig.debug: Use CONFIG_PAHOLE_VERSION
+>   lib/Kconfig.debug: Allow BTF + DWARF5 with pahole 1.21+
 >
-> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-> index bd5a8cafac49..b7dbdea112d3 100644
-> --- a/tools/bpf/bpftool/Makefile
-> +++ b/tools/bpf/bpftool/Makefile
-> @@ -1,6 +1,8 @@
->  # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->  include ../../scripts/Makefile.include
->
-> +BPFTOOL_VERSION := 6.0.0
-> +
 
-It's going to be a PITA to not forget to update this :( As discussed,
-I'm fine with this, but I also recalled the versioning approach that
-libbpf-sys library is using (see [0]). Maybe we could steal some of
-those ideas. As in, base bpftool version on libbpf (with major version
-+ 6 as you do here), but also have "-1", "-2", etc suffixes for
-bpftool releases for when libbpf version didn't change. Don't know,
-just throwing out the idea for your consideration.
+LGTM. I'd probably combine patches 2 and 3, but it's minor. I really
+like the CONFIG_PAHOLE_VERSION and how much cleaner it makes Kconfig
+options.
 
-  [0] https://github.com/libbpf/libbpf-sys#versioning
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-
->  ifeq ($(srctree),)
->  srctree := $(patsubst %/,%,$(dir $(CURDIR)))
->  srctree := $(patsubst %/,%,$(dir $(srctree)))
-> @@ -39,9 +41,6 @@ LIBBPF_BOOTSTRAP := $(LIBBPF_BOOTSTRAP_OUTPUT)libbpf.a
->  LIBBPF_INTERNAL_HDRS := $(addprefix $(LIBBPF_HDRS_DIR)/,hashmap.h nlattr.h)
->  LIBBPF_BOOTSTRAP_INTERNAL_HDRS := $(addprefix $(LIBBPF_BOOTSTRAP_HDRS_DIR)/,hashmap.h)
+>  MAINTAINERS               |  2 ++
+>  init/Kconfig              |  4 ++++
+>  lib/Kconfig.debug         |  6 +++---
+>  scripts/pahole-flags.sh   |  2 +-
+>  scripts/pahole-version.sh | 13 +++++++++++++
+>  5 files changed, 23 insertions(+), 4 deletions(-)
+>  create mode 100755 scripts/pahole-version.sh
 >
-> -ifeq ($(BPFTOOL_VERSION),)
-> -BPFTOOL_VERSION := $(shell make -rR --no-print-directory -sC ../../.. kernelversion)
-> -endif
->  LIBBPF_VERSION := $(shell make -r --no-print-directory -sC $(BPF_DIR) libbpfversion)
 >
->  $(LIBBPF_OUTPUT) $(BOOTSTRAP_OUTPUT) $(LIBBPF_BOOTSTRAP_OUTPUT) $(LIBBPF_HDRS_DIR) $(LIBBPF_BOOTSTRAP_HDRS_DIR):
+> base-commit: 533de4aea6a91eb670ff8ff2b082bb34f2c5d6ab
 > --
-> 2.32.0
+> 2.35.1
 >
