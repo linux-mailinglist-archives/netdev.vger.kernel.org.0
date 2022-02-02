@@ -2,93 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE04F4A79FF
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 22:07:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D4B64A7A06
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 22:10:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343666AbiBBVHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 16:07:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49176 "EHLO
+        id S1347441AbiBBVKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 16:10:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237468AbiBBVHI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 16:07:08 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85129C061714
-        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 13:07:08 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id m13-20020a05600c3b0d00b00353951c3f62so420127wms.5
-        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 13:07:08 -0800 (PST)
+        with ESMTP id S1347418AbiBBVKR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 16:10:17 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD41C061714
+        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 13:10:17 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id c188so690249iof.6
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 13:10:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=H0Fw+xVSyqiTzoJbm/nRIe8vSsGd9asdu27EWqrccTQ=;
-        b=aneVoBmYCCjKG7Gruf2QsRtN7UelEsOl71fI49TcWy/dSVWrD0IqkOvNAkUJvxC3D9
-         ppPqxCuUFfUZgWaXpN9C4K4LUCurKeTf9YL13BCMmt4unA1LrEaxio5yuxNpJE8nQLCn
-         sU6dNdpFcDHz2MAAS2cQXi033mnSZHNXQXZxSe7a/hu+blFWRdueHJofggQh48PRaq2E
-         cM6q6QpOZagDZnwq7bgDHF0kbKH+P06iVNi8s4nF/yxtHoK0l1cu9TxYbQxbfyfTXFX1
-         IjmTt/jZYCZ1jEfGsrIFX1w7MBtqn1o17hPIG1ZUYRp/qTrBlpq5wXYQB6lQnadjkw5J
-         awjQ==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=3t75659HzPBq87wFRBg/hKoyMSaZFRX143OrPCse9fA=;
+        b=FetyPppDYU956R83igKID+s65jxrPkNP9iHqHnYDnzitra0C3DnelZ7GXPiKprrgb0
+         XJyqkDaqbxlDVvpMEDWTdcBGD2368gDxM7OkZK42TJkWP/3pGxxp/pt6a2w2cOnaVQ2u
+         +h9uqANz/+hYCmJUiwEHvljOoHS/HcPpgt8Is=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=H0Fw+xVSyqiTzoJbm/nRIe8vSsGd9asdu27EWqrccTQ=;
-        b=0LLJtbErdKs44pfiJn6AUBwpyiNkZsvHnJyv2SrKrTE/zkieMQurz3+0lD4OiDZFyE
-         nz8NBcsRrlkdd1c+NW3FmX8U49uGRN12/C1wDAFE4s23W0heIQK94VcCQCafzolOeQAv
-         zEYMWdwTZzqptCYuykZpGA5t8Q63ICgXRNDFSeQDiI2Z/5QkGmJhL+dSZILPx9qlTNhG
-         rj1Ko1chDaO5usd/R9fTgcWiPNOUKWZGXKxtpWRpyz4A05FWa7sv104IUB/nniNSj6B+
-         maGoOX3VZgZ/WrIrWQ2SbdIJisUPv53F4Re2EPX7jOXeL/6qp80Yg8cy8n9VpSK9eELR
-         VVbQ==
-X-Gm-Message-State: AOAM531xWFkAYLeqjFlEy3TFZwgI0ET42tWpDTa70A2b2ON8et/Njl5W
-        d8vdepAnEgdkn4XQu3c1Y0CP
-X-Google-Smtp-Source: ABdhPJz8MvMeqEf4CjjGxbQPmyRiAuBOocFeiunSroBasS4SR1ROA3EoHE7XmIGWrPvGpSjdEoipyw==
-X-Received: by 2002:a05:600c:22c3:: with SMTP id 3mr7481725wmg.21.1643836027066;
-        Wed, 02 Feb 2022 13:07:07 -0800 (PST)
-Received: from Mem (2a01cb088160fc00aceb97be319ea013.ipv6.abo.wanadoo.fr. [2a01:cb08:8160:fc00:aceb:97be:319e:a013])
-        by smtp.gmail.com with ESMTPSA id p13sm17724252wrx.86.2022.02.02.13.07.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 13:07:06 -0800 (PST)
-Date:   Wed, 2 Feb 2022 22:07:05 +0100
-From:   Paul Chaignon <paul@isovalent.com>
-To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Hangbin Liu <haliu@redhat.com>
-Subject: Re: [PATCH iproute2] lib/bpf: Fix log level in verbose mode with
- libbpf
-Message-ID: <20220202210705.GB96712@Mem>
-References: <20220202181146.GA75915@Mem>
- <c40e7fc2-e395-6999-9967-3e76e0bcfd3f@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=3t75659HzPBq87wFRBg/hKoyMSaZFRX143OrPCse9fA=;
+        b=i0R2ukLsycIk4q5cdxOp0WiaXnuqzactg5+OLqiaPdqEnvXnHrMUZB0WvsnfRPnKMb
+         4lIW4DTzbOPUv1aOZd7JIsAEnwR//vUCszG73nSfOxoH/fQa7qyg3ZJbhclHIO6lnCCN
+         bSskU1gr6ciSLyyBVKETKKTN0vSYsB/kMvjJxTg3UJtd1BDhi2KJq3x/l8dGVtbvoE6R
+         hgBGf4XossmgyU2uT63vEQG26TtYZFpGRzBwBmJf+qMkChQ8/m/8gWhNHOKzRYFdeIyn
+         UcJRHXnPuuok06d1hD+TgrbfyXmXrPeQd2NfryvJjhR7KM3/NbyEN+JNaWBUMVRBcPzS
+         xDyw==
+X-Gm-Message-State: AOAM5314uAocWtpf0UbjmqZ9T6/6EzdHMp6T99cj9xrfQG9Xp3RVhr1S
+        p7BRzGex1exFHakaofK0hvtb2fqtTd60uw==
+X-Google-Smtp-Source: ABdhPJzZ/U40pLxN1F7mOBlTvI7e1PiFI3vnLg2IOzGJpegL6dPnnCWv9ezVVSNzL/N6gkrjlBskXQ==
+X-Received: by 2002:a05:6638:3888:: with SMTP id b8mr15850151jav.250.1643836216416;
+        Wed, 02 Feb 2022 13:10:16 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id c3sm24565292iow.28.2022.02.02.13.10.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Feb 2022 13:10:16 -0800 (PST)
+Subject: Re: [PATCH net-next] selftests: fib offload: use sensible tos values
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+        Ido Schimmel <idosch@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <5e43b343720360a1c0e4f5947d9e917b26f30fbf.1643826556.git.gnault@redhat.com>
+ <54a7071e-71ad-0c7d-ccc4-0f85dbe1e077@linuxfoundation.org>
+ <20220202201614.GB15826@pc-4.home>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <c5be299d-35e9-9ae9-185f-2faa6eccb149@linuxfoundation.org>
+Date:   Wed, 2 Feb 2022 14:10:15 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c40e7fc2-e395-6999-9967-3e76e0bcfd3f@gmail.com>
+In-Reply-To: <20220202201614.GB15826@pc-4.home>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 12:10:03PM -0700, David Ahern wrote:
-> On 2/2/22 11:11 AM, Paul Chaignon wrote:
-> > diff --git a/lib/bpf_libbpf.c b/lib/bpf_libbpf.c
-> > index 50ef16bd..bb6399bf 100644
-> > --- a/lib/bpf_libbpf.c
-> > +++ b/lib/bpf_libbpf.c
-> > @@ -305,7 +305,7 @@ static int load_bpf_object(struct bpf_cfg_in *cfg)
-> >  
-> >  	attr.obj = obj;
-> >  	if (cfg->verbose)
-> > -		attr.log_level = 2;
-> > +		attr.log_level = 1;
-> >  
-> >  	ret = bpf_object__load_xattr(&attr);
-> >  	if (ret)
+On 2/2/22 1:16 PM, Guillaume Nault wrote:
+> On Wed, Feb 02, 2022 at 12:46:10PM -0700, Shuah Khan wrote:
+>> On 2/2/22 11:30 AM, Guillaume Nault wrote:
+>>> Although both iproute2 and the kernel accept 1 and 2 as tos values for
+>>> new routes, those are invalid. These values only set ECN bits, which
+>>> are ignored during IPv4 fib lookups. Therefore, no packet can actually
+>>> match such routes. This selftest therefore only succeeds because it
+>>> doesn't verify that the new routes do actually work in practice (it
+>>> just checks if the routes are offloaded or not).
+>>>
+>>> It makes more sense to use tos values that don't conflict with ECN.
+>>> This way, the selftest won't be affected if we later decide to warn or
+>>> even reject invalid tos configurations for new routes.
+>>
+>> Wouldn't it make sense to leave these invalid values in the test though.
+>> Removing these makes this test out of sync withe kernel.
 > 
-> ip and tc do not have verbosity flags, but there is show_details. Why
-> not tie the log_level to that?
+> Do you mean keeping the test as is and only modify it when (if) we
+> decide to reject such invalid values?
 
-I'm not sure I understand what you're proposing. This code is referring
-to the "verbose" parameter of the tc filter command, as in e.g.:
+This is for sure. Remove the invalid values in sync with the kernel code.
 
-    tc filter replace dev eth0 ingress bpf da obj prog.o sec sec1 verbose
+> Or to write two versions of the
+> test, one with invalid values, the other with correct ones?
+> 
 
-Are you proposing we replace that parameter with the existing -details
-option?
+This one makes sense if it adds value in testing to make sure we continue
+to reject invalid values.
 
+> I don't get what keeping a test with the invalid values could bring us.
+> It's confusing for the reader, and might break in the future. This
+> patch makes the test future proof, without altering its intent and code
+> coverage. It still works on current (and past) kernels, so I don't see
+> what this patch could make out of sync.
+> 
+
+If kernel still accepts these values, then the test is valid as long as
+kernel still doesn't flag these values as invalid.
+
+I might be missing something. Don't you want to test with invalid values
+so make sure they are indeed rejected?
+
+thanks,
+-- Shuah
