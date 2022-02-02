@@ -2,181 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10CBA4A6D99
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 10:14:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CE2C4A6DCE
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 10:30:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245385AbiBBJOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 04:14:36 -0500
-Received: from de-smtp-delivery-102.mimecast.com ([194.104.109.102]:44239 "EHLO
-        de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S245376AbiBBJOa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 04:14:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1643793269;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UBmHr7XJ2cSQWq1RgLritFwFLWPO+yJ4B2kV0XhQgc8=;
-        b=CV21d9pgShHOGo4dvHghV7VPE/dpqKyEg2kAbqfcY9r5WDjmAWTiQSGlgyMop2WAS2jcI+
-        IFtYzxJUr/TsTjao4rtm4XsIHuzDcGCswbqEpXEKcgf0xzsRZmpIJrrk5/mnNBx81NdR8A
-        cReeaYSnPf/UrbTo+65wiauYJFpbVP8=
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com
- (mail-am6eur05lp2112.outbound.protection.outlook.com [104.47.18.112]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-27-22GnjADvOfq7LDE6sSTx9A-2; Wed, 02 Feb 2022 10:14:28 +0100
-X-MC-Unique: 22GnjADvOfq7LDE6sSTx9A-2
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FiPdST3AjZbb5rCPBhnwsAQKpAr0S8hhhYHwDENeNoWRIRJWOiAyIFWaXrppW9+lTEfdk8gmeXVniQ6ZUil5oU5zO3gZ3B39u91wjOm/3vEwB3hFeScWc5pkbeOlJcAUKc6kUgAjQL+6srN1k1S7EModYhzCqmf1pK7lDNZVmX1IS8GAw6JpHOB8igsMNxZZOiMuhEREsXxpm1WixpH8f8ScRQMgJTnRUSTHVarXXTREysY//ohALByZogujonLafDNM57J3nTW4FWxggx+xv1q/jeJIsBBpDZ/6/ME/9UMgXBBv1BQAHzqJWcSY9GQLqH52/cj4P9x3T9bTpTOHrQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JrllmYw8FVFJvxxl//zlJylkyhfC65JPMFsvsktnt/U=;
- b=e4Tj4qig96yJgbcZ3edKu3AK4rzRsJ/0Yg5NC4WSofaSVXTbiehh72tCMXRlTcDZAlaVOocx+GxG9gtBMS/hF5QdlKT43JFq1oufAtOqppyR13HDxXcakKz2zCCS4AyzfvHwOnWhNfIEl6J/P7yBJhWzQJ9WGxv3dF9Isf8J1T9iGoW9vYUkRr4dHgQOIvhDF/FjoR2B9ra3RP83g9SGis/utnXufgk8zAjR7TNDiWSPIQayirsOfn5uLONvifbdgaUbw0zBok2EcXLrju8D5XafPcTPnbmrPNHxT6jtHS0kdo2M8ldBkgYrlM/kgD7rjNTm1MxQ9cQLzP01AZJKvQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from DB7PR04MB5050.eurprd04.prod.outlook.com (2603:10a6:10:22::23)
- by PR3PR04MB7227.eurprd04.prod.outlook.com (2603:10a6:102:82::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Wed, 2 Feb
- 2022 09:14:26 +0000
-Received: from DB7PR04MB5050.eurprd04.prod.outlook.com
- ([fe80::24bf:3192:1d1c:4115]) by DB7PR04MB5050.eurprd04.prod.outlook.com
- ([fe80::24bf:3192:1d1c:4115%3]) with mapi id 15.20.4951.012; Wed, 2 Feb 2022
- 09:14:26 +0000
-Message-ID: <59e18374-0941-1298-4119-366452375404@suse.com>
-Date:   Wed, 2 Feb 2022 10:14:24 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net-next v1 1/1] usbnet: add devlink support
-Content-Language: en-US
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Greg KH <gregkh@linuxfoundation.org>
-CC:     Oliver Neukum <oneukum@suse.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20220127110742.922752-1-o.rempel@pengutronix.de>
- <YfJ+ceEzvzMM1JsW@kroah.com> <20220127123152.GF9150@pengutronix.de>
- <YfKcqcq4Ii1qu2+8@kroah.com> <YfPPpkGjL2vcv4oH@pengutronix.de>
-From:   Oliver Neukum <oneukum@suse.com>
-In-Reply-To: <YfPPpkGjL2vcv4oH@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: AS8PR07CA0019.eurprd07.prod.outlook.com
- (2603:10a6:20b:451::22) To DB7PR04MB5050.eurprd04.prod.outlook.com
- (2603:10a6:10:22::23)
+        id S245463AbiBBJaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 04:30:23 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:41661 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229576AbiBBJaX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 04:30:23 -0500
+Received: by mail-il1-f199.google.com with SMTP id o8-20020a056e0214c800b002bc2f9cffffso6839124ilk.8
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 01:30:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=NZ7WdYtQrNmVol7I4UetJhUqWcjgf5izWYmBss2fDeI=;
+        b=uR/WjG+/vRYZwGleRjph7UCOP52odK12rtKEHmvaZBJb/cNHgZUqhhTU8C0/tceGzb
+         4PwZJfaebQ/UWDxqBD0M6s1gD6LBDXAiFpYWGeDNTe52t6ONkajZE8N8qBtvf2P8VWY7
+         PFIbqzQ427roQVrLwrLf8KLct16GSR+aK8cGp9glyTkpjc+v2fsqZmOwnb3/Ckq6CCic
+         b1zebKhq6Agm+0KxyPbX396VMByixhD/7vlV37pcVhExZGzqb/XQAJvH6ZU8QFCIKf76
+         3xA2AJX7xs5/2Aoilp26ut96q3bPi3qO+WRtaM9ObS6cU3suy1ol73BI0t9hIxP0jOP6
+         T7RA==
+X-Gm-Message-State: AOAM532LcsRLiMHTN1+OOTCXwImPQ8DmMA4iLWHRa9eIYDmzu9Na5CEo
+        eDkexI4kfblftxHwzgHwc/6WXauFt3HinA+4JbWTQo3uimcE
+X-Google-Smtp-Source: ABdhPJzxRGFGHD/f8nz9jewR6Z8HVVhEyTz1BpTtYuPo9LSEN5UQM2YwD+bThGxUUYDBD1kyZWz0kY7by3sKLnFQTZKMf0QgqeLM
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8d59b0fb-f3f2-4a50-699f-08d9e62c6901
-X-MS-TrafficTypeDiagnostic: PR3PR04MB7227:EE_
-X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
-X-Microsoft-Antispam-PRVS: <PR3PR04MB72272B40D9ADE0FFEB942371C7279@PR3PR04MB7227.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 25wUT3buttfXQTYco/4qWqaQGCmXVNxUGCJvyIfszyPRPDbeSLUYAyrpZrzqPfFuFabbIjQ0cpE2dKKGDH7KACafzTltI9BmhU31HrDe5AZKhfX0PsYzDaSlkv+1ve78ZuqGKmHksVJFyqxgYIkh3tDSkkExLnDmM+saRJKdAS+zqR6bwr2hPTmugYMV73FuDZzFtRWcOTYVnLHvF2Hq+s2LZbxa4hewMFuJqYSJpYlk9RLjeXY8qCnVC9/hm1vLxKBKvypJ5c8OdoBnz+l+7j/EFBInPIM498KOZ0W5qAXpSwstgE7CT4sdC6PT30B1FTrA501GFmZFAAkERPNVwaBaxqnVamRZ8fi5nIvEhxAi/irt6DYg1sqkfJN2J4dq0AsZvx4dqTwwfkyy1LtIMAfs9YvMiJ+kQL5evFNjr/EgLlf810hxPeBXFKd2wOFhXamhRRKn7ZkHz/eHg+9MVWFw0a8k+yOLrZ5+IRaGnEEzZUv84kYngGbAwCYRRus8Ey8DbmTzPPR8I/16kMANcpMQ8/E3qvuBQT9ps5ov+Hxgkpy7idlMJpSmaEVmdjgAJg1dRdKeC4KsxQorjeyMbvY68EcxbGEzHu5/+cy/Z+WpYdjobOAWw9E7pYYyQzcxizuJy+svU3ZsLTl3H2g6ev31pdSyLSOzgLFKwPeU9LYJ0DsCP1uVOrYwi/D9OTeVrATgEKI5zrAZ3gZFUIkqJy3N8yj/Ym2ikbxl1g8UuN8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5050.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(38100700002)(54906003)(110136005)(66946007)(8676002)(8936002)(66556008)(4326008)(66476007)(36756003)(5660300002)(86362001)(2906002)(6506007)(31686004)(31696002)(6512007)(83380400001)(53546011)(186003)(508600001)(6486002)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?p80v6NX8vrDjFwNapdvUM1AuXW2XTBhrW9ahx3bN7uFJ7I8rU56nKnk2TjAE?=
- =?us-ascii?Q?+SAl6GV7+uoN90zw7Xm12WnXc6T6R8PdRTYiRGV+V7riCOqIrlmnPFlSkY+4?=
- =?us-ascii?Q?wXiichN1K7CBkT7PMk1VGR7PV6UimnrEsDrlYgKA6iNdKmASLqGQrP968iTW?=
- =?us-ascii?Q?wGglAXtydxprZTW/JhH87CchkIayXmZkWiUYd6a3lFsTbbhaWX+PkQhz8DGG?=
- =?us-ascii?Q?vrK9QYtFR5Ld08QfYNy5AxzQjhIXUDy7oi2aeIW/fms94cSkc6jVY8DrX6Mp?=
- =?us-ascii?Q?jp34k2fk5nHTUBOS/YndXvangz9DQx/GMnPiEBFmtifnOFzlzM46RsaGgqsK?=
- =?us-ascii?Q?pw17/XbKucoQhif0dnWXEuVU/E9I0OZl1hMTbJkvCK5J28x0W3cKX/3RrIy4?=
- =?us-ascii?Q?qNxyJhpmOgbSpbdKmscElZ5PbjU+O1sVSPvIgRdHzt2usYx/aqoocNTevXwG?=
- =?us-ascii?Q?wwQd2aoPS7PTXPx7+kpLhga0HJ1IhzLO69ofO+QSVZWasr4CTM5UJeNTBVcr?=
- =?us-ascii?Q?CBXQLkDgS1WUsQE/FSGM30M2lgh2tCLtWhUBYexrO4YGYIGPnpWVmGZakBHu?=
- =?us-ascii?Q?mJwPPQIPAwmDxn+er7NBpx1JOSjbnPPrVYDVgKkJ4RbkqPabce7cBrBt/cuY?=
- =?us-ascii?Q?Dda554xGVjqPtOKNW1Zw6o4TeRvGv8YcbNzI1AYTnArWCnzTSkZZd6CQje1w?=
- =?us-ascii?Q?zm/N5h+CSdKNGZ/LawEedZSJCCkKRQsTRNyvxNp6hE6KcJHJV0qMfw/3/D0B?=
- =?us-ascii?Q?ltP0op4MOeVJsFfN32EbFGQIFAlt3GmLeXDuAe1aitICFCKk7sLIh9LncODe?=
- =?us-ascii?Q?4TMKVMtScmVe//WEsdkbq04ESy4pZ8+VCEM/08SMZxdnSx3wGJClzGjEAbY2?=
- =?us-ascii?Q?vsf1axBXlI/wA6yu2RfLU5ka5P6J3vh6deg7cg5Tbu02F14ykYjRdjtYzO8r?=
- =?us-ascii?Q?dPXChwIm9l99g+HJgLawxvWhIu9nnPu5MkkZZ6nL4lVbQUCqQV+OGyE0wxQd?=
- =?us-ascii?Q?7MbaSNXgkkfNeXH1V5a9jKZ4CLIFlkJKBBP4WUuaxC9cxXWVKOlFNRrlunF4?=
- =?us-ascii?Q?Tg2a1GHaETJLTtB4xyyKnF2WiVykTYcHHwAk09wokCqMMGvJCKjJAU7ZarVP?=
- =?us-ascii?Q?O3EKlQwddkhVMpJJapHKoDjwFYae+JcqDDxtIRwALBYFtmmtsWU05CDnXRck?=
- =?us-ascii?Q?VOT3gZVd5vOwhRNhGK+fuvaAVqzPYpZ/PFRB5jVRtDAR+O5SIYuV7CAh0Rfa?=
- =?us-ascii?Q?vxTDrqbBss8QnCZ2lCMOXoA9r18bKnsERjuxqMWn80MqHc0QbDpGo6kCLPrv?=
- =?us-ascii?Q?OO12t7JAY/72bF0QmaTdUl7Hq8IiP6Yh/yLhTuc7miWt2RwBpKZHOanJuegB?=
- =?us-ascii?Q?TeDC74d5m5OOpWJZDjbVnsNrMtdpOtLWh4OBNAuQ6nmpkgKDLBYvviIKjDXB?=
- =?us-ascii?Q?LpXW0O/+yuvy1fV8dnqUf8OHUV8o63zi3Iuzd4frj5mNiUn5QHIRzJnJicPi?=
- =?us-ascii?Q?Sh7tAggqgEFvS5bI+qN9Z8vUu09xmu6Yzp63e6BbvI8z3QuHQMv84joMwLe9?=
- =?us-ascii?Q?+iGWwPtWftvXXjIpUKUblkj7VQSkvZ2UdQWRiq73b6UHQvJ2zhRpQBZQ+y9G?=
- =?us-ascii?Q?MzD5sdguURNnP1Euw+nn0r5IexRiT3mLn2sILvVGRGz0UobV/LGoXEescQ33?=
- =?us-ascii?Q?e06ZDMU8b8kkfx6Z3TU8gYWXQIs=3D?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d59b0fb-f3f2-4a50-699f-08d9e62c6901
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5050.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2022 09:14:26.5535
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Mocsg7xctJB0xnP3WUKVccdHLZCyndul8aNwLcWcgSUTZqezRhl0gUUvqONnx/MfY5laV0L+ypDhVIkcftIyog==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR04MB7227
+X-Received: by 2002:a05:6e02:1a47:: with SMTP id u7mr7869536ilv.33.1643794222593;
+ Wed, 02 Feb 2022 01:30:22 -0800 (PST)
+Date:   Wed, 02 Feb 2022 01:30:22 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b8c08805d705aaa2@google.com>
+Subject: [syzbot] WARNING: ODEBUG bug in __init_work (3)
+From:   syzbot <syzbot+13b13d204fb13cfda744@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        cgroups@vger.kernel.org, christian@brauner.io,
+        daniel@iogearbox.net, hannes@cmpxchg.org, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        lizefan.x@bytedance.com, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        tj@kernel.org, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 28.01.22 12:12, Oleksij Rempel wrote:
-> The user space should get an event in case there is a problem with the
-> USB transfers, i.e. the URB status is !=3D 0.
-That would need filtering for unlinks, but that is a detail
-> The use space then can decide if the USB device needs to be reset, power
-> cycled and so on.
+syzbot found the following issue on:
 
-This is highly problematic. Not necessarily impossible but problematic.
+HEAD commit:    b76bbb34dc80 net: stmmac: dwmac-sun8i: make clk really gat..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=16cccccbb00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ae0d71385f83fe54
+dashboard link: https://syzkaller.appspot.com/bug?extid=13b13d204fb13cfda744
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Executing URBs is part of the
+Unfortunately, I don't have any reproducer for this issue yet.
 
-* device removal and addition IO paths
-* block IO path
-* SCSI error handling
-* PM transition IO paths
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+13b13d204fb13cfda744@syzkaller.appspotmail.com
 
-While we can send messages to user space, we cannot allocate a lot
-of memory and we cannot wait for responses.
+------------[ cut here ]------------
+ODEBUG: init active (active state 0) object type: work_struct hint: css_killed_work_fn+0x0/0x5e0 kernel/cgroup/cgroup.c:3947
+WARNING: CPU: 0 PID: 13 at lib/debugobjects.c:505 debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+Modules linked in:
 
-> What about calling a to-be-written devlink function that reports the USB
-> status if the URB status is not 0:
->
-> diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
-> index d0f45600b669..a90134854f32 100644
-> --- a/drivers/usb/core/hcd.c
-> +++ b/drivers/usb/core/hcd.c
-> @@ -1648,6 +1648,8 @@ static void __usb_hcd_giveback_urb(struct urb *urb)
->  	usb_unanchor_urb(urb);
->  	if (likely(status =3D=3D 0))
->  		usb_led_activity(USB_LED_EVENT_HOST);
-> +	else
-> +		devlink_report_usb_status(urb, status);
-> =20
-> =20
-It seems to me that you are approaching this issue on too low
-a level. Drivers generally do at least rudimentary error handling
-or rather detection.
+CPU: 0 PID: 13 Comm: ksoftirqd/0 Not tainted 5.17.0-rc1-syzkaller-00460-gb76bbb34dc80 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd 40 30 06 8a 4c 89 ee 48 c7 c7 40 24 06 8a e8 0c 57 27 05 <0f> 0b 83 05 55 7f b2 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
+RSP: 0018:ffffc90000d27ba8 EFLAGS: 00010286
 
-This would be easy to use if you gave them a nice API. Something
-like:
+RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
+RDX: ffff888011928000 RSI: ffffffff815fa1d8 RDI: fffff520001a4f67
+RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff815f3f3e R11: 0000000000000000 R12: ffffffff89ab5380
+R13: ffffffff8a062940 R14: ffffffff814bda70 R15: ffffffff90788e18
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b2eb22000 CR3: 0000000053d45000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __debug_object_init+0x524/0xd10 lib/debugobjects.c:593
+ __init_work+0x48/0x50 kernel/workqueue.c:518
+ css_release+0x1a/0x110 kernel/cgroup/cgroup.c:5213
+ percpu_ref_put_many.constprop.0+0x22b/0x260 include/linux/percpu-refcount.h:335
+ rcu_do_batch kernel/rcu/tree.c:2527 [inline]
+ rcu_core+0x7b8/0x1540 kernel/rcu/tree.c:2778
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ run_ksoftirqd kernel/softirq.c:921 [inline]
+ run_ksoftirqd+0x2d/0x60 kernel/softirq.c:913
+ smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
 
-devlink_report_urb_error(usb_interface * intf, int reason, bool handling);
 
-Maybe also report resets and hub events from the hub driver and
-I think you'd get what you need. You need to be aware of a need for
-some kind of limiting logic for disconnects.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-The change over from logging something not very helpful to
-properly reporting is easy.
-
-=C2=A0=C2=A0=C2=A0 Regards
-=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 Oliver
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
