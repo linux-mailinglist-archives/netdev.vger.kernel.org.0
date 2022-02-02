@@ -2,100 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CAB34A6ABB
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 05:05:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FACB4A6ABF
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 05:10:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243923AbiBBEF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Feb 2022 23:05:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42578 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232069AbiBBEF0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 23:05:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B185C061714;
-        Tue,  1 Feb 2022 20:05:26 -0800 (PST)
+        id S244239AbiBBEKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Feb 2022 23:10:11 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50576 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232069AbiBBEKK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Feb 2022 23:10:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95F7AB82F70;
-        Wed,  2 Feb 2022 04:05:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECFD3C004E1;
-        Wed,  2 Feb 2022 04:05:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D7DB616D5
+        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 04:10:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id ED4DBC340EB;
+        Wed,  2 Feb 2022 04:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643774723;
-        bh=oxbbL/7HMUwj9VfiRo09uO7jEK454MuKV84eIgFo8Go=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pt3rmvr4JeVdV1AltD2Linl+hj08cNgmKgROcjgR3N3UzirHCMEgizsCYI3/o+0t0
-         /TKiQwNOqbiVw6qqCnttHnSDJMhP4CmZI67dlzC2+MTOiCoylTwtMx7Axiq+cbDdLC
-         LNbTUKekXnV1KffwYEJlszzuYUQkIuHnsdb7nd3S7KKAouG8EPXuggs0oGfH/sBy7o
-         z7Qb15N8xksHms6CxbCdm94DhIM5rwZBEm6SErsRJCu6W2DtvtR8+erYsuA6JDPJlF
-         eEAXjyjtH6dtgxmzC2iTK/eV9eLddaM06JuWLYMt02nyNcU+Qb8A4f7ARrIJ4PysbS
-         g43rhuwUA+5Ag==
-Date:   Tue, 1 Feb 2022 20:05:21 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Dan Carpenter" <dan.carpenter@oracle.com>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH net] net: sparx5: do not refer to skb after passing it
- on
-Message-ID: <20220201200521.179857d7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220201143057.3533830-1-steen.hegelund@microchip.com>
-References: <20220201143057.3533830-1-steen.hegelund@microchip.com>
+        s=k20201202; t=1643775010;
+        bh=zTE01aw9/Bi8ENOWVrceNGlrCTZMEr0aa39JLOtnCY8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=A8pgYMTWlCn8uuWEAcQHuFdootX1aBvhwj5e7KZUBFJCXVzuKukVneI/ij23hAIi7
+         7pGsdzGgPwK8gT71aD/MpEDUC7l8Y4RYbmRFYCTBp203uURUCQbc6d9ummBUTrJuQH
+         TKSIc5ucQoNFIHW2Xk1cbNCEbVDtW9bNVTk7rIuSkL1Me8RnC/UHHX6zIGrU8In2TF
+         K0D3rI+RNlmgKqOtmIqAcozV1VSsYkIvn3JTb1+WiHxmKOvUMtv/KOouUB5jA4VMvm
+         kweAUk8xpa1hy3S6T6ErUGQ4nlhkM6DJ+/l1OpxN1GC590kL2ncnhvfq4Oc5jN2OJ0
+         qsvSKJrt8dN3Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CE9AEE5D09D;
+        Wed,  2 Feb 2022 04:10:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] ethernet: smc911x: fix indentation in get/set EEPROM
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164377500984.4092.8939335292381872297.git-patchwork-notify@kernel.org>
+Date:   Wed, 02 Feb 2022 04:10:09 +0000
+References: <20220131211730.3940875-1-kuba@kernel.org>
+In-Reply-To: <20220131211730.3940875-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, lkp@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Feb 2022 15:30:57 +0100 Steen Hegelund wrote:
-> Do not try to use any SKB fields after the packet has been passed up in the
-> receive stack.
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon, 31 Jan 2022 13:17:30 -0800 you wrote:
+> Build bot produced a smatch indentation warning,
+> the code looks correct but it mixes spaces and tabs.
 > 
-> This error was reported as shown below:
-
-No need to spell it out, the tags speak for themselves.
-
 > Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> 
-
-Drop this...
-
-> Fixes: f3cad2611a77 (net: sparx5: add hostmode with phylink support)
-> 
-
-and this empty line - all the tags should be together.
-
-> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 > ---
->  drivers/net/ethernet/microchip/sparx5/sparx5_packet.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-> index dc7e5ea6ec15..ebdce4b35686 100644
-> --- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-> @@ -145,8 +145,8 @@ static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
->  	skb_put(skb, byte_cnt - ETH_FCS_LEN);
->  	eth_skb_pad(skb);
->  	skb->protocol = eth_type_trans(skb, netdev);
-> -	netif_rx(skb);
->  	netdev->stats.rx_bytes += skb->len;
-> +	netif_rx(skb);
->  	netdev->stats.rx_packets++;
+>  drivers/net/ethernet/smsc/smc911x.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 
-sorry to nit pick - wouldn't it be neater if both the stats were
-updated together?  Looks a little strange that netif_rx() is in
-between the two now.
+Here is the summary with links:
+  - [net] ethernet: smc911x: fix indentation in get/set EEPROM
+    https://git.kernel.org/netdev/net/c/6dde7acdb3dc
 
->  }
-> 
-> --
-> 2.35.1
-> 
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
