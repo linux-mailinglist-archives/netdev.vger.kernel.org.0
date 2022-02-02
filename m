@@ -2,113 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E7CC4A6C0F
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 08:05:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 249454A6C1E
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 08:10:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244763AbiBBHF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 02:05:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
+        id S231193AbiBBHKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 02:10:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239384AbiBBHFZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 02:05:25 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3F4C061714;
-        Tue,  1 Feb 2022 23:05:25 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id n17so24271589iod.4;
-        Tue, 01 Feb 2022 23:05:25 -0800 (PST)
+        with ESMTP id S230378AbiBBHKC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 02:10:02 -0500
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19398C061714
+        for <netdev@vger.kernel.org>; Tue,  1 Feb 2022 23:10:02 -0800 (PST)
+Received: by mail-ed1-x542.google.com with SMTP id n10so39750470edv.2
+        for <netdev@vger.kernel.org>; Tue, 01 Feb 2022 23:10:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SpryQOT2uTRwsdibcfsESI84DVoBT/VezHdCUqIw1nM=;
-        b=Yh8JER6t2u+rs0xm1gDMhpppjo8c55JDcz4lc1HhglDS5vddc25oWSMVv5dafoq2tL
-         X0EqeQ14PSrUBuQkDiKHBefLoTCrIPMhBcMLC4RBUJhmE816dG1uZB9z3Sk6BbJklR3D
-         Y6a17cBDceerLRMxU8JtWsbkJrqxlp3m1OZNOmBvDWxdv1i3Z4SOTXFxfqYAnKryxNoS
-         Fhjl60AsaagVaNs1saZNbjsF9Vh7z04r7CWdRI6Fo4GCYvqXXp2ewZeDC79N66/yVUo6
-         LsUtUpHgRc6Rdk5tsGhSvgH2C2oCIAVi7+2HyASUyd7UtuupMDN9XfJnLBhHxs3Doeed
-         rmlg==
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=vIF0HCtULT8/Hj4oEOKhM3wVM2dbK4vAQWbMA06NHEs=;
+        b=Xb/YDjhNgskOzs7vIOMhSt/1jkRD0om9YntvBJcyuetSrROmy3Y8OBN7tDvLygnC98
+         M52PSLYmOKlsqcv59C8/Ysej+ppEi5mIu5yuvPnMGJgA2K4Ii0RrN/pEe1zdekC/54mK
+         TecNcrP24u4ZCxggMOiftcqzucDhtFBXVeG1fVmeIW8xtnjUEtWnlXTa3gDLBjPxrEkq
+         DiepjFZ4VEQuO+z979eOAGJmw6LyZOt8v/FlXRgKvsjpK62dxqrXGTYfOADutXLlGA2A
+         XFWeVAllPPowcYj6G/wbAW8Pd/7wwN8bwSScbf7INnLxKmMg+6vMI/BjX004NwRGlbhU
+         j8mQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SpryQOT2uTRwsdibcfsESI84DVoBT/VezHdCUqIw1nM=;
-        b=n7dBvnRJnjhyILduExkcn0unr80g4Bm7z3kXxCHYd+8CVwovS1gtEHbOP81Z/oGut4
-         C0ILWy3Qfgk2b0v1XZp0fMkpoCOePkGZJgOr7q6t3iobs9UOlLXe9jsIBsd8qW3cH/op
-         IZR3K13m6acyQAWhqTGcb9jkX4bMb8L+GKXSirnK6X/HXZP+k05zyHmlp4ZDONecz2+2
-         fJVn2RiZETIfcA0GxOgnc3oGbStWMdIwzxr016JG9pxtyOjdzjTwffvN6+pdFaKYiKM4
-         taQ/HjGxHDXTjsSR7DK+fV0U5uuhuc+ZP31MUMuYqb3zGkYR8krdzAbYjXRIA/rRuipb
-         OE6w==
-X-Gm-Message-State: AOAM533c5qjCKBr2AcCokzC8UJe3TSd5MDZsXIxgiV+uI1cxZS9edYtt
-        JXpblPQjcfo9fZHM5Lu+d4x/pN9gs8Ho3XZuq+8=
-X-Google-Smtp-Source: ABdhPJyR0STyeIw70QHeReGkVxZkBvrSHZI1p+33uA5B2bkuVWZRQTmlR4YBRQ37MslJVt1AuMhh4dGDaT+Tp8C9mTQ=
-X-Received: by 2002:a02:2422:: with SMTP id f34mr14962916jaa.237.1643785524885;
- Tue, 01 Feb 2022 23:05:24 -0800 (PST)
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=vIF0HCtULT8/Hj4oEOKhM3wVM2dbK4vAQWbMA06NHEs=;
+        b=7Vlcj0N5CGVDDTDDD78R007u+T9f53yhWv2B4WdWXHklAw/H8Bw2/SjI7NLVTBb4nN
+         p5U/L4l7PahCzPvk6bcPky72gKKrpsiakpfqaIF6Hbg2Ccoe40BtAwU2UcrWCf/qlztt
+         PawztVYWjqRXvLyX7VhuwVvTVHHZK4qG7+F7s+rp5YNQfc1o9l00WT1WtqLM6zpreYJe
+         eFOY20WxjrMhgJfMEZ65O6iTwmt+HjTHPfnYUSt8bblR6WrtMB9zYJ63qxO9ozn0qmQa
+         C7PWNd7pf2d9ejJanr7xhrkL7Kb3D1rzDHsqmdCiQ8UVIeHpBZi7o8b8ptrGH/1JfnQP
+         HS+w==
+X-Gm-Message-State: AOAM532sqSVvXCuSHoWa/Ij0Bzt9l/RSAjqjgUBOUUbWhmoqOlENAbFI
+        Me+mq+FoO3//TVo22G+BGloprmy9ieVVBCM/kg==
+X-Google-Smtp-Source: ABdhPJyQM15Wsu17Wfh+K4P56WyarE9Nz//vml7fCR1aCiSGiSqc9r8pH+6EUsleGMB9EdufNQSvkkg8PyaeO3VDiWs=
+X-Received: by 2002:aa7:d7c8:: with SMTP id e8mr29138904eds.110.1643785800601;
+ Tue, 01 Feb 2022 23:10:00 -0800 (PST)
 MIME-Version: 1.0
-References: <20220201205624.652313-1-nathan@kernel.org>
-In-Reply-To: <20220201205624.652313-1-nathan@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 1 Feb 2022 23:05:13 -0800
-Message-ID: <CAEf4BzbLwMCHDncHW-hH2kgOWc9jQK7QVkcH9aOKm7n7YC2LgQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/5] Allow CONFIG_DEBUG_INFO_DWARF5=y + CONFIG_DEBUG_INFO_BTF=y
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
+Reply-To: salkavar2@gmail.com
+Sender: mwibergcaitlin997@gmail.com
+Received: by 2002:a05:6408:2508:b0:140:ed20:f01b with HTTP; Tue, 1 Feb 2022
+ 23:09:59 -0800 (PST)
+From:   "Mr.Sal kavar" <salkavar2@gmail.com>
+Date:   Wed, 2 Feb 2022 08:09:59 +0100
+X-Google-Sender-Auth: rXzLK163SBSFs1HZl2Pin2g5ryw
+Message-ID: <CAOw4te3EM1WswpeB-PW0m50cBbvKXm-sEGVuyrQ-+tr+DN77Bg@mail.gmail.com>
+Subject: Yours Faithful,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 1, 2022 at 12:56 PM Nathan Chancellor <nathan@kernel.org> wrote:
->
-> Hi all,
->
-> This series allows CONFIG_DEBUG_INFO_DWARF5 to be selected with
-> CONFIG_DEBUG_INFO_BTF=y by checking the pahole version.
->
-> The first four patches add CONFIG_PAHOLE_VERSION and
-> scripts/pahole-version.sh to clean up all the places that pahole's
-> version is transformed into a 3-digit form.
->
-> The fourth patch adds a PAHOLE_VERSION dependency to DEBUG_INFO_DWARF5
-> so that there are no build errors when it is selected with
-> DEBUG_INFO_BTF.
->
-> I build tested Fedora's aarch64 and x86_64 config with ToT clang 14.0.0
-> and GCC 11 with CONFIG_DEBUG_INFO_DWARF5 enabled with both pahole 1.21
-> and 1.23.
->
-> Nathan Chancellor (5):
->   MAINTAINERS: Add scripts/pahole-flags.sh to BPF section
->   kbuild: Add CONFIG_PAHOLE_VERSION
->   scripts/pahole-flags.sh: Use pahole-version.sh
->   lib/Kconfig.debug: Use CONFIG_PAHOLE_VERSION
->   lib/Kconfig.debug: Allow BTF + DWARF5 with pahole 1.21+
->
+I assume you and your family are in good health. I am the foreign
+operations Manager
 
-LGTM. I'd probably combine patches 2 and 3, but it's minor. I really
-like the CONFIG_PAHOLE_VERSION and how much cleaner it makes Kconfig
-options.
+This being a wide world in which it can be difficult to make new
+acquaintances and because it is virtually impossible to know who is
+trustworthy and who can be believed, i have decided to repose
+confidence in you after much fasting and prayer. It is only because of
+this that I have decided to confide in you and to share with you this
+confidential business.
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+overdue and unclaimed sum of $15.5m, (Fifteen Million Five Hundred
+Thousand Dollars Only) when the account holder suddenly passed on, he
+left no beneficiary who would be entitled to the receipt of this fund.
+For this reason, I have found it expedient to transfer this fund to a
+trustworthy individual with capacity to act as foreign business
+partner.
 
->  MAINTAINERS               |  2 ++
->  init/Kconfig              |  4 ++++
->  lib/Kconfig.debug         |  6 +++---
->  scripts/pahole-flags.sh   |  2 +-
->  scripts/pahole-version.sh | 13 +++++++++++++
->  5 files changed, 23 insertions(+), 4 deletions(-)
->  create mode 100755 scripts/pahole-version.sh
->
->
-> base-commit: 533de4aea6a91eb670ff8ff2b082bb34f2c5d6ab
-> --
-> 2.35.1
->
+Thus i humbly request your assistance to claim this fund. Upon the
+transfer of this fund in your account, you will take 45% as your share
+from the total fund, 10% will be shared to Charity Organizations in
+both country and 45% will be for me.
+
+Yours Faithful,
+Mr.Sal Kavar.
