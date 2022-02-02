@@ -2,131 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4323C4A784C
-	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 19:57:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 299CD4A7864
+	for <lists+netdev@lfdr.de>; Wed,  2 Feb 2022 19:59:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346783AbiBBSzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 13:55:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:52439 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239119AbiBBSzD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 13:55:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643828103;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XSng3PPjp54gN45DcNQq0rlFyiYuB5ZJceCegS5/YFw=;
-        b=SZ32Ukb0RI/9r/E/eUsfGKDUe1CyPRPvJlfnZWi7FFF0pFrhenGd7XnT8Em57/4bbDUkUp
-        Gp+Co8NzfYteUsmUJH4yVHTOehxxKw8zQtJiji6oJgL0daghVusqbFlnCRyRCnegIWLTQ8
-        3ld8LQUK6rFjt3gsjkiURBSAQG1TGYE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-99-3WkJk-VLMHGYoxXm2y91Wg-1; Wed, 02 Feb 2022 13:55:00 -0500
-X-MC-Unique: 3WkJk-VLMHGYoxXm2y91Wg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3094718B9ED9;
-        Wed,  2 Feb 2022 18:54:59 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-0-18.rdu2.redhat.com [10.22.0.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 78F5377C9B;
-        Wed,  2 Feb 2022 18:54:58 +0000 (UTC)
-Message-ID: <7c6ddb66d278cbf7c946994605cbd3c57f3a2508.camel@redhat.com>
-Subject: Re: Getting the IPv6 'prefix_len' for DHCP6 assigned addresses.
-From:   Dan Williams <dcbw@redhat.com>
-To:     David Laight <David.Laight@ACULAB.COM>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     David Ahern <dsahern@kernel.org>
-Date:   Wed, 02 Feb 2022 12:54:57 -0600
-In-Reply-To: <58dfe4b57faa4ead8a90c3fe924850c2@AcuMS.aculab.com>
-References: <58dfe4b57faa4ead8a90c3fe924850c2@AcuMS.aculab.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
+        id S1346819AbiBBS6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 13:58:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237713AbiBBS6x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Feb 2022 13:58:53 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5F9C06173B
+        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 10:58:52 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id p7so474462edc.12
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 10:58:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rB8ZdVoGVZMC/cNrDG3bzW7SJfmUBxnNvvX26mlUlME=;
+        b=R26QS7rvsDaMOAspbTbv7DJouKK1ZgWIXY7E1Q6FSiEU/EWHZ7xkwuUUxwbliUx0eL
+         UfreNa/LA+NWOlqkw05VPsaWU9HkMXw1V1g0A+ZtjximR6CblL2jBeCjovPr4/lK1SOX
+         DnMV++7VykVpC/hS+pnSnb7dOJI2Pa5i0IEB4NJ4dx0K/zuabw2QJ1vPn4FQBavifCIt
+         OjhItmuAAXPraCwbMfXArYFZ5LVddRkm/i6VVfYgmAcUgiHL7D19HHXjXiUmiR6zZ+M7
+         M8VZVkygUZWNLxt1jkI6dTf22LcCu7sKzpC7awfCdrBzl8Rzphr/3So+0NRQTRhM+zB9
+         AGlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rB8ZdVoGVZMC/cNrDG3bzW7SJfmUBxnNvvX26mlUlME=;
+        b=w4Ozf4kspXIAp/8qU4VJGaCU0QKvJYyHg1FIL2SmFet8qAdl15Z10v6k+P2QMHlZck
+         L5i92dGKjcxB/un8/bGFhXshTAmO/GM0zZrNcsRKbiiwXJd9zvaVxGOlsipOi0tr9CtX
+         vXXtGSOjwkGdWSM6cfISqQCbk7oIgpsS273IpGEzSpVlj+Jmi8alO4lzpe8e58eRR1p5
+         uirYkuuvT+y05D5Op86rKbJwFh4PgqZ507YjM5ORIrdFFvW1Zp2mj/PEZLk8e9BuN/uG
+         t7zbfIADTkFIEjWrck4g6SVvFyTm2xPL/nWPZ0N/9bvyX2hk5BnMw/vaLjEM3b+sNfwp
+         1VXQ==
+X-Gm-Message-State: AOAM531G+zWb/nqxcxlFYAL37r6ghMuB7XyGM+tn/BdZ8Vw75B1dcZw0
+        YypYCEP9nG+rdp57SZmiWFMclgUiLqGwlA==
+X-Google-Smtp-Source: ABdhPJy96jVtM3I08BObzdXWcWpMxPrDyrCq7ovJaLCH8/t2cNJWAZsYHxoHIHmJ57CIPJE+AWN3KQ==
+X-Received: by 2002:a50:baa8:: with SMTP id x37mr10359751ede.450.1643828331237;
+        Wed, 02 Feb 2022 10:58:51 -0800 (PST)
+Received: from [192.168.1.8] ([149.86.76.131])
+        by smtp.gmail.com with ESMTPSA id v10sm21187526edx.36.2022.02.02.10.58.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Feb 2022 10:58:49 -0800 (PST)
+Message-ID: <3fa2268a-274c-1454-7f7d-1e1b55e38119@isovalent.com>
+Date:   Wed, 2 Feb 2022 18:58:48 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH bpf-next 2/3] bpftool: Add libbpf's version number to
+ "bpftool version" output
+Content-Language: en-GB
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <20220131211136.71010-1-quentin@isovalent.com>
+ <20220131211136.71010-3-quentin@isovalent.com>
+ <CAEf4BzbmXbJzwK1uCRmg+iwX+4TrENNac=WB_eCNSsYtMDALNw@mail.gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+In-Reply-To: <CAEf4BzbmXbJzwK1uCRmg+iwX+4TrENNac=WB_eCNSsYtMDALNw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-02-02 at 16:58 +0000, David Laight wrote:
-> I'm trying to work out how DHCP6 is supposed to work.
+2022-02-01 22:59 UTC-0800 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> On Mon, Jan 31, 2022 at 1:11 PM Quentin Monnet <quentin@isovalent.com> wrote:
+>>
+>> To help users check what version of libbpf has been used to compile
+>> bpftool, embed the version number and print it along with bpftool's own
+>> version number.
+>>
+>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+>> ---
+>>  tools/bpf/bpftool/Documentation/common_options.rst | 3 ++-
+>>  tools/bpf/bpftool/Makefile                         | 2 ++
+>>  tools/bpf/bpftool/main.c                           | 3 +++
+>>  3 files changed, 7 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/tools/bpf/bpftool/Documentation/common_options.rst b/tools/bpf/bpftool/Documentation/common_options.rst
+>> index 908487b9c2ad..24166733d3ae 100644
+>> --- a/tools/bpf/bpftool/Documentation/common_options.rst
+>> +++ b/tools/bpf/bpftool/Documentation/common_options.rst
+>> @@ -4,7 +4,8 @@
+>>           Print short help message (similar to **bpftool help**).
+>>
+>>  -V, --version
+>> -         Print version number (similar to **bpftool version**), and optional
+>> +         Print bpftool's version number (similar to **bpftool version**), the
+>> +         version of libbpf that was used to compile the binary, and optional
+>>           features that were included when bpftool was compiled. Optional
+>>           features include linking against libbfd to provide the disassembler
+>>           for JIT-ted programs (**bpftool prog dump jited**) and usage of BPF
+>> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+>> index 83369f55df61..bd5a8cafac49 100644
+>> --- a/tools/bpf/bpftool/Makefile
+>> +++ b/tools/bpf/bpftool/Makefile
+>> @@ -42,6 +42,7 @@ LIBBPF_BOOTSTRAP_INTERNAL_HDRS := $(addprefix $(LIBBPF_BOOTSTRAP_HDRS_DIR)/,hash
+>>  ifeq ($(BPFTOOL_VERSION),)
+>>  BPFTOOL_VERSION := $(shell make -rR --no-print-directory -sC ../../.. kernelversion)
+>>  endif
+>> +LIBBPF_VERSION := $(shell make -r --no-print-directory -sC $(BPF_DIR) libbpfversion)
+>>
 > 
-> I've a test network with the ISC dhcp6 server and radvd running.
-> If I enable 'autoconf' I get a nice address with the prefix from
-> radvd and the last 8 bytes from my mac address, prefix_len 64.
-> I get a nice address from dhcp6 (busybox udhcpc6) with the same prefix.
-> 
-> udhcpc6 runs my scripts and 'ip add $ipv6 dev $interface' adds the
-> address.
-> But the associated prefix_len is /128.
-> 
-> All the documentation for DHCP6 says the prefix_len (and probably the
-> default route - but I've not got that far) should come from the network
-> (I think from RA messages).
-> 
-> But I can't get it to work, and google searches just seem to show
-> everyone else having the same problem.
-> 
-> The only code I've found that looks at the prefix_len from RA messages
-> is that which adds to 'autoconf' addresses - and that refuses to do
-> anything unless the prefix_len is 64.
-> 
-> I can't see anything that would change the prefix_len of an address
-> that dhcp6 added.
-> 
-> Has something fallen down a big crack?
+> why can't you use libbpf_version_string() API instead?
 
-I'm far from an expert, but I don't think anything has fallen down a
-crack. I'm sure David Ahern or somebody else will correct me, but here
-goes:
-
-Things are working as intended.
-
-DHCPv6 is not a complete IPv6 addressing solution. It must be used in
-combination with Router Advertisements to do generally useful things.
-
-https://datatracker.ietf.org/doc/html/rfc8415#section-21.6
-
-21.6.  IA Address Option
-
-      IPv6-address         An IPv6 address.  A client MUST NOT form an
-                           implicit prefix with a length other than 128
-                           for this address.  A 16-octet field.
-
-DHCPv6 intentionally doesn't tell you who your IPv6 router (gateway in
-v4-land) is. That's what the Router Advertisement is for.
-
-DHCPv6 intentionally doesn't tell you anything about what prefixes are
-"on-link" like what the subnet mask implies for IPv4. That's what the
-Router Advertisement is for.
-
-If the router sends an RA with a Prefix Information Option (PIO) with
-the "on-link" (L) bit set then the kernel should install on-link routes
-for that prefix. If your DHCPv6-provided address falls within one of
-those prefixes then kernel routing takes over and packets go where they
-should regardless of the /128.
-
-If you don't have RAs, or don't have those routes installed because the
-router wasn't sending a PIO+L for the DHCP-provided prefixes, then yeah
-things aren't going to work like you might expect.
-
-I'm sure David will be along to correct me soon though...
-
-Dan
-
-> Kernel is 5.10.84 (LTS) - but I don't think anything relevant
-> will have changed.
-> 
->         David
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes,
-> MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-> 
-
-
+I missed it somehow, thanks for the pointer. It seems to be a recent
+addition to libbpf, and it was probably not present last time I checked
+for such an API. I'll use it.
