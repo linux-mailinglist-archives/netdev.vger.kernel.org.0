@@ -2,90 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1B5F4A8839
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:01:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E6704A883B
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:02:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240514AbiBCQBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 11:01:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235479AbiBCQBM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 11:01:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC190C061714;
-        Thu,  3 Feb 2022 08:01:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AEDD611CB;
-        Thu,  3 Feb 2022 16:01:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7DADC340E8;
-        Thu,  3 Feb 2022 16:01:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643904071;
-        bh=5kczdKTMoX76feLuZmuxkNuEpdZUqjoDwEN1wHNC5BU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JVdx8bk/OQBNl2g1PkMWk6VFuj0hmsWgrVvbPP1vJvc6cDQhklsFrfubykXMx8+mb
-         wr9cGovrUFHNbB5cwQgGz2Oc6kvKPPQ3YgLctdF//TqN86XtkTHAOR9vPMbkiBum8s
-         BfDOmKqxEKqiHrYQ0TRCGuO8oWrwIfRoCEbYJPxSnynrun01OP1SzidkqNVop5IJsp
-         3wqGZo4+gxCB2s9wttN75GTGwm9yrssHxxP84D6ycxFZt9a4HTxp9wgWupKqDdloA0
-         U3Lmbrk/6F3B5EbrQQlgDNXavpszHWFe8twEVDoWEtrkQzoFOu/HE1+w9luDRKxl3E
-         kc+GzJZP571wQ==
-Date:   Thu, 3 Feb 2022 17:01:04 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/5] net: dsa: mv88e6xxx: Improve isolation of
- standalone ports
-Message-ID: <20220203170104.1cca571d@thinkpad>
-In-Reply-To: <20220203135606.z37vulus7rjimx5y@skbuf>
-References: <20220131154655.1614770-1-tobias@waldekranz.com>
-        <20220131154655.1614770-2-tobias@waldekranz.com>
-        <20220201170634.wnxy3s7f6jnmt737@skbuf>
-        <87a6fabbtb.fsf@waldekranz.com>
-        <20220201201141.u3qhhq75bo3xmpiq@skbuf>
-        <8735l2b7ui.fsf@waldekranz.com>
-        <20220203135606.z37vulus7rjimx5y@skbuf>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S240878AbiBCQBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 11:01:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55757 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235036AbiBCQBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 11:01:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643904108;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FP5r9XEYAfG7IgAXOTZgdlbgnK6ZhwtirZ/Z53Mk54c=;
+        b=axm8JWWR/Ron1M0AOLD8nNwJyQbwrO/XRktRzYP/UdDZ2VqN5c8wKPbcFuLVPKbIStb97A
+        oquH8IP8kqnANvXfR8vJ9h1zK7DkzUtHUUScIj80anfTKAUVtkfYC+hvuSEGGGqgXGSs0q
+        X1L2LHPULomuReytyjzmrpmD2FGywEU=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-470-eTJ4OPAZPMmwM9HiP78iIQ-1; Thu, 03 Feb 2022 11:01:47 -0500
+X-MC-Unique: eTJ4OPAZPMmwM9HiP78iIQ-1
+Received: by mail-wr1-f70.google.com with SMTP id s17-20020adf9791000000b001e274a1233bso796512wrb.2
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 08:01:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=FP5r9XEYAfG7IgAXOTZgdlbgnK6ZhwtirZ/Z53Mk54c=;
+        b=1cUTSTdqW5NG2jHnWm2ZxGOFZaEau+jLNFVT1v5cZ4Pi1CDyZLgaO7shebWldMAeYs
+         9dGWwKplg+ruu8asBMBEpAU4jCCd84aKeu9Zz/rQr9MKlhmJQ85cwZq5aleYDLq2b2Zg
+         fbmmrwnesY2nrlt+DVjp2e/xFFpwPLfzgX9/Pv40L2zghCQIgjy5Atm6FxD7D4EEzCbp
+         1x/nB7vXlZOmLkDI+4RfPL7tzDcoXy7SHsg+ORq5gFVC14/7nzNUBzaSSithQLHXoVOI
+         4mJaQCdmutI3oVv1ggECpPzz8FDY+1SexrrwXpyDIKoHtMXUkG4Oqe8prHqiHjVSSiRJ
+         sCfQ==
+X-Gm-Message-State: AOAM530WcfBKq8qTXI5WWgPmTuLtQ9eZheUhIQZxH9CJD6UA0s1chdVn
+        PBwXQQ68u+61x4TbNMSGrFVT/YhRE8JznJlcLVOEwOSRvouY/BaI3rA+nf2Y2PLtFneMAHjOwQt
+        4wfYTB2fMmCG3SKLQ
+X-Received: by 2002:adf:dec3:: with SMTP id i3mr28665797wrn.691.1643904106222;
+        Thu, 03 Feb 2022 08:01:46 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw9SfqXirepul5gLwDUixFMBJNayDhnQP+30f7/g9Cnw7QZcFPPw05rFnQ5sAqfDfYe8mAXOw==
+X-Received: by 2002:adf:dec3:: with SMTP id i3mr28665780wrn.691.1643904105989;
+        Thu, 03 Feb 2022 08:01:45 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-96-254.dyn.eolo.it. [146.241.96.254])
+        by smtp.gmail.com with ESMTPSA id n13sm19632812wrv.94.2022.02.03.08.01.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 08:01:45 -0800 (PST)
+Message-ID: <0d270dc73553e5deb1a195f4ae84f2795eb1b167.camel@redhat.com>
+Subject: Re: [PATCH net-next 09/15] net: increase MAX_SKB_FRAGS
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Coco Li <lixiaoyan@google.com>
+Date:   Thu, 03 Feb 2022 17:01:44 +0100
+In-Reply-To: <20220203015140.3022854-10-eric.dumazet@gmail.com>
+References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
+         <20220203015140.3022854-10-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 3 Feb 2022 15:56:06 +0200
-Vladimir Oltean <olteanv@gmail.com> wrote:
+On Wed, 2022-02-02 at 17:51 -0800, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Currently, MAX_SKB_FRAGS value is 17.
+> 
+> For standard tcp sendmsg() traffic, no big deal because tcp_sendmsg()
+> attempts order-3 allocations, stuffing 32768 bytes per frag.
+> 
+> But with zero copy, we use order-0 pages.
+> 
+> For BIG TCP to show its full potential, we increase MAX_SKB_FRAGS
+> to be able to fit 45 segments per skb.
+> 
+> This is also needed for BIG TCP rx zerocopy, as zerocopy currently
+> does not support skbs with frag list.
+> 
+> We have used this MAX_SKB_FRAGS value for years at Google before
+> we deployed 4K MTU, with no adverse effect.
+> Back then, goal was to be able to receive full size (64KB) GRO
+> packets without the frag_list overhead.
 
-> On Tue, Feb 01, 2022 at 10:22:13PM +0100, Tobias Waldekranz wrote:
-> > No worries. I have recently started using get_maintainers.pl to auto
-> > generate the recipient list, with the result that the cover is only sent
-> > to the list. Ideally I would like send-email to use the union of all
-> > recipients for the cover letter, but I haven't figured that one out yet.  
-> 
-> Maybe auto-generating isn't the best solution? Wait until you need to
-> post a link to https://patchwork.kernel.org/project/netdevbpf/, and
-> get_maintainers.pl will draw in all the BPF maintainers for you...
-> The union appears when you run get_maintainer.pl on multiple patch
-> files. I typically run get_maintainer.pl on *.patch, and adjust the
-> git-send-email list from there.
-> 
-> > I actually gave up on getting my mailinglists from my email provider,
-> > now I just download it directly from lore. I hacked together a script
-> > that will scrape a public-inbox repo and convert it to a Maildir:
-> > 
-> > https://github.com/wkz/notmuch-lore
-> > 
-> > As you can tell from the name, it is tailored for plugging into notmuch,
-> > but the guts are pretty generic.  
-> 
-> Thanks, I set that up, it's syncing right now, I'm also going to compare
-> the size of the git tree vs the maildir I currently have.
+IIRC, while backporting some changes to an older RHEL kernel, we had to
+increase the skb overhead due to kabi issue.
 
-Hi Vladimir, please let me know the results.
-Marek
+That caused some measurable regressions because some drivers (e.g.
+ixgbe) where not able any more to allocate multiple (skb) heads from
+the same page. 
+
+All the above subject to some noise - it's a fainting memory.
+
+I'll try to do some tests with the H/W I have handy, but it could take
+a little time due to conflicting scheduling here.
+
+Thanks,
+
+Paolo
+
