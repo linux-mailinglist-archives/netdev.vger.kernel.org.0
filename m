@@ -2,104 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B925D4A803E
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 09:21:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A25E4A8083
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 09:39:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236037AbiBCIVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 03:21:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58890 "EHLO
+        id S1349538AbiBCIjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 03:39:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230037AbiBCIV2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 03:21:28 -0500
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF856C061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 00:21:28 -0800 (PST)
-Received: by mail-io1-xd43.google.com with SMTP id i62so2328712ioa.1
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 00:21:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=uL5gX5u04DIClvcT5QXHMFRF57VTDgRj7Jvu3WqoBRw=;
-        b=fdHn+OgjjU2vpaBPU+ukg/+BNC+0lNR/5ka06UtFJe9f87DsGw0d9AEwLFc3K4R5KS
-         glD62rHZEo5EETAWN1lhWwhHN6zjpCeKqtrTVQhKy+6Sh7uT8vnC31jkudLaBgCJub73
-         IH4+Z82Z/4M7PuAznfIDnv4+igO1sddCkgsG0R2bLh0gpQPWYI2hFvLw0qKeWyCFpxQf
-         jShjiSDZBQim7nJfCD8xxjrVxSTK0YClSivCdvW4zRCcwL09rmFv+rLioekZRi3zcBbY
-         yWbNGGMsTNwygWVdqFKAXTN84V92FUNlPx8xbsQjGGc0KwUPMxHno32WgiLrKkT2X/Lo
-         Ft6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=uL5gX5u04DIClvcT5QXHMFRF57VTDgRj7Jvu3WqoBRw=;
-        b=MFe8qWv/cDXDuxECWuwrQzOAjj6/k/q1VQm3wsrGEY59AUKooUXktOleqpFacyfQ5V
-         kT8z9S0gWV2MP71epilZuZCW6ZGGMCK8OSL1xFa23jCSlUK9XCXiYcVyUX27Rqf+E+oD
-         UK314Bvrmhj+7w6MGc3hm0u20kNnYzI+XYv80KoS1Vn6TUHBI9loObZBOAOf3F+k9V43
-         G9n4QZbTwz2mcu+mFsSjg9oWdFDTAK1iARdERSKm+hbnRy16WByLEvOb0L5RTUKmXsux
-         GzHnmsHQU6v7oh5DIm74A7hJb7u3rBzDiGzBmoBoDoO78dnwuDo5roge1WEuW7l2zflR
-         iMqg==
-X-Gm-Message-State: AOAM530QFmFUcHYNImazeqUCki1RfJbHfdKo1XBaLFgwIvyf9adnJ+04
-        alToMA58BNwo2untf6DMUVoVlr8NP9YDjBnXQPY=
-X-Google-Smtp-Source: ABdhPJxnaoP+oJQugBhJHgt8WComt3gnSwJEnybOaig8DmmAnf3aPJJMlmkPSQ3lgttGIeSBF+gUngYsGV2bknmXmyU=
-X-Received: by 2002:a05:6602:1541:: with SMTP id h1mr17118092iow.145.1643876488196;
- Thu, 03 Feb 2022 00:21:28 -0800 (PST)
+        with ESMTP id S234502AbiBCIjT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 03:39:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14DEC061714;
+        Thu,  3 Feb 2022 00:39:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33FBA61880;
+        Thu,  3 Feb 2022 08:39:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72027C340E4;
+        Thu,  3 Feb 2022 08:39:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643877558;
+        bh=dmXgElrMno1Xr2jj1GEThEmeTJWLr2oYSbpQdJvmLr0=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=JpWTzQNdYa+zt7AH2clRJzr4UMp9QWSxeBKREX6IphMd5jkvjXxWEV70ecWtIXIvT
+         VLkljM5SnAIsQfhz5Pit3M374azaKue4qGeqCrL+hrJQJm4WIN7UrMDLI+DZjxfGD3
+         3U6o0bYNGRrMg5DaR37YtT4wxloGnbUsIqlBSYtYB18gdlHgiYHMyau+7XOdKHoaNr
+         pv3lKnStEJEEYC1PcVgHPaL8kEkYiFUL8JA5HA2MQVyHGFu/H6lRxQcaRA/CCY2igo
+         mkU2JOpEaHhtUt9Ua4WovGVFnULL5gtEIp6cZOfN2ak9u32z6HNBsk0+Z1EZu+IUCr
+         hhiys5MgLfdDw==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net, kuba@kernel.org,
+        linville@tuxdriver.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com,
+        =?utf-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+Subject: Re: [PATCH] ath9k_htc: fix uninit value bugs
+References: <20220115122733.11160-1-paskripkin@gmail.com>
+        <164337315159.4876.15861801637015517784.kvalo@kernel.org>
+        <0647fd91-f0a7-4cf7-4f80-cd5dc3f2f6a2@gmail.com>
+Date:   Thu, 03 Feb 2022 10:39:12 +0200
+In-Reply-To: <0647fd91-f0a7-4cf7-4f80-cd5dc3f2f6a2@gmail.com> (Pavel
+        Skripkin's message of "Fri, 28 Jan 2022 23:52:42 +0300")
+Message-ID: <87bkzocpjj.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Received: by 2002:a05:6638:248f:0:0:0:0 with HTTP; Thu, 3 Feb 2022 00:21:27
- -0800 (PST)
-Reply-To: interpolnig@yahoo.com
-From:   Emmanuel Maduka <kabarandrew@gmail.com>
-Date:   Thu, 3 Feb 2022 09:21:27 +0100
-Message-ID: <CAHwFdCCo7x=wbQBHeir8V-+2M6mVLqk=YTMVex5GfGK_gzhXUw@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
-INTERPOL WESTAFRIKA, UNTERREGION, ABUJA NIGERIA
-Antworten Sie an unsere direkte E-Mail-Adresse: interpolnig@yahoo.com
+Pavel Skripkin <paskripkin@gmail.com> writes:
 
-Achtung Beg=C3=BCnstigter,
+> Hi Kalle,
+>
+> On 1/28/22 15:32, Kalle Valo wrote:
+>>> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+>>> Reported-by: syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
+>>> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+>>> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+>>
+>> Patch applied to ath-next branch of ath.git, thanks.
+>>
+>> d1e0df1c57bd ath9k_htc: fix uninit value bugs
+>>
+>
+> Thanks, Kalle! Can you also, please, check out this one too :)
+> Quite old, but syzbot is getting mad with this bug (like 20k hits). Thanks!
+>
+>
+> https://lore.kernel.org/all/20210922164204.32680-1-paskripkin@gmail.com/
 
-Wir machen Sie auf die Verhaftung von zwei Betr=C3=BCgern aufmerksam, die
-Ausl=C3=A4nder mit der Absicht betrogen haben, ihnen Spendenzusch=C3=BCsse,
-Darlehen, Liebesbetrug, gef=C3=A4lschte Lotteriegewinne,
-Investitionsvorschl=C3=A4ge, Geldautomatenkarten, Bankschecks,
-Geld=C3=BCberweisungen, Angeh=C3=B6rige usw. Wir verhafteten sie aufgrund d=
-er
-Berichte, die wir von verschiedenen Personen aus Afrika, Europa, Asien
-und Amerika erhielten.
+I already provided feedback on August 6th:
 
-W=C3=A4hrend des Verh=C3=B6rs haben sie ein Gest=C3=A4ndnis abgegeben, dass=
- es ihnen
-gelungen ist, so viele Menschen mit ihren L=C3=BCgen und anderen
-Vorschl=C3=A4gen zu betr=C3=BCgen, und wir haben herausgefunden, dass Sie e=
-ines
-ihrer Opfer waren. Wir beschlagnahmten ihre Besitzt=C3=BCmer und verkauften
-sie, und die nigerianische Regierung sagte, wir sollten ihre zwanzig
-Opfer mit dem Geld entsch=C3=A4digen, das aus ihren beschlagnahmten
-Besitzt=C3=BCmern stammt, und auch mit dem Geld, das wir von ihren
-Bankkonten zur=C3=BCckerhalten haben.
+"Separate patch for cleanups, please."
 
-Wir haben 120.000,00 US-Dollar f=C3=BCr jeden von Ihnen vorgesehen, der
-zuf=C3=A4llig ihr Opfer ist. Sie m=C3=BCssen uns Ihren vollst=C3=A4ndigen N=
-amen, Ihr
-Geschlecht, Ihr Alter, Ihren Familienstand, eine Kopie Ihres g=C3=BCltigen
-Personalausweises, Ihre Telefonnummer, Ihre Privatadresse, Ihr Land,
-Ihren Beruf und Ihre Bankkontodaten mitteilen, die Sie verwenden
-werden, um Ihre zur=C3=BCckgeforderte Entsch=C3=A4digung zu erhalten Mittel=
-.
+https://patchwork.kernel.org/project/linux-wireless/patch/20210804194841.14544-1-paskripkin@gmail.com/
 
-Es tut uns leid, was Sie in den H=C3=A4nden dieser Betr=C3=BCger durchgemac=
-ht
-haben m=C3=BCssen. Hoffe bald von dir zu h=C3=B6ren.
+Please submit v2. And Toke is the new ath9k maintainer, so please CC him
+as well.
 
-BEACHTEN SIE, DASS SIE IHRE ANTWORT AN UNSERE DIREKTE E-MAIL-ADRESSE
-SENDEN M=C3=9CSSEN: interpolnig@yahoo.com
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Gr=C3=BC=C3=9Fe,
-Inspektor Emmanuel Maduka
-Antworten Sie an unsere direkte E-Mail-Adresse: interpolnig@yahoo.com
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
