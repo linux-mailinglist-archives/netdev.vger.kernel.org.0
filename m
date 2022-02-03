@@ -2,82 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D68844A86E2
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 15:48:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9D2E4A86E7
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 15:48:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234428AbiBCOsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 09:48:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33678 "EHLO
+        id S244797AbiBCOs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 09:48:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbiBCOsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 09:48:06 -0500
+        with ESMTP id S231745AbiBCOsY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 09:48:24 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693E8C061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 06:48:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8348C061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 06:48:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=IGltMAYYacqruL0D621VYGxWRCahJMLE4UDPf/HNBNY=; b=vl5VnTkOcQLzhnw2pbIKDn6xTc
-        x0600fLfwj2LZrzOlFfMLtL6TWZU9MPcJgmsDrAMjSerOnYmQVCmoe+L07ThL8nqad/chZCIe+/vZ
-        dx5pQ7EwhtRDWnY9tx5M/V/DdHmH3+V0GP/ijQFvxfWw5eaJ9rA4AzMsN+qmSPBtoKN4U3kVK9TKk
-        V1t8exkBOoLa6Pm0deZfHsfL9dngqpA6HglSjzi7JCWsIngl1wL0Dn7dU1/8USk5BsrI4s1AN6nHL
-        jXIRyRifLcnJwvPaJy92KZ8V8EmbKBtxf2KBwJeas+Ff4LjGzyk9bpxwmdSCJwF/fZXRsNH0T+s+z
-        /0To1RNw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57012)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=IEKgNN7+x8FEdBHEHkuvMDdG6N4ZgFGww6hZX+ce4fg=; b=JlMbD0odGgMgIPVxl/KLfTNe1k
+        GG5v3XEadG5hIWm65RlYYq6bUxT2nH4PhVlYll4DdJWVyc5GcYCxWTV/QeoZb9CJd6TsclCF5BraC
+        pBPEtdYSHNVUaECmxz2UNhvPrCpIQVtcg/uXF20g/mdvQi+o7VNby3YX2G9enPdIaBtG0QpisG6UD
+        cH85MouyyeHA/2h3xxZBGLl7NlrErLKh0zjipi6IEg5imMCP2F97Ox/HDdA9bU3cp9mxc6LFLEmIL
+        tT0Qc0GOv+M6X7KUCQ33RhF2E8lK8zoJJd6jGSF7XZL0Rr6PYRWHrCHnOJLSoIuHJzwL9IVYKya+j
+        XB2SjeEQ==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54208 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nFdP0-0002kZ-Ug; Thu, 03 Feb 2022 14:48:03 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nFdOz-00045W-7d; Thu, 03 Feb 2022 14:48:01 +0000
-Date:   Thu, 3 Feb 2022 14:48:01 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1nFdPJ-0002ki-4H; Thu, 03 Feb 2022 14:48:21 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+        id 1nFdPI-006Wh0-HW; Thu, 03 Feb 2022 14:48:20 +0000
+In-Reply-To: <YfvrIf/FDddglaKE@shell.armlinux.org.uk>
+References: <YfvrIf/FDddglaKE@shell.armlinux.org.uk>
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH RFC net-next 0/5] net: dsa: b53: convert to
- phylink_generic_validate() and mark as non-legacy
-Message-ID: <YfvrIf/FDddglaKE@shell.armlinux.org.uk>
+Subject: [PATCH RFC net-next 1/5] net: dsa: b53: clean up if() condition to be
+ more readable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1nFdPI-006Wh0-HW@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Thu, 03 Feb 2022 14:48:20 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+I've stared at this if() statement for a while trying to work out if
+it really does correspond with the comment above, and it does seem to.
+However, let's make it more readable and phrase it in the same way as
+the comment.
 
-This series converts b53 to use phylink_generic_validate() and also
-marks this driver as non-legacy.
+Also add a FIXME into the comment - we appear to deny Gigabit modes for
+802.3z interface modes, but 802.3z interface modes only operate at
+gigabit and above.
 
-Patch 1 cleans up an if() condition to be more readable before we
-proceed with the conversion.
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/dsa/b53/b53_common.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-Patch 2 populates the supported_interfaces and mac_capabilities members
-of phylink_config.
-
-Patch 3 drops the use of phylink_helper_basex_speed() which is now not
-necessary.
-
-Patch 4 switches the driver to use phylink_generic_validate()
-
-Patch 5 marks the driver as non-legacy.
-
- drivers/net/dsa/b53/b53_common.c | 68 +++++++++++++++++++++-------------------
- drivers/net/dsa/b53/b53_priv.h   |  8 ++---
- drivers/net/dsa/b53/b53_serdes.c | 17 ++++++----
- drivers/net/dsa/b53/b53_serdes.h |  5 ++-
- drivers/net/dsa/b53/b53_srab.c   | 35 ++++++++++++++++++++-
- 5 files changed, 85 insertions(+), 48 deletions(-)
-
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index a3b98992f180..7d62b0aeaae9 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1327,11 +1327,14 @@ void b53_phylink_validate(struct dsa_switch *ds, int port,
+ 
+ 	/* With the exclusion of 5325/5365, MII, Reverse MII and 802.3z, we
+ 	 * support Gigabit, including Half duplex.
++	 *
++	 * FIXME: this is weird - 802.3z is always Gigabit, but we exclude
++	 * it here. Why? This makes no sense.
+ 	 */
+-	if (state->interface != PHY_INTERFACE_MODE_MII &&
+-	    state->interface != PHY_INTERFACE_MODE_REVMII &&
+-	    !phy_interface_mode_is_8023z(state->interface) &&
+-	    !(is5325(dev) || is5365(dev))) {
++	if (!(state->interface == PHY_INTERFACE_MODE_MII ||
++	      state->interface == PHY_INTERFACE_MODE_REVMII ||
++	      phy_interface_mode_is_8023z(state->interface) ||
++	      is5325(dev) || is5365(dev))) {
+ 		phylink_set(mask, 1000baseT_Full);
+ 		phylink_set(mask, 1000baseT_Half);
+ 	}
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
