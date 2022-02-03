@@ -2,115 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 735284A90DA
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 23:49:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D2644A90ED
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 23:55:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355879AbiBCWta (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 17:49:30 -0500
-Received: from mga04.intel.com ([192.55.52.120]:48202 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231437AbiBCWt3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Feb 2022 17:49:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643928569; x=1675464569;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=twS+setjSAWsPuwnGNG/fvIv+vG+K+FoADvDwgrNZw8=;
-  b=Ji9aeE0qKxA068SME8w9NPu8gnsewm9CI08Zc1cdTZHtDvF1Y1VShZnz
-   ocec4eS5A55L/oKAHIhNvQu/OG2b33w9dnEevoajPvWRlCDTYd13uUEOm
-   f+0cUAftEGGxeCs0I69yASrNe03SXJvKf+/iizqZWOTGvid51IUzmS1iz
-   LF+WkYxZmnNQ1yfLZSNgYemJ1oJso9F/WZEd+PPfdBxQ+esIimep1b/7q
-   UM8+lWVy8ROv9z8xhjO+a0wAS/d7d3h9ppmzHIQoLzuoZ+ssNtw2pOoSg
-   v3nFw9okxPwCNTKG83cjA52kAbRLtJDwALrIl5Js4kizLvnRd+1hLkvzo
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="247103027"
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="247103027"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 14:49:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="538951042"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga008.jf.intel.com with ESMTP; 03 Feb 2022 14:49:28 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Samuel Mendoza-Jonas <samjonas@amazon.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net 1/1] ixgbevf: Require large buffers for build_skb on 82599VF
-Date:   Thu,  3 Feb 2022 14:49:16 -0800
-Message-Id: <20220203224916.1416367-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
+        id S243088AbiBCWzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 17:55:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238236AbiBCWzw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 17:55:52 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B350C061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 14:55:52 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id j16so3518109plx.4
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 14:55:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=otjxgyJ8DzTJqghxp7XZI9W3AlAtUB0pFwVu699GQdo=;
+        b=ekzKCQQ361f2FGWIaZdgNPHUci955FpzBeMRyuBl8BJV2q/MLkv7Je7MFDc3utNNrX
+         roiWdTpWeYcNAW6AoFRvBqFobv8bRxKVJ2DMfux78cSymmdN+0cTD0qyMVIIw//Y61+x
+         3MgR8VNvwdznickuzQO9b7MuZT2fM3fiBORzvHXO6DFsefhQpOBVaPoSZHrqws+2JgkZ
+         g4nlv7xunjzcTNbdNnNKzF1W5s9IS0+oHYVOzOUY91z5Ule139vxv4l9ru53ffCzfWIv
+         5RmobA973B6FLSDRbjwH4pHQN3FDZnkpd79wspCkbzzfPlncr4+NzBx9O5TxLxsqETSI
+         XvIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=otjxgyJ8DzTJqghxp7XZI9W3AlAtUB0pFwVu699GQdo=;
+        b=WK+moy6zuRh1K5vXVlsdSGDFq+CtR46VhH5zXnp4SN+Urv3Znp2DEz4Umhd9fUvT4G
+         3wFlAmrPv8bHyBnqkOBexEBCfGomGTqRDCpW+0/6TXsh5IjDaKpmu/+jQs+2D+p5GuOI
+         ODPeboR2xf7vRdkkXUqR3djeLmh/oaV4u+zuDo64Mbc3R5eeKPVf4XL5+tEHFRJvIpXG
+         2l/F+0XWjYKg52AO1JnHNlCMeOw/95GpVSwbWAnhNj286gGrN/9GQVwSUcoar9C9Ah93
+         f9jeoHSzfD7T6YkJAWBUO3ln5qDdgQntOTTs4Wgq22WPTRQGKhXJMD1rsX/SrnyrxDV6
+         ursQ==
+X-Gm-Message-State: AOAM532gA6eicJTYFZ6eUbP3cMrRhkq0lSp0IPpBVWlG8WeQ5w9bMUov
+        78d0Vb/OnvOzEB8V2xQgaKtgLnZg62A=
+X-Google-Smtp-Source: ABdhPJxeOgJSWt8jBRJ0eSehtb5gJPkZDjkJjSqxudt0e8NPQ9y81tajMVJKdhIcywE1SsEuxsqmPg==
+X-Received: by 2002:a17:90b:3eca:: with SMTP id rm10mr12244623pjb.211.1643928951693;
+        Thu, 03 Feb 2022 14:55:51 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:b3be:296f:182e:18d5])
+        by smtp.gmail.com with ESMTPSA id j14sm55228pfj.218.2022.02.03.14.55.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 14:55:51 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Arjun Roy <arjunroy@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Subject: [PATCH net] tcp: take care of mixed splice()/sendmsg(MSG_ZEROCOPY) case
+Date:   Thu,  3 Feb 2022 14:55:47 -0800
+Message-Id: <20220203225547.665114-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Samuel Mendoza-Jonas <samjonas@amazon.com>
+From: Eric Dumazet <edumazet@google.com>
 
-From 4.17 onwards the ixgbevf driver uses build_skb() to build an skb
-around new data in the page buffer shared with the ixgbe PF.
-This uses either a 2K or 3K buffer, and offsets the DMA mapping by
-NET_SKB_PAD + NET_IP_ALIGN. When using a smaller buffer RXDCTL is set to
-ensure the PF does not write a full 2K bytes into the buffer, which is
-actually 2K minus the offset.
+syzbot found that mixing sendpage() and sendmsg(MSG_ZEROCOPY)
+calls over the same TCP socket would again trigger the
+infamous warning in inet_sock_destruct()
 
-However on the 82599 virtual function, the RXDCTL mechanism is not
-available. The driver attempts to work around this by using the SET_LPE
-mailbox method to lower the maximm frame size, but the ixgbe PF driver
-ignores this in order to keep the PF and all VFs in sync[0].
+	WARN_ON(sk_forward_alloc_get(sk));
 
-This means the PF will write up to the full 2K set in SRRCTL, causing it
-to write NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the buffer.
-With 4K pages split into two buffers, this means it either writes
-NET_SKB_PAD + NET_IP_ALIGN bytes past the first buffer (and into the
-second), or NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the DMA
-mapping.
+While Talal took into account a mix of regular copied data
+and MSG_ZEROCOPY one in the same skb, the sendpage() path
+has been forgotten.
 
-Avoid this by only enabling build_skb when using "large" buffers (3K).
-These are placed in each half of an order-1 page, preventing the PF from
-writing past the end of the mapping.
+We want the charging to happen for sendpage(), because
+pages could be coming from a pipe. What is missing is the
+downgrading of pure zerocopy status to make sure
+sk_forward_alloc will stay synced.
 
-[0]: Technically it only ever raises the max frame size, see
-ixgbe_set_vf_lpe() in ixgbe_sriov.c
+Add tcp_downgrade_zcopy_pure() helper so that we can
+use it from the two callers.
 
-Fixes: f15c5ba5b6cd ("ixgbevf: add support for using order 1 pages to receive large frames")
-Signed-off-by: Samuel Mendoza-Jonas <samjonas@amazon.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 9b65b17db723 ("net: avoid double accounting for pure zerocopy skbs")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Talal Ahmad <talalahmad@google.com>
+Cc: Arjun Roy <arjunroy@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Cc: Soheil Hassas Yeganeh <soheil@google.com>
 ---
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ net/ipv4/tcp.c | 33 +++++++++++++++++++--------------
+ 1 file changed, 19 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-index 0015fcf1df2b..0f293acd17e8 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-@@ -1984,14 +1984,15 @@ static void ixgbevf_set_rx_buffer_len(struct ixgbevf_adapter *adapter,
- 	if (adapter->flags & IXGBEVF_FLAGS_LEGACY_RX)
- 		return;
- 
--	set_ring_build_skb_enabled(rx_ring);
-+	if (PAGE_SIZE < 8192)
-+		if (max_frame > IXGBEVF_MAX_FRAME_BUILD_SKB)
-+			set_ring_uses_large_buffer(rx_ring);
- 
--	if (PAGE_SIZE < 8192) {
--		if (max_frame <= IXGBEVF_MAX_FRAME_BUILD_SKB)
--			return;
-+	/* 82599 can't rely on RXDCTL.RLPML to restrict the size of the frame */
-+	if (adapter->hw.mac.type == ixgbe_mac_82599_vf && !ring_uses_large_buffer(rx_ring))
-+		return;
- 
--		set_ring_uses_large_buffer(rx_ring);
--	}
-+	set_ring_build_skb_enabled(rx_ring);
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index bdf108f544a45a2aa24bc962fb81dfd0ca1e0682..e1f259da988df7493ce7d71ad8743ec5025e4e7c 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -937,6 +937,22 @@ void tcp_remove_empty_skb(struct sock *sk)
+ 	}
  }
  
- /**
++/* skb changing from pure zc to mixed, must charge zc */
++static int tcp_downgrade_zcopy_pure(struct sock *sk, struct sk_buff *skb)
++{
++	if (unlikely(skb_zcopy_pure(skb))) {
++		u32 extra = skb->truesize -
++			    SKB_TRUESIZE(skb_end_offset(skb));
++
++		if (!sk_wmem_schedule(sk, extra))
++			return ENOMEM;
++
++		sk_mem_charge(sk, extra);
++		skb_shinfo(skb)->flags &= ~SKBFL_PURE_ZEROCOPY;
++	}
++	return 0;
++}
++
+ static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
+ 				      struct page *page, int offset, size_t *size)
+ {
+@@ -972,7 +988,7 @@ static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
+ 		tcp_mark_push(tp, skb);
+ 		goto new_segment;
+ 	}
+-	if (!sk_wmem_schedule(sk, copy))
++	if (tcp_downgrade_zcopy_pure(sk, skb) || !sk_wmem_schedule(sk, copy))
+ 		return NULL;
+ 
+ 	if (can_coalesce) {
+@@ -1320,19 +1336,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 
+ 			copy = min_t(int, copy, pfrag->size - pfrag->offset);
+ 
+-			/* skb changing from pure zc to mixed, must charge zc */
+-			if (unlikely(skb_zcopy_pure(skb))) {
+-				u32 extra = skb->truesize -
+-					    SKB_TRUESIZE(skb_end_offset(skb));
+-
+-				if (!sk_wmem_schedule(sk, extra))
+-					goto wait_for_space;
+-
+-				sk_mem_charge(sk, extra);
+-				skb_shinfo(skb)->flags &= ~SKBFL_PURE_ZEROCOPY;
+-			}
+-
+-			if (!sk_wmem_schedule(sk, copy))
++			if (tcp_downgrade_zcopy_pure(sk, skb) ||
++			    !sk_wmem_schedule(sk, copy))
+ 				goto wait_for_space;
+ 
+ 			err = skb_copy_to_page_nocache(sk, &msg->msg_iter, skb,
 -- 
-2.31.1
+2.35.0.263.gb82422642f-goog
 
