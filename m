@@ -2,72 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71AC84A7D26
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 02:03:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C7444A7D33
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 02:05:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348720AbiBCBBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Feb 2022 20:01:46 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:39960 "EHLO vps0.lunn.ch"
+        id S1348708AbiBCBDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Feb 2022 20:03:50 -0500
+Received: from mga17.intel.com ([192.55.52.151]:7851 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348704AbiBCBBp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Feb 2022 20:01:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=p/zPqhK7rICYn+fsLs3IXm5cKsznKQy/YMAmPq7nniU=; b=yogmTzkFdURCUDAn/stzjxjV8u
-        rCoHcf2lIgFQ+ntjcLO9MOuexhyI04CXHzXVGepe4V8FF9nycQ+3wzb4EIgiiO++ktgpxK7z1H2g0
-        yfNWiNW1i2Xz8rP7E/hqJDfcP4ALWws/uF9xoM702YoABiCXZLYI1j8kwZR5WW+Hhog8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nFQV9-0042X4-O4; Thu, 03 Feb 2022 02:01:31 +0100
-Date:   Thu, 3 Feb 2022 02:01:31 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     Martin Schiller <ms@dev.tdt.de>, Hauke Mehrtens <hauke@hauke-m.de>,
-        martin.blumenstingl@googlemail.com,
-        Florian Fainelli <f.fainelli@gmail.com>, hkallweit1@gmail.com,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net v3] net: phy: intel-xway: enable integrated led
- functions
-Message-ID: <YfspazpWoKuHEwPU@lunn.ch>
-References: <20210421055047.22858-1-ms@dev.tdt.de>
- <CAJ+vNU1=4sDmGXEzPwp0SCq4_p0J-odw-GLM=Qyi7zQnVHwQRA@mail.gmail.com>
+        id S233773AbiBCBDt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Feb 2022 20:03:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643850229; x=1675386229;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=jsyE099v4+HWgF7jMhM4Z+cIr6BUGWAi0HEwDv3wVa8=;
+  b=Gzyvc94NrwSpkounkshKnTCzM75uXOnQ7rqnoGoTtzqoOieYOXIZXX+Z
+   b74r2P2LsoR9mnvib60qAi3P1avkkC9/euA1JGAkZ7aQnF06Q/ImUdru9
+   btEompOcLxmL1PxuiaJzbLp5JstI4ShFN0oFxui0farNrXznfwGTKOQXz
+   FYDNgcI8axrgop6avZZU7cSip/F7U3ZJbqski8bc+fJKTbzXeZlW2Daw2
+   v0xpofCr8ZPAzo9Jz7TJqlFcttmpN5rkScmoFBv+32HJYf8vcuQ7Hkfey
+   bVo993fqgs7+mnukRLOkulO+FpoPkuAGfU7He1Q97efCD5q3mKN5K+FmA
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="228708713"
+X-IronPort-AV: E=Sophos;i="5.88,338,1635231600"; 
+   d="scan'208";a="228708713"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 17:03:49 -0800
+X-IronPort-AV: E=Sophos;i="5.88,338,1635231600"; 
+   d="scan'208";a="483070826"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.1.6])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 17:03:48 -0800
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: [PATCH net-next 0/7] mptcp: Miscellaneous changes for 5.18
+Date:   Wed,  2 Feb 2022 17:03:36 -0800
+Message-Id: <20220203010343.113421-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJ+vNU1=4sDmGXEzPwp0SCq4_p0J-odw-GLM=Qyi7zQnVHwQRA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> As a person responsible for boot firmware through kernel for a set of
-> boards I continue to do the following to keep Linux from mucking with
-> various PHY configurations:
-> - remove PHY reset pins from Linux DT's to keep Linux from hard resetting PHY's
-> - disabling PHY drivers
-> 
-> What are your thoughts about this?
+Patch 1 has some minor cleanup in mptcp_write_options().
 
-Hi Tim
+Patch 2 moves a rarely-needed branch to optimize mptcp_write_options().
 
-I don't like the idea that the bootloader is controlling the hardware,
-not linux.
+Patch 3 adds a comment explaining which combinations of MPTCP option
+headers are expected.
 
-There are well defined ways for telling Linux how RGMII delays should
-be set, and most PHY drivers do this. Any which don't should be
-extended to actually set the delay as configured.
+Patch 4 adds a pr_debug() for the MPTCP_RST option.
 
-LEDs are trickier. There is a slow on going effort to allow PHY LEDs
-to be configured as standard Linux LEDs. That should result in a DT
-binding which can be used to configure LEDs from DT.
+Patches 5-7 allow setting MPTCP_PM_ADDR_FLAG_FULLMESH with the "set
+flags" netlink command. This allows changing the behavior of existing
+path manager endpoints. The flag was previously only set at endpoint
+creation time. Associated selftests also updated.
 
-You probably are going to have more and more issues if you think the
-bootloader is controlling the hardware, so you really should stop
-trying to do that.
 
-       Andrew
+Geliang Tang (5):
+  mptcp: move the declarations of ssk and subflow
+  mptcp: print out reset infos of MP_RST
+  mptcp: set fullmesh flag in pm_netlink
+  selftests: mptcp: set fullmesh flag in pm_nl_ctl
+  selftests: mptcp: add fullmesh setting tests
+
+Matthieu Baerts (2):
+  mptcp: reduce branching when writing MP_FAIL option
+  mptcp: clarify when options can be used
+
+ net/mptcp/options.c                           | 64 +++++++++++++------
+ net/mptcp/pm_netlink.c                        | 37 ++++++++---
+ .../testing/selftests/net/mptcp/mptcp_join.sh | 49 ++++++++++++--
+ tools/testing/selftests/net/mptcp/pm_nl_ctl.c |  8 ++-
+ 4 files changed, 121 insertions(+), 37 deletions(-)
+
+
+base-commit: 52dae93f3bad842c6d585700460a0dea4d70e096
+-- 
+2.35.1
+
