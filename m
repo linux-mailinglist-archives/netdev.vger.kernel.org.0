@@ -2,141 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5641B4A8CC3
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 20:55:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66DEE4A8CD4
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 20:59:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353887AbiBCTy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 14:54:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49298 "EHLO
+        id S1353911AbiBCT7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 14:59:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241750AbiBCTy6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 14:54:58 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E658C06173B
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 11:54:58 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id p5so12142973ybd.13
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 11:54:58 -0800 (PST)
+        with ESMTP id S231187AbiBCT7c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 14:59:32 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7296C061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 11:59:32 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id m6so12252909ybc.9
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 11:59:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=tPNU7J+/3w4DhXKcO0WJyLtPcPjba9kfQaHUhUfYOdE=;
-        b=ZiXC+Mz6s96JxK1TclBveZkm73bHNHAyWplcrjeM11xweJHlqPk+WquFaiFME9Gnf5
-         YECTvlAVaMqoPlRIczIRU464SunzbJfWyU34wZHmj99j9XX1p3l/1jfHIwiSb7edN8/o
-         GLo8kBH3tU3lE0cKlZTJNjHNjZBK530xtJmtruWd/eJO0VFm3EtTFMQaUk453zTbfO5R
-         DDRmhPwXmJu89XNWUZVi2NOx6L5O2E5h7xHjtHxLKWeF2xDcJoFbqs228Gvsq1vwTQFT
-         AlTCP/JkPdq2LB9wLHLVrMEDhfsIXKn6XzV4LDneqbHqhMSxQzmE1uIH1Jolv5Ql5/YJ
-         D/rA==
+        bh=h9M4nKvmcJpaWHD/IndaPEH6tyG4vcbdD18YlGrzAxQ=;
+        b=kXt4lFR9hkjubzWElPnBH/wyOkRz30nCLpp+JXuGO5ogyTyauGcAWPtCBXFeg6RF1O
+         eHd3WMb6j+xFenBLrZmgWBhLjErnHeCL+QANXyAmPftUjDPd9MVbuIvas3QJz+YffuCq
+         hQn5jos+Bwn8htTjYUcWaadj20Bi0ztcq/XwbAXKmmkBG0TbhvbbVA3w94Wmpt5S0217
+         rHCUMDkFMGyPCH8bgsGbqcWdoDU6W1CUTgHj3mvPzU/UUgFKaCISLD/ztdtaSuXUFgfb
+         NeEojWtwODEydzt3+yPjBnwBYett9m8CdPlbVh8vRSKRz3VsCy4ux5oaAESw20h9sMbx
+         qwIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=tPNU7J+/3w4DhXKcO0WJyLtPcPjba9kfQaHUhUfYOdE=;
-        b=PTBWaCoP+XIivMjGCE1bw4HzJdJlGRBARTyqPGjPN6HqNQ3JlHLgWD/rBYhniZD0/F
-         6FSW2zc3Z3tBzLr2YA492dZ+0eQCwyOZ/SiNCRCIu6f9ReLWpK42BrC5pBiSxcmkqoWj
-         zqks8b4eDAkJ82VxPjceHtoIXvt2Mdn3Dg9rEPU0c+YbEqnYrpsFP9/8yJHQ2WdavHKf
-         VbNOcpPWRl1NHNGtpDFBtn6EHuI+qsDQCwhPL/ly8za2apClsUzDdaYu5VC1IP5oJrgE
-         KRRHWWsSjuqQcRoFm8PMgZHyHkfQT5EQmCPj7lsXk9AFH940OZzggjP8nsm7Epkzh/Ff
-         Hciw==
-X-Gm-Message-State: AOAM531AWojht5gsXyXGKXagU85SpazopJMZGVvnxijnEEFbwwuogeKE
-        24GptSpxYEDo31YRe+RQGIwxDZFWPFM+l5F/8N6TiFt/ksq2dGnonmY=
-X-Google-Smtp-Source: ABdhPJzgQVe5PELKeMID9hHUSndRDhr7G3g2XAHXtLIvnwzNzGLOADLoWqwMYvYyWrsqEUJA7jyjdaAxdHwy2Kax3cw=
-X-Received: by 2002:a25:4f41:: with SMTP id d62mr48668893ybb.156.1643918096799;
- Thu, 03 Feb 2022 11:54:56 -0800 (PST)
+        bh=h9M4nKvmcJpaWHD/IndaPEH6tyG4vcbdD18YlGrzAxQ=;
+        b=mxZFJw63O2/U7+xcXqDKNCdjhJ0YNYXQ/iLljzRSWvzIR3W+TBVblUe/6dy/riH6cE
+         qJlczdQ96VhRn66cM2iNTL6ahMley6Q1gWWHE5aHCnzgPWC9L6dFXqu+G3qeqU6W1XeH
+         R0CUK0Ju8MIEDRmET0eG/OspDbiQwf/XKxxb/A2e4rFjeNm4woA57hBE+OvA+cNGwJid
+         DyJYQHMbQRTz0ayhxf1r4HmmDmZFSr73OV2u1F7KPeuaTUHQbjF8Fg+goWo+p7r7MZRf
+         hAsMOi1lWyuK7Y8pTThSGa9CKJ3sNr7h+oOtjZEkNkENPyKvZyLy93BA3bBavNkH3nSj
+         NEyg==
+X-Gm-Message-State: AOAM531fJg/V7IrPrJxPRBngS5ej5SR0TVorAtv02luf+VQ0OJa5Cyxh
+        Gal6YWl2W8A3NdMe3gl0lm8CqT92LLBVRddluA9egu4KH3n5R/2f
+X-Google-Smtp-Source: ABdhPJxL6WYY0ppoqFVx/L3AIdt0f2n9yN+matHijheovEiqwKdMO6EnhbpgHcif98rLVDk+eAj5W30PzZXIr6dkzNg=
+X-Received: by 2002:a25:4f41:: with SMTP id d62mr48686478ybb.156.1643918371603;
+ Thu, 03 Feb 2022 11:59:31 -0800 (PST)
 MIME-Version: 1.0
 References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
- <20220203015140.3022854-10-eric.dumazet@gmail.com> <ee1fedeb33cd989379b72faac0fd6a366966f032.camel@gmail.com>
- <CANn89iKxGvbXQqoRZZ5j22-5YkpiCLS13EGoQ1OYe3EHjEss6A@mail.gmail.com>
- <CAKgT0UeTvj_6DWUskxxaRiQQxcwg6j0u+UHDaougJSMdkogKWA@mail.gmail.com>
- <20220203111802.1575416e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CANn89iL3_6Vkj6Gq8vuMmC=pbAS+Zbe4hFaXgSEpyKhzfgh+dQ@mail.gmail.com>
-In-Reply-To: <CANn89iL3_6Vkj6Gq8vuMmC=pbAS+Zbe4hFaXgSEpyKhzfgh+dQ@mail.gmail.com>
+ <20220203015140.3022854-6-eric.dumazet@gmail.com> <0d3cbdeee93fe7b72f3cdfc07fd364244d3f4f47.camel@gmail.com>
+ <CANn89iK7snFJ2GQ6cuDc2t4LC-Ufzki5TaQrLwDOWE8qDyYATQ@mail.gmail.com> <CAKgT0UfWd2PyOhVht8ZMpRf1wpVwnJbXxxT68M-hYK9QRZuz2w@mail.gmail.com>
+In-Reply-To: <CAKgT0UfWd2PyOhVht8ZMpRf1wpVwnJbXxxT68M-hYK9QRZuz2w@mail.gmail.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 3 Feb 2022 11:54:45 -0800
-Message-ID: <CANn89iKMa5fT3HhKdO2K=WFxwBsRBr_HN=sxPDqX-MJvWyoz5Q@mail.gmail.com>
-Subject: Re: [PATCH net-next 09/15] net: increase MAX_SKB_FRAGS
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
+Date:   Thu, 3 Feb 2022 11:59:20 -0800
+Message-ID: <CANn89iKzDxLHTVTcu=y_DZgdTHk5w1tv7uycL27aK1joPYbasA@mail.gmail.com>
+Subject: Re: [PATCH net-next 05/15] ipv6/gso: remove temporary HBH/jumbo header
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 11:20 AM Eric Dumazet <edumazet@google.com> wrote:
+On Thu, Feb 3, 2022 at 11:45 AM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
 
->
-> Another issue with CONFIG_ options is that they are integer.
->
-> Trying the following did not work
->
-> #define MAX_SKB_FRAGS  ((unsigned long)CONFIG_MAX_SKB_FRAGS)
->
-> Because in some places we have
->
-> #if    (   MAX_SKB_FRAGS > ...)
->
-> (MAX_SKB_FRAGS is UL currently, making it an integer might cause some
-> signed/unsigned operations buggy)
+> It is the fact that you are adding IPv6 specific code to the
+> net/core/skbuff.c block here. Logically speaking if you are adding the
+> header in ipv6_gro_receive then it really seems li:ke the logic to
+> remove the header really belongs in ipv6_gso_segment. I suppose this
+> is an attempt to optimize it though, since normally updates to the
+> header are done after segmentation instead of before.
 
-I came to something like this, clearly this a bit ugly.
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 08c12c41c5a5907dccc7389f396394d8132d962e..cc3cac3ee109f95c8a51eb90ba4a3bf7bebe86eb
-100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -323,7 +323,15 @@ enum skb_drop_reason {
-        SKB_DROP_REASON_MAX,
- };
-
-+#ifdef CONFIG_MAX_SKB_FRAGS_17
-+#define MAX_SKB_FRAGS 17UL
-+#endif
-+#ifdef CONFIG_MAX_SKB_FRAGS_25
-+#define MAX_SKB_FRAGS 25UL
-+#endif
-+#ifdef CONFIG_MAX_SKB_FRAGS_45
- #define MAX_SKB_FRAGS 45UL
-+#endif
-
- extern int sysctl_max_skb_frags;
-
-diff --git a/net/Kconfig b/net/Kconfig
-index 8a1f9d0287de3c32040eee03b60114c6e6d150bc..d91027a654c2aad7bfa55152ef81c882bf394aff
-100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -253,6 +253,29 @@ config PCPU_DEV_REFCNT
-          network device refcount are using per cpu variables if this
-option is set.
-          This can be forced to N to detect underflows (with a
-performance drop).
-
-+choice
-+       prompt "Maximum number of fragments per skb_shared_info"
-+       default MAX_SKB_FRAGS_17
-+
-+config MAX_SKB_FRAGS_17
-+       bool "17 fragments per skb_shared_info"
-+       help
-+         Some drivers have assumptions about MAX_SKB_FRAGS being 17.
-+         Until they are fixed, it is safe to adopt the old limit.
-+
-+config MAX_SKB_FRAGS_25
-+       bool "25 fragments per skb_shared_info"
-+       help
-+         Helps BIG TCP workloads, but might expose bugs in some legacy drivers.
-+
-+config MAX_SKB_FRAGS_45
-+       bool "45 fragments per skb_shared_info"
-+       help
-+         Helps BIG TCP workloads, but might expose bugs in some legacy drivers.
-+         This also increase memory overhead of small packets.
-+
-+endchoice
-+
- config RPS
-        bool
-        depends on SMP && SYSFS
+Right, doing this at the top level means we do the thing once only,
+instead of 45 times
+if the skb has 45 segments.
