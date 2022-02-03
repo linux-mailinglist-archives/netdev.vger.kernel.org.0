@@ -2,91 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D39754A87B4
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 16:31:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C2C64A87B8
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 16:34:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351798AbiBCPbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 10:31:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43766 "EHLO
+        id S1351874AbiBCPeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 10:34:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236346AbiBCPba (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 10:31:30 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33281C061714;
-        Thu,  3 Feb 2022 07:31:30 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id w11so5777542wra.4;
-        Thu, 03 Feb 2022 07:31:30 -0800 (PST)
+        with ESMTP id S233431AbiBCPeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 10:34:21 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD56C061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 07:34:21 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id k31so10133569ybj.4
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 07:34:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qRQ95PT/Vrnz3TmgchsWQMEElvKn8TkczXxrd4JiXxg=;
-        b=AkoM/A5rnKXsxCvCu64RpwCAa1kHe1CnXoXLu7P+imwHaVaI9eP28fg51hSaEFMOF4
-         +XPtzorhUV3yBmmCMxYy7eRn7+382DNo2rGvb+Fbkmd+zeq+pvWQ2ekbk1jBexZIVbcZ
-         5H9wxYmQj4P9dT3TqF+66PF81ZCqNeycsCVEAeNSxsSqoWFzJ5PslzH/ody6xNEO9DVa
-         xKe1uvavMWzkVxrmnfvY9BlpN58Eo6m2hRwpsIju37UTIUipmjWEAKg5q1M0L7YthmOT
-         uwxncGk607ESanGw5jKMLgLgMXVQehyqYk5yA7czIimEWTA734NnlDAbLubDDYW58LCU
-         wMPA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VxfVFMS94lD6zTTVS9qwhDXK9wUQWVtkvYSa7FlPbIM=;
+        b=WDHfehPIeqhMmn+2n7eUpvcLuN7CwaE0mftjTzN8/vSm3LpytOgFbBDZHRg13hstq3
+         SXzRE+tqtSbr8R4OgF59QmVFEvP5dO+mjzUbBmK5FUuwkpnynjUNUBFUcC83sG00a17b
+         npS43YclLV5+O6ibxmdIQX1MYsUEG7ysq6TUnolcRjomf5EWWuvWmfsCxFjOrQc6UAHd
+         ZWuVrYemsPc5bpx+kw0nzeNauirqSCcib0JYcNZwkfth4DYNn6c62ywZo0HXUTiA+XjO
+         XiJ5vf3iBx37usRIL35Ipyqv4VBsGkonHYBEmO7y59619z4X0TuRs+AxILVcacwesp/O
+         0jCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qRQ95PT/Vrnz3TmgchsWQMEElvKn8TkczXxrd4JiXxg=;
-        b=qXeLInK9aVSXvJPHs2nkJsI7f9x87BOdw2sGlyd2TZPHxUagbWpXUUb3dS2Io5aUG+
-         23e8FLhELkTCNjLGNAwQWvLqiKBih22u2cdnVE/T/T4nxf7cTWXk1NW7IFlNym3ISucQ
-         KVRQUpz+8DrQICcFL9VDhkf79k3+PQA+ZnuAIkZjRwvuAEUF9/HmHCFBqIlr/lgvN1mg
-         DAeE9T+9KkPRYQhNSxDJaByh8bTY+CTY4Aji+rmyB/J1Kz1OdEKWiKAfrz7vmjvgFFZx
-         8vh+xvpcFaFdSoeAFKetSBUoHyaIZnrn+vb6NDk0mcBzlbGA/1kd+W6ul0fFwo5PoRUc
-         JbPw==
-X-Gm-Message-State: AOAM533XTSnyHz9ll0SD+0k9H6MdJs3mrk7dEuqA+8acXVyFoz0bBQ+G
-        auyyEuxdjZCPQ7H5yxNACdyQVPCKeg1QkQ==
-X-Google-Smtp-Source: ABdhPJxGJDjfwZpXdBMoGDpmAenPPoddfCUlQWcfP8GotPPMuvY6LU011UtpkpATUFXf9XHLI7i27g==
-X-Received: by 2002:adf:fd8b:: with SMTP id d11mr29096831wrr.606.1643902288679;
-        Thu, 03 Feb 2022 07:31:28 -0800 (PST)
-Received: from baligh-ThinkCentre-M720q.iliad.local (freebox.vlq16.iliad.fr. [213.36.7.13])
-        by smtp.googlemail.com with ESMTPSA id n5sm8627250wmq.43.2022.02.03.07.31.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 07:31:27 -0800 (PST)
-From:   Baligh Gasmi <gasmibal@gmail.com>
-Cc:     gasmibal@gmail.com, Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org (open list:MAC80211),
-        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] mac80211: remove useless ieee80211_vif_is_mesh() check
-Date:   Thu,  3 Feb 2022 16:30:34 +0100
-Message-Id: <20220203153035.198697-1-gasmibal@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VxfVFMS94lD6zTTVS9qwhDXK9wUQWVtkvYSa7FlPbIM=;
+        b=Wb9o2RAb6+StascoJTM2LnVHE9TBopSB7LRGNDo4a0Ij8KUUsloKioBB7WlhHrJnrJ
+         BvAEMk0tkK3gyDJCptITcTa+h1itGwl1jINm0+QxfJmCRlWK6/ujguufSuuKIdfvpOYi
+         lmTE5uxzwiYooDYLxUlC7ONblQXqikl2amW3TZJYRsrmv2KL2fgberoWL7dv+zMeW4dn
+         KVle7doTs4W55rKLr/QtUuUr3oL7M9IU4+5gV8Kq1zVo/gSkPxaTfZMXssODIIWN6fIB
+         ERxaVOdizo4Aln2uLQ/GT17qjMTiM82+YKJxsSFxhT2T676BfwFaUXhe3x0faK7Dzo8/
+         qW/w==
+X-Gm-Message-State: AOAM530xe16/ouMn7uEir8tppDhBk9qBLkeyhY17ViVuLTkIC10FSFvh
+        WIjjK311ImCSMMqb9MV9OQOGZUXVN7IzsChF8VTTIG3x8Jv1qIrRuaw=
+X-Google-Smtp-Source: ABdhPJxaNFQ1AOWd+GthgoJM8qcPXm4tAPDNKWVYWXN3xX8OvJbhM6tbJ/gLQjCQ96q3YVOcz7XWfSnEYc2teI9S+NI=
+X-Received: by 2002:a25:d9c2:: with SMTP id q185mr45447765ybg.293.1643902459845;
+ Thu, 03 Feb 2022 07:34:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
+ <20220203015140.3022854-3-eric.dumazet@gmail.com> <90c19324a093536f1e0e2e3de3a36df4207a28d3.camel@redhat.com>
+In-Reply-To: <90c19324a093536f1e0e2e3de3a36df4207a28d3.camel@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 3 Feb 2022 07:34:08 -0800
+Message-ID: <CANn89i+-R11duRgVHoi=sJRJQ3FUVf-oruOzLbjpKAXaatK41A@mail.gmail.com>
+Subject: Re: [PATCH net-next 02/15] ipv6: add dev->gso_ipv6_max_size
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We check ieee80211_vif_is_mesh() at the top if() block,
-there's no need to check for it again.
+On Thu, Feb 3, 2022 at 12:57 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> Hello,
+>
+> On Wed, 2022-02-02 at 17:51 -0800, Eric Dumazet wrote:
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > This enable TCP stack to build TSO packets bigger than
+> > 64KB if the driver is LSOv2 compatible.
+> >
+> > This patch introduces new variable gso_ipv6_max_size
+> > that is modifiable through ip link.
+> >
+> > ip link set dev eth0 gso_ipv6_max_size 185000
+> >
+> > User input is capped by driver limit.
+> >
+> > Signed-off-by: Coco Li <lixiaoyan@google.com>
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > ---
+> >  include/linux/netdevice.h          | 12 ++++++++++++
+> >  include/uapi/linux/if_link.h       |  1 +
+> >  net/core/dev.c                     |  1 +
+> >  net/core/rtnetlink.c               | 15 +++++++++++++++
+> >  net/core/sock.c                    |  6 ++++++
+> >  tools/include/uapi/linux/if_link.h |  1 +
+> >  6 files changed, 36 insertions(+)
+> >
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index b1f68df2b37bc4b623f61cc2c6f0c02ba2afbe02..2a563869ba44f7d48095d36b1395e3fbd8cfff87 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -1949,6 +1949,7 @@ enum netdev_ml_priv_type {
+> >   *   @linkwatch_dev_tracker: refcount tracker used by linkwatch.
+> >   *   @watchdog_dev_tracker:  refcount tracker used by watchdog.
+> >   *   @tso_ipv6_max_size:     Maximum size of IPv6 TSO packets (driver/NIC limit)
+> > + *   @gso_ipv6_max_size:     Maximum size of IPv6 GSO packets (user/admin limit)
+> >   *
+> >   *   FIXME: cleanup struct net_device such that network protocol info
+> >   *   moves out.
+> > @@ -2284,6 +2285,7 @@ struct net_device {
+> >       netdevice_tracker       linkwatch_dev_tracker;
+> >       netdevice_tracker       watchdog_dev_tracker;
+> >       unsigned int            tso_ipv6_max_size;
+> > +     unsigned int            gso_ipv6_max_size;
+> >  };
+> >  #define to_net_dev(d) container_of(d, struct net_device, dev)
+> >
+> > @@ -4804,6 +4806,10 @@ static inline void netif_set_gso_max_size(struct net_device *dev,
+> >  {
+> >       /* dev->gso_max_size is read locklessly from sk_setup_caps() */
+> >       WRITE_ONCE(dev->gso_max_size, size);
+> > +
+> > +     /* legacy drivers want to lower gso_max_size, regardless of family. */
+> > +     size = min(size, dev->gso_ipv6_max_size);
+> > +     WRITE_ONCE(dev->gso_ipv6_max_size, size);
+> >  }
+> >
+> >  static inline void netif_set_gso_max_segs(struct net_device *dev,
+> > @@ -4827,6 +4833,12 @@ static inline void netif_set_tso_ipv6_max_size(struct net_device *dev,
+> >       dev->tso_ipv6_max_size = size;
+> >  }
+> >
+> > +static inline void netif_set_gso_ipv6_max_size(struct net_device *dev,
+> > +                                            unsigned int size)
+> > +{
+> > +     size = min(size, dev->tso_ipv6_max_size);
+> > +     WRITE_ONCE(dev->gso_ipv6_max_size, size);
+>
+> Dumb questions on my side: should the above be limited to
+> tso_ipv6_max_size ? or increasing gso_ipv6_max_size helps even if the
+> egress NIC does not support LSOv2?
 
-Signed-off-by: Baligh Gasmi <gasmibal@gmail.com>
----
- net/mac80211/sta_info.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+I thought that " size = min(size, dev->tso_ipv6_max_size);" was doing
+exactly that ?
 
-diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
-index 537535a88990..91fbb1ee5c38 100644
---- a/net/mac80211/sta_info.c
-+++ b/net/mac80211/sta_info.c
-@@ -364,8 +364,7 @@ struct sta_info *sta_info_alloc(struct ieee80211_sub_if_data *sdata,
- 			goto free;
- 		sta->mesh->plink_sta = sta;
- 		spin_lock_init(&sta->mesh->plink_lock);
--		if (ieee80211_vif_is_mesh(&sdata->vif) &&
--		    !sdata->u.mesh.user_mpm)
-+		if (!sdata->u.mesh.user_mpm)
- 			timer_setup(&sta->mesh->plink_timer, mesh_plink_timer,
- 				    0);
- 		sta->mesh->nonpeer_pm = NL80211_MESH_POWER_ACTIVE;
--- 
-2.35.1
+I  will fix the From: tag because patch autor is Coco Li
 
+>
+> Should gso_ipv6_max_size be capped to some reasonable value (well lower
+> than 4G), to avoid the stack building very complex skbs?
+>
+
+Drivers are responsible for choosing the max value, then admins choose
+optimal operational values based on their constraints (like device MTU)
+
+Typical LSOv2 values are 256K or 512KB, but we really tested BIG TCP
+with 45 4K segments per packet.
+
+> Thanks!
+>
+> Paolo
+>
