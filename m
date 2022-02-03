@@ -2,104 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F624A8B27
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 19:05:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D04684A8B30
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 19:08:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353088AbiBCSFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 13:05:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242896AbiBCSFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 13:05:32 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B85C06173B
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 10:05:31 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id z19so7591048lfq.13
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 10:05:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ipt2A0IXpQfKpDIz03O3RwhnKF2tn41jUPb/HJacuM8=;
-        b=MJi5/d+KoCqbmk+cXUF+GdR3XZj7eLtgHTq5lk3rJenGtsKNizLO2iu5RMBRHHN2ER
-         8yAbAHuYS3y6nAr/BrciSzmu/8Bs8QIQms6jdE/VAvcpk64v5jc0K6vIRAU36RxTK1hT
-         ISK6lANOW7Cd6oMBF/T4r7mJTRk0jt5/DRnSqltQ5LGAQV0bB0dTvNiGu7/I5qtMZRR/
-         VvOuP09s0xsKDYlXL3dRcsrNlWUyUSLhdupD32pJR3be4fEjo6P1knKd/EAuzY7yT18U
-         8dWabiFoPGK96jctxpPXDmu1E+X6JnvhvBZ8WPm0naw1n8HOH41EkUstQtt0iKbsV2U1
-         3D0A==
+        id S1353160AbiBCSHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 13:07:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:58389 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233118AbiBCSHg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 13:07:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643911656;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oxlN7OwDYW+AO5GUu76ZIRNgAVPZQnlCKRtpC+fQGoA=;
+        b=Oz4ot/EFacmMSP7/r4m4B9+X5kWcvK/M51vdbVHVThLjkUJliae1Vvy0dC7Wf//ZGo1K6J
+        r6T6A/ek6MHZFcNfO/BkYgoEuw6oUekXqRBS2C6mMRioI27+lfOwENCNdEGBmPS8HjozC7
+        LwZMkMeZjNHkom34JOwipPUi3gGuz+M=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-237-Cbzr33dVPLecS6xwcIViCw-1; Thu, 03 Feb 2022 13:07:34 -0500
+X-MC-Unique: Cbzr33dVPLecS6xwcIViCw-1
+Received: by mail-qt1-f198.google.com with SMTP id h22-20020ac85696000000b002d258f68e98so2706811qta.22
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 10:07:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ipt2A0IXpQfKpDIz03O3RwhnKF2tn41jUPb/HJacuM8=;
-        b=1KEfs5K21uKeXuYXdUFM2w0X809sjP9bKWgc4Y1qxAIGhX/PwmWlYDdgk20fSP0wuy
-         oa9LDz2utCK60kPCw40Tro9+vZ5PX+3QqwngtjUvedaTnFiEtoIOis05JbFrmbMdlF++
-         8SPBKx+FWRhrdTh5vevKnfJXaEsO/vl6MOPVr/5CrmWrFZJi7KCIZNEtAYt2zCU6G9va
-         oampBRQ3CM2keJBJGmPilB6rDv/EgBU9tKYv5Kyg0qpJr97lgvYFxx23KbLWD37CfFsf
-         RioybGZ4HQ/afFwxUoZxZxf99oxM/3fNbJ9VZ6IoZeGaWDPIz7KiqYtuT+za8eJhsD8C
-         gQbA==
-X-Gm-Message-State: AOAM531o64tmh05miLVtkeXeBBvVq/kr9ZNddw6la2g/Bh7DMbiddRUs
-        MJaAcPmKoadjn4jwU0/EgGiLTat57PiMiSuZz0tD3w==
-X-Google-Smtp-Source: ABdhPJwV99UF8F8qYyuvCbCl0dqNkyzz05skhf6O8nRDYtALIgW3K2RkSMtH+xyVAf0PeBl56TaUKg9JQxja6cRGzJ8=
-X-Received: by 2002:a05:6512:344b:: with SMTP id j11mr27396831lfr.171.1643911529822;
- Thu, 03 Feb 2022 10:05:29 -0800 (PST)
-MIME-Version: 1.0
-References: <20220201222845.3640041-1-jeffreyji@google.com> <20220202205916.58f4a592@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220202205916.58f4a592@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Brian Vazquez <brianvv@google.com>
-Date:   Thu, 3 Feb 2022 10:05:17 -0800
-Message-ID: <CAMzD94SNEPACnp+uniXVgRDWr9oukj-xnAoqyQQCE77GH_kqdg@mail.gmail.com>
-Subject: Re: [PATCH v6 net-next] net-core: add InMacErrors counter
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jeffrey Ji <jeffreyjilinux@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jeffreyji <jeffreyji@google.com>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=oxlN7OwDYW+AO5GUu76ZIRNgAVPZQnlCKRtpC+fQGoA=;
+        b=bTs/+Of5lUApnn9lMSyvj9TAdf//gv/L3RZ0ydg0tlMiFxVVgA6VuLxIVwzqDB6vT5
+         /IhGkFsqFCjI0uZAUHFN+fM9RBomoYRCQKmS/FBvkbZmolylEgm5FBinCg4HSHMn02AU
+         PycxYWAsltXQEFj+8eJBU6hcoy07Tvb8uWh7NiWsom6/SJ2xeSaijMTzeZ4EzNY6O91R
+         BWdYi343Sq8cF1k45H3WhZTpXjq+9Bv+sp8JURW3Zwh0rj7H2TMjIAA/BCBqtD6wi9My
+         d92ysWc3D2e5oCN8csWC6bWs3s7dxnay4iV6S9WKYDVKH8viiyzdbH2XLBROoWuGChvo
+         Vc2A==
+X-Gm-Message-State: AOAM533gn9i0W7cPV/qSSiUYXgGBEX3btPraAv+FCZF8D+uHEJIkPuCO
+        SEbLyUn+CrhZvJLaAKefA8uvj2maV6odHrOrgIEIR7snjqBAqkvy9fnXO3CvzF8EqP+C9r+h9nh
+        qNW/tMMXZFo51H66U
+X-Received: by 2002:ad4:5962:: with SMTP id eq2mr32251607qvb.99.1643911653399;
+        Thu, 03 Feb 2022 10:07:33 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzVBB2RSjqChnipqs8SPy/7rTEUd03WkXxSP4BB+hBHVFjzilZ/hT/WngJ/v6gX6/yHPX7Txw==
+X-Received: by 2002:ad4:5962:: with SMTP id eq2mr32251580qvb.99.1643911653143;
+        Thu, 03 Feb 2022 10:07:33 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-96-254.dyn.eolo.it. [146.241.96.254])
+        by smtp.gmail.com with ESMTPSA id l11sm15490466qkp.86.2022.02.03.10.07.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 10:07:32 -0800 (PST)
+Message-ID: <dce81ce750946287ff08aa1821d7428cd622ddfa.camel@redhat.com>
+Subject: Re: [PATCH net-next 3/3] net: gro: register gso and gro offload on
+ separate lists
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Date:   Thu, 03 Feb 2022 19:07:29 +0100
+In-Reply-To: <CANn89i+PnPNFpd-eap1n5VPZn__+Q-0BCP46hf+_kVJfw_phYQ@mail.gmail.com>
+References: <cover.1643902526.git.pabeni@redhat.com>
+         <550566fedb425275bb9d351a565a0220f67d498b.1643902527.git.pabeni@redhat.com>
+         <CANn89iLvee2jqB7R7qap9i-_johkbKofHE4ARct18jM_DwdaZg@mail.gmail.com>
+         <20220203162619.13881-1-alexandr.lobakin@intel.com>
+         <CANn89i+PnPNFpd-eap1n5VPZn__+Q-0BCP46hf+_kVJfw_phYQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 2, 2022 at 8:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue,  1 Feb 2022 22:28:45 +0000 Jeffrey Ji wrote:
-> > From: jeffreyji <jeffreyji@google.com>
-> >
-> > Increment InMacErrors counter when packet dropped due to incorrect dest
-> > MAC addr.
-> >
-> > An example when this drop can occur is when manually crafting raw
-> > packets that will be consumed by a user space application via a tap
-> > device. For testing purposes local traffic was generated using trafgen
-> > for the client and netcat to start a server
-> >
-> > example output from nstat:
-> > \~# nstat -a | grep InMac
-> > Ip6InMacErrors                  0                  0.0
-> > IpExtInMacErrors                1                  0.0
->
-> I had another thing and this still doesn't sit completely well
-> with me :(
->
-> Shouldn't we count those drops as skb->dev->rx_dropped?
-> Commonly NICs will do such filtering and if I got it right
-> in struct rtnl_link_stats64 kdoc - report them as rx_dropped.
-> It'd be inconsistent if on a physical interface we count
-> these as rx_dropped and on SW interface (or with promisc enabled
-> etc.) in the SNMP counters.
-> Or we can add a new link stat that NICs can use as well.
->
-> In fact I'm not sure this is really a IP AKA L3 statistic,
-> it's the L2 address that doesn't match.
->
->
-> If everyone disagrees - should we at least rename the MIB counter
-> similarly to the drop reason? Experience shows that users call for
-> help when they see counters with Error in their name, I'd vote for
-> IpExtInDropOtherhost or some such. The statistic should also be
-> documented in Documentation/networking/snmp_counter.rst
+On Thu, 2022-02-03 at 08:41 -0800, Eric Dumazet wrote:
+> On Thu, Feb 3, 2022 at 8:28 AM Alexander Lobakin
+> <alexandr.lobakin@intel.com> wrote:
+> > 
+> > From: Eric Dumazet <edumazet@google.com>
+> > Date: Thu, 3 Feb 2022 08:11:43 -0800
+> > 
+> > > On Thu, Feb 3, 2022 at 7:48 AM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > > 
+> > > > So that we know each element in gro_list has valid gro callbacks
+> > > > (and the same for gso). This allows dropping a bunch of conditional
+> > > > in fastpath.
+> > > > 
+> > > > Before:
+> > > > objdump -t net/core/gro.o | grep " F .text"
+> > > > 0000000000000bb0 l     F .text  000000000000033c dev_gro_receive
+> > > > 
+> > > > After:
+> > > > 0000000000000bb0 l     F .text  0000000000000325 dev_gro_receive
+> > > > 
+> > > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > > > ---
+> > > >  include/linux/netdevice.h |  3 +-
+> > > >  net/core/gro.c            | 90 +++++++++++++++++++++++----------------
+> > > >  2 files changed, 56 insertions(+), 37 deletions(-)
+> > > > 
+> > > > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > > > index 3213c7227b59..406cb457d788 100644
+> > > > --- a/include/linux/netdevice.h
+> > > > +++ b/include/linux/netdevice.h
+> > > > @@ -2564,7 +2564,8 @@ struct packet_offload {
+> > > >         __be16                   type;  /* This is really htons(ether_type). */
+> > > >         u16                      priority;
+> > > >         struct offload_callbacks callbacks;
+> > > > -       struct list_head         list;
+> > > > +       struct list_head         gro_list;
+> > > > +       struct list_head         gso_list;
+> > > >  };
+> > > > 
+> > > 
+> > > On the other hand, this makes this object bigger, increasing the risk
+> > > of spanning cache lines.
+> > 
+> > As you said, GSO callbacks are barely used with most modern NICs.
+> > Plus GRO and GSO callbacks are used in the completely different
+> > operations.
+> > `gro_list` occupies the same place where the `list` previously was.
+> > Does it make a lot of sense to care about `gso_list` being placed
+> > in a cacheline separate from `gro_list`?
+> 
+> Not sure what you are asking in this last sentence.
+> 
+> Putting together all struct packet_offload and struct net_offload
+> would reduce number of cache lines,
+> but making these objects bigger is conflicting.
+> 
+> Another approach to avoiding conditional tests would be to provide non
+> NULL values
+> for all "struct offload_callbacks"  members, just in case we missed something.
+> 
+> I think the test over ptype->type == type should be enough, right ?
 
-Changing the Name to IpExtInDropOtherhost and adding the documentation
-makes sense to me. What do others think? I'd like to get more feedback
-before Jeffrey sends another version.
+I'll try this later approach, it looks simpler.
+
+Also I'll keep this patch separate, as the others looks less
+controversial.
+
+Thanks!
+
+Paolo
+
+
