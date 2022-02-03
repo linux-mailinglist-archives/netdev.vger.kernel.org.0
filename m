@@ -2,110 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 583D14A8A2F
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 18:36:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 466A74A8A48
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 18:40:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232364AbiBCRe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 12:34:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44758 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230055AbiBCRe4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 12:34:56 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E53C061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 09:34:55 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id w81so11039861ybg.12
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 09:34:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KMNFQbwdGKWa7SrNR+/G4kXfIJ6Hav8hTTSgSvsdIzQ=;
-        b=aKoVmyy7Hgwm3KyZtanu7xfi7reSj5VKANTMv1XDp4pSiCNhog1gyQ5jeAM5UjaG+J
-         vkjhSm6z5n1SPDCzGFL6hGlnlX9l/trmff+DinWFJZujLA+Aacl8C8qVYAof7LfUyMo8
-         cMVUtPs2fFgHM7nDyk8oYNJNh8JPeP8r1Wo0O6SvkEptCbB6FOsIcMaAaxkNx/7Yw5V3
-         vtmNWEUck+zF/r1wRy+AU5WaALvckLkEW+d+tF0k/DlQ8L6vGmUu3W1UM0u1TsrQMsxa
-         Fjzktgyape2Oo3Y0dKZLKkPw54Ho4uu6FFJpsoBvlY/FZLCmAtuqkeRVn0AF+XuIK01y
-         mopg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KMNFQbwdGKWa7SrNR+/G4kXfIJ6Hav8hTTSgSvsdIzQ=;
-        b=Gy9acNIgJI+X8HMNeNtIwokBjdYa3oAfaypzMs9Lh7aY/yh99bkQe+0M1568qyVB5N
-         oWISWju119QgP8AHoARf2tT0+shdh1g/ToPih4eHv+roDrnVjon6YDgbqRWKwj57gidr
-         dCj7CIf/OrOj3kOVdRgiUPLq8dxha7qjMLQ8HJ3WA297+Lamcaki6tIOC+TtJ/Nz8X5v
-         1ueRAw8c3LPza0qsGh+rDR37maIJONStmPLE3KdMhKsgk8Lx1m2+inGUfmk7ZIRcH4hC
-         fBULcflJjLwvFQASESYSCzgGhByx8tj5q0bg9J+ApIHqf7fyH4c7bI9yGPVEEzO0pM2c
-         eEEA==
-X-Gm-Message-State: AOAM530TW2owC8qhrXeUy/Ff1Ap4F4Ewh8pnxxVXIZnPfNeym3u13Pkx
-        +QKYzLmBtMFmxphLp2E4lUGuB7MeKbPlZYhRBc1qPcvnmnEfBS1Sj5k=
-X-Google-Smtp-Source: ABdhPJzG/bm/rGgZt1ndP/tfhuvaEBrW5HuMxnii5g0ZYwVEKlvQ5btDh9irnpxlLDGJAvwHuvms5qYplKfVhQC1SQ4=
-X-Received: by 2002:a25:4f41:: with SMTP id d62mr48136259ybb.156.1643909694776;
- Thu, 03 Feb 2022 09:34:54 -0800 (PST)
+        id S1352941AbiBCRkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 12:40:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49026 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239435AbiBCRkK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 12:40:10 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2960C60B72;
+        Thu,  3 Feb 2022 17:40:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 88136C340ED;
+        Thu,  3 Feb 2022 17:40:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643910009;
+        bh=SAdLkjNr2RrsDyFMfuy2KN43kJtChi9IrkQ9pgfD/P0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=n7in4HcX96wOqxtz3BVsjMjFf1m0bRM4W1Uk+R+Pf6dPPyKm9SJnup871Z47UA//L
+         nz0kUntVSlXDMmFOcW7kpJJHQ2e29Li505Ag6JHd2fzKebpGN7BdUkDHDp0qB8yDsO
+         10kRvUEnCkZFQfcFDKmF6Y3/z4o8X8ecbdaPOVBtkyjTgf7rjW7f3rB9NvSk3yCNgb
+         UrxdfZDxMrX6uLuIvMOGvl2m6xm2rI8Hyfcd3qLY/z7gEJM4xZDzN0YeEOhxu5BLNn
+         8vMSXE1CcHu5Vh4FtN44JI+AzSefIrt++289tYFQ39QqNC0NxlRf+nk7llWIFy/dzV
+         6AJI/gTwF3Nng==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6D7B9E5D08C;
+        Thu,  3 Feb 2022 17:40:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
- <20220203015140.3022854-10-eric.dumazet@gmail.com> <ee1fedeb33cd989379b72faac0fd6a366966f032.camel@gmail.com>
-In-Reply-To: <ee1fedeb33cd989379b72faac0fd6a366966f032.camel@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 3 Feb 2022 09:34:43 -0800
-Message-ID: <CANn89iKxGvbXQqoRZZ5j22-5YkpiCLS13EGoQ1OYe3EHjEss6A@mail.gmail.com>
-Subject: Re: [PATCH net-next 09/15] net: increase MAX_SKB_FRAGS
-To:     Alexander H Duyck <alexander.duyck@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 1/5] bpf, docs: Document the byte swapping instructions
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164391000944.27300.17075086641401753236.git-patchwork-notify@kernel.org>
+Date:   Thu, 03 Feb 2022 17:40:09 +0000
+References: <20220131183638.3934982-2-hch@lst.de>
+In-Reply-To: <20220131183638.3934982-2-hch@lst.de>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     corbet@lwn.net, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 9:26 AM Alexander H Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> On Wed, 2022-02-02 at 17:51 -0800, Eric Dumazet wrote:
-> > From: Eric Dumazet <edumazet@google.com>
-> >
-> > Currently, MAX_SKB_FRAGS value is 17.
-> >
-> > For standard tcp sendmsg() traffic, no big deal because tcp_sendmsg()
-> > attempts order-3 allocations, stuffing 32768 bytes per frag.
-> >
-> > But with zero copy, we use order-0 pages.
-> >
-> > For BIG TCP to show its full potential, we increase MAX_SKB_FRAGS
-> > to be able to fit 45 segments per skb.
-> >
-> > This is also needed for BIG TCP rx zerocopy, as zerocopy currently
-> > does not support skbs with frag list.
-> >
-> > We have used this MAX_SKB_FRAGS value for years at Google before
-> > we deployed 4K MTU, with no adverse effect.
-> > Back then, goal was to be able to receive full size (64KB) GRO
-> > packets without the frag_list overhead.
-> >
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
->
-> So a big issue I see with this patch is the potential queueing issues
-> it may introduce on Tx queues. I suspect it will cause a number of
-> performance regressions and deadlocks as it will change the Tx queueing
-> behavior for many NICs.
->
-> As I recall many of the Intel drivers are using MAX_SKB_FRAGS as one of
-> the ingredients for DESC_NEEDED in order to determine if the Tx queue
-> needs to stop. With this change the value for igb for instance is
-> jumping from 21 to 49, and the wake threshold is twice that, 98. As
-> such the minimum Tx descriptor threshold for the driver would need to
-> be updated beyond 80 otherwise it is likely to deadlock the first time
-> it has to pause.
+Hello:
 
-Are these limits hard coded in Intel drivers and firmware, or do you
-think this can be changed ?
+This series was applied to bpf/bpf-next.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
 
-I could make  MAX_SKB_FRAGS a config option, and default to 17, until
-all drivers have been fixed.
+On Mon, 31 Jan 2022 19:36:34 +0100 you wrote:
+> Add a section to document the byte swapping instructions.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  Documentation/bpf/instruction-set.rst | 44 ++++++++++++++++++++++++---
+>  1 file changed, 40 insertions(+), 4 deletions(-)
 
-Alternative is that I remove this patch from the series and we apply
-it to Google production kernels,
-as we did before.
+Here is the summary with links:
+  - [1/5] bpf, docs: Document the byte swapping instructions
+    https://git.kernel.org/bpf/bpf-next/c/dd33fb571f5c
+  - [2/5] bpf, docs: Better document the regular load and store instructions
+    https://git.kernel.org/bpf/bpf-next/c/63d8c242b9a5
+  - [3/5] bpf, docs: Better document the legacy packet access instruction
+    https://git.kernel.org/bpf/bpf-next/c/15175336270a
+  - [4/5] bpf, docs: Better document the extended instruction format
+    https://git.kernel.org/bpf/bpf-next/c/5ca15b8a939f
+  - [5/5] bpf, docs: Better document the atomic instructions
+    https://git.kernel.org/bpf/bpf-next/c/594d32348556
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
