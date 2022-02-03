@@ -2,165 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 670744A7F25
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 06:44:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 016374A7F3A
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 07:15:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234536AbiBCFow (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 00:44:52 -0500
-Received: from mga12.intel.com ([192.55.52.136]:23929 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229954AbiBCFov (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Feb 2022 00:44:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643867092; x=1675403092;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6QTjfaThtdO9q0TWo75wLiuJznde8xAFYjIDlvH/Ewg=;
-  b=ENjrFNDPyq7a266tnH7sk2MsnTA40pSUS5W7rurJbcGF7vpe7NjUXp/A
-   aBqNC8NqfCg6sdWJottvhAciUX0/7pswhmkRAG5SupQ1y5PLHrbJ815SP
-   I0cy6+j39d6YS7EBZAqgyAB+no7t9/itHKqJwE+rQRKazrxtO92kebqBK
-   E8AIVVqIbQ/HThW/PqH224SVmr0Ogmd4xXj4/7BoH/7VyvXXqP+cUjIBh
-   Sqay0UcarDMYsgtahzYGyoLNJB60hWHKXcjmVaSAy+83wXs/mz1NdGMly
-   TGjOZeCXUq25e6nIMIDKjZU1t8O5gYfWxbFbC8v4/QF1Xcnqn1m3rVhVX
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="228048132"
-X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
-   d="scan'208";a="228048132"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 21:44:51 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
-   d="scan'208";a="631230094"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 02 Feb 2022 21:44:49 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nFUvJ-000VgM-2K; Thu, 03 Feb 2022 05:44:49 +0000
-Date:   Thu, 3 Feb 2022 13:43:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Coco Li <lixiaoyan@google.com>
-Subject: Re: [PATCH net-next 09/15] net: increase MAX_SKB_FRAGS
-Message-ID: <202202031344.0FFfnywX-lkp@intel.com>
-References: <20220203015140.3022854-10-eric.dumazet@gmail.com>
+        id S237776AbiBCGPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 01:15:14 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:50860 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236913AbiBCGPN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 01:15:13 -0500
+Received: by mail-il1-f200.google.com with SMTP id m9-20020a92cac9000000b002bafb712945so1074964ilq.17
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 22:15:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=1dk1fe22wAQD96KMpTrh1aJpCo8V8K5F5v+cSSPRAoo=;
+        b=07jvIx6zjE30fz1tzt7a6rza8CcByf1LezffWUi7y6EWSMbjScIsrXGwT+eiy+foUx
+         9z4ZfE4M/0qq3i98cn4CZgYsQx+no2zHkVkjW4PzkS3A/MeOG3X2TMGjkDyG//PvT1IW
+         3dsMWqYs/j5KgBL99PeWtd4S96uvhhXtyRQSAM/MOSEpxbxWJrvEmIaBTB23/uWVb+FG
+         dMQ3GIPpNvT8DVWrtyA76glg/fPlFy/Q2Pznd+5eJ8YJiJo2P1DHpDIgQQPv9XLWuVkW
+         Hs9qks5utlOl6nQ4gdzkQMaZ9sMLCISvPx3hLu2dvlxngRj6CsZHVqPUiakKIZqFmpHA
+         VIOQ==
+X-Gm-Message-State: AOAM532xyv8/js/nwsJj0Lx7xWE7qn6HD9OM/r73oiZgbm8SfNU3xLGQ
+        8sFjFrqo1FfI729NfJlT/IQL9XeW5U2uTFyCZkg/jqVO2WSj
+X-Google-Smtp-Source: ABdhPJwG5KmUUYwacPuZ2fehr/MclNnEH3Zo1f357gXYPZfwm4VEsErIU/AlluZcFnV9djQq5ZDsqkgJgfxLeg23qz1oe7oFwDex
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220203015140.3022854-10-eric.dumazet@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Received: by 2002:a02:710c:: with SMTP id n12mr18306379jac.67.1643868913131;
+ Wed, 02 Feb 2022 22:15:13 -0800 (PST)
+Date:   Wed, 02 Feb 2022 22:15:13 -0800
+In-Reply-To: <00000000000061d7eb05d7057144@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000009fe31405d7170e81@google.com>
+Subject: Re: [syzbot] WARNING in bpf_prog_test_run_xdp
+From:   syzbot <syzbot+79fd1ab62b382be6f337@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org, lorenzo@kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, toke@redhat.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+syzbot has bisected this issue to:
 
-I love your patch! Perhaps something to improve:
+commit 1c194998252469cad00a08bd9ef0b99fd255c260
+Author: Lorenzo Bianconi <lorenzo@kernel.org>
+Date:   Fri Jan 21 10:09:58 2022 +0000
 
-[auto build test WARNING on net-next/master]
+    bpf: introduce frags support to bpf_prog_test_run_xdp()
 
-url:    https://github.com/0day-ci/linux/commits/Eric-Dumazet/tcp-BIG-TCP-implementation/20220203-095336
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 52dae93f3bad842c6d585700460a0dea4d70e096
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220203/202202031344.0FFfnywX-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/64ec6b0260be94b2ed90ee6d139591bdbd49c82d
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Eric-Dumazet/tcp-BIG-TCP-implementation/20220203-095336
-        git checkout 64ec6b0260be94b2ed90ee6d139591bdbd49c82d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/net/ethernet/3com/ drivers/net/ethernet/agere/ drivers/net/ethernet/mellanox/mlx5/core/ drivers/net/wireguard/
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16d81634700000
+start commit:   000fe940e51f sfc: The size of the RX recycle ring should b..
+git tree:       net-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=15d81634700000
+console output: https://syzkaller.appspot.com/x/log.txt?x=11d81634700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e029d3b2ccd4c91a
+dashboard link: https://syzkaller.appspot.com/bug?extid=79fd1ab62b382be6f337
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12a719cc700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15851cec700000
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: syzbot+79fd1ab62b382be6f337@syzkaller.appspotmail.com
+Fixes: 1c1949982524 ("bpf: introduce frags support to bpf_prog_test_run_xdp()")
 
-All warnings (new ones prefixed by >>):
-
-   drivers/net/wireguard/send.c: In function 'encrypt_packet':
->> drivers/net/wireguard/send.c:219:1: warning: the frame size of 1064 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-     219 | }
-         | ^
---
-   drivers/net/wireguard/receive.c: In function 'decrypt_packet':
->> drivers/net/wireguard/receive.c:299:1: warning: the frame size of 1064 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-     299 | }
-         | ^
---
->> drivers/net/ethernet/3com/typhoon.c:142:2: warning: #warning Typhoon only supports 32 entries in its SG list for TSO, disabling TSO [-Wcpp]
-     142 | #warning Typhoon only supports 32 entries in its SG list for TSO, disabling TSO
-         |  ^~~~~~~
-
-
-vim +219 drivers/net/wireguard/send.c
-
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  161  
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  162  static bool encrypt_packet(struct sk_buff *skb, struct noise_keypair *keypair)
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  163  {
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  164  	unsigned int padding_len, plaintext_len, trailer_len;
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  165  	struct scatterlist sg[MAX_SKB_FRAGS + 8];
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  166  	struct message_data *header;
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  167  	struct sk_buff *trailer;
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  168  	int num_frags;
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  169  
-c78a0b4a78839d Jason A. Donenfeld 2020-05-19  170  	/* Force hash calculation before encryption so that flow analysis is
-c78a0b4a78839d Jason A. Donenfeld 2020-05-19  171  	 * consistent over the inner packet.
-c78a0b4a78839d Jason A. Donenfeld 2020-05-19  172  	 */
-c78a0b4a78839d Jason A. Donenfeld 2020-05-19  173  	skb_get_hash(skb);
-c78a0b4a78839d Jason A. Donenfeld 2020-05-19  174  
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  175  	/* Calculate lengths. */
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  176  	padding_len = calculate_skb_padding(skb);
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  177  	trailer_len = padding_len + noise_encrypted_len(0);
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  178  	plaintext_len = skb->len + padding_len;
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  179  
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  180  	/* Expand data section to have room for padding and auth tag. */
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  181  	num_frags = skb_cow_data(skb, trailer_len, &trailer);
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  182  	if (unlikely(num_frags < 0 || num_frags > ARRAY_SIZE(sg)))
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  183  		return false;
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  184  
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  185  	/* Set the padding to zeros, and make sure it and the auth tag are part
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  186  	 * of the skb.
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  187  	 */
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  188  	memset(skb_tail_pointer(trailer), 0, padding_len);
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  189  
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  190  	/* Expand head section to have room for our header and the network
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  191  	 * stack's headers.
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  192  	 */
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  193  	if (unlikely(skb_cow_head(skb, DATA_PACKET_HEAD_ROOM) < 0))
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  194  		return false;
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  195  
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  196  	/* Finalize checksum calculation for the inner packet, if required. */
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  197  	if (unlikely(skb->ip_summed == CHECKSUM_PARTIAL &&
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  198  		     skb_checksum_help(skb)))
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  199  		return false;
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  200  
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  201  	/* Only after checksumming can we safely add on the padding at the end
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  202  	 * and the header.
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  203  	 */
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  204  	skb_set_inner_network_header(skb, 0);
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  205  	header = (struct message_data *)skb_push(skb, sizeof(*header));
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  206  	header->header.type = cpu_to_le32(MESSAGE_DATA);
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  207  	header->key_idx = keypair->remote_index;
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  208  	header->counter = cpu_to_le64(PACKET_CB(skb)->nonce);
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  209  	pskb_put(skb, trailer, trailer_len);
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  210  
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  211  	/* Now we can encrypt the scattergather segments */
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  212  	sg_init_table(sg, num_frags);
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  213  	if (skb_to_sgvec(skb, sg, sizeof(struct message_data),
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  214  			 noise_encrypted_len(plaintext_len)) <= 0)
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  215  		return false;
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  216  	return chacha20poly1305_encrypt_sg_inplace(sg, plaintext_len, NULL, 0,
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  217  						   PACKET_CB(skb)->nonce,
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  218  						   keypair->sending.key);
-e7096c131e5161 Jason A. Donenfeld 2019-12-09 @219  }
-e7096c131e5161 Jason A. Donenfeld 2019-12-09  220  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
