@@ -2,159 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9A7D4A7FFA
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 08:42:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B925D4A803E
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 09:21:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349446AbiBCHmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 02:42:13 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:42936
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349427AbiBCHmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 02:42:11 -0500
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com [209.85.167.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 866EF40303
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 07:42:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1643874130;
-        bh=69oC9K6bP5zXfYZ3RPqGsmz6Po3E4WX3hDMRIgEHu/M=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=Wet2DQz117qs1mJVrv3qagOCaWiv7XM5/C2okUUAQkCG/KOVhTB/015nyqwkaOUu2
-         6hjMkY6lyOFiZpes8yIysMXHrDVpRip0bDN6lguq4sAFvoepFovVSBfWM8w4WpkSB3
-         WZFc/KKeMjJjJMv5YQlUAkoQciBoOoodSJYHr4a6T1a6FSFTQ3tgH57GunpEL3tbLH
-         1MH7oM02tOEZ1SuWqxrPHtslyfK6KW7GOy0W/4i3hBQV4YFdmqA3M9IyU1FxDmC5EB
-         yEUiKFHgUIttypf6gtfV0mgCZLWEvtQobVURB2eK1GwCzLXVlErbcQJyoNdX/tuPJz
-         eu57mjiTRFlUA==
-Received: by mail-lf1-f72.google.com with SMTP id d1-20020ac244c1000000b0043626a5df76so1098803lfm.7
-        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 23:42:10 -0800 (PST)
+        id S236037AbiBCIVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 03:21:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230037AbiBCIV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 03:21:28 -0500
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF856C061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 00:21:28 -0800 (PST)
+Received: by mail-io1-xd43.google.com with SMTP id i62so2328712ioa.1
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 00:21:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=uL5gX5u04DIClvcT5QXHMFRF57VTDgRj7Jvu3WqoBRw=;
+        b=fdHn+OgjjU2vpaBPU+ukg/+BNC+0lNR/5ka06UtFJe9f87DsGw0d9AEwLFc3K4R5KS
+         glD62rHZEo5EETAWN1lhWwhHN6zjpCeKqtrTVQhKy+6Sh7uT8vnC31jkudLaBgCJub73
+         IH4+Z82Z/4M7PuAznfIDnv4+igO1sddCkgsG0R2bLh0gpQPWYI2hFvLw0qKeWyCFpxQf
+         jShjiSDZBQim7nJfCD8xxjrVxSTK0YClSivCdvW4zRCcwL09rmFv+rLioekZRi3zcBbY
+         yWbNGGMsTNwygWVdqFKAXTN84V92FUNlPx8xbsQjGGc0KwUPMxHno32WgiLrKkT2X/Lo
+         Ft6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=69oC9K6bP5zXfYZ3RPqGsmz6Po3E4WX3hDMRIgEHu/M=;
-        b=mLlEaedztY7SgYGqnUb5+CYSl7pLXx3EYdRCpEBICamEVwmqJ7o556AVAHrhIFYZYG
-         LFzwyl1vSg3CsUsWOjR9OosjT9Uz3JemakKQT3RoxuKadmeVox0Hp0C0iwcZc/JG2AxI
-         D7BlEgxADgyebCRhGNNpLhgrveY9frIZFPDykfkyuJdF+4MGTxhPmIqWUIq69/JF+Bq/
-         skbrZt0iUxCnGkkMEfpqKHTd/FjelKAbsMgmDztywcQti6gqbF4CO6CLiv9VYZ/2cwQq
-         45hafHRB+68Znq77RLoOM2ylqzZZxoW1+/FSljELT79IICTJSULkeLYbHmWQLv6gJVbc
-         13kg==
-X-Gm-Message-State: AOAM531R8ZdWHaZvXFwLx8iWx3hlnx4PfpFPrJOryN8j4MOyL15nOnOu
-        n95GfIEhVz2h2uTPI3po2U+yWoC3XVTRYY6QuJQBYopt5c1vVYGF3987CtLVhV1MEhl3W12dAYM
-        l03zy73IViTPJpEqPyMOnPK/eRjOKXP7M9g==
-X-Received: by 2002:a05:6000:10cf:: with SMTP id b15mr28156897wrx.70.1643874119530;
-        Wed, 02 Feb 2022 23:41:59 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwInkGYx0bCKYBNdkDDYX+ptQNyAD6vMUiS8CqzI/xYfseOfTNCURA5lpsX4JtSbcPIAvyzjw==
-X-Received: by 2002:a05:6000:10cf:: with SMTP id b15mr28156886wrx.70.1643874119363;
-        Wed, 02 Feb 2022 23:41:59 -0800 (PST)
-Received: from [192.168.0.80] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id t18sm19832712wri.34.2022.02.02.23.41.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Feb 2022 23:41:58 -0800 (PST)
-Message-ID: <1d549a00-b9f5-d60f-2d5b-798e92139f86@canonical.com>
-Date:   Thu, 3 Feb 2022 08:41:56 +0100
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=uL5gX5u04DIClvcT5QXHMFRF57VTDgRj7Jvu3WqoBRw=;
+        b=MFe8qWv/cDXDuxECWuwrQzOAjj6/k/q1VQm3wsrGEY59AUKooUXktOleqpFacyfQ5V
+         kT8z9S0gWV2MP71epilZuZCW6ZGGMCK8OSL1xFa23jCSlUK9XCXiYcVyUX27Rqf+E+oD
+         UK314Bvrmhj+7w6MGc3hm0u20kNnYzI+XYv80KoS1Vn6TUHBI9loObZBOAOf3F+k9V43
+         G9n4QZbTwz2mcu+mFsSjg9oWdFDTAK1iARdERSKm+hbnRy16WByLEvOb0L5RTUKmXsux
+         GzHnmsHQU6v7oh5DIm74A7hJb7u3rBzDiGzBmoBoDoO78dnwuDo5roge1WEuW7l2zflR
+         iMqg==
+X-Gm-Message-State: AOAM530QFmFUcHYNImazeqUCki1RfJbHfdKo1XBaLFgwIvyf9adnJ+04
+        alToMA58BNwo2untf6DMUVoVlr8NP9YDjBnXQPY=
+X-Google-Smtp-Source: ABdhPJxnaoP+oJQugBhJHgt8WComt3gnSwJEnybOaig8DmmAnf3aPJJMlmkPSQ3lgttGIeSBF+gUngYsGV2bknmXmyU=
+X-Received: by 2002:a05:6602:1541:: with SMTP id h1mr17118092iow.145.1643876488196;
+ Thu, 03 Feb 2022 00:21:28 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] HPE BMC GXP SUPPORT
-Content-Language: en-US
-To:     nick.hawkins@hpe.com, verdun@hpe.com
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Corey Minyard <minyard@acm.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Lee Jones <lee.jones@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        Stanislav Jakubek <stano.jakubek@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Hao Fang <fanghao11@huawei.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Wang Kefeng <wangkefeng.wang@huawei.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-i2c@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <nick.hawkins@hpe.com>
- <20220202165315.18282-1-nick.hawkins@hpe.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220202165315.18282-1-nick.hawkins@hpe.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a05:6638:248f:0:0:0:0 with HTTP; Thu, 3 Feb 2022 00:21:27
+ -0800 (PST)
+Reply-To: interpolnig@yahoo.com
+From:   Emmanuel Maduka <kabarandrew@gmail.com>
+Date:   Thu, 3 Feb 2022 09:21:27 +0100
+Message-ID: <CAHwFdCCo7x=wbQBHeir8V-+2M6mVLqk=YTMVex5GfGK_gzhXUw@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/02/2022 17:52, nick.hawkins@hpe.com wrote:
-> From: Nick Hawkins <nick.hawkins@hpe.com>
-> 
-> GXP is the name of the HPE SoC.
-> This SoC is used to implement BMC features of HPE servers
-> (all ProLiant, Synergy, and many Apollo, and Superdome machines)
-> It does support many features including:
-> 	ARMv7 architecture, and it is based on a Cortex A9 core
-> 	Use an AXI bus to which
-> 		a memory controller is attached, as well as
->                  multiple SPI interfaces to connect boot flash,
->                  and ROM flash, a 10/100/1000 Mac engine which
->                  supports SGMII (2 ports) and RMII
-> 		Multiple I2C engines to drive connectivity with a host infrastructure
-> 		A video engine which support VGA and DP, as well as
->                  an hardware video encoder
-> 		Multiple PCIe ports
-> 		A PECI interface, and LPC eSPI
-> 		Multiple UART for debug purpose, and Virtual UART for host connectivity
-> 		A GPIO engine
-> This Patch Includes:
-> 	Documentation for device tree bindings
-> 	Device Tree Bindings
-> 	GXP Timer Support
-> 	GXP Architecture Support
-> 
+--=20
+INTERPOL WESTAFRIKA, UNTERREGION, ABUJA NIGERIA
+Antworten Sie an unsere direkte E-Mail-Adresse: interpolnig@yahoo.com
 
-1. Please version your patchses and document the changes under ---.
+Achtung Beg=C3=BCnstigter,
 
-2. With your v1 I responded what has to be separate patch. This was
-totally ignored here, so no. You have to follow this.
+Wir machen Sie auf die Verhaftung von zwei Betr=C3=BCgern aufmerksam, die
+Ausl=C3=A4nder mit der Absicht betrogen haben, ihnen Spendenzusch=C3=BCsse,
+Darlehen, Liebesbetrug, gef=C3=A4lschte Lotteriegewinne,
+Investitionsvorschl=C3=A4ge, Geldautomatenkarten, Bankschecks,
+Geld=C3=BCberweisungen, Angeh=C3=B6rige usw. Wir verhafteten sie aufgrund d=
+er
+Berichte, die wir von verschiedenen Personen aus Afrika, Europa, Asien
+und Amerika erhielten.
 
-3. Please run checkpatch and be sure there are no warnings.
+W=C3=A4hrend des Verh=C3=B6rs haben sie ein Gest=C3=A4ndnis abgegeben, dass=
+ es ihnen
+gelungen ist, so viele Menschen mit ihren L=C3=BCgen und anderen
+Vorschl=C3=A4gen zu betr=C3=BCgen, und wir haben herausgefunden, dass Sie e=
+ines
+ihrer Opfer waren. Wir beschlagnahmten ihre Besitzt=C3=BCmer und verkauften
+sie, und die nigerianische Regierung sagte, wir sollten ihre zwanzig
+Opfer mit dem Geld entsch=C3=A4digen, das aus ihren beschlagnahmten
+Besitzt=C3=BCmern stammt, und auch mit dem Geld, das wir von ihren
+Bankkonten zur=C3=BCckerhalten haben.
 
-4. Bindings in dtschema, not in text.
+Wir haben 120.000,00 US-Dollar f=C3=BCr jeden von Ihnen vorgesehen, der
+zuf=C3=A4llig ihr Opfer ist. Sie m=C3=BCssen uns Ihren vollst=C3=A4ndigen N=
+amen, Ihr
+Geschlecht, Ihr Alter, Ihren Familienstand, eine Kopie Ihres g=C3=BCltigen
+Personalausweises, Ihre Telefonnummer, Ihre Privatadresse, Ihr Land,
+Ihren Beruf und Ihre Bankkontodaten mitteilen, die Sie verwenden
+werden, um Ihre zur=C3=BCckgeforderte Entsch=C3=A4digung zu erhalten Mittel=
+.
 
-Best regards,
-Krzysztof
+Es tut uns leid, was Sie in den H=C3=A4nden dieser Betr=C3=BCger durchgemac=
+ht
+haben m=C3=BCssen. Hoffe bald von dir zu h=C3=B6ren.
 
-Best regards,
-Krzysztof
+BEACHTEN SIE, DASS SIE IHRE ANTWORT AN UNSERE DIREKTE E-MAIL-ADRESSE
+SENDEN M=C3=9CSSEN: interpolnig@yahoo.com
+
+Gr=C3=BC=C3=9Fe,
+Inspektor Emmanuel Maduka
+Antworten Sie an unsere direkte E-Mail-Adresse: interpolnig@yahoo.com
