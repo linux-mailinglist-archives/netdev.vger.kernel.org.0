@@ -2,80 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBB194A888C
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:28:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5527E4A889A
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:32:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352199AbiBCQ2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 11:28:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56984 "EHLO
+        id S240172AbiBCQbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 11:31:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352198AbiBCQ2g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 11:28:36 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D14C061714;
-        Thu,  3 Feb 2022 08:28:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=i43avDuz3XN6MDj44KkNBxrK6u4IdlfhJ1/qr9Rvu44=; b=RwFuIYqzBWh4oefkUpUmAE2BlC
-        kqQEvY+nOkk10oBkT4kEinV481nqR0Z+zdWAA6LEw7PUeCHSplvR4+feBV5SkwbANrsG6fQDPimVM
-        XdEansvs/WOvyfdx6z4GsxJGlPkuwfwRBxcCl25wbLQl8Hm471bSIPmMeKU3WHCNtTYi+XGFUJZ/j
-        yAJp0pOwO0dowDWoXGcU7MEUH0CaQ+VC2a/geYpH+Dn0UnlcU/Jr3Nc0V2MlHIiV7YnhvxOdJJa14
-        pyr+0BYpTMsKG4DnxATGFfzR5Pco1l2JPIpk4GkG50mCyqeZfWWA4FaPB7DtpETIBZxDFOQtcY5Nv
-        i6ANGUaQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57014)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nFey4-0002qb-7d; Thu, 03 Feb 2022 16:28:20 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nFexx-00048c-FZ; Thu, 03 Feb 2022 16:28:13 +0000
-Date:   Thu, 3 Feb 2022 16:28:13 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Yannick Vignon <yannick.vignon@oss.nxp.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        sebastien.laveze@oss.nxp.com, Vladimir Oltean <olteanv@gmail.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, mingkai.hu@nxp.com,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Yannick Vignon <yannick.vignon@nxp.com>
-Subject: Re: [PATCH net] net: stmmac: ensure PTP time register reads are
- consistent
-Message-ID: <YfwCnV2TV8fznZ33@shell.armlinux.org.uk>
-References: <20220203160025.750632-1-yannick.vignon@oss.nxp.com>
+        with ESMTP id S232725AbiBCQbP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 11:31:15 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A51C061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 08:31:15 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id j2so10805766ybu.0
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 08:31:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=H42to55yOhDlKsqJIVjap3K1IgLNSTsR60dR1A1e+U8=;
+        b=saKRqxKS3dygZ8E/L3rbIoYk40zR2SdgwLIaVL32+gxHij4OmDbzgtjUVfQpY6j4H/
+         R1kb99NqUSOhinkYcRs7i3335/+qAxAGuEkauTc3zwDXlvRxTpnjj+0UQ3bQzEJlG3Q2
+         s/mXiN+fxHzoKSj1HZu9DlHslUvTjjco4L6EfO2VXfNrbVNUkP5J21IYBEDLVJgzX34r
+         b9qtFJbhhxt8SSu7EFZijONI9kz/qG08Jh8tRSXJ3w9jUAYnkR0baK67MFtox7LX5e/1
+         BLmgYYJ/kLGIPF5kiSHoo5MQ5CV5fs9yeMNEHidrNRnYvZytMliXRXkXE2t2pRK9tYx2
+         Hzcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=H42to55yOhDlKsqJIVjap3K1IgLNSTsR60dR1A1e+U8=;
+        b=2UeTlGl+612sVmiypJIzKpf9WOM73bScA1QD5e9dkmimr/ix6i8RXsNxKp7aS8Ysm1
+         RobbK1qfGv6bz3mGpF+5Bb2e1Po0z97CgDN+GVroY3HaLf8Ya9CKwKMs7Dg5914P53Oz
+         tYcpkUo5TGMa23Q50a9j3V1UdmMRcIiBoV9CZ75bwt4Ss7V53fbDxUpU9j/nprYCqsU/
+         JBOd4wGjXa7GkM4Mx80IWtcTbpSbmVhImeEoB/sPN7ptekR4zJsJgF1Px7UZWZf/VgXl
+         Rq1WizBUzEA6LuCCzdR/wsRTvIR4DmPVX6LMnx62Sbz7puZZTWJ8voGWBjD/RF6Lqjdn
+         1AjQ==
+X-Gm-Message-State: AOAM5325mnIBnZwIAf8t5Tbnhv0yfrjYgkVitwdAZhXCwqe5OId/fKjR
+        GTvi3DMDAJaNIhHUhMynM16Y1+GP4uAEs9qpv9jIF3EUtPnhQBXB
+X-Google-Smtp-Source: ABdhPJyviILGgcDjPHmkKdIQYoseCTVp+CZLU7Z3GxRnYPL7QGCBoJRaYpN+YuWVodPoAR+oTWEfHy1cyFU4tKDYueo=
+X-Received: by 2002:a81:c201:: with SMTP id z1mr5122465ywc.447.1643905873443;
+ Thu, 03 Feb 2022 08:31:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220203160025.750632-1-yannick.vignon@oss.nxp.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
+ <20220203015140.3022854-9-eric.dumazet@gmail.com> <cefef8b5dfd8f5944e74f5f6bf09692f4984db6a.camel@redhat.com>
+In-Reply-To: <cefef8b5dfd8f5944e74f5f6bf09692f4984db6a.camel@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 3 Feb 2022 08:31:02 -0800
+Message-ID: <CANn89iLmOwfYSKZk6_Qb5pv7=b_933k-=Pcb7OeST4yhB+xEtg@mail.gmail.com>
+Subject: Re: [PATCH net-next 08/15] ipv6: Add hop-by-hop header to jumbograms
+ in ip6_output
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 05:00:25PM +0100, Yannick Vignon wrote:
-> From: Yannick Vignon <yannick.vignon@nxp.com>
-> 
-> Even if protected from preemption and interrupts, a small time window
-> remains when the 2 register reads could return inconsistent values,
-> each time the "seconds" register changes. This could lead to an about
-> 1-second error in the reported time.
+On Thu, Feb 3, 2022 at 1:07 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Wed, 2022-02-02 at 17:51 -0800, Eric Dumazet wrote:
+> > From: Coco Li <lixiaoyan@google.com>
+> >
+> > Instead of simply forcing a 0 payload_len in IPv6 header,
+> > implement RFC 2675 and insert a custom extension header.
+> >
+> > Note that only TCP stack is currently potentially generating
+> > jumbograms, and that this extension header is purely local,
+> > it wont be sent on a physical link.
+> >
+> > This is needed so that packet capture (tcpdump and friends)
+> > can properly dissect these large packets.
+> >
+> > Signed-off-by: Coco Li <lixiaoyan@google.com>
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > ---
+> >  include/linux/ipv6.h  |  1 +
+> >  net/ipv6/ip6_output.c | 22 ++++++++++++++++++++--
+> >  2 files changed, 21 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+> > index 1e0f8a31f3de175659dca9ecee9f97d8b01e2b68..d3fb87e1589997570cde9cb5d92b2222008a229d 100644
+> > --- a/include/linux/ipv6.h
+> > +++ b/include/linux/ipv6.h
+> > @@ -144,6 +144,7 @@ struct inet6_skb_parm {
+> >  #define IP6SKB_L3SLAVE         64
+> >  #define IP6SKB_JUMBOGRAM      128
+> >  #define IP6SKB_SEG6        256
+> > +#define IP6SKB_FAKEJUMBO      512
+> >  };
+> >
+> >  #if defined(CONFIG_NET_L3_MASTER_DEV)
+> > diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+> > index 0c6c971ce0a58b50f8a9349b8507dffac9c7818c..f78ba145620560e5d7cb25aaf16fec61ddd9ed40 100644
+> > --- a/net/ipv6/ip6_output.c
+> > +++ b/net/ipv6/ip6_output.c
+> > @@ -180,7 +180,9 @@ static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff
+> >  #endif
+> >
+> >       mtu = ip6_skb_dst_mtu(skb);
+> > -     if (skb_is_gso(skb) && !skb_gso_validate_network_len(skb, mtu))
+> > +     if (skb_is_gso(skb) &&
+> > +         !(IP6CB(skb)->flags & IP6SKB_FAKEJUMBO) &&
+> > +         !skb_gso_validate_network_len(skb, mtu))
+> >               return ip6_finish_output_gso_slowpath_drop(net, sk, skb, mtu);
+>
+> If I read correctly jumbogram with gso len not fitting the egress
+> device MTU will not be fragmented, as opposed to plain old GSO packets.
+> Am I correct? why fragmentation is not needed for jumbogram?
 
-Have you checked whether the hardware protects against this (i.o.w. the
-hardware latches the PTP_STSR value when PTP_STNSR is read, or vice
-versa? Several PTP devices I've looked at do this to allow consistent
-reading.
+I guess we could add this validation in place.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Honestly, we do not expect BIG TCP being deployed in hostile
+environments (host having devices with different MTU)
+
+Fragmentation is evil and should be avoided at all costs.
