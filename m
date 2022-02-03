@@ -2,116 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A918E4A8C41
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 20:10:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81D5A4A8C4D
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 20:12:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353709AbiBCTKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 14:10:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39186 "EHLO
+        id S1353717AbiBCTMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 14:12:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353706AbiBCTKT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 14:10:19 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F57C061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 11:10:19 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id f10so7981158lfu.8
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 11:10:19 -0800 (PST)
+        with ESMTP id S1353676AbiBCTMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 14:12:45 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35E1C061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 11:12:45 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id g14so11895938ybs.8
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 11:12:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ynmf8AjH8Et2t1D/8nO4kTjYKzq6oPr1yGjthzD28xc=;
-        b=XppQR1odninb58XQkHQZxOkb7D7s2rQyxjO9nGahV1FN6cGuzbsVLenP9ylclcRBfo
-         uXvFmluELQEC3mgmj4rKiB+Etwd6UJBvMWo80bj54CwX/6r0WDtYHbpYgHmzhhXbKBF6
-         AuTAVn3RsWpFS4SeIRTIlbk1YFkWtFII2Ot4Y=
+         :cc;
+        bh=LHoUcqZDNLQWbA/SuTbZ6VDZ9Oq8v1QDc+oOx2szl/s=;
+        b=guYLeqbWR2XTAtsSodVuanfsfLK2OVZclBeEeHhcvWnOcFO5iL1Y4OJZVFO2bTo83l
+         QL2zYA+ovS1DC/UCP00Fgc7ZHLBsRVueFtTsCnGRRvOaNcyLD3KxWBPB2cXHfHNEaviV
+         86o33Qv6bkQUJaxcVA2BY0Hm0bQ8KTHFrU3t4bey6AoK7YYB+c4vYx0nrG5eRk6skV/K
+         rarqhT29n8J8KRodgOaTmadXskyOEce3/dLy/jnoHev5it6tShNHZrZGHQx6saciS8kN
+         I2HET4XE0yed9Lc9io9cL17egK3+IWXTTKeTybjD0Qz9mUhGdtq2TyUo360031FgoZbN
+         MIpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ynmf8AjH8Et2t1D/8nO4kTjYKzq6oPr1yGjthzD28xc=;
-        b=aKBYx+n15NF57LxWrfcCf17lN34PEe0Uem9JPG6ybJviP7rO8rRDYReEva3xtPFUWW
-         uMtkGw3sXdXLNQorLtKxs0RA4gGlIngPKZXLAPWNaxJgOSiThbbUrxXjVbmvmrQdpNac
-         PYqmaAd53NcCRRCW7uinK3SaWD9CMXcsbwD2KxgX7llhptj0pjFUs7fsz7//VqfcpTGU
-         kdIkAQNXK1MrhtwJUrMbbd/lfawZp3iu7Jytk4ylak+nO4mrdHvg9dvOPvK/aVOnjh/p
-         CeDAwk0p2L2TiN+e0TtkK5EWOByVJ7tylZrzTMzcW96ztuP570d2VUevoG5ql9mFoq7P
-         oc3g==
-X-Gm-Message-State: AOAM533+T1lDriESvyj2OAeCxxvUbRPA3CmTIj0oaKagwKpR1dNwNfnK
-        kRR0GhUg8ns8duKj+VIpkl8yNfDDDQgWiYM6JmGQF1FdoOIPUA==
-X-Google-Smtp-Source: ABdhPJzHIHnWIOTmGvYm8nIKwHSKOYfJgpJULETxSmdV0h3Un1nyIWposC4LAQ9tOs/Ut6LG1jmPr5N+8cKwDXPTzwk=
-X-Received: by 2002:a05:6512:2823:: with SMTP id cf35mr27987626lfb.113.1643915417465;
- Thu, 03 Feb 2022 11:10:17 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=LHoUcqZDNLQWbA/SuTbZ6VDZ9Oq8v1QDc+oOx2szl/s=;
+        b=5qsTegmdONhvaxx1ReCxwa1T7joz/HFeklmiHci9Hm+4NdP/R7V6Fa5M3pAWxeDHaQ
+         neh/EvOkF/Fbpn9rHzSw/PRSTC/h7/iYlJF0h0lgdIEDizZc0chOX7cwcXru0BMAiq/b
+         HkxEKu1hhFoCiRHC6C4OXvDQZXhEBKaydDZ0qv4rgQPMP/UYg9ok7sA9xYVdq4u91MJL
+         whJfvqM/pFPwN79xy3nyaiwkQInU3L7Jb0UAICKmiSIbfhu2/7IiNj97YdV+QTxVZKea
+         kaVZOoXHQ6g8OdIMt4D64/nKxQ7WtpGigxQDdDoQuxbO+FG5NcsHmwjyUYMsh84sFxu5
+         6W7w==
+X-Gm-Message-State: AOAM531ufYcYFsotBu7LzKeRSogLnl5i3gWtsjhAI4tE6WdKOD0mDnj6
+        ay9uuuYmVm4MYwSCPxYI3D5sRz1N5L3ToPFYJOVhFA==
+X-Google-Smtp-Source: ABdhPJwvMhoWAqP+EK7vMFQ4hl3zFKKVnknTeXK3KI1XmAnEYdN5g63Fd3bu7XiudUVHQB5HctH5fbdusi4qvwuoz5U=
+X-Received: by 2002:a25:4f41:: with SMTP id d62mr48504949ybb.156.1643915564561;
+ Thu, 03 Feb 2022 11:12:44 -0800 (PST)
 MIME-Version: 1.0
-References: <20220128223312.1253169-1-mauricio@kinvolk.io> <20220128223312.1253169-6-mauricio@kinvolk.io>
- <d1b23ebb-21ac-558b-36a8-918b0c6cf909@isovalent.com>
-In-Reply-To: <d1b23ebb-21ac-558b-36a8-918b0c6cf909@isovalent.com>
-From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Date:   Thu, 3 Feb 2022 14:10:05 -0500
-Message-ID: <CAHap4zvBfyFYB8rQo_s3aXGAyG3hEwJ4Xsn4pdrPr5k=GhwQZA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 5/9] bpftool: Implement btfgen()
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
+References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
+ <20220203015140.3022854-2-eric.dumazet@gmail.com> <20220203083407.523721a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CANn89iKd-M6Ry+K7m+n5Voo641K7S24qm27SwrP4VAAchVPT4A@mail.gmail.com> <20220203105842.60c25d46@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220203105842.60c25d46@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 3 Feb 2022 11:12:33 -0800
+Message-ID: <CANn89i+q5rYm0QgHSHjmEH09DH3XGQ7N9uNvuiV_zu6LsE4m5w@mail.gmail.com>
+Subject: Re: [PATCH net-next 01/15] net: add netdev->tso_ipv6_max_size attribute
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 1, 2022 at 3:57 PM Quentin Monnet <quentin@isovalent.com> wrote=
-:
+On Thu, Feb 3, 2022 at 10:58 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> 2022-01-28 17:33 UTC-0500 ~ Mauricio V=C3=A1squez <mauricio@kinvolk.io>
-> > btfgen() receives the path of a source and destination BTF files and a
-> > list of BPF objects. This function records the relocations for all
-> > objects and then generates the BTF file by calling btfgen_get_btf()
-> > (implemented in the following commits).
+> On Thu, 3 Feb 2022 08:56:56 -0800 Eric Dumazet wrote:
+> > On Thu, Feb 3, 2022 at 8:34 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > On Wed,  2 Feb 2022 17:51:26 -0800 Eric Dumazet wrote:
+> > > > From: Eric Dumazet <edumazet@google.com>
+> > > >
+> > > > Some NIC (or virtual devices) are LSOv2 compatible.
+> > > >
+> > > > BIG TCP plans using the large LSOv2 feature for IPv6.
+> > > >
+> > > > New netlink attribute IFLA_TSO_IPV6_MAX_SIZE is defined.
+> > > >
+> > > > Drivers should use netif_set_tso_ipv6_max_size() to advertize their limit.
+> > > >
+> > > > Unchanged drivers are not allowing big TSO packets to be sent.
+> > >
+> > > Many drivers will have a limit on how many buffer descriptors they
+> > > can chain, not the size of the super frame, I'd think. Is that not
+> > > the case? We can't assume all pages but the first and last are full,
+> > > right?
 > >
-> > btfgen_record_obj() loads the BTF and BTF.ext sections of the BPF
-> > objects and loops through all CO-RE relocations. It uses
-> > bpf_core_calc_relo_insn() from libbpf and passes the target spec to
-> > btfgen_record_reloc() that saves the types involved in such relocation.
+> > In our case, we have a 100Gbit Google NIC which has these limits:
 > >
-> > Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
-> > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
-> > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
-> > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
-> > ---
-> >  tools/bpf/bpftool/Makefile |   8 +-
-> >  tools/bpf/bpftool/gen.c    | 221 ++++++++++++++++++++++++++++++++++++-
-> >  2 files changed, 223 insertions(+), 6 deletions(-)
+> > - TX descriptor has a 16bit field filled with skb->len
+> > - No more than 21 frags per 'packet'
 > >
-> > diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-> > index 83369f55df61..97d447135536 100644
-> > --- a/tools/bpf/bpftool/Makefile
-> > +++ b/tools/bpf/bpftool/Makefile
-> > @@ -34,10 +34,10 @@ LIBBPF_BOOTSTRAP_INCLUDE :=3D $(LIBBPF_BOOTSTRAP_DE=
-STDIR)/include
-> >  LIBBPF_BOOTSTRAP_HDRS_DIR :=3D $(LIBBPF_BOOTSTRAP_INCLUDE)/bpf
-> >  LIBBPF_BOOTSTRAP :=3D $(LIBBPF_BOOTSTRAP_OUTPUT)libbpf.a
+> > In order to support BIG TCP on it, we had to split the bigger TCP packets
+> > into smaller chunks, to satisfy both constraints (even if the second
+> > constraint is hardly hit once you chop to ~60KB packets, given our 4K
+> > MTU)
 > >
-> > -# We need to copy hashmap.h and nlattr.h which is not otherwise export=
-ed by
-> > -# libbpf, but still required by bpftool.
-> > -LIBBPF_INTERNAL_HDRS :=3D $(addprefix $(LIBBPF_HDRS_DIR)/,hashmap.h nl=
-attr.h)
-> > -LIBBPF_BOOTSTRAP_INTERNAL_HDRS :=3D $(addprefix $(LIBBPF_BOOTSTRAP_HDR=
-S_DIR)/,hashmap.h)
-> > +# We need to copy hashmap.h, nlattr.h, relo_core.h and libbpf_internal=
-.h
-> > +# which are not otherwise exported by libbpf, but still required by bp=
-ftool.
-> > +LIBBPF_INTERNAL_HDRS :=3D $(addprefix $(LIBBPF_HDRS_DIR)/,hashmap.h nl=
-attr.h relo_core.h libbpf_internal.h)
-> > +LIBBPF_BOOTSTRAP_INTERNAL_HDRS :=3D $(addprefix $(LIBBPF_BOOTSTRAP_HDR=
-S_DIR)/,hashmap.h relo_core.h libbpf_internal.h)
+> > ndo_features_check() might help to take care of small oddities.
 >
-> Do you directly call functions from relo_core.h, or is it only required
-> to compile libbpf_internal.h? (Asking because I'm wondering if there
-> would be a way to have one fewer header copied).
+> Makes sense, I was curious if we can do more in the core so that fewer
+> changes are required in the drivers. Both so that drivers don't have to
+> strip the header and so that drivers with limitations can be served
+> pre-cooked smaller skbs.
 
-bpf_core_calc_relo_insn() and bpf_core_calc_relo_insn() are used.
+I have on my plate to implement a helper to split 'big GRO/TSO' packets
+into smaller chunks. I have avoided doing it in our Google NIC driver,
+to avoid extra sk_buff/skb->head allocations for each BIG TCP packet.
+
+Yes, core networking stack could use it.
+
+> I wonder how many drivers just assumed MAX_SKB_FRAGS will never
+> change :S What do you think about a device-level check in the core
+> for number of frags?
+
+I guess we could do this if the CONFIG_MAX_SKB_FRAGS > 17
