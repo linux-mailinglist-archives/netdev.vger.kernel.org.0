@@ -2,148 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A8684A8232
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 11:19:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BA3E4A8245
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 11:25:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350175AbiBCKRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 05:17:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350070AbiBCKRN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 05:17:13 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6144FC061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 02:17:13 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id j5-20020a05600c1c0500b0034d2e956aadso1450961wms.4
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 02:17:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=o3foges394i2Torrv4y+TkfDP2u0wbyz9Waj/q2IzPs=;
-        b=YyabZF+bAVlRUnVwcDYtoiQuljWP8JdqwJ197sAprqEqfy3sUeWGBzBPvbwHfkl+yZ
-         TkJGHXhhiT5XFU426aMqKd26Wm2OXpj189RZW8qlgUtSlUi+vhD9tCJOHGpTeKywBbKw
-         HSJL167+DsD/m0oJweA4wrMli+DLoY+pvjeT+CvAIph+m6vRg61PadA+baeDyqBGbF8L
-         Hx0rga7a23FFBBJMmTj1ZCIWyuMFPgZCPm9Fa5pznlV9aI0hcVw4YBPsSuOAhQsfAiBO
-         8ACnLygQxPst0fyQh2dJKFgePAomhNsXXXNmexztTCkC0vRhUvQpoQie/Nn9Ai2tkrsF
-         eGiQ==
+        id S239307AbiBCKZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 05:25:13 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:35743 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233560AbiBCKZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 05:25:12 -0500
+Received: by mail-io1-f69.google.com with SMTP id y124-20020a6bc882000000b0060fbfe14d03so1615522iof.2
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 02:25:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=o3foges394i2Torrv4y+TkfDP2u0wbyz9Waj/q2IzPs=;
-        b=vYhu4z6aqH7kNEIO0prYmRtaDYqbgh9+gmxWKnCx3x72cm7G3qG1FH12VH184+JOih
-         IBrUgWJhHHn+zINwvsRFHyUGpcK2meHg+VirZJ+tMm8CdeFiRnxPTrtQImS/yeQNjEAb
-         XnH4yPh712JQWKrTcdqvm8G518mLhcpSMCI++m3u7F2Fu78TBm9fk+rnkvvOEG7ltPSy
-         yTR5oXUz2tDTm5gjOgHYx9vwNfs3K6qKDxcEFfualc+fvPXfYiXeQ7pLTFd+TvnccCZc
-         KMp1xGIUilKukAoYMTCc+dUN08UTUa/U7yEeHUFEFKv5NojEh4+6CX5loHUIYC4aeLGB
-         bVIQ==
-X-Gm-Message-State: AOAM533X4zMOi79Ei/gD8do1CnSGrWGxQEwZPR4oK57VkOF7S1CB2Vh9
-        2/Ndb0B2N/z2M7kSQO7/3daFrQ==
-X-Google-Smtp-Source: ABdhPJwfmVyB651XY0XDybKU/UHpoCzbXoGWw23cPBIU7I1BHaIU8CTvE8YL95uSIy3eRic/tsKSgA==
-X-Received: by 2002:a05:600c:3392:: with SMTP id o18mr9769405wmp.59.1643883431935;
-        Thu, 03 Feb 2022 02:17:11 -0800 (PST)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id g6sm19017148wrq.97.2022.02.03.02.17.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 02:17:11 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Petr Machata <petrm@nvidia.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Stephen Suryaputra <ssuryaextr@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Danielle Ratson <danieller@nvidia.com>,
-        Po-Hsu Lin <po-hsu.lin@canonical.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next 5/5] selftests: net: bridge: Parameterize ageing timeout
-Date:   Thu,  3 Feb 2022 11:16:57 +0100
-Message-Id: <20220203101657.990241-6-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220203101657.990241-1-tobias@waldekranz.com>
-References: <20220203101657.990241-1-tobias@waldekranz.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Rxhq5+VXSIrIwj7a/GsrEywPOO2yQbABshUuuSgeFDs=;
+        b=idwWYsZiBhy/eqbBlPdK3iGUYJm/zCDdha+4zDpZusNknvbGNOBzRv7cqwHIlj8UVo
+         hOmrs8D/+uaCFz/j6DTvBT/R9TngQWyMy220IW/1+OEe/TupS5FL6/buLlIYg+INPomt
+         FICgfqOpX2Hx8gGLLHd2HerpLkjtRwzsbqojohvumfx3w+seSsPv019qpnsFXc2Fb7WE
+         fRHWz9UXX3uFdOEownh5WMSLGoFWm5ss8+MRHIVyenjeUFROmuIaoj9SWLXcGm61xglp
+         +xWShYaBySQUFxJgPxvdi0RNYqc+yqy0aMuJjQZkxrmlKtgRR2hFDVHmkQnxY+sx0lse
+         To+g==
+X-Gm-Message-State: AOAM531iGoT/Y2JmlvzF/x8LKuBISTFcb6je2N98hRlCxZNgckPdx2d4
+        RIUVK1TJcyAwL4iThORxq+dshWBQAhqPNx/ygspYZbN8909l
+X-Google-Smtp-Source: ABdhPJwciDKQal6Z8tQiBUOtqqjZ9Z10+I25ua2fg40YZSw5o6TjWWvTvcWi43d589ZwucSUE+At081HdhPPiDtRhfgxGm6Iv0ds
 MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a6b:f218:: with SMTP id q24mr17682264ioh.55.1643883911669;
+ Thu, 03 Feb 2022 02:25:11 -0800 (PST)
+Date:   Thu, 03 Feb 2022 02:25:11 -0800
+In-Reply-To: <00000000000079a24b05d714d69f@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000009b6eaa05d71a8c06@google.com>
+Subject: Re: [syzbot] general protection fault in btf_decl_tag_resolve
+From:   syzbot <syzbot+53619be9444215e785ed@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, daniel@iogearbox.net,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        nathan@kernel.org, ndesaulniers@google.com, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow the ageing timeout that is set on bridges to be customized from
-forwarding.config. This allows the tests to be run on hardware which
-does not support a 10s timeout (e.g. mv88e6xxx).
+syzbot has bisected this issue to:
 
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Reviewed-by: Petr Machata <petrm@nvidia.com>
----
- tools/testing/selftests/net/forwarding/bridge_vlan_aware.sh  | 5 +++--
- .../testing/selftests/net/forwarding/bridge_vlan_unaware.sh  | 5 +++--
- .../selftests/net/forwarding/forwarding.config.sample        | 2 ++
- tools/testing/selftests/net/forwarding/lib.sh                | 1 +
- 4 files changed, 9 insertions(+), 4 deletions(-)
+commit b5ea834dde6b6e7f75e51d5f66dac8cd7c97b5ef
+Author: Yonghong Song <yhs@fb.com>
+Date:   Tue Sep 14 22:30:15 2021 +0000
 
-diff --git a/tools/testing/selftests/net/forwarding/bridge_vlan_aware.sh b/tools/testing/selftests/net/forwarding/bridge_vlan_aware.sh
-index b90dff8d3a94..64bd00fe9a4f 100755
---- a/tools/testing/selftests/net/forwarding/bridge_vlan_aware.sh
-+++ b/tools/testing/selftests/net/forwarding/bridge_vlan_aware.sh
-@@ -28,8 +28,9 @@ h2_destroy()
- 
- switch_create()
- {
--	# 10 Seconds ageing time.
--	ip link add dev br0 type bridge vlan_filtering 1 ageing_time 1000 \
-+	ip link add dev br0 type bridge \
-+		vlan_filtering 1 \
-+		ageing_time $LOW_AGEING_TIME \
- 		mcast_snooping 0
- 
- 	ip link set dev $swp1 master br0
-diff --git a/tools/testing/selftests/net/forwarding/bridge_vlan_unaware.sh b/tools/testing/selftests/net/forwarding/bridge_vlan_unaware.sh
-index c15c6c85c984..1c8a26046589 100755
---- a/tools/testing/selftests/net/forwarding/bridge_vlan_unaware.sh
-+++ b/tools/testing/selftests/net/forwarding/bridge_vlan_unaware.sh
-@@ -27,8 +27,9 @@ h2_destroy()
- 
- switch_create()
- {
--	# 10 Seconds ageing time.
--	ip link add dev br0 type bridge ageing_time 1000 mcast_snooping 0
-+	ip link add dev br0 type bridge \
-+		ageing_time $LOW_AGEING_TIME \
-+		mcast_snooping 0
- 
- 	ip link set dev $swp1 master br0
- 	ip link set dev $swp2 master br0
-diff --git a/tools/testing/selftests/net/forwarding/forwarding.config.sample b/tools/testing/selftests/net/forwarding/forwarding.config.sample
-index b0980a2efa31..4a546509de90 100644
---- a/tools/testing/selftests/net/forwarding/forwarding.config.sample
-+++ b/tools/testing/selftests/net/forwarding/forwarding.config.sample
-@@ -41,6 +41,8 @@ NETIF_CREATE=yes
- # Timeout (in seconds) before ping exits regardless of how many packets have
- # been sent or received
- PING_TIMEOUT=5
-+# Minimum ageing_time (in centiseconds) supported by hardware
-+LOW_AGEING_TIME=1000
- # Flag for tc match, supposed to be skip_sw/skip_hw which means do not process
- # filter by software/hardware
- TC_FLAG=skip_hw
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 7da783d6f453..e7e434a4758b 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -24,6 +24,7 @@ PING_COUNT=${PING_COUNT:=10}
- PING_TIMEOUT=${PING_TIMEOUT:=5}
- WAIT_TIMEOUT=${WAIT_TIMEOUT:=20}
- INTERFACE_TIMEOUT=${INTERFACE_TIMEOUT:=600}
-+LOW_AGEING_TIME=${LOW_AGEING_TIME:=1000}
- REQUIRE_JQ=${REQUIRE_JQ:=yes}
- REQUIRE_MZ=${REQUIRE_MZ:=yes}
- 
--- 
-2.25.1
+    bpf: Support for new btf kind BTF_KIND_TAG
 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12183484700000
+start commit:   b7892f7d5cb2 tools: Ignore errors from `which' when search..
+git tree:       bpf
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=11183484700000
+console output: https://syzkaller.appspot.com/x/log.txt?x=16183484700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5044676c290190f2
+dashboard link: https://syzkaller.appspot.com/bug?extid=53619be9444215e785ed
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16454914700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16ceb884700000
+
+Reported-by: syzbot+53619be9444215e785ed@syzkaller.appspotmail.com
+Fixes: b5ea834dde6b ("bpf: Support for new btf kind BTF_KIND_TAG")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
