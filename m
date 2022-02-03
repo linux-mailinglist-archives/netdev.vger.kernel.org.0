@@ -2,71 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 802A94A8F8A
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 22:06:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A1294A8F94
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 22:08:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354097AbiBCVGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 16:06:10 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:55136 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350895AbiBCVGJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 16:06:09 -0500
-Received: by mail-io1-f72.google.com with SMTP id k20-20020a5d91d4000000b0061299fad2fdso2789490ior.21
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 13:06:09 -0800 (PST)
+        id S237726AbiBCVIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 16:08:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38630 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240624AbiBCVIj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 16:08:39 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152BFC061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 13:08:39 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id c194so3237019pfb.12
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 13:08:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=e7F96jPx4YyudImtYpzXWJgKTFEs9blUunAZh2t7hH4=;
+        b=eWsju9QIMmbr8rvzJQMXPJWkMZhpnrsC64WDh1kOAG/6ZuUyebtGmn9m4REv+Jdh7e
+         f2aliZvB0Vatbm/Mls3el6d7hiEusCDfB22M5LJLdTgMapD60qJ/H/TURPny7XMRKObJ
+         xh7pslzzsP1XAy24J1L/0DSmBHfSgApY9yVr4XleuBefDuBxq1wy0TQPiycWyoKsOgZi
+         Bdk/DoLwCarzLXVkm7724YvCqaFoAIxHoiw4AEmpXOxt5HvIozXR8Y1pn8tZ57FH3L+C
+         LFKHvTYtVGSjvYcWRky1uA/vulbj8GjJ8P1PSyCLYPhguItUIEdVC1ohVCm8AGt8M3fT
+         IYog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=uBmyzhLL0AacmJiOO0ygo8pOFo4TfHCiGIA5EQdvXeE=;
-        b=Tk4J3QeHWeEcN8sHkTcxnYGRR08MC/UaHVrA4Jh020/W/84nwexDCv9Q/2uj54fBNL
-         sK5gS14UYMj0Pp02m8bkmjJ3IupHXGYSfX2n/EaeKglHZF73BwEbYgfyatY3XGQcrk1v
-         kcSmrn4fDOXwH/0f6PZfpOi/DbZXMZn1+iXs8ONVitrbHHUojpTv/kHF76qzVTJ53OMt
-         fI7xSUNgkxcbMM/+qh53Jkyg+Cj1R8OZeMXg5V1qEAVG7VGTM+HTI66d6WBJxth5lCau
-         RVLsXdkJUdn2QLtbQOlJlBhosVkQnQfS/y689PSyu84tDWz25HMj5IEzay+ogWoDM2zP
-         l33w==
-X-Gm-Message-State: AOAM530kzSJ+pt415QARWnJRG5i1UizmYYdqlzEbsybQvfbVONskNRFL
-        HIdtiBeR6gL7Ip8QllIEJsXetH0S06VGP0GDqJRf77rqCJMx
-X-Google-Smtp-Source: ABdhPJz7/ZbgejMhaE9OEyjG/6HURwiA2GryVh/9fg+CbYb99M8adUZngW39faXgneuMNTyLw+8Sk7QFCH8alyCPJh/ctQrEX+6V
-MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3295:: with SMTP id f21mr16186925jav.193.1643922369206;
- Thu, 03 Feb 2022 13:06:09 -0800 (PST)
-Date:   Thu, 03 Feb 2022 13:06:09 -0800
-In-Reply-To: <0000000000008c32e305d6d8e802@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000dade8505d72380c9@google.com>
-Subject: Re: [syzbot] general protection fault in submit_bio_checks
-From:   syzbot <syzbot+2b3f18414c37b42dcc94@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, axboe@kernel.dk,
-        bpf@vger.kernel.org, daniel@iogearbox.net, hch@lst.de,
-        john.fastabend@gmail.com, kafai@fb.com, kch@nvidia.com,
-        kpsingh@kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=e7F96jPx4YyudImtYpzXWJgKTFEs9blUunAZh2t7hH4=;
+        b=ZREuYVyYBP9RX7urWSdM0qxxZDpfFJCTWqBIDoLY+R3uY0QwPNEOsynGfcwKls1pLb
+         ct5N2v72zeWZYrSd+efkDEEJVnSAcHQ+QyUPMLY4w6L4kj0V15xEmcEyoe1V3++hRJRz
+         YRygCZ06jpjNX2bUHoGfRFDwQ7V6uCH+zHnvbWj3tPgYx4Gx8FS95hNLFZdAPlWMd2HG
+         c4hZYsVwIjOys4vgFvjNWdS4kQze2mIiHHwTfG4e8KnGtAAngMh+UhcFP4u4TZRFrIww
+         2VsvhT3/iIuL8tRd1CLXPhuLJvPXF0kz1TfxOeerL2fpB9tVQX7vh06kpnHpRAtIGYkw
+         0reg==
+X-Gm-Message-State: AOAM530di1A9Xk4kfAlM5aOK+jE43/n4Fje2W4+1q1/07Xn7V/6N1aEp
+        t7TVVjBc1FdblTztky8SNWkNKG6z3sYr/Q==
+X-Google-Smtp-Source: ABdhPJzboxgiPNtLroSj1EhfbS/12Dqc8nwJYkxsiH8eB8WLMQJHGqOo6sTFjF2wlvfR4NDzHhID9g==
+X-Received: by 2002:a63:1655:: with SMTP id 21mr29315704pgw.498.1643922517771;
+        Thu, 03 Feb 2022 13:08:37 -0800 (PST)
+Received: from ?IPv6:2001:470:b:9c3:82ee:73ff:fe41:9a02? ([2001:470:b:9c3:82ee:73ff:fe41:9a02])
+        by smtp.googlemail.com with ESMTPSA id bj7sm10402553pjb.9.2022.02.03.13.08.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 13:08:37 -0800 (PST)
+Message-ID: <802be507c28b9c1815e6431e604964b79070cd40.camel@gmail.com>
+Subject: Re: [PATCH net-next 05/15] ipv6/gso: remove temporary HBH/jumbo
+ header
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
+Date:   Thu, 03 Feb 2022 13:08:36 -0800
+In-Reply-To: <CANn89iKzDxLHTVTcu=y_DZgdTHk5w1tv7uycL27aK1joPYbasA@mail.gmail.com>
+References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
+         <20220203015140.3022854-6-eric.dumazet@gmail.com>
+         <0d3cbdeee93fe7b72f3cdfc07fd364244d3f4f47.camel@gmail.com>
+         <CANn89iK7snFJ2GQ6cuDc2t4LC-Ufzki5TaQrLwDOWE8qDyYATQ@mail.gmail.com>
+         <CAKgT0UfWd2PyOhVht8ZMpRf1wpVwnJbXxxT68M-hYK9QRZuz2w@mail.gmail.com>
+         <CANn89iKzDxLHTVTcu=y_DZgdTHk5w1tv7uycL27aK1joPYbasA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Thu, 2022-02-03 at 11:59 -0800, Eric Dumazet wrote:
+> On Thu, Feb 3, 2022 at 11:45 AM Alexander Duyck
+> <alexander.duyck@gmail.com> wrote:
+> 
+> > It is the fact that you are adding IPv6 specific code to the
+> > net/core/skbuff.c block here. Logically speaking if you are adding the
+> > header in ipv6_gro_receive then it really seems li:ke the logic to
+> > remove the header really belongs in ipv6_gso_segment. I suppose this
+> > is an attempt to optimize it though, since normally updates to the
+> > header are done after segmentation instead of before.
+> 
+> Right, doing this at the top level means we do the thing once only,
+> instead of 45 times if the skb has 45 segments.
 
-commit a7c50c940477bae89fb2b4f51bd969a2d95d7512
-Author: Christoph Hellwig <hch@lst.de>
-Date:   Mon Jan 24 09:11:07 2022 +0000
+I'm just wondering if there is a way for us to do it in
+ipv6_gso_segment directly instead though. With this we essentially end
+up having to free the skb if the segmentation fails anyway since it
+won't be able to go out on the wire.
 
-    block: pass a block_device and opf to bio_reset
+If we assume the stack will successfully segment the frame then it
+might make sense to just take care of the hop-by-hop header before we
+start processing the L4 protocol.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12b4f1cc700000
-start commit:   2d3d8c7643a5 Add linux-next specific files for 20220203
-git tree:       linux-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=11b4f1cc700000
-console output: https://syzkaller.appspot.com/x/log.txt?x=16b4f1cc700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=27a9abf2c11167c7
-dashboard link: https://syzkaller.appspot.com/bug?extid=2b3f18414c37b42dcc94
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14635480700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10eb2d14700000
 
-Reported-by: syzbot+2b3f18414c37b42dcc94@syzkaller.appspotmail.com
-Fixes: a7c50c940477 ("block: pass a block_device and opf to bio_reset")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
