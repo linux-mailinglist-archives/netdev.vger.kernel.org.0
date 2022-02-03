@@ -2,508 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D7A24A88BD
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:42:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4914D4A88BF
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:42:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239682AbiBCQkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 11:40:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59784 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238360AbiBCQkp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 11:40:45 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE15C06173B
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 08:40:44 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id o17so4764947ljp.1
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 08:40:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=1d7vceQauPxgcMQJdYYBxrR0oTcgwIsEhaw3FTsxa0E=;
-        b=RrnCaitnSiznnP/H4PPlC/9gML/JxHEEZHBWddtKYHwQSrg89w8UrRGPuqPQZKoe9q
-         j99LvQbkw7YHQ0RBZXSxm0JNkrE9y4VHzkZn52iiWhguV9ibiQQa/Xl4hhBgiV9zr6o6
-         AHCq+8sVXAh4Cb8h/UkFdCTgZKfCzwre1++6A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=1d7vceQauPxgcMQJdYYBxrR0oTcgwIsEhaw3FTsxa0E=;
-        b=14Hj+STNGMpf3BbyAYavtaih8OGAy8PEmjg6NsI6yAjJcksRNfa+2WAsnPwRlKsR50
-         yG64AxMNBH7AIkpmNIFDwVUX94oRwRhcz/sPOX78JG8HF/3TBv2Ym7W+n/yswOWHqK8k
-         ZDars1uVMvdoldRMuCRv+YdYQ15dfM0BSiAEYUWriRRmdOwnQLP0A5nhiDKvd7CTdALv
-         y4VzWzbMTcoEsZkW5OT5Fb+02KtEjaIweq5oxN2hLZE8vC+CqNNO5MyrWPAOWCJnnpyx
-         3bwNW+sdBJYZoi/bDfU6BBdkt9aK1DdrnIg52jKKXSCbiu6tVISrwCypeeOUAif3C9Fj
-         rnXQ==
-X-Gm-Message-State: AOAM530UYzzgSYSjTpg0ZcZ0mQ4PNKIEKziHwd0z9uoXxEvKL6CPMaCr
-        AZKcdqs06qXUv+O1MO2bKu/ljY6wFyaZrOQBRB5D0A==
-X-Google-Smtp-Source: ABdhPJwUWAgjS141pLO3lU4cedwREp+ZpOv4zYqPlJmuYG0Vu7ks2QVRrl/jSh8IKiv+ah/0tI4jOXuWfP0YOUaZrSA=
-X-Received: by 2002:a2e:7a06:: with SMTP id v6mr23684539ljc.301.1643906443118;
- Thu, 03 Feb 2022 08:40:43 -0800 (PST)
-MIME-Version: 1.0
-References: <20220128223312.1253169-1-mauricio@kinvolk.io> <20220128223312.1253169-7-mauricio@kinvolk.io>
- <CAEf4BzZu-u1WXGScPZKVQZc+RGjmnYm45mcOGkzXyFLMKS-5gA@mail.gmail.com>
-In-Reply-To: <CAEf4BzZu-u1WXGScPZKVQZc+RGjmnYm45mcOGkzXyFLMKS-5gA@mail.gmail.com>
-From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Date:   Thu, 3 Feb 2022 11:40:31 -0500
-Message-ID: <CAHap4zv+bLA4BB9ZJ7RXDCChe6dU0AB3zuCieWskp2OJ5Y-4xw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 6/9] bpftool: Implement relocations recording
- for BTFGen
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        id S1352311AbiBCQle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 11:41:34 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:54396 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352302AbiBCQlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 11:41:32 -0500
+Date:   Thu, 3 Feb 2022 17:41:30 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643906491;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bYIZBPQJfwNvlKqbK2sBYVP5XkkzJtgJ5VRUIUtkS4o=;
+        b=X3QpqMzWkPAZyBShkSPdNaQscxe6zgUyNMk7rjY3Rhitd6o/wad5EnyAVW5K/Oe2vnrxp5
+        Nz5nioOeJWEllBHGD4nJjDucntB0unVEElsdju4tS/ju1RWGJ9Y6XRl4pu+mjM1JvLbRWM
+        SRPeahesX479zwDtbFneQbiS+tGzUnFZyg5oPXc/IVnvAJASZ0lujE8d6IxgtxvjIVnH97
+        JYsrCt0pGJy/XrjS9lvLESrcL/gur5upb8YF1GwA6cJysJmES4hUDpHbpUpOcXRba9XOU4
+        cZjn8DQnQMRNWBKVIdJmJTfoheHFs4MXE0NkiXo2m1mCIgtuak0QKx5a9Lj/Tw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643906491;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bYIZBPQJfwNvlKqbK2sBYVP5XkkzJtgJ5VRUIUtkS4o=;
+        b=S6rPSWy7MY2Nkyr066mQrMoUy3jK+qncvSOKP6GpFHvjBi2WJblLzy5g3k4Pp5549IQArB
+        L1HWQWZvYIoyR6CA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Eric Dumazet <edumazet@google.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH net-next v2 4/4] net: dev: Make rps_lock() disable interrupts.
+Message-ID: <YfwFunubdlRK/8IZ@linutronix.de>
+References: <20220202122848.647635-1-bigeasy@linutronix.de>
+ <20220202122848.647635-5-bigeasy@linutronix.de>
+ <20220202084735.126397eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220202084735.126397eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 2, 2022 at 2:31 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Fri, Jan 28, 2022 at 2:33 PM Mauricio V=C3=A1squez <mauricio@kinvolk.i=
-o> wrote:
-> >
-> > This commit implements the logic to record the relocation information
-> > for the different kind of relocations.
-> >
-> > btfgen_record_field_relo() uses the target specification to save all th=
-e
-> > types that are involved in a field-based CO-RE relocation. In this case
-> > types resolved and added recursively (using btfgen_put_type()).
-> > Only the struct and union members and their types) involved in the
-> > relocation are added to optimize the size of the generated BTF file.
-> >
-> > On the other hand, btfgen_record_type_relo() saves the types involved i=
-n
-> > a type-based CO-RE relocation. In this case all the members for the
->
-> Do I understand correctly that if someone does
-> bpf_core_type_size(struct task_struct), you'll save not just
-> task_struct, but also any type that directly and indirectly referenced
-> from any task_struct's field, even if that is through a pointer.
+Disabling interrupts and in the RPS case locking input_pkt_queue is
+split into local_irq_disable() and optional spin_lock().
 
-That's correct.
+This breaks on PREEMPT_RT because the spinlock_t typed lock can not be
+acquired with disabled interrupts.
+The sections in which the lock is acquired is usually short in a sense that it
+is not causing long und unbounded latiencies. One exception is the
+skb_flow_limit() invocation which may invoke a BPF program (and may
+require sleeping locks).
 
-> As
-> in, do you substitute forward declarations for types that are never
-> directly used? If not, that's going to be very suboptimal for
-> something like task_struct and any other type that's part of a big
-> cluster of types.
->
+By moving local_irq_disable() + spin_lock() into rps_lock(), we can keep
+interrupts disabled on !PREEMPT_RT and enabled on PREEMPT_RT kernels.
+Without RPS on a PREEMPT_RT kernel, the needed synchronisation happens
+as part of local_bh_disable() on the local CPU.
+____napi_schedule() is only invoked if sd is from the local CPU. Replace
+it with __napi_schedule_irqoff() which already disables interrupts on
+PREEMPT_RT as needed. Move this call to rps_ipi_queued() and rename the
+function to napi_schedule_rps as suggested by Jakub.
 
-We decided to include the whole types and all direct and indirect
-types referenced from a structure field for type-based relocations.
-Our reasoning is that we don't know if the matching algorithm of
-libbpf could be changed to require more information in the future and
-type-based relocations are few compared to field based relocations.
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+On 2022-02-02 08:47:35 [-0800], Jakub Kicinski wrote:
+> 
+> I think you can re-jig this a little more - rps_ipi_queued() only return
+> 0 if sd is "local" so maybe we can call __napi_schedule_irqoff()
+> instead which already has the if () for PREEMPT_RT?
+> 
+> Maybe moving the ____napi_schedule() into rps_ipi_queued() and
+> renaming it to napi_schedule_backlog() or napi_schedule_rps() 
+> would make the code easier to follow in that case?
 
-If you are confident enough that adding empty structures/unions is ok
-then I'll update the algorithm. Actually it'll make our lives easier.
+Something like this then?
 
-> > struct and union types are added. This is not strictly required since
-> > libbpf doesn't use them while performing this kind of relocation,
-> > however that logic could change on the future. Additionally, we expect
-> > that the number of this kind of relocations in an BPF object to be very
-> > low, hence the impact on the size of the generated BTF should be
-> > negligible.
-> >
-> > Finally, btfgen_record_enumval_relo() saves the whole enum type for
-> > enum-based relocations.
-> >
-> > Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
-> > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
-> > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
-> > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
-> > ---
-> >  tools/bpf/bpftool/gen.c | 260 +++++++++++++++++++++++++++++++++++++++-
-> >  1 file changed, 257 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-> > index bb9c56401ee5..7413ec808a80 100644
-> > --- a/tools/bpf/bpftool/gen.c
-> > +++ b/tools/bpf/bpftool/gen.c
-> > @@ -1119,9 +1119,17 @@ static int btf_save_raw(const struct btf *btf, c=
-onst char *path)
-> >         return err;
-> >  }
-> >
-> > +struct btfgen_member {
-> > +       struct btf_member *member;
-> > +       int idx;
-> > +};
-> > +
-> >  struct btfgen_type {
-> >         struct btf_type *type;
-> >         unsigned int id;
-> > +       bool all_members;
-> > +
-> > +       struct hashmap *members;
-> >  };
-> >
-> >  struct btfgen_info {
-> > @@ -1151,6 +1159,19 @@ static void *u32_as_hash_key(__u32 x)
-> >
-> >  static void btfgen_free_type(struct btfgen_type *type)
-> >  {
-> > +       struct hashmap_entry *entry;
-> > +       size_t bkt;
-> > +
-> > +       if (!type)
-> > +               return;
-> > +
-> > +       if (!IS_ERR_OR_NULL(type->members)) {
-> > +               hashmap__for_each_entry(type->members, entry, bkt) {
-> > +                       free(entry->value);
-> > +               }
-> > +               hashmap__free(type->members);
-> > +       }
-> > +
-> >         free(type);
-> >  }
-> >
-> > @@ -1199,19 +1220,252 @@ btfgen_new_info(const char *targ_btf_path)
-> >         return info;
-> >  }
-> >
-> > +static int btfgen_add_member(struct btfgen_type *btfgen_type,
-> > +                            struct btf_member *btf_member, int idx)
-> > +{
-> > +       struct btfgen_member *btfgen_member;
-> > +       int err;
-> > +
-> > +       /* create new members hashmap for this btfgen type if needed */
-> > +       if (!btfgen_type->members) {
-> > +               btfgen_type->members =3D hashmap__new(btfgen_hash_fn, b=
-tfgen_equal_fn, NULL);
-> > +               if (IS_ERR(btfgen_type->members))
-> > +                       return PTR_ERR(btfgen_type->members);
-> > +       }
-> > +
-> > +       btfgen_member =3D calloc(1, sizeof(*btfgen_member));
-> > +       if (!btfgen_member)
-> > +               return -ENOMEM;
-> > +       btfgen_member->member =3D btf_member;
-> > +       btfgen_member->idx =3D idx;
-> > +       /* add btf_member as member to given btfgen_type */
-> > +       err =3D hashmap__add(btfgen_type->members, uint_as_hash_key(btf=
-gen_member->idx),
-> > +                          btfgen_member);
-> > +       if (err) {
-> > +               free(btfgen_member);
-> > +               if (err !=3D -EEXIST)
->
-> why not check that such a member exists before doing btfgen_member alloca=
-tion?
->
+ net/core/dev.c | 76 ++++++++++++++++++++++++++++----------------------
+ 1 file changed, 42 insertions(+), 34 deletions(-)
 
-I thought that it could be more efficient calling hashmap__add()
-directly without checking and then handling the case when it was
-already there. Having a second thought it seems to me that it's not
-always true and depends on how many times the code follows each path,
-what we don't know. I'll change it to check if it's there before.
+diff --git a/net/core/dev.c b/net/core/dev.c
+index f43d0580fa11d..18f9941287c2e 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -216,18 +216,38 @@ static inline struct hlist_head *dev_index_hash(struct net *net, int ifindex)
+ 	return &net->dev_index_head[ifindex & (NETDEV_HASHENTRIES - 1)];
+ }
+ 
+-static inline void rps_lock(struct softnet_data *sd)
++static inline void rps_lock_irqsave(struct softnet_data *sd,
++				    unsigned long *flags)
+ {
+-#ifdef CONFIG_RPS
+-	spin_lock(&sd->input_pkt_queue.lock);
+-#endif
++	if (IS_ENABLED(CONFIG_RPS))
++		spin_lock_irqsave(&sd->input_pkt_queue.lock, *flags);
++	else if (!IS_ENABLED(CONFIG_PREEMPT_RT))
++		local_irq_save(*flags);
+ }
+ 
+-static inline void rps_unlock(struct softnet_data *sd)
++static inline void rps_lock_irq_disable(struct softnet_data *sd)
+ {
+-#ifdef CONFIG_RPS
+-	spin_unlock(&sd->input_pkt_queue.lock);
+-#endif
++	if (IS_ENABLED(CONFIG_RPS))
++		spin_lock_irq(&sd->input_pkt_queue.lock);
++	else if (!IS_ENABLED(CONFIG_PREEMPT_RT))
++		local_irq_disable();
++}
++
++static inline void rps_unlock_irq_restore(struct softnet_data *sd,
++					  unsigned long *flags)
++{
++	if (IS_ENABLED(CONFIG_RPS))
++		spin_unlock_irqrestore(&sd->input_pkt_queue.lock, *flags);
++	else if (!IS_ENABLED(CONFIG_PREEMPT_RT))
++		local_irq_restore(*flags);
++}
++
++static inline void rps_unlock_irq_enable(struct softnet_data *sd)
++{
++	if (IS_ENABLED(CONFIG_RPS))
++		spin_unlock_irq(&sd->input_pkt_queue.lock);
++	else if (!IS_ENABLED(CONFIG_PREEMPT_RT))
++		local_irq_enable();
+ }
+ 
+ static struct netdev_name_node *netdev_name_node_alloc(struct net_device *dev,
+@@ -4456,11 +4476,11 @@ static void rps_trigger_softirq(void *data)
+  * If yes, queue it to our IPI list and return 1
+  * If no, return 0
+  */
+-static int rps_ipi_queued(struct softnet_data *sd)
++static int napi_schedule_rps(struct softnet_data *sd)
+ {
+-#ifdef CONFIG_RPS
+ 	struct softnet_data *mysd = this_cpu_ptr(&softnet_data);
+ 
++#ifdef CONFIG_RPS
+ 	if (sd != mysd) {
+ 		sd->rps_ipi_next = mysd->rps_ipi_list;
+ 		mysd->rps_ipi_list = sd;
+@@ -4469,6 +4489,7 @@ static int rps_ipi_queued(struct softnet_data *sd)
+ 		return 1;
+ 	}
+ #endif /* CONFIG_RPS */
++	__napi_schedule_irqoff(&mysd->backlog);
+ 	return 0;
+ }
+ 
+@@ -4525,9 +4546,7 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
+ 
+ 	sd = &per_cpu(softnet_data, cpu);
+ 
+-	local_irq_save(flags);
+-
+-	rps_lock(sd);
++	rps_lock_irqsave(sd, &flags);
+ 	if (!netif_running(skb->dev))
+ 		goto drop;
+ 	qlen = skb_queue_len(&sd->input_pkt_queue);
+@@ -4536,26 +4555,21 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
+ enqueue:
+ 			__skb_queue_tail(&sd->input_pkt_queue, skb);
+ 			input_queue_tail_incr_save(sd, qtail);
+-			rps_unlock(sd);
+-			local_irq_restore(flags);
++			rps_unlock_irq_restore(sd, &flags);
+ 			return NET_RX_SUCCESS;
+ 		}
+ 
+ 		/* Schedule NAPI for backlog device
+ 		 * We can use non atomic operation since we own the queue lock
+ 		 */
+-		if (!__test_and_set_bit(NAPI_STATE_SCHED, &sd->backlog.state)) {
+-			if (!rps_ipi_queued(sd))
+-				____napi_schedule(sd, &sd->backlog);
+-		}
++		if (!__test_and_set_bit(NAPI_STATE_SCHED, &sd->backlog.state))
++			napi_schedule_rps(sd);
+ 		goto enqueue;
+ 	}
+ 
+ drop:
+ 	sd->dropped++;
+-	rps_unlock(sd);
+-
+-	local_irq_restore(flags);
++	rps_unlock_irq_restore(sd, &flags);
+ 
+ 	atomic_long_inc(&skb->dev->rx_dropped);
+ 	kfree_skb(skb);
+@@ -5617,8 +5631,7 @@ static void flush_backlog(struct work_struct *work)
+ 	local_bh_disable();
+ 	sd = this_cpu_ptr(&softnet_data);
+ 
+-	local_irq_disable();
+-	rps_lock(sd);
++	rps_lock_irq_disable(sd);
+ 	skb_queue_walk_safe(&sd->input_pkt_queue, skb, tmp) {
+ 		if (skb->dev->reg_state == NETREG_UNREGISTERING) {
+ 			__skb_unlink(skb, &sd->input_pkt_queue);
+@@ -5626,8 +5639,7 @@ static void flush_backlog(struct work_struct *work)
+ 			input_queue_head_incr(sd);
+ 		}
+ 	}
+-	rps_unlock(sd);
+-	local_irq_enable();
++	rps_unlock_irq_enable(sd);
+ 
+ 	skb_queue_walk_safe(&sd->process_queue, skb, tmp) {
+ 		if (skb->dev->reg_state == NETREG_UNREGISTERING) {
+@@ -5645,16 +5657,14 @@ static bool flush_required(int cpu)
+ 	struct softnet_data *sd = &per_cpu(softnet_data, cpu);
+ 	bool do_flush;
+ 
+-	local_irq_disable();
+-	rps_lock(sd);
++	rps_lock_irq_disable(sd);
+ 
+ 	/* as insertion into process_queue happens with the rps lock held,
+ 	 * process_queue access may race only with dequeue
+ 	 */
+ 	do_flush = !skb_queue_empty(&sd->input_pkt_queue) ||
+ 		   !skb_queue_empty_lockless(&sd->process_queue);
+-	rps_unlock(sd);
+-	local_irq_enable();
++	rps_unlock_irq_enable(sd);
+ 
+ 	return do_flush;
+ #endif
+@@ -5769,8 +5779,7 @@ static int process_backlog(struct napi_struct *napi, int quota)
+ 
+ 		}
+ 
+-		local_irq_disable();
+-		rps_lock(sd);
++		rps_lock_irq_disable(sd);
+ 		if (skb_queue_empty(&sd->input_pkt_queue)) {
+ 			/*
+ 			 * Inline a custom version of __napi_complete().
+@@ -5786,8 +5795,7 @@ static int process_backlog(struct napi_struct *napi, int quota)
+ 			skb_queue_splice_tail_init(&sd->input_pkt_queue,
+ 						   &sd->process_queue);
+ 		}
+-		rps_unlock(sd);
+-		local_irq_enable();
++		rps_unlock_irq_enable(sd);
+ 	}
+ 
+ 	return work;
+-- 
+2.34.1
 
-> > +                       return err;
-> > +       }
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static struct btfgen_type *btfgen_get_type(struct btfgen_info *info, i=
-nt id)
-> > +{
-> > +       struct btfgen_type *type =3D NULL;
-> > +
-> > +       hashmap__find(info->types, uint_as_hash_key(id), (void **)&type=
-);
->
-> if (!hashmap__find(...))
->    return NULL;
->
-> > +
-> > +       return type;
-> > +}
-> > +
-> > +static struct btfgen_type *
-> > +_btfgen_put_type(struct btf *btf, struct btfgen_info *info, struct btf=
-_type *btf_type,
-> > +                unsigned int id, bool all_members)
-> > +{
-> > +       struct btfgen_type *btfgen_type, *tmp;
-> > +       struct btf_array *array;
-> > +       unsigned int child_id;
-> > +       struct btf_member *m;
-> > +       int err, i, n;
-> > +
-> > +       /* check if we already have this type */
-> > +       if (hashmap__find(info->types, uint_as_hash_key(id), (void **) =
-&btfgen_type)) {
-> > +               if (!all_members || btfgen_type->all_members)
-> > +                       return btfgen_type;
-> > +       } else {
-> > +               btfgen_type =3D calloc(1, sizeof(*btfgen_type));
-> > +               if (!btfgen_type)
-> > +                       return NULL;
-> > +
-> > +               btfgen_type->type =3D btf_type;
-> > +               btfgen_type->id =3D id;
-> > +
-> > +               /* append this type to the types list before anything e=
-lse */
->
-> what do you mean by "before anything else"?
 
-Add this before starting the recursion below. I'll update the comment
-to make it more clear.
-
->
-> > +               err =3D hashmap__add(info->types, uint_as_hash_key(btfg=
-en_type->id), btfgen_type);
-> > +               if (err) {
-> > +                       free(btfgen_type);
-> > +                       return NULL;
-> > +               }
-> > +       }
-> > +
-> > +       /* avoid infinite recursion and yet be able to add all
-> > +        * fields/members for types also managed by this function
-> > +        */
-> > +       btfgen_type->all_members =3D all_members;
-> > +
-> > +       /* recursively add other types needed by it */
-> > +       switch (btf_kind(btfgen_type->type)) {
-> > +       case BTF_KIND_UNKN:
-> > +       case BTF_KIND_INT:
-> > +       case BTF_KIND_FLOAT:
-> > +       case BTF_KIND_ENUM:
-> > +               break;
-> > +       case BTF_KIND_STRUCT:
-> > +       case BTF_KIND_UNION:
-> > +               /* doesn't need resolution if not adding all members */
-> > +               if (!all_members)
-> > +                       break;
-> > +
-> > +               n =3D btf_vlen(btf_type);
-> > +               m =3D btf_members(btf_type);
-> > +               for (i =3D 0; i < n; i++, m++) {
-> > +                       btf_type =3D (struct btf_type *) btf__type_by_i=
-d(btf, m->type);
->
-> why `const struct btf_type *` doesn't work everywhere? You are not
-> modifying btf_type itself, no?
-
-Yes, `const struct btf_type *` works fine everywhere.
-
->
-> > +
-> > +                       /* add all member types */
-> > +                       tmp =3D _btfgen_put_type(btf, info, btf_type, m=
-->type, all_members);
-> > +                       if (!tmp)
-> > +                               return NULL;
-> > +
-> > +                       /* add all members */
-> > +                       err =3D btfgen_add_member(btfgen_type, m, i);
-> > +                       if (err)
-> > +                               return NULL;
-> > +               }
-> > +               break;
-> > +       case BTF_KIND_PTR:
-> > +               if (!all_members)
-> > +                       break;
-> > +       /* fall through */
-> > +       /* Also add the type it's pointing to when adding all members *=
-/
-> > +       case BTF_KIND_CONST:
-> > +       case BTF_KIND_VOLATILE:
-> > +       case BTF_KIND_TYPEDEF:
-> > +               child_id =3D btf_type->type;
-> > +               btf_type =3D (struct btf_type *) btf__type_by_id(btf, c=
-hild_id);
-> > +
-> > +               tmp =3D _btfgen_put_type(btf, info, btf_type, child_id,=
- all_members);
-> > +               if (!tmp)
-> > +                       return NULL;
-> > +               break;
-> > +       case BTF_KIND_ARRAY:
-> > +               array =3D btf_array(btfgen_type->type);
-> > +
-> > +               /* add type for array type */
-> > +               btf_type =3D (struct btf_type *) btf__type_by_id(btf, a=
-rray->type);
-> > +               tmp =3D _btfgen_put_type(btf, info, btf_type, array->ty=
-pe, all_members);
-> > +               if (!tmp)
-> > +                       return NULL;
-> > +
-> > +               /* add type for array's index type */
-> > +               btf_type =3D (struct btf_type *) btf__type_by_id(btf, a=
-rray->index_type);
-> > +               tmp =3D _btfgen_put_type(btf, info, btf_type, array->in=
-dex_type, all_members);
-> > +               if (!tmp)
-> > +                       return NULL;
-> > +               break;
-> > +       /* tells if some other type needs to be handled */
-> > +       default:
-> > +               p_err("unsupported kind: %s (%d)",
-> > +                     btf_kind_str(btfgen_type->type), btfgen_type->id)=
-;
-> > +               errno =3D EINVAL;
-> > +               return NULL;
-> > +       }
-> > +
-> > +       return btfgen_type;
-> > +}
-> > +
-> > +/* Put type in the list. If the type already exists it's returned, oth=
-erwise a
-> > + * new one is created and added to the list. This is called recursivel=
-y adding
-> > + * all the types that are needed for the current one.
-> > + */
-> > +static struct btfgen_type *
-> > +btfgen_put_type(struct btf *btf, struct btfgen_info *info, struct btf_=
-type *btf_type,
-> > +               unsigned int id)
-> > +{
-> > +       return _btfgen_put_type(btf, info, btf_type, id, false);
-> > +}
-> > +
-> > +/* Same as btfgen_put_type, but adding all members, from given complex=
- type, recursively */
-> > +static struct btfgen_type *
-> > +btfgen_put_type_all(struct btf *btf, struct btfgen_info *info,
-> > +                   struct btf_type *btf_type, unsigned int id)
-> > +{
-> > +       return _btfgen_put_type(btf, info, btf_type, id, true);
-> > +}
->
-> these wrappers seem unnecessary, just pass false/true in 5 call sites
-> below without extra wrapping of _btfgen_put_type (and call it
-> btfgen_put_type then)
->
-> > +
-> >  static int btfgen_record_field_relo(struct btfgen_info *info, struct b=
-pf_core_spec *targ_spec)
-> >  {
-> > -       return -EOPNOTSUPP;
-> > +       struct btf *btf =3D (struct btf *) info->src_btf;
-> > +       struct btfgen_type *btfgen_type;
-> > +       struct btf_member *btf_member;
-> > +       struct btf_type *btf_type;
-> > +       struct btf_array *array;
-> > +       unsigned int id;
-> > +       int idx, err;
-> > +
-> > +       btf_type =3D (struct btf_type *) btf__type_by_id(btf, targ_spec=
-->root_type_id);
-> > +
-> > +       /* create btfgen_type for root type */
-> > +       btfgen_type =3D btfgen_put_type(btf, info, btf_type, targ_spec-=
->root_type_id);
-> > +       if (!btfgen_type)
-> > +               return -errno;
-> > +
-> > +       /* add types for complex types (arrays, unions, structures) */
-> > +       for (int i =3D 1; i < targ_spec->raw_len; i++) {
-> > +               /* skip typedefs and mods */
-> > +               while (btf_is_mod(btf_type) || btf_is_typedef(btf_type)=
-) {
-> > +                       id =3D btf_type->type;
-> > +                       btfgen_type =3D btfgen_get_type(info, id);
-> > +                       if (!btfgen_type)
-> > +                               return -ENOENT;
-> > +                       btf_type =3D (struct btf_type *) btf__type_by_i=
-d(btf, id);
-> > +               }
-> > +
-> > +               switch (btf_kind(btf_type)) {
-> > +               case BTF_KIND_STRUCT:
-> > +               case BTF_KIND_UNION:
-> > +                       idx =3D targ_spec->raw_spec[i];
-> > +                       btf_member =3D btf_members(btf_type) + idx;
-> > +                       btf_type =3D (struct btf_type *) btf__type_by_i=
-d(btf, btf_member->type);
-> > +
-> > +                       /* add member to relocation type */
-> > +                       err =3D btfgen_add_member(btfgen_type, btf_memb=
-er, idx);
-> > +                       if (err)
-> > +                               return err;
-> > +                       /* put btfgen type */
-> > +                       btfgen_type =3D btfgen_put_type(btf, info, btf_=
-type, btf_member->type);
-> > +                       if (!btfgen_type)
-> > +                               return -errno;
-> > +                       break;
-> > +               case BTF_KIND_ARRAY:
-> > +                       array =3D btf_array(btf_type);
-> > +                       btfgen_type =3D btfgen_get_type(info, array->ty=
-pe);
-> > +                       if (!btfgen_type)
-> > +                               return -ENOENT;
-> > +                       btf_type =3D (struct btf_type *) btf__type_by_i=
-d(btf, array->type);
->
-> should index_type be added as well?
-
-This is added in _btfgen_put_type(). Here we're just updating
-`btf_type` with the array's type for the next iteration of this loop.
-
->
-> > +                       break;
-> > +               default:
-> > +                       p_err("unsupported kind: %s (%d)",
-> > +                             btf_kind_str(btf_type), btf_type->type);
-> > +                       return -EINVAL;
-> > +               }
-> > +       }
-> > +
-> > +       return 0;
-> >  }
-> >
-> >  static int btfgen_record_type_relo(struct btfgen_info *info, struct bp=
-f_core_spec *targ_spec)
-> >  {
-> > -       return -EOPNOTSUPP;
-> > +       struct btf *btf =3D (struct btf *) info->src_btf;
-> > +       struct btfgen_type *btfgen_type;
-> > +       struct btf_type *btf_type;
-> > +
-> > +       btf_type =3D (struct btf_type *) btf__type_by_id(btf, targ_spec=
-->root_type_id);
-> > +
-> > +       btfgen_type =3D btfgen_put_type_all(btf, info, btf_type, targ_s=
-pec->root_type_id);
-> > +       return btfgen_type ? 0 : -errno;
-> >  }
-> >
-> >  static int btfgen_record_enumval_relo(struct btfgen_info *info, struct=
- bpf_core_spec *targ_spec)
-> >  {
-> > -       return -EOPNOTSUPP;
-> > +       struct btf *btf =3D (struct btf *) info->src_btf;
-> > +       struct btfgen_type *btfgen_type;
-> > +       struct btf_type *btf_type;
-> > +
-> > +       btf_type =3D (struct btf_type *) btf__type_by_id(btf, targ_spec=
-->root_type_id);
-> > +
-> > +       btfgen_type =3D btfgen_put_type_all(btf, info, btf_type, targ_s=
-pec->root_type_id);
-> > +       return btfgen_type ? 0 : -errno;
-> >  }
-> >
-> >  static int btfgen_record_reloc(struct btfgen_info *info, struct bpf_co=
-re_spec *res)
-> > --
-> > 2.25.1
-> >
