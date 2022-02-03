@@ -2,85 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59ACB4A8A1D
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 18:33:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 433174A8A27
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 18:33:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352882AbiBCRcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 12:32:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44218 "EHLO
+        id S1352900AbiBCRdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 12:33:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232504AbiBCRcu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 12:32:50 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857B5C061714;
-        Thu,  3 Feb 2022 09:32:50 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id r59so3059200pjg.4;
-        Thu, 03 Feb 2022 09:32:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/MrjU+6E5BVPS++BhfoyxVPlHu4UEo5Emuq7dEluOgI=;
-        b=k11E0xJ3TLkprJZZIkz2M6uxoAFQGPFMRdU7tQUMnmKBOPYdlMGEzzW58G2rgSxgMm
-         oUmP9vaDVMu/xQcwko3sxazHaZFhu+ScV7gTqTiZdP4//HYjdychHqtyBSdIvrv0j5Ht
-         Wd1q+E6jcmVHQO3R0IoT9ZG7q4aBSdMyvXEXi7/cPqZft/xkTvXHaH+DW6rs33B4h4Xg
-         JMkP0LCT9RQMPgp8xmRXXEM8BaS2k33H1MwcEKMOf4y1NQNd8gJyHAUgcfk3fWZG3Ntv
-         TY81mv6rINWLbVVWT6jxKdJgaHgBG8hRoGr1ZjNvfua7q9deLghFERrIxvXNfgOc0aIn
-         H9lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/MrjU+6E5BVPS++BhfoyxVPlHu4UEo5Emuq7dEluOgI=;
-        b=KrUpAhVDbVwEoELMSfnm9QZSdSXwDfK3rET43t8HQVaTAvrtUjjIWd58Jx94/OinTO
-         mulnuKOGhmuBvVdhmuGbG3xiZIsax3Dhd3Wl1GjJLnAtwCHQwbDlOTZzOtRGzAlBjr5B
-         e2fK1mc+DvWk3aOCwLZGZZ4kX+F6UdpXXHygK5faaUwc3j4AjxY9l39f8nU6BLm/Oua8
-         wJtk5nNN7F6UVva0Hx4J23JTfezD4pZFjdf4ZKN3m6K7JvxJTnCNPDb0u2Z3BNf2V8EX
-         pQh1K8/+pQa0qm72uQwJBiom77l2lYB/TB/ZkWMazEuExpGTvMk2qMLqNEUrFuEFwONV
-         RFXQ==
-X-Gm-Message-State: AOAM531UQUiiEsYCYdGnKIz6ZSKlKt3IqLCmEhmwktwpyjJ3fhIj01zw
-        xnab7EgAxw7YX8GKyLXLJDG06SgYL2rZUcwrFuyNHxytQ1M=
-X-Google-Smtp-Source: ABdhPJz3RqmPsOiP/l/YGnFKWapOPqnj8IPmZH+XVR4VmaUUEJJAlcXtP1jPZymMFStmOSH5kcaNkIEAFD9YdUzbCAo=
-X-Received: by 2002:a17:90a:d203:: with SMTP id o3mr15032687pju.122.1643909569987;
- Thu, 03 Feb 2022 09:32:49 -0800 (PST)
+        with ESMTP id S1352902AbiBCRdN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 12:33:13 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22B9C061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 09:33:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=cnHzcZWWo2B1XYeox8Tga+hw1M3rf/ODvVizUxJgqgA=; b=TP/oO30avlju1A0zfey/FXelhC
+        onT50rC6B+Bf6bRFWmNkNkNSUad+ua02F4Mjr0Pg9p69hBZ0o6W92zgIHJC8rq6tvTpCePzWWglGk
+        wd6uTyfeVegFa0WbnFTFM6qCyAEL4OrRk7nc0/RDWe3B07V4D+XXVkQPLFPW2xaHzW2R4TE9Lp8AD
+        urnYhj31y3xuI4Kp3EF3Q1cgyVRve4M1LN42Uwfza81TAhZDp9ly1soP8muwqvvNDpNqA7Uh5Asqx
+        +hb4jgcke7HA2QhR/eX2rAnz7xncOnwafYb8PlmAT57an/x4qBYJSLGgF1ysy++oQfAeguzce3viE
+        HVBI/J2A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57020)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nFfyn-00030t-88; Thu, 03 Feb 2022 17:33:09 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nFfym-0004BX-Jw; Thu, 03 Feb 2022 17:33:08 +0000
+Date:   Thu, 3 Feb 2022 17:33:08 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 1/5] net: dsa: b53: clean up if() condition
+ to be more readable
+Message-ID: <YfwR1Ix5UG7MppKP@shell.armlinux.org.uk>
+References: <YfvrIf/FDddglaKE@shell.armlinux.org.uk>
+ <E1nFfwa-006X66-Dd@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-References: <20220131183638.3934982-1-hch@lst.de> <20220131183638.3934982-4-hch@lst.de>
-In-Reply-To: <20220131183638.3934982-4-hch@lst.de>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 3 Feb 2022 09:32:38 -0800
-Message-ID: <CAADnVQLiEQFzON5OEV_LVYzqJuZ68e0AnqhNC++vptbed6ioEw@mail.gmail.com>
-Subject: Re: [PATCH 3/5] bpf, docs: Better document the legacy packet access instruction
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1nFfwa-006X66-Dd@rmk-PC.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 10:36 AM Christoph Hellwig <hch@lst.de> wrote:
-> +These instructions are used to access packet data and can only be used when
-> +the interpreter context is a pointer to networking packet.  ``BPF_ABS``
-...
-> +These instructions have an implicit program exit condition as well. When an
-> +eBPF program is trying to access the data beyond the packet boundary, the
-> +interpreter will abort the execution of the program.
+Sorry for the unintentional re-send, please ignore the second set.
 
-These two places make it sound like it's interpreter only behavior.
-I've reworded it like:
--the interpreter context is a pointer to networking packet.  ``BPF_ABS``
-+the program context is a pointer to networking packet.  ``BPF_ABS``
+On Thu, Feb 03, 2022 at 05:30:52PM +0000, Russell King (Oracle) wrote:
+> I've stared at this if() statement for a while trying to work out if
+> it really does correspond with the comment above, and it does seem to.
+> However, let's make it more readable and phrase it in the same way as
+> the comment.
+> 
+> Also add a FIXME into the comment - we appear to deny Gigabit modes for
+> 802.3z interface modes, but 802.3z interface modes only operate at
+> gigabit and above.
+> 
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> ---
+>  drivers/net/dsa/b53/b53_common.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+> index a3b98992f180..7d62b0aeaae9 100644
+> --- a/drivers/net/dsa/b53/b53_common.c
+> +++ b/drivers/net/dsa/b53/b53_common.c
+> @@ -1327,11 +1327,14 @@ void b53_phylink_validate(struct dsa_switch *ds, int port,
+>  
+>  	/* With the exclusion of 5325/5365, MII, Reverse MII and 802.3z, we
+>  	 * support Gigabit, including Half duplex.
+> +	 *
+> +	 * FIXME: this is weird - 802.3z is always Gigabit, but we exclude
+> +	 * it here. Why? This makes no sense.
+>  	 */
+> -	if (state->interface != PHY_INTERFACE_MODE_MII &&
+> -	    state->interface != PHY_INTERFACE_MODE_REVMII &&
+> -	    !phy_interface_mode_is_8023z(state->interface) &&
+> -	    !(is5325(dev) || is5365(dev))) {
+> +	if (!(state->interface == PHY_INTERFACE_MODE_MII ||
+> +	      state->interface == PHY_INTERFACE_MODE_REVMII ||
+> +	      phy_interface_mode_is_8023z(state->interface) ||
+> +	      is5325(dev) || is5365(dev))) {
+>  		phylink_set(mask, 1000baseT_Full);
+>  		phylink_set(mask, 1000baseT_Half);
+>  	}
+> -- 
+> 2.30.2
+> 
+> 
 
--interpreter will abort the execution of the program.
-+program execution will be aborted.
-
-and pushed to bpf-next with the rest of patches.
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
