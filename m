@@ -2,104 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B27B4A86CC
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 15:45:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3D844A86DF
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 15:47:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351226AbiBCOpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 09:45:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32892 "EHLO
+        id S1351313AbiBCOqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 09:46:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347434AbiBCOpB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 09:45:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B060C061714;
-        Thu,  3 Feb 2022 06:45:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31193619C5;
-        Thu,  3 Feb 2022 14:45:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94370C340F0;
-        Thu,  3 Feb 2022 14:45:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643899500;
-        bh=4X60c9J7dyhyGgFLDNX3tftCODVhTZ8aDgMpH70B4D0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=jf2ap6sVW+iM13htQpVRMj6v0TsX63zQhDH0Iid4nvYy+4jUC6LZAF9/hV/9pFvIb
-         57nDKwma+uVjiZTN7uWg1QiG1JxbMlNVHWFm4e+CpZPOvRPOmuai9iIfYlU+kfoInz
-         r/lml87oTUn0Ofm/RSzrn9RAYc2eMEFL3x7n285JgcmN9KOOzwHQt8fif3Of9jso2p
-         dePyU1cfQsnPZdsMiAiCt2O1RWn3diVmPeIvspC90rMUG11zbLJrwGJR4CHB9rE8Hy
-         VCiHl74aBCfKVyeDqFbEL1fpWRDSixT3FjCZDKBeTCNkR3wJzpNKH2fqXw5C6strdF
-         cUzerl3+PNJ5g==
-Received: by mail-ed1-f52.google.com with SMTP id b13so6540367edn.0;
-        Thu, 03 Feb 2022 06:45:00 -0800 (PST)
-X-Gm-Message-State: AOAM532YG8WKpw47io7J9a7lucr76OZaStXkNRoNXt8y3q0Z5IRPXECp
-        zSzcqvVxjN8s4c3ndb1MHNBd8+VB7XS3b5LOOg==
-X-Google-Smtp-Source: ABdhPJw6USRzkUs2MpEdvbFzpbuH5Gg1vUqLb2ph6uvapwZFrBu6VIyITj/70KieoZLN7eeCJZLMyfifbm340ZVUEhI=
-X-Received: by 2002:aa7:d6d4:: with SMTP id x20mr35580598edr.307.1643899498934;
- Thu, 03 Feb 2022 06:44:58 -0800 (PST)
+        with ESMTP id S1351270AbiBCOqp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 09:46:45 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0802C061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 06:46:44 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id o12so6383414lfg.12
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 06:46:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=W/BXAa3l79fX9MF+bxVFKmLQddxbKK34x2xR+l7e8gw=;
+        b=I7GrDzQ2Q3cq7ME8r0jxEDMT/RA5mDxEiZuzumzyB9NHfj5V9Gr19cG52Q+UVfjCNS
+         m+S0Gm1VNJDbUWVSUKAlAny0Yqi5awebxsN3dQVVXpTMgFHYH8DMFH9u5N1xhcnFs9Yk
+         eIFJu510Hzsb6s3kY/K9zvBkGPdWSj6VyBt4Hc+su7k3Ng6B8y/WPelA00Tr9lYFYehE
+         ZS7hl7wwWyFLfDRUiuwxV51uBE5vuaziydpv/c3jdJurkOQxJ6gyZyKlhE2Eqg3J79Lu
+         x4lw4PQQfwNJ/lLHmePPIe24mYxp+seyktF89N7Vyd2RyR34vHl9BQiT13BazvEQYjon
+         8QxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=W/BXAa3l79fX9MF+bxVFKmLQddxbKK34x2xR+l7e8gw=;
+        b=r4e9soRiyNJLm2LVyulHWqSCXGYAlvpSiGRpRt0lWtlwuu/bl4pI5/2DyS5VDMyQJ+
+         v/fobFVcYWHab6ZMUtGWNtWp76zufJKAv+yzUK/5M/AZpqGFkre37RoiJlbUY1os9GHN
+         mN/uMhTK5awNNlhhEXiNPFE4M1qR/OoScptyTgshTYBcxDxBACXjntEGRl5NLfT/LW4Q
+         9z922GvIX4fPNekXJ61URFJYtRMHK9c+x1Ryu8gF0yQdLvwoN32EfsHmmKWn+Z4qsqqj
+         LJclau7LDopwVM/dtig5zSOwwY4CUuDoBJcc+G1ECUEC2YYcsz5+X+weBEJGCJAz/qGc
+         c6lA==
+X-Gm-Message-State: AOAM532F3O0/gJF7/rS/ND/zSlNL7p9JgfUz6qZshnxh1KoKZT2h7Lgl
+        lXBQJejS8/+sHaWIb73w5wgNhzij0yUG1kgTpMU=
+X-Google-Smtp-Source: ABdhPJw4sAtPDApAUNv7pu0ymoxHinTaf1vYO+MI28XCDEq5XbROStcPADfDu2B9x6AopdF9RgAxxjLIM/mygy197o4=
+X-Received: by 2002:a05:6512:517:: with SMTP id o23mr27288413lfb.16.1643899603164;
+ Thu, 03 Feb 2022 06:46:43 -0800 (PST)
 MIME-Version: 1.0
-References: <20220201140723.467431-1-elder@linaro.org> <20220202210638.07b83d41@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <eb09c869-c5c6-4be8-5265-072849f1ecd0@linaro.org>
-In-Reply-To: <eb09c869-c5c6-4be8-5265-072849f1ecd0@linaro.org>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Thu, 3 Feb 2022 08:44:47 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLMit=e6vdum-xm1uxfCZcoJsTFe_S3k-QyVbvJPfNHew@mail.gmail.com>
-Message-ID: <CAL_JsqLMit=e6vdum-xm1uxfCZcoJsTFe_S3k-QyVbvJPfNHew@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: qcom: add IPA qcom,qmp property
-To:     Alex Elder <elder@linaro.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Gross, Andy" <agross@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Evan Green <evgreen@chromium.org>, cpratapa@codeaurora.org,
-        avuyyuru@codeaurora.org, jponduru@codeaurora.org,
-        subashab@codeaurora.org, Alex Elder <elder@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Received: by 2002:a05:6520:11ca:b0:195:649:bfd3 with HTTP; Thu, 3 Feb 2022
+ 06:46:42 -0800 (PST)
+Reply-To: mrsaishag54@gmail.com
+From:   Mrs Aisha Al-Qaddafi <mrsaishag4@gmail.com>
+Date:   Thu, 3 Feb 2022 06:46:42 -0800
+Message-ID: <CA+L6gkmnCCpYE3TXgOZH2mtL7q-KTZGA6-1g86zGvcJebTvYWQ@mail.gmail.com>
+Subject: Dear Friend,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 5:27 AM Alex Elder <elder@linaro.org> wrote:
->
-> On 2/2/22 11:06 PM, Jakub Kicinski wrote:
-> > On Tue,  1 Feb 2022 08:07:23 -0600 Alex Elder wrote:
-> >> At least three platforms require the "qcom,qmp" property to be
-> >> specified, so the IPA driver can request register retention across
-> >> power collapse.  Update DTS files accordingly.
-> >>
-> >> Signed-off-by: Alex Elder <elder@linaro.org>
-> >> ---
-> >>
-> >> Dave, Jakub, please let Bjorn take this through the Qualcomm tree.
-> >
-> > I don't know much about DT but the patch defining the property is
-> > targeting net - will it not cause validation errors? Or Bjorn knows
-> > to wait for the fixes to propagate? Or it doesn't matter? :)
->
-> It might matter sometimes, but in this case it does not.
->
-> If the DT property is present but never referenced by the
-> code, it doesn't matter.
->
-> The code in this patch looks up the DT property, and its
-> behavior is affected by whether the property is there
-> or not.  If it's not there, it's treated as an error
-> that can be safely ignored.
->
-> In the case this fix is actually needed, we'll need
-> both the code present and DT property defined.  If
-> the code is there but not the property, it's OK, but
-> the bug won't be fixed quite yet.
+Dear Friend,
 
-If there's only one possible node that qcom,qmp points to, you can
-just get the node by its compatible (of_find_compatible_node()). Then
-you don't need a DT update to make things work. Of course, this
-doesn't work too well if there are 10 possible compatibles without a
-common fallback compatible.
+I came across your e-mail contact prior to a private search while in
+need of your assistance. I am Aisha Al-Qaddafi, the only biological
+Daughter of Former President of Libya Col. Muammar Al-Qaddafi. Am a
+single Mother and a Widow with three Children.
 
-Rob
+I have investment funds worth Twenty Seven Million Five Hundred
+Thousand United State Dollar ($27.500.000.00 ) and i need a trusted
+investment Manager/Partner because of my current refugee status,
+however, I am interested in you for investment project assistance in
+your country, may be from there, we can build business relationship in
+the nearest future.
+
+I am willing to negotiate an investment/business profit sharing ratio
+with you based on the future investment earning profits.
+
+Best Regards
+Mrs Aisha Al-Qaddafi
+mrsaishag54@gmail.com
