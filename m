@@ -2,155 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 674724A8B1E
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 19:02:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0F624A8B27
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 19:05:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353074AbiBCSCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 13:02:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51612 "EHLO
+        id S1353088AbiBCSFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 13:05:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351171AbiBCSCf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 13:02:35 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AF23C061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 10:02:35 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id e6so2862695pfc.7
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 10:02:35 -0800 (PST)
+        with ESMTP id S242896AbiBCSFc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 13:05:32 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B85C06173B
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 10:05:31 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id z19so7591048lfq.13
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 10:05:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=eL+8oISp3UUovVG0G0fFzQhSpOOQI5O7U5239Fla59g=;
-        b=Dpgz7xWgldSnJ4usZ0xE9RNxb/E+YTXVMgOxQUzjB0mDQXTFcWo3N5GAqW/jJkLuhj
-         8AAtCtJ5oo2tMBL0iNCWyeEZwXmstOpgkF60kodqlbAWqw/AkFiZrEweEmVzKb57zdNw
-         gJmGfwNx636iiGCc+pRkMquwxMD3YhWymoR7UGtnakNYSG1pGrgOgdxCkBFlgTNeMi0P
-         y52Ct2zX52LtNYW6mWmUlPmf8e2i1dSTGeuTh/kjR0mQ1VnpIPFZU6SJWxXFJlZDuldR
-         ZphJHondAMwpxFqLMh+MJ/u4lfVtfWtJKwtGpgR3OO7vcZRF95VlGp2+7PrTtWr1I0xs
-         cEaQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ipt2A0IXpQfKpDIz03O3RwhnKF2tn41jUPb/HJacuM8=;
+        b=MJi5/d+KoCqbmk+cXUF+GdR3XZj7eLtgHTq5lk3rJenGtsKNizLO2iu5RMBRHHN2ER
+         8yAbAHuYS3y6nAr/BrciSzmu/8Bs8QIQms6jdE/VAvcpk64v5jc0K6vIRAU36RxTK1hT
+         ISK6lANOW7Cd6oMBF/T4r7mJTRk0jt5/DRnSqltQ5LGAQV0bB0dTvNiGu7/I5qtMZRR/
+         VvOuP09s0xsKDYlXL3dRcsrNlWUyUSLhdupD32pJR3be4fEjo6P1knKd/EAuzY7yT18U
+         8dWabiFoPGK96jctxpPXDmu1E+X6JnvhvBZ8WPm0naw1n8HOH41EkUstQtt0iKbsV2U1
+         3D0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=eL+8oISp3UUovVG0G0fFzQhSpOOQI5O7U5239Fla59g=;
-        b=M4ytov+fDvRzjIzSgnykz3fHtRsum+hKrsGefQ1vSGrEFeNuhSOORUVgJ677xFku+X
-         J8lNLfQg4laoRNp/YtXcDb78/0AXifMvJWI1/Gs8MtMfJ9jUREsVMxzWyXEu3vfOK6zm
-         Onk2U/I2yFrKS7FjB+u20W/7G3sZggPFbQt5zeSMTuXgxxLxnbRKQeFhTt4TlVArg1rA
-         2VI1i4A35Dxw/+fIBFrGgQSW9BoyV3iOzI+tQOxeIRk6d12aF53CLGqBF8pmVETJzN4m
-         K4itBRqP9N9kFmXBc/3n/voimh0Jg5W/7vJJ0xsDWeUoDEHi/u2sbDiFFCPR3JgKwvYC
-         D5zA==
-X-Gm-Message-State: AOAM533UadKua3cV3x0KH2Kqhd1g27crWN6z+eXTNMdAxtqqfKSRuHKF
-        5Nny44puW+Mje0On1LIT7XA=
-X-Google-Smtp-Source: ABdhPJxA370cTulfvwEizvh4APL10GqI928qF6Nf4vwRlBpJK3vVsADzRSzE+XwNwk4Pgh8BwFApEw==
-X-Received: by 2002:a62:5383:: with SMTP id h125mr34952010pfb.30.1643911354789;
-        Thu, 03 Feb 2022 10:02:34 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:b3be:296f:182e:18d5])
-        by smtp.gmail.com with ESMTPSA id ms14sm10702487pjb.15.2022.02.03.10.02.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 10:02:34 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 2/2] skmsg: convert struct sk_msg_sg::copy to a bitmap
-Date:   Thu,  3 Feb 2022 10:02:27 -0800
-Message-Id: <20220203180227.3751784-3-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220203180227.3751784-1-eric.dumazet@gmail.com>
-References: <20220203180227.3751784-1-eric.dumazet@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ipt2A0IXpQfKpDIz03O3RwhnKF2tn41jUPb/HJacuM8=;
+        b=1KEfs5K21uKeXuYXdUFM2w0X809sjP9bKWgc4Y1qxAIGhX/PwmWlYDdgk20fSP0wuy
+         oa9LDz2utCK60kPCw40Tro9+vZ5PX+3QqwngtjUvedaTnFiEtoIOis05JbFrmbMdlF++
+         8SPBKx+FWRhrdTh5vevKnfJXaEsO/vl6MOPVr/5CrmWrFZJi7KCIZNEtAYt2zCU6G9va
+         oampBRQ3CM2keJBJGmPilB6rDv/EgBU9tKYv5Kyg0qpJr97lgvYFxx23KbLWD37CfFsf
+         RioybGZ4HQ/afFwxUoZxZxf99oxM/3fNbJ9VZ6IoZeGaWDPIz7KiqYtuT+za8eJhsD8C
+         gQbA==
+X-Gm-Message-State: AOAM531o64tmh05miLVtkeXeBBvVq/kr9ZNddw6la2g/Bh7DMbiddRUs
+        MJaAcPmKoadjn4jwU0/EgGiLTat57PiMiSuZz0tD3w==
+X-Google-Smtp-Source: ABdhPJwV99UF8F8qYyuvCbCl0dqNkyzz05skhf6O8nRDYtALIgW3K2RkSMtH+xyVAf0PeBl56TaUKg9JQxja6cRGzJ8=
+X-Received: by 2002:a05:6512:344b:: with SMTP id j11mr27396831lfr.171.1643911529822;
+ Thu, 03 Feb 2022 10:05:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220201222845.3640041-1-jeffreyji@google.com> <20220202205916.58f4a592@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220202205916.58f4a592@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Brian Vazquez <brianvv@google.com>
+Date:   Thu, 3 Feb 2022 10:05:17 -0800
+Message-ID: <CAMzD94SNEPACnp+uniXVgRDWr9oukj-xnAoqyQQCE77GH_kqdg@mail.gmail.com>
+Subject: Re: [PATCH v6 net-next] net-core: add InMacErrors counter
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jeffrey Ji <jeffreyjilinux@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jeffreyji <jeffreyji@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Wed, Feb 2, 2022 at 8:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue,  1 Feb 2022 22:28:45 +0000 Jeffrey Ji wrote:
+> > From: jeffreyji <jeffreyji@google.com>
+> >
+> > Increment InMacErrors counter when packet dropped due to incorrect dest
+> > MAC addr.
+> >
+> > An example when this drop can occur is when manually crafting raw
+> > packets that will be consumed by a user space application via a tap
+> > device. For testing purposes local traffic was generated using trafgen
+> > for the client and netcat to start a server
+> >
+> > example output from nstat:
+> > \~# nstat -a | grep InMac
+> > Ip6InMacErrors                  0                  0.0
+> > IpExtInMacErrors                1                  0.0
+>
+> I had another thing and this still doesn't sit completely well
+> with me :(
+>
+> Shouldn't we count those drops as skb->dev->rx_dropped?
+> Commonly NICs will do such filtering and if I got it right
+> in struct rtnl_link_stats64 kdoc - report them as rx_dropped.
+> It'd be inconsistent if on a physical interface we count
+> these as rx_dropped and on SW interface (or with promisc enabled
+> etc.) in the SNMP counters.
+> Or we can add a new link stat that NICs can use as well.
+>
+> In fact I'm not sure this is really a IP AKA L3 statistic,
+> it's the L2 address that doesn't match.
+>
+>
+> If everyone disagrees - should we at least rename the MIB counter
+> similarly to the drop reason? Experience shows that users call for
+> help when they see counters with Error in their name, I'd vote for
+> IpExtInDropOtherhost or some such. The statistic should also be
+> documented in Documentation/networking/snmp_counter.rst
 
-We have plans for increasing MAX_SKB_FRAGS, but sk_msg_sg::copy
-is currently an unsigned long, limiting MAX_SKB_FRAGS to 30 on 32bit arches.
-
-Convert it to a bitmap, as Jakub suggested.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/linux/skmsg.h | 11 +++++------
- net/core/filter.c     |  4 ++--
- 2 files changed, 7 insertions(+), 8 deletions(-)
-
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index 18a717fe62eb049758bc1502da97365cf7587ffd..1ff68a88c58de0dc30a50fd030b49ea55a6c2cb9 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -29,7 +29,7 @@ struct sk_msg_sg {
- 	u32				end;
- 	u32				size;
- 	u32				copybreak;
--	unsigned long			copy;
-+	DECLARE_BITMAP(copy, MAX_MSG_FRAGS + 2);
- 	/* The extra two elements:
- 	 * 1) used for chaining the front and sections when the list becomes
- 	 *    partitioned (e.g. end < start). The crypto APIs require the
-@@ -38,7 +38,6 @@ struct sk_msg_sg {
- 	 */
- 	struct scatterlist		data[MAX_MSG_FRAGS + 2];
- };
--static_assert(BITS_PER_LONG >= NR_MSG_FRAG_IDS);
- 
- /* UAPI in filter.c depends on struct sk_msg_sg being first element. */
- struct sk_msg {
-@@ -234,7 +233,7 @@ static inline void sk_msg_compute_data_pointers(struct sk_msg *msg)
- {
- 	struct scatterlist *sge = sk_msg_elem(msg, msg->sg.start);
- 
--	if (test_bit(msg->sg.start, &msg->sg.copy)) {
-+	if (test_bit(msg->sg.start, msg->sg.copy)) {
- 		msg->data = NULL;
- 		msg->data_end = NULL;
- 	} else {
-@@ -253,7 +252,7 @@ static inline void sk_msg_page_add(struct sk_msg *msg, struct page *page,
- 	sg_set_page(sge, page, len, offset);
- 	sg_unmark_end(sge);
- 
--	__set_bit(msg->sg.end, &msg->sg.copy);
-+	__set_bit(msg->sg.end, msg->sg.copy);
- 	msg->sg.size += len;
- 	sk_msg_iter_next(msg, end);
- }
-@@ -262,9 +261,9 @@ static inline void sk_msg_sg_copy(struct sk_msg *msg, u32 i, bool copy_state)
- {
- 	do {
- 		if (copy_state)
--			__set_bit(i, &msg->sg.copy);
-+			__set_bit(i, msg->sg.copy);
- 		else
--			__clear_bit(i, &msg->sg.copy);
-+			__clear_bit(i, msg->sg.copy);
- 		sk_msg_iter_var_next(i);
- 		if (i == msg->sg.end)
- 			break;
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 9615ae1ab530a9735e3d862b1ddf12b1b1f55060..f497ca7a16d223855004876e3a868d5de8cea879 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2603,7 +2603,7 @@ BPF_CALL_4(bpf_msg_pull_data, struct sk_msg *, msg, u32, start,
- 	 * account for the headroom.
- 	 */
- 	bytes_sg_total = start - offset + bytes;
--	if (!test_bit(i, &msg->sg.copy) && bytes_sg_total <= len)
-+	if (!test_bit(i, msg->sg.copy) && bytes_sg_total <= len)
- 		goto out;
- 
- 	/* At this point we need to linearize multiple scatterlist
-@@ -2809,7 +2809,7 @@ BPF_CALL_4(bpf_msg_push_data, struct sk_msg *, msg, u32, start,
- 	/* Place newly allocated data buffer */
- 	sk_mem_charge(msg->sk, len);
- 	msg->sg.size += len;
--	__clear_bit(new, &msg->sg.copy);
-+	__clear_bit(new, msg->sg.copy);
- 	sg_set_page(&msg->sg.data[new], page, len + copy, 0);
- 	if (rsge.length) {
- 		get_page(sg_page(&rsge));
--- 
-2.35.0.263.gb82422642f-goog
-
+Changing the Name to IpExtInDropOtherhost and adding the documentation
+makes sense to me. What do others think? I'd like to get more feedback
+before Jeffrey sends another version.
