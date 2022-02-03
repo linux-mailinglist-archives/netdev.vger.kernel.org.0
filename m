@@ -2,265 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 961434A84D9
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 14:04:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD3694A84F7
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 14:16:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350700AbiBCNEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 08:04:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38062 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350698AbiBCNEw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 08:04:52 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1883AC06173B
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 05:04:52 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id m11so5790412edi.13
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 05:04:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=2mwUPXoHw2U3pchucMh1Dyc/z3652kHLkK9mHdVy47M=;
-        b=dC3CCO5oWgfnSmwG25SBVs4HxEQtsXZ5r+KZMBkM4lUhbhT8W/jCXglpAHKxMlpcqd
-         kBGrOrgrTwYx8iifSVNrY40uSASoy08FeD7AZElq/zg4lYyMt4OMWvmS6RtGpKT36qIg
-         +GtqPRsOaL5DNEa2+Xup5OnJv530ZFja7OJ7hFlUNGWPO6TPFk58PI8c6RgG6eGM2wo3
-         QNCekdZ9ZUuXZ/Obxwgsl1/jwN9D8cbaIfn7nD3YYs2fNff9KmBzpbuROM1njmODNoh2
-         FXgkUcDedawPawOnrOMRcdNnApBlE6Z06kPGzl4BiL+OeRtExHOQtU/2MA8JfWjijT72
-         onww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=2mwUPXoHw2U3pchucMh1Dyc/z3652kHLkK9mHdVy47M=;
-        b=V7HLsO8TbrRz8QOSfzyEXSWq9B4sOpFybB87ajI9/MLNB9GMenOZo+g6Psn4MsLmmJ
-         U3Ahf7cP9JTioS8n6f4jfaKpWy7D9drn1u8Ed8uQUHDc31AWU6lz6IwNC/vtkkwhVzQA
-         DjC9QwlT7H15KYStsHWNyyW1rLvXNAJRttnVfivUC1CLl7O/l0qparar6F8UYdfoHh+8
-         bSnQHhgQo18mvvpo7agqAkPHavEVjRLWL6zN3AqewpsxHDRDOOcuZf6ZEWpLsPKzNj2P
-         Y45Qg/ujTsLtjvHO+JEGeiAwR5URMqzBGNaUXXiNA7GYYjx+Nfni4SE/vznewS0E8K2m
-         mS+A==
-X-Gm-Message-State: AOAM5307WEwrTopiPgfVguLsR61bycpO2PfjYpsgbCxOkkokcj9BQRpP
-        qtNi2toF2S3pbxYH7qbIWsQ=
-X-Google-Smtp-Source: ABdhPJxxtrWrIQXaxw699Fb2j0iae+Y/LD2lnxXSd7ZxILvvYfJ+iJDW1Gnv/nQAjpvJbF4n4Pgjyg==
-X-Received: by 2002:aa7:d949:: with SMTP id l9mr35515760eds.348.1643893490518;
-        Thu, 03 Feb 2022 05:04:50 -0800 (PST)
-Received: from [192.168.0.108] ([77.126.86.139])
-        by smtp.gmail.com with ESMTPSA id d3sm11991745edq.13.2022.02.03.05.04.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Feb 2022 05:04:50 -0800 (PST)
-Message-ID: <00066e2f-048b-16ac-c3d0-eb480593bdfb@gmail.com>
-Date:   Thu, 3 Feb 2022 15:04:48 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+        id S1350733AbiBCNQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 08:16:18 -0500
+Received: from de-smtp-delivery-102.mimecast.com ([194.104.111.102]:35742 "EHLO
+        de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1346060AbiBCNQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 08:16:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1643894175;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t0bAJLePcdGYk6kVK1wFGIIutK9iYBe2gVZ5EeZGyMc=;
+        b=FDZV8R7sIGyYmRIFAwqxgw2S1//TpVF4Aw1aZNPD0y1Hpn9BGnNXlv3Uv0Ic7oDDfpHQBt
+        pp5NYo7NrW4jE7Ae69kElsuo9bHdVoWhoY7GqmsA6Lqxmfw9+AyzwvHSbA1JzcKv9/QNTh
+        kkJqyf0tGZ2uzOpKb2MGzhjm9aJohPs=
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com
+ (mail-vi1eur05lp2171.outbound.protection.outlook.com [104.47.17.171]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-32-xX2szb2sPUeDts6ccF-XEg-1; Thu, 03 Feb 2022 14:16:13 +0100
+X-MC-Unique: xX2szb2sPUeDts6ccF-XEg-1
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gSLf3w6+edWquPfzZeZj7Zp/J6J4kYt9m0FCNrJfxpd55Qu9KJmj1Mq2hl5/enopQOTHKF2Dr7ndb3l8iKlhutWT1p0P6i2r83chwD+geRGry/dbusEtdve7XOcrEEDURUGTO0FdN0TIzyb1+LisYl2rc5jgDJHa7gD+EA+tygXj7eI7JCH4JG449KTT048mIuvyq9ssrspVR9V2ievQ8CItxQlapGWbIEg1hhtX5eT0FVduDiqVPhRPlFVkKJBOUYj85sUeIP75B3fb61TrE9NSme8vnWDPFR2dbilpwcJV+HXNc7KpVbJEDQ4wfGrM+oye+hw1TcXvPc/ABdJDdQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=z9CwvqmvrZiFXSyBnnQu52l+0zrpKgp3U6DTw0lIq/M=;
+ b=JTXrjV8gpNWCs09plhXqlk3CDOdxf8eMHgUH4EG3mkHPASw/oMxUMkqcZyooqog6ydFmcCwszlXtOHIxxINgnph8rXTRvj4UJNd8ysq8Fe0xfpdFQjLUXhwYjpi5ut82XnxFkiZR2jT36fClsrCdqWlJScY4lwgFqh0zaMK3QXFbsDChdyUVlNfE4rBGPCZhmDuTwRCxNXmvbAMFQKu0kQWqti5N6Znukqmh/UrAFh3t9rQORmpEmnc05Ln0OO8HkJXzUew4fL5v9Q0FDKHd7vHZZ2OT5i/J1oyLTBRlSx8TuIuFEoohHE7fZ82yfNwPFtmzfadNwusgdRafYGfpKQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com (2603:10a6:10:22::23)
+ by DB7PR04MB4380.eurprd04.prod.outlook.com (2603:10a6:5:31::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 3 Feb
+ 2022 13:16:11 +0000
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::24bf:3192:1d1c:4115]) by DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::24bf:3192:1d1c:4115%3]) with mapi id 15.20.4951.012; Thu, 3 Feb 2022
+ 13:16:11 +0000
+Message-ID: <39e8899f-f5e0-c57c-ebaa-f3303a716d0d@suse.com>
+Date:   Thu, 3 Feb 2022 14:16:09 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH net-next 14/15] mlx4: support BIG TCP packets
+Subject: Re: [PATCH net-next v1 0/4] usbnet: add "label" support
 Content-Language: en-US
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Coco Li <lixiaoyan@google.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
- <20220203015140.3022854-15-eric.dumazet@gmail.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20220203015140.3022854-15-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Oliver Neukum <oneukum@suse.com>
+CC:     Greg KH <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220127104905.899341-1-o.rempel@pengutronix.de>
+ <YfJ6tZ3hJLbTeaDr@kroah.com> <41599e9d-20c0-d1ed-d793-cd7037013718@suse.com>
+ <Yfut/RbMAoaIhx41@pengutronix.de>
+From:   Oliver Neukum <oneukum@suse.com>
+In-Reply-To: <Yfut/RbMAoaIhx41@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-ClientProxiedBy: AM5PR1001CA0058.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:206:15::35) To DB7PR04MB5050.eurprd04.prod.outlook.com
+ (2603:10a6:10:22::23)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7100e970-acc2-4741-75b4-08d9e71758c6
+X-MS-TrafficTypeDiagnostic: DB7PR04MB4380:EE_
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-Microsoft-Antispam-PRVS: <DB7PR04MB438038D1D4999BE5C6C2EB48C7289@DB7PR04MB4380.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lOMRFlw0uFciE3+4aBIV/icxc8A/lVFqNAkduQljpsQx2Hmp8ePE/D/R0R0q+s/p+4foLopY2v3KhpSRULTLyjk/n14HEF4hXOcpuXQhZYIuXqv79MQztf7LZ9WX8FJbkZvSNIMELXYKb08tlX3/6cPKKERsvzXXprm1TO0VfiC+0dK2P98DkepcHBf6XyAhWFTkaVXMXfedUIL7ZgQhtZLoI0UH2aToKr73O4sfaRmRNiEcp3TkYJ1z5YqWH0+kTvKqG50Z+FMwi9sEWNXxOC9SmT2rp1CdqrQfI4qVygEWRVB4WP5QjoOL47p9IH+/0z9snnYVUAXmsm1U70Y90XHmOUFYxTS2L3pbYS9Q3cBJCngTI4mzLMB95fslP+mWCA0//0O89qNilq1jV0s9REYEO56TmhlaTefAnYx9AnpVtHWZzV/cA6nsasimMxrNiAmI95uaHidAuGec8POLtx1Fz+cE2zo3MgWB3pNl2VeHehDF0Wyu3ioSmBMAmcGdzIP+e3N2vZVdQZiSPxHJreZx2ZyWRQ5/4LL8BiF4MH/Ydve7X2Vg9mG5xhmB7453aUaXpolpSc45jtPdMUpv6OSkXxV8ZiayMqfdClW7qXrTazchyET+XeEBmTEKdwkNvlx3zuuyT7/VYF5GyHqdleid7IzEpt2Jx4VAv37wLWLzSZLOUo+rGvgsubj21orK+TyARNIpczs6vyxt/iQVPUkmtldKSeaviVk9ATXJeK31Zic5OafoIIjRXWvlgEP+mHdxSYKVFzvZaPyNhsiULwaPKRFQ5fCQROk6gG42zxm0gViZwZi13p7qPoOTQntL
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5050.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2906002)(2616005)(186003)(31696002)(53546011)(86362001)(38100700002)(6506007)(6512007)(36756003)(54906003)(8676002)(31686004)(316002)(110136005)(5660300002)(7416002)(8936002)(4326008)(66556008)(66476007)(66946007)(966005)(508600001)(6486002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?eaqRFRLtgnr/62zPvfpJj2TW5agAv+o8WsZP6LXV/IpSRC6c2pWJ8fmU9HBd?=
+ =?us-ascii?Q?qD+lVv034fRMffCwBmxyI0PcQLG2Rh2pLY6t+0Jh5OJtfFIszbUoAfsv2z6H?=
+ =?us-ascii?Q?66gJyfQLPTtpo2JlysnbOrkRMpxTyjCaXlituoSPmrsyA3/Vqo06bek+UOUl?=
+ =?us-ascii?Q?Sh572Ao9RkXOz62qYx4Y2oQpQoayYvJ+MV7V8XY/zWALTzKsYwmjmwF8BJ06?=
+ =?us-ascii?Q?dYWZLrezZRActmmxwNdwgl8IEGOEuPkJQ45N/01xAqvWM0XvW715oFhDdXzX?=
+ =?us-ascii?Q?6w2jLwqzsOIcK6CKOXNj3SXR7zboKW5VVy2Sr8tAZGxoZ9L9NvuUJJKcE5Xk?=
+ =?us-ascii?Q?NzdyGRqbI6Avy3qQfodAsyf5qhxgmROYJT4ps/TkUwjdre5RKHwRmN0psvm4?=
+ =?us-ascii?Q?Yc9dVzmy4nlLP1Z/5u7DrAsXGpDzfKxD5QaWuv30JAQBXje5WsEVAp3ZiQAg?=
+ =?us-ascii?Q?BqzVzL6KccLmaXwj+ookIB6ACPvtVgUSXBxYgRjODpb1V453PrIDD8QcJMlE?=
+ =?us-ascii?Q?/KN7yrLNzaK1xgVbr4+1cowb7C3W0FHtyOtl7JNI+hOPVKiM34SQbRviSBQn?=
+ =?us-ascii?Q?PMVf86nUBZY2OEN1oruMxSOyanUc0BLLC4Hm5z7jzCFyXtEObT9OzvF5sh0a?=
+ =?us-ascii?Q?8heBnbl2+vgVhBml4DUqTBKB87bkcBUGmydYMezq9vDeuOAmtykefglz+ywG?=
+ =?us-ascii?Q?i4spNpGxPWJVhi4XV44xEPdluTvhtrpzgQRsnYqyJuaGSBNCHh69j2jsgWUp?=
+ =?us-ascii?Q?jIic8EBNtrFeIXVU+Q8qbkInJvjCGM9i4IMHbOLSLVCW26S1VWp9SfiAPZGB?=
+ =?us-ascii?Q?rlcSUoCsg0Z6dgzzdhg/sF6dChKqukdINxObdOyIL7PbRlfr6N/SNL8Q0xO5?=
+ =?us-ascii?Q?+fJPzuKncJXk/SFItuPEaLKTIjc4fJmrWv7j1R7SrbYAepse85toThgkwnzT?=
+ =?us-ascii?Q?oae2VOtGRoDORPEIx+qsnynQyd5JPX7zzdXJmqT8ipg86xAVqwD/QD7j/pqk?=
+ =?us-ascii?Q?tapC3CizRzG5Q+gDzJw9BGle/+VC57eohrgopexpmlRsuPK47IYg0WI7iEJJ?=
+ =?us-ascii?Q?U3JF+wwmzRqNLiX1CknS92wdVw420X4jLrQMdO67BYT4Yd/H30yRnHTJmYkI?=
+ =?us-ascii?Q?0O4WIej5T7/8ti7q/N4gw2fV6YN/iaW9QeF1y8Fpapbr+EM0xTByqGajwbOu?=
+ =?us-ascii?Q?k9oJWiXYBTsDQB03787naQ+puhmcv1MR9NW8ofJveNnuR1n0EtziGXvq1Izf?=
+ =?us-ascii?Q?hxoS+C6Vi7qeB87+j0wuxupUuBT2ZXCefpRzgwLTr725RLm4sZ4zz7n85++h?=
+ =?us-ascii?Q?3F1NWfXoo9EACnFfyMvDfrNp97jtc7kQXB2/aWhpJu/EGFlh6NNYP65OM4Bf?=
+ =?us-ascii?Q?7HuK9KO33ZNHvYTVPo9AFwO5uuBeNpwHMx1Jb2jihb6OQTVrkZOue50eYOEb?=
+ =?us-ascii?Q?CF0XFfGGU5bAOMJ4LwnYVQYNnnvvMcgdBNOVgjsynFMDHRHBrw/uFLIDVbS5?=
+ =?us-ascii?Q?m85lfV/TWMEhXRZ/4emrtJDJLj3hG/lnXnTDTYZ5ZWf7oBGEX3PE6yniE33V?=
+ =?us-ascii?Q?8RAp1/1CGCn8t1G1xoO3VwuuolhSk/YYCx0xo4yX1X9T/dJPfDMjqVkxekCm?=
+ =?us-ascii?Q?UOz7+K+jTmzAXM8vIxCFfDHigdhaiJmsP/Bjl9E1yGUNAvMjWUBtvxEA7/74?=
+ =?us-ascii?Q?fQjWxbPCCMDkid/bvcaz38SUQqQ=3D?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7100e970-acc2-4741-75b4-08d9e71758c6
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5050.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2022 13:16:11.1957
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: q0cD5boQT+jTZ9i+JVsw+v6ZWrtbokvGuMdqEslUm/4iY0DKL/E6boyGyhLQnl0iK/QhUNrDM2XIYxBfJi7sFQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4380
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+On 03.02.22 11:27, Oleksij Rempel wrote:
+> On Thu, Feb 03, 2022 at 10:34:25AM +0100, Oliver Neukum wrote:
+>> On 27.01.22 11:57, Greg KH wrote:
+>>> On Thu, Jan 27, 2022 at 11:49:01AM +0100, Oleksij Rempel wrote:
+>>>
+> In this particular use case there is a PCB with a imx6 SoC with hard
+> wired USB attached USB-Ethernet-MAC adapters. One of these adapters is
+> connected in the same PCB to an Ethernet switch chip. There is a DSA
+> driver for the switch, so we want to describe the whole boards in a DT.
+OK, so you are talking about what is technically an embedded
+device with a DT as is usual for such devices.
+> Putting a label in the DT that renames the network interface is "nice to
+> have" but not so important.
+Well, this applies to your particular device only, doesn't it?
+>
+> As the DT DSA bindings rely on linking a MAC phandle to the switch we
+> need to describe the USB Ethernet adapter in the DT, this is more
+> important. See this discussion:
+>
+> https://lore.kernel.org/all/20220127120039.GE9150@pengutronix.de/
+And this one irks me. The USB list is not the place to talk about
+how to build switches. The question here is whether OF and
+DSA have features that need support in USB drivers.
 
-On 2/3/2022 3:51 AM, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> mlx4 supports LSOv2 just fine.
-> 
-> IPv6 stack inserts a temporary Hop-by-Hop header
-> with JUMBO TLV for big packets.
-> 
-> We need to ignore the HBH header when populating TX descriptor.
-> 
-> Tested:
-> 
-> Before: (not enabling bigger TSO/GRO packets)
-> 
-> ip link set dev eth0 gso_ipv6_max_size 65536 gro_ipv6_max_size 65536
-> 
-> netperf -H lpaa18 -t TCP_RR -T2,2 -l 10 -Cc -- -r 70000,70000
-> MIGRATED TCP REQUEST/RESPONSE TEST from ::0 (::) port 0 AF_INET6 to lpaa18.prod.google.com () port 0 AF_INET6 : first burst 0 : cpu bind
-> Local /Remote
-> Socket Size   Request Resp.  Elapsed Trans.   CPU    CPU    S.dem   S.dem
-> Send   Recv   Size    Size   Time    Rate     local  remote local   remote
-> bytes  bytes  bytes   bytes  secs.   per sec  % S    % S    us/Tr   us/Tr
-> 
-> 262144 540000 70000   70000  10.00   6591.45  0.86   1.34   62.490  97.446
-> 262144 540000
-> 
-> After: (enabling bigger TSO/GRO packets)
-> 
-> ip link set dev eth0 gso_ipv6_max_size 185000 gro_ipv6_max_size 185000
-> 
-> netperf -H lpaa18 -t TCP_RR -T2,2 -l 10 -Cc -- -r 70000,70000
-> MIGRATED TCP REQUEST/RESPONSE TEST from ::0 (::) port 0 AF_INET6 to lpaa18.prod.google.com () port 0 AF_INET6 : first burst 0 : cpu bind
-> Local /Remote
-> Socket Size   Request Resp.  Elapsed Trans.   CPU    CPU    S.dem   S.dem
-> Send   Recv   Size    Size   Time    Rate     local  remote local   remote
-> bytes  bytes  bytes   bytes  secs.   per sec  % S    % S    us/Tr   us/Tr
-> 
-> 262144 540000 70000   70000  10.00   8383.95  0.95   1.01   54.432  57.584
-> 262144 540000
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Tariq Toukan <tariqt@nvidia.com>
-> ---
->   .../net/ethernet/mellanox/mlx4/en_netdev.c    |  3 ++
->   drivers/net/ethernet/mellanox/mlx4/en_tx.c    | 47 +++++++++++++++----
->   2 files changed, 41 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-> index c61dc7ae0c056a4dbcf24297549f6b1b5cc25d92..76cb93f5e5240c54f6f4c57e39739376206b4f34 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-> @@ -3417,6 +3417,9 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
->   	dev->min_mtu = ETH_MIN_MTU;
->   	dev->max_mtu = priv->max_mtu;
->   
-> +	/* supports LSOv2 packets, 512KB limit has been tested. */
-> +	netif_set_tso_ipv6_max_size(dev, 512 * 1024);
-> +
->   	mdev->pndev[port] = dev;
->   	mdev->upper[port] = NULL;
->   
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_tx.c b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-> index 817f4154b86d599cd593876ec83529051d95fe2f..c89b3e8094e7d8cfb11aaa6cc4ad63bf3ad5934e 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-> @@ -44,6 +44,7 @@
->   #include <linux/ipv6.h>
->   #include <linux/moduleparam.h>
->   #include <linux/indirect_call_wrapper.h>
-> +#include <net/ipv6.h>
->   
->   #include "mlx4_en.h"
->   
-> @@ -635,19 +636,28 @@ static int get_real_size(const struct sk_buff *skb,
->   			 struct net_device *dev,
->   			 int *lso_header_size,
->   			 bool *inline_ok,
-> -			 void **pfrag)
-> +			 void **pfrag,
-> +			 int *hopbyhop)
->   {
->   	struct mlx4_en_priv *priv = netdev_priv(dev);
->   	int real_size;
->   
->   	if (shinfo->gso_size) {
->   		*inline_ok = false;
-> -		if (skb->encapsulation)
-> +		*hopbyhop = 0;
-> +		if (skb->encapsulation) {
->   			*lso_header_size = (skb_inner_transport_header(skb) - skb->data) + inner_tcp_hdrlen(skb);
-> -		else
-> +		} else {
-> +			/* Detects large IPV6 TCP packets and prepares for removal of
-> +			 * HBH header that has been pushed by ip6_xmit(),
-> +			 * mainly so that tcpdump can dissect them.
-> +			 */
-> +			if (ipv6_has_hopopt_jumbo(skb))
-> +				*hopbyhop = sizeof(struct hop_jumbo_hdr);
->   			*lso_header_size = skb_transport_offset(skb) + tcp_hdrlen(skb);
-> +		}
->   		real_size = CTRL_SIZE + shinfo->nr_frags * DS_SIZE +
-> -			ALIGN(*lso_header_size + 4, DS_SIZE);
-> +			ALIGN(*lso_header_size - *hopbyhop + 4, DS_SIZE);
->   		if (unlikely(*lso_header_size != skb_headlen(skb))) {
->   			/* We add a segment for the skb linear buffer only if
->   			 * it contains data */
-> @@ -874,6 +884,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
->   	int desc_size;
->   	int real_size;
->   	u32 index, bf_index;
-> +	struct ipv6hdr *h6;
->   	__be32 op_own;
->   	int lso_header_size;
->   	void *fragptr = NULL;
-> @@ -882,6 +893,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
->   	bool stop_queue;
->   	bool inline_ok;
->   	u8 data_offset;
-> +	int hopbyhop;
->   	bool bf_ok;
->   
->   	tx_ind = skb_get_queue_mapping(skb);
-> @@ -891,7 +903,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
->   		goto tx_drop;
->   
->   	real_size = get_real_size(skb, shinfo, dev, &lso_header_size,
-> -				  &inline_ok, &fragptr);
-> +				  &inline_ok, &fragptr, &hopbyhop);
->   	if (unlikely(!real_size))
->   		goto tx_drop_count;
->   
-> @@ -944,7 +956,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
->   		data = &tx_desc->data;
->   		data_offset = offsetof(struct mlx4_en_tx_desc, data);
->   	} else {
-> -		int lso_align = ALIGN(lso_header_size + 4, DS_SIZE);
-> +		int lso_align = ALIGN(lso_header_size - hopbyhop + 4, DS_SIZE);
->   
->   		data = (void *)&tx_desc->lso + lso_align;
->   		data_offset = offsetof(struct mlx4_en_tx_desc, lso) + lso_align;
-> @@ -1009,14 +1021,31 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
->   			((ring->prod & ring->size) ?
->   				cpu_to_be32(MLX4_EN_BIT_DESC_OWN) : 0);
->   
-> +		lso_header_size -= hopbyhop;
->   		/* Fill in the LSO prefix */
->   		tx_desc->lso.mss_hdr_size = cpu_to_be32(
->   			shinfo->gso_size << 16 | lso_header_size);
->   
-> -		/* Copy headers;
-> -		 * note that we already verified that it is linear */
-> -		memcpy(tx_desc->lso.header, skb->data, lso_header_size);
->   
-> +		if (unlikely(hopbyhop)) {
-> +			/* remove the HBH header.
-> +			 * Layout: [Ethernet header][IPv6 header][HBH][TCP header]
-> +			 */
-> +			memcpy(tx_desc->lso.header, skb->data, ETH_HLEN + sizeof(*h6));
-> +			h6 = (struct ipv6hdr *)((char *)tx_desc->lso.header + ETH_HLEN);
-> +			h6->nexthdr = IPPROTO_TCP;
-> +			/* Copy the TCP header after the IPv6 one */
-> +			memcpy(h6 + 1,
-> +			       skb->data + ETH_HLEN + sizeof(*h6) +
-> +					sizeof(struct hop_jumbo_hdr),
-> +			       tcp_hdrlen(skb));
-> +			/* Leave ipv6 payload_len set to 0, as LSO v2 specs request. */
+I am not ready to discuss the merits of features in OF
+>> I would suggest you implement a generic facility
+>> in the network layer and if everybody is happy with that
+>> obviously usbnet can pass through a pointer for that
+>> to operate on. Frankly, it looks to me like you are
+>> implementing only a subset of what device tree
+>> could contain for your specific use case.
+> Sounds good, but we'll focus on the DSA use case, as this is more
+> important. So patches 1 and 2 of this patches set have highest prio for
+> us.
+It looks to me like you want a layering violation for
+a special case. Is there any reason for you not to provide
+a generic helper in the networking core?
 
-Hi Eric,
-Many thanks for your patches.
-Impressive improvement indeed!
+=C2=A0=C2=A0=C2=A0 Regards
+=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 Oliver
 
-I am concerned about not using lso_header_size in this flow.
-The num of bytes copied here might be out-of-sync with the value 
-provided in the descriptor (tx_desc->lso.mss_hdr_size).
-Are the two values guaranteed to be equal?
-I think this is an assumption that can get broken in the future by 
-unaware patches to the kernel stack.
-
-Thanks,
-Tariq
-
-> +		} else {
-> +			/* Copy headers;
-> +			 * note that we already verified that it is linear
-> +			 */
-> +			memcpy(tx_desc->lso.header, skb->data, lso_header_size);
-> +		}
->   		ring->tso_packets++;
->   
->   		i = shinfo->gso_segs;
