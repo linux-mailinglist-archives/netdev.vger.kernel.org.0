@@ -2,133 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4A04A8800
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 16:49:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF4C74A87F7
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 16:48:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351964AbiBCPsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 10:48:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
+        id S1351931AbiBCPsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 10:48:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238679AbiBCPsX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 10:48:23 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51D6C061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 07:48:22 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id j2so10421018ybu.0
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 07:48:22 -0800 (PST)
+        with ESMTP id S238679AbiBCPsU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 10:48:20 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96472C061714;
+        Thu,  3 Feb 2022 07:48:20 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id r144so3725270iod.9;
+        Thu, 03 Feb 2022 07:48:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UVzqaqgkSoj7sVc6+k+5dfvjZA0TUTvOPaIl30PC7sQ=;
-        b=Je7IE+dayqcx8QVAC7r9ae39i6+47icBRT+unITntLhb08Ppcp2RCXBdRG5szo//Xh
-         1g83NrL+Sy4wNkNxtvhQEVgxKsfOtB00VvaW2tndLLyefZplt0dU+/evsJvAB+7rLj0F
-         HocRmRNuK1N6W2ATKxaJn1Yf0Zid+3Hqsrp6mjrS5JwjH9FqDS0RDBI4ZXGBPkhZSuwX
-         2sms1KgDtCxsSj9wVC3ax0zh7wnRpR8TODLfrMWmF0Dx8qvyWZl/LoSob54ae/hurmfr
-         wzQqIpTJWpD6kQDMcpzYRNAM6D9mF62cTk94sAqSghLNKKCSJXLyzj6QRpR//Xrr+zN/
-         P8Pw==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=WLH1O+Vnbs8udHEehPW8PKl/Vsqp6/y9M/lwajCfmXg=;
+        b=O2CfoR+Kidy6Oil62L7eIH2efozt64sP75j6rrjblHbD93lfalaDPECmKMSLR1bMRI
+         MyATwiK8Iq8ewDJjL9wop/yWJRNXHiz+mJrQzvj/rLk2NFXEmmVyCEkcg+achzY/Ujzq
+         rBdpvZRBfpcjJDd2ziUgr3b7rDzDcNBZjr0Gp//MfAvWdMpIeAIpoAiu88IHAI0ldyRG
+         j42emqwxOa9uI2aqBdX7uWycKCXtCy+lxyp3ULgGou70LGIa8eRS1fabpdxJaLNt4Z9c
+         EqohgOdJ2zBGkWXIvlpxH3JWAuZYbjnKP6TLYl5zqR+gElcmUBERluM5d1nIYiV/h6cr
+         sCxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UVzqaqgkSoj7sVc6+k+5dfvjZA0TUTvOPaIl30PC7sQ=;
-        b=Tx80PQuixgqRe+BZhj+VIIxtljmWWKUoED0+jL9x5t/1/L05ye5bNbiw3C0wQ3RV53
-         tReWbYcmoB2OpTd7tSAdryaSJlHeTpzy1/nYgwWOUAU7oJNJlBZ2vuC8fGkBc8PFRynC
-         xLO5O+Zdg22xfX3SSswajK6YUsHAEEegnjDly0B27WV5ZbXIiVxs0ODQtvBf56s27vlJ
-         yfhaMPKgPa4tWD+nWQvTqnDOW/3uFA+GKiUDGWmMT1MF5WTW/gS1j72cbBBpMWbbxHMO
-         ed1jzDSUV0fQ9NH4B2v/OYHR6zfc6sTzAReFhYhhpk2GsAkd0ClvFlnmj/w15YD8w43k
-         rs7A==
-X-Gm-Message-State: AOAM5310zSSTOvcyjVtiNGZfapY/yUqw05BePe2MsShTwVSq2ItODp9X
-        Wrciq8nhCFndHp+fvOo/ETSEFXHh+LxBEZQ5wAIkTbgGrZREfCdK2Rg=
-X-Google-Smtp-Source: ABdhPJzxLN2yF1cRcQ7zGV3qH+KDubVu5CkD4KcJ90tcOn8I5OpSlWt+1p4cmGO5qGkM84+pnfEvhwl6TEgQ6wuNNXg=
-X-Received: by 2002:a25:4f41:: with SMTP id d62mr47710315ybb.156.1643903301653;
- Thu, 03 Feb 2022 07:48:21 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WLH1O+Vnbs8udHEehPW8PKl/Vsqp6/y9M/lwajCfmXg=;
+        b=kbPlJ2uUhEOa4MCgi5/Tb3MOArMunrCJbx1nfLnal99dDid1n4Dlg8Ocw325aE40gg
+         RPdAAn9o9c9HKMUqh4FlyNWwOTB+BEOTTaiTKt4V8vSqBP8ZJbbNx4YAfnYbb8unuW5x
+         aT7ZHTSiLiYTCP4bo5I9qo+/HbHlUtbednGOKdMEhJ4Tfb/m3dWDhhXTgbxMXmiOvihl
+         iYEDLwZaQPZuvJe959DZnvc1aoResWHz8okEZgOPq5XS4ToZIr/qyVSfcI+8oLW8jeD0
+         ilZxxIGyFCgzMIDzMjovx25OwhzYkqONKps5jnuaW6PI1zYGeJT5sNcIhOA8lhjxKqw4
+         0K4g==
+X-Gm-Message-State: AOAM5323rKQDo+13iY+vy/UrqY1rAOPtbsay+jKSaTtq31UV/uxieU4K
+        Euo8ltYcPleFCsogSmNsrJgTuBM4m4Q=
+X-Google-Smtp-Source: ABdhPJytHT2ainnjTy8kuwJMbb9XvCK+xi9KdImDjah1yKuXQ7fyHkvMjlJDtILNHjHCwvaKCySTwA==
+X-Received: by 2002:a6b:4e18:: with SMTP id c24mr18972137iob.179.1643903300006;
+        Thu, 03 Feb 2022 07:48:20 -0800 (PST)
+Received: from ?IPV6:2601:282:800:dc80:8870:ce19:2c7:3513? ([2601:282:800:dc80:8870:ce19:2c7:3513])
+        by smtp.googlemail.com with ESMTPSA id o7sm8800664ilt.63.2022.02.03.07.48.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Feb 2022 07:48:19 -0800 (PST)
+Message-ID: <e34e03db-9764-4728-9f6a-df85659c5089@gmail.com>
+Date:   Thu, 3 Feb 2022 08:48:17 -0700
 MIME-Version: 1.0
-References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
- <20220203015140.3022854-7-eric.dumazet@gmail.com> <99e23f620a798d6cfb9c9b20fb37ba6ba8137a05.camel@redhat.com>
-In-Reply-To: <99e23f620a798d6cfb9c9b20fb37ba6ba8137a05.camel@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 3 Feb 2022 07:48:10 -0800
-Message-ID: <CANn89i+ZN=Gvn93pCaF=f4Q5X9vyzS24CpevtWpaD0Zjb7OGHg@mail.gmail.com>
-Subject: Re: [PATCH net-next 06/15] ipv6/gro: insert temporary HBH/jumbo header
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH RFC 1/4] net: skb: use line number to trace dropped skb
+Content-Language: en-US
+To:     Dongli Zhang <dongli.zhang@oracle.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, rostedt@goodmis.org,
+        mingo@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        imagedong@tencent.com, joao.m.martins@oracle.com,
+        joe.jin@oracle.com
+References: <20220203153731.8992-1-dongli.zhang@oracle.com>
+ <20220203153731.8992-2-dongli.zhang@oracle.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220203153731.8992-2-dongli.zhang@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 1:20 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> On Wed, 2022-02-02 at 17:51 -0800, Eric Dumazet wrote:
-> > From: Eric Dumazet <edumazet@google.com>
-> >
-> > Following patch will add GRO_IPV6_MAX_SIZE, allowing gro to build
-> > BIG TCP ipv6 packets (bigger than 64K).
-> >
-> > This patch changes ipv6_gro_complete() to insert a HBH/jumbo header
-> > so that resulting packet can go through IPv6/TCP stacks.
-> >
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > ---
-> >  net/ipv6/ip6_offload.c | 32 ++++++++++++++++++++++++++++++--
-> >  1 file changed, 30 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/net/ipv6/ip6_offload.c b/net/ipv6/ip6_offload.c
-> > index d37a79a8554e92a1dcaa6fd023cafe2114841ece..dac6f60436e167a3d979fef02f25fc039c6ed37d 100644
-> > --- a/net/ipv6/ip6_offload.c
-> > +++ b/net/ipv6/ip6_offload.c
-> > @@ -318,15 +318,43 @@ static struct sk_buff *ip4ip6_gro_receive(struct list_head *head,
-> >  INDIRECT_CALLABLE_SCOPE int ipv6_gro_complete(struct sk_buff *skb, int nhoff)
-> >  {
-> >       const struct net_offload *ops;
-> > -     struct ipv6hdr *iph = (struct ipv6hdr *)(skb->data + nhoff);
-> > +     struct ipv6hdr *iph;
-> >       int err = -ENOSYS;
-> > +     u32 payload_len;
-> >
-> >       if (skb->encapsulation) {
-> >               skb_set_inner_protocol(skb, cpu_to_be16(ETH_P_IPV6));
-> >               skb_set_inner_network_header(skb, nhoff);
-> >       }
-> >
-> > -     iph->payload_len = htons(skb->len - nhoff - sizeof(*iph));
-> > +     payload_len = skb->len - nhoff - sizeof(*iph);
-> > +     if (unlikely(payload_len > IPV6_MAXPLEN)) {
-> > +             struct hop_jumbo_hdr *hop_jumbo;
-> > +             int hoplen = sizeof(*hop_jumbo);
-> > +
-> > +             /* Move network header left */
-> > +             memmove(skb_mac_header(skb) - hoplen, skb_mac_header(skb),
-> > +                     skb->transport_header - skb->mac_header);
->
-> I was wondering if we should check for enough headroom and what about
-> TCP over UDP tunnel, then I read the next patch ;)
+On 2/3/22 8:37 AM, Dongli Zhang wrote:
+> Sometimes the kernel may not directly call kfree_skb() to drop the sk_buff.
+> Instead, it "goto drop" and call kfree_skb() at 'drop'. This make it
+> difficult to track the reason that the sk_buff is dropped.
+> 
+> The commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()") has
+> introduced the kfree_skb_reason() to help track the reason. However, we may
+> need to define many reasons for each driver/subsystem.
+> 
+> To avoid introducing so many new reasons, this is to use line number
+> ("__LINE__") to trace where the sk_buff is dropped. As a result, the reason
+> will be generated automatically.
+> 
 
-The check about headroom is provided in the following patch (ipv6: add
-GRO_IPV6_MAX_SIZE),
-which allows GRO stack to build packets bigger than 64KB,
-if drivers provided enough headroom (8 bytes).
-They usually provide NET_SKB_PAD (64 bytes or more)
+I don't agree with this approach. It is only marginally better than the
+old kfree_skb that only gave the instruction pointer. That tells you the
+function that dropped the packet, but not why the packet is dropped.
+Adding the line number only makes users have to consult the source code.
 
-Before the next patch, this code is dead.
+When I watch drop monitor for kfree_skb I want to know *why* the packet
+was dropped, not the line number in the source code. e.g., dropmon
+showing OTHERHOST means too many packets are sent to this host (e.g.,
+hypervisor) that do not belong to the host or the VMs running on it, or
+packets have invalid checksum (IP, TCP, UDP). Usable information by
+everyone, not just someone with access to the source code for that
+specific kernel.
 
-Also current patch set does not cook BIG TCP packets for tunneled traffic
-(look at skb_gro_receive() changes in following patch)
-
-
->
-> I think a comment here referring to the constraint enforced by
-> skb_gro_receive() could help, or perhaps squashing the 2 patches?!?
-
-Well no, we spent time making small patches to ease review, and these patches
-have different authors anyway.
-
->
-> Thanks!
->
-> Paolo
->
