@@ -2,94 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0408D4A8879
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:18:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF6CB4A887C
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:18:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346699AbiBCQSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 11:18:43 -0500
-Received: from mga14.intel.com ([192.55.52.115]:20070 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231477AbiBCQSi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Feb 2022 11:18:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643905119; x=1675441119;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ARb6j7+l1wuryTTlmyeKT87Elz11FCQCv50Dn2FT8IA=;
-  b=laCdawFaWLT048elHOiPw2hXBwDkCFfHUxohvZY51efHNMp5stCDAZ1X
-   Q4xfc8cpVrfTt9RWvvsBB/58mfIXWWvcC/vZ+x1yN+NS3UDcoliQN0O/8
-   cmMcu27pfAKPPRzDAkDkphfMArpyIMoLOUaWSzJhQpfffVNbzNLKZHgYZ
-   9ibhNcvxNaBiaZFFW0tVdMzMIEg8Dtvhy6QocT1Emgn5cYO722z4ALqtJ
-   z5lq35JujQmFckSs187R02boTP1v78PrAA7cuuSeIwzPzOgvFP6WqPSsI
-   +COXuBAELdUBGFMGSx1yKzZpIAieJH2gGEL09mQHr3Yr3Lr0QvPtodMaa
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="248393204"
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="248393204"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 08:18:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="480533134"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga003.jf.intel.com with ESMTP; 03 Feb 2022 08:18:36 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 213GIY10015819;
-        Thu, 3 Feb 2022 16:18:35 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net-next 1/3] net: gro: avoid re-computing truesize twice on recycle
-Date:   Thu,  3 Feb 2022 17:16:32 +0100
-Message-Id: <20220203161632.13190-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <e311f77a9ddb739e3c583201fb99b9945942f68a.1643902526.git.pabeni@redhat.com>
-References: <cover.1643902526.git.pabeni@redhat.com> <e311f77a9ddb739e3c583201fb99b9945942f68a.1643902526.git.pabeni@redhat.com>
+        id S1352182AbiBCQSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 11:18:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54752 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352170AbiBCQSr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 11:18:47 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B38C06173D
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 08:18:47 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id 124so9864909ybw.6
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 08:18:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3q/cWOL3ZlVqjrUNlIy7qw4rghP9mEWMr54e6NmDLs0=;
+        b=TpIKr9km45LRGn2HQwNDS5cd4h+3Tra02vddoTGU7XB5Qo+lT+Wrwm4CHAMM/H4guM
+         P5lxMYSYyPFoSg6AjI9XTSZ2xiZxU8iF7WkWM4qfNI82rUdWmbj02lPYkQ64z2SozNo4
+         AqH8ZvotvaX6A4nfjqVQWVtMty+AxIwzSymwzyYC9CaAu2eOiAw/FnUhnu3dgPlFE1Bk
+         Y80YFiGVjV+i9d7dXYVWqbzZJc+elWbsKxYzPnFmcGiZVj/4sON4WKVSjEV/uRuaN9aL
+         ZjzOpXujPzIvq+Fs+X7gYfe/oWxHNNQ0yigl3mKCeASR1veXSox6e4Gq3vZqYVQcLnIA
+         hKdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3q/cWOL3ZlVqjrUNlIy7qw4rghP9mEWMr54e6NmDLs0=;
+        b=iGSwCjSDEbYWhnWEwetLQDSS8ds9MZKyau7wL4cPSPbccGlt9q2NwLJfse5hGRv5WK
+         e3AbLj/cJubYEclkCWl/3u+DWVCajVkOT34NkgG1nKE5EzTXjQKRBRk8o6Fv3bLVvdod
+         xEzl04s1ctJ3/xjIHFV2Z2wldARtFv5XptybsS7vAeNVICoxvQO79TtMcTYU/sSoODou
+         5Z3oa4JPQEd7OLvOxfbZk15hlZujRf78llKtweFb0oBNiBy73XF3vGXGeh0eDE/MzEfX
+         qIaEDjX9HrFTOhuC1BbiRoYnz56SLRfRjLeaPKhpAZEbFrUaylxPKKwSwrSQB3lbdtRH
+         tkvw==
+X-Gm-Message-State: AOAM533vbCiUEORygoof5RqXG4exFulVgoWA7hs8zt903B78gnShxH/h
+        3Lhvq44oQ5TvUWNBHTsNp/jDqjghCh7JHIE9TSdjmONMOFseuoMvD7Y=
+X-Google-Smtp-Source: ABdhPJy74vnGDFJmBBH5O0UdNEuZALuhvVvSoyWh71ZDEDEMmX/oPUocPymeXbkXrtVlL0aQ9RKolahlMeDkWjWEFWw=
+X-Received: by 2002:a25:8885:: with SMTP id d5mr27287245ybl.383.1643905126551;
+ Thu, 03 Feb 2022 08:18:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220202122848.647635-1-bigeasy@linutronix.de>
+ <20220202122848.647635-4-bigeasy@linutronix.de> <CANn89iLVPnhybrdjRh6ccv6UZHW-_W0ZHRO5c7dnWU44FUgd_g@mail.gmail.com>
+ <YfvwbsKm4XtTUlsx@linutronix.de> <CANn89i+66MvzQVp=eTENzZY6s8+B+jQCoKEO_vXdzaDeHVTH5w@mail.gmail.com>
+ <Yfv3c+5XieVR0xAh@linutronix.de>
+In-Reply-To: <Yfv3c+5XieVR0xAh@linutronix.de>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 3 Feb 2022 08:18:34 -0800
+Message-ID: <CANn89i+t4TgrryvSBmBMfsY63m6Fhxi+smiKfOwHTRAKxvcPLQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/4] net: dev: Makes sure netif_rx() can be
+ invoked in any context.
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
-Date: Thu,  3 Feb 2022 16:48:21 +0100
+On Thu, Feb 3, 2022 at 7:40 AM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+>
+> On 2022-02-03 07:25:01 [-0800], Eric Dumazet wrote:
+> >
+> > No, the loopback device (ifconfig log) I am referring to is in
+> > drivers/net/loopback.c
+> >
+> > loopback_xmit() calls netif_rx() directly, while bh are already disabled.
+>
+> ah okay. Makes sense.
+>
+> > Instead of adding a local_bh_disable()/local_bh_enable() in netif_rx()
+> > I suggested
+> > to rename current netif_rx() to __netif_rx() and add a wrapper, eg :
+>
+> So we still end up with two interfaces. Do I move a few callers like the
+> one you already mentioned over to the __netif_rx() interface or will it
+> be the one previously mentioned for now?
 
-> After commit 5e10da5385d2 ("skbuff: allow 'slow_gro' for skb
-> carring sock reference") and commit af352460b465 ("net: fix GRO
-> skb truesize update") the truesize of freed skb is properly updated
 
-                                        ^^^^^
+I would say vast majority of drivers would use netif_rx()
 
-One nit here, I'd change this to "truesize of skb with stolen head"
-or so. It took me a bit of time to get why we should update the
-truesize of skb already freed (: Right, napi_reuse_skb() makes use
-of stolen-data skbs.
+Only the one we consider critical (loopback traffic) would use
+__netif_rx(), after careful inspection.
 
-> by the GRO engine, we don't need anymore resetting it at recycle time.
-> 
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
->  net/core/gro.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/net/core/gro.c b/net/core/gro.c
-> index a11b286d1495..d43d42215bdb 100644
-> --- a/net/core/gro.c
-> +++ b/net/core/gro.c
-> @@ -634,7 +634,6 @@ static void napi_reuse_skb(struct napi_struct *napi, struct sk_buff *skb)
->  
->  	skb->encapsulation = 0;
->  	skb_shinfo(skb)->gso_type = 0;
-> -	skb->truesize = SKB_TRUESIZE(skb_end_offset(skb));
->  	if (unlikely(skb->slow_gro)) {
->  		skb_orphan(skb);
->  		skb_ext_reset(skb);
-> -- 
-> 2.34.1
+As we said modern/high performance NIC are using NAPI and GRO these days.
 
-Thanks,
-Al
+Only virtual drivers might still use legacy netif_rx() and be in critical paths.
+
+>
+> Would something like
+>
+> diff --git a/include/linux/bottom_half.h b/include/linux/bottom_half.h
+> index fc53e0ad56d90..561cbca431ca6 100644
+> --- a/include/linux/bottom_half.h
+> +++ b/include/linux/bottom_half.h
+> @@ -30,7 +30,12 @@ static inline void local_bh_enable_ip(unsigned long ip)
+>
+>  static inline void local_bh_enable(void)
+>  {
+> -       __local_bh_enable_ip(_THIS_IP_, SOFTIRQ_DISABLE_OFFSET);
+> +       if (unlikely(softirq_count() == SOFTIRQ_DISABLE_OFFSET)) {
+> +               __local_bh_enable_ip(_THIS_IP_, SOFTIRQ_DISABLE_OFFSET);
+> +       } else {
+> +               preempt_count_sub(SOFTIRQ_DISABLE_OFFSET);
+> +               barrier();
+> +       }
+>  }
+>
+>  #ifdef CONFIG_PREEMPT_RT
+>
+> lower the overhead to acceptable range? (I still need to sell this to
+> peterz first).
+
+I guess the cost of the  local_bh_enable()/local_bh_disable() pair
+will be roughly the same, please measure it :)
+
+>
+> Sebastian
