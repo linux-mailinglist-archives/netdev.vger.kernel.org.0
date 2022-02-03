@@ -2,49 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 422F64A9037
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 22:52:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FB3D4A903B
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 22:52:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355280AbiBCVvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 16:51:52 -0500
+        id S1355327AbiBCVvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 16:51:53 -0500
 Received: from mga01.intel.com ([192.55.52.88]:63985 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354869AbiBCVvw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1355092AbiBCVvw (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 3 Feb 2022 16:51:52 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1643925112; x=1675461112;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=QEm+d8KdN1L8pHMOKq1C2YqyXVjghJIR+Ai6VaYSKFI=;
-  b=aITlgDtiQ/9GmBp5pwR3pIFFhHPi3Q/rL4NoKYS8/RBVoMudGM/aI1P9
-   /0pLZiBGyF3915kYPNjNZvCG4QNqtsL09RFHIWlhMakEWB0mfle8nW4Py
-   Ryui56WXRzlmUNlC6vXRxvIRQG8o4nnJZnCuipAvBUvM0GhVdItRjRijI
-   r7/P+3zazGOGds6CvIEqzrPQlofyBWgQ5VlyEigWhBu4cVUIbZTMI4lb1
-   WP1EQliBfUvSRzzmKcrlt4dv4U5YMNZmlQ26C78D0fYjf+RFvcs6avhRG
-   IZf7O0aAxgNTswFlkL/hu6IcMSdecIXk3mVtOMeEeqaaxMtgJgivVSHmS
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="272760129"
+  bh=f9/RQFh7MPRlyW60tvcGoyjyXCprj6oYzJY3vQ3em90=;
+  b=l1irt/1ccqlsG7wLGLYycmpsQkEsK/6IzKoUu+Vw57ckY29+Ib8GdSJH
+   /skD9CGVTdavZuOBrO3nXL+0EFIx/qId+OcM6neFvIiJSFmWlp352vHXm
+   7Ai7R4qiH08iMhHUYOLa75TA2vmli8q+KWTmPOgEPQBinD6LT4KbYNms4
+   PJDam+yPp+s7CzBZYRfEXTmRq/A2FKC/VlMfZI3oi9a/1ZB9WQo9m4yLy
+   gEOKFwrw7O+wR47aT13rLLM3QDVdX3YdAhk/u5YbMxeYK09m9X0Psx4KU
+   NbKnAF8UuQx1NnK2aPyzqCoFV8FvSny2I74uwUrUweHmtu5dMDgcTt9ut
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="272760131"
 X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="272760129"
+   d="scan'208";a="272760131"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 13:51:51 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="498295189"
+   d="scan'208";a="498295195"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga002.jf.intel.com with ESMTP; 03 Feb 2022 13:51:51 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sassmann@redhat.com,
-        Norbert Zulinski <norbertx.zulinski@intel.com>,
-        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
-        Dave Switzer <david.switzer@intel.com>
-Subject: [PATCH net-next 1/7] i40e: Disable hw-tc-offload feature on driver load
-Date:   Thu,  3 Feb 2022 13:51:34 -0800
-Message-Id: <20220203215140.969227-2-anthony.l.nguyen@intel.com>
+Cc:     Joe Damato <jdamato@fastly.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, sassmann@redhat.com,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: [PATCH net-next 2/7] i40e: Remove unused RX realloc stat
+Date:   Thu,  3 Feb 2022 13:51:35 -0800
+Message-Id: <20220203215140.969227-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220203215140.969227-1-anthony.l.nguyen@intel.com>
 References: <20220203215140.969227-1-anthony.l.nguyen@intel.com>
@@ -54,45 +52,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mateusz Palczewski <mateusz.palczewski@intel.com>
+From: Joe Damato <jdamato@fastly.com>
 
-After loading driver hw-tc-offload is enabled by default.
-Change the behaviour of driver to disable hw-tc-offload by default as
-this is the expected state. Additionally since this impacts ntuple
-feature state change the way of checking NETIF_F_HW_TC flag.
+After commit 1a557afc4dd5 ("i40e: Refactor receive routine"),
+rx_stats.realloc_count is no longer being incremented, so remove it.
 
-Signed-off-by: Norbert Zulinski <norbertx.zulinski@intel.com>
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Dave Switzer <david.switzer@intel.com>
+The debugfs string was left, but hardcoded to 0. This is intended to
+prevent breaking any existing code / scripts that are parsing debugfs
+for i40e.
+
+Signed-off-by: Joe Damato <jdamato@fastly.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_debugfs.c | 3 +--
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h    | 1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index c8834765c864..748806cfc441 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -12707,7 +12707,8 @@ static int i40e_set_features(struct net_device *netdev,
- 	else
- 		i40e_vlan_stripping_disable(vsi);
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
+index 1e57cc8c47d7..90fff05fbd2b 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
+@@ -275,9 +275,8 @@ static void i40e_dbg_dump_vsi_seid(struct i40e_pf *pf, int seid)
+ 			 rx_ring->rx_stats.alloc_page_failed,
+ 			 rx_ring->rx_stats.alloc_buff_failed);
+ 		dev_info(&pf->pdev->dev,
+-			 "    rx_rings[%i]: rx_stats: realloc_count = %lld, page_reuse_count = %lld\n",
++			 "    rx_rings[%i]: rx_stats: realloc_count = 0, page_reuse_count = %lld\n",
+ 			 i,
+-			 rx_ring->rx_stats.realloc_count,
+ 			 rx_ring->rx_stats.page_reuse_count);
+ 		dev_info(&pf->pdev->dev,
+ 			 "    rx_rings[%i]: size = %i\n",
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.h b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+index bfc2845c99d1..88387a644cc3 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+@@ -298,7 +298,6 @@ struct i40e_rx_queue_stats {
+ 	u64 alloc_page_failed;
+ 	u64 alloc_buff_failed;
+ 	u64 page_reuse_count;
+-	u64 realloc_count;
+ };
  
--	if (!(features & NETIF_F_HW_TC) && pf->num_cloud_filters) {
-+	if (!(features & NETIF_F_HW_TC) &&
-+	    (netdev->features & NETIF_F_HW_TC) && pf->num_cloud_filters) {
- 		dev_err(&pf->pdev->dev,
- 			"Offloaded tc filters active, can't turn hw_tc_offload off");
- 		return -EINVAL;
-@@ -13459,6 +13460,8 @@ static int i40e_config_netdev(struct i40e_vsi *vsi)
- 	netdev->features |= hw_features | NETIF_F_HW_VLAN_CTAG_FILTER;
- 	netdev->hw_enc_features |= NETIF_F_TSO_MANGLEID;
- 
-+	netdev->features &= ~NETIF_F_HW_TC;
-+
- 	if (vsi->type == I40E_VSI_MAIN) {
- 		SET_NETDEV_DEV(netdev, &pf->pdev->dev);
- 		ether_addr_copy(mac_addr, hw->mac.perm_addr);
+ enum i40e_ring_state_t {
 -- 
 2.31.1
 
