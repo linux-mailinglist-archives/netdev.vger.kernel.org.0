@@ -2,118 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB69E4A874A
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 16:11:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3115E4A876E
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 16:15:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351656AbiBCPKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 10:10:41 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:53944 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237585AbiBCPKl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 10:10:41 -0500
-Date:   Thu, 3 Feb 2022 16:10:38 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643901040;
+        id S1351735AbiBCPO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 10:14:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39922 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240788AbiBCPOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 10:14:55 -0500
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001B3C061714;
+        Thu,  3 Feb 2022 07:14:54 -0800 (PST)
+Received: from [IPV6:2003:e9:d71f:7b00:83f0:ef29:ebc6:2fb7] (p200300e9d71f7b0083f0ef29ebc62fb7.dip0.t-ipconnect.de [IPv6:2003:e9:d71f:7b00:83f0:ef29:ebc6:2fb7])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 8C1E1C07BA;
+        Thu,  3 Feb 2022 16:14:51 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1643901291;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fYXrDuFRXBBNMfCcnLUf/H7szb2aMihApRZq+hu5ZW8=;
-        b=12d7UYzGB54nsjoxoS7Rd1yhW64kMf/42ZiLuyln5fE06xkzZmVoZq70Gh9wtRMhTtr6U1
-        D9mHnAEfD55hGVKq3uQzXQ+ydUzzUnGF+gi+Fz6REmRrUUqSsfNkcScLx6PDWhbLrDPB7m
-        bGD0LYaPPez//IWLuBN1aXhhkznGPDTxU26r1SdbeLVZ0fCGCwGDCr13+lhWFyWcE/7YK1
-        pttGMTCIrzHQHocFofDvjdXj3zr3sxhhIO2bc6NN/4iBmx9qZ4k8LCocAcbIKEH3jgkAcc
-        +eTCWbwvUIrHxF6ln0tb6tx6bMxfQ/ed0HsRzy87jl7FQZiGmI1x6zblSnT8sQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643901040;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fYXrDuFRXBBNMfCcnLUf/H7szb2aMihApRZq+hu5ZW8=;
-        b=4X4Qb2qADonekjerDY8t4eQOFB+rjfq7AyQJDpFKhJarnFbihoTU0UHgdHpzyUaM2LwccV
-        7gx/4ZYFeSNdAkAA==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH net-next 3/4] net: dev: Makes sure netif_rx() can be
- invoked in any context.
-Message-ID: <YfvwbsKm4XtTUlsx@linutronix.de>
-References: <20220202122848.647635-1-bigeasy@linutronix.de>
- <20220202122848.647635-4-bigeasy@linutronix.de>
- <CANn89iLVPnhybrdjRh6ccv6UZHW-_W0ZHRO5c7dnWU44FUgd_g@mail.gmail.com>
+        bh=hnORKNBRjHpFsTO4HG8md0wUuEgPB5te4IcquTqbRF8=;
+        b=m+EZTLpsxJR5EkC1JiJuc3h5jEiw2V5tWNU3lR8f2+645w0581xZmli9qwHFBW+BtH9hst
+        F4F+B8iXNZIHZ1WPM88SPDB40DNFLIfogpkLMUYpWU+9MoDSWBvkYq24WME7jdjFjNM95w
+        gd6186kQa061jbaR6vtvRN0JxnT1ItpP/mi5fszi6xXo0asZ6Qd7Gmq/NNl+k5jWGtP6Jz
+        VOvkzpX81ytP4NSevp6qeFSZFG7ChxgEYWcaQd+YoWt5RIMxh2yh/LFMWhtncHCV2bGNvB
+        BCGjozch/k7BpW3MlhQ7Os0zySosKtDd6FD9Ra82iLjTQr4doTlzlRFy5X8juw==
+Message-ID: <e8dd1abc-6558-1269-3995-c8920a4e6000@datenfreihafen.org>
+Date:   Thu, 3 Feb 2022 16:14:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CANn89iLVPnhybrdjRh6ccv6UZHW-_W0ZHRO5c7dnWU44FUgd_g@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH net-next] net: don't include ndisc.h from ipv6.h
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, oliver@neukum.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, alex.aring@gmail.com,
+        jukka.rissanen@linux.intel.com, jk@codeconstruct.com.au,
+        matt@codeconstruct.com.au, linux-usb@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-wpan@vger.kernel.org
+References: <20220203043457.2222388-1-kuba@kernel.org>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20220203043457.2222388-1-kuba@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-02-02 09:43:14 [-0800], Eric Dumazet wrote:
-> Maybe worth mentioning this commit will show a negative impact, for
-> network traffic
-> over loopback interface.
+Hello.
+
+On 03.02.22 05:34, Jakub Kicinski wrote:
+> Nothing in ipv6.h needs ndisc.h, drop it.
 > 
-> My measure of the cost of local_bh_disable()/local_bh_enable() is ~6
-> nsec on one of my lab x86 hosts.
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: j.vosburgh@gmail.com
+> CC: vfalico@gmail.com
+> CC: andy@greyhouse.net
+> CC: oliver@neukum.org
+> CC: yoshfuji@linux-ipv6.org
+> CC: dsahern@kernel.org
+> CC: alex.aring@gmail.com
+> CC: jukka.rissanen@linux.intel.com
+> CC: stefan@datenfreihafen.org
+> CC: jk@codeconstruct.com.au
+> CC: matt@codeconstruct.com.au
+> CC: linux-usb@vger.kernel.org
+> CC: linux-bluetooth@vger.kernel.org
+> CC: linux-wpan@vger.kernel.org
+> ---
+>   drivers/net/bonding/bond_alb.c | 1 +
+>   drivers/net/usb/cdc_mbim.c     | 1 +
+>   include/net/ipv6.h             | 1 -
+>   include/net/ipv6_frag.h        | 1 +
+>   include/net/ndisc.h            | 1 -
+>   net/6lowpan/core.c             | 1 +
+>   net/ieee802154/6lowpan/core.c  | 1 +
 
-So you are worried that 
-    dev_loopback_xmit() -> netif_rx_ni()
+For ieee802154:
 
-becomes
-    dev_loopback_xmit() -> netif_rx()
+Acked-by: Stefan Schmidt <stefan@datenfreihafen.org>
 
-and by that 6nsec slower because of that bh off/on? Can these 6nsec get
-a little lower if we substract the overhead of preempt-off/on? 
-But maybe I picked the wrong loopback here.
-
-> Perhaps we could have a generic netif_rx(), and a __netif_rx() for the
-> virtual drivers (lo and maybe tunnels).
-> 
-> void __netif_rx(struct sk_buff *skb);
-> 
-> static inline int netif_rx(struct sk_buff *skb)
-> {
->    int res;
->     local_bh_disable();
->     res = __netif_rx(skb);
->   local_bh_enable();
->   return res;
-> }
-
-But what is __netif_rx() doing? netif_rx_ni() has this part:
-
-|       preempt_disable();
-|       err = netif_rx_internal(skb);
-|       if (local_softirq_pending())
-|               do_softirq();
-|       preempt_enable();
-
-to ensure that smp_processor_id() and friends are quiet plus any raised
-softirqs are processed. With the current netif_rx() we end up with:
-
-|       local_bh_disable();
-|       ret = netif_rx_internal(skb);
-|       local_bh_enable();
-
-which provides the same. Assuming __netif_rx() as:
-
-| int __netif_rx(skb)
-| {
-|         trace_netif_rx_entry(skb);
-| 
-|         ret = netif_rx_internal(skb);
-|         trace_netif_rx_exit(ret);
-| 
-|         return ret;
-| }
-
-and the loopback interface is not invoking this in_interrupt() context.
-
-Sebastian
+regards
+Stefan Schmidt
