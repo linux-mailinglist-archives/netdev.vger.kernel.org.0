@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AEDE4A8ED7
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 21:39:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 666B64A8E88
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 21:37:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355180AbiBCUjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 15:39:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355153AbiBCUhH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 15:37:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED99C06178C;
-        Thu,  3 Feb 2022 12:35:07 -0800 (PST)
+        id S1355384AbiBCUhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 15:37:48 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41966 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355360AbiBCUfp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 15:35:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBE15B835B1;
-        Thu,  3 Feb 2022 20:35:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3B83C340EF;
-        Thu,  3 Feb 2022 20:35:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6069761A60;
+        Thu,  3 Feb 2022 20:35:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DBF3C36AE2;
+        Thu,  3 Feb 2022 20:35:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920504;
-        bh=UAB7gaH3NgMrAcDUBNS5Abh/HcDIdCVCCYEvBt09frA=;
+        s=k20201202; t=1643920544;
+        bh=oOQiocX8iG93SVM0rrMHhdY+iPpvsf6Slo6TpR7wMsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d/7xE2Y9Fthr5dBoIzh8HMs2XpuQwpJT27N/27gcSksMlvW0U2z6oGeIkIJmpemBb
-         +/33rEG6e7dOAS5kRwBsCtvyXR885mAEvv+uN0z0FvgfKlW38vHYt+HTYDT3USZ+pT
-         ODka3aJ7fqHIHV1cgnjV2w6JltH9XkgT7am4TLlaHNHvpRvAEQenXq0+KVmGK5SsMG
-         xna5hSujy1NSXGORY11Gmr9pIG9HKwYYtOb22k+KXkQpJg/sofEm7WmCfaIhACAMkg
-         5euOzWWa2Oigrdrw9HN/oOh4vKhxs+GYcPckDvmGahijObVglFmV1T28ICLWgoLZxM
-         pi50wo+aBXErg==
+        b=kKitEMQlPbiiY1wExG3vmS9qsbk+j83xcxRJywaIT1j3CKskH+dO26zGXA5VypDYe
+         hySUogpsO08qWO8ofVIU3hmkbD8K/mlgn9uBpNhLY7qlKRY0Yhyxa2664QHbJMmVur
+         70HQOg8B3tNa/r5Rs2FP7kVFxtJtFe4ju+B3jAnCq8oS3YxtUzxvBiLZy2jNCaTE7j
+         57itRk7liiuhOM+FavdpPlpnq792xDpkUnRghi3MoQgxdTgX3JafOjOjqTYHC8Sqfl
+         F5sX/o7G/f4DqO8Sr5Rfl5FvOYowErBCGCsz4bjhyhbPaTdYKv5E04d4ZgiAwspb5b
+         ns8Yrbkl5yfEw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Victor Nogueira <victor@mojatatu.com>,
+Cc:     Jisheng Zhang <jszhang@kernel.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, kuba@kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 11/25] net: sched: Clarify error message when qdisc kind is unknown
-Date:   Thu,  3 Feb 2022 15:34:32 -0500
-Message-Id: <20220203203447.3570-11-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        kuba@kernel.org, mcoquelin.stm32@gmail.com, mripard@kernel.org,
+        wens@csie.org, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.10 25/25] net: stmmac: dwmac-sun8i: use return val of readl_poll_timeout()
+Date:   Thu,  3 Feb 2022 15:34:46 -0500
+Message-Id: <20220203203447.3570-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203447.3570-1-sashal@kernel.org>
 References: <20220203203447.3570-1-sashal@kernel.org>
@@ -52,39 +53,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Victor Nogueira <victor@mojatatu.com>
+From: Jisheng Zhang <jszhang@kernel.org>
 
-[ Upstream commit 973bf8fdd12f0e70ea351c018e68edd377a836d1 ]
+[ Upstream commit 9e0db41e7a0b6f1271cbcfb16dbf5b8641b4e440 ]
 
-When adding a tc rule with a qdisc kind that is not supported or not
-compiled into the kernel, the kernel emits the following error: "Error:
-Specified qdisc not found.". Found via tdc testing when ETS qdisc was not
-compiled in and it was not obvious right away what the message meant
-without looking at the kernel code.
+When readl_poll_timeout() timeout, we'd better directly use its return
+value.
 
-Change the error message to be more explicit and say the qdisc kind is
-unknown.
+Before this patch:
+[    2.145528] dwmac-sun8i: probe of 4500000.ethernet failed with error -14
 
-Signed-off-by: Victor Nogueira <victor@mojatatu.com>
+After this patch:
+[    2.138520] dwmac-sun8i: probe of 4500000.ethernet failed with error -110
+
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_api.c | 2 +-
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 7b24582a8a164..6758968e79327 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -1204,7 +1204,7 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+index 9f5ccf1a0a540..cad6588840d8b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -734,7 +734,7 @@ static int sun8i_dwmac_reset(struct stmmac_priv *priv)
  
- 	err = -ENOENT;
- 	if (!ops) {
--		NL_SET_ERR_MSG(extack, "Specified qdisc not found");
-+		NL_SET_ERR_MSG(extack, "Specified qdisc kind is unknown");
- 		goto err_out;
+ 	if (err) {
+ 		dev_err(priv->device, "EMAC reset timeout\n");
+-		return -EFAULT;
++		return err;
  	}
- 
+ 	return 0;
+ }
 -- 
 2.34.1
 
