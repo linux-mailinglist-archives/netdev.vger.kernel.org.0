@@ -2,106 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10DDA4A8866
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:13:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0408D4A8879
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:18:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238418AbiBCQMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 11:12:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53202 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352136AbiBCQLz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 11:11:55 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5ABC061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 08:11:55 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id 124so9802345ybw.6
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 08:11:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2c9zkis+6mjPEUK4jpV3Nd/fV3ZkhoV3T1Sk9fa/itg=;
-        b=HVdkDXFC1v1yEf6nQDIdZpARd3kCqcuNh/Nzud6NxoWx6lHydV6Z7n0dt54DjWqVat
-         kGHeXlxacQpCL1/X3BcsWdvrj0NRj6PrVrH0QQEbrpj4zm2VcFgKYo6R4dDHNLrqbwjq
-         HfV/VjgJDZRZZWJX1j4MmRhG1npfIfpFIrRGM/r/QAw4JThzeBu6KBibeDr0RM0uiYVh
-         JK/Eu9S8upX1q6WhUl3OQeZ6dUoTmN5BJzccUe6NZK/7DfkHOSXTVSAFxUKHmUgryWjN
-         33GyryJAvckAzinsmc9qFGHNldRuEr5zn2FGX+pWJTORqyjF4CRJszd6JZIsLHITT6VQ
-         ysmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2c9zkis+6mjPEUK4jpV3Nd/fV3ZkhoV3T1Sk9fa/itg=;
-        b=HPy4C4TnK5tIjOolNuvyS7bAA0c7/R2wdUZA857BEKLwOZ2R93Bts4+Z53tB97d3eU
-         JNXkk2uVqAGJuhfBEssGBNBgxVCqhWwaX8WoHYf+DpCxavnCtox0cKxX59AYVbuZWcDf
-         G6fWGg3iRbwx73K7p5V8QFcMCoGZlHDXun9N7HoDtqWY46TS07iF+Z3KkjBBO6i8bVJX
-         JJrojTMwt6+qdXH4MLGWZEubHxsOUfAn4QVCjhEQpWMG00+yHbq+ytZGaqJRB39wwYsT
-         5fJkG4yEtWrdD9sKDKPPlp+TYL8sNTAq5L6LRNkAxw4tSZ7BNNyykdMkjyy/R/qblKjc
-         5Jlw==
-X-Gm-Message-State: AOAM5333uw2otC/Yfyy2XFvRvKtzIahGajgLUl6t8s4sTz81Cchsi9sj
-        0SLWeUW2ZwvUzplOajmMNI2acirCZhD18TizNc7cVQ==
-X-Google-Smtp-Source: ABdhPJwocRAw9bvLDyZByFn+bVH/BqVA1/zKQUp8t5LiBh/ibCwiLTL085m8JoFtP3AyYwU7s+0nZfANv4K01M6+yhY=
-X-Received: by 2002:a81:3a4f:: with SMTP id h76mr5182028ywa.543.1643904714255;
- Thu, 03 Feb 2022 08:11:54 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1643902526.git.pabeni@redhat.com> <550566fedb425275bb9d351a565a0220f67d498b.1643902527.git.pabeni@redhat.com>
-In-Reply-To: <550566fedb425275bb9d351a565a0220f67d498b.1643902527.git.pabeni@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 3 Feb 2022 08:11:43 -0800
-Message-ID: <CANn89iLvee2jqB7R7qap9i-_johkbKofHE4ARct18jM_DwdaZg@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/3] net: gro: register gso and gro offload on
- separate lists
+        id S1346699AbiBCQSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 11:18:43 -0500
+Received: from mga14.intel.com ([192.55.52.115]:20070 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231477AbiBCQSi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Feb 2022 11:18:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643905119; x=1675441119;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ARb6j7+l1wuryTTlmyeKT87Elz11FCQCv50Dn2FT8IA=;
+  b=laCdawFaWLT048elHOiPw2hXBwDkCFfHUxohvZY51efHNMp5stCDAZ1X
+   Q4xfc8cpVrfTt9RWvvsBB/58mfIXWWvcC/vZ+x1yN+NS3UDcoliQN0O/8
+   cmMcu27pfAKPPRzDAkDkphfMArpyIMoLOUaWSzJhQpfffVNbzNLKZHgYZ
+   9ibhNcvxNaBiaZFFW0tVdMzMIEg8Dtvhy6QocT1Emgn5cYO722z4ALqtJ
+   z5lq35JujQmFckSs187R02boTP1v78PrAA7cuuSeIwzPzOgvFP6WqPSsI
+   +COXuBAELdUBGFMGSx1yKzZpIAieJH2gGEL09mQHr3Yr3Lr0QvPtodMaa
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="248393204"
+X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
+   d="scan'208";a="248393204"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 08:18:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
+   d="scan'208";a="480533134"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga003.jf.intel.com with ESMTP; 03 Feb 2022 08:18:36 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 213GIY10015819;
+        Thu, 3 Feb 2022 16:18:35 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 1/3] net: gro: avoid re-computing truesize twice on recycle
+Date:   Thu,  3 Feb 2022 17:16:32 +0100
+Message-Id: <20220203161632.13190-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <e311f77a9ddb739e3c583201fb99b9945942f68a.1643902526.git.pabeni@redhat.com>
+References: <cover.1643902526.git.pabeni@redhat.com> <e311f77a9ddb739e3c583201fb99b9945942f68a.1643902526.git.pabeni@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 7:48 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> So that we know each element in gro_list has valid gro callbacks
-> (and the same for gso). This allows dropping a bunch of conditional
-> in fastpath.
->
-> Before:
-> objdump -t net/core/gro.o | grep " F .text"
-> 0000000000000bb0 l     F .text  000000000000033c dev_gro_receive
->
-> After:
-> 0000000000000bb0 l     F .text  0000000000000325 dev_gro_receive
->
+From: Paolo Abeni <pabeni@redhat.com>
+Date: Thu,  3 Feb 2022 16:48:21 +0100
+
+> After commit 5e10da5385d2 ("skbuff: allow 'slow_gro' for skb
+> carring sock reference") and commit af352460b465 ("net: fix GRO
+> skb truesize update") the truesize of freed skb is properly updated
+
+                                        ^^^^^
+
+One nit here, I'd change this to "truesize of skb with stolen head"
+or so. It took me a bit of time to get why we should update the
+truesize of skb already freed (: Right, napi_reuse_skb() makes use
+of stolen-data skbs.
+
+> by the GRO engine, we don't need anymore resetting it at recycle time.
+> 
 > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 > ---
->  include/linux/netdevice.h |  3 +-
->  net/core/gro.c            | 90 +++++++++++++++++++++++----------------
->  2 files changed, 56 insertions(+), 37 deletions(-)
->
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 3213c7227b59..406cb457d788 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -2564,7 +2564,8 @@ struct packet_offload {
->         __be16                   type;  /* This is really htons(ether_type). */
->         u16                      priority;
->         struct offload_callbacks callbacks;
-> -       struct list_head         list;
-> +       struct list_head         gro_list;
-> +       struct list_head         gso_list;
->  };
->
+>  net/core/gro.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/net/core/gro.c b/net/core/gro.c
+> index a11b286d1495..d43d42215bdb 100644
+> --- a/net/core/gro.c
+> +++ b/net/core/gro.c
+> @@ -634,7 +634,6 @@ static void napi_reuse_skb(struct napi_struct *napi, struct sk_buff *skb)
+>  
+>  	skb->encapsulation = 0;
+>  	skb_shinfo(skb)->gso_type = 0;
+> -	skb->truesize = SKB_TRUESIZE(skb_end_offset(skb));
+>  	if (unlikely(skb->slow_gro)) {
+>  		skb_orphan(skb);
+>  		skb_ext_reset(skb);
+> -- 
+> 2.34.1
 
-On the other hand, this makes this object bigger, increasing the risk
-of spanning cache lines.
-
-It would be nice to group all struct packet_offload together in the
-same section to increase data locality.
-
-I played in the past with a similar idea, but splitting struct
-packet_offload in two structures, one for GRO, one for GSO.
-(Note that GSO is hardly ever use with modern NIC)
-
-But the gains were really marginal.
+Thanks,
+Al
