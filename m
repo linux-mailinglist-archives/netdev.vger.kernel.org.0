@@ -2,150 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70CA64A7EE6
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 06:20:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F041D4A7EE7
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 06:23:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232969AbiBCFUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 00:20:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbiBCFUp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 00:20:45 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 781A5C061714
-        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 21:20:45 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id m6so5379743ybc.9
-        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 21:20:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iEaZO0Lxrcsj9Qc0hQDlkSp7ZeBkDExBuQ09dFvwpSM=;
-        b=KwdAYuSWuxS/WR3nb2LdTfLhPuXiU4ol6CJQMs1+3e0xxSowe1u0gxGNPROgn51q0b
-         XNioe/lMpPUbM+DrYIph3NzKW1ISolnaXA6KAc+rODxcCr96jJ2jZVgi/BETulLIRLWh
-         Q1tNy3DpTayO8y55InBKaK0BLnY+BN0PCw7DfWW8PHQA5DW/zyxcjJ+OgxmMvvOEynQy
-         KlRyHgj5UBdFagnc9ZyNYG7mYHoX7TuuvwNvQ8zQTRpGEn9K3vGXGP7B2IaBQ2oGS3Fw
-         DVIXi4aFt6rifm5zcG4S3/pZs7LDM9rXosZHaduBxaGPrgU7OQYWnWrBZVWWfZFVhiHI
-         Euhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iEaZO0Lxrcsj9Qc0hQDlkSp7ZeBkDExBuQ09dFvwpSM=;
-        b=TkBo9DlIAn6wIgr4EPl12qMGXEwxqDcHlgbmFN/2kRsFgyvHvjY4w2fyzYYoDSY8Mv
-         /zCqLx2t8mKLiMo0eI3sHEzKY/QsO71TmFImKaa7/KY4YBatSO9SlyDxjZxpZjpmPDw1
-         F5poMkpQPZKsYvIrqsCEu+g0hJOwNaMxAXFP4Xnoi8yIBpmmUa0xQCy/ULh6Lyxfg6PC
-         riJHB8rIgr9hStcVUvcGKdTs3tWiyN+SvmYIXPxvujMW950RiMJKJGul5sJkNlhtLebk
-         KkLCzFMz/BPGHD9x4eBnIPCQpRE1dOTJVvw3qOKixw8fdb7SHDb16qDjhR/PL7nNz1b8
-         FyAw==
-X-Gm-Message-State: AOAM531YbCAVB5Mu1sMhNjQfpD1JWB7qJ2RVhvhamXlwl+7PxksXvGlV
-        x5SnNNl5E2sReS5AIPlyRjQ6QFNITYRbg88Pmx/uGA==
-X-Google-Smtp-Source: ABdhPJzI7VkfGopKurfIdmXldpkPPYvur07XKyi0c9Q5vWaEhUxry6YyjFJbZndZslT2tvqVnj99N4A4alWeuhD4BX4=
-X-Received: by 2002:a25:8885:: with SMTP id d5mr25561477ybl.383.1643865644399;
- Wed, 02 Feb 2022 21:20:44 -0800 (PST)
-MIME-Version: 1.0
-References: <20220203015140.3022854-10-eric.dumazet@gmail.com> <202202031206.1nNLT568-lkp@intel.com>
-In-Reply-To: <202202031206.1nNLT568-lkp@intel.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 2 Feb 2022 21:20:32 -0800
-Message-ID: <CANn89iJAkBXdmnU4FTO3MU2T+PxqkhFxKUpvp-q2uODurT6Wxw@mail.gmail.com>
-Subject: Re: [PATCH net-next 09/15] net: increase MAX_SKB_FRAGS
-To:     kernel test robot <lkp@intel.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        id S234337AbiBCFXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 00:23:51 -0500
+Received: from mga01.intel.com ([192.55.52.88]:45205 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229872AbiBCFXv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Feb 2022 00:23:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643865831; x=1675401831;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fG0m/RXUF4OlUWOTpCXAv3rLGBTu2HjEplkreSuJKL4=;
+  b=AbYeaSjGoLDU+OayYV9TaaoVo/lkKf3B46d8F7h+pg6WRmct8uFToTvg
+   nxNKCFIC8Vk3QB5x1izn+mKRQPBlgpSzs2W112cO+LsEnAasxhJpga8QU
+   5AYPk2TIesPuWrvEKqIZdUojQHq9wCtZBOOTsQZerprb2TlQ7tOKEXNzt
+   9+1Ucz1yL3hufCy6Xp3C9qIfK3IP9pfjFhq2r9Or1HKnSZn2dGNvdNMQ1
+   FB7aEXlYQ5hYdSpGZIu94YARyGn1VFTVlBdYz9JaSXAxa5D4fygb1rPpr
+   aqYHS2wRjdoW3CLAQ1xoHu7OX9Gq+0LZ52KVoWHCFEBnXXVZT/y+uqWM8
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="272568022"
+X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
+   d="scan'208";a="272568022"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 21:23:50 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
+   d="scan'208";a="480373471"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 02 Feb 2022 21:23:48 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nFUax-000Ve9-Ll; Thu, 03 Feb 2022 05:23:47 +0000
+Date:   Thu, 3 Feb 2022 13:23:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kbuild-all@lists.01.org,
-        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Coco Li <lixiaoyan@google.com>
+Subject: Re: [PATCH net-next 09/15] net: increase MAX_SKB_FRAGS
+Message-ID: <202202031315.B425Ipe8-lkp@intel.com>
+References: <20220203015140.3022854-10-eric.dumazet@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220203015140.3022854-10-eric.dumazet@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 2, 2022 at 9:02 PM kernel test robot <lkp@intel.com> wrote:
->
-> Hi Eric,
->
-> I love your patch! Yet something to improve:
->
-> [auto build test ERROR on net-next/master]
->
-> url:    https://github.com/0day-ci/linux/commits/Eric-Dumazet/tcp-BIG-TCP-implementation/20220203-095336
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 52dae93f3bad842c6d585700460a0dea4d70e096
-> config: arc-randconfig-r043-20220130 (https://download.01.org/0day-ci/archive/20220203/202202031206.1nNLT568-lkp@intel.com/config)
-> compiler: arc-elf-gcc (GCC) 11.2.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/0day-ci/linux/commit/64ec6b0260be94b2ed90ee6d139591bdbd49c82d
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Eric-Dumazet/tcp-BIG-TCP-implementation/20220203-095336
->         git checkout 64ec6b0260be94b2ed90ee6d139591bdbd49c82d
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash kernel/bpf/
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
->    In file included from include/linux/container_of.h:5,
->                     from include/linux/list.h:5,
->                     from include/linux/rculist.h:10,
->                     from include/linux/pid.h:5,
->                     from include/linux/sched.h:14,
->                     from include/linux/ptrace.h:6,
->                     from include/uapi/asm-generic/bpf_perf_event.h:4,
->                     from ./arch/arc/include/generated/uapi/asm/bpf_perf_event.h:1,
->                     from include/uapi/linux/bpf_perf_event.h:11,
->                     from kernel/bpf/btf.c:6:
-> >> include/linux/build_bug.h:78:41: error: static assertion failed: "BITS_PER_LONG >= NR_MSG_FRAG_IDS"
->       78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
->          |                                         ^~~~~~~~~~~~~~
->    include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
->       77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
->          |                                  ^~~~~~~~~~~~~~~
->    include/linux/skmsg.h:41:1: note: in expansion of macro 'static_assert'
->       41 | static_assert(BITS_PER_LONG >= NR_MSG_FRAG_IDS);
+Hi Eric,
 
-Not clear why we have this assertion. Do we use a bitmap in an
-"unsigned long" in skmsg ?
+I love your patch! Yet something to improve:
 
-We could still use the old 17 limit for 32bit arches/builds.
+[auto build test ERROR on net-next/master]
 
->          | ^~~~~~~~~~~~~
->    kernel/bpf/btf.c: In function 'btf_seq_show':
->    kernel/bpf/btf.c:6049:29: warning: function 'btf_seq_show' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
->     6049 |         seq_vprintf((struct seq_file *)show->target, fmt, args);
->          |                             ^~~~~~~~
->    kernel/bpf/btf.c: In function 'btf_snprintf_show':
->    kernel/bpf/btf.c:6086:9: warning: function 'btf_snprintf_show' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
->     6086 |         len = vsnprintf(show->target, ssnprintf->len_left, fmt, args);
->          |         ^~~
->
->
-> vim +78 include/linux/build_bug.h
->
-> bc6245e5efd70c4 Ian Abbott       2017-07-10  60
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  61  /**
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  62   * static_assert - check integer constant expression at build time
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  63   *
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  64   * static_assert() is a wrapper for the C11 _Static_assert, with a
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  65   * little macro magic to make the message optional (defaulting to the
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  66   * stringification of the tested expression).
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  67   *
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  68   * Contrary to BUILD_BUG_ON(), static_assert() can be used at global
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  69   * scope, but requires the expression to be an integer constant
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  70   * expression (i.e., it is not enough that __builtin_constant_p() is
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  71   * true for expr).
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  72   *
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  73   * Also note that BUILD_BUG_ON() fails the build if the condition is
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  74   * true, while static_assert() fails the build if the expression is
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  75   * false.
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  76   */
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  77  #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07 @78  #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-> 6bab69c65013bed Rasmus Villemoes 2019-03-07  79
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+url:    https://github.com/0day-ci/linux/commits/Eric-Dumazet/tcp-BIG-TCP-implementation/20220203-095336
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 52dae93f3bad842c6d585700460a0dea4d70e096
+config: hexagon-randconfig-r045-20220130 (https://download.01.org/0day-ci/archive/20220203/202202031315.B425Ipe8-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a73e4ce6a59b01f0e37037761c1e6889d539d233)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/64ec6b0260be94b2ed90ee6d139591bdbd49c82d
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Eric-Dumazet/tcp-BIG-TCP-implementation/20220203-095336
+        git checkout 64ec6b0260be94b2ed90ee6d139591bdbd49c82d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash kernel/bpf/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from kernel/bpf/btf.c:22:
+>> include/linux/skmsg.h:41:1: error: static_assert failed due to requirement '32 >= (45UL + 1)' "BITS_PER_LONG >= NR_MSG_FRAG_IDS"
+   static_assert(BITS_PER_LONG >= NR_MSG_FRAG_IDS);
+   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/build_bug.h:77:34: note: expanded from macro 'static_assert'
+   #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
+                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/build_bug.h:78:41: note: expanded from macro '__static_assert'
+   #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+                                           ^              ~~~~
+   1 error generated.
+
+
+vim +41 include/linux/skmsg.h
+
+604326b41a6fb9 Daniel Borkmann 2018-10-13  25  
+604326b41a6fb9 Daniel Borkmann 2018-10-13  26  struct sk_msg_sg {
+604326b41a6fb9 Daniel Borkmann 2018-10-13  27  	u32				start;
+604326b41a6fb9 Daniel Borkmann 2018-10-13  28  	u32				curr;
+604326b41a6fb9 Daniel Borkmann 2018-10-13  29  	u32				end;
+604326b41a6fb9 Daniel Borkmann 2018-10-13  30  	u32				size;
+604326b41a6fb9 Daniel Borkmann 2018-10-13  31  	u32				copybreak;
+163ab96b52ae2b Jakub Kicinski  2019-10-06  32  	unsigned long			copy;
+031097d9e079e4 Jakub Kicinski  2019-11-27  33  	/* The extra two elements:
+031097d9e079e4 Jakub Kicinski  2019-11-27  34  	 * 1) used for chaining the front and sections when the list becomes
+031097d9e079e4 Jakub Kicinski  2019-11-27  35  	 *    partitioned (e.g. end < start). The crypto APIs require the
+031097d9e079e4 Jakub Kicinski  2019-11-27  36  	 *    chaining;
+031097d9e079e4 Jakub Kicinski  2019-11-27  37  	 * 2) to chain tailer SG entries after the message.
+d3b18ad31f93d0 John Fastabend  2018-10-13  38  	 */
+031097d9e079e4 Jakub Kicinski  2019-11-27  39  	struct scatterlist		data[MAX_MSG_FRAGS + 2];
+604326b41a6fb9 Daniel Borkmann 2018-10-13  40  };
+031097d9e079e4 Jakub Kicinski  2019-11-27 @41  static_assert(BITS_PER_LONG >= NR_MSG_FRAG_IDS);
+604326b41a6fb9 Daniel Borkmann 2018-10-13  42  
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
