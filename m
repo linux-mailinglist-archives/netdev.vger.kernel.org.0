@@ -2,121 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5527E4A889A
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:32:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC10F4A8898
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:32:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240172AbiBCQbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 11:31:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232725AbiBCQbP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 11:31:15 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A51C061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 08:31:15 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id j2so10805766ybu.0
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 08:31:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H42to55yOhDlKsqJIVjap3K1IgLNSTsR60dR1A1e+U8=;
-        b=saKRqxKS3dygZ8E/L3rbIoYk40zR2SdgwLIaVL32+gxHij4OmDbzgtjUVfQpY6j4H/
-         R1kb99NqUSOhinkYcRs7i3335/+qAxAGuEkauTc3zwDXlvRxTpnjj+0UQ3bQzEJlG3Q2
-         s/mXiN+fxHzoKSj1HZu9DlHslUvTjjco4L6EfO2VXfNrbVNUkP5J21IYBEDLVJgzX34r
-         b9qtFJbhhxt8SSu7EFZijONI9kz/qG08Jh8tRSXJ3w9jUAYnkR0baK67MFtox7LX5e/1
-         BLmgYYJ/kLGIPF5kiSHoo5MQ5CV5fs9yeMNEHidrNRnYvZytMliXRXkXE2t2pRK9tYx2
-         Hzcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H42to55yOhDlKsqJIVjap3K1IgLNSTsR60dR1A1e+U8=;
-        b=2UeTlGl+612sVmiypJIzKpf9WOM73bScA1QD5e9dkmimr/ix6i8RXsNxKp7aS8Ysm1
-         RobbK1qfGv6bz3mGpF+5Bb2e1Po0z97CgDN+GVroY3HaLf8Ya9CKwKMs7Dg5914P53Oz
-         tYcpkUo5TGMa23Q50a9j3V1UdmMRcIiBoV9CZ75bwt4Ss7V53fbDxUpU9j/nprYCqsU/
-         JBOd4wGjXa7GkM4Mx80IWtcTbpSbmVhImeEoB/sPN7ptekR4zJsJgF1Px7UZWZf/VgXl
-         Rq1WizBUzEA6LuCCzdR/wsRTvIR4DmPVX6LMnx62Sbz7puZZTWJ8voGWBjD/RF6Lqjdn
-         1AjQ==
-X-Gm-Message-State: AOAM5325mnIBnZwIAf8t5Tbnhv0yfrjYgkVitwdAZhXCwqe5OId/fKjR
-        GTvi3DMDAJaNIhHUhMynM16Y1+GP4uAEs9qpv9jIF3EUtPnhQBXB
-X-Google-Smtp-Source: ABdhPJyviILGgcDjPHmkKdIQYoseCTVp+CZLU7Z3GxRnYPL7QGCBoJRaYpN+YuWVodPoAR+oTWEfHy1cyFU4tKDYueo=
-X-Received: by 2002:a81:c201:: with SMTP id z1mr5122465ywc.447.1643905873443;
- Thu, 03 Feb 2022 08:31:13 -0800 (PST)
-MIME-Version: 1.0
-References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
- <20220203015140.3022854-9-eric.dumazet@gmail.com> <cefef8b5dfd8f5944e74f5f6bf09692f4984db6a.camel@redhat.com>
-In-Reply-To: <cefef8b5dfd8f5944e74f5f6bf09692f4984db6a.camel@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 3 Feb 2022 08:31:02 -0800
-Message-ID: <CANn89iLmOwfYSKZk6_Qb5pv7=b_933k-=Pcb7OeST4yhB+xEtg@mail.gmail.com>
-Subject: Re: [PATCH net-next 08/15] ipv6: Add hop-by-hop header to jumbograms
- in ip6_output
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S1352219AbiBCQbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 11:31:53 -0500
+Received: from mx07-0057a101.pphosted.com ([205.220.184.10]:34488 "EHLO
+        mx07-0057a101.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1352218AbiBCQbw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 11:31:52 -0500
+Received: from pps.filterd (m0214197.ppops.net [127.0.0.1])
+        by mx07-0057a101.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2137FhRF009768;
+        Thu, 3 Feb 2022 17:31:30 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=westermo.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=12052020; bh=vY0lD5md1sLIwCVcBHbC2KeHGjxz2ha31fFKAL++r70=;
+ b=oHGRXhQmQNYJ+VOzxbi3T4iuZjUEfVaA0p1M8Vp2toGN+0ZVBcgxwMYuR1j4gcmByhEp
+ MyX6Qr1NOxiQSKRsdk78QXLW/k8lVIMkC8RnN2hO6RPAgWoASH/ZgPcHepeJaIHH0VQh
+ PHc5d1vA83xJxis5apUCMhzDM7NGXIlUfQSnYO1f+uYhe1CgVpw/2Bvp8Y0q76SCsVAW
+ 6Raia4SNeW3k//CU6pbBrg0UJzyGVBocV/jwnryzsCRlF848rAtgyWbj/U34sxQsK6u/
+ VkYBz9YUuTnjwkPBnvRa6/K+EQhdQBexMngMR2LIEqOx4Dz5fY6wEIQBId4tsFdExYKR bA== 
+Received: from mail.beijerelectronics.com ([195.67.87.131])
+        by mx07-0057a101.pphosted.com (PPS) with ESMTPS id 3dxu1u2uj6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 03 Feb 2022 17:31:30 +0100
+Received: from jacques-work.labs.westermo.se (192.168.131.30) by
+ EX01GLOBAL.beijerelectronics.com (10.101.10.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.2375.17; Thu, 3 Feb 2022 17:31:29 +0100
+From:   Jacques de Laval <Jacques.De.Laval@westermo.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+CC:     <netdev@vger.kernel.org>,
+        Jacques de Laval <Jacques.De.Laval@westermo.com>
+Subject: [PATCH net-next 1/1] net: Add new protocol attribute to IP addresses
+Date:   Thu, 3 Feb 2022 17:31:06 +0100
+Message-ID: <20220203163106.1276624-1-Jacques.De.Laval@westermo.com>
+X-Mailer: git-send-email 2.33.0
+MIME-Version: 1.0
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [192.168.131.30]
+X-ClientProxiedBy: wsevst-s0023.westermo.com (192.168.130.120) To
+ EX01GLOBAL.beijerelectronics.com (10.101.10.25)
+X-Proofpoint-ORIG-GUID: DWW9oJnEmFbE87zm8nEWzoY2NR5ZUuL-
+X-Proofpoint-GUID: DWW9oJnEmFbE87zm8nEWzoY2NR5ZUuL-
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 1:07 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> On Wed, 2022-02-02 at 17:51 -0800, Eric Dumazet wrote:
-> > From: Coco Li <lixiaoyan@google.com>
-> >
-> > Instead of simply forcing a 0 payload_len in IPv6 header,
-> > implement RFC 2675 and insert a custom extension header.
-> >
-> > Note that only TCP stack is currently potentially generating
-> > jumbograms, and that this extension header is purely local,
-> > it wont be sent on a physical link.
-> >
-> > This is needed so that packet capture (tcpdump and friends)
-> > can properly dissect these large packets.
-> >
-> > Signed-off-by: Coco Li <lixiaoyan@google.com>
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > ---
-> >  include/linux/ipv6.h  |  1 +
-> >  net/ipv6/ip6_output.c | 22 ++++++++++++++++++++--
-> >  2 files changed, 21 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-> > index 1e0f8a31f3de175659dca9ecee9f97d8b01e2b68..d3fb87e1589997570cde9cb5d92b2222008a229d 100644
-> > --- a/include/linux/ipv6.h
-> > +++ b/include/linux/ipv6.h
-> > @@ -144,6 +144,7 @@ struct inet6_skb_parm {
-> >  #define IP6SKB_L3SLAVE         64
-> >  #define IP6SKB_JUMBOGRAM      128
-> >  #define IP6SKB_SEG6        256
-> > +#define IP6SKB_FAKEJUMBO      512
-> >  };
-> >
-> >  #if defined(CONFIG_NET_L3_MASTER_DEV)
-> > diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-> > index 0c6c971ce0a58b50f8a9349b8507dffac9c7818c..f78ba145620560e5d7cb25aaf16fec61ddd9ed40 100644
-> > --- a/net/ipv6/ip6_output.c
-> > +++ b/net/ipv6/ip6_output.c
-> > @@ -180,7 +180,9 @@ static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff
-> >  #endif
-> >
-> >       mtu = ip6_skb_dst_mtu(skb);
-> > -     if (skb_is_gso(skb) && !skb_gso_validate_network_len(skb, mtu))
-> > +     if (skb_is_gso(skb) &&
-> > +         !(IP6CB(skb)->flags & IP6SKB_FAKEJUMBO) &&
-> > +         !skb_gso_validate_network_len(skb, mtu))
-> >               return ip6_finish_output_gso_slowpath_drop(net, sk, skb, mtu);
->
-> If I read correctly jumbogram with gso len not fitting the egress
-> device MTU will not be fragmented, as opposed to plain old GSO packets.
-> Am I correct? why fragmentation is not needed for jumbogram?
+This patch adds a new protocol attribute to IPv4 and IPv6 addresses.
+Inspiration was taken from the protocol attribute of routes. User space
+applications like iproute2 can set/get the protocol with the Netlink API.
 
-I guess we could add this validation in place.
+The attribute is stored as an 8-bit unsigned int. Only IFAPROT_UNSPEC is
+defined. The rest of the available ids are available for user space to
+define.
 
-Honestly, we do not expect BIG TCP being deployed in hostile
-environments (host having devices with different MTU)
+Grouping addresses on their origin is useful in scenarios where you want
+to distinguish between addresses coming from a specific protocol like DHCP
+and addresses that have been statically set.
 
-Fragmentation is evil and should be avoided at all costs.
+Tagging addresses with a string label is an existing feature that could be
+used as a solution. Unfortunately the max length of a label is
+15 characters, and for compatibility reasons the label must be prefixed
+with the name of the device followed by a colon. Since device names also
+have a max length of 15 characters, only -1 characters is guaranteed to be
+available for any origin tag, which is not that much.
+
+A reference implementation of user space setting and getting protocols
+is available for iproute2:
+
+Link: https://github.com/westermo/iproute2/commit/9a6ea18bd79f47f293e5edc7780f315ea42ff540
+
+Signed-off-by: Jacques de Laval <Jacques.De.Laval@westermo.com>
+---
+ include/linux/inetdevice.h   |  1 +
+ include/net/addrconf.h       |  1 +
+ include/net/if_inet6.h       |  2 ++
+ include/uapi/linux/if_addr.h |  4 ++++
+ net/ipv4/devinet.c           |  8 ++++++++
+ net/ipv6/addrconf.c          | 12 ++++++++++++
+ 6 files changed, 28 insertions(+)
+
+diff --git a/include/linux/inetdevice.h b/include/linux/inetdevice.h
+index a038feb63f23..caa6b7a5b5ac 100644
+--- a/include/linux/inetdevice.h
++++ b/include/linux/inetdevice.h
+@@ -148,6 +148,7 @@ struct in_ifaddr {
+ 	unsigned char		ifa_prefixlen;
+ 	__u32			ifa_flags;
+ 	char			ifa_label[IFNAMSIZ];
++	unsigned char		ifa_proto;
+ 
+ 	/* In seconds, relative to tstamp. Expiry is at tstamp + HZ * lft. */
+ 	__u32			ifa_valid_lft;
+diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+index 78ea3e332688..e53d8f4f4166 100644
+--- a/include/net/addrconf.h
++++ b/include/net/addrconf.h
+@@ -69,6 +69,7 @@ struct ifa6_config {
+ 	u32			preferred_lft;
+ 	u32			valid_lft;
+ 	u16			scope;
++	u8			ifa_proto;
+ };
+ 
+ int addrconf_init(void);
+diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
+index 653e7d0f65cb..f7c270b24167 100644
+--- a/include/net/if_inet6.h
++++ b/include/net/if_inet6.h
+@@ -73,6 +73,8 @@ struct inet6_ifaddr {
+ 
+ 	struct rcu_head		rcu;
+ 	struct in6_addr		peer_addr;
++
++	__u8			ifa_proto;
+ };
+ 
+ struct ip6_sf_socklist {
+diff --git a/include/uapi/linux/if_addr.h b/include/uapi/linux/if_addr.h
+index dfcf3ce0097f..2aa46b9c9961 100644
+--- a/include/uapi/linux/if_addr.h
++++ b/include/uapi/linux/if_addr.h
+@@ -35,6 +35,7 @@ enum {
+ 	IFA_FLAGS,
+ 	IFA_RT_PRIORITY,  /* u32, priority/metric for prefix route */
+ 	IFA_TARGET_NETNSID,
++	IFA_PROTO,
+ 	__IFA_MAX,
+ };
+ 
+@@ -69,4 +70,7 @@ struct ifa_cacheinfo {
+ #define IFA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ifaddrmsg))
+ #endif
+ 
++/* ifa_protocol */
++#define IFAPROT_UNSPEC	0
++
+ #endif
+diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
+index 4744c7839de5..369b229d0de4 100644
+--- a/net/ipv4/devinet.c
++++ b/net/ipv4/devinet.c
+@@ -102,6 +102,7 @@ static const struct nla_policy ifa_ipv4_policy[IFA_MAX+1] = {
+ 	[IFA_FLAGS]		= { .type = NLA_U32 },
+ 	[IFA_RT_PRIORITY]	= { .type = NLA_U32 },
+ 	[IFA_TARGET_NETNSID]	= { .type = NLA_S32 },
++	[IFA_PROTO]		= { .type = NLA_U8 },
+ };
+ 
+ struct inet_fill_args {
+@@ -887,6 +888,11 @@ static struct in_ifaddr *rtm_to_ifaddr(struct net *net, struct nlmsghdr *nlh,
+ 	if (tb[IFA_RT_PRIORITY])
+ 		ifa->ifa_rt_priority = nla_get_u32(tb[IFA_RT_PRIORITY]);
+ 
++	if (tb[IFA_PROTO])
++		ifa->ifa_proto = nla_get_u8(tb[IFA_PROTO]);
++	else
++		ifa->ifa_proto = IFAPROT_UNSPEC;
++
+ 	if (tb[IFA_CACHEINFO]) {
+ 		struct ifa_cacheinfo *ci;
+ 
+@@ -1623,6 +1629,7 @@ static size_t inet_nlmsg_size(void)
+ 	       + nla_total_size(4) /* IFA_BROADCAST */
+ 	       + nla_total_size(IFNAMSIZ) /* IFA_LABEL */
+ 	       + nla_total_size(4)  /* IFA_FLAGS */
++	       + nla_total_size(1)  /* IFA_PROTO */
+ 	       + nla_total_size(4)  /* IFA_RT_PRIORITY */
+ 	       + nla_total_size(sizeof(struct ifa_cacheinfo)); /* IFA_CACHEINFO */
+ }
+@@ -1697,6 +1704,7 @@ static int inet_fill_ifaddr(struct sk_buff *skb, struct in_ifaddr *ifa,
+ 	     nla_put_in_addr(skb, IFA_BROADCAST, ifa->ifa_broadcast)) ||
+ 	    (ifa->ifa_label[0] &&
+ 	     nla_put_string(skb, IFA_LABEL, ifa->ifa_label)) ||
++	    nla_put_u8(skb, IFA_PROTO, ifa->ifa_proto) ||
+ 	    nla_put_u32(skb, IFA_FLAGS, ifa->ifa_flags) ||
+ 	    (ifa->ifa_rt_priority &&
+ 	     nla_put_u32(skb, IFA_RT_PRIORITY, ifa->ifa_rt_priority)) ||
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 846037e73723..a74a3e73fcbf 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -1117,6 +1117,7 @@ ipv6_add_addr(struct inet6_dev *idev, struct ifa6_config *cfg,
+ 	ifa->prefix_len = cfg->plen;
+ 	ifa->rt_priority = cfg->rt_priority;
+ 	ifa->flags = cfg->ifa_flags;
++	ifa->ifa_proto = cfg->ifa_proto;
+ 	/* No need to add the TENTATIVE flag for addresses with NODAD */
+ 	if (!(cfg->ifa_flags & IFA_F_NODAD))
+ 		ifa->flags |= IFA_F_TENTATIVE;
+@@ -4626,6 +4627,7 @@ static const struct nla_policy ifa_ipv6_policy[IFA_MAX+1] = {
+ 	[IFA_FLAGS]		= { .len = sizeof(u32) },
+ 	[IFA_RT_PRIORITY]	= { .len = sizeof(u32) },
+ 	[IFA_TARGET_NETNSID]	= { .type = NLA_S32 },
++	[IFA_PROTO]             = { .len = sizeof(u8) },
+ };
+ 
+ static int
+@@ -4750,6 +4752,7 @@ static int inet6_addr_modify(struct inet6_ifaddr *ifp, struct ifa6_config *cfg)
+ 	ifp->tstamp = jiffies;
+ 	ifp->valid_lft = cfg->valid_lft;
+ 	ifp->prefered_lft = cfg->preferred_lft;
++	ifp->ifa_proto = cfg->ifa_proto;
+ 
+ 	if (cfg->rt_priority && cfg->rt_priority != ifp->rt_priority)
+ 		ifp->rt_priority = cfg->rt_priority;
+@@ -4843,6 +4846,11 @@ inet6_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (tb[IFA_RT_PRIORITY])
+ 		cfg.rt_priority = nla_get_u32(tb[IFA_RT_PRIORITY]);
+ 
++	if (tb[IFA_PROTO])
++		cfg.ifa_proto = nla_get_u8(tb[IFA_PROTO]);
++	else
++		cfg.ifa_proto = IFAPROT_UNSPEC;
++
+ 	cfg.valid_lft = INFINITY_LIFE_TIME;
+ 	cfg.preferred_lft = INFINITY_LIFE_TIME;
+ 
+@@ -4946,6 +4954,7 @@ static inline int inet6_ifaddr_msgsize(void)
+ 	       + nla_total_size(16) /* IFA_ADDRESS */
+ 	       + nla_total_size(sizeof(struct ifa_cacheinfo))
+ 	       + nla_total_size(4)  /* IFA_FLAGS */
++	       + nla_total_size(1)  /* IFA_PROTO */
+ 	       + nla_total_size(4)  /* IFA_RT_PRIORITY */;
+ }
+ 
+@@ -5023,6 +5032,9 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
+ 	if (nla_put_u32(skb, IFA_FLAGS, ifa->flags) < 0)
+ 		goto error;
+ 
++	if (nla_put_u8(skb, IFA_PROTO, ifa->ifa_proto))
++		goto error;
++
+ 	nlmsg_end(skb, nlh);
+ 	return 0;
+ 
+-- 
+2.33.0
+
