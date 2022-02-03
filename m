@@ -2,87 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 564974A824F
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 11:30:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 610694A8296
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 11:45:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347718AbiBCKaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 05:30:02 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:34640 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231725AbiBCKaB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 05:30:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643884201; x=1675420201;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=1TXPyy/kpZBNxO1tbtGx3iBoVnJzfJ227qS4/tBvr18=;
-  b=LYJZ6XT+Hd0/9mScnCjCfZWzcX34xsA+MSAoIuY4EvOvv5CRs4tkBQLP
-   FL96IaQCZLClIyzDu0AJffAkQAEKYzkHqOOXP/TUapxTC6+zV9yCuTCxY
-   s4H70GI58T3ny3RYgoBa08eRILQxTSQ1vo1vEs2iANe0tTWPwo+tBICuv
-   yKKwaPKU8eamOoyXHsHNDlGAjkD/yerc4s1QnAHZZeVlCFEZDl2Y16TNo
-   4DUKZ6i/H/Imlpj30bp+Lqf6XlLqosDYFHabP/HszoGRr5HSCoS4frNVe
-   nlF5/kMiCIXAXQsj9KniYAXovTTtL/HF5iK4CIkb78ywm28gtxvKMUfm/
-   g==;
-IronPort-SDR: KptEahQXKMdnpFose7f1Df66KQBgN5k2e7W95KLW+AC4ubFgizza4MgTI+t5MrZ24ksmbfM/w1
- F68uLGKNQG6XHcStLBz+aPNh7uL5GEAtdkYyqVjYOmE6ca+EP42zwUSWue4JN9rPA7DHGLuugo
- LJWgr4dp/Z4NBtlHxGRml6/x9DVELeVMXtxm5h0XiHG2fnTs+oQVQUTAej+OccO7oxIxNY0QWj
- hLS8s1OkI606jg6a4WaC/Rkg81utatMXOWKT7J/cKPt1f1yyrd9D7I3RdG4n0Ydag2ut8pLOzP
- xwO4ms0GBCABQaEFHUvGAKYw
-X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
-   d="scan'208";a="84547385"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Feb 2022 03:30:00 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 3 Feb 2022 03:30:01 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 3 Feb 2022 03:29:59 -0700
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Steen Hegelund <steen.hegelund@microchip.com>
-Subject: [PATCH net] net: sparx5: Fix get_stat64 crash in tcpdump
-Date:   Thu, 3 Feb 2022 11:29:00 +0100
-Message-ID: <20220203102900.528987-1-steen.hegelund@microchip.com>
-X-Mailer: git-send-email 2.35.1
+        id S241152AbiBCKpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 05:45:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47862 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231520AbiBCKpE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 05:45:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643885103;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wBFbqeA8wZVoaw3AhOQkcommuu2XKb8bOpX8+ULZXkQ=;
+        b=BZMW64uo4h5Qw/bTYhw1IbToC2oJ+HaZhBzLPfjHOuXLdufg/yCthWGLUhMHCnCDFuhsh0
+        f9bBaJRcJGTVl+koTMTrwVHscOULBwCZ4MFDsaZ12mZlXmsLyzG8K2uEsbo/zyhSf1+kwB
+        6SFPYXGWDGuhgP+r0pxEQnSNnuaFxPk=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-374-C0Zvahc1PuuEUDGbkbqAFQ-1; Thu, 03 Feb 2022 05:45:02 -0500
+X-MC-Unique: C0Zvahc1PuuEUDGbkbqAFQ-1
+Received: by mail-wm1-f71.google.com with SMTP id m189-20020a1c26c6000000b003508ba87dfbso592321wmm.7
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 02:45:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=wBFbqeA8wZVoaw3AhOQkcommuu2XKb8bOpX8+ULZXkQ=;
+        b=zTcNreV2VLdrcR1C1El0BkZiL43a25nE6fhFiVPzpViVE7SSjM3XK+i6eglznGHv80
+         UrOk/LzUdsp8jSkZT6lZ43yv6LouLRkC6vPgGJ8hnIqLYVQMPjs+9DLgkSb3gyEFq+2F
+         CX12hhfLuE0kBNeIYs4xL1R57Kjw5rPxIn474sL/yOrLLX44WtLaeszzj+xYcbG5uWQR
+         DgFVtDcuqCivyJpsv0aYBO4j8c3PVdMXu6XLtEB9jY2we1TJbh2tnMt+PXwJTqKDQfG2
+         UcrtpPhQISLVbK2Q3QUX2LPsgNRqBRA5nzRFYsWPeQoRLAtQpbC2YJ9eSEcmuGT8ojk1
+         zdTw==
+X-Gm-Message-State: AOAM531e71bNnHivcL6/eMxNxcpSewAwRRlBUa1Z6i0HyFe334YtufLc
+        aeDdx5SQI2wDn93XI/nLj/sW3UB6tH9vCEtyYIpQRXNtsxzPOHsqk4QQkroDTF6INmo7Q5sZ2I1
+        aQ/FE1O6pjIkJE5vM
+X-Received: by 2002:a05:600c:48a:: with SMTP id d10mr9864644wme.100.1643885101114;
+        Thu, 03 Feb 2022 02:45:01 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxfjdj8joFpcxj/yN+Ao7pGhbW6cXE1N8UQMGVTdBeQV45AgCeDw6UyGhkkUUj8JsSH+r/Dyw==
+X-Received: by 2002:a05:600c:48a:: with SMTP id d10mr9864620wme.100.1643885100812;
+        Thu, 03 Feb 2022 02:45:00 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-96-254.dyn.eolo.it. [146.241.96.254])
+        by smtp.gmail.com with ESMTPSA id f13sm20934169wri.44.2022.02.03.02.45.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 02:45:00 -0800 (PST)
+Message-ID: <366ea56787986da19724bb6d52a6e6145f2132ba.camel@redhat.com>
+Subject: Re: [PATCH net-next 07/15] ipv6: add GRO_IPV6_MAX_SIZE
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Coco Li <lixiaoyan@google.com>
+Date:   Thu, 03 Feb 2022 11:44:59 +0100
+In-Reply-To: <20220203015140.3022854-8-eric.dumazet@gmail.com>
+References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
+         <20220203015140.3022854-8-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This problem was found with Sparx5 when the tcpdump tool requests the
-do_get_stats64 (sparx5_get_stats64) statistic.
+On Wed, 2022-02-02 at 17:51 -0800, Eric Dumazet wrote:
+> From: "Signed-off-by: Coco Li" <lixiaoyan@google.com>
+> 
+> Enable GRO to have IPv6 specific limit for max packet size.
+> 
+> This patch introduces new dev->gro_ipv6_max_size
+> that is modifiable through ip link.
+> 
+> ip link set dev eth0 gro_ipv6_max_size 185000
+> 
+> Note that this value is only considered if bigger than
+> gro_max_size, and for non encapsulated TCP/ipv6 packets.
+> 
+> Signed-off-by: Coco Li <lixiaoyan@google.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> ---
+>  include/linux/netdevice.h          | 10 ++++++++++
+>  include/uapi/linux/if_link.h       |  1 +
+>  net/core/dev.c                     |  1 +
+>  net/core/gro.c                     | 20 ++++++++++++++++++--
+>  net/core/rtnetlink.c               | 15 +++++++++++++++
+>  tools/include/uapi/linux/if_link.h |  1 +
+>  6 files changed, 46 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 2a563869ba44f7d48095d36b1395e3fbd8cfff87..a3a61cffd953add6f272a53f551a49a47d200c68 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -1944,6 +1944,8 @@ enum netdev_ml_priv_type {
+>   *			keep a list of interfaces to be deleted.
+>   *	@gro_max_size:	Maximum size of aggregated packet in generic
+>   *			receive offload (GRO)
+> + *	@gro_ipv6_max_size:	Maximum size of aggregated packet in generic
+> + *				receive offload (GRO), for IPv6
+>   *
+>   *	@dev_addr_shadow:	Copy of @dev_addr to catch direct writes.
+>   *	@linkwatch_dev_tracker:	refcount tracker used by linkwatch.
+> @@ -2137,6 +2139,7 @@ struct net_device {
+>  	int			napi_defer_hard_irqs;
+>  #define GRO_MAX_SIZE		65536
+>  	unsigned int		gro_max_size;
+> +	unsigned int		gro_ipv6_max_size;
+>  	rx_handler_func_t __rcu	*rx_handler;
+>  	void __rcu		*rx_handler_data;
+>  
+> @@ -4840,6 +4843,13 @@ static inline void netif_set_gso_ipv6_max_size(struct net_device *dev,
+>  	WRITE_ONCE(dev->gso_ipv6_max_size, size);
+>  }
+>  
+> +static inline void netif_set_gro_ipv6_max_size(struct net_device *dev,
+> +					       unsigned int size)
+> +{
+> +	/* This pairs with the READ_ONCE() in skb_gro_receive() */
+> +	WRITE_ONCE(dev->gro_ipv6_max_size, size);
+> +}
+> +
+>  static inline void skb_gso_error_unwind(struct sk_buff *skb, __be16 protocol,
+>  					int pulled_hlen, u16 mac_offset,
+>  					int mac_len)
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index 024b3bd0467e1360917001dba6bcfd1f30391894..48fe85bed4a629df0dd7cc0ee3a5139370e2c94d 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -350,6 +350,7 @@ enum {
+>  	IFLA_GRO_MAX_SIZE,
+>  	IFLA_TSO_IPV6_MAX_SIZE,
+>  	IFLA_GSO_IPV6_MAX_SIZE,
+> +	IFLA_GRO_IPV6_MAX_SIZE,
+>  
+>  	__IFLA_MAX
+>  };
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 53c947e6fdb7c47e6cc92fd4e38b71e9b90d921c..e7df5c3f53d6e96d01ff06d081cef77d0c6d9d29 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -10190,6 +10190,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+>  	dev->gro_max_size = GRO_MAX_SIZE;
+>  	dev->tso_ipv6_max_size = GSO_MAX_SIZE;
+>  	dev->gso_ipv6_max_size = GSO_MAX_SIZE;
+> +	dev->gro_ipv6_max_size = GRO_MAX_SIZE;
+>  
+>  	dev->upper_level = 1;
+>  	dev->lower_level = 1;
+> diff --git a/net/core/gro.c b/net/core/gro.c
+> index a11b286d149593827f1990fb8d06b0295fa72189..005a05468418f0373264e8019384e2daa13176eb 100644
+> --- a/net/core/gro.c
+> +++ b/net/core/gro.c
+> @@ -136,11 +136,27 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
+>  	unsigned int new_truesize;
+>  	struct sk_buff *lp;
+>  
+> +	if (unlikely(NAPI_GRO_CB(skb)->flush))
+> +		return -E2BIG;
+> +
+>  	/* pairs with WRITE_ONCE() in netif_set_gro_max_size() */
+>  	gro_max_size = READ_ONCE(p->dev->gro_max_size);
+>  
+> -	if (unlikely(p->len + len >= gro_max_size || NAPI_GRO_CB(skb)->flush))
+> -		return -E2BIG;
+> +	if (unlikely(p->len + len >= gro_max_size)) {
+> +		/* pairs with WRITE_ONCE() in netif_set_gro_ipv6_max_size() */
+> +		unsigned int gro6_max_size = READ_ONCE(p->dev->gro_ipv6_max_size);
+> +
+> +		if (gro6_max_size > gro_max_size &&
+> +		    p->protocol == htons(ETH_P_IPV6) &&
+> +		    skb_headroom(p) >= sizeof(struct hop_jumbo_hdr) &&
+> +		    ipv6_hdr(p)->nexthdr == IPPROTO_TCP &&
+> +		    !p->encapsulation)
+> +			gro_max_size = gro6_max_size;
+> +
+> +		if (p->len + len >= gro_max_size)
+> +			return -E2BIG;
+> +	}
+> +
+>  
+>  	lp = NAPI_GRO_CB(p)->last;
+>  	pinfo = skb_shinfo(lp);
 
-The portstats pointer was incorrectly incremented when fetching priority
-based statistics.
+If I read correctly, a big GRO packet could be forwarded and/or
+redirected to an egress device not supporting LSOv2 or with a lower
+tso_ipv6_max_size. Don't we need to update netif_needs_gso() to take
+care of such scenario? 
+AFAICS we are not enforcing gso_max_size, so I'm wondering if that is
+really a problem?!?
 
-Fixes: af4b11022e2d (net: sparx5: add ethtool configuration and statistics support)
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
----
- drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks!
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
-index 59783fc46a7b..10b866e9f726 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
-@@ -1103,7 +1103,7 @@ void sparx5_get_stats64(struct net_device *ndev,
- 	stats->tx_carrier_errors = portstats[spx5_stats_tx_csense_cnt];
- 	stats->tx_window_errors = portstats[spx5_stats_tx_late_coll_cnt];
- 	stats->rx_dropped = portstats[spx5_stats_ana_ac_port_stat_lsb_cnt];
--	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx, ++stats)
-+	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx)
- 		stats->rx_dropped += portstats[spx5_stats_green_p0_rx_port_drop
- 					       + idx];
- 	stats->tx_dropped = portstats[spx5_stats_tx_local_drop];
--- 
-2.35.1
+Paolo
 
