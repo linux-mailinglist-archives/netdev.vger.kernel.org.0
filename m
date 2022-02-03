@@ -2,44 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C6E14A83AE
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 13:18:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EEFD4A83B3
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 13:19:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240746AbiBCMSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 07:18:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55844 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230481AbiBCMSA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 07:18:00 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45870C061714;
-        Thu,  3 Feb 2022 04:18:00 -0800 (PST)
-Date:   Thu, 3 Feb 2022 13:17:57 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643890678;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Vvn8qgUi3T3ikktOAwWXqGPzvzbNPGlVe9HhrvIFYuo=;
-        b=sjqmL5ZfHGC77vXR5Jo0NQN/xqnwPtFKGzTAXRv0EwNWSD9OgENJfsJHrz/Ojmp29YcNrK
-        UKzqKONRghqJ+Nbqrllii2HAQPxBSIuPs1uDbVkwPIPiiOuXV6CSBZ3Uou2r0mcQdQjGtW
-        8ZXyfNzo9hkhyc1XNUGnRkv6GpQm6Lb4XlgDboxT7CasX0Y4rrGBe2YeKARwCIBGktyP18
-        2zkQpdG12Z2QLBguj/ksT+OTjWUpcTuGT42YGr0fZ+4D+9HFLzjf06mNi+Ibo9rCBKjJgE
-        ABq0IC+L6uwVOggpB5nOhlbmhLx5sDXWI6IwKOYlblUZH3FhCOnMfqenmikVuA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643890678;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Vvn8qgUi3T3ikktOAwWXqGPzvzbNPGlVe9HhrvIFYuo=;
-        b=HAIt09ok8U/cmfQzjyvMQahScg5rVD6tOQp+rS5uuoAcgR91L2pwtX+fltrZ3WZNLZsiM/
-        4sgGFtvVl3s5J9Cg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-Cc:     Eric Dumazet <edumazet@google.com>, bpf <bpf@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
+        id S1350363AbiBCMTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 07:19:21 -0500
+Received: from mail.toke.dk ([45.145.95.12]:41507 "EHLO mail.toke.dk"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235652AbiBCMTU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Feb 2022 07:19:20 -0500
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1643890758; bh=PrA6M+49YlGSC+ysxDmsq2PRS2Pmdw5kBFLOBRlSQB4=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=npQU5Awt+Xbtok5i0OGMi/3RPF3Llp+Z/DD+8V3pD0PB4OODi7uFXdLBMO3c/NAPF
+         GH3fkZ/QflwR/7fjRujd5diT2t8nLLKROyllJN6zfDQ2w7DSNqBhJ0R9LE0tZZ5RFp
+         NeoYAFLvgX/mkmpNDrGqyAj5DTT/DbvqB7e6+2SrXNhn3nQYlHWv+yDHLqstPMrME6
+         OYddwiJbkEN0uvoBEOF9HEkwKV47gBHo8bAROgcW5+rhu9Jl2oLy3N9f9+nzB0UUcq
+         csCU7avg0SKPUhOoUppzGBs0AgFVopKx203uFkHRLQip3E/1aOE0qR2H4qxMIWpcPy
+         Id4zcs3KTx0nw==
+To:     Eric Dumazet <edumazet@google.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -47,54 +31,74 @@ Cc:     Eric Dumazet <edumazet@google.com>, bpf <bpf@vger.kernel.org>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH net-next 1/4] net: dev: Remove the preempt_disable() in
- netif_rx_internal().
-Message-ID: <YfvH9YpKTIU4EByk@linutronix.de>
+Subject: Re: [PATCH net-next 3/4] net: dev: Makes sure netif_rx() can be
+ invoked in any context.
+In-Reply-To: <CANn89iLVPnhybrdjRh6ccv6UZHW-_W0ZHRO5c7dnWU44FUgd_g@mail.gmail.com>
 References: <20220202122848.647635-1-bigeasy@linutronix.de>
- <20220202122848.647635-2-bigeasy@linutronix.de>
- <CANn89iJm9krQ-kjVBxFzxh0nG46O5RWDg=QyXhiq1nA3Erf9KQ@mail.gmail.com>
- <87v8xwb1o9.fsf@toke.dk>
+ <20220202122848.647635-4-bigeasy@linutronix.de>
+ <CANn89iLVPnhybrdjRh6ccv6UZHW-_W0ZHRO5c7dnWU44FUgd_g@mail.gmail.com>
+Date:   Thu, 03 Feb 2022 13:19:18 +0100
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87o83ob0s9.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <87v8xwb1o9.fsf@toke.dk>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-02-03 13:00:06 [+0100], Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> > Here is the code in larger context:
-> >
-> > #ifdef CONFIG_RPS
-> >     if (static_branch_unlikely(&rps_needed)) {
-> >         struct rps_dev_flow voidflow, *rflow =3D &voidflow;
-> >         int cpu;
-> >
-> >         preempt_disable();
-> >         rcu_read_lock();
-> >
-> >         cpu =3D get_rps_cpu(skb->dev, skb, &rflow);
-> >         if (cpu < 0)
-> >             cpu =3D smp_processor_id();
-> >
-> >         ret =3D enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
-> >
-> >         rcu_read_unlock();
-> >         preempt_enable();
-> >     } else
-> > #endif
-> >
-> > This code needs the preempt_disable().
->=20
-> This is mostly so that the CPU ID stays the same throughout that section
-> of code, though, right? So wouldn't it work to replace the
-> preempt_disable() with a migrate_disable()? That should keep _RT happy,
-> no?
+Eric Dumazet <edumazet@google.com> writes:
 
-It would but as mentioned previously: BH is disabled and
-smp_processor_id() is stable.
+> On Wed, Feb 2, 2022 at 4:28 AM Sebastian Andrzej Siewior
+> <bigeasy@linutronix.de> wrote:
+>>
+>> Dave suggested a while ago (eleven years by now) "Let's make netif_rx()
+>> work in all contexts and get rid of netif_rx_ni()". Eric agreed and
+>> pointed out that modern devices should use netif_receive_skb() to avoid
+>> the overhead.
+>> In the meantime someone added another variant, netif_rx_any_context(),
+>> which behaves as suggested.
+>>
+>> netif_rx() must be invoked with disabled bottom halves to ensure that
+>> pending softirqs, which were raised within the function, are handled.
+>> netif_rx_ni() can be invoked only from process context (bottom halves
+>> must be enabled) because the function handles pending softirqs without
+>> checking if bottom halves were disabled or not.
+>> netif_rx_any_context() invokes on the former functions by checking
+>> in_interrupts().
+>>
+>> netif_rx() could be taught to handle both cases (disabled and enabled
+>> bottom halves) by simply disabling bottom halves while invoking
+>> netif_rx_internal(). The local_bh_enable() invocation will then invoke
+>> pending softirqs only if the BH-disable counter drops to zero.
+>>
+>> Add a local_bh_disable() section in netif_rx() to ensure softirqs are
+>> handled if needed. Make netif_rx_ni() and netif_rx_any_context() invoke
+>> netif_rx() so they can be removed once they are no more users left.
+>>
+>> Link: https://lkml.kernel.org/r/20100415.020246.218622820.davem@davemloft.net
+>> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>
+> Maybe worth mentioning this commit will show a negative impact, for
+> network traffic
+> over loopback interface.
+>
+> My measure of the cost of local_bh_disable()/local_bh_enable() is ~6
+> nsec on one of my lab x86 hosts.
+>
+> Perhaps we could have a generic netif_rx(), and a __netif_rx() for the
+> virtual drivers (lo and maybe tunnels).
+>
+> void __netif_rx(struct sk_buff *skb);
+>
+> static inline int netif_rx(struct sk_buff *skb)
+> {
+>    int res;
+>     local_bh_disable();
+>     res = __netif_rx(skb);
+>   local_bh_enable();
+>   return res;
+> }
 
-> -Toke
++1, this seems like a reasonable solution!
 
-Sebastian
+-Toke
