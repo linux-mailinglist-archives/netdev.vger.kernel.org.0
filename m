@@ -2,56 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1871E4A902B
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 22:47:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 163A84A903F
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 22:52:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355496AbiBCVq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 16:46:27 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42152 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235095AbiBCVq0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 16:46:26 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B680B835B0;
-        Thu,  3 Feb 2022 21:46:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF46FC340E8;
-        Thu,  3 Feb 2022 21:46:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643924784;
-        bh=cz9F09un3prr+okQMRs9hSqR+JLzwF/3XyJjh6bMmq4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ss8fX1T2g1p/L/dzhXDdWiuuwWyp09UOTwgeXBU7cHN6RCDEJyg7BjikFC6ACtNg/
-         0KgAI1836esegwzxz4zqX5FvPxotk3ToSJbnobRXgwfDze4R2wxMbaG9dbakH6lNHz
-         l1RzxEJkQnv2q52uRTsK0qdqfg9UYnZzRf+87zp3BU4rWbDIz/Aw01gPjfItKXNpUS
-         wj/Vy1+ImLQgm2sEVcgm3FAJUyhBLQk49o3my0IU48M2XOgZLaVg2/dTGFBuCVYdI2
-         giq+NoJu/zuCrfHQqijNQyR8Da8h6YzGUTFsUEbhFvBrJEjKhtOfjaaVqyetNVwMZh
-         V4edHyUMvD16Q==
-Date:   Thu, 3 Feb 2022 13:46:22 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Florian Westphal <fw@strlen.de>, Yi Chen <yiche@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        kadlec@netfilter.org, davem@davemloft.net,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.16 05/52] netfilter: nf_conntrack_netbios_ns:
- fix helper module alias
-Message-ID: <20220203134622.5964eb15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220203202947.2304-5-sashal@kernel.org>
-References: <20220203202947.2304-1-sashal@kernel.org>
-        <20220203202947.2304-5-sashal@kernel.org>
+        id S1355155AbiBCVvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 16:51:52 -0500
+Received: from mga01.intel.com ([192.55.52.88]:63985 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231545AbiBCVvv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Feb 2022 16:51:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643925111; x=1675461111;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7zyng+yD/MsgDzplVp1bKG6k14SAqpycv1yxEvz49/I=;
+  b=bzJcyaHCnJ0Jl94VZ0IfZ0H6uiv/85t8IGjNPJr6B03Mgjl8cdZelLPG
+   DJ8XwODNxXTJ6CrpJogzv/yBdN83mV1jSzd2s+a6ABOZ+Nmz33szMDHal
+   nZuLD2KBud+zqlg22JKnnHZ7a2D90NdR3rRwlzXliWJnKJnPmCjnRBBTm
+   xl6NCkyjJkG+ET5dOfWjkVEMvvswP+6sKHQFFIx8kUKOwQEKlYZaADKK7
+   4xVzl0ArWYBebk95+EhemNuRcNxrF9ef5fyoMo4PMAYFJTRHNvOg7rO+z
+   tdUuFTXH1Ie81tQfKLqx3ZKBr+x55yr+oooElkhF9RWqch9JK27yrNJ0i
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="272760128"
+X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
+   d="scan'208";a="272760128"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 13:51:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
+   d="scan'208";a="498295185"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga002.jf.intel.com with ESMTP; 03 Feb 2022 13:51:51 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net-next 0/7][pull request] 40GbE Intel Wired LAN Driver Updates 2022-02-03
+Date:   Thu,  3 Feb 2022 13:51:33 -0800
+Message-Id: <20220203215140.969227-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  3 Feb 2022 15:28:59 -0500 Sasha Levin wrote:
-> Intentionally not adding a fixes-tag because i don't want this to go to
-> stable. 
+This series contains updates to the i40e client header file and driver.
 
-Ekhm. ;)
+Mateusz disables HW TC offload by default.
+
+Joe Damato removes a no longer used statistic.
+
+Jakub Kicinski removes an unused enum from the client header file.
+
+Jedrzej changes some admin queue commands to occur under atomic context
+and adds new functions for admin queue MAC VLAN filters to avoid a
+potential race that could occur due storing results in a structure that
+could be overwritten by the next admin queue call.
+
+The following are changes since commit 9c30918925d7992a6d812b3aa7e026839723c78a:
+  Merge branch 'dsa-mv88e6xxx-phylink_generic_validate'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 40GbE
+
+Jakub Kicinski (1):
+  i40e: remove enum i40e_client_state
+
+Jedrzej Jagielski (4):
+  i40e: Add sending commands in atomic context
+  i40e: Add new versions of send ASQ command functions
+  i40e: Add new version of i40e_aq_add_macvlan function
+  i40e: Fix race condition while adding/deleting MAC/VLAN filters
+
+Joe Damato (1):
+  i40e: Remove unused RX realloc stat
+
+Mateusz Palczewski (1):
+  i40e: Disable hw-tc-offload feature on driver load
+
+ drivers/net/ethernet/intel/i40e/i40e_adminq.c |  92 ++++++++++-
+ drivers/net/ethernet/intel/i40e/i40e_common.c | 155 +++++++++++++++---
+ .../net/ethernet/intel/i40e/i40e_debugfs.c    |   3 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |  29 ++--
+ .../net/ethernet/intel/i40e/i40e_prototype.h  |  25 +++
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h   |   1 -
+ include/linux/net/intel/i40e_client.h         |  10 --
+ 7 files changed, 255 insertions(+), 60 deletions(-)
+
+-- 
+2.31.1
+
