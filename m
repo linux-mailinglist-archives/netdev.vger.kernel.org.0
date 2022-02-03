@@ -2,70 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2307F4A905D
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 23:00:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89DCE4A9079
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 23:11:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355628AbiBCWAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 17:00:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47000 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355624AbiBCWAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 17:00:13 -0500
+        id S1351921AbiBCWKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 17:10:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38732 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233513AbiBCWKx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 17:10:53 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E13B9B835CD;
-        Thu,  3 Feb 2022 22:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BAC23C340EF;
-        Thu,  3 Feb 2022 22:00:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19332617D6;
+        Thu,  3 Feb 2022 22:10:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 780ACC340EB;
+        Thu,  3 Feb 2022 22:10:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643925610;
-        bh=1rkoyXl0TX+flY23ZfVhoH6T8eO5nqRM9yJ+4BlPp1A=;
+        s=k20201202; t=1643926252;
+        bh=xP9CJWr1aBy5mpv9X2dpcHXvU38UDBv+cO2U3vskBiE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YiUFA61g80eyQitmKfdOQ0IKz+6orhcVXCU8iqA46GBHX/LFDLKMqMnlNdwCigiGl
-         A/Zi5x7H6WAgkBZDuFcum6m+XWhYQLCgXnmsKKFILJD8/dRRA4/lBA9lfYvGbfYZcp
-         rAj9d9i2k54SqSU7hBaAaRYuLy9hEgM8AwXL5wj2e4xWdZotmLQAiFC+VMjGDzbQYT
-         y3/67HUxPDxc7mcjub7JvxZpN8J1HC79sEaU/wBmAaE/SC9Co7Ceyzngl9spMKafDE
-         panqykpZTfpUTCi3eGokgJjm/lJofs1qCWYApJVC/4CDVv9k/3xfOZJMlNM0x/zW5h
-         dHZ6PaarlCY3g==
+        b=rcG6q+uta8JxabOggF80CvwgiDM4iZWoXpXMoWk97x7YEtnpfK6DMBbrkq0AO6uFE
+         Pob5+tuxXXlonhnad4KOOqHNUVGBTbqh2i310NlTWfAxhs89cGM9WJml7nirsmowEE
+         rgUf2tol2bSSN8bQwE2bEe3Yq7Wqz8YT4f5eBU6OHjlFesSYH+qUn4HS3hJ1jzjkFH
+         rkP7I9J4kXdQhE3jc8jYIvJ0Z3eHGhGvH4LfqrGR7fv/s+iDjl+NC0D6t1fogk2Wjf
+         TpwoC2z6GcZV6o4Ito975GUGWsyQh8Hj7YU8s7WMi2j51jC5+pCTHKsNis1ZkRpfCw
+         nIi6EQBnkC09w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A3D56E5D08C;
-        Thu,  3 Feb 2022 22:00:10 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5B735E5869F;
+        Thu,  3 Feb 2022 22:10:52 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: bpf 2022-02-03
+Subject: Re: [PATCH net] net: stmmac: ensure PTP time register reads are
+ consistent
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164392561066.25807.1627541754798663535.git-patchwork-notify@kernel.org>
-Date:   Thu, 03 Feb 2022 22:00:10 +0000
-References: <20220203155815.25689-1-daniel@iogearbox.net>
-In-Reply-To: <20220203155815.25689-1-daniel@iogearbox.net>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
+Message-Id: <164392625236.29991.16982092505073746974.git-patchwork-notify@kernel.org>
+Date:   Thu, 03 Feb 2022 22:10:52 +0000
+References: <20220203160025.750632-1-yannick.vignon@oss.nxp.com>
+In-Reply-To: <20220203160025.750632-1-yannick.vignon@oss.nxp.com>
+To:     Yannick Vignon <yannick.vignon@oss.nxp.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, rayagond@vayavyalabs.com,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        sebastien.laveze@oss.nxp.com, olteanv@gmail.com,
+        xiaoliang.yang_1@nxp.com, mingkai.hu@nxp.com,
+        qiangqing.zhang@nxp.com, yannick.vignon@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This pull request was applied to netdev/net.git (master)
+This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu,  3 Feb 2022 16:58:15 +0100 you wrote:
-> Hi David, hi Jakub,
+On Thu,  3 Feb 2022 17:00:25 +0100 you wrote:
+> From: Yannick Vignon <yannick.vignon@nxp.com>
 > 
-> The following pull-request contains BPF updates for your *net* tree.
-> 
-> We've added 6 non-merge commits during the last 10 day(s) which contain
-> a total of 7 files changed, 11 insertions(+), 236 deletions(-).
+> Even if protected from preemption and interrupts, a small time window
+> remains when the 2 register reads could return inconsistent values,
+> each time the "seconds" register changes. This could lead to an about
+> 1-second error in the reported time.
 > 
 > [...]
 
 Here is the summary with links:
-  - pull-request: bpf 2022-02-03
-    https://git.kernel.org/netdev/net/c/77b1b8b43ec3
+  - [net] net: stmmac: ensure PTP time register reads are consistent
+    https://git.kernel.org/netdev/net/c/80d4609008e6
 
 You are awesome, thank you!
 -- 
