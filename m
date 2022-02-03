@@ -2,49 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9697B4A8EC7
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 21:39:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EE244A8ECF
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 21:39:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355489AbiBCUiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 15:38:50 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38908 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354946AbiBCUgx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 15:36:53 -0500
+        id S1355702AbiBCUi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 15:38:58 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43206 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354990AbiBCUg6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 15:36:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2CE0B835BF;
-        Thu,  3 Feb 2022 20:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE474C340E8;
-        Thu,  3 Feb 2022 20:36:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 91CF060ACB;
+        Thu,  3 Feb 2022 20:36:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFE53C340F2;
+        Thu,  3 Feb 2022 20:36:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920610;
-        bh=NWXtWuPcTk1NqFEhAom7jp65/IRafTnTScGEgINFwbY=;
+        s=k20201202; t=1643920617;
+        bh=5H7ZWdZ/Wp1Y3BFdLHd5wftiDtn0QwxHwepFUjOJhtU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mb0Mg6QXlWGk9D8UAB/Ewi3v8Z5/KAUPnEtcTCKUS9yGi3wNlCHb6KksKt6GmRG/+
-         jpSdyk1gXRHXVFFds7eIp6HQqfxIMff3jTADURPv6D3MclkKFhOrtaOkVsFksM4VMK
-         8RsbcbU3ZQFqC7P2qhEdq2snYgARHEV5RXlHDR1344zSRlSY/fpun2fkg2R2dK1Vro
-         uj6gneb7zuuoR3nKwRivmJxoBLh58+7fQ+WRAYaIelHJXZ6yj9AzoIy+NExehwdF/m
-         F8jG4jw0i4rHlvESJ6S7wmerKM/YZWa4B80wCbqZ6YabGvHV7kdCjXv7z00goyhJr/
-         FMfMR0uOB0S5g==
+        b=ZoEAzh7YGywCYqdnYZMncrREXaP042nq1pkoRNKgr6wU0ka+ALFzaXwtP7ier3oWS
+         jG0BGvLIucz7F6C9EMLKP+On9dwT8PoofMkFSytX4qkTpeMcsFOKrONHvKaUJSydtw
+         4CBLccUlx4CxK9ILmx4NK2iN/9KXAEbje7WLuC3jDlKpl8h7KjQBvp+2UwHrtGto4f
+         J3VOMm4jnXv/WNI5AgfvUa/ZhsuJf8I2NMq2q01cHOQp5zlwctKtMWrBgyf3zBLjvE
+         zc77sdw1HyxrVPUt9jIiZFOnxnW6aFpLs1KSa+jGWm4fUw5t5mbocZo3I/2l3sPWyB
+         1UuZjHs+XWQiQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jisheng Zhang <jszhang@kernel.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        kuba@kernel.org, mcoquelin.stm32@gmail.com, mripard@kernel.org,
-        wens@csie.org, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: [PATCH AUTOSEL 4.14 9/9] net: stmmac: dwmac-sun8i: use return val of readl_poll_timeout()
-Date:   Thu,  3 Feb 2022 15:36:33 -0500
-Message-Id: <20220203203633.4685-9-sashal@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>, Yi Chen <yiche@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
+        davem@davemloft.net, kuba@kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 3/7] netfilter: nf_conntrack_netbios_ns: fix helper module alias
+Date:   Thu,  3 Feb 2022 15:36:47 -0500
+Message-Id: <20220203203651.5158-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203203633.4685-1-sashal@kernel.org>
-References: <20220203203633.4685-1-sashal@kernel.org>
+In-Reply-To: <20220203203651.5158-1-sashal@kernel.org>
+References: <20220203203651.5158-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,40 +50,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jisheng Zhang <jszhang@kernel.org>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 9e0db41e7a0b6f1271cbcfb16dbf5b8641b4e440 ]
+[ Upstream commit 0e906607b9c5ee22312c9af4d8adb45c617ea38a ]
 
-When readl_poll_timeout() timeout, we'd better directly use its return
-value.
+The helper gets registered as 'netbios-ns', not netbios_ns.
+Intentionally not adding a fixes-tag because i don't want this to go to
+stable. This wasn't noticed for a very long time so no so no need to risk
+regressions.
 
-Before this patch:
-[    2.145528] dwmac-sun8i: probe of 4500000.ethernet failed with error -14
-
-After this patch:
-[    2.138520] dwmac-sun8i: probe of 4500000.ethernet failed with error -110
-
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Yi Chen <yiche@redhat.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/nf_conntrack_netbios_ns.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index 8e60315a087c9..1027831e5d814 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -630,7 +630,7 @@ static int sun8i_dwmac_reset(struct stmmac_priv *priv)
+diff --git a/net/netfilter/nf_conntrack_netbios_ns.c b/net/netfilter/nf_conntrack_netbios_ns.c
+index 4c8f30a3d6d27..1c429f2186eaf 100644
+--- a/net/netfilter/nf_conntrack_netbios_ns.c
++++ b/net/netfilter/nf_conntrack_netbios_ns.c
+@@ -24,13 +24,14 @@
+ #include <net/netfilter/nf_conntrack_helper.h>
+ #include <net/netfilter/nf_conntrack_expect.h>
  
- 	if (err) {
- 		dev_err(priv->device, "EMAC reset timeout\n");
--		return -EFAULT;
-+		return err;
- 	}
- 	return 0;
++#define HELPER_NAME	"netbios-ns"
+ #define NMBD_PORT	137
+ 
+ MODULE_AUTHOR("Patrick McHardy <kaber@trash.net>");
+ MODULE_DESCRIPTION("NetBIOS name service broadcast connection tracking helper");
+ MODULE_LICENSE("GPL");
+ MODULE_ALIAS("ip_conntrack_netbios_ns");
+-MODULE_ALIAS_NFCT_HELPER("netbios_ns");
++MODULE_ALIAS_NFCT_HELPER(HELPER_NAME);
+ 
+ static unsigned int timeout __read_mostly = 3;
+ module_param(timeout, uint, S_IRUSR);
+@@ -47,7 +48,7 @@ static int netbios_ns_help(struct sk_buff *skb, unsigned int protoff,
  }
+ 
+ static struct nf_conntrack_helper helper __read_mostly = {
+-	.name			= "netbios-ns",
++	.name			= HELPER_NAME,
+ 	.tuple.src.l3num	= NFPROTO_IPV4,
+ 	.tuple.src.u.udp.port	= cpu_to_be16(NMBD_PORT),
+ 	.tuple.dst.protonum	= IPPROTO_UDP,
 -- 
 2.34.1
 
