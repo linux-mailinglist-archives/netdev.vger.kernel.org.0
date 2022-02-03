@@ -2,66 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36D7A4A8897
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:32:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 675464A888B
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 17:28:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352224AbiBCQb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 11:31:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57620 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348141AbiBCQbT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 11:31:19 -0500
-X-Greylist: delayed 400 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 03 Feb 2022 08:31:18 PST
-Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658DFC06173B
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 08:31:18 -0800 (PST)
-Received: (qmail 17225 invoked from network); 3 Feb 2022 16:22:53 -0000
-Received: from p200300cf070ba5000c0051fffe8bdde4.dip0.t-ipconnect.de ([2003:cf:70b:a500:c00:51ff:fe8b:dde4]:41722 HELO eto.sf-tec.de) (auth=eike@sf-mail.de)
-        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 17:22:53 +0100
-From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
-To:     netdev@vger.kernel.org
-Subject: [PATCH 3/3] sunhme: forward the error code from pci_enable_device()
-Date:   Thu, 03 Feb 2022 17:23:54 +0100
-Message-ID: <8022143.T7Z3S40VBb@eto.sf-tec.de>
-In-Reply-To: <4686583.GXAFRqVoOG@eto.sf-tec.de>
-References: <4686583.GXAFRqVoOG@eto.sf-tec.de>
+        id S1352197AbiBCQ21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 11:28:27 -0500
+Received: from mga14.intel.com ([192.55.52.115]:21380 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234500AbiBCQ20 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Feb 2022 11:28:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643905706; x=1675441706;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=PuH5JHLTlQ8niLBlqJpVGw2sqNOjPzx7LuDvrGQ+67w=;
+  b=GnIjy2wA+9ThV/ZFcC0MusnH2crCtYHpUpOs/sNIlD82afEs6pEiEihH
+   +vZ2mYZrwL5mUERjuTM+JXoVVFZm0pERI3av+JVd+pkwW1srGvxvVJzUy
+   yqhPFJCQPx0MPfT8fHzDoVT14m2m/JdwBcoRBFD3TDvVmQar191lfJpyy
+   z26/Axoj5sqnOVnecw62ZUp4eFF8ftNZVuVRTiv2LY3qAhmyQ0RFfyeAT
+   UV5lH+0NaW0WoG5LSM0nmSgX5v78swU/N+3RAQSqtvasXnruArQNeAIdQ
+   IqVcv38fwNnjd8BPQzZaBXo6cx2al4Opqvr0tGKIWCpfusDYy9jW0E8rk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="248395764"
+X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
+   d="scan'208";a="248395764"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 08:28:14 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
+   d="scan'208";a="566448276"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga001.jf.intel.com with ESMTP; 03 Feb 2022 08:28:12 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 213GSBXM020378;
+        Thu, 3 Feb 2022 16:28:11 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next 3/3] net: gro: register gso and gro offload on separate lists
+Date:   Thu,  3 Feb 2022 17:26:19 +0100
+Message-Id: <20220203162619.13881-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <CANn89iLvee2jqB7R7qap9i-_johkbKofHE4ARct18jM_DwdaZg@mail.gmail.com>
+References: <cover.1643902526.git.pabeni@redhat.com> <550566fedb425275bb9d351a565a0220f67d498b.1643902527.git.pabeni@redhat.com> <CANn89iLvee2jqB7R7qap9i-_johkbKofHE4ARct18jM_DwdaZg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This already returns a proper error value, so pass it to the caller.
+From: Eric Dumazet <edumazet@google.com>
+Date: Thu, 3 Feb 2022 08:11:43 -0800
 
-Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
----
- drivers/net/ethernet/sun/sunhme.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+> On Thu, Feb 3, 2022 at 7:48 AM Paolo Abeni <pabeni@redhat.com> wrote:
+> >
+> > So that we know each element in gro_list has valid gro callbacks
+> > (and the same for gso). This allows dropping a bunch of conditional
+> > in fastpath.
+> >
+> > Before:
+> > objdump -t net/core/gro.o | grep " F .text"
+> > 0000000000000bb0 l     F .text  000000000000033c dev_gro_receive
+> >
+> > After:
+> > 0000000000000bb0 l     F .text  0000000000000325 dev_gro_receive
+> >
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > ---
+> >  include/linux/netdevice.h |  3 +-
+> >  net/core/gro.c            | 90 +++++++++++++++++++++++----------------
+> >  2 files changed, 56 insertions(+), 37 deletions(-)
+> >
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index 3213c7227b59..406cb457d788 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -2564,7 +2564,8 @@ struct packet_offload {
+> >         __be16                   type;  /* This is really htons(ether_type). */
+> >         u16                      priority;
+> >         struct offload_callbacks callbacks;
+> > -       struct list_head         list;
+> > +       struct list_head         gro_list;
+> > +       struct list_head         gso_list;
+> >  };
+> >
+> 
+> On the other hand, this makes this object bigger, increasing the risk
+> of spanning cache lines.
 
-diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index 43834339bb43..980a936ce8d1 100644
---- a/drivers/net/ethernet/sun/sunhme.c
-+++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -2969,11 +2969,12 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
- 		strcpy(prom_name, "SUNW,hme");
- #endif
- 
--	err = -ENODEV;
-+	err = pci_enable_device(pdev);
- 
--	if (pci_enable_device(pdev))
-+	if (err)
- 		goto err_out;
- 	pci_set_master(pdev);
-+	err = -ENODEV;
- 
- 	if (!strcmp(prom_name, "SUNW,qfe") || !strcmp(prom_name, "qfe")) {
- 		qp = quattro_pci_find(pdev);
--- 
-2.31.1
+As you said, GSO callbacks are barely used with most modern NICs.
+Plus GRO and GSO callbacks are used in the completely different
+operations.
+`gro_list` occupies the same place where the `list` previously was.
+Does it make a lot of sense to care about `gso_list` being placed
+in a cacheline separate from `gro_list`?
 
+> 
+> It would be nice to group all struct packet_offload together in the
+> same section to increase data locality.
+> 
+> I played in the past with a similar idea, but splitting struct
+> packet_offload in two structures, one for GRO, one for GSO.
+> (Note that GSO is hardly ever use with modern NIC)
+> 
+> But the gains were really marginal.
 
-
-
+Thanks,
+Al
