@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1EA04A86EA
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 15:48:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BB544A86EB
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 15:48:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236073AbiBCOsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 09:48:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33764 "EHLO
+        id S1351390AbiBCOsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 09:48:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231745AbiBCOs3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 09:48:29 -0500
+        with ESMTP id S237254AbiBCOse (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 09:48:34 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F003C061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 06:48:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14685C061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 06:48:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=76NhXZaMKCw6yzXT4Vx3wNzJZOSyX2ZQPsHh1qAlmUw=; b=ah5Z5uEcYSf4s7vhn0MLvxQ7Bu
-        CJ/lqZO2qeJwsDwJ589AMHZGiZ3344eo6pOoZDixfZpW4ETncnhM1avcuY01YAOYdYHbgLBiynF8l
-        RZeFHBgxNEmzgAaQgwMH5iRROzN12d8AIMGSy/Sb79rprqPwstk3s2/4OxXBPBRo5lD80wh55rX6m
-        hHq6y3jrdvtp+cJf68qPt7aEKTfsiWcmzrNc3R8t3avk5P7Yz2pRqoWEySATg1IbNG+XR8k3oXXQ3
-        5Wu6piWcpItzQd0v9DZLB6ZQHShRkkmBZIuAK0Pmdygsbx45OhjfH0ELz0RYwwFIBVjF1wjWbUcyd
-        YXUKjq6g==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54212 helo=rmk-PC.armlinux.org.uk)
+        bh=WgK69KSnjGRwhvkFJlQk/Vo1p3pd4aMi2MXWda7+Y9s=; b=KUqnKuEZ6IEag8JUhObUe0+wFV
+        rQ+kk3HXeaCBymz+gD3npoIBu7kscjJMoZtC+alzyYSHxaTgIjHfzCNYq54FT5Wnli7RCzo9oceP1
+        ojtJ1M8TmcBWe/rp0+YTAUeCGNoK85jGhMpVhdDOeJqhrePaOQoMo48o6fJdW0bR4VDj5HyPk6tcV
+        0rCtP43F6sZkZz56tjF+aU3KGgHlqqXVfPu9xuar+vWrDl6C7au1SE/4UZGbiWZPyB1xKnYGjZTe6
+        kJZ673Fvg1ZHlx3yE/iS7An9/vLy11YvQxq5Rs6w/K3G4RfVpp0+Jw0NSCglGe5kFVlP4glTe3SOf
+        LCzqcVCA==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54214 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1nFdPO-0002kt-7t; Thu, 03 Feb 2022 14:48:26 +0000
+        id 1nFdPT-0002l3-B6; Thu, 03 Feb 2022 14:48:31 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1nFdPN-006Wh6-LC; Thu, 03 Feb 2022 14:48:25 +0000
+        id 1nFdPS-006WhC-Or; Thu, 03 Feb 2022 14:48:30 +0000
 In-Reply-To: <YfvrIf/FDddglaKE@shell.armlinux.org.uk>
 References: <YfvrIf/FDddglaKE@shell.armlinux.org.uk>
 From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -43,202 +43,41 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH RFC net-next 2/5] net: dsa: b53: populate supported_interfaces
- and mac_capabilities
+Subject: [PATCH RFC net-next 3/5] net: dsa: b53: drop use of
+ phylink_helper_basex_speed()
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1nFdPN-006Wh6-LC@rmk-PC.armlinux.org.uk>
+Message-Id: <E1nFdPS-006WhC-Or@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Thu, 03 Feb 2022 14:48:25 +0000
+Date:   Thu, 03 Feb 2022 14:48:30 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Populate the supported interfaces and MAC capabilities for the Broadcom
-B53 DSA switches in preparation to using these for the generic
-validation functionality.
-
-The interface modes are derived from:
-- b53_serdes_phylink_validate()
-- SRAB mux configuration
-
-NOTE: much of this conversion is a guess as the driver doesn't contain
-sufficient information. I would appreciate a thorough review and
-testing of this change before it is merged.
+Now that we have a better method to select SFP interface modes, we
+no longer need to use phylink_helper_basex_speed() in a driver's
+validation function.
 
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/dsa/b53/b53_common.c | 28 ++++++++++++++++++++++++++
- drivers/net/dsa/b53/b53_priv.h   |  2 ++
- drivers/net/dsa/b53/b53_serdes.c | 27 +++++++++++++++++++++++++
- drivers/net/dsa/b53/b53_serdes.h |  2 ++
- drivers/net/dsa/b53/b53_srab.c   | 34 ++++++++++++++++++++++++++++++++
- 5 files changed, 93 insertions(+)
+ drivers/net/dsa/b53/b53_common.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 7d62b0aeaae9..211c0e499370 100644
+index 211c0e499370..a637e44bce0b 100644
 --- a/drivers/net/dsa/b53/b53_common.c
 +++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1353,6 +1353,33 @@ void b53_phylink_validate(struct dsa_switch *ds, int port,
+@@ -1348,8 +1348,6 @@ void b53_phylink_validate(struct dsa_switch *ds, int port,
+ 
+ 	linkmode_and(supported, supported, mask);
+ 	linkmode_and(state->advertising, state->advertising, mask);
+-
+-	phylink_helper_basex_speed(state);
  }
  EXPORT_SYMBOL(b53_phylink_validate);
  
-+static void b53_phylink_get_caps(struct dsa_switch *ds, int port,
-+				 struct phylink_config *config)
-+{
-+	struct b53_device *dev = ds->priv;
-+
-+	/* Internal ports need GMII for PHYLIB */
-+	__set_bit(PHY_INTERFACE_MODE_GMII, config->supported_interfaces);
-+
-+	/* These switches appear to support MII and RevMII too, but beyond
-+	 * this, the code gives very few clues. FIXME: We probably need more
-+	 * interface modes here.
-+	 */
-+	__set_bit(PHY_INTERFACE_MODE_MII, config->supported_interfaces);
-+	__set_bit(PHY_INTERFACE_MODE_REVMII, config->supported_interfaces);
-+
-+	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
-+		MAC_10 | MAC_100;
-+
-+	/* 5325/5365 are not capable of gigabit speeds, everything else is */
-+	if (!(is5325(dev) || is5365(dev)))
-+		config->mac_capabilities |= MAC_1000;
-+
-+	/* Get the implementation specific capabilities */
-+	if (dev->ops->phylink_get_caps)
-+		dev->ops->phylink_get_caps(dev, port, config);
-+}
-+
- int b53_phylink_mac_link_state(struct dsa_switch *ds, int port,
- 			       struct phylink_link_state *state)
- {
-@@ -2262,6 +2289,7 @@ static const struct dsa_switch_ops b53_switch_ops = {
- 	.phy_read		= b53_phy_read16,
- 	.phy_write		= b53_phy_write16,
- 	.adjust_link		= b53_adjust_link,
-+	.phylink_get_caps	= b53_phylink_get_caps,
- 	.phylink_validate	= b53_phylink_validate,
- 	.phylink_mac_link_state	= b53_phylink_mac_link_state,
- 	.phylink_mac_config	= b53_phylink_mac_config,
-diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-index b41dc8ac2ca8..b9d1b4819c5f 100644
---- a/drivers/net/dsa/b53/b53_priv.h
-+++ b/drivers/net/dsa/b53/b53_priv.h
-@@ -46,6 +46,8 @@ struct b53_io_ops {
- 	int (*phy_write16)(struct b53_device *dev, int addr, int reg, u16 value);
- 	int (*irq_enable)(struct b53_device *dev, int port);
- 	void (*irq_disable)(struct b53_device *dev, int port);
-+	void (*phylink_get_caps)(struct b53_device *dev, int port,
-+				 struct phylink_config *config);
- 	u8 (*serdes_map_lane)(struct b53_device *dev, int port);
- 	int (*serdes_link_state)(struct b53_device *dev, int port,
- 				 struct phylink_link_state *state);
-diff --git a/drivers/net/dsa/b53/b53_serdes.c b/drivers/net/dsa/b53/b53_serdes.c
-index 5ae3d9783b68..7e1ec51ab4c9 100644
---- a/drivers/net/dsa/b53/b53_serdes.c
-+++ b/drivers/net/dsa/b53/b53_serdes.c
-@@ -180,6 +180,33 @@ void b53_serdes_phylink_validate(struct b53_device *dev, int port,
- }
- EXPORT_SYMBOL(b53_serdes_phylink_validate);
- 
-+void b53_serdes_phylink_get_caps(struct b53_device *dev, int port,
-+				 struct phylink_config *config)
-+{
-+	u8 lane = b53_serdes_map_lane(dev, port);
-+
-+	if (lane == B53_INVALID_LANE)
-+		return;
-+
-+	switch (lane) {
-+	case 0:
-+		/* It appears lane 0 supports 2500base-X and 1000base-X */
-+		__set_bit(PHY_INTERFACE_MODE_2500BASEX,
-+			  config->supported_interfaces);
-+		config->mac_capabilities |= MAC_2500FD;
-+		fallthrough;
-+	case 1:
-+		/* It appears lane 1 only supports 1000base-X */
-+		__set_bit(PHY_INTERFACE_MODE_1000BASEX,
-+			  config->supported_interfaces);
-+		config->mac_capabilities |= MAC_1000FD;
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+EXPORT_SYMBOL(b53_serdes_phylink_get_caps);
-+
- int b53_serdes_init(struct b53_device *dev, int port)
- {
- 	u8 lane = b53_serdes_map_lane(dev, port);
-diff --git a/drivers/net/dsa/b53/b53_serdes.h b/drivers/net/dsa/b53/b53_serdes.h
-index 55d280fe38e4..8fa24f7001aa 100644
---- a/drivers/net/dsa/b53/b53_serdes.h
-+++ b/drivers/net/dsa/b53/b53_serdes.h
-@@ -115,6 +115,8 @@ void b53_serdes_config(struct b53_device *dev, int port, unsigned int mode,
- void b53_serdes_an_restart(struct b53_device *dev, int port);
- void b53_serdes_link_set(struct b53_device *dev, int port, unsigned int mode,
- 			 phy_interface_t interface, bool link_up);
-+void b53_serdes_phylink_get_caps(struct b53_device *dev, int port,
-+				 struct phylink_config *config);
- void b53_serdes_phylink_validate(struct b53_device *dev, int port,
- 				unsigned long *supported,
- 				struct phylink_link_state *state);
-diff --git a/drivers/net/dsa/b53/b53_srab.c b/drivers/net/dsa/b53/b53_srab.c
-index 4591bb1c05d2..7d72f3b293d3 100644
---- a/drivers/net/dsa/b53/b53_srab.c
-+++ b/drivers/net/dsa/b53/b53_srab.c
-@@ -443,6 +443,39 @@ static void b53_srab_irq_disable(struct b53_device *dev, int port)
- 	}
- }
- 
-+static void b53_srab_phylink_get_caps(struct b53_device *dev, int port,
-+				      struct phylink_config *config)
-+{
-+	struct b53_srab_priv *priv = dev->priv;
-+	struct b53_srab_port_priv *p = &priv->port_intrs[port];
-+
-+	switch (p->mode) {
-+	case PHY_INTERFACE_MODE_SGMII:
-+#if IS_ENABLED(CONFIG_B53_SERDES)
-+		/* If p->mode indicates SGMII mode, that essentially means we
-+		 * are using a serdes. As the serdes for the capabilities.
-+		 */
-+		b53_serdes_phylink_get_caps(dev, port, config);
-+#endif
-+		break;
-+
-+	case PHY_INTERFACE_MODE_NA:
-+		break;
-+
-+	case PHY_INTERFACE_MODE_RGMII:
-+		/* If we support RGMII, support all RGMII modes, since
-+		 * that dictates the PHY delay settings.
-+		 */
-+		phy_interface_set_rgmii(config->supported_interfaces);
-+		break;
-+
-+	default:
-+		/* Some other mode (e.g. MII, GMII etc) */
-+		__set_bit(p->mode, config->supported_interfaces);
-+		break;
-+	}
-+}
-+
- static const struct b53_io_ops b53_srab_ops = {
- 	.read8 = b53_srab_read8,
- 	.read16 = b53_srab_read16,
-@@ -456,6 +489,7 @@ static const struct b53_io_ops b53_srab_ops = {
- 	.write64 = b53_srab_write64,
- 	.irq_enable = b53_srab_irq_enable,
- 	.irq_disable = b53_srab_irq_disable,
-+	.phylink_get_caps = b53_srab_phylink_get_caps,
- #if IS_ENABLED(CONFIG_B53_SERDES)
- 	.serdes_map_lane = b53_srab_serdes_map_lane,
- 	.serdes_link_state = b53_serdes_link_state,
 -- 
 2.30.2
 
