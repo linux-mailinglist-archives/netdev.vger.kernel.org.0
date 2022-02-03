@@ -2,85 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66A424A8A86
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 18:45:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BA654A8A88
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 18:45:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353031AbiBCRp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 12:45:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:26351 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234361AbiBCRp1 (ORCPT
+        id S1353036AbiBCRpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 12:45:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236722AbiBCRp1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 12:45:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643910327;
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE858C061714;
+        Thu,  3 Feb 2022 09:45:26 -0800 (PST)
+Date:   Thu, 3 Feb 2022 18:45:22 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643910323;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=y0HNmgxmLxNYUa/mu5DTm3vHFzk7CSUGWJbL+LbLOPA=;
-        b=dblI8eQwlUwE+CxCgKbQCTd7a/z9Jj7eSNGLpnkZlaan1aMtE5lytj6ZIa1BVaGseAs6Da
-        Aza8ZSf0XoXtZ2KpbXAE58EhHLQ3i1heYaC/siXZkkyBsPrwibRx0PFm0Jq/KTa2wJL53t
-        zyst6aln3qWfmwHHJ1Q0uxg/Td1IVrE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-107-R4gKHM00NCun__whOSiC9A-1; Thu, 03 Feb 2022 12:45:23 -0500
-X-MC-Unique: R4gKHM00NCun__whOSiC9A-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7F1671091DA1;
-        Thu,  3 Feb 2022 17:45:21 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.33.211])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 31E5F4CEC7;
-        Thu,  3 Feb 2022 17:45:20 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org, lihong.yang@intel.com,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        bh=LMbK/rkb16pf1pFvu++BiU7C75L+5+l1Z7FWzQOMCJo=;
+        b=U7k595SMwbd43+SlszUhj7UdjhaQmx8EEtn59HssmwEKNfTGXLalxRFH0zhAyld1ghBXu8
+        eiGYsv5xo2XzZUqtg2eL/yql4LkJ7aANY9gu6wBGFnwvDirftSD1Qk1v1OsOV3avLv4zQX
+        uZz7n0lpMEriM4eU4Up8VxIRvRz6xm4X41ds3ReNVeKcoaMlhM8AnS9hYel6bZdIMOE79o
+        sf4FKRi7EbEmZPVoPMsguRG9qcAAII0URU/nzvlo6GNIRz9bS0+P/4uLeV/slgLJT7yMrn
+        CW+ooMcGxOoSDoL6vheRPbHAuzEOGCgEzXPaLQHIAEnT8uPRmyaQz7Yk76Iksw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643910323;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LMbK/rkb16pf1pFvu++BiU7C75L+5+l1Z7FWzQOMCJo=;
+        b=shm9yg7XQi7yUNgXid9vOKRIiEFfkic3J4+yjlKOZhVhYwdVV0VWff/aS1j1ftXijtEYVr
+        Od046CQCK5HhhXBQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] ice: change "can't set link" message to dbg level
-Date:   Thu,  3 Feb 2022 12:45:16 -0500
-Message-Id: <cfb30f5c84364c8eff96c0a3ea0231e5dfda17e4.1643910316.git.jtoppins@redhat.com>
-In-Reply-To: <b25f9e524c404820b310c73012507c8e65a2ef97.1643834329.git.jtoppins@redhat.com>
-References: <b25f9e524c404820b310c73012507c8e65a2ef97.1643834329.git.jtoppins@redhat.com>
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH net-next 3/4] net: dev: Makes sure netif_rx() can be
+ invoked in any context.
+Message-ID: <YfwUskgPuOREd9hs@linutronix.de>
+References: <20220202122848.647635-1-bigeasy@linutronix.de>
+ <20220202122848.647635-4-bigeasy@linutronix.de>
+ <CANn89iLVPnhybrdjRh6ccv6UZHW-_W0ZHRO5c7dnWU44FUgd_g@mail.gmail.com>
+ <YfvwbsKm4XtTUlsx@linutronix.de>
+ <CANn89i+66MvzQVp=eTENzZY6s8+B+jQCoKEO_vXdzaDeHVTH5w@mail.gmail.com>
+ <Yfv3c+5XieVR0xAh@linutronix.de>
+ <CANn89i+t4TgrryvSBmBMfsY63m6Fhxi+smiKfOwHTRAKxvcPLQ@mail.gmail.com>
+ <YfwGcHv6XQytcq68@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YfwGcHv6XQytcq68@linutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the case where the link is owned by manageability, the firmware is
-not allowed to set the link state, so an error code is returned.
-This however is non-fatal and there is nothing the operator can do,
-so instead of confusing the operator with messages they can do nothing
-about hide this message behind the debug log level.
+On 2022-02-03 17:44:33 [+0100], To Eric Dumazet wrote:
+> > I guess the cost of the  local_bh_enable()/local_bh_disable() pair
+> > will be roughly the same, please measure it :)
+> 
+> We would avoid that branch maybe that helps. Will measure.
 
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
- drivers/net/ethernet/intel/ice/ice_lib.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+|  BH OFF/ON     : 722922586
+|  BH OFF/ON     : 722931661
+|  BH OFF/ON     : 725341486
+|  BH OFF/ON     : 725909591
+|  BH OFF/ON     : 741705606
+|  BH OFF/ON-OPT : 536683873
+|  BH OFF/ON-OPT : 536933779
+|  BH OFF/ON-OPT : 536967581
+|  BH OFF/ON-OPT : 537109700
+|  BH OFF/ON-OPT : 537148631
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 0c187cf04fcf..81b152133d11 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -4117,9 +4117,9 @@ int ice_set_link(struct ice_vsi *vsi, bool ena)
- 	 */
- 	if (status == -EIO) {
- 		if (hw->adminq.sq_last_status == ICE_AQ_RC_EMODE)
--			dev_warn(dev, "can't set link to %s, err %d aq_err %s. not fatal, continuing\n",
--				 (ena ? "ON" : "OFF"), status,
--				 ice_aq_str(hw->adminq.sq_last_status));
-+			dev_dbg(dev, "can't set link to %s, err %d aq_err %s. not fatal, continuing\n",
-+				(ena ? "ON" : "OFF"), status,
-+				ice_aq_str(hw->adminq.sq_last_status));
- 	} else if (status) {
- 		dev_err(dev, "can't set link to %s, err %d aq_err %s\n",
- 			(ena ? "ON" : "OFF"), status,
--- 
-2.27.0
+in a tight loop of 100000000 iterations:
+BH OFF/ON = local_bh_disable(); local_bh_enable()
+BH OFF/ON-OPT = local_bh_disable(); local_bh_enable_opt()
+where local_bh_enable_opt() is the proposed function.
 
+725341486 = ~7.3ns for one iteration.
+536967581 = ~5.4ns for one iteration.
+
+This is without tracing+lockdep. So I don't need to sell this to peterz
+and focus one the previously suggested version.
+
+Sebastian
