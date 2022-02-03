@@ -2,215 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C5404A89E6
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 18:24:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D5B44A89F2
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 18:26:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351604AbiBCRYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 12:24:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42216 "EHLO
+        id S1352820AbiBCR0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 12:26:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352758AbiBCRYc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 12:24:32 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 543D0C06173D;
-        Thu,  3 Feb 2022 09:24:32 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id c188so4114558iof.6;
-        Thu, 03 Feb 2022 09:24:32 -0800 (PST)
+        with ESMTP id S236093AbiBCR0F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 12:26:05 -0500
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9707C061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 09:26:05 -0800 (PST)
+Received: by mail-qt1-x829.google.com with SMTP id t17so3132678qto.1
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 09:26:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=mRCE2FCFqBrwh5iOM2we+rq9mjZfSNfsEzVYwQaowhQ=;
-        b=WA6lquOKQuZZDZMT7mq2wYBHvUa01HE1M+kjJj1bATGN69dNFtLTLZM27qmdjwYkJI
-         6YrrBAWPaWFuLlYspY3GASE8svz1i2mREaLMqpMSbtDMpaG5gKrjmUiaxzeSb5c3aL9/
-         RqcHaH5mOYs8YrvGsgC2iXa00yBX5nuYdIts5piYDLiu1vHHqCUqxq1DZ15hqhn6vhkZ
-         CUms8hREtc8mItrkH/qv1xy7WONCXM/zxN6/zEIbOhYBa0NEdoy6FOX/4GLut3T9X8TZ
-         l0EJwe5X52qrMa6FfWrc0Q22bMOa71Mh74ex4PiwHqatVzYFHF53OSpqoJkf5LcEHO2f
-         Ck2A==
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=qZbh3uNUV8DCQT1FIy7d2DeYWRLYrx0tShTZ54sx8yE=;
+        b=Uw6s7i1RSfrGmSjcc46ZdqLxbHUo2Au9LMnItoP8vLngVrPUfKUQLOhiTTmVkUYFyQ
+         Otp7p+3RHu1MiaaZ7R+9MUdfzLN8pu0hAP1bOepm69uCqI1KAhsc1vCGIlSHfphpO2rD
+         Q92Lv5TG2XX0I8Ea6p4zz/CXCnvrUbHyUU+H+QKI4F4tcg3L/G/mc8o8WSQmFBMWAMD5
+         lTqS9V4a4eeEZV+olfU7UIlMy30YYWC1JZ4Ax3p9nFWGtsK1by/4RaI3zEyw+OpKkUVR
+         MXKsLIeOz0aaFoZn1VIUoJ2/KdC+IaS//AaCQO8bb87U7Z7z+Mu0h25sIQl6R+pUMTSi
+         n+RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=mRCE2FCFqBrwh5iOM2we+rq9mjZfSNfsEzVYwQaowhQ=;
-        b=rwdp8Q+kl/B3LiJ9QtWxPg2IrIpXyTqztlg/gnNy83tbMSzs4eedXZU0RABly/8JsY
-         mYsh9KHdDGDWU8mMMQorGMY0wi7wSJSvn04Q0rOoPj/neveUmUEFV6QdYkT7DvJIvZ0+
-         KAV4HLBInWAOAwYFVkXrnDQg+qsV7fjRbojsmkZmJHG5J5PdG44Hh77sCKESlNr81vFS
-         hvxzYuLuPIAuh9GHRgXY2d/66Yz3MMG9sL+IH4OfjFndKCsb5I7Ev3YNzQG3MXBdbYEq
-         kKfdJhowbTciu4JKdiS0cHj2LX3jrez1M+wS3laulm34gvB/Q6O9YPWPzp4bDY5GhJ1w
-         F+gQ==
-X-Gm-Message-State: AOAM532dGn6p1kUTYBlue5AKF9YIMNUK/68q3UDQE+E3AL6zBNd8maBy
-        +dZDCC3ZSLGT0CBuD6ka0usOLxu7sEQlqmOmNJQ=
-X-Google-Smtp-Source: ABdhPJwCXp9qtlbSr0c61DUHGwro9lPJKYe6CV/fLi/bIPnYpsWnhcHC25DmMgn40Kv5J+ut0oCCIfWhWNc/wE1XguQ=
-X-Received: by 2002:a5e:8406:: with SMTP id h6mr19067121ioj.144.1643909071728;
- Thu, 03 Feb 2022 09:24:31 -0800 (PST)
-MIME-Version: 1.0
-References: <20220128223312.1253169-1-mauricio@kinvolk.io> <20220128223312.1253169-5-mauricio@kinvolk.io>
- <CAEf4BzaCJMUZ5ZVNgbVnCE0nmEETBo1iAp75nKp+mh2uKfJ9HQ@mail.gmail.com> <CAHap4zuC4EbSfX_N64Uc4m=3hi-hrQWMVuZm9jefPsjPVLNGpw@mail.gmail.com>
-In-Reply-To: <CAHap4zuC4EbSfX_N64Uc4m=3hi-hrQWMVuZm9jefPsjPVLNGpw@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 3 Feb 2022 09:24:20 -0800
-Message-ID: <CAEf4BzZ3mxNW_EFhRsqErhjhZNgVxfuyhw1TqZGBF2K0JWmOOw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 4/9] bpftool: Add struct definitions and
- helpers for BTFGen
-To:     =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=qZbh3uNUV8DCQT1FIy7d2DeYWRLYrx0tShTZ54sx8yE=;
+        b=hV+4iGm++rtQmJrdvgC5CW4wa8/CVbCSUoEdzHKAQPzT5GsFSKy33bqGYrmvqeYaVf
+         GlnCrOFMAH/eGSnuGerEBxSlsBiELNUCmlGMW5Bg2Ekbf6Tr1titcLCWV4DZozjXam0h
+         fK7vlqyjZXgfV+EExDbh0ChPQ6P+BEfTOrVbMdEvASt4n4JkZGAAdfCIQraQ0jr19D13
+         ZjibuBMdbseS+mL7xsNUmkS2LRaIyz+GaOBypttDZPc132n6xx9ofNjHH9g0xqZjeodr
+         BQ3TbzD+3WJFg9nAtGDU/wJZx80Gxow0BGGvic8SeDP+DGnTJVilm2eHJMbUmlsvpl52
+         OkPg==
+X-Gm-Message-State: AOAM532gsI5EPWzs6OvZyQS+fvV2UPKrVkGhNpRWgaewN4hRtiJhSxkE
+        oQ7sQrrWlVG/qbK6+cyfR9o=
+X-Google-Smtp-Source: ABdhPJzu2u94QkZjOpWjWBMCAT7I095zGpmRM4KtmgJiLmpQluQM3UJjMMJSXLoOCtBM+eyrqzXAtA==
+X-Received: by 2002:ac8:58cf:: with SMTP id u15mr27687588qta.499.1643909164665;
+        Thu, 03 Feb 2022 09:26:04 -0800 (PST)
+Received: from ?IPv6:2001:470:b:9c3:82ee:73ff:fe41:9a02? ([2001:470:b:9c3:82ee:73ff:fe41:9a02])
+        by smtp.googlemail.com with ESMTPSA id n7sm10536153qta.78.2022.02.03.09.26.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 09:26:04 -0800 (PST)
+Message-ID: <ee1fedeb33cd989379b72faac0fd6a366966f032.camel@gmail.com>
+Subject: Re: [PATCH net-next 09/15] net: increase MAX_SKB_FRAGS
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Coco Li <lixiaoyan@google.com>
+Date:   Thu, 03 Feb 2022 09:26:02 -0800
+In-Reply-To: <20220203015140.3022854-10-eric.dumazet@gmail.com>
+References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
+         <20220203015140.3022854-10-eric.dumazet@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 8:08 AM Mauricio V=C3=A1squez Bernal
-<mauricio@kinvolk.io> wrote:
->
-> On Wed, Feb 2, 2022 at 1:55 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Fri, Jan 28, 2022 at 2:33 PM Mauricio V=C3=A1squez <mauricio@kinvolk=
-.io> wrote:
-> > >
-> > > Add some structs and helpers that will be used by BTFGen in the next
-> > > commits.
-> > >
-> > > Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
-> > > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
-> > > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
-> > > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
-> > > ---
-> >
-> > Similar considerations with unused static functions. It's also harder
-> > to review when I don't see how these types are actually used, so
-> > probably better to put it in relevant patches that are using this?
-> >
->
-> The next iteration splits the patches in a way that types are
-> introduced in the same commit they're used.
->
-> > >  tools/bpf/bpftool/gen.c | 75 +++++++++++++++++++++++++++++++++++++++=
-++
-> > >  1 file changed, 75 insertions(+)
-> > >
-> > > diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-> > > index 64371f466fa6..68bb88e86b27 100644
-> > > --- a/tools/bpf/bpftool/gen.c
-> > > +++ b/tools/bpf/bpftool/gen.c
-> > > @@ -1118,6 +1118,81 @@ static int btf_save_raw(const struct btf *btf,=
- const char *path)
-> > >         return err;
-> > >  }
-> > >
-> > > +struct btfgen_type {
-> > > +       struct btf_type *type;
-> > > +       unsigned int id;
-> > > +};
-> > > +
-> > > +struct btfgen_info {
-> > > +       struct hashmap *types;
-> > > +       struct btf *src_btf;
-> > > +};
-> > > +
-> > > +static size_t btfgen_hash_fn(const void *key, void *ctx)
-> > > +{
-> > > +       return (size_t)key;
-> > > +}
-> > > +
-> > > +static bool btfgen_equal_fn(const void *k1, const void *k2, void *ct=
-x)
-> > > +{
-> > > +       return k1 =3D=3D k2;
-> > > +}
-> > > +
-> > > +static void *uint_as_hash_key(int x)
-> > > +{
-> > > +       return (void *)(uintptr_t)x;
-> > > +}
-> > > +
-> > > +static void btfgen_free_type(struct btfgen_type *type)
-> > > +{
-> > > +       free(type);
-> > > +}
-> > > +
-> > > +static void btfgen_free_info(struct btfgen_info *info)
-> > > +{
-> > > +       struct hashmap_entry *entry;
-> > > +       size_t bkt;
-> > > +
-> > > +       if (!info)
-> > > +               return;
-> > > +
-> > > +       if (!IS_ERR_OR_NULL(info->types)) {
-> > > +               hashmap__for_each_entry(info->types, entry, bkt) {
-> > > +                       btfgen_free_type(entry->value);
-> > > +               }
-> > > +               hashmap__free(info->types);
-> > > +       }
-> > > +
-> > > +       btf__free(info->src_btf);
-> > > +
-> > > +       free(info);
-> > > +}
-> > > +
-> > > +static struct btfgen_info *
-> > > +btfgen_new_info(const char *targ_btf_path)
-> > > +{
-> > > +       struct btfgen_info *info;
-> > > +
-> > > +       info =3D calloc(1, sizeof(*info));
-> > > +       if (!info)
-> > > +               return NULL;
-> > > +
-> > > +       info->src_btf =3D btf__parse(targ_btf_path, NULL);
-> > > +       if (libbpf_get_error(info->src_btf)) {
-> >
-> > bpftool is using libbpf 1.0 mode, so don't use libbpf_get_error()
-> > anymore, just check for NULL
-> >
->
-> hmm, I got confused because libbpf_get_error() is still used in many
-> places in bpftool. I suppose those need to be updated.
+On Wed, 2022-02-02 at 17:51 -0800, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Currently, MAX_SKB_FRAGS value is 17.
+> 
+> For standard tcp sendmsg() traffic, no big deal because tcp_sendmsg()
+> attempts order-3 allocations, stuffing 32768 bytes per frag.
+> 
+> But with zero copy, we use order-0 pages.
+> 
+> For BIG TCP to show its full potential, we increase MAX_SKB_FRAGS
+> to be able to fit 45 segments per skb.
+> 
+> This is also needed for BIG TCP rx zerocopy, as zerocopy currently
+> does not support skbs with frag list.
+> 
+> We have used this MAX_SKB_FRAGS value for years at Google before
+> we deployed 4K MTU, with no adverse effect.
+> Back then, goal was to be able to receive full size (64KB) GRO
+> packets without the frag_list overhead.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-It's ok to use, but it's not necessary. Eventually I'd like to
-deprecate libbpf_get_error() is it won't be necessary. So for new code
-let's not add new uses of libbpf_get_error(). We can phase out
-existing uses gradually (just like we do with CHECK() in selftests).
+So a big issue I see with this patch is the potential queueing issues
+it may introduce on Tx queues. I suspect it will cause a number of
+performance regressions and deadlocks as it will change the Tx queueing
+behavior for many NICs.
 
+As I recall many of the Intel drivers are using MAX_SKB_FRAGS as one of
+the ingredients for DESC_NEEDED in order to determine if the Tx queue
+needs to stop. With this change the value for igb for instance is
+jumping from 21 to 49, and the wake threshold is twice that, 98. As
+such the minimum Tx descriptor threshold for the driver would need to
+be updated beyond 80 otherwise it is likely to deadlock the first time
+it has to pause.
 
->
-> > also, if you are using errno for propagating error, you need to store
-> > it locally before btfgen_free_info() call, otherwise it can be
-> > clobbered
-> >
->
-> Fixed.
->
->
->
-> > > +               btfgen_free_info(info);
-> > > +               return NULL;
-> > > +       }
-> > > +
-> > > +       info->types =3D hashmap__new(btfgen_hash_fn, btfgen_equal_fn,=
- NULL);
-> > > +       if (IS_ERR(info->types)) {
-> > > +               errno =3D -PTR_ERR(info->types);
-> > > +               btfgen_free_info(info);
-> > > +               return NULL;
-> > > +       }
-> > > +
-> > > +       return info;
-> > > +}
-> > > +
-> > >  /* Create BTF file for a set of BPF objects */
-> > >  static int btfgen(const char *src_btf, const char *dst_btf, const ch=
-ar *objspaths[])
-> > >  {
-> > > --
-> > > 2.25.1
-> > >
