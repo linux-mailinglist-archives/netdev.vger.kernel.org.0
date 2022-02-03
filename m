@@ -2,118 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19B104A8259
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 11:33:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 564974A824F
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 11:30:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238109AbiBCKd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 05:33:56 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:55611 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236018AbiBCKd4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 05:33:56 -0500
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nFZKe-0003rg-Qk; Thu, 03 Feb 2022 11:27:16 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nFZKX-00DAH6-3F; Thu, 03 Feb 2022 11:27:09 +0100
-Date:   Thu, 3 Feb 2022 11:27:09 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Oliver Neukum <oneukum@suse.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1347718AbiBCKaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 05:30:02 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:34640 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231725AbiBCKaB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 05:30:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1643884201; x=1675420201;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1TXPyy/kpZBNxO1tbtGx3iBoVnJzfJ227qS4/tBvr18=;
+  b=LYJZ6XT+Hd0/9mScnCjCfZWzcX34xsA+MSAoIuY4EvOvv5CRs4tkBQLP
+   FL96IaQCZLClIyzDu0AJffAkQAEKYzkHqOOXP/TUapxTC6+zV9yCuTCxY
+   s4H70GI58T3ny3RYgoBa08eRILQxTSQ1vo1vEs2iANe0tTWPwo+tBICuv
+   yKKwaPKU8eamOoyXHsHNDlGAjkD/yerc4s1QnAHZZeVlCFEZDl2Y16TNo
+   4DUKZ6i/H/Imlpj30bp+Lqf6XlLqosDYFHabP/HszoGRr5HSCoS4frNVe
+   nlF5/kMiCIXAXQsj9KniYAXovTTtL/HF5iK4CIkb78ywm28gtxvKMUfm/
+   g==;
+IronPort-SDR: KptEahQXKMdnpFose7f1Df66KQBgN5k2e7W95KLW+AC4ubFgizza4MgTI+t5MrZ24ksmbfM/w1
+ F68uLGKNQG6XHcStLBz+aPNh7uL5GEAtdkYyqVjYOmE6ca+EP42zwUSWue4JN9rPA7DHGLuugo
+ LJWgr4dp/Z4NBtlHxGRml6/x9DVELeVMXtxm5h0XiHG2fnTs+oQVQUTAej+OccO7oxIxNY0QWj
+ hLS8s1OkI606jg6a4WaC/Rkg81utatMXOWKT7J/cKPt1f1yyrd9D7I3RdG4n0Ydag2ut8pLOzP
+ xwO4ms0GBCABQaEFHUvGAKYw
+X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
+   d="scan'208";a="84547385"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Feb 2022 03:30:00 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 3 Feb 2022 03:30:01 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 3 Feb 2022 03:29:59 -0700
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v1 0/4] usbnet: add "label" support
-Message-ID: <Yfut/RbMAoaIhx41@pengutronix.de>
-References: <20220127104905.899341-1-o.rempel@pengutronix.de>
- <YfJ6tZ3hJLbTeaDr@kroah.com>
- <41599e9d-20c0-d1ed-d793-cd7037013718@suse.com>
+        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Steen Hegelund <steen.hegelund@microchip.com>
+Subject: [PATCH net] net: sparx5: Fix get_stat64 crash in tcpdump
+Date:   Thu, 3 Feb 2022 11:29:00 +0100
+Message-ID: <20220203102900.528987-1-steen.hegelund@microchip.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <41599e9d-20c0-d1ed-d793-cd7037013718@suse.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 11:08:31 up 98 days, 16:35, 87 users,  load average: 2.02, 3.35,
- 2.95
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 10:34:25AM +0100, Oliver Neukum wrote:
-> 
-> On 27.01.22 11:57, Greg KH wrote:
-> > On Thu, Jan 27, 2022 at 11:49:01AM +0100, Oleksij Rempel wrote:
-> >> Add devicetree label property for usbnet devices and related yaml
-> >> schema.
-> > That says _what_ you are doing, but not _why_ you would want to do such
-> > a crazy thing, nor what problem you are attempting to solve here.
-> 
-> could you at least describe what kind of systems we are talking
-> about? Is this for a limited set of embedded devices?
-> Are we talking about devices embedded on a motherboard,
-> which happen to be connected by USB?
+This problem was found with Sparx5 when the tcpdump tool requests the
+do_get_stats64 (sparx5_get_stats64) statistic.
 
-In this particular use case there is a PCB with a imx6 SoC with hard
-wired USB attached USB-Ethernet-MAC adapters. One of these adapters is
-connected in the same PCB to an Ethernet switch chip. There is a DSA
-driver for the switch, so we want to describe the whole boards in a DT.
-Putting a label in the DT that renames the network interface is "nice to
-have" but not so important.
+The portstats pointer was incorrectly incremented when fetching priority
+based statistics.
 
-As the DT DSA bindings rely on linking a MAC phandle to the switch we
-need to describe the USB Ethernet adapter in the DT, this is more
-important. See this discussion:
+Fixes: af4b11022e2d (net: sparx5: add ethtool configuration and statistics support)
+Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+---
+ drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-https://lore.kernel.org/all/20220127120039.GE9150@pengutronix.de/
-
-> That is, are we talking about another kind of firmware
-> we are to take information about devices from?
-
-There is no other firmware involved. The switch chip is attached via
-RGMII to the USB/MAC and with SPI to the CPU for the configuration
-interface. (I2C to the CPU or MDIO to the USB/MAC would be another
-option for the configuration interface.)
-
-> And if so, why are you proposing to solve this on the
-> USB driver level?
-> It looks to me like those devices are addressed by
-> their USB path. But still there is no reason that a USB
-> driver should actively interpret firmware stuff that
-> comes from a source that tells us nothing about USB
-> properties.
-> In other words it looks to me like you are trying to put
-> a generic facility for getting device properties into
-> a specific driver. The question whether device names
-> should be read out of firmware is not a USB question.
-> 
-> I would suggest you implement a generic facility
-> in the network layer and if everybody is happy with that
-> obviously usbnet can pass through a pointer for that
-> to operate on. Frankly, it looks to me like you are
-> implementing only a subset of what device tree
-> could contain for your specific use case.
-
-Sounds good, but we'll focus on the DSA use case, as this is more
-important. So patches 1 and 2 of this patches set have highest prio for
-us.
-
-Regards,
-Oleksij & Marc
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
+index 59783fc46a7b..10b866e9f726 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
+@@ -1103,7 +1103,7 @@ void sparx5_get_stats64(struct net_device *ndev,
+ 	stats->tx_carrier_errors = portstats[spx5_stats_tx_csense_cnt];
+ 	stats->tx_window_errors = portstats[spx5_stats_tx_late_coll_cnt];
+ 	stats->rx_dropped = portstats[spx5_stats_ana_ac_port_stat_lsb_cnt];
+-	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx, ++stats)
++	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx)
+ 		stats->rx_dropped += portstats[spx5_stats_green_p0_rx_port_drop
+ 					       + idx];
+ 	stats->tx_dropped = portstats[spx5_stats_tx_local_drop];
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.35.1
+
