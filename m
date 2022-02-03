@@ -2,130 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70ED04A83A6
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 13:16:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A2CA4A83A9
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 13:17:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240241AbiBCMQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 07:16:52 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:52798 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232508AbiBCMQw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 07:16:52 -0500
-Date:   Thu, 3 Feb 2022 13:16:50 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643890611;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0+DbHUWMagPgOKRQ2haCBtdxPtzgZGpsjaUsnJhpju4=;
-        b=plSENnkIWZTeNcR9BTk/Jw6zrDCbhOSG11brenMac7xJ+PM8/ehL67JV/6nD8XYzj5W+XM
-        DlB/0megjdzbHwPoHNC+NEOHqKdFo8bAbhSTc4msEGbqahwtDxBoFJU4c1JXZ3UV4VcDDs
-        eaG+i3yzHIXaPaC4XyNKTG/UygyoEr9W+rDmNYDw93lpnnrMUh6FfZ1WguIS68jLaMcSjK
-        CUV9E4Jwky+WXVpLw7X5YeQ22veUO4A7WJRbFzM1Pz241WpL2nTD/87RwtCGY8BJLZKL0h
-        eVNPofdI7cb+uF5bE4hetDJlNF21GlkAPw/yaIjTe6286PJNIIYBxFK1RGX2CA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643890611;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0+DbHUWMagPgOKRQ2haCBtdxPtzgZGpsjaUsnJhpju4=;
-        b=5g57Rg1HjzlIjCg7LiVDWyiGfFG59sqPIgDRaM6dEhfESuUT1cPnTVHXe7npRx8asNzMTs
-        tCYdw4p/RnusH9DQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH net-next 1/4] net: dev: Remove the preempt_disable() in
- netif_rx_internal().
-Message-ID: <YfvHstBs/FCBtVhU@linutronix.de>
-References: <20220202122848.647635-1-bigeasy@linutronix.de>
- <20220202122848.647635-2-bigeasy@linutronix.de>
- <CANn89iJm9krQ-kjVBxFzxh0nG46O5RWDg=QyXhiq1nA3Erf9KQ@mail.gmail.com>
+        id S1350456AbiBCMQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 07:16:58 -0500
+Received: from mga11.intel.com ([192.55.52.93]:45039 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1350390AbiBCMQ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Feb 2022 07:16:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643890618; x=1675426618;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=mTxtmM7PxDYabUdQxaPGX7R+O/XvKUxedI0be3fyatI=;
+  b=Bg8jOMybKjDqwSxxJA1XzUlAVC6l93JJykTjwpcf5Bracdou1jaSV8sO
+   EY4oTevoh44Bc7Zhbs6ZwHGAmX7pFyL/jwnkbXieuaQVo+QZADFqNXMB1
+   m1VJ6wPPHRQuLS9FjVzS3pIBnUVDm0trl/ubeHcumjqQH94wPgdT69MKU
+   EQhToVC3j+vUUJWPxIJzMaY6/b1ESytEX140a4cK7vGmx+8Du4GVsN4GR
+   +6eZEwQaYyjCTykmAE87ImTpBuVVIxBsJlyfgL6h2FZjqHGiDS5fOmMZp
+   dm7Tyip+3/vuwAuY+egb0ZrEqNvvqC5JEiCkP/62B+IN4uKW7Ut2j4MlF
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="245726109"
+X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
+   d="scan'208";a="245726109"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 04:16:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
+   d="scan'208";a="631322307"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by orsmga004.jf.intel.com with ESMTP; 03 Feb 2022 04:16:55 -0800
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        anthony.l.nguyen@intel.com, kuba@kernel.org, davem@davemloft.net,
+        magnus.karlsson@intel.com, alexandr.lobakin@intel.com,
+        jesse.brandeburg@intel.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH v2 intel-net] ice: avoid XDP checks in ice_clean_tx_irq()
+Date:   Thu,  3 Feb 2022 13:16:51 +0100
+Message-Id: <20220203121651.18937-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CANn89iJm9krQ-kjVBxFzxh0nG46O5RWDg=QyXhiq1nA3Erf9KQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-02-02 09:10:10 [-0800], Eric Dumazet wrote:
-> On Wed, Feb 2, 2022 at 4:28 AM Sebastian Andrzej Siewior
-> <bigeasy@linutronix.de> wrote:
-> >
-> > The preempt_disable() and rcu_disable() section was introduced in commit
-> >    bbbe211c295ff ("net: rcu lock and preempt disable missing around generic xdp")
-> >
-> > The backtrace shows that bottom halves were disabled and so the usage of
-> > smp_processor_id() would not trigger a warning.
-> > The "suspicious RCU usage" warning was triggered because
-> > rcu_dereference() was not used in rcu_read_lock() section (only
-> > rcu_read_lock_bh()). A rcu_read_lock() is sufficient.
-> >
-> > Remove the preempt_disable() statement which is not needed.
-> 
-> I am confused by this changelog/analysis of yours.
-> 
-> According to git blame, you are reverting this patch.
-> 
-> commit cece1945bffcf1a823cdfa36669beae118419351
-> Author: Changli Gao <xiaosuo@gmail.com>
-> Date:   Sat Aug 7 20:35:43 2010 -0700
-> 
->     net: disable preemption before call smp_processor_id()
-> 
->     Although netif_rx() isn't expected to be called in process context with
->     preemption enabled, it'd better handle this case. And this is why get_cpu()
->     is used in the non-RPS #ifdef branch. If tree RCU is selected,
->     rcu_read_lock() won't disable preemption, so preempt_disable() should be
->     called explictly.
-> 
->     Signed-off-by: Changli Gao <xiaosuo@gmail.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
+Commit 9610bd988df9 ("ice: optimize XDP_TX workloads") introduced Tx IRQ
+cleaning routine dedicated for XDP rings. Currently it is impossible to
+call ice_clean_tx_irq() against XDP ring, so it is safe to drop
+ice_ring_is_xdp() calls in there.
 
-Nut sure if I ignored it or made a wrong turn somewhere. But I remember
-reading it. But here, preempt_disable() was added because
-| Although netif_rx() isn't expected to be called in process context with
-| preemption enabled, it'd better handle this case.
+Fixes: 1c96c16858ba ("ice: update to newer kernel API")
+Fixes: cc14db11c8a4 ("ice: use prefetch methods")
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+---
 
-and this isn't much of a good reason. Simply because netif_rx()
-shouldn't not be called from preemptible context.
+v2: fix commit msg and collect ack (Alex)
 
-> But I am not sure we can.
-> 
-> Here is the code in larger context:
-> 
-> #ifdef CONFIG_RPS
->     if (static_branch_unlikely(&rps_needed)) {
->         struct rps_dev_flow voidflow, *rflow = &voidflow;
->         int cpu;
-> 
->         preempt_disable();
->         rcu_read_lock();
-> 
->         cpu = get_rps_cpu(skb->dev, skb, &rflow);
->         if (cpu < 0)
->             cpu = smp_processor_id();
-> 
->         ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
-> 
->         rcu_read_unlock();
->         preempt_enable();
->     } else
-> #endif
-> 
-> This code needs the preempt_disable().
+ drivers/net/ethernet/intel/ice/ice_txrx.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-But why? netif_rx_internal() should be invoked with disabled BH so I
-don't see a reason why preemption needs additionally be disabled in this
-section.
-On PREEMPT_RT we can get preempted but the task remains on the CPU and
-other network activity will be block on the BH-lock.
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+index 7d8824b4c8ff..25a5a3f2d107 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+@@ -223,8 +223,7 @@ static bool ice_clean_tx_irq(struct ice_tx_ring *tx_ring, int napi_budget)
+ 	struct ice_tx_buf *tx_buf;
+ 
+ 	/* get the bql data ready */
+-	if (!ice_ring_is_xdp(tx_ring))
+-		netdev_txq_bql_complete_prefetchw(txring_txq(tx_ring));
++	netdev_txq_bql_complete_prefetchw(txring_txq(tx_ring));
+ 
+ 	tx_buf = &tx_ring->tx_buf[i];
+ 	tx_desc = ICE_TX_DESC(tx_ring, i);
+@@ -313,10 +312,6 @@ static bool ice_clean_tx_irq(struct ice_tx_ring *tx_ring, int napi_budget)
+ 	tx_ring->next_to_clean = i;
+ 
+ 	ice_update_tx_ring_stats(tx_ring, total_pkts, total_bytes);
+-
+-	if (ice_ring_is_xdp(tx_ring))
+-		return !!budget;
+-
+ 	netdev_tx_completed_queue(txring_txq(tx_ring), total_pkts, total_bytes);
+ 
+ #define TX_WAKE_THRESHOLD ((s16)(DESC_NEEDED * 2))
+-- 
+2.33.1
 
-Sebastian
