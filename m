@@ -2,180 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BF4B4A8625
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 15:24:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B27B4A86CC
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 15:45:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238141AbiBCOYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 09:24:05 -0500
-Received: from mga09.intel.com ([134.134.136.24]:31771 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240146AbiBCOYD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:24:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643898243; x=1675434243;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=mZITRt8XHZzpLCxK3Nbh5HG0CKWyna47vd4e3NgzEP4=;
-  b=EkyY9IP+GMf4QF0dJ+tXpGmNLH5rWSMX2otQ+r48aKz1RV+tEVqu9p4L
-   AaQayXDvho8fnoa7qe7wWG17uhELQPE+2CitOgGE5QuWTCXSgcM5vGRSz
-   at3UEPRmjsru/EEejthkQQuPYW/qK7g24csSaOukjEsdcq3m5lGEgjTV3
-   kduIKEId9fUB+NxWqyZbIXD9MlC6ppG64sPyJ/v9AoWXgN96NRq6jO49f
-   4714O6dEEqKbIRSjTywz8CMJp1ynwAaWwxUKUkuivCIoO7fcc/omBdO/Z
-   9KLYnkR2bBSfk4phW+/GY56MdzPDlqBRH13M59nU0jUMSQpDarAcFN6wm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="247917409"
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="247917409"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 06:24:03 -0800
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="699326249"
-Received: from unknown (HELO ijarvine-MOBL2.mshome.net) ([10.237.66.34])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 06:23:55 -0800
-Date:   Thu, 3 Feb 2022 16:23:49 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com
-Subject: Re: [PATCH net-next v4 08/13] net: wwan: t7xx: Add data path
- interface
-In-Reply-To: <20220114010627.21104-9-ricardo.martinez@linux.intel.com>
-Message-ID: <1fd3d71c-d10-9feb-64c0-206a308b51d5@linux.intel.com>
-References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com> <20220114010627.21104-9-ricardo.martinez@linux.intel.com>
+        id S1351226AbiBCOpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 09:45:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32892 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347434AbiBCOpB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 09:45:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B060C061714;
+        Thu,  3 Feb 2022 06:45:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31193619C5;
+        Thu,  3 Feb 2022 14:45:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94370C340F0;
+        Thu,  3 Feb 2022 14:45:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643899500;
+        bh=4X60c9J7dyhyGgFLDNX3tftCODVhTZ8aDgMpH70B4D0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=jf2ap6sVW+iM13htQpVRMj6v0TsX63zQhDH0Iid4nvYy+4jUC6LZAF9/hV/9pFvIb
+         57nDKwma+uVjiZTN7uWg1QiG1JxbMlNVHWFm4e+CpZPOvRPOmuai9iIfYlU+kfoInz
+         r/lml87oTUn0Ofm/RSzrn9RAYc2eMEFL3x7n285JgcmN9KOOzwHQt8fif3Of9jso2p
+         dePyU1cfQsnPZdsMiAiCt2O1RWn3diVmPeIvspC90rMUG11zbLJrwGJR4CHB9rE8Hy
+         VCiHl74aBCfKVyeDqFbEL1fpWRDSixT3FjCZDKBeTCNkR3wJzpNKH2fqXw5C6strdF
+         cUzerl3+PNJ5g==
+Received: by mail-ed1-f52.google.com with SMTP id b13so6540367edn.0;
+        Thu, 03 Feb 2022 06:45:00 -0800 (PST)
+X-Gm-Message-State: AOAM532YG8WKpw47io7J9a7lucr76OZaStXkNRoNXt8y3q0Z5IRPXECp
+        zSzcqvVxjN8s4c3ndb1MHNBd8+VB7XS3b5LOOg==
+X-Google-Smtp-Source: ABdhPJw6USRzkUs2MpEdvbFzpbuH5Gg1vUqLb2ph6uvapwZFrBu6VIyITj/70KieoZLN7eeCJZLMyfifbm340ZVUEhI=
+X-Received: by 2002:aa7:d6d4:: with SMTP id x20mr35580598edr.307.1643899498934;
+ Thu, 03 Feb 2022 06:44:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20220201140723.467431-1-elder@linaro.org> <20220202210638.07b83d41@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <eb09c869-c5c6-4be8-5265-072849f1ecd0@linaro.org>
+In-Reply-To: <eb09c869-c5c6-4be8-5265-072849f1ecd0@linaro.org>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 3 Feb 2022 08:44:47 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLMit=e6vdum-xm1uxfCZcoJsTFe_S3k-QyVbvJPfNHew@mail.gmail.com>
+Message-ID: <CAL_JsqLMit=e6vdum-xm1uxfCZcoJsTFe_S3k-QyVbvJPfNHew@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: qcom: add IPA qcom,qmp property
+To:     Alex Elder <elder@linaro.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Gross, Andy" <agross@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Evan Green <evgreen@chromium.org>, cpratapa@codeaurora.org,
+        avuyyuru@codeaurora.org, jponduru@codeaurora.org,
+        subashab@codeaurora.org, Alex Elder <elder@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Jan 2022, Ricardo Martinez wrote:
+On Thu, Feb 3, 2022 at 5:27 AM Alex Elder <elder@linaro.org> wrote:
+>
+> On 2/2/22 11:06 PM, Jakub Kicinski wrote:
+> > On Tue,  1 Feb 2022 08:07:23 -0600 Alex Elder wrote:
+> >> At least three platforms require the "qcom,qmp" property to be
+> >> specified, so the IPA driver can request register retention across
+> >> power collapse.  Update DTS files accordingly.
+> >>
+> >> Signed-off-by: Alex Elder <elder@linaro.org>
+> >> ---
+> >>
+> >> Dave, Jakub, please let Bjorn take this through the Qualcomm tree.
+> >
+> > I don't know much about DT but the patch defining the property is
+> > targeting net - will it not cause validation errors? Or Bjorn knows
+> > to wait for the fixes to propagate? Or it doesn't matter? :)
+>
+> It might matter sometimes, but in this case it does not.
+>
+> If the DT property is present but never referenced by the
+> code, it doesn't matter.
+>
+> The code in this patch looks up the DT property, and its
+> behavior is affected by whether the property is there
+> or not.  If it's not there, it's treated as an error
+> that can be safely ignored.
+>
+> In the case this fix is actually needed, we'll need
+> both the code present and DT property defined.  If
+> the code is there but not the property, it's OK, but
+> the bug won't be fixed quite yet.
 
-> From: Haijun Liu <haijun.liu@mediatek.com>
-> 
-> Data Path Modem AP Interface (DPMAIF) HIF layer provides methods
-> for initialization, ISR, control and event handling of TX/RX flows.
-> 
-> DPMAIF TX
-> Exposes the `dmpaif_tx_send_skb` function which can be used by the
-> network device to transmit packets.
-> The uplink data management uses a Descriptor Ring Buffer (DRB).
-> First DRB entry is a message type that will be followed by 1 or more
-> normal DRB entries. Message type DRB will hold the skb information
-> and each normal DRB entry holds a pointer to the skb payload.
-> 
-> DPMAIF RX
-> The downlink buffer management uses Buffer Address Table (BAT) and
-> Packet Information Table (PIT) rings.
-> The BAT ring holds the address of skb data buffer for the HW to use,
-> while the PIT contains metadata about a whole network packet including
-> a reference to the BAT entry holding the data buffer address.
-> The driver reads the PIT and BAT entries written by the modem, when
-> reaching a threshold, the driver will reload the PIT and BAT rings.
-> 
-> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
-> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> ---
+If there's only one possible node that qcom,qmp points to, you can
+just get the node by its compatible (of_find_compatible_node()). Then
+you don't need a DT update to make things work. Of course, this
+doesn't work too well if there are 10 possible compatibles without a
+common fallback compatible.
 
-> +	unsigned short		last_ch_id;
-Values is never used.
-
-> +	if (old_rl_idx > old_wr_idx && new_wr_idx >= old_rl_idx) {
-> +		dev_err(dpmaif_ctrl->dev, "RX BAT flow check fail\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (new_wr_idx >= bat_req->bat_size_cnt) {
-> +		new_wr_idx -= bat_req->bat_size_cnt;
-> +		if (new_wr_idx >= old_rl_idx) {
-> +			dev_err(dpmaif_ctrl->dev, "RX BAT flow check fail\n");
-> +			return -EINVAL;
-> +		}
-
-Make a label for the identical block and goto there.
-
-> +static void t7xx_unmap_bat_skb(struct device *dev, struct dpmaif_bat_skb *bat_skb_base,
-> +			       unsigned int index)
-> +{
-> +	struct dpmaif_bat_skb *bat_skb = bat_skb_base + index;
-> +
-> +	if (bat_skb->skb) {
-> +		dma_unmap_single(dev, bat_skb->data_bus_addr, bat_skb->data_len, DMA_FROM_DEVICE);
-> +		kfree_skb(bat_skb->skb);
-
-For consistency, dev_kfree_skb?
-
-> + * @initial: Indicates if the ring is being populated for the first time.
-> + *
-> + * Allocate skb and store the start address of the data buffer into the BAT ring.
-> + * If this is not the initial call, notify the HW about the new entries.
-> + *
-> + * Return:
-> + * * 0		- Success.
-> + * * -ERROR	- Error code from failure sub-initializations.
-> + */
-> +int t7xx_dpmaif_rx_buf_alloc(struct dpmaif_ctrl *dpmaif_ctrl,
-> +			     const struct dpmaif_bat_request *bat_req,
-> +			     const unsigned char q_num, const unsigned int buf_cnt,
-> +			     const bool initial)
-
-vs its prototype:
-
-+int t7xx_dpmaif_rx_buf_alloc(struct dpmaif_ctrl *dpmaif_ctrl,
-+                            const struct dpmaif_bat_request *bat_req, const unsigned char q_num,
-+                            const unsigned int buf_cnt, const bool first_time);
-
-> +int t7xx_dpmaif_rx_frag_alloc(struct dpmaif_ctrl *dpmaif_ctrl, struct dpmaif_bat_request *bat_req,
-> +			      const unsigned int buf_cnt, const bool initial)
-> +{
-> +	struct dpmaif_bat_page *bat_skb = bat_req->bat_skb;
-> +	unsigned short cur_bat_idx = bat_req->bat_wr_idx;
-> +	unsigned int buf_space;
-> +	int ret, i;
-...
-> +	ret = i < buf_cnt ? -ENOMEM : 0;
-> +	if (ret && initial) {
-
-int ret = 0, i;
-...
-if (i < buf_cnt) {
-	ret = -ENOMEM;
-	if (initial) {
-		...
-	}
-}
-
-> +	if (!tx_drb_available || txq->tx_submit_skb_cnt >= txq->tx_list_max_len) {
-> +		cb = dpmaif_ctrl->callbacks;
-> +		cb->state_notify(dpmaif_ctrl->t7xx_dev, DMPAIF_TXQ_STATE_FULL, txqt);
-> +		return -EBUSY;
-> +	}
-> +
-> +	skb->cb[TX_CB_QTYPE] = txqt;
-> +	skb->cb[TX_CB_DRB_CNT] = send_drb_cnt;
-> +
-> +	spin_lock_irqsave(&txq->tx_skb_lock, flags);
-> +	list_add_tail(&skb->list, &txq->tx_skb_queue);
-> +	txq->tx_submit_skb_cnt++;
-> +	spin_unlock_irqrestore(&txq->tx_skb_lock, flags);
-
-Perhaps the critical section needs to start earlier to enforce that 
-tx_list_max_len check?
-
-
-(I'm yet to read half of this patch...)
-
--- 
- i.
-
+Rob
