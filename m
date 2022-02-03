@@ -2,105 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD1F44A8A0D
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 18:30:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 215C14A8A1A
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 18:33:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352860AbiBCRaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 12:30:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43678 "EHLO
+        id S1352866AbiBCRbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 12:31:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352897AbiBCRao (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 12:30:44 -0500
+        with ESMTP id S1352870AbiBCRa4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 12:30:56 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA419C061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 09:30:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3D0C061401
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 09:30:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=LtXb/005KFgYr+A6KsWEWAEbArfOPZ1QJXbaqXZvAVk=; b=Ix/zwTEKFlJTaUXsCoM96bsRbw
-        5L+6Wu/nrX7sjTqitAr+bLYnDnb8ieFdi3iycZuhEjhCwWTSNzTJPPSBYLMJ6zSRAL/Xq9s2Z36Rz
-        ovzolJZwWN9vnfxDDdfP5IYbzGTeK65LmXg+0SepD4B6L5XDml4RLdwRV4Uy+Vtgw9EKlXVabcHe5
-        igA+aWqr2EDGkO2JahUHl5DceGtD1TKtGERTajuCRGItR9ERVrolc4nAsgTnVrQqGJH72w6yQF3R1
-        HAulxinNG8A3Q1FjNKJnipYRFXh5qsBoH6z0HRNjSAime6Iq/rYQj2+RT8cTY/a3OpVja2TMhRHWj
-        1eE4mi3g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57018)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=IEKgNN7+x8FEdBHEHkuvMDdG6N4ZgFGww6hZX+ce4fg=; b=fw5hGMhBiEkQCbjXSayIbf5SwN
+        ustY6PFT1Bw8fh84guF0X6TS11e3mcuM6W/pRXeEKqxngoeMYUigGzNTNLGdDE4LnEkzZItMtE1wi
+        yrIdEdLREqdD7RUgHwxXe996Qvzu7LoLhW27auT1qgf0Z/EwlPcjaJmGbnsEjHVY9HH2LCWJS9SJ1
+        t0ZcGE7oT5Mw99T5PKpOuZ5K9gk9kIDpQFqF8kaUyn98E7/mKkIlrPuT//WWovoNaTnqKCyGYVzAq
+        Ghp7vkrwJeiCx+RaK/zjt2tOQIlqDZ24X61EuF+JToDps5NS7izT7dZdtyXWGL1PiDHd7J9xRwruP
+        GoNZwfVQ==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54868 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nFfwI-0002y5-Ej; Thu, 03 Feb 2022 17:30:34 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nFfwF-0004B7-Kj; Thu, 03 Feb 2022 17:30:31 +0000
-Date:   Thu, 3 Feb 2022 17:30:31 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1nFfwa-0002yH-W5; Thu, 03 Feb 2022 17:30:53 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+        id 1nFfwa-006X66-Dd; Thu, 03 Feb 2022 17:30:52 +0000
+In-Reply-To: <YfvrIf/FDddglaKE@shell.armlinux.org.uk>
+References: <YfvrIf/FDddglaKE@shell.armlinux.org.uk>
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH RFC net-next 0/7] net: dsa: mt7530: updates for phylink
- changes
-Message-ID: <YfwRN2ObqFbrw/fF@shell.armlinux.org.uk>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH RFC net-next 1/5] net: dsa: b53: clean up if() condition to be
+ more readable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1nFfwa-006X66-Dd@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Thu, 03 Feb 2022 17:30:52 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+I've stared at this if() statement for a while trying to work out if
+it really does correspond with the comment above, and it does seem to.
+However, let's make it more readable and phrase it in the same way as
+the comment.
 
-This series is a partial conversion of the mt7530 DSA driver to the
-modern phylink infrastructure. This driver has some exceptional cases
-which prevent - at the moment - its full conversion (particularly with
-the Autoneg bit) to using phylink_generic_validate().
+Also add a FIXME into the comment - we appear to deny Gigabit modes for
+802.3z interface modes, but 802.3z interface modes only operate at
+gigabit and above.
 
-What stands in the way is this if() condition in
-mt753x_phylink_validate():
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/dsa/b53/b53_common.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-	if (state->interface != PHY_INTERFACE_MODE_TRGMII ||
-	    !phy_interface_mode_is_8023z(state->interface)) {
-
-reduces to being always true. I highlight this here for the attention
-of the driver maintainers.
-
-Patch 1 populates the supported_interfaces for each port
-
-Patch 2 removes the interface checks that become unnecessary as a result
-of patch 1.
-
-Patch 3 removes use of phylink_helper_basex_speed() which is no longer
-required by phylink.
-
-Patch 4 becomes possible after patch 3, only indicating the ethtool
-modes that can be supported with a particular interface mode - this
-involves removing some modes and adding others as per phylink
-documentation.
-
-Patch 5 continues patch 4, as RGMII can support 1000base-X ethtool link
-mode with an appropriate external PHY.
-
-Patch 6 switches the driver to use phylink_get_linkmodes(), which moves
-the driver as close as we can to phylink_generic_validate() due to the
-Autoneg bit issue mentioned above.
-
-Patch 7 marks the driver as non-legacy.
-
- drivers/net/dsa/mt7530.c | 166 ++++++++++++++++-------------------------------
- drivers/net/dsa/mt7530.h |   5 +-
- 2 files changed, 58 insertions(+), 113 deletions(-)
-
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index a3b98992f180..7d62b0aeaae9 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1327,11 +1327,14 @@ void b53_phylink_validate(struct dsa_switch *ds, int port,
+ 
+ 	/* With the exclusion of 5325/5365, MII, Reverse MII and 802.3z, we
+ 	 * support Gigabit, including Half duplex.
++	 *
++	 * FIXME: this is weird - 802.3z is always Gigabit, but we exclude
++	 * it here. Why? This makes no sense.
+ 	 */
+-	if (state->interface != PHY_INTERFACE_MODE_MII &&
+-	    state->interface != PHY_INTERFACE_MODE_REVMII &&
+-	    !phy_interface_mode_is_8023z(state->interface) &&
+-	    !(is5325(dev) || is5365(dev))) {
++	if (!(state->interface == PHY_INTERFACE_MODE_MII ||
++	      state->interface == PHY_INTERFACE_MODE_REVMII ||
++	      phy_interface_mode_is_8023z(state->interface) ||
++	      is5325(dev) || is5365(dev))) {
+ 		phylink_set(mask, 1000baseT_Full);
+ 		phylink_set(mask, 1000baseT_Half);
+ 	}
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
