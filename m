@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E22914A7FE0
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 08:34:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED3A14A7FE3
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 08:35:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348145AbiBCHe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 02:34:56 -0500
-Received: from mga07.intel.com ([134.134.136.100]:32409 "EHLO mga07.intel.com"
+        id S1349409AbiBCHfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 02:35:09 -0500
+Received: from mga07.intel.com ([134.134.136.100]:32422 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349404AbiBCHey (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Feb 2022 02:34:54 -0500
+        id S236619AbiBCHfI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Feb 2022 02:35:08 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643873694; x=1675409694;
+  t=1643873708; x=1675409708;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=rSwoLbyA72TP/SebBPb/0ufsRtBQVDEQqkekIksYfZQ=;
-  b=WgvvJlHrBt5kDbSFOA5tMZsR9er3QltHL3RLDYvqtlZHJfZCUMu0ZECn
-   eEsbnN06KeP0HPmXR5LyvxYLOaab6+1iWgJD7hK5bATXWgWkoapp7UMnu
-   mGTaetWT5A5tLuEOe3BI29IvRKNCeSDZmlWDcEhv429kd3AXtDhlnsgVP
-   +FUwMw1b93/CIkhaKCWJharz/7YPJVeGsorrdi29Z13ZrgCGJt1Y8sYWh
-   LSlT0gZIbq2Ao22KzlqiKhqEbuvNu2Q0VBx1zRbEGzc+H5GMXsNISR5aE
-   ng9w6ew1xL3ycuW09g3FTAmTrWXbzfFr04skERyj6omGB0mt/fHjShy+T
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="311397576"
+  bh=o/kK3Kx73a+PbxgC531tJEeKezp5FnAFLjDWQaYT3Z4=;
+  b=Y9gzUazVBhXOyn8UuRmqE9I+HStybvb6vpIPbGWohpAXphQWLuDi4Vq1
+   coAf34+DA/6tXe3ZSGCAFZX2lrEZnjhcgb46kVn4JNqBzjMoNOX9Q2T1a
+   odRHoV1N2qjK+izD91cot8G2/bnAbQhnbbK8RG4ifysUHjzlVjTbvMMbk
+   iH4nOHtlbQSqmAzJxxkR4zBOvrpnVF61TAzoNakQEGkc0JWKMa6kLL2u6
+   wsG9IO0r+8Rr/4eqiNbBVTwP4GEG5Q3viQWGYgDJdnt9tsSMHhnSPxNc/
+   J+41Fq1er0ucPpF41j4i67UzCK/nPKQU3qmbYxYt6ZszXI8migZvfceaP
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="311397577"
 X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
-   d="scan'208";a="311397576"
+   d="scan'208";a="311397577"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 23:34:53 -0800
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 23:35:07 -0800
 X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
-   d="scan'208";a="771703686"
+   d="scan'208";a="771703693"
 Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 23:34:52 -0800
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 23:34:54 -0800
 From:   Zhu Lingshan <lingshan.zhu@intel.com>
 To:     mst@redhat.com, jasowang@redhat.com
 Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
         Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V4 2/4] vDPA/ifcvf: implement device MSIX vector allocator
-Date:   Thu,  3 Feb 2022 15:27:33 +0800
-Message-Id: <20220203072735.189716-3-lingshan.zhu@intel.com>
+Subject: [PATCH V4 3/4] vhost_vdpa: don't setup irq offloading when irq_num < 0
+Date:   Thu,  3 Feb 2022 15:27:34 +0800
+Message-Id: <20220203072735.189716-4-lingshan.zhu@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220203072735.189716-1-lingshan.zhu@intel.com>
 References: <20220203072735.189716-1-lingshan.zhu@intel.com>
@@ -49,66 +49,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit implements a MSIX vector allocation helper
-for vqs and config interrupts.
+When irq number is negative(e.g., -EINVAL), the virtqueue
+may be disabled or the virtqueues are sharing a device irq.
+In such case, we should not setup irq offloading for a virtqueue.
 
 Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 ---
- drivers/vdpa/ifcvf/ifcvf_main.c | 35 +++++++++++++++++++++++++++++++--
- 1 file changed, 33 insertions(+), 2 deletions(-)
+ drivers/vhost/vdpa.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index d1a6b5ab543c..44c89ab0b6da 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -58,14 +58,45 @@ static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
- 	ifcvf_free_irq_vectors(pdev);
- }
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 851539807bc9..c4fcacb0de3a 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -96,6 +96,10 @@ static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
+ 	if (!ops->get_vq_irq)
+ 		return;
  
-+/* ifcvf MSIX vectors allocator, this helper tries to allocate
-+ * vectors for all virtqueues and the config interrupt.
-+ * It returns the number of allocated vectors, negative
-+ * return value when fails.
-+ */
-+static int ifcvf_alloc_vectors(struct ifcvf_adapter *adapter)
-+{
-+	struct pci_dev *pdev = adapter->pdev;
-+	struct ifcvf_hw *vf = &adapter->vf;
-+	int max_intr, ret;
++	irq = ops->get_vq_irq(vdpa, qid);
++	if (irq < 0)
++		return;
 +
-+	/* all queues and config interrupt  */
-+	max_intr = vf->nr_vring + 1;
-+	ret = pci_alloc_irq_vectors(pdev, 1, max_intr, PCI_IRQ_MSIX | PCI_IRQ_AFFINITY);
-+
-+	if (ret < 0) {
-+		IFCVF_ERR(pdev, "Failed to alloc IRQ vectors\n");
-+		return ret;
-+	}
-+
-+	if (ret < max_intr)
-+		IFCVF_INFO(pdev,
-+			   "Requested %u vectors, however only %u allocated, lower performance\n",
-+			   max_intr, ret);
-+
-+	return ret;
-+}
-+
- static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
- {
- 	struct pci_dev *pdev = adapter->pdev;
- 	struct ifcvf_hw *vf = &adapter->vf;
--	int vector, i, ret, irq;
-+	int vector, nvectors, i, ret, irq;
- 	u16 max_intr;
- 
--	/* all queues and config interrupt  */
-+	nvectors = ifcvf_alloc_vectors(adapter);
-+	if (!(nvectors > 0))
-+		return nvectors;
-+
- 	max_intr = vf->nr_vring + 1;
- 
- 	ret = pci_alloc_irq_vectors(pdev, max_intr,
+ 	irq = ops->get_vq_irq(vdpa, qid);
+ 	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+ 	if (!vq->call_ctx.ctx || irq < 0)
 -- 
 2.27.0
 
