@@ -2,173 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5B944A81C1
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 10:48:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 727894A8206
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 11:02:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235526AbiBCJse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 04:48:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbiBCJsd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 04:48:33 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA1A7C061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 01:48:32 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id p7so4579433edc.12
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 01:48:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=M7T3IHLxN41QRZvjv1YjFFkL8vtlek+/+fn2CtCoDDU=;
-        b=YH/LViuSDXCiDO41rn7E24WZMSjl8N++XHrx4b9MaYILZJko3CSNhbleRUalaw4RMs
-         QG1f8jk7tJHCKj/ggBjiQJRcVUI36OXLRIP1fXLclPBX+JRpItgPk/RBYPuNaFiD4ucf
-         qkkZ1WVudGuyOi9h4B8XrULqVspGiDcGjN+7SceZeOLhN6BKy6UUq7CcVAnn4Yp1BIwF
-         dEcr9TwuOf8YtXK02JLT9Tl0uANeVLoajEqkHhfApp+BTEh9YNJeWssGc8JFwf3SUg4T
-         1EXS5uvAb63+q1EQO1h4cKYAK091VuVDjUw2s9wDPVlKTz/Kmn3TTPHMnllve5xIGJ4y
-         mD9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=M7T3IHLxN41QRZvjv1YjFFkL8vtlek+/+fn2CtCoDDU=;
-        b=6R6kngxcX0HCfeZwlBbfRwVLqgHLWna9lcHKnUR3IsCnTqgDUeDZNwO03lNfCQ8HqP
-         EOemyt11pEkpXGS/uwe3uxsVt5IEwGHl5/8iCguwDZjy6gQebCFcNhyDfX5s2MMvNdca
-         BZrGeP1C1IqTtfjfEKP4C4grm2qpSrzx5dSjF1nZbb4y6GrF2sxAZPOPoSxv9FNUIBqR
-         vYJ5ix68O1t2KnGXt7ZOpQOXulhoResk9sDfa6e5Kznj7nLZp83ShpsY7vqvoBpzxIga
-         TIsmCTb6MwE5DgfPPP6dY+FRhZFnemWkDO6nstw1Z4vWGPfwtXOO4TCWeIMsd8NlX84w
-         WfDg==
-X-Gm-Message-State: AOAM5301WPwixUUTV3S+FJ6JnM5oAbBrdKiZ+DETaN7wCXT5s4aT97/t
-        GW8wl31Ukn1/PdR1y4rcvo7Vug==
-X-Google-Smtp-Source: ABdhPJxWPXDA+Qfhiv1m/qrJLdCHp+0d8VSL7N9r6UBl3/CCX2ME8dVaNppeDPLwWxRsRfSXs/8EWA==
-X-Received: by 2002:a05:6402:d0d:: with SMTP id eb13mr33899293edb.6.1643881711466;
-        Thu, 03 Feb 2022 01:48:31 -0800 (PST)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id r15sm16466191ejz.72.2022.02.03.01.48.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 01:48:30 -0800 (PST)
-Date:   Thu, 3 Feb 2022 09:48:07 +0000
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     linuxarm@openeuler.org, ilias.apalodimas@linaro.org,
-        salil.mehta@huawei.com, netdev@vger.kernel.org,
-        moyufeng@huawei.com, alexanderduyck@fb.com, brouer@redhat.com,
-        kuba@kernel.org
-Subject: Re: [PATCH net-next v2 4/4] net: hns3: support skb's frag page
- recycling based on page pool
-Message-ID: <Yfuk11on6XiaB6Di@myrica>
-References: <1628217982-53533-1-git-send-email-linyunsheng@huawei.com>
- <1628217982-53533-5-git-send-email-linyunsheng@huawei.com>
- <YfFbDivUPbpWjh/m@myrica>
- <3315a093-582c-f464-d894-cb07522e5547@huawei.com>
- <YfO1q52G7GKl+P40@myrica>
- <ff54ec37-cb69-cc2f-7ee7-7974f244d843@huawei.com>
+        id S1349974AbiBCKB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 05:01:59 -0500
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:53416 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240750AbiBCKB6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 05:01:58 -0500
+Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id 4396D200F802;
+        Thu,  3 Feb 2022 11:01:56 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 4396D200F802
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1643882516;
+        bh=DL3SlfENiaGEPjEqBA7fcl+Ti+j2Sw8xhUfgB8JmKe4=;
+        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
+        b=UwCE48SQXXFPCwm9qlgj7BfdV2zRZ/y6mnxQE4BoWrn+IhEXgSQkFJ9uJ3aZZaPo1
+         r0rbJTno7TlY7Fgg93qgea5pu7yS9kQsGuITni6bWpl1of2VPvx3co3ZPmPdOShkRz
+         EPRTcxHyrlqdMM8MsLY4nu2k85uPHp1VKCloDTIKIQy3lZUngr3fPwUJoM5cbq1y6R
+         2RryewDE9MG/kCm8+/K9ku0MLMzAv/5KtroKswQc/ReDiRFASeLkTvBl6JXCKpSSvd
+         m2zzDBuNyb+bdh5m6ggBtQdOjU7IOf8yjo9VQdCXkcdId72R8luCYYd49YsKGKKfkc
+         ystcEwAaI1nsg==
+Received: from localhost (localhost [127.0.0.1])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 2EE9060224572;
+        Thu,  3 Feb 2022 11:01:56 +0100 (CET)
+Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
+        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id h6gNDQH2Y27w; Thu,  3 Feb 2022 11:01:56 +0100 (CET)
+Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 05A796016F395;
+        Thu,  3 Feb 2022 11:01:56 +0100 (CET)
+Date:   Thu, 3 Feb 2022 11:01:55 +0100 (CET)
+From:   Justin Iurman <justin.iurman@uliege.be>
+Reply-To: Justin Iurman <justin.iurman@uliege.be>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org
+Message-ID: <1603413387.15401325.1643882515850.JavaMail.zimbra@uliege.be>
+In-Reply-To: <387b6b6e-3813-60b1-51f2-33ce45aeaf47@gmail.com>
+References: <20220202142554.9691-1-justin.iurman@uliege.be> <387b6b6e-3813-60b1-51f2-33ce45aeaf47@gmail.com>
+Subject: Re: [PATCH net-next v2 0/2] Support for the IOAM insertion
+ frequency
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ff54ec37-cb69-cc2f-7ee7-7974f244d843@huawei.com>
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [81.240.24.148]
+X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF96 (Linux)/8.8.15_GA_4026)
+Thread-Topic: Support for the IOAM insertion frequency
+Thread-Index: wTf6LYIqacrYAFcj9oko0Mpy+De1RQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 29, 2022 at 04:44:34PM +0800, Yunsheng Lin wrote:
-> >> My initial thinking is to track if the reference counting or pp_frag_count of
-> >> the page is manipulated correctly.
-> > 
-> > It looks like pp_frag_count is dropped too many times: after (1),
-> > pp_frag_count only has 1 ref, so (2) drops it to 0 and (3) results in
-> > underflow. I turned page_pool_atomic_sub_frag_count_return() into
-> > "atomic_long_sub_return(nr, &page->pp_frag_count)" to make sure (the
-> > atomic_long_read() bit normally hides this). Wasn't entirely sure if this
-> > is expected behavior, though.
+On Feb 3, 2022, at 4:47 AM, David Ahern dsahern@gmail.com wrote:
+>> v2:
+>>  - signed -> unsigned (for "k" and "n")
+>>  - keep binary compatibility by moving "k" and "n" at the end of uapi
+>> 
+>> The insertion frequency is represented as "k/n", meaning IOAM will be
+>> added to {k} packets over {n} packets, with 0 < k <= n and 1 <= {k,n} <=
+>> 1000000. Therefore, it provides the following percentages of insertion
+>> frequency: [0.0001% (min) ... 100% (max)].
+>> 
+>> Not only this solution allows an operator to apply dynamic frequencies
+>> based on the current traffic load, but it also provides some
+>> flexibility, i.e., by distinguishing similar cases (e.g., "1/2" and
+>> "2/4").
+>> 
+>> "1/2" = Y N Y N Y N Y N ...
+>> "2/4" = Y Y N N Y Y N N ...
+>> 
 > 
-> Are you true the above 1~3 step is happening for the same page?
+> what's the thought process behind this kind of sampling? K consecutive
+> packets in a row with the trace; N-K consecutive packets without it.
 
-Yes they happen on the same page. What I did was save the backtrace of
-each call to page_pool_atomic_sub_frag_count_return() and, when an
-underflow error happens on a page, print out the history of that page
-only.
-
-My report was not right, though, I forgot to save the backtrace for
-pp_frag_count==0. There's actually two refs on the page. It goes like
-this:
-
-  (1) T-1535, drop BIAS_MAX - 2, pp_frag_count now 2
-     page_pool_alloc_frag+0x128/0x240
-     hns3_alloc_and_map_buffer+0x30/0x170
-     hns3_nic_alloc_rx_buffers+0x9c/0x170
-     hns3_clean_rx_ring+0x864/0x960
-     hns3_nic_common_poll+0xa0/0x218
-     __napi_poll+0x38/0x188
-     net_rx_action+0xe8/0x248
-     __do_softirq+0x120/0x284
-
-  (2) T-4, drop 1, pp_frag_count now 1
-     page_pool_put_page+0x98/0x338
-     page_pool_return_skb_page+0x48/0x60
-     skb_release_data+0x170/0x190
-     skb_release_all+0x28/0x38
-     kfree_skb_reason+0x30/0x90
-     packet_rcv+0x58/0x430
-     __netif_receive_skb_list_core+0x1f4/0x218
-     netif_receive_skb_list_internal+0x18c/0x2a8
-  
-  (3) T-1, drop 1, pp_frag_count now 0
-     page_pool_put_page+0x98/0x338
-     page_pool_return_skb_page+0x48/0x60
-     skb_release_data+0x170/0x190
-     skb_release_all+0x28/0x38
-     __kfree_skb+0x18/0x30
-     __sk_defer_free_flush+0x44/0x58
-     tcp_recvmsg+0x94/0x1b8
-     inet_recvmsg+0x50/0x128
-  
-  (4) T, drop 1, pp_frag_count now -1 (underflow)
-     page_pool_put_page+0x2d0/0x338
-     hns3_clean_rx_ring+0x74c/0x960
-     hns3_nic_common_poll+0xa0/0x218
-     __napi_poll+0x38/0x188
-     net_rx_action+0xe8/0x248
-
-> If it is the same page, there must be something wrong here.
-> 
-> Normally there are 1024 BD for a rx ring:
-> 
-> BD_0 BD_1 BD_2 BD_3 BD_4 .... BD_1020 BD_1021  BD_1022  BD_1023
->            ^         ^
->          head       tail
-> 
-> Suppose head is manipulated by driver, and tail is manipulated by
-> hw.
-> 
-> driver allocates buffer for BD pointed by head, as the frag page
-> recycling is introduced in this patch, the BD_0 and BD_1's buffer
-> may point to the same page（4K page size, and each BD only need
-> 2k Buffer.
-> hw dma the data to the buffer pointed by tail when packet is received.
-> 
-> so step 1 Normally happen for the BD pointed by head,
-> and step 2 & 3 Normally happen for the BD pointed by tail.
-> And Normally there are at least (1024 - RCB_NOF_ALLOC_RX_BUFF_ONCE) BD
-> between head and tail, so it is unlikely that head and tail's BD buffer
-> points to the same page.
-
-I think a new page is allocated at step 1, no?  The driver calls
-page_pool_alloc_frag() when refilling the rx ring, and since the current
-pool->frag_page (P1) is still used by BD_0 and BD_1, then
-page_pool_drain_frag() drops (BIAS_MAX - 2) references and
-page_pool_alloc_frag() replaces frag_page with a new page, P2. Later, head
-points to BD_1, the driver can drop the remaining 2 references to P1 in
-steps 2 and 3, and P1 can be unmapped and freed/recycled
-
-What I don't get is which of steps 2, 3 and 4 is the wrong one. Could be
-2 or 3 because the device is evidently still doing DMA to the page after
-it's released, but it could also be that the driver doesn't properly clear
-the BD in which case step 4 is wrong. I'll try to find out which fragment
-gets dropped twice.
-
-Thanks,
-Jean
-
+Flexibility. Long story short, it was initially designed with a fixed
+"k" (i.e., k=1) so that operators could set the IOAM insertion frequency
+to "1/n" (i.e., inject IOAM every n packets). Available frequencies were
+100% ("1/1"), 50% ("1/2"), 33% ("1/3"), 25% ("1/4"), etc. By introducing
+a non-fixed "k", we wanted to provide flexibility and accuracy to
+operators, because you never know... They could require to inject IOAM
+in 75% of their traffic, or want to differentiate "1/2" and "2/4", or
+whatever). So you can see it as an improved feature of the "1/n" base
+frequency. Whether it'll be useful or not, well, I don't know. Again, it
+all depends on operators' needs.
