@@ -2,126 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E78744A8590
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 14:53:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B3304A8592
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 14:54:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350906AbiBCNxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 08:53:40 -0500
-Received: from mx.msync.work ([51.91.38.21]:39718 "EHLO mx.msync.work"
+        id S236702AbiBCNyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 08:54:05 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:40862 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240877AbiBCNxj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Feb 2022 08:53:39 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id CDA38223F6;
-        Thu,  3 Feb 2022 13:53:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lexina.in; s=dkim;
-        t=1643896418; h=from:subject:date:message-id:to:mime-version:content-type:
-         content-transfer-encoding:content-language:in-reply-to:references;
-        bh=k9g+wTO5HqK7jJ0OX3kvaKZizS1QpshMgr7ugDUIQZY=;
-        b=NsYsd5RSmAuBkO1EISfM+GyC0nnUOZNQvvNXBfekmwKHuww5OdZsPqfgA9KixiSP9CfKRo
-        7L41IEs9vMQhuyN1fgEd3xGTlol8TBAL03q5KDreBRVNLQFO7lXso/VZQKFkW5pcJwsJRW
-        Tk37mfLtnTEFqKVIUT7ObyjCleAarhUSpeXV+jnjVGPnJjm+Wbbuxw9ts9RGY5SA5/pRfe
-        jtTMP/o3CiFAm5Af3PD4i7AmJkRsOipbdVTFtjtBxuzyNPl2gx1k4xQi20y3lBgemzpLEW
-        v3exAnHLtL+TSkVgGnffqI+IJEuaKCcrwbxs60TV57gBSY91qFZyndVdlrdm7w==
-Message-ID: <358698b4-1da5-8af5-8c33-c7b2350c0ac1@lexina.in>
-Date:   Thu, 3 Feb 2022 16:53:27 +0300
+        id S1350918AbiBCNyC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Feb 2022 08:54:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=M0AwtJ6X+21Ku/MswUd5r7r3/EB9NBXlsTNRVMaSpX0=; b=RU
+        rRNysWeVCXO1QisPnOkeHqcWDdWofe6HH/X3ze+EuUT0diTTf0IkVYgAPdGgVcqHiiDWoeZwYtwtL
+        tlp+LLICrKawpmjNGJRzWnFzJDhxcjTZR5uzeFTO3tDYkjAVHutAJK+Qr6BsAVKIgNg/cUfn1uspz
+        W3MfXZaHhCOvo/A=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nFcYg-0047Oz-Tp; Thu, 03 Feb 2022 14:53:58 +0100
+Date:   Thu, 3 Feb 2022 14:53:58 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Marek Beh__n <kabel@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 4/4] net: dsa: mv88e6xxx: improve 88e6352 serdes
+ statistics detection
+Message-ID: <YfveduCCD+n8vf1g@lunn.ch>
+References: <YfvYxNAkOZ6aNxql@shell.armlinux.org.uk>
+ <E1nFcCK-006WN0-Do@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: net: stmmac: dwmac-meson8b: interface sometimes does not come up
- at boot
-Content-Language: ru
-To:     Erico Nunes <nunes.erico@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org
-References: <CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com>
-From:   Vyacheslav <adeep@lexina.in>
-In-Reply-To: <CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <E1nFcCK-006WN0-Do@rmk-PC.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+On Thu, Feb 03, 2022 at 01:30:52PM +0000, Russell King (Oracle) wrote:
+> The decision whether to report serdes statistics currently depends on
+> the cached C_Mode value for the port, read at probe time or updated by
+> configuration. However, port 4 can be in "automedia" mode when it is
+> used as a serdes port, meaning it switches between the internal PHY and
+> the serdes, changing the read-only C_Mode value depending on which
+> first gains link. Consequently, the C_Mode value read at probe does not
+> accurately reflect whether the port has the serdes associated with it.
+> 
+> In "net: dsa: mv88e6xxx: add mv88e6352_g2_scratch_port_has_serdes()",
+> we added a way to read the hardware configuration to determine which
+> port has the serdes associated with it. Use this to determine which
+> port reports the serdes statistics.
+> 
+> Reviewed-by: Marek Behún <kabel@kernel.org>
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-I have same problem with meson8b on S905W Amlogic SoC.
-"ethtool -r" fixes problem after start
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-02.02.2022 23:18, Erico Nunes wrote:
-> Hello,
-> 
-> I've been tracking down an issue with network interfaces from
-> meson8b-dwmac sometimes not coming up properly at boot.
-> The target systems are AML-S805X-CC boards (Amlogic S805X SoC), I have
-> a group of them as part of a CI test farm that uses nfsroot.
-> 
-> After hopefully ruling out potential platform/firmware and network
-> issues I managed to bisect this commit in the kernel to make a big
-> difference:
-> 
->    46f69ded988d2311e3be2e4c3898fc0edd7e6c5a net: stmmac: Use resolved
-> link config in mac_link_up()
-> 
-> With a kernel before that commit, I am able to submit hundreds of test
-> jobs and the boards always start the network interface properly.
-> 
-> After that commit, around 30% of the jobs start hitting this:
-> 
->    [    2.178078] meson8b-dwmac c9410000.ethernet eth0: PHY
-> [0.e40908ff:08] driver [Meson GXL Internal PHY] (irq=48)
->    [    2.183505] meson8b-dwmac c9410000.ethernet eth0: Register
-> MEM_TYPE_PAGE_POOL RxQ-0
->    [    2.200784] meson8b-dwmac c9410000.ethernet eth0: No Safety
-> Features support found
->    [    2.202713] meson8b-dwmac c9410000.ethernet eth0: PTP not supported by HW
->    [    2.209825] meson8b-dwmac c9410000.ethernet eth0: configuring for
-> phy/rmii link mode
->    [    3.762108] meson8b-dwmac c9410000.ethernet eth0: Link is Up -
-> 100Mbps/Full - flow control off
->    [    3.783162] Sending DHCP requests ...... timed out!
->    [   93.680402] meson8b-dwmac c9410000.ethernet eth0: Link is Down
->    [   93.685712] IP-Config: Retrying forever (NFS root)...
->    [   93.756540] meson8b-dwmac c9410000.ethernet eth0: PHY
-> [0.e40908ff:08] driver [Meson GXL Internal PHY] (irq=48)
->    [   93.763266] meson8b-dwmac c9410000.ethernet eth0: Register
-> MEM_TYPE_PAGE_POOL RxQ-0
->    [   93.779340] meson8b-dwmac c9410000.ethernet eth0: No Safety
-> Features support found
->    [   93.781336] meson8b-dwmac c9410000.ethernet eth0: PTP not supported by HW
->    [   93.788088] meson8b-dwmac c9410000.ethernet eth0: configuring for
-> phy/rmii link mode
->    [   93.807459] random: fast init done
->    [   95.353076] meson8b-dwmac c9410000.ethernet eth0: Link is Up -
-> 100Mbps/Full - flow control off
-> 
-> This still happens with a kernel from master, currently 5.17-rc2 (less
-> frequently but still often hit by CI test jobs).
-> The jobs still usually get to work after restarting the interface a
-> couple of times, but sometimes it takes 3-4 attempts.
-> 
-> Here is one example and full dmesg:
-> https://gitlab.freedesktop.org/enunes/mesa/-/jobs/16452399/raw
-> 
-> Note that DHCP does not seem to be an issue here, besides the fact
-> that the problem only happens since the mentioned commit under the
-> same setup, I did try to set up the boards to use a static ip but then
-> the interfaces just don't communicate at all from boot.
-> 
-> For test purposes I attempted to revert
-> 46f69ded988d2311e3be2e4c3898fc0edd7e6c5a on top of master but that
-> does not apply trivially anymore, and by trying to revert it manually
-> I haven't been able to get a working interface.
-> 
-> Any advice on how to further debug or fix this?
-> 
-> Thanks
-> 
-> Erico
-> 
+    Andrew
