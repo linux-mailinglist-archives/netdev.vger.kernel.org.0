@@ -2,104 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD7364A8319
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 12:27:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8363B4A8350
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 12:50:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243664AbiBCL1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 06:27:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237362AbiBCL1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 06:27:52 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B24C061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 03:27:52 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id r144so2800408iod.9
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 03:27:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0yHWvoIVyRskwxVvMR4JJwddiDqQA33hRIgPIj2/Ibg=;
-        b=boGuAuKD1DcIUNXyfWoVTikePU9kREHUYw5iQsooZAnLYmyqHRKJlSKAOecd/gSQVb
-         /QIm+Ix3qXzubxkstR5mUGVer9Sf3h2iMv27G1zgZAs5+aYlzOpTYlQroiWBrXo//I3p
-         h+NqasxDe4m90nO15qfwQHdyE6r3Tcvv2JBiuRw3Ud0zZhosizU20KvLN3PNeiMPOO33
-         FfZfyk81GcU2ozzM39C9QXUoSWpQZdvIXde//BcRzxEhBlWSvwDZSnkhdq8FZwzxX52P
-         aSmSM6n58lVN+qh8lsMDHYNhgMr0zYINml23pWGGxNOvi+DzHeZtlHHei1gHn7O3SouC
-         otmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0yHWvoIVyRskwxVvMR4JJwddiDqQA33hRIgPIj2/Ibg=;
-        b=PjiKSvuGkLbJ5I+Z8FCcXocHC+XpY7ZDl5tm87owZ3OzSUx8CXAbVNvQGn0qfGrVgN
-         aHdfgBF56aSV8Otfn5/P0AhywH4clp+jOWkdWI1O3u5m9WDI9aqIpiElxS5xIt2DcuQB
-         af0kCnuq4hP/u+2gAL33G7SemUA9WI8fnjcRtYUHbr4ru1WAhStko0CeLvPPqFwKZSjI
-         6b7hRfD9T77PP8rnIDDOpiaH7zWSWZ24D1Uex18jcgu0NzyjL/jBZ5VnKLAtt5PTlmTg
-         t2r4eTA3OI49VRHHrgE8zlGwaVmy8xmL9iunwwzjWfKA9biQLnPUUUjinCYxfEHObSwA
-         Mhjg==
-X-Gm-Message-State: AOAM531mDGpgINwAYTguimHRVZVTSOFBMp24YI2i6//b9nMyywHPzQmk
-        rRQtrPE5rndZMOb3RLy+8gZg7w==
-X-Google-Smtp-Source: ABdhPJyAas9HPXykhr7Zmbjkxob3REfXS6IcM5zxfSyHhuUyaIPcwJZMhN0LFpgC2MPGFU0oWlXR1Q==
-X-Received: by 2002:a5e:8406:: with SMTP id h6mr18428130ioj.144.1643887671664;
-        Thu, 03 Feb 2022 03:27:51 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id y3sm24576165iov.29.2022.02.03.03.27.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Feb 2022 03:27:51 -0800 (PST)
-Message-ID: <eb09c869-c5c6-4be8-5265-072849f1ecd0@linaro.org>
-Date:   Thu, 3 Feb 2022 05:27:49 -0600
+        id S1350223AbiBCLuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 06:50:15 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:32832 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237728AbiBCLuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 06:50:14 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FA01B833FE
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 11:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 109E5C340EC;
+        Thu,  3 Feb 2022 11:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643889012;
+        bh=RDX4HjaczzVI9yiG1jeSRzCM4VMoJhOYO4aHxCaHmVg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MTBBf/O7eOl1NtU/f4AXX5iUttiaqn56tLCSs4t9rVd5Z/s8cZSP5+FDuRwFSiefb
+         8DFIDfQmic/PkAkBSHu7PJiZb7sV34zhO0aFUvpV2/y/2qHU1n4Np65yBmnXzsO0iU
+         5aH1rIgv5O21kSONZBCSDWv7zu1LPBzMToRkOuGGJe2LAtp14r7x4htUGb+k8I6pkb
+         pDrurN8AZhJrDusUe3N1TurKKI17FGTVLfSqCdd9X6rR3dKitYv4+4ZdyBMGBMehNs
+         JNZwvuwNDPwhI2QTX8WSsnRKOaTp2IXJfQeLeq+DVYgAgSeF/xZ6PqWIjt+3pNCc4c
+         tyCI6FEO/GEIQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EE64FE6BAC6;
+        Thu,  3 Feb 2022 11:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] arm64: dts: qcom: add IPA qcom,qmp property
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     bjorn.andersson@linaro.org, agross@kernel.org, robh+dt@kernel.org,
-        davem@davemloft.net, mka@chromium.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, avuyyuru@codeaurora.org,
-        jponduru@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220201140723.467431-1-elder@linaro.org>
- <20220202210638.07b83d41@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <20220202210638.07b83d41@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/7] mptcp: Miscellaneous changes for 5.18
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164388901196.18714.17211200195167111456.git-patchwork-notify@kernel.org>
+Date:   Thu, 03 Feb 2022 11:50:11 +0000
+References: <20220203010343.113421-1-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20220203010343.113421-1-mathew.j.martineau@linux.intel.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/2/22 11:06 PM, Jakub Kicinski wrote:
-> On Tue,  1 Feb 2022 08:07:23 -0600 Alex Elder wrote:
->> At least three platforms require the "qcom,qmp" property to be
->> specified, so the IPA driver can request register retention across
->> power collapse.  Update DTS files accordingly.
->>
->> Signed-off-by: Alex Elder <elder@linaro.org>
->> ---
->>
->> Dave, Jakub, please let Bjorn take this through the Qualcomm tree.
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Wed,  2 Feb 2022 17:03:36 -0800 you wrote:
+> Patch 1 has some minor cleanup in mptcp_write_options().
 > 
-> I don't know much about DT but the patch defining the property is
-> targeting net - will it not cause validation errors? Or Bjorn knows
-> to wait for the fixes to propagate? Or it doesn't matter? :)
+> Patch 2 moves a rarely-needed branch to optimize mptcp_write_options().
+> 
+> Patch 3 adds a comment explaining which combinations of MPTCP option
+> headers are expected.
+> 
+> [...]
 
-It might matter sometimes, but in this case it does not.
+Here is the summary with links:
+  - [net-next,1/7] mptcp: move the declarations of ssk and subflow
+    https://git.kernel.org/netdev/net-next/c/d7889cfa0b89
+  - [net-next,2/7] mptcp: reduce branching when writing MP_FAIL option
+    https://git.kernel.org/netdev/net-next/c/902c8f864882
+  - [net-next,3/7] mptcp: clarify when options can be used
+    https://git.kernel.org/netdev/net-next/c/8cca39e25171
+  - [net-next,4/7] mptcp: print out reset infos of MP_RST
+    https://git.kernel.org/netdev/net-next/c/9ddd1cac6fe1
+  - [net-next,5/7] mptcp: set fullmesh flag in pm_netlink
+    https://git.kernel.org/netdev/net-next/c/73c762c1f07d
+  - [net-next,6/7] selftests: mptcp: set fullmesh flag in pm_nl_ctl
+    https://git.kernel.org/netdev/net-next/c/c25d29be00c1
+  - [net-next,7/7] selftests: mptcp: add fullmesh setting tests
+    https://git.kernel.org/netdev/net-next/c/6a0653b96f5d
 
-If the DT property is present but never referenced by the
-code, it doesn't matter.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-The code in this patch looks up the DT property, and its
-behavior is affected by whether the property is there
-or not.  If it's not there, it's treated as an error
-that can be safely ignored.
 
-In the case this fix is actually needed, we'll need
-both the code present and DT property defined.  If
-the code is there but not the property, it's OK, but
-the bug won't be fixed quite yet.
-
-					-Alex
