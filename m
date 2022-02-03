@@ -2,105 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 433174A8A27
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 18:33:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 583D14A8A2F
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 18:36:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352900AbiBCRdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 12:33:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44320 "EHLO
+        id S232364AbiBCRe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 12:34:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352902AbiBCRdN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 12:33:13 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22B9C061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 09:33:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=cnHzcZWWo2B1XYeox8Tga+hw1M3rf/ODvVizUxJgqgA=; b=TP/oO30avlju1A0zfey/FXelhC
-        onT50rC6B+Bf6bRFWmNkNkNSUad+ua02F4Mjr0Pg9p69hBZ0o6W92zgIHJC8rq6tvTpCePzWWglGk
-        wd6uTyfeVegFa0WbnFTFM6qCyAEL4OrRk7nc0/RDWe3B07V4D+XXVkQPLFPW2xaHzW2R4TE9Lp8AD
-        urnYhj31y3xuI4Kp3EF3Q1cgyVRve4M1LN42Uwfza81TAhZDp9ly1soP8muwqvvNDpNqA7Uh5Asqx
-        +hb4jgcke7HA2QhR/eX2rAnz7xncOnwafYb8PlmAT57an/x4qBYJSLGgF1ysy++oQfAeguzce3viE
-        HVBI/J2A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57020)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nFfyn-00030t-88; Thu, 03 Feb 2022 17:33:09 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nFfym-0004BX-Jw; Thu, 03 Feb 2022 17:33:08 +0000
-Date:   Thu, 3 Feb 2022 17:33:08 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 1/5] net: dsa: b53: clean up if() condition
- to be more readable
-Message-ID: <YfwR1Ix5UG7MppKP@shell.armlinux.org.uk>
-References: <YfvrIf/FDddglaKE@shell.armlinux.org.uk>
- <E1nFfwa-006X66-Dd@rmk-PC.armlinux.org.uk>
+        with ESMTP id S230055AbiBCRe4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 12:34:56 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E53C061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 09:34:55 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id w81so11039861ybg.12
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 09:34:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KMNFQbwdGKWa7SrNR+/G4kXfIJ6Hav8hTTSgSvsdIzQ=;
+        b=aKoVmyy7Hgwm3KyZtanu7xfi7reSj5VKANTMv1XDp4pSiCNhog1gyQ5jeAM5UjaG+J
+         vkjhSm6z5n1SPDCzGFL6hGlnlX9l/trmff+DinWFJZujLA+Aacl8C8qVYAof7LfUyMo8
+         cMVUtPs2fFgHM7nDyk8oYNJNh8JPeP8r1Wo0O6SvkEptCbB6FOsIcMaAaxkNx/7Yw5V3
+         vtmNWEUck+zF/r1wRy+AU5WaALvckLkEW+d+tF0k/DlQ8L6vGmUu3W1UM0u1TsrQMsxa
+         Fjzktgyape2Oo3Y0dKZLKkPw54Ho4uu6FFJpsoBvlY/FZLCmAtuqkeRVn0AF+XuIK01y
+         mopg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KMNFQbwdGKWa7SrNR+/G4kXfIJ6Hav8hTTSgSvsdIzQ=;
+        b=Gy9acNIgJI+X8HMNeNtIwokBjdYa3oAfaypzMs9Lh7aY/yh99bkQe+0M1568qyVB5N
+         oWISWju119QgP8AHoARf2tT0+shdh1g/ToPih4eHv+roDrnVjon6YDgbqRWKwj57gidr
+         dCj7CIf/OrOj3kOVdRgiUPLq8dxha7qjMLQ8HJ3WA297+Lamcaki6tIOC+TtJ/Nz8X5v
+         1ueRAw8c3LPza0qsGh+rDR37maIJONStmPLE3KdMhKsgk8Lx1m2+inGUfmk7ZIRcH4hC
+         fBULcflJjLwvFQASESYSCzgGhByx8tj5q0bg9J+ApIHqf7fyH4c7bI9yGPVEEzO0pM2c
+         eEEA==
+X-Gm-Message-State: AOAM530TW2owC8qhrXeUy/Ff1Ap4F4Ewh8pnxxVXIZnPfNeym3u13Pkx
+        +QKYzLmBtMFmxphLp2E4lUGuB7MeKbPlZYhRBc1qPcvnmnEfBS1Sj5k=
+X-Google-Smtp-Source: ABdhPJzG/bm/rGgZt1ndP/tfhuvaEBrW5HuMxnii5g0ZYwVEKlvQ5btDh9irnpxlLDGJAvwHuvms5qYplKfVhQC1SQ4=
+X-Received: by 2002:a25:4f41:: with SMTP id d62mr48136259ybb.156.1643909694776;
+ Thu, 03 Feb 2022 09:34:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1nFfwa-006X66-Dd@rmk-PC.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
+ <20220203015140.3022854-10-eric.dumazet@gmail.com> <ee1fedeb33cd989379b72faac0fd6a366966f032.camel@gmail.com>
+In-Reply-To: <ee1fedeb33cd989379b72faac0fd6a366966f032.camel@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 3 Feb 2022 09:34:43 -0800
+Message-ID: <CANn89iKxGvbXQqoRZZ5j22-5YkpiCLS13EGoQ1OYe3EHjEss6A@mail.gmail.com>
+Subject: Re: [PATCH net-next 09/15] net: increase MAX_SKB_FRAGS
+To:     Alexander H Duyck <alexander.duyck@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry for the unintentional re-send, please ignore the second set.
+On Thu, Feb 3, 2022 at 9:26 AM Alexander H Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> On Wed, 2022-02-02 at 17:51 -0800, Eric Dumazet wrote:
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > Currently, MAX_SKB_FRAGS value is 17.
+> >
+> > For standard tcp sendmsg() traffic, no big deal because tcp_sendmsg()
+> > attempts order-3 allocations, stuffing 32768 bytes per frag.
+> >
+> > But with zero copy, we use order-0 pages.
+> >
+> > For BIG TCP to show its full potential, we increase MAX_SKB_FRAGS
+> > to be able to fit 45 segments per skb.
+> >
+> > This is also needed for BIG TCP rx zerocopy, as zerocopy currently
+> > does not support skbs with frag list.
+> >
+> > We have used this MAX_SKB_FRAGS value for years at Google before
+> > we deployed 4K MTU, with no adverse effect.
+> > Back then, goal was to be able to receive full size (64KB) GRO
+> > packets without the frag_list overhead.
+> >
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+>
+> So a big issue I see with this patch is the potential queueing issues
+> it may introduce on Tx queues. I suspect it will cause a number of
+> performance regressions and deadlocks as it will change the Tx queueing
+> behavior for many NICs.
+>
+> As I recall many of the Intel drivers are using MAX_SKB_FRAGS as one of
+> the ingredients for DESC_NEEDED in order to determine if the Tx queue
+> needs to stop. With this change the value for igb for instance is
+> jumping from 21 to 49, and the wake threshold is twice that, 98. As
+> such the minimum Tx descriptor threshold for the driver would need to
+> be updated beyond 80 otherwise it is likely to deadlock the first time
+> it has to pause.
 
-On Thu, Feb 03, 2022 at 05:30:52PM +0000, Russell King (Oracle) wrote:
-> I've stared at this if() statement for a while trying to work out if
-> it really does correspond with the comment above, and it does seem to.
-> However, let's make it more readable and phrase it in the same way as
-> the comment.
-> 
-> Also add a FIXME into the comment - we appear to deny Gigabit modes for
-> 802.3z interface modes, but 802.3z interface modes only operate at
-> gigabit and above.
-> 
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> ---
->  drivers/net/dsa/b53/b53_common.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-> index a3b98992f180..7d62b0aeaae9 100644
-> --- a/drivers/net/dsa/b53/b53_common.c
-> +++ b/drivers/net/dsa/b53/b53_common.c
-> @@ -1327,11 +1327,14 @@ void b53_phylink_validate(struct dsa_switch *ds, int port,
->  
->  	/* With the exclusion of 5325/5365, MII, Reverse MII and 802.3z, we
->  	 * support Gigabit, including Half duplex.
-> +	 *
-> +	 * FIXME: this is weird - 802.3z is always Gigabit, but we exclude
-> +	 * it here. Why? This makes no sense.
->  	 */
-> -	if (state->interface != PHY_INTERFACE_MODE_MII &&
-> -	    state->interface != PHY_INTERFACE_MODE_REVMII &&
-> -	    !phy_interface_mode_is_8023z(state->interface) &&
-> -	    !(is5325(dev) || is5365(dev))) {
-> +	if (!(state->interface == PHY_INTERFACE_MODE_MII ||
-> +	      state->interface == PHY_INTERFACE_MODE_REVMII ||
-> +	      phy_interface_mode_is_8023z(state->interface) ||
-> +	      is5325(dev) || is5365(dev))) {
->  		phylink_set(mask, 1000baseT_Full);
->  		phylink_set(mask, 1000baseT_Half);
->  	}
-> -- 
-> 2.30.2
-> 
-> 
+Are these limits hard coded in Intel drivers and firmware, or do you
+think this can be changed ?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+I could make  MAX_SKB_FRAGS a config option, and default to 17, until
+all drivers have been fixed.
+
+Alternative is that I remove this patch from the series and we apply
+it to Google production kernels,
+as we did before.
