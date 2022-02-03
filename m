@@ -2,116 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 121244A90D6
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 23:48:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 735284A90DA
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 23:49:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355876AbiBCWsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 17:48:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33434 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355873AbiBCWsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 17:48:30 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46703C06173D;
-        Thu,  3 Feb 2022 14:48:30 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id i62so5266838ioa.1;
-        Thu, 03 Feb 2022 14:48:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=NPWueLzrJFboH2nkL8a0Kt0j0fw6ZnAd3HPnO4FSgfI=;
-        b=nNf9+fu88OwLVGrq/dioOKFvP8s5k1wgcmIA0VUpL0g/hy3TXFhPHc3wyxof87N4DL
-         S9dL8n744p7DgMvaszLhpk9UVzZlvM5uJiSCAVoNXKxZRhHRCZ5usgYm+ADuK5wBJ7S+
-         ZoQ5hbKvmmwCIaIw1VDnkp23h88AIQsgGO3ay9gXodcD/FyRXW5eWSQ90mj7/VLn2pw3
-         +kJE5ubZEPHAr4k25BXA/C6+fQBvBdlewAVTX4AYxKrxeu25bhW/gpAK1IjjTJkq43AV
-         3qwzE/xtfapMQtuJxxyieb3Bv4dnGSY36SyNzXCnQqwQebVz2GG0UPbms3eFfpfeVZDe
-         Zj8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=NPWueLzrJFboH2nkL8a0Kt0j0fw6ZnAd3HPnO4FSgfI=;
-        b=T+7P1yUOKJOH3grwPntv8eRb+GSdk8oFsPAz915c083Ga8edww92z2mQBfAvFF6OXd
-         hBTvJl57/poULFw9gvJoolJN2TIDdBm8eMQsHbsBuFGHQyVAnCBAjGqxT0THfqKEYy+A
-         aoHki1mRVTq+yDSUTgFOJ0LcaEbpLsqJ6ncbY/OpiTNKb4uptyojaYKlw0UWqeSSx4Rb
-         I/xgd+0FmQCt70HaflyQNXE9YRJZiIGspuLyixMCm3oUoQvw8t1Ka32Xoq7H++1b51cV
-         DIusnwtzcaTprV2WRYDJdx5OMwd/DGXL+GiAPVjKxeX7DwqxcjaJPsDl+PxflteqI053
-         Dg0Q==
-X-Gm-Message-State: AOAM532IzcMknInscxo2gwISd9VL+/Ma8YSSHgzMiSjlii2QqW5Fmqep
-        3GUbeQjp0UFjs6Mv5M0rNu75p01dU6Y=
-X-Google-Smtp-Source: ABdhPJzLaSuHyHZqPOm0OepBhbWkNuI2kyqYoTEolXQTeVDEglvTAlTZmmCRq7UGOlLTNrZN6aVkfw==
-X-Received: by 2002:a02:6d5a:: with SMTP id e26mr77543jaf.262.1643928509716;
-        Thu, 03 Feb 2022 14:48:29 -0800 (PST)
-Received: from ?IPV6:2601:282:800:dc80:8870:ce19:2c7:3513? ([2601:282:800:dc80:8870:ce19:2c7:3513])
-        by smtp.googlemail.com with ESMTPSA id x14sm106528ilj.33.2022.02.03.14.48.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Feb 2022 14:48:29 -0800 (PST)
-Message-ID: <df19b376-49a3-1ef2-0664-a23a48e128dc@gmail.com>
-Date:   Thu, 3 Feb 2022 15:48:28 -0700
+        id S1355879AbiBCWta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 17:49:30 -0500
+Received: from mga04.intel.com ([192.55.52.120]:48202 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231437AbiBCWt3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Feb 2022 17:49:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643928569; x=1675464569;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=twS+setjSAWsPuwnGNG/fvIv+vG+K+FoADvDwgrNZw8=;
+  b=Ji9aeE0qKxA068SME8w9NPu8gnsewm9CI08Zc1cdTZHtDvF1Y1VShZnz
+   ocec4eS5A55L/oKAHIhNvQu/OG2b33w9dnEevoajPvWRlCDTYd13uUEOm
+   f+0cUAftEGGxeCs0I69yASrNe03SXJvKf+/iizqZWOTGvid51IUzmS1iz
+   LF+WkYxZmnNQ1yfLZSNgYemJ1oJso9F/WZEd+PPfdBxQ+esIimep1b/7q
+   UM8+lWVy8ROv9z8xhjO+a0wAS/d7d3h9ppmzHIQoLzuoZ+ssNtw2pOoSg
+   v3nFw9okxPwCNTKG83cjA52kAbRLtJDwALrIl5Js4kizLvnRd+1hLkvzo
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="247103027"
+X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
+   d="scan'208";a="247103027"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 14:49:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
+   d="scan'208";a="538951042"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga008.jf.intel.com with ESMTP; 03 Feb 2022 14:49:28 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Samuel Mendoza-Jonas <samjonas@amazon.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com,
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: [PATCH net 1/1] ixgbevf: Require large buffers for build_skb on 82599VF
+Date:   Thu,  3 Feb 2022 14:49:16 -0800
+Message-Id: <20220203224916.1416367-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH net-next] net: don't include ndisc.h from ipv6.h
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, oliver@neukum.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, alex.aring@gmail.com,
-        jukka.rissanen@linux.intel.com, stefan@datenfreihafen.org,
-        jk@codeconstruct.com.au, matt@codeconstruct.com.au,
-        linux-usb@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-wpan@vger.kernel.org
-References: <20220203043457.2222388-1-kuba@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220203043457.2222388-1-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/2/22 9:34 PM, Jakub Kicinski wrote:
-> diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-> index 082f30256f59..cda1f205f391 100644
-> --- a/include/net/ipv6.h
-> +++ b/include/net/ipv6.h
-> @@ -15,7 +15,6 @@
->  #include <linux/refcount.h>
->  #include <linux/jump_label_ratelimit.h>
->  #include <net/if_inet6.h>
-> -#include <net/ndisc.h>
->  #include <net/flow.h>
->  #include <net/flow_dissector.h>
->  #include <net/snmp.h>
-> diff --git a/include/net/ipv6_frag.h b/include/net/ipv6_frag.h
-> index 0a4779175a52..5052c66e22d2 100644
-> --- a/include/net/ipv6_frag.h
-> +++ b/include/net/ipv6_frag.h
-> @@ -1,6 +1,7 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  #ifndef _IPV6_FRAG_H
->  #define _IPV6_FRAG_H
-> +#include <linux/icmpv6.h>
->  #include <linux/kernel.h>
->  #include <net/addrconf.h>
->  #include <net/ipv6.h>
-> diff --git a/include/net/ndisc.h b/include/net/ndisc.h
-> index 53cb8de0e589..07d48bd6c0bd 100644
-> --- a/include/net/ndisc.h
-> +++ b/include/net/ndisc.h
-> @@ -71,7 +71,6 @@ do {								\
->  
->  struct ctl_table;
->  struct inet6_dev;
-> -struct net_device;
+From: Samuel Mendoza-Jonas <samjonas@amazon.com>
 
-ndisc_parse_options references net_device. This part seems unrelated to
-the patch intent.
+From 4.17 onwards the ixgbevf driver uses build_skb() to build an skb
+around new data in the page buffer shared with the ixgbe PF.
+This uses either a 2K or 3K buffer, and offsets the DMA mapping by
+NET_SKB_PAD + NET_IP_ALIGN. When using a smaller buffer RXDCTL is set to
+ensure the PF does not write a full 2K bytes into the buffer, which is
+actually 2K minus the offset.
 
->  struct net_proto_family;
->  struct sk_buff;
->  struct prefix_info;
+However on the 82599 virtual function, the RXDCTL mechanism is not
+available. The driver attempts to work around this by using the SET_LPE
+mailbox method to lower the maximm frame size, but the ixgbe PF driver
+ignores this in order to keep the PF and all VFs in sync[0].
 
+This means the PF will write up to the full 2K set in SRRCTL, causing it
+to write NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the buffer.
+With 4K pages split into two buffers, this means it either writes
+NET_SKB_PAD + NET_IP_ALIGN bytes past the first buffer (and into the
+second), or NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the DMA
+mapping.
+
+Avoid this by only enabling build_skb when using "large" buffers (3K).
+These are placed in each half of an order-1 page, preventing the PF from
+writing past the end of the mapping.
+
+[0]: Technically it only ever raises the max frame size, see
+ixgbe_set_vf_lpe() in ixgbe_sriov.c
+
+Fixes: f15c5ba5b6cd ("ixgbevf: add support for using order 1 pages to receive large frames")
+Signed-off-by: Samuel Mendoza-Jonas <samjonas@amazon.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+index 0015fcf1df2b..0f293acd17e8 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+@@ -1984,14 +1984,15 @@ static void ixgbevf_set_rx_buffer_len(struct ixgbevf_adapter *adapter,
+ 	if (adapter->flags & IXGBEVF_FLAGS_LEGACY_RX)
+ 		return;
+ 
+-	set_ring_build_skb_enabled(rx_ring);
++	if (PAGE_SIZE < 8192)
++		if (max_frame > IXGBEVF_MAX_FRAME_BUILD_SKB)
++			set_ring_uses_large_buffer(rx_ring);
+ 
+-	if (PAGE_SIZE < 8192) {
+-		if (max_frame <= IXGBEVF_MAX_FRAME_BUILD_SKB)
+-			return;
++	/* 82599 can't rely on RXDCTL.RLPML to restrict the size of the frame */
++	if (adapter->hw.mac.type == ixgbe_mac_82599_vf && !ring_uses_large_buffer(rx_ring))
++		return;
+ 
+-		set_ring_uses_large_buffer(rx_ring);
+-	}
++	set_ring_build_skb_enabled(rx_ring);
+ }
+ 
+ /**
+-- 
+2.31.1
 
