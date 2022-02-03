@@ -2,77 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89E3E4A87DA
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 16:40:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 109B54A87DE
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 16:40:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238223AbiBCPkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 10:40:10 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37034 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236351AbiBCPkK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 10:40:10 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE83D60A3C;
-        Thu,  3 Feb 2022 15:40:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2AE2BC340EF;
-        Thu,  3 Feb 2022 15:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643902809;
-        bh=Br/3WjvrKdzq3PB9D4aLMn0T+U57lrXHHcW39P5tUts=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JzaMi8sNwqB7QcCbitL7bZA5aBhoTWbXeWZLxc2QNIAgI1ZhEHNvAIK5KfCgjFRWC
-         N890u4YcLt71yf2oF+rDJ4f1ReAwRaEZVCWj/caV7drYQ/AVCnQCLEe45Xz/zVBYtr
-         DzKbjUokhB4mCpRJeLWK6+EjUFNoo7rPoaWo4lEr8MhBjf9uhrkPDL1cAqmnXu+/XD
-         lTFfPT+UE6UiFM+WjULv6GO1vNYOPky8X3pMq73/Pyu9bsSd/+PVzydlbDgxXwYPsl
-         zC9EmANEwAzdftzuMkWY7Oo3IxSyQkiK1G/qk4ZzYNKJ6z9PK9iu+DG4O8kV5oC6Jp
-         Tw7Cc3ndMvqWw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 10E1FE5D08C;
-        Thu,  3 Feb 2022 15:40:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232155AbiBCPko (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 10:40:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243438AbiBCPkj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 10:40:39 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D635C061714;
+        Thu,  3 Feb 2022 07:40:39 -0800 (PST)
+Date:   Thu, 3 Feb 2022 16:40:35 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643902836;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=18aGWyGNO1weA/CrtPpkhyQkBZ6ZYq86BDBqYv5Eggs=;
+        b=4EPsnViOAQtklcVhBnqsZE8Vfjzd2ST9SGkLLO6vvZYZZW9kwS49Nz+4ss0babhRIesSxp
+        2rePC35D9ELzWY1FnppHfTmmuwKhWdzAg6fXW/onRbLU1QmckcL8TL0NQWVIfMsveUEcwJ
+        NaWHZecGdkWfI1xq6CspOnGhyn2HcOZqtFqalvCCNrSQ0LIiB0Roccf71wfS9uuP2XY4cu
+        C9szV7E1Wk/CMkS3MqXMpcOe41EU/reauusaHBrGabSCkO/tH+y/wXvcmswhDduktSDWZK
+        2UshwvO6BrzNCfbh943Z7no8mbXDtWGWCvhspk6IMaSyU8fvFuPYI4m8C1sXlQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643902836;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=18aGWyGNO1weA/CrtPpkhyQkBZ6ZYq86BDBqYv5Eggs=;
+        b=Z0XbRsoSkuyAw0C5kChy+Ap5gzaCcxBhTMUC5sUfrYVhZm7wwxAsOcS1BRzLOHoua/aCcf
+        pbqWzL9lb+ieX/BQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH net-next 3/4] net: dev: Makes sure netif_rx() can be
+ invoked in any context.
+Message-ID: <Yfv3c+5XieVR0xAh@linutronix.de>
+References: <20220202122848.647635-1-bigeasy@linutronix.de>
+ <20220202122848.647635-4-bigeasy@linutronix.de>
+ <CANn89iLVPnhybrdjRh6ccv6UZHW-_W0ZHRO5c7dnWU44FUgd_g@mail.gmail.com>
+ <YfvwbsKm4XtTUlsx@linutronix.de>
+ <CANn89i+66MvzQVp=eTENzZY6s8+B+jQCoKEO_vXdzaDeHVTH5w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] tools/resolve_btfids: Do not print any commands when building
- silently
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164390280906.30354.18316430842630830286.git-patchwork-notify@kernel.org>
-Date:   Thu, 03 Feb 2022 15:40:09 +0000
-References: <20220201212503.731732-1-nathan@kernel.org>
-In-Reply-To: <20220201212503.731732-1-nathan@kernel.org>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CANn89i+66MvzQVp=eTENzZY6s8+B+jQCoKEO_vXdzaDeHVTH5w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
-
-On Tue,  1 Feb 2022 14:25:04 -0700 you wrote:
-> When building with 'make -s', there is some output from resolve_btfids:
+On 2022-02-03 07:25:01 [-0800], Eric Dumazet wrote:
 > 
-> $ make -sj"$(nproc)" oldconfig prepare
->   MKDIR     .../tools/bpf/resolve_btfids/libbpf/
->   MKDIR     .../tools/bpf/resolve_btfids//libsubcmd
->   LINK     resolve_btfids
+> No, the loopback device (ifconfig log) I am referring to is in
+> drivers/net/loopback.c
 > 
-> [...]
+> loopback_xmit() calls netif_rx() directly, while bh are already disabled.
 
-Here is the summary with links:
-  - tools/resolve_btfids: Do not print any commands when building silently
-    https://git.kernel.org/bpf/bpf/c/7f3bdbc3f131
+ah okay. Makes sense.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Instead of adding a local_bh_disable()/local_bh_enable() in netif_rx()
+> I suggested
+> to rename current netif_rx() to __netif_rx() and add a wrapper, eg :
 
+So we still end up with two interfaces. Do I move a few callers like the
+one you already mentioned over to the __netif_rx() interface or will it
+be the one previously mentioned for now?
 
+Would something like 
+
+diff --git a/include/linux/bottom_half.h b/include/linux/bottom_half.h
+index fc53e0ad56d90..561cbca431ca6 100644
+--- a/include/linux/bottom_half.h
++++ b/include/linux/bottom_half.h
+@@ -30,7 +30,12 @@ static inline void local_bh_enable_ip(unsigned long ip)
+ 
+ static inline void local_bh_enable(void)
+ {
+-	__local_bh_enable_ip(_THIS_IP_, SOFTIRQ_DISABLE_OFFSET);
++	if (unlikely(softirq_count() == SOFTIRQ_DISABLE_OFFSET)) {
++		__local_bh_enable_ip(_THIS_IP_, SOFTIRQ_DISABLE_OFFSET);
++	} else {
++		preempt_count_sub(SOFTIRQ_DISABLE_OFFSET);
++		barrier();
++	}
+ }
+ 
+ #ifdef CONFIG_PREEMPT_RT
+
+lower the overhead to acceptable range? (I still need to sell this to
+peterz first).
+
+Sebastian
