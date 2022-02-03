@@ -2,551 +2,302 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1128A4A7FE2
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 08:35:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11F794A7FD9
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 08:27:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349397AbiBCHe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 02:34:59 -0500
-Received: from mga17.intel.com ([192.55.52.151]:38604 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349409AbiBCHe6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Feb 2022 02:34:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643873698; x=1675409698;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=KJZ0Zc9HrjnJFlTCKFO8Aq2faAg66O2mn9lOoYxw4MM=;
-  b=kw7Jm9I5pvDJds62GNEJWCt1WXnLsDn2Eq0QgArvukUlNsYTSQcpmG13
-   8OFaL3yszJiWA17/U3atbXfFhssos43tM5ITE4qWiy6+CEzc11QkpMPH5
-   aLV6KnMjf9ReWQkZvKvuwzldxX73MxyCQ0W9wCc5o1xqfjeyJKPNlZCtZ
-   IDObwawGi/VHHNIA/fmMORa4f7j+6aTq6BI1kGb5KX2rRZ4qVbe3eo0V6
-   9eLwzr3oI5d1Ta+ejaAbc4XITDV8iuwXlFDQjVWy76m9H6XrhSsBPnRdw
-   wrb2j2cdpfr/ags8IJYjONWXVVqBTcQPVlojqkYKblqnVNXX7jksa5CPc
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="228744920"
-X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
-   d="scan'208";a="228744920"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 23:34:58 -0800
-X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
-   d="scan'208";a="771703700"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 23:34:55 -0800
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     mst@redhat.com, jasowang@redhat.com
-Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V4 4/4] vDPA/ifcvf: implement shared IRQ feature
-Date:   Thu,  3 Feb 2022 15:27:35 +0800
-Message-Id: <20220203072735.189716-5-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220203072735.189716-1-lingshan.zhu@intel.com>
-References: <20220203072735.189716-1-lingshan.zhu@intel.com>
+        id S239337AbiBCH1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 02:27:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237818AbiBCH1w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 02:27:52 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86498C061714
+        for <netdev@vger.kernel.org>; Wed,  2 Feb 2022 23:27:51 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id me13so5644522ejb.12
+        for <netdev@vger.kernel.org>; Wed, 02 Feb 2022 23:27:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=51kKfCzjNyw4Sk+AnDc5fNVlmTYRmXoEdLHxf4yP7Yo=;
+        b=IvOS1LT6JLLP5zUP+tmG/IzJpjbrwl/MNlkNTWRBWGAstZssNGlH/MW7lhk7qlkaE2
+         zHVbw4zmjZrxmlEK4yPPkNgvpYY9PUe3lKTqsvrytm7ATuteWGChimYEWi1S4Z9KRhQa
+         KA48k1jXSuUa28MA7VRbV1SfY+SdC1myrwho1FvvuOnLGTHCARYloftSaU8tPKpQz36D
+         nPS34JpFTXK4LHT8UqhNgNaj5hkLcH5TmdRzEI1TJxHjQloXjmJ7T625CJAUxwXkT/HA
+         83fxzDOrzmxeQaahsBhhaHNkQp3y/K+7T/3gTUS7jh720SXDS3s5ioDsVyPAimV+osXb
+         7IRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=51kKfCzjNyw4Sk+AnDc5fNVlmTYRmXoEdLHxf4yP7Yo=;
+        b=QjM3KNauAjIIuPSA6Y2zMtLz6go5HOBI48SE+n3G96oHcUbDmUm4/EyYkRAiesTzP/
+         di0dZtvMgXSa3bCXks6zZdrrjBeic+5PdJ/0HdBsgt2ZH6f8qXKCMuExd7PA3Yt2NsUR
+         JkH4lBIyasTC2wEs4QzDMzlDo/s0jplr29k2iJUROE/bPPzShQTCAJakiO4G0GZeMaNf
+         59lrNq2Wzl+zIgbWHy4r98vr729eK9GMAmjPnLKaH5tcEDFRsOmrW4JRsxGHpOn87KbE
+         JwPkrHatCgjNQZcjD9A+x/s4AHo1n8wcJPJBUw7Dse88ufM8QqtYX9pXdDzRiB3bwJBb
+         Hqkg==
+X-Gm-Message-State: AOAM530Wn2pXWyxykSpoBLFNiLkzvJ58gdYFpd5QAGTPIjpQNAkt0nMe
+        7xN17yc2Rjzsev8CqwJ0mBM=
+X-Google-Smtp-Source: ABdhPJxRIjkRQF0ghnjZCrQF1ByEYJvdLK9Ra1T3ZEgksBAiaslaj1EoKc9yZltA2M+mTs7roWNu8w==
+X-Received: by 2002:a17:907:720f:: with SMTP id dr15mr28086928ejc.182.1643873269568;
+        Wed, 02 Feb 2022 23:27:49 -0800 (PST)
+Received: from [192.168.0.108] ([77.126.86.139])
+        by smtp.gmail.com with ESMTPSA id gg14sm16585319ejb.62.2022.02.02.23.27.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Feb 2022 23:27:49 -0800 (PST)
+Message-ID: <3ec9a7cb-433c-41b3-f918-8b5746092482@gmail.com>
+Date:   Thu, 3 Feb 2022 09:27:46 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next 15/15] mlx5: support BIG TCP packets
+Content-Language: en-US
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Coco Li <lixiaoyan@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>
+References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
+ <20220203015140.3022854-16-eric.dumazet@gmail.com>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <20220203015140.3022854-16-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On some platforms/devices, there may not be enough MSI vector
-slots allocated for virtqueues and config changes. In such a case,
-the interrupt sources(virtqueues, config changes) must share
-an IRQ/vector, to avoid initialization failures, keep
-the device functional.
+Hi,
 
-This commit handles three cases:
-(1) number of the allocated vectors == the number of virtqueues + 1
-(config changes), every virtqueue and the config interrupt has
-a separated vector/IRQ, the best and the most likely case.
-(2) number of the allocated vectors is less than the best case, but
-greater than 1. In this case, all virtqueues share a vector/IRQ,
-the config interrupt has a separated vector/IRQ
-(3) only one vector is allocated, in this case, the virtqueues and
-the config interrupt share a vector/IRQ. The worst and most
-unlikely case.
+Thanks for your patch!
 
-Otherwise, it needs to fail.
+On 2/3/2022 3:51 AM, Eric Dumazet wrote:
+> From: Coco Li <lixiaoyan@google.com>
+> 
+> mlx5 supports LSOv2.
+> 
+> IPv6 gro/tcp stacks insert a temporary Hop-by-Hop header
+> with JUMBO TLV for big packets.
+> 
+> We need to ignore/skip this HBH header when populating TX descriptor.
+> 
+> Signed-off-by: Coco Li <lixiaoyan@google.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Saeed Mahameed <saeedm@nvidia.com>
+> Cc: Leon Romanovsky <leon@kernel.org>
+> ---
+>   .../net/ethernet/mellanox/mlx5/core/en_main.c |  1 +
+>   .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 81 +++++++++++++++----
+>   2 files changed, 65 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> index bf80fb6124499fc4e6a0310ab92c91159b4ccbbb..1c4ce90e5d0f5186c402137b744258ff4ce6a348 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> @@ -4888,6 +4888,7 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
+>   
+>   	netdev->priv_flags       |= IFF_UNICAST_FLT;
+>   
+> +	netif_set_tso_ipv6_max_size(netdev, 512 * 1024);
+>   	mlx5e_set_netdev_dev_addr(netdev);
+>   	mlx5e_ipsec_build_netdev(priv);
+>   	mlx5e_tls_build_netdev(priv);
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+> index 7fd33b356cc8d191413e8259acd0b26b3ebd6ba9..fc945bd8219dcb69950b1840bb492649c8749976 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+> @@ -40,6 +40,7 @@
+>   #include "en_accel/en_accel.h"
+>   #include "en_accel/ipsec_rxtx.h"
+>   #include "en/ptp.h"
+> +#include <net/ipv6.h>
+>   
+>   static void mlx5e_dma_unmap_wqe_err(struct mlx5e_txqsq *sq, u8 num_dma)
+>   {
+> @@ -241,8 +242,11 @@ mlx5e_txwqe_build_eseg_csum(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>   		sq->stats->csum_none++;
+>   }
+>   
+> +/* Returns the number of header bytes that we plan
+> + * to inline later in the transmit descriptor
+> + */
+>   static inline u16
+> -mlx5e_tx_get_gso_ihs(struct mlx5e_txqsq *sq, struct sk_buff *skb)
+> +mlx5e_tx_get_gso_ihs(struct mlx5e_txqsq *sq, struct sk_buff *skb, int *hopbyhop)
+>   {
+>   	struct mlx5e_sq_stats *stats = sq->stats;
+>   	u16 ihs;
+> @@ -252,15 +256,18 @@ mlx5e_tx_get_gso_ihs(struct mlx5e_txqsq *sq, struct sk_buff *skb)
+>   		stats->tso_inner_packets++;
+>   		stats->tso_inner_bytes += skb->len - ihs;
+>   	} else {
+> -		if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4)
+> +		if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4) {
+>   			ihs = skb_transport_offset(skb) + sizeof(struct udphdr);
+> -		else
+> +		} else {
+> +			if (ipv6_has_hopopt_jumbo(skb))
+> +				*hopbyhop = sizeof(struct hop_jumbo_hdr);
+>   			ihs = skb_transport_offset(skb) + tcp_hdrlen(skb);
+> +		}
+>   		stats->tso_packets++;
+> -		stats->tso_bytes += skb->len - ihs;
+> +		stats->tso_bytes += skb->len - ihs - *hopbyhop;
 
-This commit introduces some helper functions:
-ifcvf_set_vq_vector() and ifcvf_set_config_vector() sets virtqueue
-vector and config vector in the device config space, so that
-the device can send interrupt DMA.
+AFAIU, *hopbyhop is already accounted inside ihs, why decrement it once 
+more?
 
-This commit adds some fields in struct ifcvf_hw and re-placed
-the existed fields to be aligned with the cacheline.
+Probably it'd be cleaner to assign/fix both ihs and hopbyhop under 
+ipv6_has_hopopt_jumbo branch():
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vdpa/ifcvf/ifcvf_base.c |  47 ++++--
- drivers/vdpa/ifcvf/ifcvf_base.h |  23 ++-
- drivers/vdpa/ifcvf/ifcvf_main.c | 243 +++++++++++++++++++++++++++-----
- 3 files changed, 256 insertions(+), 57 deletions(-)
+		ihs = skb_transport_offset(skb) + tcp_hdrlen(skb);
+		if (ipv6_has_hopopt_jumbo(skb)) {
+			*hopbyhop = sizeof(struct hop_jumbo_hdr);
+			ihs -= sizeof(struct hop_jumbo_hdr);
+		}
+...
+		stats->tso_bytes += skb->len - ihs - *hopbyhop;
+...
+		return ihs;
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
-index 397692ae671c..18dcb63ab1e3 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.c
-@@ -15,6 +15,36 @@ struct ifcvf_adapter *vf_to_adapter(struct ifcvf_hw *hw)
- 	return container_of(hw, struct ifcvf_adapter, vf);
- }
- 
-+int ifcvf_set_vq_vector(struct ifcvf_hw *hw, u16 qid, int vector)
-+{
-+	struct virtio_pci_common_cfg __iomem *cfg = hw->common_cfg;
-+	struct ifcvf_adapter *ifcvf = vf_to_adapter(hw);
-+
-+	ifc_iowrite16(qid, &cfg->queue_select);
-+	ifc_iowrite16(vector, &cfg->queue_msix_vector);
-+	if (ifc_ioread16(&cfg->queue_msix_vector) == VIRTIO_MSI_NO_VECTOR) {
-+		IFCVF_ERR(ifcvf->pdev, "No msix vector for queue %u\n", qid);
-+			return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+int ifcvf_set_config_vector(struct ifcvf_hw *hw, int vector)
-+{
-+	struct virtio_pci_common_cfg __iomem *cfg = hw->common_cfg;
-+	struct ifcvf_adapter *ifcvf = vf_to_adapter(hw);
-+
-+	cfg = hw->common_cfg;
-+	ifc_iowrite16(vector,  &cfg->msix_config);
-+	if (ifc_ioread16(&cfg->msix_config) == VIRTIO_MSI_NO_VECTOR) {
-+		IFCVF_ERR(ifcvf->pdev, "No msix vector for device config\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- static void __iomem *get_cap_addr(struct ifcvf_hw *hw,
- 				  struct virtio_pci_cap *cap)
- {
-@@ -140,6 +170,8 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
- 		  hw->common_cfg, hw->notify_base, hw->isr,
- 		  hw->dev_cfg, hw->notify_off_multiplier);
- 
-+	hw->vqs_shared_irq = -EINVAL;
-+
- 	return 0;
- }
- 
-@@ -321,12 +353,6 @@ static int ifcvf_hw_enable(struct ifcvf_hw *hw)
- 
- 	ifcvf = vf_to_adapter(hw);
- 	cfg = hw->common_cfg;
--	ifc_iowrite16(IFCVF_MSI_CONFIG_OFF, &cfg->msix_config);
--
--	if (ifc_ioread16(&cfg->msix_config) == VIRTIO_MSI_NO_VECTOR) {
--		IFCVF_ERR(ifcvf->pdev, "No msix vector for device config\n");
--		return -EINVAL;
--	}
- 
- 	for (i = 0; i < hw->nr_vring; i++) {
- 		if (!hw->vring[i].ready)
-@@ -340,15 +366,6 @@ static int ifcvf_hw_enable(struct ifcvf_hw *hw)
- 		ifc_iowrite64_twopart(hw->vring[i].used, &cfg->queue_used_lo,
- 				     &cfg->queue_used_hi);
- 		ifc_iowrite16(hw->vring[i].size, &cfg->queue_size);
--		ifc_iowrite16(i + IFCVF_MSI_QUEUE_OFF, &cfg->queue_msix_vector);
--
--		if (ifc_ioread16(&cfg->queue_msix_vector) ==
--		    VIRTIO_MSI_NO_VECTOR) {
--			IFCVF_ERR(ifcvf->pdev,
--				  "No msix vector for queue %u\n", i);
--			return -EINVAL;
--		}
--
- 		ifcvf_set_vq_state(hw, i, hw->vring[i].last_avail_idx);
- 		ifc_iowrite16(1, &cfg->queue_enable);
- 	}
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-index 949b4fb9d554..9cfe088c82e9 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.h
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-@@ -27,8 +27,6 @@
- 
- #define IFCVF_QUEUE_ALIGNMENT	PAGE_SIZE
- #define IFCVF_QUEUE_MAX		32768
--#define IFCVF_MSI_CONFIG_OFF	0
--#define IFCVF_MSI_QUEUE_OFF	1
- #define IFCVF_PCI_MAX_RESOURCE	6
- 
- #define IFCVF_LM_CFG_SIZE		0x40
-@@ -42,6 +40,13 @@
- #define ifcvf_private_to_vf(adapter) \
- 	(&((struct ifcvf_adapter *)adapter)->vf)
- 
-+/* all vqs and config interrupt has its own vector */
-+#define MSIX_VECTOR_PER_VQ_AND_CONFIG		1
-+/* all vqs share a vector, and config interrupt has a separate vector */
-+#define MSIX_VECTOR_SHARED_VQ_AND_CONFIG	2
-+/* all vqs and config interrupt share a vector */
-+#define MSIX_VECTOR_DEV_SHARED			3
-+
- static inline u8 ifc_ioread8(u8 __iomem *addr)
- {
- 	return ioread8(addr);
-@@ -97,25 +102,27 @@ struct ifcvf_hw {
- 	u8 __iomem *isr;
- 	/* Live migration */
- 	u8 __iomem *lm_cfg;
--	u16 nr_vring;
- 	/* Notification bar number */
- 	u8 notify_bar;
-+	u8 msix_vector_status;
-+	/* virtio-net or virtio-blk device config size */
-+	u32 config_size;
- 	/* Notificaiton bar address */
- 	void __iomem *notify_base;
- 	phys_addr_t notify_base_pa;
- 	u32 notify_off_multiplier;
-+	u32 dev_type;
- 	u64 req_features;
- 	u64 hw_features;
--	u32 dev_type;
- 	struct virtio_pci_common_cfg __iomem *common_cfg;
- 	void __iomem *dev_cfg;
- 	struct vring_info vring[IFCVF_MAX_QUEUES];
- 	void __iomem * const *base;
- 	char config_msix_name[256];
- 	struct vdpa_callback config_cb;
--	unsigned int config_irq;
--	/* virtio-net or virtio-blk device config size */
--	u32 config_size;
-+	int config_irq;
-+	int vqs_shared_irq;
-+	u16 nr_vring;
- };
- 
- struct ifcvf_adapter {
-@@ -160,4 +167,6 @@ int ifcvf_set_vq_state(struct ifcvf_hw *hw, u16 qid, u16 num);
- struct ifcvf_adapter *vf_to_adapter(struct ifcvf_hw *hw);
- int ifcvf_probed_virtio_net(struct ifcvf_hw *hw);
- u32 ifcvf_get_config_size(struct ifcvf_hw *hw);
-+int ifcvf_set_vq_vector(struct ifcvf_hw *hw, u16 qid, int vector);
-+int ifcvf_set_config_vector(struct ifcvf_hw *hw, int vector);
- #endif /* _IFCVF_H_ */
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index 44c89ab0b6da..ca414399f040 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -17,6 +17,7 @@
- #define DRIVER_AUTHOR   "Intel Corporation"
- #define IFCVF_DRIVER_NAME       "ifcvf"
- 
-+/* handles config interrupt */
- static irqreturn_t ifcvf_config_changed(int irq, void *arg)
- {
- 	struct ifcvf_hw *vf = arg;
-@@ -27,6 +28,7 @@ static irqreturn_t ifcvf_config_changed(int irq, void *arg)
- 	return IRQ_HANDLED;
- }
- 
-+/* handles vqs interrupt */
- static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
- {
- 	struct vring_info *vring = arg;
-@@ -37,24 +39,78 @@ static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
- 	return IRQ_HANDLED;
- }
- 
-+/* handls vqs shared interrupt */
-+static irqreturn_t ifcvf_vq_shared_intr_handler(int irq, void *arg)
-+{
-+	struct ifcvf_hw *vf = arg;
-+	struct vring_info *vring;
-+	int i;
-+
-+	for (i = 0; i < vf->nr_vring; i++) {
-+		vring = &vf->vring[i];
-+		if (vring->cb.callback)
-+			vf->vring->cb.callback(vring->cb.private);
-+	}
-+
-+	return IRQ_HANDLED;
-+}
-+
-+/* handles a shared interrupt for vqs and config */
-+static irqreturn_t ifcvf_dev_shared_intr_handler(int irq, void *arg)
-+{
-+	struct ifcvf_hw *vf = arg;
-+	u8 isr;
-+
-+	isr = ifc_ioread8(vf->isr);
-+	if (isr & VIRTIO_PCI_ISR_CONFIG)
-+		ifcvf_config_changed(irq, arg);
-+
-+	return ifcvf_vq_shared_intr_handler(irq, arg);
-+}
-+
- static void ifcvf_free_irq_vectors(void *data)
- {
- 	pci_free_irq_vectors(data);
- }
- 
--static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
-+static void ifcvf_free_vq_irq(struct ifcvf_adapter *adapter, int queues)
- {
- 	struct pci_dev *pdev = adapter->pdev;
- 	struct ifcvf_hw *vf = &adapter->vf;
- 	int i;
- 
-+	if (vf->msix_vector_status == MSIX_VECTOR_PER_VQ_AND_CONFIG) {
-+		for (i = 0; i < queues; i++) {
-+			devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
-+			vf->vring[i].irq = -EINVAL;
-+		}
-+	} else {
-+		devm_free_irq(&pdev->dev, vf->vqs_shared_irq, vf);
-+		vf->vqs_shared_irq = -EINVAL;
-+	}
-+}
- 
--	for (i = 0; i < queues; i++) {
--		devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
--		vf->vring[i].irq = -EINVAL;
-+static void ifcvf_free_config_irq(struct ifcvf_adapter *adapter)
-+{
-+	struct pci_dev *pdev = adapter->pdev;
-+	struct ifcvf_hw *vf = &adapter->vf;
-+
-+	/* If the irq is shared by all vqs and the config interrupt,
-+	 * it is already freed in ifcvf_free_vq_irq, so here only
-+	 * need to free config irq when msix_vector_status != MSIX_VECTOR_DEV_SHARED
-+	 */
-+	if (vf->msix_vector_status != MSIX_VECTOR_DEV_SHARED) {
-+		devm_free_irq(&pdev->dev, vf->config_irq, vf);
-+		vf->config_irq = -EINVAL;
- 	}
-+}
-+
-+static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
-+{
-+	struct pci_dev *pdev = adapter->pdev;
- 
--	devm_free_irq(&pdev->dev, vf->config_irq, vf);
-+	ifcvf_free_vq_irq(adapter, queues);
-+	ifcvf_free_config_irq(adapter);
- 	ifcvf_free_irq_vectors(pdev);
- }
- 
-@@ -86,58 +142,172 @@ static int ifcvf_alloc_vectors(struct ifcvf_adapter *adapter)
- 	return ret;
- }
- 
--static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
-+static int ifcvf_request_per_vq_irq(struct ifcvf_adapter *adapter)
- {
- 	struct pci_dev *pdev = adapter->pdev;
- 	struct ifcvf_hw *vf = &adapter->vf;
--	int vector, nvectors, i, ret, irq;
--	u16 max_intr;
-+	int i, vector, ret, irq;
- 
--	nvectors = ifcvf_alloc_vectors(adapter);
--	if (!(nvectors > 0))
--		return nvectors;
-+	for (i = 0; i < vf->nr_vring; i++) {
-+		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n", pci_name(pdev), i);
-+		vector = i;
-+		irq = pci_irq_vector(pdev, vector);
-+		ret = devm_request_irq(&pdev->dev, irq,
-+				       ifcvf_intr_handler, 0,
-+				       vf->vring[i].msix_name,
-+				       &vf->vring[i]);
-+		if (ret) {
-+			IFCVF_ERR(pdev, "Failed to request irq for vq %d\n", i);
-+			ifcvf_free_vq_irq(adapter, i);
-+		} else {
-+			vf->vring[i].irq = irq;
-+			ifcvf_set_vq_vector(vf, i, vector);
-+		}
-+	}
- 
--	max_intr = vf->nr_vring + 1;
-+	vf->vqs_shared_irq = -EINVAL;
-+
-+	return 0;
-+}
-+
-+static int ifcvf_request_shared_vq_irq(struct ifcvf_adapter *adapter)
-+{
-+	struct pci_dev *pdev = adapter->pdev;
-+	struct ifcvf_hw *vf = &adapter->vf;
-+	int i, vector, ret, irq;
-+
-+	vector = 0;
-+	/* reuse msix_name[256] space of vring0 to store shared vqs interrupt name */
-+	snprintf(vf->vring[0].msix_name, 256, "ifcvf[%s]-vqs-shared-irq\n", pci_name(pdev));
-+	irq = pci_irq_vector(pdev, vector);
-+	ret = devm_request_irq(&pdev->dev, irq,
-+			       ifcvf_vq_shared_intr_handler, 0,
-+			       vf->vring[0].msix_name, vf);
-+	if (ret) {
-+		IFCVF_ERR(pdev, "Failed to request shared irq for vf\n");
-+
-+		return ret;
-+	}
-+
-+	vf->vqs_shared_irq = irq;
-+	for (i = 0; i < vf->nr_vring; i++) {
-+		vf->vring[i].irq = -EINVAL;
-+		ifcvf_set_vq_vector(vf, i, vector);
-+	}
-+
-+	return 0;
-+
-+}
-+
-+static int ifcvf_request_dev_shared_irq(struct ifcvf_adapter *adapter)
-+{
-+	struct pci_dev *pdev = adapter->pdev;
-+	struct ifcvf_hw *vf = &adapter->vf;
-+	int i, vector, ret, irq;
-+
-+	vector = 0;
-+	/* reuse msix_name[256] space of vring0 to store shared device interrupt name */
-+	snprintf(vf->vring[0].msix_name, 256, "ifcvf[%s]-dev-shared-irq\n", pci_name(pdev));
-+	irq = pci_irq_vector(pdev, vector);
-+	ret = devm_request_irq(&pdev->dev, irq,
-+			       ifcvf_dev_shared_intr_handler, 0,
-+			       vf->vring[0].msix_name, vf);
-+	if (ret) {
-+		IFCVF_ERR(pdev, "Failed to request shared irq for vf\n");
- 
--	ret = pci_alloc_irq_vectors(pdev, max_intr,
--				    max_intr, PCI_IRQ_MSIX);
--	if (ret < 0) {
--		IFCVF_ERR(pdev, "Failed to alloc IRQ vectors\n");
- 		return ret;
- 	}
- 
-+	vf->vqs_shared_irq = irq;
-+	for (i = 0; i < vf->nr_vring; i++) {
-+		vf->vring[i].irq = -EINVAL;
-+		ifcvf_set_vq_vector(vf, i, vector);
-+	}
-+
-+	vf->config_irq = irq;
-+	ifcvf_set_config_vector(vf, vector);
-+
-+	return 0;
-+
-+}
-+
-+static int ifcvf_request_vq_irq(struct ifcvf_adapter *adapter)
-+{
-+	struct ifcvf_hw *vf = &adapter->vf;
-+	int ret;
-+
-+	if (vf->msix_vector_status == MSIX_VECTOR_PER_VQ_AND_CONFIG)
-+		ret = ifcvf_request_per_vq_irq(adapter);
-+	else
-+		ret = ifcvf_request_shared_vq_irq(adapter);
-+
-+	return ret;
-+}
-+
-+static int ifcvf_request_config_irq(struct ifcvf_adapter *adapter)
-+{
-+	struct pci_dev *pdev = adapter->pdev;
-+	struct ifcvf_hw *vf = &adapter->vf;
-+	int config_vector, ret;
-+
-+	if (vf->msix_vector_status == MSIX_VECTOR_DEV_SHARED)
-+		return 0;
-+
-+	if (vf->msix_vector_status == MSIX_VECTOR_PER_VQ_AND_CONFIG)
-+		/* vector 0 ~ vf->nr_vring for vqs, num vf->nr_vring vector for config interrupt */
-+		config_vector = vf->nr_vring;
-+
-+	if (vf->msix_vector_status ==  MSIX_VECTOR_SHARED_VQ_AND_CONFIG)
-+		/* vector 0 for vqs and 1 for config interrupt */
-+		config_vector = 1;
-+
- 	snprintf(vf->config_msix_name, 256, "ifcvf[%s]-config\n",
- 		 pci_name(pdev));
--	vector = 0;
--	vf->config_irq = pci_irq_vector(pdev, vector);
-+	vf->config_irq = pci_irq_vector(pdev, config_vector);
- 	ret = devm_request_irq(&pdev->dev, vf->config_irq,
- 			       ifcvf_config_changed, 0,
- 			       vf->config_msix_name, vf);
- 	if (ret) {
- 		IFCVF_ERR(pdev, "Failed to request config irq\n");
-+		ifcvf_free_vq_irq(adapter, vf->nr_vring);
- 		return ret;
- 	}
- 
--	for (i = 0; i < vf->nr_vring; i++) {
--		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
--			 pci_name(pdev), i);
--		vector = i + IFCVF_MSI_QUEUE_OFF;
--		irq = pci_irq_vector(pdev, vector);
--		ret = devm_request_irq(&pdev->dev, irq,
--				       ifcvf_intr_handler, 0,
--				       vf->vring[i].msix_name,
--				       &vf->vring[i]);
--		if (ret) {
--			IFCVF_ERR(pdev,
--				  "Failed to request irq for vq %d\n", i);
--			ifcvf_free_irq(adapter, i);
-+	ifcvf_set_config_vector(vf, config_vector);
- 
--			return ret;
--		}
-+	return 0;
-+}
-+
-+static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
-+{
-+	struct ifcvf_hw *vf = &adapter->vf;
-+	int nvectors, ret, max_intr;
- 
--		vf->vring[i].irq = irq;
-+	nvectors = ifcvf_alloc_vectors(adapter);
-+	if (!(nvectors > 0))
-+		return nvectors;
-+
-+	vf->msix_vector_status = MSIX_VECTOR_PER_VQ_AND_CONFIG;
-+	max_intr = vf->nr_vring + 1;
-+	if (nvectors < max_intr)
-+		vf->msix_vector_status = MSIX_VECTOR_SHARED_VQ_AND_CONFIG;
-+
-+	if (nvectors == 1) {
-+		vf->msix_vector_status = MSIX_VECTOR_DEV_SHARED;
-+		ret = ifcvf_request_dev_shared_irq(adapter);
-+
-+		return ret;
- 	}
- 
-+	ret = ifcvf_request_vq_irq(adapter);
-+	if (ret)
-+		return ret;
-+
-+	ret = ifcvf_request_config_irq(adapter);
-+
-+	if (ret)
-+		return ret;
-+
- 	return 0;
- }
- 
-@@ -441,7 +611,10 @@ static int ifcvf_vdpa_get_vq_irq(struct vdpa_device *vdpa_dev,
- {
- 	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
- 
--	return vf->vring[qid].irq;
-+	if (vf->vqs_shared_irq < 0)
-+		return vf->vring[qid].irq;
-+	else
-+		return -EINVAL;
- }
- 
- static struct vdpa_notification_area ifcvf_get_vq_notification(struct vdpa_device *vdpa_dev,
--- 
-2.27.0
+>   	}
+>   
+> -	return ihs;
+> +	return ihs - *hopbyhop;
+>   }
+>   
+>   static inline int
+> @@ -319,6 +326,7 @@ struct mlx5e_tx_attr {
+>   	__be16 mss;
+>   	u16 insz;
+>   	u8 opcode;
+> +	u8 hopbyhop;
+>   };
+>   
+>   struct mlx5e_tx_wqe_attr {
+> @@ -355,14 +363,16 @@ static void mlx5e_sq_xmit_prepare(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>   	struct mlx5e_sq_stats *stats = sq->stats;
+>   
+>   	if (skb_is_gso(skb)) {
+> -		u16 ihs = mlx5e_tx_get_gso_ihs(sq, skb);
+> +		int hopbyhop;
 
+missing init to zero. mlx5e_tx_get_gso_ihs() doesn't always write to it.
+
+> +		u16 ihs = mlx5e_tx_get_gso_ihs(sq, skb, &hopbyhop);
+>   
+>   		*attr = (struct mlx5e_tx_attr) {
+>   			.opcode    = MLX5_OPCODE_LSO,
+>   			.mss       = cpu_to_be16(skb_shinfo(skb)->gso_size),
+>   			.ihs       = ihs,
+>   			.num_bytes = skb->len + (skb_shinfo(skb)->gso_segs - 1) * ihs,
+> -			.headlen   = skb_headlen(skb) - ihs,
+> +			.headlen   = skb_headlen(skb) - ihs - hopbyhop,
+> +			.hopbyhop  = hopbyhop,
+>   		};
+>   
+>   		stats->packets += skb_shinfo(skb)->gso_segs;
+> @@ -476,7 +486,8 @@ mlx5e_sq_xmit_wqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>   	struct mlx5_wqe_eth_seg  *eseg;
+>   	struct mlx5_wqe_data_seg *dseg;
+>   	struct mlx5e_tx_wqe_info *wi;
+> -
+> +	u16 ihs = attr->ihs;
+> +	struct ipv6hdr *h6;
+>   	struct mlx5e_sq_stats *stats = sq->stats;
+>   	int num_dma;
+>   
+> @@ -490,15 +501,36 @@ mlx5e_sq_xmit_wqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>   
+>   	eseg->mss = attr->mss;
+>   
+> -	if (attr->ihs) {
+> -		if (skb_vlan_tag_present(skb)) {
+> -			eseg->inline_hdr.sz |= cpu_to_be16(attr->ihs + VLAN_HLEN);
+> -			mlx5e_insert_vlan(eseg->inline_hdr.start, skb, attr->ihs);
+> +	if (ihs) {
+> +		u8 *start = eseg->inline_hdr.start;
+> +
+> +		if (unlikely(attr->hopbyhop)) {
+> +			/* remove the HBH header.
+> +			 * Layout: [Ethernet header][IPv6 header][HBH][TCP header]
+> +			 */
+> +			if (skb_vlan_tag_present(skb)) {
+> +				mlx5e_insert_vlan(start, skb, ETH_HLEN + sizeof(*h6));
+> +				ihs += VLAN_HLEN;
+> +				h6 = (struct ipv6hdr *)(start + sizeof(struct vlan_ethhdr));
+> +			} else {
+> +				memcpy(start, skb->data, ETH_HLEN + sizeof(*h6));
+> +				h6 = (struct ipv6hdr *)(start + ETH_HLEN);
+> +			}
+> +			h6->nexthdr = IPPROTO_TCP;
+> +			/* Copy the TCP header after the IPv6 one */
+> +			memcpy(h6 + 1,
+> +			       skb->data + ETH_HLEN + sizeof(*h6) +
+> +					sizeof(struct hop_jumbo_hdr),
+> +			       tcp_hdrlen(skb));
+> +			/* Leave ipv6 payload_len set to 0, as LSO v2 specs request. */
+
+You are not using ihs when preparing the inline part of the descriptor, 
+so this might yield a mismatch between ihs and the sum of the sizes 
+you're copying above. Is there a guarantee that this won't happen?
+
+> +		} else if (skb_vlan_tag_present(skb)) {
+> +			mlx5e_insert_vlan(start, skb, ihs);
+> +			ihs += VLAN_HLEN;
+>   			stats->added_vlan_packets++;
+>   		} else {
+> -			eseg->inline_hdr.sz |= cpu_to_be16(attr->ihs);
+> -			memcpy(eseg->inline_hdr.start, skb->data, attr->ihs);
+> +			memcpy(start, skb->data, ihs);
+>   		}
+> +		eseg->inline_hdr.sz |= cpu_to_be16(ihs);
+>   		dseg += wqe_attr->ds_cnt_inl;
+>   	} else if (skb_vlan_tag_present(skb)) {
+>   		eseg->insert.type = cpu_to_be16(MLX5_ETH_WQE_INSERT_VLAN);
+> @@ -509,7 +541,7 @@ mlx5e_sq_xmit_wqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>   	}
+>   
+>   	dseg += wqe_attr->ds_cnt_ids;
+> -	num_dma = mlx5e_txwqe_build_dsegs(sq, skb, skb->data + attr->ihs,
+> +	num_dma = mlx5e_txwqe_build_dsegs(sq, skb, skb->data + attr->ihs + attr->hopbyhop,
+>   					  attr->headlen, dseg);
+>   	if (unlikely(num_dma < 0))
+>   		goto err_drop;
+> @@ -1016,12 +1048,27 @@ void mlx5i_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>   	eseg->mss = attr.mss;
+>   
+>   	if (attr.ihs) {
+> -		memcpy(eseg->inline_hdr.start, skb->data, attr.ihs);
+> +		if (unlikely(attr.hopbyhop)) {
+> +			/* remove the HBH header.
+> +			 * Layout: [Ethernet header][IPv6 header][HBH][TCP header]
+> +			 */
+> +			memcpy(eseg->inline_hdr.start, skb->data, ETH_HLEN + sizeof(*h6));
+> +			h6 = (struct ipv6hdr *)((char *)eseg->inline_hdr.start + ETH_HLEN);
+> +			h6->nexthdr = IPPROTO_TCP;
+> +			/* Copy the TCP header after the IPv6 one */
+> +			memcpy(h6 + 1,
+> +			       skb->data + ETH_HLEN + sizeof(*h6) +
+> +					sizeof(struct hop_jumbo_hdr),
+> +			       tcp_hdrlen(skb));
+> +			/* Leave ipv6 payload_len set to 0, as LSO v2 specs request. */
+> +		} else {
+> +			memcpy(eseg->inline_hdr.start, skb->data, attr.ihs);
+> +		}
+>   		eseg->inline_hdr.sz = cpu_to_be16(attr.ihs);
+>   		dseg += wqe_attr.ds_cnt_inl;
+>   	}
+>   
+> -	num_dma = mlx5e_txwqe_build_dsegs(sq, skb, skb->data + attr.ihs,
+> +	num_dma = mlx5e_txwqe_build_dsegs(sq, skb, skb->data + attr.ihs + attr.hopbyhop,
+>   					  attr.headlen, dseg);
+>   	if (unlikely(num_dma < 0))
+>   		goto err_drop;
