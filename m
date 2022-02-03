@@ -2,202 +2,344 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 610694A8296
-	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 11:45:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B52F4A82B3
+	for <lists+netdev@lfdr.de>; Thu,  3 Feb 2022 11:50:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241152AbiBCKpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 05:45:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47862 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231520AbiBCKpE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 05:45:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643885103;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wBFbqeA8wZVoaw3AhOQkcommuu2XKb8bOpX8+ULZXkQ=;
-        b=BZMW64uo4h5Qw/bTYhw1IbToC2oJ+HaZhBzLPfjHOuXLdufg/yCthWGLUhMHCnCDFuhsh0
-        f9bBaJRcJGTVl+koTMTrwVHscOULBwCZ4MFDsaZ12mZlXmsLyzG8K2uEsbo/zyhSf1+kwB
-        6SFPYXGWDGuhgP+r0pxEQnSNnuaFxPk=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-374-C0Zvahc1PuuEUDGbkbqAFQ-1; Thu, 03 Feb 2022 05:45:02 -0500
-X-MC-Unique: C0Zvahc1PuuEUDGbkbqAFQ-1
-Received: by mail-wm1-f71.google.com with SMTP id m189-20020a1c26c6000000b003508ba87dfbso592321wmm.7
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 02:45:02 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=wBFbqeA8wZVoaw3AhOQkcommuu2XKb8bOpX8+ULZXkQ=;
-        b=zTcNreV2VLdrcR1C1El0BkZiL43a25nE6fhFiVPzpViVE7SSjM3XK+i6eglznGHv80
-         UrOk/LzUdsp8jSkZT6lZ43yv6LouLRkC6vPgGJ8hnIqLYVQMPjs+9DLgkSb3gyEFq+2F
-         CX12hhfLuE0kBNeIYs4xL1R57Kjw5rPxIn474sL/yOrLLX44WtLaeszzj+xYcbG5uWQR
-         DgFVtDcuqCivyJpsv0aYBO4j8c3PVdMXu6XLtEB9jY2we1TJbh2tnMt+PXwJTqKDQfG2
-         UcrtpPhQISLVbK2Q3QUX2LPsgNRqBRA5nzRFYsWPeQoRLAtQpbC2YJ9eSEcmuGT8ojk1
-         zdTw==
-X-Gm-Message-State: AOAM531e71bNnHivcL6/eMxNxcpSewAwRRlBUa1Z6i0HyFe334YtufLc
-        aeDdx5SQI2wDn93XI/nLj/sW3UB6tH9vCEtyYIpQRXNtsxzPOHsqk4QQkroDTF6INmo7Q5sZ2I1
-        aQ/FE1O6pjIkJE5vM
-X-Received: by 2002:a05:600c:48a:: with SMTP id d10mr9864644wme.100.1643885101114;
-        Thu, 03 Feb 2022 02:45:01 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxfjdj8joFpcxj/yN+Ao7pGhbW6cXE1N8UQMGVTdBeQV45AgCeDw6UyGhkkUUj8JsSH+r/Dyw==
-X-Received: by 2002:a05:600c:48a:: with SMTP id d10mr9864620wme.100.1643885100812;
-        Thu, 03 Feb 2022 02:45:00 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-96-254.dyn.eolo.it. [146.241.96.254])
-        by smtp.gmail.com with ESMTPSA id f13sm20934169wri.44.2022.02.03.02.45.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 02:45:00 -0800 (PST)
-Message-ID: <366ea56787986da19724bb6d52a6e6145f2132ba.camel@redhat.com>
-Subject: Re: [PATCH net-next 07/15] ipv6: add GRO_IPV6_MAX_SIZE
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Coco Li <lixiaoyan@google.com>
-Date:   Thu, 03 Feb 2022 11:44:59 +0100
-In-Reply-To: <20220203015140.3022854-8-eric.dumazet@gmail.com>
-References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
-         <20220203015140.3022854-8-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        id S242098AbiBCKt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 05:49:57 -0500
+Received: from air.basealt.ru ([194.107.17.39]:38606 "EHLO air.basealt.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230016AbiBCKt5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Feb 2022 05:49:57 -0500
+Received: by air.basealt.ru (Postfix, from userid 490)
+        id 8434458980A; Thu,  3 Feb 2022 10:49:55 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on
+        sa.local.altlinux.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=ham autolearn_force=no version=3.4.1
+Received: from localhost (unknown [193.43.9.4])
+        by air.basealt.ru (Postfix) with ESMTPSA id 7247058958B;
+        Thu,  3 Feb 2022 10:49:52 +0000 (UTC)
+Date:   Thu, 3 Feb 2022 14:49:48 +0400
+From:   Alexey Sheplyakov <asheplyakov@basealt.ru>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     netdev@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Dmitry Dunaev <dmitry.dunaev@baikalelectronics.ru>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>
+Subject: Re: [PATCH 1/2] net: stmmac: added Baikal-T1/M SoCs glue layer
+Message-ID: <YfuzTO/3XCs+XFOv@asheplyakov-rocket>
+References: <20220126084456.1122873-1-asheplyakov@basealt.ru>
+ <20220128150642.qidckst5mzkpuyr3@mobilestation>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220128150642.qidckst5mzkpuyr3@mobilestation>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-02-02 at 17:51 -0800, Eric Dumazet wrote:
-> From: "Signed-off-by: Coco Li" <lixiaoyan@google.com>
-> 
-> Enable GRO to have IPv6 specific limit for max packet size.
-> 
-> This patch introduces new dev->gro_ipv6_max_size
-> that is modifiable through ip link.
-> 
-> ip link set dev eth0 gro_ipv6_max_size 185000
-> 
-> Note that this value is only considered if bigger than
-> gro_max_size, and for non encapsulated TCP/ipv6 packets.
-> 
-> Signed-off-by: Coco Li <lixiaoyan@google.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> ---
->  include/linux/netdevice.h          | 10 ++++++++++
->  include/uapi/linux/if_link.h       |  1 +
->  net/core/dev.c                     |  1 +
->  net/core/gro.c                     | 20 ++++++++++++++++++--
->  net/core/rtnetlink.c               | 15 +++++++++++++++
->  tools/include/uapi/linux/if_link.h |  1 +
->  6 files changed, 46 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 2a563869ba44f7d48095d36b1395e3fbd8cfff87..a3a61cffd953add6f272a53f551a49a47d200c68 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -1944,6 +1944,8 @@ enum netdev_ml_priv_type {
->   *			keep a list of interfaces to be deleted.
->   *	@gro_max_size:	Maximum size of aggregated packet in generic
->   *			receive offload (GRO)
-> + *	@gro_ipv6_max_size:	Maximum size of aggregated packet in generic
-> + *				receive offload (GRO), for IPv6
->   *
->   *	@dev_addr_shadow:	Copy of @dev_addr to catch direct writes.
->   *	@linkwatch_dev_tracker:	refcount tracker used by linkwatch.
-> @@ -2137,6 +2139,7 @@ struct net_device {
->  	int			napi_defer_hard_irqs;
->  #define GRO_MAX_SIZE		65536
->  	unsigned int		gro_max_size;
-> +	unsigned int		gro_ipv6_max_size;
->  	rx_handler_func_t __rcu	*rx_handler;
->  	void __rcu		*rx_handler_data;
->  
-> @@ -4840,6 +4843,13 @@ static inline void netif_set_gso_ipv6_max_size(struct net_device *dev,
->  	WRITE_ONCE(dev->gso_ipv6_max_size, size);
->  }
->  
-> +static inline void netif_set_gro_ipv6_max_size(struct net_device *dev,
-> +					       unsigned int size)
-> +{
-> +	/* This pairs with the READ_ONCE() in skb_gro_receive() */
-> +	WRITE_ONCE(dev->gro_ipv6_max_size, size);
-> +}
-> +
->  static inline void skb_gso_error_unwind(struct sk_buff *skb, __be16 protocol,
->  					int pulled_hlen, u16 mac_offset,
->  					int mac_len)
-> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-> index 024b3bd0467e1360917001dba6bcfd1f30391894..48fe85bed4a629df0dd7cc0ee3a5139370e2c94d 100644
-> --- a/include/uapi/linux/if_link.h
-> +++ b/include/uapi/linux/if_link.h
-> @@ -350,6 +350,7 @@ enum {
->  	IFLA_GRO_MAX_SIZE,
->  	IFLA_TSO_IPV6_MAX_SIZE,
->  	IFLA_GSO_IPV6_MAX_SIZE,
-> +	IFLA_GRO_IPV6_MAX_SIZE,
->  
->  	__IFLA_MAX
->  };
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 53c947e6fdb7c47e6cc92fd4e38b71e9b90d921c..e7df5c3f53d6e96d01ff06d081cef77d0c6d9d29 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -10190,6 +10190,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
->  	dev->gro_max_size = GRO_MAX_SIZE;
->  	dev->tso_ipv6_max_size = GSO_MAX_SIZE;
->  	dev->gso_ipv6_max_size = GSO_MAX_SIZE;
-> +	dev->gro_ipv6_max_size = GRO_MAX_SIZE;
->  
->  	dev->upper_level = 1;
->  	dev->lower_level = 1;
-> diff --git a/net/core/gro.c b/net/core/gro.c
-> index a11b286d149593827f1990fb8d06b0295fa72189..005a05468418f0373264e8019384e2daa13176eb 100644
-> --- a/net/core/gro.c
-> +++ b/net/core/gro.c
-> @@ -136,11 +136,27 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
->  	unsigned int new_truesize;
->  	struct sk_buff *lp;
->  
-> +	if (unlikely(NAPI_GRO_CB(skb)->flush))
-> +		return -E2BIG;
-> +
->  	/* pairs with WRITE_ONCE() in netif_set_gro_max_size() */
->  	gro_max_size = READ_ONCE(p->dev->gro_max_size);
->  
-> -	if (unlikely(p->len + len >= gro_max_size || NAPI_GRO_CB(skb)->flush))
-> -		return -E2BIG;
-> +	if (unlikely(p->len + len >= gro_max_size)) {
-> +		/* pairs with WRITE_ONCE() in netif_set_gro_ipv6_max_size() */
-> +		unsigned int gro6_max_size = READ_ONCE(p->dev->gro_ipv6_max_size);
-> +
-> +		if (gro6_max_size > gro_max_size &&
-> +		    p->protocol == htons(ETH_P_IPV6) &&
-> +		    skb_headroom(p) >= sizeof(struct hop_jumbo_hdr) &&
-> +		    ipv6_hdr(p)->nexthdr == IPPROTO_TCP &&
-> +		    !p->encapsulation)
-> +			gro_max_size = gro6_max_size;
-> +
-> +		if (p->len + len >= gro_max_size)
-> +			return -E2BIG;
-> +	}
-> +
->  
->  	lp = NAPI_GRO_CB(p)->last;
->  	pinfo = skb_shinfo(lp);
+Hello,
 
-If I read correctly, a big GRO packet could be forwarded and/or
-redirected to an egress device not supporting LSOv2 or with a lower
-tso_ipv6_max_size. Don't we need to update netif_needs_gso() to take
-care of such scenario? 
-AFAICS we are not enforcing gso_max_size, so I'm wondering if that is
-really a problem?!?
+On Fri, Jan 28, 2022 at 06:06:42PM +0300, Serge Semin wrote:
+ 
+> My comments regarding the most problematic parts of this patch are
+> below.
+> 
+> On Wed, Jan 26, 2022 at 12:44:55PM +0400, Alexey Sheplyakov wrote:
+> > The gigabit Ethernet controller available in Baikal-T1 and Baikal-M
+> > SoCs is a Synopsys DesignWare MAC IP core, already supported by
+> > the stmmac driver.
+> > 
+> > This patch implements some SoC specific operations (DMA reset and
+> > speed fixup) necessary for Baikal-T1/M variants.
+> > 
+> > Signed-off-by: Alexey Sheplyakov <asheplyakov@basealt.ru>
+> > Signed-off-by: Dmitry Dunaev <dmitry.dunaev@baikalelectronics.ru>
+> > ---
+> >  drivers/net/ethernet/stmicro/stmmac/Kconfig   |  11 +
+> >  drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
+> >  .../ethernet/stmicro/stmmac/dwmac-baikal.c    | 199 ++++++++++++++++++
+> >  .../ethernet/stmicro/stmmac/dwmac1000_core.c  |   1 +
+> >  .../ethernet/stmicro/stmmac/dwmac1000_dma.c   |  46 ++--
+> >  .../ethernet/stmicro/stmmac/dwmac1000_dma.h   |  26 +++
+> >  .../net/ethernet/stmicro/stmmac/dwmac_lib.c   |   8 +
+> >  7 files changed, 274 insertions(+), 18 deletions(-)
+> >  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-baikal.c
+> >  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac1000_dma.h
+> > 
+> > diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+> > index 929cfc22cd0c..d8e6dcb98e6c 100644
+> > --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
+> > +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+> > @@ -66,6 +66,17 @@ config DWMAC_ANARION
+> >  
+> >  	  This selects the Anarion SoC glue layer support for the stmmac driver.
+> >  
+> > +config DWMAC_BAIKAL
+> > +	tristate "Baikal Electronics GMAC support"
+> > +	default MIPS_BAIKAL_T1
+> > +	depends on OF && (MIPS || ARM64 || COMPILE_TEST)
+> > +	help
+> > +	  Support for gigabit ethernet controller on Baikal Electronics SoCs.
+> > +
+> > +	  This selects the Baikal Electronics SoCs glue layer support for
+> > +	  the stmmac driver. This driver is used for Baikal-T1 and Baikal-M
+> > +	  SoCs gigabit ethernet controller.
+> > +
+> >  config DWMAC_INGENIC
+> >  	tristate "Ingenic MAC support"
+> >  	default MACH_INGENIC
+> > diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
+> > index d4e12e9ace4f..ad138062e199 100644
+> > --- a/drivers/net/ethernet/stmicro/stmmac/Makefile
+> > +++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
+> > @@ -14,6 +14,7 @@ stmmac-$(CONFIG_STMMAC_SELFTESTS) += stmmac_selftests.o
+> >  # Ordering matters. Generic driver must be last.
+> >  obj-$(CONFIG_STMMAC_PLATFORM)	+= stmmac-platform.o
+> >  obj-$(CONFIG_DWMAC_ANARION)	+= dwmac-anarion.o
+> > +obj-$(CONFIG_DWMAC_BAIKAL)	+= dwmac-baikal.o
+> >  obj-$(CONFIG_DWMAC_INGENIC)	+= dwmac-ingenic.o
+> >  obj-$(CONFIG_DWMAC_IPQ806X)	+= dwmac-ipq806x.o
+> >  obj-$(CONFIG_DWMAC_LPC18XX)	+= dwmac-lpc18xx.o
+> > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-baikal.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-baikal.c
+> > new file mode 100644
+> > index 000000000000..9133188a5d1b
+> > --- /dev/null
+> > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-baikal.c
+> > @@ -0,0 +1,199 @@
+> > +// SPDX-License-Identifier: GPL-2.0-or-later
+> > +/*
+> > + * Baikal-T1/M SoCs DWMAC glue layer
+> > + *
+> > + * Copyright (C) 2015,2016,2021 Baikal Electronics JSC
+> > + * Copyright (C) 2020-2022 BaseALT Ltd
+> > + * Authors: Dmitry Dunaev <dmitry.dunaev@baikalelectronics.ru>
+> > + *          Alexey Sheplyakov <asheplyakov@basealt.ru>
+> > + */
+> > +
+> > +#include <linux/clk.h>
+> > +#include <linux/iopoll.h>
+> > +#include <linux/module.h>
+> > +#include <linux/of.h>
+> > +#include <linux/platform_device.h>
+> > +
+> > +#include "stmmac.h"
+> > +#include "stmmac_platform.h"
+> > +#include "common.h"
+> > +#include "dwmac_dma.h"
+> > +#include "dwmac1000_dma.h"
+> > +
+> > +#define MAC_GPIO	0x00e0	/* GPIO register */
+> > +#define MAC_GPIO_GPO	BIT(8)	/* Output port */
+> > +
+> > +struct baikal_dwmac {
+> > +	struct device	*dev;
+> > +	struct clk	*tx2_clk;
+> > +};
+> > +
+> 
+> > +static int baikal_dwmac_dma_reset(void __iomem *ioaddr)
+> > +{
+> > +	int err;
+> > +	u32 value;
+> > +
+> > +	/* DMA SW reset */
+> > +	value = readl(ioaddr + DMA_BUS_MODE);
+> > +	value |= DMA_BUS_MODE_SFT_RESET;
+> > +	writel(value, ioaddr + DMA_BUS_MODE);
+> > +
+> > +	usleep_range(100, 120);
+> > +
+> > +	/* Clear PHY reset */
+> > +	value = readl(ioaddr + MAC_GPIO);
+> > +	value |= MAC_GPIO_GPO;
+> > +	writel(value, ioaddr + MAC_GPIO);
+> > +
+> > +	return readl_poll_timeout(ioaddr + DMA_BUS_MODE, value,
+> > +				  !(value & DMA_BUS_MODE_SFT_RESET),
+> > +				  10000, 1000000);
+> > +}
+> > +
+> > +static const struct stmmac_dma_ops baikal_dwmac_dma_ops = {
+> > +	.reset = baikal_dwmac_dma_reset,
+> 
+> First of all this modification is redundant for the platforms not
+> using the GMAC GPOs as resets, and is harmful if these signals are
+> used for something not related with the GMAC interface. Secondly this
+> callback won't properly work for all PHY types (though is acceptable
+> for some simple PHYs, which don't require much initialization or have
+> suitable default setups).
 
-Thanks!
+As a matter of fact with this DMA reset method Ethernet works just fine
+on BFK3.1 board (based on Baikal-T1), TF307-MB-S-D board (Baikal-M),
+LGP-16 system on the module (Baikal-M) [1], and a few other Baikal-M
+based experimental boards. On all these boards Ethernet does NOT work
+with original dwmac_dma_reset.
 
-Paolo
+[1] https://www.lagrangeproject.com/lagrange-sarmah-som
+
+> The problem is in the way the MAC + PHY
+> initialization procedure is designed and in the way the embedded GPIOs
+> are used in the platform. Even if we assume that all DW GMAC/xGBE
+> GPIs/GPOs are used in conjunction with the corresponding GMAC
+> interface (it's wrong in general), the interface open procedure upon
+> return will still leave the PHY uninitialized or initialized with default
+> values. That happens due to the PHY initialization being performed
+> before the MAC initialization in the STMMAC open callback. Since the
+> later implies calling the DW GMAC soft-reset, the former turns to be
+> pointless due to the soft-reset causing the GPO toggle and consequent
+> PHY reset.
+> 
+> So to speak in order to cover all the GPI/GPO usage scenario and in
+> order to fix the problems described above the STMMAC core needs to be
+> also properly modified, which isn't that easy due to the way the
+> driver has evolved to.
+
+I'm not trying to cover all usage scenarios. The current versions works
+just fine with all Baikal-M and Baikal-T1 boards I've got so far, and
+that is good enough for me.
+
+> > +static int dwmac_baikal_probe(struct platform_device *pdev)
+> > +{
+> > +	struct plat_stmmacenet_data *plat_dat;
+> > +	struct stmmac_resources stmmac_res;
+> > +	struct baikal_dwmac *dwmac;
+> > +	int ret;
+> > +
+> > +	dwmac = devm_kzalloc(&pdev->dev, sizeof(*dwmac), GFP_KERNEL);
+> > +	if (!dwmac)
+> > +		return -ENOMEM;
+> > +
+> > +	ret = stmmac_get_platform_resources(pdev, &stmmac_res);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+> > +	if (ret) {
+> > +		dev_err(&pdev->dev, "no suitable DMA available\n");
+> > +		return ret;
+> > +	}
+> > +
+> > +	plat_dat = stmmac_probe_config_dt(pdev, stmmac_res.mac);
+> > +	if (IS_ERR(plat_dat)) {
+> > +		dev_err(&pdev->dev, "dt configuration failed\n");
+> > +		return PTR_ERR(plat_dat);
+> > +	}
+> > +
+> > +	dwmac->dev = &pdev->dev;
+> 
+> > +	dwmac->tx2_clk = devm_clk_get_optional(dwmac->dev, "tx2_clk");
+> > +	if (IS_ERR(dwmac->tx2_clk)) {
+> > +		ret = PTR_ERR(dwmac->tx2_clk);
+> > +		dev_err(&pdev->dev, "couldn't get TX2 clock: %d\n", ret);
+> > +		goto err_remove_config_dt;
+> > +	}
+> 
+> The bindings are much more comprehensive than just a single Tx-clock.
+> You are missing them here and in your DT-bindings patch. Please also
+> note you can't make the DT-resources name up without providing a
+> corresponding bindings schema update.
+
+Can't parse this, sorry. Could you please elaborate what is exactly
+wrong here?
+
+> > +
+> > +	if (dwmac->tx2_clk)
+> > +		plat_dat->fix_mac_speed = baikal_dwmac_fix_mac_speed;
+> > +	plat_dat->bsp_priv = dwmac;
+> > +	plat_dat->has_gmac = 1;
+> > +	plat_dat->enh_desc = 1;
+> > +	plat_dat->tx_coe = 1;
+> > +	plat_dat->rx_coe = 1;
+> 
+> > +	plat_dat->clk_csr = 3;
+> 
+> Instead of fixing the stmmac_clk_csr_set() method you have provided
+> the clk_csr workaround. What if pclk rate is changed? Which BTW is
+> possible. =) In that case you'll get a wrong MDC rate.
+
+1) This works for me just fine with all Baikal-M and Baikal-T1 boards
+   I've got so far. 
+2) I avoid changes in the generic stmmac code on purpose to keep the risk
+   of regressions minimal.
+ 
+> > +	plat_dat->setup = baikal_dwmac_setup;
+> > +
+> > +	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+> > +	if (ret)
+> > +		goto err_remove_config_dt;
+> > +
+> > +	return 0;
+> > +
+> > +err_remove_config_dt:
+> > +	stmmac_remove_config_dt(pdev, plat_dat);
+> > +	return ret;
+> > +}
+> > +
+> > +static const struct of_device_id dwmac_baikal_match[] = {
+> 
+> > +	{ .compatible = "baikal,dwmac" },
+> 
+> Even though Baikal-T1 and Baikal-M1 have been synthesized with almost
+> identical IP-cores I wouldn't suggest to use the same compatible
+> string for both of them. At least those are different platforms with
+> different reference signals parameters. So it would be much better to
+> use the naming like "baikal,bt1-gmac" and "baikal,bm1-gmac" here.
+
+OK, makes sense.
+
+> 
+> > +	{ }
+> > +};
+> > +MODULE_DEVICE_TABLE(of, dwmac_baikal_match);
+> > +
+> > +static struct platform_driver dwmac_baikal_driver = {
+> > +	.probe	= dwmac_baikal_probe,
+> > +	.remove	= stmmac_pltfr_remove,
+> > +	.driver	= {
+> > +		.name = "baikal-dwmac",
+> > +		.pm = &stmmac_pltfr_pm_ops,
+> > +		.of_match_table = of_match_ptr(dwmac_baikal_match)
+> > +	}
+> > +};
+> > +module_platform_driver(dwmac_baikal_driver);
+> > +
+> > +MODULE_DESCRIPTION("Baikal-T1/M DWMAC driver");
+> > +MODULE_LICENSE("GPL");
+> > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+> > index 76edb9b72675..7b8a955d98a9 100644
+> > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+> > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+> > @@ -563,3 +563,4 @@ int dwmac1000_setup(struct stmmac_priv *priv)
+> >  
+> >  	return 0;
+> >  }
+> > +EXPORT_SYMBOL_GPL(dwmac1000_setup);
+> 
+> As I said providing a platform-specific reset method won't solve the
+> problem with the PHYs resetting on each interface up/down procedures.
+> So exporting this method and the methods below will be just useless
+> since the provided fix isn't complete.
+
+When the experiment and a theory disagree the experiment always wins.
+With this driver Ethernet works just fine with
+
+* BFK3.1 board (Baikal-T1 reference boards)
+* TF307-MB-S-D board (Baikal-M)
+* LGP-16 system on the module (Baikal-M)
+
+It might or might not work with other boards (although I haven't got
+such boards myself yet).
+
+Last but not least, if this driver is such a wrong and incomplete, why
+Baikal Electronics ships it in its vendor kernel [2]?
+
+[2] https://github.com/baikalelectronics/kernel/blob/v5.4_BE-aarch64_stable/drivers/net/ethernet/stmicro/stmmac/dwmac-baikal.c
+    https://share.baikalelectronics.ru/index.php/s/Zi4tmLzpjCYccKb (warning: links are js-wrapped)
 
