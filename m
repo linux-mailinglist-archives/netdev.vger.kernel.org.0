@@ -2,85 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7488A4A9D3C
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 17:59:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 553974A9D54
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 18:04:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376703AbiBDQ7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 11:59:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41487 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233140AbiBDQ67 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 11:58:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643993938;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=cnjW8yKbEyG0FqNYK6ZIIplhyg3mHtVTjDUJ3agdcfQ=;
-        b=bAjYbmHs3Ur+Er6Eos+pYOuzb5QYumarMV3v6RvHFCICWKga2OLTsJk5pWLnO7xXmbmtfD
-        OaexkqXvYZfCFcnx1cVMS7OMB+OxqzgRYu0aKY1cgZujnx2MAGFf/Lur3cnOkxOhtJo7KQ
-        gWQa/JAcG2Uhg8imcsRD3SvBDeRNVlo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-244-yB7x48wRPSGm60yek7yULw-1; Fri, 04 Feb 2022 11:58:53 -0500
-X-MC-Unique: yB7x48wRPSGm60yek7yULw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2842F51081;
-        Fri,  4 Feb 2022 16:58:52 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.16.103])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E4FB2753FC;
-        Fri,  4 Feb 2022 16:58:50 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     intel-wired-lan@lists.osuosl.org, lihong.yang@intel.com
-Cc:     Jocelyn Falempe <jfalempe@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC] ice: use msleep instead of mdelay
-Date:   Fri,  4 Feb 2022 11:58:46 -0500
-Message-Id: <c095aac80cac3fc103f13170a976def3aa4d0f78.1643993926.git.jtoppins@redhat.com>
+        id S1376727AbiBDRE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 12:04:27 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:42812 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236336AbiBDRE0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Feb 2022 12:04:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=xzbIZkKNfNZlOnpceTUufYPgNrcPtbnsWdhukx8SdZA=; b=RWvrBVoQ/TBWtCOKIqFcnXFch7
+        1iJRaG+XfrQSIE9uOga41M8yeYo2iiDpYWr7lodRrP3RIG8HOBNo0I60+zhdMqJz3SGsF5VOFaCed
+        KFvZRLA6MUY5NUsJ4nyHTljzsHYZocROGQXzV9/d0oTHS852su/P1EUFPhdRtNsCJn78=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nG20W-004IQj-Jg; Fri, 04 Feb 2022 18:04:24 +0100
+Date:   Fri, 4 Feb 2022 18:04:24 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>
+Cc:     netdev@vger.kernel.org, hkallweit1@gmail.com, linux@armlinux.org.uk
+Subject: Re: [PATCH 1/2] net: phy: micrel: add Microchip KSZ 9897 Switch PHY
+ support
+Message-ID: <Yf1cmDw3RN1ul6Av@lunn.ch>
+References: <20220204133635.296974-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
+ <20220204133635.296974-2-enguerrand.de-ribaucourt@savoirfairelinux.com>
+ <Yf0ykctMgWKswgpC@lunn.ch>
+ <526221306.489515.1643987866650.JavaMail.zimbra@savoirfairelinux.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <526221306.489515.1643987866650.JavaMail.zimbra@savoirfairelinux.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use msleep for long delays instead of spinning in the driver.
+> > You can probably use PHY_ID_MATCH_EXACT().
+> 
+> Thank you for your feedback! The rest of the driver always uses
+> this style instead of PHY_ID_MATCH_EXACT().
 
-Suggested-by: Jocelyn Falempe <jfalempe@redhat.com>
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
- drivers/net/ethernet/intel/ice/ice_common.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+You could add another patch converting them. It looks like some could
+also use PHY_ID_MATCH_MODEL(). Up to you, depending on how much time
+you want to spend on this.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 408d15a5b0e3..50987d513faf 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -1107,7 +1107,7 @@ int ice_check_reset(struct ice_hw *hw)
- 			GLGEN_RSTCTL_GRSTDEL_S) + 10;
- 
- 	for (cnt = 0; cnt < grst_timeout; cnt++) {
--		mdelay(100);
-+		msleep(100);
- 		reg = rd32(hw, GLGEN_RSTAT);
- 		if (!(reg & GLGEN_RSTAT_DEVSTATE_M))
- 			break;
-@@ -3196,7 +3196,7 @@ ice_set_fc(struct ice_port_info *pi, u8 *aq_failures, bool ena_auto_link_update)
- 			if (!status)
- 				break;
- 
--			mdelay(100);
-+			msleep(100);
- 		}
- 
- 		if (status)
--- 
-2.27.0
-
+      Andrew
