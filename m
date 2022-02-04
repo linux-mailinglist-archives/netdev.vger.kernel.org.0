@@ -2,84 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74BEC4A97C9
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 11:30:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 069E24A97F6
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 11:40:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357305AbiBDKaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 05:30:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355714AbiBDKaE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 05:30:04 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E2FC061714
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 02:30:04 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id f17so10456508wrx.1
-        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 02:30:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=message-id:date:mime-version:user-agent:reply-to:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=O0IhaDE2lAkgh1vz985YsOMgdwQutpfFWZR3lCpOpRY=;
-        b=Fyw+bAWIYyxNUByXlnijwzsNdmHTIWI9bfTgQpfTFFIGN/VcTn1WXOAE90se49qzAZ
-         d9d641zs7eUiVvmv5oxANYOohSyXa7WLvxmhHMTirQsQ8WI2d/HFrvFsmWfhNT2q4+5C
-         lsJIJq2eepsI4beFs81BVJTSWNzN6pKJzLrSNVV/J4IxiarKgLIAG3+0+VpGaeLBMzPV
-         th0s/XNFifZbnJsMtc7XP6iJePGDr6W4E/Y6+HRpMEGF/95xLwgC4mSxmThF8tvYzy9n
-         XNc4wUI2GxnjyzmDlScCAEFVg3z6ZfPmZTRU/fRWFODX4koqfkz3GCkWvZ5VHiXYi8QI
-         zCXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
-         :subject:content-language:to:cc:references:from:organization
-         :in-reply-to:content-transfer-encoding;
-        bh=O0IhaDE2lAkgh1vz985YsOMgdwQutpfFWZR3lCpOpRY=;
-        b=Tejgr+7sbIMM7Fj4vC+nktwgnAE/NkquWRUJt7aBWDknC7+Af6KNJaGkDMRdeNz/Tv
-         4JmkPaJYhfH/TjuYysDddzJKmSjDe/xo+/XSP5M95PpjHvuOI5Wsq2QHiVp5xUaJ6rD3
-         +VmfQEI8iscYdRxYH+waqzOWhKXJ5RyT2Gif/tYLz1JlhuOrslljeg5VDKLSd6asEske
-         dNZ3qX/wGk3AQV0t10UqJTOL7XYRyXby4C+QBVIMR9UbCYldxG0cmySYzHGwdD0+DOCH
-         YDofTYbgrywiKe2EzE9LLW1KnPU4VerEQH5/eI2hBVJVCR3nJsxGaKXPxpYdwFCkLW7+
-         AZ5w==
-X-Gm-Message-State: AOAM533+Lupz7DnF+th1d28EADsuTf0GJT295riK/F3yUwlyhZ1EyKva
-        m5YhVok2UeGM4CEBsTcaQZsSgw==
-X-Google-Smtp-Source: ABdhPJwoK8fN303VHC9osBEabKC9KTJTcj56wkXbsB2g7ZUzqTVb5p2xLtTtAUaHRuehD6n1JGM/Lw==
-X-Received: by 2002:a05:6000:1861:: with SMTP id d1mr1898246wri.92.1643970603139;
-        Fri, 04 Feb 2022 02:30:03 -0800 (PST)
-Received: from ?IPV6:2a01:e0a:b41:c160:6954:fe60:5398:2a42? ([2a01:e0a:b41:c160:6954:fe60:5398:2a42])
-        by smtp.gmail.com with ESMTPSA id n10sm1854466wrf.96.2022.02.04.02.30.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Feb 2022 02:30:02 -0800 (PST)
-Message-ID: <8c08a4e0-83a0-9fc1-798b-dbd6a53f7231@6wind.com>
-Date:   Fri, 4 Feb 2022 11:30:01 +0100
+        id S1354446AbiBDKkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 05:40:17 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58450 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240339AbiBDKkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 05:40:15 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83CB3B8370A;
+        Fri,  4 Feb 2022 10:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 085C9C340F1;
+        Fri,  4 Feb 2022 10:40:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643971213;
+        bh=lUAV3AfO+c5A1LMdq46tWOi4TK6LQxolaSmqDKSg4z4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GN7SpYDOQSLM5O4nLV7a6MMwdTGqz5RuAtiT7M2Y/P5Pi31eeqt163D2pRwPxki2L
+         HucIzBnD/YFHGKIc7Fn3QFsJfHI6966sIR8QpA/SbVVcgfu35QRUv3D2N9LMN1pgWf
+         L40X7rJb8Zk+kvaDohJaA0q0aB6YTdGi+/y7OudEjFNteZLO0R25PWTedT5ZvUUWf/
+         RoSDac2J1v0TA2J3D2Zm+VbrHrNAKkakYYk6MRcEpyvBwnpp+mSR/VmGsGOO5Xpm8D
+         C85RQVqCpqVY1LgWkp7pGhdrLRwzfXIG8LJzD1/23IZ+TN7UXB2Z6s64NzHLhlZPbt
+         VdH22VmNo30aQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E23CDE5D08C;
+        Fri,  4 Feb 2022 10:40:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH libnetfilter_queue] libnetfilter_queue: add support of
- skb->priority
-Content-Language: en-US
-To:     pablo@netfilter.org
-Cc:     fw@strlen.de, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <Yfy2YxiwvDLtLvTo@salvia>
- <20220204102637.4272-1-nicolas.dichtel@6wind.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <20220204102637.4272-1-nicolas.dichtel@6wind.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 00/10] net: ipa: improve RX buffer replenishing
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164397121292.5815.16093042564142954985.git-patchwork-notify@kernel.org>
+Date:   Fri, 04 Feb 2022 10:40:12 +0000
+References: <20220203170927.770572-1-elder@linaro.org>
+In-Reply-To: <20220203170927.770572-1-elder@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
+        mka@chromium.org, evgreen@chromium.org, cpratapa@codeaurora.org,
+        avuyyuru@codeaurora.org, jponduru@codeaurora.org,
+        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-Le 04/02/2022 à 11:26, Nicolas Dichtel a écrit :
-> Available since linux v5.18.
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu,  3 Feb 2022 11:09:17 -0600 you wrote:
+> This series revises the algorithm used for replenishing receive
+> buffers on RX endpoints.  Currently there are two atomic variables
+> that track how many receive buffers can be sent to the hardware.
+> The new algorithm obviates the need for those, by just assuming we
+> always want to provide the hardware with buffers until it can hold
+> no more.
 > 
-> Link: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=
-> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-> ---
+> [...]
 
-Should I send another patch for the 'set' part?
-In this case, a nfq_set_verdict3(). The name is a bit ugly ;-)
-Any suggestions?
+Here is the summary with links:
+  - [net-next,01/10] net: ipa: kill replenish_saved
+    https://git.kernel.org/netdev/net-next/c/a9bec7ae70c1
+  - [net-next,02/10] net: ipa: allocate transaction before pages when replenishing
+    https://git.kernel.org/netdev/net-next/c/b4061c136b56
+  - [net-next,03/10] net: ipa: increment backlog in replenish caller
+    https://git.kernel.org/netdev/net-next/c/4b22d8419549
+  - [net-next,04/10] net: ipa: decide on doorbell in replenish loop
+    https://git.kernel.org/netdev/net-next/c/b9dbabc5ca84
+  - [net-next,05/10] net: ipa: allocate transaction in replenish loop
+    (no matching commit)
+  - [net-next,06/10] net: ipa: don't use replenish_backlog
+    https://git.kernel.org/netdev/net-next/c/d0ac30e74ea0
+  - [net-next,07/10] net: ipa: introduce gsi_channel_trans_idle()
+    https://git.kernel.org/netdev/net-next/c/5fc7f9ba2e51
+  - [net-next,08/10] net: ipa: kill replenish_backlog
+    https://git.kernel.org/netdev/net-next/c/09b337dedaca
+  - [net-next,09/10] net: ipa: replenish after delivering payload
+    https://git.kernel.org/netdev/net-next/c/5d6ac24fb10f
+  - [net-next,10/10] net: ipa: determine replenish doorbell differently
+    https://git.kernel.org/netdev/net-next/c/9654d8c462ce
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
