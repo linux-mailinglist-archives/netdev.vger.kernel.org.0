@@ -2,86 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A46B54A97F8
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 11:40:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 484444A97F3
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 11:40:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240339AbiBDKkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 05:40:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50996 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241822AbiBDKkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 05:40:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8695CC061714
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 02:40:16 -0800 (PST)
+        id S239329AbiBDKkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 05:40:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51306 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234577AbiBDKkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 05:40:13 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83224B810AC
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 10:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 14E3AC340F2;
-        Fri,  4 Feb 2022 10:40:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A636A61A47
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 10:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F2532C340EF;
+        Fri,  4 Feb 2022 10:40:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1643971213;
-        bh=/fgy3n1Tj8pmt9kcQaCEs7RnT03VJs6O5INjhhH1R7U=;
+        bh=Wp4QHA9VAFtdjzpjux6WpWee5SEQiw5bXTiWowaaFnI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jwOX+8mtsBIRgPkF31NSbzzjx0FkcVl7Dz4al9hUvC1KKbVWv4ypgJ6WMmtnP1iFW
-         b3BRUqx/7Get8YewDtiZmS9o+/CAkycEZbycluey8OE6O1jGQp0xbHbTR7AXAQ7jRL
-         I2n+Z9MmEVtKE4BZqgC7kyNwGu9MXFqd0y2uyc/Ii0QpASTOmFFy0uYWBSGM+QbNrP
-         OaSic0P8N6grrP69Hf/zF2gZnqP/js+50+jtM32gi6YuO+05BdMQ78wcBtxlUQa3so
-         FY+WbfraGpkQo3Y4ndYiNsAUUJmnZaeWR900z2GViB+N52KWlo4CNHtgOlnITYt1bl
-         kV6A1Lt5B/EHw==
+        b=sbuRTTxAKDnCrYG3YmkoQ39CTPeUCCG/LME+nazR4IcNjrGA/5VL6QvpimL5n++my
+         wv4gW9EOyVuUaqxj1Byi1NmJL7F5JdysT+o0Ep3PprgeSrawCUzdYcgLQQFhdvICxp
+         XvqnmmWUleEtRfP5QV2S0TOHfPKWK73W0fVqeXzZ3i7q0B6Xb0pJ8XFbI+Kr1KDbhR
+         DsbnOLWurl+/m/3LsC7ChL73NulwfdljkH3oUu0y2BvhGhi+J2v/H6sWif+v6sBufs
+         Tkcj7/ARaBvUP7z6tmxymki13k5Yo3J6y5aeeuFJz39ml1K90QozYR6J9HhudddeF6
+         ekeZ2zVkYFJvA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EDA28E6D3DD;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D732BE6BBD2;
         Fri,  4 Feb 2022 10:40:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/7][pull request] 40GbE Intel Wired LAN Driver
- Updates 2022-02-03
+Subject: Re: [PATCH net-next] tls: cap the output scatter list to something
+ reasonable
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164397121296.5815.11134187232009697528.git-patchwork-notify@kernel.org>
+Message-Id: <164397121286.5815.16819956253657269354.git-patchwork-notify@kernel.org>
 Date:   Fri, 04 Feb 2022 10:40:12 +0000
-References: <20220203215140.969227-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220203215140.969227-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com
+References: <20220202222031.2174584-1-kuba@kernel.org>
+In-Reply-To: <20220202222031.2174584-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        viro@zeniv.linux.org.uk, borisp@nvidia.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net,
+        vfedorenko@novek.ru, kernel-team@fb.com, axboe@kernel.dk
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On Thu,  3 Feb 2022 13:51:33 -0800 you wrote:
-> This series contains updates to the i40e client header file and driver.
+On Wed,  2 Feb 2022 14:20:31 -0800 you wrote:
+> TLS recvmsg() passes user pages as destination for decrypt.
+> The decrypt operation is repeated record by record, each
+> record being 16kB, max. TLS allocates an sg_table and uses
+> iov_iter_get_pages() to populate it with enough pages to
+> fit the decrypted record.
 > 
-> Mateusz disables HW TC offload by default.
-> 
-> Joe Damato removes a no longer used statistic.
-> 
-> Jakub Kicinski removes an unused enum from the client header file.
+> Even though we decrypt a single message at a time we size
+> the sg_table based on the entire length of the iovec.
+> This leads to unnecessarily large allocations, risking
+> triggering OOM conditions.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/7] i40e: Disable hw-tc-offload feature on driver load
-    https://git.kernel.org/netdev/net-next/c/647c65e14332
-  - [net-next,2/7] i40e: Remove unused RX realloc stat
-    https://git.kernel.org/netdev/net-next/c/79f227c4ff3e
-  - [net-next,3/7] i40e: remove enum i40e_client_state
-    https://git.kernel.org/netdev/net-next/c/00edb2bac29f
-  - [net-next,4/7] i40e: Add sending commands in atomic context
-    https://git.kernel.org/netdev/net-next/c/59b3d7350ff3
-  - [net-next,5/7] i40e: Add new versions of send ASQ command functions
-    https://git.kernel.org/netdev/net-next/c/74073848b0d7
-  - [net-next,6/7] i40e: Add new version of i40e_aq_add_macvlan function
-    https://git.kernel.org/netdev/net-next/c/b3237df9e7c8
-  - [net-next,7/7] i40e: Fix race condition while adding/deleting MAC/VLAN filters
-    https://git.kernel.org/netdev/net-next/c/53a9e346e159
+  - [net-next] tls: cap the output scatter list to something reasonable
+    https://git.kernel.org/netdev/net-next/c/b93235e68921
 
 You are awesome, thank you!
 -- 
