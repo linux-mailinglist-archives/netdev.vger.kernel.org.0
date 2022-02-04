@@ -2,96 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CEA94A9873
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 12:34:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 476CC4A9886
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 12:42:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358412AbiBDLeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 06:34:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:40067 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1358341AbiBDLeJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 06:34:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643974449;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7b9K3gDBQNkMgnuV1ibTAuhV5BJoAvC3sZ1UK0nk2J8=;
-        b=g1uEwL8QMIO5u18Lo9itjKHarBlto61Ls87IoC9E2vtT/d4ehkiKbz2J946zsXuGrzQwTV
-        JdaCmO5zAmL9MUG8es05SF4AaaqwZZGTVa8Ht9gJL76ngqsxl970Gi9DmkuosBAhB/ouoi
-        1t6hEHJEWuTHrgM2ijksGBdTtPG2cT4=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-497-uMsn0rxtOw2Yk8gpiUce7Q-1; Fri, 04 Feb 2022 06:34:08 -0500
-X-MC-Unique: uMsn0rxtOw2Yk8gpiUce7Q-1
-Received: by mail-qt1-f197.google.com with SMTP id a9-20020aed2789000000b002d78436cc47so4412763qtd.12
-        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 03:34:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=7b9K3gDBQNkMgnuV1ibTAuhV5BJoAvC3sZ1UK0nk2J8=;
-        b=07mPZcKoOgw68uNdkKjp7tByF0fo3NV+qbf/GTq+g5J1lvAbmC+l5aqZYdBbi8wdIW
-         b7z4iNKaDp9SK15gcGA1sPHNn03NTN858kdhWCmzGhNqVvO433rpX7wY0SgSzmPSXJdW
-         /8KQrFcFRBr0JAJoUfX0WkgjkcmqhMqI8f13O0HoEMRKIREsgNYEDWHuBk4MlDDCHn+A
-         aj9tr66//d7HEzZGRgqZgGUH2HGos5NQQIWXnI2CT69jEZPjNSDN7on4ftW2Y4zEyqLe
-         HliQhJZTheSbP0tyJ8Qvz2qHjHM3hlUe5uj5f6BQjj294Cx/AfGJKEeFUgIUwauRE1x8
-         ISiA==
-X-Gm-Message-State: AOAM5337a/lnB1wmGtyXQk+X7yZMFunsTssiVHBfZ1IiDV2WMtNlloVK
-        qMg4Esuy62eNYkMw/vHJFIdkR4y9pJKkxd2s83qkVpcTgYyzc/0/fa2qzITylJkBZ/xXROtA9Fs
-        LUrz9wjovsmD/ucjsqhGdvvYU4pLtQOdbWlP3W7F6lXBUvuvkkhsvmG7xxFwpUJVaLA==
-X-Received: by 2002:a05:6214:27cd:: with SMTP id ge13mr1459116qvb.40.1643974447671;
-        Fri, 04 Feb 2022 03:34:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy831ezbgShg858gNd1jufzQCxmNLXuAnxtn24OBml3Am1OhM9J8zYyl6aBsPIe/Ue0z+sbxg==
-X-Received: by 2002:a05:6214:27cd:: with SMTP id ge13mr1459094qvb.40.1643974447402;
-        Fri, 04 Feb 2022 03:34:07 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-96-254.dyn.eolo.it. [146.241.96.254])
-        by smtp.gmail.com with ESMTPSA id v19sm932187qkp.131.2022.02.04.03.34.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 03:34:06 -0800 (PST)
-Message-ID: <be23f15d43f7af165c7d2121071b09be73740899.camel@redhat.com>
-Subject: Re: [PATCH net-next 0/2] gro: a couple of minor optimization
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander H Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 04 Feb 2022 12:34:03 +0100
-In-Reply-To: <cover.1643972527.git.pabeni@redhat.com>
-References: <cover.1643972527.git.pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        id S1358454AbiBDLmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 06:42:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345608AbiBDLmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 06:42:13 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04C9C061714
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 03:42:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=u+rVxvY6mypUIAlWq0LV2q4DDasZbfkQnlFLCI96OA8=; b=LkNHv0lLmsXNfHedJlQbnLzCrh
+        FRGr3cJlD0/XdA4ojREjNaQvz2AxeqSrJIzBpQ4hiDfsZITo1gfvvGiqlPr4KKk2MLYkGh5IAQJ/q
+        bn8f3AXuJuBIGwA9z4noWFypK3wbxX6Y58ifE1uWbGxm8+3fFQfMMQVYERYJXsZE9TsFj/JbYaVGU
+        fLyHWV5KJbefv+itKCpx8OJ55hq8yMFRoYS8PheRfhqYJrMYuTKCRVJgNwbDij3CRTFOUGGgtZSSS
+        dF6jQvzQRWdFoXmnJqboZYwSH3yxvcXKuUpbOrxsD/MBXxMN/M2iZwLG5Eep5gjjv90tWq4uC0Qmz
+        Q0rPdBGA==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:60590 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1nFwyg-0004SY-Mk; Fri, 04 Feb 2022 11:42:10 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+        id 1nFwyg-006Yqs-4C; Fri, 04 Feb 2022 11:42:10 +0000
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] net: phylink: remove phylink_set_10g_modes()
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1nFwyg-006Yqs-4C@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Fri, 04 Feb 2022 11:42:10 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-02-04 at 12:28 +0100, Paolo Abeni wrote:
-> This series collects a couple of small optimizations for the GRO engine,
-> reducing slightly the number of cycles for dev_gro_receive().
-> The delta is within noise range in tput tests, but with big TCP coming
-> every cycle saved from the GRO engine will count - I hope ;)
-> 
-> v1 -> v2:
->  - a few cleanup suggested from Alexander(s)
->  - moved away the more controversial 3rd patch
-> 
-> Paolo Abeni (2):
->   net: gro: avoid re-computing truesize twice on recycle
->   net: gro: minor optimization for dev_gro_receive()
-> 
->  include/net/gro.h | 52 +++++++++++++++++++++++++----------------------
->  net/core/gro.c    | 16 ++++-----------
->  2 files changed, 32 insertions(+), 36 deletions(-)
+phylink_set_10g_modes() is no longer used with the conversion of
+drivers to phylink_generic_validate(), so we can remove it.
 
-This is really a v2. Please let me know if you prefer a formal repost.
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/phylink.c | 11 -----------
+ include/linux/phylink.h   |  1 -
+ 2 files changed, 12 deletions(-)
 
-Thanks!
-
-Paolo
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 420201858564..5b53a3e23c89 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -132,17 +132,6 @@ void phylink_set_port_modes(unsigned long *mask)
+ }
+ EXPORT_SYMBOL_GPL(phylink_set_port_modes);
+ 
+-void phylink_set_10g_modes(unsigned long *mask)
+-{
+-	phylink_set(mask, 10000baseT_Full);
+-	phylink_set(mask, 10000baseCR_Full);
+-	phylink_set(mask, 10000baseSR_Full);
+-	phylink_set(mask, 10000baseLR_Full);
+-	phylink_set(mask, 10000baseLRM_Full);
+-	phylink_set(mask, 10000baseER_Full);
+-}
+-EXPORT_SYMBOL_GPL(phylink_set_10g_modes);
+-
+ static int phylink_is_empty_linkmode(const unsigned long *linkmode)
+ {
+ 	__ETHTOOL_DECLARE_LINK_MODE_MASK(tmp) = { 0, };
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index 713a0c928b7c..cca149f78d35 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -582,7 +582,6 @@ int phylink_speed_up(struct phylink *pl);
+ #define phylink_test(bm, mode)	__phylink_do_bit(test_bit, bm, mode)
+ 
+ void phylink_set_port_modes(unsigned long *bits);
+-void phylink_set_10g_modes(unsigned long *mask);
+ void phylink_helper_basex_speed(struct phylink_link_state *state);
+ 
+ void phylink_mii_c22_pcs_decode_state(struct phylink_link_state *state,
+-- 
+2.30.2
 
