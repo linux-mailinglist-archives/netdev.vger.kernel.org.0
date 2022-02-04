@@ -2,75 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C00934A96DE
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 10:34:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4254F4A9735
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 10:56:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239132AbiBDJeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 04:34:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232946AbiBDJeK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 04:34:10 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A559C061714
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 01:34:10 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id c24so12090718edy.4
-        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 01:34:10 -0800 (PST)
+        id S239842AbiBDJ4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 04:56:25 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:60478 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238145AbiBDJ4Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 04:56:24 -0500
+Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id E0A508030867;
+        Fri,  4 Feb 2022 12:56:21 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru E0A508030867
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=YzaRfFCHXNYdfq8Kxe/JhGWtCRlO5Sx5ASsnHTibewA=;
-        b=GAAfYbl6ITNzX1w4fC5GRlFYXklCCowKucXjbJRzEMAk3HcydjwxIjIbbO16uje9fJ
-         h+05YdXHPsZ2Xwbut2fmVgYPJKeJwzwZdlRupVkjX9oFKrZ4K52eE7XuFJ4O8R7Vhj7Y
-         1iqCkerh6kjmG2UHSVeXUTleRd8qA/hOeaX7epCHCkaG1yrtWa1ZMUId9okggv82Ym6X
-         osbfMkBhXVVvfwKbPlUz6rfg9rMqXkIb1/nR87Uj42oL5iz9r5gzTKErle+WVTcnkwzT
-         SgDmgA6K2zo4p9EECLEo/StOoaP7OL6gVdpmq6dJXihoDB4kP8Gkd76Rt+KYAqZBCNTC
-         /psA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=YzaRfFCHXNYdfq8Kxe/JhGWtCRlO5Sx5ASsnHTibewA=;
-        b=7AMrcu0S/cDlm3EPJ/U3aRUrNAZFoH3Zzdsr4iktuSbQz2i/L71TWE6BOsFhZ16OVK
-         9onqHAeis1aJH2TXT7tSS9IVNo5ITKEwzKkD0yUcGEyr6isXcuWF/K1c3aWo71n5UBjy
-         XhzF0EfmfX0SdqmHdbQsjCwThNsjk01eg2b5HF1kljTHWhsa9zwIs6a+eVCHWny4Hqas
-         AiR2bIMzGUKAFSZjJUX3q+h9ZWhpmaZm6H7WM4w5e12KTFYUAgq/AG1VwlF3OyeFOweg
-         ROMCKXhkLIJHt+HK0+NnS62Lsl4gKwDDtgwm9PBYRorieKmdmhB+RUPwxcQy78lk7mND
-         Uaog==
-X-Gm-Message-State: AOAM532RdJvGuhPbavCoJVuu1JP1Fw35/x0erJwweYLhzox4Afw5Q6eG
-        2KKX4lz8hDmj+gIIhxpSpXzQkp8BF0agX+swOz0=
-X-Google-Smtp-Source: ABdhPJxRXmnrRQ2+IErA0RfxRVxzxogXP5wuSp47b07MgkJzOB87FLtsz2171xehbM/2mU8bvyssgzuSpn0FOKqu5BE=
-X-Received: by 2002:a05:6402:37a:: with SMTP id s26mr2170140edw.400.1643967248917;
- Fri, 04 Feb 2022 01:34:08 -0800 (PST)
+        d=baikalelectronics.ru; s=mail; t=1643968583;
+        bh=40LQjWECz2P7IV5SSGPbM6aWS8cMWRc2EdHMJbUlsOM=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To:From;
+        b=NdL7WHD2p0o+ecb9fpTGVq7DITa/mnWc9Z9E5h9D3fYKIwMTuxk9mF4zLulBx4T4H
+         WZlJHyvARUs6FhAIeCn/l9cYaifSG7eKUCnQbGZHX9+Lm97Mk1bzZI2cJNpfju4MQ+
+         D/+Eqeg6JuFcZV3Qc+iaw0aBqtnJAuvpJHijV0Vs=
+Received: from mobilestation (192.168.168.10) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 4 Feb 2022 12:56:12 +0300
+Date:   Fri, 4 Feb 2022 12:56:21 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     "=?utf-8?B?0J/QsNGA0YXQvtC80LXQvdC60L4g0J/QsNCy0LXQuyDQmtC40YDQuNC70Ls=?=
+        =?utf-8?B?0L7QstC40Yc=?=" <Pavel.Parkhomenko@baikalelectronics.ru>
+CC:     "michael@stapelberg.de" <michael@stapelberg.de>,
+        "afleming@gmail.com" <afleming@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "=?utf-8?B?0JzQsNC70LDRhdC+0LIg0JDQu9C10LrRgdC10Lkg0JLQsNC70LXRgNGM0LU=?=
+        =?utf-8?B?0LLQuNGH?=" <Alexey.Malahov@baikalelectronics.ru>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Serge Semin <fancer.lancer@gmail.com>
+Subject: Re: [PATCH] net: phy: marvell: Fix RGMII Tx/Rx delays setting in
+ 88e1121-compatible PHYs
+Message-ID: <20220204095621.bcchrzupmtor3jbq@mobilestation>
+References: <96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru>
 MIME-Version: 1.0
-Received: by 2002:a54:3992:0:0:0:0:0 with HTTP; Fri, 4 Feb 2022 01:34:08 -0800 (PST)
-Reply-To: mrsjessiedaniel@gmail.com
-From:   Jessie Daniel <infor.ubaci79@gmail.com>
-Date:   Fri, 4 Feb 2022 10:34:08 +0100
-Message-ID: <CAFu8h+onHM-tXp+h=YMXGqcjkqhkkHqrsToQiSM5G30V4JQVYA@mail.gmail.com>
-Subject: divine
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru>
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Donation from Mrs. Jessie Daniel
-Abidjan Cacody, Riviera Golf 4,
-BP 520 Abidjan 05, Cote d'Ivoire,
++Cc: Heiner, Russel, David, Jakub
 
-Dear beloved.
-I am Mrs. Jessie Daniel an ageing widow suffering from long time
-illness. I am writing this mail to you with heavy tears in my eyes and
-great sorrow in my heart because I am currently admitted in a private
-hospital, am 58years old Woman I have some funds I inherited from my
-late loving husband Mr. Wright Daniel, the sum of $3.500.000 (Three
-Million Five Hundred Thousand Dollars) which he deposited in bank here
-I need a honest person that can use these funds for less privilege's,
-and 30 % out of the total funds will be for your regulation of This
-work, I found your email address from the internet and decided to
-contact you.
-I will tell you more about myself and my plans with this money when I
-hear back from you.
-Best Regards
-Mrs. Jessie Daniel.
+-Sergey
+
+On Fri, Feb 04, 2022 at 08:29:11AM +0300, Пархоменко Павел Кириллович wrote:
+> It is mandatory for a software to issue a reset upon modifying RGMII
+> Receive Timing Control and RGMII Transmit Timing Control bit fields of MAC
+> Specific Control register 2 (page 2, register 21) otherwise the changes
+> won't be perceived by the PHY (the same is applicable for a lot of other
+> registers). Not setting the RGMII delays on the platforms that imply
+> it's being done on the PHY side will consequently cause the traffic loss.
+> We discovered that the denoted soft-reset is missing in the
+> m88e1121_config_aneg() method for the case if the RGMII delays are
+> modified but the MDIx polarity isn't changed or the auto-negotiation is
+> left enabled, thus causing the traffic loss on our platform with Marvell
+> Alaska 88E1510 installed. Let's fix that by issuing the soft-reset if the
+> delays have been actually set in the m88e1121_config_aneg_rgmii_delays()
+> method.
+> 
+> Fixes: d6ab93364734 ("net: phy: marvell: Avoid unnecessary soft reset")
+> Signed-off-by: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+> Reviewed-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
+> Cc: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> 
+> ---
+>  drivers/net/phy/marvell.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+> index 4fcfca4e1702..a4f685927a64 100644
+> --- a/drivers/net/phy/marvell.c
+> +++ b/drivers/net/phy/marvell.c
+> @@ -551,9 +551,9 @@ static int m88e1121_config_aneg_rgmii_delays(struct
+> phy_device *phydev)
+>  	else
+>  		mscr = 0;
+>  
+> -	return phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
+> -				MII_88E1121_PHY_MSCR_REG,
+> -				MII_88E1121_PHY_MSCR_DELAY_MASK, mscr);
+> +	return phy_modify_paged_changed(phydev, MII_MARVELL_MSCR_PAGE,
+> +					MII_88E1121_PHY_MSCR_REG,
+> +					MII_88E1121_PHY_MSCR_DELAY_MASK, mscr);
+>  }
+>  
+>  static int m88e1121_config_aneg(struct phy_device *phydev)
+> @@ -567,11 +567,13 @@ static int m88e1121_config_aneg(struct phy_device *phydev)
+>  			return err;
+>  	}
+>  
+> +	changed = err;
+> +
+>  	err = marvell_set_polarity(phydev, phydev->mdix_ctrl);
+>  	if (err < 0)
+>  		return err;
+>  
+> -	changed = err;
+> +	changed |= err;
+>  
+>  	err = genphy_config_aneg(phydev);
+>  	if (err < 0)
+> -- 
+> 2.34.1
+> 
+> 
