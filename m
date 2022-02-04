@@ -2,124 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90A7E4AA06C
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 20:51:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A2F4AA08D
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 20:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235158AbiBDTvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 14:51:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37006 "EHLO
+        id S235117AbiBDT5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 14:57:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235016AbiBDTvB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 14:51:01 -0500
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9A7C06175E
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 11:50:59 -0800 (PST)
-Received: by mail-il1-x136.google.com with SMTP id i1so5769789ils.5
-        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 11:50:59 -0800 (PST)
+        with ESMTP id S231801AbiBDT5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 14:57:18 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BE44C061714
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 11:57:18 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id y5-20020a17090aca8500b001b8127e3d3aso7060395pjt.3
+        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 11:57:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Q42zjW8xahSVhGaNilfnj63EHK+Wikk3dCoDovWBQQY=;
-        b=Fqu8+ypIkgxeVioleBdx7cz2kzcNe89AS6NsggXAOlU1Ts4IPADKZ7XQeqdEbNyf89
-         SAwWXPLyU9ULlM70bsTCwyoO4AYCOLi9/eUmNITJ8VrsmKVKrxSjiJqvPtseykw4EZcI
-         7i8RqubLHz8YGtUo1UHLJKtlFDeKXKdw9yb2FasbkTYh78guITuK5WoEem40G8WTdxNI
-         N2ZTPzSdf0zgrNKA7v4PckXQhcoazag/+YBMSZrJJ51D1Yj4DXi3d3/mwjcQ34YFtLul
-         GJRRg3fl06CGSyOoSnuyNX5UWetE1yfvt15CEfeAHhUtgBC2UVyjdv2AnnMPDzCd61Vc
-         tpSw==
+        bh=wDGw0/EwtJYTglZEqfDGb3FIN462zRDf9urboGC2t7A=;
+        b=Bk9rhpq3K39sqcfpUMoJLxjONLVP7mBOncRpnvnFvdoquHHy0SI+S3PVTkNmzC6qC1
+         Hn7axQi/nFdTpBvbEZ4XzLfGaP4rMAFWAq3v7KyXaOgmugpS9APiMuYLkOHYw2hXcPNd
+         2/GEwlEADthc4am1sM/aGZ8vqH3dCMT8zVEvrmS9yPDQ+SKt7UQV5Yo+yIPBIRr3tuN9
+         1BnbqqlWOnlIdC164bX0QW/M8+Tyd60RVHJg+nj4209UulaFHx1bg9TrYNJ2BDVDcnjX
+         5uOr0A77F0GSamgDRXNohGvyGSGpYAuQ/ZjUW43X6doZKK6WtU+ACHhHBLQ9kcahdGxk
+         W6yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Q42zjW8xahSVhGaNilfnj63EHK+Wikk3dCoDovWBQQY=;
-        b=CRapa9/XnkmUJZVLjqa/f2ZptISurpwpckqoUZvO6EEFSQIbPOLZo/1DxBIzUj3MsF
-         j4tlfuRZv1dbgCiFcugPgGINCzFomJn9wYZ/cVeUQFuDgRZfgvfrnMBuRYrlPRj3V942
-         iVUt42Gbro6wwKbSTPhbvuHa5h6h47HJlQ1wvjQU0WL5jZCYTp8KK69x4UHa4K11Ig4Y
-         P1frn3FCMlZk3SsrG6WbIS9piQvO+Tz88+WoF7S9EQSAIsEk6GWGhDEQG6pjF/wJepAa
-         aJAUuz58ou8C6ur21jFUSmyOsKUZ606TFIaayeLxRWlPkOwTSvAkOafKBmXUDeieCtDp
-         9cjQ==
-X-Gm-Message-State: AOAM532y+4j2dPxtmYkPYC/wjGqaJ/+laarwYW0hNejk5riumFtR2/5R
-        yGyxOS7Obo2rPxDkPu+iWp/CcQ==
-X-Google-Smtp-Source: ABdhPJwifcbLNOdRURW/rAIAn/Qb8lZQb1jM5cBMyOnP8fsp1/pvuwPkQuyCiwRCNj/Yx2I45RV8vQ==
-X-Received: by 2002:a92:c569:: with SMTP id b9mr374353ilj.140.1644004258743;
-        Fri, 04 Feb 2022 11:50:58 -0800 (PST)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id k13sm1417564ili.22.2022.02.04.11.50.57
+        bh=wDGw0/EwtJYTglZEqfDGb3FIN462zRDf9urboGC2t7A=;
+        b=EOCEqKoYswrWAHL7RsACj+cIjKduH8xpSVjyjcurHuU2PAlS34ZY+UD+gR3eiP6ZM1
+         v4eJUy13bePL/HQfDMDpzkIJd5Tjw1oENxQ3BZqih7sw0UllX7v+oZa6Awwtbwb5CpfW
+         tEmfqhsZJGissTzO7zjBcsH3ih/kDf3/fCop1XDCURM0+gBiNNkjTTRda5ohoDrSL7SO
+         1wYmCc01vnPI6zdVbRM8lbc4mDQIWfD0xFyJjmQoNFSYwpcNps1tcqWhJ4AAUtMp88IM
+         yzIMmB32NyonEtKI3Fjos6NvyVp5iOZtB6/npnrzPV2meNsyocEA44QQopc+XTxH8Vdk
+         7d9g==
+X-Gm-Message-State: AOAM532+7jrA+7q5ux4d6H/Obg2YqByJn1PFyFiHdhWr416Le5UhgSLd
+        GtdGqG54Dy2p1ScjWOyg1AMAAA==
+X-Google-Smtp-Source: ABdhPJzfIwASGH9Q9YDrGpj7+nQBCQ9/oA7DJD4A2a/w8DbSTpauL5FCdoCfS7WdNzcYae8fuOcNsw==
+X-Received: by 2002:a17:903:1249:: with SMTP id u9mr4926897plh.171.1644004637715;
+        Fri, 04 Feb 2022 11:57:17 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id bx19sm1098827pjb.53.2022.02.04.11.57.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 11:50:58 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     djakov@kernel.org, bjorn.andersson@linaro.org, mka@chromium.org,
-        evgreen@chromium.org, cpratapa@codeaurora.org,
-        avuyyuru@codeaurora.org, jponduru@codeaurora.org,
-        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 7/7] net: ipa: use IPA power device pointer
-Date:   Fri,  4 Feb 2022 13:50:44 -0600
-Message-Id: <20220204195044.1082026-8-elder@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220204195044.1082026-1-elder@linaro.org>
-References: <20220204195044.1082026-1-elder@linaro.org>
+        Fri, 04 Feb 2022 11:57:17 -0800 (PST)
+Date:   Fri, 4 Feb 2022 11:57:14 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next] net: minor __dev_alloc_name() optimization
+Message-ID: <20220204115714.3b98451c@hermes.local>
+In-Reply-To: <20220203064609.3242863-1-eric.dumazet@gmail.com>
+References: <20220203064609.3242863-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ipa_power structure contains a copy of the IPA device pointer,
-so there's no need to pass it to ipa_interconnect_init().  We can
-also use that pointer for an error message in ipa_power_enable().
+On Wed,  2 Feb 2022 22:46:09 -0800
+Eric Dumazet <eric.dumazet@gmail.com> wrote:
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_power.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> __dev_alloc_name() allocates a private zeroed page,
+> then sets bits in it while iterating through net devices.
+> 
+> It can use __set_bit() to avoid unecessary locked operations.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-diff --git a/drivers/net/ipa/ipa_power.c b/drivers/net/ipa/ipa_power.c
-index 8a564d72799da..16ece27d14d7e 100644
---- a/drivers/net/ipa/ipa_power.c
-+++ b/drivers/net/ipa/ipa_power.c
-@@ -71,7 +71,7 @@ struct ipa_power {
- };
- 
- /* Initialize interconnects required for IPA operation */
--static int ipa_interconnect_init(struct ipa_power *power, struct device *dev,
-+static int ipa_interconnect_init(struct ipa_power *power,
- 				 const struct ipa_interconnect_data *data)
- {
- 	struct icc_bulk_data *interconnect;
-@@ -89,7 +89,7 @@ static int ipa_interconnect_init(struct ipa_power *power, struct device *dev,
- 		interconnect++;
- 	}
- 
--	ret = of_icc_bulk_get(dev, power->interconnect_count,
-+	ret = of_icc_bulk_get(power->dev, power->interconnect_count,
- 			      power->interconnect);
- 	if (ret)
- 		return ret;
-@@ -123,7 +123,7 @@ static int ipa_power_enable(struct ipa *ipa)
- 
- 	ret = clk_prepare_enable(power->core);
- 	if (ret) {
--		dev_err(&ipa->pdev->dev, "error %d enabling core clock\n", ret);
-+		dev_err(power->dev, "error %d enabling core clock\n", ret);
- 		icc_bulk_disable(power->interconnect_count,
- 				 power->interconnect);
- 	}
-@@ -385,7 +385,7 @@ ipa_power_init(struct device *dev, const struct ipa_power_data *data)
- 	spin_lock_init(&power->spinlock);
- 	power->interconnect_count = data->interconnect_count;
- 
--	ret = ipa_interconnect_init(power, dev, data->interconnect_data);
-+	ret = ipa_interconnect_init(power, data->interconnect_data);
- 	if (ret)
- 		goto err_kfree;
- 
--- 
-2.32.0
+That looks correct.
+
+
+Acked-by: Stephen Hemminger <stephen@networkplumber.org>
 
