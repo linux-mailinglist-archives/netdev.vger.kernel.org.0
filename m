@@ -2,93 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B63774A94D5
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 09:03:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E4584A94FF
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 09:19:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236018AbiBDIDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 03:03:09 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:58500 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232004AbiBDIDJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 03:03:09 -0500
-From:   Kurt Kanzenbach <kurt@linutronix.de>
+        id S1348616AbiBDIT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 03:19:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238253AbiBDIT0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 03:19:26 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7295BC061714
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 00:19:26 -0800 (PST)
+Date:   Fri, 4 Feb 2022 09:19:22 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643961788;
+        s=2020; t=1643962763;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=1Q9w9cCPiizS9c08viXczkQ5y2iVATK7Ure0+P8y1WA=;
-        b=ljChLCBbv7pau6AmdP7lrZKgMaXOBH5xuPDQSv6n5Cxlvl7kOFDnMh4+NcPTLcyPE50T0H
-        OHaKZJTqyDObo1ihgDWeO9g1ozkEh1AlkIN+kCl3EGUa0j/uMDg/35fl8Kzzc3ABqZJib0
-        rsuM5DRLRPIy3Vtu66zrC599ckiBvmG6aLpYg+zr5BcUvRRQ+wY9Osmbwo6HD9xGNZbcaz
-        cr5k25Cg4Qjnbdr2t7siEAC9Pkt0hBEB8vpTT/1ZmE5pzWfMjT6LszwOqPksez4/+xIju7
-        FLJ3Xkzljt5cD7jQZq+t4DfYn3/DAlGIpJYbkMnaza6XKISQ5icpY+2it3yeCQ==
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0EVqzfBHngLFj0WvMsDBX7PUceCV7lBGA4L5jVwG7vw=;
+        b=Cxlpr/2qIhsE/fte7cb1HgHCTd2elrrQ9z/+c9sV3QsODR+qhGxM5NgvwepE2+4t2G4irY
+        CrREhnCYrzent8bqZykgmQtLBaw6hreji4QaB2wsE5xV48IVPm50Lwge8ZJxKsPesFBYmh
+        KSz+XULro99j2YNm9QKZ55s1d+/4aYU9GasBFga1eVvHRT5OEofwxkgqTmo4DmYPK9sMpg
+        CBhlFw5JpDUQOb+z6FOpasOkCSmCVIUM5KMNN7N6pzEG8iP4TS9nJZZhdetZmE2PhW0rR9
+        HqDbHP32exFiD+WhEo+LaD3k4W2BjL2mZjWDBY0FTASOAhWUhJdXjGXtdj3bSQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643961788;
+        s=2020e; t=1643962763;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=1Q9w9cCPiizS9c08viXczkQ5y2iVATK7Ure0+P8y1WA=;
-        b=eLzMILb0aJ6QOt9v0QzfE+irTbFbevFZeS2k8zVF4bzdF3a3nQtm6s5bJ1Mcgqpf/Y2boP
-        vHVy0UUAp7KLgWCw==
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andre Guedes <andre.guedes@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jithu Joseph <jithu.joseph@intel.com>,
-        Vedang Patel <vedang.patel@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH net] igc: Clear old XDP info when changing ring settings
-Date:   Fri,  4 Feb 2022 09:02:17 +0100
-Message-Id: <20220204080217.70054-1-kurt@linutronix.de>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0EVqzfBHngLFj0WvMsDBX7PUceCV7lBGA4L5jVwG7vw=;
+        b=rtbuQpOJgwEmcbJ11r4HTYRHQFSOsYovnsuXf+wpmWA/+nkNQU0fKuKpn5Gzv1z/oueNKd
+        9Kx2fcZWkNLEpzAw==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Yannick Vignon <yannick.vignon@oss.nxp.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Wang <weiwan@google.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, mingkai.hu@nxp.com,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        sebastien.laveze@nxp.com, Yannick Vignon <yannick.vignon@nxp.com>
+Subject: Re: [PATCH net-next 1/2] net: napi: wake up ksoftirqd if needed
+ after scheduling NAPI
+Message-ID: <YfzhioY0Mj3M1v4S@linutronix.de>
+References: <20220203184031.1074008-1-yannick.vignon@oss.nxp.com>
+ <CANn89iKn20yuortKnqKV99s=Pb9HHXbX8e0=58f_szkTWnQbCQ@mail.gmail.com>
+ <0ad1a438-8e29-4613-df46-f913e76a1770@oss.nxp.com>
+ <20220203170901.52ccfd09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220203170901.52ccfd09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When changing ring sizes the driver triggers kernel warnings in XDP code.
+On 2022-02-03 17:09:01 [-0800], Jakub Kicinski wrote:
+> Let's be clear that the problem only exists when switching to threaded
+> IRQs on _non_ PREEMPT_RT kernel (or old kernels). We already have a
+> check in __napi_schedule_irqoff() which should handle your problem on
+> PREEMPT_RT.
 
-For instance, running 'ethtool -G $interface tx 1024 rx 1024' yields:
+It does not. The problem is the missing bh-off/on around the call. The
+forced-threaded handler has this. His explicit threaded-handler does not
+and needs it.
 
-|[  754.838136] Missing unregister, handled but fix driver
-|[  754.838143] WARNING: CPU: 4 PID: 704 at net/core/xdp.c:170 xdp_rxq_info_reg+0x7d/0xe0
+> We should slap a lockdep warning for non-irq contexts in
+> ____napi_schedule(), I think, it was proposed by got lost.
 
-The newly allocated ring is copied by memcpy() and still contains the old XDP
-information. Therefore, it has to be cleared before allocating new resources
-by igc_setup_rx_resources().
+Something like this perhaps?:
 
-Igb does it the same way. Keep the code in sync.
-
-Fixes: 4609ffb9f615 ("igc: Refactor XDP rxq info registration")
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
----
- drivers/net/ethernet/intel/igc/igc_ethtool.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-index 8cc077b712ad..93839106504d 100644
---- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-@@ -671,6 +671,10 @@ igc_ethtool_set_ringparam(struct net_device *netdev,
- 			memcpy(&temp_ring[i], adapter->rx_ring[i],
- 			       sizeof(struct igc_ring));
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 1baab07820f65..11c5f003d1591 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4217,6 +4217,9 @@ static inline void ____napi_schedule(struct softnet_data *sd,
+ {
+ 	struct task_struct *thread;
  
-+			/* Clear copied XDP RX-queue info */
-+			memset(&temp_ring[i].xdp_rxq, 0,
-+			       sizeof(temp_ring[i].xdp_rxq));
++	lockdep_assert_once(hardirq_count() | softirq_count());
++	lockdep_assert_irqs_disabled();
 +
- 			temp_ring[i].count = new_rx_count;
- 			err = igc_setup_rx_resources(&temp_ring[i]);
- 			if (err) {
--- 
-2.30.2
+ 	if (test_bit(NAPI_STATE_THREADED, &napi->state)) {
+ 		/* Paired with smp_mb__before_atomic() in
+ 		 * napi_enable()/dev_set_threaded().
 
+Be aware that this (the first assert) will trigger in dev_cpu_dead() and
+needs a bh-off/on around. I should have something in my RT tree :)
+
+Sebastian
