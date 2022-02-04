@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 846BF4A9A75
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 14:58:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 740C24A9A77
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 14:58:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359161AbiBDN6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 08:58:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:49907 "EHLO
+        id S1359155AbiBDN62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 08:58:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38596 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1359155AbiBDN6T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 08:58:19 -0500
+        by vger.kernel.org with ESMTP id S1359164AbiBDN6V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 08:58:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643983099;
+        s=mimecast20190719; t=1643983101;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=MBMyk3IZsR5ozoJLuOW+sHZ0Vu+57g26uCSnHB4yqHg=;
-        b=RmWj8lULiS3JwegvZMNYJFj1sxEqzvUVCAkJtbD6aHTO6qHIbswmy7pyIAoK5G1r9aZpa+
-        U105yEcMDs5Gf0vdYO8TDU+Y88tN6z1mM6X3fL7nVXNYffeP8qcrkGw9q03QR7YGi9k+nd
-        jQMzmeKds21n2DJSXC1ee7aNJ7ASpoA=
+        bh=huLoFadblEn2s3rt9PCLve07r8DRe9hm65RauLtf9Y8=;
+        b=dlGE2ZyCPTnbdXXpZf/voWFK9TeQXQrFgW4MJVycGuC+rEvHh5t87C9ID67wxXpdYH3O6/
+        1Av7kSqWDFF2uj3Wog2C5AIo5tgrqwOpwzAAeCCzzMR5pH8/WiQs9e1AZ5jrjKRz8pNPwm
+        Igh3I7kOmtyAZAhhl9zc0gy1gGWYkbc=
 Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
  [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-373-Bsz1aEktM8-rg8CE3E__gQ-1; Fri, 04 Feb 2022 08:58:18 -0500
-X-MC-Unique: Bsz1aEktM8-rg8CE3E__gQ-1
-Received: by mail-wr1-f71.google.com with SMTP id s17-20020adf9791000000b001e274a1233bso2010518wrb.2
-        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 05:58:17 -0800 (PST)
+ us-mta-674-Sl2TAusrNCyGaSGWGc33ug-1; Fri, 04 Feb 2022 08:58:20 -0500
+X-MC-Unique: Sl2TAusrNCyGaSGWGc33ug-1
+Received: by mail-wr1-f71.google.com with SMTP id e2-20020adfa442000000b001e2dd248341so592590wra.20
+        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 05:58:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=MBMyk3IZsR5ozoJLuOW+sHZ0Vu+57g26uCSnHB4yqHg=;
-        b=21ZQ5MQHbemSnHTfelbgRJBV7/0JIi4OET1VNfLXaaFnGQIsxzQoMiwpmqwy6nVcS9
-         8Br1dxSm+nzCNPP0cpa6G+p0n8Vjz67ELAZGKTms/q8nbDyMbr8Km39SBKz5Vh8/gFch
-         3UMRH3qRelVjVQZLjzP6qibUqcJg6c1lWvV9gEGwvZJCf/EIYZRcQ5sTXWaSRESdworr
-         FpEvIRNuUoU2loOsuX19uWcR1VTMK+ZW/dW7+D4q2/7WxpFwm3D2Hu4Mmy/iRimat4sE
-         OKGaMrN4qAkHLMNCmXl3dmI314bh/Pr/GSnNrrunUEMP2/fxuK5k0nSkQTFHTegyS9/f
-         FUdg==
-X-Gm-Message-State: AOAM533yMOwHddOCD4Q8ir/qEaJUURypYdNIGy2zW2FtA4CmfzBiw/yX
-        mzNecsdCxFTEK7LRdU4aeYbbdjMEImDSX5NdACCf/SGQRpdIPh/dk2p+O1yI7PVwCZbAY9RyCbt
-        fSRz/9fIVRd8F0Way
-X-Received: by 2002:a05:6000:25c:: with SMTP id m28mr2505936wrz.511.1643983096746;
-        Fri, 04 Feb 2022 05:58:16 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxwFnp0E5TKW9qae8qOTeJ2DC4Arzk0wVFQek4amDQpq4oIdfQziIY2s9OwcMQeIpq8RT1BUQ==
-X-Received: by 2002:a05:6000:25c:: with SMTP id m28mr2505922wrz.511.1643983096587;
-        Fri, 04 Feb 2022 05:58:16 -0800 (PST)
+        bh=huLoFadblEn2s3rt9PCLve07r8DRe9hm65RauLtf9Y8=;
+        b=yJc2GRdXCfQ2jaSEXBo+i+CCjmS33kxu453eqMz8eqQ2CHvgcqkel9vE5t+hano0X3
+         Tc5Tq1Lf7as9b9jmUZ+6o/NU4rdOlYd6IzINMB3aRoJw07QckXgLJexWmYTu63otQdi+
+         3bOrnZ2HozwBgqwch3t4FajUkBXreiI3QA5AUaImgjFPVtIK8IE884JxC1+I66CrPtWI
+         V6s4BkNQPG27yyuawPlh+nl5PvD+1RFGsoNs1KXCbvOc1XPWkKIjjmkm6JKt0lIoOWd+
+         g7NI5IxymfUxJ/8kqqPqWrzIARUOVwYXPBmA1vsq+mgTLggTtL1oGWFGU6qp7sQPSoeN
+         4mNA==
+X-Gm-Message-State: AOAM532feN9yqIDNI5qmMiuRjxdOfm9TrXgaxBl2NriLfZGAKQnm4xpR
+        yZhuK+V2bBXuL60w9zgJjQYj7KPvjLVWkwlaU9E6QVSy6f8Bzij31c0/xfsyEzC6LRiFz5u4mAP
+        FBII1dggN/KqWdLPx
+X-Received: by 2002:adf:f750:: with SMTP id z16mr786425wrp.239.1643983099111;
+        Fri, 04 Feb 2022 05:58:19 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz9n7xqbaODP/c2niZ8sZmsya6PVRtmFseh5p6sdFV0nfmo3BUQb4qtexbScYv/kP0iTRNYQg==
+X-Received: by 2002:adf:f750:: with SMTP id z16mr786414wrp.239.1643983098926;
+        Fri, 04 Feb 2022 05:58:18 -0800 (PST)
 Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id bg26sm10366044wmb.48.2022.02.04.05.58.15
+        by smtp.gmail.com with ESMTPSA id o14sm2280445wry.104.2022.02.04.05.58.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 05:58:16 -0800 (PST)
-Date:   Fri, 4 Feb 2022 14:58:14 +0100
+        Fri, 04 Feb 2022 05:58:18 -0800 (PST)
+Date:   Fri, 4 Feb 2022 14:58:16 +0100
 From:   Guillaume Nault <gnault@redhat.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -61,9 +61,9 @@ Cc:     netdev@vger.kernel.org,
         Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
         Russell Strong <russell@strong.id.au>,
         Dave Taht <dave.taht@gmail.com>
-Subject: [PATCH net-next 2/4] ipv4: Stop taking ECN bits into account in
- fib4-rules
-Message-ID: <706ed5f33756ea0989373f1e312e248095d458d5.1643981839.git.gnault@redhat.com>
+Subject: [PATCH net-next 3/4] ipv4: Reject routes specifying ECN bits in
+ rtm_tos
+Message-ID: <e59d6861e3c230c9fd1f24f116de38a73fa27773.1643981839.git.gnault@redhat.com>
 References: <cover.1643981839.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -73,159 +73,227 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new dscp_t type to replace the tos field of struct fib4_rule,
-so that fib4-rules consistently ignore ECN bits.
+Use the new dscp_t type to replace the fc_tos field of fib_config, to
+ensure IPv4 routes aren't influenced by ECN bits when configured with
+non-zero rtm_tos.
 
-Before this patch, fib4-rules did accept rules with the high order ECN
-bit set (but not the low order one). Also, it relied on its callers
-masking the ECN bits of ->flowi4_tos to prevent those from influencing
-the result. This was brittle and a few call paths still do the lookup
-without masking the ECN bits first.
+Before this patch, IPv4 routes specifying an rtm_tos with some of the
+ECN bits set were accepted. However they wouldn't work (never match) as
+IPv4 normally clears the ECN bits with IPTOS_RT_MASK before doing a FIB
+lookup (although a few buggy code paths don't).
 
-After this patch fib4-rules only compare the DSCP bits. ECN can't
-influence the result anymore, even if the caller didn't mask these
-bits. Also, fib4-rules now must have both ECN bits cleared or they will
-be rejected.
+After this patch, IPv4 routes specifying an rtm_tos with any ECN bit
+set is rejected.
+
+Note: IPv6 routes ignore rtm_tos altogether, any rtm_tos is accepted,
+but treated as if it were 0.
 
 Signed-off-by: Guillaume Nault <gnault@redhat.com>
 ---
- net/ipv4/fib_rules.c                          | 18 ++++++-----
- tools/testing/selftests/net/fib_rule_tests.sh | 30 ++++++++++++++++++-
- 2 files changed, 39 insertions(+), 9 deletions(-)
+Shuah, FYI, this is the patch I was refering to in our discussion about
+testing invalid tos values:
+https://lore.kernel.org/netdev/20220202232555.GC15826@pc-4.home/
 
-diff --git a/net/ipv4/fib_rules.c b/net/ipv4/fib_rules.c
-index e0b6c8b6de57..117c48571cf0 100644
---- a/net/ipv4/fib_rules.c
-+++ b/net/ipv4/fib_rules.c
-@@ -23,6 +23,7 @@
- #include <linux/list.h>
+ include/net/ip_fib.h                     |  3 +-
+ net/ipv4/fib_frontend.c                  | 11 +++-
+ net/ipv4/fib_trie.c                      |  7 ++-
+ tools/testing/selftests/net/fib_tests.sh | 76 ++++++++++++++++++++++++
+ 4 files changed, 93 insertions(+), 4 deletions(-)
+
+diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
+index c4297704bbcb..6a82bcb8813b 100644
+--- a/include/net/ip_fib.h
++++ b/include/net/ip_fib.h
+@@ -17,6 +17,7 @@
  #include <linux/rcupdate.h>
- #include <linux/export.h>
+ #include <net/fib_notifier.h>
+ #include <net/fib_rules.h>
++#include <net/inet_dscp.h>
+ #include <net/inetpeer.h>
+ #include <linux/percpu.h>
+ #include <linux/notifier.h>
+@@ -24,7 +25,7 @@
+ 
+ struct fib_config {
+ 	u8			fc_dst_len;
+-	u8			fc_tos;
++	dscp_t			fc_dscp;
+ 	u8			fc_protocol;
+ 	u8			fc_scope;
+ 	u8			fc_type;
+diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+index 4d61ddd8a0ec..c60e1d1ed2b0 100644
+--- a/net/ipv4/fib_frontend.c
++++ b/net/ipv4/fib_frontend.c
+@@ -32,6 +32,7 @@
+ #include <linux/list.h>
+ #include <linux/slab.h>
+ 
 +#include <net/inet_dscp.h>
  #include <net/ip.h>
+ #include <net/protocol.h>
  #include <net/route.h>
- #include <net/tcp.h>
-@@ -35,7 +36,7 @@ struct fib4_rule {
- 	struct fib_rule		common;
- 	u8			dst_len;
- 	u8			src_len;
--	u8			tos;
-+	dscp_t			dscp;
- 	__be32			src;
- 	__be32			srcmask;
- 	__be32			dst;
-@@ -49,7 +50,7 @@ static bool fib4_rule_matchall(const struct fib_rule *rule)
- {
- 	struct fib4_rule *r = container_of(rule, struct fib4_rule, common);
+@@ -735,8 +736,16 @@ static int rtm_to_fib_config(struct net *net, struct sk_buff *skb,
+ 	memset(cfg, 0, sizeof(*cfg));
  
--	if (r->dst_len || r->src_len || r->tos)
-+	if (r->dst_len || r->src_len || r->dscp)
- 		return false;
- 	return fib_rule_matchall(rule);
- }
-@@ -185,7 +186,7 @@ INDIRECT_CALLABLE_SCOPE int fib4_rule_match(struct fib_rule *rule,
- 	    ((daddr ^ r->dst) & r->dstmask))
- 		return 0;
- 
--	if (r->tos && (r->tos != fl4->flowi4_tos))
-+	if (r->dscp && r->dscp != inet_dsfield_to_dscp(fl4->flowi4_tos))
- 		return 0;
- 
- 	if (rule->ip_proto && (rule->ip_proto != fl4->flowi4_proto))
-@@ -225,10 +226,12 @@ static int fib4_rule_configure(struct fib_rule *rule, struct sk_buff *skb,
- 	int err = -EINVAL;
- 	struct fib4_rule *rule4 = (struct fib4_rule *) rule;
- 
--	if (frh->tos & ~IPTOS_TOS_MASK) {
--		NL_SET_ERR_MSG(extack, "Invalid tos");
-+	if (!inet_validate_dscp(frh->tos)) {
+ 	rtm = nlmsg_data(nlh);
++
++	if (!inet_validate_dscp(rtm->rtm_tos)) {
 +		NL_SET_ERR_MSG(extack,
 +			       "Invalid dsfield (tos): ECN bits must be 0");
- 		goto errout;
++		err = -EINVAL;
++		goto errout;
++	}
++	cfg->fc_dscp = inet_dsfield_to_dscp(rtm->rtm_tos);
++
+ 	cfg->fc_dst_len = rtm->rtm_dst_len;
+-	cfg->fc_tos = rtm->rtm_tos;
+ 	cfg->fc_table = rtm->rtm_table;
+ 	cfg->fc_protocol = rtm->rtm_protocol;
+ 	cfg->fc_scope = rtm->rtm_scope;
+diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+index 8060524f4256..d937eeebb812 100644
+--- a/net/ipv4/fib_trie.c
++++ b/net/ipv4/fib_trie.c
+@@ -61,6 +61,7 @@
+ #include <linux/vmalloc.h>
+ #include <linux/notifier.h>
+ #include <net/net_namespace.h>
++#include <net/inet_dscp.h>
+ #include <net/ip.h>
+ #include <net/protocol.h>
+ #include <net/route.h>
+@@ -1210,9 +1211,9 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
+ 	struct fib_info *fi;
+ 	u8 plen = cfg->fc_dst_len;
+ 	u8 slen = KEYLENGTH - plen;
+-	u8 tos = cfg->fc_tos;
+ 	u32 key;
+ 	int err;
++	u8 tos;
+ 
+ 	key = ntohl(cfg->fc_dst);
+ 
+@@ -1227,6 +1228,7 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
+ 		goto err;
  	}
-+	rule4->dscp = inet_dsfield_to_dscp(frh->tos);
  
- 	/* split local/main if they are not already split */
- 	err = fib_unmerge(net);
-@@ -270,7 +273,6 @@ static int fib4_rule_configure(struct fib_rule *rule, struct sk_buff *skb,
- 	rule4->srcmask = inet_make_mask(rule4->src_len);
- 	rule4->dst_len = frh->dst_len;
- 	rule4->dstmask = inet_make_mask(rule4->dst_len);
--	rule4->tos = frh->tos;
++	tos = inet_dscp_to_dsfield(cfg->fc_dscp);
+ 	l = fib_find_node(t, &tp, key);
+ 	fa = l ? fib_find_alias(&l->leaf, slen, tos, fi->fib_priority,
+ 				tb->tb_id, false) : NULL;
+@@ -1703,8 +1705,8 @@ int fib_table_delete(struct net *net, struct fib_table *tb,
+ 	struct key_vector *l, *tp;
+ 	u8 plen = cfg->fc_dst_len;
+ 	u8 slen = KEYLENGTH - plen;
+-	u8 tos = cfg->fc_tos;
+ 	u32 key;
++	u8 tos;
  
- 	net->ipv4.fib_has_custom_rules = true;
+ 	key = ntohl(cfg->fc_dst);
  
-@@ -313,7 +315,7 @@ static int fib4_rule_compare(struct fib_rule *rule, struct fib_rule_hdr *frh,
- 	if (frh->dst_len && (rule4->dst_len != frh->dst_len))
- 		return 0;
+@@ -1715,6 +1717,7 @@ int fib_table_delete(struct net *net, struct fib_table *tb,
+ 	if (!l)
+ 		return -ESRCH;
  
--	if (frh->tos && (rule4->tos != frh->tos))
-+	if (frh->tos && inet_dscp_to_dsfield(rule4->dscp) != frh->tos)
- 		return 0;
- 
- #ifdef CONFIG_IP_ROUTE_CLASSID
-@@ -337,7 +339,7 @@ static int fib4_rule_fill(struct fib_rule *rule, struct sk_buff *skb,
- 
- 	frh->dst_len = rule4->dst_len;
- 	frh->src_len = rule4->src_len;
--	frh->tos = rule4->tos;
-+	frh->tos = inet_dscp_to_dsfield(rule4->dscp);
- 
- 	if ((rule4->dst_len &&
- 	     nla_put_in_addr(skb, FRA_DST, rule4->dst)) ||
-diff --git a/tools/testing/selftests/net/fib_rule_tests.sh b/tools/testing/selftests/net/fib_rule_tests.sh
-index d7a9ab3be1d3..4f70baad867d 100755
---- a/tools/testing/selftests/net/fib_rule_tests.sh
-+++ b/tools/testing/selftests/net/fib_rule_tests.sh
-@@ -215,10 +215,25 @@ fib_rule4_test_match_n_redirect()
- 	log_test $? 0 "rule4 del by pref: $description"
++	tos = inet_dscp_to_dsfield(cfg->fc_dscp);
+ 	fa = fib_find_alias(&l->leaf, slen, tos, 0, tb->tb_id, false);
+ 	if (!fa)
+ 		return -ESRCH;
+diff --git a/tools/testing/selftests/net/fib_tests.sh b/tools/testing/selftests/net/fib_tests.sh
+index 996af1ae3d3d..bb73235976b3 100755
+--- a/tools/testing/selftests/net/fib_tests.sh
++++ b/tools/testing/selftests/net/fib_tests.sh
+@@ -1447,6 +1447,81 @@ ipv4_local_rt_cache()
+ 	log_test $? 0 "Cached route removed from VRF port device"
  }
  
-+fib_rule4_test_reject()
++ipv4_rt_dsfield()
 +{
-+	local match="$1"
-+	local rc
++	echo
++	echo "IPv4 route with dsfield tests"
 +
-+	$IP rule add $match table $RTABLE 2>/dev/null
-+	rc=$?
-+	log_test $rc 2 "rule4 check: $match"
++	run_cmd "$IP route flush 172.16.102.0/24"
 +
-+	if [ $rc -eq 0 ]; then
-+		$IP rule del $match table $RTABLE
-+	fi
++	# New routes should reject dsfield options that interfere with ECN
++	run_cmd "$IP route add 172.16.102.0/24 dsfield 0x01 via 172.16.101.2"
++	log_test $? 2 "Reject route with dsfield 0x01"
++
++	run_cmd "$IP route add 172.16.102.0/24 dsfield 0x02 via 172.16.101.2"
++	log_test $? 2 "Reject route with dsfield 0x02"
++
++	run_cmd "$IP route add 172.16.102.0/24 dsfield 0x03 via 172.16.101.2"
++	log_test $? 2 "Reject route with dsfield 0x03"
++
++	# A generic route that doesn't take DSCP into account
++	run_cmd "$IP route add 172.16.102.0/24 via 172.16.101.2"
++
++	# A more specific route for DSCP 0x10
++	run_cmd "$IP route add 172.16.102.0/24 dsfield 0x10 via 172.16.103.2"
++
++	# DSCP 0x10 should match the specific route, no matter the ECN bits
++	$IP route get fibmatch 172.16.102.1 dsfield 0x10 | \
++		grep -q "via 172.16.103.2"
++	log_test $? 0 "IPv4 route with DSCP and ECN:Not-ECT"
++
++	$IP route get fibmatch 172.16.102.1 dsfield 0x11 | \
++		grep -q "via 172.16.103.2"
++	log_test $? 0 "IPv4 route with DSCP and ECN:ECT(1)"
++
++	$IP route get fibmatch 172.16.102.1 dsfield 0x12 | \
++		grep -q "via 172.16.103.2"
++	log_test $? 0 "IPv4 route with DSCP and ECN:ECT(0)"
++
++	$IP route get fibmatch 172.16.102.1 dsfield 0x13 | \
++		grep -q "via 172.16.103.2"
++	log_test $? 0 "IPv4 route with DSCP and ECN:CE"
++
++	# Unknown DSCP should match the generic route, no matter the ECN bits
++	$IP route get fibmatch 172.16.102.1 dsfield 0x14 | \
++		grep -q "via 172.16.101.2"
++	log_test $? 0 "IPv4 route with unknown DSCP and ECN:Not-ECT"
++
++	$IP route get fibmatch 172.16.102.1 dsfield 0x15 | \
++		grep -q "via 172.16.101.2"
++	log_test $? 0 "IPv4 route with unknown DSCP and ECN:ECT(1)"
++
++	$IP route get fibmatch 172.16.102.1 dsfield 0x16 | \
++		grep -q "via 172.16.101.2"
++	log_test $? 0 "IPv4 route with unknown DSCP and ECN:ECT(0)"
++
++	$IP route get fibmatch 172.16.102.1 dsfield 0x17 | \
++		grep -q "via 172.16.101.2"
++	log_test $? 0 "IPv4 route with unknown DSCP and ECN:CE"
++
++	# Null DSCP should match the generic route, no matter the ECN bits
++	$IP route get fibmatch 172.16.102.1 dsfield 0x00 | \
++		grep -q "via 172.16.101.2"
++	log_test $? 0 "IPv4 route with no DSCP and ECN:Not-ECT"
++
++	$IP route get fibmatch 172.16.102.1 dsfield 0x01 | \
++		grep -q "via 172.16.101.2"
++	log_test $? 0 "IPv4 route with no DSCP and ECN:ECT(1)"
++
++	$IP route get fibmatch 172.16.102.1 dsfield 0x02 | \
++		grep -q "via 172.16.101.2"
++	log_test $? 0 "IPv4 route with no DSCP and ECN:ECT(0)"
++
++	$IP route get fibmatch 172.16.102.1 dsfield 0x03 | \
++		grep -q "via 172.16.101.2"
++	log_test $? 0 "IPv4 route with no DSCP and ECN:CE"
 +}
 +
- fib_rule4_test()
+ ipv4_route_test()
  {
- 	local getmatch
- 	local match
-+	local cnt
+ 	route_setup
+@@ -1454,6 +1529,7 @@ ipv4_route_test()
+ 	ipv4_rt_add
+ 	ipv4_rt_replace
+ 	ipv4_local_rt_cache
++	ipv4_rt_dsfield
  
- 	# setup the fib rule redirect route
- 	$IP route add table $RTABLE default via $GW_IP4 dev $DEV onlink
-@@ -234,8 +249,21 @@ fib_rule4_test()
- 	fib_rule4_test_match_n_redirect "$match" "$match" "iif redirect to table"
- 	ip netns exec testns sysctl -qw net.ipv4.ip_forward=0
- 
-+	# Reject dsfield (tos) options which have ECN bits set
-+	for cnt in $(seq 1 3); do
-+		match="dsfield $cnt"
-+		fib_rule4_test_reject "$match"
-+	done
-+
-+	# Don't take ECN bits into account when matching on dsfield
- 	match="tos 0x10"
--	fib_rule4_test_match_n_redirect "$match" "$match" "tos redirect to table"
-+	for cnt in "0x10" "0x11" "0x12" "0x13"; do
-+		# Using option 'tos' instead of 'dsfield' as old iproute2
-+		# versions don't support 'dsfield' in ip rule show.
-+		getmatch="tos $cnt"
-+		fib_rule4_test_match_n_redirect "$match" "$getmatch" \
-+						"$getmatch redirect to table"
-+	done
- 
- 	match="fwmark 0x64"
- 	getmatch="mark 0x64"
+ 	route_cleanup
+ }
 -- 
 2.21.3
 
