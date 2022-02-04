@@ -2,131 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55EC64AA04E
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 20:44:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED4FC4AA06A
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 20:50:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234643AbiBDToq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 14:44:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35518 "EHLO
+        id S234832AbiBDTuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 14:50:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234589AbiBDToo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 14:44:44 -0500
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FAB2C06173D
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 11:44:44 -0800 (PST)
-Received: by mail-lj1-x232.google.com with SMTP id z20so9937701ljo.6
-        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 11:44:44 -0800 (PST)
+        with ESMTP id S234780AbiBDTuy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 14:50:54 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A26C06173D
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 11:50:49 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id r144so8675943iod.9
+        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 11:50:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=+7p7SjPlIf2qoaknlsDE3NxXwoy8KpIefdGFaq4c5Ns=;
-        b=eA1Fk3TYR/JpkfnoIDJ8/0lNUUWKOxyaWFCQT3NCLvbgC6Oboh+wn/OpPn/ddhZDA3
-         /95pIPfnF2JZovHsPEnFoWe5cas5SjwcIhk671q8zDPCgcC7U96wijgYT/2HkdOOqwPE
-         5JRuR8kP63wYej2MtAph78zTUZlczL/k3LA4E=
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MxtfVI7KgoxN9MF1SpdHVpgmrFjcw8vxtvnlV5FrFuE=;
+        b=NiD0q3wT+xkpMP6TDkOOqpU7H+ZR/irEDLfQ7ixuXR1K/2tAqFaHtFl1UfLN+ii2hl
+         sffwSCM/7LmpxGuH0PuKmzF9fHEajjbGS001rDHCbQpOb2i1ijU6hfoOUqn/uGu+Q8HD
+         mC/ZtXQDrM5c2sK8q5IaLE1Da7NtZRQq0am8fz5aqmx3GztO3YVWHgiBtsPEINnDrB6L
+         NNHrJpX98MWuMU7a5IOkJWvKLQ9wT36Ee8L9/kf2Q8Tf7gmsRdEzelvcctV5OeP1QOwP
+         jh2c0xvTgipGj5n7XKDwJaKkag0ngVn5BsHmz3sU7dK98U4zfJOlzjMWpQTgl0fL/pD4
+         QssA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=+7p7SjPlIf2qoaknlsDE3NxXwoy8KpIefdGFaq4c5Ns=;
-        b=SQpgqWmcf0zy9qm5M72dCm5a+oYIbVQdv0bvKrCTeBP5K8XtTG+3f77Hf4yz27w587
-         Yp05K8ZAxawbehhT6gyKi6MjCyj3Mc1mxd1hTCFNkgmWlr4vkAdCsWWRIBDEiHrJExit
-         yx8MFq5qJqixc0MxNnsV9v5ZOl3QmxLh05JmwuqyX4G3fDObfMpJX6gz9wQ+JUVSkL0C
-         MXkqp2gSTGyb/EwnWKUkTX5RvsYgOZnECi39V6+MqZFU/ZfbbRDEIyHb1Q/YJUtJ+wBq
-         RzK8lnX5Jl/xJNykvNYiCr0q4XXjc8mNjMi959a3kHz0/bwDSSM/7OBhUSUXjt2m3qFz
-         2IEQ==
-X-Gm-Message-State: AOAM531LrK4kRqf9g6f3KuhKsSadbVeqTGQjTuvOeVtIizL9i4stt+pz
-        dQrTp+E5PM5Z/5bQPyEo4jANPdWW9bUQvZFK2ei3ig==
-X-Google-Smtp-Source: ABdhPJxB5s8BcySQb85Tldwg+UgD9pi2DNN3XJy/FXx6wr0ehlMTKupMk1RDVfqerNUu9G/dP2HfmIS9Y+JH8vUngPQ=
-X-Received: by 2002:a2e:b8d6:: with SMTP id s22mr290009ljp.218.1644003882351;
- Fri, 04 Feb 2022 11:44:42 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MxtfVI7KgoxN9MF1SpdHVpgmrFjcw8vxtvnlV5FrFuE=;
+        b=zMleTWvVOTn5fnWkU3EbOplFXa3uPiUkj5N5JCpvUCzLXaxzxEJG36KUGjCltnBQwk
+         Co9rCpotCu+rSFI0sKFn3TCuUiydIfYSh3Z4w5dAAx62KMRLuQ2WgCBRpYh2O09i9P1l
+         6E/UHUX6iCnqEXXmDJ60iuYWlQ+eAFvVttw/tGnuYV8e2eogRFMe7DsJEJ34eFTaX+jp
+         HF+UHDZGAxCT0WcvLcXtUxPparjCsI+sP3+ceTyyP29D65OAqPUckMM70B7dCaJ/UB7E
+         +yYeY7LUmDUwkSxZh3d23ZkSGW8N/cOlaP+6wryDeArc5WRNVEpA00yX+VYX4n0GYBlo
+         ZPuw==
+X-Gm-Message-State: AOAM5322U2dKlBygoN7YjRHW5lZ/DK/4z6JrhWLpYzGbyB9hYVBwTWnm
+        ro6b6cMBiv5rYg6KzGjmlnGc+KWisDzTbaMw
+X-Google-Smtp-Source: ABdhPJzftx1Oesx2QJ6Qo+x81hXij1Ey8oZmAnObEMe9yf19iwRqAQmfUlqCkxP+oKkN6TyY7KbisA==
+X-Received: by 2002:a05:6638:1501:: with SMTP id b1mr338974jat.251.1644004249035;
+        Fri, 04 Feb 2022 11:50:49 -0800 (PST)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id k13sm1417564ili.22.2022.02.04.11.50.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Feb 2022 11:50:48 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     djakov@kernel.org, bjorn.andersson@linaro.org, mka@chromium.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org,
+        avuyyuru@codeaurora.org, jponduru@codeaurora.org,
+        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/7] net: ipa: use bulk interconnect interfaces
+Date:   Fri,  4 Feb 2022 13:50:37 -0600
+Message-Id: <20220204195044.1082026-1-elder@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220128223312.1253169-1-mauricio@kinvolk.io> <20220128223312.1253169-7-mauricio@kinvolk.io>
- <CAEf4BzZ33dhRcySttxSJ6BA-1pCkbebEksLVa-cR08W=YV6x=w@mail.gmail.com>
-In-Reply-To: <CAEf4BzZ33dhRcySttxSJ6BA-1pCkbebEksLVa-cR08W=YV6x=w@mail.gmail.com>
-From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Date:   Fri, 4 Feb 2022 14:44:31 -0500
-Message-ID: <CAHap4zuD8j7CXwOK2a12=j0j0b7twHs6gwKEBNagdryHWNQyWQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 6/9] bpftool: Implement relocations recording
- for BTFGen
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 2, 2022 at 5:55 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Fri, Jan 28, 2022 at 2:33 PM Mauricio V=C3=A1squez <mauricio@kinvolk.i=
-o> wrote:
-> >
-> > This commit implements the logic to record the relocation information
-> > for the different kind of relocations.
-> >
-> > btfgen_record_field_relo() uses the target specification to save all th=
-e
-> > types that are involved in a field-based CO-RE relocation. In this case
-> > types resolved and added recursively (using btfgen_put_type()).
-> > Only the struct and union members and their types) involved in the
-> > relocation are added to optimize the size of the generated BTF file.
-> >
-> > On the other hand, btfgen_record_type_relo() saves the types involved i=
-n
-> > a type-based CO-RE relocation. In this case all the members for the
-> > struct and union types are added. This is not strictly required since
-> > libbpf doesn't use them while performing this kind of relocation,
-> > however that logic could change on the future. Additionally, we expect
-> > that the number of this kind of relocations in an BPF object to be very
-> > low, hence the impact on the size of the generated BTF should be
-> > negligible.
-> >
-> > Finally, btfgen_record_enumval_relo() saves the whole enum type for
-> > enum-based relocations.
-> >
-> > Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
-> > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
-> > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
-> > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
-> > ---
->
-> I've been thinking about this in background. This proliferation of
-> hashmaps to store used types and their members really adds to
-> complexity (and no doubt to memory usage and CPU utilization, even
-> though I don't think either is too big for this use case).
->
-> What if instead of keeping track of used types and members separately,
-> we initialize the original struct btf and its btf_type, btf_member,
-> btf_enum, etc types. We can carve out one bit in them to mark whether
-> that specific entity was used. That way you don't need any extra
-> hashmap maintenance. You just set or check bit on each type or its
-> member to figure out if it has to be in the resulting BTF.
->
-> This can be highest bit of name_off or type fields, depending on
-> specific case. This will work well because type IDs never use highest
-> bit and string offset can never be as high as to needing full 32 bits.
->
-> You'll probably want to have two copies of target BTF for this, of
-> course, but I think simplicity of bookkeeping trumps this
-> inefficiency. WDYT?
->
+The IPA code currently enables and disables interconnects by setting
+the bandwidth of each to a non-zero value, or to zero.  The
+interconnect API now supports enable/disable functions, so we can
+use those instead.  In addition, the interconnect API provides bulk
+interfaces that allow all interconnects to be operated on at once.
 
-It's a very nice idea indeed. I got a version working with this idea.
-I keep two instances of the target BTF (as you suggested) one is only
-for keeping track of the used types/members, the other one is used as
-source when copying the BTF types and also to run the candidate search
-algorithm and so on. Actually there is no need to use the highest bit,
-I'm just setting the whole name_off to UINT32_MAX. It works fine
-because that copy of the BTF isn't used anywhere else. I'm cleaning
-this up and hope to send it early next week.
+This series converts the IPA driver to use the bulk enable and
+disable interfaces.  In the process it uses some existing data
+structures rather than defining new ones.
 
-Thanks for all the feedback!
+					-Alex
+
+Alex Elder (7):
+  net: ipa: kill struct ipa_interconnect
+  net: ipa: use icc_enable() and icc_disable()
+  net: ipa: use interconnect bulk enable/disable operations
+  net: ipa: use bulk operations to set up interconnects
+  net: ipa: use bulk interconnect initialization
+  net: ipa: embed interconnect array in the power structure
+  net: ipa: use IPA power device pointer
+
+ drivers/net/ipa/ipa_power.c | 178 +++++++++---------------------------
+ 1 file changed, 42 insertions(+), 136 deletions(-)
+
+-- 
+2.32.0
+
