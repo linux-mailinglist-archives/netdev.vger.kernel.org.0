@@ -2,45 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51E884AA410
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 00:14:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E83364AA415
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 00:15:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353924AbiBDXOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 18:14:37 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:44066 "EHLO
+        id S1377887AbiBDXPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 18:15:23 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:44250 "EHLO
         sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236025AbiBDXOh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 18:14:37 -0500
+        with ESMTP id S1378011AbiBDXPV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 18:15:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B5BD0CE24BA;
-        Fri,  4 Feb 2022 23:14:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16F09C004E1;
-        Fri,  4 Feb 2022 23:14:33 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A8B56CE24B9;
+        Fri,  4 Feb 2022 23:15:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0A97C004E1;
+        Fri,  4 Feb 2022 23:15:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644016473;
-        bh=fkMwYBKvbFi2f59VTbiYok/TBWSxIk3qx+WKrnPRpZk=;
+        s=k20201202; t=1644016518;
+        bh=pLxkcGPvu1HilxtYZWiOuXKZ4HHdXlhZYggbeedegY8=;
         h=Date:From:To:Cc:Subject:From;
-        b=UW2/QdnhuVJNmOmrza0vFekR0P2u/O2D+OTJMk0rTeGqWMWisuTuILbDkg5I90lIJ
-         EwkJ/YQ/YsmetpfI2RW1LiiwpEWciB4AYi5dk4CgRl+r/VUlgn/UXL/GcaVdYRTd6R
-         vDkqcGR4AlgUoA2ORSCIODY7Szh8oJEBLNZrOOyyj8HZfcKbu9nwRLBEG2ovfMKDVe
-         tLthORsHTb3R50mWKyja9KbQgomrywzgnVMpyZq+w3DSmBSBg4jf1VmI0PrTCJvQiv
-         do2scjrg5gYGmhldIUXf8DpxTvGqy3P55jA4BONubFtAFV377v+gJkJSYhdAiV7RcE
-         CJk2/3WhXgYPQ==
-Date:   Fri, 4 Feb 2022 17:21:44 -0600
+        b=gxVDSfcEzhnIk3vlbJV6q3zukKT+CBf31XqdUYm9lHJZE8Uv66HCVT1c5uPHD1nIE
+         Kc/X6SAKguuQLHJ1spTq67w3U+EkYYcU/pIcxa/j79rIZXzO52DytDv+FaoGz0aK9i
+         pFHqYEVvzuQgA19AT/kScPKNPlNbZmAiS9NvX9NwxY4XWy/VZfZuPVpH7v2ZFdcnxs
+         2m9nN7cEqRsQohBij47o49WCKqyDaMLfprHyIsuKT6KXZPzCF/GDHSfwupS2AgvieB
+         BOljl7nuKUoiJ69RxVY7F3+EuJ01QzrE1OVXDdIxYil/rZOHeifr403+hpzEsGqJto
+         GC0k6I4LC3p8Q==
+Date:   Fri, 4 Feb 2022 17:22:28 -0600
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Ariel Elior <aelior@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH][next] bnx2x: Replace one-element array with flexible-array
- member
-Message-ID: <20220204232144.GA442861@embeddedor>
+Subject: [PATCH][next] brcmfmac: p2p: Replace one-element arrays with
+ flexible-array members
+Message-ID: <20220204232228.GA442895@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
@@ -67,22 +74,67 @@ manually.
 Link: https://github.com/KSPP/linux/issues/79
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/wireless/broadcom/brcm80211/brcmfmac/p2p.c   | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-index a19dd6797070..447a75ea0cc1 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-@@ -1271,7 +1271,7 @@ struct bnx2x_fw_stats_data {
- 	struct per_port_stats		port;
- 	struct per_pf_stats		pf;
- 	struct fcoe_statistics_params	fcoe;
--	struct per_queue_stats		queue_stats[1];
-+	struct per_queue_stats		queue_stats[];
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
+index 4735063e4c03..d3f08d4f380b 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
+@@ -158,7 +158,7 @@ struct brcmf_p2p_pub_act_frame {
+ 	u8	oui_type;
+ 	u8	subtype;
+ 	u8	dialog_token;
+-	u8	elts[1];
++	u8	elts[];
  };
  
- /* Public slow path states */
+ /**
+@@ -177,7 +177,7 @@ struct brcmf_p2p_action_frame {
+ 	u8	type;
+ 	u8	subtype;
+ 	u8	dialog_token;
+-	u8	elts[1];
++	u8	elts[];
+ };
+ 
+ /**
+@@ -192,7 +192,7 @@ struct brcmf_p2psd_gas_pub_act_frame {
+ 	u8	category;
+ 	u8	action;
+ 	u8	dialog_token;
+-	u8	query_data[1];
++	u8	query_data[];
+ };
+ 
+ /**
+@@ -225,7 +225,7 @@ static bool brcmf_p2p_is_pub_action(void *frame, u32 frame_len)
+ 		return false;
+ 
+ 	pact_frm = (struct brcmf_p2p_pub_act_frame *)frame;
+-	if (frame_len < sizeof(struct brcmf_p2p_pub_act_frame) - 1)
++	if (frame_len < sizeof(*pact_frm))
+ 		return false;
+ 
+ 	if (pact_frm->category == P2P_PUB_AF_CATEGORY &&
+@@ -253,7 +253,7 @@ static bool brcmf_p2p_is_p2p_action(void *frame, u32 frame_len)
+ 		return false;
+ 
+ 	act_frm = (struct brcmf_p2p_action_frame *)frame;
+-	if (frame_len < sizeof(struct brcmf_p2p_action_frame) - 1)
++	if (frame_len < sizeof(*act_frm))
+ 		return false;
+ 
+ 	if (act_frm->category == P2P_AF_CATEGORY &&
+@@ -280,7 +280,7 @@ static bool brcmf_p2p_is_gas_action(void *frame, u32 frame_len)
+ 		return false;
+ 
+ 	sd_act_frm = (struct brcmf_p2psd_gas_pub_act_frame *)frame;
+-	if (frame_len < sizeof(struct brcmf_p2psd_gas_pub_act_frame) - 1)
++	if (frame_len < sizeof(*sd_act_frm))
+ 		return false;
+ 
+ 	if (sd_act_frm->category != P2PSD_ACTION_CATEGORY)
 -- 
 2.27.0
 
