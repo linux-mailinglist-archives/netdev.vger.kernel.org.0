@@ -2,78 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2956D4AA2E3
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 23:12:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13D1F4AA31C
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 23:24:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346016AbiBDWMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 17:12:03 -0500
-Received: from mail-oi1-f180.google.com ([209.85.167.180]:40642 "EHLO
-        mail-oi1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241261AbiBDWMC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 17:12:02 -0500
-Received: by mail-oi1-f180.google.com with SMTP id q8so10135637oiw.7;
-        Fri, 04 Feb 2022 14:12:02 -0800 (PST)
+        id S1349083AbiBDWYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 17:24:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52844 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347604AbiBDWY3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 17:24:29 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA987D32DC4C
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 14:24:25 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id z62so10546115ybc.11
+        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 14:24:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=H5tsXpigjy8/GqkEn/RWupsHMsvf4jYImCTbTpMGJ+Q=;
+        b=afipZ7gTtAriiXYFn7I8YzBJ++IXgeBghl/YXdk8pT3kiw+/9akScclcEmtNtObpF6
+         djlbnnT9Mf+bVBiFmVp/TdA7/Fnq3oKvdJAOJFZmQzo3KVdpIwJu2jM7tTAX7bVkTG6D
+         YydjcnlDoxAsrUtvD9mW9b96knMkMeVOh/BB/t9VIIEnbHbVFZXwttVLLsrGRKBFVTcY
+         cjQGQMiQxZQDfbESanAG99VlvvFF7pJHOl9CPFVuMSRCgVePlYpqJdOpgDBepr1r2J8w
+         icz/ocLR1E159SwBkqReWbBxVzRA9BscPIfVKB3M36pimEXP6W5eUiDeReH/R3KzXCDM
+         nF+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dzMRt27+2vZ9lhhwIAfcKkpOyX3qxt1HYwD/zFIRG94=;
-        b=7iRKFYj6DpsV7SeFzCeq98EfqA+MhGFiCOULsv8xUlggdvSEzQjiYk2PTpygLaT6+g
-         re3pzyNKovgf+X4Q15H1h2EcINrERzwwhw6tlUysBVM8z4mcBF43KLmCSIbzw/jsrgB6
-         Xmz8y8ukFTBAPoP8ixL7nrYz2llx3JW/IysfuW6stMtX56hsHG9sgaaj92HRxuBExVKk
-         zMoUyFr8wd/25CHEuzR8YRix2EtsmCq8bMDKZqWc1/Xyt0WuDy7Qjd+Zz4ug4ylc9dwr
-         c4nZZLXwovDj+IEnqZ5ESrPF/z9H9obwiPIFjvRo8QQ1f3AX//dcEH0jac8HPB2+OklB
-         3gAg==
-X-Gm-Message-State: AOAM531HzP6JxqiebWveNxjag26tign/AiGfzH1up180lscDp1Za/UuN
-        mJCT78+7xb7bQQ0SvIpcJ/t0LRG+eA==
-X-Google-Smtp-Source: ABdhPJxcH2dzMaKW4bpCJiKR5cuCnvSkJiR/f39LsK134mXLcHKAiNSXG6FX38Yxos0H4l7vFqiQSg==
-X-Received: by 2002:a05:6808:20a5:: with SMTP id s37mr557372oiw.30.1644012722052;
-        Fri, 04 Feb 2022 14:12:02 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id t31sm1009104oaa.9.2022.02.04.14.11.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 14:12:00 -0800 (PST)
-Received: (nullmailer pid 3272537 invoked by uid 1000);
-        Fri, 04 Feb 2022 22:11:59 -0000
-Date:   Fri, 4 Feb 2022 16:11:59 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Cc:     UNGLinuxDriver@microchip.com, linux@armlinux.org.uk,
-        Woojung.Huh@microchip.com, hkallweit1@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org, olteanv@gmail.com,
-        f.fainelli@gmail.com, kuba@kernel.org, andrew@lunn.ch,
-        robh+dt@kernel.org, vivien.didelot@gmail.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v7 net-next 01/10] dt-bindings: net: dsa: dt bindings for
- microchip lan937x
-Message-ID: <Yf2krw1igf/qY3C/@robh.at.kernel.org>
-References: <20220204174500.72814-1-prasanna.vengateshan@microchip.com>
- <20220204174500.72814-2-prasanna.vengateshan@microchip.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=H5tsXpigjy8/GqkEn/RWupsHMsvf4jYImCTbTpMGJ+Q=;
+        b=e5AKwfd39cJCab44vSH2wfToBlD87i6II9m8J0anVjUXifF7Rb0w0XhwhKK8XzjonF
+         /YUD0XA73wB6zQF9/wJyKFnyQVOP0QqPhtcowLSQNnsY1PXJmrCSY3P+SD6cQX46o62m
+         iX+okgs7+HzWMWZWwQ3nmXRyojD3Ypzx8YPqheKbbdG7JH8+iirk+Gu6Zh9Ha+2HCJpV
+         XOAy1EqSJgYMYJBgU8ak1CRYEgoaGeHwyxb8UdVs97YScTrmX7jEkhXFBxQf2Jy4lP2l
+         QUH1X1Wb4o2C6oY94F0FppmCFT3pm1b8aOUvtIu1nPEWKiAPKXAZ+cVloTzEmS2Lro/z
+         OY8g==
+X-Gm-Message-State: AOAM531+9IpWR499HE0HthnLJO5s4zekM310emUPJOEYf3iwEg760SIy
+        0u/og2cs0Hv46Njt/S0GhT6INDgkZcx8/jdQTOxdTvVq1hSQInKlQZU=
+X-Google-Smtp-Source: ABdhPJych//KyXkrPQb6CJ6Xs0cQ29wSJsr9YkMt86H8tH5ILBkBWtWghr0fcUamky9ipPNZR3nSg7MrPDecNJjKFfs=
+X-Received: by 2002:a25:d2cb:: with SMTP id j194mr1309599ybg.277.1644013464654;
+ Fri, 04 Feb 2022 14:24:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220204174500.72814-2-prasanna.vengateshan@microchip.com>
+References: <20220204183630.2376998-1-eric.dumazet@gmail.com> <CANn89iKp2jY-Yr1PX_Ug+6izpYjYzZPBNaYN63T16Wz=3AJ16Q@mail.gmail.com>
+In-Reply-To: <CANn89iKp2jY-Yr1PX_Ug+6izpYjYzZPBNaYN63T16Wz=3AJ16Q@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 4 Feb 2022 14:24:13 -0800
+Message-ID: <CANn89iK0n6yNR+Bgj_rWqz=sYcp2nLVFOE_G0UXppL5KxHSUdA@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/3] net: device tracking improvements
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 04 Feb 2022 23:14:51 +0530, Prasanna Vengateshan wrote:
-> Documentation in .yaml format and updates to the MAINTAINERS
-> Also 'make dt_binding_check' is passed.
-> 
-> RGMII internal delay values for the mac is retrieved from
-> rx-internal-delay-ps & tx-internal-delay-ps as per the feedback from
-> v3 patch series.
-> https://lore.kernel.org/netdev/20210802121550.gqgbipqdvp5x76ii@skbuf/
-> 
-> It supports only the delay value of 0ns and 2ns.
-> 
-> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-> ---
->  .../bindings/net/dsa/microchip,lan937x.yaml   | 179 ++++++++++++++++++
->  MAINTAINERS                                   |   1 +
->  2 files changed, 180 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
-> 
+On Fri, Feb 4, 2022 at 1:51 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Fri, Feb 4, 2022 at 10:36 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > Main goal of this series is to be able to detect the following case
+> > which apparently is still haunting us.
+> >
+> > dev_hold_track(dev, tracker_1, GFP_ATOMIC);
+> >     dev_hold(dev);
+> >     dev_put(dev);
+> >     dev_put(dev);              // Should complain loudly here.
+> > dev_put_track(dev, tracker_1); // instead of here (as before this series)
+>
+>
+> Please do not merge.
+>
+> I have missed some warnings in my tests, it seems I need to refine
+> things a bit more.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+I had to add the following on top of the last patch, I will send a V2 soon.
+
+diff --git a/net/core/link_watch.c b/net/core/link_watch.c
+index b0f5344d1185be66d05cd1dc50cffc5ccfe883ef..95098d1a49bdf4cbc3ddeb4d345e4276f974a208
+100644
+--- a/net/core/link_watch.c
++++ b/net/core/link_watch.c
+@@ -166,10 +166,10 @@ static void linkwatch_do_dev(struct net_device *dev)
+
+                netdev_state_change(dev);
+        }
+-       /* Note: our callers are responsible for
+-        * calling netdev_tracker_free().
++       /* Note: our callers are responsible for calling netdev_tracker_free().
++        * This is the reason we use __dev_put() instead of dev_put().
+         */
+-       dev_put(dev);
++       __dev_put(dev);
+ }
+
+ static void __linkwatch_run_queue(int urgent_only)
