@@ -2,116 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BDFD4A9A91
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 15:02:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07D2B4A9A9F
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 15:05:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359208AbiBDOCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 09:02:09 -0500
-Received: from relay5.hostedemail.com ([64.99.140.38]:17760 "EHLO
-        relay5.hostedemail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359209AbiBDOCI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 09:02:08 -0500
-Received: from omf17.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay02.hostedemail.com (Postfix) with ESMTP id C1E642183A;
-        Fri,  4 Feb 2022 14:02:07 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf17.hostedemail.com (Postfix) with ESMTPA id A72A11B;
-        Fri,  4 Feb 2022 14:01:08 +0000 (UTC)
-Message-ID: <7cb1ce88cbf977801f2519178c270c1271100ac6.camel@perches.com>
-Subject: Re: [PATCH] HPE BMC GXP SUPPORT
-From:   Joe Perches <joe@perches.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     nick.hawkins@hpe.com, verdun@hpe.com,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Corey Minyard <minyard@acm.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        Stanislav Jakubek <stano.jakubek@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Hao Fang <fanghao11@huawei.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Wang Kefeng <wangkefeng.wang@huawei.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-i2c@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Date:   Fri, 04 Feb 2022 06:01:44 -0800
-In-Reply-To: <Yf0cihUQ1byjnh3d@shell.armlinux.org.uk>
-References: <nick.hawkins@hpe.com>
-         <20220202165315.18282-1-nick.hawkins@hpe.com>
-         <Yf0Wm1kOV1Pss9HJ@shell.armlinux.org.uk>
-         <ad56e88206a8d66b715035362abe16ece0bde7d3.camel@perches.com>
-         <Yf0cihUQ1byjnh3d@shell.armlinux.org.uk>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        id S235381AbiBDOFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 09:05:07 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:42564 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233512AbiBDOFH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Feb 2022 09:05:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=9JssIWingg3SjbCos9YUJucNleA1gB0olHIjVFnf1WI=; b=VyMHJWq+721SJm8kgbWIjj6V0v
+        ZflmIrSBYycYlU0fQ9zogHJyGC3dM87h7nsg4lRFSLQeaEUZTayJumegAIQjGy9BU6yqiskRkPsFs
+        g6kUdypizOb+uKehTinKqJfHKhUBl5nTCGC7gtMwcbXIKzzOIXS4VCeG/9QijFzTdBgI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nFzCz-004HHx-DR; Fri, 04 Feb 2022 15:05:05 +0100
+Date:   Fri, 4 Feb 2022 15:05:05 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>
+Cc:     netdev@vger.kernel.org, hkallweit1@gmail.com, linux@armlinux.org.uk
+Subject: Re: [PATCH 1/2] net: phy: micrel: add Microchip KSZ 9897 Switch PHY
+ support
+Message-ID: <Yf0ykctMgWKswgpC@lunn.ch>
+References: <20220204133635.296974-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
+ <20220204133635.296974-2-enguerrand.de-ribaucourt@savoirfairelinux.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: A72A11B
-X-Spam-Status: No, score=-2.03
-X-Stat-Signature: c3yzg6zcu4cpdcebaczubogb94ck3gqq
-X-Rspamd-Server: rspamout07
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+KwoOMBfXWPFnO9qh3WITIVuG9hjhnLgA=
-X-HE-Tag: 1643983268-605794
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220204133635.296974-2-enguerrand.de-ribaucourt@savoirfairelinux.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-02-04 at 12:31 +0000, Russell King (Oracle) wrote:
-> On Fri, Feb 04, 2022 at 04:18:24AM -0800, Joe Perches wrote:
-> > On Fri, 2022-02-04 at 12:05 +0000, Russell King (Oracle) wrote:
-> > > On Wed, Feb 02, 2022 at 10:52:50AM -0600, nick.hawkins@hpe.com wrote:
-> > > > +	if (readb_relaxed(timer->control) & MASK_TCS_TC) {
-> > > > +		writeb_relaxed(MASK_TCS_TC, timer->control);
-> > > > +
-> > > > +		event_handler = READ_ONCE(timer->evt.event_handler);
-> > > > +		if (event_handler)
-> > > > +			event_handler(&timer->evt);
-> > > > +		return IRQ_HANDLED;
-> > > > +	} else {
-> > > > +		return IRQ_NONE;
-> > > > +	}
-> > > > +}
-> > 
-> > It's also less indented code and perhaps clearer to reverse the test
-> > 
-> > 	if (!readb_relaxed(timer->control) & MASK_TCS_TC)
+On Fri, Feb 04, 2022 at 02:36:34PM +0100, Enguerrand de Ribaucourt wrote:
+> Adding Microchip 9897 Phy included in KSZ9897 Switch.
+> The KSZ9897 shares the same prefix as the KSZ8081. The phy_id_mask was
+> updated to allow the KSZ9897 to be matched.
 > 
-> This will need to be:
+> Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
+> ---
+>  drivers/net/phy/micrel.c   | 15 +++++++++++++--
+>  include/linux/micrel_phy.h |  1 +
+>  2 files changed, 14 insertions(+), 2 deletions(-)
 > 
->  	if (!(readb_relaxed(timer->control) & MASK_TCS_TC))
+> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> index 44a24b99c894..9b2047e26449 100644
+> --- a/drivers/net/phy/micrel.c
+> +++ b/drivers/net/phy/micrel.c
+> @@ -1726,7 +1726,7 @@ static struct phy_driver ksphy_driver[] = {
+>  }, {
+>  	.phy_id		= PHY_ID_KSZ8081,
+>  	.name		= "Micrel KSZ8081 or KSZ8091",
+> -	.phy_id_mask	= MICREL_PHY_ID_MASK,
+> +	.phy_id_mask	= 0x00ffffff,
 
-right, thanks.
+You can probably use PHY_ID_MATCH_EXACT().
 
+>  	.flags		= PHY_POLL_CABLE_TEST,
+>  	/* PHY_BASIC_FEATURES */
+>  	.driver_data	= &ksz8081_type,
+> @@ -1869,6 +1869,16 @@ static struct phy_driver ksphy_driver[] = {
+>  	.config_init	= kszphy_config_init,
+>  	.suspend	= genphy_suspend,
+>  	.resume		= genphy_resume,
+> +}, {
+> +	.phy_id		= PHY_ID_KSZ9897,
+> +	.phy_id_mask	= 0x00ffffff,
 
+Here as well.
+
+> +	.name		= "Microchip KSZ9897",
+> +	/* PHY_BASIC_FEATURES */
+> +	.config_init	= kszphy_config_init,
+> +	.config_aneg	= ksz8873mll_config_aneg,
+> +	.read_status	= ksz8873mll_read_status,
+> +	.suspend	= genphy_suspend,
+> +	.resume		= genphy_resume,
+>  } };
+>  
+>  module_phy_driver(ksphy_driver);
+> @@ -1888,11 +1898,12 @@ static struct mdio_device_id __maybe_unused micrel_tbl[] = {
+>  	{ PHY_ID_KSZ8041, MICREL_PHY_ID_MASK },
+>  	{ PHY_ID_KSZ8051, MICREL_PHY_ID_MASK },
+>  	{ PHY_ID_KSZ8061, MICREL_PHY_ID_MASK },
+> -	{ PHY_ID_KSZ8081, MICREL_PHY_ID_MASK },
+> +	{ PHY_ID_KSZ8081, 0x00ffffff },
+
+And here.
+
+>  	{ PHY_ID_KSZ8873MLL, MICREL_PHY_ID_MASK },
+>  	{ PHY_ID_KSZ886X, MICREL_PHY_ID_MASK },
+>  	{ PHY_ID_LAN8814, MICREL_PHY_ID_MASK },
+>  	{ PHY_ID_LAN8804, MICREL_PHY_ID_MASK },
+> +	{ PHY_ID_KSZ9897, 0x00ffffff },
+
+etc.
+
+	Andrew
