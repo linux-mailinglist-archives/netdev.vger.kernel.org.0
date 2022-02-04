@@ -2,211 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBEBA4AA46E
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 00:38:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7998F4AA493
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 00:44:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348740AbiBDXiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 18:38:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46040 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230020AbiBDXiO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 18:38:14 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC02FE022EBF
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 15:38:13 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id oa14-20020a17090b1bce00b001b61aed4a03so7508890pjb.5
-        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 15:38:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Yw/ERKNo/KnGo1oNnb5gwvuJdNDxfPy9ncBi8+mXk1g=;
-        b=G8ihuitmOh2IgrvecWg1SFPptyDbEI0qtiJ9zBejkRrGTZXkoJrWZ0/j+diWbkGwyX
-         guC3ayBNZYffdUXgbbsdxszYVWqPE31tMmiClrD73hQSLKCde7/lgrWDz+7cc7T1WYe7
-         I7fQElMz/gYE5EMdfYY83OOfHHBfFQiqVm10iJVf8vdqNGRdxfuTXQo8tg1IhMrKQYNl
-         jxP1Fi21bkmNi4nxKLJiKd4xgCqNRsPXDeB1fduiZKcNdW1O6bjo+Z+HRXw4x9y1R3cd
-         kyyS3VJ6CrC9qJjpSP7xI+9lcLo4qF1LfsgimoCRVc6/Y+EAmjo+6lYNYopEBP73YC+e
-         5acQ==
+        id S243336AbiBDXoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 18:44:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:21696 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229446AbiBDXoe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 18:44:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644018273;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OG4d2yofZLex3o/TeM8Xf3ERpfuxuz16MfpWbW0GXSU=;
+        b=gXCHxfASxE3Xb3jES8N2q7fj7b4M90QgIjm7SwjHUXNpKtE5Q4WJomF4D1yXsJTthun8CL
+        DdfSKKmVymeLpaBrPjFrRCBUAwhP8xlVImbiQsXC/8gEzxTUl/h5XZrX+GrpcJKfb1jghU
+        KITvBZrUdDYDZM2hlNlXGtiSp6oYGyw=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-523-FHBTK7QXOkeHPFd86oED8w-1; Fri, 04 Feb 2022 18:44:32 -0500
+X-MC-Unique: FHBTK7QXOkeHPFd86oED8w-1
+Received: by mail-qt1-f197.google.com with SMTP id x5-20020ac84d45000000b002cf826b1a18so5870156qtv.2
+        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 15:44:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Yw/ERKNo/KnGo1oNnb5gwvuJdNDxfPy9ncBi8+mXk1g=;
-        b=lehjNC8vAglBCb3HPaRMCRr5nD5COFc8sdiTG0xwCZrCQ+Z/WWXOQLQpP6drpTv4Vd
-         asD+WdmR4XjdIKMheTpso7apGk0hLIAAO2/Z5LgVlHu8dzTbeJ7UVNjwNPAJP++JK0Ms
-         Met85hYOOjr/u9HfQ9sIyECUGgU7c6SAS8HFRkBeG0+kzI/EIIuOyJMOcS0z7FJtLPhN
-         cUEgUgKH8bERS0h8TuIRBSmjM4IZmHx9aoBU1hzzeNjQxpF18vFHVi/kf51ZwpaWmGJs
-         KYKKVOyxV42Pk8xiaDKWvQ3ZDvADf6xanmSJszYRp9gIRH7UqDgJ1luO9EZ5qXhYUzVx
-         /oBA==
-X-Gm-Message-State: AOAM531Oh3XLlnbv+kcyr7kFIAzW9ogR2OGvD4HCeNpw9hjnOs4k2RPO
-        afwWKwS4dv9w7G6f+JeNj/E=
-X-Google-Smtp-Source: ABdhPJxyqTdcDGxBOeuQs6WNh1WcnXbcDI0kCwLI54w7oyfPMaTzcZNL4PgAxk37SqsbGHWjlUl7Bw==
-X-Received: by 2002:a17:902:ecc5:: with SMTP id a5mr5782506plh.54.1644017893204;
-        Fri, 04 Feb 2022 15:38:13 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:e0d3:6ec9:bd06:3e67])
-        by smtp.gmail.com with ESMTPSA id 16sm13810029pje.34.2022.02.04.15.38.12
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=OG4d2yofZLex3o/TeM8Xf3ERpfuxuz16MfpWbW0GXSU=;
+        b=xw0OEa3tsx1z7mtNVOYY3JR49OSHOy3UB+vyEfxe9KBLePPaSyRyGW20O/PsJLD2pd
+         rVU2vICd1zN+/HLUpXtriWHjjy1D7Pw+PbQtoVs+MVoaSt4CS2LkeQWpd/Uq+plAHMX5
+         nblB8r4J0OX5Ldy6EGcf0b1yQeprwefN+d4kKXiHHqE3UEl/lTxs5IIRepZQQ8/I128k
+         8gr30xA2oruiBoFno/a+casH62I7nsTgG1/LNJkveKvNZLdyRi9IDuR2fX+n+NbRNSbG
+         Dvj0siDQkKv+yjdZoKRhVjk8czHqu4HABhMtIqnllk0CWgyfHoubm8rH4BVDXvbT7fnS
+         7mDw==
+X-Gm-Message-State: AOAM532IsjepIzOPS+GOYSWAA9DDFAQjssPlUSXbIUH9ZURHGgg/XewG
+        xgL338vHvV8ZE+oYktV/QieFgV3a8tbX+vkZqmtWbWbGIVoA2/Mp9ZXPJqZx7nwwF/+fv72dKMc
+        6Hj8gce88BOM+p6Y/
+X-Received: by 2002:a05:620a:2546:: with SMTP id s6mr819111qko.587.1644018271304;
+        Fri, 04 Feb 2022 15:44:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzbXyZBjD/qSWRhtQRyOpp0HB9Uki8PNS9GPCVgMIYS3jwxv33tskEa0CcyGYgS2OEfhT8GUA==
+X-Received: by 2002:a05:620a:2546:: with SMTP id s6mr819087qko.587.1644018270042;
+        Fri, 04 Feb 2022 15:44:30 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id 134sm1626369qkl.50.2022.02.04.15.44.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 15:38:12 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
+        Fri, 04 Feb 2022 15:44:29 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id F1BEF101B7B; Sat,  5 Feb 2022 00:44:27 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next] net: initialize init_net earlier
-Date:   Fri,  4 Feb 2022 15:38:09 -0800
-Message-Id: <20220204233809.3082403-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH net-next v2 1/3] net: dev: Remove preempt_disable() and
+ get_cpu() in netif_rx_internal().
+In-Reply-To: <20220204201259.1095226-2-bigeasy@linutronix.de>
+References: <20220204201259.1095226-1-bigeasy@linutronix.de>
+ <20220204201259.1095226-2-bigeasy@linutronix.de>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Sat, 05 Feb 2022 00:44:27 +0100
+Message-ID: <87bkzmb3j8.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Sebastian Andrzej Siewior <bigeasy@linutronix.de> writes:
 
-While testing a patch that will follow later
-("net: add netns refcount tracker to struct nsproxy")
-I found that devtmpfs_init() was called before init_net
-was initialized.
+> The preempt_disable() () section was introduced in commit
+>     cece1945bffcf ("net: disable preemption before call smp_processor_id(=
+)")
+>
+> and adds it in case this function is invoked from preemtible context and
+> because get_cpu() later on as been added.
+>
+> The get_cpu() usage was added in commit
+>     b0e28f1effd1d ("net: netif_rx() must disable preemption")
+>
+> because ip_dev_loopback_xmit() invoked netif_rx() with enabled preemption
+> causing a warning in smp_processor_id(). The function netif_rx() should
+> only be invoked from an interrupt context which implies disabled
+> preemption. The commit
+>    e30b38c298b55 ("ip: Fix ip_dev_loopback_xmit()")
+>
+> was addressing this and replaced netif_rx() with in netif_rx_ni() in
+> ip_dev_loopback_xmit().
+>
+> Based on the discussion on the list, the former patch (b0e28f1effd1d)
+> should not have been applied only the latter (e30b38c298b55).
+>
+> Remove get_cpu() and preempt_disable() since the function is supposed to
+> be invoked from context with stable per-CPU pointers. Bottom halves have
+> to be disabled at this point because the function may raise softirqs
+> which need to be processed.
+>
+> Link: https://lkml.kernel.org/r/20100415.013347.98375530.davem@davemloft.=
+net
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-This is a bug, because devtmpfs_setup() calls
-ksys_unshare(CLONE_NEWNS);
-
-This has the effect of increasing init_net refcount,
-which will be later overwritten to 1, as part of setup_net(&init_net)
-
-We had too many prior patches [1] trying to work around the root cause.
-
-Really, make sure init_net is in BSS section, and that net_ns_init()
-is called earlier at boot time.
-
-Note that another patch ("vfs: add netns refcount tracker
-to struct fs_context") also will need net_ns_init() being called
-before vfs_caches_init()
-
-As a bonus, this patch saves around 4KB in .data section.
-
-[1]
-
-f8c46cb39079 ("netns: do not call pernet ops for not yet set up init_net namespace")
-b5082df8019a ("net: Initialise init_net.count to 1")
-734b65417b24 ("net: Statically initialize init_net.dev_base_head")
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/net/net_namespace.h |  6 ++++++
- init/main.c                 |  2 ++
- net/core/dev.c              |  3 +--
- net/core/net_namespace.c    | 17 +++++------------
- 4 files changed, 14 insertions(+), 14 deletions(-)
-
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index 5b61c462e534be468c81d2b0f4ef586b209dd4b8..2ecbd7c11c88e016b1a6a450f07ee2cd94048f62 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -513,4 +513,10 @@ static inline void fnhe_genid_bump(struct net *net)
- 	atomic_inc(&net->fnhe_genid);
- }
- 
-+#ifdef CONFIG_NET
-+void net_ns_init(void);
-+#else
-+static inline net_ns_init(void) {}
-+#endif
-+
- #endif /* __NET_NET_NAMESPACE_H */
-diff --git a/init/main.c b/init/main.c
-index 65fa2e41a9c0904131525d504f3ec86add44f141..ada50f5a15e4397e45b0e5c06bab051b1ce193d9 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -99,6 +99,7 @@
- #include <linux/kcsan.h>
- #include <linux/init_syscalls.h>
- #include <linux/stackdepot.h>
-+#include <net/net_namespace.h>
- 
- #include <asm/io.h>
- #include <asm/bugs.h>
-@@ -1116,6 +1117,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
- 	key_init();
- 	security_init();
- 	dbg_late_init();
-+	net_ns_init();
- 	vfs_caches_init();
- 	pagecache_init();
- 	signals_init();
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 1eaa0b88e3ba5d800484656f2c3420af57050294..f662c6a7d7b49b836a05efc74aeffc7fc9e4e147 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10732,8 +10732,7 @@ static int __net_init netdev_init(struct net *net)
- 	BUILD_BUG_ON(GRO_HASH_BUCKETS >
- 		     8 * sizeof_field(struct napi_struct, gro_bitmask));
- 
--	if (net != &init_net)
--		INIT_LIST_HEAD(&net->dev_base_head);
-+	INIT_LIST_HEAD(&net->dev_base_head);
- 
- 	net->dev_name_head = netdev_create_hash();
- 	if (net->dev_name_head == NULL)
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 8711350085d6b55a4f3da19bc69e521f9efb7861..0ec2f5906a27c7f930e832835682d69a32e3c8e1 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -44,13 +44,7 @@ EXPORT_SYMBOL_GPL(net_rwsem);
- static struct key_tag init_net_key_domain = { .usage = REFCOUNT_INIT(1) };
- #endif
- 
--struct net init_net = {
--	.ns.count	= REFCOUNT_INIT(1),
--	.dev_base_head	= LIST_HEAD_INIT(init_net.dev_base_head),
--#ifdef CONFIG_KEYS
--	.key_domain	= &init_net_key_domain,
--#endif
--};
-+struct net init_net;
- EXPORT_SYMBOL(init_net);
- 
- static bool init_net_initialized;
-@@ -1087,7 +1081,7 @@ static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 portid,
- 	rtnl_set_sk_err(net, RTNLGRP_NSID, err);
- }
- 
--static int __init net_ns_init(void)
-+void __init net_ns_init(void)
- {
- 	struct net_generic *ng;
- 
-@@ -1108,6 +1102,9 @@ static int __init net_ns_init(void)
- 
- 	rcu_assign_pointer(init_net.gen, ng);
- 
-+#ifdef CONFIG_KEYS
-+	init_net.key_domain = &init_net_key_domain;
-+#endif
- 	down_write(&pernet_ops_rwsem);
- 	if (setup_net(&init_net, &init_user_ns))
- 		panic("Could not setup the initial network namespace");
-@@ -1122,12 +1119,8 @@ static int __init net_ns_init(void)
- 		      RTNL_FLAG_DOIT_UNLOCKED);
- 	rtnl_register(PF_UNSPEC, RTM_GETNSID, rtnl_net_getid, rtnl_net_dumpid,
- 		      RTNL_FLAG_DOIT_UNLOCKED);
--
--	return 0;
- }
- 
--pure_initcall(net_ns_init);
--
- static void free_exit_list(struct pernet_operations *ops, struct list_head *net_exit_list)
- {
- 	ops_pre_exit_list(ops, net_exit_list);
--- 
-2.35.0.263.gb82422642f-goog
+Reviewed-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
