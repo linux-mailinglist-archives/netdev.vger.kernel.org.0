@@ -2,68 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C85404A9C24
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 16:42:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 002CA4A9C29
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 16:43:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359808AbiBDPmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 10:42:15 -0500
-Received: from www62.your-server.de ([213.133.104.62]:33468 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359802AbiBDPmO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 10:42:14 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nG0iq-0002u6-Oo; Fri, 04 Feb 2022 16:42:04 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nG0iq-000V8b-BR; Fri, 04 Feb 2022 16:42:04 +0100
-Subject: Re: [PATCH bpf-next v3 1/3] bpf, arm64: enable kfunc call
-To:     Hou Tao <hotforest@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, houtao1@huawei.com,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ard.biesheuvel@arm.com>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220130092917.14544-1-hotforest@gmail.com>
- <20220130092917.14544-2-hotforest@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <1345374f-d47c-81da-e7f3-57b9c22a6328@iogearbox.net>
-Date:   Fri, 4 Feb 2022 16:42:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S239080AbiBDPnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 10:43:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35874 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230391AbiBDPnV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 10:43:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC55C061714
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 07:43:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F83C615F4
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 15:43:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C04A0C004E1;
+        Fri,  4 Feb 2022 15:43:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643989399;
+        bh=7GY+SB9RcTUPr3tw03/aOQLdk5r8xCOKVtLSkvhdTU4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=U+Uw5YxkRBfVxZtJJu1pqt70aSFhkfxk06hl2AdDD3sXJJgiYWkjVJHgu7N30t90X
+         D+blNOf615m7kfVPWugoMGKETgilFe14v5p5C9Z53qsP0Klwq9Nmz4VJNx6+aQwES2
+         5NJgBAEBjp1BCba3lBKpGY9A2metTTirFZtP6Z3Vo42KICelzsWzBfpuybHUeCXswD
+         ZYELRM3OCjAh+8AoRc1qRDXEV7E/ortaDLkeIAeAYT1jeUbmdOETZYVv0jkxe4FZ4j
+         eqUar0+8DtIuCunqd9RmCXITYQO/S/iwduEjkU1NMAYxnoujN3AZEBFQ/mugftHwwb
+         xBTmJ2r7Ux2yg==
+Date:   Fri, 4 Feb 2022 07:43:17 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Yannick Vignon <yannick.vignon@oss.nxp.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Wang <weiwan@google.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, mingkai.hu@nxp.com,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        sebastien.laveze@nxp.com, Yannick Vignon <yannick.vignon@nxp.com>
+Subject: Re: [PATCH net-next 1/2] net: napi: wake up ksoftirqd if needed
+ after scheduling NAPI
+Message-ID: <20220204074317.4a8be6d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YfzhioY0Mj3M1v4S@linutronix.de>
+References: <20220203184031.1074008-1-yannick.vignon@oss.nxp.com>
+        <CANn89iKn20yuortKnqKV99s=Pb9HHXbX8e0=58f_szkTWnQbCQ@mail.gmail.com>
+        <0ad1a438-8e29-4613-df46-f913e76a1770@oss.nxp.com>
+        <20220203170901.52ccfd09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YfzhioY0Mj3M1v4S@linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20220130092917.14544-2-hotforest@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26443/Fri Feb  4 10:22:38 2022)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/30/22 10:29 AM, Hou Tao wrote:
-> From: Hou Tao <houtao1@huawei.com>
-> 
-> Since commit b2eed9b58811 ("arm64/kernel: kaslr: reduce module
-> randomization range to 2 GB"), for arm64 whether KASLR is enabled
-> or not, the module is placed within 2GB of the kernel region, so
-> s32 in bpf_kfunc_desc is sufficient to represente the offset of
-> module function relative to __bpf_call_base. The only thing needed
-> is to override bpf_jit_supports_kfunc_call().
-> 
-> Signed-off-by: Hou Tao <houtao1@huawei.com>
+On Fri, 4 Feb 2022 09:19:22 +0100 Sebastian Andrzej Siewior wrote:
+> On 2022-02-03 17:09:01 [-0800], Jakub Kicinski wrote:
+> > Let's be clear that the problem only exists when switching to threaded
+> > IRQs on _non_ PREEMPT_RT kernel (or old kernels). We already have a
+> > check in __napi_schedule_irqoff() which should handle your problem on
+> > PREEMPT_RT. =20
+>=20
+> It does not. The problem is the missing bh-off/on around the call. The
+> forced-threaded handler has this. His explicit threaded-handler does not
+> and needs it.
 
-Could you rebase patch 2 & 3 and resend as they don't apply to bpf-next
-right now. Meanwhile, applied this one, thanks a lot!
+I see, what I was getting at is on PREEMPT_RT IRQs are already threaded
+so I thought the patch was only targeting non-RT, I didn't think that
+explicitly threading IRQ is advantageous also on RT.
+
+> > We should slap a lockdep warning for non-irq contexts in
+> > ____napi_schedule(), I think, it was proposed by got lost. =20
+>=20
+> Something like this perhaps?:
+>=20
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 1baab07820f65..11c5f003d1591 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4217,6 +4217,9 @@ static inline void ____napi_schedule(struct softnet=
+_data *sd,
+>  {
+>  	struct task_struct *thread;
+> =20
+> +	lockdep_assert_once(hardirq_count() | softirq_count());
+> +	lockdep_assert_irqs_disabled();
+> +
+>  	if (test_bit(NAPI_STATE_THREADED, &napi->state)) {
+>  		/* Paired with smp_mb__before_atomic() in
+>  		 * napi_enable()/dev_set_threaded().
+
+=F0=9F=91=8D maybe with a comment above the first one saying that we want t=
+o make
+sure softirq will be handled somewhere down the callstack. Possibly push
+it as a helper in lockdep.h called "lockdep_assert_softirq_will_run()"
+so it's self-explanatory?
+
+> Be aware that this (the first assert) will trigger in dev_cpu_dead() and
+> needs a bh-off/on around. I should have something in my RT tree :)
+
+Or we could push the asserts only into the driver-facing helpers
+(__napi_schedule(), __napi_schedule_irqoff()).
