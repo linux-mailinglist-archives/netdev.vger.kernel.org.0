@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 484444A97F3
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 11:40:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABD5F4A97F5
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 11:40:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239329AbiBDKkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 05:40:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51306 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234577AbiBDKkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 05:40:13 -0500
+        id S1351220AbiBDKkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 05:40:17 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58444 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234577AbiBDKkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 05:40:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A636A61A47
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 10:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F2532C340EF;
-        Fri,  4 Feb 2022 10:40:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71DCEB83708
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 10:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 25DB7C340F0;
+        Fri,  4 Feb 2022 10:40:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1643971213;
-        bh=Wp4QHA9VAFtdjzpjux6WpWee5SEQiw5bXTiWowaaFnI=;
+        bh=FfHcUg/o6n8gVrRV1oLJQLwERDtmZcVxvTN2NH1IlE0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sbuRTTxAKDnCrYG3YmkoQ39CTPeUCCG/LME+nazR4IcNjrGA/5VL6QvpimL5n++my
-         wv4gW9EOyVuUaqxj1Byi1NmJL7F5JdysT+o0Ep3PprgeSrawCUzdYcgLQQFhdvICxp
-         XvqnmmWUleEtRfP5QV2S0TOHfPKWK73W0fVqeXzZ3i7q0B6Xb0pJ8XFbI+Kr1KDbhR
-         DsbnOLWurl+/m/3LsC7ChL73NulwfdljkH3oUu0y2BvhGhi+J2v/H6sWif+v6sBufs
-         Tkcj7/ARaBvUP7z6tmxymki13k5Yo3J6y5aeeuFJz39ml1K90QozYR6J9HhudddeF6
-         ekeZ2zVkYFJvA==
+        b=A+ny9FmRX726+UWbsT9sDS8Xfk4lFwwc/E/JO2OuH79Mf62rERnfcOm6rc+K9PIKC
+         HZKXbVxLkkRUdlJMgs2+TU0EAiVCQ2LkQrSatZ5f7mVUGtS0IieWsis/Qdg3ZPk/u0
+         inqUs6h4QOiY2Grt8cb5C8usXo6DWedswPydbXKMuhEs7PjZzvs77cYKbVQgk5Mm/K
+         AkvjnKCNQTr9tT9R/SWP+U6PpkJ0o/bSMNsmdoI7vd8oub40aqrFwiYUihZHqKJFgE
+         0gkwklmCOtSJoIf5p+P1Mvc9yiUOAIe/KnafTvZJM49xGuAig/U9HnMwFC72R1LF1Z
+         f66NBLadmWjjg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D732BE6BBD2;
-        Fri,  4 Feb 2022 10:40:12 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 05D12E6D3DA;
+        Fri,  4 Feb 2022 10:40:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] tls: cap the output scatter list to something
- reasonable
+Subject: Re: [PATCH net-next] net: dsa: realtek: convert to
+ phylink_generic_validate()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164397121286.5815.16819956253657269354.git-patchwork-notify@kernel.org>
-Date:   Fri, 04 Feb 2022 10:40:12 +0000
-References: <20220202222031.2174584-1-kuba@kernel.org>
-In-Reply-To: <20220202222031.2174584-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        viro@zeniv.linux.org.uk, borisp@nvidia.com,
-        john.fastabend@gmail.com, daniel@iogearbox.net,
-        vfedorenko@novek.ru, kernel-team@fb.com, axboe@kernel.dk
+Message-Id: <164397121301.5815.18327945100502330970.git-patchwork-notify@kernel.org>
+Date:   Fri, 04 Feb 2022 10:40:13 +0000
+References: <E1nFIVZ-006Lgp-0o@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1nFIVZ-006Lgp-0o@rmk-PC.armlinux.org.uk>
+To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -55,23 +54,21 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed,  2 Feb 2022 14:20:31 -0800 you wrote:
-> TLS recvmsg() passes user pages as destination for decrypt.
-> The decrypt operation is repeated record by record, each
-> record being 16kB, max. TLS allocates an sg_table and uses
-> iov_iter_get_pages() to populate it with enough pages to
-> fit the decrypted record.
+On Wed, 02 Feb 2022 16:29:25 +0000 you wrote:
+> Populate the supported interfaces and MAC capabilities for the Realtek
+> rtl8365 DSA switch and remove the old validate implementation to allow
+> DSA to use phylink_generic_validate() for this switch driver.
 > 
-> Even though we decrypt a single message at a time we size
-> the sg_table based on the entire length of the iovec.
-> This leads to unnecessarily large allocations, risking
-> triggering OOM conditions.
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> ---
+> I seem to have missed this driver, so here's an update for it - but only
+> build tested.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] tls: cap the output scatter list to something reasonable
-    https://git.kernel.org/netdev/net-next/c/b93235e68921
+  - [net-next] net: dsa: realtek: convert to phylink_generic_validate()
+    https://git.kernel.org/netdev/net-next/c/6ff6064605e9
 
 You are awesome, thank you!
 -- 
