@@ -2,84 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7FE24A9C88
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 16:56:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31ADF4A9C90
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 16:59:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376365AbiBDPz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 10:55:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38834 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376456AbiBDPzv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 10:55:51 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 277E3C06175C
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 07:55:27 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id w25so14012068edt.7
-        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 07:55:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=n6D04wilXtSuF+RMEcMT67RNVn5L7mpxQdznF4XFDzQ=;
-        b=p4FOldEf2GNlGiU+Iw+BJwLo+ev9+ma1Pmp4LoZTAP5hfxVsc04zBzIVHmGqQN3qVR
-         R0Hr2V2LggIKu2uZb3GKEX3WYk0tJTeqRJ+nHUWolFpZufVihh7ZI/0z4lUyLZJlx7Mb
-         Gmd216X7pI5LLKb5zU2ZWnIg+YuWCg8G6u9gupC8lw6QCukuQrOgyc4wPx62C8Stg5WA
-         C1q3qjZ5uBjSHFMnX0ZdSOZdBjcqUJOkqDoevUIGGuzjo3xTuMS8nmPkmfuCrenma5JW
-         I0e+hixC65nweRteVYWPC41PugcU1FQJn6mTALDubSDYodOVIVhI/yp1NFBjbM79NQ4Q
-         n2Xg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n6D04wilXtSuF+RMEcMT67RNVn5L7mpxQdznF4XFDzQ=;
-        b=OZk2OrHcAE73Z6dE23T7GpZoB+fcV1dmYdySZ8PTwq9B9VKjagi57lS06RfYpROBmw
-         SrRt8LDzLUEFlOpBc+xZUEWMx/UmERG68EfgoR186QHhAUWc9IqsPE0edBQOKby13mPL
-         HudPxlPRkXyl531yG9JkK/C1gWC27WmxBhxSJ3X1X4hqCoEW/a4/VWNoSU79V4/lG/4P
-         Js+O/H8omPYNSv6xXjHyezHAWjIk7E04ClOlxu3a0VbYTYjeTWMj8Y0fAGC0sEQ6fBH9
-         VIupD9nwDKB6LXnvAId47qxR1ZtxaLAjL6ggMpAfC9yXj/gUKZ6w063ZCpD1uo2p7S7G
-         KxqQ==
-X-Gm-Message-State: AOAM531+Eu/ukxbcpPEZZBZ479e1j+kpKjY+uiSbY266JDRLIJ+X/dmh
-        wza9a9Tdp6ElM2apZEhGci3fB/LKJynsRw1d/iA=
-X-Google-Smtp-Source: ABdhPJwGPzOofWLNMERK8olF+8/cbJtlaXHU7we3ZSs6cvYLqAaHNqHKwKhrSiQ21JXdFSvhzRu6sKf3y9wprLd2kRY=
-X-Received: by 2002:a05:6402:3c6:: with SMTP id t6mr3618083edw.21.1643990125569;
- Fri, 04 Feb 2022 07:55:25 -0800 (PST)
+        id S243386AbiBDP7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 10:59:32 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47784 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243078AbiBDP7b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 10:59:31 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63841B8381C
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 15:59:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A22DFC340E9;
+        Fri,  4 Feb 2022 15:59:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643990369;
+        bh=Of4E/0Jl+edk3fw1EEQV128+SiGRRSY3eruR43VLkHw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PfhR49kDK6MnWieEAbTeTkRNfFf6xcpqMQv8h4FcPEKxxGjT+b00dhB7h84JWXbXt
+         q72ZO6whIU0u3YR8ZL9hZRtrkV/C9GnLHQDJHko4t5k8Q+mNbX86XviMz+motf7rGK
+         E1ruLBzozXnAjrjlgIQeYKuXpFCku/Ojo/6G5pAfDOn6BZszoOUItlfaFhi5tIonit
+         bI58TM3Dxs2gK4MYJjd7oF5KgAbPcs9eNePvKBWhOIh6zgn7cEGqMkxK1VuO6w1xxd
+         zP5YKPe2uewQ5ye/B9U7056RAcia9T9Mp0hUEhI+x1uTZC1AxE0Z0F1S5QSGGOYREO
+         DVFFWdbD1tgjg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com
+Subject: [PATCH net-next] net: dsa: realtek: don't default Kconfigs to y
+Date:   Fri,  4 Feb 2022 07:59:27 -0800
+Message-Id: <20220204155927.2393749-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <cover.1643972527.git.pabeni@redhat.com>
-In-Reply-To: <cover.1643972527.git.pabeni@redhat.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 4 Feb 2022 07:55:14 -0800
-Message-ID: <CAKgT0UeNKjFYZkUfXCX8W8DTxJH7bXxCfERH6e0w6DZ2+N5v1g@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/2] gro: a couple of minor optimization
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 4, 2022 at 3:29 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> This series collects a couple of small optimizations for the GRO engine,
-> reducing slightly the number of cycles for dev_gro_receive().
-> The delta is within noise range in tput tests, but with big TCP coming
-> every cycle saved from the GRO engine will count - I hope ;)
->
-> v1 -> v2:
->  - a few cleanup suggested from Alexander(s)
->  - moved away the more controversial 3rd patch
->
-> Paolo Abeni (2):
->   net: gro: avoid re-computing truesize twice on recycle
->   net: gro: minor optimization for dev_gro_receive()
->
->  include/net/gro.h | 52 +++++++++++++++++++++++++----------------------
->  net/core/gro.c    | 16 ++++-----------
->  2 files changed, 32 insertions(+), 36 deletions(-)
+We generally default the vendor to y and the drivers itself
+to n. NET_DSA_REALTEK, however, selects a whole bunch of things,
+so it's not a pure "vendor selection" knob. Let's default it all
+to n.
 
-This addresses the concern I had.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+Happy to drop this if someone has a better patch, e.g. making
+NET_DSA_REALTEK a pure vendor knob!
 
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+CC: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+CC: Arınç ÜNAL <arinc.unal@arinc9.com>
+CC: linus.walleij@linaro.org
+CC: andrew@lunn.ch
+CC: vivien.didelot@gmail.com
+CC: f.fainelli@gmail.com
+CC: olteanv@gmail.com
+---
+ drivers/net/dsa/realtek/Kconfig | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/net/dsa/realtek/Kconfig b/drivers/net/dsa/realtek/Kconfig
+index 5242698143d9..b7427a8292b2 100644
+--- a/drivers/net/dsa/realtek/Kconfig
++++ b/drivers/net/dsa/realtek/Kconfig
+@@ -12,7 +12,6 @@ menuconfig NET_DSA_REALTEK
+ config NET_DSA_REALTEK_MDIO
+ 	tristate "Realtek MDIO connected switch driver"
+ 	depends on NET_DSA_REALTEK
+-	default y
+ 	help
+ 	  Select to enable support for registering switches configured
+ 	  through MDIO.
+@@ -20,14 +19,12 @@ config NET_DSA_REALTEK_MDIO
+ config NET_DSA_REALTEK_SMI
+ 	tristate "Realtek SMI connected switch driver"
+ 	depends on NET_DSA_REALTEK
+-	default y
+ 	help
+ 	  Select to enable support for registering switches connected
+ 	  through SMI.
+ 
+ config NET_DSA_REALTEK_RTL8365MB
+ 	tristate "Realtek RTL8365MB switch subdriver"
+-	default y
+ 	depends on NET_DSA_REALTEK
+ 	depends on NET_DSA_REALTEK_SMI || NET_DSA_REALTEK_MDIO
+ 	select NET_DSA_TAG_RTL8_4
+@@ -36,7 +33,6 @@ config NET_DSA_REALTEK_RTL8365MB
+ 
+ config NET_DSA_REALTEK_RTL8366RB
+ 	tristate "Realtek RTL8366RB switch subdriver"
+-	default y
+ 	depends on NET_DSA_REALTEK
+ 	depends on NET_DSA_REALTEK_SMI || NET_DSA_REALTEK_MDIO
+ 	select NET_DSA_TAG_RTL4_A
+-- 
+2.34.1
+
