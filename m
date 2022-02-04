@@ -2,87 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 693984A919A
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 01:27:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 840104A91B9
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 01:46:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243615AbiBDA1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 19:27:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55522 "EHLO
+        id S1356283AbiBDAq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 19:46:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233251AbiBDA1y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 19:27:54 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69262C061714
-        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 16:27:54 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id g14so14028576ybs.8
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 16:27:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nQKr+Ck+sZo803cnA2KM7V1QYN76Aea9LHlVDTklP5Q=;
-        b=tHlGyIea8Xr8i31zNODuikOFAJqe/QmWa9Yg1Hw0MJ2mXK7pZhtUA+ls2qQIYmHWO/
-         /otwCBsNH4TP5f2xWCr/pS6PC+B/hrbNyPDFiBYymCPSYzKaC5WMPqvWJDq/B4kZA5HF
-         i9bOl64Tas+CU3jDeemneOu08mMid0pr7BykUz0PGzCF26fcrctVQFYXKqebrwbmPgo2
-         WH68j8be+HrkSM0RHi0+9L1CtqTE8Isi+vqdhSTVo/qOFXldOhLx1nCsXZtLY8qLRc25
-         QZqakwg0QRJI7R4RXmZUGax43yIr4OI1ztZKNlrzf4Vgccq5okOILMe2/np7fwDbuRDw
-         YgWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nQKr+Ck+sZo803cnA2KM7V1QYN76Aea9LHlVDTklP5Q=;
-        b=LjrPyud8LDGiZpfQAur5WekwMMe7L8SO5Oo33lqCx1tFt+Fdi3ChtWJveKtgeeijD7
-         bEoU7gdS0x807JK9vaSluOdwMUW1sw9oAeM6Ddxlt7n3w9fkuG8/AdqDjSpeCdla8rAw
-         RNOSiiqR5+G5EuWaNPiwEOtIuDWrzr9jOh7j0zkvn8Sr2Hez5tDkZJh+S5dDsPrz4QrC
-         FoxxjvK77LTK3HRdRYFEzVvDWnz5KoNe0yOF4/YBi04YPWT2KsteCsRMxrAgX6jCW4Da
-         1CNjbD9PqiUDtxbxd46Hkbw303zQOeFDTbyWBox2FgmOL26Bk0EWwzbW8LMBfYgv5/2E
-         AeiQ==
-X-Gm-Message-State: AOAM531FFnhusLlNflWSbig1kWsL4wMIeLhaIq0w4aX52JIuSbUtJSsX
-        LRlQLKx4yfHKZnFKooJ9x4XKiV0mMORyhU4fGa5SBA==
-X-Google-Smtp-Source: ABdhPJz0aoogAn564qMqtBxPsLOdRzxJU+U71nK2bz9nXJmthxZQy9HebPah93g6DprR1y+cTPlPcq22JQx8H3oj5YI=
-X-Received: by 2002:a25:d2cb:: with SMTP id j194mr667197ybg.277.1643934473274;
- Thu, 03 Feb 2022 16:27:53 -0800 (PST)
-MIME-Version: 1.0
-References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
- <20220203015140.3022854-6-eric.dumazet@gmail.com> <0d3cbdeee93fe7b72f3cdfc07fd364244d3f4f47.camel@gmail.com>
- <CANn89iK7snFJ2GQ6cuDc2t4LC-Ufzki5TaQrLwDOWE8qDyYATQ@mail.gmail.com>
- <CAKgT0UfWd2PyOhVht8ZMpRf1wpVwnJbXxxT68M-hYK9QRZuz2w@mail.gmail.com>
- <CANn89iKzDxLHTVTcu=y_DZgdTHk5w1tv7uycL27aK1joPYbasA@mail.gmail.com>
- <802be507c28b9c1815e6431e604964b79070cd40.camel@gmail.com>
- <CANn89iLLgF6f6YQkd26OxL0Fy3hUEx2KQ+PBQ7p6w8zRUpaC_w@mail.gmail.com> <CAKgT0UcGoqJ5426JrKeOAhdm5izSAB1_9+X_bbB23Ws34PKASA@mail.gmail.com>
-In-Reply-To: <CAKgT0UcGoqJ5426JrKeOAhdm5izSAB1_9+X_bbB23Ws34PKASA@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 3 Feb 2022 16:27:42 -0800
-Message-ID: <CANn89iLkx34cnAJboMdRSbQz63OnD7ttxnEX6gMacjWdEL+7Eg@mail.gmail.com>
-Subject: Re: [PATCH net-next 05/15] ipv6/gso: remove temporary HBH/jumbo header
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S230386AbiBDAq0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 19:46:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F62C061714;
+        Thu,  3 Feb 2022 16:46:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA6716194A;
+        Fri,  4 Feb 2022 00:46:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCAD1C340E8;
+        Fri,  4 Feb 2022 00:46:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643935585;
+        bh=KnasKzPC2rpJ48+6l141M8t0itDGXTYhKozsZuyWfwE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VzNMyLHs39xZVHVY4WDNUfezDCHiOS96hm/rk8Kgo1uAe0noKV2Rqe/ywnVMU95k4
+         GghhgewCeMMUhO/GVY+pBiIPij16bA2G2OgZH0FhR6fo4mGfz263OxZVqKFxPlp+Ux
+         iD0OjRptj+gb0+0h1nAYo7OTjwLY1H6EZlNT/gAF6kKDbOFxog4W97pVvMRs+oKJEZ
+         XAKuBodVLJpyMR8LYLpV0nRK0L+Aq5+8eHTl+oqFTEcyQkdgOM/Ab0+cQ2XpvOOVWY
+         DHcpDG761xcF/UUwlXCx519tMkXcIBA77LaPpmjsg+yCrmRl3ZTB+tkgy3svTMkbN0
+         Vetsh4AIzMUVw==
+Date:   Fri, 4 Feb 2022 09:46:19 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Olsa <olsajiri@gmail.com>
+Subject: Re: [PATCH 0/8] bpf: Add fprobe link
+Message-Id: <20220204094619.2784e00c0b7359356458ca57@kernel.org>
+In-Reply-To: <YfvvfLlM1FOTgvDm@krava>
+References: <20220202135333.190761-1-jolsa@kernel.org>
+        <CAADnVQ+hTWbvNgnvJpAeM_-Ui2-G0YSM3QHB9G2+2kWEd4-Ymw@mail.gmail.com>
+        <Yfq+PJljylbwJ3Bf@krava>
+        <CAADnVQKeTB=UgY4Gf-46EBa8rwWTu2wvi7hEj2sdVTALGJ0JEg@mail.gmail.com>
+        <YfvvfLlM1FOTgvDm@krava>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 4:05 PM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
+On Thu, 3 Feb 2022 16:06:36 +0100
+Jiri Olsa <jolsa@redhat.com> wrote:
 
-> I get that. What I was getting at was that we might be able to process
-> it in ipv6_gso_segment before we hand it off to either TCP or UDP gso
-> handlers to segment.
->
-> The general idea being we keep the IPv6 specific bits in the IPv6
-> specific code instead of having the skb_segment function now have to
-> understand IPv6 packets. So what we would end up doing is having to do
-> an skb_cow to replace the skb->head if any clones might be holding on
-> it, and then just chop off the HBH jumbo header before we start the
-> segmenting.
->
-> The risk would be that we waste cycles removing the HBH header for a
-> frame that is going to fail, but I am not sure how likely a scenario
-> that is or if we need to optimize for that.
+> On Wed, Feb 02, 2022 at 09:30:21AM -0800, Alexei Starovoitov wrote:
+> > On Wed, Feb 2, 2022 at 9:24 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > >
+> > > On Wed, Feb 02, 2022 at 09:09:53AM -0800, Alexei Starovoitov wrote:
+> > > > On Wed, Feb 2, 2022 at 5:53 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > > > >
+> > > > > hi,
+> > > > > this patchset adds new link type BPF_LINK_TYPE_FPROBE that attaches kprobe
+> > > > > program through fprobe API [1] instroduced by Masami.
+> > > >
+> > > > No new prog type please.
+> > > > I thought I made my reasons clear earlier.
+> > > > It's a multi kprobe. Not a fprobe or any other name.
+> > > > The kernel internal names should not leak into uapi.
+> > > >
+> > >
+> > > well it's not new prog type, it's new link type that allows
+> > > to attach kprobe program to multiple functions
+> > >
+> > > the original change used BPF_LINK_TYPE_RAW_KPROBE, which did not
+> > > seem to fit anymore, so I moved to FPROBE, because that's what
+> > > it is ;-)
+> > 
+> > Now I don't like the fprobe name even more.
+> > Why invent new names? It's an ftrace interface.
+> 
+> how about ftrace_probe ?
 
-I guess I can try this for the next version, thanks.
+I thought What Alexei pointed was that don't expose the FPROBE name
+to user space. If so, I agree with that. We can continue to use
+KPROBE for user space. Using fprobe is just for kernel implementation.
+
+It means that we may better to keep simple mind model (there are only
+static event or dynamic kprobe event).
+
+
+> > > but if you don't want new name in uapi we could make this more
+> > > obvious with link name:
+> > >   BPF_LINK_TYPE_MULTI_KPROBE
+> > >
+> > > and bpf_attach_type:
+> > >   BPF_TRACE_MULTI_KPROBE
+> > 
+> > I'd rather get rid of fprobe name first.
+> >
+> 
+> Masami, any idea?
+
+Can't we continue to use kprobe prog type for user interface
+and internally, if there are multiple kprobes or kretprobes
+required, switch to use fprobe?
+
+Thank you,
+
+> 
+> thanks,
+> jirka
+> 
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
