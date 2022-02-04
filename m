@@ -2,249 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41D814A9273
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 03:50:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 248BE4A927E
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 03:57:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356702AbiBDCuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 21:50:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58822 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356697AbiBDCuu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 21:50:50 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C063C06173B;
-        Thu,  3 Feb 2022 18:50:50 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id m2so3731078ilg.11;
-        Thu, 03 Feb 2022 18:50:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=AIfPgcmH73UTSzW0sWNz2twIRmbviYhmxxkZu3SSGkc=;
-        b=YpuXcpsP/pYn2sW64Wi6CzN16bLv6j9IjCw2/lp/RzLEO/BwzFSZSZSpBWmoKmhJaO
-         4oj6ZG/BDx3JoBVIFsX4k1baIwByGTNC500zPCzKAQDGCFTaxVO9H4J6y9B5qA2p/L5e
-         9GBq+CfZ9D7bmkrmdFhQx+tDB9GfEFIhXdEyW9MedU8kZEWg18frp8PGb3Y9/OdA5nwi
-         Uyea86Jv82UCDCcdlDdnBYmN0fsil3I3H4CANxBdWKeKySsL5J0KBsWD8k6ZN547Ly3D
-         iaKPGHw/nQhWhEapq9yaw0vIf0ZgMa7X5nHbLdPWjEycxgIKdtzlGbmRLT8VzCdvl6dY
-         sluw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=AIfPgcmH73UTSzW0sWNz2twIRmbviYhmxxkZu3SSGkc=;
-        b=ttr7WiL3Ojp06uw+ltM3O0XiujCsN+VduCZtpWprKrPTn5IVjkIq6ImjyB/npuoJlC
-         39nGVJrHlFzl7aWA+vPTSGPAwRYta/niPxfGRShWNibQ+EHwyrkNnE5k3bRuVgdE7nZm
-         o+7Q+qcaZlof1FJpHbhQJwOb8yNai3sdpyY4nxuEbayMlY6Fos8ZhlJnGa6qhka2nD7V
-         IRnwTk+pHs2l6CrFGpgSIC1Vcd/N+7kSLmvHbfQkRagX1oP5ZvvDl4YJBhKd6arZI9Ru
-         LDCBp/cjgAT+z/sDyEjvs1uDNETCvWvm+0kFGId4kdT6CySqG7QtMU7Mnt9ytfhHCnfu
-         tE1g==
-X-Gm-Message-State: AOAM532rEXwjP2NHBHHTxWRE5mgta5Ka22+9+cJR/ZA1LisFvi1CmZY7
-        eyAR6cn2S7PROD1ElIV2OL0=
-X-Google-Smtp-Source: ABdhPJyIi3zGENlLbHWfZw0p4SICcoePzVfSRWHAGMAZRW71RRIUH7SrNoSAA3kx1qweBiGsY+atYw==
-X-Received: by 2002:a05:6e02:1a47:: with SMTP id u7mr477623ilv.33.1643943049996;
-        Thu, 03 Feb 2022 18:50:49 -0800 (PST)
-Received: from localhost ([99.197.200.79])
-        by smtp.gmail.com with ESMTPSA id d16sm352618iow.13.2022.02.03.18.50.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 18:50:49 -0800 (PST)
-Date:   Thu, 03 Feb 2022 18:50:43 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Petar Penkov <ppenkov@google.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joe Stringer <joe@cilium.io>,
-        Florent Revest <revest@chromium.org>,
-        linux-kselftest@vger.kernel.org,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Florian Westphal <fw@strlen.de>
-Message-ID: <61fc9483dfbe7_1d27c208e7@john.notmuch>
-In-Reply-To: <9cef58de-1f84-5988-92f8-fcdd3c61f689@nvidia.com>
-References: <20220124151340.376807-1-maximmi@nvidia.com>
- <20220124151340.376807-3-maximmi@nvidia.com>
- <61efacc6980f4_274ca2083e@john.notmuch>
- <8f5fecac-ce6e-adc8-305b-a2ee76328bce@nvidia.com>
- <61f850bdf1b23_8597208f8@john.notmuch>
- <61f852711e15a_92e0208ac@john.notmuch>
- <9cef58de-1f84-5988-92f8-fcdd3c61f689@nvidia.com>
-Subject: Re: [PATCH bpf-next v2 2/3] bpf: Add helpers to issue and check SYN
- cookies in XDP
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S1356685AbiBDCzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 21:55:45 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60200 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229967AbiBDCzp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 21:55:45 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65118B83644;
+        Fri,  4 Feb 2022 02:55:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D44D7C340E8;
+        Fri,  4 Feb 2022 02:55:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643943342;
+        bh=iFYVFJtjKaIbefdHLdpYqegeVUxQnXuKEpN+3Ch3AIA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dr8qqzYPKFmFJByEK9kO6IpaCaW2bVgGDR5hk16oTTfhfGHTPoaUlr0Z2MKd2sbTW
+         zaBeSYK9ycn8fgB8Z8a180clQI9z3bWiKTyHJhz4+uhbMlXyYPkQ4gEZlM5x2szmk9
+         drlBO+BE2DeRlnscsGLbH1vqAVjlD+6vzU9SH+ZhT+9yMwvcf2RZMhgUp8rROy9esK
+         fJ6SOOMLfaSTdMLABEptYk/mhdKEpf2zEhxhW9QheMEtRF05JB35AR4DPFkp+3Vhjs
+         oKHraGBRsNPAWo3JoZptsYDhK+33ru8rNbOXGNRVZ7eKuQ8HsBo0gz5X+iM6m0+PUX
+         Vn9EA39y6g5cg==
+Date:   Thu, 3 Feb 2022 18:55:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tianyu Lan <ltykernel@gmail.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, davem@davemloft.net,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
+        hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com,
+        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
+        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        netdev@vger.kernel.org, vkuznets@redhat.com, brijesh.singh@amd.com,
+        konrad.wilk@oracle.com, hch@lst.de, joro@8bytes.org,
+        parri.andrea@gmail.com, dave.hansen@intel.com
+Subject: Re: [PATCH V7 4/5] scsi: storvsc: Add Isolation VM support for
+ storvsc driver
+Message-ID: <20220203185539.3b70a6b9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220203155351.2ca86ab3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20211213071407.314309-1-ltykernel@gmail.com>
+        <20211213071407.314309-5-ltykernel@gmail.com>
+        <20220203155351.2ca86ab3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maxim Mikityanskiy wrote:
-> On 2022-01-31 23:19, John Fastabend wrote:
-> > John Fastabend wrote:
-> >> Maxim Mikityanskiy wrote:
-> >>> On 2022-01-25 09:54, John Fastabend wrote:
-> >>>> Maxim Mikityanskiy wrote:
-> >>>>> The new helpers bpf_tcp_raw_{gen,check}_syncookie allow an XDP program
-> >>>>> to generate SYN cookies in response to TCP SYN packets and to check
-> >>>>> those cookies upon receiving the first ACK packet (the final packet of
-> >>>>> the TCP handshake).
-> >>>>>
-> >>>>> Unlike bpf_tcp_{gen,check}_syncookie these new helpers don't need a
-> >>>>> listening socket on the local machine, which allows to use them together
-> >>>>> with synproxy to accelerate SYN cookie generation.
-> >>>>>
-> >>>>> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-> >>>>> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-> >>>>> ---
-> >>>>
-> >>>> [...]
-> >>>>
-> >>>>> +
-> >>>>> +BPF_CALL_4(bpf_tcp_raw_check_syncookie, void *, iph, u32, iph_len,
-> >>>>> +	   struct tcphdr *, th, u32, th_len)
-> >>>>> +{
-> >>>>> +#ifdef CONFIG_SYN_COOKIES
-> >>>>> +	u32 cookie;
-> >>>>> +	int ret;
-> >>>>> +
-> >>>>> +	if (unlikely(th_len < sizeof(*th)))
-> >>>>> +		return -EINVAL;
-> >>>>> +
-> >>>>> +	if (!th->ack || th->rst || th->syn)
-> >>>>> +		return -EINVAL;
-> >>>>> +
-> >>>>> +	if (unlikely(iph_len < sizeof(struct iphdr)))
-> >>>>> +		return -EINVAL;
-> >>>>> +
-> >>>>> +	cookie = ntohl(th->ack_seq) - 1;
-> >>>>> +
-> >>>>> +	/* Both struct iphdr and struct ipv6hdr have the version field at the
-> >>>>> +	 * same offset so we can cast to the shorter header (struct iphdr).
-> >>>>> +	 */
-> >>>>> +	switch (((struct iphdr *)iph)->version) {
-> >>>>> +	case 4:
-> >>>>
-> >>>> Did you consider just exposing __cookie_v4_check() and __cookie_v6_check()?
-> >>>
-> >>> No, I didn't, I just implemented it consistently with
-> >>> bpf_tcp_check_syncookie, but let's consider it.
-> >>>
-> >>> I can't just pass a pointer from BPF without passing the size, so I
-> >>> would need some wrappers around __cookie_v{4,6}_check anyway. The checks
-> >>> for th_len and iph_len would have to stay in the helpers. The check for
-> >>> TCP flags (ACK, !RST, !SYN) could be either in the helper or in BPF. The
-> >>> switch would obviously be gone.
-> >>
-> >> I'm not sure you would need the len checks in helper, they provide
-> >> some guarantees I guess, but the void * is just memory I don't see
-> >> any checks on its size. It could be the last byte of a value for
-> >> example?
+On Thu, 3 Feb 2022 15:53:51 -0800 Jakub Kicinski wrote:
+> On Mon, 13 Dec 2021 02:14:05 -0500 Tianyu Lan wrote:
+> > @@ -2078,6 +2079,7 @@ struct hv_device *vmbus_device_create(const guid_t *type,
+> >  	return child_device_obj;
+> >  }
+> >  
+> > +static u64 vmbus_dma_mask = DMA_BIT_MASK(64);  
 > 
-> The verifier makes sure that the packet pointer and the size come 
-> together in function parameters (see check_arg_pair_ok). It also makes 
-> sure that the memory region defined by these two parameters is valid, 
-> i.e. in our case it belongs to packet data.
+> This breaks the x86 clang allmodconfig build as I presume those
+> involved know by now:
 > 
-> Now that the helper got a valid memory region, its length is still 
-> arbitrary. The helper has to check it's big enough to contain a TCP 
-> header, before trying to access its fields. Hence the checks in the helper.
-> 
-> > I suspect we need to add verifier checks here anyways to ensure we don't
-> > walk off the end of a value unless something else is ensuring the iph
-> > is inside a valid memory block.
-> 
-> The verifier ensures that the [iph; iph+iph_len) is valid memory, but 
-> the helper still has to check that struct iphdr fits into this region. 
-> Otherwise iph_len could be too small, and the helper would access memory 
-> outside of the valid region.
+> ../drivers/hv/vmbus_drv.c:2082:29: error: shift count >= width of type [-Werror,-Wshift-count-overflow]
+> static u64 vmbus_dma_mask = DMA_BIT_MASK(64);
+>                             ^~~~~~~~~~~~~~~~
+> ../include/linux/dma-mapping.h:76:54: note: expanded from macro 'DMA_BIT_MASK'
+> #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
+>                                                      ^ ~~~
+> 1 error generated.
 
-Thanks for the details this all makes sense. See response to
-other mail about adding new types. Replied to the wrong email
-but I think the context is not lost.
+Looks like a compiler issue actually, found the discussion now:
 
-> 
-> >>
-> >>>
-> >>> The bottom line is that it would be the same code, but without the
-> >>> switch, and repeated twice. What benefit do you see in this approach?
-> >>
-> >> The only benefit would be to shave some instructions off the program.
-> >> XDP is about performance so I figure we shouldn't be adding arbitrary
-> >> stuff here. OTOH you're already jumping into a helper so it might
-> >> not matter at all.
-> >>
-> >>>   From my side, I only see the ability to drop one branch at the expense
-> >>> of duplicating the code above the switch (th_len and iph_len checks).
-> >>
-> >> Just not sure you need the checks either, can you just assume the user
-> >> gives good data?
-> 
-> No, since the BPF program would be able to trick the kernel into reading 
-> from an invalid location (see the explanation above).
-> 
-> >>>
-> >>>> My code at least has already run the code above before it would ever call
-> >>>> this helper so all the other bits are duplicate.
-> >>>
-> >>> Sorry, I didn't quite understand this part. What "your code" are you
-> >>> referring to?
-> >>
-> >> Just that the XDP code I maintain has a if ipv4 {...} else ipv6{...}
-> >> structure
-> 
-> Same for my code (see the last patch in the series).
-> 
-> Splitting into two helpers would allow to drop the extra switch in the 
-> helper, however:
-> 
-> 1. The code will be duplicated for the checks.
-
-See response wrt PTR_TO_IP, PTR_TO_TCP types.
-
-> 
-> 2. It won't be consistent with bpf_tcp_check_syncookie (and all other 
-> existing helpers - as far as I see, there is no split for IPv4/IPv6).
-
-This does seem useful to me.
-
-> 
-> 3. It's easier to misuse, e.g., pass an IPv6 header to the IPv4 helper. 
-> This point is controversial, since it shouldn't pose any additional 
-> security threat, but in my opinion, it's better to be foolproof. That 
-> means, I'd add the IP version check even to the separate helpers, which 
-> defeats the purpose of separating them.
-
-Not really convinced that we need to guard against misuse. This is
-down in XDP space its not a place we should be adding extra insns
-to stop developers from hurting themselves, just as a general
-rule.
-
-> 
-> Given these points, I'd prefer to keep it a single helper. However, if 
-> you have strong objections, I can split it.
-
-I think (2) is the strongest argument combined with the call is
-heavy operation and saving some cycles maybe isn't terribly
-important, but its XDP land again and insns matter IMO. I'm on
-the fence maybe others have opinions?
-
-Sorry for diverging the thread a bit there with the two replies.
-
-Thanks,
-John
+https://lore.kernel.org/llvm/202112181827.o3X7GmHz-lkp@intel.com/
