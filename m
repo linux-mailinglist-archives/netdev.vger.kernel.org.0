@@ -2,135 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 588FB4A91BF
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 01:50:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 455394A91E7
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 02:09:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242063AbiBDAul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 19:50:41 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:56124
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230386AbiBDAuk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 19:50:40 -0500
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S1356381AbiBDBJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 20:09:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353229AbiBDBJE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 20:09:04 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987CCC061714
+        for <netdev@vger.kernel.org>; Thu,  3 Feb 2022 17:09:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A98D23F4B4
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 00:50:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1643935834;
-        bh=0tqfuFEZO5OoJYnI+QHMoCp+jUQTwMPUVWWrO24E7TI=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=HsEQrQn6MWaZ2BjLPFiqOOnNvzOenwZdLfM1OUbkjkIcX+ET+jt5lxM2UvGVKwMwy
-         Nl9MKj+L8EZLCgQIyxmvS0EVN+O6xcNrbsVUtXyMmw2E6xF309anYDiyB/3s2PxgE+
-         9WY0SSLCj7gGJdvOt3dwmbvc3LIVxAjO112m4sLHRPT08lWNx1FqWjsVAp+tQyzEkw
-         +BtAcOBUPBBcxVIZVQ7XxtfY9pByysEJ6QqHOH3q9V7Scus32lI50OL+LrkhrNkhTz
-         jCaufnhhTdDdTIIXMtsQXrT9goMSuZhYqBuLs+SUzR319591Zahw5tTdgi1WM8vmyX
-         OVYZF7u9tvLVQ==
-Received: by mail-pj1-f72.google.com with SMTP id p14-20020a17090a2c4e00b001b54165bffeso2883691pjm.0
-        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 16:50:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
-         :comments:mime-version:content-id:content-transfer-encoding:date
-         :message-id;
-        bh=0tqfuFEZO5OoJYnI+QHMoCp+jUQTwMPUVWWrO24E7TI=;
-        b=UI/WePUqWpWW7/4PmtIlRH+zwxUHTzGXj9tBTowZ+Sl7bWh7p/gUGqC5be/vihnk2E
-         rywRf6aepAZ41H08bcXlSiFTSma/g2lo7wQc/9uRL2z67cmAm21ndi3NPLrfepM56nyf
-         jyLJHqJMgJRU72bz6/UPfOpa2am5cJl1yQ2iGgC2uoxZ7Vrm0XnYhl1VewOj5YTlYNyq
-         11vPD0sEdSBfzMHJORfnMfeiiPee/sX0VCsS2wnCWp+Go2qfVxGLSBj0JD5U3WJa276j
-         kcgYFCEpAnHqglooAmN+IA6IqTU4TvOW6v586D+RGWA5TJG2bcS12nh6cS3Auw6bbyh4
-         mMcQ==
-X-Gm-Message-State: AOAM532VG1xiwchElaZeYMLY1hU6sWLeQNkpzjwF34UPE9U4uhebleF7
-        bx4NsFyKJXJQ5RiIaiNIX9MYTUVw4gznAY2EPW+Qi2FDw6LD8kVwYzd+/GHl4HZtU7Vd5moAA0T
-        W5WvbDe+6aYoXC27IbWYnTP8XFdIa0Ko5xw==
-X-Received: by 2002:a17:902:c102:: with SMTP id 2mr761835pli.92.1643935831570;
-        Thu, 03 Feb 2022 16:50:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJypEUVGUovI5RowUGRspStozBKpkc38VUsHQznhBYs3iRzOsJm6PXdY2z+njrIyVq8xh3fRbg==
-X-Received: by 2002:a17:902:c102:: with SMTP id 2mr761811pli.92.1643935831299;
-        Thu, 03 Feb 2022 16:50:31 -0800 (PST)
-Received: from famine.localdomain ([50.125.80.157])
-        by smtp.gmail.com with ESMTPSA id d70sm165080pga.48.2022.02.03.16.50.30
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 03 Feb 2022 16:50:30 -0800 (PST)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 2C8855FDEE; Thu,  3 Feb 2022 16:50:30 -0800 (PST)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 255CEA0B26;
-        Thu,  3 Feb 2022 16:50:30 -0800 (PST)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Mahesh Bandewar <maheshb@google.com>
-cc:     Netdev <netdev@vger.kernel.org>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mahesh Bandewar <mahesh@bandewar.net>
-Subject: Re: [PATCH v3 net-next] bonding: pair enable_port with slave_arr_updates
-In-reply-to: <20220204000653.364358-1-maheshb@google.com>
-References: <20220204000653.364358-1-maheshb@google.com>
-Comments: In-reply-to Mahesh Bandewar <maheshb@google.com>
-   message dated "Thu, 03 Feb 2022 16:06:53 -0800."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35B7A617A7
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 01:09:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C26ADC340E8;
+        Fri,  4 Feb 2022 01:09:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643936943;
+        bh=qc6ZxeqZJBwM62nlsHKZlN/Dqs+tYLgObSZzFwiBGKI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CKeB84n/oAeD56o7up7I9RRsUXLQPO+fOSwQwMw+jw/FtKqrPvsX8uo8hqHTgcnvU
+         /Qph/hdfWPt6xGBAlbnp5bnN91S5ysfMW7idaeRPI4stLz8VHTD9R9I5j5sZa/NxKL
+         oMVjxhKQrAhsnqQUCr6kzHtXQsZg1TADDeE5NT92wQf/7JkAxhSMGxc+WBqESN8Ia0
+         /t64NJlfvKTlenY9dIRBCZAxeWEOFtD6flwaXNX+lMfg+8P7nCWXQXuQbUTf2y+hNx
+         xwUX4qpIXvCN0aUYJXrLzsIFOMP/IR3SWwp+ccx/9CMCka6bul5/QzHIYXgHJmEv6x
+         XD3KjKNzyhhPw==
+Date:   Thu, 3 Feb 2022 17:09:01 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yannick Vignon <yannick.vignon@oss.nxp.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Wang <weiwan@google.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, mingkai.hu@nxp.com,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        sebastien.laveze@nxp.com, Yannick Vignon <yannick.vignon@nxp.com>
+Subject: Re: [PATCH net-next 1/2] net: napi: wake up ksoftirqd if needed
+ after scheduling NAPI
+Message-ID: <20220203170901.52ccfd09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <0ad1a438-8e29-4613-df46-f913e76a1770@oss.nxp.com>
+References: <20220203184031.1074008-1-yannick.vignon@oss.nxp.com>
+        <CANn89iKn20yuortKnqKV99s=Pb9HHXbX8e0=58f_szkTWnQbCQ@mail.gmail.com>
+        <0ad1a438-8e29-4613-df46-f913e76a1770@oss.nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <20791.1643935830.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Thu, 03 Feb 2022 16:50:30 -0800
-Message-ID: <20792.1643935830@famine>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mahesh Bandewar <maheshb@google.com> wrote:
+On Fri, 4 Feb 2022 00:40:41 +0100 Yannick Vignon wrote:
+> Maybe some background on how I came to this would be helpful. I have 
+> been chasing down sources of latencies in processing rx packets on a 
+> PREEMPT_RT kernel and the stmmac driver. I observed that the main ones 
+> were bh_dis/en sections, preventing even my high-prio, (force-)threaded 
+> rx irq from being handled in a timely manner. Given that explicitly 
+> threaded irq handlers were not enclosed in a bh_dis/en section, and that 
+> from what I saw the stmmac interrupt handler didn't need such a 
+> protection anyway, I modified the stmmac driver to request threaded 
+> interrupts. This worked, safe for that "NOHZ" message: because 
+> __napi_schedule was now called from a kernel thread context, the softirq 
+> was no longer triggered.
+> (note that the problem solves itself when enabling threaded NAPI)
 
->When 803.2ad mode enables a participating port, it should update
->the slave-array. I have observed that the member links are participating
->and are part of the active aggregator while the traffic is egressing via
->only one member link (in a case where two links are participating). Via
->krpobes I discovered that that slave-arr has only one link added while
->the other participating link wasn't part of the slave-arr.
->
->I couldn't see what caused that situation but the simple code-walk
->through provided me hints that the enable_port wasn't always associated
->with the slave-array update.
->
->Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+Let's be clear that the problem only exists when switching to threaded
+IRQs on _non_ PREEMPT_RT kernel (or old kernels). We already have a
+check in __napi_schedule_irqoff() which should handle your problem on
+PREEMPT_RT.
 
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-
->---
-> drivers/net/bonding/bond_3ad.c | 3 ++-
-> 1 file changed, 2 insertions(+), 1 deletion(-)
->
->diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3a=
-d.c
->index 6006c2e8fa2b..9fd1d6cba3cd 100644
->--- a/drivers/net/bonding/bond_3ad.c
->+++ b/drivers/net/bonding/bond_3ad.c
->@@ -1021,8 +1021,8 @@ static void ad_mux_machine(struct port *port, bool =
-*update_slave_arr)
-> 				if (port->aggregator &&
-> 				    port->aggregator->is_active &&
-> 				    !__port_is_enabled(port)) {
->-
-> 					__enable_port(port);
->+					*update_slave_arr =3D true;
-> 				}
-> 			}
-> 			break;
->@@ -1779,6 +1779,7 @@ static void ad_agg_selection_logic(struct aggregato=
-r *agg,
-> 			     port =3D port->next_port_in_aggregator) {
-> 				__enable_port(port);
-> 			}
->+			*update_slave_arr =3D true;
-> 		}
-> 	}
-> =
-
->-- =
-
->2.35.0.263.gb82422642f-goog
->
+We should slap a lockdep warning for non-irq contexts in
+____napi_schedule(), I think, it was proposed by got lost.
