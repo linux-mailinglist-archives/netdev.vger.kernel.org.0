@@ -2,106 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31ADF4A9C90
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 16:59:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B7EB4A9CD4
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 17:19:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243386AbiBDP7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 10:59:32 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47784 "EHLO
+        id S1347646AbiBDQTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 11:19:40 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55746 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243078AbiBDP7b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 10:59:31 -0500
+        with ESMTP id S1376476AbiBDQTj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 11:19:39 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63841B8381C
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 15:59:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A22DFC340E9;
-        Fri,  4 Feb 2022 15:59:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA9E9B83829
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 16:19:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E2CFC004E1;
+        Fri,  4 Feb 2022 16:19:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643990369;
-        bh=Of4E/0Jl+edk3fw1EEQV128+SiGRRSY3eruR43VLkHw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PfhR49kDK6MnWieEAbTeTkRNfFf6xcpqMQv8h4FcPEKxxGjT+b00dhB7h84JWXbXt
-         q72ZO6whIU0u3YR8ZL9hZRtrkV/C9GnLHQDJHko4t5k8Q+mNbX86XviMz+motf7rGK
-         E1ruLBzozXnAjrjlgIQeYKuXpFCku/Ojo/6G5pAfDOn6BZszoOUItlfaFhi5tIonit
-         bI58TM3Dxs2gK4MYJjd7oF5KgAbPcs9eNePvKBWhOIh6zgn7cEGqMkxK1VuO6w1xxd
-         zP5YKPe2uewQ5ye/B9U7056RAcia9T9Mp0hUEhI+x1uTZC1AxE0Z0F1S5QSGGOYREO
-         DVFFWdbD1tgjg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com
-Subject: [PATCH net-next] net: dsa: realtek: don't default Kconfigs to y
-Date:   Fri,  4 Feb 2022 07:59:27 -0800
-Message-Id: <20220204155927.2393749-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        s=k20201202; t=1643991577;
+        bh=kXkkrkIEePN17Fz+Y1Uc4hhm7O497uhCYPNN5IO8p3Q=;
+        h=In-Reply-To:References:Subject:To:Cc:From:Date:From;
+        b=KZHDQcpZSVvcvEwa89QNj1XZQW+JZ4SMyuXn+Zg0RrBu8FQsXHpEAT18eOFoXTQdj
+         g41azKjr7xHu4PDxrexTcpTsg9+RNCd0YuFsDO8c5aT3eNUX0X5D9bfHZdlRyI7US/
+         tkK8KkQqPBNfzV+NwEYj6Vr/zYttjbmiWvdhi8fHPiyHx06yycXs0FJYythYkO+5nh
+         LGeZ8/log3etpdmpBOJ83/S1sfQ3M3wFeE4Ra1AypSDmdHnYlR9NxDKs1QM7rK+hwV
+         rq2HO+rVMz0RMJ+KUi0pEmz1dzMgoTATziWKmxBQvUK3rBI3g6a0f7anjX0zoD3wJb
+         luU/xRJXPU8UQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <fc060e49-6ddf-0d18-f10d-958425876370@iogearbox.net>
+References: <20220202110137.470850-1-atenart@kernel.org> <20220202110137.470850-2-atenart@kernel.org> <8585630f-f68c-ecea-a6b5-9a2ca8323566@iogearbox.net> <164380949615.380114.13546587453907068231@kwain> <fc060e49-6ddf-0d18-f10d-958425876370@iogearbox.net>
+Subject: Re: [PATCH net 1/2] net: do not keep the dst cache when uncloning an skb dst and its metadata
+To:     Daniel Borkmann <daniel@iogearbox.net>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, vladbu@nvidia.com, pabeni@redhat.com,
+        pshelar@ovn.org, wenxu@ucloud.cn
+From:   Antoine Tenart <atenart@kernel.org>
+Message-ID: <164399157371.4980.14890218612337167330@kwain>
+Date:   Fri, 04 Feb 2022 17:19:33 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We generally default the vendor to y and the drivers itself
-to n. NET_DSA_REALTEK, however, selects a whole bunch of things,
-so it's not a pure "vendor selection" knob. Let's default it all
-to n.
+Quoting Daniel Borkmann (2022-02-04 13:33:20)
+> On 2/2/22 2:44 PM, Antoine Tenart wrote:
+> > Quoting Daniel Borkmann (2022-02-02 13:13:30)
+> >> On 2/2/22 12:01 PM, Antoine Tenart wrote:
+> >>> When uncloning an skb dst and its associated metadata a new dst+metad=
+ata
+> >>> is allocated and the tunnel information from the old metadata is copi=
+ed
+> >>> over there.
+> >>>
+> >>> The issue is the tunnel metadata has references to cached dst, which =
+are
+> >>> copied along the way. When a dst+metadata refcount drops to 0 the
+> >>> metadata is freed including the cached dst entries. As they are also
+> >>> referenced in the initial dst+metadata, this ends up in UaFs.
+> >>>
+> >>> In practice the above did not happen because of another issue, the
+> >>> dst+metadata was never freed because its refcount never dropped to 0
+> >>> (this will be fixed in a subsequent patch).
+> >>>
+> >>> Fix this by initializing the dst cache after copying the tunnel
+> >>> information from the old metadata to also unshare the dst cache.
+> >>>
+> >>> Fixes: d71785ffc7e7 ("net: add dst_cache to ovs vxlan lwtunnel")
+> >>> Cc: Paolo Abeni <pabeni@redhat.com>
+> >>> Reported-by: Vlad Buslov <vladbu@nvidia.com>
+> >>> Tested-by: Vlad Buslov <vladbu@nvidia.com>
+> >>> Signed-off-by: Antoine Tenart <atenart@kernel.org>
+> >>> ---
+> >>>    include/net/dst_metadata.h | 13 ++++++++++++-
+> >>>    1 file changed, 12 insertions(+), 1 deletion(-)
+> >>>
+> >>> diff --git a/include/net/dst_metadata.h b/include/net/dst_metadata.h
+> >>> index 14efa0ded75d..c8f8b7b56bba 100644
+> >>> --- a/include/net/dst_metadata.h
+> >>> +++ b/include/net/dst_metadata.h
+> >>> @@ -110,8 +110,8 @@ static inline struct metadata_dst *tun_rx_dst(int=
+ md_size)
+> >>>    static inline struct metadata_dst *tun_dst_unclone(struct sk_buff =
+*skb)
+> >>>    {
+> >>>        struct metadata_dst *md_dst =3D skb_metadata_dst(skb);
+> >>> -     int md_size;
+> >>>        struct metadata_dst *new_md;
+> >>> +     int md_size, ret;
+> >>>   =20
+> >>>        if (!md_dst || md_dst->type !=3D METADATA_IP_TUNNEL)
+> >>>                return ERR_PTR(-EINVAL);
+> >>> @@ -123,6 +123,17 @@ static inline struct metadata_dst *tun_dst_unclo=
+ne(struct sk_buff *skb)
+> >>>   =20
+> >>>        memcpy(&new_md->u.tun_info, &md_dst->u.tun_info,
+> >>>               sizeof(struct ip_tunnel_info) + md_size);
+> >>> +#ifdef CONFIG_DST_CACHE
+> >>> +     ret =3D dst_cache_init(&new_md->u.tun_info.dst_cache, GFP_ATOMI=
+C);
+> >>> +     if (ret) {
+> >>> +             /* We can't call metadata_dst_free directly as the stil=
+l shared
+> >>> +              * dst cache would be released.
+> >>> +              */
+> >>> +             kfree(new_md);
+> >>> +             return ERR_PTR(ret);
+> >>> +     }
+> >>> +#endif
+> >>
+> >> Could you elaborate (e.g. also in commit message) how this interacts
+> >> or whether it is needed for TUNNEL_NOCACHE users? (Among others,
+> >> latter is used by BPF, for example.)
+> >=20
+> > My understanding is that TUNNEL_NOCACHE is used to decide whether or not
+> > to use a dst cache, that might or might not come from the tunnel info
+> > attached to an skb. The dst cache being allocated in a tunnel info is
+> > orthogonal to the use of TUNNEL_NOCACHE. While looking around I actually
+> > found a code path explicitly setting both, in nft_tunnel_obj_init (that
+> > might need to be investigated though but it is another topic).
+>=20
+> Good point, this is coming from 3e511d5652ce ("netfilter: nft_tunnel: Add=
+ dst_cache
+> support") and was added only after af308b94a2a4 ("netfilter: nf_tables: a=
+dd tunnel
+> support") which initially indicated TUNNEL_NOCACHE. This is indeed contra=
+dictory.
+> wenxu (+Cc), ptal.
+>=20
+> > It doesn't look like initializing the dst cache would break
+> > TUNNEL_NOCACHE users as ip_tunnel_dst_cache_usable would return false
+> > anyway. Having said that, we probably want to unshare the dst cache only
+> > if there is one already, checking for
+> > 'md_dst->u.tun_info.dst_cache.cache !=3D NULL' first.
+>=20
+> Meaning, if that is the case, we wouldn't require the dst_cache_init()
+> and thus extra alloc, right? Would make sense afaics.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-Happy to drop this if someone has a better patch, e.g. making
-NET_DSA_REALTEK a pure vendor knob!
+Meaning:
 
-CC: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-CC: Arınç ÜNAL <arinc.unal@arinc9.com>
-CC: linus.walleij@linaro.org
-CC: andrew@lunn.ch
-CC: vivien.didelot@gmail.com
-CC: f.fainelli@gmail.com
-CC: olteanv@gmail.com
----
- drivers/net/dsa/realtek/Kconfig | 4 ----
- 1 file changed, 4 deletions(-)
+          memcpy(&new_md->u.tun_info, &md_dst->u.tun_info,
+                 sizeof(struct ip_tunnel_info) + md_size);
+  +#ifdef CONFIG_DST_CACHE
+  +       if (new_md->u.tun_info.dst_cache.cache) {
+  +               int ret =3D dst_cache_init(&new_md->u.tun_info.dst_cache,
+  +                                        GFP_ATOMIC);
+  +               if (ret) {
+  +                       metadata_dst_free(new_md);
+  +                       return ERR_PTR(ret);
+  +               }
+  +       }
+  +#endif
 
-diff --git a/drivers/net/dsa/realtek/Kconfig b/drivers/net/dsa/realtek/Kconfig
-index 5242698143d9..b7427a8292b2 100644
---- a/drivers/net/dsa/realtek/Kconfig
-+++ b/drivers/net/dsa/realtek/Kconfig
-@@ -12,7 +12,6 @@ menuconfig NET_DSA_REALTEK
- config NET_DSA_REALTEK_MDIO
- 	tristate "Realtek MDIO connected switch driver"
- 	depends on NET_DSA_REALTEK
--	default y
- 	help
- 	  Select to enable support for registering switches configured
- 	  through MDIO.
-@@ -20,14 +19,12 @@ config NET_DSA_REALTEK_MDIO
- config NET_DSA_REALTEK_SMI
- 	tristate "Realtek SMI connected switch driver"
- 	depends on NET_DSA_REALTEK
--	default y
- 	help
- 	  Select to enable support for registering switches connected
- 	  through SMI.
- 
- config NET_DSA_REALTEK_RTL8365MB
- 	tristate "Realtek RTL8365MB switch subdriver"
--	default y
- 	depends on NET_DSA_REALTEK
- 	depends on NET_DSA_REALTEK_SMI || NET_DSA_REALTEK_MDIO
- 	select NET_DSA_TAG_RTL8_4
-@@ -36,7 +33,6 @@ config NET_DSA_REALTEK_RTL8365MB
- 
- config NET_DSA_REALTEK_RTL8366RB
- 	tristate "Realtek RTL8366RB switch subdriver"
--	default y
- 	depends on NET_DSA_REALTEK
- 	depends on NET_DSA_REALTEK_SMI || NET_DSA_REALTEK_MDIO
- 	select NET_DSA_TAG_RTL4_A
--- 
-2.34.1
+So that the cache is unshared only if there was one in the first place.
+If there was no cache to unshare, we can save the extra alloc.
 
+> db3c6139e6ea ("bpf, vxlan, geneve, gre: fix usage of dst_cache on
+> xmit") had some details related to BPF use.
+
+With the above commit if TUNNEL_NOCACHE is set the tunnel cache
+shouldn't be used, regardless of it being allocated. I guess with that
+and the above, we should be good.
+
+Thanks!
+Antoine
