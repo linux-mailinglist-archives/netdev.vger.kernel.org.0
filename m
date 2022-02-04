@@ -2,115 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 002CA4A9C29
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 16:43:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 460904A9C31
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 16:46:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239080AbiBDPnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 10:43:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35874 "EHLO
+        id S241200AbiBDPq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 10:46:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbiBDPnV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 10:43:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC55C061714
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 07:43:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F83C615F4
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 15:43:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C04A0C004E1;
-        Fri,  4 Feb 2022 15:43:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643989399;
-        bh=7GY+SB9RcTUPr3tw03/aOQLdk5r8xCOKVtLSkvhdTU4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U+Uw5YxkRBfVxZtJJu1pqt70aSFhkfxk06hl2AdDD3sXJJgiYWkjVJHgu7N30t90X
-         D+blNOf615m7kfVPWugoMGKETgilFe14v5p5C9Z53qsP0Klwq9Nmz4VJNx6+aQwES2
-         5NJgBAEBjp1BCba3lBKpGY9A2metTTirFZtP6Z3Vo42KICelzsWzBfpuybHUeCXswD
-         ZYELRM3OCjAh+8AoRc1qRDXEV7E/ortaDLkeIAeAYT1jeUbmdOETZYVv0jkxe4FZ4j
-         eqUar0+8DtIuCunqd9RmCXITYQO/S/iwduEjkU1NMAYxnoujN3AZEBFQ/mugftHwwb
-         xBTmJ2r7Ux2yg==
-Date:   Fri, 4 Feb 2022 07:43:17 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Yannick Vignon <yannick.vignon@oss.nxp.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Paolo Abeni <pabeni@redhat.com>, Wei Wang <weiwan@google.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, mingkai.hu@nxp.com,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        sebastien.laveze@nxp.com, Yannick Vignon <yannick.vignon@nxp.com>
-Subject: Re: [PATCH net-next 1/2] net: napi: wake up ksoftirqd if needed
- after scheduling NAPI
-Message-ID: <20220204074317.4a8be6d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YfzhioY0Mj3M1v4S@linutronix.de>
-References: <20220203184031.1074008-1-yannick.vignon@oss.nxp.com>
-        <CANn89iKn20yuortKnqKV99s=Pb9HHXbX8e0=58f_szkTWnQbCQ@mail.gmail.com>
-        <0ad1a438-8e29-4613-df46-f913e76a1770@oss.nxp.com>
-        <20220203170901.52ccfd09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YfzhioY0Mj3M1v4S@linutronix.de>
+        with ESMTP id S230391AbiBDPq5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 10:46:57 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 376D3C061714
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 07:46:57 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id ah7so20547443ejc.4
+        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 07:46:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OBzhmbzrOAY/aLu1KT+JvuqQwH2N0TlEC2WQ/HrrWLQ=;
+        b=aDuhJglcvNYbeZ2+HLhTL+BuOoVUSdS7ebzWm5IAY9nFdHEdgiyv9kg1jKiSuZIhPU
+         QwgkGcyEaF3OVKFkI18rtu7Jrir3gvolJFC3YwlJdXS4txAklnsrSimN5zBP/VSAW043
+         2iTELPBOTu1wohKyLNB88Pmaq8DuMSDe62l7hQ/okdzJGcW9mEzfqe1sj2ChXoN/rawe
+         00ZwwyWw3gydUpHZutKiktZ4mhQDOJ9A2pjvGxnk8cmG9svTCF+ZTDARuZtTBq667FxU
+         SmvDKPM2zzZJQHFiNQYpjiu2snaiPA47pFYkbX03BePvyx58Wsi7W5AKJ/PWCUqf5xxB
+         1EPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OBzhmbzrOAY/aLu1KT+JvuqQwH2N0TlEC2WQ/HrrWLQ=;
+        b=hJ+GSolMj7kT/GSex508EbAFEcyGTMBFD92ehnsbEVI3/3A0ULyp9tndlHppn4/jnE
+         7xPB0427bbOon+2gGn8ZWraZK2g9LEFLbQPuTZzycObHjq5qkTfYTw3Hn9he8wXrp3pM
+         C7ZgGAJYtlRi384TpYvcUX8SBx1IRq/itZvx/gW7vwYGHl27Ou+n6uNQ6F6Xg2im+TZE
+         0Psi9Vt+TPu7MBqI3kapH4IodzHUi7fWEWdY56KMqzeijouBe/RyyNFzmzHWLSnq2Sc4
+         sDcfBIDC5/+wC+K03zAHVydrL20BqUiKH8sUYE9Fl+JMZXz1tn5Avz4+/QcHJZAr5qq1
+         3dsA==
+X-Gm-Message-State: AOAM5303w76OVDZFD/b64hM4vVMHzLK5Pe2paW8f1YKux7cWLAI8jV/x
+        y2C+kRIzAH+W088ab/M3DCkROlHdfnIb8lZBJEQAVjWeqZE=
+X-Google-Smtp-Source: ABdhPJzVjuEFYDVQr8g3EX4bZ1Nfi6R1iinbVsrI8zB+fCYLYcYzBebGWj+3BEDxxyCaIaihNBssRb1+n0QFCi1BwMY=
+X-Received: by 2002:a17:906:c154:: with SMTP id dp20mr2894678ejc.184.1643989615523;
+ Fri, 04 Feb 2022 07:46:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220203015140.3022854-1-eric.dumazet@gmail.com>
+ <20220203015140.3022854-10-eric.dumazet@gmail.com> <ee1fedeb33cd989379b72faac0fd6a366966f032.camel@gmail.com>
+ <CANn89iKxGvbXQqoRZZ5j22-5YkpiCLS13EGoQ1OYe3EHjEss6A@mail.gmail.com>
+ <CAKgT0UeTvj_6DWUskxxaRiQQxcwg6j0u+UHDaougJSMdkogKWA@mail.gmail.com> <11f331492498494584f171c4ab8dc733@AcuMS.aculab.com>
+In-Reply-To: <11f331492498494584f171c4ab8dc733@AcuMS.aculab.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 4 Feb 2022 07:46:43 -0800
+Message-ID: <CAKgT0UdyApTnBOr9rdsdoh4==orpxNEuhkLngX2MuEhOzqdh0w@mail.gmail.com>
+Subject: Re: [PATCH net-next 09/15] net: increase MAX_SKB_FRAGS
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Feb 2022 09:19:22 +0100 Sebastian Andrzej Siewior wrote:
-> On 2022-02-03 17:09:01 [-0800], Jakub Kicinski wrote:
-> > Let's be clear that the problem only exists when switching to threaded
-> > IRQs on _non_ PREEMPT_RT kernel (or old kernels). We already have a
-> > check in __napi_schedule_irqoff() which should handle your problem on
-> > PREEMPT_RT. =20
->=20
-> It does not. The problem is the missing bh-off/on around the call. The
-> forced-threaded handler has this. His explicit threaded-handler does not
-> and needs it.
+On Fri, Feb 4, 2022 at 2:18 AM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Alexander Duyck
+> > Sent: 03 February 2022 17:57
+> ...
+> > > > So a big issue I see with this patch is the potential queueing issues
+> > > > it may introduce on Tx queues. I suspect it will cause a number of
+> > > > performance regressions and deadlocks as it will change the Tx queueing
+> > > > behavior for many NICs.
+> > > >
+> > > > As I recall many of the Intel drivers are using MAX_SKB_FRAGS as one of
+> > > > the ingredients for DESC_NEEDED in order to determine if the Tx queue
+> > > > needs to stop. With this change the value for igb for instance is
+> > > > jumping from 21 to 49, and the wake threshold is twice that, 98. As
+> > > > such the minimum Tx descriptor threshold for the driver would need to
+> > > > be updated beyond 80 otherwise it is likely to deadlock the first time
+> > > > it has to pause.
+> > >
+> > > Are these limits hard coded in Intel drivers and firmware, or do you
+> > > think this can be changed ?
+> >
+> > This is all code in the drivers. Most drivers have them as the logic
+> > is used to avoid having to return NETIDEV_TX_BUSY. Basically the
+> > assumption is there is a 1:1 correlation between descriptors and
+> > individual frags. So most drivers would need to increase the size of
+> > their Tx descriptor rings if they were optimized for a lower value.
+>
+> Maybe the drivers can be a little less conservative about the number
+> of fragments they expect in the next message?
+> There is little point requiring 49 free descriptors when the workload
+> never has more than 2 or 3 fragments.
+>
+> Clearly you don't want to re-enable things unless there are enough
+> descriptors for an skb that has generated NETDEV_TX_BUSY, but the
+> current logic of 'trying to never actually return NETDEV_TX_BUSY'
+> is probably over cautious.
 
-I see, what I was getting at is on PREEMPT_RT IRQs are already threaded
-so I thought the patch was only targeting non-RT, I didn't think that
-explicitly threading IRQ is advantageous also on RT.
+The problem is that NETDEV_TX_BUSY can cause all sorts of issues in
+terms of the flow of packets. Basically when you start having to push
+packets back from the device to the qdisc you can essentially create
+head-of-line blocking type scenarios which can make things like
+traffic shaping that much more difficult.
 
-> > We should slap a lockdep warning for non-irq contexts in
-> > ____napi_schedule(), I think, it was proposed by got lost. =20
->=20
-> Something like this perhaps?:
->=20
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 1baab07820f65..11c5f003d1591 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4217,6 +4217,9 @@ static inline void ____napi_schedule(struct softnet=
-_data *sd,
->  {
->  	struct task_struct *thread;
-> =20
-> +	lockdep_assert_once(hardirq_count() | softirq_count());
-> +	lockdep_assert_irqs_disabled();
-> +
->  	if (test_bit(NAPI_STATE_THREADED, &napi->state)) {
->  		/* Paired with smp_mb__before_atomic() in
->  		 * napi_enable()/dev_set_threaded().
+> Does Linux allow skb to have a lot of short fragments?
+> If dma_map isn't cheap (probably anything with an iommu or non-coherent
+> memory) them copying/merging short fragments into a pre-mapped
+> buffer can easily be faster.
 
-=F0=9F=91=8D maybe with a comment above the first one saying that we want t=
-o make
-sure softirq will be handled somewhere down the callstack. Possibly push
-it as a helper in lockdep.h called "lockdep_assert_softirq_will_run()"
-so it's self-explanatory?
+I know Linux skbs can have a lot of short fragments. The i40e has a
+workaround for cases where more than 8 fragments are needed to
+transmit a single frame for instance, see __i40e_chk_linearize().
 
-> Be aware that this (the first assert) will trigger in dev_cpu_dead() and
-> needs a bh-off/on around. I should have something in my RT tree :)
+> Many years ago we found it was worth copying anything under 1k on
+> a sparc mbus+sbus system.
+> I don't think Linux can generate what I've seen elsewhere - the mac
+> driver being asked to transmit something with 1000+ one byte fragmemts!
+>
+>         David
 
-Or we could push the asserts only into the driver-facing helpers
-(__napi_schedule(), __napi_schedule_irqoff()).
+Linux cannot generate the 1000+ fragments, mainly because it is
+limited by the frags. However as I pointed out above it isn't uncommon
+to see an skb composed of a number of smaller fragments.
+
+That said, I don't know if we really need to be rewriting the code for
+NETDEV_TX_BUSY handling on the drivers. It would just be a matter of
+reserving more memory in the descriptor rings since the counts would
+be going from 42 to 98 in order to unblock a Tx queue in the case of
+igb for instance, and currently the minimum ring size is 80. So in
+this case it would just be a matter of increasing the minimum so that
+it cannot be configured into a deadlock.
+
+Ultimately that is the trade-off with this approach. What we are doing
+is increasing the memory footprint of the drivers and skbs in order to
+allow for more buffering in the skb to increase throughput. I wonder
+if it wouldn't make sense to just make MAX_SKB_FRAGS a driver level
+setting like gso_max_size so that low end NICs out there aren't having
+to reserve a ton of memory to store fragments they will never use.
+
+- Alex
