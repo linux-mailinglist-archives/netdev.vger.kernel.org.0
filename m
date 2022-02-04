@@ -2,65 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36B854A91EC
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 02:17:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF5084A920A
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 02:35:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356472AbiBDBQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 20:16:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43064 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351504AbiBDBQd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 20:16:33 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C641D6198E;
-        Fri,  4 Feb 2022 01:16:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3569AC340ED;
-        Fri,  4 Feb 2022 01:16:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643937392;
-        bh=aB9+D8EG8yLCGwvt9qYMcApSdbrEaj1GWxq4XpQ+TEU=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=dDQEfRpggUC0bKDkEhxvW31nantepBvl4sPJl5A+RwuS7G7M7FtKvEro/hoXDScdP
-         i7CpliCUJTp3+wOpLyzlErM7vvcAmabUXiZs9EhbUFdUwN09Bndsre/gAxiDXnlIMU
-         zMV+IHarp/byQ16sLKi21OKFgB5zcGtAxk780zWJmbpvAXub4eEkkhaljWfj5KfRkf
-         A2zJXmmagu/IZN1Izi43NmVlEZVVVMZ/dWkQFvwHzgcx/5shaId34VMUCVfEEmTyvZ
-         gkaaPn4ZIR92ivhhfotqalgeqkgbCqTaP2NdJfHgP2F/RnoWoa8XMD5oWHjfcHDYnr
-         +DmsPTj5ObxZg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 22CAAE5869F;
-        Fri,  4 Feb 2022 01:16:32 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking for 5.17-rc3
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220204000428.2889873-1-kuba@kernel.org>
-References: <20220204000428.2889873-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220204000428.2889873-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.17-rc3
-X-PR-Tracked-Commit-Id: 87563a043cef044fed5db7967a75741cc16ad2b1
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: eb2eb5161cdbd4f0acc574ef1c3ce799b980544b
-Message-Id: <164393739213.12311.5728078063673083709.pr-tracker-bot@kernel.org>
-Date:   Fri, 04 Feb 2022 01:16:32 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        id S1356534AbiBDBfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 20:35:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42282 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233523AbiBDBfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 20:35:06 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58AEDC061714;
+        Thu,  3 Feb 2022 17:35:06 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id i30so3767176pfk.8;
+        Thu, 03 Feb 2022 17:35:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2bpGEL1s7vwy9yPRn1lbRnxaJLI1WAuazQwx6NrRDQY=;
+        b=czQEscCtwlYRzgBzIFtw1PupejjJC/HH6fUW/QGebzll5RE15jdecT1kb53Ep81cT9
+         CX2to994pbDs6YT8TFL9PsHwAioVntitZikiCNfM/s/8hiwKlQisJB5ZFHUMqng2/wYb
+         wOdxyCd5Tx9Gr8juHLUn6oQoOhAb1XHthF9DY8urZll2TBj1v1t2nBH3zJB3FIjjvjLH
+         1B7RgsvgW/2NgV4XLaYvQb9vRrSJDyOeJVvjkBnbhbNTgMz7ICVUj0h8exXmyEt2W/i4
+         vmGj9m5h9Z0tgFXbhBsIGM4AZEkaWFsifKimV4aw7EDCbIX8FiQUtEsbQxSm//ni+yOM
+         HiHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2bpGEL1s7vwy9yPRn1lbRnxaJLI1WAuazQwx6NrRDQY=;
+        b=uy8o+YWYGNmuhLXqmHj+Sr5Vzd6SmRaAsBB0qdnYOXN2pPyeNptH782Aq2CqsETFpw
+         QUwzOfQmA1uynLhuwo/KjhLHlgx7FRWjqjt+AysBmXC5xeKOlBUst/UQyhmWAsxUZQvU
+         GLvfRfzS18EDfivo30wb9Be08i6f+TFOZRKlArVSd+Gx9vNUB2U+nSp45WwqtglwJxDC
+         39DpXqha1CDMBgq+MJfVAFNKC3osOMJrDUGDBtcL8DkinvGs3DkUc6hYdEeMV/rakH1K
+         BjJR45Uf6/wAst2KxnbyU4RT30eEBmPAdemFOgq29oFZCILq/Mkr53vZjYAA5yg10vhP
+         3gCw==
+X-Gm-Message-State: AOAM533+VIOIuFjBrVzyQyY4z67IdgyKQHmN4nZl0oqxdGGuzIq3WH4y
+        Oyc0gDB9bx6sNnjKDx+PlsyA6MCGtQfTgo+J79M=
+X-Google-Smtp-Source: ABdhPJzlcHJJ9cjr7j9mNMGV9qin+A2a4K9zPmGHjXnh50EbOAqrDhjI/toPjUuZ1c87JIht7o/ot/2oTc8mbONZMoA=
+X-Received: by 2002:a63:5b43:: with SMTP id l3mr611410pgm.375.1643938505671;
+ Thu, 03 Feb 2022 17:35:05 -0800 (PST)
+MIME-Version: 1.0
+References: <20220202135333.190761-1-jolsa@kernel.org> <CAADnVQ+hTWbvNgnvJpAeM_-Ui2-G0YSM3QHB9G2+2kWEd4-Ymw@mail.gmail.com>
+ <Yfq+PJljylbwJ3Bf@krava> <CAADnVQKeTB=UgY4Gf-46EBa8rwWTu2wvi7hEj2sdVTALGJ0JEg@mail.gmail.com>
+ <YfvvfLlM1FOTgvDm@krava> <20220204094619.2784e00c0b7359356458ca57@kernel.org>
+In-Reply-To: <20220204094619.2784e00c0b7359356458ca57@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 3 Feb 2022 17:34:54 -0800
+Message-ID: <CAADnVQJYY0Xm6M9O02E5rOkdQPX39NOOS4tM2jpwRLQvP-qDBg@mail.gmail.com>
+Subject: Re: [PATCH 0/8] bpf: Add fprobe link
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Olsa <olsajiri@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu,  3 Feb 2022 16:04:28 -0800:
+On Thu, Feb 3, 2022 at 4:46 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+>
+> I thought What Alexei pointed was that don't expose the FPROBE name
+> to user space. If so, I agree with that. We can continue to use
+> KPROBE for user space. Using fprobe is just for kernel implementation.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.17-rc3
-
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/eb2eb5161cdbd4f0acc574ef1c3ce799b980544b
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Clearly that intent is not working.
+The "fprobe" name is already leaking outside of the kernel internals.
+The module interface is being proposed.
+You'd need to document it, etc.
+I think it's only causing confusion to users.
+The new name serves no additional purpose other than
+being new and unheard of.
+fprobe is kprobe on ftrace. That's it.
+Just call it kprobe on ftrace in api and everywhere.
+Please?
