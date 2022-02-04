@@ -2,129 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 840104A91B9
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 01:46:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 588FB4A91BF
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 01:50:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356283AbiBDAq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 19:46:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59682 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230386AbiBDAq0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 19:46:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F62C061714;
-        Thu,  3 Feb 2022 16:46:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S242063AbiBDAul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 19:50:41 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:56124
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230386AbiBDAuk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 19:50:40 -0500
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA6716194A;
-        Fri,  4 Feb 2022 00:46:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCAD1C340E8;
-        Fri,  4 Feb 2022 00:46:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643935585;
-        bh=KnasKzPC2rpJ48+6l141M8t0itDGXTYhKozsZuyWfwE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VzNMyLHs39xZVHVY4WDNUfezDCHiOS96hm/rk8Kgo1uAe0noKV2Rqe/ywnVMU95k4
-         GghhgewCeMMUhO/GVY+pBiIPij16bA2G2OgZH0FhR6fo4mGfz263OxZVqKFxPlp+Ux
-         iD0OjRptj+gb0+0h1nAYo7OTjwLY1H6EZlNT/gAF6kKDbOFxog4W97pVvMRs+oKJEZ
-         XAKuBodVLJpyMR8LYLpV0nRK0L+Aq5+8eHTl+oqFTEcyQkdgOM/Ab0+cQ2XpvOOVWY
-         DHcpDG761xcF/UUwlXCx519tMkXcIBA77LaPpmjsg+yCrmRl3ZTB+tkgy3svTMkbN0
-         Vetsh4AIzMUVw==
-Date:   Fri, 4 Feb 2022 09:46:19 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Jiri Olsa <olsajiri@gmail.com>
-Subject: Re: [PATCH 0/8] bpf: Add fprobe link
-Message-Id: <20220204094619.2784e00c0b7359356458ca57@kernel.org>
-In-Reply-To: <YfvvfLlM1FOTgvDm@krava>
-References: <20220202135333.190761-1-jolsa@kernel.org>
-        <CAADnVQ+hTWbvNgnvJpAeM_-Ui2-G0YSM3QHB9G2+2kWEd4-Ymw@mail.gmail.com>
-        <Yfq+PJljylbwJ3Bf@krava>
-        <CAADnVQKeTB=UgY4Gf-46EBa8rwWTu2wvi7hEj2sdVTALGJ0JEg@mail.gmail.com>
-        <YfvvfLlM1FOTgvDm@krava>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A98D23F4B4
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 00:50:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643935834;
+        bh=0tqfuFEZO5OoJYnI+QHMoCp+jUQTwMPUVWWrO24E7TI=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=HsEQrQn6MWaZ2BjLPFiqOOnNvzOenwZdLfM1OUbkjkIcX+ET+jt5lxM2UvGVKwMwy
+         Nl9MKj+L8EZLCgQIyxmvS0EVN+O6xcNrbsVUtXyMmw2E6xF309anYDiyB/3s2PxgE+
+         9WY0SSLCj7gGJdvOt3dwmbvc3LIVxAjO112m4sLHRPT08lWNx1FqWjsVAp+tQyzEkw
+         +BtAcOBUPBBcxVIZVQ7XxtfY9pByysEJ6QqHOH3q9V7Scus32lI50OL+LrkhrNkhTz
+         jCaufnhhTdDdTIIXMtsQXrT9goMSuZhYqBuLs+SUzR319591Zahw5tTdgi1WM8vmyX
+         OVYZF7u9tvLVQ==
+Received: by mail-pj1-f72.google.com with SMTP id p14-20020a17090a2c4e00b001b54165bffeso2883691pjm.0
+        for <netdev@vger.kernel.org>; Thu, 03 Feb 2022 16:50:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
+         :comments:mime-version:content-id:content-transfer-encoding:date
+         :message-id;
+        bh=0tqfuFEZO5OoJYnI+QHMoCp+jUQTwMPUVWWrO24E7TI=;
+        b=UI/WePUqWpWW7/4PmtIlRH+zwxUHTzGXj9tBTowZ+Sl7bWh7p/gUGqC5be/vihnk2E
+         rywRf6aepAZ41H08bcXlSiFTSma/g2lo7wQc/9uRL2z67cmAm21ndi3NPLrfepM56nyf
+         jyLJHqJMgJRU72bz6/UPfOpa2am5cJl1yQ2iGgC2uoxZ7Vrm0XnYhl1VewOj5YTlYNyq
+         11vPD0sEdSBfzMHJORfnMfeiiPee/sX0VCsS2wnCWp+Go2qfVxGLSBj0JD5U3WJa276j
+         kcgYFCEpAnHqglooAmN+IA6IqTU4TvOW6v586D+RGWA5TJG2bcS12nh6cS3Auw6bbyh4
+         mMcQ==
+X-Gm-Message-State: AOAM532VG1xiwchElaZeYMLY1hU6sWLeQNkpzjwF34UPE9U4uhebleF7
+        bx4NsFyKJXJQ5RiIaiNIX9MYTUVw4gznAY2EPW+Qi2FDw6LD8kVwYzd+/GHl4HZtU7Vd5moAA0T
+        W5WvbDe+6aYoXC27IbWYnTP8XFdIa0Ko5xw==
+X-Received: by 2002:a17:902:c102:: with SMTP id 2mr761835pli.92.1643935831570;
+        Thu, 03 Feb 2022 16:50:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJypEUVGUovI5RowUGRspStozBKpkc38VUsHQznhBYs3iRzOsJm6PXdY2z+njrIyVq8xh3fRbg==
+X-Received: by 2002:a17:902:c102:: with SMTP id 2mr761811pli.92.1643935831299;
+        Thu, 03 Feb 2022 16:50:31 -0800 (PST)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id d70sm165080pga.48.2022.02.03.16.50.30
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 03 Feb 2022 16:50:30 -0800 (PST)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 2C8855FDEE; Thu,  3 Feb 2022 16:50:30 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 255CEA0B26;
+        Thu,  3 Feb 2022 16:50:30 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Mahesh Bandewar <maheshb@google.com>
+cc:     Netdev <netdev@vger.kernel.org>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mahesh Bandewar <mahesh@bandewar.net>
+Subject: Re: [PATCH v3 net-next] bonding: pair enable_port with slave_arr_updates
+In-reply-to: <20220204000653.364358-1-maheshb@google.com>
+References: <20220204000653.364358-1-maheshb@google.com>
+Comments: In-reply-to Mahesh Bandewar <maheshb@google.com>
+   message dated "Thu, 03 Feb 2022 16:06:53 -0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <20791.1643935830.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Thu, 03 Feb 2022 16:50:30 -0800
+Message-ID: <20792.1643935830@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 3 Feb 2022 16:06:36 +0100
-Jiri Olsa <jolsa@redhat.com> wrote:
+Mahesh Bandewar <maheshb@google.com> wrote:
 
-> On Wed, Feb 02, 2022 at 09:30:21AM -0800, Alexei Starovoitov wrote:
-> > On Wed, Feb 2, 2022 at 9:24 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> > >
-> > > On Wed, Feb 02, 2022 at 09:09:53AM -0800, Alexei Starovoitov wrote:
-> > > > On Wed, Feb 2, 2022 at 5:53 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> > > > >
-> > > > > hi,
-> > > > > this patchset adds new link type BPF_LINK_TYPE_FPROBE that attaches kprobe
-> > > > > program through fprobe API [1] instroduced by Masami.
-> > > >
-> > > > No new prog type please.
-> > > > I thought I made my reasons clear earlier.
-> > > > It's a multi kprobe. Not a fprobe or any other name.
-> > > > The kernel internal names should not leak into uapi.
-> > > >
-> > >
-> > > well it's not new prog type, it's new link type that allows
-> > > to attach kprobe program to multiple functions
-> > >
-> > > the original change used BPF_LINK_TYPE_RAW_KPROBE, which did not
-> > > seem to fit anymore, so I moved to FPROBE, because that's what
-> > > it is ;-)
-> > 
-> > Now I don't like the fprobe name even more.
-> > Why invent new names? It's an ftrace interface.
-> 
-> how about ftrace_probe ?
+>When 803.2ad mode enables a participating port, it should update
+>the slave-array. I have observed that the member links are participating
+>and are part of the active aggregator while the traffic is egressing via
+>only one member link (in a case where two links are participating). Via
+>krpobes I discovered that that slave-arr has only one link added while
+>the other participating link wasn't part of the slave-arr.
+>
+>I couldn't see what caused that situation but the simple code-walk
+>through provided me hints that the enable_port wasn't always associated
+>with the slave-array update.
+>
+>Signed-off-by: Mahesh Bandewar <maheshb@google.com>
 
-I thought What Alexei pointed was that don't expose the FPROBE name
-to user space. If so, I agree with that. We can continue to use
-KPROBE for user space. Using fprobe is just for kernel implementation.
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
 
-It means that we may better to keep simple mind model (there are only
-static event or dynamic kprobe event).
+>---
+> drivers/net/bonding/bond_3ad.c | 3 ++-
+> 1 file changed, 2 insertions(+), 1 deletion(-)
+>
+>diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3a=
+d.c
+>index 6006c2e8fa2b..9fd1d6cba3cd 100644
+>--- a/drivers/net/bonding/bond_3ad.c
+>+++ b/drivers/net/bonding/bond_3ad.c
+>@@ -1021,8 +1021,8 @@ static void ad_mux_machine(struct port *port, bool =
+*update_slave_arr)
+> 				if (port->aggregator &&
+> 				    port->aggregator->is_active &&
+> 				    !__port_is_enabled(port)) {
+>-
+> 					__enable_port(port);
+>+					*update_slave_arr =3D true;
+> 				}
+> 			}
+> 			break;
+>@@ -1779,6 +1779,7 @@ static void ad_agg_selection_logic(struct aggregato=
+r *agg,
+> 			     port =3D port->next_port_in_aggregator) {
+> 				__enable_port(port);
+> 			}
+>+			*update_slave_arr =3D true;
+> 		}
+> 	}
+> =
 
+>-- =
 
-> > > but if you don't want new name in uapi we could make this more
-> > > obvious with link name:
-> > >   BPF_LINK_TYPE_MULTI_KPROBE
-> > >
-> > > and bpf_attach_type:
-> > >   BPF_TRACE_MULTI_KPROBE
-> > 
-> > I'd rather get rid of fprobe name first.
-> >
-> 
-> Masami, any idea?
-
-Can't we continue to use kprobe prog type for user interface
-and internally, if there are multiple kprobes or kretprobes
-required, switch to use fprobe?
-
-Thank you,
-
-> 
-> thanks,
-> jirka
-> 
-
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+>2.35.0.263.gb82422642f-goog
+>
