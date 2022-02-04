@@ -2,118 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC6A24AA100
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 21:14:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F10724AA104
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 21:15:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236827AbiBDUOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 15:14:43 -0500
-Received: from sender4-op-o14.zoho.com ([136.143.188.14]:17457 "EHLO
-        sender4-op-o14.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236743AbiBDUOj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 15:14:39 -0500
-ARC-Seal: i=1; a=rsa-sha256; t=1644005664; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=ZOac+K77m+A7u4w6AYf9Tv7bPSUvL7GF82TIMvDYRh4bEakBRlzu+tvCc+CwdCmKfXHYxCXWu6L/24SNWuKlHXLkSXsYFXJhR6LZIv4F8LZpDGEbA96DYVHklOANAIKsU7qklynJHxpbEycuYfLge7MG8SlDAtt0Od6mhOY2tIM=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1644005664; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=c1vGslHdN+O1ym6r0SvgPaBufqh35jaqy1hBlfrivMo=; 
-        b=OeFqwm6z+KJiJlRafkugFtNhOg6Cs7LqefzLqQHGecSQ1rsncfrvLBCrxG9G8j1nfCCEIhylXgFaZByXuayL1iYUKA/1vv5OJMm1ST2ebZX3Sq0QvFvKb0YiYuh7TEyhStbX9boVQR/iKuYeebDfZedeRukqNdS6epJnDymLHp4=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1644005664;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-        bh=c1vGslHdN+O1ym6r0SvgPaBufqh35jaqy1hBlfrivMo=;
-        b=M+VN2G+CmNcClnmhI7MjqdMGCaz2aXSGQ6RsaYRgYwvrZwkG6KvdgSFShzQRl7j6
-        MNNyqq4nXUQFTggAAn8BMVRF0MBSaFaJdEiCnLoHUIytNlmjhip9YKvI8TmOIzRwlvN
-        NZL+Spm8FwMtUIjv3+xaz2D1hfQgcMuHnnJFeJZY=
-Received: from [10.10.10.216] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1644005661943579.3934546292821; Fri, 4 Feb 2022 12:14:21 -0800 (PST)
-Message-ID: <6dcd3b46-9114-b551-aa90-eaaeb2101625@arinc9.com>
-Date:   Fri, 4 Feb 2022 23:14:15 +0300
+        id S236999AbiBDUPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 15:15:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236182AbiBDUPv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 15:15:51 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8122C061714
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 12:15:50 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id m7so6651007pjk.0
+        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 12:15:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FFHiF/6N4G82cEcqiAN2d0pe129A+nJr0KUBr/GCoYQ=;
+        b=BM19YwoxXHh+mYQKtTXtmOTWPaN3NrUgnow0xkY7+QW1zPcc3mnR0V955Bjd/cKyBq
+         kyvzrP0Z8t8a9bGLJXwk1PRpAOl9pDxyZXfDOLt9je7ZOjjrC4NpVpOPDG4KfdQRs0eV
+         ciPRcZMGtY/93Fws475n4nuHLFuXghg8FiG4RTgVl9/OQAyjYXy5PM4D4d/pNeMPhrzy
+         rpLrvl6+ero40z5cvwc3t+Po4W/kXBsjZ3qSxX8OcI25tMa7qAJWZ1FAB7w7Yd8/qpaO
+         Mp65pT8forwQLhSLDA1xgHFIJlIe/mfqfRTuZanS8E+rx/0Zmgt8934ChWKXIkOn19ea
+         hpRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FFHiF/6N4G82cEcqiAN2d0pe129A+nJr0KUBr/GCoYQ=;
+        b=uWrgK84xVxmKiJwOKpvQabgRv5p40rJ1VHYvKBnI/akJauis6xtLdwr5LuIOn8AeEt
+         uC4Zq1VDDfFKSrqoekZVkbGWiBPwOeIlBB+plNY2AoigNjX6i2JMjaOpZ60xkRMnPQC6
+         Ily817x9BeGd8wNuurWWeCMFHZOLKtWqP0ZHJBae1l4TBfP0QYvbPwVKCppcDxjQGbe3
+         ILU7A5IhmdLqIhg+B7TYM+E0oFWbsprtGrOSksFCycmDeohpXgl1yFJ7BqT4smVr/BIA
+         Gy3cvZ0wBBItMpM0vLTRFyH7YmGvgTjh0pjd442ot3IHV2sJsP6jIdqr9TBAdx/SYSNo
+         HWtA==
+X-Gm-Message-State: AOAM5334V9h8blvy4m2gPS8GzuweIaxgnYLYa8QcGEJSGflCCf+uMtd6
+        OFkeGGvco0Fp8/+5LxTvun4=
+X-Google-Smtp-Source: ABdhPJz38BKRoWLhsookizCS31e0kJvE8Mxhf11SM3ZED/e6Hxiq41hy5tD/NuvK5DldgV+036ebSw==
+X-Received: by 2002:a17:902:eacc:: with SMTP id p12mr4793926pld.123.1644005750204;
+        Fri, 04 Feb 2022 12:15:50 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:e0d3:6ec9:bd06:3e67])
+        by smtp.gmail.com with ESMTPSA id d9sm3571417pfl.69.2022.02.04.12.15.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Feb 2022 12:15:49 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next 0/2] ipv6: mc_forwarding changes
+Date:   Fri,  4 Feb 2022 12:15:44 -0800
+Message-Id: <20220204201546.2703267-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH net-next] net: dsa: realtek: don't default Kconfigs to y
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com
-References: <20220204155927.2393749-1-kuba@kernel.org>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20220204155927.2393749-1-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/02/2022 18:59, Jakub Kicinski wrote:
-> We generally default the vendor to y and the drivers itself
-> to n. NET_DSA_REALTEK, however, selects a whole bunch of things,
-> so it's not a pure "vendor selection" knob. Let's default it all
-> to n.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> Happy to drop this if someone has a better patch, e.g. making
-> NET_DSA_REALTEK a pure vendor knob!
-> 
-> CC: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> CC: Arınç ÜNAL <arinc.unal@arinc9.com>
-> CC: linus.walleij@linaro.org
-> CC: andrew@lunn.ch
-> CC: vivien.didelot@gmail.com
-> CC: f.fainelli@gmail.com
-> CC: olteanv@gmail.com
-> ---
->   drivers/net/dsa/realtek/Kconfig | 4 ----
->   1 file changed, 4 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/realtek/Kconfig b/drivers/net/dsa/realtek/Kconfig
-> index 5242698143d9..b7427a8292b2 100644
-> --- a/drivers/net/dsa/realtek/Kconfig
-> +++ b/drivers/net/dsa/realtek/Kconfig
-> @@ -12,7 +12,6 @@ menuconfig NET_DSA_REALTEK
->   config NET_DSA_REALTEK_MDIO
->   	tristate "Realtek MDIO connected switch driver"
->   	depends on NET_DSA_REALTEK
-> -	default y
->   	help
->   	  Select to enable support for registering switches configured
->   	  through MDIO.
-> @@ -20,14 +19,12 @@ config NET_DSA_REALTEK_MDIO
->   config NET_DSA_REALTEK_SMI
->   	tristate "Realtek SMI connected switch driver"
->   	depends on NET_DSA_REALTEK
-> -	default y
->   	help
->   	  Select to enable support for registering switches connected
->   	  through SMI.
->   
->   config NET_DSA_REALTEK_RTL8365MB
->   	tristate "Realtek RTL8365MB switch subdriver"
-> -	default y
->   	depends on NET_DSA_REALTEK
->   	depends on NET_DSA_REALTEK_SMI || NET_DSA_REALTEK_MDIO
->   	select NET_DSA_TAG_RTL8_4
-> @@ -36,7 +33,6 @@ config NET_DSA_REALTEK_RTL8365MB
->   
->   config NET_DSA_REALTEK_RTL8366RB
->   	tristate "Realtek RTL8366RB switch subdriver"
-> -	default y
->   	depends on NET_DSA_REALTEK
->   	depends on NET_DSA_REALTEK_SMI || NET_DSA_REALTEK_MDIO
->   	select NET_DSA_TAG_RTL4_A
+From: Eric Dumazet <edumazet@google.com>
 
-Looks good to me.
+First patch removes minor data-races, as mc_forwarding can
+be locklessly read in fast path.
 
-Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Second patch adds a short cut in ip6mr_sk_done()
 
-Cheers.
-Arınç
+Eric Dumazet (2):
+  ipv6: make mc_forwarding atomic
+  ip6mr: ip6mr_sk_done() can exit early in common cases
+
+ include/linux/ipv6.h       |  2 +-
+ net/batman-adv/multicast.c |  2 +-
+ net/ipv6/addrconf.c        |  4 ++--
+ net/ipv6/ip6_input.c       |  2 +-
+ net/ipv6/ip6mr.c           | 11 +++++++----
+ 5 files changed, 12 insertions(+), 9 deletions(-)
+
+-- 
+2.35.0.263.gb82422642f-goog
+
