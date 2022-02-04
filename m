@@ -2,182 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08EEA4AA015
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 20:30:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55EC64AA04E
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 20:44:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233835AbiBDTa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 14:30:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60528 "EHLO
+        id S234643AbiBDToq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 14:44:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233768AbiBDTa1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 14:30:27 -0500
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8394BC061714;
-        Fri,  4 Feb 2022 11:30:27 -0800 (PST)
-Received: by mail-io1-xd2f.google.com with SMTP id n17so8646543iod.4;
-        Fri, 04 Feb 2022 11:30:27 -0800 (PST)
+        with ESMTP id S234589AbiBDToo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 14:44:44 -0500
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FAB2C06173D
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 11:44:44 -0800 (PST)
+Received: by mail-lj1-x232.google.com with SMTP id z20so9937701ljo.6
+        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 11:44:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=kinvolk.io; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=G5Ev0pQLy6cGfkzqPa2EKK7EBgTL3yBveXxkgXkWG58=;
-        b=QIHpeevj1hSBJC2VuQD9xeY4sT9WQmHx9UHF2tz7XKfUMT8671pTlJ/wfMvS//ICj5
-         vOhtYC287DWcSSyM8RAzrzH3X5X/mfkNGu4CALu6+B7s3TUl9DIVzxslkih9HaKBaYZ5
-         D3KmCxowlp/Nl0uU35wvUuwbzZUiZ/Srb65UgSphnBVMkX0D+iqLQAfrhs+H8ydjU3Pg
-         e/chilgUWjiEtDrx5XQyRrymfd8uY5sI2jg/ZbzH9Sbgh4ueAtGaY6orgR8oB6J3nyug
-         W6mcPIrgbbxC1VNH9ecdv6MK/Mclfl/+MUcnzacPlthZlpr2fT5X0ccueBJ9ToN8ZFRX
-         DmYQ==
+         :cc:content-transfer-encoding;
+        bh=+7p7SjPlIf2qoaknlsDE3NxXwoy8KpIefdGFaq4c5Ns=;
+        b=eA1Fk3TYR/JpkfnoIDJ8/0lNUUWKOxyaWFCQT3NCLvbgC6Oboh+wn/OpPn/ddhZDA3
+         /95pIPfnF2JZovHsPEnFoWe5cas5SjwcIhk671q8zDPCgcC7U96wijgYT/2HkdOOqwPE
+         5JRuR8kP63wYej2MtAph78zTUZlczL/k3LA4E=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=G5Ev0pQLy6cGfkzqPa2EKK7EBgTL3yBveXxkgXkWG58=;
-        b=W/1u+F8oDd5nLYzTGxLHcsatk/VHu3UJ6rzp4Gae16TLVrSafwY9Ny9FQqIvkZvEQ9
-         o3fIoGe437DChsuGd45h9A7+sh3y2RmdwhJp1tmH77Uv6BHZboiSsgay62gdrE5LI7a0
-         4E6vFjFl7B8AgqQepaW+bIxmFFFDAlvh0s2Yjga8miez3a+O7rygDdyXB52m25PDlrXS
-         /Q4QamUb7udqBu8lH5EwqED4h0x1PgmOUt+TxuM+Su7r7NjXNIqimO+FetlZHCW7cNaP
-         fI3yP3X7LMtd+Q+jn1nDSuzcP2fEVlxTl0S6jkXliXyMek1aaFQbtUAEtHB9efNV/500
-         1pdw==
-X-Gm-Message-State: AOAM532QptVuwmLB0K7dDWOTWrgNqtiwRAECnMqr35cZAeirEfqzUGlN
-        WMlIiNxAIvHzwr1WJZNxDzNYRSM9Ov8LNC4h0gg=
-X-Google-Smtp-Source: ABdhPJwBHTOSKUOKMai6POYVC9JM+PuRJ4loEPKJ8ktl6qT7frFalloF3eVzYQo6z03JbYLhOyIIdIQSPi2ZX2m/Tlo=
-X-Received: by 2002:a5d:88c1:: with SMTP id i1mr300035iol.154.1644003026553;
- Fri, 04 Feb 2022 11:30:26 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=+7p7SjPlIf2qoaknlsDE3NxXwoy8KpIefdGFaq4c5Ns=;
+        b=SQpgqWmcf0zy9qm5M72dCm5a+oYIbVQdv0bvKrCTeBP5K8XtTG+3f77Hf4yz27w587
+         Yp05K8ZAxawbehhT6gyKi6MjCyj3Mc1mxd1hTCFNkgmWlr4vkAdCsWWRIBDEiHrJExit
+         yx8MFq5qJqixc0MxNnsV9v5ZOl3QmxLh05JmwuqyX4G3fDObfMpJX6gz9wQ+JUVSkL0C
+         MXkqp2gSTGyb/EwnWKUkTX5RvsYgOZnECi39V6+MqZFU/ZfbbRDEIyHb1Q/YJUtJ+wBq
+         RzK8lnX5Jl/xJNykvNYiCr0q4XXjc8mNjMi959a3kHz0/bwDSSM/7OBhUSUXjt2m3qFz
+         2IEQ==
+X-Gm-Message-State: AOAM531LrK4kRqf9g6f3KuhKsSadbVeqTGQjTuvOeVtIizL9i4stt+pz
+        dQrTp+E5PM5Z/5bQPyEo4jANPdWW9bUQvZFK2ei3ig==
+X-Google-Smtp-Source: ABdhPJxB5s8BcySQb85Tldwg+UgD9pi2DNN3XJy/FXx6wr0ehlMTKupMk1RDVfqerNUu9G/dP2HfmIS9Y+JH8vUngPQ=
+X-Received: by 2002:a2e:b8d6:: with SMTP id s22mr290009ljp.218.1644003882351;
+ Fri, 04 Feb 2022 11:44:42 -0800 (PST)
 MIME-Version: 1.0
-References: <1643645554-28723-1-git-send-email-alan.maguire@oracle.com> <1643645554-28723-5-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1643645554-28723-5-git-send-email-alan.maguire@oracle.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 4 Feb 2022 11:30:15 -0800
-Message-ID: <CAEf4BzZW6W6vVtsGEDyYcc=ZMon676r9NOAbnseZA1az2Heq3Q@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 4/4] selftests/bpf: add tests for u[ret]probe
- attach by name
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
+References: <20220128223312.1253169-1-mauricio@kinvolk.io> <20220128223312.1253169-7-mauricio@kinvolk.io>
+ <CAEf4BzZ33dhRcySttxSJ6BA-1pCkbebEksLVa-cR08W=YV6x=w@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ33dhRcySttxSJ6BA-1pCkbebEksLVa-cR08W=YV6x=w@mail.gmail.com>
+From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
+Date:   Fri, 4 Feb 2022 14:44:31 -0500
+Message-ID: <CAHap4zuD8j7CXwOK2a12=j0j0b7twHs6gwKEBNagdryHWNQyWQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 6/9] bpftool: Implement relocations recording
+ for BTFGen
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
-        Yucong Sun <sunyucong@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
+        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
+        Leonardo Di Donato <leonardo.didonato@elastic.co>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 8:13 AM Alan Maguire <alan.maguire@oracle.com> wrote:
+On Wed, Feb 2, 2022 at 5:55 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> add tests that verify attaching by name for
+> On Fri, Jan 28, 2022 at 2:33 PM Mauricio V=C3=A1squez <mauricio@kinvolk.i=
+o> wrote:
+> >
+> > This commit implements the logic to record the relocation information
+> > for the different kind of relocations.
+> >
+> > btfgen_record_field_relo() uses the target specification to save all th=
+e
+> > types that are involved in a field-based CO-RE relocation. In this case
+> > types resolved and added recursively (using btfgen_put_type()).
+> > Only the struct and union members and their types) involved in the
+> > relocation are added to optimize the size of the generated BTF file.
+> >
+> > On the other hand, btfgen_record_type_relo() saves the types involved i=
+n
+> > a type-based CO-RE relocation. In this case all the members for the
+> > struct and union types are added. This is not strictly required since
+> > libbpf doesn't use them while performing this kind of relocation,
+> > however that logic could change on the future. Additionally, we expect
+> > that the number of this kind of relocations in an BPF object to be very
+> > low, hence the impact on the size of the generated BTF should be
+> > negligible.
+> >
+> > Finally, btfgen_record_enumval_relo() saves the whole enum type for
+> > enum-based relocations.
+> >
+> > Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
+> > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
+> > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
+> > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
+> > ---
 >
-> 1. local functions in a program
-> 2. library functions in a shared object; and
-> 3. library functions in a program
+> I've been thinking about this in background. This proliferation of
+> hashmaps to store used types and their members really adds to
+> complexity (and no doubt to memory usage and CPU utilization, even
+> though I don't think either is too big for this use case).
 >
-> ...succeed for uprobe and uretprobes using new "func_name"
-> option for bpf_program__attach_uprobe_opts().  Also verify
-> auto-attach works where uprobe, path to binary and function
-> name are specified, but fails with -ESRCH when the format
-> does not match (the latter is to support backwards-compatibility).
+> What if instead of keeping track of used types and members separately,
+> we initialize the original struct btf and its btf_type, btf_member,
+> btf_enum, etc types. We can carve out one bit in them to mark whether
+> that specific entity was used. That way you don't need any extra
+> hashmap maintenance. You just set or check bit on each type or its
+> member to figure out if it has to be in the resulting BTF.
 >
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-> ---
->  .../selftests/bpf/prog_tests/attach_probe.c        | 89 +++++++++++++++++++++-
->  .../selftests/bpf/progs/test_attach_probe.c        | 37 +++++++++
->  2 files changed, 123 insertions(+), 3 deletions(-)
+> This can be highest bit of name_off or type fields, depending on
+> specific case. This will work well because type IDs never use highest
+> bit and string offset can never be as high as to needing full 32 bits.
+>
+> You'll probably want to have two copies of target BTF for this, of
+> course, but I think simplicity of bookkeeping trumps this
+> inefficiency. WDYT?
 >
 
-[...]
+It's a very nice idea indeed. I got a version working with this idea.
+I keep two instances of the target BTF (as you suggested) one is only
+for keeping track of the used types/members, the other one is used as
+source when copying the BTF types and also to run the candidate search
+algorithm and so on. Actually there is no need to use the highest bit,
+I'm just setting the whole name_off to UINT32_MAX. It works fine
+because that copy of the BTF isn't used anywhere else. I'm cleaning
+this up and hope to send it early next week.
 
->         if (CHECK(skel->bss->uprobe_res != 3, "check_uprobe_res",
->                   "wrong uprobe res: %d\n", skel->bss->uprobe_res))
->                 goto cleanup;
-> @@ -110,7 +179,21 @@ void test_attach_probe(void)
->                   "wrong uretprobe res: %d\n", skel->bss->uretprobe_res))
->                 goto cleanup;
->
-> +       if (CHECK(skel->bss->uprobe_byname_res != 5, "check_uprobe_byname_res",
-> +                 "wrong uprobe byname res: %d\n", skel->bss->uprobe_byname_res))
-> +               goto cleanup;
-> +       if (CHECK(skel->bss->uretprobe_byname_res != 6, "check_uretprobe_byname_res",
-> +                 "wrong uretprobe byname res: %d\n", skel->bss->uretprobe_byname_res))
-> +               goto cleanup;
-> +       if (CHECK(skel->bss->uprobe_byname2_res != 7, "check_uprobe_byname2_res",
-> +                 "wrong uprobe byname2 res: %d\n", skel->bss->uprobe_byname2_res))
-> +               goto cleanup;
-> +       if (CHECK(skel->bss->uretprobe_byname2_res != 8, "check_uretprobe_byname2_res",
-> +                 "wrong uretprobe byname2 res: %d\n", skel->bss->uretprobe_byname2_res))
-> +               goto cleanup;
-> +
-
-Please don't use CHECK()s for new code, only ASSERT_xxx() for new code.
-
->  cleanup:
-> +       free(libc_path);
->         test_attach_probe__destroy(skel);
->         ASSERT_EQ(uprobe_ref_ctr, 0, "uprobe_ref_ctr_cleanup");
->  }
-> diff --git a/tools/testing/selftests/bpf/progs/test_attach_probe.c b/tools/testing/selftests/bpf/progs/test_attach_probe.c
-> index 8056a4c..9942461c 100644
-> --- a/tools/testing/selftests/bpf/progs/test_attach_probe.c
-> +++ b/tools/testing/selftests/bpf/progs/test_attach_probe.c
-> @@ -10,6 +10,10 @@
->  int kretprobe_res = 0;
->  int uprobe_res = 0;
->  int uretprobe_res = 0;
-> +int uprobe_byname_res = 0;
-> +int uretprobe_byname_res = 0;
-> +int uprobe_byname2_res = 0;
-> +int uretprobe_byname2_res = 0;
->
->  SEC("kprobe/sys_nanosleep")
->  int handle_kprobe(struct pt_regs *ctx)
-> @@ -39,4 +43,37 @@ int handle_uretprobe(struct pt_regs *ctx)
->         return 0;
->  }
->
-> +SEC("uprobe/trigger_func_byname")
-> +int handle_uprobe_byname(struct pt_regs *ctx)
-> +{
-> +       uprobe_byname_res = 5;
-> +       return 0;
-> +}
-> +
-> +/* use auto-attach format for section definition. */
-> +SEC("uretprobe//proc/self/exe:trigger_func2")
-> +int handle_uretprobe_byname(struct pt_regs *ctx)
-> +{
-> +       uretprobe_byname_res = 6;
-> +       return 0;
-> +}
-> +
-> +SEC("uprobe/trigger_func_byname2")
-> +int handle_uprobe_byname2(struct pt_regs *ctx)
-
-this one is for malloc, so why SEC() doesn't reflect this?
-
-It would be great to also have (probably separate) selftest for
-auto-attach logic of skeleton for uprobes.
-I'd add a separate uprobe-specific selftests, there is plenty to test
-without having kprobes intermingled.
-
-> +{
-> +       unsigned int size = PT_REGS_PARM1(ctx);
-> +
-> +       /* verify malloc size */
-> +       if (size == 1)
-> +               uprobe_byname2_res = 7;
-> +       return 0;
-> +}
-> +
-> +SEC("uretprobe/trigger_func_byname2")
-> +int handle_uretprobe_byname2(struct pt_regs *ctx)
-> +{
-> +       uretprobe_byname2_res = 8;
-> +       return 0;
-> +}
-> +
->  char _license[] SEC("license") = "GPL";
-> --
-> 1.8.3.1
->
+Thanks for all the feedback!
