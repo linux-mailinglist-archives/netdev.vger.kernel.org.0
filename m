@@ -2,132 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFB144A92E3
-	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 04:59:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC20A4A92EA
+	for <lists+netdev@lfdr.de>; Fri,  4 Feb 2022 05:04:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356810AbiBDD7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Feb 2022 22:59:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45780 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345345AbiBDD7u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Feb 2022 22:59:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175E6C061714;
-        Thu,  3 Feb 2022 19:59:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF988B8364F;
-        Fri,  4 Feb 2022 03:59:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCE27C004E1;
-        Fri,  4 Feb 2022 03:59:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643947187;
-        bh=lCcXf1A5cM6ZpNUg4SCoX5duKcDpWk2uRMyMgVPxB+8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NJRJKDaw9Vn190aAcLwQMQRshh4hwOeOUIItjod7QdF4mtpwbNPpSEdmpMQsawVXz
-         vQl2uimyvZqHJHQ1AKtxxGs3K1NXh1R4PGPwm3Cq5VPDC96GSstDT9cYbtf6ujivtE
-         6ZDGBPD3Y1u8tdP51+9us+lp8APZbDFvo4OntNYEC6MJEimbw0vRcBGUGQUoRgx0Qt
-         EP9skThRPo4RGT2morDxFF6zWNwpPJPdbbl+E00Ujv4+nChQIN0Tb7gnLVwRgv6eXt
-         IBzoyVeUkUMEArllEuKtEp471sV/Ch5OW25xMEbj1d26JBu/X9CB7qkmQ6iyHI5doX
-         WN+lJ7/Femb8A==
-Date:   Fri, 4 Feb 2022 12:59:42 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Jiri Olsa <olsajiri@gmail.com>
-Subject: Re: [PATCH 0/8] bpf: Add fprobe link
-Message-Id: <20220204125942.a4bda408f536c2e3248955e1@kernel.org>
-In-Reply-To: <CAADnVQKjNJjZDs+ZV7vcusEkKuDq+sWhSD3M5GtvNeZMx3Fcmg@mail.gmail.com>
-References: <20220202135333.190761-1-jolsa@kernel.org>
-        <CAADnVQ+hTWbvNgnvJpAeM_-Ui2-G0YSM3QHB9G2+2kWEd4-Ymw@mail.gmail.com>
-        <Yfq+PJljylbwJ3Bf@krava>
-        <CAADnVQKeTB=UgY4Gf-46EBa8rwWTu2wvi7hEj2sdVTALGJ0JEg@mail.gmail.com>
-        <YfvvfLlM1FOTgvDm@krava>
-        <20220204094619.2784e00c0b7359356458ca57@kernel.org>
-        <CAADnVQJYY0Xm6M9O02E5rOkdQPX39NOOS4tM2jpwRLQvP-qDBg@mail.gmail.com>
-        <20220204110704.7c6eaf43ff9c8f5fe9bf3179@kernel.org>
-        <CAADnVQJfq_10H0V+u0w0rzyZ9uy7vq=T-3BMDANjEN8A3-prsQ@mail.gmail.com>
-        <20220203211954.67c20cd3@gandalf.local.home>
-        <CAADnVQKjNJjZDs+ZV7vcusEkKuDq+sWhSD3M5GtvNeZMx3Fcmg@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S244577AbiBDED7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Feb 2022 23:03:59 -0500
+Received: from mga06.intel.com ([134.134.136.31]:57157 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239888AbiBDED6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Feb 2022 23:03:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643947438; x=1675483438;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=enODRzoB0jh6G0zwvFew0nggpLDbEQ0yZNG7y7oQu20=;
+  b=N71xoZYWAM+Qa+4lb9JR+LMhRyzckDZFKlM2+Sc9Gh3ilh72yhYmtAoL
+   NlQ69Zg8Zo1ZJhxSBGnJHnB9CwhuDoajWHf5MPOHBTXsdFtlThNgor34H
+   EQiFsGHtewLc3W+NOyMDSCTzSl9U9DjtpR5SEm4XMCV5vgDzX7iusPWly
+   X9KnURXuZ9v1z3lv6li0uiThCn0R6E+2XMUEbwb5eR8w21Fz2EVk9bo5t
+   Kd5M3J5GlatnZt2fo1+97Wj8iZWVbH0BrWsv1Sr5klv8kVFIyugOyyWWJ
+   NVDAGxXL7SRLYcKwkA+XUQf/P4WOwaUfEf8lBxSEgL7p0iX9RL4y6moUe
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="309050975"
+X-IronPort-AV: E=Sophos;i="5.88,341,1635231600"; 
+   d="scan'208";a="309050975"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 20:03:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,341,1635231600"; 
+   d="scan'208";a="631583575"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 03 Feb 2022 20:03:55 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nFppC-000X6z-SY; Fri, 04 Feb 2022 04:03:54 +0000
+Date:   Fri, 4 Feb 2022 12:03:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Coco Li <lixiaoyan@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>
+Subject: Re: [PATCH net-next 15/15] mlx5: support BIG TCP packets
+Message-ID: <202202041153.aALvQUP0-lkp@intel.com>
+References: <20220203015140.3022854-16-eric.dumazet@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220203015140.3022854-16-eric.dumazet@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexei,
+Hi Eric,
 
-On Thu, 3 Feb 2022 18:42:22 -0800
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+Thank you for the patch! Yet something to improve:
 
-> On Thu, Feb 3, 2022 at 6:19 PM Steven Rostedt <rostedt@goodmis.org> wrote:
-> >
-> > On Thu, 3 Feb 2022 18:12:11 -0800
-> > Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> >
-> > > > No, fprobe is NOT kprobe on ftrace, kprobe on ftrace is already implemented
-> > > > transparently.
-> > >
-> > > Not true.
-> > > fprobe is nothing but _explicit_ kprobe on ftrace.
-> > > There was an implicit optimization for kprobe when ftrace
-> > > could be used.
-> > > All this new interface is doing is making it explicit.
-> > > So a new name is not warranted here.
-> > >
-> > > > from that viewpoint, fprobe and kprobe interface are similar but different.
-> > >
-> > > What is the difference?
-> > > I don't see it.
-> >
-> > IIUC, a kprobe on a function (or ftrace, aka fprobe) gives some extra
-> > abilities that a normal kprobe does not. Namely, "what is the function
-> > parameters?"
-> >
-> > You can only reliably get the parameters at function entry. Hence, by
-> > having a probe that is unique to functions as supposed to the middle of a
-> > function, makes sense to me.
-> >
-> > That is, the API can change. "Give me parameter X". That along with some
-> > BTF reading, could figure out how to get parameter X, and record that.
-> 
-> This is more or less a description of kprobe on ftrace :)
-> The bpf+kprobe users were relying on that for a long time.
-> See PT_REGS_PARM1() macros in bpf_tracing.h
-> They're meaningful only with kprobe on ftrace.
-> So, no, fprobe is not inventing anything new here.
+[auto build test ERROR on net-next/master]
 
-Hmm, you may be misleading why PT_REGS_PARAM1() macro works. You can use
-it even if CONFIG_FUNCITON_TRACER=n if your kernel is built with
-CONFIG_KPROBES=y. It is valid unless you put a probe out of function
-entry.
+url:    https://github.com/0day-ci/linux/commits/Eric-Dumazet/tcp-BIG-TCP-implementation/20220203-095336
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 52dae93f3bad842c6d585700460a0dea4d70e096
+config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220204/202202041153.aALvQUP0-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/7561f5d66d00583e6d88fa6b2fffd868dcc82b2e
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Eric-Dumazet/tcp-BIG-TCP-implementation/20220203-095336
+        git checkout 7561f5d66d00583e6d88fa6b2fffd868dcc82b2e
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash
 
-> No one is using kprobe in the middle of the function.
-> It's too difficult to make anything useful out of it,
-> so no one bothers.
-> When people say "kprobe" 99 out of 100 they mean
-> kprobe on ftrace/fentry.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-I see. But the kprobe is kprobe. It is not designed to support multiple
-probe points. If I'm forced to say, I can rename the struct fprobe to
-struct multi_kprobe, but that doesn't change the essence. You may need
-to use both of kprobes and so-called multi_kprobe properly. (Someone
-need to do that.)
+All errors (new ones prefixed by >>):
 
-Thank you,
+   In file included from include/linux/container_of.h:5,
+                    from include/linux/kernel.h:21,
+                    from include/linux/skbuff.h:13,
+                    from include/linux/tcp.h:17,
+                    from drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:33:
+   include/linux/build_bug.h:78:41: error: static assertion failed: "BITS_PER_LONG >= NR_MSG_FRAG_IDS"
+      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+         |                                         ^~~~~~~~~~~~~~
+   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
+      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
+         |                                  ^~~~~~~~~~~~~~~
+   include/linux/skmsg.h:41:1: note: in expansion of macro 'static_assert'
+      41 | static_assert(BITS_PER_LONG >= NR_MSG_FRAG_IDS);
+         | ^~~~~~~~~~~~~
+   drivers/net/ethernet/mellanox/mlx5/core/en_tx.c: In function 'mlx5i_sq_xmit':
+>> drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:1055:86: error: 'h6' undeclared (first use in this function)
+    1055 |                         memcpy(eseg->inline_hdr.start, skb->data, ETH_HLEN + sizeof(*h6));
+         |                                                                                      ^~
+   drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:1055:86: note: each undeclared identifier is reported only once for each function it appears in
 
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+
+vim +/h6 +1055 drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+
+  1011	
+  1012	void mlx5i_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+  1013			   struct mlx5_av *av, u32 dqpn, u32 dqkey, bool xmit_more)
+  1014	{
+  1015		struct mlx5e_tx_wqe_attr wqe_attr;
+  1016		struct mlx5e_tx_attr attr;
+  1017		struct mlx5i_tx_wqe *wqe;
+  1018	
+  1019		struct mlx5_wqe_datagram_seg *datagram;
+  1020		struct mlx5_wqe_ctrl_seg *cseg;
+  1021		struct mlx5_wqe_eth_seg  *eseg;
+  1022		struct mlx5_wqe_data_seg *dseg;
+  1023		struct mlx5e_tx_wqe_info *wi;
+  1024	
+  1025		struct mlx5e_sq_stats *stats = sq->stats;
+  1026		int num_dma;
+  1027		u16 pi;
+  1028	
+  1029		mlx5e_sq_xmit_prepare(sq, skb, NULL, &attr);
+  1030		mlx5i_sq_calc_wqe_attr(skb, &attr, &wqe_attr);
+  1031	
+  1032		pi = mlx5e_txqsq_get_next_pi(sq, wqe_attr.num_wqebbs);
+  1033		wqe = MLX5I_SQ_FETCH_WQE(sq, pi);
+  1034	
+  1035		stats->xmit_more += xmit_more;
+  1036	
+  1037		/* fill wqe */
+  1038		wi       = &sq->db.wqe_info[pi];
+  1039		cseg     = &wqe->ctrl;
+  1040		datagram = &wqe->datagram;
+  1041		eseg     = &wqe->eth;
+  1042		dseg     =  wqe->data;
+  1043	
+  1044		mlx5i_txwqe_build_datagram(av, dqpn, dqkey, datagram);
+  1045	
+  1046		mlx5e_txwqe_build_eseg_csum(sq, skb, NULL, eseg);
+  1047	
+  1048		eseg->mss = attr.mss;
+  1049	
+  1050		if (attr.ihs) {
+  1051			if (unlikely(attr.hopbyhop)) {
+  1052				/* remove the HBH header.
+  1053				 * Layout: [Ethernet header][IPv6 header][HBH][TCP header]
+  1054				 */
+> 1055				memcpy(eseg->inline_hdr.start, skb->data, ETH_HLEN + sizeof(*h6));
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
