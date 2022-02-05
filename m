@@ -2,109 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC7454AA804
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 11:06:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 423AA4AA80C
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 11:20:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245334AbiBEKGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 05:06:17 -0500
-Received: from mxout013.mail.hostpoint.ch ([217.26.49.173]:57596 "EHLO
-        mxout013.mail.hostpoint.ch" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233009AbiBEKGR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 05:06:17 -0500
-Received: from [10.0.2.46] (helo=asmtp013.mail.hostpoint.ch)
-        by mxout013.mail.hostpoint.ch with esmtp (Exim 4.94.2 (FreeBSD))
-        (envelope-from <thomas@kupper.org>)
-        id 1nGHxM-0008Yj-Cr; Sat, 05 Feb 2022 11:06:12 +0100
-Received: from [2001:1620:50ce:1969:65d6:ee42:8561:f134]
-        by asmtp013.mail.hostpoint.ch with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2 (FreeBSD))
-        (envelope-from <thomas@kupper.org>)
-        id 1nGHxM-000H6J-9A; Sat, 05 Feb 2022 11:06:12 +0100
-X-Authenticated-Sender-Id: thomas@kupper.org
-Message-ID: <45b7130e-0f39-cb54-f6a8-3ea2f602d65e@kupper.org>
-Date:   Sat, 5 Feb 2022 11:06:11 +0100
+        id S1359814AbiBEKUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 05:20:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38638 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229484AbiBEKUO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 05:20:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5AFC061346
+        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 02:20:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 130C160B1D
+        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 10:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6508EC340E9;
+        Sat,  5 Feb 2022 10:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644056409;
+        bh=ypYtQo1pSLUuzFoFZEcU0keJI4jSb/ZZ/CcXOXufBSY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZOXltDsLBs7HCSY44wuWrCUi9zCkm0tV5FYzO76eysB4wDMOGE/zeG+8bKVpXSptW
+         ZIa/SxAFOLC+jLFb6Dfn8LzC9CXGEINlqYYGNaONq1K0NSoH/oEttysFlmYORRcuet
+         Ms0r60fnT4qylfFZEmq+yDjjB6LhiGPXPCnrpgt07o0xi/SH06vlPP56lQEVom22tY
+         qFhxgABItNfRbrD80O9yjm2u0BK8Ho2F7DsEUoN6aVG+5k9oJXJuSeQRxEdy8OeUEQ
+         i6aSlo7IKj1CnpCY2JqwJ++ZOi7wzfBACTjvjROY/YZHmOimYmhVUFBDWtS3ZJeGGC
+         suzkalwxMwlHQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4A23BE5D07E;
+        Sat,  5 Feb 2022 10:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     thomas.lendacky@amd.com
-Cc:     netdev@vger.kernel.org
-From:   Thomas Kupper <thomas@kupper.org>
-Subject: AMD XGBE "phy irq request failed" kernel v5.17-rc2 on V1500B based
- board
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v3 1/1] net/sched: Enable tc skb ext allocation on
+ chain miss only when needed
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164405640929.30996.579134906117911198.git-patchwork-notify@kernel.org>
+Date:   Sat, 05 Feb 2022 10:20:09 +0000
+References: <20220203084430.25339-1-paulb@nvidia.com>
+In-Reply-To: <20220203084430.25339-1-paulb@nvidia.com>
+To:     Paul Blakey <paulb@nvidia.com>
+Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
+        xiyou.wangcong@gmail.com, jhs@mojatatu.com, pshelar@ovn.org,
+        davem@davemloft.net, jiri@nvidia.com, kuba@kernel.org,
+        daniel@iogearbox.net, saeedm@nvidia.com, ozsh@nvidia.com,
+        vladbu@nvidia.com, roid@nvidia.com
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello:
 
-I got an OPNsense DEC740 firewall which is based on the AMD V1500B CPU.
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-OPNsense runs fine on it but on Linux I'm not able to get the 10GbE 
-interfaces to work.
+On Thu, 3 Feb 2022 10:44:30 +0200 you wrote:
+> Currently tc skb extension is used to send miss info from
+> tc to ovs datapath module, and driver to tc. For the tc to ovs
+> miss it is currently always allocated even if it will not
+> be used by ovs datapath (as it depends on a requested feature).
+> 
+> Export the static key which is used by openvswitch module to
+> guard this code path as well, so it will be skipped if ovs
+> datapath doesn't need it. Enable this code path once
+> ovs datapath needs it.
+> 
+> [...]
 
-My test setup is based on Ubuntu 21.10 Impish Indri with a v5.17-rc2 
-kernel compiled from Mr Torvalds sources, tag v5.17-rc2. The second 
-10GbE interface (enp6s0f2) is set to receive the IP by DHCPv4.
+Here is the summary with links:
+  - [net-next,v3,1/1] net/sched: Enable tc skb ext allocation on chain miss only when needed
+    https://git.kernel.org/netdev/net-next/c/35d39fecbc24
 
-The relevant dmesg entries after boot are:
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-[    4.763712] libphy: amd-xgbe-mii: probed
-[    4.782850] amd-xgbe 0000:06:00.1 eth0: net device enabled
-[    4.800625] libphy: amd-xgbe-mii: probed
-[    4.803192] amd-xgbe 0000:06:00.2 eth1: net device enabled
-[    4.841151] amd-xgbe 0000:06:00.1 enp6s0f1: renamed from eth0
-[    5.116617] amd-xgbe 0000:06:00.2 enp6s0f2: renamed from eth1
-
-After that I see a link up on the switch for enp6s0f2 and the switch 
-reports 10G link speed.
-
-ethtool reports:
-
-$ sudo ethtool enp6s0f2
-Settings for enp6s0f2:
-         Supported ports: [ FIBRE ]
-         Supported link modes:   Not reported
-         Supported pause frame use: No
-         Supports auto-negotiation: No
-         Supported FEC modes: Not reported
-         Advertised link modes:  Not reported
-         Advertised pause frame use: No
-         Advertised auto-negotiation: No
-         Advertised FEC modes: Not reported
-         Speed: Unknown!
-         Duplex: Unknown! (255)
-         Auto-negotiation: off
-         Port: None
-         PHYAD: 0
-         Transceiver: internal
-         Current message level: 0x00000034 (52)
-                                link ifdown ifup
-         Link detected: no
-
-
-Manually assigning an IP and pull the interface up and I end up with:
-
-$ sudo ifconfig enp6s0f2 up
-
-SIOCSIFFLAGS: Device or resource busy
-
-... and dmesg reports:
-
-[  648.038655] genirq: Flags mismatch irq 59. 00000000 (enp6s0f2-pcs) 
-vs. 00000000 (enp6s0f2-pcs)
-[  648.048303] amd-xgbe 0000:06:00.2 enp6s0f2: phy irq request failed
-
-After that the lights are out on the switch for that port and it reports 
-'no link'
-
-Would that be an known issue or is that configuration simply not yet 
-supported?
-
-
-Kind Regards
-
-Thomas Kupper
 
