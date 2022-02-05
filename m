@@ -2,71 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C83754AA776
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 08:48:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D34124AA784
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 09:01:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379662AbiBEHsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 02:48:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60666 "EHLO
+        id S1348609AbiBEIBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 03:01:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379619AbiBEHse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 02:48:34 -0500
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F24C061347;
-        Fri,  4 Feb 2022 23:48:34 -0800 (PST)
-Received: by mail-pl1-x642.google.com with SMTP id s6so7033460plg.12;
-        Fri, 04 Feb 2022 23:48:34 -0800 (PST)
+        with ESMTP id S230215AbiBEIBY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 03:01:24 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0193CC061346;
+        Sat,  5 Feb 2022 00:01:22 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id m11so17985015edi.13;
+        Sat, 05 Feb 2022 00:01:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9pvmS13AHWSjRM47Jhdp6MkeVnK13IvKcbnz13xDaLE=;
-        b=lSIJtl9jKVNqlSJP68ZtPIvJXK7FivpbvUb8I7KHPx3pk45QxppS+wOjpoi1dApI/q
-         0jmTU+VWeGpxPKbU2Z5Yy/J+b/blH4IrVfLCd5B3rVf1bRFEBRmMTforC1MvE3IaLHya
-         BAXO0rFzSlwGqtYmhfDsfHvktj5xXU+wgiBkYLgbW3So4SMphCi/1pA1e8lCB8dBJO0M
-         SU/biRDERDB0vZ9aED6tDpZ8/LH535441Ch0qkhZYKfX96RpkZ5TH176CrEPa20wmGcS
-         fA5FSVsYh7c0jXn5vo0Hsw/woZ4mQsuRVchROTGHOFj1Xga89CgS7t/jqQRE2QKoOHs8
-         wHhw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Spi4/TBWuPHr2EowITjtYU4PenRDdKDN3wwrLsjSjk4=;
+        b=cvL613u1xOlgUDBHgPmghGnK1CdTmaklLNkMaQZ0R1bIp46Zp2C23aDSqiNG3FEdGT
+         b96KvwJW4riA5fuQbd9Kb9KgxNBsjjTIpDOEQtocAe9P/onMf7Fke+coev4X1/L2crTW
+         nxvYguQbbBm61i5uIO6Eqsl6Y2of7QnTyv8u2Q1UyBDr1yqspp6QmdTvga+JL9UvFuRr
+         XBwnAXTddRTd13/o2Ei67SLk1lvmGPvBZ18ZqGM2h7ZpkIOpbBoaT3T4GWB60eBwxTAl
+         kUJLafF25jv95yG2gZWv+8wxdo4LBx5SlN0AsP6bU+ZmqKwG47UB7v1QkdRoF8rQlxRp
+         OHbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9pvmS13AHWSjRM47Jhdp6MkeVnK13IvKcbnz13xDaLE=;
-        b=ajg5sN+A14Ye5l9luGoRPEbk4Vn7LwoqtcNst5nBHuXxe8n7JbHens+ZAOX39znRiz
-         uo+dxvnWbPgtzSZJD8RegXo2J3kSgiTMVDBEsvc4zSaT9/i4o5Nq85zndckDZE3bxThI
-         XjnnSS8OBMMPY7p6oXXC5mBGGcQQtU/HBlGIwrhN3lKdbHADChHbaKSfrExs3ZnI2A6b
-         wBcKuV+tC1/dwkgKN6cmiKE07/e1hzpjRVeieqEcVzDvHfg8zui5AVPmT2IGnTe6wIoD
-         fNM6v3mHfJs6+kRnif+AenpdI1TOJ6PGxf/c+I0KxtENphJrJlVRanarPr0giwvqHI1a
-         jO6g==
-X-Gm-Message-State: AOAM5319N7cOdeNq7PAE+ra0RNLfMhPvFFBJn3KoPVD4gqymWHaauvrU
-        w3IZV2In2jAjZ5knj6OR6p8=
-X-Google-Smtp-Source: ABdhPJxhsnjGiJZF8PGXfpb97dgdLRQSe/8+NXuxEr2/Qmygq/RV+nnomhFmEY4MOTq91nNRfBtISA==
-X-Received: by 2002:a17:902:e812:: with SMTP id u18mr7196603plg.12.1644047313617;
-        Fri, 04 Feb 2022 23:48:33 -0800 (PST)
-Received: from localhost.localdomain ([43.132.141.4])
-        by smtp.gmail.com with ESMTPSA id p21sm5165844pfh.89.2022.02.04.23.48.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 23:48:33 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     dsahern@kernel.org, kuba@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, pablo@netfilter.org, kadlec@netfilter.org,
-        fw@strlen.de, edumazet@google.com, alobakin@pm.me, ast@kernel.org,
-        imagedong@tencent.com, pabeni@redhat.com, keescook@chromium.org,
-        talalahmad@google.com, haokexin@gmail.com,
-        ilias.apalodimas@linaro.org, memxor@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        paulb@nvidia.com, cong.wang@bytedance.com, mengensun@tencent.com
-Subject: [PATCH v4 net-next 7/7] net: udp: use kfree_skb_reason() in __udp_queue_rcv_skb()
-Date:   Sat,  5 Feb 2022 15:47:39 +0800
-Message-Id: <20220205074739.543606-8-imagedong@tencent.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220205074739.543606-1-imagedong@tencent.com>
-References: <20220205074739.543606-1-imagedong@tencent.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Spi4/TBWuPHr2EowITjtYU4PenRDdKDN3wwrLsjSjk4=;
+        b=P4iZczR0H3O+Q2lWDa7oFVt8+ETo1tBr4ecQnsUTnnMJUFICWIdBmQLAuUd5XZatdP
+         kA0vrB6sW/4hQCNfI1yxuDTlf8rUBXoQzW+a2Nn/s/S8XJP3ZS/K/zo1O5QQdL67Cw+l
+         DFIb0AhDP0+oAVqm16H0TjLA7TZukg9mbYq5M+IUIWzkoPOTMEFs6yM0mAaPhD5X9j9j
+         L3ybodsQIaDJRcfNFNXg2wZ1HJrOfsdug0q1+dlG3osF3zCJRtoQXd6Ru9/a9JtoVkBL
+         Hs/AJ3LgDJxh50+wTtRDR/leBVKTuvAAMD/z5tmttH3bzQ+SqYhC4I+DIv3MNYzSjujQ
+         9tMQ==
+X-Gm-Message-State: AOAM5335NYL8fMtNZovIr95WJg99xNESqt5iyYS+MuMmz2ykdl5/5l3p
+        R5EWVXeREFMoGB3sxMK/NVvnpcgOFUyXk+M+Bys=
+X-Google-Smtp-Source: ABdhPJxM1BHtMF4dTwKP6fg1UinVXOr+sBR/5ESOhk3z5WlFXdO9MAXRdxxLLkuNO1j+84XOCVJuxShiOa2a4vYfoD4=
+X-Received: by 2002:a05:6402:5290:: with SMTP id en16mr688163edb.236.1644048081477;
+ Sat, 05 Feb 2022 00:01:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220204140813.4007173-1-imagedong@tencent.com>
+In-Reply-To: <20220204140813.4007173-1-imagedong@tencent.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Sat, 5 Feb 2022 15:56:28 +0800
+Message-ID: <CADxym3aQqMhgcOnK-HMto29GQ3zN_4fvqE9WpYuL_ZVwqWyp4Q@mail.gmail.com>
+Subject: Re: [PATCH v5 net-next] net: drop_monitor: support drop reason
+To:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@kernel.org>,
+        Ido Schimmel <idosch@idosch.org>
+Cc:     Neil Horman <nhorman@tuxdriver.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Menglong Dong <imagedong@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -77,79 +69,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+On Fri, Feb 4, 2022 at 10:08 PM <menglong8.dong@gmail.com> wrote:
+>
+> From: Menglong Dong <imagedong@tencent.com>
+>
+> In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()")
+> drop reason is introduced to the tracepoint of kfree_skb. Therefore,
+> drop_monitor is able to report the drop reason to users by netlink.
+>
+> The drop reasons are reported as string to users, which is exactly
+> the same as what we do when reporting it to ftrace.
+>
+> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> ---
+> v5:
+> - check if drop reason larger than SKB_DROP_REASON_MAX
+>
+> v4:
+> - report drop reasons as string
+>
+> v3:
+> - referring to cb->reason and cb->pc directly in
+>   net_dm_packet_report_fill()
+>
+> v2:
+> - get a pointer to struct net_dm_skb_cb instead of local var for
+>   each field
+> ---
+>  include/uapi/linux/net_dropmon.h |  1 +
+>  net/core/drop_monitor.c          | 29 +++++++++++++++++++++++++----
+>  2 files changed, 26 insertions(+), 4 deletions(-)
+>
+> diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
+> index 66048cc5d7b3..1bbea8f0681e 100644
+> --- a/include/uapi/linux/net_dropmon.h
+> +++ b/include/uapi/linux/net_dropmon.h
+> @@ -93,6 +93,7 @@ enum net_dm_attr {
+>         NET_DM_ATTR_SW_DROPS,                   /* flag */
+>         NET_DM_ATTR_HW_DROPS,                   /* flag */
+>         NET_DM_ATTR_FLOW_ACTION_COOKIE,         /* binary */
+> +       NET_DM_ATTR_REASON,                     /* string */
+>
+>         __NET_DM_ATTR_MAX,
+>         NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
+> diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+> index 7b288a121a41..2d1c8e8dec83 100644
+> --- a/net/core/drop_monitor.c
+> +++ b/net/core/drop_monitor.c
+> @@ -48,6 +48,16 @@
+>  static int trace_state = TRACE_OFF;
+>  static bool monitor_hw;
+>
+> +#undef EM
+> +#undef EMe
+> +
+> +#define EM(a, b)       [a] = #b,
+> +#define EMe(a, b)      [a] = #b
+> +
+> +static const char *drop_reasons[SKB_DROP_REASON_MAX + 1] = {
+> +       TRACE_SKB_DROP_REASON
+> +};
+> +
+>  /* net_dm_mutex
+>   *
+>   * An overall lock guarding every operation coming from userspace.
+> @@ -126,6 +136,7 @@ struct net_dm_skb_cb {
+>                 struct devlink_trap_metadata *hw_metadata;
+>                 void *pc;
+>         };
+> +       enum skb_drop_reason reason;
+>  };
+>
+>  #define NET_DM_SKB_CB(__skb) ((struct net_dm_skb_cb *)&((__skb)->cb[0]))
+> @@ -498,6 +509,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+>  {
+>         ktime_t tstamp = ktime_get_real();
+>         struct per_cpu_dm_data *data;
+> +       struct net_dm_skb_cb *cb;
+>         struct sk_buff *nskb;
+>         unsigned long flags;
+>
+> @@ -508,7 +520,9 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+>         if (!nskb)
+>                 return;
+>
+> -       NET_DM_SKB_CB(nskb)->pc = location;
+> +       cb = NET_DM_SKB_CB(nskb);
+> +       cb->reason = reason;
+> +       cb->pc = location;
+>         /* Override the timestamp because we care about the time when the
+>          * packet was dropped.
+>          */
+> @@ -606,8 +620,9 @@ static int net_dm_packet_report_in_port_put(struct sk_buff *msg, int ifindex,
+>  static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+>                                      size_t payload_len)
+>  {
+> -       u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
+> +       struct net_dm_skb_cb *cb = NET_DM_SKB_CB(skb);
+>         char buf[NET_DM_MAX_SYMBOL_LEN];
+> +       enum skb_drop_reason reason;
+>         struct nlattr *attr;
+>         void *hdr;
+>         int rc;
+> @@ -620,10 +635,16 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+>         if (nla_put_u16(msg, NET_DM_ATTR_ORIGIN, NET_DM_ORIGIN_SW))
+>                 goto nla_put_failure;
+>
+> -       if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
+> +       if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, (u64)(uintptr_t)cb->pc,
+> +                             NET_DM_ATTR_PAD))
+> +               goto nla_put_failure;
+> +
+> +       reason = cb->reason;
+> +       if (reason < SKB_DROP_REASON_MAX &&
+> +           nla_put_string(msg, NET_DM_ATTR_REASON, drop_reasons[reason]))
+>                 goto nla_put_failure;
 
-Replace kfree_skb() with kfree_skb_reason() in __udp_queue_rcv_skb().
-Following new drop reasons are introduced:
+I guess I made a mistake here: assuming that the enum is unsigned.
+Please ignore this version, I'll make a new one.
 
-SKB_DROP_REASON_SOCKET_RCVBUFF
-SKB_DROP_REASON_PROTO_MEM
+Thanks!
+Menglong Dong
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
----
- include/linux/skbuff.h     |  5 +++++
- include/trace/events/skb.h |  2 ++
- net/ipv4/udp.c             | 10 +++++++---
- 3 files changed, 14 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 2a64afa97910..a5adbf6b51e8 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -341,6 +341,11 @@ enum skb_drop_reason {
- 						  */
- 	SKB_DROP_REASON_XFRM_POLICY,	/* xfrm policy check failed */
- 	SKB_DROP_REASON_IP_NOPROTO,	/* no support for IP protocol */
-+	SKB_DROP_REASON_SOCKET_RCVBUFF,	/* socket receive buff is full */
-+	SKB_DROP_REASON_PROTO_MEM,	/* proto memory limition, such as
-+					 * udp packet drop out of
-+					 * udp_memory_allocated.
-+					 */
- 	SKB_DROP_REASON_MAX,
- };
- 
-diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index 985e481c092d..cfcfd26399f7 100644
---- a/include/trace/events/skb.h
-+++ b/include/trace/events/skb.h
-@@ -25,6 +25,8 @@
- 	   UNICAST_IN_L2_MULTICAST)				\
- 	EM(SKB_DROP_REASON_XFRM_POLICY, XFRM_POLICY)		\
- 	EM(SKB_DROP_REASON_IP_NOPROTO, IP_NOPROTO)		\
-+	EM(SKB_DROP_REASON_SOCKET_RCVBUFF, SOCKET_RCVBUFF)	\
-+	EM(SKB_DROP_REASON_PROTO_MEM, PROTO_MEM)		\
- 	EMe(SKB_DROP_REASON_MAX, MAX)
- 
- #undef EM
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 952f5bf108a5..6b4d8361560f 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2093,16 +2093,20 @@ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
- 	rc = __udp_enqueue_schedule_skb(sk, skb);
- 	if (rc < 0) {
- 		int is_udplite = IS_UDPLITE(sk);
-+		int drop_reason;
- 
- 		/* Note that an ENOMEM error is charged twice */
--		if (rc == -ENOMEM)
-+		if (rc == -ENOMEM) {
- 			UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
- 					is_udplite);
--		else
-+			drop_reason = SKB_DROP_REASON_SOCKET_RCVBUFF;
-+		} else {
- 			UDP_INC_STATS(sock_net(sk), UDP_MIB_MEMERRORS,
- 				      is_udplite);
-+			drop_reason = SKB_DROP_REASON_PROTO_MEM;
-+		}
- 		UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
--		kfree_skb(skb);
-+		kfree_skb_reason(skb, drop_reason);
- 		trace_udp_fail_queue_rcv_skb(rc, sk);
- 		return -1;
- 	}
--- 
-2.34.1
-
+>
+> -       snprintf(buf, sizeof(buf), "%pS", NET_DM_SKB_CB(skb)->pc);
+> +       snprintf(buf, sizeof(buf), "%pS", cb->pc);
+>         if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
+>                 goto nla_put_failure;
+>
+> --
+> 2.34.1
+>
