@@ -2,77 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DC844AA675
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 05:30:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47C564AA677
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 05:30:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379332AbiBEEaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 23:30:16 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53186 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379316AbiBEEaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 23:30:11 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A597CB839AC
-        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 04:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5E33CC340EC;
-        Sat,  5 Feb 2022 04:30:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644035409;
-        bh=+rKEbOIq+WKe9+t33SgmB3ZxB7ue3FeoGtsv60Tuzkk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SXuDrv2JOldeLBW1MCavghKCnp9Z/kZXrADDWUyh8J/Q+NxmdyYIUKNC1a70hwq5Q
-         jrTdpwISmHrnawmQfQDvoFK9ZImnP251au3UVJo5suZdaXVfgwpdY2NGPC6GfkjmcR
-         8aXP5TWNedkrcp9BBkGHyQclpC37BWZJaiBPYWwMgLAD3Ld/WKfpr3VfVjlq3BQNmP
-         yilL0YF3nqutHHXBRDYbp/kEomATpI1jbHLZgcKk7Qs3a4KmCSLYLYtxH4ZeGO86v9
-         5WVGVmfM1j12VIQ00pbOA64clTQsVJpfnGtAnQdMAlL/9aaUR+mAiXHwRmCFEkMpeG
-         M3uXp9gRcGnhA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 40B89E6D3DE;
-        Sat,  5 Feb 2022 04:30:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1379343AbiBEEat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 23:30:49 -0500
+Received: from helcar.hmeau.com ([216.24.177.18]:34022 "EHLO fornost.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1379333AbiBEEar (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Feb 2022 23:30:47 -0500
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1nGCia-00020D-0M; Sat, 05 Feb 2022 15:30:37 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Sat, 05 Feb 2022 15:30:35 +1100
+Date:   Sat, 5 Feb 2022 15:30:35 +1100
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Shijith Thotton <sthotton@marvell.com>
+Cc:     Arnaud Ebalard <arno@natisbad.org>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Srujana Challa <schalla@marvell.com>,
+        linux-crypto@vger.kernel.org, jerinj@marvell.com,
+        sgoutham@marvell.com, "David S. Miller" <davem@davemloft.net>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:MARVELL OCTEONTX2 RVU ADMIN FUNCTION DRIVER" 
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH] crypto: octeontx2: disable DMA black hole on an DMA fault
+Message-ID: <Yf39a4NJglaf0eDy@gondor.apana.org.au>
+References: <ab2269cb3ef3049ed0ab73f28be29f6669a06e36.1643134480.git.sthotton@marvell.com>
+ <2ece169a85504c8a185070055db2f6f8ea3c7d11.1643134449.git.sthotton@marvell.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] tcp: take care of mixed splice()/sendmsg(MSG_ZEROCOPY)
- case
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164403540926.14792.15149477966460152526.git-patchwork-notify@kernel.org>
-Date:   Sat, 05 Feb 2022 04:30:09 +0000
-References: <20220203225547.665114-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220203225547.665114-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, syzkaller@googlegroups.com,
-        talalahmad@google.com, arjunroy@google.com, willemb@google.com,
-        soheil@google.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2ece169a85504c8a185070055db2f6f8ea3c7d11.1643134449.git.sthotton@marvell.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu,  3 Feb 2022 14:55:47 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Tue, Jan 25, 2022 at 11:56:23PM +0530, Shijith Thotton wrote:
+> From: Srujana Challa <schalla@marvell.com>
 > 
-> syzbot found that mixing sendpage() and sendmsg(MSG_ZEROCOPY)
-> calls over the same TCP socket would again trigger the
-> infamous warning in inet_sock_destruct()
+> When CPT_AF_DIAG[FLT_DIS] = 0 and a CPT engine access to
+> LLC/DRAM encounters a fault/poison, a rare case may result
+> in unpredictable data being delivered to a CPT engine.
+> So, this patch adds code to set FLT_DIS as a workaround.
 > 
-> 	WARN_ON(sk_forward_alloc_get(sk));
-> 
-> [...]
+> Signed-off-by: Srujana Challa <schalla@marvell.com>
+> Signed-off-by: Shijith Thotton <sthotton@marvell.com>
+> ---
+>  drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c | 13 +++++++++++++
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c |  1 +
+>  2 files changed, 14 insertions(+)
 
-Here is the summary with links:
-  - [net] tcp: take care of mixed splice()/sendmsg(MSG_ZEROCOPY) case
-    https://git.kernel.org/netdev/net/c/f8d9d938514f
-
-You are awesome, thank you!
+Patch applied.  Thanks.
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
