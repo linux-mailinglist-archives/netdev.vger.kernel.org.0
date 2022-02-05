@@ -2,159 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDE514AA72D
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 07:35:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A074AA730
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 07:50:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379498AbiBEGfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 01:35:10 -0500
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:39803 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237733AbiBEGfH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 01:35:07 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V3cFwZm_1644042904;
-Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V3cFwZm_1644042904)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sat, 05 Feb 2022 14:35:05 +0800
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        "D. Wythe" <alibuda@linux.alibaba.com>
-Subject: [PATCH net-next v3 3/3] net/smc: Fallback when handshake workqueue congested
-Date:   Sat,  5 Feb 2022 14:34:45 +0800
-Message-Id: <e623520d70b5c4c6360a33750d07243d66599018.1644041638.git.alibuda@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <cover.1644041637.git.alibuda@linux.alibaba.com>
-References: <cover.1644041637.git.alibuda@linux.alibaba.com>
+        id S238491AbiBEGrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 01:47:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46708 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230008AbiBEGrr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 01:47:47 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E19A8C061346;
+        Fri,  4 Feb 2022 22:47:43 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id e6so6984693pfc.7;
+        Fri, 04 Feb 2022 22:47:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=FCcXnFe+AjDLJWHmF/M/9s62o5qLgGSOORd9vpKd/v4=;
+        b=JVp1WoeFWk2sg9YssMpSZiyjxY7guelYiPtHdZgPaqpz2BNVY/Z7syt4nDNbUkv7ga
+         HuW+LXnA4oVmkJ8QraA5INWrpTPLnRWkg54p0MPhvhD86LZMyCd+SaEKVv6mxSZK0ec7
+         JozKoKariZ+A23A0hjoEJ+TcGuiMS+A9DnBJgP7y1l8OoiqVJqDpf/b44hLlh3Shs4KY
+         OlpOWAMfvzjxVSgiCP6ItTN8G9j4e7afQdXr8huptEr1PqXpql6HIQXH4B0U261IJLK3
+         DcFG69HyocXH/b1UXkecfuywfbcXMS3qgnmc4iKqeVxzlwIMC2vEJq7ESunq0HufLlCQ
+         Qybg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=FCcXnFe+AjDLJWHmF/M/9s62o5qLgGSOORd9vpKd/v4=;
+        b=A0yrjnLxLvIDNc0ldMAkVnW7k2HvGrWIK1UBMOSb9vrJQNKGx2kwTQTsDl/rwfitvw
+         IceE33PmnGpAzP+tPbytSF+cEidgoxYHS9t8HsyjVX80B5RO5M8TMaCaSCJCwDzwtY81
+         psdJ3ezezSkcKbhux/G6qODzXMmX9mHqdQfD8EiAFy5rWO/wuMohgGOyFFjw79uv3kfo
+         zD+3+20R8USHf6FkSpXxqUnqTgn5JuRByHRo11hWLYhJ+EvtxGlH+PGLIappputzSBTJ
+         mSpAGUxTaWb54JRZ74Jr3XxdUqXjyf4T7TOa8ETpVBbruflSLLsmJ5QLCs+AG4P0geWt
+         ZBgw==
+X-Gm-Message-State: AOAM5302hrussa5lwYdU229Kj1W/w7F0XLmx+GQX5Vt1CQw58TpfJ3gm
+        ZtEGMJ8/McoQ7mGQO84p9vo=
+X-Google-Smtp-Source: ABdhPJyOmL7EE5vRNAoEwnCmzFSGS6hXIwn08o0tG4frEhx91YUIlsKZxgtNtMxlQiEr8iP1js/93g==
+X-Received: by 2002:a63:27c4:: with SMTP id n187mr2049424pgn.504.1644043662372;
+        Fri, 04 Feb 2022 22:47:42 -0800 (PST)
+Received: from localhost.localdomain ([2405:201:2003:b021:6001:8ce1:3e29:705e])
+        by smtp.gmail.com with ESMTPSA id nu15sm1706233pjb.5.2022.02.04.22.47.39
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 04 Feb 2022 22:47:42 -0800 (PST)
+From:   Raag Jadav <raagjadav@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Raag Jadav <raagjadav@gmail.com>
+Subject: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
+Date:   Sat,  5 Feb 2022 12:14:52 +0530
+Message-Id: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
+X-Mailer: git-send-email 2.7.4
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "D. Wythe" <alibuda@linux.alibaba.com>
+Enable MAC SerDes autonegotiation to distinguish between
+1000BASE-X, SGMII and QSGMII MAC.
 
-This patch intends to provide a mechanism to allow automatic fallback to
-TCP according to the pressure of SMC handshake process. At present,
-frequent visits will cause the incoming connections to be backlogged in
-SMC handshake queue, raise the connections established time. Which is
-quite unacceptable for those applications who base on short lived
-connections.
-
-It should be optional for applications that don't care about connection
-established time. For now, this patch only provides the switch at the
-compile time.
-
-There are two ways to implement this mechanism:
-
-1. Fallback when TCP established.
-2. Fallback before TCP established.
-
-In the first way, we need to wait and receive CLC messages that the
-client will potentially send, and then actively reply with a decline
-message, in a sense, which is also a sort of SMC handshake, affect the
-connections established time on its way.
-
-In the second way, the only problem is that we need to inject SMC logic
-into TCP when it is about to reply the incoming SYN, since we already do
-that, it's seems not a problem anymore. And advantage is obvious, few
-additional processes are required to complete the fallback.
-
-This patch use the second way.
-
-Link: https://lore.kernel.org/all/1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com/
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+Signed-off-by: Raag Jadav <raagjadav@gmail.com>
 ---
- include/linux/tcp.h  |  1 +
- net/ipv4/tcp_input.c |  3 ++-
- net/smc/Kconfig      | 12 ++++++++++++
- net/smc/af_smc.c     | 22 ++++++++++++++++++++++
- 4 files changed, 37 insertions(+), 1 deletion(-)
+ drivers/net/phy/mscc/mscc.h      |  2 ++
+ drivers/net/phy/mscc/mscc_main.c | 24 ++++++++++++++++++++++++
+ 2 files changed, 26 insertions(+)
 
-diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-index 78b91bb..1c4ae5d 100644
---- a/include/linux/tcp.h
-+++ b/include/linux/tcp.h
-@@ -394,6 +394,7 @@ struct tcp_sock {
- 	bool	is_mptcp;
- #endif
- #if IS_ENABLED(CONFIG_SMC)
-+	bool	(*smc_in_limited)(const struct sock *sk);
- 	bool	syn_smc;	/* SYN includes SMC */
- #endif
+diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
+index a50235f..366db14 100644
+--- a/drivers/net/phy/mscc/mscc.h
++++ b/drivers/net/phy/mscc/mscc.h
+@@ -195,6 +195,8 @@ enum rgmii_clock_delay {
+ #define MSCC_PHY_EXTENDED_INT_MS_EGR	  BIT(9)
  
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index dc49a3d..9890de9 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6701,7 +6701,8 @@ static void tcp_openreq_init(struct request_sock *req,
- 	ireq->ir_num = ntohs(tcp_hdr(skb)->dest);
- 	ireq->ir_mark = inet_request_mark(sk, skb);
- #if IS_ENABLED(CONFIG_SMC)
--	ireq->smc_ok = rx_opt->smc_ok;
-+	ireq->smc_ok = rx_opt->smc_ok && !(tcp_sk(sk)->smc_in_limited &&
-+			tcp_sk(sk)->smc_in_limited(sk));
- #endif
+ /* Extended Page 3 Registers */
++#define MSCC_PHY_SERDES_PCS_CTRL	  16
++#define MSCC_PHY_SERDES_ANEG		  BIT(7)
+ #define MSCC_PHY_SERDES_TX_VALID_CNT	  21
+ #define MSCC_PHY_SERDES_TX_CRC_ERR_CNT	  22
+ #define MSCC_PHY_SERDES_RX_VALID_CNT	  28
+diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
+index ebfeeb3..6db43a5 100644
+--- a/drivers/net/phy/mscc/mscc_main.c
++++ b/drivers/net/phy/mscc/mscc_main.c
+@@ -1685,6 +1685,25 @@ static int vsc8574_config_host_serdes(struct phy_device *phydev)
+ 			   PROC_CMD_RST_CONF_PORT | PROC_CMD_FIBER_1000BASE_X);
  }
  
-diff --git a/net/smc/Kconfig b/net/smc/Kconfig
-index 1ab3c5a..a4e1713 100644
---- a/net/smc/Kconfig
-+++ b/net/smc/Kconfig
-@@ -19,3 +19,15 @@ config SMC_DIAG
- 	  smcss.
- 
- 	  if unsure, say Y.
-+
-+if SMC
-+
-+config SMC_AUTO_FALLBACK
-+	bool "SMC: automatic fallback to TCP"
-+	default y
-+	help
-+	  Allow automatic fallback to TCP accroding to the pressure of SMC-R
-+	  handshake process.
-+
-+	  If that's not what you except or unsure, say N.
-+endif
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 66a0e64..49b8a29 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -101,6 +101,24 @@ static struct sock *smc_tcp_syn_recv_sock(const struct sock *sk, struct sk_buff
- 	return NULL;
- }
- 
-+#if IS_ENABLED(CONFIG_SMC_AUTO_FALLBACK)
-+static bool smc_is_in_limited(const struct sock *sk)
++static int vsc85xx_config_inband_aneg(struct phy_device *phydev, bool enabled)
 +{
-+	const struct smc_sock *smc;
++	int rc;
++	u16 reg_val = 0;
 +
-+	smc = (const struct smc_sock *)
-+		((uintptr_t)sk->sk_user_data & ~SK_USER_DATA_NOCOPY);
++	if (enabled)
++		reg_val = MSCC_PHY_SERDES_ANEG;
 +
-+	if (!smc)
-+		return true;
++	mutex_lock(&phydev->lock);
 +
-+	if (workqueue_congested(WORK_CPU_UNBOUND, smc_hs_wq))
-+		return true;
++	rc = phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_3,
++			      MSCC_PHY_SERDES_PCS_CTRL, MSCC_PHY_SERDES_ANEG,
++			      reg_val);
 +
-+	return false;
++	mutex_unlock(&phydev->lock);
++
++	return rc;
 +}
-+#endif
 +
- static struct smc_hashinfo smc_v4_hashinfo = {
- 	.lock = __RW_LOCK_UNLOCKED(smc_v4_hashinfo.lock),
- };
-@@ -2206,6 +2224,10 @@ static int smc_listen(struct socket *sock, int backlog)
+ static int vsc8584_config_init(struct phy_device *phydev)
+ {
+ 	struct vsc8531_private *vsc8531 = phydev->priv;
+@@ -1772,6 +1791,11 @@ static int vsc8584_config_init(struct phy_device *phydev)
+ 					      VSC8572_RGMII_TX_DELAY_MASK);
+ 		if (ret)
+ 			return ret;
++	} else {
++		/* Enable clause 37 */
++		ret = vsc85xx_config_inband_aneg(phydev, true);
++		if (ret)
++			return ret;
+ 	}
  
- 	inet_csk(smc->clcsock->sk)->icsk_af_ops = &smc->af_ops;
- 
-+#if IS_ENABLED(CONFIG_SMC_AUTO_FALLBACK)
-+	tcp_sk(smc->clcsock->sk)->smc_in_limited = smc_is_in_limited;
-+#endif
-+
- 	rc = kernel_listen(smc->clcsock, backlog);
- 	if (rc) {
- 		smc->clcsock->sk->sk_data_ready = smc->clcsk_data_ready;
+ 	ret = genphy_soft_reset(phydev);
 -- 
-1.8.3.1
+2.7.4
 
