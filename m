@@ -2,86 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A1C74AAACD
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 19:15:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EB864AAC84
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 21:36:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380850AbiBESO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 13:14:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234705AbiBESO6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 13:14:58 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC79C061348
-        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 10:14:57 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id f8so7866462pgf.8
-        for <netdev@vger.kernel.org>; Sat, 05 Feb 2022 10:14:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8l31Iyn30e4SiFLeL27V1Ki33NeNJ3SlJhCiSBXV7Xg=;
-        b=qtq1JdecF1qfYNhCV/9jMRDzDrbM1Lyu7QZGX7LnWVAVyONwpW0HcbBoDenBGvo7L4
-         eWhT0g7F1fegb16mlG07b5cptdnWAlfgXEMRFHB4QEz3F5HsBg9YdVcyoSzEM627plUD
-         kAejOP7PWyFPS/hV027VDpToEY5hLbz39R5/Z6stBBzpAvcoS8g3LwJu0u6k3cscauqE
-         3x2rzCEwJAI2GvAZvfftJI52I/ge9ilh7UVL0hXhXD8B/egfAeoKAAp3kt2bwT8btYDO
-         OcuYVP4LBM70+SKuMwdwY26IY9PtUBH3P16txfK/mc50Hp/USJPaOhnCofgGl73Wrr3M
-         DXYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8l31Iyn30e4SiFLeL27V1Ki33NeNJ3SlJhCiSBXV7Xg=;
-        b=JLUfSYaMlohJsw9qCBwUWtY/KiEzoWJMXIyQHG7GX0gYKUD9BWCj7CzFwbNosw3D7n
-         J2hN6NjzZQLf3I93UOjQRiQ3LCjhCp6g/7p0EE54NI+vRkCA//FijNObgwMDXYCLMIvR
-         +LmCooSeXXE9KpdfVw8uOfUHMUmxkBmXaknwYZD5lIRXySMpyKRVL/7Dd8zMBGsDufQA
-         ddIl5uC1PABqr2AFikXaYpYOWBZ0oBG2DsdvFW+XhilW8ISePnlZRak1+JCSYjKZnO0t
-         gTVbn+/HqjvOSZpJk0M4V+KjnDYx/sGHwEbULydQF4captaXOnZtvI94sqBqmAlFZA9N
-         xyhw==
-X-Gm-Message-State: AOAM530mTCpg90zYW4Hp4nmoFyEmxAAV9ANlAvZJE+4wSOz31uHyeoTS
-        CwzBXUw3WdJyCv4bEcYD1xBkD7GdKL61DTx36Qg=
-X-Google-Smtp-Source: ABdhPJzyvHGwMDmLVt5hF/BflvCdwq9YUgg++rqAnSpXeKAGf9ODlrCNSFKvVK5nSsfmoDFNOxkSJj4zP/MOJGMc53I=
-X-Received: by 2002:a63:6c01:: with SMTP id h1mr3742243pgc.118.1644084897063;
- Sat, 05 Feb 2022 10:14:57 -0800 (PST)
-MIME-Version: 1.0
-References: <20220204155927.2393749-1-kuba@kernel.org> <CACRpkdbfbKNzbSt_TiFq4Ji6zq1tLetW3f9=GjsFJypbihMU-g@mail.gmail.com>
-In-Reply-To: <CACRpkdbfbKNzbSt_TiFq4Ji6zq1tLetW3f9=GjsFJypbihMU-g@mail.gmail.com>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Sat, 5 Feb 2022 15:14:46 -0300
-Message-ID: <CAJq09z42p98YUcdKoJm78XHHPG=DFDpoaL+jgFn9NbmiFF=XMA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: realtek: don't default Kconfigs to y
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
+        id S1381298AbiBEUgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 15:36:08 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:39548 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232428AbiBEUgI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 15:36:08 -0500
+Date:   Sat, 5 Feb 2022 21:36:05 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644093366;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=560cbxN7mKYo1ZjnfDECl4wv6yBbemNlcEq8eApjrmg=;
+        b=sUipOuadgP+bmhmZbl3Tev+Kh6wONkj0ICpPs3vPEAxFvq3btg2jdeSe1BBznz0L2f5HLP
+        rYfUM7/1cSfHsK+easkj0K7tWlyFSvW3G3eSlDW+G7GwPfO7Z6gpDkQNe7vrh47GYwZOd1
+        I2qIfy42TmoAE39SMwP1moDPrwPhHGlnnb1h6av5IVZkWOEX+hm9ibgh86hjW98i42noEv
+        8AqZX829cMzShAEoH7+V5FtzT54ND0SXJLkuyelCcFFODZtj9xBbZQdyfXkAXGnW6EEfKa
+        zNisPPVP/T0E7a1lkpM8DbTLKJKqixDqvX9++mtf25V2f2u0+o2FHXBZyKjTDQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644093366;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=560cbxN7mKYo1ZjnfDECl4wv6yBbemNlcEq8eApjrmg=;
+        b=sAtyET1A0Wt76uXkqVcl/txZ46Gsxx5lQS4hHRqHjxITVo68Nykmw5xSfhBeEAhTgs93zi
+        2uK2ijbiv13ZerAg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+Subject: Re: [PATCH net-next v2 2/3] net: dev: Makes sure netif_rx() can be
+ invoked in any context.
+Message-ID: <Yf7ftf+6j52opu5w@linutronix.de>
+References: <20220204201259.1095226-1-bigeasy@linutronix.de>
+ <20220204201259.1095226-3-bigeasy@linutronix.de>
+ <20220204201715.44f48f4f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220204201715.44f48f4f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em sex., 4 de fev. de 2022 20:55, Linus Walleij
-<linus.walleij@linaro.org> escreveu:
->
-> On Fri, Feb 4, 2022 at 4:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> > We generally default the vendor to y and the drivers itself
-> > to n. NET_DSA_REALTEK, however, selects a whole bunch of things,
-> > so it's not a pure "vendor selection" knob. Let's default it all
-> > to n.
+On 2022-02-04 20:17:15 [-0800], Jakub Kicinski wrote:
+> On Fri,  4 Feb 2022 21:12:58 +0100 Sebastian Andrzej Siewior wrote:
+> > +int __netif_rx(struct sk_buff *skb)
+> > +{
+> > +	int ret;
+> > +
+> > +	trace_netif_rx_entry(skb);
+> > +	ret = netif_rx_internal(skb);
+> > +	trace_netif_rx_exit(ret);
+> > +	return ret;
+> > +}
+> 
+> Any reason this is not exported? I don't think there's anything wrong
+> with drivers calling this function, especially SW drivers which already
+> know to be in BH. I'd vote for roughly all of $(ls drivers/net/*.c) to
+> get the same treatment as loopback.
 
-Whatever fits better In the kernel default settings policy. The
-devices where that driver will be used normally work with custom built
-kernels. The default values have little importance.
+Don't we end up in the same situation as netif_rx() vs netix_rx_ni()?
 
-Acked-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Sebastian
