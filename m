@@ -2,73 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 825324AA9CE
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 17:00:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5B464AAA24
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 17:25:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352957AbiBEQAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 11:00:12 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57590 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238542AbiBEQAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 11:00:11 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3485B80818
-        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 16:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 58835C340F0;
-        Sat,  5 Feb 2022 16:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644076809;
-        bh=oKFo0CaOLBoohESc+43drpjSF7nvbn/6O1B9WiPoutc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dgr6/RKTYnL63Fp72hwGh8/AVrJzi4H84cseSifhkG4chDTfP+8yMozKbyDRLUswp
-         aSqw/sTvaEL3xG5XlCz7RPL4IdXXOdCprYWad/XwEgPn5fiw8Etc2U8VOoaELkwGF8
-         lf5MwpqcXp36Yqn+wKXWw2oHSkVaWlbMwJjYK72bVtKioJxiBP8TuSGgnlfzQ0ll78
-         J8icjVjPSu3YT8yWfvQq5mTC5iLw947ZwsJPeT9z/HLoEIC4bIdY9/DdyrYUscnDJi
-         LtA5wS2vx6Ni6pVSt5MQsynNA16ONJWcHGsDxgEuDP5nXMxfkLPGblEaxLnkLJ/SJK
-         OhIH2+Fc4s74g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 413E6E6D3DD;
-        Sat,  5 Feb 2022 16:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1380471AbiBEQZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 11:25:48 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:43908 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230210AbiBEQZr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Feb 2022 11:25:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=vh9miszy1uEiFiI+TyRVRbaw95NG+kNiCTw6Ce+iMBU=; b=i5
+        LaelNcPZ3l0Vo6T7ro+SULjFsg4UhuD1ol2GS3jRh54d98SbFa9T8mXhnGAKN4WnnFAyGyDg/0OBP
+        ZTY+ML94umIeAWB0DXxiol7PIjthcfVYRCroxq/61UalZq/J0wSHUJaWwo/zj5vRRvRpyhXahheRA
+        SVT/7fqyoNOkwfg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nGNse-004PVL-5C; Sat, 05 Feb 2022 17:25:44 +0100
+Date:   Sat, 5 Feb 2022 17:25:44 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pavel.Parkhomenko@baikalelectronics.ru
+Cc:     Alexey.Malahov@baikalelectronics.ru,
+        Sergey.Semin@baikalelectronics.ru, linux-kernel@vger.kernel.org,
+        michael@stapelberg.de, afleming@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] net: phy: marvell: Fix RGMII Tx/Rx delays setting in
+ 88e1121-compatible PHYs
+Message-ID: <Yf6lCNoBY8Lr5JWB@lunn.ch>
+References: <96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru>
+ <Yf0lyGi+2mEwmrEH@lunn.ch>
+ <5dd77fec0f9a2d38fd4473cd0e357e80aeafe0cb.camel@baikalelectronics.ru>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next] skmsg: convert struct sk_msg_sg::copy to a bitmap
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164407680926.4093.15356635864658025431.git-patchwork-notify@kernel.org>
-Date:   Sat, 05 Feb 2022 16:00:09 +0000
-References: <20220205045614.3457092-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220205045614.3457092-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com
+In-Reply-To: <5dd77fec0f9a2d38fd4473cd0e357e80aeafe0cb.camel@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri,  4 Feb 2022 20:56:14 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Sat, Feb 05, 2022 at 03:22:44PM +0000, Pavel.Parkhomenko@baikalelectronics.ru wrote:
+> On Fri, 04/02/2022 at 14:10 +0100, Andrew Lunn wrote:
+> > Hi Pavel
+> > 
+> > There appears to be another path which has the same issue.
+> > 
+> > m88e1118_config_aneg() calls marvell_set_polarity(), which also needs
+> > a reset afterwards.
+> > 
+> > Could you fix this case as well?
+> > 
+> > Thanks
+> >         Andrew
 > 
-> We have plans for increasing MAX_SKB_FRAGS, but sk_msg_sg::copy
-> is currently an unsigned long, limiting MAX_SKB_FRAGS to 30 on 32bit arches.
-> 
-> Convert it to a bitmap, as Jakub suggested.
-> 
-> [...]
+> m88e1118_config_aneg() was added back in 2008 and has unconditional
+> genphy_soft_reset() at the very beginning. I haven't got 88E1118R or
+> 88E11149R by the hand and the full documentation is also not available.
+> I believe that in this case it would be safe to still issue reset
+> unconditionally, but do it at the very end of m88e1118_config_aneg().
+> Anyways, I'd like to post it as a separate patch as I cannot test the fix
+> properly, unlike previous patch regarding 88E1510.
 
-Here is the summary with links:
-  - [v2,net-next] skmsg: convert struct sk_msg_sg::copy to a bitmap
-    https://git.kernel.org/netdev/net-next/c/5a8fb33e5305
+All the datasheets i have follow the same scheme, you need to perform
+a reset at some point to get changes to actually apply. So i doubt
+1118r is any different.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Posting a separate patch is fine.
 
-
+Thanks
+	Andrew
