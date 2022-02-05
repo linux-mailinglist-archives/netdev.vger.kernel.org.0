@@ -2,92 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A1364AA9BE
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 16:52:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 371424AA9CD
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 16:58:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380264AbiBEPw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 10:52:28 -0500
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:52554 "EHLO
-        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380262AbiBEPw2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 10:52:28 -0500
-Received: from ubuntu.home (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 708F0200E1DC;
-        Sat,  5 Feb 2022 16:52:26 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 708F0200E1DC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1644076346;
-        bh=7w5IPUg3D+4fL9V6TwlnfgmwwPb2LipSpZDXVHAIuPA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zzDEB2TrrlxJPIbXXACFHe6GT/W261oaf0VhnnxyAM1UKZpOwEM1+UaKbNwVy1418
-         iL+GNIfNHyCmJ2DqMM4VLyqekoqEUTJyaBbFV0Os3zrX97qcw1/2bFjLZMeW0folYP
-         NBN88hVy9WWIWQK4WJegU2EnJW0IoJEAFn4uDY/ZBMWNReGe5W2O4a9StQgvSNYcZW
-         RYoPoAzJ9WTbMTSzqkLCmhPIUyLiFgnu/BW2uwJ9xcbhhfuFtvRutP4kTwvmKxX4F+
-         0bZVni55r2wRUUvi7eONH58cib80APUbwVAAjIFifwLPrj4y+ZBU6d5vALOUIRugvm
-         ulB49toDr9ydg==
-From:   Justin Iurman <justin.iurman@uliege.be>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@kernel.org, stephen@networkplumber.org,
-        justin.iurman@uliege.be
-Subject: [PATCH iproute2-next 2/2] Update documentation
-Date:   Sat,  5 Feb 2022 16:52:08 +0100
-Message-Id: <20220205155208.22531-3-justin.iurman@uliege.be>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220205155208.22531-1-justin.iurman@uliege.be>
-References: <20220205155208.22531-1-justin.iurman@uliege.be>
+        id S244032AbiBEP57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 10:57:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60200 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238542AbiBEP57 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 10:57:59 -0500
+Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19500C061348
+        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 07:57:58 -0800 (PST)
+Received: (qmail 7077 invoked from network); 5 Feb 2022 15:56:13 -0000
+Received: from p200300cf0744fd00709fcefffe16676f.dip0.t-ipconnect.de ([2003:cf:744:fd00:709f:ceff:fe16:676f]:56542 HELO eto.sf-tec.de) (auth=eike@sf-mail.de)
+        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
+        for <andrew@lunn.ch>; Sat, 05 Feb 2022 16:56:13 +0100
+From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH 2/3] sunhme: fix the version number in struct ethtool_drvinfo
+Date:   Sat, 05 Feb 2022 16:57:50 +0100
+Message-ID: <2227796.ElGaqSPkdT@eto.sf-tec.de>
+In-Reply-To: <Yf6OSc78JScHNgag@lunn.ch>
+References: <4686583.GXAFRqVoOG@eto.sf-tec.de> <5538622.DvuYhMxLoT@eto.sf-tec.de> <Yf6OSc78JScHNgag@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="nextPart4687044.GXAFRqVoOG"; micalg="pgp-sha1"; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the ip-route documentation to include the IOAM insertion
-frequency.
+--nextPart4687044.GXAFRqVoOG
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 
-Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
----
- man/man8/ip-route.8.in | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+Am Samstag, 5. Februar 2022, 15:48:41 CET schrieb Andrew Lunn:
+> > > > struct ethtool_drvinfo *info>
+> > > >=20
+> > > >  {
+> > > > =20
+> > > >  	struct happy_meal *hp =3D netdev_priv(dev);
+> > > >=20
+> > > > -	strlcpy(info->driver, "sunhme", sizeof(info->driver));
+> > > > -	strlcpy(info->version, "2.02", sizeof(info->version));
+> > > > +	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
+> > > > +	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
+> > >=20
+> > > I would suggest you drop setting info->version. The kernel will fill
+> > > it with the current kernel version, which is much more meaningful.
+> >=20
+> > Would it make sense to completely remove the version number from the
+> > driver
+> > then?
+>=20
+> If it is not used anywhere else, yes, you can remove it.
 
-diff --git a/man/man8/ip-route.8.in b/man/man8/ip-route.8.in
-index ed628455..462ff269 100644
---- a/man/man8/ip-route.8.in
-+++ b/man/man8/ip-route.8.in
-@@ -245,7 +245,9 @@ throw " | " unreachable " | " prohibit " | " blackhole " | " nat " ]"
- 
- .ti -8
- .IR ENCAP_IOAM6 " := "
--.B ioam6
-+.BR ioam6 " ["
-+.B freq
-+.IR K "/" N " ] "
- .BR mode " [ "
- .BR inline " | " encap " | " auto " ] ["
- .B tundst
-@@ -919,6 +921,9 @@ address is set as described in \fBip-sr\fR(8).
- 
- .B ioam6
- .in +2
-+.B freq K/N
-+- Inject IOAM in K packets every N packets (default is 1/1).
-+
- .B mode inline
- - Directly insert IOAM after IPv6 header (default mode).
- .sp
-@@ -1274,9 +1279,9 @@ ip -6 route add 2001:db8:1::/64 encap seg6local action End.DT46 vrftable 100 dev
- Adds an IPv6 route with SRv6 decapsulation and forward with lookup in VRF table.
- .RE
- .PP
--ip -6 route add 2001:db8:1::/64 encap ioam6 mode encap tundst 2001:db8:42::1 trace prealloc type 0x800000 ns 1 size 12 dev eth0
-+ip -6 route add 2001:db8:1::/64 encap ioam6 freq 2/5 mode encap tundst 2001:db8:42::1 trace prealloc type 0x800000 ns 1 size 12 dev eth0
- .RS 4
--Adds an IPv6 route with an IOAM Pre-allocated Trace encapsulation (ip6ip6) that only includes the hop limit and the node id, configured for the IOAM namespace 1 and a pre-allocated data block of 12 octets.
-+Adds an IPv6 route with an IOAM Pre-allocated Trace encapsulation (ip6ip6) that only includes the hop limit and the node id, configured for the IOAM namespace 1 and a pre-allocated data block of 12 octets (will be injected in 2 packets every 5 packets).
- .RE
- .PP
- ip route add 10.1.1.0/30 nhid 10
--- 
-2.25.1
+Of course it prints the number on module load=E2=80=A6 but otherwise it doe=
+s nothing=20
+with it.
+--nextPart4687044.GXAFRqVoOG
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQSaYVDeqwKa3fTXNeNcpIk+abn8TgUCYf6efgAKCRBcpIk+abn8
+TocDAKCbNCbYb0zxNzLx4ltSKbmqXgAPLwCfStkc5ALhEXbuOYzte6c0D5L69wQ=
+=1LVG
+-----END PGP SIGNATURE-----
+
+--nextPart4687044.GXAFRqVoOG--
+
+
 
