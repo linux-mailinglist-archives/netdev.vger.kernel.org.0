@@ -2,78 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C937E4AA88B
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 13:10:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 469CD4AA890
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 13:14:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241229AbiBEMKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 07:10:33 -0500
-Received: from mga04.intel.com ([192.55.52.120]:37205 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232479AbiBEMKc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 5 Feb 2022 07:10:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644063032; x=1675599032;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=lZP4CupIkHIl8x9BJu41rQxOUyIclXltfTO1C9bu780=;
-  b=RpS4nsTiEJVsRadApBDTxJxCnHyICwYpWc+itamsTmE9yGwoP2uplyl2
-   0GBQqq/fFm350uPhy9oYh/oHfhJAp6QyeTBnZvlApbKBDqsdvbBdYZrgB
-   /8dJsoXT4gGBdomRfINmG+mvX4ovA6lMlj8pX8KSnYg+7WP/ri2pZt5fz
-   gtJ4uhjZU269xhdEsYAXnWHkrNTrhiOzWvl4VlLlpbobha8cegxvE5TUN
-   9HGzZUYZg/EC5vyLB8YaLZzLMD56Z5ZUCxG2TGNw+Igl0p1Ye/9eY/HMd
-   qsg7wAXffWM3p8+Cxd23UE5vUVald9XfwepK1ktuTS8iJaMj5rRdQEd6j
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="247340766"
-X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
-   d="scan'208";a="247340766"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 04:10:31 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
-   d="scan'208";a="584391910"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 05 Feb 2022 04:10:30 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nGJtd-000Z0M-H9; Sat, 05 Feb 2022 12:10:29 +0000
-Date:   Sat, 5 Feb 2022 20:09:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com
-Cc:     kbuild-all@lists.01.org, kuba@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org, "D. Wythe" <alibuda@linux.alibaba.com>
-Subject: [RFC PATCH] net/smc: smc_tcp_ls_wq can be static
-Message-ID: <20220205120947.GA10751@d01e203e4d07>
-References: <1d7365b47719546fe1f145affb01398d8287b381.1644041638.git.alibuda@linux.alibaba.com>
+        id S1378784AbiBEMOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 07:14:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:38496 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232479AbiBEMOx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 07:14:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644063293;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TyNPl/BS5Ojb0LAkSOubv8BDmPxJEZ5jeJYKCHOdoM8=;
+        b=hTpWRmtV4hQW9Jmp5FfDHV2or29+AGtHpvMqsjVZHr3JTrsQKUK751BRY43vBVvbeK3Jt0
+        yE8cvVClukohjLZ70s1KZJeXn8lQpw5HP8LZE28RB+KcvoH/qCw0AqHW7bUJagJX0c6gNM
+        HXv5Pamm2mt1bva2z1fD0ncWBQ1qdt4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-125-l4PPduCpMxGeq-HNVnP4pw-1; Sat, 05 Feb 2022 07:14:49 -0500
+X-MC-Unique: l4PPduCpMxGeq-HNVnP4pw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B4BCE189DF50;
+        Sat,  5 Feb 2022 12:14:48 +0000 (UTC)
+Received: from calimero.vinschen.de (ovpn-112-15.ams2.redhat.com [10.36.112.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 766EC28570;
+        Sat,  5 Feb 2022 12:14:48 +0000 (UTC)
+Received: by calimero.vinschen.de (Postfix, from userid 500)
+        id 11698A8076B; Sat,  5 Feb 2022 13:14:47 +0100 (CET)
+Date:   Sat, 5 Feb 2022 13:14:47 +0100
+From:   Corinna Vinschen <vinschen@redhat.com>
+To:     intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Subject: Re: [Intel-wired-lan] [PATCH 2/2 net-next v6] igb: refactor XDP
+ registration
+Message-ID: <Yf5qN/AAv2gQLWyf@calimero.vinschen.de>
+Mail-Followup-To: intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
+References: <20220119145259.1790015-1-vinschen@redhat.com>
+ <20220119145259.1790015-3-vinschen@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1d7365b47719546fe1f145affb01398d8287b381.1644041638.git.alibuda@linux.alibaba.com>
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220119145259.1790015-3-vinschen@redhat.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-net/smc/af_smc.c:62:25: warning: symbol 'smc_tcp_ls_wq' was not declared. Should it be static?
+On Jan 19 15:52, Corinna Vinschen wrote:
+> On changing the RX ring parameters igb uses a hack to avoid a warning
+> when calling xdp_rxq_info_reg via igb_setup_rx_resources.  It just
+> clears the struct xdp_rxq_info content.
+> 
+> Instead, change this to unregister if we're already registered.  Align
+> code to the igc code.
+> 
+> Fixes: 9cbc948b5a20c ("igb: add XDP support")
+> Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
+> ---
+>  drivers/net/ethernet/intel/igb/igb_ethtool.c |  4 ----
+>  drivers/net/ethernet/intel/igb/igb_main.c    | 19 +++++++++++++------
+>  2 files changed, 13 insertions(+), 10 deletions(-)
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
- af_smc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Any chance this could be set to "Tested" to go forward here?
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 05b88cbadf3d1..4969ac8029a98 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -59,7 +59,7 @@ static DEFINE_MUTEX(smc_client_lgr_pending);	/* serialize link group
- 						 * creation on client
- 						 */
- 
--struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work */
-+static struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work */
- struct workqueue_struct	*smc_hs_wq;	/* wq for handshake work */
- struct workqueue_struct	*smc_close_wq;	/* wq for close work */
- 
+
+Thanks,
+Corinna
+
