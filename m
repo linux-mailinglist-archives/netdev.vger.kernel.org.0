@@ -2,219 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48CC64AA78B
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 09:10:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 616114AA797
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 09:17:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358704AbiBEIKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 03:10:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37534 "EHLO
+        id S1351944AbiBEIR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 03:17:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232674AbiBEIKX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 03:10:23 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB10FC061347
-        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 00:10:21 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id c9so7069903plg.11
-        for <netdev@vger.kernel.org>; Sat, 05 Feb 2022 00:10:21 -0800 (PST)
+        with ESMTP id S1351216AbiBEIRr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 03:17:47 -0500
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 471A1C061355;
+        Sat,  5 Feb 2022 00:17:46 -0800 (PST)
+Received: by mail-pj1-x1044.google.com with SMTP id y5-20020a17090aca8500b001b8127e3d3aso8294778pjt.3;
+        Sat, 05 Feb 2022 00:17:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mRwDG3dHdSCt9JBk2JbCS8GWF1RzkAIy/xnl8iR8W7Y=;
-        b=Efq/YfxkqG5CBZkRIDisd5gefe9br7yxLyzgSlJN58z1Z1XQqxfejULxQmW8IMxsK6
-         pbUElT+8PCYsg8YA/RUK6wr+//t3jug9t+qemcQ5s5H06POYAojLHHsWPMPCAQ7L4XFZ
-         M80w3rSQrn1K0SQBHRJdaEV/7J0Ps+vnOlZ/zk6uarHFQXTDi0zNN99DAZJuOwHkAofb
-         35vVxceWkkJxUCysdnD88PUHrKqu5TdxmfL4iy+ZMTgQHFNE4zlMPmsrmK44dyRJCU/0
-         zK8JAJ5CzTqIgFiLlHyG5eKoi4YgIFtaxoh37za2slQitkcVCkmGhPDYMNielJbbCtha
-         RHJg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=q7pnMxxA41QGRIEltZrYAcSJW8Szr5sjwJMXNTY+cos=;
+        b=Dh4/dRqdta5uoH/FAXGRbVbWSY8pJEUGbFjdzdu0nZNYBEktAfy+TEMqZMyrzXFXsL
+         njI7zxaz1ALv/hKQyUOtaz1YTecrPOHuB/J+xIIRBa1lWvqSmGwEAPxWY6WQEnjfjuRV
+         OljLmpO0mjQfd8GkGen6hQIyIgW88z2e+sbfsmw0pD3unDP8Z3x1Gz/Ou2t/BaY6lIJg
+         syHhAZVbvzREA+t83+AziFzxJu0lnPJ5zrEcGTW0llioPcUiINCO3RLZn00kbjd4781h
+         Rf3/mXF9sdXBPdbL3JnBxwuNaEbw77W+u3fDIvDUbW8LyWL0fJLtf8sXR3MPFMMhyeHJ
+         frFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mRwDG3dHdSCt9JBk2JbCS8GWF1RzkAIy/xnl8iR8W7Y=;
-        b=Hfa7VrG43m8AiZ4FJp8IkjgJtb03kSH762F2VvhEKNUorqIOEc11XqFmKFQwFpF/3S
-         Yb+lDqoN0wHArgi26n2FOjQAmJGMsm7DyEWdW6D0Hn/IXMY+/qEyUMzRpHS5t6/rlTBK
-         7Smsx9IQHt//M090JyA+mEUDzjCe7SetctS3hW9N8a2JkMrubtCqwZOwD3IZXGqm1etz
-         ymnHYD5nqqQ26OT+mnDPDxeAwclST1m0HtIxtnSutZPqtXN8nyIE/b5VDdhbZ+c8L87e
-         ePan0MA40JNmtrSbiXSjHzkiWYJ4sBIA60EVDQdnluhMcE8gbCABxZuk2l6psUHIN8jg
-         Wv7Q==
-X-Gm-Message-State: AOAM533/x4kLlnekMOnBlp7YcL5RPSCiwk+XbpLq4sW4AmRxeVuYDk0I
-        Nz7qOJtdwdekhlFbDhrPJOZflg==
-X-Google-Smtp-Source: ABdhPJyzVREfDn/ZPdBiHrLF3VHliNAMRn8haobaKdARf0TzcgZ2O8oD1Q04EkQAa1rtwqfOjRdutw==
-X-Received: by 2002:a17:902:8483:: with SMTP id c3mr7095691plo.19.1644048620689;
-        Sat, 05 Feb 2022 00:10:20 -0800 (PST)
-Received: from leoy-ThinkPad-X240s ([134.195.101.46])
-        by smtp.gmail.com with ESMTPSA id k16sm5118928pfu.140.2022.02.05.00.10.16
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=q7pnMxxA41QGRIEltZrYAcSJW8Szr5sjwJMXNTY+cos=;
+        b=O99zq79CiNZk7emL9FGGKqmhfxTmXN2+W5KgvoJYfY9x9bmslbe2jSHW23o1nPtshH
+         bSnxhWC5H1YBoJMm6bve5O5kkg3/rBOQDX+RZ9hva96dlUGfKuYUfyZ6ePhpYkDul3A9
+         FpiaAJnScbJ25/zctYXbPDFdHkoT/EvilrLH7H7VMV4sOqgXMwJec8s4WyBeXx7kOgvx
+         pfLja+jp/wz9fbQcVj6tbmsJPogHnH3DTds7O9dPboCqvBMYLxDoNFCI+uFI/5qehWh7
+         EXYp+cMUkHhxbJhffpfADwKFJWxlzjshBZTE6AF48zYP2lPlX9XWpmUosBHTYtZcz3Kp
+         G8Wg==
+X-Gm-Message-State: AOAM531S4gpr263KGq8LGo+5LbTnFS5XpW51tkgOs/H1i5sSs1jZG2Jc
+        ZoGPjB1zVOV2VzgbZe3/Qe8=
+X-Google-Smtp-Source: ABdhPJz8EaqFeLlCCHRtBL8zk/a7lfH+n/ALNUfnxXXU6q18NCq1RfGxBtIc6Q5L3mxNWekrfZ45LQ==
+X-Received: by 2002:a17:902:7784:: with SMTP id o4mr6932893pll.173.1644049066363;
+        Sat, 05 Feb 2022 00:17:46 -0800 (PST)
+Received: from localhost.localdomain ([43.132.141.4])
+        by smtp.gmail.com with ESMTPSA id b12sm4826934pfm.154.2022.02.05.00.17.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Feb 2022 00:10:19 -0800 (PST)
-Date:   Sat, 5 Feb 2022 16:10:13 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     German Gomez <german.gomez@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] perf test: Add perf_event_attr tests for the arm_spe
- event
-Message-ID: <20220205081013.GA391033@leoy-ThinkPad-X240s>
-References: <20220126160710.32983-1-german.gomez@arm.com>
+        Sat, 05 Feb 2022 00:17:45 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     kuba@kernel.org, dsahern@kernel.org, idosch@idosch.org
+Cc:     nhorman@tuxdriver.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
+        Menglong Dong <imagedong@tencent.com>
+Subject: [PATCH v6 net-next] net: drop_monitor: support drop reason
+Date:   Sat,  5 Feb 2022 16:17:38 +0800
+Message-Id: <20220205081738.565394-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126160710.32983-1-german.gomez@arm.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi German,
+From: Menglong Dong <imagedong@tencent.com>
 
-On Wed, Jan 26, 2022 at 04:07:09PM +0000, German Gomez wrote:
-> Adds a couple of perf_event_attr tests for the fix introduced in [1].
-> The tests check that the correct sample_period value is set in the
-> struct perf_event_attr of the arm_spe events.
-> 
-> [1]: https://lore.kernel.org/all/20220118144054.2541-1-german.gomez@arm.com/
-> 
-> Signed-off-by: German Gomez <german.gomez@arm.com>
+In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()")
+drop reason is introduced to the tracepoint of kfree_skb. Therefore,
+drop_monitor is able to report the drop reason to users by netlink.
 
-I tested this patch with two commands:
+The drop reasons are reported as string to users, which is exactly
+the same as what we do when reporting it to ftrace.
 
-# PERF_TEST_ATTR=/tmp /usr/bin/python2 ./tests/attr.py -d ./tests/attr/ \
-        -p ./perf -vvvvv -t test-record-spe-period
-# PERF_TEST_ATTR=/tmp /usr/bin/python2 ./tests/attr.py -d ./tests/attr/ \
-        -p ./perf -vvvvv -t test-record-spe-period-term
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+v6:
+- check the range of drop reason in net_dm_packet_report_fill()
 
-Both testing can pass on Hisilicon D06 board.
+v5:
+- check if drop reason larger than SKB_DROP_REASON_MAX
 
-One question: I'm a bit concern this case will fail on some Arm64
-platforms which doesn't contain Arm SPE modules.  E.g. below commands
-will always fail on Arm64 platforms if SPE module is absent.  So I am
-wandering if we can add extra checking ARM SPE event is existed or not?
+v4:
+- report drop reasons as string
 
-  # ./perf test list
-   17: Setup struct perf_event_attr
-  # ./perf test 17
+v3:
+- referring to cb->reason and cb->pc directly in
+  net_dm_packet_report_fill()
 
-Thanks,
-Leo
+v2:
+- get a pointer to struct net_dm_skb_cb instead of local var for
+  each field
+---
+ include/uapi/linux/net_dropmon.h |  1 +
+ net/core/drop_monitor.c          | 29 +++++++++++++++++++++++++----
+ 2 files changed, 26 insertions(+), 4 deletions(-)
 
-> ---
->  tools/perf/tests/attr/README                  |  2 +
->  tools/perf/tests/attr/base-record-spe         | 40 +++++++++++++++++++
->  tools/perf/tests/attr/test-record-spe-period  | 12 ++++++
->  .../tests/attr/test-record-spe-period-term    | 12 ++++++
->  4 files changed, 66 insertions(+)
->  create mode 100644 tools/perf/tests/attr/base-record-spe
->  create mode 100644 tools/perf/tests/attr/test-record-spe-period
->  create mode 100644 tools/perf/tests/attr/test-record-spe-period-term
-> 
-> diff --git a/tools/perf/tests/attr/README b/tools/perf/tests/attr/README
-> index 1116fc6bf2ac..454505d343fa 100644
-> --- a/tools/perf/tests/attr/README
-> +++ b/tools/perf/tests/attr/README
-> @@ -58,6 +58,8 @@ Following tests are defined (with perf commands):
->    perf record -c 100 -P kill                    (test-record-period)
->    perf record -c 1 --pfm-events=cycles:period=2 (test-record-pfm-period)
->    perf record -R kill                           (test-record-raw)
-> +  perf record -c 2 -e arm_spe_0// -- kill       (test-record-spe-period)
-> +  perf record -e arm_spe_0/period=3/ -- kill    (test-record-spe-period-term)
->    perf stat -e cycles kill                      (test-stat-basic)
->    perf stat kill                                (test-stat-default)
->    perf stat -d kill                             (test-stat-detailed-1)
-> diff --git a/tools/perf/tests/attr/base-record-spe b/tools/perf/tests/attr/base-record-spe
-> new file mode 100644
-> index 000000000000..08fa96b59240
-> --- /dev/null
-> +++ b/tools/perf/tests/attr/base-record-spe
-> @@ -0,0 +1,40 @@
-> +[event]
-> +fd=*
-> +group_fd=-1
-> +flags=*
-> +cpu=*
-> +type=*
-> +size=*
-> +config=*
-> +sample_period=*
-> +sample_type=*
-> +read_format=*
-> +disabled=*
-> +inherit=*
-> +pinned=*
-> +exclusive=*
-> +exclude_user=*
-> +exclude_kernel=*
-> +exclude_hv=*
-> +exclude_idle=*
-> +mmap=*
-> +comm=*
-> +freq=*
-> +inherit_stat=*
-> +enable_on_exec=*
-> +task=*
-> +watermark=*
-> +precise_ip=*
-> +mmap_data=*
-> +sample_id_all=*
-> +exclude_host=*
-> +exclude_guest=*
-> +exclude_callchain_kernel=*
-> +exclude_callchain_user=*
-> +wakeup_events=*
-> +bp_type=*
-> +config1=*
-> +config2=*
-> +branch_sample_type=*
-> +sample_regs_user=*
-> +sample_stack_user=*
-> diff --git a/tools/perf/tests/attr/test-record-spe-period b/tools/perf/tests/attr/test-record-spe-period
-> new file mode 100644
-> index 000000000000..75f8c9cd8e3f
-> --- /dev/null
-> +++ b/tools/perf/tests/attr/test-record-spe-period
-> @@ -0,0 +1,12 @@
-> +[config]
-> +command = record
-> +args    = --no-bpf-event -c 2 -e arm_spe_0// -- kill >/dev/null 2>&1
-> +ret     = 1
-> +arch    = aarch64
-> +
-> +[event-10:base-record-spe]
-> +sample_period=2
-> +freq=0
-> +
-> +# dummy event
-> +[event-1:base-record-spe]
-> diff --git a/tools/perf/tests/attr/test-record-spe-period-term b/tools/perf/tests/attr/test-record-spe-period-term
-> new file mode 100644
-> index 000000000000..8f60a4fec657
-> --- /dev/null
-> +++ b/tools/perf/tests/attr/test-record-spe-period-term
-> @@ -0,0 +1,12 @@
-> +[config]
-> +command = record
-> +args    = --no-bpf-event -e arm_spe_0/period=3/ -- kill >/dev/null 2>&1
-> +ret     = 1
-> +arch    = aarch64
-> +
-> +[event-10:base-record-spe]
-> +sample_period=3
-> +freq=0
-> +
-> +# dummy event
-> +[event-1:base-record-spe]
-> -- 
-> 2.25.1
-> 
+diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
+index 66048cc5d7b3..1bbea8f0681e 100644
+--- a/include/uapi/linux/net_dropmon.h
++++ b/include/uapi/linux/net_dropmon.h
+@@ -93,6 +93,7 @@ enum net_dm_attr {
+ 	NET_DM_ATTR_SW_DROPS,			/* flag */
+ 	NET_DM_ATTR_HW_DROPS,			/* flag */
+ 	NET_DM_ATTR_FLOW_ACTION_COOKIE,		/* binary */
++	NET_DM_ATTR_REASON,			/* string */
+ 
+ 	__NET_DM_ATTR_MAX,
+ 	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index 7b288a121a41..1180f1a28599 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -48,6 +48,16 @@
+ static int trace_state = TRACE_OFF;
+ static bool monitor_hw;
+ 
++#undef EM
++#undef EMe
++
++#define EM(a, b)	[a] = #b,
++#define EMe(a, b)	[a] = #b
++
++static const char *drop_reasons[SKB_DROP_REASON_MAX + 1] = {
++	TRACE_SKB_DROP_REASON
++};
++
+ /* net_dm_mutex
+  *
+  * An overall lock guarding every operation coming from userspace.
+@@ -126,6 +136,7 @@ struct net_dm_skb_cb {
+ 		struct devlink_trap_metadata *hw_metadata;
+ 		void *pc;
+ 	};
++	enum skb_drop_reason reason;
+ };
+ 
+ #define NET_DM_SKB_CB(__skb) ((struct net_dm_skb_cb *)&((__skb)->cb[0]))
+@@ -498,6 +509,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+ {
+ 	ktime_t tstamp = ktime_get_real();
+ 	struct per_cpu_dm_data *data;
++	struct net_dm_skb_cb *cb;
+ 	struct sk_buff *nskb;
+ 	unsigned long flags;
+ 
+@@ -508,7 +520,9 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+ 	if (!nskb)
+ 		return;
+ 
+-	NET_DM_SKB_CB(nskb)->pc = location;
++	cb = NET_DM_SKB_CB(nskb);
++	cb->reason = reason;
++	cb->pc = location;
+ 	/* Override the timestamp because we care about the time when the
+ 	 * packet was dropped.
+ 	 */
+@@ -606,8 +620,9 @@ static int net_dm_packet_report_in_port_put(struct sk_buff *msg, int ifindex,
+ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+ 				     size_t payload_len)
+ {
+-	u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
++	struct net_dm_skb_cb *cb = NET_DM_SKB_CB(skb);
+ 	char buf[NET_DM_MAX_SYMBOL_LEN];
++	unsigned int reason;
+ 	struct nlattr *attr;
+ 	void *hdr;
+ 	int rc;
+@@ -620,10 +635,16 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+ 	if (nla_put_u16(msg, NET_DM_ATTR_ORIGIN, NET_DM_ORIGIN_SW))
+ 		goto nla_put_failure;
+ 
+-	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
++	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, (u64)(uintptr_t)cb->pc,
++			      NET_DM_ATTR_PAD))
++		goto nla_put_failure;
++
++	reason = (unsigned int)cb->reason;
++	if (reason < SKB_DROP_REASON_MAX &&
++	    nla_put_string(msg, NET_DM_ATTR_REASON, drop_reasons[reason]))
+ 		goto nla_put_failure;
+ 
+-	snprintf(buf, sizeof(buf), "%pS", NET_DM_SKB_CB(skb)->pc);
++	snprintf(buf, sizeof(buf), "%pS", cb->pc);
+ 	if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
+ 		goto nla_put_failure;
+ 
+-- 
+2.27.0
+
