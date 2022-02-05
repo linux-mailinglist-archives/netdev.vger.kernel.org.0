@@ -2,114 +2,284 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF1F04AA6B8
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 06:14:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59D354AA6FC
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 06:53:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235295AbiBEFOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 00:14:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52260 "EHLO
+        id S243384AbiBEFxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 00:53:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiBEFOb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 00:14:31 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EDEC061346
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 21:14:30 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id j2so24846339ybu.0
-        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 21:14:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+I5R1Tzn6Y/4HaTXJrdJSNQ6sSMv1i3VLowark/057M=;
-        b=ZS9Zru5BcoQHPcw4PYIDao7sWhWgjJDWZUG+xK7E+yCLVUmKkPk4Kj6ZyvNvOThgEA
-         w5Vn0ERD62FdRTUoPIvVbECj8fVMmOfhsstbmhvjEQR/L1EgD+csrEuWqSmt2y5qHnhU
-         hEIPKjQWln7xtVqs6P4pYlqv9c3qkMkm7wtD+9OJPE3c4MNuFkFrYL8LfvQNmckExzts
-         wo/AJNLrLtoc/BOQjo0XJdndfI5e/+ya+Dzb3LeSKeshuykrbzgB9TDIo58PnAKnT2hl
-         MqCkLOc5faZluGhLlky1vlMxtSdK3rF+C5ZcgDVn/zu+Mj0AIHzBaqxvaB8hSxYAbCzn
-         MaPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+I5R1Tzn6Y/4HaTXJrdJSNQ6sSMv1i3VLowark/057M=;
-        b=LOqA5wimbHq8wuCfTRm+h1Q7koLbTB0dAgRUHOGsNp1UvtBoWjovS3k0g2vafkoS9B
-         qpM8G72ZuMlCUIO8gJ5Il7PibzXn25sbJ0x0SYIPUza8oUH573H+n+W6RMWqc26zmcpD
-         LLPQGacmeISF66BSXioqllmvGFpyK/Wd1HBGrgo7hT3sxf44dr6N8SExMb7eQEGEz+wv
-         oUx7+ky+qoR7TeqwoiYEdld6lsqEb9rwoO1XEdGcmKctllB4/vbv9RbxhtfENXnhkyGK
-         4TyHAkRTa9cngGE41wtjQiGpME/h5xXRAr3tp3+88ad0B3G1t7Yxt8eB2TBEqH+wZbb7
-         XrwQ==
-X-Gm-Message-State: AOAM533geQLcqAoX6eIoLQKq9m4uX6TBx5fVR2mhnXc3SxM7fQS2Whpr
-        PVFhHt1bmqiZJqOXn62Rz24DXxev6RupL0ucrSzLKoRIUR4dw5rl
-X-Google-Smtp-Source: ABdhPJwi8v1ce4uaEU+2ZXquzg/R5Vj8o4/fItJ+FQiQonke0pj9qywbAt0tR1WNQ5Hub7X4+Qk+PRg8zTb3mnSrpHs=
-X-Received: by 2002:a81:80d:: with SMTP id 13mr2291815ywi.40.1644038069652;
- Fri, 04 Feb 2022 21:14:29 -0800 (PST)
+        with ESMTP id S235459AbiBEFxU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 00:53:20 -0500
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 04 Feb 2022 21:53:19 PST
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A400C061346
+        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 21:53:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644040399; x=1675576399;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=iX48ViLuOhFLYHT7tRd5qzB9H0kvgo+NOZpk8GHpT3A=;
+  b=N4G6HhUM7Hb0Esl1bphWBW+RKfBj+UI2XfHV371IaEXAXv9e7+1aWjlu
+   vCCew+eTOfCbSGS4B7e3IX24kRotgSYl82EyCvGv2JkuhyiRZNdQbf7KD
+   adRU4h/TOMyt6fGt4aVIAoCrnNHwkxGZNDmxTRfdI3aHMiSfET3n0f/xq
+   WgGsRSIFCZhRY0RDpfQ4LBVOzL3Bt4JITKgLKmpY3Eqt9G4awZy1O+8sa
+   D4n00fDgAdUJAcCuyISwwzGxcSHsFS1fxKXR/1dmeDclwHndz3o7pTi9+
+   hVg4wCyzzuwbTIb4U/LKZtYTrqAbUi2cMEd39/U/+ARvL0X+m50OgZxkS
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="311790663"
+X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
+   d="scan'208";a="311790663"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 21:52:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
+   d="scan'208";a="600427572"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 04 Feb 2022 21:52:13 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nGDzZ-000Yeu-8s; Sat, 05 Feb 2022 05:52:13 +0000
+Date:   Sat, 5 Feb 2022 13:52:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next] net: initialize init_net earlier
+Message-ID: <202202051344.7VoLsgix-lkp@intel.com>
+References: <20220204233809.3082403-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-References: <20220204105902.1421-1-claudiajkang@gmail.com> <20220204193438.2f800f69@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220204193438.2f800f69@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Juhee Kang <claudiajkang@gmail.com>
-Date:   Sat, 5 Feb 2022 14:13:53 +0900
-Message-ID: <CAK+SQuQ=HOXtPNYOXHzPnWFOjJkNAW5zuSHgh4-EAOtU_XyFbA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net: hsr: use hlist_head instead of list_head
- for mac addresses
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220204233809.3082403-1-eric.dumazet@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 5, 2022 at 12:34 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri,  4 Feb 2022 10:59:02 +0000 Juhee Kang wrote:
-> > Currently, HSR manages mac addresses of known HSR nodes by using list_head.
-> > It takes a lot of time when there are a lot of registered nodes due to
-> > finding specific mac address nodes by using linear search. We can be
-> > reducing the time by using hlist. Thus, this patch moves list_head to
-> > hlist_head for mac addresses and this allows for further improvement of
-> > network performance.
-> >
-> >     Condition: registered 10,000 known HSR nodes
-> >     Before:
-> >     # iperf3 -c 192.168.10.1 -i 1 -t 10
-> >     Connecting to host 192.168.10.1, port 5201
-> >     [  5] local 192.168.10.2 port 59442 connected to 192.168.10.1 port 5201
-> >     [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-> >     [  5]   0.00-1.49   sec  3.75 MBytes  21.1 Mbits/sec    0    158 KBytes
-> >     [  5]   1.49-2.05   sec  1.25 MBytes  18.7 Mbits/sec    0    166 KBytes
-> >     [  5]   2.05-3.06   sec  2.44 MBytes  20.3 Mbits/sec   56   16.9 KBytes
-> >     [  5]   3.06-4.08   sec  1.43 MBytes  11.7 Mbits/sec   11   38.0 KBytes
-> >     [  5]   4.08-5.00   sec   951 KBytes  8.49 Mbits/sec    0   56.3 KBytes
-> >
-> >     After:
-> >     # iperf3 -c 192.168.10.1 -i 1 -t 10
-> >     Connecting to host 192.168.10.1, port 5201
-> >     [  5] local 192.168.10.2 port 36460 connected to 192.168.10.1 port 5201
-> >     [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-> >     [  5]   0.00-1.00   sec  7.39 MBytes  62.0 Mbits/sec    3    130 KBytes
-> >     [  5]   1.00-2.00   sec  5.06 MBytes  42.4 Mbits/sec   16    113 KBytes
-> >     [  5]   2.00-3.00   sec  8.58 MBytes  72.0 Mbits/sec   42   94.3 KBytes
-> >     [  5]   3.00-4.00   sec  7.44 MBytes  62.4 Mbits/sec    2    131 KBytes
-> >     [  5]   4.00-5.07   sec  8.13 MBytes  63.5 Mbits/sec   38   92.9 KBytes
-> >
-> > Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
->
-> Does not apply to the current net-next tree, please rebase.
+Hi Eric,
+
+I love your patch! Yet something to improve:
+
+[auto build test ERROR on net-next/master]
+
+url:    https://github.com/0day-ci/linux/commits/Eric-Dumazet/net-initialize-init_net-earlier/20220205-073957
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git c531adaf884d313df2729ca94228317a52e46b83
+config: arm-randconfig-r031-20220131 (https://download.01.org/0day-ci/archive/20220205/202202051344.7VoLsgix-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a73e4ce6a59b01f0e37037761c1e6889d539d233)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/0day-ci/linux/commit/0d2a51961bd19173f1d7cfa779b9cf82c48e4499
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Eric-Dumazet/net-initialize-init_net-earlier/20220205-073957
+        git checkout 0d2a51961bd19173f1d7cfa779b9cf82c48e4499
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from kernel/events/core.c:46:
+   In file included from include/linux/filter.h:20:
+   In file included from include/linux/if_vlan.h:10:
+   In file included from include/linux/netdevice.h:37:
+>> include/net/net_namespace.h:519:34: error: non-void function does not return a value [-Werror,-Wreturn-type]
+   static inline net_ns_init(void) {}
+                                    ^
+   1 error generated.
+--
+   In file included from init/main.c:102:
+>> include/net/net_namespace.h:519:34: error: non-void function does not return a value [-Werror,-Wreturn-type]
+   static inline net_ns_init(void) {}
+                                    ^
+   init/main.c:769:20: warning: no previous prototype for function 'arch_post_acpi_subsys_init' [-Wmissing-prototypes]
+   void __init __weak arch_post_acpi_subsys_init(void) { }
+                      ^
+   init/main.c:769:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init __weak arch_post_acpi_subsys_init(void) { }
+   ^
+   static 
+   init/main.c:781:20: warning: no previous prototype for function 'mem_encrypt_init' [-Wmissing-prototypes]
+   void __init __weak mem_encrypt_init(void) { }
+                      ^
+   init/main.c:781:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init __weak mem_encrypt_init(void) { }
+   ^
+   static 
+   init/main.c:783:20: warning: no previous prototype for function 'poking_init' [-Wmissing-prototypes]
+   void __init __weak poking_init(void) { }
+                      ^
+   init/main.c:783:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init __weak poking_init(void) { }
+   ^
+   static 
+   3 warnings and 1 error generated.
+--
+   kernel/fork.c:162:13: warning: no previous prototype for function 'arch_release_task_struct' [-Wmissing-prototypes]
+   void __weak arch_release_task_struct(struct task_struct *tsk)
+               ^
+   kernel/fork.c:162:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __weak arch_release_task_struct(struct task_struct *tsk)
+   ^
+   static 
+   kernel/fork.c:764:20: warning: no previous prototype for function 'arch_task_cache_init' [-Wmissing-prototypes]
+   void __init __weak arch_task_cache_init(void) { }
+                      ^
+   kernel/fork.c:764:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init __weak arch_task_cache_init(void) { }
+   ^
+   static 
+   kernel/fork.c:859:12: warning: no previous prototype for function 'arch_dup_task_struct' [-Wmissing-prototypes]
+   int __weak arch_dup_task_struct(struct task_struct *dst,
+              ^
+   kernel/fork.c:859:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int __weak arch_dup_task_struct(struct task_struct *dst,
+   ^
+   static 
+   In file included from kernel/fork.c:996:
+   In file included from include/linux/init_task.h:18:
+>> include/net/net_namespace.h:519:34: error: non-void function does not return a value [-Werror,-Wreturn-type]
+   static inline net_ns_init(void) {}
+                                    ^
+   3 warnings and 1 error generated.
+--
+   In file included from kernel/kallsyms.c:25:
+   In file included from include/linux/filter.h:20:
+   In file included from include/linux/if_vlan.h:10:
+   In file included from include/linux/netdevice.h:37:
+>> include/net/net_namespace.h:519:34: error: non-void function does not return a value [-Werror,-Wreturn-type]
+   static inline net_ns_init(void) {}
+                                    ^
+   kernel/kallsyms.c:587:12: warning: no previous prototype for function 'arch_get_kallsym' [-Wmissing-prototypes]
+   int __weak arch_get_kallsym(unsigned int symnum, unsigned long *value,
+              ^
+   kernel/kallsyms.c:587:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int __weak arch_get_kallsym(unsigned int symnum, unsigned long *value,
+   ^
+   static 
+   1 warning and 1 error generated.
+--
+   In file included from kernel/sched/core.c:13:
+   In file included from kernel/sched/sched.h:49:
+   In file included from include/linux/init_task.h:18:
+>> include/net/net_namespace.h:519:34: error: non-void function does not return a value [-Werror,-Wreturn-type]
+   static inline net_ns_init(void) {}
+                                    ^
+   kernel/sched/core.c:6401:35: warning: no previous prototype for function 'schedule_user' [-Wmissing-prototypes]
+   asmlinkage __visible void __sched schedule_user(void)
+                                     ^
+   kernel/sched/core.c:6401:22: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   asmlinkage __visible void __sched schedule_user(void)
+                        ^
+                        static 
+   1 warning and 1 error generated.
+--
+   In file included from kernel/sched/fair.c:23:
+   In file included from kernel/sched/sched.h:49:
+   In file included from include/linux/init_task.h:18:
+>> include/net/net_namespace.h:519:34: error: non-void function does not return a value [-Werror,-Wreturn-type]
+   static inline net_ns_init(void) {}
+                                    ^
+   kernel/sched/fair.c:5477:6: warning: no previous prototype for function 'init_cfs_bandwidth' [-Wmissing-prototypes]
+   void init_cfs_bandwidth(struct cfs_bandwidth *cfs_b) {}
+        ^
+   kernel/sched/fair.c:5477:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void init_cfs_bandwidth(struct cfs_bandwidth *cfs_b) {}
+   ^
+   static 
+   kernel/sched/fair.c:11703:6: warning: no previous prototype for function 'free_fair_sched_group' [-Wmissing-prototypes]
+   void free_fair_sched_group(struct task_group *tg) { }
+        ^
+   kernel/sched/fair.c:11703:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void free_fair_sched_group(struct task_group *tg) { }
+   ^
+   static 
+   kernel/sched/fair.c:11705:5: warning: no previous prototype for function 'alloc_fair_sched_group' [-Wmissing-prototypes]
+   int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent)
+       ^
+   kernel/sched/fair.c:11705:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent)
+   ^
+   static 
+   kernel/sched/fair.c:11710:6: warning: no previous prototype for function 'online_fair_sched_group' [-Wmissing-prototypes]
+   void online_fair_sched_group(struct task_group *tg) { }
+        ^
+   kernel/sched/fair.c:11710:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void online_fair_sched_group(struct task_group *tg) { }
+   ^
+   static 
+   kernel/sched/fair.c:11712:6: warning: no previous prototype for function 'unregister_fair_sched_group' [-Wmissing-prototypes]
+   void unregister_fair_sched_group(struct task_group *tg) { }
+        ^
+   kernel/sched/fair.c:11712:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void unregister_fair_sched_group(struct task_group *tg) { }
+   ^
+   static 
+   5 warnings and 1 error generated.
+--
+   In file included from kernel/sched/rt.c:6:
+   In file included from kernel/sched/sched.h:49:
+   In file included from include/linux/init_task.h:18:
+>> include/net/net_namespace.h:519:34: error: non-void function does not return a value [-Werror,-Wreturn-type]
+   static inline net_ns_init(void) {}
+                                    ^
+   kernel/sched/rt.c:262:6: warning: no previous prototype for function 'unregister_rt_sched_group' [-Wmissing-prototypes]
+   void unregister_rt_sched_group(struct task_group *tg) { }
+        ^
+   kernel/sched/rt.c:262:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void unregister_rt_sched_group(struct task_group *tg) { }
+   ^
+   static 
+   kernel/sched/rt.c:264:6: warning: no previous prototype for function 'free_rt_sched_group' [-Wmissing-prototypes]
+   void free_rt_sched_group(struct task_group *tg) { }
+        ^
+   kernel/sched/rt.c:264:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void free_rt_sched_group(struct task_group *tg) { }
+   ^
+   static 
+   kernel/sched/rt.c:266:5: warning: no previous prototype for function 'alloc_rt_sched_group' [-Wmissing-prototypes]
+   int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent)
+       ^
+   kernel/sched/rt.c:266:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent)
+   ^
+   static 
+   kernel/sched/rt.c:680:6: warning: no previous prototype for function 'sched_rt_bandwidth_account' [-Wmissing-prototypes]
+   bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
+        ^
+   kernel/sched/rt.c:680:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
+   ^
+   static 
+   4 warnings and 1 error generated.
 
 
+vim +519 include/net/net_namespace.h
 
-Hi Jakub,
-Thank you for your review!
+   515	
+   516	#ifdef CONFIG_NET
+   517	void net_ns_init(void);
+   518	#else
+ > 519	static inline net_ns_init(void) {}
+   520	#endif
+   521	
 
-So, I will send a v3 patch after some tests.
-Thank you so much!!
-
--- 
-
-Best regards,
-Juhee Kang
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
