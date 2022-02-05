@@ -2,75 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA5424AA74F
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 08:26:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 292754AA761
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 08:47:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379574AbiBEH0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 02:26:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55532 "EHLO
+        id S232487AbiBEHry (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 02:47:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbiBEH0e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 02:26:34 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5245C061346
-        for <netdev@vger.kernel.org>; Fri,  4 Feb 2022 23:26:30 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id c24so18088285edy.4
-        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 23:26:30 -0800 (PST)
+        with ESMTP id S229852AbiBEHry (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 02:47:54 -0500
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 947ADC061346;
+        Fri,  4 Feb 2022 23:47:52 -0800 (PST)
+Received: by mail-pj1-x1042.google.com with SMTP id v4so1942359pjh.2;
+        Fri, 04 Feb 2022 23:47:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rzrkbFxcqi8SuTu2Hx73Mhzv8KbasIqXzzy/tzWkoII=;
-        b=YTJDbVo0Z2wcxSd7R5THmeL0dJei3Tqp+8Vl4HgsTFFjcwq7YuHWzajnXJlpZItATK
-         VE7O7fZqs8YoBzhD5zvzSzvbSk7n4SPeA20z7IzgMZYuCbJTesZk5gG2lui0vBRkNUpl
-         lZUz2LSwTjLjLYet8pZnF4gjfCqwPuk30mPNbGLVakm+xVkLFsP5QFBeN01uVfuqI8Qb
-         dFf4HhToQptIE1S2wG4WK+lUKpwjkW9yGX0dBx5V7Htxd4MuXJQ4PDzz9+vbrw3GS7oe
-         BzGD7+GVYuqwfEri66kVBIVgj5kTf+U9mW39kQ/DADrvdPQCSzHrvlYovx2dKCoZdoLo
-         wibA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TvKVmfFUdXxOOdxxrcTCTu1sCDVD75UVE6UHl7eAXTo=;
+        b=k2QpbtFl+dO8bSEaT+gazl+kbNzsf40jdf1SwIbdKORCJjYvFjQQWuQH55uIxUgqbh
+         0NvvLC4jQKjw6PaMPNxs+n4Qq92rClobkbmMxaF38xhBkIOn+dZBnYFgEoU+S5hWFB02
+         jij5CTLUISd/+8UTSPSa6KugZRXAQcxeV3cNVWL/mrPwA/gz+/CLzRlqdAo+Fz6bb/eS
+         R2zdz/p81inPmjOWaGYQqRVGidqWaqnzybwg8bLhcg6FeFRBd+duiyUMi8ZA4vnpuuYv
+         4Rw2p5wmSuFC9pKzXHJGmQZzJ+zY09Hlgobtz96iuAbYiXeZl7lRE2pW8omPEVAtQ1g9
+         DpqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rzrkbFxcqi8SuTu2Hx73Mhzv8KbasIqXzzy/tzWkoII=;
-        b=im5er+HkKQBZuYWDUsTDe2tDAJMpNHrcOjFs2elPoma+BQVymv5Axlm01KBkK3SzQr
-         K5PhrD64KEk17I7/LU4WXR6ezv4XIxYah1C83OM9ANZuBFVlrBeMUtlrlHS7SE+2ixgq
-         1WzPalu9w5KQrS2e2nW7Hh+K5Vb5YfMWD2KfWxMelVC68Qoc+krZhy84d6qNqLBi0KaM
-         i1n11nEXCiy5lcVBVdIPnNyPnEAnurcuJFCWG6XqNvFFXQZV6ogUPTGVSmxFAD7utRFJ
-         uxcxoyWdBqtRl8BepbRWylEp+2q0F70VROxfrO7ge7ssJHVJe4pr1+uuqj6ZTLg6w/GD
-         cOVQ==
-X-Gm-Message-State: AOAM530SKU+pa/lgpXVUctmBg5Q3Ku6X3N89bNrmU0f84ExSTMv8yXOK
-        EROHQ6XKEEWGN27JpKM8dD4E/0w/JJdV09lPltw=
-X-Google-Smtp-Source: ABdhPJzzFFKDRHAdYfjwIFcToKa7bUsuCDAf70ZxZjbwgnJA4jPsagsU724kMtIS3aUCsg1g21UbQNIvbbO90xsKlUo=
-X-Received: by 2002:aa7:dcd5:: with SMTP id w21mr3049915edu.97.1644045989034;
- Fri, 04 Feb 2022 23:26:29 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TvKVmfFUdXxOOdxxrcTCTu1sCDVD75UVE6UHl7eAXTo=;
+        b=urXoQNjBqEab6z3gyTtwcGx68DjtWBqzwCie52wbW4wE4rlvX5Kr3Z4peWpr1Mxetr
+         f1DuoFoPhlucSiYsqBVLdzKSxZTAMytUWqj7Q73ydGe4/C6hbii6w7HJfYmChByfg3io
+         StFKofKjMIhUkNxVXpCesAmAg2gHVyARxMkj1uI1EhY2ATs/WyxKTp8SetcugBfVoRPg
+         FXiDLWNi7NwiTGN9xCbBuYwrgr7smeiyvpFoZNqKoXEkOh5qgVR/GwgYKRD++R3gGd0o
+         dtoYrNi2S0JpGB/vZfZPkclLtTTiKvHpP4Sg1IbIfqIfIFBMAqXOMHYWy+tOhJ1jnC5Y
+         Z5pA==
+X-Gm-Message-State: AOAM530+OccAhGa7objGD7UpNQ4n2Ub87ynOUP5Ts6enzRU9Z4qc2B6r
+        efDHCO0PnS90Vkgq/Khux3Y=
+X-Google-Smtp-Source: ABdhPJzThzJLqDjg3OoiMIuL6og+I4Gy091jyg2JnfDS2/M+QGuY2A8Qc3zkIsITL3jk2KLlIST+qQ==
+X-Received: by 2002:a17:90b:33ca:: with SMTP id lk10mr3080485pjb.45.1644047272117;
+        Fri, 04 Feb 2022 23:47:52 -0800 (PST)
+Received: from localhost.localdomain ([43.132.141.4])
+        by smtp.gmail.com with ESMTPSA id p21sm5165844pfh.89.2022.02.04.23.47.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Feb 2022 23:47:51 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     dsahern@kernel.org, kuba@kernel.org
+Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, pablo@netfilter.org, kadlec@netfilter.org,
+        fw@strlen.de, edumazet@google.com, alobakin@pm.me, ast@kernel.org,
+        imagedong@tencent.com, pabeni@redhat.com, keescook@chromium.org,
+        talalahmad@google.com, haokexin@gmail.com,
+        ilias.apalodimas@linaro.org, memxor@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        paulb@nvidia.com, cong.wang@bytedance.com, mengensun@tencent.com
+Subject: [PATCH v4 net-next 0/7] net: use kfree_skb_reason() for ip/udp packet receive
+Date:   Sat,  5 Feb 2022 15:47:32 +0800
+Message-Id: <20220205074739.543606-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20220126143206.23023-1-xiangxia.m.yue@gmail.com>
- <20220126143206.23023-3-xiangxia.m.yue@gmail.com> <CAM_iQpU3yK2bft7gvPkf+pEkqDUOPhkBSJH1y+rqM44bw2sNVg@mail.gmail.com>
- <a2ecd27f-f5b5-0de4-19df-9c30671f4a9f@mojatatu.com>
-In-Reply-To: <a2ecd27f-f5b5-0de4-19df-9c30671f4a9f@mojatatu.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Sat, 5 Feb 2022 15:25:52 +0800
-Message-ID: <CAMDZJNUHmrYBbnXrXmiSDF2dOMMCviAM+P_pEqsu=puxWeGuvA@mail.gmail.com>
-Subject: Re: [net-next v8 2/2] net: sched: support hash/classid/cpuid
- selecting tx queue
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -81,46 +75,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 9:12 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
->
-> On 2022-01-26 14:52, Cong Wang wrote:
-> > You really should just use eBPF, with eBPF code you don't even need
-> > to send anything to upstream, you can do whatever you want without
-> > arguing with anyone. It is a win-win.
->
-> Cong,
->
-> This doesnt work in some environments. Example:
->
-> 1) Some data centres (telco large and medium sized enteprises that
-> i have personally encountered) dont allow for anything that requires
-> compilation to be introduced (including ebpf).
-> They depend on upstream - if something is already in the kernel and
-> requires a script it becomes an operational issue which is a simpler
-> process.
-> This is unlike large organizations who have staff of developers
-> dedicated to coding stuff. Most of the folks i am talking about
-> have zero developers in house. But even if they did have a few,
-> introducing code into the kernel that has to be vetted by a
-> multitude of internal organizations tends to be a very
-> long process.
-Yes, really agree with that.
-> 2) In some cases adding new code voids the distro vendor's
-> support warranty and you have to pay the distro vendor to
-> vet and put your changes via their regression testing.
-> Most of these organizations are tied to one or other distro
-> vendor and they dont want to mess with the warranty or pay
-> extra fees which causes more work for them (a lot of them
-> have their own vetting process after the distro vendors vetting).
->
-> I am not sure what the OP's situation is - but what i described
-> above is _real_. If there is some extension to existing features like
-> skbedit and there is a good use case IMO we should allow for it.
->
-> cheers,
-> jamal
+From: Menglong Dong <imagedong@tencent.com>
+
+In this series patches, kfree_skb() is replaced with kfree_skb_reason()
+during ipv4 and udp4 packet receiving path, and following drop reasons
+are introduced:
+
+SKB_DROP_REASON_SOCKET_FILTER
+SKB_DROP_REASON_NETFILTER_DROP
+SKB_DROP_REASON_OTHERHOST
+SKB_DROP_REASON_IP_CSUM
+SKB_DROP_REASON_IP_INHDR
+SKB_DROP_REASON_IP_RPFILTER
+SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST
+SKB_DROP_REASON_XFRM_POLICY
+SKB_DROP_REASON_IP_NOPROTO
+SKB_DROP_REASON_SOCKET_RCVBUFF
+SKB_DROP_REASON_PROTO_MEM
+
+TCP is more complex, so I left it in the next series.
+
+I just figure out how __print_symbolic() works. It doesn't base on the
+array index, but searching for symbols by loop. So I'm a little afraid
+it's performance.
+
+Changes since v3:
+- fix some small problems in the third patch (net: ipv4: use
+  kfree_skb_reason() in ip_rcv_core()), as David Ahern said
+
+Changes since v2:
+- use SKB_DROP_REASON_PKT_TOO_SMALL for a path in ip_rcv_core()
+
+Changes since v1:
+- add document for all drop reasons, as David advised
+- remove unreleated cleanup
+- remove EARLY_DEMUX and IP_ROUTE_INPUT drop reason
+- replace {UDP, TCP}_FILTER with SOCKET_FILTER
 
 
+Alex Elder (6):
+  net: ipa: allocate transaction in replenish loop
+  net: ipa: don't use replenish_backlog
+  net: ipa: introduce gsi_channel_trans_idle()
+  net: ipa: kill replenish_backlog
+  net: ipa: replenish after delivering payload
+  net: ipa: determine replenish doorbell differently
+
+Menglong Dong (1):
+  net: drop_monitor: support drop reason
 
 -- 
-Best regards, Tonghao
+2.27.0
+
