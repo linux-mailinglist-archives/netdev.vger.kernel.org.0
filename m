@@ -2,712 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 118F24AA9B8
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 16:40:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 971284AA9BC
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 16:51:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380199AbiBEPkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 10:40:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56274 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378892AbiBEPkt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 10:40:49 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D335CC061348
-        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 07:40:47 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id l13so7701433plg.9
-        for <netdev@vger.kernel.org>; Sat, 05 Feb 2022 07:40:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Hn9n6eZepz2HeOoFpC1qT8EY1DaXJ1yMoDVWGfd8ntY=;
-        b=XNzHbTvZ9dNjDjF+lF2qIWbC7+SrfE4Ao24XVEcr9iY+P96DBGdn10QT8+rXSaE36r
-         FmiDk7fPfaL+sZFUiaOSmuz2ruv9cGwRFgWUXWMHVDzVvvtH7vMLBKMoZG+CVItZlVXL
-         1gYLSCLIikT2Jvxwdj7v/km1kT6KqA081NprQ+wA0UfdVkL6MgkzFrKLf/QCGsUN3j+S
-         cb7J7nurCn/SIuMRSg0ybJwBU4xeFfhjagG0dCfPjJz62mXPEzdOCgJv5TjugpTeGmZd
-         Ob2on1nVxDAbJFGEKy/JjWHbNzuvMmuRMrwf8f+XmgybZrY1VTo+Fs3m2gxXn9Zny3iO
-         IMdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Hn9n6eZepz2HeOoFpC1qT8EY1DaXJ1yMoDVWGfd8ntY=;
-        b=DVR5S5TTsImc0jWvK/GQ2n6cAeRA/egTSlwGz7gTrornMCpT48bkeMbw+s+QHC9ajn
-         7IEWVxGD0t4/czkGFA/e3vzKfbiM7B7460qEXf65JsVUS1aoVYO0v0t2wJgQ9tvilMrt
-         I495jm3kB0Aj20oSNcdgD9+FQl+ErMNRdd0yh42eGV3Ci87G0Xkh3oZHXrKRDoPB1A4m
-         sJqXFM2hTEpJMf1OBH3U+uo81WU8+FuYunARO+Fb7aCRvYNfAKL+g+H370hWim+8T2yR
-         zydkjsparUiIOJymU5y5CrrUcNRMtA76lfOTmgylHHBcfP/CrNFxAjNy2A0mdYj3bdQU
-         FlNQ==
-X-Gm-Message-State: AOAM533lDW2kxQLfW8tqcdIuhNvaQa+0l76DWFAqywVf1A1OA0ov+tRB
-        JHRog0xqvDumn/9yibQf23sz8ootIBHeHgl1lx0=
-X-Google-Smtp-Source: ABdhPJwjEtN7hSbmPhBGG4WH3UxlX5Rfaoe8Pcor2O4IgFZHa3Kpg3y94qM19sasoogjMSCzS9umPA==
-X-Received: by 2002:a17:90a:5d8d:: with SMTP id t13mr2482672pji.163.1644075646985;
-        Sat, 05 Feb 2022 07:40:46 -0800 (PST)
-Received: from localhost.localdomain ([58.76.185.115])
-        by smtp.gmail.com with ESMTPSA id 207sm4220928pgh.32.2022.02.05.07.40.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Feb 2022 07:40:46 -0800 (PST)
-From:   Juhee Kang <claudiajkang@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     ennoerlangen@gmail.com, george.mccollister@gmail.com,
-        olteanv@gmail.com, marco.wenzel@a-eberle.de,
-        xiong.zhenwu@zte.com.cn
-Subject: [PATCH v4 net-next] net: hsr: use hlist_head instead of list_head for mac addresses
-Date:   Sat,  5 Feb 2022 15:40:38 +0000
-Message-Id: <20220205154038.2345-1-claudiajkang@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
+        id S1355322AbiBEPvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 10:51:12 -0500
+Received: from mail-dm6nam11on2057.outbound.protection.outlook.com ([40.107.223.57]:58650
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232649AbiBEPvM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Feb 2022 10:51:12 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L/J6iW77ku2SIok2upkMlRpJcJS56lLtJWdhyMKLhOh+pZqwV2tqD+M1QxeG/hx6B7vltiFFGaUjLt5lGrlVBQlDb5uZc+nlg2ZBI1/NADM26PQ8+ZRY75zWISy9b3bv5Fi4AKrQajfp2FzW0faTHLIdNqkg/M09A25bulavBm6KtpOzKScQPb+c8zGWiEq/IEoy97gDIm8yCMv39kW3eGQTcgBefDmcH/9ZC14IwhT19gIV4UcgSYoQkZMMxeWMBuJ4/QKmUoooMPOCRxZUZpH+aRtFax9f/1h8xvZ10wQjYSZmziLb25p8QYNxe4qaRAdAGgW6TqoFkECwolCdTQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=j6XIFx181Ifl2aoC077aNI5vN08rAQoSEYspbu+SQkc=;
+ b=Tmn3IBvJgbECSzJE0x87Ex4IbjmiugPlZ5j/vy0TkWkR4jsmLepihX/rYXgSFBJTJPKqwrABkY9UzV5rYnax74S69YQSlnfNeougV7mIDxN3clAqybah1cYYhv+J8lFQ1TuhU+ZGhmRUwfgQCMFKqD0Jo6rAdzCG4weOkuZ36tjGF4VS0UNv8in5SoIC67Ld1rKit/Oa/JvcEX61VI14wAYmdmeAnVolLukwIBh+Xm38Ox3dTuCfOHDWIwHkl3Mrz5X6B8pWK0HWLZQ6WDUrkaijYMlk6Qbop1bUmRq+WyZjXOridjxTQzpuaJsYqw5DPVENqBrbWduaZr3edD9+Qw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=j6XIFx181Ifl2aoC077aNI5vN08rAQoSEYspbu+SQkc=;
+ b=zf6awzAKb6MQ4/XtMjme2qzaHIr/CFlfCnoSatkmGuvOopxeXsnVkqPutbeNmJSrkMe7ZUYIUfkCt01HU8DXXDP6yXUZL9I+CK3m8qaLzDCgSOOsxvzF4QmFypEF/7JIUCczzP66ILbm2zwNfu3Su+J8ajoHQHQq6qzkfR7+FA4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by BY5PR12MB4132.namprd12.prod.outlook.com (2603:10b6:a03:209::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Sat, 5 Feb
+ 2022 15:51:04 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::ccd7:e520:c726:d0b]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::ccd7:e520:c726:d0b%7]) with mapi id 15.20.4951.017; Sat, 5 Feb 2022
+ 15:51:03 +0000
+Message-ID: <c3e8cbdc-d3f9-d258-fcb6-761a5c6c89ed@amd.com>
+Date:   Sat, 5 Feb 2022 09:51:00 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: AMD XGBE "phy irq request failed" kernel v5.17-rc2 on V1500B
+ based board
+Content-Language: en-US
+To:     Thomas Kupper <thomas@kupper.org>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+Cc:     netdev@vger.kernel.org
+References: <45b7130e-0f39-cb54-f6a8-3ea2f602d65e@kupper.org>
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+In-Reply-To: <45b7130e-0f39-cb54-f6a8-3ea2f602d65e@kupper.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
+X-ClientProxiedBy: SN6PR08CA0009.namprd08.prod.outlook.com
+ (2603:10b6:805:66::22) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 11cef8ac-0db6-49e1-14c3-08d9e8bf500f
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4132:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB413280322FAC2C6364542BBEEC2A9@BY5PR12MB4132.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: F/nqj0eM8uap7dUbLtvBHl7jPx3pexTMZZajuMAf5qGllj3jsJbNEWEzUCX9A5Z+aUoBvgrenvPMEj1dSILKK52lEABxL6NvQSathiStRpCYBQzuYUpVen481XaEv4gUuIydD/0wA9FPKs4kFx0/Imf7JledCTaB7RhEf4WyEq0GZVHoTGxhw/e8K1sKFGelOB7C9id0zEliBqy4cLvulyXvpfRy3TwTiKZLAYxmaflIO7nBeuAZiCW+pGT7JvBw5d0be/IxLbas3mTvt+hxiOJiH7/Z1YZlO3T62he6DtdZW6ZhSy2bCds1nFOK9cNcndL5B0wWPfJ0i5D/QnWqzumAsypsHq9U3T8HRrzqNxgLef7PwrYJvl2N23vk9fnazkhRMD6yKrL3zwF4vMNi5ctq6F5Io3t8Uybn5aePQGvOlvyupYTrU8HqmfoUEKh827qpYAOFGSo20absmqAiD/KAXwI5vbyE6QXd/r65ftWce/+mIeXTcTEDF1mnwVIJX5uTUxSvqsxkS5+TnH2MHuT26kPpUE3zdaOKnHHF0LKzHO7y1E/d5IjEra/exHWfI+YkS9DTqLa9vqYhV9o4NgJuBfTO90HoKhzFFpTJv5S/COOF2794XIdhShuxORPndbyfDH8HB9syTPyUh7Im5Sznqy2SdQHbxuov5jPfEeu9250/dN9IRBa/01Z0fZH7iPFt4w28ihgQsj0coDJXIDWG2i+nSyAlXUJ73xwG56k=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(6486002)(31696002)(31686004)(53546011)(38100700002)(5660300002)(26005)(6512007)(2616005)(186003)(8936002)(8676002)(36756003)(110136005)(4326008)(66476007)(66556008)(66946007)(6506007)(316002)(6636002)(83380400001)(2906002)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dnQrdCs0Qzd1a2VPd2tSQU5HNVQva0dQdXk1UUM1MUlQWjdwWGFndHlyMStU?=
+ =?utf-8?B?UGh0R09pRC9TanFOWUxXOUZIbUVOaFBDamRQSHJVaTJrRmpQSjlHTHpTcDlk?=
+ =?utf-8?B?SFFxRVBYRkg4Q0dQSFRkTkZUb3hJWWRhVDNBUDZML0dTZVdIRm1ydlh5WXF6?=
+ =?utf-8?B?RG4vS2I0K2lqbXBOVzlHUWszdjQ2Rk1VN2pLSWpmZk0wdC9USndEVk0veUQv?=
+ =?utf-8?B?VjFsbG9TQ2xDUzRzbnlZeWd4dWJEbVcyaXNWdjV2cERmSTNNZ2E1eWh6WXR6?=
+ =?utf-8?B?aTVUSG4rQ0J2MEMyRWs0WG4vVTNKQXpKdkxVaExYZ21BeC9IQUJ4MmRKVXY5?=
+ =?utf-8?B?SGM1QUJDZHpZVkdyOW5IL3RLd3ZnUU8rZkVuRUQ3VnRYWHpDSFNwZFBIU2Zo?=
+ =?utf-8?B?S05Bd2dReVljeUw4c3R4RDBoQWlQcCthVEQzcFQ5WGM2Sk1jZCtRNXBEdnpa?=
+ =?utf-8?B?elo3MjFwbTdHUTBLLytaaUkwTzhqMkd5aWZkWm8yWDQvbVpkMkxkMm9tY0Vo?=
+ =?utf-8?B?VE5wKzlwNHFTL3o2S1k5dkFyWWlHVmFJZndOTW9aTnd3aGlnR3JuN2k3Lzcw?=
+ =?utf-8?B?Mmp4YVlZQ0Y0OFVpek5aRkEyc2NFTFRuU0t0c0ZJZ2Z3eTk2QVNBUnY0dlBr?=
+ =?utf-8?B?a0pUVXd3UC9JVGhhNjJYd3huY3pCL1ZTcGs2UVNJTlBLT1FFZEF0WXpvR0I2?=
+ =?utf-8?B?a2tIMWNBS0ptTG5Qcmc0Ni9iRGFlSXRscXFSUUVxWWJHQlQrTjluYS9OYjls?=
+ =?utf-8?B?TzNMb1daejdqU3VlRjBWVHFnMWE5eVBLLzFnWEVtMG95cW5FWXZaVjEvYVYw?=
+ =?utf-8?B?bUs5L0MrTWoxQVJQclhUVnVYajRJODc4TFFMN3JuRU5PQk5OV1lOSUFoM1Jj?=
+ =?utf-8?B?OWpOOGRna2V0ZmFjMVZ6WjJIcUZqVyttMGFHZUFHQldmSGVwRmMvTE9NWExS?=
+ =?utf-8?B?V1dLZ0VlNVJxUGtVRm5PRW56SEIzT05kTVgrMktqQnBrOXRGbHhvdUtiMVla?=
+ =?utf-8?B?Slg5QlBtTmdBUDhLVExtUFptYi9ia3RTc2RaVVdkaUYzTHkxQUVvOTYxNGZG?=
+ =?utf-8?B?dGR6Q2FCQnBpc0gyZFUxUE1uQlk3MGp4bE5UeTJnRjFra1orOXRzQ1J6ZlhY?=
+ =?utf-8?B?bXY1eXQzV0wzTDNJaUVodS9uL3J4VDZveldFUGJjbVc4eWY3R1lHZkpLWUpO?=
+ =?utf-8?B?R2tXT2JObTlaV0hFdzJ6TWFLSGdVcUI2NUxadU9tK3I1SEs4TVhNdzl3N2Js?=
+ =?utf-8?B?TnhTRm0ya2d0MElLOEthdVlMT0NKSksrSUNTbzlFWTd2UWwyMWlSV3RLQkYx?=
+ =?utf-8?B?YWNDTExwcDZoYi9tVlZCQjJWREkvbDVBZ2lPMC9WTXdjSEZLYnV5TUdqWXps?=
+ =?utf-8?B?Sm8rYmp6Q0ZGY2M4QWRJSXU5WkZqd1V0anp2R3M5Z1NVbGdtS2RaRFM4ZXN1?=
+ =?utf-8?B?U3FCekp1Y2xQYU5WVzk2d2Z2OGtGcFhBRnpSYXA1ZDZkS1FSWGZId255NExG?=
+ =?utf-8?B?aFpySWFxekNzY0oxRU5vVmY0WWlpYlg4bDJXaEJVM2ZuNldVZGpsclVKNlZG?=
+ =?utf-8?B?dG9LRWpSWnpZRTYvMUlyK281bVB6YUUvNlkwYUVPRFppVDcwNVh2WXVKK2V3?=
+ =?utf-8?B?a3FXcGpjdDNxcDlRaWQ5b1U2RW5LMk5tZC9QSTljZ3kxMVNYcXYwdTBuRGJr?=
+ =?utf-8?B?K05VeFJ2dW1kZTV5ckswRjN1VnIyQ0JCUHBlWHhXa01xSFg4YkgvSFp3bnVF?=
+ =?utf-8?B?bXB6Mlc5dzFJV1dUUWxqQmNJWnh6enFRNHJScnVHRlYzMFZkYmRyOWRTK1lS?=
+ =?utf-8?B?Q3doL1lPbyt0cnN4ZG9NeFd3S0YyaVp2TEh6LzFyNkRKcWNRQUMzaDk3NU03?=
+ =?utf-8?B?S1lNVStOL1NpU3IwbzF0VXlISE1mNVZ6MnRwSXhTTFJhR0hDcDNJc3FTNlpK?=
+ =?utf-8?B?Q05vbks0M0xnbmJ5R25XWlhuYXBmTHNhRWtBekZtaVd1a0Nwenp5R0dhenp3?=
+ =?utf-8?B?VEpTcGhpMmgyYWtPQ293aktFekZDZUt2K3c5SjZFTDY2eWJUS2p3NUVEOXcx?=
+ =?utf-8?B?YXRDSVVTVEJjOWpGcno4cWxWZE5UT2VUNkdJWE1YOUpLWmpvRnhVNHZwSkta?=
+ =?utf-8?B?M1lXYU5mWUNCN3VIR1ViTHVGdjhXMmlsaTZ1b2huaTVZTmpsT1JxMXNQTFB2?=
+ =?utf-8?Q?iCANtElnOEGEkgDFv4ZTA7g=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 11cef8ac-0db6-49e1-14c3-08d9e8bf500f
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2022 15:51:03.2479
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bGv5UrDguLva3cHJqfUNTG106YgoFEW8/anMgtuJFcd0NiqALaOv0mot4+bAFxvmc1VVzN2a3tGjSsFYVnDZUg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4132
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, HSR manages mac addresses of known HSR nodes by using list_head.
-It takes a lot of time when there are a lot of registered nodes due to
-finding specific mac address nodes by using linear search. We can be
-reducing the time by using hlist. Thus, this patch moves list_head to
-hlist_head for mac addresses and this allows for further improvement of
-network performance.
+On 2/5/22 04:06, Thomas Kupper wrote:
+> Hi,
+> 
+> I got an OPNsense DEC740 firewall which is based on the AMD V1500B CPU.
+> 
+> OPNsense runs fine on it but on Linux I'm not able to get the 10GbE 
+> interfaces to work.
+> 
+> My test setup is based on Ubuntu 21.10 Impish Indri with a v5.17-rc2 
+> kernel compiled from Mr Torvalds sources, tag v5.17-rc2. The second 10GbE 
+> interface (enp6s0f2) is set to receive the IP by DHCPv4.
+> 
+> The relevant dmesg entries after boot are:
+> 
+> [    4.763712] libphy: amd-xgbe-mii: probed
+> [    4.782850] amd-xgbe 0000:06:00.1 eth0: net device enabled
+> [    4.800625] libphy: amd-xgbe-mii: probed
+> [    4.803192] amd-xgbe 0000:06:00.2 eth1: net device enabled
+> [    4.841151] amd-xgbe 0000:06:00.1 enp6s0f1: renamed from eth0
+> [    5.116617] amd-xgbe 0000:06:00.2 enp6s0f2: renamed from eth1
+> 
+> After that I see a link up on the switch for enp6s0f2 and the switch 
+> reports 10G link speed.
+> 
+> ethtool reports:
+> 
+> $ sudo ethtool enp6s0f2
+> Settings for enp6s0f2:
+>          Supported ports: [ FIBRE ]
+>          Supported link modes:   Not reported
+>          Supported pause frame use: No
+>          Supports auto-negotiation: No
+>          Supported FEC modes: Not reported
+>          Advertised link modes:  Not reported
+>          Advertised pause frame use: No
+>          Advertised auto-negotiation: No
+>          Advertised FEC modes: Not reported
+>          Speed: Unknown!
+>          Duplex: Unknown! (255)
+>          Auto-negotiation: off
+>          Port: None
+>          PHYAD: 0
+>          Transceiver: internal
+>          Current message level: 0x00000034 (52)
+>                                 link ifdown ifup
+>          Link detected: no
+> 
+> 
+> Manually assigning an IP and pull the interface up and I end up with:
+> 
+> $ sudo ifconfig enp6s0f2 up
+> 
+> SIOCSIFFLAGS: Device or resource busy
+> 
+> ... and dmesg reports:
+> 
+> [  648.038655] genirq: Flags mismatch irq 59. 00000000 (enp6s0f2-pcs) vs. 
+> 00000000 (enp6s0f2-pcs)
+> [  648.048303] amd-xgbe 0000:06:00.2 enp6s0f2: phy irq request failed
+> 
+> After that the lights are out on the switch for that port and it reports 
+> 'no link'
+> 
+> Would that be an known issue or is that configuration simply not yet 
+> supported?
+> 
 
-    Condition: registered 10,000 known HSR nodes
-    Before:
-    # iperf3 -c 192.168.10.1 -i 1 -t 10
-    Connecting to host 192.168.10.1, port 5201
-    [  5] local 192.168.10.2 port 59442 connected to 192.168.10.1 port 5201
-    [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-    [  5]   0.00-1.49   sec  3.75 MBytes  21.1 Mbits/sec    0    158 KBytes
-    [  5]   1.49-2.05   sec  1.25 MBytes  18.7 Mbits/sec    0    166 KBytes
-    [  5]   2.05-3.06   sec  2.44 MBytes  20.3 Mbits/sec   56   16.9 KBytes
-    [  5]   3.06-4.08   sec  1.43 MBytes  11.7 Mbits/sec   11   38.0 KBytes
-    [  5]   4.08-5.00   sec   951 KBytes  8.49 Mbits/sec    0   56.3 KBytes
+Reloading the module and specify the dyndbg option to get some additional 
+debug output.
 
-    After:
-    # iperf3 -c 192.168.10.1 -i 1 -t 10
-    Connecting to host 192.168.10.1, port 5201
-    [  5] local 192.168.10.2 port 36460 connected to 192.168.10.1 port 5201
-    [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-    [  5]   0.00-1.00   sec  7.39 MBytes  62.0 Mbits/sec    3    130 KBytes
-    [  5]   1.00-2.00   sec  5.06 MBytes  42.4 Mbits/sec   16    113 KBytes
-    [  5]   2.00-3.00   sec  8.58 MBytes  72.0 Mbits/sec   42   94.3 KBytes
-    [  5]   3.00-4.00   sec  7.44 MBytes  62.4 Mbits/sec    2    131 KBytes
-    [  5]   4.00-5.07   sec  8.13 MBytes  63.5 Mbits/sec   38   92.9 KBytes
+I'm adding Shyam to the thread, too, as I'm not familiar with the 
+configuration for this chip.
 
-Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
----
-v4:
- - fix indent warnings
+Thanks,
+Tom
 
-v3:
- - rebase current net-next tree
-
-v2:
- - fix rcu warning
-
- net/hsr/hsr_debugfs.c  |  40 +++++----
- net/hsr/hsr_device.c   |  10 ++-
- net/hsr/hsr_forward.c  |   7 +-
- net/hsr/hsr_framereg.c | 200 ++++++++++++++++++++++++-----------------
- net/hsr/hsr_framereg.h |   8 +-
- net/hsr/hsr_main.h     |   9 +-
- net/hsr/hsr_netlink.c  |   4 +-
- 7 files changed, 171 insertions(+), 107 deletions(-)
-
-diff --git a/net/hsr/hsr_debugfs.c b/net/hsr/hsr_debugfs.c
-index 99f3af1a9d4d..fe6094e9a2db 100644
---- a/net/hsr/hsr_debugfs.c
-+++ b/net/hsr/hsr_debugfs.c
-@@ -17,6 +17,7 @@
- #include <linux/module.h>
- #include <linux/errno.h>
- #include <linux/debugfs.h>
-+#include <linux/jhash.h>
- #include "hsr_main.h"
- #include "hsr_framereg.h"
- 
-@@ -28,6 +29,7 @@ hsr_node_table_show(struct seq_file *sfp, void *data)
- {
- 	struct hsr_priv *priv = (struct hsr_priv *)sfp->private;
- 	struct hsr_node *node;
-+	int i;
- 
- 	seq_printf(sfp, "Node Table entries for (%s) device\n",
- 		   (priv->prot_version == PRP_V1 ? "PRP" : "HSR"));
-@@ -39,22 +41,28 @@ hsr_node_table_show(struct seq_file *sfp, void *data)
- 		seq_puts(sfp, "DAN-H\n");
- 
- 	rcu_read_lock();
--	list_for_each_entry_rcu(node, &priv->node_db, mac_list) {
--		/* skip self node */
--		if (hsr_addr_is_self(priv, node->macaddress_A))
--			continue;
--		seq_printf(sfp, "%pM ", &node->macaddress_A[0]);
--		seq_printf(sfp, "%pM ", &node->macaddress_B[0]);
--		seq_printf(sfp, "%10lx, ", node->time_in[HSR_PT_SLAVE_A]);
--		seq_printf(sfp, "%10lx, ", node->time_in[HSR_PT_SLAVE_B]);
--		seq_printf(sfp, "%14x, ", node->addr_B_port);
--
--		if (priv->prot_version == PRP_V1)
--			seq_printf(sfp, "%5x, %5x, %5x\n",
--				   node->san_a, node->san_b,
--				   (node->san_a == 0 && node->san_b == 0));
--		else
--			seq_printf(sfp, "%5x\n", 1);
-+
-+	for (i = 0 ; i < priv->hash_buckets; i++) {
-+		hlist_for_each_entry_rcu(node, &priv->node_db[i], mac_list) {
-+			/* skip self node */
-+			if (hsr_addr_is_self(priv, node->macaddress_A))
-+				continue;
-+			seq_printf(sfp, "%pM ", &node->macaddress_A[0]);
-+			seq_printf(sfp, "%pM ", &node->macaddress_B[0]);
-+			seq_printf(sfp, "%10lx, ",
-+				   node->time_in[HSR_PT_SLAVE_A]);
-+			seq_printf(sfp, "%10lx, ",
-+				   node->time_in[HSR_PT_SLAVE_B]);
-+			seq_printf(sfp, "%14x, ", node->addr_B_port);
-+
-+			if (priv->prot_version == PRP_V1)
-+				seq_printf(sfp, "%5x, %5x, %5x\n",
-+					   node->san_a, node->san_b,
-+					   (node->san_a == 0 &&
-+					    node->san_b == 0));
-+			else
-+				seq_printf(sfp, "%5x\n", 1);
-+		}
- 	}
- 	rcu_read_unlock();
- 	return 0;
-diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
-index e57fdad9ef94..7f250216433d 100644
---- a/net/hsr/hsr_device.c
-+++ b/net/hsr/hsr_device.c
-@@ -485,12 +485,16 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],
- {
- 	bool unregister = false;
- 	struct hsr_priv *hsr;
--	int res;
-+	int res, i;
- 
- 	hsr = netdev_priv(hsr_dev);
- 	INIT_LIST_HEAD(&hsr->ports);
--	INIT_LIST_HEAD(&hsr->node_db);
--	INIT_LIST_HEAD(&hsr->self_node_db);
-+	INIT_HLIST_HEAD(&hsr->self_node_db);
-+	hsr->hash_buckets = HSR_HSIZE;
-+	get_random_bytes(&hsr->hash_seed, sizeof(hsr->hash_seed));
-+	for (i = 0; i < hsr->hash_buckets; i++)
-+		INIT_HLIST_HEAD(&hsr->node_db[i]);
-+
- 	spin_lock_init(&hsr->list_lock);
- 
- 	eth_hw_addr_set(hsr_dev, slave[0]->dev_addr);
-diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
-index e59cbb4f0cd1..5bf357734b11 100644
---- a/net/hsr/hsr_forward.c
-+++ b/net/hsr/hsr_forward.c
-@@ -570,20 +570,23 @@ static int fill_frame_info(struct hsr_frame_info *frame,
- 	struct ethhdr *ethhdr;
- 	__be16 proto;
- 	int ret;
-+	u32 hash;
- 
- 	/* Check if skb contains ethhdr */
- 	if (skb->mac_len < sizeof(struct ethhdr))
- 		return -EINVAL;
- 
- 	memset(frame, 0, sizeof(*frame));
-+
-+	ethhdr = (struct ethhdr *)skb_mac_header(skb);
-+	hash = hsr_mac_hash(port->hsr, ethhdr->h_source);
- 	frame->is_supervision = is_supervision_frame(port->hsr, skb);
--	frame->node_src = hsr_get_node(port, &hsr->node_db, skb,
-+	frame->node_src = hsr_get_node(port, &hsr->node_db[hash], skb,
- 				       frame->is_supervision,
- 				       port->type);
- 	if (!frame->node_src)
- 		return -1; /* Unknown node and !is_supervision, or no mem */
- 
--	ethhdr = (struct ethhdr *)skb_mac_header(skb);
- 	frame->is_vlan = false;
- 	proto = ethhdr->h_proto;
- 
-diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
-index 0775f0f95dbf..b3c6ffa1894d 100644
---- a/net/hsr/hsr_framereg.c
-+++ b/net/hsr/hsr_framereg.c
-@@ -15,11 +15,28 @@
- #include <linux/etherdevice.h>
- #include <linux/slab.h>
- #include <linux/rculist.h>
-+#include <linux/jhash.h>
- #include "hsr_main.h"
- #include "hsr_framereg.h"
- #include "hsr_netlink.h"
- 
--/*	TODO: use hash lists for mac addresses (linux/jhash.h)?    */
-+u32 hsr_mac_hash(struct hsr_priv *hsr, const unsigned char *addr)
-+{
-+	u32 hash = jhash(addr, ETH_ALEN, hsr->hash_seed);
-+
-+	return reciprocal_scale(hash, hsr->hash_buckets);
-+}
-+
-+struct hsr_node *hsr_node_get_first(struct hlist_head *head)
-+{
-+	struct hlist_node *first;
-+
-+	first = rcu_dereference(hlist_first_rcu(head));
-+	if (first)
-+		return hlist_entry(first, struct hsr_node, mac_list);
-+
-+	return NULL;
-+}
- 
- /* seq_nr_after(a, b) - return true if a is after (higher in sequence than) b,
-  * false otherwise.
-@@ -42,8 +59,7 @@ bool hsr_addr_is_self(struct hsr_priv *hsr, unsigned char *addr)
- {
- 	struct hsr_node *node;
- 
--	node = list_first_or_null_rcu(&hsr->self_node_db, struct hsr_node,
--				      mac_list);
-+	node = hsr_node_get_first(&hsr->self_node_db);
- 	if (!node) {
- 		WARN_ONCE(1, "HSR: No self node\n");
- 		return false;
-@@ -59,12 +75,12 @@ bool hsr_addr_is_self(struct hsr_priv *hsr, unsigned char *addr)
- 
- /* Search for mac entry. Caller must hold rcu read lock.
-  */
--static struct hsr_node *find_node_by_addr_A(struct list_head *node_db,
-+static struct hsr_node *find_node_by_addr_A(struct hlist_head *node_db,
- 					    const unsigned char addr[ETH_ALEN])
- {
- 	struct hsr_node *node;
- 
--	list_for_each_entry_rcu(node, node_db, mac_list) {
-+	hlist_for_each_entry_rcu(node, node_db, mac_list) {
- 		if (ether_addr_equal(node->macaddress_A, addr))
- 			return node;
- 	}
-@@ -79,7 +95,7 @@ int hsr_create_self_node(struct hsr_priv *hsr,
- 			 const unsigned char addr_a[ETH_ALEN],
- 			 const unsigned char addr_b[ETH_ALEN])
- {
--	struct list_head *self_node_db = &hsr->self_node_db;
-+	struct hlist_head *self_node_db = &hsr->self_node_db;
- 	struct hsr_node *node, *oldnode;
- 
- 	node = kmalloc(sizeof(*node), GFP_KERNEL);
-@@ -90,14 +106,13 @@ int hsr_create_self_node(struct hsr_priv *hsr,
- 	ether_addr_copy(node->macaddress_B, addr_b);
- 
- 	spin_lock_bh(&hsr->list_lock);
--	oldnode = list_first_or_null_rcu(self_node_db,
--					 struct hsr_node, mac_list);
-+	oldnode = hsr_node_get_first(self_node_db);
- 	if (oldnode) {
--		list_replace_rcu(&oldnode->mac_list, &node->mac_list);
-+		hlist_replace_rcu(&oldnode->mac_list, &node->mac_list);
- 		spin_unlock_bh(&hsr->list_lock);
- 		kfree_rcu(oldnode, rcu_head);
- 	} else {
--		list_add_tail_rcu(&node->mac_list, self_node_db);
-+		hlist_add_tail_rcu(&node->mac_list, self_node_db);
- 		spin_unlock_bh(&hsr->list_lock);
- 	}
- 
-@@ -106,25 +121,25 @@ int hsr_create_self_node(struct hsr_priv *hsr,
- 
- void hsr_del_self_node(struct hsr_priv *hsr)
- {
--	struct list_head *self_node_db = &hsr->self_node_db;
-+	struct hlist_head *self_node_db = &hsr->self_node_db;
- 	struct hsr_node *node;
- 
- 	spin_lock_bh(&hsr->list_lock);
--	node = list_first_or_null_rcu(self_node_db, struct hsr_node, mac_list);
-+	node = hsr_node_get_first(self_node_db);
- 	if (node) {
--		list_del_rcu(&node->mac_list);
-+		hlist_del_rcu(&node->mac_list);
- 		kfree_rcu(node, rcu_head);
- 	}
- 	spin_unlock_bh(&hsr->list_lock);
- }
- 
--void hsr_del_nodes(struct list_head *node_db)
-+void hsr_del_nodes(struct hlist_head *node_db)
- {
- 	struct hsr_node *node;
--	struct hsr_node *tmp;
-+	struct hlist_node *tmp;
- 
--	list_for_each_entry_safe(node, tmp, node_db, mac_list)
--		kfree(node);
-+	hlist_for_each_entry_safe(node, tmp, node_db, mac_list)
-+		kfree_rcu(node, rcu_head);
- }
- 
- void prp_handle_san_frame(bool san, enum hsr_port_type port,
-@@ -145,7 +160,7 @@ void prp_handle_san_frame(bool san, enum hsr_port_type port,
-  * originating from the newly added node.
-  */
- static struct hsr_node *hsr_add_node(struct hsr_priv *hsr,
--				     struct list_head *node_db,
-+				     struct hlist_head *node_db,
- 				     unsigned char addr[],
- 				     u16 seq_out, bool san,
- 				     enum hsr_port_type rx_port)
-@@ -175,14 +190,14 @@ static struct hsr_node *hsr_add_node(struct hsr_priv *hsr,
- 		hsr->proto_ops->handle_san_frame(san, rx_port, new_node);
- 
- 	spin_lock_bh(&hsr->list_lock);
--	list_for_each_entry_rcu(node, node_db, mac_list,
--				lockdep_is_held(&hsr->list_lock)) {
-+	hlist_for_each_entry_rcu(node, node_db, mac_list,
-+				 lockdep_is_held(&hsr->list_lock)) {
- 		if (ether_addr_equal(node->macaddress_A, addr))
- 			goto out;
- 		if (ether_addr_equal(node->macaddress_B, addr))
- 			goto out;
- 	}
--	list_add_tail_rcu(&new_node->mac_list, node_db);
-+	hlist_add_tail_rcu(&new_node->mac_list, node_db);
- 	spin_unlock_bh(&hsr->list_lock);
- 	return new_node;
- out:
-@@ -202,7 +217,7 @@ void prp_update_san_info(struct hsr_node *node, bool is_sup)
- 
- /* Get the hsr_node from which 'skb' was sent.
-  */
--struct hsr_node *hsr_get_node(struct hsr_port *port, struct list_head *node_db,
-+struct hsr_node *hsr_get_node(struct hsr_port *port, struct hlist_head *node_db,
- 			      struct sk_buff *skb, bool is_sup,
- 			      enum hsr_port_type rx_port)
- {
-@@ -218,7 +233,7 @@ struct hsr_node *hsr_get_node(struct hsr_port *port, struct list_head *node_db,
- 
- 	ethhdr = (struct ethhdr *)skb_mac_header(skb);
- 
--	list_for_each_entry_rcu(node, node_db, mac_list) {
-+	hlist_for_each_entry_rcu(node, node_db, mac_list) {
- 		if (ether_addr_equal(node->macaddress_A, ethhdr->h_source)) {
- 			if (hsr->proto_ops->update_san_info)
- 				hsr->proto_ops->update_san_info(node, is_sup);
-@@ -268,11 +283,12 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
- 	struct hsr_sup_tlv *hsr_sup_tlv;
- 	struct hsr_node *node_real;
- 	struct sk_buff *skb = NULL;
--	struct list_head *node_db;
-+	struct hlist_head *node_db;
- 	struct ethhdr *ethhdr;
- 	int i;
- 	unsigned int pull_size = 0;
- 	unsigned int total_pull_size = 0;
-+	u32 hash;
- 
- 	/* Here either frame->skb_hsr or frame->skb_prp should be
- 	 * valid as supervision frame always will have protocol
-@@ -310,11 +326,13 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
- 	hsr_sp = (struct hsr_sup_payload *)skb->data;
- 
- 	/* Merge node_curr (registered on macaddress_B) into node_real */
--	node_db = &port_rcv->hsr->node_db;
--	node_real = find_node_by_addr_A(node_db, hsr_sp->macaddress_A);
-+	node_db = port_rcv->hsr->node_db;
-+	hash = hsr_mac_hash(hsr, hsr_sp->macaddress_A);
-+	node_real = find_node_by_addr_A(&node_db[hash], hsr_sp->macaddress_A);
- 	if (!node_real)
- 		/* No frame received from AddrA of this node yet */
--		node_real = hsr_add_node(hsr, node_db, hsr_sp->macaddress_A,
-+		node_real = hsr_add_node(hsr, &node_db[hash],
-+					 hsr_sp->macaddress_A,
- 					 HSR_SEQNR_START - 1, true,
- 					 port_rcv->type);
- 	if (!node_real)
-@@ -348,7 +366,8 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
- 		hsr_sp = (struct hsr_sup_payload *)skb->data;
- 
- 		/* Check if redbox mac and node mac are equal. */
--		if (!ether_addr_equal(node_real->macaddress_A, hsr_sp->macaddress_A)) {
-+		if (!ether_addr_equal(node_real->macaddress_A,
-+				      hsr_sp->macaddress_A)) {
- 			/* This is a redbox supervision frame for a VDAN! */
- 			goto done;
- 		}
-@@ -368,7 +387,7 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
- 	node_real->addr_B_port = port_rcv->type;
- 
- 	spin_lock_bh(&hsr->list_lock);
--	list_del_rcu(&node_curr->mac_list);
-+	hlist_del_rcu(&node_curr->mac_list);
- 	spin_unlock_bh(&hsr->list_lock);
- 	kfree_rcu(node_curr, rcu_head);
- 
-@@ -406,6 +425,7 @@ void hsr_addr_subst_dest(struct hsr_node *node_src, struct sk_buff *skb,
- 			 struct hsr_port *port)
- {
- 	struct hsr_node *node_dst;
-+	u32 hash;
- 
- 	if (!skb_mac_header_was_set(skb)) {
- 		WARN_ONCE(1, "%s: Mac header not set\n", __func__);
-@@ -415,7 +435,8 @@ void hsr_addr_subst_dest(struct hsr_node *node_src, struct sk_buff *skb,
- 	if (!is_unicast_ether_addr(eth_hdr(skb)->h_dest))
- 		return;
- 
--	node_dst = find_node_by_addr_A(&port->hsr->node_db,
-+	hash = hsr_mac_hash(port->hsr, eth_hdr(skb)->h_dest);
-+	node_dst = find_node_by_addr_A(&port->hsr->node_db[hash],
- 				       eth_hdr(skb)->h_dest);
- 	if (!node_dst) {
- 		if (net_ratelimit())
-@@ -491,59 +512,73 @@ static struct hsr_port *get_late_port(struct hsr_priv *hsr,
- void hsr_prune_nodes(struct timer_list *t)
- {
- 	struct hsr_priv *hsr = from_timer(hsr, t, prune_timer);
-+	struct hlist_node *tmp;
- 	struct hsr_node *node;
--	struct hsr_node *tmp;
- 	struct hsr_port *port;
- 	unsigned long timestamp;
- 	unsigned long time_a, time_b;
-+	int i;
- 
- 	spin_lock_bh(&hsr->list_lock);
--	list_for_each_entry_safe(node, tmp, &hsr->node_db, mac_list) {
--		/* Don't prune own node. Neither time_in[HSR_PT_SLAVE_A]
--		 * nor time_in[HSR_PT_SLAVE_B], will ever be updated for
--		 * the master port. Thus the master node will be repeatedly
--		 * pruned leading to packet loss.
--		 */
--		if (hsr_addr_is_self(hsr, node->macaddress_A))
--			continue;
--
--		/* Shorthand */
--		time_a = node->time_in[HSR_PT_SLAVE_A];
--		time_b = node->time_in[HSR_PT_SLAVE_B];
--
--		/* Check for timestamps old enough to risk wrap-around */
--		if (time_after(jiffies, time_a + MAX_JIFFY_OFFSET / 2))
--			node->time_in_stale[HSR_PT_SLAVE_A] = true;
--		if (time_after(jiffies, time_b + MAX_JIFFY_OFFSET / 2))
--			node->time_in_stale[HSR_PT_SLAVE_B] = true;
--
--		/* Get age of newest frame from node.
--		 * At least one time_in is OK here; nodes get pruned long
--		 * before both time_ins can get stale
--		 */
--		timestamp = time_a;
--		if (node->time_in_stale[HSR_PT_SLAVE_A] ||
--		    (!node->time_in_stale[HSR_PT_SLAVE_B] &&
--		    time_after(time_b, time_a)))
--			timestamp = time_b;
--
--		/* Warn of ring error only as long as we get frames at all */
--		if (time_is_after_jiffies(timestamp +
--				msecs_to_jiffies(1.5 * MAX_SLAVE_DIFF))) {
--			rcu_read_lock();
--			port = get_late_port(hsr, node);
--			if (port)
--				hsr_nl_ringerror(hsr, node->macaddress_A, port);
--			rcu_read_unlock();
--		}
- 
--		/* Prune old entries */
--		if (time_is_before_jiffies(timestamp +
--				msecs_to_jiffies(HSR_NODE_FORGET_TIME))) {
--			hsr_nl_nodedown(hsr, node->macaddress_A);
--			list_del_rcu(&node->mac_list);
--			/* Note that we need to free this entry later: */
--			kfree_rcu(node, rcu_head);
-+	for (i = 0; i < hsr->hash_buckets; i++) {
-+		hlist_for_each_entry_safe(node, tmp, &hsr->node_db[i],
-+					  mac_list) {
-+			/* Don't prune own node.
-+			 * Neither time_in[HSR_PT_SLAVE_A]
-+			 * nor time_in[HSR_PT_SLAVE_B], will ever be updated
-+			 * for the master port. Thus the master node will be
-+			 * repeatedly pruned leading to packet loss.
-+			 */
-+			if (hsr_addr_is_self(hsr, node->macaddress_A))
-+				continue;
-+
-+			/* Shorthand */
-+			time_a = node->time_in[HSR_PT_SLAVE_A];
-+			time_b = node->time_in[HSR_PT_SLAVE_B];
-+
-+			/* Check for timestamps old enough to
-+			 * risk wrap-around
-+			 */
-+			if (time_after(jiffies, time_a + MAX_JIFFY_OFFSET / 2))
-+				node->time_in_stale[HSR_PT_SLAVE_A] = true;
-+			if (time_after(jiffies, time_b + MAX_JIFFY_OFFSET / 2))
-+				node->time_in_stale[HSR_PT_SLAVE_B] = true;
-+
-+			/* Get age of newest frame from node.
-+			 * At least one time_in is OK here; nodes get pruned
-+			 * long before both time_ins can get stale
-+			 */
-+			timestamp = time_a;
-+			if (node->time_in_stale[HSR_PT_SLAVE_A] ||
-+			    (!node->time_in_stale[HSR_PT_SLAVE_B] &&
-+			     time_after(time_b, time_a)))
-+				timestamp = time_b;
-+
-+			/* Warn of ring error only as long as we get
-+			 * frames at all
-+			 */
-+			if (time_is_after_jiffies(timestamp +
-+						  msecs_to_jiffies(1.5 * MAX_SLAVE_DIFF))) {
-+				rcu_read_lock();
-+				port = get_late_port(hsr, node);
-+				if (port)
-+					hsr_nl_ringerror(hsr,
-+							 node->macaddress_A,
-+							 port);
-+				rcu_read_unlock();
-+			}
-+
-+			/* Prune old entries */
-+			if (time_is_before_jiffies(timestamp +
-+						   msecs_to_jiffies(HSR_NODE_FORGET_TIME))) {
-+				hsr_nl_nodedown(hsr, node->macaddress_A);
-+				hlist_del_rcu(&node->mac_list);
-+				/* Note that we need to free this
-+				 * entry later:
-+				 */
-+				kfree_rcu(node, rcu_head);
-+			}
- 		}
- 	}
- 	spin_unlock_bh(&hsr->list_lock);
-@@ -557,17 +592,19 @@ void *hsr_get_next_node(struct hsr_priv *hsr, void *_pos,
- 			unsigned char addr[ETH_ALEN])
- {
- 	struct hsr_node *node;
-+	u32 hash;
-+
-+	hash = hsr_mac_hash(hsr, addr);
- 
- 	if (!_pos) {
--		node = list_first_or_null_rcu(&hsr->node_db,
--					      struct hsr_node, mac_list);
-+		node = hsr_node_get_first(&hsr->node_db[hash]);
- 		if (node)
- 			ether_addr_copy(addr, node->macaddress_A);
- 		return node;
- 	}
- 
- 	node = _pos;
--	list_for_each_entry_continue_rcu(node, &hsr->node_db, mac_list) {
-+	hlist_for_each_entry_continue_rcu(node, mac_list) {
- 		ether_addr_copy(addr, node->macaddress_A);
- 		return node;
- 	}
-@@ -587,8 +624,11 @@ int hsr_get_node_data(struct hsr_priv *hsr,
- 	struct hsr_node *node;
- 	struct hsr_port *port;
- 	unsigned long tdiff;
-+	u32 hash;
-+
-+	hash = hsr_mac_hash(hsr, addr);
- 
--	node = find_node_by_addr_A(&hsr->node_db, addr);
-+	node = find_node_by_addr_A(&hsr->node_db[hash], addr);
- 	if (!node)
- 		return -ENOENT;
- 
-diff --git a/net/hsr/hsr_framereg.h b/net/hsr/hsr_framereg.h
-index bdbb8c822ba1..d7cce6b161e3 100644
---- a/net/hsr/hsr_framereg.h
-+++ b/net/hsr/hsr_framereg.h
-@@ -28,9 +28,11 @@ struct hsr_frame_info {
- 	bool is_from_san;
- };
- 
-+u32 hsr_mac_hash(struct hsr_priv *hsr, const unsigned char *addr);
-+struct hsr_node *hsr_node_get_first(struct hlist_head *head);
- void hsr_del_self_node(struct hsr_priv *hsr);
--void hsr_del_nodes(struct list_head *node_db);
--struct hsr_node *hsr_get_node(struct hsr_port *port, struct list_head *node_db,
-+void hsr_del_nodes(struct hlist_head *node_db);
-+struct hsr_node *hsr_get_node(struct hsr_port *port, struct hlist_head *node_db,
- 			      struct sk_buff *skb, bool is_sup,
- 			      enum hsr_port_type rx_port);
- void hsr_handle_sup_frame(struct hsr_frame_info *frame);
-@@ -68,7 +70,7 @@ void prp_handle_san_frame(bool san, enum hsr_port_type port,
- void prp_update_san_info(struct hsr_node *node, bool is_sup);
- 
- struct hsr_node {
--	struct list_head	mac_list;
-+	struct hlist_node	mac_list;
- 	unsigned char		macaddress_A[ETH_ALEN];
- 	unsigned char		macaddress_B[ETH_ALEN];
- 	/* Local slave through which AddrB frames are received from this node */
-diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
-index ff9ec7634218..ca556bda3467 100644
---- a/net/hsr/hsr_main.h
-+++ b/net/hsr/hsr_main.h
-@@ -63,6 +63,9 @@ struct hsr_tag {
- 
- #define HSR_V1_SUP_LSDUSIZE		52
- 
-+#define HSR_HSIZE_SHIFT	8
-+#define HSR_HSIZE	BIT(HSR_HSIZE_SHIFT)
-+
- /* The helper functions below assumes that 'path' occupies the 4 most
-  * significant bits of the 16-bit field shared by 'path' and 'LSDU_size' (or
-  * equivalently, the 4 most significant bits of HSR tag byte 14).
-@@ -201,8 +204,8 @@ struct hsr_proto_ops {
- struct hsr_priv {
- 	struct rcu_head		rcu_head;
- 	struct list_head	ports;
--	struct list_head	node_db;	/* Known HSR nodes */
--	struct list_head	self_node_db;	/* MACs of slaves */
-+	struct hlist_head	node_db[HSR_HSIZE];	/* Known HSR nodes */
-+	struct hlist_head	self_node_db;	/* MACs of slaves */
- 	struct timer_list	announce_timer;	/* Supervision frame dispatch */
- 	struct timer_list	prune_timer;
- 	int announce_count;
-@@ -212,6 +215,8 @@ struct hsr_priv {
- 	spinlock_t seqnr_lock;	/* locking for sequence_nr */
- 	spinlock_t list_lock;	/* locking for node list */
- 	struct hsr_proto_ops	*proto_ops;
-+	u32 hash_buckets;
-+	u32 hash_seed;
- #define PRP_LAN_ID	0x5     /* 0x1010 for A and 0x1011 for B. Bit 0 is set
- 				 * based on SLAVE_A or SLAVE_B
- 				 */
-diff --git a/net/hsr/hsr_netlink.c b/net/hsr/hsr_netlink.c
-index f3c8f91dbe2c..1405c037cf7a 100644
---- a/net/hsr/hsr_netlink.c
-+++ b/net/hsr/hsr_netlink.c
-@@ -105,6 +105,7 @@ static int hsr_newlink(struct net *src_net, struct net_device *dev,
- static void hsr_dellink(struct net_device *dev, struct list_head *head)
- {
- 	struct hsr_priv *hsr = netdev_priv(dev);
-+	int i;
- 
- 	del_timer_sync(&hsr->prune_timer);
- 	del_timer_sync(&hsr->announce_timer);
-@@ -113,7 +114,8 @@ static void hsr_dellink(struct net_device *dev, struct list_head *head)
- 	hsr_del_ports(hsr);
- 
- 	hsr_del_self_node(hsr);
--	hsr_del_nodes(&hsr->node_db);
-+	for (i = 0; i < hsr->hash_buckets; i++)
-+		hsr_del_nodes(&hsr->node_db[i]);
- 
- 	unregister_netdevice_queue(dev, head);
- }
--- 
-2.25.1
-
+> 
+> Kind Regards
+> 
+> Thomas Kupper
+> 
