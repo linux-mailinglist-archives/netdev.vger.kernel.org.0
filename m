@@ -2,60 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FDD44AAA52
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 18:01:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A73FA4AAA89
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 18:27:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380517AbiBERBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 12:01:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47332 "EHLO
+        id S1380697AbiBER1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 12:27:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239376AbiBERBe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 12:01:34 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C095C061348
-        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 09:01:29 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id om8so741018pjb.5
-        for <netdev@vger.kernel.org>; Sat, 05 Feb 2022 09:01:29 -0800 (PST)
+        with ESMTP id S242204AbiBER1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 12:27:16 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCB6C061348
+        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 09:27:15 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id u130so7933918pfc.2
+        for <netdev@vger.kernel.org>; Sat, 05 Feb 2022 09:27:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=cDLSgxhWsfmnXVqh2Fw60fWmZUR1WAPhE5phlgLvMlA=;
-        b=Qct5NqaVgZFmUO1oTH5Qe19Jc39t97gr8IkMGoEmWdyPhAbZear3nuxynwX0zOLWRM
-         ycLMxIt4Ri0v7Fssc/XDIbezB+BVPSDriV1NEMCYRQGADubETpYBJUJxpbHRy7mJGN8h
-         QanjrNS0fIUOOliKXO92XvH0oAx04wP30Ye3UciRYf9HjNAQn2crywEfkvwRJDhLb1BF
-         99ZRX54rFxkAPb9m2ZrCxnNpFwZI2jz4DFrCVjqPpqfUaYer73wu/QJq12IVWHpSzQFa
-         OEQukDkHFdtW8R4E3hr7tTbdfNMjN0ttqqt8HuUNoDhK7i3vUJ7bGD2hdOsBdhvNBYot
-         ndNw==
+        bh=KlLfYxFaL2DMllwh2ZMZKJDTu0Hxy3jMMIr74/EJNwo=;
+        b=RsPLThoGbvnVpnTGztS7pInkL+PdVvLWOTlUaUGd9xOtm6pRYWRHgs0cU2kQuw+d4s
+         MV481yf9pSss1ADZJwzDGPgxhc9o6/d4kDBHlL+3aNL/VJq0bgHjCrVUG95E97rIS4cC
+         LXIUfjui4CrcbF8pwV/ez1SxTBiMOTm0D7BfmMa1vWw4H9tYNYcRINaqWs5UUPRDavo+
+         +T9CB17eokArVlI0mVEZVQZbzDLk1PCGJ0fvHgljPqVvikW7qPlZKs+koR/skT2yilx3
+         ariiq6z8EqRuqAWc5nKNbzUvOSa/Ic/NgunmCpEg6q9MDtS62CjE0qeyyoVYcHeW9g2e
+         /OdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=cDLSgxhWsfmnXVqh2Fw60fWmZUR1WAPhE5phlgLvMlA=;
-        b=KDczbxympzxXNUUCIiiDmDxttSwDY6EnGWt32WeKDdavWfe3shF+I/VWAjt7gUOQbN
-         RoKtaOPCGsJ7liGl6R2pMvu3IcsgY1zNVmB4qPlXRppKk2U3L+ki6lU+wQ2rVgCY3ef0
-         +wcXk5LqZSjm54+0+aZT9HaOALw2ibCxQ57YtIAgg36sVxWMsBRHm4ASN4lgp3xbZ9Vi
-         0kzMaafawzmW9HD0dBXgTOyUhyXY258veABA/YVwdqeCFrflGkPuFEcnWzeiQXKS0wiZ
-         2iUaSoXNRu3R9eSgvFrJsZpVRC2h8+vLqBvKr4/FsxGOUrGHgWuduCzr7w0hKC3Q47i8
-         Bjdw==
-X-Gm-Message-State: AOAM533hgckdKdZc7ZlxWNkRiOAd432EsksPLVtA6xamxRVeQ6aaIZFy
-        ElswCazEdjXt+M47fS/6jfsCN0fQizc=
-X-Google-Smtp-Source: ABdhPJxxaelNSzwKDTHZGuxTN4aevXfwK41YJ3GTdtWWXzKSbNVWtTVYt0M/hj0mc4zV6kH2V6AukA==
-X-Received: by 2002:a17:902:e88d:: with SMTP id w13mr8943303plg.122.1644080488735;
-        Sat, 05 Feb 2022 09:01:28 -0800 (PST)
+        bh=KlLfYxFaL2DMllwh2ZMZKJDTu0Hxy3jMMIr74/EJNwo=;
+        b=WReqWImDPwM9muJtYOThTfAK1S/Z5MHHct8KoPVXALhLQ3Rjx7KYyFc3Z9VpzDBmPE
+         GePJBQfOKIiDjspUT4SxIYAKAudsRMsgf8pH+2uwanyXEvs+TsWGYP1sNZOJVHt6eWqb
+         UpWBk5gX6Agz1N8agHl3jdYuKHdvwMbh+AMd/rSyc3GDsIkBCAlbcDHqjAohzmGZO5Fb
+         rUQ2nXSkCKKbeC/vBfWqpZyn09vebhhLcqMb4GFJjTBE+8ek5uBdbR5kaE2BqWjcN0kA
+         SHyyuRczG9DA8m/YzLMVsuhvsxOJv422+vaiTo5tqqXSJKWtb6Xw373VB8AvUOuMwgA0
+         bA+Q==
+X-Gm-Message-State: AOAM5319bCQ8900NC5/YhtSEHodWNv65zE80Nb4RqbTO1LUGSC3zeRCm
+        DLopwXGKZPvSSoWhffUpZ9Ivdu710rM=
+X-Google-Smtp-Source: ABdhPJxW89uhH4rwLwc9pAmyay4lzzhrG34Gxm/3ismFn5kJrgkIF2igVMcLjIp5BtWbOOa+DSke1Q==
+X-Received: by 2002:a63:4f4f:: with SMTP id p15mr3599783pgl.452.1644082035155;
+        Sat, 05 Feb 2022 09:27:15 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:8eb:b7ed:dbe7:a81f])
-        by smtp.gmail.com with ESMTPSA id a1sm4176835pgm.83.2022.02.05.09.01.27
+        by smtp.gmail.com with ESMTPSA id z13sm6769589pfe.20.2022.02.05.09.27.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Feb 2022 09:01:28 -0800 (PST)
+        Sat, 05 Feb 2022 09:27:14 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v2 net-next] net: initialize init_net earlier
-Date:   Sat,  5 Feb 2022 09:01:25 -0800
-Message-Id: <20220205170125.3562935-1-eric.dumazet@gmail.com>
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>
+Subject: [PATCH net-next] ref_tracker: remove filter_irq_stacks() call
+Date:   Sat,  5 Feb 2022 09:27:11 -0800
+Message-Id: <20220205172711.3775171-1-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -71,144 +74,38 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-While testing a patch that will follow later
-("net: add netns refcount tracker to struct nsproxy")
-I found that devtmpfs_init() was called before init_net
-was initialized.
-
-This is a bug, because devtmpfs_setup() calls
-ksys_unshare(CLONE_NEWNS);
-
-This has the effect of increasing init_net refcount,
-which will be later overwritten to 1, as part of setup_net(&init_net)
-
-We had too many prior patches [1] trying to work around the root cause.
-
-Really, make sure init_net is in BSS section, and that net_ns_init()
-is called earlier at boot time.
-
-Note that another patch ("vfs: add netns refcount tracker
-to struct fs_context") also will need net_ns_init() being called
-before vfs_caches_init()
-
-As a bonus, this patch saves around 4KB in .data section.
-
-[1]
-
-f8c46cb39079 ("netns: do not call pernet ops for not yet set up init_net namespace")
-b5082df8019a ("net: Initialise init_net.count to 1")
-734b65417b24 ("net: Statically initialize init_net.dev_base_head")
-
-v2: fixed a build error reported by kernel build bots (CONFIG_NET=n)
+After commit e94006608949 ("lib/stackdepot: always do filter_irq_stacks()
+in stack_depot_save()") it became unnecessary to filter the stack
+before calling stack_depot_save().
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Marco Elver <elver@google.com>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
 ---
- include/net/net_namespace.h |  6 ++++++
- init/main.c                 |  2 ++
- net/core/dev.c              |  3 +--
- net/core/net_namespace.c    | 17 +++++------------
- 4 files changed, 14 insertions(+), 14 deletions(-)
+ lib/ref_tracker.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index 5b61c462e534be468c81d2b0f4ef586b209dd4b8..374cc7b260fcdf15a8fc2c709d0b0fc6d99e8c5c 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -513,4 +513,10 @@ static inline void fnhe_genid_bump(struct net *net)
- 	atomic_inc(&net->fnhe_genid);
- }
+diff --git a/lib/ref_tracker.c b/lib/ref_tracker.c
+index 9c0c2e09df666d19aba441f568762afbd1cad4d0..dc7b14aa3431e2bf7a97a7e78220f04da144563d 100644
+--- a/lib/ref_tracker.c
++++ b/lib/ref_tracker.c
+@@ -89,7 +89,6 @@ int ref_tracker_alloc(struct ref_tracker_dir *dir,
+ 		return -ENOMEM;
+ 	}
+ 	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
+-	nr_entries = filter_irq_stacks(entries, nr_entries);
+ 	tracker->alloc_stack_handle = stack_depot_save(entries, nr_entries, gfp);
  
-+#ifdef CONFIG_NET
-+void net_ns_init(void);
-+#else
-+static inline void net_ns_init(void) {}
-+#endif
-+
- #endif /* __NET_NET_NAMESPACE_H */
-diff --git a/init/main.c b/init/main.c
-index 65fa2e41a9c0904131525d504f3ec86add44f141..ada50f5a15e4397e45b0e5c06bab051b1ce193d9 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -99,6 +99,7 @@
- #include <linux/kcsan.h>
- #include <linux/init_syscalls.h>
- #include <linux/stackdepot.h>
-+#include <net/net_namespace.h>
+ 	spin_lock_irqsave(&dir->lock, flags);
+@@ -120,7 +119,6 @@ int ref_tracker_free(struct ref_tracker_dir *dir,
+ 		return -EEXIST;
+ 	}
+ 	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
+-	nr_entries = filter_irq_stacks(entries, nr_entries);
+ 	stack_handle = stack_depot_save(entries, nr_entries, GFP_ATOMIC);
  
- #include <asm/io.h>
- #include <asm/bugs.h>
-@@ -1116,6 +1117,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
- 	key_init();
- 	security_init();
- 	dbg_late_init();
-+	net_ns_init();
- 	vfs_caches_init();
- 	pagecache_init();
- 	signals_init();
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 1eaa0b88e3ba5d800484656f2c3420af57050294..f662c6a7d7b49b836a05efc74aeffc7fc9e4e147 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10732,8 +10732,7 @@ static int __net_init netdev_init(struct net *net)
- 	BUILD_BUG_ON(GRO_HASH_BUCKETS >
- 		     8 * sizeof_field(struct napi_struct, gro_bitmask));
- 
--	if (net != &init_net)
--		INIT_LIST_HEAD(&net->dev_base_head);
-+	INIT_LIST_HEAD(&net->dev_base_head);
- 
- 	net->dev_name_head = netdev_create_hash();
- 	if (net->dev_name_head == NULL)
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 8711350085d6b55a4f3da19bc69e521f9efb7861..0ec2f5906a27c7f930e832835682d69a32e3c8e1 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -44,13 +44,7 @@ EXPORT_SYMBOL_GPL(net_rwsem);
- static struct key_tag init_net_key_domain = { .usage = REFCOUNT_INIT(1) };
- #endif
- 
--struct net init_net = {
--	.ns.count	= REFCOUNT_INIT(1),
--	.dev_base_head	= LIST_HEAD_INIT(init_net.dev_base_head),
--#ifdef CONFIG_KEYS
--	.key_domain	= &init_net_key_domain,
--#endif
--};
-+struct net init_net;
- EXPORT_SYMBOL(init_net);
- 
- static bool init_net_initialized;
-@@ -1087,7 +1081,7 @@ static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 portid,
- 	rtnl_set_sk_err(net, RTNLGRP_NSID, err);
- }
- 
--static int __init net_ns_init(void)
-+void __init net_ns_init(void)
- {
- 	struct net_generic *ng;
- 
-@@ -1108,6 +1102,9 @@ static int __init net_ns_init(void)
- 
- 	rcu_assign_pointer(init_net.gen, ng);
- 
-+#ifdef CONFIG_KEYS
-+	init_net.key_domain = &init_net_key_domain;
-+#endif
- 	down_write(&pernet_ops_rwsem);
- 	if (setup_net(&init_net, &init_user_ns))
- 		panic("Could not setup the initial network namespace");
-@@ -1122,12 +1119,8 @@ static int __init net_ns_init(void)
- 		      RTNL_FLAG_DOIT_UNLOCKED);
- 	rtnl_register(PF_UNSPEC, RTM_GETNSID, rtnl_net_getid, rtnl_net_dumpid,
- 		      RTNL_FLAG_DOIT_UNLOCKED);
--
--	return 0;
- }
- 
--pure_initcall(net_ns_init);
--
- static void free_exit_list(struct pernet_operations *ops, struct list_head *net_exit_list)
- {
- 	ops_pre_exit_list(ops, net_exit_list);
+ 	spin_lock_irqsave(&dir->lock, flags);
 -- 
 2.35.0.263.gb82422642f-goog
 
