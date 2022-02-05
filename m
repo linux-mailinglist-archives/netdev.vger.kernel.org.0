@@ -2,90 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E915F4AA853
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 12:28:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C937E4AA88B
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 13:10:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243780AbiBEL17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 06:27:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53972 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243390AbiBEL16 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 06:27:58 -0500
-Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A97C061346
-        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 03:27:56 -0800 (PST)
-Received: (qmail 27698 invoked from network); 5 Feb 2022 11:26:10 -0000
-Received: from p200300cf0744fd00709fcefffe16676f.dip0.t-ipconnect.de ([2003:cf:744:fd00:709f:ceff:fe16:676f]:56536 HELO eto.sf-tec.de) (auth=eike@sf-mail.de)
-        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
-        for <andrew@lunn.ch>; Sat, 05 Feb 2022 12:26:10 +0100
-From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH 2/3] sunhme: fix the version number in struct ethtool_drvinfo
-Date:   Sat, 05 Feb 2022 12:27:47 +0100
-Message-ID: <5538622.DvuYhMxLoT@eto.sf-tec.de>
-In-Reply-To: <YfwNCAYc6Xyk8V8K@lunn.ch>
-References: <4686583.GXAFRqVoOG@eto.sf-tec.de> <3152336.aeNJFYEL58@eto.sf-tec.de> <YfwNCAYc6Xyk8V8K@lunn.ch>
+        id S241229AbiBEMKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 07:10:33 -0500
+Received: from mga04.intel.com ([192.55.52.120]:37205 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232479AbiBEMKc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Feb 2022 07:10:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644063032; x=1675599032;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lZP4CupIkHIl8x9BJu41rQxOUyIclXltfTO1C9bu780=;
+  b=RpS4nsTiEJVsRadApBDTxJxCnHyICwYpWc+itamsTmE9yGwoP2uplyl2
+   0GBQqq/fFm350uPhy9oYh/oHfhJAp6QyeTBnZvlApbKBDqsdvbBdYZrgB
+   /8dJsoXT4gGBdomRfINmG+mvX4ovA6lMlj8pX8KSnYg+7WP/ri2pZt5fz
+   gtJ4uhjZU269xhdEsYAXnWHkrNTrhiOzWvl4VlLlpbobha8cegxvE5TUN
+   9HGzZUYZg/EC5vyLB8YaLZzLMD56Z5ZUCxG2TGNw+Igl0p1Ye/9eY/HMd
+   qsg7wAXffWM3p8+Cxd23UE5vUVald9XfwepK1ktuTS8iJaMj5rRdQEd6j
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="247340766"
+X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
+   d="scan'208";a="247340766"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 04:10:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
+   d="scan'208";a="584391910"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 05 Feb 2022 04:10:30 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nGJtd-000Z0M-H9; Sat, 05 Feb 2022 12:10:29 +0000
+Date:   Sat, 5 Feb 2022 20:09:48 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com
+Cc:     kbuild-all@lists.01.org, kuba@kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org, "D. Wythe" <alibuda@linux.alibaba.com>
+Subject: [RFC PATCH] net/smc: smc_tcp_ls_wq can be static
+Message-ID: <20220205120947.GA10751@d01e203e4d07>
+References: <1d7365b47719546fe1f145affb01398d8287b381.1644041638.git.alibuda@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart5792010.lOV4Wx5bFT"; micalg="pgp-sha1"; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1d7365b47719546fe1f145affb01398d8287b381.1644041638.git.alibuda@linux.alibaba.com>
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart5792010.lOV4Wx5bFT
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+net/smc/af_smc.c:62:25: warning: symbol 'smc_tcp_ls_wq' was not declared. Should it be static?
 
-Am Donnerstag, 3. Februar 2022, 18:12:40 CET schrieb Andrew Lunn:
-> On Thu, Feb 03, 2022 at 05:22:23PM +0100, Rolf Eike Beer wrote:
-> > Fixes: 050bbb196392b9c178f82b1205a23dd2f915ee93
-> > Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
-> > ---
-> > 
-> >  drivers/net/ethernet/sun/sunhme.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/sun/sunhme.c
-> > b/drivers/net/ethernet/sun/sunhme.c index 22abfe58f728..43834339bb43
-> > 100644
-> > --- a/drivers/net/ethernet/sun/sunhme.c
-> > +++ b/drivers/net/ethernet/sun/sunhme.c
-> > @@ -2470,8 +2470,8 @@ static void hme_get_drvinfo(struct net_device *dev,
-> > struct ethtool_drvinfo *info> 
-> >  {
-> >  
-> >  	struct happy_meal *hp = netdev_priv(dev);
-> > 
-> > -	strlcpy(info->driver, "sunhme", sizeof(info->driver));
-> > -	strlcpy(info->version, "2.02", sizeof(info->version));
-> > +	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
-> > +	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
-> 
-> I would suggest you drop setting info->version. The kernel will fill
-> it with the current kernel version, which is much more meaningful.
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+---
+ af_smc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Would it make sense to completely remove the version number from the driver 
-then?
-
-Eike
---nextPart5792010.lOV4Wx5bFT
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQSaYVDeqwKa3fTXNeNcpIk+abn8TgUCYf5fMwAKCRBcpIk+abn8
-TumpAJ9j9hOdErU8FlHbPtvjWYivfV3t1QCeKSDKwMNpDdfpiPIeyY1THsqrfI0=
-=uOwH
------END PGP SIGNATURE-----
-
---nextPart5792010.lOV4Wx5bFT--
-
-
-
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 05b88cbadf3d1..4969ac8029a98 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -59,7 +59,7 @@ static DEFINE_MUTEX(smc_client_lgr_pending);	/* serialize link group
+ 						 * creation on client
+ 						 */
+ 
+-struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work */
++static struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work */
+ struct workqueue_struct	*smc_hs_wq;	/* wq for handshake work */
+ struct workqueue_struct	*smc_close_wq;	/* wq for close work */
+ 
