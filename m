@@ -2,36 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A304AA667
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 05:17:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7345D4AA669
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 05:17:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379154AbiBEERT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 23:17:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229969AbiBEERT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 23:17:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52020C061346;
-        Fri,  4 Feb 2022 20:17:18 -0800 (PST)
+        id S1379185AbiBEERw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 23:17:52 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41002 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229969AbiBEERv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 23:17:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C62D460C09;
-        Sat,  5 Feb 2022 04:17:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BED1CC340E8;
-        Sat,  5 Feb 2022 04:17:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C87B460C09;
+        Sat,  5 Feb 2022 04:17:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF567C340E8;
+        Sat,  5 Feb 2022 04:17:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644034637;
-        bh=5B0zzt47TZJh1dllxNrRqDgAts6rZBFb72hDo7VDMiE=;
+        s=k20201202; t=1644034670;
+        bh=2akhDseEzFt+NqVu8nQ9Kcv+ZbPtiE+4mb8CRHgc1ls=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lYpw0Nf+qJoAIxX5PIPmanWcvtpMFysREj3DEqX3e5oXINGxBPLVBhp/2T+PfVlmc
-         adO8Yf201TdV85BQF+x7bTp5z33d2Bu1b+riq9ay6vExSN8TjoEC79JZ4rFVIWj/MS
-         RUxesmDuk0IlPjR9QvUI4mv8qef8rjmkSP7cW5s+XxwBTEKLpArPP/21t+OKrOTev6
-         bl6s8vEFrknHZfJQPzzkRhKP1BA7P7Bn8S29TxHoc7wjxLmjMp2roTyk2etlhaJ4Bz
-         cN43usqWkR6xrlmERr7gB1alE/tSIPPZ4toFxIn5TniEd8xGdJR+f/64TWM10IcgI+
-         VsmihyugcZ82w==
-Date:   Fri, 4 Feb 2022 20:17:15 -0800
+        b=kPgMtLuvI56qp86MrDxks41liBOwMhJ66fkMSQ7GW4omJFq0M+6iIuSbcMwmXhQVk
+         69QVacksb6JYA++qfpMyl4hSpZ1YPywfZA82W/b8jSPlRS2OpxirnOVN5vTD4PivLC
+         x/cX8Y6fuAUkhW87+nsx1uCt4u4Kzbco8xc4mPRDGPwzhRLqInl8ssjOqHrd24E2s5
+         KeVnBARik5togHg7BFXHL0R9krVyNvSeqpsM0i8EGg6Lvnqde35rTqmPpYpTv7Bx+f
+         uu7GXjK9WWt7NgMQKErNjcrNBSQ4qgOl21WK63E4f1U7QYKTJm6YoKSo11UGj1GqkU
+         ykaiQs6g3xl9w==
+Date:   Fri, 4 Feb 2022 20:17:48 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
@@ -44,37 +41,39 @@ Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         Thomas Gleixner <tglx@linutronix.de>,
         Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNl?= =?UTF-8?B?bg==?= 
         <toke@toke.dk>
-Subject: Re: [PATCH net-next v2 2/3] net: dev: Makes sure netif_rx() can be
- invoked in any context.
-Message-ID: <20220204201715.44f48f4f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220204201259.1095226-3-bigeasy@linutronix.de>
+Subject: Re: [PATCH net-next v2 3/3] net: dev: Make rps_lock() disable
+ interrupts.
+Message-ID: <20220204201748.4af2857c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220204201259.1095226-4-bigeasy@linutronix.de>
 References: <20220204201259.1095226-1-bigeasy@linutronix.de>
-        <20220204201259.1095226-3-bigeasy@linutronix.de>
+        <20220204201259.1095226-4-bigeasy@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  4 Feb 2022 21:12:58 +0100 Sebastian Andrzej Siewior wrote:
-> +int __netif_rx(struct sk_buff *skb)
-> +{
-> +	int ret;
-> +
-> +	trace_netif_rx_entry(skb);
-> +	ret = netif_rx_internal(skb);
-> +	trace_netif_rx_exit(ret);
-> +	return ret;
-> +}
+On Fri,  4 Feb 2022 21:12:59 +0100 Sebastian Andrzej Siewior wrote:
+> Disabling interrupts and in the RPS case locking input_pkt_queue is
+> split into local_irq_disable() and optional spin_lock().
+> 
+> This breaks on PREEMPT_RT because the spinlock_t typed lock can not be
+> acquired with disabled interrupts.
+> The sections in which the lock is acquired is usually short in a sense that it
+> is not causing long und unbounded latiencies. One exception is the
+> skb_flow_limit() invocation which may invoke a BPF program (and may
+> require sleeping locks).
+> 
+> By moving local_irq_disable() + spin_lock() into rps_lock(), we can keep
+> interrupts disabled on !PREEMPT_RT and enabled on PREEMPT_RT kernels.
+> Without RPS on a PREEMPT_RT kernel, the needed synchronisation happens
+> as part of local_bh_disable() on the local CPU.
+> ____napi_schedule() is only invoked if sd is from the local CPU. Replace
+> it with __napi_schedule_irqoff() which already disables interrupts on
+> PREEMPT_RT as needed. Move this call to rps_ipi_queued() and rename the
+> function to napi_schedule_rps as suggested by Jakub.
+> 
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-Any reason this is not exported? I don't think there's anything wrong
-with drivers calling this function, especially SW drivers which already
-know to be in BH. I'd vote for roughly all of $(ls drivers/net/*.c) to
-get the same treatment as loopback.
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
