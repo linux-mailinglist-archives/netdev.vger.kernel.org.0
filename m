@@ -2,56 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94C424AA9CF
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 17:00:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 825324AA9CE
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 17:00:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356179AbiBEQAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 11:00:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60696 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238542AbiBEQAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 11:00:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FB61C061348
-        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 08:00:12 -0800 (PST)
+        id S1352957AbiBEQAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 11:00:12 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57590 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238542AbiBEQAL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 11:00:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AEB5AB80833
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3485B80818
         for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 16:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 65132C340EF;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 58835C340F0;
         Sat,  5 Feb 2022 16:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1644076809;
-        bh=QAczK8Rs26xHhRR2yDmlHurjFCe3vSh/Ju9VTwRdiv4=;
+        bh=oKFo0CaOLBoohESc+43drpjSF7nvbn/6O1B9WiPoutc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tHVmWUkG7YlPbp1Rb6uJAuUxpPxogLk2uJ67uzGu2f3kZ+NltLQErwZXzIvdAMYXf
-         94o4wkTiQCOEL4vj5Rv1yMQ2M3DbVG9RgCsrf3fyJHwPXtkyrgCTYIMJnZRQ0tsnTI
-         +9gndwTK03DyHUSeKCtvJ8ruay29C+3yXWIU4BEclNZZ9wK1zvGdBUO426rcyB55pb
-         Lgr3C3Tu8eqPCfwlJzYRDgmIgwHFEkDsMDScGPNpZCXiup4HcsjxVmCZhhoSUITYqR
-         thYJgltOYtq6WmaaeocjDyacyw2r/cQ3d99xgzYqDg/JzMdkb8SP8dhgkxw8kHTXBq
-         NKuNJzXgX9ADw==
+        b=dgr6/RKTYnL63Fp72hwGh8/AVrJzi4H84cseSifhkG4chDTfP+8yMozKbyDRLUswp
+         aSqw/sTvaEL3xG5XlCz7RPL4IdXXOdCprYWad/XwEgPn5fiw8Etc2U8VOoaELkwGF8
+         lf5MwpqcXp36Yqn+wKXWw2oHSkVaWlbMwJjYK72bVtKioJxiBP8TuSGgnlfzQ0ll78
+         J8icjVjPSu3YT8yWfvQq5mTC5iLw947ZwsJPeT9z/HLoEIC4bIdY9/DdyrYUscnDJi
+         LtA5wS2vx6Ni6pVSt5MQsynNA16ONJWcHGsDxgEuDP5nXMxfkLPGblEaxLnkLJ/SJK
+         OhIH2+Fc4s74g==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4A85AE5D07E;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 413E6E6D3DD;
         Sat,  5 Feb 2022 16:00:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next] net: typhoon: implement ndo_features_check method
+Subject: Re: [PATCH v2 net-next] skmsg: convert struct sk_msg_sg::copy to a bitmap
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164407680930.4093.15930983192642246114.git-patchwork-notify@kernel.org>
+Message-Id: <164407680926.4093.15356635864658025431.git-patchwork-notify@kernel.org>
 Date:   Sat, 05 Feb 2022 16:00:09 +0000
-References: <20220205045459.3457024-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220205045459.3457024-1-eric.dumazet@gmail.com>
+References: <20220205045614.3457092-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220205045614.3457092-1-eric.dumazet@gmail.com>
 To:     Eric Dumazet <eric.dumazet@gmail.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         edumazet@google.com
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -61,21 +52,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri,  4 Feb 2022 20:54:59 -0800 you wrote:
+On Fri,  4 Feb 2022 20:56:14 -0800 you wrote:
 > From: Eric Dumazet <edumazet@google.com>
 > 
-> Instead of disabling TSO at compile time if MAX_SKB_FRAGS > 32,
-> implement ndo_features_check() method for this driver for
-> a more dynamic handling.
+> We have plans for increasing MAX_SKB_FRAGS, but sk_msg_sg::copy
+> is currently an unsigned long, limiting MAX_SKB_FRAGS to 30 on 32bit arches.
 > 
-> If skb has more than 32 frags and is a GSO packet, force
-> software segmentation.
+> Convert it to a bitmap, as Jakub suggested.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,net-next] net: typhoon: implement ndo_features_check method
-    https://git.kernel.org/netdev/net-next/c/d2692eee05b8
+  - [v2,net-next] skmsg: convert struct sk_msg_sg::copy to a bitmap
+    https://git.kernel.org/netdev/net-next/c/5a8fb33e5305
 
 You are awesome, thank you!
 -- 
