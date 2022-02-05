@@ -2,77 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EB864AAC84
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 21:36:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4E534AAC86
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 21:39:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381298AbiBEUgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 15:36:08 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:39548 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232428AbiBEUgI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 15:36:08 -0500
-Date:   Sat, 5 Feb 2022 21:36:05 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644093366;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=560cbxN7mKYo1ZjnfDECl4wv6yBbemNlcEq8eApjrmg=;
-        b=sUipOuadgP+bmhmZbl3Tev+Kh6wONkj0ICpPs3vPEAxFvq3btg2jdeSe1BBznz0L2f5HLP
-        rYfUM7/1cSfHsK+easkj0K7tWlyFSvW3G3eSlDW+G7GwPfO7Z6gpDkQNe7vrh47GYwZOd1
-        I2qIfy42TmoAE39SMwP1moDPrwPhHGlnnb1h6av5IVZkWOEX+hm9ibgh86hjW98i42noEv
-        8AqZX829cMzShAEoH7+V5FtzT54ND0SXJLkuyelCcFFODZtj9xBbZQdyfXkAXGnW6EEfKa
-        zNisPPVP/T0E7a1lkpM8DbTLKJKqixDqvX9++mtf25V2f2u0+o2FHXBZyKjTDQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644093366;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=560cbxN7mKYo1ZjnfDECl4wv6yBbemNlcEq8eApjrmg=;
-        b=sAtyET1A0Wt76uXkqVcl/txZ46Gsxx5lQS4hHRqHjxITVo68Nykmw5xSfhBeEAhTgs93zi
-        2uK2ijbiv13ZerAg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        id S1381309AbiBEUjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 15:39:40 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:41692 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242000AbiBEUjk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 15:39:40 -0500
+Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 468108001D4C;
+        Sat,  5 Feb 2022 23:39:38 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 468108001D4C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1644093578;
+        bh=sDoTov5OIKx67Gh9Jh4s/4QXTa6AuW6mlrErVMoII/c=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=p1dTl/rgXa1VCd6PQrjyq/HRHFMdvzgtDz6OVPK0zx9ut+CsHzJzl2EjMvPkcbEZb
+         xhEW/IyE4RcMvW4T5dczJ1/8/CNuh86o6CabZK5ox7oPKdU8v/r7D5/kNKmj4LtauA
+         XO4BrCFQNUv8FwLXm7ZgrnMmdqYKa2mkl1LniAGo=
+Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Sat, 5 Feb 2022 23:39:23 +0300
+From:   Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-Subject: Re: [PATCH net-next v2 2/3] net: dev: Makes sure netif_rx() can be
- invoked in any context.
-Message-ID: <Yf7ftf+6j52opu5w@linutronix.de>
-References: <20220204201259.1095226-1-bigeasy@linutronix.de>
- <20220204201259.1095226-3-bigeasy@linutronix.de>
- <20220204201715.44f48f4f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+CC:     Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        <stable@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net v2] net: phy: marvell: Fix RGMII Tx/Rx delays setting in 88e1121-compatible PHYs
+Date:   Sat, 5 Feb 2022 23:39:32 +0300
+Message-ID: <20220205203932.26899-1-Pavel.Parkhomenko@baikalelectronics.ru>
+In-Reply-To: <96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru>
+References: <96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220204201715.44f48f4f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-02-04 20:17:15 [-0800], Jakub Kicinski wrote:
-> On Fri,  4 Feb 2022 21:12:58 +0100 Sebastian Andrzej Siewior wrote:
-> > +int __netif_rx(struct sk_buff *skb)
-> > +{
-> > +	int ret;
-> > +
-> > +	trace_netif_rx_entry(skb);
-> > +	ret = netif_rx_internal(skb);
-> > +	trace_netif_rx_exit(ret);
-> > +	return ret;
-> > +}
-> 
-> Any reason this is not exported? I don't think there's anything wrong
-> with drivers calling this function, especially SW drivers which already
-> know to be in BH. I'd vote for roughly all of $(ls drivers/net/*.c) to
-> get the same treatment as loopback.
+It is mandatory for a software to issue a reset upon modifying RGMII
+Receive Timing Control and RGMII Transmit Timing Control bit fields of MAC
+Specific Control register 2 (page 2, register 21) otherwise the changes
+won't be perceived by the PHY (the same is applicable for a lot of other
+registers). Not setting the RGMII delays on the platforms that imply it'
+being done on the PHY side will consequently cause the traffic loss. We
+discovered that the denoted soft-reset is missing in the
+m88e1121_config_aneg() method for the case if the RGMII delays are
+modified but the MDIx polarity isn't changed or the auto-negotiation is
+left enabled, thus causing the traffic loss on our platform with Marvell
+Alaska 88E1510 installed. Let's fix that by issuing the soft-reset if the
+delays have been actually set in the m88e1121_config_aneg_rgmii_delays()
+method.
 
-Don't we end up in the same situation as netif_rx() vs netix_rx_ni()?
+Fixes: d6ab93364734 ("net: phy: marvell: Avoid unnecessary soft reset")
+Signed-off-by: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
+Cc: stable@vger.kernel.org
 
-Sebastian
+---
+
+Link: https://lore.kernel.org/netdev/96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru/
+Changelog v2:
+- Add "net" suffix into the PATCH-clause of the subject.
+- Cc the patch to the stable tree list.
+- Rebase onto the latset netdev/net branch with the top commit 59085208e4a2
+("net: mscc: ocelot: fix all IP traffic getting trapped to CPU with PTP over
+IP")
+---
+ drivers/net/phy/marvell.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index fa71fb7a66b5..e2fd1252be48 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -553,9 +553,9 @@ static int m88e1121_config_aneg_rgmii_delays(struct phy_device *phydev)
+ 	else
+ 		mscr = 0;
+ 
+-	return phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
+-				MII_88E1121_PHY_MSCR_REG,
+-				MII_88E1121_PHY_MSCR_DELAY_MASK, mscr);
++	return phy_modify_paged_changed(phydev, MII_MARVELL_MSCR_PAGE,
++					MII_88E1121_PHY_MSCR_REG,
++					MII_88E1121_PHY_MSCR_DELAY_MASK, mscr);
+ }
+ 
+ static int m88e1121_config_aneg(struct phy_device *phydev)
+@@ -569,11 +569,13 @@ static int m88e1121_config_aneg(struct phy_device *phydev)
+ 			return err;
+ 	}
+ 
++	changed = err;
++
+ 	err = marvell_set_polarity(phydev, phydev->mdix_ctrl);
+ 	if (err < 0)
+ 		return err;
+ 
+-	changed = err;
++	changed |= err;
+ 
+ 	err = genphy_config_aneg(phydev);
+ 	if (err < 0)
+-- 
+2.32.0
+
