@@ -2,92 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DFFC4AA70F
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 07:10:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4513D4AA724
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 07:34:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351601AbiBEGKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 01:10:15 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57184 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351751AbiBEGKO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 01:10:14 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70460B839DB
-        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 06:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1F6D1C340EC;
-        Sat,  5 Feb 2022 06:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644041412;
-        bh=9y0hRMLG81HDrfK+/FsShH8IK6aHwlF0NfzKK/DvnuY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Q9jI//r6hmXbkQnP4kU2gl39wTcL/CbZM86QLEeXJI+6/A4KU4WWPnnpyFGt9xt8I
-         E9aoVbX9bGCWlsHYb493FB+k+aSvADzd5M4Rf0zbPore7WMUca4+vqyx0sZrUYOBLh
-         yI/RGxX/TgIP0+X+kOXXY2h2JxewLq2PFjOcniLIC2Eu+ZuTyy/N5V9PdVz5N2DB6o
-         wpI49lRL1mQ7+ceOPa/vQDBox2nlB9/Dtz6T72P7eUg7ud+klZX8jevLUmMWDI3yE2
-         EEMjjEs1ilJyPc2OLXAr0HQAnrepP/vj5fHp2++2wVCiYju7LIVJh1bEOcOFYQemtr
-         aloWhSZ3aw7Aw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F3607E5D07E;
-        Sat,  5 Feb 2022 06:10:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/9] mptcp: Improve set-flags command and update self
- tests
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164404141198.19196.16444853469420129139.git-patchwork-notify@kernel.org>
-Date:   Sat, 05 Feb 2022 06:10:11 +0000
-References: <20220205000337.187292-1-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20220205000337.187292-1-mathew.j.martineau@linux.intel.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
+        id S1378967AbiBEGez (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 01:34:55 -0500
+Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:56996 "EHLO
+        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230008AbiBEGey (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 01:34:54 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V3cFwYN_1644042891;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V3cFwYN_1644042891)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sat, 05 Feb 2022 14:34:52 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        "D. Wythe" <alibuda@linux.alibaba.com>
+Subject: [PATCH net-next v3 0/3] Optimizing performance in short-lived scenarios     
+Date:   Sat,  5 Feb 2022 14:34:42 +0800
+Message-Id: <cover.1644041637.git.alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+This patch set aims to optimizing performance of SMC in short-lived
+links scenarios, which is quite unsatisfactory right now.
 
-On Fri,  4 Feb 2022 16:03:28 -0800 you wrote:
-> Patches 1-3 allow more flexibility in the combinations of features and
-> flags allowed with the MPTCP_PM_CMD_SET_FLAGS netlink command, and add
-> self test case coverage for the new functionality.
-> 
-> Patches 4-6 and 9 refactor the mptcp_join.sh self tests to allow them to
-> configure all of the test cases using either the pm_nl_ctl utility (part
-> of the mptcp self tests) or the 'ip mptcp' command (from iproute2). The
-> default remains to use pm_nl_ctl.
-> 
-> [...]
+In our benchmark, we test it with follow scripts:
 
-Here is the summary with links:
-  - [net-next,1/9] mptcp: allow to use port and non-signal in set_flags
-    https://git.kernel.org/netdev/net-next/c/09f12c3ab7a5
-  - [net-next,2/9] selftests: mptcp: add the port argument for set_flags
-    https://git.kernel.org/netdev/net-next/c/d6a676e0e1a8
-  - [net-next,3/9] selftests: mptcp: add backup with port testcase
-    https://git.kernel.org/netdev/net-next/c/33397b83eee6
-  - [net-next,4/9] selftests: mptcp: add ip mptcp wrappers
-    https://git.kernel.org/netdev/net-next/c/34aa6e3bccd8
-  - [net-next,5/9] selftests: mptcp: add wrapper for showing addrs
-    https://git.kernel.org/netdev/net-next/c/dda61b3dbea0
-  - [net-next,6/9] selftests: mptcp: add wrapper for setting flags
-    https://git.kernel.org/netdev/net-next/c/f01403862592
-  - [net-next,7/9] selftests: mptcp: add the id argument for set_flags
-    https://git.kernel.org/netdev/net-next/c/a224a847ae7a
-  - [net-next,8/9] selftests: mptcp: add set_flags tests in pm_netlink.sh
-    https://git.kernel.org/netdev/net-next/c/6da1dfdd037e
-  - [net-next,9/9] selftests: mptcp: set ip_mptcp in command line
-    https://git.kernel.org/netdev/net-next/c/621bd393039e
+./wrk -c 10000 -t 4 -H 'Connection: Close' -d 20 http://smc-server
 
-You are awesome, thank you!
+Current performance figures like that:
+
+Running 20s test @ http://11.213.45.6
+  4 threads and 10000 connections
+  4956 requests in 20.06s, 3.24MB read
+  Socket errors: connect 0, read 0, write 672, timeout 0
+Requests/sec:    247.07
+Transfer/sec:    165.28KB
+
+There are many reasons for this phenomenon, this patch set doesn't
+solve it all though, but it can be well alleviated with it in.
+
+Patch 1/3  (Make smc_tcp_listen_work() independent) :
+
+Separate smc_tcp_listen_work() from smc_listen_work(), make them
+independent of each other, the busy SMC handshake can not affect new TCP
+connections visit any more. Avoid discarding a large number of TCP
+connections after being overstock, which is undoubtedly raise the
+connection establishment time.
+
+Patch 2/3 (Limits SMC backlog connections):
+
+Since patch 1 has separated smc_tcp_listen_work() from
+smc_listen_work(), an unrestricted TCP accept have come into being. This
+patch try to put a limit on SMC backlog connections refers to
+implementation of TCP.
+
+Patch 3/3 (Fallback when SMC handshake workqueue congested):
+
+Considering the complexity of SMC handshake right now, in short-lived
+links scenarios, this may not be the main scenario of SMC though, it's
+performance is still quite poor. This Patch try to provide auto fallback
+case when SMC handshake workqueue congested, which is the sign of SMC
+handshake stacking in our opinion.
+
+Of course, it's optional.
+
+After this patch set, performance figures like that:
+
+Running 20s test @ http://11.213.45.6
+  4 threads and 10000 connections
+  693253 requests in 20.10s, 452.88MB read
+Requests/sec:  34488.13
+Transfer/sec:     22.53MB
+
+That's a quite well performance improvement, about to 6 to 7 times in my
+environment.
+---
+changelog:
+v2 -> v1:
+- fix compile warning
+- fix invalid dependencies in kconfig
+v3 -> v2:
+- correct spelling mistakes 
+- fix useless variable declare
+---
+D. Wythe (3):
+  net/smc: Make smc_tcp_listen_work() independent
+  net/smc: Limits backlog connections
+  net/smc: Fallback when handshake workqueue congested
+
+ include/linux/tcp.h  |  1 +
+ net/ipv4/tcp_input.c |  3 +-
+ net/smc/Kconfig      | 12 ++++++++
+ net/smc/af_smc.c     | 78 ++++++++++++++++++++++++++++++++++++++++++++++++++--
+ net/smc/smc.h        |  4 +++
+ 5 files changed, 95 insertions(+), 3 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+1.8.3.1
 
