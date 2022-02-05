@@ -2,99 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E25BF4AA59D
-	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 03:18:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FE2E4AA5C4
+	for <lists+netdev@lfdr.de>; Sat,  5 Feb 2022 03:33:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378945AbiBECSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Feb 2022 21:18:43 -0500
-Received: from mail-oo1-f48.google.com ([209.85.161.48]:45670 "EHLO
-        mail-oo1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378927AbiBECSm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 21:18:42 -0500
-Received: by mail-oo1-f48.google.com with SMTP id u25-20020a4ad0d9000000b002e8d4370689so6732467oor.12;
-        Fri, 04 Feb 2022 18:18:42 -0800 (PST)
+        id S1378986AbiBECdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Feb 2022 21:33:20 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:38907 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378978AbiBECdS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Feb 2022 21:33:18 -0500
+Received: by mail-io1-f69.google.com with SMTP id r4-20020a6b4404000000b00614d5a865f7so5251946ioa.5
+        for <netdev@vger.kernel.org>; Fri, 04 Feb 2022 18:33:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=dh+lEqNlO5YoCM8DAnReukIGw+hgF+pQdL2dapiz1tw=;
-        b=KQezzCuYBAqkqb+jut4BySf55xuoCZGl4ECzYUqKUdwAAVEq6xjLQB1tarR4rxoHof
-         ySTn9A84nJOrhtQsWxt8IgELQ1CSc+oofEokf20PVv+IBwIX0NsKVtFtK+FVMCFAv/nR
-         XthWser9qqDgbSTg8UzVYmBaGrfgn45ogGqzNVzgzljvoCKJ27IZhpAAtRz4Slkqzlh4
-         sTZxQ7AcrXMO+s/l3MN0cfBIqNoxrt4frkgmUQZg1XI8vbO0gWNcZKC52oQXVNYNF2M6
-         sXc+wM34q7NI2gbjKkxLQ0Uqob0MHbgUIspu/sNUcBQtZcQNp+bWKN4+RHbGUsO8Z+By
-         fyxg==
-X-Gm-Message-State: AOAM533O7Kma0BLSs/smvVwGoFlaT3RxwZIPNedIC3nBfQuaTY3c0iNF
-        0XForOKyE/wvaTfJ0maQ4g==
-X-Google-Smtp-Source: ABdhPJzVNBt81cbdJTvk5Ro3frSpSh5Zi976G6ToD+gWG8jKQFJyo6E99hWEtAccWCoNG6CR6ss2dw==
-X-Received: by 2002:a05:6870:37c5:: with SMTP id p5mr1411350oai.252.1644027522457;
-        Fri, 04 Feb 2022 18:18:42 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id h9sm1425584otk.42.2022.02.04.18.18.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 18:18:41 -0800 (PST)
-Received: (nullmailer pid 3624417 invoked by uid 1000);
-        Sat, 05 Feb 2022 02:18:40 -0000
-Date:   Fri, 4 Feb 2022 20:18:40 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        devicetree@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
-        Holger Brunck <holger.brunck@hitachienergy.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        linux-phy@lists.infradead.org, Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>
-Subject: Re: [PATCH devicetree v3] dt-bindings: phy: Add `tx-p2p-microvolt`
- property binding
-Message-ID: <Yf3egEVYyyXUkklM@robh.at.kernel.org>
-References: <20220119131117.30245-1-kabel@kernel.org>
- <74566284-ff3f-8e69-5b7d-d8ede75b78ad@gmail.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=J56lO7LttwsJaeKgX0tNVRY/qO85NuUU/tQlLy1XDUM=;
+        b=MCUyXS7nshdZTF2twtLIAgNeTfU8hoAChfFNrJEcQY4dE/PWHHd7WLOHZSWrq82cL7
+         NLUfYqPQw+++H7a/qDXk4XWUeZEZDQykD+vzVJgtk+qPRHpTiirz5W4XyMNgXwVymcd7
+         gJSXFtoOJquifuZPRPVQk9qONM2/rGUWcY5bsph5fhtzUoBJLkXadGmcSHJMxlq6Irhl
+         b9MUniHynCgiwx5fguNSLwMa/vDigkTy8oDAcNc0TotzKzsT0sqR5wu2xGruo8J7+iTx
+         kn1vHHYsIEMOlEXR3K8NqRuFs+W41xvP9N4X6eMMaKvvlk/enby/xjik8UUYBWnTQq/P
+         /UNQ==
+X-Gm-Message-State: AOAM5339bGmsT5rsvDRAFQ0YYujASXMTiKcsN+EfS0cIaWJ28KLvMCMX
+        yxCDcyGVCTohNZlqdc5jCBbT0Nn4X0XHclqGZoEeiS7pN9cc
+X-Google-Smtp-Source: ABdhPJzrn30KMHlfyE8tjwMMW5RfWIiW2TKyrm+AvngLD/RBeUYU1a46CCg0vow0BFIAymzz9x3u5Bpmg5HEH9HTrWutuIJE1Mbe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <74566284-ff3f-8e69-5b7d-d8ede75b78ad@gmail.com>
+X-Received: by 2002:a92:c6c8:: with SMTP id v8mr988388ilm.14.1644028398304;
+ Fri, 04 Feb 2022 18:33:18 -0800 (PST)
+Date:   Fri, 04 Feb 2022 18:33:18 -0800
+In-Reply-To: <00000000000072391b05b00bcb00@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ae860205d73c30a8@google.com>
+Subject: Re: [syzbot] WARNING in ieee80211_rx_list
+From:   syzbot <syzbot+8830db5d3593b5546d2e@syzkaller.appspotmail.com>
+To:     ajithjain@space-mep.com, davem@davemloft.net,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 11:18:09AM -0800, Florian Fainelli wrote:
-> On 1/19/22 5:11 AM, Marek Behún wrote:
-> > Common PHYs and network PCSes often have the possibility to specify
-> > peak-to-peak voltage on the differential pair - the default voltage
-> > sometimes needs to be changed for a particular board.
-> > 
-> > Add properties `tx-p2p-microvolt` and `tx-p2p-microvolt-names` for this
-> > purpose. The second property is needed to specify the mode for the
-> > corresponding voltage in the `tx-p2p-microvolt` property, if the voltage
-> > is to be used only for speficic mode. More voltage-mode pairs can be
-> > specified.
-> > 
-> > Example usage with only one voltage (it will be used for all supported
-> > PHY modes, the `tx-p2p-microvolt-names` property is not needed in this
-> > case):
-> > 
-> >   tx-p2p-microvolt = <915000>;
-> > 
-> > Example usage with voltages for multiple modes:
-> > 
-> >   tx-p2p-microvolt = <915000>, <1100000>, <1200000>;
-> >   tx-p2p-microvolt-names = "2500base-x", "usb", "pcie";
-> > 
-> > Add these properties into a separate file phy/transmit-amplitude.yaml,
-> > which should be referenced by any binding that uses it.
-> 
-> p2p commonly means peer to peer which incidentally could be confusing,
-> can you spell out the property entire:
-> 
-> tx-peaktopeak-microvolt or:
-> 
-> tx-pk2pk-microvolt for a more compact name maybe?
+syzbot has found a reproducer for the following issue on:
 
-Peer to peer makes little sense in terms of a voltage. I think this is 
-fine as-is.
+HEAD commit:    227a0713b319 libbpf: Deprecate forgotten btf__get_map_kv_t..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=15d58c62700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b210f94c3ec14b22
+dashboard link: https://syzkaller.appspot.com/bug?extid=8830db5d3593b5546d2e
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1692ceec700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16e97524700000
 
-Rob
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8830db5d3593b5546d2e@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 13 at net/mac80211/rx.c:4902 ieee80211_rx_list+0x18e2/0x2740 net/mac80211/rx.c:4902
+Modules linked in:
+CPU: 0 PID: 13 Comm: ksoftirqd/0 Not tainted 5.16.0-syzkaller-11609-g227a0713b319 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:ieee80211_rx_list+0x18e2/0x2740 net/mac80211/rx.c:4902
+Code: 00 00 31 ff 89 de e8 ad ba d8 f8 85 db 0f 85 19 02 00 00 e8 80 b8 d8 f8 4c 89 e7 e8 48 ef 88 fe e9 bc eb ff ff e8 6e b8 d8 f8 <0f> 0b e9 53 ec ff ff e8 62 b8 d8 f8 4c 89 ea 48 b8 00 00 00 00 00
+RSP: 0018:ffffc90000d27b80 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: ffff888074dab3c8 RCX: 0000000000000100
+RDX: ffff8880118d0000 RSI: ffffffff889f9d32 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff889f86cb R11: 0000000000000000 R12: ffff888078f17280
+R13: 0000000000000000 R14: 0000000000000000 R15: ffff888074da8e60
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005555566663b8 CR3: 000000000b88e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ ieee80211_rx_napi+0xdb/0x3d0 net/mac80211/rx.c:5000
+ ieee80211_rx include/net/mac80211.h:4594 [inline]
+ ieee80211_tasklet_handler+0xd4/0x130 net/mac80211/main.c:235
+ tasklet_action_common.constprop.0+0x201/0x2e0 kernel/softirq.c:784
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ run_ksoftirqd kernel/softirq.c:921 [inline]
+ run_ksoftirqd+0x2d/0x60 kernel/softirq.c:913
+ smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+
