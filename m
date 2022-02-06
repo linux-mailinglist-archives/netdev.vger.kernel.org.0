@@ -2,207 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C78154AB06B
-	for <lists+netdev@lfdr.de>; Sun,  6 Feb 2022 16:56:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B25E64AB091
+	for <lists+netdev@lfdr.de>; Sun,  6 Feb 2022 17:07:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244148AbiBFP4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Feb 2022 10:56:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60482 "EHLO
+        id S232190AbiBFQH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Feb 2022 11:07:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233564AbiBFP4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Feb 2022 10:56:09 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625E9C06173B
-        for <netdev@vger.kernel.org>; Sun,  6 Feb 2022 07:56:04 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id b1so860817pfi.9
-        for <netdev@vger.kernel.org>; Sun, 06 Feb 2022 07:56:04 -0800 (PST)
+        with ESMTP id S231915AbiBFQH1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Feb 2022 11:07:27 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582ECC06173B
+        for <netdev@vger.kernel.org>; Sun,  6 Feb 2022 08:07:26 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id l5so24896449edv.3
+        for <netdev@vger.kernel.org>; Sun, 06 Feb 2022 08:07:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XbhnA8I+W53FsNK9seJWijp3mVzGxgG6c4sFS+8pri8=;
-        b=KQxQGjOn2//+vD/hEa4Blc3F+8urgb+U1je15jXKAKze+F94dOcc/3KfsXauYTtlT0
-         9oHNz05nQr725xMAzTbCPDA638ijs5oMkHYMtAsVgBhLMAHvZFQc66xoNzoXoffvwKND
-         +HZmzBm7jSFu7qJJJVRL3rxGW2MxQbUGUkSGQxyU4kKsvJ413UKI1E5wNKVxBdn43bJA
-         19BjCsxn14K+oSBYxfk2pmoKTGzRCGedGmmhbH2ckQFDAGllYIeKbl5GnCChjSEpCUvN
-         dPssV6pklTrWzMuNlraBAM4QyRdC14PQa3Wfim8Snk0KEuYI06Nil/UJzoV3/tIFgxyQ
-         rKcQ==
+        h=message-id:date:mime-version:user-agent:from:to:cc:content-language
+         :subject:content-transfer-encoding;
+        bh=MfSRa8SzGorEIciIvFacs94wlErL2RvQ0HenIwlrlCM=;
+        b=jf1GDUTWpYFWDAaN69I1yAydzX7RHAxYyu1OEOi2GPO2jIXsFexoxZQ/OD9+cxoRVy
+         bIJ36o837aaHuc2+4yYPGlSazO6w0BBZh4jQMAy84+ymzYF5PsnPNFAQxR2xI0beynu+
+         EqaPd5WrVwNrilMLFb5vK46JQj0gJbv08dXJhf7p2tGCHqz1eneWRI5zpltmU/H/+vVB
+         a24F2olsUQcfI6iAumpdWqABFzs12YCBJRScMPVnyNA/VIjTU40e8ST7aFI9jOtNfqwu
+         MofMWy9LedBvr/ZYnCWC0ozLQFjK2v0cjBAFXJ+aqeO72x4y+3wCu5FdqJdkY/a8KGqg
+         BbQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XbhnA8I+W53FsNK9seJWijp3mVzGxgG6c4sFS+8pri8=;
-        b=m/ah+scZ4CV4N8LgwN21vgpDZYIA2FDAOY1PNSivppDHDv4NLWYqjxd+8YUx5EMhOS
-         XW1u0oXqR3UuR+Xvgfp1rsLt1mHFDlVZhhqu0e6Mitmag/Qc3KlIPWt8I04tUjGweT17
-         I1hwjRewwuf7DAd1ZZ0vb6Axs6/oQNwHGOSfT9MBThLW2PM91yFgo4emrmYDWCvgMr3T
-         wmzX2aawv/zHtjP9aKuhtPEc+xB4Y5arKhoue+XyAQvktbbIlOm5ZlzBjo7lCSl4M9rB
-         by9CR2e47Enu5/3Le88PvU9h2rIq+dwlPEQkud6nRUZsPZ8UvYq+qLBQrDR/Brbw9Rc/
-         15ZA==
-X-Gm-Message-State: AOAM533V0brEnFOQDCKIn0BcCA5X+rkSDbRZyYE3Y6yLYV+GCDu2bbHU
-        Mj0bvlLTrU0Yn1RYGk6djig=
-X-Google-Smtp-Source: ABdhPJwx2lhhCKF0lNePRIvaE/yoEnZGWuNLCXLFiuh0lppIUhzckg2zKv/CwreC6QorAj6Oc9v2Pg==
-X-Received: by 2002:a63:d80b:: with SMTP id b11mr6422189pgh.189.1644162963810;
-        Sun, 06 Feb 2022 07:56:03 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:8eb:b7ed:dbe7:a81f])
-        by smtp.gmail.com with ESMTPSA id h14sm10058392pfh.95.2022.02.06.07.56.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 07:56:03 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net-next] ip6mr: fix use-after-free in ip6mr_sk_done()
-Date:   Sun,  6 Feb 2022 07:56:00 -0800
-Message-Id: <20220206155600.509633-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from:to
+         :cc:content-language:subject:content-transfer-encoding;
+        bh=MfSRa8SzGorEIciIvFacs94wlErL2RvQ0HenIwlrlCM=;
+        b=wCALhxwVMsqJCw8wuzCd0EAv0SlIBfDdcnpX0Cya0JSt19W6UsB3e8QBYeticUR/6G
+         Xh8I+p7nFmF2DS8IqTUn42vjVvkO3nmD/oOBNY59mz0vUP4fg1VJP+m9ybOcxy6u7ges
+         eR7nWAER5U37dtXo4yujFNdzDXHJkWDOIMz2ugvI1VzX6P1+OQBW7my7N49oqlRlNwBz
+         0p9S3lddwXNBI46VeIVHnmBOmMkVn+q6KJlSG6ZIRbxYG8BadzGuFaMkCMZ2N5DyOa6n
+         12+MpBvWD38P94iPKcXbXDLgf+0i2oUcbu45nPzZY4gmUUy+pWsHHf62e1+mk6Ybv3x5
+         KOMw==
+X-Gm-Message-State: AOAM531GbORZoNuZETf4RyfQusVnEzB4K4uwUNpzjHXvazgcQEsEVHdV
+        yxet9OsH03W4Tgxpv60OQfyddn6Ru6Y=
+X-Google-Smtp-Source: ABdhPJzdtEDsnPyLUoOGL/gohN0zX6o3+rSXe8kWwW13dN167mTHaAlJYYalceG5y00q+BLsXzkuQQ==
+X-Received: by 2002:aa7:c917:: with SMTP id b23mr2809486edt.118.1644163644784;
+        Sun, 06 Feb 2022 08:07:24 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f4d:2b00:102e:bd16:6d55:bf2d? (p200300ea8f4d2b00102ebd166d55bf2d.dip0.t-ipconnect.de. [2003:ea:8f4d:2b00:102e:bd16:6d55:bf2d])
+        by smtp.googlemail.com with ESMTPSA id n6sm3936299edy.87.2022.02.06.08.07.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Feb 2022 08:07:24 -0800 (PST)
+Message-ID: <467ee9c1-4587-08c0-60ca-e653d31cbc9f@gmail.com>
+Date:   Sun, 6 Feb 2022 17:07:13 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Language: en-US
+Subject: [PATCH net-next] r8169: factor out redundant RTL8168d PHY config
+ functionality to rtl8168d_1_common()
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+rtl8168d_2_hw_phy_config() shares quite some functionality with
+rtl8168d_1_hw_phy_config(), so let's factor out the common part to a
+new function rtl8168d_1_common(). In addition improve the code a little.
 
-Apparently addrconf_exit_net() is called before igmp6_net_exit()
-and ndisc_net_exit() at netns dismantle time:
-
- net_namespace: call ip6table_mangle_net_exit()
- net_namespace: call ip6_tables_net_exit()
- net_namespace: call ipv6_sysctl_net_exit()
- net_namespace: call ioam6_net_exit()
- net_namespace: call seg6_net_exit()
- net_namespace: call ping_v6_proc_exit_net()
- net_namespace: call tcpv6_net_exit()
- ip6mr_sk_done sk=ffffa354c78a74c0
- net_namespace: call ipv6_frags_exit_net()
- net_namespace: call addrconf_exit_net()
- net_namespace: call ip6addrlbl_net_exit()
- net_namespace: call ip6_flowlabel_net_exit()
- net_namespace: call ip6_route_net_exit_late()
- net_namespace: call fib6_rules_net_exit()
- net_namespace: call xfrm6_net_exit()
- net_namespace: call fib6_net_exit()
- net_namespace: call ip6_route_net_exit()
- net_namespace: call ipv6_inetpeer_exit()
- net_namespace: call if6_proc_net_exit()
- net_namespace: call ipv6_proc_exit_net()
- net_namespace: call udplite6_proc_exit_net()
- net_namespace: call raw6_exit_net()
- net_namespace: call igmp6_net_exit()
- ip6mr_sk_done sk=ffffa35472b2a180
- ip6mr_sk_done sk=ffffa354c78a7980
- net_namespace: call ndisc_net_exit()
- ip6mr_sk_done sk=ffffa35472b2ab00
- net_namespace: call ip6mr_net_exit()
- net_namespace: call inet6_net_exit()
-
-This was fine because ip6mr_sk_done() would not reach the point decreasing
-net->ipv6.devconf_all->mc_forwarding until my patch in ip6mr_sk_done().
-
-To fix this without changing struct pernet_operations ordering,
-we can clear net->ipv6.devconf_dflt and net->ipv6.devconf_all
-when they are freed from addrconf_exit_net()
-
-BUG: KASAN: use-after-free in instrument_atomic_read include/linux/instrumented.h:71 [inline]
-BUG: KASAN: use-after-free in atomic_read include/linux/atomic/atomic-instrumented.h:27 [inline]
-BUG: KASAN: use-after-free in ip6mr_sk_done+0x11b/0x410 net/ipv6/ip6mr.c:1578
-Read of size 4 at addr ffff88801ff08688 by task kworker/u4:4/963
-
-CPU: 0 PID: 963 Comm: kworker/u4:4 Not tainted 5.17.0-rc2-syzkaller-00650-g5a8fb33e5305 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: netns cleanup_net
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0x8d/0x336 mm/kasan/report.c:255
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- check_region_inline mm/kasan/generic.c:183 [inline]
- kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
- instrument_atomic_read include/linux/instrumented.h:71 [inline]
- atomic_read include/linux/atomic/atomic-instrumented.h:27 [inline]
- ip6mr_sk_done+0x11b/0x410 net/ipv6/ip6mr.c:1578
- rawv6_close+0x58/0x80 net/ipv6/raw.c:1201
- inet_release+0x12e/0x280 net/ipv4/af_inet.c:428
- inet6_release+0x4c/0x70 net/ipv6/af_inet6.c:478
- __sock_release net/socket.c:650 [inline]
- sock_release+0x87/0x1b0 net/socket.c:678
- inet_ctl_sock_destroy include/net/inet_common.h:65 [inline]
- igmp6_net_exit+0x6b/0x170 net/ipv6/mcast.c:3173
- ops_exit_list+0xb0/0x170 net/core/net_namespace.c:168
- cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:600
- process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
- worker_thread+0x657/0x1110 kernel/workqueue.c:2454
- kthread+0x2e9/0x3a0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-
-Fixes: f2f2325ec799 ("ip6mr: ip6mr_sk_done() can exit early in common cases")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- net/ipv6/addrconf.c |  2 ++
- net/ipv6/ip6mr.c    | 10 ++++++----
- 2 files changed, 8 insertions(+), 4 deletions(-)
+ .../net/ethernet/realtek/r8169_phy_config.c   | 71 +++++++------------
+ 1 file changed, 25 insertions(+), 46 deletions(-)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index ff1b2484b8ed8638e4d37eb21c67de4e5ac43dae..ef23e7dc538ad983a28853865dd4281f7f0ea8de 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -7184,7 +7184,9 @@ static void __net_exit addrconf_exit_net(struct net *net)
- 				     NETCONFA_IFINDEX_ALL);
- #endif
- 	kfree(net->ipv6.devconf_dflt);
-+	net->ipv6.devconf_dflt = NULL;
- 	kfree(net->ipv6.devconf_all);
-+	net->ipv6.devconf_all = NULL;
+diff --git a/drivers/net/ethernet/realtek/r8169_phy_config.c b/drivers/net/ethernet/realtek/r8169_phy_config.c
+index f7ad54878..15c295f90 100644
+--- a/drivers/net/ethernet/realtek/r8169_phy_config.c
++++ b/drivers/net/ethernet/realtek/r8169_phy_config.c
+@@ -429,15 +429,6 @@ static const struct phy_reg rtl8168d_1_phy_reg_init_0[] = {
+ 	{ 0x0d, 0xf880 }
+ };
+ 
+-static const struct phy_reg rtl8168d_1_phy_reg_init_1[] = {
+-	{ 0x1f, 0x0002 },
+-	{ 0x05, 0x669a },
+-	{ 0x1f, 0x0005 },
+-	{ 0x05, 0x8330 },
+-	{ 0x06, 0x669a },
+-	{ 0x1f, 0x0002 }
+-};
+-
+ static void rtl8168d_apply_firmware_cond(struct rtl8169_private *tp,
+ 					 struct phy_device *phydev,
+ 					 u16 val)
+@@ -455,6 +446,29 @@ static void rtl8168d_apply_firmware_cond(struct rtl8169_private *tp,
+ 		r8169_apply_firmware(tp);
  }
  
- static struct pernet_operations addrconf_ops = {
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index 8e483e14b5709b1b8a6e9dfd6616a5bde5c273ee..fd660414d482a30c6d339bb7360bd91d8f3c6f05 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -1567,15 +1567,17 @@ static int ip6mr_sk_init(struct mr_table *mrt, struct sock *sk)
- 
- int ip6mr_sk_done(struct sock *sk)
++static void rtl8168d_1_common(struct phy_device *phydev)
++{
++	u16 val;
++
++	phy_write_paged(phydev, 0x0002, 0x05, 0x669a);
++	r8168d_phy_param(phydev, 0x8330, 0xffff, 0x669a);
++	phy_write(phydev, 0x1f, 0x0002);
++
++	val = phy_read(phydev, 0x0d);
++
++	if ((val & 0x00ff) != 0x006c) {
++		static const u16 set[] = {
++			0x0065, 0x0066, 0x0067, 0x0068,
++			0x0069, 0x006a, 0x006b, 0x006c
++		};
++		int i;
++
++		val &= 0xff00;
++		for (i = 0; i < ARRAY_SIZE(set); i++)
++			phy_write(phydev, 0x0d, val | set[i]);
++	}
++}
++
+ static void rtl8168d_1_hw_phy_config(struct rtl8169_private *tp,
+ 				     struct phy_device *phydev)
  {
-+	struct net *net = sock_net(sk);
-+	struct ipv6_devconf *devconf;
-+	struct mr_table *mrt;
- 	int err = -EACCES;
--	struct net *net = sock_net(sk);
--	struct mr_table *mrt;
+@@ -469,25 +483,7 @@ static void rtl8168d_1_hw_phy_config(struct rtl8169_private *tp,
+ 	phy_modify(phydev, 0x0c, 0x5d00, 0xa200);
  
- 	if (sk->sk_type != SOCK_RAW ||
- 	    inet_sk(sk)->inet_num != IPPROTO_ICMPV6)
- 		return err;
+ 	if (rtl8168d_efuse_read(tp, 0x01) == 0xb1) {
+-		int val;
+-
+-		rtl_writephy_batch(phydev, rtl8168d_1_phy_reg_init_1);
+-
+-		val = phy_read(phydev, 0x0d);
+-
+-		if ((val & 0x00ff) != 0x006c) {
+-			static const u32 set[] = {
+-				0x0065, 0x0066, 0x0067, 0x0068,
+-				0x0069, 0x006a, 0x006b, 0x006c
+-			};
+-			int i;
+-
+-			phy_write(phydev, 0x1f, 0x0002);
+-
+-			val &= 0xff00;
+-			for (i = 0; i < ARRAY_SIZE(set); i++)
+-				phy_write(phydev, 0x0d, val | set[i]);
+-		}
++		rtl8168d_1_common(phydev);
+ 	} else {
+ 		phy_write_paged(phydev, 0x0002, 0x05, 0x6662);
+ 		r8168d_phy_param(phydev, 0x8330, 0xffff, 0x6662);
+@@ -513,24 +509,7 @@ static void rtl8168d_2_hw_phy_config(struct rtl8169_private *tp,
+ 	rtl_writephy_batch(phydev, rtl8168d_1_phy_reg_init_0);
  
--	if (!atomic_read(&net->ipv6.devconf_all->mc_forwarding))
-+	devconf = net->ipv6.devconf_all;
-+	if (!devconf || !atomic_read(&devconf->mc_forwarding))
- 		return err;
- 
- 	rtnl_lock();
-@@ -1587,7 +1589,7 @@ int ip6mr_sk_done(struct sock *sk)
- 			 * so the RCU grace period before sk freeing
- 			 * is guaranteed by sk_destruct()
- 			 */
--			atomic_dec(&net->ipv6.devconf_all->mc_forwarding);
-+			atomic_dec(&devconf->mc_forwarding);
- 			write_unlock_bh(&mrt_lock);
- 			inet6_netconf_notify_devconf(net, RTM_NEWNETCONF,
- 						     NETCONFA_MC_FORWARDING,
+ 	if (rtl8168d_efuse_read(tp, 0x01) == 0xb1) {
+-		int val;
+-
+-		rtl_writephy_batch(phydev, rtl8168d_1_phy_reg_init_1);
+-
+-		val = phy_read(phydev, 0x0d);
+-		if ((val & 0x00ff) != 0x006c) {
+-			static const u32 set[] = {
+-				0x0065, 0x0066, 0x0067, 0x0068,
+-				0x0069, 0x006a, 0x006b, 0x006c
+-			};
+-			int i;
+-
+-			phy_write(phydev, 0x1f, 0x0002);
+-
+-			val &= 0xff00;
+-			for (i = 0; i < ARRAY_SIZE(set); i++)
+-				phy_write(phydev, 0x0d, val | set[i]);
+-		}
++		rtl8168d_1_common(phydev);
+ 	} else {
+ 		phy_write_paged(phydev, 0x0002, 0x05, 0x2642);
+ 		r8168d_phy_param(phydev, 0x8330, 0xffff, 0x2642);
 -- 
-2.35.0.263.gb82422642f-goog
+2.35.1
 
