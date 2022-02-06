@@ -2,141 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 923C54AADA4
-	for <lists+netdev@lfdr.de>; Sun,  6 Feb 2022 04:30:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC5D74AADAE
+	for <lists+netdev@lfdr.de>; Sun,  6 Feb 2022 05:31:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232973AbiBFDao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Feb 2022 22:30:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60198 "EHLO
+        id S229596AbiBFEbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Feb 2022 23:31:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiBFDan (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 22:30:43 -0500
-X-Greylist: delayed 10802 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 05 Feb 2022 19:30:41 PST
-Received: from mx2.smtp.larsendata.com (mx2.smtp.larsendata.com [91.221.196.228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE1BC043186
-        for <netdev@vger.kernel.org>; Sat,  5 Feb 2022 19:30:41 -0800 (PST)
-Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
-        by mx2.smtp.larsendata.com (Halon) with ESMTPS
-        id 12f502cb-8454-11ec-ac19-0050568cd888;
-        Wed, 02 Feb 2022 18:15:17 +0000 (UTC)
-Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: sam@ravnborg.org)
-        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 67A6F194BFA;
-        Wed,  2 Feb 2022 19:14:11 +0100 (CET)
-Date:   Wed, 2 Feb 2022 19:14:08 +0100
-X-Report-Abuse-To: abuse@mxhotel.dk
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     nick.hawkins@hpe.com
-Cc:     verdun@hpe.com, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Corey Minyard <minyard@acm.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229452AbiBFEbS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Feb 2022 23:31:18 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94726C06173B;
+        Sat,  5 Feb 2022 20:31:18 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id on2so1216516pjb.4;
+        Sat, 05 Feb 2022 20:31:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RUijhOjd1nWaq8bBd+e7fKkRlf3hDD9ZgGUieQmhTZU=;
+        b=pt4/pOwtjeXG0CPKhFPxYdGyVQLwfXNl9IXVzCcLMJDGGNtDEWyOix9CkXWiVx+KO7
+         vSbexJBrgH7pjJPuwC3YVdSAKMtGDyUjaaZsXwM1NoN0JEPWUbHi2zdkEtzu6OBqidG7
+         0529B54xARy9WsceWxyVfrR2JKL2EtjlZAxz5at47knBErldO7g7dx4otZJ8YQTApv4c
+         jrMOlN8YChzSjj5sQatsVTmlf7W+Obch1LckrBCwLrgpR7UScJ7aywscPjTFNSUcbsQy
+         btbd9SJ5ox4lWT0BJ+yRNQUr6q+1m+3aiRd07eOW/qtrOHj+zzvx3TwVw9sye0YqOe/T
+         ixsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RUijhOjd1nWaq8bBd+e7fKkRlf3hDD9ZgGUieQmhTZU=;
+        b=JnfFWPxMhNka8e0z4LqfQH1k03JUp49cz3X3gD5CRCKbYUPrkP63fqycClynO3AkOB
+         lxn1TqZ284TEd8OzmJzvPHAOx4Q/cb9g5tf0Q6ilNb3GNL4Np6kYEYygWNXcvKPBfDun
+         /vKSLD7G5d10R60hUYorcWLzTu/WqyCtxZUkhQKVOebgRi73+0RRjLutfqwiV+qMNobO
+         dXk9LpLzUbEfWMRRWVOYAs2gh/niCRzl3bEHIhI78Ai7c0HZIz0Tzz/xKRxevDWPiL3F
+         Kma+TT/o+Ls+2722CcRtbp/YriT8/5mKwNA7aSuYdOx+bwU0wS1yGI+fFK8lsk7cv/My
+         EbSQ==
+X-Gm-Message-State: AOAM531eQaJrz1XscYMi+4q7eGzD2TZnC/NnykPVia3G5DxOszfc+Gcn
+        bQyzETB8nW+NtRebx1Ln2w0=
+X-Google-Smtp-Source: ABdhPJygy475aNP1rsPQmWj5YvFmJGACNExCwpOYKIIQgl7KYaHVyGpIhT5pKbD0Eoi7cpj8K1NW6A==
+X-Received: by 2002:a17:90a:6a0a:: with SMTP id t10mr7179411pjj.227.1644121877128;
+        Sat, 05 Feb 2022 20:31:17 -0800 (PST)
+Received: from localhost (61-224-163-139.dynamic-ip.hinet.net. [61.224.163.139])
+        by smtp.gmail.com with ESMTPSA id mr7sm4134871pjb.32.2022.02.05.20.31.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 05 Feb 2022 20:31:16 -0800 (PST)
+From:   Hou Tao <hotforest@gmail.com>
+X-Google-Original-From: Hou Tao <houtao1@huawei.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        Stanislav Jakubek <stano.jakubek@gmail.com>,
-        Hao Fang <fanghao11@huawei.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Wang Kefeng <wangkefeng.wang@huawei.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-i2c@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] HPE BMC GXP SUPPORT
-Message-ID: <YfrJ8JWjyH9ptV4z@ravnborg.org>
-References: <nick.hawkins@hpe.com>
- <20220202165315.18282-1-nick.hawkins@hpe.com>
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, houtao1@huawei.com
+Subject: [PATCH bpf-next v4 0/2] selftests: add test for kfunc call
+Date:   Sun,  6 Feb 2022 12:31:05 +0800
+Message-Id: <20220206043107.18549-1-houtao1@huawei.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220202165315.18282-1-nick.hawkins@hpe.com>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,SUBJ_ALL_CAPS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nick,
+Hi,
 
-good to see all this stuff coming mainline,
+The patchset add a test for kfunc call to ensure s32 is sufficient for
+kfunc offset. Patch #1 unexports the subtests in ksyms_module.c to fix
+the confusion in test output and patch #2 adds a test in ksyms_module.c
+to ensure s32 is sufficient for kfunc offset.
 
-On Wed, Feb 02, 2022 at 10:52:50AM -0600, nick.hawkins@hpe.com wrote:
-> From: Nick Hawkins <nick.hawkins@hpe.com>
-> 
-> GXP is the name of the HPE SoC.
-> This SoC is used to implement BMC features of HPE servers
-> (all ProLiant, Synergy, and many Apollo, and Superdome machines)
-> It does support many features including:
-> 	ARMv7 architecture, and it is based on a Cortex A9 core
-> 	Use an AXI bus to which
-> 		a memory controller is attached, as well as
->                  multiple SPI interfaces to connect boot flash,
->                  and ROM flash, a 10/100/1000 Mac engine which
->                  supports SGMII (2 ports) and RMII
-> 		Multiple I2C engines to drive connectivity with a host infrastructure
-> 		A video engine which support VGA and DP, as well as
->                  an hardware video encoder
-> 		Multiple PCIe ports
-> 		A PECI interface, and LPC eSPI
-> 		Multiple UART for debug purpose, and Virtual UART for host connectivity
-> 		A GPIO engine
-> This Patch Includes:
-> 	Documentation for device tree bindings
-> 	Device Tree Bindings
-> 	GXP Timer Support
-> 	GXP Architecture Support
-> 
-> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
-> ---
->  .../bindings/display/hpe,gxp-thumbnail.txt    |  21 +
->  .../devicetree/bindings/gpio/hpe,gxp-gpio.txt |  16 +
-...
+Change Log:
+v4:
+ * remove merged patch "bpf, arm64: enable kfunc call"
+ * rebased on bpf-next
 
-All new bindings must be in the DT-schema format (yaml files).
-This enables a lot of syntax checks and validation.
+v3: https://lore.kernel.org/bpf/20220130092917.14544-1-hotforest@gmail.com
+  * patch #2: newly-addded to unexport unnecessary subtests
+  * patch #3: use kallsyms_find() instead of reimplementing it.
+  * patch #3: ensure kfunc call is supported before checking
+              whether s32 will be overflowed or not.
 
-We are slowly migrating away from the .txt based bindings.
+v2: https://lore.kernel.org/bpf/20220127071532.384888-1-houtao1@huawei.com
+  * add a test to check whether imm will be overflowed for kfunc call
 
-Also, for new bindings please follow the guide lines listed in
-Documentation/devicetree/bindings/submitting-patches.rst
+v1: https://lore.kernel.org/bpf/20220119144942.305568-1-houtao1@huawei.com
 
-Consider including the bindings with the drivers using the bindings so
-things have a more natural split.
+Hou Tao (2):
+  selftests/bpf: do not export subtest as standalone test
+  selftests/bpf: check whether s32 is sufficient for kfunc offset
 
-	Sam
+ .../selftests/bpf/prog_tests/ksyms_module.c   | 46 ++++++++++++++++++-
+ .../bpf/prog_tests/xdp_adjust_frags.c         |  6 ---
+ .../bpf/prog_tests/xdp_adjust_tail.c          |  4 +-
+ .../bpf/prog_tests/xdp_cpumap_attach.c        |  4 +-
+ .../bpf/prog_tests/xdp_devmap_attach.c        |  2 +-
+ 5 files changed, 49 insertions(+), 13 deletions(-)
+
+-- 
+2.35.1
+
