@@ -2,66 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B25E64AB091
-	for <lists+netdev@lfdr.de>; Sun,  6 Feb 2022 17:07:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01B004AB0CF
+	for <lists+netdev@lfdr.de>; Sun,  6 Feb 2022 18:05:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232190AbiBFQH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Feb 2022 11:07:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35740 "EHLO
+        id S1343664AbiBFRFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Feb 2022 12:05:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231915AbiBFQH1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Feb 2022 11:07:27 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582ECC06173B
-        for <netdev@vger.kernel.org>; Sun,  6 Feb 2022 08:07:26 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id l5so24896449edv.3
-        for <netdev@vger.kernel.org>; Sun, 06 Feb 2022 08:07:26 -0800 (PST)
+        with ESMTP id S232559AbiBFRFk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Feb 2022 12:05:40 -0500
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C485BC06173B
+        for <netdev@vger.kernel.org>; Sun,  6 Feb 2022 09:05:39 -0800 (PST)
+Received: by mail-qt1-x82e.google.com with SMTP id s1so10162319qtw.9
+        for <netdev@vger.kernel.org>; Sun, 06 Feb 2022 09:05:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:to:cc:content-language
-         :subject:content-transfer-encoding;
-        bh=MfSRa8SzGorEIciIvFacs94wlErL2RvQ0HenIwlrlCM=;
-        b=jf1GDUTWpYFWDAaN69I1yAydzX7RHAxYyu1OEOi2GPO2jIXsFexoxZQ/OD9+cxoRVy
-         bIJ36o837aaHuc2+4yYPGlSazO6w0BBZh4jQMAy84+ymzYF5PsnPNFAQxR2xI0beynu+
-         EqaPd5WrVwNrilMLFb5vK46JQj0gJbv08dXJhf7p2tGCHqz1eneWRI5zpltmU/H/+vVB
-         a24F2olsUQcfI6iAumpdWqABFzs12YCBJRScMPVnyNA/VIjTU40e8ST7aFI9jOtNfqwu
-         MofMWy9LedBvr/ZYnCWC0ozLQFjK2v0cjBAFXJ+aqeO72x4y+3wCu5FdqJdkY/a8KGqg
-         BbQw==
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=4vfQyttDdobHbBrio36ZO852PxT9+1cO/BhU8vf48uk=;
+        b=YfRHQiL4ZJ3x88JYbW3jdyyCvWsnJ5Qt7JnCaY49smbb/XuoZvdH9i2gaQ/ePqfeZZ
+         wpt+/JokyIBur1EsZA2fSxvNdOy4Dyp0N3x0H4pchYdFuwvhJSkA3q8kr9sGpxnAz8CL
+         4iHEQIumFK8MkJQGJT3LnHOkXNFSL2GyoOGVHAo7lz27Ql1h8hulAXUN1Z910AEiQ8X0
+         fPgqosduF1CRkdFdsUxAInkp3t6u5oIZqJPuGzUCv7MxWtcb3R9Tv2gZnMyLIHz9I8I3
+         iD6+x1FEvEVsz+gToudF9/DcbubCwc+tho+UL6GexCrLf7zvs12EVq1HSy1ieICSiLY2
+         dU/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from:to
-         :cc:content-language:subject:content-transfer-encoding;
-        bh=MfSRa8SzGorEIciIvFacs94wlErL2RvQ0HenIwlrlCM=;
-        b=wCALhxwVMsqJCw8wuzCd0EAv0SlIBfDdcnpX0Cya0JSt19W6UsB3e8QBYeticUR/6G
-         Xh8I+p7nFmF2DS8IqTUn42vjVvkO3nmD/oOBNY59mz0vUP4fg1VJP+m9ybOcxy6u7ges
-         eR7nWAER5U37dtXo4yujFNdzDXHJkWDOIMz2ugvI1VzX6P1+OQBW7my7N49oqlRlNwBz
-         0p9S3lddwXNBI46VeIVHnmBOmMkVn+q6KJlSG6ZIRbxYG8BadzGuFaMkCMZ2N5DyOa6n
-         12+MpBvWD38P94iPKcXbXDLgf+0i2oUcbu45nPzZY4gmUUy+pWsHHf62e1+mk6Ybv3x5
-         KOMw==
-X-Gm-Message-State: AOAM531GbORZoNuZETf4RyfQusVnEzB4K4uwUNpzjHXvazgcQEsEVHdV
-        yxet9OsH03W4Tgxpv60OQfyddn6Ru6Y=
-X-Google-Smtp-Source: ABdhPJzdtEDsnPyLUoOGL/gohN0zX6o3+rSXe8kWwW13dN167mTHaAlJYYalceG5y00q+BLsXzkuQQ==
-X-Received: by 2002:aa7:c917:: with SMTP id b23mr2809486edt.118.1644163644784;
-        Sun, 06 Feb 2022 08:07:24 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f4d:2b00:102e:bd16:6d55:bf2d? (p200300ea8f4d2b00102ebd166d55bf2d.dip0.t-ipconnect.de. [2003:ea:8f4d:2b00:102e:bd16:6d55:bf2d])
-        by smtp.googlemail.com with ESMTPSA id n6sm3936299edy.87.2022.02.06.08.07.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Feb 2022 08:07:24 -0800 (PST)
-Message-ID: <467ee9c1-4587-08c0-60ca-e653d31cbc9f@gmail.com>
-Date:   Sun, 6 Feb 2022 17:07:13 +0100
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=4vfQyttDdobHbBrio36ZO852PxT9+1cO/BhU8vf48uk=;
+        b=RiCcbGgWYD57tS0j9KTU6pqWb4BoYuKchmA5AGkmMQylVRbJW3b7zAk/KgmUSJn4fd
+         T/a+o0itG87UXSCJw2OsuVU3OwlIqFNDro/ZWUeKlVZgOlXm0l54tA5mYXTDVyOuKhAH
+         Hsi4Ra+Sav7xBViUrdO509bddbAbyA3NwoqmeOw9Sln4bHqJGvq+61NSVdjnanhhmXZJ
+         iZtMKh05MQklrDi3Nl7CxohIsRwYVTmGlzCiq+1CHMoFuvHD3cGmEem0xEN0CpQZCLSf
+         CffzfC4k7Ud4fpBIe5jnQ9pGinoERkhnLOrrpu/oyAgFCU2fAhFSMIeQhg8DSEWKkL5x
+         ns7A==
+X-Gm-Message-State: AOAM53016af4gb6xD2jcCeoafc7w6jDQ2nAo7l35ncFdP2Xm9gD2+Ym9
+        1hL6uUOc0Yi+r60aw/LYlHzrFBOgeQ+JaTrIAms=
+X-Google-Smtp-Source: ABdhPJwpHfYeDbXvrJDCVf8itF6k9t4DYf1OjWh3td3g0cp33bqajzBACSEgi1OY8asxPjZmPotR7i+JuQpKCYrNed4=
+X-Received: by 2002:a05:622a:1056:: with SMTP id f22mr5493567qte.99.1644167139021;
+ Sun, 06 Feb 2022 09:05:39 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Language: en-US
-Subject: [PATCH net-next] r8169: factor out redundant RTL8168d PHY config
- functionality to rtl8168d_1_common()
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Sender: ndubuisiu000@gmail.com
+Received: by 2002:a05:622a:1391:0:0:0:0 with HTTP; Sun, 6 Feb 2022 09:05:38
+ -0800 (PST)
+From:   Hannah Johnson <hannahjohnson8856@gmail.com>
+Date:   Sun, 6 Feb 2022 17:05:38 +0000
+X-Google-Sender-Auth: oFtHN8BXN4CzwXdqoUI0NH7AmK4
+Message-ID: <CAPxcwwjT7d7OY0CMnof5JgX3-h60i55mwMQ+gR04-cy1e9zJ-Q@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
@@ -72,118 +63,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rtl8168d_2_hw_phy_config() shares quite some functionality with
-rtl8168d_1_hw_phy_config(), so let's factor out the common part to a
-new function rtl8168d_1_common(). In addition improve the code a little.
-
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- .../net/ethernet/realtek/r8169_phy_config.c   | 71 +++++++------------
- 1 file changed, 25 insertions(+), 46 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_phy_config.c b/drivers/net/ethernet/realtek/r8169_phy_config.c
-index f7ad54878..15c295f90 100644
---- a/drivers/net/ethernet/realtek/r8169_phy_config.c
-+++ b/drivers/net/ethernet/realtek/r8169_phy_config.c
-@@ -429,15 +429,6 @@ static const struct phy_reg rtl8168d_1_phy_reg_init_0[] = {
- 	{ 0x0d, 0xf880 }
- };
- 
--static const struct phy_reg rtl8168d_1_phy_reg_init_1[] = {
--	{ 0x1f, 0x0002 },
--	{ 0x05, 0x669a },
--	{ 0x1f, 0x0005 },
--	{ 0x05, 0x8330 },
--	{ 0x06, 0x669a },
--	{ 0x1f, 0x0002 }
--};
--
- static void rtl8168d_apply_firmware_cond(struct rtl8169_private *tp,
- 					 struct phy_device *phydev,
- 					 u16 val)
-@@ -455,6 +446,29 @@ static void rtl8168d_apply_firmware_cond(struct rtl8169_private *tp,
- 		r8169_apply_firmware(tp);
- }
- 
-+static void rtl8168d_1_common(struct phy_device *phydev)
-+{
-+	u16 val;
-+
-+	phy_write_paged(phydev, 0x0002, 0x05, 0x669a);
-+	r8168d_phy_param(phydev, 0x8330, 0xffff, 0x669a);
-+	phy_write(phydev, 0x1f, 0x0002);
-+
-+	val = phy_read(phydev, 0x0d);
-+
-+	if ((val & 0x00ff) != 0x006c) {
-+		static const u16 set[] = {
-+			0x0065, 0x0066, 0x0067, 0x0068,
-+			0x0069, 0x006a, 0x006b, 0x006c
-+		};
-+		int i;
-+
-+		val &= 0xff00;
-+		for (i = 0; i < ARRAY_SIZE(set); i++)
-+			phy_write(phydev, 0x0d, val | set[i]);
-+	}
-+}
-+
- static void rtl8168d_1_hw_phy_config(struct rtl8169_private *tp,
- 				     struct phy_device *phydev)
- {
-@@ -469,25 +483,7 @@ static void rtl8168d_1_hw_phy_config(struct rtl8169_private *tp,
- 	phy_modify(phydev, 0x0c, 0x5d00, 0xa200);
- 
- 	if (rtl8168d_efuse_read(tp, 0x01) == 0xb1) {
--		int val;
--
--		rtl_writephy_batch(phydev, rtl8168d_1_phy_reg_init_1);
--
--		val = phy_read(phydev, 0x0d);
--
--		if ((val & 0x00ff) != 0x006c) {
--			static const u32 set[] = {
--				0x0065, 0x0066, 0x0067, 0x0068,
--				0x0069, 0x006a, 0x006b, 0x006c
--			};
--			int i;
--
--			phy_write(phydev, 0x1f, 0x0002);
--
--			val &= 0xff00;
--			for (i = 0; i < ARRAY_SIZE(set); i++)
--				phy_write(phydev, 0x0d, val | set[i]);
--		}
-+		rtl8168d_1_common(phydev);
- 	} else {
- 		phy_write_paged(phydev, 0x0002, 0x05, 0x6662);
- 		r8168d_phy_param(phydev, 0x8330, 0xffff, 0x6662);
-@@ -513,24 +509,7 @@ static void rtl8168d_2_hw_phy_config(struct rtl8169_private *tp,
- 	rtl_writephy_batch(phydev, rtl8168d_1_phy_reg_init_0);
- 
- 	if (rtl8168d_efuse_read(tp, 0x01) == 0xb1) {
--		int val;
--
--		rtl_writephy_batch(phydev, rtl8168d_1_phy_reg_init_1);
--
--		val = phy_read(phydev, 0x0d);
--		if ((val & 0x00ff) != 0x006c) {
--			static const u32 set[] = {
--				0x0065, 0x0066, 0x0067, 0x0068,
--				0x0069, 0x006a, 0x006b, 0x006c
--			};
--			int i;
--
--			phy_write(phydev, 0x1f, 0x0002);
--
--			val &= 0xff00;
--			for (i = 0; i < ARRAY_SIZE(set); i++)
--				phy_write(phydev, 0x0d, val | set[i]);
--		}
-+		rtl8168d_1_common(phydev);
- 	} else {
- 		phy_write_paged(phydev, 0x0002, 0x05, 0x2642);
- 		r8168d_phy_param(phydev, 0x8330, 0xffff, 0x2642);
 -- 
-2.35.1
-
+Hello
+Nice to meet you
+my name is Hannah Johnson i will be glad if we get to know each other
+more better and share pictures i am  expecting your reply
+thank you
