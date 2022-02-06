@@ -2,112 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 204284AB115
-	for <lists+netdev@lfdr.de>; Sun,  6 Feb 2022 18:54:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7E2A4AB138
+	for <lists+netdev@lfdr.de>; Sun,  6 Feb 2022 19:28:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345285AbiBFRyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Feb 2022 12:54:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41158 "EHLO
+        id S1345858AbiBFS2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Feb 2022 13:28:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232592AbiBFRyV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Feb 2022 12:54:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D86C06173B;
-        Sun,  6 Feb 2022 09:54:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A74C9611F0;
-        Sun,  6 Feb 2022 17:54:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B57C340E9;
-        Sun,  6 Feb 2022 17:54:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644170059;
-        bh=ZgaaGrymrJfoXt8JUPDmsicwkZeVuhH1bTY9PINlWGM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CwoZzWfre3xS6bYEeuSlgihY9EssoXepaxlG2CPrCXxQOazcqPbmhfpHz/eKyQCVZ
-         0KGU4ACZLaFycbkMW4JDKtQ/jM5v+/7aXnuNMiHWdXT0jlWHvGcArGVz7bajQe+OkE
-         hfIoWQfJ0benPdtTPav/M66vr62Lh7SAS0V3V4J9ImlZu7FWRVDjXqi5m7P6Lh1xaO
-         asq40fb8A1mmNq00bhoMGR0/cF8zLRVz19xiAsxyxqQl3puXuFsfPoASzOPHFEr2/g
-         IevfAEzivBGDbIuZQnMxawRwWaL3fKzJnLTJrFV0neH9gmIAbCpiLa503d5d/QsnLn
-         Tputwj+ZsuADg==
-Date:   Sun, 6 Feb 2022 18:54:13 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        devicetree@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
-        Holger Brunck <holger.brunck@hitachienergy.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        linux-phy@lists.infradead.org, Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>
-Subject: Re: [PATCH devicetree v3] dt-bindings: phy: Add `tx-p2p-microvolt`
- property binding
-Message-ID: <20220206185413.4c1ac00d@thinkpad>
-In-Reply-To: <Yf3egEVYyyXUkklM@robh.at.kernel.org>
-References: <20220119131117.30245-1-kabel@kernel.org>
-        <74566284-ff3f-8e69-5b7d-d8ede75b78ad@gmail.com>
-        <Yf3egEVYyyXUkklM@robh.at.kernel.org>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S230006AbiBFS2X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Feb 2022 13:28:23 -0500
+X-Greylist: delayed 1582 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 10:28:21 PST
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160CFC06173B;
+        Sun,  6 Feb 2022 10:28:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=/8tPNhnmKNqwNI2GwJ1u5pVwv907hfEX8rrGwiFxMM8=; b=dl
+        XuCEYwo3gFWPQbeuANJDhxAM8CTKgrsz3WhXKSrLbI/5d9Yk3IoTKKc++vKZLa7X2pEZ1ivFIdH4a
+        gRCAlhtGhvrgWkKYkdpn1pBI9tcCLi15RfDJ07hBFk/nIxUPNC1godBA++221YH4pFetZN5kXKtZJ
+        6Yr0ZoVkg+U2jn8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nGlr3-004Wpn-KU; Sun, 06 Feb 2022 19:01:41 +0100
+Date:   Sun, 6 Feb 2022 19:01:41 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Raag Jadav <raagjadav@gmail.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
+Message-ID: <YgANBQjsrmK+T/N+@lunn.ch>
+References: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
+ <Yf6QbbqaxZhZPUdC@lunn.ch>
+ <20220206171234.GA5778@localhost>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220206171234.GA5778@localhost>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Feb 2022 20:18:40 -0600
-Rob Herring <robh@kernel.org> wrote:
+On Sun, Feb 06, 2022 at 10:42:34PM +0530, Raag Jadav wrote:
+> On Sat, Feb 05, 2022 at 03:57:49PM +0100, Andrew Lunn wrote:
+> > On Sat, Feb 05, 2022 at 12:14:52PM +0530, Raag Jadav wrote:
+> > > Enable MAC SerDes autonegotiation to distinguish between
+> > > 1000BASE-X, SGMII and QSGMII MAC.
+> > 
+> > How does autoneg help you here? It just tells you about duplex, pause
+> > etc. It does not indicate 1000BaseX, SGMII etc. The PHY should be
+> > using whatever mode it was passed in phydev->interface, which the MAC
+> > sets when it calls the connection function. If the PHY dynamically
+> > changes its host side mode as a result of what that line side is
+> > doing, it should also change phydev->interface. However, as far as i
+> > can see, the mscc does not do this.
+> >
+> 
+> Once the PHY auto-negotiates parameters such as speed and duplex mode
+> with its link partner over the copper link as per IEEE 802.3 Clause 27,
+> the link partner’s capabilities are then transferred by PHY to MAC
+> over 1000BASE-X or SGMII link using the auto-negotiation functionality
+> defined in IEEE 802.3z Clause 37.
 
-> On Fri, Jan 21, 2022 at 11:18:09AM -0800, Florian Fainelli wrote:
-> > On 1/19/22 5:11 AM, Marek Beh=C3=BAn wrote: =20
-> > > Common PHYs and network PCSes often have the possibility to specify
-> > > peak-to-peak voltage on the differential pair - the default voltage
-> > > sometimes needs to be changed for a particular board.
-> > >=20
-> > > Add properties `tx-p2p-microvolt` and `tx-p2p-microvolt-names` for th=
-is
-> > > purpose. The second property is needed to specify the mode for the
-> > > corresponding voltage in the `tx-p2p-microvolt` property, if the volt=
-age
-> > > is to be used only for speficic mode. More voltage-mode pairs can be
-> > > specified.
-> > >=20
-> > > Example usage with only one voltage (it will be used for all supported
-> > > PHY modes, the `tx-p2p-microvolt-names` property is not needed in this
-> > > case):
-> > >=20
-> > >   tx-p2p-microvolt =3D <915000>;
-> > >=20
-> > > Example usage with voltages for multiple modes:
-> > >=20
-> > >   tx-p2p-microvolt =3D <915000>, <1100000>, <1200000>;
-> > >   tx-p2p-microvolt-names =3D "2500base-x", "usb", "pcie";
-> > >=20
-> > > Add these properties into a separate file phy/transmit-amplitude.yaml,
-> > > which should be referenced by any binding that uses it. =20
-> >=20
-> > p2p commonly means peer to peer which incidentally could be confusing,
-> > can you spell out the property entire:
-> >=20
-> > tx-peaktopeak-microvolt or:
-> >=20
-> > tx-pk2pk-microvolt for a more compact name maybe? =20
->=20
-> Peer to peer makes little sense in terms of a voltage. I think this is=20
-> fine as-is.
+None of this allows you to distinguish between 1000BASE-X, SGMII and
+QSGMII, which is what the commit message says.
 
-Cool. Should this get merged via devicetree, or via phy maintainers?
-Or should I resend this together with patches that make use of this
-property? (In that case can you add your Ack?)
+It does allow you to get duplex, pause, and maybe speed via in band
+signalling. But you should also be getting the same information out of
+band, via the phylib callback.
 
-Thanks.
+There are some MACs which don't seem to work correctly without the in
+band signalling, so maybe that is your problem? Please could you give
+more background about your problem, what MAC and PHY combination are
+you using, what problem you are seeing, etc.
 
-Marek
+    Andrew
+
