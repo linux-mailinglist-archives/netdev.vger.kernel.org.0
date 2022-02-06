@@ -2,86 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9C5E4AB0EB
-	for <lists+netdev@lfdr.de>; Sun,  6 Feb 2022 18:18:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9B874AB0EE
+	for <lists+netdev@lfdr.de>; Sun,  6 Feb 2022 18:23:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237351AbiBFRSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Feb 2022 12:18:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57572 "EHLO
+        id S1344080AbiBFRXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Feb 2022 12:23:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230187AbiBFRSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Feb 2022 12:18:36 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84734C06173B;
-        Sun,  6 Feb 2022 09:18:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=WZawEW9E5ypY6Rh387lFEt31JC2J35mGwrAMc0/AAzo=; b=XzNSINIBxMQVdoTpXXnrPQzf2q
-        pk211w38Qs3kErnL+k8t7syiQ5zoeirAlUJzTwt8Pa9w4ZsO1Q3czT///aWzv7KhIoCecbc2T1dX4
-        sjLBD4lghAlPv2APe5J7BKKvuLm3XrBMLH4Eu944Sdxm+MUow+GPxxZuB18qF4hLE3cGvLXfGnzXs
-        QD1nvXzPzUX1jbTLT2bjSfxfuhBGI9gQ7wZBi1lNKWSiuAye/avfUJ898gwSmhNRXsRy2CJxNHXsm
-        ZTjfU1x3MY16/PXPNMnO7py0r3uzDheMhlQYjjPXtjhf1N3lH4RyYMcosQcRnwBHcNOS4qfrs/K+7
-        MGhNDhOQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57066)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nGlBA-0000Ad-EQ; Sun, 06 Feb 2022 17:18:24 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nGlB6-00073Y-AG; Sun, 06 Feb 2022 17:18:20 +0000
-Date:   Sun, 6 Feb 2022 17:18:20 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Raag Jadav <raagjadav@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
-Message-ID: <YgAC3I/7EENrN8r7@shell.armlinux.org.uk>
-References: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
- <Yf6QbbqaxZhZPUdC@lunn.ch>
- <20220206171234.GA5778@localhost>
+        with ESMTP id S230187AbiBFRXi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Feb 2022 12:23:38 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3267C06173B;
+        Sun,  6 Feb 2022 09:23:36 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id b9so22656376lfq.6;
+        Sun, 06 Feb 2022 09:23:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=DZ5wjKqdD4TOpUJAi2NdV3t9go691za/EKfx/PAIrRE=;
+        b=ke/mkrDrFNo/Hys09oQTVDx/tPAMh8uwUaeWxjMUi9yAqTMBjeqcRSZqI1FLkfjmbq
+         KPQX8oeXfbq5K+Vxi2H5MiZHZSRQI4dCm2z4pLEHh4FkGttMdfrpveAGjeIHDAqGGwDd
+         /5Zxv66RdSa21j9lGSh0es1OYkJpqKiA8a9QDzYKWRT0CH6NuWmRjOgfDwdVwavNdU4z
+         Z4FFleRc3v+wOs1iNmcXKF6Cw0BFh/YBnj0LEq9yQe45zXHRewEqjwH+HiE6JHNKRD+h
+         bM4GWAiMljukALizvHG4DEFNLFAzlO2yOvpHdmvTN2n0f6lI7wBv80oqVh4zmqqq33n0
+         oZOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DZ5wjKqdD4TOpUJAi2NdV3t9go691za/EKfx/PAIrRE=;
+        b=Bgp+SX2tf2sSAKmMJO4/b/TugssM40Uj4UQnQb9ia5MG/1nv+ywL0J21Pbr8IVSvs8
+         kieS5dBLpoo+/lIymITBiiGJWOb+YfiSZEBjv/jtV0CdDMP6mhruUa8lukmZDZmrdUWk
+         5osvnn2KGeSRTkMCYdeaSE3zP3HNKtXc05gvVGoaA5xY9kPpVxOdoBhoGccX+9TzxFFt
+         MvvE/HMhhIDEu2VKFyvNJ9TycLXLpTqOPk0QuET2HYLbU5juoI1Onut0FTKw2TaaNBU7
+         Thi3GZo2ykuRIqnT+aBqPvhjZjeTA/reua9eukKWq+je6gwNyCHpjEI5j7IaRduI4Dfm
+         Sd8Q==
+X-Gm-Message-State: AOAM531CQSrNwpFu/yG7Ur70p/Pt22bu9rnJ5RvOT6jAzI+wl74XHs7v
+        PN9dqAMnkD99poNgiynKbIFKg9ywwFDJ+g==
+X-Google-Smtp-Source: ABdhPJyI2INFDQ9ECmeCNbGeCgArPLiJ4rd3qowK0jikNBNRB1r6KD0EMtuhM06s+RxJ/XYHE3wxeQ==
+X-Received: by 2002:ac2:5e64:: with SMTP id a4mr5874900lfr.674.1644168214696;
+        Sun, 06 Feb 2022 09:23:34 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.224.201])
+        by smtp.gmail.com with ESMTPSA id t12sm1276573ljc.97.2022.02.06.09.23.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Feb 2022 09:23:34 -0800 (PST)
+Message-ID: <7dbe85db-92b8-68bd-d008-33a4be9a55b9@gmail.com>
+Date:   Sun, 6 Feb 2022 20:23:32 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220206171234.GA5778@localhost>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH RFT] net: asix: add proper error handling of usb read
+ errors
+Content-Language: en-US
+To:     davem@davemloft.net, kuba@kernel.org, linux@rempel-privat.de,
+        andrew@lunn.ch, oneukum@suse.com, robert.foss@collabora.com,
+        freddy@asix.com.tw
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+6ca9f7867b77c2d316ac@syzkaller.appspotmail.com
+References: <20220105131952.15693-1-paskripkin@gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20220105131952.15693-1-paskripkin@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 06, 2022 at 10:42:34PM +0530, Raag Jadav wrote:
-> Once the PHY auto-negotiates parameters such as speed and duplex mode
-> with its link partner over the copper link as per IEEE 802.3 Clause 27,
-> the link partner’s capabilities are then transferred by PHY to MAC
-> over 1000BASE-X or SGMII link using the auto-negotiation functionality
-> defined in IEEE 802.3z Clause 37.
+On 1/5/22 16:19, Pavel Skripkin wrote:
+> Syzbot once again hit uninit value in asix driver. The problem still the
+> same -- asix_read_cmd() reads less bytes, than was requested by caller.
+> 
+> Since all read requests are performed via asix_read_cmd() let's catch
+> usb related error there and add __must_check notation to be sure all
+> callers actually check return value.
+> 
+> So, this patch adds sanity check inside asix_read_cmd(), that simply
+> checks if bytes read are not less, than was requested and adds missing
+> error handling of asix_read_cmd() all across the driver code.
+> 
+> Fixes: d9fe64e51114 ("net: asix: Add in_pm parameter")
+> Reported-and-tested-by: syzbot+6ca9f7867b77c2d316ac@syzkaller.appspotmail.com
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> ---
 
-This is slightly incorrect. 1000BASE-X is only capable of operating at
-gigabit speed, not at 100M or 10M.
+gentle ping :)
 
-The PHY _might_ signal the copper side pause resolution via the
-1000BASE-X negotiation word, and even rarer would be whether operating
-at 1G FD or 1G HD.
+>   drivers/net/usb/asix.h         |  4 ++--
+>   drivers/net/usb/asix_common.c  | 19 +++++++++++++------
+>   drivers/net/usb/asix_devices.c | 21 ++++++++++++++++++---
+>   3 files changed, 33 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
+> index 2a1e31defe71..4334aafab59a 100644
+> --- a/drivers/net/usb/asix.h
+> +++ b/drivers/net/usb/asix.h
+> @@ -192,8 +192,8 @@ extern const struct driver_info ax88172a_info;
+>   /* ASIX specific flags */
+>   #define FLAG_EEPROM_MAC		(1UL << 0)  /* init device MAC from eeprom */
+>   
+> -int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+> -		  u16 size, void *data, int in_pm);
+> +int __must_check asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+> +			       u16 size, void *data, int in_pm);
+>   
+>   int asix_write_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+>   		   u16 size, void *data, int in_pm);
+> diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
+> index 71682970be58..524805285019 100644
+> --- a/drivers/net/usb/asix_common.c
+> +++ b/drivers/net/usb/asix_common.c
+> @@ -11,8 +11,8 @@
+>   
+>   #define AX_HOST_EN_RETRIES	30
+>   
+> -int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+> -		  u16 size, void *data, int in_pm)
+> +int __must_check asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+> +			       u16 size, void *data, int in_pm)
+>   {
+>   	int ret;
+>   	int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
+> @@ -27,9 +27,12 @@ int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+>   	ret = fn(dev, cmd, USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+>   		 value, index, data, size);
+>   
+> -	if (unlikely(ret < 0))
+> +	if (unlikely(ret < size)) {
+> +		ret = ret < 0 ? ret : -ENODATA;
+> +
+>   		netdev_warn(dev->net, "Failed to read reg index 0x%04x: %d\n",
+>   			    index, ret);
+> +	}
+>   
+>   	return ret;
+>   }
+> @@ -79,7 +82,7 @@ static int asix_check_host_enable(struct usbnet *dev, int in_pm)
+>   				    0, 0, 1, &smsr, in_pm);
+>   		if (ret == -ENODEV)
+>   			break;
+> -		else if (ret < sizeof(smsr))
+> +		else if (ret < 0)
+>   			continue;
+>   		else if (smsr & AX_HOST_EN)
+>   			break;
+> @@ -579,8 +582,12 @@ int asix_mdio_read_nopm(struct net_device *netdev, int phy_id, int loc)
+>   		return ret;
+>   	}
+>   
+> -	asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id,
+> -		      (__u16)loc, 2, &res, 1);
+> +	ret = asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id,
+> +			    (__u16)loc, 2, &res, 1);
+> +	if (ret < 0) {
+> +		mutex_unlock(&dev->phy_mutex);
+> +		return ret;
+> +	}
+>   	asix_set_hw_mii(dev, 1);
+>   	mutex_unlock(&dev->phy_mutex);
+>   
+> diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+> index 4514d35ef4c4..6b2fbdf4e0fd 100644
+> --- a/drivers/net/usb/asix_devices.c
+> +++ b/drivers/net/usb/asix_devices.c
+> @@ -755,7 +755,12 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
+>   	priv->phy_addr = ret;
+>   	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10);
+>   
+> -	asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
+> +	ret = asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
+> +	if (ret < 0) {
+> +		netdev_dbg(dev->net, "Failed to read STATMNGSTS_REG: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+>   	chipcode &= AX_CHIPCODE_MASK;
+>   
+>   	ret = (chipcode == AX_AX88772_CHIPCODE) ? ax88772_hw_reset(dev, 0) :
+> @@ -920,11 +925,21 @@ static int ax88178_reset(struct usbnet *dev)
+>   	int gpio0 = 0;
+>   	u32 phyid;
+>   
+> -	asix_read_cmd(dev, AX_CMD_READ_GPIOS, 0, 0, 1, &status, 0);
+> +	ret = asix_read_cmd(dev, AX_CMD_READ_GPIOS, 0, 0, 1, &status, 0);
+> +	if (ret < 0) {
+> +		netdev_dbg(dev->net, "Failed to read GPIOS: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+>   	netdev_dbg(dev->net, "GPIO Status: 0x%04x\n", status);
+>   
+>   	asix_write_cmd(dev, AX_CMD_WRITE_ENABLE, 0, 0, 0, NULL, 0);
+> -	asix_read_cmd(dev, AX_CMD_READ_EEPROM, 0x0017, 0, 2, &eeprom, 0);
+> +	ret = asix_read_cmd(dev, AX_CMD_READ_EEPROM, 0x0017, 0, 2, &eeprom, 0);
+> +	if (ret < 0) {
+> +		netdev_dbg(dev->net, "Failed to read EEPROM: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+>   	asix_write_cmd(dev, AX_CMD_WRITE_DISABLE, 0, 0, 0, NULL, 0);
+>   
+>   	netdev_dbg(dev->net, "EEPROM index 0x17 is 0x%04x\n", eeprom);
 
-Out of the two, only SGMII is capable of operating at 1G, 100M and 10M,
-FD or HD. No pause resolution is passed. SGMII is not an 802.3 defined
-protocol, it's an adaption of 1000BASE-X by Cisco.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
+
+With regards,
+Pavel Skripkin
