@@ -2,53 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C99964AAEF3
+	by mail.lfdr.de (Postfix) with ESMTP id 4AA064AAEF2
 	for <lists+netdev@lfdr.de>; Sun,  6 Feb 2022 12:10:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233558AbiBFLKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Feb 2022 06:10:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56670 "EHLO
+        id S232441AbiBFLKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Feb 2022 06:10:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232609AbiBFLKO (ORCPT
+        with ESMTP id S233104AbiBFLKO (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 6 Feb 2022 06:10:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CD60C061A73
-        for <netdev@vger.kernel.org>; Sun,  6 Feb 2022 03:10:12 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F22C06173B
+        for <netdev@vger.kernel.org>; Sun,  6 Feb 2022 03:10:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9026B80DB1
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D81460F4D
         for <netdev@vger.kernel.org>; Sun,  6 Feb 2022 11:10:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7C254C340F6;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6D200C340F5;
         Sun,  6 Feb 2022 11:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1644145809;
-        bh=38KhMiWYxt8fY7ckeJpJ0KENkIii9htw+6ex/Fj0qus=;
+        bh=HZOoohQEbHxdMSp10kzpQPZvGQXUPoYhXI3MnMTZLgQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=itekfyAnUKUwK5m/QYJRXqFL+rIs7Ph3m1JlJvSeNK2BwSgyzQ2gLYdZCETWe0IRE
-         X3jTRL73DshBWaZYqgXqXpSH2R3P/ADTRZdEFZ2muI+z6QX7eSRhDL4uBxiQsS3tpb
-         ZVPFO/ubdDyGraiMvd0KuKrewZZfHUsWmqy/naoacKCeoUsk6datfA5q4uVM2iXES4
-         rvMeAVnrOSCxRU4bQtw2K8+1+23LX4VxSRQtmB54euPDdNyAmsiEiikH2Lg09U3y0E
-         3dmuzayML28oSfDH1EhO9HCfnz+F0ovUIZQHIlf4ESkiSvVCZSWHDQE7JrTPpzXp0o
-         9IuAnlUOQ/MmQ==
+        b=DRaM106ohGCMCAH+MCvH/j1/NG1K3/DDxdQP3FDNCt3cI4bbZoxqEpO6NggNvyGL+
+         EIr3K3/jyzYymODKt4m4fARlyrSYFN85aoLWMBguCGsRzq8sOSwKM0NHNYpfbRfFCB
+         Miy5cHYmAOoCtDFpZU0r9JAHNkJiGm36UF8E4WeJg1Jn+mMntUbs7Gv/WSh7fwCRyr
+         Ceg0oYjNfDZMNS91dsb0pbf0WnhK6KBTyQ2wGDiBCvXobagHrWS25HHCxB/il6TtTN
+         o32nwkF0c+UQJFkA24C8hVpgOKR75eQKADtMumu8K5UM+/fGaGRKeYidqM6j+RfxKj
+         y4lxMFHe9yBFQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6A2ECE6D44F;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5D51FE6BBD2;
         Sun,  6 Feb 2022 11:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 net-next] net: hsr: use hlist_head instead of list_head for
- mac addresses
+Subject: Re: [PATCH v2 net-next] net: initialize init_net earlier
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164414580941.29882.3204574468884683223.git-patchwork-notify@kernel.org>
+Message-Id: <164414580937.29882.9458302181097916569.git-patchwork-notify@kernel.org>
 Date:   Sun, 06 Feb 2022 11:10:09 +0000
-References: <20220205154038.2345-1-claudiajkang@gmail.com>
-In-Reply-To: <20220205154038.2345-1-claudiajkang@gmail.com>
-To:     Juhee Kang <claudiajkang@gmail.com>
+References: <20220205170125.3562935-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220205170125.3562935-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        ennoerlangen@gmail.com, george.mccollister@gmail.com,
-        olteanv@gmail.com, marco.wenzel@a-eberle.de,
-        xiong.zhenwu@zte.com.cn
+        edumazet@google.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -64,19 +61,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Sat,  5 Feb 2022 15:40:38 +0000 you wrote:
-> Currently, HSR manages mac addresses of known HSR nodes by using list_head.
-> It takes a lot of time when there are a lot of registered nodes due to
-> finding specific mac address nodes by using linear search. We can be
-> reducing the time by using hlist. Thus, this patch moves list_head to
-> hlist_head for mac addresses and this allows for further improvement of
-> network performance.
+On Sat,  5 Feb 2022 09:01:25 -0800 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> While testing a patch that will follow later
+> ("net: add netns refcount tracker to struct nsproxy")
+> I found that devtmpfs_init() was called before init_net
+> was initialized.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v4,net-next] net: hsr: use hlist_head instead of list_head for mac addresses
-    https://git.kernel.org/netdev/net-next/c/4acc45db7115
+  - [v2,net-next] net: initialize init_net earlier
+    https://git.kernel.org/netdev/net-next/c/9c1be1935fb6
 
 You are awesome, thank you!
 -- 
