@@ -2,126 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF31C4AB1F2
-	for <lists+netdev@lfdr.de>; Sun,  6 Feb 2022 21:11:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 939384AB216
+	for <lists+netdev@lfdr.de>; Sun,  6 Feb 2022 21:29:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243706AbiBFULQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Feb 2022 15:11:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53494 "EHLO
+        id S245578AbiBFU3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Feb 2022 15:29:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231982AbiBFULP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Feb 2022 15:11:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1EC3C06173B;
-        Sun,  6 Feb 2022 12:11:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3785B60F9E;
-        Sun,  6 Feb 2022 20:11:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10199C340E9;
-        Sun,  6 Feb 2022 20:11:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644178272;
-        bh=jljw/NXDE01h/Pq3byW2tpFU83OPdtk2kq8rd42Jk1c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nhvpRiAHeyPnhoPW5AJYz7sXsz9qtFaixezo/f6lKIoTinmiRK/0KfhqtTjkJMiZA
-         C1eoikWCvjFFaQoyqdBqnt61Sxj9tcqo0hoj4c33suJ2iCZVvxedjh6hh9d879NQUy
-         D91VqLaA4kYzRnFvGL+lqISffF5jEMJeJz/KehV/F5DPWnP4iRK5HBxqJZ8N5Qpqov
-         u/68l4FbFrs1dFjSIxxVA0bjW0xDBeDhMAwDNgmwQeGdSpN03gGah6Mw9+50+gKID4
-         mgmnJ0HiCVk6qrLd1K0L185npwEZ8epAYyk8NiTmVh/xeQiJvC8hROwGWHFXO+yTZR
-         g2rbP6e0rw9Lw==
-Date:   Sun, 6 Feb 2022 21:11:06 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
+        with ESMTP id S229983AbiBFU3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Feb 2022 15:29:35 -0500
+X-Greylist: delayed 304 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 12:29:35 PST
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3DD4AC043184
+        for <netdev@vger.kernel.org>; Sun,  6 Feb 2022 12:29:35 -0800 (PST)
+X-IronPort-AV: E=Sophos;i="5.88,348,1635174000"; 
+   d="scan'208";a="110336605"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 07 Feb 2022 05:24:31 +0900
+Received: from localhost.localdomain (unknown [10.226.92.17])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 6061F40062BD;
+        Mon,  7 Feb 2022 05:24:28 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>
-Subject: Re: [PATCH v2 1/7] genirq: Provide generic_handle_irq_safe().
-Message-ID: <YgArWgyvy9xF3V5Q@kunai>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>, Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>, UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>
-References: <20220131123404.175438-1-bigeasy@linutronix.de>
- <20220131123404.175438-2-bigeasy@linutronix.de>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="agAcRzQ1V4vmM4bn"
-Content-Disposition: inline
-In-Reply-To: <20220131123404.175438-2-bigeasy@linutronix.de>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH RESEND net-next 1/2] dt-bindings: net: renesas,etheravb: Document RZ/V2L SoC
+Date:   Sun,  6 Feb 2022 20:24:24 +0000
+Message-Id: <20220206202425.15829-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=1.1 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Document Gigabit Ethernet IP found on RZ/V2L SoC. Gigabit Ethernet
+Interface is identical to one found on the RZ/G2L SoC. No driver changes
+are required as generic compatible string "renesas,rzg2l-gbeth" will be
+used as a fallback.
 
---agAcRzQ1V4vmM4bn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+Resending to net-next, as patchwork state[1] shows not applicable
 
+[1] https://patchwork.kernel.org/project/netdevbpf/list/?submitter=190075&state=*
+---
+ Documentation/devicetree/bindings/net/renesas,etheravb.yaml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> + * This function can be called any context (IRQ or process context). It will
+diff --git a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+index bda821065a2b..db0ad6fbad89 100644
+--- a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
++++ b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+@@ -46,7 +46,8 @@ properties:
+       - items:
+           - enum:
+               - renesas,r9a07g044-gbeth # RZ/G2{L,LC}
+-          - const: renesas,rzg2l-gbeth  # RZ/G2L
++              - renesas,r9a07g054-gbeth # RZ/V2L
++          - const: renesas,rzg2l-gbeth  # RZ/{G2L,V2L} family
+ 
+   reg: true
+ 
+-- 
+2.17.1
 
-"from any context"
-
-> + * report an error if not invoked from IRQ context and the irq has been marked
-> + * to enforce IRQ-contex only.
-
-"IRQ-context"
-
-Other than that, the paragraph is really helpful now IMO. So with the
-above fixed, you may add:
-
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-
-
---agAcRzQ1V4vmM4bn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIAK1UACgkQFA3kzBSg
-KbbBQA//be5yTyPptkcw8xl8xEjjuosJmrSOMBREgzarO4DbrPX/pC/W0Nak54bs
-UnjGfnRDFQXa2krCIIbZmmwtCLKftVVbqB5eFFJ/Y6uM/pa2hKgli0sNfHJ2p++i
-jT01vDRqxEjyA795yxeF8nD3/xkmIM49A5hbPq7yW6YTGF8VJ6Qhe+5vWpMoNqFH
-6KoSHGUFpwCgVBEadLhdV8a0OpSrjPTs+MOZhWL+IIpb3Ay+tztQpUL1f2ncnlG/
-Sq5E7KPuKem03swyvKmFcn1fl+R3eLy7ueoHbXeyfKDi8eqLImP1ZYwfq0K+LwKK
-O2LHRkXcrPnHM/lSt9dQDbJNY9J6wzav77BzF9zS8e23KhPlTlidSDHWwgtkq2vj
-yr825hAIMoecoj8t4pgpSDYyyw9rnSeGwmB7AFWZctzLoaLtdGBZrIZKJv4ZM5bH
-p79anJodYwJEVRRvj3t1ZA+vH8n4TThUG6RFWV18a9rLUi1N/YvwsZO7wTf9Msw6
-lnL8iMPAcHpx0byMztoiHybZsmoV4eKGteuu1dwt0CK7Vz1MMKOgQKkLtq1NzWUe
-5DEWew6kXfumd6/yxKJV4i0Zj21mzkjWAtFYk/JXenTGN42RRCErqCFCbZ2qOHq/
-26QRgRBrQ+i9B3h91gLA2r7T7+UTcboUEhA8zhvvf8omx/gYw0M=
-=mPjB
------END PGP SIGNATURE-----
-
---agAcRzQ1V4vmM4bn--
