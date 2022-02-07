@@ -2,386 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DCAC4AC0E3
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 15:18:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 591954ABF46
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 14:24:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351015AbiBGOQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 09:16:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58796 "EHLO
+        id S1447864AbiBGNCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 08:02:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391060AbiBGOKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 09:10:34 -0500
-X-Greylist: delayed 1014 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 06:10:30 PST
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 876D6C043181;
-        Mon,  7 Feb 2022 06:10:30 -0800 (PST)
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JsnYz4mlqzZfCF;
-        Mon,  7 Feb 2022 21:49:27 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
- (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Feb
- 2022 21:53:37 +0800
-From:   Hou Tao <houtao1@huawei.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <houtao1@huawei.com>, Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Julien Thierry <jthierry@redhat.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH bpf-next v3 4/4] selftests/bpf: use raw_tp program for atomic test
-Date:   Sun, 30 Jan 2022 06:04:52 +0800
-Message-ID: <20220129220452.194585-5-houtao1@huawei.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220129220452.194585-1-houtao1@huawei.com>
-References: <20220129220452.194585-1-houtao1@huawei.com>
+        with ESMTP id S1387650AbiBGLl1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 06:41:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B167C03E93D;
+        Mon,  7 Feb 2022 03:40:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DF4160DBF;
+        Mon,  7 Feb 2022 11:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B98DAC340F0;
+        Mon,  7 Feb 2022 11:40:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644234010;
+        bh=LurCH/FgOiyF5tRrbMdN+klo1M8jNPBO4OqOYHEWz0k=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=mYdEQ5TF4K7TDhfDM0t+ipH+GXJwozzx0b4HKEOm8Z/3jLqExCl+JPAeTL4j2PQRk
+         x8saaTkchxeQDBGwtUh65hlYDWvYkhYAhj+PHdVZNzRIaY+15cLzK3Asv6p5uIGiRG
+         mY9zSav585jh+RV2u+Hijtn5/2UREuxXG3DwS8StLuBQHEo7XhWA411IJiiAUJPYml
+         +cRQimmc5+FIAmTJaNlQTEx7hcdDlTuL49rn8Dn0/cEaPjTwEnQK6JUPZFAhRWWCru
+         E6xFayawpyctWduU1zQtfo5m3xqOY2+S5beS8Bj3VrQJj6CWW4VToyVD7chq/vduE9
+         t/WTmeyG25Y2w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9E069E6BB3D;
+        Mon,  7 Feb 2022 11:40:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500025.china.huawei.com (7.185.36.35)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 net-next 0/7] net: use kfree_skb_reason() for ip/udp packet
+ receive
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164423401064.10014.14060566984987490532.git-patchwork-notify@kernel.org>
+Date:   Mon, 07 Feb 2022 11:40:10 +0000
+References: <20220205074739.543606-1-imagedong@tencent.com>
+In-Reply-To: <20220205074739.543606-1-imagedong@tencent.com>
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     dsahern@kernel.org, kuba@kernel.org, rostedt@goodmis.org,
+        mingo@redhat.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        edumazet@google.com, alobakin@pm.me, ast@kernel.org,
+        imagedong@tencent.com, pabeni@redhat.com, keescook@chromium.org,
+        talalahmad@google.com, haokexin@gmail.com,
+        ilias.apalodimas@linaro.org, memxor@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        paulb@nvidia.com, cong.wang@bytedance.com, mengensun@tencent.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now atomic tests will attach fentry program and run it through
-bpf_prog_test_run_opts(), but attaching fentry program depends on bpf
-trampoline which is only available under x86-64. Considering many archs
-have atomic support, using raw_tp program instead.
+Hello:
 
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
----
- .../selftests/bpf/prog_tests/atomics.c        | 91 +++++--------------
- tools/testing/selftests/bpf/progs/atomics.c   | 28 +++---
- 2 files changed, 36 insertions(+), 83 deletions(-)
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/atomics.c b/tools/testing/selftests/bpf/prog_tests/atomics.c
-index ab62aba10e2b..13e101f370a1 100644
---- a/tools/testing/selftests/bpf/prog_tests/atomics.c
-+++ b/tools/testing/selftests/bpf/prog_tests/atomics.c
-@@ -7,19 +7,15 @@
- static void test_add(struct atomics_lskel *skel)
- {
- 	int err, prog_fd;
--	int link_fd;
- 	LIBBPF_OPTS(bpf_test_run_opts, topts);
- 
--	link_fd = atomics_lskel__add__attach(skel);
--	if (!ASSERT_GT(link_fd, 0, "attach(add)"))
--		return;
--
-+	/* No need to attach it, just run it directly */
- 	prog_fd = skel->progs.add.prog_fd;
- 	err = bpf_prog_test_run_opts(prog_fd, &topts);
- 	if (!ASSERT_OK(err, "test_run_opts err"))
--		goto cleanup;
-+		return;
- 	if (!ASSERT_OK(topts.retval, "test_run_opts retval"))
--		goto cleanup;
-+		return;
- 
- 	ASSERT_EQ(skel->data->add64_value, 3, "add64_value");
- 	ASSERT_EQ(skel->bss->add64_result, 1, "add64_result");
-@@ -31,27 +27,20 @@ static void test_add(struct atomics_lskel *skel)
- 	ASSERT_EQ(skel->bss->add_stack_result, 1, "add_stack_result");
- 
- 	ASSERT_EQ(skel->data->add_noreturn_value, 3, "add_noreturn_value");
--
--cleanup:
--	close(link_fd);
- }
- 
- static void test_sub(struct atomics_lskel *skel)
- {
- 	int err, prog_fd;
--	int link_fd;
- 	LIBBPF_OPTS(bpf_test_run_opts, topts);
- 
--	link_fd = atomics_lskel__sub__attach(skel);
--	if (!ASSERT_GT(link_fd, 0, "attach(sub)"))
--		return;
--
-+	/* No need to attach it, just run it directly */
- 	prog_fd = skel->progs.sub.prog_fd;
- 	err = bpf_prog_test_run_opts(prog_fd, &topts);
- 	if (!ASSERT_OK(err, "test_run_opts err"))
--		goto cleanup;
-+		return;
- 	if (!ASSERT_OK(topts.retval, "test_run_opts retval"))
--		goto cleanup;
-+		return;
- 
- 	ASSERT_EQ(skel->data->sub64_value, -1, "sub64_value");
- 	ASSERT_EQ(skel->bss->sub64_result, 1, "sub64_result");
-@@ -63,27 +52,20 @@ static void test_sub(struct atomics_lskel *skel)
- 	ASSERT_EQ(skel->bss->sub_stack_result, 1, "sub_stack_result");
- 
- 	ASSERT_EQ(skel->data->sub_noreturn_value, -1, "sub_noreturn_value");
--
--cleanup:
--	close(link_fd);
- }
- 
- static void test_and(struct atomics_lskel *skel)
- {
- 	int err, prog_fd;
--	int link_fd;
- 	LIBBPF_OPTS(bpf_test_run_opts, topts);
- 
--	link_fd = atomics_lskel__and__attach(skel);
--	if (!ASSERT_GT(link_fd, 0, "attach(and)"))
--		return;
--
-+	/* No need to attach it, just run it directly */
- 	prog_fd = skel->progs.and.prog_fd;
- 	err = bpf_prog_test_run_opts(prog_fd, &topts);
- 	if (!ASSERT_OK(err, "test_run_opts err"))
--		goto cleanup;
-+		return;
- 	if (!ASSERT_OK(topts.retval, "test_run_opts retval"))
--		goto cleanup;
-+		return;
- 
- 	ASSERT_EQ(skel->data->and64_value, 0x010ull << 32, "and64_value");
- 	ASSERT_EQ(skel->bss->and64_result, 0x110ull << 32, "and64_result");
-@@ -92,26 +74,20 @@ static void test_and(struct atomics_lskel *skel)
- 	ASSERT_EQ(skel->bss->and32_result, 0x110, "and32_result");
- 
- 	ASSERT_EQ(skel->data->and_noreturn_value, 0x010ull << 32, "and_noreturn_value");
--cleanup:
--	close(link_fd);
- }
- 
- static void test_or(struct atomics_lskel *skel)
- {
- 	int err, prog_fd;
--	int link_fd;
- 	LIBBPF_OPTS(bpf_test_run_opts, topts);
- 
--	link_fd = atomics_lskel__or__attach(skel);
--	if (!ASSERT_GT(link_fd, 0, "attach(or)"))
--		return;
--
-+	/* No need to attach it, just run it directly */
- 	prog_fd = skel->progs.or.prog_fd;
- 	err = bpf_prog_test_run_opts(prog_fd, &topts);
- 	if (!ASSERT_OK(err, "test_run_opts err"))
--		goto cleanup;
-+		return;
- 	if (!ASSERT_OK(topts.retval, "test_run_opts retval"))
--		goto cleanup;
-+		return;
- 
- 	ASSERT_EQ(skel->data->or64_value, 0x111ull << 32, "or64_value");
- 	ASSERT_EQ(skel->bss->or64_result, 0x110ull << 32, "or64_result");
-@@ -120,26 +96,20 @@ static void test_or(struct atomics_lskel *skel)
- 	ASSERT_EQ(skel->bss->or32_result, 0x110, "or32_result");
- 
- 	ASSERT_EQ(skel->data->or_noreturn_value, 0x111ull << 32, "or_noreturn_value");
--cleanup:
--	close(link_fd);
- }
- 
- static void test_xor(struct atomics_lskel *skel)
- {
- 	int err, prog_fd;
--	int link_fd;
- 	LIBBPF_OPTS(bpf_test_run_opts, topts);
- 
--	link_fd = atomics_lskel__xor__attach(skel);
--	if (!ASSERT_GT(link_fd, 0, "attach(xor)"))
--		return;
--
-+	/* No need to attach it, just run it directly */
- 	prog_fd = skel->progs.xor.prog_fd;
- 	err = bpf_prog_test_run_opts(prog_fd, &topts);
- 	if (!ASSERT_OK(err, "test_run_opts err"))
--		goto cleanup;
-+		return;
- 	if (!ASSERT_OK(topts.retval, "test_run_opts retval"))
--		goto cleanup;
-+		return;
- 
- 	ASSERT_EQ(skel->data->xor64_value, 0x101ull << 32, "xor64_value");
- 	ASSERT_EQ(skel->bss->xor64_result, 0x110ull << 32, "xor64_result");
-@@ -148,26 +118,20 @@ static void test_xor(struct atomics_lskel *skel)
- 	ASSERT_EQ(skel->bss->xor32_result, 0x110, "xor32_result");
- 
- 	ASSERT_EQ(skel->data->xor_noreturn_value, 0x101ull << 32, "xor_nxoreturn_value");
--cleanup:
--	close(link_fd);
- }
- 
- static void test_cmpxchg(struct atomics_lskel *skel)
- {
- 	int err, prog_fd;
--	int link_fd;
- 	LIBBPF_OPTS(bpf_test_run_opts, topts);
- 
--	link_fd = atomics_lskel__cmpxchg__attach(skel);
--	if (!ASSERT_GT(link_fd, 0, "attach(cmpxchg)"))
--		return;
--
-+	/* No need to attach it, just run it directly */
- 	prog_fd = skel->progs.cmpxchg.prog_fd;
- 	err = bpf_prog_test_run_opts(prog_fd, &topts);
- 	if (!ASSERT_OK(err, "test_run_opts err"))
--		goto cleanup;
-+		return;
- 	if (!ASSERT_OK(topts.retval, "test_run_opts retval"))
--		goto cleanup;
-+		return;
- 
- 	ASSERT_EQ(skel->data->cmpxchg64_value, 2, "cmpxchg64_value");
- 	ASSERT_EQ(skel->bss->cmpxchg64_result_fail, 1, "cmpxchg_result_fail");
-@@ -176,45 +140,34 @@ static void test_cmpxchg(struct atomics_lskel *skel)
- 	ASSERT_EQ(skel->data->cmpxchg32_value, 2, "lcmpxchg32_value");
- 	ASSERT_EQ(skel->bss->cmpxchg32_result_fail, 1, "cmpxchg_result_fail");
- 	ASSERT_EQ(skel->bss->cmpxchg32_result_succeed, 1, "cmpxchg_result_succeed");
--
--cleanup:
--	close(link_fd);
- }
- 
- static void test_xchg(struct atomics_lskel *skel)
- {
- 	int err, prog_fd;
--	int link_fd;
- 	LIBBPF_OPTS(bpf_test_run_opts, topts);
- 
--	link_fd = atomics_lskel__xchg__attach(skel);
--	if (!ASSERT_GT(link_fd, 0, "attach(xchg)"))
--		return;
--
-+	/* No need to attach it, just run it directly */
- 	prog_fd = skel->progs.xchg.prog_fd;
- 	err = bpf_prog_test_run_opts(prog_fd, &topts);
- 	if (!ASSERT_OK(err, "test_run_opts err"))
--		goto cleanup;
-+		return;
- 	if (!ASSERT_OK(topts.retval, "test_run_opts retval"))
--		goto cleanup;
-+		return;
- 
- 	ASSERT_EQ(skel->data->xchg64_value, 2, "xchg64_value");
- 	ASSERT_EQ(skel->bss->xchg64_result, 1, "xchg64_result");
- 
- 	ASSERT_EQ(skel->data->xchg32_value, 2, "xchg32_value");
- 	ASSERT_EQ(skel->bss->xchg32_result, 1, "xchg32_result");
--
--cleanup:
--	close(link_fd);
- }
- 
- void test_atomics(void)
- {
- 	struct atomics_lskel *skel;
--	__u32 duration = 0;
- 
- 	skel = atomics_lskel__open_and_load();
--	if (CHECK(!skel, "skel_load", "atomics skeleton failed\n"))
-+	if (!ASSERT_OK_PTR(skel, "atomics skeleton load"))
- 		return;
- 
- 	if (skel->data->skip_tests) {
-diff --git a/tools/testing/selftests/bpf/progs/atomics.c b/tools/testing/selftests/bpf/progs/atomics.c
-index 16e57313204a..f89c7f0cc53b 100644
---- a/tools/testing/selftests/bpf/progs/atomics.c
-+++ b/tools/testing/selftests/bpf/progs/atomics.c
-@@ -20,8 +20,8 @@ __u64 add_stack_value_copy = 0;
- __u64 add_stack_result = 0;
- __u64 add_noreturn_value = 1;
- 
--SEC("fentry/bpf_fentry_test1")
--int BPF_PROG(add, int a)
-+SEC("raw_tp/sys_enter")
-+int add(const void *ctx)
- {
- 	if (pid != (bpf_get_current_pid_tgid() >> 32))
- 		return 0;
-@@ -46,8 +46,8 @@ __s64 sub_stack_value_copy = 0;
- __s64 sub_stack_result = 0;
- __s64 sub_noreturn_value = 1;
- 
--SEC("fentry/bpf_fentry_test1")
--int BPF_PROG(sub, int a)
-+SEC("raw_tp/sys_enter")
-+int sub(const void *ctx)
- {
- 	if (pid != (bpf_get_current_pid_tgid() >> 32))
- 		return 0;
-@@ -70,8 +70,8 @@ __u32 and32_value = 0x110;
- __u32 and32_result = 0;
- __u64 and_noreturn_value = (0x110ull << 32);
- 
--SEC("fentry/bpf_fentry_test1")
--int BPF_PROG(and, int a)
-+SEC("raw_tp/sys_enter")
-+int and(const void *ctx)
- {
- 	if (pid != (bpf_get_current_pid_tgid() >> 32))
- 		return 0;
-@@ -91,8 +91,8 @@ __u32 or32_value = 0x110;
- __u32 or32_result = 0;
- __u64 or_noreturn_value = (0x110ull << 32);
- 
--SEC("fentry/bpf_fentry_test1")
--int BPF_PROG(or, int a)
-+SEC("raw_tp/sys_enter")
-+int or(const void *ctx)
- {
- 	if (pid != (bpf_get_current_pid_tgid() >> 32))
- 		return 0;
-@@ -111,8 +111,8 @@ __u32 xor32_value = 0x110;
- __u32 xor32_result = 0;
- __u64 xor_noreturn_value = (0x110ull << 32);
- 
--SEC("fentry/bpf_fentry_test1")
--int BPF_PROG(xor, int a)
-+SEC("raw_tp/sys_enter")
-+int xor(const void *ctx)
- {
- 	if (pid != (bpf_get_current_pid_tgid() >> 32))
- 		return 0;
-@@ -132,8 +132,8 @@ __u32 cmpxchg32_value = 1;
- __u32 cmpxchg32_result_fail = 0;
- __u32 cmpxchg32_result_succeed = 0;
- 
--SEC("fentry/bpf_fentry_test1")
--int BPF_PROG(cmpxchg, int a)
-+SEC("raw_tp/sys_enter")
-+int cmpxchg(const void *ctx)
- {
- 	if (pid != (bpf_get_current_pid_tgid() >> 32))
- 		return 0;
-@@ -153,8 +153,8 @@ __u64 xchg64_result = 0;
- __u32 xchg32_value = 1;
- __u32 xchg32_result = 0;
- 
--SEC("fentry/bpf_fentry_test1")
--int BPF_PROG(xchg, int a)
-+SEC("raw_tp/sys_enter")
-+int xchg(const void *ctx)
- {
- 	if (pid != (bpf_get_current_pid_tgid() >> 32))
- 		return 0;
+On Sat,  5 Feb 2022 15:47:32 +0800 you wrote:
+> From: Menglong Dong <imagedong@tencent.com>
+> 
+> In this series patches, kfree_skb() is replaced with kfree_skb_reason()
+> during ipv4 and udp4 packet receiving path, and following drop reasons
+> are introduced:
+> 
+> SKB_DROP_REASON_SOCKET_FILTER
+> SKB_DROP_REASON_NETFILTER_DROP
+> SKB_DROP_REASON_OTHERHOST
+> SKB_DROP_REASON_IP_CSUM
+> SKB_DROP_REASON_IP_INHDR
+> SKB_DROP_REASON_IP_RPFILTER
+> SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST
+> SKB_DROP_REASON_XFRM_POLICY
+> SKB_DROP_REASON_IP_NOPROTO
+> SKB_DROP_REASON_SOCKET_RCVBUFF
+> SKB_DROP_REASON_PROTO_MEM
+> 
+> [...]
+
+Here is the summary with links:
+  - [v4,net-next,1/7] net: skb_drop_reason: add document for drop reasons
+    https://git.kernel.org/netdev/net-next/c/88590b369354
+  - [v4,net-next,2/7] net: netfilter: use kfree_drop_reason() for NF_DROP
+    https://git.kernel.org/netdev/net-next/c/2df3041ba3be
+  - [v4,net-next,3/7] net: ipv4: use kfree_skb_reason() in ip_rcv_core()
+    https://git.kernel.org/netdev/net-next/c/33cba42985c8
+  - [v4,net-next,4/7] net: ipv4: use kfree_skb_reason() in ip_rcv_finish_core()
+    https://git.kernel.org/netdev/net-next/c/c1f166d1f7ee
+  - [v4,net-next,5/7] net: ipv4: use kfree_skb_reason() in ip_protocol_deliver_rcu()
+    https://git.kernel.org/netdev/net-next/c/10580c479190
+  - [v4,net-next,6/7] net: udp: use kfree_skb_reason() in udp_queue_rcv_one_skb()
+    https://git.kernel.org/netdev/net-next/c/1379a92d38e3
+  - [v4,net-next,7/7] net: udp: use kfree_skb_reason() in __udp_queue_rcv_skb()
+    https://git.kernel.org/netdev/net-next/c/08d4c0370c40
+
+You are awesome, thank you!
 -- 
-2.27.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
