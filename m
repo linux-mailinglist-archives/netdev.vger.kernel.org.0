@@ -2,136 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D1404AC874
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 19:23:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 769144AC8A5
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 19:35:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231545AbiBGSVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 13:21:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
+        id S243361AbiBGSf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 13:35:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239273AbiBGSRN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 13:17:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CAC37C0401D9
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 10:17:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644257831;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EdU7WqO0Ry21zoESqpPAeMlKhPgWFbV0TNGxL6U+ofw=;
-        b=JuB4nUezEDYfaQ0wheTukW0fc84qMMfQUWjGHirwDSmvIUmwySzJbv3w+1Idnb7LeGmqZp
-        0Rp52hupt56W6I538olbnsAN1OQ8GMVLHEOPCexfbBme+jZTlyv0v8QifVVpTM+kaPnLJs
-        TuiOfKxUS3GVhyUmcS3bESY6AXdMNx4=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-187-20QYK2Z8PWqD6Byf0vVQ4Q-1; Mon, 07 Feb 2022 13:17:10 -0500
-X-MC-Unique: 20QYK2Z8PWqD6Byf0vVQ4Q-1
-Received: by mail-wm1-f71.google.com with SMTP id h82-20020a1c2155000000b003552c13626cso8273665wmh.3
-        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 10:17:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=EdU7WqO0Ry21zoESqpPAeMlKhPgWFbV0TNGxL6U+ofw=;
-        b=lc3nSJEnmRspJM54ORJzHnfhRpiFlV4OgEz3+/0wWjaBvH0DK/hybKf4tpC5RL+s+H
-         NCzvWx94MGq3fJsurWP6BZ8m7Z0mKBD4IbnSgzKRWzifL6uW2bVIH9QNg6TEAyb3x05/
-         wDWuhC9zeIfe6Ar8dvog/YiMT23LfvDkIjMtb6VpWXe6JgdOUut6LoNOLEeZ7S/iMyFU
-         /T/NLCoAqEvDbeUq6G0D6Au/wWAllBXZF+itwXMOdRNkWP8LNOg/ZeHchOqMXnAunST/
-         PFuKb0Mie+S7FmjBzKSfxnKmacfLOkpLhAWdeXaffm1PndGnDbqiwSoOySxN8EdzVp0Y
-         TIxg==
-X-Gm-Message-State: AOAM531ZdvZwV9HkWFLDFO8ayr9DuXiik/LRC3N8NUVH8nbJrBoMov78
-        G3i7fxnM877QE2VU4zcGi/mv2QJffypVs16Pwi2LFS/kS0CgkT6nKQAmg/H8yao0N7k0ICo9yVT
-        CSmZNeF9OCp7zPrdj
-X-Received: by 2002:adf:a51b:: with SMTP id i27mr581367wrb.172.1644257829315;
-        Mon, 07 Feb 2022 10:17:09 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwYoIvk4H3SrfjRLrVLsALIOQ3JHng8EY209TznpTyTedmDCbI8D/8WdWH7ELhivZlTANShmg==
-X-Received: by 2002:adf:a51b:: with SMTP id i27mr581346wrb.172.1644257829112;
-        Mon, 07 Feb 2022 10:17:09 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-96-254.dyn.eolo.it. [146.241.96.254])
-        by smtp.gmail.com with ESMTPSA id u7sm2835623wrq.112.2022.02.07.10.17.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 10:17:08 -0800 (PST)
-Message-ID: <42c623d9dc86399f62bef9bbe40b38aa7143a41b.camel@redhat.com>
-Subject: Re: [PATCH net v2 1/2] net: do not keep the dst cache when
- uncloning an skb dst and its metadata
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Antoine Tenart <atenart@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, vladbu@nvidia.com, pshelar@ovn.org,
-        daniel@iogearbox.net
-Date:   Mon, 07 Feb 2022 19:17:07 +0100
-In-Reply-To: <20220207171319.157775-2-atenart@kernel.org>
-References: <20220207171319.157775-1-atenart@kernel.org>
-         <20220207171319.157775-2-atenart@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        with ESMTP id S233253AbiBGSdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 13:33:25 -0500
+Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B9996C0401DA
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 10:33:24 -0800 (PST)
+Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id B60D68030799;
+        Mon,  7 Feb 2022 21:33:22 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru B60D68030799
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1644258803;
+        bh=MgYjuciirHTrL0hJS9JIhfcZ6DKQUKNmm0Q3nk5w8Qw=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To:From;
+        b=DwfhbqZv8gG9yvfcIVDEObThk9fkNS4/n2FWmjoMC0OZsr9eGo/J8AKAZ+nJWcVJr
+         gzfFu6F8CJ7u+oXXfxK76EX74MTK9i+tVaDnhoIfE4oL/Iy/Jo+UyLa4bWBgXG367d
+         +bbUefe/FXo5cYSd0IjDf+Evdf2GVLtZPCb+pZEo=
+Received: from mobilestation (192.168.152.164) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 7 Feb 2022 21:32:59 +0300
+Date:   Mon, 7 Feb 2022 21:33:19 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Serge Semin <fancer.lancer@gmail.com>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        <stable@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH net v2] net: phy: marvell: Fix RGMII Tx/Rx delays setting
+ in 88e1121-compatible PHYs
+Message-ID: <20220207183319.ls2rz4k6m7tgbqlg@mobilestation>
+References: <96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru>
+ <20220205203932.26899-1-Pavel.Parkhomenko@baikalelectronics.ru>
+ <20220207094039.6a2b34df@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220207094039.6a2b34df@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-02-07 at 18:13 +0100, Antoine Tenart wrote:
-> When uncloning an skb dst and its associated metadata a new dst+metadata
-> is allocated and the tunnel information from the old metadata is copied
-> over there.
-> 
-> The issue is the tunnel metadata has references to cached dst, which are
-> copied along the way. When a dst+metadata refcount drops to 0 the
-> metadata is freed including the cached dst entries. As they are also
-> referenced in the initial dst+metadata, this ends up in UaFs.
-> 
-> In practice the above did not happen because of another issue, the
-> dst+metadata was never freed because its refcount never dropped to 0
-> (this will be fixed in a subsequent patch).
-> 
-> Fix this by initializing the dst cache after copying the tunnel
-> information from the old metadata to also unshare the dst cache.
-> 
-> Fixes: d71785ffc7e7 ("net: add dst_cache to ovs vxlan lwtunnel")
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Reported-by: Vlad Buslov <vladbu@nvidia.com>
-> Tested-by: Vlad Buslov <vladbu@nvidia.com>
-> Signed-off-by: Antoine Tenart <atenart@kernel.org>
-> ---
->  include/net/dst_metadata.h | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
-> 
-> diff --git a/include/net/dst_metadata.h b/include/net/dst_metadata.h
-> index 14efa0ded75d..b997e0c1e362 100644
-> --- a/include/net/dst_metadata.h
-> +++ b/include/net/dst_metadata.h
-> @@ -123,6 +123,19 @@ static inline struct metadata_dst *tun_dst_unclone(struct sk_buff *skb)
->  
->  	memcpy(&new_md->u.tun_info, &md_dst->u.tun_info,
->  	       sizeof(struct ip_tunnel_info) + md_size);
-> +#ifdef CONFIG_DST_CACHE
-> +	/* Unclone the dst cache if there is one */
-> +	if (new_md->u.tun_info.dst_cache.cache) {
-> +		int ret;
-> +
-> +		ret = dst_cache_init(&new_md->u.tun_info.dst_cache, GFP_ATOMIC);
-> +		if (ret) {
-> +			metadata_dst_free(new_md);
-> +			return ERR_PTR(ret);
-> +		}
-> +	}
-> +#endif
-> +
->  	skb_dst_drop(skb);
->  	dst_hold(&new_md->dst);
->  	skb_dst_set(skb, &new_md->dst);
+Hello Jakub
 
-LGTM, thanks!
+On Mon, Feb 07, 2022 at 09:40:39AM -0800, Jakub Kicinski wrote:
+> On Sat, 5 Feb 2022 23:39:32 +0300 Pavel Parkhomenko wrote:
+> > It is mandatory for a software to issue a reset upon modifying RGMII
+> > Receive Timing Control and RGMII Transmit Timing Control bit fields of MAC
+> > Specific Control register 2 (page 2, register 21) otherwise the changes
+> > won't be perceived by the PHY (the same is applicable for a lot of other
+> > registers). Not setting the RGMII delays on the platforms that imply it'
+> > being done on the PHY side will consequently cause the traffic loss. We
+> > discovered that the denoted soft-reset is missing in the
+> > m88e1121_config_aneg() method for the case if the RGMII delays are
+> > modified but the MDIx polarity isn't changed or the auto-negotiation is
+> > left enabled, thus causing the traffic loss on our platform with Marvell
+> > Alaska 88E1510 installed. Let's fix that by issuing the soft-reset if the
+> > delays have been actually set in the m88e1121_config_aneg_rgmii_delays()
+> > method.
+> > 
+> > Fixes: d6ab93364734 ("net: phy: marvell: Avoid unnecessary soft reset")
+> > Signed-off-by: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+> > Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> > Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
+> > Cc: stable@vger.kernel.org
+> > 
+> > ---
+> > 
+> > Link: https://lore.kernel.org/netdev/96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru/
+> > Changelog v2:
+> > - Add "net" suffix into the PATCH-clause of the subject.
+> > - Cc the patch to the stable tree list.
+> > - Rebase onto the latset netdev/net branch with the top commit 59085208e4a2
+> > ("net: mscc: ocelot: fix all IP traffic getting trapped to CPU with PTP over IP")
+> 
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
+> This patch is valid and waiting to be reviewed & applied, right?
 
+Right.
+
+> I see it's marked as Superseded in patchwork, but can't track down a v3.
+
+We had accidentally sent out a temporal v2 version before submitting this
+one. The failed patch is here
+Link: https://lore.kernel.org/stable/20220205190814.20282-1-Pavel.Parkhomenko@baikalelectronics.ru/
+But the message was sent to Russel and to the stable mailing list only
+with no netdev list being in Cc. I thought if the right v2 was sent
+out after the failed one, then even if patchwork somehow gets to catch
+both of the messages, the former patch would have at least superseded
+the later one. It appears I was wrong. Sorry about that. Do you want
+us to resend this patch as v3 to have a proper patchwork status?
+
+-Sergey
