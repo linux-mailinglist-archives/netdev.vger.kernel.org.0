@@ -2,69 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46A1B4AC8DC
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 19:52:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2821F4AC91D
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 20:04:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233014AbiBGSwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 13:52:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33322 "EHLO
+        id S238313AbiBGTDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 14:03:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235186AbiBGSvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 13:51:10 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A2FC0401DA
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 10:51:08 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id v186so42988762ybg.1
-        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 10:51:08 -0800 (PST)
+        with ESMTP id S235152AbiBGS71 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 13:59:27 -0500
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83DAC0401DC;
+        Mon,  7 Feb 2022 10:59:26 -0800 (PST)
+Received: by mail-il1-x12b.google.com with SMTP id 15so11898797ilg.8;
+        Mon, 07 Feb 2022 10:59:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=G3C/ia8dQRTRLjg0OoFrC2IgLazdEPO0o5eddLxNF9g=;
-        b=YbdflBHXhQpYmpoKWpjSGWEQ2qVbz7DWPuYhvOqYvdyqPeqBsLCkob4qz0vqErorBH
-         wkQ+vuBX7J0/jSfUWy/w40Ru0BMiiWWIoT13SJILzRBN7ncvG7daVeauRPomHvKy5zKd
-         H/Nzx7fZo44SdeWGVvRcm+b05OyWa5bypv41V/GFWPwIFUqJqwwKwTZTWofpe6ykU9UI
-         5gZAP51SMMbLBfRZS6WnFNMbQ+CxLyf/8ISXpE1aL1NzDR+nJORFGqOlpzKIZ9zAAQS3
-         WZdcB/47uuXaAoIVH8SP0n2JpDiU0c1zcJsEmHdgVD1Xm/DSHQ4Q1YoDNaeuhtVR1qjq
-         st3g==
+        bh=jqSMes7om4oZ/PPBldNZ/pl7IhGQnaogvb59orgvrqw=;
+        b=RK21RcvV3O/hEx8semKTCTx+TC2JmjjdPYe2me6oP/jE3B5cDbsl6nzj7tuNbBpWml
+         +GOubejJyMsoD2w1mWXdG39m6oYIFOjkN6IPnj3rN/iz8IUeiq4wmNBN2q/eemoeniCJ
+         JqXUwif6q6Rju4HJdwfm8Cui7H3sHhHVw+BaN+GFcemisc0LOPdpu/QC+QS0Wo71uWJF
+         lsUVDJP+3GWL908onek9cV3ftwkFZrCskTzDyD8ie5WDhwXelMIIuAitlY+rCQxHiX3Z
+         nqVO7kIvrL7DmkNCq3Wz8H6wndRGmYhqN7E9ngu+gJBeZRwf9dKchkh+ozVaFCiDZX7p
+         FZrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=G3C/ia8dQRTRLjg0OoFrC2IgLazdEPO0o5eddLxNF9g=;
-        b=OZyvOh0SIZI08Yqxy56BC6056AqhKPfkK51Vm3D1OchFLuFOYDjuVR6/uGBQbQfBX6
-         ZFEne5WXA3/YR3L4Bj+MEbhC+LML6bGONHuMCTtDaXhmlPRJnB68BImGOJ0t4QC8KEpS
-         /Ti4CYfrAhgcP9IIGCiM7GdIgo6xQjIHWAh91gbXeDxevd+siJkNB7Zy8qrgo7DQC2TX
-         0/jmJfIaBZr4H73IomFrhBHmRQk6atkWEh9M/jvOHbX9EnTBfIMArJ6Zk3rQe7UUVuer
-         R5i3Xj68Ah/PGBnMPxsEvVdf7hAw44g+cK5GB8Jc/jhhG58b6ePWt+n4tAZzIheFeFS9
-         a7Ug==
-X-Gm-Message-State: AOAM532FmJHaMoAwUt89i2a97XkhlhPY7H/8hfNRVO1+fVHzPlC7BOsZ
-        7AxI8Sr71Zm9wsdu8aq4b7eJq86rlJG/0gUlkOJfgTvIzfQQXddY
-X-Google-Smtp-Source: ABdhPJwGklcxlgTw1GLX04btOZ8vmYiLnYix+Za4LWd0Exl1M31H0rn0lsN98kE9jv2bkqst8vBwZ7jFGoTpoM1XuF8=
-X-Received: by 2002:a81:8742:: with SMTP id x63mr1292264ywf.112.1644259867737;
- Mon, 07 Feb 2022 10:51:07 -0800 (PST)
+        bh=jqSMes7om4oZ/PPBldNZ/pl7IhGQnaogvb59orgvrqw=;
+        b=xyoVrJLRVtgKTS4qeAeJqHJ5ycpI6QCQXJNzYdZx6j3NFPSnALtDWMNWTeuEvwyNTo
+         qN2mnvxYbfsVj6SlWPo0WHZUG8q4hFCLI/okpXsRq50ztWpgBF6EV3vwu78um7C2iL3r
+         Am4b6WhEhnEyMlMtAfOG3jTVF9CHHCASlf8zLMwn0fSIoCSFJDibLBK2Z91lzC2issn0
+         daJvCA+l8uH7iGwWgvwPJUiR+m/yY/J/mb+o0/xQMcR9j3r3ixo5NwUqnxbLv2Mo4e5f
+         VzXzfkP57qd0NjOUsdCmZN5d9minm6QU834ionohNMG5WzYXpeuoXFC07IQw5OlWZBPg
+         CUbA==
+X-Gm-Message-State: AOAM530CSXJlWAw3loq9ETQBmQzvjWTRn8/WeI50j2Z6W7RFCPwQRRT1
+        e7TIXgLbpoAtnrjNiAEHW+JEiptjJ6BW4GDCacY=
+X-Google-Smtp-Source: ABdhPJx9p3vUREUKxxDF6V5E2+AJkr5z9QkVtc0gKpjN95hpnHbx2hskfuYk6uLmu0wPRNs66c5YS8SWoZMqwPLmLgY=
+X-Received: by 2002:a05:6e02:1bcd:: with SMTP id x13mr456145ilv.98.1644260366146;
+ Mon, 07 Feb 2022 10:59:26 -0800 (PST)
 MIME-Version: 1.0
-References: <20220207171756.1304544-1-eric.dumazet@gmail.com>
- <20220207171756.1304544-10-eric.dumazet@gmail.com> <c81703cb-a2b1-4a45-3c5f-0833576f4785@hartkopp.net>
- <CANn89iJhf+-myjz0GgTeWmohnoBottRa+nP8DPqM3yoS64cmHQ@mail.gmail.com> <70900ebc-876d-cbb3-a048-9104e2e96420@hartkopp.net>
-In-Reply-To: <70900ebc-876d-cbb3-a048-9104e2e96420@hartkopp.net>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 7 Feb 2022 10:50:56 -0800
-Message-ID: <CANn89iJQayZegWUQYQEXuuhKTT5K9DQCQMCo6q4b1VxmWJD__A@mail.gmail.com>
-Subject: Re: [PATCH net-next 09/11] can: gw: switch cangw_pernet_exit() to
- batch mode
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
+References: <20220202135333.190761-1-jolsa@kernel.org> <20220202135333.190761-2-jolsa@kernel.org>
+In-Reply-To: <20220202135333.190761-2-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 7 Feb 2022 10:59:14 -0800
+Message-ID: <CAEf4BzZYepTYLN6LrPAAaOXUtCBv07bQQJzgarntu03L+cj2GQ@mail.gmail.com>
+Subject: Re: [PATCH 1/8] bpf: Add support to attach kprobe program with fprobe
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Olsa <olsajiri@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,105 +74,205 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 10:40 AM Oliver Hartkopp <socketcan@hartkopp.net> wrote:
+On Wed, Feb 2, 2022 at 5:53 AM Jiri Olsa <jolsa@redhat.com> wrote:
 >
+> Adding new link type BPF_LINK_TYPE_FPROBE that attaches kprobe program
+> through fprobe API.
 >
+> The fprobe API allows to attach probe on multiple functions at once very
+> fast, because it works on top of ftrace. On the other hand this limits
+> the probe point to the function entry or return.
 >
-> On 07.02.22 18:54, Eric Dumazet wrote:
-> > On Mon, Feb 7, 2022 at 9:41 AM Oliver Hartkopp <socketcan@hartkopp.net> wrote:
-> (..)
-> >>> -static void __net_exit cangw_pernet_exit(struct net *net)
-> >>> +static void __net_exit cangw_pernet_exit_batch(struct list_head *net_list)
-> >>>    {
-> >>> +     struct net *net;
-> >>> +
-> >>>        rtnl_lock();
-> >>> -     cgw_remove_all_jobs(net);
-> >>> +     list_for_each_entry(net, net_list, exit_list)
-> >>> +             cgw_remove_all_jobs(net);
-> >>
-> >> Instead of removing the jobs for ONE net namespace it seems you are
-> >> remove removing the jobs for ALL net namespaces?
-> >>
-> >> Looks wrong to me.
-> >
-> > I see nothing wrong in my patch.
-> >
-> > I think you have to look more closely at ops_exit_list() in
-> > net/core/net_namespace.c
+> The kprobe program gets the same pt_regs input ctx as when it's attached
+> through the perf API.
 >
-> Ok, thanks. Your patch just moved the list_for_each_entry() to gw.c.
-> So there is no functional difference.
+> Adding new attach type BPF_TRACE_FPROBE that enables such link for kprobe
+> program.
 >
-> Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+> User provides array of addresses or symbols with count to attach the kprobe
+> program to. The new link_create uapi interface looks like:
 >
-> > BTW, the sychronize_rcu() call in cgw_remove_all_jobs is definitely
-> > bad, you should absolutely replace it by call_rcu() or kfree_rcu()
+>   struct {
+>           __aligned_u64   syms;
+>           __aligned_u64   addrs;
+>           __u32           cnt;
+>           __u32           flags;
+>   } fprobe;
 >
-> Advise is welcome!
+> The flags field allows single BPF_F_FPROBE_RETURN bit to create return fprobe.
 >
-> The synchronize_rcu() has been introduced in fb8696ab14ad ("can: gw:
-> synchronize rcu operations before removing gw job entry") as
-> can_can_gw_rcv() is called under RCU protection (NET_RX softirq).
->
-> That patch was a follow-up to d5f9023fa61e ("can: bcm: delay release of
-> struct bcm_op after synchronize_rcu()") where Thadeu Lima de Souza
-> Cascardo detected a race in the BCM code.
->
-> When call_rcu() is enough to make sure we do not get a race in
-> can_can_gw_rcv() while receiving skbs and removing filters with
-> cgw_unregister_filter() I would be happy this rcu thing being fixed up.
+> Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  include/linux/bpf_types.h      |   1 +
+>  include/uapi/linux/bpf.h       |  13 ++
+>  kernel/bpf/syscall.c           | 248 ++++++++++++++++++++++++++++++++-
+>  tools/include/uapi/linux/bpf.h |  13 ++
+>  4 files changed, 270 insertions(+), 5 deletions(-)
 >
 
-Can you test this straightforward patch, thanks !
-diff --git a/net/can/gw.c b/net/can/gw.c
-index d8861e862f157aec36c417b71eb7e8f59bd064b9..20e74fe7d0906dccc65732b8f9e7e14e2d1192c3
-100644
---- a/net/can/gw.c
-+++ b/net/can/gw.c
-@@ -577,6 +577,13 @@ static inline void cgw_unregister_filter(struct
-net *net, struct cgw_job *gwj)
-                          gwj->ccgw.filter.can_mask, can_can_gw_rcv, gwj);
- }
+[...]
 
-+static void cgw_job_free_rcu(struct rcu_head *rcu_head)
-+{
-+       struct cgw_job *gwj = container_of(rcu_head, struct cgw_job, rcu);
-+
-+       kmem_cache_free(cgw_cache, gwj);
-+}
-+
- static int cgw_notifier(struct notifier_block *nb,
-                        unsigned long msg, void *ptr)
- {
-@@ -596,8 +603,7 @@ static int cgw_notifier(struct notifier_block *nb,
-                        if (gwj->src.dev == dev || gwj->dst.dev == dev) {
-                                hlist_del(&gwj->list);
-                                cgw_unregister_filter(net, gwj);
--                               synchronize_rcu();
--                               kmem_cache_free(cgw_cache, gwj);
-+                               call_rcu(&gwj->rcu, cgw_job_free_rcu);
-                        }
-                }
-        }
-@@ -1155,8 +1161,7 @@ static void cgw_remove_all_jobs(struct net *net)
-        hlist_for_each_entry_safe(gwj, nx, &net->can.cgw_list, list) {
-                hlist_del(&gwj->list);
-                cgw_unregister_filter(net, gwj);
--               synchronize_rcu();
--               kmem_cache_free(cgw_cache, gwj);
-+               call_rcu(&gwj->rcu, cgw_job_free_rcu);
-        }
- }
+>
+> +#ifdef CONFIG_FPROBE
+> +
+> +struct bpf_fprobe_link {
+> +       struct bpf_link link;
+> +       struct fprobe fp;
+> +       unsigned long *addrs;
+> +};
+> +
+> +static void bpf_fprobe_link_release(struct bpf_link *link)
+> +{
+> +       struct bpf_fprobe_link *fprobe_link;
+> +
+> +       fprobe_link = container_of(link, struct bpf_fprobe_link, link);
+> +       unregister_fprobe(&fprobe_link->fp);
+> +}
+> +
+> +static void bpf_fprobe_link_dealloc(struct bpf_link *link)
+> +{
+> +       struct bpf_fprobe_link *fprobe_link;
+> +
+> +       fprobe_link = container_of(link, struct bpf_fprobe_link, link);
+> +       kfree(fprobe_link->addrs);
+> +       kfree(fprobe_link);
+> +}
+> +
+> +static const struct bpf_link_ops bpf_fprobe_link_lops = {
+> +       .release = bpf_fprobe_link_release,
+> +       .dealloc = bpf_fprobe_link_dealloc,
+> +};
+> +
 
-@@ -1224,8 +1229,7 @@ static int cgw_remove_job(struct sk_buff *skb,
-struct nlmsghdr *nlh,
+should this whole new link implementation (including
+fprobe_link_prog_run() below) maybe live in kernel/trace/bpf_trace.c?
+Seems a bit more fitting than kernel/bpf/syscall.c
 
-                hlist_del(&gwj->list);
-                cgw_unregister_filter(net, gwj);
--               synchronize_rcu();
--               kmem_cache_free(cgw_cache, gwj);
-+               call_rcu(&gwj->rcu, cgw_job_free_rcu);
-                err = 0;
-                break;
-        }
+> +static int fprobe_link_prog_run(struct bpf_fprobe_link *fprobe_link,
+> +                               struct pt_regs *regs)
+> +{
+> +       int err;
+> +
+> +       if (unlikely(__this_cpu_inc_return(bpf_prog_active) != 1)) {
+> +               err = 0;
+> +               goto out;
+> +       }
+> +
+> +       rcu_read_lock();
+> +       migrate_disable();
+> +       err = bpf_prog_run(fprobe_link->link.prog, regs);
+> +       migrate_enable();
+> +       rcu_read_unlock();
+> +
+> + out:
+> +       __this_cpu_dec(bpf_prog_active);
+> +       return err;
+> +}
+> +
+> +static void fprobe_link_entry_handler(struct fprobe *fp, unsigned long entry_ip,
+> +                                     struct pt_regs *regs)
+> +{
+> +       unsigned long saved_ip = instruction_pointer(regs);
+> +       struct bpf_fprobe_link *fprobe_link;
+> +
+> +       /*
+> +        * Because fprobe's regs->ip is set to the next instruction of
+> +        * dynamic-ftrace insturction, correct entry ip must be set, so
+> +        * that the bpf program can access entry address via regs as same
+> +        * as kprobes.
+> +        */
+> +       instruction_pointer_set(regs, entry_ip);
+> +
+> +       fprobe_link = container_of(fp, struct bpf_fprobe_link, fp);
+> +       fprobe_link_prog_run(fprobe_link, regs);
+> +
+> +       instruction_pointer_set(regs, saved_ip);
+> +}
+> +
+> +static void fprobe_link_exit_handler(struct fprobe *fp, unsigned long entry_ip,
+> +                                    struct pt_regs *regs)
+
+isn't it identical to fprobe_lnk_entry_handler? Maybe use one callback
+for both entry and exit?
+
+> +{
+> +       unsigned long saved_ip = instruction_pointer(regs);
+> +       struct bpf_fprobe_link *fprobe_link;
+> +
+> +       instruction_pointer_set(regs, entry_ip);
+> +
+> +       fprobe_link = container_of(fp, struct bpf_fprobe_link, fp);
+> +       fprobe_link_prog_run(fprobe_link, regs);
+> +
+> +       instruction_pointer_set(regs, saved_ip);
+> +}
+> +
+> +static int fprobe_resolve_syms(const void *usyms, u32 cnt,
+> +                              unsigned long *addrs)
+> +{
+> +       unsigned long addr, size;
+> +       const char **syms;
+> +       int err = -ENOMEM;
+> +       unsigned int i;
+> +       char *func;
+> +
+> +       size = cnt * sizeof(*syms);
+> +       syms = kzalloc(size, GFP_KERNEL);
+
+any reason not to use kvzalloc() here?
+
+> +       if (!syms)
+> +               return -ENOMEM;
+> +
+
+[...]
+
+> +
+> +static int bpf_fprobe_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+> +{
+> +       struct bpf_fprobe_link *link = NULL;
+> +       struct bpf_link_primer link_primer;
+> +       unsigned long *addrs;
+> +       u32 flags, cnt, size;
+> +       void __user *uaddrs;
+> +       void __user *usyms;
+> +       int err;
+> +
+> +       /* no support for 32bit archs yet */
+> +       if (sizeof(u64) != sizeof(void *))
+> +               return -EINVAL;
+
+-EOPNOTSUPP?
+
+> +
+> +       if (prog->expected_attach_type != BPF_TRACE_FPROBE)
+> +               return -EINVAL;
+> +
+> +       flags = attr->link_create.fprobe.flags;
+> +       if (flags & ~BPF_F_FPROBE_RETURN)
+> +               return -EINVAL;
+> +
+> +       uaddrs = u64_to_user_ptr(attr->link_create.fprobe.addrs);
+> +       usyms = u64_to_user_ptr(attr->link_create.fprobe.syms);
+> +       if ((!uaddrs && !usyms) || (uaddrs && usyms))
+> +               return -EINVAL;
+
+!!uaddrs == !!usyms ?
+
+> +
+> +       cnt = attr->link_create.fprobe.cnt;
+> +       if (!cnt)
+> +               return -EINVAL;
+> +
+> +       size = cnt * sizeof(*addrs);
+> +       addrs = kzalloc(size, GFP_KERNEL);
+
+same, why not kvzalloc? Also, aren't you overwriting each addrs entry
+anyway, so "z" is not necessary, right?
+
+> +       if (!addrs)
+> +               return -ENOMEM;
+> +
+
+[...]
