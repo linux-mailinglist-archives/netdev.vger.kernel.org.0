@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4DD4AC284
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 16:08:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0BF34AC35B
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 16:30:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442509AbiBGPF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 10:05:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
+        id S235924AbiBGP3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 10:29:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382241AbiBGPDo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 10:03:44 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB19C0401C1;
-        Mon,  7 Feb 2022 07:03:43 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id g8so3543468pfq.9;
-        Mon, 07 Feb 2022 07:03:43 -0800 (PST)
+        with ESMTP id S1443995AbiBGPQ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 10:16:27 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AC3C0401C3;
+        Mon,  7 Feb 2022 07:16:26 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id g15-20020a17090a67cf00b001b7d5b6bedaso13806548pjm.4;
+        Mon, 07 Feb 2022 07:16:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:from
-         :subject:cc:content-transfer-encoding;
-        bh=mS7TncTDTAedIOa0shd+ZvGI84i/d6u1cvvXwuS06Vs=;
-        b=Sl1aAWG5gg6a89W6+hFicuNJFDjzoyl7G87HBJQZ95+v0sgfh8ILxDj8Mkfxk19UBA
-         OsxOlkJU/x19u70esZnffMoPwI+6XB1K2HlG2ODOWNWNwUPf2zW9lkswGQ4eK+2taYPX
-         Tj8Yb+qq1qGXIWYbVdpf/fhONO0vBztvqWni62yPJX5QQq6mPu0eAia/6auVYyEVasiu
-         yP0nrsrAqWFWJ8N0JVSqPOyExBnQJM/4Cm8I4qnBC6GJ/Rqf35gwTN0IQGkcU03ghFJK
-         0aFoxMI7B+iVEMIOXRfpnWkIbvGRmEWmNzW3jPgeoNPkW2n9z6b7j/TNPUMOwhEAOIoM
-         ZzaA==
+        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
+         :subject:content-transfer-encoding;
+        bh=IwbC5GgraFRaOZ81Tu6X93hQoXdowAbRSopeguTSmFc=;
+        b=hcfUDDOsZCztYEGe/mxWefKZqn+JNcaDtKUP7OKrlvEJnXG/7fU9pe5O91Xaq0io7i
+         SHMfSdapc6V5YglntuSaKkB65K6U887NXJpaEEVsMS8I5SVsFtLlvtqEHUUBLlTqumUW
+         ateUkSUpe+3vKeooly3rikst3qVyhPmmO9xuS2zgJITEgj8UQe4HnMosRS/yuTXUxDfW
+         k0V++MLGfNLq5iwSZoCGhiZT3hzK6zIhK0Zt9TvEoESL5MHLPd7HNk0Uw7G5rdyJhfu3
+         D6HKNSLHW6E2PVfSfTfDDI3iBPtOA6od7g3YV/Rx0Y4UvU6il0JsMJEMMUol0xnF8N8K
+         kxAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:from:subject:cc:content-transfer-encoding;
-        bh=mS7TncTDTAedIOa0shd+ZvGI84i/d6u1cvvXwuS06Vs=;
-        b=kNrOc3PjihaJeVgovzALeuAzfVq0Rn/UprBsBPbnxhq2hgwhJvUT77SNyELwY4IUjx
-         9U+k1CsRrmYLXqa5OqmyweBcYN4mx8l8ABBCzxT2hQaL8+ZoOHj25OsxyvSs/Z/2Cw9b
-         EQNU23fMT5c4p5GrMVoc5FNhK+r5XKqt9G/6EsM22M0i2F49zz92fHOOBQJCMIG6xjE7
-         fDqktPZwsNYdXpGpbMKpYXIvlWT4OTMD6q2PfcxkOor7wCUnPWfkGRhigWNx0IAsN4S0
-         5aFwQ4FDJnMwoXyKOQpt9L2iQ+kpQSnuSL1p6rRf3UeJT7GZTHBztDGua62F8ihZOZ8e
-         Rdyg==
-X-Gm-Message-State: AOAM532QZSB/NdJDJuuaV08DV06rfyxL2SjDWM5SNhliGKpv8xV4Xc5Y
-        dw5QOqxvvDiRXF5CCIxMLi9RX5nl5XGeaQ==
-X-Google-Smtp-Source: ABdhPJwJ843l2UFGHHTAgxbxW057CYEHotDhqvKJamSl4AwMke8vHlo7YUo3kOY8hVXvF82cWdkPKw==
-X-Received: by 2002:a63:2c16:: with SMTP id s22mr9704833pgs.297.1644246223146;
-        Mon, 07 Feb 2022 07:03:43 -0800 (PST)
+         :content-language:to:cc:from:subject:content-transfer-encoding;
+        bh=IwbC5GgraFRaOZ81Tu6X93hQoXdowAbRSopeguTSmFc=;
+        b=mpXm0VQ6ArrL1epiVLTAinMZOUrxzl3LUhKTEbsmSMahgyBNUoEe8id13NlIVNdD00
+         VQKCCGZwsavqVJJ+DSJjr2/NJSkwrv/Jt5wioDqG0xvxIcFBN9angGIuG6YJCuIqkQ9f
+         wDKbU73DsPlSvszdsUL9BnTgFmungjF0fSCo0ETKVN9bFJ5Y0bXDPRWpqZf3KkkDTCEi
+         fH6N7hlroy4ucQMUWw/7euNzbvabu6+l1NXNfKobfdfLEkG4Ql653ibPzSyQubFmJa6b
+         qVeF6966VdsXA8R2GGWHms+OfyxovZIRakbNrHwEy4BVnZFAEtrOfs0dxpESmaQ7PJ5a
+         esEQ==
+X-Gm-Message-State: AOAM530qHHwq68vrAqrUMB13iZC8FOFSny+WDZ5cVOYmxfFczkTLDjo1
+        vYBZpjKl0cRTFevoWZElPgo=
+X-Google-Smtp-Source: ABdhPJwffx0JxoNKiyAoQ9V5iWqcodJHDZCEkvSKQ0Y9jRGhuG44O8WmHV0bIcteHCGoN789PL6lEw==
+X-Received: by 2002:a17:902:a5c1:: with SMTP id t1mr16582992plq.106.1644246986367;
+        Mon, 07 Feb 2022 07:16:26 -0800 (PST)
 Received: from [10.59.0.6] ([85.203.23.80])
-        by smtp.gmail.com with ESMTPSA id w4sm8531262pgs.28.2022.02.07.07.03.36
+        by smtp.gmail.com with ESMTPSA id m21sm12823728pfk.26.2022.02.07.07.16.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 07:03:42 -0800 (PST)
-Message-ID: <49ce0d1f-c302-7fe5-805b-9f505240f683@gmail.com>
-Date:   Mon, 7 Feb 2022 23:03:29 +0800
+        Mon, 07 Feb 2022 07:16:25 -0800 (PST)
+Message-ID: <4a850d04-ed6a-5802-7038-a94ad0d466c5@gmail.com>
+Date:   Mon, 7 Feb 2022 23:16:14 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
 Content-Language: en-US
-To:     stas.yakovlev@gmail.com, kvalo@kernel.org, davem@davemloft.net,
-        kuba@kernel.org
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [BUG] ipw2100: possible deadlocks involving waiting and locking
- operations
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+To:     tariqt@nvidia.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
         linux-kernel@vger.kernel.org
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [BUG] net: mellanox: mlx4: possible deadlock in mlx4_xdp_set() and
+ mlx4_en_reset_config()
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -74,44 +73,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello,
 
-My static analysis tool reports two possible deadlock in the ipw2100 
-driver in Linux 5.16:
+My static analysis tool reports a possible deadlock in the mlx4 driver 
+in Linux 5.16:
 
-#BUG 1
-ipw2100_wx_set_retry()
-   mutex_lock(&priv->action_mutex); --> Line 7323 (Lock A)
-   ipw2100_set_short_retry()
-     ipw2100_hw_send_command()
-       wait_event_interruptible_timeout(priv->wait_command_queue, ...) 
---> Line 793 (Wait X)
+mlx4_xdp_set()
+   mutex_lock(&mdev->state_lock); --> Line 2778 (Lock A)
+   mlx4_en_try_alloc_resources()
+     mlx4_en_alloc_resources()
+       mlx4_en_destroy_tx_ring()
+         mlx4_qp_free()
+           wait_for_completion(&qp->free); --> Line 528 (Wait X)
 
-ipw_radio_kill_sw()
-   mutex_lock(&priv->action_mutex); --> Line 4259 (Lock A)
-   schedule_reset()
-     wake_up_interruptible(&priv->wait_command_queue); --> Line 706 (Wake X)
+mlx4_en_reset_config()
+   mutex_lock(&mdev->state_lock); --> Line 3522 (Lock A)
+   mlx4_en_try_alloc_resources()
+     mlx4_en_alloc_resources()
+       mlx4_en_destroy_tx_ring()
+         mlx4_qp_free()
+           complete(&qp->free); --> Line 527 (Wake X)
 
-#BUG 2
-ipw2100_wx_set_scan()
-   mutex_lock(&priv->action_mutex); --> Line 7393 (Lock A)
-   ipw2100_start_scan()
-     ipw2100_hw_send_command()
-       wait_event_interruptible_timeout(priv->wait_command_queue, ...) 
---> Line 793 (Wait X)
+When mlx4_xdp_set() is executed, "Wait X" is performed by holding "Lock 
+A". If mlx4_en_reset_config() is executed at this time, "Wake X" cannot 
+be performed to wake up "Wait X" in mlx4_xdp_set(), because "Lock A" has 
+been already hold by mlx4_xdp_set(), causing a possible deadlock.
 
-ipw_radio_kill_sw()
-   mutex_lock(&priv->action_mutex); --> Line 4259 (Lock A)
-   schedule_reset()
-     wake_up_interruptible(&priv->wait_command_queue); --> Line 706 (Wake X)
-
-When ipw2100_wx_set_retry() or ipw2100_wx_set_scan() is executed, "Wait 
-X" is performed by holding "Lock A". If ipw_radio_kill_sw() is executed 
-at this time, "Wake X" cannot be performed to wake up "Wait X", because 
-"Lock A" has been already hold, causing possible deadlocks.
-I find that "Wait X" is performed with a timeout, to relieve the 
-possible deadlocks; but I think this timeout can cause inefficient 
-execution.
-
-I am not quite sure whether these possible problems are real.
+I am not quite sure whether this possible problem is real and how to fix 
+it if it is real.
 Any feedback would be appreciated, thanks :)
 
 
