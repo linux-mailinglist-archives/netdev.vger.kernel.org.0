@@ -2,187 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F72D4AC811
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 19:00:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36F754AC80F
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 19:00:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236269AbiBGR7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 12:59:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
+        id S235794AbiBGR7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 12:59:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345915AbiBGRxl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 12:53:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B545C0401D9;
-        Mon,  7 Feb 2022 09:53:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E79F061265;
-        Mon,  7 Feb 2022 17:53:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6A59C004E1;
-        Mon,  7 Feb 2022 17:53:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644256420;
-        bh=J/5npvl2AWJR5CZyz4n1OKbcZJe3W/JUn6lsfy2Lq2A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WUaGbeOkGK8q0zSj9WIbfCMzICxJHWhH7uPA8uALbb5tft9vuA3gJGKmYh15bMAwT
-         5i+0Rime8i/kN5BBE0SlwLTl62IOycTNsnZRbQ9SUblQ3Pl7gSxCSiiAwNRVXLGbDm
-         w9pRkRK3o8lnvD8B8lMN5HI4a+xMyUHAudJ4BE6W7F3n0KrPx927/DqDWkcFBk22+v
-         GzbwX6liuKM48swPFGl+mp0QNnUYQGQqQGlgEuXmDwLbs+63uMWO7oWjJcxKN0r4Ce
-         YOHEwrpeGvhvgyfuEfzhidjR6LHJnl9/y0gz4i3ovrDD5wfV/nROczEK1JlZcQWQzb
-         OAnACashZrlWQ==
-Date:   Mon, 7 Feb 2022 18:53:35 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        brouer@redhat.com, toke@redhat.com, andrii@kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next] selftest/bpf: check invalid length in
- test_xdp_update_frags
-Message-ID: <YgFcn487ZHk8e2VP@lore-desk>
-References: <aff68ca785cae86cd6263355010ceaff24daee1f.1643982947.git.lorenzo@kernel.org>
- <c3858f6b-43d5-18ef-2fc8-b58c13c12b05@fb.com>
- <Yf1nxMWEWy4DSwgN@lore-desk>
- <15f829a2-8556-0545-7408-3fca66eb38b7@fb.com>
- <Yf1w2HRokiYBg8w9@lore-desk>
- <Yf15n2GJG70JrxX6@lore-desk>
- <c03f0c81-8e56-6c92-d31a-03a5394b9388@fb.com>
+        with ESMTP id S1346592AbiBGRya (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 12:54:30 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA52C0401DC
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 09:54:29 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id y203so1867029yby.11
+        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 09:54:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6+QTT1Fbw38O8F+oxHccgSwSHhvYFU77T78AafO6f8A=;
+        b=JwIqzU1X4Y5WwGQD3il0fZVrLr5VSmwBZXyXL9CLxuQYKvY/DxDrf+N3z3R/9iHeij
+         +ctxbnwcMnSjAKUiNz9Vy4/dQ0BJ1PU9y4q4sl3U+5GLay3XhTnXAkMLbMSz0lgAFQ46
+         NZDL6nZw3tsP6Ws0D3GyFUwATFlRfLiHKGx83U/MWEOSXUGAFtxI0jkPRiY5mmdGMJk/
+         hP6VSs/u1XLOdajdiruKQyRe1O0+/8BXSOa9OU4c5xJdO5rynyape1YTi7oipcaR7Zj1
+         9gLndtxfBE9G6VQS4GPdqsbPV7HVgHpE0P3ZP2XOg1h9BJSjgYWnQva7OyuOPb75Ahw+
+         8jDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6+QTT1Fbw38O8F+oxHccgSwSHhvYFU77T78AafO6f8A=;
+        b=OWa88qLtbxBvrhRA5ZGgrtwjl7CbUySZ6KFEDmDPBxm9QIs173T0fUmVINFCLsqoHL
+         Kiy/tY68GFLPz4oyiNbGRKNXjj0Etg2e4KTUeWAer0nvQ0rvdoXPXxq3fVqVsZz9l0N7
+         1H2qw/QoEDqSVk9oWPdxHdd9KGgjcLhPur3fU4HJqqB+aDQ1knobjW5T4F7xjw2S8s+K
+         TBoy0TVE7NGOQ+TOvTS0IbSt+058zVTPoYrlVBeARIRw+Lskhv0MLZtMmtY+mBpOY88i
+         XWX/FHVWSKK52SCilQMVOolLrxqxg/psyqjlgqnoVKmjO8JO0g1FUoz4lMt/2Wrl1rvV
+         S8ew==
+X-Gm-Message-State: AOAM533dYgqd3kVB+aCTKQj0VHRXlCI0PG7wG5F/dCp4q3wj/9f0LZvp
+        YooML2aotkXP5yjZ927QW/purHyoFQuY6jc6luEkFg==
+X-Google-Smtp-Source: ABdhPJzn0uNY6oaGqdO+kPZ4ZvHyLvQV2vdQXTGNNZ1QmiCNQ4MCkei3P3gXknuQitJeT463ZjdZcIM/EeSf9wxV9Ug=
+X-Received: by 2002:a25:508b:: with SMTP id e133mr820763ybb.293.1644256468237;
+ Mon, 07 Feb 2022 09:54:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="9OLtDuQbpDP0jtNd"
-Content-Disposition: inline
-In-Reply-To: <c03f0c81-8e56-6c92-d31a-03a5394b9388@fb.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220207171756.1304544-1-eric.dumazet@gmail.com>
+ <20220207171756.1304544-10-eric.dumazet@gmail.com> <c81703cb-a2b1-4a45-3c5f-0833576f4785@hartkopp.net>
+In-Reply-To: <c81703cb-a2b1-4a45-3c5f-0833576f4785@hartkopp.net>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 7 Feb 2022 09:54:17 -0800
+Message-ID: <CANn89iJhf+-myjz0GgTeWmohnoBottRa+nP8DPqM3yoS64cmHQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 09/11] can: gw: switch cangw_pernet_exit() to
+ batch mode
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Feb 7, 2022 at 9:41 AM Oliver Hartkopp <socketcan@hartkopp.net> wrote:
+>
+>
+>
+> On 07.02.22 18:17, Eric Dumazet wrote:
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > cleanup_net() is competing with other rtnl users.
+> >
+> > Avoiding to acquire rtnl for each netns before calling
+> > cgw_remove_all_jobs() gives chance for cleanup_net()
+> > to progress much faster, holding rtnl a bit longer.
+> >
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Cc: Oliver Hartkopp <socketcan@hartkopp.net>
+> > Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+> > ---
+> >   net/can/gw.c | 9 ++++++---
+> >   1 file changed, 6 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/net/can/gw.c b/net/can/gw.c
+> > index d8861e862f157aec36c417b71eb7e8f59bd064b9..24221352e059be9fb9aca3819be6a7ac4cdef144 100644
+> > --- a/net/can/gw.c
+> > +++ b/net/can/gw.c
+> > @@ -1239,16 +1239,19 @@ static int __net_init cangw_pernet_init(struct net *net)
+> >       return 0;
+> >   }
+> >
+> > -static void __net_exit cangw_pernet_exit(struct net *net)
+> > +static void __net_exit cangw_pernet_exit_batch(struct list_head *net_list)
+> >   {
+> > +     struct net *net;
+> > +
+> >       rtnl_lock();
+> > -     cgw_remove_all_jobs(net);
+> > +     list_for_each_entry(net, net_list, exit_list)
+> > +             cgw_remove_all_jobs(net);
+>
+> Instead of removing the jobs for ONE net namespace it seems you are
+> remove removing the jobs for ALL net namespaces?
+>
+> Looks wrong to me.
 
---9OLtDuQbpDP0jtNd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I see nothing wrong in my patch.
 
->=20
->=20
-> On 2/4/22 11:08 AM, Lorenzo Bianconi wrote:
-> > > >=20
-> > >=20
-> > > [...]
-> > >=20
-> > > > > >=20
-> > > > > > In kernel, the nr_frags checking is against MAX_SKB_FRAGS,
-> > > > > > but if /proc/sys/net/core/max_skb_flags is 2 or more less
-> > > > > > than MAX_SKB_FRAGS, the test won't fail, right?
-> > > > >=20
-> > > > > yes, you are right. Should we use the same definition used in
-> > > > > include/linux/skbuff.h instead? Something like:
-> > > > >=20
-> > > > > if (65536 / page_size + 1 < 16)
-> > > > > 	max_skb_flags =3D 16;
-> > > > > else
-> > > > > 	max_skb_flags =3D 65536/page_size + 1;
-> > > >=20
-> > > > The maximum packet size limit 64KB won't change anytime soon.
-> > > > So the above should work. Some comments to explain why using
-> > > > the above formula will be good.
-> > >=20
-> > > ack, I will do in v2.
-> >=20
-> > I can see there is a on-going discussion here [0] about increasing
-> > MAX_SKB_FRAGS. I guess we can put on-hold this patch and see how
-> > MAX_SKB_FRAGS will be changed.
->=20
-> Thanks for the link. The new patch is going to increase
-> MAX_SKB_FRAGS and it is possible that will be changed again
-> (maybe under some config options).
->=20
-> The default value for
-> /proc/sys/net/core/max_skb_flags is MAX_SKB_FRAGS and I suspect
-> anybody is bothering to change it. So your patch is okay to me.
-> Maybe change a little bit -ENOMEM error message. current,
->   ASSERT_EQ(err, -ENOMEM, "unsupported buffer size");
-> to
->   ASSERT_EQ(err, -ENOMEM, "unsupported buffer size, possible non-default
-> /proc/sys/net/core/max_skb_flags?");
+I think you have to look more closely at ops_exit_list() in
+net/core/net_namespace.c
 
-ack, I am fine with it.
-@Alexei, Andrii: any hints about it?
 
-Regards,
-Lorenzo
+BTW, the sychronize_rcu() call in cgw_remove_all_jobs is definitely
+bad, you should absolutely replace it by call_rcu() or kfree_rcu()
 
->=20
-> >=20
-> > Regards,
-> > Lorenzo
-> >=20
-> > [0] https://lore.kernel.org/all/202202031315.B425Ipe8-lkp@intel.com/t/#=
-ma1b2c7e71fe9bc69e24642a62dadf32fda7d5f03
-> >=20
-> > >=20
-> > > Regards,
-> > > Lorenzo
-> > >=20
-> > > >=20
-> > > > >=20
-> > > > > Regards,
-> > > > > Lorenzo
-> > > > >=20
-> > > > > >=20
-> > > > > > > +
-> > > > > > > +	num =3D fscanf(f, "%d", &max_skb_frags);
-> > > > > > > +	fclose(f);
-> > > > > > > +
-> > > > > > > +	if (!ASSERT_EQ(num, 1, "max_skb_frags read failed"))
-> > > > > > > +		goto out;
-> > > > > > > +
-> > > > > > > +	/* xdp_buff linear area size is always set to 4096 in the
-> > > > > > > +	 * bpf_prog_test_run_xdp routine.
-> > > > > > > +	 */
-> > > > > > > +	buf_size =3D 4096 + (max_skb_frags + 1) * sysconf(_SC_PAGE_=
-SIZE);
-> > > > > > > +	buf =3D malloc(buf_size);
-> > > > > > > +	if (!ASSERT_OK_PTR(buf, "alloc buf"))
-> > > > > > > +		goto out;
-> > > > > > > +
-> > > > > > > +	memset(buf, 0, buf_size);
-> > > > > > > +	offset =3D (__u32 *)buf;
-> > > > > > > +	*offset =3D 16;
-> > > > > > > +	buf[*offset] =3D 0xaa;
-> > > > > > > +	buf[*offset + 15] =3D 0xaa;
-> > > > > > > +
-> > > > > > > +	topts.data_in =3D buf;
-> > > > > > > +	topts.data_out =3D buf;
-> > > > > > > +	topts.data_size_in =3D buf_size;
-> > > > > > > +	topts.data_size_out =3D buf_size;
-> > > > > > > +
-> > > > > > > +	err =3D bpf_prog_test_run_opts(prog_fd, &topts);
-> > > > > > > +	ASSERT_EQ(err, -ENOMEM, "unsupported buffer size");
-> > > > > > > +	free(buf);
-> > > > > > >     out:
-> > > > > > >     	bpf_object__close(obj);
-> > > > > > >     }
-> > > > > >=20
-> > > >=20
-> >=20
-> >=20
-
---9OLtDuQbpDP0jtNd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYgFcnwAKCRA6cBh0uS2t
-rBo4AQD515rOMGBMkdaQ+noY6PJY1THC3o1ciSn987z53aJr4gD/Z9k2fwFJPnoY
-i3+j93idzNN42dcNIaDFnG1utXGjRgE=
-=Aw/G
------END PGP SIGNATURE-----
-
---9OLtDuQbpDP0jtNd--
+>
+> Best regards,
+> Oliver
+>
+>
+> >       rtnl_unlock();
+> >   }
+> >
+> >   static struct pernet_operations cangw_pernet_ops = {
+> >       .init = cangw_pernet_init,
+> > -     .exit = cangw_pernet_exit,
+> > +     .exit_batch = cangw_pernet_exit_batch,
+> >   };
+> >
+> >   static __init int cgw_module_init(void)
