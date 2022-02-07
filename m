@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A15204AB87A
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 11:13:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 224A94AB888
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 11:16:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244247AbiBGKMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 05:12:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43252 "EHLO
+        id S1358379AbiBGKNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 05:13:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352102AbiBGKAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 05:00:03 -0500
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E71C043181;
-        Mon,  7 Feb 2022 02:00:01 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R481e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V3okuPA_1644227998;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V3okuPA_1644227998)
+        with ESMTP id S237653AbiBGKDR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 05:03:17 -0500
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17B9C043181;
+        Mon,  7 Feb 2022 02:03:15 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R261e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V3p8PEf_1644228192;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V3p8PEf_1644228192)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 07 Feb 2022 17:59:59 +0800
-Date:   Mon, 7 Feb 2022 17:59:58 +0800
+          Mon, 07 Feb 2022 18:03:12 +0800
+Date:   Mon, 7 Feb 2022 18:03:11 +0800
 From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Leon Romanovsky <leon@kernel.org>
+To:     Stefan Raspl <raspl@linux.ibm.com>
 Cc:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH net-next] net/smc: Allocate pages of SMC-R on ibdev NUMA
- node
-Message-ID: <YgDtnk8g7y5oRKXB@TonyMac-Alibaba>
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: Re: [PATCH net-next 1/3] net/smc: Send directly when TCP_CORK is
+ cleared
+Message-ID: <YgDuX/TW0AKrbnpe@TonyMac-Alibaba>
 Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <20220130190259.94593-1-tonylu@linux.alibaba.com>
- <YfeN1BfPqhVz8mvy@unreal>
+References: <20220130180256.28303-1-tonylu@linux.alibaba.com>
+ <20220130180256.28303-2-tonylu@linux.alibaba.com>
+ <74aaa8ce-81a4-b048-cee2-b137279d13d5@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YfeN1BfPqhVz8mvy@unreal>
+In-Reply-To: <74aaa8ce-81a4-b048-cee2-b137279d13d5@linux.ibm.com>
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
@@ -44,42 +44,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 09:20:52AM +0200, Leon Romanovsky wrote:
-> On Mon, Jan 31, 2022 at 03:03:00AM +0800, Tony Lu wrote:
-> > Currently, pages are allocated in the process context, for its NUMA node
-> > isn't equal to ibdev's, which is not the best policy for performance.
+On Mon, Jan 31, 2022 at 08:13:53PM +0100, Stefan Raspl wrote:
+> On 1/30/22 19:02, Tony Lu wrote:
+> > According to the man page of TCP_CORK [1], if set, don't send out
+> > partial frames. All queued partial frames are sent when option is
+> > cleared again.
 > > 
-> > Applications will generally perform best when the processes are
-> > accessing memory on the same NUMA node. When numa_balancing enabled
-> > (which is enabled by most of OS distributions), it moves tasks closer to
-> > the memory of sndbuf or rmb and ibdev, meanwhile, the IRQs of ibdev bind
-> > to the same node usually. This reduces the latency when accessing remote
-> > memory.
+> > When applications call setsockopt to disable TCP_CORK, this call is
+> > protected by lock_sock(), and tries to mod_delayed_work() to 0, in order
+> > to send pending data right now. However, the delayed work smc_tx_work is
+> > also protected by lock_sock(). There introduces lock contention for
+> > sending data.
+> > 
+> > To fix it, send pending data directly which acts like TCP, without
+> > lock_sock() protected in the context of setsockopt (already lock_sock()ed),
+> > and cancel unnecessary dealyed work, which is protected by lock.
+> > 
+> > [1] https://linux.die.net/man/7/tcp
+> > 
+> > Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+> > ---
+> >   net/smc/af_smc.c |  4 ++--
+> >   net/smc/smc_tx.c | 25 +++++++++++++++----------
+> >   net/smc/smc_tx.h |  1 +
+> >   3 files changed, 18 insertions(+), 12 deletions(-)
+> > 
+> > diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> > index ffab9cee747d..ef021ec6b361 100644
+> > --- a/net/smc/af_smc.c
+> > +++ b/net/smc/af_smc.c
+> > @@ -2600,8 +2600,8 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
+> >   		    sk->sk_state != SMC_CLOSED) {
+> >   			if (!val) {
+> >   				SMC_STAT_INC(smc, cork_cnt);
+> > -				mod_delayed_work(smc->conn.lgr->tx_wq,
+> > -						 &smc->conn.tx_work, 0);
+> > +				smc_tx_pending(&smc->conn);
+> > +				cancel_delayed_work(&smc->conn.tx_work);
+> >   			}
+> >   		}
+> >   		break;
+> > diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
+> > index be241d53020f..7b0b6e24582f 100644
+> > --- a/net/smc/smc_tx.c
+> > +++ b/net/smc/smc_tx.c
+> > @@ -597,27 +597,32 @@ int smc_tx_sndbuf_nonempty(struct smc_connection *conn)
+> >   	return rc;
+> >   }
+> > -/* Wakeup sndbuf consumers from process context
+> > - * since there is more data to transmit
+> > - */
+> > -void smc_tx_work(struct work_struct *work)
+> > +void smc_tx_pending(struct smc_connection *conn)
 > 
-> It is very subjective per-specific test. I would expect that
-> application will control NUMA memory policies (set_mempolicy(), ...)
-> by itself without kernel setting NUMA node.
-> 
-> Various *_alloc_node() APIs are applicable for in-kernel allocations
-> where user can't control memory policy.
-> 
-> I don't know SMC-R enough, but if I judge from your description, this
-> allocation is controlled by the application.
+> Could you add a comment that we're expecting lock_sock() to be held when
+> calling this function?
 
-The original design of SMC doesn't handle the memory allocation of
-different NUMA node, and the application can't control the NUMA policy
-in SMC.
+I will add it in the next separated patch.
 
-It allocates memory according to the NUMA node based on the process
-context, which is determined by the scheduler. If application process
-runs on NUMA node 0, SMC allocates on node 0 and so on, it all depends
-on the scheduler. If RDMA device is attached to node 1, the process runs
-on node 0, it allocates memory on node 0.
-
-This patch tries to allocate memory on the same NUMA node of RDMA
-device. Applications can't know the current node of RDMA device. The
-scheduler knows the node of memory, and can let applications run on the
-same node of memory and RDMA device.
-
-Thanks,
+Thank you,
 Tony Lu
