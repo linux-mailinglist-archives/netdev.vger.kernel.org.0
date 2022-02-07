@@ -2,42 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 762B14AC80E
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 18:59:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E1A14AC812
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 19:00:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233375AbiBGR7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 12:59:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35566 "EHLO
+        id S239305AbiBGR7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 12:59:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345860AbiBGRxX (ORCPT
+        with ESMTP id S1345868AbiBGRxX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 12:53:23 -0500
 Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [208.88.110.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 619C8C0401E4
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61755C0401E1
         for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 09:53:16 -0800 (PST)
 Received: from localhost (localhost [127.0.0.1])
-        by mail.savoirfairelinux.com (Postfix) with ESMTP id 20F5C9C024C;
-        Mon,  7 Feb 2022 12:45:47 -0500 (EST)
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id A59699C024A;
+        Mon,  7 Feb 2022 12:46:24 -0500 (EST)
 Received: from mail.savoirfairelinux.com ([127.0.0.1])
         by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id rb8Maz7zMPDt; Mon,  7 Feb 2022 12:45:46 -0500 (EST)
+        with ESMTP id X3J2siQvDzIF; Mon,  7 Feb 2022 12:46:24 -0500 (EST)
 Received: from localhost (localhost [127.0.0.1])
-        by mail.savoirfairelinux.com (Postfix) with ESMTP id A6A339C024A;
-        Mon,  7 Feb 2022 12:45:46 -0500 (EST)
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id 2B1AF9C025D;
+        Mon,  7 Feb 2022 12:46:24 -0500 (EST)
 X-Virus-Scanned: amavisd-new at mail.savoirfairelinux.com
 Received: from mail.savoirfairelinux.com ([127.0.0.1])
         by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 8DbUYRRHGV_r; Mon,  7 Feb 2022 12:45:46 -0500 (EST)
+        with ESMTP id 88vzV-Xiwnxo; Mon,  7 Feb 2022 12:46:24 -0500 (EST)
 Received: from sfl-deribaucourt.rennes.sfl (lfbn-ren-1-1441-98.w90-27.abo.wanadoo.fr [90.27.160.98])
-        by mail.savoirfairelinux.com (Postfix) with ESMTPSA id EED189C0207;
-        Mon,  7 Feb 2022 12:45:45 -0500 (EST)
+        by mail.savoirfairelinux.com (Postfix) with ESMTPSA id 6EB059C024A;
+        Mon,  7 Feb 2022 12:46:23 -0500 (EST)
 From:   Enguerrand de Ribaucourt 
         <enguerrand.de-ribaucourt@savoirfairelinux.com>
 To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk
-Subject: [PATCH v2 0/2] net: phy: micrel: add Microchip KSZ 9897 Switch PHY
-Date:   Mon,  7 Feb 2022 18:45:31 +0100
-Message-Id: <20220207174532.362781-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>
+Subject: [PATCH v2 1/2] net: phy: micrel: add Microchip KSZ 9897 Switch PHY support
+Date:   Mon,  7 Feb 2022 18:45:34 +0100
+Message-Id: <20220207174532.362781-2-enguerrand.de-ribaucourt@savoirfairelinux.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220207174532.362781-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
+References: <20220207174532.362781-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -49,68 +53,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v2: I was on my way to convert the .phy_id_mask to PHY_ID_MATCH_EXACT()
-following reviews, but I discovered that the datasheet actually contained=
- PHY id
-registers but they do not correspond to RMII ports. I rechecked the phy_i=
-d value
-on my KSZ9897 and confirmed that I did not make this up. But this lead me=
- to
-find that the KSZ8081 revision A2's datasheet shared the exact same phy_i=
-d.
-Hence, in order not to break compatibility with this model, I wrote a new=
- way to
-differenciate them with the default LED MODE configuration instead of
-PHY_ID_MATCH_EXACT() by mimicking ksz8051_ksz8795_match_phy_device().
+Adding Microchip 9897 Phy included in KSZ9897 Switch.
+The KSZ9897 shares the same phy_id as some revisions of the KSZ8081.
+match_phy_device functions were added to distinguish them.
 
-I abstained from converting MICREL_PHY_ID_MASK to PHY_ID_MATCH_MODEL() be=
-cause
-it is used in other drivers, and would take a very long time to check all=
- the
-datasheets of these models.
-
-Thanks again to Andrew Lunn for your reviews and suggestions.
-
-Original patch v1 discussion:
-https://lore.kernel.org/all/20220204133635.296974-1-enguerrand.de-ribauco=
-urt@savoirfairelinux.com/
-
+Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirf=
+airelinux.com>
 ---
+ drivers/net/phy/micrel.c   | 45 ++++++++++++++++++++++++++++++++++++++
+ include/linux/micrel_phy.h |  5 +++++
+ 2 files changed, 50 insertions(+)
 
-Hi,
-I've recently used a KSZ9897 DSA switch that was connected to an i.MX6 CP=
-U
-through SPI for the DSA control, and RMII as the data cpu-port. The SPI/D=
-SA was
-well supported in drivers/net/dsa/microchip/ksz9477.c, but the RMII conne=
-ction
-was not working. I would like to upstream the patch I developped to add s=
-upport
-for the KSZ9897 RMII bus. This is required for the cpu-port capability of
-the DSA switch and have a complete support of this DSA switch.
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 44a24b99c894..fc5c33194bdc 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -522,6 +522,34 @@ static int ksz8081_read_status(struct phy_device *ph=
+ydev)
+ 	return genphy_read_status(phydev);
+ }
 
-Since PHY_ID_KSZ9897 and PHY_ID_KSZ8081 are very close, I had to modify t=
-he mask
-used for the latter. I don't have this one, so it would be very appreciat=
-ed if
-someone could test this patch with the KSZ8081 or KSZ8091. In particular,=
- I'd
-like to know the exact phy_id used by those models to check that the new =
-mask is
-valid, and that they don't collide with the KSZ9897. The phy_ids cannot b=
-e found
-in the datasheet, so I couldn't verify that myself.
++static int ksz8081_ksz9897_match_phy_device(struct phy_device *phydev,
++					    const bool ksz_8081)
++{
++	int ret;
++
++	if ((phydev->phy_id & MICREL_PHY_ID_MASK) !=3D PHY_ID_KSZ8081)
++		return 0;
++
++	ret =3D phy_read(phydev, MICREL_KSZ8081_CTRL2);
++	if (ret < 0)
++		return ret;
++
++	/* KSZ8081A3/KSZ8091R1 PHY and KSZ9897 switch share the same
++	 * exact PHY ID. However, they can be told apart by the default value
++	 * of the LED mode. It is 0 for the PHY, and 1 for the switch.
++	 */
++	ret &=3D (MICREL_KSZ8081_CTRL2_LED_MODE0 | MICREL_KSZ8081_CTRL2_LED_MOD=
+E1);
++	if (!ksz_8081)
++		return ret;
++	else
++		return !ret;
++}
++
++static int ksz8081_match_phy_device(struct phy_device *phydev)
++{
++	return ksz8081_ksz9897_match_phy_device(phydev, true);
++}
++
+ static int ksz8061_config_init(struct phy_device *phydev)
+ {
+ 	int ret;
+@@ -1561,6 +1589,11 @@ static int ksz886x_cable_test_get_status(struct ph=
+y_device *phydev,
+ 	return ret;
+ }
 
-My definition of the struct phy_driver was copied from the similar
-PHY_ID_KSZ8873MLL and proved to work on a 5.4 kernel. However, my patch m=
-ay not
-support the Gigabit Ethernet but works reliably otherwise.
++static int ksz9897_match_phy_device(struct phy_device *phydev)
++{
++	return ksz8081_ksz9897_match_phy_device(phydev, false);
++}
++
+ #define LAN_EXT_PAGE_ACCESS_CONTROL			0x16
+ #define LAN_EXT_PAGE_ACCESS_ADDRESS_DATA		0x17
+ #define LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC		0x4000
+@@ -1734,6 +1767,7 @@ static struct phy_driver ksphy_driver[] =3D {
+ 	.config_init	=3D ksz8081_config_init,
+ 	.soft_reset	=3D genphy_soft_reset,
+ 	.config_aneg	=3D ksz8081_config_aneg,
++	.match_phy_device =3D ksz8081_match_phy_device,
+ 	.read_status	=3D ksz8081_read_status,
+ 	.config_intr	=3D kszphy_config_intr,
+ 	.handle_interrupt =3D kszphy_handle_interrupt,
+@@ -1869,6 +1903,17 @@ static struct phy_driver ksphy_driver[] =3D {
+ 	.config_init	=3D kszphy_config_init,
+ 	.suspend	=3D genphy_suspend,
+ 	.resume		=3D genphy_resume,
++}, {
++	.phy_id		=3D PHY_ID_KSZ9897,
++	.phy_id_mask	=3D 0x00ffffff,
++	.name		=3D "Microchip KSZ9897",
++	/* PHY_BASIC_FEATURES */
++	.config_init	=3D kszphy_config_init,
++	.config_aneg	=3D ksz8873mll_config_aneg,
++	.match_phy_device =3D ksz9897_match_phy_device,
++	.read_status	=3D ksz8873mll_read_status,
++	.suspend	=3D genphy_suspend,
++	.resume		=3D genphy_resume,
+ } };
 
-The second patch fixes an issue with the KSZ9477 declaration I noticed. I
-couldn't find PHY_ID_KSZ9477, or an equivalent mask in the MODULE_DEVICE_=
-TABLE
-declaration. I fear the driver is not initialized properly with this PHY.=
- I
-don't have this model either so it would be great if someone could test t=
-his.
+ module_phy_driver(ksphy_driver);
+diff --git a/include/linux/micrel_phy.h b/include/linux/micrel_phy.h
+index 1f7c33b2f5a3..05b24bf7f75f 100644
+--- a/include/linux/micrel_phy.h
++++ b/include/linux/micrel_phy.h
+@@ -36,6 +36,7 @@
+ #define PHY_ID_KSZ87XX		0x00221550
 
+ #define	PHY_ID_KSZ9477		0x00221631
++#define	PHY_ID_KSZ9897		0x00221561
+
+ /* struct phy_device dev_flags definitions */
+ #define MICREL_PHY_50MHZ_CLK	0x00000001
+@@ -62,4 +63,8 @@
+
+ #define KSZ886X_CTRL_MDIX_STAT			BIT(4)
+
++#define MICREL_KSZ8081_CTRL2	0x1F
++#define MICREL_KSZ8081_CTRL2_LED_MODE0	BIT(4)
++#define MICREL_KSZ8081_CTRL2_LED_MODE1	BIT(5)
++
+ #endif /* _MICREL_PHY_H */
+--
+2.25.1
