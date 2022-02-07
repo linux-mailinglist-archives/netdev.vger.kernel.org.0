@@ -2,103 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D2E94AC283
+	by mail.lfdr.de (Postfix) with ESMTP id EB4DD4AC284
 	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 16:08:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442486AbiBGPFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 10:05:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33666 "EHLO
+        id S1442509AbiBGPF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 10:05:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244609AbiBGPDP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 10:03:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 19F01C0401C7
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 07:03:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644246194;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dxF/KRvojcGP3XsaFuJbiGl5YjK5EzOxT0MESeC2AXA=;
-        b=dv5Y3wOk9VhfM2V1bmTGu9jHVWN8RwSaYmLbtPKgFaOFfN1hCc2JgZOiUyASi8eP3+2Iq7
-        uaMD/G9MBINKsJfpm7yid19dhQAc1Im9TRvt6DdH8w99wIBsUdbkBuUg5exAa8iAylA58b
-        /s+U/HkOT3LDwwO6uDqvH9pDl8dTz54=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-173-1mBcwiO1M9mzW4josS38AQ-1; Mon, 07 Feb 2022 10:03:13 -0500
-X-MC-Unique: 1mBcwiO1M9mzW4josS38AQ-1
-Received: by mail-io1-f72.google.com with SMTP id q24-20020a5d8358000000b006133573a011so9241921ior.23
-        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 07:03:13 -0800 (PST)
+        with ESMTP id S1382241AbiBGPDo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 10:03:44 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB19C0401C1;
+        Mon,  7 Feb 2022 07:03:43 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id g8so3543468pfq.9;
+        Mon, 07 Feb 2022 07:03:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:from
+         :subject:cc:content-transfer-encoding;
+        bh=mS7TncTDTAedIOa0shd+ZvGI84i/d6u1cvvXwuS06Vs=;
+        b=Sl1aAWG5gg6a89W6+hFicuNJFDjzoyl7G87HBJQZ95+v0sgfh8ILxDj8Mkfxk19UBA
+         OsxOlkJU/x19u70esZnffMoPwI+6XB1K2HlG2ODOWNWNwUPf2zW9lkswGQ4eK+2taYPX
+         Tj8Yb+qq1qGXIWYbVdpf/fhONO0vBztvqWni62yPJX5QQq6mPu0eAia/6auVYyEVasiu
+         yP0nrsrAqWFWJ8N0JVSqPOyExBnQJM/4Cm8I4qnBC6GJ/Rqf35gwTN0IQGkcU03ghFJK
+         0aFoxMI7B+iVEMIOXRfpnWkIbvGRmEWmNzW3jPgeoNPkW2n9z6b7j/TNPUMOwhEAOIoM
+         ZzaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dxF/KRvojcGP3XsaFuJbiGl5YjK5EzOxT0MESeC2AXA=;
-        b=yKnwxj86TjgiUnVbSEcNXbNJ9gU8AzmZZHkkX+3IrZ9c1/l39PlY7X2CriXeIY/XO/
-         mF0HOa3kqzFd0i8bj8Tu7q9XoSu6uYIw7RviD4jrO8Tx56c7ykkWsx9W1TVSJ+qRZdT+
-         NYe//ZH6RcEyDiF7D+LVlIqnY0sPSRaxlILif8QsFFt538WnkQpQBTh1CHLV+0wOrOlH
-         m8bgCjS258XRXBTwyv9EClHZojguhIkfsQLdxF9PKYxzfqkcNSYDE+ILlf3qPhneIlsG
-         egBKhdvrADhWCYVcWnMX88yFEMH2vhoTxpjK5wxBiHp0wRjoOnB+DAmqzn+yuBBThfN8
-         rMqA==
-X-Gm-Message-State: AOAM531JMsC+GVzSv6FMWQGL8TUfVsKkbqtrDNlI6rwenLXtJLXlA+x2
-        FoXJcXSkPf9Yk5F7e5surhXD7q8P4+gD8DLPxQWSbh6ccu6gJ5+kMYF/uqTcZF7NWJKy1vEA43R
-        ppSRTXJaeqemn3ZcmNHdlDgrP8wcMWtSM
-X-Received: by 2002:a05:6e02:4cd:: with SMTP id f13mr4596033ils.246.1644246192542;
-        Mon, 07 Feb 2022 07:03:12 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwYii+1llQovJZGqjtsXOT/DdGJZsB2HazJG1Yp8W4WjJoZMxDwLh+KvEsJbiheznda4IWSmA1vC42T69Hzy/c=
-X-Received: by 2002:a05:6e02:4cd:: with SMTP id f13mr4596015ils.246.1644246192308;
- Mon, 07 Feb 2022 07:03:12 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:from:subject:cc:content-transfer-encoding;
+        bh=mS7TncTDTAedIOa0shd+ZvGI84i/d6u1cvvXwuS06Vs=;
+        b=kNrOc3PjihaJeVgovzALeuAzfVq0Rn/UprBsBPbnxhq2hgwhJvUT77SNyELwY4IUjx
+         9U+k1CsRrmYLXqa5OqmyweBcYN4mx8l8ABBCzxT2hQaL8+ZoOHj25OsxyvSs/Z/2Cw9b
+         EQNU23fMT5c4p5GrMVoc5FNhK+r5XKqt9G/6EsM22M0i2F49zz92fHOOBQJCMIG6xjE7
+         fDqktPZwsNYdXpGpbMKpYXIvlWT4OTMD6q2PfcxkOor7wCUnPWfkGRhigWNx0IAsN4S0
+         5aFwQ4FDJnMwoXyKOQpt9L2iQ+kpQSnuSL1p6rRf3UeJT7GZTHBztDGua62F8ihZOZ8e
+         Rdyg==
+X-Gm-Message-State: AOAM532QZSB/NdJDJuuaV08DV06rfyxL2SjDWM5SNhliGKpv8xV4Xc5Y
+        dw5QOqxvvDiRXF5CCIxMLi9RX5nl5XGeaQ==
+X-Google-Smtp-Source: ABdhPJwJ843l2UFGHHTAgxbxW057CYEHotDhqvKJamSl4AwMke8vHlo7YUo3kOY8hVXvF82cWdkPKw==
+X-Received: by 2002:a63:2c16:: with SMTP id s22mr9704833pgs.297.1644246223146;
+        Mon, 07 Feb 2022 07:03:43 -0800 (PST)
+Received: from [10.59.0.6] ([85.203.23.80])
+        by smtp.gmail.com with ESMTPSA id w4sm8531262pgs.28.2022.02.07.07.03.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 07:03:42 -0800 (PST)
+Message-ID: <49ce0d1f-c302-7fe5-805b-9f505240f683@gmail.com>
+Date:   Mon, 7 Feb 2022 23:03:29 +0800
 MIME-Version: 1.0
-References: <20220128151922.1016841-1-ihuguet@redhat.com> <20220128151922.1016841-2-ihuguet@redhat.com>
- <20220128142728.0df3707e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220128142728.0df3707e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
-Date:   Mon, 7 Feb 2022 16:03:01 +0100
-Message-ID: <CACT4ouctx9+UP2BKicjk6LJSRcR2M_4yDhHmfDARcDuVj=_XAg@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] sfc: default config to 1 channel/core in
- local NUMA node only
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Edward Cree <ecree.xilinx@gmail.com>, habetsm.xilinx@gmail.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Content-Language: en-US
+To:     stas.yakovlev@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [BUG] ipw2100: possible deadlocks involving waiting and locking
+ operations
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 11:27 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri, 28 Jan 2022 16:19:21 +0100 =C3=8D=C3=B1igo Huguet wrote:
-> > Handling channels from CPUs in different NUMA node can penalize
-> > performance, so better configure only one channel per core in the same
-> > NUMA node than the NIC, and not per each core in the system.
-> >
-> > Fallback to all other online cores if there are not online CPUs in loca=
-l
-> > NUMA node.
->
-> I think we should make netif_get_num_default_rss_queues() do a similar
-> thing. Instead of min(8, num_online_cpus()) we should default to
-> num_cores / 2 (that's physical cores, not threads). From what I've seen
-> this appears to strike a good balance between wasting resources on
-> pointless queues per hyperthread, and scaling up for CPUs which have
-> many wimpy cores.
->
+Hello,
 
-I have a few busy weeks coming, but I can do this after that.
+My static analysis tool reports two possible deadlock in the ipw2100 
+driver in Linux 5.16:
 
-With num_cores / 2 you divide by 2 because you're assuming 2 NUMA
-nodes, or just the plain number 2?
+#BUG 1
+ipw2100_wx_set_retry()
+   mutex_lock(&priv->action_mutex); --> Line 7323 (Lock A)
+   ipw2100_set_short_retry()
+     ipw2100_hw_send_command()
+       wait_event_interruptible_timeout(priv->wait_command_queue, ...) 
+--> Line 793 (Wait X)
+
+ipw_radio_kill_sw()
+   mutex_lock(&priv->action_mutex); --> Line 4259 (Lock A)
+   schedule_reset()
+     wake_up_interruptible(&priv->wait_command_queue); --> Line 706 (Wake X)
+
+#BUG 2
+ipw2100_wx_set_scan()
+   mutex_lock(&priv->action_mutex); --> Line 7393 (Lock A)
+   ipw2100_start_scan()
+     ipw2100_hw_send_command()
+       wait_event_interruptible_timeout(priv->wait_command_queue, ...) 
+--> Line 793 (Wait X)
+
+ipw_radio_kill_sw()
+   mutex_lock(&priv->action_mutex); --> Line 4259 (Lock A)
+   schedule_reset()
+     wake_up_interruptible(&priv->wait_command_queue); --> Line 706 (Wake X)
+
+When ipw2100_wx_set_retry() or ipw2100_wx_set_scan() is executed, "Wait 
+X" is performed by holding "Lock A". If ipw_radio_kill_sw() is executed 
+at this time, "Wake X" cannot be performed to wake up "Wait X", because 
+"Lock A" has been already hold, causing possible deadlocks.
+I find that "Wait X" is performed with a timeout, to relieve the 
+possible deadlocks; but I think this timeout can cause inefficient 
+execution.
+
+I am not quite sure whether these possible problems are real.
+Any feedback would be appreciated, thanks :)
 
 
---=20
-=C3=8D=C3=B1igo Huguet
-
+Best wishes,
+Jia-Ju Bai
