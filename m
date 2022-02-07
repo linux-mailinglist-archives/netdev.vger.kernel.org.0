@@ -2,89 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB82C4AC7C8
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 18:43:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 739F94AC7FB
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 18:54:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233762AbiBGRjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 12:39:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49540 "EHLO
+        id S235397AbiBGRwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 12:52:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243771AbiBGRaw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 12:30:52 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8690C0401DD
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 09:30:51 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id k17so11718629plk.0
-        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 09:30:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=c3UO1TTRZqzSjjDQY9Mwanici3NZ8tfp3AuhU7oMYuA=;
-        b=QPHaqlTiE16WocBPSKB+Lh+Ski0qtk/u+htUzq292AHwqkwfgCqNFPoyzWnzp35sr1
-         n78XPElUsjVk+gUGFqDap1fb/7cK7w3cKnLfv/E1GfzCkSjYiGDbS4+eZ00YZIqec36r
-         55RYOC2HtBq5z7nfTlvxbqnm0+1d/78bCDNOvtUD+Jznz0Pv/3oQaLKY4fJGfaDokHcs
-         m3OPmlwR+CTgXREhrBYj5yishPrXwWxcJrEjBiv+ALyN8E2AYBv2GcZorbFEj/MBHjdb
-         i4HFCxGCYrfT39BP2j5Ag0bTWXBwepHMjSv7tZCU5oF3rdb1QaapZIZPlDDy/uKn9Kx/
-         hOgQ==
+        with ESMTP id S1343720AbiBGRoP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 12:44:15 -0500
+X-Greylist: delayed 384 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 09:44:14 PST
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E245C0401DA
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 09:44:13 -0800 (PST)
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 4B5273F4B4
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 17:37:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644255468;
+        bh=dro8+D+54p75Kt9gfft6Sy+zM9pUCrf8SmGosTvwQTA=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=jux2f5friwXmuHYnUMlvxWSuhNa1H20MCP39r30GzwSCp6wYoyQmGaFN130e5eyk9
+         EiQwVpHxuaV1GKLvIo5UEuX59NrjIH7AyZjFxqnF+5ugpc59lZ9HoGnm6zNkrTNJZP
+         b2M5RLmVfI9QB+VxWldNYWgVRhOK0nzmn2joEYln2dq6HLsCb5JPhP9QH8C9C89i4+
+         oE/VQDv5QiTNJLRLmga0sUnLhGFOAhhcBYKPRamUxA2WgLgMnYYKQ3A7xcdJuUbaCL
+         +DkrwFXJlHHEtW6hY6iGCOW/MJSq9qMlY38YK5i8+oEujvY+QgYg5aeja7FI1SOWAD
+         VV1MlHD4a3QRw==
+Received: by mail-pj1-f72.google.com with SMTP id w3-20020a17090ac98300b001b8b914e91aso3313003pjt.0
+        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 09:37:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=c3UO1TTRZqzSjjDQY9Mwanici3NZ8tfp3AuhU7oMYuA=;
-        b=Hd5yHB+Ug+3tyW4xWbbYGlFTvGmp9gMtg5vDP3n431Os/a4AQH64DMxr5CykhcR0PX
-         8iyY1sPBPEiMJbd4v+5DCr5b0Yicr1IAgJySMCbjI8SsGS9xokcdwNth+9snh9x/J+JL
-         0BXFc0EBVC8Wy65CvwzKtnBsQfnp7QLwHLVuN2p8RY+1vGJqm//M3G6fLytDcpX+ftVj
-         3deDUYefDAo8SRySdMcd754VbepADrAdMb5YaSBoDdmpUBqr7Dg1saYFaNx1lSl8pBa/
-         XUTF8GL7u9hdRNxvXoTn8ny/9VuhlOiSw32RHdrRHgszn28M9oexa94iTK+Srqv4WlFh
-         Nr4A==
-X-Gm-Message-State: AOAM532TBQvS4yP/BToXSQrdX8UAP7z5vtxfLirJmkOlr0LxjFpQL9dS
-        r63R17fwEYLdNzN2AQSZig24hg==
-X-Google-Smtp-Source: ABdhPJybnmCKGPtO8IqhqttCxQi89zitG0at/CJ7JkdPePmN1OOEdHERPm0zX6p8FrnaR53d4x9KXw==
-X-Received: by 2002:a17:90a:af97:: with SMTP id w23mr11768861pjq.162.1644255051050;
-        Mon, 07 Feb 2022 09:30:51 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id 38sm8878921pgm.37.2022.02.07.09.30.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 09:30:50 -0800 (PST)
-Date:   Mon, 7 Feb 2022 09:30:48 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 1/4] net: bridge: Add support for bridge port
- in locked mode
-Message-ID: <20220207093048.24bb6249@hermes.local>
-In-Reply-To: <20220207100742.15087-2-schultz.hans+netdev@gmail.com>
-References: <20220207100742.15087-1-schultz.hans+netdev@gmail.com>
-        <20220207100742.15087-2-schultz.hans+netdev@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-id:date:message-id;
+        bh=dro8+D+54p75Kt9gfft6Sy+zM9pUCrf8SmGosTvwQTA=;
+        b=Kc5xFuWn0VgQUGQWGKIvTzECwTioPvRiFUqAkEUV0feQW2jjQ+a6CU3w7C2GQa6n0M
+         9/qOOZak4SHkxU7AJqIrDWpMSOl2ynXe6PFhXo5NfcIaXoAFSJYOlKLi4KXW/JKZVdoq
+         hjm1vefMwOgZatyVWMmXaNaP5/UiXGclXdqVcmABVI1DkAzjgITNwCmDKKf4GhWmQq6v
+         yBOlBU8AEu/xJJA16tVWudeQbD6Dxrz+kyiGBDd3p6qX4dwrGfGiPqIb/e0zpQs1w2RH
+         uo4BouSMxSDGGeON1ZahWjvbv/vfmVG6qg3lwmVZ9jsV5a8YaVIbZ9eqvvftGq2NfEii
+         07rg==
+X-Gm-Message-State: AOAM5305K0hXXnFu/wNHlPvD9KolCmZ2DQrqiFZZISHvZIwtr1bw6jFm
+        OYVGdOhiSfjqw3l7t2zoXLtodvUOT1vjN0f16ZfV67luWESRZbzXfda9UEt8FcFNfDb5DUX1Wgp
+        ybedL8k4GMcgzCNSouic/GE9DU4XZ2R5oDw==
+X-Received: by 2002:a17:90b:3e81:: with SMTP id rj1mr23289pjb.190.1644255466625;
+        Mon, 07 Feb 2022 09:37:46 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwbV6qZP4XKXhyoWSmlfPqK18req2XbPtY3tS4tBjcZc0as6zyTLKntersaHJG30dc5R3r7Kw==
+X-Received: by 2002:a17:90b:3e81:: with SMTP id rj1mr23272pjb.190.1644255466399;
+        Mon, 07 Feb 2022 09:37:46 -0800 (PST)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id e28sm9029530pgm.23.2022.02.07.09.37.46
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 07 Feb 2022 09:37:46 -0800 (PST)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 9D36D6093D; Mon,  7 Feb 2022 09:37:45 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 9589EA0B26;
+        Mon,  7 Feb 2022 09:37:45 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+cc:     "Mahesh Bandewar
+        =?us-ascii?Q?=28=3D=3FUTF-8=3FB=3F4KSu4KS54KWH4KS2IOCkrOCkguCkoeClh+Ck?=
+        =?us-ascii?Q?tQ=3D=3D=3F=3D____=3D=3FUTF-8=3FB=3F4KS+4KSw=3F=3D=29?= " 
+        <maheshb@google.com>, Netdev <netdev@vger.kernel.org>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Mahesh Bandewar <mahesh@bandewar.net>
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+Subject: Re: [PATCH v3 net-next] bonding: pair enable_port with slave_arr_updates
+In-reply-to: <20220207090343.3af1ff59@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220204000653.364358-1-maheshb@google.com> <20792.1643935830@famine> <20220204195949.10e0ed50@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CAF2d9jjLdLjrOAwPR8JZNPTNyy44vxYei0X7NW_pKkzkCt5WSA@mail.gmail.com> <20220207090343.3af1ff59@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <8825.1644255465.1@famine>
+Date:   Mon, 07 Feb 2022 09:37:45 -0800
+Message-ID: <8826.1644255465@famine>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  7 Feb 2022 11:07:39 +0100
-Hans Schultz <schultz.hans@gmail.com> wrote:
+Jakub Kicinski <kuba@kernel.org> wrote:
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-> --- a/include/uapi/linux/if_link.h
-> +++ b/include/uapi/linux/if_link.h
-> @@ -532,6 +532,7 @@ enum {
->  	IFLA_BRPORT_GROUP_FWD_MASK,
->  	IFLA_BRPORT_NEIGH_SUPPRESS,
->  	IFLA_BRPORT_ISOLATED,
-> +	IFLA_BRPORT_LOCKED,
->  	IFLA_BRPORT_BACKUP_PORT,
->  	IFLA_BRPORT_MRP_RING_OPEN,
+>On Sun, 6 Feb 2022 21:52:11 -0800 Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=
+=A5=87=E0=A4=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=
+=A4=B0) wrote:
+>> On Fri, Feb 4, 2022 at 7:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>> > Quacks like a fix, no? It's tagged for net-next and no fixes tag,
+>> > is there a reason why?=20=20
+>>=20
+>> Though this fixes some corner cases, I couldn't find anything obvious
+>> that I can report as "fixes" hence decided otherwise. Does that make
+>> sense?
+>
+>So it's was not introduced in the refactorings which added
+>update_slave_arr? If the problem existed forever we can put:
+>
+>Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+>
+>it's just an indication how far back the backporting should go.
+>For anything older than oldest LTS (4.9) the exact tag probably
+>doesn't matter all that much.
 
-Adding new element in middle of enum causes them to be renumbered.
-That breaks the kernel ABI. Please add only at end.
+	I think the correct Fixes line would be the commit that
+introduces the array logic in the first place, which I believe is:
+
+Fixes: ee6377147409 ("bonding: Simplify the xmit function for modes that us=
+e xmit_hash")
+
+	This dates to 3.18.
+
+	-J
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
