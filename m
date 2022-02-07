@@ -2,70 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E52C14AC861
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 19:16:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DEEF4AC7C6
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 18:43:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230527AbiBGSQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 13:16:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44152 "EHLO
+        id S241556AbiBGRlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 12:41:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244883AbiBGSJK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 13:09:10 -0500
-X-Greylist: delayed 1789 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 10:09:08 PST
-Received: from smtpout-03.clustermail.de (smtpout-03.clustermail.de [IPv6:2a02:708:0:31::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5456CC0401DA
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 10:09:08 -0800 (PST)
-Received: from [10.0.0.7] (helo=frontend.clustermail.de)
-        by smtpout-03.clustermail.de with esmtp (Exim 4.94.2)
-        (envelope-from <Daniel.Klauer@gin.de>)
-        id 1nH7yg-0002uz-8d; Mon, 07 Feb 2022 18:39:07 +0100
-Received: from [217.6.33.237] (helo=Win2012-02.gin-domain.local)
-        by frontend.clustermail.de with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
-        (Exim 4.94.2)
-        (envelope-from <Daniel.Klauer@gin.de>)
-        id 1nH7yg-0004jF-3p; Mon, 07 Feb 2022 18:39:02 +0100
-Received: from [10.176.8.31] (10.176.8.31) by Win2012-02.gin-domain.local
- (10.160.128.12) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 7 Feb
- 2022 18:38:58 +0100
-Message-ID: <c96e84a5-9920-d41a-cee2-b6c06ae99820@gin.de>
-Date:   Mon, 7 Feb 2022 18:38:58 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net 1/7] net: dsa: mv88e6xxx: don't use devres for mdiobus
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S1384425AbiBGRkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 12:40:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50738C0401DA;
+        Mon,  7 Feb 2022 09:40:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1436BB80D3C;
+        Mon,  7 Feb 2022 17:40:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B0A5C004E1;
+        Mon,  7 Feb 2022 17:40:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644255640;
+        bh=KAxjunFgwNR4WL2HyqkAIrFtJZKYBhaVQTI5UOHggI0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SVU0U0Cn5X/zuO3OIIqYJ5g/syZyxnLrppTn7AQS/m7z6ZQwAcn2wsX0AULnIecQ3
+         hXVIOyTLToDEzF8cUaXm3R+NJIpOiZTjQMggQZtvV9r4RHe6FjCrSQxLiNvWIOoqiz
+         xJu5uqm7yRNDmVgkB9Q0TO9yDyhmas8vSsvF8LNTYawNczqndq0UMl+Oz1LSVnnecT
+         KefJSYw3dk7jlKh02vsqHwvw3yTQBaqkPrpTE0Yv0ivGkDXdNsD0drRZVkx3kgCMEx
+         2PcTkQTOxVUiJMO3XVbecwvqPj1xzTahKnpsHeQzlSFn44ZfxZH317SOORUH3WUD32
+         ptefOa1OmuNMQ==
+Date:   Mon, 7 Feb 2022 09:40:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        "DENG Qingfang" <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        "Richter, Rafael" <Rafael.Richter@gin.de>
-References: <20220207161553.579933-1-vladimir.oltean@nxp.com>
- <20220207161553.579933-2-vladimir.oltean@nxp.com>
-From:   Daniel Klauer <daniel.klauer@gin.de>
-In-Reply-To: <20220207161553.579933-2-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        <stable@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH net v2] net: phy: marvell: Fix RGMII Tx/Rx delays
+ setting in 88e1121-compatible PHYs
+Message-ID: <20220207094039.6a2b34df@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220205203932.26899-1-Pavel.Parkhomenko@baikalelectronics.ru>
+References: <96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru>
+        <20220205203932.26899-1-Pavel.Parkhomenko@baikalelectronics.ru>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.176.8.31]
-X-ClientProxiedBy: Win2012-02.gin-domain.local (10.160.128.12) To
- Win2012-02.gin-domain.local (10.160.128.12)
-X-EsetResult: clean, is OK
-X-EsetId: 37303A29342AAB5361776A
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -74,7 +63,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for this patch, with it the 5.16 kernel no longer BUGs on 
-shutdown on our board (LX2160A + mv88e6xxx).
+On Sat, 5 Feb 2022 23:39:32 +0300 Pavel Parkhomenko wrote:
+> It is mandatory for a software to issue a reset upon modifying RGMII
+> Receive Timing Control and RGMII Transmit Timing Control bit fields of MAC
+> Specific Control register 2 (page 2, register 21) otherwise the changes
+> won't be perceived by the PHY (the same is applicable for a lot of other
+> registers). Not setting the RGMII delays on the platforms that imply it'
+> being done on the PHY side will consequently cause the traffic loss. We
+> discovered that the denoted soft-reset is missing in the
+> m88e1121_config_aneg() method for the case if the RGMII delays are
+> modified but the MDIx polarity isn't changed or the auto-negotiation is
+> left enabled, thus causing the traffic loss on our platform with Marvell
+> Alaska 88E1510 installed. Let's fix that by issuing the soft-reset if the
+> delays have been actually set in the m88e1121_config_aneg_rgmii_delays()
+> method.
+> 
+> Fixes: d6ab93364734 ("net: phy: marvell: Avoid unnecessary soft reset")
+> Signed-off-by: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+> Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
+> Cc: stable@vger.kernel.org
+> 
+> ---
+> 
+> Link: https://lore.kernel.org/netdev/96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru/
+> Changelog v2:
+> - Add "net" suffix into the PATCH-clause of the subject.
+> - Cc the patch to the stable tree list.
+> - Rebase onto the latset netdev/net branch with the top commit 59085208e4a2
+> ("net: mscc: ocelot: fix all IP traffic getting trapped to CPU with PTP over IP")
 
-Tested-by: Daniel Klauer <daniel.klauer@gin.de>
+This patch is valid and waiting to be reviewed & applied, right?
+I see it's marked as Superseded in patchwork, but can't track down a v3.
