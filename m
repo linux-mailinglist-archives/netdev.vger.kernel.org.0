@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 576924AC27F
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 16:07:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA0CF4AC273
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 16:07:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392409AbiBGPFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 10:05:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54098 "EHLO
+        id S1380812AbiBGPFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 10:05:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442262AbiBGOsL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 09:48:11 -0500
+        with ESMTP id S1442263AbiBGOsM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 09:48:12 -0500
 Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A354C0401C1;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F73C0401C2;
         Mon,  7 Feb 2022 06:48:11 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 0080C2000D;
-        Mon,  7 Feb 2022 14:48:06 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 81D332000B;
+        Mon,  7 Feb 2022 14:48:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644245288;
+        t=1644245289;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=SY+L3+slPcpKWWJh7GnVXx86tNNdeMS/KrYWUhmZKvM=;
-        b=JQkBqzemwXIinqOfYHjTR0bOjiKe47RE1USmNq1ohRe/X1qopqo5RdNP7YhBsFh8OGrUbw
-        h4xIYQW8emkbM5FWhlQLuX29+8jSenGX1Ux5YZpq8ybKsjIBk4l6DxZR2+f2Mid7kYPVl3
-        UTw7nA/bcr5Aen1Dmp2uEEOpoS/2HeJm6eabxXvr0fsfaKOs+YNHQ0Js4x7duSbmwza+Ix
-        WRiLD9x2NxcgA1cF2Z9KmuyGFcG9gnYsk639SGDsPJSVmzogZ4Jw4s+jK+cDJ66CUp8kY0
-        dM7lytbZECMKwhSsOMwOr1ZtZ4MMqO4mFsMUaU9Smw4DS9JBPYne6lVPOwcLlA==
+        bh=vDrO3Tw9p4ErYkEAD53kXKEoAP/91adCzTKGwaYTCW8=;
+        b=VGX00/Vm5BDswDYKP7TX/wNl9Y7+cHgIgOK/2JvI4RHpvu+yx8nuNfLLztEwIe/QL6um/Y
+        4lJipH7R0KRte9ksBzGsbwMpBpW/ecmAkidWFUSFvRfLOOTK57FEc/siUTkUVv/ndFoRnB
+        tYA3oiwYXO6DK6LuuVLOm4g9daOexdZNut7ZiOstaizXjQpb7GIfISxqV3xvoURw5odU7S
+        QnkNrwBWk3ePgPJI9tr9sp6Hf0+nbGB6ZOvCu9AYo+Z3lqAG4IJ4YepMEOY85s4UhRT6Ft
+        6QkGdgAVwMdok0OG7X04aJJr0BD6eYqNrxd5yznBuqxdrii/xAtLRmqj1Eqh3w==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -41,9 +41,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v2 01/14] net: ieee802154: Move the logic restarting the queue upon transmission
-Date:   Mon,  7 Feb 2022 15:47:51 +0100
-Message-Id: <20220207144804.708118-2-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v2 02/14] net: mac802154: Create a transmit error helper
+Date:   Mon,  7 Feb 2022 15:47:52 +0100
+Message-Id: <20220207144804.708118-3-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220207144804.708118-1-miquel.raynal@bootlin.com>
 References: <20220207144804.708118-1-miquel.raynal@bootlin.com>
@@ -59,62 +59,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Create a new helper with the logic restarting the queue upon
-transmission, so that we can create a second path for error conditions
-which can reuse that code easily.
+So far there is only a helper for successful transmission, which led
+device drivers to implement their own handling in case of
+error. Unfortunately, we really need all the drivers to give the hand
+back to the core once they are done in order to be able to build a
+proper synchronous API. So let's create a _xmit_error() helper.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- net/mac802154/util.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+ include/net/mac802154.h | 10 ++++++++++
+ net/mac802154/util.c    | 10 ++++++++++
+ 2 files changed, 20 insertions(+)
 
+diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+index 2c3bbc6645ba..9fe8cfef1ba0 100644
+--- a/include/net/mac802154.h
++++ b/include/net/mac802154.h
+@@ -498,4 +498,14 @@ void ieee802154_stop_queue(struct ieee802154_hw *hw);
+ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
+ 			      bool ifs_handling);
+ 
++/**
++ * ieee802154_xmit_error - frame transmission failed
++ *
++ * @hw: pointer as obtained from ieee802154_alloc_hw().
++ * @skb: buffer for transmission
++ * @ifs_handling: indicate interframe space handling
++ */
++void ieee802154_xmit_error(struct ieee802154_hw *hw, struct sk_buff *skb,
++			   bool ifs_handling);
++
+ #endif /* NET_MAC802154_H */
 diff --git a/net/mac802154/util.c b/net/mac802154/util.c
-index f2078238718b..6f82418e9dec 100644
+index 6f82418e9dec..9016f634efba 100644
 --- a/net/mac802154/util.c
 +++ b/net/mac802154/util.c
-@@ -55,8 +55,9 @@ enum hrtimer_restart ieee802154_xmit_ifs_timer(struct hrtimer *timer)
- 	return HRTIMER_NORESTART;
- }
- 
--void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
--			      bool ifs_handling)
-+static void
-+ieee802154_wakeup_after_xmit_done(struct ieee802154_hw *hw, bool ifs_handling,
-+				  unsigned int skb_len)
- {
- 	if (ifs_handling) {
- 		struct ieee802154_local *local = hw_to_local(hw);
-@@ -72,7 +73,7 @@ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
- 		else
- 			max_sifs_size = IEEE802154_MAX_SIFS_FRAME_SIZE;
- 
--		if (skb->len > max_sifs_size)
-+		if (skb_len > max_sifs_size)
- 			hrtimer_start(&local->ifs_timer,
- 				      hw->phy->lifs_period * NSEC_PER_USEC,
- 				      HRTIMER_MODE_REL);
-@@ -83,8 +84,21 @@ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
- 	} else {
- 		ieee802154_wake_queue(hw);
- 	}
-+}
-+
-+static void ieee802154_xmit_end(struct ieee802154_hw *hw, bool ifs_handling,
-+				unsigned int skb_len)
-+{
-+	ieee802154_wakeup_after_xmit_done(hw, ifs_handling, skb_len);
-+}
-+
-+void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
-+			      bool ifs_handling)
-+{
-+	unsigned int skb_len = skb->len;
- 
- 	dev_consume_skb_any(skb);
-+	ieee802154_xmit_end(hw, ifs_handling, skb_len);
+@@ -102,6 +102,16 @@ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
  }
  EXPORT_SYMBOL(ieee802154_xmit_complete);
  
++void ieee802154_xmit_error(struct ieee802154_hw *hw, struct sk_buff *skb,
++			   bool ifs_handling)
++{
++	unsigned int skb_len = skb->len;
++
++	dev_kfree_skb_any(skb);
++	ieee802154_xmit_end(hw, ifs_handling, skb_len);
++}
++EXPORT_SYMBOL(ieee802154_xmit_error);
++
+ void ieee802154_stop_device(struct ieee802154_local *local)
+ {
+ 	flush_workqueue(local->workqueue);
 -- 
 2.27.0
 
