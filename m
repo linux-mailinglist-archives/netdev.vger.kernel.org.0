@@ -2,125 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13FC54ACB01
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 22:13:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C33984ACB2C
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 22:20:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237328AbiBGVNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 16:13:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41604 "EHLO
+        id S238222AbiBGVUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 16:20:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235998AbiBGVNL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 16:13:11 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09DFDC06173B;
-        Mon,  7 Feb 2022 13:13:11 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id l25so12550369eda.12;
-        Mon, 07 Feb 2022 13:13:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=zT3oKzS7n7TI0D8XaL63jjRHo7FI4UGfj4YRLtEmDxg=;
-        b=QR4Jc2mIcnWKHiYdoFEJ5zevhFJyEliAI5KBqZrUbY9rLUnmJuFmL5mMzVoJQveBx6
-         bQKjeiAEyGGkvvKddmCr4S0JElAz3tca5rUbg9We0fHqb6MJhOU3cbspzMY7eP5q3VSv
-         o73vYEdAF5+amj8IL/ESmg3zp2/x6vzygRMHArv14zYwJsjV/z+qZDGo04DAUZEt7TQd
-         5q3hEJf/+LcyDZG2f556d1kDc8HVzfvkdYmTUtYi/PtpFDb+zdv32TgeFqvgB0slNyHb
-         gPv40errXwoy706jxPdyeF8dAh3O2tPaKh7Iwga0jwATcDdGGJR0Fps0AfOmnEIO4Ccf
-         6UJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=zT3oKzS7n7TI0D8XaL63jjRHo7FI4UGfj4YRLtEmDxg=;
-        b=ikGdHmzinLGnY385TcpwaA+lPnsNXo6KkctiR0js8RBGuMWlegb5RE5BEn2F/hgwy9
-         MHtT5XI9yl3csswLJilozlziXqUtRmildx3vzy5cBMRaQQM17SJk6qCthBaARvzxYJ7y
-         A/Dq4oGxxTffDWHzQqqJq7cu+ZrH3jIpZsGUrimDnYVVJpeVZGESJ+R8qBv8p2FuPMtk
-         C6DAxmP30+cGV7zZJNXxf1uo1YqtL/9CcCJMmxZQXYc2TcYzG51JgPhTEuS3HLo0LaIC
-         GpD0/pX/CsIgiGwYrPw0DymEBClIkDSIHbyhywGmSD+Ck9KFCmaqk/ZM3rs/FmL9pFQn
-         lRRw==
-X-Gm-Message-State: AOAM530iHn7zNw9naD+t+fsplVwqCvucZBFTRtKF38cR5DhIIztJaFY8
-        ItRHgz7/Jx5Xh5tvwVXk+xJqBN66M7c=
-X-Google-Smtp-Source: ABdhPJwCC1iS4UP4hrkX15xYRf3fNO8oBBK+NyVHs/d2yncCD2u4zkXVuzWYG4uaZpq0AanrIwNZmg==
-X-Received: by 2002:a05:6402:254a:: with SMTP id l10mr1340361edb.318.1644268389476;
-        Mon, 07 Feb 2022 13:13:09 -0800 (PST)
-Received: from debian64.daheim (pd9e292b6.dip0.t-ipconnect.de. [217.226.146.182])
-        by smtp.gmail.com with ESMTPSA id z6sm4058135ejd.96.2022.02.07.13.13.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 13:13:08 -0800 (PST)
-Received: from localhost.daheim ([127.0.0.1])
-        by debian64.daheim with esmtp (Exim 4.95)
-        (envelope-from <chunkeey@gmail.com>)
-        id 1nHAN7-001CUZ-Os;
-        Mon, 07 Feb 2022 22:13:08 +0100
-Message-ID: <feb446cd-e935-6fc4-7f3c-d7ab21d18d8e@gmail.com>
-Date:   Mon, 7 Feb 2022 22:13:08 +0100
+        with ESMTP id S238009AbiBGVUL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 16:20:11 -0500
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD30C06173B
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 13:20:09 -0800 (PST)
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nHBQa-000HoW-37; Mon, 07 Feb 2022 21:20:04 +0000
+Date:   Mon, 7 Feb 2022 21:20:04 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, borisp@nvidia.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net,
+        vfedorenko@novek.ru, kernel-team@fb.com, axboe@kernel.dk
+Subject: Re: [PATCH net-next] tls: cap the output scatter list to something
+ reasonable
+Message-ID: <YgGNBMvSCcmLgTAJ@zeniv-ca.linux.org.uk>
+References: <20220202222031.2174584-1-kuba@kernel.org>
+ <YgFTsot6DUQptjWk@zeniv-ca.linux.org.uk>
+ <20220207092619.08754453@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [BUG] intersil: p54: possible deadlock in p54_remove_interface()
- and p54_stop()
-Content-Language: en-US
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>, chunkeey@googlemail.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <fb543659-f69d-242f-b18a-69dd8b8b5ca1@gmail.com>
-From:   Christian Lamparter <chunkeey@gmail.com>
-In-Reply-To: <fb543659-f69d-242f-b18a-69dd8b8b5ca1@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207092619.08754453@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On 07/02/2022 16:31, Jia-Ju Bai wrote:
-> Hello,
+On Mon, Feb 07, 2022 at 09:26:19AM -0800, Jakub Kicinski wrote:
+> On Mon, 7 Feb 2022 17:15:30 +0000 Al Viro wrote:
+> > On Wed, Feb 02, 2022 at 02:20:31PM -0800, Jakub Kicinski wrote:
+> > > TLS recvmsg() passes user pages as destination for decrypt.
+> > > The decrypt operation is repeated record by record, each
+> > > record being 16kB, max. TLS allocates an sg_table and uses
+> > > iov_iter_get_pages() to populate it with enough pages to
+> > > fit the decrypted record.
+> > > 
+> > > Even though we decrypt a single message at a time we size
+> > > the sg_table based on the entire length of the iovec.
+> > > This leads to unnecessarily large allocations, risking
+> > > triggering OOM conditions.
+> > > 
+> > > Use iov_iter_truncate() / iov_iter_reexpand() to construct
+> > > a "capped" version of iov_iter_npages(). Alternatively we
+> > > could parametrize iov_iter_npages() to take the size as
+> > > arg instead of using i->count, or do something else..  
+> > 
+> > Er...  Would simply passing 16384/PAGE_SIZE instead of MAX_INT work
+> > for your purposes?
 > 
-> My static analysis tool reports a possible deadlock in the p54 driver in Linux 5.16:
-> 
-> p54_remove_interface()
->    mutex_lock(&priv->conf_mutex); --> Line 262 (Lock A)
-> wait_for_completion_interruptible_timeout(&priv->beacon_comp, HZ); --> Line 271 (Wait X)
-> 
-> p54_stop()
->    mutex_lock(&priv->conf_mutex); --> Line 208 (Lock A)
->    p54p_stop() (call via priv->stop)
->      p54_free_skb()
->        p54_tx_qos_accounting_free()
->          complete(&priv->beacon_comp); --> Line 230 (Wake X)
-> 
-> When p54_remove_interface() is executed, "Wait X" is performed by holding "Lock A". 
-> If p54_stop() is executed at this time, "Wake X" cannot be performed to wake 
-> up "Wait X" in p54_remove_interface(), because "Lock A" has been already hold by
-> p54_remove_interface(), causing a possible deadlock.
->
-> I find that "Wait X" is performed with a timeout, to relieve the possible deadlock;
-> but I think this timeout can cause inefficient execution.
-> 
-> I am not quite sure whether this possible problem is real and how to fix it if it is real.
-> Any feedback would be appreciated, thanks :)
+> The last arg is maxpages, I want maxbytes, no?
 
-This has been such a long long time ago. But I think I found
-the right documentation entry for you:
+What's the point of pass maxpages as argument to that, seeing that
+you ignore the value you've got?  I'm just trying to understand what
+semantics do you really intend for that thing.
 
-<https://www.kernel.org/doc/html/v5.16/driver-api/80211/mac80211.html> (scroll down a bit)
-| remove_interface
-| 	Notifies a driver that an interface is going down.
-| 	>>The stop callback is called after this if it is the last interface
-|	and no monitor interfaces are present.<<
-|	(it goes on a bit. But I don't think there's anything important left)
+Another thing: looking at that bunch now, for pipe-backed ones
+that won't work.  It's a bug, strictly speaking, even though
+the actual primitives that grab those pages *will* honour the
+truncation/reexpand.
 
-The documentation tells you not to worry. p54_stop() and p54_remove_interface()
-are being serialized by mac80211.
+Frankly, I wonder if we would be better off with making iov_iter_npages()
+a wrapper for that one, passing SIZE_MAX as maxbytes.  How does the following
+(completely untested) look for you?
 
-Cheers,
-Christian
+diff --git a/include/linux/uio.h b/include/linux/uio.h
+index 1198a2bfc9bfc..07e4ebae7c6fa 100644
+--- a/include/linux/uio.h
++++ b/include/linux/uio.h
+@@ -236,11 +236,16 @@ ssize_t iov_iter_get_pages(struct iov_iter *i, struct page **pages,
+ 			size_t maxsize, unsigned maxpages, size_t *start);
+ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i, struct page ***pages,
+ 			size_t maxsize, size_t *start);
+-int iov_iter_npages(const struct iov_iter *i, int maxpages);
++int __iov_iter_npages(const struct iov_iter *i, size_t maxsize, int maxpages);
+ void iov_iter_restore(struct iov_iter *i, struct iov_iter_state *state);
+ 
+ const void *dup_iter(struct iov_iter *new, struct iov_iter *old, gfp_t flags);
+ 
++static inline int iov_iter_npages(const struct iov_iter *i, int maxpages)
++{
++	return __iov_iter_npages(i, SIZE_MAX, maxpages);
++}
++
+ static inline size_t iov_iter_count(const struct iov_iter *i)
+ {
+ 	return i->count;
+diff --git a/lib/iov_iter.c b/lib/iov_iter.c
+index b0e0acdf96c15..35a86d68f7073 100644
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -1763,9 +1763,9 @@ size_t hash_and_copy_to_iter(const void *addr, size_t bytes, void *hashp,
+ }
+ EXPORT_SYMBOL(hash_and_copy_to_iter);
+ 
+-static int iov_npages(const struct iov_iter *i, int maxpages)
++static int iov_npages(const struct iov_iter *i, size_t size, int maxpages)
+ {
+-	size_t skip = i->iov_offset, size = i->count;
++	size_t skip = i->iov_offset;
+ 	const struct iovec *p;
+ 	int npages = 0;
+ 
+@@ -1783,9 +1783,9 @@ static int iov_npages(const struct iov_iter *i, int maxpages)
+ 	return npages;
+ }
+ 
+-static int bvec_npages(const struct iov_iter *i, int maxpages)
++static int bvec_npages(const struct iov_iter *i, size_t size, int maxpages)
+ {
+-	size_t skip = i->iov_offset, size = i->count;
++	size_t skip = i->iov_offset;
+ 	const struct bio_vec *p;
+ 	int npages = 0;
+ 
+@@ -1801,36 +1801,43 @@ static int bvec_npages(const struct iov_iter *i, int maxpages)
+ 	return npages;
+ }
+ 
+-int iov_iter_npages(const struct iov_iter *i, int maxpages)
++int __iov_iter_npages(const struct iov_iter *i, size_t maxsize, int maxpages)
+ {
+-	if (unlikely(!i->count))
++	if (i->count < maxsize)
++		maxsize = i->count;
++	if (unlikely(!maxsize))
+ 		return 0;
+ 	/* iovec and kvec have identical layouts */
+ 	if (likely(iter_is_iovec(i) || iov_iter_is_kvec(i)))
+-		return iov_npages(i, maxpages);
++		return iov_npages(i, maxsize, maxpages);
+ 	if (iov_iter_is_bvec(i))
+-		return bvec_npages(i, maxpages);
++		return bvec_npages(i, maxsize, maxpages);
+ 	if (iov_iter_is_pipe(i)) {
+ 		unsigned int iter_head;
+ 		int npages;
+ 		size_t off;
++		size_t n;
+ 
+ 		if (!sanity(i))
+ 			return 0;
+ 
+ 		data_start(i, &iter_head, &off);
++		n = DIV_ROUND_UP(off + maxsize, PAGE_SIZE);
++		if (maxpages > n)
++			maxpages = n;
++
+ 		/* some of this one + all after this one */
+ 		npages = pipe_space_for_user(iter_head, i->pipe->tail, i->pipe);
+ 		return min(npages, maxpages);
+ 	}
+ 	if (iov_iter_is_xarray(i)) {
+ 		unsigned offset = (i->xarray_start + i->iov_offset) % PAGE_SIZE;
+-		int npages = DIV_ROUND_UP(offset + i->count, PAGE_SIZE);
++		int npages = DIV_ROUND_UP(offset + maxsize, PAGE_SIZE);
+ 		return min(npages, maxpages);
+ 	}
+ 	return 0;
+ }
+-EXPORT_SYMBOL(iov_iter_npages);
++EXPORT_SYMBOL(__iov_iter_npages);
+ 
+ const void *dup_iter(struct iov_iter *new, struct iov_iter *old, gfp_t flags)
+ {
