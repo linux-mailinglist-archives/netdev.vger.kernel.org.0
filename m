@@ -2,168 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02BC84AB4EE
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 07:41:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 106644AB585
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 08:05:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233796AbiBGGbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 01:31:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58702 "EHLO
+        id S230254AbiBGHEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 02:04:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349381AbiBGGYa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 01:24:30 -0500
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9279BC043184;
-        Sun,  6 Feb 2022 22:24:27 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R581e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V3le4ps_1644215064;
-Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V3le4ps_1644215064)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 07 Feb 2022 14:24:25 +0800
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        "D. Wythe" <alibuda@linux.alibaba.com>
-Subject: [PATCH net-next v4 3/3] net/smc: Fallback when handshake workqueue congested
-Date:   Mon,  7 Feb 2022 14:24:15 +0800
-Message-Id: <6deeca64bfecbd01d724092a1a2c91ca8bce3ce0.1644214112.git.alibuda@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <cover.1644214112.git.alibuda@linux.alibaba.com>
-References: <cover.1644214112.git.alibuda@linux.alibaba.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S236248AbiBGGpT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 01:45:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A9D3C043181
+        for <netdev@vger.kernel.org>; Sun,  6 Feb 2022 22:45:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644216317;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JEUURs9DbKRojqtjER3XfuZTqVH5n0Bbt2yoRWooa6A=;
+        b=YOx7Aild7cTu7/JAsa0ZcFNMKU5uANIsCqKp9HezOBfdzP87Au48J34/VzL2vMycAgAj7C
+        N4TiM+vCVMKtxOOuEtDXx7u9uzO/MJ8JAubHbyUGhs5w87xcbt+l5HH1xGMm8fJ/GdGNjz
+        MOHSF4nnBa05AlO2DG/0TWu1ofvb7K0=
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
+ [209.85.214.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-637-iR5tF7UPNf6a9eEIOD03Sg-1; Mon, 07 Feb 2022 01:45:12 -0500
+X-MC-Unique: iR5tF7UPNf6a9eEIOD03Sg-1
+Received: by mail-pl1-f197.google.com with SMTP id p7-20020a1709026b8700b0014a8d8fbf6fso4847659plk.23
+        for <netdev@vger.kernel.org>; Sun, 06 Feb 2022 22:45:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JEUURs9DbKRojqtjER3XfuZTqVH5n0Bbt2yoRWooa6A=;
+        b=dC/s4pCG5KE8EJcdrdOz6ob1OcRYMYJ8FQ7dqr6WE+oJIHL8QdytL1E62esmXSSUyy
+         KT+VqKzpT67eg6LCHd0TM4OkuFS7v1XrimhAw4YiMQCEiLUARdWLljV/vWlkwO1q4k2j
+         HZGUwVbLfTFu9OcazWmev9BsbGS0w+5wJizigm55pHd12P02QzZvqeqBhPVN7WrLGLn0
+         XTesuj5FMiVUk1A6fIeJUIR51KWjqKXSUSpFvrl7LeP6NZlnFv8lB1YzbGQbQlVnRkze
+         FZt3wDdGgRpAh/5Od2gY3rGRzwZHPB/mrtQQFveFQdsaFSFdCRhHVyqfgHckkOUNs75i
+         gmSQ==
+X-Gm-Message-State: AOAM532PO4mBaQu7Ske5Tpu138Vkk9onYe29PE5YNNTXR6Xz8dWrCXP2
+        nQnBnQdwzstRQULurDwiYGEfDMWbpOiJ68FSYXAsE4evz2J1KsDrup9OXNNk+tWOzewTyVe+Ukf
+        23Up63Pub+iaXeW8/
+X-Received: by 2002:a63:6b42:: with SMTP id g63mr8303758pgc.602.1644216311796;
+        Sun, 06 Feb 2022 22:45:11 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxtYZ8GxxwFMH2BvLkRE/V/ozYLXcbkTgERq0ID8ESIJ580AADyl/hLYYCiSuS83tm2veY2YQ==
+X-Received: by 2002:a63:6b42:: with SMTP id g63mr8303744pgc.602.1644216311494;
+        Sun, 06 Feb 2022 22:45:11 -0800 (PST)
+Received: from [10.72.13.253] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id 17sm11002163pfl.175.2022.02.06.22.45.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Feb 2022 22:45:10 -0800 (PST)
+Message-ID: <6e3efe44-3ca8-acfa-58a6-c0fc150846e7@redhat.com>
+Date:   Mon, 7 Feb 2022 14:45:02 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH v3 03/17] virtio: queue_reset: struct virtio_config_ops
+ add callbacks for queue_reset
+Content-Language: en-US
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
+References: <20220126073533.44994-1-xuanzhuo@linux.alibaba.com>
+ <20220126073533.44994-4-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220126073533.44994-4-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-This patch intends to provide a mechanism to allow automatic fallback to
-TCP according to the pressure of SMC handshake process. At present,
-frequent visits will cause the incoming connections to be backlogged in
-SMC handshake queue, raise the connections established time. Which is
-quite unacceptable for those applications who base on short lived
-connections.
+在 2022/1/26 下午3:35, Xuan Zhuo 写道:
+> Performing reset on a queue is divided into two steps:
+>
+> 1. reset_vq: reset one vq
+> 2. enable_reset_vq: re-enable the reset queue
+>
+> In the first step, these tasks will be completed:
+>      1. notify the hardware queue to reset
+>      2. recycle the buffer from vq
+>      3. release the ring of the vq
+>
+> The second step is similar to find vqs,
 
-It should be optional for applications that don't care about connection
-established time. For now, this patch only provides the switch at the
-compile time.
 
-There are two ways to implement this mechanism:
+Not sure, since find_vqs will usually try to allocate interrupts.
 
-1. Fallback when TCP established.
-2. Fallback before TCP established.
 
-In the first way, we need to wait and receive CLC messages that the
-client will potentially send, and then actively reply with a decline
-message, in a sense, which is also a sort of SMC handshake, affect the
-connections established time on its way.
+>   passing parameters callback and
+> name, etc. Based on the original vq, the ring is re-allocated and
+> configured to the backend.
 
-In the second way, the only problem is that we need to inject SMC logic
-into TCP when it is about to reply the incoming SYN, since we already do
-that, it's seems not a problem anymore. And advantage is obvious, few
-additional processes are required to complete the fallback.
 
-This patch use the second way.
+I wonder whether we really have such requirement.
 
-Link: https://lore.kernel.org/all/1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com/
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
----
- include/linux/tcp.h  |  1 +
- net/ipv4/tcp_input.c |  3 ++-
- net/smc/Kconfig      | 12 ++++++++++++
- net/smc/af_smc.c     | 22 ++++++++++++++++++++++
- 4 files changed, 37 insertions(+), 1 deletion(-)
+For example, do we really have a use case that may change:
 
-diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-index 78b91bb..1c4ae5d 100644
---- a/include/linux/tcp.h
-+++ b/include/linux/tcp.h
-@@ -394,6 +394,7 @@ struct tcp_sock {
- 	bool	is_mptcp;
- #endif
- #if IS_ENABLED(CONFIG_SMC)
-+	bool	(*smc_in_limited)(const struct sock *sk);
- 	bool	syn_smc;	/* SYN includes SMC */
- #endif
- 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index dc49a3d..9890de9 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6701,7 +6701,8 @@ static void tcp_openreq_init(struct request_sock *req,
- 	ireq->ir_num = ntohs(tcp_hdr(skb)->dest);
- 	ireq->ir_mark = inet_request_mark(sk, skb);
- #if IS_ENABLED(CONFIG_SMC)
--	ireq->smc_ok = rx_opt->smc_ok;
-+	ireq->smc_ok = rx_opt->smc_ok && !(tcp_sk(sk)->smc_in_limited &&
-+			tcp_sk(sk)->smc_in_limited(sk));
- #endif
- }
- 
-diff --git a/net/smc/Kconfig b/net/smc/Kconfig
-index 1ab3c5a..a4e1713 100644
---- a/net/smc/Kconfig
-+++ b/net/smc/Kconfig
-@@ -19,3 +19,15 @@ config SMC_DIAG
- 	  smcss.
- 
- 	  if unsure, say Y.
-+
-+if SMC
-+
-+config SMC_AUTO_FALLBACK
-+	bool "SMC: automatic fallback to TCP"
-+	default y
-+	help
-+	  Allow automatic fallback to TCP accroding to the pressure of SMC-R
-+	  handshake process.
-+
-+	  If that's not what you except or unsure, say N.
-+endif
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 697573f..46f86a2 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -101,6 +101,24 @@ static struct sock *smc_tcp_syn_recv_sock(const struct sock *sk, struct sk_buff
- 	return NULL;
- }
- 
-+#if IS_ENABLED(CONFIG_SMC_AUTO_FALLBACK)
-+static bool smc_is_in_limited(const struct sock *sk)
-+{
-+	const struct smc_sock *smc;
-+
-+	smc = (const struct smc_sock *)
-+		((uintptr_t)sk->sk_user_data & ~SK_USER_DATA_NOCOPY);
-+
-+	if (!smc)
-+		return true;
-+
-+	if (workqueue_congested(WORK_CPU_UNBOUND, smc_hs_wq))
-+		return true;
-+
-+	return false;
-+}
-+#endif
-+
- static struct smc_hashinfo smc_v4_hashinfo = {
- 	.lock = __RW_LOCK_UNLOCKED(smc_v4_hashinfo.lock),
- };
-@@ -2206,6 +2224,10 @@ static int smc_listen(struct socket *sock, int backlog)
- 
- 	inet_csk(smc->clcsock->sk)->icsk_af_ops = &smc->af_ops;
- 
-+#if IS_ENABLED(CONFIG_SMC_AUTO_FALLBACK)
-+	tcp_sk(smc->clcsock->sk)->smc_in_limited = smc_is_in_limited;
-+#endif
-+
- 	rc = kernel_listen(smc->clcsock, backlog);
- 	if (rc) {
- 		smc->clcsock->sk->sk_data_ready = smc->clcsk_data_ready;
--- 
-1.8.3.1
+vq callback, ctx, ring_num or even re-create the virtqueue?
+
+Thanks
+
+
+>
+> So add two callbacks reset_vq, enable_reset_vq to struct
+> virtio_config_ops.
+>
+> Add a structure for passing parameters. This will facilitate subsequent
+> expansion of the parameters of enable reset vq.
+> There is currently only one default extended parameter ring_num.
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>   include/linux/virtio_config.h | 43 ++++++++++++++++++++++++++++++++++-
+>   1 file changed, 42 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
+> index 4d107ad31149..51dd8461d1b6 100644
+> --- a/include/linux/virtio_config.h
+> +++ b/include/linux/virtio_config.h
+> @@ -16,6 +16,44 @@ struct virtio_shm_region {
+>   	u64 len;
+>   };
+>   
+> +typedef void vq_callback_t(struct virtqueue *);
+> +
+> +/* virtio_reset_vq: specify parameters for queue_reset
+> + *
+> + *	vdev: the device
+> + *	queue_index: the queue index
+> + *
+> + *	free_unused_cb: callback to free unused bufs
+> + *	data: used by free_unused_cb
+> + *
+> + *	callback: callback for the virtqueue, NULL for vq that do not need a
+> + *	          callback
+> + *	name: virtqueue names (mainly for debugging), NULL for vq unused by
+> + *	      driver
+> + *	ctx: ctx
+> + *
+> + *	ring_num: specify ring num for the vq to be re-enabled. 0 means use the
+> + *	          default value. MUST be a power of 2.
+> + */
+> +struct virtio_reset_vq;
+> +typedef void vq_reset_callback_t(struct virtio_reset_vq *param, void *buf);
+> +struct virtio_reset_vq {
+> +	struct virtio_device *vdev;
+> +	u16 queue_index;
+> +
+> +	/* reset vq param */
+> +	vq_reset_callback_t *free_unused_cb;
+> +	void *data;
+> +
+> +	/* enable reset vq param */
+> +	vq_callback_t *callback;
+> +	const char *name;
+> +	const bool *ctx;
+> +
+> +	/* ext enable reset vq param */
+> +	u16 ring_num;
+> +};
+> +
+>   /**
+>    * virtio_config_ops - operations for configuring a virtio device
+>    * Note: Do not assume that a transport implements all of the operations
+> @@ -74,8 +112,9 @@ struct virtio_shm_region {
+>    * @set_vq_affinity: set the affinity for a virtqueue (optional).
+>    * @get_vq_affinity: get the affinity for a virtqueue (optional).
+>    * @get_shm_region: get a shared memory region based on the index.
+> + * @reset_vq: reset a queue individually
+> + * @enable_reset_vq: enable a reset queue
+>    */
+> -typedef void vq_callback_t(struct virtqueue *);
+>   struct virtio_config_ops {
+>   	void (*enable_cbs)(struct virtio_device *vdev);
+>   	void (*get)(struct virtio_device *vdev, unsigned offset,
+> @@ -100,6 +139,8 @@ struct virtio_config_ops {
+>   			int index);
+>   	bool (*get_shm_region)(struct virtio_device *vdev,
+>   			       struct virtio_shm_region *region, u8 id);
+> +	int (*reset_vq)(struct virtio_reset_vq *param);
+> +	struct virtqueue *(*enable_reset_vq)(struct virtio_reset_vq *param);
+>   };
+>   
+>   /* If driver didn't advertise the feature, it will never appear. */
 
