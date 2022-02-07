@@ -2,63 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC5DB4AC764
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 18:28:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F1A44AC758
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 18:28:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377401AbiBGR1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 12:27:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43048 "EHLO
+        id S1359713AbiBGR1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 12:27:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238630AbiBGRSd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 12:18:33 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD51C0401D9
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 09:18:33 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id y5so13171200pfe.4
-        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 09:18:33 -0800 (PST)
+        with ESMTP id S239156AbiBGRSj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 12:18:39 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F23C0401D9
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 09:18:35 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id i186so14154071pfe.0
+        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 09:18:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=86erZqV65XT7HOKTwd7EuyR31bW9wtxCPKCH1CEIE5E=;
-        b=gkLqfuWhQQidwxSdWh4J62YGSEzZJeqIMM57SzeZpJp57/v6n9neIcUHdE98kdaJKq
-         t2zwHfG459QWSdT3h49R172jdHv0YzHTcOL64w9N49nLGioas7oeDARVBGQ3LOThKD8n
-         JBgT4Q/g9lCjSHCZXTwg5syAP+YsRksPPiF6MpmAhoKjjU958LzM/g6zPkLA4elK0JMU
-         JClcGH7LpE0hDhQn6e/FnmwLlAWE2/xHm/kcvxXHAfmwR+Hwiu2FjXX90jMRyj0TXWj8
-         dI+yKeY9QiP09bJi/s99zHRG3A/d+UcmTPxmS8C4s8k+mtQso05uMaYXNMuQaeUgD70L
-         N3pg==
+        bh=ZWsV/Q/92/ziNxuz2yNYUYJtM7LiQqqzaRRVAP5luY0=;
+        b=MarH6reczKbc/XLSLlzrSd5OzTyWDR8nYgQ74vrSTzPE+hRL3B5i3ISrsJNqNfBVZb
+         FZEv5GWtuxy3RTeXKd102LKkXLv0eTV6v/KmzdExhtH5j2uIxLpUWF/QbTIDJlcmlUJ2
+         rsasuxNSbAc8prD/1OEsFvHGzu/Qt7w5IFkYF9rrPtonqs07FgsFiFOj/ThDmCsr66yD
+         Rn9ux4/ElKhQgAzO0S5vsUgYGf284RVJpsSRbjC1ejdSlPtvCJKCtDPeSGO4V/HXsM2Q
+         JS91gKdcwnqT6V/F/Vmhx6N25SpC+E5YBOArncbndzq4579UmFYC81+ZwuezT1xIbHvP
+         ONmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=86erZqV65XT7HOKTwd7EuyR31bW9wtxCPKCH1CEIE5E=;
-        b=kWkkX47/eX8//Q53eJGun/otH8Utvvi88n00d6YCjcfmxV/Ogi2+CQ+sP9LYaMCg3z
-         fg4FLcJkV/IrkmKri33qxjVMQ6IvTlFzJheFVeOicCIQsgZMJ10vaYzvuwVySDAGW07s
-         unOHSnlbJ/kqnTfh4rYwas/kr8+2DqOM1I5qaRYMwrlrsbH/xQB1vvu0BU/opJHYyJ/f
-         2r6jte8JFFTyaIimoW9Or/LA6k8eyvW6FOZH3MYxcpa5JmiGsXVgvWlwPDOFCFOT20bg
-         gG6B4G+FYKWJyG6ky+AE/d2piiXdAH6a1oDc6zbK/w3LmpDp0GGBqlHbBUAQzzVxK4po
-         YZqg==
-X-Gm-Message-State: AOAM532pDDjQCp/C2oKAXwSSFRbigfWq++Owu96bxt08FJLkvu54WAY+
-        yP+EVK/NCQ11NOhCrRWOVFA=
-X-Google-Smtp-Source: ABdhPJyErN2zyhcXnzpgMf5RblAPyk1bsfuDVfDXZChp12EqWl4WlqrkwwuuAG0Pb/u3JcZ6axBjhw==
-X-Received: by 2002:a63:1043:: with SMTP id 3mr343801pgq.16.1644254312584;
-        Mon, 07 Feb 2022 09:18:32 -0800 (PST)
+        bh=ZWsV/Q/92/ziNxuz2yNYUYJtM7LiQqqzaRRVAP5luY0=;
+        b=PIGRtnB1ZZ07qXILIlvZpqh2vo99HTBJY9X+oE1fsSTLKDvwr3i9a7JG65eDIk1MRb
+         g6sGLwBObMCP1V2JkmmDVplW0RDBoMNezTEzh4T2axdq9gKTKT4lpaSX/RiCkxTpN/8c
+         +WvvSAOHE/J+5TMf3IZEtfuTOrE+uaEuo82d56QCtvH9N8x9vK6XL/CKO2NfyRjB2x7k
+         yAAmHRzWYRepnbS/L0K5mq8KmsK8oZYwOGsEGPBgEAi5MlO0MAM+wq/RCaV5HPZUnmse
+         pGHDRmL+cq3FN4uIcDBaf+rZAPjBNPbVEDNS6EzId2bnADN8su6i++G4lTlmpf8Yj4FN
+         lB5A==
+X-Gm-Message-State: AOAM533JielXdK2mlxwwbrSO8FVSmJ4s6OMTmSqY8YeZLhW1ih/Xaiu2
+        SuTxyrTFxDz1sOk3AIkZyuQ=
+X-Google-Smtp-Source: ABdhPJy5H4QWWzqwskoPRt17RU7L8CGFN9skqT+K3ztM0ALx2hv7Tw1OATHuUjOhy278DZ1Clt9SQQ==
+X-Received: by 2002:a63:e84f:: with SMTP id a15mr311846pgk.191.1644254315545;
+        Mon, 07 Feb 2022 09:18:35 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:6dea:218:38e6:9e0])
-        by smtp.gmail.com with ESMTPSA id lr8sm24415156pjb.11.2022.02.07.09.18.31
+        by smtp.gmail.com with ESMTPSA id lr8sm24415156pjb.11.2022.02.07.09.18.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 09:18:32 -0800 (PST)
+        Mon, 07 Feb 2022 09:18:35 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: [PATCH net-next 10/11] bonding: switch bond_net_exit() to batch mode
-Date:   Mon,  7 Feb 2022 09:17:55 -0800
-Message-Id: <20220207171756.1304544-11-eric.dumazet@gmail.com>
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next 11/11] net: remove default_device_exit()
+Date:   Mon,  7 Feb 2022 09:17:56 -0800
+Message-Id: <20220207171756.1304544-12-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 In-Reply-To: <20220207171756.1304544-1-eric.dumazet@gmail.com>
 References: <20220207171756.1304544-1-eric.dumazet@gmail.com>
@@ -76,84 +73,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-cleanup_net() is competing with other rtnl users.
+For some reason default_device_ops kept two exit method:
 
-Batching bond_net_exit() factorizes all rtnl acquistions
-to a single one, giving chance for cleanup_net()
-to progress much faster, holding rtnl a bit longer.
+1) default_device_exit() is called for each netns being dismantled in
+a cleanup_net() round. This acquires rtnl for each invocation.
+
+2) default_device_exit_batch() is called once with the list of all netns
+int the batch, allowing for a single rtnl invocation.
+
+Get rid of the .exit() method to handle the logic from
+default_device_exit_batch(), to decrease the number of rtnl acquisition
+to one.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Cc: Veaceslav Falico <vfalico@gmail.com>
-Cc: Andy Gospodarek <andy@greyhouse.net>
 ---
- drivers/net/bonding/bond_main.c   | 27 +++++++++++++++++++--------
- drivers/net/bonding/bond_procfs.c |  1 -
- 2 files changed, 19 insertions(+), 9 deletions(-)
+ net/core/dev.c | 22 ++++++++++++++--------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 238b56d77c369d9595d55bc681c2191c49dd2905..617c2bf8c5a7f71ece82a20dbd3a9740b928ef6a 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -6048,27 +6048,38 @@ static int __net_init bond_net_init(struct net *net)
- 	return 0;
- }
- 
--static void __net_exit bond_net_exit(struct net *net)
-+static void __net_exit bond_net_exit_batch(struct list_head *net_list)
- {
--	struct bond_net *bn = net_generic(net, bond_net_id);
--	struct bonding *bond, *tmp_bond;
-+	struct bond_net *bn;
-+	struct net *net;
- 	LIST_HEAD(list);
- 
--	bond_destroy_sysfs(bn);
-+	list_for_each_entry(net, net_list, exit_list) {
-+		bn = net_generic(net, bond_net_id);
-+		bond_destroy_sysfs(bn);
-+	}
- 
- 	/* Kill off any bonds created after unregistering bond rtnl ops */
- 	rtnl_lock();
--	list_for_each_entry_safe(bond, tmp_bond, &bn->dev_list, bond_list)
--		unregister_netdevice_queue(bond->dev, &list);
-+	list_for_each_entry(net, net_list, exit_list) {
-+		struct bonding *bond, *tmp_bond;
-+
-+		bn = net_generic(net, bond_net_id);
-+		list_for_each_entry_safe(bond, tmp_bond, &bn->dev_list, bond_list)
-+			unregister_netdevice_queue(bond->dev, &list);
-+	}
- 	unregister_netdevice_many(&list);
- 	rtnl_unlock();
- 
--	bond_destroy_proc_dir(bn);
-+	list_for_each_entry(net, net_list, exit_list) {
-+		bn = net_generic(net, bond_net_id);
-+		bond_destroy_proc_dir(bn);
-+	}
- }
- 
- static struct pernet_operations bond_net_ops = {
- 	.init = bond_net_init,
--	.exit = bond_net_exit,
-+	.exit_batch = bond_net_exit_batch,
- 	.id   = &bond_net_id,
- 	.size = sizeof(struct bond_net),
+diff --git a/net/core/dev.c b/net/core/dev.c
+index f662c6a7d7b49b836a05efc74aeffc7fc9e4e147..e39c2897f6475dfa77c478603cfced76ba0b9078 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10848,14 +10848,14 @@ static struct pernet_operations __net_initdata netdev_net_ops = {
+ 	.exit = netdev_exit,
  };
-diff --git a/drivers/net/bonding/bond_procfs.c b/drivers/net/bonding/bond_procfs.c
-index 46b150e6289ef4607c8ddbcd2b833ff4dd64cc9b..cfe37be42be4e0edb218c45127a378b53e487df8 100644
---- a/drivers/net/bonding/bond_procfs.c
-+++ b/drivers/net/bonding/bond_procfs.c
-@@ -307,7 +307,6 @@ void __net_init bond_create_proc_dir(struct bond_net *bn)
+ 
+-static void __net_exit default_device_exit(struct net *net)
++static void __net_exit default_device_exit_net(struct net *net)
+ {
+ 	struct net_device *dev, *aux;
+ 	/*
+ 	 * Push all migratable network devices back to the
+ 	 * initial network namespace
+ 	 */
+-	rtnl_lock();
++	ASSERT_RTNL();
+ 	for_each_netdev_safe(net, dev, aux) {
+ 		int err;
+ 		char fb_name[IFNAMSIZ];
+@@ -10879,22 +10879,22 @@ static void __net_exit default_device_exit(struct net *net)
+ 			BUG();
+ 		}
+ 	}
+-	rtnl_unlock();
  }
  
- /* Destroy the bonding directory under /proc/net, if empty.
-- * Caller must hold rtnl_lock.
-  */
- void __net_exit bond_destroy_proc_dir(struct bond_net *bn)
+ static void __net_exit rtnl_lock_unregistering(struct list_head *net_list)
  {
+-	/* Return with the rtnl_lock held when there are no network
++	/* Return (with the rtnl_lock held) when there are no network
+ 	 * devices unregistering in any network namespace in net_list.
+ 	 */
+-	struct net *net;
+-	bool unregistering;
+ 	DEFINE_WAIT_FUNC(wait, woken_wake_function);
++	bool unregistering;
++	struct net *net;
+ 
++	ASSERT_RTNL();
+ 	add_wait_queue(&netdev_unregistering_wq, &wait);
+ 	for (;;) {
+ 		unregistering = false;
+-		rtnl_lock();
++
+ 		list_for_each_entry(net, net_list, exit_list) {
+ 			if (net->dev_unreg_count > 0) {
+ 				unregistering = true;
+@@ -10906,6 +10906,7 @@ static void __net_exit rtnl_lock_unregistering(struct list_head *net_list)
+ 		__rtnl_unlock();
+ 
+ 		wait_woken(&wait, TASK_UNINTERRUPTIBLE, MAX_SCHEDULE_TIMEOUT);
++		rtnl_lock();
+ 	}
+ 	remove_wait_queue(&netdev_unregistering_wq, &wait);
+ }
+@@ -10921,6 +10922,11 @@ static void __net_exit default_device_exit_batch(struct list_head *net_list)
+ 	struct net *net;
+ 	LIST_HEAD(dev_kill_list);
+ 
++	rtnl_lock();
++	list_for_each_entry(net, net_list, exit_list) {
++		default_device_exit_net(net);
++		cond_resched();
++	}
+ 	/* To prevent network device cleanup code from dereferencing
+ 	 * loopback devices or network devices that have been freed
+ 	 * wait here for all pending unregistrations to complete,
+@@ -10933,6 +10939,7 @@ static void __net_exit default_device_exit_batch(struct list_head *net_list)
+ 	 * default_device_exit_batch.
+ 	 */
+ 	rtnl_lock_unregistering(net_list);
++
+ 	list_for_each_entry(net, net_list, exit_list) {
+ 		for_each_netdev_reverse(net, dev) {
+ 			if (dev->rtnl_link_ops && dev->rtnl_link_ops->dellink)
+@@ -10946,7 +10953,6 @@ static void __net_exit default_device_exit_batch(struct list_head *net_list)
+ }
+ 
+ static struct pernet_operations __net_initdata default_device_ops = {
+-	.exit = default_device_exit,
+ 	.exit_batch = default_device_exit_batch,
+ };
+ 
 -- 
 2.35.0.263.gb82422642f-goog
 
