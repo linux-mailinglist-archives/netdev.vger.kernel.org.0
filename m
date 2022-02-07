@@ -2,70 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B54954AC724
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 18:22:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F6B14AC726
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 18:22:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353406AbiBGRSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 12:18:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60448 "EHLO
+        id S1348665AbiBGRSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 12:18:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344486AbiBGRDh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 12:03:37 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6A4C0401D1;
-        Mon,  7 Feb 2022 09:03:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644253414; x=1675789414;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=pnrO5Plp1Sug3zd8Uyldl5o/laIPwZ454MnCGdKK9C0=;
-  b=Lzht4rsrtFtugZC0Rf6Y0V6BQNgoKmAy/sjDoaDBmGhl1QJpDgwlSg1j
-   ZRRZWM8gKs5WrXOsmG2US4irzvb3ibcq43/8LonY7iYUWp64iDbV63DKm
-   dYzGrFHje+psAR/OXvuFqlxUyRx24UhkEqywfJjh8Tj7d2QV+/ai3kNTJ
-   pQglyAWiAO7nxH2+LGejKtK1N4GJ0TnWxehy/rgA3zWHZP6cFIFtHqioe
-   AwCLjK4x7vQR4wICn8N+d742R0VO2k2E5q1bEehPrNfXnOFt8Ymb3UIF5
-   IrqcQoK59NLsbE9olp2p3MxPsAyhe4mPP9UE3EhUTK/HVYryBgeG6h6BQ
-   Q==;
-IronPort-SDR: ASOr3RrNRwTdUZYa3WxbUDfOgmuEVvbq9pKxD/chgXWMRHhWjHN2vEpYsADK29+Ufzo10XspCs
- VbZQg3ez+ZqhJyCsvrGMoLvHLvOEozZPHCY0JaRPZXck9sIKGhM5FZJ4aCiOSUjGToQuDOQrNP
- rtD9YbKZy1ohwJFr31lge+ulzLIueK5TvC4/0TRB9DV4Oav8w1MQTtQGfIgkGSwvvTcfPRteIk
- HCDgH1TPdP+UGoWJ5f41lOOvn0lfglmuXEX60++rSFobwRetk0qgf6inDVSdoboJ5YAcwJ2h4g
- H2hoPW/fG4rFPYMU7ljdQbB3
-X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="152733239"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 10:03:32 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Feb 2022 10:03:32 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 7 Feb 2022 10:03:26 -0700
-Message-ID: <49878826c61a9fe556869710fecee615cf2a0c21.camel@microchip.com>
-Subject: Re: [PATCH v7 net-next 07/10] net: dsa: microchip: add support for
- ethtool port counters
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
-        <robh+dt@kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <Woojung.Huh@microchip.com>, <hkallweit1@gmail.com>,
-        <linux@armlinux.org.uk>, <davem@davemloft.net>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Mon, 7 Feb 2022 22:33:25 +0530
-In-Reply-To: <20220204192721.21835705@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220204174500.72814-1-prasanna.vengateshan@microchip.com>
-         <20220204174500.72814-8-prasanna.vengateshan@microchip.com>
-         <20220204192721.21835705@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.0-1 
+        with ESMTP id S1353386AbiBGRDq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 12:03:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44196C0401D5
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 09:03:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9B2F60AE7
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 17:03:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA521C004E1;
+        Mon,  7 Feb 2022 17:03:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644253425;
+        bh=MFlCIk0nex7qoch6fv2307q8js6pkDaBmho9HMJmxuA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oDpquQRGaXfDNMK6zzOqcnkEl2yJP4aND7aL12ziUdv7O821ceNSybYa1y56iXz4F
+         7mNi3bD7Jyo2ExNgtGgQOMbqASaeKnYA3B0fYXhph5wjg16bW3nt7sENtmMpXIU7Zw
+         d0G4S5YzG7L8IdvDE0PPF6KyGetyQIILxthB8EqvX7+B/9rPgSKuiz3X5O6HSpnawT
+         alUGVOhKjOe+b4WbPv3NhNSnAdzqhxP9shmy6bMZiWebAZVqtNxNSZm+6Vi5+ac1bd
+         QDaG+cOq0kg4LJVQAQLkudtYfQ1fixIsKmXsbwIRW3YJoUL5yrdT5rYDcxCX5ZGX8c
+         Aiu0iAT1C9avw==
+Date:   Mon, 7 Feb 2022 09:03:43 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Mahesh Bandewar (=?UTF-8?B?4KSu4KS54KWH4KS2IOCkrOCkguCkoeClh+CktQ==?=
+        =?UTF-8?B?4KS+4KSw?=) " <maheshb@google.com>
+Cc:     Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Mahesh Bandewar <mahesh@bandewar.net>
+Subject: Re: [PATCH v3 net-next] bonding: pair enable_port with
+ slave_arr_updates
+Message-ID: <20220207090343.3af1ff59@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAF2d9jjLdLjrOAwPR8JZNPTNyy44vxYei0X7NW_pKkzkCt5WSA@mail.gmail.com>
+References: <20220204000653.364358-1-maheshb@google.com>
+        <20792.1643935830@famine>
+        <20220204195949.10e0ed50@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAF2d9jjLdLjrOAwPR8JZNPTNyy44vxYei0X7NW_pKkzkCt5WSA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,18 +62,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-02-04 at 19:27 -0800, Jakub Kicinski wrote:
-> > +     for (i = 0; i < dev->mib_cnt; i++) {
-> > +             memcpy(buf + i * ETH_GSTRING_LEN, lan937x_mib_names[i].string,
-> > +                    ETH_GSTRING_LEN);
-> > +     }
-> 
-> parenthesis unnecessary around single expression
-> 
-> Also check out ethtool_sprintf(), although not strictly necessary since
-> you're not formatting
-Sure, thanks for the feedback.
+On Sun, 6 Feb 2022 21:52:11 -0800 Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=A5=
+=87=E0=A4=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=A4=
+=B0) wrote:
+> On Fri, Feb 4, 2022 at 7:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > Quacks like a fix, no? It's tagged for net-next and no fixes tag,
+> > is there a reason why? =20
+>=20
+> Though this fixes some corner cases, I couldn't find anything obvious
+> that I can report as "fixes" hence decided otherwise. Does that make
+> sense?
 
-Prasanna V
+So it's was not introduced in the refactorings which added
+update_slave_arr? If the problem existed forever we can put:
 
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 
+it's just an indication how far back the backporting should go.
+For anything older than oldest LTS (4.9) the exact tag probably
+doesn't matter all that much.
