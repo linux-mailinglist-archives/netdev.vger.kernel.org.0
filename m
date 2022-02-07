@@ -2,125 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 194FD4ACA53
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 21:25:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C78DC4ACA92
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 21:47:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237251AbiBGUZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 15:25:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49572 "EHLO
+        id S230000AbiBGUq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 15:46:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234543AbiBGUYc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 15:24:32 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA3DC0401DA;
-        Mon,  7 Feb 2022 12:24:31 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id z4so14391444lfg.5;
-        Mon, 07 Feb 2022 12:24:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gItGRtBFmuDCuiCd8LZimI8CT8KycScnCN76eWqmpsI=;
-        b=EvGmrX7VLUplcnT7jV/mKf7O+C+eUWXMUppPpYkx6X9DhLk8AvGTjImHanjDBoSfid
-         p+e+YTlRflPL2Ke4p+llrqzuoi+T9WduxnN4OGM6oMSCpsVjeJ9O7fZl8wqmLC7LBbYm
-         Lcnl9+KHWE/ges8niXD9d1f2MdpOQ89TbyZVvnUk+yvUZzfyPqnIrX9SFEdoC7Q5HR/G
-         jZMVmTDWmlvagkAEzMUAUzGHXSJ6ljsOL3VfU1f1tZK9bfUFP5YPVV0UOJOy6vu241i/
-         AJ+LjR7N37F6Zvsuc/Xfcf2LKt1YDeC+cYmpFjapst9HF1Ag1KTjQRJQugX45T/JUfjf
-         noPw==
+        with ESMTP id S242732AbiBGUay (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 15:30:54 -0500
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5E0C0401DA;
+        Mon,  7 Feb 2022 12:30:53 -0800 (PST)
+Received: by mail-oi1-f175.google.com with SMTP id 4so18280642oil.11;
+        Mon, 07 Feb 2022 12:30:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gItGRtBFmuDCuiCd8LZimI8CT8KycScnCN76eWqmpsI=;
-        b=eMB3YV6/oC9E+9DhfI8U3BY4t1gXAnaEp7iRYeUHXCIuPyJe5vxQrdWZ5hxl5/D9dM
-         ilL2o6A7b/yOAdfBGYg1V9tdj6p7QCQvbqhlk2jgRehWWRw2oHM/YQ/D+8UWmzG/820M
-         ObTbrqCDci8aHltmBb4upgCl14NFHJBGhwGtTnC347+OCkWeZPAL+RHsxNfz16qzX8vC
-         R8Q0juoiRKbQe3I9x0DFu7zg5bpkmi/QkOdti5EsJxu815TnLKTE3sxbgH6RigsEL0ev
-         ySa2PBH+BMcIeOrdjZBquivmsH9zwnIT+DzjkhJ1kLLZBBrjhE/HOnXzyTOvk11UpigF
-         mrcw==
-X-Gm-Message-State: AOAM531OxE4SopaEjVezmel34xcXD8ckR/Zem1nb68iYOcR6pAa03EVb
-        5cl/PCsc2/XNO7rNj5PnVHEaoQbhZrncEg==
-X-Google-Smtp-Source: ABdhPJz7L7ywOhhkq7VsLw/TZyIlGHs1A43QzxAPf71xzK7cAl3+cKVgqJvVR4mIAjJjhLs6FT83Fg==
-X-Received: by 2002:a05:6512:234a:: with SMTP id p10mr767844lfu.15.1644265469479;
-        Mon, 07 Feb 2022 12:24:29 -0800 (PST)
-Received: from localhost.localdomain ([94.103.224.201])
-        by smtp.gmail.com with ESMTPSA id m7sm1759127ljh.47.2022.02.07.12.24.28
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=M80jk/mTnmzTCyOAgobT1zJYrEwWUPQbcvoyxfMNQ0k=;
+        b=rsmIPlkDo6uBj+fENhZ36oww2mWNGioHWmiBVGOy6mhJL1UVymKmqHUbn6/S6RjVci
+         LA9vg1aUK0sjv7skcFsF3QldXNx6zhbdPbaltU97Q4buGY/VGNKlNP/eOVjxITWRs7qJ
+         sYWInDiTt5/9kIKAmYA3k9zWc3ffNYdFqWoMG6UgTrU+4UimtPBONlg8sSZ75YdfOu8Y
+         WFZp3ulf1eJ0DfMbFYLQdsBSREuL8WixiWGF2/ZoN8yVaB9D5l//uAJ8I9OHqfy97cgP
+         okx4CE2Da0jB85DMQl0JNHnhPmW/EA+YSQVB9KncoeX67lPcpoyb1OPazTxYLEvpJ4sS
+         YuPA==
+X-Gm-Message-State: AOAM530nD5USLj1P3lOvXtu2LLSPnvIPN7PUQcRDv8dgyBTZdPu0UicP
+        9oYqlh649iLRTjoUOv/Nsw==
+X-Google-Smtp-Source: ABdhPJxrtjY8DN4oMg8J59VZ53F3yuhMoNXTZzes8GFgKwzEEiGAyqNyAURzasKssSKB+fI+cBpThA==
+X-Received: by 2002:a05:6808:1513:: with SMTP id u19mr309040oiw.205.1644265853047;
+        Mon, 07 Feb 2022 12:30:53 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id bc36sm4343256oob.45.2022.02.07.12.30.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 12:24:28 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     ath9k-devel@qca.qualcomm.com, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, toke@toke.dk,
-        linville@tuxdriver.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH v3 2/2] ath9k: htc: clean up *STAT_* macros
-Date:   Mon,  7 Feb 2022 23:24:25 +0300
-Message-Id: <28c83b99b8fea0115ad7fbda7cc93a86468ec50d.1644265120.git.paskripkin@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
-References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
+        Mon, 07 Feb 2022 12:30:52 -0800 (PST)
+Received: (nullmailer pid 855870 invoked by uid 1000);
+        Mon, 07 Feb 2022 20:30:51 -0000
+Date:   Mon, 7 Feb 2022 14:30:51 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Vinod Koul <vkoul@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Holger Brunck <holger.brunck@hitachienergy.com>,
+        linux-phy@lists.infradead.org
+Subject: Re: [PATCH devicetree v3] dt-bindings: phy: Add `tx-p2p-microvolt`
+ property binding
+Message-ID: <YgGBe0BS/d0lOVtU@robh.at.kernel.org>
+References: <20220119131117.30245-1-kabel@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220119131117.30245-1-kabel@kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I've changed *STAT_* macros a bit in previous patch and I seems like
-they become really unreadable. Align these macros definitions to make
-code cleaner.
+On Wed, 19 Jan 2022 14:11:17 +0100, Marek Behún wrote:
+> Common PHYs and network PCSes often have the possibility to specify
+> peak-to-peak voltage on the differential pair - the default voltage
+> sometimes needs to be changed for a particular board.
+> 
+> Add properties `tx-p2p-microvolt` and `tx-p2p-microvolt-names` for this
+> purpose. The second property is needed to specify the mode for the
+> corresponding voltage in the `tx-p2p-microvolt` property, if the voltage
+> is to be used only for speficic mode. More voltage-mode pairs can be
+> specified.
+> 
+> Example usage with only one voltage (it will be used for all supported
+> PHY modes, the `tx-p2p-microvolt-names` property is not needed in this
+> case):
+> 
+>   tx-p2p-microvolt = <915000>;
+> 
+> Example usage with voltages for multiple modes:
+> 
+>   tx-p2p-microvolt = <915000>, <1100000>, <1200000>;
+>   tx-p2p-microvolt-names = "2500base-x", "usb", "pcie";
+> 
+> Add these properties into a separate file phy/transmit-amplitude.yaml,
+> which should be referenced by any binding that uses it.
+> 
+> Signed-off-by: Marek Behún <kabel@kernel.org>
+> ---
+> Change since v2:
+> - removed 'select:' as requested by Rob. Instead the schema should be
+>   referenced by any binding that uses it. This also fixed indentation
+>   warnings from Rob's bot, since they warned about lines in the select
+>   statement
+> ---
+>  .../bindings/phy/transmit-amplitude.yaml      | 103 ++++++++++++++++++
+>  1 file changed, 103 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/phy/transmit-amplitude.yaml
+> 
 
-Also fixed following checkpatch warning
-
-ERROR: Macros with complex values should be enclosed in parentheses
-
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
-
-Changes since v2:
-	- My send-email script forgot, that mailing lists exist.
-	  Added back all related lists
-	- Fixed checkpatch warning
-
-Changes since v1:
-	- Added this patch
-
----
- drivers/net/wireless/ath/ath9k/htc.h | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
-index 141642e5e00d..b4755e21a501 100644
---- a/drivers/net/wireless/ath/ath9k/htc.h
-+++ b/drivers/net/wireless/ath/ath9k/htc.h
-@@ -327,14 +327,14 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
- }
- 
- #ifdef CONFIG_ATH9K_HTC_DEBUGFS
--#define __STAT_SAVE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
--#define TX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
--#define TX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
--#define RX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
--#define RX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
--#define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
--
--#define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
-+#define __STAT_SAVE(expr)	(hif_dev->htc_handle->drv_priv ? (expr) : 0)
-+#define TX_STAT_INC(c)		__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
-+#define TX_STAT_ADD(c, a)	__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
-+#define RX_STAT_INC(c)		__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
-+#define RX_STAT_ADD(c, a)	__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
-+#define CAB_STAT_INC		(priv->debug.tx_stats.cab_queued++)
-+
-+#define TX_QSTAT_INC(q)		(priv->debug.tx_stats.queue_stats[q]++)
- 
- void ath9k_htc_err_stat_rx(struct ath9k_htc_priv *priv,
- 			   struct ath_rx_status *rs);
--- 
-2.34.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
