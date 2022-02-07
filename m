@@ -2,109 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D38DA4AC0D7
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 15:16:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 654844ABFEF
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 14:49:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349134AbiBGOQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 09:16:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50956 "EHLO
+        id S1387998AbiBGNqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 08:46:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390416AbiBGN5e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 08:57:34 -0500
-X-Greylist: delayed 1762 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 05:57:29 PST
-Received: from mx07-0057a101.pphosted.com (mx07-0057a101.pphosted.com [205.220.184.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32DD4C0401C5
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 05:57:28 -0800 (PST)
-Received: from pps.filterd (m0214197.ppops.net [127.0.0.1])
-        by mx07-0057a101.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 217BSTR9014899;
-        Mon, 7 Feb 2022 14:27:46 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=westermo.com; h=date : from : to :
- cc : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=12052020; bh=pQ4+uX/QMochd9sPwGFaAzokREF0acE7OJnWSqGMGEw=;
- b=QucZcBGxppDVWb0WpuqeGoVYbu09qtfwt8IBFK0biObQnR4RV/xtLhD5/nRF/5Br+J8G
- O9kz7a5VlpUbip2/vX3vqxhQeKepKCjW6KZPoN01GPYFYRKmTXN3L3tQVv6RVlOQWSgu
- 2Dhjij6H0TlbYIb26yl08VZT5JigzHo+Z1OZNiON2ryxroKqtKI/x9zj7ucxNargBy2+
- dRkc2knu7kcO8qZsD5NB3j6SonNCTU4SYLSqCr8uk5cESL8PA2n/yP1LXf7uIIjo9l30
- g3K5I8HdX53Gm6PCpGKeeLzGRqphVpY3uYc8u/BVJoXI08O+ApY0uuxelg4AWoPL/yUg lA== 
-Received: from mail.beijerelectronics.com ([195.67.87.131])
-        by mx07-0057a101.pphosted.com (PPS) with ESMTPS id 3e1efe9xbr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 14:27:46 +0100
-Received: from westermo.com (192.168.131.30) by
- EX01GLOBAL.beijerelectronics.com (10.101.10.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.2375.17; Mon, 7 Feb 2022 14:27:45 +0100
-Date:   Mon, 7 Feb 2022 14:27:44 +0100
-From:   Jacques de Laval <Jacques.De.Laval@westermo.com>
-To:     David Ahern <dsahern@gmail.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1381046AbiBGNdd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 08:33:33 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF9FC043189;
+        Mon,  7 Feb 2022 05:33:32 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id v129so6337305wme.2;
+        Mon, 07 Feb 2022 05:33:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V9QEgmdSl8jrpLmboxH3MycHRrNVtMiq+z3Om5YP+L4=;
+        b=ZeXCogp2RMZJX5bCWf5GbVepmcsMjxXm6LLMgfx0ol8BSDdh8zAsv+NO9/LnCpM0jB
+         bVrc/woX1x72Ie3U1zOWBW+QSDGWgRoIhxbPYK3X2ZzjKJDMjnPpbYMJVM6Boqr2sPeL
+         /6sCSMQUF7rByaBI1nwjEu/MhYDhu1qvv+5TCmAdzNs7BgTo2djdrGjEPKsqW7EJefsD
+         P3neh3NRyJGCLgoNX1YxdsjWaL698+tF51+kY7JtQSg/bF3ycqX9PoPavxEQn+06JR4T
+         r2XMKw7uXjNmpoJYCU770I/sBp4rR71G5lrGSFrHU/NEg1K3bRMhiRMuuK+eyQHFr6Fw
+         u8yQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V9QEgmdSl8jrpLmboxH3MycHRrNVtMiq+z3Om5YP+L4=;
+        b=hJAE/FGJ5sfq/a269J/NFlK9/RZWFhoSeD1eWoHdDgKmPyT0Net15V3f5swN2xv58G
+         ccUHSCExOlLT9h+7HOJjrXp0gIedPUjgIwzbveqSx5thHPVrvXnBgiQjKwIZ/FqB5ZFY
+         QhEpGnZPhpCsZwZNn0KrNF4KHPhvMDKeeZwfdDEk5PLjKio5gyeuQb7Am0KsezISk6a9
+         Ktg7BLS3l1i1FutbamshnrFKEZYnUGcLmi8RUlf5PX4hgP7wXy6RE7klayg6hUhkokRO
+         RJIs2Gr8adbAE/o4edtBVjHISu/t37QjJ5DnYUZxmfvFufe/8+aFbvSc+yRhQa5AOkbH
+         GXBg==
+X-Gm-Message-State: AOAM533fI1CIBL30lwDqLqgWMGmoZcEUqhsIkv/Y/HnjxFyPa49chFVZ
+        UprX5CeTAJMQUC3cj6gAA1s=
+X-Google-Smtp-Source: ABdhPJylUXyrmFmYPgL7jbK0a9g9xkwVwdjDV+JW8NPwgewUuCwNlNWvwo/VRNkr3mzIoT3RoF/Q2Q==
+X-Received: by 2002:a7b:c84f:: with SMTP id c15mr14361555wml.181.1644240811059;
+        Mon, 07 Feb 2022 05:33:31 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id bg23sm11366849wmb.5.2022.02.07.05.33.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 05:33:30 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/1] net: Add new protocol attribute to IP
- addresses
-Message-ID: <20220207132744.mnk62qaxngswb3dz@westermo.com>
-References: <42653bf5-ba76-2561-9cf9-27b0ae730210@gmail.com>
- <20220204180728.1597731-1-Jacques.De.Laval@westermo.com>
- <1f5e05a3-7d07-0412-1db2-8a848aa868d9@gmail.com>
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] brcmfmac: of: remove redundant variable len
+Date:   Mon,  7 Feb 2022 13:33:29 +0000
+Message-Id: <20220207133329.336664-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <1f5e05a3-7d07-0412-1db2-8a848aa868d9@gmail.com>
-X-Originating-IP: [192.168.131.30]
-X-ClientProxiedBy: wsevst-s0023.westermo.com (192.168.130.120) To
- EX01GLOBAL.beijerelectronics.com (10.101.10.25)
-X-Proofpoint-GUID: PwFDPBr1pR2kx8SUsCUIq64Wbne3dOG8
-X-Proofpoint-ORIG-GUID: PwFDPBr1pR2kx8SUsCUIq64Wbne3dOG8
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 09:10:51PM -0700, David Ahern wrote:
-> On 2/4/22 11:07 AM, Jacques de Laval wrote:
-> >>> @@ -69,4 +70,7 @@ struct ifa_cacheinfo {
-> >>>  #define IFA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ifaddrmsg))
-> >>>  #endif
-> >>>  
-> >>> +/* ifa_protocol */
-> >>> +#define IFAPROT_UNSPEC	0
-> >>
-> >> *If* the value is just a passthrough (userspace to kernel and back), no
-> >> need for this uapi. However, have you considered builtin protocol labels
-> >> - e.g. for autoconf, LLA, etc. Kernel generated vs RAs vs userspace
-> >> adding it.
-> > 
-> > Agreed. For my own (very isolated) use case I only need the passthrough,
-> > but I can see that it would make sense to standardize some labels.
-> > I was trying to give this some thought but I have to admit I copped out
-> > because of my limited knowledge on what labels would be reasonable to
-> > reserve.
-> > 
-> > Based on what you mention, do you think the list bellow would make sense?
-> > 
-> > #define IFAPROT_UNSPEC		0  /* unspecified */
-> > #define IFAPROT_KERNEL_LO	1  /* loopback */
-> > #define IFAPROT_KERNEL_RA	2  /* auto assigned by kernel from router announcement */
-> > #define IFAPROT_KERNEL_LL	3  /* link-local set by kernel */
-> 
-> Those above look good to me.
-> 
-> > #define IFAPROT_STATIC		4  /* set by admin */
-> > #define IFAPROT_AUTO		5  /* DHCP, BOOTP etc. */
-> > #define IFAPROT_LL		6  /* link-local set by userspace */
-> > 
-> > Or do you think it needs more granularity?
-> 
-> anything coming from userspace can just be a passthrough, so protocol
-> label is only set if it is an autonomous action by the kernel or some
-> app passed in a value.
-> 
+The variable len is being assigned bit is never used. The variable
+and the strlen call are redundant and can be removed.
 
-Thanks David, that makes sense. Will include the first defines in v2
-and try to set them when appropriate.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+index 5708de1d9f26..8623bde5eb70 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+@@ -71,14 +71,13 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+ 	/* Set board-type to the first string of the machine compatible prop */
+ 	root = of_find_node_by_path("/");
+ 	if (root) {
+-		int i, len;
++		int i;
+ 		char *board_type;
+ 		const char *tmp;
+ 
+ 		of_property_read_string_index(root, "compatible", 0, &tmp);
+ 
+ 		/* get rid of '/' in the compatible string to be able to find the FW */
+-		len = strlen(tmp) + 1;
+ 		board_type = devm_kstrdup(dev, tmp, GFP_KERNEL);
+ 		if (!board_type) {
+ 			of_node_put(root);
+-- 
+2.34.1
+
