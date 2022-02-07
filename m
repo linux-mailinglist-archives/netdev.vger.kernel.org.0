@@ -2,54 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7893E4ABEDA
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 14:23:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B08CE4ABF24
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 14:23:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447826AbiBGNB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 08:01:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46172 "EHLO
+        id S1347988AbiBGNAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 08:00:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446549AbiBGMn3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 07:43:29 -0500
-X-Greylist: delayed 91801 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 04:40:12 PST
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D106C033252;
-        Mon,  7 Feb 2022 04:40:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2048B81240;
-        Mon,  7 Feb 2022 12:40:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8EA63C36AE2;
-        Mon,  7 Feb 2022 12:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644237609;
-        bh=Bi+YRTjzamuxy0Bbl8Ld2t5KWt1ALAj8F1h1s7aksL4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BMm0uVY5iTIHH3NKUqXCQZcpwC7f59j6QpQu3kWk/2N8uURfuPQiOm2XD+FJ6OmTd
-         uGuITypjb8T4Bi+2ZePUAqQr+cnVtt3rnLAlKkYzoea778aUFJ4h8oRk1MLWRXyZk/
-         1Ri9hImoNPzIijDPLFbbEOVN+CByZcEtK262oCJeAyn1x8TWJDpTqgtsuQxu0RKjG/
-         nBBSUMXY97ps5IFKBkFHHMfv2x6VaJThwfKKr1nbfI+UD+KjT0+EuNnMAPBhzyfdCj
-         /uGrDAeZ9vrU1VDrvQYuZx42r68q5FtVu1AXMW9IMqgOLjY6nG7We6aAijpAeh+kn1
-         J8IIFsyZcfbzA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 78495E5D09D;
-        Mon,  7 Feb 2022 12:40:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1442707AbiBGMtj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 07:49:39 -0500
+Received: from smtp-bc0e.mail.infomaniak.ch (smtp-bc0e.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc0e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0F5C043188
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 04:49:14 -0800 (PST)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4JsmDS0wS1zMprtX;
+        Mon,  7 Feb 2022 13:49:12 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4JsmDR4wcMzlhSMP;
+        Mon,  7 Feb 2022 13:49:11 +0100 (CET)
+Message-ID: <ae0fcafa-3e8d-d6f2-26a8-ae74dda8371c@digikod.net>
+Date:   Mon, 7 Feb 2022 13:49:51 +0100
 MIME-Version: 1.0
+User-Agent: 
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com
+References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
+ <20220124080215.265538-3-konstantin.meskhidze@huawei.com>
+ <4d54e3a9-8a26-d393-3c81-b01389f76f09@digikod.net>
+ <ae5ca74d-ce5f-51e8-31c1-d02744ec92f8@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [RFC PATCH 2/2] landlock: selftests for bind and connect hooks
+In-Reply-To: <ae5ca74d-ce5f-51e8-31c1-d02744ec92f8@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V2 net-next] net: hns3: add support for TX push mode
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164423760948.4874.7091354263258727957.git-patchwork-notify@kernel.org>
-Date:   Mon, 07 Feb 2022 12:40:09 +0000
-References: <20220207014423.3218-1-huangguangbin2@huawei.com>
-In-Reply-To: <20220207014423.3218-1-huangguangbin2@huawei.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, wangjie125@huawei.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lipeng321@huawei.com, chenhao288@hisilicon.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -58,29 +47,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Mon, 7 Feb 2022 09:44:23 +0800 you wrote:
-> From: Yufeng Mo <moyufeng@huawei.com>
+On 07/02/2022 08:11, Konstantin Meskhidze wrote:
 > 
-> For the device that supports the TX push capability, the BD can
-> be directly copied to the device memory. However, due to hardware
-> restrictions, the push mode can be used only when there are no
-> more than two BDs, otherwise, the doorbell mode based on device
-> memory is used.
 > 
-> [...]
+> 2/1/2022 9:31 PM, Mickaël Salaün пишет:
+>>
+>> On 24/01/2022 09:02, Konstantin Meskhidze wrote:
+>>> Support 4 tests for bind and connect networks actions:
+>>
+>> Good to see such tests!
+>>
+>>
+>>> 1. bind() a socket with no landlock restrictions.
+>>> 2. bind() sockets with landllock restrictions.
 
-Here is the summary with links:
-  - [V2,net-next] net: hns3: add support for TX push mode
-    https://git.kernel.org/netdev/net-next/c/87a9b2fd9288
+[...]
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>>> + */
+>>> +
+>>> +#define _GNU_SOURCE
+>>> +#include <errno.h>
+>>> +#include <fcntl.h>
+>>> +#include <linux/landlock.h>
+>>> +#include <string.h>
+>>> +#include <sys/prctl.h>
+>>> +#include <sys/socket.h>
+>>> +#include <sys/types.h>
+>>> +#include <netinet/in.h>
+>>> +#include <arpa/inet.h>
+>>
+>> To make it determinisitic (and ease patching/diff/merging), you should 
+>> sort all the included files (in tests and in the kernel code).
+> 
+>    Sorry. Did not get your point here. Could you explain in a bit more
+>    details please.
 
+It will be easier to sort all the #include lines with the "sort -u" command.
 
+[...]
+
+>>> +    /* Create a socket 3 */
+>>> +    sockfd_3 = socket(AF_INET, SOCK_STREAM, 0);
+>>> +    ASSERT_LE(0, sockfd_3);
+>>> +    /* Allow reuse of local addresses */
+>>> +    ASSERT_EQ(0, setsockopt(sockfd_3, SOL_SOCKET, SO_REUSEADDR, 
+>>> &one, sizeof(one)));
+>>> +
+>>> +    /* Set socket 3 address parameters */
+>>> +    addr_3.sin_family = AF_INET;
+>>> +    addr_3.sin_port = htons(SOCK_PORT_3);
+>>> +    addr_3.sin_addr.s_addr = inet_addr(IP_ADDRESS);
+>>> +    memset(&(addr_3.sin_zero), '\0', 8);
+>>> +    /* Bind the socket 3 to IP address */
+>>> +    ASSERT_EQ(0, bind(sockfd_3, (struct sockaddr *)&addr_3, 
+>>> sizeof(addr_3)));
+>>
+>> Why is it allowed to bind to SOCK_PORT_3 whereas net_service_3 forbids 
+>> it?
+> 
+>    It's allowed cause net_service_3 has empty access field.
+> 
+>     /* Empty allowed_access (i.e. deny rules) are ignored in network
+>      *  actions for SOCK_PORT_3 socket "object"
+>      */
+>      ASSERT_EQ(-1, landlock_add_rule(ruleset_fd,
+>                                      LANDLOCK_RULE_NET_SERVICE,
+>                                      &net_service_3, 0));
+>      ASSERT_EQ(ENOMSG, errno);
+> 
+>    Applying this rule returns ENOMSG errno:
+> 
+>    /* Informs about useless rule: empty allowed_access (i.e. deny rules)
+>     * are ignored in network actions
+>     */
+>          if (!net_service_attr.allowed_access) {
+>              err = -ENOMSG;
+>              goto out_put_ruleset;
+>          }
+>    This means binding socket 3 is not restricted.
+>    For path_beneath_attr.allowed_access = 0 there is the same logic.
+
+I missed the ENOMSG check; the third rule has nothing to do with it. 
+However, because the ruleset handles bind and connect actions, they must 
+be denied by default. There is no rule allowing binding to SOCK_PORT_3. 
+Why is it allowed?
+
+You can test with another SOCK_PORT_4, not covered by any rule. As for 
+SOCK_PORT_3, it must be forbidden to bind on it.
