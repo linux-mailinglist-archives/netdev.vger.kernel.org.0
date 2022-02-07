@@ -2,68 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B73A4AB4EB
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 07:41:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D37DB4AB4FA
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 07:41:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229718AbiBGGbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 01:31:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38326 "EHLO
+        id S231396AbiBGG3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 01:29:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350287AbiBGFwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 00:52:39 -0500
-Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52EC1C043181
-        for <netdev@vger.kernel.org>; Sun,  6 Feb 2022 21:52:38 -0800 (PST)
-Received: by mail-ua1-x929.google.com with SMTP id w21so21007066uan.7
-        for <netdev@vger.kernel.org>; Sun, 06 Feb 2022 21:52:38 -0800 (PST)
+        with ESMTP id S242735AbiBGGIT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 01:08:19 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DAFC043181;
+        Sun,  6 Feb 2022 22:08:18 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id u12so3250160plq.10;
+        Sun, 06 Feb 2022 22:08:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=L1Rjq/ql7urNH275JgtjOWwPnTNap7zuvbeGPfxz5dk=;
-        b=tL/3b03W+JH4On8JGgN+G47JSKM16N+ZylsEH2Q+KcbF0UWlZPv6twnFjWKgw5c0dF
-         AvSIKFiZATE9/oAob2ijdRc1Kvnqf/qJTUmhLSPzDBwdKuDPH7TBiAmt2ZWaB1F8RRSr
-         R1IRIEZInH/VzkMCFE0KgWXm7hR5RApKseRzY6riVWkK3gF2bCMQxZTvmUvjjuY88xgg
-         8nTdCkJN+nLW23abPt/7Q2A5f2KvTK04HrBn8aDNUi0j1g4xgljEsxxCFDBd2X30xdG5
-         NB/Vc51Zu2B8j2nCo1L8+Porb2szl7slQXrXqcRpTcmIS+vT7jCk9/34VbA5IRiqdBbQ
-         GhDQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PHS5WqAWZreqQEZLkxFcHhD/e2ICT/LSBM8dDEtfxbg=;
+        b=QZDNjRLoskRVkeCj3CgednO7LBL+RNIVsMLnalremj/WJjLWx1P2PZI5vxO/ULGsYp
+         Lx2ogV6lxbXecpE7M/5GtwyWvJjRFlmapc+dGEJN4sb8jlzJq0GchlpGdFXKmumhqyzu
+         noTyBBFR7I9jxb7Laq4zD2xG9/MDpwErCzAGpPSQMRaywPX61vmSHpd9I9TWkj5mH4Xc
+         mUHrp+zjO0z95dCCG0Oj1Bd4lqmhkH9WSOhRLtcqxStu1YcV6z5K/aSe8pmGH1HFkJGS
+         pAmTEdRPEEE/QkwmIkJs+SAryWrAlgVpOklUY9FYjSUdEVPcO7c7vgjS4E7kSzQ5hTa0
+         HqCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=L1Rjq/ql7urNH275JgtjOWwPnTNap7zuvbeGPfxz5dk=;
-        b=1MPUGWHoXoLYWY++MIOHFG1Cx3vjVWTL2wX9pVwmJFcp7W0iKEKwalGNYINdzzMEDa
-         ESLcza1DnpnuM1QNGGV55BiB0WKLoDywp2lUhOQVJodtGs5lrJh+zu521vfJvs4Zrsbx
-         gf/uHzvZydtqHpgVlS1h6KtmAXljfddoOyk8tOqrZQwaOyPhTmmoBvSNixoID9US/j2d
-         4LOin+74XOOS2mnYTzUNKNMCk9QbUVKkSGvfl+r3QFfyJ5LqYdbXkgNlOTvl08iM5UTv
-         TAHQxyycWwCVCGhY7UEc47IQ+/YvCN9QSiVKOxDMGGZ3dCppPIxHbddpC6Fk+SvVp3TD
-         hZIA==
-X-Gm-Message-State: AOAM5329m550gGd4qTXugMI2BdbmoHzxXNEyVVGaMCwwZHvPYsN9jtqP
-        XtT4ToCmhb4fvzB2t0LnSpiPC2my2+Tn5kabpVmI2A==
-X-Google-Smtp-Source: ABdhPJyQMFft69kTngWJY32onjRKjzuIa9UTH3B/P0UB3PJj3eviBJJrXE/Du+TXKVjNBDKiDhHQNyBcATIz/FNM3y0=
-X-Received: by 2002:a9f:36c1:: with SMTP id p59mr2814471uap.41.1644213157165;
- Sun, 06 Feb 2022 21:52:37 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PHS5WqAWZreqQEZLkxFcHhD/e2ICT/LSBM8dDEtfxbg=;
+        b=n/pEPcHiuoJDEuOhY2QyC5w/djIL6fb47XgEsL9H8LN2snoroMoAekJXrLe8oLsUWs
+         qDHWIAbzQUObZrTow6ZPJ9UygOd2d+naTcdMlrwYRuLl3WwaDAwJwLkYd56R+car/6jz
+         2q56sXubTjgoQxs2XpFQDqpbjO/ysVCq64Xb+enPFPAhYr9rO0LDWFo64qCxHnvdRQIi
+         bvCuqrs4vSMtfHCZFQ3Os8JXEfmdbqUD79tViTx+Y+THDG+5prmHhtYtIgmcQT0M8xi2
+         J3S7t5fq8MJZQaIA4mnAtn3LfL3LwVtQZRq7ZbtOQ9Fw922fANLjGVY5rztNpTzDMdAV
+         W9Og==
+X-Gm-Message-State: AOAM532bnmbZ+y+rCoLGa/tBkj8e+I/vkAhyRTJuBocfEkarFq/v+62s
+        t9DpiqLmqUWorFeTnUnp4vPBYw6PvkA=
+X-Google-Smtp-Source: ABdhPJwdiFua/cXNLUkdANjjJNfOcsXYh110a+B0xwciURrp1YFvc5u9bJ6hyPsk1WaqHQzahHk4Hw==
+X-Received: by 2002:a17:90b:249:: with SMTP id fz9mr16732914pjb.99.1644214097809;
+        Sun, 06 Feb 2022 22:08:17 -0800 (PST)
+Received: from [10.0.2.64] ([209.37.97.194])
+        by smtp.googlemail.com with ESMTPSA id ns21sm19288525pjb.43.2022.02.06.22.08.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Feb 2022 22:08:17 -0800 (PST)
+Message-ID: <b5514b41-4a1b-4b97-6d46-82d9334dcab2@gmail.com>
+Date:   Sun, 6 Feb 2022 22:08:15 -0800
 MIME-Version: 1.0
-References: <20220204000653.364358-1-maheshb@google.com> <20792.1643935830@famine>
- <20220204195949.10e0ed50@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220204195949.10e0ed50@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Date:   Sun, 6 Feb 2022 21:52:11 -0800
-Message-ID: <CAF2d9jjLdLjrOAwPR8JZNPTNyy44vxYei0X7NW_pKkzkCt5WSA@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next] bonding: pair enable_port with slave_arr_updates
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Veaceslav Falico <vfalico@gmail.com>,
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH net-next 0/4] inet: Separate DSCP from ECN bits using new
+ dscp_t type
+Content-Language: en-US
+To:     Guillaume Nault <gnault@redhat.com>,
         David Miller <davem@davemloft.net>,
-        Mahesh Bandewar <mahesh@bandewar.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgense?= =?UTF-8?Q?n?= 
+        <toke@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Russell Strong <russell@strong.id.au>,
+        Dave Taht <dave.taht@gmail.com>
+References: <cover.1643981839.git.gnault@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <cover.1643981839.git.gnault@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,40 +82,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 4, 2022 at 7:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 03 Feb 2022 16:50:30 -0800 Jay Vosburgh wrote:
-> > Mahesh Bandewar <maheshb@google.com> wrote:
-> >
-> > >When 803.2ad mode enables a participating port, it should update
-> > >the slave-array. I have observed that the member links are participating
-> > >and are part of the active aggregator while the traffic is egressing via
-> > >only one member link (in a case where two links are participating). Via
-> > >krpobes I discovered that that slave-arr has only one link added while
->
-> kprobes
-> that that
->
-> The commit message would use some proof reading in general.
->
-:( will fix the typo and send it to you again.
+On 2/4/22 5:58 AM, Guillaume Nault wrote:
+> The networking stack currently doesn't clearly distinguish between DSCP
+> and ECN bits. The entire DSCP+ECN bits are stored in u8 variables (or
+> structure fields), and each part of the stack handles them in their own
+> way, using different macros. This has created several bugs in the past
+> and some uncommon code paths are still unfixed.
+> 
+> Such bugs generally manifest by selecting invalid routes because of ECN
+> bits interfering with FIB routes and rules lookups (more details in the
+> LPC 2021 talk[1] and in the RFC of this series[2]).
+> 
+> This patch series aims at preventing the introduction of such bugs (and
+> detecting existing ones), by introducing a dscp_t type, representing
+> "sanitised" DSCP values (that is, with no ECN information), as opposed
+> to plain u8 values that contain both DSCP and ECN information. dscp_t
+> makes it clear for the reader what we're working on, and Sparse can
+> flag invalid interactions between dscp_t and plain u8.
+> 
+> This series converts only a few variables and structures:
+> 
+>   * Patch 1 converts the tclass field of struct fib6_rule. It
+>     effectively forbids the use of ECN bits in the tos/dsfield option
+>     of ip -6 rule. Rules now match packets solely based on their DSCP
+>     bits, so ECN doesn't influence the result any more. This contrasts
+>     with the previous behaviour where all 8 bits of the Traffic Class
+>     field were used. It is believed that this change is acceptable as
+>     matching ECN bits wasn't usable for IPv4, so only IPv6-only
+>     deployments could be depending on it. Also the previous behaviour
+>     made DSCP-based ip6-rules fail for packets with both a DSCP and an
+>     ECN mark, which is another reason why any such deploy is unlikely.
+> 
+>   * Patch 2 converts the tos field of struct fib4_rule. This one too
+>     effectively forbids defining ECN bits, this time in ip -4 rule.
+>     Before that, setting ECN bit 1 was accepted, while ECN bit 0 was
+>     rejected. But even when accepted, the rule would never match, as
+>     the packets would have their ECN bits cleared before doing the
+>     rule lookup.
+> 
+>   * Patch 3 converts the fc_tos field of struct fib_config. This is
+>     equivalent to patch 2, but for IPv4 routes. Routes using a
+>     tos/dsfield option with any ECN bit set is now rejected. Before
+>     this patch, they were accepted but, as with ip4 rules, these routes
+>     couldn't match any packet, since their ECN bits are cleared before
+>     the lookup.
+> 
+>   * Patch 4 converts the fa_tos field of struct fib_alias. This one is
+>     pure internal u8 to dscp_t conversion. While patches 1-3 had user
+>     facing consequences, this patch shouldn't have any side effect and
+>     is there to give an overview of what future conversion patches will
+>     look like. Conversions are quite mechanical, but imply some code
+>     churn, which is the price for the extra clarity a possibility of
+>     type checking.
+> 
+> To summarise, all the behaviour changes required for the dscp_t type
+> approach to work should be contained in patches 1-3. These changes are
+> edge cases of ip-route and ip-rule that don't currently work properly.
+> So they should be safe. Also, a kernel selftest is added for each of
+> them.
+> 
 
-> > >the other participating link wasn't part of the slave-arr.
-> > >
-> > >I couldn't see what caused that situation but the simple code-walk
-> > >through provided me hints that the enable_port wasn't always associated
-> > >with the slave-array update.
-> > >
-> > >Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-> >
-> > Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
->
-> Quacks like a fix, no? It's tagged for net-next and no fixes tag,
-> is there a reason why?
+seems like the right directions to me.
 
-Though this fixes some corner cases, I couldn't find anything obvious
-that I can report as "fixes" hence decided otherwise. Does that make
-sense?
+Acked-by: David Ahern <dsahern@kernel.org>
 
-thanks,
---mahesh..
+
+
+
