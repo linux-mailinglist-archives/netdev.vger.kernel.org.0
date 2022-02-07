@@ -2,150 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D37DB4AB4FA
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 07:41:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B10D84AB4EA
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 07:41:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231396AbiBGG3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 01:29:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50898 "EHLO
+        id S231653AbiBGGbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 01:31:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242735AbiBGGIT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 01:08:19 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DAFC043181;
-        Sun,  6 Feb 2022 22:08:18 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id u12so3250160plq.10;
-        Sun, 06 Feb 2022 22:08:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=PHS5WqAWZreqQEZLkxFcHhD/e2ICT/LSBM8dDEtfxbg=;
-        b=QZDNjRLoskRVkeCj3CgednO7LBL+RNIVsMLnalremj/WJjLWx1P2PZI5vxO/ULGsYp
-         Lx2ogV6lxbXecpE7M/5GtwyWvJjRFlmapc+dGEJN4sb8jlzJq0GchlpGdFXKmumhqyzu
-         noTyBBFR7I9jxb7Laq4zD2xG9/MDpwErCzAGpPSQMRaywPX61vmSHpd9I9TWkj5mH4Xc
-         mUHrp+zjO0z95dCCG0Oj1Bd4lqmhkH9WSOhRLtcqxStu1YcV6z5K/aSe8pmGH1HFkJGS
-         pAmTEdRPEEE/QkwmIkJs+SAryWrAlgVpOklUY9FYjSUdEVPcO7c7vgjS4E7kSzQ5hTa0
-         HqCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=PHS5WqAWZreqQEZLkxFcHhD/e2ICT/LSBM8dDEtfxbg=;
-        b=n/pEPcHiuoJDEuOhY2QyC5w/djIL6fb47XgEsL9H8LN2snoroMoAekJXrLe8oLsUWs
-         qDHWIAbzQUObZrTow6ZPJ9UygOd2d+naTcdMlrwYRuLl3WwaDAwJwLkYd56R+car/6jz
-         2q56sXubTjgoQxs2XpFQDqpbjO/ysVCq64Xb+enPFPAhYr9rO0LDWFo64qCxHnvdRQIi
-         bvCuqrs4vSMtfHCZFQ3Os8JXEfmdbqUD79tViTx+Y+THDG+5prmHhtYtIgmcQT0M8xi2
-         J3S7t5fq8MJZQaIA4mnAtn3LfL3LwVtQZRq7ZbtOQ9Fw922fANLjGVY5rztNpTzDMdAV
-         W9Og==
-X-Gm-Message-State: AOAM532bnmbZ+y+rCoLGa/tBkj8e+I/vkAhyRTJuBocfEkarFq/v+62s
-        t9DpiqLmqUWorFeTnUnp4vPBYw6PvkA=
-X-Google-Smtp-Source: ABdhPJwdiFua/cXNLUkdANjjJNfOcsXYh110a+B0xwciURrp1YFvc5u9bJ6hyPsk1WaqHQzahHk4Hw==
-X-Received: by 2002:a17:90b:249:: with SMTP id fz9mr16732914pjb.99.1644214097809;
-        Sun, 06 Feb 2022 22:08:17 -0800 (PST)
-Received: from [10.0.2.64] ([209.37.97.194])
-        by smtp.googlemail.com with ESMTPSA id ns21sm19288525pjb.43.2022.02.06.22.08.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Feb 2022 22:08:17 -0800 (PST)
-Message-ID: <b5514b41-4a1b-4b97-6d46-82d9334dcab2@gmail.com>
-Date:   Sun, 6 Feb 2022 22:08:15 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH net-next 0/4] inet: Separate DSCP from ECN bits using new
- dscp_t type
-Content-Language: en-US
-To:     Guillaume Nault <gnault@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgense?= =?UTF-8?Q?n?= 
-        <toke@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Russell Strong <russell@strong.id.au>,
-        Dave Taht <dave.taht@gmail.com>
-References: <cover.1643981839.git.gnault@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <cover.1643981839.git.gnault@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S244576AbiBGGYZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 01:24:25 -0500
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A87C043181;
+        Sun,  6 Feb 2022 22:24:22 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V3nGPGq_1644215059;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V3nGPGq_1644215059)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 07 Feb 2022 14:24:20 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        "D. Wythe" <alibuda@linux.alibaba.com>
+Subject: [PATCH net-next v4 0/3] net/smc: Optimizing performance in short-lived scenarios
+Date:   Mon,  7 Feb 2022 14:24:12 +0800
+Message-Id: <cover.1644214112.git.alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-8.7 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NORMAL_HTTP_TO_IP,NUMERIC_HTTP_ADDR,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/4/22 5:58 AM, Guillaume Nault wrote:
-> The networking stack currently doesn't clearly distinguish between DSCP
-> and ECN bits. The entire DSCP+ECN bits are stored in u8 variables (or
-> structure fields), and each part of the stack handles them in their own
-> way, using different macros. This has created several bugs in the past
-> and some uncommon code paths are still unfixed.
-> 
-> Such bugs generally manifest by selecting invalid routes because of ECN
-> bits interfering with FIB routes and rules lookups (more details in the
-> LPC 2021 talk[1] and in the RFC of this series[2]).
-> 
-> This patch series aims at preventing the introduction of such bugs (and
-> detecting existing ones), by introducing a dscp_t type, representing
-> "sanitised" DSCP values (that is, with no ECN information), as opposed
-> to plain u8 values that contain both DSCP and ECN information. dscp_t
-> makes it clear for the reader what we're working on, and Sparse can
-> flag invalid interactions between dscp_t and plain u8.
-> 
-> This series converts only a few variables and structures:
-> 
->   * Patch 1 converts the tclass field of struct fib6_rule. It
->     effectively forbids the use of ECN bits in the tos/dsfield option
->     of ip -6 rule. Rules now match packets solely based on their DSCP
->     bits, so ECN doesn't influence the result any more. This contrasts
->     with the previous behaviour where all 8 bits of the Traffic Class
->     field were used. It is believed that this change is acceptable as
->     matching ECN bits wasn't usable for IPv4, so only IPv6-only
->     deployments could be depending on it. Also the previous behaviour
->     made DSCP-based ip6-rules fail for packets with both a DSCP and an
->     ECN mark, which is another reason why any such deploy is unlikely.
-> 
->   * Patch 2 converts the tos field of struct fib4_rule. This one too
->     effectively forbids defining ECN bits, this time in ip -4 rule.
->     Before that, setting ECN bit 1 was accepted, while ECN bit 0 was
->     rejected. But even when accepted, the rule would never match, as
->     the packets would have their ECN bits cleared before doing the
->     rule lookup.
-> 
->   * Patch 3 converts the fc_tos field of struct fib_config. This is
->     equivalent to patch 2, but for IPv4 routes. Routes using a
->     tos/dsfield option with any ECN bit set is now rejected. Before
->     this patch, they were accepted but, as with ip4 rules, these routes
->     couldn't match any packet, since their ECN bits are cleared before
->     the lookup.
-> 
->   * Patch 4 converts the fa_tos field of struct fib_alias. This one is
->     pure internal u8 to dscp_t conversion. While patches 1-3 had user
->     facing consequences, this patch shouldn't have any side effect and
->     is there to give an overview of what future conversion patches will
->     look like. Conversions are quite mechanical, but imply some code
->     churn, which is the price for the extra clarity a possibility of
->     type checking.
-> 
-> To summarise, all the behaviour changes required for the dscp_t type
-> approach to work should be contained in patches 1-3. These changes are
-> edge cases of ip-route and ip-rule that don't currently work properly.
-> So they should be safe. Also, a kernel selftest is added for each of
-> them.
-> 
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-seems like the right directions to me.
+This patch set aims to optimizing performance of SMC in short-lived
+links scenarios, which is quite unsatisfactory right now.
 
-Acked-by: David Ahern <dsahern@kernel.org>
+In our benchmark, we test it with follow scripts:
 
+./wrk -c 10000 -t 4 -H 'Connection: Close' -d 20 http://smc-server
 
+Current performance figures like that:
 
+Running 20s test @ http://11.213.45.6
+  4 threads and 10000 connections
+  4956 requests in 20.06s, 3.24MB read
+  Socket errors: connect 0, read 0, write 672, timeout 0
+Requests/sec:    247.07
+Transfer/sec:    165.28KB
+
+There are many reasons for this phenomenon, this patch set doesn't
+solve it all though, but it can be well alleviated with it in.
+
+Patch 1/3  (Make smc_tcp_listen_work() independent) :
+
+Separate smc_tcp_listen_work() from smc_listen_work(), make them
+independent of each other, the busy SMC handshake can not affect new TCP
+connections visit any more. Avoid discarding a large number of TCP
+connections after being overstock, which is undoubtedly raise the
+connection establishment time.
+
+Patch 2/3 (Limits SMC backlog connections):
+
+Since patch 1 has separated smc_tcp_listen_work() from
+smc_listen_work(), an unrestricted TCP accept have come into being. This
+patch try to put a limit on SMC backlog connections refers to
+implementation of TCP.
+
+Patch 3/3 (Fallback when SMC handshake workqueue congested):
+
+Considering the complexity of SMC handshake right now, in short-lived
+links scenarios, this may not be the main scenario of SMC though, it's
+performance is still quite poor. This Patch try to provide auto fallback
+case when SMC handshake workqueue congested, which is the sign of SMC
+handshake stacking in our opinion.
+
+Of course, it's optional.
+
+After this patch set, performance figures like that:
+
+Running 20s test @ http://11.213.45.6
+  4 threads and 10000 connections
+  693253 requests in 20.10s, 452.88MB read
+Requests/sec:  34488.13
+Transfer/sec:     22.53MB
+
+That's a quite well performance improvement, about to 6 to 7 times in my
+environment.
+---
+changelog:
+v2 -> v1:
+- fix compile warning
+- fix invalid dependencies in kconfig
+v3 -> v2:
+- correct spelling mistakes
+- fix useless variable declare
+v4 -> v3
+- make smc_tcp_ls_wq be static 
+---
+D. Wythe (3):
+  net/smc: Make smc_tcp_listen_work() independent
+  net/smc: Limits backlog connections
+  net/smc: Fallback when handshake workqueue congested
+
+ include/linux/tcp.h  |  1 +
+ net/ipv4/tcp_input.c |  3 +-
+ net/smc/Kconfig      | 12 ++++++++
+ net/smc/af_smc.c     | 78 ++++++++++++++++++++++++++++++++++++++++++++++++++--
+ net/smc/smc.h        |  4 +++
+ 5 files changed, 95 insertions(+), 3 deletions(-)
+
+-- 
+1.8.3.1
 
