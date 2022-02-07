@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EA9E4AC270
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 16:07:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 174404AC271
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 16:07:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355745AbiBGPFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 10:05:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56658 "EHLO
+        id S1357095AbiBGPFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 10:05:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442518AbiBGOwX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 09:52:23 -0500
-Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0017C0401C1
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 06:52:22 -0800 (PST)
-Received: by mail-ua1-x92b.google.com with SMTP id e17so23189006uad.9
-        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 06:52:22 -0800 (PST)
+        with ESMTP id S1442521AbiBGOwZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 09:52:25 -0500
+Received: from mail-ua1-x930.google.com (mail-ua1-x930.google.com [IPv6:2607:f8b0:4864:20::930])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BAA1C0401C2
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 06:52:25 -0800 (PST)
+Received: by mail-ua1-x930.google.com with SMTP id g18so13049861uak.5
+        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 06:52:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kinvolk.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HfWfVAzwYYBOjlJMDmq+XjKAY8WYr/lc4t7p7lNwmtg=;
-        b=cbXoz5y/hkJSL5j+9B0JJo3b/xbOB+bCvG2tWWf08bu0JslJHgjzBk+DSXu50PMI5l
-         NQ92/csuKEr+J9qqdKQrhaiP3namjM4fS4RtUmmnU27j2wn760zHuENQajwDQL4B8UHL
-         F9sKAv4ELWwNZItKGdw1O5IMAx0mddrZb7UNQ=
+        bh=Mtx2YBw2ZJ4lWpSF8NYCcRXkDCZX1esZEmumdIEB7tc=;
+        b=U9paWWLNk2naINhsgRGAFDCSxBYYkUqv8/GYR8vpcrB6Pp9fyJC1JBpm3S5vT4qBpf
+         op5bIGf2ej/q6x+AFkX/k6bpdkpG97moFbU8uwTTdRNN+jJqFBGjzbdi61KH/0BrZR/R
+         8ZfQCc9wP8nl5sV1yXdgl/5f4qQjC0+Lnz5fo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HfWfVAzwYYBOjlJMDmq+XjKAY8WYr/lc4t7p7lNwmtg=;
-        b=vOiQEa9yTbamFuxqVWRz362jzDJSXG8Hgyjxt9GAHzT3imdxAInFxMO5YS/yiWlHhb
-         NTHYvfKG/vdYrrx4NIfPXtWcuOpaJqcVrR3lodZNWmJa/caRSTlm4XoOdew1ARBNrWjQ
-         Od/r6xWHR/IJ125qh8XPUcT8AcS56bcmavKqMll75PEtkim32m9X/hXlhIihp21FcKoz
-         uPF0xrka5hQG/stjsGaJgKIFDHDI0GHOmdqpYwBgePo76bhSdhgkI4KIk5HWRUzhIXjL
-         zTRpC73lCja3zGjOaZv8jXQ4KyUbKKRlvJRsSNjZ2YYya9uCVU3mV+U/A7ZpZ0c+nIaK
-         5CGw==
-X-Gm-Message-State: AOAM532gV94Ad0f1F9ofEoJjQjtgMKRiBcVyn6wz+smz2NvbkQxNQhdJ
-        FSnuKFdsDca/HugVwEpa8AxA9fWBEpkokWieoqDGi6WkviMIYA30qQ90ppYNbhLC8SIB5YLek1n
-        ssZY5ZIAUyJR/bX92C4/Z7SgHynHXGCVf1yj4PvBciZCSNGOQ/VIa6IbQLX7AdCxkgAiNdw==
-X-Google-Smtp-Source: ABdhPJzI5/pNnsljUqywSTvACDJS4PXPU5UlhPL+S+99LesuUE+Z/RLEvd/P1L+vJ5nSSeEQcN1/Mw==
-X-Received: by 2002:a05:6102:2f7:: with SMTP id j23mr4362219vsj.31.1644245539953;
-        Mon, 07 Feb 2022 06:52:19 -0800 (PST)
+        bh=Mtx2YBw2ZJ4lWpSF8NYCcRXkDCZX1esZEmumdIEB7tc=;
+        b=AC7+aFkoTTPK0sDJU6yj9JakAMUXsqAAWgYR51llS8ymjaf2df30k8ojpH2cZP1mqP
+         f5H3MPVqphiO/8pedqv7h4kxfPh7zaPujOYyJt3OcGjyMzqNfALDI75rr76olHRIGm/E
+         11WPqaPbnUr1IAtm7SXo7eK6qRY/QYSsB37oZ6AtFgRsWykFQkZhVvg7xoISU9om+pRT
+         zwJU9oSqEH2m2eAwk+mFooniRPLjqgc8WnYuBJBIFw3dzn8q+tucwDCWnm60Rgco7kNw
+         u9loUdG6uDa+L1cGLfIZ+U6QaKz2N0UMih82F1G3ICng5Kg6UglU6ohBM5Va2z3er9x4
+         4XQA==
+X-Gm-Message-State: AOAM532xFRoTx6jQWpZLmQuGDNsBZfkhaaPgxDnqr9PNa5Gp0zjpvJCE
+        0TrIkgue+O5bFeLsGAiYnOrqDqKytkMGScP4cvrAIaEG46XgjfwgPCQCzSn1I7dYUPvIgKIflSx
+        n81tad2Tpid2hj9bUkd9WB3T+TvOHSTFMHA8/fWCAYe90VmU+9qjrNnW2u18trgCegqemjQ==
+X-Google-Smtp-Source: ABdhPJzeQG9FgL2MZ4q9NP9LpbIoI173m00Efi+GPRo9FgOW6LMbiyuUzW1kbiJEpnKsjaRQxlBjHA==
+X-Received: by 2002:a67:f8d7:: with SMTP id c23mr4266012vsp.35.1644245541813;
+        Mon, 07 Feb 2022 06:52:21 -0800 (PST)
 Received: from localhost.localdomain ([181.136.110.101])
-        by smtp.gmail.com with ESMTPSA id r14sm581347vke.20.2022.02.07.06.52.18
+        by smtp.gmail.com with ESMTPSA id r14sm581347vke.20.2022.02.07.06.52.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 06:52:19 -0800 (PST)
+        Mon, 07 Feb 2022 06:52:21 -0800 (PST)
 From:   =?UTF-8?q?Mauricio=20V=C3=A1squez?= <mauricio@kinvolk.io>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next v2 2/3] bpftool: Fix strict mode calculation
-Date:   Mon,  7 Feb 2022 09:50:51 -0500
-Message-Id: <20220207145052.124421-3-mauricio@kinvolk.io>
+Subject: [PATCH bpf-next v2 3/3] selftests/bpf: Fix strict mode calculation
+Date:   Mon,  7 Feb 2022 09:50:52 -0500
+Message-Id: <20220207145052.124421-4-mauricio@kinvolk.io>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220207145052.124421-1-mauricio@kinvolk.io>
 References: <20220207145052.124421-1-mauricio@kinvolk.io>
@@ -79,29 +79,22 @@ Fixes: 93b8952d223a ("libbpf: deprecate legacy BPF map definitions")
 
 Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
 ---
- tools/bpf/bpftool/main.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/btf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
-index 9d01fa9de033..490f7bd54e4c 100644
---- a/tools/bpf/bpftool/main.c
-+++ b/tools/bpf/bpftool/main.c
-@@ -478,14 +478,11 @@ int main(int argc, char **argv)
- 	}
+diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
+index 14f9b6136794..4b93789acd86 100644
+--- a/tools/testing/selftests/bpf/prog_tests/btf.c
++++ b/tools/testing/selftests/bpf/prog_tests/btf.c
+@@ -4561,7 +4561,7 @@ static void do_test_file(unsigned int test_num)
+ 	btf_ext__free(btf_ext);
  
- 	if (!legacy_libbpf) {
--		enum libbpf_strict_mode mode;
--
- 		/* Allow legacy map definitions for skeleton generation.
- 		 * It will still be rejected if users use LIBBPF_STRICT_ALL
- 		 * mode for loading generated skeleton.
- 		 */
--		mode = (__LIBBPF_STRICT_LAST - 1) & ~LIBBPF_STRICT_MAP_DEFINITIONS;
--		ret = libbpf_set_strict_mode(mode);
-+		ret = libbpf_set_strict_mode(LIBBPF_STRICT_ALL & ~LIBBPF_STRICT_MAP_DEFINITIONS);
- 		if (ret)
- 			p_err("failed to enable libbpf strict mode: %d", ret);
- 	}
+ 	/* temporary disable LIBBPF_STRICT_MAP_DEFINITIONS to test legacy maps */
+-	libbpf_set_strict_mode((__LIBBPF_STRICT_LAST - 1) & ~LIBBPF_STRICT_MAP_DEFINITIONS);
++	libbpf_set_strict_mode(LIBBPF_STRICT_ALL & ~LIBBPF_STRICT_MAP_DEFINITIONS);
+ 	obj = bpf_object__open(test->file);
+ 	err = libbpf_get_error(obj);
+ 	if (CHECK(err, "obj: %d", err))
 -- 
 2.25.1
 
