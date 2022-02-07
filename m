@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B10D84AB4EA
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 07:41:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADA104AB4DE
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 07:41:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231653AbiBGGbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 01:31:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58664 "EHLO
+        id S238680AbiBGGbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 01:31:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244576AbiBGGYZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 01:24:25 -0500
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A87C043181;
-        Sun,  6 Feb 2022 22:24:22 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V3nGPGq_1644215059;
-Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V3nGPGq_1644215059)
+        with ESMTP id S244862AbiBGGY0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 01:24:26 -0500
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC26BC043184;
+        Sun,  6 Feb 2022 22:24:24 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V3le4pS_1644215061;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V3le4pS_1644215061)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 07 Feb 2022 14:24:20 +0800
+          Mon, 07 Feb 2022 14:24:22 +0800
 From:   "D. Wythe" <alibuda@linux.alibaba.com>
 To:     kgraul@linux.ibm.com
 Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
         linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
         "D. Wythe" <alibuda@linux.alibaba.com>
-Subject: [PATCH net-next v4 0/3] net/smc: Optimizing performance in short-lived scenarios
-Date:   Mon,  7 Feb 2022 14:24:12 +0800
-Message-Id: <cover.1644214112.git.alibuda@linux.alibaba.com>
+Subject: [PATCH net-next v4 1/3] net/smc: Make smc_tcp_listen_work() independent
+Date:   Mon,  7 Feb 2022 14:24:13 +0800
+Message-Id: <e4a1e64d69ffec7d851998abb73b9e8731f175a7.1644214112.git.alibuda@linux.alibaba.com>
 X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=-8.7 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NORMAL_HTTP_TO_IP,NUMERIC_HTTP_ADDR,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <cover.1644214112.git.alibuda@linux.alibaba.com>
+References: <cover.1644214112.git.alibuda@linux.alibaba.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -40,83 +41,85 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-This patch set aims to optimizing performance of SMC in short-lived
-links scenarios, which is quite unsatisfactory right now.
+In multithread and 10K connections benchmark, the backend TCP connection
+established very slowly, and lots of TCP connections stay in SYN_SENT
+state.
 
-In our benchmark, we test it with follow scripts:
+Client: smc_run wrk -c 10000 -t 4 http://server
 
-./wrk -c 10000 -t 4 -H 'Connection: Close' -d 20 http://smc-server
+the netstate of server host shows like:
+    145042 times the listen queue of a socket overflowed
+    145042 SYNs to LISTEN sockets dropped
 
-Current performance figures like that:
+One reason of this issue is that, since the smc_tcp_listen_work() shared
+the same workqueue (smc_hs_wq) with smc_listen_work(), while the
+smc_listen_work() do blocking wait for smc connection established. Once
+the workqueue became congested, it's will block the accept() from TCP
+listen.
 
-Running 20s test @ http://11.213.45.6
-  4 threads and 10000 connections
-  4956 requests in 20.06s, 3.24MB read
-  Socket errors: connect 0, read 0, write 672, timeout 0
-Requests/sec:    247.07
-Transfer/sec:    165.28KB
+This patch creates a independent workqueue(smc_tcp_ls_wq) for
+smc_tcp_listen_work(), separate it from smc_listen_work(), which is
+quite acceptable considering that smc_tcp_listen_work() runs very fast.
 
-There are many reasons for this phenomenon, this patch set doesn't
-solve it all though, but it can be well alleviated with it in.
-
-Patch 1/3  (Make smc_tcp_listen_work() independent) :
-
-Separate smc_tcp_listen_work() from smc_listen_work(), make them
-independent of each other, the busy SMC handshake can not affect new TCP
-connections visit any more. Avoid discarding a large number of TCP
-connections after being overstock, which is undoubtedly raise the
-connection establishment time.
-
-Patch 2/3 (Limits SMC backlog connections):
-
-Since patch 1 has separated smc_tcp_listen_work() from
-smc_listen_work(), an unrestricted TCP accept have come into being. This
-patch try to put a limit on SMC backlog connections refers to
-implementation of TCP.
-
-Patch 3/3 (Fallback when SMC handshake workqueue congested):
-
-Considering the complexity of SMC handshake right now, in short-lived
-links scenarios, this may not be the main scenario of SMC though, it's
-performance is still quite poor. This Patch try to provide auto fallback
-case when SMC handshake workqueue congested, which is the sign of SMC
-handshake stacking in our opinion.
-
-Of course, it's optional.
-
-After this patch set, performance figures like that:
-
-Running 20s test @ http://11.213.45.6
-  4 threads and 10000 connections
-  693253 requests in 20.10s, 452.88MB read
-Requests/sec:  34488.13
-Transfer/sec:     22.53MB
-
-That's a quite well performance improvement, about to 6 to 7 times in my
-environment.
+Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
 ---
-changelog:
-v2 -> v1:
-- fix compile warning
-- fix invalid dependencies in kconfig
-v3 -> v2:
-- correct spelling mistakes
-- fix useless variable declare
-v4 -> v3
-- make smc_tcp_ls_wq be static 
----
-D. Wythe (3):
-  net/smc: Make smc_tcp_listen_work() independent
-  net/smc: Limits backlog connections
-  net/smc: Fallback when handshake workqueue congested
+ net/smc/af_smc.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
- include/linux/tcp.h  |  1 +
- net/ipv4/tcp_input.c |  3 +-
- net/smc/Kconfig      | 12 ++++++++
- net/smc/af_smc.c     | 78 ++++++++++++++++++++++++++++++++++++++++++++++++++--
- net/smc/smc.h        |  4 +++
- 5 files changed, 95 insertions(+), 3 deletions(-)
-
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index d5ea62b..80bdd7b 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -59,6 +59,7 @@
+ 						 * creation on client
+ 						 */
+ 
++static struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work */
+ struct workqueue_struct	*smc_hs_wq;	/* wq for handshake work */
+ struct workqueue_struct	*smc_close_wq;	/* wq for close work */
+ 
+@@ -2124,7 +2125,7 @@ static void smc_clcsock_data_ready(struct sock *listen_clcsock)
+ 	lsmc->clcsk_data_ready(listen_clcsock);
+ 	if (lsmc->sk.sk_state == SMC_LISTEN) {
+ 		sock_hold(&lsmc->sk); /* sock_put in smc_tcp_listen_work() */
+-		if (!queue_work(smc_hs_wq, &lsmc->tcp_listen_work))
++		if (!queue_work(smc_tcp_ls_wq, &lsmc->tcp_listen_work))
+ 			sock_put(&lsmc->sk);
+ 	}
+ }
+@@ -2919,9 +2920,14 @@ static int __init smc_init(void)
+ 		goto out_nl;
+ 
+ 	rc = -ENOMEM;
++
++	smc_tcp_ls_wq = alloc_workqueue("smc_tcp_ls_wq", 0, 0);
++	if (!smc_tcp_ls_wq)
++		goto out_pnet;
++
+ 	smc_hs_wq = alloc_workqueue("smc_hs_wq", 0, 0);
+ 	if (!smc_hs_wq)
+-		goto out_pnet;
++		goto out_alloc_tcp_ls_wq;
+ 
+ 	smc_close_wq = alloc_workqueue("smc_close_wq", 0, 0);
+ 	if (!smc_close_wq)
+@@ -2992,6 +2998,8 @@ static int __init smc_init(void)
+ 	destroy_workqueue(smc_close_wq);
+ out_alloc_hs_wq:
+ 	destroy_workqueue(smc_hs_wq);
++out_alloc_tcp_ls_wq:
++	destroy_workqueue(smc_tcp_ls_wq);
+ out_pnet:
+ 	smc_pnet_exit();
+ out_nl:
+@@ -3010,6 +3018,7 @@ static void __exit smc_exit(void)
+ 	smc_core_exit();
+ 	smc_ib_unregister_client();
+ 	destroy_workqueue(smc_close_wq);
++	destroy_workqueue(smc_tcp_ls_wq);
+ 	destroy_workqueue(smc_hs_wq);
+ 	proto_unregister(&smc_proto6);
+ 	proto_unregister(&smc_proto);
 -- 
 1.8.3.1
 
