@@ -2,113 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 129E34AB795
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 10:41:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85B3F4AB7A7
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 10:41:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233297AbiBGJeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 04:34:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56080 "EHLO
+        id S236405AbiBGJd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 04:33:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245335AbiBGJZ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 04:25:56 -0500
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E0E9C043181;
-        Mon,  7 Feb 2022 01:25:55 -0800 (PST)
-Received: by mail-qk1-x736.google.com with SMTP id 13so10359471qkd.13;
-        Mon, 07 Feb 2022 01:25:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y/dxAF3x0GJD/yOWW2//ISQPOYVEfNyN7bTdBahKbf8=;
-        b=X55bg7//XsI+mNmzED7n8IC1BbbSnen+0lp9U3WpmhieixI6C5F0a0eMGYWPQp9/+t
-         WOYhdY/3xwoEVQD/0ndQRCIChHDI18spnb5FlyYTYouTHXfFcOx/GHIjvvaLQivTijFO
-         k3pQF96fzxnIGUx/hRipI16mf3YJlkg9NHMP0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y/dxAF3x0GJD/yOWW2//ISQPOYVEfNyN7bTdBahKbf8=;
-        b=74JgpikP9Arj7T2+kRHs/ZVqSaBCD66cU7KvjOl84lunXI25WSQol9dAWwapSxN9MW
-         qOKNCL9JN2H6XtbMGq+sF4ZdBEYRH6Trb5PyPgSyws6zkAuVF3jKIFImyjeBSekFf016
-         9Cuk8ypsXBZuoyGB5fmm27XrROZEr+c7GrNrx4jsZSH19ZE9X9zK2zxEk2Opc1OEWqsW
-         VSIc9TrulamUBapyiz7hbe8z7TdPx3lRro7Le2u/eHdjnICJDoT5sl0RlpSrKPETm5CY
-         EFrknG5zbBllQM5r3/2kPsxJeP0u+uprytoNcB89j74y+cxMGleuAi+bic5MKe3w4jx/
-         egbg==
-X-Gm-Message-State: AOAM532JCoiVue3AumkNDwhEKtm7kub7QRHb++oZ7iDng2P6I7+iZeUF
-        ymBTyUfD/NWq5pDqnAHOnyMwQ27DGy/qc00TRWk=
-X-Google-Smtp-Source: ABdhPJyDzNdH8+TZMzgRoftC9sJcMcIAki0rXOsSE251InEIM467OEgMjjTjX5n8rS8lJq8A3IXiBXMyKlmkEf5AIu8=
-X-Received: by 2002:a05:620a:44c7:: with SMTP id y7mr5967705qkp.347.1644225954191;
- Mon, 07 Feb 2022 01:25:54 -0800 (PST)
+        with ESMTP id S1350493AbiBGJ2F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 04:28:05 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806B8C043181
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 01:28:04 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nH0JP-0008FG-HX; Mon, 07 Feb 2022 10:27:55 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nH0JN-0004kE-R4; Mon, 07 Feb 2022 10:27:53 +0100
+Date:   Mon, 7 Feb 2022 10:27:53 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     alexandru.tachici@analog.com, davem@davemloft.net,
+        devicetree@vger.kernel.org, hkallweit1@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, robh+dt@kernel.org
+Subject: Re: [PATCH v4 4/7] net: phy: Add 10BASE-T1L support in phy-c45
+Message-ID: <20220207092753.GC23727@pengutronix.de>
+References: <20211210110509.20970-1-alexandru.tachici@analog.com>
+ <20211210110509.20970-5-alexandru.tachici@analog.com>
+ <YbUTJdKN9kQAJzqA@lunn.ch>
 MIME-Version: 1.0
-References: <20220207084912.9309-1-cai.huoqing@linux.dev>
-In-Reply-To: <20220207084912.9309-1-cai.huoqing@linux.dev>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Mon, 7 Feb 2022 09:25:42 +0000
-Message-ID: <CACPK8Xcs-qsO5COcSPZBsShhJWtDwfhreuYfkBy1pLXh8nz3Ow@mail.gmail.com>
-Subject: Re: [PATCH] net: ethernet: litex: Add the dependency on HAS_IOMEM
-To:     Cai Huoqing <cai.huoqing@linux.dev>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YbUTJdKN9kQAJzqA@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:26:12 up 58 days, 18:11, 81 users,  load average: 0.28, 0.29,
+ 0.50
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 7 Feb 2022 at 08:49, Cai Huoqing <cai.huoqing@linux.dev> wrote:
->
-> The helper function devm_platform_ioremap_resource_xxx()
-> needs HAS_IOMEM enabled, so add the dependency on HAS_IOMEM.
->
-> Fixes: 464a57281f29 ("net/mlxbf_gige: Make use of devm_platform_ioremap_resourcexxx()")
+Hi Alexandru,
 
-That looks wrong...
+On Sat, Dec 11, 2021 at 10:07:49PM +0100, Andrew Lunn wrote:
+> > +		ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
+> > +		if (ret < 0)
+> > +			return ret;
+> > +
+> > +		if (ret & MDIO_PMA_EXTABLE_BT1)
+> 
+> 
+> This pattern of reading the MDIO_PMA_EXTABLE register and then looking
+> for bit MDIO_PMA_EXTABLE_BT1 happens a lot. It is not something which
+> is expected to change is it? So i wounder if it should be read once
+> and stored away?
 
-$ git show --oneline --stat  464a57281f29
-464a57281f29 net/mlxbf_gige: Make use of devm_platform_ioremap_resourcexxx()
- drivers/net/ethernet/litex/litex_liteeth.c                 |  7 ++-----
- drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c | 21
-+++------------------
- drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c |  7 +------
- drivers/net/ethernet/ni/nixge.c
+What is the state of this patches? Will you be able to make requested
+changes and send new version?
 
-That's a strange commit message for the litex driver. Similarly for
-the ni driver. Did something go wrong there?
-
-A better fixes line would be ee7da21ac4c3be1f618b6358e0a38739a5d1773e,
-as the original driver addition also has the iomem dependency.
-
-> Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
-> ---
->  drivers/net/ethernet/litex/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/litex/Kconfig b/drivers/net/ethernet/litex/Kconfig
-> index f99adbf26ab4..04345b929d8e 100644
-> --- a/drivers/net/ethernet/litex/Kconfig
-> +++ b/drivers/net/ethernet/litex/Kconfig
-> @@ -17,7 +17,7 @@ if NET_VENDOR_LITEX
->
->  config LITEX_LITEETH
->         tristate "LiteX Ethernet support"
-> -       depends on OF
-> +       depends on OF && HAS_IOMEM
->         help
->           If you wish to compile a kernel for hardware with a LiteX LiteEth
->           device then you should answer Y to this.
-> --
-> 2.25.1
->
+Regards,
+Oleskij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
