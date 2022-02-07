@@ -2,64 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB6CC4AB884
+	by mail.lfdr.de (Postfix) with ESMTP id 5CE134AB883
 	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 11:16:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241889AbiBGKNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 05:13:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45782 "EHLO
+        id S1358219AbiBGKNK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 05:13:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244994AbiBGKIH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 05:08:07 -0500
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29032C043181;
-        Mon,  7 Feb 2022 02:08:06 -0800 (PST)
-Received: by mail-lf1-x143.google.com with SMTP id x23so25894360lfc.0;
-        Mon, 07 Feb 2022 02:08:06 -0800 (PST)
+        with ESMTP id S245324AbiBGKIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 05:08:22 -0500
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BEE9C043181;
+        Mon,  7 Feb 2022 02:08:21 -0800 (PST)
+Received: by mail-lj1-x242.google.com with SMTP id z7so18780005ljj.4;
+        Mon, 07 Feb 2022 02:08:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:organization:content-transfer-encoding;
-        bh=cEAT+Hy10Io/v/6MX2mvQJLKyjX37zLdKJy2cGs9ssg=;
-        b=VyAN6wJkNW7abvMrzl7SF3wzE97exy5eu7WmTzSN/TOxB5I/EWFzIYd7yfLAUu21Xu
-         BYgDBMggIiQ1lmLxYy0ZdfIkXc58GNd+CKyEvB7BCXkEWoQeRyxPI/jpCUcwMOow3JNB
-         gxoWkImounf5/SN0rcQHZBn0tri5gozybXcsJwayWGf3AtiY5c8bzX0YhjGn7e+TIdLE
-         tAhkQEEGaI0NmkuNjZarowcREP1UowuHaFpfBXbGCaAGxoML6WxJ4X5YIz2xz8vXBzX2
-         wE/3+A63YSnzIROSRsFCuaynNLRM1RQhhYSfaBL3UEfbaqtnJwvTNuz9+TqCLxfQyBrA
-         XBDg==
+        bh=s5p54l/5ghXdgSmZcw68jguzPsn8MNmzYbYS1HcBzhQ=;
+        b=RzMbPy1Ln5QC6ew2bpQt2fFy5Gg4iv7JtdI3IUXtfqISS/HnN0e86EcT7Di/nEKMxE
+         1NadGpBz6dm7Q4yJ5wejlLcbT2YiydWbY0KrhlqgdPm/o3bPUTm+yqbvl0nNIqjwoaD2
+         SGBnI8aDBDsezm963aQhsje0reUXEAc0i9BHqFs6iUaa5NdDNOZ6kHeH+LqpXjDpUkE+
+         5Z+l92urz0maruhjX3vzEGZf+tks0CM3tCNjn9Dzi0C+1ImRdLzgDv79IzTC0DzPlTs9
+         eZNh5g0ZdlI8FpmT4zgLHyw1Twr3mcA0Vd2WzQUWxekdtA7YXTx6O4RNsztpkypFklQP
+         sPbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:organization:content-transfer-encoding;
-        bh=cEAT+Hy10Io/v/6MX2mvQJLKyjX37zLdKJy2cGs9ssg=;
-        b=XjcxSrgGp/YoCtjwqJpX90eb8+K91D+zk3GIPaeMMJ+PdErEzux4hkxufCuaUoL/MS
-         abMPgxMyD7fLrQJtK3OVHl6jRjCoQTShVI6qjo+7dYCW8O3cqGss3ViAGxxralOB3rl2
-         7VP5alX3Tcjb+xtb2UlmAl6te2D1k5Da203h2rRlcD5wOKxcZJysRIU0JpdAdKK1F3zW
-         AiUebcPBVl6XeV+Sxzfz92rYfziOFEPRJByQ/W/hLVEOQZRXMLifRyTRkOKLAo/L4F/F
-         W4lR19ZzroZsGPegyyKM//3YUl1IpNUBaV3eqcasEq/w4QuNZrdIEFIIerx2N4jZzlfi
-         cOYw==
-X-Gm-Message-State: AOAM53376lCRxt+jvcqFBSjmXCI7FM3DTovIkUeXkM6j+4v5baJtsGX9
-        el4yHhZ3bZLSTELjyTYNU60=
-X-Google-Smtp-Source: ABdhPJyQW07MI6sMuY6Nkop9ESztUBKa8lVcQLLrm1lvEue2qyLWdRiRnAgkjYWXinKAN2kFkAibTw==
-X-Received: by 2002:ac2:54b7:: with SMTP id w23mr7704396lfk.6.1644228484590;
-        Mon, 07 Feb 2022 02:08:04 -0800 (PST)
+        bh=s5p54l/5ghXdgSmZcw68jguzPsn8MNmzYbYS1HcBzhQ=;
+        b=gC0EIV42IwLPt8hfq1N1cuK8Gk2FkDoy2KgsSV5fHjpbllvWhn2SXpfJqRxc5NWZbm
+         8Ue2cB/4EewzlWAzYk4gcI8R2VkVISfV46E3mCYQ5OaawB5ca5pN4WXusxZan8MbOYIO
+         rj6lY1u8tMwwclUpGMkzog5XmwxTxhMHW6hEXFegRMnUIyXVuX79tIV7pWJ97eU2NOi6
+         lLhIUSV8TkTb5bnngWD4KhyHB6ZyjWLT5lNL6Zin+5Xekg3hj4//cIldgVDhPSVA7sR9
+         Y80CQTu2C/2PdY3iydzefHyzkJMW5Ksa0XBYYJytYasoXUsJ84wtfF9jtjXanXg+Jjap
+         TH+A==
+X-Gm-Message-State: AOAM532i+g6/yoK1PUTfVgmlN32fBJez3RyU4uBbmVyOYHluBCOkkE37
+        rj3104p6e5ytcGsuJUESUpk=
+X-Google-Smtp-Source: ABdhPJxMQy4Pq8xSBb2Kxdy0UnyMlVEthzWHERuU3S/+zvpQY031kDEBJGyRzezNzLjiKs+NiMTyJg==
+X-Received: by 2002:a2e:5810:: with SMTP id m16mr8134875ljb.261.1644228499706;
+        Mon, 07 Feb 2022 02:08:19 -0800 (PST)
 Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id k12sm1546034ljh.45.2022.02.07.02.08.03
+        by smtp.gmail.com with ESMTPSA id k12sm1546034ljh.45.2022.02.07.02.08.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 02:08:04 -0800 (PST)
+        Mon, 07 Feb 2022 02:08:19 -0800 (PST)
 From:   Hans Schultz <schultz.hans@gmail.com>
 X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org,
         Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/4] net: dsa: mv88e6xxx: Add support for bridge port locked feature
-Date:   Mon,  7 Feb 2022 11:07:41 +0100
-Message-Id: <20220207100742.15087-4-schultz.hans+netdev@gmail.com>
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 4/4] net: bridge: Refactor bridge port in locked mode to use jump labels
+Date:   Mon,  7 Feb 2022 11:07:42 +0100
+Message-Id: <20220207100742.15087-5-schultz.hans+netdev@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220207100742.15087-1-schultz.hans+netdev@gmail.com>
 References: <20220207100742.15087-1-schultz.hans+netdev@gmail.com>
@@ -76,104 +74,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Supporting bridge port locked mode using the 802.1X mode in Marvell
-mv88e6xxx switchcores is described in the '88E6096/88E6097/88E6097F
-Datasheet', sections 4.4.6, 4.4.7 and 5.1.2.1 (Drop on Lock).
-
-This feature is implemented here facilitated by the locked port flag.
+As the locked mode feature is in the hot path of the bridge modules
+reception of packets, it needs to be refactored to use jump labels
+for optimization.
 
 Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c |  9 ++++++++-
- drivers/net/dsa/mv88e6xxx/port.c | 33 ++++++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/port.h |  3 +++
- 3 files changed, 44 insertions(+), 1 deletion(-)
+ net/bridge/br_input.c   | 22 ++++++++++++++++++----
+ net/bridge/br_netlink.c |  6 ++++++
+ net/bridge/br_private.h |  2 ++
+ 3 files changed, 26 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 58ca684d73f7..eed3713b97ae 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -5881,7 +5881,7 @@ static int mv88e6xxx_port_pre_bridge_flags(struct dsa_switch *ds, int port,
- 	const struct mv88e6xxx_ops *ops;
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index 469e3adbce07..6fc428d6bac5 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -23,6 +23,18 @@
+ #include "br_private.h"
+ #include "br_private_tunnel.h"
  
- 	if (flags.mask & ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
--			   BR_BCAST_FLOOD))
-+			   BR_BCAST_FLOOD | BR_PORT_LOCKED))
- 		return -EINVAL;
- 
- 	ops = chip->info->ops;
-@@ -5939,6 +5939,13 @@ static int mv88e6xxx_port_bridge_flags(struct dsa_switch *ds, int port,
- 			goto out;
- 	}
- 
-+	if (flags.mask & BR_PORT_LOCKED) {
-+		bool locked = !!(flags.val & BR_PORT_LOCKED);
++static struct static_key_false br_input_locked_port_feature;
 +
-+		err = mv88e6xxx_port_set_lock(chip, port, locked);
-+		if (err)
-+			goto out;
-+	}
- out:
- 	mv88e6xxx_reg_unlock(chip);
- 
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index ab41619a809b..2279936429f9 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -1234,6 +1234,39 @@ int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
- 	return err;
- }
- 
-+int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
-+			    bool locked)
++void br_input_locked_port_add(void)
 +{
-+	u16 reg;
-+	int err;
-+
-+	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg);
-+	if (err)
-+		return err;
-+
-+	reg &= ~MV88E6XXX_PORT_CTL0_DROP_ON_LOCK;
-+	if (locked)
-+		reg |= MV88E6XXX_PORT_CTL0_DROP_ON_LOCK;
-+
-+	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL0, reg);
-+	if (err)
-+		return err;
-+
-+	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_ASSOC_VECTOR, &reg);
-+	if (err)
-+		return err;
-+
-+	reg &= ~MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT;
-+	if (locked)
-+		reg |= MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT;
-+
-+	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_ASSOC_VECTOR, reg);
-+	if (err)
-+		return err;
-+
-+	return 0;
++	static_branch_inc(&br_input_locked_port_feature);
 +}
 +
- int mv88e6xxx_port_set_8021q_mode(struct mv88e6xxx_chip *chip, int port,
- 				  u16 mode)
- {
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index 03382b66f800..655d942ac657 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -365,6 +365,9 @@ int mv88e6xxx_port_set_fid(struct mv88e6xxx_chip *chip, int port, u16 fid);
- int mv88e6xxx_port_get_pvid(struct mv88e6xxx_chip *chip, int port, u16 *pvid);
- int mv88e6xxx_port_set_pvid(struct mv88e6xxx_chip *chip, int port, u16 pvid);
- 
-+int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
-+			    bool locked);
++void br_input_locked_port_remove(void)
++{
++	static_branch_dec(&br_input_locked_port_feature);
++}
 +
- int mv88e6xxx_port_set_8021q_mode(struct mv88e6xxx_chip *chip, int port,
- 				  u16 mode);
- int mv88e6095_port_tag_remap(struct mv88e6xxx_chip *chip, int port);
+ static int
+ br_netif_receive_skb(struct net *net, struct sock *sk, struct sk_buff *skb)
+ {
+@@ -91,10 +103,12 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 				&state, &vlan))
+ 		goto out;
+ 
+-	if (p->flags & BR_PORT_LOCKED) {
+-		fdb_entry = br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
+-		if (!(fdb_entry && fdb_entry->dst == p))
+-			goto drop;
++	if (static_branch_unlikely(&br_input_locked_port_feature)) {
++		if (p->flags & BR_PORT_LOCKED) {
++			fdb_entry = br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
++			if (!(fdb_entry && fdb_entry->dst == p))
++				goto drop;
++		}
+ 	}
+ 
+ 	nbp_switchdev_frame_mark(p, skb);
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index 7d4432ca9a20..e3dbe9fed75c 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -860,6 +860,7 @@ static int br_set_port_state(struct net_bridge_port *p, u8 state)
+ static void br_set_port_flag(struct net_bridge_port *p, struct nlattr *tb[],
+ 			     int attrtype, unsigned long mask)
+ {
++	bool locked = p->flags & BR_PORT_LOCKED;
+ 	if (!tb[attrtype])
+ 		return;
+ 
+@@ -867,6 +868,11 @@ static void br_set_port_flag(struct net_bridge_port *p, struct nlattr *tb[],
+ 		p->flags |= mask;
+ 	else
+ 		p->flags &= ~mask;
++
++	if ((p->flags & BR_PORT_LOCKED) && !locked)
++		br_input_locked_port_add();
++	if (!(p->flags & BR_PORT_LOCKED) && locked)
++		br_input_locked_port_remove();
+ }
+ 
+ /* Process bridge protocol info on port */
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 2661dda1a92b..0ec3ef897978 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -832,6 +832,8 @@ void br_manage_promisc(struct net_bridge *br);
+ int nbp_backup_change(struct net_bridge_port *p, struct net_device *backup_dev);
+ 
+ /* br_input.c */
++void br_input_locked_port_add(void);
++void br_input_locked_port_remove(void);
+ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb);
+ rx_handler_func_t *br_get_rx_handler(const struct net_device *dev);
+ 
 -- 
 2.30.2
 
