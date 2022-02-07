@@ -2,48 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD2A64ABFED
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 14:49:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D38DA4AC0D7
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 15:16:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387976AbiBGNqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 08:46:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55702 "EHLO
+        id S1349134AbiBGOQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 09:16:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378827AbiBGNSw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 08:18:52 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D82DC0401C1;
-        Mon,  7 Feb 2022 05:18:51 -0800 (PST)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jsmsr6fdHz689YM;
-        Mon,  7 Feb 2022 21:18:08 +0800 (CST)
-Received: from [10.122.132.241] (10.122.132.241) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Mon, 7 Feb 2022 14:18:48 +0100
-Message-ID: <51967ba5-519a-8af2-76ce-eafa8c1dea33@huawei.com>
-Date:   Mon, 7 Feb 2022 16:18:47 +0300
+        with ESMTP id S1390416AbiBGN5e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 08:57:34 -0500
+X-Greylist: delayed 1762 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 05:57:29 PST
+Received: from mx07-0057a101.pphosted.com (mx07-0057a101.pphosted.com [205.220.184.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32DD4C0401C5
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 05:57:28 -0800 (PST)
+Received: from pps.filterd (m0214197.ppops.net [127.0.0.1])
+        by mx07-0057a101.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 217BSTR9014899;
+        Mon, 7 Feb 2022 14:27:46 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=westermo.com; h=date : from : to :
+ cc : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=12052020; bh=pQ4+uX/QMochd9sPwGFaAzokREF0acE7OJnWSqGMGEw=;
+ b=QucZcBGxppDVWb0WpuqeGoVYbu09qtfwt8IBFK0biObQnR4RV/xtLhD5/nRF/5Br+J8G
+ O9kz7a5VlpUbip2/vX3vqxhQeKepKCjW6KZPoN01GPYFYRKmTXN3L3tQVv6RVlOQWSgu
+ 2Dhjij6H0TlbYIb26yl08VZT5JigzHo+Z1OZNiON2ryxroKqtKI/x9zj7ucxNargBy2+
+ dRkc2knu7kcO8qZsD5NB3j6SonNCTU4SYLSqCr8uk5cESL8PA2n/yP1LXf7uIIjo9l30
+ g3K5I8HdX53Gm6PCpGKeeLzGRqphVpY3uYc8u/BVJoXI08O+ApY0uuxelg4AWoPL/yUg lA== 
+Received: from mail.beijerelectronics.com ([195.67.87.131])
+        by mx07-0057a101.pphosted.com (PPS) with ESMTPS id 3e1efe9xbr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 14:27:46 +0100
+Received: from westermo.com (192.168.131.30) by
+ EX01GLOBAL.beijerelectronics.com (10.101.10.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.2375.17; Mon, 7 Feb 2022 14:27:45 +0100
+Date:   Mon, 7 Feb 2022 14:27:44 +0100
+From:   Jacques de Laval <Jacques.De.Laval@westermo.com>
+To:     David Ahern <dsahern@gmail.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/1] net: Add new protocol attribute to IP
+ addresses
+Message-ID: <20220207132744.mnk62qaxngswb3dz@westermo.com>
+References: <42653bf5-ba76-2561-9cf9-27b0ae730210@gmail.com>
+ <20220204180728.1597731-1-Jacques.De.Laval@westermo.com>
+ <1f5e05a3-7d07-0412-1db2-8a848aa868d9@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC PATCH 0/2] landlock network implementation cover letter
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>
-References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
- <85450679-51fd-e5ae-b994-74bda3041739@digikod.net>
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-In-Reply-To: <85450679-51fd-e5ae-b994-74bda3041739@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml752-chm.china.huawei.com (10.201.108.202) To
- fraeml704-chm.china.huawei.com (10.206.15.53)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1f5e05a3-7d07-0412-1db2-8a848aa868d9@gmail.com>
+X-Originating-IP: [192.168.131.30]
+X-ClientProxiedBy: wsevst-s0023.westermo.com (192.168.130.120) To
+ EX01GLOBAL.beijerelectronics.com (10.101.10.25)
+X-Proofpoint-GUID: PwFDPBr1pR2kx8SUsCUIq64Wbne3dOG8
+X-Proofpoint-ORIG-GUID: PwFDPBr1pR2kx8SUsCUIq64Wbne3dOG8
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -52,130 +66,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Feb 04, 2022 at 09:10:51PM -0700, David Ahern wrote:
+> On 2/4/22 11:07 AM, Jacques de Laval wrote:
+> >>> @@ -69,4 +70,7 @@ struct ifa_cacheinfo {
+> >>>  #define IFA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ifaddrmsg))
+> >>>  #endif
+> >>>  
+> >>> +/* ifa_protocol */
+> >>> +#define IFAPROT_UNSPEC	0
+> >>
+> >> *If* the value is just a passthrough (userspace to kernel and back), no
+> >> need for this uapi. However, have you considered builtin protocol labels
+> >> - e.g. for autoconf, LLA, etc. Kernel generated vs RAs vs userspace
+> >> adding it.
+> > 
+> > Agreed. For my own (very isolated) use case I only need the passthrough,
+> > but I can see that it would make sense to standardize some labels.
+> > I was trying to give this some thought but I have to admit I copped out
+> > because of my limited knowledge on what labels would be reasonable to
+> > reserve.
+> > 
+> > Based on what you mention, do you think the list bellow would make sense?
+> > 
+> > #define IFAPROT_UNSPEC		0  /* unspecified */
+> > #define IFAPROT_KERNEL_LO	1  /* loopback */
+> > #define IFAPROT_KERNEL_RA	2  /* auto assigned by kernel from router announcement */
+> > #define IFAPROT_KERNEL_LL	3  /* link-local set by kernel */
+> 
+> Those above look good to me.
+> 
+> > #define IFAPROT_STATIC		4  /* set by admin */
+> > #define IFAPROT_AUTO		5  /* DHCP, BOOTP etc. */
+> > #define IFAPROT_LL		6  /* link-local set by userspace */
+> > 
+> > Or do you think it needs more granularity?
+> 
+> anything coming from userspace can just be a passthrough, so protocol
+> label is only set if it is an autonomous action by the kernel or some
+> app passed in a value.
+> 
 
-
-2/1/2022 8:53 PM, Mickaël Salaün пишет:
-> 
-> On 24/01/2022 09:02, Konstantin Meskhidze wrote:
->> Hi, all!
->>
->> This is a new bunch of RFC patches related to Landlock LSM network 
->> confinement.
->> Here are previous discussions:
->> 1. 
->> https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/ 
->>
->> 2. 
->> https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/ 
->>
->>
->> As in previous RFCs, 2 hooks are supported:
->>    - hook_socket_bind()
->>    - hook_socket_connect()
->>
->> Selftest are provided in tools/testing/selftests/landlock/network_test.c;
->> Implementation was tested in QEMU invironment with 5.13 kernel version:
-> 
-> Again, you need to base your work on the latest kernel version.
-> 
-   Is it because there are new Landlock features in a latest kernel
-   version?
-   I thought 5.13 kernel version and the latest one have the same
-   Landlock functionality and there will not be rebasing problems in
-   future. But anyway I will base the work on the latest kernel.
-   Which kernel version do you work on now?
-
-> 
->>   1. base_test - passed all tests
->>   2. fs_test - passed 44/46 tests. 2 tests related to overlayfs failed.
->>      Probably, I have wrong config options for overlayfs.
-> 
-> The minimal required configuration is listed in the "config" file. You 
-> need to update it for the network tests as well. You missed the 
-> ptrace_test. To test everything you can run:
-> fakeroot make -C tools/testing/selftests TARGETS=landlock gen_tar
-> and then extract 
-> tools/testing/selftests/kselftest_install/kselftest-packages/kselftest.tar.gz 
-> and execute run_kselftest.sh on your VM.
-
-   Thank you. I missed config file in landlock selftests.
-   I will launch all landlock tests.
-> 
-> 
->>   3. network_test - passed all tests.
->>      Please give your suggestions about test cover in network_test.c
->>
->> Implementation related issues
->> =============================
-> 
-> It is more a changelog than issues. ;)
-
-   Ok. Thanks. I will add a changelog into the next patches.
-> 
-> 
->>
->> 1. Access masks array refactored into 1D one and changed
->> to 32 bits. Filesystem masks occupy 16 lower bits and network
->> masks reside in 16 upper bits.
->>
->>        struct landlock_ruleset {
->>              ...
->>              ...
->>              u32 access_masks[];
->>        }
->>
->> 2. Refactor API functions in ruleset.c:
->>      1. Add (void *)object argument.
->>      2. Add u16 rule_type argument.
->>
->>    - In filesystem case the "object" is defined by underlying inode.
->>    In network case the "object" is defined by a port. There is
->>    a union containing either a struct landlock_object pointer or a
->>    raw data (here a u16 port):
->>      union {
->>          struct landlock_object *ptr;
->>          uintptr_t data;
->>      } object;
->>
->>    - Everytime when a rule is inserted it's needed to provide a rule 
->> type:
->>
->>      landlock_insert_rule(ruleset, (void *)object, access, rule_type)
->>        1. A rule_type could be or LANDLOCK_RULE_NET_SERVICE or
->>        LANDLOCK_RULE_PATH_BENEATH;
->>        2. (void *) object - is either landlock_object *ptr or port value;
->>
->> 3. Use two rb_trees in ruleset structure:
->>      1. root_inode - for filesystem objects (inodes).
->>      2. root_net_port - for network port objects.
-> 
-> Thanks for these explanations!
-
-   Thanks for the review!!!
-> 
-> 
->>
->> Konstantin Meskhidze (2):
->>    landlock: TCP network hooks implementation
->>    landlock: selftests for bind and connect hooks
->>
->>   include/uapi/linux/landlock.h                 |  52 +++
->>   security/landlock/Makefile                    |   2 +-
->>   security/landlock/fs.c                        |  12 +-
->>   security/landlock/limits.h                    |   6 +
->>   security/landlock/net.c                       | 175 +++++++++
->>   security/landlock/net.h                       |  21 ++
->>   security/landlock/ruleset.c                   | 167 ++++++---
->>   security/landlock/ruleset.h                   |  40 +-
->>   security/landlock/setup.c                     |   3 +
->>   security/landlock/syscalls.c                  | 142 ++++---
->>   .../testing/selftests/landlock/network_test.c | 346 ++++++++++++++++++
->>   11 files changed, 860 insertions(+), 106 deletions(-)
->>   create mode 100644 security/landlock/net.c
->>   create mode 100644 security/landlock/net.h
->>   create mode 100644 tools/testing/selftests/landlock/network_test.c
->>
->> -- 
->> 2.25.1
->>
-> .
+Thanks David, that makes sense. Will include the first defines in v2
+and try to set them when appropriate.
