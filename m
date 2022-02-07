@@ -2,104 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A25F94AC26C
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 16:07:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B42604AC275
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 16:07:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239345AbiBGPFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 10:05:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54274 "EHLO
+        id S1383422AbiBGPFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 10:05:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442281AbiBGOsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 09:48:30 -0500
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C76FC0401C1;
-        Mon,  7 Feb 2022 06:48:29 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 480C52000D;
-        Mon,  7 Feb 2022 14:48:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644245308;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3N1S3rGLbsDgwaPfgEoq52NBP1iyP4isiXbkLeW13wk=;
-        b=PaGkctaRg5RDmERt6GXCqnai30UrvaT4v50vi5lN8ZnZ/vvXU46xJMd/0/tDZIi3iGe0V2
-        URwTf736vQnzGJGYQuZTmIr96kTQZvzwnt3xXYcZ8qr2njGd2eHF2We/aitRnmu3zKvtGR
-        0vyWFtb9sKzsdYUk/ZE7lSS0RsfHfXnjcXgR6ukDlYOPAIE0sV0S7IomYFW91ZqTLbwWb7
-        xCeYZLy7fwXuncZY3cqI731jGmTFr4PdMUG4sVvf7/WCJxy/PJEFxeXfKcP7Sy2hIPcGQu
-        WT9sMGQWimO6BwXnUMIoSnORHki9tlPpA8R5R5wuN5ZkR4H1gAWGnwsk0IgYXw==
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v2 14/14] net: mac802154: Introduce a synchronous API for MLME commands
-Date:   Mon,  7 Feb 2022 15:48:04 +0100
-Message-Id: <20220207144804.708118-15-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220207144804.708118-1-miquel.raynal@bootlin.com>
-References: <20220207144804.708118-1-miquel.raynal@bootlin.com>
+        with ESMTP id S1442510AbiBGOwT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 09:52:19 -0500
+Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D79FC0401C3
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 06:52:18 -0800 (PST)
+Received: by mail-vk1-xa2a.google.com with SMTP id d27so402853vkn.5
+        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 06:52:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kinvolk.io; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xjCnOU0sLvWX+vekLxUSA4g/zhKs1G47jm1FsaM9SkY=;
+        b=avISx7AaE3dddYOA5hk9MWO/39e1yUX4nZZIuwMN/T+U2M6SC+lHp5EPEbzsvVdlsX
+         uX/w9sHAauQduMNXqxpSIPTEIrDaqcx1/pJ/AUapN1wVuwWdW4ZeulQLamNUZbqvACtN
+         td3rUUqWcai8mQ1ODsY/T23oHO6djLAsQqg0w=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xjCnOU0sLvWX+vekLxUSA4g/zhKs1G47jm1FsaM9SkY=;
+        b=68lf3ZTrX9OO+QPzh2cpYqXciyuYF8YOJ7jraIXqNgWRxBTbhPR0HgO+6ST7FLugRO
+         Z95gDl6QNFOpJLwXfIEQ2WoXqJ18P9vZi4b/KodejFOMGni5CdP7yCxkC9yL0X3+wrfL
+         hwYgA39/eKiZ2kJTU6Eg+4uXJpy3kuHUOAnjnNAtzA+MdJYXu4QECxNMy0nY6NOMUpuS
+         VE32jMbQuoziSMT7QC166Rd17aOtvgEumvpCRZIvc0q1/O+YHXp2Ym7chJ+CrxxmFTdB
+         cjdDLPl1zn/T880IPHkAslM9qiwrtlKMLER2Qzy28g8NGJRtkhEnstOViW1rSyuVU9rk
+         MPZA==
+X-Gm-Message-State: AOAM532UKAIG9kJ8+PxSC3NxyS8tEuZi2uDHV46qTjbjROOO39U8bBwC
+        fW7MP9eLB21VX0AqC73AnQzZwL9luOBhV0oW2EGrHVJj99APCGvdbxIYoD9+WkE9sss+tB7Wh1O
+        1YG8GHNgLrGfB6QDWJTMGcT08G7JNRcQ4BJFBsPQ4m8gjyb8BE4WUJP4rxC99ioTJY5AMtw==
+X-Google-Smtp-Source: ABdhPJy8fboLlgBsr7NTyQTdbL6k86RpEJ9ALKHfTiQ8ly9f0OpXci9S+ZlTSMzOkryZUrHCngj/2w==
+X-Received: by 2002:ac5:c94f:: with SMTP id s15mr5005605vkm.35.1644245535145;
+        Mon, 07 Feb 2022 06:52:15 -0800 (PST)
+Received: from localhost.localdomain ([181.136.110.101])
+        by smtp.gmail.com with ESMTPSA id r14sm581347vke.20.2022.02.07.06.52.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 06:52:14 -0800 (PST)
+From:   =?UTF-8?q?Mauricio=20V=C3=A1squez?= <mauricio@kinvolk.io>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next v2 0/3] bpf: Fix strict mode calculation
+Date:   Mon,  7 Feb 2022 09:50:49 -0500
+Message-Id: <20220207145052.124421-1-mauricio@kinvolk.io>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the slow path, we need to wait for each command to be processed
-before continuing so let's introduce an helper which does the
-transmission and blocks until it gets notified of its asynchronous
-completion. This helper is going to be used when introducing scan
-support.
+This series fixes a bad calculation of strict mode in two places. It
+also updates libbpf to make it easier for the users to disable a
+specific LIBBPF_STRICT_* flag.
 
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- net/mac802154/ieee802154_i.h | 1 +
- net/mac802154/tx.c           | 6 ++++++
- 2 files changed, 7 insertions(+)
+v1 -> v2:
+- remove check in libbpf_set_strict_mode()
+- split in different commits
 
-diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
-index 295c9ce091e1..ad76a60af087 100644
---- a/net/mac802154/ieee802154_i.h
-+++ b/net/mac802154/ieee802154_i.h
-@@ -123,6 +123,7 @@ extern struct ieee802154_mlme_ops mac802154_mlme_wpan;
- void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb);
- void ieee802154_xmit_sync_worker(struct work_struct *work);
- void ieee802154_sync_and_stop_tx(struct ieee802154_local *local);
-+void ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buff *skb);
- netdev_tx_t
- ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev);
- netdev_tx_t
-diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
-index 06ae2e6cea43..7c281458942e 100644
---- a/net/mac802154/tx.c
-+++ b/net/mac802154/tx.c
-@@ -126,6 +126,12 @@ void ieee802154_sync_and_stop_tx(struct ieee802154_local *local)
- 	atomic_dec(&local->phy->hold_txs);
- }
- 
-+void ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buff *skb)
-+{
-+	ieee802154_tx(local, skb);
-+	ieee802154_sync_and_stop_tx(local);
-+}
-+
- netdev_tx_t
- ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev)
- {
+v1: https://lore.kernel.org/bpf/20220204220435.301896-1-mauricio@kinvolk.io/
+
+Mauricio Vásquez (3):
+  libbpf: Remove mode check in libbpf_set_strict_mode()
+  bpftool: Fix strict mode calculation
+  selftests/bpf: Fix strict mode calculation
+
+ tools/bpf/bpftool/main.c                     | 5 +----
+ tools/lib/bpf/libbpf.c                       | 8 --------
+ tools/testing/selftests/bpf/prog_tests/btf.c | 2 +-
+ 3 files changed, 2 insertions(+), 13 deletions(-)
+
 -- 
-2.27.0
+2.25.1
 
