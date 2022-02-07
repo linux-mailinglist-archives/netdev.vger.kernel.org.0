@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6572D4AC272
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 16:07:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12B084AC276
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 16:07:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358363AbiBGPFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 10:05:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54158 "EHLO
+        id S1384157AbiBGPFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 10:05:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442269AbiBGOsS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 09:48:18 -0500
+        with ESMTP id S1442270AbiBGOsT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 09:48:19 -0500
 Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20721C0401C2;
-        Mon,  7 Feb 2022 06:48:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B67C0401C1;
+        Mon,  7 Feb 2022 06:48:18 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id F0C5920010;
-        Mon,  7 Feb 2022 14:48:12 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7BB972000E;
+        Mon,  7 Feb 2022 14:48:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644245294;
+        t=1644245295;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=03PeMOOBYV3QxuR6NQ4Wuywa+Kse1fWPBQRqVz5KdeI=;
-        b=FLQk+u542umCe8pYRuUaeYTuaVAxQJGj32WSSMrduRjrq3+EQsTgOaGDrVErsgkIrCaB13
-        fuwp4AdLTe6U8VDoXdBCnkXHTPLnrbqfkua6mBKLv534metxUuE45O1mAH8AYksmZPXoc4
-        ggaCZPVMfpyQ4iXL0SDli0XW4s+PlhpAv4f9Tf8tMcpXrgk0oSYALB05cZh8WQGVkuh5E6
-        0TWnmRgegSXgLiif2Cuhamxx2cxuJAl584dA1K5OFaSlrLG1Oo0biMfFjgvv77DS5s6RL2
-        Pi6Atx2pEVvJ1swgx6kNM8EUzq0ehdZHLHEkhyvNDE9Z20Ldh+pzvVY/X8WudA==
+        bh=KEvoIRvAVCq69JUqPSnTO94KCQuJsWgdxodYKZ8Wj08=;
+        b=kZ1YBpFxaZ3d/m7MBjCZGqiNHbWyrg65byhuLTgVjSqPTaLWMbrlTeop2mgug124jis6JY
+        VFfJdwGsp8FBpVuzKMz6aMujIs4tS9CnWnBRZfbcpSJQNgaXjG8MgHYEkecpl+ZQdZjDYT
+        BRjOxLOtPN4ZbFiOMmUg2AcOTSELTx+zOoY6UaFDpisk3Owup6SUjMOsU3/Vz3Cu/W+Fwf
+        myr5IQPNmGI8OGvRh7r+UnWqeoQ4/cQ76gKWlipKtF1BZLVJn81sCxDSaPpL+HHHAfy9BV
+        kV0hZ6OhYt7+eAQy6R/QGSojdGMRcQgTQPDo6mukl9Vlt6XqHZXf91Wp6+2WuQ==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -41,9 +41,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v2 05/14] net: ieee802154: ca8210: Call _xmit_error() when a transmission fails
-Date:   Mon,  7 Feb 2022 15:47:55 +0100
-Message-Id: <20220207144804.708118-6-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v2 06/14] net: mac802154: Stop exporting ieee802154_wake/stop_queue()
+Date:   Mon,  7 Feb 2022 15:47:56 +0100
+Message-Id: <20220207144804.708118-7-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220207144804.708118-1-miquel.raynal@bootlin.com>
 References: <20220207144804.708118-1-miquel.raynal@bootlin.com>
@@ -59,41 +59,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ieee802154_xmit_error() is the right helper to call when a transmission
-has failed. Let's use it instead of open-coding it.
+Individual drivers do not necessarily need to call these helpers
+manually. There are other functions, more suited for this purpose, that
+will do that for them. The advantage is that, as no more drivers call
+these, it eases the tracking of the ongoing transfers that we are about
+to introduce while keeping the possibility to bypass thse counters from
+core code.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/net/ieee802154/ca8210.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ include/net/mac802154.h      | 27 ---------------------------
+ net/mac802154/ieee802154_i.h | 24 ++++++++++++++++++++++++
+ net/mac802154/util.c         |  2 --
+ 3 files changed, 24 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-index fc74fa0f1ddd..1dfc5528f295 100644
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -1765,17 +1765,20 @@ static int ca8210_async_xmit_complete(
- 	priv->nextmsduhandle++;
+diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+index 9fe8cfef1ba0..9e2e2b2cd65e 100644
+--- a/include/net/mac802154.h
++++ b/include/net/mac802154.h
+@@ -460,33 +460,6 @@ void ieee802154_unregister_hw(struct ieee802154_hw *hw);
+  */
+ void ieee802154_rx_irqsafe(struct ieee802154_hw *hw, struct sk_buff *skb,
+ 			   u8 lqi);
+-/**
+- * ieee802154_wake_queue - wake ieee802154 queue
+- * @hw: pointer as obtained from ieee802154_alloc_hw().
+- *
+- * Tranceivers usually have either one transmit framebuffer or one framebuffer
+- * for both transmitting and receiving. Hence, the core currently only handles
+- * one frame at a time for each phy, which means we had to stop the queue to
+- * avoid new skb to come during the transmission. The queue then needs to be
+- * woken up after the operation.
+- *
+- * Drivers should use this function instead of netif_wake_queue.
+- */
+-void ieee802154_wake_queue(struct ieee802154_hw *hw);
+-
+-/**
+- * ieee802154_stop_queue - stop ieee802154 queue
+- * @hw: pointer as obtained from ieee802154_alloc_hw().
+- *
+- * Tranceivers usually have either one transmit framebuffer or one framebuffer
+- * for both transmitting and receiving. Hence, the core currently only handles
+- * one frame at a time for each phy, which means we need to tell upper layers to
+- * stop giving us new skbs while we are busy with the transmitted one. The queue
+- * must then be stopped before transmitting.
+- *
+- * Drivers should use this function instead of netif_stop_queue.
+- */
+-void ieee802154_stop_queue(struct ieee802154_hw *hw);
  
- 	if (status) {
-+		bool ifs_handling =
-+			status == MAC_TRANSACTION_OVERFLOW ? true : false;
+ /**
+  * ieee802154_xmit_complete - frame transmission complete
+diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
+index 702560acc8ce..c9451d18de31 100644
+--- a/net/mac802154/ieee802154_i.h
++++ b/net/mac802154/ieee802154_i.h
+@@ -128,6 +128,30 @@ netdev_tx_t
+ ieee802154_subif_start_xmit(struct sk_buff *skb, struct net_device *dev);
+ enum hrtimer_restart ieee802154_xmit_ifs_timer(struct hrtimer *timer);
+ 
++/**
++ * ieee802154_wake_queue - wake ieee802154 queue
++ * @hw: pointer as obtained from ieee802154_alloc_hw().
++ *
++ * Tranceivers usually have either one transmit framebuffer or one framebuffer
++ * for both transmitting and receiving. Hence, the core currently only handles
++ * one frame at a time for each phy, which means we had to stop the queue to
++ * avoid new skb to come during the transmission. The queue then needs to be
++ * woken up after the operation.
++ */
++void ieee802154_wake_queue(struct ieee802154_hw *hw);
 +
- 		dev_err(
- 			&priv->spi->dev,
- 			"Link transmission unsuccessful, status = %d\n",
- 			status
- 		);
- 		if (status != MAC_TRANSACTION_OVERFLOW) {
--			dev_kfree_skb_any(priv->tx_skb);
--			ieee802154_wake_queue(priv->hw);
-+			ieee802154_xmit_error(priv->hw, priv->tx_skb, ifs_handling);
- 			return 0;
- 		}
++/**
++ * ieee802154_stop_queue - stop ieee802154 queue
++ * @hw: pointer as obtained from ieee802154_alloc_hw().
++ *
++ * Tranceivers usually have either one transmit framebuffer or one framebuffer
++ * for both transmitting and receiving. Hence, the core currently only handles
++ * one frame at a time for each phy, which means we need to tell upper layers to
++ * stop giving us new skbs while we are busy with the transmitted one. The queue
++ * must then be stopped before transmitting.
++ */
++void ieee802154_stop_queue(struct ieee802154_hw *hw);
++
+ /* MIB callbacks */
+ void mac802154_dev_set_page_channel(struct net_device *dev, u8 page, u8 chan);
+ 
+diff --git a/net/mac802154/util.c b/net/mac802154/util.c
+index 9016f634efba..6c56884ed508 100644
+--- a/net/mac802154/util.c
++++ b/net/mac802154/util.c
+@@ -27,7 +27,6 @@ void ieee802154_wake_queue(struct ieee802154_hw *hw)
  	}
-+
- 	ieee802154_xmit_complete(priv->hw, priv->tx_skb, true);
+ 	rcu_read_unlock();
+ }
+-EXPORT_SYMBOL(ieee802154_wake_queue);
  
- 	return 0;
+ void ieee802154_stop_queue(struct ieee802154_hw *hw)
+ {
+@@ -43,7 +42,6 @@ void ieee802154_stop_queue(struct ieee802154_hw *hw)
+ 	}
+ 	rcu_read_unlock();
+ }
+-EXPORT_SYMBOL(ieee802154_stop_queue);
+ 
+ enum hrtimer_restart ieee802154_xmit_ifs_timer(struct hrtimer *timer)
+ {
 -- 
 2.27.0
 
