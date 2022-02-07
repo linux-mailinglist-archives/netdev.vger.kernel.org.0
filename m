@@ -2,288 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C324B4AB41E
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 07:12:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EED154AB3BA
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 06:47:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229598AbiBGFrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 00:47:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52846 "EHLO
+        id S229834AbiBGFqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 00:46:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241006AbiBGCxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Feb 2022 21:53:48 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F285C061A73
-        for <netdev@vger.kernel.org>; Sun,  6 Feb 2022 18:53:47 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id v15-20020a17090a4ecf00b001b82db48754so12025288pjl.2
-        for <netdev@vger.kernel.org>; Sun, 06 Feb 2022 18:53:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ON6wKi2JZhFM9QoIxStW/3o6E+AlirJLBp5dj83vpTs=;
-        b=KSf0LfIBfxtLhuDk7AFp1Q8kqGEVBG8q4kZinuVo9haXQrY3ehkGg1sIHExnVn1FSL
-         OR8qlPutU6bVUN2Kf1Ibu7299ylhlruAV0FGkzLNKtVrxUShNX5/3FtnCIJ39OBuTbFw
-         kzSzQO9D+hTQWP0SHyin15KCIVDM/oePIXscM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ON6wKi2JZhFM9QoIxStW/3o6E+AlirJLBp5dj83vpTs=;
-        b=xo2wPiDbOoBCGjVyHyD6OIhH/lDEnM2Q9rxJMp+kjV1Fd/e8DRwWENaAut7bOceM3d
-         nYHqdkTpvf53lzFrmQK4ur5jg144Ik8ZL6CUWsK9Lk/4Y4iHCT8WUsG5rEV9h90VZaFB
-         +jIssUpPwejq0YgipshLuFJUA0+HG7mWmXGdU2Bo2MxBOnFJj9El3737IjlCC/HNLw/3
-         yPGORhnwFwDQVn+QQESRUBePp93zyGdS2h1CMfeShoJt3x3k24COTqUKzqY0veVYE0Yz
-         og8WZ2f3Mjljx7E/F4irFf/PqMl36pAMd08Wj6EjloBVfYwJJLxUmNwtlcwat3rr0j8I
-         3TcA==
-X-Gm-Message-State: AOAM5330N7BE6M7oWd/XLJUtE83OtbEBeIaTh1Ezuj5zLn/Biiu19FlQ
-        /bxa74GrfS3FUOaXxjK9GKeNZw==
-X-Google-Smtp-Source: ABdhPJz9k9DZi9V8DEhE6qdfqvfw7rCkgh+XP5oOqs+AgdR4s/c33C+xyoXyCwEjd4oQ63Daq0QohQ==
-X-Received: by 2002:a17:903:2093:: with SMTP id d19mr14279688plc.29.1644202426331;
-        Sun, 06 Feb 2022 18:53:46 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id j3sm7030042pgs.0.2022.02.06.18.53.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 18:53:45 -0800 (PST)
-Date:   Sun, 6 Feb 2022 18:53:44 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [RFC PATCH 2/3] net: gro: minor optimization for
- dev_gro_receive()
-Message-ID: <202202061826.50506BF8@keescook>
-References: <cover.1642519257.git.pabeni@redhat.com>
- <35d722e246b7c4afb6afb03760df6f664db4ef05.1642519257.git.pabeni@redhat.com>
- <20220118155620.27706-1-alexandr.lobakin@intel.com>
- <c262125543e39d6b869e522da0ed59044eb07722.camel@redhat.com>
- <20220118173903.31823-1-alexandr.lobakin@intel.com>
- <7bbab59c6d6cd2eb4e6d2fb7b2c2636b7d03445d.camel@redhat.com>
- <20220202120827.23716-1-alexandr.lobakin@intel.com>
+        with ESMTP id S238664AbiBGDKc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Feb 2022 22:10:32 -0500
+X-Greylist: delayed 942 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 19:10:29 PST
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDB5C061A73
+        for <netdev@vger.kernel.org>; Sun,  6 Feb 2022 19:10:29 -0800 (PST)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JsVxm0Kc8zZfR5;
+        Mon,  7 Feb 2022 10:50:36 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 7 Feb 2022 10:54:40 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.21; Mon, 7 Feb
+ 2022 10:54:40 +0800
+Subject: Re: [PATCH net-next v2 4/4] net: hns3: support skb's frag page
+ recycling based on page pool
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
+CC:     <linuxarm@openeuler.org>, <ilias.apalodimas@linaro.org>,
+        <salil.mehta@huawei.com>, <netdev@vger.kernel.org>,
+        <moyufeng@huawei.com>, <alexanderduyck@fb.com>,
+        <brouer@redhat.com>, <kuba@kernel.org>
+References: <1628217982-53533-1-git-send-email-linyunsheng@huawei.com>
+ <1628217982-53533-5-git-send-email-linyunsheng@huawei.com>
+ <YfFbDivUPbpWjh/m@myrica> <3315a093-582c-f464-d894-cb07522e5547@huawei.com>
+ <YfO1q52G7GKl+P40@myrica> <ff54ec37-cb69-cc2f-7ee7-7974f244d843@huawei.com>
+ <Yfuk11on6XiaB6Di@myrica>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <e0795eee-26d8-1289-e241-b88c967027d7@huawei.com>
+Date:   Mon, 7 Feb 2022 10:54:40 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220202120827.23716-1-alexandr.lobakin@intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <Yfuk11on6XiaB6Di@myrica>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme714-chm.china.huawei.com (10.1.199.110) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 01:08:27PM +0100, Alexander Lobakin wrote:
-> From: Paolo Abeni <pabeni@redhat.com>
-> Date: Wed, 02 Feb 2022 11:09:41 +0100
+On 2022/2/3 17:48, Jean-Philippe Brucker wrote:
+> On Sat, Jan 29, 2022 at 04:44:34PM +0800, Yunsheng Lin wrote:
+>>>> My initial thinking is to track if the reference counting or pp_frag_count of
+>>>> the page is manipulated correctly.
+>>>
+>>> It looks like pp_frag_count is dropped too many times: after (1),
+>>> pp_frag_count only has 1 ref, so (2) drops it to 0 and (3) results in
+>>> underflow. I turned page_pool_atomic_sub_frag_count_return() into
+>>> "atomic_long_sub_return(nr, &page->pp_frag_count)" to make sure (the
+>>> atomic_long_read() bit normally hides this). Wasn't entirely sure if this
+>>> is expected behavior, though.
+>>
+>> Are you true the above 1~3 step is happening for the same page?
 > 
-> > Hello,
+> Yes they happen on the same page. What I did was save the backtrace of
+> each call to page_pool_atomic_sub_frag_count_return() and, when an
+> underflow error happens on a page, print out the history of that page
+> only.
 > 
-> Hi!
+> My report was not right, though, I forgot to save the backtrace for
+> pp_frag_count==0. There's actually two refs on the page. It goes like
+> this:
 > 
-> > 
-> > On Tue, 2022-01-18 at 18:39 +0100, Alexander Lobakin wrote:
-> > > From: Paolo Abeni <pabeni@redhat.com>
-> > > Date: Tue, 18 Jan 2022 17:31:00 +0100
-> > > 
-> > > > On Tue, 2022-01-18 at 16:56 +0100, Alexander Lobakin wrote:
-> > > > > From: Paolo Abeni <pabeni@redhat.com>
-> > > > > Date: Tue, 18 Jan 2022 16:24:19 +0100
-> > > > > 
-> > > > > > While inspecting some perf report, I noticed that the compiler
-> > > > > > emits suboptimal code for the napi CB initialization, fetching
-> > > > > > and storing multiple times the memory for flags bitfield.
-> > > > > > This is with gcc 10.3.1, but I observed the same with older compiler
-> > > > > > versions.
-> > > > > > 
-> > > > > > We can help the compiler to do a nicer work e.g. initially setting
-> > > > > > all the bitfield to 0 using an u16 alias. The generated code is quite
-> > > > > > smaller, with the same number of conditional
-> > > > > > 
-> > > > > > Before:
-> > > > > > objdump -t net/core/gro.o | grep " F .text"
-> > > > > > 0000000000000bb0 l     F .text	0000000000000357 dev_gro_receive
-> > > > > > 
-> > > > > > After:
-> > > > > > 0000000000000bb0 l     F .text	000000000000033c dev_gro_receive
-> > > > > > 
-> > > > > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > > > > > ---
-> > > > > >  include/net/gro.h | 13 +++++++++----
-> > > > > >  net/core/gro.c    | 16 +++++-----------
-> > > > > >  2 files changed, 14 insertions(+), 15 deletions(-)
-> > > > > > 
-> > > > > > diff --git a/include/net/gro.h b/include/net/gro.h
-> > > > > > index 8f75802d50fd..a068b27d341f 100644
-> > > > > > --- a/include/net/gro.h
-> > > > > > +++ b/include/net/gro.h
-> > > > > > @@ -29,14 +29,17 @@ struct napi_gro_cb {
-> > > > > >  	/* Number of segments aggregated. */
-> > > > > >  	u16	count;
-> > > > > >  
-> > > > > > -	/* Start offset for remote checksum offload */
-> > > > > > -	u16	gro_remcsum_start;
-> > > > > > +	/* Used in ipv6_gro_receive() and foo-over-udp */
-> > > > > > +	u16	proto;
-> > > > > >  
-> > > > > >  	/* jiffies when first packet was created/queued */
-> > > > > >  	unsigned long age;
-> > > > > >  
-> > > > > > -	/* Used in ipv6_gro_receive() and foo-over-udp */
-> > > > > > -	u16	proto;
-> > > > > > +	/* portion of the cb set to zero at every gro iteration */
-> > > > > > +	u32	zeroed_start[0];
-> > > > > > +
-> > > > > > +	/* Start offset for remote checksum offload */
-> > > > > > +	u16	gro_remcsum_start;
-> > > > > >  
-> > > > > >  	/* This is non-zero if the packet may be of the same flow. */
-> > > > > >  	u8	same_flow:1;
-> > > > > > @@ -70,6 +73,8 @@ struct napi_gro_cb {
-> > > > > >  	/* GRO is done by frag_list pointer chaining. */
-> > > > > >  	u8	is_flist:1;
-> > > > > >  
-> > > > > > +	u32	zeroed_end[0];
-> > > > > 
-> > > > > This should be wrapped in struct_group() I believe, or compilers
-> > > > > will start complaining soon. See [0] for the details.
-> > > > > Adding Kees to the CCs.
+>   (1) T-1535, drop BIAS_MAX - 2, pp_frag_count now 2
+>      page_pool_alloc_frag+0x128/0x240
+>      hns3_alloc_and_map_buffer+0x30/0x170
+>      hns3_nic_alloc_rx_buffers+0x9c/0x170
+>      hns3_clean_rx_ring+0x864/0x960
+>      hns3_nic_common_poll+0xa0/0x218
+>      __napi_poll+0x38/0x188
+>      net_rx_action+0xe8/0x248
+>      __do_softirq+0x120/0x284
+> 
+>   (2) T-4, drop 1, pp_frag_count now 1
+>      page_pool_put_page+0x98/0x338
+>      page_pool_return_skb_page+0x48/0x60
+>      skb_release_data+0x170/0x190
+>      skb_release_all+0x28/0x38
+>      kfree_skb_reason+0x30/0x90
+>      packet_rcv+0x58/0x430
+>      __netif_receive_skb_list_core+0x1f4/0x218
+>      netif_receive_skb_list_internal+0x18c/0x2a8
+>   
+>   (3) T-1, drop 1, pp_frag_count now 0
+>      page_pool_put_page+0x98/0x338
+>      page_pool_return_skb_page+0x48/0x60
+>      skb_release_data+0x170/0x190
+>      skb_release_all+0x28/0x38
+>      __kfree_skb+0x18/0x30
+>      __sk_defer_free_flush+0x44/0x58
+>      tcp_recvmsg+0x94/0x1b8
+>      inet_recvmsg+0x50/0x128
+>   
+>   (4) T, drop 1, pp_frag_count now -1 (underflow)
+>      page_pool_put_page+0x2d0/0x338
+>      hns3_clean_rx_ring+0x74c/0x960
+>      hns3_nic_common_poll+0xa0/0x218
+>      __napi_poll+0x38/0x188
+>      net_rx_action+0xe8/0x248
+> 
+>> If it is the same page, there must be something wrong here.
+>>
+>> Normally there are 1024 BD for a rx ring:
+>>
+>> BD_0 BD_1 BD_2 BD_3 BD_4 .... BD_1020 BD_1021  BD_1022  BD_1023
+>>            ^         ^
+>>          head       tail
+>>
+>> Suppose head is manipulated by driver, and tail is manipulated by
+>> hw.
+>>
+>> driver allocates buffer for BD pointed by head, as the frag page
+>> recycling is introduced in this patch, the BD_0 and BD_1's buffer
+>> may point to the same page（4K page size, and each BD only need
+>> 2k Buffer.
+>> hw dma the data to the buffer pointed by tail when packet is received.
+>>
+>> so step 1 Normally happen for the BD pointed by head,
+>> and step 2 & 3 Normally happen for the BD pointed by tail.
+>> And Normally there are at least (1024 - RCB_NOF_ALLOC_RX_BUFF_ONCE) BD
+>> between head and tail, so it is unlikely that head and tail's BD buffer
+>> points to the same page.
+> 
+> I think a new page is allocated at step 1, no?  The driver calls
+> page_pool_alloc_frag() when refilling the rx ring, and since the current
+> pool->frag_page (P1) is still used by BD_0 and BD_1, then
+> page_pool_drain_frag() drops (BIAS_MAX - 2) references and
+> page_pool_alloc_frag() replaces frag_page with a new page, P2. Later, head
+> points to BD_1, the driver can drop the remaining 2 references to P1 in
+> steps 2 and 3, and P1 can be unmapped and freed/recycled
 
-Hi! Sorry I missed the original email sent my way. :)
-
-> > > > 
-> > > > Thank you for the reference. That really slipped-off my mind.
-> > > > 
-> > > > This patch does not use memcpy() or similar, just a single direct
-> > > > assignement. Would that still require struct_group()?
-> > > 
-> > > Oof, sorry, I saw start/end and overlooked that it's only for
-> > > a single assignment.
-> > > Then it shouldn't cause warnings, but maybe use an anonymous
-> > > union instead?
-> > > 
-> > > 	union {
-> > > 		u32 zeroed;
-> > > 		struct {
-> > > 			u16 gro_remcsum_start;
-> > > 			...
-> > > 		};
-> > > 	};
-> > > 	__wsum csum;
-> > > 
-> > > Use can still use a BUILD_BUG_ON() in this case, like
-> > > sizeof(zeroed) != offsetof(csum) - offsetof(zeroed).
-> > 
-> > Please forgive me for the very long delay. I'm looking again at this
-> > stuff for formal non-rfc submission.
-> 
-> Sure, not a problem at all (:
-> 
-> > 
-> > I like the anonymous union less, because it will move around much more
-> > code - making the patch less readable - and will be more fragile e.g.
-> > some comment alike "please don't move around 'csum'" would be needed.
-> 
-> We still need comments around zeroed_{start,end}[0] for now.
-> I used offsetof(csum) as offsetofend(is_flist) which I'd prefer here
-> unfortunately expands to offsetof(is_flist) + sizeof(is_flist), and
-> the latter causes an error of using sizeof() against a bitfield.
-> 
-> > 
-> > No strong opinion anyway, so if you really prefer that way I can adapt.
-> > Please let me know.
-> 
-> I don't really have a strong preference here, I just suspect that
-> zero-length array will produce or already produce -Warray-bounds
-> warnings, and empty-struct constructs like
-
-Yes, -Warray-bounds would yell very loudly about an 0-element array
-having its first element assigned. :)
+Yes.
+For most of the case, there should be two steps of the 2/3/4 steps, when
+there is extra step in the above calltrace, it may mean the page_count()
+is 2 instead of 1, if that is the case, __skb_frag_ref() may be called
+for a page from page pool((page->pp_magic & ~0x3UL) == PP_SIGNATURE)),
+which is not supposed to happen.
 
 > 
-> 	struct { } zeroed_start;
-> 	u16 gro_remcsum_start;
-> 	...
-> 	struct { } zeroed_end;
-> 
-> 	memset(NAPI_GRO_CB(skb)->zeroed_start, 0,
-> 	       offsetofend(zeroed_end) - offsetsof(zeroed_start));
-> 
-> will trigger Fortify compile-time errors from Kees' KSPP tree.
-> 
-> I think we could use
-> 
-> 	__struct_group(/* no tag */, zeroed, /* no attrs */,
+> What I don't get is which of steps 2, 3 and 4 is the wrong one. Could be
+> 2 or 3 because the device is evidently still doing DMA to the page after
+> it's released, but it could also be that the driver doesn't properly clear
+> the BD in which case step 4 is wrong. I'll try to find out which fragment
+> gets dropped twice.
 
-Since this isn't UAPI, you can just do:
+When there are more than two steps for the freeing side, the only case I know
+about the skb cloning and expanding case, which is fixed by the below commit:
+2cc3aeb5eccc (skbuff: Fix a potential race while recycling page_pool packets)
 
-	struct_group(zeroed,
+Maybe there are other case we missed?
 
-> 		u16 gro_remcsum_start;
-> 		...
-> 		u8 is_flist:1;
-> 	);
-> 	__wsum csum;
-> 
-> 	BUILD_BUG_ON(sizeof_field(struct napi_gro_cb, zeroed) != sizeof(u32));
-> 	BUILD_BUG_ON(!IS_ALIGNED(offsetof(struct napi_gro_cb, zeroed),
-> 				 sizeof(u32))); /* Avoid slow unaligned acc */
-> 
-> 	*(u32 *)&NAPI_GRO_CB(skb)->zeroed = 0;
-> 
-> This doesn't depend on `csum`, doesn't need `struct { }` or
-> `struct zero[0]` markers and still uses a direct assignment.
 
-Given the kernel's -O2 use, a constant-sized u32 memcpy() and a direct
-assignment will resolve to the same machine code:
-
-https://godbolt.org/z/b9qKexx6q
-
-void zero_var(struct object *p)
-{
-    p->zero_var = 0;
-}
-
-void zero_group(struct object *p)
-{
-    memset(&p->zero_group, 0, sizeof(p->zero_group));
-}
-
-zero_var:
-  movl $0, (%rdi)
-  ret
-zero_group:
-  movl $0, (%rdi)
-  ret
-
-And assigning them individually results in careful "and"ing to avoid the
-padding:
-
-zero_each:
-  andl $-134217728, (%rdi)
-  ret
-
-I would have recommended struct_group() + memset() here, just because
-you don't need the casts. But since you're doing BUILD_BUG_ON() size
-verification, it's fine either way.
-
-If you want to avoid the cast and avoid the memset(), you could use the
-earlier suggestion of anonymous union and anonymous struct. It's
-basically an open-coded struct_group, but you get to pick the type of
-the overlapping variable. :)
-
--Kees
-
-> Also adding Gustavo, maybe he'd like to leave a comment here.
-> 
-> > 
-> > Thanks!
-> > 
-> > Paolo
 > 
 > Thanks,
-> Al
-
--- 
-Kees Cook
+> Jean
+> 
+> .
+> 
