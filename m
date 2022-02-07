@@ -2,115 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAC7D4AB421
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 07:12:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B73A4AB4EB
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 07:41:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231555AbiBGFrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 00:47:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59836 "EHLO
+        id S229718AbiBGGbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 01:31:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235577AbiBGF3p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 00:29:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 262C4C043184;
-        Sun,  6 Feb 2022 21:29:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FFF161140;
-        Mon,  7 Feb 2022 05:29:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1FEEC004E1;
-        Mon,  7 Feb 2022 05:29:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644211782;
-        bh=IScjOYArVNYVbJH6MdKnmqqYzf1ygoeSC6Cat/SyezM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZKr+40RwCyLTmBLqDyLA6NfttVuysn3LAXf6bwqRngyYCtAe7oBoc9d08siEND25g
-         5sEvUB6SRqwpHSyYh+Nxu/w40pGCL/ae3bklPZXBjKSsbq2Fy9xzvspbOAiqwWsp/2
-         wpi2IyOQ7oYNpXqEnC1MI8Z6kibSUmPwjpwBYM4nS+MKboN7nJo/3fSWDuChgkfdly
-         BkB/g8sXdfrB2A8/xLoir1UkQ+rMpxbs6T/9+EddJprBls4JXsBMKxd2iX7eFou+W7
-         3CCEDPnYyoxFooqYA0tLKFfAdA7Fy6+9McuGwYMZOwpfBm8XuCIrZDHnYT9Ip0EpnV
-         a2PoM7SXEh6Hg==
-Date:   Mon, 7 Feb 2022 10:59:38 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Rob Herring <robh@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        devicetree@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
-        Holger Brunck <holger.brunck@hitachienergy.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        linux-phy@lists.infradead.org,
-        Kishon Vijay Abraham I <kishon@ti.com>
-Subject: Re: [PATCH devicetree v3] dt-bindings: phy: Add `tx-p2p-microvolt`
- property binding
-Message-ID: <YgCuQjN5tBvljrQN@matsya>
-References: <20220119131117.30245-1-kabel@kernel.org>
- <74566284-ff3f-8e69-5b7d-d8ede75b78ad@gmail.com>
- <Yf3egEVYyyXUkklM@robh.at.kernel.org>
- <20220206185413.4c1ac00d@thinkpad>
+        with ESMTP id S1350287AbiBGFwj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 00:52:39 -0500
+Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52EC1C043181
+        for <netdev@vger.kernel.org>; Sun,  6 Feb 2022 21:52:38 -0800 (PST)
+Received: by mail-ua1-x929.google.com with SMTP id w21so21007066uan.7
+        for <netdev@vger.kernel.org>; Sun, 06 Feb 2022 21:52:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=L1Rjq/ql7urNH275JgtjOWwPnTNap7zuvbeGPfxz5dk=;
+        b=tL/3b03W+JH4On8JGgN+G47JSKM16N+ZylsEH2Q+KcbF0UWlZPv6twnFjWKgw5c0dF
+         AvSIKFiZATE9/oAob2ijdRc1Kvnqf/qJTUmhLSPzDBwdKuDPH7TBiAmt2ZWaB1F8RRSr
+         R1IRIEZInH/VzkMCFE0KgWXm7hR5RApKseRzY6riVWkK3gF2bCMQxZTvmUvjjuY88xgg
+         8nTdCkJN+nLW23abPt/7Q2A5f2KvTK04HrBn8aDNUi0j1g4xgljEsxxCFDBd2X30xdG5
+         NB/Vc51Zu2B8j2nCo1L8+Porb2szl7slQXrXqcRpTcmIS+vT7jCk9/34VbA5IRiqdBbQ
+         GhDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=L1Rjq/ql7urNH275JgtjOWwPnTNap7zuvbeGPfxz5dk=;
+        b=1MPUGWHoXoLYWY++MIOHFG1Cx3vjVWTL2wX9pVwmJFcp7W0iKEKwalGNYINdzzMEDa
+         ESLcza1DnpnuM1QNGGV55BiB0WKLoDywp2lUhOQVJodtGs5lrJh+zu521vfJvs4Zrsbx
+         gf/uHzvZydtqHpgVlS1h6KtmAXljfddoOyk8tOqrZQwaOyPhTmmoBvSNixoID9US/j2d
+         4LOin+74XOOS2mnYTzUNKNMCk9QbUVKkSGvfl+r3QFfyJ5LqYdbXkgNlOTvl08iM5UTv
+         TAHQxyycWwCVCGhY7UEc47IQ+/YvCN9QSiVKOxDMGGZ3dCppPIxHbddpC6Fk+SvVp3TD
+         hZIA==
+X-Gm-Message-State: AOAM5329m550gGd4qTXugMI2BdbmoHzxXNEyVVGaMCwwZHvPYsN9jtqP
+        XtT4ToCmhb4fvzB2t0LnSpiPC2my2+Tn5kabpVmI2A==
+X-Google-Smtp-Source: ABdhPJyQMFft69kTngWJY32onjRKjzuIa9UTH3B/P0UB3PJj3eviBJJrXE/Du+TXKVjNBDKiDhHQNyBcATIz/FNM3y0=
+X-Received: by 2002:a9f:36c1:: with SMTP id p59mr2814471uap.41.1644213157165;
+ Sun, 06 Feb 2022 21:52:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220206185413.4c1ac00d@thinkpad>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220204000653.364358-1-maheshb@google.com> <20792.1643935830@famine>
+ <20220204195949.10e0ed50@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220204195949.10e0ed50@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
+        <maheshb@google.com>
+Date:   Sun, 6 Feb 2022 21:52:11 -0800
+Message-ID: <CAF2d9jjLdLjrOAwPR8JZNPTNyy44vxYei0X7NW_pKkzkCt5WSA@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next] bonding: pair enable_port with slave_arr_updates
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Mahesh Bandewar <mahesh@bandewar.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06-02-22, 18:54, Marek Behún wrote:
-> On Fri, 4 Feb 2022 20:18:40 -0600
-> Rob Herring <robh@kernel.org> wrote:
-> 
-> > On Fri, Jan 21, 2022 at 11:18:09AM -0800, Florian Fainelli wrote:
-> > > On 1/19/22 5:11 AM, Marek Behún wrote:  
-> > > > Common PHYs and network PCSes often have the possibility to specify
-> > > > peak-to-peak voltage on the differential pair - the default voltage
-> > > > sometimes needs to be changed for a particular board.
-> > > > 
-> > > > Add properties `tx-p2p-microvolt` and `tx-p2p-microvolt-names` for this
-> > > > purpose. The second property is needed to specify the mode for the
-> > > > corresponding voltage in the `tx-p2p-microvolt` property, if the voltage
-> > > > is to be used only for speficic mode. More voltage-mode pairs can be
-> > > > specified.
-> > > > 
-> > > > Example usage with only one voltage (it will be used for all supported
-> > > > PHY modes, the `tx-p2p-microvolt-names` property is not needed in this
-> > > > case):
-> > > > 
-> > > >   tx-p2p-microvolt = <915000>;
-> > > > 
-> > > > Example usage with voltages for multiple modes:
-> > > > 
-> > > >   tx-p2p-microvolt = <915000>, <1100000>, <1200000>;
-> > > >   tx-p2p-microvolt-names = "2500base-x", "usb", "pcie";
-> > > > 
-> > > > Add these properties into a separate file phy/transmit-amplitude.yaml,
-> > > > which should be referenced by any binding that uses it.  
-> > > 
-> > > p2p commonly means peer to peer which incidentally could be confusing,
-> > > can you spell out the property entire:
-> > > 
-> > > tx-peaktopeak-microvolt or:
-> > > 
-> > > tx-pk2pk-microvolt for a more compact name maybe?  
-> > 
-> > Peer to peer makes little sense in terms of a voltage. I think this is 
-> > fine as-is.
-> 
-> Cool. Should this get merged via devicetree, or via phy maintainers?
-> Or should I resend this together with patches that make use of this
-> property? (In that case can you add your Ack?)
+On Fri, Feb 4, 2022 at 7:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 03 Feb 2022 16:50:30 -0800 Jay Vosburgh wrote:
+> > Mahesh Bandewar <maheshb@google.com> wrote:
+> >
+> > >When 803.2ad mode enables a participating port, it should update
+> > >the slave-array. I have observed that the member links are participating
+> > >and are part of the active aggregator while the traffic is egressing via
+> > >only one member link (in a case where two links are participating). Via
+> > >krpobes I discovered that that slave-arr has only one link added while
+>
+> kprobes
+> that that
+>
+> The commit message would use some proof reading in general.
+>
+:( will fix the typo and send it to you again.
 
-Sending with patches using this would be better.. It can go thru phy
-tree
+> > >the other participating link wasn't part of the slave-arr.
+> > >
+> > >I couldn't see what caused that situation but the simple code-walk
+> > >through provided me hints that the enable_port wasn't always associated
+> > >with the slave-array update.
+> > >
+> > >Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+> >
+> > Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+>
+> Quacks like a fix, no? It's tagged for net-next and no fixes tag,
+> is there a reason why?
 
--- 
-~Vinod
+Though this fixes some corner cases, I couldn't find anything obvious
+that I can report as "fixes" hence decided otherwise. Does that make
+sense?
+
+thanks,
+--mahesh..
