@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08FEA4AC843
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 19:11:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 612204AC83D
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 19:10:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236707AbiBGSGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 13:06:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39018 "EHLO
+        id S230262AbiBGSGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 13:06:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242356AbiBGR7y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 12:59:54 -0500
-Received: from mxout014.mail.hostpoint.ch (mxout014.mail.hostpoint.ch [IPv6:2a00:d70:0:e::314])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9A0C0401D9
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 09:59:51 -0800 (PST)
+        with ESMTP id S1357123AbiBGSE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 13:04:28 -0500
+Received: from mxout017.mail.hostpoint.ch (mxout017.mail.hostpoint.ch [IPv6:2a00:d70:0:e::317])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB2AC0401D9
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 10:04:26 -0800 (PST)
 Received: from [10.0.2.44] (helo=asmtp014.mail.hostpoint.ch)
-        by mxout014.mail.hostpoint.ch with esmtp (Exim 4.94.2 (FreeBSD))
+        by mxout017.mail.hostpoint.ch with esmtp (Exim 4.94.2 (FreeBSD))
         (envelope-from <thomas@kupper.org>)
-        id 1nH8Im-000EZe-R8; Mon, 07 Feb 2022 18:59:48 +0100
+        id 1nH8NE-000JK5-8I; Mon, 07 Feb 2022 19:04:24 +0100
 Received: from [2001:1620:50ce:1969:7551:c966:b4bb:22e]
         by asmtp014.mail.hostpoint.ch with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
         (Exim 4.94.2 (FreeBSD))
         (envelope-from <thomas@kupper.org>)
-        id 1nH8Im-000N6O-OJ; Mon, 07 Feb 2022 18:59:48 +0100
+        id 1nH8NE-000Oio-6C; Mon, 07 Feb 2022 19:04:24 +0100
 X-Authenticated-Sender-Id: thomas@kupper.org
-Message-ID: <603a03f4-2765-c8e7-085c-808f67b42fa9@kupper.org>
-Date:   Mon, 7 Feb 2022 18:59:48 +0100
+Message-ID: <919f6fb5-aef1-5377-4789-082a97574ec6@kupper.org>
+Date:   Mon, 7 Feb 2022 19:04:23 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
@@ -124,294 +124,100 @@ Am 07.02.22 um 16:19 schrieb Shyam Sundar S K:
 >> Thanks,
 >> Tom
 
-Shyam, I will check the git logs for the relevant commit then from time 
-to time.
-Looking at the code diff from OPNsense and the latest Linux kernel I 
-assumed that there would much more to do then fix a irq strom (but I 
-have no idea about the inner working of the kernel).
+Sorry, forgot the 'lspci -nn -vv' output. Here it goes:
 
-Nevermind: Setting the 'msglvl 0x3' with ethtool the following info can 
-be found in dmesg:
+$ ethtool -i enp6s0f2
+driver: amd-xgbe
+version: 5.17.0-rc2-tk
+firmware-version: 17.118.33
+expansion-rom-version:
+bus-info: 0000:06:00.2
+supports-statistics: yes
+supports-test: no
+supports-eeprom-access: no
+supports-register-dump: no
+supports-priv-flags: no
 
-Running : $ ifconfig enp6s0f2 up
-SIOCSIFFLAGS: Invalid argument
+$ lspci -nn -vv -s 0:6:0.2
+06:00.2 Ethernet controller [0200]: Advanced Micro Devices, Inc. [AMD] 
+Device [1022:1458]
+         Subsystem: Advanced Micro Devices, Inc. [AMD] Device [1022:1458]
+         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- 
+ParErr- Stepping- SERR- FastB2B- DisINTx+
+         Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- 
+<TAbort- <MAbort- >SERR- <PERR- INTx-
+         Latency: 0, Cache Line Size: 64 bytes
+         Interrupt: pin C routed to IRQ 69
+         Region 0: Memory at d0020000 (32-bit, non-prefetchable) [size=128K]
+         Region 1: Memory at d0000000 (32-bit, non-prefetchable) [size=128K]
+         Region 2: Memory at d0080000 (64-bit, non-prefetchable) [size=8K]
+         Capabilities: [48] Vendor Specific Information: Len=08 <?>
+         Capabilities: [50] Power Management version 3
+                 Flags: PMEClk- DSI- D1- D2- AuxCurrent=0mA 
+PME(D0-,D1-,D2-,D3hot-,D3cold-)
+                 Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
+         Capabilities: [64] Express (v2) Endpoint, MSI 00
+                 DevCap: MaxPayload 256 bytes, PhantFunc 0, Latency L0s 
+<4us, L1 unlimited
+                         ExtTag+ AttnBtn- AttnInd- PwrInd- RBE+ FLReset- 
+SlotPowerLimit 0.000W
+                 DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-
+                         RlxdOrd+ ExtTag+ PhantFunc- AuxPwr- NoSnoop+
+                         MaxPayload 128 bytes, MaxReadReq 512 bytes
+                 DevSta: CorrErr+ NonFatalErr- FatalErr- UnsupReq+ 
+AuxPwr- TransPend-
+                 LnkCap: Port #0, Speed 8GT/s, Width x16, ASPM L0s L1, 
+Exit Latency L0s <64ns, L1 <1us
+                         ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp+
+                 LnkCtl: ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
+                         ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                 LnkSta: Speed 8GT/s (ok), Width x16 (ok)
+                         TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
+                 DevCap2: Completion Timeout: Not Supported, TimeoutDis- 
+NROPrPrP- LTR-
+                          10BitTagComp- 10BitTagReq- OBFF Not Supported, 
+ExtFmt- EETLPPrefix-
+                          EmergencyPowerReduction Not Supported, 
+EmergencyPowerReductionInit-
+                          FRS- TPHComp- ExtTPHComp-
+                          AtomicOpsCap: 32bit- 64bit- 128bitCAS-
+                 DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- 
+LTR- OBFF Disabled,
+                          AtomicOpsCtl: ReqEn-
+                 LnkSta2: Current De-emphasis Level: -3.5dB, 
+EqualizationComplete- EqualizationPhase1-
+                          EqualizationPhase2- EqualizationPhase3- 
+LinkEqualizationRequest-
+                          Retimer- 2Retimers- CrosslinkRes: unsupported
+         Capabilities: [a0] MSI: Enable- Count=1/8 Maskable- 64bit+
+                 Address: 0000000000000000  Data: 0000
+         Capabilities: [c0] MSI-X: Enable+ Count=7 Masked-
+                 Vector table: BAR=2 offset=00000000
+                 PBA: BAR=2 offset=00001000
+         Capabilities: [100 v1] Vendor Specific Information: ID=0001 
+Rev=1 Len=010 <?>
+         Capabilities: [150 v2] Advanced Error Reporting
+                 UESta:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- 
+UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+                 UEMsk:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- 
+UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+                 UESvrt: DLP+ SDES+ TLP- FCP+ CmpltTO- CmpltAbrt- 
+UnxCmplt- RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
+                 CESta:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- 
+AdvNonFatalErr+
+                 CEMsk:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- 
+AdvNonFatalErr+
+                 AERCap: First Error Pointer: 00, ECRCGenCap- ECRCGenEn- 
+ECRCChkCap- ECRCChkEn-
+                         MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
+                 HeaderLog: 00000000 00000000 00000000 00000000
+         Capabilities: [2a0 v1] Access Control Services
+                 ACSCap: SrcValid- TransBlk- ReqRedir- CmpltRedir- 
+UpstreamFwd- EgressCtrl- DirectTrans-
+                 ACSCtl: SrcValid- TransBlk- ReqRedir- CmpltRedir- 
+UpstreamFwd- EgressCtrl- DirectTrans-
+         Kernel driver in use: amd-xgbe
+         Kernel modules: amd_xgbe
 
-... and 'dmesg':
-
-[   55.177447] amd-xgbe 0000:06:00.2 enp6s0f2: channel-0: cpu=0, node=0
-[   55.177456] amd-xgbe 0000:06:00.2 enp6s0f2: channel-0: 
-dma_regs=00000000d11bf3f1, dma_irq=74, tx=00000000dd57b5c4, 
-rx=00000000d73e70f8
-[   55.177464] amd-xgbe 0000:06:00.2 enp6s0f2: channel-1: cpu=1, node=0
-[   55.177467] amd-xgbe 0000:06:00.2 enp6s0f2: channel-1: 
-dma_regs=000000000d972dd7, dma_irq=75, tx=00000000573bcff8, 
-rx=000000003d9a6f65
-[   55.177473] amd-xgbe 0000:06:00.2 enp6s0f2: channel-2: cpu=2, node=0
-[   55.177476] amd-xgbe 0000:06:00.2 enp6s0f2: channel-2: 
-dma_regs=0000000046f71179, dma_irq=76, tx=00000000897116c9, 
-rx=0000000004ba17e7
-[   55.177480] amd-xgbe 0000:06:00.2 enp6s0f2: channel-0 - Tx ring:
-[   55.177502] amd-xgbe 0000:06:00.2 enp6s0f2: rdesc=00000000794657ba, 
-rdesc_dma=0x000000010fad8000, rdata=0000000008ace7d8, node=0
-[   55.177507] amd-xgbe 0000:06:00.2 enp6s0f2: channel-0 - Rx ring:
-[   55.177523] amd-xgbe 0000:06:00.2 enp6s0f2: rdesc=000000009313d9b3, 
-rdesc_dma=0x0000000114538000, rdata=00000000510e3b77, node=0
-[   55.177527] amd-xgbe 0000:06:00.2 enp6s0f2: channel-1 - Tx ring:
-[   55.177543] amd-xgbe 0000:06:00.2 enp6s0f2: rdesc=00000000d26d9194, 
-rdesc_dma=0x000000010a774000, rdata=00000000b9419829, node=0
-[   55.177547] amd-xgbe 0000:06:00.2 enp6s0f2: channel-1 - Rx ring:
-[   55.177564] amd-xgbe 0000:06:00.2 enp6s0f2: rdesc=0000000007bf60dd, 
-rdesc_dma=0x000000010fb84000, rdata=00000000aa48e8c0, node=0
-[   55.177568] amd-xgbe 0000:06:00.2 enp6s0f2: channel-2 - Tx ring:
-[   55.177584] amd-xgbe 0000:06:00.2 enp6s0f2: rdesc=00000000e7e6c52e, 
-rdesc_dma=0x000000010fa2a000, rdata=0000000017b5d85c, node=0
-[   55.177587] amd-xgbe 0000:06:00.2 enp6s0f2: channel-2 - Rx ring:
-[   55.177603] amd-xgbe 0000:06:00.2 enp6s0f2: rdesc=000000000898fbf4, 
-rdesc_dma=0x0000000101f08000, rdata=00000000aded7d4c, node=0
-[   55.182366] amd-xgbe 0000:06:00.2 enp6s0f2: TXq0 mapped to TC0
-[   55.182381] amd-xgbe 0000:06:00.2 enp6s0f2: TXq1 mapped to TC1
-[   55.182388] amd-xgbe 0000:06:00.2 enp6s0f2: TXq2 mapped to TC2
-[   55.182395] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO0 mapped to RXq0
-[   55.182400] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO1 mapped to RXq0
-[   55.182405] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO2 mapped to RXq0
-[   55.182410] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO3 mapped to RXq1
-[   55.182414] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO4 mapped to RXq1
-[   55.182418] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO5 mapped to RXq1
-[   55.182423] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO6 mapped to RXq2
-[   55.182427] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO7 mapped to RXq2
-[   55.182473] amd-xgbe 0000:06:00.2 enp6s0f2: 3 Tx hardware queues, 
-21760 byte fifo per queue
-[   55.182501] amd-xgbe 0000:06:00.2 enp6s0f2: 3 Rx hardware queues, 
-21760 byte fifo per queue
-[   55.182544] amd-xgbe 0000:06:00.2 enp6s0f2: flow control enabled for RXq0
-[   55.182550] amd-xgbe 0000:06:00.2 enp6s0f2: flow control enabled for RXq1
-[   55.182556] amd-xgbe 0000:06:00.2 enp6s0f2: flow control enabled for RXq2
-[   56.178946] amd-xgbe 0000:06:00.2 enp6s0f2: SFP detected:
-[   56.178954] amd-xgbe 0000:06:00.2 enp6s0f2:   vendor: MikroTik
-[   56.178958] amd-xgbe 0000:06:00.2 enp6s0f2:   part number: S+AO0005
-[   56.178961] amd-xgbe 0000:06:00.2 enp6s0f2:   revision level: 1.0
-[   56.178963] amd-xgbe 0000:06:00.2 enp6s0f2:   serial number: 
-STST050B1900001
-
-Then running '$ rmmod amd_xgbe' produced the following dmesg output:
-
-[  504.272482] ------------[ cut here ]------------
-[  504.272489] remove_proc_entry: removing non-empty directory 'irq/72', 
-leaking at least 'enp6s0f2-i2c'
-[  504.272500] WARNING: CPU: 0 PID: 803 at fs/proc/generic.c:715 
-remove_proc_entry+0x196/0x1b0
-[  504.272525] Modules linked in: nls_iso8859_1 intel_rapl_msr 
-intel_rapl_common snd_hda_intel edac_mce_amd snd_intel_dspcfg 
-snd_intel_sdw_acpi snd_hda_codec snd_hda_core snd_hwdep kvm snd_pcm rapl 
-snd_timer snd_rn_pci_acp3x snd k10temp efi_pstore soundcore 
-snd_pci_acp3x ccp mac_hid sch_fq_codel msr drm ip_tables x_tables 
-autofs4 btrfs blake2b_generic zstd_compress raid10 raid456 
-async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq 
-libcrc32c raid1 raid0 multipath linear crct10dif_pclmul crc32_pclmul 
-ghash_clmulni_intel aesni_intel crypto_simd cryptd amd_xgbe(-) xhci_pci 
-igb i2c_piix4 i2c_amd_mp2_pci xhci_pci_renesas nvme dca i2c_algo_bit 
-nvme_core video spi_amd
-[  504.272603] CPU: 0 PID: 803 Comm: rmmod Not tainted 5.17.0-rc2-tk #8
-[  504.272608] Hardware name: Deciso B.V. DEC2700 - OPNsense 
-Appliance/Netboard-A10 Gen.3, BIOS 05.32.50.0012-A10.20 11/15/2021
-[  504.272612] RIP: 0010:remove_proc_entry+0x196/0x1b0
-[  504.272619] Code: a8 1d de 92 48 85 c0 48 8d 90 78 ff ff ff 48 0f 45 
-c2 49 8b 54 24 78 4c 8b 80 a0 00 00 00 48 8b 92 a0 00 00 00 e8 28 53 81 
-00 <0f> 0b e9 44 ff ff ff e8 6e bd 87 00 66 66 2e 0f 1f 84 00 00 00 00
-[  504.272623] RSP: 0018:ffffa22a810b7b88 EFLAGS: 00010282
-[  504.272627] RAX: 0000000000000000 RBX: ffff8d8c8022ccc0 RCX: 
-0000000000000000
-[  504.272630] RDX: 0000000000000001 RSI: ffffffff92dbc031 RDI: 
-00000000ffffffff
-[  504.272632] RBP: ffffa22a810b7bb8 R08: 0000000000000000 R09: 
-ffffa22a810b7978
-[  504.272635] R10: ffffa22a810b7970 R11: ffffffff93155f48 R12: 
-ffff8d8c90dc0540
-[  504.272637] R13: ffff8d8c90dc05c0 R14: 0000000000000049 R15: 
-0000000000000049
-[  504.272639] FS:  00007fb60c99b400(0000) GS:ffff8d8caae00000(0000) 
-knlGS:0000000000000000
-[  504.272643] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  504.272645] CR2: 00007f86e9192f68 CR3: 0000000111b46000 CR4: 
-00000000003506f0
-[  504.272648] Call Trace:
-[  504.272650]  <TASK>
-[  504.272656]  unregister_irq_proc+0xe4/0x110
-[  504.272664]  free_desc+0x2e/0x70
-[  504.272669]  irq_free_descs+0x50/0x80
-[  504.272674]  irq_domain_free_irqs+0x16b/0x1c0
-[  504.272678]  __msi_domain_free_irqs+0xf1/0x160
-[  504.272683]  msi_domain_free_irqs_descs_locked+0x20/0x50
-[  504.272687]  pci_msi_teardown_msi_irqs+0x49/0x50
-[  504.272692]  pci_disable_msix.part.0+0xff/0x160
-[  504.272695]  pci_free_irq_vectors+0x45/0x60
-[  504.272699]  xgbe_pci_remove+0x24/0x40 [amd_xgbe]
-[  504.272717]  pci_device_remove+0x39/0xa0
-[  504.272724]  __device_release_driver+0x181/0x250
-[  504.272731]  driver_detach+0xd3/0x120
-[  504.272736]  bus_remove_driver+0x59/0xd0
-[  504.272739]  driver_unregister+0x31/0x50
-[  504.272743]  pci_unregister_driver+0x40/0x90
-[  504.272748]  xgbe_pci_exit+0x15/0x20 [amd_xgbe]
-[  504.272766]  xgbe_mod_exit+0x9/0x8b0 [amd_xgbe]
-[  504.272784]  __do_sys_delete_module.constprop.0+0x183/0x290
-[  504.272791]  ? syscall_exit_to_user_mode+0x27/0x50
-[  504.272799]  __x64_sys_delete_module+0x12/0x20
-[  504.272804]  do_syscall_64+0x5c/0xc0
-[  504.272809]  ? irqentry_exit+0x33/0x40
-[  504.272813]  ? exc_page_fault+0x89/0x180
-[  504.272818]  ? asm_exc_page_fault+0x8/0x30
-[  504.272822]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  504.272828] RIP: 0033:0x7fb60caca8eb
-[  504.272833] Code: 73 01 c3 48 8b 0d 45 e5 0e 00 f7 d8 64 89 01 48 83 
-c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f 
-05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 15 e5 0e 00 f7 d8 64 89 01 48
-[  504.272836] RSP: 002b:00007ffd82036228 EFLAGS: 00000206 ORIG_RAX: 
-00000000000000b0
-[  504.272840] RAX: ffffffffffffffda RBX: 00007fb60e79b760 RCX: 
-00007fb60caca8eb
-[  504.272843] RDX: 000000000000000a RSI: 0000000000000800 RDI: 
-00007fb60e79b7c8
-[  504.272845] RBP: 0000000000000000 R08: 0000000000000000 R09: 
-0000000000000000
-[  504.272847] R10: 00007fb60cb62ac0 R11: 0000000000000206 R12: 
-00007ffd82036480
-[  504.272850] R13: 00007ffd820368b6 R14: 00007fb60e79b2a0 R15: 
-00007fb60e79b760
-[  504.272855]  </TASK>
-[  504.272857] ---[ end trace 0000000000000000 ]---
-[  504.272917] ------------[ cut here ]------------
-[  504.272919] remove_proc_entry: removing non-empty directory 'irq/73', 
-leaking at least 'enp6s0f2-pcs'
-[  504.272930] WARNING: CPU: 0 PID: 803 at fs/proc/generic.c:715 
-remove_proc_entry+0x196/0x1b0
-[  504.272938] Modules linked in: nls_iso8859_1 intel_rapl_msr 
-intel_rapl_common snd_hda_intel edac_mce_amd snd_intel_dspcfg 
-snd_intel_sdw_acpi snd_hda_codec snd_hda_core snd_hwdep kvm snd_pcm rapl 
-snd_timer snd_rn_pci_acp3x snd k10temp efi_pstore soundcore 
-snd_pci_acp3x ccp mac_hid sch_fq_codel msr drm ip_tables x_tables 
-autofs4 btrfs blake2b_generic zstd_compress raid10 raid456 
-async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq 
-libcrc32c raid1 raid0 multipath linear crct10dif_pclmul crc32_pclmul 
-ghash_clmulni_intel aesni_intel crypto_simd cryptd amd_xgbe(-) xhci_pci 
-igb i2c_piix4 i2c_amd_mp2_pci xhci_pci_renesas nvme dca i2c_algo_bit 
-nvme_core video spi_amd
-[  504.272998] CPU: 0 PID: 803 Comm: rmmod Tainted: G W         
-5.17.0-rc2-tk #8
-[  504.273002] Hardware name: Deciso B.V. DEC2700 - OPNsense 
-Appliance/Netboard-A10 Gen.3, BIOS 05.32.50.0012-A10.20 11/15/2021
-[  504.273004] RIP: 0010:remove_proc_entry+0x196/0x1b0
-[  504.273009] Code: a8 1d de 92 48 85 c0 48 8d 90 78 ff ff ff 48 0f 45 
-c2 49 8b 54 24 78 4c 8b 80 a0 00 00 00 48 8b 92 a0 00 00 00 e8 28 53 81 
-00 <0f> 0b e9 44 ff ff ff e8 6e bd 87 00 66 66 2e 0f 1f 84 00 00 00 00
-[  504.273012] RSP: 0018:ffffa22a810b7b88 EFLAGS: 00010282
-[  504.273015] RAX: 0000000000000000 RBX: ffff8d8c8022ccc0 RCX: 
-0000000000000000
-[  504.273018] RDX: 0000000000000001 RSI: ffffffff92dbc031 RDI: 
-00000000ffffffff
-[  504.273020] RBP: ffffa22a810b7bb8 R08: 0000000000000000 R09: 
-ffffa22a810b7978
-[  504.273022] R10: ffffa22a810b7970 R11: ffffffff93155f48 R12: 
-ffff8d8c8b8676c0
-[  504.273024] R13: ffff8d8c8b867740 R14: 000000000000004a R15: 
-000000000000004a
-[  504.273027] FS:  00007fb60c99b400(0000) GS:ffff8d8caae00000(0000) 
-knlGS:0000000000000000
-[  504.273030] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  504.273032] CR2: 00007f86e9192f68 CR3: 0000000111b46000 CR4: 
-00000000003506f0
-[  504.273035] Call Trace:
-[  504.273036]  <TASK>
-[  504.273039]  unregister_irq_proc+0xe4/0x110
-[  504.273044]  free_desc+0x2e/0x70
-[  504.273049]  irq_free_descs+0x50/0x80
-[  504.273053]  irq_domain_free_irqs+0x16b/0x1c0
-[  504.273058]  __msi_domain_free_irqs+0xf1/0x160
-[  504.273064]  msi_domain_free_irqs_descs_locked+0x20/0x50
-[  504.273070]  pci_msi_teardown_msi_irqs+0x49/0x50
-[  504.273074]  pci_disable_msix.part.0+0xff/0x160
-[  504.273079]  pci_free_irq_vectors+0x45/0x60
-[  504.273082]  xgbe_pci_remove+0x24/0x40 [amd_xgbe]
-[  504.273098]  pci_device_remove+0x39/0xa0
-[  504.273103]  __device_release_driver+0x181/0x250
-[  504.273107]  driver_detach+0xd3/0x120
-[  504.273110]  bus_remove_driver+0x59/0xd0
-[  504.273113]  driver_unregister+0x31/0x50
-[  504.273116]  pci_unregister_driver+0x40/0x90
-[  504.273121]  xgbe_pci_exit+0x15/0x20 [amd_xgbe]
-[  504.273136]  xgbe_mod_exit+0x9/0x8b0 [amd_xgbe]
-[  504.273151]  __do_sys_delete_module.constprop.0+0x183/0x290
-[  504.273156]  ? syscall_exit_to_user_mode+0x27/0x50
-[  504.273161]  __x64_sys_delete_module+0x12/0x20
-[  504.273165]  do_syscall_64+0x5c/0xc0
-[  504.273168]  ? irqentry_exit+0x33/0x40
-[  504.273172]  ? exc_page_fault+0x89/0x180
-[  504.273176]  ? asm_exc_page_fault+0x8/0x30
-[  504.273179]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  504.273184] RIP: 0033:0x7fb60caca8eb
-[  504.273187] Code: 73 01 c3 48 8b 0d 45 e5 0e 00 f7 d8 64 89 01 48 83 
-c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f 
-05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 15 e5 0e 00 f7 d8 64 89 01 48
-[  504.273189] RSP: 002b:00007ffd82036228 EFLAGS: 00000206 ORIG_RAX: 
-00000000000000b0
-[  504.273192] RAX: ffffffffffffffda RBX: 00007fb60e79b760 RCX: 
-00007fb60caca8eb
-[  504.273194] RDX: 000000000000000a RSI: 0000000000000800 RDI: 
-00007fb60e79b7c8
-[  504.273196] RBP: 0000000000000000 R08: 0000000000000000 R09: 
-0000000000000000
-[  504.273198] R10: 00007fb60cb62ac0 R11: 0000000000000206 R12: 
-00007ffd82036480
-[  504.273200] R13: 00007ffd820368b6 R14: 00007fb60e79b2a0 R15: 
-00007fb60e79b760
-[  504.273204]  </TASK>
-[  504.273205] ---[ end trace 0000000000000000 ]---
-[  504.925023] irq 31: nobody cared (try booting with the "irqpoll" option)
-[  504.932518] CPU: 4 PID: 0 Comm: swapper/4 Tainted: G W         
-5.17.0-rc2-tk #8
-[  504.932524] Hardware name: Deciso B.V. DEC2700 - OPNsense 
-Appliance/Netboard-A10 Gen.3, BIOS 05.32.50.0012-A10.20 11/15/2021
-[  504.932526] Call Trace:
-[  504.932529]  <IRQ>
-[  504.932533]  dump_stack_lvl+0x4c/0x63
-[  504.932542]  dump_stack+0x10/0x12
-[  504.932545]  __report_bad_irq+0x3a/0xaf
-[  504.932550]  note_interrupt.cold+0xb/0x60
-[  504.932554]  ? __this_cpu_preempt_check+0x13/0x20
-[  504.932560]  handle_irq_event+0x71/0x80
-[  504.932567]  handle_fasteoi_irq+0x95/0x1e0
-[  504.932572]  __common_interrupt+0x6e/0x110
-[  504.932577]  common_interrupt+0xbd/0xe0
-[  504.932581]  </IRQ>
-[  504.932582]  <TASK>
-[  504.932584]  asm_common_interrupt+0x1e/0x40
-[  504.932588] RIP: 0010:cpuidle_enter_state+0xdf/0x380
-[  504.932595] Code: ff e8 e5 88 73 ff 80 7d d7 00 74 17 9c 58 0f 1f 44 
-00 00 f6 c4 02 0f 85 82 02 00 00 31 ff e8 d8 9e 7a ff fb 66 0f 1f 44 00 
-00 <45> 85 ff 0f 88 1a 01 00 00 49 63 d7 4c 89 f1 48 2b 4d c8 48 8d 04
-[  504.932599] RSP: 0018:ffffa22a800e3e68 EFLAGS: 00000246
-[  504.932604] RAX: ffff8d8caaf00000 RBX: 0000000000000002 RCX: 
-000000000000001f
-[  504.932607] RDX: 0000000000000000 RSI: ffffffff92dbc031 RDI: 
-ffffffff92dcab7f
-[  504.932609] RBP: ffffa22a800e3ea0 R08: 000000758fe062ac R09: 
-000000754b94ae72
-[  504.932611] R10: 0000000000000001 R11: ffff8d8caaf2fd84 R12: 
-ffff8d8c933f7000
-[  504.932613] R13: ffffffff9326e3c0 R14: 000000758fe062ac R15: 
-0000000000000002
-[  504.932618]  ? cpuidle_enter_state+0xbb/0x380
-[  504.932624]  cpuidle_enter+0x2e/0x40
-[  504.932628]  do_idle+0x203/0x290
-[  504.932633]  cpu_startup_entry+0x20/0x30
-[  504.932637]  start_secondary+0x118/0x150
-[  504.932642]  secondary_startup_64_no_verify+0xd5/0xdb
-[  504.932650]  </TASK>
-[  504.932651] handlers:
-[  504.935191] [<00000000dbc7353a>] amd_mp2_irq_isr [i2c_amd_mp2_pci]
-[  504.942102] Disabling IRQ #31
-
-
-Cheers
-Thomas
+/Thomas
 
