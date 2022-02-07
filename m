@@ -2,87 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29F834ACA54
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 21:26:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1A644ACA55
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 21:26:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241250AbiBGUZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S241430AbiBGUZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 7 Feb 2022 15:25:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47432 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241807AbiBGUUL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 15:20:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9350FC0401E1;
-        Mon,  7 Feb 2022 12:20:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 221CD61528;
-        Mon,  7 Feb 2022 20:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7F8A2C340EE;
-        Mon,  7 Feb 2022 20:20:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644265209;
-        bh=BBEBnletFD20aH/opeooHKsu6fGgsTHw4+9SGllHqJk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VSF2r9Bm/3pAZO3U27j9udAsiE/tfnCT2UQOb0zU0pujeIH5oaS4hw3CnXGcyzCtM
-         zjYaKGQA4B7EnXqz7iKwbrWQ++g3A+IIeLGWI30r2PGPvxLrE2pBWFTgq0TsW7+HLM
-         9FDkcw0wDEgT1/wiC8FbOh8ruerjvog5x8sSEMbrAj/Y1QB1kC5aTJ7l0g5rPWrAZF
-         fyqmVuJrm4lScSL6j8O3ZcS35A/Zn2rQuz0ltKfifoAKs5D9B6vy2Ycuw3ZSHNYKhs
-         2/LYZJGVDXrj1d2m3STWPGjOKyAiOVUzCXjrCzAOhLxV4KrsiHfsdCnkeqzNq0SqXk
-         OsZiMB7WSvrcA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 63151E6BB3D;
-        Mon,  7 Feb 2022 20:20:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232919AbiBGUY0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 15:24:26 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E81EC0401DA;
+        Mon,  7 Feb 2022 12:24:25 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id c15so21337953ljf.11;
+        Mon, 07 Feb 2022 12:24:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0QZUBGn5Vf3a75LS52BCKhCqw6Mtv6YRAewQwFkN9YU=;
+        b=HhaDozkIYW6SQNj1SQEVEcn2tye5SwdgIeieSdv/hIXRvmL1r923vLwDCNEEGwxBgy
+         ejLv9/tQuSRFUF6C7yjnA3fjs9L1IZyReulArI7kR7mayrLqFa+Pu+f1s6gYvelTFBt4
+         hKPqwWco2L3GIx8GWLseYf5rrUEGQKsJFMY0Jhq9deKERJj8heycEDGAXc6H2Mlq8GUJ
+         KWLysWMrukYAbLX/0qbqPZ3ZcmXbbq6Pt85S7Edf48M0a1LqXGXmv5gXzx4AHPW06Sb2
+         Tfogob6yzAnGUGavRbX4E61OEUFN9jaWmhYiqYCD3J2RRxJeibyNkh7HBXNBFzbTkg65
+         raiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0QZUBGn5Vf3a75LS52BCKhCqw6Mtv6YRAewQwFkN9YU=;
+        b=Xrqxxh0nU7e/xPggz6YBaLVbFHCaTbKhA+9J275ZHIqGcCKjL3jZxntApVSNz5NjgC
+         21WPRwAVDnZgsw7Y74uGrwUllrtBogWHQGEWuLHAJ7qFvtBVr2XfzND6X0300NaQlSeD
+         n6eTzsGgY2iR4zykNjWRY3OSfgllVfaVj/ErKvMlUzdNUquDmsijYtIgBhHcM0ZoP7jM
+         pqxBMN0JeI4KuJKe6+bjBxdSC1IPAkMYxmsD01jLZ3OF5Uf9zacjm+fIXaWraa6RdcHS
+         NF8pgT/pjVJEivAJv4pLGl536KV3BlqfFQNE4K8uW7EH8l2A3rfoUCJWicxZR+vc6k7e
+         BCXw==
+X-Gm-Message-State: AOAM531Y7GuYkyLrSM+MC9p0uAhECLXt1iZLj2sSYcIayRP+j5l7NaFz
+        A6Gz0MT2e8T25VVi8MDInRo=
+X-Google-Smtp-Source: ABdhPJz4tTPcQksNjB3XhXBM2BhaAlFbe5VIPLCf72OHyrbnaTGpDRyfcnx/8nTl/uDcOydHOb1FUw==
+X-Received: by 2002:a2e:8447:: with SMTP id u7mr734250ljh.516.1644265463369;
+        Mon, 07 Feb 2022 12:24:23 -0800 (PST)
+Received: from localhost.localdomain ([94.103.224.201])
+        by smtp.gmail.com with ESMTPSA id n16sm1625618lfq.113.2022.02.07.12.24.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 12:24:22 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     ath9k-devel@qca.qualcomm.com, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, toke@toke.dk,
+        linville@tuxdriver.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
+        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+Subject: [PATCH v3 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+Date:   Mon,  7 Feb 2022 23:24:18 +0300
+Message-Id: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v2 0/3] bpf: Fix strict mode calculation
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164426520940.21464.8742032555307635242.git-patchwork-notify@kernel.org>
-Date:   Mon, 07 Feb 2022 20:20:09 +0000
-References: <20220207145052.124421-1-mauricio@kinvolk.io>
-In-Reply-To: <20220207145052.124421-1-mauricio@kinvolk.io>
-To:     =?utf-8?q?Mauricio_V=C3=A1squez_=3Cmauricio=40kinvolk=2Eio=3E?=@ci.codeaurora.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, quentin@isovalent.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb(). The
+problem was in incorrect htc_handle->drv_priv initialization.
 
-This series was applied to bpf/bpf-next.git (master)
-by Andrii Nakryiko <andrii@kernel.org>:
+Probable call trace which can trigger use-after-free:
 
-On Mon,  7 Feb 2022 09:50:49 -0500 you wrote:
-> This series fixes a bad calculation of strict mode in two places. It
-> also updates libbpf to make it easier for the users to disable a
-> specific LIBBPF_STRICT_* flag.
-> 
-> v1 -> v2:
-> - remove check in libbpf_set_strict_mode()
-> - split in different commits
-> 
-> [...]
+ath9k_htc_probe_device()
+  /* htc_handle->drv_priv = priv; */
+  ath9k_htc_wait_for_target()      <--- Failed
+  ieee80211_free_hw()		   <--- priv pointer is freed
 
-Here is the summary with links:
-  - [bpf-next,v2,1/3] libbpf: Remove mode check in libbpf_set_strict_mode()
-    https://git.kernel.org/bpf/bpf-next/c/e4e835c87bb5
-  - [bpf-next,v2,2/3] bpftool: Fix strict mode calculation
-    https://git.kernel.org/bpf/bpf-next/c/da7af0aa20f8
-  - [bpf-next,v2,3/3] selftests/bpf: Fix strict mode calculation
-    https://git.kernel.org/bpf/bpf-next/c/2b9e2eadc9c8
+<IRQ>
+...
+ath9k_hif_usb_rx_cb()
+  ath9k_hif_usb_rx_stream()
+   RX_STAT_INC()		<--- htc_handle->drv_priv access
 
-You are awesome, thank you!
+In order to not add fancy protection for drv_priv we can move
+htc_handle->drv_priv initialization at the end of the
+ath9k_htc_probe_device() and add helper macro to make
+all *_STAT_* macros NULL save.
+
+Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
+Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+
+Changes since v2:
+	- My send-email script forgot, that mailing lists exist.
+	  Added back all related lists
+
+Changes since v1:
+	- Removed clean-ups and moved them to 2/2
+
+---
+ drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
+ drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+index 6b45e63fae4b..141642e5e00d 100644
+--- a/drivers/net/wireless/ath/ath9k/htc.h
++++ b/drivers/net/wireless/ath/ath9k/htc.h
+@@ -327,11 +327,11 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
+ }
+ 
+ #ifdef CONFIG_ATH9K_HTC_DEBUGFS
+-
+-#define TX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
+-#define TX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
+-#define RX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
+-#define RX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
++#define __STAT_SAVE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
++#define TX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
++#define TX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
++#define RX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
++#define RX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
+ #define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
+ 
+ #define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_init.c b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
+index ff61ae34ecdf..07ac88fb1c57 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_init.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
+@@ -944,7 +944,6 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
+ 	priv->hw = hw;
+ 	priv->htc = htc_handle;
+ 	priv->dev = dev;
+-	htc_handle->drv_priv = priv;
+ 	SET_IEEE80211_DEV(hw, priv->dev);
+ 
+ 	ret = ath9k_htc_wait_for_target(priv);
+@@ -965,6 +964,8 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
+ 	if (ret)
+ 		goto err_init;
+ 
++	htc_handle->drv_priv = priv;
++
+ 	return 0;
+ 
+ err_init:
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
