@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA0CF4AC273
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 16:07:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8793E4AC264
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 16:05:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380812AbiBGPFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 10:05:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54100 "EHLO
+        id S244739AbiBGPEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 10:04:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442263AbiBGOsM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 09:48:12 -0500
+        with ESMTP id S1442264AbiBGOsN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 09:48:13 -0500
 Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F73C0401C2;
-        Mon,  7 Feb 2022 06:48:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADDA0C0401C1;
+        Mon,  7 Feb 2022 06:48:12 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 81D332000B;
-        Mon,  7 Feb 2022 14:48:08 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id E358720002;
+        Mon,  7 Feb 2022 14:48:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644245289;
+        t=1644245291;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vDrO3Tw9p4ErYkEAD53kXKEoAP/91adCzTKGwaYTCW8=;
-        b=VGX00/Vm5BDswDYKP7TX/wNl9Y7+cHgIgOK/2JvI4RHpvu+yx8nuNfLLztEwIe/QL6um/Y
-        4lJipH7R0KRte9ksBzGsbwMpBpW/ecmAkidWFUSFvRfLOOTK57FEc/siUTkUVv/ndFoRnB
-        tYA3oiwYXO6DK6LuuVLOm4g9daOexdZNut7ZiOstaizXjQpb7GIfISxqV3xvoURw5odU7S
-        QnkNrwBWk3ePgPJI9tr9sp6Hf0+nbGB6ZOvCu9AYo+Z3lqAG4IJ4YepMEOY85s4UhRT6Ft
-        6QkGdgAVwMdok0OG7X04aJJr0BD6eYqNrxd5yznBuqxdrii/xAtLRmqj1Eqh3w==
+        bh=7vgHAxf85S2r5hBg/JVeDh49xgJmMDMYurxM/t95k3A=;
+        b=j2w4uBzS7g1hvGdGKoDUbtxSyBE9wNlv5/aKKW7nZMQhUe6OfbkkwdXEQtm2fDs55Iwbks
+        5sLrjFx3iDI8LoaRUcMryxNGcdSDkjQhYYYzrgd1JooBdehyUeJ2cyhu0bZSyzjqSgUpD/
+        t5kOh0Kz3g1Y1lOmg3p3BvMcjYXTbFaRueki3MA72wUAiWRcIXoco3JPON2G93i6quXKWM
+        0wABv9R57wTuk3kX+rAktxTiWxrl7rKBZh/SSTlL01V+YsOJWDQ8jtE3YFaPsCQ6p4rkzN
+        2+2ue52Wg9ht7V8klttN4hncPQlgCeeWxUmOF2N/PQmuYLem5MVzNq2MepOtdw==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -41,9 +41,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v2 02/14] net: mac802154: Create a transmit error helper
-Date:   Mon,  7 Feb 2022 15:47:52 +0100
-Message-Id: <20220207144804.708118-3-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v2 03/14] net: ieee802154: at86rf230: Call _xmit_error() when a transmission fails
+Date:   Mon,  7 Feb 2022 15:47:53 +0100
+Message-Id: <20220207144804.708118-4-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220207144804.708118-1-miquel.raynal@bootlin.com>
 References: <20220207144804.708118-1-miquel.raynal@bootlin.com>
@@ -59,58 +59,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So far there is only a helper for successful transmission, which led
-device drivers to implement their own handling in case of
-error. Unfortunately, we really need all the drivers to give the hand
-back to the core once they are done in order to be able to build a
-proper synchronous API. So let's create a _xmit_error() helper.
+ieee802154_xmit_error() is the right helper to call when a transmission
+has failed. Let's use it instead of open-coding it.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- include/net/mac802154.h | 10 ++++++++++
- net/mac802154/util.c    | 10 ++++++++++
- 2 files changed, 20 insertions(+)
+ drivers/net/ieee802154/at86rf230.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/include/net/mac802154.h b/include/net/mac802154.h
-index 2c3bbc6645ba..9fe8cfef1ba0 100644
---- a/include/net/mac802154.h
-+++ b/include/net/mac802154.h
-@@ -498,4 +498,14 @@ void ieee802154_stop_queue(struct ieee802154_hw *hw);
- void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
- 			      bool ifs_handling);
+diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+index 563031ce76f0..5d714c6ec9b4 100644
+--- a/drivers/net/ieee802154/at86rf230.c
++++ b/drivers/net/ieee802154/at86rf230.c
+@@ -346,8 +346,7 @@ at86rf230_async_error_recover_complete(void *context)
  
-+/**
-+ * ieee802154_xmit_error - frame transmission failed
-+ *
-+ * @hw: pointer as obtained from ieee802154_alloc_hw().
-+ * @skb: buffer for transmission
-+ * @ifs_handling: indicate interframe space handling
-+ */
-+void ieee802154_xmit_error(struct ieee802154_hw *hw, struct sk_buff *skb,
-+			   bool ifs_handling);
-+
- #endif /* NET_MAC802154_H */
-diff --git a/net/mac802154/util.c b/net/mac802154/util.c
-index 6f82418e9dec..9016f634efba 100644
---- a/net/mac802154/util.c
-+++ b/net/mac802154/util.c
-@@ -102,6 +102,16 @@ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
+ 	if (lp->was_tx) {
+ 		lp->was_tx = 0;
+-		dev_kfree_skb_any(lp->tx_skb);
+-		ieee802154_wake_queue(lp->hw);
++		ieee802154_xmit_error(lp->hw, lp->tx_skb, false);
+ 	}
  }
- EXPORT_SYMBOL(ieee802154_xmit_complete);
  
-+void ieee802154_xmit_error(struct ieee802154_hw *hw, struct sk_buff *skb,
-+			   bool ifs_handling)
-+{
-+	unsigned int skb_len = skb->len;
-+
-+	dev_kfree_skb_any(skb);
-+	ieee802154_xmit_end(hw, ifs_handling, skb_len);
-+}
-+EXPORT_SYMBOL(ieee802154_xmit_error);
-+
- void ieee802154_stop_device(struct ieee802154_local *local)
- {
- 	flush_workqueue(local->workqueue);
 -- 
 2.27.0
 
