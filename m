@@ -2,59 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DA1C4ACDAB
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 02:18:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01A454ACDC3
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 02:18:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245695AbiBHBGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 20:06:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41792 "EHLO
+        id S245478AbiBHBGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 20:06:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245742AbiBGXaB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 18:30:01 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479E5C061355
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 15:30:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=celx2ES4IjUrlg3ujO49ac+FR0AgAhyQ5+H4uvYQYqQ=; b=YtNTflKnbjRhtIN/0ja7v5kGsl
-        JZwiqfbyX6t04Jih79Dlf98ScYoDZxs5nue3Wh5PRcWKGTdRZMk2AdaX8i6YZqlToaLhwJikvwp+H
-        femlTKbfcJYzH41MP5gMKAsN+1WGaIOYUE/zPAaz1HbO8774z1qX0IoVnP8LG9xBu+sA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nHDSJ-004ibG-Lr; Tue, 08 Feb 2022 00:29:59 +0100
-Date:   Tue, 8 Feb 2022 00:29:59 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>
-Cc:     netdev@vger.kernel.org, hkallweit1@gmail.com, linux@armlinux.org.uk
-Subject: Re: [PATCH v2 2/2] net: phy: micrel: add Microchip KSZ 9477 to the
- device table
-Message-ID: <YgGrd2SJj5mIo5b6@lunn.ch>
-References: <20220207174532.362781-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
- <20220207174532.362781-3-enguerrand.de-ribaucourt@savoirfairelinux.com>
+        with ESMTP id S239718AbiBGXc4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 18:32:56 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A89AC061355;
+        Mon,  7 Feb 2022 15:32:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644276775; x=1675812775;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=roNur7xt9W/+tkOmxvKe2APccW8Ci8hXBtHvfXkGCk8=;
+  b=fw06696w9AKDMzVD/+Gv4Q8UkNfhvk+Jp/l8jehKWPWq2DbCyWSYsNuP
+   GtgCLHHRBWKCG3yhVTBzApmJxq5h/6oxLfs+nZXDWfAHvl0lbNJkPOHB1
+   629DVXFanHJOan7EnDhaPNpRF3cOiJIoUmPPzJHzgHQATmi281W9nOlpu
+   XeoXA+ZMPxjCA+psRdAZRLEVU0F8rXt2iIit8bpYDZRMEg+bhH2e8gS2k
+   3ChY++xm2lBlUOiF4PoO7F2R/aCJFqpb2+PxCt1McbzWRyZywvFVZeX+3
+   0TzH8wdp+rL7AY1D3fonKHVnMeRk3fJmY4YkvZaiKoONqIU3UTZ72xpDF
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="335232071"
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="335232071"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 15:32:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="772948619"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga005.fm.intel.com with ESMTP; 07 Feb 2022 15:32:54 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        vinschen@redhat.com, maciej.fijalkowski@intel.com,
+        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com, bpf@vger.kernel.org
+Subject: [PATCH net-next 0/2][pull request] 1GbE Intel Wired LAN Driver Updates 2022-02-07
+Date:   Mon,  7 Feb 2022 15:32:44 -0800
+Message-Id: <20220207233246.1172958-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207174532.362781-3-enguerrand.de-ribaucourt@savoirfairelinux.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 06:45:36PM +0100, Enguerrand de Ribaucourt wrote:
-> PHY_ID_KSZ9477 was supported but not added to the device table passed to
-> MODULE_DEVICE_TABLE.
-> 
-> Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
+Corinna Vinschen says:
 
-I'm pretty sure i gave a reviewed-by: for this patch. Please add such
-tags when you repost.
+Fix the kernel warning "Missing unregister, handled but fix driver"
+when running, e.g.,
 
-     Andrew
+  $ ethtool -G eth0 rx 1024
+
+on igc.  Remove memset hack from igb and align igb code to igc.
+
+The following are changes since commit ff62433883b3ab753a78954ecf46e2c514f5c407:
+  net: dsa: mv88e6xxx: Unlock on error in mv88e6xxx_port_bridge_join()
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 1GbE
+
+Corinna Vinschen (2):
+  igc: avoid kernel warning when changing RX ring parameters
+  igb: refactor XDP registration
+
+ drivers/net/ethernet/intel/igb/igb_ethtool.c |  4 ----
+ drivers/net/ethernet/intel/igb/igb_main.c    | 19 +++++++++++++------
+ drivers/net/ethernet/intel/igc/igc_main.c    |  3 +++
+ 3 files changed, 16 insertions(+), 10 deletions(-)
+
+-- 
+2.31.1
+
