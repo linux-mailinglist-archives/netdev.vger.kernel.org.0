@@ -2,68 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C78DC4ACA92
-	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 21:47:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69EC74ACACD
+	for <lists+netdev@lfdr.de>; Mon,  7 Feb 2022 22:00:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbiBGUq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 15:46:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52616 "EHLO
+        id S231496AbiBGVAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 16:00:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242732AbiBGUay (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 15:30:54 -0500
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5E0C0401DA;
-        Mon,  7 Feb 2022 12:30:53 -0800 (PST)
-Received: by mail-oi1-f175.google.com with SMTP id 4so18280642oil.11;
-        Mon, 07 Feb 2022 12:30:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=M80jk/mTnmzTCyOAgobT1zJYrEwWUPQbcvoyxfMNQ0k=;
-        b=rsmIPlkDo6uBj+fENhZ36oww2mWNGioHWmiBVGOy6mhJL1UVymKmqHUbn6/S6RjVci
-         LA9vg1aUK0sjv7skcFsF3QldXNx6zhbdPbaltU97Q4buGY/VGNKlNP/eOVjxITWRs7qJ
-         sYWInDiTt5/9kIKAmYA3k9zWc3ffNYdFqWoMG6UgTrU+4UimtPBONlg8sSZ75YdfOu8Y
-         WFZp3ulf1eJ0DfMbFYLQdsBSREuL8WixiWGF2/ZoN8yVaB9D5l//uAJ8I9OHqfy97cgP
-         okx4CE2Da0jB85DMQl0JNHnhPmW/EA+YSQVB9KncoeX67lPcpoyb1OPazTxYLEvpJ4sS
-         YuPA==
-X-Gm-Message-State: AOAM530nD5USLj1P3lOvXtu2LLSPnvIPN7PUQcRDv8dgyBTZdPu0UicP
-        9oYqlh649iLRTjoUOv/Nsw==
-X-Google-Smtp-Source: ABdhPJxrtjY8DN4oMg8J59VZ53F3yuhMoNXTZzes8GFgKwzEEiGAyqNyAURzasKssSKB+fI+cBpThA==
-X-Received: by 2002:a05:6808:1513:: with SMTP id u19mr309040oiw.205.1644265853047;
-        Mon, 07 Feb 2022 12:30:53 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id bc36sm4343256oob.45.2022.02.07.12.30.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 12:30:52 -0800 (PST)
-Received: (nullmailer pid 855870 invoked by uid 1000);
-        Mon, 07 Feb 2022 20:30:51 -0000
-Date:   Mon, 7 Feb 2022 14:30:51 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Vinod Koul <vkoul@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Holger Brunck <holger.brunck@hitachienergy.com>,
-        linux-phy@lists.infradead.org
-Subject: Re: [PATCH devicetree v3] dt-bindings: phy: Add `tx-p2p-microvolt`
- property binding
-Message-ID: <YgGBe0BS/d0lOVtU@robh.at.kernel.org>
-References: <20220119131117.30245-1-kabel@kernel.org>
+        with ESMTP id S231402AbiBGVAS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 16:00:18 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3A0C06173B;
+        Mon,  7 Feb 2022 13:00:17 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id B2EE91F449C3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644267606;
+        bh=N5JqssyGW7G70mGE9QlOJwJiSFPcXLNfmk8H/V5Cg2k=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=i43/GqRMALGePiOvKLLiVm68rl7kuD1jPtECg5+AFtHcce0lAwh1/GGSmHJCn1jLm
+         X6EL8T3rmdu1TBQ/ziIiAobHLYePbEtAuBsXOtvThf0rFuOu8ioogWyo6+p0fFYO0U
+         ZLVr+k/X26iDjWvfPYqFgwc+hy1U+5WgvQ2zeSKTUHwbHkc7+MItKBgcSIpQIEsWKS
+         7W8bg5mwFpiErJuWGEN7K4AK8h2t5qcIQurHllkJpGqXRQfas9/efaLODRJ1EjX+n5
+         NBoTD33o5y28NxivwECmAHmWVYfQ12CbFe71ygKzJgFU11I4fj5npRIXDC8Gzhq2U4
+         zmjQwNtPnfCgA==
+Message-ID: <701fbfac-b548-1f05-7841-e233ef82be15@collabora.com>
+Date:   Tue, 8 Feb 2022 01:59:58 +0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220119131117.30245-1-kabel@kernel.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     usama.anjum@collabora.com, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, kernel@collabora.com,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH] selftests: Fix build when $(O) points to a relative path
+Content-Language: en-US
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+References: <20220204225817.3918648-1-usama.anjum@collabora.com>
+ <CAEf4Bzbf38F39XHJnCKy19m97JZJnhN0+Sr-TAVzZnSKuqzL4w@mail.gmail.com>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <CAEf4Bzbf38F39XHJnCKy19m97JZJnhN0+Sr-TAVzZnSKuqzL4w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,42 +63,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 Jan 2022 14:11:17 +0100, Marek Behún wrote:
-> Common PHYs and network PCSes often have the possibility to specify
-> peak-to-peak voltage on the differential pair - the default voltage
-> sometimes needs to be changed for a particular board.
+On 2/8/22 12:22 AM, Andrii Nakryiko wrote:
+> On Fri, Feb 4, 2022 at 2:59 PM Muhammad Usama Anjum
+> <usama.anjum@collabora.com> wrote:
+>>
+>> Build of bpf and tc-testing selftests fails when the relative path of
+>> the build directory is specified.
+>>
+>> make -C tools/testing/selftests O=build0
+>> make[1]: Entering directory '/linux_mainline/tools/testing/selftests/bpf'
+>> ../../../scripts/Makefile.include:4: *** O=build0 does not exist.  Stop.
+>> make[1]: Entering directory '/linux_mainline/tools/testing/selftests/tc-testing'
+>> ../../../scripts/Makefile.include:4: *** O=build0 does not exist.  Stop.
+>>
+>> The fix is same as mentioned in commit 150a27328b68 ("bpf, preload: Fix
+>> build when $(O) points to a relative path").
+>>
 > 
-> Add properties `tx-p2p-microvolt` and `tx-p2p-microvolt-names` for this
-> purpose. The second property is needed to specify the mode for the
-> corresponding voltage in the `tx-p2p-microvolt` property, if the voltage
-> is to be used only for speficic mode. More voltage-mode pairs can be
-> specified.
-> 
-> Example usage with only one voltage (it will be used for all supported
-> PHY modes, the `tx-p2p-microvolt-names` property is not needed in this
-> case):
-> 
->   tx-p2p-microvolt = <915000>;
-> 
-> Example usage with voltages for multiple modes:
-> 
->   tx-p2p-microvolt = <915000>, <1100000>, <1200000>;
->   tx-p2p-microvolt-names = "2500base-x", "usb", "pcie";
-> 
-> Add these properties into a separate file phy/transmit-amplitude.yaml,
-> which should be referenced by any binding that uses it.
-> 
-> Signed-off-by: Marek Behún <kabel@kernel.org>
-> ---
-> Change since v2:
-> - removed 'select:' as requested by Rob. Instead the schema should be
->   referenced by any binding that uses it. This also fixed indentation
->   warnings from Rob's bot, since they warned about lines in the select
->   statement
-> ---
->  .../bindings/phy/transmit-amplitude.yaml      | 103 ++++++++++++++++++
->  1 file changed, 103 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/phy/transmit-amplitude.yaml
-> 
+> I don't think it actually helps building BPF selftest. Even with this
+This patch is fixing one type of build error which occurs if output
+directory's path is relative.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+> patch applied, all the feature detection doesn't work, and I get
+> reallocarray redefinition failure when bpftool is being built as part
+> of selftest.
+There may be more problems in BPF tests. Those needs to be looked at
+separately.
+
+>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+>> ---
+>>  tools/testing/selftests/Makefile | 4 +++-
+>>  1 file changed, 3 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+>> index 4eda7c7c15694..aa0faf132c35a 100644
+>> --- a/tools/testing/selftests/Makefile
+>> +++ b/tools/testing/selftests/Makefile
+>> @@ -178,6 +178,7 @@ all: khdr
+>>                 BUILD_TARGET=$$BUILD/$$TARGET;                  \
+>>                 mkdir $$BUILD_TARGET  -p;                       \
+>>                 $(MAKE) OUTPUT=$$BUILD_TARGET -C $$TARGET       \
+>> +                               O=$(abs_objtree)                \
+>>                                 $(if $(FORCE_TARGETS),|| exit); \
+>>                 ret=$$((ret * $$?));                            \
+>>         done; exit $$ret;
+>> @@ -185,7 +186,8 @@ all: khdr
+>>  run_tests: all
+>>         @for TARGET in $(TARGETS); do \
+>>                 BUILD_TARGET=$$BUILD/$$TARGET;  \
+>> -               $(MAKE) OUTPUT=$$BUILD_TARGET -C $$TARGET run_tests;\
+>> +               $(MAKE) OUTPUT=$$BUILD_TARGET -C $$TARGET run_tests \
+>> +                               O=$(abs_objtree);                   \
+>>         done;
+>>
+>>  hotplug:
+>> --
+>> 2.30.2
+>>
