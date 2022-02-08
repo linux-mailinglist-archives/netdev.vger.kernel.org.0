@@ -2,561 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A34D54AD6B9
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 12:29:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 406614AD6BE
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 12:29:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350231AbiBHL3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 06:29:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34154 "EHLO
+        id S1358188AbiBHL3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 06:29:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356737AbiBHK5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 05:57:00 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA84C03FEC5;
-        Tue,  8 Feb 2022 02:56:56 -0800 (PST)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2187sJBJ000850;
-        Tue, 8 Feb 2022 01:55:16 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=eFKbRoUffa88clZsutPkjLLqv7ndrmgGCcMvmp5bIeU=;
- b=ZgsLTo/9Emf4vx8lFs2u1hH481MVkvimrETtvAd9SF3qxkoEPOt5oktfStjHPOLmIjSt
- aCyFR+0SoyxsY1VCAyLJGxgJoKuivKVWmnuInmzQyO3BXh+3I5NUj0pcEm7EMf6PQ/h1
- 8qVRQeKyNJwTUerYO+/0NDnOezWrvU7ddJqA2BLesBZNvETdCXVKgpsKa8H9lULrm9zH
- 8oAq4etguMNQJJfiC1F4BwgAwACugr+9x5gi4oY5h0KF+50eAiqtNKjwPq4G/w/yEfQM
- C8qmPPiCceaUCUhe2BlmKYy9EEGlm4zelKU9CguXHQMDDlRxnGI5drjyiqnoQoLACMJG 0w== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3e3mhsged0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 01:55:16 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 8 Feb
- 2022 01:55:14 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 8 Feb 2022 01:55:14 -0800
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 982553F708F;
-        Tue,  8 Feb 2022 01:55:11 -0800 (PST)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
-        <sbhatta@marvell.com>, <hkelam@marvell.com>
-Subject: [net-next PATCH 4/4] octeontx2-pf: PFC config support with DCBx
-Date:   Tue, 8 Feb 2022 15:24:56 +0530
-Message-ID: <20220208095456.6122-5-hkelam@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220208095456.6122-1-hkelam@marvell.com>
-References: <20220208095456.6122-1-hkelam@marvell.com>
-MIME-Version: 1.0
+        with ESMTP id S1349575AbiBHKPZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 05:15:25 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2120.outbound.protection.outlook.com [40.107.94.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED83C03FEC0
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 02:15:23 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SigUBWDP5NalDXQpagd3VAWRIJOvRLroH12mljh7sG6y0+yOzyDXuyiFcXXlk73q+fynv821ZwFPJKwFMYmUMBf6IgkQp3aC1E/dlm4URSyCCOMInsocUdRlDKJjb+CCa1vQWyRnu6MlrnJ3bqU9ZzdY6mpx8B+0kBR2baD4l7ek5Rwh4/5R+BXIkk8YB2hzTz2zS/qyi6kLwv/3Ys1e2GLKn1DPg/8Xb4vqZQy/vpxZMTSyxbEUwDHXlguSzKnbbmeyI1uH8ZZhnUYHy1HDhsZB0TpdIIj78sWtxwLNxaP+5VqFAy7OkdcdWbzfjnstgIz+P1mvvyC+9QTJSbLLOw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5tr4U43SXVdeAfzjTE4Fz3Aml686YJVqCH2a/k2/EH4=;
+ b=eCHV172u9Vjpvh9vRZTQdh8i46+rBdgHCaEYJz8BYztGbzHtVtk+2RJnJUka6DUp//wUcVicc97WGcgKWjRJoev+yUWhY9y3GJXqmKWPzTncRon0+a/K+wSCV61SbyjXdxiQ1H3MPTtRxYEZcnjsX7rZO/TjdnzVegjg0b9A9C3znwQzhrZ1BQsZOGq5/m0bdLr0d5sgnE9CKvmbrzNeNMGv7+sCZPgCIN33ryDgbyU6d1mLTwOZK9J8wXb73ks8pp10O0UhtHAYce7UvCAt8eMatPgZ5Z/G6SDs1uxFK4q6y0EE30lgJiLd4BkSRqLeYzfOT0Cc5BIp7rDndfFnhg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5tr4U43SXVdeAfzjTE4Fz3Aml686YJVqCH2a/k2/EH4=;
+ b=CjuoThw0yDvHkjro3Pnwc779bctFsVRAgy4+i/vaJD6ape/qYvNV9W2pY/OgZdgIyhFDfx5nISofWshXqC0Qz5A2TuFsvgGEz1nDJdHOBSCYFBPCeKNPj1vTaFkn2f8nq/eRUj/fZSYcYTdkUTeBS9quUtZ00el+gjlO3VL8sEs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SA1PR13MB4815.namprd13.prod.outlook.com (2603:10b6:806:1ab::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.9; Tue, 8 Feb
+ 2022 10:15:20 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::7037:b9dc:923c:c20d]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::7037:b9dc:923c:c20d%7]) with mapi id 15.20.4975.011; Tue, 8 Feb 2022
+ 10:15:20 +0000
+From:   Simon Horman <simon.horman@corigine.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Louis Peens <louis.peens@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH net] nfp: flower: fix ida_idx not being released
+Date:   Tue,  8 Feb 2022 11:14:53 +0100
+Message-Id: <20220208101453.321949-1-simon.horman@corigine.com>
+X-Mailer: git-send-email 2.30.2
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 0DnsdJtK5OFYK4fys_a8LM9gtIryPHjq
-X-Proofpoint-GUID: 0DnsdJtK5OFYK4fys_a8LM9gtIryPHjq
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-08_02,2022-02-07_02,2021-12-02_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-ClientProxiedBy: AM9P195CA0020.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21f::25) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 065c8a41-ae5a-4562-69d7-08d9eaebe92e
+X-MS-TrafficTypeDiagnostic: SA1PR13MB4815:EE_
+X-Microsoft-Antispam-PRVS: <SA1PR13MB4815935DBC3F1428D632EB80E82D9@SA1PR13MB4815.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: H0maAF6K3bowSIwqeRdQ4A9uAEKLl4r3jjfwk46lEroxqLQOFq40oKQqV9T7xIcq0jl5cENg80WvkM0Ho5USzeqGzo8A2tl4pQyU3Dfv2VtyHheoxks/bZPtk1cVVq/GOHHQetp3HfFZVhAzZ1SJdzpDpAcn6dVXpd8FTKo4VTfadI52weALFNwwbSVuyzFRG3kWGv37AVCuhtum9F/s0qbKN6kgCGafPUYdj9hY5TTlLd2zrX67XsBvJA1NlYzyU852KatpiafMYf+S1zRVrSxiTTLJE7MUPrjk0lZnh7vKt5RWyPKIzEglJH5OyKwzsesS1XCSc6w0PZRZkRmv96f6+nebq87X8pJdn9l9lkl8i8A8ZMxaTj5HNLgwXzbYpliV6pcKmSNxV70J/gMRj7mff61MwxAx/Ed48PNuTXYafu8BwBELoff3g374s4VyrLn/Gx4IEtQe5qvwCM1Oo+HtwKrYQwbsHvKyugSeAdX4x51tNmeZXHIThe9r6YMiAp2h7lJCNLxLspFMrUh176KUBDfyrQyGdCLTUj+NV/7rWk7qy0yB7FGJ+cSm17awoUQ/t70iRL8NyyYrIt0XgMI7CwWgFfhRqfO1IMsjeXZaYgXgrnLuI4s3XVx3WxP9BmH1KOZdjkMR0JauwWB30Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(346002)(136003)(376002)(396003)(39830400003)(107886003)(1076003)(66556008)(2906002)(38100700002)(4326008)(186003)(54906003)(66946007)(8676002)(36756003)(66476007)(110136005)(2616005)(316002)(83380400001)(86362001)(6512007)(6666004)(6506007)(52116002)(508600001)(44832011)(5660300002)(6486002)(8936002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uvjPdB/Ykh9bO4j/89fVZUVuzxxYHXQqCisTXGWK65W6pETjE6IsT78/xKlA?=
+ =?us-ascii?Q?iusgyN+zx4ScDKKAjGvLsDHhOVZz4yDHycESSK4y6z9ce2+FLjZraR9m0JA7?=
+ =?us-ascii?Q?HVBSf3Y2u3ImThJ8PwD6ezHq/slbSl5K0hLT1zO4v9wbQt+cK9No1wauEPb8?=
+ =?us-ascii?Q?n9pQKt5x1uJ9grO0Y9RgwQMWaSRV6zg403MfFc7L2nKKmR26dffi42ydfUZb?=
+ =?us-ascii?Q?W9evjetf7YvTitzckxm1R/KRLvWqPfVFv8A4tR/QjnMBLjyimsBUFUh7ZMp2?=
+ =?us-ascii?Q?xqmR5ZelcCYvneauAt6BHMnaOEbun+6v7hLyjBlNQzSB5aHhDF/TuBDei21G?=
+ =?us-ascii?Q?HSrBC8quvoW9Nc+8KlKapCs2HbSVip0LbUjxEzxOqL9B1oE6uM1QdQQb3qIa?=
+ =?us-ascii?Q?wIiQ3ovGkMOyxNCoWsWuO2XHGIHQKvFoS9oTho+v9D3Lg/ZFIXhCMBQjB4KQ?=
+ =?us-ascii?Q?Uj0ZFojW2yJb2tRmXqETf9ali6I0FZIejyzSuxo0rZ8JnoTGr2wM0+gAeC7a?=
+ =?us-ascii?Q?GHMgsl8WCWj4ZqWq0tYz0Huhcir+WNFz6tj4HCdnLWRnhrRU4DnF7cAMidGK?=
+ =?us-ascii?Q?zjbqC0lpdtmphTtEcOpnesLMnJNAeFTNowdtsYPfIfMfLqsIx9K3iiIFVBV7?=
+ =?us-ascii?Q?os/bWOfofRpKwK0OxIwQYQUiptowno3fifKDlcMpLGvNky0Z6c/Nvuy2/qMR?=
+ =?us-ascii?Q?xtiSoUwt6XGLKKM+WhGUig+fZ7XZkVDQDuYSoQ26ggaZAS/FsIwM8s4vn4Q9?=
+ =?us-ascii?Q?gfKysbrdQjzKEONAeMuX7uTZqf/AY7wlCfSqyOqNGAmU6dWZ2RbqYBiE23T0?=
+ =?us-ascii?Q?GDodooAZsOS6aQ80yFZR1+XuRGW3nZ7/QyPpwGO2vAWiKYbfI2F+/ggo/NQs?=
+ =?us-ascii?Q?O67DWS69IgvXjswD21R9JFu65Zj4/f//rDu0l1q++PeyILvgcLoiTkXm8CPy?=
+ =?us-ascii?Q?AQDYtxkXzC46lEeRAk8tOufltSOJdP/CrHew54rOabaoXPqHcdYGZIf3Ctev?=
+ =?us-ascii?Q?KuXbsLhIFq8Heu2oTzQdLT+SfxA1O+P7RuzZYKb5Mv9d4MKXYE/Edf9SltHd?=
+ =?us-ascii?Q?3FeXK2yQS4Q/vX33YR9OTpFaz3jgz5jkwt013GflEMZwarmyB3ioX6e2cYUx?=
+ =?us-ascii?Q?GEPcZc37saBiDRV63AOucf1H1F6PAOmPYXiX1Th8uS56JfdxtfmKi1YArxtv?=
+ =?us-ascii?Q?hNFWW4P+Z9dpC8qREav3OmNh0MXNtqmXq90ByahuRyuJFeWpzGCmYgHj49Qc?=
+ =?us-ascii?Q?M9aIwrEuZQhfbRDKh8E8Tz28EePXDVhelWO9GUMGk7QuxVEz31LO8VZ15bW/?=
+ =?us-ascii?Q?ZaPZWLXiq44IlJffMofjQ2fGuQMZKKkykQ9fsAdSNJ9BYPZKSNj9q9FD57eu?=
+ =?us-ascii?Q?v2mKGvddahws9CJfQubh7p3eaWmBf04TAInp/gE1tprBk4399zwermmU6iUn?=
+ =?us-ascii?Q?MEGKiAtnflYJGWKqD9y33hCrLANJ3eD8ecAtXddI9E5gNhcc8VO/tfqq4EYY?=
+ =?us-ascii?Q?iuBFuEwQE2gpV8ZxHCNpv94UdD62PX8ZG8zkNtn0nU5WP7BrxDM/u+vdAKAM?=
+ =?us-ascii?Q?QcKQ5c1m8gxCThRBC9yvUVpZxDGZ7L/oZFwFPtmIGAksTiiTHbchsu64o3ve?=
+ =?us-ascii?Q?+qenrKP0U+ItwskT1k/tIEZ0RMjIo+OIFchqNo2utEgXTZTt5tUUJl6RDjHz?=
+ =?us-ascii?Q?R+HkNHfTiP6ZKQOqNOeymh6odymhepzQBl8WqNC7d/Ehwj0gCR2jAeuKX4vu?=
+ =?us-ascii?Q?MVycc1C8UDjj9lEBjQzmIdgDsjHxTuY=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 065c8a41-ae5a-4562-69d7-08d9eaebe92e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2022 10:15:20.1545
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JRU+Ot43m+Hv2LtLjG6M6p91uvXtjydAspthGr0pqDmA1mJ0kxNRwPxGw9Bwal//5xqCWQyDcwB6zaPSnh8hjBvdKUDf9gndmwh00Hk7fuQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB4815
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Data centric bridging designed to eliminate packet loss due to
-queue overflow by adding enhancements to ethernet network such as
-proprity flow control etc. This patch adds support for management
-of Priority flow control(PFC) on Octeontx2 and CN10K interfaces.
+From: Louis Peens <louis.peens@corigine.com>
 
-To enable PFC for all priorities
-	dcb pfc set dev eth0 prio-pfc all:on/off
+When looking for a global mac index the extra NFP_TUN_PRE_TUN_IDX_BIT
+that gets set if nfp_flower_is_supported_bridge is true is not taken
+into account. Consequently the path that should release the ida_index
+in cleanup is never triggered, causing messages like:
 
-To enable PFC on selected priorites
-	dcb pfc set dev eth0 prio-pfc 0:on/off 1:on/off ..7:on/off
+    nfp 0000:02:00.0: nfp: Failed to offload MAC on br-ex.
+    nfp 0000:02:00.0: nfp: Failed to offload MAC on br-ex.
+    nfp 0000:02:00.0: nfp: Failed to offload MAC on br-ex.
 
-With the ntuple commands user can map Priority to receive queues.
-On queue overflow NIX will assert backpressure such that PFC pause frames
-are genarated with mapped priority.
+after NFP_MAX_MAC_INDEX number of reconfigs. Ultimately this lead to
+new tunnel flows not being offloaded.
 
-To map priority 7 to Queue 1
-ethtool -U eth0 flow-type ether dst xx:xx:xx:xx:xx:xx vlan 0xe00a
-m 0x1fff  queue 1
+Fix this by unsetting the NFP_TUN_PRE_TUN_IDX_BIT before checking if
+the port is of type OTHER.
 
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Fixes: 2e0bc7f3cb55 ("nfp: flower: encode mac indexes with pre-tunnel rule check")
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- .../ethernet/marvell/octeontx2/nic/Makefile   |   3 +
- .../marvell/octeontx2/nic/otx2_common.c       |  17 +-
- .../marvell/octeontx2/nic/otx2_common.h       |  12 ++
- .../marvell/octeontx2/nic/otx2_dcbnl.c        | 170 ++++++++++++++++++
- .../marvell/octeontx2/nic/otx2_flows.c        |  50 +++++-
- .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  13 ++
- .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |  14 ++
- 7 files changed, 271 insertions(+), 8 deletions(-)
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_dcbnl.c
+ .../net/ethernet/netronome/nfp/flower/tunnel_conf.c  | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-index 0048b5946712..d463dc72d80a 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-@@ -11,4 +11,7 @@ rvu_nicpf-y := otx2_pf.o otx2_common.o otx2_txrx.o otx2_ethtool.o \
-                otx2_devlink.o
- rvu_nicvf-y := otx2_vf.o otx2_devlink.o
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+index dfb4468fe287..0a326e04e692 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+@@ -1011,6 +1011,7 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ 	struct nfp_flower_repr_priv *repr_priv;
+ 	struct nfp_tun_offloaded_mac *entry;
+ 	struct nfp_repr *repr;
++	u16 nfp_mac_idx;
+ 	int ida_idx;
  
-+rvu_nicpf-$(CONFIG_DCB) += otx2_dcbnl.o
-+rvu_nicvf-$(CONFIG_DCB) += otx2_dcbnl.o
-+
- ccflags-y += -I$(srctree)/drivers/net/ethernet/marvell/octeontx2/af
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index 92c0ddb602ca..d923a1ede9e0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -938,7 +938,11 @@ static int otx2_cq_init(struct otx2_nic *pfvf, u16 qidx)
- 		if (!is_otx2_lbkvf(pfvf->pdev)) {
- 			/* Enable receive CQ backpressure */
- 			aq->cq.bp_ena = 1;
-+#ifdef CONFIG_DCB
-+			aq->cq.bpid = pfvf->bpid[pfvf->queue_to_pfc_map[qidx]];
-+#else
- 			aq->cq.bpid = pfvf->bpid[0];
-+#endif
+ 	entry = nfp_tunnel_lookup_offloaded_macs(app, mac);
+@@ -1029,8 +1030,6 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ 		entry->bridge_count--;
  
- 			/* Set backpressure level is same as cq pass level */
- 			aq->cq.bp = RQ_PASS_LVL_CQ(pfvf->hw.rq_skid, qset->rqe_cnt);
-@@ -1218,7 +1222,11 @@ static int otx2_aura_init(struct otx2_nic *pfvf, int aura_id,
- 		 */
- 		if (pfvf->nix_blkaddr == BLKADDR_NIX1)
- 			aq->aura.bp_ena = 1;
-+#ifdef CONFIG_DCB
-+		aq->aura.nix0_bpid = pfvf->bpid[pfvf->queue_to_pfc_map[aura_id]];
-+#else
- 		aq->aura.nix0_bpid = pfvf->bpid[0];
-+#endif
+ 		if (!entry->bridge_count && entry->ref_count) {
+-			u16 nfp_mac_idx;
+-
+ 			nfp_mac_idx = entry->index & ~NFP_TUN_PRE_TUN_IDX_BIT;
+ 			if (__nfp_tunnel_offload_mac(app, mac, nfp_mac_idx,
+ 						     false)) {
+@@ -1046,7 +1045,6 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
  
- 		/* Set backpressure level for RQ's Aura */
- 		aq->aura.bp = RQ_BP_LVL_AURA;
-@@ -1545,11 +1553,18 @@ int otx2_nix_config_bp(struct otx2_nic *pfvf, bool enable)
- 		return -ENOMEM;
+ 	/* If MAC is now used by 1 repr set the offloaded MAC index to port. */
+ 	if (entry->ref_count == 1 && list_is_singular(&entry->repr_list)) {
+-		u16 nfp_mac_idx;
+ 		int port, err;
  
- 	req->chan_base = 0;
--	req->chan_cnt = 1;
-+#ifdef CONFIG_DCB
-+	req->chan_cnt = pfvf->pfc_en ? IEEE_8021QAZ_MAX_TCS : 1;
-+	req->bpid_per_chan = pfvf->pfc_en ? 1 : 0;
-+#else
-+	req->chan_cnt =  1;
- 	req->bpid_per_chan = 0;
-+#endif
+ 		repr_priv = list_first_entry(&entry->repr_list,
+@@ -1074,8 +1072,14 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ 	WARN_ON_ONCE(rhashtable_remove_fast(&priv->tun.offloaded_macs,
+ 					    &entry->ht_node,
+ 					    offloaded_macs_params));
 +
- 
- 	return otx2_sync_mbox_msg(&pfvf->mbox);
- }
-+EXPORT_SYMBOL(otx2_nix_config_bp);
- 
- /* Mbox message handlers */
- void mbox_handler_cgx_stats(struct otx2_nic *pfvf,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 56be20053931..b6be9784ea36 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -399,6 +399,11 @@ struct otx2_nic {
- 
- 	/* Devlink */
- 	struct otx2_devlink	*dl;
-+#ifdef CONFIG_DCB
-+	/* PFC */
-+	u8			pfc_en;
-+	u8			*queue_to_pfc_map;
-+#endif
- };
- 
- static inline bool is_otx2_lbkvf(struct pci_dev *pdev)
-@@ -879,4 +884,11 @@ int otx2_dmacflt_remove(struct otx2_nic *pf, const u8 *mac, u8 bit_pos);
- int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u8 bit_pos);
- void otx2_dmacflt_reinstall_flows(struct otx2_nic *pf);
- void otx2_dmacflt_update_pfmac_flow(struct otx2_nic *pfvf);
++	if (nfp_flower_is_supported_bridge(netdev))
++		nfp_mac_idx = entry->index & ~NFP_TUN_PRE_TUN_IDX_BIT;
++	else
++		nfp_mac_idx = entry->index;
 +
-+#ifdef CONFIG_DCB
-+/* DCB support*/
-+void otx2_update_bpid_in_rqctx(struct otx2_nic *pfvf, int vlan_prio, int qidx, bool pfc_enable);
-+int otx2_config_priority_flow_ctrl(struct otx2_nic *pfvf);
-+int otx2_dcbnl_set_ops(struct net_device *dev);
-+#endif
- #endif /* OTX2_COMMON_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dcbnl.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dcbnl.c
-new file mode 100644
-index 000000000000..723d2506d309
---- /dev/null
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dcbnl.c
-@@ -0,0 +1,170 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Marvell RVU Ethernet driver
-+ *
-+ * Copyright (C) 2021 Marvell.
-+ *
-+ */
-+
-+#include "otx2_common.h"
-+
-+int otx2_config_priority_flow_ctrl(struct otx2_nic *pfvf)
-+{
-+	struct cgx_pfc_cfg *req;
-+	struct cgx_pfc_rsp *rsp;
-+	int err = 0;
-+
-+	if (is_otx2_lbkvf(pfvf->pdev))
-+		return 0;
-+
-+	mutex_lock(&pfvf->mbox.lock);
-+	req = otx2_mbox_alloc_msg_cgx_prio_flow_ctrl_cfg(&pfvf->mbox);
-+	if (!req) {
-+		err = -ENOMEM;
-+		goto unlock;
-+	}
-+
-+	if (pfvf->pfc_en) {
-+		req->rx_pause = true;
-+		req->tx_pause = true;
-+	} else {
-+		req->rx_pause = false;
-+		req->tx_pause = false;
-+	}
-+	req->pfc_en = pfvf->pfc_en;
-+
-+	if (!otx2_sync_mbox_msg(&pfvf->mbox)) {
-+		rsp = (struct cgx_pfc_rsp *)
-+		       otx2_mbox_get_rsp(&pfvf->mbox.mbox, 0, &req->hdr);
-+		if (req->rx_pause != rsp->rx_pause || req->tx_pause != rsp->tx_pause) {
-+			dev_warn(pfvf->dev,
-+				 "Failed to config PFC\n");
-+			err = -EPERM;
-+		}
-+	}
-+unlock:
-+	mutex_unlock(&pfvf->mbox.lock);
-+	return err;
-+}
-+
-+void otx2_update_bpid_in_rqctx(struct otx2_nic *pfvf, int vlan_prio, int qidx,
-+			       bool pfc_enable)
-+{
-+	bool if_up = netif_running(pfvf->netdev);
-+	struct npa_aq_enq_req *npa_aq;
-+	struct nix_aq_enq_req *aq;
-+	int err = 0;
-+
-+	if (pfvf->queue_to_pfc_map[qidx] && pfc_enable) {
-+		dev_warn(pfvf->dev,
-+			 "PFC enable not permitted as Priority %d already mapped to Queue %d\n",
-+			 pfvf->queue_to_pfc_map[qidx], qidx);
-+		return;
-+	}
-+
-+	if (if_up) {
-+		netif_tx_stop_all_queues(pfvf->netdev);
-+		netif_carrier_off(pfvf->netdev);
-+	}
-+
-+	pfvf->queue_to_pfc_map[qidx] = vlan_prio;
-+
-+	aq = otx2_mbox_alloc_msg_nix_aq_enq(&pfvf->mbox);
-+	if (!aq) {
-+		err = -ENOMEM;
-+		goto out;
-+	}
-+
-+	aq->cq.bpid = pfvf->bpid[vlan_prio];
-+	aq->cq_mask.bpid = GENMASK(8, 0);
-+
-+	/* Fill AQ info */
-+	aq->qidx = qidx;
-+	aq->ctype = NIX_AQ_CTYPE_CQ;
-+	aq->op = NIX_AQ_INSTOP_WRITE;
-+
-+	otx2_sync_mbox_msg(&pfvf->mbox);
-+
-+	npa_aq = otx2_mbox_alloc_msg_npa_aq_enq(&pfvf->mbox);
-+	if (!npa_aq) {
-+		err = -ENOMEM;
-+		goto out;
-+	}
-+	npa_aq->aura.nix0_bpid = pfvf->bpid[vlan_prio];
-+	npa_aq->aura_mask.nix0_bpid = GENMASK(8, 0);
-+
-+	/* Fill NPA AQ info */
-+	npa_aq->aura_id = qidx;
-+	npa_aq->ctype = NPA_AQ_CTYPE_AURA;
-+	npa_aq->op = NPA_AQ_INSTOP_WRITE;
-+	otx2_sync_mbox_msg(&pfvf->mbox);
-+
-+out:
-+	if (if_up) {
-+		netif_carrier_on(pfvf->netdev);
-+		netif_tx_start_all_queues(pfvf->netdev);
-+	}
-+
-+	if (err)
-+		dev_warn(pfvf->dev,
-+			 "Updating BPIDs in CQ and Aura contexts of RQ%d failed with err %d\n",
-+			 qidx, err);
-+}
-+
-+static int otx2_dcbnl_ieee_getpfc(struct net_device *dev, struct ieee_pfc *pfc)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(dev);
-+
-+	pfc->pfc_cap = IEEE_8021QAZ_MAX_TCS;
-+	pfc->pfc_en = pfvf->pfc_en;
-+
-+	return 0;
-+}
-+
-+static int otx2_dcbnl_ieee_setpfc(struct net_device *dev, struct ieee_pfc *pfc)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(dev);
-+	int err;
-+
-+	/* Save PFC configuration to interface */
-+	pfvf->pfc_en = pfc->pfc_en;
-+
-+	err = otx2_config_priority_flow_ctrl(pfvf);
-+	if (err)
-+		return err;
-+
-+	/* Request Per channel Bpids */
-+	if (pfc->pfc_en)
-+		otx2_nix_config_bp(pfvf, true);
-+
-+	return 0;
-+}
-+
-+static u8 otx2_dcbnl_getdcbx(struct net_device __always_unused *dev)
-+{
-+	return DCB_CAP_DCBX_HOST | DCB_CAP_DCBX_VER_IEEE;
-+}
-+
-+static u8 otx2_dcbnl_setdcbx(struct net_device __always_unused *dev, u8 mode)
-+{
-+	return (mode != (DCB_CAP_DCBX_HOST | DCB_CAP_DCBX_VER_IEEE)) ? 1 : 0;
-+}
-+
-+static const struct dcbnl_rtnl_ops otx2_dcbnl_ops = {
-+	.ieee_getpfc	= otx2_dcbnl_ieee_getpfc,
-+	.ieee_setpfc	= otx2_dcbnl_ieee_setpfc,
-+	.getdcbx	= otx2_dcbnl_getdcbx,
-+	.setdcbx	= otx2_dcbnl_setdcbx,
-+};
-+
-+int otx2_dcbnl_set_ops(struct net_device *dev)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(dev);
-+
-+	pfvf->queue_to_pfc_map = devm_kzalloc(pfvf->dev, pfvf->hw.rx_queues,
-+					      GFP_KERNEL);
-+	if (!pfvf->queue_to_pfc_map)
-+		return -ENOMEM;
-+	dev->dcbnl_ops = &otx2_dcbnl_ops;
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-index 77a13fb555fb..54f235c216a9 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-@@ -21,8 +21,10 @@ struct otx2_flow {
- 	u16 entry;
- 	bool is_vf;
- 	u8 rss_ctx_id;
-+#define DMAC_FILTER_RULE		BIT(0)
-+#define PFC_FLOWCTRL_RULE		BIT(1)
-+	u16 rule_type;
- 	int vf;
--	bool dmac_filter;
- };
- 
- enum dmac_req {
-@@ -899,6 +901,9 @@ static int otx2_is_flow_rule_dmacfilter(struct otx2_nic *pfvf,
- static int otx2_add_flow_msg(struct otx2_nic *pfvf, struct otx2_flow *flow)
- {
- 	u64 ring_cookie = flow->flow_spec.ring_cookie;
-+#ifdef CONFIG_DCB
-+	int vlan_prio, qidx, pfc_rule = 0;
-+#endif
- 	struct npc_install_flow_req *req;
- 	int err, vf = 0;
- 
-@@ -940,6 +945,24 @@ static int otx2_add_flow_msg(struct otx2_nic *pfvf, struct otx2_flow *flow)
- 			mutex_unlock(&pfvf->mbox.lock);
- 			return -EINVAL;
- 		}
-+
-+#ifdef CONFIG_DCB
-+		/* Identify PFC rule if PFC enabled and ntuple rule is vlan */
-+		if (!vf && (req->features & BIT_ULL(NPC_OUTER_VID)) &&
-+		    pfvf->pfc_en && req->op != NIX_RX_ACTIONOP_RSS) {
-+			vlan_prio = ntohs(req->packet.vlan_tci) &
-+				    ntohs(req->mask.vlan_tci);
-+
-+			/* Get the priority */
-+			vlan_prio >>= 13;
-+			flow->rule_type |= PFC_FLOWCTRL_RULE;
-+			/* Check if PFC enabled for this priority */
-+			if (pfvf->pfc_en & BIT(vlan_prio)) {
-+				pfc_rule = true;
-+				qidx = req->index;
-+			}
-+		}
-+#endif
+ 	/* If MAC has global ID then extract and free the ida entry. */
+-	if (nfp_tunnel_is_mac_idx_global(entry->index)) {
++	if (nfp_tunnel_is_mac_idx_global(nfp_mac_idx)) {
+ 		ida_idx = nfp_tunnel_get_ida_from_global_mac_idx(entry->index);
+ 		ida_simple_remove(&priv->tun.mac_off_ids, ida_idx);
  	}
- 
- 	/* ethtool ring_cookie has (VF + 1) for VF */
-@@ -951,6 +974,12 @@ static int otx2_add_flow_msg(struct otx2_nic *pfvf, struct otx2_flow *flow)
- 
- 	/* Send message to AF */
- 	err = otx2_sync_mbox_msg(&pfvf->mbox);
-+
-+#ifdef CONFIG_DCB
-+	if (!err && pfc_rule)
-+		otx2_update_bpid_in_rqctx(pfvf, vlan_prio, qidx, true);
-+#endif
-+
- 	mutex_unlock(&pfvf->mbox.lock);
- 	return err;
- }
-@@ -966,7 +995,7 @@ static int otx2_add_flow_with_pfmac(struct otx2_nic *pfvf,
- 		return -ENOMEM;
- 
- 	pf_mac->entry = 0;
--	pf_mac->dmac_filter = true;
-+	pf_mac->rule_type |= DMAC_FILTER_RULE;
- 	pf_mac->location = pfvf->flow_cfg->max_flows;
- 	memcpy(&pf_mac->flow_spec, &flow->flow_spec,
- 	       sizeof(struct ethtool_rx_flow_spec));
-@@ -1031,7 +1060,7 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
- 		eth_hdr = &flow->flow_spec.h_u.ether_spec;
- 
- 		/* Sync dmac filter table with updated fields */
--		if (flow->dmac_filter)
-+		if (flow->rule_type & DMAC_FILTER_RULE)
- 			return otx2_dmacflt_update(pfvf, eth_hdr->h_dest,
- 						   flow->entry);
- 
-@@ -1052,7 +1081,7 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
- 		if (!test_bit(0, &flow_cfg->dmacflt_bmap))
- 			otx2_add_flow_with_pfmac(pfvf, flow);
- 
--		flow->dmac_filter = true;
-+		flow->rule_type |= DMAC_FILTER_RULE;
- 		flow->entry = find_first_zero_bit(&flow_cfg->dmacflt_bmap,
- 						  flow_cfg->dmacflt_max_flows);
- 		fsp->location = flow_cfg->max_flows + flow->entry;
-@@ -1120,7 +1149,7 @@ static void otx2_update_rem_pfmac(struct otx2_nic *pfvf, int req)
- 	bool found = false;
- 
- 	list_for_each_entry(iter, &pfvf->flow_cfg->flow_list, list) {
--		if (iter->dmac_filter && iter->entry == 0) {
-+		if ((iter->rule_type & DMAC_FILTER_RULE) && iter->entry == 0) {
- 			eth_hdr = &iter->flow_spec.h_u.ether_spec;
- 			if (req == DMAC_ADDR_DEL) {
- 				otx2_dmacflt_remove(pfvf, eth_hdr->h_dest,
-@@ -1156,7 +1185,7 @@ int otx2_remove_flow(struct otx2_nic *pfvf, u32 location)
- 	if (!flow)
- 		return -ENOENT;
- 
--	if (flow->dmac_filter) {
-+	if (flow->rule_type & DMAC_FILTER_RULE) {
- 		struct ethhdr *eth_hdr = &flow->flow_spec.h_u.ether_spec;
- 
- 		/* user not allowed to remove dmac filter with interface mac */
-@@ -1174,6 +1203,13 @@ int otx2_remove_flow(struct otx2_nic *pfvf, u32 location)
- 				  flow_cfg->dmacflt_max_flows) == 1)
- 			otx2_update_rem_pfmac(pfvf, DMAC_ADDR_DEL);
- 	} else {
-+#ifdef CONFIG_DCB
-+		if (flow->rule_type & PFC_FLOWCTRL_RULE)
-+			otx2_update_bpid_in_rqctx(pfvf, 0,
-+						  flow->flow_spec.ring_cookie,
-+						  false);
-+#endif
-+
- 		err = otx2_remove_flow_msg(pfvf, flow->entry, false);
- 	}
- 
-@@ -1383,7 +1419,7 @@ void otx2_dmacflt_reinstall_flows(struct otx2_nic *pf)
- 	struct ethhdr *eth_hdr;
- 
- 	list_for_each_entry(iter, &pf->flow_cfg->flow_list, list) {
--		if (iter->dmac_filter) {
-+		if (iter->rule_type & DMAC_FILTER_RULE) {
- 			eth_hdr = &iter->flow_spec.h_u.ether_spec;
- 			otx2_dmacflt_add(pf, eth_hdr->h_dest,
- 					 iter->entry);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 67fbe6ec0030..ede4df51648b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -2779,6 +2779,12 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	/* Enable link notifications */
- 	otx2_cgx_config_linkevents(pf, true);
- 
-+#ifdef CONFIG_DCB
-+	err = otx2_dcbnl_set_ops(netdev);
-+	if (err)
-+		goto err_pf_sriov_init;
-+#endif
-+
- 	return 0;
- 
- err_pf_sriov_init:
-@@ -2930,6 +2936,13 @@ static void otx2_remove(struct pci_dev *pdev)
- 		otx2_config_pause_frm(pf);
- 	}
- 
-+#ifdef CONFIG_DCB
-+	/* Disable PFC config */
-+	if (pf->pfc_en) {
-+		pf->pfc_en = 0;
-+		otx2_config_priority_flow_ctrl(pf);
-+	}
-+#endif
- 	cancel_work_sync(&pf->reset_task);
- 	/* Disable link notifications */
- 	otx2_cgx_config_linkevents(pf, false);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-index c154b09ec12f..78142498d046 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-@@ -702,6 +702,12 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	if (err)
- 		goto err_unreg_netdev;
- 
-+#ifdef CONFIG_DCB
-+	err = otx2_dcbnl_set_ops(netdev);
-+	if (err)
-+		goto err_unreg_netdev;
-+#endif
-+
- 	return 0;
- 
- err_unreg_netdev:
-@@ -744,6 +750,14 @@ static void otx2vf_remove(struct pci_dev *pdev)
- 		otx2_config_pause_frm(vf);
- 	}
- 
-+#ifdef CONFIG_DCB
-+	/* Disable PFC config */
-+	if (vf->pfc_en) {
-+		vf->pfc_en = 0;
-+		otx2_config_priority_flow_ctrl(vf);
-+	}
-+#endif
-+
- 	cancel_work_sync(&vf->reset_task);
- 	otx2_unregister_dl(vf);
- 	unregister_netdev(netdev);
 -- 
-2.17.1
+2.30.2
 
