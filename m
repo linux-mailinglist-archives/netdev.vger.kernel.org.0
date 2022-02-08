@@ -2,116 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABC6A4ACF66
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 04:02:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CAC64ACF5E
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 04:01:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345972AbiBHDB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 22:01:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44084 "EHLO
+        id S1345711AbiBHDBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 22:01:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345937AbiBHDBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 22:01:54 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683E2C0401D3;
-        Mon,  7 Feb 2022 19:01:46 -0800 (PST)
-X-UUID: 54fb89243a69437c95d34c9640da4b49-20220208
-X-UUID: 54fb89243a69437c95d34c9640da4b49-20220208
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <lina.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1663928602; Tue, 08 Feb 2022 11:01:42 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 8 Feb 2022 11:01:40 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 8 Feb 2022 11:01:39 +0800
-From:   Lina Wang <lina.wang@mediatek.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, <maze@google.com>,
-        <willemb@google.com>, <edumazet@google.com>,
-        Lina Wang <lina.wang@mediatek.com>
-Subject: [PATCH] net: fix wrong network header length
-Date:   Tue, 8 Feb 2022 10:55:11 +0800
-Message-ID: <20220208025511.1019-1-lina.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        with ESMTP id S245526AbiBHDBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 22:01:39 -0500
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CABC061A73;
+        Mon,  7 Feb 2022 19:01:38 -0800 (PST)
+Received: by mail-ej1-x642.google.com with SMTP id m4so48071191ejb.9;
+        Mon, 07 Feb 2022 19:01:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KgJJdfopCu/gOTHns364l9rxwDPl5Ujwxxvwj3Zh+CA=;
+        b=lgnRSdgFW6GsulGqW6bELZTt4gLU7Iqwu2zRGVIQOOlgP13+GlUT3pxc8u8uC469nl
+         VZNz50vaB6hg2JIAebzJoCMgQ38LTFlXpDq1vWoK0ez980OdQ9z3RTeodLipWHbL7Yke
+         1teeBSwS+lfwi3CVx4dkBK4DKhnqsXd84FygiXgobtpn0lTHgm3MspDOQS3VA1WkX2qu
+         PCWnBvsX5SMipHyRXKeadFgjF9LHRl4TP9F3sUfNh/o4TKRtoh84HVF32VRQivlVm9So
+         Qkj6ldLLBnLMNStCGc/ysMDqhSOpJ77stv1E10E322pYDLeMeTQCAGUeHv+UFZmudZHU
+         Wlgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KgJJdfopCu/gOTHns364l9rxwDPl5Ujwxxvwj3Zh+CA=;
+        b=eOxBbnK+IFRyDjPjrovedgqFdQKaxWUitWt70uGlfr9oP3GWIUMsO++N8VKVurKz+x
+         NDPvtqSHGMimI80/e0W2UKq9XXAwTu4+MS5zN17NRkXJck3DFhYyoZIgQVU9+Lrg9+Qk
+         L8hrFOrTKObRNt8W2oQlSYnGCHITP28aNHe66hHUjGwBjfEa9S5qALAkYyQveUzmUhYu
+         UYCMBQPlGsU4zi0fzYPn+1vQraDQZPDcazpYOj6+VS5zbH7/LtktYiXM0wdmW4NMXxSx
+         skwhpQuNgSpM8B6OtxSl1UAwHKLMBcAqdpkw8S4Bw304bGYbS2XJeCkSVuz5sf2JxCuz
+         43qw==
+X-Gm-Message-State: AOAM531zgam0zh7E4ta/7P1xlKxGnGYhLHNMGdwAEsPgLQLAD+ZkWcVA
+        znliRnSXIx7ZNUzl6mtZtHoNqMDVf0C4sGPORM8=
+X-Google-Smtp-Source: ABdhPJzy6B6nffkllGqyVTgi5ViR54JhqpK5tpeI4Nm3zWRXvBisvTFfec8rkSUIWFxOcKbPWFgq5y4M/f4Oizf6idQ=
+X-Received: by 2002:a17:907:1689:: with SMTP id hc9mr2096012ejc.348.1644289297300;
+ Mon, 07 Feb 2022 19:01:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220205081738.565394-1-imagedong@tencent.com> <20220207094301.5c061d23@gandalf.local.home>
+In-Reply-To: <20220207094301.5c061d23@gandalf.local.home>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Tue, 8 Feb 2022 10:56:44 +0800
+Message-ID: <CADxym3ZaMmUpZxpLrj3YMvH1nygVE5x4u6VKWZiZ98JWpRF10w@mail.gmail.com>
+Subject: Re: [PATCH v6 net-next] net: drop_monitor: support drop reason
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@kernel.org>,
+        Ido Schimmel <idosch@idosch.org>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Menglong Dong <imagedong@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
-several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
-ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
-network_header\transport_header\mac_header have been updated as ipv4 acts,
-but other skbs in frag_list didnot update anything, just ipv6 packets.
+On Mon, Feb 7, 2022 at 10:43 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+> On Sat,  5 Feb 2022 16:17:38 +0800
+> menglong8.dong@gmail.com wrote:
+>
+> > --- a/net/core/drop_monitor.c
+> > +++ b/net/core/drop_monitor.c
+> > @@ -48,6 +48,16 @@
+> >  static int trace_state = TRACE_OFF;
+> >  static bool monitor_hw;
+> >
+> > +#undef EM
+> > +#undef EMe
+> > +
+> > +#define EM(a, b)     [a] = #b,
+> > +#define EMe(a, b)    [a] = #b
+> > +
+> > +static const char *drop_reasons[SKB_DROP_REASON_MAX + 1] = {
+>
+> Do you need to define the size above? Can't the compiler do it for you?
+>
+> static const char *drop_reasons[] = {
+>
 
-udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
-frag_list and make sure right udp payload is delivered to user space.
-Unfortunately, other skbs in frag_list who are still ipv6 packets are
-updated like the first skb and will have wrong transport header length.
+Yeah, it seems the compiler can do this job. Thanks!
 
-e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
-has the same network_header(24)& transport_header(64), after
-bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
-skb's network_header is 44,transport_header is 64, other skbs in frag_list
-didnot change.After skb_segment_list, the other skbs in frag_list has
-different network_header(24) and transport_header(44), so there will be 20
-bytes difference,that is difference between ipv6 header and ipv4 header.
-
-Actually, there are two solutions to fix it, one is traversing all skbs
-and changing every skb header in bpf_skb_proto_6_to_4, the other is
-modifying frag_list skb's header in skb_segment_list. Considering
-efficiency, adopt the second one--- when the first skb and other skbs in
-frag_list has different network_header length, restore them to make sure
-right udp payload is delivered to user space.
-
-
-Signed-off-by: Lina Wang <lina.wang@mediatek.com>
-
----
- net/core/skbuff.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 75dfbde8d2e6..f15bbb7449ce 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3682,6 +3682,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 	struct sk_buff *tail = NULL;
- 	struct sk_buff *nskb, *tmp;
- 	int err;
-+	unsigned int len_diff = 0;
- 
- 	skb_push(skb, -skb_network_offset(skb) + offset);
- 
-@@ -3721,9 +3722,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 		skb_push(nskb, -skb_network_offset(nskb) + offset);
- 
- 		skb_release_head_state(nskb);
-+		len_diff = skb_network_header_len(nskb) - skb_network_header_len(skb);
- 		 __copy_skb_header(nskb, skb);
- 
- 		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
-+		nskb->transport_header += len_diff;
- 		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
- 						 nskb->data - tnl_hlen,
- 						 offset + tnl_hlen);
--- 
-2.18.0
-
+> -- Steve
+>
+> > +     TRACE_SKB_DROP_REASON
+> > +};
+> > +
+> >  /* net_dm_mutex
+> >   *
