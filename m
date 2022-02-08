@@ -2,73 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92F394AD05C
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 05:29:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FF444AD065
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 05:34:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241316AbiBHE3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 23:29:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
+        id S1346500AbiBHEdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 23:33:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234088AbiBHE3i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:29:38 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF48C0401DC
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:29:37 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id i30so16736447pfk.8
-        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 20:29:37 -0800 (PST)
+        with ESMTP id S1346730AbiBHEdL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:33:11 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A453BC0401EE
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:33:10 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id p5so46261049ybd.13
+        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 20:33:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=KFy0VFK8kUwnINSIg5P5ODLFMqdHWEM7U09ysXDvakA=;
-        b=q1RWHtzzdh7ColxUMz5qZ+pbDpAWiEFojK9xC8J5mkAE3dUuR9Ri5ourJjxS5FQCEt
-         gnEX4BS5OruPR06c6SEWAKBLL3iQ11TConhiIqlnWMZjKAuUNFSrUwZQvGVWlC5mgNMo
-         /WatYpZJj7m687ORr7vPtH6zaqNgSteUmECuwO8t5SkoN9As/sHbKaE+1ibmv5Ydh0v7
-         2Y3fmMJnTXd/4508owLgeZtVkZbBcohA8mzhNWt3wqpHRE9gDDmluofS8V1bUQsMfvzx
-         2Kn0zaVk/tygyw18JOUhvvWLZhITMxK0ahgmfxQLe2hmPFJ13hkdg46y79ZQ4nzS018j
-         UqXQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U15Bb4/SR1RZDkOEppauFJ4545K69aj7PuaJsKbYMBU=;
+        b=Ya9umnjKNBpJUPOOd9PT/HsapCHBgpwrSPnGwKsv3pcvtz8Bf8D/awWjLtYbdMRuaO
+         L7lMGDrQynkXuntLgi0GCP5ZHRsC62tSqHVsOgPHqR//B2mZiNEYu1q/XJN9FsOvBVP5
+         CjndC57LYfR2crHFFg282NmNFnu9gyRwWnJNeYnhieA+GDqg6kd2WlkwP7YGwBGDSorR
+         5Q7SgYXvatVdyo6HQIbutPVAKNuXBGC7CkZ9KanCnl3DQnvNFefttFXEjw/MhDJE4C4f
+         yrfK++HcOolpq3GSmuJ/iEpdoIpTXBxoMlcOwJxkiuu34qvDfhoMTp62zYI+6p7uc6h1
+         LCiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KFy0VFK8kUwnINSIg5P5ODLFMqdHWEM7U09ysXDvakA=;
-        b=BLG3EYOysuw36OZ3ewpMriRj2OnLJoElBDiwO6BnZs09Kv8W+vwDpdIzDFjzSTkR35
-         uJh64IWwgUPzDTxEa8uZtd/VUnnIclJZcbRLpn58hO3SWSXLJGw4+I6F03qiFWMahV60
-         0HYpLjnJJf42IEaOF3KlB6uVNMea7ekIN64g3Ti5nJQdH5ZyWxvqpy40Ef/M/tH9dmfA
-         4jhbxUDNxTu42cNL/qMOGZjh6RQAynT7raBirTAPUNp3s/J6ot3aWKMZrg689aojtIlG
-         OGWrv9RiLTN0EhP5FJ04nDgVxGGnv4c82j4D/eNc2C1HaMjQ4E2+E6rhQrCKnfh6GJwm
-         QluQ==
-X-Gm-Message-State: AOAM532EgvCff6KdpcVaVIGUYIy3j9te4KrZ2fRplv7JFIoLVD64PEox
-        EmAl4Vd6dBD7Xwv07fRu8Bg=
-X-Google-Smtp-Source: ABdhPJyJlP3/qsCLVBWlj35nGZQPrVkehXDbka6ZfOG2VQXGc1ehSNOHp0PjYlsm6yFMthm9CcJACQ==
-X-Received: by 2002:a05:6a00:1c96:: with SMTP id y22mr2630885pfw.8.1644294577188;
-        Mon, 07 Feb 2022 20:29:37 -0800 (PST)
-Received: from [10.0.2.64] ([209.37.97.194])
-        by smtp.googlemail.com with ESMTPSA id x1sm14566908pfh.167.2022.02.07.20.29.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 20:29:36 -0800 (PST)
-Message-ID: <2815a75c-b474-34f0-f0c9-7566f0f9e87e@gmail.com>
-Date:   Mon, 7 Feb 2022 20:29:35 -0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U15Bb4/SR1RZDkOEppauFJ4545K69aj7PuaJsKbYMBU=;
+        b=2EmhprhSmf/O3qPXY/Y05Igdu7Omi++4AehCC6In7q5S3SbKnBPTKyhhZONMGxiIis
+         Bd3dwPg1MMqFS6ODf5GbemF0jrf+cwFZFTwaO+ieAqWYsRYFEjrTR8atM6y4LN6gueO5
+         ywaqLipxUAegtYpygF+QzJX8LVUTByYSmvTaUYv7GJQGSrTbvwNtN+OMd6IU1Fs9AvsI
+         7Fb5nmmTOjY2EQEZeZhCCCAkPvPfiA6Y+B2XWIVNz1L7j32/Ir6QBdpS3H9EbNgUJzvj
+         70HZAFObe4mKUy6/qliNWGoIf6DDdJHmn04gc0kRvBLsiDgdQGfY+yi0G8KvgjJwPu/A
+         PNow==
+X-Gm-Message-State: AOAM532slnO2BmZEhAwoQh5TznsD+mz9OhMiay20u/ypoK46SrmPSD5V
+        rI5GdXxBrCg2M5h5plXIbtCK9wGgfYrRB77zz0c4Ow==
+X-Google-Smtp-Source: ABdhPJy+B/0jeB1J6mLngvzrhTfPM6ngjaZEPqh4p9HII3btSu84wVNavInvQrsT1yi9/MwToxum8Oa7drbFNAaths4=
+X-Received: by 2002:a25:4f41:: with SMTP id d62mr2928804ybb.156.1644294789499;
+ Mon, 07 Feb 2022 20:33:09 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH net-next 11/11] net: remove default_device_exit()
-Content-Language: en-US
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-References: <20220207171756.1304544-1-eric.dumazet@gmail.com>
- <20220207171756.1304544-12-eric.dumazet@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220207171756.1304544-12-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220208035510.1200-1-dongli.zhang@oracle.com> <20220208035510.1200-2-dongli.zhang@oracle.com>
+In-Reply-To: <20220208035510.1200-2-dongli.zhang@oracle.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 7 Feb 2022 20:32:58 -0800
+Message-ID: <CANn89i++X+QBtm=L19PBbGLUJb8ZiTib4AABL_WL+cUfgwVfOA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] net: tap: track dropped skb via kfree_skb_reason()
+To:     Dongli Zhang <dongli.zhang@oracle.com>
+Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        Joao Martins <joao.m.martins@oracle.com>, joe.jin@oracle.com,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,27 +75,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/7/22 9:17 AM, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> For some reason default_device_ops kept two exit method:
-> 
-> 1) default_device_exit() is called for each netns being dismantled in
-> a cleanup_net() round. This acquires rtnl for each invocation.
-> 
-> 2) default_device_exit_batch() is called once with the list of all netns
-> int the batch, allowing for a single rtnl invocation.
-> 
-> Get rid of the .exit() method to handle the logic from
-> default_device_exit_batch(), to decrease the number of rtnl acquisition
-> to one.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+On Mon, Feb 7, 2022 at 7:55 PM Dongli Zhang <dongli.zhang@oracle.com> wrote:
+>
+> The TAP can be used as vhost-net backend. E.g., the tap_handle_frame() is
+> the interface to forward the skb from TAP to vhost-net/virtio-net.
+>
+> However, there are many "goto drop" in the TAP driver. Therefore, the
+> kfree_skb_reason() is involved at each "goto drop" to help userspace
+> ftrace/ebpf to track the reason for the loss of packets
+>
+> Cc: Joao Martins <joao.m.martins@oracle.com>
+> Cc: Joe Jin <joe.jin@oracle.com>
+> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
 > ---
->  net/core/dev.c | 22 ++++++++++++++--------
->  1 file changed, 14 insertions(+), 8 deletions(-)
-> 
+>  drivers/net/tap.c          | 30 ++++++++++++++++++++++--------
+>  include/linux/skbuff.h     |  5 +++++
+>  include/trace/events/skb.h |  5 +++++
+>  3 files changed, 32 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+> index 8e3a28ba6b28..232572289e63 100644
+> --- a/drivers/net/tap.c
+> +++ b/drivers/net/tap.c
+> @@ -322,6 +322,7 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
+>         struct tap_dev *tap;
+>         struct tap_queue *q;
+>         netdev_features_t features = TAP_FEATURES;
+> +       int drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+>
+>         tap = tap_dev_get_rcu(dev);
+>         if (!tap)
+> @@ -343,12 +344,16 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
+>                 struct sk_buff *segs = __skb_gso_segment(skb, features, false);
+>                 struct sk_buff *next;
+>
+> -               if (IS_ERR(segs))
+> +               if (IS_ERR(segs)) {
+> +                       drop_reason = SKB_DROP_REASON_SKB_GSO_SEGMENT;
+>                         goto drop;
+> +               }
+>
+>                 if (!segs) {
+> -                       if (ptr_ring_produce(&q->ring, skb))
+> +                       if (ptr_ring_produce(&q->ring, skb)) {
+> +                               drop_reason = SKB_DROP_REASON_PTR_FULL;
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
-
-
+PTR_FULL is strange .... How about FULL_RING, or FULL_QUEUE ?
