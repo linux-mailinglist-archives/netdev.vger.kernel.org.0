@@ -2,100 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 724F14ACEEF
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 03:30:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECDB04ACF0B
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 03:40:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345941AbiBHCaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 21:30:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
+        id S1345469AbiBHCkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 21:40:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345937AbiBHCaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 21:30:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B27C06109E;
-        Mon,  7 Feb 2022 18:30:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 136236147C;
-        Tue,  8 Feb 2022 02:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 72329C340ED;
-        Tue,  8 Feb 2022 02:30:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644287412;
-        bh=2NrfmZ5nHmEtw6Xj9n4lzXjnH/mIJFd6e08LaVoVHTA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=haisEjIwxQHs//x1HxPEfguZW7dj1XRID0//W6L8OevWkQM7b3yhKEWew7FrpbFA0
-         VOBHUXXX4p880IG+JYY26jwBfAfAKXGrjlm8i5HIGXtHbUPT+LWdgSEjSIS+3fBHKd
-         QqcsWJ0nN3o6HoPe2Urws+03yueAuL03859xX9FNsvMAemwnjLgR/1V0LBz1e2OWAD
-         Swi39YLTKIxjT07FSThLDul6NhpYHZ6ohIkt22S3yAM+PPpLaLeSbO6fS4X6P2675z
-         dcvsqfVr0s8N6J4Ek3GALKJOidPcjeC8Bi/iTrqzFhfQYAdxmrPf4bk4uTzbCjLc8G
-         I/E4365Fl5NrA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 57C16E6BB76;
-        Tue,  8 Feb 2022 02:30:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1346016AbiBHCkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 21:40:20 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A83DC061355;
+        Mon,  7 Feb 2022 18:40:06 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id om7so1658145pjb.5;
+        Mon, 07 Feb 2022 18:40:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=86PbrZKbZvLla8kmVYV+8hVSLQZGTzn/6xh5EbYOAj4=;
+        b=fcR2K65BIaGAKiryhCoJh/eGKykysyx/7VBsPrAt9DVxhQqqgUizS4IL/QxjqQuY53
+         XYdv3YMOccCLt8wImkU5xPlHfo/++sQvdAufd/A6RFnjURFxxp7mFvzp5ry9atiLrsRK
+         BdXSWB6IxNsx/XUA0Cy8PqHfZMOimpIVQgw4BarMS/HZ/wIohaD/usv0jZP2WmlNym/b
+         PCrZw50zAXxEFEGIwBoO/OkYHjbLCqYn83XxhQTcgnLDUZCq9GrzKsBD3B7W3NHFN55d
+         SzRVhpz+xLNzOwPMtOaa5grGp7LrDC6oEsUQ7Zcn2wxVsTmq3+9WE21hxQtt56Ux+dsy
+         99fQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=86PbrZKbZvLla8kmVYV+8hVSLQZGTzn/6xh5EbYOAj4=;
+        b=PT+FPLUGl7EiTPK1RDZ3lnvoOftCsVeECIcwOLKRpFNwAoYw0hwpBMnGyNvGK3PGpL
+         2puJWWOyJHKv+3t7VoZV7UOhRk/pXM/A4MNPAAkPrkYE/Ogu59QxefHqF6EdjBr3EJND
+         7iMuzwPgpdUg89532AbNBxPdOQT/+t185FD0rSrVBBeOv+U+k68glWu8+DsxjYraTvDQ
+         cdacjm4QqrL5Zmnjgm7YM9l9t1z+W0VvFxebD8vTwzoZOT65L68hfRJcIVmJm31Ll6cV
+         j4omW1OaDv4632SNz2hdYNr8BW+P4OQyusGL8mvLoFb7G0HdWy/Hy3ZGk4tjt1XSbTXM
+         cwdg==
+X-Gm-Message-State: AOAM533S3PDivWDMzjQsFn9ZLg/l+NNYAgjd/OnzMOQ4GtLKpUu76H8L
+        ylOstTECEtJL3vyXDWWAxrknX3bQ9cYZuGRx+r8=
+X-Google-Smtp-Source: ABdhPJyV012NbxVh/J9M5daJXHmHwJBOHf9FFPsYK2o7fmjuwGkJzXawQ44kZCYOWDBLeUkqHfA6woRW8D0ouQFdz78=
+X-Received: by 2002:a17:902:ced1:: with SMTP id d17mr2360713plg.78.1644288005882;
+ Mon, 07 Feb 2022 18:40:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v9 bpf-next 0/9] bpf_prog_pack allocator
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164428741235.20223.1353999217126442524.git-patchwork-notify@kernel.org>
-Date:   Tue, 08 Feb 2022 02:30:12 +0000
-References: <20220204185742.271030-1-song@kernel.org>
-In-Reply-To: <20220204185742.271030-1-song@kernel.org>
-To:     Song Liu <song@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kernel-team@fb.com, peterz@infradead.org,
-        x86@kernel.org, iii@linux.ibm.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <705a05194508bc0c1b0c1a5de081bbb60f2693a5.1643712078.git.lorenzo@kernel.org>
+In-Reply-To: <705a05194508bc0c1b0c1a5de081bbb60f2693a5.1643712078.git.lorenzo@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 7 Feb 2022 18:39:54 -0800
+Message-ID: <CAADnVQJoWF8co=9YNdvQkziwsOAoqw=p134aHTL9YZ82=QJcRA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] net: veth: account total xdp_frame len running ndo_xdp_xmit
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Feb 1, 2022 at 2:46 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>
+> Introduce xdp_get_frame_len utility routine to get the xdp_frame full
+> length and account total frame size running XDP_REDIRECT of a
+> non-linear xdp frame into a veth device.
+>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/veth.c |  4 ++--
+>  include/net/xdp.h  | 14 ++++++++++++++
+>  2 files changed, 16 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index 354a963075c5..22ecaf8b8f98 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -493,7 +493,7 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
+>                 struct xdp_frame *frame = frames[i];
+>                 void *ptr = veth_xdp_to_ptr(frame);
+>
+> -               if (unlikely(frame->len > max_len ||
+> +               if (unlikely(xdp_get_frame_len(frame) > max_len ||
+>                              __ptr_ring_produce(&rq->xdp_ring, ptr)))
+>                         break;
 
-This series was applied to bpf/bpf-next.git (master)
-by Alexei Starovoitov <ast@kernel.org>:
+Looks correct, but could you explain what happens without this fix?
 
-On Fri, 4 Feb 2022 10:57:33 -0800 you wrote:
-> Changes v8 => v9:
-> 1. Fix an error with multi function program, in 4/9.
-> 
-> Changes v7 => v8:
-> 1. Rebase and fix conflicts.
-> 2. Lock text_mutex for text_poke_copy. (Daniel)
-> 
-> [...]
-
-Here is the summary with links:
-  - [v9,bpf-next,1/9] x86/Kconfig: select HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP
-    https://git.kernel.org/bpf/bpf-next/c/fac54e2bfb5b
-  - [v9,bpf-next,2/9] bpf: use bytes instead of pages for bpf_jit_[charge|uncharge]_modmem
-    https://git.kernel.org/bpf/bpf-next/c/3486bedd9919
-  - [v9,bpf-next,3/9] bpf: use size instead of pages in bpf_binary_header
-    https://git.kernel.org/bpf/bpf-next/c/ed2d9e1a26cc
-  - [v9,bpf-next,4/9] bpf: use prog->jited_len in bpf_prog_ksym_set_addr()
-    https://git.kernel.org/bpf/bpf-next/c/d00c6473b1ee
-  - [v9,bpf-next,5/9] x86/alternative: introduce text_poke_copy
-    https://git.kernel.org/bpf/bpf-next/c/0e06b4037168
-  - [v9,bpf-next,6/9] bpf: introduce bpf_arch_text_copy
-    https://git.kernel.org/bpf/bpf-next/c/ebc1415d9b4f
-  - [v9,bpf-next,7/9] bpf: introduce bpf_prog_pack allocator
-    https://git.kernel.org/bpf/bpf-next/c/57631054fae6
-  - [v9,bpf-next,8/9] bpf: introduce bpf_jit_binary_pack_[alloc|finalize|free]
-    https://git.kernel.org/bpf/bpf-next/c/33c9805860e5
-  - [v9,bpf-next,9/9] bpf, x86_64: use bpf_jit_binary_pack_alloc
-    https://git.kernel.org/bpf/bpf-next/c/1022a5498f6f
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Any other drivers might have the same issue?
