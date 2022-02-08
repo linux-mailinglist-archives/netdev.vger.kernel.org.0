@@ -2,112 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B9F04ADF0E
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 18:13:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51C9D4ADF19
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 18:15:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352583AbiBHRNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 12:13:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46958 "EHLO
+        id S1352438AbiBHRPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 12:15:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234690AbiBHRNw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 12:13:52 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1233EC06157A;
-        Tue,  8 Feb 2022 09:13:52 -0800 (PST)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 218GMR78015620;
-        Tue, 8 Feb 2022 17:13:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=TOLI4z2hux2zYaTEPqS24Y2d2xJyKH7dqt62eIBHOh8=;
- b=IH+h8SWELUOBtrv/Qv0aZBSdr4KFgoTNfYbJnPmAP4I3oskGSrWR1HQl4Ihg7ojxxWmM
- 8TfVmnZD96V9HyaczYsTDF/lcAb21zCHS/UEg3ObKugLuT6wsAKf4SRlIKym+RueZvGW
- O2RaViiR3aLQOBtoWn9Oo9H4lQ19ac6G1ni/QB3yGJxwdZ9EOzKXYs/Bnjd0JR3Zgz89
- xHJLl7MnvhBUYwL7NRLXUPKEibfQZ6yrfwa2X3ryHmRTgxGTG5T89Qzad40Nt5hfERlO
- bpygmgE2FuSPq0b6xioDoAoyp1SVlp42jUu9bZwisHvk4BEj4PjVjeKJ+0Vb01DiCfmB zg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e236fqh82-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 17:13:48 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 218FTiYp028379;
-        Tue, 8 Feb 2022 17:13:47 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e236fqh7q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 17:13:47 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 218HCfg6013975;
-        Tue, 8 Feb 2022 17:13:46 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3e1ggk054r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 17:13:46 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 218HDhjH47644942
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 8 Feb 2022 17:13:43 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A0A38A4055;
-        Tue,  8 Feb 2022 17:13:43 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 42BDCA405B;
-        Tue,  8 Feb 2022 17:13:43 +0000 (GMT)
-Received: from [9.145.157.102] (unknown [9.145.157.102])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  8 Feb 2022 17:13:43 +0000 (GMT)
-Message-ID: <c28365d5-72e3-335b-372e-2a9069898df1@linux.ibm.com>
-Date:   Tue, 8 Feb 2022 18:13:42 +0100
+        with ESMTP id S1352657AbiBHRPH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 12:15:07 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2070.outbound.protection.outlook.com [40.107.92.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E4BC061576;
+        Tue,  8 Feb 2022 09:15:05 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Pafd5G00znU2tEhLiKdU5qbVB6UbTwFkZBKRdgjpEP+Pa2I2xWvonpsSD5WycR8gr0jPzsgjjgdnj0/uHrjr36kwiM0aQBR8m7yXzb4Y/h+S0jJU05X7Ex3rD95y3D/j3Zva2T/AINNouGtI+Xirw9iwPls58uJZWZmjVLnZNHZoBrr0fCWKBJzmwXtXGLpK+Mn8jti84Vo6H1otBtBskqKD6WGmQcdDw3FbacSRwX9CpaS93YAGNfHHRvYNw83hV7AT/RNW08p4g8JBQeXcBAicyuMczROrYEwpFfGEFDA/4VRKAyw8kjkZQ7Ep4MDdIldrg/H3C+c8snqMgumwIg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vIm+7DXWqyozF+Wh+jrKS1y3QEhSQ40IiUGK6OZcX90=;
+ b=Ix0n5zGH3Jn8DvPSFbyJ7meAWXeYJXaWefBsf9VmgeB0dXZoCIMP3wyutz69UknAuxSjJ4fBt9U7uQMfw1OxQJahVElXjQ9NquoLN9o0C4ghUFpV3V18+0yRG6AqDVpVfmGjJS+y3C85ywSsyDpM5xknkJDqp9dP2wrqhqo/YWQ3EclgZs8uPCdz9y9l0Ao30zyAvARhxMqRsXLcutMSNXw9JEbxjpALGRiHxuapwsds4T5jlmIBHQs0KD+tK6+lgxTTBgMm7ifTSKDlvLU2/Y4RVXYnukv0+ZAVU35uyspWiNiSELhwMd27av6E2eiRloU4LBIm59eIa8/NAbaeVQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vIm+7DXWqyozF+Wh+jrKS1y3QEhSQ40IiUGK6OZcX90=;
+ b=jCmI7VwYXlZT6HTCV6swrtEPIVLrcJjPuCyeA76mPZO3eKwG5guey77ZXBzCrGuHL22HujBdhQtCby5PjsC4zBmcLz+J/oEUkIfMOw4x0qmbsg866mxZduCLwX9IbGe7WeMvfv3nn6bRC/D4rmvjOKuT5MhdNJzo6Rq4p32k/aoK6HTNKGJFFFTsiumws/2vadV8xXJ11g3DrsVHcZPCRQ+jpnrIGLJRqwuDtujrE9oHuK0s0v+LC60tJ94iVJKwDGKUJI2lBDkU0jrqjdPq45td8Qem14CtkG095YcZhsZuWSttq1C2FuPEIcAaCeNmfT7NLgWZDlcGiNtuwfefHw==
+Received: from DM3PR11CA0013.namprd11.prod.outlook.com (2603:10b6:0:54::23) by
+ BYAPR12MB2821.namprd12.prod.outlook.com (2603:10b6:a03:9b::30) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4951.18; Tue, 8 Feb 2022 17:15:03 +0000
+Received: from DM6NAM11FT048.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:0:54:cafe::2) by DM3PR11CA0013.outlook.office365.com
+ (2603:10b6:0:54::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12 via Frontend
+ Transport; Tue, 8 Feb 2022 17:15:03 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ DM6NAM11FT048.mail.protection.outlook.com (10.13.173.114) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4951.12 via Frontend Transport; Tue, 8 Feb 2022 17:15:03 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 8 Feb
+ 2022 17:14:44 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Tue, 8 Feb 2022
+ 09:14:43 -0800
+Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server id 15.2.986.9 via Frontend Transport; Tue, 8 Feb
+ 2022 09:14:41 -0800
+From:   Moshe Shemesh <moshe@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Jiri Pirko <jiri@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Moshe Shemesh <moshe@nvidia.com>
+Subject: [PATCH net-next 0/4] net/mlx5: Introduce devlink param to disable SF aux dev probe
+Date:   Tue, 8 Feb 2022 19:14:02 +0200
+Message-ID: <1644340446-125084-1-git-send-email-moshe@nvidia.com>
+X-Mailer: git-send-email 1.8.4.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net-next v5 2/5] net/smc: Limit backlog connections
-Content-Language: en-US
-To:     "D. Wythe" <alibuda@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <cover.1644323503.git.alibuda@linux.alibaba.com>
- <c597e6c6d004e5b2a26a9535c8099d389214f273.1644323503.git.alibuda@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <c597e6c6d004e5b2a26a9535c8099d389214f273.1644323503.git.alibuda@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: YNDUrGuSa5JxSFCuWNuE-QInp5Xc0CWi
-X-Proofpoint-GUID: yOP3GfkbHlqwJ7nAkezh27x-yKMJyts6
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-08_06,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- lowpriorityscore=0 clxscore=1015 adultscore=0 priorityscore=1501
- mlxscore=0 phishscore=0 spamscore=0 malwarescore=0 impostorscore=0
- bulkscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202080103
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0c094671-7c6a-427c-d0c4-08d9eb268ba9
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2821:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB282126D0F2D83AC4BED5C01AD42D9@BYAPR12MB2821.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8ImhXMZnpAx1ksNukUj8EI+ZLG0q4dynOwUd3LO7W3p/qrm4nZk1Z+PSetsSnyAzhkuiABQEfuRwAH+YZ0jwV62xU/xWSABV6m+I646yUUyYGRhJ2xuwCfJ/8upvJ81l2eIAXekWsnNbFL80biI4j5PGEM8eVJ4FWLRlQpbsWhFMHBwDEApElK0jOrEqWUuEMUWwXWOM35zeSKkI63eivbPGxH9zOPQPbdujk+2+b3lApwaN/jIz++EBvPoqoyGu3gfjlDsRYCjj40LWwlQhv7SKvZ4E3KXdnzO+37qBSN7YwyUs2uHMeAeTv9DPI7eoxMIy0sHHRPwXbxdcwhuRfYBJRV4to3Fu8+hYwFqjZGgoUGaKibcPBp19r9ZT/qrjlA2AByupeEAMAW//O/K4Q6HEm6x+rGuiytIQaG2N04sLyABPQQswN85GAqKdrlZ2EOnMCMgOJWU4kUfa+B4YZlrN/ftIRwZgLyuDvvHOZAfNl2QY9Pd46ZIxBriaqZGVEnmmAt2kaxGJtZyqXqE6kCUxGsybLGQJy+hs9xpEgnV+g1h9c0GIdv9B4mhLtDUTZVxatbJAp2RMzRbW3cosoT/ggE742MznSd2NlhIvBPpOGjEORKZiIfBAIDMLoQpz9Gc6BjWZoN9Q2xdU0cdAdr+eRbmR/QyzDqYtDFt2jsGMHMwcTXpiXHd6jyp+RnN10kfGkt2YP+cRKznMmXpZuQ==
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(40460700003)(36860700001)(508600001)(86362001)(8936002)(6666004)(336012)(426003)(7696005)(8676002)(70206006)(83380400001)(4326008)(47076005)(5660300002)(316002)(36756003)(82310400004)(81166007)(110136005)(186003)(356005)(2616005)(70586007)(26005)(54906003)(2906002)(107886003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2022 17:15:03.2676
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c094671-7c6a-427c-d0c4-08d9eb268ba9
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT048.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2821
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/02/2022 13:53, D. Wythe wrote:
-> From: "D. Wythe" <alibuda@linux.alibaba.com>
-> 
-> Current implementation does not handling backlog semantics, one
-> potential risk is that server will be flooded by infinite amount
-> connections, even if client was SMC-incapable.
+Currently SF device has all the aux devices enabled by default. Once
+loaded, user who desire to disable some of them need to perform devlink
+reload. This operation helps to reclaim memory that was not supposed
+to be used, but the lost time in disabling and enabling again cannot be
+recovered by this approach[1].
+Therefore, introduce a new devlink generic parameter for PCI PF which
+controls the creation of SFs. This parameter sets a flag in order to
+disable all auxiliary devices of the SF. i.e.: All children auxiliary
+devices of SF for RDMA, eth and vdpa-net are disabled by default and
+hence no device initialization is done at probe stage.
 
-In this patch you count the number of inflight SMC handshakes as pending and
-check them against the defined max_backlog. I really like this improvement.
+$ devlink dev param set pci/0000:08:00.0 name enable_sfs_aux_devs \
+              value false cmode runtime
 
-There is another queue in af_smc.c, the smc accept queue and any new client 
-socket that completed the handshake process is enqueued there (in smc_accept_enqueue() )
-and is waiting to get accepted by the user space application. To apply the correct
-semantics here, I think the number of sockets waiting in the smc accept queue 
-should also be counted as backlog connections, right? I see no limit for this queue
-now. What do you think?
+Create SF:
+$ devlink port add pci/0000:08:00.0 flavour pcisf pfnum 0 sfnum 11
+$ devlink port function set pci/0000:08:00.0/32768 \
+               hw_addr 00:00:00:00:00:11 state active
+
+Now depending on the use case, the user can enable specific auxiliary
+device(s). For example:
+
+$ devlink dev param set auxiliary/mlx5_core.sf.1 \
+              name enable_vnet value true cmde driverinit
+
+Afterwards, user needs to reload the SF in order for the SF to come up
+with the specific configuration:
+
+$ devlink dev reload auxiliary/mlx5_core.sf.1
+
+[1]
+mlx5 devlink reload is taking about 2 seconds, which means that with
+256 SFs we are speaking about ~8.5 minutes.
+
+Shay Drory (4):
+  net/mlx5: Split function_setup() to enable and open functions
+  net/mlx5: Delete redundant default assignment of runtime devlink
+    params
+  devlink: Add new "enable_sfs_aux_devs" generic device param
+  net/mlx5: Support enable_sfs_aux_devs devlink param
+
+ .../networking/devlink/devlink-params.rst     |   5 +
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c |  16 ++
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |  51 ++---
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c |   3 +
+ .../net/ethernet/mellanox/mlx5/core/health.c  |   5 +-
+ .../net/ethernet/mellanox/mlx5/core/main.c    | 183 +++++++++++++++---
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   6 +
+ .../mellanox/mlx5/core/sf/dev/driver.c        |  13 +-
+ .../ethernet/mellanox/mlx5/core/sf/devlink.c  |  40 ++++
+ .../ethernet/mellanox/mlx5/core/sf/hw_table.c |   7 +
+ .../net/ethernet/mellanox/mlx5/core/sf/priv.h |   2 +
+ include/linux/mlx5/driver.h                   |   1 +
+ include/net/devlink.h                         |   4 +
+ net/core/devlink.c                            |   5 +
+ 14 files changed, 284 insertions(+), 57 deletions(-)
+
+-- 
+2.26.3
+
