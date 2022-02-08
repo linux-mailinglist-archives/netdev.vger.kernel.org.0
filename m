@@ -2,83 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF0074ACF2B
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 03:50:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6BCA4ACF34
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 03:53:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346119AbiBHCtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 21:49:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38230 "EHLO
+        id S1343974AbiBHCxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 21:53:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238055AbiBHCtk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 21:49:40 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12FDEC061355
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 18:49:40 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id n32so16386118pfv.11
-        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 18:49:40 -0800 (PST)
+        with ESMTP id S233685AbiBHCxK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 21:53:10 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E39C061355;
+        Mon,  7 Feb 2022 18:53:09 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id v4so8961079pjh.2;
+        Mon, 07 Feb 2022 18:53:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=zNQZXxqoOYkdXuYo5dD7WKNu4QDhFnzCJtPbDGQgP2o=;
-        b=Wm+oKdqfraU8GZ5amC/CQiqquSc19ORVi4GHQ6GWCxf5893cPRNarg+i1XB/jmtaJ9
-         D7jtR/PW48gx9yCpv8l8KTVx8Vq1Bo28t9NTGDkCMItOpHv2I6uqQsXljj1x7vb3uaYF
-         YQDH5NwOmgb/adjO5JlhjzkZfXyMZ6wYLzazBkrbmObglsV7bbUms2LGzhrlEe9VtuKa
-         CdaCjwB0Y9FKDJThp6SuERlTsrRVwj2DOIzu2Cuok46Po83Fjwh4jE8CKU18jX0GCaHa
-         M2lpEmpGckNsu4i+mdGRBkkI8s7ACf4B191HIdrF24vD2vkjJ2RGiRZg5oR+ssIuS9nq
-         r6Sg==
+        bh=FHvEEsTakrojeNRd6lGWIzvkLLl9CJaFPC3mOTNvRw4=;
+        b=NFft9JIvnH+k8y3DuoDdh0h7tYf1A+rTKolC2dO9OdB2ZVbQsII9LNGb5+O+n9Pjgy
+         Qd5xqzdMnq3A+LSG/w9gGB4FgRZPexyS4lTTB6ExNps+7Qk6twyadlVUAdNCxkA6o0UO
+         ICucyXzRFeN5T4v25an9awp+jlu1CC+xTStUIJao+Ht0yZOWJ5TtUEKqM1M/Skzy9EVe
+         jQSgaxANRo9wBlkp8FARYZGy+1+5I9tRbLhUm5lI6XIDkiNhOtIivyIWfgfcLakfRMYT
+         EB/fcbH8ZbtjiYLRgDf3/WgmfVRkihdgW007Xj1QwiPuyg/NLdQSuAv+PHog76kleml/
+         1KFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=zNQZXxqoOYkdXuYo5dD7WKNu4QDhFnzCJtPbDGQgP2o=;
-        b=ISC4+fWK2vRecHNBZZq+wJWXT3nSgqt4pYShreY5mJ7UVf7ZuMKaVbWg4z4ZOpuXyg
-         b+9DhlG/hjJfnKY6Admqa3BsF8kfwxFW9ZP0Zw/8ZF5nmV+qH75RRHXTr2Yjbyr2U622
-         LQ2baLerhiJIOCmArXX/KpAQnYpYAsV+h8e26HCHpkSAO/UGPr46q4fRKcE0D90AhwR3
-         U0N+/1h2Y059F4gLkWiKMSSIyTcv5bjsLpktOKb8U9Tf/Mg239u6iJhBkR6mqGWscUCB
-         Tij2+l9ZNvkgu9+ROemeTDDESARnWDFijkOSnsYbZ78TDqMyXRsziiniViF2l8Ejx5I+
-         0uqA==
-X-Gm-Message-State: AOAM530frrklGg4lWUKGJaPzTrs/ECmVSs31Z1eldOuFOW0luDDvQqjk
-        Q90TKV164iJgtLK+j/2tSSw=
-X-Google-Smtp-Source: ABdhPJwABHF7D6lc/Z4IeqLR8qqwyKkfsxaDzyitibrcjfPicN0fXM/f6yOTiCHZ01Kt0RH38ywyag==
-X-Received: by 2002:a05:6a00:1c96:: with SMTP id y22mr2340970pfw.8.1644288579551;
-        Mon, 07 Feb 2022 18:49:39 -0800 (PST)
+        bh=FHvEEsTakrojeNRd6lGWIzvkLLl9CJaFPC3mOTNvRw4=;
+        b=FexZXflT3lBipzb+DaKPoVAUvov5p6T2ikUJPQtuCcN9AgbjnxZWvdf4M7cpguaz+D
+         VdmMjEEG53Ws+zk1AERf9P9hbu2ebFHmz5VsXH/Rr76L8oViaTbGOrUaEWkzFHmMWjBE
+         Bic5r/+mrPMK6xz+UK7867PiPiavgtYXn9B3u1eLiX4RMfpGsSIdT1iWu5qF4UdAzAs1
+         km3md5Tgj2I5lc3wKJl+5JKpQxiW3+ITkNciQjLQjyWwVvuO/Fd+8fzHFr7OeOmGQ0SP
+         TDdkCYB8eQ98Op+UFFeBaCuDIk9bDNEs0aKsl+HFqmAirbqX+jxVO8tcSCbwdYEKhQ33
+         Ja6w==
+X-Gm-Message-State: AOAM532duhYQQLD7Atx8gvuV1Rq+DOJaDbAx0cU5BCzBwCJ5G/eTO8zC
+        PuRtdKP3b/p7c1GFdV0hQbs=
+X-Google-Smtp-Source: ABdhPJx6TLFiQTRxVx6o0QBsvhPZejzhqjTs5YNHuChXj/dfNgtKlAfSUxcwost38eA/f8kJDpbaOA==
+X-Received: by 2002:a17:902:b941:: with SMTP id h1mr2622972pls.73.1644288789067;
+        Mon, 07 Feb 2022 18:53:09 -0800 (PST)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id l20sm13928645pfc.53.2022.02.07.18.49.37
+        by smtp.gmail.com with ESMTPSA id t1sm9426770pgj.43.2022.02.07.18.53.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 18:49:38 -0800 (PST)
-Message-ID: <92d44fc0-fafa-b445-d0cd-27179520b1d4@gmail.com>
-Date:   Mon, 7 Feb 2022 18:49:36 -0800
+        Mon, 07 Feb 2022 18:53:08 -0800 (PST)
+Message-ID: <88caec5c-c509-124e-5f6b-22b94f968aea@gmail.com>
+Date:   Mon, 7 Feb 2022 18:53:06 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH net 7/7] net: dsa: lantiq_gswip: don't use devres for
- mdiobus
+Subject: Re: [PATCH v8 net-next 01/10] dt-bindings: net: dsa: dt bindings for
+ microchip lan937x
 Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Rafael Richter <rafael.richter@gin.de>,
-        Daniel Klauer <daniel.klauer@gin.de>
-References: <20220207161553.579933-1-vladimir.oltean@nxp.com>
- <20220207161553.579933-8-vladimir.oltean@nxp.com>
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
+        andrew@lunn.ch, netdev@vger.kernel.org, olteanv@gmail.com,
+        robh+dt@kernel.org
+Cc:     UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        vivien.didelot@gmail.com, devicetree@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
+ <20220207172204.589190-2-prasanna.vengateshan@microchip.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220207161553.579933-8-vladimir.oltean@nxp.com>
+In-Reply-To: <20220207172204.589190-2-prasanna.vengateshan@microchip.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -93,36 +82,94 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2/7/2022 8:15 AM, Vladimir Oltean wrote:
-> As explained in commits:
-> 74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
-> 5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
+On 2/7/2022 9:21 AM, Prasanna Vengateshan wrote:
+> Documentation in .yaml format and updates to the MAINTAINERS
+> Also 'make dt_binding_check' is passed.
 > 
-> mdiobus_free() will panic when called from devm_mdiobus_free() <-
-> devres_release_all() <- __device_release_driver(), and that mdiobus was
-> not previously unregistered.
+> RGMII internal delay values for the mac is retrieved from
+> rx-internal-delay-ps & tx-internal-delay-ps as per the feedback from
+> v3 patch series.
+> https://lore.kernel.org/netdev/20210802121550.gqgbipqdvp5x76ii@skbuf/
 > 
-> The GSWIP switch is a platform device, so the initial set of constraints
-> that I thought would cause this (I2C or SPI buses which call ->remove on
-> ->shutdown) do not apply. But there is one more which applies here.
+> It supports only the delay value of 0ns and 2ns.
 > 
-> If the DSA master itself is on a bus that calls ->remove from ->shutdown
-> (like dpaa2-eth, which is on the fsl-mc bus), there is a device link
-> between the switch and the DSA master, and device_links_unbind_consumers()
-> will unbind the GSWIP switch driver on shutdown.
+> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+>   .../bindings/net/dsa/microchip,lan937x.yaml   | 179 ++++++++++++++++++
+>   MAINTAINERS                                   |   1 +
+>   2 files changed, 180 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
 > 
-> So the same treatment must be applied to all DSA switch drivers, which
-> is: either use devres for both the mdiobus allocation and registration,
-> or don't use devres at all.
-> 
-> The gswip driver has the code structure in place for orderly mdiobus
-> removal, so just replace devm_mdiobus_alloc() with the non-devres
-> variant, and add manual free where necessary, to ensure that we don't
-> let devres free a still-registered bus.
-> 
-> Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+> new file mode 100644
+> index 000000000000..5657a0b89e4e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+> @@ -0,0 +1,179 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/dsa/microchip,lan937x.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: LAN937x Ethernet Switch Series Tree Bindings
+> +
+> +maintainers:
+> +  - UNGLinuxDriver@microchip.com
+> +
+> +allOf:
+> +  - $ref: dsa.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - microchip,lan9370
+> +      - microchip,lan9371
+> +      - microchip,lan9372
+> +      - microchip,lan9373
+> +      - microchip,lan9374
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 50000000
+> +
+> +  reset-gpios:
+> +    description: Optional gpio specifier for a reset line
+> +    maxItems: 1
+> +
+> +  mdio:
+> +    $ref: /schemas/net/mdio.yaml#
+> +    unevaluatedProperties: false
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+This should be moved to dsa.yaml since this is about describing the 
+switch's internal MDIO bus controller. This is applicable to any switch, 
+really.
+
+> +
+> +patternProperties:
+> +  "^(ethernet-)?ports$":
+> +    patternProperties:
+> +      "^(ethernet-)?port@[0-7]+$":
+> +        allOf:
+> +          - if:
+> +              properties:
+> +                phy-mode:
+> +                  contains:
+> +                    enum:
+> +                      - rgmii
+> +                      - rgmii-rxid
+> +                      - rgmii-txid
+> +                      - rgmii-id
+> +            then:
+> +              properties:
+> +                rx-internal-delay-ps:
+> +                  $ref: "#/$defs/internal-delay-ps"
+> +                tx-internal-delay-ps:
+> +                  $ref: "#/$defs/internal-delay-ps"
+
+Likewise, this should actually be changed in ethernet-controller.yaml
 -- 
 Florian
