@@ -2,127 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79C274AD212
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 08:18:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A241F4AD219
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 08:21:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348011AbiBHHSb convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 8 Feb 2022 02:18:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53518 "EHLO
+        id S1348036AbiBHHUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 02:20:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347170AbiBHHSX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 02:18:23 -0500
-X-Greylist: delayed 140 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 23:18:21 PST
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0245C0401F5;
-        Mon,  7 Feb 2022 23:18:21 -0800 (PST)
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 2187F78w8002212, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 2187F78w8002212
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 8 Feb 2022 15:15:07 +0800
-Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 8 Feb 2022 15:15:06 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Feb 2022 15:15:06 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
- RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
- 15.01.2308.020; Tue, 8 Feb 2022 15:15:06 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>,
+        with ESMTP id S237283AbiBHHUc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 02:20:32 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82097C0401EF
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 23:20:31 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nHKnc-0000gW-Pq; Tue, 08 Feb 2022 08:20:28 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nHKnY-000085-PV; Tue, 08 Feb 2022 08:20:24 +0100
+Date:   Tue, 8 Feb 2022 08:20:24 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Henning Schild <henning.schild@siemens.com>
-CC:     Aaron Ma <aaron.ma@canonical.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "tiwai@suse.de" <tiwai@suse.de>
-Subject: RE: [PATCH v3] net: usb: r8152: Add MAC passthrough support for RTL8153BL
-Thread-Topic: [PATCH v3] net: usb: r8152: Add MAC passthrough support for
- RTL8153BL
-Thread-Index: AQHYFAANjLdOSvtCR0KlGk2k9pQgE6x3kd2AgACjlICAAAm2AIARBXOA
-Date:   Tue, 8 Feb 2022 07:15:06 +0000
-Message-ID: <780d5453fbd24f61bb10f6e8f0acbda1@realtek.com>
-References: <20220127100109.12979-1-aaron.ma@canonical.com>
- <20220128043207.14599-1-aaron.ma@canonical.com>
- <20220128092103.1fa2a661@md1za8fc.ad001.siemens.net>
- <YfQwpy1Kkz3wheTi@lunn.ch>
- <BL1PR12MB515773B15441F5BC375E452DE2229@BL1PR12MB5157.namprd12.prod.outlook.com>
-In-Reply-To: <BL1PR12MB515773B15441F5BC375E452DE2229@BL1PR12MB5157.namprd12.prod.outlook.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.203]
-x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/2/8_=3F=3F_02:24:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Rafael Richter <rafael.richter@gin.de>,
+        Daniel Klauer <daniel.klauer@gin.de>
+Subject: Re: [PATCH net 2/7] net: dsa: ar9331: register the mdiobus under
+ devres
+Message-ID: <20220208072024.GB18325@pengutronix.de>
+References: <20220207161553.579933-1-vladimir.oltean@nxp.com>
+ <20220207161553.579933-3-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220207161553.579933-3-vladimir.oltean@nxp.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 08:19:37 up 59 days, 16:05, 65 users,  load average: 0.18, 0.18,
+ 0.18
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Limonciello, Mario <Mario.Limonciello@amd.com>
-> Sent: Saturday, January 29, 2022 2:41 AM
-[...]
-> > I've not yet been convinced by replies that the proposed code really
-> > does only match the given dock, and not random USB dongles.
+On Mon, Feb 07, 2022 at 06:15:48PM +0200, Vladimir Oltean wrote:
+> As explained in commits:
+> 74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
+> 5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
 > 
-> Didn't Realtek confirm this bit is used to identify the Lenovo devices?
+> mdiobus_free() will panic when called from devm_mdiobus_free() <-
+> devres_release_all() <- __device_release_driver(), and that mdiobus was
+> not previously unregistered.
+> 
+> The ar9331 is an MDIO device, so the initial set of constraints that I
+> thought would cause this (I2C or SPI buses which call ->remove on
+> ->shutdown) do not apply. But there is one more which applies here.
+> 
+> If the DSA master itself is on a bus that calls ->remove from ->shutdown
+> (like dpaa2-eth, which is on the fsl-mc bus), there is a device link
+> between the switch and the DSA master, and device_links_unbind_consumers()
+> will unbind the ar9331 switch driver on shutdown.
+> 
+> So the same treatment must be applied to all DSA switch drivers, which
+> is: either use devres for both the mdiobus allocation and registration,
+> or don't use devres at all.
+> 
+> The ar9331 driver doesn't have a complex code structure for mdiobus
+> removal, so just replace of_mdiobus_register with the devres variant in
+> order to be all-devres and ensure that we don't free a still-registered
+> bus.
+> 
+> Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Excuse me. Last week is our vacation of Chinese New Year.
-Realtek confirms that bit is used to identify the Lenovo devices.
-We use different bits for specific customers.
-For RTL8153B, bit 0 and 2 of USB OCP 0xD81F are for Dell. Bit 3 is for Lenovo.
-However, Realtek couldn't answer if the Lenovo devices are used on docks only.
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Best Regards,
-Hayes
+Thank you!
 
-> > To be
-> > convinced i would probably like to see code which positively
-> > identifies the dock, and that the USB device is on the correct port of
-> > the USB hub within the dock. I doubt you can actually do that in a
-> > sane way inside an Ethernet driver. As you say, it will likely lead to
-> > unmaintainable spaghetti-code.
-> >
-> > I also don't really think the vendor would be keen on adding code
-> > which they know will get reverted as soon as it is shown to cause a
-> > regression.
-> >
-> > So i would prefer to NACK this, and push it to udev rules where you
-> > have a complete picture of the hardware and really can identify with
-> > 100% certainty it really is the docks NIC.
+> ---
+>  drivers/net/dsa/qca/ar9331.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> I remember when I did the Dell implementation I tried userspace first.
+> diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
+> index 3bda7015f0c1..e5098cfe44bc 100644
+> --- a/drivers/net/dsa/qca/ar9331.c
+> +++ b/drivers/net/dsa/qca/ar9331.c
+> @@ -378,7 +378,7 @@ static int ar9331_sw_mbus_init(struct ar9331_sw_priv *priv)
+>  	if (!mnp)
+>  		return -ENODEV;
+>  
+> -	ret = of_mdiobus_register(mbus, mnp);
+> +	ret = devm_of_mdiobus_register(dev, mbus, mnp);
+>  	of_node_put(mnp);
+>  	if (ret)
+>  		return ret;
+> @@ -1066,7 +1066,6 @@ static void ar9331_sw_remove(struct mdio_device *mdiodev)
+>  	}
+>  
+>  	irq_domain_remove(priv->irqdomain);
+> -	mdiobus_unregister(priv->mbus);
+>  	dsa_unregister_switch(&priv->ds);
+>  
+>  	reset_control_assert(priv->sw_reset);
+> -- 
+> 2.25.1
 > 
-> Pushing this out to udev has a few other implications I remember hitting:
-> 1) You need to also get the value you're supposed to use from ACPI BIOS
->      exported some way in userland too.
-> 2) You can run into race conditions with other device or MAC renaming rules.
->     My first try I did it with NM and hit that continually.  So you would
-> probably
->     need to land this in systemd or so.
 > 
-> >
-> >    Andrew------Please consider the environment before printing this e-mail.
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
