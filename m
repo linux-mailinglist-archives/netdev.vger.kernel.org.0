@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE6ED4ADD67
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 16:48:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECE354ADD76
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 16:49:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381960AbiBHPsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 10:48:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58278 "EHLO
+        id S1351976AbiBHPth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 10:49:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382007AbiBHPsf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 10:48:35 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50654C0612BC;
-        Tue,  8 Feb 2022 07:48:31 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id j14so25095270lja.3;
-        Tue, 08 Feb 2022 07:48:31 -0800 (PST)
+        with ESMTP id S239907AbiBHPtg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 10:49:36 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 779A9C061578;
+        Tue,  8 Feb 2022 07:49:35 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id z20so25077365ljo.6;
+        Tue, 08 Feb 2022 07:49:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=KxYSiqV12Dhm8YIIbxVVPZPZ8DeDZ9T4ZM/yFNlt0P4=;
-        b=RCJH/+Jlb0WLMRrQOaeKkLw2zcgYhGFGq9EIE5cCcIrXrMKxY0eYUJydZobET1700n
-         iOG+u9NHqzmAPh5tqUFIHuf5qBlqkQYWCsIU0LmPKZ6NZW05XvolNBchVjmMwmpJ34rV
-         wdwdBwyiQ3TetWfh553Uj1uIMs2eVv8Vyn1DMzTO+S5FLW4PNHxvCqfTovmyxSl02VEy
-         P9Ec+IOUIER0y6542iKSfRvbjyEs3rOQJpQqDJ8auotuYdI79eqMZrxDUUlXLl+RCG0l
-         bzIPx3IJSNxUt+N5zYGmBgnbIAGPi5K8thj689pSZm2WW3t34iPIvuwGJYRcTcpgTW3t
-         RVSQ==
+        bh=jKPmnUC6L/CUlDp8szM1YCCjQLDW+YvcV/DqXbymrLg=;
+        b=f2WRHXLNfJOh7sW/V4/7apwC9vEcqbQDCu5ThTHxAjbf0FymsK82Q4rw6gMCGa01gN
+         4xx/vbgf9yXx/k8BdfUkiUmlj5xJNFXdxj5q88rAbeuogtTBS346YPJA3qm+bMj+10+Z
+         f6SKGWmzAP5T1w/mDDMDJF1DmH/TQWBkMUZPesR9oqq7pjT0N8jmBvNpKe1UYmdPL1o7
+         XActh5t9D1lYngjG3RUaGgnbEtOaerM7QqSxam3phY2cZA0ndAI+5kV7lK376CJrYFCi
+         vQH9B2H88FpNZ4/GcRQBFqk5uzlxoBl1lXY1CzwkB62EdAMCqO0Xy/gSYDWFgWTcBj6+
+         uIcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=KxYSiqV12Dhm8YIIbxVVPZPZ8DeDZ9T4ZM/yFNlt0P4=;
-        b=t8FDkNtA5Bhs3X4UfYOEEALPtfSLnyESVk7hlVK8/MhA/UkemDDaFpu3xpBWh+tbcM
-         hn7Yckh6A8C/J/lIiB2ql15Hkj5tvwdih69vOoEWI1RV1LPuEfVBwYfrZCrqZq3xMiXe
-         l1K+WDXS1s9PG65yq/ip/l8VP4Wp7J5sLscz7Xcu2iWJylLDVaTsIhZ04qD5PTpye+qB
-         skW/01aemjtzH6v9NQrc00oulv6JOoaP+4srqFaNHy+DZ/hnTQf5Bg6jrWevscOQUuuK
-         6RORWj4Ka8QbGZA/WbNbexY1FW5GJaSDMJbAan+QrLFfXNZEdQskDP3NHlIWGFOD/0I3
-         Ajkw==
-X-Gm-Message-State: AOAM5300dt8zDxoWD4aWkSv80kXqDst0qGb/YiC/o5SipktrH8X1qxXB
-        5nRQEfNMsvncBeSp4BX0FrEEpNKI/Z7WCA==
-X-Google-Smtp-Source: ABdhPJySi/pdYPq6mdP6NmTInKPyJ648iKNTgmsWmxL8LMLykGhXyqhkOIbLNTmw+0/eXkf1WgB04A==
-X-Received: by 2002:a05:651c:3c7:: with SMTP id f7mr3269342ljp.62.1644335309629;
-        Tue, 08 Feb 2022 07:48:29 -0800 (PST)
+        bh=jKPmnUC6L/CUlDp8szM1YCCjQLDW+YvcV/DqXbymrLg=;
+        b=6FY9TNnMU+bUADO5mDVXJ9vAlmdCPhlO0Ho+UewK4hL8vuArb6vYyF1uSSmwOBD0cA
+         2ltCVF0HxK0HbC8COHEjp6xFaSKWMFU9C0cMObpVjXt6E0MQMfxHa3AxC42sYfGRhFAd
+         ig0TpfT2uUSSVgdNGOAcpqke6mRw2jORSXMi+s7bcywUKC0odfu0j4N8qK5A6jTy50lG
+         JZbWQ3JkrQZPKwK/THVBgiSsC1SYEBAiAufo9gfeeMnm+SJcjLAlZl91p6q35q3OAaO9
+         etbcdgQn3aLrA6KYNR+p7Zf8Xzvi76COu+q62+206pUkzW6QrBTmSYYBrB/Vev3XVZ5V
+         baBg==
+X-Gm-Message-State: AOAM532XioYVTJvmsJp2agnrZtVClhAhTauqy4UIfVD4TayIqxC1mBp9
+        vy5vMXcsYYFM3takcyRDWFY=
+X-Google-Smtp-Source: ABdhPJw9LiyrQQ/0AXcRsE2Qr2EzS8Azw2M1dHgg7XpBuggCxJhcctze5CShZpEVzzzPswRmRv3TDg==
+X-Received: by 2002:a2e:8495:: with SMTP id b21mr3126317ljh.89.1644335373825;
+        Tue, 08 Feb 2022 07:49:33 -0800 (PST)
 Received: from [192.168.1.11] ([94.103.224.201])
-        by smtp.gmail.com with ESMTPSA id w6sm2025770ljm.109.2022.02.08.07.48.28
+        by smtp.gmail.com with ESMTPSA id v7sm2018844ljv.68.2022.02.08.07.49.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 07:48:29 -0800 (PST)
-Message-ID: <6f0615da-aa0b-df8e-589c-f5caf09d3449@gmail.com>
-Date:   Tue, 8 Feb 2022 18:48:24 +0300
+        Tue, 08 Feb 2022 07:49:33 -0800 (PST)
+Message-ID: <61f00e3c-06ea-20a6-4b76-2bddf986f074@gmail.com>
+Date:   Tue, 8 Feb 2022 18:49:28 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v3 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+Subject: Re: [PATCH v3 2/2] ath9k: htc: clean up *STAT_* macros
 Content-Language: en-US
 To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
+        Jeff Johnson <quic_jjohnson@quicinc.com>,
         ath9k-devel@qca.qualcomm.com, kvalo@kernel.org,
         davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com
 Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
-        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+        linux-kernel@vger.kernel.org
 References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
- <87h799a007.fsf@toke.dk>
+ <28c83b99b8fea0115ad7fbda7cc93a86468ec50d.1644265120.git.paskripkin@gmail.com>
+ <258ac12b-9ca3-9b24-30df-148f9df51582@quicinc.com> <87ee4d9xxe.fsf@toke.dk>
 From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <87h799a007.fsf@toke.dk>
+In-Reply-To: <87ee4d9xxe.fsf@toke.dk>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -80,58 +80,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi Toke,
 
-On 2/8/22 17:47, Toke Høiland-Jørgensen wrote:
-> Pavel Skripkin <paskripkin@gmail.com> writes:
+On 2/8/22 18:32, Toke Høiland-Jørgensen wrote:
+>> It seems that these macros (both the original and the new) aren't 
+>> following the guidance from the Coding Style which tells us under 
+>> "Things to avoid when using macros" that we should avoid "macros that 
+>> depend on having a local variable with a magic name". Wouldn't these 
+>> macros be "better" is they included the hif_dev/priv as arguments rather 
+>> than being "magic"?
 > 
->> Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb(). The
->> problem was in incorrect htc_handle->drv_priv initialization.
->>
->> Probable call trace which can trigger use-after-free:
->>
->> ath9k_htc_probe_device()
->>   /* htc_handle->drv_priv = priv; */
->>   ath9k_htc_wait_for_target()      <--- Failed
->>   ieee80211_free_hw()		   <--- priv pointer is freed
->>
->> <IRQ>
->> ...
->> ath9k_hif_usb_rx_cb()
->>   ath9k_hif_usb_rx_stream()
->>    RX_STAT_INC()		<--- htc_handle->drv_priv access
->>
->> In order to not add fancy protection for drv_priv we can move
->> htc_handle->drv_priv initialization at the end of the
->> ath9k_htc_probe_device() and add helper macro to make
->> all *_STAT_* macros NULL save.
+> Hmm, yeah, that's a good point; looks like the non-HTC ath9k stats
+> macros have already been converted to take the container as a parameter,
+> so taking this opportunity to fix these macros is not a bad idea. While
+> we're at it, let's switch to the do{} while(0) syntax the other macros
+> are using instead of that weird usage of ?:. And there's not really any
+> reason for the duplication between ADD/INC either. So I'm thinking
+> something like:
 > 
-> I'm not too familiar with how the initialisation flow of an ath9k_htc
-> device works. Looking at htc_handle->drv_priv there seems to
-> be three other functions apart from the stat counters that dereference
-> it:
+> #define __STAT_SAVE(_priv, _member, _n) do { if (_priv) (_priv)->_member += (_n); } while(0)
 > 
-> ath9k_htc_suspend()
-> ath9k_htc_resume()
-> ath9k_hif_usb_disconnect()
-> 
-> What guarantees that none of these will be called midway through
-> ath9k_htc_probe_device() (which would lead to a NULL deref after this
-> change)?
+> #define TX_STAT_ADD(_priv, _c, _a) __STAT_SAVE(_priv, debug.tx_stats._c, _a)
+> #define TX_STAT_INC(_priv, _c) TX_STAT_ADD(_priv, _c, 1)
 > 
 
-IIUC, situation you are talking about may happen even without my change.
-I was thinking, that ath9k_htc_probe_device() is the real ->probe() 
-function, but things look a bit more tricky.
-
-
-So, the ->probe() function may be completed before 
-ath9k_htc_probe_device() is called, because it's called from fw loader 
-callback function. If ->probe() is completed, than we can call 
-->suspend(), ->resume() and others usb callbacks, right? And we can meet 
-NULL defer even if we leave drv_priv = priv initialization on it's place.
-
-Please, correct me if I am wrong somewhere :)
-
-
+Good point, thank you. Will redo these macros in v4
 
 
 With regards,
