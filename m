@@ -2,111 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C08094ACE22
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 02:48:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 203654ACE25
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 02:48:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241473AbiBHBsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 20:48:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33050 "EHLO
+        id S242236AbiBHBsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 20:48:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243166AbiBHBgy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 20:36:54 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1607EC061355;
-        Mon,  7 Feb 2022 17:36:53 -0800 (PST)
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jt5F30ckXzccp1;
-        Tue,  8 Feb 2022 09:35:51 +0800 (CST)
-Received: from [10.174.176.117] (10.174.176.117) by
- dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Feb 2022 09:36:50 +0800
-Subject: Re: [PATCH bpf-next v4 1/2] selftests/bpf: do not export subtest as
- standalone test
-To:     Yonghong Song <yhs@fb.com>, Hou Tao <hotforest@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S1344962AbiBHBmb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 20:42:31 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CB1C043180
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 17:42:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=C0o5EvMmSv4YkfC1tR7YpfFH9A7w3zbuj9FNyziXHdc=; b=WzTwsxZcPHwkafOLgQg4XgH916
+        bxVv26+fjyX6VDmjArBQpauC3sLH6HS5CpknelxLPMsKpwpHTMpfBNlTKylnbTstxECRx1FBC2AFm
+        IsK1FkanqMkvGfL/iWhDCEaNTIOb1qzTlsOqyAbi2HZ9LpZL6RaESInlaAMsVIP+tl/4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nHFWS-004jc2-1U; Tue, 08 Feb 2022 02:42:24 +0100
+Date:   Tue, 8 Feb 2022 02:42:24 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-References: <20220206043107.18549-1-houtao1@huawei.com>
- <20220206043107.18549-2-houtao1@huawei.com>
- <bc45d372-91cf-a909-aa8b-4daa755e758f@fb.com>
-From:   Hou Tao <houtao1@huawei.com>
-Message-ID: <e1300ed8-8118-6463-551d-59f6c5f10086@huawei.com>
-Date:   Tue, 8 Feb 2022 09:36:50 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Rafael Richter <rafael.richter@gin.de>,
+        Daniel Klauer <daniel.klauer@gin.de>
+Subject: Re: [PATCH net 1/7] net: dsa: mv88e6xxx: don't use devres for mdiobus
+Message-ID: <YgHKgEAoPOKH7wE6@lunn.ch>
+References: <20220207161553.579933-1-vladimir.oltean@nxp.com>
+ <20220207161553.579933-2-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <bc45d372-91cf-a909-aa8b-4daa755e758f@fb.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.174.176.117]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500025.china.huawei.com (7.185.36.35)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207161553.579933-2-vladimir.oltean@nxp.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Mon, Feb 07, 2022 at 06:15:47PM +0200, Vladimir Oltean wrote:
+> As explained in commits:
+> 74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
+> 5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
+> 
+> mdiobus_free() will panic when called from devm_mdiobus_free() <-
+> devres_release_all() <- __device_release_driver(), and that mdiobus was
+> not previously unregistered.
 
-On 2/8/2022 2:17 AM, Yonghong Song wrote:
->
->
-> On 2/5/22 8:31 PM, Hou Tao wrote:
->> Two subtests in ksyms_module.c are not qualified as static, so these
->> subtests are exported as standalone tests in tests.h and lead to
->> confusion for the output of "./test_progs -t ksyms_module".
->>
->> By using the following command:
->>
->>    grep "^void \(serial_\)\?test_[a-zA-Z0-9_]\+(\(void\)\?)" \
->>        tools/testing/selftests/bpf/prog_tests/*.c | \
->>     awk -F : '{print $1}' | sort | uniq -c | awk '$1 != 1'
->>
->> Find out that other tests also have the similar problem, so fix
->> these tests by marking subtests in these tests as static. For
->> xdp_adjust_frags.c, there is just one subtest, so just export
->> the subtest directly.
-[...]
->> diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c
->> b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c
->> index 134d0ac32f59..fc2d8fa8dac5 100644
->> --- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c
->> +++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c
->> @@ -102,9 +102,3 @@ void test_xdp_update_frags(void)
->>   out:
->>       bpf_object__close(obj);
->>   }
->> -
->> -void test_xdp_adjust_frags(void)
->> -{
->> -    if (test__start_subtest("xdp_adjust_frags"))
->> -        test_xdp_update_frags();
->> -}
->
-> I suggest keep test_xdp_adjust_frags and mark
-> test_xdp_update_frags as static function, and
-> this is also good for future extension.
-> It is confusing that test_xdp_update_frags
-> test in file xdp_adjust_frags.c. Typical
-> prog_tests/ test has {test,serial_test}_<TEST> test
-> with file name <TEST>.c file.
->
-Will do and thanks for your suggestion.
+...
+ 
+> Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
+> Reported-by: Rafael Richter <Rafael.Richter@gin.de>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Regards,
-Tao
-> [...]
-> .
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
+    Andrew
