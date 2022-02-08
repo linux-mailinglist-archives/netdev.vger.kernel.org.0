@@ -2,53 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34B394AD290
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 08:56:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73F1D4AD2DC
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 09:11:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236268AbiBHH4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 02:56:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41486 "EHLO
+        id S1348946AbiBHILN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 03:11:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231454AbiBHH4I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 02:56:08 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CD9C0401F1;
-        Mon,  7 Feb 2022 23:56:05 -0800 (PST)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JtFZz6gbhz68Bkm;
-        Tue,  8 Feb 2022 15:51:55 +0800 (CST)
-Received: from [10.122.132.241] (10.122.132.241) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Tue, 8 Feb 2022 08:55:59 +0100
-Message-ID: <cc023cc4-043b-c67e-1e6e-acf1eb18d155@huawei.com>
-Date:   Tue, 8 Feb 2022 10:55:57 +0300
+        with ESMTP id S1348941AbiBHILM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 03:11:12 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635C0C0401F5
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 00:11:09 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nHLaX-00062r-3f; Tue, 08 Feb 2022 09:11:01 +0100
+Received: from pengutronix.de (unknown [195.138.59.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id E33242E206;
+        Tue,  8 Feb 2022 08:10:58 +0000 (UTC)
+Date:   Tue, 8 Feb 2022 09:10:55 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>
+Subject: Re: [PATCH v2 net-next 09/11] can: gw: switch cangw_pernet_exit() to
+ batch mode
+Message-ID: <20220208081055.cfy655uarxxdcfe2@pengutronix.de>
+References: <20220208045038.2635826-1-eric.dumazet@gmail.com>
+ <20220208045038.2635826-10-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC PATCH 1/2] landlock: TCP network hooks implementation
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>
-References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
- <20220124080215.265538-2-konstantin.meskhidze@huawei.com>
- <ed2bd420-a22b-2912-1ff5-f48ab352d8e7@digikod.net>
- <5cd5b983-32a5-97ec-0835-f0c96d86e805@huawei.com>
- <10999c72-93eb-4db2-e536-a92187545bdb@digikod.net>
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-In-Reply-To: <10999c72-93eb-4db2-e536-a92187545bdb@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
- fraeml704-chm.china.huawei.com (10.206.15.53)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ayle4dle4rrls5g7"
+Content-Disposition: inline
+In-Reply-To: <20220208045038.2635826-10-eric.dumazet@gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -56,310 +59,48 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--ayle4dle4rrls5g7
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-2/7/2022 5:17 PM, Mickaël Salaün пишет:
-> 
-> On 07/02/2022 14:09, Konstantin Meskhidze wrote:
->>
->>
->> 2/1/2022 3:13 PM, Mickaël Salaün пишет:
->>>
->>> On 24/01/2022 09:02, Konstantin Meskhidze wrote:
->>>> Support of socket_bind() and socket_connect() hooks.
->>>> Current prototype can restrict binding and connecting of TCP
->>>> types of sockets. Its just basic idea how Landlock could support
->>>> network confinement.
->>>>
->>>> Changes:
->>>> 1. Access masks array refactored into 1D one and changed
->>>> to 32 bits. Filesystem masks occupy 16 lower bits and network
->>>> masks reside in 16 upper bits.
->>>> 2. Refactor API functions in ruleset.c:
->>>>      1. Add void *object argument.
->>>>      2. Add u16 rule_type argument.
->>>> 3. Use two rb_trees in ruleset structure:
->>>>      1. root_inode - for filesystem objects
->>>>      2. root_net_port - for network port objects
->>>
->>> It's good to add a changelog, but they must not be in commit messages 
->>> that get copied by git am. Please use "---" to separate this 
->>> additionnal info (but not the Signed-off-by). Please also include a 
->>> version in the email subjects (this one should have been "[RFC PATCH 
->>> v3 1/2] landlock: …"), e.g. using git format-patch --reroll-count=X .
->>>
->>> Please follow these rules: 
->>> https://www.kernel.org/doc/html/latest/process/submitting-patches.html
->>> You can take some inspiration from this patch series: 
->>> https://lore.kernel.org/lkml/20210422154123.13086-1-mic@digikod.net/
->>
->>   Ok. I will add patch vervison in next patch. So it will be "[RFC PATCH
->>   v4 ../..] landlock: ..."
->>   But the previous patches remain with no version, correct?
-> 
-> Right, you can't change the subject of already sent emails. ;)
+On 07.02.2022 20:50:36, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+>=20
+> cleanup_net() is competing with other rtnl users.
+>=20
+> Avoiding to acquire rtnl for each netns before calling
+> cgw_remove_all_jobs() gives chance for cleanup_net()
+> to progress much faster, holding rtnl a bit longer.
+>=20
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
 
-   Ok. But I can add previous patches like:
-    v1: 
-https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com
-    v2: 
-https://lore.kernel.org/netdev/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
-    v3: ....
+Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
 
-  right ?
-> 
-> [...]
-> 
->>>> diff --git a/security/landlock/net.c b/security/landlock/net.c
->>>> new file mode 100644
->>>> index 000000000000..0b5323d254a7
->>>> --- /dev/null
->>>> +++ b/security/landlock/net.c
->>>> @@ -0,0 +1,175 @@
->>>> +// SPDX-License-Identifier: GPL-2.0-only
->>>> +/*
->>>> + * Landlock LSM - Filesystem management and hooks
->>>> + *
->>>> + * Copyright © 2016-2020 Mickaël Salaün <mic@digikod.net>
->>>> + * Copyright © 2018-2020 ANSSI
->>>> + */
->>>> +
->>>> +#include <linux/socket.h>
->>>> +#include <linux/net.h>
->>>> +#include <linux/in.h>
->>>
->>> Why is linux/in.h required?
->>>
->>    Struct sockaddr_in is described in this header.
->>    A pointer to struct sockaddr_in is used in hook_socket_connect()
->>    and hook_socket_bind() to get socket's family and port values.
-> 
-> OK, good point.
-> 
-> [...]
-> 
->>>> +        return 0;
->>>> +
->>>> +    socket_type = sock->type;
->>>> +    /* Check if it's a TCP socket */
->>>> +    if (socket_type != SOCK_STREAM)
->>>> +        return 0;
->>>> +
->>>> +    if (!dom)
->>>> +        return 0;
->>>
->>> This must be at the top of *each* hook to make it clear that they 
->>> don't impact non-landlocked processes.
->>>
->>    They don't impact. It does not matter what to check first socket
->>    family/type or landlocked process.
-> 
-> It doesn't change the semantic but it changes the reviewing which is 
-> easier with common and consistent sequential checks (and could avoid 
-> future mistakes). This rule is followed by all Landlock hooks.
+regards,
+Marc
 
-   Ok.
-> 
-> [...]
-> 
->>>> @@ -67,10 +76,11 @@ static void build_check_rule(void)
->>>>   }
->>>>   static struct landlock_rule *create_rule(
->>>> -        struct landlock_object *const object,
->>>> +        void *const object,
->>>
->>> Instead of shoehorning two different types into one (and then loosing 
->>> the typing), you should rename object to object_ptr and add a new 
->>> object_data argument. Only one of these should be set according to 
->>> the rule_type. However, if there is no special action performed on 
->>> one of these type (e.g. landlock_get_object), only one uintptr_t 
->>> argument should be enough.
->>>
->>   Do you mean using 2 object arguments in create_rule():
->>
->>      1. create_rule( object_ptr = landlock_object , object_data = 0,
->>                                 ...,  fs_rule_type);
->>          2. create_rule( object_ptr = NULL , object_data = port, .... ,
->>                           net_rule_type);
-> 
-> Yes, and you can add a WARN_ON_ONCE() in these function to check that 
-> only one argument is set (but object_data could be 0 in each case). The 
-> landlock_get_object() function should only require an object_data though.
-> 
-   Sorry. As you said in previous comment in landlock_get_object, only
-   one  uintptr_t argument should be enough. But, I did not get: "The
-   landlock_get_object() function should only require an object_data
-   though".
-   uintptr_t is the only argument in landlock_get_object?
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-> [...]
-> 
->>>> @@ -142,26 +159,36 @@ static void build_check_ruleset(void)
->>>>    * access rights.
->>>>    */
->>>>   static int insert_rule(struct landlock_ruleset *const ruleset,
->>>> -        struct landlock_object *const object,
->>>> -        const struct landlock_layer (*const layers)[],
->>>> -        size_t num_layers)
->>>> +        void *const obj, const struct landlock_layer (*const 
->>>> layers)[],
->>>
->>> same here
->>       Do you mean using 2 object arguments in insert_rule():
->>
->>      1. insert_rule( object_ptr = landlock_object , object_data = 0,
->>                                 ...,  fs_rule_type);
->>          2. insert_rule( object_ptr = NULL , object_data = port, .... ,
->>                           net_rule_type);
-> 
-> Yes
-> 
-> [...]
-> 
->>>> @@ -336,9 +399,11 @@ static int inherit_ruleset(struct 
->>>> landlock_ruleset *const parent,
->>>>           err = -EINVAL;
->>>>           goto out_unlock;
->>>>       }
->>>> -    /* Copies the parent layer stack and leaves a space for the new 
->>>> layer. */
->>>> -    memcpy(child->fs_access_masks, parent->fs_access_masks,
->>>> -            flex_array_size(parent, fs_access_masks, 
->>>> parent->num_layers));
->>>> +    /* Copies the parent layer stack and leaves a space for the new 
->>>> layer.
->>>
->>> ditto
->>        Do you mean comments style here?
-> 
-> Yes
-> 
-> [...]
-> 
->>>> @@ -317,47 +331,91 @@ SYSCALL_DEFINE4(landlock_add_rule,
->>>>       if (flags)
->>>>           return -EINVAL;
->>>> -    if (rule_type != LANDLOCK_RULE_PATH_BENEATH)
->>>> +    if ((rule_type != LANDLOCK_RULE_PATH_BENEATH) &&
->>>> +        (rule_type != LANDLOCK_RULE_NET_SERVICE))
->>>
->>> Please replace with a switch/case.
->>
->>    Ok. I got it.
->>>
->>>
->>>>           return -EINVAL;
->>>> -    /* Copies raw user space buffer, only one type for now. */
->>>> -    res = copy_from_user(&path_beneath_attr, rule_attr,
->>>> -            sizeof(path_beneath_attr));
->>>> -    if (res)
->>>> -        return -EFAULT;
->>>> -
->>>> -    /* Gets and checks the ruleset. */
->>>> -    ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
->>>> -    if (IS_ERR(ruleset))
->>>> -        return PTR_ERR(ruleset);
->>>> -
->>>> -    /*
->>>> -     * Informs about useless rule: empty allowed_access (i.e. deny 
->>>> rules)
->>>> -     * are ignored in path walks.
->>>> -     */
->>>> -    if (!path_beneath_attr.allowed_access) {
->>>> -        err = -ENOMSG;
->>>> -        goto out_put_ruleset;
->>>> -    }
->>>> -    /*
->>>> -     * Checks that allowed_access matches the @ruleset constraints
->>>> -     * (ruleset->fs_access_masks[0] is automatically upgraded to 
->>>> 64-bits).
->>>> -     */
->>>> -    if ((path_beneath_attr.allowed_access | 
->>>> ruleset->fs_access_masks[0]) !=
->>>> -            ruleset->fs_access_masks[0]) {
->>>> -        err = -EINVAL;
->>>> -        goto out_put_ruleset;
->>>> +    switch (rule_type) {
->>>> +    case LANDLOCK_RULE_PATH_BENEATH:
->>>> +        /* Copies raw user space buffer, for fs rule type. */
->>>> +        res = copy_from_user(&path_beneath_attr, rule_attr,
->>>> +                    sizeof(path_beneath_attr));
->>>> +        if (res)
->>>> +            return -EFAULT;
->>>> +        break;
->>>> +
->>>> +    case LANDLOCK_RULE_NET_SERVICE:
->>>> +        /* Copies raw user space buffer, for net rule type. */
->>>> +        res = copy_from_user(&net_service_attr, rule_attr,
->>>> +                sizeof(net_service_attr));
->>>> +        if (res)
->>>> +            return -EFAULT;
->>>> +        break;
->>>>       }
->>>> -    /* Gets and checks the new rule. */
->>>> -    err = get_path_from_fd(path_beneath_attr.parent_fd, &path);
->>>> -    if (err)
->>>> -        goto out_put_ruleset;
->>>> +    if (rule_type == LANDLOCK_RULE_PATH_BENEATH) {
->>>> +        /* Gets and checks the ruleset. */
->>>> +        ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
->>>> +        if (IS_ERR(ruleset))
->>>> +            return PTR_ERR(ruleset);
->>>> +
->>>> +        /*
->>>> +         * Informs about useless rule: empty allowed_access (i.e. 
->>>> deny rules)
->>>> +         * are ignored in path walks.
->>>> +         */
->>>> +        if (!path_beneath_attr.allowed_access) {
->>>> +            err = -ENOMSG;
->>>> +            goto out_put_ruleset;
->>>> +        }
->>>> +        /*
->>>> +         * Checks that allowed_access matches the @ruleset constraints
->>>> +         * (ruleset->access_masks[0] is automatically upgraded to 
->>>> 64-bits).
->>>> +         */
->>>> +        if ((path_beneath_attr.allowed_access | 
->>>> ruleset->access_masks[0]) !=
->>>> +                            ruleset->access_masks[0]) {
->>>> +            err = -EINVAL;
->>>> +            goto out_put_ruleset;
->>>> +        }
->>>> +
->>>> +        /* Gets and checks the new rule. */
->>>> +        err = get_path_from_fd(path_beneath_attr.parent_fd, &path);
->>>> +        if (err)
->>>> +            goto out_put_ruleset;
->>>> +
->>>> +        /* Imports the new rule. */
->>>> +        err = landlock_append_fs_rule(ruleset, &path,
->>>> +                path_beneath_attr.allowed_access);
->>>> +        path_put(&path);
->>>> +    }
->>>> -    /* Imports the new rule. */
->>>> -    err = landlock_append_fs_rule(ruleset, &path,
->>>> -            path_beneath_attr.allowed_access);
->>>> -    path_put(&path);
->>>> +    if (rule_type == LANDLOCK_RULE_NET_SERVICE) {
->>>> +        /* Gets and checks the ruleset. */
->>>> +        ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
->>>
->>> You need to factor out more code.
->>
->>    Sorry. I did not get you here. Please could you explain more detailed?
-> 
-> Instead of duplicating similar function calls (e.g. get_ruleset_from_fd) 
-> or operations, try to use one switch statement where you put the checks 
-> that are different (you can move the 
-> copy_from_user(&path_beneath_attr...) call). It may be a good idea to 
-> split this function into 3: one handling each rule_attr, which enables 
-> to not mix different attr types in the same function. A standalone patch 
-> should be refactoring the code to add and use a new function 
-> add_rule_path_beneath(ruleset, rule_attr) (only need the "landlock_" 
-> prefix for exported functions).
+--ayle4dle4rrls5g7
+Content-Type: application/pgp-signature; name="signature.asc"
 
-   Sorry again. Still don't get the point. What function do you suggetst
-   to split in 3? Can you please give detailed template of these
-   functions and the logic?
+-----BEGIN PGP SIGNATURE-----
 
-> .
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmICJYwACgkQrX5LkNig
+011SdAf+MFKrheg/ItGTv6yfXfktMAdhanoEOx7OsvRh9gU7TZBSdjHLbEAQ5hjH
+970LfdibcP/9of0BdReo/Ac8+79mxBNoHVUWhWr4GeObMFjW0Zk8CGXPAjNRUwTa
+fjNjhRFR9Z/nMkOGL5Ig6490Ka31ktgfYvQcFjCzSrkmBTaSys+UV2tfX7Kx1wkd
+5Qbebp4AMPXm2mkIBWrrrIBeKGMaWCdEOgzTwKY+2uvJ1DAMVVJ79myCUndt8+E2
+0b5jlC48JdwtNVAUn5fgYhAM4Wa8+15EhQv/PRGvzngLbAcMiTKvvlbI+eEODBaD
+jXv0VXO2Pf51tIszKpg+LxmdLFeGgQ==
+=83GG
+-----END PGP SIGNATURE-----
+
+--ayle4dle4rrls5g7--
