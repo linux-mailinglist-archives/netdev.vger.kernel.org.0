@@ -2,86 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4789E4AE345
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 23:21:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C56F4AE357
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 23:21:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386578AbiBHWVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 17:21:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56954 "EHLO
+        id S1387180AbiBHWVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 17:21:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386491AbiBHUmI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 15:42:08 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2417FC0612C0
-        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 12:42:07 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id j14so592502lja.3
-        for <netdev@vger.kernel.org>; Tue, 08 Feb 2022 12:42:07 -0800 (PST)
+        with ESMTP id S1386513AbiBHUr7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 15:47:59 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEDEC0613CB
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 12:47:58 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id i186so646152pfe.0
+        for <netdev@vger.kernel.org>; Tue, 08 Feb 2022 12:47:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=1arNLeaBe5R3++hUI9/c4FXwtGni/EUby5Sin47pTdk=;
-        b=Lb7EmKUMUybeoFQm61QwAXKAIUC96MWw5KHpW6AXfdODIb97hzU4gI1Jaum5QRmbJD
-         I5Uy4zR+U1GCM4wXIgjANF4btuzAUtWHC44SOc56L7XL0ZZaVd6luXrADm0RItW0MYGf
-         qMSECZalMnz6eRPrXJzUORG7Hmx3dWAKi4/3I=
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=36bFG7ntm+OMXHUX1wBqy1exMKG3hT94fWkd/YdKFso=;
+        b=EB5blAN+nc4047T4q3y6PAXdjFVzOh0h1nRpPlBLAymmXmt38O74ex9G1CPRcAuUmQ
+         lR3NCPsglplkaB/0HuarR9qASqtbYZdgt+TwIgqgu7nIM53hudsv2Os1ctfQGikl6oGq
+         hRSbGSHmA872UXys/1ZCfGw37y4TYDfbUi8B+WCHSBdgYcngBY29Rxqo4Tzl/MQ8d0bu
+         X1zse1TAjgr9LLiz2qvmhUaSRluau3pFCPJjfW4Iw9TTqJGoWiKdvKX9ILFDj0V672J5
+         Ji5TkgNvRg3hwzbSCz3E+xacX1aWPufZU7VAJ0fyLC/yNRoX9Jx+M/G7HJrKzddQbMqN
+         JMCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=1arNLeaBe5R3++hUI9/c4FXwtGni/EUby5Sin47pTdk=;
-        b=2Q9IdRF8+nhUMQ6r53fRsv1Ydq6eFYiMnh+Vt+Ih+9sWOBssCNXu5oFBkvp7o+ctiv
-         UrN7x+arVB7KmCtt3g/PcB1VAxCWmyGTYQH/vMogOogM3UuS7VIzv04vopn+dszdH4J6
-         kordx3Vyv5SqOAL9LAvWTNtNe/K0sEJpHStEI/xo8fzMR49t8G4qoaWJik0RgM1NiNE8
-         PjjvPv/o4T5jwUpYC5vN1cM0l9OA4+4AJ6wijJzesSqzcGAEkJ0Km2IYQ3TG6tT8b8Ld
-         rGULj6vzg0RFjuzzqeeIBIMYthAREaXKPtDg0/BqwpiAbIV9i2LEp2XG7bhflwZ2pExg
-         Pjgw==
-X-Gm-Message-State: AOAM531PsyUQZhMKOZ/ZVYw/JK8ARjpHaKFCirB4yG+7q6P7/9jCwfh8
-        eAd9sm0LMTCW3JhBHZZ7W8lKgw==
-X-Google-Smtp-Source: ABdhPJyxVwpRL74mQEbdgzHrBRw1AQc1y8JfoA1keQTYYNxstmTY9HZuC7hb70h9WGhv/VfOqUrgLw==
-X-Received: by 2002:a2e:bf08:: with SMTP id c8mr3872583ljr.281.1644352925372;
-        Tue, 08 Feb 2022 12:42:05 -0800 (PST)
-Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0e00.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::e00])
-        by smtp.gmail.com with ESMTPSA id m17sm2052933lfr.24.2022.02.08.12.42.04
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=36bFG7ntm+OMXHUX1wBqy1exMKG3hT94fWkd/YdKFso=;
+        b=X8HZvw5ZrJfGe2egaDDJAXoBcreNQXLNeST10tk8OUxfinXxuBmUmvSWMzv+iBG8we
+         CzC81i8DfBlyaUoyLkes4z42QiTTnkq0LHlFpb+lAgdCBySjWc1E4A0g8sEuwt7Hfy0d
+         tUnK/Sb+TjY1znzSg9cIkx21sSRc6z2dudk5RUxyPNA+2kg+DzIVHvnizCUVCDrQQh0n
+         I9feUxIcpnIRMwoi5P1kOl2ooCdA+vTXMAU5hVUea+oOd/FiCULY7SbWyaq9JDCADdNp
+         GWbSbxhLongO4NFOzQvwQ/ZsG0COuyhY0YFItAzcQcmXTwB2Hx2ZJwrcoinqAUN21NhJ
+         l4DQ==
+X-Gm-Message-State: AOAM532sxfP9wqB/thVedmZCyBDTdJxt6iZKaIux5Gn918Nemedf+tZG
+        3+yuW5es/36r93H2MuLOi+jcrazzCV4r907U
+X-Google-Smtp-Source: ABdhPJyqy4Q9iMO2ppfHSk71V5UJaaUs1WuiXDPrl5/nsYuuGQzyD72sfPcAc7NM/DGFn2r6P7IV+Q==
+X-Received: by 2002:aa7:87c4:: with SMTP id i4mr6280286pfo.38.1644353277790;
+        Tue, 08 Feb 2022 12:47:57 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id pg2sm4258937pjb.54.2022.02.08.12.47.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 12:42:05 -0800 (PST)
-References: <20220207131459.504292-2-jakub@cloudflare.com>
- <202202080631.n8UjqRXy-lkp@intel.com>
- <CAADnVQKGF=YaKvzWZFO1c9bO63XHoiD=i-w-chCeSbaNoRfdwg@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     kernel test robot <lkp@intel.com>, bpf <bpf@vger.kernel.org>,
-        kbuild-all@lists.01.org,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf: Make remote_port field in struct
- bpf_sk_lookup 16-bit wide
-In-reply-to: <CAADnVQKGF=YaKvzWZFO1c9bO63XHoiD=i-w-chCeSbaNoRfdwg@mail.gmail.com>
-Date:   Tue, 08 Feb 2022 21:42:04 +0100
-Message-ID: <87y22lqeeb.fsf@cloudflare.com>
+        Tue, 08 Feb 2022 12:47:57 -0800 (PST)
+Date:   Tue, 8 Feb 2022 12:47:54 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Maciek Machnikowski <maciejm@nvidia.com>
+Cc:     "marta.a.plantykow@intel.com" <marta.a.plantykow@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "people@netdevconf.info" <people@netdevconf.info>,
+        "milena.olech@intel.com" <milena.olech@intel.com>
+Subject: Re: PTP-optimization code upstreamed
+Message-ID: <20220208124754.02817343@hermes.local>
+In-Reply-To: <BYAPR12MB2998E6F31AAAFBDF9294A092CC2D9@BYAPR12MB2998.namprd12.prod.outlook.com>
+References: <20220208132341.10743-1-marta.a.plantykow@intel.com>
+        <20220208095441.3316ec13@hermes.local>
+        <MWHPR11MB177519F17F8BF5145DC773BBA82D9@MWHPR11MB1775.namprd11.prod.outlook.com>
+        <BYAPR12MB2998E6F31AAAFBDF9294A092CC2D9@BYAPR12MB2998.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 08:28 PM CET, Alexei Starovoitov wrote:
-> On Mon, Feb 7, 2022 at 2:05 PM kernel test robot <lkp@intel.com> wrote:
->> 7c32e8f8bc33a5f Lorenz Bauer 2021-03-03  1148
->> 7c32e8f8bc33a5f Lorenz Bauer 2021-03-03 @1149   if (user_ctx->local_port > U16_MAX || user_ctx->remote_port > U16_MAX) {
->
-> Jakub,
-> are you planning to respin and remove that check?
+On Tue, 8 Feb 2022 19:43:13 +0000
+Maciek Machnikowski <maciejm@nvidia.com> wrote:
 
-Yes, certainly. Just didn't get to it today.
+> > -----Original Message-----
+> > From: Stephen Hemminger <stephen@networkplumber.org>
+> > Sent: Tuesday, February 8, 2022 6:55 PM 
+> > Subject: Re: PTP-optimization code upstreamed
+> > 
+> > On Tue,  8 Feb 2022 14:23:41 +0100 
+> > 
+> > The process for contributing to upstream kernel is very well documented.
+> > Links to github is useful, but does not start the upstream process.
+> > 
+> > https://www.kernel.org/doc/html/latest/process/submitting-
+> > patches.html#submittingpatches
+> > 
+> > When can we expect patch set to show up on this mailing list?  
+> 
+> Hi Stephen,
+> 
+> This code is not intended to be upstreamed, since it is a set of python scripts
+> optimizing phc2sys and ptp4l servo.
+> It reached the netdev mail list because it was presented on the NetDev 
+> conference, and some people were interested in them during the presentation.
+> 
+> Have a great day!
+> Maciek 
 
-Can either respin the series or send a follow-up. Whatever works.
+Sure thanks. It still might be good to have this in tools directory.
+Or somewhere related to kernel.
