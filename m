@@ -2,73 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 442154AD10D
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 06:34:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 655C14AD10B
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 06:33:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347466AbiBHFdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 00:33:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55806 "EHLO
+        id S1347476AbiBHFdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 00:33:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347022AbiBHEr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:47:29 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B97C0401DC;
-        Mon,  7 Feb 2022 20:47:29 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id z17so2877600plb.9;
-        Mon, 07 Feb 2022 20:47:29 -0800 (PST)
+        with ESMTP id S242829AbiBHEut (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:50:49 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716E3C0401DC
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:50:48 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id y7so7602745plp.2
+        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 20:50:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=s9UxDPunzThEazgxjnJNZiUd1Sn9ezdvm0HY1dXaGJg=;
-        b=Te3Xw/Laa+58xrEhBZUXblnfIvrZq9PP8a6n5sNT1r0iPSz+2Na6f2d5T2NUcheHur
-         wyf5hlNNhcvKvnDizW7lxWngdzj694vMyBWGnp/5mMbMRGgH9zGHJdP2nNstbjva7F8k
-         dzVUBln38s40UMwfHyKEoYtJ0Vd/rH4nnL5g4RVgt12LaXO/2mlfFDu68l22A0W8Ixq8
-         SgNrdz/IDmjBomR1NX6ANb9YdSf/04AeEsZB4Y3mdNqm9u7fmpl9dg4M6Jltii8fVAPg
-         CxLifKxzN5q/HqvKCapgVcB++kTtjBdgZHtbCFXcPmqlBiCaQ8ugkdEH+F5N0sLZUen+
-         rh1A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a5dr1AmP/ZPtv4P6kUAoUMUvpNzhHdrFDkbooHT4u08=;
+        b=eMC9NugFy/AFznjJF85ODmjuOabk4QtQW50d1Hv/2ZrRnrNWcjI1GbmCPYORLybClv
+         tBYdTrZsTIbSPzcg4KxDYARBcc1Crx30K4cqTLW5pxAhDfutwPuHtExfMccsi5/6I/EJ
+         YeYW7Vc4DmNXX9aMNEAkxKDZ35Ipaa+dr2r3jgfsH/QqfQo9J7LAw5fRauTYv9NvJcXr
+         yO9X1+iVxp8IAo/dyYTI7DjBrA8j+oBG5qunutn5p0a5jizQM3q7bL8NlMMewu0XCp8r
+         n9kMfk7JjrX31RGIBFo2PwNtnTcmuFSiHQjOA73dpk0rEC75iy2SWyJYAaYQshyukJgp
+         6YxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=s9UxDPunzThEazgxjnJNZiUd1Sn9ezdvm0HY1dXaGJg=;
-        b=h/V1pGdBFe83MpPoIODLNHVM6YLstnYtbot16NO9JCKgDhK+s/9qAnbWJKQ/r2Vd0L
-         XYJ/zF/TgffDlNJS75VbKJymkbXeWeh0jdfiwyfmBf2U0Goey8f2EdeC6oMgfj+ybAd9
-         84oY6BIa3ts3KDhJrMlGZ5gRmNuRStaGWXBQKohEZE1970TPq0Iss9XauQt8MnAQDdBN
-         pHEuAXsU0s+56Fq+HgGWIp8uD9briHiuJo4DrDtxIZWwT228n41xvUDuNtjLQt8Qevoz
-         DZtzFLTEL83spoMvg+fhegP3F0FEbijVvdBVvzVImqzIaKJlOYgcP25ew9JyKXpBza2v
-         QsUg==
-X-Gm-Message-State: AOAM531cOHWFP8TW5sBjwSitb9L0bEKJM337uHFWKaXzaeIwLtPgXp0R
-        g3of9TyyEVqn0rD0qAv0fYU=
-X-Google-Smtp-Source: ABdhPJxnXhfyyETbRVA04ZajBGzAY+x7vfTavhEVgoEcU/GG44I7F3oBilXC8UCBgiX6TVChnT+F/Q==
-X-Received: by 2002:a17:90b:17c4:: with SMTP id me4mr2495286pjb.198.1644295648655;
-        Mon, 07 Feb 2022 20:47:28 -0800 (PST)
-Received: from [10.0.2.64] ([209.37.97.194])
-        by smtp.googlemail.com with ESMTPSA id j3sm10105037pgs.0.2022.02.07.20.47.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 20:47:28 -0800 (PST)
-Message-ID: <53282d15-1e73-9aef-6384-3f76812480e6@gmail.com>
-Date:   Mon, 7 Feb 2022 20:47:26 -0800
+        bh=a5dr1AmP/ZPtv4P6kUAoUMUvpNzhHdrFDkbooHT4u08=;
+        b=G+EuLNClBBvqEsuC3hi5X9Tcq65ZmPdTgvCybEYLEERgtDgZN0JFrpoRwrvdkw9pVH
+         gcuQqLmMnfe6zH3+v3R5gZ70xHbIqI8WYkOCA5AyE2dIk2Z8LxXkzfuEbjJuUt0XwhWI
+         GVio1u3lCqDZM347i61GCgsApogoyAKqeaSe0O1qketeTwA+BeyKV+GuqMGZFPjPKEwC
+         Pys9R3Z27DQjSdBkT3hJk/oiRbZZDCjBT1UBruDjTO/vVGObxyuJoUqJ5RHVJk6AjeYu
+         6uuXe7IDXXAdiBAnQslNWCyy9WfeCuwKYJ6gUJ0Jq1Qn9B55Jfj5qk24tn5Rvwjbd+5t
+         wQJw==
+X-Gm-Message-State: AOAM531ZXucgqLVJWg/qjiwpZ+kfeS/EDsN8NS3TXd9rBGuAxyQnbTj/
+        rfzJ3A8tjPzXnOGcpo9zb78=
+X-Google-Smtp-Source: ABdhPJyNnzGVufd2VtMgrvwAx0YjI6A7dzE8SCoU5qxM/4b7CoL2mf2zxUZEUOHn5pai/j7R4b0+Kg==
+X-Received: by 2002:a17:902:f203:: with SMTP id m3mr3092548plc.20.1644295847871;
+        Mon, 07 Feb 2022 20:50:47 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:8f56:515b:a442:2bd5])
+        by smtp.gmail.com with ESMTPSA id j23sm9810257pgb.75.2022.02.07.20.50.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 20:50:47 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next 00/11] net: speedup netns dismantles
+Date:   Mon,  7 Feb 2022 20:50:27 -0800
+Message-Id: <20220208045038.2635826-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH 1/2] net: tap: track dropped skb via kfree_skb_reason()
-Content-Language: en-US
-To:     Dongli Zhang <dongli.zhang@oracle.com>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>
-Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
-        joao.m.martins@oracle.com, joe.jin@oracle.com
-References: <20220208035510.1200-1-dongli.zhang@oracle.com>
- <20220208035510.1200-2-dongli.zhang@oracle.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220208035510.1200-2-dongli.zhang@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -77,115 +69,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/7/22 7:55 PM, Dongli Zhang wrote:
-> diff --git a/drivers/net/tap.c b/drivers/net/tap.c
-> index 8e3a28ba6b28..232572289e63 100644
-> --- a/drivers/net/tap.c
-> +++ b/drivers/net/tap.c
-> @@ -322,6 +322,7 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
->  	struct tap_dev *tap;
->  	struct tap_queue *q;
->  	netdev_features_t features = TAP_FEATURES;
-> +	int drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+From: Eric Dumazet <edumazet@google.com>
 
-maybe I missed an exit path, but I believe drop_reason is always set
-before a goto jump, so this init is not needed.
+In this series, I made network namespace deletions more scalable,
+by 4x on the little benchmark described in this cover letter.
 
->  
->  	tap = tap_dev_get_rcu(dev);
->  	if (!tap)
-> @@ -343,12 +344,16 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
->  		struct sk_buff *segs = __skb_gso_segment(skb, features, false);
->  		struct sk_buff *next;
->  
-> -		if (IS_ERR(segs))
-> +		if (IS_ERR(segs)) {
-> +			drop_reason = SKB_DROP_REASON_SKB_GSO_SEGMENT;
+- Remove bottleneck on ipv6 addrconf, by replacing a global
+  hash table to a per netns one.
 
-This reason points to a line of code, not the real reason for the drop.
-If you unwind __skb_gso_segment the only failure there is ENOMEM. The
-reason code needs to be meaningful to users, not just code references.
+- Rework many (struct pernet_operations)->exit() handlers to
+  exit_batch() ones. This removes many rtnl acquisitions,
+  and gives to cleanup_net() kind of a priority over rtnl
+  ownership.
+
+Tested on a host with 24 cpus (48 HT)
+
+Test script:
+
+for nr in {1..10}
+do
+  (for i in {1..10000}; do unshare -n /bin/bash -c "ifconfig lo up"; done) &
+done
+wait
+
+for i in {1..10}
+do
+  sleep 1 
+  echo 3 >/proc/sys/vm/drop_caches
+  grep net_namespace /proc/slabinfo
+done
+
+Before: We can see host struggles to clean the netns, even after there are no new creations.
+Memory cost is high, because each netns consumes a good amount of memory.
+
+time ./unshare10.sh
+net_namespace      82634  82634   3968    1    1 : tunables   24   12    8 : slabdata  82634  82634      0
+net_namespace      82634  82634   3968    1    1 : tunables   24   12    8 : slabdata  82634  82634      0
+net_namespace      82634  82634   3968    1    1 : tunables   24   12    8 : slabdata  82634  82634      0
+net_namespace      82634  82634   3968    1    1 : tunables   24   12    8 : slabdata  82634  82634      0
+net_namespace      82634  82634   3968    1    1 : tunables   24   12    8 : slabdata  82634  82634      0
+net_namespace      82634  82634   3968    1    1 : tunables   24   12    8 : slabdata  82634  82634      0
+net_namespace      82634  82634   3968    1    1 : tunables   24   12    8 : slabdata  82634  82634      0
+net_namespace      82634  82634   3968    1    1 : tunables   24   12    8 : slabdata  82634  82634      0
+net_namespace      82634  82634   3968    1    1 : tunables   24   12    8 : slabdata  82634  82634      0
+net_namespace      37214  37792   3968    1    1 : tunables   24   12    8 : slabdata  37214  37792    192
+
+real	6m57.766s
+user	3m37.277s
+sys	40m4.826s
+
+After: We can see the script completes much faster,
+the kernel thread doing the cleanup_net() keeps up just fine.
+Memory cost is not too big.
+
+time ./unshare10.sh
+net_namespace       9945   9945   4096    1    1 : tunables   24   12    8 : slabdata   9945   9945      0
+net_namespace       4087   4665   4096    1    1 : tunables   24   12    8 : slabdata   4087   4665    192
+net_namespace       4082   4607   4096    1    1 : tunables   24   12    8 : slabdata   4082   4607    192
+net_namespace        234    761   4096    1    1 : tunables   24   12    8 : slabdata    234    761    192
+net_namespace        224    751   4096    1    1 : tunables   24   12    8 : slabdata    224    751    192
+net_namespace        218    745   4096    1    1 : tunables   24   12    8 : slabdata    218    745    192
+net_namespace        193    667   4096    1    1 : tunables   24   12    8 : slabdata    193    667    172
+net_namespace        167    609   4096    1    1 : tunables   24   12    8 : slabdata    167    609    152
+net_namespace        167    609   4096    1    1 : tunables   24   12    8 : slabdata    167    609    152
+net_namespace        157    609   4096    1    1 : tunables   24   12    8 : slabdata    157    609    152
+
+real    1m43.876s
+user    3m39.728s
+sys 7m36.342s
 
 
->  			goto drop;
-> +		}
->  
->  		if (!segs) {
-> -			if (ptr_ring_produce(&q->ring, skb))
-> +			if (ptr_ring_produce(&q->ring, skb)) {
-> +				drop_reason = SKB_DROP_REASON_PTR_FULL;
+v2: - fix a typo on ASSER_RTNL() (kernel build bots)
+    - add reviewers approvals.
 
-similar comment to Eric - PTR_FULL needs to be more helpful.
+Eric Dumazet (11):
+  ipv6/addrconf: allocate a per netns hash table
+  ipv6/addrconf: use one delayed work per netns
+  ipv6/addrconf: switch to per netns inet6_addr_lst hash table
+  nexthop: change nexthop_net_exit() to nexthop_net_exit_batch()
+  ipv4: add fib_net_exit_batch()
+  ipv6: change fib6_rules_net_exit() to batch mode
+  ip6mr: introduce ip6mr_net_exit_batch()
+  ipmr: introduce ipmr_net_exit_batch()
+  can: gw: switch cangw_pernet_exit() to batch mode
+  bonding: switch bond_net_exit() to batch mode
+  net: remove default_device_exit()
 
->  				goto drop;
-> +			}
->  			goto wake_up;
->  		}
->  
-> @@ -369,10 +374,14 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
->  		 */
->  		if (skb->ip_summed == CHECKSUM_PARTIAL &&
->  		    !(features & NETIF_F_CSUM_MASK) &&
-> -		    skb_checksum_help(skb))
-> +		    skb_checksum_help(skb)) {
-> +			drop_reason = SKB_DROP_REASON_SKB_CHECKSUM;
+ drivers/net/bonding/bond_main.c   |  27 ++++--
+ drivers/net/bonding/bond_procfs.c |   1 -
+ include/net/netns/ipv6.h          |   5 ++
+ net/can/gw.c                      |   9 +-
+ net/core/dev.c                    |  22 +++--
+ net/ipv4/fib_frontend.c           |  19 +++-
+ net/ipv4/ipmr.c                   |  20 +++--
+ net/ipv4/nexthop.c                |  12 ++-
+ net/ipv6/addrconf.c               | 139 ++++++++++++++----------------
+ net/ipv6/fib6_rules.c             |  11 ++-
+ net/ipv6/ip6mr.c                  |  20 +++--
+ 11 files changed, 172 insertions(+), 113 deletions(-)
 
-That is not helpful explanation of the root cause; it is more of a code
-reference.
+-- 
+2.35.0.263.gb82422642f-goog
 
-
->  			goto drop;
-> -		if (ptr_ring_produce(&q->ring, skb))
-> +		}
-> +		if (ptr_ring_produce(&q->ring, skb)) {
-> +			drop_reason = SKB_DROP_REASON_PTR_FULL;
-
-ditto above comment
-
->  			goto drop;
-> +		}
->  	}
->  
->  wake_up:
-> @@ -383,7 +392,7 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
->  	/* Count errors/drops only here, thus don't care about args. */
->  	if (tap->count_rx_dropped)
->  		tap->count_rx_dropped(tap);
-> -	kfree_skb(skb);
-> +	kfree_skb_reason(skb, drop_reason);
->  	return RX_HANDLER_CONSUMED;
->  }
->  EXPORT_SYMBOL_GPL(tap_handle_frame);
-> @@ -632,6 +641,7 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
->  	int depth;
->  	bool zerocopy = false;
->  	size_t linear;
-> +	int drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
->  
->  	if (q->flags & IFF_VNET_HDR) {
->  		vnet_hdr_len = READ_ONCE(q->vnet_hdr_sz);
-> @@ -696,8 +706,10 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
->  	else
->  		err = skb_copy_datagram_from_iter(skb, 0, from, len);
->  
-> -	if (err)
-> +	if (err) {
-> +		drop_reason = SKB_DROP_REASON_SKB_COPY_DATA;
-
-As mentioned above, plus unwind the above functions and give a more
-explicit description of why the above fails.
-
->  		goto err_kfree;
-> +	}
->  
->  	skb_set_network_header(skb, ETH_HLEN);
->  	skb_reset_mac_header(skb);
-> @@ -706,8 +718,10 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
->  	if (vnet_hdr_len) {
->  		err = virtio_net_hdr_to_skb(skb, &vnet_hdr,
->  					    tap_is_little_endian(q));
-> -		if (err)
-> +		if (err) {
-> +			drop_reason = SKB_DROP_REASON_VIRTNET_HDR;
-
-and here too.
