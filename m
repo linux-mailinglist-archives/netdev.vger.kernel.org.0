@@ -2,144 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D5E04AD7EA
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 12:52:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6187F4AD7F7
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 12:55:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355764AbiBHLv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 06:51:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
+        id S1351191AbiBHLyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 06:54:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358725AbiBHLvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 06:51:12 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07FBFC07D6BD
-        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 03:51:11 -0800 (PST)
-Date:   Tue, 8 Feb 2022 12:51:07 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644321069;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rgNB8V1G/BsnpTc2CQlRvrgoKfGkEHXkXK7IiCgvNUY=;
-        b=1ybtIjSlrmP5X6ol4givI83H38Om5blSGBytUzuzef9hmgNKDS/+PaM1PCiNAbMGOYbdoX
-        3zgy2rEUBVfkfYj3aMVkigtyifN9XZ4UEg9kiKWPYWqPhpRQhh6OQ4yP0UpvrxIqEctXbm
-        TY7KkyZgYe2wsRdxGQEZIM8+U7lnTgSfGzWaCjJs1UriORVV5yPGbRL1hjCk7bOhh3K/Is
-        VpfertWTlpO2tqgF/Dx9ePqLK6yXInNmDhBZESRic+TfjVjPDfuByVewtcyenZqGf5HQP6
-        VPVr0pWObqtOkbwTFRJZWCgkLNnJulWt2/X+XgpS0lncmSz/82aLmfAt9fLcQw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644321069;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rgNB8V1G/BsnpTc2CQlRvrgoKfGkEHXkXK7IiCgvNUY=;
-        b=u3RtzFDpH43zwZu3Ij+EgOKObTMVhwpA8WhjeGOmbHIgJAnjwwWQ8q0hyfv3EvKtDbs3vm
-        nbimLm99510SzpCw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Yannick Vignon <yannick.vignon@oss.nxp.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Paolo Abeni <pabeni@redhat.com>, Wei Wang <weiwan@google.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, mingkai.hu@nxp.com,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        sebastien.laveze@nxp.com, Yannick Vignon <yannick.vignon@nxp.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH net-next 1/2] net: napi: wake up ksoftirqd if needed
- after scheduling NAPI
-Message-ID: <YgJZK42urDmKQfgf@linutronix.de>
-References: <20220203184031.1074008-1-yannick.vignon@oss.nxp.com>
- <CANn89iKn20yuortKnqKV99s=Pb9HHXbX8e0=58f_szkTWnQbCQ@mail.gmail.com>
- <0ad1a438-8e29-4613-df46-f913e76a1770@oss.nxp.com>
- <20220203170901.52ccfd09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YfzhioY0Mj3M1v4S@linutronix.de>
- <20220204074317.4a8be6d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <078bffa8-6feb-9637-e874-254b6d4b188e@oss.nxp.com>
- <20220204094522.4a233a2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <Yf1qc7R5rFoALsCo@linutronix.de>
- <20220204105035.4e207e9c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        with ESMTP id S1343656AbiBHLyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 06:54:31 -0500
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C612C03FEC9
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 03:54:31 -0800 (PST)
+Received: by mail-io1-xd44.google.com with SMTP id q204so20741838iod.8
+        for <netdev@vger.kernel.org>; Tue, 08 Feb 2022 03:54:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=mTe6rsF1WlocKfWRCIawejpNJl6lRYSIlYxDz8jltlQ=;
+        b=JdLO1uGo1qKTqjwgdMPQCSFxSj8GdFFunMUYAZzBTanhX/Ki7vobKKFGlXs4+mSTXY
+         pA5V2CPEyaltfrQ2TIs8Q+kC3KkzsPPI2ETcNsCLMWVp33NGyJU31pK8f9j0KVDYhagK
+         OG7Ng/9Lish/gplpBDQaIRmgtq1dNcCGzAE/8koOAGXIn907SqUxrq/Eub9raET9hEpX
+         oQLVNct++K6pxeOBC2AtIR3OHRjpTv8+g6JXnP/QG6CQ0Lf/53ZuXCg7RLY8fIOQ/oDQ
+         wyDPtvlJswSN8McYwJrKFXCDH8d4wdpGm4htjDzuz2DU8vLW6Da8GoxoA1149T/rIJXr
+         jf9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=mTe6rsF1WlocKfWRCIawejpNJl6lRYSIlYxDz8jltlQ=;
+        b=2LalEleIJSmHogCDOK+zcQE9uPWXSe6kBKQoa9MGlTQIMFL4BPGVqD9241mp6ZetJj
+         NDELO+9L9agoZnZWp7Eh1r6iafR9dFY1pwx9KOONa8bxc6Ld66738VGYyIPq6YmnGBwD
+         4hrSvjDQfNNf8Rbel5RmbyRx8XVUdIkI7x13B18OZPoPyqa5Z6A5GbBN/cglGeg1avDE
+         rLw8zguYKBrFEvY6HH4p+tHvbepErTwzOf8UeNYd2Vw3ADWCfy8s56G3hwdxvRmLSqTn
+         ppJczDmj70gh7e5x8pKiJ33bQ6+3pvEFQ4B4XNV3Ej1I56ITU1idduRHjZ70sqKSWoQP
+         fcKA==
+X-Gm-Message-State: AOAM533dfYecwQ+OK3BlB42lqhlhVzTh9Cf3ls2efXwgfl+l7WTsLV8v
+        ZHIBCFbViCCykS/Nn5HQld2iJxjJp5yXK45gh1k=
+X-Google-Smtp-Source: ABdhPJywql1hPmq1wXqjwi5uq7u6q8RN0O5Q8qlHAUR3fo0AA7+uCQtCrT18t1Tl7BqvnIuLnj1UBay6BJXLaE25KHM=
+X-Received: by 2002:a6b:d90c:: with SMTP id r12mr1848593ioc.99.1644321270290;
+ Tue, 08 Feb 2022 03:54:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220204105035.4e207e9c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Reply-To: zahirikeen@gmail.com
+Sender: aliwat885@gmail.com
+Received: by 2002:a05:6638:1ef:0:0:0:0 with HTTP; Tue, 8 Feb 2022 03:54:29
+ -0800 (PST)
+From:   Zahiri Keen <zahirikeen2@gmail.com>
+Date:   Tue, 8 Feb 2022 11:54:29 +0000
+X-Google-Sender-Auth: gF58IWijgIDvRmFofVXwQc4q33E
+Message-ID: <CAA2insLs4Ezv=aPjagsKiunVEcra-6x0rEs9FjKPFGGnp_2Oig@mail.gmail.com>
+Subject: Greetings to you.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:d44 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4937]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [aliwat885[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [zahirikeen2[at]gmail.com]
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.4 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-02-04 10:50:35 [-0800], Jakub Kicinski wrote:
-> On Fri, 4 Feb 2022 19:03:31 +0100 Sebastian Andrzej Siewior wrote:
-> > On 2022-02-04 09:45:22 [-0800], Jakub Kicinski wrote:
-> > > Coincidentally, I believe the threaded NAPI wake up is buggy - 
-> > > we assume the thread is only woken up when NAPI gets scheduled,
-> > > but IIUC signal delivery and other rare paths may wake up kthreads,
-> > > randomly.  
-> > 
-> > I had to look into NAPI-threads for some reason.
-> > What I dislike is that after enabling it via sysfs I have to:
-> > - adjust task priority manual so it is preferred over other threads.
-> >   This is usually important on RT. But then there is no overload
-> >   protection.
-> > 
-> > - set an affinity-mask for the thread so it does not migrate from one
-> >   CPU to the other. This is worse for a RT task where the scheduler
-> >   tries to keep the task running.
-> > 
-> > Wouldn't it work to utilize the threaded-IRQ API and use that instead
-> > the custom thread? Basically the primary handler would what it already
-> > does (disable the interrupt) and the threaded handler would feed packets
-> > into the stack. In the overload case one would need to lower the
-> > thread-priority.
-> 
-> Sounds like an interesting direction if you ask me! That said I have
-> not been able to make threaded NAPI useful in my experiments / with my
-> workloads so I'd defer to Wei for confirmation.
-> 
-> To be clear -- are you suggesting that drivers just switch to threaded
-> NAPI, or a more dynamic approach where echo 1 > /proc/irq/$n/threaded
-> dynamically engages a thread in a generic fashion?
+Good Day,
 
-Uhm, kind of, yes.
+I know this email might come to you as a surprise because is coming
+from someone you haven=E2=80=99t met with before.
 
-Now you have
-	request_irq(, handler_irq);
-	netif_napi_add(, , handler_napi);
+I am Mr. Zahiri Keen, the bank manager with BOA bank i contact you for
+a deal relating to the funds which are in my position I shall furnish
+you with more detail once your response.
 
-The handler_irq() disables the interrupt line and schedules the softirq
-to process handler_napi(). Once handler_napi() is it re-enables the
-interrupt line otherwise it will be processed again on the next tick.
-
-If you enable threaded NAPI then you end up with a thread and the
-softirq is no longer used. I don't know what the next action is but I
-guess you search for that thread and pin it manually to CPU and assign a
-RT priority (probably, otherwise it will compete with other tasks for
-CPU resources).
-
-Instead we could have
-	request_threaded_irq(, handler_irq, handler_napi);
-
-And we would have basically the same outcome. Except that handler_napi()
-runs that SCHED_FIFO/50 and has the same CPU affinity as the IRQ (and
-the CPU affinity is adjusted if the IRQ-affinity is changed).
-We would still have to work out the details what handler_irq() is
-allowed to do and how to handle one IRQ and multiple handler_napi().
-
-If you wrap request_threaded_irq() in something like request_napi_irq()
-the you could switch between the former (softirq) and later (thread)
-based NAPI handling (since you have all the needed details).
-
-Sebastian
+Regards,
+Mr.Zahiri
