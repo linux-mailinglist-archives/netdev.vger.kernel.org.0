@@ -2,181 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7201E4AD890
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 14:15:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C82CC4AD893
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 14:15:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230408AbiBHNPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 08:15:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33928 "EHLO
+        id S231539AbiBHNP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 08:15:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359762AbiBHMx1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 07:53:27 -0500
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F3BC03FECA;
-        Tue,  8 Feb 2022 04:53:26 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V3wCD9C_1644324803;
-Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V3wCD9C_1644324803)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 08 Feb 2022 20:53:23 +0800
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        "D. Wythe" <alibuda@linux.alibaba.com>
-Subject: [PATCH net-next v5 5/5] net/smc: Add global configure for auto fallback by netlink
-Date:   Tue,  8 Feb 2022 20:53:13 +0800
-Message-Id: <f54ee9f30898b998edf8f07dabccc84efaa2ab8b.1644323503.git.alibuda@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <cover.1644323503.git.alibuda@linux.alibaba.com>
-References: <cover.1644323503.git.alibuda@linux.alibaba.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        with ESMTP id S1376354AbiBHM53 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 07:57:29 -0500
+Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B74C03FECA
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 04:57:27 -0800 (PST)
+Received: by mail-vs1-xe30.google.com with SMTP id b2so3244876vso.9
+        for <netdev@vger.kernel.org>; Tue, 08 Feb 2022 04:57:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QZ2ThHzP4ksA4NOQgohi764WWAj9VnjVAoaKOn8fduI=;
+        b=EMNBfmRp2wjXy+C2nQjYiC4DxNdDT0Ya2c9ZJSm2s/IK+XPPjo+cGsdCTvp9u90FsG
+         tRqCGtNC3wCccHPKhPWChFxncjU99ntTEaBdEPB03bc9P8/U8FYgUFY7vdSZAP+LL66n
+         8muVbJxDU+xxi+GmHrXwjsvugC3kqxn9ef9hdQsp10IXD+NVENGlrxBTWY+UFPNoHPf4
+         RHbN11vXN69TDV8BidyZ8l4EP8cJ2ab/NHOkJSAN5IKDoyD0sZA7xP4PaeLcrr5DiYd4
+         g91AF4JgLxIiEs01Ea2luKoKeXr9sBtd2/KBDK+xVx2Jy59x8WCPTibulnNVsHC01Xk4
+         ZNtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QZ2ThHzP4ksA4NOQgohi764WWAj9VnjVAoaKOn8fduI=;
+        b=4gTZLjp8CbLrikMWO+d0LY9eT4YLhODCVg5SfnGYytw729681rp5LbxCUUl96iuL/2
+         rIiBkSCqslD/wr4IKXyfGI02k7fHl6tQ+wQmOYhrtheqZp2bz6dOfvPwbZy9Cj0E1kC4
+         45ZHEDt9yG8PKIy/YNY7JTTTw3LhlUhkTge2Xe1HTuq1cF22cB1YE30lhCDY65YOrxQB
+         DtBSO3kR3O/d9d+fPyDTJKRcBtzOj+mPaRnr+U5PEUJSAk+koX2tVgbsq7/VaaSPdgtn
+         r/Tlt8Nle46oq1vdCrzDHDPYjgjCGyQOitNZ683Y8QugFHaF2nTLDH/AGrymiBds+lMT
+         c94Q==
+X-Gm-Message-State: AOAM530cPBOqZO319ovAt3yb0BsMP4jHniEMy8qGj0OCfl6dPOd0FlgG
+        3RhNinqeKXiM3T7LyTolDPelS1Wx6RIfV6CZeXdLNAsVUbBw9g==
+X-Google-Smtp-Source: ABdhPJwzYnmI8xSLok/uyBrzIkBQJkWypFop0Iw7jyMCJjojRBeCCoicMZcYrBL6mMytDpkckHcQi/Zv4nuSY6mysaM=
+X-Received: by 2002:a67:e146:: with SMTP id o6mr1574855vsl.12.1644325046779;
+ Tue, 08 Feb 2022 04:57:26 -0800 (PST)
+MIME-Version: 1.0
+References: <20220208025511.1019-1-lina.wang@mediatek.com> <0300acca47b10384e6181516f32caddda043f3e4.camel@redhat.com>
+In-Reply-To: <0300acca47b10384e6181516f32caddda043f3e4.camel@redhat.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Tue, 8 Feb 2022 04:57:14 -0800
+Message-ID: <CANP3RGe8ko=18F2cr0_hVMKw99nhTyOCf4Rd_=SMiwBtQ7AmrQ@mail.gmail.com>
+Subject: Re: [PATCH] net: fix wrong network header length
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Lina Wang <lina.wang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Kernel hackers <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Willem Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "D. Wythe" <alibuda@linux.alibaba.com>
+On Tue, Feb 8, 2022 at 12:25 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> Hello,
+>
+> On Tue, 2022-02-08 at 10:55 +0800, Lina Wang wrote:
+> > When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
+> > several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
+> > ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
+> > network_header\transport_header\mac_header have been updated as ipv4 acts,
+> > but other skbs in frag_list didnot update anything, just ipv6 packets.
+> >
+> > udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
+> > frag_list and make sure right udp payload is delivered to user space.
+> > Unfortunately, other skbs in frag_list who are still ipv6 packets are
+> > updated like the first skb and will have wrong transport header length.
+> >
+> > e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
+> > has the same network_header(24)& transport_header(64), after
+> > bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
+> > skb's network_header is 44,transport_header is 64, other skbs in frag_list
+> > didnot change.After skb_segment_list, the other skbs in frag_list has
+> > different network_header(24) and transport_header(44), so there will be 20
+> > bytes difference,that is difference between ipv6 header and ipv4 header.
+>
+> > Actually, there are two solutions to fix it, one is traversing all skbs
+> > and changing every skb header in bpf_skb_proto_6_to_4, the other is
+> > modifying frag_list skb's header in skb_segment_list.
+>
+> I don't think the above should be addressed into the GSO layer. The
+> ebpf program is changing the GRO packet in arbitrary way violating the
+> GSO packet constraint - arguably, it's corrupting the packet.
+>
+> I think it would be better change the bpf_skb_proto_6_to_4() to
+> properly handle FRAGLIST GSO packets.
+>
+> If traversing the segments become too costly, you can try replacing
+> GRO_FRAGLIST with GRO_UDP_FWD.
 
-Although we can control SMC auto fallback through socket options, which
-means that applications who need it must modify their code. It's quite
-troublesome for many existing applications. This patch modifies the
-global default value of auto fallback through netlink, providing a way
-to auto fallback without modifying any code for applications.
+Yeah, I don't know...
 
-Suggested-by: Tony Lu <tonylu@linux.alibaba.com>
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
----
- include/uapi/linux/smc.h |  3 +++
- net/smc/af_smc.c         | 17 +++++++++++++++++
- net/smc/smc.h            |  7 +++++++
- net/smc/smc_core.c       |  2 ++
- net/smc/smc_netlink.c    | 10 ++++++++++
- 5 files changed, 39 insertions(+)
+I've considered that we could perhaps fix the 6to4 helper, and 4to6 helper...
+but then I think every *other* helper / code path that plays games
+with the packet header needs fixing as well,
+ie. everything dealing with encap/decap, vlan, etc..
 
-diff --git a/include/uapi/linux/smc.h b/include/uapi/linux/smc.h
-index 9f2cbf8..33f7fb8 100644
---- a/include/uapi/linux/smc.h
-+++ b/include/uapi/linux/smc.h
-@@ -59,6 +59,8 @@ enum {
- 	SMC_NETLINK_DUMP_SEID,
- 	SMC_NETLINK_ENABLE_SEID,
- 	SMC_NETLINK_DISABLE_SEID,
-+	SMC_NETLINK_ENABLE_AUTO_FALLBACK,
-+	SMC_NETLINK_DISABLE_AUTO_FALLBACK,
- };
- 
- /* SMC_GENL_FAMILY top level attributes */
-@@ -85,6 +87,7 @@ enum {
- 	SMC_NLA_SYS_LOCAL_HOST,		/* string */
- 	SMC_NLA_SYS_SEID,		/* string */
- 	SMC_NLA_SYS_IS_SMCR_V2,		/* u8 */
-+	SMC_NLA_SYS_AUTO_FALLBACK,	/* u8 */
- 	__SMC_NLA_SYS_MAX,
- 	SMC_NLA_SYS_MAX = __SMC_NLA_SYS_MAX - 1
- };
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index c313561..4a25ce7 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -59,6 +59,8 @@
- 						 * creation on client
- 						 */
- 
-+bool smc_auto_fallback;	/* default behavior for auto fallback, disable by default */
-+
- static struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work */
- struct workqueue_struct	*smc_hs_wq;	/* wq for handshake work */
- struct workqueue_struct	*smc_close_wq;	/* wq for close work */
-@@ -66,6 +68,18 @@
- static void smc_tcp_listen_work(struct work_struct *);
- static void smc_connect_work(struct work_struct *);
- 
-+int smc_enable_auto_fallback(struct sk_buff *skb, struct genl_info *info)
-+{
-+	WRITE_ONCE(smc_auto_fallback, true);
-+	return 0;
-+}
-+
-+int smc_disable_auto_fallback(struct sk_buff *skb, struct genl_info *info)
-+{
-+	WRITE_ONCE(smc_auto_fallback, false);
-+	return 0;
-+}
-+
- static void smc_set_keepalive(struct sock *sk, int val)
- {
- 	struct smc_sock *smc = smc_sk(sk);
-@@ -3006,6 +3020,9 @@ static int __smc_create(struct net *net, struct socket *sock, int protocol,
- 	smc->use_fallback = false; /* assume rdma capability first */
- 	smc->fallback_rsn = 0;
- 
-+	/* default behavior from smc_auto_fallback */
-+	smc->auto_fallback = READ_ONCE(smc_auto_fallback);
-+
- 	rc = 0;
- 	if (!clcsock) {
- 		rc = sock_create_kern(net, family, SOCK_STREAM, IPPROTO_TCP,
-diff --git a/net/smc/smc.h b/net/smc/smc.h
-index a0bdf75..ac75fe8 100644
---- a/net/smc/smc.h
-+++ b/net/smc/smc.h
-@@ -14,6 +14,7 @@
- #include <linux/socket.h>
- #include <linux/types.h>
- #include <linux/compiler.h> /* __aligned */
-+#include <net/genetlink.h>
- #include <net/sock.h>
- 
- #include "smc_ib.h"
-@@ -336,4 +337,10 @@ void smc_fill_gid_list(struct smc_link_group *lgr,
- 		       struct smc_gidlist *gidlist,
- 		       struct smc_ib_device *known_dev, u8 *known_gid);
- 
-+extern bool smc_auto_fallback; /* default behavior for auto fallback */
-+
-+/* smc_auto_fallback setter for netlink */
-+int smc_enable_auto_fallback(struct sk_buff *skb, struct genl_info *info);
-+int smc_disable_auto_fallback(struct sk_buff *skb, struct genl_info *info);
-+
- #endif	/* __SMC_H */
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 29525d0..cc9a398 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -248,6 +248,8 @@ int smc_nl_get_sys_info(struct sk_buff *skb, struct netlink_callback *cb)
- 		goto errattr;
- 	if (nla_put_u8(skb, SMC_NLA_SYS_IS_SMCR_V2, true))
- 		goto errattr;
-+	if (nla_put_u8(skb, SMC_NLA_SYS_AUTO_FALLBACK, smc_auto_fallback))
-+		goto errattr;
- 	smc_clc_get_hostname(&host);
- 	if (host) {
- 		memcpy(hostname, host, SMC_MAX_HOSTNAME_LEN);
-diff --git a/net/smc/smc_netlink.c b/net/smc/smc_netlink.c
-index f13ab06..a7de517 100644
---- a/net/smc/smc_netlink.c
-+++ b/net/smc/smc_netlink.c
-@@ -111,6 +111,16 @@
- 		.flags = GENL_ADMIN_PERM,
- 		.doit = smc_nl_disable_seid,
- 	},
-+	{
-+		.cmd = SMC_NETLINK_ENABLE_AUTO_FALLBACK,
-+		.flags = GENL_ADMIN_PERM,
-+		.doit = smc_enable_auto_fallback,
-+	},
-+	{
-+		.cmd = SMC_NETLINK_DISABLE_AUTO_FALLBACK,
-+		.flags = GENL_ADMIN_PERM,
-+		.doit = smc_disable_auto_fallback,
-+	},
- };
- 
- static const struct nla_policy smc_gen_nl_policy[2] = {
--- 
-1.8.3.1
+At that point it seems to me like it's worth fixing here rather than
+in all those other places.
 
+In general it seems gro fraglist as implemented is just a bad idea...
+Packets (and things we treat like packets) really should only have 1 header.
+GRO fraglist - as implemented - violates this pretty fundamental assumption.
+As such it seems to be on the gro fraglist implementation to deal with it.
+That to me seems to mean it should be fixed here, and not elsewhere.
+
+(btw. wrt. this commit itself, it seems like the diff should be a signed int)
