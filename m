@@ -2,103 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CAC64ACF5E
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 04:01:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 200844ACF61
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 04:01:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345711AbiBHDBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 22:01:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43860 "EHLO
+        id S1345826AbiBHDBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 22:01:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245526AbiBHDBj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 22:01:39 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CABC061A73;
-        Mon,  7 Feb 2022 19:01:38 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id m4so48071191ejb.9;
-        Mon, 07 Feb 2022 19:01:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KgJJdfopCu/gOTHns364l9rxwDPl5Ujwxxvwj3Zh+CA=;
-        b=lgnRSdgFW6GsulGqW6bELZTt4gLU7Iqwu2zRGVIQOOlgP13+GlUT3pxc8u8uC469nl
-         VZNz50vaB6hg2JIAebzJoCMgQ38LTFlXpDq1vWoK0ez980OdQ9z3RTeodLipWHbL7Yke
-         1teeBSwS+lfwi3CVx4dkBK4DKhnqsXd84FygiXgobtpn0lTHgm3MspDOQS3VA1WkX2qu
-         PCWnBvsX5SMipHyRXKeadFgjF9LHRl4TP9F3sUfNh/o4TKRtoh84HVF32VRQivlVm9So
-         Qkj6ldLLBnLMNStCGc/ysMDqhSOpJ77stv1E10E322pYDLeMeTQCAGUeHv+UFZmudZHU
-         Wlgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KgJJdfopCu/gOTHns364l9rxwDPl5Ujwxxvwj3Zh+CA=;
-        b=eOxBbnK+IFRyDjPjrovedgqFdQKaxWUitWt70uGlfr9oP3GWIUMsO++N8VKVurKz+x
-         NDPvtqSHGMimI80/e0W2UKq9XXAwTu4+MS5zN17NRkXJck3DFhYyoZIgQVU9+Lrg9+Qk
-         L8hrFOrTKObRNt8W2oQlSYnGCHITP28aNHe66hHUjGwBjfEa9S5qALAkYyQveUzmUhYu
-         UYCMBQPlGsU4zi0fzYPn+1vQraDQZPDcazpYOj6+VS5zbH7/LtktYiXM0wdmW4NMXxSx
-         skwhpQuNgSpM8B6OtxSl1UAwHKLMBcAqdpkw8S4Bw304bGYbS2XJeCkSVuz5sf2JxCuz
-         43qw==
-X-Gm-Message-State: AOAM531zgam0zh7E4ta/7P1xlKxGnGYhLHNMGdwAEsPgLQLAD+ZkWcVA
-        znliRnSXIx7ZNUzl6mtZtHoNqMDVf0C4sGPORM8=
-X-Google-Smtp-Source: ABdhPJzy6B6nffkllGqyVTgi5ViR54JhqpK5tpeI4Nm3zWRXvBisvTFfec8rkSUIWFxOcKbPWFgq5y4M/f4Oizf6idQ=
-X-Received: by 2002:a17:907:1689:: with SMTP id hc9mr2096012ejc.348.1644289297300;
- Mon, 07 Feb 2022 19:01:37 -0800 (PST)
+        with ESMTP id S1345723AbiBHDBk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 22:01:40 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55146C06109E;
+        Mon,  7 Feb 2022 19:01:39 -0800 (PST)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jt73K1BW9z67klM;
+        Tue,  8 Feb 2022 10:57:33 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 04:01:35 +0100
+Message-ID: <9a77fc40-4463-4344-34d0-184d427d32cf@huawei.com>
+Date:   Tue, 8 Feb 2022 06:01:34 +0300
 MIME-Version: 1.0
-References: <20220205081738.565394-1-imagedong@tencent.com> <20220207094301.5c061d23@gandalf.local.home>
-In-Reply-To: <20220207094301.5c061d23@gandalf.local.home>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Tue, 8 Feb 2022 10:56:44 +0800
-Message-ID: <CADxym3ZaMmUpZxpLrj3YMvH1nygVE5x4u6VKWZiZ98JWpRF10w@mail.gmail.com>
-Subject: Re: [PATCH v6 net-next] net: drop_monitor: support drop reason
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@kernel.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Menglong Dong <imagedong@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [RFC PATCH 2/2] landlock: selftests for bind and connect hooks
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
+ <20220124080215.265538-3-konstantin.meskhidze@huawei.com>
+ <4d54e3a9-8a26-d393-3c81-b01389f76f09@digikod.net>
+ <ae5ca74d-ce5f-51e8-31c1-d02744ec92f8@huawei.com>
+ <ae0fcafa-3e8d-d6f2-26a8-ae74dda8371c@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <ae0fcafa-3e8d-d6f2-26a8-ae74dda8371c@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 10:43 PM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> On Sat,  5 Feb 2022 16:17:38 +0800
-> menglong8.dong@gmail.com wrote:
->
-> > --- a/net/core/drop_monitor.c
-> > +++ b/net/core/drop_monitor.c
-> > @@ -48,6 +48,16 @@
-> >  static int trace_state = TRACE_OFF;
-> >  static bool monitor_hw;
-> >
-> > +#undef EM
-> > +#undef EMe
-> > +
-> > +#define EM(a, b)     [a] = #b,
-> > +#define EMe(a, b)    [a] = #b
-> > +
-> > +static const char *drop_reasons[SKB_DROP_REASON_MAX + 1] = {
->
-> Do you need to define the size above? Can't the compiler do it for you?
->
-> static const char *drop_reasons[] = {
->
 
-Yeah, it seems the compiler can do this job. Thanks!
 
-> -- Steve
->
-> > +     TRACE_SKB_DROP_REASON
-> > +};
-> > +
-> >  /* net_dm_mutex
-> >   *
+2/7/2022 3:49 PM, Mickaël Salaün пишет:
+> 
+> On 07/02/2022 08:11, Konstantin Meskhidze wrote:
+>>
+>>
+>> 2/1/2022 9:31 PM, Mickaël Salaün пишет:
+>>>
+>>> On 24/01/2022 09:02, Konstantin Meskhidze wrote:
+>>>> Support 4 tests for bind and connect networks actions:
+>>>
+>>> Good to see such tests!
+>>>
+>>>
+>>>> 1. bind() a socket with no landlock restrictions.
+>>>> 2. bind() sockets with landllock restrictions.
+> 
+> [...]
+> 
+>>>> + */
+>>>> +
+>>>> +#define _GNU_SOURCE
+>>>> +#include <errno.h>
+>>>> +#include <fcntl.h>
+>>>> +#include <linux/landlock.h>
+>>>> +#include <string.h>
+>>>> +#include <sys/prctl.h>
+>>>> +#include <sys/socket.h>
+>>>> +#include <sys/types.h>
+>>>> +#include <netinet/in.h>
+>>>> +#include <arpa/inet.h>
+>>>
+>>> To make it determinisitic (and ease patching/diff/merging), you 
+>>> should sort all the included files (in tests and in the kernel code).
+>>
+>>    Sorry. Did not get your point here. Could you explain in a bit more
+>>    details please.
+> 
+> It will be easier to sort all the #include lines with the "sort -u" 
+> command.
+
+   Ok. I got it. Thanks.
+> 
+> [...]
+> 
+>>>> +    /* Create a socket 3 */
+>>>> +    sockfd_3 = socket(AF_INET, SOCK_STREAM, 0);
+>>>> +    ASSERT_LE(0, sockfd_3);
+>>>> +    /* Allow reuse of local addresses */
+>>>> +    ASSERT_EQ(0, setsockopt(sockfd_3, SOL_SOCKET, SO_REUSEADDR, 
+>>>> &one, sizeof(one)));
+>>>> +
+>>>> +    /* Set socket 3 address parameters */
+>>>> +    addr_3.sin_family = AF_INET;
+>>>> +    addr_3.sin_port = htons(SOCK_PORT_3);
+>>>> +    addr_3.sin_addr.s_addr = inet_addr(IP_ADDRESS);
+>>>> +    memset(&(addr_3.sin_zero), '\0', 8);
+>>>> +    /* Bind the socket 3 to IP address */
+>>>> +    ASSERT_EQ(0, bind(sockfd_3, (struct sockaddr *)&addr_3, 
+>>>> sizeof(addr_3)));
+>>>
+>>> Why is it allowed to bind to SOCK_PORT_3 whereas net_service_3 
+>>> forbids it?
+>>
+>>    It's allowed cause net_service_3 has empty access field.
+>>
+>>     /* Empty allowed_access (i.e. deny rules) are ignored in network
+>>      *  actions for SOCK_PORT_3 socket "object"
+>>      */
+>>      ASSERT_EQ(-1, landlock_add_rule(ruleset_fd,
+>>                                      LANDLOCK_RULE_NET_SERVICE,
+>>                                      &net_service_3, 0));
+>>      ASSERT_EQ(ENOMSG, errno);
+>>
+>>    Applying this rule returns ENOMSG errno:
+>>
+>>    /* Informs about useless rule: empty allowed_access (i.e. deny rules)
+>>     * are ignored in network actions
+>>     */
+>>          if (!net_service_attr.allowed_access) {
+>>              err = -ENOMSG;
+>>              goto out_put_ruleset;
+>>          }
+>>    This means binding socket 3 is not restricted.
+>>    For path_beneath_attr.allowed_access = 0 there is the same logic.
+> 
+> I missed the ENOMSG check; the third rule has nothing to do with it. 
+> However, because the ruleset handles bind and connect actions, they must 
+> be denied by default. There is no rule allowing binding to SOCK_PORT_3. 
+> Why is it allowed?
+> 
+> You can test with another SOCK_PORT_4, not covered by any rule. As for 
+> SOCK_PORT_3, it must be forbidden to bind on it.
+
+   Apllying the third rule (net_service_3.access is empty) returns ENOMSG
+   error. That means a process hasn't been restricted by the third rule,
+   cause during search  process in network rb_tree the process won't find
+   the third rule, so binding to SOCK_PORT_3 is allowed.
+
+   Maybe there is a misunderstanding here. You mean that if there is just
+   only one network rule for a particular port has been applied to a
+   process, other ports' networks actions are automatically restricted
+   until they will be added into landlock newtwork rb_tree?
+> .
