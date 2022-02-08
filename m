@@ -2,105 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6187F4AD7F7
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 12:55:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30F2D4AD824
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 13:07:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351191AbiBHLyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 06:54:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44414 "EHLO
+        id S245010AbiBHMGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 07:06:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343656AbiBHLyb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 06:54:31 -0500
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C612C03FEC9
-        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 03:54:31 -0800 (PST)
-Received: by mail-io1-xd44.google.com with SMTP id q204so20741838iod.8
-        for <netdev@vger.kernel.org>; Tue, 08 Feb 2022 03:54:31 -0800 (PST)
+        with ESMTP id S233096AbiBHMGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 07:06:55 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B9E7C03FECA
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 04:06:54 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id k25so51182708ejp.5
+        for <netdev@vger.kernel.org>; Tue, 08 Feb 2022 04:06:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=mTe6rsF1WlocKfWRCIawejpNJl6lRYSIlYxDz8jltlQ=;
-        b=JdLO1uGo1qKTqjwgdMPQCSFxSj8GdFFunMUYAZzBTanhX/Ki7vobKKFGlXs4+mSTXY
-         pA5V2CPEyaltfrQ2TIs8Q+kC3KkzsPPI2ETcNsCLMWVp33NGyJU31pK8f9j0KVDYhagK
-         OG7Ng/9Lish/gplpBDQaIRmgtq1dNcCGzAE/8koOAGXIn907SqUxrq/Eub9raET9hEpX
-         oQLVNct++K6pxeOBC2AtIR3OHRjpTv8+g6JXnP/QG6CQ0Lf/53ZuXCg7RLY8fIOQ/oDQ
-         wyDPtvlJswSN8McYwJrKFXCDH8d4wdpGm4htjDzuz2DU8vLW6Da8GoxoA1149T/rIJXr
-         jf9Q==
+        bh=FXGkFFi0ny4hdmpTVKgt323AqjwINIUXguF90H/Ze4k=;
+        b=7dCLKTmIfVeuBY6hV3wNkhhfl2hB4NZOpQQ/Ea7wwPbUmCONsfC2/BEE6HOkeCYe1Y
+         QVhup2jMyaCyprbqm/3qQhBxnoyGuBaguI4JCG6TxOTio/5D1ZItzu4+Q1z1787WCTyh
+         WAyRqdfeeoF32YdIV8n5tLW59RcPXxJIiAvWQ6Mgi9kM4HfH/5A70xndfBdNyqwfBr0F
+         nwU1S/UfmfzOnVAtrD1UfcteoaDg5PxlxyeuZlSM+2AbvX+Awd1j7TnI4XTpBZu/iWSF
+         gDaNGiIq80GkWXGju4mLLeTxU19scstd2lBhzl4wlshwau7dmcmWuCRW36bVJyhbPNV1
+         4Kjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=mTe6rsF1WlocKfWRCIawejpNJl6lRYSIlYxDz8jltlQ=;
-        b=2LalEleIJSmHogCDOK+zcQE9uPWXSe6kBKQoa9MGlTQIMFL4BPGVqD9241mp6ZetJj
-         NDELO+9L9agoZnZWp7Eh1r6iafR9dFY1pwx9KOONa8bxc6Ld66738VGYyIPq6YmnGBwD
-         4hrSvjDQfNNf8Rbel5RmbyRx8XVUdIkI7x13B18OZPoPyqa5Z6A5GbBN/cglGeg1avDE
-         rLw8zguYKBrFEvY6HH4p+tHvbepErTwzOf8UeNYd2Vw3ADWCfy8s56G3hwdxvRmLSqTn
-         ppJczDmj70gh7e5x8pKiJ33bQ6+3pvEFQ4B4XNV3Ej1I56ITU1idduRHjZ70sqKSWoQP
-         fcKA==
-X-Gm-Message-State: AOAM533dfYecwQ+OK3BlB42lqhlhVzTh9Cf3ls2efXwgfl+l7WTsLV8v
-        ZHIBCFbViCCykS/Nn5HQld2iJxjJp5yXK45gh1k=
-X-Google-Smtp-Source: ABdhPJywql1hPmq1wXqjwi5uq7u6q8RN0O5Q8qlHAUR3fo0AA7+uCQtCrT18t1Tl7BqvnIuLnj1UBay6BJXLaE25KHM=
-X-Received: by 2002:a6b:d90c:: with SMTP id r12mr1848593ioc.99.1644321270290;
- Tue, 08 Feb 2022 03:54:30 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FXGkFFi0ny4hdmpTVKgt323AqjwINIUXguF90H/Ze4k=;
+        b=mUjoD/+pgcbQWyJYklMHCwZKea4Ujf+Mg2e4U5HgiB3icDCe3dyNeFbYDnA8qn/PzS
+         dnSiXzlRM6w4xwC9xL9TKMoZTC6B9qLnZJK6tVUuVmgf1Jt2ZiMalP1yF6fR9e+GmEUW
+         KLaSlwBFp5kyLxW/e6WKp0izxpWvz/+z963H0onmSjd1dRRznM6DH3jIBeV1wacNjbgS
+         Xt5zLz8I564VChS31OjA3/m9VqjxHZBx7XfRbgIaPrRoCATNF03FNCb+ctqXOddKS9LQ
+         JALYQXAOlT6s7f0i2PI5hgy/7iqkSzCVgzUzQHWA0GUQvtMhPFQk5tjg7vk/zUvUaWJ5
+         +sfw==
+X-Gm-Message-State: AOAM5327Lr8scJXpVSdn7ASrDLiJw8I+XTR0qhlI9HIYa/6pAC9ePkrF
+        EKr88fsiAmE8VwBE0VOIbotA0g==
+X-Google-Smtp-Source: ABdhPJxx+Nwnocmt/Vs4ZgvqNBdOCCPknsuiToOaU1xcProFVsXYUrbzCrXZDH5vABwLCI2kBb15gA==
+X-Received: by 2002:a17:906:faec:: with SMTP id lu44mr3349687ejb.216.1644322012677;
+        Tue, 08 Feb 2022 04:06:52 -0800 (PST)
+Received: from localhost.localdomain ([149.86.77.242])
+        by smtp.gmail.com with ESMTPSA id m17sm5567351edr.62.2022.02.08.04.06.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 04:06:51 -0800 (PST)
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next v2 0/3] bpftool: Switch to new versioning scheme (align on libbpf's)
+Date:   Tue,  8 Feb 2022 12:06:45 +0000
+Message-Id: <20220208120648.49169-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Reply-To: zahirikeen@gmail.com
-Sender: aliwat885@gmail.com
-Received: by 2002:a05:6638:1ef:0:0:0:0 with HTTP; Tue, 8 Feb 2022 03:54:29
- -0800 (PST)
-From:   Zahiri Keen <zahirikeen2@gmail.com>
-Date:   Tue, 8 Feb 2022 11:54:29 +0000
-X-Google-Sender-Auth: gF58IWijgIDvRmFofVXwQc4q33E
-Message-ID: <CAA2insLs4Ezv=aPjagsKiunVEcra-6x0rEs9FjKPFGGnp_2Oig@mail.gmail.com>
-Subject: Greetings to you.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:d44 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4937]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [aliwat885[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [zahirikeen2[at]gmail.com]
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.4 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good Day,
+Hi, this set aims at updating the way bpftool versions are numbered.
+Instead of copying the version from the kernel (given that the sources for
+the kernel and bpftool are shipped together), align it on libbpf's version
+number, with a fixed offset (6) to avoid going backwards. Please refer to
+the description of the third commit for details on the motivations.
 
-I know this email might come to you as a surprise because is coming
-from someone you haven=E2=80=99t met with before.
+The patchset also adds the number of the version of libbpf that was used to
+compile to the output of "bpftool version". Bpftool makes such a heavy
+usage of libbpf that it makes sense to indicate what version was used to
+build it.
 
-I am Mr. Zahiri Keen, the bank manager with BOA bank i contact you for
-a deal relating to the funds which are in my position I shall furnish
-you with more detail once your response.
+v2:
+- Align on libbpf's version number instead of creating an independent
+  versioning scheme.
+- Use libbpf_version_string() to retrieve and display libbpf's version.
+- Re-order patches (1 <-> 2).
 
-Regards,
-Mr.Zahiri
+Quentin Monnet (3):
+  bpftool: Add libbpf's version number to "bpftool version" output
+  libbpf: Add "libbpversion" make target to print version
+  bpftool: Update versioning scheme, align on libbpf's version number
+
+ .../bpf/bpftool/Documentation/common_options.rst  | 13 +++++++------
+ tools/bpf/bpftool/Makefile                        | 15 +++++++++------
+ tools/bpf/bpftool/main.c                          |  4 ++++
+ tools/lib/bpf/Makefile                            |  3 +++
+ 4 files changed, 23 insertions(+), 12 deletions(-)
+
+-- 
+2.32.0
+
