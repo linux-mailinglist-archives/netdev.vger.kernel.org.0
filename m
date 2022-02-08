@@ -2,172 +2,364 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 101EC4AD287
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 08:52:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34B394AD290
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 08:56:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348621AbiBHHwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 02:52:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40154 "EHLO
+        id S236268AbiBHH4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 02:56:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235478AbiBHHwE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 02:52:04 -0500
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8960AC0401EF;
-        Mon,  7 Feb 2022 23:52:03 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id B729F320209C;
-        Tue,  8 Feb 2022 02:52:00 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 08 Feb 2022 02:52:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=CpObZswqDowwOx77NiQV1IhLqQ3/YYHk/8qYQOtLW
-        SY=; b=FOhwphY1RCs7OL4P897HcCxindLpk/o2q7oZP/nUuZIdlqj4taWeHOXpW
-        OSOwxqOKraovMGq5hEk+qm69V32Dkz5sRKKaXJeymsVg4Ju0qCA+UHSzGOktWPpR
-        Ikj2/Dp/FLOZhx7u9cMPV39WrEogqhJNAuNUV36T42qpCoQDE6ijIj/eNRcGbebd
-        aBW+6urYzFX8Uz7gIPZZ9Qxj5ZwHoM2AuvIXAbhdEhm9j4abUWFJ0r5emhXRYEiY
-        s+esRTMZJiWtYCebsppH1DJnKnX6iyM529J5PcL1cKMb/Qe3ypTBLPFnIE5PVeTY
-        0fyuuZyXd4Nfwl3ufIPngiGLwO52g==
-X-ME-Sender: <xms:HyECYsWZR81C0dg1htAOeO-3_F3cBwDWYzSrJ55R0MaBxbAOa5Edqg>
-    <xme:HyECYgmTNZtkMEQSbzB2Ncyrji-4UMnqHjT73S5SAur3lMpwAMSRu4i2LBwcbYuF0
-    YEuiVWIAXvJQQA>
-X-ME-Received: <xmr:HyECYgYJlol44EXstsWZt08KUjjbOyXltuXD65Ki8hNJms8kp2X422e93qtHW-RdNmi0G5ozRkbrWQgaGDXdqcW9HwRS7A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheeigdduudduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtugfgjgesthekredttddtudenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepvdffveekfeeiieeuieetudefkeevkeeuhfeuieduudetkeegleefvdegheej
-    hefhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:HyECYrWnaCvHF8AuDMo5n7CKsw3pXwt-VAFOiAU2UYcD1zamSsm2ew>
-    <xmx:HyECYmnKW09JYpyWy6EY7LXOwCivXZOwI6ym6IEqyaPK8VIMPWjnag>
-    <xmx:HyECYgchomkp4Zm2fXItMi0dc9dOe9Nb2nasnen3XB5UbGLxnGgbpQ>
-    <xmx:ICECYtuaepj1iEDr9AiPGkvccAKsR3jDCx5AuW7Poo3JE20HaruJ4Q>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 8 Feb 2022 02:51:58 -0500 (EST)
-Date:   Tue, 8 Feb 2022 09:51:54 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     "wanghai (M)" <wanghai38@huawei.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, edumazet@google.com,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        netdev@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [BUG] net: ipv4: The sent udp broadcast message may be converted
- to an arp request message
-Message-ID: <YgIhGhh75mR5uLaS@shredder>
-References: <55a04a8f-56f3-f73c-2aea-2195923f09d1@huawei.com>
+        with ESMTP id S231454AbiBHH4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 02:56:08 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CD9C0401F1;
+        Mon,  7 Feb 2022 23:56:05 -0800 (PST)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JtFZz6gbhz68Bkm;
+        Tue,  8 Feb 2022 15:51:55 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 08:55:59 +0100
+Message-ID: <cc023cc4-043b-c67e-1e6e-acf1eb18d155@huawei.com>
+Date:   Tue, 8 Feb 2022 10:55:57 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [RFC PATCH 1/2] landlock: TCP network hooks implementation
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
+ <20220124080215.265538-2-konstantin.meskhidze@huawei.com>
+ <ed2bd420-a22b-2912-1ff5-f48ab352d8e7@digikod.net>
+ <5cd5b983-32a5-97ec-0835-f0c96d86e805@huawei.com>
+ <10999c72-93eb-4db2-e536-a92187545bdb@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <10999c72-93eb-4db2-e536-a92187545bdb@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <55a04a8f-56f3-f73c-2aea-2195923f09d1@huawei.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 10:09:49PM +0800, wanghai (M) wrote:
-> Hello,
-> 
-> I found a bug, but I don't know how to fix it. Anyone have some good ideas?
-> 
-> This bug will cause udp broadcast messages not to be sent, but instead send
-> non-expected arp request messages.
-> 
-> Deleting the ip while sending udp broadcast messages and then configuring
-> the ip again will probably trigger the bug.
-> 
-> The following is the timing diagram of the bug, cpu0 sends a broadcast
-> message and cpu1 deletes the routing table at the appropriate time.
-> 
-> cpu0������������������� ��� ��� ��� ��� ��� cpu1
-> send()
-> � udp_sendmsg()
-> ��� ip_route_output_flow()
-> ��� |� fib_lookup()
-> ��� udp_send_skb()
-> ����� ip_send_skb()
-> ������� ip_finish_output2()
-> 
-> ������������������������������������������� ifconfig eth0:2 down
-> ��������������������������������������������� fib_del_ifaddr
-> ����������������������������������������������� fib_table_delete // delete
-> fib table
-> 
-> ��������� ip_neigh_for_gw()
-> ��������� |� ip_neigh_gw4()
-> ��������� |��� __ipv4_neigh_lookup_noref()
-> ��������� |��� __neigh_create()
-> ��������� |����� tbl->constructor(n) --> arp_constructor()
-> ��������� |������� neigh->type = inet_addr_type_dev_table(); // no route,
-> neigh->type = RTN_UNICAST
-> ��������� neigh_output() // unicast, send an arp request and create an
-> exception arp entry
-> 
-> After the above operation, an abnormal arp entry will be generated. If
-> the ip is configured again(ifconfig eth0:2 12.0.208.0), the abnormal arp
-> entry will still exist, and the udp broadcast message will be converted
-> to an arp request message when it is sent.
 
-Can you try the below? Not really happy with it, but don't have a better
-idea at the moment. It seemed better to handle it from the control path
-than augmenting the data path with more checks
 
-diff --git a/include/net/arp.h b/include/net/arp.h
-index 031374ac2f22..9e6a1961b64c 100644
---- a/include/net/arp.h
-+++ b/include/net/arp.h
-@@ -64,6 +64,7 @@ void arp_send(int type, int ptype, __be32 dest_ip,
- 	      const unsigned char *dest_hw,
- 	      const unsigned char *src_hw, const unsigned char *th);
- int arp_mc_map(__be32 addr, u8 *haddr, struct net_device *dev, int dir);
-+int arp_invalidate(struct net_device *dev, __be32 ip);
- void arp_ifdown(struct net_device *dev);
- 
- struct sk_buff *arp_create(int type, int ptype, __be32 dest_ip,
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 4db0325f6e1a..b81665ce2b57 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -1116,7 +1116,7 @@ static int arp_req_get(struct arpreq *r, struct net_device *dev)
- 	return err;
- }
- 
--static int arp_invalidate(struct net_device *dev, __be32 ip)
-+int arp_invalidate(struct net_device *dev, __be32 ip)
- {
- 	struct neighbour *neigh = neigh_lookup(&arp_tbl, &ip, dev);
- 	int err = -ENXIO;
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 4d61ddd8a0ec..2d7085232cb5 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -1112,9 +1112,11 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
- 		return;
- 
- 	/* Add broadcast address, if it is explicitly assigned. */
--	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF))
-+	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF)) {
- 		fib_magic(RTM_NEWROUTE, RTN_BROADCAST, ifa->ifa_broadcast, 32,
- 			  prim, 0);
-+		arp_invalidate(dev, ifa->ifa_broadcast);
-+	}
- 
- 	if (!ipv4_is_zeronet(prefix) && !(ifa->ifa_flags & IFA_F_SECONDARY) &&
- 	    (prefix != addr || ifa->ifa_prefixlen < 32)) {
-@@ -1128,6 +1130,7 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
- 		if (ifa->ifa_prefixlen < 31) {
- 			fib_magic(RTM_NEWROUTE, RTN_BROADCAST, prefix | ~mask,
- 				  32, prim, 0);
-+			arp_invalidate(dev, prefix | ~mask);
- 		}
- 	}
- }
+2/7/2022 5:17 PM, Mickaël Salaün пишет:
+> 
+> On 07/02/2022 14:09, Konstantin Meskhidze wrote:
+>>
+>>
+>> 2/1/2022 3:13 PM, Mickaël Salaün пишет:
+>>>
+>>> On 24/01/2022 09:02, Konstantin Meskhidze wrote:
+>>>> Support of socket_bind() and socket_connect() hooks.
+>>>> Current prototype can restrict binding and connecting of TCP
+>>>> types of sockets. Its just basic idea how Landlock could support
+>>>> network confinement.
+>>>>
+>>>> Changes:
+>>>> 1. Access masks array refactored into 1D one and changed
+>>>> to 32 bits. Filesystem masks occupy 16 lower bits and network
+>>>> masks reside in 16 upper bits.
+>>>> 2. Refactor API functions in ruleset.c:
+>>>>      1. Add void *object argument.
+>>>>      2. Add u16 rule_type argument.
+>>>> 3. Use two rb_trees in ruleset structure:
+>>>>      1. root_inode - for filesystem objects
+>>>>      2. root_net_port - for network port objects
+>>>
+>>> It's good to add a changelog, but they must not be in commit messages 
+>>> that get copied by git am. Please use "---" to separate this 
+>>> additionnal info (but not the Signed-off-by). Please also include a 
+>>> version in the email subjects (this one should have been "[RFC PATCH 
+>>> v3 1/2] landlock: …"), e.g. using git format-patch --reroll-count=X .
+>>>
+>>> Please follow these rules: 
+>>> https://www.kernel.org/doc/html/latest/process/submitting-patches.html
+>>> You can take some inspiration from this patch series: 
+>>> https://lore.kernel.org/lkml/20210422154123.13086-1-mic@digikod.net/
+>>
+>>   Ok. I will add patch vervison in next patch. So it will be "[RFC PATCH
+>>   v4 ../..] landlock: ..."
+>>   But the previous patches remain with no version, correct?
+> 
+> Right, you can't change the subject of already sent emails. ;)
+
+   Ok. But I can add previous patches like:
+    v1: 
+https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com
+    v2: 
+https://lore.kernel.org/netdev/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
+    v3: ....
+
+  right ?
+> 
+> [...]
+> 
+>>>> diff --git a/security/landlock/net.c b/security/landlock/net.c
+>>>> new file mode 100644
+>>>> index 000000000000..0b5323d254a7
+>>>> --- /dev/null
+>>>> +++ b/security/landlock/net.c
+>>>> @@ -0,0 +1,175 @@
+>>>> +// SPDX-License-Identifier: GPL-2.0-only
+>>>> +/*
+>>>> + * Landlock LSM - Filesystem management and hooks
+>>>> + *
+>>>> + * Copyright © 2016-2020 Mickaël Salaün <mic@digikod.net>
+>>>> + * Copyright © 2018-2020 ANSSI
+>>>> + */
+>>>> +
+>>>> +#include <linux/socket.h>
+>>>> +#include <linux/net.h>
+>>>> +#include <linux/in.h>
+>>>
+>>> Why is linux/in.h required?
+>>>
+>>    Struct sockaddr_in is described in this header.
+>>    A pointer to struct sockaddr_in is used in hook_socket_connect()
+>>    and hook_socket_bind() to get socket's family and port values.
+> 
+> OK, good point.
+> 
+> [...]
+> 
+>>>> +        return 0;
+>>>> +
+>>>> +    socket_type = sock->type;
+>>>> +    /* Check if it's a TCP socket */
+>>>> +    if (socket_type != SOCK_STREAM)
+>>>> +        return 0;
+>>>> +
+>>>> +    if (!dom)
+>>>> +        return 0;
+>>>
+>>> This must be at the top of *each* hook to make it clear that they 
+>>> don't impact non-landlocked processes.
+>>>
+>>    They don't impact. It does not matter what to check first socket
+>>    family/type or landlocked process.
+> 
+> It doesn't change the semantic but it changes the reviewing which is 
+> easier with common and consistent sequential checks (and could avoid 
+> future mistakes). This rule is followed by all Landlock hooks.
+
+   Ok.
+> 
+> [...]
+> 
+>>>> @@ -67,10 +76,11 @@ static void build_check_rule(void)
+>>>>   }
+>>>>   static struct landlock_rule *create_rule(
+>>>> -        struct landlock_object *const object,
+>>>> +        void *const object,
+>>>
+>>> Instead of shoehorning two different types into one (and then loosing 
+>>> the typing), you should rename object to object_ptr and add a new 
+>>> object_data argument. Only one of these should be set according to 
+>>> the rule_type. However, if there is no special action performed on 
+>>> one of these type (e.g. landlock_get_object), only one uintptr_t 
+>>> argument should be enough.
+>>>
+>>   Do you mean using 2 object arguments in create_rule():
+>>
+>>      1. create_rule( object_ptr = landlock_object , object_data = 0,
+>>                                 ...,  fs_rule_type);
+>>          2. create_rule( object_ptr = NULL , object_data = port, .... ,
+>>                           net_rule_type);
+> 
+> Yes, and you can add a WARN_ON_ONCE() in these function to check that 
+> only one argument is set (but object_data could be 0 in each case). The 
+> landlock_get_object() function should only require an object_data though.
+> 
+   Sorry. As you said in previous comment in landlock_get_object, only
+   one  uintptr_t argument should be enough. But, I did not get: "The
+   landlock_get_object() function should only require an object_data
+   though".
+   uintptr_t is the only argument in landlock_get_object?
+
+> [...]
+> 
+>>>> @@ -142,26 +159,36 @@ static void build_check_ruleset(void)
+>>>>    * access rights.
+>>>>    */
+>>>>   static int insert_rule(struct landlock_ruleset *const ruleset,
+>>>> -        struct landlock_object *const object,
+>>>> -        const struct landlock_layer (*const layers)[],
+>>>> -        size_t num_layers)
+>>>> +        void *const obj, const struct landlock_layer (*const 
+>>>> layers)[],
+>>>
+>>> same here
+>>       Do you mean using 2 object arguments in insert_rule():
+>>
+>>      1. insert_rule( object_ptr = landlock_object , object_data = 0,
+>>                                 ...,  fs_rule_type);
+>>          2. insert_rule( object_ptr = NULL , object_data = port, .... ,
+>>                           net_rule_type);
+> 
+> Yes
+> 
+> [...]
+> 
+>>>> @@ -336,9 +399,11 @@ static int inherit_ruleset(struct 
+>>>> landlock_ruleset *const parent,
+>>>>           err = -EINVAL;
+>>>>           goto out_unlock;
+>>>>       }
+>>>> -    /* Copies the parent layer stack and leaves a space for the new 
+>>>> layer. */
+>>>> -    memcpy(child->fs_access_masks, parent->fs_access_masks,
+>>>> -            flex_array_size(parent, fs_access_masks, 
+>>>> parent->num_layers));
+>>>> +    /* Copies the parent layer stack and leaves a space for the new 
+>>>> layer.
+>>>
+>>> ditto
+>>        Do you mean comments style here?
+> 
+> Yes
+> 
+> [...]
+> 
+>>>> @@ -317,47 +331,91 @@ SYSCALL_DEFINE4(landlock_add_rule,
+>>>>       if (flags)
+>>>>           return -EINVAL;
+>>>> -    if (rule_type != LANDLOCK_RULE_PATH_BENEATH)
+>>>> +    if ((rule_type != LANDLOCK_RULE_PATH_BENEATH) &&
+>>>> +        (rule_type != LANDLOCK_RULE_NET_SERVICE))
+>>>
+>>> Please replace with a switch/case.
+>>
+>>    Ok. I got it.
+>>>
+>>>
+>>>>           return -EINVAL;
+>>>> -    /* Copies raw user space buffer, only one type for now. */
+>>>> -    res = copy_from_user(&path_beneath_attr, rule_attr,
+>>>> -            sizeof(path_beneath_attr));
+>>>> -    if (res)
+>>>> -        return -EFAULT;
+>>>> -
+>>>> -    /* Gets and checks the ruleset. */
+>>>> -    ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
+>>>> -    if (IS_ERR(ruleset))
+>>>> -        return PTR_ERR(ruleset);
+>>>> -
+>>>> -    /*
+>>>> -     * Informs about useless rule: empty allowed_access (i.e. deny 
+>>>> rules)
+>>>> -     * are ignored in path walks.
+>>>> -     */
+>>>> -    if (!path_beneath_attr.allowed_access) {
+>>>> -        err = -ENOMSG;
+>>>> -        goto out_put_ruleset;
+>>>> -    }
+>>>> -    /*
+>>>> -     * Checks that allowed_access matches the @ruleset constraints
+>>>> -     * (ruleset->fs_access_masks[0] is automatically upgraded to 
+>>>> 64-bits).
+>>>> -     */
+>>>> -    if ((path_beneath_attr.allowed_access | 
+>>>> ruleset->fs_access_masks[0]) !=
+>>>> -            ruleset->fs_access_masks[0]) {
+>>>> -        err = -EINVAL;
+>>>> -        goto out_put_ruleset;
+>>>> +    switch (rule_type) {
+>>>> +    case LANDLOCK_RULE_PATH_BENEATH:
+>>>> +        /* Copies raw user space buffer, for fs rule type. */
+>>>> +        res = copy_from_user(&path_beneath_attr, rule_attr,
+>>>> +                    sizeof(path_beneath_attr));
+>>>> +        if (res)
+>>>> +            return -EFAULT;
+>>>> +        break;
+>>>> +
+>>>> +    case LANDLOCK_RULE_NET_SERVICE:
+>>>> +        /* Copies raw user space buffer, for net rule type. */
+>>>> +        res = copy_from_user(&net_service_attr, rule_attr,
+>>>> +                sizeof(net_service_attr));
+>>>> +        if (res)
+>>>> +            return -EFAULT;
+>>>> +        break;
+>>>>       }
+>>>> -    /* Gets and checks the new rule. */
+>>>> -    err = get_path_from_fd(path_beneath_attr.parent_fd, &path);
+>>>> -    if (err)
+>>>> -        goto out_put_ruleset;
+>>>> +    if (rule_type == LANDLOCK_RULE_PATH_BENEATH) {
+>>>> +        /* Gets and checks the ruleset. */
+>>>> +        ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
+>>>> +        if (IS_ERR(ruleset))
+>>>> +            return PTR_ERR(ruleset);
+>>>> +
+>>>> +        /*
+>>>> +         * Informs about useless rule: empty allowed_access (i.e. 
+>>>> deny rules)
+>>>> +         * are ignored in path walks.
+>>>> +         */
+>>>> +        if (!path_beneath_attr.allowed_access) {
+>>>> +            err = -ENOMSG;
+>>>> +            goto out_put_ruleset;
+>>>> +        }
+>>>> +        /*
+>>>> +         * Checks that allowed_access matches the @ruleset constraints
+>>>> +         * (ruleset->access_masks[0] is automatically upgraded to 
+>>>> 64-bits).
+>>>> +         */
+>>>> +        if ((path_beneath_attr.allowed_access | 
+>>>> ruleset->access_masks[0]) !=
+>>>> +                            ruleset->access_masks[0]) {
+>>>> +            err = -EINVAL;
+>>>> +            goto out_put_ruleset;
+>>>> +        }
+>>>> +
+>>>> +        /* Gets and checks the new rule. */
+>>>> +        err = get_path_from_fd(path_beneath_attr.parent_fd, &path);
+>>>> +        if (err)
+>>>> +            goto out_put_ruleset;
+>>>> +
+>>>> +        /* Imports the new rule. */
+>>>> +        err = landlock_append_fs_rule(ruleset, &path,
+>>>> +                path_beneath_attr.allowed_access);
+>>>> +        path_put(&path);
+>>>> +    }
+>>>> -    /* Imports the new rule. */
+>>>> -    err = landlock_append_fs_rule(ruleset, &path,
+>>>> -            path_beneath_attr.allowed_access);
+>>>> -    path_put(&path);
+>>>> +    if (rule_type == LANDLOCK_RULE_NET_SERVICE) {
+>>>> +        /* Gets and checks the ruleset. */
+>>>> +        ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
+>>>
+>>> You need to factor out more code.
+>>
+>>    Sorry. I did not get you here. Please could you explain more detailed?
+> 
+> Instead of duplicating similar function calls (e.g. get_ruleset_from_fd) 
+> or operations, try to use one switch statement where you put the checks 
+> that are different (you can move the 
+> copy_from_user(&path_beneath_attr...) call). It may be a good idea to 
+> split this function into 3: one handling each rule_attr, which enables 
+> to not mix different attr types in the same function. A standalone patch 
+> should be refactoring the code to add and use a new function 
+> add_rule_path_beneath(ruleset, rule_attr) (only need the "landlock_" 
+> prefix for exported functions).
+
+   Sorry again. Still don't get the point. What function do you suggetst
+   to split in 3? Can you please give detailed template of these
+   functions and the logic?
+
+> .
