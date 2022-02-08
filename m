@@ -2,542 +2,287 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1067B4AE34F
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 23:21:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33B9A4AE33A
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 23:21:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386004AbiBHWVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 17:21:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49622 "EHLO
+        id S1386527AbiBHWVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 17:21:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386339AbiBHUKm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 15:10:42 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 682E1C0613CB;
-        Tue,  8 Feb 2022 12:10:40 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id y3so1047224ejf.2;
-        Tue, 08 Feb 2022 12:10:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=LqpS1C58rEre6k1Ish5WUbwOdRiZi0f8EFHi+i5WIvo=;
-        b=S6Eh7lva1WoZBEDwp+ntAxc6UTzGvE268VB2ZOvJrE3kx7bfpIdHK2pFiNWZq8DDb1
-         C5GOG1D17V4xl4okMH6Jh+QNoYUs99YVS4y0/rLJh+jM9sDWjxkmV0zJFkQMZeTRmlHG
-         kCaCv1UGhByN9XKDjE9H/OTbwelG6rz4igNyLeBlDfgtBh+MHgapRuALdkl6K+ZCvn0Q
-         mrSZk57aoLP1gddt2x4654GT9Gk5Cb2lb5jMqNJNuqzdfee0miBBMmukdIIb+GhItwgJ
-         WtUqRETIkXiw+3CehiKM0L6xbyQOZSpdo3InuusC0ZgEfDiyidann1XdezKcrYFj9TKV
-         Dkew==
+        with ESMTP id S1386393AbiBHUVd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 15:21:33 -0500
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6525C0612C0
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 12:21:31 -0800 (PST)
+Received: by mail-il1-f197.google.com with SMTP id p8-20020a056e02144800b002be41f4c3d2so4467480ilo.15
+        for <netdev@vger.kernel.org>; Tue, 08 Feb 2022 12:21:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LqpS1C58rEre6k1Ish5WUbwOdRiZi0f8EFHi+i5WIvo=;
-        b=xwFs/N52UlyBjfVISpg1PRQzEyKhk16h6soWlTxHLEG1JY7Ipm/pWzY1HwFVj0TLmB
-         KPyLg/CzhBrR5BS8CMovwytrZfBA7S/6XpL/T+/wsVovQZ2Rmjx5qaTPK8icYP9q53jU
-         B/igMyXR5msSQinYEfCZZHFuWhlHy2nDk0IR6HG7SzkZ7WrE1UV3WwrlGrTYGtbgRLg5
-         vXeCS0UXrnrNyA3hkA5oZETSsVhSQ4ZG7Dl1TX5WQhsFM8zvRPgl+vkYLd8i9LAa6JN9
-         hv8N0eEfX6svTImLKpYby9xgiei1oY9s8N0XFZdmA0dOUZ9Ur98RxI0bzBf5mDER5dxs
-         BWeQ==
-X-Gm-Message-State: AOAM530TowMt0AnSnLv6rKnmd4h3bRzrokx4AJlsEPjrfmkY9hSScMWg
-        8KFKw9cgdnTtIZ33iwzcMwYbjOdztIkget7y/WMYyEOlI46VSw==
-X-Google-Smtp-Source: ABdhPJwTfhhiIuNgwW0z2YamYq660O9jrbcrgJBsQqaEJJ7UuuabvkknKnwttu0PEpBZ2QtMVSdpwn6Q8t32jw2L/HI=
-X-Received: by 2002:a17:907:6d17:: with SMTP id sa23mr4821509ejc.551.1644351038635;
- Tue, 08 Feb 2022 12:10:38 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=TaQwE2DFiZTHkuTB9gFHxb0jFiUgExXwgy+A0Sjpojg=;
+        b=sRX8dyjDJE2cdfVMk0mspkVhQqCdgCE5gjrylxBnz/c7wWpSjpnjXyDZBmTkwnlYvL
+         xJQuitoatPVQboQ9tfk9GgCqDYp7zB2WOoSgaZg0KrG/Zj+ZSLIzduS0lXD1WzjLl8P/
+         Cw3AIoJgcx7aX/dzACWIjbZSl8tba4stI3LP8NQrJrd/SKB1RlhW5FLum2ByfeCfC87G
+         sBcv3i5SesfTRzi6tnim5umL8JQV8Wix4WwRNKHFekI+lR0iUgTzyq5GR2FId+nSBXI7
+         kQN0yCDkE/wYYusscGQaZ5hkKFF0NbH3KlQXHZu7S7FfVgHWtsx5am6ncn/7+aFFbydo
+         KtaA==
+X-Gm-Message-State: AOAM532j2nekEzouBovW+DRXsQTFKt7aqq4mWF8Rnnd0GLmBpcUcmrcw
+        EfDMVctOvEUeZAtV2NFGgaHkcLAkXSxYqyM91cFhr4j2fr3+
+X-Google-Smtp-Source: ABdhPJwAVRTcWd8gAG6rv+1tIP3j1Wp4NlKNx+pkGdIW2URUSM4oWubQcegGkCjTmblLU4xyteAIKdcNHVJ/vB1Anc0NCup1HmkG
 MIME-Version: 1.0
-References: <159db05f-539c-fe29-608b-91b036588033@molgen.mpg.de>
- <CAABZP2xampOLo8k93OLgaOfv9LreJ+f0g0_1mXwqtrv_LKewQg@mail.gmail.com>
- <3534d781-7d01-b42a-8974-0b1c367946f0@molgen.mpg.de> <CAABZP2zFDY-hrZqE=-c0uW8vFMH+Q9XezYd2DcBX4Wm+sxzK1g@mail.gmail.com>
- <04a597dc-64aa-57e6-f7fb-17bd2ec58159@molgen.mpg.de> <CAABZP2yb7-xa4F_2c6tuzkv7x902wU-hqgD_pqRooGC6C7S20A@mail.gmail.com>
- <20220130174421.GS4285@paulmck-ThinkPad-P17-Gen-1> <CAABZP2w8ysVFmxRo7CMSHunnU0GqtS=+bU6tLqcsXDUyf60-Dw@mail.gmail.com>
- <20220201175023.GW4285@paulmck-ThinkPad-P17-Gen-1> <CAABZP2zsyf238t6FGaszY+vwuBocFWQj=7k2pGd2OA3E7G525g@mail.gmail.com>
-In-Reply-To: <CAABZP2zsyf238t6FGaszY+vwuBocFWQj=7k2pGd2OA3E7G525g@mail.gmail.com>
-From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
-Date:   Wed, 9 Feb 2022 04:10:26 +0800
-Message-ID: <CAABZP2xS8zPZxve=Yx=UKMGYxjKmgjL-GA4YOngH7BSn5Tf7Gw@mail.gmail.com>
-Subject: Re: BUG: Kernel NULL pointer dereference on write at 0x00000000 (rtmsg_ifinfo_build_skb)
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        Josh Triplett <josh@joshtriplett.org>,
-        rcu <rcu@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
+X-Received: by 2002:a02:6f48:: with SMTP id b8mr3107880jae.9.1644351690964;
+ Tue, 08 Feb 2022 12:21:30 -0800 (PST)
+Date:   Tue, 08 Feb 2022 12:21:30 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006d045e05d78776f6@google.com>
+Subject: [syzbot] BUG: MAX_LOCK_DEPTH too low! (3)
+From:   syzbot <syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, guwen@linux.alibaba.com,
+        john.fastabend@gmail.com, kafai@fb.com, kgraul@linux.ibm.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NORMAL_HTTP_TO_IP,
-        NUMERIC_HTTP_ADDR,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paul
+Hello,
 
-Below are my preliminary test results tested on PPC VM supplied by
-Open source lab of Oregon State University, thank you for your
-support!
+syzbot found the following issue on:
 
-[Preliminary test results on ppc64le virtual guest]
+HEAD commit:    ed14fc7a79ab net: sparx5: Fix get_stat64 crash in tcpdump
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=175bd324700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b4a89edfcc8f7c74
+dashboard link: https://syzkaller.appspot.com/bug?extid=4de3c0e8a263e1e499bc
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15f97334700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16b54958700000
 
-1. Conclusion
-Some other kernel configuration besides RCU may lead to "BUG: Kernel
-NULL pointer dereference" at boot
+The issue was bisected to:
+
+commit 341adeec9adad0874f29a0a1af35638207352a39
+Author: Wen Gu <guwen@linux.alibaba.com>
+Date:   Wed Jan 26 15:33:04 2022 +0000
+
+    net/smc: Forward wakeup to smc socket waitqueue after fallback
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11c2637c700000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=13c2637c700000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15c2637c700000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com
+Fixes: 341adeec9ada ("net/smc: Forward wakeup to smc socket waitqueue after fallback")
+
+BUG: MAX_LOCK_DEPTH too low!
+turning off the locking correctness validator.
+depth: 48  max: 48!
+48 locks held by syz-executor417/3783:
+ #0: ffff888070db8810 (&sb->s_type->i_mutex_key#11){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:777 [inline]
+ #0: ffff888070db8810 (&sb->s_type->i_mutex_key#11){+.+.}-{3:3}, at: __sock_release+0x86/0x280 net/socket.c:649
+ #1: ffff88801d4f7578 (&smc->clcsock_release_lock){+.+.}-{3:3}, at: smc_clcsock_release+0x71/0xe0 net/smc/smc_close.c:30
+ #2: ffff8880739bc930 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1668 [inline]
+ #2: ffff8880739bc930 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: tcp_close+0x1e/0xc0 net/ipv4/tcp.c:2921
+ #3: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #4: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #5: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #6: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #7: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #8: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #9: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #10: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #11: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #12: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #13: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #14: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #15: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #16: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #17: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #18: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #19: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #20: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #21: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #22: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #23: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #24: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #25: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #26: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #27: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #28: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #29: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #30: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #31: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #32: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #33: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #34: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #35: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #36: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #37: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #38: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #39: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #40: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #41: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #42: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #43: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #44: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #45: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #46: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: smc_fback_forward_wakeup+0x0/0x540 net/smc/af_smc.c:2890
+ #47: ffff888070db8c58 (&ei->socket.wq.wait){..-.}-{2:2}, at: add_wait_queue+0x42/0x260 kernel/sched/wait.c:23
+INFO: lockdep is turned off.
+CPU: 0 PID: 3783 Comm: syz-executor417 Not tainted 5.17.0-rc2-syzkaller-00168-ged14fc7a79ab #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ __lock_acquire+0x18fd/0x5470 kernel/locking/lockdep.c:5045
+ lock_acquire kernel/locking/lockdep.c:5639 [inline]
+ lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5604
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+ _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
+ add_wait_queue+0x42/0x260 kernel/sched/wait.c:23
+ smc_fback_forward_wakeup+0x15b/0x540 net/smc/af_smc.c:617
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ smc_fback_forward_wakeup+0x161/0x540 net/smc/af_smc.c:618
+ smc_fback_error_report+0x82/0xa0 net/smc/af_smc.c:664
+ sk_error_report+0x35/0x310 net/core/sock.c:340
+ tcp_disconnect+0x14e3/0x1e80 net/ipv4/tcp.c:3096
+ __tcp_close+0xe65/0x12b0 net/ipv4/tcp.c:2792
+ tcp_close+0x29/0xc0 net/ipv4/tcp.c:2922
+ inet_release+0x12e/0x280 net/ipv4/af_inet.c:428
+ __sock_release net/socket.c:650 [inline]
+ sock_release+0x87/0x1b0 net/socket.c:678
+ smc_clcsock_release+0xb3/0xe0 net/smc/smc_close.c:34
+ __smc_release+0x35e/0x5b0 net/smc/af_smc.c:172
+ smc_release+0x17f/0x530 net/smc/af_smc.c:209
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x18/0x20 net/socket.c:1318
+ __fput+0x286/0x9f0 fs/file_table.c:311
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ exit_task_work include/linux/task_work.h:32 [inline]
+ do_exit+0xb29/0x2a30 kernel/exit.c:806
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:935
+ get_signal+0x4b0/0x28c0 kernel/signal.c:2862
+ arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
+ handle_signal_work kernel/entry/common.c:148 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+ exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f41e18579a9
+Code: Unable to access opcode bytes at RIP 0x7f41e185797f.
+RSP: 002b:00007f41e17e8318 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
+RAX: 0000000000000001 RBX: 00007f41e18df3f8 RCX: 00007f41e18579a9
+RDX: 00000000000f4240 RSI: 0000000000000081 RDI: 00007f41e18df3fc
+RBP: 00007f41e18df3f0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f41e18ad074
+R13: 00007ffefdec9ecf R14: 00007f41e17e8400 R15: 0000000000022000
+ </TASK>
 
 
-2. Test Environment
-2.1 host hardware
-8 core ppc64le virtual guest with 16G ram and 160G disk
-cpu        : POWER9 (architected), altivec supported
-clock        : 2200.000000MHz
-revision    : 2.2 (pvr 004e 1202)
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-2.2 host software
-Operating System: Ubuntu 20.04.3 LTS, Compiler: gcc version 9.3.0
-
-
-3. Test Procedure
-3.1 kernel source
-next-20220203
-
-3.2 build and boot the kernel with CONFIG_DRM_BOCHS=3Dm and
-CONFIG_RCU_TORTURE_TEST=3Dy
-test result: "BUG: Kernel NULL pointer dereference" at boot
-config file: http://154.223.142.244/Feb2022/config-5.17.0-rc2-next.bochs.to=
-rture
-boot msg: http://154.223.142.244/Feb2022/dmesg.torture.bochs
-
-3.3 build and boot the kernel with CONFIG_DRM_BOCHS=3Dm
-test result: "BUG: Kernel NULL pointer dereference" at boot
-config file: http://154.223.142.244/Feb2022/config-5.17.0-rc2-next.bochs
-boot msg: http://154.223.142.244/Feb2022/dmesg.bochs
-
-3.4 build and boot the kernel with CONFIG_RCU_TORTURE_TEST=3Dy (without
-CONFIG_DRM_BOCHS)
-test result: boot without error
-config file: http://154.223.142.244/Feb2022/config-5.17.0-rc2-next.torture
-boot msg: http://154.223.142.244/Feb2022/dmesg.torture
-
-3.5 build and boot the kernel with CONFIG_RCU_TORTURE_TEST=3Dm (without
-CONFIG_DRM_BOCHS)
-test result: boot without error
-config file: http://154.223.142.244/Feb2022/config-5.17.0-rc2-next
-boot msg: http://154.223.142.244/Feb2022/dmesg
-
-4. Acknowledgement
-Thank Open source lab of Oregon State University and Paul Menzel and
-all other community members who support my tiny research.
-
-Thanks
-Zhouyi
-
-On Wed, Feb 2, 2022 at 10:39 AM Zhouyi Zhou <zhouzhouyi@gmail.com> wrote:
->
-> Thank Paul for your encouragement!
->
-> On Wed, Feb 2, 2022 at 1:50 AM Paul E. McKenney <paulmck@kernel.org> wrot=
-e:
-> >
-> > On Mon, Jan 31, 2022 at 09:08:40AM +0800, Zhouyi Zhou wrote:
-> > > Thank Paul for joining us!
-> > >
-> > > On Mon, Jan 31, 2022 at 1:44 AM Paul E. McKenney <paulmck@kernel.org>=
- wrote:
-> > > >
-> > > > On Sun, Jan 30, 2022 at 09:24:44PM +0800, Zhouyi Zhou wrote:
-> > > > > Dear Paul
-> > > > >
-> > > > > On Sun, Jan 30, 2022 at 4:19 PM Paul Menzel <pmenzel@molgen.mpg.d=
-e> wrote:
-> > > > > >
-> > > > > > Dear Zhouyi,
-> > > > > >
-> > > > > >
-> > > > > > Am 30.01.22 um 01:21 schrieb Zhouyi Zhou:
-> > > > > >
-> > > > > > > Thank you for your instructions, I learned a lot from this pr=
-ocess.
-> > > > > >
-> > > > > > Same on my end.
-> > > > > >
-> > > > > > > On Sun, Jan 30, 2022 at 12:52 AM Paul Menzel <pmenzel@molgen.=
-mpg.de> wrote:
-> > > > > >
-> > > > > > >> Am 29.01.22 um 03:23 schrieb Zhouyi Zhou:
-> > > > > > >>
-> > > > > > >>> I don't have an IBM machine, but I tried to analyze the pro=
-blem using
-> > > > > > >>> my x86_64 kvm virtual machine, I can't reproduce the bug us=
-ing my
-> > > > > > >>> x86_64 kvm virtual machine.
-> > > > > > >>
-> > > > > > >> No idea, if it=E2=80=99s architecture specific.
-> > > > > > >>
-> > > > > > >>> I saw the panic is caused by registration of sit device (A =
-sit device
-> > > > > > >>> is a type of virtual network device that takes our IPv6 tra=
-ffic,
-> > > > > > >>> encapsulates/decapsulates it in IPv4 packets, and sends/rec=
-eives it
-> > > > > > >>> over the IPv4 Internet to another host)
-> > > > > > >>>
-> > > > > > >>> sit device is registered in function sit_init_net:
-> > > > > > >>> 1895    static int __net_init sit_init_net(struct net *net)
-> > > > > > >>> 1896    {
-> > > > > > >>> 1897        struct sit_net *sitn =3D net_generic(net, sit_n=
-et_id);
-> > > > > > >>> 1898        struct ip_tunnel *t;
-> > > > > > >>> 1899        int err;
-> > > > > > >>> 1900
-> > > > > > >>> 1901        sitn->tunnels[0] =3D sitn->tunnels_wc;
-> > > > > > >>> 1902        sitn->tunnels[1] =3D sitn->tunnels_l;
-> > > > > > >>> 1903        sitn->tunnels[2] =3D sitn->tunnels_r;
-> > > > > > >>> 1904        sitn->tunnels[3] =3D sitn->tunnels_r_l;
-> > > > > > >>> 1905
-> > > > > > >>> 1906        if (!net_has_fallback_tunnels(net))
-> > > > > > >>> 1907            return 0;
-> > > > > > >>> 1908
-> > > > > > >>> 1909        sitn->fb_tunnel_dev =3D alloc_netdev(sizeof(str=
-uct ip_tunnel), "sit0",
-> > > > > > >>> 1910                           NET_NAME_UNKNOWN,
-> > > > > > >>> 1911                           ipip6_tunnel_setup);
-> > > > > > >>> 1912        if (!sitn->fb_tunnel_dev) {
-> > > > > > >>> 1913            err =3D -ENOMEM;
-> > > > > > >>> 1914            goto err_alloc_dev;
-> > > > > > >>> 1915        }
-> > > > > > >>> 1916        dev_net_set(sitn->fb_tunnel_dev, net);
-> > > > > > >>> 1917        sitn->fb_tunnel_dev->rtnl_link_ops =3D &sit_lin=
-k_ops;
-> > > > > > >>> 1918        /* FB netdevice is special: we have one, and on=
-ly one per netns.
-> > > > > > >>> 1919         * Allowing to move it to another netns is clea=
-rly unsafe.
-> > > > > > >>> 1920         */
-> > > > > > >>> 1921        sitn->fb_tunnel_dev->features |=3D NETIF_F_NETN=
-S_LOCAL;
-> > > > > > >>> 1922
-> > > > > > >>> 1923        err =3D register_netdev(sitn->fb_tunnel_dev);
-> > > > > > >>> register_netdev on line 1923 will call if_nlmsg_size indire=
-ctly.
-> > > > > > >>>
-> > > > > > >>> On the other hand, the function that calls the paniced strl=
-en is if_nlmsg_size:
-> > > > > > >>> (gdb) disassemble if_nlmsg_size
-> > > > > > >>> Dump of assembler code for function if_nlmsg_size:
-> > > > > > >>>      0xffffffff81a0dc20 <+0>:    nopl   0x0(%rax,%rax,1)
-> > > > > > >>>      0xffffffff81a0dc25 <+5>:    push   %rbp
-> > > > > > >>>      0xffffffff81a0dc26 <+6>:    push   %r15
-> > > > > > >>>      0xffffffff81a0dd04 <+228>:    je     0xffffffff81a0de2=
-0 <if_nlmsg_size+512>
-> > > > > > >>>      0xffffffff81a0dd0a <+234>:    mov    0x10(%rbp),%rdi
-> > > > > > >>>      ...
-> > > > > > >>>    =3D> 0xffffffff81a0dd0e <+238>:    callq  0xffffffff8175=
-32d0 <strlen>
-> > > > > > >>>      0xffffffff81a0dd13 <+243>:    add    $0x10,%eax
-> > > > > > >>>      0xffffffff81a0dd16 <+246>:    movslq %eax,%r12
-> > > > > > >>
-> > > > > > >> Excuse my ignorance, would that look the same for ppc64le?
-> > > > > > >> Unfortunately, I didn=E2=80=99t save the problematic `vmlinu=
-z` file, but on a
-> > > > > > >> current build (without rcutorture) I have the line below, wh=
-ere strlen
-> > > > > > >> shows up.
-> > > > > > >>
-> > > > > > >>       (gdb) disassemble if_nlmsg_size
-> > > > > > >>       [=E2=80=A6]
-> > > > > > >>       0xc000000000f7f82c <+332>: bl      0xc000000000a10e30 =
-<strlen>
-> > > > > > >>       [=E2=80=A6]
-> > > > > > >>
-> > > > > > >>> and the C code for 0xffffffff81a0dd0e is following (line 52=
-4):
-> > > > > > >>> 515    static size_t rtnl_link_get_size(const struct net_de=
-vice *dev)
-> > > > > > >>> 516    {
-> > > > > > >>> 517        const struct rtnl_link_ops *ops =3D dev->rtnl_li=
-nk_ops;
-> > > > > > >>> 518        size_t size;
-> > > > > > >>> 519
-> > > > > > >>> 520        if (!ops)
-> > > > > > >>> 521            return 0;
-> > > > > > >>> 522
-> > > > > > >>> 523        size =3D nla_total_size(sizeof(struct nlattr)) +=
- /* IFLA_LINKINFO */
-> > > > > > >>> 524               nla_total_size(strlen(ops->kind) + 1);  /=
-* IFLA_INFO_KIND */
-> > > > > > >>
-> > > > > > >> How do I connect the disassemby output with the correspondin=
-g line?
-> > > > > > > I use "make  ARCH=3Dpowerpc CC=3Dpowerpc64le-linux-gnu-gcc-9
-> > > > > > > CROSS_COMPILE=3Dpowerpc64le-linux-gnu- -j 16" to cross compil=
-e kernel
-> > > > > > > for powerpc64le in my Ubuntu 20.04 x86_64.
-> > > > > > >
-> > > > > > > gdb-multiarch ./vmlinux
-> > > > > > > (gdb)disassemble if_nlmsg_size
-> > > > > > > [...]
-> > > > > > > 0xc00000000191bf40 <+112>:    bl      0xc000000001c28ad0 <str=
-len>
-> > > > > > > [...]
-> > > > > > > (gdb) break *0xc00000000191bf40
-> > > > > > > Breakpoint 1 at 0xc00000000191bf40: file ./include/net/netlin=
-k.h, line 1112.
-> > > > > > >
-> > > > > > > But in include/net/netlink.h:1112, I can't find the call to s=
-trlen
-> > > > > > > 1110static inline int nla_total_size(int payload)
-> > > > > > > 1111{
-> > > > > > > 1112        return NLA_ALIGN(nla_attr_size(payload));
-> > > > > > > 1113}
-> > > > > > > This may be due to the compiler wrongly encode the debug info=
-rmation, I guess.
-> > > > > >
-> > > > > > `rtnl_link_get_size()` contains:
-> > > > > >
-> > > > > >              size =3D nla_total_size(sizeof(struct nlattr)) + /=
-*
-> > > > > > IFLA_LINKINFO */
-> > > > > >                     nla_total_size(strlen(ops->kind) + 1);  /*
-> > > > > > IFLA_INFO_KIND */
-> > > > > >
-> > > > > > Is that inlined(?) and the code at fault?
-> > > > > Yes, that is inlined! because
-> > > > > (gdb) disassemble if_nlmsg_size
-> > > > > Dump of assembler code for function if_nlmsg_size:
-> > > > > [...]
-> > > > > 0xc00000000191bf38 <+104>:    beq     0xc00000000191c1f0 <if_nlms=
-g_size+800>
-> > > > > 0xc00000000191bf3c <+108>:    ld      r3,16(r31)
-> > > > > 0xc00000000191bf40 <+112>:    bl      0xc000000001c28ad0 <strlen>
-> > > > > [...]
-> > > > > (gdb)
-> > > > > (gdb) break *0xc00000000191bf40
-> > > > > Breakpoint 1 at 0xc00000000191bf40: file ./include/net/netlink.h,=
- line 1112.
-> > > > > (gdb) break *0xc00000000191bf38
-> > > > > Breakpoint 2 at 0xc00000000191bf38: file net/core/rtnetlink.c, li=
-ne 520.
-> > > >
-> > > > I suggest building your kernel with CONFIG_DEBUG_INFO=3Dy if you ar=
-e not
-> > > > already doing so.  That gives gdb a lot more information about thin=
-gs
-> > > > like inlining.
-> > > I check my .config file, CONFIG_DEBUG_INFO=3Dy is here:
-> > > linux-next$ grep CONFIG_DEBUG_INFO .config
-> > > CONFIG_DEBUG_INFO=3Dy
-> > > Then I invoke "make clean" and rebuild the kernel, the behavior of gd=
-b
-> > > and vmlinux remain unchanged, sorry for that
-> >
-> > Glad you were already on top of this one!
-> I am very pleased to contribute my tiny effort to the process of
-> making Linux better ;-)
-> >
-> > > I am trying to reproduce the bug on my bare metal x86_64 machines in
-> > > the coming days, and am also trying to work with Mr Menzel after he
-> > > comes back to the office.
-> >
-> > This URL used to allow community members such as yourself to request
-> > access to Power systems: https://osuosl.org/services/powerdev/
-> I have filled the request form on
-> https://osuosl.org/services/powerdev/ and now wait for them to deploy
-> the environment for me.
->
-> Thanks again
-> Zhouyi
-> >
-> > In case that helps.
-> >
-> >                                                         Thanx, Paul
-> >
-> > > Thanks
-> > > Zhouyi
-> > > >
-> > > >                                                         Thanx, Paul
-> > > >
-> > > > > > >>> But ops is assigned the value of sit_link_ops in function s=
-it_init_net
-> > > > > > >>> line 1917, so I guess something must happened between the c=
-alls.
-> > > > > > >>>
-> > > > > > >>> Do we have KASAN in IBM machine? would KASAN help us find o=
-ut what
-> > > > > > >>> happened in between?
-> > > > > > >>
-> > > > > > >> Unfortunately, KASAN is not support on Power, I have, as far=
- as I can
-> > > > > > >> see. From `arch/powerpc/Kconfig`:
-> > > > > > >>
-> > > > > > >>           select HAVE_ARCH_KASAN                  if PPC32 &=
-& PPC_PAGE_SHIFT <=3D 14
-> > > > > > >>           select HAVE_ARCH_KASAN_VMALLOC          if PPC32 &=
-& PPC_PAGE_SHIFT <=3D 14
-> > > > > > >>
-> > > > > > > en, agree, I invoke "make  menuconfig  ARCH=3Dpowerpc
-> > > > > > > CC=3Dpowerpc64le-linux-gnu-gcc-9 CROSS_COMPILE=3Dpowerpc64le-=
-linux-gnu- -j
-> > > > > > > 16", I can't find KASAN under Memory Debugging, I guess we sh=
-ould find
-> > > > > > > the bug by bisecting instead.
-> > > > > >
-> > > > > > I do not know, if it is a regression, as it was the first time =
-I tried
-> > > > > > to run a Linux kernel built with rcutorture on real hardware.
-> > > > > I tried to add some debug statements to the kernel to locate the =
-bug
-> > > > > more accurately,  you can try it when you're not busy in the futu=
-re,
-> > > > > or just ignore it if the following patch looks not very effective=
- ;-)
-> > > > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > > > index 1baab07820f6..969ac7c540cc 100644
-> > > > > --- a/net/core/dev.c
-> > > > > +++ b/net/core/dev.c
-> > > > > @@ -9707,6 +9707,9 @@ int register_netdevice(struct net_device *d=
-ev)
-> > > > >       *    Prevent userspace races by waiting until the network
-> > > > >       *    device is fully setup before sending notifications.
-> > > > >       */
-> > > > > +    if (dev->rtnl_link_ops)
-> > > > > +        printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", dev->rtnl=
-_link_ops,
-> > > > > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> > > > >      if (!dev->rtnl_link_ops ||
-> > > > >          dev->rtnl_link_state =3D=3D RTNL_LINK_INITIALIZED)
-> > > > >          rtmsg_ifinfo(RTM_NEWLINK, dev, ~0U, GFP_KERNEL);
-> > > > > @@ -9788,6 +9791,9 @@ int register_netdev(struct net_device *dev)
-> > > > >
-> > > > >      if (rtnl_lock_killable())
-> > > > >          return -EINTR;
-> > > > > +    if (dev->rtnl_link_ops)
-> > > > > +        printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", dev->rtnl=
-_link_ops,
-> > > > > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> > > > >      err =3D register_netdevice(dev);
-> > > > >      rtnl_unlock();
-> > > > >      return err;
-> > > > > diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> > > > > index e476403231f0..e08986ae6238 100644
-> > > > > --- a/net/core/rtnetlink.c
-> > > > > +++ b/net/core/rtnetlink.c
-> > > > > @@ -520,6 +520,8 @@ static size_t rtnl_link_get_size(const struct
-> > > > > net_device *dev)
-> > > > >      if (!ops)
-> > > > >          return 0;
-> > > > >
-> > > > > +    printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", ops,
-> > > > > +           ops->kind, __FUNCTION__);
-> > > > >      size =3D nla_total_size(sizeof(struct nlattr)) + /* IFLA_LIN=
-KINFO */
-> > > > >             nla_total_size(strlen(ops->kind) + 1);  /* IFLA_INFO_=
-KIND */
-> > > > >
-> > > > > @@ -1006,6 +1008,9 @@ static size_t rtnl_proto_down_size(const st=
-ruct
-> > > > > net_device *dev)
-> > > > >  static noinline size_t if_nlmsg_size(const struct net_device *de=
-v,
-> > > > >                       u32 ext_filter_mask)
-> > > > >  {
-> > > > > +    if (dev->rtnl_link_ops)
-> > > > > +        printk(KERN_INFO "%lx IFLA_INFO_KIND  %s %s\n", dev->rtn=
-l_link_ops,
-> > > > > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> > > > >      return NLMSG_ALIGN(sizeof(struct ifinfomsg))
-> > > > >             + nla_total_size(IFNAMSIZ) /* IFLA_IFNAME */
-> > > > >             + nla_total_size(IFALIASZ) /* IFLA_IFALIAS */
-> > > > > @@ -3825,7 +3830,9 @@ struct sk_buff *rtmsg_ifinfo_build_skb(int =
-type,
-> > > > > struct net_device *dev,
-> > > > >      struct net *net =3D dev_net(dev);
-> > > > >      struct sk_buff *skb;
-> > > > >      int err =3D -ENOBUFS;
-> > > > > -
-> > > > > +    if (dev->rtnl_link_ops)
-> > > > > +        printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n", dev->rtnl=
-_link_ops,
-> > > > > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> > > > >      skb =3D nlmsg_new(if_nlmsg_size(dev, 0), flags);
-> > > > >      if (skb =3D=3D NULL)
-> > > > >          goto errout;
-> > > > > @@ -3861,7 +3868,9 @@ static void rtmsg_ifinfo_event(int type, st=
-ruct
-> > > > > net_device *dev,
-> > > > >
-> > > > >      if (dev->reg_state !=3D NETREG_REGISTERED)
-> > > > >          return;
-> > > > > -
-> > > > > +    if (dev->rtnl_link_ops)
-> > > > > +        printk(KERN_INFO "%lx IFLA_INFO_KIND  %s %s\n", dev->rtn=
-l_link_ops,
-> > > > > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> > > > >      skb =3D rtmsg_ifinfo_build_skb(type, dev, change, event, fla=
-gs, new_nsid,
-> > > > >                       new_ifindex);
-> > > > >      if (skb)
-> > > > > @@ -3871,6 +3880,9 @@ static void rtmsg_ifinfo_event(int type, st=
-ruct
-> > > > > net_device *dev,
-> > > > >  void rtmsg_ifinfo(int type, struct net_device *dev, unsigned int=
- change,
-> > > > >            gfp_t flags)
-> > > > >  {
-> > > > > +    if (dev->rtnl_link_ops)
-> > > > > +        printk(KERN_INFO "%lx IFLA_INFO_KIND  %s %s\n", dev->rtn=
-l_link_ops,
-> > > > > +               dev->rtnl_link_ops->kind, __FUNCTION__);
-> > > > >      rtmsg_ifinfo_event(type, dev, change, rtnl_get_event(0), fla=
-gs,
-> > > > >                 NULL, 0);
-> > > > >  }
-> > > > > diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-> > > > > index c0b138c20992..fa5b2725811c 100644
-> > > > > --- a/net/ipv6/sit.c
-> > > > > +++ b/net/ipv6/sit.c
-> > > > > @@ -1919,6 +1919,8 @@ static int __net_init sit_init_net(struct n=
-et *net)
-> > > > >       * Allowing to move it to another netns is clearly unsafe.
-> > > > >       */
-> > > > >      sitn->fb_tunnel_dev->features |=3D NETIF_F_NETNS_LOCAL;
-> > > > > -
-> > > > > +    printk(KERN_INFO "%lx IFLA_INFO_KIND %s %s\n",
-> > > > > +           sitn->fb_tunnel_dev->rtnl_link_ops,
-> > > > > +           sitn->fb_tunnel_dev->rtnl_link_ops->kind, __FUNCTION_=
-_);
-> > > > >      err =3D register_netdev(sitn->fb_tunnel_dev);
-> > > > >      if (err)
-> > > > >          goto err_reg_dev;
-> > > > > >
-> > > > > > >>> Hope I can be of more helpful.
-> > > > > > >>
-> > > > > > >> Some distributions support multi-arch, so they easily allow
-> > > > > > >> crosscompiling for different architectures.
-> > > > > > > I use "make  ARCH=3Dpowerpc CC=3Dpowerpc64le-linux-gnu-gcc-9
-> > > > > > > CROSS_COMPILE=3Dpowerpc64le-linux-gnu- -j 16" to cross compil=
-e kernel
-> > > > > > > for powerpc64le in my Ubuntu 20.04 x86_64. But I can't boot t=
-he
-> > > > > > > compiled kernel using "qemu-system-ppc64le -M pseries -nograp=
-hic -smp
-> > > > > > > 4 -net none -m 4G -kernel arch/powerpc/boot/zImage". I will c=
-ontinue
-> > > > > > > to explore it.
-> > > > > >
-> > > > > > Oh, that does not sound good. But I have not tried that in a lo=
-ng time
-> > > > > > either. It=E2=80=99s a separate issue, but maybe some of the PP=
-C
-> > > > > > maintainers/folks could help.
-> > > > > I will do further research on this later.
-> > > > >
-> > > > > Thanks for your time
-> > > > > Kind regards
-> > > > > Zhouyi
-> > > > > >
-> > > > > >
-> > > > > > Kind regards,
-> > > > > >
-> > > > > > Paul
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
