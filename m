@@ -2,354 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24CE14ADDA7
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 16:52:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C9304ADDAA
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 16:53:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381853AbiBHPwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 10:52:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34176 "EHLO
+        id S1357527AbiBHPxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 10:53:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376280AbiBHPwX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 10:52:23 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2079.outbound.protection.outlook.com [40.107.220.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84841C061579;
-        Tue,  8 Feb 2022 07:52:22 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DeUvhhK2ZBlyK7eJ4F2r4khfKx++K9lRMWF2G7xYa9BiEiIpILU+yfpwsATXElATq1hP4P8Oka7M/HnEkjLvBw/Mb+2UfPUQ4kQiHY+S/PL65B66YQpiHnV2E4M/7ZgNuPCwcB9hfLS14FpuTduY5CeWuJ4Lmu98PUz9hQ5fskoI08QmQel//VYkwzd/jaQ7H3rhLUop4u0QXjgHNHSTfIKe5dAEiDZ9AAWhfEyQbsFhf7wsbiofhhC+yzIQak1MmN+rQY5cpIc09Ils4bVExoclkLyYDY7nyZ7IW86aO7stjSE8MOXuC8o+V9vuq7t1KNTgUpwPd3Df2qCPBqW5Xw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VcsVLRBAK5JKotjr/PZnpfox5eHfXvmkxZKbc32faXM=;
- b=nAhb7aSQ9/vsCrApodx1uN4SSpQSo45KrAX22eV423aCMEQMdlphDJH9/MBJyoCRCEQr4IxsTHBGP4i66Y8YpPmVHTqh06PG14ncysOuAQ30Jh+VmZGhErARbIMUNEGRWuaRiXDFeNMwT5qmxQPpsvpQ3YRLjqtJ8oH2I7FjHPvcyCEQYStpxOh/guJXr2nOjPBDR+Fh87pvJW0PRuhJGwbY/6A99N9HWs3QM8wfrovrb4LUuHP5S8kdIY4DMIbY7kuF4BmSClRY1j/oYXvM0RnWyyjp2qnkThD4hmEo+BtyhxheQ+l9cpevv21DLXtNhLUOFULy8XUwq7XYsLlnKQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=grandegger.com smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
+        with ESMTP id S235311AbiBHPxO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 10:53:14 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B337C061576;
+        Tue,  8 Feb 2022 07:53:13 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id x3so14175733pll.3;
+        Tue, 08 Feb 2022 07:53:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VcsVLRBAK5JKotjr/PZnpfox5eHfXvmkxZKbc32faXM=;
- b=jp1Db41dNoJh7k07Hp7ZHe1bAynsuC8ZzkBn600Gj/qaC0vRdZ3AqUpi+vn5nP7aYgNwua51iP1h+OYpAE5rL1tqZ670KDE3jzErBNhtlfN/Tbfmj9ykVJWt/7vdWMItqpeZboA3dD2YYRFIXgTWZC2gW5VkwLmEI3MxtMQJFz8=
-Received: from SN7PR18CA0012.namprd18.prod.outlook.com (2603:10b6:806:f3::35)
- by BYAPR02MB4869.namprd02.prod.outlook.com (2603:10b6:a03:45::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Tue, 8 Feb
- 2022 15:52:19 +0000
-Received: from SN1NAM02FT0040.eop-nam02.prod.protection.outlook.com
- (2603:10b6:806:f3:cafe::ac) by SN7PR18CA0012.outlook.office365.com
- (2603:10b6:806:f3::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11 via Frontend
- Transport; Tue, 8 Feb 2022 15:52:19 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- SN1NAM02FT0040.mail.protection.outlook.com (10.97.5.204) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4951.12 via Frontend Transport; Tue, 8 Feb 2022 15:52:19 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 8 Feb 2022 07:52:15 -0800
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 8 Feb 2022 07:52:15 -0800
-Envelope-to: git@xilinx.com,
- wg@grandegger.com,
- mkl@pengutronix.de,
- davem@davemloft.net,
- kuba@kernel.org,
- robh+dt@kernel.org,
- linux-can@vger.kernel.org,
- netdev@vger.kernel.org,
- devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org
-Received: from [10.140.6.18] (port=57654 helo=xhdlakshmis40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <amit.kumar-mahapatra@xilinx.com>)
-        id 1nHSmt-000Bhv-1m; Tue, 08 Feb 2022 07:52:15 -0800
-From:   Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
-To:     <appana.durga.rao@xilinx.com>, <wg@grandegger.com>,
-        <mkl@pengutronix.de>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <robh+dt@kernel.org>
-CC:     <git@xilinx.com>, <naga.sureshkumar.relli@xilinx.com>,
-        <michal.simek@xilinx.com>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Amit Kumar Mahapatra" <amit.kumar-mahapatra@xilinx.com>
-Subject: [PATCH] dt-bindings: can: xilinx_can: Convert Xilinx CAN binding to YAML
-Date:   Tue, 8 Feb 2022 21:22:09 +0530
-Message-ID: <20220208155209.25926-1-amit.kumar-mahapatra@xilinx.com>
-X-Mailer: git-send-email 2.17.1
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=gAm+PLZtrqdu/2KKj3BZozQaVMMACzxvjpkrHL/obM4=;
+        b=aV/EE1edQCucPEr+plYfTdxaMVX8QN1x4M6sMVj9wVDOxMMG+25UrgT8O96rKHY80V
+         KBwM8FJcupa7PIPHI0rXalxH1N6c1tXZ2Vd26NRBL3UwSSKBaL8OkLisb1sTnoh0Zhw7
+         qPOuUGusze8e6ezam8tunqmF5M2RO+K084dzHN2iJlPlCim04ptuRsL+nSJiZhq95Hzn
+         Vu2qD8CxGOp8VB1vuNdcMvZSkxKBKhhshz7MDCNKiirIp1+dJv2tUSTYk1KQNEeyKLCO
+         LKeR4zhbVfCs70dJkup1PcdC+4vKseKVk0eFTPeuOEAkLttLeTvfHAU2Vnx3qZZVbuSQ
+         MzSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=gAm+PLZtrqdu/2KKj3BZozQaVMMACzxvjpkrHL/obM4=;
+        b=pgpTs1MwsnzhgGJ1xEVasS+gNE5wV0FrVSj3d/p0wU3Qwaix2PRGPdqL5kLesRyF2S
+         kWPG+S1mZjcZmvLTvDekW/9jA2r4P43rSOA1tVHqZyKi4tW9EDL3CdmK1QoQ3lxH+iOh
+         le9kTAZFAPM6L0NPgHk9R5J5x6EQyIpbjVeEylA08F0jU3DxfmCER4dMaq0IozVjXS9d
+         71c7yoTkno76HPWjg8YwmIbTeJjQiTkDfgQh3MZAwlVxXxLETfA1pBS8HTFEixlrnCiM
+         ZYQUrsER/tGpOILyCoA9GpICSnDANw2RFbQOjeq+u+8ZNrJdKfr1uA2uIzPuSR0Lhxab
+         aDmQ==
+X-Gm-Message-State: AOAM531G0mD6VWn1n54byP2m+QCqehIFqr3Mrr0jTjypjkxp/zzMbz+h
+        8WZKszpckL0PL8N/9zitZ9g=
+X-Google-Smtp-Source: ABdhPJybJREJFmQkPKtB0rsnZk0tzZgG7w0ZBF+GSQrj0s3mvdMvi7ThmDAG3834IOzuqFRMQOvYLg==
+X-Received: by 2002:a17:903:2286:: with SMTP id b6mr5280223plh.94.1644335593021;
+        Tue, 08 Feb 2022 07:53:13 -0800 (PST)
+Received: from localhost ([2405:201:2003:b021:6001:8ce1:3e29:705e])
+        by smtp.gmail.com with ESMTPSA id o21sm17116826pfu.100.2022.02.08.07.53.09
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 08 Feb 2022 07:53:12 -0800 (PST)
+Date:   Tue, 8 Feb 2022 21:23:06 +0530
+From:   Raag Jadav <raagjadav@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
+Message-ID: <20220208155306.GA3003@localhost>
+References: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
+ <Yf6QbbqaxZhZPUdC@lunn.ch>
+ <20220206171234.GA5778@localhost>
+ <YgANBQjsrmK+T/N+@lunn.ch>
+ <20220207174948.GA5183@localhost>
+ <YgI7qcO1qjicYqUm@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4cb79005-e24b-4a6d-ed4b-08d9eb1afcb8
-X-MS-TrafficTypeDiagnostic: BYAPR02MB4869:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR02MB4869CA4545FE38346799D64CBA2D9@BYAPR02MB4869.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:849;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: a3J0SJut709RW7Kvsik48icIJEZz227eKWrDKGVvl9K8KaPjQ70afMQU56jsTSvBqdNi/3M2ENDWDVRpoO0/K1oeouEkbWnBKs1qvW7J2UNwD+43u5YKkYDDlG1E1pUdvcMg0aUNIgsU4cjAEfPMC+jqyK3pCZchpUmelLEaF0kd0bovY/zbdb4xcXkm2UsXhXLTQ6hax5djoH3guWxvSWbbuZuwvITwRdguT6Fzv5M1j/Q8wYPQFNX5FJab0vFL2zOdSFd66gVjH7oOww96l8tcUslS5Wy84YxGAFvq/7d5/iS0ZW16XMWJRVAEbpJC1we4IhRdBLNrEOfInPmbF0qZzCPEq6YuU3KLYuOaGnagSCH7VU6jg+PXQUmYai/68HELAj6QdFXsnA/iJVdDolT/1UmkysgOzgnaaly/x1mx+OoOxAKSdPL4vTr4YMM6E1F4OoJ81F75S6Wf+/U74Bprmhx9yAm7OvScUDuOsDuuhl7wqqL4iPUewjPEdqsIOaK3fSKQBsunXnMMxzcWw8mdhpwkcGY/BAAzeikPPP8zqkUd5oNkvRCjSGnmnXNhEksJTlWyZIslCZ/1D5HvkW5QqTm2ZXGW+EvtdK7LIVRx0iyKi3bzonIR4e9PIiV72y5WLoOI/Fytpl0NRK5gG3pK6htD+QbdSKJLDY8sOV2HdnCjOtRJ+2LwcGkK5wmmF247IL8S4JULprVKOFzEyMzDcoVPGQTNCNj3YXxsEZTKoBhlFeeFWlwvH65UnYvwxgRU++NilPFWwsjua/CGGj0Ezsu+ZaylS9cVwQqX8Tc=
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(4326008)(508600001)(8936002)(70206006)(36860700001)(316002)(9786002)(966005)(70586007)(426003)(54906003)(47076005)(2906002)(8676002)(110136005)(82310400004)(36756003)(7416002)(7636003)(336012)(356005)(7696005)(5660300002)(107886003)(2616005)(1076003)(26005)(186003)(6666004)(83380400001)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2022 15:52:19.0353
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cb79005-e24b-4a6d-ed4b-08d9eb1afcb8
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0040.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB4869
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YgI7qcO1qjicYqUm@shell.armlinux.org.uk>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert Xilinx CAN binding documentation to YAML.
+On Tue, Feb 08, 2022 at 09:45:13AM +0000, Russell King (Oracle) wrote:
+> On Mon, Feb 07, 2022 at 11:19:48PM +0530, Raag Jadav wrote:
+> > On Sun, Feb 06, 2022 at 07:01:41PM +0100, Andrew Lunn wrote:
+> > > On Sun, Feb 06, 2022 at 10:42:34PM +0530, Raag Jadav wrote:
+> > > > On Sat, Feb 05, 2022 at 03:57:49PM +0100, Andrew Lunn wrote:
+> > > > > On Sat, Feb 05, 2022 at 12:14:52PM +0530, Raag Jadav wrote:
+> > > > > > Enable MAC SerDes autonegotiation to distinguish between
+> > > > > > 1000BASE-X, SGMII and QSGMII MAC.
+> > > > > 
+> > > > > How does autoneg help you here? It just tells you about duplex, pause
+> > > > > etc. It does not indicate 1000BaseX, SGMII etc. The PHY should be
+> > > > > using whatever mode it was passed in phydev->interface, which the MAC
+> > > > > sets when it calls the connection function. If the PHY dynamically
+> > > > > changes its host side mode as a result of what that line side is
+> > > > > doing, it should also change phydev->interface. However, as far as i
+> > > > > can see, the mscc does not do this.
+> > > > >
+> > > > 
+> > > > Once the PHY auto-negotiates parameters such as speed and duplex mode
+> > > > with its link partner over the copper link as per IEEE 802.3 Clause 27,
+> > > > the link partner’s capabilities are then transferred by PHY to MAC
+> > > > over 1000BASE-X or SGMII link using the auto-negotiation functionality
+> > > > defined in IEEE 802.3z Clause 37.
+> > > 
+> > > None of this allows you to distinguish between 1000BASE-X, SGMII and
+> > > QSGMII, which is what the commit message says.
+> > > 
+> > 
+> > I agree, the current commit message is misleading.
+> > 
+> > > It does allow you to get duplex, pause, and maybe speed via in band
+> > > signalling. But you should also be getting the same information out of
+> > > band, via the phylib callback.
+> > > 
+> > > There are some MACs which don't seem to work correctly without the in
+> > > band signalling, so maybe that is your problem? Please could you give
+> > > more background about your problem, what MAC and PHY combination are
+> > > you using, what problem you are seeing, etc.
+> > > 
+> > 
+> > MAC implementation[1] in a lot of NXP SoCs comes with in-band aneg enabled
+> > by default, and it does expect Clause 37 auto-negotiation to complete
+> > between MAC and PHY before the actual data transfer happens.
+> > 
+> > [1] https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/t-series/3241/1/AN3869(1).pdf
+> > 
+> > I faced such issue while integrating VSC85xx PHY
+> > with one of the recent NXP SoC having similar MAC implementation.
+> > Not sure if this is a problem on MAC side or PHY side,
+> > But having Clause 37 support should help in most cases I believe.
+> 
+> Clause 37 is 1000BASE-X negotiation, which is different from SGMII - a
+> point which is even made in your PDF above in section 1.1.
+> 
+> You will need both ends to be operating in SGMII mode for 10M and 100M
+> to work. If one end is in 1000BASE-X mdoe and the other is in SGMII,
+> it can appear to work, but it won't be working correctly.
+> 
+> Please get the terminology correct here when talking about SGMII or
+> 1000BASE-X.
+> 
 
-Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
----
-BRANCH: yaml
----
- .../bindings/net/can/xilinx_can.txt           |  61 --------
- .../bindings/net/can/xilinx_can.yaml          | 146 ++++++++++++++++++
- 2 files changed, 146 insertions(+), 61 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/can/xilinx_can.txt
- create mode 100644 Documentation/devicetree/bindings/net/can/xilinx_can.yaml
+Thank you for the clarification.
+Really appreciate it.
 
-diff --git a/Documentation/devicetree/bindings/net/can/xilinx_can.txt b/Documentation/devicetree/bindings/net/can/xilinx_can.txt
-deleted file mode 100644
-index 100cc40b8510..000000000000
---- a/Documentation/devicetree/bindings/net/can/xilinx_can.txt
-+++ /dev/null
-@@ -1,61 +0,0 @@
--Xilinx Axi CAN/Zynq CANPS controller Device Tree Bindings
-----------------------------------------------------------
--
--Required properties:
--- compatible		: Should be:
--			  - "xlnx,zynq-can-1.0" for Zynq CAN controllers
--			  - "xlnx,axi-can-1.00.a" for Axi CAN controllers
--			  - "xlnx,canfd-1.0" for CAN FD controllers
--			  - "xlnx,canfd-2.0" for CAN FD 2.0 controllers
--- reg			: Physical base address and size of the controller
--			  registers map.
--- interrupts		: Property with a value describing the interrupt
--			  number.
--- clock-names		: List of input clock names
--			  - "can_clk", "pclk" (For CANPS),
--			  - "can_clk", "s_axi_aclk" (For AXI CAN and CAN FD).
--			  (See clock bindings for details).
--- clocks		: Clock phandles (see clock bindings for details).
--- tx-fifo-depth		: Can Tx fifo depth (Zynq, Axi CAN).
--- rx-fifo-depth		: Can Rx fifo depth (Zynq, Axi CAN, CAN FD in
--                          sequential Rx mode).
--- tx-mailbox-count	: Can Tx mailbox buffer count (CAN FD).
--- rx-mailbox-count	: Can Rx mailbox buffer count (CAN FD in mailbox Rx
--			  mode).
--
--
--Example:
--
--For Zynq CANPS Dts file:
--	zynq_can_0: can@e0008000 {
--			compatible = "xlnx,zynq-can-1.0";
--			clocks = <&clkc 19>, <&clkc 36>;
--			clock-names = "can_clk", "pclk";
--			reg = <0xe0008000 0x1000>;
--			interrupts = <0 28 4>;
--			interrupt-parent = <&intc>;
--			tx-fifo-depth = <0x40>;
--			rx-fifo-depth = <0x40>;
--		};
--For Axi CAN Dts file:
--	axi_can_0: axi-can@40000000 {
--			compatible = "xlnx,axi-can-1.00.a";
--			clocks = <&clkc 0>, <&clkc 1>;
--			clock-names = "can_clk","s_axi_aclk" ;
--			reg = <0x40000000 0x10000>;
--			interrupt-parent = <&intc>;
--			interrupts = <0 59 1>;
--			tx-fifo-depth = <0x40>;
--			rx-fifo-depth = <0x40>;
--		};
--For CAN FD Dts file:
--	canfd_0: canfd@40000000 {
--			compatible = "xlnx,canfd-1.0";
--			clocks = <&clkc 0>, <&clkc 1>;
--			clock-names = "can_clk", "s_axi_aclk";
--			reg = <0x40000000 0x2000>;
--			interrupt-parent = <&intc>;
--			interrupts = <0 59 1>;
--			tx-mailbox-count = <0x20>;
--			rx-fifo-depth = <0x20>;
--		};
-diff --git a/Documentation/devicetree/bindings/net/can/xilinx_can.yaml b/Documentation/devicetree/bindings/net/can/xilinx_can.yaml
-new file mode 100644
-index 000000000000..cdf2e4a20662
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/can/xilinx_can.yaml
-@@ -0,0 +1,146 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/can/xilinx_can.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title:
-+  Xilinx Axi CAN/Zynq CANPS controller Binding
-+
-+maintainers:
-+  - Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - const: xlnx,zynq-can-1.0
-+        description: For Zynq CAN controller
-+      - const: xlnx,axi-can-1.00.a
-+        description: For Axi CAN controller
-+      - const: xlnx,canfd-1.0
-+        description: For CAN FD controller
-+      - const: xlnx,canfd-2.0
-+        description: For CAN FD 2.0 controller
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    description: |
-+      CAN functional clock phandle
-+    maxItems: 2
-+
-+  tx-fifo-depth:
-+    description: |
-+      CAN Tx fifo depth (Zynq, Axi CAN).
-+
-+  rx-fifo-depth:
-+    description: |
-+      CAN Rx fifo depth (Zynq, Axi CAN, CAN FD in sequential Rx mode)
-+
-+  tx-mailbox-count:
-+    description: |
-+      CAN Tx mailbox buffer count (CAN FD)
-+
-+  rx-mailbox-count:
-+    description: |
-+      CAN Rx mailbox buffer count (CAN FD in mailbox Rx  mode)
-+
-+  clock-names:
-+    maxItems: 2
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: xlnx,zynq-can-1.0
-+
-+    then:
-+      properties:
-+        clock-names:
-+          items:
-+            - const: can_clk
-+            - const: pclk
-+      required:
-+        - tx-fifo-depth
-+        - rx-fifo-depth
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: xlnx,axi-can-1.00.a
-+
-+    then:
-+      properties:
-+        clock-names:
-+          items:
-+            - const: can_clk
-+            - const: s_axi_aclk
-+      required:
-+        - tx-fifo-depth
-+        - rx-fifo-depth
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: xlnx,canfd-1.0
-+
-+    then:
-+      properties:
-+        clock-names:
-+          items:
-+            - const: can_clk
-+            - const: s_axi_aclk
-+      required:
-+        - tx-mailbox-count
-+        - rx-fifo-depth
-+
-+examples:
-+  - |
-+    can@e0008000 {
-+        compatible = "xlnx,zynq-can-1.0";
-+        clocks = <&clkc 19>, <&clkc 36>;
-+        clock-names = "can_clk", "pclk";
-+        reg = <0xe0008000 0x1000>;
-+        interrupts = <0 28 4>;
-+        interrupt-parent = <&intc>;
-+        tx-fifo-depth = <0x40>;
-+        rx-fifo-depth = <0x40>;
-+    };
-+  - |
-+    axi-can@40000000 {
-+        compatible = "xlnx,axi-can-1.00.a";
-+        clocks = <&clkc 0>, <&clkc 1>;
-+        clock-names = "can_clk","s_axi_aclk" ;
-+        reg = <0x40000000 0x10000>;
-+        interrupt-parent = <&intc>;
-+        interrupts = <0 59 1>;
-+        tx-fifo-depth = <0x40>;
-+        rx-fifo-depth = <0x40>;
-+    };
-+  - |
-+    canfd@40000000 {
-+        compatible = "xlnx,canfd-1.0";
-+        clocks = <&clkc 0>, <&clkc 1>;
-+        clock-names = "can_clk", "s_axi_aclk";
-+        reg = <0x40000000 0x2000>;
-+        interrupt-parent = <&intc>;
-+        interrupts = <0 59 1>;
-+        tx-mailbox-count = <0x20>;
-+        rx-fifo-depth = <0x20>;
-+    };
--- 
-2.17.1
+Cheers,
+Raag
 
+> -- 
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
