@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B4184AD0FB
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 06:33:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B8934AD0E7
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 06:33:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242961AbiBHFd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 00:33:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56640 "EHLO
+        id S231652AbiBHFdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 00:33:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347044AbiBHEvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:51:08 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C99C0401E5
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:51:07 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id u130so16839063pfc.2
-        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 20:51:07 -0800 (PST)
+        with ESMTP id S1347046AbiBHEvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:51:11 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5255DC0401E5
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:51:11 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id c3so12877738pls.5
+        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 20:51:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=MO0sIC6aoDSHuE1A77wb7716OltOM6QAoh5qnGMh2Os=;
-        b=nUiSgYkcAATTYcKmRrIUmZ2D70W7aZUVeLkwWoacnQrT9IdEJWdIMWpEHPyacz9TNr
-         aXR+ZaMu7Wl/pOZJ1Fdm7ZcoXHgQT4Fc/fjB/xESEp01bq5s8CUYpJa6yW3MgiQDAs2r
-         OIWzVSEbY2TGKDgRqFsokJmmgC0jZulmdDMm6R383ewjMZX4f95qTwJ6GgfhGutKdK/X
-         EUOTAcCvrrseBeAQB7u7OpLEC6CeYohcb4tMaR4jcl/99KDcTF63+38n+L1pgPmJzEam
-         RGdpKSNOsfBC7QDTpskxArzSVgpz6mrE5PJcq6VKlyAO8r6l7G6TOLV78iMdG8CQC8mB
-         3Vnw==
+        bh=zsNMXE+P45OQsH5Dutxol2CPtyXwO7PMwPm5gWuakjs=;
+        b=Dy6sluPV98pHSN6HjX+d8ZqNevr0X2lkD9OOBtGZbFN9bMeVHLFXdKlnq6Tk4MW46S
+         0A231bN7Jhum+BX05rh6EKpoPC6FBtwsLFJjFGDd/RPPal72Wo3T3tD8elcy0U6mAx/e
+         Xldxu7YNVjigA7yI4U6x+behMo13vOimBDO+gNhK6ZNtG5yV8ohBNaqpQgD1zJOSbN0N
+         d9JyiC9ozru5VzIqy7BUJQQgT8OI5hNLRMvBOOHe0IFJrg2QHm2b2MSu1IS0aHpauYbt
+         0XEMDF4eH2urPyAKxbzrpXnwy7LYWzQLSRfAnWAYXQLiKKaOT1nq7BThTE4kSAZJW03l
+         NMzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=MO0sIC6aoDSHuE1A77wb7716OltOM6QAoh5qnGMh2Os=;
-        b=p+fYDxpwPsZxvY0QGlMSdXYp6J96zVmzI6c4ZLiFR3O/jDBNexebvvZPQ4ZLSHMDKq
-         KcCu0e/0kjwWd2fGLsGOKB1azweO15HSiXsJ4V27dto5Da+JPoTl9dWvQMgS+H7leG+q
-         BgNBlzi9rGcidtiNVHsW6er7rxCqFmS5+2ZyX8OoLQTZbQoLZ2ogk3kAoZ9Y+UI1J5IG
-         0ICHjxMiD9gDMywg9tHnP4z76z7s9Ai8Ygj6PJZ3VOokw0yizWmAbfAP9X7KUrCBtSo/
-         x+rJ8VeRGSOTV+iyqCKH0hIksUg2EpRXvga5dzRAm7TzpAAj5ONgpUV8uadcucZnglUs
-         wRxg==
-X-Gm-Message-State: AOAM533W1vEJwWnswVIvnTJUNsQEHMC6I72QYPRvEAEX1Ow+WVFo8bfH
-        B7m6IQ1HpDxKViZ+xewEfRw=
-X-Google-Smtp-Source: ABdhPJwksc0PYZZqCsTLGAhfRJfxmh/cuQhzoGyaOL4JE4KByUsmRTVKwjvijW7YG8XiPiNpRPphQA==
-X-Received: by 2002:a05:6a00:1588:: with SMTP id u8mr2690475pfk.4.1644295867415;
-        Mon, 07 Feb 2022 20:51:07 -0800 (PST)
+        bh=zsNMXE+P45OQsH5Dutxol2CPtyXwO7PMwPm5gWuakjs=;
+        b=ZRYvudOMvx7zTgjE5kOMQ8vWVv9NalE/YWuWbYO47lrzZDcNvkQHmqUrx6P1YhlCqM
+         7+torR+NS+ARl7aOZQtU8690VCpinucNf2auZraL6mJoC+sJzl2KvfoSAmXkg+Ahnhkk
+         7vfY5VeM8Y5I1dLtZWRcNU3aYiNYHTtEiMgAH+QIZL2ylkR1jADqShOOZgN9BtkFvBmn
+         8fjwgn3xh9yEep0VMhjAF9bZrGFutnFPKPdAKPDFRAYduErKbYF3ahcu18YVGItQjc28
+         aBsYaQ89n8dZlDoiiwjqTBwsgLvXsFW1ocdQvUjHHTQj0TVk9iefI++kTIUotIIOcbu3
+         YSYw==
+X-Gm-Message-State: AOAM531HcTPtrrc5W9Og+66Mez6OL0l4Nj/EfBqW9iYcWArV7a1XqYmQ
+        Waa3CxNza8FJSO/I+7J/GYk=
+X-Google-Smtp-Source: ABdhPJwUjvW9Zg1bEeA7mdRcRMHLLqLe3BJ8f5/tyB37sAcjWuaoJol53x7D5Tw5lxUf0sGl1RycDw==
+X-Received: by 2002:a17:902:8ec5:: with SMTP id x5mr2791258plo.161.1644295870893;
+        Mon, 07 Feb 2022 20:51:10 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:8f56:515b:a442:2bd5])
-        by smtp.gmail.com with ESMTPSA id j23sm9810257pgb.75.2022.02.07.20.51.06
+        by smtp.gmail.com with ESMTPSA id j23sm9810257pgb.75.2022.02.07.20.51.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 20:51:07 -0800 (PST)
+        Mon, 07 Feb 2022 20:51:10 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v2 net-next 05/11] ipv4: add fib_net_exit_batch()
-Date:   Mon,  7 Feb 2022 20:50:32 -0800
-Message-Id: <20220208045038.2635826-6-eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next 06/11] ipv6: change fib6_rules_net_exit() to batch mode
+Date:   Mon,  7 Feb 2022 20:50:33 -0800
+Message-Id: <20220208045038.2635826-7-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 In-Reply-To: <20220208045038.2635826-1-eric.dumazet@gmail.com>
 References: <20220208045038.2635826-1-eric.dumazet@gmail.com>
@@ -75,72 +75,45 @@ From: Eric Dumazet <edumazet@google.com>
 
 cleanup_net() is competing with other rtnl users.
 
-Instead of acquiring rtnl at each fib_net_exit() invocation,
-add fib_net_exit_batch() so that rtnl is acquired once.
+fib6_rules_net_exit() seems a good candidate for exit_batch(),
+as this gives chance for cleanup_net() to progress much faster,
+holding rtnl a bit longer.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Reviewed-by: David Ahern <dsahern@kernel.org>
 ---
- net/ipv4/fib_frontend.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
+ net/ipv6/fib6_rules.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 4d61ddd8a0ecfc4cc47b4802eb5a573beb84ee44..8c10f671d24db7f5751b6aed8e90a902bd1be5b4 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -1547,7 +1547,7 @@ static void ip_fib_net_exit(struct net *net)
- {
- 	int i;
- 
--	rtnl_lock();
-+	ASSERT_RTNL();
- #ifdef CONFIG_IP_MULTIPLE_TABLES
- 	RCU_INIT_POINTER(net->ipv4.fib_main, NULL);
- 	RCU_INIT_POINTER(net->ipv4.fib_default, NULL);
-@@ -1572,7 +1572,7 @@ static void ip_fib_net_exit(struct net *net)
- #ifdef CONFIG_IP_MULTIPLE_TABLES
- 	fib4_rules_exit(net);
- #endif
--	rtnl_unlock();
-+
- 	kfree(net->ipv4.fib_table_hash);
- 	fib4_notifier_exit(net);
- }
-@@ -1599,7 +1599,9 @@ static int __net_init fib_net_init(struct net *net)
- out_proc:
- 	nl_fib_lookup_exit(net);
- out_nlfl:
-+	rtnl_lock();
- 	ip_fib_net_exit(net);
-+	rtnl_unlock();
+diff --git a/net/ipv6/fib6_rules.c b/net/ipv6/fib6_rules.c
+index ec029c86ae06828c1cfe886ad0f401318b114310..8ad4f49cbe0bb1a31645bbdd4735c69b9b52d8bb 100644
+--- a/net/ipv6/fib6_rules.c
++++ b/net/ipv6/fib6_rules.c
+@@ -486,16 +486,21 @@ static int __net_init fib6_rules_net_init(struct net *net)
  	goto out;
  }
  
-@@ -1607,12 +1609,23 @@ static void __net_exit fib_net_exit(struct net *net)
+-static void __net_exit fib6_rules_net_exit(struct net *net)
++static void __net_exit fib6_rules_net_exit_batch(struct list_head *net_list)
  {
- 	fib_proc_exit(net);
- 	nl_fib_lookup_exit(net);
--	ip_fib_net_exit(net);
-+}
-+
-+static void __net_exit fib_net_exit_batch(struct list_head *net_list)
-+{
 +	struct net *net;
 +
-+	rtnl_lock();
-+	list_for_each_entry(net, net_list, exit_list)
-+		ip_fib_net_exit(net);
-+
-+	rtnl_unlock();
+ 	rtnl_lock();
+-	fib_rules_unregister(net->ipv6.fib6_rules_ops);
++	list_for_each_entry(net, net_list, exit_list) {
++		fib_rules_unregister(net->ipv6.fib6_rules_ops);
++		cond_resched();
++	}
+ 	rtnl_unlock();
  }
  
- static struct pernet_operations fib_net_ops = {
- 	.init = fib_net_init,
- 	.exit = fib_net_exit,
-+	.exit_batch = fib_net_exit_batch,
+ static struct pernet_operations fib6_rules_net_ops = {
+ 	.init = fib6_rules_net_init,
+-	.exit = fib6_rules_net_exit,
++	.exit_batch = fib6_rules_net_exit_batch,
  };
  
- void __init ip_fib_init(void)
+ int __init fib6_rules_init(void)
 -- 
 2.35.0.263.gb82422642f-goog
 
