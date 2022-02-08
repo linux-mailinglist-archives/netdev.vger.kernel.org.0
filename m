@@ -2,52 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC9654AE60E
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 01:33:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A312D4AE55C
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 00:18:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240036AbiBIAcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 19:32:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39086 "EHLO
+        id S235954AbiBHXRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 18:17:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230431AbiBIAcs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 19:32:48 -0500
-X-Greylist: delayed 8394 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 16:32:47 PST
-Received: from smtp.hosts.co.uk (smtp.hosts.co.uk [85.233.160.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480C9C06157B;
-        Tue,  8 Feb 2022 16:32:46 -0800 (PST)
-Received: from host81-132-12-162.range81-132.btcentralplus.com ([81.132.12.162] helo=[192.168.1.218])
-        by smtp.hosts.co.uk with esmtpa (Exim)
-        (envelope-from <antlists@youngman.org.uk>)
-        id 1nHYjC-0006Ve-Bl; Tue, 08 Feb 2022 22:12:50 +0000
-Message-ID: <d07a9d41-5a8f-a1f3-59f7-d2a75d6df2e5@youngman.org.uk>
-Date:   Tue, 8 Feb 2022 22:12:47 +0000
+        with ESMTP id S235952AbiBHXRr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 18:17:47 -0500
+X-Greylist: delayed 897 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 15:17:47 PST
+Received: from hs01.dk-develop.de (hs01.dk-develop.de [173.249.23.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A2FFC061577
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 15:17:46 -0800 (PST)
+Date:   Tue, 8 Feb 2022 23:52:44 +0100
+From:   Danilo Krummrich <danilokrummrich@dk-develop.de>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>
+Subject: Re: [PATCH 2/2] net: mdio: support c45 peripherals on c22 busses
+Message-ID: <YgLxYeRzruu3Ugr1@pollux>
+References: <20210331141755.126178-3-danilokrummrich@dk-develop.de>
+ <YGSi+b/r4zlq9rm8@lunn.ch>
+ <6f1dfc28368d098ace9564e53ed92041@dk-develop.de>
+ <20210331183524.GV1463@shell.armlinux.org.uk>
+ <2f0ea3c3076466e197ca2977753b07f3@dk-develop.de>
+ <20210401084857.GW1463@shell.armlinux.org.uk>
+ <YGZvGfNSBBq/92D+@arch-linux>
+ <YGcOBkr2V1onxWDt@lunn.ch>
+ <YGoEo3s/AxrjowLH@arch-linux>
+ <CAMuHMdUCDYvjZCrybxSF5rLGM81Ujkg=CSp-ymFWV+E8S5Wq6A@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/2] lib/raid6/test/Makefile: Use `$(pound)` instead of
- `\#` for Make 4.3
-Content-Language: en-GB
-To:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, Song Liu <song@kernel.org>,
-        linux-raid@vger.kernel.org,
-        Matt Brown <matthew.brown.dev@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <20220208152148.48534-1-pmenzel@molgen.mpg.de>
-From:   Wols Lists <antlists@youngman.org.uk>
-In-Reply-To: <20220208152148.48534-1-pmenzel@molgen.mpg.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdUCDYvjZCrybxSF5rLGM81Ujkg=CSp-ymFWV+E8S5Wq6A@mail.gmail.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -56,13 +50,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/02/2022 15:21, Paul Menzel wrote:
-> So, do the same as commit 9564a8cf422d ("Kbuild: fix # escaping in .cmd
-> files for future Make") and commit 929bef467771 ("bpf: Use $(pound) instead
-> of \# in Makefiles") and define and use a `$(pound)` variable.
+Hi Geert,
 
-As commented elsewhere, for the sake of us ENGLISH speakers, *PLEASE* 
-make that $(hash). A pound sign is £.
+On Tue, Feb 08, 2022 at 05:30:01PM +0100, Geert Uytterhoeven wrote:
+> On Sun, Apr 4, 2021 at 8:26 PM Danilo Krummrich
+> <danilokrummrich@dk-develop.de> wrote:
+> >
+> > Yes, I'll get it ready once I got some spare time.
+> 
+> Did this ever happen? I cannot find such a patch.
+> 
+> I'm asking because I have access to a board with Marvell 88Q2110 PHYs
+> (ID 0x002b0983).
+No, it happened that I neither got access to the datasheet nor to a board I
+could test on again.
 
-Cheers,
-Wol
+I still have some reverse engineered protocol data and I/O traces from a
+proprietary driver, which I can provide to you.
+
+However, without a datasheet this might not lead to a proper driver, whereas
+when having a proper datasheet this data might be needless.
+
+> 
+> Thanks!
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+
+- Danilo
