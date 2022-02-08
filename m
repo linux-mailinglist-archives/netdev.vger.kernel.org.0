@@ -2,94 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C90904AE33D
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 23:21:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B98DF4AE353
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 23:21:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237629AbiBHWV3 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 8 Feb 2022 17:21:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49146 "EHLO
+        id S1387151AbiBHWVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 17:21:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387169AbiBHWF2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 17:05:28 -0500
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292C3C0612B8
-        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 14:05:27 -0800 (PST)
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 218H9uiQ011678
-        for <netdev@vger.kernel.org>; Tue, 8 Feb 2022 14:05:27 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3e3vp823ne-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 08 Feb 2022 14:05:27 -0800
-Received: from twshared22811.39.frc1.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Feb 2022 14:05:26 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 4977529B2C7D2; Tue,  8 Feb 2022 14:05:18 -0800 (PST)
-From:   Song Liu <song@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, Song Liu <song@kernel.org>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH bpf-next 2/2] bpf: fix bpf_prog_pack build HPAGE_PMD_SIZE
-Date:   Tue, 8 Feb 2022 14:05:09 -0800
-Message-ID: <20220208220509.4180389-3-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220208220509.4180389-1-song@kernel.org>
-References: <20220208220509.4180389-1-song@kernel.org>
+        with ESMTP id S1345032AbiBHWUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 17:20:52 -0500
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F734C0612B8;
+        Tue,  8 Feb 2022 14:20:50 -0800 (PST)
+Received: from localhost.localdomain (ip5f5aebc2.dynamic.kabel-deutschland.de [95.90.235.194])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 16BEA61E64846;
+        Tue,  8 Feb 2022 23:20:47 +0100 (CET)
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] Revert "Bluetooth: Fix passing NULL to PTR_ERR"
+Date:   Tue,  8 Feb 2022 23:19:10 +0100
+Message-Id: <20220208221911.57058-1-pmenzel@molgen.mpg.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: LQXQHKq9Uxff64AnLsf3hxmXGFdTRuCP
-X-Proofpoint-GUID: LQXQHKq9Uxff64AnLsf3hxmXGFdTRuCP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-08_06,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 malwarescore=0
- phishscore=0 impostorscore=0 adultscore=0 mlxlogscore=935
- lowpriorityscore=0 bulkscore=0 spamscore=0 priorityscore=1501
- clxscore=1034 mlxscore=0 suspectscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202080129
-X-FB-Internal: deliver
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix build with CONFIG_TRANSPARENT_HUGEPAGE=n with BPF_PROG_PACK_SIZE as
-PAGE_SIZE.
+This reverts commit 266191aa8d14b84958aaeb5e96ee4e97839e3d87, so that
+commit 81be03e026dc ("Bluetooth: RFCOMM: Replace use of memcpy_from_msg
+with bt_skb_sendmmsg"), introducing a regression, can be reverted.
 
-Fixes: 57631054fae6 ("bpf: Introduce bpf_prog_pack allocator")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
 ---
- kernel/bpf/core.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ include/net/bluetooth/bluetooth.h | 2 +-
+ net/bluetooth/rfcomm/sock.c       | 2 +-
+ net/bluetooth/sco.c               | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 306aa63fa58e..9519264ab1ee 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -814,7 +814,11 @@ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
-  * allocator. The prog_pack allocator uses HPAGE_PMD_SIZE page (2MB on x86)
-  * to host BPF programs.
-  */
-+#ifdef CONFIG_TRANSPARENT_HUGEPAGE
- #define BPF_PROG_PACK_SIZE	HPAGE_PMD_SIZE
-+#else
-+#define BPF_PROG_PACK_SIZE	PAGE_SIZE
-+#endif
- #define BPF_PROG_CHUNK_SHIFT	6
- #define BPF_PROG_CHUNK_SIZE	(1 << BPF_PROG_CHUNK_SHIFT)
- #define BPF_PROG_CHUNK_MASK	(~(BPF_PROG_CHUNK_SIZE - 1))
+diff --git a/include/net/bluetooth/bluetooth.h b/include/net/bluetooth/bluetooth.h
+index 4b3d0b16c185..318df161e6d3 100644
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -505,7 +505,7 @@ static inline struct sk_buff *bt_skb_sendmmsg(struct sock *sk,
+ 		struct sk_buff *tmp;
+ 
+ 		tmp = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
+-		if (IS_ERR(tmp)) {
++		if (IS_ERR_OR_NULL(tmp)) {
+ 			kfree_skb(skb);
+ 			return tmp;
+ 		}
+diff --git a/net/bluetooth/rfcomm/sock.c b/net/bluetooth/rfcomm/sock.c
+index 4bf4ea6cbb5e..5938af3e9936 100644
+--- a/net/bluetooth/rfcomm/sock.c
++++ b/net/bluetooth/rfcomm/sock.c
+@@ -583,7 +583,7 @@ static int rfcomm_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 
+ 	skb = bt_skb_sendmmsg(sk, msg, len, d->mtu, RFCOMM_SKB_HEAD_RESERVE,
+ 			      RFCOMM_SKB_TAIL_RESERVE);
+-	if (IS_ERR(skb))
++	if (IS_ERR_OR_NULL(skb))
+ 		return PTR_ERR(skb);
+ 
+ 	sent = rfcomm_dlc_send(d, skb);
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 8eabf41b2993..7ebc9d294f0c 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -734,7 +734,7 @@ static int sco_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 		return -EOPNOTSUPP;
+ 
+ 	skb = bt_skb_sendmsg(sk, msg, len, len, 0, 0);
+-	if (IS_ERR(skb))
++	if (IS_ERR_OR_NULL(skb))
+ 		return PTR_ERR(skb);
+ 
+ 	lock_sock(sk);
 -- 
-2.30.2
+2.34.1
 
