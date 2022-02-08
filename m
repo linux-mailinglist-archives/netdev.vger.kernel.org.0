@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D7164ACF25
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 03:48:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C415E4ACF27
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 03:48:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346115AbiBHCsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 21:48:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37822 "EHLO
+        id S1346118AbiBHCsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 21:48:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229888AbiBHCs3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 21:48:29 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778E6C061355
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 18:48:28 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id i186so16455224pfe.0
-        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 18:48:28 -0800 (PST)
+        with ESMTP id S1346116AbiBHCso (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 21:48:44 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23996C061A73
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 18:48:44 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id j4so389766plj.8
+        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 18:48:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=2aZqSBXGDf3/RmFKoGK0WLS8bd8u3NP/ekwoYCbOZYU=;
-        b=b38L2gKvgzRyl9aCMZ8F0EAU58HaKVMbVX/j2aJx+3UF0L/G3n5AJJFy5HVPsNUdgT
-         YNcK+R1fsXVoxNxzdf6TIFBycrQ0xG+1DyY6I1AFepwfPjpDBQH84WHy2yOhUpbLzXQC
-         seEyPd9xqylCSIux0KK0E1NXukUF7XvKciMlBSEP+HxsWLnrzTLa0ueXH2RJ9cgd7dut
-         c+bA+X/s6kpIVIx0rqIDrP1TmKkGcz/edi17LggLhSpOAUftYtjl/W8LxAdiGwHn/JZu
-         AAFoAC5zLQMofObDe0tbAP9bJlxAJTge86vqr3wXtNnbrRH8z64aeA9V9Y4gQGlc0DmB
-         fzcA==
+        bh=NEh5x0LVGd+qoMxieAe+IiZ/A7gCA2iHcNNv6+1ntpw=;
+        b=Shvu9tWvyuQoh0LcpaNmNzxbWfY4RF1TXC11GuH4LQZ2xAvH+1JKlUSSEy5VqyRZ9O
+         dQ+xW/RYCaTgcALHKCM0Q86RSQtBFp/caHA6lT7pgKU5CmZdlElvaZ3V0Risk9lkGRC2
+         mOY24o+gkLg03oqgvzYCh+qwQbcQv8ginWFuvEbNwok5uMFj2Uhzp5ah8UwzR3Kf7i64
+         d3ljewxpKDpcVD+uUR0NiqvPbdMHSc4AGMcyOyX2sPbVJ3nQ7d3izmxrz/BI1xzhhAoP
+         llmdezqj7Oq/SARCwwQBaVnBUcA/vA1MBdvhtmO40LrdzZz1GnZSNmo6iqpv8eA4fTuV
+         Rcig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=2aZqSBXGDf3/RmFKoGK0WLS8bd8u3NP/ekwoYCbOZYU=;
-        b=3SJknsxpHbmORjJS052/StIp8Ij+jBYJ5/DMU77jxJI17Wg6meJw+hTwPdpzcxfMZ6
-         HBh4/Q3RPEt+7q7fjgdR1uo6pR1GKatazJ0aTIo152CHbXzTXJPhYMzzxKzVR+7LPaEl
-         IMBU7HCiexqE1Wt+ma90w8NyZzXD7M2SyHkAP+rYtO77ak1edLnWEIKtnf0gYk4/UDLN
-         S8b1IT0sJyR2/UkJJG7Mff5FNkYlwwLgRKlfrmioSVHeUK4bNFH/7RIvY1cm5zydskgG
-         P9M+k8f3JsYFbG51kctM9QQgg+2iVUi13xMPzR/HacmosqA3qh6IRjcJEkOF0Y8ykbiJ
-         fNaw==
-X-Gm-Message-State: AOAM5310mlXJ1DjMHxMeh1C78xoHVSJEDXOTGYc41GuZKcSeqm/e6+en
-        9YtodlG4RmQ2syonYAgWZnU=
-X-Google-Smtp-Source: ABdhPJxKQoA8+PPuz26Al4O/0dZN0w/UpTOGHOas0WmkL24JO51IgA+M2Kwq6KPB426uJksKfuYUVg==
-X-Received: by 2002:a63:8141:: with SMTP id t62mr15914pgd.266.1644288507926;
-        Mon, 07 Feb 2022 18:48:27 -0800 (PST)
+        bh=NEh5x0LVGd+qoMxieAe+IiZ/A7gCA2iHcNNv6+1ntpw=;
+        b=cc/fxgIaRHurR9MhJYiaSE9huR5ZgZnh/qyBQRr4WKuRPra+Ob0QW1zZoaxLgTkc/I
+         zRNk+xNeF/OJaPpdfEGZPkYUFGPXZoYu/HHUD7F0pEIiiRoNbgCx/B7XyYZXeJpdLIkb
+         gOI0c32LLf4r9AhT0pP59/Um8/DQ1pkYGalF5BJXy6wuhmR2eu8UjAEctBgM7aAtoGKe
+         8UBA79zikXu2X/LmNLm+fsDj++m4EYAXAk1UQeFLjX1JxAxkZ0ziPvtElipQGHFS2+gQ
+         WjFiWZabFmkDyFK2X0R6ldVRJnefvd2VG+s6h6/yNdPK0+Nck4GlKBC5nmC6Vxm83TEl
+         V4UQ==
+X-Gm-Message-State: AOAM531nqpILqgOoqqp6tcCqCp+8RUByJtcVn8diq7UbpoSO6fNrPAQI
+        l+Ek5ibXTA14LVCyWVoibPZTDeFC/p4=
+X-Google-Smtp-Source: ABdhPJzLCoT2UziifSX5edoylV8TNKZYWPbNMJ3i/DJu+bfdwSIHdGdf6Dro2yOVwSbUvGybGX/eGQ==
+X-Received: by 2002:a17:903:41c6:: with SMTP id u6mr2636273ple.71.1644288523603;
+        Mon, 07 Feb 2022 18:48:43 -0800 (PST)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id s14sm13885605pfk.174.2022.02.07.18.48.26
+        by smtp.gmail.com with ESMTPSA id h25sm12617270pfn.208.2022.02.07.18.48.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 18:48:27 -0800 (PST)
-Message-ID: <b180b3df-da13-18a5-7e59-c8114149314c@gmail.com>
-Date:   Mon, 7 Feb 2022 18:48:25 -0800
+        Mon, 07 Feb 2022 18:48:42 -0800 (PST)
+Message-ID: <18635376-118f-4f98-74b5-6dbe81f893d9@gmail.com>
+Date:   Mon, 7 Feb 2022 18:48:40 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH net 4/7] net: dsa: felix: don't use devres for mdiobus
+Subject: Re: [PATCH net 5/7] net: dsa: seville: register the mdiobus under
+ devres
 Content-Language: en-US
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -75,9 +76,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Rafael Richter <rafael.richter@gin.de>,
         Daniel Klauer <daniel.klauer@gin.de>
 References: <20220207161553.579933-1-vladimir.oltean@nxp.com>
- <20220207161553.579933-5-vladimir.oltean@nxp.com>
+ <20220207161553.579933-6-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220207161553.579933-5-vladimir.oltean@nxp.com>
+In-Reply-To: <20220207161553.579933-6-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -101,7 +102,7 @@ On 2/7/2022 8:15 AM, Vladimir Oltean wrote:
 > devres_release_all() <- __device_release_driver(), and that mdiobus was
 > not previously unregistered.
 > 
-> The Felix VSC9959 switch is a PCI device, so the initial set of
+> The Seville VSC9959 switch is a platform device, so the initial set of
 > constraints that I thought would cause this (I2C or SPI buses which call
 > ->remove on ->shutdown) do not apply. But there is one more which
 > applies here.
@@ -109,16 +110,20 @@ On 2/7/2022 8:15 AM, Vladimir Oltean wrote:
 > If the DSA master itself is on a bus that calls ->remove from ->shutdown
 > (like dpaa2-eth, which is on the fsl-mc bus), there is a device link
 > between the switch and the DSA master, and device_links_unbind_consumers()
-> will unbind the felix switch driver on shutdown.
+> will unbind the seville switch driver on shutdown.
 > 
 > So the same treatment must be applied to all DSA switch drivers, which
 > is: either use devres for both the mdiobus allocation and registration,
 > or don't use devres at all.
 > 
-> The felix driver has the code structure in place for orderly mdiobus
-> removal, so just replace devm_mdiobus_alloc_size() with the non-devres
-> variant, and add manual free where necessary, to ensure that we don't
-> let devres free a still-registered bus.
+> The seville driver has a code structure that could accommodate both the
+> mdiobus_unregister and mdiobus_free calls, but it has an external
+> dependency upon mscc_miim_setup() from mdio-mscc-miim.c, which calls
+> devm_mdiobus_alloc_size() on its behalf. So rather than restructuring
+> that, and exporting yet one more symbol mscc_miim_teardown(), let's work
+> with devres and replace of_mdiobus_register with the devres variant.
+> When we use all-devres, we can ensure that devres doesn't free a
+> still-registered bus (it either runs both callbacks, or none).
 > 
 > Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
