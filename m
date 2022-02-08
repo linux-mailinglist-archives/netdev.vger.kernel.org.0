@@ -2,91 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5B544AD024
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 05:10:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52FE54AD033
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 05:12:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346543AbiBHEKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 23:10:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42424 "EHLO
+        id S1346236AbiBHEMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 23:12:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346517AbiBHEKM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:10:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A93CC0401E5
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:10:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 050FEB817FF
-        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 04:10:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A885CC340F6;
-        Tue,  8 Feb 2022 04:10:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644293408;
-        bh=m0OQQK/kwD2QCv1uwGNHbrltUDqGCgDqUpwriANXeH8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dqw0BbqIufzwagWXlLSSqlyBnlXxs39F3n8jKil+oXkU1Ww/iCXL6a6kXCYcPkS58
-         r4Xe1vrSeXr18bvYZwzl1481iRZ9/esGDb7aEA5f1+W6VTyKq3koB2xT4dp/K/O7Az
-         SmSiSWTPEaGTRAvgOEzRz9DAjKrY01nMF6uxGFtS64+TQJIR1vS7u+JOEyRkKwT73C
-         Zpr8JuNujBYKCmsAahHheaxEX6VqLFhxBxuFgIPof0rcHPQIv2Pkaye4XklBEv0bhT
-         EiM+uynRvUJuH8/cDd0H/VeADn//aS+1DHMTwFr3mjqgqjZrp0/99H2QhNzssgjK2J
-         e/OmXTR1ozAcw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 97AFFE5D084;
-        Tue,  8 Feb 2022 04:10:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1346782AbiBHEMR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:12:17 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56EF7C0401E5
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:12:17 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id n32so16680679pfv.11
+        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 20:12:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=IHH3Ou/fj7p1O60NDSvye2PQmIbDifAvVgs0Uz//Alg=;
+        b=RhoXSMYlsNe6FAh7hDIZMl6a49Dtd+UxKkaw0a7o4nmwFqmHTeSzqtUUGN/5Nf/7eL
+         iP2TEzJ6JtVcYyYMq1wv/ivg08gVHzoh5rAd9Fk81NUPgkjd0vliS06Yi5svA6+//rGN
+         PFrdpR/uaoPTpNbO0TbXZ6t9DSfqvwz/ZVSTapq80csE/1Pyf0doJZeYR18LwVI0Ha28
+         ebUW2jxSsPpvwNXI5fPDGfXd5hH7/X/x/AlypikWz+cF6bNhdOrqL+kXmUr677nniErJ
+         IqDY3uPgpD68HLSQ5qq2xhT4DT1MyRx2gdsAoho6zKUMKZ19kFjeFsbxNknq59Egi61W
+         /Pww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IHH3Ou/fj7p1O60NDSvye2PQmIbDifAvVgs0Uz//Alg=;
+        b=ot7HxEhrHx5jFudUkEYak0K/uOs2u3yVA+Z+XPQV20KQuVRfVVu1If3D6aC3vBNMHn
+         v2j+08AfpP+mbQ7HBt6HaSwU1z28EYsUNv30DAVXT4/fF8fivQR0x+SNtJlyfNddRhal
+         dHttwrPD0sLVV/7d71nsomHKiYCjofbDe+6+Oz8LufS8QAAp+l//+Q3IKeAhwFCpQKAk
+         hh2QLWv/8pfX3AJFIkLfPgtB/3RYI7GnaHkTLEL6uVlLeOldisMGK75B5dyx1ogERWyZ
+         dbqEmmC6pVHGdZJu+XORSzBsWPRUN2lKkM5DbC/dGtXNXKdmtU7HelCCW3cjalf5t3ak
+         z6qw==
+X-Gm-Message-State: AOAM532LEFr2vpB78ooJrif5E3Z+dkow0QYMaGK4zUuCJazuKg05ERk5
+        b8dBfIUhOo7esUbctlmGA4A=
+X-Google-Smtp-Source: ABdhPJwi0yj43r7lf5kwjx8YI/1NUTOv8OiGYSYqqFrBjQ7s9SjUjtK9rUf752xkbO89gUYOV8lBtA==
+X-Received: by 2002:aa7:938c:: with SMTP id t12mr2522962pfe.51.1644293536840;
+        Mon, 07 Feb 2022 20:12:16 -0800 (PST)
+Received: from [10.0.2.64] ([209.37.97.194])
+        by smtp.googlemail.com with ESMTPSA id ng16sm906316pjb.12.2022.02.07.20.12.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 20:12:16 -0800 (PST)
+Message-ID: <776f76fc-6a0e-44e4-f880-9cffe65dd4b0@gmail.com>
+Date:   Mon, 7 Feb 2022 20:12:15 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: stmmac: optimize locking around PTP clock reads
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164429340861.30538.10382631851655387838.git-patchwork-notify@kernel.org>
-Date:   Tue, 08 Feb 2022 04:10:08 +0000
-References: <20220204135545.2770625-1-yannick.vignon@oss.nxp.com>
-In-Reply-To: <20220204135545.2770625-1-yannick.vignon@oss.nxp.com>
-To:     Yannick Vignon <yannick.vignon@oss.nxp.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        olteanv@gmail.com, xiaoliang.yang_1@nxp.com, mingkai.hu@nxp.com,
-        qiangqing.zhang@nxp.com, sebastien.laveze@nxp.com,
-        yannick.vignon@nxp.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH net-next 03/11] ipv6/addrconf: switch to per netns
+ inet6_addr_lst hash table
+Content-Language: en-US
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+References: <20220207171756.1304544-1-eric.dumazet@gmail.com>
+ <20220207171756.1304544-4-eric.dumazet@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220207171756.1304544-4-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Fri,  4 Feb 2022 14:55:44 +0100 you wrote:
-> From: Yannick Vignon <yannick.vignon@nxp.com>
+On 2/7/22 9:17 AM, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> Reading the PTP clock is a simple operation requiring only 3 register
-> reads. Under a PREEMPT_RT kernel, protecting those reads by a spin_lock is
-> counter-productive: if the 2nd task preempting the 1st has a higher prio
-> but needs to read time as well, it will require 2 context switches, which
-> will pretty much always be more costly than just disabling preemption for
-> the duration of the reads. Moreover, with the code logic recently added
-> to get_systime(), disabling preemption is not even required anymore:
-> reads and writes just need to be protected from each other, to prevent a
-> clock read while the clock is being updated.
+> IPv6 does not scale very well with the number of IPv6 addresses.
+> It uses a global (shared by all netns) hash table with 256 buckets.
 > 
-> [...]
+> Some functions like addrconf_verify_rtnl() and addrconf_ifdown()
+> have to iterate all addresses in the hash table.
+> 
+> I have seen addrconf_verify_rtnl() holding the cpu for 10ms or more.
+> 
+> Switch to the per netns hashtable (and spinlock) added
+> in prior patches.
+> 
+> This considerably speeds up netns dismantle times on hosts
+> with thousands of netns.
 
-Here is the summary with links:
-  - [net-next] net: stmmac: optimize locking around PTP clock reads
-    https://git.kernel.org/netdev/net-next/c/642436a1ad34
+this has to speed up many aspects of ipv6 addresses, not just the teardown.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> ---
+>  net/ipv6/addrconf.c | 77 ++++++++++++++-------------------------------
+>  1 file changed, 23 insertions(+), 54 deletions(-)
+> 
+
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
 
