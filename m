@@ -2,81 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 061E04ACFCE
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 04:36:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBE664ACFE2
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 04:51:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238287AbiBHDgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 22:36:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
+        id S1345332AbiBHDvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 22:51:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233098AbiBHDgj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 22:36:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F717C0401D6
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 19:36:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644291398;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RvjYmb4fznf4B7CPoj9ot4B6+UX+ip1V7EfG8FVrs/w=;
-        b=J6jpZnN172CHsC92PnckzcEffL5Z3Z7TSZZkuuwUbFsZ7cTogEyXaht+ErzD2/xZ8EaMvX
-        cmACS4ilfkBveXX3g/zUzki/wvBIg4OlzTkDZjDAmbilJV9JGhHxvjFZjK3Pj3c9elnzW6
-        I7Nc1orWWOKWd2rvNtGRrTd6wJs7710=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-451-V18G3fZNNRKcGPCAq4BfZw-1; Mon, 07 Feb 2022 22:36:36 -0500
-X-MC-Unique: V18G3fZNNRKcGPCAq4BfZw-1
-Received: by mail-lf1-f72.google.com with SMTP id u14-20020a196a0e000000b0044139d17aceso190999lfu.15
-        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 19:36:35 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=RvjYmb4fznf4B7CPoj9ot4B6+UX+ip1V7EfG8FVrs/w=;
-        b=s/id3qIwTiEgoDqcr7t+FpxDRU7I6wHEOvsGigUNxP328d50SrhuNcQxLxyVL9i+k8
-         xUbUabIglmnFAY0fJjBgXNsZnaE4mmDI0h2LzXw+xUk9gmfyEpzcMbC8QVxnmp1Dmryz
-         ya2YJ3w33RCki1maU455s7XK5smRhG16Xf1ORlK2ZRfhBccs5NByDYCssPLjNq+PM7m2
-         FANTplYlU4Uxp4OI+bGlHisYAnd9NJvcs5SuSJLYW9xy2pF8z1shNRDF3PTdxBOhfIgo
-         E5il0CjfleNxdD4m07jZEteQ9n7XCk0PcfnaNuiTv9r4Z1aJ6AxnM33Qrysg78jPwCTY
-         8hFw==
-X-Gm-Message-State: AOAM533va+KGHwwlLVN6GODB4zSjV3wWvxv+pVlijHGrT2xcIv7LdGGD
-        qilGr1f6wAMR8kSUyRSnxx2wT6tHN+PyyAbzUD42GJoC/qtYo4vMS10MEhnlvQs74/65YIFNTVv
-        KBJdQVfLGRdLuYT1iC8oxil5ZxFvaELt4
-X-Received: by 2002:a2e:9c02:: with SMTP id s2mr1568575lji.217.1644291394397;
-        Mon, 07 Feb 2022 19:36:34 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwMI8o//xEA9K104uQ3Yysm0k68EfVhZh1ieP1yTpxYlAIN/TFaRuip8eyeyhBON0GOKIx6a2oM+t+M5gdNlNU=
-X-Received: by 2002:a2e:9c02:: with SMTP id s2mr1568554lji.217.1644291394065;
- Mon, 07 Feb 2022 19:36:34 -0800 (PST)
+        with ESMTP id S238983AbiBHDvm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 22:51:42 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8854EC0401DC;
+        Mon,  7 Feb 2022 19:51:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C6BF61529;
+        Tue,  8 Feb 2022 03:51:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36DBAC004E1;
+        Tue,  8 Feb 2022 03:51:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644292300;
+        bh=ABaVsbOIb3+OcYn2+ylzu6Byh3EUHq/wPhjW1EhoBIs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IBYF/lrlFyeSuS2oqOc/d9fIcdy7zrA4gRdFau3P52O1c7B+0o3KhDqmNTPlsH/0i
+         sunvseBZ+AZWK+CfmcUkUJEE3Mv+4xW8md3dh+Q0vo+eYssqxMSr661akKap8ptas6
+         B8ugcNMyduW8TdDMPVYV7p4dTFqIJtzEWrHJOuLkz4hW4hzSuywV6C/pP61M1ziHtX
+         6QYbo+UbjMctfN34OuqMJGraQLIv0l9DSW8q96rWUEDU6eq0Pe63zjwDNorG/uHRIj
+         JTrCuucSraQq+eWphiznzSzOEKFNpL5uyVRyk9jkPbrH0TE8vhkSnWB/uWc9hzJpMM
+         Reo9UYUvAUa2w==
+Date:   Mon, 7 Feb 2022 19:51:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jeffrey Ji <jeffreyjilinux@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Brian Vazquez <brianvv@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jeffreyji <jeffreyji@google.com>
+Subject: Re: [PATCH v7 net-next] net-core: add InDropOtherhost counter
+Message-ID: <20220207195139.77d860cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220207235714.1050160-1-jeffreyji@google.com>
+References: <20220207235714.1050160-1-jeffreyji@google.com>
 MIME-Version: 1.0
-References: <20220126073533.44994-1-xuanzhuo@linux.alibaba.com>
- <20220126073533.44994-2-xuanzhuo@linux.alibaba.com> <28013a95-4ce4-7859-9ca1-d836265e8792@redhat.com>
- <1644213876.065673-2-xuanzhuo@linux.alibaba.com> <CACGkMEuJ_v5g2ypLZ3eNhAcUM9Q3PpWuiaeWVfEC6KACGzWAZw@mail.gmail.com>
- <1644286649.5989025-1-xuanzhuo@linux.alibaba.com> <CACGkMEvVmKg0r4WudojL6dGt3vG4f=_4Pnsn-kBwQcge63jNqQ@mail.gmail.com>
- <1644290312.0241497-3-xuanzhuo@linux.alibaba.com> <CACGkMEtOoSF293nDwLFpAcs9M1+sUZufO309kCO0tRy7w40vdQ@mail.gmail.com>
- <1644290712.5535257-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <1644290712.5535257-1-xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 8 Feb 2022 11:36:23 +0800
-Message-ID: <CACGkMEshTp8vSP9=pKj82y8+DDQFu9tFAk1EGhMZLvXUE-OSEA@mail.gmail.com>
-Subject: Re: [PATCH v3 01/17] virtio_pci: struct virtio_pci_common_cfg add queue_notify_data
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,194 +56,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 11:29 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrot=
-e:
->
-> On Tue, 8 Feb 2022 11:24:13 +0800, Jason Wang <jasowang@redhat.com> wrote=
-:
-> > On Tue, Feb 8, 2022 at 11:20 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> =
-wrote:
-> > >
-> > > On Tue, 8 Feb 2022 11:03:17 +0800, Jason Wang <jasowang@redhat.com> w=
-rote:
-> > > > On Tue, Feb 8, 2022 at 10:17 AM Xuan Zhuo <xuanzhuo@linux.alibaba.c=
-om> wrote:
-> > > > >
-> > > > > On Mon, 7 Feb 2022 16:06:15 +0800, Jason Wang <jasowang@redhat.co=
-m> wrote:
-> > > > > > On Mon, Feb 7, 2022 at 2:07 PM Xuan Zhuo <xuanzhuo@linux.alibab=
-a.com> wrote:
-> > > > > > >
-> > > > > > > On Mon, 7 Feb 2022 11:41:06 +0800, Jason Wang <jasowang@redha=
-t.com> wrote:
-> > > > > > > >
-> > > > > > > > =E5=9C=A8 2022/1/26 =E4=B8=8B=E5=8D=883:35, Xuan Zhuo =E5=
-=86=99=E9=81=93:
-> > > > > > > > > Add queue_notify_data in struct virtio_pci_common_cfg, wh=
-ich comes from
-> > > > > > > > > here https://github.com/oasis-tcs/virtio-spec/issues/89
-> > > > > > > > >
-> > > > > > > > > Since I want to add queue_reset after it, I submitted thi=
-s patch first.
-> > > > > > > > >
-> > > > > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > > > > > > ---
-> > > > > > > > >   include/uapi/linux/virtio_pci.h | 1 +
-> > > > > > > > >   1 file changed, 1 insertion(+)
-> > > > > > > > >
-> > > > > > > > > diff --git a/include/uapi/linux/virtio_pci.h b/include/ua=
-pi/linux/virtio_pci.h
-> > > > > > > > > index 3a86f36d7e3d..492c89f56c6a 100644
-> > > > > > > > > --- a/include/uapi/linux/virtio_pci.h
-> > > > > > > > > +++ b/include/uapi/linux/virtio_pci.h
-> > > > > > > > > @@ -164,6 +164,7 @@ struct virtio_pci_common_cfg {
-> > > > > > > > >     __le32 queue_avail_hi;          /* read-write */
-> > > > > > > > >     __le32 queue_used_lo;           /* read-write */
-> > > > > > > > >     __le32 queue_used_hi;           /* read-write */
-> > > > > > > > > +   __le16 queue_notify_data;       /* read-write */
-> > > > > > > > >   };
-> > > > > > > >
-> > > > > > > >
-> > > > > > > > So I had the same concern as previous version.
-> > > > > > > >
-> > > > > > > > This breaks uABI where program may try to use sizeof(struct
-> > > > > > > > virtio_pci_common_cfg).
-> > > > > > > >
-> > > > > > > > We probably need a container structure here.
-> > > > > > >
-> > > > > > > I see, I plan to add a struct like this, do you think it's ap=
-propriate?
-> > > > > > >
-> > > > > > > struct virtio_pci_common_cfg_v1 {
-> > > > > > >         struct virtio_pci_common_cfg cfg;
-> > > > > > >         __le16 queue_notify_data;       /* read-write */
-> > > > > > > }
-> > > > > >
-> > > > > > Something like this but we probably need a better name.
-> > > > >
-> > > > >
-> > > > > how about this?
-> > > > >
-> > > > >         /* Ext Fields in VIRTIO_PCI_CAP_COMMON_CFG: */
-> > > > >         struct virtio_pci_common_cfg_ext {
-> > > > >                 struct virtio_pci_common_cfg cfg;
-> > > > >
-> > > > >                 __le16 queue_notify_data;       /* read-write */
-> > > > >
-> > > > >                 __le16 reserved0;
-> > > > >                 __le16 reserved1;
-> > > > >                 __le16 reserved2;
-> > > > >                 __le16 reserved3;
-> > > > >                 __le16 reserved4;
-> > > > >                 __le16 reserved5;
-> > > > >                 __le16 reserved6;
-> > > > >                 __le16 reserved7;
-> > > > >                 __le16 reserved8;
-> > > > >                 __le16 reserved9;
-> > > > >                 __le16 reserved10;
-> > > > >                 __le16 reserved11;
-> > > > >                 __le16 reserved12;
-> > > > >                 __le16 reserved13;
-> > > > >                 __le16 reserved14;
-> > > > >         };
-> > > >
-> > > > I still think the container without padding is better. Otherwise
-> > > > userspace needs to use offset_of() trick instead of sizeof().
-> > >
-> > > In this case, as virtio_pci_common_cfg_ext adds new members in the fu=
-ture, we
-> > > will add more container structures.
-> > >
-> > > In that case, I think virtio_pci_common_cfg_v1 is a good name instead=
-.
-> >
-> > Something like "virtio_pci_common_cfg_notify" might be a little bit bet=
-ter.
->
-> Although there is only one notify_data in this patch, I plan to look like=
- this
-> after my patch set:
->
->         struct virtio_pci_common_cfg_v1 {
->                 struct virtio_pci_common_cfg cfg;
->
->                 __le16 queue_notify_data;       /* read-write */
->                 __le16 queue_reset;       /* read-write */
->         }
->
-> If we use virtio_pci_common_cfg_notify, then we will get two structures a=
-fter
-> this patch set:
->
->         struct virtio_pci_common_cfg_notify {
->                 struct virtio_pci_common_cfg cfg;
->
->                 __le16 queue_notify_data;       /* read-write */
->         }
->
->         struct virtio_pci_common_cfg_reset {
->                 struct virtio_pci_common_cfg_notify cfg;
->
->                 __le16 queue_reset;       /* read-write */
->         }
+On Mon,  7 Feb 2022 23:57:14 +0000 Jeffrey Ji wrote:
+> From: jeffreyji <jeffreyji@google.com>
+> 
+> Increment InDropOtherhost counter when packet dropped due to incorrect dest
+> MAC addr.
+> 
+> An example when this drop can occur is when manually crafting raw
+> packets that will be consumed by a user space application via a tap
+> device. For testing purposes local traffic was generated using trafgen
+> for the client and netcat to start a server
+> 
+> example output from nstat:
+> \~# nstat -a | grep InMac
+> Ip6InDropOtherhost                  0                  0.0
+> IpExtInDropOtherhost                1                  0.0
+> 
+> Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+> with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
+> counter was incremented.
 
-Right, this is sub-optimal, and we need padding in cfg_notify
-probably. But I couldn't think of a better idea currently, maybe we
-can listen from others opinion
-
-But we use something like this for vnet_header extension
-
-struct virtio_net_hdr_v1{
-};
-
-struct virtio_net_hdr_v1_hash{
-struct virtio_net_hdr_v1;
-__le32 XXX;
-...
-__le16 padding;
-};
-
-And it's not hard to imagine there would be another container for
-struct virtio_net_hdr_v1_hash in the future if we want to extend vnet
-header.
-
-Thanks
-
->
->
-> Thanks.
->
-> >
-> > Thanks
-> >
-> > >
-> > > Thanks.
-> > >
-> > >
-> > > >
-> > > > Thanks
-> > > >
-> > > > >
-> > > > > Thanks
-> > > > >
-> > > > > >
-> > > > > > Thanks
-> > > > > >
-> > > > > > >
-> > > > > > > Thanks.
-> > > > > > >
-> > > > > > > >
-> > > > > > > > THanks
-> > > > > > > >
-> > > > > > > >
-> > > > > > > > >
-> > > > > > > > >   /* Fields in VIRTIO_PCI_CAP_PCI_CFG: */
-> > > > > > > >
-> > > > > > >
-> > > > > >
-> > > > >
-> > > >
-> > >
-> >
->
-
+As far as I can tell nobody objected to my suggestion of making this 
+a netdev counter, so please switch to working on that. Thanks.
