@@ -2,67 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C48F54AE07C
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 19:16:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2F9D4AE099
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 19:21:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384807AbiBHSQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 13:16:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51394 "EHLO
+        id S1353333AbiBHSV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 13:21:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384725AbiBHSPu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 13:15:50 -0500
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AEAC061578
-        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 10:15:49 -0800 (PST)
-Received: by mail-lj1-x233.google.com with SMTP id e17so86801ljk.5
-        for <netdev@vger.kernel.org>; Tue, 08 Feb 2022 10:15:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+37NPEyVD8WMNDuKr+VUpr12blnHBAWksfV9NWdACbw=;
-        b=zwnHJGSXcjyPdbLznzXmWvMRa3UWKL5LIZ5Hgobr6ylhWMO+pojrCi+9nahhBazm7b
-         CHoqYDO5Nn7LxS9eTBQOyfaCRNDzgOEOePJOFMsh/qWI/hLz736UCQw1LO//91wQoWq+
-         4wQ+7jZJWFFZvyJz6a/2pu9MJcBmuoXpdu8Y2KMpuz/IThti9omsfsMlR3INKZmKwr5X
-         xcS1BhLqtfXCzrSE2y83j3awjh33Rxm2yOUu9hWzkW9WKy4AhugE/W8yyQAWGGEkCYwu
-         o0vMGodNEtf87qq6mvKgzkQaRnihng8EU7H6BQhPJEebfLWlOgKuQB4aHrbmAAD7vLQP
-         fhLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+37NPEyVD8WMNDuKr+VUpr12blnHBAWksfV9NWdACbw=;
-        b=JLxww5g+re2nFp3cgHEYxR3yt+MQaqI5U4EdX28uHtAqY5ZViVRkVazxDepDiPqn2W
-         LV9TrLw8H5jKCgT4lVAUgoeVh6hXgJudmqG/JsywvHp6ZJ85YqVK2CvB1k3KCP01EbNG
-         c6DNG937DxnHWlHFp3Y0PxtAZY+n9EdO6xaVJq7rcZrTru5tqs7/4WVGaz2r0qMiv3Ix
-         ZZnfwh8BjB9AgbXmk31zvb3kwAlr/KMkrqKaVp192o02coccBqxLq7cHsUR1CkVBW5D/
-         HBohgVgBRCHkh9YLkz+h/m96mfvjGP3+KWG0+LkgUfdZHRuanwP9b10Dqn40sYDx9b1T
-         1p6w==
-X-Gm-Message-State: AOAM530rxq/Fm8pSuNPhnAjlhEClc7yToqJlxU1VyV9c4krb2Xw6G3oB
-        axU+sa2jyfBHJ6CUWZWYbTInlMVueIopjrYw
-X-Google-Smtp-Source: ABdhPJzyvVblRx20Nb0+M4lqiiWcQd4FDHTeMZG0p9O+KGIhqGeTVjXci+jjWxMcGrDkXaytMx+gUw==
-X-Received: by 2002:a2e:a41a:: with SMTP id p26mr3602861ljn.176.1644344147317;
-        Tue, 08 Feb 2022 10:15:47 -0800 (PST)
-Received: from navi.cosmonova.net.ua ([95.67.24.131])
-        by smtp.gmail.com with ESMTPSA id p16sm2125082ljc.86.2022.02.08.10.15.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 10:15:46 -0800 (PST)
-From:   Andrew Melnychenko <andrew@daynix.com>
-To:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jasowang@redhat.com, mst@redhat.com
-Cc:     yan@daynix.com, yuri.benditovich@daynix.com
-Subject: [PATCH v3 4/4] drivers/net/virtio_net: Added RSS hash report control.
-Date:   Tue,  8 Feb 2022 20:15:10 +0200
-Message-Id: <20220208181510.787069-5-andrew@daynix.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220208181510.787069-1-andrew@daynix.com>
-References: <20220208181510.787069-1-andrew@daynix.com>
+        with ESMTP id S231478AbiBHSV5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 13:21:57 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D13FC061578
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 10:21:56 -0800 (PST)
+Date:   Tue, 8 Feb 2022 19:21:50 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644344512;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PNUJvwxkXvuL7PBal3v6ermE6pCkemV/xZDJ3tugatM=;
+        b=n6NGNbXKCvinFg0H5ZMNAx0IEOkFFhVJJHD4x1jVeHPyhv4BbH6d+iwIIN5MoQwU3zDlJG
+        4zzYK5kHuBhXdzua99Vbzs7sDHf4cAmoWsGy0xa8u4RfzZB8pEVF2vYYm/+BXGZO+ouIlw
+        7trH1yLghHhOLrU5GgeiBWL40tZ3Dawr/Z96ofVgxxXQqSSP/UgkYDuOKkbdF+ef+ACsB0
+        gM7Qw7coOKfLOuR2y17i0FZcDm6NqNfEiPpVSG5d06BWTQa1P/p8i/xgE4uQQA8WEg9GwE
+        +1nAvs1E08GVEuCsFAsL0wf76WcczukIwRiWDJdO81raI684gWvZHtBUH0BU2g==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644344512;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PNUJvwxkXvuL7PBal3v6ermE6pCkemV/xZDJ3tugatM=;
+        b=rHx9dIEziQx6gSWAdohOzoyvmSDQI5VARDc9o6JP/GeXoIk4X+rXyScKzutBRoLM00EKwT
+        TcLagkKaVTcYN3DQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Yannick Vignon <yannick.vignon@oss.nxp.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Wei Wang <weiwan@google.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, mingkai.hu@nxp.com,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        sebastien.laveze@nxp.com, Yannick Vignon <yannick.vignon@nxp.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH net-next 1/2] net: napi: wake up ksoftirqd if needed
+ after scheduling NAPI
+Message-ID: <YgK0vi8Zs37LdoK4@linutronix.de>
+References: <0ad1a438-8e29-4613-df46-f913e76a1770@oss.nxp.com>
+ <20220203170901.52ccfd09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YfzhioY0Mj3M1v4S@linutronix.de>
+ <20220204074317.4a8be6d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <078bffa8-6feb-9637-e874-254b6d4b188e@oss.nxp.com>
+ <20220204094522.4a233a2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <Yf1qc7R5rFoALsCo@linutronix.de>
+ <20220204105035.4e207e9c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YgJZK42urDmKQfgf@linutronix.de>
+ <8b5010f2e6730ad0af0b9d8949cf34bc17681b12.camel@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <8b5010f2e6730ad0af0b9d8949cf34bc17681b12.camel@redhat.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,207 +85,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now it's possible to control supported hashflows.
-Added hashflow set/get callbacks.
-Also, disabling RXH_IP_SRC/DST for TCP would disable then for UDP.
-TCP and UDP supports only:
-ethtool -U eth0 rx-flow-hash tcp4 sd
-    RXH_IP_SRC + RXH_IP_DST
-ethtool -U eth0 rx-flow-hash tcp4 sdfn
-    RXH_IP_SRC + RXH_IP_DST + RXH_L4_B_0_1 + RXH_L4_B_2_3
+On 2022-02-08 16:57:59 [+0100], Paolo Abeni wrote:
+> just for historic reference:
+>=20
+> https://lkml.org/lkml/2016/6/15/460
 
-Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
----
- drivers/net/virtio_net.c | 141 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 140 insertions(+), 1 deletion(-)
+that is
+  https://lore.kernel.org/all/cover.1465996447.git.pabeni@redhat.com
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 543da2fbdd2d..88759d5e693c 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -231,6 +231,7 @@ struct virtnet_info {
- 	u8 rss_key_size;
- 	u16 rss_indir_table_size;
- 	u32 rss_hash_types_supported;
-+	u32 rss_hash_types_saved;
- 
- 	/* Has control virtqueue */
- 	bool has_cvq;
-@@ -2272,6 +2273,7 @@ static void virtnet_init_default_rss(struct virtnet_info *vi)
- 	int i = 0;
- 
- 	vi->ctrl->rss.hash_types = vi->rss_hash_types_supported;
-+	vi->rss_hash_types_saved = vi->rss_hash_types_supported;
- 	vi->ctrl->rss.indirection_table_mask = vi->rss_indir_table_size - 1;
- 	vi->ctrl->rss.unclassified_queue = 0;
- 
-@@ -2286,6 +2288,121 @@ static void virtnet_init_default_rss(struct virtnet_info *vi)
- 	netdev_rss_key_fill(vi->ctrl->rss.key, vi->rss_key_size);
- }
- 
-+static void virtnet_get_hashflow(const struct virtnet_info *vi, struct ethtool_rxnfc *info)
-+{
-+	info->data = 0;
-+	switch (info->flow_type) {
-+	case TCP_V4_FLOW:
-+		if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_TCPv4) {
-+			info->data = RXH_IP_SRC | RXH_IP_DST |
-+						 RXH_L4_B_0_1 | RXH_L4_B_2_3;
-+		} else if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_IPv4) {
-+			info->data = RXH_IP_SRC | RXH_IP_DST;
-+		}
-+		break;
-+	case TCP_V6_FLOW:
-+		if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_TCPv6) {
-+			info->data = RXH_IP_SRC | RXH_IP_DST |
-+						 RXH_L4_B_0_1 | RXH_L4_B_2_3;
-+		} else if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_IPv6) {
-+			info->data = RXH_IP_SRC | RXH_IP_DST;
-+		}
-+		break;
-+	case UDP_V4_FLOW:
-+		if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_UDPv4) {
-+			info->data = RXH_IP_SRC | RXH_IP_DST |
-+						 RXH_L4_B_0_1 | RXH_L4_B_2_3;
-+		} else if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_IPv4) {
-+			info->data = RXH_IP_SRC | RXH_IP_DST;
-+		}
-+		break;
-+	case UDP_V6_FLOW:
-+		if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_UDPv6) {
-+			info->data = RXH_IP_SRC | RXH_IP_DST |
-+						 RXH_L4_B_0_1 | RXH_L4_B_2_3;
-+		} else if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_IPv6) {
-+			info->data = RXH_IP_SRC | RXH_IP_DST;
-+		}
-+		break;
-+	case IPV4_FLOW:
-+		if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_IPv4)
-+			info->data = RXH_IP_SRC | RXH_IP_DST;
-+
-+		break;
-+	case IPV6_FLOW:
-+		if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_IPv6)
-+			info->data = RXH_IP_SRC | RXH_IP_DST;
-+
-+		break;
-+	default:
-+		info->data = 0;
-+		break;
-+	}
-+}
-+
-+static bool virtnet_set_hashflow(struct virtnet_info *vi, struct ethtool_rxnfc *info)
-+{
-+	u32 new_hashtypes = vi->rss_hash_types_saved;
-+	bool is_disable = info->data & RXH_DISCARD;
-+	bool is_l4 = info->data == (RXH_IP_SRC | RXH_IP_DST | RXH_L4_B_0_1 | RXH_L4_B_2_3);
-+
-+	/* supports only 'sd', 'sdfn' and 'r' */
-+	if (!((info->data == (RXH_IP_SRC | RXH_IP_DST)) | is_l4 | is_disable))
-+		return false;
-+
-+	switch (info->flow_type) {
-+	case TCP_V4_FLOW:
-+		new_hashtypes &= ~(VIRTIO_NET_RSS_HASH_TYPE_IPv4 | VIRTIO_NET_RSS_HASH_TYPE_TCPv4);
-+		if (!is_disable)
-+			new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv4
-+				| (is_l4 ? VIRTIO_NET_RSS_HASH_TYPE_TCPv4 : 0);
-+		break;
-+	case UDP_V4_FLOW:
-+		new_hashtypes &= ~(VIRTIO_NET_RSS_HASH_TYPE_IPv4 | VIRTIO_NET_RSS_HASH_TYPE_UDPv4);
-+		if (!is_disable)
-+			new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv4
-+				| (is_l4 ? VIRTIO_NET_RSS_HASH_TYPE_UDPv4 : 0);
-+		break;
-+	case IPV4_FLOW:
-+		new_hashtypes &= ~VIRTIO_NET_RSS_HASH_TYPE_IPv4;
-+		if (!is_disable)
-+			new_hashtypes = VIRTIO_NET_RSS_HASH_TYPE_IPv4;
-+		break;
-+	case TCP_V6_FLOW:
-+		new_hashtypes &= ~(VIRTIO_NET_RSS_HASH_TYPE_IPv6 | VIRTIO_NET_RSS_HASH_TYPE_TCPv6);
-+		if (!is_disable)
-+			new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv6
-+				| (is_l4 ? VIRTIO_NET_RSS_HASH_TYPE_TCPv6 : 0);
-+		break;
-+	case UDP_V6_FLOW:
-+		new_hashtypes &= ~(VIRTIO_NET_RSS_HASH_TYPE_IPv6 | VIRTIO_NET_RSS_HASH_TYPE_UDPv6);
-+		if (!is_disable)
-+			new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv6
-+				| (is_l4 ? VIRTIO_NET_RSS_HASH_TYPE_UDPv6 : 0);
-+		break;
-+	case IPV6_FLOW:
-+		new_hashtypes &= ~VIRTIO_NET_RSS_HASH_TYPE_IPv6;
-+		if (!is_disable)
-+			new_hashtypes = VIRTIO_NET_RSS_HASH_TYPE_IPv6;
-+		break;
-+	default:
-+		/* unsupported flow */
-+		return false;
-+	}
-+
-+	/* if unsupported hashtype was set */
-+	if (new_hashtypes != (new_hashtypes & vi->rss_hash_types_supported))
-+		return false;
-+
-+	if (new_hashtypes != vi->rss_hash_types_saved) {
-+		vi->rss_hash_types_saved = new_hashtypes;
-+		vi->ctrl->rss.hash_types = vi->rss_hash_types_saved;
-+		if (vi->dev->features & NETIF_F_RXHASH)
-+			return virtnet_commit_rss_command(vi);
-+	}
-+
-+	return true;
-+}
- 
- static void virtnet_get_drvinfo(struct net_device *dev,
- 				struct ethtool_drvinfo *info)
-@@ -2571,6 +2688,27 @@ static int virtnet_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info,
- 	switch (info->cmd) {
- 	case ETHTOOL_GRXRINGS:
- 		info->data = vi->curr_queue_pairs;
-+		break;
-+	case ETHTOOL_GRXFH:
-+		virtnet_get_hashflow(vi, info);
-+		break;
-+	default:
-+		rc = -EOPNOTSUPP;
-+	}
-+
-+	return rc;
-+}
-+
-+static int virtnet_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info)
-+{
-+	struct virtnet_info *vi = netdev_priv(dev);
-+	int rc = 0;
-+
-+	switch (info->cmd) {
-+	case ETHTOOL_SRXFH:
-+		if (!virtnet_set_hashflow(vi, info))
-+			rc = -EINVAL;
-+
- 		break;
- 	default:
- 		rc = -EOPNOTSUPP;
-@@ -2599,6 +2737,7 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
- 	.get_rxfh = virtnet_get_rxfh,
- 	.set_rxfh = virtnet_set_rxfh,
- 	.get_rxnfc = virtnet_get_rxnfc,
-+	.set_rxnfc = virtnet_set_rxnfc,
- };
- 
- static void virtnet_freeze_down(struct virtio_device *vdev)
-@@ -2853,7 +2992,7 @@ static int virtnet_set_features(struct net_device *dev,
- 
- 	if ((dev->features ^ features) & NETIF_F_RXHASH) {
- 		if (features & NETIF_F_RXHASH)
--			vi->ctrl->rss.hash_types = vi->rss_hash_types_supported;
-+			vi->ctrl->rss.hash_types = vi->rss_hash_types_saved;
- 		else
- 			vi->ctrl->rss.hash_types = VIRTIO_NET_HASH_REPORT_NONE;
- 
--- 
-2.34.1
+let me digest that later=E2=80=A6
 
+> I think that running the thread performing the NAPI loop with
+> SCHED_FIFO would be dangerous WRT DDOS. Even the affinity setting can
+> give mixed results depending on the workload - unless you do good
+> static CPUs allocation pinning each process manually, not really a
+> generic setup.
+
+The DDoS part is where I meant we need figure out the details. Since it
+is a threaded-interrupt we could do msleep() as a break which is similar
+to what softirq does. Detecting such a case might be difficult since the
+budget is per-thread only and does not involve other NAPI-structs on the
+same CPU like backlog.
+
+The performance is usually best if the IRQ and threaded handler are
+running on the same CPU. The win with the NAPI thread seems to be that
+if two NAPIs fire on the same CPU then the scheduler will see two tasks
+which will be moved (at some point) to different CPUs. And in a DDoS
+like situation they can constantly push new skbs into the stack and
+SCHED_OTHER ensures that the user can still do something. Without napi
+threads, both NAPIs would be processed on the same CPU (in order) and
+eventually moved to ksoftirqd where it will take a break under high
+load.
+
+> Cheers,
+>=20
+> Paolo
+
+Sebastian
