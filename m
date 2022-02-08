@@ -2,151 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67DC54AD469
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 10:11:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D526C4AD472
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 10:13:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353078AbiBHJLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 04:11:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55426 "EHLO
+        id S1353123AbiBHJM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 04:12:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353103AbiBHJLI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 04:11:08 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4DBC03FEE6;
-        Tue,  8 Feb 2022 01:11:06 -0800 (PST)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2186NgoC023009;
-        Tue, 8 Feb 2022 09:11:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=xCHUlRjEw83eqiNlE4+9PV8BubYZQd/8xSz+xmQ5TFU=;
- b=B2luCWi+F0zz8f9vcdIwNhRF+WYXHpapcgDrpl7cAGr9y/jnYCM/WqRzOgnEzQVbXqwl
- J42owCRyxsP9s7XtB3TApuqJyp6e/yXGRCmB+HYwN20xbBnYPfVlzF5DDDo+ri48f/uq
- S+uhrh6DfVcvE6e8fxnS/kBUY8O0pMOyiBo7uWUSf+PydV6CFsV+Pm9VYI+GMo1+f+vI
- bqU3CIV3fTWwLedbm+HUfHb5NGJKTMeOjyTWiptU0Di1zmCCbbjMcSh1b4HEkrDl6rTn
- itkzYdgOxBBsJj82dYcUxGx4bE1lMWpomX69bCHHL1wyERKbpK3y3CjYgi+OVyUwHZyq hw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22kqm1dp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 09:11:01 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2188V2nW027560;
-        Tue, 8 Feb 2022 09:11:00 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22kqm1d5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 09:11:00 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2189902F016132;
-        Tue, 8 Feb 2022 09:10:59 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma05fra.de.ibm.com with ESMTP id 3e1gva2vfw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 09:10:58 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2189Au7w33817082
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 8 Feb 2022 09:10:56 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 70422AE051;
-        Tue,  8 Feb 2022 09:10:56 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 172B3AE045;
-        Tue,  8 Feb 2022 09:10:56 +0000 (GMT)
-Received: from [9.171.11.11] (unknown [9.171.11.11])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  8 Feb 2022 09:10:56 +0000 (GMT)
-Message-ID: <6d88abaa-62b8-c2ae-2b96-ceca6eea28e7@linux.ibm.com>
-Date:   Tue, 8 Feb 2022 10:10:55 +0100
+        with ESMTP id S1352924AbiBHJM6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 04:12:58 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE391C0401F0
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 01:12:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644311575;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=F+Wu/sGGNFwRVA6o9CxafTUWjc6Pw1cGgpDABPbC3kU=;
+        b=GhiLZ2jOv4yBZNbdOlDOJYYLxvKeMdDdSQ7RpS2kAYdclex5VMMvo/3XVAd/j/Yuo1htCj
+        EptxHsk3V8m0fgPz8xfnH4Zn6xiRLo0LJ5rIUy96taoOgvULloC+U8w2OnkoXqFhmnA1d1
+        TayeUarOipyC+jnSifBrt3I0tUi72sc=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-468-dMF7v70CPOG_wkS450RLWQ-1; Tue, 08 Feb 2022 04:12:54 -0500
+X-MC-Unique: dMF7v70CPOG_wkS450RLWQ-1
+Received: by mail-ed1-f72.google.com with SMTP id cr7-20020a056402222700b0040f59dae606so4170069edb.11
+        for <netdev@vger.kernel.org>; Tue, 08 Feb 2022 01:12:54 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=F+Wu/sGGNFwRVA6o9CxafTUWjc6Pw1cGgpDABPbC3kU=;
+        b=Hm89y98Sad79O7YuxrM00YIFKdNNswXz5skijFPOyel4mLvnUXquGq77HJt7hWKmti
+         pTJTbb7hKjCkXjYDyFwFaT/kLThHWBMSyF9NOfLIrAzDWf1m0iri1AiBmKLBHyut0FTM
+         B0wxPhEgi4YPT8vIgjzDiRD2grauE9BmxBbXe8qlT3h7cZLr3xqrQvSdvXxr0hQJCUWh
+         ye13DTIUd+spPd8VHkUuxXndxA9ethleTojrfECO4d/CvnkIsAFfaCA1PIsAu+ktaXHC
+         ngY9W9BRGqahUZTbt6Z4rgX5z1EuPfZ6Iq7BJoKvarfbAFw5/L+yyT3YPafp3YTRCk3W
+         Kzxw==
+X-Gm-Message-State: AOAM530rcRPk6Uqb3UT7X+tV3epgud+k7dq7+HSpt/9J3sB8soAEkZ9y
+        QwaYsVQqvAMJe8mxa0YlbqpZdKHP0LUAXr7DdZGCNXO5YhRBFbOgqB5KdSwCeJBYhDw+d3ncQEx
+        hPLHBhmSXGARO2A2D
+X-Received: by 2002:a17:906:4fc1:: with SMTP id i1mr2822064ejw.248.1644311573612;
+        Tue, 08 Feb 2022 01:12:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwYBF44TL/lfB6QHqHH1Nak9YF+ZhC2FLFpMGaXqPMTlTXjPgdPNfD12GOzYHV1JeeVLqiaiA==
+X-Received: by 2002:a17:906:4fc1:: with SMTP id i1mr2822039ejw.248.1644311573396;
+        Tue, 08 Feb 2022 01:12:53 -0800 (PST)
+Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id l7sm5760193edb.53.2022.02.08.01.12.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 01:12:52 -0800 (PST)
+Date:   Tue, 8 Feb 2022 10:12:51 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Olsa <olsajiri@gmail.com>
+Subject: Re: [PATCH 6/8] libbpf: Add bpf_program__attach_kprobe_opts for
+ multi kprobes
+Message-ID: <YgI0E1D6v0RZa5/Z@krava>
+References: <20220202135333.190761-1-jolsa@kernel.org>
+ <20220202135333.190761-7-jolsa@kernel.org>
+ <CAEf4BzZPSYzyoxrPC4uNHedhTr_75b2Qa8h3OC7GCK-n6mYrdg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH net-next] net/smc: Allocate pages of SMC-R on ibdev NUMA
- node
-Content-Language: en-US
-To:     Leon Romanovsky <leon@kernel.org>,
-        Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-References: <20220130190259.94593-1-tonylu@linux.alibaba.com>
- <YfeN1BfPqhVz8mvy@unreal> <YgDtnk8g7y5oRKXB@TonyMac-Alibaba>
- <YgEjZonizb1Ugg2b@unreal>
-From:   Stefan Raspl <raspl@linux.ibm.com>
-In-Reply-To: <YgEjZonizb1Ugg2b@unreal>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: K0cj7u5Of_OXnWPmPZFaonClO747VLOQ
-X-Proofpoint-ORIG-GUID: b16vmd38Pse_jCRABD_31E5p6mwcJVkY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-08_02,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
- priorityscore=1501 bulkscore=0 spamscore=0 impostorscore=0 suspectscore=0
- mlxlogscore=999 lowpriorityscore=0 adultscore=0 malwarescore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202080051
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZPSYzyoxrPC4uNHedhTr_75b2Qa8h3OC7GCK-n6mYrdg@mail.gmail.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/7/22 14:49, Leon Romanovsky wrote:
-> On Mon, Feb 07, 2022 at 05:59:58PM +0800, Tony Lu wrote:
->> On Mon, Jan 31, 2022 at 09:20:52AM +0200, Leon Romanovsky wrote:
->>> On Mon, Jan 31, 2022 at 03:03:00AM +0800, Tony Lu wrote:
->>>> Currently, pages are allocated in the process context, for its NUMA node
->>>> isn't equal to ibdev's, which is not the best policy for performance.
->>>>
->>>> Applications will generally perform best when the processes are
->>>> accessing memory on the same NUMA node. When numa_balancing enabled
->>>> (which is enabled by most of OS distributions), it moves tasks closer to
->>>> the memory of sndbuf or rmb and ibdev, meanwhile, the IRQs of ibdev bind
->>>> to the same node usually. This reduces the latency when accessing remote
->>>> memory.
->>>
->>> It is very subjective per-specific test. I would expect that
->>> application will control NUMA memory policies (set_mempolicy(), ...)
->>> by itself without kernel setting NUMA node.
->>>
->>> Various *_alloc_node() APIs are applicable for in-kernel allocations
->>> where user can't control memory policy.
->>>
->>> I don't know SMC-R enough, but if I judge from your description, this
->>> allocation is controlled by the application.
->>
->> The original design of SMC doesn't handle the memory allocation of
->> different NUMA node, and the application can't control the NUMA policy
->> in SMC.
->>
->> It allocates memory according to the NUMA node based on the process
->> context, which is determined by the scheduler. If application process
->> runs on NUMA node 0, SMC allocates on node 0 and so on, it all depends
->> on the scheduler. If RDMA device is attached to node 1, the process runs
->> on node 0, it allocates memory on node 0.
->>
->> This patch tries to allocate memory on the same NUMA node of RDMA
->> device. Applications can't know the current node of RDMA device. The
->> scheduler knows the node of memory, and can let applications run on the
->> same node of memory and RDMA device.
+On Mon, Feb 07, 2022 at 10:59:29AM -0800, Andrii Nakryiko wrote:
+
+SNIP
+
+> > +struct fprobe_resolve {
+> > +       const char *name;
+> > +       __u64 *addrs;
+> > +       __u32 alloc;
+> > +       __u32 cnt;
+> > +};
+> > +
+> > +static bool glob_matches(const char *glob, const char *s)
 > 
-> I don't know, everything explained above is controlled through memory
-> policy, where application needs to run on same node as ibdev.
+> we've since added more generic glob_match() implementation (see
+> test_progs.c), let's copy/paste that one (it's actually shorter and
+> doesn't do hacky input args modification). Let's maybe also add '?'
+> handling (it's trivial). Both original code in perf and the one in
+> test_progs.c are GPL-2.0-only, so let's also get acks from original
+> authors.
 
-The purpose of SMC-R is to provide a drop-in replacement for existing TCP/IP 
-applications. The idea is to avoid almost any modification to the application, 
-just switch the address family. So while what you say makes a lot of sense for 
-applications that intend to use RDMA, in the case of SMC-R we can safely assume 
-that most if not all applications running it assume they get connectivity 
-through a non-RDMA NIC. Hence we cannot expect the applications to think about 
-aspects such as NUMA, and we should do the right thing within SMC-R.
+ok, will check
 
-Ciao,
-Stefan
+> 
+> > +{
+> > +       int n = strlen(glob);
+> > +
+> > +       if (n == 1 && glob[0] == '*')
+> > +               return true;
+> > +
+> > +       if (glob[0] == '*' && glob[n - 1] == '*') {
+> > +               const char *subs;
+> > +               /* substring match */
+> > +
+> > +               /* this is hacky, but we don't want to allocate
+> > +                * for no good reason
+> > +                */
+> > +               ((char *)glob)[n - 1] = '\0';
+> > +               subs = strstr(s, glob + 1);
+> > +               ((char *)glob)[n - 1] = '*';
+> > +
+> > +               return subs != NULL;
+> > +       } else if (glob[0] == '*') {
+> > +               size_t nn = strlen(s);
+> > +               /* suffix match */
+> > +
+> > +               /* too short for a given suffix */
+> > +               if (nn < n - 1)
+> > +                       return false;
+> > +               return strcmp(s + nn - (n - 1), glob + 1) == 0;
+> > +       } else if (glob[n - 1] == '*') {
+> > +               /* prefix match */
+> > +               return strncmp(s, glob, n - 1) == 0;
+> > +       } else {
+> > +               /* exact match */
+> > +               return strcmp(glob, s) == 0;
+> > +       }
+> > +}
+> > +
+> > +static int resolve_fprobe_cb(void *arg, unsigned long long sym_addr,
+> > +                            char sym_type, const char *sym_name)
+> > +{
+> > +       struct fprobe_resolve *res = arg;
+> > +       __u64 *p;
+> > +
+> > +       if (!glob_matches(res->name, sym_name))
+> > +               return 0;
+> > +
+> > +       if (res->cnt == res->alloc) {
+> > +               res->alloc = max((__u32) 16, res->alloc * 3 / 2);
+> > +               p = libbpf_reallocarray(res->addrs, res->alloc, sizeof(__u32));
+> > +               if (!p)
+> > +                       return -ENOMEM;
+> > +               res->addrs = p;
+> > +       }
+> 
+> please use libbpf_ensure_mem() instead
+
+ok
+
+> 
+> 
+> > +       res->addrs[res->cnt++] = sym_addr;
+> > +       return 0;
+> > +}
+> > +
+> > +static struct bpf_link *
+> > +attach_fprobe_opts(const struct bpf_program *prog,
+> > +                  const char *func_name,
+> 
+> func_glob or func_pattern?
+
+ok
+
+> 
+> > +                  const struct bpf_kprobe_opts *kopts)
+> > +{
+> > +       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
+> > +       struct fprobe_resolve res = {
+> > +               .name = func_name,
+> > +       };
+> > +       struct bpf_link *link = NULL;
+> > +       char errmsg[STRERR_BUFSIZE];
+> > +       int err, link_fd, prog_fd;
+> > +       bool retprobe;
+> > +
+> > +       err = libbpf__kallsyms_parse(&res, resolve_fprobe_cb);
+> > +       if (err)
+> > +               goto error;
+> > +       if (!res.cnt) {
+> > +               err = -ENOENT;
+> > +               goto error;
+> > +       }
+> > +
+> > +       retprobe = OPTS_GET(kopts, retprobe, false);
+> > +
+> > +       opts.fprobe.addrs = (__u64) res.addrs;
+> 
+> ptr_to_u64()
+
+ok
+
+> 
+> > +       opts.fprobe.cnt = res.cnt;
+> > +       opts.flags = retprobe ? BPF_F_FPROBE_RETURN : 0;
+> > +
+> > +       link = calloc(1, sizeof(*link));
+> > +       if (!link) {
+> > +               err = -ENOMEM;
+> > +               goto error;
+> > +       }
+> > +       link->detach = &bpf_link__detach_fd;
+> > +
+> > +       prog_fd = bpf_program__fd(prog);
+> > +       link_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_FPROBE, &opts);
+> > +       if (link_fd < 0) {
+> > +               err = -errno;
+> > +               pr_warn("prog '%s': failed to attach to %s: %s\n",
+> > +                       prog->name, res.name,
+> > +                       libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+> > +               goto error;
+> > +       }
+> > +       link->fd = link_fd;
+> > +       free(res.addrs);
+> > +       return link;
+> > +
+> > +error:
+> > +       free(link);
+> > +       free(res.addrs);
+> > +       return libbpf_err_ptr(err);
+> > +}
+> > +
+> >  struct bpf_link *
+> >  bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
+> >                                 const char *func_name,
+> > @@ -10047,6 +10166,9 @@ bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
+> >         if (!OPTS_VALID(opts, bpf_kprobe_opts))
+> >                 return libbpf_err_ptr(-EINVAL);
+> >
+> > +       if (prog->expected_attach_type == BPF_TRACE_FPROBE)
+> > +               return attach_fprobe_opts(prog, func_name, opts);
+> > +
+> >         retprobe = OPTS_GET(opts, retprobe, false);
+> >         offset = OPTS_GET(opts, offset, 0);
+> >         pe_opts.bpf_cookie = OPTS_GET(opts, bpf_cookie, 0);
+> > @@ -10112,6 +10234,14 @@ struct bpf_link *bpf_program__attach_kprobe(const struct bpf_program *prog,
+> >         return bpf_program__attach_kprobe_opts(prog, func_name, &opts);
+> >  }
+> >
+> > +static int init_kprobe(struct bpf_program *prog, long cookie)
+> > +{
+> > +       /* If we have wildcard, switch to fprobe link. */
+> > +       if (strchr(prog->sec_name, '*'))
+> 
+> ugh... :( maybe let's have a separate SEC("kprobe.multi/<glob>") and
+> same for kretprobe?
+
+I agree new SEC type is more clear ;-) ok
+
+thanks,
+jirka
+
