@@ -2,144 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A241F4AD219
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 08:21:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 402644AD230
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 08:29:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348036AbiBHHUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 02:20:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54612 "EHLO
+        id S1348034AbiBHH3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 02:29:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237283AbiBHHUc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 02:20:32 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82097C0401EF
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 23:20:31 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nHKnc-0000gW-Pq; Tue, 08 Feb 2022 08:20:28 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nHKnY-000085-PV; Tue, 08 Feb 2022 08:20:24 +0100
-Date:   Tue, 8 Feb 2022 08:20:24 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Rafael Richter <rafael.richter@gin.de>,
-        Daniel Klauer <daniel.klauer@gin.de>
-Subject: Re: [PATCH net 2/7] net: dsa: ar9331: register the mdiobus under
- devres
-Message-ID: <20220208072024.GB18325@pengutronix.de>
-References: <20220207161553.579933-1-vladimir.oltean@nxp.com>
- <20220207161553.579933-3-vladimir.oltean@nxp.com>
+        with ESMTP id S242843AbiBHH27 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 02:28:59 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88427C0401EF;
+        Mon,  7 Feb 2022 23:28:59 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id g8so7542381pfq.9;
+        Mon, 07 Feb 2022 23:28:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZpefNqf0BicbbFRRkSIzvUz/ffY2S1XepRcls6JuRXc=;
+        b=jZRLSfpQJjrp5QXKiKDZACKE7HLZrL+BC1EbWDMnJYLSYKSf1RBPkveyvUbRj+BRBr
+         u3en7OgrlA0ebUsZFz/9zPLCAxFCON1qFPlMHzmjy7El4pC8HyrFx+don82kT8j2OZLw
+         Z5pMINOSlJx9HPzBdQCTwTH2CRHxqctE+uSbkJiKebzg79hnpB/dLB4R5qnM7DizMoRV
+         u8VwU9Zre406YE7pv6dPSNtXps5fnh4aTYyzW8YD9TedPI3GVnwkM/flF2WloXpszQcO
+         O/MApFze0xI+RsTCrZfTX5EREH+Uvlb3ooxMgatkx6xOtb3PAcaMUtssbftFvdrMkc3x
+         uxiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZpefNqf0BicbbFRRkSIzvUz/ffY2S1XepRcls6JuRXc=;
+        b=km3Z9smSINra5nP1qkGTF4IUwBH8eM959tOQxTdehv78mMNVo7EiLKHO/B1GHCK6/w
+         utRoRX97WDTwRh/VE9OuA96PalyKSRH6i+vCEsH4yFeMgwuln6MsQk/2qYzJ+Zb2Cno4
+         zStODQsJqWCBbr+R2Q3B1gnio78jQ/EeEPFqADRTxNM5ouDOrDh96j6MvFQdgwCp89b5
+         LeaTIfU7MZmS6Ek7ZuCKb3i88ttINTEYpMwVoO7smmVkAhV8/7ApqJBQ18c7bsbmQb92
+         TCtovleOHikTPgVJCoTCFil2ORFAMQlXcqQroIJnqA4A/q1UgmWRpB9t4IsGdzYhXC9i
+         ItVw==
+X-Gm-Message-State: AOAM531mNbOMY47mE1DUdMyI8H7GeMKdnV3Q7fs2Wn+PdRkwYcVSUa/u
+        t8Wy8vCUosO/Jh9MCqMaNKs=
+X-Google-Smtp-Source: ABdhPJyT/z+dPLJrYDrDt8q6hhklHGOM7Si53aN12vPdqfIj/whBJFBPBwQamiypt+LcZRTyTXJ5yw==
+X-Received: by 2002:aa7:8484:: with SMTP id u4mr3104192pfn.70.1644305339002;
+        Mon, 07 Feb 2022 23:28:59 -0800 (PST)
+Received: from localhost.localdomain ([43.132.141.8])
+        by smtp.gmail.com with ESMTPSA id n37sm435675pgl.48.2022.02.07.23.28.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 23:28:58 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     rostedt@goodmis.org, idosch@idosch.org
+Cc:     mingo@redhat.com, nhorman@tuxdriver.com, davem@davemloft.net,
+        kuba@kernel.org, imagedong@tencent.com, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/2] net: drop_monitor: support drop reason
+Date:   Tue,  8 Feb 2022 15:28:34 +0800
+Message-Id: <20220208072836.3540192-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220207161553.579933-3-vladimir.oltean@nxp.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 08:19:37 up 59 days, 16:05, 65 users,  load average: 0.18, 0.18,
- 0.18
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 06:15:48PM +0200, Vladimir Oltean wrote:
-> As explained in commits:
-> 74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
-> 5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
-> 
-> mdiobus_free() will panic when called from devm_mdiobus_free() <-
-> devres_release_all() <- __device_release_driver(), and that mdiobus was
-> not previously unregistered.
-> 
-> The ar9331 is an MDIO device, so the initial set of constraints that I
-> thought would cause this (I2C or SPI buses which call ->remove on
-> ->shutdown) do not apply. But there is one more which applies here.
-> 
-> If the DSA master itself is on a bus that calls ->remove from ->shutdown
-> (like dpaa2-eth, which is on the fsl-mc bus), there is a device link
-> between the switch and the DSA master, and device_links_unbind_consumers()
-> will unbind the ar9331 switch driver on shutdown.
-> 
-> So the same treatment must be applied to all DSA switch drivers, which
-> is: either use devres for both the mdiobus allocation and registration,
-> or don't use devres at all.
-> 
-> The ar9331 driver doesn't have a complex code structure for mdiobus
-> removal, so just replace of_mdiobus_register with the devres variant in
-> order to be all-devres and ensure that we don't free a still-registered
-> bus.
-> 
-> Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Menglong Dong <imagedong@tencent.com>
 
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
+This series patches is to make drop monitor supporting drop reason
+and report it to user space.
 
-Thank you!
+In the first patch, we define the macro 'SKB_DR_MAX_LEN', which is
+the max string length of drop reasons. We introduce this macro as
+drop_monitor need to know the memory allocated for NET_DM_ATTR_REASON
+in the second patch.
 
-> ---
->  drivers/net/dsa/qca/ar9331.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-> index 3bda7015f0c1..e5098cfe44bc 100644
-> --- a/drivers/net/dsa/qca/ar9331.c
-> +++ b/drivers/net/dsa/qca/ar9331.c
-> @@ -378,7 +378,7 @@ static int ar9331_sw_mbus_init(struct ar9331_sw_priv *priv)
->  	if (!mnp)
->  		return -ENODEV;
->  
-> -	ret = of_mdiobus_register(mbus, mnp);
-> +	ret = devm_of_mdiobus_register(dev, mbus, mnp);
->  	of_node_put(mnp);
->  	if (ret)
->  		return ret;
-> @@ -1066,7 +1066,6 @@ static void ar9331_sw_remove(struct mdio_device *mdiodev)
->  	}
->  
->  	irq_domain_remove(priv->irqdomain);
-> -	mdiobus_unregister(priv->mbus);
->  	dsa_unregister_switch(&priv->ds);
->  
->  	reset_control_assert(priv->sw_reset);
-> -- 
-> 2.25.1
-> 
-> 
+In the second patch, we report drop reasons as string to user space
+in drop_monitor.
+
+
+Menglong Dong (2):
+  net: skb: introduce SKB_DR_MAX_LEN
+  net: drop_monitor: support drop reason
+
+ include/trace/events/skb.h       |  5 +++++
+ include/uapi/linux/net_dropmon.h |  1 +
+ net/core/drop_monitor.c          | 34 ++++++++++++++++++++++++++++----
+ 3 files changed, 36 insertions(+), 4 deletions(-)
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.27.0
+
