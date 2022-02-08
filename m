@@ -2,79 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBE664ACFE2
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 04:51:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A14304ACFE9
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 04:54:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345332AbiBHDvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 22:51:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33430 "EHLO
+        id S1346570AbiBHDyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 22:54:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238983AbiBHDvm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 22:51:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8854EC0401DC;
-        Mon,  7 Feb 2022 19:51:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C6BF61529;
-        Tue,  8 Feb 2022 03:51:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36DBAC004E1;
-        Tue,  8 Feb 2022 03:51:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644292300;
-        bh=ABaVsbOIb3+OcYn2+ylzu6Byh3EUHq/wPhjW1EhoBIs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IBYF/lrlFyeSuS2oqOc/d9fIcdy7zrA4gRdFau3P52O1c7B+0o3KhDqmNTPlsH/0i
-         sunvseBZ+AZWK+CfmcUkUJEE3Mv+4xW8md3dh+Q0vo+eYssqxMSr661akKap8ptas6
-         B8ugcNMyduW8TdDMPVYV7p4dTFqIJtzEWrHJOuLkz4hW4hzSuywV6C/pP61M1ziHtX
-         6QYbo+UbjMctfN34OuqMJGraQLIv0l9DSW8q96rWUEDU6eq0Pe63zjwDNorG/uHRIj
-         JTrCuucSraQq+eWphiznzSzOEKFNpL5uyVRyk9jkPbrH0TE8vhkSnWB/uWc9hzJpMM
-         Reo9UYUvAUa2w==
-Date:   Mon, 7 Feb 2022 19:51:39 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jeffrey Ji <jeffreyjilinux@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Brian Vazquez <brianvv@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jeffreyji <jeffreyji@google.com>
-Subject: Re: [PATCH v7 net-next] net-core: add InDropOtherhost counter
-Message-ID: <20220207195139.77d860cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220207235714.1050160-1-jeffreyji@google.com>
-References: <20220207235714.1050160-1-jeffreyji@google.com>
+        with ESMTP id S1346487AbiBHDxv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 22:53:51 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F473C0401DC;
+        Mon,  7 Feb 2022 19:53:50 -0800 (PST)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jt8CX24PZz67ZkT;
+        Tue,  8 Feb 2022 11:49:44 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 04:53:47 +0100
+Message-ID: <8356b0fe-5665-96c1-c09b-bb74f97cc7ca@huawei.com>
+Date:   Tue, 8 Feb 2022 06:53:46 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [RFC PATCH 0/2] landlock network implementation cover letter
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
+ <85450679-51fd-e5ae-b994-74bda3041739@digikod.net>
+ <51967ba5-519a-8af2-76ce-eafa8c1dea33@huawei.com>
+ <26cae763-3540-8e1b-f25b-68ac3df481a6@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <26cae763-3540-8e1b-f25b-68ac3df481a6@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  7 Feb 2022 23:57:14 +0000 Jeffrey Ji wrote:
-> From: jeffreyji <jeffreyji@google.com>
-> 
-> Increment InDropOtherhost counter when packet dropped due to incorrect dest
-> MAC addr.
-> 
-> An example when this drop can occur is when manually crafting raw
-> packets that will be consumed by a user space application via a tap
-> device. For testing purposes local traffic was generated using trafgen
-> for the client and netcat to start a server
-> 
-> example output from nstat:
-> \~# nstat -a | grep InMac
-> Ip6InDropOtherhost                  0                  0.0
-> IpExtInDropOtherhost                1                  0.0
-> 
-> Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
-> with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
-> counter was incremented.
 
-As far as I can tell nobody objected to my suggestion of making this 
-a netdev counter, so please switch to working on that. Thanks.
+
+2/7/2022 4:35 PM, Mickaël Salaün пишет:
+> 
+> On 07/02/2022 14:18, Konstantin Meskhidze wrote:
+>>
+>>
+>> 2/1/2022 8:53 PM, Mickaël Salaün пишет:
+>>>
+>>> On 24/01/2022 09:02, Konstantin Meskhidze wrote:
+>>>> Hi, all!
+>>>>
+>>>> This is a new bunch of RFC patches related to Landlock LSM network 
+>>>> confinement.
+>>>> Here are previous discussions:
+>>>> 1. 
+>>>> https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/ 
+>>>>
+>>>> 2. 
+>>>> https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/ 
+>>>>
+>>>>
+>>>> As in previous RFCs, 2 hooks are supported:
+>>>>    - hook_socket_bind()
+>>>>    - hook_socket_connect()
+>>>>
+>>>> Selftest are provided in 
+>>>> tools/testing/selftests/landlock/network_test.c;
+>>>> Implementation was tested in QEMU invironment with 5.13 kernel version:
+>>>
+>>> Again, you need to base your work on the latest kernel version.
+>>>
+>>    Is it because there are new Landlock features in a latest kernel
+>>    version?
+>>    I thought 5.13 kernel version and the latest one have the same
+>>    Landlock functionality and there will not be rebasing problems in
+>>    future. But anyway I will base the work on the latest kernel.
+>>    Which kernel version do you work on now?
+> 
+> 
+> For now, the security/landlock/ files didn't changed yet, but that will 
+> come. All other kernel APIs (and semantic) may change over time (e.g. 
+> LSM API, network types…). I'm working on Linus's master branch (when it 
+> becomes stable enough) or the linux-rolling-stable branch (from the 
+> stable repository). When it will be ready for a merge, we need to base 
+> our work on linux-next.
+
+   Ok. I got it. I will rebase to the latest version.
+   Thanks.
+> .
+
