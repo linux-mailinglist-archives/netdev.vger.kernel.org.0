@@ -2,82 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A53674AD001
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 05:00:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 411A34AD012
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 05:04:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238819AbiBHEAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 23:00:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37258 "EHLO
+        id S236788AbiBHEET (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 23:04:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230298AbiBHEAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:00:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7185C0401DC
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:00:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A257161542
-        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 04:00:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 11D4CC340E9;
-        Tue,  8 Feb 2022 04:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644292809;
-        bh=sPnAHgQAfr1ZqnNxZXZHAFkG+E4MAj1qk3iLGyTUowg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ueDgBe/mGpBaWBGBgCou26IkcD6BTF8TZJSg+D29TzEtJL/7v/+EavR3pTvMuUlj0
-         ADZdkHbCNLpBuZUXtohYInGvtkkBmjxWMXtbN6U/qQkTApHm23CRLXCZ8e+O55Rgj7
-         onsY6wdkBw5uXtz30y/meDHMwYPtQ8IbxHfDm3jR8xylzeyORMqsoO8QUhuPFo/aeP
-         C2v0iSObPxSCONay1o+vnuVXu5rbbZVMbL0xh/m379UUMLODurBHPR4ePZGv+J82bl
-         f3H3vXVYLgCtk8Lh0I+e95sQzEAM4aRWrtH7T7NAO93HVuWLiBD9acq4u7HMijw9Nb
-         tZATrBdn66jMw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EB6DAE6BB3D;
-        Tue,  8 Feb 2022 04:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233348AbiBHEET (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:04:19 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0794C0401DC
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:04:18 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id d187so16646524pfa.10
+        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 20:04:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rbQTUagh3Idsh0rtcwxIuYHkWrAIhx+F/El2D5w6y04=;
+        b=dGt+WPcAgNsCOw4EaoHUaj3yh8ubD4p2xA3VpmoZhfgPqdh5J2tF2C/4GMRyLWyL/m
+         vccLtrrD4cQSdBn87dhagBzrpcSKjsQQqittpT/cmSRyPnTJyaR6rSM9GNFM+3ghqrLj
+         BF0SiYRCMBiGSO1D7t/fKFj7ja2VCdYU4RDyf7fDnuvlqXYZd8YMco/7xG2asqeS0G4C
+         VigWq7WzEaDN2fiuEUUBw4BlWbeHqjTyk1uTDfJLukFV0JwKoINrftKw8iellfztP8b/
+         XmAljwHS40B0rlt+anpdXmTQC+tiRtX3Xo7kRomdFm3nnJBGsQn9cl3moCcPI2RMWLTa
+         H1Og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rbQTUagh3Idsh0rtcwxIuYHkWrAIhx+F/El2D5w6y04=;
+        b=qZiuhAxSphnKkuEFJ55Jl9gvo/qhjb9z705W5+VpmPKcNHpT1H2fapEPy5NIEw3Ban
+         uvW7hRBYSqBbggBz7AYAx9wbonY0e50L/QGVYBIPbmhLBJ/mFH3GMHVdCgrs3oP/doWa
+         /L/wwmPsXzFuklxId51cW6JaJLGxRFAELBHxDaytSIms9YF/lXHffmaf6EmdDxvQEEMX
+         PVGStqzXMigxQKMm55wGeUb6PuV8JMyo2VOmUIqtbO2uSnLLtzyo/TSbKBDmQAOV2fFm
+         do88Tjb9GvWw03oTWTWEBOqvL1/OHvBBJVUnlWf7YBSmAH+neao1Ym0bdkaKgJYM0KIX
+         2heg==
+X-Gm-Message-State: AOAM533ANPtDKr9g6wW9PR27Jjb0fEgJI3xe+mu1sr0df1euOJwROztW
+        mnmTWDFLUvdycXfLuM4NfxU=
+X-Google-Smtp-Source: ABdhPJyxLD8A0728/2yeHTMB7OcUowZSPs+eZAiIBczG80pCAMsP7MMESAXx52NOaF0Jh1gXaCzNIg==
+X-Received: by 2002:a05:6a00:21c9:: with SMTP id t9mr2553714pfj.48.1644293058417;
+        Mon, 07 Feb 2022 20:04:18 -0800 (PST)
+Received: from [10.0.2.64] ([209.37.97.194])
+        by smtp.googlemail.com with ESMTPSA id t15sm9792199pgc.49.2022.02.07.20.04.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 20:04:17 -0800 (PST)
+Message-ID: <e86ef784-9dd4-8649-1979-423f3c0c2062@gmail.com>
+Date:   Mon, 7 Feb 2022 20:04:16 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: typhoon: include <net/vxlan.h>
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164429280896.26406.10672367394832135312.git-patchwork-notify@kernel.org>
-Date:   Tue, 08 Feb 2022 04:00:08 +0000
-References: <20220208003502.1799728-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220208003502.1799728-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH net-next 01/11] ipv6/addrconf: allocate a per netns hash
+ table
+Content-Language: en-US
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+References: <20220207171756.1304544-1-eric.dumazet@gmail.com>
+ <20220207171756.1304544-2-eric.dumazet@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220207171756.1304544-2-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon,  7 Feb 2022 16:35:02 -0800 you wrote:
+On 2/7/22 9:17 AM, Eric Dumazet wrote:
 > From: Eric Dumazet <edumazet@google.com>
 > 
-> We need this to get vxlan_features_check() definition.
+> Add a per netns hash table and a dedicated spinlock,
+> first step to get rid of the global inet6_addr_lst[] one.
 > 
-> Fixes: d2692eee05b8 ("net: typhoon: implement ndo_features_check method")
 > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> ---
+>  include/net/netns/ipv6.h |  4 ++++
+>  net/ipv6/addrconf.c      | 20 ++++++++++++++++++++
+>  2 files changed, 24 insertions(+)
 > 
-> [...]
 
-Here is the summary with links:
-  - [net-next] net: typhoon: include <net/vxlan.h>
-    https://git.kernel.org/netdev/net-next/c/d1d5bd647c49
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
 
