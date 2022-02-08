@@ -2,60 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A59154ACFFF
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 04:58:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A53674AD001
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 05:00:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242328AbiBHD6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 22:58:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36780 "EHLO
+        id S238819AbiBHEAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 23:00:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230298AbiBHD6a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 22:58:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE8CC0401DC;
-        Mon,  7 Feb 2022 19:58:29 -0800 (PST)
+        with ESMTP id S230298AbiBHEAL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:00:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7185C0401DC
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:00:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87DA561512;
-        Tue,  8 Feb 2022 03:58:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DDADC340E9;
-        Tue,  8 Feb 2022 03:58:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A257161542
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 04:00:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 11D4CC340E9;
+        Tue,  8 Feb 2022 04:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644292708;
-        bh=wlSWE02vijqLb7afUOki+FFDRQApC6VyPmtbpgQxuAA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KxjZM/HWcTU3/sIZy4/XZGDmB/vfPmYkJVei9liZjWeJ23rw/5zAfT6PCiPB7mtET
-         SwYA+Qmb4QgTiLXEHdmG/72I7HttzRU/Umssvx/s3eSc5eQNwqj+r/TNIjxrek8NCF
-         FrEqsvrrE4t6OMaoGD6oKj5VWilPj/rtknLqzg8hH+Pqiydl956gjs37b4mb8GHmiT
-         HG+izeZLGBtZb8VvtijszGf2zKaHWZyW6/E5nPcXGOKd9QAe+1b5DsMhnurqPfHIok
-         p/ZAQdvTJX8rxa8kKufE9085rdpfGyu/TAXnAS7AgsC3VJEr+/2LpZCJmyrtXVeT+a
-         Aq5wr54YoB1Og==
-Date:   Mon, 7 Feb 2022 19:58:27 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Serge Semin <fancer.lancer@gmail.com>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        <stable@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH net v2] net: phy: marvell: Fix RGMII Tx/Rx delays
- setting in 88e1121-compatible PHYs
-Message-ID: <20220207195827.43f11866@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220207112239.20ae3bfe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru>
-        <20220205203932.26899-1-Pavel.Parkhomenko@baikalelectronics.ru>
-        <20220207094039.6a2b34df@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20220207183319.ls2rz4k6m7tgbqlg@mobilestation>
-        <20220207112239.20ae3bfe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        s=k20201202; t=1644292809;
+        bh=sPnAHgQAfr1ZqnNxZXZHAFkG+E4MAj1qk3iLGyTUowg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ueDgBe/mGpBaWBGBgCou26IkcD6BTF8TZJSg+D29TzEtJL/7v/+EavR3pTvMuUlj0
+         ADZdkHbCNLpBuZUXtohYInGvtkkBmjxWMXtbN6U/qQkTApHm23CRLXCZ8e+O55Rgj7
+         onsY6wdkBw5uXtz30y/meDHMwYPtQ8IbxHfDm3jR8xylzeyORMqsoO8QUhuPFo/aeP
+         C2v0iSObPxSCONay1o+vnuVXu5rbbZVMbL0xh/m379UUMLODurBHPR4ePZGv+J82bl
+         f3H3vXVYLgCtk8Lh0I+e95sQzEAM4aRWrtH7T7NAO93HVuWLiBD9acq4u7HMijw9Nb
+         tZATrBdn66jMw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EB6DAE6BB3D;
+        Tue,  8 Feb 2022 04:00:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: typhoon: include <net/vxlan.h>
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164429280896.26406.10672367394832135312.git-patchwork-notify@kernel.org>
+Date:   Tue, 08 Feb 2022 04:00:08 +0000
+References: <20220208003502.1799728-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220208003502.1799728-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        edumazet@google.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -66,21 +56,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 7 Feb 2022 11:22:39 -0800 Jakub Kicinski wrote:
-> On Mon, 7 Feb 2022 21:33:19 +0300 Serge Semin wrote:
-> > > I see it's marked as Superseded in patchwork, but can't track down a v3.    
-> > 
-> > We had accidentally sent out a temporal v2 version before submitting this
-> > one. The failed patch is here
-> > Link: https://lore.kernel.org/stable/20220205190814.20282-1-Pavel.Parkhomenko@baikalelectronics.ru/
-> > But the message was sent to Russel and to the stable mailing list only
-> > with no netdev list being in Cc. I thought if the right v2 was sent
-> > out after the failed one, then even if patchwork somehow gets to catch
-> > both of the messages, the former patch would have at least superseded
-> > the later one. It appears I was wrong. Sorry about that. Do you want
-> > us to resend this patch as v3 to have a proper patchwork status?  
-> 
-> No need, I set it back to New, thanks!
+Hello:
 
-Applied now, commit fe4f57bf7b58 ("net: phy: marvell: Fix RGMII Tx/Rx
-delays setting in 88e1121-compatible PHYs"), thanks!
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon,  7 Feb 2022 16:35:02 -0800 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> We need this to get vxlan_features_check() definition.
+> 
+> Fixes: d2692eee05b8 ("net: typhoon: implement ndo_features_check method")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] net: typhoon: include <net/vxlan.h>
+    https://git.kernel.org/netdev/net-next/c/d1d5bd647c49
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
