@@ -2,104 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D8CE4ADC40
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 16:18:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDE054ADC73
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 16:23:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352648AbiBHPSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 10:18:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35412 "EHLO
+        id S1379942AbiBHPW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 10:22:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239424AbiBHPSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 10:18:36 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1108FC061577
-        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 07:18:34 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id s13so53123994ejy.3
-        for <netdev@vger.kernel.org>; Tue, 08 Feb 2022 07:18:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=aOLzuOLlP/f98S9a3BMaCLPxZQ1gBmNEHnx7naa6bCg=;
-        b=fq38nRJ58BfqG1umexttXe1iglNFMZFrWjYgIlSHztXyBxXDksB8WdErZAaht4PMHl
-         YSXmMbHyJXM1N5NeWG2XXTw5G/4CHC9rtiN9IqXPxveNtTnku2BWZ4hrqd9wWpMiCSG2
-         1/9DyRwFn1edi5EDo33Lf5d2mSCafxPLx6hLghlWkvA1rr1umd/7vk+DhYRZT6OLzOZn
-         pZJ5TISWMnzRwkOVN4akKPfgOtGS4V6xgqzeK53tKPZ5uHXAltdGz3bldCYlWg7EDU8U
-         ijPyZhko33vqcrf1HHKFb5iuxSEh5oRDdzUrub1jTs2jXnAJWxBUvhsJFtdRFodX7gT8
-         KG/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aOLzuOLlP/f98S9a3BMaCLPxZQ1gBmNEHnx7naa6bCg=;
-        b=02rwC1huLPeyq7Kd7dCtSwFQHQ3gZFxGOpfu2Nl0aCNf99p4m4BFggDxRAsBhcniOZ
-         3GCq/gZnlsL1girCOm8haMRv23tG6X0xf4PZ5GiqqjBxqLTcRkvVuXoL5eJux1rt5hgv
-         hCPNmwtjiSha5D7DN3Rf3UM8qzRjb4Qp7isX2DnO3McL+p9vLdzWlswUHiMfDo1uskUf
-         VJKvh6S26DciA5DBWow0Gc0CsbVi7FkKnN7JdkVQaRQgcASnHkr7kREE1ynAFII/efrS
-         BpMETRoZlRzKlfhc5lnwC821NgJhKlEO7fikrGL4DDZoPIXOhYkQaLZ1lf/qRRWUfoD5
-         LP3Q==
-X-Gm-Message-State: AOAM531aqAkl532T517fPPg/QrfXecS64b2c7YopKkLLZ93kzKCZHBoO
-        M5YVPhxtUtdNja8c0t/8U3Y=
-X-Google-Smtp-Source: ABdhPJwVlDeEhSsIAzH3hS8xAwdgYzE0uN4Q5JW9dUiDmr5yqXLYx3o4hG5OrUZTwQ/ZmDD35xjCGg==
-X-Received: by 2002:a17:907:e8b:: with SMTP id ho11mr4300850ejc.650.1644333512435;
-        Tue, 08 Feb 2022 07:18:32 -0800 (PST)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id r8sm2946543edt.65.2022.02.08.07.18.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 07:18:31 -0800 (PST)
-Date:   Tue, 8 Feb 2022 16:18:28 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH CFT net-next 0/6] net: dsa: qca8k: convert to phylink_pcs
- and mark as non-legacy
-Message-ID: <YgKJxKBF6/i2k0tR@Ansuel-xps.localdomain>
-References: <YgKIIq2baq4yERS5@shell.armlinux.org.uk>
+        with ESMTP id S233761AbiBHPWz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 10:22:55 -0500
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFB4C061576;
+        Tue,  8 Feb 2022 07:22:54 -0800 (PST)
+Received: from localhost.localdomain (ip5f5aebc2.dynamic.kabel-deutschland.de [95.90.235.194])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 51C0D61E6478B;
+        Tue,  8 Feb 2022 16:22:52 +0100 (CET)
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org, Song Liu <song@kernel.org>,
+        linux-raid@vger.kernel.org,
+        Matt Brown <matthew.brown.dev@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH v2 1/2] lib/raid6/test/Makefile: Use `$(pound)` instead of `\#` for Make 4.3
+Date:   Tue,  8 Feb 2022 16:21:48 +0100
+Message-Id: <20220208152148.48534-1-pmenzel@molgen.mpg.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgKIIq2baq4yERS5@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 03:11:30PM +0000, Russell King (Oracle) wrote:
-> This series adds support into DSA for the mac_select_pcs method, and
-> converts qca8k to make use of this, eventually marking qca8k as non-
-> legacy.
-> 
-> Patch 1 adds DSA support for mac_select_pcs.
+Buidling `raid6test` on Ubuntu 21.10 (ppc64le) with GNU Make 4.3 shows the
+errors below:
 
-Was thinking... Is it possible to limit the polling just to sgmii/basex?
-Would save some overhead in the case fixed-rate is set and the link
-never change.
+    $ cd lib/raid6/test/
+    $ make
+    <stdin>:1:1: error: stray ‘\’ in program
+    <stdin>:1:2: error: stray ‘#’ in program
+    <stdin>:1:11: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘<’ token
+    cp -f ../int.uc int.uc
+    awk -f ../unroll.awk -vN=1 < int.uc > int1.c
+    gcc -I.. -I ../../../include -g -O2                      -c -o int1.o int1.c
+    awk -f ../unroll.awk -vN=2 < int.uc > int2.c
+    gcc -I.. -I ../../../include -g -O2                      -c -o int2.o int2.c
+    awk -f ../unroll.awk -vN=4 < int.uc > int4.c
+    gcc -I.. -I ../../../include -g -O2                      -c -o int4.o int4.c
+    awk -f ../unroll.awk -vN=8 < int.uc > int8.c
+    gcc -I.. -I ../../../include -g -O2                      -c -o int8.o int8.c
+    awk -f ../unroll.awk -vN=16 < int.uc > int16.c
+    gcc -I.. -I ../../../include -g -O2                      -c -o int16.o int16.c
+    awk -f ../unroll.awk -vN=32 < int.uc > int32.c
+    gcc -I.. -I ../../../include -g -O2                      -c -o int32.o int32.c
+    rm -f raid6.a
+    ar cq raid6.a int1.o int2.o int4.o int8.o int16.o int32.o recov.o algos.o tables.o
+    ranlib raid6.a
+    gcc -I.. -I ../../../include -g -O2                      -o raid6test test.c raid6.a
+    /usr/bin/ld: raid6.a(algos.o):/dev/shm/linux/lib/raid6/test/algos.c:28: multiple definition of `raid6_call'; /scratch/local/ccIJjN8s.o:/dev/shm/linux/lib/raid6/test/test.c:22: first defined here
+    collect2: error: ld returned 1 exit status
+    make: *** [Makefile:72: raid6test] Error 1
 
-> Patch 2 and patch 3 moves code around in qca8k to make patch 4 more
-> readable.
-> Patch 4 does a simple conversion to phylink_pcs.
-> Patch 5 moves the serdes configuration to phylink_pcs.
-> Patch 6 marks qca8k as non-legacy.
-> 
->  drivers/net/dsa/qca8k.c | 738 +++++++++++++++++++++++++++---------------------
->  drivers/net/dsa/qca8k.h |   8 +
->  include/net/dsa.h       |   3 +
->  net/dsa/port.c          |  15 +
->  4 files changed, 436 insertions(+), 328 deletions(-)
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+The errors come from the `HAS_ALTIVEC` test, which fails, and the POWER
+optimized versions are not built. That’s also reason nobody noticed on the
+other architectures.
 
+GNU Make 4.3 does not remove the backslash anymore. From the 4.3 release
+announcment:
+
+> * WARNING: Backward-incompatibility!
+>   Number signs (#) appearing inside a macro reference or function invocation
+>   no longer introduce comments and should not be escaped with backslashes:
+>   thus a call such as:
+>     foo := $(shell echo '#')
+>   is legal.  Previously the number sign needed to be escaped, for example:
+>     foo := $(shell echo '\#')
+>   Now this latter will resolve to "\#".  If you want to write makefiles
+>   portable to both versions, assign the number sign to a variable:
+>     H := \#
+>     foo := $(shell echo '$H')
+>   This was claimed to be fixed in 3.81, but wasn't, for some reason.
+>   To detect this change search for 'nocomment' in the .FEATURES variable.
+
+So, do the same as commit 9564a8cf422d ("Kbuild: fix # escaping in .cmd
+files for future Make") and commit 929bef467771 ("bpf: Use $(pound) instead
+of \# in Makefiles") and define and use a `$(pound)` variable.
+
+Reference for the change in make:
+https://git.savannah.gnu.org/cgit/make.git/commit/?id=c6966b323811c37acedff05b57
+
+Cc: Matt Brown <matthew.brown.dev@gmail.com>
+Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
+---
+v2: Fix checkpatch.pl errors by adding missing quotes around git commit
+message summary/title.
+
+ lib/raid6/test/Makefile | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/lib/raid6/test/Makefile b/lib/raid6/test/Makefile
+index a4c7cd74cff5..4fb7700a741b 100644
+--- a/lib/raid6/test/Makefile
++++ b/lib/raid6/test/Makefile
+@@ -4,6 +4,8 @@
+ # from userspace.
+ #
+ 
++pound := \#
++
+ CC	 = gcc
+ OPTFLAGS = -O2			# Adjust as desired
+ CFLAGS	 = -I.. -I ../../../include -g $(OPTFLAGS)
+@@ -42,7 +44,7 @@ else ifeq ($(HAS_NEON),yes)
+         OBJS   += neon.o neon1.o neon2.o neon4.o neon8.o recov_neon.o recov_neon_inner.o
+         CFLAGS += -DCONFIG_KERNEL_MODE_NEON=1
+ else
+-        HAS_ALTIVEC := $(shell printf '\#include <altivec.h>\nvector int a;\n' |\
++        HAS_ALTIVEC := $(shell printf '$(pound)include <altivec.h>\nvector int a;\n' |\
+                          gcc -c -x c - >/dev/null && rm ./-.o && echo yes)
+         ifeq ($(HAS_ALTIVEC),yes)
+                 CFLAGS += -I../../../arch/powerpc/include
 -- 
-	Ansuel
+2.34.1
+
