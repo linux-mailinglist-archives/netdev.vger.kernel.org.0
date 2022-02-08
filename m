@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FB804AD053
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 05:24:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92F394AD05C
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 05:29:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346871AbiBHEYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Feb 2022 23:24:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48862 "EHLO
+        id S241316AbiBHE3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Feb 2022 23:29:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346914AbiBHEYv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:24:51 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41E9C0401DC
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:24:50 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id m7so15011834pjk.0
-        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 20:24:50 -0800 (PST)
+        with ESMTP id S234088AbiBHE3i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:29:38 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF48C0401DC
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:29:37 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id i30so16736447pfk.8
+        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 20:29:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=WuuKwP0gNbquZGhuPG3i3NLPQcjGwiraNBzBgxwQBgU=;
-        b=DCubD2fvc8bDWaoNLVFQbF/CYT74cBdT/jW0TKuMimfa62Z1UlMgsTjLDwzEmpxtUO
-         +SNNiX37D3DDgkmpwb/ztNaKOW/cBHqHOmZR7G0AgiObm+LxdWazW1P4tS87KXWuZRWG
-         +HOm6QGgvmp7LQ1tSE/3wFywvTcTS6/JrcccOWUjJymL9QgJsgSUxMscYUPjp6juIjF1
-         QCSJa7yB2wUvB3gmDq/P9MxZWnf0kVb6bfyzD89aWvMcQUnbChs9dy5dBFI7WX1/L2xS
-         LlFZLboyBVLvXGMFWoKtCFLS7X3K/YJf9uKn3ZnlBOmrIKouhlXexD571Db4w0fur7m0
-         byyA==
+        bh=KFy0VFK8kUwnINSIg5P5ODLFMqdHWEM7U09ysXDvakA=;
+        b=q1RWHtzzdh7ColxUMz5qZ+pbDpAWiEFojK9xC8J5mkAE3dUuR9Ri5ourJjxS5FQCEt
+         gnEX4BS5OruPR06c6SEWAKBLL3iQ11TConhiIqlnWMZjKAuUNFSrUwZQvGVWlC5mgNMo
+         /WatYpZJj7m687ORr7vPtH6zaqNgSteUmECuwO8t5SkoN9As/sHbKaE+1ibmv5Ydh0v7
+         2Y3fmMJnTXd/4508owLgeZtVkZbBcohA8mzhNWt3wqpHRE9gDDmluofS8V1bUQsMfvzx
+         2Kn0zaVk/tygyw18JOUhvvWLZhITMxK0ahgmfxQLe2hmPFJ13hkdg46y79ZQ4nzS018j
+         UqXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=WuuKwP0gNbquZGhuPG3i3NLPQcjGwiraNBzBgxwQBgU=;
-        b=eOKlNG5paM9nXV5mwbEbfj/vmcQSFyBU1il5r4IJokRlsCVrnZ/+XUypngf7gGinJL
-         bD0HlkKHnRIvaduoR3051DH5zQARuLHN3ui0+vyjcImpkl0fvbCiQX13qBHG5MWNj5sK
-         Gcta5ZvIX1XBY3UCQ9tk1oCZkfeN/DIIajRVdAkJEoyVEqdgcY0bftyB4SmEVo2HPC3Q
-         xskVRj7fap9UXyV4Cxq5oVj1ffqiZZj0FOOZq+4/Aa4tCu8YXaklPC/1iv9iOX4XGwpP
-         58MHzLS+MDqlR8gV+mVXjqKlIH7ITwwkL2LkMaJxXepT2L/W95GzLQlnqBV5NfIzhKgC
-         LBGg==
-X-Gm-Message-State: AOAM5314IUPRgoiHTLd8uktQDkZw56wwBNd811iSTjYcwZBytx5lVRsD
-        25Im6XIdiqcYMii86O2jqjE=
-X-Google-Smtp-Source: ABdhPJxSfyCeq0m+n5zGMdaWVfZJ3sA/A8OiojeQkpZrlJ6f3F6bVM4D7SX7tDIFqBCZCXS1pOFvzg==
-X-Received: by 2002:a17:90b:2252:: with SMTP id hk18mr2421650pjb.183.1644294290361;
-        Mon, 07 Feb 2022 20:24:50 -0800 (PST)
+        bh=KFy0VFK8kUwnINSIg5P5ODLFMqdHWEM7U09ysXDvakA=;
+        b=BLG3EYOysuw36OZ3ewpMriRj2OnLJoElBDiwO6BnZs09Kv8W+vwDpdIzDFjzSTkR35
+         uJh64IWwgUPzDTxEa8uZtd/VUnnIclJZcbRLpn58hO3SWSXLJGw4+I6F03qiFWMahV60
+         0HYpLjnJJf42IEaOF3KlB6uVNMea7ekIN64g3Ti5nJQdH5ZyWxvqpy40Ef/M/tH9dmfA
+         4jhbxUDNxTu42cNL/qMOGZjh6RQAynT7raBirTAPUNp3s/J6ot3aWKMZrg689aojtIlG
+         OGWrv9RiLTN0EhP5FJ04nDgVxGGnv4c82j4D/eNc2C1HaMjQ4E2+E6rhQrCKnfh6GJwm
+         QluQ==
+X-Gm-Message-State: AOAM532EgvCff6KdpcVaVIGUYIy3j9te4KrZ2fRplv7JFIoLVD64PEox
+        EmAl4Vd6dBD7Xwv07fRu8Bg=
+X-Google-Smtp-Source: ABdhPJyJlP3/qsCLVBWlj35nGZQPrVkehXDbka6ZfOG2VQXGc1ehSNOHp0PjYlsm6yFMthm9CcJACQ==
+X-Received: by 2002:a05:6a00:1c96:: with SMTP id y22mr2630885pfw.8.1644294577188;
+        Mon, 07 Feb 2022 20:29:37 -0800 (PST)
 Received: from [10.0.2.64] ([209.37.97.194])
-        by smtp.googlemail.com with ESMTPSA id oa5sm940958pjb.0.2022.02.07.20.24.49
+        by smtp.googlemail.com with ESMTPSA id x1sm14566908pfh.167.2022.02.07.20.29.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 20:24:49 -0800 (PST)
-Message-ID: <c5cf5df5-a37e-2c34-f5c6-b34cc91cf911@gmail.com>
-Date:   Mon, 7 Feb 2022 20:24:48 -0800
+        Mon, 07 Feb 2022 20:29:36 -0800 (PST)
+Message-ID: <2815a75c-b474-34f0-f0c9-7566f0f9e87e@gmail.com>
+Date:   Mon, 7 Feb 2022 20:29:35 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH net-next 08/11] ipmr: introduce ipmr_net_exit_batch()
+Subject: Re: [PATCH net-next 11/11] net: remove default_device_exit()
 Content-Language: en-US
 To:     Eric Dumazet <eric.dumazet@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -61,9 +61,9 @@ To:     Eric Dumazet <eric.dumazet@gmail.com>,
 Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>
 References: <20220207171756.1304544-1-eric.dumazet@gmail.com>
- <20220207171756.1304544-9-eric.dumazet@gmail.com>
+ <20220207171756.1304544-12-eric.dumazet@gmail.com>
 From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220207171756.1304544-9-eric.dumazet@gmail.com>
+In-Reply-To: <20220207171756.1304544-12-eric.dumazet@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -79,17 +79,22 @@ X-Mailing-List: netdev@vger.kernel.org
 On 2/7/22 9:17 AM, Eric Dumazet wrote:
 > From: Eric Dumazet <edumazet@google.com>
 > 
-> cleanup_net() is competing with other rtnl users.
+> For some reason default_device_ops kept two exit method:
 > 
-> Avoiding to acquire rtnl for each netns before calling
-> ipmr_rules_exit() gives chance for cleanup_net()
-> to progress much faster, holding rtnl a bit longer.
+> 1) default_device_exit() is called for each netns being dismantled in
+> a cleanup_net() round. This acquires rtnl for each invocation.
+> 
+> 2) default_device_exit_batch() is called once with the list of all netns
+> int the batch, allowing for a single rtnl invocation.
+> 
+> Get rid of the .exit() method to handle the logic from
+> default_device_exit_batch(), to decrease the number of rtnl acquisition
+> to one.
 > 
 > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: David Ahern <dsahern@kernel.org>
 > ---
->  net/ipv4/ipmr.c | 20 +++++++++++++++-----
->  1 file changed, 15 insertions(+), 5 deletions(-)
+>  net/core/dev.c | 22 ++++++++++++++--------
+>  1 file changed, 14 insertions(+), 8 deletions(-)
 > 
 
 Reviewed-by: David Ahern <dsahern@kernel.org>
