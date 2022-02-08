@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01E984AD0F7
-	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 06:33:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C2AE4AD0C4
+	for <lists+netdev@lfdr.de>; Tue,  8 Feb 2022 06:32:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231778AbiBHFdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 00:33:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56578 "EHLO
+        id S243915AbiBHFc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 00:32:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347037AbiBHEu6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:50:58 -0500
+        with ESMTP id S1347038AbiBHEvC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Feb 2022 23:51:02 -0500
 Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706CBC0401DC
-        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:50:57 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id i17so16798447pfq.13
-        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 20:50:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA666C0401DC
+        for <netdev@vger.kernel.org>; Mon,  7 Feb 2022 20:51:00 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id e28so16827501pfj.5
+        for <netdev@vger.kernel.org>; Mon, 07 Feb 2022 20:51:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4EsVHO1j93+zknKhBX4yib6nrA45XuKP1cgfl2DPi9g=;
-        b=Zq54UyPDWYJtS8ZrQD8cmzwRUAaL1Gu9z9fVL/SUN/L+wEKL8SvLxl26vCfQMYCjyA
-         vYUYO3gWwGu2+PpifD7zcKC4csfHFkL08wAThCaN2Gjq73AD6jgfWqUKgyz+dyytripm
-         +KmPZdVrPXtKeAKOpvMZSY4nhrfKnB2SpQzB+5bYIcBCkAg9jn07wOKyj4cqW7Xp5Gpw
-         fum/9i06I6ZdqCVFYsKx7t3LQXjt6OubsSxNIb4nSx0CRs6I155yirgFekVRYJzfaRtx
-         ObVK0fCbRotNpx89WOTmEu81TSQxWnpOib/jzm4GeQkHnQ+/8+xVwAQPUuLSGGiJh3Le
-         A7+w==
+        bh=YocVE5eZik1tiPsP0ujFo28MkujqtR9FCp0qy4+Xms4=;
+        b=Jg7bpGjxVkKtlil3CT0q2PQ8k/0d/bK4VgPxTrQIIOaHDuJ2FSNMGhqK9+O8sZHR44
+         QQRzAJUUEhfIiOZjGjc+1WfZabwK045aoe6OZCGT0NUbH0Tl7h6BS72enQiTNoG2i28c
+         8Ywcc7xEl9k1QPdYLCoVoXb26v5/zERzIMOUybFGsiuVRkE2+W1CrZLgt0sx1XyLJ4DB
+         bk/z4nxm9oJq5kCxrfVx+BxFbnjQgfsA039GZ3nDqarobM95jOmz4OA8VxOfYRInhMBU
+         Yvmha9F7uB9DwcJB88xiJWSkz8K1X44cvIC27V1kwWe1kX7S1L80FTJOLvCAGqbV/CjF
+         ux/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4EsVHO1j93+zknKhBX4yib6nrA45XuKP1cgfl2DPi9g=;
-        b=dZfc74qvh1zz3qmrNd2bRWR8q4ZO7El43cQlOfGvbHY/QW+x0CEE5nn7gmzF9uXZHJ
-         hl158sSOq/9tKa2gGVMeE4+P6pt6Ti0c6pNGMyMIuz1DTqDChRsM4geNckMTirzM6aOc
-         h8/hnrH2WWNNXKnuDkrDJaEvJBRijOlEY1OZrPkMTlFLQZ/ArToe5TFuKsLZbvJfW6Wo
-         kKdoyBN1hgQ9xt7pp8pprZ++hpheuEN2Qro3VcCEvdVKLaVhEwQ3iUH0oUwsRV+hLvzx
-         Y9QjyGnRhh4cR0aEX4gqxXJEXXnTm4dIcnQCKYemkJ6bPCzVWauCWFMM6tA3L1elCWlK
-         jhFg==
-X-Gm-Message-State: AOAM530Pdn9uRFnwcBR+1XLe3f/b3bIdm6iAjnnVqX3ZB3lRZDDrENvB
-        y+DQgArBL9d5ZaDS7qbyh6IYFJ2LAx8=
-X-Google-Smtp-Source: ABdhPJyfFkVHDfxDSPol50b58F0EMpOT9Ag6Dmc5Sbx6+2zjwlwHoO32VUPkz6ElCdFS2nhreukDHA==
-X-Received: by 2002:a63:7a53:: with SMTP id j19mr2095878pgn.533.1644295856811;
-        Mon, 07 Feb 2022 20:50:56 -0800 (PST)
+        bh=YocVE5eZik1tiPsP0ujFo28MkujqtR9FCp0qy4+Xms4=;
+        b=onmjEPD5ALK8A3DHGeaRAss4MxbKEOTp0Zzce0lFcVxTWXpnCyEUNrmbzID78Ddxbd
+         6/W8w+805lojheofMRDA0T5Cz8c3BMho/Wf0mkJFR+++pBanrrhmsqtFFeP4szWubohL
+         EjxHFMw6e3bHj2esUQl33YNhLi2S51rAMgsBqkZvW8FJS1AvCTQ0NtELs7TIpFwX4xs+
+         JtvX/N9BQlw4ThH10ESPJAtPqZ0jV1jCMf6ded1grMjDAUpdCqn3tCdKENdKPD8dvWQK
+         Kjp6m0F+vMk5FwaKG9xtvOyk+YHXpIF92m32uhA/nnwyCmfpSn0QKdLFswlTAEMRRi0H
+         9Lbw==
+X-Gm-Message-State: AOAM533pbs32aM7FGExTXtTwwz31THzhywEwfE38id90iQ9yH21Meflg
+        rNWSVsSnwdq3uOOwaUjPZZc=
+X-Google-Smtp-Source: ABdhPJzV4eojucbWFVJybAxdV/kpBzafUdb9sU0bRbCoK5m4A9zsDI6iGBDTVrPiDUhPq4fatRoMKA==
+X-Received: by 2002:aa7:8a14:: with SMTP id m20mr2608173pfa.63.1644295860365;
+        Mon, 07 Feb 2022 20:51:00 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:8f56:515b:a442:2bd5])
-        by smtp.gmail.com with ESMTPSA id j23sm9810257pgb.75.2022.02.07.20.50.55
+        by smtp.gmail.com with ESMTPSA id j23sm9810257pgb.75.2022.02.07.20.50.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 20:50:56 -0800 (PST)
+        Mon, 07 Feb 2022 20:51:00 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v2 net-next 02/11] ipv6/addrconf: use one delayed work per netns
-Date:   Mon,  7 Feb 2022 20:50:29 -0800
-Message-Id: <20220208045038.2635826-3-eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next 03/11] ipv6/addrconf: switch to per netns inet6_addr_lst hash table
+Date:   Mon,  7 Feb 2022 20:50:30 -0800
+Message-Id: <20220208045038.2635826-4-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 In-Reply-To: <20220208045038.2635826-1-eric.dumazet@gmail.com>
 References: <20220208045038.2635826-1-eric.dumazet@gmail.com>
@@ -73,201 +73,260 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-Next step for using per netns inet6_addr_lst
-is to have per netns work item to ultimately
-call addrconf_verify_rtnl() and addrconf_verify()
-with a new 'struct net*' argument.
+IPv6 does not scale very well with the number of IPv6 addresses.
+It uses a global (shared by all netns) hash table with 256 buckets.
 
-Everything is still using the global inet6_addr_lst[] table.
+Some functions like addrconf_verify_rtnl() and addrconf_ifdown()
+have to iterate all addresses in the hash table.
+
+I have seen addrconf_verify_rtnl() holding the cpu for 10ms or more.
+
+Switch to the per netns hashtable (and spinlock) added
+in prior patches.
+
+This considerably speeds up netns dismantle times on hosts
+with thousands of netns. This also has an impact
+on regular (fast path) IPv6 processing.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Reviewed-by: David Ahern <dsahern@kernel.org>
 ---
- include/net/netns/ipv6.h |  1 +
- net/ipv6/addrconf.c      | 44 ++++++++++++++++++++++------------------
- 2 files changed, 25 insertions(+), 20 deletions(-)
+ net/ipv6/addrconf.c | 77 ++++++++++++++-------------------------------
+ 1 file changed, 23 insertions(+), 54 deletions(-)
 
-diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
-index 755f12001c8b2a73ad1895e73c7aebcba67c6728..d145f196668240bf5c3e509255f3f9b06f0e91bc 100644
---- a/include/net/netns/ipv6.h
-+++ b/include/net/netns/ipv6.h
-@@ -95,6 +95,7 @@ struct netns_ipv6 {
- 
- 	struct hlist_head	*inet6_addr_lst;
- 	spinlock_t		addrconf_hash_lock;
-+	struct delayed_work	addr_chk_work;
- 
- #ifdef CONFIG_IPV6_MROUTE
- #ifndef CONFIG_IPV6_MROUTE_MULTIPLE_TABLES
 diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index cda9e59cab4343507f670e7f59e2b72fd3cded0f..dab291cd39ba20c8dad29854297e8699c067b1e7 100644
+index dab291cd39ba20c8dad29854297e8699c067b1e7..4f402bc38f056e08f3761e63a7bc7a51e54e9384 100644
 --- a/net/ipv6/addrconf.c
 +++ b/net/ipv6/addrconf.c
-@@ -152,12 +152,10 @@ static int ipv6_generate_stable_address(struct in6_addr *addr,
- static struct hlist_head inet6_addr_lst[IN6_ADDR_HSIZE];
- static DEFINE_SPINLOCK(addrconf_hash_lock);
+@@ -146,11 +146,6 @@ static int ipv6_generate_stable_address(struct in6_addr *addr,
  
--static void addrconf_verify(void);
--static void addrconf_verify_rtnl(void);
--static void addrconf_verify_work(struct work_struct *);
-+static void addrconf_verify(struct net *net);
-+static void addrconf_verify_rtnl(struct net *net);
+ #define IN6_ADDR_HSIZE_SHIFT	8
+ #define IN6_ADDR_HSIZE		(1 << IN6_ADDR_HSIZE_SHIFT)
+-/*
+- *	Configured unicast address hash table
+- */
+-static struct hlist_head inet6_addr_lst[IN6_ADDR_HSIZE];
+-static DEFINE_SPINLOCK(addrconf_hash_lock);
  
- static struct workqueue_struct *addrconf_wq;
--static DECLARE_DELAYED_WORK(addr_chk_work, addrconf_verify_work);
+ static void addrconf_verify(struct net *net);
+ static void addrconf_verify_rtnl(struct net *net);
+@@ -1009,9 +1004,7 @@ static bool ipv6_chk_same_addr(struct net *net, const struct in6_addr *addr,
+ {
+ 	struct inet6_ifaddr *ifp;
  
- static void addrconf_join_anycast(struct inet6_ifaddr *ifp);
- static void addrconf_leave_anycast(struct inet6_ifaddr *ifp);
-@@ -2675,7 +2673,7 @@ int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device *dev,
- 				 create, now);
+-	hlist_for_each_entry(ifp, &inet6_addr_lst[hash], addr_lst) {
+-		if (!net_eq(dev_net(ifp->idev->dev), net))
+-			continue;
++	hlist_for_each_entry(ifp, &net->ipv6.inet6_addr_lst[hash], addr_lst) {
+ 		if (ipv6_addr_equal(&ifp->addr, addr)) {
+ 			if (!dev || ifp->idev->dev == dev)
+ 				return true;
+@@ -1022,20 +1015,21 @@ static bool ipv6_chk_same_addr(struct net *net, const struct in6_addr *addr,
  
- 		in6_ifa_put(ifp);
--		addrconf_verify();
-+		addrconf_verify(net);
+ static int ipv6_add_addr_hash(struct net_device *dev, struct inet6_ifaddr *ifa)
+ {
+-	unsigned int hash = inet6_addr_hash(dev_net(dev), &ifa->addr);
++	struct net *net = dev_net(dev);
++	unsigned int hash = inet6_addr_hash(net, &ifa->addr);
+ 	int err = 0;
+ 
+-	spin_lock(&addrconf_hash_lock);
++	spin_lock(&net->ipv6.addrconf_hash_lock);
+ 
+ 	/* Ignore adding duplicate addresses on an interface */
+-	if (ipv6_chk_same_addr(dev_net(dev), &ifa->addr, dev, hash)) {
++	if (ipv6_chk_same_addr(net, &ifa->addr, dev, hash)) {
+ 		netdev_dbg(dev, "ipv6_add_addr: already assigned\n");
+ 		err = -EEXIST;
+ 	} else {
+-		hlist_add_head_rcu(&ifa->addr_lst, &inet6_addr_lst[hash]);
++		hlist_add_head_rcu(&ifa->addr_lst, &net->ipv6.inet6_addr_lst[hash]);
  	}
  
- 	return 0;
-@@ -2987,7 +2985,7 @@ static int inet6_addr_add(struct net *net, int ifindex,
- 			manage_tempaddrs(idev, ifp, cfg->valid_lft,
- 					 cfg->preferred_lft, true, jiffies);
- 		in6_ifa_put(ifp);
--		addrconf_verify_rtnl();
-+		addrconf_verify_rtnl(net);
- 		return 0;
- 	} else if (cfg->ifa_flags & IFA_F_MCAUTOJOIN) {
- 		ipv6_mc_config(net->ipv6.mc_autojoin_sk, false,
-@@ -3027,7 +3025,7 @@ static int inet6_addr_del(struct net *net, int ifindex, u32 ifa_flags,
- 				manage_tempaddrs(idev, ifp, 0, 0, false,
- 						 jiffies);
- 			ipv6_del_addr(ifp);
--			addrconf_verify_rtnl();
-+			addrconf_verify_rtnl(net);
- 			if (ipv6_addr_is_multicast(pfx)) {
- 				ipv6_mc_config(net->ipv6.mc_autojoin_sk,
- 					       false, pfx, dev->ifindex);
-@@ -4246,7 +4244,7 @@ static void addrconf_dad_completed(struct inet6_ifaddr *ifp, bool bump_id,
- 	 * before this temporary address becomes deprecated.
- 	 */
- 	if (ifp->flags & IFA_F_TEMPORARY)
--		addrconf_verify_rtnl();
-+		addrconf_verify_rtnl(dev_net(dev));
+-	spin_unlock(&addrconf_hash_lock);
++	spin_unlock(&net->ipv6.addrconf_hash_lock);
+ 
+ 	return err;
  }
+@@ -1259,9 +1253,10 @@ cleanup_prefix_route(struct inet6_ifaddr *ifp, unsigned long expires,
  
- static void addrconf_dad_run(struct inet6_dev *idev, bool restart)
-@@ -4484,7 +4482,7 @@ int ipv6_chk_rpl_srh_loop(struct net *net, const struct in6_addr *segs,
-  *	Periodic address status verification
-  */
- 
--static void addrconf_verify_rtnl(void)
-+static void addrconf_verify_rtnl(struct net *net)
+ static void ipv6_del_addr(struct inet6_ifaddr *ifp)
  {
- 	unsigned long now, next, next_sec, next_sched;
- 	struct inet6_ifaddr *ifp;
-@@ -4496,7 +4494,7 @@ static void addrconf_verify_rtnl(void)
- 	now = jiffies;
- 	next = round_jiffies_up(now + ADDR_CHECK_FREQUENCY);
+-	int state;
+ 	enum cleanup_prefix_rt_t action = CLEANUP_PREFIX_RT_NOP;
++	struct net *net = dev_net(ifp->idev->dev);
+ 	unsigned long expires;
++	int state;
  
--	cancel_delayed_work(&addr_chk_work);
-+	cancel_delayed_work(&net->ipv6.addr_chk_work);
+ 	ASSERT_RTNL();
+ 
+@@ -1273,9 +1268,9 @@ static void ipv6_del_addr(struct inet6_ifaddr *ifp)
+ 	if (state == INET6_IFADDR_STATE_DEAD)
+ 		goto out;
+ 
+-	spin_lock_bh(&addrconf_hash_lock);
++	spin_lock_bh(&net->ipv6.addrconf_hash_lock);
+ 	hlist_del_init_rcu(&ifp->addr_lst);
+-	spin_unlock_bh(&addrconf_hash_lock);
++	spin_unlock_bh(&net->ipv6.addrconf_hash_lock);
+ 
+ 	write_lock_bh(&ifp->idev->lock);
+ 
+@@ -1918,10 +1913,8 @@ __ipv6_chk_addr_and_flags(struct net *net, const struct in6_addr *addr,
+ 	if (skip_dev_check)
+ 		dev = NULL;
+ 
+-	hlist_for_each_entry_rcu(ifp, &inet6_addr_lst[hash], addr_lst) {
++	hlist_for_each_entry_rcu(ifp, &net->ipv6.inet6_addr_lst[hash], addr_lst) {
+ 		ndev = ifp->idev->dev;
+-		if (!net_eq(dev_net(ndev), net))
+-			continue;
+ 
+ 		if (l3mdev_master_dev_rcu(ndev) != l3mdev)
+ 			continue;
+@@ -2025,9 +2018,7 @@ struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net, const struct in6_addr *add
+ 	struct inet6_ifaddr *ifp, *result = NULL;
+ 
+ 	rcu_read_lock();
+-	hlist_for_each_entry_rcu(ifp, &inet6_addr_lst[hash], addr_lst) {
+-		if (!net_eq(dev_net(ifp->idev->dev), net))
+-			continue;
++	hlist_for_each_entry_rcu(ifp, &net->ipv6.inet6_addr_lst[hash], addr_lst) {
+ 		if (ipv6_addr_equal(&ifp->addr, addr)) {
+ 			if (!dev || ifp->idev->dev == dev ||
+ 			    !(ifp->scope&(IFA_LINK|IFA_HOST) || strict)) {
+@@ -2094,7 +2085,7 @@ static int addrconf_dad_end(struct inet6_ifaddr *ifp)
+ void addrconf_dad_failure(struct sk_buff *skb, struct inet6_ifaddr *ifp)
+ {
+ 	struct inet6_dev *idev = ifp->idev;
+-	struct net *net = dev_net(ifp->idev->dev);
++	struct net *net = dev_net(idev->dev);
+ 
+ 	if (addrconf_dad_end(ifp)) {
+ 		in6_ifa_put(ifp);
+@@ -3770,9 +3761,9 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
+ 
+ 	/* Step 2: clear hash table */
+ 	for (i = 0; i < IN6_ADDR_HSIZE; i++) {
+-		struct hlist_head *h = &inet6_addr_lst[i];
++		struct hlist_head *h = &net->ipv6.inet6_addr_lst[i];
+ 
+-		spin_lock_bh(&addrconf_hash_lock);
++		spin_lock_bh(&net->ipv6.addrconf_hash_lock);
+ restart:
+ 		hlist_for_each_entry_rcu(ifa, h, addr_lst) {
+ 			if (ifa->idev == idev) {
+@@ -3788,7 +3779,7 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
+ 				}
+ 			}
+ 		}
+-		spin_unlock_bh(&addrconf_hash_lock);
++		spin_unlock_bh(&net->ipv6.addrconf_hash_lock);
+ 	}
+ 
+ 	write_lock_bh(&idev->lock);
+@@ -4286,10 +4277,8 @@ static struct inet6_ifaddr *if6_get_first(struct seq_file *seq, loff_t pos)
+ 	}
+ 
+ 	for (; state->bucket < IN6_ADDR_HSIZE; ++state->bucket) {
+-		hlist_for_each_entry_rcu(ifa, &inet6_addr_lst[state->bucket],
++		hlist_for_each_entry_rcu(ifa, &net->ipv6.inet6_addr_lst[state->bucket],
+ 					 addr_lst) {
+-			if (!net_eq(dev_net(ifa->idev->dev), net))
+-				continue;
+ 			/* sync with offset */
+ 			if (p < state->offset) {
+ 				p++;
+@@ -4312,8 +4301,6 @@ static struct inet6_ifaddr *if6_get_next(struct seq_file *seq,
+ 	struct net *net = seq_file_net(seq);
+ 
+ 	hlist_for_each_entry_continue_rcu(ifa, addr_lst) {
+-		if (!net_eq(dev_net(ifa->idev->dev), net))
+-			continue;
+ 		state->offset++;
+ 		return ifa;
+ 	}
+@@ -4321,9 +4308,7 @@ static struct inet6_ifaddr *if6_get_next(struct seq_file *seq,
+ 	state->offset = 0;
+ 	while (++state->bucket < IN6_ADDR_HSIZE) {
+ 		hlist_for_each_entry_rcu(ifa,
+-				     &inet6_addr_lst[state->bucket], addr_lst) {
+-			if (!net_eq(dev_net(ifa->idev->dev), net))
+-				continue;
++				     &net->ipv6.inet6_addr_lst[state->bucket], addr_lst) {
+ 			return ifa;
+ 		}
+ 	}
+@@ -4411,9 +4396,7 @@ int ipv6_chk_home_addr(struct net *net, const struct in6_addr *addr)
+ 	int ret = 0;
+ 
+ 	rcu_read_lock();
+-	hlist_for_each_entry_rcu(ifp, &inet6_addr_lst[hash], addr_lst) {
+-		if (!net_eq(dev_net(ifp->idev->dev), net))
+-			continue;
++	hlist_for_each_entry_rcu(ifp, &net->ipv6.inet6_addr_lst[hash], addr_lst) {
+ 		if (ipv6_addr_equal(&ifp->addr, addr) &&
+ 		    (ifp->flags & IFA_F_HOMEADDRESS)) {
+ 			ret = 1;
+@@ -4451,9 +4434,7 @@ int ipv6_chk_rpl_srh_loop(struct net *net, const struct in6_addr *segs,
+ 		hash = inet6_addr_hash(net, addr);
+ 
+ 		hash_found = false;
+-		hlist_for_each_entry_rcu(ifp, &inet6_addr_lst[hash], addr_lst) {
+-			if (!net_eq(dev_net(ifp->idev->dev), net))
+-				continue;
++		hlist_for_each_entry_rcu(ifp, &net->ipv6.inet6_addr_lst[hash], addr_lst) {
+ 
+ 			if (ipv6_addr_equal(&ifp->addr, addr)) {
+ 				hash_found = true;
+@@ -4498,7 +4479,7 @@ static void addrconf_verify_rtnl(struct net *net)
  
  	for (i = 0; i < IN6_ADDR_HSIZE; i++) {
  restart:
-@@ -4599,20 +4597,23 @@ static void addrconf_verify_rtnl(void)
+-		hlist_for_each_entry_rcu_bh(ifp, &inet6_addr_lst[i], addr_lst) {
++		hlist_for_each_entry_rcu_bh(ifp, &net->ipv6.inet6_addr_lst[i], addr_lst) {
+ 			unsigned long age;
  
- 	pr_debug("now = %lu, schedule = %lu, rounded schedule = %lu => %lu\n",
- 		 now, next, next_sec, next_sched);
--	mod_delayed_work(addrconf_wq, &addr_chk_work, next_sched - now);
-+	mod_delayed_work(addrconf_wq, &net->ipv6.addr_chk_work, next_sched - now);
- 	rcu_read_unlock_bh();
- }
- 
- static void addrconf_verify_work(struct work_struct *w)
+ 			/* When setting preferred_lft to a value not zero or
+@@ -7233,7 +7214,7 @@ static struct rtnl_af_ops inet6_ops __read_mostly = {
+ int __init addrconf_init(void)
  {
-+	struct net *net = container_of(to_delayed_work(w), struct net,
-+				       ipv6.addr_chk_work);
-+
- 	rtnl_lock();
--	addrconf_verify_rtnl();
-+	addrconf_verify_rtnl(net);
- 	rtnl_unlock();
- }
+ 	struct inet6_dev *idev;
+-	int i, err;
++	int err;
  
--static void addrconf_verify(void)
-+static void addrconf_verify(struct net *net)
- {
--	mod_delayed_work(addrconf_wq, &addr_chk_work, 0);
-+	mod_delayed_work(addrconf_wq, &net->ipv6.addr_chk_work, 0);
- }
+ 	err = ipv6_addr_label_init();
+ 	if (err < 0) {
+@@ -7280,9 +7261,6 @@ int __init addrconf_init(void)
  
- static struct in6_addr *extract_addr(struct nlattr *addr, struct nlattr *local,
-@@ -4708,7 +4709,8 @@ static int modify_prefix_route(struct inet6_ifaddr *ifp,
- 	return 0;
- }
+ 	ip6_route_init_special_entries();
  
--static int inet6_addr_modify(struct inet6_ifaddr *ifp, struct ifa6_config *cfg)
-+static int inet6_addr_modify(struct net *net, struct inet6_ifaddr *ifp,
-+			     struct ifa6_config *cfg)
- {
- 	u32 flags;
- 	clock_t expires;
-@@ -4822,7 +4824,7 @@ static int inet6_addr_modify(struct inet6_ifaddr *ifp, struct ifa6_config *cfg)
- 				 jiffies);
- 	}
- 
--	addrconf_verify_rtnl();
-+	addrconf_verify_rtnl(net);
- 
- 	return 0;
- }
-@@ -4909,7 +4911,7 @@ inet6_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	    !(nlh->nlmsg_flags & NLM_F_REPLACE))
- 		err = -EEXIST;
- 	else
--		err = inet6_addr_modify(ifa, &cfg);
-+		err = inet6_addr_modify(net, ifa, &cfg);
- 
- 	in6_ifa_put(ifa);
- 
-@@ -5794,7 +5796,7 @@ static int inet6_set_iftoken(struct inet6_dev *idev, struct in6_addr *token,
- 
- 	write_unlock_bh(&idev->lock);
- 	inet6_ifinfo_notify(RTM_NEWLINK, idev);
--	addrconf_verify_rtnl();
-+	addrconf_verify_rtnl(dev_net(dev));
- 	return 0;
- }
- 
-@@ -7112,6 +7114,7 @@ static int __net_init addrconf_init_net(struct net *net)
- 	struct ipv6_devconf *all, *dflt;
- 
- 	spin_lock_init(&net->ipv6.addrconf_hash_lock);
-+	INIT_DEFERRABLE_WORK(&net->ipv6.addr_chk_work, addrconf_verify_work);
- 	net->ipv6.inet6_addr_lst = kcalloc(IN6_ADDR_HSIZE,
- 					   sizeof(struct hlist_head),
- 					   GFP_KERNEL);
-@@ -7199,6 +7202,7 @@ static void __net_exit addrconf_exit_net(struct net *net)
- 	kfree(net->ipv6.devconf_all);
- 	net->ipv6.devconf_all = NULL;
- 
-+	cancel_delayed_work(&net->ipv6.addr_chk_work);
- 	/*
- 	 *	Check hash table, then free it.
- 	 */
-@@ -7281,7 +7285,7 @@ int __init addrconf_init(void)
- 
+-	for (i = 0; i < IN6_ADDR_HSIZE; i++)
+-		INIT_HLIST_HEAD(&inet6_addr_lst[i]);
+-
  	register_netdevice_notifier(&ipv6_dev_notf);
  
--	addrconf_verify();
-+	addrconf_verify(&init_net);
+ 	addrconf_verify(&init_net);
+@@ -7343,7 +7321,6 @@ int __init addrconf_init(void)
+ void addrconf_cleanup(void)
+ {
+ 	struct net_device *dev;
+-	int i;
  
- 	rtnl_af_register(&inet6_ops);
+ 	unregister_netdevice_notifier(&ipv6_dev_notf);
+ 	unregister_pernet_subsys(&addrconf_ops);
+@@ -7361,14 +7338,6 @@ void addrconf_cleanup(void)
+ 	}
+ 	addrconf_ifdown(init_net.loopback_dev, true);
  
-@@ -7364,7 +7368,7 @@ void addrconf_cleanup(void)
- 	for (i = 0; i < IN6_ADDR_HSIZE; i++)
- 		WARN_ON(!hlist_empty(&inet6_addr_lst[i]));
- 	spin_unlock_bh(&addrconf_hash_lock);
--	cancel_delayed_work(&addr_chk_work);
-+
+-	/*
+-	 *	Check hash table.
+-	 */
+-	spin_lock_bh(&addrconf_hash_lock);
+-	for (i = 0; i < IN6_ADDR_HSIZE; i++)
+-		WARN_ON(!hlist_empty(&inet6_addr_lst[i]));
+-	spin_unlock_bh(&addrconf_hash_lock);
+-
  	rtnl_unlock();
  
  	destroy_workqueue(addrconf_wq);
