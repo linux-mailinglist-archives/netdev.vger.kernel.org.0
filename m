@@ -2,89 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD2064AE7F8
+	by mail.lfdr.de (Postfix) with ESMTP id 9DDC24AE7F7
 	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 05:07:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244085AbiBIEHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 23:07:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48486 "EHLO
+        id S240404AbiBIEHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 23:07:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347391AbiBIDrp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 22:47:45 -0500
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7946CC0613C9;
-        Tue,  8 Feb 2022 19:47:44 -0800 (PST)
-Received: by mail-ot1-f51.google.com with SMTP id x52-20020a05683040b400b0059ea92202daso682434ott.7;
-        Tue, 08 Feb 2022 19:47:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Y/S59m4SqvekIlBklMvaBC073KyUpiz6Cf+mvt2eZDQ=;
-        b=Kvq3eAkR1QL7WD7lC2CQ3BtGlrznTWoUiF7UBin9OJHJ/D0UZ4HGdyuJ6kt76MuA9s
-         UPj0RinpoL1rIy4eFxhi5BCyKcZQz1+ZOQrjX9Tt2wihsIcy2RKZ+QYvfmbMKvNnj4Yv
-         OvhvMkAob68QYmJthfwaQ+RPfbeg2+ijokHIToI6ulGPdOor7yj0Hw7YfXx6oF+SfZBZ
-         +8hRrtThTlYqQpahAThjOfvRzmsGiru1K7BfHYwVjf0DrRy1MyNaToqGyupbJR8i5Tux
-         gvdDHCig/FWqgHzo0DjzQhZOi9MlkBzgW6pNOe4KoSvOUzUuHKv0O1JftbtiD3swWFOI
-         FQsg==
-X-Gm-Message-State: AOAM5320Wy022hrjR/Na0wXvdeMqTxsa11439RRHR9mE/HnN/NhST0a3
-        KGpZirO+WeHmD9t+9SktqA==
-X-Google-Smtp-Source: ABdhPJxzSi7rOGQ+ufIvJGYHpLK1bHM3/A5fE+JnD2iGJS8mZHIGfvvmaY41ZsJPcSb1b/cz04OpDQ==
-X-Received: by 2002:a9d:6c8b:: with SMTP id c11mr197538otr.92.1644378463701;
-        Tue, 08 Feb 2022 19:47:43 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id c29sm6054494otk.16.2022.02.08.19.47.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 19:47:42 -0800 (PST)
-Received: (nullmailer pid 3608852 invoked by uid 1000);
-        Wed, 09 Feb 2022 03:47:41 -0000
-Date:   Tue, 8 Feb 2022 21:47:41 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v1 2/4] dt-bindings: net: add schema for
- Microchip/SMSC LAN95xx USB Ethernet controllers
-Message-ID: <YgM5XSwmiQi5XbW/@robh.at.kernel.org>
-References: <20220127104905.899341-1-o.rempel@pengutronix.de>
- <20220127104905.899341-3-o.rempel@pengutronix.de>
- <YfJ6/xdacR59Jvq+@kroah.com>
+        with ESMTP id S1347509AbiBIDtG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 22:49:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D836C06174F;
+        Tue,  8 Feb 2022 19:49:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF752B81E57;
+        Wed,  9 Feb 2022 03:49:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D912C340E7;
+        Wed,  9 Feb 2022 03:49:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644378542;
+        bh=NH/0rQb0O2Au84RUhggPWG4HEjxTOHr2UcxZto/4Uhw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=foyT8vJq6VkQKzP0c23smMGcRl/maRyaVj5vNuuZ96ohBFb0F4ek91IrERNdj0D7G
+         yi+kE42/jSvQTbHzkDW7NMYDI27rnjQimCE8CBdBkbAnaQSHBSkpkCNr5bT2LxY86u
+         hxiEvsjvn0f9oou2Hf5lzNGVIUwx7GW4TL3gR4lWi/hINeA3QeqP+dHTWy/o8BoNLx
+         bhps5CvNF507w/eolYjFss9mLDTYrWNGtj2w7nvE17YmZJ71R2RBJ4my5acQqIK8Co
+         i1DI+EY8RGpn6BitStzJTWXy+yR+Qw//vo//gTB3ZRzs4pIZwWIqQKVaSjEoClaV6X
+         vXudEdveHDjQA==
+Date:   Tue, 8 Feb 2022 19:49:00 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     simon.horman@corigine.com, David Miller <davem@davemloft.net>,
+        shenyang39@huawei.com, libaokun1@huawei.com,
+        oss-drivers@corigine.com, netdev@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [BUG] net: netronome: nfp: possible deadlock in
+ nfp_cpp_area_acquire() and nfp_cpp_area_release()
+Message-ID: <20220208194900.6d1afbc4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <922a002a-3ab6-eabe-131c-af3b8951866b@gmail.com>
+References: <922a002a-3ab6-eabe-131c-af3b8951866b@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfJ6/xdacR59Jvq+@kroah.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 11:59:11AM +0100, Greg KH wrote:
-> On Thu, Jan 27, 2022 at 11:49:03AM +0100, Oleksij Rempel wrote:
-> > Create initial schema for Microchip/SMSC LAN95xx USB Ethernet controllers and
-> > import all currently supported USB IDs form drivers/net/usb/smsc95xx.c
-> 
-> That is a loosing game to play.  There is a reason that kernel drivers
-> only require a device id in 1 place, instead of multiple places like
-> other operating systems.  Please do not go back and make the same
-> mistakes others have.
+On Wed, 9 Feb 2022 10:50:44 +0800 Jia-Ju Bai wrote:
+> Hello,
+>=20
+> My static analysis tool reports a possible deadlock in the nfp driver in=
+=20
+> Linux 5.16:
+>=20
+> nfp_cpp_area_acquire()
+>  =C2=A0 mutex_lock(&area->mutex); --> Line 455 (Lock A)
+>  =C2=A0 __nfp_cpp_area_acquire()
+>  =C2=A0=C2=A0=C2=A0 wait_event_interruptible(area->cpp->waitq, ...) --> L=
+ine 427 (Wait X)
+>=20
+> nfp_cpp_area_release()
+>  =C2=A0 mutex_lock(&area->mutex); --> Line 502 (Lock A)
+>  =C2=A0 wake_up_interruptible_all(&area->cpp->waitq); --> Line 508 (Wake =
+X)
+>=20
+> When nfp_cpp_area_acquire() is executed, "Wait X" is performed by=20
+> holding "Lock A". If nfp_cpp_area_release() is executed at this time,=20
+> "Wake X" cannot be performed to wake up "Wait X" in=20
+> nfp_cpp_area_acquire(), because "Lock A" has been already hold by=20
+> nfp_cpp_area_acquire(), causing a possible deadlock.
+>=20
+> I am not quite sure whether this possible problem is real and how to fix=
+=20
+> it if it is real.
 
-This instance doesn't look so bad because SMSC devices are chips rather 
-than random OEM rebranded devices all with the same underlying chip.
+It's not.
 
-> Not to mention that I think overall this is a bad idea anyway.  USB
-> devices are self-describing, don't add them to DT.
+> Any feedback would be appreciated, thanks :)
+>
+>
+> Best wishes,
+> Jia-Ju Bai
 
-Until they are soldered down and the board maker cheaps out on having an 
-eeprom to hold the MAC address...
-
-Rob
