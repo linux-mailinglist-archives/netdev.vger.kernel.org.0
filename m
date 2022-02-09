@@ -2,54 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 448C04AF237
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 14:01:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88C9B4AF436
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 15:38:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233758AbiBINAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 08:00:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37468 "EHLO
+        id S235100AbiBIOiK convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 9 Feb 2022 09:38:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231338AbiBINAJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 08:00:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6303C05CBB0
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 05:00:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46BDAB82103
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 13:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0653BC340EB;
-        Wed,  9 Feb 2022 13:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644411610;
-        bh=X5uyIyMmQAVEsf6bAqVY0iQv12AMKbfrJDMBFlPPexI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CDaeGN9Ep/IqwR4ubPQ0uwumq2Aw+7Dws70qLr+Abp6tddM6R1azam0koCFAOgHL6
-         QFs9T69MdwjrZIePIRbdY3bVUzmQ99AwkpMXncEs8WdGq6QkqZ+23RpxCl/sWmftjJ
-         h3PVpLSAdVDQbaWhRr9oFbstxTWmzJ27PsQ5iefz0zN6Bfx/Ul3JRwIIIIdpYMDtXw
-         rWJhkFcuOBHAX2oVhu8vh5MC+FYpwjAOuVDCYVub056Q09svyHYNPQIc4MZTMCpYfU
-         08IGjB1iCrUSpEXcK3D06l982s3F0ZpTksmtnGy/QEvnmQH7h1vB0rjfKngT6mr9c6
-         76zTgZkG0LlKg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DDCA8E6D458;
-        Wed,  9 Feb 2022 13:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S235094AbiBIOiK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 09:38:10 -0500
+Received: from inet10.abb.com (inet10.abb.com [138.225.1.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEC3C06157B
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 06:38:11 -0800 (PST)
+Received: from gitsiv.ch.abb.com (gitsiv.keymile.net [10.41.156.251])
+        by inet10.abb.com (8.14.7/8.14.7) with SMTP id 2199sUEm023348;
+        Wed, 9 Feb 2022 10:54:30 +0100
+Received: from ch10641.keymile.net.net (ch10641.keymile.net [172.31.40.7])
+        by gitsiv.ch.abb.com (Postfix) with ESMTP id B031565B8B03;
+        Wed,  9 Feb 2022 10:54:30 +0100 (CET)
+From:   Holger Brunck <holger.brunck@hitachienergy.com>
+To:     netdev@vger.kernel.org
+Cc:     Holger Brunck <holger.brunck@hitachienergy.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [v5] dsa: mv88e6xxx: make serdes SGMII/Fiber tx amplitude configurable
+Date:   Wed,  9 Feb 2022 10:54:27 +0100
+Message-Id: <20220209095427.30568-1-holger.brunck@hitachienergy.com>
+X-Mailer: git-send-email 2.34.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: amd-xgbe: disable interrupts during pci removal
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164441160990.8299.1367888794996416900.git-patchwork-notify@kernel.org>
-Date:   Wed, 09 Feb 2022 13:00:09 +0000
-References: <20220209043201.1365811-1-Raju.Rangoju@amd.com>
-In-Reply-To: <20220209043201.1365811-1-Raju.Rangoju@amd.com>
-To:     Raju Rangoju <Raju.Rangoju@amd.com>
-Cc:     thomas.lendacky@amd.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, Shyam-sundar.S-k@amd.com,
-        Selwin.Sebastian@amd.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,31 +41,185 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The mv88e6352, mv88e6240 and mv88e6176  have a serdes interface. This patch
+allows to configure the output swing to a desired value in the
+phy-handle of the port. The value which is peak to peak has to be
+specified in microvolts. As the chips only supports eight dedicated
+values we return EINVAL if the value in the DTS does not match one of
+these values.
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+CC: Andrew Lunn <andrew@lunn.ch>
+CC: Jakub Kicinski <kuba@kernel.org>
+CC: Marek Behún <kabel@kernel.org>
+Signed-off-by: Holger Brunck <holger.brunck@hitachienergy.com>
+---
+changes for v5:
+  - rebase on netdev-next
+  - release phy_handle
+  - fix register and mask handling
+  - simpify mv88e6352_serdes_p2p_to_reg array
+changes for v4:
+  - adapted for new dt-binding
+      https://www.spinics.net/lists/netdev/msg793918.html
 
-On Wed, 9 Feb 2022 10:02:01 +0530 you wrote:
-> Hardware interrupts are enabled during the pci probe, however,
-> they are not disabled during pci removal.
-> 
-> Disable all hardware interrupts during pci removal to avoid any
-> issues.
-> 
-> Fixes: e75377404726 ("amd-xgbe: Update PCI support to use new IRQ functions")
-> Suggested-by: Selwin Sebastian <Selwin.Sebastian@amd.com>
-> Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
-> 
-> [...]
+ drivers/net/dsa/mv88e6xxx/chip.c   | 25 ++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/chip.h   |  4 ++++
+ drivers/net/dsa/mv88e6xxx/serdes.c | 38 ++++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/serdes.h |  5 ++++
+ 4 files changed, 72 insertions(+)
 
-Here is the summary with links:
-  - [net] net: amd-xgbe: disable interrupts during pci removal
-    https://git.kernel.org/netdev/net/c/68c2d6af1f1e
-
-You are awesome, thank you!
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index c54649c4c3a0..92fe29e55f09 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -2987,7 +2987,10 @@ static int mv88e6xxx_setup_upstream_port(struct mv88e6xxx_chip *chip, int port)
+ 
+ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
+ {
++	struct device_node *phy_handle = NULL;
+ 	struct dsa_switch *ds = chip->ds;
++	struct dsa_port *dp;
++	int tx_amp;
+ 	int err;
+ 	u16 reg;
+ 
+@@ -3178,6 +3181,25 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
+ 			return err;
+ 	}
+ 
++	if (chip->info->ops->serdes_set_tx_p2p_amplitude) {
++		dp = dsa_to_port(ds, port);
++		if (dp)
++			phy_handle = of_parse_phandle(dp->dn, "phy-handle", 0);
++
++		if (phy_handle && !of_property_read_u32(phy_handle,
++							"tx-p2p-microvolt",
++							&tx_amp)) {
++			err = mv88e6352_serdes_set_tx_p2p_amplitude(chip, port,
++								    tx_amp);
++			if (err) {
++				of_node_put(phy_handle);
++				return err;
++			}
++		}
++		if (phy_handle)
++			of_node_put(phy_handle);
++	}
++
+ 	/* Port based VLAN map: give each port the same default address
+ 	 * database, and allow bidirectional communication between the
+ 	 * CPU and DSA port(s), and the other ports.
+@@ -4241,6 +4263,7 @@ static const struct mv88e6xxx_ops mv88e6176_ops = {
+ 	.serdes_irq_status = mv88e6352_serdes_irq_status,
+ 	.serdes_get_regs_len = mv88e6352_serdes_get_regs_len,
+ 	.serdes_get_regs = mv88e6352_serdes_get_regs,
++	.serdes_set_tx_p2p_amplitude = mv88e6352_serdes_set_tx_p2p_amplitude,
+ 	.gpio_ops = &mv88e6352_gpio_ops,
+ 	.phylink_get_caps = mv88e6352_phylink_get_caps,
+ };
+@@ -4521,6 +4544,7 @@ static const struct mv88e6xxx_ops mv88e6240_ops = {
+ 	.serdes_irq_status = mv88e6352_serdes_irq_status,
+ 	.serdes_get_regs_len = mv88e6352_serdes_get_regs_len,
+ 	.serdes_get_regs = mv88e6352_serdes_get_regs,
++	.serdes_set_tx_p2p_amplitude = mv88e6352_serdes_set_tx_p2p_amplitude,
+ 	.gpio_ops = &mv88e6352_gpio_ops,
+ 	.avb_ops = &mv88e6352_avb_ops,
+ 	.ptp_ops = &mv88e6352_ptp_ops,
+@@ -4927,6 +4951,7 @@ static const struct mv88e6xxx_ops mv88e6352_ops = {
+ 	.serdes_get_stats = mv88e6352_serdes_get_stats,
+ 	.serdes_get_regs_len = mv88e6352_serdes_get_regs_len,
+ 	.serdes_get_regs = mv88e6352_serdes_get_regs,
++	.serdes_set_tx_p2p_amplitude = mv88e6352_serdes_set_tx_p2p_amplitude,
+ 	.phylink_get_caps = mv88e6352_phylink_get_caps,
+ };
+ 
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index 12aa637779f5..620de163a680 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -588,6 +588,10 @@ struct mv88e6xxx_ops {
+ 	void (*serdes_get_regs)(struct mv88e6xxx_chip *chip, int port,
+ 				void *_p);
+ 
++	/* SERDES SGMII/Fiber Output Amplitude */
++	int (*serdes_set_tx_p2p_amplitude)(struct mv88e6xxx_chip *chip,
++					   int port, int val);
++
+ 	/* Address Translation Unit operations */
+ 	int (*atu_get_hash)(struct mv88e6xxx_chip *chip, u8 *hash);
+ 	int (*atu_set_hash)(struct mv88e6xxx_chip *chip, u8 hash);
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+index 6a177bf654ee..d16816a267d3 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.c
++++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+@@ -1313,6 +1313,44 @@ void mv88e6390_serdes_get_regs(struct mv88e6xxx_chip *chip, int port, void *_p)
+ 	}
+ }
+ 
++static const int mv88e6352_serdes_p2p_to_reg[] = {
++	/* Index of value in microvolts corresponds to the register value */
++	14000, 112000, 210000, 308000, 406000, 504000, 602000, 700000,
++};
++
++int mv88e6352_serdes_set_tx_p2p_amplitude(struct mv88e6xxx_chip *chip, int port,
++					  int val)
++{
++	bool found = false;
++	u16 ctrl, reg;
++	int err;
++	int i;
++
++	err = mv88e6352_g2_scratch_port_has_serdes(chip, port);
++	if (err <= 0)
++		return err;
++
++	for (i = 0; i < ARRAY_SIZE(mv88e6352_serdes_p2p_to_reg); ++i) {
++		if (mv88e6352_serdes_p2p_to_reg[i] == val) {
++			reg = i;
++			found = true;
++			break;
++		}
++	}
++
++	if (!found)
++		return -EINVAL;
++
++	err = mv88e6352_serdes_read(chip, MV88E6352_SERDES_SPEC_CTRL2, &ctrl);
++	if (err)
++		return err;
++
++	ctrl &= ~MV88E6352_SERDES_OUT_AMP_MASK;
++	ctrl |= reg;
++
++	return mv88e6352_serdes_write(chip, MV88E6352_SERDES_SPEC_CTRL2, ctrl);
++}
++
+ static int mv88e6393x_serdes_power_lane(struct mv88e6xxx_chip *chip, int lane,
+ 					bool on)
+ {
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.h b/drivers/net/dsa/mv88e6xxx/serdes.h
+index 8dd8ed225b45..e3a2e7a1232c 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.h
++++ b/drivers/net/dsa/mv88e6xxx/serdes.h
+@@ -27,6 +27,8 @@
+ #define MV88E6352_SERDES_INT_FIBRE_ENERGY	BIT(4)
+ #define MV88E6352_SERDES_INT_STATUS	0x13
+ 
++#define MV88E6352_SERDES_SPEC_CTRL2	0x1a
++#define MV88E6352_SERDES_OUT_AMP_MASK		0x0007
+ 
+ #define MV88E6341_PORT5_LANE		0x15
+ 
+@@ -176,6 +178,9 @@ void mv88e6352_serdes_get_regs(struct mv88e6xxx_chip *chip, int port, void *_p);
+ int mv88e6390_serdes_get_regs_len(struct mv88e6xxx_chip *chip, int port);
+ void mv88e6390_serdes_get_regs(struct mv88e6xxx_chip *chip, int port, void *_p);
+ 
++int mv88e6352_serdes_set_tx_p2p_amplitude(struct mv88e6xxx_chip *chip, int port,
++					  int val);
++
+ /* Return the (first) SERDES lane address a port is using, -errno otherwise. */
+ static inline int mv88e6xxx_serdes_get_lane(struct mv88e6xxx_chip *chip,
+ 					    int port)
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.0
 
