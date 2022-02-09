@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DF844AEA4A
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 07:28:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72A8D4AEA74
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 07:41:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231425AbiBIG2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 01:28:18 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47292 "EHLO
+        id S231948AbiBIGl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 01:41:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234932AbiBIGYW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 01:24:22 -0500
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F672C00875D;
-        Tue,  8 Feb 2022 22:24:25 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R431e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V3zg98L_1644387858;
-Received: from 30.225.28.54(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V3zg98L_1644387858)
+        with ESMTP id S231682AbiBIGlY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 01:41:24 -0500
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1A9C043181;
+        Tue,  8 Feb 2022 22:41:27 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R271e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V4-CaI3_1644388883;
+Received: from 30.225.28.54(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V4-CaI3_1644388883)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Feb 2022 14:24:23 +0800
-Message-ID: <e8764a6e-7542-3048-fb30-cdb7fd4dcde2@linux.alibaba.com>
-Date:   Wed, 9 Feb 2022 14:24:15 +0800
+          Wed, 09 Feb 2022 14:41:24 +0800
+Message-ID: <9ba496e1-daf1-57d2-318e-bfcd4f57755c@linux.alibaba.com>
+Date:   Wed, 9 Feb 2022 14:41:21 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH net-next v5 1/5] net/smc: Make smc_tcp_listen_work()
- independent
+Subject: Re: [PATCH net-next v5 4/5] net/smc: Dynamic control auto fallback by
+ socket options
 To:     Karsten Graul <kgraul@linux.ibm.com>
 Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
         linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
 References: <cover.1644323503.git.alibuda@linux.alibaba.com>
- <58c544cb206d94b759ff0546bcffe693c3cbfb98.1644323503.git.alibuda@linux.alibaba.com>
- <0d1363b7-6080-5fb3-1dcb-cdedf82303fa@linux.ibm.com>
+ <20f504f961e1a803f85d64229ad84260434203bd.1644323503.git.alibuda@linux.alibaba.com>
+ <74e9c7fb-073c-cd62-c42a-e57c18de3404@linux.ibm.com>
 From:   "D. Wythe" <alibuda@linux.alibaba.com>
-In-Reply-To: <0d1363b7-6080-5fb3-1dcb-cdedf82303fa@linux.ibm.com>
+In-Reply-To: <74e9c7fb-073c-cd62-c42a-e57c18de3404@linux.ibm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
@@ -45,30 +45,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is indeed okay to use system_wq at present. Dues to the load 
-balancing issues we found, queue_work() always submits tasks to the 
-worker on the current CPU. tcp_listen_work() execution once may submit a 
-large number of tasks to the worker of the current CPU, causing 
-unnecessary pending, even though worker on other CPU are totaly free. I 
-was plan to make tcp_listen_work() blocked wait on worker of every CPU, 
-so I create a new workqueue, and that's the only reason for it. But this 
-problem is not very urgent, and I don't have strong opinion too...
+
+Some of our servers have different service types on different ports.
+A global switch cannot control different service ports individually in 
+this case。In fact, it has nothing to do with using netlink or not. 
+Socket options is the first solution comes to my mind in that case，I 
+don't know if there is any other better way。
+
+Looks for you suggestions.
+Thanks.
 
 
-在 2022/2/9 上午1:06, Karsten Graul 写道:
+在 2022/2/9 上午1:08, Karsten Graul 写道:
 > On 08/02/2022 13:53, D. Wythe wrote:
->> +static struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work */
->>   struct workqueue_struct	*smc_hs_wq;	/* wq for handshake work */
->>   struct workqueue_struct	*smc_close_wq;	/* wq for close work */
->>   
->> @@ -2227,7 +2228,7 @@ static void smc_clcsock_data_ready(struct sock *listen_clcsock)
->>   	lsmc->clcsk_data_ready(listen_clcsock);
->>   	if (lsmc->sk.sk_state == SMC_LISTEN) {
->>   		sock_hold(&lsmc->sk); /* sock_put in smc_tcp_listen_work() */
->> -		if (!queue_work(smc_hs_wq, &lsmc->tcp_listen_work))
->> +		if (!queue_work(smc_tcp_ls_wq, &lsmc->tcp_listen_work))
->>   			sock_put(&lsmc->sk);
+>> From: "D. Wythe" <alibuda@linux.alibaba.com>
+>>
+>> This patch aims to add dynamic control for SMC auto fallback, since we
+>> don't have socket option level for SMC yet, which requires we need to
+>> implement it at the same time.
 > 
-> It works well this way, but given the fact that there is one tcp_listen worker per
-> listen socket and these workers finish relatively quickly, wouldn't it be okay to
-> use the system_wq instead of using an own queue? But I have no strong opinion about that...
+> In your response to the v2 version of this series you wrote:
+> 
+>> After some trial and thought, I found that the scope of netlink control
+>> is too large, we should limit the scope to socket. Adding a socket option
+>> may be a better choice, what do you think?
+> 
+> I want to understand why this socket option is required, who needs it and why.
+> What were your trials and thoughts, did you see any problems with the global
+> switch via the netlink interface?
