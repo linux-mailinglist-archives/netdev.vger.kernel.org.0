@@ -2,347 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 241FD4AEDE8
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 10:24:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B6C94AEDFD
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 10:27:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233917AbiBIJX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 04:23:56 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39746 "EHLO
+        id S234561AbiBIJ0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 04:26:18 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:48558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiBIJXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 04:23:50 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590FCE03A56E
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 01:23:45 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id a11-20020a17090a740b00b001b8b506c42fso4621415pjg.0
-        for <netdev@vger.kernel.org>; Wed, 09 Feb 2022 01:23:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=JK/vxlNdT7JFNpKXya4qcBlyZK3+Mgah0JCZD6Vpyng=;
-        b=Dd9ehfWl2Y6WKNAFgrGKr9CVtZ1St2YwveTIwLh40r2xNqNNv4hfP3lIxok/CJbpbb
-         lCBQFXHhalZXWsgQG6emIqVTccv8VkQDyQUD1cq5hdYemUNtFvdmQZ2/1Mm5M5aUD0nP
-         9mV3/4iQPPLOGCrGIFGt8yp9wDPcybqlFoKKQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=JK/vxlNdT7JFNpKXya4qcBlyZK3+Mgah0JCZD6Vpyng=;
-        b=TsLaip+JOfBYoQvcqiuLzjj90qlhp5JkM7T28N/tRVesDGBFseFJWJqKiVC5dY0Ogo
-         YbLJstHkJvQYFXi43nrwUJeJv8Tb0kaByKy/9oHzK19nCZBtYHshoYTayVkEZcgOK7vJ
-         Kxu61Bm8WdPlX5k9kmjbA7GKJgRuoacMNsYKhNZOn53yFDGrxjHt7iaQnxlVEqOl+aCO
-         50zEXby2z6VMecQw0gYUsxofQbJvcD4rDsIOSeq5rnm4xW7qpeKtsO4mH6A3QaYFThE4
-         Rm4aDC3XrReGepkH/qXXGGNYJb1GH0Zf/PLoKgWYi6eWsGwrfl+c9gDSA+ugVz6FODUt
-         r4/Q==
-X-Gm-Message-State: AOAM533O5EjdQ+TgrQltND/y3js1KfRc7SjslbSMAYiq6bGVUoFwJbA1
-        3K5AnUztzpJUhWzPnQNOf1i2Mw==
-X-Google-Smtp-Source: ABdhPJwJAeFEelD78q6rYpvvQ6JxuZtvcWF/AFitGSSMgHKpRLSybFUYGC+pdSrjsP540fmNOXEUIg==
-X-Received: by 2002:a17:90a:3:: with SMTP id 3mr335438pja.211.1644398595054;
-        Wed, 09 Feb 2022 01:23:15 -0800 (PST)
-Received: from localhost (174.71.80.34.bc.googleusercontent.com. [34.80.71.174])
-        by smtp.gmail.com with UTF8SMTPSA id k14sm19262194pff.25.2022.02.09.01.23.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 01:23:14 -0800 (PST)
-From:   Joseph Hwang <josephsih@chromium.org>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com, pali@kernel.org
-Cc:     josephsih@google.com, chromeos-bluetooth-upstreaming@chromium.org,
-        Joseph Hwang <josephsih@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 3/3] Bluetooth: mgmt: add set_quality_report for MGMT_OP_SET_QUALITY_REPORT
-Date:   Wed,  9 Feb 2022 17:23:00 +0800
-Message-Id: <20220209092312.751426-1-josephsih@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220209172233.v3.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
-References: <20220209172233.v3.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
-MIME-Version: 1.0
+        with ESMTP id S229544AbiBIJ0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 04:26:17 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on0606.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0d::606])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DAAE01D5D6
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 01:26:13 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KPXofw/15K4933CsrU9YaRNhUb2ZESwCDsrWWpUZPDwSbK/eyrdR6F7OEbWFP/SCho7nmjpz8+THETB5mcmOizvt5ex77YKycmq/TFcsYEkPyUwFgEWZlHbAX+0vhQsykIozFGAPpuqTZ3Rrw4e8VDwAlOoX/twiFBuS+g9oXUus26gPbLPTuDVEU+xetxMXiB6Oe6u1ZUIJ2XmTNHuodAc18rPriXQX4prv/0hBTLG1hAUoccg0ZQ0zI4lTj395tL1+lT/xLR6Gnw76C8Yiwu/nBW3oUPgQalP6Ju+gsfJCJLlMQGMtqgnDGKrahpN8vCI2xoVwAP7UGdcOgSH3jA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=W3sDNXBcDbrLOAZwvhmHds7YjINQKzlK4qsorA00EPI=;
+ b=DZ5wEnEM4t/ZBPDo6rJkz1J2zqiu1B1FxXN5om3swt87RDwJMzYzAz0AL1dor6VBP7RE0sMKnBi6XBaz+A4sXiQnf4LeolaYJcdw3QqrAFiDRXZf1GmbIINiwu8Pxx9d5+KsXV8LXzSWJOe95b9Q/+TNFhx5tqAoKqsB07+YB5qvfqUOWI8Z9kNINDRMBQIbFFAYVN7CbqKV4qo1VT+yY39O2hqSxAD/05nCmqGhbv1GxPHjdzGdww9WtGPcjVbOLp8CBZFx97lg0rmOUhAA7lIA5jHqNpFN2Y833W0FJZHMUiBbfkn4sVfeLkvFSwbr6UMb40Krfawn4pBq54riYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=W3sDNXBcDbrLOAZwvhmHds7YjINQKzlK4qsorA00EPI=;
+ b=rboKlxLFIUxf2ugsrrs3NjLHlFkMRENp0mIJ56fV9DdMJvvmSrHYLX0frBtDGvAnwI1BDo1aQhdX2uqY+vMFFLH98mxdKb20hCYFT8txRbRC8ZNPoZXCsPrF2xPI05DducEDXho+yy9Ff1vuwMLsbgf3O4mRBdsT1JnQuaIC0OY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM9PR04MB8555.eurprd04.prod.outlook.com (2603:10a6:20b:436::16)
+ by VI1PR04MB5423.eurprd04.prod.outlook.com (2603:10a6:803:da::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Wed, 9 Feb
+ 2022 09:23:59 +0000
+Received: from AM9PR04MB8555.eurprd04.prod.outlook.com
+ ([fe80::5df9:5bf0:7ac1:a793]) by AM9PR04MB8555.eurprd04.prod.outlook.com
+ ([fe80::5df9:5bf0:7ac1:a793%9]) with mapi id 15.20.4975.011; Wed, 9 Feb 2022
+ 09:23:59 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     youri.querry_1@nxp.com, leoyang.li@nxp.com,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net-next 0/7] dpaa2-eth: add support for software TSO
+Date:   Wed,  9 Feb 2022 11:23:28 +0200
+Message-Id: <20220209092335.3064731-1-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 2.33.1
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR03CA0037.eurprd03.prod.outlook.com (2603:10a6:208::14)
+ To AM9PR04MB8555.eurprd04.prod.outlook.com (2603:10a6:20b:436::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a4a1e167-24e1-4ecf-416a-08d9ebade6f8
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5423:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB54231194CF0D7CE09922A466E02E9@VI1PR04MB5423.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1775;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Vp0MnWKpkFJavYYZK+oGZrtXCgjEWn0Z2/B3AIv61+XNo3aqw+lMf7pA9i1Y24p1Xgdecd6KZo1PfoIx2h1p8/SRsHaVG4BnXFYN/UeLYZkNOgWOfgOWXjvPjuB7rJjse/LJmQMbNjvbSKFqaX0PaAnBApCFTynIE7FIFwmusSGCUatW5aQjms9Xl5K+dHjBMaT44NVSk0QgJt0FYaX6YXO3r0VaS/tSjq2LAEHRLDpONSYDr76eHFXj1NLLK/iubrL/FpkvGqvAdil7j3KYP7hf/r+ZB+LERoJV43z7QFb7ZE/MPQK5z0fQSrL/iXH/OvNIkRMALispHXF/YezRxw0PTDDvIqwez2BWGqdY1CLH828cK/AHYwz+jkiAVi3vEtevYZpnm5RUUCtDoxIkRw5gTmiI3FFqXvtC36tli+9UQ1VFcGBwNhezDAjd47RGUN9pEbX06P+TEkp+lHaflsdqJEU99Yk0ycQsjT8T3r31iOys5y2f8sSwAntqYD/RRmO7N3/N/nnmiAwCfnpapQ7dQzKWnXvUjhNDzdx4Ow1ucMEdIgiSCwBhhsNrvI96SPvRtnwD/41oE88Xb015x9QoaixWGvHHW8ZNebU48Zc+2kzk40/bMvySVG8b9iXwaXweATSTzyHoyXsTryYd21M1DMUGqbSiCKU3YbVFZIFVMBJuTcl3ZhoQNqG5DyoGEV+4hFxwn8A0GUBKTLWqQQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8555.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(83380400001)(66556008)(66476007)(8936002)(4326008)(8676002)(2906002)(1076003)(26005)(36756003)(6486002)(5660300002)(44832011)(52116002)(66946007)(86362001)(38350700002)(508600001)(38100700002)(186003)(316002)(6506007)(6666004)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?q5Luo9bigm5Ibbk/2B2jZYNK0EHwj7FEjmR1V0B9lJ9awDrkXuwJEbnO+WXy?=
+ =?us-ascii?Q?aFA9Gs0+JOjTHhG+cq4SJ3yu7Sf6OQvYYiEoIb7bFc1Ie8mG8eyqAGRglfiI?=
+ =?us-ascii?Q?E/zYhAqpCMcVZf3hizgkHzuwLFwIKFStpawJXW4O75jVE1t7nrqfRvt95J6u?=
+ =?us-ascii?Q?sHVHJ2hFXNeKAGgs7aJkgznMkGdEjbxtPSW689TZ0NoTLk0sBDSK0z2flyZZ?=
+ =?us-ascii?Q?ptLrE9AJEgxBPb4EsT5Slro1JMVCcqtf2cwFQPW3BgMCakHhcSHavoRX5FBs?=
+ =?us-ascii?Q?IURMTg7mWmwB2NmeYm/7oyfbdaclwPMjmmJjFRSg1oFhWeIs9a4MkXRxvoPh?=
+ =?us-ascii?Q?UR0uQRcUttNBipr4BBiJ3YCbxkAGWCqtuTT2TjeVQF246bEHy8OcLMoAmT82?=
+ =?us-ascii?Q?sM6YXDyh39hE0Lu/rb2Me8QK9gW2gsHSgsONLgK0S1MAdGc2Y8n9H0uCxRiu?=
+ =?us-ascii?Q?Ru4lYoIVeMZ+83mY2Jz8SHlxIBaQZpmN2V02Z9onDOOtFa77e53ugTAmVitv?=
+ =?us-ascii?Q?UODcp/ObU/O8KfIc/V/NWEeP/JruKD6dW57aQqCnHFq3JxMjmOhyPMGNtRVK?=
+ =?us-ascii?Q?f7ayzhCluZzPFT05seVT7tuY2JYhbC6ao6Oh2XygRkFq6Flt6+Xjs9auRnTq?=
+ =?us-ascii?Q?8LhjY28qpjZc1UiRoWHPyR9msEjEc3mJdCoV451eds3h7FPwIPal/TpSqqbc?=
+ =?us-ascii?Q?rx3LhKH5qDD3d2FyuJMvulUi1tP77eOzvIWf///iE44t2t5jOjfdV9KNDDWW?=
+ =?us-ascii?Q?ttXs5GhgvxPnCjdn7qGbKN9WLuex0QcF2zZ0oPLXKXwWfDtOwLQVpk4oXmBO?=
+ =?us-ascii?Q?ixnPqOH8NgFN1osRsspBJ12yQj7sIpWhwFQ+WI3S0S6UiQWDLEFpU8dlnNXP?=
+ =?us-ascii?Q?rRgIWZLw/taOV662jPDr4BjfRE2PRWeOXcZLBwNlfYjzxm0ldbezpSpfqCcg?=
+ =?us-ascii?Q?9CJOTZE/BQZjwRuDM2n0w0ggNBXYSpMYb5OdKspUU+/BL4HDyHMGu6notRox?=
+ =?us-ascii?Q?YLpXhk6TGJccit/FdLbOgPYIVrDtBCptCg376ZtTRKYJSMuXkRIOQ7R9Wob7?=
+ =?us-ascii?Q?DsONaeZtlPTsY8VpoXEa3MyjBizuzPybu/UGejp4lXGcwwv1cO4xuz3fETf8?=
+ =?us-ascii?Q?IxmbAHmFpLnG78IoszJCvxtpmP/HcAl4nzOZPSW9sKBqtlPIY786zcOJkXOF?=
+ =?us-ascii?Q?gSMlbgoHN/GZifX02WwJaUWs3uVyHA/Kei1HxSQp10ou0fz0prG6Xropb2sI?=
+ =?us-ascii?Q?YobPhpUSS82oZyeMDdJ0vWbXcGFdiqctT/r86Nh7rL/k7Ik1G+EhJEuuRBqX?=
+ =?us-ascii?Q?OwTGyH/i73wYguuH0jmBJuQIGauH1/2kZVpVQA4kG2+Z1W73S8wV2DynmXF/?=
+ =?us-ascii?Q?8tIIpxl9qHYVu8YmadydwzmC0gOCxbDRmuYLNaxR1g48gzVLsY20FKvFmyCE?=
+ =?us-ascii?Q?nCl6X3/hmDcvSL9tXvllGRM1uzKfSihR4lxIr08BygLujZNmpkbn6ByRnDym?=
+ =?us-ascii?Q?GTOUSKUAWk5Qmhsmyw8jjYq+S48jKlCxPCfgNzmZdn+Abp+4tia5fLI0GlfC?=
+ =?us-ascii?Q?08GE05QkQYXaPEaXd3oXADehuJkMydWsw32kwSGZib620QPgCORUXfzCgizb?=
+ =?us-ascii?Q?aYobdKz8GyM0jtHuVc1McHM=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a4a1e167-24e1-4ecf-416a-08d9ebade6f8
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8555.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 09:23:59.3267
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ym1cCUccrfc6kFlWX05rk8Vrlroo9t6wEryVU9hnxPUmjXk3+cjTZfwdT8GDTGSPlcYBg1GwAwGUUfVWCL3p/A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5423
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a new set_quality_report mgmt handler to set
-the quality report feature. The feature is removed from the
-experimental features at the same time.
+This series adds support for driver level TSO in the dpaa2-eth driver.
 
-Signed-off-by: Joseph Hwang <josephsih@chromium.org>
----
+The first 5 patches lay the ground work for the actual feature:
+rearrange some variable declaration, cleaning up the interraction with
+the S/G Table buffer cache etc.
 
-Changes in v3:
-- This is a new patch to enable the quality report feature.
-  The reading and setting of the quality report feature are
-  removed from the experimental features.
+The 6th patch adds the actual driver level software TSO support by using
+the usual tso_build_hdr()/tso_build_data() APIs and creates the S/G FDs.
 
- include/net/bluetooth/mgmt.h |   7 ++
- net/bluetooth/mgmt.c         | 164 +++++++++++++++--------------------
- 2 files changed, 77 insertions(+), 94 deletions(-)
+With this patch set we can see the following improvement in a TCP flow
+running on a single A72@2.2GHz of the LX2160A SoC:
 
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index 03204b4ba641..236e042fbc1c 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -109,6 +109,7 @@ struct mgmt_rp_read_index_list {
- #define MGMT_SETTING_STATIC_ADDRESS	0x00008000
- #define MGMT_SETTING_PHY_CONFIGURATION	0x00010000
- #define MGMT_SETTING_WIDEBAND_SPEECH	0x00020000
-+#define MGMT_SETTING_QUALITY_REPORT	0x00040000
- 
- #define MGMT_OP_READ_INFO		0x0004
- #define MGMT_READ_INFO_SIZE		0
-@@ -838,6 +839,12 @@ struct mgmt_cp_add_adv_patterns_monitor_rssi {
- } __packed;
- #define MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE	8
- 
-+#define MGMT_OP_SET_QUALITY_REPORT		0x0057
-+struct mgmt_cp_set_quality_report {
-+	__u8	action;
-+} __packed;
-+#define MGMT_SET_QUALITY_REPORT_SIZE		1
-+
- #define MGMT_EV_CMD_COMPLETE		0x0001
- struct mgmt_ev_cmd_complete {
- 	__le16	opcode;
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index cab79f480a21..92de8e669897 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -857,6 +857,10 @@ static u32 get_supported_settings(struct hci_dev *hdev)
- 
- 	settings |= MGMT_SETTING_PHY_CONFIGURATION;
- 
-+	if (hdev && (aosp_has_quality_report(hdev) ||
-+		     hdev->set_quality_report))
-+		settings |= MGMT_SETTING_QUALITY_REPORT;
-+
- 	return settings;
- }
- 
-@@ -928,6 +932,9 @@ static u32 get_current_settings(struct hci_dev *hdev)
- 	if (hci_dev_test_flag(hdev, HCI_WIDEBAND_SPEECH_ENABLED))
- 		settings |= MGMT_SETTING_WIDEBAND_SPEECH;
- 
-+	if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
-+		settings |= MGMT_SETTING_QUALITY_REPORT;
-+
- 	return settings;
- }
- 
-@@ -3871,12 +3878,6 @@ static const u8 debug_uuid[16] = {
- };
- #endif
- 
--/* 330859bc-7506-492d-9370-9a6f0614037f */
--static const u8 quality_report_uuid[16] = {
--	0x7f, 0x03, 0x14, 0x06, 0x6f, 0x9a, 0x70, 0x93,
--	0x2d, 0x49, 0x06, 0x75, 0xbc, 0x59, 0x08, 0x33,
--};
--
- /* a6695ace-ee7f-4fb9-881a-5fac66c629af */
- static const u8 offload_codecs_uuid[16] = {
- 	0xaf, 0x29, 0xc6, 0x66, 0xac, 0x5f, 0x1a, 0x88,
-@@ -3898,7 +3899,7 @@ static const u8 rpa_resolution_uuid[16] = {
- static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
- 				  void *data, u16 data_len)
- {
--	char buf[102];   /* Enough space for 5 features: 2 + 20 * 5 */
-+	char buf[82];   /* Enough space for 4 features: 2 + 20 * 4 */
- 	struct mgmt_rp_read_exp_features_info *rp = (void *)buf;
- 	u16 idx = 0;
- 	u32 flags;
-@@ -3939,18 +3940,6 @@ static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
- 		idx++;
- 	}
- 
--	if (hdev && (aosp_has_quality_report(hdev) ||
--		     hdev->set_quality_report)) {
--		if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
--			flags = BIT(0);
--		else
--			flags = 0;
--
--		memcpy(rp->features[idx].uuid, quality_report_uuid, 16);
--		rp->features[idx].flags = cpu_to_le32(flags);
--		idx++;
--	}
--
- 	if (hdev && hdev->get_data_path_id) {
- 		if (hci_dev_test_flag(hdev, HCI_OFFLOAD_CODECS_ENABLED))
- 			flags = BIT(0);
-@@ -4163,80 +4152,6 @@ static int set_rpa_resolution_func(struct sock *sk, struct hci_dev *hdev,
- 	return err;
- }
- 
--static int set_quality_report_func(struct sock *sk, struct hci_dev *hdev,
--				   struct mgmt_cp_set_exp_feature *cp,
--				   u16 data_len)
--{
--	struct mgmt_rp_set_exp_feature rp;
--	bool val, changed;
--	int err;
--
--	/* Command requires to use a valid controller index */
--	if (!hdev)
--		return mgmt_cmd_status(sk, MGMT_INDEX_NONE,
--				       MGMT_OP_SET_EXP_FEATURE,
--				       MGMT_STATUS_INVALID_INDEX);
--
--	/* Parameters are limited to a single octet */
--	if (data_len != MGMT_SET_EXP_FEATURE_SIZE + 1)
--		return mgmt_cmd_status(sk, hdev->id,
--				       MGMT_OP_SET_EXP_FEATURE,
--				       MGMT_STATUS_INVALID_PARAMS);
--
--	/* Only boolean on/off is supported */
--	if (cp->param[0] != 0x00 && cp->param[0] != 0x01)
--		return mgmt_cmd_status(sk, hdev->id,
--				       MGMT_OP_SET_EXP_FEATURE,
--				       MGMT_STATUS_INVALID_PARAMS);
--
--	hci_req_sync_lock(hdev);
--
--	val = !!cp->param[0];
--	changed = (val != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
--
--	if (!aosp_has_quality_report(hdev) && !hdev->set_quality_report) {
--		err = mgmt_cmd_status(sk, hdev->id,
--				      MGMT_OP_SET_EXP_FEATURE,
--				      MGMT_STATUS_NOT_SUPPORTED);
--		goto unlock_quality_report;
--	}
--
--	if (changed) {
--		if (hdev->set_quality_report)
--			err = hdev->set_quality_report(hdev, val);
--		else
--			err = aosp_set_quality_report(hdev, val);
--
--		if (err) {
--			err = mgmt_cmd_status(sk, hdev->id,
--					      MGMT_OP_SET_EXP_FEATURE,
--					      MGMT_STATUS_FAILED);
--			goto unlock_quality_report;
--		}
--
--		if (val)
--			hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
--		else
--			hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
--	}
--
--	bt_dev_dbg(hdev, "quality report enable %d changed %d", val, changed);
--
--	memcpy(rp.uuid, quality_report_uuid, 16);
--	rp.flags = cpu_to_le32(val ? BIT(0) : 0);
--	hci_sock_set_flag(sk, HCI_MGMT_EXP_FEATURE_EVENTS);
--
--	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_EXP_FEATURE, 0,
--				&rp, sizeof(rp));
--
--	if (changed)
--		exp_feature_changed(hdev, quality_report_uuid, val, sk);
--
--unlock_quality_report:
--	hci_req_sync_unlock(hdev);
--	return err;
--}
--
- static int set_offload_codec_func(struct sock *sk, struct hci_dev *hdev,
- 				  struct mgmt_cp_set_exp_feature *cp,
- 				  u16 data_len)
-@@ -4363,7 +4278,6 @@ static const struct mgmt_exp_feature {
- 	EXP_FEAT(debug_uuid, set_debug_func),
- #endif
- 	EXP_FEAT(rpa_resolution_uuid, set_rpa_resolution_func),
--	EXP_FEAT(quality_report_uuid, set_quality_report_func),
- 	EXP_FEAT(offload_codecs_uuid, set_offload_codec_func),
- 	EXP_FEAT(le_simultaneous_roles_uuid, set_le_simultaneous_roles_func),
- 
-@@ -8656,6 +8570,67 @@ static int get_adv_size_info(struct sock *sk, struct hci_dev *hdev,
- 	return err;
- }
- 
-+static int set_quality_report(struct sock *sk, struct hci_dev *hdev,
-+			      void *data, u16 data_len)
-+{
-+	struct mgmt_cp_set_quality_report *cp = data;
-+	bool enable, changed;
-+	int err;
-+
-+	/* Command requires to use a valid controller index */
-+	if (!hdev)
-+		return mgmt_cmd_status(sk, MGMT_INDEX_NONE,
-+				       MGMT_OP_SET_QUALITY_REPORT,
-+				       MGMT_STATUS_INVALID_INDEX);
-+
-+	/* Only 0 (off) and 1 (on) is supported */
-+	if (cp->action != 0x00 && cp->action != 0x01)
-+		return mgmt_cmd_status(sk, hdev->id,
-+				       MGMT_OP_SET_QUALITY_REPORT,
-+				       MGMT_STATUS_INVALID_PARAMS);
-+
-+	hci_req_sync_lock(hdev);
-+
-+	enable = !!cp->action;
-+	changed = (enable != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
-+
-+	if (!aosp_has_quality_report(hdev) && !hdev->set_quality_report) {
-+		err = mgmt_cmd_status(sk, hdev->id,
-+				      MGMT_OP_SET_QUALITY_REPORT,
-+				      MGMT_STATUS_NOT_SUPPORTED);
-+		goto unlock_quality_report;
-+	}
-+
-+	if (changed) {
-+		if (hdev->set_quality_report)
-+			err = hdev->set_quality_report(hdev, enable);
-+		else
-+			err = aosp_set_quality_report(hdev, enable);
-+
-+		if (err) {
-+			err = mgmt_cmd_status(sk, hdev->id,
-+					      MGMT_OP_SET_QUALITY_REPORT,
-+					      MGMT_STATUS_FAILED);
-+			goto unlock_quality_report;
-+		}
-+
-+		if (enable)
-+			hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
-+		else
-+			hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
-+	}
-+
-+	bt_dev_dbg(hdev, "quality report enable %d changed %d",
-+		   enable, changed);
-+
-+	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_QUALITY_REPORT, 0,
-+				NULL, 0);
-+
-+unlock_quality_report:
-+	hci_req_sync_unlock(hdev);
-+	return err;
-+}
-+
- static const struct hci_mgmt_handler mgmt_handlers[] = {
- 	{ NULL }, /* 0x0000 (no command) */
- 	{ read_version,            MGMT_READ_VERSION_SIZE,
-@@ -8782,6 +8757,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
- 	{ add_adv_patterns_monitor_rssi,
- 				   MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE,
- 						HCI_MGMT_VAR_LEN },
-+	{ set_quality_report,      MGMT_SET_QUALITY_REPORT_SIZE },
- };
- 
- void mgmt_index_added(struct hci_dev *hdev)
+before: 6.38Gbit/s
+after:  8.48Gbit/s
+
+Ioana Ciornei (7):
+  dpaa2-eth: rearrange variable declaration in __dpaa2_eth_tx
+  dpaa2-eth: allocate a fragment already aligned
+  dpaa2-eth: extract the S/G table buffer cache interaction into
+    functions
+  dpaa2-eth: use the S/G table cache also for the normal S/G path
+  dpaa2-eth: work with an array of FDs
+  dpaa2-eth: add support for software TSO
+  soc: fsl: dpio: read the consumer index from the cache inhibited area
+
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 343 ++++++++++++++----
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  18 +
+ .../ethernet/freescale/dpaa2/dpaa2-ethtool.c  |   2 +
+ drivers/soc/fsl/dpio/qbman-portal.c           |   8 +-
+ 4 files changed, 301 insertions(+), 70 deletions(-)
+
 -- 
-2.35.0.263.gb82422642f-goog
+2.33.1
 
