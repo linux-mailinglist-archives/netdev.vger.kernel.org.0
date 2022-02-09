@@ -2,94 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 535A34AEB70
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 08:50:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D48794AEB8B
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 08:55:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239437AbiBIHtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 02:49:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44318 "EHLO
+        id S239824AbiBIHyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 02:54:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239669AbiBIHtm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 02:49:42 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E17FC05CBA5
-        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 23:49:42 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nHhjK-0002UW-MQ; Wed, 09 Feb 2022 08:49:34 +0100
-Received: from pengutronix.de (unknown [195.138.59.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id A64A62EEE4;
-        Wed,  9 Feb 2022 07:49:33 +0000 (UTC)
-Date:   Wed, 9 Feb 2022 08:49:30 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Srinivas Neeli <srinivas.neeli@xilinx.com>
-Cc:     wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
-        michal.simek@xilinx.com, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, appana.durga.rao@xilinx.com,
-        sgoud@xilinx.com, git@xilinx.com
-Subject: Re: [PATCH] can: xilinx_can: Add check for NAPI Poll function
-Message-ID: <20220209074930.azbn26glrxukg4sr@pengutronix.de>
-References: <20220208162053.39896-1-srinivas.neeli@xilinx.com>
+        with ESMTP id S235383AbiBIHyP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 02:54:15 -0500
+X-Greylist: delayed 42799 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 23:54:18 PST
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.164])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB23C0613CA;
+        Tue,  8 Feb 2022 23:54:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644393256;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=sCy+BFzraB5UPCDrJqayTu4U5x2Azckr0KW+I3kfiQc=;
+    b=K9GgT2Gsq67ZGqFQdUZ6Ak/QSOAJogD90+bxmZUKtXDc9vR3k2qp07VDoEatKT9IwE
+    9/3OfmHeRCFkXwD0dr8TGh3G/GbG9EkmsQ0H2JlqmCOwGN2Q7SFWomKasV8ZSlL0X82k
+    CLciobQThGH4e9ehGnck7C/6iTqsAJZj+yWvQdr0eovdOcxLVQcstoqhqhZPmOuWbF/i
+    FRVZAT3wb/hdmYXLFVDCLteMTDMs3HJUzOpfUmaB5AdSNs4tTqOTGqmf4v2G+JrX56pa
+    gNmi2iDu1bP8M2Uecv4k/Xvb4iHhKNwVgyk8dykOaz+kcb0pstH1l88gmjStXW7ndRyF
+    /bCQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.39.0 AUTH)
+    with ESMTPSA id L7379cy197sFNsZ
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 9 Feb 2022 08:54:15 +0100 (CET)
+Message-ID: <b4be7878-e461-e2c3-2aaf-89598ac8a64f@hartkopp.net>
+Date:   Wed, 9 Feb 2022 08:54:09 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zar6w3gq6ud5tbfx"
-Content-Disposition: inline
-In-Reply-To: <20220208162053.39896-1-srinivas.neeli@xilinx.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net] can: isotp: isotp_rcv_cf(): fix so->rx race problem
+Content-Language: en-US
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
+        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1fb4407a-1269-ec50-0ad5-074e49f91144@hartkopp.net>
+ <2aba02d4-0597-1d55-8b3e-2c67386f68cf@huawei.com>
+ <64695483-ff75-4872-db81-ca55763f95cf@hartkopp.net>
+ <d7e69278-d741-c706-65e1-e87623d9a8e8@huawei.com>
+ <97339463-b357-3e0e-1cbf-c66415c08129@hartkopp.net>
+ <24e6da96-a3e5-7b4e-102b-b5676770b80e@hartkopp.net>
+ <20220128080704.ns5fzbyn72wfoqmx@pengutronix.de>
+ <72419ca8-b0cb-1e9d-3fcc-655defb662df@hartkopp.net>
+ <20220128084603.jvrvapqf5dt57yiq@pengutronix.de>
+ <07c69ccd-dbc0-5c74-c68e-8636ec9179ef@hartkopp.net>
+ <20220207081123.sdmczptqffwr64al@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220207081123.sdmczptqffwr64al@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Marc,
 
---zar6w3gq6ud5tbfx
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 07.02.22 09:11, Marc Kleine-Budde wrote:
+> On 28.01.2022 15:48:05, Oliver Hartkopp wrote:
+>> Hello Marc, hello William,
+>>
+>> On 28.01.22 09:46, Marc Kleine-Budde wrote:
+>>> On 28.01.2022 09:32:40, Oliver Hartkopp wrote:
+>>>>
+>>>>
+>>>> On 28.01.22 09:07, Marc Kleine-Budde wrote:
+>>>>> On 28.01.2022 08:56:19, Oliver Hartkopp wrote:
+>>>>>> I've seen the frame processing sometimes freezes for one second when
+>>>>>> stressing the isotp_rcv() from multiple sources. This finally freezes
+>>>>>> the entire softirq which is either not good and not needed as we only
+>>>>>> need to fix this race for stress tests - and not for real world usage
+>>>>>> that does not create this case.
+>>>>>
+>>>>> Hmmm, this doesn't sound good. Can you test with LOCKDEP enabled?
+>>
+>>
+>>>> #
+>>>> # Lock Debugging (spinlocks, mutexes, etc...)
+>>>> #
+>>>> CONFIG_LOCK_DEBUGGING_SUPPORT=y
+>>>> # CONFIG_PROVE_LOCKING is not set
+>>> CONFIG_PROVE_LOCKING=y
+>>
+>> Now enabled even more locking (seen relevant kernel config at the end).
+>>
+>> It turns out that there is no visible difference when using spin_lock() or
+>> spin_trylock().
+>>
+>> I only got some of these kernel log entries
+>>
+>> Jan 28 11:13:14 silver kernel: [ 2396.323211] perf: interrupt took too long
+>> (2549 > 2500), lowering kernel.perf_event_max_sample_rate to 78250
+>> Jan 28 11:25:49 silver kernel: [ 3151.172773] perf: interrupt took too long
+>> (3188 > 3186), lowering kernel.perf_event_max_sample_rate to 62500
+>> Jan 28 11:45:24 silver kernel: [ 4325.583328] perf: interrupt took too long
+>> (4009 > 3985), lowering kernel.perf_event_max_sample_rate to 49750
+>> Jan 28 12:15:46 silver kernel: [ 6148.238246] perf: interrupt took too long
+>> (5021 > 5011), lowering kernel.perf_event_max_sample_rate to 39750
+>> Jan 28 13:01:45 silver kernel: [ 8907.303715] perf: interrupt took too long
+>> (6285 > 6276), lowering kernel.perf_event_max_sample_rate to 31750
+>>
+>> But I get these sporadically anyway. No other LOCKDEP splat.
+>>
+>> At least the issue reported by William should be fixed now - but I'm still
+>> unclear whether spin_lock() or spin_trylock() is the best approach here in
+>> the NET_RX softirq?!?
+> 
+> With the !spin_trylock() -> return you are saying if something
+> concurrent happens, drop it. This doesn't sound correct.
 
-On 08.02.2022 21:50:53, Srinivas Neeli wrote:
-> Add check for NAPI poll function to avoid enabling interrupts
-> with out completing the NAPI call.
+Yes, I had the same feeling and did some extensive load tests using both 
+variants.
 
-Thanks for the patch. Does this fix a bug? If so, please add a Fixes:
-tag that lists the patch that introduced that bug.
+It turned out the standard spin_lock() works excellent to fix the issue.
 
-regards,
-Marc
+Thanks for taking it for upstream here:
+https://lore.kernel.org/linux-can/20220209074818.3ylfz4zmuhit7orc@pengutronix.de/T/#t
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Best regards,
+Oliver
 
---zar6w3gq6ud5tbfx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIDcgcACgkQrX5LkNig
-0108nAf/ZasdLkXg7nYB6kH36IDS7QN92H98Mg4W97Tg3x0zfa1RZRKcd8frSZ5t
-LXH59Nu5k675LeQp4jWyzignYO54QGcoz0AJ3UcaKInKN2wKUwvV3zlbILdjLb0O
-nfPujAL5ubH6cTgc/uqZGYORumW2am4vfW9BqJL4zRM20ka0OCkx1Q3o92j7FoZz
-bUBzEXBN6FV0evl+exdqszpOOdPenCE5i9TFCOMxYmJZoTBO7+NBCn/RZ79KCFfw
-ewk77ZyUdf/hLUSEDV8/38KsvxEC0GQnnD4mk0JaIox6ZznSEGzvFdmwmkPo/5N7
-2fopzMxuZHtjSqRl+6bgvjvXa5qaZw==
-=6imx
------END PGP SIGNATURE-----
-
---zar6w3gq6ud5tbfx--
