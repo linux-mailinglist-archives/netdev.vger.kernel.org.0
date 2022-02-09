@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F01DE4AF216
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 13:50:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 740C14AF217
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 13:50:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233634AbiBIMuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 07:50:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53290 "EHLO
+        id S233646AbiBIMuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 07:50:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233640AbiBIMuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 07:50:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABACC05CBBB
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 04:50:09 -0800 (PST)
+        with ESMTP id S231577AbiBIMuJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 07:50:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955B1C05CB97;
+        Wed,  9 Feb 2022 04:50:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CFA761920
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 12:50:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CC233C340EB;
-        Wed,  9 Feb 2022 12:50:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 466E2B820CB;
+        Wed,  9 Feb 2022 12:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 10B24C340EE;
+        Wed,  9 Feb 2022 12:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644411008;
-        bh=agUcKdODCdDCMpyjGyo58YEaw8ugNxjQeryuPCkAwv8=;
+        s=k20201202; t=1644411010;
+        bh=xWHN9CIsMOkHElKuRiLQjIOW5O8pYSdRfpxje3zeYbI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QGXQv4LmvaegMcxEu/urGIs+rTM3Tx7T/gSsPAgMALWo44UlaHGHqLdxUi4U4lHZt
-         i1eQrfXJG+SXPh+UAkklwVDlG5j8p4rIR1UspBDo/E5aeUdauoLPLJLkPPPHyAddgW
-         WS2tFiWzrDmAh9N901YT7BsiXfzzi5b6yyHIq2t6LgEiwNATy3NNYwWevwAW5Zou6v
-         Y0IfehN9QjQHW1ya9M1Y1X0fnaPTX8cuEcpCMqHrLS2RjmR79UdbHcVa/KLRItYWed
-         WymJm8U+cW8ikypTZhGP3LreDvmDR900Ui7vuBzwoKA7MyunrSt2x/bbx3LLDTycff
-         zp9pDX1/W7naA==
+        b=gndt95hOjSs49VZNjWxwyIynDE3V7pTUDoAjTYNh8HlTc1/Y0YkEgGndwSRQTQIyU
+         n6m2fJrBBN0goP9ok06y7PuJ/NbNYzWiMLn1Lki3ZLu3EmeV3pA1RSutOqHidSrcjt
+         +4EHh7nt1/VD7EjcnUM43tIcVMFFOyu6MyLC2eD7L2Pk9z7kM2eqoBlM/m8tAu5zw9
+         aYtphW768nx5rqAN1rboOtgIi0NxYpbAI5RWzmMGgEkjp2+5kyOHjYzlTvDvHuRnBE
+         Au/zVDEbArrtwHGKCJrBudDKjumKg4KYzd/uVg+qn92dmgexyu2G0gRFSyIK99Y8kO
+         2jnpCNn+feVDQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B8E04E6D458;
-        Wed,  9 Feb 2022 12:50:08 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0003DE5D07D;
+        Wed,  9 Feb 2022 12:50:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net,
- v2] tipc: rate limit warning for received illegal binding update
+Subject: Re: [PATCH net-next v2 0/5] MCTP tag control interface
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164441100875.3630.7253473908279805257.git-patchwork-notify@kernel.org>
-Date:   Wed, 09 Feb 2022 12:50:08 +0000
-References: <20220209032237.1161090-1-jmaloy@redhat.com>
-In-Reply-To: <20220209032237.1161090-1-jmaloy@redhat.com>
-To:     Jon Maloy <jmaloy@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        tipc-discussion@lists.sourceforge.net,
-        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
-        tuong.t.lien@dektech.com.au, maloy@donjonn.com, xinl@redhat.com,
-        ying.xue@windriver.com, parthasarathy.bhuvaragan@gmail.com
+Message-Id: <164441100999.3630.17468274065248587297.git-patchwork-notify@kernel.org>
+Date:   Wed, 09 Feb 2022 12:50:09 +0000
+References: <20220209040557.391197-1-jk@codeconstruct.com.au>
+In-Reply-To: <20220209040557.391197-1-jk@codeconstruct.com.au>
+To:     Jeremy Kerr <jk@codeconstruct.com.au>
+Cc:     netdev@vger.kernel.org, matt@codeconstruct.com.au,
+        davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
+        rostedt@goodmis.org, mingo@redhat.com, linux-doc@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,22 +59,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue,  8 Feb 2022 22:22:37 -0500 you wrote:
-> From: Jon Maloy <jmaloy@redhat.com>
+On Wed,  9 Feb 2022 12:05:52 +0800 you wrote:
+> This series implements a small interface for userspace-controlled
+> message tag allocation for the MCTP protocol. Rather than leaving the
+> kernel to allocate per-message tag values, userspace can explicitly
+> allocate (and release) message tags through two new ioctls:
+> SIOCMCTPALLOCTAG and SIOCMCTPDROPTAG.
 > 
-> It would be easy to craft a message containing an illegal binding table
-> update operation. This is handled correctly by the code, but the
-> corresponding warning printout is not rate limited as is should be.
-> We fix this now.
+> In order to do this, we first introduce some minor changes to the tag
+> handling, including a couple of new tests for the route input paths.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2] tipc: rate limit warning for received illegal binding update
-    https://git.kernel.org/netdev/net/c/c7223d687758
+  - [net-next,v2,1/5] mctp: tests: Rename FL_T macro to FL_TO
+    https://git.kernel.org/netdev/net-next/c/62a2b005c6d6
+  - [net-next,v2,2/5] mctp: tests: Add key state tests
+    https://git.kernel.org/netdev/net-next/c/c5755214623d
+  - [net-next,v2,3/5] mctp: Add helper for address match checking
+    https://git.kernel.org/netdev/net-next/c/8069b22d656f
+  - [net-next,v2,4/5] mctp: Allow keys matching any local address
+    https://git.kernel.org/netdev/net-next/c/0de55a7d1133
+  - [net-next,v2,5/5] mctp: Add SIOCMCTP{ALLOC,DROP}TAG ioctls for tag control
+    https://git.kernel.org/netdev/net-next/c/63ed1aab3d40
 
 You are awesome, thank you!
 -- 
