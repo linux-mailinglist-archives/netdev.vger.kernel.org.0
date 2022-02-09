@@ -2,224 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88C9B4AF436
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 15:38:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4E7D4AF24D
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 14:06:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235100AbiBIOiK convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 9 Feb 2022 09:38:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
+        id S233831AbiBINGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 08:06:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235094AbiBIOiK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 09:38:10 -0500
-Received: from inet10.abb.com (inet10.abb.com [138.225.1.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEC3C06157B
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 06:38:11 -0800 (PST)
-Received: from gitsiv.ch.abb.com (gitsiv.keymile.net [10.41.156.251])
-        by inet10.abb.com (8.14.7/8.14.7) with SMTP id 2199sUEm023348;
-        Wed, 9 Feb 2022 10:54:30 +0100
-Received: from ch10641.keymile.net.net (ch10641.keymile.net [172.31.40.7])
-        by gitsiv.ch.abb.com (Postfix) with ESMTP id B031565B8B03;
-        Wed,  9 Feb 2022 10:54:30 +0100 (CET)
-From:   Holger Brunck <holger.brunck@hitachienergy.com>
-To:     netdev@vger.kernel.org
-Cc:     Holger Brunck <holger.brunck@hitachienergy.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [v5] dsa: mv88e6xxx: make serdes SGMII/Fiber tx amplitude configurable
-Date:   Wed,  9 Feb 2022 10:54:27 +0100
-Message-Id: <20220209095427.30568-1-holger.brunck@hitachienergy.com>
-X-Mailer: git-send-email 2.34.0
+        with ESMTP id S233824AbiBINGA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 08:06:00 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B774C0613CA
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 05:06:03 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id c15so3254259ljf.11
+        for <netdev@vger.kernel.org>; Wed, 09 Feb 2022 05:06:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=ik/qwif2JQQYaftr1F0ovk4W9b9PouoozjP+RTv1j6s=;
+        b=XB8Yuh+ZabNCCSs3EIoU8U8OTVNGSPp65Bg+6grOBLwAF4WhEVXOGVp16aJCCrUNKA
+         /xBez+Tn9eKPIGdKL+fQz/lW6Fd+GxDQ+TeyXMtvJCWWRSqGWc27FXWluvuLLnGxcd0F
+         qWUY6JrjeZa3iied0K/N/M1wRKIA+l4MUv9AygSXyGVnRpKNC3QPPKuvfg7NUA6FooC6
+         N3H5MXqWhzW7HhidRRuHWfe5pU2o5ykYNLTQ8P0y3FGE5gBL2fl3AsH6wgAdFGpUplpw
+         L+GDLb/ICMMXRbqv1fpZgpcHTZp/3I07H9kqqHF0v4HBQ3sxDnSnmzhhCwOLWulssyPh
+         Zh4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=ik/qwif2JQQYaftr1F0ovk4W9b9PouoozjP+RTv1j6s=;
+        b=F45Zyiss9FjIG03mBa7J5HZEj5sVotfqeKIT035f8euQL1yn4fUUQCrAq4cvyHBoXd
+         whn0wQCBS5y7TI6WbaS5iGis098Pd+tmv4SVSw0wRcH7SoSoNMPDn4V+kAScZV5j9ky7
+         9MK9MCtJ8F06VkOowafhT+sGVHEpjGRmR2ICdMhZjmagMO4DTiQE2yzq62Fd6rCbSAdV
+         e637x6TGaBJfyOFvEizyMbsIfb0lb+hWsZ8Y1K91RJ8kCetkehoxlTfOPNMgBOgx/NGQ
+         DzkH2V8OPq+nM0Nz8ZQLFfVyhl9897oPHEOFDJVxEEU22cHnqUhbPNJQDVsFA64zDqVz
+         SdJA==
+X-Gm-Message-State: AOAM531fJ6DT+WZKSDEkPUgf3/ty8XT7ecvtglmiy0vdpF7uUyIglzy9
+        TXKdO+PVn/xkpZZU75DTQBDj28d3t2KNuPaAPC8=
+X-Google-Smtp-Source: ABdhPJyfLPcG7qY6SNiS1QeTxQ1G1fn6+hfieAv+IhkaMShlVKuaqsgQWLGZTwRjli4xc+h+oeKxHw==
+X-Received: by 2002:a05:651c:507:: with SMTP id o7mr1470965ljp.125.1644411961600;
+        Wed, 09 Feb 2022 05:06:01 -0800 (PST)
+Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id k3sm2352608lfo.127.2022.02.09.05.06.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 05:06:01 -0800 (PST)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>
+Subject: [PATCH net-next v2 0/5] Add support for locked bridge ports (for 802.1X)
+Date:   Wed,  9 Feb 2022 14:05:32 +0100
+Message-Id: <20220209130538.533699-1-schultz.hans+netdev@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mv88e6352, mv88e6240 and mv88e6176  have a serdes interface. This patch
-allows to configure the output swing to a desired value in the
-phy-handle of the port. The value which is peak to peak has to be
-specified in microvolts. As the chips only supports eight dedicated
-values we return EINVAL if the value in the DTS does not match one of
-these values.
+This series starts by adding support for SA filtering to the bridge,
+which is then allowed to be offloaded to switchdev devices. Furthermore
+an offloading implementation is supplied for the mv88e6xxx driver.
 
-CC: Andrew Lunn <andrew@lunn.ch>
-CC: Jakub Kicinski <kuba@kernel.org>
-CC: Marek Behún <kabel@kernel.org>
-Signed-off-by: Holger Brunck <holger.brunck@hitachienergy.com>
----
-changes for v5:
-  - rebase on netdev-next
-  - release phy_handle
-  - fix register and mask handling
-  - simpify mv88e6352_serdes_p2p_to_reg array
-changes for v4:
-  - adapted for new dt-binding
-      https://www.spinics.net/lists/netdev/msg793918.html
+Public Local Area Networks are often deployed such that there is a
+risk of unauthorized or unattended clients getting access to the LAN.
+To prevent such access we introduce SA filtering, such that ports
+designated as secure ports are set in locked mode, so that only
+authorized source MAC addresses are given access by adding them to
+the bridges forwarding database. Incoming packets with source MAC
+addresses that are not in the forwarding database of the bridge are
+discarded. It is then the task of user space daemons to populate the
+bridge's forwarding database with static entries of authorized entities.
 
- drivers/net/dsa/mv88e6xxx/chip.c   | 25 ++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/chip.h   |  4 ++++
- drivers/net/dsa/mv88e6xxx/serdes.c | 38 ++++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/serdes.h |  5 ++++
- 4 files changed, 72 insertions(+)
+The most common approach is to use the IEEE 802.1X protocol to take
+care of the authorization of allowed users to gain access by opening
+for the source address of the authorized host.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index c54649c4c3a0..92fe29e55f09 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2987,7 +2987,10 @@ static int mv88e6xxx_setup_upstream_port(struct mv88e6xxx_chip *chip, int port)
- 
- static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- {
-+	struct device_node *phy_handle = NULL;
- 	struct dsa_switch *ds = chip->ds;
-+	struct dsa_port *dp;
-+	int tx_amp;
- 	int err;
- 	u16 reg;
- 
-@@ -3178,6 +3181,25 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- 			return err;
- 	}
- 
-+	if (chip->info->ops->serdes_set_tx_p2p_amplitude) {
-+		dp = dsa_to_port(ds, port);
-+		if (dp)
-+			phy_handle = of_parse_phandle(dp->dn, "phy-handle", 0);
-+
-+		if (phy_handle && !of_property_read_u32(phy_handle,
-+							"tx-p2p-microvolt",
-+							&tx_amp)) {
-+			err = mv88e6352_serdes_set_tx_p2p_amplitude(chip, port,
-+								    tx_amp);
-+			if (err) {
-+				of_node_put(phy_handle);
-+				return err;
-+			}
-+		}
-+		if (phy_handle)
-+			of_node_put(phy_handle);
-+	}
-+
- 	/* Port based VLAN map: give each port the same default address
- 	 * database, and allow bidirectional communication between the
- 	 * CPU and DSA port(s), and the other ports.
-@@ -4241,6 +4263,7 @@ static const struct mv88e6xxx_ops mv88e6176_ops = {
- 	.serdes_irq_status = mv88e6352_serdes_irq_status,
- 	.serdes_get_regs_len = mv88e6352_serdes_get_regs_len,
- 	.serdes_get_regs = mv88e6352_serdes_get_regs,
-+	.serdes_set_tx_p2p_amplitude = mv88e6352_serdes_set_tx_p2p_amplitude,
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.phylink_get_caps = mv88e6352_phylink_get_caps,
- };
-@@ -4521,6 +4544,7 @@ static const struct mv88e6xxx_ops mv88e6240_ops = {
- 	.serdes_irq_status = mv88e6352_serdes_irq_status,
- 	.serdes_get_regs_len = mv88e6352_serdes_get_regs_len,
- 	.serdes_get_regs = mv88e6352_serdes_get_regs,
-+	.serdes_set_tx_p2p_amplitude = mv88e6352_serdes_set_tx_p2p_amplitude,
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.avb_ops = &mv88e6352_avb_ops,
- 	.ptp_ops = &mv88e6352_ptp_ops,
-@@ -4927,6 +4951,7 @@ static const struct mv88e6xxx_ops mv88e6352_ops = {
- 	.serdes_get_stats = mv88e6352_serdes_get_stats,
- 	.serdes_get_regs_len = mv88e6352_serdes_get_regs_len,
- 	.serdes_get_regs = mv88e6352_serdes_get_regs,
-+	.serdes_set_tx_p2p_amplitude = mv88e6352_serdes_set_tx_p2p_amplitude,
- 	.phylink_get_caps = mv88e6352_phylink_get_caps,
- };
- 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 12aa637779f5..620de163a680 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -588,6 +588,10 @@ struct mv88e6xxx_ops {
- 	void (*serdes_get_regs)(struct mv88e6xxx_chip *chip, int port,
- 				void *_p);
- 
-+	/* SERDES SGMII/Fiber Output Amplitude */
-+	int (*serdes_set_tx_p2p_amplitude)(struct mv88e6xxx_chip *chip,
-+					   int port, int val);
-+
- 	/* Address Translation Unit operations */
- 	int (*atu_get_hash)(struct mv88e6xxx_chip *chip, u8 *hash);
- 	int (*atu_set_hash)(struct mv88e6xxx_chip *chip, u8 hash);
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
-index 6a177bf654ee..d16816a267d3 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.c
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.c
-@@ -1313,6 +1313,44 @@ void mv88e6390_serdes_get_regs(struct mv88e6xxx_chip *chip, int port, void *_p)
- 	}
- }
- 
-+static const int mv88e6352_serdes_p2p_to_reg[] = {
-+	/* Index of value in microvolts corresponds to the register value */
-+	14000, 112000, 210000, 308000, 406000, 504000, 602000, 700000,
-+};
-+
-+int mv88e6352_serdes_set_tx_p2p_amplitude(struct mv88e6xxx_chip *chip, int port,
-+					  int val)
-+{
-+	bool found = false;
-+	u16 ctrl, reg;
-+	int err;
-+	int i;
-+
-+	err = mv88e6352_g2_scratch_port_has_serdes(chip, port);
-+	if (err <= 0)
-+		return err;
-+
-+	for (i = 0; i < ARRAY_SIZE(mv88e6352_serdes_p2p_to_reg); ++i) {
-+		if (mv88e6352_serdes_p2p_to_reg[i] == val) {
-+			reg = i;
-+			found = true;
-+			break;
-+		}
-+	}
-+
-+	if (!found)
-+		return -EINVAL;
-+
-+	err = mv88e6352_serdes_read(chip, MV88E6352_SERDES_SPEC_CTRL2, &ctrl);
-+	if (err)
-+		return err;
-+
-+	ctrl &= ~MV88E6352_SERDES_OUT_AMP_MASK;
-+	ctrl |= reg;
-+
-+	return mv88e6352_serdes_write(chip, MV88E6352_SERDES_SPEC_CTRL2, ctrl);
-+}
-+
- static int mv88e6393x_serdes_power_lane(struct mv88e6xxx_chip *chip, int lane,
- 					bool on)
- {
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.h b/drivers/net/dsa/mv88e6xxx/serdes.h
-index 8dd8ed225b45..e3a2e7a1232c 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.h
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.h
-@@ -27,6 +27,8 @@
- #define MV88E6352_SERDES_INT_FIBRE_ENERGY	BIT(4)
- #define MV88E6352_SERDES_INT_STATUS	0x13
- 
-+#define MV88E6352_SERDES_SPEC_CTRL2	0x1a
-+#define MV88E6352_SERDES_OUT_AMP_MASK		0x0007
- 
- #define MV88E6341_PORT5_LANE		0x15
- 
-@@ -176,6 +178,9 @@ void mv88e6352_serdes_get_regs(struct mv88e6xxx_chip *chip, int port, void *_p);
- int mv88e6390_serdes_get_regs_len(struct mv88e6xxx_chip *chip, int port);
- void mv88e6390_serdes_get_regs(struct mv88e6xxx_chip *chip, int port, void *_p);
- 
-+int mv88e6352_serdes_set_tx_p2p_amplitude(struct mv88e6xxx_chip *chip, int port,
-+					  int val);
-+
- /* Return the (first) SERDES lane address a port is using, -errno otherwise. */
- static inline int mv88e6xxx_serdes_get_lane(struct mv88e6xxx_chip *chip,
- 					    int port)
+With the current use of the bridge parameter in hostapd, there is
+a limitation in using this for IEEE 802.1X port authentication. It
+depends on hostapd attaching the port on which it has a successful
+authentication to the bridge, but that only allows for a single
+authentication per port. This patch set allows for the use of
+IEEE 802.1X port authentication in a more general network context with
+multiple 802.1X aware hosts behind a single port as depicted, which is
+a commonly used commercial use-case, as it is only the number of
+available entries in the forwarding database that limits the number of
+authenticated clients.
+
+      +--------------------------------+
+      |                                |
+      |      Bridge/Authenticator      |
+      |                                |
+      +-------------+------------------+
+       802.1X port  |
+                    |
+                    |
+             +------+-------+
+             |              |
+             |  Hub/Switch  |
+             |              |
+             +-+----------+-+
+               |          |
+            +--+--+    +--+--+
+            |     |    |     |
+    Hosts   |  a  |    |  b  |   . . .
+            |     |    |     |
+            +-----+    +-----+
+
+The 802.1X standard involves three different components, a Supplicant
+(Host), an Authenticator (Network Access Point) and an Authentication
+Server which is typically a Radius server. This patch set thus enables
+the bridge module together with an authenticator application to serve
+as an Authenticator on designated ports.
+
+
+For the bridge to become an IEEE 802.1X Authenticator, a solution using
+hostapd with the bridge driver can be found at
+https://github.com/westermo/hostapd/tree/bridge_driver .
+
+
+The relevant components work transparently in relation to if it is the
+bridge module or the offloaded switchcore case that is in use.
+
+Hans Schultz (5):
+  net: bridge: Add support for bridge port in locked mode
+  net: bridge: Add support for offloading of locked port flag
+  net: dsa: Add support for offloaded locked port flag
+  net: dsa: mv88e6xxx: Add support for bridge port locked mode
+  net: bridge: Refactor bridge port in locked mode to use jump labels
+
+ drivers/net/dsa/mv88e6xxx/chip.c |  9 ++++++++-
+ drivers/net/dsa/mv88e6xxx/port.c | 33 ++++++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/port.h |  9 ++++++++-
+ include/linux/if_bridge.h        |  1 +
+ include/uapi/linux/if_link.h     |  1 +
+ net/bridge/br_input.c            | 24 ++++++++++++++++++++++-
+ net/bridge/br_netlink.c          | 12 +++++++++++-
+ net/bridge/br_private.h          |  2 ++
+ net/bridge/br_switchdev.c        |  2 +-
+ net/dsa/port.c                   |  4 ++--
+ 10 files changed, 90 insertions(+), 7 deletions(-)
+
 -- 
-2.34.0
+2.30.2
 
