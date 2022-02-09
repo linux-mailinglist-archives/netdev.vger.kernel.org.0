@@ -2,104 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39DCC4AEE14
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 10:37:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DC8B4AEDD1
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 10:19:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbiBIJey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 04:34:54 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37206 "EHLO
+        id S231140AbiBIJTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 04:19:30 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235468AbiBIJbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 04:31:22 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7EC3E010907;
-        Wed,  9 Feb 2022 01:31:16 -0800 (PST)
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JtvHp5ph0zbk5J;
-        Wed,  9 Feb 2022 17:11:02 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
- (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 9 Feb
- 2022 17:12:03 +0800
-From:   Hou Tao <houtao1@huawei.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <houtao1@huawei.com>
-Subject: [PATCH bpf-next v3] bpf: reject kfunc calls that overflow insn->imm
-Date:   Wed, 9 Feb 2022 17:11:53 +0800
-Message-ID: <20220209091153.54116-1-houtao1@huawei.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S229616AbiBIJT3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 04:19:29 -0500
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B14E04EC3F;
+        Wed,  9 Feb 2022 01:19:18 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V4-Yw8X_1644398037;
+Received: from 30.225.24.53(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V4-Yw8X_1644398037)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 09 Feb 2022 17:13:58 +0800
+Message-ID: <c15e185e-3d92-e5ce-fc99-600b98bfe3dd@linux.alibaba.com>
+Date:   Wed, 9 Feb 2022 17:13:57 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500025.china.huawei.com (7.185.36.35)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.0
+Subject: Re: [syzbot] BUG: MAX_LOCK_DEPTH too low! (3)
+To:     syzbot <syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com>,
+        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net,
+        john.fastabend@gmail.com, kafai@fb.com, kgraul@linux.ibm.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+References: <0000000000006d045e05d78776f6@google.com>
+From:   Wen Gu <guwen@linux.alibaba.com>
+In-Reply-To: <0000000000006d045e05d78776f6@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now kfunc call uses s32 to represent the offset between the address
-of kfunc and __bpf_call_base, but it doesn't check whether or not
-s32 will be overflowed, so add an extra checking to reject these
-invalid kfunc calls.
 
-Signed-off-by: Hou Tao <houtao1@huawei.com>
----
-v3:
- * call BPF_CALL_IMM() once (suggested by Yonghong)
 
-v2: https://lore.kernel.org/bpf/20220208123348.40360-1-houtao1@huawei.com
- * instead of checking the overflow in selftests, just reject
-   these kfunc calls directly in verifier
+On 2022/2/9 4:21 am, syzbot wrote:
 
-v1: https://lore.kernel.org/bpf/20220206043107.18549-1-houtao1@huawei.com
----
- kernel/bpf/verifier.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+> The issue was bisected to:
+> 
+> commit 341adeec9adad0874f29a0a1af35638207352a39
+> Author: Wen Gu <guwen@linux.alibaba.com>
+> Date:   Wed Jan 26 15:33:04 2022 +0000
+> 
+>      net/smc: Forward wakeup to smc socket waitqueue after fallback
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11c2637c700000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=13c2637c700000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=15c2637c700000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com
+> Fixes: 341adeec9ada ("net/smc: Forward wakeup to smc socket waitqueue after fallback")
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 1ae41d0cf96c..eb72e6139e2b 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -1842,6 +1842,7 @@ static int add_kfunc_call(struct bpf_verifier_env *env, u32 func_id, s16 offset)
- 	struct bpf_kfunc_desc *desc;
- 	const char *func_name;
- 	struct btf *desc_btf;
-+	unsigned long call_imm;
- 	unsigned long addr;
- 	int err;
- 
-@@ -1926,9 +1927,17 @@ static int add_kfunc_call(struct bpf_verifier_env *env, u32 func_id, s16 offset)
- 		return -EINVAL;
- 	}
- 
-+	call_imm = BPF_CALL_IMM(addr);
-+	/* Check whether or not the relative offset overflows desc->imm */
-+	if ((unsigned long)(s32)call_imm != call_imm) {
-+		verbose(env, "address of kernel function %s is out of range\n",
-+			func_name);
-+		return -EINVAL;
-+	}
-+
- 	desc = &tab->descs[tab->nr_descs++];
- 	desc->func_id = func_id;
--	desc->imm = BPF_CALL_IMM(addr);
-+	desc->imm = call_imm;
- 	desc->offset = offset;
- 	err = btf_distill_func_proto(&env->log, desc_btf,
- 				     func_proto, func_name,
--- 
-2.27.0
+Thanks for all the details provided by syzbot.
 
+I reproduced this issue in my environment. It is caused by repeated calls to
+smc_switch_to_fallback().
+
+In 341adeec9ada ("net/smc: Forward wakeup to smc socket waitqueue after fallback"),
+smc_switch_to_fallback() saves the original callback function of clcsock in
+smc->clcsk_error_report and set clcsk->sk_error_report as smc_fback_error_report().
+
+If smc_switch_to_fallback() is called repeatedly, the smc->clcsk_error_report will be
+reset as clcsk->sk_error_report, which now is smc_fback_error_report().
+
+And the call trace will be:
+
+clcsk->sk_error_report
+   |- smc_fback_error_report() <----------------|
+        |- smc_fback_forward_wakeup()           |
+             |- clcsock_callback()              |
+                  |- smc->clcsk_error_report() -|
+
+Thus resulting in this issue.
+
+I will send a patch to fix it.
