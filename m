@@ -2,164 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E53CA4AE5C2
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 01:08:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46EA64AE5C8
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 01:13:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239121AbiBIAIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 19:08:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57968 "EHLO
+        id S239336AbiBIANO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 19:13:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239192AbiBIAII (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 19:08:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6DECC0613C9
-        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 16:08:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644365285;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9YVyzYjceHqtJTEnTgolmjHSaev9BDBTYcDygUVIpE8=;
-        b=ecdRFW8gsGLOqOx3YlOQn9NhkVLcyEXkEoWFmBkFw/Ntg6xxfQnwfPwOSv+IFN7FggrsUd
-        eSYWYEYgmHvvwLdytdvb7pi/gly0smmyQuzDwYMuwFEwvfMMraa1p0GjFYWnFxr6gmos83
-        siLEcaBCpmnx+SOrvg5HKhETzA21BQU=
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
- [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-671-d7RUNIirOLGHDiMA1Spzdg-1; Tue, 08 Feb 2022 19:08:04 -0500
-X-MC-Unique: d7RUNIirOLGHDiMA1Spzdg-1
-Received: by mail-il1-f197.google.com with SMTP id a4-20020a92c704000000b002bdfb6040c3so323582ilp.5
-        for <netdev@vger.kernel.org>; Tue, 08 Feb 2022 16:08:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=9YVyzYjceHqtJTEnTgolmjHSaev9BDBTYcDygUVIpE8=;
-        b=VRwYbbvzE+ke9WOIZyi/ubkuXwDpamm8iaanzde2fNOyaPG9C/pCjA7JqkY5LGwIdt
-         0F7A47IbjZF4X+42qDA9vzNewHwzDzOA8bMFMxE69viMc4AIU8ket/eM0BgwCl37vhoM
-         dzip3JPZDy6KFZA09EtXbcf5a5EjSyL3q85E15SctMTmNwh7MITHBH6tiv8IIAmlD+XD
-         N4a57Wy6kaRCapUwTGu2LfyIBa2qZGkpEdPvbx20rZLlbkLZEaNIrF9GVGS8ExJ5hFW5
-         juJtcIXfOl79fouDsp9VM0THYqmTS/2LHwDSfX87xBcuO5hd9lziipQST7OoCnX5adRi
-         PMTA==
-X-Gm-Message-State: AOAM533q/u+Vd+QPGuSAXySZLorZUdhWGn53Dj+QbpP8E8TBRajXVLaW
-        nmh9Vj7Ly4+culT0k1ziNNUhtRXCdKx0J9uQsZiTo0ZYUdoPKplvhDCI5vlEvrN0RxjeOB3hWiU
-        FdNtZqk0GOad5JMbP
-X-Received: by 2002:a05:6602:2d86:: with SMTP id k6mr3204790iow.79.1644365284024;
-        Tue, 08 Feb 2022 16:08:04 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzyja9pFPPCXhJ6O1Zq/AO3xSYZ5NoOsc6hBQIZAv+1Y7UhbtQH5nWOVMXaoGTRxmmqSDSsGw==
-X-Received: by 2002:a05:6602:2d86:: with SMTP id k6mr3204782iow.79.1644365283841;
-        Tue, 08 Feb 2022 16:08:03 -0800 (PST)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id c2sm5294501ilh.43.2022.02.08.16.08.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 16:08:03 -0800 (PST)
-Date:   Tue, 8 Feb 2022 17:08:01 -0700
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Yishai Hadas <yishaih@nvidia.com>
-Cc:     <bhelgaas@google.com>, <jgg@nvidia.com>, <saeedm@nvidia.com>,
-        <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
-        <kwankhede@nvidia.com>, <mgurtovoy@nvidia.com>, <maorg@nvidia.com>,
-        <ashok.raj@intel.com>, <kevin.tian@intel.com>,
-        <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH V7 mlx5-next 14/15] vfio/mlx5: Use its own PCI
- reset_done error handler
-Message-ID: <20220208170801.39dab353.alex.williamson@redhat.com>
-In-Reply-To: <20220207172216.206415-15-yishaih@nvidia.com>
-References: <20220207172216.206415-1-yishaih@nvidia.com>
-        <20220207172216.206415-15-yishaih@nvidia.com>
-Organization: Red Hat
+        with ESMTP id S239326AbiBIANK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 19:13:10 -0500
+Received: from dispatch1-us1.ppe-hosted.com (dispatch1-us1.ppe-hosted.com [148.163.129.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348E8C061576
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 16:13:09 -0800 (PST)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.64.218])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 6ABE81A007E;
+        Wed,  9 Feb 2022 00:13:08 +0000 (UTC)
+Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 3D89184007D;
+        Wed,  9 Feb 2022 00:13:08 +0000 (UTC)
+Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id D4DA913C2B0;
+        Tue,  8 Feb 2022 16:13:07 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com D4DA913C2B0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1644365587;
+        bh=H6yzabo77K4UKL9GR4S8m6Z805wlouY50TiuZ5uWL28=;
+        h=Subject:From:To:Cc:References:Date:In-Reply-To:From;
+        b=l90NLy9u4WtaQ8+zOQEHWWgaT2yPATuOuzs9sB1QlHYbirkNiT8aO422hbAcjk040
+         0+QPLhi/8o/82/AUAv8RAZiK935c/HHd2wTP0sGv0sw+ZeaWZqRxl7yJTDhF+ldacm
+         6lPARFV+5DQss4HbrhK+81KyTyzFtHgyNkWS3AC0=
+Subject: Re: Question on comment in dev_queue_xmit_nit
+From:   Ben Greear <greearb@candelatech.com>
+To:     Salam Noureddine <noureddine@arista.com>
+Cc:     netdev <netdev@vger.kernel.org>
+References: <40bf4696-2c58-f5ba-e81f-46a2a5e7887a@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <69c0f515-0488-6a8b-be62-5ad0de045af7@candelatech.com>
+Date:   Tue, 8 Feb 2022 16:13:07 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <40bf4696-2c58-f5ba-e81f-46a2a5e7887a@candelatech.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-MDID: 1644365588-iWmBpTDylxg6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 7 Feb 2022 19:22:15 +0200
-Yishai Hadas <yishaih@nvidia.com> wrote:
-
-> Register its own handler for pci_error_handlers.reset_done and update
-> state accordingly.
+On 2/8/22 3:51 PM, Ben Greear wrote:
+> Hello Salam,
 > 
-> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/vfio/pci/mlx5/main.c | 57 ++++++++++++++++++++++++++++++++++--
->  1 file changed, 55 insertions(+), 2 deletions(-)
+> After an 8 day torture test on a hacked 5.15.7+ kernel doing wifi testing, our system crashed
+> in the dev_queue_xmit_nit method, evidently 'skb' is NULL.
 > 
-> diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
-> index acd205bcff70..63a889210ef3 100644
-> --- a/drivers/vfio/pci/mlx5/main.c
-> +++ b/drivers/vfio/pci/mlx5/main.c
-> @@ -28,9 +28,12 @@
->  struct mlx5vf_pci_core_device {
->  	struct vfio_pci_core_device core_device;
->  	u8 migrate_cap:1;
-> +	u8 deferred_reset:1;
->  	/* protect migration state */
->  	struct mutex state_mutex;
->  	enum vfio_device_mig_state mig_state;
-> +	/* protect the reset_done flow */
-> +	spinlock_t reset_lock;
->  	u16 vhca_id;
->  	struct mlx5_vf_migration_file *resuming_migf;
->  	struct mlx5_vf_migration_file *saving_migf;
-> @@ -437,6 +440,25 @@ mlx5vf_pci_step_device_state_locked(struct mlx5vf_pci_core_device *mvdev,
->  	return ERR_PTR(-EINVAL);
->  }
->  
-> +/*
-> + * This function is called in all state_mutex unlock cases to
-> + * handle a 'deferred_reset' if exists.
-> + */
-> +static void mlx5vf_state_mutex_unlock(struct mlx5vf_pci_core_device *mvdev)
-> +{
-> +again:
-> +	spin_lock(&mvdev->reset_lock);
-> +	if (mvdev->deferred_reset) {
-> +		mvdev->deferred_reset = false;
-> +		spin_unlock(&mvdev->reset_lock);
-> +		mvdev->mig_state = VFIO_DEVICE_STATE_RUNNING;
-> +		mlx5vf_disable_fds(mvdev);
-> +		goto again;
-> +	}
-> +	mutex_unlock(&mvdev->state_mutex);
-> +	spin_unlock(&mvdev->reset_lock);
-> +}
-> +
->  static struct file *
->  mlx5vf_pci_set_device_state(struct vfio_device *vdev,
->  			    enum vfio_device_mig_state new_state)
-> @@ -465,7 +487,7 @@ mlx5vf_pci_set_device_state(struct vfio_device *vdev,
->  			break;
->  		}
->  	}
-> -	mutex_unlock(&mvdev->state_mutex);
-> +	mlx5vf_state_mutex_unlock(mvdev);
->  	return res;
->  }
->  
-> @@ -477,10 +499,34 @@ static int mlx5vf_pci_get_device_state(struct vfio_device *vdev,
->  
->  	mutex_lock(&mvdev->state_mutex);
->  	*curr_state = mvdev->mig_state;
-> -	mutex_unlock(&mvdev->state_mutex);
-> +	mlx5vf_state_mutex_unlock(mvdev);
->  	return 0;
+> gdb claims it is the 'skb2 = skb_clone ...' line below.  Now, this crash could
+> be fault of my local patches or other random things, but the comment caught
+> my attention.  It is cloning once per loop as far as I can see, so why the comment
+> about 'done only once' ?
+> 
+>          /* need to clone skb, done only once */
+>          skb2 = skb_clone(skb, GFP_ATOMIC);
+>          if (!skb2)
+>              goto out_unlock;
+> 
+> Thanks,
+> Ben
+> 
 
-I still can't see why it wouldn't be a both fairly trivial to implement
-and a usability improvement if the unlock wrapper returned -EAGAIN on a
-deferred reset so we could avoid returning a stale state to the user
-and a dead fd in the former case.  Thanks,
+My question above stands, but I was looking at wrong stack frame for the actual
+crash location.  It is actually dying down in slub.c, so I guess it is some nasty
+memory corruption and this crash site is probably not actually related to the cause...
 
-Alex
+(gdb) l *(dev_queue_xmit_nit+0xf4)
+0xffffffff819bf4d4 is in dev_queue_xmit_nit (/home2/greearb/git/linux-5.15.dev.y/net/core/dev.c:2305).
+2300				pt_prev = ptype;
+2301				continue;
+2302			}
+2303	
+2304			/* need to clone skb, done only once */
+2305			skb2 = skb_clone(skb, GFP_ATOMIC);
+2306			if (!skb2)
+2307				goto out_unlock;
+2308	
+2309			net_timestamp_set(skb2);
+(gdb) l *(skb_clone+0x47)
+0xffffffff819a9ff7 is in skb_clone (/home2/greearb/git/linux-5.15.dev.y/net/core/skbuff.c:1521).
+1516			refcount_set(&fclones->fclone_ref, 2);
+1517		} else {
+1518			if (skb_pfmemalloc(skb))
+1519				gfp_mask |= __GFP_MEMALLOC;
+1520	
+1521			n = kmem_cache_alloc(skbuff_head_cache, gfp_mask);
+1522			if (!n)
+1523				return NULL;
+1524	
+1525			n->fclone = SKB_FCLONE_UNAVAILABLE;
+(gdb) l *(kmem_cache_alloc+0x71)
+0xffffffff8133b821 is in kmem_cache_alloc (/home2/greearb/git/linux-5.15.dev.y/mm/slub.c:352).
+347	}
+348	
+349	static inline void *get_freepointer(struct kmem_cache *s, void *object)
+350	{
+351		object = kasan_reset_tag(object);
+352		return freelist_dereference(s, object + s->offset);
+353	}
+354	
 
+Thanks,
+Ben
