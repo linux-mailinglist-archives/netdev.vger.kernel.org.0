@@ -2,143 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80F484AFB9E
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 19:48:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 363D74AFB7F
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 19:47:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240862AbiBISrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 13:47:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33396 "EHLO
+        id S240686AbiBISr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 13:47:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241173AbiBISqe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 13:46:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD6CC036493;
-        Wed,  9 Feb 2022 10:43:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2D86B82215;
-        Wed,  9 Feb 2022 18:43:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB408C340EE;
-        Wed,  9 Feb 2022 18:43:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432220;
-        bh=gD0Sn3OaPOUOkHnhQNdnZwVetF5O3MEMg+qMvhTqXvI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jvT8Lp0q7DSpFHsGOQA4ShA9TB+xKkvUZ4Zpt6MLAyb983u7qe2Z1EyLbKpSnwJqW
-         d2ZCXP4z7zHHH4/Vr2KaB4NGgw4VLvfe+RaDADNgFwZWGJ+kS9LqEdxfYz6n8z0D4K
-         GjO4CGM6DegygwiMN9E0vhCiDkZgj3ygktCNR81BLohp4aq2+ap+wk4ETyOEBS+PMg
-         PQZzIEdVQMBcqzYKkmDU8pPlayE0YEGKepoJdlT9kR94xnZqq1O2Sh/NV3bkLcPSoX
-         4nqvXT++Hh40xGaBXWs9v6pvXZ7aFkQJjOBSYiq3IKviJfo1XRs3z60mgQWSUQUfCd
-         jjh6XI+qs+Xpg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, jreuter@yaina.de,
-        kuba@kernel.org, linux-hams@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 07/15] ax25: improve the incomplete fix to avoid UAF and NPD bugs
-Date:   Wed,  9 Feb 2022 13:42:53 -0500
-Message-Id: <20220209184305.47983-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209184305.47983-1-sashal@kernel.org>
-References: <20220209184305.47983-1-sashal@kernel.org>
+        with ESMTP id S240825AbiBISpy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 13:45:54 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B368C03F938;
+        Wed,  9 Feb 2022 10:43:27 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id i21so4332857pfd.13;
+        Wed, 09 Feb 2022 10:43:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=++8mApk7RkWt9IYMQQmWE9VHiPI6DBwLCpnWFPssygI=;
+        b=qGy++wR4TC8B3MD+skcOoU0Rz0NlIDn//t1PfiTRzziEWiC1QzxRUkyF3jiknY45eG
+         MVQ1DwUkKDi3GRrni4fQawxf3YkxOlRs64seslgvIUD3L0SeJOyAGvrCse0s5u6wfwL6
+         oG5fIm+bBQ4JYQC80X97WqYBXewbVESuOD3ySzW1MD9KHJQ71miaauYI01NuBqL8sX0w
+         AOM9pD6xeYX5HlmeErEWysd++M+ebcvTQJnfVFrBc13ZBRbCGljmQth2gKDJaW9rOyLd
+         jN8qOtjLjM/3TQ2yST8qk0H34cgEevysDmnCEi2YjnKnvn9lQWK/Uq/Zd9lConzXy+oo
+         /cSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=++8mApk7RkWt9IYMQQmWE9VHiPI6DBwLCpnWFPssygI=;
+        b=NahHbVmPIsJL4R7rcRWaf2Mce3piCOgOs/P6uNW088XRkYc4uvhccdQXpSsNajrtRy
+         5ROjxyfuQcx8Ww7iHOWFEtvyfeTbLtdt10bTG9SW7ErwDSOSTkvameW7V9UtzWyOth4x
+         FXcy29OI2naOiSCmxmouh4XuOgQoaHH7M8GywnPBO+pRYUI5Q0wbSV37wDECEYd/sPc4
+         xh3BBqhcX3e8CdmOZPmAfHTe1hnPzI5nAstXmUoUjyTUglF4XEFAVqYeILFjsULe9QE/
+         zoqAYjUrtsU34KaY7etvj7A2oFi/Q7kEj25ADxbz8Ex7G5/lKToJC4TgCKk/4I0Y/OJl
+         cv6w==
+X-Gm-Message-State: AOAM533nkqijhXfn4m3cKwN5GDOOfGrYZDqnyRSIfJKUckaVU2Gl8boO
+        99PrysjkJxpVeFpB8liA4VicweWJV5gWMC4IGZ0nJ2r0K7GgOR4s
+X-Google-Smtp-Source: ABdhPJzoiadJc5PSqYDMUBE96R7/2wNLf+6aj2O+i3AwgRvSjPRvqapEiu8YingYuFXFOgzq0w+N7jlBAFrrthRVY2A=
+X-Received: by 2002:a63:6c01:: with SMTP id h1mr2996139pgc.118.1644432206694;
+ Wed, 09 Feb 2022 10:43:26 -0800 (PST)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20211228072645.32341-1-luizluca@gmail.com> <Ydx4+o5TsWZkZd45@robh.at.kernel.org>
+ <CAJq09z4G40ttsTHXtOywjyusNLSjt_BQ9D78PhwSodJr=4p6OA@mail.gmail.com>
+ <CAL_JsqJ4SsEzZz=JfFMDDUMXEDfybMZw4BVDcj1MoapM+8jQwg@mail.gmail.com>
+ <87zgn0gf3k.fsf@bang-olufsen.dk> <YgP7jgswRQ+GR4P2@lunn.ch>
+In-Reply-To: <YgP7jgswRQ+GR4P2@lunn.ch>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Wed, 9 Feb 2022 15:43:15 -0300
+Message-ID: <CAJq09z49EEMxtBTs9q0sg3nn0VrSi0M=DkQTJ_n=QmgTr1aonw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: net: dsa: realtek-smi: convert to YAML schema
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        Rob Herring <robh@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+> > However, the linux driver today does not care about any of these
+> > interruptions but INT_TYPE_LINK_STATUS. So it simply multiplex only
+> > this the interruption to each port, in a n-cell map (n being number of
+> > ports).
+> > I don't know what to describe here as device-tree should be something
+> > independent of a particular OS or driver.
+>
+> You shouldn't need to know what Linux does to figure this out.
 
-[ Upstream commit 4e0f718daf97d47cf7dec122da1be970f145c809 ]
+The Linux driver is masquerading all those interruptions into a single
+"link status changed". If interrupts property is about what the HW
+sends to us, it is a single pin.
 
-The previous commit 1ade48d0c27d ("ax25: NPD bug when detaching
-AX25 device") introduce lock_sock() into ax25_kill_by_device to
-prevent NPD bug. But the concurrency NPD or UAF bug will occur,
-when lock_sock() or release_sock() dereferences the ax25_cb->sock.
+  interrupt-controller:
+   type: object
+   description: |
+     This defines an interrupt controller with an IRQ line (typically
+     a GPIO) that will demultiplex and handle the interrupt from the single
+     interrupt line coming out of one of the Realtek switch chips. It most
+     importantly provides link up/down interrupts to the PHY blocks inside
+     the ASIC.
 
-The NULL pointer dereference bug can be shown as below:
+   properties:
 
-ax25_kill_by_device()        | ax25_release()
-                             |   ax25_destroy_socket()
-                             |     ax25_cb_del()
-  ...                        |     ...
-                             |     ax25->sk=NULL;
-  lock_sock(s->sk); //(1)    |
-  s->ax25_dev = NULL;        |     ...
-  release_sock(s->sk); //(2) |
-  ...                        |
+     interrupt-controller: true
 
-The root cause is that the sock is set to null before dereference
-site (1) or (2). Therefore, this patch extracts the ax25_cb->sock
-in advance, and uses ax25_list_lock to protect it, which can synchronize
-with ax25_cb_del() and ensure the value of sock is not null before
-dereference sites.
+     interrupts:
+       maxItems: 1
+       description:
+         A single IRQ line from the switch, either active LOW or HIGH
 
-The concurrency UAF bug can be shown as below:
+     '#address-cells':
+       const: 0
 
-ax25_kill_by_device()        | ax25_release()
-                             |   ax25_destroy_socket()
-  ...                        |   ...
-                             |   sock_put(sk); //FREE
-  lock_sock(s->sk); //(1)    |
-  s->ax25_dev = NULL;        |   ...
-  release_sock(s->sk); //(2) |
-  ...                        |
+     '#interrupt-cells':
+       const: 1
 
-The root cause is that the sock is released before dereference
-site (1) or (2). Therefore, this patch uses sock_hold() to increase
-the refcount of sock and uses ax25_list_lock to protect it, which
-can synchronize with ax25_cb_del() in ax25_destroy_socket() and
-ensure the sock wil not be released before dereference sites.
+   required:
+     - interrupt-controller
+     - '#address-cells'
+     - '#interrupt-cells'
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/ax25/af_ax25.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+Now as it is also an interrupt-controller, shouldn't I document what it emits?
+I've just sent the new version and we can discuss it there.
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 1f84d41e22c36..184af6da0defc 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -77,6 +77,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- {
- 	ax25_dev *ax25_dev;
- 	ax25_cb *s;
-+	struct sock *sk;
- 
- 	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
- 		return;
-@@ -85,13 +86,15 @@ static void ax25_kill_by_device(struct net_device *dev)
- again:
- 	ax25_for_each(s, &ax25_list) {
- 		if (s->ax25_dev == ax25_dev) {
-+			sk = s->sk;
-+			sock_hold(sk);
- 			spin_unlock_bh(&ax25_list_lock);
--			lock_sock(s->sk);
-+			lock_sock(sk);
- 			s->ax25_dev = NULL;
--			release_sock(s->sk);
-+			release_sock(sk);
- 			ax25_disconnect(s, ENETUNREACH);
- 			spin_lock_bh(&ax25_list_lock);
--
-+			sock_put(sk);
- 			/* The entry could have been deleted from the
- 			 * list meanwhile and thus the next pointer is
- 			 * no longer valid.  Play it safe and restart
--- 
-2.34.1
+> >  - one interrupt for the switch
+> >  - the switch is an interrupt-controller
+> >  - ... and is the interrupt-parent for the phy nodes.
+>
+> This pattern is pretty common for DSA switches, which have internal
+> PHYs. You can see this in the mv88e6xxx binding for example.
 
+The issue is that those similar devices are still not in yaml format.
+
+>       Andrew
