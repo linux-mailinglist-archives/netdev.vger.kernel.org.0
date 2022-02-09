@@ -2,158 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 779754AEA9E
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 07:51:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 092D84AEAA6
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 07:54:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234041AbiBIGvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 01:51:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44318 "EHLO
+        id S229931AbiBIGyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 01:54:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiBIGvT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 01:51:19 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2081.outbound.protection.outlook.com [40.107.93.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5750FC05CB81
-        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 22:51:23 -0800 (PST)
+        with ESMTP id S231701AbiBIGyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 01:54:18 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2044.outbound.protection.outlook.com [40.107.243.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC23C05CB85
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 22:54:21 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RBgV7KTXXM15/IhxXQ4wryw/7E7Dzyka/bieVR7bSbz285DvLnFnYeQGuRCp2Fyj8IYtxRgxdS+SJOlfnTqLaC7/UOOAK8M8KkPbG78oBY5nGVia3AivzI4xUbkp62hXc4axWHz/9BVi+ksyBdO+0nB4vjAY/9MOaomQEw9ornXL3IiA9cKbwkcyCMLXhfo7UdKaqKxWhesWclZd5/Ikum5ncshDeYJMR9uTV8PNvklDFJzG1Nylm9HjjwQk1bTeqZfDOTWQWUahg9rjVGzrqs2JoEaiSDZ4MDL3tEOax5YK6FWPoRim78FpJMJw+FXukMXuklOPN+7mXeroSyEmZw==
+ b=HKqH9EiK55mwBFGTzb2nczSSLKwLY3t4jGqu3fuVsNJYvHa6br96aR7U9T13l3X4tMmTph1uDoULNnSLUhXBlz18wPi1McSrTJ2rmvx+PQ0TsecV5ZOY7CaDYHCb8BlcLSkZPbVMIva7uEUbenD1Qi8FLmt9lLZHY8JFF24c3ZBKok79mYYT9Q2n0MiQasfEKZ46PAn63yVpRQLp8hIdqjHG154LkQuYCLSL6oYer2EnRI1oORApJ9pLWeoTBYIepODF6H/fR55qBUyG/kGSNo9KRyE6ZHGULc8TKoCrl+v8W+4Y53VKujDHijfkPMCntCHpWtGbevGp0eZ0LRdMfg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=17zvvr9K6cVrw7cktBF9phjqjw/7lDsGGOD6AOIJlS0=;
- b=ElWwLZ9DBZBHzBj8WT8P23rs6vrKKBwIw+S1rWPxRi/S6h02Om6QjjbPILr0InxYI+kTMnG0hEv1crw2NYg7wjbkNuTG+zQEXr0nZBfmF+8WV9I4PAJ6h7BC3wAskFDbeEzqe2IQCg322CkOeba3haA2LESO7575U6DYWlKh06x+lVsVb7r+06xDPwTeGKwmXkiv+9Yc1PVFydUEMT6XxjCGYov71NldU/5NYqZgpPdpZSJ4Af4SplAGY1Blp995tnK6lmFm8qVTn592L2k8f+xjTSVzyU340BCYHR2NVe2Okev38As4f/wPARPwD50+mC1VYYCra+4Ns7ZZjnVJ7w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
+ bh=DzM5lgUwFy/SPBrZ7+fnIQhRVUjqHqzfQtlNTIV9RwI=;
+ b=mgdbm9DvrC+Dldf8tU5P2WjkBttdKhrJmJQBQerALdAKjrQ5wCGhW70+EWbQ9wxiFUPMdTlboRLJYqUe9rZve2xiotk/E6lp0WligzQhHbrK7r5owlMWaIEpCLig3wor35CZ2wmttr+wlH1XIY/Zviwd+mARfWtYNcq8HxJ3ezX00ewC3AXRjXjS9/s3xhaKyP6lpCjyoV8XsIpt01nX/3oMiG1XWbhKihhWHOsKv0wTCrhnjsok9cefGOTtkNlbqEfv4A2Y1mgPcRz93Sv30B6eXS5lS8o/JXajbZ1CDkHlpVkxNfarG6kPKAxODU2EL7gx3gVEyN2KjMnhD9tYJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=17zvvr9K6cVrw7cktBF9phjqjw/7lDsGGOD6AOIJlS0=;
- b=C2mvwGMJ5lUOy7T+gNTr7hUZtHuyLp4s3StsPVnARlJBashv4R7WWKiHWA7TPxPhBvJ0dT8iytccByvFDL0r0B9zCQGkp+H8XGE5BJ/AbEdWtGh1lkDZA7wYJ8Hd7VbtgWyJ5HxXDfqZ5hWAUGlCmcwb0DXHCvczb//+DwIhNen77B4atieDu/7gxd9j93i42mwBNEEAkOs5vhBYBkEp2uopI1ueAki4AwlSZJvB+e5pM/bm8sGMuYqlF3ZPc3PJ3UlgzDfLREbwqDZdzSE/neUPwg1zLMTjyM7WYsren6Kij3upkJGOJ3PldZ+2RFweIV8Dx4tr1Zh1dK2M+uuxTQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BY5PR12MB4227.namprd12.prod.outlook.com (2603:10b6:a03:206::21)
- by MN2PR12MB4470.namprd12.prod.outlook.com (2603:10b6:208:260::19) with
+ bh=DzM5lgUwFy/SPBrZ7+fnIQhRVUjqHqzfQtlNTIV9RwI=;
+ b=HgfCPAhC+7RsKAtQdSK8EHi3bhFFbQITJIR/DebLHwxeKLmslDUGdMoMZLh57dtCmFsacCWo86tlPmSppOZZ6ZKKfKa171q1ZxqR00QK2qXQJjfZyGvOJy4OKpNX4brW/zQzqTFkKZliyCeL6s/9/ETdQ952fgHh6vQE8+FWLuf/BzldVuqEHEotq5p1iFN8AhO5lzeivIzgoKk/14axrHZ/ZOB0qknU9iW1kHVTNqGZRYENIGB/zGvfr3c4/OG9nDXwJq5Z5stwHVlou/zQ+i3R65IlNemNUHHAZhexPlriwQAX/vrMIy64pcY+Ol8VtUw6i2pVL5pKk/KnGATdhA==
+Received: from MW4P222CA0003.NAMP222.PROD.OUTLOOK.COM (2603:10b6:303:114::8)
+ by DM4PR12MB5199.namprd12.prod.outlook.com (2603:10b6:5:396::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Wed, 9 Feb
- 2022 06:51:21 +0000
-Received: from BY5PR12MB4227.namprd12.prod.outlook.com
- ([fe80::e8f9:fbd:239:2c88]) by BY5PR12MB4227.namprd12.prod.outlook.com
- ([fe80::e8f9:fbd:239:2c88%5]) with mapi id 15.20.4975.011; Wed, 9 Feb 2022
- 06:51:21 +0000
-Message-ID: <e894e2bd-6cc2-2fdc-37c9-1b4f1cda701c@nvidia.com>
-Date:   Wed, 9 Feb 2022 08:51:14 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH iproute2-next] tunnel: Fix missing space after
- local/remote print
-Content-Language: en-US
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-References: <20220208144005.32401-1-gal@nvidia.com>
- <20220208095729.35701fd7@hermes.local>
+ 2022 06:54:20 +0000
+Received: from CO1NAM11FT027.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:114:cafe::ca) by MW4P222CA0003.outlook.office365.com
+ (2603:10b6:303:114::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.14 via Frontend
+ Transport; Wed, 9 Feb 2022 06:54:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ CO1NAM11FT027.mail.protection.outlook.com (10.13.174.224) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4975.11 via Frontend Transport; Wed, 9 Feb 2022 06:54:19 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 9 Feb
+ 2022 06:54:19 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Tue, 8 Feb 2022
+ 22:54:18 -0800
+Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server id 15.2.986.9 via Frontend Transport; Tue, 8 Feb
+ 2022 22:54:16 -0800
 From:   Gal Pressman <gal@nvidia.com>
-In-Reply-To: <20220208095729.35701fd7@hermes.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AS8PR07CA0057.eurprd07.prod.outlook.com
- (2603:10a6:20b:459::34) To BY5PR12MB4227.namprd12.prod.outlook.com
- (2603:10b6:a03:206::21)
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>
+CC:     <netdev@vger.kernel.org>, Gal Pressman <gal@nvidia.com>
+Subject: [PATCH iproute2-next] tunnel: Fix missing space after local/remote print
+Date:   Wed, 9 Feb 2022 08:54:15 +0200
+Message-ID: <20220209065415.7068-1-gal@nvidia.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d395e7dd-a3b5-400d-64d3-08d9eb9894cf
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4470:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB4470BB7A39BCB4648612FDF2C22E9@MN2PR12MB4470.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:546;
+X-MS-Office365-Filtering-Correlation-Id: 5e13b73a-37d9-46b6-ec18-08d9eb98ff07
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5199:EE_
+X-Microsoft-Antispam-PRVS: <DM4PR12MB519946C219D006E95E753A8EC22E9@DM4PR12MB5199.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:331;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9X7coefMxcKTRHTPbgcr7IxUWX5ZjYxhTMIlxl2XcFSD3Xg8r46bUu/SR5JK1ZXcF0ryWfEeyaV9HO3t8OIt8ERNaZ2DxqLZwgeh2hHx7vq3+BHWRX7Blm/5Mg/J0nN/q3yiRNUYJvPAYnT3fzgA+EJMqQWZC4UXydL5bMXZq/OZcNo6hz3n06Zb8c0yN1AAjrFwwp4AwobxSdkOJaFZ6mzt7HfVXqco/kRPguN5WlbynpxfYSc8oAk0QS9Va43RqTjvBb0IFMqbmGt6nHC1ZyW+7p7T0abCHJb8Trqyou4wnbjAjEAC++TE293O5PrGSle1lnFjvCctCoqwKCBCgTjvbWvT+NDdEfz2H5regnjoyDnymci0gG5taMiQpAKn98XMSTJLpdP6A1qyT8+KowssrANDn2kx+VUJPxBW3gcmoiQKzjOruRJ3tDFCNGb+Lfgq6sX3UufLqFrvm6nBnyrN2/RX1EjrI6LgWB4qw9hl/0+cvtaCvqIJJdvkgGIPpJUyLyuXF9xwqyNwMGcRqXxEBsFvz7WABmRQHrkRF4pcbn2EsIK4z580gLRg488/O9ZOo0JhPHK6PpGivn8ovMBhuagHKc21dtpRw8JJxrRFEgcGSet6l7oOJjQDfZH9jiWEONdS3iq3SlWndNJ51HTpG1AuARSR4eeXoKA8jk3IGN3Jj+o9sVIpY8X4OKd/HfUrapo3Xx1IFH/OXFSHjeRIkT83OXpyO3oKhYfzGU6L9F3jX1m3ZtnzptsyfuAd
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4227.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(2906002)(4326008)(8676002)(66476007)(8936002)(6666004)(66556008)(66946007)(31696002)(316002)(38100700002)(4744005)(2616005)(186003)(26005)(36756003)(31686004)(508600001)(53546011)(6506007)(6486002)(6512007)(83380400001)(6916009)(86362001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d2pocDlhUnMweW5JZmxuRzZXS2htN3M1Uy9qaEJTNGRxRk5Nb1l2WkpQWElq?=
- =?utf-8?B?emx0TUZobzVTYVN4clVvVXFOWGZQRXlrUjh5c1MvUzJucVBqRHVhallQWkRq?=
- =?utf-8?B?VTZyZ1dZNDFKSXU0Q1RCa003UXRDcVQ3bHYrMUtQcmVISmZFNTBNd3M1RFp0?=
- =?utf-8?B?MWN6L25HNDN2VU1EOEh2SGJxOFVZcFdxVWg4aHNjOC9vL3FtYzZIV0Iyek85?=
- =?utf-8?B?QnFXSVZuL3hEQUQ5RVNnajAxQ0I5T3pHZExkUWhPRU9IQS92U3FicC9mT1RF?=
- =?utf-8?B?WGlEQ2RadmVZSjBBV1RGRzBoZ1B3czdqdzZDTHVYSDJ1eFo1ajRmWEVveTJ5?=
- =?utf-8?B?YkY2bVhnMmJ3UkgwVVp6Sk9HUEhBMDVmQmVzb0p4ZlBKRjJha3I3V1NuUTJJ?=
- =?utf-8?B?S1pEV2FLK2gzc3VaNlFwQjRLdjc0di9FVTJYMkhObHkvRXcxa0hUU1huWGIy?=
- =?utf-8?B?aEQrOUorQmNmb2hGNTJSWU00dDFQVGZNbTZudjVYNk1Xc2hxdFpjUzF0bkxU?=
- =?utf-8?B?L0VDYnl2dEhJK2ZCTVpQb0txdmNGU2tQeEtRckNyLzJqcXUwcDlwd3NjQzFH?=
- =?utf-8?B?N0w1eEdsNkpSdUhGaVhBNmFlRFVwR2ZHM2Ezd3Zid2RrclRMSHpSeHgwSHJk?=
- =?utf-8?B?ZS83SjFHaVFCUW94ak5LMlh4T0czVGVnR0xpMXJrcWY1anZwQklhUEdmblRG?=
- =?utf-8?B?VnhJSUtxV1FORndtUDN6Zmp0OU96a3lVcCtLaEN3RW44bmQyMDlURFhpWFZy?=
- =?utf-8?B?aUxDWUdLTStLczkyVHRhaXVrNWNtZEJGYzNjcmNJUDkxUmtJckJBTnlZd2VW?=
- =?utf-8?B?ZTVqMFNMWGdWQzRUU20vNzFVeXB1aWdta2RXbVNFUDgvRlVjbDRBbFJoQ3Ez?=
- =?utf-8?B?emIvRTdBWHltTzRGbVFnQUFRNWJtZEdIUGRwRXFwVm5QRDJwclcyZTNmTFBY?=
- =?utf-8?B?YmlJVEorT2ZqUEE2RGVMdWtFNHZqNzlTQkpVNk5HRkg4R0wrT09IM3VNUG9Z?=
- =?utf-8?B?WDRLUkYzVjd5UUJVWVVlWGNSQUFBb1hkK0lLZGI3T01lWk5odUR4S0ZId2ps?=
- =?utf-8?B?UVBDMDFnSVlrTzZVTkFvRjRubTZRblBYY25pcWZJMUpmUm1tc2cwdXE4OHJt?=
- =?utf-8?B?UTAxOW9JN1hQVGU1T3h6bE9VT21HbHJqVTFLRk51MWhUTkJ0Y2xCRDU4RjRK?=
- =?utf-8?B?OWhIUno3VEJmNEZUS2Z2TFRDTWJ3cUJFblMrRDkybjJWN0MxenorY2RjM2FW?=
- =?utf-8?B?UjFwQkpoZHY5dlI4RHp3RVdWSHZxL0pyWkYwY2xaM0t0TlcvVzJRdEdLRVFS?=
- =?utf-8?B?bUJodjRNVUZyYUtvdXIvQ3dwYnZHREtsdGVWL0RkVko4VnA2RVNXM2l6cS83?=
- =?utf-8?B?MThzU3IvS21XUGRlOU1hamhTSzgxUHErTXNLbTIxVEhTS09ia0daL3ZJNit6?=
- =?utf-8?B?SzRIZS9GSHZDOHEwM2Y1bVVKS2lLL0pqSlpNRnhhMjRXNHR6eEpneHJjYkI4?=
- =?utf-8?B?TVJkeTJRM290ZjlQRTlVeHN6Z2p2d3RJZGRENFVCaTYxQ1NnOHg0MUsrQXRv?=
- =?utf-8?B?emdwLytiU0hzTWdpVlRUTWNyVnpaT3ZtTTlRbXRsWHVMM25vRW9MTi9JcEZn?=
- =?utf-8?B?V0NEQTY5QmtzRFZLTWc0S3ZES3VHTjZvVlM5cFRsc2NTSG5oVFI4K3pOZTFu?=
- =?utf-8?B?blpNTndwVTcrNmpoZm5SMDhxanpHZ0pxeU9mODNRdGNQSHdoU3Y0cUY0L2w4?=
- =?utf-8?B?NjRPL0JkV2trT1JUWkpmOU9jWkd1TUhMdXJYTVBEUlFLd0pBWWY2MEljUGxi?=
- =?utf-8?B?YTBzME8rYTczVWV3WDY5WTYrdk5XTTV4dEJJUW9xNWZMQ0pWcGFIMUNJWkp5?=
- =?utf-8?B?TmpDek5wSVVtazZqYzhQemZsR1JOM1NiMjNJZmxlMEs0MzMyL2dDSGlNZWpm?=
- =?utf-8?B?ZGVPU2FvdjRjY05peW1ZeHBSakxpWHdBMVpJeXRFS2tmY0V3ajhwQi9KRURw?=
- =?utf-8?B?ZUpabVlyUEh6bm95Q2Q0bVNFTGRncGtTTytkd1ZhYktTYm1sL2NOZzRHQ1Jl?=
- =?utf-8?B?bkc1cmlFd09LQ1BZS3V0dW5aTkh1OC9GU3ZZdWVub3NQZkxyUVBMOEtkMmds?=
- =?utf-8?Q?frR0=3D?=
+X-Microsoft-Antispam-Message-Info: fA4xFlo+ax0rO6ND3b2gKS9m7dssKCyKoJKnTJSycKjubh3rgBbo3+6njDHUV68FjPpzcxwsUAQlPYlFoM9JKvplDTu/iuNrpVXh40e6SWis4U5Hw2UJz7/kr3qxuFWUDkkd6ZZdtHaG3bQm/bZiLxuK38AQwuU1TBRBB4oGa5gV0rPjVKbjs9HMeTZHkj6Gd3weOHz+acK5/d4ma0fuzI2NDPdsNj66FD9bQJKxbjkRCJAuSbRYfqaE/Imi6qgNfZUkIMSOzB57w0EeNU3OU2ChGoxTnlvxo1PShStcQfW3f4h/QQ94uWMO4bXwB2xSTNIQogS3O+9gQf7qZjPyel5Ac7dn85KaLuu6QaGIcr76KVpC4cFk19tNIoEl5KMWA3gpgYyUI+ES6j9pUxL4hP1LLKQqAgyHuXoXTipqT1poXLOtn4y6Tx2WtQ+DcGjYCrOBPsTbh8352pFkZtSqApDcrSq3XXIXsCsypSq42Jehxnv2T6yXWmLlqmuBbOmjqjrkSYuiAqz9Yeaul283Lko2lUTTp22j/LD8dSgqGIQXiwjvArobtw82kTf56RmgqKZalbFxdh2KmpsDLDlli2mIeHddJCM2pr5PIkTe93E98OQA+63T6y0cOCT5xoGKXWhX6Gn/s0JgFoOKh34HWI7L2G6PiUBcpuMsHaKzR0XBb8Dv+LhsAkOENzNcvEKiUGQ1/XaBbDTAfC8KA44kQHa02VzKFcZHHnVgM5svRLDBvrFEofyzH0y5wAomjj81mPDLMtHz1EpjbUPvbED05C8DayExPsPrlSKhC13zCkU=
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(8676002)(86362001)(356005)(1076003)(5660300002)(966005)(7696005)(83380400001)(54906003)(8936002)(40460700003)(316002)(110136005)(4326008)(70586007)(70206006)(82310400004)(36756003)(4744005)(2906002)(26005)(186003)(426003)(2616005)(336012)(47076005)(36860700001)(81166007)(508600001)(107886003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d395e7dd-a3b5-400d-64d3-08d9eb9894cf
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4227.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 06:51:21.6936
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 06:54:19.4807
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5e13b73a-37d9-46b6-ec18-08d9eb98ff07
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1kKmlVtdTNn1FTUyoQDmJ29Pf1x8DFFtJsZqrsyIj5ZXRB+nviRgltTs8lj5f0du
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4470
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT027.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5199
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/02/2022 19:57, Stephen Hemminger wrote:
-> On Tue, 8 Feb 2022 16:40:05 +0200
-> Gal Pressman <gal@nvidia.com> wrote:
->
->> The cited commit removed the space after the local/remote tunnel print
->> and resulted in "broken" output:
->>
->> gre remote 1.1.1.2local 1.1.1.1ttl inherit erspan_ver 0 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
->>     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
->>
->> Fixes: 5632cf69ad59 ("tunnel: fix clang warning")
->> Signed-off-by: Gal Pressman <gal@nvidia.com>
->> ---
->>  ip/tunnel.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/ip/tunnel.c b/ip/tunnel.c
->> index f2632f43babf..7200ce831317 100644
->> --- a/ip/tunnel.c
->> +++ b/ip/tunnel.c
->> @@ -299,6 +299,8 @@ void tnl_print_endpoint(const char *name, const struct rtattr *rta, int family)
->>  	}
->>  
->>  	print_string_name_value(name, value);
->> +	if (!is_json_context())
->> +		print_string(PRINT_FP, NULL, " ", NULL);
-> is_json_context is not needed here.
+The cited commit removed the space after the local/remote tunnel print
+and resulted in "broken" output:
 
-Thanks, will remove.
+gre remote 1.1.1.2local 1.1.1.1ttl inherit erspan_ver 0 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Fixes: 5632cf69ad59 ("tunnel: fix clang warning")
+Signed-off-by: Gal Pressman <gal@nvidia.com>
+---
+v1->v2: https://lore.kernel.org/netdev/20220208144005.32401-1-gal@nvidia.com/
+* Remove unneeded is_json_context()
+---
+ ip/tunnel.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/ip/tunnel.c b/ip/tunnel.c
+index f2632f43babf..224c81e42e9b 100644
+--- a/ip/tunnel.c
++++ b/ip/tunnel.c
+@@ -299,6 +299,7 @@ void tnl_print_endpoint(const char *name, const struct rtattr *rta, int family)
+ 	}
+ 
+ 	print_string_name_value(name, value);
++	print_string(PRINT_FP, NULL, " ", NULL);
+ }
+ 
+ void tnl_print_gre_flags(__u8 proto,
+-- 
+2.25.1
 
