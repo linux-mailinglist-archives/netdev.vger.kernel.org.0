@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 384984AF5A3
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 16:44:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BC1C4AF782
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 18:03:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236217AbiBIPnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 10:43:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
+        id S235903AbiBIRDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 12:03:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234255AbiBIPnc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 10:43:32 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9FBC0613CA;
-        Wed,  9 Feb 2022 07:43:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644421415; x=1675957415;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=tT0ubbIOHy9IAuW3heCg9dBzqzLkwpWxBVD1B0pmpaQ=;
-  b=BimlXhnafmYZeRAnxWg3H1QUHe49YZWZ8WVj4XUYNhYY0TMlC8la1XUk
-   EewQqP+pJxFgBS8Mt+wQ6JbKaxIZgn2wZVKzFuOTKDIz0X0EDAbZq9qSu
-   Yt4kqx0515UDxcZkouXQn3giJq8Ny1aSsN0wDEw/71tRVY3kVXpRPAYCp
-   6Uz8HdT6h/9aNGBSKueBm/VrTd2xrlhwQpCGQc/Lx+7SejZnx8xXLLWlZ
-   Etb5ibPRyOscZV65RYrdKqTKyYpppmQwn/ewLLUIA+nTCHVWoCuNpSScz
-   +NiygLpxxOEr26fa8E/6F3xoYeuRuAMWomxroLWiiE+bbrDSQDzZd54t8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="249435521"
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="249435521"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 07:43:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="541143751"
-Received: from chenyu-dev.sh.intel.com ([10.239.158.61])
-  by orsmga008.jf.intel.com with ESMTP; 09 Feb 2022 07:43:28 -0800
-From:   Chen Yu <yu.c.chen@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Todd Brandt <todd.e.brandt@intel.com>,
-        Len Brown <len.brown@intel.com>, Chen Yu <yu.c.chen@intel.com>
-Subject: [PATCH] e1000e: Print PHY register address when MDI read/write fails
-Date:   Thu, 10 Feb 2022 07:43:02 +0800
-Message-Id: <20220209234302.50833-1-yu.c.chen@intel.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DATE_IN_FUTURE_06_12,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        with ESMTP id S231136AbiBIRDp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 12:03:45 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA7D6C05CB82
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 09:03:48 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id t8-20020a259ac8000000b00619a3b5977fso6021936ybo.5
+        for <netdev@vger.kernel.org>; Wed, 09 Feb 2022 09:03:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=kN7NXL+BiQJuosnfsfnDxVGLuX5Wa2jq4GtcAaW8rr8=;
+        b=p5Bw5ek+ks3C6qQyclKiW+JyCjOvEqW0AUPy2csFj+CxuLJNcjmOkBePD0WL70hsti
+         GLW+S3g+Z5eB8sQeMfig7osIyFiAS07iIpBfGrg5QkvvlGR7hL9/8m/Wcpyd/J82Savy
+         LM39adTXji/aNF6Oofl9o3s2NoV15zeiaNvndxdrQVGpGMKGID7Kop9ppxCtIqy+wQHu
+         xjDiMATz9LqLJdwPDzhbJRTGc2rik/YrDQMXZYkJjdC54S504ABZ3UAk+niqT0LX8JK2
+         LBIFEvKOHe1oxxwLJgPwEPWKqgLiRExZIzhszSTt+jyG+NAS8fYh6g2lP0yn1RRJob7/
+         K8ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=kN7NXL+BiQJuosnfsfnDxVGLuX5Wa2jq4GtcAaW8rr8=;
+        b=7jlvaSmQofGvw9UzE3qmrDWr/FsbDBXijjVP81IMdqXtv+hcoVqfk0zHivvEW0YqOQ
+         xdg4IDIG2rijcj+0EzhoRp+uFkCUYfbKGYf2kj0Nrx5j3ADmDKm5AZnQiWqsdead+1US
+         f/VH36YAlL2M1UJ2KMUqPUVInc+95x37qT33neNKQETBJoNjDiaKDQEzYKZ1CGogFQ7z
+         FQrM2SUi7P6PVn/D220lAfGgdp8/4DhxCEeClytyC445nldUWvTY1fgYO8buRxo7xPKA
+         7msGXoppCdQGYtCouxlnzPGXiNqEpB7Wr/RT/AYwLVdKJdEElKct2eu18G2WSkkAnzB7
+         o/tA==
+X-Gm-Message-State: AOAM532PXD0FIrlVyD+6Z+S8e/3KyvW/eMpFmLNstuLU+xzTjI/tWEZn
+        a8cZq/GvO6Q+9JHofM3tyZdhpxg=
+X-Google-Smtp-Source: ABdhPJw3IwTJsHp8E1qWoQ3jmRqzKEF8NuxuCxjMDv8n534dhwxqvR6Yw+tps3xKhpxyiG3KKG1A+fo=
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:4d3:1afe:7eeb:c0e6])
+ (user=sdf job=sendgmr) by 2002:a25:2155:: with SMTP id h82mr2921759ybh.606.1644426228134;
+ Wed, 09 Feb 2022 09:03:48 -0800 (PST)
+Date:   Wed, 9 Feb 2022 09:03:45 -0800
+Message-Id: <YgPz8akQ4+qBz7nf@google.com>
+Mime-Version: 1.0
+Subject: Override default socket policy per cgroup
+From:   sdf@google.com
+To:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,54 +60,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is occasional suspend error from e1000e which blocks the
-system from further suspending:
-[   20.078957] PM: pci_pm_suspend(): e1000e_pm_suspend+0x0/0x780 [e1000e] returns -2
-[   20.078970] PM: dpm_run_callback(): pci_pm_suspend+0x0/0x170 returns -2
-[   20.078974] e1000e 0000:00:1f.6: PM: pci_pm_suspend+0x0/0x170 returned -2 after 371012 usecs
-[   20.078978] e1000e 0000:00:1f.6: PM: failed to suspend async: error -2
-According to the code flow, this might be caused by broken MDI read/write to PHY registers.
-However currently the code does not tell us which register is broken. Thus enhance the debug
-information to print the offender PHY register for easier debugging.
+Let's say I want to set some default sk_priority for all sockets in a
+specific cgroup. I can do it right now using cgroup/sock_create, but it
+applies only to AF_INET{,6} sockets. I'd like to do the same for raw
+(AF_PACKET) sockets and cgroup/sock_create doesn't trigger for them :-(
 
-Reported-by: Todd Brandt <todd.e.brandt@intel.com>
-Signed-off-by: Chen Yu <yu.c.chen@intel.com>
----
- drivers/net/ethernet/intel/e1000e/phy.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+(1) My naive approach would be to add another cgroup/sock_post_create
+which runs late from __sock_create and triggers on everything.
 
-diff --git a/drivers/net/ethernet/intel/e1000e/phy.c b/drivers/net/ethernet/intel/e1000e/phy.c
-index 0f0efee5fc8e..fd07c3679bb1 100644
---- a/drivers/net/ethernet/intel/e1000e/phy.c
-+++ b/drivers/net/ethernet/intel/e1000e/phy.c
-@@ -146,11 +146,11 @@ s32 e1000e_read_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 *data)
- 			break;
- 	}
- 	if (!(mdic & E1000_MDIC_READY)) {
--		e_dbg("MDI Read did not complete\n");
-+		e_dbg("MDI Read PHY Reg Address %d did not complete\n", offset);
- 		return -E1000_ERR_PHY;
- 	}
- 	if (mdic & E1000_MDIC_ERROR) {
--		e_dbg("MDI Error\n");
-+		e_dbg("MDI Read PHY Reg Address %d Error\n", offset);
- 		return -E1000_ERR_PHY;
- 	}
- 	if (((mdic & E1000_MDIC_REG_MASK) >> E1000_MDIC_REG_SHIFT) != offset) {
-@@ -210,11 +210,11 @@ s32 e1000e_write_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 data)
- 			break;
- 	}
- 	if (!(mdic & E1000_MDIC_READY)) {
--		e_dbg("MDI Write did not complete\n");
-+		e_dbg("MDI Write PHY Reg Address %d did not complete\n", offset);
- 		return -E1000_ERR_PHY;
- 	}
- 	if (mdic & E1000_MDIC_ERROR) {
--		e_dbg("MDI Error\n");
-+		e_dbg("MDI Write PHY Red Address %d Error\n", offset);
- 		return -E1000_ERR_PHY;
- 	}
- 	if (((mdic & E1000_MDIC_REG_MASK) >> E1000_MDIC_REG_SHIFT) != offset) {
--- 
-2.25.1
+(2) Another approach might be to move BPF_CGROUP_RUN_PROG_INET_SOCK and
+make it work with AF_PACKET. This might be not 100% backwards compatible
+but I'd assume that most users should look at the socket family before
+doing anything. (in this case it feels like we can extend
+sock_bind/release for af_packets as well, just for accounting purposes,
+without any way to override the target ifindex).
 
+(3) I've also tried to play with fentry/security_socket_post_create, but
+it doesn't look like I can change kernel data from the tracing context.
+fentry is also global and I'd like to get to cgroup-local-storage.
+
+(I don't want to get involved in per-packet processing here, so I'm
+looking at something I can do once at socket creation).
+
+Any suggestions? Anything I'm missing? I'm leaning towards (2), maybe we
+can extend existing socket create/bind/release for af_packet? Having
+another set (1) doesn't make sense.
