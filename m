@@ -2,105 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 057C94AE7FE
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 05:07:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1849F4AE77F
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 04:11:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244580AbiBIEHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 23:07:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
+        id S242916AbiBIDDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 22:03:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346828AbiBIDiy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 22:38:54 -0500
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA077C043188;
-        Tue,  8 Feb 2022 19:33:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=P6YRM
-        vZrszN+VySkNSrGHtGd3i/66fEQ9oe+G3JBq3c=; b=PtMAVONpTzf0raGf7V42m
-        jcs9M/IbShvr0zwBAUMYYK5BFl5XvgU3EBZyiNAZVZfYGcwjsZdXrxmCGbY4eLb0
-        n2sMQS2g/zwh+GLHhMVoImLK1LNp/YjFbfxa76WiDiAYYiz6ltr5UTimd6FIuxTS
-        R/Kt+39kz9Gg9KbY/YiCpI=
-Received: from localhost.localdomain (unknown [112.97.82.107])
-        by smtp4 (Coremail) with SMTP id HNxpCgC3pRo4KwNiKHlaBg--.26133S2;
-        Wed, 09 Feb 2022 10:47:24 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     bjorn@mork.no, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH net] net: usb: qmi_wwan: Add support for Dell DW5829e
-Date:   Wed,  9 Feb 2022 10:47:17 +0800
-Message-Id: <20220209024717.8564-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S1359829AbiBICy4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 21:54:56 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2AA7C061353;
+        Tue,  8 Feb 2022 18:54:54 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id fy20so3402180ejc.0;
+        Tue, 08 Feb 2022 18:54:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bqtTdK0TT1VP41J1UOPy1VjbkVSMizRyRzOZ6tCheig=;
+        b=YGMb3cSiC+KMDWUz6c19IGO3meyMeEvPpvT5otEh9gmMcxTJI0mXLKFss01Z5RXhcb
+         gQpLjvm4ww5pDScz7YMNV/tsQkwmLNJ0b2dNAwE8CfqBuhXmA/OBl9i6GMT91S/hduRD
+         JWyuxGCRc4b7ujDPDaYTySxMbw4pL3zyKnbt2cLP7PVdwL1IHkk+BZpKlKfeHfveeOEn
+         JMn5QFN0rb0txSwO16ec2rKdR6IYKjSX3G2gCh+3CiqnIp3prs9qPqlcA/MFWucIP5X6
+         pULY1pPvrJ+rX2pSOKm0Goxo2SrEmuYdJmrUXhd1E1Pal4bW3EOJQIMmkdSRAKWLuEHi
+         uwWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bqtTdK0TT1VP41J1UOPy1VjbkVSMizRyRzOZ6tCheig=;
+        b=DeEAoOzqJH9Iz4jE3bRnGNBslgSlkkCg8ketD5CahPPqbvGtuT2cOa4Xy40QPVzr7E
+         gXQshJCt704F3xioUDleWnybMMGMBXFgbEuEJmpMEOenFadPOWdLYUdPW/N3jEfUnUm4
+         mv3xnCsHs/mTK5RARLK0/bB3PJ6fuDMe3TZ/hElnP626LLzpnH6xg0YEyH8Uim+Wk4GP
+         jn9y5vc05h4vvJIfuSnJzWiHzqIaLQIWTMiknri7Bkabwn/qBXQs4QcEm+P6aSnLxvJq
+         pz7dqeeCvQa45O0OEc4Pz4FQ41nZu/UEfdQmFuw4hthUDXEk5h4lb612r6XVk7drkVed
+         ypZQ==
+X-Gm-Message-State: AOAM530hcfjBt7O7343MCQ1kCICMSuEs2fSXTlCshCVSdY2y/GWmeEwR
+        3ebQhhitB8GZ99Dp/OMf2KtRhrROu0r1+NGyjIM=
+X-Google-Smtp-Source: ABdhPJx/sXJPPMltCJF9E0Vjqb/4igaQXZtp/9XYDrYiYKZHe+ter1DfujLLeM1I3woh5KWwCIMlYTNyQ2WZs6gIco4=
+X-Received: by 2002:a17:906:b819:: with SMTP id dv25mr100613ejb.689.1644375293354;
+ Tue, 08 Feb 2022 18:54:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HNxpCgC3pRo4KwNiKHlaBg--.26133S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxur4UJrW5XrykCr47JF4DXFb_yoW5Xryfpr
-        1UAr17AFyUJF12vFykAF1xZryF9an7Wr9rtasF9an7WFWIvrs7t3yDtF9rZF1Iga1fK3WD
-        tFs8Kr47Kwn5GFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRpHqsUUUUU=
-X-Originating-IP: [112.97.82.107]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiRwGhZFc7VzxTYQABs3
+References: <20220208072836.3540192-1-imagedong@tencent.com>
+ <20220208072836.3540192-3-imagedong@tencent.com> <YgKFHyQphAwMgsEY@shredder>
+In-Reply-To: <YgKFHyQphAwMgsEY@shredder>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Wed, 9 Feb 2022 10:49:59 +0800
+Message-ID: <CADxym3aPfdM2ZFN8KnM3wXqXQ7FXZqUKNpVWzEDaxjRMWM9hYA@mail.gmail.com>
+Subject: Re: [PATCH v7 net-next 2/2] net: drop_monitor: support drop reason
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
+        Neil Horman <nhorman@tuxdriver.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        David Ahern <dsahern@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dell DW5829e same as DW5821e except the CAT level.
-DW5821e supports CAT16 but DW5829e supports CAT9.
-Also, DW5829e includes normal and eSIM type.
-Please see below test evidence:
+On Tue, Feb 8, 2022 at 10:58 PM Ido Schimmel <idosch@idosch.org> wrote:
+>
+> On Tue, Feb 08, 2022 at 03:28:36PM +0800, menglong8.dong@gmail.com wrote:
+> > From: Menglong Dong <imagedong@tencent.com>
+> >
+> > In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()")
+> > drop reason is introduced to the tracepoint of kfree_skb. Therefore,
+> > drop_monitor is able to report the drop reason to users by netlink.
+> >
+> > The drop reasons are reported as string to users, which is exactly
+> > the same as what we do when reporting it to ftrace.
+> >
+> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> > ---
+> > v7:
+> > - take the size of NET_DM_ATTR_REASON into accounting in
+> >   net_dm_packet_report_size()
+> > - let compiler define the size of drop_reasons
+> >
+> > v6:
+> > - check the range of drop reason in net_dm_packet_report_fill()
+> >
+> > v5:
+> > - check if drop reason larger than SKB_DROP_REASON_MAX
+> >
+> > v4:
+> > - report drop reasons as string
+> >
+> > v3:
+> > - referring to cb->reason and cb->pc directly in
+> >   net_dm_packet_report_fill()
+> >
+> > v2:
+> > - get a pointer to struct net_dm_skb_cb instead of local var for
+> >   each field
+> > ---
+> >  include/uapi/linux/net_dropmon.h |  1 +
+> >  net/core/drop_monitor.c          | 34 ++++++++++++++++++++++++++++----
+> >  2 files changed, 31 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
+> > index 66048cc5d7b3..1bbea8f0681e 100644
+> > --- a/include/uapi/linux/net_dropmon.h
+> > +++ b/include/uapi/linux/net_dropmon.h
+> > @@ -93,6 +93,7 @@ enum net_dm_attr {
+> >       NET_DM_ATTR_SW_DROPS,                   /* flag */
+> >       NET_DM_ATTR_HW_DROPS,                   /* flag */
+> >       NET_DM_ATTR_FLOW_ACTION_COOKIE,         /* binary */
+> > +     NET_DM_ATTR_REASON,                     /* string */
+> >
+> >       __NET_DM_ATTR_MAX,
+> >       NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
+> > diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+> > index 7b288a121a41..28c55d605566 100644
+> > --- a/net/core/drop_monitor.c
+> > +++ b/net/core/drop_monitor.c
+> > @@ -48,6 +48,19 @@
+> >  static int trace_state = TRACE_OFF;
+> >  static bool monitor_hw;
+> >
+> > +#undef EM
+> > +#undef EMe
+> > +
+> > +#define EM(a, b)     [a] = #b,
+> > +#define EMe(a, b)    [a] = #b
+> > +
+> > +/* drop_reasons is used to translate 'enum skb_drop_reason' to string,
+> > + * which is reported to user space.
+> > + */
+> > +static const char * const drop_reasons[] = {
+> > +     TRACE_SKB_DROP_REASON
+> > +};
+> > +
+> >  /* net_dm_mutex
+> >   *
+> >   * An overall lock guarding every operation coming from userspace.
+> > @@ -126,6 +139,7 @@ struct net_dm_skb_cb {
+> >               struct devlink_trap_metadata *hw_metadata;
+> >               void *pc;
+> >       };
+> > +     enum skb_drop_reason reason;
+> >  };
+> >
+> >  #define NET_DM_SKB_CB(__skb) ((struct net_dm_skb_cb *)&((__skb)->cb[0]))
+> > @@ -498,6 +512,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+> >  {
+> >       ktime_t tstamp = ktime_get_real();
+> >       struct per_cpu_dm_data *data;
+> > +     struct net_dm_skb_cb *cb;
+> >       struct sk_buff *nskb;
+> >       unsigned long flags;
+> >
+> > @@ -508,7 +523,9 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+> >       if (!nskb)
+> >               return;
+> >
+> > -     NET_DM_SKB_CB(nskb)->pc = location;
+> > +     cb = NET_DM_SKB_CB(nskb);
+> > +     cb->reason = reason;
+> > +     cb->pc = location;
+> >       /* Override the timestamp because we care about the time when the
+> >        * packet was dropped.
+> >        */
+> > @@ -574,6 +591,8 @@ static size_t net_dm_packet_report_size(size_t payload_len)
+> >              nla_total_size(sizeof(u32)) +
+> >              /* NET_DM_ATTR_PROTO */
+> >              nla_total_size(sizeof(u16)) +
+> > +            /* NET_DM_ATTR_REASON */
+> > +            nla_total_size(SKB_DR_MAX_LEN + 1) +
+>
+> Nothing ensures that the reason is not longer than this length and
+> nothing ensures that this assumption remains valid as more reasons are
+> added.
+>
+> I think "SKB_DR_MAX_LEN" can be removed completely. Pass "reason" to
+> this function and do "strlen(drop_reasons[reason]) + 1". Any reason it
+> can't work?
 
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=413c ProdID=81e6 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+Yeah, it can work. But it feels a little weird to pass this param to
+net_dm_packet_report_size(). I'll give it a try.
 
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=413c ProdID=81e4 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e-eSIM Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+>
+> >              /* NET_DM_ATTR_PAYLOAD */
+> >              nla_total_size(payload_len);
+> >  }
+> > @@ -606,8 +625,9 @@ static int net_dm_packet_report_in_port_put(struct sk_buff *msg, int ifindex,
+> >  static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+> >                                    size_t payload_len)
+> >  {
+> > -     u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
+> > +     struct net_dm_skb_cb *cb = NET_DM_SKB_CB(skb);
+> >       char buf[NET_DM_MAX_SYMBOL_LEN];
+> > +     unsigned int reason;
+> >       struct nlattr *attr;
+> >       void *hdr;
+> >       int rc;
+> > @@ -620,10 +640,16 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+> >       if (nla_put_u16(msg, NET_DM_ATTR_ORIGIN, NET_DM_ORIGIN_SW))
+> >               goto nla_put_failure;
+> >
+> > -     if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
+> > +     if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, (u64)(uintptr_t)cb->pc,
+> > +                           NET_DM_ATTR_PAD))
+> > +             goto nla_put_failure;
+> > +
+> > +     reason = (unsigned int)cb->reason;
+> > +     if (reason < SKB_DROP_REASON_MAX &&
+>
+> In which cases can this happen? Might be better to perform this
+> validation in net_dm_packet_trace_kfree_skb_hit() and set "cb->reason"
+> to "SKB_DROP_REASON_NOT_SPECIFIED" in this case. That way we don't need
+> to perform the validation in later code paths
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- drivers/net/usb/qmi_wwan.c | 2 ++
- 1 file changed, 2 insertions(+)
+Logically speaking, this shouldn't happen, as the reason is always be
+'enum skb_drop_reason'. I added this part out of misunderstanding
+your previous reply, and now I'm not sure if we should keep this.
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 37e5f3495362..3353e761016d 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1400,6 +1400,8 @@ static const struct usb_device_id products[] = {
- 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
- 	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproduction config */
- 	{QMI_FIXED_INTF(0x413c, 0x81e0, 0)},	/* Dell Wireless 5821e with eSIM support*/
-+	{QMI_FIXED_INTF(0x413c, 0x81e4, 0)},	/* Dell Wireless 5829e with eSIM support*/
-+	{QMI_FIXED_INTF(0x413c, 0x81e6, 0)},	/* Dell Wireless 5829e */
- 	{QMI_FIXED_INTF(0x03f0, 0x4e1d, 8)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
- 	{QMI_FIXED_INTF(0x03f0, 0x9d1d, 1)},	/* HP lt4120 Snapdragon X5 LTE */
- 	{QMI_QUIRK_SET_DTR(0x22de, 0x9051, 2)}, /* Hucom Wireless HM-211S/K */
--- 
-2.25.1
+For security considering, let's keep it for the moment, and I'll move it
+to net_dm_packet_trace_kfree_skb_hit()
 
+Thanks!
+Menglong Dong
+
+>
+> > +         nla_put_string(msg, NET_DM_ATTR_REASON, drop_reasons[reason]))
+> >               goto nla_put_failure;
+> >
+> > -     snprintf(buf, sizeof(buf), "%pS", NET_DM_SKB_CB(skb)->pc);
+> > +     snprintf(buf, sizeof(buf), "%pS", cb->pc);
+> >       if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
+> >               goto nla_put_failure;
+> >
+> > --
+> > 2.34.1
+> >
