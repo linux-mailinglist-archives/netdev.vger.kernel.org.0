@@ -2,51 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C76CE4AFB16
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 19:42:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C09514AFB13
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 19:42:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240310AbiBISlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 13:41:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53558 "EHLO
+        id S240289AbiBISlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 13:41:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240159AbiBISkm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 13:40:42 -0500
+        with ESMTP id S240612AbiBISlV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 13:41:21 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D491C03E941;
-        Wed,  9 Feb 2022 10:40:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC4A2C05CB8F;
+        Wed,  9 Feb 2022 10:41:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFFF2B8238E;
-        Wed,  9 Feb 2022 18:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0557FC340EF;
-        Wed,  9 Feb 2022 18:40:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5C79B82389;
+        Wed,  9 Feb 2022 18:41:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 342BFC340E9;
+        Wed,  9 Feb 2022 18:41:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432010;
-        bh=06AEE+dTILRtwDY8oQbRofaIwu30iB9WUEgyuAH6rvs=;
+        s=k20201202; t=1644432080;
+        bh=VIQquFzGDHKbKcmGm6RKoojybnkJGoVldTQZYNSMAJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hteFlor3t86fgNkY2YFhewQuK9vhMWBn40QM2BrO5qrebYE1yPDgEW7dwCGMneTBz
-         OFDdWLKv+8fiIt2SjgKidAyglOGMIWCseqSd7gVLPKJgpwhWUPdJn5qwsWf1PQtK+T
-         ZSuJ2Gw4URcWjxRb9wSCoR0hDuvQqYAUpmS8y9I3ElIzunyzk9cLHFO1Stlg++yk/o
-         d7G8miyx3RmSje6o0NoBbpSFC7icUxAUHDzrHCUANqKgH50QP2AVZmiTkeBveCK4v1
-         dUdWajaYW8XbPlINV/fou6XnSdJUas5iXjF3hFD2dkGKYRJ4hI7ZnmB9GsmX/7rUkS
-         x+yADA+5cT84w==
+        b=YMLoX3ykDV8D/jnEfLsSfVaHWBJfuUpGRVuAviE9eBodhVfJeR5fFvcQSdS/AGpzT
+         6rafXjNjRPT+HHxIvDUCrGDrHwBDAd99y3EPGhqlVzrZiOBeXUBAQ/67ryEP/xf7H1
+         itIcA1ShmJi7Ii6O2fG4fdb6z+xmaq22N25sEW2ruIpRMbOcNe6zwEY3SCV/g7TXCW
+         uDCyhcVYdIxpJwFloZhgoS68S5/3K2slSu9Z3Rnj8AAJn52c4SbqXNeDZ637jQVZZE
+         Ugi/f6OkIPwbq3j2vEN7N9oHCsUVS5YTubyzrXXTWOC73a8aHxYFLWR6jP2rsROqXa
+         vpzHRKwo+0UUQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Steen Hegelund <steen.hegelund@microchip.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
-        UNGLinuxDriver@microchip.com, bjarni.jonasson@microchip.com,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 29/36] net: sparx5: do not refer to skb after passing it on
-Date:   Wed,  9 Feb 2022 13:37:52 -0500
-Message-Id: <20220209183759.47134-29-sashal@kernel.org>
+        kuba@kernel.org, linux-wpan@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 05/27] net: ieee802154: at86rf230: Stop leaking skb's
+Date:   Wed,  9 Feb 2022 13:40:41 -0500
+Message-Id: <20220209184103.47635-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209183759.47134-1-sashal@kernel.org>
-References: <20220209183759.47134-1-sashal@kernel.org>
+In-Reply-To: <20220209184103.47635-1-sashal@kernel.org>
+References: <20220209184103.47635-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -61,38 +59,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Steen Hegelund <steen.hegelund@microchip.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-[ Upstream commit 81eb8b0b18789e647e65579303529fd52d861cc2 ]
+[ Upstream commit e5ce576d45bf72fd0e3dc37eff897bfcc488f6a9 ]
 
-Do not try to use any SKB fields after the packet has been passed up in the
-receive stack.
+Upon error the ieee802154_xmit_complete() helper is not called. Only
+ieee802154_wake_queue() is called manually. In the Tx case we then leak
+the skb structure.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-Link: https://lore.kernel.org/r/20220202083039.3774851-1-steen.hegelund@microchip.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Free the skb structure upon error before returning when appropriate.
+
+As the 'is_tx = 0' cannot be moved in the complete handler because of a
+possible race between the delay in switching to STATE_RX_AACK_ON and a
+new interrupt, we introduce an intermediate 'was_tx' boolean just for
+this purpose.
+
+There is no Fixes tag applying here, many changes have been made on this
+area and the issue kind of always existed.
+
+Suggested-by: Alexander Aring <alex.aring@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Acked-by: Alexander Aring <aahringo@redhat.com>
+Link: https://lore.kernel.org/r/20220125121426.848337-4-miquel.raynal@bootlin.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/microchip/sparx5/sparx5_packet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ieee802154/at86rf230.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-index dc7e5ea6ec158..148d431fcde42 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-@@ -145,9 +145,9 @@ static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
- 	skb_put(skb, byte_cnt - ETH_FCS_LEN);
- 	eth_skb_pad(skb);
- 	skb->protocol = eth_type_trans(skb, netdev);
--	netif_rx(skb);
- 	netdev->stats.rx_bytes += skb->len;
- 	netdev->stats.rx_packets++;
-+	netif_rx(skb);
+diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+index 7d67f41387f55..4f5ef8a9a9a87 100644
+--- a/drivers/net/ieee802154/at86rf230.c
++++ b/drivers/net/ieee802154/at86rf230.c
+@@ -100,6 +100,7 @@ struct at86rf230_local {
+ 	unsigned long cal_timeout;
+ 	bool is_tx;
+ 	bool is_tx_from_off;
++	bool was_tx;
+ 	u8 tx_retry;
+ 	struct sk_buff *tx_skb;
+ 	struct at86rf230_state_change tx;
+@@ -343,7 +344,11 @@ at86rf230_async_error_recover_complete(void *context)
+ 	if (ctx->free)
+ 		kfree(ctx);
+ 
+-	ieee802154_wake_queue(lp->hw);
++	if (lp->was_tx) {
++		lp->was_tx = 0;
++		dev_kfree_skb_any(lp->tx_skb);
++		ieee802154_wake_queue(lp->hw);
++	}
  }
  
- static int sparx5_inject(struct sparx5 *sparx5,
+ static void
+@@ -352,7 +357,11 @@ at86rf230_async_error_recover(void *context)
+ 	struct at86rf230_state_change *ctx = context;
+ 	struct at86rf230_local *lp = ctx->lp;
+ 
+-	lp->is_tx = 0;
++	if (lp->is_tx) {
++		lp->was_tx = 1;
++		lp->is_tx = 0;
++	}
++
+ 	at86rf230_async_state_change(lp, ctx, STATE_RX_AACK_ON,
+ 				     at86rf230_async_error_recover_complete);
+ }
 -- 
 2.34.1
 
