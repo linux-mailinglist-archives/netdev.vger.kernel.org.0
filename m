@@ -2,80 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1859A4AE8D1
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 06:13:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09A994AE8CE
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 06:13:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233236AbiBIFGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 00:06:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39796 "EHLO
+        id S233270AbiBIFGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 00:06:23 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:40188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377724AbiBIEcE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 23:32:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF169C0612BD
-        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 20:26:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644380765;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8mY8elVfyQglRlLXkjN7Nh6smhNHX9r1QRGNGZo7nas=;
-        b=jH+MmTLgXpN4posvgRydc5fVFKJsW/z/+L3jTaENMG3FyemXVRMMhOG9J02lbGIUHF9tUO
-        R0F9hOcv1xe35eyTZ+5vv+LvzHhxRoPPqU6A5VP4OnSRusXqvevOyum4YDpOTz5hIrZmkP
-        1LkjE432qd0IaX/joKsdc2T5O7Rt/tw=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-354-9eghzDWLNmGXMiByTrqw1w-1; Tue, 08 Feb 2022 23:26:03 -0500
-X-MC-Unique: 9eghzDWLNmGXMiByTrqw1w-1
-Received: by mail-pj1-f71.google.com with SMTP id mz22-20020a17090b379600b001b863f7a846so888298pjb.9
-        for <netdev@vger.kernel.org>; Tue, 08 Feb 2022 20:26:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8mY8elVfyQglRlLXkjN7Nh6smhNHX9r1QRGNGZo7nas=;
-        b=b6kEtxTAMe9FUo+EPysbUrHgyjmXVqlP3kf2+owZFzrRn4Bfshw+cp8Xj3sVEeOEGp
-         QlC7SH4LFxwaMnvCO7dvVyIGWcnw30zv90S2RsA5cwDIH7DqonFvTihuLWa/pWMmTZe0
-         qjDfONd5YIzzFG8fNerhmNVkflbVISU7ArSpD18Gs8ml95uTLKeNTIP5NrVY+NBu+WYG
-         UF7eEjCJ7hH+EbJDKlPc2p7dt8DmcjKznpYqg7IWAyYUF9vnz529d/kLxZ+YXVHrUms8
-         4mmbYzQspujrYuYrsuiuk6b9ulDrgXUNpZaFJIftL7OqzNaSuYnHaHG9FUlX5Gy5Lymr
-         SKHg==
-X-Gm-Message-State: AOAM530Kf5j6/VX3ebtTpnOyz+wNHFXI8i4VvuW3tw55nDAZJY/MDRmn
-        sWyV12Rr+epS8mi4Ah/RwmhhMKCz23Y447LRi+DJ7AEwl7BKq2pIlk2X5nDGlvhXdPVYGsy49Ej
-        P+Rc3DPBRP6FzBjEV
-X-Received: by 2002:a17:902:d4d2:: with SMTP id o18mr689053plg.70.1644380762288;
-        Tue, 08 Feb 2022 20:26:02 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJykaFv2k/rU0QWZ6U8v2dqzYGXw3Od1HYD//YNB9h1Dzi13vXmiZ2WWJpeEOkwfNhTZU6a1Xw==
-X-Received: by 2002:a17:902:d4d2:: with SMTP id o18mr689040plg.70.1644380761987;
-        Tue, 08 Feb 2022 20:26:01 -0800 (PST)
-Received: from [10.72.13.141] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id z15sm10137088pfh.82.2022.02.08.20.25.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 20:26:01 -0800 (PST)
-Message-ID: <06a90de0-57ae-9315-dc2c-03cc74b4ae0c@redhat.com>
-Date:   Wed, 9 Feb 2022 12:25:54 +0800
+        with ESMTP id S1356241AbiBIEdw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 23:33:52 -0500
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2077.outbound.protection.outlook.com [40.107.100.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68990C061577
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 20:33:51 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=icOAuGnxqu6Nx29pMHWJ0ongajtSAu1DeCY9dBRqF+A95HAcwhobNfupGcFnUEg62zacmaYU76szMis3FutXaD2EIjYqh3HQCiG3mljf+SzHxOgxo6lAEr6PFPGuYoyYjqyXUo5MSxFAF49AXAPHXu8x6YSG580Lg6zbyLiU0Dinr5Pp5IqDvxYsfzIWcU28qlCsRtw+o/wsIq+lPj0I7ewwD2HixmuPJk4cX8vo92mpnNWuquaFJKU0OE1IXZuCYNmX0zoWEhpTKd/eGz1211r8qbzKtYq+JQM5pFTkenRUbtt2HsDEAsq2veao3bhl2rm+OypgRbElHp7uUXEDRw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=woy3w/K6cH0ICn6bQfkwMgzqxFGqs9aRBmMq9FXi2zg=;
+ b=FV0rF6QTe36wfIEQhQktOaavXMbNUwHYbnULkT11IdAgBy/iF6Y9JiLlhLxi9SoakRqTf3We1Ir+TJfMzhQlP1PDXEzN+3W0XHWI8AvfRA1k5gITLXndlo0t+/HqU5amEqYh0b+OBxeDqgxjPzVuP2T7SBiiYuPz1cGUj7j6Mrfybv6HtZ+0X/hAxHSAem7BXCxf7q+lgFY4ws+6FuaO31fFfARTDmE4OmwX9r97v72kMGlL2qOXXBW4Jr47W7hJyc6j7zyplVA5XTV+P/jILYn+AVkec1leaSDJ4HyaQDSN6BX+CRo0WEkvofZGlI8T2Za25DwQqfHD7NHVNoUjrw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=woy3w/K6cH0ICn6bQfkwMgzqxFGqs9aRBmMq9FXi2zg=;
+ b=oBjWLnGrKXgzPZa+SxvDK1euXlVyOqI6k1aaXHZP5ei0MVByhle+6z3Nm8zJTujjbYcfyesYR7PB/AQR04ukFWs+8sd5KacLWQtXvSrdH9CK7g6X4K0m95tFIps8c8JQhzfGx2o2cLVHmbUCKxm0DzSOEDRtV/O7hnIRACyyeow=
+Received: from DS7PR03CA0338.namprd03.prod.outlook.com (2603:10b6:8:55::31) by
+ BYAPR12MB3493.namprd12.prod.outlook.com (2603:10b6:a03:dd::15) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4975.11; Wed, 9 Feb 2022 04:33:48 +0000
+Received: from DM6NAM11FT066.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:55:cafe::6b) by DS7PR03CA0338.outlook.office365.com
+ (2603:10b6:8:55::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11 via Frontend
+ Transport; Wed, 9 Feb 2022 04:33:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT066.mail.protection.outlook.com (10.13.173.179) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4975.11 via Frontend Transport; Wed, 9 Feb 2022 04:33:48 +0000
+Received: from jatayu.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 8 Feb
+ 2022 22:33:45 -0600
+From:   Raju Rangoju <Raju.Rangoju@amd.com>
+To:     <thomas.lendacky@amd.com>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <Shyam-sundar.S-k@amd.com>,
+        <Raju.Rangoju@amd.com>, Selwin Sebastian <Selwin.Sebastian@amd.com>
+Subject: [PATCH net] net: amd-xgbe: disable interrupts during pci removal
+Date:   Wed, 9 Feb 2022 10:02:01 +0530
+Message-ID: <20220209043201.1365811-1-Raju.Rangoju@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [RFC PATCH 1/5] uapi/linux/if_tun.h: Added new ioctl for tun/tap.
-Content-Language: en-US
-To:     Andrew Melnychenko <andrew@daynix.com>, davem@davemloft.net,
-        kuba@kernel.org, mst@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     yuri.benditovich@daynix.com, yan@daynix.com
-References: <20220125084702.3636253-1-andrew@daynix.com>
- <20220125084702.3636253-2-andrew@daynix.com>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220125084702.3636253-2-andrew@daynix.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 16f5efac-7f80-47a9-e0a9-08d9eb855d93
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3493:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB34931287B2BCB23295FFBF8E952E9@BYAPR12MB3493.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: U1gcDMp2wkPHNQCYAminGdW8lMwE2zFS/pQPvZW+udM6xAQJUPTEZMuIfo2dxTQX4GR4Ex3r9bMhXFXTs82WWaA+QStIBC43vX4qUv4++4luuKf1GPeeij7r566VnWhYjfg+Z86EzTaFPpn1TZsZdNu4Xf5x6Yacb53scdYYTha48LyIkYioT2d4jYv3D3pPgFgsaqAKRsDnK9koY7Msb1O0/ku+jHO0O1VZl4N0F3kAoQf2ESJQ9ay7WC7zcscU8OxP1HcJVxDUb2SR48zwea4Ev/RGc5C3NwNf5TIcSMTfKNpcDtw83HczDdxPIkx7uovRcrpBzhaWwX96/a4o9D76aoItMutWOFbcCC8pyvfukXbjmKSID+pRc5VTMOkh7U1HHrgdRldRP4vbK7iz5aEswka97RVTSOZrjPl5ly1586+tl1qT11MOqyQCQcoOmEYihtiv8+gF5woaOtmTfzdPM2LlaVQFJim5wG0+lrHS5b06SjMSFbcxFhHS3lod7Slyk30P7OoFO//NfcQa0CHg3th4h5HOorxd/NnPNBmtJz4G+LE/qEoIo72K9mEa99yfBwD2XVzT6ksKJZbsHepnJ3MImczHrIqdmF5N+C0SVw01+Y920F1VY0sna6xWTKcMz8B6oHFsGQsoBOnu2MIYUfeL3M0R3u0nkbL7B5MeftNEwd8pKtlFwwq6z7XDkISuW0p98TgaN9NGTw4D9g==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(40460700003)(2906002)(36860700001)(508600001)(86362001)(6666004)(356005)(7696005)(47076005)(4326008)(8936002)(82310400004)(316002)(5660300002)(36756003)(2616005)(70586007)(70206006)(8676002)(81166007)(336012)(4744005)(83380400001)(186003)(1076003)(426003)(110136005)(54906003)(16526019)(26005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 04:33:48.1848
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 16f5efac-7f80-47a9-e0a9-08d9eb855d93
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT066.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3493
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,62 +97,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hardware interrupts are enabled during the pci probe, however,
+they are not disabled during pci removal.
 
-在 2022/1/25 下午4:46, Andrew Melnychenko 写道:
-> Added TUNGETSUPPORTEDOFFLOADS that should allow
-> to get bits of supported offloads.
+Disable all hardware interrupts during pci removal to avoid any
+issues.
 
+Fixes: e75377404726 ("amd-xgbe: Update PCI support to use new IRQ functions")
+Suggested-by: Selwin Sebastian <Selwin.Sebastian@amd.com>
+Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
+---
+ drivers/net/ethernet/amd/xgbe/xgbe-pci.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-So we don't use dedicated ioctls in the past, instead, we just probing 
-by checking the return value of TUNSETOFFLOADS.
-
-E.g qemu has the following codes:
-
-int tap_probe_has_ufo(int fd)
-{
-     unsigned offload;
-
-     offload = TUN_F_CSUM | TUN_F_UFO;
-
-     if (ioctl(fd, TUNSETOFFLOAD, offload) < 0)
-         return 0;
-
-     return 1;
-}
-
-Any reason we can't keep using that?
-
-Thanks
-
-
-> Added 2 additional offlloads for USO(IPv4 & IPv6).
-> Separate offloads are required for Windows VM guests,
-> g.e. Windows may set USO rx only for IPv4.
->
-> Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
-> ---
->   include/uapi/linux/if_tun.h | 3 +++
->   1 file changed, 3 insertions(+)
->
-> diff --git a/include/uapi/linux/if_tun.h b/include/uapi/linux/if_tun.h
-> index 454ae31b93c7..07680fae6e18 100644
-> --- a/include/uapi/linux/if_tun.h
-> +++ b/include/uapi/linux/if_tun.h
-> @@ -61,6 +61,7 @@
->   #define TUNSETFILTEREBPF _IOR('T', 225, int)
->   #define TUNSETCARRIER _IOW('T', 226, int)
->   #define TUNGETDEVNETNS _IO('T', 227)
-> +#define TUNGETSUPPORTEDOFFLOADS _IOR('T', 228, unsigned int)
->   
->   /* TUNSETIFF ifr flags */
->   #define IFF_TUN		0x0001
-> @@ -88,6 +89,8 @@
->   #define TUN_F_TSO6	0x04	/* I can handle TSO for IPv6 packets */
->   #define TUN_F_TSO_ECN	0x08	/* I can handle TSO with ECN bits. */
->   #define TUN_F_UFO	0x10	/* I can handle UFO packets */
-> +#define TUN_F_USO4	0x20	/* I can handle USO for IPv4 packets */
-> +#define TUN_F_USO6	0x40	/* I can handle USO for IPv6 packets */
->   
->   /* Protocol info prepended to the packets (when IFF_NO_PI is not set) */
->   #define TUN_PKT_STRIP	0x0001
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
+index efdcf484a510..2af3da4b2d05 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
+@@ -425,6 +425,9 @@ static void xgbe_pci_remove(struct pci_dev *pdev)
+ 
+ 	pci_free_irq_vectors(pdata->pcidev);
+ 
++	/* Disable all interrupts in the hardware */
++	XP_IOWRITE(pdata, XP_INT_EN, 0x0);
++
+ 	xgbe_free_pdata(pdata);
+ }
+ 
+-- 
+2.25.1
 
