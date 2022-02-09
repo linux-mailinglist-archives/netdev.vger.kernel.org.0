@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ED774AF2BD
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 14:30:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99F464AF2BB
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 14:30:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233767AbiBINaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 08:30:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45298 "EHLO
+        id S233495AbiBINaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 08:30:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233591AbiBINaN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 08:30:13 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE55C05CB9E;
-        Wed,  9 Feb 2022 05:30:17 -0800 (PST)
+        with ESMTP id S232967AbiBINaK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 08:30:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C82A6C05CB97;
+        Wed,  9 Feb 2022 05:30:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 85256CE20F8;
-        Wed,  9 Feb 2022 13:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C5798C340F2;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 630E9619EB;
+        Wed,  9 Feb 2022 13:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BC4A0C340F0;
         Wed,  9 Feb 2022 13:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1644413411;
-        bh=bk0rG3oK09ieja9UH5Clt/Uh9t30U3MGsnok4wltk9A=;
+        bh=0f0mIIp2PVoZ2iZ9BvnhTIYKPtq6j8Y1JLIMf1udPnc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=F4xTSNgzKiTDt6BBFqnDWjNHif5/Jttpntx2pigcuffGgNARtww3z4TPyLGAD9Mig
-         cFiYIWpuRj9GhE0P8zhKjBKvLDgsU1TY/24jhgG/IVdcGiY26VzmgqF/vRVpjYUNaG
-         BNUsBd1Ruuy5YrOsBm7Bm1xrsCX5Lh6ylBpcY2ZuPqVnHwqvpcV1llu6s7v93s0Bc4
-         73CXzbyu91OWUc7JGqUfS9DzYBSyt4fz0BD4RNN1gh90kjSJ1BC/ImLdvOXoSe+V/5
-         5Pg5LYcYZgp+deThHwN6u9hRdh/1E6srUuxswYtVzeROWjs8hmk0QTEBUYV4ru7RUS
-         PlMfBJL7Qm10g==
+        b=l/+pwIJsjgyjtarNTWkAEtRnpo1C83yo7XdcwOp9iO4HPyHFUmjif3HgLhvDYGFGV
+         0teUVYWxYibc2vgPXkUVFckd4v89RoKmooWk45aP9bWQbnoF1JkoHIu+iL+CKNscYP
+         t7TkAz52HQTiSdw6qmBpDsMtVfIykbf3VU7YY0lVyt+TkndpaaoaPn/czPwizPMgYU
+         8f7CEb0MFRtmaiQPtmfkql4z/2dwlD6MteFGqBmeBDS+3c05iWWq9YdCojWt4u2ToS
+         Lgb6He2nf3wjjjg/sCs8ZBYyRSzIIcP7RhbnN2i8oP+WJk/y1VQlCjuAaVsEGYeAqZ
+         6DC5vdZ48v3Ww==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AF703E6D4A2;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A6022E6D458;
         Wed,  9 Feb 2022 13:30:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v1] net: usb: smsc95xx: add generic selftest support
+Subject: Re: [v2,net-next 1/3] net:enetc: allocate CBD ring data memory using DMA
+ coherent methods
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164441341171.22778.5411489210672986734.git-patchwork-notify@kernel.org>
+Message-Id: <164441341167.22778.2861856904847036230.git-patchwork-notify@kernel.org>
 Date:   Wed, 09 Feb 2022 13:30:11 +0000
-References: <20220209124256.3019116-1-o.rempel@pengutronix.de>
-In-Reply-To: <20220209124256.3019116-1-o.rempel@pengutronix.de>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
+References: <20220209123303.22799-1-po.liu@nxp.com>
+In-Reply-To: <20220209123303.22799-1-po.liu@nxp.com>
+To:     Po Liu <po.liu@nxp.com>
+Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, tim.gardner@canonical.com, kuba@kernel.org,
+        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
+        xiaoliang.yang_1@nxp.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,21 +61,27 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed,  9 Feb 2022 13:42:55 +0100 you wrote:
-> Provide generic selftest support. Tested with LAN9500 and LAN9512.
+On Wed,  9 Feb 2022 20:33:01 +0800 you wrote:
+> To replace the dma_map_single() stream DMA mapping with DMA coherent
+> method dma_alloc_coherent() which is more simple.
 > 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  drivers/net/usb/Kconfig    |  1 +
->  drivers/net/usb/smsc95xx.c | 25 +++++++++++++++++++++++++
->  2 files changed, 26 insertions(+)
+> dma_map_single() found by Tim Gardner not proper. Suggested by Claudiu
+> Manoil and Jakub Kicinski to use dma_alloc_coherent(). Discussion at:
+> 
+> https://lore.kernel.org/netdev/AM9PR04MB8397F300DECD3C44D2EBD07796BD9@AM9PR04MB8397.eurprd04.prod.outlook.com/t/
+> 
+> [...]
 
 Here is the summary with links:
-  - [net-next,v1] net: usb: smsc95xx: add generic selftest support
-    https://git.kernel.org/netdev/net-next/c/1710b52d7c13
+  - [v2,net-next,1/3] net:enetc: allocate CBD ring data memory using DMA coherent methods
+    https://git.kernel.org/netdev/net-next/c/b3a723dbc94a
+  - [v2,net-next,2/3] net:enetc: command BD ring data memory alloc as one function alone
+    https://git.kernel.org/netdev/net-next/c/0cc11cdbcb39
+  - [v2,net-next,3/3] net:enetc: enetc qos using the CBDR dma alloc function
+    https://git.kernel.org/netdev/net-next/c/237d20c208db
 
 You are awesome, thank you!
 -- 
