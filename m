@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 850414AEDE6
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 10:24:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 241FD4AEDE8
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 10:24:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233500AbiBIJXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 04:23:39 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38962 "EHLO
+        id S233917AbiBIJX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 04:23:56 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233168AbiBIJXh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 04:23:37 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F20EBE00E5A3
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 01:23:32 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id y5so3232548pfe.4
-        for <netdev@vger.kernel.org>; Wed, 09 Feb 2022 01:23:32 -0800 (PST)
+        with ESMTP id S229538AbiBIJXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 04:23:50 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590FCE03A56E
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 01:23:45 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id a11-20020a17090a740b00b001b8b506c42fso4621415pjg.0
+        for <netdev@vger.kernel.org>; Wed, 09 Feb 2022 01:23:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qEfAUfSAkDgSMqeOfMNjmcPHeTC8mTixekghh3MVAhM=;
-        b=W0d1uP6vAnj9FShyjUbrs8b8+LlzO+f1zowV74Gw8P1CniuzlVeHNOthlwOpsGfbSz
-         XH0xFyKNbTysVA5VT33K86ffq5niw3BZjSJFaiIbnBJI9uZn7YXA6se148lMaOIMlVV3
-         mEziEMQeSH2nk6FCPO47t5n33Xe0/u7zxGiiI=
+        bh=JK/vxlNdT7JFNpKXya4qcBlyZK3+Mgah0JCZD6Vpyng=;
+        b=Dd9ehfWl2Y6WKNAFgrGKr9CVtZ1St2YwveTIwLh40r2xNqNNv4hfP3lIxok/CJbpbb
+         lCBQFXHhalZXWsgQG6emIqVTccv8VkQDyQUD1cq5hdYemUNtFvdmQZ2/1Mm5M5aUD0nP
+         9mV3/4iQPPLOGCrGIFGt8yp9wDPcybqlFoKKQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qEfAUfSAkDgSMqeOfMNjmcPHeTC8mTixekghh3MVAhM=;
-        b=rxMcXf4d1cVyi0zoAe8FcdahwqLRxC0zSb4mTa2hEkmRldMWNumaYhUk39RjAA6vdZ
-         J99BfXCpREreQWnZ3yM3bENOaYr4V/JUUDO9VHMi35DS78NvT5gV7VGxBb+V93g2WY0v
-         N2oIZ29/4Y+F5I0H0axG8NCwScN7QyejM01lDcVnZy1q4gLlR3i8dIlHWiTBcxMV74zf
-         fiV9Fm3GLDILPWlEnR7gYMiCaAUdg1N2S8OF3IsyPn+IHzHUXI/wzCvnXhPFGKnsjJrl
-         PZr1R/qIJLtTr593FAOKxEZnVg3RN4xrdNntDbBbJWYIZugkpZekuhwOfIwuMNq8Yfxr
-         9x7g==
-X-Gm-Message-State: AOAM533zeCeFTxEQ22ZF5LezoDkEMVTfKRcq1KA0/TLmq+VwH5QrKDrf
-        Sk9hB72Ey7dxUwK0YJqxYAfgFA==
-X-Google-Smtp-Source: ABdhPJyy4g+jEipJLxokRRnr0JVc1Qds93rnhOlwC25swm2hmzM3VP2EWEh7tobVFDKjMSnMnDqQFw==
-X-Received: by 2002:aa7:81c9:: with SMTP id c9mr1276352pfn.9.1644398591687;
-        Wed, 09 Feb 2022 01:23:11 -0800 (PST)
+        bh=JK/vxlNdT7JFNpKXya4qcBlyZK3+Mgah0JCZD6Vpyng=;
+        b=TsLaip+JOfBYoQvcqiuLzjj90qlhp5JkM7T28N/tRVesDGBFseFJWJqKiVC5dY0Ogo
+         YbLJstHkJvQYFXi43nrwUJeJv8Tb0kaByKy/9oHzK19nCZBtYHshoYTayVkEZcgOK7vJ
+         Kxu61Bm8WdPlX5k9kmjbA7GKJgRuoacMNsYKhNZOn53yFDGrxjHt7iaQnxlVEqOl+aCO
+         50zEXby2z6VMecQw0gYUsxofQbJvcD4rDsIOSeq5rnm4xW7qpeKtsO4mH6A3QaYFThE4
+         Rm4aDC3XrReGepkH/qXXGGNYJb1GH0Zf/PLoKgWYi6eWsGwrfl+c9gDSA+ugVz6FODUt
+         r4/Q==
+X-Gm-Message-State: AOAM533O5EjdQ+TgrQltND/y3js1KfRc7SjslbSMAYiq6bGVUoFwJbA1
+        3K5AnUztzpJUhWzPnQNOf1i2Mw==
+X-Google-Smtp-Source: ABdhPJwJAeFEelD78q6rYpvvQ6JxuZtvcWF/AFitGSSMgHKpRLSybFUYGC+pdSrjsP540fmNOXEUIg==
+X-Received: by 2002:a17:90a:3:: with SMTP id 3mr335438pja.211.1644398595054;
+        Wed, 09 Feb 2022 01:23:15 -0800 (PST)
 Received: from localhost (174.71.80.34.bc.googleusercontent.com. [34.80.71.174])
-        by smtp.gmail.com with UTF8SMTPSA id mn7sm5338358pjb.8.2022.02.09.01.23.09
+        by smtp.gmail.com with UTF8SMTPSA id k14sm19262194pff.25.2022.02.09.01.23.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 01:23:11 -0800 (PST)
+        Wed, 09 Feb 2022 01:23:14 -0800 (PST)
 From:   Joseph Hwang <josephsih@chromium.org>
 To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
         luiz.dentz@gmail.com, pali@kernel.org
 Cc:     josephsih@google.com, chromeos-bluetooth-upstreaming@chromium.org,
         Joseph Hwang <josephsih@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 2/3] Bluetooth: btintel: surface Intel telemetry events through mgmt
-Date:   Wed,  9 Feb 2022 17:22:59 +0800
-Message-Id: <20220209172233.v3.2.I63681490281b2392aa1ac05dff91a126394ab649@changeid>
+Subject: [PATCH v3 3/3] Bluetooth: mgmt: add set_quality_report for MGMT_OP_SET_QUALITY_REPORT
+Date:   Wed,  9 Feb 2022 17:23:00 +0800
+Message-Id: <20220209092312.751426-1-josephsih@chromium.org>
 X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 In-Reply-To: <20220209172233.v3.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
 References: <20220209172233.v3.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
@@ -72,158 +71,278 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When receiving a HCI vendor event, the kernel checks if it is an
-Intel telemetry event. If yes, the event is sent to bluez user
-space through the mgmt socket.
+This patch adds a new set_quality_report mgmt handler to set
+the quality report feature. The feature is removed from the
+experimental features at the same time.
 
 Signed-off-by: Joseph Hwang <josephsih@chromium.org>
-Reviewed-by: Archie Pusaka <apusaka@chromium.org>
 ---
 
 Changes in v3:
-- Move intel_vendor_evt() from hci_event.c to the btintel driver.
+- This is a new patch to enable the quality report feature.
+  The reading and setting of the quality report feature are
+  removed from the experimental features.
 
-Changes in v2:
-- Drop the pull_quality_report_data function from hci_dev.
-  Do not bother hci_dev with it. Do not bleed the details
-  into the core.
+ include/net/bluetooth/mgmt.h |   7 ++
+ net/bluetooth/mgmt.c         | 164 +++++++++++++++--------------------
+ 2 files changed, 77 insertions(+), 94 deletions(-)
 
- drivers/bluetooth/btintel.c      | 37 +++++++++++++++++++++++++++++++-
- drivers/bluetooth/btintel.h      |  7 ++++++
- include/net/bluetooth/hci_core.h |  2 ++
- net/bluetooth/hci_event.c        | 12 +++++++++++
- 4 files changed, 57 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/bluetooth/btintel.c b/drivers/bluetooth/btintel.c
-index 06514ed66022..c7732da2752f 100644
---- a/drivers/bluetooth/btintel.c
-+++ b/drivers/bluetooth/btintel.c
-@@ -2401,9 +2401,12 @@ static int btintel_setup_combined(struct hci_dev *hdev)
- 	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
- 	set_bit(HCI_QUIRK_NON_PERSISTENT_DIAG, &hdev->quirks);
+diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
+index 03204b4ba641..236e042fbc1c 100644
+--- a/include/net/bluetooth/mgmt.h
++++ b/include/net/bluetooth/mgmt.h
+@@ -109,6 +109,7 @@ struct mgmt_rp_read_index_list {
+ #define MGMT_SETTING_STATIC_ADDRESS	0x00008000
+ #define MGMT_SETTING_PHY_CONFIGURATION	0x00010000
+ #define MGMT_SETTING_WIDEBAND_SPEECH	0x00020000
++#define MGMT_SETTING_QUALITY_REPORT	0x00040000
  
--	/* Set up the quality report callback for Intel devices */
-+	/* Set up the quality report callbacks for Intel devices */
- 	hdev->set_quality_report = btintel_set_quality_report;
+ #define MGMT_OP_READ_INFO		0x0004
+ #define MGMT_READ_INFO_SIZE		0
+@@ -838,6 +839,12 @@ struct mgmt_cp_add_adv_patterns_monitor_rssi {
+ } __packed;
+ #define MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE	8
  
-+	/* Set up the vendor specific callback for Intel devices */
-+	hdev->vendor_evt = btintel_vendor_evt;
-+
- 	/* For Legacy device, check the HW platform value and size */
- 	if (skb->len == sizeof(ver) && skb->data[1] == 0x37) {
- 		bt_dev_dbg(hdev, "Read the legacy Intel version information");
-@@ -2650,6 +2653,38 @@ void btintel_secure_send_result(struct hci_dev *hdev,
- }
- EXPORT_SYMBOL_GPL(btintel_secure_send_result);
- 
-+#define INTEL_PREFIX		0x8087
-+#define TELEMETRY_CODE		0x03
-+
-+struct intel_prefix_evt_data {
-+	__le16 vendor_prefix;
-+	__u8 code;
-+	__u8 data[];   /* a number of struct intel_tlv subevents */
++#define MGMT_OP_SET_QUALITY_REPORT		0x0057
++struct mgmt_cp_set_quality_report {
++	__u8	action;
 +} __packed;
++#define MGMT_SET_QUALITY_REPORT_SIZE		1
 +
-+static bool is_quality_report_evt(struct sk_buff *skb)
-+{
-+	struct intel_prefix_evt_data *ev;
-+	u16 vendor_prefix;
-+
-+	if (skb->len < sizeof(struct intel_prefix_evt_data))
-+		return false;
-+
-+	ev = (struct intel_prefix_evt_data *)skb->data;
-+	vendor_prefix = __le16_to_cpu(ev->vendor_prefix);
-+
-+	return vendor_prefix == INTEL_PREFIX && ev->code == TELEMETRY_CODE;
-+}
-+
-+void btintel_vendor_evt(struct hci_dev *hdev,  void *data, struct sk_buff *skb)
-+{
-+	/* Only interested in the telemetry event for now. */
-+	if (hdev->set_quality_report && is_quality_report_evt(skb))
-+		mgmt_quality_report(hdev, skb->data, skb->len,
-+				    QUALITY_SPEC_INTEL_TELEMETRY);
-+}
-+EXPORT_SYMBOL_GPL(btintel_vendor_evt);
-+
- MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
- MODULE_DESCRIPTION("Bluetooth support for Intel devices ver " VERSION);
- MODULE_VERSION(VERSION);
-diff --git a/drivers/bluetooth/btintel.h b/drivers/bluetooth/btintel.h
-index e0060e58573c..82dc278b09eb 100644
---- a/drivers/bluetooth/btintel.h
-+++ b/drivers/bluetooth/btintel.h
-@@ -211,6 +211,7 @@ void btintel_bootup(struct hci_dev *hdev, const void *ptr, unsigned int len);
- void btintel_secure_send_result(struct hci_dev *hdev,
- 				const void *ptr, unsigned int len);
- int btintel_set_quality_report(struct hci_dev *hdev, bool enable);
-+void btintel_vendor_evt(struct hci_dev *hdev,  void *data, struct sk_buff *skb);
- #else
+ #define MGMT_EV_CMD_COMPLETE		0x0001
+ struct mgmt_ev_cmd_complete {
+ 	__le16	opcode;
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index cab79f480a21..92de8e669897 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -857,6 +857,10 @@ static u32 get_supported_settings(struct hci_dev *hdev)
  
- static inline int btintel_check_bdaddr(struct hci_dev *hdev)
-@@ -306,4 +307,10 @@ static inline int btintel_set_quality_report(struct hci_dev *hdev, bool enable)
- {
- 	return -ENODEV;
+ 	settings |= MGMT_SETTING_PHY_CONFIGURATION;
+ 
++	if (hdev && (aosp_has_quality_report(hdev) ||
++		     hdev->set_quality_report))
++		settings |= MGMT_SETTING_QUALITY_REPORT;
++
+ 	return settings;
  }
+ 
+@@ -928,6 +932,9 @@ static u32 get_current_settings(struct hci_dev *hdev)
+ 	if (hci_dev_test_flag(hdev, HCI_WIDEBAND_SPEECH_ENABLED))
+ 		settings |= MGMT_SETTING_WIDEBAND_SPEECH;
+ 
++	if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
++		settings |= MGMT_SETTING_QUALITY_REPORT;
 +
-+static inline void btintel_vendor_evt(struct hci_dev *hdev,  void *data,
-+				      struct sk_buff *skb)
-+{
-+}
-+
+ 	return settings;
+ }
+ 
+@@ -3871,12 +3878,6 @@ static const u8 debug_uuid[16] = {
+ };
  #endif
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index ea83619ac4de..3505ffe20779 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -635,6 +635,8 @@ struct hci_dev {
- 	void (*cmd_timeout)(struct hci_dev *hdev);
- 	bool (*wakeup)(struct hci_dev *hdev);
- 	int (*set_quality_report)(struct hci_dev *hdev, bool enable);
-+	void (*vendor_evt)(struct hci_dev *hdev, void *data,
-+			   struct sk_buff *skb);
- 	int (*get_data_path_id)(struct hci_dev *hdev, __u8 *data_path);
- 	int (*get_codec_config_data)(struct hci_dev *hdev, __u8 type,
- 				     struct bt_codec *codec, __u8 *vnd_len,
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 6468ea0f71bd..e34dea0f0c2e 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4250,6 +4250,7 @@ static void hci_num_comp_blocks_evt(struct hci_dev *hdev, void *data,
-  *       space to avoid collision.
-  */
- static unsigned char AOSP_BQR_PREFIX[] = { 0x58 };
-+static unsigned char INTEL_PREFIX[] = { 0x87, 0x80 };
  
- /* Some vendor prefixes are fixed values and lengths. */
- #define FIXED_EVT_PREFIX(_prefix, _vendor_func)				\
-@@ -4273,6 +4274,16 @@ static unsigned char AOSP_BQR_PREFIX[] = { 0x58 };
- 	.get_prefix_len = _prefix_len_func,				\
+-/* 330859bc-7506-492d-9370-9a6f0614037f */
+-static const u8 quality_report_uuid[16] = {
+-	0x7f, 0x03, 0x14, 0x06, 0x6f, 0x9a, 0x70, 0x93,
+-	0x2d, 0x49, 0x06, 0x75, 0xbc, 0x59, 0x08, 0x33,
+-};
+-
+ /* a6695ace-ee7f-4fb9-881a-5fac66c629af */
+ static const u8 offload_codecs_uuid[16] = {
+ 	0xaf, 0x29, 0xc6, 0x66, 0xac, 0x5f, 0x1a, 0x88,
+@@ -3898,7 +3899,7 @@ static const u8 rpa_resolution_uuid[16] = {
+ static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
+ 				  void *data, u16 data_len)
+ {
+-	char buf[102];   /* Enough space for 5 features: 2 + 20 * 5 */
++	char buf[82];   /* Enough space for 4 features: 2 + 20 * 4 */
+ 	struct mgmt_rp_read_exp_features_info *rp = (void *)buf;
+ 	u16 idx = 0;
+ 	u32 flags;
+@@ -3939,18 +3940,6 @@ static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
+ 		idx++;
+ 	}
+ 
+-	if (hdev && (aosp_has_quality_report(hdev) ||
+-		     hdev->set_quality_report)) {
+-		if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
+-			flags = BIT(0);
+-		else
+-			flags = 0;
+-
+-		memcpy(rp->features[idx].uuid, quality_report_uuid, 16);
+-		rp->features[idx].flags = cpu_to_le32(flags);
+-		idx++;
+-	}
+-
+ 	if (hdev && hdev->get_data_path_id) {
+ 		if (hci_dev_test_flag(hdev, HCI_OFFLOAD_CODECS_ENABLED))
+ 			flags = BIT(0);
+@@ -4163,80 +4152,6 @@ static int set_rpa_resolution_func(struct sock *sk, struct hci_dev *hdev,
+ 	return err;
  }
  
-+/* Every vendor that handles particular vendor events in its driver should
-+ * 1. set up the vendor_evt callback in its driver and
-+ * 2. add an entry in struct vendor_event_prefix.
-+ */
-+static void vendor_evt(struct hci_dev *hdev,  void *data, struct sk_buff *skb)
+-static int set_quality_report_func(struct sock *sk, struct hci_dev *hdev,
+-				   struct mgmt_cp_set_exp_feature *cp,
+-				   u16 data_len)
+-{
+-	struct mgmt_rp_set_exp_feature rp;
+-	bool val, changed;
+-	int err;
+-
+-	/* Command requires to use a valid controller index */
+-	if (!hdev)
+-		return mgmt_cmd_status(sk, MGMT_INDEX_NONE,
+-				       MGMT_OP_SET_EXP_FEATURE,
+-				       MGMT_STATUS_INVALID_INDEX);
+-
+-	/* Parameters are limited to a single octet */
+-	if (data_len != MGMT_SET_EXP_FEATURE_SIZE + 1)
+-		return mgmt_cmd_status(sk, hdev->id,
+-				       MGMT_OP_SET_EXP_FEATURE,
+-				       MGMT_STATUS_INVALID_PARAMS);
+-
+-	/* Only boolean on/off is supported */
+-	if (cp->param[0] != 0x00 && cp->param[0] != 0x01)
+-		return mgmt_cmd_status(sk, hdev->id,
+-				       MGMT_OP_SET_EXP_FEATURE,
+-				       MGMT_STATUS_INVALID_PARAMS);
+-
+-	hci_req_sync_lock(hdev);
+-
+-	val = !!cp->param[0];
+-	changed = (val != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
+-
+-	if (!aosp_has_quality_report(hdev) && !hdev->set_quality_report) {
+-		err = mgmt_cmd_status(sk, hdev->id,
+-				      MGMT_OP_SET_EXP_FEATURE,
+-				      MGMT_STATUS_NOT_SUPPORTED);
+-		goto unlock_quality_report;
+-	}
+-
+-	if (changed) {
+-		if (hdev->set_quality_report)
+-			err = hdev->set_quality_report(hdev, val);
+-		else
+-			err = aosp_set_quality_report(hdev, val);
+-
+-		if (err) {
+-			err = mgmt_cmd_status(sk, hdev->id,
+-					      MGMT_OP_SET_EXP_FEATURE,
+-					      MGMT_STATUS_FAILED);
+-			goto unlock_quality_report;
+-		}
+-
+-		if (val)
+-			hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
+-		else
+-			hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
+-	}
+-
+-	bt_dev_dbg(hdev, "quality report enable %d changed %d", val, changed);
+-
+-	memcpy(rp.uuid, quality_report_uuid, 16);
+-	rp.flags = cpu_to_le32(val ? BIT(0) : 0);
+-	hci_sock_set_flag(sk, HCI_MGMT_EXP_FEATURE_EVENTS);
+-
+-	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_EXP_FEATURE, 0,
+-				&rp, sizeof(rp));
+-
+-	if (changed)
+-		exp_feature_changed(hdev, quality_report_uuid, val, sk);
+-
+-unlock_quality_report:
+-	hci_req_sync_unlock(hdev);
+-	return err;
+-}
+-
+ static int set_offload_codec_func(struct sock *sk, struct hci_dev *hdev,
+ 				  struct mgmt_cp_set_exp_feature *cp,
+ 				  u16 data_len)
+@@ -4363,7 +4278,6 @@ static const struct mgmt_exp_feature {
+ 	EXP_FEAT(debug_uuid, set_debug_func),
+ #endif
+ 	EXP_FEAT(rpa_resolution_uuid, set_rpa_resolution_func),
+-	EXP_FEAT(quality_report_uuid, set_quality_report_func),
+ 	EXP_FEAT(offload_codecs_uuid, set_offload_codec_func),
+ 	EXP_FEAT(le_simultaneous_roles_uuid, set_le_simultaneous_roles_func),
+ 
+@@ -8656,6 +8570,67 @@ static int get_adv_size_info(struct sock *sk, struct hci_dev *hdev,
+ 	return err;
+ }
+ 
++static int set_quality_report(struct sock *sk, struct hci_dev *hdev,
++			      void *data, u16 data_len)
 +{
-+	if (hdev->vendor_evt)
-+		hdev->vendor_evt(hdev, data, skb);
++	struct mgmt_cp_set_quality_report *cp = data;
++	bool enable, changed;
++	int err;
++
++	/* Command requires to use a valid controller index */
++	if (!hdev)
++		return mgmt_cmd_status(sk, MGMT_INDEX_NONE,
++				       MGMT_OP_SET_QUALITY_REPORT,
++				       MGMT_STATUS_INVALID_INDEX);
++
++	/* Only 0 (off) and 1 (on) is supported */
++	if (cp->action != 0x00 && cp->action != 0x01)
++		return mgmt_cmd_status(sk, hdev->id,
++				       MGMT_OP_SET_QUALITY_REPORT,
++				       MGMT_STATUS_INVALID_PARAMS);
++
++	hci_req_sync_lock(hdev);
++
++	enable = !!cp->action;
++	changed = (enable != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
++
++	if (!aosp_has_quality_report(hdev) && !hdev->set_quality_report) {
++		err = mgmt_cmd_status(sk, hdev->id,
++				      MGMT_OP_SET_QUALITY_REPORT,
++				      MGMT_STATUS_NOT_SUPPORTED);
++		goto unlock_quality_report;
++	}
++
++	if (changed) {
++		if (hdev->set_quality_report)
++			err = hdev->set_quality_report(hdev, enable);
++		else
++			err = aosp_set_quality_report(hdev, enable);
++
++		if (err) {
++			err = mgmt_cmd_status(sk, hdev->id,
++					      MGMT_OP_SET_QUALITY_REPORT,
++					      MGMT_STATUS_FAILED);
++			goto unlock_quality_report;
++		}
++
++		if (enable)
++			hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
++		else
++			hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
++	}
++
++	bt_dev_dbg(hdev, "quality report enable %d changed %d",
++		   enable, changed);
++
++	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_QUALITY_REPORT, 0,
++				NULL, 0);
++
++unlock_quality_report:
++	hci_req_sync_unlock(hdev);
++	return err;
 +}
 +
- /* Every distinct vendor specification must have a well-defined vendor
-  * event prefix to determine if a vendor event meets the specification.
-  * If an event prefix is fixed, it should be delcared with FIXED_EVT_PREFIX.
-@@ -4287,6 +4298,7 @@ struct vendor_event_prefix {
- 	__u8 (*get_prefix_len)(struct hci_dev *hdev);
- } evt_prefixes[] = {
- 	FIXED_EVT_PREFIX(AOSP_BQR_PREFIX, aosp_quality_report_evt),
-+	FIXED_EVT_PREFIX(INTEL_PREFIX, vendor_evt),
- 	DYNAMIC_EVT_PREFIX(get_msft_evt_prefix, get_msft_evt_prefix_len,
- 			   msft_vendor_evt),
+ static const struct hci_mgmt_handler mgmt_handlers[] = {
+ 	{ NULL }, /* 0x0000 (no command) */
+ 	{ read_version,            MGMT_READ_VERSION_SIZE,
+@@ -8782,6 +8757,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
+ 	{ add_adv_patterns_monitor_rssi,
+ 				   MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE,
+ 						HCI_MGMT_VAR_LEN },
++	{ set_quality_report,      MGMT_SET_QUALITY_REPORT_SIZE },
+ };
  
+ void mgmt_index_added(struct hci_dev *hdev)
 -- 
 2.35.0.263.gb82422642f-goog
 
