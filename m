@@ -2,67 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E13464AF0D0
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 13:08:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5C674AF0E9
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 13:08:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231952AbiBIMHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 07:07:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48034 "EHLO
+        id S232383AbiBIMHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 07:07:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233391AbiBIMGq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 07:06:46 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457CCE016CD8;
-        Wed,  9 Feb 2022 03:13:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644405212; x=1675941212;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CLhMlvEV+rn3VwrObHpuk3rd0PNcKIyWcU6fqh61PL0=;
-  b=sUIpL9FOAznQkfCu0DlA5cPaCCp9qzzxX8nzd7V1MiIgb1ilNMSTuK9u
-   +zILMC1fBg4y/0JFXR4ShxsZpLLBuEhV5no/MiU5NV4gDrU3wbQfzb59k
-   T2MlsCpq0iY+2SWB4xbibarGRqmyaLSN7ef/cDix06Rw9h/Sq5LHcW+3t
-   5JO5V84SwikU8J8cC83keoYiA73iZQd95YCyusk/pGNtJ9ypprGwS6F6T
-   tr1jKgd2DYTtudTmKGwZuZfe2akFqm1BmKkONWf/3Ptb+i3yE9KX9kFAW
-   SR1iN8hoIQucSdAPnZD/oRfMvOdTrQfENAPiLDjUJzX7JYGBc9uAYzLzl
-   w==;
-IronPort-SDR: zRl5OBvAiM2qFDpZMrVz0fW3VW1goqRqcuNeSeAhfZACzHgjQ+wtgByg1x2AwtdZ4SFpUQnpaN
- StgWhqmeXjNMRy75MFws7T+4VM6wPt7h8P6q1wJfuIlfKj6q0U+dMdZIamZcBgxR+QinSTdAYY
- yOuKsGd06fZtQov+Cl0dL5IAdkrzYbM+FUjftmQi2OPZQzXbKMwAwjKErZNKyVwpNl0G3S5/wV
- VUVbfFAIZAK6RiBmUcRtBdB0D3wF+aBIdyqh97rhBpxrTEKxtgN0IZ1LnBv5OpBQM9gtUmb4V2
- BU/01FxaDjRWfSsfZ24sh7MR
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="152974486"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Feb 2022 04:13:31 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 9 Feb 2022 04:13:30 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Wed, 9 Feb 2022 04:13:27 -0700
-From:   <conor.dooley@microchip.com>
-To:     <harini.katakam@xilinx.com>, <andrei.pistirica@microchip.com>,
-        <claudiu.beznea@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <nicolas.ferre@microchip.com>
-CC:     <harinikatakamlinux@gmail.com>, <Conor.Dooley@microchip.com>,
-        <linux-kernel@vger.kernel.org>, <michal.simek@xilinx.com>,
-        <mstamand@ciena.com>, <netdev@vger.kernel.org>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH] net: macb: Align the dma and coherent dma masks
-Date:   Wed, 9 Feb 2022 11:15:56 +0000
-Message-ID: <20220209111555.4022923-1-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220209094325.8525-1-harini.katakam@xilinx.com>
-References: <20220209094325.8525-1-harini.katakam@xilinx.com>
+        with ESMTP id S232677AbiBIMGF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 07:06:05 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3C6C094CBB
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 03:27:08 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nHl7J-0007ep-T9; Wed, 09 Feb 2022 12:26:33 +0100
+Received: from pengutronix.de (unknown [195.138.59.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 144702F207;
+        Wed,  9 Feb 2022 11:26:21 +0000 (UTC)
+Date:   Wed, 9 Feb 2022 12:26:17 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Yannick Vignon <yannick.vignon@oss.nxp.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Wang <weiwan@google.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, mingkai.hu@nxp.com,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        sebastien.laveze@nxp.com, Yannick Vignon <yannick.vignon@nxp.com>
+Subject: Re: [PATCH net-next 1/2] net: napi: wake up ksoftirqd if needed
+ after scheduling NAPI
+Message-ID: <20220209112617.mx5scslk2zbwqlq5@pengutronix.de>
+References: <20220203184031.1074008-1-yannick.vignon@oss.nxp.com>
+ <CANn89iKn20yuortKnqKV99s=Pb9HHXbX8e0=58f_szkTWnQbCQ@mail.gmail.com>
+ <0ad1a438-8e29-4613-df46-f913e76a1770@oss.nxp.com>
+ <20220203170901.52ccfd09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YfzhioY0Mj3M1v4S@linutronix.de>
+ <20220204074317.4a8be6d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <078bffa8-6feb-9637-e874-254b6d4b188e@oss.nxp.com>
+ <20220204094522.4a233a2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <Yf1qc7R5rFoALsCo@linutronix.de>
+ <20220204105035.4e207e9c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="bp5rpkdrxtbu77ma"
+Content-Disposition: inline
+In-Reply-To: <20220204105035.4e207e9c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,59 +78,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> From: Marc St-Amand <mstamand@ciena.com>
-> 
-> Single page and coherent memory blocks can use different DMA masks
-> when the macb accesses physical memory directly. The kernel is clever
-> enough to allocate pages that fit into the requested address width.
-> 
-> When using the ARM SMMU, the DMA mask must be the same for single
-> pages and big coherent memory blocks. Otherwise the translation
-> tables turn into one big mess.
-> 
->   [   74.959909] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
->   [   74.959989] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
->   [   75.173939] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
->   [   75.173955] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
-> 
-> Since using the same DMA mask does not hurt direct 1:1 physical
-> memory mappings, this commit always aligns DMA and coherent masks.
-> 
-> Signed-off-by: Marc St-Amand <mstamand@ciena.com>
-> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
 
-Tested-by: Conor Dooley <conor.dooley@microchip.com>
+--bp5rpkdrxtbu77ma
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Fixes a DMA allocation failure for me on a non arm board, seen if
-I only assigned DDR to 64 bit addresses. Without the change I was
-getting the following page allocation error:
+On 04.02.2022 10:50:35, Jakub Kicinski wrote:
+> > Wouldn't it work to utilize the threaded-IRQ API and use that instead
+> > the custom thread? Basically the primary handler would what it already
+> > does (disable the interrupt) and the threaded handler would feed packets
+> > into the stack. In the overload case one would need to lower the
+> > thread-priority.
+>=20
+> Sounds like an interesting direction if you ask me! That said I have
+> not been able to make threaded NAPI useful in my experiments / with my
+> workloads so I'd defer to Wei for confirmation.
 
-Starting network:
-[    2.911830] ip: page allocation failure: order:2, mode:0xcc4(GFP_KERNEL|GFP_DMA32),nodemask=(null)
-[    2.921256] CPU: 3 PID: 171 Comm: ip Not tainted 5.17.0-rc1-00640-g6cc001edd9ad #1
-[    2.928915] Hardware name: Microchip PolarFire-SoC Icicle Kit (DT)
-[    2.935147] Call Trace:
-[    2.937626] [<ffffffff800047e0>] dump_backtrace+0x1c/0x24
-[    2.943087] [<ffffffff807fcfce>] dump_stack_lvl+0x40/0x58
-[    2.948547] [<ffffffff807fcffa>] dump_stack+0x14/0x1c
-[    2.953649] [<ffffffff80104bfc>] warn_alloc+0xd6/0x14c
-[    2.958849] [<ffffffff801053e0>] __alloc_pages_slowpath.constprop.0+0x76e/0x882
-[    2.966242] [<ffffffff80105618>] __alloc_pages+0x124/0x174
-[    2.971783] [<ffffffff80061440>] __dma_direct_alloc_pages+0x12c/0x28c
-[    2.978286] [<ffffffff800616f2>] dma_direct_alloc+0x40/0x13e
-[    2.983996] [<ffffffff80060bf2>] dma_alloc_attrs+0x78/0x86
-[    2.989541] [<ffffffff805cdfb6>] macb_open+0x84/0x42c
-[    2.994645] [<ffffffff806e2468>] __dev_open+0xb0/0x142
-[    2.999845] [<ffffffff806e2884>] __dev_change_flags+0x180/0x1ec
-[    3.005827] [<ffffffff806e290e>] dev_change_flags+0x1e/0x54
-[    3.011461] [<ffffffff8076960e>] devinet_ioctl+0x1fc/0x612
-[    3.017015] [<ffffffff8076b27e>] inet_ioctl+0x96/0xfa
-[    3.022109] [<ffffffff806bf5e2>] sock_ioctl+0x256/0x29e
-[    3.027396] [<ffffffff8012bc7c>] sys_ioctl+0x340/0x7f8
-[    3.032595] [<ffffffff80003014>] ret_from_syscall+0x0/0x2
-<snip>
-[    3.176712] macb 20110000.ethernet eth0: Unable to allocate DMA memory (error -12)
-ip: SIOCSIFFLAGS: Cannot allocate memory
-FAIL
+FWIW: We have a threaded NAPI use case. On a PREEMPT_RT enabled imx6 (4
+core 32 bit ARM) the NAPI of the CAN controller (flexcan) is running in
+threaded mode with raised priorities. This reduces latency spikes and
+jitter of RX'ed CAN frames, which are part of a closed control loop.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--bp5rpkdrxtbu77ma
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIDpNcACgkQrX5LkNig
+011TXgf9GnStV2H486VhVb7IKmiCq/IG51H+d5VPtw72NUInmqDiVX69Sgk2fcuI
+tKwPOib7dBI52Ia7zkaWdRQS+PmJzwS+rLUWLbgZf3PpYKeyyA3EFFF4/BEUn6vc
+J343dkIRK/AMUC5mvXAYz7slr6N/Lmy0iyXsqeFGvjGOZgWSBShRvUdsB+uJhb+R
+xRblZJhsnsbzLPteVXWAqPndnbJZwYVVUiCz7E33kP6tzqwP6+RgtObUqQU3fMC6
+yJLorz+kBkhP6SXspXCA3EqOhTXV3WTDf/kfVALsWuclvIu4o1mPHip80U8BJG6+
+aAnGhadxtcmXmetAaQhvv9+xb710MA==
+=2ul/
+-----END PGP SIGNATURE-----
+
+--bp5rpkdrxtbu77ma--
