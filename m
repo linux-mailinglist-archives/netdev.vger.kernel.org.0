@@ -2,49 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9429E4AEA2E
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 07:18:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F16B4AEA26
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 07:18:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231168AbiBIGRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 01:17:54 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34720 "EHLO
+        id S231816AbiBIGRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 01:17:53 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241467AbiBIGLY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 01:11:24 -0500
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17388C002146;
-        Tue,  8 Feb 2022 22:09:14 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V3zwKp0_1644386916;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V3zwKp0_1644386916)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Feb 2022 14:08:37 +0800
-Message-ID: <1644386755.446152-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v3 13/17] virtio_pci: queue_reset: support VIRTIO_F_RING_RESET
-Date:   Wed, 9 Feb 2022 14:05:55 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>
-References: <20220126073533.44994-1-xuanzhuo@linux.alibaba.com>
- <20220126073533.44994-14-xuanzhuo@linux.alibaba.com>
- <0908a9f6-562d-fab5-39c3-2f0125acc80e@redhat.com>
- <1644220750.6834595-1-xuanzhuo@linux.alibaba.com>
- <CACGkMEuemxceN-uQ9Pg1bkaW6jba_jzWkoduRM_FqXUKQy26AA@mail.gmail.com>
- <1644305735.2620988-1-xuanzhuo@linux.alibaba.com>
- <CACGkMEvSjS+WM+wXpJQ1a=bQ7__D-kQtVSErubz=GbmyT7+E5g@mail.gmail.com>
-In-Reply-To: <CACGkMEvSjS+WM+wXpJQ1a=bQ7__D-kQtVSErubz=GbmyT7+E5g@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        with ESMTP id S240970AbiBIGLF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 01:11:05 -0500
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410B3C1036B8;
+        Tue,  8 Feb 2022 22:09:03 -0800 (PST)
+Received: by mail-pf1-x443.google.com with SMTP id i6so612282pfc.9;
+        Tue, 08 Feb 2022 22:09:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7qu9SXzamv/QkP+1OWSYirJbPVRFGrMjMBWpsyDdk9k=;
+        b=CTcStu2DYq1/LPHmRKZ6GwkibuxZPg6hvbaAf8Ifs/rospQZ3e03hK9Azp7bvenjXP
+         dqtUvM/l0p6FzPaqzBDGH+Fe6KQ5nO45X0xgPQ0edj9m3tTy32tbsi8zG7ukxERyZ1N5
+         OzS8W5OvDHPtEd0SfYQHQpZJYuLbUnU3vPiBv3bbfDa4VVNF8OzU50jGbb2e3Bb9Xw+I
+         hCj1de4hBnrAlbrLBEu6xv/kpPT9H5bdCMzmsLQWrPPCztU6uYaqylozCsGSN29qwnqr
+         iTqzu0ay2lsODaYndYtgnbppCo30bUgPDDYvFwhorV47uGBlq2rKy678YQyjvOWKQoic
+         mCog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7qu9SXzamv/QkP+1OWSYirJbPVRFGrMjMBWpsyDdk9k=;
+        b=QFFTv8X/ZoZ0KBLgrzv3qIppH4ghUKKHqCVSWGLvbkUE/ASBacWB3I8zBJB2+C0qit
+         xETjN00/1WT9jjkeMZSOHHZFthw8ru1LyIynSLrfH8bgNv6vJCMRUKH6Pd5Wv+FC2SiI
+         XoBxsu43A97zsIKDzd2nC3O6Ru7yYkppRxWBlnBvwiKieNGVewxh3LKPa52Vu8sOfckW
+         AHOX5pK8zNJUj4Y9IZ2K6HV6wPC5BjVgYWGAWA26LTn82V0XyGzVECpVJtTlq4VDF1Fl
+         T+OFACg5xkEiM9yvuX5jSNHsjOghuloQKaOE38gEpjioIndS3uZb4+qVRb+vvmlkmyWv
+         NtCQ==
+X-Gm-Message-State: AOAM533u8EWoj3S1XaieVz7gwKdBmfiq4UI2hxxb7PKj2J7K/hDLmuNv
+        vPt1HS5a3w65y3kMFzk2dDk=
+X-Google-Smtp-Source: ABdhPJyam0O1L9PHL4QJzBnA7ZzLLWr0s6N1yboZe3wXkn5GDckeROUhMgGCRGSRTFRE6J0fDFqegQ==
+X-Received: by 2002:a63:5a64:: with SMTP id k36mr698362pgm.408.1644386941495;
+        Tue, 08 Feb 2022 22:09:01 -0800 (PST)
+Received: from localhost ([139.155.25.230])
+        by smtp.gmail.com with ESMTPSA id l13sm12788114pgs.16.2022.02.08.22.09.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 22:09:00 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     idosch@idosch.org
+Cc:     nhorman@tuxdriver.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rostedt@goodmis.org, dsahern@kernel.org,
+        Menglong Dong <imagedong@tencent.com>
+Subject: [PATCH v8 net-next] net: drop_monitor: support drop reason
+Date:   Wed,  9 Feb 2022 14:08:38 +0800
+Message-Id: <20220209060838.55513-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,435 +70,169 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Feb 2022 13:44:06 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Tue, Feb 8, 2022 at 3:44 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wro=
-te:
-> >
-> > On Tue, 8 Feb 2022 10:55:37 +0800, Jason Wang <jasowang@redhat.com> wro=
-te:
-> > > On Mon, Feb 7, 2022 at 4:19 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com>=
- wrote:
-> > > >
-> > > > On Mon, 7 Feb 2022 14:57:13 +0800, Jason Wang <jasowang@redhat.com>=
- wrote:
-> > > > >
-> > > > > =E5=9C=A8 2022/1/26 =E4=B8=8B=E5=8D=883:35, Xuan Zhuo =E5=86=99=
-=E9=81=93:
-> > > > > > This patch implements virtio pci support for QUEUE RESET.
-> > > > > >
-> > > > > > Performing reset on a queue is divided into two steps:
-> > > > > >
-> > > > > > 1. reset_vq: reset one vq
-> > > > > > 2. enable_reset_vq: re-enable the reset queue
-> > > > > >
-> > > > > > In the first step, these tasks will be completed:
-> > > > > >     1. notify the hardware queue to reset
-> > > > > >     2. recycle the buffer from vq
-> > > > > >     3. release the ring of the vq
-> > > > > >
-> > > > > > The process of enable reset vq:
-> > > > > >      vp_modern_enable_reset_vq()
-> > > > > >      vp_enable_reset_vq()
-> > > > > >      __vp_setup_vq()
-> > > > > >      setup_vq()
-> > > > > >      vring_setup_virtqueue()
-> > > > > >
-> > > > > > In this process, we added two parameters, vq and num, and final=
-ly passed
-> > > > > > them to vring_setup_virtqueue().  And reuse the original info a=
-nd vq.
-> > > > > >
-> > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > > > ---
-> > > > > >   drivers/virtio/virtio_pci_common.c |  36 +++++++----
-> > > > > >   drivers/virtio/virtio_pci_common.h |   5 ++
-> > > > > >   drivers/virtio/virtio_pci_modern.c | 100 ++++++++++++++++++++=
-+++++++++
-> > > > > >   3 files changed, 128 insertions(+), 13 deletions(-)
-> > > > > >
-> > > > > > diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virti=
-o/virtio_pci_common.c
-> > > > > > index c02936d29a31..ad21638fbf66 100644
-> > > > > > --- a/drivers/virtio/virtio_pci_common.c
-> > > > > > +++ b/drivers/virtio/virtio_pci_common.c
-> > > > > > @@ -205,23 +205,28 @@ static int vp_request_msix_vectors(struct=
- virtio_device *vdev, int nvectors,
-> > > > > >     return err;
-> > > > > >   }
-> > > > > >
-> > > > > > -static struct virtqueue *vp_setup_vq(struct virtio_device *vde=
-v, unsigned index,
-> > > > > > -                                void (*callback)(struct virtqu=
-eue *vq),
-> > > > > > -                                const char *name,
-> > > > > > -                                bool ctx,
-> > > > > > -                                u16 msix_vec, u16 num)
-> > > > > > +struct virtqueue *vp_setup_vq(struct virtio_device *vdev, unsi=
-gned index,
-> > > > > > +                         void (*callback)(struct virtqueue *vq=
-),
-> > > > > > +                         const char *name,
-> > > > > > +                         bool ctx,
-> > > > > > +                         u16 msix_vec, u16 num)
-> > > > > >   {
-> > > > > >     struct virtio_pci_device *vp_dev =3D to_vp_device(vdev);
-> > > > > > -   struct virtio_pci_vq_info *info =3D kmalloc(sizeof *info, G=
-FP_KERNEL);
-> > > > > > +   struct virtio_pci_vq_info *info;
-> > > > > >     struct virtqueue *vq;
-> > > > > >     unsigned long flags;
-> > > > > >
-> > > > > > -   /* fill out our structure that represents an active queue */
-> > > > > > -   if (!info)
-> > > > > > -           return ERR_PTR(-ENOMEM);
-> > > > > > +   info =3D vp_dev->vqs[index];
-> > > > > > +   if (!info) {
-> > > > > > +           info =3D kzalloc(sizeof *info, GFP_KERNEL);
-> > > > > > +
-> > > > > > +           /* fill out our structure that represents an active=
- queue */
-> > > > > > +           if (!info)
-> > > > > > +                   return ERR_PTR(-ENOMEM);
-> > > > > > +   }
-> > > > > >
-> > > > > >     vq =3D vp_dev->setup_vq(vp_dev, info, index, callback, name=
-, ctx,
-> > > > > > -                         msix_vec, NULL, num);
-> > > > > > +                         msix_vec, info->vq, num);
-> > > > > >     if (IS_ERR(vq))
-> > > > > >             goto out_info;
-> > > > > >
-> > > > > > @@ -238,6 +243,9 @@ static struct virtqueue *vp_setup_vq(struct=
- virtio_device *vdev, unsigned index,
-> > > > > >     return vq;
-> > > > > >
-> > > > > >   out_info:
-> > > > > > +   if (info->vq && info->vq->reset)
-> > > > > > +           return vq;
-> > > > > > +
-> > > > > >     kfree(info);
-> > > > > >     return vq;
-> > > > > >   }
-> > > > > > @@ -248,9 +256,11 @@ static void vp_del_vq(struct virtqueue *vq)
-> > > > > >     struct virtio_pci_vq_info *info =3D vp_dev->vqs[vq->index];
-> > > > > >     unsigned long flags;
-> > > > > >
-> > > > > > -   spin_lock_irqsave(&vp_dev->lock, flags);
-> > > > > > -   list_del(&info->node);
-> > > > > > -   spin_unlock_irqrestore(&vp_dev->lock, flags);
-> > > > > > +   if (!vq->reset) {
-> > > > > > +           spin_lock_irqsave(&vp_dev->lock, flags);
-> > > > > > +           list_del(&info->node);
-> > > > > > +           spin_unlock_irqrestore(&vp_dev->lock, flags);
-> > > > > > +   }
-> > > > > >
-> > > > > >     vp_dev->del_vq(info);
-> > > > > >     kfree(info);
-> > > > > > diff --git a/drivers/virtio/virtio_pci_common.h b/drivers/virti=
-o/virtio_pci_common.h
-> > > > > > index 65db92245e41..c1d15f7c0be4 100644
-> > > > > > --- a/drivers/virtio/virtio_pci_common.h
-> > > > > > +++ b/drivers/virtio/virtio_pci_common.h
-> > > > > > @@ -119,6 +119,11 @@ int vp_find_vqs(struct virtio_device *vdev=
-, unsigned nvqs,
-> > > > > >             struct virtqueue *vqs[], vq_callback_t *callbacks[],
-> > > > > >             const char * const names[], const bool *ctx,
-> > > > > >             struct irq_affinity *desc);
-> > > > > > +struct virtqueue *vp_setup_vq(struct virtio_device *vdev, unsi=
-gned index,
-> > > > > > +                         void (*callback)(struct virtqueue *vq=
-),
-> > > > > > +                         const char *name,
-> > > > > > +                         bool ctx,
-> > > > > > +                         u16 msix_vec, u16 num);
-> > > > > >   const char *vp_bus_name(struct virtio_device *vdev);
-> > > > > >
-> > > > > >   /* Setup the affinity for a virtqueue:
-> > > > > > diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virti=
-o/virtio_pci_modern.c
-> > > > > > index 2ce58de549de..6789411169e4 100644
-> > > > > > --- a/drivers/virtio/virtio_pci_modern.c
-> > > > > > +++ b/drivers/virtio/virtio_pci_modern.c
-> > > > > > @@ -34,6 +34,9 @@ static void vp_transport_features(struct virt=
-io_device *vdev, u64 features)
-> > > > > >     if ((features & BIT_ULL(VIRTIO_F_SR_IOV)) &&
-> > > > > >                     pci_find_ext_capability(pci_dev, PCI_EXT_CA=
-P_ID_SRIOV))
-> > > > > >             __virtio_set_bit(vdev, VIRTIO_F_SR_IOV);
-> > > > > > +
-> > > > > > +   if (features & BIT_ULL(VIRTIO_F_RING_RESET))
-> > > > > > +           __virtio_set_bit(vdev, VIRTIO_F_RING_RESET);
-> > > > > >   }
-> > > > > >
-> > > > > >   /* virtio config->finalize_features() implementation */
-> > > > > > @@ -176,6 +179,94 @@ static void vp_reset(struct virtio_device =
-*vdev)
-> > > > > >     vp_disable_cbs(vdev);
-> > > > > >   }
-> > > > > >
-> > > > > > +static int vp_modern_reset_vq(struct virtio_reset_vq *param)
-> > > > > > +{
-> > > > > > +   struct virtio_pci_device *vp_dev =3D to_vp_device(param->vd=
-ev);
-> > > > > > +   struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
-> > > > > > +   struct virtio_pci_vq_info *info;
-> > > > > > +   u16 msix_vec, queue_index;
-> > > > > > +   unsigned long flags;
-> > > > > > +   void *buf;
-> > > > > > +
-> > > > > > +   if (!virtio_has_feature(param->vdev, VIRTIO_F_RING_RESET))
-> > > > > > +           return -ENOENT;
-> > > > > > +
-> > > > > > +   queue_index =3D param->queue_index;
-> > > > > > +
-> > > > > > +   vp_modern_set_queue_reset(mdev, queue_index);
-> > > > > > +
-> > > > > > +   /* After write 1 to queue reset, the driver MUST wait for a=
- read of
-> > > > > > +    * queue reset to return 1.
-> > > > > > +    */
-> > > > > > +   while (vp_modern_get_queue_reset(mdev, queue_index) !=3D 1)
-> > > > > > +           msleep(1);
-> > > > >
-> > > > >
-> > > > > Is this better to move this logic into vp_modern_set_queue_reset(=
-)?
-> > > > >
-> > > >
-> > > > OK.
-> > > >
-> > > > >
-> > > > > > +
-> > > > > > +   info =3D vp_dev->vqs[queue_index];
-> > > > > > +   msix_vec =3D info->msix_vector;
-> > > > > > +
-> > > > > > +   /* Disable VQ callback. */
-> > > > > > +   if (vp_dev->per_vq_vectors && msix_vec !=3D VIRTIO_MSI_NO_V=
-ECTOR)
-> > > > > > +           disable_irq(pci_irq_vector(vp_dev->pci_dev, msix_ve=
-c));
-> > > > >
-> > > > >
-> > > > > How about the INTX case where irq is shared? I guess we need to d=
-isable
-> > > > > and enable the irq as well.
-> > > >
-> > > > For the INTX scenario, I don't think we need to disable/enable the =
-irq. But I do
-> > > > have a mistake, I should put the following list_del(&info->node) he=
-re, so that
-> > > > when the irq comes, it will no longer operate this vq.
-> > > >
-> > > > In fact, for no INTX case, the disable_irq here is not necessary, a=
-ccording to
-> > > > the requirements of the spec, after reset, the device should not ge=
-nerate irq
-> > > > anymore.
-> > >
-> > > I may miss something but I don't think INTX differs from MSI from the
-> > > vq handler perspective.
-> > >
-> > > > Here just to prevent accidents.
-> > >
-> > > The problem is that if you don't disable/sync IRQ there could be a
-> > > race between the vq irq handler and the virtqueue_detach_unused_buf()?
-> > >
-> > > >
-> > > > >
-> > > > >
-> > > > > > +
-> > > > > > +   while ((buf =3D virtqueue_detach_unused_buf(info->vq)) !=3D=
- NULL)
-> > > > > > +           param->free_unused_cb(param, buf);
-> > > > >
-> > > > >
-> > > > > Any reason that we can't leave this logic to driver? (Or is there=
- any
-> > > > > operations that must be done before the following operations?)
-> > > >
-> > > > As you commented before, we merged free unused buf and reset queue.
-> > > >
-> > > > I think it's a good note, otherwise, we're going to
-> > > >
-> > > >         1. reset vq
-> > > >         2. free unused(by driver)
-> > > >         3. free ring of vq
-> > >
-> > > Rethink about this, I'd prefer to leave it to the driver for consiste=
-ncy.
-> > >
-> > > E.g the virtqueue_detach_unused_buf() is called by each driver nowday=
-s.
-> >
-> > In this case, go back to my previous design and add three helpers:
-> >
-> >         int (*reset_vq)();
-> >         int (*free_reset_vq)();
->
-> So this is only needed if there are any transport specific operations.
-> But I don't see there's any.
+From: Menglong Dong <imagedong@tencent.com>
 
-Yes, you are right.
+In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()")
+drop reason is introduced to the tracepoint of kfree_skb. Therefore,
+drop_monitor is able to report the drop reason to users by netlink.
 
-Performing reset on a queue is divided into four steps
-    1. virtio_config_ops->reset_vq(): reset one vq
-    2. recycle the buffer from vq by virtqueue_detach_unused_buf()
-    3. release the ring of the vq by vring_release_virtqueue() (new functio=
-n)
-    4. virtio_config_ops->enable_reset_vq(): re-enable the reset queue
+The drop reasons are reported as string to users, which is exactly
+the same as what we do when reporting it to ftrace.
 
-Thanks.
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+v8:
+- pass drop reason to net_dm_packet_report_size()
+- move drop reason validation to net_dm_packet_trace_kfree_skb_hit()
 
->
-> Thanks
->
-> >         int (*enable_reset_vq)();
-> >
-> > Thanks.
-> >
-> > >
-> > > >
-> > > >
-> > > > >
-> > > > >
-> > > > > > +
-> > > > > > +   /* delete vq */
-> > > > > > +   spin_lock_irqsave(&vp_dev->lock, flags);
-> > > > > > +   list_del(&info->node);
-> > > > > > +   spin_unlock_irqrestore(&vp_dev->lock, flags);
-> > > > > > +
-> > > > > > +   INIT_LIST_HEAD(&info->node);
-> > > > > > +
-> > > > > > +   if (vp_dev->msix_enabled)
-> > > > > > +           vp_modern_queue_vector(mdev, info->vq->index,
-> > > > > > +                                  VIRTIO_MSI_NO_VECTOR);
-> > > > >
-> > > > >
-> > > > > I wonder if this is a must.
-> > > > >
-> > > > >
-> > > > > > +
-> > > > > > +   if (!mdev->notify_base)
-> > > > > > +           pci_iounmap(mdev->pci_dev,
-> > > > > > +                       (void __force __iomem *)info->vq->priv);
-> > > > >
-> > > > >
-> > > > > Is this a must? what happens if we simply don't do this?
-> > > > >
-> > > >
-> > > > The purpose of these two operations is mainly to be symmetrical wit=
-h del_vq().
-> > >
-> > > This is another question I want to ask. Any reason for calling
-> > > del_vq()? Is it because you need to exclude a vq from the vq handler?
-> > >
-> > > For any case, the MSI and notification stuff seems unnecessary.
-> > >
-> > > Thanks
-> > >
-> > > >
-> > > >
-> > > > >
-> > > > > > +
-> > > > > > +   vring_reset_virtqueue(info->vq);
-> > > > > > +
-> > > > > > +   return 0;
-> > > > > > +}
-> > > > > > +
-> > > > > > +static struct virtqueue *vp_modern_enable_reset_vq(struct virt=
-io_reset_vq *param)
-> > > > > > +{
-> > > > > > +   struct virtio_pci_device *vp_dev =3D to_vp_device(param->vd=
-ev);
-> > > > > > +   struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
-> > > > > > +   struct virtio_pci_vq_info *info;
-> > > > > > +   u16 msix_vec, queue_index;
-> > > > > > +   struct virtqueue *vq;
-> > > > > > +
-> > > > > > +   if (!virtio_has_feature(param->vdev, VIRTIO_F_RING_RESET))
-> > > > > > +           return ERR_PTR(-ENOENT);
-> > > > > > +
-> > > > > > +   queue_index =3D param->queue_index;
-> > > > > > +
-> > > > > > +   info =3D vp_dev->vqs[queue_index];
-> > > > > > +
-> > > > > > +   if (!info->vq->reset)
-> > > > > > +           return ERR_PTR(-EPERM);
-> > > > > > +
-> > > > > > +   /* check queue reset status */
-> > > > > > +   if (vp_modern_get_queue_reset(mdev, queue_index) !=3D 1)
-> > > > > > +           return ERR_PTR(-EBUSY);
-> > > > > > +
-> > > > > > +   vq =3D vp_setup_vq(param->vdev, queue_index, param->callbac=
-k, param->name,
-> > > > > > +                    param->ctx, info->msix_vector, param->ring=
-_num);
-> > > > > > +   if (IS_ERR(vq))
-> > > > > > +           return vq;
-> > > > > > +
-> > > > > > +   vp_modern_set_queue_enable(&vp_dev->mdev, vq->index, true);
-> > > > > > +
-> > > > > > +   msix_vec =3D vp_dev->vqs[queue_index]->msix_vector;
-> > > > > > +   if (vp_dev->per_vq_vectors && msix_vec !=3D VIRTIO_MSI_NO_V=
-ECTOR)
-> > > > > > +           enable_irq(pci_irq_vector(vp_dev->pci_dev, msix_vec=
-));
-> > > > >
-> > > > >
-> > > > > How about the INT-X case?
-> > > >
-> > > > Explained above.
-> > > >
-> > > > Thanks.
-> > > >
-> > > > >
-> > > > > Thanks
-> > > > >
-> > > > >
-> > > > > > +
-> > > > > > +   return vq;
-> > > > > > +}
-> > > > > > +
-> > > > > >   static u16 vp_config_vector(struct virtio_pci_device *vp_dev,=
- u16 vector)
-> > > > > >   {
-> > > > > >     return vp_modern_config_vector(&vp_dev->mdev, vector);
-> > > > > > @@ -284,6 +375,11 @@ static void del_vq(struct virtio_pci_vq_in=
-fo *info)
-> > > > > >     struct virtio_pci_device *vp_dev =3D to_vp_device(vq->vdev);
-> > > > > >     struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
-> > > > > >
-> > > > > > +   if (vq->reset) {
-> > > > > > +           vring_del_virtqueue(vq);
-> > > > > > +           return;
-> > > > > > +   }
-> > > > > > +
-> > > > > >     if (vp_dev->msix_enabled)
-> > > > > >             vp_modern_queue_vector(mdev, vq->index,
-> > > > > >                                    VIRTIO_MSI_NO_VECTOR);
-> > > > > > @@ -403,6 +499,8 @@ static const struct virtio_config_ops virti=
-o_pci_config_nodev_ops =3D {
-> > > > > >     .set_vq_affinity =3D vp_set_vq_affinity,
-> > > > > >     .get_vq_affinity =3D vp_get_vq_affinity,
-> > > > > >     .get_shm_region  =3D vp_get_shm_region,
-> > > > > > +   .reset_vq        =3D vp_modern_reset_vq,
-> > > > > > +   .enable_reset_vq =3D vp_modern_enable_reset_vq,
-> > > > > >   };
-> > > > > >
-> > > > > >   static const struct virtio_config_ops virtio_pci_config_ops =
-=3D {
-> > > > > > @@ -421,6 +519,8 @@ static const struct virtio_config_ops virti=
-o_pci_config_ops =3D {
-> > > > > >     .set_vq_affinity =3D vp_set_vq_affinity,
-> > > > > >     .get_vq_affinity =3D vp_get_vq_affinity,
-> > > > > >     .get_shm_region  =3D vp_get_shm_region,
-> > > > > > +   .reset_vq        =3D vp_modern_reset_vq,
-> > > > > > +   .enable_reset_vq =3D vp_modern_enable_reset_vq,
-> > > > > >   };
-> > > > > >
-> > > > > >   /* the PCI probing function */
-> > > > >
-> > > >
-> > >
-> >
->
+v7:
+- take the size of NET_DM_ATTR_REASON into accounting in
+  net_dm_packet_report_size()
+- let compiler define the size of drop_reasons
+
+v6:
+- check the range of drop reason in net_dm_packet_report_fill()
+
+v5:
+- check if drop reason larger than SKB_DROP_REASON_MAX
+
+v4:
+- report drop reasons as string
+
+v3:
+- referring to cb->reason and cb->pc directly in
+  net_dm_packet_report_fill()
+
+v2:
+- get a pointer to struct net_dm_skb_cb instead of local var for
+  each field
+---
+ include/uapi/linux/net_dropmon.h |  1 +
+ net/core/drop_monitor.c          | 41 +++++++++++++++++++++++++++-----
+ 2 files changed, 36 insertions(+), 6 deletions(-)
+
+diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
+index 66048cc5d7b3..1bbea8f0681e 100644
+--- a/include/uapi/linux/net_dropmon.h
++++ b/include/uapi/linux/net_dropmon.h
+@@ -93,6 +93,7 @@ enum net_dm_attr {
+ 	NET_DM_ATTR_SW_DROPS,			/* flag */
+ 	NET_DM_ATTR_HW_DROPS,			/* flag */
+ 	NET_DM_ATTR_FLOW_ACTION_COOKIE,		/* binary */
++	NET_DM_ATTR_REASON,			/* string */
+ 
+ 	__NET_DM_ATTR_MAX,
+ 	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index 7b288a121a41..4641126b8a20 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -48,6 +48,19 @@
+ static int trace_state = TRACE_OFF;
+ static bool monitor_hw;
+ 
++#undef EM
++#undef EMe
++
++#define EM(a, b)	[a] = #b,
++#define EMe(a, b)	[a] = #b
++
++/* drop_reasons is used to translate 'enum skb_drop_reason' to string,
++ * which is reported to user space.
++ */
++static const char * const drop_reasons[] = {
++	TRACE_SKB_DROP_REASON
++};
++
+ /* net_dm_mutex
+  *
+  * An overall lock guarding every operation coming from userspace.
+@@ -126,6 +139,7 @@ struct net_dm_skb_cb {
+ 		struct devlink_trap_metadata *hw_metadata;
+ 		void *pc;
+ 	};
++	enum skb_drop_reason reason;
+ };
+ 
+ #define NET_DM_SKB_CB(__skb) ((struct net_dm_skb_cb *)&((__skb)->cb[0]))
+@@ -498,6 +512,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+ {
+ 	ktime_t tstamp = ktime_get_real();
+ 	struct per_cpu_dm_data *data;
++	struct net_dm_skb_cb *cb;
+ 	struct sk_buff *nskb;
+ 	unsigned long flags;
+ 
+@@ -508,7 +523,11 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+ 	if (!nskb)
+ 		return;
+ 
+-	NET_DM_SKB_CB(nskb)->pc = location;
++	if ((unsigned int)reason >= SKB_DROP_REASON_MAX)
++		reason = SKB_DROP_REASON_NOT_SPECIFIED;
++	cb = NET_DM_SKB_CB(nskb);
++	cb->reason = reason;
++	cb->pc = location;
+ 	/* Override the timestamp because we care about the time when the
+ 	 * packet was dropped.
+ 	 */
+@@ -553,7 +572,8 @@ static size_t net_dm_in_port_size(void)
+ 
+ #define NET_DM_MAX_SYMBOL_LEN 40
+ 
+-static size_t net_dm_packet_report_size(size_t payload_len)
++static size_t net_dm_packet_report_size(size_t payload_len,
++					enum skb_drop_reason reason)
+ {
+ 	size_t size;
+ 
+@@ -574,6 +594,8 @@ static size_t net_dm_packet_report_size(size_t payload_len)
+ 	       nla_total_size(sizeof(u32)) +
+ 	       /* NET_DM_ATTR_PROTO */
+ 	       nla_total_size(sizeof(u16)) +
++	       /* NET_DM_ATTR_REASON */
++	       nla_total_size(strlen(drop_reasons[reason]) + 1) +
+ 	       /* NET_DM_ATTR_PAYLOAD */
+ 	       nla_total_size(payload_len);
+ }
+@@ -606,7 +628,7 @@ static int net_dm_packet_report_in_port_put(struct sk_buff *msg, int ifindex,
+ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+ 				     size_t payload_len)
+ {
+-	u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
++	struct net_dm_skb_cb *cb = NET_DM_SKB_CB(skb);
+ 	char buf[NET_DM_MAX_SYMBOL_LEN];
+ 	struct nlattr *attr;
+ 	void *hdr;
+@@ -620,10 +642,15 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+ 	if (nla_put_u16(msg, NET_DM_ATTR_ORIGIN, NET_DM_ORIGIN_SW))
+ 		goto nla_put_failure;
+ 
+-	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
++	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, (u64)(uintptr_t)cb->pc,
++			      NET_DM_ATTR_PAD))
++		goto nla_put_failure;
++
++	if (nla_put_string(msg, NET_DM_ATTR_REASON,
++			   drop_reasons[cb->reason]))
+ 		goto nla_put_failure;
+ 
+-	snprintf(buf, sizeof(buf), "%pS", NET_DM_SKB_CB(skb)->pc);
++	snprintf(buf, sizeof(buf), "%pS", cb->pc);
+ 	if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
+ 		goto nla_put_failure;
+ 
+@@ -679,7 +706,9 @@ static void net_dm_packet_report(struct sk_buff *skb)
+ 	if (net_dm_trunc_len)
+ 		payload_len = min_t(size_t, net_dm_trunc_len, payload_len);
+ 
+-	msg = nlmsg_new(net_dm_packet_report_size(payload_len), GFP_KERNEL);
++	msg = nlmsg_new(net_dm_packet_report_size(payload_len,
++						  NET_DM_SKB_CB(skb)->reason),
++			GFP_KERNEL);
+ 	if (!msg)
+ 		goto out;
+ 
+-- 
+2.34.1
+
