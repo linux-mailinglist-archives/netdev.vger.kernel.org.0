@@ -2,101 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57D7C4AE78C
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 04:11:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 551584AE7B2
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 04:11:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242910AbiBIDD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 22:03:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52412 "EHLO
+        id S237396AbiBIDIZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 22:08:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359764AbiBICvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 21:51:25 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C133C0612C2;
-        Tue,  8 Feb 2022 18:50:48 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id 10so1028045plj.1;
-        Tue, 08 Feb 2022 18:50:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-transfer-encoding:content-language;
-        bh=h0zU2sqp9DInM9RIto6tdU+ZDVJECbmLRz9DGlSBkQA=;
-        b=S+1HXZWBrFY+m0WszgouwfuXg8ZAQ+U1QGmFDQYqZvgyCeBFwx4xfexAqZ3a0cCgj2
-         d6ghHdTCktl0vbeo6k/ifXLCc6fNgo8L39m4ZnomSvwp5SxXi0GnKHKxmduLBMWUW8sm
-         zBbrM0J7YHJzy+LPt24oQpBsEma2qSfxhHCHnI4BTRVXwIpWU0rotWSUCk4HNJOksbK+
-         lRQOmYYAZH3h8SgPM6TeciIdyIOLuL9h022UvXV6A7ynjKWebIlY9DsM8PrXnArqI+p7
-         aCYY04cCte0FVJE2jtc++l3ne/7LLcxTA5Hh3vRhzh0OTBmW4kKDMGuIIl76QwByzxpt
-         vtPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-transfer-encoding:content-language;
-        bh=h0zU2sqp9DInM9RIto6tdU+ZDVJECbmLRz9DGlSBkQA=;
-        b=6X0QuXo8+pw7gZ9TQcOlNIgUnJBPlYmhmynjUqGsB6Ete+tgCxQYDGgYKr3L3Tugy9
-         DUROw4k3hEjWJFGsGZ2/I9FzDU0v9FeXe1WpLd8fAa3GOEGO1d/mj/ehphhWjpnkW/fy
-         +BSLJA15gyjW49O0eXRve6abxpZSq1fbXvPAagsNyc1vWZEceNlbf0K8E8XsdYQF1DPH
-         xffkTSqsH1U7ThqlHHb8jWfwYAHvVfmygz71guxqEgBWBL2F4/izTHg4MbX3Fhy2BHMp
-         5WqtjSw1mL2ALRncxSNb3fw65vRFoPVOJjVEKRD3pNZL2n4GAGhRorrPrQZL9MHhHpT2
-         6oFQ==
-X-Gm-Message-State: AOAM530Ll8z5z71NoxMAleeWcKPkID8W1TARFjHF2De/71QhBE6//aX/
-        DzWKZApaJApcYLOJK7Px2wHKJKumd1s=
-X-Google-Smtp-Source: ABdhPJykVboULllJsI40xKPv9LbYcg5sq9410WhmFuByGFlzuxSllka4Pnp4oEshsoXzZvhpxWgMAA==
-X-Received: by 2002:a17:90b:23c9:: with SMTP id md9mr1082313pjb.173.1644375047431;
-        Tue, 08 Feb 2022 18:50:47 -0800 (PST)
-Received: from [192.168.1.100] ([166.111.139.99])
-        by smtp.gmail.com with ESMTPSA id r7sm6944390pgv.15.2022.02.08.18.50.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 18:50:46 -0800 (PST)
-To:     simon.horman@corigine.com, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>, shenyang39@huawei.com,
-        libaokun1@huawei.com
-Cc:     oss-drivers@corigine.com, netdev@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [BUG] net: netronome: nfp: possible deadlock in
- nfp_cpp_area_acquire() and nfp_cpp_area_release()
-Message-ID: <922a002a-3ab6-eabe-131c-af3b8951866b@gmail.com>
-Date:   Wed, 9 Feb 2022 10:50:44 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        with ESMTP id S235988AbiBIDFJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 22:05:09 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F29C03E944;
+        Tue,  8 Feb 2022 19:04:02 -0800 (PST)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jtl3Z0bt8z682M0;
+        Wed,  9 Feb 2022 10:59:54 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Wed, 9 Feb 2022 04:03:59 +0100
+Message-ID: <2aae376f-14df-2c69-204a-0de8e4b0dd74@huawei.com>
+Date:   Wed, 9 Feb 2022 06:03:58 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [RFC PATCH 2/2] landlock: selftests for bind and connect hooks
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
+ <20220124080215.265538-3-konstantin.meskhidze@huawei.com>
+ <4d54e3a9-8a26-d393-3c81-b01389f76f09@digikod.net>
+ <ae5ca74d-ce5f-51e8-31c1-d02744ec92f8@huawei.com>
+ <ae0fcafa-3e8d-d6f2-26a8-ae74dda8371c@digikod.net>
+ <9a77fc40-4463-4344-34d0-184d427d32cf@huawei.com>
+ <d09ac689-b1bf-86fa-4da5-3a0ade7fd552@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <d09ac689-b1bf-86fa-4da5-3a0ade7fd552@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-My static analysis tool reports a possible deadlock in the nfp driver in 
-Linux 5.16:
-
-nfp_cpp_area_acquire()
-   mutex_lock(&area->mutex); --> Line 455 (Lock A)
-   __nfp_cpp_area_acquire()
-     wait_event_interruptible(area->cpp->waitq, ...) --> Line 427 (Wait X)
-
-nfp_cpp_area_release()
-   mutex_lock(&area->mutex); --> Line 502 (Lock A)
-   wake_up_interruptible_all(&area->cpp->waitq); --> Line 508 (Wake X)
-
-When nfp_cpp_area_acquire() is executed, "Wait X" is performed by 
-holding "Lock A". If nfp_cpp_area_release() is executed at this time, 
-"Wake X" cannot be performed to wake up "Wait X" in 
-nfp_cpp_area_acquire(), because "Lock A" has been already hold by 
-nfp_cpp_area_acquire(), causing a possible deadlock.
-
-I am not quite sure whether this possible problem is real and how to fix 
-it if it is real.
-Any feedback would be appreciated, thanks :)
 
 
-Best wishes,
-Jia-Ju Bai
+2/8/2022 3:17 PM, Mickaël Salaün пишет:
+> 
+> On 08/02/2022 04:01, Konstantin Meskhidze wrote:
+>>
+>>
+>> 2/7/2022 3:49 PM, Mickaël Salaün пишет:
+> 
+>>> [...]
+>>>
+>>>>>> +    /* Create a socket 3 */
+>>>>>> +    sockfd_3 = socket(AF_INET, SOCK_STREAM, 0);
+>>>>>> +    ASSERT_LE(0, sockfd_3);
+>>>>>> +    /* Allow reuse of local addresses */
+>>>>>> +    ASSERT_EQ(0, setsockopt(sockfd_3, SOL_SOCKET, SO_REUSEADDR, 
+>>>>>> &one, sizeof(one)));
+>>>>>> +
+>>>>>> +    /* Set socket 3 address parameters */
+>>>>>> +    addr_3.sin_family = AF_INET;
+>>>>>> +    addr_3.sin_port = htons(SOCK_PORT_3);
+>>>>>> +    addr_3.sin_addr.s_addr = inet_addr(IP_ADDRESS);
+>>>>>> +    memset(&(addr_3.sin_zero), '\0', 8);
+>>>>>> +    /* Bind the socket 3 to IP address */
+>>>>>> +    ASSERT_EQ(0, bind(sockfd_3, (struct sockaddr *)&addr_3, 
+>>>>>> sizeof(addr_3)));
+>>>>>
+>>>>> Why is it allowed to bind to SOCK_PORT_3 whereas net_service_3 
+>>>>> forbids it?
+>>>>
+>>>>    It's allowed cause net_service_3 has empty access field.
+>>>>
+>>>>     /* Empty allowed_access (i.e. deny rules) are ignored in network
+>>>>      *  actions for SOCK_PORT_3 socket "object"
+>>>>      */
+>>>>      ASSERT_EQ(-1, landlock_add_rule(ruleset_fd,
+>>>>                                      LANDLOCK_RULE_NET_SERVICE,
+>>>>                                      &net_service_3, 0));
+>>>>      ASSERT_EQ(ENOMSG, errno);
+>>>>
+>>>>    Applying this rule returns ENOMSG errno:
+>>>>
+>>>>    /* Informs about useless rule: empty allowed_access (i.e. deny 
+>>>> rules)
+>>>>     * are ignored in network actions
+>>>>     */
+>>>>          if (!net_service_attr.allowed_access) {
+>>>>              err = -ENOMSG;
+>>>>              goto out_put_ruleset;
+>>>>          }
+>>>>    This means binding socket 3 is not restricted.
+>>>>    For path_beneath_attr.allowed_access = 0 there is the same logic.
+>>>
+>>> I missed the ENOMSG check; the third rule has nothing to do with it. 
+>>> However, because the ruleset handles bind and connect actions, they 
+>>> must be denied by default. There is no rule allowing binding to 
+>>> SOCK_PORT_3. Why is it allowed?
+>>>
+>>> You can test with another SOCK_PORT_4, not covered by any rule. As 
+>>> for SOCK_PORT_3, it must be forbidden to bind on it.
+>>
+>>    Apllying the third rule (net_service_3.access is empty) returns ENOMSG
+>>    error. That means a process hasn't been restricted by the third rule,
+>>    cause during search  process in network rb_tree the process won't find
+>>    the third rule, so binding to SOCK_PORT_3 is allowed.
+> 
+> Landlock is designed to deny every access rights that are handled (by a 
+> ruleset) by default. All rules added to a ruleset are exceptions to 
+> allow a subset of the handled access rights on a specific object/port.
+> 
+> With the current networking code, a sandboxed process can still bind or 
+> connect to any port except, in this test, partially for two ports. This 
+> approach doesn't help to isolate a process from the network.
+   I got it. Thanks.
+> 
+>>
+>>    Maybe there is a misunderstanding here. You mean that if there is just
+>>    only one network rule for a particular port has been applied to a
+>>    process, other ports' networks actions are automatically restricted
+>>    until they will be added into landlock newtwork rb_tree?
+> 
+> Right! That is how it should be.
+
+   So it possible to check network rb_tree for emptiness before
+   every rule search caused by bind/connect hooks.
+   Am I corrent that if there is a proccess with Landlcok restrictions
+   applied for the filesystem, but landlock networtk rb_tree is empty
+   that means the proccess is not isolated from the network? I suppose it
+   would be an additional test case.
+> .
