@@ -2,70 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B69664AF053
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 12:57:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E9114AF082
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 13:01:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231743AbiBIL5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 06:57:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57098 "EHLO
+        id S231205AbiBIMBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 07:01:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231330AbiBIL4U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 06:56:20 -0500
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73442C1038EE;
-        Wed,  9 Feb 2022 02:56:37 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R601e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V4.8Z-0_1644404194;
-Received: from 30.225.28.54(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V4.8Z-0_1644404194)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Feb 2022 18:56:35 +0800
-Message-ID: <5150791a-b91f-c861-b648-9de78af0b984@linux.alibaba.com>
-Date:   Wed, 9 Feb 2022 18:56:34 +0800
+        with ESMTP id S232218AbiBIMA4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 07:00:56 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B9D5E02E3D8;
+        Wed,  9 Feb 2022 03:01:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644404476; x=1675940476;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ZcUnnB4GIETEqYMW/unYziD4D7wpQejz5U5oSfHd+qo=;
+  b=GYYg/vloz2SCFfXbg6V2WObK/HYJfP01iFC6O1VFSMXWk/sG1sA1gPyS
+   ZaqOc2rIF3CIJqCOOu5chiDQDawYfIw/WKItkv6eRerJwzBrbNGSk25Kg
+   jhAO8FkEZCtV1KgPpTx8TwUg+JXQ+2x/Fx1lEcQNTEtKXUd+ZekDiESyz
+   yLoGefYzo/hi+MF33a2NhN9U1Q3dDo1cIXn2l2W3Jh/2ujTirgHhRkJjI
+   xAKbObarpybHhWAvdqrM8W/MBiRQcWiqYtTZ5mw9gDiyBpw8URj/6yg1o
+   igFxhuP8gMSEPMgxvW3FAw8Z5j+hubFvDMECw1U+v9uOrDZa4M6XQE7EH
+   w==;
+IronPort-SDR: FiqHhkLKKPcfwRg+8cqczYtpORQzacBdXoIfZYZTcEfJtG1I2WhNaS/wTDXnBHOax55/B/38cH
+ Ct4cgovs9A7CoHsHmWxbzZDRfchs/3jgKdWW7h8YG3M1LLK6XFVPWvWmMvEkS+sv3P4cg5y55t
+ dK15Dw7phnAiOViAoxpbrvVBxRhrX+vpOdcOklqBy/rtS2Ccfei9j7cGq7BwOM+zjZdHjKP59U
+ 5kZa93jar7v2ONbt8gjAIFh2CcVnJ9qplwPBxbhY63lZY+vfgtQAo2lxh3aZtvjAcAIAl2Nw3w
+ p/qK6Ua/LMCtNZgL+LOVn2qr
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="145381331"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Feb 2022 04:01:15 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 9 Feb 2022 04:01:15 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 9 Feb 2022 04:01:09 -0700
+Message-ID: <2e0a7e5d3415e7db093f416a4357c603098b9c39.camel@microchip.com>
+Subject: Re: [PATCH v8 net-next 06/10] net: dsa: microchip: add support for
+ phylink management
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <robh+dt@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Date:   Wed, 9 Feb 2022 16:31:08 +0530
+In-Reply-To: <20220207172713.efts4o7b7xor37uu@skbuf>
+References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
+         <20220207172204.589190-7-prasanna.vengateshan@microchip.com>
+         <20220207172713.efts4o7b7xor37uu@skbuf>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH net-next v5 5/5] net/smc: Add global configure for auto
- fallback by netlink
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-References: <cover.1644323503.git.alibuda@linux.alibaba.com>
- <f54ee9f30898b998edf8f07dabccc84efaa2ab8b.1644323503.git.alibuda@linux.alibaba.com>
- <YgOKc5FW/JRmW1U6@TonyMac-Alibaba>
- <20fc8ef9-6cbc-ac1d-97ad-ab47a2874afd@linux.alibaba.com>
- <YgOPRh34nUWOqh2C@TonyMac-Alibaba>
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-In-Reply-To: <YgOPRh34nUWOqh2C@TonyMac-Alibaba>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Copy that, there are indeed some problems for the container environment.
-I'll try work on it.
-
-Thanks.
-
-在 2022/2/9 下午5:54, Tony Lu 写道:
-> On Wed, Feb 09, 2022 at 05:41:50PM +0800, D. Wythe wrote:
->> I don't think this is necessary, since we already have socket options. Is
->> there any scenario that the socket options and global switch can not cover?
->>
-> When transparently replacing the whole container's TCP connections, we
-> cannot touch the user's application, and have to replace their
-> connections to SMC. It is common for container environment, different
-> containers will run different applications.
+On Mon, 2022-02-07 at 19:27 +0200, Vladimir Oltean wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
+> content is safe
 > 
-> Most of TCP knob is per net-namespace, it could be better for us to do
-> it from the beginning.
+> On Mon, Feb 07, 2022 at 10:52:00PM +0530, Prasanna Vengateshan wrote:
+> > ased on interface later */
+> > +     data8 &= ~PORT_MII_SEL_M;
+> > +
+> > +     /* configure MAC based on interface */
+> > +     switch (interface) {
+> > +     case PHY_INTERFACE_MODE_MII:
+> > +             lan937x_config_gbit(dev, false, &data8);
+> > +             data8 |= PORT_MII_SEL;
+> > +             break;
+> > +     case PHY_INTERFACE_MODE_RMII:
+> > +             lan937x_config_gbit(dev, false, &data8);
+> > +             data8 |= PORT_RMII_SEL;
+> > +             break;
+> > +     case PHY_INTERFACE_MODE_RGMII:
+> > +             lan937x_config_gbit(dev, true, &data8);
+> > +             data8 |= PORT_RGMII_SEL;
+> > +             break;
+> > +     case PHY_INTERFACE_MODE_RGMII_ID:
+> > +     case PHY_INTERFACE_MODE_RGMII_TXID:
+> > +     case PHY_INTERFACE_MODE_RGMII_RXID:
+> > +             lan937x_config_gbit(dev, true, &data8);
+> > +             data8 |= PORT_RGMII_SEL;
+> > +
+> > +             /* Apply rgmii internal delay for the mac */
+> > +             lan937x_apply_rgmii_delay(dev, port, interface, data8);
 > 
-> Thanks,
-> Tony Lu
+> I think the agreement from previous discussions was to apply RGMII delay
+> _exclusively_ based on the 'rx-internal-delay-ps' and 'tx-internal-delay-ps'
+> properties, at least for new drivers with no legacy. You are omitting to
+> apply delays in phy-mode = "rgmii", which contradicts that agreement.
+> I think you should treat all 4 RGMII cases the same, and remove the
+> interface checks from lan937x_apply_rgmii_delay.
+
+Thanks for the feedback. Yes, you are right. Regardless of the phy-mode, mac
+should apply its delay from the device tree. I will change both of the places in
+the next revision.
+
+Prasanna V
+> 
+
