@@ -2,233 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A210A4AFC4F
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 19:58:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B5164AFCBE
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 20:02:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241524AbiBIS5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 13:57:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33718 "EHLO
+        id S241637AbiBITB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 14:01:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241169AbiBIS45 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 13:56:57 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B96C05CB8E
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 10:57:00 -0800 (PST)
-Date:   Wed, 9 Feb 2022 19:56:57 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644433018;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=7I4cQa2jWNhqQjy8w0xvQdIjLHEeKqBvO3JQ83PS8ek=;
-        b=WOnVzhF+EqkZ6yQPsvz/8WmFpXmxoQUNrM7Ncpdn9vKDyPtAwPtTEXfbQyH69SisESkkHh
-        vxDI4GbvuFDuMHKb1AlPUrwFMl12VxFe1vWHlwrIIf0mwkRvsJN3GgNDS9XywInIXAcliv
-        tbDLfUVtk2ZTaX+Bey3Pzs15tiu0Aa73iWddzwJEZm8cVLbZmVYWGuA8ntMaTx2QqyGPIR
-        WCBUrZ+bD0/iwt95NiajrDh7Jszs9Yo6/J6IAXfQACk79eZNUQt/rtU+vBBQuvkkLlyie9
-        6yr0UkgOhbUnSMQnx/pe8Ml8LgbV9W1C3Yc92KQ+Ap1vFdZ8e2v8SdYNkkJ8cw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644433018;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=7I4cQa2jWNhqQjy8w0xvQdIjLHEeKqBvO3JQ83PS8ek=;
-        b=CtQRzrnb+5T+Tl+PlLgp1jdL6edJpDlQGS5b9ay8/5FR1FQXhIGDS6JX7kdkuRSIHSvRf2
-        ErDDDuD3W4cMCiAw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        eric.dumazet@gmail.com, davem@davemloft.net, dsahern@kernel.org,
-        efault@gmx.de, tglx@linutronix.de, yoshfuji@linux-ipv6.org,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: [PATCH net-next v4] tcp: Don't acquire inet_listen_hashbucket::lock
- with disabled BH.
-Message-ID: <YgQOebeZ10eNx1W6@linutronix.de>
+        with ESMTP id S240347AbiBITAi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 14:00:38 -0500
+Received: from smtp.smtpout.orange.fr (smtp10.smtpout.orange.fr [80.12.242.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7827BC003663
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 10:59:07 -0800 (PST)
+Received: from pop-os.home ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id HsAznZHevbnFGHsAzncVqP; Wed, 09 Feb 2022 19:58:51 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Wed, 09 Feb 2022 19:58:51 +0100
+X-ME-IP: 90.126.236.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Simon Horman <simon.horman@corigine.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        John Hurley <john.hurley@netronome.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        oss-drivers@corigine.com, netdev@vger.kernel.org
+Subject: [PATCH] nfp: flower: Fix a potential theorical leak in nfp_tunnel_add_shared_mac()
+Date:   Wed,  9 Feb 2022 19:58:47 +0100
+Message-Id: <49e30a009f6fc56cfb76eb2c922740ac64c7767d.1644433109.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit
-   9652dc2eb9e40 ("tcp: relax listening_hash operations")
+ida_simple_get() returns an id between min (0) and max (NFP_MAX_MAC_INDEX)
+inclusive.
+So NFP_MAX_MAC_INDEX (0xff) is a valid id
 
-removed the need to disable bottom half while acquiring
-listening_hash.lock. There are still two callers left which disable
-bottom half before the lock is acquired.
+In order for the error handling path to work correctly, the 'invalid'
+value for 'ida_idx' should not be in the 0..NFP_MAX_MAC_INDEX range,
+inclusive.
 
-On PREEMPT_RT the softirqs are preemptible and local_bh_disable() acts
-as a lock to ensure that resources, that are protected by disabling
-bottom halves, remain protected.
-This leads to a circular locking dependency if the lock acquired with
-disabled bottom halves is also acquired with enabled bottom halves
-followed by disabling bottom halves. This is the reverse locking order.
-It has been observed with inet_listen_hashbucket::lock:
+So set it to -1.
 
-local_bh_disable() + spin_lock(&ilb->lock):
-  inet_listen()
-    inet_csk_listen_start()
-      sk->sk_prot->hash() :=3D inet_hash()
-	local_bh_disable()
-	__inet_hash()
-	  spin_lock(&ilb->lock);
-	    acquire(&ilb->lock);
+While at it, use ida_alloc_xxx()/ida_free() instead to
+ida_simple_get()/ida_simple_remove().
+The latter is deprecated and more verbose.
 
-Reverse order: spin_lock(&ilb2->lock) + local_bh_disable():
-  tcp_seq_next()
-    listening_get_next()
-      spin_lock(&ilb2->lock);
-	acquire(&ilb2->lock);
-
-  tcp4_seq_show()
-    get_tcp4_sock()
-      sock_i_ino()
-	read_lock_bh(&sk->sk_callback_lock);
-	  acquire(softirq_ctrl)	// <---- whoops
-	  acquire(&sk->sk_callback_lock)
-
-Drop local_bh_disable() around __inet_hash() which acquires
-listening_hash->lock. Split inet_unhash() and acquire the
-listen_hashbucket lock without disabling bottom halves; the inet_ehash
-lock with disabled bottom halves.
-
-Reported-by: Mike Galbraith <efault@gmx.de>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Link: https://lkml.kernel.org/r/12d6f9879a97cd56c09fb53dee343cbb14f7f1f7.ca=
-mel@gmx.de
-Link: https://lkml.kernel.org/r/X9CheYjuXWc75Spa@hirez.programming.kicks-as=
-s.net
+Fixes: 20cce8865098 ("nfp: flower: enable MAC address sharing for offloadable devs")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
-v3=E2=80=A6v4:
-   - Reposted targeting the net-next tree.
+ .../ethernet/netronome/nfp/flower/tunnel_conf.c    | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-v2=E2=80=A6v3:
-   - Update commit description with ilb2 instead ilb (requested by
-     Martin KaFai Lau).
-
-v1=E2=80=A6v2:=20
-   Reposted with fixes and net-tree as requested. Please keep in mind that
-   this only effects the PREEMPT_RT preemption model and I'm posting this
-   as part of the merging efforts. Therefore I didn't add the Fixes: tag
-   and used net-next as I didn't expect any -stable backports (but then
-   Greg sometimes backports RT-only patches since "it makes the life of
-   some folks easier" as he puts it).
-
- net/ipv4/inet_hashtables.c  |   53 ++++++++++++++++++++++++++-------------=
------
- net/ipv6/inet6_hashtables.c |    5 ----
- 2 files changed, 33 insertions(+), 25 deletions(-)
-
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -637,7 +637,9 @@ int __inet_hash(struct sock *sk, struct
- 	int err =3D 0;
-=20
- 	if (sk->sk_state !=3D TCP_LISTEN) {
-+		local_bh_disable();
- 		inet_ehash_nolisten(sk, osk, NULL);
-+		local_bh_enable();
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+index ce865e619568..b60c2b78ba04 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+@@ -922,8 +922,8 @@ nfp_tunnel_add_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ 			  int port, bool mod)
+ {
+ 	struct nfp_flower_priv *priv = app->priv;
+-	int ida_idx = NFP_MAX_MAC_INDEX, err;
+ 	struct nfp_tun_offloaded_mac *entry;
++	int ida_idx = -1, err;
+ 	u16 nfp_mac_idx = 0;
+ 
+ 	entry = nfp_tunnel_lookup_offloaded_macs(app, netdev->dev_addr);
+@@ -942,8 +942,8 @@ nfp_tunnel_add_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ 	if (!nfp_mac_idx) {
+ 		/* Assign a global index if non-repr or MAC is now shared. */
+ 		if (entry || !port) {
+-			ida_idx = ida_simple_get(&priv->tun.mac_off_ids, 0,
+-						 NFP_MAX_MAC_INDEX, GFP_KERNEL);
++			ida_idx = ida_alloc_max(&priv->tun.mac_off_ids,
++						NFP_MAX_MAC_INDEX, GFP_KERNEL);
+ 			if (ida_idx < 0)
+ 				return ida_idx;
+ 
+@@ -997,8 +997,8 @@ nfp_tunnel_add_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ err_free_entry:
+ 	kfree(entry);
+ err_free_ida:
+-	if (ida_idx != NFP_MAX_MAC_INDEX)
+-		ida_simple_remove(&priv->tun.mac_off_ids, ida_idx);
++	if (ida_idx != -1)
++		ida_free(&priv->tun.mac_off_ids, ida_idx);
+ 
+ 	return err;
+ }
+@@ -1063,7 +1063,7 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ 		}
+ 
+ 		ida_idx = nfp_tunnel_get_ida_from_global_mac_idx(entry->index);
+-		ida_simple_remove(&priv->tun.mac_off_ids, ida_idx);
++		ida_free(&priv->tun.mac_off_ids, ida_idx);
+ 		entry->index = nfp_mac_idx;
  		return 0;
  	}
- 	WARN_ON(!sk_unhashed(sk));
-@@ -669,45 +671,54 @@ int inet_hash(struct sock *sk)
- {
- 	int err =3D 0;
-=20
--	if (sk->sk_state !=3D TCP_CLOSE) {
--		local_bh_disable();
-+	if (sk->sk_state !=3D TCP_CLOSE)
- 		err =3D __inet_hash(sk, NULL);
--		local_bh_enable();
--	}
-=20
- 	return err;
- }
- EXPORT_SYMBOL_GPL(inet_hash);
-=20
--void inet_unhash(struct sock *sk)
-+static void __inet_unhash(struct sock *sk, struct inet_listen_hashbucket *=
-ilb)
- {
--	struct inet_hashinfo *hashinfo =3D sk->sk_prot->h.hashinfo;
--	struct inet_listen_hashbucket *ilb =3D NULL;
--	spinlock_t *lock;
--
- 	if (sk_unhashed(sk))
- 		return;
-=20
--	if (sk->sk_state =3D=3D TCP_LISTEN) {
--		ilb =3D &hashinfo->listening_hash[inet_sk_listen_hashfn(sk)];
--		lock =3D &ilb->lock;
--	} else {
--		lock =3D inet_ehash_lockp(hashinfo, sk->sk_hash);
--	}
--	spin_lock_bh(lock);
--	if (sk_unhashed(sk))
--		goto unlock;
--
- 	if (rcu_access_pointer(sk->sk_reuseport_cb))
- 		reuseport_stop_listen_sock(sk);
- 	if (ilb) {
-+		struct inet_hashinfo *hashinfo =3D sk->sk_prot->h.hashinfo;
-+
- 		inet_unhash2(hashinfo, sk);
- 		ilb->count--;
+@@ -1077,7 +1077,7 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ 	/* If MAC has global ID then extract and free the ida entry. */
+ 	if (nfp_tunnel_is_mac_idx_global(entry->index)) {
+ 		ida_idx = nfp_tunnel_get_ida_from_global_mac_idx(entry->index);
+-		ida_simple_remove(&priv->tun.mac_off_ids, ida_idx);
++		ida_free(&priv->tun.mac_off_ids, ida_idx);
  	}
- 	__sk_nulls_del_node_init_rcu(sk);
- 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
--unlock:
--	spin_unlock_bh(lock);
-+}
-+
-+void inet_unhash(struct sock *sk)
-+{
-+	struct inet_hashinfo *hashinfo =3D sk->sk_prot->h.hashinfo;
-+
-+	if (sk_unhashed(sk))
-+		return;
-+
-+	if (sk->sk_state =3D=3D TCP_LISTEN) {
-+		struct inet_listen_hashbucket *ilb;
-+
-+		ilb =3D &hashinfo->listening_hash[inet_sk_listen_hashfn(sk)];
-+		/* Don't disable bottom halves while acquiring the lock to
-+		 * avoid circular locking dependency on PREEMPT_RT.
-+		 */
-+		spin_lock(&ilb->lock);
-+		__inet_unhash(sk, ilb);
-+		spin_unlock(&ilb->lock);
-+	} else {
-+		spinlock_t *lock =3D inet_ehash_lockp(hashinfo, sk->sk_hash);
-+
-+		spin_lock_bh(lock);
-+		__inet_unhash(sk, NULL);
-+		spin_unlock_bh(lock);
-+	}
- }
- EXPORT_SYMBOL_GPL(inet_unhash);
-=20
---- a/net/ipv6/inet6_hashtables.c
-+++ b/net/ipv6/inet6_hashtables.c
-@@ -333,11 +333,8 @@ int inet6_hash(struct sock *sk)
- {
- 	int err =3D 0;
-=20
--	if (sk->sk_state !=3D TCP_CLOSE) {
--		local_bh_disable();
-+	if (sk->sk_state !=3D TCP_CLOSE)
- 		err =3D __inet_hash(sk, NULL);
--		local_bh_enable();
--	}
-=20
- 	return err;
- }
+ 
+ 	kfree(entry);
+-- 
+2.32.0
 
