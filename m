@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D7804AF2E7
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 14:37:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E98DB4AF2F6
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 14:37:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234097AbiBINgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 08:36:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53552 "EHLO
+        id S234161AbiBINgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 08:36:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234142AbiBINg2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 08:36:28 -0500
+        with ESMTP id S234153AbiBINgc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 08:36:32 -0500
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6DBCFC05CB8A;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2700BC061355;
         Wed,  9 Feb 2022 05:36:31 -0800 (PST)
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 017EA601D3;
-        Wed,  9 Feb 2022 14:36:19 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 887E5601CD;
+        Wed,  9 Feb 2022 14:36:20 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 13/14] nfqueue: enable to set skb->priority
-Date:   Wed,  9 Feb 2022 14:36:15 +0100
-Message-Id: <20220209133616.165104-14-pablo@netfilter.org>
+Subject: [PATCH net-next 14/14] netfilter: ctnetlink: use dump structure instead of raw args
+Date:   Wed,  9 Feb 2022 14:36:16 +0100
+Message-Id: <20220209133616.165104-15-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220209133616.165104-1-pablo@netfilter.org>
 References: <20220209133616.165104-1-pablo@netfilter.org>
@@ -37,57 +37,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: Florian Westphal <fw@strlen.de>
 
-This is a follow up of the previous patch that enables to get
-skb->priority. It's now posssible to set it also.
+netlink_dump structure has a union of 'long args[6]' and a context
+buffer as scratch space.
 
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Acked-by: Florian Westphal <fw@strlen.de>
-Reported-by: kernel test robot <lkp@intel.com>
+Convert ctnetlink to use a structure, its easier to read than the
+raw 'args' usage which comes with no type checks and no readable names.
+
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nfnetlink_queue.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ net/netfilter/nf_conntrack_netlink.c | 36 ++++++++++++++++++----------
+ 1 file changed, 24 insertions(+), 12 deletions(-)
 
-diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-index 48d7a59c6482..8c15978d9258 100644
---- a/net/netfilter/nfnetlink_queue.c
-+++ b/net/netfilter/nfnetlink_queue.c
-@@ -1019,11 +1019,13 @@ static const struct nla_policy nfqa_verdict_policy[NFQA_MAX+1] = {
- 	[NFQA_CT]		= { .type = NLA_UNSPEC },
- 	[NFQA_EXP]		= { .type = NLA_UNSPEC },
- 	[NFQA_VLAN]		= { .type = NLA_NESTED },
-+	[NFQA_PRIORITY]		= { .type = NLA_U32 },
- };
+diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
+index ac438370f94a..3d9f9ee50294 100644
+--- a/net/netfilter/nf_conntrack_netlink.c
++++ b/net/netfilter/nf_conntrack_netlink.c
+@@ -58,6 +58,12 @@
  
- static const struct nla_policy nfqa_verdict_batch_policy[NFQA_MAX+1] = {
- 	[NFQA_VERDICT_HDR]	= { .len = sizeof(struct nfqnl_msg_verdict_hdr) },
- 	[NFQA_MARK]		= { .type = NLA_U32 },
-+	[NFQA_PRIORITY]		= { .type = NLA_U32 },
- };
+ MODULE_LICENSE("GPL");
  
- static struct nfqnl_instance *
-@@ -1104,6 +1106,9 @@ static int nfqnl_recv_verdict_batch(struct sk_buff *skb,
- 		if (nfqa[NFQA_MARK])
- 			entry->skb->mark = ntohl(nla_get_be32(nfqa[NFQA_MARK]));
- 
-+		if (nfqa[NFQA_PRIORITY])
-+			entry->skb->priority = ntohl(nla_get_be32(nfqa[NFQA_PRIORITY]));
++struct ctnetlink_list_dump_ctx {
++	struct nf_conn *last;
++	unsigned int cpu;
++	bool done;
++};
 +
- 		nfqnl_reinject(entry, verdict);
- 	}
- 	return 0;
-@@ -1230,6 +1235,9 @@ static int nfqnl_recv_verdict(struct sk_buff *skb, const struct nfnl_info *info,
- 	if (nfqa[NFQA_MARK])
- 		entry->skb->mark = ntohl(nla_get_be32(nfqa[NFQA_MARK]));
+ static int ctnetlink_dump_tuples_proto(struct sk_buff *skb,
+ 				const struct nf_conntrack_tuple *tuple,
+ 				const struct nf_conntrack_l4proto *l4proto)
+@@ -1694,14 +1700,18 @@ static int ctnetlink_get_conntrack(struct sk_buff *skb,
  
-+	if (nfqa[NFQA_PRIORITY])
-+		entry->skb->priority = ntohl(nla_get_be32(nfqa[NFQA_PRIORITY]));
+ static int ctnetlink_done_list(struct netlink_callback *cb)
+ {
+-	if (cb->args[1])
+-		nf_ct_put((struct nf_conn *)cb->args[1]);
++	struct ctnetlink_list_dump_ctx *ctx = (void *)cb->ctx;
 +
- 	nfqnl_reinject(entry, verdict);
++	if (ctx->last)
++		nf_ct_put(ctx->last);
++
  	return 0;
  }
+ 
+ static int
+ ctnetlink_dump_list(struct sk_buff *skb, struct netlink_callback *cb, bool dying)
+ {
++	struct ctnetlink_list_dump_ctx *ctx = (void *)cb->ctx;
+ 	struct nf_conn *ct, *last;
+ 	struct nf_conntrack_tuple_hash *h;
+ 	struct hlist_nulls_node *n;
+@@ -1712,12 +1722,12 @@ ctnetlink_dump_list(struct sk_buff *skb, struct netlink_callback *cb, bool dying
+ 	struct hlist_nulls_head *list;
+ 	struct net *net = sock_net(skb->sk);
+ 
+-	if (cb->args[2])
++	if (ctx->done)
+ 		return 0;
+ 
+-	last = (struct nf_conn *)cb->args[1];
++	last = ctx->last;
+ 
+-	for (cpu = cb->args[0]; cpu < nr_cpu_ids; cpu++) {
++	for (cpu = ctx->cpu; cpu < nr_cpu_ids; cpu++) {
+ 		struct ct_pcpu *pcpu;
+ 
+ 		if (!cpu_possible(cpu))
+@@ -1731,10 +1741,10 @@ ctnetlink_dump_list(struct sk_buff *skb, struct netlink_callback *cb, bool dying
+ 			ct = nf_ct_tuplehash_to_ctrack(h);
+ 			if (l3proto && nf_ct_l3num(ct) != l3proto)
+ 				continue;
+-			if (cb->args[1]) {
++			if (ctx->last) {
+ 				if (ct != last)
+ 					continue;
+-				cb->args[1] = 0;
++				ctx->last = NULL;
+ 			}
+ 
+ 			/* We can't dump extension info for the unconfirmed
+@@ -1751,19 +1761,19 @@ ctnetlink_dump_list(struct sk_buff *skb, struct netlink_callback *cb, bool dying
+ 			if (res < 0) {
+ 				if (!refcount_inc_not_zero(&ct->ct_general.use))
+ 					continue;
+-				cb->args[0] = cpu;
+-				cb->args[1] = (unsigned long)ct;
++				ctx->cpu = cpu;
++				ctx->last = ct;
+ 				spin_unlock_bh(&pcpu->lock);
+ 				goto out;
+ 			}
+ 		}
+-		if (cb->args[1]) {
+-			cb->args[1] = 0;
++		if (ctx->last) {
++			ctx->last = NULL;
+ 			goto restart;
+ 		}
+ 		spin_unlock_bh(&pcpu->lock);
+ 	}
+-	cb->args[2] = 1;
++	ctx->done = true;
+ out:
+ 	if (last)
+ 		nf_ct_put(last);
+@@ -3877,6 +3887,8 @@ static int __init ctnetlink_init(void)
+ {
+ 	int ret;
+ 
++	BUILD_BUG_ON(sizeof(struct ctnetlink_list_dump_ctx) > sizeof_field(struct netlink_callback, ctx));
++
+ 	ret = nfnetlink_subsys_register(&ctnl_subsys);
+ 	if (ret < 0) {
+ 		pr_err("ctnetlink_init: cannot register with nfnetlink.\n");
 -- 
 2.30.2
 
