@@ -2,49 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A8C24AE5DB
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 01:21:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED0364AE605
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 01:28:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239700AbiBIAVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 19:21:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34620 "EHLO
+        id S239861AbiBIA1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 19:27:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232503AbiBIAVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 19:21:50 -0500
+        with ESMTP id S237906AbiBIA1c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 19:27:32 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8890DC061576;
-        Tue,  8 Feb 2022 16:21:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A148BC061576;
+        Tue,  8 Feb 2022 16:27:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 233316181A;
-        Wed,  9 Feb 2022 00:21:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43561C004E1;
-        Wed,  9 Feb 2022 00:21:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D46461827;
+        Wed,  9 Feb 2022 00:27:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64535C004E1;
+        Wed,  9 Feb 2022 00:27:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644366109;
-        bh=vxqRvGYYVd1oVMFwBKGEjIrETwUfpQEIcQwo8Bn3Yyg=;
+        s=k20201202; t=1644366450;
+        bh=DOgHT7IypYPcEzB2cyqFOeqBxjv+zi17vi6+cGA2ltE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VNk+zY9TooI97vm1g6CSEOyMtdeur7X1bGukDDzAKVET9usjeCchHmZXaLdlyu7un
-         +UAyNRfdpROhVPeoZ3Lm2vFUayXL4RFDOrs8J4c8090tK0KO8/6ka/lDwOnKfMho0N
-         qnOoNQM11XV/a8+0I2akxWPDLInY3JX+TVtnMIjD8ciEjx3d7Qr25+zOn5MVliC1T8
-         mgSJbnFry3Wtu422jDZpVG3VyLEpmZHWyvGJU7/aDf/SZRHBy94n6A8aHQ5jf3Ht+i
-         FdUJfH2ZXS13PgsmWcgCt+kAp3hJJldQy5tFlJtJ58Qd9F0Svy/x9mTlwZYxI5eQO6
-         mWX4KAcuRAOHg==
-Date:   Tue, 8 Feb 2022 16:21:48 -0800
+        b=Nqd41M3obBvnPKwbaBCPjq91MTVykmhnHBw7axREl7vJFMenD/ol0SXTUODmtB2Uj
+         DK4FGG7sGbKCAn1coIkQmufTBBJBMQcTBRmCj50sYqeFyHhq4fnXQHS1Ai4p/SEdSu
+         hb6c49gjGv0r6DtOkOpxTKQMtImOevWD/GRxSTs6v/Ofiq9YfpShRvAGzLzmOuQEtp
+         IMtTx4dZJzFr4D/AWZR33DQciXT1xXBbZgiWXPRvsjzLZkXbPyaN9KH/7B7s/Oyej9
+         JB50IJsuZ40RaCKMxvNo7BIWAu+Bjf5AkNQNep34s+ElaHsoR+QllQuwPn40dWOleW
+         rhYEmEWf+8BsA==
+Date:   Tue, 8 Feb 2022 16:27:29 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
-Subject: Re: [PATCH net-next] can: gw: use call_rcu() instead of costly
- synchronize_rcu()
-Message-ID: <20220208162148.285b5432@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220207190706.1499190-1-eric.dumazet@gmail.com>
-References: <20220207190706.1499190-1-eric.dumazet@gmail.com>
+To:     Yajun Deng <yajun.deng@linux.dev>
+Cc:     davem@davemloft.net, rostedt@goodmis.org, mingo@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dev: introduce netdev_drop_inc()
+Message-ID: <20220208162729.41b62ae7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220208064318.1075849-1-yajun.deng@linux.dev>
+References: <20220208064318.1075849-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,21 +53,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  7 Feb 2022 11:07:06 -0800 Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Tue,  8 Feb 2022 14:43:18 +0800 Yajun Deng wrote:
+> We will use 'sudo perf record -g -a -e skb:kfree_skb' command to trace
+> the dropped packets when dropped increase in the output of ifconfig.
+> But there are two cases, one is only called kfree_skb(), another is
+> increasing the dropped and called kfree_skb(). The latter is what
+> we need. So we need to separate these two cases.
 > 
-> Commit fb8696ab14ad ("can: gw: synchronize rcu operations
-> before removing gw job entry") added three synchronize_rcu() calls
-> to make sure one rcu grace period was observed before freeing
-> a "struct cgw_job" (which are tiny objects).
+> From the other side, the dropped packet came from the core network and
+> the driver, we also need to separate these two cases.
 > 
-> This should be converted to call_rcu() to avoid adding delays
-> in device / network dismantles.
+> Add netdev_drop_inc() and add a tracepoint for the core network dropped
+> packets. use 'sudo perf record -g -a -e net:netdev_drop' and 'sudo perf
+>  script' will recored the dropped packets by the core network.
 > 
-> Use the rcu_head that was already in struct cgw_job,
-> not yet used.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Oliver Hartkopp <socketcan@hartkopp.net>
+> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
 
-Adding Marc and linux-can to CC.
+Have you seen the work that's being done around kfree_skb_reason()?
