@@ -2,97 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 874514AEC35
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 09:26:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C8D4AEC43
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 09:28:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239110AbiBII0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 03:26:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33820 "EHLO
+        id S237671AbiBII22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 03:28:28 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235192AbiBII0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 03:26:01 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E757C0613CA;
-        Wed,  9 Feb 2022 00:26:05 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id x4so1595729plb.4;
-        Wed, 09 Feb 2022 00:26:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qcjBJ/Ci2VT2f5f7cAYMgRpT1z1jkbGO0KryE5QWZ98=;
-        b=A0TRrw7fLJ9eVfA7MjdT8PplW2pF0Hf6og6tUjvIQYCx3+JMf7+sm3aEfqfxoFabm9
-         38aogAR6iprWXfy1WlExL0Sw23wuoV+nijCcodDj2eZG0odCpFxe7+aPMxIGJjLe03+J
-         WeC0h4fEqFCqt4BjJXfa1fTjj3IWGMOd9Y3up7+qmPeFh3j2OcgsE4pZdiS4We9BpsK+
-         2GVb77W/9kWHDzgFUPQWCmnJdojz79ZvPIih5mzbzkBOf9XBNRJ9BcFkSUpj3zCbz4UX
-         0BuFGgrg30C1SjIDVRSgbJcJuAMloX4/CGglyw7otIpaegntMTZEfR17l1UQ7+0KtFLD
-         4TAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qcjBJ/Ci2VT2f5f7cAYMgRpT1z1jkbGO0KryE5QWZ98=;
-        b=lZ7XT/oZApYv4gGbjFJ3uA0ThlZb87xzzaWi2JNR6UzzI5yNHHhPBD0ghUsaGpA/WX
-         p21vaAeGPU/jQ975IrifAijjlLMSWIRWU6r3ANZ58jIsA57UZ81OelhgwXhy9WyLS1/o
-         5gcFg10+hLMesnBErXCA9lh76jA09MBNiKD/2n6ys7N4g3dCGt6jqkPfE3wYdGu0yuMl
-         XtpTEdgze7NEQ62Cv+QqlN1mw/bJvTCT+RTqwSR1pQfsbpD5OfnQwZBcwibWZFJu2eqQ
-         pKSVODA+xRIU52/A06mjlqYe8vuX399F2AzoUBDxVjuAHK1uaQFSTSvAcMzjdLSWIQRf
-         T7pg==
-X-Gm-Message-State: AOAM530LyqgTEdxRx1zlVZGZJax1kL7x272VNvobkXJS1q+R2TZhgned
-        QC4GaAhiJs4CcCsU5tQsKHK0E8sXoe0=
-X-Google-Smtp-Source: ABdhPJyIHornEkMjATpC9q19n0/2gCr2JmRrsBk/zCu2Jz4jkkk7cfi1Ff6mYh+j/AwhXYHHg+5w4Q==
-X-Received: by 2002:a17:903:189:: with SMTP id z9mr1011269plg.71.1644395164335;
-        Wed, 09 Feb 2022 00:26:04 -0800 (PST)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id nv13sm5641533pjb.17.2022.02.09.00.26.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 00:26:03 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     netfilter-devel@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Stefano Brivio <sbrivio@redhat.com>,
-        Florian Westphal <fw@strlen.de>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH nf] selftests: netfilter: fix exit value for nft_concat_range
-Date:   Wed,  9 Feb 2022 16:25:51 +0800
-Message-Id: <20220209082551.894541-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S238325AbiBII2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 03:28:24 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA58C05CB9E
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 00:28:28 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nHiKs-0007Du-BS; Wed, 09 Feb 2022 09:28:22 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nHiKr-009H8A-Fe; Wed, 09 Feb 2022 09:28:21 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH net-next v1] dt-bindings: net: ethernet-controller: document label property
+Date:   Wed,  9 Feb 2022 09:28:20 +0100
+Message-Id: <20220209082820.2210753-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the nft_concat_range test failed, it exit 1 in the code
-specifically.
+"label" provides human readable name used on a box, board or schematic
+to identify Ethernet port.
 
-But when part of, or all of the test passed, it will failed the
-[ ${passed} -eq 0 ] check and thus exit with 1, which is the same
-exit value with failure result. Fix it by exit 0 when passed is not 0.
-
-Fixes: 611973c1e06f ("selftests: netfilter: Introduce tests for sets with range concatenation")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- tools/testing/selftests/netfilter/nft_concat_range.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../devicetree/bindings/net/ethernet-controller.yaml          | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/tools/testing/selftests/netfilter/nft_concat_range.sh b/tools/testing/selftests/netfilter/nft_concat_range.sh
-index df322e47a54f..b35010cc7f6a 100755
---- a/tools/testing/selftests/netfilter/nft_concat_range.sh
-+++ b/tools/testing/selftests/netfilter/nft_concat_range.sh
-@@ -1601,4 +1601,4 @@ for name in ${TESTS}; do
- 	done
- done
+diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+index 34c5463abcec..817794e56227 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+@@ -13,6 +13,10 @@ properties:
+   $nodename:
+     pattern: "^ethernet(@.*)?$"
  
--[ ${passed} -eq 0 ] && exit ${KSELFTEST_SKIP}
-+[ ${passed} -eq 0 ] && exit ${KSELFTEST_SKIP} || exit 0
++  label:
++    $ref: /schemas/types.yaml#/definitions/string
++    description: Human readable label on a port of a box.
++
+   local-mac-address:
+     description:
+       Specifies the MAC address that was assigned to the network device.
 -- 
-2.31.1
+2.30.2
 
