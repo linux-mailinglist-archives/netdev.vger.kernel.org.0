@@ -2,94 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 110D14AE5D9
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 01:21:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A8C24AE5DB
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 01:21:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239688AbiBIAVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 19:21:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34590 "EHLO
+        id S239700AbiBIAVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 19:21:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232503AbiBIAVt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 19:21:49 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7880CC061576;
-        Tue,  8 Feb 2022 16:21:48 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        with ESMTP id S232503AbiBIAVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 19:21:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8890DC061576;
+        Tue,  8 Feb 2022 16:21:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JtgXy2ywQz4xcp;
-        Wed,  9 Feb 2022 11:21:37 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1644366098;
-        bh=OAelZNQ28TFoQ+fesqVaaW/qWkf9ydcEeD63ov+iiic=;
-        h=Date:From:To:Cc:Subject:From;
-        b=XJjQlKELk/ORoICQBAZwCKz1+VQ/af51WYIGVZ6N78rwbgPl0HbULfJPPmSybkMfP
-         C4mD0RV+8LMqzvmDK3QcmzhobB1uFowKPwDQhhA5a5GZRR0qW5sCrBrxfS4gF550yp
-         MJplO0EqghXyhJZntMrYsRnlUAG2ITGCcMWidCOqnBQAdSQdktk73D6YY3R6D8Yxji
-         UY782NN1EPn9j5GTIAVmA22qi26FfT2pir6fir3LZvjKylpW/fM778td7m/hHQx/1n
-         aC0pvABXksJJJbcgtp3hp2FcU3FkIbTRNB+0ibUPoyoU9t3l6l0Eb0Dd8bRpCVcrHT
-         RTgY6W6Caj/PQ==
-Date:   Wed, 9 Feb 2022 11:21:35 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Song Liu <song@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the bpf-next tree
-Message-ID: <20220209112135.7fec872f@canb.auug.org.au>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 233316181A;
+        Wed,  9 Feb 2022 00:21:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43561C004E1;
+        Wed,  9 Feb 2022 00:21:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644366109;
+        bh=vxqRvGYYVd1oVMFwBKGEjIrETwUfpQEIcQwo8Bn3Yyg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VNk+zY9TooI97vm1g6CSEOyMtdeur7X1bGukDDzAKVET9usjeCchHmZXaLdlyu7un
+         +UAyNRfdpROhVPeoZ3Lm2vFUayXL4RFDOrs8J4c8090tK0KO8/6ka/lDwOnKfMho0N
+         qnOoNQM11XV/a8+0I2akxWPDLInY3JX+TVtnMIjD8ciEjx3d7Qr25+zOn5MVliC1T8
+         mgSJbnFry3Wtu422jDZpVG3VyLEpmZHWyvGJU7/aDf/SZRHBy94n6A8aHQ5jf3Ht+i
+         FdUJfH2ZXS13PgsmWcgCt+kAp3hJJldQy5tFlJtJ58Qd9F0Svy/x9mTlwZYxI5eQO6
+         mWX4KAcuRAOHg==
+Date:   Tue, 8 Feb 2022 16:21:48 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org
+Subject: Re: [PATCH net-next] can: gw: use call_rcu() instead of costly
+ synchronize_rcu()
+Message-ID: <20220208162148.285b5432@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220207190706.1499190-1-eric.dumazet@gmail.com>
+References: <20220207190706.1499190-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/K.I5wuzZ3aVsh8RZY5/KK/1";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/K.I5wuzZ3aVsh8RZY5/KK/1
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Mon,  7 Feb 2022 11:07:06 -0800 Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Commit fb8696ab14ad ("can: gw: synchronize rcu operations
+> before removing gw job entry") added three synchronize_rcu() calls
+> to make sure one rcu grace period was observed before freeing
+> a "struct cgw_job" (which are tiny objects).
+> 
+> This should be converted to call_rcu() to avoid adding delays
+> in device / network dismantles.
+> 
+> Use the rcu_head that was already in struct cgw_job,
+> not yet used.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Oliver Hartkopp <socketcan@hartkopp.net>
 
-Hi all,
-
-After merging the bpf-next tree, today's linux-next build (powerpc
-ppc64_defconfig) failed like this:
-
-kernel/bpf/core.c:830:23: error: variably modified 'bitmap' at file scope
-  830 |         unsigned long bitmap[BITS_TO_LONGS(BPF_PROG_CHUNK_COUNT)];
-      |                       ^~~~~~
-
-Caused by commit
-
-  57631054fae6 ("bpf: Introduce bpf_prog_pack allocator")
-
-I have used the bpf-next tree from next-20220208 for today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/K.I5wuzZ3aVsh8RZY5/KK/1
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIDCQ8ACgkQAVBC80lX
-0GwjQAf8DYpys4P4GjraUETbZo4yF2ktnc45XHh4gcknKVcjDeW4OnOhTuWG2E6y
-HAmHkJGTTZ+UHcT8WoRX3+likwzxSLnh2lzdqoV0uooFj7R9W7q+JBHwW4XWJLDY
-WCBBrcFPB+mH/ALwMNvHWl6Qvl3vJGNKA6QFsi2fc55q1ilNO1dWn76HRRz0fm1/
-twUfltkCrYOi+nlSTYL+1XoI3YM4ucN27Zk/IXQLHFhWANJEpKMAzmPI9oUam7X5
-zYcGkCo/h44YDn1eSaIs1ELZA8R29cz/5sUuLkpfyqG/s7sPH0gwDYWxymw5Hb8f
-CyB5QPU4XeWY6bAtTaYyZdht1Gqpkw==
-=sshk
------END PGP SIGNATURE-----
-
---Sig_/K.I5wuzZ3aVsh8RZY5/KK/1--
+Adding Marc and linux-can to CC.
