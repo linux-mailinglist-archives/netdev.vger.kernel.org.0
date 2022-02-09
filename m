@@ -2,65 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37A034AFB9D
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 19:48:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9C134AFB86
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 19:47:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240575AbiBISrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 13:47:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35004 "EHLO
+        id S240810AbiBISr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 13:47:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241125AbiBISqc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 13:46:32 -0500
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71704C03BFD9
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 10:43:45 -0800 (PST)
-Received: by mail-lj1-x22a.google.com with SMTP id h18so800437lja.13
-        for <netdev@vger.kernel.org>; Wed, 09 Feb 2022 10:43:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ixFgM/dV6WHZoJnxQBJHzIb0ge+sZ4sIjS2A0qNB+sI=;
-        b=QvIa4tB80ySgiEJK/seLckPEkEK/dRtG68E8pd+WTel95NcOpmyUHHS1wTiLJ643Fa
-         i5FX4TO0ijWikDFzniSWy/VO+VdzxVGMYQpUAe2VlGx2ORWPp7L202MMxPTlln8MZpho
-         6yvhfaFJbWPovPIkYpNG65Fk013wJ/MXKmfX4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ixFgM/dV6WHZoJnxQBJHzIb0ge+sZ4sIjS2A0qNB+sI=;
-        b=4W4CpHImp1FfnqPDWnynIJZYUvw6suscqK7hOpB5JJcR0U4wkaY2zKKtUYwxHsSnJk
-         /nnNQRvaI6WkRbwPb6L/D+OrNgpCeYs6JQkFORzS091UaTwqhO/C/SxP2Zuakf6V+xrb
-         PeMtzU0y8wXJTcO05m5GofaaNp6KbOrYA4jhRGn0Nq4YUCx1Nn1QjMk57wzoFhTzeVfS
-         Oiz6BNjyag7cNAzuQek/XeQtnTt939b9t3CS1TiwK7ux3dHAHNuqnOOJgki8YI8Hez/4
-         pPO2Oe5l2G5EYvfTJrD3aefnwIVKDRxTX4YzPYTkMkA7vc4e6RlVCQ+rUaKVJLrWr89G
-         CzVQ==
-X-Gm-Message-State: AOAM531hKWDvl1GKO3lsyugAuj0hP8KqK4Yc4MKVmlZ7HbacnElvkbvv
-        6Tgqctxd14zBhi8aQXeLXV6zbg==
-X-Google-Smtp-Source: ABdhPJzXCtafQU5ZqmX4+EWkBXxr48P1HBlw6bpR50TrhUFSgXjhhQ9lUYB+mGWzD+6QaMOBmwVPcw==
-X-Received: by 2002:a05:651c:1509:: with SMTP id e9mr2377671ljf.347.1644432216015;
-        Wed, 09 Feb 2022 10:43:36 -0800 (PST)
-Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0e00.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::e00])
-        by smtp.gmail.com with ESMTPSA id u7sm2593879lju.6.2022.02.09.10.43.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 10:43:35 -0800 (PST)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team@cloudflare.com, Yonghong Song <yhs@fb.com>
-Subject: [PATCH bpf-next v2 2/2] selftests/bpf: Cover 4-byte load from remote_port in bpf_sk_lookup
-Date:   Wed,  9 Feb 2022 19:43:33 +0100
-Message-Id: <20220209184333.654927-3-jakub@cloudflare.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220209184333.654927-1-jakub@cloudflare.com>
-References: <20220209184333.654927-1-jakub@cloudflare.com>
+        with ESMTP id S241681AbiBISqz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 13:46:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204BAC0F86BE;
+        Wed,  9 Feb 2022 10:44:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38D6B612D5;
+        Wed,  9 Feb 2022 18:44:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FDBAC340EF;
+        Wed,  9 Feb 2022 18:44:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644432253;
+        bh=K3QGi21JyiylmC9O+Ts03GWV8vWnzVXFL9nRfTBRNLk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gXB3XKq0FKZvp5ZfXg207pyTChVNXT2Bx+SA8ZTEXUSMh6kLwdLT5zRRrXi/it08V
+         4GVxP51X5/ozzcp3SYqDJ6t0yq66sJvY/O/OFigRqZssTlNU8Vd3kUTiqzl8R+SpOG
+         3movFTtC3XqjEvlcKIZ/OfY7x9WYAbKzvLV86A9Du/DQd4zGlNdtTrNuRkyPnfM/sq
+         T9qpoCSYGmqIQG3ZUdRabEZdFnXJ7U8oa26QJ8E+xHJel17F8VSXTfKqH9D64PsAFV
+         n4MCu/hpSncmqjKtigE7P/3ufMN4T2NhNQVGCLdf4JLVMxzf4Ts9gkGPS64F8EPA+V
+         xveNtz1iTqiZg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, linux-wpan@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 01/10] net: ieee802154: at86rf230: Stop leaking skb's
+Date:   Wed,  9 Feb 2022 13:44:00 -0500
+Message-Id: <20220209184410.48223-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,55 +57,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend the context access tests for sk_lookup prog to cover the surprising
-case of a 4-byte load from the remote_port field, where the expected value
-is actually shifted by 16 bits.
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-Acked-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+[ Upstream commit e5ce576d45bf72fd0e3dc37eff897bfcc488f6a9 ]
+
+Upon error the ieee802154_xmit_complete() helper is not called. Only
+ieee802154_wake_queue() is called manually. In the Tx case we then leak
+the skb structure.
+
+Free the skb structure upon error before returning when appropriate.
+
+As the 'is_tx = 0' cannot be moved in the complete handler because of a
+possible race between the delay in switching to STATE_RX_AACK_ON and a
+new interrupt, we introduce an intermediate 'was_tx' boolean just for
+this purpose.
+
+There is no Fixes tag applying here, many changes have been made on this
+area and the issue kind of always existed.
+
+Suggested-by: Alexander Aring <alex.aring@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Acked-by: Alexander Aring <aahringo@redhat.com>
+Link: https://lore.kernel.org/r/20220125121426.848337-4-miquel.raynal@bootlin.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/include/uapi/linux/bpf.h                     | 3 ++-
- tools/testing/selftests/bpf/progs/test_sk_lookup.c | 6 ++++++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/ieee802154/at86rf230.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index a7f0ddedac1f..afe3d0d7f5f2 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -6453,7 +6453,8 @@ struct bpf_sk_lookup {
- 	__u32 protocol;		/* IP protocol (IPPROTO_TCP, IPPROTO_UDP) */
- 	__u32 remote_ip4;	/* Network byte order */
- 	__u32 remote_ip6[4];	/* Network byte order */
--	__u32 remote_port;	/* Network byte order */
-+	__be16 remote_port;	/* Network byte order */
-+	__u16 :16;		/* Zero padding */
- 	__u32 local_ip4;	/* Network byte order */
- 	__u32 local_ip6[4];	/* Network byte order */
- 	__u32 local_port;	/* Host byte order */
-diff --git a/tools/testing/selftests/bpf/progs/test_sk_lookup.c b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-index 83b0aaa52ef7..bf5b7caefdd0 100644
---- a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-+++ b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-@@ -392,6 +392,7 @@ int ctx_narrow_access(struct bpf_sk_lookup *ctx)
- {
- 	struct bpf_sock *sk;
- 	int err, family;
-+	__u32 val_u32;
- 	bool v4;
+diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+index 3d9e915798668..1bc09b6c308f8 100644
+--- a/drivers/net/ieee802154/at86rf230.c
++++ b/drivers/net/ieee802154/at86rf230.c
+@@ -108,6 +108,7 @@ struct at86rf230_local {
+ 	unsigned long cal_timeout;
+ 	bool is_tx;
+ 	bool is_tx_from_off;
++	bool was_tx;
+ 	u8 tx_retry;
+ 	struct sk_buff *tx_skb;
+ 	struct at86rf230_state_change tx;
+@@ -351,7 +352,11 @@ at86rf230_async_error_recover_complete(void *context)
+ 	if (ctx->free)
+ 		kfree(ctx);
  
- 	v4 = (ctx->family == AF_INET);
-@@ -418,6 +419,11 @@ int ctx_narrow_access(struct bpf_sk_lookup *ctx)
- 	if (LSW(ctx->remote_port, 0) != SRC_PORT)
- 		return SK_DROP;
+-	ieee802154_wake_queue(lp->hw);
++	if (lp->was_tx) {
++		lp->was_tx = 0;
++		dev_kfree_skb_any(lp->tx_skb);
++		ieee802154_wake_queue(lp->hw);
++	}
+ }
  
-+	/* Load from remote_port field with zero padding (backward compatibility) */
-+	val_u32 = *(__u32 *)&ctx->remote_port;
-+	if (val_u32 != bpf_htonl(bpf_ntohs(SRC_PORT) << 16))
-+		return SK_DROP;
+ static void
+@@ -360,7 +365,11 @@ at86rf230_async_error_recover(void *context)
+ 	struct at86rf230_state_change *ctx = context;
+ 	struct at86rf230_local *lp = ctx->lp;
+ 
+-	lp->is_tx = 0;
++	if (lp->is_tx) {
++		lp->was_tx = 1;
++		lp->is_tx = 0;
++	}
 +
- 	/* Narrow loads from local_port field. Expect DST_PORT. */
- 	if (LSB(ctx->local_port, 0) != ((DST_PORT >> 0) & 0xff) ||
- 	    LSB(ctx->local_port, 1) != ((DST_PORT >> 8) & 0xff) ||
+ 	at86rf230_async_state_change(lp, ctx, STATE_RX_AACK_ON,
+ 				     at86rf230_async_error_recover_complete);
+ }
 -- 
-2.31.1
+2.34.1
 
