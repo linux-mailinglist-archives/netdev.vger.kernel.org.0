@@ -2,68 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 123AA4AF675
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 17:23:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCE634AF6C0
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 17:33:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236381AbiBIQWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 11:22:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53898 "EHLO
+        id S237024AbiBIQbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 11:31:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233355AbiBIQWP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 11:22:15 -0500
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F616C0613C9;
-        Wed,  9 Feb 2022 08:22:18 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 0F3E23201ECF;
-        Wed,  9 Feb 2022 11:22:16 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 09 Feb 2022 11:22:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=AyPVdM+Px9t0COZXk
-        bffbEcG7jUs+g3bmwqXA+leG10=; b=RSpuffbPXoR40AZ9ceUtgeB07rV769Ft8
-        eHwplwAELAmGPI15+xH8oXg872HcUkZdopoCy2IQ8baGRf69RivslgmlNforS3L6
-        B3n2jpYNmpHgrxK/4eZ9wBObzLS8h8o+6V2+00WAv/lmKEXoX/5w/NQwgA2tYdn8
-        M4kIn4FSiH7iEYnq0RkW7Von6lrqxTOjbpS/I4t9UE4hG/Zh8K9Qaq6FUept3goZ
-        jAJ14d7C8VFOJl4vQ9oNvogbGJ8lcE31SXR8y9Za/TFvu5CJb3wt7GtSFRdSk4Ex
-        iJlIBkdfs3NLgNcaEXynXA5cVgMu1eO0WCWadlCjuTrfHg5w6Ms5g==
-X-ME-Sender: <xms:OOoDYqzZM_z5xmPGTflqWjqlekVYHSwJMdTqkO3tXfEuKIylbV1W4g>
-    <xme:OOoDYmRSKhJC4L8of_iHkgrIfMOJj4FRGqYvrb6-ySblUI1t2zlMrcQL5BJ_-SgSe
-    rtEHFYBt0Aq0tw>
-X-ME-Received: <xmr:OOoDYsVEm2W8jivujWQChCTM6AbYvRQ2j8hgaoe2-Vq6_vMta_LdLeDtbAyljbDJVqe4rlaOUx6jtoRXUBVnOSM6vEgclw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheelgdekiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:OOoDYgiyZEP5DXZAvv6IctTCf1j8vnyPZXzEYN3P2iYjEj4H57POQg>
-    <xmx:OOoDYsDBdnXgFUvc7bHk_u-1PBl2vGjDBGMKRLL8WKNy1B2B_xbhzg>
-    <xmx:OOoDYhKbiVPgxqc4mZH7LgdLb560mxDdeh7zkkaiq8aEyWJTptYrsQ>
-    <xmx:OOoDYu0BOz6YJnd58Pgxahnk9QrOMzQkW-RhrYTBfzmdZ-Wsa36p-w>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 9 Feb 2022 11:22:15 -0500 (EST)
-Date:   Wed, 9 Feb 2022 18:22:11 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     menglong8.dong@gmail.com
-Cc:     nhorman@tuxdriver.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rostedt@goodmis.org, dsahern@kernel.org,
-        Menglong Dong <imagedong@tencent.com>
-Subject: Re: [PATCH v8 net-next] net: drop_monitor: support drop reason
-Message-ID: <YgPqM3PgIThH7iZy@shredder>
-References: <20220209060838.55513-1-imagedong@tencent.com>
+        with ESMTP id S235316AbiBIQbc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 11:31:32 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A53C0613C9
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 08:31:35 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id t14-20020a17090a3e4e00b001b8f6032d96so2725586pjm.2
+        for <netdev@vger.kernel.org>; Wed, 09 Feb 2022 08:31:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=f18zhjNA/1oePndK5dfsZn2r6JnfT2DoIKaTV1UU+J0=;
+        b=2sVnnSBwxhgFlh+U1Zk8St2FmWoyRonVGWeOy1DyA+M6q+sqWhARdchnOEZsUycKeP
+         DxgI6Qfy795n43SEMakuXQYcficNKrhTiHeciPFcQNdKYQDWU/nWWsDbQ3I6ftPlwGZ1
+         HtZNSwk6kKpsllijI+8Yj9WxngExCltZghVwIsHlvKo8Oo6m8f8dypsDcIK2ovGB9rwf
+         EkSvwhjoQ6bU01UYIUSGQdKc/S8PxfT/rp+nVVAVCxssTahcbN6AXnb/kobXDibDmIaU
+         jV1kHAmmjV9iwGyAh+qdGPyfI0lGjMx3Tu6J51htzyd6WFLOq8ZUBF2IJqxRHG1apwSk
+         Wh8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=f18zhjNA/1oePndK5dfsZn2r6JnfT2DoIKaTV1UU+J0=;
+        b=vmACAD75rfqvXriY8tS/1sAHOWUJ2LuLc8HzJvxbJ+Y6f1suxbjVVVSxuQWcyUHMNL
+         qkSnk42w/xh3i/LSWudmJSWG81o25lvdbxdBbBIdMhkckC6KvzgCx7PtuhSSXvpXOPiI
+         slynMw+12lQwNf7jdx3v+WJyueB+EBh015smndElIyX27TDcH5UC9yuQCDakUST3CO4O
+         EOyBeOlUEbd6RO5vnayCDlcINdXqvxmkKNKW/ir1e1btN54XQFXEn7YI8k0e7/CA5jfy
+         M3pjxY4A3luyWDVAMrYCAaXMUffC/9BzHr+ZTHcGhoR2SNweCQlxA36L5q/6HEKPWe9Q
+         HBaQ==
+X-Gm-Message-State: AOAM532URjJqTkNOUM+kBgWnOSuS9mXsKAK+6fb9TNPUXi/0Q2A0Ynyp
+        1M45j20UnVmZvWgJbrV0oS3PAmPrGAOKocLmkPqka9j8Fp4=
+X-Google-Smtp-Source: ABdhPJxF3yvL4j70OAESSKqp6CPknT56/uTzkqGgr/AJaHoa1k+VCeL/+SKVyl5kGWq2ZEIsoTRHHdMfo+wouOVXPlg=
+X-Received: by 2002:a17:903:1210:: with SMTP id l16mr2952959plh.63.1644424295180;
+ Wed, 09 Feb 2022 08:31:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209060838.55513-1-imagedong@tencent.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
+References: <20210421055047.22858-1-ms@dev.tdt.de> <CAJ+vNU1=4sDmGXEzPwp0SCq4_p0J-odw-GLM=Qyi7zQnVHwQRA@mail.gmail.com>
+ <YfspazpWoKuHEwPU@lunn.ch> <CAJ+vNU2v9WD2kzB9uTD5j6DqnBBKhv-XOttKLoZ-VzkwdzwjXw@mail.gmail.com>
+ <YfwEvgerYddIUp1V@lunn.ch> <CAJ+vNU1qY1VJgw1QRsbmED6-TLQP2wwxSYb+bXfqZ3wiObLgHg@mail.gmail.com>
+ <YfxtglvVDx2JJM9w@lunn.ch> <CAJ+vNU1td9aizbws-uZ-p-fEzsD8rJVS-mZn4TT2YFn9PY2n_w@mail.gmail.com>
+ <Yf2usAHGZSUDvLln@lunn.ch>
+In-Reply-To: <Yf2usAHGZSUDvLln@lunn.ch>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Wed, 9 Feb 2022 08:31:23 -0800
+Message-ID: <CAJ+vNU3EY0qp-6oQ6Bjd4mZCKv9AeqiaJp=FSrN84P=8atKLrw@mail.gmail.com>
+Subject: Re: [PATCH net v3] net: phy: intel-xway: enable integrated led functions
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Martin Schiller <ms@dev.tdt.de>, Hauke Mehrtens <hauke@hauke-m.de>,
+        martin.blumenstingl@googlemail.com,
+        Florian Fainelli <f.fainelli@gmail.com>, hkallweit1@gmail.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,16 +72,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 02:08:38PM +0800, menglong8.dong@gmail.com wrote:
-> From: Menglong Dong <imagedong@tencent.com>
-> 
-> In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()")
-> drop reason is introduced to the tracepoint of kfree_skb. Therefore,
-> drop_monitor is able to report the drop reason to users by netlink.
-> 
-> The drop reasons are reported as string to users, which is exactly
-> the same as what we do when reporting it to ftrace.
-> 
-> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+On Fri, Feb 4, 2022 at 2:54 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > The PHY_INTERRFACE_MODE_NA is a neat trick that I will remember but it
+> > would only help with the rgmii delay issue and not the LED issue (this
+> > patch). The GPY111 has some really nasty errata that is going to cause
+> > me to have a very hackish work-around anyway and I will be disabling
+> > the PHY driver to stay out of the way of that workaround
+>
+> Well, ideally we want the workaround for the erratas in the kernel
+> drivers. In the long run, you will get less surprises if you add what
+> you need to Linux, not hide stuff away in the bootloader.
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Andrew,
+
+I agree it is best to get workarounds for errata in the kernel where
+possible but this one is going to be a mess. There are 3 errata for
+this part and 2 of them require a toggle of the reset pin as a work
+around. Even if the mii bus can export a function for the phy to call
+to toggle reset in my case one of my boards has 2 of these PHY's (1 on
+a RGMII MAC and 1 on a SGMII MAC) on different MDIO busses that share
+a reset pin so if I trigger a reset I have to re-configure the other
+phy as well.
+
+The errata can be summarized as:
+- 1 out of 100 boots or cable plug events RGMII GbE link will end up
+going down and up 3 to 4 times then resort to a 100m link; workaround
+has been found to require a pin level reset
+- 1 out of 100 boots or cable plug events (varies per board) SGMII
+will fail link between the MAC and PHY; workaround has been found to
+require a pin level reset
+- occasionally the phy will come up with a high bit error rate between
+the MAC and PHY; workaround has been found to require a soft reset or
+ANEG restart
+
+>
+> > As far as changing a driver to force a LED configuration with no dt
+> > binding input (like this patch does) it feels wrong for exactly the
+> > same reason - LED configuration for this PHY can be done via
+> > pin-strapping and this driver now undoes that with this patch.
+>
+> Is it possible to read the pin strapping pins? If we know it has been
+> pin strapped, then a patch to detect this and not change the LED
+> configuration seems very likely to be accepted.
+>
+
+No, you can read the current LED configuration but you don't know if
+it was set via strapping or boot firmware.
+
+Best regards,
+
+Tim
