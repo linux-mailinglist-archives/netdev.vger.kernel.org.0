@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9719C4AF1B8
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 13:33:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3504D4AF1BA
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 13:33:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233126AbiBIMdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 07:33:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59710 "EHLO
+        id S233341AbiBIMdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 07:33:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233162AbiBIMdT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 07:33:19 -0500
+        with ESMTP id S233215AbiBIMdW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 07:33:22 -0500
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70089.outbound.protection.outlook.com [40.107.7.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2F8C0613CA;
-        Wed,  9 Feb 2022 04:33:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501F3C05CB9B;
+        Wed,  9 Feb 2022 04:33:24 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W70GTJ4PtuGYftz7VKJqSCQDT6D/DvGkpwWiAlkpYLr6bASLOwrC7y5v03TsC6/B7AD/X58HCKH3bXzpfZjzf/iZRHJGPlIakjbU9ybmhwZRY/K9p3gPNIIN8BjrXxmmIeNcc1Lqqr942NuOo6wAMWUSQXDyfcANcCuKviGpih7xJgHL0mwzz9LW2w4eTqrjJnw15noBy9SFXWaHrFV38jGuYxDz4uxbIAs39zD6jyr3laInxe2BS6OGoMB3NPonSdHeKxgze7wVTpSzy9mvHz9QtB0ovGupLwLUt+MEAI/E7K+w6FfkTP7DIB4uV9SjU6LuhxnmBVxqXrOUxI9m5g==
+ b=IdtyLsipFzO8XWF0tUamDEa8MTLfaMugsnoAZ+ZfV9iJK4BB6dul6C3HB0SR0V4tfdjxRXz8QnY4Zck7FF6OlA9/bfrIkZikA3RDBZrCMAGVNsfN89J9+0xYvQ4IVgwJnpGPWaUzi4P2EfRkDzEyWxMjs0Nw2PVoSGvW9retVYKou5naeWaaXjh3BhpWrXwJ8gb8xpSANycgn3cXelm2lwM/+6uTXiGctt//Mqpuw3ZRTg1jDZ5sM0BXLmP9a6ow+dRTJVDNfgYTBRVcSiRU6pfprkE3skrtXzopZn1Sy3lcYMR1Jt7BVa+yxmua6aZOfi+UYXtNdsFa02rNMiH2HA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LMHoUp2+WC6WCZo4XGAylNa3NLxwZq4Q2RdfGJRkAy4=;
- b=RlJUI45U4NV716dOrJ3ZQOthZWpepy6gmP5Z/YAlsuvfA+dOjGtrOGXwjckS+DPQIftzS3hSGxaGG6pL14j8TmZuuY0AMVV2W71aaAtAeZjy3twDB/Cwawf68EsBE3AsxnDiC5qzJcfyp9CUszfdATi8HywiFwlmcqJSmvQO9z1FK4Xb0LnVXvzPAhN3QhxbD/FW5DNeybCmHWaew+WDUr9XN5sxFaGTOrOGBjl3Rs43s133IFgxSHox9dhqoVNF7RU795rkUGUNTnx78UMQKij76fkGbPyHXglaJxE1XNwqDPnNCp+B7v1W9ZInklCuwwxlPs8krcBEZ27p8hJ8+Q==
+ bh=u2+g7iGSrNChcyXmw1tgIoXrfaaiK6QnTD771x/iSRk=;
+ b=FOvoquzZKVGAAyCA+xUCH5nUYsJYsK5neXBTIok9PL5xN66r/ywtArAHIs6Qe8LgkfWcNd8bZa2OqrbIWWZ9SsSHpJV13D1fyrmzubx5i78T6uCgIpyi7SPo6Ivr+x9JFh+onyyao3MzyemG+NdA8CPNBfa2K00FHUNrd48ZIC3kDGvP6tVTm01GWbx6uXkbdLGj1mkMzBgzC+FnoyNWyPzJSpPAun3V96eo5rJ5yErVjC66bY5AQDUl3Mdn5QiUZFBtxqXcVFrnzaNNFmOtcBnS2lx7yBLoM4QapkFXVXBFqZF1w9S1UL9q5xA2bcTEQLhgBw3GbqNRG2c6uWX6Kw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LMHoUp2+WC6WCZo4XGAylNa3NLxwZq4Q2RdfGJRkAy4=;
- b=qpwRh8D7LCZh/begEr6oDm5qIRVN3eHUFJ/qtLRNjux4aPI/R4MW2Xr0sBJ8+PUVh2JHf4Qn3Tigc9wBv8nUwNDU5SujI1n7530a6GSqrtMDdAEqdsYpqC6S8jqVSz1NY3n9n1LY+HGH2hbK8/tOmEFbXdr8IOTvm3qrVgeKpgM=
+ bh=u2+g7iGSrNChcyXmw1tgIoXrfaaiK6QnTD771x/iSRk=;
+ b=ViMc6axEmqu6x+NpVsDRG+xE+D8ylHCcKgcY2Gs4a9FwdA9CzoTf/G80QjV1T5r7V3EXkBsv/vdWv4o0ea5t/iTGV7O1I2Kut+y4znS/2o98MjxMgb+tiuS2FzKuSHA/AGhtpDcJWzvqIcgBSNkiomdQC6bwza2kYLOITXRsWj0=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from DBBPR04MB7818.eurprd04.prod.outlook.com (2603:10a6:10:1f2::23)
  by DBAPR04MB7398.eurprd04.prod.outlook.com (2603:10a6:10:1a0::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Wed, 9 Feb
- 2022 12:33:19 +0000
+ 2022 12:33:22 +0000
 Received: from DBBPR04MB7818.eurprd04.prod.outlook.com
  ([fe80::a012:8f08:e448:9f4a]) by DBBPR04MB7818.eurprd04.prod.outlook.com
  ([fe80::a012:8f08:e448:9f4a%3]) with mapi id 15.20.4975.011; Wed, 9 Feb 2022
- 12:33:19 +0000
+ 12:33:22 +0000
 From:   Po Liu <po.liu@nxp.com>
 To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, tim.gardner@canonical.com, kuba@kernel.org,
         claudiu.manoil@nxp.com, vladimir.oltean@nxp.com
 Cc:     xiaoliang.yang_1@nxp.com, Po Liu <po.liu@nxp.com>
-Subject: [v2,net-next 2/3] net:enetc: command BD ring data memory alloc as one function alone
-Date:   Wed,  9 Feb 2022 20:33:02 +0800
-Message-Id: <20220209123303.22799-2-po.liu@nxp.com>
+Subject: [v2,net-next 3/3] net:enetc: enetc qos using the CBDR dma alloc function
+Date:   Wed,  9 Feb 2022 20:33:03 +0800
+Message-Id: <20220209123303.22799-3-po.liu@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220209123303.22799-1-po.liu@nxp.com>
 References: <20220209054929.10266-3-po.liu@nxp.com>
@@ -56,53 +56,53 @@ X-ClientProxiedBy: SG2PR06CA0241.apcprd06.prod.outlook.com
  (2603:10a6:10:1f2::23)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9f8c6d67-114c-48e5-7552-08d9ebc85a15
+X-MS-Office365-Filtering-Correlation-Id: 1a30153d-0848-4ced-a0ce-08d9ebc85c16
 X-MS-TrafficTypeDiagnostic: DBAPR04MB7398:EE_
-X-Microsoft-Antispam-PRVS: <DBAPR04MB73983EF4A425BF37B9B884D9922E9@DBAPR04MB7398.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
+X-Microsoft-Antispam-PRVS: <DBAPR04MB739807F20B445ADB5C6A7B54922E9@DBAPR04MB7398.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2803;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: j2NhsrM4WilGz/Y6eIJS4JSU5y3oXcqUdA9fpLDCLb0lPVY+0Kf18GUu6cCpM8wADSEk9bMsDiMFpkiaI4tB6Uhu8rSVBmB0gIUPlU2nsheeG0d2vOkZNxk/U9xD6I0vU8T6uh4wJTuhvREtwbtuL4B9g+XCPSD/L6W10LGOEDG4EXAfmroB4NuEBRd+TBI71+aTMwvIED0JKAaRH2g9p6KBbJI7E4YWIIXTAOKXMzZaTMaAoozZRsL2oBbcr7ooLnX70i+RFFqR+mv/2YTdhy30qPndqE1JlrOopIFxRtrCvKdn+wC0Ev9cTxOJmGhNXdmDMdmsTGABFeuDrdPLSQcua0g7HtJrS5fr9onB6oY6gN6VWyAP5z8OSOBqldnwjYynNxQ3vd0U0OKOTQSLiseuxP0ocVMd5zNyLzfTbfPQCli20E32RuDlsMgvURjmJ2RyanrtBAzrZDf/E1pYlNva+JG7V5P8XnJk3VGK7VFmBf0BBtmqZBHcbMnMg1iu/uaUqQC9SKeLmcPfeKeUE3vDTvubUDgjsdyWCVkk4mG6t+Fvp9mUAujqKVh1VnpELRJqS77AnRv0xQmA+yUX5w2VPJ8z/4aIzDAWQqRI++dYdIu/bOAC63dyRD1oXAcfIRvuDlLG1G9+Lxk0LJP5rBkS8zNRrYelHM8nsz7SGIxLlMwvUNOL2iu3vh6yPyA22fA2gc9TSp/L3zJdeUl9sQ==
+X-Microsoft-Antispam-Message-Info: d17wv8tuUM3o/XkzhNXT4pgzfRfR87TCQ7Y/+NdsCOhOjrcInn791n1+Z2WlPlHyZU0KGdToIBbuClx04qIWVyKKNaiAEFocCJyrk3ieLCCrYjP+onQDfDkizAJwIXEJ+3LsC4rrUSwuy+DQArBTdwuxuzZ73h1xZsAngbIV4hWaWZhISLoHUa8nSxO+DLU3yU8uqKThlKJuL/FuOGXfTscGYR99aEkKH4X8i0R4XPFQoqu71pXeHvBEJjt6GBQBWERlnaJafTqbwaves43MuRyeXT74GW0bDWsmmEM4e5zlHyYOYt96e63r0XbFlQIeReeep6QRoDrek4sP/IrTxXEyexvqdHQkpNTfcf0hr1YcHlwrOp1DgYlAYk2lunKaThf6qHZDeRJETG+wcJ8TKs6ukixItDsCq9izAEpYpm+bR3wLYwpRilIt2NBWhM8ykHuFTQBD/ONMcucMHuoBww4hl/ry+cRQq8RdzdYT8c9fegPy+N9/8mt3tAnQP8L2shunPqPV356juyBVr+jGed1+41QBMgK0/nCLZhrnwIBtMGWfKwh+OUz4u7UMbhn2DN2ZsJumCRnPlG6i4Gkp5MRmIduyFtzoxGlRQCAauOQ7590G5EdW/vGlKFf6j2KzswhTgUXQ79N9drO0IsyxsQntEMXjKo/2jssGJ3u+1QHLWLRykh2SjKHugl7+Bbuk5rm1sdcXm+EKbToFMZJGJA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBBPR04MB7818.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(66946007)(6506007)(36756003)(186003)(52116002)(6636002)(1076003)(316002)(2616005)(38350700002)(6666004)(38100700002)(66556008)(86362001)(6512007)(2906002)(4326008)(44832011)(5660300002)(66476007)(6486002)(508600001)(8676002)(8936002)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MFAtDyYEoGtgWmUo/AhAi4ZTJ3d6rb305nhdXX+cFKmCnW/3gToB+gV9kJrs?=
- =?us-ascii?Q?EwmAzkDfFbFiopglCAw4lSdOTfwxTqllGN3fxYvrSQRQuyyUBMxUYmSip20C?=
- =?us-ascii?Q?nmcNRpx9K1DV7Pm1Zi/3ED/FbsaU3lQEtapVY+2F8MJfxbL3CVUBUUKzZRHk?=
- =?us-ascii?Q?iMha3s0nWjJPEZLdgcEBzopEAuh9aLTQulNH1zMKnNSL9njmAcTqI1uJdsj0?=
- =?us-ascii?Q?TZjA6ZpTKZiFn/Wzo2UKGCGuElne9wtOlVvYid0muXhcn/nZ2VH6ThKbSsFs?=
- =?us-ascii?Q?QebmcWPYGQ9TWNWF5Vc8hKWLWo9jRsy3qATXwkisbMKVvXkL8Ro3T83wlrjA?=
- =?us-ascii?Q?cCVGNpvMn/kPudLK35Q8FMm+HETcdEVvncxHJNircCq7vu7rY20fGi51bs1f?=
- =?us-ascii?Q?UPCPgLT1V38zYG2vhIFIzDzvmZxstc65tLoT+W5Bv1xhF1ObF+6UgVY330XU?=
- =?us-ascii?Q?CXGVYFn9OCNxhM/CMfO/zUNvCVfavMQ/Uvsnyx3mWrst5XdoDxaXJUi7zk93?=
- =?us-ascii?Q?zatDgLyTfnNbf3/AbLj+gQKGR/BzYz8NBKsfGLqyWl8qgKfGXZ1ktKC9nSlA?=
- =?us-ascii?Q?XCyMIoN8Hwp4OpvLjbyKMivYBJXQvlE3kmiwniSTNxu2+D6b4fWKtqPL6f7G?=
- =?us-ascii?Q?wFp24+a10JRdI7/OUUCON4sLclnTov7eDDZISB2DVVWSsta9gC/qEcVEnsWC?=
- =?us-ascii?Q?gdaeQDwjFF+9I9+noIo98MTznmpkExspWy/7frzdGXIJfis6E6D6vuCGMRtp?=
- =?us-ascii?Q?8mDXhgjQwKdi4lPvtEbGz50NthHYpOvYy61R1YS2asMT/pjh8796iTMR30CH?=
- =?us-ascii?Q?pp2HpoR1lwgxzgNt4jfeK3xaT9m7ekSvDH5DjFI0DEaet2IdbpZCSPH1FJ0u?=
- =?us-ascii?Q?EYFibd9GhAHvt6EX3H7fJPHq7xZunAe5rlwXZvRTxa3zK6UAyYiVYHpuXpBQ?=
- =?us-ascii?Q?pM2Opj/bzFKzBb7RBMwGdAWN92i0Pw+BgYBUiF2B/wjVDUxLLgn6VHB+1F95?=
- =?us-ascii?Q?TyHFyxR07so9aHFrWgJhEPBXJOqXK5goqCsWFXArGw4C9dx61eL5qC2/rhQm?=
- =?us-ascii?Q?c7WDg9nFmKA3rtVTApE3laVhcNvY1MNIaMZxydHZbzXuPl9zQXJVZJsZGFEG?=
- =?us-ascii?Q?06hy4G29bxSPajf3cijf26SLXpiVl+jgq5TBgS8x4wiHzvicQWV2wjStQTGK?=
- =?us-ascii?Q?KpobTwM1LX+Sri4b+WlkTn7tjIJXc7Xd5SKGabdUVC0JAc0HUyj8UkalLvb4?=
- =?us-ascii?Q?gmXVUNiNNKm/hKYuZDqozEUoSVpnCwFas+02n86V5Zej7f9fbyzWgG9hoet8?=
- =?us-ascii?Q?aZMZFDnym5R8z0vXgEbdSP7tf1gIfmaL+8T1BpE0Iixhwh1XDqrGT3S5DHuC?=
- =?us-ascii?Q?0MYkkmtQQusg0j9Oj6FkviX2kJph1W3W9C066Satz/Q2avgtvmGX+cJPwbXz?=
- =?us-ascii?Q?I5ckc9JdwYH6E2w0PsyDv+QRpaDCGLLyPm5/P+9KEhPy3lEuRbShgONCgxdD?=
- =?us-ascii?Q?od2OT579/H1vI4TsbBkbNslRQ4dvisMOzQLU9bFxoF2h/kVattZr50RAjJfa?=
- =?us-ascii?Q?U02hP3kLf0AVcPhyKwM=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qj2Q7EWWrTGfXkVXW/1CPN+E+32qzKZxhd/bXbhxHcgeONBuJEaeq3Hgv6fI?=
+ =?us-ascii?Q?M3PKZoHa6iCzxwO2NK8f41PLjdZl6MTn2YgkcA69pTzu6mkx4aWJYZQtVViJ?=
+ =?us-ascii?Q?wcTKWVRhUofJmkzIZjBvk7KEA0pjc1zAr7vckJWR5yAyvg/v8H4MbLscO5FL?=
+ =?us-ascii?Q?34KPZr/id/CnfMQpEWj/8oY+N0v4IESOLbAZ2/dPCOhSobm53iVi8z/xvPdP?=
+ =?us-ascii?Q?1dL0J7Y+e2NO5VuE+DsJtnsqqZQCxymkGHI1UVrMKBDQfNYsoUpTQ/aZ+u33?=
+ =?us-ascii?Q?8u5LiT4GHuzKfW17sbdtNFhBQuPCe5f7dQnjzoLf5TguJVIzYrQxsvgVLuHv?=
+ =?us-ascii?Q?1kk5bbcTO5A0dADgCMA/88XLRmNyJ36pNtjcs7ZY5mbx3kTr1JO9MsbNucNR?=
+ =?us-ascii?Q?AZyJuPNHk2gPHgK9Xm/h9TPY0XMzwMq8U95QbxBoqyTet3ChMOGR+/O0kfXU?=
+ =?us-ascii?Q?zy6IeE3tJXjlTu6uAh2kYlWzTvPXV31s0XzvBe2523QAC8IuvtLQyUuH/jxb?=
+ =?us-ascii?Q?xH6PbLqJGqrk7fJ6PBCUoFqpHhT0rWPJy+9QqioGx048YkCaJuMcX5vV9Llf?=
+ =?us-ascii?Q?mN1xUhd0nsMg59ZgpYWkJSM+eTeAeDMZPEahlwej1CAQP7TQl63MQBvnUsiB?=
+ =?us-ascii?Q?AX7vmIA+hS1ADfOsMmUcqpGChrtrisVwV6r+FLG4VdbPwNrcr6huEmpjy2sB?=
+ =?us-ascii?Q?gWTjiy+SlRi0C5jmrKmFmuxlbRZUepiVU6ZzzbCV9rFudVKutLE+HuGJSplG?=
+ =?us-ascii?Q?RVq0zpUWXJ3BK455lXQn5/oaDcMalT6uBL8Qhj3RJOieADh/R+ec8Gkx3qwm?=
+ =?us-ascii?Q?fusW08mdwXBbyULKzqy2KRLPix23l9z1+3dMkqplQ9HslDZKOXVg/R9E8B7x?=
+ =?us-ascii?Q?6LSge/QHb59R2r3wxd0tI9WgrsOemlNGlHsXZvYsyXfzmRIawBpxu4SChNPk?=
+ =?us-ascii?Q?SJRXYnFQXx9ThIwVwpwRLtZb+xmElEte/JDJ8eqIYKlmR2qmgbu2Vj2waB+N?=
+ =?us-ascii?Q?N7U6Lxjtk4t6qtKymwlEw31zILhBsAbfO0W1CWjSwjUs3wj+t/HFsREWTf09?=
+ =?us-ascii?Q?BKbNXYKaOxy7AfY8MjeSSDNJ5kUbyH6NfJtvPlea8I0DKu4ehlK62RkMJTIy?=
+ =?us-ascii?Q?BF2UprCRDUzo93iM1v7rFgckCqH5s+Nk9FBLD0tijjQcuwVOmOJUqJbl3BSL?=
+ =?us-ascii?Q?jThQcSNgGSK9W1LS63TG9S6HQkRJUHWeaq3RB/leEgd30eQ+jbLAzymAMrB5?=
+ =?us-ascii?Q?gW2NmPoxc34ajo/lcpr3Kts5oEnDXBXWXfIzHIf2Qt72K1t2VfTIJ1k2bJSG?=
+ =?us-ascii?Q?g7q0kmuzWvvoDMGK/HDHz5s1gDYjd2S1PGOI429fRcqFwGaCtLEtlhKlo4py?=
+ =?us-ascii?Q?h4BTIqme5siSR/3h7QTvnwbc2S9j7w5nFtbFYunlXj8L7rEIu6UOJ7dqy+yn?=
+ =?us-ascii?Q?v/BmpxFQm2l/YWexZKjKALojBqBWYnEkQHifeUl1tY4NaoRyZ1e9WV7CD3jG?=
+ =?us-ascii?Q?Fi/ikSSO/Mm2MdCxFUJG3+EVRIPR0DPkrFaYW/IjUm8HSUpGqWLfF5jOv97m?=
+ =?us-ascii?Q?brLB7tAhVL9KKHmSKFg=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9f8c6d67-114c-48e5-7552-08d9ebc85a15
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1a30153d-0848-4ced-a0ce-08d9ebc85c16
 X-MS-Exchange-CrossTenant-AuthSource: DBBPR04MB7818.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 12:33:18.9023
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 12:33:22.3577
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hzvPHCeIh2fHqeWr7To5xG/4ZO7KG98Xl6Pfmt98gQ35Oa0Inwu3NOpmxIHaE9Eo
+X-MS-Exchange-CrossTenant-UserPrincipalName: J0dNegRKaPQPxpv3oc0i8ozcskuK/7FCGf04olASAW3BhxM/mgqcseWJ77pohGBg
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7398
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -114,180 +114,243 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Separate the CBDR data memory alloc standalone. It is convenient for
-other part loading, for example the ENETC QOS part.
+Now we can use the enetc_cbd_alloc_data_mem() to replace complicated DMA
+data alloc method and CBDR memory basic seting.
 
-Reported-and-suggested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Po Liu <po.liu@nxp.com>
 ---
-change log:
-v2: no changes
+v2: fix the enetc_streamid_hw_set() cbd cleared again lead HW setting error 
 
- drivers/net/ethernet/freescale/enetc/enetc.h  | 38 +++++++++++++++++
- .../net/ethernet/freescale/enetc/enetc_cbdr.c | 41 +++++--------------
- 2 files changed, 49 insertions(+), 30 deletions(-)
+ .../net/ethernet/freescale/enetc/enetc_qos.c  | 97 +++++--------------
+ 1 file changed, 22 insertions(+), 75 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
-index fb39e406b7fc..68d806dc3701 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.h
-@@ -18,6 +18,8 @@
- #define ENETC_MAX_MTU		(ENETC_MAC_MAXFRM_SIZE - \
- 				(ETH_FCS_LEN + ETH_HLEN + VLAN_HLEN))
- 
-+#define ENETC_CBD_DATA_MEM_ALIGN 64
-+
- struct enetc_tx_swbd {
- 	union {
- 		struct sk_buff *skb;
-@@ -415,6 +417,42 @@ int enetc_get_rss_table(struct enetc_si *si, u32 *table, int count);
- int enetc_set_rss_table(struct enetc_si *si, const u32 *table, int count);
- int enetc_send_cmd(struct enetc_si *si, struct enetc_cbd *cbd);
- 
-+static inline void *enetc_cbd_alloc_data_mem(struct enetc_si *si,
-+					     struct enetc_cbd *cbd,
-+					     int size, dma_addr_t *dma,
-+					     void **data_align)
-+{
-+	struct enetc_cbdr *ring = &si->cbd_ring;
-+	dma_addr_t dma_align;
-+	void *data;
-+
-+	data = dma_alloc_coherent(ring->dma_dev,
-+				  size + ENETC_CBD_DATA_MEM_ALIGN,
-+				  dma, GFP_KERNEL);
-+	if (!data) {
-+		dev_err(ring->dma_dev, "CBD alloc data memory failed!\n");
-+		return NULL;
-+	}
-+
-+	dma_align = ALIGN(*dma, ENETC_CBD_DATA_MEM_ALIGN);
-+	*data_align = PTR_ALIGN(data, ENETC_CBD_DATA_MEM_ALIGN);
-+
-+	cbd->addr[0] = cpu_to_le32(lower_32_bits(dma_align));
-+	cbd->addr[1] = cpu_to_le32(upper_32_bits(dma_align));
-+	cbd->length = cpu_to_le16(size);
-+
-+	return data;
-+}
-+
-+static inline void enetc_cbd_free_data_mem(struct enetc_si *si, int size,
-+					   void *data, dma_addr_t *dma)
-+{
-+	struct enetc_cbdr *ring = &si->cbd_ring;
-+
-+	dma_free_coherent(ring->dma_dev, size + ENETC_CBD_DATA_MEM_ALIGN,
-+			  data, *dma);
-+}
-+
- #ifdef CONFIG_FSL_ENETC_QOS
- int enetc_setup_tc_taprio(struct net_device *ndev, void *type_data);
- void enetc_sched_speed_set(struct enetc_ndev_priv *priv, int speed);
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c b/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c
-index 073e56dcca4e..af68dc46a795 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c
-@@ -166,70 +166,55 @@ int enetc_set_mac_flt_entry(struct enetc_si *si, int index,
- 	return enetc_send_cmd(si, &cbd);
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+index d3d7172e0fcc..5a3eea1a718b 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+@@ -45,7 +45,6 @@ void enetc_sched_speed_set(struct enetc_ndev_priv *priv, int speed)
+ 		      | pspeed);
  }
  
--#define RFSE_ALIGN	64
- /* Set entry in RFS table */
- int enetc_set_fs_entry(struct enetc_si *si, struct enetc_cmd_rfse *rfse,
- 		       int index)
+-#define ENETC_QOS_ALIGN	64
+ static int enetc_setup_taprio(struct net_device *ndev,
+ 			      struct tc_taprio_qopt_offload *admin_conf)
  {
- 	struct enetc_cbdr *ring = &si->cbd_ring;
+@@ -53,7 +52,7 @@ static int enetc_setup_taprio(struct net_device *ndev,
  	struct enetc_cbd cbd = {.cmd = 0};
+ 	struct tgs_gcl_conf *gcl_config;
+ 	struct tgs_gcl_data *gcl_data;
 -	dma_addr_t dma, dma_align;
- 	void *tmp, *tmp_align;
 +	dma_addr_t dma;
- 	int err;
+ 	struct gce *gce;
+ 	u16 data_size;
+ 	u16 gcl_len;
+@@ -84,16 +83,10 @@ static int enetc_setup_taprio(struct net_device *ndev,
+ 	gcl_config = &cbd.gcl_conf;
  
- 	/* fill up the "set" descriptor */
- 	cbd.cmd = 0;
- 	cbd.cls = 4;
- 	cbd.index = cpu_to_le16(index);
--	cbd.length = cpu_to_le16(sizeof(*rfse));
- 	cbd.opt[3] = cpu_to_le32(0); /* SI */
- 
--	tmp = dma_alloc_coherent(ring->dma_dev, sizeof(*rfse) + RFSE_ALIGN,
+ 	data_size = struct_size(gcl_data, entry, gcl_len);
+-	tmp = dma_alloc_coherent(&priv->si->pdev->dev,
+-				 data_size + ENETC_QOS_ALIGN,
 -				 &dma, GFP_KERNEL);
 -	if (!tmp) {
--		dev_err(ring->dma_dev, "DMA mapping of RFS entry failed!\n");
-+	tmp = enetc_cbd_alloc_data_mem(si, &cbd, sizeof(*rfse),
-+				       &dma, &tmp_align);
+-		dev_err(&priv->si->pdev->dev,
+-			"DMA mapping of taprio gate list failed!\n");
++	tmp = enetc_cbd_alloc_data_mem(priv->si, &cbd, data_size,
++				       &dma, (void *)&gcl_data);
 +	if (!tmp)
  		return -ENOMEM;
 -	}
+-	dma_align = ALIGN(dma, ENETC_QOS_ALIGN);
+-	gcl_data = (struct tgs_gcl_data *)PTR_ALIGN(tmp, ENETC_QOS_ALIGN);
  
--	dma_align = ALIGN(dma, RFSE_ALIGN);
--	tmp_align = PTR_ALIGN(tmp, RFSE_ALIGN);
- 	memcpy(tmp_align, rfse, sizeof(*rfse));
+ 	gce = (struct gce *)(gcl_data + 1);
+ 
+@@ -116,11 +109,8 @@ static int enetc_setup_taprio(struct net_device *ndev,
+ 		temp_gce->period = cpu_to_le32(temp_entry->interval);
+ 	}
+ 
+-	cbd.length = cpu_to_le16(data_size);
+ 	cbd.status_flags = 0;
  
 -	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
 -	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
--
- 	err = enetc_send_cmd(si, &cbd);
- 	if (err)
- 		dev_err(ring->dma_dev, "FS entry add failed (%d)!", err);
+ 	cbd.cls = BDCR_CMD_PORT_GCL;
+ 	cbd.status_flags = 0;
  
--	dma_free_coherent(ring->dma_dev, sizeof(*rfse) + RFSE_ALIGN,
+@@ -133,8 +123,7 @@ static int enetc_setup_taprio(struct net_device *ndev,
+ 			 ENETC_QBV_PTGCR_OFFSET,
+ 			 tge & (~ENETC_QBV_TGE));
+ 
+-	dma_free_coherent(&priv->si->pdev->dev, data_size + ENETC_QOS_ALIGN,
 -			  tmp, dma);
-+	enetc_cbd_free_data_mem(si, sizeof(*rfse), tmp, &dma);
++	enetc_cbd_free_data_mem(priv->si, data_size, tmp, &dma);
  
  	return err;
  }
+@@ -451,6 +440,7 @@ static struct actions_fwd enetc_act_fwd[] = {
+ };
  
--#define RSSE_ALIGN	64
- static int enetc_cmd_rss_table(struct enetc_si *si, u32 *table, int count,
- 			       bool read)
- {
- 	struct enetc_cbdr *ring = &si->cbd_ring;
+ static struct enetc_psfp epsfp = {
++	.dev_bitmap = 0,
+ 	.psfp_sfi_bitmap = NULL,
+ };
+ 
+@@ -464,7 +454,7 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
  	struct enetc_cbd cbd = {.cmd = 0};
+ 	struct streamid_data *si_data;
+ 	struct streamid_conf *si_conf;
 -	dma_addr_t dma, dma_align;
- 	u8 *tmp, *tmp_align;
 +	dma_addr_t dma;
- 	int err, i;
+ 	u16 data_size;
+ 	void *tmp;
+ 	int port;
+@@ -487,20 +477,11 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
+ 	cbd.status_flags = 0;
  
--	if (count < RSSE_ALIGN)
-+	if (count < ENETC_CBD_DATA_MEM_ALIGN)
- 		/* HW only takes in a full 64 entry table */
- 		return -EINVAL;
- 
--	tmp = dma_alloc_coherent(ring->dma_dev, count + RSSE_ALIGN,
+ 	data_size = sizeof(struct streamid_data);
+-	tmp = dma_alloc_coherent(&priv->si->pdev->dev,
+-				 data_size + ENETC_QOS_ALIGN,
 -				 &dma, GFP_KERNEL);
 -	if (!tmp) {
--		dev_err(ring->dma_dev, "DMA mapping of RSS table failed!\n");
-+	tmp = enetc_cbd_alloc_data_mem(si, &cbd, count,
-+				       &dma, (void *)&tmp_align);
+-		dev_err(&priv->si->pdev->dev,
+-			"DMA mapping of stream identify failed!\n");
++	tmp = enetc_cbd_alloc_data_mem(priv->si, &cbd, data_size,
++				       &dma, (void *)&si_data);
 +	if (!tmp)
  		return -ENOMEM;
 -	}
--	dma_align = ALIGN(dma, RSSE_ALIGN);
--	tmp_align = PTR_ALIGN(tmp, RSSE_ALIGN);
+-	dma_align = ALIGN(dma, ENETC_QOS_ALIGN);
+-	si_data = (struct streamid_data *)PTR_ALIGN(tmp, ENETC_QOS_ALIGN);
  
- 	if (!read)
- 		for (i = 0; i < count; i++)
-@@ -238,10 +223,6 @@ static int enetc_cmd_rss_table(struct enetc_si *si, u32 *table, int count,
- 	/* fill up the descriptor */
- 	cbd.cmd = read ? 2 : 1;
- 	cbd.cls = 3;
--	cbd.length = cpu_to_le16(count);
+-	cbd.length = cpu_to_le16(data_size);
+-	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
+-	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
+ 	eth_broadcast_addr(si_data->dmac);
+ 	si_data->vid_vidm_tg = (ENETC_CBDR_SID_VID_MASK
+ 			       + ((0x3 << 14) | ENETC_CBDR_SID_VIDM));
+@@ -521,11 +502,6 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
+ 		goto out;
+ 
+ 	/* Enable the entry overwrite again incase space flushed by hardware */
+-	memset(&cbd, 0, sizeof(cbd));
+-
+-	cbd.index = cpu_to_le16((u16)sid->index);
+-	cbd.cmd = 0;
+-	cbd.cls = BDCR_CMD_STREAM_IDENTIFY;
+ 	cbd.status_flags = 0;
+ 
+ 	si_conf->en = 0x80;
+@@ -538,11 +514,6 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
+ 
+ 	memset(si_data, 0, data_size);
+ 
+-	cbd.length = cpu_to_le16(data_size);
+-
+-	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
+-	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
+-
+ 	/* VIDM default to be 1.
+ 	 * VID Match. If set (b1) then the VID must match, otherwise
+ 	 * any VID is considered a match. VIDM setting is only used
+@@ -562,8 +533,7 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
+ 
+ 	err = enetc_send_cmd(priv->si, &cbd);
+ out:
+-	dma_free_coherent(&priv->si->pdev->dev, data_size + ENETC_QOS_ALIGN,
+-			  tmp, dma);
++	enetc_cbd_free_data_mem(priv->si, data_size, tmp, &dma);
+ 
+ 	return err;
+ }
+@@ -632,7 +602,7 @@ static int enetc_streamcounter_hw_get(struct enetc_ndev_priv *priv,
+ {
+ 	struct enetc_cbd cbd = { .cmd = 2 };
+ 	struct sfi_counter_data *data_buf;
+-	dma_addr_t dma, dma_align;
++	dma_addr_t dma;
+ 	u16 data_size;
+ 	void *tmp;
+ 	int err;
+@@ -643,21 +613,11 @@ static int enetc_streamcounter_hw_get(struct enetc_ndev_priv *priv,
+ 	cbd.status_flags = 0;
+ 
+ 	data_size = sizeof(struct sfi_counter_data);
+-	tmp = dma_alloc_coherent(&priv->si->pdev->dev,
+-				 data_size + ENETC_QOS_ALIGN,
+-				 &dma, GFP_KERNEL);
+-	if (!tmp) {
+-		dev_err(&priv->si->pdev->dev,
+-			"DMA mapping of stream counter failed!\n");
+-		return -ENOMEM;
+-	}
+-	dma_align = ALIGN(dma, ENETC_QOS_ALIGN);
+-	data_buf = (struct sfi_counter_data *)PTR_ALIGN(tmp, ENETC_QOS_ALIGN);
 -
 -	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
 -	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
  
- 	err = enetc_send_cmd(si, &cbd);
- 	if (err)
-@@ -251,7 +232,7 @@ static int enetc_cmd_rss_table(struct enetc_si *si, u32 *table, int count,
- 		for (i = 0; i < count; i++)
- 			table[i] = tmp_align[i];
+-	cbd.length = cpu_to_le16(data_size);
++	tmp = enetc_cbd_alloc_data_mem(priv->si, &cbd, data_size,
++				       &dma, (void *)&data_buf);
++	if (!tmp)
++		return -ENOMEM;
  
--	dma_free_coherent(ring->dma_dev, count + RSSE_ALIGN, tmp, dma);
-+	enetc_cbd_free_data_mem(si, count, tmp, &dma);
+ 	err = enetc_send_cmd(priv->si, &cbd);
+ 	if (err)
+@@ -684,8 +644,7 @@ static int enetc_streamcounter_hw_get(struct enetc_ndev_priv *priv,
+ 				data_buf->flow_meter_dropl;
+ 
+ exit:
+-	dma_free_coherent(&priv->si->pdev->dev, data_size + ENETC_QOS_ALIGN,
+-			  tmp, dma);
++	enetc_cbd_free_data_mem(priv->si, data_size, tmp, &dma);
  
  	return err;
  }
+@@ -725,7 +684,7 @@ static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
+ 	struct sgcl_conf *sgcl_config;
+ 	struct sgcl_data *sgcl_data;
+ 	struct sgce *sgce;
+-	dma_addr_t dma, dma_align;
++	dma_addr_t dma;
+ 	u16 data_size;
+ 	int err, i;
+ 	void *tmp;
+@@ -775,20 +734,10 @@ static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
+ 	sgcl_config->acl_len = (sgi->num_entries - 1) & 0x3;
+ 
+ 	data_size = struct_size(sgcl_data, sgcl, sgi->num_entries);
+-	tmp = dma_alloc_coherent(&priv->si->pdev->dev,
+-				 data_size + ENETC_QOS_ALIGN,
+-				 &dma, GFP_KERNEL);
+-	if (!tmp) {
+-		dev_err(&priv->si->pdev->dev,
+-			"DMA mapping of stream counter failed!\n");
++	tmp = enetc_cbd_alloc_data_mem(priv->si, &cbd, data_size,
++				       &dma, (void *)&sgcl_data);
++	if (!tmp)
+ 		return -ENOMEM;
+-	}
+-	dma_align = ALIGN(dma, ENETC_QOS_ALIGN);
+-	sgcl_data = (struct sgcl_data *)PTR_ALIGN(tmp, ENETC_QOS_ALIGN);
+-
+-	cbd.length = cpu_to_le16(data_size);
+-	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
+-	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
+ 
+ 	sgce = &sgcl_data->sgcl[0];
+ 
+@@ -843,9 +792,7 @@ static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
+ 	err = enetc_send_cmd(priv->si, &cbd);
+ 
+ exit:
+-	dma_free_coherent(&priv->si->pdev->dev, data_size + ENETC_QOS_ALIGN,
+-			  tmp, dma);
+-
++	enetc_cbd_free_data_mem(priv->si, data_size, tmp, &dma);
+ 	return err;
+ }
+ 
 -- 
 2.17.1
 
