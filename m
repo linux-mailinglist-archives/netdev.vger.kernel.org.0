@@ -2,90 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DC8B4AEDD1
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 10:19:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6551A4AEDE0
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 10:22:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231140AbiBIJTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 04:19:30 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53280 "EHLO
+        id S232848AbiBIJWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 04:22:39 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbiBIJT3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 04:19:29 -0500
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B14E04EC3F;
-        Wed,  9 Feb 2022 01:19:18 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V4-Yw8X_1644398037;
-Received: from 30.225.24.53(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V4-Yw8X_1644398037)
+        with ESMTP id S229706AbiBIJWi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 04:22:38 -0500
+Received: from out199-8.us.a.mail.aliyun.com (out199-8.us.a.mail.aliyun.com [47.90.199.8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82E8E053F88;
+        Wed,  9 Feb 2022 01:22:32 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V4-nGVb_1644398213;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V4-nGVb_1644398213)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Feb 2022 17:13:58 +0800
-Message-ID: <c15e185e-3d92-e5ce-fc99-600b98bfe3dd@linux.alibaba.com>
-Date:   Wed, 9 Feb 2022 17:13:57 +0800
+          Wed, 09 Feb 2022 17:16:54 +0800
+Date:   Wed, 9 Feb 2022 17:16:51 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     "D. Wythe" <alibuda@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next v5 5/5] net/smc: Add global configure for auto
+ fallback by netlink
+Message-ID: <YgOGg9Ud5N7LOOV6@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <cover.1644323503.git.alibuda@linux.alibaba.com>
+ <f54ee9f30898b998edf8f07dabccc84efaa2ab8b.1644323503.git.alibuda@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.0
-Subject: Re: [syzbot] BUG: MAX_LOCK_DEPTH too low! (3)
-To:     syzbot <syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net,
-        john.fastabend@gmail.com, kafai@fb.com, kgraul@linux.ibm.com,
-        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-References: <0000000000006d045e05d78776f6@google.com>
-From:   Wen Gu <guwen@linux.alibaba.com>
-In-Reply-To: <0000000000006d045e05d78776f6@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f54ee9f30898b998edf8f07dabccc84efaa2ab8b.1644323503.git.alibuda@linux.alibaba.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2022/2/9 4:21 am, syzbot wrote:
-
-> The issue was bisected to:
+On Tue, Feb 08, 2022 at 08:53:13PM +0800, D. Wythe wrote:
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
 > 
-> commit 341adeec9adad0874f29a0a1af35638207352a39
-> Author: Wen Gu <guwen@linux.alibaba.com>
-> Date:   Wed Jan 26 15:33:04 2022 +0000
-> 
->      net/smc: Forward wakeup to smc socket waitqueue after fallback
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11c2637c700000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=13c2637c700000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=15c2637c700000
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com
-> Fixes: 341adeec9ada ("net/smc: Forward wakeup to smc socket waitqueue after fallback")
+> @@ -248,6 +248,8 @@ int smc_nl_get_sys_info(struct sk_buff *skb, struct netlink_callback *cb)
+>  		goto errattr;
+>  	if (nla_put_u8(skb, SMC_NLA_SYS_IS_SMCR_V2, true))
+>  		goto errattr;
+> +	if (nla_put_u8(skb, SMC_NLA_SYS_AUTO_FALLBACK, smc_auto_fallback))
 
-Thanks for all the details provided by syzbot.
+READ_ONCE(smc_auto_fallback) ?
 
-I reproduced this issue in my environment. It is caused by repeated calls to
-smc_switch_to_fallback().
+> +		goto errattr;
+>  	smc_clc_get_hostname(&host);
+>  	if (host) {
+>  		memcpy(hostname, host, SMC_MAX_HOSTNAME_LEN);
+> diff --git a/net/smc/smc_netlink.c b/net/smc/smc_netlink.c
+> index f13ab06..a7de517 100644
+> --- a/net/smc/smc_netlink.c
+> +++ b/net/smc/smc_netlink.c
+> @@ -111,6 +111,16 @@
+>  		.flags = GENL_ADMIN_PERM,
+>  		.doit = smc_nl_disable_seid,
+>  	},
+> +	{
+> +		.cmd = SMC_NETLINK_ENABLE_AUTO_FALLBACK,
+> +		.flags = GENL_ADMIN_PERM,
+> +		.doit = smc_enable_auto_fallback,
+> +	},
+> +	{
+> +		.cmd = SMC_NETLINK_DISABLE_AUTO_FALLBACK,
+> +		.flags = GENL_ADMIN_PERM,
+> +		.doit = smc_disable_auto_fallback,
+> +	},
+>  };
 
-In 341adeec9ada ("net/smc: Forward wakeup to smc socket waitqueue after fallback"),
-smc_switch_to_fallback() saves the original callback function of clcsock in
-smc->clcsk_error_report and set clcsk->sk_error_report as smc_fback_error_report().
+Consider adding the separated cmd to query the status of this config,
+just as SEID does?
 
-If smc_switch_to_fallback() is called repeatedly, the smc->clcsk_error_report will be
-reset as clcsk->sk_error_report, which now is smc_fback_error_report().
+It is common to check this value after user-space setted. Combined with
+sys_info maybe a little heavy in this scene.
 
-And the call trace will be:
-
-clcsk->sk_error_report
-   |- smc_fback_error_report() <----------------|
-        |- smc_fback_forward_wakeup()           |
-             |- clcsock_callback()              |
-                  |- smc->clcsk_error_report() -|
-
-Thus resulting in this issue.
-
-I will send a patch to fix it.
+Thanks,
+Tony Lu
