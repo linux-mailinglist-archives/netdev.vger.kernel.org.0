@@ -2,95 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 373A84AEBA3
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 09:00:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 458EF4AEBAE
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 09:00:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240095AbiBIH7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 02:59:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49668 "EHLO
+        id S240173AbiBIIAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 03:00:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240024AbiBIH7r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 02:59:47 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6670CC0613CA;
-        Tue,  8 Feb 2022 23:59:51 -0800 (PST)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2194Tujv024643;
-        Wed, 9 Feb 2022 07:59:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=TM89jeZR3hp5YkmJjCUIZAQfdRAWvUAR7HMXrcvyp9Y=;
- b=naw1uQGpYr2y/XCM+avyaJzHGmHmsc/0ZUNsSqSQVdieNXNTAoUQnbLqLDi6wZI4/YQW
- 0jMoQrDifR/bP6SVEcVxSPJh+SV1TizlJ18+TvJx/cFTh+u1R6jCtW9x6dl7raRdtmQK
- 8Oc8Q4hPZVq/sxqEgOjn/Lvbf2elBOTe+N/foaDXQtjP6VghGhiVQY9tajCVXPr/k7fo
- 1pxYjH2Ih8jtw/xCqTYHk5WkklLsQ5va+7P2r/wzRDqvhdseqr/xwhzK7TldNys0A2QH
- fU3hBGSEsL4xuEXuIpO+LMisLtEwEwjF4+gRZrNvF/pOSfppbjMIQUTFU/+6jMAPd+S7 rA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e46mn4gv8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 07:59:49 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2197rkwN010093;
-        Wed, 9 Feb 2022 07:59:49 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e46mn4guq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 07:59:49 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2197qgop011881;
-        Wed, 9 Feb 2022 07:59:47 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3e1gv9mek8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 07:59:46 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2197xifv47055158
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Feb 2022 07:59:44 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 502E34C052;
-        Wed,  9 Feb 2022 07:59:44 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EA6434C04A;
-        Wed,  9 Feb 2022 07:59:43 +0000 (GMT)
-Received: from [9.145.24.227] (unknown [9.145.24.227])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  9 Feb 2022 07:59:43 +0000 (GMT)
-Message-ID: <e19f2c6a-0429-7e33-4083-caf58414d453@linux.ibm.com>
-Date:   Wed, 9 Feb 2022 08:59:45 +0100
+        with ESMTP id S240203AbiBIIAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 03:00:37 -0500
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA56FC05CB80;
+        Wed,  9 Feb 2022 00:00:40 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V4-I6Fo_1644393637;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V4-I6Fo_1644393637)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 09 Feb 2022 16:00:37 +0800
+Date:   Wed, 9 Feb 2022 16:00:34 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Stefan Raspl <raspl@linux.ibm.com>, kgraul@linux.ibm.com,
+        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH net-next] net/smc: Allocate pages of SMC-R on ibdev NUMA
+ node
+Message-ID: <YgN0ok0bJ4lc9ida@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20220130190259.94593-1-tonylu@linux.alibaba.com>
+ <YfeN1BfPqhVz8mvy@unreal>
+ <YgDtnk8g7y5oRKXB@TonyMac-Alibaba>
+ <YgEjZonizb1Ugg2b@unreal>
+ <6d88abaa-62b8-c2ae-2b96-ceca6eea28e7@linux.ibm.com>
+ <YgI4pz0coUJcK8WO@unreal>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net-next v5 4/5] net/smc: Dynamic control auto fallback by
- socket options
-Content-Language: en-US
-To:     "D. Wythe" <alibuda@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <cover.1644323503.git.alibuda@linux.alibaba.com>
- <20f504f961e1a803f85d64229ad84260434203bd.1644323503.git.alibuda@linux.alibaba.com>
- <74e9c7fb-073c-cd62-c42a-e57c18de3404@linux.ibm.com>
- <9ba496e1-daf1-57d2-318e-bfcd4f57755c@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <9ba496e1-daf1-57d2-318e-bfcd4f57755c@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: CLFbqcOMpMq3T5cGntM_iugrjV4weN3e
-X-Proofpoint-GUID: hJ9hffZ76Lw4ZhrXFghoxnLXobQ9ayCe
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-09_04,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
- malwarescore=0 spamscore=0 mlxlogscore=842 clxscore=1015 phishscore=0
- mlxscore=0 priorityscore=1501 lowpriorityscore=0 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202090051
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgI4pz0coUJcK8WO@unreal>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -98,16 +49,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/02/2022 07:41, D. Wythe wrote:
+On Tue, Feb 08, 2022 at 11:32:23AM +0200, Leon Romanovsky wrote:
+> On Tue, Feb 08, 2022 at 10:10:55AM +0100, Stefan Raspl wrote:
+> > On 2/7/22 14:49, Leon Romanovsky wrote:
+> > > On Mon, Feb 07, 2022 at 05:59:58PM +0800, Tony Lu wrote:
+> > > > On Mon, Jan 31, 2022 at 09:20:52AM +0200, Leon Romanovsky wrote:
+> > > > > On Mon, Jan 31, 2022 at 03:03:00AM +0800, Tony Lu wrote:
+> > > > > > Currently, pages are allocated in the process context, for its NUMA node
+> > > > > > isn't equal to ibdev's, which is not the best policy for performance.
+> > > > > > 
+> > > > > > Applications will generally perform best when the processes are
+> > > > > > accessing memory on the same NUMA node. When numa_balancing enabled
+> > > > > > (which is enabled by most of OS distributions), it moves tasks closer to
+> > > > > > the memory of sndbuf or rmb and ibdev, meanwhile, the IRQs of ibdev bind
+> > > > > > to the same node usually. This reduces the latency when accessing remote
+> > > > > > memory.
+> > > > > 
+> > > > > It is very subjective per-specific test. I would expect that
+> > > > > application will control NUMA memory policies (set_mempolicy(), ...)
+> > > > > by itself without kernel setting NUMA node.
+> > > > > 
+> > > > > Various *_alloc_node() APIs are applicable for in-kernel allocations
+> > > > > where user can't control memory policy.
+> > > > > 
+> > > > > I don't know SMC-R enough, but if I judge from your description, this
+> > > > > allocation is controlled by the application.
+> > > > 
+> > > > The original design of SMC doesn't handle the memory allocation of
+> > > > different NUMA node, and the application can't control the NUMA policy
+> > > > in SMC.
+> > > > 
+> > > > It allocates memory according to the NUMA node based on the process
+> > > > context, which is determined by the scheduler. If application process
+> > > > runs on NUMA node 0, SMC allocates on node 0 and so on, it all depends
+> > > > on the scheduler. If RDMA device is attached to node 1, the process runs
+> > > > on node 0, it allocates memory on node 0.
+> > > > 
+> > > > This patch tries to allocate memory on the same NUMA node of RDMA
+> > > > device. Applications can't know the current node of RDMA device. The
+> > > > scheduler knows the node of memory, and can let applications run on the
+> > > > same node of memory and RDMA device.
+> > > 
+> > > I don't know, everything explained above is controlled through memory
+> > > policy, where application needs to run on same node as ibdev.
+> > 
+> > The purpose of SMC-R is to provide a drop-in replacement for existing TCP/IP
+> > applications. The idea is to avoid almost any modification to the
+> > application, just switch the address family. So while what you say makes a
+> > lot of sense for applications that intend to use RDMA, in the case of SMC-R
+> > we can safely assume that most if not all applications running it assume
+> > they get connectivity through a non-RDMA NIC. Hence we cannot expect the
+> > applications to think about aspects such as NUMA, and we should do the right
+> > thing within SMC-R.
 > 
-> Some of our servers have different service types on different ports.
-> A global switch cannot control different service ports individually in this case。In fact, it has nothing to do with using netlink or not. Socket options is the first solution comes to my mind in that case，I don't know if there is any other better way。
+> And here comes the problem, you are doing the right thing for very
+> specific and narrow use case, where application and ibdev run on
+> same node. It is not true for multi-core systems as application will
+> be scheduled on less load node (in very simplistic form).
+> 
+> In general case, the application will get CPU and memory based on scheduler
+> heuristic as you don't use memory policy to restrict it. The assumption
+> that allocations need to be close to ibdev and not to applications can
+> lead to worse performance.
 > 
 
-I try to understand why you think it is needed to handle different 
-service types differently. As you wrote
+Yes, the applications cannot run faster if they always access remote
+memory. There are something complex in SMC, so choose to bind to the
+RDMA device.
 
-> After some trial and thought, I found that the scope of netlink control is too large
+As Stefan mentioned, SMC is to provide a drop-in replacement for TCP.
+SMC doesn't allocate memory for the new connection most of time, it has
+linkgroup-level buffer reuse pool. The memory is only allocated during
+connecting in process context or workqueue (non-blocking) if no buffer
+in the beginning. Later it will reuse the buffer in the link group. The
+data operations (send/recv) occurs in the following progress and wake up
+by scheduler (epoll). Also, local IRQ binding can help process runs on
+the node of RDMA device.
 
-please explain what you found out. I don't doubt about netlink or socket option here,
-its all about why a global switch for this behavior isn't good enough.
+NUMA 0                | NUMA 1
+// Application A      |
+connect()             |
+  smc_connect_rdma()  |
+    smc_conn_create() |
+      // create buffer|
+      smc_buf_create()|
+      ...             |
+                      |
+close()               |
+  ...                 |
+    // recycle buffer |
+    smc_buf_unuse()   |
+                      | // Application B
+                      | connect()
+                      |   smc_connect_rdma()
+                      |     smc_conn_create()
+                      |       // reuse buffer in NUMA 0
+                      |       smc_buf_create()
+
+Thanks,
+Tony Lu
