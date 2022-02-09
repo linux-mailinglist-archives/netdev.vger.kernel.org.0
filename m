@@ -2,81 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 995BF4AE810
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 05:07:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD2064AE7F8
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 05:07:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343579AbiBIEHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 23:07:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47162 "EHLO
+        id S244085AbiBIEHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 23:07:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347329AbiBIDlw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 22:41:52 -0500
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02801C06174F;
-        Tue,  8 Feb 2022 19:41:51 -0800 (PST)
-Received: by mail-oi1-f179.google.com with SMTP id q8so1240236oiw.7;
-        Tue, 08 Feb 2022 19:41:50 -0800 (PST)
+        with ESMTP id S1347391AbiBIDrp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 22:47:45 -0500
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7946CC0613C9;
+        Tue,  8 Feb 2022 19:47:44 -0800 (PST)
+Received: by mail-ot1-f51.google.com with SMTP id x52-20020a05683040b400b0059ea92202daso682434ott.7;
+        Tue, 08 Feb 2022 19:47:44 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=2uBLFZ0bop4GNjuX3AfN0OvA74Zgje4mCs2rxqz1als=;
-        b=31aXIjLctDNLZLLgskwTD599B16SnHWgl/woimUvCZbB379m0VV0qvRWWM2hY9OYRu
-         uY7mECobfNoqzcyWM21dSbWMdSwdouvX2oqgHJj6Bs18l5X3R0ei7HH7OFCmaWqZZz2w
-         F+x983yhOjwfbqJR8GNi116/BWEu0fVHEIg5SBTGwjjedh+NimwGDue4KYHrfqebyIpJ
-         UWlztDvNkSNI+Nly0I2f3pvl0YO7IIwm0VjeZxmPrQbcM2vFlym2GsELVvjiiK3VWDge
-         +oQjajApK2g/4dkXyLeyR5Z5nSmLnxS9m8VknHdXBW0lfQy5jF5+qDBzo3U+4YTW6ZIQ
-         yqUw==
-X-Gm-Message-State: AOAM5326gJnxsVeYexnsaWxCUPazYzqkFM/Q2i7oZHWMzdocAGvdPXtk
-        irxzIijr2ZLEjKGx7m+LDA==
-X-Google-Smtp-Source: ABdhPJxHuCzQRSdgQbD/dpAHOEDefFhYMR9jsE8gC31ttWua2aUvf702XmQ5GzjfR7N8wqiNIbUWxg==
-X-Received: by 2002:a05:6808:1598:: with SMTP id t24mr478637oiw.50.1644378110345;
-        Tue, 08 Feb 2022 19:41:50 -0800 (PST)
+        bh=Y/S59m4SqvekIlBklMvaBC073KyUpiz6Cf+mvt2eZDQ=;
+        b=Kvq3eAkR1QL7WD7lC2CQ3BtGlrznTWoUiF7UBin9OJHJ/D0UZ4HGdyuJ6kt76MuA9s
+         UPj0RinpoL1rIy4eFxhi5BCyKcZQz1+ZOQrjX9Tt2wihsIcy2RKZ+QYvfmbMKvNnj4Yv
+         OvhvMkAob68QYmJthfwaQ+RPfbeg2+ijokHIToI6ulGPdOor7yj0Hw7YfXx6oF+SfZBZ
+         +8hRrtThTlYqQpahAThjOfvRzmsGiru1K7BfHYwVjf0DrRy1MyNaToqGyupbJR8i5Tux
+         gvdDHCig/FWqgHzo0DjzQhZOi9MlkBzgW6pNOe4KoSvOUzUuHKv0O1JftbtiD3swWFOI
+         FQsg==
+X-Gm-Message-State: AOAM5320Wy022hrjR/Na0wXvdeMqTxsa11439RRHR9mE/HnN/NhST0a3
+        KGpZirO+WeHmD9t+9SktqA==
+X-Google-Smtp-Source: ABdhPJxzSi7rOGQ+ufIvJGYHpLK1bHM3/A5fE+JnD2iGJS8mZHIGfvvmaY41ZsJPcSb1b/cz04OpDQ==
+X-Received: by 2002:a9d:6c8b:: with SMTP id c11mr197538otr.92.1644378463701;
+        Tue, 08 Feb 2022 19:47:43 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id o1sm6591379oik.0.2022.02.08.19.41.49
+        by smtp.gmail.com with ESMTPSA id c29sm6054494otk.16.2022.02.08.19.47.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 19:41:49 -0800 (PST)
-Received: (nullmailer pid 3600805 invoked by uid 1000);
-        Wed, 09 Feb 2022 03:41:48 -0000
-Date:   Tue, 8 Feb 2022 21:41:48 -0600
+        Tue, 08 Feb 2022 19:47:42 -0800 (PST)
+Received: (nullmailer pid 3608852 invoked by uid 1000);
+        Wed, 09 Feb 2022 03:47:41 -0000
+Date:   Tue, 8 Feb 2022 21:47:41 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Greg KH <greg@kroah.com>, Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Oliver Neukum <oneukum@suse.com>,
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Oliver Neukum <oneukum@suse.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
         netdev@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/4] dt-bindings: net: add schema for ASIX
- USB Ethernet controllers
-Message-ID: <YgM3/OHpGaIy+b/c@robh.at.kernel.org>
+Subject: Re: [PATCH net-next v1 2/4] dt-bindings: net: add schema for
+ Microchip/SMSC LAN95xx USB Ethernet controllers
+Message-ID: <YgM5XSwmiQi5XbW/@robh.at.kernel.org>
 References: <20220127104905.899341-1-o.rempel@pengutronix.de>
- <20220127104905.899341-2-o.rempel@pengutronix.de>
- <YfJ7JXrqEEybRLCi@kroah.com>
+ <20220127104905.899341-3-o.rempel@pengutronix.de>
+ <YfJ6/xdacR59Jvq+@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YfJ7JXrqEEybRLCi@kroah.com>
+In-Reply-To: <YfJ6/xdacR59Jvq+@kroah.com>
 X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
         FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 11:59:49AM +0100, Greg KH wrote:
-> On Thu, Jan 27, 2022 at 11:49:02AM +0100, Oleksij Rempel wrote:
-> > Create initial schema for ASIX USB Ethernet controllers and import all
-> > currently supported USB IDs form drivers/net/usb/asix_devices.c
+On Thu, Jan 27, 2022 at 11:59:11AM +0100, Greg KH wrote:
+> On Thu, Jan 27, 2022 at 11:49:03AM +0100, Oleksij Rempel wrote:
+> > Create initial schema for Microchip/SMSC LAN95xx USB Ethernet controllers and
+> > import all currently supported USB IDs form drivers/net/usb/smsc95xx.c
 > 
-> Again, you are setting yourself to play a game you are always going to
-> loose and be behind on.  This is not acceptable, sorry.
+> That is a loosing game to play.  There is a reason that kernel drivers
+> only require a device id in 1 place, instead of multiple places like
+> other operating systems.  Please do not go back and make the same
+> mistakes others have.
 
-I would suggest adding just the IDs you need. There probably aren't many 
-which are hardwired. And if they aren't hardwired, what are they doing 
-in DT?
+This instance doesn't look so bad because SMSC devices are chips rather 
+than random OEM rebranded devices all with the same underlying chip.
+
+> Not to mention that I think overall this is a bad idea anyway.  USB
+> devices are self-describing, don't add them to DT.
+
+Until they are soldered down and the board maker cheaps out on having an 
+eeprom to hold the MAC address...
 
 Rob
