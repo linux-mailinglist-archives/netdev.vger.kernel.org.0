@@ -2,145 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E785D4AFD81
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 20:32:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9CAC4AFD89
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 20:33:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235751AbiBITbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 14:31:17 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:36174 "EHLO
+        id S235762AbiBITdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 14:33:35 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:36498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235588AbiBITbJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 14:31:09 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E15BDF28AEE
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 11:23:36 -0800 (PST)
-X-UUID: 2d8d81d444704484b922c7d9a054aaa8-20220210
-X-UUID: 2d8d81d444704484b922c7d9a054aaa8-20220210
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <landen.chao@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 2071314603; Thu, 10 Feb 2022 03:15:30 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 10 Feb 2022 03:15:28 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 10 Feb
- 2022 03:15:28 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 10 Feb 2022 03:15:28 +0800
-Message-ID: <dab7f18b3f86d598702f9697347c86bfe5cae7f9.camel@mediatek.com>
-Subject: Re: [PATCH RFC net-next 0/7] net: dsa: mt7530: updates for phylink
- changes
-From:   Landen Chao <landen.chao@mediatek.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <Sean.Wang@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>
-Date:   Thu, 10 Feb 2022 03:15:28 +0800
-In-Reply-To: <YgP+NBeGL4MzRcYR@shell.armlinux.org.uk>
-References: <YfwRN2ObqFbrw/fF@shell.armlinux.org.uk>
-         <YgO8WMjc77BsOLtD@shell.armlinux.org.uk>
-         <48d2d967a625c65308bff7bad03ae49779986549.camel@mediatek.com>
-         <YgP+NBeGL4MzRcYR@shell.armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        with ESMTP id S235758AbiBITca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 14:32:30 -0500
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56777DF8E3FA;
+        Wed,  9 Feb 2022 11:23:57 -0800 (PST)
+Received: by mail-il1-x12b.google.com with SMTP id z18so2598040iln.2;
+        Wed, 09 Feb 2022 11:23:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MLw55ws4X6zer56DNeW7pz8Ub79ZLnscmulyhhZPJnQ=;
+        b=jpL6TavhGoml6iFqW6BVeR09IpaF503T9IjvGkw5EuIdHJI9hFiZNOB35Nsdae0Q5m
+         mH8KsNTLem4jkEADNsvyqIfdbgayR0Reb+mqMNAU15i38q9Xibo+lQkJJ8cdM5fB2Dgc
+         nKHLbJvyme7cI+G8ZzKxZY6uxe2pgZnwEzbwd2IPYKNqA9wRuxfJDEJgI9bOis2ANf4n
+         9QNhPJysRS5fhDERZ/fx4o3hgqVJC2LIAM9gOlAiVPNTTqHgC/3BUJ6lPAMGiaq7Wl4O
+         Dg1kA0Tv6AvGxsY+sp0VDH+kIHyRar0PrTgeUGdQSz7Wb4HgG524m0uAhNx0P2WCJuhb
+         df+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MLw55ws4X6zer56DNeW7pz8Ub79ZLnscmulyhhZPJnQ=;
+        b=zATSlYQsjY1o4MCZb1Inx2FVN4zQSdUnOo63Bhu0cXF1xkNOg63QzP0efhZP9QyXdB
+         fAfZnYQr9dTgvAZW1PVhpKNdAVFI2okqp8R16NQV2+ES7EpPZ/OljmmXGwi+DWMwLxYJ
+         iEStXmo6g+GPJl1SgNPgYi64ratOTXucPWSR0dQDajs5jf9rMODz5kwZ0OwtKAtLAaFW
+         f97C56aUrcevsUpVpvaGQljLjLsm/+yzBHPN9KVp/XfZqXODOSGHt5qnOF2oXXjLM+r4
+         xg+t+Yaji5P2H+BqfaeQwZ0RuwIQceK4k7EdmLkvDyeQ2LW+GljhTFJeMaEC6E1Lbj3P
+         WJNA==
+X-Gm-Message-State: AOAM5307B//2F3fM8pDFvW2ntNrvYDipmfUykiyFZLpRoRJioISXvJVR
+        Ptp1kNRUl1B5mhYDsR2wzljwNSUWe/tTtatAXdk=
+X-Google-Smtp-Source: ABdhPJxC4EfGQOpirYpHo+mocNBnKvRc1iCCme37p/0Kisfra41m7ex4c+JAF0z4nJAnPCOqroXhj3tmJt4AFT9hJ3g=
+X-Received: by 2002:a05:6e02:2163:: with SMTP id s3mr1826579ilv.252.1644434636243;
+ Wed, 09 Feb 2022 11:23:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220208120648.49169-1-quentin@isovalent.com> <20220208120648.49169-4-quentin@isovalent.com>
+ <CAEf4BzaH1OKZpJ8-CC4TbhGmYe+jv_0iqOTwhOG9+98Lze9Lew@mail.gmail.com>
+ <82da0b01-af9f-ea0d-17a4-76a4c48bc879@isovalent.com> <CAEf4BzYPP28afBFwG+9jW4hpt2-iyy2gqATNUbY9yw0eDJU7Vw@mail.gmail.com>
+ <1d3d53c7-d3cc-cd76-220c-c7b250111229@isovalent.com>
+In-Reply-To: <1d3d53c7-d3cc-cd76-220c-c7b250111229@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 9 Feb 2022 11:23:44 -0800
+Message-ID: <CAEf4BzZ1Zu_XNm63BwhHXWfykKFq_61Nm_VVtxT=qKAHv6u+nw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 3/3] bpftool: Update versioning scheme, align
+ on libbpf's version number
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-02-10 at 01:47 +0800, Russell King (Oracle) wrote:
-> On Thu, Feb 10, 2022 at 01:33:34AM +0800, Landen Chao wrote:
-> > On Wed, 2022-02-09 at 21:06 +0800, Russell King (Oracle) wrote:
-> > > On Thu, Feb 03, 2022 at 05:30:31PM +0000, Russell King (Oracle)
-> > > wrote:
-> > > > Hi,
-> > > > 
-> > > > This series is a partial conversion of the mt7530 DSA driver to
-> > > > the
-> > > > modern phylink infrastructure. This driver has some exceptional
-> > > > cases
-> > > > which prevent - at the moment - its full conversion
-> > > > (particularly
-> > > > with
-> > > > the Autoneg bit) to using phylink_generic_validate().
-> > > > 
-> > > > What stands in the way is this if() condition in
-> > > > mt753x_phylink_validate():
-> > > > 
-> > > > 	if (state->interface != PHY_INTERFACE_MODE_TRGMII ||
-> > > > 	    !phy_interface_mode_is_8023z(state->interface)) {
-> > > > 
-> > > > reduces to being always true. I highlight this here for the
-> > > > attention
-> > > > of the driver maintainers.
-> > 
-> > Hi Russel,
-> > 
-> > The above behaviour is really a bug. "&&" should be used to prevent
-> > setting MAC_10, MAC_100 and Antoneg capability in particular
-> > interface
-> > mode in original code. However, these capability depend on the link
-> > partner of the MAC, such as Ethernet phy. It's okay to keep setting
-> > them.
-> 
-> Hi Landen,
-> 
-> Thanks for the response. I think you have a slight misunderstanding
-> about these capabilities, both in the old code and the new code.
-> 
-> You shouldn't care about e.g. the ethernet PHY's capabilities in the
-> validate() callback at all - phylink will look at the capabilities
-> reported by phylib, and mask out anything that the MAC says shouldn't
-> be supported, which has the effect of restricting what the ethernet
-> PHY will advertise.
-> 
-> In the old code, the validate() callback should only be concerned
-> with
-> what the MAC and PCS can support - e.g. if the MAC isn't capable of
-> supportig 1G half-duplex, then the 1G HD capabilities should be
-> masked
-> out.
-> 
-> With the new code, PCS gain their own validation function, which
-> means
-> that the validate() callback then becomes very much just about the
-> MAC,
-> and with phylink_generic_validate(), we can get away with just
-> specifying a bitmap of the supported interface types for the MAC/PCS
-> end of the system, and the MAC speeds that are supported.
-> 
-> Given your feedback, I will re-jig the series to take account of your
-> comments - thanks.
-> 
-Hi Russell,
+On Wed, Feb 9, 2022 at 11:15 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> 2022-02-09 09:53 UTC-0800 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > On Wed, Feb 9, 2022 at 4:37 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >>
+> >> 2022-02-08 16:39 UTC-0800 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> >>> On Tue, Feb 8, 2022 at 4:07 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >>>>
+> >>>> Since the notion of versions was introduced for bpftool, it has been
+> >>>> following the version number of the kernel (using the version number
+> >>>> corresponding to the tree in which bpftool's sources are located). The
+> >>>> rationale was that bpftool's features are loosely tied to BPF features
+> >>>> in the kernel, and that we could defer versioning to the kernel
+> >>>> repository itself.
+> >>>>
+> >>>> But this versioning scheme is confusing today, because a bpftool binary
+> >>>> should be able to work with both older and newer kernels, even if some
+> >>>> of its recent features won't be available on older systems. Furthermore,
+> >>>> if bpftool is ported to other systems in the future, keeping a
+> >>>> Linux-based version number is not a good option.
+> >>>>
+> >>>> Looking at other options, we could either have a totally independent
+> >>>> scheme for bpftool, or we could align it on libbpf's version number
+> >>>> (with an offset on the major version number, to avoid going backwards).
+> >>>> The latter comes with a few drawbacks:
+> >>>>
+> >>>> - We may want bpftool releases in-between two libbpf versions. We can
+> >>>>   always append pre-release numbers to distinguish versions, although
+> >>>>   those won't look as "official" as something with a proper release
+> >>>>   number. But at the same time, having bpftool with version numbers that
+> >>>>   look "official" hasn't really been an issue so far.
+> >>>>
+> >>>> - If no new feature lands in bpftool for some time, we may move from
+> >>>>   e.g. 6.7.0 to 6.8.0 when libbpf levels up and have two different
+> >>>>   versions which are in fact the same.
+> >>>>
+> >>>> - Following libbpf's versioning scheme sounds better than kernel's, but
+> >>>>   ultimately it doesn't make too much sense either, because even though
+> >>>>   bpftool uses the lib a lot, its behaviour is not that much conditioned
+> >>>>   by the internal evolution of the library (or by new APIs that it may
+> >>>>   not use).
+> >>>>
+> >>>> Having an independent versioning scheme solves the above, but at the
+> >>>> cost of heavier maintenance. Developers will likely forget to increase
+> >>>> the numbers when adding features or bug fixes, and we would take the
+> >>>> risk of having to send occasional "catch-up" patches just to update the
+> >>>> version number.
+> >>>>
+> >>>> Based on these considerations, this patch aligns bpftool's version
+> >>>> number on libbpf's. This is not a perfect solution, but 1) it's
+> >>>> certainly an improvement over the current scheme, 2) the issues raised
+> >>>> above are all minor at the moment, and 3) we can still move to an
+> >>>> independent scheme in the future if we realise we need it.
+> >>>>
+> >>>> Given that libbpf is currently at version 0.7.0, and bpftool, before
+> >>>> this patch, was at 5.16, we use an offset of 6 for the major version,
+> >>>> bumping bpftool to 6.7.0.
+> >>>>
+> >>>> It remains possible to manually override the version number by setting
+> >>>> BPFTOOL_VERSION when calling make.
+> >>>>
+> >>>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> >>>> ---
+> >>>> Contrarily to the previous discussion and to what the first patch of the
+> >>>> set does, I chose not to use the libbpf_version_string() API from libbpf
+> >>>> to compute the version for bpftool. There were three reasons for that:
+> >>>>
+> >>>> - I don't feel comfortable having bpftool's version number computed at
+> >>>>   runtime. Somehow it really feels like we should now it when we compile
+> >>>
+> >>> Fair, but why not use LIBBPF_MAJOR_VERSION and LIBBPF_MINOR_VERSION to
+> >>> define BPFTOOL_VERSION (unless it's overridden).
+> >>
+> >> I forgot the macros were exposed, which is silly, because I was the one
+> >> to help expose them in the first place. Anyway.
+> >>
+> >>> Which all seems to be
+> >>> doable at compilation time in C code, not in Makefile. This will work
+> >>> with Github version of libbpf just as well with no extra Makefile
+> >>> changes (and in general, the less stuff is done in Makefile the
+> >>> better, IMO).
+> >>>
+> >>> Version string can also be "composed" at compile time with a bit of
+> >>> helper macro, see libbpf_version_string() implementation in libbpf.
+> >>
+> >> Sounds good, I can do that.
+>
+> ... Except that you can only compose so much. The preprocessor won't
+> allow me to sum libbpf's major version with the offset (6) before
+> turning it into a string. I need to think about this a bit more.
 
-Thanks for your guidance.
-
-I've been stuck with an unnecessary problem, "should I export
-MAC_1000/MAC_100/MAC_10 capability of MAC when PCS is connected with an
-Ethernet PHY supports both 2500base-X and SGMII mode?" Now I know the
-answer, just export all capability that MAC and PCS can support in the
-validate(). phylink will help to find out the final configuration by
-coworking with phylib.
+Yeah, it sucks. Well, we can either go back to `make version` or
+you'll have to do snprintf() to get string representation. 6 +
+LIBBPF_MAJOR_VERSION should work in #if condition, it just doesn't
+stringifies to 6, but rather "6 + 0", unfortunately.
 
 
+>
+> >>
+> >> This won't give me the patch number, though, only major and minor
+> >> version. We could add an additional LIBBPF_PATCH_VERSION to libbpf.
+> >> Although thinking about it, I'm not sure we need a patch version for
+> >> bpftool at the moment, because changes in libbpf's patch number is
+> >> unlikely to reflect any change in bpftool, so it makes little sense to
+> >> copy it. So I'm considering just leaving it at 0 in bpftool, and having
+> >> updates on major/minor numbers only when libbpf releases a major/minor
+> >> version. If we do want bugfix releases, it will still be possible to
+> >> overwrite the version number with BPFTOOL_VERSION anyway. What do you think?
+> >
+> > So the patch version is not currently reflected in libbpf.map file. I
+> > do patch version bumps only when we detect some small issue after
+> > official release. It happened 2 or 3 times so far. I'm hesitant to
+> > expose that as LIBBPF_PATCH_VERSION, because I'll need to remember to
+> > bump it manually (and coordinating this between kernel sources and
+> > Github is a slow nightmare). Let's not rely on patch version, too much
+> > burden.
+>
+> Agreed, thanks.
+> Quentin
