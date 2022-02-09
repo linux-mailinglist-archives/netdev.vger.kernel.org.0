@@ -2,109 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D26034AE997
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 06:57:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9429E4AEA2E
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 07:18:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231946AbiBIFyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 00:54:46 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:57318 "EHLO
+        id S231168AbiBIGRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 01:17:54 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234279AbiBIFwM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 00:52:12 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60056.outbound.protection.outlook.com [40.107.6.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B626C0DE7DA;
-        Tue,  8 Feb 2022 21:52:16 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hbTgMHfFGvSIbYcPEt2neJac69elVRYNXt4yn70GPlG7c5Oy4LJTX5EHXnl+7urEaOfbgEFoFtGJvdlU2upCNI4tEKnorSTPZlVhiU6cNjhYiFSb/BunK9ODVKYTgCRr7b6y7WjzJyCUlC+Upj3TbC/l+ww1XfDnvXObWjwX7zaxZrykIzY7LXPtq10y+wRpd4U+WLvNFhZ4q8C0xm8Rrj2QVklQY+GAkhtCJApuZ6uEsbQWX68lgFQNn/lZ/ahPNwDEqMayh+YJ1aaW8Oy1ElY8XRUn9JchUfZnCVqlpTMmPUQPEE/2F57ucrgMuS+i+xXmq/DNCoEgj+NpEEjSMw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=88F9u7kzdYGAVeqXRt4Y3yUCU9dzJ8EmNJtpZpJ2uDI=;
- b=A1SirIQ8J6DRtEOUb9n3yJqlaucta+D1d6agN1mdHcpYJNc8jTWwA4RTuS+DceNHgeViOGEKSceQ2kZSa2pSGHXlyTaFjp2LdpZ3uqT/Od2ZK8Hnz6xiPnCYPab421iEpLJPO0dye+Sxeb+ybHTbKIM/OVGFxQZVi6R2Ex4fjqKUT9rCPdgoNBlKT8St7vAe0bQfZPJUVzJ7TaI7rJ1ix/nwmTb4X1vVHOkuSuQXs5CUywK8OQOaZSoVZ8VLknxvVRLPmfKaAxs7y7yt2D6BxaXmr1ZbJ+30CXtpaw3zp9ndVMAksM2v3rhDJjx+tjXpUXV5JEmBu8k1vO3Ru8FxvQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=88F9u7kzdYGAVeqXRt4Y3yUCU9dzJ8EmNJtpZpJ2uDI=;
- b=lbFmRV7xgqH1aeM/Li3shC+agpFq3hLr3TC0iPLu+jY+jPzD7rU3TC5ITyu5oVU5iqyV1VSNgLCi+mEsBduW/G359kwFyduteJGEvP+ty91OH7KWbkg2BzHvJl2sMLd6q9z5zxZo6x5j3DRMn/r41b8CM+jZx6gNls0P7XhC1vM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from PA4PR04MB7823.eurprd04.prod.outlook.com (2603:10a6:102:c1::14)
- by DB7PR04MB5002.eurprd04.prod.outlook.com (2603:10a6:10:19::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.19; Wed, 9 Feb
- 2022 05:50:32 +0000
-Received: from PA4PR04MB7823.eurprd04.prod.outlook.com
- ([fe80::653b:a7f3:f5c9:b7a5]) by PA4PR04MB7823.eurprd04.prod.outlook.com
- ([fe80::653b:a7f3:f5c9:b7a5%5]) with mapi id 15.20.4951.018; Wed, 9 Feb 2022
- 05:50:32 +0000
-From:   Po Liu <po.liu@nxp.com>
-To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, tim.gardner@canonical.com, kuba@kernel.org,
-        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com
-Cc:     xiaoliang.yang_1@nxp.com, Po Liu <po.liu@nxp.com>
-Subject: [v1,net-next 3/3] net:enetc: enetc qos using the CBDR dma alloc function
-Date:   Wed,  9 Feb 2022 13:49:29 +0800
-Message-Id: <20220209054929.10266-3-po.liu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220209054929.10266-1-po.liu@nxp.com>
-References: <20220209054929.10266-1-po.liu@nxp.com>
-Content-Type: text/plain
-X-ClientProxiedBy: SI2P153CA0023.APCP153.PROD.OUTLOOK.COM (2603:1096:4:190::6)
- To PA4PR04MB7823.eurprd04.prod.outlook.com (2603:10a6:102:c1::14)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a4fdcca1-942c-40d2-450e-08d9eb9015dd
-X-MS-TrafficTypeDiagnostic: DB7PR04MB5002:EE_
-X-Microsoft-Antispam-PRVS: <DB7PR04MB5002E59EFD05C6F82C816027922E9@DB7PR04MB5002.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2803;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wzCYO7Eo9XiJpl9hZGBDU0gch1J6QowJz/Xd/d0C2Mv/ZVKyeKu/SwaLIBzIkPb3C5U1zBh9JqO1Z6raIsfFjxJZsBVHUB98ATQrw76dxPty/h2Kdp23uM5wP62ElZbgzRfXBiVHnRCPRD3Yz9gaxudpLescQYQJ1RHqgHtE3iPsZt3/hRo7+s79rTlpFf9kY6ixF4pU0ntiDsIqQbCGlgTPgeEPjCqmHFE/LzUi8ciBRuWxyvZcWbHXzB6JzxFqrQBVM9koKr0nh5ixAozU85IDLI+f2H5J/cTYxCqb6KxKBzPH9Rvu/rITo1JVQcZVPNrCMtSZRdJmThx1CWWmJwV9I36wDexM2VfVcu6h+5LfU3NNKD5uAPt0+jLhCd0NRelWp4paNRUkSDW9bno+es2RR3g+wZ+8nfXrPGR1G0bZFViMisPjWOz98uHKpt/5D21N0nijptWXyRvY9h4fnbMhLQLPLuUTH+5QQi//zGZTQmMlTfHNQ6wplKWr3+P2tXm/estHEePO1s1nvV6ZTmj3Od4TV+5AM1naAlqCVXbTotTFhvMqims9FdKNu2w5Dxt2FPZRLeom+3qcBwAcGhdIGDuW8Qrl1X7qnaENUw3o7Byrxe/SSZnmME672HewahAwiJw7+usOx2gtEjCpHVhqTy9zwu8AUf9lTXJnnjVbkmAczITM4UjrYU13416neXkfiMMso17nxSh8Ea8bgA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR04MB7823.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(4326008)(44832011)(316002)(6636002)(5660300002)(6512007)(26005)(6486002)(6666004)(86362001)(6506007)(2906002)(2616005)(186003)(1076003)(66476007)(8936002)(66556008)(508600001)(66946007)(38100700002)(38350700002)(8676002)(36756003)(52116002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NMGOjCkCHieJ2nLah1e/0s2dl/Kb6dvdkP6vn9yKT3gCgG1/tZTlBuFFElkQ?=
- =?us-ascii?Q?NOLwFhzcEz/w/wHIFFBbjK83TC7B9lOwGq4uxQR9pP6FiAjRh/JlJvt0IMy7?=
- =?us-ascii?Q?maYGmePzOfjsRK7eO+Fs5hAD7TXKiI5AhzXIi9SRzUi2Bl0XOLMs5126V3I6?=
- =?us-ascii?Q?E/NX6LIhkn5dbAGZntv2+5fZQSLrZN0T2fJbpqaYD3WG0uEn0CMTjt8rVPuP?=
- =?us-ascii?Q?OuXNwysR/AoWt3uiAtKIyzwcj4P/8IP3wFPNjZi6aSY/9gjbeI09+lUbblI7?=
- =?us-ascii?Q?ruzeufCNiRUGfx+ZehcY9qb7IAu2wCeEOW6+BEzVgR0FMGgRU96LY1ASrw1+?=
- =?us-ascii?Q?JmcptiYnslQyAB+N1JqeLc5G8xBMWjE4ZDJhRT2QhHVfQvt+MJ9CjGMnvPPV?=
- =?us-ascii?Q?GmzVuUZzBBB7yehyQDHXQW6WHqUoqe3bkX/e6gEO4DiRQTW1dsFGk8l0rT8v?=
- =?us-ascii?Q?DhxeN2GWe8pelq5Dq4hemr+p1bZYhLA3JO64dISyH4AOnkAn++wIRO7kXuSl?=
- =?us-ascii?Q?/vhQxrEb1GdN1V7LoxCCzb3hv/HRP1S/pQ2YTyEVAO1iX0wd9vYmEaPLUJ9O?=
- =?us-ascii?Q?TevnKswDKn+waMOhveev9SwbB60g9x8Ck0a7eOyoVnOK4UzTWHJ2DYnRFqNl?=
- =?us-ascii?Q?r++tekvbGVWbcD3d2FY45HmxwBQf8EjRHXX3QyNFx0Tut+8k6DRAOyCB9b9p?=
- =?us-ascii?Q?53uOd9h5KqQyiYl+ybkdhoZ62PROeuuHRJF6hoyCe8g4h9AJSJLya8B/Aom/?=
- =?us-ascii?Q?YZv2iAc7K+6iAUXirDPUBzHItHpR2mPfT73hTc6palKY7ilzYTOM9cK8aztv?=
- =?us-ascii?Q?w7aMjOebFlfqp0FQPGb8zzMFaGj6g0N1thJeMMnJ/QgDgNJydE+jiOJu4GyG?=
- =?us-ascii?Q?PCAFHt1TcginMHLFHAa1C8xw6+BUeZT/VSTjqXxxS1IU9ibn5nJnTaZgrBKx?=
- =?us-ascii?Q?hYIHpCq8zyJZkh1prZ/Ft+mgAIcjY3C14NJPyMnjFI4k7lTD0Zt6Hrw/J/jF?=
- =?us-ascii?Q?jNwuQgHF54E4nMcke3BFE69xJpnUTHbzQYd71IQmVqGIu/btvkB+qB3Ip6ae?=
- =?us-ascii?Q?gNB3c6B3H0d5pp6CAg62LFDCye0aP/O7MP0SJUqYR6uTuxWihp2f9PXfQ6yw?=
- =?us-ascii?Q?uKi5dQQ/D+GayjOnadAErXErU7iVqnif49iWbCvQeD2yw8IcCzsDtCBcAK3d?=
- =?us-ascii?Q?Mo0ezHAkfqWZF2V70X2R06zwIA8dEg1JjGq3+1bsh9CD9czNVe4sZf6MWTBw?=
- =?us-ascii?Q?GqPtATBnFIIdRtqiSyhb5RCaey3oY/FKnc9I2IkIja69A3N14rN2sydJeRai?=
- =?us-ascii?Q?ph7w95Ccdckvf+LHPZooKM3XKoLDyFapoNlpstvdMhuM3W5nNW9vLnrpPchI?=
- =?us-ascii?Q?v5pq8SqWrg6dQ4ohmS3v+f8Q6I4l/67r5tcu6dyWKDP95rQz5QRMgdymuLpn?=
- =?us-ascii?Q?fgNfIuELsc0Cie9FTbvGz8Y4r2/9y0G5eyQYIVsTQ4ysdg7edYgUHlCKQlR3?=
- =?us-ascii?Q?catORwE7VcrY3yv1jrtd3w4ns1uySZAwZoWkWjwXCMAdg0rCJ9behCzlGJ12?=
- =?us-ascii?Q?pC2D3FSJvrtxAsUgX2I=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a4fdcca1-942c-40d2-450e-08d9eb9015dd
-X-MS-Exchange-CrossTenant-AuthSource: PA4PR04MB7823.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 05:50:32.6307
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UGHPI5WdpkJSOIPfWW37Xjtw6fuv1I7DhnKtbDKrHTb4K0t1848NoaeBIVW0RS9I
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5002
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        with ESMTP id S241467AbiBIGLY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 01:11:24 -0500
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17388C002146;
+        Tue,  8 Feb 2022 22:09:14 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V3zwKp0_1644386916;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V3zwKp0_1644386916)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 09 Feb 2022 14:08:37 +0800
+Message-ID: <1644386755.446152-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v3 13/17] virtio_pci: queue_reset: support VIRTIO_F_RING_RESET
+Date:   Wed, 9 Feb 2022 14:05:55 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>
+References: <20220126073533.44994-1-xuanzhuo@linux.alibaba.com>
+ <20220126073533.44994-14-xuanzhuo@linux.alibaba.com>
+ <0908a9f6-562d-fab5-39c3-2f0125acc80e@redhat.com>
+ <1644220750.6834595-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEuemxceN-uQ9Pg1bkaW6jba_jzWkoduRM_FqXUKQy26AA@mail.gmail.com>
+ <1644305735.2620988-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEvSjS+WM+wXpJQ1a=bQ7__D-kQtVSErubz=GbmyT7+E5g@mail.gmail.com>
+In-Reply-To: <CACGkMEvSjS+WM+wXpJQ1a=bQ7__D-kQtVSErubz=GbmyT7+E5g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -112,221 +52,435 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now we can use the enetc_cbd_alloc_data_mem() to replace complicated DMA
-data alloc method and CBDR memory basic seting.
+On Wed, 9 Feb 2022 13:44:06 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> On Tue, Feb 8, 2022 at 3:44 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wro=
+te:
+> >
+> > On Tue, 8 Feb 2022 10:55:37 +0800, Jason Wang <jasowang@redhat.com> wro=
+te:
+> > > On Mon, Feb 7, 2022 at 4:19 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com>=
+ wrote:
+> > > >
+> > > > On Mon, 7 Feb 2022 14:57:13 +0800, Jason Wang <jasowang@redhat.com>=
+ wrote:
+> > > > >
+> > > > > =E5=9C=A8 2022/1/26 =E4=B8=8B=E5=8D=883:35, Xuan Zhuo =E5=86=99=
+=E9=81=93:
+> > > > > > This patch implements virtio pci support for QUEUE RESET.
+> > > > > >
+> > > > > > Performing reset on a queue is divided into two steps:
+> > > > > >
+> > > > > > 1. reset_vq: reset one vq
+> > > > > > 2. enable_reset_vq: re-enable the reset queue
+> > > > > >
+> > > > > > In the first step, these tasks will be completed:
+> > > > > >     1. notify the hardware queue to reset
+> > > > > >     2. recycle the buffer from vq
+> > > > > >     3. release the ring of the vq
+> > > > > >
+> > > > > > The process of enable reset vq:
+> > > > > >      vp_modern_enable_reset_vq()
+> > > > > >      vp_enable_reset_vq()
+> > > > > >      __vp_setup_vq()
+> > > > > >      setup_vq()
+> > > > > >      vring_setup_virtqueue()
+> > > > > >
+> > > > > > In this process, we added two parameters, vq and num, and final=
+ly passed
+> > > > > > them to vring_setup_virtqueue().  And reuse the original info a=
+nd vq.
+> > > > > >
+> > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > > > ---
+> > > > > >   drivers/virtio/virtio_pci_common.c |  36 +++++++----
+> > > > > >   drivers/virtio/virtio_pci_common.h |   5 ++
+> > > > > >   drivers/virtio/virtio_pci_modern.c | 100 ++++++++++++++++++++=
++++++++++
+> > > > > >   3 files changed, 128 insertions(+), 13 deletions(-)
+> > > > > >
+> > > > > > diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virti=
+o/virtio_pci_common.c
+> > > > > > index c02936d29a31..ad21638fbf66 100644
+> > > > > > --- a/drivers/virtio/virtio_pci_common.c
+> > > > > > +++ b/drivers/virtio/virtio_pci_common.c
+> > > > > > @@ -205,23 +205,28 @@ static int vp_request_msix_vectors(struct=
+ virtio_device *vdev, int nvectors,
+> > > > > >     return err;
+> > > > > >   }
+> > > > > >
+> > > > > > -static struct virtqueue *vp_setup_vq(struct virtio_device *vde=
+v, unsigned index,
+> > > > > > -                                void (*callback)(struct virtqu=
+eue *vq),
+> > > > > > -                                const char *name,
+> > > > > > -                                bool ctx,
+> > > > > > -                                u16 msix_vec, u16 num)
+> > > > > > +struct virtqueue *vp_setup_vq(struct virtio_device *vdev, unsi=
+gned index,
+> > > > > > +                         void (*callback)(struct virtqueue *vq=
+),
+> > > > > > +                         const char *name,
+> > > > > > +                         bool ctx,
+> > > > > > +                         u16 msix_vec, u16 num)
+> > > > > >   {
+> > > > > >     struct virtio_pci_device *vp_dev =3D to_vp_device(vdev);
+> > > > > > -   struct virtio_pci_vq_info *info =3D kmalloc(sizeof *info, G=
+FP_KERNEL);
+> > > > > > +   struct virtio_pci_vq_info *info;
+> > > > > >     struct virtqueue *vq;
+> > > > > >     unsigned long flags;
+> > > > > >
+> > > > > > -   /* fill out our structure that represents an active queue */
+> > > > > > -   if (!info)
+> > > > > > -           return ERR_PTR(-ENOMEM);
+> > > > > > +   info =3D vp_dev->vqs[index];
+> > > > > > +   if (!info) {
+> > > > > > +           info =3D kzalloc(sizeof *info, GFP_KERNEL);
+> > > > > > +
+> > > > > > +           /* fill out our structure that represents an active=
+ queue */
+> > > > > > +           if (!info)
+> > > > > > +                   return ERR_PTR(-ENOMEM);
+> > > > > > +   }
+> > > > > >
+> > > > > >     vq =3D vp_dev->setup_vq(vp_dev, info, index, callback, name=
+, ctx,
+> > > > > > -                         msix_vec, NULL, num);
+> > > > > > +                         msix_vec, info->vq, num);
+> > > > > >     if (IS_ERR(vq))
+> > > > > >             goto out_info;
+> > > > > >
+> > > > > > @@ -238,6 +243,9 @@ static struct virtqueue *vp_setup_vq(struct=
+ virtio_device *vdev, unsigned index,
+> > > > > >     return vq;
+> > > > > >
+> > > > > >   out_info:
+> > > > > > +   if (info->vq && info->vq->reset)
+> > > > > > +           return vq;
+> > > > > > +
+> > > > > >     kfree(info);
+> > > > > >     return vq;
+> > > > > >   }
+> > > > > > @@ -248,9 +256,11 @@ static void vp_del_vq(struct virtqueue *vq)
+> > > > > >     struct virtio_pci_vq_info *info =3D vp_dev->vqs[vq->index];
+> > > > > >     unsigned long flags;
+> > > > > >
+> > > > > > -   spin_lock_irqsave(&vp_dev->lock, flags);
+> > > > > > -   list_del(&info->node);
+> > > > > > -   spin_unlock_irqrestore(&vp_dev->lock, flags);
+> > > > > > +   if (!vq->reset) {
+> > > > > > +           spin_lock_irqsave(&vp_dev->lock, flags);
+> > > > > > +           list_del(&info->node);
+> > > > > > +           spin_unlock_irqrestore(&vp_dev->lock, flags);
+> > > > > > +   }
+> > > > > >
+> > > > > >     vp_dev->del_vq(info);
+> > > > > >     kfree(info);
+> > > > > > diff --git a/drivers/virtio/virtio_pci_common.h b/drivers/virti=
+o/virtio_pci_common.h
+> > > > > > index 65db92245e41..c1d15f7c0be4 100644
+> > > > > > --- a/drivers/virtio/virtio_pci_common.h
+> > > > > > +++ b/drivers/virtio/virtio_pci_common.h
+> > > > > > @@ -119,6 +119,11 @@ int vp_find_vqs(struct virtio_device *vdev=
+, unsigned nvqs,
+> > > > > >             struct virtqueue *vqs[], vq_callback_t *callbacks[],
+> > > > > >             const char * const names[], const bool *ctx,
+> > > > > >             struct irq_affinity *desc);
+> > > > > > +struct virtqueue *vp_setup_vq(struct virtio_device *vdev, unsi=
+gned index,
+> > > > > > +                         void (*callback)(struct virtqueue *vq=
+),
+> > > > > > +                         const char *name,
+> > > > > > +                         bool ctx,
+> > > > > > +                         u16 msix_vec, u16 num);
+> > > > > >   const char *vp_bus_name(struct virtio_device *vdev);
+> > > > > >
+> > > > > >   /* Setup the affinity for a virtqueue:
+> > > > > > diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virti=
+o/virtio_pci_modern.c
+> > > > > > index 2ce58de549de..6789411169e4 100644
+> > > > > > --- a/drivers/virtio/virtio_pci_modern.c
+> > > > > > +++ b/drivers/virtio/virtio_pci_modern.c
+> > > > > > @@ -34,6 +34,9 @@ static void vp_transport_features(struct virt=
+io_device *vdev, u64 features)
+> > > > > >     if ((features & BIT_ULL(VIRTIO_F_SR_IOV)) &&
+> > > > > >                     pci_find_ext_capability(pci_dev, PCI_EXT_CA=
+P_ID_SRIOV))
+> > > > > >             __virtio_set_bit(vdev, VIRTIO_F_SR_IOV);
+> > > > > > +
+> > > > > > +   if (features & BIT_ULL(VIRTIO_F_RING_RESET))
+> > > > > > +           __virtio_set_bit(vdev, VIRTIO_F_RING_RESET);
+> > > > > >   }
+> > > > > >
+> > > > > >   /* virtio config->finalize_features() implementation */
+> > > > > > @@ -176,6 +179,94 @@ static void vp_reset(struct virtio_device =
+*vdev)
+> > > > > >     vp_disable_cbs(vdev);
+> > > > > >   }
+> > > > > >
+> > > > > > +static int vp_modern_reset_vq(struct virtio_reset_vq *param)
+> > > > > > +{
+> > > > > > +   struct virtio_pci_device *vp_dev =3D to_vp_device(param->vd=
+ev);
+> > > > > > +   struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
+> > > > > > +   struct virtio_pci_vq_info *info;
+> > > > > > +   u16 msix_vec, queue_index;
+> > > > > > +   unsigned long flags;
+> > > > > > +   void *buf;
+> > > > > > +
+> > > > > > +   if (!virtio_has_feature(param->vdev, VIRTIO_F_RING_RESET))
+> > > > > > +           return -ENOENT;
+> > > > > > +
+> > > > > > +   queue_index =3D param->queue_index;
+> > > > > > +
+> > > > > > +   vp_modern_set_queue_reset(mdev, queue_index);
+> > > > > > +
+> > > > > > +   /* After write 1 to queue reset, the driver MUST wait for a=
+ read of
+> > > > > > +    * queue reset to return 1.
+> > > > > > +    */
+> > > > > > +   while (vp_modern_get_queue_reset(mdev, queue_index) !=3D 1)
+> > > > > > +           msleep(1);
+> > > > >
+> > > > >
+> > > > > Is this better to move this logic into vp_modern_set_queue_reset(=
+)?
+> > > > >
+> > > >
+> > > > OK.
+> > > >
+> > > > >
+> > > > > > +
+> > > > > > +   info =3D vp_dev->vqs[queue_index];
+> > > > > > +   msix_vec =3D info->msix_vector;
+> > > > > > +
+> > > > > > +   /* Disable VQ callback. */
+> > > > > > +   if (vp_dev->per_vq_vectors && msix_vec !=3D VIRTIO_MSI_NO_V=
+ECTOR)
+> > > > > > +           disable_irq(pci_irq_vector(vp_dev->pci_dev, msix_ve=
+c));
+> > > > >
+> > > > >
+> > > > > How about the INTX case where irq is shared? I guess we need to d=
+isable
+> > > > > and enable the irq as well.
+> > > >
+> > > > For the INTX scenario, I don't think we need to disable/enable the =
+irq. But I do
+> > > > have a mistake, I should put the following list_del(&info->node) he=
+re, so that
+> > > > when the irq comes, it will no longer operate this vq.
+> > > >
+> > > > In fact, for no INTX case, the disable_irq here is not necessary, a=
+ccording to
+> > > > the requirements of the spec, after reset, the device should not ge=
+nerate irq
+> > > > anymore.
+> > >
+> > > I may miss something but I don't think INTX differs from MSI from the
+> > > vq handler perspective.
+> > >
+> > > > Here just to prevent accidents.
+> > >
+> > > The problem is that if you don't disable/sync IRQ there could be a
+> > > race between the vq irq handler and the virtqueue_detach_unused_buf()?
+> > >
+> > > >
+> > > > >
+> > > > >
+> > > > > > +
+> > > > > > +   while ((buf =3D virtqueue_detach_unused_buf(info->vq)) !=3D=
+ NULL)
+> > > > > > +           param->free_unused_cb(param, buf);
+> > > > >
+> > > > >
+> > > > > Any reason that we can't leave this logic to driver? (Or is there=
+ any
+> > > > > operations that must be done before the following operations?)
+> > > >
+> > > > As you commented before, we merged free unused buf and reset queue.
+> > > >
+> > > > I think it's a good note, otherwise, we're going to
+> > > >
+> > > >         1. reset vq
+> > > >         2. free unused(by driver)
+> > > >         3. free ring of vq
+> > >
+> > > Rethink about this, I'd prefer to leave it to the driver for consiste=
+ncy.
+> > >
+> > > E.g the virtqueue_detach_unused_buf() is called by each driver nowday=
+s.
+> >
+> > In this case, go back to my previous design and add three helpers:
+> >
+> >         int (*reset_vq)();
+> >         int (*free_reset_vq)();
+>
+> So this is only needed if there are any transport specific operations.
+> But I don't see there's any.
 
-Signed-off-by: Po Liu <po.liu@nxp.com>
----
- .../net/ethernet/freescale/enetc/enetc_qos.c  | 91 +++++--------------
- 1 file changed, 21 insertions(+), 70 deletions(-)
+Yes, you are right.
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-index d3d7172e0fcc..147c2457292f 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-@@ -45,7 +45,6 @@ void enetc_sched_speed_set(struct enetc_ndev_priv *priv, int speed)
- 		      | pspeed);
- }
- 
--#define ENETC_QOS_ALIGN	64
- static int enetc_setup_taprio(struct net_device *ndev,
- 			      struct tc_taprio_qopt_offload *admin_conf)
- {
-@@ -53,7 +52,7 @@ static int enetc_setup_taprio(struct net_device *ndev,
- 	struct enetc_cbd cbd = {.cmd = 0};
- 	struct tgs_gcl_conf *gcl_config;
- 	struct tgs_gcl_data *gcl_data;
--	dma_addr_t dma, dma_align;
-+	dma_addr_t dma;
- 	struct gce *gce;
- 	u16 data_size;
- 	u16 gcl_len;
-@@ -84,16 +83,10 @@ static int enetc_setup_taprio(struct net_device *ndev,
- 	gcl_config = &cbd.gcl_conf;
- 
- 	data_size = struct_size(gcl_data, entry, gcl_len);
--	tmp = dma_alloc_coherent(&priv->si->pdev->dev,
--				 data_size + ENETC_QOS_ALIGN,
--				 &dma, GFP_KERNEL);
--	if (!tmp) {
--		dev_err(&priv->si->pdev->dev,
--			"DMA mapping of taprio gate list failed!\n");
-+	tmp = enetc_cbd_alloc_data_mem(priv->si, &cbd, data_size,
-+				       &dma, (void *)&gcl_data);
-+	if (!tmp)
- 		return -ENOMEM;
--	}
--	dma_align = ALIGN(dma, ENETC_QOS_ALIGN);
--	gcl_data = (struct tgs_gcl_data *)PTR_ALIGN(tmp, ENETC_QOS_ALIGN);
- 
- 	gce = (struct gce *)(gcl_data + 1);
- 
-@@ -116,11 +109,8 @@ static int enetc_setup_taprio(struct net_device *ndev,
- 		temp_gce->period = cpu_to_le32(temp_entry->interval);
- 	}
- 
--	cbd.length = cpu_to_le16(data_size);
- 	cbd.status_flags = 0;
- 
--	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
--	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
- 	cbd.cls = BDCR_CMD_PORT_GCL;
- 	cbd.status_flags = 0;
- 
-@@ -133,8 +123,7 @@ static int enetc_setup_taprio(struct net_device *ndev,
- 			 ENETC_QBV_PTGCR_OFFSET,
- 			 tge & (~ENETC_QBV_TGE));
- 
--	dma_free_coherent(&priv->si->pdev->dev, data_size + ENETC_QOS_ALIGN,
--			  tmp, dma);
-+	enetc_cbd_free_data_mem(priv->si, data_size, tmp, &dma);
- 
- 	return err;
- }
-@@ -464,7 +453,7 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
- 	struct enetc_cbd cbd = {.cmd = 0};
- 	struct streamid_data *si_data;
- 	struct streamid_conf *si_conf;
--	dma_addr_t dma, dma_align;
-+	dma_addr_t dma;
- 	u16 data_size;
- 	void *tmp;
- 	int port;
-@@ -487,20 +476,11 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
- 	cbd.status_flags = 0;
- 
- 	data_size = sizeof(struct streamid_data);
--	tmp = dma_alloc_coherent(&priv->si->pdev->dev,
--				 data_size + ENETC_QOS_ALIGN,
--				 &dma, GFP_KERNEL);
--	if (!tmp) {
--		dev_err(&priv->si->pdev->dev,
--			"DMA mapping of stream identify failed!\n");
-+	tmp = enetc_cbd_alloc_data_mem(priv->si, &cbd, data_size,
-+				       &dma, (void *)&si_data);
-+	if (!tmp)
- 		return -ENOMEM;
--	}
--	dma_align = ALIGN(dma, ENETC_QOS_ALIGN);
--	si_data = (struct streamid_data *)PTR_ALIGN(tmp, ENETC_QOS_ALIGN);
- 
--	cbd.length = cpu_to_le16(data_size);
--	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
--	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
- 	eth_broadcast_addr(si_data->dmac);
- 	si_data->vid_vidm_tg = (ENETC_CBDR_SID_VID_MASK
- 			       + ((0x3 << 14) | ENETC_CBDR_SID_VIDM));
-@@ -538,11 +518,6 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
- 
- 	memset(si_data, 0, data_size);
- 
--	cbd.length = cpu_to_le16(data_size);
--
--	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
--	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
--
- 	/* VIDM default to be 1.
- 	 * VID Match. If set (b1) then the VID must match, otherwise
- 	 * any VID is considered a match. VIDM setting is only used
-@@ -562,8 +537,7 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
- 
- 	err = enetc_send_cmd(priv->si, &cbd);
- out:
--	dma_free_coherent(&priv->si->pdev->dev, data_size + ENETC_QOS_ALIGN,
--			  tmp, dma);
-+	enetc_cbd_free_data_mem(priv->si, data_size, tmp, &dma);
- 
- 	return err;
- }
-@@ -632,7 +606,7 @@ static int enetc_streamcounter_hw_get(struct enetc_ndev_priv *priv,
- {
- 	struct enetc_cbd cbd = { .cmd = 2 };
- 	struct sfi_counter_data *data_buf;
--	dma_addr_t dma, dma_align;
-+	dma_addr_t dma;
- 	u16 data_size;
- 	void *tmp;
- 	int err;
-@@ -643,21 +617,11 @@ static int enetc_streamcounter_hw_get(struct enetc_ndev_priv *priv,
- 	cbd.status_flags = 0;
- 
- 	data_size = sizeof(struct sfi_counter_data);
--	tmp = dma_alloc_coherent(&priv->si->pdev->dev,
--				 data_size + ENETC_QOS_ALIGN,
--				 &dma, GFP_KERNEL);
--	if (!tmp) {
--		dev_err(&priv->si->pdev->dev,
--			"DMA mapping of stream counter failed!\n");
--		return -ENOMEM;
--	}
--	dma_align = ALIGN(dma, ENETC_QOS_ALIGN);
--	data_buf = (struct sfi_counter_data *)PTR_ALIGN(tmp, ENETC_QOS_ALIGN);
- 
--	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
--	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
--
--	cbd.length = cpu_to_le16(data_size);
-+	tmp = enetc_cbd_alloc_data_mem(priv->si, &cbd, data_size,
-+				       &dma, (void *)&data_buf);
-+	if (!tmp)
-+		return -ENOMEM;
- 
- 	err = enetc_send_cmd(priv->si, &cbd);
- 	if (err)
-@@ -684,8 +648,7 @@ static int enetc_streamcounter_hw_get(struct enetc_ndev_priv *priv,
- 				data_buf->flow_meter_dropl;
- 
- exit:
--	dma_free_coherent(&priv->si->pdev->dev, data_size + ENETC_QOS_ALIGN,
--			  tmp, dma);
-+	enetc_cbd_free_data_mem(priv->si, data_size, tmp, &dma);
- 
- 	return err;
- }
-@@ -725,7 +688,7 @@ static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
- 	struct sgcl_conf *sgcl_config;
- 	struct sgcl_data *sgcl_data;
- 	struct sgce *sgce;
--	dma_addr_t dma, dma_align;
-+	dma_addr_t dma;
- 	u16 data_size;
- 	int err, i;
- 	void *tmp;
-@@ -775,20 +738,10 @@ static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
- 	sgcl_config->acl_len = (sgi->num_entries - 1) & 0x3;
- 
- 	data_size = struct_size(sgcl_data, sgcl, sgi->num_entries);
--	tmp = dma_alloc_coherent(&priv->si->pdev->dev,
--				 data_size + ENETC_QOS_ALIGN,
--				 &dma, GFP_KERNEL);
--	if (!tmp) {
--		dev_err(&priv->si->pdev->dev,
--			"DMA mapping of stream counter failed!\n");
-+	tmp = enetc_cbd_alloc_data_mem(priv->si, &cbd, data_size,
-+				       &dma, (void *)&sgcl_data);
-+	if (!tmp)
- 		return -ENOMEM;
--	}
--	dma_align = ALIGN(dma, ENETC_QOS_ALIGN);
--	sgcl_data = (struct sgcl_data *)PTR_ALIGN(tmp, ENETC_QOS_ALIGN);
--
--	cbd.length = cpu_to_le16(data_size);
--	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma_align));
--	cbd.addr[1] = cpu_to_le32(upper_32_bits(dma_align));
- 
- 	sgce = &sgcl_data->sgcl[0];
- 
-@@ -843,9 +796,7 @@ static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
- 	err = enetc_send_cmd(priv->si, &cbd);
- 
- exit:
--	dma_free_coherent(&priv->si->pdev->dev, data_size + ENETC_QOS_ALIGN,
--			  tmp, dma);
--
-+	enetc_cbd_free_data_mem(priv->si, data_size, tmp, &dma);
- 	return err;
- }
- 
--- 
-2.17.1
+Performing reset on a queue is divided into four steps
+    1. virtio_config_ops->reset_vq(): reset one vq
+    2. recycle the buffer from vq by virtqueue_detach_unused_buf()
+    3. release the ring of the vq by vring_release_virtqueue() (new functio=
+n)
+    4. virtio_config_ops->enable_reset_vq(): re-enable the reset queue
 
+Thanks.
+
+>
+> Thanks
+>
+> >         int (*enable_reset_vq)();
+> >
+> > Thanks.
+> >
+> > >
+> > > >
+> > > >
+> > > > >
+> > > > >
+> > > > > > +
+> > > > > > +   /* delete vq */
+> > > > > > +   spin_lock_irqsave(&vp_dev->lock, flags);
+> > > > > > +   list_del(&info->node);
+> > > > > > +   spin_unlock_irqrestore(&vp_dev->lock, flags);
+> > > > > > +
+> > > > > > +   INIT_LIST_HEAD(&info->node);
+> > > > > > +
+> > > > > > +   if (vp_dev->msix_enabled)
+> > > > > > +           vp_modern_queue_vector(mdev, info->vq->index,
+> > > > > > +                                  VIRTIO_MSI_NO_VECTOR);
+> > > > >
+> > > > >
+> > > > > I wonder if this is a must.
+> > > > >
+> > > > >
+> > > > > > +
+> > > > > > +   if (!mdev->notify_base)
+> > > > > > +           pci_iounmap(mdev->pci_dev,
+> > > > > > +                       (void __force __iomem *)info->vq->priv);
+> > > > >
+> > > > >
+> > > > > Is this a must? what happens if we simply don't do this?
+> > > > >
+> > > >
+> > > > The purpose of these two operations is mainly to be symmetrical wit=
+h del_vq().
+> > >
+> > > This is another question I want to ask. Any reason for calling
+> > > del_vq()? Is it because you need to exclude a vq from the vq handler?
+> > >
+> > > For any case, the MSI and notification stuff seems unnecessary.
+> > >
+> > > Thanks
+> > >
+> > > >
+> > > >
+> > > > >
+> > > > > > +
+> > > > > > +   vring_reset_virtqueue(info->vq);
+> > > > > > +
+> > > > > > +   return 0;
+> > > > > > +}
+> > > > > > +
+> > > > > > +static struct virtqueue *vp_modern_enable_reset_vq(struct virt=
+io_reset_vq *param)
+> > > > > > +{
+> > > > > > +   struct virtio_pci_device *vp_dev =3D to_vp_device(param->vd=
+ev);
+> > > > > > +   struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
+> > > > > > +   struct virtio_pci_vq_info *info;
+> > > > > > +   u16 msix_vec, queue_index;
+> > > > > > +   struct virtqueue *vq;
+> > > > > > +
+> > > > > > +   if (!virtio_has_feature(param->vdev, VIRTIO_F_RING_RESET))
+> > > > > > +           return ERR_PTR(-ENOENT);
+> > > > > > +
+> > > > > > +   queue_index =3D param->queue_index;
+> > > > > > +
+> > > > > > +   info =3D vp_dev->vqs[queue_index];
+> > > > > > +
+> > > > > > +   if (!info->vq->reset)
+> > > > > > +           return ERR_PTR(-EPERM);
+> > > > > > +
+> > > > > > +   /* check queue reset status */
+> > > > > > +   if (vp_modern_get_queue_reset(mdev, queue_index) !=3D 1)
+> > > > > > +           return ERR_PTR(-EBUSY);
+> > > > > > +
+> > > > > > +   vq =3D vp_setup_vq(param->vdev, queue_index, param->callbac=
+k, param->name,
+> > > > > > +                    param->ctx, info->msix_vector, param->ring=
+_num);
+> > > > > > +   if (IS_ERR(vq))
+> > > > > > +           return vq;
+> > > > > > +
+> > > > > > +   vp_modern_set_queue_enable(&vp_dev->mdev, vq->index, true);
+> > > > > > +
+> > > > > > +   msix_vec =3D vp_dev->vqs[queue_index]->msix_vector;
+> > > > > > +   if (vp_dev->per_vq_vectors && msix_vec !=3D VIRTIO_MSI_NO_V=
+ECTOR)
+> > > > > > +           enable_irq(pci_irq_vector(vp_dev->pci_dev, msix_vec=
+));
+> > > > >
+> > > > >
+> > > > > How about the INT-X case?
+> > > >
+> > > > Explained above.
+> > > >
+> > > > Thanks.
+> > > >
+> > > > >
+> > > > > Thanks
+> > > > >
+> > > > >
+> > > > > > +
+> > > > > > +   return vq;
+> > > > > > +}
+> > > > > > +
+> > > > > >   static u16 vp_config_vector(struct virtio_pci_device *vp_dev,=
+ u16 vector)
+> > > > > >   {
+> > > > > >     return vp_modern_config_vector(&vp_dev->mdev, vector);
+> > > > > > @@ -284,6 +375,11 @@ static void del_vq(struct virtio_pci_vq_in=
+fo *info)
+> > > > > >     struct virtio_pci_device *vp_dev =3D to_vp_device(vq->vdev);
+> > > > > >     struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
+> > > > > >
+> > > > > > +   if (vq->reset) {
+> > > > > > +           vring_del_virtqueue(vq);
+> > > > > > +           return;
+> > > > > > +   }
+> > > > > > +
+> > > > > >     if (vp_dev->msix_enabled)
+> > > > > >             vp_modern_queue_vector(mdev, vq->index,
+> > > > > >                                    VIRTIO_MSI_NO_VECTOR);
+> > > > > > @@ -403,6 +499,8 @@ static const struct virtio_config_ops virti=
+o_pci_config_nodev_ops =3D {
+> > > > > >     .set_vq_affinity =3D vp_set_vq_affinity,
+> > > > > >     .get_vq_affinity =3D vp_get_vq_affinity,
+> > > > > >     .get_shm_region  =3D vp_get_shm_region,
+> > > > > > +   .reset_vq        =3D vp_modern_reset_vq,
+> > > > > > +   .enable_reset_vq =3D vp_modern_enable_reset_vq,
+> > > > > >   };
+> > > > > >
+> > > > > >   static const struct virtio_config_ops virtio_pci_config_ops =
+=3D {
+> > > > > > @@ -421,6 +519,8 @@ static const struct virtio_config_ops virti=
+o_pci_config_ops =3D {
+> > > > > >     .set_vq_affinity =3D vp_set_vq_affinity,
+> > > > > >     .get_vq_affinity =3D vp_get_vq_affinity,
+> > > > > >     .get_shm_region  =3D vp_get_shm_region,
+> > > > > > +   .reset_vq        =3D vp_modern_reset_vq,
+> > > > > > +   .enable_reset_vq =3D vp_modern_enable_reset_vq,
+> > > > > >   };
+> > > > > >
+> > > > > >   /* the PCI probing function */
+> > > > >
+> > > >
+> > >
+> >
+>
