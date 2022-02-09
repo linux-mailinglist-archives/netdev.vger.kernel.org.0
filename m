@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C997F4AEAE1
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 08:16:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F4854AEADC
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 08:16:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237001AbiBIHPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 02:15:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
+        id S237081AbiBIHPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 02:15:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236517AbiBIHPi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 02:15:38 -0500
+        with ESMTP id S236642AbiBIHPk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 02:15:40 -0500
 Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD7DC0613CB;
-        Tue,  8 Feb 2022 23:15:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632C2C0612C3;
+        Tue,  8 Feb 2022 23:15:43 -0800 (PST)
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2196PfVT019548;
-        Tue, 8 Feb 2022 23:15:36 -0800
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2196PfVU019548;
+        Tue, 8 Feb 2022 23:15:39 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=6AVyIpZnbEKN4rXA2yrQOr/6xrmDl2g1Q2a4UyVRqJ4=;
- b=R16+SmnTrU/2FoNbQnVh7awPp7pQfj3vDm3ic3kRRAj5ei7T2Pej6U5xRf+sIGX5v4Ld
- 6A3nGlqYnjSgHkWeFB2G0mjEGFLyFFmKhKReI8ukB0jSuSxo12e2f2ZYBPVbIWxXC/Yj
- Nmc+sjutOEuhep7M/5ZrYFMd2OqoLTUwut0hcPBS433bfzBhiSfldFxTFkf9plI+g7bl
- lt8v25GKzDLvmSDo8PqSfutq86CO8L8LDXZJ4nfvjZr/kVMAx7CFPHOqGWTZpQ8YdFvy
- uTvKefJbRsj0MPwQCzXonpQvJTAP5IgqkFqIN5nuXnB9dxD2s9WYn1QyBb8RhAaOt8Z5 6A== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3e3nuy4wa5-1
+ content-type; s=pfpt0220; bh=2+usUML3asRaxQD1yrVWBptBzb+mqVrfMIXpGWd18ys=;
+ b=Lm6/qI8z93hgzcoHjdlmUjDnqdd08AnY7WA0nKJtEItOKjlwMgx3d0QCZbRlXFd371i5
+ +cp2KatvxNBECO6dwI7J0oIUq8MB62OtnLBl7ssGE62yNpWP/FlmQilR8+UA9NAYfhty
+ Ubkdw3U6a8Lt+4u07auI4sj021GbM51Qe2/XpwLpaC/+40sOOvNghZpENzGcjOGUvF8I
+ yrWhWnFj+APtPmUE56p8DO5n+Jxxfuu3ZjxrlVqLu2OwE1JH0dWLN40FxLnVva6gIeea
+ rxEKK1KnD+bmZAhlX7BCcTBoswB1m7U4h6kX8r5peUn+l9gV6MgyImHgxMMUfwRSM8AI Vw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3e3nuy4wa9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 23:15:36 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 8 Feb
- 2022 23:15:34 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 8 Feb 2022 23:15:33 -0800
+        Tue, 08 Feb 2022 23:15:39 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 8 Feb
+ 2022 23:15:37 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 8 Feb 2022 23:15:37 -0800
 Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 035F63F7045;
-        Tue,  8 Feb 2022 23:15:30 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 75B253F7053;
+        Tue,  8 Feb 2022 23:15:34 -0800 (PST)
 From:   Hariprasad Kelam <hkelam@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
         <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
         <sbhatta@marvell.com>, <hkelam@marvell.com>
-Subject: [net-next PATCH V2 3/4] octeontx2-af: Flow control resource management
-Date:   Wed, 9 Feb 2022 12:45:18 +0530
-Message-ID: <20220209071519.10403-4-hkelam@marvell.com>
+Subject: [net-next PATCH V2 4/4] octeontx2-pf: PFC config support with DCBx
+Date:   Wed, 9 Feb 2022 12:45:19 +0530
+Message-ID: <20220209071519.10403-5-hkelam@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220209071519.10403-1-hkelam@marvell.com>
 References: <20220209071519.10403-1-hkelam@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-GUID: ez5-jviL7xcbmBaZ9F8teYNacUB-odJo
-X-Proofpoint-ORIG-GUID: ez5-jviL7xcbmBaZ9F8teYNacUB-odJo
+X-Proofpoint-GUID: -4W2Ds6TxmtKaST5DO_U5A3BmsD9q0td
+X-Proofpoint-ORIG-GUID: -4W2Ds6TxmtKaST5DO_U5A3BmsD9q0td
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-02-09_03,2022-02-07_02,2021-12-02_01
@@ -66,585 +66,497 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CN10K MAC block (RPM) and Octeontx2 MAC block (CGX) both supports
-PFC flow control and 802.3X flow control pause frames.
+Data centric bridging designed to eliminate packet loss due to
+queue overflow by adding enhancements to ethernet network such as
+proprity flow control etc. This patch adds support for management
+of Priority flow control(PFC) on Octeontx2 and CN10K interfaces.
 
-Each MAC block supports max 4 LMACS and AF driver assigns same
-(MAC,LMAC) to PF and its VFs. As PF and its share same (MAC,LMAC)
-pair we need resource management to address below scenarios
+To enable PFC for all priorities
+	dcb pfc set dev eth0 prio-pfc all:on/off
 
-1. Maintain PFC and 8023X pause frames mutually exclusive.
-2. Reject disable flow control request if other PF or Vfs
-   enabled it.
+To enable PFC on selected priorites
+	dcb pfc set dev eth0 prio-pfc 0:on/off 1:on/off ..7:on/off
+
+With the ntuple commands user can map Priority to receive queues.
+On queue overflow NIX will assert backpressure such that PFC pause frames
+are genarated with mapped priority.
+
+To map priority 7 to Queue 1
+ethtool -U eth0 flow-type ether dst xx:xx:xx:xx:xx:xx vlan 0xe00a
+m 0x1fff  queue 1
 
 Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
 Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 ---
- .../net/ethernet/marvell/octeontx2/af/cgx.c   | 166 ++++++++++++++----
- .../net/ethernet/marvell/octeontx2/af/cgx.h   |   4 +
- .../marvell/octeontx2/af/lmac_common.h        |   7 +
- .../net/ethernet/marvell/octeontx2/af/mbox.h  |   2 +
- .../net/ethernet/marvell/octeontx2/af/rpm.c   |  34 +++-
- .../net/ethernet/marvell/octeontx2/af/rpm.h   |   2 +
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |   3 +
- .../ethernet/marvell/octeontx2/af/rvu_cgx.c   |  98 +++++++++--
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   |   8 +-
- 9 files changed, 276 insertions(+), 48 deletions(-)
+ .../ethernet/marvell/octeontx2/nic/Makefile   |   3 +
+ .../marvell/octeontx2/nic/otx2_common.c       |  17 +-
+ .../marvell/octeontx2/nic/otx2_common.h       |  12 ++
+ .../marvell/octeontx2/nic/otx2_dcbnl.c        | 170 ++++++++++++++++++
+ .../marvell/octeontx2/nic/otx2_flows.c        |  50 +++++-
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  13 ++
+ .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |  14 ++
+ 7 files changed, 271 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_dcbnl.c
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index 64e8211d14ba..25491edc35ce 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -578,31 +578,78 @@ void cgx_lmac_promisc_config(int cgx_id, int lmac_id, bool enable)
- 	}
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
+index 0048b5946712..d463dc72d80a 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
+@@ -11,4 +11,7 @@ rvu_nicpf-y := otx2_pf.o otx2_common.o otx2_txrx.o otx2_ethtool.o \
+                otx2_devlink.o
+ rvu_nicvf-y := otx2_vf.o otx2_devlink.o
+ 
++rvu_nicpf-$(CONFIG_DCB) += otx2_dcbnl.o
++rvu_nicvf-$(CONFIG_DCB) += otx2_dcbnl.o
++
+ ccflags-y += -I$(srctree)/drivers/net/ethernet/marvell/octeontx2/af
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index 52615bd9b9bf..358e5b216698 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -939,7 +939,11 @@ static int otx2_cq_init(struct otx2_nic *pfvf, u16 qidx)
+ 		if (!is_otx2_lbkvf(pfvf->pdev)) {
+ 			/* Enable receive CQ backpressure */
+ 			aq->cq.bp_ena = 1;
++#ifdef CONFIG_DCB
++			aq->cq.bpid = pfvf->bpid[pfvf->queue_to_pfc_map[qidx]];
++#else
+ 			aq->cq.bpid = pfvf->bpid[0];
++#endif
+ 
+ 			/* Set backpressure level is same as cq pass level */
+ 			aq->cq.bp = RQ_PASS_LVL_CQ(pfvf->hw.rq_skid, qset->rqe_cnt);
+@@ -1219,7 +1223,11 @@ static int otx2_aura_init(struct otx2_nic *pfvf, int aura_id,
+ 		 */
+ 		if (pfvf->nix_blkaddr == BLKADDR_NIX1)
+ 			aq->aura.bp_ena = 1;
++#ifdef CONFIG_DCB
++		aq->aura.nix0_bpid = pfvf->bpid[pfvf->queue_to_pfc_map[aura_id]];
++#else
+ 		aq->aura.nix0_bpid = pfvf->bpid[0];
++#endif
+ 
+ 		/* Set backpressure level for RQ's Aura */
+ 		aq->aura.bp = RQ_BP_LVL_AURA;
+@@ -1546,11 +1554,18 @@ int otx2_nix_config_bp(struct otx2_nic *pfvf, bool enable)
+ 		return -ENOMEM;
+ 
+ 	req->chan_base = 0;
+-	req->chan_cnt = 1;
++#ifdef CONFIG_DCB
++	req->chan_cnt = pfvf->pfc_en ? IEEE_8021QAZ_MAX_TCS : 1;
++	req->bpid_per_chan = pfvf->pfc_en ? 1 : 0;
++#else
++	req->chan_cnt =  1;
+ 	req->bpid_per_chan = 0;
++#endif
++
+ 
+ 	return otx2_sync_mbox_msg(&pfvf->mbox);
  }
++EXPORT_SYMBOL(otx2_nix_config_bp);
  
-+static int cgx_lmac_get_pause_frm_status(void *cgxd, int lmac_id,
-+					 u8 *tx_pause, u8 *rx_pause)
-+{
-+	struct cgx *cgx = cgxd;
-+	u64 cfg;
-+
-+	if (is_dev_rpm(cgx))
-+		return 0;
-+
-+	if (!is_lmac_valid(cgx, lmac_id))
-+		return -ENODEV;
-+
-+	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
-+	*rx_pause = !!(cfg & CGX_SMUX_RX_FRM_CTL_CTL_BCK);
-+
-+	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_CTL);
-+	*tx_pause = !!(cfg & CGX_SMUX_TX_CTL_L2P_BP_CONV);
-+	return 0;
-+}
-+
- /* Enable or disable forwarding received pause frames to Tx block */
- void cgx_lmac_enadis_rx_pause_fwding(void *cgxd, int lmac_id, bool enable)
- {
- 	struct cgx *cgx = cgxd;
-+	u8 rx_pause, tx_pause;
-+	bool is_pfc_enabled;
-+	struct lmac *lmac;
- 	u64 cfg;
+ /* Mbox message handlers */
+ void mbox_handler_cgx_stats(struct otx2_nic *pfvf,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 56be20053931..b6be9784ea36 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -399,6 +399,11 @@ struct otx2_nic {
  
- 	if (!cgx)
- 		return;
- 
--	if (enable) {
--		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
--		cfg |= CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK;
--		cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
-+	lmac = lmac_pdata(lmac_id, cgx);
-+	if (!lmac)
-+		return;
- 
--		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
--		cfg |= CGX_SMUX_RX_FRM_CTL_CTL_BCK;
--		cgx_write(cgx, lmac_id,	CGXX_SMUX_RX_FRM_CTL, cfg);
-+	/* Pause frames are not enabled just return */
-+	if (!bitmap_weight(lmac->rx_fc_pfvf_bmap.bmap, lmac->rx_fc_pfvf_bmap.max))
-+		return;
-+
-+	cgx_lmac_get_pause_frm_status(cgx, lmac_id, &rx_pause, &tx_pause);
-+	is_pfc_enabled = rx_pause ? false : true;
-+
-+	if (enable) {
-+		if (!is_pfc_enabled) {
-+			cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
-+			cfg |= CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK;
-+			cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
-+
-+			cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
-+			cfg |= CGX_SMUX_RX_FRM_CTL_CTL_BCK;
-+			cgx_write(cgx, lmac_id,	CGXX_SMUX_RX_FRM_CTL, cfg);
-+		} else {
-+			cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
-+			cfg |= CGXX_SMUX_CBFC_CTL_BCK_EN;
-+			cgx_write(cgx, lmac_id, CGXX_SMUX_CBFC_CTL, cfg);
-+		}
- 	} else {
--		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
--		cfg &= ~CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK;
--		cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
- 
--		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
--		cfg &= ~CGX_SMUX_RX_FRM_CTL_CTL_BCK;
--		cgx_write(cgx, lmac_id,	CGXX_SMUX_RX_FRM_CTL, cfg);
-+		if (!is_pfc_enabled) {
-+			cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
-+			cfg &= ~CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK;
-+			cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
-+
-+			cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
-+			cfg &= ~CGX_SMUX_RX_FRM_CTL_CTL_BCK;
-+			cgx_write(cgx, lmac_id,	CGXX_SMUX_RX_FRM_CTL, cfg);
-+		} else {
-+			cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
-+			cfg &= ~CGXX_SMUX_CBFC_CTL_BCK_EN;
-+			cgx_write(cgx, lmac_id, CGXX_SMUX_CBFC_CTL, cfg);
-+		}
- 	}
- }
- 
-@@ -722,26 +769,6 @@ int cgx_lmac_tx_enable(void *cgxd, int lmac_id, bool enable)
- 	return !!(last & DATA_PKT_TX_EN);
- }
- 
--static int cgx_lmac_get_pause_frm_status(void *cgxd, int lmac_id,
--					 u8 *tx_pause, u8 *rx_pause)
--{
--	struct cgx *cgx = cgxd;
--	u64 cfg;
--
--	if (is_dev_rpm(cgx))
--		return 0;
--
--	if (!is_lmac_valid(cgx, lmac_id))
--		return -ENODEV;
--
--	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
--	*rx_pause = !!(cfg & CGX_SMUX_RX_FRM_CTL_CTL_BCK);
--
--	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_CTL);
--	*tx_pause = !!(cfg & CGX_SMUX_TX_CTL_L2P_BP_CONV);
--	return 0;
--}
--
- static int cgx_lmac_enadis_pause_frm(void *cgxd, int lmac_id,
- 				     u8 tx_pause, u8 rx_pause)
- {
-@@ -815,6 +842,47 @@ static void cgx_lmac_pause_frm_config(void *cgxd, int lmac_id, bool enable)
- 	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_CTL);
- 	cfg &= ~CGX_SMUX_TX_CTL_L2P_BP_CONV;
- 	cgx_write(cgx, lmac_id, CGXX_SMUX_TX_CTL, cfg);
-+
-+	cfg = cgx_read(cgx, 0, CGXX_CMR_RX_OVR_BP);
-+	cfg |= CGX_CMR_RX_OVR_BP_EN(lmac_id);
-+	cfg &= ~CGX_CMR_RX_OVR_BP_BP(lmac_id);
-+	cgx_write(cgx, 0, CGXX_CMR_RX_OVR_BP, cfg);
-+}
-+
-+int verify_lmac_fc_cfg(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
-+		       int pfvf_idx)
-+{
-+	struct cgx *cgx = cgxd;
-+	struct lmac *lmac;
-+
-+	lmac = lmac_pdata(lmac_id, cgx);
-+	if (!lmac)
-+		return -ENODEV;
-+
-+	if (!rx_pause)
-+		clear_bit(pfvf_idx, lmac->rx_fc_pfvf_bmap.bmap);
-+	else
-+		set_bit(pfvf_idx, lmac->rx_fc_pfvf_bmap.bmap);
-+
-+	if (!tx_pause)
-+		clear_bit(pfvf_idx, lmac->tx_fc_pfvf_bmap.bmap);
-+	else
-+		set_bit(pfvf_idx, lmac->tx_fc_pfvf_bmap.bmap);
-+
-+	/* check if other pfvfs are using flow control */
-+	if (!rx_pause && bitmap_weight(lmac->rx_fc_pfvf_bmap.bmap, lmac->rx_fc_pfvf_bmap.max)) {
-+		dev_warn(&cgx->pdev->dev,
-+			 "Receive Flow control disable not permitted as its used by other PFVFs\n");
-+		return -EPERM;
-+	}
-+
-+	if (!tx_pause && bitmap_weight(lmac->tx_fc_pfvf_bmap.bmap, lmac->tx_fc_pfvf_bmap.max)) {
-+		dev_warn(&cgx->pdev->dev,
-+			 "Transmit Flow control disable not permitted as its used by other PFVFs\n");
-+		return -EPERM;
-+	}
-+
-+	return 0;
- }
- 
- int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause,
-@@ -858,6 +926,23 @@ int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause,
- 	return 0;
- }
- 
-+int cgx_lmac_get_pfc_frm_cfg(void *cgxd, int lmac_id, u8 *tx_pause,
-+			     u8 *rx_pause)
-+{
-+	struct cgx *cgx = cgxd;
-+	u64 cfg;
-+
-+	if (!is_lmac_valid(cgx, lmac_id))
-+		return -ENODEV;
-+
-+	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
-+
-+	*rx_pause = !!(cfg & CGXX_SMUX_CBFC_CTL_RX_EN);
-+	*tx_pause = !!(cfg & CGXX_SMUX_CBFC_CTL_TX_EN);
-+
-+	return 0;
-+}
-+
- void cgx_lmac_ptp_config(void *cgxd, int lmac_id, bool enable)
- {
- 	struct cgx *cgx = cgxd;
-@@ -1517,6 +1602,16 @@ static int cgx_lmac_init(struct cgx *cgx)
- 		/* Reserve first entry for default MAC address */
- 		set_bit(0, lmac->mac_to_index_bmap.bmap);
- 
-+		lmac->rx_fc_pfvf_bmap.max = 128;
-+		err = rvu_alloc_bitmap(&lmac->rx_fc_pfvf_bmap);
-+		if (err)
-+			goto err_dmac_bmap_free;
-+
-+		lmac->tx_fc_pfvf_bmap.max = 128;
-+		err = rvu_alloc_bitmap(&lmac->tx_fc_pfvf_bmap);
-+		if (err)
-+			goto err_rx_fc_bmap_free;
-+
- 		init_waitqueue_head(&lmac->wq_cmd_cmplt);
- 		mutex_init(&lmac->cmd_lock);
- 		spin_lock_init(&lmac->event_cb_lock);
-@@ -1533,6 +1628,10 @@ static int cgx_lmac_init(struct cgx *cgx)
- 	return cgx_lmac_verify_fwi_version(cgx);
- 
- err_bitmap_free:
-+	rvu_free_bitmap(&lmac->tx_fc_pfvf_bmap);
-+err_rx_fc_bmap_free:
-+	rvu_free_bitmap(&lmac->rx_fc_pfvf_bmap);
-+err_dmac_bmap_free:
- 	rvu_free_bitmap(&lmac->mac_to_index_bmap);
- err_name_free:
- 	kfree(lmac->name);
-@@ -1601,6 +1700,7 @@ static struct mac_ops	cgx_mac_ops    = {
- 	.mac_rx_tx_enable =		cgx_lmac_rx_tx_enable,
- 	.mac_tx_enable =		cgx_lmac_tx_enable,
- 	.pfc_config =                   cgx_lmac_pfc_config,
-+	.mac_get_pfc_frm_cfg   =        cgx_lmac_get_pfc_frm_cfg,
+ 	/* Devlink */
+ 	struct otx2_devlink	*dl;
++#ifdef CONFIG_DCB
++	/* PFC */
++	u8			pfc_en;
++	u8			*queue_to_pfc_map;
++#endif
  };
  
- static int cgx_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-index 27c6fa925e10..bd2f33a26eee 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-@@ -181,4 +181,8 @@ u64 cgx_read_dmac_ctrl(void *cgxd, int lmac_id);
- u64 cgx_read_dmac_entry(void *cgxd, int index);
- int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
- 			u16 pfc_en);
-+int cgx_lmac_get_pfc_frm_cfg(void *cgxd, int lmac_id, u8 *tx_pause,
-+			     u8 *rx_pause);
-+int verify_lmac_fc_cfg(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
-+		       int pfvf_idx);
- #endif /* CGX_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-index 8f6b7d14b18b..f30581bf0688 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-@@ -17,6 +17,8 @@
-  * @resp:		command response
-  * @link_info:		link related information
-  * @mac_to_index_bmap:	Mac address to CGX table index mapping
-+ * @rx_fc_pfvf_bmap:    Receive flow control enabled netdev mapping
-+ * @tx_fc_pfvf_bmap:    Transmit flow control enabled netdev mapping
-  * @event_cb:		callback for linkchange events
-  * @event_cb_lock:	lock for serializing callback with unregister
-  * @cgx:		parent cgx port
-@@ -33,6 +35,8 @@ struct lmac {
- 	u64 resp;
- 	struct cgx_link_user_info link_info;
- 	struct rsrc_bmap mac_to_index_bmap;
-+	struct rsrc_bmap rx_fc_pfvf_bmap;
-+	struct rsrc_bmap tx_fc_pfvf_bmap;
- 	struct cgx_event_cb event_cb;
- 	/* lock for serializing callback with unregister */
- 	spinlock_t event_cb_lock;
-@@ -113,6 +117,9 @@ struct mac_ops {
- 	int                     (*pfc_config)(void *cgxd, int lmac_id,
- 					      u8 tx_pause, u8 rx_pause, u16 pfc_en);
- 
-+	int                     (*mac_get_pfc_frm_cfg)(void *cgxd, int lmac_id,
-+						       u8 *tx_pause, u8 *rx_pause);
+ static inline bool is_otx2_lbkvf(struct pci_dev *pdev)
+@@ -879,4 +884,11 @@ int otx2_dmacflt_remove(struct otx2_nic *pf, const u8 *mac, u8 bit_pos);
+ int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u8 bit_pos);
+ void otx2_dmacflt_reinstall_flows(struct otx2_nic *pf);
+ void otx2_dmacflt_update_pfmac_flow(struct otx2_nic *pfvf);
 +
- };
- 
- struct cgx {
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index f8d0e7f42567..550cb11197bf 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -1620,6 +1620,8 @@ enum cgx_af_status {
- 	LMAC_AF_ERR_INVALID_PARAM	= -1101,
- 	LMAC_AF_ERR_PF_NOT_MAPPED	= -1102,
- 	LMAC_AF_ERR_PERM_DENIED		= -1103,
-+	LMAC_AF_ERR_PFC_ENADIS_PERM_DENIED       = -1104,
-+	LMAC_AF_ERR_8023PAUSE_ENADIS_PERM_DENIED = -1105,
- };
- 
- #endif /* MBOX_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-index a9a93c66ab07..d7a8aad46e12 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-@@ -33,6 +33,7 @@ static struct mac_ops	rpm_mac_ops   = {
- 	.mac_rx_tx_enable =		rpm_lmac_rx_tx_enable,
- 	.mac_tx_enable =		rpm_lmac_tx_enable,
- 	.pfc_config =                   rpm_lmac_pfc_config,
-+	.mac_get_pfc_frm_cfg   =        rpm_lmac_get_pfc_frm_cfg,
- };
- 
- struct mac_ops *rpm_get_mac_ops(void)
-@@ -97,11 +98,20 @@ int rpm_lmac_rx_tx_enable(void *rpmd, int lmac_id, bool enable)
- void rpm_lmac_enadis_rx_pause_fwding(void *rpmd, int lmac_id, bool enable)
- {
- 	rpm_t *rpm = rpmd;
-+	struct lmac *lmac;
- 	u64 cfg;
- 
- 	if (!rpm)
- 		return;
- 
-+	lmac = lmac_pdata(lmac_id, rpm);
-+	if (!lmac)
-+		return;
++#ifdef CONFIG_DCB
++/* DCB support*/
++void otx2_update_bpid_in_rqctx(struct otx2_nic *pfvf, int vlan_prio, int qidx, bool pfc_enable);
++int otx2_config_priority_flow_ctrl(struct otx2_nic *pfvf);
++int otx2_dcbnl_set_ops(struct net_device *dev);
++#endif
+ #endif /* OTX2_COMMON_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dcbnl.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dcbnl.c
+new file mode 100644
+index 000000000000..723d2506d309
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dcbnl.c
+@@ -0,0 +1,170 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Marvell RVU Ethernet driver
++ *
++ * Copyright (C) 2021 Marvell.
++ *
++ */
 +
-+	/* Pause frames are not enabled just return */
-+	if (!bitmap_weight(lmac->rx_fc_pfvf_bmap.bmap, lmac->rx_fc_pfvf_bmap.max))
-+		return;
++#include "otx2_common.h"
 +
- 	if (enable) {
- 		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
- 		cfg &= ~RPMX_MTI_MAC100X_COMMAND_CONFIG_PAUSE_IGNORE;
-@@ -123,10 +133,11 @@ int rpm_lmac_get_pause_frm_status(void *rpmd, int lmac_id,
- 		return -ENODEV;
- 
- 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
--	*rx_pause = !(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE);
-+	if (!(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_PFC_MODE)) {
-+		*rx_pause = !(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE);
-+		*tx_pause = !(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE);
-+	}
- 
--	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
--	*tx_pause = !(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE);
- 	return 0;
- }
- 
-@@ -416,3 +427,20 @@ int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 p
- 
- 	return 0;
- }
-+
-+int  rpm_lmac_get_pfc_frm_cfg(void *rpmd, int lmac_id, u8 *tx_pause, u8 *rx_pause)
++int otx2_config_priority_flow_ctrl(struct otx2_nic *pfvf)
 +{
-+	rpm_t *rpm = rpmd;
-+	u64 cfg;
-+
-+	if (!is_lmac_valid(rpm, lmac_id))
-+		return -ENODEV;
-+
-+	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
-+	if (cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_PFC_MODE) {
-+		*rx_pause = !(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE);
-+		*tx_pause = !(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE);
-+	}
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-index 2d2f5d150f03..9ab8d49dd180 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-@@ -89,4 +89,6 @@ int rpm_lmac_rx_tx_enable(void *rpmd, int lmac_id, bool enable);
- int rpm_lmac_tx_enable(void *rpmd, int lmac_id, bool enable);
- int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause,
- 			u16 pfc_en);
-+int rpm_lmac_get_pfc_frm_cfg(void *rpmd, int lmac_id, u8 *tx_pause,
-+			     u8 *rx_pause);
- #endif /* RPM_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index 5ed94cfb47d2..513b43ecd5be 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -807,6 +807,9 @@ u32  rvu_cgx_get_fifolen(struct rvu *rvu);
- void *rvu_first_cgx_pdata(struct rvu *rvu);
- int cgxlmac_to_pf(struct rvu *rvu, int cgx_id, int lmac_id);
- int rvu_cgx_config_tx(void *cgxd, int lmac_id, bool enable);
-+int rvu_cgx_prio_flow_ctrl_cfg(struct rvu *rvu, u16 pcifunc, u8 tx_pause, u8 rx_pause,
-+			       u16 pfc_en);
-+int rvu_cgx_cfg_pause_frm(struct rvu *rvu, u16 pcifunc, u8 tx_pause, u8 rx_pause);
- 
- int npc_get_nixlf_mcam_index(struct npc_mcam *mcam, u16 pcifunc, int nixlf,
- 			     int type);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index b2dac088dc43..9ffe99830e34 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -863,6 +863,45 @@ int rvu_mbox_handler_cgx_intlbk_disable(struct rvu *rvu, struct msg_req *req,
- 	return 0;
- }
- 
-+int rvu_cgx_cfg_pause_frm(struct rvu *rvu, u16 pcifunc, u8 tx_pause, u8 rx_pause)
-+{
-+	int pf = rvu_get_pf(pcifunc);
-+	u8 rx_pfc = 0, tx_pfc = 0;
-+	struct mac_ops *mac_ops;
-+	u8 cgx_id, lmac_id;
-+	void *cgxd;
-+
-+	if (!is_mac_feature_supported(rvu, pf, RVU_LMAC_FEAT_FC))
-+		return 0;
-+
-+	/* This msg is expected only from PF/VFs that are mapped to CGX LMACs,
-+	 * if received from other PF/VF simply ACK, nothing to do.
-+	 */
-+	if (!is_pf_cgxmapped(rvu, pf))
-+		return LMAC_AF_ERR_PF_NOT_MAPPED;
-+
-+	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+	cgxd = rvu_cgx_pdata(cgx_id, rvu);
-+	mac_ops = get_mac_ops(cgxd);
-+
-+	mac_ops->mac_get_pfc_frm_cfg(cgxd, lmac_id, &tx_pfc, &rx_pfc);
-+	if (tx_pfc || rx_pfc) {
-+		dev_warn(rvu->dev,
-+			 "Can not configure 802.3X flow control as PFC frames are enabled");
-+		return LMAC_AF_ERR_8023PAUSE_ENADIS_PERM_DENIED;
-+	}
-+
-+	mutex_lock(&rvu->rsrc_lock);
-+	if (verify_lmac_fc_cfg(cgxd, lmac_id, tx_pause, rx_pause,
-+			       pcifunc & RVU_PFVF_FUNC_MASK)) {
-+		mutex_unlock(&rvu->rsrc_lock);
-+		return LMAC_AF_ERR_PERM_DENIED;
-+	}
-+	mutex_unlock(&rvu->rsrc_lock);
-+
-+	return mac_ops->mac_enadis_pause_frm(cgxd, lmac_id, tx_pause, rx_pause);
-+}
-+
- int rvu_mbox_handler_cgx_cfg_pause_frm(struct rvu *rvu,
- 				       struct cgx_pause_frm_cfg *req,
- 				       struct cgx_pause_frm_cfg *rsp)
-@@ -870,11 +909,9 @@ int rvu_mbox_handler_cgx_cfg_pause_frm(struct rvu *rvu,
- 	int pf = rvu_get_pf(req->hdr.pcifunc);
- 	struct mac_ops *mac_ops;
- 	u8 cgx_id, lmac_id;
++	struct cgx_pfc_cfg *req;
++	struct cgx_pfc_rsp *rsp;
 +	int err = 0;
- 	void *cgxd;
- 
--	if (!is_mac_feature_supported(rvu, pf, RVU_LMAC_FEAT_FC))
--		return 0;
--
- 	/* This msg is expected only from PF/VFs that are mapped to CGX LMACs,
- 	 * if received from other PF/VF simply ACK, nothing to do.
- 	 */
-@@ -886,13 +923,11 @@ int rvu_mbox_handler_cgx_cfg_pause_frm(struct rvu *rvu,
- 	mac_ops = get_mac_ops(cgxd);
- 
- 	if (req->set)
--		mac_ops->mac_enadis_pause_frm(cgxd, lmac_id,
--					      req->tx_pause, req->rx_pause);
-+		err = rvu_cgx_cfg_pause_frm(rvu, req->hdr.pcifunc, req->tx_pause, req->rx_pause);
- 	else
--		mac_ops->mac_get_pause_frm_status(cgxd, lmac_id,
--						  &rsp->tx_pause,
--						  &rsp->rx_pause);
--	return 0;
-+		mac_ops->mac_get_pause_frm_status(cgxd, lmac_id, &rsp->tx_pause, &rsp->rx_pause);
 +
++	if (is_otx2_lbkvf(pfvf->pdev))
++		return 0;
++
++	mutex_lock(&pfvf->mbox.lock);
++	req = otx2_mbox_alloc_msg_cgx_prio_flow_ctrl_cfg(&pfvf->mbox);
++	if (!req) {
++		err = -ENOMEM;
++		goto unlock;
++	}
++
++	if (pfvf->pfc_en) {
++		req->rx_pause = true;
++		req->tx_pause = true;
++	} else {
++		req->rx_pause = false;
++		req->tx_pause = false;
++	}
++	req->pfc_en = pfvf->pfc_en;
++
++	if (!otx2_sync_mbox_msg(&pfvf->mbox)) {
++		rsp = (struct cgx_pfc_rsp *)
++		       otx2_mbox_get_rsp(&pfvf->mbox.mbox, 0, &req->hdr);
++		if (req->rx_pause != rsp->rx_pause || req->tx_pause != rsp->tx_pause) {
++			dev_warn(pfvf->dev,
++				 "Failed to config PFC\n");
++			err = -EPERM;
++		}
++	}
++unlock:
++	mutex_unlock(&pfvf->mbox.lock);
 +	return err;
- }
- 
- int rvu_mbox_handler_cgx_get_phy_fec_stats(struct rvu *rvu, struct msg_req *req,
-@@ -1080,6 +1115,43 @@ int rvu_mbox_handler_cgx_mac_addr_update(struct rvu *rvu,
- 	return cgx_lmac_addr_update(cgx_id, lmac_id, req->mac_addr, req->index);
- }
- 
-+int rvu_cgx_prio_flow_ctrl_cfg(struct rvu *rvu, u16 pcifunc, u8 tx_pause,
-+			       u8 rx_pause, u16 pfc_en)
-+{
-+	int pf = rvu_get_pf(pcifunc);
-+	u8 rx_8023 = 0, tx_8023 = 0;
-+	struct mac_ops *mac_ops;
-+	u8 cgx_id, lmac_id;
-+	void *cgxd;
-+
-+	/* This msg is expected only from PF/VFs that are mapped to CGX LMACs,
-+	 * if received from other PF/VF simply ACK, nothing to do.
-+	 */
-+	if (!is_pf_cgxmapped(rvu, pf))
-+		return -ENODEV;
-+
-+	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+	cgxd = rvu_cgx_pdata(cgx_id, rvu);
-+	mac_ops = get_mac_ops(cgxd);
-+
-+	mac_ops->mac_get_pause_frm_status(cgxd, lmac_id, &tx_8023, &rx_8023);
-+	if (tx_8023 || rx_8023) {
-+		dev_warn(rvu->dev,
-+			 "Can not configure PFC as 802.3X pause frames are enabled");
-+		return LMAC_AF_ERR_PFC_ENADIS_PERM_DENIED;
-+	}
-+
-+	mutex_lock(&rvu->rsrc_lock);
-+	if (verify_lmac_fc_cfg(cgxd, lmac_id, tx_pause, rx_pause,
-+			       pcifunc & RVU_PFVF_FUNC_MASK)) {
-+		mutex_unlock(&rvu->rsrc_lock);
-+		return LMAC_AF_ERR_PERM_DENIED;
-+	}
-+	mutex_unlock(&rvu->rsrc_lock);
-+
-+	return mac_ops->pfc_config(cgxd, lmac_id, tx_pause, rx_pause, pfc_en);
 +}
 +
- int rvu_mbox_handler_cgx_prio_flow_ctrl_cfg(struct rvu *rvu,
- 					    struct cgx_pfc_cfg *req,
- 					    struct cgx_pfc_rsp *rsp)
-@@ -1088,6 +1160,7 @@ int rvu_mbox_handler_cgx_prio_flow_ctrl_cfg(struct rvu *rvu,
- 	struct mac_ops *mac_ops;
- 	u8 cgx_id, lmac_id;
- 	void *cgxd;
-+	int err;
- 
- 	/* This msg is expected only from PF/VFs that are mapped to CGX LMACs,
- 	 * if received from other PF/VF simply ACK, nothing to do.
-@@ -1099,6 +1172,9 @@ int rvu_mbox_handler_cgx_prio_flow_ctrl_cfg(struct rvu *rvu,
- 	cgxd = rvu_cgx_pdata(cgx_id, rvu);
- 	mac_ops = get_mac_ops(cgxd);
- 
--	return mac_ops->pfc_config(cgxd, lmac_id, req->tx_pause, req->rx_pause,
--				   req->pfc_en);
-+	err = rvu_cgx_prio_flow_ctrl_cfg(rvu, req->hdr.pcifunc, req->tx_pause,
-+					 req->rx_pause, req->pfc_en);
++void otx2_update_bpid_in_rqctx(struct otx2_nic *pfvf, int vlan_prio, int qidx,
++			       bool pfc_enable)
++{
++	bool if_up = netif_running(pfvf->netdev);
++	struct npa_aq_enq_req *npa_aq;
++	struct nix_aq_enq_req *aq;
++	int err = 0;
 +
-+	mac_ops->mac_get_pfc_frm_cfg(cgxd, lmac_id, &rsp->tx_pause, &rsp->rx_pause);
-+	return err;
- }
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 811d775a9752..73cd39af0090 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -525,7 +525,7 @@ static int rvu_nix_get_bpid(struct rvu *rvu, struct nix_bp_cfg_req *req,
- 	 */
- 	switch (type) {
- 	case NIX_INTF_TYPE_CGX:
--		if ((req->chan_base + req->chan_cnt) > 15)
-+		if ((req->chan_base + req->chan_cnt) > 16)
++	if (pfvf->queue_to_pfc_map[qidx] && pfc_enable) {
++		dev_warn(pfvf->dev,
++			 "PFC enable not permitted as Priority %d already mapped to Queue %d\n",
++			 pfvf->queue_to_pfc_map[qidx], qidx);
++		return;
++	}
++
++	if (if_up) {
++		netif_tx_stop_all_queues(pfvf->netdev);
++		netif_carrier_off(pfvf->netdev);
++	}
++
++	pfvf->queue_to_pfc_map[qidx] = vlan_prio;
++
++	aq = otx2_mbox_alloc_msg_nix_aq_enq(&pfvf->mbox);
++	if (!aq) {
++		err = -ENOMEM;
++		goto out;
++	}
++
++	aq->cq.bpid = pfvf->bpid[vlan_prio];
++	aq->cq_mask.bpid = GENMASK(8, 0);
++
++	/* Fill AQ info */
++	aq->qidx = qidx;
++	aq->ctype = NIX_AQ_CTYPE_CQ;
++	aq->op = NIX_AQ_INSTOP_WRITE;
++
++	otx2_sync_mbox_msg(&pfvf->mbox);
++
++	npa_aq = otx2_mbox_alloc_msg_npa_aq_enq(&pfvf->mbox);
++	if (!npa_aq) {
++		err = -ENOMEM;
++		goto out;
++	}
++	npa_aq->aura.nix0_bpid = pfvf->bpid[vlan_prio];
++	npa_aq->aura_mask.nix0_bpid = GENMASK(8, 0);
++
++	/* Fill NPA AQ info */
++	npa_aq->aura_id = qidx;
++	npa_aq->ctype = NPA_AQ_CTYPE_AURA;
++	npa_aq->op = NPA_AQ_INSTOP_WRITE;
++	otx2_sync_mbox_msg(&pfvf->mbox);
++
++out:
++	if (if_up) {
++		netif_carrier_on(pfvf->netdev);
++		netif_tx_start_all_queues(pfvf->netdev);
++	}
++
++	if (err)
++		dev_warn(pfvf->dev,
++			 "Updating BPIDs in CQ and Aura contexts of RQ%d failed with err %d\n",
++			 qidx, err);
++}
++
++static int otx2_dcbnl_ieee_getpfc(struct net_device *dev, struct ieee_pfc *pfc)
++{
++	struct otx2_nic *pfvf = netdev_priv(dev);
++
++	pfc->pfc_cap = IEEE_8021QAZ_MAX_TCS;
++	pfc->pfc_en = pfvf->pfc_en;
++
++	return 0;
++}
++
++static int otx2_dcbnl_ieee_setpfc(struct net_device *dev, struct ieee_pfc *pfc)
++{
++	struct otx2_nic *pfvf = netdev_priv(dev);
++	int err;
++
++	/* Save PFC configuration to interface */
++	pfvf->pfc_en = pfc->pfc_en;
++
++	err = otx2_config_priority_flow_ctrl(pfvf);
++	if (err)
++		return err;
++
++	/* Request Per channel Bpids */
++	if (pfc->pfc_en)
++		otx2_nix_config_bp(pfvf, true);
++
++	return 0;
++}
++
++static u8 otx2_dcbnl_getdcbx(struct net_device __always_unused *dev)
++{
++	return DCB_CAP_DCBX_HOST | DCB_CAP_DCBX_VER_IEEE;
++}
++
++static u8 otx2_dcbnl_setdcbx(struct net_device __always_unused *dev, u8 mode)
++{
++	return (mode != (DCB_CAP_DCBX_HOST | DCB_CAP_DCBX_VER_IEEE)) ? 1 : 0;
++}
++
++static const struct dcbnl_rtnl_ops otx2_dcbnl_ops = {
++	.ieee_getpfc	= otx2_dcbnl_ieee_getpfc,
++	.ieee_setpfc	= otx2_dcbnl_ieee_setpfc,
++	.getdcbx	= otx2_dcbnl_getdcbx,
++	.setdcbx	= otx2_dcbnl_setdcbx,
++};
++
++int otx2_dcbnl_set_ops(struct net_device *dev)
++{
++	struct otx2_nic *pfvf = netdev_priv(dev);
++
++	pfvf->queue_to_pfc_map = devm_kzalloc(pfvf->dev, pfvf->hw.rx_queues,
++					      GFP_KERNEL);
++	if (!pfvf->queue_to_pfc_map)
++		return -ENOMEM;
++	dev->dcbnl_ops = &otx2_dcbnl_ops;
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+index 77a13fb555fb..54f235c216a9 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+@@ -21,8 +21,10 @@ struct otx2_flow {
+ 	u16 entry;
+ 	bool is_vf;
+ 	u8 rss_ctx_id;
++#define DMAC_FILTER_RULE		BIT(0)
++#define PFC_FLOWCTRL_RULE		BIT(1)
++	u16 rule_type;
+ 	int vf;
+-	bool dmac_filter;
+ };
+ 
+ enum dmac_req {
+@@ -899,6 +901,9 @@ static int otx2_is_flow_rule_dmacfilter(struct otx2_nic *pfvf,
+ static int otx2_add_flow_msg(struct otx2_nic *pfvf, struct otx2_flow *flow)
+ {
+ 	u64 ring_cookie = flow->flow_spec.ring_cookie;
++#ifdef CONFIG_DCB
++	int vlan_prio, qidx, pfc_rule = 0;
++#endif
+ 	struct npc_install_flow_req *req;
+ 	int err, vf = 0;
+ 
+@@ -940,6 +945,24 @@ static int otx2_add_flow_msg(struct otx2_nic *pfvf, struct otx2_flow *flow)
+ 			mutex_unlock(&pfvf->mbox.lock);
  			return -EINVAL;
- 		rvu_get_cgx_lmac_id(pfvf->cgx_lmac, &cgx_id, &lmac_id);
- 		/* Assign bpid based on cgx, lmac and chan id */
-@@ -4570,6 +4570,12 @@ void rvu_nix_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int nixlf)
- 		pfvf->hw_rx_tstamp_en = false;
+ 		}
++
++#ifdef CONFIG_DCB
++		/* Identify PFC rule if PFC enabled and ntuple rule is vlan */
++		if (!vf && (req->features & BIT_ULL(NPC_OUTER_VID)) &&
++		    pfvf->pfc_en && req->op != NIX_RX_ACTIONOP_RSS) {
++			vlan_prio = ntohs(req->packet.vlan_tci) &
++				    ntohs(req->mask.vlan_tci);
++
++			/* Get the priority */
++			vlan_prio >>= 13;
++			flow->rule_type |= PFC_FLOWCTRL_RULE;
++			/* Check if PFC enabled for this priority */
++			if (pfvf->pfc_en & BIT(vlan_prio)) {
++				pfc_rule = true;
++				qidx = req->index;
++			}
++		}
++#endif
  	}
  
-+	/* reset priority flow control config */
-+	rvu_cgx_prio_flow_ctrl_cfg(rvu, pcifunc, 0, 0, 0);
-+
-+	/* reset 802.3x flow control config */
-+	rvu_cgx_cfg_pause_frm(rvu, pcifunc, 0, 0);
-+
- 	nix_ctx_free(rvu, pfvf);
+ 	/* ethtool ring_cookie has (VF + 1) for VF */
+@@ -951,6 +974,12 @@ static int otx2_add_flow_msg(struct otx2_nic *pfvf, struct otx2_flow *flow)
  
- 	nix_free_all_bandprof(rvu, pcifunc);
+ 	/* Send message to AF */
+ 	err = otx2_sync_mbox_msg(&pfvf->mbox);
++
++#ifdef CONFIG_DCB
++	if (!err && pfc_rule)
++		otx2_update_bpid_in_rqctx(pfvf, vlan_prio, qidx, true);
++#endif
++
+ 	mutex_unlock(&pfvf->mbox.lock);
+ 	return err;
+ }
+@@ -966,7 +995,7 @@ static int otx2_add_flow_with_pfmac(struct otx2_nic *pfvf,
+ 		return -ENOMEM;
+ 
+ 	pf_mac->entry = 0;
+-	pf_mac->dmac_filter = true;
++	pf_mac->rule_type |= DMAC_FILTER_RULE;
+ 	pf_mac->location = pfvf->flow_cfg->max_flows;
+ 	memcpy(&pf_mac->flow_spec, &flow->flow_spec,
+ 	       sizeof(struct ethtool_rx_flow_spec));
+@@ -1031,7 +1060,7 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
+ 		eth_hdr = &flow->flow_spec.h_u.ether_spec;
+ 
+ 		/* Sync dmac filter table with updated fields */
+-		if (flow->dmac_filter)
++		if (flow->rule_type & DMAC_FILTER_RULE)
+ 			return otx2_dmacflt_update(pfvf, eth_hdr->h_dest,
+ 						   flow->entry);
+ 
+@@ -1052,7 +1081,7 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
+ 		if (!test_bit(0, &flow_cfg->dmacflt_bmap))
+ 			otx2_add_flow_with_pfmac(pfvf, flow);
+ 
+-		flow->dmac_filter = true;
++		flow->rule_type |= DMAC_FILTER_RULE;
+ 		flow->entry = find_first_zero_bit(&flow_cfg->dmacflt_bmap,
+ 						  flow_cfg->dmacflt_max_flows);
+ 		fsp->location = flow_cfg->max_flows + flow->entry;
+@@ -1120,7 +1149,7 @@ static void otx2_update_rem_pfmac(struct otx2_nic *pfvf, int req)
+ 	bool found = false;
+ 
+ 	list_for_each_entry(iter, &pfvf->flow_cfg->flow_list, list) {
+-		if (iter->dmac_filter && iter->entry == 0) {
++		if ((iter->rule_type & DMAC_FILTER_RULE) && iter->entry == 0) {
+ 			eth_hdr = &iter->flow_spec.h_u.ether_spec;
+ 			if (req == DMAC_ADDR_DEL) {
+ 				otx2_dmacflt_remove(pfvf, eth_hdr->h_dest,
+@@ -1156,7 +1185,7 @@ int otx2_remove_flow(struct otx2_nic *pfvf, u32 location)
+ 	if (!flow)
+ 		return -ENOENT;
+ 
+-	if (flow->dmac_filter) {
++	if (flow->rule_type & DMAC_FILTER_RULE) {
+ 		struct ethhdr *eth_hdr = &flow->flow_spec.h_u.ether_spec;
+ 
+ 		/* user not allowed to remove dmac filter with interface mac */
+@@ -1174,6 +1203,13 @@ int otx2_remove_flow(struct otx2_nic *pfvf, u32 location)
+ 				  flow_cfg->dmacflt_max_flows) == 1)
+ 			otx2_update_rem_pfmac(pfvf, DMAC_ADDR_DEL);
+ 	} else {
++#ifdef CONFIG_DCB
++		if (flow->rule_type & PFC_FLOWCTRL_RULE)
++			otx2_update_bpid_in_rqctx(pfvf, 0,
++						  flow->flow_spec.ring_cookie,
++						  false);
++#endif
++
+ 		err = otx2_remove_flow_msg(pfvf, flow->entry, false);
+ 	}
+ 
+@@ -1383,7 +1419,7 @@ void otx2_dmacflt_reinstall_flows(struct otx2_nic *pf)
+ 	struct ethhdr *eth_hdr;
+ 
+ 	list_for_each_entry(iter, &pf->flow_cfg->flow_list, list) {
+-		if (iter->dmac_filter) {
++		if (iter->rule_type & DMAC_FILTER_RULE) {
+ 			eth_hdr = &iter->flow_spec.h_u.ether_spec;
+ 			otx2_dmacflt_add(pf, eth_hdr->h_dest,
+ 					 iter->entry);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 67fbe6ec0030..ede4df51648b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -2779,6 +2779,12 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	/* Enable link notifications */
+ 	otx2_cgx_config_linkevents(pf, true);
+ 
++#ifdef CONFIG_DCB
++	err = otx2_dcbnl_set_ops(netdev);
++	if (err)
++		goto err_pf_sriov_init;
++#endif
++
+ 	return 0;
+ 
+ err_pf_sriov_init:
+@@ -2930,6 +2936,13 @@ static void otx2_remove(struct pci_dev *pdev)
+ 		otx2_config_pause_frm(pf);
+ 	}
+ 
++#ifdef CONFIG_DCB
++	/* Disable PFC config */
++	if (pf->pfc_en) {
++		pf->pfc_en = 0;
++		otx2_config_priority_flow_ctrl(pf);
++	}
++#endif
+ 	cancel_work_sync(&pf->reset_task);
+ 	/* Disable link notifications */
+ 	otx2_cgx_config_linkevents(pf, false);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+index c154b09ec12f..78142498d046 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+@@ -702,6 +702,12 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (err)
+ 		goto err_unreg_netdev;
+ 
++#ifdef CONFIG_DCB
++	err = otx2_dcbnl_set_ops(netdev);
++	if (err)
++		goto err_unreg_netdev;
++#endif
++
+ 	return 0;
+ 
+ err_unreg_netdev:
+@@ -744,6 +750,14 @@ static void otx2vf_remove(struct pci_dev *pdev)
+ 		otx2_config_pause_frm(vf);
+ 	}
+ 
++#ifdef CONFIG_DCB
++	/* Disable PFC config */
++	if (vf->pfc_en) {
++		vf->pfc_en = 0;
++		otx2_config_priority_flow_ctrl(vf);
++	}
++#endif
++
+ 	cancel_work_sync(&vf->reset_task);
+ 	otx2_unregister_dl(vf);
+ 	unregister_netdev(netdev);
 -- 
 2.17.1
 
