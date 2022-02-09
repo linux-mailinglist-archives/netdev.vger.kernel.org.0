@@ -2,42 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70CA14AEE66
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 10:49:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABF6E4AEE7C
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 10:53:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbiBIJtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 04:49:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52258 "EHLO
+        id S233077AbiBIJxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 04:53:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbiBIJtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 04:49:16 -0500
+        with ESMTP id S232997AbiBIJxL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 04:53:11 -0500
 Received: from out199-14.us.a.mail.aliyun.com (out199-14.us.a.mail.aliyun.com [47.90.199.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D91FC001F5C;
-        Wed,  9 Feb 2022 01:49:07 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R341e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V4-gd1y_1644399828;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V4-gd1y_1644399828)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4ED7E076B5D;
+        Wed,  9 Feb 2022 01:53:03 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V4-Z1JE_1644400163;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V4-Z1JE_1644400163)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Feb 2022 17:43:48 +0800
-Date:   Wed, 9 Feb 2022 17:43:45 +0800
+          Wed, 09 Feb 2022 17:49:23 +0800
+Date:   Wed, 9 Feb 2022 17:49:20 +0800
 From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     "Dmitry V. Levin" <ldv@altlinux.org>
-Cc:     Karsten Graul <kgraul@linux.ibm.com>, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-api@vger.kernel.org
-Subject: Re: [PATCH] Partially revert "net/smc: Add netlink net namespace
- support"
-Message-ID: <YgOM0dKMYGr8xeey@TonyMac-Alibaba>
+To:     Karsten Graul <kgraul@linux.ibm.com>
+Cc:     Leon Romanovsky <leon@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 0/6] net/smc: Spread workload over multiple
+ cores
+Message-ID: <YgOOIGDx9/0cwsCV@TonyMac-Alibaba>
 Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <20211228130611.19124-1-tonylu@linux.alibaba.com>
- <20211228130611.19124-3-tonylu@linux.alibaba.com>
- <20220131002453.GA7599@altlinux.org>
- <521e3f2a-8b00-43d4-b296-1253c351a3d2@linux.ibm.com>
- <20220202030904.GA9742@altlinux.org>
+References: <YfIOHZ7hSfogeTyS@TonyMac-Alibaba>
+ <YfI50xqsv20KDpz9@unreal>
+ <YfJQ6AwYMA/i4HvH@TonyMac-Alibaba>
+ <YfJcDfkBZfeYA1Z/@unreal>
+ <YfJieyROaAKE+ZO0@TonyMac-Alibaba>
+ <YfJlFe3p2ABbzoYI@unreal>
+ <YfJq5pygXS13XRhp@TonyMac-Alibaba>
+ <3fcfdf75-eb8c-426d-5874-3afdc49de743@linux.ibm.com>
+ <YfOTa5uIPUw+gOfM@TonyMac-Alibaba>
+ <6739dd5f-aaa9-dce9-4b06-08060fe267da@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220202030904.GA9742@altlinux.org>
+In-Reply-To: <6739dd5f-aaa9-dce9-4b06-08060fe267da@linux.ibm.com>
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
         ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
         UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
@@ -48,31 +53,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 06:09:04AM +0300, Dmitry V. Levin wrote:
-> The change of sizeof(struct smc_diag_linkinfo) by commit 79d39fc503b4
-> ("net/smc: Add netlink net namespace support") introduced an ABI
-> regression: since struct smc_diag_lgrinfo contains an object of
-> type "struct smc_diag_linkinfo", offset of all subsequent members
-> of struct smc_diag_lgrinfo was changed by that change.
+On Tue, Feb 01, 2022 at 05:50:48PM +0100, Karsten Graul wrote:
+> On 28/01/2022 07:55, Tony Lu wrote:
+> > On Thu, Jan 27, 2022 at 03:52:36PM +0100, Karsten Graul wrote:
+> >> On 27/01/2022 10:50, Tony Lu wrote:
+> >>> On Thu, Jan 27, 2022 at 11:25:41AM +0200, Leon Romanovsky wrote:
+> >>>> On Thu, Jan 27, 2022 at 05:14:35PM +0800, Tony Lu wrote:
+> >>>>> On Thu, Jan 27, 2022 at 10:47:09AM +0200, Leon Romanovsky wrote:
+> >>>>>> On Thu, Jan 27, 2022 at 03:59:36PM +0800, Tony Lu wrote:
+> >>>>>
+> >>>>> Sorry for that if I missed something about properly using existing
+> >>>>> in-kernel API. I am not sure the proper API is to use ib_cq_pool_get()
+> >>>>> and ib_cq_pool_put()?
+> >>>>>
+> >>>>> If so, these APIs doesn't suit for current smc's usage, I have to
+> >>>>> refactor logic (tasklet and wr_id) in smc. I think it is a huge work
+> >>>>> and should do it with full discussion.
+> >>>>
+> >>>> This discussion is not going anywhere. Just to summarize, we (Jason and I)
+> >>>> are asking to use existing API, from the beginning.
+> >>>
+> >>> Yes, I can't agree more with you about using existing API and I have
+> >>> tried them earlier. The existing APIs are easy to use if I wrote a new
+> >>> logic. I also don't want to repeat the codes.
+> >>>
+> >>> The main obstacle is that the packet and wr processing of smc is
+> >>> tightly bound to the old API and not easy to replace with existing API.
+> >>>
+> >>> To solve a real issue, I have to fix it based on the old API. If using
+> >>> existing API in this patch, I have to refactor smc logics which needs
+> >>> more time. Our production tree is synced with smc next. So I choose to
+> >>> fix this issue first, then refactor these logic to fit existing API once
+> >>> and for all.
+> >>
+> >> While I understand your approach to fix the issue first I need to say
+> >> that such interim fixes create an significant amount of effort that has to
+> >> be spent for review and test for others. And there is the increased risk 
+> >> to introduce new bugs by just this only-for-now fix.
+> > 
+> > Let's back to this patch itself. This approach spreads CQs to different
+> > vectors, it tries to solve this issue under current design and not to
+> > introduce more changes to make it easier to review and test. It severely
+> > limits the performance of SMC when replacing TCP. This patch tries to
+> > reduce the gap between SMC and TCP.
+> > 
+> > To use newer API, it should have a lots of work to do with wr process
+> > logic, for example remove tasklet handler, refactor wr_id logic. I have
+> > no idea if we should do this? If it's okay and got your permission, I
+> > will do this in the next patch.
 > 
-> As result, applications compiled with the old version
-> of struct smc_diag_linkinfo will receive garbage in
-> struct smc_diag_lgrinfo.role if the kernel implements
-> this new version of struct smc_diag_linkinfo.
+> Hi Tony,
 > 
-> Fix this regression by reverting the part of commit 79d39fc503b4 that
-> changes struct smc_diag_linkinfo.  After all, there is SMC_GEN_NETLINK
-> interface which is good enough, so there is probably no need to touch
-> the smc_diag ABI in the first place.
+> I think there was quite a discussion now about this patch series and the conclusion from 
+> the RDMA list and from my side was that if this code is changed it should be done using
+> the new API. The current version re-implements code that is already available there.
 > 
-> Fixes: 79d39fc503b4 ("net/smc: Add netlink net namespace support")
-> Signed-off-by: Dmitry V. Levin <ldv@altlinux.org>
+> I agree that using the new API is the way to go, and I am in for any early discussions
+> about the changes that are needed.
+> 
 
-Thank you and Karsten.
+Thank you for pointing me to the sure way.
 
-It was my negligence that caused the ABI incompatibility issue.
-I will consider to fix it completely. And we are starting to build
-smc-tools and other userspace test for potential ABI modifications.
+I am working on this. I will send the complete refactor version with the
+new API later.
 
 Best regards,
 Tony Lu
