@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F58C4AF2E4
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 14:37:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48D884AF2F1
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 14:37:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234115AbiBINgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 08:36:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53398 "EHLO
+        id S234109AbiBINgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 08:36:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234084AbiBINgW (ORCPT
+        with ESMTP id S234085AbiBINgW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 08:36:22 -0500
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4BC8C061355;
-        Wed,  9 Feb 2022 05:36:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E2C1C0613C9;
+        Wed,  9 Feb 2022 05:36:25 -0800 (PST)
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id E5A54601CB;
-        Wed,  9 Feb 2022 14:36:12 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 8D860601CC;
+        Wed,  9 Feb 2022 14:36:13 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 01/14] netfilter: conntrack: mark UDP zero checksum as CHECKSUM_UNNECESSARY
-Date:   Wed,  9 Feb 2022 14:36:03 +0100
-Message-Id: <20220209133616.165104-2-pablo@netfilter.org>
+Subject: [PATCH net-next 02/14] netfilter: nfqueue: enable to get skb->priority
+Date:   Wed,  9 Feb 2022 14:36:04 +0100
+Message-Id: <20220209133616.165104-3-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220209133616.165104-1-pablo@netfilter.org>
 References: <20220209133616.165104-1-pablo@netfilter.org>
@@ -37,48 +37,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kevin Mitchell <kevmitch@arista.com>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-The udp_error function verifies the checksum of incoming UDP packets if
-one is set. This has the desirable side effect of setting skb->ip_summed
-to CHECKSUM_COMPLETE, signalling that this verification need not be
-repeated further up the stack.
+This info could be useful to improve traffic analysis.
 
-Conversely, when the UDP checksum is empty, which is perfectly legal (at least
-inside IPv4), udp_error previously left no trace that the checksum had been
-deemed acceptable.
-
-This was a problem in particular for nf_reject_ipv4, which verifies the
-checksum in nf_send_unreach() before sending ICMP_DEST_UNREACH. It makes
-no accommodation for zero UDP checksums unless they are already marked
-as CHECKSUM_UNNECESSARY.
-
-This commit ensures packets with empty UDP checksum are marked as
-CHECKSUM_UNNECESSARY, which is explicitly recommended in skbuff.h.
-
-Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 Acked-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_conntrack_proto_udp.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/uapi/linux/netfilter/nfnetlink_queue.h | 1 +
+ net/netfilter/nfnetlink_queue.c                | 5 +++++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/net/netfilter/nf_conntrack_proto_udp.c b/net/netfilter/nf_conntrack_proto_udp.c
-index 3b516cffc779..12f793d8fe0c 100644
---- a/net/netfilter/nf_conntrack_proto_udp.c
-+++ b/net/netfilter/nf_conntrack_proto_udp.c
-@@ -63,8 +63,10 @@ static bool udp_error(struct sk_buff *skb,
- 	}
+diff --git a/include/uapi/linux/netfilter/nfnetlink_queue.h b/include/uapi/linux/netfilter/nfnetlink_queue.h
+index aed90c4df0c8..ef7c97f21a15 100644
+--- a/include/uapi/linux/netfilter/nfnetlink_queue.h
++++ b/include/uapi/linux/netfilter/nfnetlink_queue.h
+@@ -61,6 +61,7 @@ enum nfqnl_attr_type {
+ 	NFQA_SECCTX,			/* security context string */
+ 	NFQA_VLAN,			/* nested attribute: packet vlan info */
+ 	NFQA_L2HDR,			/* full L2 header */
++	NFQA_PRIORITY,			/* skb->priority */
  
- 	/* Packet with no checksum */
--	if (!hdr->check)
-+	if (!hdr->check) {
-+		skb->ip_summed = CHECKSUM_UNNECESSARY;
- 		return false;
-+	}
+ 	__NFQA_MAX
+ };
+diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
+index ea2d9c2a44cf..48d7a59c6482 100644
+--- a/net/netfilter/nfnetlink_queue.c
++++ b/net/netfilter/nfnetlink_queue.c
+@@ -402,6 +402,7 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
+ 		+ nla_total_size(sizeof(u_int32_t))	/* ifindex */
+ #endif
+ 		+ nla_total_size(sizeof(u_int32_t))	/* mark */
++		+ nla_total_size(sizeof(u_int32_t))	/* priority */
+ 		+ nla_total_size(sizeof(struct nfqnl_msg_packet_hw))
+ 		+ nla_total_size(sizeof(u_int32_t))	/* skbinfo */
+ 		+ nla_total_size(sizeof(u_int32_t));	/* cap_len */
+@@ -559,6 +560,10 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
+ 	    nla_put_be32(skb, NFQA_MARK, htonl(entskb->mark)))
+ 		goto nla_put_failure;
  
- 	/* Checksum invalid? Ignore.
- 	 * We skip checking packets on the outgoing path
++	if (entskb->priority &&
++	    nla_put_be32(skb, NFQA_PRIORITY, htonl(entskb->priority)))
++		goto nla_put_failure;
++
+ 	if (indev && entskb->dev &&
+ 	    skb_mac_header_was_set(entskb) &&
+ 	    skb_mac_header_len(entskb) != 0) {
 -- 
 2.30.2
 
