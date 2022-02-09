@@ -2,72 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67DF84AEFF0
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 12:27:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 901154AEFFB
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 12:33:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229719AbiBIL1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 06:27:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
+        id S230092AbiBILde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 06:33:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiBIL1j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 06:27:39 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176A3E0969AF;
-        Wed,  9 Feb 2022 02:21:29 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id cf2so3995380edb.9;
-        Wed, 09 Feb 2022 02:21:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HkPO0AGVSJ77TKhpfb80SADzW0ARBmPh6GNCbk7lmrM=;
-        b=Pf5vkLS6cPpQ5pXhObwXKqRIi1EHsNwkjgOuOa/YseN2ddMt/AVXqIdoyJk3Ukrjc/
-         sFw77R/VIC7pfahE4aRjgV8RXqj1X8wro2JHIJ3YfzkkO8yWpb+kU89Ie1QbXP7UpmmX
-         C1GTdDav3TZBL+8qkGEkbE/JbNM6IKNogNBU3AYgTpYLKIDrcM08bDEEOtO2Px50SmcY
-         c45e2GaAyTv+Qt9Upwv5nkTJ8UukW6CcByZB9nqiTPwPZezURGQpOGire3k/OQdhZmAF
-         3b17UDq8d7C1nH2GOLo5//6O+KP8RjXZ24VsFeGf4Xsd0ejlqNjOjw63cHlmJ8hTaEwS
-         PVdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HkPO0AGVSJ77TKhpfb80SADzW0ARBmPh6GNCbk7lmrM=;
-        b=as3TEKYG1k0XsZ51EWJio0H0+og5wV6EC6EEPplFEfb0Ap+n6eCp0r7qMo5FGCehrm
-         t4KJp/eaJi1WGsxKKwgvwcc4CALWRo4XfhYBbLEbJ+FN6AKv/ubMQjHHD7K8uo2v7Iu4
-         wYK+ucb/mkLu64anFOSUSZhtpMvxabEoeR7ApMZoVsJQE85ajsVNzJyii/aSE1lu1rFQ
-         GvLpIB5VD9itzkZfmyac4OR2CB3h1tSSByHKbucevZIkSt3qvqPETlp8gj/iH0oZppZS
-         XFWZUm9akSCwk0kxDjhzfMUgkD+Q8bUkHiK0bBnQo9bZCnbP5I7mrtaemve2QukuG4OY
-         MquQ==
-X-Gm-Message-State: AOAM530idXOe9ePNk96veGk/5LMhFIzIH2H8rPVqBee3ylE9tCDYJ9Re
-        TgQIzvgcwwgeQXbo/o5JC/g=
-X-Google-Smtp-Source: ABdhPJxw9KX+3YSWHKExATGl3dQ+kkw3w8RMgwOuyi1zuq7fwXtnfr9xhcYUoRq5LIZGKwB30YDNxg==
-X-Received: by 2002:aa7:d898:: with SMTP id u24mr1623473edq.60.1644402087635;
-        Wed, 09 Feb 2022 02:21:27 -0800 (PST)
-Received: from [192.168.0.108] ([77.126.86.139])
-        by smtp.gmail.com with ESMTPSA id p19sm996929ejx.30.2022.02.09.02.21.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 02:21:27 -0800 (PST)
-Message-ID: <bde548df-cb80-966a-599c-3e1cb8639716@gmail.com>
-Date:   Wed, 9 Feb 2022 12:21:24 +0200
+        with ESMTP id S229447AbiBILde (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 06:33:34 -0500
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 02:25:51 PST
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8F8E148617
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 02:25:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644402351; x=1675938351;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=tKssAuH+rgarP0EYdoMpZsm6AfzDbRcpB7eIOckVr+8=;
+  b=Cdxa53MndEsT3OS3T1LHc1XU+fJWXoUc6gJhel92lZqVlj286xlPMyBN
+   FG+0PXhkEpc/cc3jDEi08j6iqV2BUEPqCecV5j35YS/R5wvI/JOorDZ7W
+   sx0F5WejVBHiAnGtZJTU8dJxLk68MVcO967HjPH3KNvnWOAjqNgCGQv2Q
+   s3UEJKlluaTM7C0rT1rolLlI1zoXHNi7e6bgL76K4yS70cDdnPSmEeAdQ
+   MJ1qDHrFhxeh/8SRnGSzZR9JsJHTJ9sV5f6UVNMNHmleuaJVL9y5oQIkS
+   qoFnXOhTMPtVfdCB7UqQOK8XU2Ihp7Hv9lQg6mX3IlE1GMnl/WntyzmFM
+   A==;
+IronPort-SDR: nGNsrxLmsWkOMGuzZt+kNen+3rqOnR8/JnVhk0PEznY0smadEE71pwygWpO09i5NykHPK/ug/R
+ oux1jfrqQOqnrN/1FNKtmBnr+MQctYQveZRFfKFR7CpE7o28FmaSNW+ZFn6rWNQCIv2wyXzErJ
+ u1OT9+MhXcFNdrdd5ew/ZSobvHKbclmFNE0pbAp6aYHqufd+pYOID0KTU21RSFPUC2WGU+tFv7
+ BZNmPVS5SkjeSBHupK/gs78e787jWmhSXmCPa0LPpdU2MrFG0ymkuwYQi3hsYGvixlyb6LHBiY
+ gf+tWIdk1+o86FXk+4ZM2wog
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="145378883"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Feb 2022 03:24:47 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 9 Feb 2022 03:24:47 -0700
+Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Wed, 9 Feb 2022 03:24:45 -0700
+Message-ID: <e33d303b-15d6-d133-bdb3-cb63e305ef24@microchip.com>
+Date:   Wed, 9 Feb 2022 11:24:43 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [BUG] net: mellanox: mlx4: possible deadlock in mlx4_xdp_set()
- and mlx4_en_reset_config()
+Subject: Re: [PATCH] net: macb: Align the dma and coherent dma masks
 Content-Language: en-US
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>, tariqt@nvidia.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <4a850d04-ed6a-5802-7038-a94ad0d466c5@gmail.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <4a850d04-ed6a-5802-7038-a94ad0d466c5@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+To:     Harini Katakam <harini.katakam@xilinx.com>, <davem@davemloft.net>,
+        <claudiu.beznea@microchip.com>, <kuba@kernel.org>,
+        <Conor.Dooley@microchip.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <michal.simek@xilinx.com>, <harinikatakamlinux@gmail.com>,
+        <mstamand@ciena.com>
+References: <20220209094325.8525-1-harini.katakam@xilinx.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <20220209094325.8525-1-harini.katakam@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,58 +73,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2/7/2022 5:16 PM, Jia-Ju Bai wrote:
-> Hello,
+On 09/02/2022 at 10:43, Harini Katakam wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> My static analysis tool reports a possible deadlock in the mlx4 driver 
-> in Linux 5.16:
+> From: Marc St-Amand <mstamand@ciena.com>
+> 
+> Single page and coherent memory blocks can use different DMA masks
+> when the macb accesses physical memory directly. The kernel is clever
+> enough to allocate pages that fit into the requested address width.
+> 
+> When using the ARM SMMU, the DMA mask must be the same for single
+> pages and big coherent memory blocks. Otherwise the translation
+> tables turn into one big mess.
+> 
+>    [   74.959909] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
+>    [   74.959989] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
+>    [   75.173939] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
+>    [   75.173955] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
+> 
+> Since using the same DMA mask does not hurt direct 1:1 physical
+> memory mappings, this commit always aligns DMA and coherent masks.
+> 
+> Signed-off-by: Marc St-Amand <mstamand@ciena.com>
+> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+
+Ok:
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+
+Best regards,
+   Nicolas
+
+> ---
+>   drivers/net/ethernet/cadence/macb_main.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index 1ce20bf52f72..4c231159b562 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -4765,7 +4765,7 @@ static int macb_probe(struct platform_device *pdev)
+> 
+>   #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+>          if (GEM_BFEXT(DAW64, gem_readl(bp, DCFG6))) {
+> -               dma_set_mask(&pdev->dev, DMA_BIT_MASK(44));
+> +               dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(44));
+>                  bp->hw_dma_cap |= HW_DMA_CAP_64B;
+>          }
+>   #endif
+> --
+> 2.17.1
 > 
 
-Hi Jia-Ju,
-Thanks for your email.
 
-Which static analysis tool do you use? Is it standard one?
-
-> mlx4_xdp_set()
->    mutex_lock(&mdev->state_lock); --> Line 2778 (Lock A)
->    mlx4_en_try_alloc_resources()
->      mlx4_en_alloc_resources()
->        mlx4_en_destroy_tx_ring()
->          mlx4_qp_free()
->            wait_for_completion(&qp->free); --> Line 528 (Wait X)
-
-The refcount_dec_and_test(&qp->refcount)) in mlx4_qp_free() pairs with 
-refcount_set(&qp->refcount, 1); in mlx4_qp_alloc.
-mlx4_qp_event increases and decreasing the refcount while running 
-qp->event(qp, event_type); to protect it from being freed.
-
-> 
-> mlx4_en_reset_config()
->    mutex_lock(&mdev->state_lock); --> Line 3522 (Lock A)
->    mlx4_en_try_alloc_resources()
->      mlx4_en_alloc_resources()
->        mlx4_en_destroy_tx_ring()
->          mlx4_qp_free()
->            complete(&qp->free); --> Line 527 (Wake X)
-> 
-> When mlx4_xdp_set() is executed, "Wait X" is performed by holding "Lock 
-> A". If mlx4_en_reset_config() is executed at this time, "Wake X" cannot 
-> be performed to wake up "Wait X" in mlx4_xdp_set(), because "Lock A" has 
-> been already hold by mlx4_xdp_set(), causing a possible deadlock.
-> 
-> I am not quite sure whether this possible problem is real and how to fix 
-> it if it is real.
-> Any feedback would be appreciated, thanks :)
-> 
-
-Not possible.
-These are two different qps, maintaining two different instances of 
-refcount and complete, following the behavior I described above.
-> 
-> Best wishes,
-> Jia-Ju Bai
-
-Thanks,
-Tariq
+-- 
+Nicolas Ferre
