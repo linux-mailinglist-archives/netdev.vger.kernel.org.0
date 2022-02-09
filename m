@@ -2,105 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A984AE618
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 01:36:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CC1F4AE622
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 01:38:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240143AbiBIAf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Feb 2022 19:35:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40186 "EHLO
+        id S240369AbiBIAid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Feb 2022 19:38:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240154AbiBIAfv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 19:35:51 -0500
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE11BC061576;
-        Tue,  8 Feb 2022 16:35:50 -0800 (PST)
-Received: by mail-il1-x131.google.com with SMTP id i10so425665ilm.4;
-        Tue, 08 Feb 2022 16:35:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+YWDH4eHWrUs+PczL2NaxuiVLZlAbGyakS668c6eLak=;
-        b=bwoDTM16u7oDn1CPlqKqLcy5pChqFvKVLokKfP0cEseywUB2c1KLfZRCgVol6fPK09
-         6OfXhgTMBQ38lbx9Ug+G4dZh1zczJzjt/OmBFqRffiYLzoWq2TiWE+C8mqCCNbQvmCE0
-         g/AiVPQpb4HkZP/XdzSkLn2kCFbP1CQ5tKw8veVr8bPClYdoQbGThhT+NJ1biTKxJoyg
-         meDgbGb8BV8DfwNGYpljRcxeZI3Oox5rHV9mmas1UyV9WGWyTiZeuyZLCvGmUxzQBt7q
-         jbejjCT16EwsCmbdiBRMFpY2E+KR86s4aeC/InxuOFOAff9tXJxhdZG9TkJtd1qe6Wbb
-         h0Iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+YWDH4eHWrUs+PczL2NaxuiVLZlAbGyakS668c6eLak=;
-        b=7JbMhnpsv4tcI5SuhysNfJHIpo/l4djU5PElb2W5ljXm+NKHr9N26DWyfEcNayRlFx
-         Vx3/T22h1xqrxndxwppHQbpNi5yiVwagbJYJGJxf1vD3QWITwR+NGWu+L3C0OTJhZw10
-         CtqJKukcfx1U0491TWvL0uelfk964A31tn2dQzRmUYSFEMVFZw7VqZS54u5/Y9EcQ3C2
-         6V9fQTe/qbXYMMZ+Wqnwan9wM2USAEWUevkwKPTyo3n3FBBfwyuQAEOcWM3rB9vNiE/3
-         6ns751G4FkRoydVcTW9xTt4IcN/t2K3R70AU8QkVVddDKn4zTTDW+7OMKb6uPKx3E4An
-         Vp5w==
-X-Gm-Message-State: AOAM530YjUvL6XZptYEgqh0GSRfwUUeGR947pLHKJDOXXKRRRxE+0euq
-        gEc4934paofkOF2WmuNf5pW8qlBnooppZjNu4aRjRNNC
-X-Google-Smtp-Source: ABdhPJyRGl2DdC3jBFNtbIKvppHoU/K3MAgFnADqdOmVIzsyNrwr9872zhb2xL9e6PD0y/aUtmXwPl91hRf+Ki6Qq3E=
-X-Received: by 2002:a05:6e02:1bcd:: with SMTP id x13mr3454687ilv.98.1644366949988;
- Tue, 08 Feb 2022 16:35:49 -0800 (PST)
+        with ESMTP id S235164AbiBIAic (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Feb 2022 19:38:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4959DC061576
+        for <netdev@vger.kernel.org>; Tue,  8 Feb 2022 16:38:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 080FCB81DBE
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 00:38:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EFA3C004E1;
+        Wed,  9 Feb 2022 00:38:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644367109;
+        bh=bIVnhnwa63Aq61kKWu2n1baJuyrJ9fja/e/EyL0qSoY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZFsi3nIDtIE2n6r30ESa2ntFV1AOxY1iNjbV30o3MyCyDXwYrOr2F8ioH4ZMg3Tew
+         xPWANTYfZaNTG00kOsKWdxyWXSfS9sHr+n6jKp6htcfFDdBXuX/RLwZJSkdki6FiHb
+         WGUeQkVxUECTmjf/v5+z1Ul6a2vB1/iSYPHi9LrqG1HgxrdgS3yCuS2P4p/5rTbdsd
+         T7s1VX6xk898rY0SpunlxHRGP6ax5iiq4VcPVOuTanZ8VhMukjLa3dOrUTnuV/XN3s
+         PyOk5gieunTZxkqaQ3VNRjW3uYjTBpiBRDMk3SgL/X41dZwBsAQrBWNGxWRrD3pkBY
+         oASqJrIzCc7eA==
+Date:   Tue, 8 Feb 2022 16:38:28 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     jmaloy@redhat.com
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        tipc-discussion@lists.sourceforge.net,
+        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
+        tuong.t.lien@dektech.com.au, maloy@donjonn.com, xinl@redhat.com,
+        ying.xue@windriver.com, parthasarathy.bhuvaragan@gmail.com
+Subject: Re: [net-next] tipc: rate limit warning for received illegal
+ binding update
+Message-ID: <20220208163828.2be15fc6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220208183157.922752-1-jmaloy@redhat.com>
+References: <20220208183157.922752-1-jmaloy@redhat.com>
 MIME-Version: 1.0
-References: <20220208120648.49169-1-quentin@isovalent.com> <20220208120648.49169-3-quentin@isovalent.com>
-In-Reply-To: <20220208120648.49169-3-quentin@isovalent.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 8 Feb 2022 16:35:38 -0800
-Message-ID: <CAEf4BzaWJtOkinVVet1hzHioCo4sZ++o+N2cXhNbV7r7iP=Krg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/3] libbpf: Add "libbpversion" make target to
- print version
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 4:06 AM Quentin Monnet <quentin@isovalent.com> wrote:
->
-> Add a target to libbpf's Makefile to print its version number, in a
-> similar way to what running "make kernelversion" at the root of the
-> repository does.
->
-> This is to avoid re-implementing the parsing of the libbpf.map file in
-> case some other tools want to extract the version of the libbpf sources
-> they are using.
->
-> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-> ---
->  tools/lib/bpf/Makefile | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-> index b8b37fe76006..91136623edf9 100644
-> --- a/tools/lib/bpf/Makefile
-> +++ b/tools/lib/bpf/Makefile
-> @@ -108,6 +108,9 @@ MAKEOVERRIDES=
->
->  all:
->
-> +libbpfversion:
+On Tue,  8 Feb 2022 13:31:57 -0500 jmaloy@redhat.com wrote:
+> From: Jon Maloy <jmaloy@redhat.com>
+> 
+> It would be easy to craft a message containing an illegal binding table
+> update operation. This is handled correctly by the code, but the
+> corresponding warning printout is not rate limited as is should be.
+> We fix this now.
+> 
+> Signed-off-by: Jon Maloy <jmaloy@redhat.com>
 
-I don't think we need it (see next patch), but if we end up keeping
-it, please call it just "version". Worst case, "libbpf-version" seems
-better still.
+I reckon this should go to net with:
 
-> +       @echo $(LIBBPF_VERSION)
-> +
->  export srctree OUTPUT CC LD CFLAGS V
->  include $(srctree)/tools/build/Makefile.include
->
-> --
-> 2.32.0
->
+Fixes: b97bf3fd8f6a ("[TIPC] Initial merge")
