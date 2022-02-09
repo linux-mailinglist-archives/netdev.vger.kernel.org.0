@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B98F4AFFAE
-	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 23:00:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B3114AFFB5
+	for <lists+netdev@lfdr.de>; Wed,  9 Feb 2022 23:00:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234590AbiBIV6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 16:58:00 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55642 "EHLO
+        id S234675AbiBIV56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 16:57:58 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234472AbiBIV5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 16:57:37 -0500
+        with ESMTP id S234513AbiBIV5i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 16:57:38 -0500
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FFF5E00D121
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 13:57:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D844BE00E25E
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 13:57:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644443840; x=1675979840;
+  t=1644443841; x=1675979841;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=MYqCY/n+zr1wspr2cNRsn5BdvD/nXLkSoFbIZ89UhK8=;
-  b=g6tju89SYLLD5aCGrXM3r5Azaor8TUZRo5c8/5j/+2V4wH90QYwQ0TPu
-   GCFSsN1QMO/6Vqj4dLWgxY1ziPPvviQm4hZpT1jIpZm27JxC4bkgS5644
-   kCkX2Gb3jjwP12EPTd7K+x7LJuYdiSFnwVPRyHdJ4TsHKhnzybCsw2YBQ
-   G1XYZhzLWAx7L1w9pSwuFlr1jcIUtV1kl1cway61DUdmTe+MfoWfDLklK
-   3+Jenv6rjV6wZRhpJn1mR0RPIF79vUuBFDeLxTp8axkIHARvBFGRL39hQ
-   +Q2hph6f8Rh6LS6+WJlf/JZOTfM5PQO16AnB/f/8vAPJpiCy0yJyZtbad
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="249104104"
+  bh=+nXBKVlBbvBUegJshruxyqFgAqKG9VcDJvjnVCoUsag=;
+  b=Wu8wQD0UpSQ/CHxzzgXfYb6MhCcVZrgKIQciBjeqXV2TRYO1P7Mu+Msi
+   0/vVPFZe5Sz9Z23h7ALZzX8wqnvRrq5/nmf7jVAaPtrRku3IXaPZoJrLd
+   yYiN72gXxSJyjEBUGwnwaHDUY0X22zUv+Jf1DAJC7nUfxBZSVlmV5QZBe
+   DPUu8QNj5QpBtkQLWyH74QEp9bW87bd4na7Rpt5ZoY705MgCFzarF1+pS
+   heGwGxnOLgFUjubio3USYt2tWoXetQw4PhJ6qZH7UXqZcRddV647wuvyT
+   Gqwn8SilEIEd30fIaoXcVAkUIQRmB+yk4qDGNGa4I/F51VwIymjVZ/Fh1
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="249104105"
 X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="249104104"
+   d="scan'208";a="249104105"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 13:57:17 -0800
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 13:57:18 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="601790508"
+   d="scan'208";a="601790512"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga004.fm.intel.com with ESMTP; 09 Feb 2022 13:57:17 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net-next 10/14] ice: Add support for VIRTCHNL_VF_OFFLOAD_VLAN_V2
-Date:   Wed,  9 Feb 2022 13:57:02 -0800
-Message-Id: <20220209215706.2468371-11-anthony.l.nguyen@intel.com>
+        anthony.l.nguyen@intel.com, Dan Nowlin <dan.nowlin@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: [PATCH net-next 11/14] ice: Support configuring the device to Double VLAN Mode
+Date:   Wed,  9 Feb 2022 13:57:03 -0800
+Message-Id: <20220209215706.2468371-12-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220209215706.2468371-1-anthony.l.nguyen@intel.com>
 References: <20220209215706.2468371-1-anthony.l.nguyen@intel.com>
@@ -62,1529 +62,1562 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Brett Creeley <brett.creeley@intel.com>
 
-Add support for the VF driver to be able to request
-VIRTCHNL_VF_OFFLOAD_VLAN_V2, negotiate its VLAN capabilities via
-VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS, add/delete VLAN filters, and
-enable/disable VLAN offloads.
+In order to support configuring the device in Double VLAN Mode (DVM),
+the DDP and FW have to support DVM. If both support DVM, the PF that
+downloads the package needs to update the default recipes, set the
+VLAN mode, and update boost TCAM entries.
 
-VFs supporting VIRTCHNL_OFFLOAD_VLAN_V2 will be able to use the
-following virtchnl opcodes:
+To support updating the default recipes in DVM, add support for
+updating an existing switch recipe's lkup_idx and mask. This is done
+by first calling the get recipe AQ (0x0292) with the desired recipe
+ID. Then, if that is successful update one of the lookup indices
+(lkup_idx) and its associated mask if the mask is valid otherwise
+the already existing mask will be used.
 
-VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS
-VIRTCHNL_OP_ADD_VLAN_V2
-VIRTCHNL_OP_DEL_VLAN_V2
-VIRTCHNL_OP_ENABLE_VLAN_STRIPPING_V2
-VIRTCHNL_OP_DISABLE_VLAN_STRIPPING_V2
-VIRTCHNL_OP_ENABLE_VLAN_INSERTION_V2
-VIRTCHNL_OP_DISABLE_VLAN_INSERTION_V2
+The VLAN mode of the device has to be configured while the global
+configuration lock is held while downloading the DDP, specifically after
+the DDP has been downloaded. If supported, the device will default to
+DVM.
 
-Legacy VF drivers may expect the initial VLAN stripping settings to be
-configured by the PF, so the PF initializes VLAN stripping based on the
-VIRTCHNL_OP_GET_VF_RESOURCES opcode. However, with VLAN support via
-VIRTCHNL_VF_OFFLOAD_VLAN_V2, this function is only expected to be used
-for VFs that only support VIRTCHNL_VF_OFFLOAD_VLAN, which will only
-be supported when a port VLAN is configured. Update the function
-based on the new expectations. Also, change the message when the PF
-can't enable/disable VLAN stripping to a dev_dbg() as this isn't fatal.
-
-When a VF isn't in a port VLAN and it only supports
-VIRTCHNL_VF_OFFLOAD_VLAN when Double VLAN Mode (DVM) is enabled, then
-the PF needs to reject the VIRTCHNL_VF_OFFLOAD_VLAN capability and
-configure the VF in software only VLAN mode. To do this add the new
-function ice_vf_vsi_cfg_legacy_vlan_mode(), which updates the VF's
-inner and outer ice_vsi_vlan_ops functions and sets up software only
-VLAN mode.
-
+Co-developed-by: Dan Nowlin <dan.nowlin@intel.com>
+Signed-off-by: Dan Nowlin <dan.nowlin@intel.com>
 Signed-off-by: Brett Creeley <brett.creeley@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_base.c     |    1 +
- .../ethernet/intel/ice/ice_vf_vsi_vlan_ops.c  |  115 ++
- .../ethernet/intel/ice/ice_vf_vsi_vlan_ops.h  |    3 +
- .../intel/ice/ice_virtchnl_allowlist.c        |   10 +
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 1132 ++++++++++++++++-
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |    8 +
- 6 files changed, 1226 insertions(+), 43 deletions(-)
+ drivers/net/ethernet/intel/ice/Makefile       |   1 +
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  64 ++-
+ drivers/net/ethernet/intel/ice/ice_common.c   |  49 +-
+ drivers/net/ethernet/intel/ice/ice_common.h   |   3 +
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    | 291 ++++++++++--
+ .../net/ethernet/intel/ice/ice_flex_pipe.h    |  13 +
+ .../net/ethernet/intel/ice/ice_flex_type.h    |  40 ++
+ drivers/net/ethernet/intel/ice/ice_main.c     |  12 +
+ .../ethernet/intel/ice/ice_pf_vsi_vlan_ops.c  |   1 +
+ drivers/net/ethernet/intel/ice/ice_switch.c   |  75 +++
+ drivers/net/ethernet/intel/ice/ice_switch.h   |  13 +
+ drivers/net/ethernet/intel/ice/ice_type.h     |  10 +
+ .../ethernet/intel/ice/ice_vf_vsi_vlan_ops.c  |   1 +
+ .../net/ethernet/intel/ice/ice_vlan_mode.c    | 439 ++++++++++++++++++
+ .../net/ethernet/intel/ice/ice_vlan_mode.h    |  13 +
+ .../net/ethernet/intel/ice/ice_vsi_vlan_lib.c |  25 +-
+ .../net/ethernet/intel/ice/ice_vsi_vlan_ops.h |   5 -
+ 17 files changed, 996 insertions(+), 59 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_vlan_mode.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_vlan_mode.h
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
-index 33b9dd0fd83f..2360e6abdb1e 100644
---- a/drivers/net/ethernet/intel/ice/ice_base.c
-+++ b/drivers/net/ethernet/intel/ice/ice_base.c
-@@ -5,6 +5,7 @@
- #include "ice_base.h"
- #include "ice_lib.h"
- #include "ice_dcb_lib.h"
-+#include "ice_virtchnl_pf.h"
+diff --git a/drivers/net/ethernet/intel/ice/Makefile b/drivers/net/ethernet/intel/ice/Makefile
+index d0c4db00590c..389fff70d22e 100644
+--- a/drivers/net/ethernet/intel/ice/Makefile
++++ b/drivers/net/ethernet/intel/ice/Makefile
+@@ -23,6 +23,7 @@ ice-y := ice_main.o	\
+ 	 ice_vsi_vlan_lib.o \
+ 	 ice_fdir.o	\
+ 	 ice_ethtool_fdir.o \
++	 ice_vlan_mode.o \
+ 	 ice_flex_pipe.o \
+ 	 ice_flow.o	\
+ 	 ice_idc.o	\
+diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+index 72214c609cf5..fd8ee5b7f596 100644
+--- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
++++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+@@ -226,6 +226,15 @@ struct ice_aqc_get_sw_cfg_resp_elem {
+ #define ICE_AQC_GET_SW_CONF_RESP_IS_VF		BIT(15)
+ };
  
- static bool ice_alloc_rx_buf_zc(struct ice_rx_ring *rx_ring)
++/* Set Port parameters, (direct, 0x0203) */
++struct ice_aqc_set_port_params {
++	__le16 cmd_flags;
++#define ICE_AQC_SET_P_PARAMS_DOUBLE_VLAN_ENA	BIT(2)
++	__le16 bad_frame_vsi;
++	__le16 swid;
++	u8 reserved[10];
++};
++
+ /* These resource type defines are used for all switch resource
+  * commands where a resource type is required, such as:
+  * Get Resource Allocation command (indirect 0x0204)
+@@ -283,6 +292,40 @@ struct ice_aqc_alloc_free_res_elem {
+ 	struct ice_aqc_res_elem elem[];
+ };
+ 
++/* Request buffer for Set VLAN Mode AQ command (indirect 0x020C) */
++struct ice_aqc_set_vlan_mode {
++	u8 reserved;
++	u8 l2tag_prio_tagging;
++#define ICE_AQ_VLAN_PRIO_TAG_S			0
++#define ICE_AQ_VLAN_PRIO_TAG_M			(0x7 << ICE_AQ_VLAN_PRIO_TAG_S)
++#define ICE_AQ_VLAN_PRIO_TAG_NOT_SUPPORTED	0x0
++#define ICE_AQ_VLAN_PRIO_TAG_STAG		0x1
++#define ICE_AQ_VLAN_PRIO_TAG_OUTER_CTAG		0x2
++#define ICE_AQ_VLAN_PRIO_TAG_OUTER_VLAN		0x3
++#define ICE_AQ_VLAN_PRIO_TAG_INNER_CTAG		0x4
++#define ICE_AQ_VLAN_PRIO_TAG_MAX		0x4
++#define ICE_AQ_VLAN_PRIO_TAG_ERROR		0x7
++	u8 l2tag_reserved[64];
++	u8 rdma_packet;
++#define ICE_AQ_VLAN_RDMA_TAG_S			0
++#define ICE_AQ_VLAN_RDMA_TAG_M			(0x3F << ICE_AQ_VLAN_RDMA_TAG_S)
++#define ICE_AQ_SVM_VLAN_RDMA_PKT_FLAG_SETTING	0x10
++#define ICE_AQ_DVM_VLAN_RDMA_PKT_FLAG_SETTING	0x1A
++	u8 rdma_reserved[2];
++	u8 mng_vlan_prot_id;
++#define ICE_AQ_VLAN_MNG_PROTOCOL_ID_OUTER	0x10
++#define ICE_AQ_VLAN_MNG_PROTOCOL_ID_INNER	0x11
++	u8 prot_id_reserved[30];
++};
++
++/* Response buffer for Get VLAN Mode AQ command (indirect 0x020D) */
++struct ice_aqc_get_vlan_mode {
++	u8 vlan_mode;
++#define ICE_AQ_VLAN_MODE_DVM_ENA	BIT(0)
++	u8 l2tag_prio_tagging;
++	u8 reserved[98];
++};
++
+ /* Add VSI (indirect 0x0210)
+  * Update VSI (indirect 0x0211)
+  * Get VSI (indirect 0x0212)
+@@ -494,9 +537,13 @@ struct ice_aqc_add_get_recipe {
+ 
+ struct ice_aqc_recipe_content {
+ 	u8 rid;
++#define ICE_AQ_RECIPE_ID_S		0
++#define ICE_AQ_RECIPE_ID_M		(0x3F << ICE_AQ_RECIPE_ID_S)
+ #define ICE_AQ_RECIPE_ID_IS_ROOT	BIT(7)
+ #define ICE_AQ_SW_ID_LKUP_IDX		0
+ 	u8 lkup_indx[5];
++#define ICE_AQ_RECIPE_LKUP_DATA_S	0
++#define ICE_AQ_RECIPE_LKUP_DATA_M	(0x3F << ICE_AQ_RECIPE_LKUP_DATA_S)
+ #define ICE_AQ_RECIPE_LKUP_IGNORE	BIT(7)
+ #define ICE_AQ_SW_ID_LKUP_MASK		0x00FF
+ 	__le16 mask[5];
+@@ -507,15 +554,25 @@ struct ice_aqc_recipe_content {
+ 	u8 rsvd0[3];
+ 	u8 act_ctrl_join_priority;
+ 	u8 act_ctrl_fwd_priority;
++#define ICE_AQ_RECIPE_FWD_PRIORITY_S	0
++#define ICE_AQ_RECIPE_FWD_PRIORITY_M	(0xF << ICE_AQ_RECIPE_FWD_PRIORITY_S)
+ 	u8 act_ctrl;
++#define ICE_AQ_RECIPE_ACT_NEED_PASS_L2	BIT(0)
++#define ICE_AQ_RECIPE_ACT_ALLOW_PASS_L2	BIT(1)
+ #define ICE_AQ_RECIPE_ACT_INV_ACT	BIT(2)
++#define ICE_AQ_RECIPE_ACT_PRUNE_INDX_S	4
++#define ICE_AQ_RECIPE_ACT_PRUNE_INDX_M	(0x3 << ICE_AQ_RECIPE_ACT_PRUNE_INDX_S)
+ 	u8 rsvd1;
+ 	__le32 dflt_act;
++#define ICE_AQ_RECIPE_DFLT_ACT_S	0
++#define ICE_AQ_RECIPE_DFLT_ACT_M	(0x7FFFF << ICE_AQ_RECIPE_DFLT_ACT_S)
++#define ICE_AQ_RECIPE_DFLT_ACT_VALID	BIT(31)
+ };
+ 
+ struct ice_aqc_recipe_data_elem {
+ 	u8 recipe_indx;
+ 	u8 resp_bits;
++#define ICE_AQ_RECIPE_WAS_UPDATED	BIT(0)
+ 	u8 rsvd0[2];
+ 	u8 recipe_bitmap[8];
+ 	u8 rsvd1[4];
+@@ -1888,7 +1945,7 @@ struct ice_aqc_get_clear_fw_log {
+ };
+ 
+ /* Download Package (indirect 0x0C40) */
+-/* Also used for Update Package (indirect 0x0C42) */
++/* Also used for Update Package (indirect 0x0C41 and 0x0C42) */
+ struct ice_aqc_download_pkg {
+ 	u8 flags;
+ #define ICE_AQC_DOWNLOAD_PKG_LAST_BUF	0x01
+@@ -2014,6 +2071,7 @@ struct ice_aq_desc {
+ 		struct ice_aqc_sff_eeprom read_write_sff_param;
+ 		struct ice_aqc_set_port_id_led set_port_id_led;
+ 		struct ice_aqc_get_sw_cfg get_sw_conf;
++		struct ice_aqc_set_port_params set_port_params;
+ 		struct ice_aqc_sw_rules sw_rules;
+ 		struct ice_aqc_add_get_recipe add_get_recipe;
+ 		struct ice_aqc_recipe_to_profile recipe_to_profile;
+@@ -2115,10 +2173,13 @@ enum ice_adminq_opc {
+ 
+ 	/* internal switch commands */
+ 	ice_aqc_opc_get_sw_cfg				= 0x0200,
++	ice_aqc_opc_set_port_params			= 0x0203,
+ 
+ 	/* Alloc/Free/Get Resources */
+ 	ice_aqc_opc_alloc_res				= 0x0208,
+ 	ice_aqc_opc_free_res				= 0x0209,
++	ice_aqc_opc_set_vlan_mode_parameters		= 0x020C,
++	ice_aqc_opc_get_vlan_mode_parameters		= 0x020D,
+ 
+ 	/* VSI commands */
+ 	ice_aqc_opc_add_vsi				= 0x0210,
+@@ -2209,6 +2270,7 @@ enum ice_adminq_opc {
+ 
+ 	/* package commands */
+ 	ice_aqc_opc_download_pkg			= 0x0C40,
++	ice_aqc_opc_upload_section			= 0x0C41,
+ 	ice_aqc_opc_update_pkg				= 0x0C42,
+ 	ice_aqc_opc_get_pkg_info_list			= 0x0C43,
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 408d15a5b0e3..464ecb7b54cb 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -1518,16 +1518,27 @@ ice_aq_send_cmd(struct ice_hw *hw, struct ice_aq_desc *desc, void *buf,
+ 
+ 	/* When a package download is in process (i.e. when the firmware's
+ 	 * Global Configuration Lock resource is held), only the Download
+-	 * Package, Get Version, Get Package Info List and Release Resource
+-	 * (with resource ID set to Global Config Lock) AdminQ commands are
+-	 * allowed; all others must block until the package download completes
+-	 * and the Global Config Lock is released.  See also
+-	 * ice_acquire_global_cfg_lock().
++	 * Package, Get Version, Get Package Info List, Upload Section,
++	 * Update Package, Set Port Parameters, Get/Set VLAN Mode Parameters,
++	 * Add Recipe, Set Recipes to Profile Association, Get Recipe, and Get
++	 * Recipes to Profile Association, and Release Resource (with resource
++	 * ID set to Global Config Lock) AdminQ commands are allowed; all others
++	 * must block until the package download completes and the Global Config
++	 * Lock is released.  See also ice_acquire_global_cfg_lock().
+ 	 */
+ 	switch (le16_to_cpu(desc->opcode)) {
+ 	case ice_aqc_opc_download_pkg:
+ 	case ice_aqc_opc_get_pkg_info_list:
+ 	case ice_aqc_opc_get_ver:
++	case ice_aqc_opc_upload_section:
++	case ice_aqc_opc_update_pkg:
++	case ice_aqc_opc_set_port_params:
++	case ice_aqc_opc_get_vlan_mode_parameters:
++	case ice_aqc_opc_set_vlan_mode_parameters:
++	case ice_aqc_opc_add_recipe:
++	case ice_aqc_opc_recipe_to_profile:
++	case ice_aqc_opc_get_recipe:
++	case ice_aqc_opc_get_recipe_to_profile:
+ 		break;
+ 	case ice_aqc_opc_release_res:
+ 		if (le16_to_cpu(cmd->res_id) == ICE_AQC_RES_ID_GLBL_LOCK)
+@@ -2736,6 +2747,34 @@ void ice_clear_pxe_mode(struct ice_hw *hw)
+ 		ice_aq_clear_pxe_mode(hw);
+ }
+ 
++/**
++ * ice_aq_set_port_params - set physical port parameters.
++ * @pi: pointer to the port info struct
++ * @double_vlan: if set double VLAN is enabled
++ * @cd: pointer to command details structure or NULL
++ *
++ * Set Physical port parameters (0x0203)
++ */
++int
++ice_aq_set_port_params(struct ice_port_info *pi, bool double_vlan,
++		       struct ice_sq_cd *cd)
++
++{
++	struct ice_aqc_set_port_params *cmd;
++	struct ice_hw *hw = pi->hw;
++	struct ice_aq_desc desc;
++	u16 cmd_flags = 0;
++
++	cmd = &desc.params.set_port_params;
++
++	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_set_port_params);
++	if (double_vlan)
++		cmd_flags |= ICE_AQC_SET_P_PARAMS_DOUBLE_VLAN_ENA;
++	cmd->cmd_flags = cpu_to_le16(cmd_flags);
++
++	return ice_aq_send_cmd(hw, &desc, NULL, 0, cd);
++}
++
+ /**
+  * ice_get_link_speed_based_on_phy_type - returns link speed
+  * @phy_type_low: lower part of phy_type
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+index 1c57097ddf0b..d28749edd92f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.h
++++ b/drivers/net/ethernet/intel/ice/ice_common.h
+@@ -85,6 +85,9 @@ int
+ ice_aq_send_driver_ver(struct ice_hw *hw, struct ice_driver_ver *dv,
+ 		       struct ice_sq_cd *cd);
+ int
++ice_aq_set_port_params(struct ice_port_info *pi, bool double_vlan,
++		       struct ice_sq_cd *cd);
++int
+ ice_aq_get_phy_caps(struct ice_port_info *pi, bool qual_mods, u8 report_mode,
+ 		    struct ice_aqc_get_phy_caps_data *caps,
+ 		    struct ice_sq_cd *cd);
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+index 4deb2c9446ec..38fe0a7e6975 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
++++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+@@ -5,9 +5,17 @@
+ #include "ice_flex_pipe.h"
+ #include "ice_flow.h"
+ 
++/* For supporting double VLAN mode, it is necessary to enable or disable certain
++ * boost tcam entries. The metadata labels names that match the following
++ * prefixes will be saved to allow enabling double VLAN mode.
++ */
++#define ICE_DVM_PRE	"BOOST_MAC_VLAN_DVM"	/* enable these entries */
++#define ICE_SVM_PRE	"BOOST_MAC_VLAN_SVM"	/* disable these entries */
++
+ /* To support tunneling entries by PF, the package will append the PF number to
+  * the label; for example TNL_VXLAN_PF0, TNL_VXLAN_PF1, TNL_VXLAN_PF2, etc.
+  */
++#define ICE_TNL_PRE	"TNL_"
+ static const struct ice_tunnel_type_scan tnls[] = {
+ 	{ TNL_VXLAN,		"TNL_VXLAN_PF" },
+ 	{ TNL_GENEVE,		"TNL_GENEVE_PF" },
+@@ -522,6 +530,55 @@ ice_enum_labels(struct ice_seg *ice_seg, u32 type, struct ice_pkg_enum *state,
+ 	return label->name;
+ }
+ 
++/**
++ * ice_add_tunnel_hint
++ * @hw: pointer to the HW structure
++ * @label_name: label text
++ * @val: value of the tunnel port boost entry
++ */
++static void ice_add_tunnel_hint(struct ice_hw *hw, char *label_name, u16 val)
++{
++	if (hw->tnl.count < ICE_TUNNEL_MAX_ENTRIES) {
++		u16 i;
++
++		for (i = 0; tnls[i].type != TNL_LAST; i++) {
++			size_t len = strlen(tnls[i].label_prefix);
++
++			/* Look for matching label start, before continuing */
++			if (strncmp(label_name, tnls[i].label_prefix, len))
++				continue;
++
++			/* Make sure this label matches our PF. Note that the PF
++			 * character ('0' - '7') will be located where our
++			 * prefix string's null terminator is located.
++			 */
++			if ((label_name[len] - '0') == hw->pf_id) {
++				hw->tnl.tbl[hw->tnl.count].type = tnls[i].type;
++				hw->tnl.tbl[hw->tnl.count].valid = false;
++				hw->tnl.tbl[hw->tnl.count].boost_addr = val;
++				hw->tnl.tbl[hw->tnl.count].port = 0;
++				hw->tnl.count++;
++				break;
++			}
++		}
++	}
++}
++
++/**
++ * ice_add_dvm_hint
++ * @hw: pointer to the HW structure
++ * @val: value of the boost entry
++ * @enable: true if entry needs to be enabled, or false if needs to be disabled
++ */
++static void ice_add_dvm_hint(struct ice_hw *hw, u16 val, bool enable)
++{
++	if (hw->dvm_upd.count < ICE_DVM_MAX_ENTRIES) {
++		hw->dvm_upd.tbl[hw->dvm_upd.count].boost_addr = val;
++		hw->dvm_upd.tbl[hw->dvm_upd.count].enable = enable;
++		hw->dvm_upd.count++;
++	}
++}
++
+ /**
+  * ice_init_pkg_hints
+  * @hw: pointer to the HW structure
+@@ -548,32 +605,23 @@ static void ice_init_pkg_hints(struct ice_hw *hw, struct ice_seg *ice_seg)
+ 	label_name = ice_enum_labels(ice_seg, ICE_SID_LBL_RXPARSER_TMEM, &state,
+ 				     &val);
+ 
+-	while (label_name && hw->tnl.count < ICE_TUNNEL_MAX_ENTRIES) {
+-		for (i = 0; tnls[i].type != TNL_LAST; i++) {
+-			size_t len = strlen(tnls[i].label_prefix);
++	while (label_name) {
++		if (!strncmp(label_name, ICE_TNL_PRE, strlen(ICE_TNL_PRE)))
++			/* check for a tunnel entry */
++			ice_add_tunnel_hint(hw, label_name, val);
+ 
+-			/* Look for matching label start, before continuing */
+-			if (strncmp(label_name, tnls[i].label_prefix, len))
+-				continue;
++		/* check for a dvm mode entry */
++		else if (!strncmp(label_name, ICE_DVM_PRE, strlen(ICE_DVM_PRE)))
++			ice_add_dvm_hint(hw, val, true);
+ 
+-			/* Make sure this label matches our PF. Note that the PF
+-			 * character ('0' - '7') will be located where our
+-			 * prefix string's null terminator is located.
+-			 */
+-			if ((label_name[len] - '0') == hw->pf_id) {
+-				hw->tnl.tbl[hw->tnl.count].type = tnls[i].type;
+-				hw->tnl.tbl[hw->tnl.count].valid = false;
+-				hw->tnl.tbl[hw->tnl.count].boost_addr = val;
+-				hw->tnl.tbl[hw->tnl.count].port = 0;
+-				hw->tnl.count++;
+-				break;
+-			}
+-		}
++		/* check for a svm mode entry */
++		else if (!strncmp(label_name, ICE_SVM_PRE, strlen(ICE_SVM_PRE)))
++			ice_add_dvm_hint(hw, val, false);
+ 
+ 		label_name = ice_enum_labels(NULL, 0, &state, &val);
+ 	}
+ 
+-	/* Cache the appropriate boost TCAM entry pointers */
++	/* Cache the appropriate boost TCAM entry pointers for tunnels */
+ 	for (i = 0; i < hw->tnl.count; i++) {
+ 		ice_find_boost_entry(ice_seg, hw->tnl.tbl[i].boost_addr,
+ 				     &hw->tnl.tbl[i].boost_entry);
+@@ -583,6 +631,11 @@ static void ice_init_pkg_hints(struct ice_hw *hw, struct ice_seg *ice_seg)
+ 				hw->tnl.valid_count[hw->tnl.tbl[i].type]++;
+ 		}
+ 	}
++
++	/* Cache the appropriate boost TCAM entry pointers for DVM and SVM */
++	for (i = 0; i < hw->dvm_upd.count; i++)
++		ice_find_boost_entry(ice_seg, hw->dvm_upd.tbl[i].boost_addr,
++				     &hw->dvm_upd.tbl[i].boost_entry);
+ }
+ 
+ /* Key creation */
+@@ -873,6 +926,27 @@ ice_aq_download_pkg(struct ice_hw *hw, struct ice_buf_hdr *pkg_buf,
+ 	return status;
+ }
+ 
++/**
++ * ice_aq_upload_section
++ * @hw: pointer to the hardware structure
++ * @pkg_buf: the package buffer which will receive the section
++ * @buf_size: the size of the package buffer
++ * @cd: pointer to command details structure or NULL
++ *
++ * Upload Section (0x0C41)
++ */
++int
++ice_aq_upload_section(struct ice_hw *hw, struct ice_buf_hdr *pkg_buf,
++		      u16 buf_size, struct ice_sq_cd *cd)
++{
++	struct ice_aq_desc desc;
++
++	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_upload_section);
++	desc.flags |= cpu_to_le16(ICE_AQ_FLAG_RD);
++
++	return ice_aq_send_cmd(hw, &desc, pkg_buf, buf_size, cd);
++}
++
+ /**
+  * ice_aq_update_pkg
+  * @hw: pointer to the hardware structure
+@@ -957,25 +1031,21 @@ ice_find_seg_in_pkg(struct ice_hw *hw, u32 seg_type,
+ }
+ 
+ /**
+- * ice_update_pkg
++ * ice_update_pkg_no_lock
+  * @hw: pointer to the hardware structure
+  * @bufs: pointer to an array of buffers
+  * @count: the number of buffers in the array
+- *
+- * Obtains change lock and updates package.
+  */
+-static int ice_update_pkg(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
++static int
++ice_update_pkg_no_lock(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
  {
+-	u32 offset, info, i;
+-	int status;
+-
+-	status = ice_acquire_change_lock(hw, ICE_RES_WRITE);
+-	if (status)
+-		return status;
++	int status = 0;
++	u32 i;
+ 
+ 	for (i = 0; i < count; i++) {
+ 		struct ice_buf_hdr *bh = (struct ice_buf_hdr *)(bufs + i);
+ 		bool last = ((i + 1) == count);
++		u32 offset, info;
+ 
+ 		status = ice_aq_update_pkg(hw, bh, le16_to_cpu(bh->data_end),
+ 					   last, &offset, &info, NULL);
+@@ -987,6 +1057,27 @@ static int ice_update_pkg(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
+ 		}
+ 	}
+ 
++	return status;
++}
++
++/**
++ * ice_update_pkg
++ * @hw: pointer to the hardware structure
++ * @bufs: pointer to an array of buffers
++ * @count: the number of buffers in the array
++ *
++ * Obtains change lock and updates package.
++ */
++static int ice_update_pkg(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
++{
++	int status;
++
++	status = ice_acquire_change_lock(hw, ICE_RES_WRITE);
++	if (status)
++		return status;
++
++	status = ice_update_pkg_no_lock(hw, bufs, count);
++
+ 	ice_release_change_lock(hw);
+ 
+ 	return status;
+@@ -1080,6 +1171,13 @@ ice_dwnld_cfg_bufs(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
+ 			break;
+ 	}
+ 
++	if (!status) {
++		status = ice_set_vlan_mode(hw);
++		if (status)
++			ice_debug(hw, ICE_DBG_PKG, "Failed to set VLAN mode: err %d\n",
++				  status);
++	}
++
+ 	ice_release_global_cfg_lock(hw);
+ 
+ 	return state;
+@@ -1117,6 +1215,7 @@ static enum ice_ddp_state
+ ice_download_pkg(struct ice_hw *hw, struct ice_seg *ice_seg)
+ {
+ 	struct ice_buf_table *ice_buf_tbl;
++	int status;
+ 
+ 	ice_debug(hw, ICE_DBG_PKG, "Segment format version: %d.%d.%d.%d\n",
+ 		  ice_seg->hdr.seg_format_ver.major,
+@@ -1133,8 +1232,12 @@ ice_download_pkg(struct ice_hw *hw, struct ice_seg *ice_seg)
+ 	ice_debug(hw, ICE_DBG_PKG, "Seg buf count: %d\n",
+ 		  le32_to_cpu(ice_buf_tbl->buf_count));
+ 
+-	return ice_dwnld_cfg_bufs(hw, ice_buf_tbl->buf_array,
+-				  le32_to_cpu(ice_buf_tbl->buf_count));
++	status = ice_dwnld_cfg_bufs(hw, ice_buf_tbl->buf_array,
++				    le32_to_cpu(ice_buf_tbl->buf_count));
++
++	ice_post_pkg_dwnld_vlan_mode_cfg(hw);
++
++	return status;
+ }
+ 
+ /**
+@@ -1897,7 +2000,7 @@ void ice_init_prof_result_bm(struct ice_hw *hw)
+  *
+  * Frees a package buffer
+  */
+-static void ice_pkg_buf_free(struct ice_hw *hw, struct ice_buf_build *bld)
++void ice_pkg_buf_free(struct ice_hw *hw, struct ice_buf_build *bld)
+ {
+ 	devm_kfree(ice_hw_to_dev(hw), bld);
+ }
+@@ -1996,6 +2099,43 @@ ice_pkg_buf_alloc_section(struct ice_buf_build *bld, u32 type, u16 size)
+ 	return NULL;
+ }
+ 
++/**
++ * ice_pkg_buf_alloc_single_section
++ * @hw: pointer to the HW structure
++ * @type: the section type value
++ * @size: the size of the section to reserve (in bytes)
++ * @section: returns pointer to the section
++ *
++ * Allocates a package buffer with a single section.
++ * Note: all package contents must be in Little Endian form.
++ */
++struct ice_buf_build *
++ice_pkg_buf_alloc_single_section(struct ice_hw *hw, u32 type, u16 size,
++				 void **section)
++{
++	struct ice_buf_build *buf;
++
++	if (!section)
++		return NULL;
++
++	buf = ice_pkg_buf_alloc(hw);
++	if (!buf)
++		return NULL;
++
++	if (ice_pkg_buf_reserve_section(buf, 1))
++		goto ice_pkg_buf_alloc_single_section_err;
++
++	*section = ice_pkg_buf_alloc_section(buf, type, size);
++	if (!*section)
++		goto ice_pkg_buf_alloc_single_section_err;
++
++	return buf;
++
++ice_pkg_buf_alloc_single_section_err:
++	ice_pkg_buf_free(hw, buf);
++	return NULL;
++}
++
+ /**
+  * ice_pkg_buf_get_active_sections
+  * @bld: pointer to pkg build (allocated by ice_pkg_buf_alloc())
+@@ -2023,7 +2163,7 @@ static u16 ice_pkg_buf_get_active_sections(struct ice_buf_build *bld)
+  *
+  * Return a pointer to the buffer's header
+  */
+-static struct ice_buf *ice_pkg_buf(struct ice_buf_build *bld)
++struct ice_buf *ice_pkg_buf(struct ice_buf_build *bld)
+ {
+ 	if (!bld)
+ 		return NULL;
+@@ -2059,6 +2199,89 @@ ice_get_open_tunnel_port(struct ice_hw *hw, u16 *port,
+ 	return res;
+ }
+ 
++/**
++ * ice_upd_dvm_boost_entry
++ * @hw: pointer to the HW structure
++ * @entry: pointer to double vlan boost entry info
++ */
++static int
++ice_upd_dvm_boost_entry(struct ice_hw *hw, struct ice_dvm_entry *entry)
++{
++	struct ice_boost_tcam_section *sect_rx, *sect_tx;
++	int status = -ENOSPC;
++	struct ice_buf_build *bld;
++	u8 val, dc, nm;
++
++	bld = ice_pkg_buf_alloc(hw);
++	if (!bld)
++		return -ENOMEM;
++
++	/* allocate 2 sections, one for Rx parser, one for Tx parser */
++	if (ice_pkg_buf_reserve_section(bld, 2))
++		goto ice_upd_dvm_boost_entry_err;
++
++	sect_rx = ice_pkg_buf_alloc_section(bld, ICE_SID_RXPARSER_BOOST_TCAM,
++					    struct_size(sect_rx, tcam, 1));
++	if (!sect_rx)
++		goto ice_upd_dvm_boost_entry_err;
++	sect_rx->count = cpu_to_le16(1);
++
++	sect_tx = ice_pkg_buf_alloc_section(bld, ICE_SID_TXPARSER_BOOST_TCAM,
++					    struct_size(sect_tx, tcam, 1));
++	if (!sect_tx)
++		goto ice_upd_dvm_boost_entry_err;
++	sect_tx->count = cpu_to_le16(1);
++
++	/* copy original boost entry to update package buffer */
++	memcpy(sect_rx->tcam, entry->boost_entry, sizeof(*sect_rx->tcam));
++
++	/* re-write the don't care and never match bits accordingly */
++	if (entry->enable) {
++		/* all bits are don't care */
++		val = 0x00;
++		dc = 0xFF;
++		nm = 0x00;
++	} else {
++		/* disable, one never match bit, the rest are don't care */
++		val = 0x00;
++		dc = 0xF7;
++		nm = 0x08;
++	}
++
++	ice_set_key((u8 *)&sect_rx->tcam[0].key, sizeof(sect_rx->tcam[0].key),
++		    &val, NULL, &dc, &nm, 0, sizeof(u8));
++
++	/* exact copy of entry to Tx section entry */
++	memcpy(sect_tx->tcam, sect_rx->tcam, sizeof(*sect_tx->tcam));
++
++	status = ice_update_pkg_no_lock(hw, ice_pkg_buf(bld), 1);
++
++ice_upd_dvm_boost_entry_err:
++	ice_pkg_buf_free(hw, bld);
++
++	return status;
++}
++
++/**
++ * ice_set_dvm_boost_entries
++ * @hw: pointer to the HW structure
++ *
++ * Enable double vlan by updating the appropriate boost tcam entries.
++ */
++int ice_set_dvm_boost_entries(struct ice_hw *hw)
++{
++	int status;
++	u16 i;
++
++	for (i = 0; i < hw->dvm_upd.count; i++) {
++		status = ice_upd_dvm_boost_entry(hw, &hw->dvm_upd.tbl[i]);
++		if (status)
++			return status;
++	}
++
++	return 0;
++}
++
+ /**
+  * ice_tunnel_idx_to_entry - convert linear index to the sparse one
+  * @hw: pointer to the HW structure
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
+index 6cbc29bcb02f..2fd5312494c7 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
++++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
+@@ -89,6 +89,12 @@ ice_init_prof_result_bm(struct ice_hw *hw);
+ int
+ ice_get_sw_fv_list(struct ice_hw *hw, u8 *prot_ids, u16 ids_cnt,
+ 		   unsigned long *bm, struct list_head *fv_list);
++int
++ice_pkg_buf_unreserve_section(struct ice_buf_build *bld, u16 count);
++u16 ice_pkg_buf_get_free_space(struct ice_buf_build *bld);
++int
++ice_aq_upload_section(struct ice_hw *hw, struct ice_buf_hdr *pkg_buf,
++		      u16 buf_size, struct ice_sq_cd *cd);
+ bool
+ ice_get_open_tunnel_port(struct ice_hw *hw, u16 *port,
+ 			 enum ice_tunnel_type type);
+@@ -96,6 +102,7 @@ int ice_udp_tunnel_set_port(struct net_device *netdev, unsigned int table,
+ 			    unsigned int idx, struct udp_tunnel_info *ti);
+ int ice_udp_tunnel_unset_port(struct net_device *netdev, unsigned int table,
+ 			      unsigned int idx, struct udp_tunnel_info *ti);
++int ice_set_dvm_boost_entries(struct ice_hw *hw);
+ 
+ /* Rx parser PTYPE functions */
+ bool ice_hw_ptype_ena(struct ice_hw *hw, u16 ptype);
+@@ -119,4 +126,10 @@ void ice_fill_blk_tbls(struct ice_hw *hw);
+ void ice_clear_hw_tbls(struct ice_hw *hw);
+ void ice_free_hw_tbls(struct ice_hw *hw);
+ int ice_rem_prof(struct ice_hw *hw, enum ice_block blk, u64 id);
++struct ice_buf_build *
++ice_pkg_buf_alloc_single_section(struct ice_hw *hw, u32 type, u16 size,
++				 void **section);
++struct ice_buf *ice_pkg_buf(struct ice_buf_build *bld);
++void ice_pkg_buf_free(struct ice_hw *hw, struct ice_buf_build *bld);
++
+ #endif /* _ICE_FLEX_PIPE_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_type.h b/drivers/net/ethernet/intel/ice/ice_flex_type.h
+index fc087e0b5292..5735e9542a49 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_flex_type.h
+@@ -162,6 +162,7 @@ struct ice_meta_sect {
+ 
+ #define ICE_SID_RXPARSER_MARKER_PTYPE	55
+ #define ICE_SID_RXPARSER_BOOST_TCAM	56
++#define ICE_SID_RXPARSER_METADATA_INIT	58
+ #define ICE_SID_TXPARSER_BOOST_TCAM	66
+ 
+ #define ICE_SID_XLT0_PE			80
+@@ -442,6 +443,19 @@ struct ice_tunnel_table {
+ 	u16 valid_count[__TNL_TYPE_CNT];
+ };
+ 
++struct ice_dvm_entry {
++	u16 boost_addr;
++	u16 enable;
++	struct ice_boost_tcam_entry *boost_entry;
++};
++
++#define ICE_DVM_MAX_ENTRIES	48
++
++struct ice_dvm_table {
++	struct ice_dvm_entry tbl[ICE_DVM_MAX_ENTRIES];
++	u16 count;
++};
++
+ struct ice_pkg_es {
+ 	__le16 count;
+ 	__le16 offset;
+@@ -662,4 +676,30 @@ enum ice_prof_type {
+ 	ICE_PROF_TUN_ALL = 0x6,
+ 	ICE_PROF_ALL = 0xFF,
+ };
++
++/* Number of bits/bytes contained in meta init entry. Note, this should be a
++ * multiple of 32 bits.
++ */
++#define ICE_META_INIT_BITS	192
++#define ICE_META_INIT_DW_CNT	(ICE_META_INIT_BITS / (sizeof(__le32) * \
++				 BITS_PER_BYTE))
++
++/* The meta init Flag field starts at this bit */
++#define ICE_META_FLAGS_ST		123
++
++/* The entry and bit to check for Double VLAN Mode (DVM) support */
++#define ICE_META_VLAN_MODE_ENTRY	0
++#define ICE_META_FLAG_VLAN_MODE		60
++#define ICE_META_VLAN_MODE_BIT		(ICE_META_FLAGS_ST + \
++					 ICE_META_FLAG_VLAN_MODE)
++
++struct ice_meta_init_entry {
++	__le32 bm[ICE_META_INIT_DW_CNT];
++};
++
++struct ice_meta_init_section {
++	__le16 count;
++	__le16 offset;
++	struct ice_meta_init_entry entry;
++};
+ #endif /* _ICE_FLEX_TYPE_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index a1497c809cf3..15534827aa12 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -3547,12 +3547,17 @@ static int ice_tc_indir_block_register(struct ice_vsi *vsi)
+ static int ice_setup_pf_sw(struct ice_pf *pf)
+ {
+ 	struct device *dev = ice_pf_to_dev(pf);
++	bool dvm = ice_is_dvm_ena(&pf->hw);
+ 	struct ice_vsi *vsi;
+ 	int status;
+ 
+ 	if (ice_is_reset_in_progress(pf->state))
+ 		return -EBUSY;
+ 
++	status = ice_aq_set_port_params(pf->hw.port_info, dvm, NULL);
++	if (status)
++		return -EIO;
++
+ 	vsi = ice_pf_vsi_setup(pf, pf->hw.port_info);
+ 	if (!vsi)
+ 		return -ENOMEM;
+@@ -6634,6 +6639,7 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+ {
+ 	struct device *dev = ice_pf_to_dev(pf);
+ 	struct ice_hw *hw = &pf->hw;
++	bool dvm;
+ 	int err;
+ 
+ 	if (test_bit(ICE_DOWN, pf->state))
+@@ -6697,6 +6703,12 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+ 		goto err_init_ctrlq;
+ 	}
+ 
++	dvm = ice_is_dvm_ena(hw);
++
++	err = ice_aq_set_port_params(pf->hw.port_info, dvm, NULL);
++	if (err)
++		goto err_init_ctrlq;
++
+ 	err = ice_sched_init_port(hw->port_info);
+ 	if (err)
+ 		goto err_sched_init_port;
+diff --git a/drivers/net/ethernet/intel/ice/ice_pf_vsi_vlan_ops.c b/drivers/net/ethernet/intel/ice/ice_pf_vsi_vlan_ops.c
+index b00360ca6e92..976a03d3bdd5 100644
+--- a/drivers/net/ethernet/intel/ice/ice_pf_vsi_vlan_ops.c
++++ b/drivers/net/ethernet/intel/ice/ice_pf_vsi_vlan_ops.c
+@@ -3,6 +3,7 @@
+ 
+ #include "ice_vsi_vlan_ops.h"
+ #include "ice_vsi_vlan_lib.h"
++#include "ice_vlan_mode.h"
+ #include "ice.h"
+ #include "ice_pf_vsi_vlan_ops.h"
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
+index 4213855f7961..4143728a1919 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.c
++++ b/drivers/net/ethernet/intel/ice/ice_switch.c
+@@ -1096,6 +1096,64 @@ ice_aq_get_recipe(struct ice_hw *hw,
+ 	return status;
+ }
+ 
++/**
++ * ice_update_recipe_lkup_idx - update a default recipe based on the lkup_idx
++ * @hw: pointer to the HW struct
++ * @params: parameters used to update the default recipe
++ *
++ * This function only supports updating default recipes and it only supports
++ * updating a single recipe based on the lkup_idx at a time.
++ *
++ * This is done as a read-modify-write operation. First, get the current recipe
++ * contents based on the recipe's ID. Then modify the field vector index and
++ * mask if it's valid at the lkup_idx. Finally, use the add recipe AQ to update
++ * the pre-existing recipe with the modifications.
++ */
++int
++ice_update_recipe_lkup_idx(struct ice_hw *hw,
++			   struct ice_update_recipe_lkup_idx_params *params)
++{
++	struct ice_aqc_recipe_data_elem *rcp_list;
++	u16 num_recps = ICE_MAX_NUM_RECIPES;
++	int status;
++
++	rcp_list = kcalloc(num_recps, sizeof(*rcp_list), GFP_KERNEL);
++	if (!rcp_list)
++		return -ENOMEM;
++
++	/* read current recipe list from firmware */
++	rcp_list->recipe_indx = params->rid;
++	status = ice_aq_get_recipe(hw, rcp_list, &num_recps, params->rid, NULL);
++	if (status) {
++		ice_debug(hw, ICE_DBG_SW, "Failed to get recipe %d, status %d\n",
++			  params->rid, status);
++		goto error_out;
++	}
++
++	/* only modify existing recipe's lkup_idx and mask if valid, while
++	 * leaving all other fields the same, then update the recipe firmware
++	 */
++	rcp_list->content.lkup_indx[params->lkup_idx] = params->fv_idx;
++	if (params->mask_valid)
++		rcp_list->content.mask[params->lkup_idx] =
++			cpu_to_le16(params->mask);
++
++	if (params->ignore_valid)
++		rcp_list->content.lkup_indx[params->lkup_idx] |=
++			ICE_AQ_RECIPE_LKUP_IGNORE;
++
++	status = ice_aq_add_recipe(hw, &rcp_list[0], 1, NULL);
++	if (status)
++		ice_debug(hw, ICE_DBG_SW, "Failed to update recipe %d lkup_idx %d fv_idx %d mask %d mask_valid %s, status %d\n",
++			  params->rid, params->lkup_idx, params->fv_idx,
++			  params->mask, params->mask_valid ? "true" : "false",
++			  status);
++
++error_out:
++	kfree(rcp_list);
++	return status;
++}
++
+ /**
+  * ice_aq_map_recipe_to_profile - Map recipe to packet profile
+  * @hw: pointer to the HW struct
+@@ -3872,6 +3930,23 @@ ice_find_recp(struct ice_hw *hw, struct ice_prot_lkup_ext *lkup_exts,
+ 	return ICE_MAX_NUM_RECIPES;
+ }
+ 
++/**
++ * ice_change_proto_id_to_dvm - change proto id in prot_id_tbl
++ *
++ * As protocol id for outer vlan is different in dvm and svm, if dvm is
++ * supported protocol array record for outer vlan has to be modified to
++ * reflect the value proper for DVM.
++ */
++void ice_change_proto_id_to_dvm(void)
++{
++	u8 i;
++
++	for (i = 0; i < ARRAY_SIZE(ice_prot_id_tbl); i++)
++		if (ice_prot_id_tbl[i].type == ICE_VLAN_OFOS &&
++		    ice_prot_id_tbl[i].protocol_id != ICE_VLAN_OF_HW)
++			ice_prot_id_tbl[i].protocol_id = ICE_VLAN_OF_HW;
++}
++
+ /**
+  * ice_prot_type_to_id - get protocol ID from protocol type
+  * @type: protocol type
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
+index 5000cc8276cd..7b42c51a3eb0 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.h
++++ b/drivers/net/ethernet/intel/ice/ice_switch.h
+@@ -118,6 +118,15 @@ struct ice_fltr_info {
+ 	u8 lan_en;	/* Indicate if packet can be forwarded to the uplink */
+ };
+ 
++struct ice_update_recipe_lkup_idx_params {
++	u16 rid;
++	u16 fv_idx;
++	bool ignore_valid;
++	u16 mask;
++	bool mask_valid;
++	u8 lkup_idx;
++};
++
+ struct ice_adv_lkup_elem {
+ 	enum ice_protocol_type type;
+ 	union ice_prot_hdr h_u;	/* Header values */
+@@ -360,4 +369,8 @@ void ice_rm_all_sw_replay_rule_info(struct ice_hw *hw);
+ int
+ ice_aq_sw_rules(struct ice_hw *hw, void *rule_list, u16 rule_list_sz,
+ 		u8 num_rules, enum ice_adminq_opc opc, struct ice_sq_cd *cd);
++int
++ice_update_recipe_lkup_idx(struct ice_hw *hw,
++			   struct ice_update_recipe_lkup_idx_params *params);
++void ice_change_proto_id_to_dvm(void);
+ #endif /* _ICE_SWITCH_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index d27f96f45079..28fcab26b868 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -15,6 +15,7 @@
+ #include "ice_flex_type.h"
+ #include "ice_protocol_type.h"
+ #include "ice_sbq_cmd.h"
++#include "ice_vlan_mode.h"
+ 
+ static inline bool ice_is_tc_ena(unsigned long bitmap, u8 tc)
+ {
+@@ -54,6 +55,11 @@ static inline u32 ice_round_to_num(u32 N, u32 R)
+ #define ICE_DBG_AQ_DESC		BIT_ULL(25)
+ #define ICE_DBG_AQ_DESC_BUF	BIT_ULL(26)
+ #define ICE_DBG_AQ_CMD		BIT_ULL(27)
++#define ICE_DBG_AQ		(ICE_DBG_AQ_MSG		| \
++				 ICE_DBG_AQ_DESC	| \
++				 ICE_DBG_AQ_DESC_BUF	| \
++				 ICE_DBG_AQ_CMD)
++
+ #define ICE_DBG_USER		BIT_ULL(31)
+ 
+ enum ice_aq_res_ids {
+@@ -920,6 +926,9 @@ struct ice_hw {
+ 	struct udp_tunnel_nic_shared udp_tunnel_shared;
+ 	struct udp_tunnel_nic_info udp_tunnel_nic;
+ 
++	/* dvm boost update information */
++	struct ice_dvm_table dvm_upd;
++
+ 	/* HW block tables */
+ 	struct ice_blk_info blk[ICE_BLK_COUNT];
+ 	struct mutex fl_profs_locks[ICE_BLK_COUNT];	/* lock fltr profiles */
+@@ -943,6 +952,7 @@ struct ice_hw {
+ 	struct list_head rss_list_head;
+ 	struct ice_mbx_snapshot mbx_snapshot;
+ 	DECLARE_BITMAP(hw_ptype, ICE_FLOW_PTYPE_MAX);
++	u8 dvm_ena;
+ 	u16 io_expander_handle;
+ };
+ 
 diff --git a/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c b/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c
-index 741b041606a2..d89577843d68 100644
+index d89577843d68..4be29f97365c 100644
 --- a/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c
 +++ b/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c
-@@ -14,9 +14,20 @@ noop_vlan_arg(struct ice_vsi __always_unused *vsi,
- 	return 0;
- }
+@@ -3,6 +3,7 @@
  
+ #include "ice_vsi_vlan_ops.h"
+ #include "ice_vsi_vlan_lib.h"
++#include "ice_vlan_mode.h"
+ #include "ice.h"
+ #include "ice_vf_vsi_vlan_ops.h"
+ #include "ice_virtchnl_pf.h"
+diff --git a/drivers/net/ethernet/intel/ice/ice_vlan_mode.c b/drivers/net/ethernet/intel/ice/ice_vlan_mode.c
+new file mode 100644
+index 000000000000..1b618de592b7
+--- /dev/null
++++ b/drivers/net/ethernet/intel/ice/ice_vlan_mode.c
+@@ -0,0 +1,439 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2019-2021, Intel Corporation. */
++
++#include "ice_common.h"
++
++/**
++ * ice_pkg_get_supported_vlan_mode - determine if DDP supports Double VLAN mode
++ * @hw: pointer to the HW struct
++ * @dvm: output variable to determine if DDP supports DVM(true) or SVM(false)
++ */
 +static int
-+noop_vlan(struct ice_vsi __always_unused *vsi)
++ice_pkg_get_supported_vlan_mode(struct ice_hw *hw, bool *dvm)
 +{
-+	return 0;
-+}
++	u16 meta_init_size = sizeof(struct ice_meta_init_section);
++	struct ice_meta_init_section *sect;
++	struct ice_buf_build *bld;
++	int status;
 +
- /**
-  * ice_vf_vsi_init_vlan_ops - Initialize default VSI VLAN ops for VF VSI
-  * @vsi: VF's VSI being configured
-+ *
-+ * If Double VLAN Mode (DVM) is enabled, assume that the VF supports the new
-+ * VIRTCHNL_VF_VLAN_OFFLOAD_V2 capability and set up the VLAN ops accordingly.
-+ * If SVM is enabled maintain the same level of VLAN support previous to
-+ * VIRTCHNL_VF_VLAN_OFFLOAD_V2.
-  */
- void ice_vf_vsi_init_vlan_ops(struct ice_vsi *vsi)
- {
-@@ -44,6 +55,20 @@ void ice_vf_vsi_init_vlan_ops(struct ice_vsi *vsi)
- 			vlan_ops = &vsi->inner_vlan_ops;
- 			vlan_ops->add_vlan = noop_vlan_arg;
- 			vlan_ops->del_vlan = noop_vlan_arg;
-+			vlan_ops->ena_stripping = ice_vsi_ena_inner_stripping;
-+			vlan_ops->dis_stripping = ice_vsi_dis_inner_stripping;
-+			vlan_ops->ena_insertion = ice_vsi_ena_inner_insertion;
-+			vlan_ops->dis_insertion = ice_vsi_dis_inner_insertion;
-+		} else {
-+			vlan_ops->del_vlan = ice_vsi_del_vlan;
-+			vlan_ops->ena_stripping = ice_vsi_ena_outer_stripping;
-+			vlan_ops->dis_stripping = ice_vsi_dis_outer_stripping;
-+			vlan_ops->ena_insertion = ice_vsi_ena_outer_insertion;
-+			vlan_ops->dis_insertion = ice_vsi_dis_outer_insertion;
++	/* if anything fails, we assume there is no DVM support */
++	*dvm = false;
 +
-+			/* setup inner VLAN ops */
-+			vlan_ops = &vsi->inner_vlan_ops;
++	bld = ice_pkg_buf_alloc_single_section(hw,
++					       ICE_SID_RXPARSER_METADATA_INIT,
++					       meta_init_size, (void **)&sect);
++	if (!bld)
++		return -ENOMEM;
 +
- 			vlan_ops->ena_stripping = ice_vsi_ena_inner_stripping;
- 			vlan_ops->dis_stripping = ice_vsi_dis_inner_stripping;
- 			vlan_ops->ena_insertion = ice_vsi_ena_inner_insertion;
-@@ -70,3 +95,93 @@ void ice_vf_vsi_init_vlan_ops(struct ice_vsi *vsi)
- 		}
- 	}
- }
++	/* only need to read a single section */
++	sect->count = cpu_to_le16(1);
++	sect->offset = cpu_to_le16(ICE_META_VLAN_MODE_ENTRY);
 +
-+/**
-+ * ice_vf_vsi_cfg_dvm_legacy_vlan_mode - Config VLAN mode for old VFs in DVM
-+ * @vsi: VF's VSI being configured
-+ *
-+ * This should only be called when Double VLAN Mode (DVM) is enabled, there
-+ * is not a port VLAN enabled on this VF, and the VF negotiates
-+ * VIRTCHNL_VF_OFFLOAD_VLAN.
-+ *
-+ * This function sets up the VF VSI's inner and outer ice_vsi_vlan_ops and also
-+ * initializes software only VLAN mode (i.e. allow all VLANs). Also, use no-op
-+ * implementations for any functions that may be called during the lifetime of
-+ * the VF so these methods do nothing and succeed.
-+ */
-+void ice_vf_vsi_cfg_dvm_legacy_vlan_mode(struct ice_vsi *vsi)
-+{
-+	struct ice_vf *vf = &vsi->back->vf[vsi->vf_id];
-+	struct device *dev = ice_pf_to_dev(vf->pf);
-+	struct ice_vsi_vlan_ops *vlan_ops;
++	status = ice_aq_upload_section(hw,
++				       (struct ice_buf_hdr *)ice_pkg_buf(bld),
++				       ICE_PKG_BUF_SIZE, NULL);
++	if (!status) {
++		DECLARE_BITMAP(entry, ICE_META_INIT_BITS);
++		u32 arr[ICE_META_INIT_DW_CNT];
++		u16 i;
 +
-+	if (!ice_is_dvm_ena(&vsi->back->hw) || ice_vf_is_port_vlan_ena(vf))
-+		return;
++		/* convert to host bitmap format */
++		for (i = 0; i < ICE_META_INIT_DW_CNT; i++)
++			arr[i] = le32_to_cpu(sect->entry.bm[i]);
 +
-+	vlan_ops = &vsi->outer_vlan_ops;
++		bitmap_from_arr32(entry, arr, (u16)ICE_META_INIT_BITS);
 +
-+	/* Rx VLAN filtering always disabled to allow software offloaded VLANs
-+	 * for VFs that only support VIRTCHNL_VF_OFFLOAD_VLAN and don't have a
-+	 * port VLAN configured
-+	 */
-+	vlan_ops->dis_rx_filtering = ice_vsi_dis_rx_vlan_filtering;
-+	/* Don't fail when attempting to enable Rx VLAN filtering */
-+	vlan_ops->ena_rx_filtering = noop_vlan;
++		/* check if DVM is supported */
++		*dvm = test_bit(ICE_META_VLAN_MODE_BIT, entry);
++	}
 +
-+	/* Tx VLAN filtering always disabled to allow software offloaded VLANs
-+	 * for VFs that only support VIRTCHNL_VF_OFFLOAD_VLAN and don't have a
-+	 * port VLAN configured
-+	 */
-+	vlan_ops->dis_tx_filtering = ice_vsi_dis_tx_vlan_filtering;
-+	/* Don't fail when attempting to enable Tx VLAN filtering */
-+	vlan_ops->ena_tx_filtering = noop_vlan;
++	ice_pkg_buf_free(hw, bld);
 +
-+	if (vlan_ops->dis_rx_filtering(vsi))
-+		dev_dbg(dev, "Failed to disable Rx VLAN filtering for old VF without VIRTCHNL_VF_OFFLOAD_VLAN_V2 support\n");
-+	if (vlan_ops->dis_tx_filtering(vsi))
-+		dev_dbg(dev, "Failed to disable Tx VLAN filtering for old VF without VIRTHCNL_VF_OFFLOAD_VLAN_V2 support\n");
-+
-+	/* All outer VLAN offloads must be disabled */
-+	vlan_ops->dis_stripping = ice_vsi_dis_outer_stripping;
-+	vlan_ops->dis_insertion = ice_vsi_dis_outer_insertion;
-+
-+	if (vlan_ops->dis_stripping(vsi))
-+		dev_dbg(dev, "Failed to disable outer VLAN stripping for old VF without VIRTCHNL_VF_OFFLOAD_VLAN_V2 support\n");
-+
-+	if (vlan_ops->dis_insertion(vsi))
-+		dev_dbg(dev, "Failed to disable outer VLAN insertion for old VF without VIRTCHNL_VF_OFFLOAD_VLAN_V2 support\n");
-+
-+	/* All inner VLAN offloads must be disabled */
-+	vlan_ops = &vsi->inner_vlan_ops;
-+
-+	vlan_ops->dis_stripping = ice_vsi_dis_outer_stripping;
-+	vlan_ops->dis_insertion = ice_vsi_dis_outer_insertion;
-+
-+	if (vlan_ops->dis_stripping(vsi))
-+		dev_dbg(dev, "Failed to disable inner VLAN stripping for old VF without VIRTCHNL_VF_OFFLOAD_VLAN_V2 support\n");
-+
-+	if (vlan_ops->dis_insertion(vsi))
-+		dev_dbg(dev, "Failed to disable inner VLAN insertion for old VF without VIRTCHNL_VF_OFFLOAD_VLAN_V2 support\n");
++	return status;
 +}
 +
 +/**
-+ * ice_vf_vsi_cfg_svm_legacy_vlan_mode - Config VLAN mode for old VFs in SVM
-+ * @vsi: VF's VSI being configured
++ * ice_aq_get_vlan_mode - get the VLAN mode of the device
++ * @hw: pointer to the HW structure
++ * @get_params: structure FW fills in based on the current VLAN mode config
 + *
-+ * This should only be called when Single VLAN Mode (SVM) is enabled, there is
-+ * not a port VLAN enabled on this VF, and the VF negotiates
-+ * VIRTCHNL_VF_OFFLOAD_VLAN.
-+ *
-+ * All of the normal SVM VLAN ops are identical for this case. However, by
-+ * default Rx VLAN filtering should be turned off by default in this case.
++ * Get VLAN Mode Parameters (0x020D)
 + */
-+void ice_vf_vsi_cfg_svm_legacy_vlan_mode(struct ice_vsi *vsi)
++static int
++ice_aq_get_vlan_mode(struct ice_hw *hw,
++		     struct ice_aqc_get_vlan_mode *get_params)
 +{
-+	struct ice_vf *vf = &vsi->back->vf[vsi->vf_id];
++	struct ice_aq_desc desc;
 +
-+	if (ice_is_dvm_ena(&vsi->back->hw) || ice_vf_is_port_vlan_ena(vf))
-+		return;
++	if (!get_params)
++		return -EINVAL;
 +
-+	if (vsi->inner_vlan_ops.dis_rx_filtering(vsi))
-+		dev_dbg(ice_pf_to_dev(vf->pf), "Failed to disable Rx VLAN filtering for old VF with VIRTCHNL_VF_OFFLOAD_VLAN support\n");
++	ice_fill_dflt_direct_cmd_desc(&desc,
++				      ice_aqc_opc_get_vlan_mode_parameters);
++
++	return ice_aq_send_cmd(hw, &desc, get_params, sizeof(*get_params),
++			       NULL);
 +}
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.h b/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.h
-index 8ea13628a5e1..875a4e615f39 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.h
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.h
-@@ -8,6 +8,9 @@
- 
- struct ice_vsi;
- 
-+void ice_vf_vsi_cfg_dvm_legacy_vlan_mode(struct ice_vsi *vsi);
-+void ice_vf_vsi_cfg_svm_legacy_vlan_mode(struct ice_vsi *vsi);
 +
- #ifdef CONFIG_PCI_IOV
- void ice_vf_vsi_init_vlan_ops(struct ice_vsi *vsi);
- #else
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_allowlist.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_allowlist.c
-index 9feebe5f556c..5a82216e7d03 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_allowlist.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_allowlist.c
-@@ -55,6 +55,15 @@ static const u32 vlan_allowlist_opcodes[] = {
- 	VIRTCHNL_OP_ENABLE_VLAN_STRIPPING, VIRTCHNL_OP_DISABLE_VLAN_STRIPPING,
- };
- 
-+/* VIRTCHNL_VF_OFFLOAD_VLAN_V2 */
-+static const u32 vlan_v2_allowlist_opcodes[] = {
-+	VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS, VIRTCHNL_OP_ADD_VLAN_V2,
-+	VIRTCHNL_OP_DEL_VLAN_V2, VIRTCHNL_OP_ENABLE_VLAN_STRIPPING_V2,
-+	VIRTCHNL_OP_DISABLE_VLAN_STRIPPING_V2,
-+	VIRTCHNL_OP_ENABLE_VLAN_INSERTION_V2,
-+	VIRTCHNL_OP_DISABLE_VLAN_INSERTION_V2,
++/**
++ * ice_aq_is_dvm_ena - query FW to check if double VLAN mode is enabled
++ * @hw: pointer to the HW structure
++ *
++ * Returns true if the hardware/firmware is configured in double VLAN mode,
++ * else return false signaling that the hardware/firmware is configured in
++ * single VLAN mode.
++ *
++ * Also, return false if this call fails for any reason (i.e. firmware doesn't
++ * support this AQ call).
++ */
++static bool ice_aq_is_dvm_ena(struct ice_hw *hw)
++{
++	struct ice_aqc_get_vlan_mode get_params = { 0 };
++	int status;
++
++	status = ice_aq_get_vlan_mode(hw, &get_params);
++	if (status) {
++		ice_debug(hw, ICE_DBG_AQ, "Failed to get VLAN mode, status %d\n",
++			  status);
++		return false;
++	}
++
++	return (get_params.vlan_mode & ICE_AQ_VLAN_MODE_DVM_ENA);
++}
++
++/**
++ * ice_is_dvm_ena - check if double VLAN mode is enabled
++ * @hw: pointer to the HW structure
++ *
++ * The device is configured in single or double VLAN mode on initialization and
++ * this cannot be dynamically changed during runtime. Based on this there is no
++ * need to make an AQ call every time the driver needs to know the VLAN mode.
++ * Instead, use the cached VLAN mode.
++ */
++bool ice_is_dvm_ena(struct ice_hw *hw)
++{
++	return hw->dvm_ena;
++}
++
++/**
++ * ice_cache_vlan_mode - cache VLAN mode after DDP is downloaded
++ * @hw: pointer to the HW structure
++ *
++ * This is only called after downloading the DDP and after the global
++ * configuration lock has been released because all ports on a device need to
++ * cache the VLAN mode.
++ */
++static void ice_cache_vlan_mode(struct ice_hw *hw)
++{
++	hw->dvm_ena = ice_aq_is_dvm_ena(hw) ? true : false;
++}
++
++/**
++ * ice_pkg_supports_dvm - find out if DDP supports DVM
++ * @hw: pointer to the HW structure
++ */
++static bool ice_pkg_supports_dvm(struct ice_hw *hw)
++{
++	bool pkg_supports_dvm;
++	int status;
++
++	status = ice_pkg_get_supported_vlan_mode(hw, &pkg_supports_dvm);
++	if (status) {
++		ice_debug(hw, ICE_DBG_PKG, "Failed to get supported VLAN mode, status %d\n",
++			  status);
++		return false;
++	}
++
++	return pkg_supports_dvm;
++}
++
++/**
++ * ice_fw_supports_dvm - find out if FW supports DVM
++ * @hw: pointer to the HW structure
++ */
++static bool ice_fw_supports_dvm(struct ice_hw *hw)
++{
++	struct ice_aqc_get_vlan_mode get_vlan_mode = { 0 };
++	int status;
++
++	/* If firmware returns success, then it supports DVM, else it only
++	 * supports SVM
++	 */
++	status = ice_aq_get_vlan_mode(hw, &get_vlan_mode);
++	if (status) {
++		ice_debug(hw, ICE_DBG_NVM, "Failed to get VLAN mode, status %d\n",
++			  status);
++		return false;
++	}
++
++	return true;
++}
++
++/**
++ * ice_is_dvm_supported - check if Double VLAN Mode is supported
++ * @hw: pointer to the hardware structure
++ *
++ * Returns true if Double VLAN Mode (DVM) is supported and false if only Single
++ * VLAN Mode (SVM) is supported. In order for DVM to be supported the DDP and
++ * firmware must support it, otherwise only SVM is supported. This function
++ * should only be called while the global config lock is held and after the
++ * package has been successfully downloaded.
++ */
++static bool ice_is_dvm_supported(struct ice_hw *hw)
++{
++	if (!ice_pkg_supports_dvm(hw)) {
++		ice_debug(hw, ICE_DBG_PKG, "DDP doesn't support DVM\n");
++		return false;
++	}
++
++	if (!ice_fw_supports_dvm(hw)) {
++		ice_debug(hw, ICE_DBG_PKG, "FW doesn't support DVM\n");
++		return false;
++	}
++
++	return true;
++}
++
++#define ICE_EXTERNAL_VLAN_ID_FV_IDX			11
++#define ICE_SW_LKUP_VLAN_LOC_LKUP_IDX			1
++#define ICE_SW_LKUP_VLAN_PKT_FLAGS_LKUP_IDX		2
++#define ICE_SW_LKUP_PROMISC_VLAN_LOC_LKUP_IDX		2
++#define ICE_PKT_FLAGS_0_TO_15_FV_IDX			1
++#define ICE_PKT_FLAGS_0_TO_15_VLAN_FLAGS_MASK		0xD000
++static struct ice_update_recipe_lkup_idx_params ice_dvm_dflt_recipes[] = {
++	{
++		/* Update recipe ICE_SW_LKUP_VLAN to filter based on the
++		 * outer/single VLAN in DVM
++		 */
++		.rid = ICE_SW_LKUP_VLAN,
++		.fv_idx = ICE_EXTERNAL_VLAN_ID_FV_IDX,
++		.ignore_valid = true,
++		.mask = 0,
++		.mask_valid = false, /* use pre-existing mask */
++		.lkup_idx = ICE_SW_LKUP_VLAN_LOC_LKUP_IDX,
++	},
++	{
++		/* Update recipe ICE_SW_LKUP_VLAN to filter based on the VLAN
++		 * packet flags to support VLAN filtering on multiple VLAN
++		 * ethertypes (i.e. 0x8100 and 0x88a8) in DVM
++		 */
++		.rid = ICE_SW_LKUP_VLAN,
++		.fv_idx = ICE_PKT_FLAGS_0_TO_15_FV_IDX,
++		.ignore_valid = false,
++		.mask = ICE_PKT_FLAGS_0_TO_15_VLAN_FLAGS_MASK,
++		.mask_valid = true,
++		.lkup_idx = ICE_SW_LKUP_VLAN_PKT_FLAGS_LKUP_IDX,
++	},
++	{
++		/* Update recipe ICE_SW_LKUP_PROMISC_VLAN to filter based on the
++		 * outer/single VLAN in DVM
++		 */
++		.rid = ICE_SW_LKUP_PROMISC_VLAN,
++		.fv_idx = ICE_EXTERNAL_VLAN_ID_FV_IDX,
++		.ignore_valid = true,
++		.mask = 0,
++		.mask_valid = false,  /* use pre-existing mask */
++		.lkup_idx = ICE_SW_LKUP_PROMISC_VLAN_LOC_LKUP_IDX,
++	},
 +};
 +
- /* VIRTCHNL_VF_OFFLOAD_RSS_PF */
- static const u32 rss_pf_allowlist_opcodes[] = {
- 	VIRTCHNL_OP_CONFIG_RSS_KEY, VIRTCHNL_OP_CONFIG_RSS_LUT,
-@@ -89,6 +98,7 @@ static const struct allowlist_opcode_info allowlist_opcodes[] = {
- 	ALLOW_ITEM(VIRTCHNL_VF_OFFLOAD_RSS_PF, rss_pf_allowlist_opcodes),
- 	ALLOW_ITEM(VIRTCHNL_VF_OFFLOAD_ADV_RSS_PF, adv_rss_pf_allowlist_opcodes),
- 	ALLOW_ITEM(VIRTCHNL_VF_OFFLOAD_FDIR_PF, fdir_pf_allowlist_opcodes),
-+	ALLOW_ITEM(VIRTCHNL_VF_OFFLOAD_VLAN_V2, vlan_v2_allowlist_opcodes),
- };
- 
- /**
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index e63e0664e44b..68a515a87be7 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -11,6 +11,7 @@
- #include "ice_virtchnl_allowlist.h"
- #include "ice_flex_pipe.h"
- #include "ice_vf_vsi_vlan_ops.h"
-+#include "ice_vlan.h"
- 
- #define FIELD_SELECTOR(proto_hdr_field) \
- 		BIT((proto_hdr_field) & PROTO_HDR_FIELD_MASK)
-@@ -1460,6 +1461,7 @@ static void ice_vf_set_initialized(struct ice_vf *vf)
- 	clear_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states);
- 	clear_bit(ICE_VF_STATE_DIS, vf->vf_states);
- 	set_bit(ICE_VF_STATE_INIT, vf->vf_states);
-+	memset(&vf->vlan_v2_caps, 0, sizeof(vf->vlan_v2_caps));
- }
- 
- /**
-@@ -2349,8 +2351,33 @@ static int ice_vc_get_vf_res_msg(struct ice_vf *vf, u8 *msg)
- 		goto err;
- 	}
- 
--	if (!ice_vf_is_port_vlan_ena(vf))
--		vfres->vf_cap_flags |= VIRTCHNL_VF_OFFLOAD_VLAN;
-+	if (vf->driver_caps & VIRTCHNL_VF_OFFLOAD_VLAN_V2) {
-+		/* VLAN offloads based on current device configuration */
-+		vfres->vf_cap_flags |= VIRTCHNL_VF_OFFLOAD_VLAN_V2;
-+	} else if (vf->driver_caps & VIRTCHNL_VF_OFFLOAD_VLAN) {
-+		/* allow VF to negotiate VIRTCHNL_VF_OFFLOAD explicitly for
-+		 * these two conditions, which amounts to guest VLAN filtering
-+		 * and offloads being based on the inner VLAN or the
-+		 * inner/single VLAN respectively and don't allow VF to
-+		 * negotiate VIRTCHNL_VF_OFFLOAD in any other cases
-+		 */
-+		if (ice_is_dvm_ena(&pf->hw) && ice_vf_is_port_vlan_ena(vf)) {
-+			vfres->vf_cap_flags |= VIRTCHNL_VF_OFFLOAD_VLAN;
-+		} else if (!ice_is_dvm_ena(&pf->hw) &&
-+			   !ice_vf_is_port_vlan_ena(vf)) {
-+			vfres->vf_cap_flags |= VIRTCHNL_VF_OFFLOAD_VLAN;
-+			/* configure backward compatible support for VFs that
-+			 * only support VIRTCHNL_VF_OFFLOAD_VLAN, the PF is
-+			 * configured in SVM, and no port VLAN is configured
-+			 */
-+			ice_vf_vsi_cfg_svm_legacy_vlan_mode(vsi);
-+		} else if (ice_is_dvm_ena(&pf->hw)) {
-+			/* configure software offloaded VLAN support when DVM
-+			 * is enabled, but no port VLAN is enabled
-+			 */
-+			ice_vf_vsi_cfg_dvm_legacy_vlan_mode(vsi);
++/**
++ * ice_dvm_update_dflt_recipes - update default switch recipes in DVM
++ * @hw: hardware structure used to update the recipes
++ */
++static int ice_dvm_update_dflt_recipes(struct ice_hw *hw)
++{
++	unsigned long i;
++
++	for (i = 0; i < ARRAY_SIZE(ice_dvm_dflt_recipes); i++) {
++		struct ice_update_recipe_lkup_idx_params *params;
++		int status;
++
++		params = &ice_dvm_dflt_recipes[i];
++
++		status = ice_update_recipe_lkup_idx(hw, params);
++		if (status) {
++			ice_debug(hw, ICE_DBG_INIT, "Failed to update RID %d lkup_idx %d fv_idx %d mask_valid %s mask 0x%04x\n",
++				  params->rid, params->lkup_idx, params->fv_idx,
++				  params->mask_valid ? "true" : "false",
++				  params->mask);
++			return status;
 +		}
 +	}
- 
- 	if (vf->driver_caps & VIRTCHNL_VF_OFFLOAD_RSS_PF) {
- 		vfres->vf_cap_flags |= VIRTCHNL_VF_OFFLOAD_RSS_PF;
-@@ -4176,6 +4203,62 @@ static bool ice_vf_vlan_offload_ena(u32 caps)
- 	return !!(caps & VIRTCHNL_VF_OFFLOAD_VLAN);
- }
- 
-+/**
-+ * ice_is_vlan_promisc_allowed - check if VLAN promiscuous config is allowed
-+ * @vf: VF used to determine if VLAN promiscuous config is allowed
-+ */
-+static bool ice_is_vlan_promisc_allowed(struct ice_vf *vf)
-+{
-+	if ((test_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states) ||
-+	     test_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states)) &&
-+	    test_bit(ICE_FLAG_VF_TRUE_PROMISC_ENA, vf->pf->flags))
-+		return true;
-+
-+	return false;
-+}
-+
-+/**
-+ * ice_vf_ena_vlan_promisc - Enable Tx/Rx VLAN promiscuous for the VLAN
-+ * @vsi: VF's VSI used to enable VLAN promiscuous mode
-+ * @vlan: VLAN used to enable VLAN promiscuous
-+ *
-+ * This function should only be called if VLAN promiscuous mode is allowed,
-+ * which can be determined via ice_is_vlan_promisc_allowed().
-+ */
-+static int ice_vf_ena_vlan_promisc(struct ice_vsi *vsi, struct ice_vlan *vlan)
-+{
-+	u8 promisc_m = ICE_PROMISC_VLAN_TX | ICE_PROMISC_VLAN_RX;
-+	int status;
-+
-+	status = ice_fltr_set_vsi_promisc(&vsi->back->hw, vsi->idx, promisc_m,
-+					  vlan->vid);
-+	if (status && status != -EEXIST)
-+		return status;
 +
 +	return 0;
 +}
 +
 +/**
-+ * ice_vf_dis_vlan_promisc - Disable Tx/Rx VLAN promiscuous for the VLAN
-+ * @vsi: VF's VSI used to disable VLAN promiscuous mode for
-+ * @vlan: VLAN used to disable VLAN promiscuous
++ * ice_aq_set_vlan_mode - set the VLAN mode of the device
++ * @hw: pointer to the HW structure
++ * @set_params: requested VLAN mode configuration
 + *
-+ * This function should only be called if VLAN promiscuous mode is allowed,
-+ * which can be determined via ice_is_vlan_promisc_allowed().
++ * Set VLAN Mode Parameters (0x020C)
 + */
-+static int ice_vf_dis_vlan_promisc(struct ice_vsi *vsi, struct ice_vlan *vlan)
++static int
++ice_aq_set_vlan_mode(struct ice_hw *hw,
++		     struct ice_aqc_set_vlan_mode *set_params)
 +{
-+	u8 promisc_m = ICE_PROMISC_VLAN_TX | ICE_PROMISC_VLAN_RX;
++	u8 rdma_packet, mng_vlan_prot_id;
++	struct ice_aq_desc desc;
++
++	if (!set_params)
++		return -EINVAL;
++
++	if (set_params->l2tag_prio_tagging > ICE_AQ_VLAN_PRIO_TAG_MAX)
++		return -EINVAL;
++
++	rdma_packet = set_params->rdma_packet;
++	if (rdma_packet != ICE_AQ_SVM_VLAN_RDMA_PKT_FLAG_SETTING &&
++	    rdma_packet != ICE_AQ_DVM_VLAN_RDMA_PKT_FLAG_SETTING)
++		return -EINVAL;
++
++	mng_vlan_prot_id = set_params->mng_vlan_prot_id;
++	if (mng_vlan_prot_id != ICE_AQ_VLAN_MNG_PROTOCOL_ID_OUTER &&
++	    mng_vlan_prot_id != ICE_AQ_VLAN_MNG_PROTOCOL_ID_INNER)
++		return -EINVAL;
++
++	ice_fill_dflt_direct_cmd_desc(&desc,
++				      ice_aqc_opc_set_vlan_mode_parameters);
++	desc.flags |= cpu_to_le16(ICE_AQ_FLAG_RD);
++
++	return ice_aq_send_cmd(hw, &desc, set_params, sizeof(*set_params),
++			       NULL);
++}
++
++/**
++ * ice_set_dvm - sets up software and hardware for double VLAN mode
++ * @hw: pointer to the hardware structure
++ */
++static int ice_set_dvm(struct ice_hw *hw)
++{
++	struct ice_aqc_set_vlan_mode params = { 0 };
 +	int status;
 +
-+	status = ice_fltr_clear_vsi_promisc(&vsi->back->hw, vsi->idx, promisc_m,
-+					    vlan->vid);
-+	if (status && status != -ENOENT)
++	params.l2tag_prio_tagging = ICE_AQ_VLAN_PRIO_TAG_OUTER_CTAG;
++	params.rdma_packet = ICE_AQ_DVM_VLAN_RDMA_PKT_FLAG_SETTING;
++	params.mng_vlan_prot_id = ICE_AQ_VLAN_MNG_PROTOCOL_ID_OUTER;
++
++	status = ice_aq_set_vlan_mode(hw, &params);
++	if (status) {
++		ice_debug(hw, ICE_DBG_INIT, "Failed to set double VLAN mode parameters, status %d\n",
++			  status);
 +		return status;
++	}
++
++	status = ice_dvm_update_dflt_recipes(hw);
++	if (status) {
++		ice_debug(hw, ICE_DBG_INIT, "Failed to update default recipes for double VLAN mode, status %d\n",
++			  status);
++		return status;
++	}
++
++	status = ice_aq_set_port_params(hw->port_info, true, NULL);
++	if (status) {
++		ice_debug(hw, ICE_DBG_INIT, "Failed to set port in double VLAN mode, status %d\n",
++			  status);
++		return status;
++	}
++
++	status = ice_set_dvm_boost_entries(hw);
++	if (status) {
++		ice_debug(hw, ICE_DBG_INIT, "Failed to set boost TCAM entries for double VLAN mode, status %d\n",
++			  status);
++		return status;
++	}
 +
 +	return 0;
 +}
 +
- /**
-  * ice_vf_has_max_vlans - check if VF already has the max allowed VLAN filters
-  * @vf: VF to check against
-@@ -4210,14 +4293,11 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
- 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
- 	struct virtchnl_vlan_filter_list *vfl =
- 	    (struct virtchnl_vlan_filter_list *)msg;
--	struct ice_vsi_vlan_ops *vlan_ops;
- 	struct ice_pf *pf = vf->pf;
- 	bool vlan_promisc = false;
- 	struct ice_vsi *vsi;
- 	struct device *dev;
--	struct ice_hw *hw;
- 	int status = 0;
--	u8 promisc_m;
- 	int i;
- 
- 	dev = ice_pf_to_dev(pf);
-@@ -4245,7 +4325,6 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
- 		}
- 	}
- 
--	hw = &pf->hw;
- 	vsi = ice_get_vf_vsi(vf);
- 	if (!vsi) {
- 		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-@@ -4261,17 +4340,22 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
- 		goto error_param;
- 	}
- 
--	if (ice_vf_is_port_vlan_ena(vf)) {
-+	/* in DVM a VF can add/delete inner VLAN filters when
-+	 * VIRTCHNL_VF_OFFLOAD_VLAN is negotiated, so only reject in SVM
-+	 */
-+	if (ice_vf_is_port_vlan_ena(vf) && !ice_is_dvm_ena(&pf->hw)) {
- 		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
- 		goto error_param;
- 	}
- 
--	if ((test_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states) ||
--	     test_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states)) &&
--	    test_bit(ICE_FLAG_VF_TRUE_PROMISC_ENA, pf->flags))
--		vlan_promisc = true;
-+	/* in DVM VLAN promiscuous is based on the outer VLAN, which would be
-+	 * the port VLAN if VIRTCHNL_VF_OFFLOAD_VLAN was negotiated, so only
-+	 * allow vlan_promisc = true in SVM and if no port VLAN is configured
-+	 */
-+	vlan_promisc = ice_is_vlan_promisc_allowed(vf) &&
-+		!ice_is_dvm_ena(&pf->hw) &&
-+		!ice_vf_is_port_vlan_ena(vf);
- 
--	vlan_ops = ice_get_compat_vsi_vlan_ops(vsi);
- 	if (add_v) {
- 		for (i = 0; i < vfl->num_elements; i++) {
- 			u16 vid = vfl->vlan_id[i];
-@@ -4301,23 +4385,16 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
- 				goto error_param;
- 			}
- 
--			/* Enable VLAN pruning when non-zero VLAN is added */
--			if (!vlan_promisc && vid &&
--			    !ice_vsi_is_vlan_pruning_ena(vsi)) {
--				status = vlan_ops->ena_rx_filtering(vsi);
--				if (status) {
-+			/* Enable VLAN filtering on first non-zero VLAN */
-+			if (!vlan_promisc && vid && !ice_is_dvm_ena(&pf->hw)) {
-+				if (vsi->inner_vlan_ops.ena_rx_filtering(vsi)) {
- 					v_ret = VIRTCHNL_STATUS_ERR_PARAM;
- 					dev_err(dev, "Enable VLAN pruning on VLAN ID: %d failed error-%d\n",
- 						vid, status);
- 					goto error_param;
- 				}
- 			} else if (vlan_promisc) {
--				/* Enable Ucast/Mcast VLAN promiscuous mode */
--				promisc_m = ICE_PROMISC_VLAN_TX |
--					    ICE_PROMISC_VLAN_RX;
--
--				status = ice_set_vsi_promisc(hw, vsi->idx,
--							     promisc_m, vid);
-+				status = ice_vf_ena_vlan_promisc(vsi, &vlan);
- 				if (status) {
- 					v_ret = VIRTCHNL_STATUS_ERR_PARAM;
- 					dev_err(dev, "Enable Unicast/multicast promiscuous mode on VLAN ID:%d failed error-%d\n",
-@@ -4354,19 +4431,12 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
- 				goto error_param;
- 			}
- 
--			/* Disable VLAN pruning when only VLAN 0 is left */
--			if (!ice_vsi_has_non_zero_vlans(vsi) &&
--			    ice_vsi_is_vlan_pruning_ena(vsi))
--				status = vlan_ops->dis_rx_filtering(vsi);
--
--			/* Disable Unicast/Multicast VLAN promiscuous mode */
--			if (vlan_promisc) {
--				promisc_m = ICE_PROMISC_VLAN_TX |
--					    ICE_PROMISC_VLAN_RX;
-+			/* Disable VLAN filtering when only VLAN 0 is left */
-+			if (!ice_vsi_has_non_zero_vlans(vsi))
-+				vsi->inner_vlan_ops.dis_rx_filtering(vsi);
- 
--				ice_clear_vsi_promisc(hw, vsi->idx,
--						      promisc_m, vid);
--			}
-+			if (vlan_promisc)
-+				ice_vf_dis_vlan_promisc(vsi, &vlan);
- 		}
- 	}
- 
-@@ -4473,11 +4543,8 @@ static int ice_vc_dis_vlan_stripping(struct ice_vf *vf)
-  * ice_vf_init_vlan_stripping - enable/disable VLAN stripping on initialization
-  * @vf: VF to enable/disable VLAN stripping for on initialization
-  *
-- * If the VIRTCHNL_VF_OFFLOAD_VLAN flag is set enable VLAN stripping, else if
-- * the flag is cleared then we want to disable stripping. For example, the flag
-- * will be cleared when port VLANs are configured by the administrator before
-- * passing the VF to the guest or if the AVF driver doesn't support VLAN
-- * offloads.
-+ * Set the default for VLAN stripping based on whether a port VLAN is configured
-+ * and the current VLAN mode of the device.
++/**
++ * ice_set_svm - set single VLAN mode
++ * @hw: pointer to the HW structure
++ */
++static int ice_set_svm(struct ice_hw *hw)
++{
++	struct ice_aqc_set_vlan_mode *set_params;
++	int status;
++
++	status = ice_aq_set_port_params(hw->port_info, false, NULL);
++	if (status) {
++		ice_debug(hw, ICE_DBG_INIT, "Failed to set port parameters for single VLAN mode\n");
++		return status;
++	}
++
++	set_params = devm_kzalloc(ice_hw_to_dev(hw), sizeof(*set_params),
++				  GFP_KERNEL);
++	if (!set_params)
++		return -ENOMEM;
++
++	/* default configuration for SVM configurations */
++	set_params->l2tag_prio_tagging = ICE_AQ_VLAN_PRIO_TAG_INNER_CTAG;
++	set_params->rdma_packet = ICE_AQ_SVM_VLAN_RDMA_PKT_FLAG_SETTING;
++	set_params->mng_vlan_prot_id = ICE_AQ_VLAN_MNG_PROTOCOL_ID_INNER;
++
++	status = ice_aq_set_vlan_mode(hw, set_params);
++	if (status)
++		ice_debug(hw, ICE_DBG_INIT, "Failed to configure port in single VLAN mode\n");
++
++	devm_kfree(ice_hw_to_dev(hw), set_params);
++	return status;
++}
++
++/**
++ * ice_set_vlan_mode
++ * @hw: pointer to the HW structure
++ */
++int ice_set_vlan_mode(struct ice_hw *hw)
++{
++	if (!ice_is_dvm_supported(hw))
++		return 0;
++
++	if (!ice_set_dvm(hw))
++		return 0;
++
++	return ice_set_svm(hw);
++}
++
++/**
++ * ice_print_dvm_not_supported - print if DDP and/or FW doesn't support DVM
++ * @hw: pointer to the HW structure
++ *
++ * The purpose of this function is to print that  QinQ is not supported due to
++ * incompatibilty from the DDP and/or FW. This will give a hint to the user to
++ * update one and/or both components if they expect QinQ functionality.
++ */
++static void ice_print_dvm_not_supported(struct ice_hw *hw)
++{
++	bool pkg_supports_dvm = ice_pkg_supports_dvm(hw);
++	bool fw_supports_dvm = ice_fw_supports_dvm(hw);
++
++	if (!fw_supports_dvm && !pkg_supports_dvm)
++		dev_info(ice_hw_to_dev(hw), "QinQ functionality cannot be enabled on this device. Update your DDP package and NVM to versions that support QinQ.\n");
++	else if (!pkg_supports_dvm)
++		dev_info(ice_hw_to_dev(hw), "QinQ functionality cannot be enabled on this device. Update your DDP package to a version that supports QinQ.\n");
++	else if (!fw_supports_dvm)
++		dev_info(ice_hw_to_dev(hw), "QinQ functionality cannot be enabled on this device. Update your NVM to a version that supports QinQ.\n");
++}
++
++/**
++ * ice_post_pkg_dwnld_vlan_mode_cfg - configure VLAN mode after DDP download
++ * @hw: pointer to the HW structure
++ *
++ * This function is meant to configure any VLAN mode specific functionality
++ * after the global configuration lock has been released and the DDP has been
++ * downloaded.
++ *
++ * Since only one PF downloads the DDP and configures the VLAN mode there needs
++ * to be a way to configure the other PFs after the DDP has been downloaded and
++ * the global configuration lock has been released. All such code should go in
++ * this function.
++ */
++void ice_post_pkg_dwnld_vlan_mode_cfg(struct ice_hw *hw)
++{
++	ice_cache_vlan_mode(hw);
++
++	if (ice_is_dvm_ena(hw))
++		ice_change_proto_id_to_dvm();
++	else
++		ice_print_dvm_not_supported(hw);
++}
+diff --git a/drivers/net/ethernet/intel/ice/ice_vlan_mode.h b/drivers/net/ethernet/intel/ice/ice_vlan_mode.h
+new file mode 100644
+index 000000000000..a0fb743d08e2
+--- /dev/null
++++ b/drivers/net/ethernet/intel/ice/ice_vlan_mode.h
+@@ -0,0 +1,13 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (C) 2019-2021, Intel Corporation. */
++
++#ifndef _ICE_VLAN_MODE_H_
++#define _ICE_VLAN_MODE_H_
++
++struct ice_hw;
++
++bool ice_is_dvm_ena(struct ice_hw *hw);
++int ice_set_vlan_mode(struct ice_hw *hw);
++void ice_post_pkg_dwnld_vlan_mode_cfg(struct ice_hw *hw);
++
++#endif /* _ICE_VLAN_MODE_H */
+diff --git a/drivers/net/ethernet/intel/ice/ice_vsi_vlan_lib.c b/drivers/net/ethernet/intel/ice/ice_vsi_vlan_lib.c
+index 62a2630d6fab..5b4a0abb4607 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vsi_vlan_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_vsi_vlan_lib.c
+@@ -39,20 +39,20 @@ static bool validate_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan)
   */
- static int ice_vf_init_vlan_stripping(struct ice_vf *vf)
+ int ice_vsi_add_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan)
  {
-@@ -4486,8 +4553,10 @@ static int ice_vf_init_vlan_stripping(struct ice_vf *vf)
- 	if (!vsi)
+-	int err = 0;
++	int err;
+ 
+ 	if (!validate_vlan(vsi, vlan))
  		return -EINVAL;
  
--	/* don't modify stripping if port VLAN is configured */
--	if (ice_vf_is_port_vlan_ena(vf))
-+	/* don't modify stripping if port VLAN is configured in SVM since the
-+	 * port VLAN is based on the inner/single VLAN in SVM
-+	 */
-+	if (ice_vf_is_port_vlan_ena(vf) && !ice_is_dvm_ena(&vsi->back->hw))
- 		return 0;
+-	if (!ice_fltr_add_vlan(vsi, vlan)) {
+-		vsi->num_vlan++;
+-	} else {
+-		err = -ENODEV;
+-		dev_err(ice_pf_to_dev(vsi->back), "Failure Adding VLAN %d on VSI %i\n",
+-			vlan->vid, vsi->vsi_num);
++	err = ice_fltr_add_vlan(vsi, vlan);
++	if (err && err != -EEXIST) {
++		dev_err(ice_pf_to_dev(vsi->back), "Failure Adding VLAN %d on VSI %i, status %d\n",
++			vlan->vid, vsi->vsi_num, err);
++		return err;
+ 	}
  
- 	if (ice_vf_vlan_offload_ena(vf->driver_caps))
-@@ -4496,6 +4565,955 @@ static int ice_vf_init_vlan_stripping(struct ice_vf *vf)
- 		return vsi->inner_vlan_ops.dis_stripping(vsi);
+-	return err;
++	vsi->num_vlan++;
++	return 0;
  }
  
-+static u16 ice_vc_get_max_vlan_fltrs(struct ice_vf *vf)
-+{
-+	if (vf->trusted)
-+		return VLAN_N_VID;
+ /**
+@@ -72,16 +72,13 @@ int ice_vsi_del_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan)
+ 	dev = ice_pf_to_dev(pf);
+ 
+ 	err = ice_fltr_remove_vlan(vsi, vlan);
+-	if (!err) {
++	if (!err)
+ 		vsi->num_vlan--;
+-	} else if (err == -ENOENT) {
+-		dev_dbg(dev, "Failed to remove VLAN %d on VSI %i, it does not exist\n",
+-			vlan->vid, vsi->vsi_num);
++	else if (err == -ENOENT || err == -EBUSY)
+ 		err = 0;
+-	} else {
 +	else
-+		return ICE_MAX_VLAN_PER_VF;
-+}
-+
-+/**
-+ * ice_vf_outer_vlan_not_allowed - check outer VLAN can be used when the device is in DVM
-+ * @vf: VF that being checked for
-+ */
-+static bool ice_vf_outer_vlan_not_allowed(struct ice_vf *vf)
-+{
-+	if (ice_vf_is_port_vlan_ena(vf))
-+		return true;
-+
-+	return false;
-+}
-+
-+/**
-+ * ice_vc_set_dvm_caps - set VLAN capabilities when the device is in DVM
-+ * @vf: VF that capabilities are being set for
-+ * @caps: VLAN capabilities to populate
-+ *
-+ * Determine VLAN capabilities support based on whether a port VLAN is
-+ * configured. If a port VLAN is configured then the VF should use the inner
-+ * filtering/offload capabilities since the port VLAN is using the outer VLAN
-+ * capabilies.
-+ */
-+static void
-+ice_vc_set_dvm_caps(struct ice_vf *vf, struct virtchnl_vlan_caps *caps)
-+{
-+	struct virtchnl_vlan_supported_caps *supported_caps;
-+
-+	if (ice_vf_outer_vlan_not_allowed(vf)) {
-+		/* until support for inner VLAN filtering is added when a port
-+		 * VLAN is configured, only support software offloaded inner
-+		 * VLANs when a port VLAN is confgured in DVM
-+		 */
-+		supported_caps = &caps->filtering.filtering_support;
-+		supported_caps->inner = VIRTCHNL_VLAN_UNSUPPORTED;
-+
-+		supported_caps = &caps->offloads.stripping_support;
-+		supported_caps->inner = VIRTCHNL_VLAN_ETHERTYPE_8100 |
-+					VIRTCHNL_VLAN_TOGGLE |
-+					VIRTCHNL_VLAN_TAG_LOCATION_L2TAG1;
-+		supported_caps->outer = VIRTCHNL_VLAN_UNSUPPORTED;
-+
-+		supported_caps = &caps->offloads.insertion_support;
-+		supported_caps->inner = VIRTCHNL_VLAN_ETHERTYPE_8100 |
-+					VIRTCHNL_VLAN_TOGGLE |
-+					VIRTCHNL_VLAN_TAG_LOCATION_L2TAG1;
-+		supported_caps->outer = VIRTCHNL_VLAN_UNSUPPORTED;
-+
-+		caps->offloads.ethertype_init = VIRTCHNL_VLAN_ETHERTYPE_8100;
-+		caps->offloads.ethertype_match =
-+			VIRTCHNL_ETHERTYPE_STRIPPING_MATCHES_INSERTION;
-+	} else {
-+		supported_caps = &caps->filtering.filtering_support;
-+		supported_caps->inner = VIRTCHNL_VLAN_UNSUPPORTED;
-+		supported_caps->outer = VIRTCHNL_VLAN_ETHERTYPE_8100 |
-+					VIRTCHNL_VLAN_ETHERTYPE_88A8 |
-+					VIRTCHNL_VLAN_ETHERTYPE_9100 |
-+					VIRTCHNL_VLAN_ETHERTYPE_AND;
-+		caps->filtering.ethertype_init = VIRTCHNL_VLAN_ETHERTYPE_8100 |
-+						 VIRTCHNL_VLAN_ETHERTYPE_88A8 |
-+						 VIRTCHNL_VLAN_ETHERTYPE_9100;
-+
-+		supported_caps = &caps->offloads.stripping_support;
-+		supported_caps->inner = VIRTCHNL_VLAN_TOGGLE |
-+					VIRTCHNL_VLAN_ETHERTYPE_8100 |
-+					VIRTCHNL_VLAN_TAG_LOCATION_L2TAG1;
-+		supported_caps->outer = VIRTCHNL_VLAN_TOGGLE |
-+					VIRTCHNL_VLAN_ETHERTYPE_8100 |
-+					VIRTCHNL_VLAN_ETHERTYPE_88A8 |
-+					VIRTCHNL_VLAN_ETHERTYPE_9100 |
-+					VIRTCHNL_VLAN_ETHERTYPE_XOR |
-+					VIRTCHNL_VLAN_TAG_LOCATION_L2TAG2_2;
-+
-+		supported_caps = &caps->offloads.insertion_support;
-+		supported_caps->inner = VIRTCHNL_VLAN_TOGGLE |
-+					VIRTCHNL_VLAN_ETHERTYPE_8100 |
-+					VIRTCHNL_VLAN_TAG_LOCATION_L2TAG1;
-+		supported_caps->outer = VIRTCHNL_VLAN_TOGGLE |
-+					VIRTCHNL_VLAN_ETHERTYPE_8100 |
-+					VIRTCHNL_VLAN_ETHERTYPE_88A8 |
-+					VIRTCHNL_VLAN_ETHERTYPE_9100 |
-+					VIRTCHNL_VLAN_ETHERTYPE_XOR |
-+					VIRTCHNL_VLAN_TAG_LOCATION_L2TAG2;
-+
-+		caps->offloads.ethertype_init = VIRTCHNL_VLAN_ETHERTYPE_8100;
-+
-+		caps->offloads.ethertype_match =
-+			VIRTCHNL_ETHERTYPE_STRIPPING_MATCHES_INSERTION;
-+	}
-+
-+	caps->filtering.max_filters = ice_vc_get_max_vlan_fltrs(vf);
-+}
-+
-+/**
-+ * ice_vc_set_svm_caps - set VLAN capabilities when the device is in SVM
-+ * @vf: VF that capabilities are being set for
-+ * @caps: VLAN capabilities to populate
-+ *
-+ * Determine VLAN capabilities support based on whether a port VLAN is
-+ * configured. If a port VLAN is configured then the VF does not have any VLAN
-+ * filtering or offload capabilities since the port VLAN is using the inner VLAN
-+ * capabilities in single VLAN mode (SVM). Otherwise allow the VF to use inner
-+ * VLAN fitlering and offload capabilities.
-+ */
-+static void
-+ice_vc_set_svm_caps(struct ice_vf *vf, struct virtchnl_vlan_caps *caps)
-+{
-+	struct virtchnl_vlan_supported_caps *supported_caps;
-+
-+	if (ice_vf_is_port_vlan_ena(vf)) {
-+		supported_caps = &caps->filtering.filtering_support;
-+		supported_caps->inner = VIRTCHNL_VLAN_UNSUPPORTED;
-+		supported_caps->outer = VIRTCHNL_VLAN_UNSUPPORTED;
-+
-+		supported_caps = &caps->offloads.stripping_support;
-+		supported_caps->inner = VIRTCHNL_VLAN_UNSUPPORTED;
-+		supported_caps->outer = VIRTCHNL_VLAN_UNSUPPORTED;
-+
-+		supported_caps = &caps->offloads.insertion_support;
-+		supported_caps->inner = VIRTCHNL_VLAN_UNSUPPORTED;
-+		supported_caps->outer = VIRTCHNL_VLAN_UNSUPPORTED;
-+
-+		caps->offloads.ethertype_init = VIRTCHNL_VLAN_UNSUPPORTED;
-+		caps->offloads.ethertype_match = VIRTCHNL_VLAN_UNSUPPORTED;
-+		caps->filtering.max_filters = 0;
-+	} else {
-+		supported_caps = &caps->filtering.filtering_support;
-+		supported_caps->inner = VIRTCHNL_VLAN_ETHERTYPE_8100;
-+		supported_caps->outer = VIRTCHNL_VLAN_UNSUPPORTED;
-+		caps->filtering.ethertype_init = VIRTCHNL_VLAN_ETHERTYPE_8100;
-+
-+		supported_caps = &caps->offloads.stripping_support;
-+		supported_caps->inner = VIRTCHNL_VLAN_ETHERTYPE_8100 |
-+					VIRTCHNL_VLAN_TOGGLE |
-+					VIRTCHNL_VLAN_TAG_LOCATION_L2TAG1;
-+		supported_caps->outer = VIRTCHNL_VLAN_UNSUPPORTED;
-+
-+		supported_caps = &caps->offloads.insertion_support;
-+		supported_caps->inner = VIRTCHNL_VLAN_ETHERTYPE_8100 |
-+					VIRTCHNL_VLAN_TOGGLE |
-+					VIRTCHNL_VLAN_TAG_LOCATION_L2TAG1;
-+		supported_caps->outer = VIRTCHNL_VLAN_UNSUPPORTED;
-+
-+		caps->offloads.ethertype_init = VIRTCHNL_VLAN_ETHERTYPE_8100;
-+		caps->offloads.ethertype_match =
-+			VIRTCHNL_ETHERTYPE_STRIPPING_MATCHES_INSERTION;
-+		caps->filtering.max_filters = ice_vc_get_max_vlan_fltrs(vf);
-+	}
-+}
-+
-+/**
-+ * ice_vc_get_offload_vlan_v2_caps - determine VF's VLAN capabilities
-+ * @vf: VF to determine VLAN capabilities for
-+ *
-+ * This will only be called if the VF and PF successfully negotiated
-+ * VIRTCHNL_VF_OFFLOAD_VLAN_V2.
-+ *
-+ * Set VLAN capabilities based on the current VLAN mode and whether a port VLAN
-+ * is configured or not.
-+ */
-+static int ice_vc_get_offload_vlan_v2_caps(struct ice_vf *vf)
-+{
-+	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
-+	struct virtchnl_vlan_caps *caps = NULL;
-+	int err, len = 0;
-+
-+	if (!test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	caps = kzalloc(sizeof(*caps), GFP_KERNEL);
-+	if (!caps) {
-+		v_ret = VIRTCHNL_STATUS_ERR_NO_MEMORY;
-+		goto out;
-+	}
-+	len = sizeof(*caps);
-+
-+	if (ice_is_dvm_ena(&vf->pf->hw))
-+		ice_vc_set_dvm_caps(vf, caps);
-+	else
-+		ice_vc_set_svm_caps(vf, caps);
-+
-+	/* store negotiated caps to prevent invalid VF messages */
-+	memcpy(&vf->vlan_v2_caps, caps, sizeof(*caps));
-+
-+out:
-+	err = ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS,
-+				    v_ret, (u8 *)caps, len);
-+	kfree(caps);
-+	return err;
-+}
-+
-+/**
-+ * ice_vc_validate_vlan_tpid - validate VLAN TPID
-+ * @filtering_caps: negotiated/supported VLAN filtering capabilities
-+ * @tpid: VLAN TPID used for validation
-+ *
-+ * Convert the VLAN TPID to a VIRTCHNL_VLAN_ETHERTYPE_* and then compare against
-+ * the negotiated/supported filtering caps to see if the VLAN TPID is valid.
-+ */
-+static bool ice_vc_validate_vlan_tpid(u16 filtering_caps, u16 tpid)
-+{
-+	enum virtchnl_vlan_support vlan_ethertype = VIRTCHNL_VLAN_UNSUPPORTED;
-+
-+	switch (tpid) {
-+	case ETH_P_8021Q:
-+		vlan_ethertype = VIRTCHNL_VLAN_ETHERTYPE_8100;
-+		break;
-+	case ETH_P_8021AD:
-+		vlan_ethertype = VIRTCHNL_VLAN_ETHERTYPE_88A8;
-+		break;
-+	case ETH_P_QINQ1:
-+		vlan_ethertype = VIRTCHNL_VLAN_ETHERTYPE_9100;
-+		break;
-+	}
-+
-+	if (!(filtering_caps & vlan_ethertype))
-+		return false;
-+
-+	return true;
-+}
-+
-+/**
-+ * ice_vc_is_valid_vlan - validate the virtchnl_vlan
-+ * @vc_vlan: virtchnl_vlan to validate
-+ *
-+ * If the VLAN TCI and VLAN TPID are 0, then this filter is invalid, so return
-+ * false. Otherwise return true.
-+ */
-+static bool ice_vc_is_valid_vlan(struct virtchnl_vlan *vc_vlan)
-+{
-+	if (!vc_vlan->tci || !vc_vlan->tpid)
-+		return false;
-+
-+	return true;
-+}
-+
-+/**
-+ * ice_vc_validate_vlan_filter_list - validate the filter list from the VF
-+ * @vfc: negotiated/supported VLAN filtering capabilities
-+ * @vfl: VLAN filter list from VF to validate
-+ *
-+ * Validate all of the filters in the VLAN filter list from the VF. If any of
-+ * the checks fail then return false. Otherwise return true.
-+ */
-+static bool
-+ice_vc_validate_vlan_filter_list(struct virtchnl_vlan_filtering_caps *vfc,
-+				 struct virtchnl_vlan_filter_list_v2 *vfl)
-+{
-+	u16 i;
-+
-+	if (!vfl->num_elements)
-+		return false;
-+
-+	for (i = 0; i < vfl->num_elements; i++) {
-+		struct virtchnl_vlan_supported_caps *filtering_support =
-+			&vfc->filtering_support;
-+		struct virtchnl_vlan_filter *vlan_fltr = &vfl->filters[i];
-+		struct virtchnl_vlan *outer = &vlan_fltr->outer;
-+		struct virtchnl_vlan *inner = &vlan_fltr->inner;
-+
-+		if ((ice_vc_is_valid_vlan(outer) &&
-+		     filtering_support->outer == VIRTCHNL_VLAN_UNSUPPORTED) ||
-+		    (ice_vc_is_valid_vlan(inner) &&
-+		     filtering_support->inner == VIRTCHNL_VLAN_UNSUPPORTED))
-+			return false;
-+
-+		if ((outer->tci_mask &&
-+		     !(filtering_support->outer & VIRTCHNL_VLAN_FILTER_MASK)) ||
-+		    (inner->tci_mask &&
-+		     !(filtering_support->inner & VIRTCHNL_VLAN_FILTER_MASK)))
-+			return false;
-+
-+		if (((outer->tci & VLAN_PRIO_MASK) &&
-+		     !(filtering_support->outer & VIRTCHNL_VLAN_PRIO)) ||
-+		    ((inner->tci & VLAN_PRIO_MASK) &&
-+		     !(filtering_support->inner & VIRTCHNL_VLAN_PRIO)))
-+			return false;
-+
-+		if ((ice_vc_is_valid_vlan(outer) &&
-+		     !ice_vc_validate_vlan_tpid(filtering_support->outer, outer->tpid)) ||
-+		    (ice_vc_is_valid_vlan(inner) &&
-+		     !ice_vc_validate_vlan_tpid(filtering_support->inner, inner->tpid)))
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
-+/**
-+ * ice_vc_to_vlan - transform from struct virtchnl_vlan to struct ice_vlan
-+ * @vc_vlan: struct virtchnl_vlan to transform
-+ */
-+static struct ice_vlan ice_vc_to_vlan(struct virtchnl_vlan *vc_vlan)
-+{
-+	struct ice_vlan vlan = { 0 };
-+
-+	vlan.prio = (vc_vlan->tci & VLAN_PRIO_MASK) >> VLAN_PRIO_SHIFT;
-+	vlan.vid = vc_vlan->tci & VLAN_VID_MASK;
-+	vlan.tpid = vc_vlan->tpid;
-+
-+	return vlan;
-+}
-+
-+/**
-+ * ice_vc_vlan_action - action to perform on the virthcnl_vlan
-+ * @vsi: VF's VSI used to perform the action
-+ * @vlan_action: function to perform the action with (i.e. add/del)
-+ * @vlan: VLAN filter to perform the action with
-+ */
-+static int
-+ice_vc_vlan_action(struct ice_vsi *vsi,
-+		   int (*vlan_action)(struct ice_vsi *, struct ice_vlan *),
-+		   struct ice_vlan *vlan)
-+{
-+	int err;
-+
-+	err = vlan_action(vsi, vlan);
-+	if (err)
-+		return err;
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_vc_del_vlans - delete VLAN(s) from the virtchnl filter list
-+ * @vf: VF used to delete the VLAN(s)
-+ * @vsi: VF's VSI used to delete the VLAN(s)
-+ * @vfl: virthchnl filter list used to delete the filters
-+ */
-+static int
-+ice_vc_del_vlans(struct ice_vf *vf, struct ice_vsi *vsi,
-+		 struct virtchnl_vlan_filter_list_v2 *vfl)
-+{
-+	bool vlan_promisc = ice_is_vlan_promisc_allowed(vf);
-+	int err;
-+	u16 i;
-+
-+	for (i = 0; i < vfl->num_elements; i++) {
-+		struct virtchnl_vlan_filter *vlan_fltr = &vfl->filters[i];
-+		struct virtchnl_vlan *vc_vlan;
-+
-+		vc_vlan = &vlan_fltr->outer;
-+		if (ice_vc_is_valid_vlan(vc_vlan)) {
-+			struct ice_vlan vlan = ice_vc_to_vlan(vc_vlan);
-+
-+			err = ice_vc_vlan_action(vsi,
-+						 vsi->outer_vlan_ops.del_vlan,
-+						 &vlan);
-+			if (err)
-+				return err;
-+
-+			if (vlan_promisc)
-+				ice_vf_dis_vlan_promisc(vsi, &vlan);
-+		}
-+
-+		vc_vlan = &vlan_fltr->inner;
-+		if (ice_vc_is_valid_vlan(vc_vlan)) {
-+			struct ice_vlan vlan = ice_vc_to_vlan(vc_vlan);
-+
-+			err = ice_vc_vlan_action(vsi,
-+						 vsi->inner_vlan_ops.del_vlan,
-+						 &vlan);
-+			if (err)
-+				return err;
-+
-+			/* no support for VLAN promiscuous on inner VLAN unless
-+			 * we are in Single VLAN Mode (SVM)
-+			 */
-+			if (!ice_is_dvm_ena(&vsi->back->hw) && vlan_promisc)
-+				ice_vf_dis_vlan_promisc(vsi, &vlan);
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_vc_remove_vlan_v2_msg - virtchnl handler for VIRTCHNL_OP_DEL_VLAN_V2
-+ * @vf: VF the message was received from
-+ * @msg: message received from the VF
-+ */
-+static int ice_vc_remove_vlan_v2_msg(struct ice_vf *vf, u8 *msg)
-+{
-+	struct virtchnl_vlan_filter_list_v2 *vfl =
-+		(struct virtchnl_vlan_filter_list_v2 *)msg;
-+	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
-+	struct ice_vsi *vsi;
-+
-+	if (!ice_vc_validate_vlan_filter_list(&vf->vlan_v2_caps.filtering,
-+					      vfl)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	if (!ice_vc_isvalid_vsi_id(vf, vfl->vport_id)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	vsi = ice_get_vf_vsi(vf);
-+	if (!vsi) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	if (ice_vc_del_vlans(vf, vsi, vfl))
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+
-+out:
-+	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_DEL_VLAN_V2, v_ret, NULL,
-+				     0);
-+}
-+
-+/**
-+ * ice_vc_add_vlans - add VLAN(s) from the virtchnl filter list
-+ * @vf: VF used to add the VLAN(s)
-+ * @vsi: VF's VSI used to add the VLAN(s)
-+ * @vfl: virthchnl filter list used to add the filters
-+ */
-+static int
-+ice_vc_add_vlans(struct ice_vf *vf, struct ice_vsi *vsi,
-+		 struct virtchnl_vlan_filter_list_v2 *vfl)
-+{
-+	bool vlan_promisc = ice_is_vlan_promisc_allowed(vf);
-+	int err;
-+	u16 i;
-+
-+	for (i = 0; i < vfl->num_elements; i++) {
-+		struct virtchnl_vlan_filter *vlan_fltr = &vfl->filters[i];
-+		struct virtchnl_vlan *vc_vlan;
-+
-+		vc_vlan = &vlan_fltr->outer;
-+		if (ice_vc_is_valid_vlan(vc_vlan)) {
-+			struct ice_vlan vlan = ice_vc_to_vlan(vc_vlan);
-+
-+			err = ice_vc_vlan_action(vsi,
-+						 vsi->outer_vlan_ops.add_vlan,
-+						 &vlan);
-+			if (err)
-+				return err;
-+
-+			if (vlan_promisc) {
-+				err = ice_vf_ena_vlan_promisc(vsi, &vlan);
-+				if (err)
-+					return err;
-+			}
-+		}
-+
-+		vc_vlan = &vlan_fltr->inner;
-+		if (ice_vc_is_valid_vlan(vc_vlan)) {
-+			struct ice_vlan vlan = ice_vc_to_vlan(vc_vlan);
-+
-+			err = ice_vc_vlan_action(vsi,
-+						 vsi->inner_vlan_ops.add_vlan,
-+						 &vlan);
-+			if (err)
-+				return err;
-+
-+			/* no support for VLAN promiscuous on inner VLAN unless
-+			 * we are in Single VLAN Mode (SVM)
-+			 */
-+			if (!ice_is_dvm_ena(&vsi->back->hw) && vlan_promisc) {
-+				err = ice_vf_ena_vlan_promisc(vsi, &vlan);
-+				if (err)
-+					return err;
-+			}
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_vc_validate_add_vlan_filter_list - validate add filter list from the VF
-+ * @vsi: VF VSI used to get number of existing VLAN filters
-+ * @vfc: negotiated/supported VLAN filtering capabilities
-+ * @vfl: VLAN filter list from VF to validate
-+ *
-+ * Validate all of the filters in the VLAN filter list from the VF during the
-+ * VIRTCHNL_OP_ADD_VLAN_V2 opcode. If any of the checks fail then return false.
-+ * Otherwise return true.
-+ */
-+static bool
-+ice_vc_validate_add_vlan_filter_list(struct ice_vsi *vsi,
-+				     struct virtchnl_vlan_filtering_caps *vfc,
-+				     struct virtchnl_vlan_filter_list_v2 *vfl)
-+{
-+	u16 num_requested_filters = vsi->num_vlan + vfl->num_elements;
-+
-+	if (num_requested_filters > vfc->max_filters)
-+		return false;
-+
-+	return ice_vc_validate_vlan_filter_list(vfc, vfl);
-+}
-+
-+/**
-+ * ice_vc_add_vlan_v2_msg - virtchnl handler for VIRTCHNL_OP_ADD_VLAN_V2
-+ * @vf: VF the message was received from
-+ * @msg: message received from the VF
-+ */
-+static int ice_vc_add_vlan_v2_msg(struct ice_vf *vf, u8 *msg)
-+{
-+	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
-+	struct virtchnl_vlan_filter_list_v2 *vfl =
-+		(struct virtchnl_vlan_filter_list_v2 *)msg;
-+	struct ice_vsi *vsi;
-+
-+	if (!test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	if (!ice_vc_isvalid_vsi_id(vf, vfl->vport_id)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	vsi = ice_get_vf_vsi(vf);
-+	if (!vsi) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	if (!ice_vc_validate_add_vlan_filter_list(vsi,
-+						  &vf->vlan_v2_caps.filtering,
-+						  vfl)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	if (ice_vc_add_vlans(vf, vsi, vfl))
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+
-+out:
-+	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_ADD_VLAN_V2, v_ret, NULL,
-+				     0);
-+}
-+
-+/**
-+ * ice_vc_valid_vlan_setting - validate VLAN setting
-+ * @negotiated_settings: negotiated VLAN settings during VF init
-+ * @ethertype_setting: ethertype(s) requested for the VLAN setting
-+ */
-+static bool
-+ice_vc_valid_vlan_setting(u32 negotiated_settings, u32 ethertype_setting)
-+{
-+	if (ethertype_setting && !(negotiated_settings & ethertype_setting))
-+		return false;
-+
-+	/* only allow a single VIRTCHNL_VLAN_ETHERTYPE if
-+	 * VIRTHCNL_VLAN_ETHERTYPE_AND is not negotiated/supported
-+	 */
-+	if (!(negotiated_settings & VIRTCHNL_VLAN_ETHERTYPE_AND) &&
-+	    hweight32(ethertype_setting) > 1)
-+		return false;
-+
-+	/* ability to modify the VLAN setting was not negotiated */
-+	if (!(negotiated_settings & VIRTCHNL_VLAN_TOGGLE))
-+		return false;
-+
-+	return true;
-+}
-+
-+/**
-+ * ice_vc_valid_vlan_setting_msg - validate the VLAN setting message
-+ * @caps: negotiated VLAN settings during VF init
-+ * @msg: message to validate
-+ *
-+ * Used to validate any VLAN virtchnl message sent as a
-+ * virtchnl_vlan_setting structure. Validates the message against the
-+ * negotiated/supported caps during VF driver init.
-+ */
-+static bool
-+ice_vc_valid_vlan_setting_msg(struct virtchnl_vlan_supported_caps *caps,
-+			      struct virtchnl_vlan_setting *msg)
-+{
-+	if ((!msg->outer_ethertype_setting &&
-+	     !msg->inner_ethertype_setting) ||
-+	    (!caps->outer && !caps->inner))
-+		return false;
-+
-+	if (msg->outer_ethertype_setting &&
-+	    !ice_vc_valid_vlan_setting(caps->outer,
-+				       msg->outer_ethertype_setting))
-+		return false;
-+
-+	if (msg->inner_ethertype_setting &&
-+	    !ice_vc_valid_vlan_setting(caps->inner,
-+				       msg->inner_ethertype_setting))
-+		return false;
-+
-+	return true;
-+}
-+
-+/**
-+ * ice_vc_get_tpid - transform from VIRTCHNL_VLAN_ETHERTYPE_* to VLAN TPID
-+ * @ethertype_setting: VIRTCHNL_VLAN_ETHERTYPE_* used to get VLAN TPID
-+ * @tpid: VLAN TPID to populate
-+ */
-+static int ice_vc_get_tpid(u32 ethertype_setting, u16 *tpid)
-+{
-+	switch (ethertype_setting) {
-+	case VIRTCHNL_VLAN_ETHERTYPE_8100:
-+		*tpid = ETH_P_8021Q;
-+		break;
-+	case VIRTCHNL_VLAN_ETHERTYPE_88A8:
-+		*tpid = ETH_P_8021AD;
-+		break;
-+	case VIRTCHNL_VLAN_ETHERTYPE_9100:
-+		*tpid = ETH_P_QINQ1;
-+		break;
-+	default:
-+		*tpid = 0;
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_vc_ena_vlan_offload - enable VLAN offload based on the ethertype_setting
-+ * @vsi: VF's VSI used to enable the VLAN offload
-+ * @ena_offload: function used to enable the VLAN offload
-+ * @ethertype_setting: VIRTCHNL_VLAN_ETHERTYPE_* to enable offloads for
-+ */
-+static int
-+ice_vc_ena_vlan_offload(struct ice_vsi *vsi,
-+			int (*ena_offload)(struct ice_vsi *vsi, u16 tpid),
-+			u32 ethertype_setting)
-+{
-+	u16 tpid;
-+	int err;
-+
-+	err = ice_vc_get_tpid(ethertype_setting, &tpid);
-+	if (err)
-+		return err;
-+
-+	err = ena_offload(vsi, tpid);
-+	if (err)
-+		return err;
-+
-+	return 0;
-+}
-+
-+#define ICE_L2TSEL_QRX_CONTEXT_REG_IDX	3
-+#define ICE_L2TSEL_BIT_OFFSET		23
-+enum ice_l2tsel {
-+	ICE_L2TSEL_EXTRACT_FIRST_TAG_L2TAG2_2ND,
-+	ICE_L2TSEL_EXTRACT_FIRST_TAG_L2TAG1,
-+};
-+
-+/**
-+ * ice_vsi_update_l2tsel - update l2tsel field for all Rx rings on this VSI
-+ * @vsi: VSI used to update l2tsel on
-+ * @l2tsel: l2tsel setting requested
-+ *
-+ * Use the l2tsel setting to update all of the Rx queue context bits for l2tsel.
-+ * This will modify which descriptor field the first offloaded VLAN will be
-+ * stripped into.
-+ */
-+static void ice_vsi_update_l2tsel(struct ice_vsi *vsi, enum ice_l2tsel l2tsel)
-+{
-+	struct ice_hw *hw = &vsi->back->hw;
-+	u32 l2tsel_bit;
-+	int i;
-+
-+	if (l2tsel == ICE_L2TSEL_EXTRACT_FIRST_TAG_L2TAG2_2ND)
-+		l2tsel_bit = 0;
-+	else
-+		l2tsel_bit = BIT(ICE_L2TSEL_BIT_OFFSET);
-+
-+	for (i = 0; i < vsi->alloc_rxq; i++) {
-+		u16 pfq = vsi->rxq_map[i];
-+		u32 qrx_context_offset;
-+		u32 regval;
-+
-+		qrx_context_offset =
-+			QRX_CONTEXT(ICE_L2TSEL_QRX_CONTEXT_REG_IDX, pfq);
-+
-+		regval = rd32(hw, qrx_context_offset);
-+		regval &= ~BIT(ICE_L2TSEL_BIT_OFFSET);
-+		regval |= l2tsel_bit;
-+		wr32(hw, qrx_context_offset, regval);
-+	}
-+}
-+
-+/**
-+ * ice_vc_ena_vlan_stripping_v2_msg
-+ * @vf: VF the message was received from
-+ * @msg: message received from the VF
-+ *
-+ * virthcnl handler for VIRTCHNL_OP_ENABLE_VLAN_STRIPPING_V2
-+ */
-+static int ice_vc_ena_vlan_stripping_v2_msg(struct ice_vf *vf, u8 *msg)
-+{
-+	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
-+	struct virtchnl_vlan_supported_caps *stripping_support;
-+	struct virtchnl_vlan_setting *strip_msg =
-+		(struct virtchnl_vlan_setting *)msg;
-+	u32 ethertype_setting;
-+	struct ice_vsi *vsi;
-+
-+	if (!test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	if (!ice_vc_isvalid_vsi_id(vf, strip_msg->vport_id)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	vsi = ice_get_vf_vsi(vf);
-+	if (!vsi) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	stripping_support = &vf->vlan_v2_caps.offloads.stripping_support;
-+	if (!ice_vc_valid_vlan_setting_msg(stripping_support, strip_msg)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	ethertype_setting = strip_msg->outer_ethertype_setting;
-+	if (ethertype_setting) {
-+		if (ice_vc_ena_vlan_offload(vsi,
-+					    vsi->outer_vlan_ops.ena_stripping,
-+					    ethertype_setting)) {
-+			v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+			goto out;
-+		} else {
-+			enum ice_l2tsel l2tsel =
-+				ICE_L2TSEL_EXTRACT_FIRST_TAG_L2TAG2_2ND;
-+
-+			/* PF tells the VF that the outer VLAN tag is always
-+			 * extracted to VIRTCHNL_VLAN_TAG_LOCATION_L2TAG2_2 and
-+			 * inner is always extracted to
-+			 * VIRTCHNL_VLAN_TAG_LOCATION_L2TAG1. This is needed to
-+			 * support outer stripping so the first tag always ends
-+			 * up in L2TAG2_2ND and the second/inner tag, if
-+			 * enabled, is extracted in L2TAG1.
-+			 */
-+			ice_vsi_update_l2tsel(vsi, l2tsel);
-+		}
-+	}
-+
-+	ethertype_setting = strip_msg->inner_ethertype_setting;
-+	if (ethertype_setting &&
-+	    ice_vc_ena_vlan_offload(vsi, vsi->inner_vlan_ops.ena_stripping,
-+				    ethertype_setting)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+out:
-+	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_ENABLE_VLAN_STRIPPING_V2, v_ret, NULL, 0);
-+}
-+
-+/**
-+ * ice_vc_dis_vlan_stripping_v2_msg
-+ * @vf: VF the message was received from
-+ * @msg: message received from the VF
-+ *
-+ * virthcnl handler for VIRTCHNL_OP_DISABLE_VLAN_STRIPPING_V2
-+ */
-+static int ice_vc_dis_vlan_stripping_v2_msg(struct ice_vf *vf, u8 *msg)
-+{
-+	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
-+	struct virtchnl_vlan_supported_caps *stripping_support;
-+	struct virtchnl_vlan_setting *strip_msg =
-+		(struct virtchnl_vlan_setting *)msg;
-+	u32 ethertype_setting;
-+	struct ice_vsi *vsi;
-+
-+	if (!test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	if (!ice_vc_isvalid_vsi_id(vf, strip_msg->vport_id)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	vsi = ice_get_vf_vsi(vf);
-+	if (!vsi) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	stripping_support = &vf->vlan_v2_caps.offloads.stripping_support;
-+	if (!ice_vc_valid_vlan_setting_msg(stripping_support, strip_msg)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	ethertype_setting = strip_msg->outer_ethertype_setting;
-+	if (ethertype_setting) {
-+		if (vsi->outer_vlan_ops.dis_stripping(vsi)) {
-+			v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+			goto out;
-+		} else {
-+			enum ice_l2tsel l2tsel =
-+				ICE_L2TSEL_EXTRACT_FIRST_TAG_L2TAG1;
-+
-+			/* PF tells the VF that the outer VLAN tag is always
-+			 * extracted to VIRTCHNL_VLAN_TAG_LOCATION_L2TAG2_2 and
-+			 * inner is always extracted to
-+			 * VIRTCHNL_VLAN_TAG_LOCATION_L2TAG1. This is needed to
-+			 * support inner stripping while outer stripping is
-+			 * disabled so that the first and only tag is extracted
-+			 * in L2TAG1.
-+			 */
-+			ice_vsi_update_l2tsel(vsi, l2tsel);
-+		}
-+	}
-+
-+	ethertype_setting = strip_msg->inner_ethertype_setting;
-+	if (ethertype_setting && vsi->inner_vlan_ops.dis_stripping(vsi)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+out:
-+	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_DISABLE_VLAN_STRIPPING_V2, v_ret, NULL, 0);
-+}
-+
-+/**
-+ * ice_vc_ena_vlan_insertion_v2_msg
-+ * @vf: VF the message was received from
-+ * @msg: message received from the VF
-+ *
-+ * virthcnl handler for VIRTCHNL_OP_ENABLE_VLAN_INSERTION_V2
-+ */
-+static int ice_vc_ena_vlan_insertion_v2_msg(struct ice_vf *vf, u8 *msg)
-+{
-+	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
-+	struct virtchnl_vlan_supported_caps *insertion_support;
-+	struct virtchnl_vlan_setting *insertion_msg =
-+		(struct virtchnl_vlan_setting *)msg;
-+	u32 ethertype_setting;
-+	struct ice_vsi *vsi;
-+
-+	if (!test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	if (!ice_vc_isvalid_vsi_id(vf, insertion_msg->vport_id)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	vsi = ice_get_vf_vsi(vf);
-+	if (!vsi) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	insertion_support = &vf->vlan_v2_caps.offloads.insertion_support;
-+	if (!ice_vc_valid_vlan_setting_msg(insertion_support, insertion_msg)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	ethertype_setting = insertion_msg->outer_ethertype_setting;
-+	if (ethertype_setting &&
-+	    ice_vc_ena_vlan_offload(vsi, vsi->outer_vlan_ops.ena_insertion,
-+				    ethertype_setting)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	ethertype_setting = insertion_msg->inner_ethertype_setting;
-+	if (ethertype_setting &&
-+	    ice_vc_ena_vlan_offload(vsi, vsi->inner_vlan_ops.ena_insertion,
-+				    ethertype_setting)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+out:
-+	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_ENABLE_VLAN_INSERTION_V2, v_ret, NULL, 0);
-+}
-+
-+/**
-+ * ice_vc_dis_vlan_insertion_v2_msg
-+ * @vf: VF the message was received from
-+ * @msg: message received from the VF
-+ *
-+ * virthcnl handler for VIRTCHNL_OP_DISABLE_VLAN_INSERTION_V2
-+ */
-+static int ice_vc_dis_vlan_insertion_v2_msg(struct ice_vf *vf, u8 *msg)
-+{
-+	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
-+	struct virtchnl_vlan_supported_caps *insertion_support;
-+	struct virtchnl_vlan_setting *insertion_msg =
-+		(struct virtchnl_vlan_setting *)msg;
-+	u32 ethertype_setting;
-+	struct ice_vsi *vsi;
-+
-+	if (!test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	if (!ice_vc_isvalid_vsi_id(vf, insertion_msg->vport_id)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	vsi = ice_get_vf_vsi(vf);
-+	if (!vsi) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	insertion_support = &vf->vlan_v2_caps.offloads.insertion_support;
-+	if (!ice_vc_valid_vlan_setting_msg(insertion_support, insertion_msg)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	ethertype_setting = insertion_msg->outer_ethertype_setting;
-+	if (ethertype_setting && vsi->outer_vlan_ops.dis_insertion(vsi)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+	ethertype_setting = insertion_msg->inner_ethertype_setting;
-+	if (ethertype_setting && vsi->inner_vlan_ops.dis_insertion(vsi)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto out;
-+	}
-+
-+out:
-+	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_DISABLE_VLAN_INSERTION_V2, v_ret, NULL, 0);
-+}
-+
- static struct ice_vc_vf_ops ice_vc_vf_dflt_ops = {
- 	.get_ver_msg = ice_vc_get_ver_msg,
- 	.get_vf_res_msg = ice_vc_get_vf_res_msg,
-@@ -4518,6 +5536,13 @@ static struct ice_vc_vf_ops ice_vc_vf_dflt_ops = {
- 	.handle_rss_cfg_msg = ice_vc_handle_rss_cfg,
- 	.add_fdir_fltr_msg = ice_vc_add_fdir_fltr,
- 	.del_fdir_fltr_msg = ice_vc_del_fdir_fltr,
-+	.get_offload_vlan_v2_caps = ice_vc_get_offload_vlan_v2_caps,
-+	.add_vlan_v2_msg = ice_vc_add_vlan_v2_msg,
-+	.remove_vlan_v2_msg = ice_vc_remove_vlan_v2_msg,
-+	.ena_vlan_stripping_v2_msg = ice_vc_ena_vlan_stripping_v2_msg,
-+	.dis_vlan_stripping_v2_msg = ice_vc_dis_vlan_stripping_v2_msg,
-+	.ena_vlan_insertion_v2_msg = ice_vc_ena_vlan_insertion_v2_msg,
-+	.dis_vlan_insertion_v2_msg = ice_vc_dis_vlan_insertion_v2_msg,
+ 		dev_err(dev, "Error removing VLAN %d on VSI %i error: %d\n",
+ 			vlan->vid, vsi->vsi_num, err);
+-	}
+ 
+ 	return err;
+ }
+diff --git a/drivers/net/ethernet/intel/ice/ice_vsi_vlan_ops.h b/drivers/net/ethernet/intel/ice/ice_vsi_vlan_ops.h
+index 30d02d2b8e5f..5b47568f6256 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vsi_vlan_ops.h
++++ b/drivers/net/ethernet/intel/ice/ice_vsi_vlan_ops.h
+@@ -23,11 +23,6 @@ struct ice_vsi_vlan_ops {
+ 	int (*set_port_vlan)(struct ice_vsi *vsi, struct ice_vlan *vlan);
  };
  
- void ice_vc_set_dflt_vf_ops(struct ice_vc_vf_ops *ops)
-@@ -4746,7 +5771,7 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
- 	case VIRTCHNL_OP_GET_VF_RESOURCES:
- 		err = ops->get_vf_res_msg(vf, msg);
- 		if (ice_vf_init_vlan_stripping(vf))
--			dev_err(dev, "Failed to initialize VLAN stripping for VF %d\n",
-+			dev_dbg(dev, "Failed to initialize VLAN stripping for VF %d\n",
- 				vf->vf_id);
- 		ice_vc_notify_vf_link_state(vf);
- 		break;
-@@ -4811,6 +5836,27 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
- 	case VIRTCHNL_OP_DEL_RSS_CFG:
- 		err = ops->handle_rss_cfg_msg(vf, msg, false);
- 		break;
-+	case VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS:
-+		err = ops->get_offload_vlan_v2_caps(vf);
-+		break;
-+	case VIRTCHNL_OP_ADD_VLAN_V2:
-+		err = ops->add_vlan_v2_msg(vf, msg);
-+		break;
-+	case VIRTCHNL_OP_DEL_VLAN_V2:
-+		err = ops->remove_vlan_v2_msg(vf, msg);
-+		break;
-+	case VIRTCHNL_OP_ENABLE_VLAN_STRIPPING_V2:
-+		err = ops->ena_vlan_stripping_v2_msg(vf, msg);
-+		break;
-+	case VIRTCHNL_OP_DISABLE_VLAN_STRIPPING_V2:
-+		err = ops->dis_vlan_stripping_v2_msg(vf, msg);
-+		break;
-+	case VIRTCHNL_OP_ENABLE_VLAN_INSERTION_V2:
-+		err = ops->ena_vlan_insertion_v2_msg(vf, msg);
-+		break;
-+	case VIRTCHNL_OP_DISABLE_VLAN_INSERTION_V2:
-+		err = ops->dis_vlan_insertion_v2_msg(vf, msg);
-+		break;
- 	case VIRTCHNL_OP_UNKNOWN:
- 	default:
- 		dev_err(dev, "Unsupported opcode %d from VF %d\n", v_opcode,
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-index 4110847e0699..4f4961043638 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-@@ -95,6 +95,13 @@ struct ice_vc_vf_ops {
- 	int (*handle_rss_cfg_msg)(struct ice_vf *vf, u8 *msg, bool add);
- 	int (*add_fdir_fltr_msg)(struct ice_vf *vf, u8 *msg);
- 	int (*del_fdir_fltr_msg)(struct ice_vf *vf, u8 *msg);
-+	int (*get_offload_vlan_v2_caps)(struct ice_vf *vf);
-+	int (*add_vlan_v2_msg)(struct ice_vf *vf, u8 *msg);
-+	int (*remove_vlan_v2_msg)(struct ice_vf *vf, u8 *msg);
-+	int (*ena_vlan_stripping_v2_msg)(struct ice_vf *vf, u8 *msg);
-+	int (*dis_vlan_stripping_v2_msg)(struct ice_vf *vf, u8 *msg);
-+	int (*ena_vlan_insertion_v2_msg)(struct ice_vf *vf, u8 *msg);
-+	int (*dis_vlan_insertion_v2_msg)(struct ice_vf *vf, u8 *msg);
- };
+-static inline bool ice_is_dvm_ena(struct ice_hw __always_unused *hw)
+-{
+-	return false;
+-}
+-
+ void ice_vsi_init_vlan_ops(struct ice_vsi *vsi);
+ struct ice_vsi_vlan_ops *ice_get_compat_vsi_vlan_ops(struct ice_vsi *vsi);
  
- /* VF information structure */
-@@ -121,6 +128,7 @@ struct ice_vf {
- 	DECLARE_BITMAP(txq_ena, ICE_MAX_RSS_QS_PER_VF);
- 	DECLARE_BITMAP(rxq_ena, ICE_MAX_RSS_QS_PER_VF);
- 	struct ice_vlan port_vlan_info;	/* Port VLAN ID, QoS, and TPID */
-+	struct virtchnl_vlan_caps vlan_v2_caps;
- 	u8 pf_set_mac:1;		/* VF MAC address set by VMM admin */
- 	u8 trusted:1;
- 	u8 spoofchk:1;
 -- 
 2.31.1
 
