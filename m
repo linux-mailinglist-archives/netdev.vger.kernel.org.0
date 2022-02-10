@@ -2,117 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78CC34B09FC
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 10:51:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D78F94B0A29
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 11:02:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239124AbiBJJvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 04:51:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38772 "EHLO
+        id S238582AbiBJKBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 05:01:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239098AbiBJJvE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 04:51:04 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1CC1DD;
-        Thu, 10 Feb 2022 01:51:05 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id x15so6858776pfr.5;
-        Thu, 10 Feb 2022 01:51:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IPIAr9B88raXJ/R9UN+5dNl5AB4bp+Kz/ykYnflmqHA=;
-        b=dhXOZo2rgw542LFautHg/acRTCvI7pYc0k6jPgg//YHRpMEZbS/OOzKO+NiHAVbYrL
-         UlhhyLd006X34XKYbLo6F7KrA9bTmE4BWOQ8/Z7tZhKaIgAS8qhLLINjOpi5G13OKb8O
-         ZysLk7NigCmKsKdT5ut00MRD3yQvDEeW1Td3zpsl7ZZFsvfQZ9fnzJnBVTWmo9BRS+2c
-         gjx0nnF16sW0ZmId+xwpXiMpAFIj0D7HwuzskWrgOeQU9paH3oblUBz5SkQBWByAI6If
-         tHC8oAFTLbFkDdNjOL+F/Rm8uHslOfAGlu3PwSA2IEgEoXqPoV6xfI2N8iZP3SzHkZto
-         CGQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IPIAr9B88raXJ/R9UN+5dNl5AB4bp+Kz/ykYnflmqHA=;
-        b=SXjn/nxrNj8IC0OzmnOoaAWrPX0vd7FVKnrnzUF25Z5d91qmhoXAaYN9l6MXbeiuli
-         EiRN+AHYzR1IdJLFeg7TruXsh30l/KRiL5uU5lm7nkcLopc02iMwFyPzkspxZvDFggz3
-         Gx7zlItC/q7xRqsFaQ8lyT9C5DniGhcQK4YStgCk+SXR0ZoLgHsGqgCDxaKqGkPho+Ir
-         sI/AMG00J3bngiSPnTmPcYtJ6erGG7OT87C7tL0UmPKD9hsqs7cWsf8yyt1Qi4PWjMIM
-         EizT3JsJNxoStsqC3QkF81WOypnYb86aUOXU+AfoGkv/4TsM5ehXN9CIDj9gqwka94MY
-         PqYQ==
-X-Gm-Message-State: AOAM533akew1FSto4bYy42epHVE/T8FQsH3lT584yDzZkoIHyKuMqHia
-        Wv8d70HyAVknkbLsX9J9S8IKgmVhyDE=
-X-Google-Smtp-Source: ABdhPJxshsMoUNHED4iI0+dVLTxCdLlhnwR3l93Vq2qNJXwUGN0ZEQctX616cEAwwU4/xqQQ7N/7ag==
-X-Received: by 2002:a05:6a00:b85:: with SMTP id g5mr6806473pfj.27.1644486664676;
-        Thu, 10 Feb 2022 01:51:04 -0800 (PST)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id c11sm15767939pgl.92.2022.02.10.01.51.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 01:51:04 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     netfilter-devel@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Hangbin Liu <liuhangbin@gmail.com>, Yi Chen <yiche@redhat.com>
-Subject: [PATCHv2 nf] selftests: netfilter: disable rp_filter on router
-Date:   Thu, 10 Feb 2022 17:50:56 +0800
-Message-Id: <20220210095056.961984-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S234215AbiBJKBy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 05:01:54 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F44C06;
+        Thu, 10 Feb 2022 02:01:55 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 64EF01F3A3;
+        Thu, 10 Feb 2022 10:01:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644487314; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kpIvMALIc+t855APyoHsITk4A3Z//kVWKUUyv5HYwBg=;
+        b=O+09E0jN1+FVpCzb4OlzPMBKDq4A4BXqWd4OMXi0Vdymd/uVM6cG1HRDxUit+p72x6DkpI
+        z4EHqKwTf2L4UVInC7nVTbMQO2eqjUtI2G+Zw0dkxAp9icw/vy4TXmHiwrGpfj56ZAiaV9
+        xVfyB2SlCg2pBx9gEsslBPSA/q2VTpo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644487314;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kpIvMALIc+t855APyoHsITk4A3Z//kVWKUUyv5HYwBg=;
+        b=ye+ZukJrEdpKaZcnmOqxPyUm7MkerOHdf0MXH6fVaqSFPhULUqRcjhq4trIq+42hJLRmWH
+        E7mtxfRzGRhFqlCg==
+Received: from kunlun.suse.cz (unknown [10.100.128.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 4BE00A3B84;
+        Thu, 10 Feb 2022 10:01:54 +0000 (UTC)
+Date:   Thu, 10 Feb 2022 11:01:53 +0100
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Shung-Hsi Yu <shung-hsi.yu@suse.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: Re: BTF compatibility issue across builds
+Message-ID: <20220210100153.GA90679@kunlun.suse.cz>
+References: <YfK18x/XrYL4Vw8o@syu-laptop>
+ <8d17226b-730f-5426-b1cc-99fe43483ed1@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8d17226b-730f-5426-b1cc-99fe43483ed1@fb.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some distros may enalbe rp_filter by default. After ns1 change addr to
-10.0.2.99 and set default router to 10.0.2.1, while the connected router
-address is still 10.0.1.1. The router will not reply the arp request
-from ns1. Fix it by setting the router's veth0 rp_filter to 0.
+Hello,
 
-Before the fix:
-  # ./nft_fib.sh
-  PASS: fib expression did not cause unwanted packet drops
-  Netns nsrouter-HQkDORO2 fib counter doesn't match expected packet count of 1 for 1.1.1.1
-  table inet filter {
-          chain prerouting {
-                  type filter hook prerouting priority filter; policy accept;
-                  ip daddr 1.1.1.1 fib saddr . iif oif missing counter packets 0 bytes 0 drop
-                  ip6 daddr 1c3::c01d fib saddr . iif oif missing counter packets 0 bytes 0 drop
-          }
-  }
+On Mon, Jan 31, 2022 at 09:36:44AM -0800, Yonghong Song wrote:
+> 
+> 
+> On 1/27/22 7:10 AM, Shung-Hsi Yu wrote:
+> > Hi,
+> > 
+> > We recently run into module load failure related to split BTF on openSUSE
+> > Tumbleweed[1], which I believe is something that may also happen on other
+> > rolling distros.
+> > 
+> > The error looks like the follow (though failure is not limited to ipheth)
+> > 
+> >      BPF:[103111] STRUCT BPF:size=152 vlen=2 BPF: BPF:Invalid name BPF:
+> > 
+> >      failed to validate module [ipheth] BTF: -22
+> > 
+> > The error comes down to trying to load BTF of *kernel modules from a
+> > different build* than the runtime kernel (but the source is the same), where
+> > the base BTF of the two build is different.
+> > 
+> > While it may be too far stretched to call this a bug, solving this might
+> > make BTF adoption easier. I'd natively think that we could further split
+> > base BTF into two part to avoid this issue, where .BTF only contain exported
+> > types, and the other (still residing in vmlinux) holds the unexported types.
+> 
+> What is the exported types? The types used by export symbols?
+> This for sure will increase btf handling complexity.
 
-After the fix:
-  # ./nft_fib.sh
-  PASS: fib expression did not cause unwanted packet drops
-  PASS: fib expression did drop packets for 1.1.1.1
-  PASS: fib expression did drop packets for 1c3::c01d
+And it will not actually help.
 
-Fixes: 82944421243e ("selftests: netfilter: add fib test case")
-Signed-off-by: Yi Chen <yiche@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
-v2: no need to disable rp_filter on router veth1
----
- tools/testing/selftests/netfilter/nft_fib.sh | 1 +
- 1 file changed, 1 insertion(+)
+We have modversion ABI which checks the checksum of the symbols that the
+module imports and fails the load if the checksum for these symbols does
+not match. It's not concerned with symbols not exported, it's not
+concerned with symbols not used by the module. This is something that is
+sustainable across kernel rebuilds with minor fixes/features and what
+distributions watch for.
 
-diff --git a/tools/testing/selftests/netfilter/nft_fib.sh b/tools/testing/selftests/netfilter/nft_fib.sh
-index 6caf6ac8c285..695a1958723f 100755
---- a/tools/testing/selftests/netfilter/nft_fib.sh
-+++ b/tools/testing/selftests/netfilter/nft_fib.sh
-@@ -174,6 +174,7 @@ test_ping() {
- ip netns exec ${nsrouter} sysctl net.ipv6.conf.all.forwarding=1 > /dev/null
- ip netns exec ${nsrouter} sysctl net.ipv4.conf.veth0.forwarding=1 > /dev/null
- ip netns exec ${nsrouter} sysctl net.ipv4.conf.veth1.forwarding=1 > /dev/null
-+ip netns exec ${nsrouter} sysctl net.ipv4.conf.veth0.rp_filter=0 > /dev/null
- 
- sleep 3
- 
--- 
-2.31.1
+Now with BTF the situation is vastly different. There are at least three
+bugs:
 
+ - The BTF check is global for all symbols, not for the symbols the
+   module uses. This is not sustainable. Given the BTF is supposed to
+   allow linking BPF programs that were built in completely different
+   environment with the kernel it is completely within the scope of BTF
+   to solve this problem, it's just neglected.
+ - It is possible to load modules with no BTF but not modules with
+   non-matching BTF. Surely the non-matching BTF could be discarded.
+ - BTF is part of vermagic. This is completely pointless since modules
+   without BTF can be loaded on BTF kernel. Surely it would not be too
+   difficult to do the reverse as well. Given BTF must pass extra check
+   to be used having it in vermagic is just useless moise.
+
+> > Does that sound like something reasonable to work on?
+> > 
+> > 
+> > ## Root case (in case anyone is interested in a verbose version)
+> > 
+> > On openSUSE Tumbleweed there can be several builds of the same source. Since
+> > the source is the same, the binaries are simply replaced when a package with
+> > a larger build number is installed during upgrade.
+> > 
+> > In our case, a rebuild is triggered[2], and resulted in changes in base BTF.
+> > More precisely, the BTF_KIND_FUNC{,_PROTO} of i2c_smbus_check_pec(u8 cpec,
+> > struct i2c_msg *msg) and inet_lhash2_bucket_sk(struct inet_hashinfo *h,
+> > struct sock *sk) was added to the base BTF of 5.15.12-1.3. Those functions
+> > are previously missing in base BTF of 5.15.12-1.1.
+> 
+> As stated in [2] below, I think we should understand why rebuild is
+> triggered. If the rebuild for vmlinux is triggered, why the modules cannot
+> be rebuild at the same time?
+
+They do get rebuilt. However, if you are running the kernel and install
+the update you get the new modules with the old kernel. If the install
+script fails to copy the kernel to your EFI partition based on the fact
+a kernel with the same filename is alreasy there you get the same.
+
+If you have 'stable' distribution adding new symbols is normal and it
+does not break module loading without BTF but it breaks BTF.
+
+Thanks
+
+Michal
