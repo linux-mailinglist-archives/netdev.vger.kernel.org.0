@@ -2,97 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBD5C4B08F0
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 09:56:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BADB4B08F4
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 09:56:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238043AbiBJI4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 03:56:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53984 "EHLO
+        id S238070AbiBJI4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 03:56:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237646AbiBJI4G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 03:56:06 -0500
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC18D4A;
-        Thu, 10 Feb 2022 00:56:06 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V43bw9e_1644483360;
-Received: from 30.225.24.25(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V43bw9e_1644483360)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 10 Feb 2022 16:56:01 +0800
-Message-ID: <fb71bcc5-77ad-698c-b025-36e1910f868f@linux.alibaba.com>
-Date:   Thu, 10 Feb 2022 16:56:00 +0800
+        with ESMTP id S238065AbiBJI41 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 03:56:27 -0500
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA79CD70;
+        Thu, 10 Feb 2022 00:56:28 -0800 (PST)
+Received: from netfilter.org (unknown [78.30.32.163])
+        by mail.netfilter.org (Postfix) with ESMTPSA id AA463601BA;
+        Thu, 10 Feb 2022 09:56:13 +0100 (CET)
+Date:   Thu, 10 Feb 2022 09:56:25 +0100
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        Florian Westphal <fw@strlen.de>, Yi Chen <yiche@redhat.com>
+Subject: Re: [PATCH nf] selftests: netfilter: disable rp_filter on router
+Message-ID: <YgTTOWm0cN56pY+h@salvia>
+References: <20220210033205.928458-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.0
-Subject: Re: [PATCH net] net/smc: Avoid overwriting the copies of clcsock
- callback functions
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1644415853-46641-1-git-send-email-guwen@linux.alibaba.com>
- <YgR9XrT8cATDP4Zx@TonyMac-Alibaba>
-From:   Wen Gu <guwen@linux.alibaba.com>
-In-Reply-To: <YgR9XrT8cATDP4Zx@TonyMac-Alibaba>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220210033205.928458-1-liuhangbin@gmail.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2022/2/10 10:50 am, Tony Lu wrote:
-
-> I am wondering that there is a potential racing. If ->use_fallback is
-> setted to true, but the rest of replacing process is on the way, others
-> who tested and passed ->use_fallback, they would get old value before
-> replacing.
+On Thu, Feb 10, 2022 at 11:32:05AM +0800, Hangbin Liu wrote:
+> Some distros may enalbe rp_filter by default. After ns1 change addr to
+> 10.0.2.99 and set default router to 10.0.2.1, while the connected router
+> address is still 10.0.1.1. The router will not reply the arp request
+> from ns1. Fix it by setting the router's veth0 rp_filter to 0.
 > 
+> Before the fix:
+>   # ./nft_fib.sh
+>   PASS: fib expression did not cause unwanted packet drops
+>   Netns nsrouter-HQkDORO2 fib counter doesn't match expected packet count of 1 for 1.1.1.1
+>   table inet filter {
+>           chain prerouting {
+>                   type filter hook prerouting priority filter; policy accept;
+>                   ip daddr 1.1.1.1 fib saddr . iif oif missing counter packets 0 bytes 0 drop
+>                   ip6 daddr 1c3::c01d fib saddr . iif oif missing counter packets 0 bytes 0 drop
+>           }
+>   }
+> 
+> After the fix:
+>   # ./nft_fib.sh
+>   PASS: fib expression did not cause unwanted packet drops
+>   PASS: fib expression did drop packets for 1.1.1.1
+>   PASS: fib expression did drop packets for 1c3::c01d
 
-Thanks for your comments.
-
-I understand your concern. But when I went through all the places that
-check for smc->use_fallback, I haven't found the exact potential racing
-point. Please point out if I missed something. Thank you.
-
-In my humble opinion, most of the operations after smc->use_fallback check
-have no direct relationship with what did in smc_switch_to_fallback() (the
-replacement of clcsock callback functions), except for which in smc_sendmsg(),
-smc_recvmsg() and smc_sendpage():
-
-smc_sendmsg():
-
-	if (smc->use_fallback) {
-		rc = smc->clcsock->ops->sendmsg(smc->clcsock, msg, len);
-	}
-
-smc_recvmsg():
-
-	if (smc->use_fallback) {
-		rc = smc->clcsock->ops->recvmsg(smc->clcsock, msg, len, flags);
-	}
-
-smc_sendpage():
-
-	if (smc->use_fallback) {
-		rc = kernel_sendpage(smc->clcsock, page, offset,
-				     size, flags);
-	}
-
-If smc->use_fallback is set to true, but callback functions (sk_data_ready ...)
-of clcsock haven't been replaced yet at this moment, there may be a racing as
-you described.
-
-But it won't happen, because fallback must already be done before sending and receiving.
-
-What do you think about it?
-
-Thanks,
-Wen Gu
-
+Applied
