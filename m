@@ -2,60 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 957014B10EB
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 15:51:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 194334B10FA
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 15:53:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243221AbiBJOvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 09:51:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38856 "EHLO
+        id S243282AbiBJOxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 09:53:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238303AbiBJOvJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 09:51:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D67F2EA1;
-        Thu, 10 Feb 2022 06:51:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S243273AbiBJOw7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 09:52:59 -0500
+X-Greylist: delayed 13827 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 06:53:00 PST
+Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4330B96;
+        Thu, 10 Feb 2022 06:53:00 -0800 (PST)
+Received: from [IPV6:2003:e9:d718:7a06:664f:fc39:1c1a:aa99] (p200300e9d7187a06664ffc391c1aaa99.dip0.t-ipconnect.de [IPv6:2003:e9:d718:7a06:664f:fc39:1c1a:aa99])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 725C361AC3;
-        Thu, 10 Feb 2022 14:51:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A231C004E1;
-        Thu, 10 Feb 2022 14:51:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644504669;
-        bh=lRD3lBDFEjNGr8K6VaXM+s1gigm4CwkCeahOEMFr7wI=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=KMZqYCBbcthMl1mXPaGgp3+weM0K5VQvzyDdObE8aENPyWjeaAK/cWrH/bEV9yujA
-         BndPt2/E0Kdtf2JHJKPGO7K343yIuOlkBm1bWhltGfDLYWnWOdR14AMw9lmyDl5nE7
-         tACxdqbHzYrRGCsBRfRUq4B0SapvMn8dgJanC8aNzBD0BHURduPhVDaf5bpZF+WV9/
-         npsY+Nbnnvnwm3j44WnYbu3FMdoqdRS6FRp/pH7pbSh2JyOLl9SDDnaOG3B4Q0KsQj
-         aAct2uel6hwPigln7QwJB0ASNo/qj4idSNBLgXdLF2NmmHjasrkUI1rMe+uc8weZEg
-         bkMYhlD2Bl9sQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-mmc@vger.kernel.org,
-        Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v9 05/24] wfx: add main.c/main.h
-References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com>
-        <2898137.rlL8Y2EFai@pc-42> <87r18a3irb.fsf@kernel.org>
-        <4055223.VTxhiZFAix@pc-42>
-Date:   Thu, 10 Feb 2022 16:51:03 +0200
-In-Reply-To: <4055223.VTxhiZFAix@pc-42> (=?utf-8?B?IkrDqXLDtG1l?=
- Pouiller"'s message of "Thu,
-        10 Feb 2022 15:41:39 +0100")
-Message-ID: <87ee4a3hd4.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id DFCB2C0434;
+        Thu, 10 Feb 2022 15:52:56 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1644504777;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=woAICiXlaRHnaCbGqhU6WRh9hSqXCnJr+zBk1afWk5Y=;
+        b=Hj0VrcmolVGinTGiSegVceNcP89MPRiSuGcgJ5yxtnyqnrHPObplvfrGM718gMf5lYOKKx
+        S2nZSaJYCKah6Bs/curcJRfTMtFdeshd+qAzvjDDDBCVau42oYemk2EAM1mdQs/c4JXvpz
+        42tQ+r/lvhUh9S89whYnTh85O+ts5zOJuCxPAUqT05Vg+LYNgqNG3BgmxxECWpGEvMbM9E
+        KFkWjmPna2Hf6XwRU+2J+eCGNzqSJYx4ZQ4XmUGu5MjOX5CbPWEiCZQPt6KeHGWrhIdgX2
+        VCuEu7vbhHNzJ50kFVDlJEJYSOTgqjwpEXlahq8+gOwbLr/myjGf4BSCcT7YJg==
+Message-ID: <75c6cf8c-c7cc-4a5e-1b54-519bf51a7540@datenfreihafen.org>
+Date:   Thu, 10 Feb 2022 15:52:56 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH wpan-next v3 0/4] ieee802154: Improve durations handling
+Content-Language: en-US
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Xue Liu <liuxuenetmail@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harry Morris <harrymorris12@gmail.com>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+References: <20220201180629.93410-1-miquel.raynal@bootlin.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20220201180629.93410-1-miquel.raynal@bootlin.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -64,45 +69,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com> writes:
 
-> On Thursday 10 February 2022 15:20:56 CET Kalle Valo wrote:
->>=20
->> J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com> writes:
->>=20
->> > Kalle, is this function what you expected? If it is right for you, I am
->> > going to send it to the staging tree.
->>=20
->> Looks better, but I don't get why '{' and '}' are still needed. Ah, does
->> the firmware require to have them?
->
-> Indeed. If '{' and '}' are not present, I guarantee the firmware will ret=
-urn
-> an error (or assert). However, I am more confident in the driver than in =
-the
-> firmware to report errors to the user.
+Hello.
 
-Agreed.
+On 01.02.22 19:06, Miquel Raynal wrote:
+> These patches try to enhance the support of the various delays by adding
+> into the core the necessary logic to derive the actual symbol duration
+> (and then the lifs/sifs durations) depending on the protocol used. The
+> symbol duration type is also updated to fit smaller numbers.
+> 
+> Having the symbol durations properly set is a mandatory step in order to
+> use the scanning feature that will soon be introduced.
+> 
+> Changes since v2:
+> * Added the ca8210 driver fix.
+> * Fully dropped my rework of the way channels are advertised by device
+>    drivers. Adapted instead the main existing helper to derive durations
+>    based on the page/channel couple.
+> 
+> Miquel Raynal (4):
+>    net: ieee802154: ca8210: Fix lifs/sifs periods
+>    net: mac802154: Convert the symbol duration into nanoseconds
+>    net: mac802154: Set durations automatically
+>    net: ieee802154: Drop duration settings when the core does it already
+> 
+>   drivers/net/ieee802154/at86rf230.c | 33 ------------------
+>   drivers/net/ieee802154/atusb.c     | 33 ------------------
+>   drivers/net/ieee802154/ca8210.c    |  3 --
+>   drivers/net/ieee802154/mcr20a.c    |  5 ---
+>   include/net/cfg802154.h            |  6 ++--
+>   net/mac802154/cfg.c                |  1 +
+>   net/mac802154/main.c               | 54 +++++++++++++++++++++++++++---
+>   7 files changed, 55 insertions(+), 80 deletions(-)
+> 
 
-> If there is no other comment, I am going to:
->   - submit this change to the staging tree
 
-Good, it's important that you get all your changes to the staging tree
-before the next merge window.
+This patchset has been applied to the wpan-next tree and will be
+part of the next pull request to net-next. Thanks!
 
->   - publish the tool that generate this new format
->   - submit the PDS files referenced in bus_{sdio,spi}.c to linux-firmware
->   - send the v10 of this PR
-
-I'm not sure if there's a need to send a full patchset anymore? We are
-so close now anyway and the full driver is available from the staging
-tree, at least that's what I will use from now on when reviewing wfx.
-
-What about the Device Tree bindings? That needs to be acked by the DT
-maintainers, so that's good to submit as a separate patch for review.
-
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+regards
+Stefan Schmidt
