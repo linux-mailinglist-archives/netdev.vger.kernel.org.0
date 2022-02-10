@@ -2,119 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E13A4B118B
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 16:21:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2459B4B11A1
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 16:25:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243539AbiBJPVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 10:21:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55360 "EHLO
+        id S243611AbiBJPYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 10:24:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239853AbiBJPVL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 10:21:11 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2131.outbound.protection.outlook.com [40.107.244.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C701B3;
-        Thu, 10 Feb 2022 07:21:09 -0800 (PST)
+        with ESMTP id S243607AbiBJPYD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 10:24:03 -0500
+X-Greylist: delayed 4208 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 07:24:04 PST
+Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.111.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DB0CE5
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 07:24:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1644506642;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=3ro4L0cP9mg5Ij0iz/ZFdm9NWBjL+zFm3TVBR3Bgpt0=;
+        b=c+Cixldm34Aej/mCgQcbW2jS9QJCqGsrSJ4U0haRgwq8HeKBGidY8b0cWOiz6uwFm3aJiG
+        sZXdSj5lW/YQ7VTIHfj3xuHGzgC3WNT4flyAbxBbFzh8AaURjN9y5ELEn71yVpICmuYy7O
+        S2LiSxPBWd9YIvRAFd+8kPBPVid8sx8=
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com
+ (mail-db3eur04lp2052.outbound.protection.outlook.com [104.47.12.52]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-30-X8HQKP2fNzSQ7djBY0eNqg-1; Thu, 10 Feb 2022 16:24:00 +0100
+X-MC-Unique: X8HQKP2fNzSQ7djBY0eNqg-1
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JwNqWn3ghDymSIcIwBZ+otG9JN3KKTUAov5kOHqLWFbL561Tg8JYMlA+h3AAJ2VRSAP1MITBTji+lI/z/WlNKsC2FsHj8GmXjZ+0x0GIc648x7zI42dNJwDeuu+DcD0Cw9x2r30hWDjHOW5hCsOAHhQTbL9fSbne0Yi1PXjSEWqHoZc+tRIjO/4eYpK3exZR7vVGvh1FoCqZY2X8b5C5hN/dq8PGogk+xLG7kHmQMCzlIyKyWLAjEFJ+Inj4EhnqiI7yY9C8DN29vTycPN3xbV1rDNVr2ZzzdpROt+Tr2I7g0FuUEh/GzVdUbV4djwaNJ8I0QXy8FeRUem6dzI02iw==
+ b=BG+omBvAk0IVDE1Ko6/kzXGRDLl1FFepBvBEiDugxv/euhAX6xn6surCsDmRlx7p+vpcbVfb0fv6SrsoNjmKCKEs/Gteq3ADb0QOuYOMDEBkGY7f9WJqKda0+/u+3dleEhc8oiVNTu0AZFbMmZL5vYZD2ZFBzs9RcWM1a8p8xiLmVd+GnC33lAp9IyqRdvfkrf9VjyF7/E32T54YPvtj+jv7nwBE/0Gmn8HbO4E8IyzcvcAv8VreXyLqmwUJWqb/84041WT6pd387/ofTPrV7D8BHjPj9bUSA3GAb8b1DssYf/cVFN+qYHT6aV4gteshdHHgWKPU92QaolgoGZF0gg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mlkUZqjvYrQRpAJVQ3r+I7VBSVyWP/0mue1gbmZtjq0=;
- b=mI5D5G/rmi0Crt/KnNT5EFWKpwm3LoGyW0UlQm1tgggKVfqWZ4dlDj3rOkLDaGQjMg69jSgAUImU97u5WraeV1i+Fs1nfrEHH+kSJqfVCl5pOUCuqJESYzQDXUXS9MmjDPb84F14vaqdVnA0yG3qrXHV2J7vgHmnU8jPdKYL0MeLxE/twxkxaoH+QcbfSzi4mdG8KYcierZ8xYOh8XbA/zPVvoc9BuxYZ8POxUQrj6KymE/ysq3ZKCEPJQzxyDKjkbNXJJ5ZWBlmFSpCIz05GjG5qA7S+hOlT6roFzeNEanY6TFAIPuVulSWVcFSjn/YOsSqkL58ehd7g26wUJaP8A==
+ bh=uqw5ABk4tQqk0VSKMzn0VA9nTetbjsuBoqgpODD2Dpo=;
+ b=KWZpOiY1C46yXv0ukZywWINv2Tq0Yxh16awFwblboT/KIvRHr660UkzEROjJfV0joQUW/9z6wTGkGop4nClhwX2EWyxcA06CE8KuWLq5XsCUC++dXJjsgaF64yIbls6otUP/HLOkaY8ylNpqb4y045M/u1FGDMpHsa0mmlnJMSjc7hXO+JWn4vZG6hXy57t6+uyvr+2pscRx7a0Nw7JdOolywZ8fpj12HkP+NTxzRIDj3vkJgbukjmVhgxiG6OlR06cgJYBFOquRS3ZexTjYc+69NTm/b3m6PpwyIwmEE+2j8xJ+K+yaPzsLkrm/nwv2J8F5Tqhb27eJNz7Snu17vQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mlkUZqjvYrQRpAJVQ3r+I7VBSVyWP/0mue1gbmZtjq0=;
- b=HEAbYAKKKlf1OziLncPHhoqVn8RF3m+nO6Gm4A6152p/R8nrw6BVjyQpS7E8n4E6b/tKQhOGSDFwsHOG0KmpuHHJUTmauamgglXUGdrc/sWrJgZoGI8Q3KshscHoBYZrejyvCy7bofWubV9RkHZuTaRFASwrAfGJRfiVx/Rcm/Y=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by DM5PR1001MB2121.namprd10.prod.outlook.com
- (2603:10b6:4:32::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 10 Feb
- 2022 15:21:06 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::7c:dc80:7f24:67c5]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::7c:dc80:7f24:67c5%6]) with mapi id 15.20.4975.012; Thu, 10 Feb 2022
- 15:21:06 +0000
-Date:   Thu, 10 Feb 2022 07:21:03 -0800
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: Re: [PATCH v6 net-next 5/5] net: mscc: ocelot: use bulk reads for
- stats
-Message-ID: <20220210152103.GB354478@euler>
-References: <20220210041345.321216-1-colin.foster@in-advantage.com>
- <20220210041345.321216-6-colin.foster@in-advantage.com>
- <20220210103636.gtkky2l2q7jyn7y5@skbuf>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220210103636.gtkky2l2q7jyn7y5@skbuf>
-X-ClientProxiedBy: CO1PR15CA0063.namprd15.prod.outlook.com
- (2603:10b6:101:1f::31) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com (2603:10a6:10:22::23)
+ by DB9PR04MB8299.eurprd04.prod.outlook.com (2603:10a6:10:241::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Thu, 10 Feb
+ 2022 15:24:00 +0000
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::24bf:3192:1d1c:4115]) by DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::24bf:3192:1d1c:4115%3]) with mapi id 15.20.4951.018; Thu, 10 Feb 2022
+ 15:24:00 +0000
+Message-ID: <68332064-3c38-fe81-b659-613940a6cfb1@suse.com>
+Date:   Thu, 10 Feb 2022 16:23:58 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+To:     =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>
+Content-Language: en-US
+CC:     USB list <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Oliver Neukum <oneukum@suse.com>
+Subject: possible integer overflow in CDC-NCM checks
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-ClientProxiedBy: AM5PR0101CA0034.eurprd01.prod.exchangelabs.com
+ (2603:10a6:206:16::47) To DB7PR04MB5050.eurprd04.prod.outlook.com
+ (2603:10a6:10:22::23)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e6ed054c-a070-40c7-97c0-08d9eca8f4fe
-X-MS-TrafficTypeDiagnostic: DM5PR1001MB2121:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1001MB21219D66AF51CDE3335CC58FA42F9@DM5PR1001MB2121.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:489;
+X-MS-Office365-Filtering-Correlation-Id: 98ba67bf-ef6b-43a5-f778-08d9eca95cb8
+X-MS-TrafficTypeDiagnostic: DB9PR04MB8299:EE_
+X-Microsoft-Antispam-PRVS: <DB9PR04MB82995DE95DAF4F1EF2919F04C72F9@DB9PR04MB8299.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: esYANxR+HpNjAzgLtvbTXZuEhVwqZgwn4L6pYErbnQxy5P6Bgth+y9sTpRDgyo9bjJmh+Litl8eZWOWkpErpnTa9PZOeMcXv4iN5XunTpMXACz8J4ieFXDDDm3ZI7ZqjoM30CjNdNxLZJauuTRkNMg3O0WZBcl/3ItgugST1qXkrR29nVqRVRhMR3haNvNs545HNHVC0oQKi0chzWEFNnTyh9ljqb3ezKrycuerjwF4TTYigsIf3yiox97fwdBfeS/lLcaGx7SMQm1+wyADToekgCO3vt/K7/P21HCr5RjKVETxdBRqD2t2fwDKOVa7jlE+D21FP8ybxrjb6HWX1vQ5GGf6vJuFI6AKqEq4eVKp6a32ckyIE0fxsR0/quvBO50ldWgzQN1CFWzOeHPjMh/Dbz6JVunZH1bMX+UbFA2OrDsPHNXbMGvH4xJAu1AT2e3RvFBB2U4R4UXyp0un4sSNvhBlmYHi02Y8lzsUS4TaRTbc57SIPCFuxKSyTjJjDGgu7/yPN0MPya+G4+klZEE5TPtsZZWCzyvDJPfxpYrSGLEq+OdJi4oAAb5fp6Te4d9bTYgq8ry8CwQS/S+jOeso/OfNJha6ccDl2a95KNofOYrOn3PU3BhrufDJEyLlqlKjCNoaEr2nE2eTYfdoz8mkfO2grfB6I3gXFFOfc1N3f17qW1g9KNLo3BfGjIcq6rEtrlNwRdcY1/IEFgp0/Cw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(39840400004)(376002)(346002)(136003)(42606007)(366004)(396003)(66946007)(1076003)(8676002)(9686003)(26005)(186003)(66476007)(4326008)(66556008)(6512007)(6486002)(33656002)(33716001)(38350700002)(6666004)(86362001)(6506007)(38100700002)(316002)(54906003)(6916009)(8936002)(2906002)(52116002)(508600001)(44832011)(5660300002)(83380400001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: WwLyGTu+838Oh2xip2GPfkfQKTrG3gf3831+8qZsFObBCsGxFLevwGykSJFXcWvJLa1S7uFzYbnOrJ0R2QOscY9sFihRgAozVp7nwvBhKsYyMHR+23NKU3cDafbtf0g34w3PnegQ0U4PdYZhULiRlzqshmaocWRzL3/rlCl+JIRD8n9B+BZxFwcPl6LXhpLIVx9TSvcyO4kaDBTzZcKeMTtt3xIjYaSBqdnfGpS9KWuDNnkubQ5mjaBnXl/QdBd8emCnkb/qixxvH/NwDyMJA5a8s7jm0YxVhCtFTgh7EW8AuHU4Ffup9oAdivcPNfrU1txskpcqOvWuRPbcW1KfRm3b7kr49FcJ8dHb8MuIsex7SIlY2y8WZ9PpmIPi1VWSKfNl7K7/skxUNX1myhjHDhMgOlUqRJ9Gu3LUv7l5EPusOD2V3Dk4bzRVeE939ZyDkLfPX2LN6K7PdJay7lFuM8Iap1gaNvA7aoOZqFV5hfJNz4UfyTL95S0MZG96fu8oXIE/fn9eH60GbVY1ViNGowdIYA8dvf5xevYLuwIxVLYkFLL3zMId/VJNik03YKHtPLcGLyh1hAqJfEG+jbR9T6hcsqjiN3XrY6zbO3KbFz7vTBU8lAjofhgsAUnodrJH6hIl0TDzzEP2GMs9tNNhginezH2iAQLFLCNLZsttL+tXPL/x84hqawgD3Fn7gRWAKsicxMkRxHxHp851njlvJxtf1vRGCb087CiJ7KpupRs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5050.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(508600001)(186003)(5660300002)(6506007)(6486002)(2906002)(316002)(4326008)(8936002)(6512007)(36756003)(66556008)(66476007)(66946007)(83380400001)(8676002)(38100700002)(31696002)(6916009)(54906003)(31686004)(86362001)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YNkJ3auWjbnaEuJaVx2HNv9ju/8bqFzMXMBDWbHQa5Q0S0WikqMeGZSPizmJ?=
- =?us-ascii?Q?nOQuxVgWVg/reo8w2rh3OFa3Zg07ZPtaBuysOq25KNRSRkEtG8mnhiqRePaM?=
- =?us-ascii?Q?Jn2HKVR3Tsgm1ZV3r7RxeBuvh9IBy3JO/Y8xROhqgAI8rOhJutvc72ug1YOe?=
- =?us-ascii?Q?95odSbptOepgDa/Ml8Eee6VNKeJqG3j2AVB8WxghDKVqy2LU6lITgaOatn/8?=
- =?us-ascii?Q?s+Mq4Ov09pfwIXMRKDsoBHNN3UNdRXcbInnxdvUA4gmoNLAjMjVMl+i1VnA8?=
- =?us-ascii?Q?FvODIg/Z267+5fsRPTC8T1NzggXO61EPTGfxxWSqV9NfpHndfoDs9tWij/pg?=
- =?us-ascii?Q?P3+hTPFuWmzbA7YetQEkZlA+tSlMjJw0yL3qF0UPHhNI9mUF/O9c9Yuu84cv?=
- =?us-ascii?Q?pmWJNR98GhM9/Wf5eYkCW4NXqMd5V2kuo+UiTvHgBPGVJ0rGthNPdo5SUTlT?=
- =?us-ascii?Q?W2HaYphQjDQZTodi7GCYfuXXYftRHYQA+lDYLkbrAenTEd/eC5cPbB9J2FWH?=
- =?us-ascii?Q?e7UUKWBN7PF/357FfL2qg+ZjqhgpukDRPLbaM9EL1o2wv/xhrQ+qxFsCxwpR?=
- =?us-ascii?Q?f5NVKtOw/f5UUR63YvIU7wd7hJ8pIUfTOxebWLbWMWDvQ/9e/c/j5p2n3pIb?=
- =?us-ascii?Q?EhWA00JlgD08LsWVri5fT1eSBMcpiAHcpSvcJoOgY8zSmAsCVuGFB/rJpcjj?=
- =?us-ascii?Q?YNwGGsFF+7mkepLFbgG/TEi+IrYsiyNC4BLWJPvQ+CKlIOG2uFGuTuG7edpY?=
- =?us-ascii?Q?ifJ2+G6KMXfW5YRMRK2ER7bL786e+p7u+MtYcE05TOmBrTOBekFkXXqAvaK4?=
- =?us-ascii?Q?JhtA0LByTnnmw3/2wUS9XiBK7oh9wwdI0YcvYLsg0Ff2I/UcdUWUjWakWgxy?=
- =?us-ascii?Q?4xYUgcQqkBhczP7C+b4r5bGUuqRi0LVsudBD/2yj2cYguWmi4Nt4U4yRlXZs?=
- =?us-ascii?Q?6V760zL7VpXBSFnWHX8ZW31FtwsT/xMJ1htY+0tqfLrUxhjecClt/MtEQitR?=
- =?us-ascii?Q?bu0nKrDL0ta8W21PdHHXmISd84mxhaddwahGClD7qBohAEQsN3CbF24tz6YD?=
- =?us-ascii?Q?Tsmc/ztWCba1M0r5g4nnv8SNchp5e6pWdZ8U0f33ga8LtWK3RyqKXE3yqKQr?=
- =?us-ascii?Q?InBxmC5oOoVho8R38TAGPe2PGgFp96XPQKeStt+gzVD2bNqL0iia/1NScIje?=
- =?us-ascii?Q?Fz8ql2lkOz9NZOXeolr1DIOkxVOLPsZgJzF4O67fIv3zPG4h1QV+AteHt1Uo?=
- =?us-ascii?Q?tvDsjfxNENty2edyfyH2TxGn/MXnZEg/s7n1g0ePv6Q1OBlickyvSN725ja1?=
- =?us-ascii?Q?WgR0XKGl21G7tBTbjCD+uxhn7BCA9YlabMt73RarLh2cycfvJC/HGxlANYlG?=
- =?us-ascii?Q?s/mHM1JpTyriySMwaJLeAdZwuaUYHc++liSwN2LrsDnni+3CijFFLlR/vG4i?=
- =?us-ascii?Q?HslnUE22k/FnSV1iL6NsioRQUy6Hy4krkqX6FFXOE1aM2CTXMibzIr4TkBWx?=
- =?us-ascii?Q?cIibvGNtd9YlXlczdx0UqrCa0SogGXwslAGioDWE5fSkCVC03WDdfgOZBDSi?=
- =?us-ascii?Q?Z6IXv8g+DSNs+m2/AVCzFbzayT7ofv5uVpaB7qPEKmTS1Gyc0wLMfJNS+wtI?=
- =?us-ascii?Q?FPRrkKg5isvV0Z4ivjaeile4ZwFzHl1RdeR7mFd/sKZRAW16ms3PmY/1ER9R?=
- =?us-ascii?Q?8Jqb64OpNSiAzLeQSWCQ/9t0W/g=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e6ed054c-a070-40c7-97c0-08d9eca8f4fe
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?50oLIMV6mDmZ7Be1C1cAWhCWS0nYXCE2ih3Rfr43QktWJL+nLZEXxJkRi+at?=
+ =?us-ascii?Q?vGvtfBhfvQx5udKhmFAw0C+oloVOq0ZToTUvReRRl16ejnZKVDY1cfkloPQA?=
+ =?us-ascii?Q?j2L7BQtu7UMi+tXgejTFMYXl3rwSQpWddZvMmLzsf9yuri91lmgvrufKLhNK?=
+ =?us-ascii?Q?XtI2QLMlqKHBXmydULzkHY8BEp0isEL2GK3wnNjq1X0l7QF9FS+hKnlPkjeu?=
+ =?us-ascii?Q?QE9+MHlxlthOhawNASU4qUYHmOSN7D8HGwOh1MV3lzw+7Av8ZCBY4r5a8WAn?=
+ =?us-ascii?Q?B7pgfsG8q5hVFaSSRmkz9V3UWN6RFWZLeKxcZbphvpeIwliY4xym6cUVSfS6?=
+ =?us-ascii?Q?Kkfahag3lWpf4uYG9rsTWg17D0a74DrRDzdUOrVjdbJjL+5IHJWHRktJhbA3?=
+ =?us-ascii?Q?eW0bcFvJcJwDhCnDb5+ru4tdNp7foB7vJJt3wJPLhusXg0Hx1m0eyo9R1ru0?=
+ =?us-ascii?Q?ucR124Jlc6tcWgw400r5SIlYm2Z7LNz0bEG5cOTqQmiB5KC53b0MuFy4n36a?=
+ =?us-ascii?Q?04FTIgCbk8kO6cgjqcBqy9mQekUoRjRh2IPCco2F7oV3mzMQNDRX9TBVyZfl?=
+ =?us-ascii?Q?UtjWYleuSybcwybmV5a62j/u//ZcfMAOW08ViJBY/pV8mCL/+GzHEJJ0nYPc?=
+ =?us-ascii?Q?2Mshi4zxjzRDM7ITd9oFSk249YnlgZI0dKmhLXpXfL6I2FdvLv86d+HGhW1U?=
+ =?us-ascii?Q?ZQkJuWw8xpREdOhVQcOtOBDODBlG4xcsQFzvN/vsNckI7TMxFUIRAkhLW1HA?=
+ =?us-ascii?Q?xH7Hlidq+RhUvVhtL5gEvZZI65EEi+TEXYwAOphRJFw9xWoVq1kBj5UoPg9F?=
+ =?us-ascii?Q?jenjNGNnqc4KsOpK3bzMTnDDbdoLed11D+P/hDdXCmINL2TKGtTRGvsIDlo8?=
+ =?us-ascii?Q?RHVNTkROI447bMUgsQgdtqkqmGELbvjqLGZkv0S3drDlZP6RWndUepqpKCSg?=
+ =?us-ascii?Q?NgE5yT23N/5W48oV1AXJioKCkXsKqNRUGiG0lu/XNJAQgmv131QGXbYcmhma?=
+ =?us-ascii?Q?RFzJoEM103dztNtWxQNjBH7rD2PI6VKs3spmXyfvEcmaxyRFi+P74t5DInaI?=
+ =?us-ascii?Q?b7/jX1LciS/4GmEYpyDmSOwyTB/P0fWSPl+MVNxyX4/oAM1RbbXSxqUpg2YV?=
+ =?us-ascii?Q?WevarYylJT3it642CG82AngFtGJ9OQj1WWyIEKvBn/WQeWXWtcGNkSOw8qUo?=
+ =?us-ascii?Q?7q5Hwoadz76N7nBnUnPpm1nX3nDkuuHV1TYKewW3dj5j2FlrR7HTG4m66wdN?=
+ =?us-ascii?Q?pQM6Pd1K/cjHAxo+Rlq4viA8/DRzSjefn1IYZOp8Lswny73b8KNWEodxvUY8?=
+ =?us-ascii?Q?h1NvRzRbAnM29hG1f1EM7OnVFMBzUrlkXu8Dg4f/2FFJj+7SjzVwR9Hyy9dL?=
+ =?us-ascii?Q?TWM5TKjQPlinjpOw2D6q0/DYFh1HJJFncCDPHQR/KlykOgWhAad5NOj1tE4h?=
+ =?us-ascii?Q?ltwjYLudhmML2ZRpcMSHs17SgZMrINMXwodIbGiALdHnBVsxKyfn09RSpXy7?=
+ =?us-ascii?Q?ydHlJPvEUpY0qaFT4EPEeuLqiCancK2SPNnY5Fc/q/XK8fD4E/vHSHQslhbw?=
+ =?us-ascii?Q?evJdScCJiYB1cZekDzua8nA9LGW0nrsZAYyToz6/k+KIe1f6sixt48mOZ2EZ?=
+ =?us-ascii?Q?tVRYlsClffy9k23WFO0bhVqCLimw9nWXDCB2QzCXgNPBI88hXISjMDPfWn5q?=
+ =?us-ascii?Q?VQ9hgv1LVuh3O3L4f/JVedW1Zy0=3D?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 98ba67bf-ef6b-43a5-f778-08d9eca95cb8
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5050.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 15:21:06.0341
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 15:24:00.0295
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kx7eiWe/vPZnIRNNlvOFl2jxfaB4q4RaXoxOSYxRub0gww18efYi2mID6gMd5FK1D0CEk4n5gVWh53dfL0Bg2rixO+57pXTE4gVzP1hXACs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1001MB2121
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+X-MS-Exchange-CrossTenant-UserPrincipalName: xrb0ueUgNiyMisj69CXvD0uqV2Ps9ZDFIcrumi+8fQbXwU4YVnWa104hwBJnbv74JP6FJDHBkYw3gbc8xdVvyw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8299
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -122,182 +127,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 10:36:37AM +0000, Vladimir Oltean wrote:
-> On Wed, Feb 09, 2022 at 08:13:45PM -0800, Colin Foster wrote:
-> > Create and utilize bulk regmap reads instead of single access for gathering
-> > stats. The background reading of statistics happens frequently, and over
-> > a few contiguous memory regions.
-> > 
-> > High speed PCIe buses and MMIO access will probably see negligible
-> > performance increase. Lower speed buses like SPI and I2C could see
-> > significant performance increase, since the bus configuration and register
-> > access times account for a large percentage of data transfer time.
-> > 
-> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> > ---
-> >  drivers/net/ethernet/mscc/ocelot.c | 79 +++++++++++++++++++++++++-----
-> >  include/soc/mscc/ocelot.h          |  8 +++
-> >  2 files changed, 75 insertions(+), 12 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-> > index ab36732e7d3f..fdbd31149dfc 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot.c
-> > @@ -1738,25 +1738,36 @@ void ocelot_get_strings(struct ocelot *ocelot, int port, u32 sset, u8 *data)
-> >  EXPORT_SYMBOL(ocelot_get_strings);
-> >  
-> >  /* Caller must hold &ocelot->stats_lock */
-> > -static void ocelot_update_stats_for_port(struct ocelot *ocelot, int port)
-> > +static int ocelot_update_stats_for_port(struct ocelot *ocelot, int port)
-> >  {
-> > -	int j;
-> > +	unsigned int idx = port * ocelot->num_stats;
-> > +	struct ocelot_stats_region *region;
-> > +	int err, j;
-> >  
-> >  	/* Configure the port to read the stats from */
-> >  	ocelot_write(ocelot, SYS_STAT_CFG_STAT_VIEW(port), SYS_STAT_CFG);
-> >  
-> > -	for (j = 0; j < ocelot->num_stats; j++) {
-> > -		u32 val;
-> > -		unsigned int idx = port * ocelot->num_stats + j;
-> > +	list_for_each_entry(region, &ocelot->stats_regions, node) {
-> > +		err = ocelot_bulk_read_rix(ocelot, SYS_COUNT_RX_OCTETS,
-> > +					   region->offset, region->buf,
-> > +					   region->count);
-> > +		if (err)
-> > +			return err;
-> >  
-> > -		val = ocelot_read_rix(ocelot, SYS_COUNT_RX_OCTETS,
-> > -				      ocelot->stats_layout[j].offset);
-> > +		for (j = 0; j < region->count; j++) {
-> > +			u64 *stat = &ocelot->stats[idx + j];
-> > +			u64 val = region->buf[j];
-> >  
-> > -		if (val < (ocelot->stats[idx] & U32_MAX))
-> > -			ocelot->stats[idx] += (u64)1 << 32;
-> > +			if (val < (*stat & U32_MAX))
-> > +				*stat += (u64)1 << 32;
-> > +
-> > +			*stat = (*stat & ~(u64)U32_MAX) + val;
-> > +		}
-> >  
-> > -		ocelot->stats[idx] = (ocelot->stats[idx] & ~(u64)U32_MAX) + val;
-> > +		idx += region->count;
-> >  	}
-> > +
-> > +	return err;
-> >  }
-> >  
-> >  static void ocelot_check_stats_work(struct work_struct *work)
-> > @@ -1777,12 +1788,14 @@ static void ocelot_check_stats_work(struct work_struct *work)
-> >  
-> >  void ocelot_get_ethtool_stats(struct ocelot *ocelot, int port, u64 *data)
-> >  {
-> > -	int i;
-> > +	int i, err;
-> >  
-> >  	mutex_lock(&ocelot->stats_lock);
-> >  
-> >  	/* check and update now */
-> > -	ocelot_update_stats_for_port(ocelot, port);
-> > +	err = ocelot_update_stats_for_port(ocelot, port);
-> 
-> ocelot_check_stats_work() should also check for errors.
+Hi,
 
-Another change I'm catching: I assume calling dev_err while holding a
-mutex is frowned upon, so I'm moving this err check after the counter
-copy / mutex unlock. I'll submit that fix after patch 1 gets merged into
-net / mainline.
+unfortunately there is no maintainer and you were among
+the last to send fixes for this driver, so I am going to ask
+you for review.
 
-> 
-> > +	if (err)
-> > +		dev_err(ocelot->dev, "Error %d updating ethtool stats\n", err);
-> >  
-> >  	/* Copy all counters */
-> >  	for (i = 0; i < ocelot->num_stats; i++)
-> > @@ -1801,6 +1814,41 @@ int ocelot_get_sset_count(struct ocelot *ocelot, int port, int sset)
-> >  }
-> >  EXPORT_SYMBOL(ocelot_get_sset_count);
-> >  
-> > +static int ocelot_prepare_stats_regions(struct ocelot *ocelot)
-> > +{
-> > +	struct ocelot_stats_region *region = NULL;
-> > +	unsigned int last;
-> > +	int i;
-> > +
-> > +	INIT_LIST_HEAD(&ocelot->stats_regions);
-> > +
-> > +	for (i = 0; i < ocelot->num_stats; i++) {
-> > +		if (region && ocelot->stats_layout[i].offset == last + 1) {
-> > +			region->count++;
-> > +		} else {
-> > +			region = devm_kzalloc(ocelot->dev, sizeof(*region),
-> > +					      GFP_KERNEL);
-> > +			if (!region)
-> > +				return -ENOMEM;
-> > +
-> > +			region->offset = ocelot->stats_layout[i].offset;
-> > +			region->count = 1;
-> > +			list_add_tail(&region->node, &ocelot->stats_regions);
-> > +		}
-> > +
-> > +		last = ocelot->stats_layout[i].offset;
-> > +	}
-> > +
-> > +	list_for_each_entry(region, &ocelot->stats_regions, node) {
-> > +		region->buf = devm_kcalloc(ocelot->dev, region->count,
-> > +					   sizeof(*region->buf), GFP_KERNEL);
-> > +		if (!region->buf)
-> > +			return -ENOMEM;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >  int ocelot_get_ts_info(struct ocelot *ocelot, int port,
-> >  		       struct ethtool_ts_info *info)
-> >  {
-> > @@ -2801,6 +2849,13 @@ int ocelot_init(struct ocelot *ocelot)
-> >  				 ANA_CPUQ_8021_CFG_CPUQ_BPDU_VAL(6),
-> >  				 ANA_CPUQ_8021_CFG, i);
-> >  
-> > +	ret = ocelot_prepare_stats_regions(ocelot);
-> > +	if (ret) {
-> > +		destroy_workqueue(ocelot->stats_queue);
-> > +		destroy_workqueue(ocelot->owq);
-> > +		return ret;
-> > +	}
-> > +
-> >  	INIT_DELAYED_WORK(&ocelot->stats_work, ocelot_check_stats_work);
-> >  	queue_delayed_work(ocelot->stats_queue, &ocelot->stats_work,
-> >  			   OCELOT_STATS_CHECK_DELAY);
-> > diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-> > index 312b72558659..d3291a5f7e88 100644
-> > --- a/include/soc/mscc/ocelot.h
-> > +++ b/include/soc/mscc/ocelot.h
-> > @@ -542,6 +542,13 @@ struct ocelot_stat_layout {
-> >  	char name[ETH_GSTRING_LEN];
-> >  };
-> >  
-> > +struct ocelot_stats_region {
-> > +	struct list_head node;
-> > +	u32 offset;
-> > +	int count;
-> > +	u32 *buf;
-> > +};
-> > +
-> >  enum ocelot_tag_prefix {
-> >  	OCELOT_TAG_PREFIX_DISABLED	= 0,
-> >  	OCELOT_TAG_PREFIX_NONE,
-> > @@ -673,6 +680,7 @@ struct ocelot {
-> >  	struct regmap_field		*regfields[REGFIELD_MAX];
-> >  	const u32 *const		*map;
-> >  	const struct ocelot_stat_layout	*stats_layout;
-> > +	struct list_head		stats_regions;
-> >  	unsigned int			num_stats;
-> >  
-> >  	u32				pool_size[OCELOT_SB_NUM][OCELOT_SB_POOL_NUM];
-> > -- 
-> > 2.25.1
-> >
+It looks to me like the sanity check in
+cdc_ncm_rx_fixup() can be fooled by abusing integer overflows.
+You cannot guarantee that the addition of offset and len will
+fit into an integer and this gets worse if offset can be
+negative.
+
+As this is tricky, do you think this fix is correct?
+
+=C2=A0=C2=A0=C2=A0 Regards
+=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 Oliver
+
+CDC-NCM: avoid overflow in sanity checking A broken device may give an
+extreme offset like 0xFFF0 and a reasonable length for a fragment. In
+the sanity check as formulated now, this will create an integer
+overflow, defeating the sanity check. It needs to be rewritten as a
+subtraction and the variables should be unsigned. Signed-off-by: Oliver
+Neukum <oneukum@suse.com> --- drivers/net/usb/cdc_ncm.c | 6 +++--- 1
+file changed, 3 insertions(+), 3 deletions(-) diff --git
+a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c index
+e303b522efb5..f78fccbc4b93 100644 --- a/drivers/net/usb/cdc_ncm.c +++
+b/drivers/net/usb/cdc_ncm.c @@ -1715,10 +1715,10 @@ int
+cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in) { struct
+sk_buff *skb; struct cdc_ncm_ctx *ctx =3D (struct cdc_ncm_ctx
+*)dev->data[0]; - int len; + unsigned int len; int nframes; int x; - int
+offset; + unsigned int offset; union { struct usb_cdc_ncm_ndp16 *ndp16;
+struct usb_cdc_ncm_ndp32 *ndp32; @@ -1791,7 +1791,7 @@ int
+cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in) } /* sanity
+checking */ - if (((offset + len) > skb_in->len) || + if ((offset >
+skb_in->len - len) || (len > ctx->rx_max) || (len < ETH_HLEN)) {
+netif_dbg(dev, rx_err, dev->net, "invalid frame detected (ignored)
+offset[%u]=3D%u, length=3D%u, skb=3D%p\n", -- 2.34.1
+
