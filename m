@@ -2,123 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 330384B0786
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 08:50:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BE6D4B0782
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 08:50:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236441AbiBJHtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 02:49:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38392 "EHLO
+        id S236626AbiBJHuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 02:50:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234424AbiBJHte (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 02:49:34 -0500
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED99103D
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 23:49:35 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id B00B020491;
-        Thu, 10 Feb 2022 08:49:33 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id sFuke06hH3_F; Thu, 10 Feb 2022 08:49:33 +0100 (CET)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 159E7201A1;
-        Thu, 10 Feb 2022 08:49:33 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id 0D14080004A;
-        Thu, 10 Feb 2022 08:49:33 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 10 Feb 2022 08:49:32 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Thu, 10 Feb
- 2022 08:49:32 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 115A1318038D; Thu, 10 Feb 2022 08:49:32 +0100 (CET)
-Date:   Thu, 10 Feb 2022 08:49:31 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-CC:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
-        Lina Wang <lina.wang@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        "Kernel hackers" <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, "Martin KaFai Lau" <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Willem Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH] net: fix wrong network header length
-Message-ID: <20220210074931.GB1223722@gauss3.secunet.de>
-References: <20220208025511.1019-1-lina.wang@mediatek.com>
- <0300acca47b10384e6181516f32caddda043f3e4.camel@redhat.com>
- <CANP3RGe8ko=18F2cr0_hVMKw99nhTyOCf4Rd_=SMiwBtQ7AmrQ@mail.gmail.com>
- <a62abfeb0c06bf8be7f4fa271e2bcdef9d86c550.camel@redhat.com>
+        with ESMTP id S236619AbiBJHuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 02:50:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB9C8103D
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 23:50:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644479419;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4KIGxXInQ1uI9ZOUE3GlaQZVi6kzbYigWmFUhCjtrL8=;
+        b=T762G19bL4rLKbBd5Cvpw9pgav9f5RgOacqda1q1Q2U9TqGMu41T84oIkdj239zeMla7cN
+        Gsth60n8GiT4HwAlj2mkeKIfrIq0bgG+8pM8ybd9PNSa08KT0cCxvYeGGkX0l3bTlTLikd
+        9nDHKCOKYX55BqIhnbzuJeArvIVONkY=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-621-K6rZzrT_NeuGBTBpnXlXZQ-1; Thu, 10 Feb 2022 02:50:17 -0500
+X-MC-Unique: K6rZzrT_NeuGBTBpnXlXZQ-1
+Received: by mail-lf1-f69.google.com with SMTP id u14-20020a196a0e000000b0044139d17aceso1138978lfu.15
+        for <netdev@vger.kernel.org>; Wed, 09 Feb 2022 23:50:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4KIGxXInQ1uI9ZOUE3GlaQZVi6kzbYigWmFUhCjtrL8=;
+        b=sqrO7E4iCDCxE0Lp+cFUk8uQ03llf/bM/pSnqNY8JmVZ5XsNWzwYEJRsrkR/t4CMdz
+         y8Q2EidFgBIvxJ+bnVM0AzLalDfg580KyU3O111SHpAuyV21o0yD4WF/TT+vprviPqBZ
+         jWj1Vyofx2ZqmdEoUvaoxwj2RoKjLbuUmuB1/VwU/sb1Vy4jfeLOT2t4BU7DExxPfg26
+         UbyT9Yi4hISVkWazsHId5jw0QLuKTm92q4xjEerdGYpfiXjrP9qifyj4+hDQTqXwOjPk
+         95eA6lkcEngb4SaZuqZhkNIDpeQDrq7zF27FOvaWe337+gAXw0dSd6WbRqo43rvSMGEf
+         lxFg==
+X-Gm-Message-State: AOAM531B6j0qorPdV7r+7Qfttm1dvyxqMnEDWTSHD/yVXKSaYGmoldih
+        RzQrgWJQtJpD0gE3hnz5+rrAdaDxGY7ZbUO/fAKNvZZMb1UgflvyGRI+cldVF5O42tOrtnr48HJ
+        pmvPEw+vyV+9FkyseA9vxN+kdKG0X8bwk
+X-Received: by 2002:a2e:a80c:: with SMTP id l12mr4194927ljq.107.1644479416059;
+        Wed, 09 Feb 2022 23:50:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxsEcgufsx0ybeJs0c96UO3or4xMWNHOBShvaMPPIehWygx9rYD5a1UYqQmbmeI8OCRIxIfTCqT1zcZ9qtd0ag=
+X-Received: by 2002:a2e:a80c:: with SMTP id l12mr4194917ljq.107.1644479415872;
+ Wed, 09 Feb 2022 23:50:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a62abfeb0c06bf8be7f4fa271e2bcdef9d86c550.camel@redhat.com>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220207125537.174619-1-elic@nvidia.com> <20220207125537.174619-2-elic@nvidia.com>
+In-Reply-To: <20220207125537.174619-2-elic@nvidia.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Thu, 10 Feb 2022 15:50:04 +0800
+Message-ID: <CACGkMEtbVdaFDeecZXRUQH6n3xVemf9HAMv0EnX-PJyaB8GNwQ@mail.gmail.com>
+Subject: Re: [PATCH 1/3] vdpa: Remove unsupported command line option
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     "Hemminger, Stephen" <stephen@networkplumber.org>,
+        netdev <netdev@vger.kernel.org>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Jianbo Liu <jianbol@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 05:01:07PM +0100, Paolo Abeni wrote:
-> + Steffen
-> On Tue, 2022-02-08 at 04:57 -0800, Maciej Żenczykowski wrote:
-> > > 
-> > > If traversing the segments become too costly, you can try replacing
-> > > GRO_FRAGLIST with GRO_UDP_FWD.
-> > 
-> > Yeah, I don't know...
-> > 
-> > I've considered that we could perhaps fix the 6to4 helper, and 4to6 helper...
-> > but then I think every *other* helper / code path that plays games
-> > with the packet header needs fixing as well,
-> > ie. everything dealing with encap/decap, vlan, etc..
-> > 
-> > At that point it seems to me like it's worth fixing here rather than
-> > in all those other places.
-> > 
-> > In general it seems gro fraglist as implemented is just a bad idea...
-> > Packets (and things we treat like packets) really should only have 1 header.
-> > GRO fraglist - as implemented - violates this pretty fundamental assumption.
-> > As such it seems to be on the gro fraglist implementation to deal with it.
-> > That to me seems to mean it should be fixed here, and not elsewhere.
-> 
-> @Steffen: IIRC GRO_FRAGLIST was originally added to support some
-> forwarding scenarios. Now we have GRO_UDP_FWD which should be quite
-> comparable. I'm wondering if the latter feature addresses your use
-> case, too.
+On Mon, Feb 7, 2022 at 8:56 PM Eli Cohen <elic@nvidia.com> wrote:
+>
+> "-v[erbose]" option is not supported.
+> Remove it.
+>
+> Reviewed-by: Jianbo Liu <jianbol@nvidia.com>
+> Signed-off-by: Eli Cohen <elic@nvidia.com>
 
-The advantage of GRO_FRAGLIST for forwarding is that GRO and GSO
-happen with almost no overhead, because the packets are left in
-the skbs we received them and are not mangled during processing.
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-So if there is no hardware segmentation support, GRO_FRAGLIST is
-still much faster than GRO_UDP_FWD.
+> ---
+>  vdpa/vdpa.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
+> index f048e470c929..4ccb564872a0 100644
+> --- a/vdpa/vdpa.c
+> +++ b/vdpa/vdpa.c
+> @@ -711,7 +711,7 @@ static void help(void)
+>         fprintf(stderr,
+>                 "Usage: vdpa [ OPTIONS ] OBJECT { COMMAND | help }\n"
+>                 "where  OBJECT := { mgmtdev | dev }\n"
+> -               "       OPTIONS := { -V[ersion] | -n[o-nice-names] | -j[son] | -p[retty] | -v[erbose] }\n");
+> +               "       OPTIONS := { -V[ersion] | -n[o-nice-names] | -j[son] | -p[retty] }\n");
+>  }
+>
+>  static int vdpa_cmd(struct vdpa *vdpa, int argc, char **argv)
+> --
+> 2.34.1
+>
 
-> If so, could we consider deprecating (and in a longer run, drop) the
-> GRO_FRAGLIST feature? 
-
-Maybe we can make it exclusive for forwarding or bring the header
-processing a bit closer to GRO_UDP_FWD, but I'd like to keep that
-feature.
