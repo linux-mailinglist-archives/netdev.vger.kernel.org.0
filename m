@@ -2,113 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A74874B0D85
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 13:25:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACAAC4B0D8E
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 13:27:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241555AbiBJMZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 07:25:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41900 "EHLO
+        id S241260AbiBJM0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 07:26:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241542AbiBJMZB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 07:25:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B7442646
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 04:24:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644495897;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=Fv1bFey76cfKrs22KKsH0h7BCRARWXpAFXjfaPkP6U8=;
-        b=afigX1YOLtOTN3JDEKyKM1sKWiLKZi4OjXyySKauLpq8VaoLZ5fxn0af7TTKF8Ac5eTJ4V
-        +M7g0WplMlv7NPYUJOpKL5xZf9ZH6WxuEM1O4/ilrbEDyBadiG2IHIgYXKqs+aXUYMJxec
-        uzywyg9lWbDjmqf2gqR4t+BrJfUuNDw=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-391-RxvOT_W1OG68kfENhg2jEw-1; Thu, 10 Feb 2022 07:24:56 -0500
-X-MC-Unique: RxvOT_W1OG68kfENhg2jEw-1
-Received: by mail-wm1-f69.google.com with SMTP id i186-20020a1c3bc3000000b0037bb9f6feeeso2812190wma.5
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 04:24:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Fv1bFey76cfKrs22KKsH0h7BCRARWXpAFXjfaPkP6U8=;
-        b=wZWjOoyeRaJCksQt0TeOhEAktRPcfmg2cYeSuXNfu6E7qAmC0kDWNrIV6Bj9GO6dCp
-         9SWDtrxBOWs5whpnVSitff48PLFtJ45q24/sRDKRua0zVnt5xwtEse+WbSoCyWZa5126
-         x3SB+WBSzpylgjsPUpsyByaxeiu32kZuussg8qjLv6UysE+Ky8qYjqYT501LnksF4F0R
-         d7FGIbMzh27Sy4VPClDARdcPoDIWLvL6YYuPLbKUnpfz5DKzNaqvjRHeMvk7PJWdg2yt
-         7syfzwC9ZpsQyE7H2Y9GJDvkyy9ro2iSN5fvxiGip4yZTVjcQKSdrHj6pwGUtcnBr+Sy
-         WLNQ==
-X-Gm-Message-State: AOAM532CKH5a4Wmz0UAJwwvWuN8SAXW+GExxDYJQyL0Q+DxMxqaYvQMY
-        gS7iI2xruyn3qZEI6c7TYx9ppLrn0vD6gJIn/9MTnXoUmGi/dAe2p5vb4umEAM8GqKJV5J+3yz/
-        GI5UbyoFdSGo10zDB
-X-Received: by 2002:adf:e34c:: with SMTP id n12mr6188126wrj.263.1644495895262;
-        Thu, 10 Feb 2022 04:24:55 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzQKl/ghmSWEV30HbtnUA6kVbHgFJM1OJxCg8/5GY3bKYO6DSqtae9AISNWfu0BFsyadI4Wkg==
-X-Received: by 2002:adf:e34c:: with SMTP id n12mr6188120wrj.263.1644495895089;
-        Thu, 10 Feb 2022 04:24:55 -0800 (PST)
-Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id y14sm20537488wrd.91.2022.02.10.04.24.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 04:24:53 -0800 (PST)
-Date:   Thu, 10 Feb 2022 13:24:51 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Subject: [PATCH net-next] ipv4: Reject again rules with high DSCP values
-Message-ID: <cca72292694a74c76a6e155b34a8480df2918a14.1644495285.git.gnault@redhat.com>
+        with ESMTP id S233221AbiBJM0y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 07:26:54 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E182F116E;
+        Thu, 10 Feb 2022 04:26:55 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id A1A321F37B;
+        Thu, 10 Feb 2022 12:26:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644496014; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=PwWod+QFCKRSL0TsqYpgjQDGMKA4hGJve7v/iJX/oRU=;
+        b=i+BTfkzC9NQRA7kiZOqPoflgZqDeiy13O9U7xLy1+a05CcQ4FSUJ0CNfixzujT9PgNe57G
+        PYeWmbBlpP/fk54D+xvQaOTlswjH+LqMjF1nBy+TSFMbvbvGm7vXNdUsoSuebWW0t7wbal
+        3KefUTAOI3aPQbxmVNfUpVyvf2xuHHo=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5CE3413B78;
+        Thu, 10 Feb 2022 12:26:54 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id eb79FI4EBWJRLwAAMHmgww
+        (envelope-from <oneukum@suse.com>); Thu, 10 Feb 2022 12:26:54 +0000
+From:   Oliver Neukum <oneukum@suse.com>
+To:     bids.7405@bigpond.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        gregKH@linuxfoundation.org
+Cc:     Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH] USB: zaurus: support another broken Zaurus
+Date:   Thu, 10 Feb 2022 13:26:43 +0100
+Message-Id: <20220210122643.12274-1-oneukum@suse.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 563f8e97e054 ("ipv4: Stop taking ECN bits into account in
-fib4-rules") replaced the validation test on frh->tos. While the new
-test is stricter for ECN bits, it doesn't detect the use of high order
-DSCP bits. This would be fine if IPv4 could properly handle them. But
-currently, most IPv4 lookups are done with the three high DSCP bits
-masked. Therefore, using these bits doesn't lead to the expected
-result.
+This SL-6000 says Direct Line, not Ethernet
 
-Let's reject such configurations again, so that nobody starts to
-use and make any assumption about how the stack handles the three high
-order DSCP bits in fib4 rules.
-
-Fixes: 563f8e97e054 ("ipv4: Stop taking ECN bits into account in fib4-rules")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
 ---
- net/ipv4/fib_rules.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/usb/cdc_ether.c | 12 ++++++++++++
+ drivers/net/usb/zaurus.c    | 12 ++++++++++++
+ 2 files changed, 24 insertions(+)
 
-diff --git a/net/ipv4/fib_rules.c b/net/ipv4/fib_rules.c
-index 117c48571cf0..001fea394bde 100644
---- a/net/ipv4/fib_rules.c
-+++ b/net/ipv4/fib_rules.c
-@@ -231,6 +231,11 @@ static int fib4_rule_configure(struct fib_rule *rule, struct sk_buff *skb,
- 			       "Invalid dsfield (tos): ECN bits must be 0");
- 		goto errout;
- 	}
-+	/* IPv4 currently doesn't handle high order DSCP bits correctly */
-+	if (frh->tos & ~IPTOS_TOS_MASK) {
-+		NL_SET_ERR_MSG(extack, "Invalid tos");
-+		goto errout;
-+	}
- 	rule4->dscp = inet_dsfield_to_dscp(frh->tos);
+diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+index eb3817d70f2b..9b4dfa3001d6 100644
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -583,6 +583,11 @@ static const struct usb_device_id	products[] = {
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
  
- 	/* split local/main if they are not already split */
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
+  * wire-incompatible with true CDC Ethernet implementations.
+  * (And, it seems, needlessly so...)
+@@ -636,6 +641,13 @@ static const struct usb_device_id	products[] = {
+ 	.idProduct              = 0x9032,	/* SL-6000 */
+ 	ZAURUS_MASTER_INTERFACE,
+ 	.driver_info		= 0,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++		 | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor               = 0x04DD,
++	.idProduct              = 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info		= 0,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+diff --git a/drivers/net/usb/zaurus.c b/drivers/net/usb/zaurus.c
+index 8e717a0b559b..9243be9bd2aa 100644
+--- a/drivers/net/usb/zaurus.c
++++ b/drivers/net/usb/zaurus.c
+@@ -256,6 +256,11 @@ static const struct usb_device_id	products [] = {
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
+ 
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
+ {
+ 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
+@@ -313,6 +318,13 @@ static const struct usb_device_id	products [] = {
+ 	.idProduct              = 0x9032,	/* SL-6000 */
+ 	ZAURUS_MASTER_INTERFACE,
+ 	.driver_info = ZAURUS_PXA_INFO,
++}, {
++        .match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++                 | USB_DEVICE_ID_MATCH_DEVICE,
++        .idVendor               = 0x04DD,
++        .idProduct              = 0x9032,       /* SL-6000 */
++        ZAURUS_FAKE_INTERFACE,
++        .driver_info = (unsigned long) &bogus_mdlm_info,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
 -- 
-2.21.3
+2.34.1
 
