@@ -2,110 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6FCC4B138E
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 17:53:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E6854B13B0
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 17:57:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244856AbiBJQxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 11:53:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36894 "EHLO
+        id S244539AbiBJQ51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 11:57:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239993AbiBJQxF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 11:53:05 -0500
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F7FD4
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:53:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
-        From:References:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
-        :List-Post:List-Owner:List-Archive;
-        bh=CA1IBl3OpeIdmti3f51wn9Zcc96/vpRB+dlAooHdVm0=; b=i6DQ1QaeauvohotDFz4vHkWxUQ
-        7r851OkDTw8ps2gm+w9tE4pHnOfQ5mGljD+tc0ZboMsxLWuDwa74o/SMjmjq1UdTLyAHNDdfR/S5G
-        M+FHj4U2ulat0zN8SqxeVXkaGoXzYgHrMPACu7U3lD9NSo9/LaXmCpcbOZ2KyV7U1054=;
-Received: from p200300daa71e0b00d9ae6de683158d49.dip0.t-ipconnect.de ([2003:da:a71e:b00:d9ae:6de6:8315:8d49] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1nICgr-0008Sk-03; Thu, 10 Feb 2022 17:53:05 +0100
-Message-ID: <e8f1e8f5-8417-84a8-61c3-793fa7803ac6@nbd.name>
-Date:   Thu, 10 Feb 2022 17:53:04 +0100
+        with ESMTP id S244450AbiBJQ50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 11:57:26 -0500
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD03104
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:57:27 -0800 (PST)
+Received: by mail-yb1-xb2c.google.com with SMTP id p19so17269100ybc.6
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:57:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LzombJHfUaPY76B25DWEwD4zN/2+cpMugOK4+oRxx4s=;
+        b=Ma1Ny/CQLT9HVSmpavyVelVoPLe0YAsclRDFXwv/8e6TGUEr7yseDC/Twq4HWKIyxF
+         aX8ZEUFb8W8YTUeqwa7gEt0PcjimuGRFEcElD//GknAssyLo9AZJ6uqNCiOXuelU8wLS
+         F6tewGXk2+zV9/StUwHrgqPW1Xw7N0MmpxMPRrUWC4n+cSrd8HXFyoAsQOAJ9q2UICig
+         LyVk+wenlabxhvayL1LH4JUUaIEPXNtYOySLdEup1fUCYmFKMdtMzc39oJ5PACBI7kEx
+         YFs+mcCml6O7FCZ2VYqDIftupvZqpJQEfegRgOwmWoXY43/TQ8Wa7DwYwoYs3fJ8Uj1f
+         5Qgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LzombJHfUaPY76B25DWEwD4zN/2+cpMugOK4+oRxx4s=;
+        b=RUxBXsvjx0eAL39IzhuKJ936p85rMf+EksS5heoC6fiRQCEO8WcR9M7XeBehskoUhg
+         x93iUWz+fTTckh0rtfu6GR5b+Jq+hofcZR7Vxljz9QBY4dSMHBJGum/PRwSGArwwgw4t
+         d9YzjFfPkzZdv/H1/i8XIQJx+xTl5E2gHMOH68BiRWY3ETGn3XplWjB/tUigCEGq+8hQ
+         DToqX17VLoHY0vl7LoDE4oWtdoGf0x/phQxQiYBLEh+cxFR09X5TUkPNqnKcgOlIWfyA
+         xKH6MYFUskYJqsqK8F92E8tRxLJwC2GD3Oe++qdDAQztksK7kLZPEF7TP7iwTRJg79Tx
+         t36g==
+X-Gm-Message-State: AOAM5322CM+zru+qrtd7kmFM9FBZdOD69aqiTHF/3MbYV14wUpArKKST
+        AwoDO3ic5/+hJrVmx6h1Y2MhMh0FGq6XYSqwXo50Og==
+X-Google-Smtp-Source: ABdhPJzHk0q53Nu+3WRHfU8m7ClASRJfWhAetIVmZmusv/PuqX6gjXBYwDdt6rVqggIc6gTMGO3ezcmjg9ITNI5p/1A=
+X-Received: by 2002:a81:8742:: with SMTP id x63mr8006680ywf.112.1644512246560;
+ Thu, 10 Feb 2022 08:57:26 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Content-Language: en-US
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>, netdev@vger.kernel.org
-References: <20220210142401.4912-1-nbd@nbd.name>
- <20220210142401.4912-2-nbd@nbd.name>
- <bc499a39-64b9-ceb4-f36f-21dd74d6272d@nvidia.com>
-From:   Felix Fietkau <nbd@nbd.name>
-Subject: Re: [RFC 2/2] net: bridge: add a software fast-path implementation
-In-Reply-To: <bc499a39-64b9-ceb4-f36f-21dd74d6272d@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220208232822.3432213-1-eric.dumazet@gmail.com> <18d9bd16-a5f9-b4b3-d92c-4057240ad89f@gmail.com>
+In-Reply-To: <18d9bd16-a5f9-b4b3-d92c-4057240ad89f@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 10 Feb 2022 08:57:15 -0800
+Message-ID: <CANn89iLFhSr6PQwSTixVitgaRQi3=xtLm3dCUY2d5nOyxMDQng@mail.gmail.com>
+Subject: Re: [PATCH net] veth: fix races around rq->rx_notify_masked
+To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Feb 9, 2022 at 4:36 AM Toshiaki Makita
+<toshiaki.makita1@gmail.com> wrote:
+>
+> On 2022/02/09 8:28, Eric Dumazet wrote:
+> > From: Eric Dumazet <edumazet@google.com>
+>
+> Thank you for handling this case.
+>
+> > veth being NETIF_F_LLTX enabled, we need to be more careful
+> > whenever we read/write rq->rx_notify_masked.
+> >
+> > BUG: KCSAN: data-race in veth_xmit / veth_xmit
+> >
+> > w
+> > value changed: 0x00 -> 0x01
+>
+> I'm not familiar with KCSAN.
+> Does this mean rx_notify_masked value is changed while another CPU is reading it?
+>
 
-On 10.02.22 16:02, Nikolay Aleksandrov wrote:
-> Hi Felix,
-> that looks kind of familiar. :) I've been thinking about a similar optimization for
-> quite some time and generally love the idea, but I thought we'd allow this to be
-> implemented via eBPF flow speedup with some bridge helpers. There's also a lot of low
-> hanging fruit about optimizations in bridge's fast-path.
-> 
-> Also from your commit message it seems you don't need to store this in the bridge at
-> all but can use the notifications that others currently use and program these flows
-> in the interested driver. I think it'd be better to do the software flow cache via
-> ebpf, and do the hardware offload in the specific driver.
-To be honest, I have no idea how to handle this in a clean way in the 
-driver, because this offloading path crosses several driver/subsystem 
-boundaries.
+Yes.
 
-Right now we have support for a packet processing engine (PPE) in the 
-MT7622 SoC, which can handle offloading IPv4 NAT/routing and IPv6 routing.
-The hardware can also handle forwarding of src-mac/destination-mac 
-tuples, but that is currently unused because it's not needed for 
-ethernet-only forwarding.
+> If so, I'm not sure there is a problem with that.
 
-When adding WLAN to the mix, it gets more complex. The PPE has an output 
-port that connects to a special block called Wireless Ethernet Dispatch, 
-which can be configured to intercept DMA between the WLAN driver (mt76) 
-and a PCIe device with MT7615 or MT7915 in order to inject extra packets.
+This is a problem if not annotated properly.
 
-I already have working NAT/routing offload support for this, which I 
-will post soon. In order to figure out the path to WLAN, the offloading 
-code calls the .ndo_fill_forward_path op, which mac80211 supports.
-This allows the mt76 driver to fill in required metadata which gets 
-stored in the PPE flowtable.
+> At least we could call napi_schedule() twice, but that just causes one extra napi
+> poll due to NAPIF_STATE_MISSED, and it happens very rarely?
+>
+> Toshiaki Makita
 
-On MT7622, traffic can only flow from ethernet to WLAN in this manner, 
-on newer SoCs, offloading can work in the other direction as well.
-
-So when looking at fdb entries and flows between them, the ethernet 
-driver will have to figure out:
-- which port number to use in the DSA tag on the ethernet side
-- which VLAN to use on the ethernet side, with the extra gotcha that 
-ingress traffic will be tagged, but egress won't
-- which entries sit behind mac80211 vifs that support offloading through 
-WED.
-I would also need to add a way to push the notifications through DSA to 
-the ethernet driver, because there is a switch inbetween that is not 
-involved in the offloading path (PPE handles DSA tagging/untagging).
-
-By the way, all of this is needed for offloading a fairly standard 
-configuration on these devices, so not just for weird exotic settings.
-
-If I let the bridge code tracks flows, I can easily handle this by using 
-the same kind of infrastructure that netfilter flowtable uses. If I push 
-this to the driver, it becomes a lot more complex and messy, in my 
-opinion...
-
-- Felix
+The issue might be more problematic, a compiler might play bad games,
+look for load and store tearing.
