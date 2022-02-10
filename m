@@ -2,159 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 832834B0E5F
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 14:27:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 460434B0ECC
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 14:32:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242160AbiBJN1S convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Feb 2022 08:27:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53368 "EHLO
+        id S242241AbiBJNb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 08:31:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237852AbiBJN1R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 08:27:17 -0500
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71ABE1B5
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 05:27:18 -0800 (PST)
-Received: by mail-io1-f70.google.com with SMTP id n13-20020a056602340d00b006361f2312deso4039989ioz.9
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 05:27:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to
-         :content-transfer-encoding;
-        bh=DlpPZGGKliMKcWhjenaLMpD1ZyJmKZB8Ha4yhKNSbSo=;
-        b=dyPSl6SnC1E4oFKouIXPc+BPDPBtcVYzQhUHl2XKpmSxNvXxYEpVbmdV994PKWR7p9
-         ozyg1439sLZkA1AF0lu+bt8iM/YxuJALg1A+8bZvUmELRFoJLFrU8g86YIRAlSQndC7u
-         zfGy8YH3STET6cYEaEu1BRDkciLI8qQJuXzi/grqPJqetiXa7SCi1nvKn8iFHwEN5qps
-         Rn2ZcezUp9YoHlk+U66cEhb/VvDi1CowD+Zj2e5c2vYe6/9Q5rqzgHnVJ8dKzRMimSjN
-         4CPYol/p48Idqi+j4l0TIGhTX0R3ifwXKULj4SEntysq3bhmdmx8mticSgFbZ5CYvF3I
-         Nu2w==
-X-Gm-Message-State: AOAM532292QiYo2xog+ozUwWdQ2NXX96r9nLRjBXrOidfJuHa/Dn4PHU
-        U8f/v53eOwqXg+AUPJ9AiDrcfIuzqybJfJXw1TLtTykH6cyJ
-X-Google-Smtp-Source: ABdhPJxktaqc2MT8TGypSv3S6tvzNRIrDITqBFmZIMUyTf+hsDOhN0yqT8VFBTUt97hEaujKN31FgFE53ED94o/E0F7FMTp9X6eh
+        with ESMTP id S238351AbiBJNbZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 08:31:25 -0500
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2068.outbound.protection.outlook.com [40.107.100.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1711DBA9
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 05:31:25 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ng9YMnG3drq8+4YeeWy3nN5Ff5z/zaksPxQaFyefHnn/8lx9bim9GyM3ZZ1GB/59KpSdxtzDVbYcRWULMtKaQdm1W4PaElcHQI5gB8ZBv65fJYBZN9uyKp3frhYod3ZEA09wjVTIkktHRJZXaGkwh4eV5c0oBgXFZVXE5b8aT+r5FfrM1vI5VPS1yuwn7MnQf19jld0msN1qBYVgwMBab9JMV1lGdji5CiZnp8B2srs21McrbwNEURlT3fnAFPkvV0wk0fACXL8hRbCUSlZlsLb8ptPfBKK1ayP9gxUIcAIgIJaxqkxrMcJ/+FTLrMqwVdFUsljrzO2SM0uG+yVW1w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ope8Jv7OVZTbP9lmy+Kv1NuR6X30olwFS8cRthVwU80=;
+ b=bBgiFXRXkNs5XCvli1PIzd8uWThceZ8xhjH9jviT19V5mKDqrImFHgiRf6Z6eedUZ0BX/6QlxbMXYJyvJFgH04IjfDrd8rl+tYPsOoU/h0K/UeS7AYiYgn0BO+GXKMLuenfbKZvf+etgqdeCR6gsYW3wXg0aXtwo4Q5VsDGm9F7RzLZ5LwNQ5Z43LPN27LlohDrfOcZXpF4SGvw4Y5wqeU5KNVBU/bbyvkVNeps1DJg/CbJOmhS+i2jIuYy5/VTRJXb4lZlopbr3tpL1WMQlfit3ovoxlwgmSDEfRv7yuZGlh2oZ2NiLXc//kPDvVpwZkuYdB/kU2f1rgnJsW+xVnw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ope8Jv7OVZTbP9lmy+Kv1NuR6X30olwFS8cRthVwU80=;
+ b=sl8d874GwLC7y2MkBh0ZbrFxWoAJWlrWmTyDVHpKqqZI9gnDxp09ITCCeJjzqcK1FXOZTA2UzBRsWnrIPH9vWCekd8X93fSltLinPSYa4egKkmF0zlHnaX22Gx4OWbcMG9hSYT9bKtzEoyJVwMhJ3vlIP0MWie+LinGvG32JwtsYd81eRyVRzoS/GHA84cGKGO/jiHJU7mltG7YGmuqds93bOLrKlpTEUlT1yAeikHiesaBKalRgcXSKvrZ0XmpqzRE7jSLNLu5Lc2yoryxEFQYNt3U4CT6+6JQt9HOSMHJ0l4t3mQLEL9bBdgLrOEdu/4e6bAGPxfQbgf4SqnJgbg==
+Received: from BN0PR04CA0016.namprd04.prod.outlook.com (2603:10b6:408:ee::21)
+ by BYAPR12MB3381.namprd12.prod.outlook.com (2603:10b6:a03:df::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 10 Feb
+ 2022 13:31:22 +0000
+Received: from BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ee:cafe::c1) by BN0PR04CA0016.outlook.office365.com
+ (2603:10b6:408:ee::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11 via Frontend
+ Transport; Thu, 10 Feb 2022 13:31:22 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT040.mail.protection.outlook.com (10.13.177.166) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4975.11 via Frontend Transport; Thu, 10 Feb 2022 13:31:22 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 10 Feb
+ 2022 13:31:21 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Thu, 10 Feb 2022
+ 05:31:21 -0800
+Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server id 15.2.986.9 via Frontend Transport; Thu, 10 Feb
+ 2022 05:31:19 -0800
+From:   Eli Cohen <elic@nvidia.com>
+To:     <stephen@networkplumber.org>, <netdev@vger.kernel.org>
+CC:     <jasowang@redhat.com>, <lulu@redhat.com>, <si-wei.liu@oracle.com>,
+        "Eli Cohen" <elic@nvidia.com>
+Subject: [PATCH v1 0/4] vdpa tool enhancements
+Date:   Thu, 10 Feb 2022 15:31:11 +0200
+Message-ID: <20220210133115.115967-1-elic@nvidia.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1906:: with SMTP id w6mr3703475ilu.43.1644499637838;
- Thu, 10 Feb 2022 05:27:17 -0800 (PST)
-Date:   Thu, 10 Feb 2022 05:27:17 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000bf2b0705d7a9e8ac@google.com>
-Subject: [syzbot] net-next test error: WARNING: suspicious RCU usage in hsr_node_get_first
-From:   syzbot <syzbot+f0eb4f3876de066b128c@syzkaller.appspotmail.com>
-To:     andrew@lunn.ch, claudiajkang@gmail.com, davem@davemloft.net,
-        ennoerlangen@gmail.com, george.mccollister@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        marco.wenzel@a-eberle.de, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6f9fa6cf-e219-4ca8-1106-08d9ec99a10b
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3381:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB338155F684D196635BFA1A75AB2F9@BYAPR12MB3381.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vG61kpytXjBlv4sfxuuL/jkHZv3XAgoy1qwGM9QtHIZM2FEGGKPvs+jpeMEiLnI9fcVaVr9snfOVq5hMLZwU5twReOr9v39lXmKNkmAOgAF219gEXfQFTPDPzpXl7KSAHTSjcGxJqTvl7qQi7Xf70498FuP5BGF+QDm+2DPWt3y4fC+EkygpA2vYRjOGXq1y6wBGU0AY7EZ3kOsSbK5/xLKJ/EVt40GVVeeqrg/geYIbJBNUbxLF8FZkMSyaEjmraL24tCqy73gRq73SGkVbXE6vc8jIZfHpP3PgiTzpEkgzlvanAoizrGAfEacHbz4pbI0OcOrqe25aXhGuAePwCsKR1jOfuMVM504eY/g9VAcNVeHSfjIjZ2j7Y10jfELzCAR74ajl20u6sVTblxTqF+cNqKHetQrrgDqA5lE1iXnjQFFAiKlo0ZT0Pj9E6Ty980tI2U13EoJnCC7pIDNzKDAfUmIIZhX384ufrtI7273mnHKJNBe68RQ0BhKhQFZbQL5R5S40Ear2Q5slGwl5ybwF8WqlQgzdj8OAo5i3QOsVH03RsA23QCwcmUt7JD5qrAM9zz+ijv6lVOGTo4DeyleObDJrU2zsP1TKxOlUWLGHcdta4eWMAqvDL951rd4tlgdYwXzmClWLna2p9E+MEobAQVE4P7vCfjuesAyRupuCYNNcwiOF1CGzwSiZKRum3di44x9myssP1Se8kSVJhA==
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(81166007)(40460700003)(47076005)(107886003)(4326008)(70206006)(70586007)(8936002)(356005)(2906002)(83380400001)(508600001)(4744005)(8676002)(6666004)(7696005)(2616005)(5660300002)(36860700001)(336012)(426003)(1076003)(110136005)(316002)(186003)(82310400004)(54906003)(26005)(36756003)(86362001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 13:31:22.3925
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f9fa6cf-e219-4ca8-1106-08d9ec99a10b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3381
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The following four patch series enhances vdpa to show negotiated
+features for a vdpa device, max features for a management device and
+allows to configure max number of virtqueue pairs.
 
-syzbot found the following issue on:
+v0 -> v1:
+1. Split patches to present added functionality in separate patches.
+2. Remove patch 0002 and add required definitions from uapi linux
+headers.
+3. Print bit numbers for non net devices.
 
-HEAD commit:    45230829827b Merge git://git.kernel.org/pub/scm/linux/kern..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=12e2f52c700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3fa7f88a3821006b
-dashboard link: https://syzkaller.appspot.com/bug?extid=f0eb4f3876de066b128c
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Eli Cohen (4):
+  vdpa: Remove unsupported command line option
+  vdpa: Allow for printing negotiated features of a device
+  vdpa: Support for configuring max VQ pairs for a device
+  vdpa: Support reading device features
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+f0eb4f3876de066b128c@syzkaller.appspotmail.com
+ vdpa/include/uapi/linux/vdpa.h |   4 +
+ vdpa/vdpa.c                    | 164 +++++++++++++++++++++++++++++++--
+ 2 files changed, 162 insertions(+), 6 deletions(-)
 
-batman_adv: batadv0: The MTU of interface batadv_slave_1 is too small (1500) to handle the transport of batman-adv packets. Packets going over this interface will be fragmented on layer2 which could impact the performance. Setting the MTU to 1560 would solve the problem.
-batman_adv: batadv0: Not using interface batadv_slave_1 (retrying later): interface not active
-=============================
-WARNING: suspicious RCU usage
-5.17.0-rc2-syzkaller-00903-g45230829827b #0 Not tainted
------------------------------
-net/hsr/hsr_framereg.c:34 suspicious rcu_dereference_check() usage!
+-- 
+2.34.1
 
-other info that might help us debug this:
-
-
-rcu_scheduler_active = 2, debug_locks = 1
-2 locks held by syz-executor.0/3597:
- #0: ffffffff8d32ca28 (rtnl_mutex){+.+.}-{3:3}, at: rtnl_lock net/core/rtnetlink.c:72 [inline]
- #0: ffffffff8d32ca28 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x3be/0xb80 net/core/rtnetlink.c:5591
- #1: ffff888073fa55f0 (&hsr->list_lock){+...}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:354 [inline]
- #1: ffff888073fa55f0 (&hsr->list_lock){+...}-{2:2}, at: hsr_create_self_node+0x225/0x650 net/hsr/hsr_framereg.c:108
-
-stack backtrace:
-CPU: 1 PID: 3597 Comm: syz-executor.0 Not tainted 5.17.0-rc2-syzkaller-00903-g45230829827b #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- hsr_node_get_first+0x9b/0xb0 net/hsr/hsr_framereg.c:34
- hsr_create_self_node+0x22d/0x650 net/hsr/hsr_framereg.c:109
- hsr_dev_finalize+0x2c1/0x7d0 net/hsr/hsr_device.c:514
- hsr_newlink+0x315/0x730 net/hsr/hsr_netlink.c:102
- __rtnl_newlink+0x107c/0x1760 net/core/rtnetlink.c:3481
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3529
- rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5594
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
- netlink_unicast+0x539/0x7e0 net/netlink/af_netlink.c:1343
- netlink_sendmsg+0x904/0xe00 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:725
- __sys_sendto+0x21c/0x320 net/socket.c:2040
- __do_sys_sendto net/socket.c:2052 [inline]
- __se_sys_sendto net/socket.c:2048 [inline]
- __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2048
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fca68e2ae1c
-Code: fa fa ff ff 44 8b 4c 24 2c 4c 8b 44 24 20 89 c5 44 8b 54 24 28 48 8b 54 24 18 b8 2c 00 00 00 48 8b 74 24 10 8b 7c 24 08 0f 05 <48> 3d 00 f0 ff ff 77 34 89 ef 48 89 44 24 08 e8 20 fb ff ff 48 8b
-RSP: 002b:00007ffcd2955580 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 00007fca69ec3320 RCX: 00007fca68e2ae1c
-RDX: 0000000000000048 RSI: 00007fca69ec3370 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 00007ffcd29555d4 R09: 000000000000000c
-R10: 0000000000000000 R11: 0000000000000293 R12: 0000000000000000
-R13: 00007fca69ec3370 R14: 0000000000000003 R15: 0000000000000000
- </TASK>
-device hsr_slave_0 entered promiscuous mode
-device hsr_slave_1 entered promiscuous mode
-netdevsim netdevsim0 netdevsim0: renamed from eth0
-netdevsim netdevsim0 netdevsim1: renamed from eth1
-netdevsim netdevsim0 netdevsim2: renamed from eth2
-netdevsim netdevsim0 netdevsim3: renamed from eth3
-bridge0: port 2(bridge_slave_1) entered blocking state
-bridge0: port 2(bridge_slave_1) entered forwarding state
-bridge0: port 1(bridge_slave_0) entered blocking state
-bridge0: port 1(bridge_slave_0) entered forwarding state
-8021q: adding VLAN 0 to HW filter on device bond0
-8021q: adding VLAN 0 to HW filter on device team0
-IPv6: ADDRCONF(NETDEV_CHANGE): hsr0: link becomes ready
-8021q: adding VLAN 0 to HW filter on device batadv0
-device veth0_vlan entered promiscuous mode
-device veth1_vlan entered promiscuous mode
-device veth0_macvtap entered promiscuous mode
-device veth1_macvtap entered promiscuous mode
-batman_adv: batadv0: Interface activated: batadv_slave_0
-batman_adv: batadv0: Interface activated: batadv_slave_1
-netdevsim netdevsim0 netdevsim0: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
-syz-executor.0 (3597) used greatest stack depth: 22400 bytes left
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
