@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAFBB4B1928
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 00:12:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8173C4B1938
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 00:14:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345515AbiBJXLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 18:11:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60592 "EHLO
+        id S1345538AbiBJXOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 18:14:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345508AbiBJXLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 18:11:52 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC455F5D;
-        Thu, 10 Feb 2022 15:11:52 -0800 (PST)
+        with ESMTP id S1345532AbiBJXOa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 18:14:30 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296D25F45;
+        Thu, 10 Feb 2022 15:14:31 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: usama.anjum)
-        with ESMTPSA id 1E5A31F469B1
+        with ESMTPSA id 2EC861F469B4
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644534711;
-        bh=xJk1X1Ou6Pj/lU4m3+l3X4A8FKv0b4TtWehWstyFtXM=;
+        s=mail; t=1644534869;
+        bh=o9q78kTwG5UmK6/5Bu7ra/nY0WB8DC6T1nn3SDr51bM=;
         h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=lkNkBwNu3iDeSbxbxmet/aqfx3hhFrQ3FBBRbXIoO+lQStXrobNg3t/g4nl3tQ1gX
-         FIZPublwfNFKTq0N+K3/aOdozYJVx5cKySe/NoLst7xgG5oghsf/2DTe1rKAmYXk52
-         OSHezvvvrA2ceJ0fxhgAi35xzbqLDZN6a4Z+DN2AQNHnQT92cxiCzYGSaZhHpD6tqQ
-         bYRF3c7Sh6e/B7vfE1bxu5Iji30pldoNAFuBGMvg47DAV/WAwWUVdBtNjDaC3tYaeB
-         zUzQ3D2nvsEL2zJywXcCRm+3Lp9K0H4azyW19a8BUVPwPwRd0vy8w/V1khLtWkOR22
-         7fPgtj9o+VzXg==
-Message-ID: <63e239fc-9282-0276-50b2-3172a446262d@collabora.com>
-Date:   Fri, 11 Feb 2022 04:11:40 +0500
+        b=OWjwy7ePObdQwYLGZ827EpObqOzhn+TNJ4HTTUKnn02v1nnpHj7SkPSXT1I4fdEG6
+         M8vNVbqFqLR948xyhEoi27Bd5Z1pNZ1/6ipD/Eg+8AhiTmDdNBb4dABjrmCJEu6PQG
+         KlgcZFLoHY12EEZP7W6gwnHz0KT4YnplsdBOfx0GiGWYkoqKGhjupnXfSeeNRbmFBa
+         +BHqNCbMIdoXYSVEYlyTulOF5bP8/AmGrsjOiXDJWrB+6tzjfeGiNFxoHDDWSHQcN+
+         AEmsFODOXyjZOQVxJH0prJunaBafHD0423ghUKUWWe2bs+Xv1YH5K2wpX/MGroYU3B
+         6KNZvMp22yXVQ==
+Message-ID: <755ec9b2-8781-a75a-4fd0-39fb518fc484@collabora.com>
+Date:   Fri, 11 Feb 2022 04:14:17 +0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
@@ -83,9 +83,12 @@ On 2/11/22 1:30 AM, Sherry Yang wrote:
 > @@ -1,5 +1,5 @@
 >  # SPDX-License-Identifier: GPL-2.0
 > -CFLAGS += -Wl,-no-as-needed -Wall
-> +CFLAGS += -Wl,-no-as-needed -Wall -isystem ../../../../usr/include/"../../../../usr/include/" directory doesn't have header files if
+> +CFLAGS += -Wl,-no-as-needed -Wall -isystem ../../../../usr/include/
+
+"../../../../usr/include/" directory doesn't have header files if
 different output directory is used for kselftests build like "make -C
 tools/tests/selftest O=build". Can you try adding recently added
 variable, KHDR_INCLUDES here which makes this kind of headers inclusion
 easy and correct for other build combinations as well?
+
 
