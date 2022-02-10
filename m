@@ -2,100 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF3FD4B12C2
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 17:29:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75D804B12D9
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 17:36:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229519AbiBJQ3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 11:29:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43384 "EHLO
+        id S244258AbiBJQgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 11:36:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244203AbiBJQ3h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 11:29:37 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA00F128
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:29:35 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id y6so17065444ybc.5
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:29:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=icJaWELoFkK+x1iy67lv/nCb3yezWQKgn5KOEGJ+cIY=;
-        b=SN2tNbcQchx4HXJyjvkghxpfPQ2bvwdEG3CbOAyk+0XyFNYjQkxITqTjVne6ncX93M
-         Ft/L/YPHrYfefVdYvRiuB7L8xki1DMTFwDelpjUnawbEyMDT0o5dakr/W8+2VkvrLNZa
-         5q5IMl6Op/EZeK1QHdMQnbJUXOuk06mg6VYmGWEYbMD1OAOJjg6mEt9Rdb7AI8N5RE3P
-         pDA0PijIAVF9dWawbq0V5TFORF6k91Lg52OzlD6dCOlt06XvOdBgbsfuz6FjKzGf9znC
-         Xwbmr06f7BVMlJfpekrsnSWf6dQFwfMtX1T+LhO2xdECrKk6hLVQauiRV1sljIAiQWh7
-         X7kA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=icJaWELoFkK+x1iy67lv/nCb3yezWQKgn5KOEGJ+cIY=;
-        b=ozFBFukMaxaQUrukNUJAY4YwDNfNzhq4/kEcDn1YYqob+C1O+LjLl79S+BgdsonUal
-         +zcwKvbByMrqhRmtICvgyYPDyTdIPxGtnOk32QKLA7rjSpTEshcgw0rDO+8HJiUqX7vb
-         6lRDRfUPzV97LSGAk7YNf+Rbiqkzjd4qx3znGSTrI3uWKmfoqyCkuv29iBi5lgHeOvsj
-         pbyIoD79thCAwBKFnLdYD3PEMYRWe2UoY77C2984CqegwML1uRQ5Axy1lv+zciQI7Gsn
-         KnJgTuuDwHz2cFMeUEA4AmzdEO218aA/JT3hFCE8gzcf8E7FKg8ztcGePxZj0BfvaQJX
-         kisw==
-X-Gm-Message-State: AOAM531RJb6LgI7g5pTa2MrdEcLut6VnRHdQndxAAvJvrt+KMqC9/9GV
-        qiKJhHQKHxqSAZgKeF/nHNebMYoLewB03KelmAhoRg==
-X-Google-Smtp-Source: ABdhPJzt9+1Rkf4flJfxjiFJAaQfZGZW9tw1ziM0rdiM1SVD5y2oz2Eso/1rLeRMF9U4H1OVH/407PmVpIn8yVGq8f8=
-X-Received: by 2002:a25:4f0a:: with SMTP id d10mr7613486ybb.296.1644510574702;
- Thu, 10 Feb 2022 08:29:34 -0800 (PST)
+        with ESMTP id S244254AbiBJQgG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 11:36:06 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E0F1A8;
+        Thu, 10 Feb 2022 08:36:07 -0800 (PST)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21AAJL0J008359;
+        Thu, 10 Feb 2022 08:36:04 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=+YXeHLopDlrVI9hkQTBypubMSt1yVf2ZrvrNt0+T0pc=;
+ b=WQ1/S+3WfAQz19ta23v1dpXtwFOslCeIlCjDyynztfW32Io1qrDo+eCg5tJwLilsFVdT
+ zBl0q3r+y+kPeoIpM4HcbwkwOI+9+r3pEsxwHTtj3RXHF4SUD2ZWa+SehXoONQ+hPVFH
+ OVogL1e161aujkvbTaL5hdl7XE+eXQ+QbmR623Y09YUjLAhq7XdDft8zJd96b+lrfUe0
+ W8ERQ29pxYUHqA/FT3oH+leN9nlsn4FPrL5jhCydBTg75orSMIZTMDq6KLwDsC87qvNl
+ Qt+gQnIohFr1rUGBh9RbcbEjAvnN449fshRHGDhX11nhW3+Hey8hyHZ42zqtFmDaWwFC PA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3e50uc9mga-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 10 Feb 2022 08:36:04 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 10 Feb
+ 2022 08:36:02 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Thu, 10 Feb 2022 08:36:02 -0800
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 097D73F706B;
+        Thu, 10 Feb 2022 08:35:58 -0800 (PST)
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
+        <sbhatta@marvell.com>, <hkelam@marvell.com>
+Subject: [net-next PATCH] octeontx2-af: fix array bound error
+Date:   Thu, 10 Feb 2022 22:05:57 +0530
+Message-ID: <20220210163557.7256-1-hkelam@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20220128073319.1017084-1-imagedong@tencent.com>
- <20220128073319.1017084-2-imagedong@tencent.com> <0029e650-3f38-989b-74a3-58c512d63f6b@gmail.com>
- <CADxym3akuxC_Cr07Vzvv+BD55XgMEx7nqU4qW8WHowGR0jeoOQ@mail.gmail.com>
- <20220209211202.7cddd337@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CADxym3ZajjCV2EHF6+2xa5ewZuVqxwk6bSqF0KuA+J6sGnShbQ@mail.gmail.com> <20220210081322.566488f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220210081322.566488f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 10 Feb 2022 08:29:23 -0800
-Message-ID: <CANn89iKhkQ_0TbSJnPtMJrC57nz=0iiRXR-XzeZj5q6OPYZnFA@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next 1/7] net: skb_drop_reason: add document for
- drop reasons
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Menglong Dong <menglong8.dong@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Alexander Lobakin <alobakin@pm.me>, paulb@nvidia.com,
-        Kees Cook <keescook@chromium.org>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, Cong Wang <cong.wang@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Proofpoint-GUID: 1xIyoBmz22_zbQOTThAQXlOzR5aC6Bye
+X-Proofpoint-ORIG-GUID: 1xIyoBmz22_zbQOTThAQXlOzR5aC6Bye
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-10_07,2022-02-09_01,2021-12-02_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 8:13 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 10 Feb 2022 21:42:14 +0800 Menglong Dong wrote:
-> > How about introducing a field to 'struct sock' for drop reasons? As sk is
-> > locked during the packet process in tcp_v4_do_rcv(), this seems to work.
->
-> I find adding temporary storage to persistent data structures awkward.
-> You can put a structure on the stack and pass it thru the call chain,
-> that's just my subjective preference, tho, others may have better ideas.
+This patch fixes below error by using proper data type.
 
-I had a similar TODO item, because stuff like 'waking up task' or free
-one skb (or list of skb) could be performed outside of socket lock.
+drivers/net/ethernet/marvell/octeontx2/af/rpm.c: In function
+'rpm_cfg_pfc_quanta_thresh':
+include/linux/find.h:40:23: error: array subscript 'long unsigned
+int[0]' is partly outside array bounds of 'u16[1]' {aka 'short unsigned
+int[1]'} [-Werror=array-bounds]
+   40 |                 val = *addr & GENMASK(size - 1, offset);
+
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/af/rpm.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+index d7a8aad46e12..47e83d7a5804 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+@@ -141,14 +141,15 @@ int rpm_lmac_get_pause_frm_status(void *rpmd, int lmac_id,
+ 	return 0;
+ }
+ 
+-static void rpm_cfg_pfc_quanta_thresh(rpm_t *rpm, int lmac_id, u16 pfc_en,
++static void rpm_cfg_pfc_quanta_thresh(rpm_t *rpm, int lmac_id,
++				      unsigned long pfc_en,
+ 				      bool enable)
+ {
+ 	u64 quanta_offset = 0, quanta_thresh = 0, cfg;
+ 	int i, shift;
+ 
+ 	/* Set pause time and interval */
+-	for_each_set_bit(i, (unsigned long *)&pfc_en, 16) {
++	for_each_set_bit(i, &pfc_en, 16) {
+ 		switch (i) {
+ 		case 0:
+ 		case 1:
+-- 
+2.17.1
+
