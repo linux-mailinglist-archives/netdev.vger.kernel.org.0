@@ -2,63 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1E744B03F7
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 04:32:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C18F4B0403
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 04:40:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232690AbiBJDcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 22:32:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57148 "EHLO
+        id S230388AbiBJDkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 22:40:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230059AbiBJDcS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 22:32:18 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341D723BD9;
-        Wed,  9 Feb 2022 19:32:20 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id h14-20020a17090a130e00b001b88991a305so7170130pja.3;
-        Wed, 09 Feb 2022 19:32:20 -0800 (PST)
+        with ESMTP id S229549AbiBJDkw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 22:40:52 -0500
+Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FABC23BF1
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 19:40:54 -0800 (PST)
+Received: by mail-oo1-xc29.google.com with SMTP id f11-20020a4abb0b000000b002e9abf6bcbcso4943732oop.0
+        for <netdev@vger.kernel.org>; Wed, 09 Feb 2022 19:40:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=j48+22ZByNM/hLovrTeV1WT75NKYqr7Fm/OV9vNHCNw=;
-        b=JlUWCJAPQI439U0lMs+OPOWWl3X1lSr2P7x4WylcZgyfHbYwq6YrPZ3Tu5o5HafJKo
-         fVHDurp6eQWq3TtiV6H+AX2hwcOb1kUUP+GFxY3kLz34H96bMRf+77VbH2GZz6+2XT67
-         pARFWY+Dye1DP+h45smS7Pz/Ric4pJfu63wjsEAqwO/wtqr+kZL1Br+k6qAdmo1u2gmb
-         cNFKvWDrB5Fbm58+cKvBB5CnpHs+Amo4RN0Zn5YatgJqAMood1vHixHJm7GqGlGQGaJm
-         RB7mIH3Fo9KfdD22SCA7yrMwInDtQBuaNsRUqbzBOJT3Csj3IXeaS5crfx8TQammNg07
-         hwBg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2Ez2nTX23/RpMbua/tp7BmlVIqHKbLFMA0uYCGy/5mI=;
+        b=JlEKjOVBcBywzdh1hxwzJvHJVZExFc2yfOPogFl3eVplGjatBHix3vUqWIQNfCugHo
+         U1oKl/fKcoMdWhOJhy+82ZtLNSFfrjjMu+9b7MIheUK8T+DOmewIPRIfaO4lhvjbKYrb
+         60FB+1kE3EihaZB46AkvqB9AKQ063bAflUq7fwBkUw3njcDnd2bGlsP+Q7D/VPtEzfhe
+         /6cW8uYn8BWWdKpizngmD7bIBklcRJ6O2bYAZk0vNP+IA0ZjiXzmOUBlByO/7mjlxxls
+         8DbpcY+dfvse0E7JDHVmSGbS6lqXfy0c9TH5NxiETVn/6EmU3+dSpm3qFqUuEnB0jweT
+         HkxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=j48+22ZByNM/hLovrTeV1WT75NKYqr7Fm/OV9vNHCNw=;
-        b=NGXlE2SEiAjE4H8Scv+eipkE1Rg2lF7klbmMGAW4LqYa+0ZfPPrRlv8TmJYvWy+rrH
-         fe+9+3RZUCzkbY3XPQvDzWpuve8UNUnSnxc7LBbpYRj8k6J/Zspe67UmlhBuNNQuj2HV
-         yFAXzFCEm3bHBDMFNVP+6JpscRK54tf2CwnC4/ejQ0zuVjdvBlzXq7z+/GdvWAN0x4GC
-         hTTKmWDpYRJvnZR7Hdn67XT5SQQEJTFfKWUbPO92sNdzmYDkk1mDU8WGK8FrPmXe01Pl
-         fDUvkH7jHUz89EZ85s7b685Hx9mhulhOOKWHgSzrEUnzXPQYplPKwMPPNn8WqqOk3X2l
-         YgCw==
-X-Gm-Message-State: AOAM531s6Zqv2+HECRVfqXa+AJ0ZV2p2gZNXzlDY0ipPloZo2kqO5Zhj
-        zPw1Lgk8qB2ZwGjMszlBErSa5yl4Ck8=
-X-Google-Smtp-Source: ABdhPJyo0+D8jUvlBqAmfE5CePl88jZnnBW8Ll4BK9L/VWpYynwKdcLU5UUEL1QpMQermI4wqHAdcA==
-X-Received: by 2002:a17:903:249:: with SMTP id j9mr5276607plh.39.1644463939513;
-        Wed, 09 Feb 2022 19:32:19 -0800 (PST)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id s32sm14760483pfw.80.2022.02.09.19.32.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 19:32:19 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     netfilter-devel@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Hangbin Liu <liuhangbin@gmail.com>, Yi Chen <yiche@redhat.com>
-Subject: [PATCH nf] selftests: netfilter: disable rp_filter on router
-Date:   Thu, 10 Feb 2022 11:32:05 +0800
-Message-Id: <20220210033205.928458-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2Ez2nTX23/RpMbua/tp7BmlVIqHKbLFMA0uYCGy/5mI=;
+        b=udWYUKmOfuy4kZgtjCVXOg/jOlPeHAjfWKFVWwUTGDvsYyfiaL1p9aBrYGxH5r1JIC
+         mNrgxGn8XtLoJyszVqNVZMAUcGAOoD92vZb4+T/kn8wBj4El5nRMu76egX5JuJ1FXEbp
+         +bZFZJDi9dnNoUms+kWwEK5qc+IWDkdFVwPU4ElIhKLjxV1IljQIASzfwrSj+bnZ7VD6
+         CTUR80rQBUa60YtlhyEcaD9WWqAkJYIApOXIGVPSxdJ5gFIOWaMURwWP4VB6iFCOZh5/
+         jMK7hXJZPvSniF/CntvOFx0DLxzHLIrGGBxnxAILiNdcMdruqoOpyRBkdy06Y6iqxglG
+         /aOg==
+X-Gm-Message-State: AOAM530hN/TXPwrLe43FQHg9PnDz6l+55zggkQKoi6w0M8et8swAW7wc
+        llbSFpvUDKJMjYysT7LyOLGs+0pi9K4C5E8duCtPWABXYx6XrQ==
+X-Google-Smtp-Source: ABdhPJxCYeSlYaTJ6SZPGxxjdggFOb3m3rYwlx30LSEpfFYePU+aknemPZeItgcHtpy0QfDlo4jN742KCGbmyKraAoI=
+X-Received: by 2002:a05:6870:b1d0:: with SMTP id x16mr198811oak.169.1644464453597;
+ Wed, 09 Feb 2022 19:40:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1644394642.git.lucien.xin@gmail.com> <76c52badfdccaa7f094d959eaf24f422ae09dec6.1644394642.git.lucien.xin@gmail.com>
+ <20220209175558.3117342d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220209175558.3117342d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 10 Feb 2022 11:40:42 +0800
+Message-ID: <CADvbK_ckY31iZq+++z6kOdd5rBYMyZDNe8N_cHT2wAWu8ZzoZA@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] vlan: move dev_put into vlan_dev_uninit
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Ziyang Xuan <william.xuanziyang@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -69,49 +66,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some distros may enalbe rp_filter by default. After ns1 change addr to
-10.0.2.99 and set default router to 10.0.2.1, while the connected router
-address is still 10.0.1.1. The router will not reply the arp request
-from ns1. Fix it by setting the router's veth0 rp_filter to 0.
+On Thu, Feb 10, 2022 at 9:56 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed,  9 Feb 2022 03:19:56 -0500 Xin Long wrote:
+> > Shuang Li reported an QinQ issue by simply doing:
+> >
+> >   # ip link add dummy0 type dummy
+> >   # ip link add link dummy0 name dummy0.1 type vlan id 1
+> >   # ip link add link dummy0.1 name dummy0.1.2 type vlan id 2
+> >   # rmmod 8021q
+> >
+> >  unregister_netdevice: waiting for dummy0.1 to become free. Usage count = 1
+>
+> How about we put this in a selftest under tools/testing/selftests/net/
+> or tools/testing/selftests/drivers/net/ ?
+I will try.
 
-Before the fix:
-  # ./nft_fib.sh
-  PASS: fib expression did not cause unwanted packet drops
-  Netns nsrouter-HQkDORO2 fib counter doesn't match expected packet count of 1 for 1.1.1.1
-  table inet filter {
-          chain prerouting {
-                  type filter hook prerouting priority filter; policy accept;
-                  ip daddr 1.1.1.1 fib saddr . iif oif missing counter packets 0 bytes 0 drop
-                  ip6 daddr 1c3::c01d fib saddr . iif oif missing counter packets 0 bytes 0 drop
-          }
-  }
+>
+> > When rmmods 8021q, all vlan devs are deleted from their real_dev's vlan grp
+> > and added into list_kill by unregister_vlan_dev(). dummy0.1 is unregistered
+> > before dummy0.1.2, as it's using for_each_netdev() in __rtnl_kill_links().
+> >
+> > When unregisters dummy0.1, dummy0.1.2 is not unregistered in the event of
+> > NETDEV_UNREGISTER, as it's been deleted from dummy0.1's vlan grp. However,
+> > due to dummy0.1.2 still holding dummy0.1, dummy0.1 will keep waiting in
+> > netdev_wait_allrefs(), while dummy0.1.2 will never get unregistered and
+> > release dummy0.1, as it delays dev_put until calling dev->priv_destructor,
+> > vlan_dev_free().
+> >
+> > This issue was introduced by Commit 563bcbae3ba2 ("net: vlan: fix a UAF in
+> > vlan_dev_real_dev()"), and this patch is to fix it by moving dev_put() into
+> > vlan_dev_uninit(), which is called after NETDEV_UNREGISTER event but before
+> > netdev_wait_allrefs().
+> >
+> > Fixes: 563bcbae3ba2 ("net: vlan: fix a UAF in vlan_dev_real_dev()")
+>
+> As far as I understand this is pretty much a revert of the previous fix.
+> Note that netdevice_event_work_handler() as seen in the backtrace in the
+> commit message of the fix in question is called from a workqueue, so the
+> ordering of netdev notifications saves us from nothing here. We can't
+> start freeing state until all refs are gone.
+understand.
 
-After the fix:
-  # ./nft_fib.sh
-  PASS: fib expression did not cause unwanted packet drops
-  PASS: fib expression did drop packets for 1.1.1.1
-  PASS: fib expression did drop packets for 1c3::c01d
-
-Fixes: 82944421243e ("selftests: netfilter: add fib test case")
-Signed-off-by: Yi Chen <yiche@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- tools/testing/selftests/netfilter/nft_fib.sh | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/tools/testing/selftests/netfilter/nft_fib.sh b/tools/testing/selftests/netfilter/nft_fib.sh
-index 6caf6ac8c285..22c7feff8d48 100755
---- a/tools/testing/selftests/netfilter/nft_fib.sh
-+++ b/tools/testing/selftests/netfilter/nft_fib.sh
-@@ -174,6 +174,8 @@ test_ping() {
- ip netns exec ${nsrouter} sysctl net.ipv6.conf.all.forwarding=1 > /dev/null
- ip netns exec ${nsrouter} sysctl net.ipv4.conf.veth0.forwarding=1 > /dev/null
- ip netns exec ${nsrouter} sysctl net.ipv4.conf.veth1.forwarding=1 > /dev/null
-+ip netns exec ${nsrouter} sysctl net.ipv4.conf.veth0.rp_filter=0 > /dev/null
-+ip netns exec ${nsrouter} sysctl net.ipv4.conf.veth1.rp_filter=0 > /dev/null
- 
- sleep 3
- 
--- 
-2.31.1
-
+>
+> I think better fix would be to rewrite netdev_run_todo() to free the
+> netdevs in any order they become ready. That's gonna solve any
+> dependency problems and may even speed things up.
+>
+What about I keep dev_put() in dev->priv_destructor()/vlan_dev_free() for
+vlan as before, and fix this problem by using for_each_netdev_reverse()
+in __rtnl_kill_links()?
+It will make sense as the late added dev should be deleted early when
+rtnl_link_unregister a rtnl_link_ops.
