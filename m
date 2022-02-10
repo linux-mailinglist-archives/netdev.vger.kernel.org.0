@@ -2,68 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F47E4B1254
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 17:09:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42AB94B126B
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 17:12:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244017AbiBJQJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 11:09:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60886 "EHLO
+        id S243935AbiBJQMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 11:12:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244015AbiBJQJL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 11:09:11 -0500
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6D5C51
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:09:12 -0800 (PST)
-Received: by mail-vs1-xe2c.google.com with SMTP id v6so6935600vsp.11
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:09:12 -0800 (PST)
+        with ESMTP id S243839AbiBJQMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 11:12:08 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662C2EB
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:12:09 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id 192so16785052ybd.10
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:12:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=TRwPb5Y+oBkP41XEt/JXjya2Xo5aicaCGmanVBPeNig=;
-        b=R5iXAIJyn5nNTBjra5nrJeFym34vS+blo4YIs4MhOiIkIBJUmO81I8FmYY5J3KdEk3
-         Ww1crq7HzjrrjAmQ5QZwPZWCRMeHX4fOIecZgF0PmxkHfi5AHsq8KlRk8N9IGnP54gN5
-         ++QGFkPEC1UCzJC99/P++84QyO/wxA6eaze1+OPL/zsoeRzNNPFK0uCZXBPtFVxg1WlX
-         vpeLsQa0tqTloY6Q/jfdecxSSEY7ANdvIxylQUnmAzz6xuffquxll7kkWEaYecDbM7sY
-         triYS7uch0DbgivVcmsjIwNFf/LliQITrZ801j0Bm90crKwt7BwhWdTMRjhp2mZcXsL1
-         O5jg==
+        bh=Boy/GIabb2pNN2ysU7kdQPFbp4AoWALHb+LU5Vq3/WE=;
+        b=iPLKrZ0sATTgv2QdHv2ngcpOQhncpxBytSMhV7hWWJWXMQwvQu7IvKJet+PUSew2FA
+         xh8bDPQ6LtnJxDgj9zpiurcSLjVNAW5d6r+8IDtN6BXABdxmVp5naFxX01Uo11Zjm6zQ
+         WZxnfPHZBelBC/582Lus87RK0WWWfxbnAcGxjcbJGPbKrCkH9qlCn+aB+M6Uo2y/ELX3
+         wL4n2Pxi/NbNXczHxvRHq3CZXHXvWXTLzMWgooqxudwN8oS4nCoGA0z+q6YEZ8hFsfYa
+         6fsVbPY3qAuRpBgHEzjv1jgmTn+ei6o2scQDpCJ6RqvlpHJIfinTorhc1IVyZh8QcLxu
+         KHNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=TRwPb5Y+oBkP41XEt/JXjya2Xo5aicaCGmanVBPeNig=;
-        b=rv8cjDcGQPGUcnkHWCd6M1qhPxGTv8dDZ1PkSNVNMb3CMbrGCSSE/4fXGMg0eCURTu
-         SWi39jPJfrXVwwAEeUSH9WY8yai9twjOudgXls6YNFsl9ktnbOTJmIojWCZWLPbX+Urp
-         /JyjlPxOGPTiwy3Y1wb/rgDJzUCo9rVeBM9GHdkTdj6IzSQJB3XYPdAkTgSRxMp/7A8E
-         Pu3CBpqiP2I+pDs451xzwhZBUDm1AFCpElA02uRf0zVjWYbY9m5UO4fDbu+XSBqwo8fQ
-         fJyK+vdP6Pl72Ol1xukya+lWVirDot5h2QaL/mmFAH3ls0DW2hQscuTnHJ2R2q3ZMU89
-         ou5Q==
-X-Gm-Message-State: AOAM531qCLPS+nzH9SwrCp8xrgvomzjd/n0TKHeLAtJleF3sA9DOUXCb
-        /ltNNRUdIzjR4YH9frOViX+/X+Ssdq8=
-X-Google-Smtp-Source: ABdhPJziW431hT56R+gU+g/qy8yTXDWfLMXYmlcpuIfYeEfzZWcXPt11JI74DjcWwONaNGfByJ9y3A==
-X-Received: by 2002:a67:fa83:: with SMTP id f3mr2751555vsq.80.1644509351193;
-        Thu, 10 Feb 2022 08:09:11 -0800 (PST)
-Received: from mail-vk1-f179.google.com (mail-vk1-f179.google.com. [209.85.221.179])
-        by smtp.gmail.com with ESMTPSA id w3sm3904514vkd.5.2022.02.10.08.09.10
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 08:09:10 -0800 (PST)
-Received: by mail-vk1-f179.google.com with SMTP id d27so3355456vkn.5
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:09:10 -0800 (PST)
-X-Received: by 2002:a05:6122:507:: with SMTP id x7mr2742625vko.14.1644509350149;
- Thu, 10 Feb 2022 08:09:10 -0800 (PST)
+        bh=Boy/GIabb2pNN2ysU7kdQPFbp4AoWALHb+LU5Vq3/WE=;
+        b=zp0BvLQkuO5eLsRMZexXwfOkdel+pBwWJFE5Ls4Q7GIWqRx+IBAPuYxYrRvQwHxI9v
+         ddtyGmWEe8AHcdLi2Mol6M/9wVLb3dYzfwZ8YTQrZ+jgV1BLdS7wZAHdwKecTtbnzQRJ
+         GbK2dGDPqdqqKLj4VxL/96RF0S6paoY2uDznuAa0LEsx4Hlwkt89v+JyNR3+mrhb//UI
+         IPMlbBbhBta34y1DA/mC3X6sT6Xkf3M3P69EF/aQtpaXXxgzPybnS0oAPmMjzELKUYw1
+         vF0nw6eOFzjGKCWDvsh9KI0s24Wz7offzAMf7OgyPLTvktPdLvyLsFRXUyJVdNRbxhqd
+         Gogw==
+X-Gm-Message-State: AOAM532Vti2eorqPSXdXqIBTSt3EsMTFEK47sBek+g6l4lLK/+MhL/x3
+        yBX3BuG9lDyCzVckqeV4cRafcUNxRsJ8kbvDpIs=
+X-Google-Smtp-Source: ABdhPJw5qaWFw8+3CeOuq1Brm1icOahv0aOKwdb8SQ8bxz1f7HZKYt94Y+8ovTz781QjI8+JbGvOudc6VvncE9nQYhI=
+X-Received: by 2002:a25:508b:: with SMTP id e133mr7114040ybb.293.1644509528624;
+ Thu, 10 Feb 2022 08:12:08 -0800 (PST)
 MIME-Version: 1.0
-References: <20220210003649.3120861-1-kuba@kernel.org>
-In-Reply-To: <20220210003649.3120861-1-kuba@kernel.org>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 10 Feb 2022 11:08:33 -0500
-X-Gmail-Original-Message-ID: <CA+FuTScN_Mu5qV1H3Wpo4o=5hTiakP0eD7NRuZse-4TsxubQyA@mail.gmail.com>
-Message-ID: <CA+FuTScN_Mu5qV1H3Wpo4o=5hTiakP0eD7NRuZse-4TsxubQyA@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/11] net: ping6: support basic socket cmsgs
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, lorenzo@google.com,
-        maze@google.com, dsahern@kernel.org, yoshfuji@linux-ipv6.org,
-        shuah@kernel.org, linux-kselftest@vger.kernel.org
+References: <20220210154912.5803-1-claudiajkang@gmail.com>
+In-Reply-To: <20220210154912.5803-1-claudiajkang@gmail.com>
+From:   Juhee Kang <claudiajkang@gmail.com>
+Date:   Fri, 11 Feb 2022 01:11:32 +0900
+Message-ID: <CAK+SQuR3wn1_nzabwJzqB+iap4DC48msigUbQaKk0bOdGR8FBg@mail.gmail.com>
+Subject: Re: [PATCH net] net: hsr: fix suspicious usage in hsr_node_get_first
+To:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     ennoerlangen@gmail.com, george.mccollister@gmail.com,
+        olteanv@gmail.com, marco.wenzel@a-eberle.de,
+        xiong.zhenwu@zte.com.cn,
+        syzbot+f0eb4f3876de066b128c@syzkaller.appspotmail.com
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -75,38 +68,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 7:36 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Fri, Feb 11, 2022 at 12:49 AM Juhee Kang <claudiajkang@gmail.com> wrote:
 >
-> Add support for common SOL_SOCKET cmsgs in ICMPv6 sockets.
-> Extend the cmsg tests to cover more cmsgs and socket types.
+> Currently, to dereference hlist_node which is result of hlist_first_rcu(),
+> rcu_dereference() is used. But, suspicious RCU warnings occur because
+> the caller doesn't acquire RCU. So it was solved by adding rcu_read_lock().
 >
-> SOL_IPV6 cmsgs to follow.
+> The kernel test robot reports:
+>     [   53.750001][ T3597] =============================
+>     [   53.754849][ T3597] WARNING: suspicious RCU usage
+>     [   53.759833][ T3597] 5.17.0-rc2-syzkaller-00903-g45230829827b #0 Not tainted
+>     [   53.766947][ T3597] -----------------------------
+>     [   53.771840][ T3597] net/hsr/hsr_framereg.c:34 suspicious rcu_dereference_check() usage!
+>     [   53.780129][ T3597] other info that might help us debug this:
+>     [   53.790594][ T3597] rcu_scheduler_active = 2, debug_locks = 1
+>     [   53.798896][ T3597] 2 locks held by syz-executor.0/3597:
 >
-> Jakub Kicinski (11):
->   net: ping6: remove a pr_debug() statement
->   net: ping6: support packet timestamping
->   net: ping6: support setting socket options via cmsg
->   selftests: net: rename cmsg_so_mark
->   selftests: net: make cmsg_so_mark ready for more options
->   selftests: net: cmsg_sender: support icmp and raw sockets
->   selftests: net: cmsg_so_mark: test ICMP and RAW sockets
->   selftests: net: cmsg_so_mark: test with SO_MARK set by setsockopt
->   selftests: net: cmsg_sender: support setting SO_TXTIME
->   selftests: net: cmsg_sender: support Tx timestamping
->   selftests: net: test standard socket cmsgs across UDP and ICMP sockets
+> Fixes: 4acc45db7115 ("net: hsr: use hlist_head instead of list_head for mac addresses")
+> Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
+> Reported-by: syzbot+f0eb4f3876de066b128c@syzkaller.appspotmail.com
+> Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
+> ---
+>  net/hsr/hsr_framereg.c | 3 +++
+>  1 file changed, 3 insertions(+)
 >
->  net/ipv6/ping.c                             |  14 +-
->  tools/testing/selftests/net/.gitignore      |   2 +-
->  tools/testing/selftests/net/Makefile        |   3 +-
->  tools/testing/selftests/net/cmsg_sender.c   | 380 ++++++++++++++++++++
->  tools/testing/selftests/net/cmsg_so_mark.c  |  67 ----
->  tools/testing/selftests/net/cmsg_so_mark.sh |  32 +-
->  tools/testing/selftests/net/cmsg_time.sh    |  83 +++++
->  7 files changed, 499 insertions(+), 82 deletions(-)
->  create mode 100644 tools/testing/selftests/net/cmsg_sender.c
->  delete mode 100644 tools/testing/selftests/net/cmsg_so_mark.c
->  create mode 100755 tools/testing/selftests/net/cmsg_time.sh
+> diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
+> index b3c6ffa1894d..92abdf855327 100644
+> --- a/net/hsr/hsr_framereg.c
+> +++ b/net/hsr/hsr_framereg.c
+> @@ -31,7 +31,10 @@ struct hsr_node *hsr_node_get_first(struct hlist_head *head)
+>  {
+>         struct hlist_node *first;
+>
+> +       rcu_read_lock();
+>         first = rcu_dereference(hlist_first_rcu(head));
+> +       rcu_read_unlock();
+> +
+>         if (first)
+>                 return hlist_entry(first, struct hsr_node, mac_list);
+>
+> --
+> 2.25.1
 >
 
-Already merged, but since I was on the cc line: overall looks great to
-me too. Thanks Jakub.
+
+There are netdev/apply warnings.
+I will fix it and I will send v2 patch!!
+
+-- 
+
+Best regards,
+Juhee Kang
