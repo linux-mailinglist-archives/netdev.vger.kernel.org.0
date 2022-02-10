@@ -2,136 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA7CE4B02DD
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 03:01:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 530634B0215
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 02:25:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233799AbiBJB55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 20:57:57 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60094 "EHLO
+        id S231847AbiBJBZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 20:25:15 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233732AbiBJB4N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 20:56:13 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 535E42AA97;
-        Wed,  9 Feb 2022 17:38:03 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id i186so7627270pfe.0;
-        Wed, 09 Feb 2022 17:38:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=R8E1uIi3+8OQz5EH8bcJFCimfA9i/IShFnqKSrhw+jA=;
-        b=DnxCQevBUHlaiRVxA8S2V5t0STdyWdb7vCOz1MZmbNfdaAqnQHJ9xL7o+NxwQZJ06i
-         U2SgAyQqMZEqsV1VTgBDMGitHbzXmTCFU2jM7T5dvWJf+cz1vtaTFiHww9lItWJo8viM
-         pjL7Wat8NcOtWXfcnZc4VWTvjR1Yjqcqd8785aC2FBl5fM6nBe5T6YVrGjNl77Ufw1sM
-         ovuNGw5CSdjDbv3qpnqzdHHLUx8bpKJFrb9wJxlbjbhiK9QJi2qvbfttqZ7RBTfnLyKY
-         1Z4aUe+PUJ5x6mfyptluFdpoCHQ/oTADlScIwYVDvJNk1+CbnSD49NCZ5IQUqAI6BIi8
-         CrXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=R8E1uIi3+8OQz5EH8bcJFCimfA9i/IShFnqKSrhw+jA=;
-        b=sX0CFX5sDXuR6ez/wRloDn18Xfz9Pf6IFkVtmoQbC8plg2HlS9l0uXPzRs0eA0xIcC
-         LXcMYjafm8VE0KVfOGjRUSl3xm5Vo72FyLXjGGMjXDXygHjyF7CStV+tiqjZw2Gb0fBA
-         JYWvxXz+77rFE35mNPbf3i+nDlKu5mgYlc/6fRqvIpOrD5iOQRlZ6akMETSoP9+TzQ8d
-         ze0RpzvIBWgAhTumCYx7TXELRT5BR9n4yN4gg+mGXgMljDfV5cEjSBM66BR5rz3upmPd
-         YeQDSfkBa5r9/fszXBdkoPyrHIRX/WoeEf3Ht3H8J6aXUAcdKD0HsXaKFAXVr7fPR3+Z
-         Q5Aw==
-X-Gm-Message-State: AOAM531Z2N8YJHgxCdhn5OWKR2BPUKhvy3Gi8qrtthkIkpOE9HLmEyA+
-        +6s/FimfblBqvG5COhjywXkUmQLjlMo=
-X-Google-Smtp-Source: ABdhPJy5Fomf6P+kFMcts/ExMC8D+CDsh8XGL9w5xwGkTidzggtLHQyJTHmFq92PBjsNDE0+LNZUeg==
-X-Received: by 2002:a63:5166:: with SMTP id r38mr4138254pgl.99.1644455592404;
-        Wed, 09 Feb 2022 17:13:12 -0800 (PST)
-Received: from [192.168.86.21] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id s14sm21770334pfk.174.2022.02.09.17.13.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 17:13:11 -0800 (PST)
-Message-ID: <3d13bcf4-8d20-0f06-5c00-3880b79363af@gmail.com>
-Date:   Wed, 9 Feb 2022 17:13:09 -0800
+        with ESMTP id S231476AbiBJBZN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 20:25:13 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77875205C0
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 17:25:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644456315; x=1675992315;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3rrsnoKd1ZR12c0sFe1pA9AOATsBnXmwt4Bb94WhWLQ=;
+  b=DTkzyuuw34VYWI6JBcYGkwP4nm6JxpVQFl+rwF5PhPgaSonliqM0AtPh
+   Fi8sNhBkgJyqJRJHTQ/zedVZv2l88b5kZR4LrheT9VpHYclDhT00zv5H4
+   zSLJTvBYN0pEq8mSklQQRfeSiGmRfaCI1hnQqXt6hPjO5SvEACj52J9bi
+   fAxcd3FElNaEb7kX/H2uOWOMTBeWDDSEGunJHaWB7o+HVDiitIOttZMcF
+   Ee/sIcnus108FtIQc8+bXd6lFxesOfjvTYRnsVyWajBwL9T3/DWGmV3Gk
+   8OLBcYgi0mVIa2s6ymVm1u8bChumIKBtPfHEAGkhUEg7I7qWCdX+zl1/3
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="230029674"
+X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
+   d="scan'208";a="230029674"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 17:25:15 -0800
+X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
+   d="scan'208";a="526263243"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.22.101])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 17:25:14 -0800
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: [PATCH net 0/2] mptcp: Fixes for 5.17
+Date:   Wed,  9 Feb 2022 17:25:06 -0800
+Message-Id: <20220210012508.226880-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH bpf-next 2/2] bpf: fix bpf_prog_pack build HPAGE_PMD_SIZE
-Content-Language: en-US
-To:     Song Liu <song@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kernel-team@fb.com, kernel test robot <lkp@intel.com>
-References: <20220208220509.4180389-1-song@kernel.org>
- <20220208220509.4180389-3-song@kernel.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <20220208220509.4180389-3-song@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Patch 1 fixes a MPTCP selftest bug that combined the results of two
+separate tests in the test output.
 
-On 2/8/22 14:05, Song Liu wrote:
-> Fix build with CONFIG_TRANSPARENT_HUGEPAGE=n with BPF_PROG_PACK_SIZE as
-> PAGE_SIZE.
->
-> Fixes: 57631054fae6 ("bpf: Introduce bpf_prog_pack allocator")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Song Liu <song@kernel.org>
-> ---
->   kernel/bpf/core.c | 4 ++++
->   1 file changed, 4 insertions(+)
->
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 306aa63fa58e..9519264ab1ee 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -814,7 +814,11 @@ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
->    * allocator. The prog_pack allocator uses HPAGE_PMD_SIZE page (2MB on x86)
->    * to host BPF programs.
->    */
-> +#ifdef CONFIG_TRANSPARENT_HUGEPAGE
->   #define BPF_PROG_PACK_SIZE	HPAGE_PMD_SIZE
-> +#else
-> +#define BPF_PROG_PACK_SIZE	PAGE_SIZE
-> +#endif
->   #define BPF_PROG_CHUNK_SHIFT	6
->   #define BPF_PROG_CHUNK_SIZE	(1 << BPF_PROG_CHUNK_SHIFT)
->   #define BPF_PROG_CHUNK_MASK	(~(BPF_PROG_CHUNK_SIZE - 1))
+Patch 2 fixes a problem where advertised IPv6 addresses were not actually
+available for incoming MP_JOIN requests.
 
-BTW, I do not understand with module_alloc(HPAGE_PMD_SIZE) would 
-necessarily allocate a huge page.
+Kishen Maloor (1):
+  mptcp: netlink: process IPv6 addrs in creating listening sockets
 
-I am pretty sure it does not on x86_64 and dual socket host (NUMA)
+Matthieu Baerts (1):
+  selftests: mptcp: add missing join check
 
-It seems you need to multiply this by num_online_nodes()  or change the 
-way __vmalloc_node_range()
-
-works, because it currently does:
-
-     if (vmap_allow_huge && !(vm_flags & VM_NO_HUGE_VMAP)) {
-         unsigned long size_per_node;
-
-         /*
-          * Try huge pages. Only try for PAGE_KERNEL allocations,
-          * others like modules don't yet expect huge pages in
-          * their allocations due to apply_to_page_range not
-          * supporting them.
-          */
-
-         size_per_node = size;
-         if (node == NUMA_NO_NODE)
-<*>          size_per_node /= num_online_nodes();
-         if (arch_vmap_pmd_supported(prot) && size_per_node >= PMD_SIZE)
-             shift = PMD_SHIFT;
-         else
-             shift = arch_vmap_pte_supported_shift(size_per_node);
+ net/mptcp/pm_netlink.c                          | 8 ++++++--
+ tools/testing/selftests/net/mptcp/mptcp_join.sh | 1 +
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
 
-
+base-commit: 3bed06e36994661a75bae6a289926e566b9b3c1a
+-- 
+2.35.1
 
