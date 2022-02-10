@@ -2,105 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A1C34B0210
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 02:25:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C584B020A
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 02:25:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231982AbiBJBZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 20:25:18 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50586 "EHLO
+        id S232007AbiBJBZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 20:25:34 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231751AbiBJBZO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 20:25:14 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DAC1205DF;
-        Wed,  9 Feb 2022 17:25:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644456316; x=1675992316;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=G0+MAlrnsf/greE/vEdVzWDF/aTaDZ7Y2QTg6LX8frg=;
-  b=ZP0dsq2Ytlr/Sj5TMQW2wheutX4axLG4MBzvFU0Fx5GBzxfehQjNsSJN
-   2sk30YoSXk5t+sYUfgYp9BxO0qpcgFkI1oj7+rKTK04EpfvTEAbmF4nEV
-   n9C376bRIWG6Zc/uBdMWIiWc2+Pt2dxBbqeKemsJEAitlFJ/4Ihepmptn
-   2aYNZPqJD6V256JMP5suQqdtUXdcwxR+jeg42N45TJApZ0bnuyEJMmtr1
-   lrPIizQlcM9GAxDNBYkVzZR2FvY4V+q1fUEH+LQOWvY7VdELAcR+4NP3p
-   6FoJj9NlnrCcez/3hM+uZa7doUgyFXWknGJafvEA426ULzEhUyl6GvRFu
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="230029677"
-X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
-   d="scan'208";a="230029677"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 17:25:15 -0800
-X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
-   d="scan'208";a="526263247"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.22.101])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 17:25:15 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Kishen Maloor <kishen.maloor@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev, stable@vger.kernel.org,
-        Geliang Tang <geliang.tang@suse.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net 2/2] mptcp: netlink: process IPv6 addrs in creating listening sockets
-Date:   Wed,  9 Feb 2022 17:25:08 -0800
-Message-Id: <20220210012508.226880-3-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220210012508.226880-1-mathew.j.martineau@linux.intel.com>
-References: <20220210012508.226880-1-mathew.j.martineau@linux.intel.com>
+        with ESMTP id S232057AbiBJBZ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 20:25:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50FB75598;
+        Wed,  9 Feb 2022 17:25:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD21EB823BB;
+        Thu, 10 Feb 2022 01:25:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 276E9C340E7;
+        Thu, 10 Feb 2022 01:25:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644456327;
+        bh=q1j/8X8KRoaMux0MR33EKmu69UKx9HSvfrHlB087F2Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dSOgMdAvTyqsqgyfjJafaoZDP9KQqRA12znksjSjfUS65ZvWAeU5jZLE44U3J+1Te
+         MblFTGGEnsucHWyXVUgdr+CpwrmS2RkEGHQn1zqk+rYzT1kzBDhkWXfKH4bcty4NF+
+         AnSaHC9mSJ1XsDOYHyxifkbduWYMtOqU+/1ACoSa3/9Hz/5mjA2r4OqEdQLWtvNDn7
+         u5a29BYyu2kAD8e7D9Kvd3BJJ556KnEQX8IYeAk/BKLebT2sZBhScfw1qznLrCjVNV
+         PcCOJ//q4w8XmVdIJS+WtIYh0t78DmP/C2S6oouNqEmN0eFrKNifHdcOlZq+LiltdU
+         6u6/GoJJ1W4tQ==
+Date:   Wed, 9 Feb 2022 17:25:25 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>, Moshe Shemesh <moshe@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/4] net/mlx5: Introduce devlink param to
+ disable SF aux dev probe
+Message-ID: <20220209172525.19977e8c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YgOQAZKnbm5IzbTy@nanopsycho>
+References: <1644340446-125084-1-git-send-email-moshe@nvidia.com>
+        <20220208212341.513e04bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YgOQAZKnbm5IzbTy@nanopsycho>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kishen Maloor <kishen.maloor@intel.com>
+On Wed, 9 Feb 2022 09:39:54 +0200 Moshe Shemesh wrote:
+> Well we don't have the SFs at that stage, how can we tell which SF will 
+> use vnet and which SF will use eth ?
 
-This change updates mptcp_pm_nl_create_listen_socket() to create
-listening sockets bound to IPv6 addresses (where IPv6 is supported).
+On Wed, 9 Feb 2022 10:57:21 +0100 Jiri Pirko wrote: 
+> It's a different user. One works with the eswitch and creates the port
+> function. The other one takes the created instance and works with it.
+> Note that it may be on a different host.
 
-Cc: stable@vger.kernel.org
-Fixes: 1729cf186d8a ("mptcp: create the listening socket for new port")
-Acked-by: Geliang Tang <geliang.tang@suse.com>
-Signed-off-by: Kishen Maloor <kishen.maloor@intel.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- net/mptcp/pm_netlink.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+It is a little confusing, so I may well be misunderstanding but the
+cover letter says:
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 782b1d452269..356f596e2032 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -925,6 +925,7 @@ static int mptcp_pm_nl_append_new_local_addr(struct pm_nl_pernet *pernet,
- static int mptcp_pm_nl_create_listen_socket(struct sock *sk,
- 					    struct mptcp_pm_addr_entry *entry)
- {
-+	int addrlen = sizeof(struct sockaddr_in);
- 	struct sockaddr_storage addr;
- 	struct mptcp_sock *msk;
- 	struct socket *ssock;
-@@ -949,8 +950,11 @@ static int mptcp_pm_nl_create_listen_socket(struct sock *sk,
- 	}
- 
- 	mptcp_info2sockaddr(&entry->addr, &addr, entry->addr.family);
--	err = kernel_bind(ssock, (struct sockaddr *)&addr,
--			  sizeof(struct sockaddr_in));
-+#if IS_ENABLED(CONFIG_MPTCP_IPV6)
-+	if (entry->addr.family == AF_INET6)
-+		addrlen = sizeof(struct sockaddr_in6);
-+#endif
-+	err = kernel_bind(ssock, (struct sockaddr *)&addr, addrlen);
- 	if (err) {
- 		pr_warn("kernel_bind error, err=%d", err);
- 		goto out;
--- 
-2.35.1
+$ devlink dev param set pci/0000:08:00.0 name enable_sfs_aux_devs \
+              value false cmode runtime
 
+$ devlink port add pci/0000:08:00.0 flavour pcisf pfnum 0 sfnum 11
+
+So both of these run on the same side, no?
+
+What I meant is make the former part of the latter:
+
+$ devlink port add pci/0000:08:00.0 flavour pcisf pfnum 0 sfnum 11 noprobe
+
+
+Maybe worth clarifying - pci/0000:08:00.0 is the eswitch side and
+auxiliary/mlx5_core.sf.1 is the... "customer" side, correct? 
