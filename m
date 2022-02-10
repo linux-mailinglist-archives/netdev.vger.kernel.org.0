@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41B104B1918
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 00:11:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 981B54B191E
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 00:11:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345463AbiBJXKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 18:10:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59348 "EHLO
+        id S1345483AbiBJXKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 18:10:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345459AbiBJXK3 (ORCPT
+        with ESMTP id S1345462AbiBJXK3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 18:10:29 -0500
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8751F5F45;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ED6DE5F4E;
         Thu, 10 Feb 2022 15:10:29 -0800 (PST)
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 8AA90601D3;
+        by mail.netfilter.org (Postfix) with ESMTPSA id E39E9601D5;
         Fri, 11 Feb 2022 00:10:12 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 3/6] selftests: netfilter: fix exit value for nft_concat_range
-Date:   Fri, 11 Feb 2022 00:10:18 +0100
-Message-Id: <20220210231021.204488-4-pablo@netfilter.org>
+Subject: [PATCH net 4/6] netfilter: nft_synproxy: unregister hooks on init error path
+Date:   Fri, 11 Feb 2022 00:10:19 +0100
+Message-Id: <20220210231021.204488-5-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220210231021.204488-1-pablo@netfilter.org>
 References: <20220210231021.204488-1-pablo@netfilter.org>
@@ -37,33 +37,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+Disable the IPv4 hooks if the IPv6 hooks fail to be registered.
 
-When the nft_concat_range test failed, it exit 1 in the code
-specifically.
-
-But when part of, or all of the test passed, it will failed the
-[ ${passed} -eq 0 ] check and thus exit with 1, which is the same
-exit value with failure result. Fix it by exit 0 when passed is not 0.
-
-Fixes: 611973c1e06f ("selftests: netfilter: Introduce tests for sets with range concatenation")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+Fixes: ad49d86e07a4 ("netfilter: nf_tables: Add synproxy support")
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- tools/testing/selftests/netfilter/nft_concat_range.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/nft_synproxy.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/netfilter/nft_concat_range.sh b/tools/testing/selftests/netfilter/nft_concat_range.sh
-index df322e47a54f..b35010cc7f6a 100755
---- a/tools/testing/selftests/netfilter/nft_concat_range.sh
-+++ b/tools/testing/selftests/netfilter/nft_concat_range.sh
-@@ -1601,4 +1601,4 @@ for name in ${TESTS}; do
- 	done
- done
+diff --git a/net/netfilter/nft_synproxy.c b/net/netfilter/nft_synproxy.c
+index a0109fa1e92d..1133e06f3c40 100644
+--- a/net/netfilter/nft_synproxy.c
++++ b/net/netfilter/nft_synproxy.c
+@@ -191,8 +191,10 @@ static int nft_synproxy_do_init(const struct nft_ctx *ctx,
+ 		if (err)
+ 			goto nf_ct_failure;
+ 		err = nf_synproxy_ipv6_init(snet, ctx->net);
+-		if (err)
++		if (err) {
++			nf_synproxy_ipv4_fini(snet, ctx->net);
+ 			goto nf_ct_failure;
++		}
+ 		break;
+ 	}
  
--[ ${passed} -eq 0 ] && exit ${KSELFTEST_SKIP}
-+[ ${passed} -eq 0 ] && exit ${KSELFTEST_SKIP} || exit 0
 -- 
 2.30.2
 
