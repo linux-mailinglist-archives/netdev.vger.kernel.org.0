@@ -2,84 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B71DA4B0610
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 07:08:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84FCE4B0611
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 07:10:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232635AbiBJGIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 01:08:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53232 "EHLO
+        id S235022AbiBJGIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 01:08:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231761AbiBJGIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 01:08:05 -0500
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD881E6
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 22:08:07 -0800 (PST)
-Received: by mail-il1-f197.google.com with SMTP id x6-20020a92d306000000b002bdff65a8e1so3284765ila.3
-        for <netdev@vger.kernel.org>; Wed, 09 Feb 2022 22:08:07 -0800 (PST)
+        with ESMTP id S229865AbiBJGIu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 01:08:50 -0500
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555C61A5;
+        Wed,  9 Feb 2022 22:08:52 -0800 (PST)
+Received: by mail-qv1-xf36.google.com with SMTP id k4so3961315qvt.6;
+        Wed, 09 Feb 2022 22:08:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7JmUNCH8ILvUpgW5tfKMuBrQ9Oc08aN4VH7PCjI93Sg=;
+        b=XURn4hJpnc9rH6q6uqnGir8XcYYLszbadb/32HdlDIZAesJDwK97Yze8V+sz4BhEY5
+         PuwMZLEifxqHRd27nB6fRtRvMXY+JF8aW7DZJwJD1avljzuFKC9JC15tANE0zROJOFUv
+         Calf8rI/v5S7GvEYHIRtXELkZV0+1nqzFPnysN37w0zj3ZaypfJnMZQpU1QFrZlXVfov
+         EfSxVQ99/K9wqGY2ShWsqd+hHWk+CLAhoFS8nVSx2chA857udYczOslXTLHklB8P5Zsm
+         gVmhY5QBqAS3pBDbnabH04R89ntWFoOWfQKPA8urWTnS32bnOWXqTrO3NTPKx/gGUSW4
+         4dgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=hxxPMFG7Sy5R8OTw+DHD+CiI9MhDe02HH/eavpKJlVI=;
-        b=J6n6DU74TvX5/2UIUVoeyP00FhroQyr7B+zpXcA0cmF0Xu78htgy2PNsHHBFOcc559
-         h7yQGfLt5wG3M1M+HoykxaEPGZAQJl2WsPa9zP636wKYIBd2biWfA7fF+Qm/L/6P44wW
-         MPZM/uRuNdPEkVSW6snPkMczVevIKzToEFzCA9jGZJxw5AOnFFWkfAWZIQ+6V+Scohuf
-         Da7SyXGIbXzEXzTtBPTQaGchgnHmUwLg2R6PDxJCBbwA5uj19b+AVtqZO+PaDEYoS/on
-         t2p06YOBR1k60lnmiPBQgegJ9vUVwN/HcPhSs+b1q4UOfJ/s1xkC39Z3soSaSolxKP0Z
-         1vLw==
-X-Gm-Message-State: AOAM532SglxBlDVRyilS1c6aUaLPj61YYhvNcJrJP5CBth5vPQgta67v
-        sPahi3KjJtZVXac5Pq++5eklzQxD0tlx6ep2u6s3fIUGCFFJ
-X-Google-Smtp-Source: ABdhPJxoAleQUKXdKQfyFJ/lU/DvKG+eN88p4ZFdGI/Tl2jq2ibPHrnZmPgShLp0DuHR0xD1pBw8UCAuxjN2bbrZc03Lii2YDBgU
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7JmUNCH8ILvUpgW5tfKMuBrQ9Oc08aN4VH7PCjI93Sg=;
+        b=QScmdlvmoiBPCIZ+67kQZJra7yyuUWwZBRIVmikLmGFa1NOW0wXlxVBrG8kcMHr/t/
+         ZVNBI83IpK65XINZEP+A/BeYS/akWvfSBeRdW6dgb4E5V+wWqOKjk0dTqNv0PFelxcCW
+         Z2W/grB+C2cOH23oOHLN9eqJVe9vryCTZ0Ut4qSL82WEFkFZrW4X0P/Qfpw+TEjtL8pz
+         hY8DH68n89QzucO/JJuOK1AXkUMIG0zKQVMRZDPzPgxZrmEw2sXlBmrrTBRkYCx09s8c
+         n23XMWroSY3X0I3ND1h5HFQ9DunZQheZkuu0HWOAQAXjuU5tkHiAguS11e5ovye4osNQ
+         0Rfg==
+X-Gm-Message-State: AOAM5319Egnj5HXu1Vpl5q+EFwOorg68yNDW/SQuCHKlHiDKom3Yd+SA
+        8ukCRK498/59A982b7nch20=
+X-Google-Smtp-Source: ABdhPJxoS1gFeEW+kHFthBrPAumPRtegWqJziHdxjRwdjbPjnN9LJW1nPN96Evo+JpE1y6xfm/IGhw==
+X-Received: by 2002:ad4:5deb:: with SMTP id jn11mr3994703qvb.120.1644473331569;
+        Wed, 09 Feb 2022 22:08:51 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id d11sm10224915qtd.63.2022.02.09.22.08.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 22:08:51 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH V2] net/802: use struct_size over open coded arithmetic
+Date:   Thu, 10 Feb 2022 06:08:45 +0000
+Message-Id: <20220210060845.1608290-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2cd2:: with SMTP id j18mr3118329iow.92.1644473287137;
- Wed, 09 Feb 2022 22:08:07 -0800 (PST)
-Date:   Wed, 09 Feb 2022 22:08:07 -0800
-In-Reply-To: <000000000000a3571605d27817b5@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001f60ef05d7a3c6ad@google.com>
-Subject: Re: [syzbot] WARNING: kmalloc bug in xdp_umem_create (2)
-From:   syzbot <syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
-        bjorn.topel@gmail.com, bjorn.topel@intel.com, bjorn@kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        fgheet255t@gmail.com, hawk@kernel.org, john.fastabend@gmail.com,
-        jonathan.lemon@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        magnus.karlsson@intel.com, mudongliangabcd@gmail.com,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org,
-        w@1wt.eu, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
 
-commit 7661809d493b426e979f39ab512e3adf41fbcc69
-Author: Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed Jul 14 16:45:49 2021 +0000
+Replace zero-length array with flexible-array member and make use
+of the struct_size() helper in kmalloc(). For example:
 
-    mm: don't allow oversized kvmalloc() calls
+struct garp_attr {
+    struct rb_node            node;
+    enum garp_applicant_state    state;
+    u8                type;
+    u8                dlen;
+    unsigned char            data[];
+};
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13bc74c2700000
-start commit:   f4bc5bbb5fef Merge tag 'nfsd-5.17-2' of git://git.kernel.o..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=107c74c2700000
-console output: https://syzkaller.appspot.com/x/log.txt?x=17bc74c2700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5707221760c00a20
-dashboard link: https://syzkaller.appspot.com/bug?extid=11421fbbff99b989670e
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12e514a4700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15fcdf8a700000
+Make use of the struct_size() helper instead of an open-coded version
+in order to avoid any potential type mistakes.
 
-Reported-by: syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com
-Fixes: 7661809d493b ("mm: don't allow oversized kvmalloc() calls")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+---
+ net/802/mrp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+diff --git a/net/802/mrp.c b/net/802/mrp.c
+index 35e04cc5390c..880cb9ed9c4b 100644
+--- a/net/802/mrp.c
++++ b/net/802/mrp.c
+@@ -273,7 +273,7 @@ static struct mrp_attr *mrp_attr_create(struct mrp_applicant *app,
+ 			return attr;
+ 		}
+ 	}
+-	attr = kmalloc(sizeof(*attr) + len, GFP_ATOMIC);
++	attr = kmalloc(struct_size(attr, data, len), GFP_ATOMIC);
+ 	if (!attr)
+ 		return attr;
+ 	attr->state = MRP_APPLICANT_VO;
+-- 
+2.25.1
+
