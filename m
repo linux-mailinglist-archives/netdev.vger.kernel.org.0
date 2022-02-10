@@ -2,121 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 725E64B0D79
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 13:22:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A74874B0D85
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 13:25:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237982AbiBJMWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 07:22:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38538 "EHLO
+        id S241555AbiBJMZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 07:25:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232743AbiBJMWf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 07:22:35 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FBBE2631;
-        Thu, 10 Feb 2022 04:22:36 -0800 (PST)
-Date:   Thu, 10 Feb 2022 13:22:32 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644495753;
+        with ESMTP id S241542AbiBJMZB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 07:25:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B7442646
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 04:24:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644495897;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ly3/GBnNpjMpdrZvKsc6VwS5WfDdrVLH6rBEH5yz1a0=;
-        b=hSrHZpkbnBJs2x5RcUX3I3PQYCu0NUtBVBv+Mu68/coqZePr1W1j3pAEcVBiGKkvfA07a9
-        tEdyNeMhEUuQfml2IR7hpmq3HjHTinwjBkJYL4n6X0+4fxTpywMRDCEdaZhxDZjWF/7TmJ
-        FZjhP74grDvNYTx2nB4VuhpQlgjaz6+vbBOAPwN9IEe1Q+cJhiZtMP6NmhQzNPFtUH4nzd
-        c91H3gyLt/3qa0FERikrX04HyqlgePAtenD5t0Hj5p5q0PBF3ell249rv6lY59QUcTDEei
-        F/TALcJR78kkSColUZXbzCHcDllZqtjP1uvuThKG0HKo8acZFdQwKzrNueWs/Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644495753;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ly3/GBnNpjMpdrZvKsc6VwS5WfDdrVLH6rBEH5yz1a0=;
-        b=bm4uCox679/q89dXUm7N2j9jgBQvQxF1GpjfI6GXy+OdvtJyxuSVtdPKTmvYkZ+smANo86
-        g+AekpepcyaRAxCw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-Subject: Re: [PATCH net-next v2 2/3] net: dev: Makes sure netif_rx() can be
- invoked in any context.
-Message-ID: <YgUDiE4FTsdwdVSH@linutronix.de>
-References: <20220204201259.1095226-1-bigeasy@linutronix.de>
- <20220204201259.1095226-3-bigeasy@linutronix.de>
- <20220204201715.44f48f4f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <Yf7ftf+6j52opu5w@linutronix.de>
- <20220207084717.5b7126e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=Fv1bFey76cfKrs22KKsH0h7BCRARWXpAFXjfaPkP6U8=;
+        b=afigX1YOLtOTN3JDEKyKM1sKWiLKZi4OjXyySKauLpq8VaoLZ5fxn0af7TTKF8Ac5eTJ4V
+        +M7g0WplMlv7NPYUJOpKL5xZf9ZH6WxuEM1O4/ilrbEDyBadiG2IHIgYXKqs+aXUYMJxec
+        uzywyg9lWbDjmqf2gqR4t+BrJfUuNDw=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-391-RxvOT_W1OG68kfENhg2jEw-1; Thu, 10 Feb 2022 07:24:56 -0500
+X-MC-Unique: RxvOT_W1OG68kfENhg2jEw-1
+Received: by mail-wm1-f69.google.com with SMTP id i186-20020a1c3bc3000000b0037bb9f6feeeso2812190wma.5
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 04:24:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=Fv1bFey76cfKrs22KKsH0h7BCRARWXpAFXjfaPkP6U8=;
+        b=wZWjOoyeRaJCksQt0TeOhEAktRPcfmg2cYeSuXNfu6E7qAmC0kDWNrIV6Bj9GO6dCp
+         9SWDtrxBOWs5whpnVSitff48PLFtJ45q24/sRDKRua0zVnt5xwtEse+WbSoCyWZa5126
+         x3SB+WBSzpylgjsPUpsyByaxeiu32kZuussg8qjLv6UysE+Ky8qYjqYT501LnksF4F0R
+         d7FGIbMzh27Sy4VPClDARdcPoDIWLvL6YYuPLbKUnpfz5DKzNaqvjRHeMvk7PJWdg2yt
+         7syfzwC9ZpsQyE7H2Y9GJDvkyy9ro2iSN5fvxiGip4yZTVjcQKSdrHj6pwGUtcnBr+Sy
+         WLNQ==
+X-Gm-Message-State: AOAM532CKH5a4Wmz0UAJwwvWuN8SAXW+GExxDYJQyL0Q+DxMxqaYvQMY
+        gS7iI2xruyn3qZEI6c7TYx9ppLrn0vD6gJIn/9MTnXoUmGi/dAe2p5vb4umEAM8GqKJV5J+3yz/
+        GI5UbyoFdSGo10zDB
+X-Received: by 2002:adf:e34c:: with SMTP id n12mr6188126wrj.263.1644495895262;
+        Thu, 10 Feb 2022 04:24:55 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzQKl/ghmSWEV30HbtnUA6kVbHgFJM1OJxCg8/5GY3bKYO6DSqtae9AISNWfu0BFsyadI4Wkg==
+X-Received: by 2002:adf:e34c:: with SMTP id n12mr6188120wrj.263.1644495895089;
+        Thu, 10 Feb 2022 04:24:55 -0800 (PST)
+Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id y14sm20537488wrd.91.2022.02.10.04.24.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 04:24:53 -0800 (PST)
+Date:   Thu, 10 Feb 2022 13:24:51 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Subject: [PATCH net-next] ipv4: Reject again rules with high DSCP values
+Message-ID: <cca72292694a74c76a6e155b34a8480df2918a14.1644495285.git.gnault@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220207084717.5b7126e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-02-07 08:47:17 [-0800], Jakub Kicinski wrote:
-> On Sat, 5 Feb 2022 21:36:05 +0100 Sebastian Andrzej Siewior wrote:
-> > On 2022-02-04 20:17:15 [-0800], Jakub Kicinski wrote:
-> > > On Fri,  4 Feb 2022 21:12:58 +0100 Sebastian Andrzej Siewior wrote:  
-> > > > +int __netif_rx(struct sk_buff *skb)
-> > > > +{
-> > > > +	int ret;
-> > > > +
-> > > > +	trace_netif_rx_entry(skb);
-> > > > +	ret = netif_rx_internal(skb);
-> > > > +	trace_netif_rx_exit(ret);
-> > > > +	return ret;
-> > > > +}  
-> > > 
-> > > Any reason this is not exported? I don't think there's anything wrong
-> > > with drivers calling this function, especially SW drivers which already
-> > > know to be in BH. I'd vote for roughly all of $(ls drivers/net/*.c) to
-> > > get the same treatment as loopback.  
-> > 
-> > Don't we end up in the same situation as netif_rx() vs netix_rx_ni()?
-> 
-> Sort of. TBH my understanding of the motivation is a bit vague.
-> IIUC you want to reduce the API duplication so drivers know what to
-> do[1]. I believe the quote from Eric you put in the commit message
-> pertains to HW devices, where using netif_rx() is quite anachronistic. 
-> But software devices like loopback, veth or tunnels may want to go via
-> backlog for good reasons. Would it make it better if we called
-> netif_rx() netif_rx_backlog() instead? Or am I missing the point?
+Commit 563f8e97e054 ("ipv4: Stop taking ECN bits into account in
+fib4-rules") replaced the validation test on frh->tos. While the new
+test is stricter for ECN bits, it doesn't detect the use of high order
+DSCP bits. This would be fine if IPv4 could properly handle them. But
+currently, most IPv4 lookups are done with the three high DSCP bits
+masked. Therefore, using these bits doesn't lead to the expected
+result.
 
-So we do netif_rx_backlog() with the bh disable+enable and
-__netif_rx_backlog() without it and export both tree wide? It would make
-it more obvious indeed. Could we add
-	WARN_ON_ONCE(!(hardirq_count() | softirq_count()))
-to the shortcut to catch the "you did it wrong folks"? This costs me
-about 2ns.
+Let's reject such configurations again, so that nobody starts to
+use and make any assumption about how the stack handles the three high
+order DSCP bits in fib4 rules.
 
-TL;DR
+Fixes: 563f8e97e054 ("ipv4: Stop taking ECN bits into account in fib4-rules")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+---
+ net/ipv4/fib_rules.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-The netix_rx_ni() is problematic on RT and I tried to do something about
-it. I remembered from the in_atomic() cleanup that a few drivers got it
-wrong (one way or another). We added also netif_rx_any_context() which
-is used by some of the drivers (which is yet another entry point) while
-the few other got fixed.
-Then I stumbled over the thread where the entry (netif_rx() vs
-netif_rx_ni()) was wrong and Dave suggested to have one entry point for
-them all. This sounded like a good idea since it would eliminate the
-several API entry points where things can go wrong and my RT trouble
-would vanish in one go.
-The part with deprecated looked promising but I didn't take into account
-that the overhead for legitimate users (like the backlog or the software
-tunnels you mention) is not acceptable.
+diff --git a/net/ipv4/fib_rules.c b/net/ipv4/fib_rules.c
+index 117c48571cf0..001fea394bde 100644
+--- a/net/ipv4/fib_rules.c
++++ b/net/ipv4/fib_rules.c
+@@ -231,6 +231,11 @@ static int fib4_rule_configure(struct fib_rule *rule, struct sk_buff *skb,
+ 			       "Invalid dsfield (tos): ECN bits must be 0");
+ 		goto errout;
+ 	}
++	/* IPv4 currently doesn't handle high order DSCP bits correctly */
++	if (frh->tos & ~IPTOS_TOS_MASK) {
++		NL_SET_ERR_MSG(extack, "Invalid tos");
++		goto errout;
++	}
+ 	rule4->dscp = inet_dsfield_to_dscp(frh->tos);
+ 
+ 	/* split local/main if they are not already split */
+-- 
+2.21.3
 
-Sebastian
