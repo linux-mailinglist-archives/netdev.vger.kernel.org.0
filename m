@@ -2,147 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E94834B1248
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 17:03:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADDD64B124F
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 17:06:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243972AbiBJQDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 11:03:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58386 "EHLO
+        id S243992AbiBJQGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 11:06:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243971AbiBJQDE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 11:03:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 55231B8
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:03:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644508983;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XqMRSNji5KHFwBXLfzLcneZQrTGS+nQUHDyGuzlvgWY=;
-        b=BFuhfulCHcpRU67OqFIboJWlAsdzPOuzMfZZIa9rqcLfucp2I3vnGWR03cOxLnluh6Q8FY
-        Rjk1ogBJdOKd325kpnd+Tj5ffRLdO9YkfsS4CRXUEe8VYyZEeqG/WhWR38HM0zuHCupYq5
-        YTJQzOgkrj0PEtSO8vxOVHFxLkT4qZs=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-630-7FmTtbCNPq2pmbdoDmX9Ow-1; Thu, 10 Feb 2022 11:02:59 -0500
-X-MC-Unique: 7FmTtbCNPq2pmbdoDmX9Ow-1
-Received: by mail-qt1-f199.google.com with SMTP id e14-20020ac84b4e000000b002cfbbdf8206so4689410qts.10
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:02:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=XqMRSNji5KHFwBXLfzLcneZQrTGS+nQUHDyGuzlvgWY=;
-        b=ZfIQmh/O0OhYPuhFpEosj8UkaXF2r3h+gQ141QaHqZL1TqTEOuDQBY6gUwH00klyCn
-         GVfJvOJWeX44GWNWkRactL37oA72nl6xxwj7f5KLL8ug6941iG4DoECJuTgiuoB+t2DJ
-         4KNxdTrK5xmeSQ3897WFpRE/+Kp0l3et8scPM04iUuc3N6Albel9vb14kErWnkV0dAOJ
-         6cPUrN+rjgBR9I2446rqIrm+28Y9eGkXSjDFKSV0uB7qPIfJd0bHKdNpbh7yzhcvrbkv
-         PbL+/1NMvx5/gInPSOZ0QGegnzpkDc/RmeGswofHiQzT65QosCUZS/iLBlEWprbc7ZTH
-         jrVw==
-X-Gm-Message-State: AOAM532v8Mvi4rlIEPqGy+7JJb7aizEkIycZ4782fUr1ZX/XQmWC/vZg
-        nMR9jGURPx7QU2tqZFgSQUFxxTkeOETpAcP56ADcT1zQqkRyuZYLmdqAj/kBFxiBmIPdLuw6NtQ
-        LYH3xbMRKg4tPiLw4
-X-Received: by 2002:ac8:470b:: with SMTP id f11mr5264447qtp.428.1644508979125;
-        Thu, 10 Feb 2022 08:02:59 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwJZidFHgX2qaFuNO4wwwWXQrdPSZ6BLsKxCMwzMjl3VQN+p8ixuoDBh/MeuJVBmzm2X+Enig==
-X-Received: by 2002:ac8:470b:: with SMTP id f11mr5264402qtp.428.1644508978832;
-        Thu, 10 Feb 2022 08:02:58 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-96-254.dyn.eolo.it. [146.241.96.254])
-        by smtp.gmail.com with ESMTPSA id p15sm11231377qtk.56.2022.02.10.08.02.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 08:02:58 -0800 (PST)
-Message-ID: <d5dd3f10c144f7150ec508fa8e6d7a78ceabfc10.camel@redhat.com>
-Subject: Re: [PATCH] net: fix wrong network header length
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     "lina.wang" <lina.wang@mediatek.com>,
-        Maciej =?UTF-8?Q?=C5=BBenczykowski?= <maze@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Kernel hackers <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Willem Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>, zhuoliang@mediatek.com,
-        chao.song@mediatek.com
-Date:   Thu, 10 Feb 2022 17:02:53 +0100
-In-Reply-To: <5ca86c46109794a627e6e2a62b140963217984a0.camel@mediatek.com>
-References: <20220208025511.1019-1-lina.wang@mediatek.com>
-         <0300acca47b10384e6181516f32caddda043f3e4.camel@redhat.com>
-         <CANP3RGe8ko=18F2cr0_hVMKw99nhTyOCf4Rd_=SMiwBtQ7AmrQ@mail.gmail.com>
-         <a62abfeb0c06bf8be7f4fa271e2bcdef9d86c550.camel@redhat.com>
-         <5ca86c46109794a627e6e2a62b140963217984a0.camel@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        with ESMTP id S238433AbiBJQGi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 11:06:38 -0500
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D218C26
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:06:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
+        From:References:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
+        :List-Post:List-Owner:List-Archive;
+        bh=jkDYoYgDn/3qbwaUuHqdsfbsMKgTOiwZeN1KlBHkJYM=; b=sATJYvRUsk7ranB78wOxUBOC8c
+        tpvkcwDoB6qkKGIeILVGaJRZLjXS5i+W+xvQvRQIyPL3f56Fgdtc68H8d9Jc72qbhknXVVBTMrHUe
+        +Sk8ND1xT10PqX2Bt/Itwa+Pi91VzxfV7QSuTpVYunJg2uqCsrf8hym838AfSB6luG/g=;
+Received: from p200300daa71e0b00d9ae6de683158d49.dip0.t-ipconnect.de ([2003:da:a71e:b00:d9ae:6de6:8315:8d49] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1nIBxt-0006hg-N0; Thu, 10 Feb 2022 17:06:37 +0100
+Message-ID: <8feee888-491a-9324-6437-07f33d0d5584@nbd.name>
+Date:   Thu, 10 Feb 2022 17:06:37 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Content-Language: en-US
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>, netdev@vger.kernel.org
+References: <20220210142401.4912-1-nbd@nbd.name>
+ <d4f1f9b1-6e8e-d21d-603f-7a0889e33a78@nvidia.com>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [RFC 1/2] net: bridge: add knob for filtering rx/tx BPDU packets
+ on a port
+In-Reply-To: <d4f1f9b1-6e8e-d21d-603f-7a0889e33a78@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-02-09 at 18:25 +0800, lina.wang wrote:
-> We use NETIF_F_GRO_FRAGLIST not for forwarding scenary, just for
-> software udp gro. 
+
+On 10.02.22 15:55, Nikolay Aleksandrov wrote:
+> On 10/02/2022 16:24, Felix Fietkau wrote:
+>> Some devices (e.g. wireless APs) can't have devices behind them be part of
+>> a bridge topology with redundant links, due to address limitations.
+>> Additionally, broadcast traffic on these devices is somewhat expensive, due to
+>> the low data rate and wakeups of clients in powersave mode.
+>> This knob can be used to ensure that BPDU packets are never sent or forwarded
+>> to/from these devices
+>> 
+>> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+>> ---
+>>  include/linux/if_bridge.h    | 1 +
+>>  include/uapi/linux/if_link.h | 1 +
+>>  net/bridge/br_forward.c      | 5 +++++
+>>  net/bridge/br_input.c        | 2 ++
+>>  net/bridge/br_netlink.c      | 6 +++++-
+>>  net/bridge/br_stp_bpdu.c     | 9 +++++++--
+>>  net/core/rtnetlink.c         | 4 +++-
+>>  7 files changed, 24 insertions(+), 4 deletions(-)
+>> 
 > 
-I'm wondering why don't you simply enable UDP_GRO on the relevant
-socket? 
+> Why can't netfilter or tc be used to filter these frames?
+netfilter is slow as hell, and even adding a tc rule that has to look at 
+all frames to check for useless BPDU packets costs a lot more CPU cycles 
+than simply suppressing them at the source.
 
-> Whatever NETIF_F_GRO_FRAGLIST or NETIF_F_GRO_FWD,
-> skb_segment_list should not have bugs.
-
-The bug is arguably in bpf_skb_proto_6_to_4(), even if fixing it in
-skb_segment_list() is possibly easier.
-
-> We modify skb_segment_list, not in epbf. One point is traversing the
-> segments costly, another is what @Maciej said, *other* helper may have
-> the same problem. In skb_segment_list, it calls
-> skb_headers_offset_update to update different headroom, which implys
-> header maybe different.
-
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 75dfbde8d2e6..f15bbb7449ce 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -3682,6 +3682,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
->  	struct sk_buff *tail = NULL;
->  	struct sk_buff *nskb, *tmp;
->  	int err;
-> +	unsigned int len_diff = 0;
-
-Mintor nit: please respect the reverse x-mas tree order.
-
->  
->  	skb_push(skb, -skb_network_offset(skb) + offset);
-
-> @@ -3721,9 +3722,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
->  		skb_push(nskb, -skb_network_offset(nskb) + offset);
->  
->  		skb_release_head_state(nskb);
-> +		len_diff = skb_network_header_len(nskb) - skb_network_header_len(skb);
->  		 __copy_skb_header(nskb, skb);
->  
->  		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
-> +		nskb->transport_header += len_diff;
-
-This does not look correct ?!? the network hdr position for nskb will
-still be uncorrect?!? and even the mac hdr likely?!? possibly you need
-to change the offset in skb_headers_offset_update().
-
-Paolo
-
+- Felix
