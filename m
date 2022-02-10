@@ -2,105 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC4E24B0847
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 09:31:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2599E4B0852
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 09:32:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237439AbiBJIag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 03:30:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59340 "EHLO
+        id S233296AbiBJIbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 03:31:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237441AbiBJIac (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 03:30:32 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6A110B8
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 00:30:33 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id p24so13468998ejo.1
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 00:30:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=4BAbC2SrKWiikj9sQCe8GZxvTJd08+U2hgXBpuolPto=;
-        b=s8pXpBQeUNug2WzF/0ZLJCiDOoSVGmUqybFpEraPZF/lCgswGicM3tDaouz3TeHrOF
-         fBsGbAotjowRZ30ET4SpUOXQgWE9T28ljK8qGn0WnjalcAZoppJweaNPqvC6QXowV8oP
-         fdGNJk7/6sv/lUAIGXi/0+qClfMjGhbglUkLcjUljRKSIXvi/os3LiG3/CqUOfEWnp2k
-         a34gA/sTvHlyxXDs+nNZXdc+mLT8E/kNVL+VXr4qgu9PzX4CJHxJdZIU69fC+VILbQw4
-         rnYIgYPV+7eYuHVFwlTVVsalqXogXw30U7cEAi2EOqTVgP4MnQDfyUQv3eklF8LBtG8l
-         G0FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4BAbC2SrKWiikj9sQCe8GZxvTJd08+U2hgXBpuolPto=;
-        b=BguLGeufizWGpOc/QtuLGA9YLNPwdFeDNXpE7/w5MqbV7joG+P7ooJC9Fh0ARyCGzy
-         6o7IvX96s5iXfWYWVinDNSKZpLHvV3hS/8C2hiKzoqGQcKu+QaCexj2eLynqQeSp7w+K
-         FBy9X0/ZIH/ni+ACbvBDdnax/cGir2d3blwIwhGOhRU28MMI8g1F5Ny49UnwefYpkYLb
-         D8X+K9frrE7z2/YTjUwDpZi0qSuavIkG8pdNTOztuDklpHHHJJ8kuSQI8upu80JOgGhz
-         RhOLSA2wkuvIT5NVWg7UIh3wJ7GjEtVeoXb2bqgpgnnzjIcz0QnaOdx7FMe6HTGKXqol
-         GqEw==
-X-Gm-Message-State: AOAM531AHEUdOT91K2rxI/X004+d9NRT2kytlVmcVJmQs5GTaX7Tk1Z7
-        r/1A6PSjE27trtDNcSbniFqLjLyqnBe6Tl8ipSQ=
-X-Google-Smtp-Source: ABdhPJwCH5pjvaVVQ6C2muwLRjFSPeu+sMuohXKnxHQ79qrclhxZguUvuBpNEXUFqL18/R6lx8jyfg==
-X-Received: by 2002:a17:907:d9f:: with SMTP id go31mr5614027ejc.282.1644481832240;
-        Thu, 10 Feb 2022 00:30:32 -0800 (PST)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id h8sm9384574edk.14.2022.02.10.00.30.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 00:30:31 -0800 (PST)
-Message-ID: <c9374232-00a3-d046-87f6-29f471b50f5c@blackwall.org>
-Date:   Thu, 10 Feb 2022 10:30:30 +0200
+        with ESMTP id S237549AbiBJIbW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 03:31:22 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2053.outbound.protection.outlook.com [40.107.96.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00171111F
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 00:31:23 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mEfXwbUkGczzGpxaiu4B5R2/QAFqebFaredttM0JQEFHIWHvgQz7/lQOE6T18hCPEIrCq/fE4hjBiJVHLFz3MQ8EMcA7XIMrqLSRej+qEoXO47qUTNOwQROrSswj6WGHoxdLsLwbGaaIPtvneAERzOVYkqknu0aTSk/ORBIFtUuTzMVCWuxYVQXAytMjnxT7HczVxmEw6PMn3o+jQuYB9H9U1DyCT/czumv70IEjsFED3huKJyh2OrhVQ6q6a4Fygq295x8uRfu4yxvwTUlbQXtcobJGVHMq+N5iP6yEmK5GD9y2aBfyagNrHnqZan7pElb5765ByFVvuoL1Tb7VWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wu/V4/xgTOfKc1OL6FObu/GqL/Wo0DHVck8fY2zcUSo=;
+ b=CT6xsFvF4rK5spqKi2iZwnqhdaroRliqXpzeDVECbHjv6x14LWDT2XLmSBLcQQUy/i4Hmw3sj8OlYpOwk9ZnZc4Xx9AzugtOqtWK7+20Yj2vH7LX2BtE/8aaBN6xaobcWOn9br03Gr8P0GdoNZz+NDhDzn2H6xO5PJmCjlkJwGQ6Py4hPJicRTxS+RFigb3+9D4bss1Cqn03uDO5F7lOmBstZaou02VSY+QBEEQQbt1ikmto3Clq3Ms0/m3B19FqVceYINfFy6fpH5ikE9meS/5lqgFHIqWo4paP2YZJGEeltUxmPO0sWKo70kp5MpNvxmPyUo3B6ZSTTZZDCIMmEQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wu/V4/xgTOfKc1OL6FObu/GqL/Wo0DHVck8fY2zcUSo=;
+ b=RFm6SxkKLCO+/gijBVRSwxNNtRmZ8ByuNywYJR2JXl90XMQjxNAe3oh2VZNBkvYYPHmGAOkpE5RZtjjEO+g1oK4hIOj8GEtEhSJPm3Gfk2/aks5m9CVVHFPorZm53FwDQrenjj8FhKT1aAyVZyrH0zf3oEeLROgecPHhhIY1GIA6xaG7r2I9QYIDXMcmL3f3q+cSgLpny7pb5cM7rvPu85SaU0XqHJQfG6rwOG/alwV1GFRcc+SRyw0k89MUT8FvEvnJBCGwgq35eLvEA38ibzso/wukMeiR/iaFQv7u6L6W9mBRh52rn7rPfFJ0nw43EL7HYuSvCqhG8Rq4hs6+Hw==
+Received: from MWHPR18CA0041.namprd18.prod.outlook.com (2603:10b6:320:31::27)
+ by BL0PR12MB2372.namprd12.prod.outlook.com (2603:10b6:207:4d::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Thu, 10 Feb
+ 2022 08:31:22 +0000
+Received: from CO1NAM11FT034.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:320:31:cafe::4f) by MWHPR18CA0041.outlook.office365.com
+ (2603:10b6:320:31::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.19 via Frontend
+ Transport; Thu, 10 Feb 2022 08:31:21 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT034.mail.protection.outlook.com (10.13.174.248) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4975.11 via Frontend Transport; Thu, 10 Feb 2022 08:31:21 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 10 Feb
+ 2022 08:30:55 +0000
+Received: from mtl-vdi-166.wap.labs.mlnx (10.126.230.35) by
+ rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9;
+ Thu, 10 Feb 2022 00:30:53 -0800
+Date:   Thu, 10 Feb 2022 10:30:50 +0200
+From:   Eli Cohen <elic@nvidia.com>
+To:     Jason Wang <jasowang@redhat.com>
+CC:     "Hemminger, Stephen" <stephen@networkplumber.org>,
+        netdev <netdev@vger.kernel.org>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Jianbo Liu <jianbol@nvidia.com>
+Subject: Re: [PATCH 2/3] virtio: Define bit numbers for device independent
+ features
+Message-ID: <20220210083050.GA224722@mtl-vdi-166.wap.labs.mlnx>
+References: <20220207125537.174619-1-elic@nvidia.com>
+ <20220207125537.174619-3-elic@nvidia.com>
+ <CACGkMEvF7opCo35QLz4p3u7=T1+H-p=isFm4+yh4uNzKiAxr1A@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net-next v2 2/5] net: bridge: Add support for offloading
- of locked port flag
-Content-Language: en-US
-To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <20220209130538.533699-1-schultz.hans+netdev@gmail.com>
- <20220209130538.533699-3-schultz.hans+netdev@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220209130538.533699-3-schultz.hans+netdev@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CACGkMEvF7opCo35QLz4p3u7=T1+H-p=isFm4+yh4uNzKiAxr1A@mail.gmail.com>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4dda0f94-9599-470f-f9aa-08d9ec6fb78b
+X-MS-TrafficTypeDiagnostic: BL0PR12MB2372:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB2372410B21C02F9091BFC798AB2F9@BL0PR12MB2372.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6gi+Im2slsWu5SyCdJCUE7kBssCqQMVAEXBPkqlRNNnuYa4rdT5ycDere+HYwyXvsm37kqzvkBRbqzAGcdqJ4EoIhXu/onAKLBufT7T3gH0ZRJOYLF9eKD/7FnPp32HsvyBL6ozyojBCQdRdkwMuE2IQl5+Pw9qUj/Zlq9pteucsYzifXTMuQFjnWPdW+0DAISv7y4YWB1J5LXWjP3u17nHziX2QV5/XmNRSsZ00Cew/m4mqZasx8Z+ulk1oqq5uZ8RKc96qdirtDPqxD/0QwIs2yJ4qWjstQZurfQcUblHPSgL+NDEVTUhigYSsDWn/6Z+3wRiaHBHuYOXLNIhC+VEyV3PdqV9TmnexRIUEh20eQpFEb4s4/uzRBX4t3saVtxbK46pLV7DgPGbMi3labrFh54ooQBshpKsrjLRMQ3spz2UwG7CiIgfffmMlCOdbZUVKdn074rMOyCie3vPDWDlADfBouD3U63OPwqFng061UvaZSHqnoClNklXJW7yeDGtN4t3KNDheMJzhN0L72nSkgzEsW0YmKziST7oVRZ+ZeMNLp20Q2kKTtyAaoDJstze0yOmvjjmm1apNqsgDa7BuQp+ar20Dw9ystuSr/0LZZAkfZMphDqa9MGMppS69RG8+azSafGZZM1jPMwOTLtqOh9uTx6jqphze3wmJXC1M1ZoxGUE5ei4IOjTph+1f1PRvSH+6yn7F6wIWRh94tA==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(7696005)(316002)(81166007)(47076005)(356005)(4326008)(54906003)(8676002)(86362001)(83380400001)(55016003)(6916009)(426003)(336012)(70586007)(2906002)(70206006)(36860700001)(5660300002)(8936002)(107886003)(186003)(26005)(16526019)(82310400004)(1076003)(33656002)(53546011)(508600001)(40460700003)(9686003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 08:31:21.3471
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4dda0f94-9599-470f-f9aa-08d9ec6fb78b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT034.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2372
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/02/2022 15:05, Hans Schultz wrote:
-> Various switchcores support setting ports in locked mode, so that
-> clients behind locked ports cannot send traffic through the port
-> unless a fdb entry is added with the clients MAC address.
+On Thu, Feb 10, 2022 at 03:54:57PM +0800, Jason Wang wrote:
+> On Mon, Feb 7, 2022 at 8:56 PM Eli Cohen <elic@nvidia.com> wrote:
+> >
+> > Define bit fields for device independent feature bits. We need them in a
+> > follow up patch.
+> >
+> > Also, define macros for start and end of these feature bits.
+> >
+> > Reviewed-by: Jianbo Liu <jianbol@nvidia.com>
+> > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > ---
+> >  include/uapi/linux/virtio_config.h | 16 ++++++++--------
+> >  1 file changed, 8 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/include/uapi/linux/virtio_config.h b/include/uapi/linux/virtio_config.h
+> > index 3bf6c8bf8477..6d92cc31a8d3 100644
+> > --- a/include/uapi/linux/virtio_config.h
+> > +++ b/include/uapi/linux/virtio_config.h
+> > @@ -45,14 +45,14 @@
+> >  /* We've given up on this device. */
+> >  #define VIRTIO_CONFIG_S_FAILED         0x80
+> >
+> > -/*
+> > - * Virtio feature bits VIRTIO_TRANSPORT_F_START through
+> > - * VIRTIO_TRANSPORT_F_END are reserved for the transport
+> > - * being used (e.g. virtio_ring, virtio_pci etc.), the
+> > - * rest are per-device feature bits.
+> > - */
+> > -#define VIRTIO_TRANSPORT_F_START       28
+> > -#define VIRTIO_TRANSPORT_F_END         38
+> > +/* Device independent features per virtio spec 1.1 range from 28 to 38 */
+> > +#define VIRTIO_DEV_INDEPENDENT_F_START 28
+> > +#define VIRTIO_DEV_INDEPENDENT_F_END   38
 > 
-> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
-> ---
->  net/bridge/br_switchdev.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Haven't gone through patch 3 but I think it's probably better not
+> touch uapi stuff. Or we can define those macros in other place?
 > 
-> diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-> index f8fbaaa7c501..bf549fc22556 100644
-> --- a/net/bridge/br_switchdev.c
-> +++ b/net/bridge/br_switchdev.c
-> @@ -72,7 +72,7 @@ bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
->  
->  /* Flags that can be offloaded to hardware */
->  #define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | \
-> -				  BR_MCAST_FLOOD | BR_BCAST_FLOOD)
-> +				  BR_MCAST_FLOOD | BR_BCAST_FLOOD | BR_PORT_LOCKED)
->  
->  int br_switchdev_set_port_flag(struct net_bridge_port *p,
->  			       unsigned long flags,
 
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+I can put it in vdpa.c
 
+> > +
+> > +#define VIRTIO_F_RING_INDIRECT_DESC 28
+> > +#define VIRTIO_F_RING_EVENT_IDX 29
+> > +#define VIRTIO_F_IN_ORDER 35
+> > +#define VIRTIO_F_NOTIFICATION_DATA 38
+> 
+> This part belongs to the virtio_ring.h any reason not pull that file
+> instead of squashing those into virtio_config.h?
+> 
+
+Not sure what you mean here. I can't find virtio_ring.h in my tree.
+
+> Thanks
+> 
+> >
+> >  #ifndef VIRTIO_CONFIG_NO_LEGACY
+> >  /* Do we get callbacks when the ring is completely used, even if we've
+> > --
+> > 2.34.1
+> >
+> 
