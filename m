@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FBCA4B0DE0
+	by mail.lfdr.de (Postfix) with ESMTP id 029C34B0DDE
 	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 13:52:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241806AbiBJMwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 07:52:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35722 "EHLO
+        id S241815AbiBJMwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 07:52:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239293AbiBJMwQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 07:52:16 -0500
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2082.outbound.protection.outlook.com [40.107.20.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A702643
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 04:52:17 -0800 (PST)
+        with ESMTP id S241813AbiBJMwU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 07:52:20 -0500
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30081.outbound.protection.outlook.com [40.107.3.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEC52640
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 04:52:21 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YbJnQMpuG7wXDq4SGGaeIz5syAvc1JGtoYAqAWcH+kTA2ki0AS1j/r/Op/pMxjPVKID8KmwgdfhCqpigJCzO8F1uMOjNYo6iKbiaDGlvRJ+C7bDsFKw7OM8YCSvoSk/pvlo/Nf7TT5Tu/5gDei8b0BOvHfUC09gLIbwE3pLhkekvQ442k0mafXASQnOgQEG+R5WikGUBVFavZ/6hqfJ+Z0OOJHevUAG1N0FBfwM86XHZonZe5xZGMGxpDjSjTsPbFrUEmpTCTODTCK4tv75lFO7Gv8scwsy4+dQ36IZ/yC6j2Juo163FYZN//pA4yQXdxXhlll0Od31VFwWomplFsA==
+ b=hDlUKqfopq9FGpIiJHEv7ni3gJE8nXgUeEko/wLlQ1+t6XwjL4WAXKBRx9OGNfqfxL1FwoQ1fUHR/5JN3MExNcxC9TdvbJ9jPR7oHBHlThPpuQJXADfFeodoFUTvQTRjNF6tz8kNBKKM1q4QnaSYX9ngq5G08o1thHnX88NSHip/e/MKmGsOMD8LwAmlFTZbZ6/HeYIfroFrItr+9kJTXBlIKFcNPIGU50XxMzC0F5yd1Yf44tzP9CFRFgC5I3JVBtazHsVXv3lmw0qXTfia7bXWLNzy6nsnx/aJDesO08ruIrgghhg9/yais5MAwgLG26nfY9eWxUZXallOoKm9mA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=R+fPLScid4OcbeqR7qHAjRE91HjIsUDEbwyfmGB/1ug=;
- b=RcgsBehYkMuSlQN24Aka1ooRq06E1g3eQFcB6xPn98OGp2IB9/VaOPaQdZaZ5crAMvTV9lx5mayOB7OoV/Oi8loaVde+J8FFoC1/nLdEQ5Pj18fZt1ynoZJZTa8S89xKgJiXO9N9sPj2FAVlvF03d8qYHNXZ7jIhyFhQdt5zbFyoyrtqh/JIJGbkjgRGfcv9hwHrloaGPEoJ9nbh7bYfIeKROwjrtxvNwTRMszQfTgyszbOfeekxwYT/TNBHoiEnnxPyCBLZiAFLpwLHqDZe4+pJnLvb9vhapD+muK7cJsfwbrK+s+kjUnTgUnCRxmJbs6PGOfrjJ4gkTQZTok4+qw==
+ bh=wfa464V7AvGreMhb90fvzIj28owRSXZc+IFHwyN6DGo=;
+ b=chY7zO6wOgD2PI6d4cI3Lxnb+iSkqab/EAYxPWeXVfOvB/V8pl7Di9N7l+FIGN78c4Jmj+0EulX6D7nxtEEgEc32XlOAfP5G4umjA+o5XICks07W1kx+yhkE78X8u8tQsmdfRIaJal4XiVFfA4kpEeeGjjtHR0GtPXPMb42Jdn94dhKU0fDu1O1W9Uo7o9/GQVr0o61I992QeA8VFafTP28TIc6aGE1jRyn3g8t8ff7W6Y41NuoDWAbtLsRAjrJH2r7pOlfPC7MS+qkyUGKkOQzkfbEvsrgvotES4LahKSaDaV9zjo8JTUZ6O5aFgPuMtFT7fqEXQuMbru5kDtKP1Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R+fPLScid4OcbeqR7qHAjRE91HjIsUDEbwyfmGB/1ug=;
- b=Zi5eOO90bundMUB1t8K7KQly4yNZ5eZirtEiCkLPfv4OlUI49gTTI/APnZU2mELCP6PrIOEUx1OkbBVPqK6yJzMLq+odTH6bjbxxiXe3USPZ9eSPIeSyfBqT9WQwKkPnUTztWVkOiZBhytM71u+hDzDq7Vx6R5ygImU8rG9IMkc=
+ bh=wfa464V7AvGreMhb90fvzIj28owRSXZc+IFHwyN6DGo=;
+ b=ZkPNRCQPd6rYGn0IioecYkz1k2/0mIAGCGAMEvzXIMsNhjKswBVg333tvBt4BojSb0aAgIOFJ7oK7iDPvUKQzsMNcGCzp42EJ+N4bqezbFJpSvUv0pKa9my9NuUaaiNPtWikpDAVnUnCeTKvtF8/f7t1cCdfcKVzkkRiBu39D1I=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DBAPR04MB7336.eurprd04.prod.outlook.com (2603:10a6:10:1a9::16) with
+ by DU2PR04MB8806.eurprd04.prod.outlook.com (2603:10a6:10:2e1::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Thu, 10 Feb
- 2022 12:52:15 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.13; Thu, 10 Feb
+ 2022 12:52:17 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Thu, 10 Feb 2022
- 12:52:15 +0000
+ 12:52:16 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -51,9 +51,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com, Jiri Pirko <jiri@resnulli.us>,
         Ivan Vecera <ivecera@redhat.com>
-Subject: [PATCH v2 net-next 01/12] net: dsa: rename references to "lag" as "lag_dev"
-Date:   Thu, 10 Feb 2022 14:51:50 +0200
-Message-Id: <20220210125201.2859463-2-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 02/12] net: dsa: mv88e6xxx: rename references to "lag" as "lag_dev"
+Date:   Thu, 10 Feb 2022 14:51:51 +0200
+Message-Id: <20220210125201.2859463-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220210125201.2859463-1-vladimir.oltean@nxp.com>
 References: <20220210125201.2859463-1-vladimir.oltean@nxp.com>
@@ -64,55 +64,55 @@ X-ClientProxiedBy: AM0PR08CA0014.eurprd08.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 56b827cf-be57-4e39-5860-08d9ec9429bc
-X-MS-TrafficTypeDiagnostic: DBAPR04MB7336:EE_
-X-Microsoft-Antispam-PRVS: <DBAPR04MB73361E87F3D65FE9E7DF0F31E02F9@DBAPR04MB7336.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Office365-Filtering-Correlation-Id: 1d50e49b-b122-44b0-acca-08d9ec942a97
+X-MS-TrafficTypeDiagnostic: DU2PR04MB8806:EE_
+X-Microsoft-Antispam-PRVS: <DU2PR04MB88063C36ECF31AC466F2A75EE02F9@DU2PR04MB8806.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aCDMjKc93sd+hYu81gkhvlTWKKiDCBGQLI0X4hueE0vBGACG4t8oDGikcP2Su4o77Rerg1B6wqOQzL/CZ8SZIigsEl3JoH7axaSFR0VUizBEOUxjxegs7X7JBv2o/oV8TmCsoxjXy690Au3OeTk4gsVGyQYhJMvsl2e3WhEdOpHkMiN0adaHxzyBv/bINfRoYe85GyNU63/13RGar3vssQYKVR2eFvD7RrcG09HjTXjvC529KKYaYvch8MnGFYFjk4JgEPEsZ+81ZlC+WZvHxRRsDehah7awTTjts4Ji9YH/yB4+D2l6rM6tGJxyLdHyuYXZuBHQRuXXhfSWaszWmYeTqRkc8V4BRQnIhAt3ofZpogzgoa4wuGLZ1zCOh1YnVckxNejY9Ano3CaJ2FUjS5kKWWj9SDRhNew8L2d0FwKq9TRnTOShXnE9mIjJGlrbntj+DHkqRQmi/AmO01jDzpej8jYKA8TmY80J3m4vpmXKN/zkTCUNDN6HCU6AXyD4nT0z8tIv/XeeUCNJWvOy44sgIaTQFe3g5YApjDJG3KKz2RVC5Czn0AKFktHKoJzx0JsKGFG9DOKJVez4kKAKpFyvNkyN9T8L3Bo67AJ58ZNx7etohG5dixjNGfG5lySH/vQbnttZZyyW18gZTfAvMxZ4TnPN0vAeZAJuihZXFXpxw6geHXyOLffRpur8pntLq3sVul2NF3QvFyQrArHY0Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(52116002)(186003)(26005)(6666004)(2616005)(83380400001)(6512007)(6506007)(44832011)(2906002)(7416002)(5660300002)(8936002)(4326008)(66476007)(66946007)(508600001)(36756003)(8676002)(66556008)(6486002)(54906003)(38100700002)(86362001)(38350700002)(6916009)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 8PJz1p/BmQ66dn1ULJgbM/5bp7u2XFZhlV0yZTc5zIy8ckto/bdexbA+lmhMIpBHFPN9PRWHLpMVmyL36og9EKIlyUdRnThnEqyFsGJqPJwDzUTSpPCuVMRj3u5LSu25ng74/bbZmqjBt40/I+wWm+EK3rgdwn4lVm2HzizZaLJ1GIglRDeM0xoMZ0VrIvDhsbcSXf7/KijKK7S0ax2yGinQ5HyT9uiV4G1aHbyfIVv0wU7rTIZGtSMnah7tYXn2sWLwrdTj1a/6MFwJgezo/nikdbxf5rUH82xdoUiiIjJvtCYOH9vD8dg4gUUH4S/GhYmDxTQVy8G+FsutkFJMxCGBmePkhuN58g5GEKxZVXihwjzracj1gjfSC4CKoOTcoxtspR5heCiv6MYA5wUNc+HX6E2+ke45VWrsy9wq7qymholQnU9j8PZStk0D4DCYaj3wID5oAGNecjssOzUO+Qv0gy7YaCfsA+w2BelFLLkKjg3Dxl3jHVgJ37rJQr9dlxC5yGUcXN8l2jAJ6AstAdfakwHalI7oTt/4Ioqm2HM7GJL0HsSivqepJuNx8tfM96UVZ50Rd5llh6I64jPFgLeSvyJfT9ecvcPu/stumArxkxSSdY/8vEioFEP2fY8Rx4Omk6xPSFawpSm3TQM7VOripFSsUk9knOmtiTB8GpyNEhlu9v4QB8CSC8yHljXaDtt4GktX6clRiWkpRSP/GQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(316002)(38100700002)(38350700002)(66946007)(6506007)(6666004)(6916009)(54906003)(8936002)(36756003)(6486002)(5660300002)(8676002)(66556008)(66476007)(4326008)(7416002)(52116002)(86362001)(2906002)(6512007)(44832011)(83380400001)(2616005)(1076003)(26005)(186003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5RhfNonhPHxPzil/lhhv+1paWjJ756b82JZhriMEzuHGeQzM13TfKnx1nCON?=
- =?us-ascii?Q?53NtbT6O0zvgqeg9KXjZhhI7/LhJgHX3wsnYWv//kVxlmkGAQgSzgS7AneRp?=
- =?us-ascii?Q?j4sf+MJqEHStanU8p7a0H63ckmZ2t3FSgDQK4OMZhlPnphA9Y8NL91RhTEFz?=
- =?us-ascii?Q?q2ak+BM5PHyIDZLwSzns0ZI3BP6ZBNHWh5kP42bFE1cKWZPwrS1wWsYvioWm?=
- =?us-ascii?Q?mJDLaD7Ahc98e/FQmBDBG2VNMPkte1q8jO+f7fMef1GS/bDNFS+Bqsj1ADFX?=
- =?us-ascii?Q?1l1go6Dw6uPzsTB9CQbRfjqfCiZS+9v2eUtiIs7dNOb+7+DMS+1f49yF6qkq?=
- =?us-ascii?Q?51E6EJ4Nh1XJVYmIBY7Dq4+4hWiBOnEbJK/rQNcPgoKV10SHeGHUH1ufKae0?=
- =?us-ascii?Q?R7XFbp+Wsvzc/iiYSc5Y4Ehoei/Vpnga9A6X0xGtaZKPPcKzb5CqVCT6lrmH?=
- =?us-ascii?Q?I2gZappA0RE2qUjyzVZNcxCy43IVRjpWJZ3IV4ie+c46XnngxZysNMKIbfO0?=
- =?us-ascii?Q?5rjkYwpQznb/1hWiBZ8n3F+vBCzOSW1fkhtuGuNw+5zAvUDMO7K4uPWazCcw?=
- =?us-ascii?Q?LpsTFS8Nf3CH8PrqkDgrkK5uQQfMiXKBNNtE+l3QVs+iddZWF4cVh276xqay?=
- =?us-ascii?Q?EePUr+aCOdzlam672Eb7w77y8Vj1wPoiFnJnumuxqCdQRJvGWNv3vEXkh/wx?=
- =?us-ascii?Q?GhfCuiAjB6KMfEwXuvjMR8isgDaPt+vSpuJxTRfXxNouUey4ZnQYday0Fe7V?=
- =?us-ascii?Q?OIvRAiAtYSueFIgxZyPNvFgrByVYktQi7P+ufbDo838TvTz4vuV6/k2AUhMO?=
- =?us-ascii?Q?j67kO9NOJqNbhrtJMnksIcyzT8l1WheEvmzADS9r19wXw3lq2ARYz/mDnOqK?=
- =?us-ascii?Q?yo8fZZ+CZBx54yyeaRcWNWa43RT2dnUh/C5pBRxI6ZGr0xoLGI9huac44p6k?=
- =?us-ascii?Q?uCq5TQpHrEN3jxavlKjlcCndby2GLoGQwhEI1+auybrFRvQ8lr1Z82kPNsho?=
- =?us-ascii?Q?6rdvn5o0trXfFZZnCTz9jhWiuOzWV0RZdDA+jucVh9/csXAc9GPMu7PbAp5v?=
- =?us-ascii?Q?D9pIwBKgqQ1LPbxWuyEm8hnzIrwLRJcU0Uu0AnlU8AAFJ/pHPtd5ByizLqje?=
- =?us-ascii?Q?F/d9XtUBe7ho3nQocM8K3ruydE9sUhCvzvHrfukIlpAYAB7NsOGBtYtMm8c5?=
- =?us-ascii?Q?+7WxbzJ/Ql/2gMJvrMCr9YUmEU+Mxnz1m3fwYBeX5RfMSjzAdk1tCFEucgNR?=
- =?us-ascii?Q?puvcKRMio+JLsfkRC4xog19zQcT2j37lckWKbM6EmyrgAfbVpkvozAFlCt2y?=
- =?us-ascii?Q?k7UXoOAk00wx51DvXypp7ejTIiHa/gO5FOPb3lOJDJ2lIWmIUtykz8wC+AvZ?=
- =?us-ascii?Q?CbLy4y60heTKxbXgXCyP1TZn9ppCBqMYcVe5Ucj6rHgoHsZJ1fwcBwY8Vxfy?=
- =?us-ascii?Q?YHQLo59PCchgXtJi6Yz+m75B/SjrWBdI9gjVxLn/sFTnbo71KPYhdhiiB32k?=
- =?us-ascii?Q?hekCcravRQJrbYdyxOW08ta1YqmNicBp4xEZGmvAZ5kIiVkqXtcdy+SjrXx4?=
- =?us-ascii?Q?NMlVOKrKnwcEb6Sv05wtFKHCEhbNKYXi9aSMGq5FXqXM2d3cjcS2KEhFA0bM?=
- =?us-ascii?Q?2TrRdRmIhXvLoP5GAtgIKQo=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xw6eUGYaj3xdiWR0uEk9+cVcl6Qo4Fz7NlMAfp/wJLvxXvjwy+dT1nT49iCB?=
+ =?us-ascii?Q?jBZpZarwKYpHxer672kZhlUbJF7yJuZNcqR1O7hPXGQ4oima/CoND5kYhAzk?=
+ =?us-ascii?Q?60wXl8Q8J7a/5I7L/49A5ye3Tgzq6egTI70GeqcaQwxUdiqjESa62GoqpnRe?=
+ =?us-ascii?Q?5puvtZOMVQ3eO3utdZC73nfQu7rhQnP3sPFyvQtbVeTABgi3JPh8Wxb70wRI?=
+ =?us-ascii?Q?QBmgnB41kfWpeQf8ysrPzV1y062V+K+hZb1OXSL5H8qlgVaoblBI57aSTf/N?=
+ =?us-ascii?Q?977zbd1Mh0LgENScnVyubD/ncNWkE5r4HaHdV2L0F7ZRXkEoIrUbpXXErxG+?=
+ =?us-ascii?Q?hm35GgNBu1Z6J7O8dedv8F6FIDCXM7AUqFQqtlMwAJ6wzn4WzPXexVay5/+4?=
+ =?us-ascii?Q?z8SeLojtNnCNn5suMMIpcTSTH8lLbe6yG2D1q5NT1N90Cs5geF9dO/f1T5bD?=
+ =?us-ascii?Q?IahCvZ3gfj/tfPycXclCjHjK0AZ/fEXmTilW8+qDt7PrhFftgNibV3RMUHgf?=
+ =?us-ascii?Q?VNQuHWxmoa8E7YV5Rb4AkxVqcZcSBKxUPnKHSr0tMxeOHia/iq/JCTUGrUXI?=
+ =?us-ascii?Q?GZ5TNauf/c4r1/s5JwJXDvL/fNIQFrI3uR0g6NLJht8Rqe6zRmRb6gv7PADq?=
+ =?us-ascii?Q?x0SQc9EkfNJh3lfjspkqCH55i75cTeSonxYSrAG3xUDb/aGRX3kdHdaVs5xB?=
+ =?us-ascii?Q?IFIT36wQHEHN0LAWB63EiOO39gQZuPXTEsN8ffJHHiQrAtk/0KXH1LZrKdat?=
+ =?us-ascii?Q?zw8DRpUuuIJuDESAM7qYGqo6uqzUrEy+R1aSCTKu28FDbTxb4ix6v7WPf4ct?=
+ =?us-ascii?Q?BCs4iTSPvULMZkB0smEmWB6OLHpXMuZKF4v6c13p9ykqCq4VwlTIJCMo55N1?=
+ =?us-ascii?Q?pbFw1ZXlzl+UZxhe5FJHSo7HXjYcDgc5k+gsXMfjLUo9Z+pIR1NeDRgsjQ52?=
+ =?us-ascii?Q?bwyvYvJsZ+joaVJqZPkKIC53RsvNjVcVtqh1YbTtpRuQAE2R8SzEAYF51qVT?=
+ =?us-ascii?Q?Ip0LP6aML1P87QkyrAW/IC+26ZtV2bHtVfgsVTxGyNXEux5OCfMnX/3IbFPq?=
+ =?us-ascii?Q?IbkYz+7L/F0UvGaS3M5B+O1UWqp9ZYR5Aofe4GKKMAKHB+orp2QGjN2IYoQ9?=
+ =?us-ascii?Q?/hLcx5Uy5jXXWcF7R8QUtnszwbCkVOZFaa9MzqehJSU1hf1g24Bfi9ce0qf+?=
+ =?us-ascii?Q?qM/9Q6Nb71OEYlt/oD5j+hw9SFocWfX9jFUlikKjXsQihQpCtHmG3dC0hmJ2?=
+ =?us-ascii?Q?I32GochXslssA9gyUurpvFH38Jo7jfDEC+gXOaYUM01TX0mK8S5KkLPj/biO?=
+ =?us-ascii?Q?UFclpDuNnEzHNF3V0XBkQIeNCPW1gUFuQvW6vWbTBTxQ0VvLkKX/Drwv1BLH?=
+ =?us-ascii?Q?0Ujmd3CkhucIw3nONZJ6elk6rPI30sxZ+HJfd72W3Mdn9IBV1Die0I2KkxyG?=
+ =?us-ascii?Q?3IKJWJDkUfG10OzhsWtKwdQoMp/Wk/XyqOvYaP4qQeed6td3KTwt5oio8T3f?=
+ =?us-ascii?Q?T333obnQzbX6SnSEuN979UEjnAVNZNdDcK0SkCFAVVc3uHT95Exrw1wrq7ul?=
+ =?us-ascii?Q?phcNH5zsP3/38J1bi97OJxm+aDd0Igm7A7sA288BwkBiB4y8V4uQgl9GAwvW?=
+ =?us-ascii?Q?N1tqUHquFLNuJqR+8L0bESg=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 56b827cf-be57-4e39-5860-08d9ec9429bc
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1d50e49b-b122-44b0-acca-08d9ec942a97
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 12:52:15.1191
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 12:52:16.5408
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sdGOB41IdG3gae1zECqVJ37p129u46zdhnQ8e1sjzWUd0OuhSiyFYPjUd3V4i+0CS0d87dJr/Ww5FLvNJtUrMw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7336
+X-MS-Exchange-CrossTenant-UserPrincipalName: zR3tkOmUq/zsC5iHepTtZLzwPidpJXqbNdXi17bv04FKUq8EwsIHc94aDRfcYWx3TVcRJjBMAIk18KEgOnYtnA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8806
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -125,256 +125,200 @@ X-Mailing-List: netdev@vger.kernel.org
 
 In preparation of converting struct net_device *dp->lag_dev into a
 struct dsa_lag *dp->lag, we need to rename, for consistency purposes,
-all occurrences of the "lag" variable in the DSA core to "lag_dev".
+all occurrences of the "lag" variable in mv88e6xxx to "lag_dev".
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/net/dsa.h  | 12 ++++++------
- net/dsa/dsa2.c     | 16 ++++++++--------
- net/dsa/dsa_priv.h |  6 +++---
- net/dsa/port.c     | 20 ++++++++++----------
- net/dsa/switch.c   |  8 ++++----
- 5 files changed, 31 insertions(+), 31 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 49 ++++++++++++++++----------------
+ 1 file changed, 25 insertions(+), 24 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index fd1f62a6e0a8..207723e979c3 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -182,12 +182,12 @@ static inline struct net_device *dsa_lag_dev(struct dsa_switch_tree *dst,
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index c54649c4c3a0..454e3ee20155 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -6114,7 +6114,7 @@ static int mv88e6xxx_port_bridge_flags(struct dsa_switch *ds, int port,
  }
  
- static inline int dsa_lag_id(struct dsa_switch_tree *dst,
--			     struct net_device *lag)
-+			     struct net_device *lag_dev)
+ static bool mv88e6xxx_lag_can_offload(struct dsa_switch *ds,
+-				      struct net_device *lag,
++				      struct net_device *lag_dev,
+ 				      struct netdev_lag_upper_info *info)
  {
- 	unsigned int id;
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+@@ -6124,11 +6124,11 @@ static bool mv88e6xxx_lag_can_offload(struct dsa_switch *ds,
+ 	if (!mv88e6xxx_has_lag(chip))
+ 		return false;
  
- 	dsa_lags_foreach_id(id, dst) {
--		if (dsa_lag_dev(dst, id) == lag)
-+		if (dsa_lag_dev(dst, id) == lag_dev)
- 			return id;
- 	}
+-	id = dsa_lag_id(ds->dst, lag);
++	id = dsa_lag_id(ds->dst, lag_dev);
+ 	if (id < 0 || id >= ds->num_lag_ids)
+ 		return false;
  
-@@ -958,10 +958,10 @@ struct dsa_switch_ops {
- 	int	(*crosschip_lag_change)(struct dsa_switch *ds, int sw_index,
- 					int port);
- 	int	(*crosschip_lag_join)(struct dsa_switch *ds, int sw_index,
--				      int port, struct net_device *lag,
-+				      int port, struct net_device *lag_dev,
- 				      struct netdev_lag_upper_info *info);
- 	int	(*crosschip_lag_leave)(struct dsa_switch *ds, int sw_index,
--				       int port, struct net_device *lag);
-+				       int port, struct net_device *lag_dev);
+-	dsa_lag_foreach_port(dp, ds->dst, lag)
++	dsa_lag_foreach_port(dp, ds->dst, lag_dev)
+ 		/* Includes the port joining the LAG */
+ 		members++;
  
- 	/*
- 	 * PTP functionality
-@@ -1033,10 +1033,10 @@ struct dsa_switch_ops {
- 	 */
- 	int	(*port_lag_change)(struct dsa_switch *ds, int port);
- 	int	(*port_lag_join)(struct dsa_switch *ds, int port,
--				 struct net_device *lag,
-+				 struct net_device *lag_dev,
- 				 struct netdev_lag_upper_info *info);
- 	int	(*port_lag_leave)(struct dsa_switch *ds, int port,
--				  struct net_device *lag);
-+				  struct net_device *lag_dev);
+@@ -6148,20 +6148,21 @@ static bool mv88e6xxx_lag_can_offload(struct dsa_switch *ds,
+ 	return true;
+ }
  
- 	/*
- 	 * HSR integration
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 909b045c9b11..c73c376d5d2b 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -74,7 +74,7 @@ int dsa_broadcast(unsigned long e, void *v)
- /**
-  * dsa_lag_map() - Map LAG netdev to a linear LAG ID
-  * @dst: Tree in which to record the mapping.
-- * @lag: Netdev that is to be mapped to an ID.
-+ * @lag_dev: Netdev that is to be mapped to an ID.
-  *
-  * dsa_lag_id/dsa_lag_dev can then be used to translate between the
-  * two spaces. The size of the mapping space is determined by the
-@@ -82,17 +82,17 @@ int dsa_broadcast(unsigned long e, void *v)
-  * it unset if it is not needed, in which case these functions become
-  * no-ops.
-  */
--void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag)
-+void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag_dev)
+-static int mv88e6xxx_lag_sync_map(struct dsa_switch *ds, struct net_device *lag)
++static int mv88e6xxx_lag_sync_map(struct dsa_switch *ds,
++				  struct net_device *lag_dev)
  {
- 	unsigned int id;
- 
--	if (dsa_lag_id(dst, lag) >= 0)
-+	if (dsa_lag_id(dst, lag_dev) >= 0)
- 		/* Already mapped */
- 		return;
- 
- 	for (id = 0; id < dst->lags_len; id++) {
- 		if (!dsa_lag_dev(dst, id)) {
--			dst->lags[id] = lag;
-+			dst->lags[id] = lag_dev;
- 			return;
- 		}
- 	}
-@@ -108,22 +108,22 @@ void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag)
- /**
-  * dsa_lag_unmap() - Remove a LAG ID mapping
-  * @dst: Tree in which the mapping is recorded.
-- * @lag: Netdev that was mapped.
-+ * @lag_dev: Netdev that was mapped.
-  *
-  * As there may be multiple users of the mapping, it is only removed
-  * if there are no other references to it.
-  */
--void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag)
-+void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag_dev)
- {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
  	struct dsa_port *dp;
- 	unsigned int id;
+ 	u16 map = 0;
+ 	int id;
  
--	dsa_lag_foreach_port(dp, dst, lag)
-+	dsa_lag_foreach_port(dp, dst, lag_dev)
- 		/* There are remaining users of this mapping */
- 		return;
+-	id = dsa_lag_id(ds->dst, lag);
++	id = dsa_lag_id(ds->dst, lag_dev);
  
- 	dsa_lags_foreach_id(id, dst) {
--		if (dsa_lag_dev(dst, id) == lag) {
-+		if (dsa_lag_dev(dst, id) == lag_dev) {
- 			dst->lags[id] = NULL;
- 			break;
- 		}
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 2bbfa9efe9f8..9bc6dd4a5855 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -74,7 +74,7 @@ struct dsa_notifier_mdb_info {
+ 	/* Build the map of all ports to distribute flows destined for
+ 	 * this LAG. This can be either a local user port, or a DSA
+ 	 * port if the LAG port is on a remote chip.
+ 	 */
+-	dsa_lag_foreach_port(dp, ds->dst, lag)
++	dsa_lag_foreach_port(dp, ds->dst, lag_dev)
+ 		map |= BIT(dsa_towards_port(ds, dp->ds->index, dp->index));
  
- /* DSA_NOTIFIER_LAG_* */
- struct dsa_notifier_lag_info {
--	struct net_device *lag;
+ 	return mv88e6xxx_g2_trunk_mapping_write(chip, id, map);
+@@ -6205,8 +6206,8 @@ static void mv88e6xxx_lag_set_port_mask(u16 *mask, int port,
+ static int mv88e6xxx_lag_sync_masks(struct dsa_switch *ds)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
 +	struct net_device *lag_dev;
- 	int sw_index;
- 	int port;
+ 	unsigned int id, num_tx;
+-	struct net_device *lag;
+ 	struct dsa_port *dp;
+ 	int i, err, nth;
+ 	u16 mask[8];
+@@ -6230,12 +6231,12 @@ static int mv88e6xxx_lag_sync_masks(struct dsa_switch *ds)
+ 	 * are in the Tx set.
+ 	 */
+ 	dsa_lags_foreach_id(id, ds->dst) {
+-		lag = dsa_lag_dev(ds->dst, id);
+-		if (!lag)
++		lag_dev = dsa_lag_dev(ds->dst, id);
++		if (!lag_dev)
+ 			continue;
  
-@@ -481,8 +481,8 @@ int dsa_switch_register_notifier(struct dsa_switch *ds);
- void dsa_switch_unregister_notifier(struct dsa_switch *ds);
+ 		num_tx = 0;
+-		dsa_lag_foreach_port(dp, ds->dst, lag) {
++		dsa_lag_foreach_port(dp, ds->dst, lag_dev) {
+ 			if (dp->lag_tx_enabled)
+ 				num_tx++;
+ 		}
+@@ -6244,7 +6245,7 @@ static int mv88e6xxx_lag_sync_masks(struct dsa_switch *ds)
+ 			continue;
  
- /* dsa2.c */
--void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag);
--void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag);
-+void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag_dev);
-+void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag_dev);
- int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v);
- int dsa_broadcast(unsigned long e, void *v);
- int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index bd78192e0e47..bb42ac7ed53f 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -440,27 +440,27 @@ int dsa_port_lag_change(struct dsa_port *dp,
- 	return dsa_port_notify(dp, DSA_NOTIFIER_LAG_CHANGE, &info);
+ 		nth = 0;
+-		dsa_lag_foreach_port(dp, ds->dst, lag) {
++		dsa_lag_foreach_port(dp, ds->dst, lag_dev) {
+ 			if (!dp->lag_tx_enabled)
+ 				continue;
+ 
+@@ -6266,14 +6267,14 @@ static int mv88e6xxx_lag_sync_masks(struct dsa_switch *ds)
  }
  
--int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag,
-+int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag_dev,
- 		      struct netdev_lag_upper_info *uinfo,
- 		      struct netlink_ext_ack *extack)
+ static int mv88e6xxx_lag_sync_masks_map(struct dsa_switch *ds,
+-					struct net_device *lag)
++					struct net_device *lag_dev)
  {
- 	struct dsa_notifier_lag_info info = {
- 		.sw_index = dp->ds->index,
- 		.port = dp->index,
--		.lag = lag,
-+		.lag_dev = lag_dev,
- 		.info = uinfo,
- 	};
- 	struct net_device *bridge_dev;
  	int err;
  
--	dsa_lag_map(dp->ds->dst, lag);
--	dp->lag_dev = lag;
-+	dsa_lag_map(dp->ds->dst, lag_dev);
-+	dp->lag_dev = lag_dev;
+ 	err = mv88e6xxx_lag_sync_masks(ds);
  
- 	err = dsa_port_notify(dp, DSA_NOTIFIER_LAG_JOIN, &info);
- 	if (err)
- 		goto err_lag_join;
+ 	if (!err)
+-		err = mv88e6xxx_lag_sync_map(ds, lag);
++		err = mv88e6xxx_lag_sync_map(ds, lag_dev);
  
--	bridge_dev = netdev_master_upper_dev_get(lag);
-+	bridge_dev = netdev_master_upper_dev_get(lag_dev);
- 	if (!bridge_dev || !netif_is_bridge_master(bridge_dev))
- 		return 0;
- 
-@@ -474,11 +474,11 @@ int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag,
- 	dsa_port_notify(dp, DSA_NOTIFIER_LAG_LEAVE, &info);
- err_lag_join:
- 	dp->lag_dev = NULL;
--	dsa_lag_unmap(dp->ds->dst, lag);
-+	dsa_lag_unmap(dp->ds->dst, lag_dev);
  	return err;
  }
- 
--void dsa_port_pre_lag_leave(struct dsa_port *dp, struct net_device *lag)
-+void dsa_port_pre_lag_leave(struct dsa_port *dp, struct net_device *lag_dev)
- {
- 	struct net_device *br = dsa_port_bridge_dev_get(dp);
- 
-@@ -486,13 +486,13 @@ void dsa_port_pre_lag_leave(struct dsa_port *dp, struct net_device *lag)
- 		dsa_port_pre_bridge_leave(dp, br);
+@@ -6290,16 +6291,16 @@ static int mv88e6xxx_port_lag_change(struct dsa_switch *ds, int port)
  }
  
--void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag)
-+void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag_dev)
+ static int mv88e6xxx_port_lag_join(struct dsa_switch *ds, int port,
+-				   struct net_device *lag,
++				   struct net_device *lag_dev,
+ 				   struct netdev_lag_upper_info *info)
  {
- 	struct net_device *br = dsa_port_bridge_dev_get(dp);
- 	struct dsa_notifier_lag_info info = {
- 		.sw_index = dp->ds->index,
- 		.port = dp->index,
--		.lag = lag,
-+		.lag_dev = lag_dev,
- 	};
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int err, id;
+ 
+-	if (!mv88e6xxx_lag_can_offload(ds, lag, info))
++	if (!mv88e6xxx_lag_can_offload(ds, lag_dev, info))
+ 		return -EOPNOTSUPP;
+ 
+-	id = dsa_lag_id(ds->dst, lag);
++	id = dsa_lag_id(ds->dst, lag_dev);
+ 
+ 	mv88e6xxx_reg_lock(chip);
+ 
+@@ -6307,7 +6308,7 @@ static int mv88e6xxx_port_lag_join(struct dsa_switch *ds, int port,
+ 	if (err)
+ 		goto err_unlock;
+ 
+-	err = mv88e6xxx_lag_sync_masks_map(ds, lag);
++	err = mv88e6xxx_lag_sync_masks_map(ds, lag_dev);
+ 	if (err)
+ 		goto err_clear_trunk;
+ 
+@@ -6322,13 +6323,13 @@ static int mv88e6xxx_port_lag_join(struct dsa_switch *ds, int port,
+ }
+ 
+ static int mv88e6xxx_port_lag_leave(struct dsa_switch *ds, int port,
+-				    struct net_device *lag)
++				    struct net_device *lag_dev)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int err_sync, err_trunk;
+ 
+ 	mv88e6xxx_reg_lock(chip);
+-	err_sync = mv88e6xxx_lag_sync_masks_map(ds, lag);
++	err_sync = mv88e6xxx_lag_sync_masks_map(ds, lag_dev);
+ 	err_trunk = mv88e6xxx_port_set_trunk(chip, port, false, 0);
+ 	mv88e6xxx_reg_unlock(chip);
+ 	return err_sync ? : err_trunk;
+@@ -6347,18 +6348,18 @@ static int mv88e6xxx_crosschip_lag_change(struct dsa_switch *ds, int sw_index,
+ }
+ 
+ static int mv88e6xxx_crosschip_lag_join(struct dsa_switch *ds, int sw_index,
+-					int port, struct net_device *lag,
++					int port, struct net_device *lag_dev,
+ 					struct netdev_lag_upper_info *info)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
  	int err;
  
-@@ -514,7 +514,7 @@ void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag)
- 			"port %d failed to notify DSA_NOTIFIER_LAG_LEAVE: %pe\n",
- 			dp->index, ERR_PTR(err));
+-	if (!mv88e6xxx_lag_can_offload(ds, lag, info))
++	if (!mv88e6xxx_lag_can_offload(ds, lag_dev, info))
+ 		return -EOPNOTSUPP;
  
--	dsa_lag_unmap(dp->ds->dst, lag);
-+	dsa_lag_unmap(dp->ds->dst, lag_dev);
+ 	mv88e6xxx_reg_lock(chip);
+ 
+-	err = mv88e6xxx_lag_sync_masks_map(ds, lag);
++	err = mv88e6xxx_lag_sync_masks_map(ds, lag_dev);
+ 	if (err)
+ 		goto unlock;
+ 
+@@ -6370,13 +6371,13 @@ static int mv88e6xxx_crosschip_lag_join(struct dsa_switch *ds, int sw_index,
  }
  
- /* Must be called under rcu_read_lock() */
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 4866b58649e4..d0d59f2fd445 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -468,12 +468,12 @@ static int dsa_switch_lag_join(struct dsa_switch *ds,
- 			       struct dsa_notifier_lag_info *info)
+ static int mv88e6xxx_crosschip_lag_leave(struct dsa_switch *ds, int sw_index,
+-					 int port, struct net_device *lag)
++					 int port, struct net_device *lag_dev)
  {
- 	if (ds->index == info->sw_index && ds->ops->port_lag_join)
--		return ds->ops->port_lag_join(ds, info->port, info->lag,
-+		return ds->ops->port_lag_join(ds, info->port, info->lag_dev,
- 					      info->info);
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int err_sync, err_pvt;
  
- 	if (ds->index != info->sw_index && ds->ops->crosschip_lag_join)
- 		return ds->ops->crosschip_lag_join(ds, info->sw_index,
--						   info->port, info->lag,
-+						   info->port, info->lag_dev,
- 						   info->info);
- 
- 	return -EOPNOTSUPP;
-@@ -483,11 +483,11 @@ static int dsa_switch_lag_leave(struct dsa_switch *ds,
- 				struct dsa_notifier_lag_info *info)
- {
- 	if (ds->index == info->sw_index && ds->ops->port_lag_leave)
--		return ds->ops->port_lag_leave(ds, info->port, info->lag);
-+		return ds->ops->port_lag_leave(ds, info->port, info->lag_dev);
- 
- 	if (ds->index != info->sw_index && ds->ops->crosschip_lag_leave)
- 		return ds->ops->crosschip_lag_leave(ds, info->sw_index,
--						    info->port, info->lag);
-+						    info->port, info->lag_dev);
- 
- 	return -EOPNOTSUPP;
- }
+ 	mv88e6xxx_reg_lock(chip);
+-	err_sync = mv88e6xxx_lag_sync_masks_map(ds, lag);
++	err_sync = mv88e6xxx_lag_sync_masks_map(ds, lag_dev);
+ 	err_pvt = mv88e6xxx_pvt_map(chip, sw_index, port);
+ 	mv88e6xxx_reg_unlock(chip);
+ 	return err_sync ? : err_pvt;
 -- 
 2.25.1
 
