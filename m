@@ -2,191 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2971F4B08E8
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 09:54:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBD5C4B08F0
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 09:56:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238001AbiBJIyy convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Feb 2022 03:54:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53386 "EHLO
+        id S238043AbiBJI4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 03:56:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237979AbiBJIyx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 03:54:53 -0500
-X-Greylist: delayed 51045 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 00:54:54 PST
-Received: from smtpout-03.clustermail.de (smtpout-03.clustermail.de [212.223.35.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AF1D4A
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 00:54:54 -0800 (PST)
-Received: from [10.0.0.4] (helo=frontend.clustermail.de)
-        by smtpout-03.clustermail.de with esmtp (Exim 4.94.2)
-        (envelope-from <Rafael.Richter@gin.de>)
-        id 1nI5Dn-0002A1-T2; Thu, 10 Feb 2022 09:54:46 +0100
-Received: from [217.6.33.237] (helo=Win2012-02.gin-domain.local)
-        by frontend.clustermail.de with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
-        (Exim 4.94.2)
-        (envelope-from <Rafael.Richter@gin.de>)
-        id 1nI5Dn-0005Qi-Q4; Thu, 10 Feb 2022 09:54:35 +0100
-Received: from Win2012-02.gin-domain.local (10.160.128.12) by
- Win2012-02.gin-domain.local (10.160.128.12) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Thu, 10 Feb 2022 09:54:34 +0100
-Received: from Win2012-02.gin-domain.local ([fe80::b531:214c:87e0:8d4a]) by
- Win2012-02.gin-domain.local ([fe80::b531:214c:87e0:8d4a%18]) with mapi id
- 15.00.1497.026; Thu, 10 Feb 2022 09:54:34 +0100
-From:   "Richter, Rafael" <Rafael.Richter@gin.de>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "Klauer, Daniel" <Daniel.Klauer@gin.de>,
-        Robert-Ionut Alexa <robert-ionut.alexa@nxp.com>
-Subject: AW: [PATCH net] dpaa2-eth: unregister the netdev before disconnecting
- from the PHY
-Thread-Topic: [PATCH net] dpaa2-eth: unregister the netdev before
- disconnecting from the PHY
-Thread-Index: AQHYHc3irxHwc5wFI0WE9O9tcl0aJqyLi9TygADwJVo=
-Date:   Thu, 10 Feb 2022 08:54:34 +0000
-Message-ID: <1644483274017.7612@gin.de>
-References: <20220209155743.3167775-1-ioana.ciornei@nxp.com>,<1644432224486.73494@gin.de>
-In-Reply-To: <1644432224486.73494@gin.de>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.176.8.30]
-x-esetresult: clean, is OK
-x-esetid: 37303A29342AAB5361706A
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S237646AbiBJI4G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 03:56:06 -0500
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC18D4A;
+        Thu, 10 Feb 2022 00:56:06 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V43bw9e_1644483360;
+Received: from 30.225.24.25(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V43bw9e_1644483360)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 10 Feb 2022 16:56:01 +0800
+Message-ID: <fb71bcc5-77ad-698c-b025-36e1910f868f@linux.alibaba.com>
+Date:   Thu, 10 Feb 2022 16:56:00 +0800
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.0
+Subject: Re: [PATCH net] net/smc: Avoid overwriting the copies of clcsock
+ callback functions
+To:     Tony Lu <tonylu@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1644415853-46641-1-git-send-email-guwen@linux.alibaba.com>
+ <YgR9XrT8cATDP4Zx@TonyMac-Alibaba>
+From:   Wen Gu <guwen@linux.alibaba.com>
+In-Reply-To: <YgR9XrT8cATDP4Zx@TonyMac-Alibaba>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ioana!
-
-please ignore the previous mail. Everything works now fine. It was a local issue with my setup.
-
-BR,
-
-Rafael
-________________________________________
-Von: Richter, Rafael
-Gesendet: Mittwoch, 9. Februar 2022 19:43
-An: Ioana Ciornei; davem@davemloft.net; kuba@kernel.org; netdev@vger.kernel.org
-Cc: Klauer, Daniel; Robert-Ionut Alexa
-Betreff: AW: [PATCH net] dpaa2-eth: unregister the netdev before disconnecting from the PHY
-
-Hi Ioana!
-
-I've been testing this patch. However, I'm still facing the same kernel panic during shutdown if a SGMII interface was activated before.
-
-Here is the stack trace:
-
-[   96.923647] systemd-shutdown[1]: Rebooting.
-[   97.461827] fsl-mc dpbp.9: Removing from iommu group 7
-[   97.838899] fsl-mc dpbp.8: Removing from iommu group 7
-[   98.206385] fsl-mc dpbp.7: Removing from iommu group 7
-[   98.554855] fsl-mc dpbp.6: Removing from iommu group 7
-[   98.815498] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-[   98.816624] Mem abort info:
-[   98.816981]   ESR = 0x86000004
-[   98.817371]   EC = 0x21: IABT (current EL), IL = 32 bits
-[   98.818046]   SET = 0, FnV = 0
-[   98.818436]   EA = 0, S1PTW = 0
-[   98.818837]   FSC = 0x04: level 0 translation fault
-[   98.819456] user pgtable: 4k pages, 48-bit VAs, pgdp=00000020835d7000
-[   98.820273] [0000000000000000] pgd=0000000000000000, p4d=0000000000000000
-[   98.821140] Internal error: Oops: 86000004 [#1] PREEMPT SMP
-[   98.821848] Modules linked in:
-[   98.822241] CPU: 15 PID: 0 Comm: swapper/15 Not tainted 5.17.0-rc2-00212-g3bed06e36994-dirty #1
-[   98.823345] Hardware name: mpxlx2160a-gl6 (DT)
-[   98.823909] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   98.824794] pc : 0x0
-[   98.825077] lr : call_timer_fn.constprop.0+0x20/0x80
-[   98.825717] sp : ffff80000943ba40
-[   98.826139] x29: ffff80000943ba40 x28: 0000000000000000 x27: ffff80000943bad0
-[   98.827052] x26: ffff0020002ff140 x25: ffff800008ee6980 x24: ffff00267c19fd28
-[   98.827963] x23: ffff80000943bad0 x22: 0000000000000000 x21: 0000000000000101
-[   98.828873] x20: ffff0020002ff140 x19: 0000000000000000 x18: fffffc0080035a48
-[   98.829783] x17: ffff8026733ae000 x16: ffff80000807c000 x15: 0000000000004000
-[   98.830693] x14: 00000000000003d0 x13: 0000000000000000 x12: 00000000000001e2
-[   98.831602] x11: 00000000000003a6 x10: ffff8026733ae000 x9 : ffff00267c19fd70
-[   98.832511] x8 : 0000000000000001 x7 : ffffffffffffffff x6 : 0000000000000000
-[   98.833420] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000000200
-[   98.834329] x2 : 0000000000000200 x1 : 0000000000000000 x0 : ffff0020030872b0
-[   98.835239] Call trace:
-[   98.835552]  0x0
-[   98.835790]  __run_timers.part.0+0x1e8/0x220
-[   98.836338]  run_timer_softirq+0x38/0x70
-[   98.836840]  _stext+0x124/0x29c
-[   98.837244]  __irq_exit_rcu+0xdc/0xfc
-[   98.837716]  irq_exit_rcu+0xc/0x14
-[   98.838153]  el1_interrupt+0x34/0x80
-[   98.838617]  el1h_64_irq_handler+0x14/0x1c
-[   98.839140]  el1h_64_irq+0x78/0x7c
-[   98.839575]  cpuidle_enter_state+0x12c/0x314
-[   98.840121]  cpuidle_enter+0x34/0x4c
-[   98.840577]  do_idle+0x1f0/0x254
-[   98.840994]  cpu_startup_entry+0x20/0x70
-[   98.841497]  secondary_start_kernel+0x13c/0x160
-[   98.842076]  __secondary_switched+0x54/0x58
-[   98.842618] Code: bad PC value
-[   98.843010] ---[ end trace 0000000000000000 ]---
-[   98.843597] Kernel panic - not syncing: Oops: Fatal exception in interrupt
-[   98.844479] Kernel Offset: disabled
-[   98.844922] CPU features: 0x10,00000042,40000842
-[   98.845510] Memory Limit: none
-[   98.845901] ---[ end Kernel panic - not syncing: Oops: Fatal exception in interrupt ]---
-
-BR,
-
-Rafael Richter
-________________________________________
-Von: Ioana Ciornei <ioana.ciornei@nxp.com>
-Gesendet: Mittwoch, 9. Februar 2022 16:57
-An: davem@davemloft.net; kuba@kernel.org; netdev@vger.kernel.org
-Cc: Richter, Rafael; Klauer, Daniel; Robert-Ionut Alexa; Ioana Ciornei
-Betreff: [PATCH net] dpaa2-eth: unregister the netdev before disconnecting from the PHY
-
-From: Robert-Ionut Alexa <robert-ionut.alexa@nxp.com>
-
-The netdev should be unregistered before we are disconnecting from the
-MAC/PHY so that the dev_close callback is called and the PHY and the
-phylink workqueues are actually stopped before we are disconnecting and
-destroying the phylink instance.
-
-Fixes: 719479230893 ("dpaa2-eth: add MAC/PHY support through phylink")
-Signed-off-by: Robert-Ionut Alexa <robert-ionut.alexa@nxp.com>
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index e985ae008a97..dd9385d15f6b 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -4523,12 +4523,12 @@ static int dpaa2_eth_remove(struct fsl_mc_device *ls_dev)
- #ifdef CONFIG_DEBUG_FS
-        dpaa2_dbg_remove(priv);
- #endif
-+
-+       unregister_netdev(net_dev);
-        rtnl_lock();
-        dpaa2_eth_disconnect_mac(priv);
-        rtnl_unlock();
-
--       unregister_netdev(net_dev);
--
-        dpaa2_eth_dl_port_del(priv);
-        dpaa2_eth_dl_traps_unregister(priv);
-        dpaa2_eth_dl_free(priv);
---
-2.33.1
 
 
+On 2022/2/10 10:50 am, Tony Lu wrote:
+
+> I am wondering that there is a potential racing. If ->use_fallback is
+> setted to true, but the rest of replacing process is on the way, others
+> who tested and passed ->use_fallback, they would get old value before
+> replacing.
+> 
+
+Thanks for your comments.
+
+I understand your concern. But when I went through all the places that
+check for smc->use_fallback, I haven't found the exact potential racing
+point. Please point out if I missed something. Thank you.
+
+In my humble opinion, most of the operations after smc->use_fallback check
+have no direct relationship with what did in smc_switch_to_fallback() (the
+replacement of clcsock callback functions), except for which in smc_sendmsg(),
+smc_recvmsg() and smc_sendpage():
+
+smc_sendmsg():
+
+	if (smc->use_fallback) {
+		rc = smc->clcsock->ops->sendmsg(smc->clcsock, msg, len);
+	}
+
+smc_recvmsg():
+
+	if (smc->use_fallback) {
+		rc = smc->clcsock->ops->recvmsg(smc->clcsock, msg, len, flags);
+	}
+
+smc_sendpage():
+
+	if (smc->use_fallback) {
+		rc = kernel_sendpage(smc->clcsock, page, offset,
+				     size, flags);
+	}
+
+If smc->use_fallback is set to true, but callback functions (sk_data_ready ...)
+of clcsock haven't been replaced yet at this moment, there may be a racing as
+you described.
+
+But it won't happen, because fallback must already be done before sending and receiving.
+
+What do you think about it?
+
+Thanks,
+Wen Gu
 
