@@ -2,124 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD3EF4B09A4
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 10:37:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DCC64B09BF
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 10:41:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238696AbiBJJhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 04:37:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56996 "EHLO
+        id S238930AbiBJJkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 04:40:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238259AbiBJJhX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 04:37:23 -0500
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2583810B4
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 01:37:25 -0800 (PST)
-Received: by mail-il1-f198.google.com with SMTP id b3-20020a056e020c8300b002be19f9e043so3561335ile.13
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 01:37:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=WMAa1QK9Kxhsy8/kVs+uPN7XYVttZNgIOYjzv5RISB8=;
-        b=pwuYwlymrS/4XuGtUmUfmXhni1PC1Z6sWlykPYkmrmBH6hpkAuRLCpmrFjSfnGYyx8
-         wSMYUPi7rlrfj5P0KOQsSxvvHD4S8qsHyOxFY6p/raK2dHpN4hXPdlJUmlEmr70vJEeY
-         rnXZuZcXfWmnHI3QEwJU7GG8FEKf9J9FYP5StZWoKXBZOAw3Fel5ZRO1OYzN+flZIIet
-         20e/lZh6+lJTGgkCo0uSrMYiX3iXXPExlpIi9q6L920f+4BRWqAV4OBE68nD9nwFXBZi
-         b/bsoMqMkRNVLB+NfbIIhlIbrsUQ7Swo7NtuOssf2qLVkA1zAQ9bNIZyAkyzVZGXxpu4
-         2RfQ==
-X-Gm-Message-State: AOAM532fpUfSHe1cLgdUXWN2gXwMXWEe6Mm2UKGKHkBD3w6AcFdqiDY2
-        CckBjghyet0ZayCdSoY1JJJaGI+ymRalD+PSpy2GKjxLWQqN
-X-Google-Smtp-Source: ABdhPJxlrs0tfruePAiedbMxqBIY+mk2PNpErSRsdCCar4qxDMSvU2QoKxJYzkZUwwESzwTp/eQucdtG2jk87AYhZKvF2bcIcwBV
+        with ESMTP id S238908AbiBJJky (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 04:40:54 -0500
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30084.outbound.protection.outlook.com [40.107.3.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7977510C3
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 01:40:55 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l1hTFj1GQHSjN1dPlo3OamRnUfsiiRVVUKniVolUW/KIhkJFVmakYP1kVa3VfsJKXsoDAC49A9dmQ9lbv7WbwqnWBnAlhiAgS3tuJbIUxtsWMUDijCSS1bS14G7Q5/h/IAP2PY5yOdQLtJbTQhyXwMKXPyd8OJRh/0kg1yCBO5jEMSL4Dl7VYDo3n65sjzqi7NkSIKghXUDB0exmkgC0huGu9HPrrxgFEk/OLyc3C4RCcmag+JTeTuMZuhrOQ8G2yvKfqxWeF85FqBuFz4pORpVUZ+CYcMqfOR00vl2GR4K/vjYCudENxRThPB9Znyw6Utt44xgg+qvZ6mjmOKQ/kA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5pXMSaX4y7zTlbhyg0uHVe0KS3SVbJ62C2P3fK9CAmg=;
+ b=ewf9fO1gvBZj33ZU9V1a3TgYfxz9PIufIO4gmMlebrK5pz9T0BmyVDGTvPlHqdmozKvB+2+ncZn056/97ZT2qAhcDZSR7vse/DBZgMyeHaCdYJzhHWkMp4kOOF6aTCg10BXvLUkt1r5+i1erJeC9KXAHQDRXKpRRr+uutlX8rnWJF34kTc+traxAbl1PrKUbn4r+ab1XANp1df+/73s3tdclXE81t+m+L07VQSIiDUJodtUDct9ORjQ8FjejRHKGCgfrVrWzTPHuN52m7b0SIOHjoPBe+S7ot+o7nVIkcbgNoTX8U5n3liSjqVfaNefpM89yQXoigsxXJSH7B9AcHA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5pXMSaX4y7zTlbhyg0uHVe0KS3SVbJ62C2P3fK9CAmg=;
+ b=Mw2tjyRz4/7c5oyur7vc0W1IODNOk4TYX7Laelpb2PnSjPyVtA/fjlUOo6h9EQRjrYRQHu7spl0gDXREt+5HZD5RWuEjieSJIjuWW/xpIeAo8oZMV9VmM3Ksq5WaF/l5nG5RXoBZ5J+DSb+rvBete0FASH44L8RS3NsJkMBFqao=
+Received: from AM9PR04MB8555.eurprd04.prod.outlook.com (2603:10a6:20b:436::16)
+ by VE1PR04MB7231.eurprd04.prod.outlook.com (2603:10a6:800:1a9::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Thu, 10 Feb
+ 2022 09:40:53 +0000
+Received: from AM9PR04MB8555.eurprd04.prod.outlook.com
+ ([fe80::5df9:5bf0:7ac1:a793]) by AM9PR04MB8555.eurprd04.prod.outlook.com
+ ([fe80::5df9:5bf0:7ac1:a793%9]) with mapi id 15.20.4975.011; Thu, 10 Feb 2022
+ 09:40:53 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     "Richter, Rafael" <Rafael.Richter@gin.de>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Klauer, Daniel" <Daniel.Klauer@gin.de>,
+        Robert-ionut Alexa <robert-ionut.alexa@nxp.com>
+Subject: Re: [PATCH net] dpaa2-eth: unregister the netdev before disconnecting
+ from the PHY
+Thread-Topic: [PATCH net] dpaa2-eth: unregister the netdev before
+ disconnecting from the PHY
+Thread-Index: AQHYHc3R+Hv7+puOBUubY22EfutTXKyLjlOAgADttwCAAAzwAA==
+Date:   Thu, 10 Feb 2022 09:40:53 +0000
+Message-ID: <20220210094052.64o52akouoh33m4j@skbuf>
+References: <20220209155743.3167775-1-ioana.ciornei@nxp.com>
+ <1644432224486.73494@gin.de> <1644483274017.7612@gin.de>
+In-Reply-To: <1644483274017.7612@gin.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7536880b-83a0-4243-f2ce-08d9ec796e2f
+x-ms-traffictypediagnostic: VE1PR04MB7231:EE_
+x-microsoft-antispam-prvs: <VE1PR04MB7231AA80673B0E11B8A35F8AE02F9@VE1PR04MB7231.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4714;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: hbWUBCuTzieqOZM/++sQ9WhsTWkTkZ4SFxVJczO76Kt8WF0cZb+dX1TGheGv8DauL7saF8LucDavbquTh2dVsqXDqJ8bMIKljmlIaM3byDQ2eGdC3I4cgwEZKfCBMnak7ow7RcumTaP/Na0pHBX3lp8o35d3aa877eoGcUeDbp2DO0C1xSRcnhXmNtHB0RKoa7agUnTRxazuwHn6B/IhRZxdHD7pgvMf7C4yu/XO1diXy7AMIjoZF1m0S58HMQrkbX6373B5MUe3n17z4Naiz6ciS311tRfRidtHqYzLaGIq7oBXrHsJCX5ypKK9j7IIk5ax6LXKFs7eyCiSKKqgqXs/2CcECchyIPoeil6fIBXmbruN+UlecmkXFiNabaR0k8/WmTZfj0k55UnujDm30LACfqHzGwBBhguKn+uCPacA5cRyxwHq4wKJwCnian12mC0zlITjksiBLsmjMcoDcYP7ANFKxTHrBClSXY5F+LEj4X+CakInESWEuQQo7NXozEi1925dRkpYWApXYvCKEA7p/Bqy4VdMem5xf2c6wJBZyz4Cw5nUM8tRx1HF64Bq74uUZG5M1mbm+/rHHQ3qetp15/lTHVeFnzAE9F0aRtPLP+0QmXs0d6UQEWGZVF+HawqIRz1H7J2W6WKb1lna8tgwJHzzuKSUe4JUA2vdGGAQyl5C9f5mousiJK4lX0KSGlU3DkVeXVLRtUlYghw+rw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8555.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(38070700005)(508600001)(1076003)(5660300002)(66446008)(8676002)(66476007)(4326008)(66556008)(91956017)(64756008)(66946007)(76116006)(6486002)(71200400001)(8936002)(6512007)(9686003)(86362001)(26005)(2906002)(122000001)(33716001)(4744005)(54906003)(6916009)(6506007)(316002)(44832011)(186003)(38100700002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?tbbw1N06+VybKB9viqkNe/ePz97TuMIjSK7ovoJ9LiICOv5HQd1+03dIpgNo?=
+ =?us-ascii?Q?gpKgQSmch+zsJvWJwDnk72qOXSOl4gwEe0qR771CkbfsJ3X2CHtegAFgIP9l?=
+ =?us-ascii?Q?p6cT4rV/zH5D6uos2YupY0Se3tXcg9YODSUZW4tNGIkn0tWCzhrFSZMoW6m3?=
+ =?us-ascii?Q?h+5Gg6UAWSDl9if4VPzlTTTFjMg5Z6kdkUnuGwJwcGqQGmDYwGNckj/JFzdH?=
+ =?us-ascii?Q?xCU8BYTLoIkLMK9U+NjUq/tY8pr6ELtAd58+R4TRc7/d/hGBR8yVb8sMe7jJ?=
+ =?us-ascii?Q?KuVZj4UEzou50ucaMsU85dfw1v1J+PspCuSwlfd9mRU7+h5+1cLz6QtWvek/?=
+ =?us-ascii?Q?oXxG1fIXuaiMr6VS66Eq2zv3wAFmXlq3KaMp0KA2FwtDek0zTRNZm2qJAge9?=
+ =?us-ascii?Q?/BsQW0aZHxnnCvlBDJLMmb4DJ/8Qp9+LfALrlm22N6yWdN7JMdeexPoZj/0k?=
+ =?us-ascii?Q?x8W8e03zfFafDCc1ScXURrDttOomH7tzBR50x4rbaaDRPobb8XiSP1kffeHz?=
+ =?us-ascii?Q?RPEZEA34OUlJ0EJxSz3GS8zbx651/1nPn7Fty2sbnw0FkoIj77Y3V188QyM9?=
+ =?us-ascii?Q?Rjsglr90Zou1gsGTMizLta4I830qF4HQ+5tfO5EOdNPeXVYPGDfwhZj35DSL?=
+ =?us-ascii?Q?/Ok1VX94D1KSHukus9NqkL55UKXoQ+vDebQeZWtN3lJ7Gs5xpm4Ohr/WTbtY?=
+ =?us-ascii?Q?MaMZkmb3oCvautknPTgiYuS0BlBHoP2IukcErObxhvrqs3ctlejwN/yi3dff?=
+ =?us-ascii?Q?DBs7L29eIeBzacIbUt3RuakySC3N18HP49ds3EKemQF+SNBERTa20XcQFn/J?=
+ =?us-ascii?Q?/RnYxQo84Hb3Iy7h8xfvO3lx0UiOCbU+alXqgrwU2gpNfzUX2nNG5TPBmEi6?=
+ =?us-ascii?Q?MEaTd4VshtkMG2HtbUuj1AIMhonqQtWg0+bpDOBJMvSQ6qhVAwzCRmev+s2e?=
+ =?us-ascii?Q?lc/JlRD+if5VxQXiyO8N70jCZX+tT9km8pMAjKHR/LUYcltVEzAcd3kyXg1X?=
+ =?us-ascii?Q?nEzuRMfFtdiuCtgElC0TarWvJ0eG7/yUVJNdjU3h29ykSUksbyJ5LQfTy0lB?=
+ =?us-ascii?Q?q9jZDKMObg20huJ0KUjljzMJKY30ssiVXPfVhIRELqrVZNt3LHSpu1NWmkWf?=
+ =?us-ascii?Q?RJmyV9Vuh76Nczle+pDnaXljSbootk7DWCA2mwNZWtwJ994h0Oe/KL/NAR/O?=
+ =?us-ascii?Q?yh7vo7morasSTdnDyMjMfp/K8Y4tcR8/XK26G6jvfONomzLupokymEPPtT1z?=
+ =?us-ascii?Q?e5f5Wt1+37tkXpn+CYRF7t7Ov2oIPMrGp1jH6rx6SR+HugOtZpcd1skIsWpF?=
+ =?us-ascii?Q?teqCsGVPhk/EygI5LYT6tMEyAw0Nd4m0xI72TctejUrziKDKRLww4H0vm2xe?=
+ =?us-ascii?Q?rvMayPf/dbmzB60bY09vjR7zqp+wYRXUfeB546p3+h8puyp7o4SthjDtj/hO?=
+ =?us-ascii?Q?oy7vB4tKigb/YO3/kXe1c2/FzY7jpoEecc8p9n/5KmqlBtZbdmYwaQqbYKSf?=
+ =?us-ascii?Q?ndEJQoq6H0GW8FqQl/Yt+HeTug5pKIIok+jqyfoq6D2Rjm8iU3yuiuyAuXNS?=
+ =?us-ascii?Q?IhX2XFMif1D+UlN6mwrdqspBh5EKUfPCccirPeRtqttsUvyvCeCZQ+V0S74C?=
+ =?us-ascii?Q?sTob+1XvmLTn+iZR6n3M2cA=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4FB17ADB46748140B83BEE8D2FDF769C@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1a21:: with SMTP id g1mr1474902ile.154.1644485844491;
- Thu, 10 Feb 2022 01:37:24 -0800 (PST)
-Date:   Thu, 10 Feb 2022 01:37:24 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009962dc05d7a6b27f@google.com>
-Subject: [syzbot] WARNING in mroute_clean_tables
-From:   syzbot <syzbot+a7c030a05218db921de5@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8555.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7536880b-83a0-4243-f2ce-08d9ec796e2f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Feb 2022 09:40:53.3001
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: b14MwGAt6prn+ie+H8ncJvJXl0pjnf11EZgDhw5f0QKXQmngVr7+3KyD5PdgmRezp5bY7Jz+1e5NkLXUWcOOWg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7231
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1109f758700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
-dashboard link: https://syzkaller.appspot.com/bug?extid=a7c030a05218db921de5
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a7c030a05218db921de5@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-RTNL: assertion failed at net/core/dev.c (10367)
-WARNING: CPU: 0 PID: 29585 at net/core/dev.c:10367 unregister_netdevice_many+0x1246/0x1850 net/core/dev.c:10367
-Modules linked in:
-CPU: 0 PID: 29585 Comm: syz-executor.4 Not tainted 5.16.0-syzkaller-11655-ge5313968c41b #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:unregister_netdevice_many+0x1246/0x1850 net/core/dev.c:10367
-Code: 0f 85 9b ee ff ff e8 59 f1 4a fa ba 7f 28 00 00 48 c7 c6 00 90 ae 8a 48 c7 c7 40 90 ae 8a c6 05 0e a1 51 06 01 e8 3c 8a d8 01 <0f> 0b e9 70 ee ff ff e8 2e f1 4a fa 4c 89 e7 e8 c6 22 59 fa e9 ee
-RSP: 0018:ffffc90003f976d8 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000040000 RSI: ffffffff815fa058 RDI: fffff520007f2ecd
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff815f3dbe R11: 0000000000000000 R12: ffffc90003f97850
-R13: dffffc0000000000 R14: ffffc90003f97748 R15: ffff888075174000
-FS:  00007ff7a83c1700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f76931c2fc0 CR3: 000000006a1c3000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- mroute_clean_tables+0x271/0xb50 net/ipv4/ipmr.c:1282
- ipmr_free_table net/ipv4/ipmr.c:411 [inline]
- ipmr_rules_init net/ipv4/ipmr.c:259 [inline]
- ipmr_net_init net/ipv4/ipmr.c:3059 [inline]
- ipmr_net_init+0x3f0/0x4e0 net/ipv4/ipmr.c:3051
- ops_init+0xaf/0x470 net/core/net_namespace.c:140
- setup_net+0x54f/0xbb0 net/core/net_namespace.c:331
- copy_net_ns+0x318/0x760 net/core/net_namespace.c:475
- create_new_namespaces+0x3f6/0xb20 kernel/nsproxy.c:110
- copy_namespaces+0x391/0x450 kernel/nsproxy.c:178
- copy_process+0x2e15/0x7310 kernel/fork.c:2167
- kernel_clone+0xe7/0xab0 kernel/fork.c:2555
- __do_sys_clone+0xc8/0x110 kernel/fork.c:2672
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7ff7a9a4c059
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ff7a83c1118 EFLAGS: 00000202 ORIG_RAX: 0000000000000038
-RAX: ffffffffffffffda RBX: 00007ff7a9b5ef60 RCX: 00007ff7a9a4c059
-RDX: 0000000020000080 RSI: 0000000020000050 RDI: 0000000046000080
-RBP: 00007ff7a9aa608d R08: 0000000020000100 R09: 0000000020000100
-R10: 00000000200000c0 R11: 0000000000000202 R12: 0000000000000000
-R13: 00007ffff1377c7f R14: 00007ff7a83c1300 R15: 0000000000022000
- </TASK>
+On Thu, Feb 10, 2022 at 08:54:34AM +0000, Richter, Rafael wrote:
+> Hi Ioana!
+>=20
+> please ignore the previous mail. Everything works now fine. It was a loca=
+l issue with my setup.
+>=20
+> BR,
+>=20
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Hi Rafael,
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Great to hear that the patch fixes the issue.
+I didn't respond until now because I was trying to get it to reproduce
+on my end even with the patch - to no avail.
+
+Anyhow, would you mind sending a Tested-by tag?
+
+Ioana=
