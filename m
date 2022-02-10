@@ -2,47 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 61D254B1221
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 16:55:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F38D44B1236
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 16:59:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243822AbiBJPy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 10:54:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45180 "EHLO
+        id S243893AbiBJP7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 10:59:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243819AbiBJPy7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 10:54:59 -0500
+        with ESMTP id S243877AbiBJP7O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 10:59:14 -0500
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C24C27;
-        Thu, 10 Feb 2022 07:55:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795C9E5D;
+        Thu, 10 Feb 2022 07:59:15 -0800 (PST)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 31AEF1F391;
-        Thu, 10 Feb 2022 15:54:59 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 33A2E1F391;
+        Thu, 10 Feb 2022 15:59:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644508499; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1644508754; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=OKxQrN6mxBbuh+p9hUZ4hw4C3t64iHUhouTTRpVebX8=;
-        b=nq7k7eM8al3DcrjAZruKFoR4tSHWCiewh13/umjLkrWkppym26Fzhjr/iMMJe37EOzMxf9
-        gm9IgSVX0MOgGwSvlKHJfCMiX93V4Wr9qNJsqFmhOJx6c8btpPfrgEeGyDeGT3iO5X5Lo1
-        oTNPZUoDNGBxsQAyvCZELmzt2DrSD20=
+        bh=YOI5IXCChR4iS9iMg/60P0pB3y6d34dpo7NowlPvL2M=;
+        b=DNoTXdIg1t3T2A4tawxZehKP6lDR7yhLCwrT0LXExc89l/T7URVAB6GDN3jvEn4iVPJR5A
+        LZV6aGISH5DLv6VeD1eNQRUC73t5I/V7IcC9Q/yKk+Yuf51PGG3ri8/dBLu/PXpMIlhyj0
+        /7txhUtZ0wdx6BR5gWMYE1XDogEp3Jc=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E30E213BEF;
-        Thu, 10 Feb 2022 15:54:58 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D11B813BEF;
+        Thu, 10 Feb 2022 15:59:13 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id BzDCNVI1BWIVIQAAMHmgww
-        (envelope-from <oneukum@suse.com>); Thu, 10 Feb 2022 15:54:58 +0000
+        id FJpiMVE2BWJdIwAAMHmgww
+        (envelope-from <oneukum@suse.com>); Thu, 10 Feb 2022 15:59:13 +0000
 From:   Oliver Neukum <oneukum@suse.com>
-To:     bjorn@mork.no, linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Oliver Neukum <oneukum@suse.com>
-Subject: [RFC] CDC-NCM: avoid overflow in sanity checking
-Date:   Thu, 10 Feb 2022 16:54:55 +0100
-Message-Id: <20220210155455.4601-1-oneukum@suse.com>
+To:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, gregKH@linuxfoundation.org
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        Ross Maynard <bids.7405@bigpond.com>
+Subject: [PATCHv2] USB: zaurus: support another broken Zaurus
+Date:   Thu, 10 Feb 2022 16:59:11 +0100
+Message-Id: <20220210155911.15973-1-oneukum@suse.com>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -56,44 +58,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A broken device may give an extreme offset like 0xFFF0
-and a reasonable length for a fragment. In the sanity
-check as formulated now, this will create an integer
-overflow, defeating the sanity check. It needs to be
-rewritten as a subtraction and the variables should be
-unsigned.
+This SL-6000 says Direct Line, not Ethernet
+
+v2: added Reporter and Link
 
 Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reported-by: Ross Maynard <bids.7405@bigpond.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
 ---
- drivers/net/usb/cdc_ncm.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/usb/cdc_ether.c | 12 ++++++++++++
+ drivers/net/usb/zaurus.c    | 12 ++++++++++++
+ 2 files changed, 24 insertions(+)
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index e303b522efb5..f78fccbc4b93 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -1715,10 +1715,10 @@ int cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in)
- {
- 	struct sk_buff *skb;
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
--	int len;
-+	unsigned int len;
- 	int nframes;
- 	int x;
--	int offset;
-+	unsigned int offset;
- 	union {
- 		struct usb_cdc_ncm_ndp16 *ndp16;
- 		struct usb_cdc_ncm_ndp32 *ndp32;
-@@ -1791,7 +1791,7 @@ int cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in)
- 		}
+diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+index eb3817d70f2b..9b4dfa3001d6 100644
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -583,6 +583,11 @@ static const struct usb_device_id	products[] = {
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
  
- 		/* sanity checking */
--		if (((offset + len) > skb_in->len) ||
-+		if ((offset > skb_in->len - len) ||
- 				(len > ctx->rx_max) || (len < ETH_HLEN)) {
- 			netif_dbg(dev, rx_err, dev->net,
- 				  "invalid frame detected (ignored) offset[%u]=%u, length=%u, skb=%p\n",
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
+  * wire-incompatible with true CDC Ethernet implementations.
+  * (And, it seems, needlessly so...)
+@@ -636,6 +641,13 @@ static const struct usb_device_id	products[] = {
+ 	.idProduct              = 0x9032,	/* SL-6000 */
+ 	ZAURUS_MASTER_INTERFACE,
+ 	.driver_info		= 0,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++		 | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor               = 0x04DD,
++	.idProduct              = 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info		= 0,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+diff --git a/drivers/net/usb/zaurus.c b/drivers/net/usb/zaurus.c
+index 8e717a0b559b..5289b6e31713 100644
+--- a/drivers/net/usb/zaurus.c
++++ b/drivers/net/usb/zaurus.c
+@@ -256,6 +256,11 @@ static const struct usb_device_id	products [] = {
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
+ 
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
+ {
+ 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
+@@ -313,6 +318,13 @@ static const struct usb_device_id	products [] = {
+ 	.idProduct              = 0x9032,	/* SL-6000 */
+ 	ZAURUS_MASTER_INTERFACE,
+ 	.driver_info = ZAURUS_PXA_INFO,
++}, {
++        .match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++                 | USB_DEVICE_ID_MATCH_DEVICE,
++        .idVendor		= 0x04DD,
++        .idProduct		= 0x9032,	/* SL-6000 */
++        ZAURUS_FAKE_INTERFACE,
++        .driver_info = (unsigned long) &bogus_mdlm_info,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
 -- 
 2.34.1
 
