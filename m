@@ -2,68 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 446514B1806
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 23:16:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFC224B183D
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 23:35:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344866AbiBJWQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 17:16:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47528 "EHLO
+        id S1344998AbiBJWe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 17:34:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243459AbiBJWQJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 17:16:09 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6281139
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 14:16:09 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id u16so7089393pfg.3
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 14:16:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8dy6nukpUU3XoOh9L9NN/hm6UJ10Lf1Ruk7hRlDYf+k=;
-        b=Z/eyeu/sPiZCONdL7aMClqMIAfBv7EtF6uK19o+F9P1lYEofWKcWM1HIUuXBolqAXA
-         lQoAqbYPIPGPzw2gtI5JbXQhot6XKqY9GWmu2xajORyPqyBeGomyx4ahlgANOe7Pej5z
-         NO+DS6SnOMnm+HStEwonml7QD47yNkaweCcm40I2aX6LU8Qknk7PxIIZm0WRmEI+unW2
-         dLpQeRBbKnPxYrachxj92aQelq9u2J+mHMvqDipoxpLjTq05DzI4FHv0Mfg9XEesm2HZ
-         Yl0KZ9WuxF7pBldcPAtFfv24IycEMz0B6seeiIuTlzWUgkAJyBXTxRUW2YgIiLjPyOiW
-         lWYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8dy6nukpUU3XoOh9L9NN/hm6UJ10Lf1Ruk7hRlDYf+k=;
-        b=0PZE4OUO4hIPzO/glEUJxyAwLn0Erur4MDFO+GfQBnOrnHtOvoEu5SbmreSwMTn/rV
-         reYDX01301Q8awwpjAW2qB/y5GeEMnhflNRD7zMxGDI71cdTqFagSxbD/IDYlPdRMXkG
-         R196yqpDhSY/L0+Prh7sbq2rs0NuA4BwI5VEp3e09h2sIGOKgR8fv/A54s6m7Z8yWhVC
-         pNnndxar/J08MCMAU6M2rR9JHqrY05yD5jI9DhmiOIzMEMwZgoNDZShbJMYehUbWsJiv
-         zagIzdutLvJZbDV54S0StD+RgSVdVA49O2osAULOMkpS2Fe9gPM+5MTYWmcv+mmojm6O
-         c4cg==
-X-Gm-Message-State: AOAM530Cs7APFHB6BUOKFu12VcWdLCrHmVylcMfJ/7/45kPgtSLzylAh
-        A7Za2rf6mZ0r7VgaTTc7L2TJQ69ube/xUExJmHQ+pR44eI9AbAGl
-X-Google-Smtp-Source: ABdhPJy+urq33hwXKasKUtypLlGT+KV/ebevLsvt3h9WO8DAuOwRFnAFLX2PgRxuBfUnRbvqGLYJt3sHsrct2ycG63E=
-X-Received: by 2002:a62:190b:: with SMTP id 11mr9488390pfz.77.1644531369212;
- Thu, 10 Feb 2022 14:16:09 -0800 (PST)
-MIME-Version: 1.0
-References: <20220209224538.9028-1-luizluca@gmail.com> <4b53b688-3769-c378-ec35-3286b3229303@gmail.com>
-In-Reply-To: <4b53b688-3769-c378-ec35-3286b3229303@gmail.com>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Thu, 10 Feb 2022 19:15:58 -0300
-Message-ID: <CAJq09z7QJ9qXteGMFCjYOVanu7iAP6aNO3=5a8cjYMAe+7TQfQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: realtek: rtl8365mb: irq with realtek-mdio
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S243209AbiBJWe4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 17:34:56 -0500
+Received: from smtp.smtpout.orange.fr (smtp03.smtpout.orange.fr [80.12.242.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05965F47
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 14:34:56 -0800 (PST)
+Received: from pop-os.home ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id II1dnjIzz9r2MII1enUsYH; Thu, 10 Feb 2022 23:34:55 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Thu, 10 Feb 2022 23:34:55 +0100
+X-ME-IP: 90.126.236.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Simon Horman <simon.horman@corigine.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        "David S. Miller" <davem@davemloft.net>,
+        John Hurley <john.hurley@netronome.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        oss-drivers@corigine.com, netdev@vger.kernel.org
+Subject: [PATCH v2 1/2] nfp: flower: Fix a potential leak in nfp_tunnel_add_shared_mac()
+Date:   Thu, 10 Feb 2022 23:34:52 +0100
+Message-Id: <4acb805751f2cf5de8d69e9602a88ec39feff9fc.1644532467.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,62 +44,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> This assumes a 1:1 mapping between the port number and its PHY address
-> on the internal MDIO bus, is that always true?
+ida_simple_get() returns an id between min (0) and max (NFP_MAX_MAC_INDEX)
+inclusive.
+So NFP_MAX_MAC_INDEX (0xff) is a valid id.
 
-Thanks Florian,
+In order for the error handling path to work correctly, the 'invalid'
+value for 'ida_idx' should not be in the 0..NFP_MAX_MAC_INDEX range,
+inclusive.
 
-As far as I know, for supported models, yes. I'm not sure about models
-rtl8363nb and rtl8364nb because they have only 2 user ports at 1 and
-3.
-Anyway, they are not supported yet.
+So set it to -1.
 
-> It seems to me like we are resisting as much as possible the creating of
-> the MDIO bus using of_mdiobus_register() and that seems to be forcing
-> you to jump through hoops to get your per-port PHY interrupts mapped.
->
-> Maybe this needs to be re-considered and you should just create that
-> internal MDIO bus without the help of the DSA framework and reap the
-> benefits? We could also change the DSA framework's way of creating the
-> MDIO bus so as to be OF-aware.
+Fixes: 20cce8865098 ("nfp: flower: enable MAC address sharing for offloadable devs")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-That looks like a nice idea.
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+index cd50db779dda..9244b35e3855 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+@@ -922,8 +922,8 @@ nfp_tunnel_add_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ 			  int port, bool mod)
+ {
+ 	struct nfp_flower_priv *priv = app->priv;
+-	int ida_idx = NFP_MAX_MAC_INDEX, err;
+ 	struct nfp_tun_offloaded_mac *entry;
++	int ida_idx = -1, err;
+ 	u16 nfp_mac_idx = 0;
+ 
+ 	entry = nfp_tunnel_lookup_offloaded_macs(app, netdev->dev_addr);
+@@ -997,7 +997,7 @@ nfp_tunnel_add_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ err_free_entry:
+ 	kfree(entry);
+ err_free_ida:
+-	if (ida_idx != NFP_MAX_MAC_INDEX)
++	if (ida_idx != -1)
+ 		ida_simple_remove(&priv->tun.mac_off_ids, ida_idx);
+ 
+ 	return err;
+-- 
+2.32.0
 
-I do not have any problem duplicating the mdio setup from realtek-smi
-into realtek-mdio.
-However, it is just 3 copies of the same code (and I believe there are
-a couple more of them):
-
-1) dsa_switch_setup()+dsa_slave_mii_bus_init()
-2) realtek_smi_setup_mdio()
-3) realtek_mdio_setup_mdio() (NEW)
-
-And realtek_smi_setup_mdio only exists as a way to reference the
-OF-node. And OF-node is only needed because it needs to associate the
-interrupt-parent and interrupts with each phy.
-I think the best solution would be a way that the
-dsa_slave_mii_bus_init could look for a specific subnode. Something
-like:
-
-dsa_slave_mii_bus_init(struct dsa_switch *ds)
-{
-        struct device_node *dn;
-...
-        dn = of_get_child_by_name(ds->dn, "slave_mii_bus");
-        if (dn) {
-                ds->slave_mii_bus->dev.of_node = dn;
-        }
-...
-}
-
-It would remove the realtek_smi_setup_mdio().
-
-If possible, I would like to define safe default values (like assuming
-1:1 mapping between the port number and its PHY address) for this
-driver when interrupt-controller is present but
-slave_mii_bus node is missing.
-
-Does it sound ok?
-
---
-Luiz
