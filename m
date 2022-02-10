@@ -2,68 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EAD24B03ED
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 04:30:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6459D4B03EE
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 04:31:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231173AbiBJDaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 22:30:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56244 "EHLO
+        id S231484AbiBJDax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 22:30:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229898AbiBJDaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 22:30:19 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E3A023BD5
-        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 19:30:22 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id t14-20020a17090a3e4e00b001b8f6032d96so4263540pjm.2
-        for <netdev@vger.kernel.org>; Wed, 09 Feb 2022 19:30:22 -0800 (PST)
+        with ESMTP id S229898AbiBJDat (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 22:30:49 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A146F23BD5;
+        Wed,  9 Feb 2022 19:30:51 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id a39so7041770pfx.7;
+        Wed, 09 Feb 2022 19:30:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=USJZEpWHKpxWW74+xZjMYeip/O4IXiuRf0a3MyMXSzY=;
-        b=RS3nNIlIRjF0Y14a0lflALD4n/Unmd/bvWFaP7r9UNrzvXSkWfWU0ymkM0sSam+drk
-         gASAUkEaAXUWbpFgvEFfgmnHA/jk1b7c6Rz795+58EtvamJyVLJ4Iex7IGWqOarffX+J
-         uv8RjADKJeXPTT3aY6RaEzPg50c1lrsoI9VdZ+8fU9pNVPsaykwmoYeStXcX2OBSUAfP
-         2qXA/rtRd6vZf68OerAr+R2iTE+QRrXQEf/zXsMw3p41GuQDdp9/w4UsFxdx5psK+1NK
-         K2WkNqExM+L7H4YEGSfwVRRLT9q/Tl0Hl0SMHCD+XrIXR+M+PGnnSEdZW4OcVfRY1wCd
-         TagA==
+        bh=AmLyqfUdlL8DhLFGxGUWbqjZWjMo7jccpA1AQzm3NEQ=;
+        b=iMTVcsTiBpdcgE/LXjjjSy9WbEr3RQtlPc14mGvHY8KipI8360dhwh2Bu9pGSdNrGk
+         f5uUflfGWeev1ojIFa7OxtHdZnWEtY3PUZ44BPs/MkEy2LniSd+Ais+/r0ZMdgcHLHGK
+         bTSibGgPe+xucmleAu1TAyDpYtyw6H20nlJBX8hWgvqygH+ZQexf9LLDAKScY5LN604o
+         gz6vASlIW/mZK15So5XVBCMbU2a2IuJfZpC2IiuxYoNzac4cGqrdf69WZCHkfSEj3evR
+         VJeudmoCDUocuwCl6jFh1I9EkHkhNTGMiyo7LofAalaTEHl7Ayqu3/Wi2cUTJhi02Cjw
+         kvFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=USJZEpWHKpxWW74+xZjMYeip/O4IXiuRf0a3MyMXSzY=;
-        b=e+6aqC5qo2xATN9YZFor2U6aXfuLDaanYP11oRepB+TE+FN2jz2+jand0BDHPNexqf
-         INYHl7snBHMpYiXdN1X0yvDe+x2+EuN50fUjrfcEj6LnxX2vP20TjP1FLUyofsOl5rhk
-         zB9HSHvBhWfJwLqE06utWQKsPtnrcDg1noZPH0T/FPZMuA84MYHBIvLLCN1OMrMlZU6K
-         TxOwrCJoQQQrGu0FKy7WgaXZnt7UGWdgBTZrm9gWiKCUhTL5aMmqJ6Ahyi/87wO97DQz
-         BpzZ2wL71Z593Jxqde+jXcMMs4S2hnp5/Z3QJrm5ZdUKEr/boRYbyhiajU5i8fkfoLNY
-         UOTw==
-X-Gm-Message-State: AOAM530Kw7CugdUsjcaY5oynwqzd+MKwdGgq0KMxGeTmgm68GsBof4rV
-        uz1MbhOxfdRAl3N9WntPnCo=
-X-Google-Smtp-Source: ABdhPJzn3YnQDlUeuDS+tIC5FIkE/Vqa7jxbwCRB/mtKHfskpBMEiznCu/x5e+o0HXj+GNluUNwLbw==
-X-Received: by 2002:a17:902:a708:: with SMTP id w8mr5449013plq.101.1644463821443;
-        Wed, 09 Feb 2022 19:30:21 -0800 (PST)
+        bh=AmLyqfUdlL8DhLFGxGUWbqjZWjMo7jccpA1AQzm3NEQ=;
+        b=6a00P4sTYZSAIS34y0FtuJwUKiVzJJNLtY8GViOXoz9NBcdRnNs9u50AB/DtpMisjS
+         XtLm1WQMGNruH//bclvR4rIjtwRQ7UvWKxlC9ijR+JqvKIoJ3k77L43CbHExUozS8R4U
+         75JunipDgY5+NQgGB1xAyjTDD/OPUiwflkzL9fJKFk9jjdzASv2zaWfMRzfmmVBgMXIn
+         rP7ZGQo0fpw9Nv7zaUir4gyFxJXl1nZMIBcjHjQP9Maa7skdRuiLrM6yc7Utyvfr2faq
+         QwWJj6K1AF28GTumSb56SJvhmUQ1dpYAtjlx3U4w3rGHQQIZVsQ3DSeMYCUwj0CPNNyS
+         Fipg==
+X-Gm-Message-State: AOAM53191gBATiHG2sT9HiNsSnnBqmtqL3VZp1soJ0FxPoEvdTVoiwut
+        dxtAb/Kw8KFYx6Z3EXvU0bY=
+X-Google-Smtp-Source: ABdhPJwr143OVyAx/RUyXpTOD2E0EgWk95VWXJ/HPx31CxiYCtnw5wbPpLyMHoaRRGCKRhw4UzvzzQ==
+X-Received: by 2002:a63:2c0c:: with SMTP id s12mr4523537pgs.331.1644463851128;
+        Wed, 09 Feb 2022 19:30:51 -0800 (PST)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id g7sm3538257pfi.7.2022.02.09.19.30.20
+        by smtp.gmail.com with ESMTPSA id o21sm22276367pfu.100.2022.02.09.19.30.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 19:30:20 -0800 (PST)
-Message-ID: <4b53b688-3769-c378-ec35-3286b3229303@gmail.com>
-Date:   Wed, 9 Feb 2022 19:30:19 -0800
+        Wed, 09 Feb 2022 19:30:50 -0800 (PST)
+Message-ID: <6c74b2f8-dd83-c4f2-cadd-07794a37dfac@gmail.com>
+Date:   Wed, 9 Feb 2022 19:30:48 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH net-next] net: dsa: realtek: rtl8365mb: irq with
- realtek-mdio
+Subject: Re: [PATCH] net: dsa: qca8k: fix noderef.cocci warnings
 Content-Language: en-US
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        alsi@bang-olufsen.dk, arinc.unal@arinc9.com
-References: <20220209224538.9028-1-luizluca@gmail.com>
+To:     kernel test robot <lkp@intel.com>,
+        Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <202202100634.l8CtrpzE-lkp@intel.com>
+ <20220209221304.GA17529@d2214a582157>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220209224538.9028-1-luizluca@gmail.com>
+In-Reply-To: <20220209221304.GA17529@d2214a582157>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -78,49 +82,21 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2/9/2022 2:45 PM, Luiz Angelo Daros de Luca wrote:
-> realtek-smi creates a custom ds->slave_mii_bus and uses a mdio
-> device-tree subnode to associates the interrupt-controller to each port.
-> However, with realtek-mdio, ds->slave_mii_bus is created and configured
-> by the switch with no device-tree settings. With no interruptions, the
-> switch falls back to polling the port status.
+On 2/9/2022 2:13 PM, kernel test robot wrote:
+> From: kernel test robot <lkp@intel.com>
 > 
-> This patch adds a new ds_ops->port_setup() to configure each phy_device
-> interruption. It is only used by realtek-mdio but it could probably be
-> used by realtek-smi as well, removing the need for a mdio subnode in the
-> realtek device-tree node.
+> drivers/net/dsa/qca8k.c:422:37-43: ERROR: application of sizeof to pointer
 > 
-> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> ---
->   drivers/net/dsa/realtek/rtl8365mb.c | 18 ++++++++++++++++++
->   1 file changed, 18 insertions(+)
+>   sizeof when applied to a pointer typed expression gives the size of
+>   the pointer
 > 
-> diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-> index 2ed592147c20..45afe57a5d31 100644
-> --- a/drivers/net/dsa/realtek/rtl8365mb.c
-> +++ b/drivers/net/dsa/realtek/rtl8365mb.c
-> @@ -1053,6 +1053,23 @@ static void rtl8365mb_phylink_mac_link_up(struct dsa_switch *ds, int port,
->   	}
->   }
->   
-> +static int rtl8365mb_port_setup(struct dsa_switch *ds, int port)
-> +{
-> +	struct realtek_priv *priv = ds->priv;
-> +	struct phy_device *phydev;
-> +
-> +	if (priv->irqdomain && ds->slave_mii_bus->irq[port] == PHY_POLL) {
-> +		phydev = mdiobus_get_phy(ds->slave_mii_bus, port);
+> Generated by: scripts/coccinelle/misc/noderef.cocci
+> 
+> Fixes: 90386223f44e ("net: dsa: qca8k: add support for larger read/write size with mgmt Ethernet")
+> CC: Ansuel Smith <ansuelsmth@gmail.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: kernel test robot <lkp@intel.com>
 
-This assumes a 1:1 mapping between the port number and its PHY address 
-on the internal MDIO bus, is that always true?
-
-It seems to me like we are resisting as much as possible the creating of 
-the MDIO bus using of_mdiobus_register() and that seems to be forcing 
-you to jump through hoops to get your per-port PHY interrupts mapped.
-
-Maybe this needs to be re-considered and you should just create that 
-internal MDIO bus without the help of the DSA framework and reap the 
-benefits? We could also change the DSA framework's way of creating the 
-MDIO bus so as to be OF-aware.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
