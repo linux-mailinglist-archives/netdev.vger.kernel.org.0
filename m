@@ -2,75 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B5424B0F18
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 14:47:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F2EE4B0F06
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 14:45:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242392AbiBJNrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 08:47:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47438 "EHLO
+        id S242357AbiBJNpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 08:45:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242384AbiBJNrM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 08:47:12 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6D2D73;
-        Thu, 10 Feb 2022 05:47:13 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id fy20so15431505ejc.0;
-        Thu, 10 Feb 2022 05:47:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3O5dxW8Yi3OGBQsUph2cEFwlLeho+NaqEkL3/CgaS64=;
-        b=UKZG9UDkHLOigLdNLKeZ0FMk/1dFBQae/6nrOMlCiK4oKFBaClwv655PPDg/cf7/Cn
-         x6QIyIowFHjt1tVUIhBnVGU0/QTY0GsbNysAdzdo9nioSB35CA74mDKDxwCanMaKgzZa
-         QQ0QrC3oD7yE1GSkJAwi/6CJoSooxTPiqEWzO+eP+P4cY0RXxCRId1dhG5Tl6B2LbXfC
-         3kSJeyqj6PpHNcoS+2Qf9j264sHgYzxbMXzGPY4nqmMYDPdIwunS4IM+OXlJsWPYWkfs
-         EtIYLpndqbz+NdSMUTrsozOYMfz3qnioawWsMTa5xiDMGgtuK4YPtvVdA2IGSkGpR6S5
-         I56Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3O5dxW8Yi3OGBQsUph2cEFwlLeho+NaqEkL3/CgaS64=;
-        b=of/pj6Nm2MxdYLglRcjOAQNJ7Ij2f+oXi51FxZaGAHT6d/J7VF8SCCTlKgOPV7GLs0
-         ap8mBe6dfSe6pXPkLM8qm21uWxPS6v91HW+Wp+vaFd4XXaXMkcXck+XPZcuP5HBfBitU
-         ndBz3/9IioSjTr+8b9uaDiFcwGuXGSO2B72ub206BycXmnjBmoeKnIbUx1QzSk/oOrr3
-         rHpWlpRmKucnItUH0lhSgtP7IYjTZnmzD3OUeVUyb2phGn4goyBch03cJt0JFJxz5YlK
-         iwrFopkzy3T8Dx5Z/ykaPB1aXh8Ej8259n3zXUG1XdM9O0mCO3PtA13RZM9o9g0L/QnG
-         e7cw==
-X-Gm-Message-State: AOAM532rMBwG+dEE7wc0OoPpkjsPGOAOeto6uX0ecTNT1rR8sZtAWqDT
-        eIISOCs2wcPV5y3XO873Ds1Yov6lYJXhms+Dm1U=
-X-Google-Smtp-Source: ABdhPJyWMp7m4+apEwVy+wWt18FsYjZ2B+C1emhDUEB7/gfu8NcXsUiOi8gdQjmNxvt9Gj9xNCMK4dBf4z0+vyyc7Uw=
-X-Received: by 2002:a17:906:b819:: with SMTP id dv25mr6409626ejb.689.1644500829972;
- Thu, 10 Feb 2022 05:47:09 -0800 (PST)
+        with ESMTP id S242355AbiBJNpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 08:45:11 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70053.outbound.protection.outlook.com [40.107.7.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C955C59
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 05:45:12 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HbmoMdFqBUDykwCOUhB4D148iDLnW89gcr3MM+dme5vt2ik56QkpEPtYYVClYVVVa70J1vTZfyQOZZmczerfH+/WdWZ3ax1CANBdKa1x57NLUCD9+9M8Slz5g8kYh3ux0y+lG6MBhXT8BY/Cy6DtiXNCl0kODwHGIAzS5J5h60vs0tn10zJxAJOvNWlBGnhSRYJQjEE0CxmZqPmLNTpnsV5754PFXoN7sURM52ILnK1Xq3KzWe8pRp5m7bHKsFPQrYdo+pNomxKVNj2NinfnKUM+xUsL066ZgSFer5Qx4EA0O846Vl8h3UlQYsai9BY67FqetWC+iE68FhL7Iet0pA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zL5FAy725iMnvxO9WplyUDeZCYh9hCFq/24f3civoHc=;
+ b=cN/AOwqGHuEn6Ped70VSRbYIC1JYFx0F8phg1ncyVCN2Y4HFs4j5CWMlnFZOLr4tmF++Llk9Yx4noV1SEb3NZgjOgyJU0ryLqwYXi1SELxqlma5AY9h9iDyADKq3Pp8V9qrJ4iZKlw70a3o6qPnEVLotSivHzBWOityokJQuVzlFeA8E8dsYr+fdhDVNTZFPxoi04Glzw0SLE0lJks1vsbExWam+5/cojiUKwEZoTQdSLrEGrJFg7OozD9mVhXQUAILZYexjmnyUNTjUCFQke/Zm5D6mMYK9oQUwlMgMU2bDIbqEgTjH/QScDI/egSVKQqFNw6JwBvHhSRsC2T1gAQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zL5FAy725iMnvxO9WplyUDeZCYh9hCFq/24f3civoHc=;
+ b=exQUiHYiA9zU51uaX21LGuNE4pR7ifANPZzqz9A0meR1viBbnwdkgfc8RMBAgQTpa0pkynSplOez7xaMD7i3hcmc7I4z3oT5PBSl2QD5D+TkNIB+UNOZC0eo6fEupsyjo+opzGjMsOaYU6XJnd6eH0ZHlkaizn43devDD6qW/7w=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0401MB2493.eurprd04.prod.outlook.com (2603:10a6:800:58::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Thu, 10 Feb
+ 2022 13:45:09 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Thu, 10 Feb 2022
+ 13:45:09 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH v2 net-next 0/3] More aggressive DSA cleanup
+Date:   Thu, 10 Feb 2022 15:44:57 +0200
+Message-Id: <20220210134500.2949119-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR10CA0097.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:e6::14) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-References: <20220128073319.1017084-1-imagedong@tencent.com>
- <20220128073319.1017084-2-imagedong@tencent.com> <0029e650-3f38-989b-74a3-58c512d63f6b@gmail.com>
- <CADxym3akuxC_Cr07Vzvv+BD55XgMEx7nqU4qW8WHowGR0jeoOQ@mail.gmail.com> <20220209211202.7cddd337@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220209211202.7cddd337@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Thu, 10 Feb 2022 21:42:14 +0800
-Message-ID: <CADxym3ZajjCV2EHF6+2xa5ewZuVqxwk6bSqF0KuA+J6sGnShbQ@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next 1/7] net: skb_drop_reason: add document for
- drop reasons
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        pablo@netfilter.org, kadlec@netfilter.org,
-        Florian Westphal <fw@strlen.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Eric Dumazet <edumazet@google.com>, alobakin@pm.me,
-        paulb@nvidia.com, Kees Cook <keescook@chromium.org>,
-        talalahmad@google.com, haokexin@gmail.com, memxor@gmail.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, Cong Wang <cong.wang@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 38f5c066-7bde-4b2c-9a07-08d9ec9b8de1
+X-MS-TrafficTypeDiagnostic: VI1PR0401MB2493:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB2493D9A5161ACE3E714C64B8E02F9@VI1PR0401MB2493.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +w5Fb4YzVDGAnDNZbtpJuO4huOXMFIG2F4I2DwXIgMGgWK8/j/Maez0UwUHKReiFiB4JwIBmIDfmVN0JD/NzXkyRNKeLpK10frsovsCXOy0k4HSB6KWXhd22mNcwxHurupDrJX9qItIZjwc40Rx6/vo6xla5Au0qMpxU/nXX1UzNhQWqBISCIqem5mROL20SAOgCn79zw/9/+nttbz3QN8BtdeLCSMruzxVG8cefC4xngfUg1IOAWviQoHVOUbM1OroCy+sgBlFenusoaxUU8kmqIO/opy+AEtXYuH38pcK1VcIZUaRjHDXNRC/PYxnb8T1vb3PmG0NsKT0gEy3XyC6MBcIMwgkLqJU120dBwsSySR5/2oQeW3VAYqojh0Z5ar+jmEGSmiya7GIrbVETsQU25cju/YLB9tVDP/xk3WVb3UZ4MgGEauo1Ypj81WNiszlCuptIdqbrKj+g+4CbE/6BqazUZYIhjTPLhkZWJc5mk+NB92LBiH37fVrThkBVsZT1Nh9nByMx1acSrI3HtDzuwQBup5pvUkq2Lz/v2tgiAfDYD0h3lG23AcCjYQg0A0XRGp3gKQiWbUl3JPiUuZMEaxOD+QJDeK8mT4WAfFPqN2ETHHaP8x/Ykn/JxifUfDY9sS1PAIHFEO/R3yPhcZcBBBJXO+EqXu/YYhgia6k/dLhTsF3gWpk8aSkmj0tbY6Xf810v42mWEkqKK4kHZdEPj578N6G+JZPbGK+z74XfUDRADakZoRVi36GoaYMQ1qtxXRpEOi2k24cBq0ewa6kk4/8T7eTjNExQ8LpwZXQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6666004)(316002)(8936002)(52116002)(36756003)(6512007)(2616005)(54906003)(6506007)(6486002)(6916009)(966005)(1076003)(508600001)(2906002)(86362001)(83380400001)(26005)(186003)(66476007)(66946007)(4326008)(66556008)(44832011)(4744005)(8676002)(5660300002)(38100700002)(38350700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FX/dMwKn6Kn7NssOE1yOAsMKa99iZlC06mXijQXN0iAM2OuQ+DGGPEQ6l19A?=
+ =?us-ascii?Q?SUnww8ORD7j7TRMh+VkDLKGlc0NOcGSl02wuvKGm6qqopfU81VX+jH40ZtTK?=
+ =?us-ascii?Q?+KVwM6dz3Iy9SChQwDtWK8Ss0B2P/TWnZLwA3szg4o3wfCCqTBOdSR73y3np?=
+ =?us-ascii?Q?tz0GozQn2Q+DafOOk34aJWhmUHNG4F+sT3euOCAK4CYpa9Q8BUQTLNkvhyDl?=
+ =?us-ascii?Q?JMRkRwNxIqr3W+ODXTLINlmHSrzvf/AtL+c/fTH1WoChHYMymMyw6sBpAknf?=
+ =?us-ascii?Q?Kr7aklAgDAQUqU60UlRLjsYxsbyjXVp05Kw3hjCTgaqKXj9JsBunM///InZZ?=
+ =?us-ascii?Q?S3fsA0X6trLqU/I8HsS6bPWie2RVUaHs0ABchQ/pXb6ZbzOHj9rUGLtr2CHw?=
+ =?us-ascii?Q?608MGa+3cZ2CoHtK4E1Ra/wpSMKepEMm1stzY6j4KBYeiJwBJG5X2T3lCz62?=
+ =?us-ascii?Q?gRxiK2ixUax+2wNutBE4XuC+fxSC2pRs3BoHkR69uLUeT5fjO1P/Lbpox0cP?=
+ =?us-ascii?Q?mYcd912NASsMTWG72ohu65dkX1nY00niLDB3rUtkCmKuxnbQnzzmflgx6SEg?=
+ =?us-ascii?Q?9H6Uk19QnweSeXurlCbOG64HEDYatrlqqgMj0tFA+xi2ps+4NxgXGLKVvJXh?=
+ =?us-ascii?Q?Sa+REi7LMXzpKhaLRs1+xXKeOIK7Bw0RQ7zYiWoIeUfCmZ1bgquD2GjBjsnY?=
+ =?us-ascii?Q?JskI5ikgo8J+lyylNlJSv/vE9CfVMLQmMQeL5iGBCfRSoGzlrmdCD39Xbs2E?=
+ =?us-ascii?Q?AyoVfOepzn8iCq4mAPhMTCrJyYBAmJ7bf9L0lu5VLzBI9ts3z9YUmCrlzuqE?=
+ =?us-ascii?Q?yOkRXf/VRF+M69pgKKdac3FJBnsH4N0s78Kaoz9KffFCQEp5Qx3zaCqhWYUO?=
+ =?us-ascii?Q?0WtAHoixrYbIbNYT78+lZzMmRnQ2BFKOXXNbRNRreflH8Miah24QouJKFYJr?=
+ =?us-ascii?Q?pJf2pyPiNdb8PFlC7ceeyo/ZN76UTVuRmRSOYFWt1pX4shWetwQC/4NyXgbZ?=
+ =?us-ascii?Q?EEdUUk7LiHwpcyUMUE4+3MNpn6FEu8zwqpKdhzWjU6807GjVKwTKOoNquUa7?=
+ =?us-ascii?Q?6cxdkJ+iTguH/GYMVnd+YevkrJuvCaJjL5X84WtSB7NpJjCGFsxPUY5a5WM6?=
+ =?us-ascii?Q?jt0+fZGCV8e+VZkUbHYurvLeShsfGurs/rGpo7/5bt1e+1Rx/Ffnuj2ryLSH?=
+ =?us-ascii?Q?7ghptTr8vbot3F9kxL35mf13hW7xR9nWS4CbgtTfRPX8DHvokXUTxSvfy65I?=
+ =?us-ascii?Q?nJ78qOfKOsmUgh3wmfzyn2uuWkp3UnYCFT7kIIBnElBaHwclCzMCLAwXky4S?=
+ =?us-ascii?Q?RuHzOozoxCtFkdhxMiy02D9M0+JRcAemHRK6IvZuuEruEZi8aYPX5DWmIq0L?=
+ =?us-ascii?Q?D4KV+gDAlfjB7TvBvojOvtLVll1V52uy7tyMvM+5fBoq5c0qYfNZKg7h28OM?=
+ =?us-ascii?Q?bMe6vcEpFjCy2QIPKnayJJZGCcBMXiioU3mJwf2ZOfsFZV+8yy4kpvuhBAeV?=
+ =?us-ascii?Q?Uo7gsnxJERXCLRCq7Qnv+djoEBKrqgK8lNlflXcrQmdvc88sjHCEjK092kP6?=
+ =?us-ascii?Q?GBewWRUObuzS7v33izHANJ8s11t3CfAeeTnO26KjfvkbVhr1QUxk3/EclQf5?=
+ =?us-ascii?Q?8vYjiTTjOpAGoDBY1FDScBg=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 38f5c066-7bde-4b2c-9a07-08d9ec9b8de1
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 13:45:09.6594
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: t8UhNNahM7SyxctlXCiU66EK7A30vLdPVE1R2hjmmN6Us+FjrNjsmlQKkOpxIarnxh31yeQaZUJj3dOrTQBH0g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2493
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,54 +114,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 1:12 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 10 Feb 2022 11:19:49 +0800 Menglong Dong wrote:
-> > I'm doing the job of using kfree_skb_reason() for the TCP layer,
-> > and I have some puzzles.
-> >
-> > When collecting drop reason for tcp_v4_inbound_md5_hash() in
-> > tcp_v4_rcv(), I come up with 2 ways:
-> >
-> > First way: pass the address of reason to tcp_v4_inbound_md5_hash()
-> > like this:
-> >
-> >  static bool tcp_v4_inbound_md5_hash(const struct sock *sk,
-> >                       const struct sk_buff *skb,
-> > -                    int dif, int sdif)
-> > +                    int dif, int sdif,
-> > +                    enum skb_drop_reason *reason)
-> >
-> > This can work, but many functions like tcp_v4_inbound_md5_hash()
-> > need to do such a change.
-> >
-> > Second way: introduce a 'drop_reason' field to 'struct sk_buff'. Therefore,
-> > drop reason can be set by 'skb->drop_reason = SKB_DROP_REASON_XXX'
-> > anywhere.
-> >
-> > For TCP, there are many cases where you can't get a drop reason in
-> > the place where skb is freed, so I think there needs to be a way to
-> > deeply collect drop reasons. The second can resolve this problem
-> > easily, but extra fields may have performance problems.
-> >
-> > Do you have some better ideas?
->
-> On a quick look tcp_v4_inbound_md5_hash() returns a drop / no drop
-> decision, so you could just change the return type to enum
-> skb_drop_reason. SKB_DROP_REASON_NOT_SPECIFIED is 0 is false,
-> so if (reason) goto drop; logic will hold up.
+This series deletes some code which is apparently not needed.
 
-Yeah, that's an idea. But some functions are more complex, such as
-tcp_rcv_state_process() and tcp_rcv_state_process()->tcp_v4_conn_request().
-The return value of tcp_rcv_state_process() can't be reused, and it's hard
-to add a function param of type 'enum skb_drop_reason *' to
-tcp_v4_conn_request().
+I've had these patches in my tree for a while, and testing on my boards
+didn't reveal any issues.
 
-There are some nice drop reasons in tcp_v4_conn_request(), it's a pity to
-give up them.
+Compared to the RFC v1 series, the only change is the addition of patch 3.
+https://patchwork.kernel.org/project/netdevbpf/cover/20220107184842.550334-1-vladimir.oltean@nxp.com/
 
-How about introducing a field to 'struct sock' for drop reasons? As sk is
-locked during the packet process in tcp_v4_do_rcv(), this seems to work.
+Vladimir Oltean (3):
+  net: dsa: remove ndo_get_phys_port_name and ndo_get_port_parent_id
+  net: dsa: remove lockdep class for DSA master address list
+  net: dsa: remove lockdep class for DSA slave address list
 
-Thanks!
-Menglong Dong
+ net/dsa/master.c |  4 ----
+ net/dsa/slave.c  | 54 +-----------------------------------------------
+ 2 files changed, 1 insertion(+), 57 deletions(-)
+
+-- 
+2.25.1
+
