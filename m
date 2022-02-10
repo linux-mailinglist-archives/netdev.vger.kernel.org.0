@@ -2,74 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50D324B1803
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 23:15:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 446514B1806
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 23:16:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344887AbiBJWPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 17:15:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47314 "EHLO
+        id S1344866AbiBJWQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 17:16:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344868AbiBJWPf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 17:15:35 -0500
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2688F1139
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 14:15:36 -0800 (PST)
-Received: by mail-io1-xd2c.google.com with SMTP id n17so9241392iod.4
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 14:15:36 -0800 (PST)
+        with ESMTP id S243459AbiBJWQJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 17:16:09 -0500
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6281139
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 14:16:09 -0800 (PST)
+Received: by mail-pf1-x42b.google.com with SMTP id u16so7089393pfg.3
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 14:16:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EOJCZlWtnaUAqUSbnSeiKKhH2IwojqmUtfeSmw0q78U=;
-        b=Q/d0wrOm6M783QMRxF1jZN6EmO/xV3HHfO8yZWm7f7ij/lYlpuYtLHZ5W48ZnSl5tr
-         IHAzRq5pbzGRx0H5ypA9TXk5ZOvmT35OVOzbKc1n5hcTRf0jPUkzbV/UoPtBhuuPrSJM
-         zmheiR0YJe/Ny21GHTsIKkOJRJHcnW2CjGnB0=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8dy6nukpUU3XoOh9L9NN/hm6UJ10Lf1Ruk7hRlDYf+k=;
+        b=Z/eyeu/sPiZCONdL7aMClqMIAfBv7EtF6uK19o+F9P1lYEofWKcWM1HIUuXBolqAXA
+         lQoAqbYPIPGPzw2gtI5JbXQhot6XKqY9GWmu2xajORyPqyBeGomyx4ahlgANOe7Pej5z
+         NO+DS6SnOMnm+HStEwonml7QD47yNkaweCcm40I2aX6LU8Qknk7PxIIZm0WRmEI+unW2
+         dLpQeRBbKnPxYrachxj92aQelq9u2J+mHMvqDipoxpLjTq05DzI4FHv0Mfg9XEesm2HZ
+         Yl0KZ9WuxF7pBldcPAtFfv24IycEMz0B6seeiIuTlzWUgkAJyBXTxRUW2YgIiLjPyOiW
+         lWYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EOJCZlWtnaUAqUSbnSeiKKhH2IwojqmUtfeSmw0q78U=;
-        b=Wzykf08mjD3p9kkAfMrmTC7T6HjGULzra5pPXdYXN4ZUCwqLNCUH0zueNzqOix6Nfo
-         UxwTLp4W4bZ2aPbggRsyPG/7P4mRqX29+c9SmwD3NIkxrxiTrQSE2hCk4vOuDSJ3ZPrD
-         zuHt6ab0UPfKHVdJXLIRJXwqimU6iJ4MNKU19HUV0YYTRCueQkaDHrWEbZojwNwilPTe
-         EP1McnKuM/36w68Z16vMPXHL8Cq5bBoQ60f3aNPCdKKUSsUUODp4Jf8GimuonDWduxQ1
-         bjkLiV6zwmeldE0YbeK2/j9gplK5YpE/SEQIPhRg2SJ/ZdrTWV2UkPKxe8jLVgBmTEjx
-         5icw==
-X-Gm-Message-State: AOAM530BboOwDqilI56Dw8pF6PqpKK7kOH0o1FNFNg1HE4HD4uf/we47
-        ILxMokEDics3wuwmsXOYKl2JqdX2uJxlyw==
-X-Google-Smtp-Source: ABdhPJzZe3214Rziic0zSZxbipcgLIu3ZL5p/9SqAc6FL/T1Gg83dfbgw2cAkIBYcA1WFQ6fVhD3uA==
-X-Received: by 2002:a05:6602:2cd3:: with SMTP id j19mr4870736iow.17.1644531335139;
-        Thu, 10 Feb 2022 14:15:35 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id i17sm9029851ilq.19.2022.02.10.14.15.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 14:15:34 -0800 (PST)
-Subject: Re: [PATCH net-next] ipv6: Reject routes configurations that specify
- dsfield (tos)
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <51234fd156acbe2161e928631cdc3d74b00002a7.1644505353.git.gnault@redhat.com>
- <7bbeba35-17a7-f8ba-0587-4bb1c9b6721e@linuxfoundation.org>
- <20220210220516.GA31389@pc-4.home>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <0b401730-4f18-4e61-1c88-1dce438d6166@linuxfoundation.org>
-Date:   Thu, 10 Feb 2022 15:15:34 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8dy6nukpUU3XoOh9L9NN/hm6UJ10Lf1Ruk7hRlDYf+k=;
+        b=0PZE4OUO4hIPzO/glEUJxyAwLn0Erur4MDFO+GfQBnOrnHtOvoEu5SbmreSwMTn/rV
+         reYDX01301Q8awwpjAW2qB/y5GeEMnhflNRD7zMxGDI71cdTqFagSxbD/IDYlPdRMXkG
+         R196yqpDhSY/L0+Prh7sbq2rs0NuA4BwI5VEp3e09h2sIGOKgR8fv/A54s6m7Z8yWhVC
+         pNnndxar/J08MCMAU6M2rR9JHqrY05yD5jI9DhmiOIzMEMwZgoNDZShbJMYehUbWsJiv
+         zagIzdutLvJZbDV54S0StD+RgSVdVA49O2osAULOMkpS2Fe9gPM+5MTYWmcv+mmojm6O
+         c4cg==
+X-Gm-Message-State: AOAM530Cs7APFHB6BUOKFu12VcWdLCrHmVylcMfJ/7/45kPgtSLzylAh
+        A7Za2rf6mZ0r7VgaTTc7L2TJQ69ube/xUExJmHQ+pR44eI9AbAGl
+X-Google-Smtp-Source: ABdhPJy+urq33hwXKasKUtypLlGT+KV/ebevLsvt3h9WO8DAuOwRFnAFLX2PgRxuBfUnRbvqGLYJt3sHsrct2ycG63E=
+X-Received: by 2002:a62:190b:: with SMTP id 11mr9488390pfz.77.1644531369212;
+ Thu, 10 Feb 2022 14:16:09 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220210220516.GA31389@pc-4.home>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+References: <20220209224538.9028-1-luizluca@gmail.com> <4b53b688-3769-c378-ec35-3286b3229303@gmail.com>
+In-Reply-To: <4b53b688-3769-c378-ec35-3286b3229303@gmail.com>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Thu, 10 Feb 2022 19:15:58 -0300
+Message-ID: <CAJq09z7QJ9qXteGMFCjYOVanu7iAP6aNO3=5a8cjYMAe+7TQfQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: realtek: rtl8365mb: irq with realtek-mdio
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -78,68 +71,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/10/22 3:05 PM, Guillaume Nault wrote:
-> On Thu, Feb 10, 2022 at 11:23:20AM -0700, Shuah Khan wrote:
->> On 2/10/22 8:08 AM, Guillaume Nault wrote:
->>> The ->rtm_tos option is normally used to route packets based on both
->>> the destination address and the DS field. However it's ignored for
->>> IPv6 routes. Setting ->rtm_tos for IPv6 is thus invalid as the route
->>> is going to work only on the destination address anyway, so it won't
->>> behave as specified.
->>>
->>> Suggested-by: Toke Høiland-Jørgensen <toke@redhat.com>
->>> Signed-off-by: Guillaume Nault <gnault@redhat.com>
->>> ---
->>> The same problem exists for ->rtm_scope. I'm working only on ->rtm_tos
->>> here because IPv4 recently started to validate this option too (as part
->>> of the DSCP/ECN clarification effort).
->>> I'll give this patch some soak time, then send another one for
->>> rejecting ->rtm_scope in IPv6 routes if nobody complains.
->>>
->>>    net/ipv6/route.c                         |  6 ++++++
->>>    tools/testing/selftests/net/fib_tests.sh | 13 +++++++++++++
->>>    2 files changed, 19 insertions(+)
->>>
->>> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
->>> index f4884cda13b9..dd98a11fbdb6 100644
->>> --- a/net/ipv6/route.c
->>> +++ b/net/ipv6/route.c
->>> @@ -5009,6 +5009,12 @@ static int rtm_to_fib6_config(struct sk_buff *skb, struct nlmsghdr *nlh,
->>>    	err = -EINVAL;
->>>    	rtm = nlmsg_data(nlh);
->>> +	if (rtm->rtm_tos) {
->>> +		NL_SET_ERR_MSG(extack,
->>> +			       "Invalid dsfield (tos): option not available for IPv6");
->>
->> Is this an expected failure on ipv6, in which case should this test report
->> pass? Should it print "failed as expected" or is returning fail from errout
->> is what should happen?
-> 
-> This is an expected failure. When ->rtm_tos is set, iproute2 fails with
-> error code 2 and prints
-> "Error: Invalid dsfield (tos): option not available for IPv6.".
-> 
-> The selftest redirects stderr to /dev/null by default (unless -v is
-> passed on the command line) and expects the command to fail and
-> return 2. So the default output is just:
-> 
-> IPv6 route with dsfield tests
->      TEST: Reject route with dsfield                                     [ OK ]
-> 
-> Of course, on a kernel that accepts non-null ->rtm_tos, "[ OK ]"
-> becomes "[FAIL]", and the the failed tests couter is incremented.
-> 
+> This assumes a 1:1 mapping between the port number and its PHY address
+> on the internal MDIO bus, is that always true?
 
-Sounds good to me.
+Thanks Florian,
 
->>
->> With the above comment addressed or explained.
->>
->> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
->>
+As far as I know, for supported models, yes. I'm not sure about models
+rtl8363nb and rtl8364nb because they have only 2 user ports at 1 and
+3.
+Anyway, they are not supported yet.
 
-thanks,
--- Shuah
+> It seems to me like we are resisting as much as possible the creating of
+> the MDIO bus using of_mdiobus_register() and that seems to be forcing
+> you to jump through hoops to get your per-port PHY interrupts mapped.
+>
+> Maybe this needs to be re-considered and you should just create that
+> internal MDIO bus without the help of the DSA framework and reap the
+> benefits? We could also change the DSA framework's way of creating the
+> MDIO bus so as to be OF-aware.
 
+That looks like a nice idea.
 
+I do not have any problem duplicating the mdio setup from realtek-smi
+into realtek-mdio.
+However, it is just 3 copies of the same code (and I believe there are
+a couple more of them):
 
+1) dsa_switch_setup()+dsa_slave_mii_bus_init()
+2) realtek_smi_setup_mdio()
+3) realtek_mdio_setup_mdio() (NEW)
+
+And realtek_smi_setup_mdio only exists as a way to reference the
+OF-node. And OF-node is only needed because it needs to associate the
+interrupt-parent and interrupts with each phy.
+I think the best solution would be a way that the
+dsa_slave_mii_bus_init could look for a specific subnode. Something
+like:
+
+dsa_slave_mii_bus_init(struct dsa_switch *ds)
+{
+        struct device_node *dn;
+...
+        dn = of_get_child_by_name(ds->dn, "slave_mii_bus");
+        if (dn) {
+                ds->slave_mii_bus->dev.of_node = dn;
+        }
+...
+}
+
+It would remove the realtek_smi_setup_mdio().
+
+If possible, I would like to define safe default values (like assuming
+1:1 mapping between the port number and its PHY address) for this
+driver when interrupt-controller is present but
+slave_mii_bus node is missing.
+
+Does it sound ok?
+
+--
+Luiz
