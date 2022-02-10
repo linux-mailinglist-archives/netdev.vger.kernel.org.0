@@ -2,59 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 481394B04C5
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 06:12:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B6D4B0508
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 06:28:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233435AbiBJFME (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 00:12:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43242 "EHLO
+        id S233734AbiBJF2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 00:28:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231807AbiBJFMD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 00:12:03 -0500
+        with ESMTP id S233325AbiBJF2T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 00:28:19 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F23E290;
-        Wed,  9 Feb 2022 21:12:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0FC5EAE
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 21:28:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADAEF61BA3;
-        Thu, 10 Feb 2022 05:12:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30F7BC340E5;
-        Thu, 10 Feb 2022 05:12:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CF3A61BD4
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 05:28:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B794C004E1;
+        Thu, 10 Feb 2022 05:28:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644469925;
-        bh=LFqZdC12qnwe1Y76es8sEhk/QMcb0vADkit1XFNLr34=;
+        s=k20201202; t=1644470898;
+        bh=cVoMuLQCkJthyCiJd9QX9TLWn5fva/2+0LVZFnRdWyg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SLaXM7J9xK+YQ9Jr7kXvubbxpi3xl7gqfDPey6gwEBPx2hWZ12w9X7UbLDtyz6blr
-         mE0EImwRa46BGO201erGuYl1zMHxJ8M/TE0y/D/+vEClKv2CGXfC6zHqkotWC8sb5J
-         84yOu6sctQvK3e+L1YPK6ZS2PagBVB5+scs5nnrWly++bWRlTuZKZY8cnW5CCHO5ii
-         CVfxTzQWdfAqHrDQZIoOnqzOSMnCNAs67uFSV19RRniqAkTwG9z4d9awrgoXOOaiLK
-         4untIMC2Ku42zp5TFTnIejVV1xLvwlEj3Ttvkwg515y5TYwbT0HmOeprMyZa1SXwdG
-         EHLIz1eGtApcQ==
-Date:   Wed, 9 Feb 2022 21:12:02 -0800
+        b=sW5YwDPb0HZV4foZIKU+vyjSMnPHBsNnGCp+QqhZ0rvqUn2Bui2rinpsw3Q65sB14
+         XIbarz/cI2La778DP0vPHbKSMw3KtMYLUk85bAwDC7otGi4MONuo9MwnjsWtEF+xrE
+         91Els/TxbOkxxaUvgNsslRb1MYDe23LInr4zeej7UV2/eSHCRA+oH0Vxex1M2Aj/Sl
+         lTR08zH6XbTU+3DXLUBsHgwihqmSbzaV3EADmoN9Jkk4wpJScgxYLv0NDMVCb16GoV
+         yWEbTkS2FSASqj79pN1VIpibnoQqOrxU8HyXKcG9JhxCJtXBFWUOnHdVVVKGmYV3XO
+         leh5lcyt5ZM8Q==
+Date:   Wed, 9 Feb 2022 21:28:17 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        pablo@netfilter.org, kadlec@netfilter.org,
-        Florian Westphal <fw@strlen.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Eric Dumazet <edumazet@google.com>, alobakin@pm.me,
-        paulb@nvidia.com, Kees Cook <keescook@chromium.org>,
-        talalahmad@google.com, haokexin@gmail.com, memxor@gmail.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, Cong Wang <cong.wang@bytedance.com>
-Subject: Re: [PATCH v3 net-next 1/7] net: skb_drop_reason: add document for
- drop reasons
-Message-ID: <20220209211202.7cddd337@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CADxym3akuxC_Cr07Vzvv+BD55XgMEx7nqU4qW8WHowGR0jeoOQ@mail.gmail.com>
-References: <20220128073319.1017084-1-imagedong@tencent.com>
-        <20220128073319.1017084-2-imagedong@tencent.com>
-        <0029e650-3f38-989b-74a3-58c512d63f6b@gmail.com>
-        <CADxym3akuxC_Cr07Vzvv+BD55XgMEx7nqU4qW8WHowGR0jeoOQ@mail.gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Ziyang Xuan <william.xuanziyang@huawei.com>
+Subject: Re: [PATCH net 2/2] vlan: move dev_put into vlan_dev_uninit
+Message-ID: <20220209212817.4fe52d3a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CADvbK_ckY31iZq+++z6kOdd5rBYMyZDNe8N_cHT2wAWu8ZzoZA@mail.gmail.com>
+References: <cover.1644394642.git.lucien.xin@gmail.com>
+        <76c52badfdccaa7f094d959eaf24f422ae09dec6.1644394642.git.lucien.xin@gmail.com>
+        <20220209175558.3117342d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CADvbK_ckY31iZq+++z6kOdd5rBYMyZDNe8N_cHT2wAWu8ZzoZA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -68,37 +57,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Feb 2022 11:19:49 +0800 Menglong Dong wrote:
-> I'm doing the job of using kfree_skb_reason() for the TCP layer,
-> and I have some puzzles.
-> 
-> When collecting drop reason for tcp_v4_inbound_md5_hash() in
-> tcp_v4_rcv(), I come up with 2 ways:
-> 
-> First way: pass the address of reason to tcp_v4_inbound_md5_hash()
-> like this:
-> 
->  static bool tcp_v4_inbound_md5_hash(const struct sock *sk,
->                       const struct sk_buff *skb,
-> -                    int dif, int sdif)
-> +                    int dif, int sdif,
-> +                    enum skb_drop_reason *reason)
-> 
-> This can work, but many functions like tcp_v4_inbound_md5_hash()
-> need to do such a change.
-> 
-> Second way: introduce a 'drop_reason' field to 'struct sk_buff'. Therefore,
-> drop reason can be set by 'skb->drop_reason = SKB_DROP_REASON_XXX'
-> anywhere.
-> 
-> For TCP, there are many cases where you can't get a drop reason in
-> the place where skb is freed, so I think there needs to be a way to
-> deeply collect drop reasons. The second can resolve this problem
-> easily, but extra fields may have performance problems.
-> 
-> Do you have some better ideas?
+On Thu, 10 Feb 2022 11:40:42 +0800 Xin Long wrote:
+> > I think better fix would be to rewrite netdev_run_todo() to free the
+> > netdevs in any order they become ready. That's gonna solve any
+> > dependency problems and may even speed things up.
+>
+> What about I keep dev_put() in dev->priv_destructor()/vlan_dev_free() for
+> vlan as before, and fix this problem by using for_each_netdev_reverse()
+> in __rtnl_kill_links()?
+> It will make sense as the late added dev should be deleted early when
+> rtnl_link_unregister a rtnl_link_ops.
 
-On a quick look tcp_v4_inbound_md5_hash() returns a drop / no drop
-decision, so you could just change the return type to enum
-skb_drop_reason. SKB_DROP_REASON_NOT_SPECIFIED is 0 is false, 
-so if (reason) goto drop; logic will hold up.
+Feels like sooner or later we'll run into a scenario when reversing will
+cause a problem. Or some data structure will stop preserving the order.
+
+Do you reckon rewriting netdev_run_todo() will be a lot of effort or
+it's too risky?
