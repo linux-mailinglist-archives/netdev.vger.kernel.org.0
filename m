@@ -2,192 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ECCE4B0B9B
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 11:58:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F00704B0BAB
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 12:02:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240303AbiBJK6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 05:58:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36818 "EHLO
+        id S240431AbiBJLCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 06:02:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239713AbiBJK6i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 05:58:38 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80508FDB;
-        Thu, 10 Feb 2022 02:58:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644490719; x=1676026719;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=984OafvZJY4SOk4PBuH9Dox9/wKSXeq2BBG8ok7oy+Q=;
-  b=lNh2i0hhvYDE025Qy9Q7348/WWyXHJpks8kHk4BhhaI86BcpVS+7yQ5S
-   9IKCC7YTTY9oiI5uJxoALCsvSE1Flu1tMpDsXkM7yamJFPLC5zVLbqPIK
-   2C0W5Hj0l+KS0uy/ErWThyaW8ydhiLFUgO3SWwzzlnR9AFA/tBA1Fx//C
-   6QXmGEByrCq+bftcsIcREOXU9OOSelNEPr/h7OkXPOqPmkrHEcVqE+AKh
-   6zhLqmTJbg1MQaxI4UBjB1vrN3/BVJhPv2pQqsJ+M2iuyhmEL2Ulm6MnB
-   m+46oFxQROUQPw2QwebuKPl4WjS9KEMmdLF1mHIyM01J0TVF21NsEooFk
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="233027079"
-X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
-   d="scan'208";a="233027079"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 02:58:39 -0800
-X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
-   d="scan'208";a="541560113"
-Received: from asamsono-mobl1.ccr.corp.intel.com ([10.252.41.247])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 02:58:33 -0800
-Date:   Thu, 10 Feb 2022 12:58:31 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com
-Subject: Re: [PATCH net-next v4 10/13] net: wwan: t7xx: Introduce power
- management support
-In-Reply-To: <20220114010627.21104-11-ricardo.martinez@linux.intel.com>
-Message-ID: <e2d38f21-b1cf-4cbf-5cf5-3862846dee51@linux.intel.com>
-References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com> <20220114010627.21104-11-ricardo.martinez@linux.intel.com>
+        with ESMTP id S240390AbiBJLCd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 06:02:33 -0500
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0BDFDB;
+        Thu, 10 Feb 2022 03:02:34 -0800 (PST)
+Received: from localhost.localdomain.datenfreihafen.local (p200300e9d7187a06664ffc391c1aaa99.dip0.t-ipconnect.de [IPv6:2003:e9:d718:7a06:664f:fc39:1c1a:aa99])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@sostec.de)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 2B8CEC00B0;
+        Thu, 10 Feb 2022 12:02:31 +0100 (CET)
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
+        netdev@vger.kernel.org
+Subject: pull-request: ieee802154-next 2022-02-10
+Date:   Thu, 10 Feb 2022 12:02:27 +0100
+Message-Id: <20220210110227.3433928-1-stefan@datenfreihafen.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Jan 2022, Ricardo Martinez wrote:
+Hello Dave, Jakub.
 
-> From: Haijun Liu <haijun.liu@mediatek.com>
-> 
-> Implements suspend, resumes, freeze, thaw, poweroff, and restore
-> `dev_pm_ops` callbacks.
-> 
-> >From the host point of view, the t7xx driver is one entity. But, the
-> device has several modules that need to be addressed in different ways
-> during power management (PM) flows.
-> The driver uses the term 'PM entities' to refer to the 2 DPMA and
-> 2 CLDMA HW blocks that need to be managed during PM flows.
-> When a dev_pm_ops function is called, the PM entities list is iterated
-> and the matching function is called for each entry in the list.
-> 
-> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
-> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> ---
+An update from ieee802154 for your *net-next* tree.
 
+There is more ongoing in ieee802154 than usual. This will be the first pull
+request for this cycle, but I expect one more. Depending on review and rework
+times.
 
->  	if (ret) {
->  		dev_err(dev, "Failed to allocate RX/TX SW resources: %d\n", ret);
-> +		t7xx_dpmaif_pm_entity_release(dpmaif_ctrl);
->  		return NULL;
+Pavel Skripkin ported the atusb driver over to the new USB api to avoid unint
+problems as well as making use of the modern api without kmalloc() needs in he
+driver.
 
-Print after release.
+Miquel Raynal landed some changes to ensure proper frame checksum checking with
+hwsim, documenting our use of wake and stop_queue and eliding a magic value by
+using the proper define.
 
+David Girault documented the address struct used in ieee802154.
 
-> +static int __t7xx_pci_pm_suspend(struct pci_dev *pdev)
-> +{
-> +	struct t7xx_pci_dev *t7xx_dev;
-> +	struct md_pm_entity *entity;
-> +	unsigned long wait_ret;
-> +	enum t7xx_pm_id id;
-> +	int ret = 0;
-> +
-> +	t7xx_dev = pci_get_drvdata(pdev);
-> +	if (atomic_read(&t7xx_dev->md_pm_state) <= MTK_PM_INIT) {
-> +		dev_err(&pdev->dev,
-> +			"[PM] Exiting suspend, because handshake failure or in an exception\n");
-> +		return -EFAULT;
-> +	}
-> +
-> +	iowrite32(L1_DISABLE_BIT(0), IREG_BASE(t7xx_dev) + DIS_ASPM_LOWPWR_SET_0);
-> +
-> +	ret = t7xx_wait_pm_config(t7xx_dev);
-> +	if (ret)
-> +		return ret;
+regards
+Stefan Schmidt
 
-Do you need to rollback the iowrite?
+The following changes since commit 8aaaf2f3af2ae212428f4db1af34214225f5cec3:
 
-> +	atomic_set(&t7xx_dev->md_pm_state, MTK_PM_SUSPENDED);
-> +	t7xx_pcie_mac_clear_int(t7xx_dev, SAP_RGU_INT);
-> +	t7xx_dev->rgu_pci_irq_en = false;
-> +
-> +	list_for_each_entry(entity, &t7xx_dev->md_pm_entities, entity) {
-> +		if (entity->suspend) {
-> +			ret = entity->suspend(t7xx_dev, entity->entity_param);
-> +			if (ret) {
-> +				id = entity->id;
-> +				break;
-> +			}
-> +		}
-> +	}
-> +
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "[PM] Suspend error: %d, id: %d\n", ret, id);
-> +
-> +		list_for_each_entry(entity, &t7xx_dev->md_pm_entities, entity) {
-> +			if (id == entity->id)
-> +				break;
-> +
-> +			if (entity->resume)
-> +				entity->resume(t7xx_dev, entity->entity_param);
-> +		}
-> +
-> +		goto suspend_complete;
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-01-09 17:00:17 -0800)
 
-Suspend failure path(?) gotos to "suspend_complete"?
+are available in the Git repository at:
 
-> +	}
-> +
-> +	reinit_completion(&t7xx_dev->pm_sr_ack);
-> +	t7xx_mhccif_h2d_swint_trigger(t7xx_dev, H2D_CH_SUSPEND_REQ);
-> +	wait_ret = wait_for_completion_timeout(&t7xx_dev->pm_sr_ack,
-> +					       msecs_to_jiffies(PM_ACK_TIMEOUT_MS));
-> +	if (!wait_ret)
-> +		dev_err(&pdev->dev, "[PM] Wait for device suspend ACK timeout-MD\n");
-> +
-> +	reinit_completion(&t7xx_dev->pm_sr_ack);
-> +	t7xx_mhccif_h2d_swint_trigger(t7xx_dev, H2D_CH_SUSPEND_REQ_AP);
-> +	wait_ret = wait_for_completion_timeout(&t7xx_dev->pm_sr_ack,
-> +					       msecs_to_jiffies(PM_ACK_TIMEOUT_MS));
-> +	if (!wait_ret)
-> +		dev_err(&pdev->dev, "[PM] Wait for device suspend ACK timeout-SAP\n");
-> +
-> +	list_for_each_entry(entity, &t7xx_dev->md_pm_entities, entity) {
-> +		if (entity->suspend_late)
-> +			entity->suspend_late(t7xx_dev, entity->entity_param);
-> +	}
-> +
-> +suspend_complete:
-> +	iowrite32(L1_DISABLE_BIT(0), IREG_BASE(t7xx_dev) + DIS_ASPM_LOWPWR_CLR_0);
-> +
-> +	if (ret) {
-> +		atomic_set(&t7xx_dev->md_pm_state, MTK_PM_RESUMED);
-> +		t7xx_pcie_mac_set_int(t7xx_dev, SAP_RGU_INT);
-> +	}
-> +
-> +	return ret;
-> +}
+  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan-next.git tags/ieee802154-for-davem-2022-02-10
 
-Please check all paths in this function. I found enough oddities to not 
-be able to convince myself I understood it all or found all the problems.
-As if, e.g., an ok path return would be missing above misnamed 
-suspend_complete label (but then there's if (ret) below it which is kind 
-of counterargument against my reasoning).
+for you to fetch changes up to 02b2a91c6f0d57df687e666b475849a54f295a12:
 
-I've no comments on patches 11-13.
+  net: ieee802154: Provide a kdoc to the address structure (2022-02-01 21:03:48 +0100)
 
--- 
- i.
+----------------------------------------------------------------
+David Girault (1):
+      net: ieee802154: Provide a kdoc to the address structure
 
+Miquel Raynal (3):
+      net: ieee802154: hwsim: Ensure frame checksum are valid
+      net: ieee802154: Use the IEEE802154_MAX_PAGE define when relevant
+      net: mac802154: Explain the use of ieee802154_wake/stop_queue()
+
+Pavel Skripkin (1):
+      ieee802154: atusb: move to new USB API
+
+ drivers/net/ieee802154/atusb.c           | 186 +++++++++++--------------------
+ drivers/net/ieee802154/mac802154_hwsim.c |   2 +-
+ include/net/cfg802154.h                  |  10 ++
+ include/net/mac802154.h                  |  12 ++
+ net/ieee802154/nl-phy.c                  |   4 +-
+ 5 files changed, 92 insertions(+), 122 deletions(-)
