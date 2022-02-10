@@ -2,116 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 299544B0FA2
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 15:05:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8109E4B0FF6
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 15:15:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242592AbiBJOFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 09:05:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57562 "EHLO
+        id S242703AbiBJOPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 09:15:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240156AbiBJOFR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 09:05:17 -0500
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F42F1BA
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 06:05:19 -0800 (PST)
-Received: by mail-io1-f71.google.com with SMTP id ay26-20020a5d9d9a000000b006396dd81e4bso2635988iob.10
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 06:05:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=9sgSbApQo++c7T70sHfxQzyj8WhWNYeWFt0ennmNEF4=;
-        b=kHigvCpy/ZNRF89A1Mz9t2lofIbs7xR4xbDzT2qlbr0p7ONFkyLIvZOw2D0P0SEGEM
-         N2o9UMTcNmx2AFDYSpFqgbOfLfAnXryCzKR32MUrvv1WfYgjPBj889WgDRjOABNvLO4a
-         wQP4QLM8AVByz9Wpy5OtTpFWt6Q2faOzb+TO/7vV4XPZPWX57TRp1U2IXMBdhGddY1mm
-         TZFvtGn7cXpb/TsvHWV7XR8i1Cfng9vV0hT1df7qcT0I+8+G/rwtwQwborOJ5FX4gXzb
-         Cvh3osVsOQST71rPFw5TFWZR5bmFTyJDnpmYqCfz8mvZ/iBm9WgsV3V2UjXTbPOAga/l
-         FwXg==
-X-Gm-Message-State: AOAM530n5daB8lht/bFbMq/DKhaoU7Oa892ry12knYVy7+wtUrAY2sIB
-        7LdyunfEfY90K9t9/KmkAz2NBdcO4dc0SHDDrsTDa38rBSJf
-X-Google-Smtp-Source: ABdhPJx9Wn+4DdjWmfvunvoohS0TCSGFqtxqixRGiPT2n7ES7InJgdBlxLJp6xXEqCpCxhBmFGtGpg9ihjjFDl5JQHf92GXr/eOb
+        with ESMTP id S242701AbiBJOPD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 09:15:03 -0500
+Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.109.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1581C2
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 06:15:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1644502501;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BTpJU7M36JsRdBIAXPK1qJPM4H9LhFKmIIv9jPcdFF4=;
+        b=QIUm1zgJfP9Fe/alwlJA2wsuZkCdUec/jvviWPtY317FD6voNZbGf+/78567vvt7qw0y4W
+        xdNMj4hiqIyAB5UsK3Nfn1YcmsaIvIDHQfwKGn0C9y776FHVFq7pnPR4ETdbWXktje9p62
+        lnssqtFSBfx2OysDd5ambc1S2Ui5uW8=
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com
+ (mail-ve1eur03lp2050.outbound.protection.outlook.com [104.47.9.50]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-4-lHrFUoEVNMCbZIw3JCgiFA-1; Thu, 10 Feb 2022 15:13:54 +0100
+X-MC-Unique: lHrFUoEVNMCbZIw3JCgiFA-1
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VwpRYrJWqopUy1fAdVRSY8+66maisKpJ1Frdemw6Rt0K/2tQ5f4SOEzl52Je3dChnvQXB5tmLxCQY4J7bPYmnXKE45FBFpDNIFoMa35uJTlGLq1X563DyNWdQMbkfWYub+QiWDpKayP4hS9l44/BbP4DdPE6WoFWTQGdeyvUkl1fdmompwZ83QuGrUPIGChXMPcmgOZn5xRe1qMs/Gyni68E1NP9/LW3yBvtiVhTCX1kROwzbMM+UgEbrDNyttlcaUygjKb8+Pz101T8nau6b0IRrISdrbnTD9os9t0gC1DlsKQrqAYrZaI4rN2C55bKfV9m+AkTQR+A2Xk8MctzNA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4QCj0paEG7DxFsjysm7A/jzWhyzWjFKt/3H4GRPxr6Y=;
+ b=e/NHocPMygsRK7dKDmH2bmEmukuRwqm0p8VHLQBBXQL5QoJlQtht+2Aj61QuV3L4rkRFI2gvT50T16nv/I4TZsh7c7L9KfuFQD64wDwig2bwi+Eg6CNKWxeigKa2kB/ffnDWVWKq/FO21nWfppKfIYl9NbLk+X1VY9lBvpA2IAPOdPcJoLS04icEVQYTPJjl/US2wBKxmwXN3k0z43pk2AG4D7kH9yNgtJdYrkzP66DcrdQRha9rWsnk4gbqiT+PBp/Byl1B0r7eXmoRjQM25+nBiRybh3XlmFpY19z2nrzKvX38eUFuHXtbSps2YiHwqdTmggTgnSPpl8oYs8vsqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com (2603:10a6:10:22::23)
+ by DBBPR04MB7852.eurprd04.prod.outlook.com (2603:10a6:10:1ee::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Thu, 10 Feb
+ 2022 14:13:51 +0000
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::24bf:3192:1d1c:4115]) by DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::24bf:3192:1d1c:4115%3]) with mapi id 15.20.4951.018; Thu, 10 Feb 2022
+ 14:13:51 +0000
+Message-ID: <6d5a8cb4-1823-cecb-a31e-2118a95c96a6@suse.com>
+Date:   Thu, 10 Feb 2022 15:13:49 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] USB: zaurus: support another broken Zaurus
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Oliver Neukum <oneukum@suse.com>
+CC:     bids.7405@bigpond.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+References: <20220210122643.12274-1-oneukum@suse.com>
+ <YgUL6y4F34ZgC2K/@kroah.com>
+From:   Oliver Neukum <oneukum@suse.com>
+In-Reply-To: <YgUL6y4F34ZgC2K/@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-ClientProxiedBy: AM5PR0502CA0001.eurprd05.prod.outlook.com
+ (2603:10a6:203:91::11) To DB7PR04MB5050.eurprd04.prod.outlook.com
+ (2603:10a6:10:22::23)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:2054:: with SMTP id t20mr4051237jaj.207.1644501918370;
- Thu, 10 Feb 2022 06:05:18 -0800 (PST)
-Date:   Thu, 10 Feb 2022 06:05:18 -0800
-In-Reply-To: <0000000000009962dc05d7a6b27f@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ad4e9c05d7aa7064@google.com>
-Subject: Re: [syzbot] WARNING in mroute_clean_tables
-From:   syzbot <syzbot+a7c030a05218db921de5@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0ed8097e-9a98-4bc5-5a27-08d9ec9f904d
+X-MS-TrafficTypeDiagnostic: DBBPR04MB7852:EE_
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-Microsoft-Antispam-PRVS: <DBBPR04MB7852AA0EEFC58B898AAB57DBC72F9@DBBPR04MB7852.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: OWwNGjEHLUwXlwqYTWIOvnEDdW+wocqdjaFnoexesf2lLIHDkdo8Q/birXkDEMy1tm7fe7IURXF/S/abPkdu/9dMVL68xTPALr7Rj6tLC0gHijhEWhg7ipzU8XxejTgG+GggKXscH9FAVehN8n2szbci6jF+jQGtaQ7ujbwjM9luYm+mFfOGTBUpeRYpfbOdaE/IQt4mg/hHJN/zjpxlDjWEPooKDt988IbWu9vzcpuLfUwOr7urM1IfSlwsdK64alP58hMK8mQrcsV70zcqz7BYzEuRqSGrurgAOjAV+vKYSX6dq9CMv/aSpQ1JF+xQxno9bP/XW5P2hT5oDEYKtECsaBtj58rcqryh2bntKLURN77udeRkM2clhBQVe2igGRwJdwjgzu1Ph8WQ/mpypmpWbguyliwt2n0tjHE+VQr90SroawTWUN0TJFAlSijRBvmf4BQGCjtVZCoBi+Vy4hy0ynfYJNaKiaMAu+f/ftDS5mPlI/IVNAUb/hKDbGNGJJov3gaIUWI7aU6+qogxoOPmpvcs5eriiJq22/khlFKNlE7mYfeEAJelnTQxahkPkpN97Rn/vjpXhRjGiLaU7pJQvop96+IjB+D/2kVaGk3kyfKlWYS2yihEvwZLDhYWBZQKhmo/2ebegntMkw0XHS/CHktvJTlYIrgK8iA0iB+YAmRwdXveeWq/lhu0ngZyd3OJHoezKiQJRkwzhR+ECuN6h3KrYN/l0CzwC7XY4Ao=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5050.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(4326008)(186003)(66946007)(66476007)(66556008)(31696002)(86362001)(5660300002)(2906002)(8676002)(38100700002)(53546011)(6512007)(110136005)(2616005)(6506007)(36756003)(8936002)(6486002)(31686004)(508600001)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bsMKx5Mr/MeFbcfpVRPhwzcKUzu4h1YYBZ0W1WBAolXAcfv5ccK4FmmjRFG2?=
+ =?us-ascii?Q?dYVaUfw3FYthLzuhaB1TUa+Gwf5+Rl3QhmFydUXVQ40f3sE0aE/PJulVOZhW?=
+ =?us-ascii?Q?b4h4NQZ15H9yksyaNGwe9CLNRkU75v1vvPT/V5yYC8mUhQZUO1dzBjFWCSQ1?=
+ =?us-ascii?Q?FwFbnCNXm+YiDNKp6DbjbaE9jAjvC7NMhc7F3njGlQKUaRpByKYcEVTlT2Dr?=
+ =?us-ascii?Q?ZQuXc9a92lzky8I/aNlaRHlVStVgRNuVwY0Evo1oJOMtFuXUjTXt5SUydQBd?=
+ =?us-ascii?Q?d7eYt35qudq3sw9MvxBfGk/Jihb5XfaYAbMrbBdlstUM/Yz8mwXOmiGER6r/?=
+ =?us-ascii?Q?+bnofaLGCVJ0l8YQE6HLnYIK8/8G40nIHMfTlKpR7SwNM4CAHlfh5AvB0nmy?=
+ =?us-ascii?Q?IYTl/xcQHA9d8sEyR7+VvEPf9jL7sruj1FUZV5u7hA1E92iLR1Z+kWeynZUc?=
+ =?us-ascii?Q?oIoBoV6Ugcgz6KYoILW8qLo+kcBakYaCTfCRmrICMYrXYgDAWyzFbmnaouDY?=
+ =?us-ascii?Q?VRkH4okiz5xV2hgoyo0Gzii3hD8RufUIbKU076Y/nNXuOQZiEt3TiEuiV/gG?=
+ =?us-ascii?Q?weZrxeL4wGW+ErIlo+LAv2R3FHTyxKvDzleEfFDt34EQPQGL7hV9jaNR4S8a?=
+ =?us-ascii?Q?m9IFqTGjFdyYlBxuOaXrv5sOlI5gn+SRWC415+qtT6QPv1O3c/kMfqnXFTyx?=
+ =?us-ascii?Q?MYciL3Gv++UiD+Mc+6LqRq8KN7cW8V8SWrtKBZHS82w+o6vuC4NvEyhkT+nT?=
+ =?us-ascii?Q?HcyLveQ0QPygt6qlms7TTiJswxGjkj2ydIvEughvbgiKr2IUeduHSGm6zx/F?=
+ =?us-ascii?Q?UONqZenuuKt3VbzX4WH2l0rb9M3Pympt7BO3cKNn1WqNTVMClTWWcRbGBXqr?=
+ =?us-ascii?Q?d4AA05B6iwmHPa76hUEmf/2EYSDjXytaS2Wgfe1/54VyAVOh8YvFUMyUYq2S?=
+ =?us-ascii?Q?VsxXlZcsF10uiJ5R7Lx1aXC9vpg4u25fUH74KpqczhnDiZ/S2s+4ovfnccjg?=
+ =?us-ascii?Q?XPT73KSIj74sJombo4clCtxkBPPPiLZ00DcutTzYl95sFpXSFNAnx/SFah2r?=
+ =?us-ascii?Q?vNpfH21+weA/KLibo8T1TfSIVfHD8qXojpeBno8Ecq2Zxm8rOzhlYGuGnSbG?=
+ =?us-ascii?Q?3k1N99/VBgThIxcundvX+uc+r3KV1CUZFL5iJJ/CqqwLvwvOUx566rLEUnRS?=
+ =?us-ascii?Q?gv7phbbA/nT+i6/vZv+GPWEW/MTBHs81PfCjmMK1v/tpgugJXnAw6y+rknUZ?=
+ =?us-ascii?Q?VqpYbCgdoNHiPG9Vg++rrwpSjms1vm49daubKuP8OybaU3nYo8KfcGBHLeoX?=
+ =?us-ascii?Q?Ms/Vrb3r+K+BXVRmYDn9nbsTE9NXipdp+4FJMZ3lTb6UJbSPPCxAA8RnAjB/?=
+ =?us-ascii?Q?KqrJEyNyN23RUfOwEdSGnPqzYJHC6q6jO9adtJOCqb/ue1Hi8I000HANpKwB?=
+ =?us-ascii?Q?5JwAcZbjD9VLIwmnBn0fkbOiABL6Ni93v3h8W17CsLpRmtBaiaTj1w8aZIAC?=
+ =?us-ascii?Q?UdKyQq3O8zxsCbex9p5rJ4s2asQqYot/ITqVIzJdqc21s5P1XJIOQbCKBG7C?=
+ =?us-ascii?Q?gDHNa2JiSrSn48BJMFMrkkh8d+woYKC8cHZ4botS9utiC/j6IjMtpqALLNfA?=
+ =?us-ascii?Q?iNtw3/rO2olxvNlIsp2bpxQ6SMtkwfT2+2kkmQeZT8ki+4XOoWAI2Yr2PVKN?=
+ =?us-ascii?Q?n0nLVqjvIEqPN0a5vHWG7i527xc=3D?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ed8097e-9a98-4bc5-5a27-08d9ec9f904d
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5050.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 14:13:51.6141
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NdHCi5WKiRGG0flp/18WwL/pSIClF6zdi3u8PDZW+47nwmzomcWHcSmfupfOYEjID0LfkjMCikfmcGaMU3Dsaw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB7852
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
 
-HEAD commit:    e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=141c859a700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
-dashboard link: https://syzkaller.appspot.com/bug?extid=a7c030a05218db921de5
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=130486f8700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16d9f758700000
+On 10.02.22 13:58, Greg KH wrote:
+> On Thu, Feb 10, 2022 at 01:26:43PM +0100, Oliver Neukum wrote:
+>> This SL-6000 says Direct Line, not Ethernet
+>>
+>> Signed-off-by: Oliver Neukum <oneukum@suse.com>
+>> ---
+>>  drivers/net/usb/cdc_ether.c | 12 ++++++++++++
+>>  drivers/net/usb/zaurus.c    | 12 ++++++++++++
+>>  2 files changed, 24 insertions(+)
+>>
+>> diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+>> index eb3817d70f2b..9b4dfa3001d6 100644
+>> --- a/drivers/net/usb/cdc_ether.c
+>> +++ b/drivers/net/usb/cdc_ether.c
+>> @@ -583,6 +583,11 @@ static const struct usb_device_id	products[] =3D {
+>>  	.bInterfaceSubClass	=3D USB_CDC_SUBCLASS_ETHERNET, \
+>>  	.bInterfaceProtocol	=3D USB_CDC_PROTO_NONE
+>> =20
+>> +#define ZAURUS_FAKE_INTERFACE \
+>> +	.bInterfaceClass	=3D USB_CLASS_COMM, \
+>> +	.bInterfaceSubClass	=3D USB_CDC_SUBCLASS_MDLM, \
+>> +	.bInterfaceProtocol	=3D USB_CDC_PROTO_NONE
+>> +
+>>  /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
+>>   * wire-incompatible with true CDC Ethernet implementations.
+>>   * (And, it seems, needlessly so...)
+>> @@ -636,6 +641,13 @@ static const struct usb_device_id	products[] =3D {
+>>  	.idProduct              =3D 0x9032,	/* SL-6000 */
+>>  	ZAURUS_MASTER_INTERFACE,
+>>  	.driver_info		=3D 0,
+>> +}, {
+>> +	.match_flags    =3D   USB_DEVICE_ID_MATCH_INT_INFO
+>> +		 | USB_DEVICE_ID_MATCH_DEVICE,
+>> +	.idVendor               =3D 0x04DD,
+>> +	.idProduct              =3D 0x9032,	/* SL-6000 */
+>> +	ZAURUS_FAKE_INTERFACE,
+>> +	.driver_info		=3D 0,
+>>  }, {
+>>  	.match_flags    =3D   USB_DEVICE_ID_MATCH_INT_INFO
+>>  		 | USB_DEVICE_ID_MATCH_DEVICE,
+>> diff --git a/drivers/net/usb/zaurus.c b/drivers/net/usb/zaurus.c
+>> index 8e717a0b559b..9243be9bd2aa 100644
+>> --- a/drivers/net/usb/zaurus.c
+>> +++ b/drivers/net/usb/zaurus.c
+>> @@ -256,6 +256,11 @@ static const struct usb_device_id	products [] =3D {
+>>  	.bInterfaceSubClass	=3D USB_CDC_SUBCLASS_ETHERNET, \
+>>  	.bInterfaceProtocol	=3D USB_CDC_PROTO_NONE
+>> =20
+>> +#define ZAURUS_FAKE_INTERFACE \
+>> +	.bInterfaceClass	=3D USB_CLASS_COMM, \
+>> +	.bInterfaceSubClass	=3D USB_CDC_SUBCLASS_MDLM, \
+>> +	.bInterfaceProtocol	=3D USB_CDC_PROTO_NONE
+>> +
+>>  /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
+>>  {
+>>  	.match_flags	=3D   USB_DEVICE_ID_MATCH_INT_INFO
+>> @@ -313,6 +318,13 @@ static const struct usb_device_id	products [] =3D {
+>>  	.idProduct              =3D 0x9032,	/* SL-6000 */
+>>  	ZAURUS_MASTER_INTERFACE,
+>>  	.driver_info =3D ZAURUS_PXA_INFO,
+>> +}, {
+>> +        .match_flags    =3D   USB_DEVICE_ID_MATCH_INT_INFO
+>> +                 | USB_DEVICE_ID_MATCH_DEVICE,
+>> +        .idVendor               =3D 0x04DD,
+>> +        .idProduct              =3D 0x9032,       /* SL-6000 */
+>> +        ZAURUS_FAKE_INTERFACE,
+>> +        .driver_info =3D (unsigned long) &bogus_mdlm_info,
+> No tabs here?
+Checking ...
+>
+> And isn't there a needed "Reported-by:" for this one as it came from a
+> bug report?
+Do we do these for reports by the kernel.org bugzilla?
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a7c030a05218db921de5@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-RTNL: assertion failed at net/core/dev.c (10367)
-WARNING: CPU: 1 PID: 3674 at net/core/dev.c:10367 unregister_netdevice_many+0x1246/0x1850 net/core/dev.c:10367
-Modules linked in:
-CPU: 1 PID: 3674 Comm: syz-executor165 Not tainted 5.16.0-syzkaller-11655-ge5313968c41b #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:unregister_netdevice_many+0x1246/0x1850 net/core/dev.c:10367
-Code: 0f 85 9b ee ff ff e8 59 f1 4a fa ba 7f 28 00 00 48 c7 c6 00 90 ae 8a 48 c7 c7 40 90 ae 8a c6 05 0e a1 51 06 01 e8 3c 8a d8 01 <0f> 0b e9 70 ee ff ff e8 2e f1 4a fa 4c 89 e7 e8 c6 22 59 fa e9 ee
-RSP: 0018:ffffc90003adf6e0 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff888075bf8000 RSI: ffffffff815fa058 RDI: fffff5200075bece
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff815f3dbe R11: 0000000000000000 R12: 00000000fffffff4
-R13: dffffc0000000000 R14: ffffc90003adf750 R15: ffff888070f9c000
-FS:  00007f8cda422700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f8cda4229d0 CR3: 0000000071e66000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- mroute_clean_tables+0x244/0xb40 net/ipv6/ip6mr.c:1509
- ip6mr_free_table net/ipv6/ip6mr.c:389 [inline]
- ip6mr_rules_init net/ipv6/ip6mr.c:246 [inline]
- ip6mr_net_init net/ipv6/ip6mr.c:1306 [inline]
- ip6mr_net_init+0x3f0/0x4e0 net/ipv6/ip6mr.c:1298
- ops_init+0xaf/0x470 net/core/net_namespace.c:140
- setup_net+0x54f/0xbb0 net/core/net_namespace.c:331
- copy_net_ns+0x318/0x760 net/core/net_namespace.c:475
- create_new_namespaces+0x3f6/0xb20 kernel/nsproxy.c:110
- copy_namespaces+0x391/0x450 kernel/nsproxy.c:178
- copy_process+0x2e15/0x7310 kernel/fork.c:2167
- kernel_clone+0xe7/0xab0 kernel/fork.c:2555
- __do_sys_clone+0xc8/0x110 kernel/fork.c:2672
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f8cda472169
-Code: Unable to access opcode bytes at RIP 0x7f8cda47213f.
-RSP: 002b:00007f8cda4222f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000038
-RAX: ffffffffffffffda RBX: 00007f8cda4fb4e0 RCX: 00007f8cda472169
-RDX: 0000000020000080 RSI: 0000000020000050 RDI: 0000000046000080
-RBP: 00007f8cda4c82fc R08: 0000000020000100 R09: 0000000000000000
-R10: 00000000200000c0 R11: 0000000000000246 R12: 00007f8cda4c82ed
-R13: 2bcc52a5f498fa8d R14: 000000344059e000 R15: 00007f8cda4fb4e8
- </TASK>
+=C2=A0=C2=A0=C2=A0 Regards
+=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 Oliver
 
