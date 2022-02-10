@@ -2,96 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E347B4B1311
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 17:39:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 473E14B1364
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 17:48:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244412AbiBJQjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 11:39:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51072 "EHLO
+        id S244761AbiBJQsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 11:48:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230018AbiBJQjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 11:39:42 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652621A8;
-        Thu, 10 Feb 2022 08:39:43 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id 10so2303324plj.1;
-        Thu, 10 Feb 2022 08:39:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=VyCvMQvGVY3kjERzylhRvh9eJlWVE5dyq2500svQ1kU=;
-        b=d8Bk8D7R2QV4lPQwQRa9qVRlrjTslInRci86Cq8Y5GNky2l5t8OEne2EZxM3ML5p4X
-         jxIVXKW0BwRaHOGDPBlYJW2FRum2UTwFz/mbe8+Jaqa4RJzfAUebfcZ/euV+kusRR6Lu
-         ln/PrH81nG0ViGbdrf/zH9HQe2HGTbjWiFSroPuw8EJSBhYrVJt1+6+ILtVyh0si/Lyk
-         TBZksXwTtifJXsFcQAYna71yZw0F/hhos7sPHzQPv5dk7DRC0v53Xt1mir/UrDav0V/x
-         5bM678lUoBhpfTHYCnzOPbRju0OZ7+b4jdKuHBRrStoDzImW+SHDF1oxWzKKZhGyhIyB
-         JCUA==
+        with ESMTP id S244961AbiBJQsP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 11:48:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 091CE98
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:48:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644511695;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=53BPBlXQ9S5Ov+amkvoqYiyiQymDxhLzSDn632g3AnI=;
+        b=TqQCAEFvVu2MN5IrnUqyRUIB3OC6sQ2O+rt3S0dNNM7lkrQ2VaPcpFIFxlj3pgXymt4KoN
+        v55Oyao0ikkeC8Dg/5UycuK/kExBgqAZ4fCRQx4TWG/ufhAP9Izek0Dqkh4nz3I6bJ794d
+        bILgDDoUSdqX1LRzbAOI/KubtoxzN/g=
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
+ [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-615-_kIqx3LDP_iTzczcSO-FPg-1; Thu, 10 Feb 2022 11:48:14 -0500
+X-MC-Unique: _kIqx3LDP_iTzczcSO-FPg-1
+Received: by mail-oi1-f199.google.com with SMTP id s42-20020a05680820aa00b002cfd10820b7so1496186oiw.4
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:48:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VyCvMQvGVY3kjERzylhRvh9eJlWVE5dyq2500svQ1kU=;
-        b=4BzjDFWnGRIdixiJT8QxHf9YlP78JrT6AXMDpgycu5ooo1+lQe/ZUAwIDC049bfS1q
-         p7lK3IZtGXvXuNliR2N8hklQSRICNNfKvYf6lHsnPx+6NCpgtBOzTCZiQAkLLQRN07QD
-         pEAYDPq14C9XR8h5C7Vkb+ecLt9XRp6bACAvv7/A68CvzCg1I3O355FfW0iWFNz4Mp/d
-         gWMqB8bktcKnqov/N+OE3H9XMeI64YAeHqCXc/p/tsy91jYuiidSyg+sG+lGJe6eIbh7
-         RvM6mkUAO9UZYhDGRybe/G+rhuvyTrqO1j/yMaVR7a5GMDj25df8h6zB6YS+3kSRfzYb
-         yadQ==
-X-Gm-Message-State: AOAM530KOihjTuPPCeDOD8ydAfKAaaLdUSJv+Yy05/39lqz0GY4jeBKM
-        5qxexFtbEqb6SJbGBg+ewCg=
-X-Google-Smtp-Source: ABdhPJzhSEdlxQmJY5qsBi6VTBQgg4dInmdj2X7NVorqBfzv4Q6bf37GrGNxmKssnGJee04i9DPkgQ==
-X-Received: by 2002:a17:90a:688e:: with SMTP id a14mr3696420pjd.63.1644511182802;
-        Thu, 10 Feb 2022 08:39:42 -0800 (PST)
-Received: from [192.168.86.21] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id d16sm17367918pfj.1.2022.02.10.08.39.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 08:39:42 -0800 (PST)
-Message-ID: <9bb39c37-0fc9-f4a7-dd4b-897f0a8fae18@gmail.com>
-Date:   Thu, 10 Feb 2022 08:39:40 -0800
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=53BPBlXQ9S5Ov+amkvoqYiyiQymDxhLzSDn632g3AnI=;
+        b=X/gn7YGLiB7QvdS7qV4CuIixW2jOscJSuDcEDs0FhWrnkwrz03qjIjtb419jdsaxlu
+         cCsrlNVMfpDPS1KlnPlYXKLQHTKgj6baEQRlonhPmXGMOvdUcVw3s7l01U/Qb0uXlY3e
+         l31L+BO5IMLdlu7Chkh1yDjyR2qvx+f7k8u6esvaHdf5oeEiVquJ6AP7OplgeWTx6cv5
+         h3+yIzBYp8T6OXSmvbO/MzDw9Pno0ygu8Ch6E+KtcfKCkEbe+MHpLMCpVb9AnzTT3xeb
+         gXv7oajlR2tInop9uaOIsGxphzc1BVOraN70gtxxHKW5UfPHUFwHUdnqe/LyZJS3QYd0
+         oIUA==
+X-Gm-Message-State: AOAM530UvkHPH5Re0WUtO5lv4jsT6oXp5mk+n0kqpRbZHO1qIjcCAU/l
+        n5aNuiVkdgXZ/nx/h5HLigtebjHfzRwjTfZG0MC1aW9gQMw4fSaWR4sa3KpyRG3CCb1KK+hqtCy
+        lWWuVTrZu8LRyVHIT
+X-Received: by 2002:a05:6870:12d7:: with SMTP id 23mr1060325oam.133.1644511693325;
+        Thu, 10 Feb 2022 08:48:13 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxwwaQd00a+1hW/QSYxWvHGo3F2y4/ysYql9KJVOGrs/Tngz3B2WZGdj9eeXOUi+BnYh8YJDA==
+X-Received: by 2002:a05:6870:12d7:: with SMTP id 23mr1060313oam.133.1644511693125;
+        Thu, 10 Feb 2022 08:48:13 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id el40sm9398252oab.22.2022.02.10.08.48.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 08:48:12 -0800 (PST)
+Date:   Thu, 10 Feb 2022 09:48:11 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        ashok.raj@intel.com, kevin.tian@intel.com,
+        shameerali.kolothum.thodi@huawei.com
+Subject: Re: [PATCH V7 mlx5-next 14/15] vfio/mlx5: Use its own PCI
+ reset_done error handler
+Message-ID: <20220210094811.0f95fbd8.alex.williamson@redhat.com>
+In-Reply-To: <20220209023918.GO4160@nvidia.com>
+References: <20220207172216.206415-1-yishaih@nvidia.com>
+        <20220207172216.206415-15-yishaih@nvidia.com>
+        <20220208170801.39dab353.alex.williamson@redhat.com>
+        <20220209023918.GO4160@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [syzbot] WARNING in mroute_clean_tables
-Content-Language: en-US
-To:     syzbot <syzbot+a7c030a05218db921de5@syzkaller.appspotmail.com>,
-        davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-References: <000000000000ad4e9c05d7aa7064@google.com>
-From:   Eric Dumazet <erdnetdev@gmail.com>
-In-Reply-To: <000000000000ad4e9c05d7aa7064@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 8 Feb 2022 22:39:18 -0400
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-On 2/10/22 06:05, syzbot wrote:
-> syzbot has found a reproducer for the following issue on:
->
-> HEAD commit:    e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
-> git tree:       bpf-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=141c859a700000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
-> dashboard link: https://syzkaller.appspot.com/bug?extid=a7c030a05218db921de5
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=130486f8700000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16d9f758700000
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+a7c030a05218db921de5@syzkaller.appspotmail.com
+> On Tue, Feb 08, 2022 at 05:08:01PM -0700, Alex Williamson wrote:
+> > > @@ -477,10 +499,34 @@ static int mlx5vf_pci_get_device_state(struct vfio_device *vdev,
+> > >  
+> > >  	mutex_lock(&mvdev->state_mutex);
+> > >  	*curr_state = mvdev->mig_state;
+> > > -	mutex_unlock(&mvdev->state_mutex);
+> > > +	mlx5vf_state_mutex_unlock(mvdev);
+> > >  	return 0;  
+> > 
+> > I still can't see why it wouldn't be a both fairly trivial to implement
+> > and a usability improvement if the unlock wrapper returned -EAGAIN on a
+> > deferred reset so we could avoid returning a stale state to the user
+> > and a dead fd in the former case.  Thanks,  
+> 
+> It simply is not useful - again, we always resolve this race that
+> should never happen as though the two events happened consecutively,
+> which is what would normally happen if we could use a simple mutex. We
+> do not need to add any more complexity to deal with this already
+> troublesome thing..
 
+So walk me through how this works with QEMU, it's easy to hand-wave
+userspace race and move on, but device reset can be triggered by guest
+behavior while migration is supposed to be transparent to the guest.
+These are essentially asynchronous threads where we're imposing a
+synchronization point or lots of double checking in userspace whether
+the device actually entered the state we think it did and if the
+returned FD is usable.
 
-#syz fix: ipmr,ip6mr: acquire RTNL before calling ip[6]mr_free_table() 
-on failure path
+Specifically, I suspect we can trigger this race if the VM reboots as
+we're initiating a migration in the STOP_COPY phase, but that's maybe
+less interesting if we expect the VM to be halted before the device
+state is stepped.  More interesting might be how a PRE_COPY transition
+works relative to asynchronous VM resets triggering device resets.  Are
+we serializing all access to reset vs this DEVICE_FEATURE op or are we
+resorting to double checking the device state, and how do we plan to
+re-initiate migration states if a VM reset occurs during migration?
+Thanks,
 
+Alex
 
