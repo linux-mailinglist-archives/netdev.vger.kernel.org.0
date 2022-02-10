@@ -2,69 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4D594B13E5
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 18:09:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41B334B13F4
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 18:13:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244957AbiBJRJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 12:09:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57620 "EHLO
+        id S245066AbiBJRNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 12:13:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237394AbiBJRJq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 12:09:46 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A66E6A;
-        Thu, 10 Feb 2022 09:09:46 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id m11so11969767edi.13;
-        Thu, 10 Feb 2022 09:09:46 -0800 (PST)
+        with ESMTP id S245065AbiBJRNf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 12:13:35 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6181CD1
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 09:13:35 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id y7so2388378plp.2
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 09:13:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6KO1EHZt76GuJ09+7lD/Q77CRRrPRaK9iQ8TqtMouCs=;
-        b=oE0UWN3i1TkNvMqRFkDLcjavtpSFD1eDEkeFDT4QLUJRC9sc94G+UoYYpZ8WZBZN02
-         9w1bjMoaj4w3ErLUogI86cN813NKNnm5zTxx2NDpe0IOpVftdwCZTA4tl+87sxtB5qg7
-         9F7t+AgNZayB2UOsgR5c9UfnoeanY5vOoC4JxdeNeSP/w584iFgzZvjL3LxWRzwhvirY
-         amdO9wYhDmTv8oXSBPehyhvPJF7ZMOMCb4DA4JIO5xSuGg7ccx8J57opZFRZ8RXBAr32
-         6YwSFyhGYjdarzx8bEcsroRMCgBImWfhVRAvasNn6Bf7QHrmq3nrUfCLZjFpHDu1wZOC
-         YrDA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lBJMUL38zXn4E1IFRNV+Rj2SDrR6oMD8c6F46AoSdS8=;
+        b=dZocyfih4srAO1yx+iVzC9FnwwnMvCWwqTl0KAAvD2vXdRDZ2hcxjJfh6BeU9d1TU2
+         F4EBRPINeVvD0Uk3Wm9+aVOPOARlGNR3QPV933XmkhaNKltezAYRNHKZTbhpAlhmWh7G
+         NhAEeXV7eTcat1v8qa8bLLWxI0W598oSSm5lat+3A9nRfQqZofd22IfjqT20MjCkeFs/
+         5HmbH3eclvENLfoFca4QuE0+4VCI9li5sVr1tD0Z1tGgY8JnP/mAiYwBDeO+EGaJ33NF
+         2Cr/2jd6z0zDemQhY+rGWSQGbk/BVGIbRjhOtgaHlX7HaCrvOt51k07e5BkunmLLO9fn
+         0J7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6KO1EHZt76GuJ09+7lD/Q77CRRrPRaK9iQ8TqtMouCs=;
-        b=bHwIbdRyfrdJ4PEfcL9+LenSsjDGvSy34DWMruwhgwrHC8DK6YUNZcpEMRM0IDKK4I
-         ZERdIdVuqxP3JD6se471g/DjYqpkEW/9XjC5mq7z/Qwd74I0sfcKjTugMP8xAlPJU1fn
-         lfmTaZSzKsMd5bwIXHCkD8mZq9Hsbn2afjYrmsabYZs+0zJIRgk5JCvzWpvj+eWBAkzB
-         gKDsFEoDeBm+H/+vhRTExnsqVO1Kn8hH+Efie0Y16gabeAN3HXEwoL7cGdx931lnOuY/
-         qSl7in4Tk2D6v1htL8lKV9Br1vLdwBirXRCWTvPKb0BK11qLCJvkIpfJMnq4qIDRWCUI
-         dviA==
-X-Gm-Message-State: AOAM532c7XrfIvdFX16kcTWtYx+SBI+AplnAh32Xw7GUTMbcvi2HwyYD
-        JRW0d2ZN8uwi2vNzzkvAlco=
-X-Google-Smtp-Source: ABdhPJwbe+YniUx44ThriVsops7IHX9fxPYlLtd68unikrqu6n215gfZVJHNWsldYo+g+aBnZotxKA==
-X-Received: by 2002:a05:6402:190f:: with SMTP id e15mr9479055edz.195.1644512985120;
-        Thu, 10 Feb 2022 09:09:45 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id qx22sm6215632ejb.135.2022.02.10.09.09.43
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lBJMUL38zXn4E1IFRNV+Rj2SDrR6oMD8c6F46AoSdS8=;
+        b=hpHiFCnQYGubcdp7E6o5AmCF52RrHSsIsGcAkh/Y0iH/LVBqM3wLheaWD45OIKBsXK
+         EdqWgoUGqMSxYGkTnX7yYxQA7tSyfl9Su0tuzf6uFpP0p5HWciMt8fCeE/U3q5tXCWF/
+         Sf9goPVChyIrWQWpRDZcxNEQXPmv0OdzvhJPAoGKA0JVmh47NQkEx1C/xDBvJSrletwu
+         UVnC/8nLyesfqnanQcEr2Dx9g0KTIUoBpkWwMGj791JSCUt+p0Nd7E4eRX6Kfp06BwtS
+         pvR0He0lNx++65iNrMq0HY9yozsb1ZfwRtSJr87F4coTQ7Qrn1uaj/9Dbe9SjlXqh0pu
+         30+A==
+X-Gm-Message-State: AOAM531yd6T0beCDbCmTwIsm4S8lBO4fzaW6TA+yWA83SOnw3goAD3MI
+        tEbR0JhM9k5QVitFkhuzK3s=
+X-Google-Smtp-Source: ABdhPJwJN/oCrLWay+fZz1BBEfuimdKX3Z1e/Hsa1akJUqd9A0y6dQCUgKAJA9Semga4I1gIAMwZ5g==
+X-Received: by 2002:a17:902:dac9:: with SMTP id q9mr8033148plx.164.1644513215347;
+        Thu, 10 Feb 2022 09:13:35 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c3d8:67ff:656a:cfd9])
+        by smtp.gmail.com with ESMTPSA id q1sm7468470pfs.112.2022.02.10.09.13.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 09:09:44 -0800 (PST)
-Date:   Thu, 10 Feb 2022 19:09:43 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 3/5] net: dsa: Add support for offloaded
- locked port flag
-Message-ID: <20220210170943.tvmnru5byx5jbqkz@skbuf>
-References: <20220209130538.533699-1-schultz.hans+netdev@gmail.com>
- <20220209130538.533699-4-schultz.hans+netdev@gmail.com>
+        Thu, 10 Feb 2022 09:13:34 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net] drop_monitor: fix data-race in dropmon_net_event / trace_napi_poll_hit
+Date:   Thu, 10 Feb 2022 09:13:31 -0800
+Message-Id: <20220210171331.1458807-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209130538.533699-4-schultz.hans+netdev@gmail.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -75,48 +71,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Eric Dumazet <edumazet@google.com>
 
-Next time you send a patch version, if you're going to copy me on a
-patch, can you please copy me on all of them? I have a problem with not
-receiving emails in real time from netdev@vger.kernel.org, and
-refreshing patchwork to see if anything has been said on the other
-patches is pretty out of hand. I don't have enough information to
-comment just on the DSA bits.
+trace_napi_poll_hit() is reading stat->dev while another thread can write
+on it from dropmon_net_event()
 
-Thanks.
+Use READ_ONCE()/WRITE_ONCE() here, RCU rules are properly enforced already,
+we only have to take care of load/store tearing.
 
-On Wed, Feb 09, 2022 at 02:05:35PM +0100, Hans Schultz wrote:
-> Among the switchcores that support this feature is the Marvell
-> mv88e6xxx family.
-> 
-> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
-> ---
->  net/dsa/port.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/dsa/port.c b/net/dsa/port.c
-> index bd78192e0e47..01ed22ed74a1 100644
-> --- a/net/dsa/port.c
-> +++ b/net/dsa/port.c
-> @@ -176,7 +176,7 @@ static int dsa_port_inherit_brport_flags(struct dsa_port *dp,
->  					 struct netlink_ext_ack *extack)
->  {
->  	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
-> -				   BR_BCAST_FLOOD;
-> +				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
->  	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
->  	int flag, err;
->  
-> @@ -200,7 +200,7 @@ static void dsa_port_clear_brport_flags(struct dsa_port *dp)
->  {
->  	const unsigned long val = BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
->  	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
-> -				   BR_BCAST_FLOOD;
-> +				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
->  	int flag, err;
->  
->  	for_each_set_bit(flag, &mask, 32) {
-> -- 
-> 2.30.2
-> 
+BUG: KCSAN: data-race in dropmon_net_event / trace_napi_poll_hit
+
+write to 0xffff88816f3ab9c0 of 8 bytes by task 20260 on cpu 1:
+ dropmon_net_event+0xb8/0x2b0 net/core/drop_monitor.c:1579
+ notifier_call_chain kernel/notifier.c:84 [inline]
+ raw_notifier_call_chain+0x53/0xb0 kernel/notifier.c:392
+ call_netdevice_notifiers_info net/core/dev.c:1919 [inline]
+ call_netdevice_notifiers_extack net/core/dev.c:1931 [inline]
+ call_netdevice_notifiers net/core/dev.c:1945 [inline]
+ unregister_netdevice_many+0x867/0xfb0 net/core/dev.c:10415
+ ip_tunnel_delete_nets+0x24a/0x280 net/ipv4/ip_tunnel.c:1123
+ vti_exit_batch_net+0x2a/0x30 net/ipv4/ip_vti.c:515
+ ops_exit_list net/core/net_namespace.c:173 [inline]
+ cleanup_net+0x4dc/0x8d0 net/core/net_namespace.c:597
+ process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
+ worker_thread+0x616/0xa70 kernel/workqueue.c:2454
+ kthread+0x1bf/0x1e0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30
+
+read to 0xffff88816f3ab9c0 of 8 bytes by interrupt on cpu 0:
+ trace_napi_poll_hit+0x89/0x1c0 net/core/drop_monitor.c:292
+ trace_napi_poll include/trace/events/napi.h:14 [inline]
+ __napi_poll+0x36b/0x3f0 net/core/dev.c:6366
+ napi_poll net/core/dev.c:6432 [inline]
+ net_rx_action+0x29e/0x650 net/core/dev.c:6519
+ __do_softirq+0x158/0x2de kernel/softirq.c:558
+ do_softirq+0xb1/0xf0 kernel/softirq.c:459
+ __local_bh_enable_ip+0x68/0x70 kernel/softirq.c:383
+ __raw_spin_unlock_bh include/linux/spinlock_api_smp.h:167 [inline]
+ _raw_spin_unlock_bh+0x33/0x40 kernel/locking/spinlock.c:210
+ spin_unlock_bh include/linux/spinlock.h:394 [inline]
+ ptr_ring_consume_bh include/linux/ptr_ring.h:367 [inline]
+ wg_packet_decrypt_worker+0x73c/0x780 drivers/net/wireguard/receive.c:506
+ process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
+ worker_thread+0x616/0xa70 kernel/workqueue.c:2454
+ kthread+0x1bf/0x1e0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30
+
+value changed: 0xffff88815883e000 -> 0x0000000000000000
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 26435 Comm: kworker/0:1 Not tainted 5.17.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: wg-crypt-wg2 wg_packet_decrypt_worker
+
+Fixes: 4ea7e38696c7 ("dropmon: add ability to detect when hardware dropsrxpackets")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Neil Horman <nhorman@tuxdriver.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/core/drop_monitor.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index 7b288a121a41a7b3f3e19e275d1da3ce50579b01..d5dc6be2522cbe50e53532a9a85f5bbb58b18f4f 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -283,13 +283,17 @@ static void trace_napi_poll_hit(void *ignore, struct napi_struct *napi,
+ 
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(new_stat, &hw_stats_list, list) {
++		struct net_device *dev;
++
+ 		/*
+ 		 * only add a note to our monitor buffer if:
+ 		 * 1) this is the dev we received on
+ 		 * 2) its after the last_rx delta
+ 		 * 3) our rx_dropped count has gone up
+ 		 */
+-		if ((new_stat->dev == napi->dev)  &&
++		/* Paired with WRITE_ONCE() in dropmon_net_event() */
++		dev = READ_ONCE(new_stat->dev);
++		if ((dev == napi->dev)  &&
+ 		    (time_after(jiffies, new_stat->last_rx + dm_hw_check_delta)) &&
+ 		    (napi->dev->stats.rx_dropped != new_stat->last_drop_val)) {
+ 			trace_drop_common(NULL, NULL);
+@@ -1576,7 +1580,10 @@ static int dropmon_net_event(struct notifier_block *ev_block,
+ 		mutex_lock(&net_dm_mutex);
+ 		list_for_each_entry_safe(new_stat, tmp, &hw_stats_list, list) {
+ 			if (new_stat->dev == dev) {
+-				new_stat->dev = NULL;
++
++				/* Paired with READ_ONCE() in trace_napi_poll_hit() */
++				WRITE_ONCE(new_stat->dev, NULL);
++
+ 				if (trace_state == TRACE_OFF) {
+ 					list_del_rcu(&new_stat->list);
+ 					kfree_rcu(new_stat, rcu);
+-- 
+2.35.0.263.gb82422642f-goog
+
