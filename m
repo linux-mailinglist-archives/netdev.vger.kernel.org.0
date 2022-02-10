@@ -2,90 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73AF04B14ED
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 19:07:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10B5E4B14FC
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 19:10:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245528AbiBJSGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 13:06:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34224 "EHLO
+        id S244820AbiBJSKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 13:10:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245504AbiBJSGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 13:06:40 -0500
-Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A188125CD
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 10:06:41 -0800 (PST)
-Received: by mail-ua1-x929.google.com with SMTP id f13so3418644uab.10
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 10:06:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QLAfKqmhSBus4Fd9PwOHU5Gpom66QCfywDWDrHdXm0I=;
-        b=E1HaE37yDHuRfjmHQaBH0z3g8JL0XisVYmChbS9IzmugVv3n3pW65RdfySSHe+ytZi
-         9IFmm0+FzPdULbDNITcsTXApIIjIr0M6PDTufNwROmfpqQ45r5EQFTrFu7fiLBuTK4ze
-         sQ4OGDvMZxIow/kSnMZkThIeRK/Mqpnk6F5LsNGdXjckZm9ie7W3BOcTjEfEbA8uYDpE
-         O5X4zh2F6aaaK7bBFQs4PhiOvWA/1EVuYqaej3yZjeK7iVWmKSOlGwffcfu+I6Nj1RCL
-         7sXecrQAQLL7zTBfzAJX7j0oqvB90KO5Zb8oBQgBLpuU0vMTeAu15pdEAUVe1vKavek+
-         sSsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QLAfKqmhSBus4Fd9PwOHU5Gpom66QCfywDWDrHdXm0I=;
-        b=ss9QKVYOvzFi5QK76bww7U7GuWVcC48DWoR0UHeXaWY2LFdZOniJoSY97pGMJYbNu2
-         +gEZggPrkO3f9lNnWw/hwu0nhbBAhL1ZERojQ+5xYvvg2v5nBtC2p9r6yYAQt3t4m87r
-         otD7KuFlnxFTSKfXXZm851ezPchoXIIPSIsmcJ3Vcp4bM4p/hBF039V06w4fKOLdxWdN
-         0hDjPD9eJz9r2TKFjspOUnqa1J9Z9gHkOHtD2SLOzFiW3T0MAOc4WYlLrEdf0DCxobW1
-         UMjsF5IAPwXKV+B7AnUPzmrMciS7QMFefImGTBigG9OgbGk0Tg6AWs2GrU1jwNPC0i2r
-         Pf3g==
-X-Gm-Message-State: AOAM5324+vhNANmk1tSazgnAUZkSccP2xCA4R0tsND4rAHBTm6wrpQpQ
-        pxSgfeXB9wj/A/1MUc4gko+wcH8Qw9cgTNLBpO5kWA==
-X-Google-Smtp-Source: ABdhPJyL0ZNYGrR3MjeCiFh0aRSXwUGHcPfhFv1tsW1Cy0Yjm2/GJR4EmgQGi8kwNeTXmb1sUpyY0g/NxVDJGvCs1wY=
-X-Received: by 2002:a9f:35d0:: with SMTP id u16mr2723403uad.87.1644516400582;
- Thu, 10 Feb 2022 10:06:40 -0800 (PST)
+        with ESMTP id S229462AbiBJSKK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 13:10:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB6C110C
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 10:10:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA87761E43
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 18:10:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 14FC0C340EB;
+        Thu, 10 Feb 2022 18:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644516610;
+        bh=iMM9KVxk+GDqVz2qmQDYWhdgKoItbsg6IPYxH0pl54M=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=CSnh0VSzAIKARfqQnLBMH6PKkaPcab+4VYTygeOPOH5ReqyfIJjleBPsamJs5oxvB
+         Xb0tYwG461/6YJgxGm0nm3osBZWtKhOjLKdAMpfkysWbbQOv/lnveKU9JjAumgrsqz
+         quQQV5sO0x9vZ6jqg7pZsExiVQV+UYww4nG0PhCipdDHqJCOQnRtST9d9tXJrZtdnv
+         LnDkiy35Xs9uzmye31x6bJI9tE+IawZbNbSqnBzY23pxJ32GnpppvJTRdnv00zz04B
+         0MiensuAYLcZw7NnkBRbDr/c0uIMeW5UkKkqaBf2toPpNN8dxL9G0r01RQIAlOL6Fw
+         6LT3BChzoNHAQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id ECD90E5D084;
+        Thu, 10 Feb 2022 18:10:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220208025511.1019-1-lina.wang@mediatek.com> <0300acca47b10384e6181516f32caddda043f3e4.camel@redhat.com>
- <CANP3RGe8ko=18F2cr0_hVMKw99nhTyOCf4Rd_=SMiwBtQ7AmrQ@mail.gmail.com>
- <a62abfeb0c06bf8be7f4fa271e2bcdef9d86c550.camel@redhat.com>
- <5ca86c46109794a627e6e2a62b140963217984a0.camel@mediatek.com> <d5dd3f10c144f7150ec508fa8e6d7a78ceabfc10.camel@redhat.com>
-In-Reply-To: <d5dd3f10c144f7150ec508fa8e6d7a78ceabfc10.camel@redhat.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Date:   Thu, 10 Feb 2022 10:06:28 -0800
-Message-ID: <CANP3RGeCRz5Ea6tbX4qGnYNzP_sq0K3mGKdpzP0OrcL=C6ejgQ@mail.gmail.com>
-Subject: Re: [PATCH] net: fix wrong network header length
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     "lina.wang" <lina.wang@mediatek.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Kernel hackers <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Willem Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>, zhuoliang@mediatek.com,
-        chao.song@mediatek.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH iproute2-next] tunnel: Fix missing space after local/remote
+ print
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164451660996.28542.17555893745139008598.git-patchwork-notify@kernel.org>
+Date:   Thu, 10 Feb 2022 18:10:09 +0000
+References: <20220209065415.7068-1-gal@nvidia.com>
+In-Reply-To: <20220209065415.7068-1-gal@nvidia.com>
+To:     Gal Pressman <gal@nvidia.com>
+Cc:     stephen@networkplumber.org, dsahern@gmail.com,
+        netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I'm wondering why don't you simply enable UDP_GRO on the relevant
-> socket?
+Hello:
 
-Oh this is simple.
-We don't control the socket.  Apps do.  ie. the entirety of the rest
-of the internet.
+This patch was applied to iproute2/iproute2-next.git (main)
+by David Ahern <dsahern@kernel.org>:
+
+On Wed, 9 Feb 2022 08:54:15 +0200 you wrote:
+> The cited commit removed the space after the local/remote tunnel print
+> and resulted in "broken" output:
+> 
+> gre remote 1.1.1.2local 1.1.1.1ttl inherit erspan_ver 0 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+>     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 
+> Fixes: 5632cf69ad59 ("tunnel: fix clang warning")
+> Signed-off-by: Gal Pressman <gal@nvidia.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [iproute2-next] tunnel: Fix missing space after local/remote print
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=25a9c4fa81c6
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
