@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A895C4B0DDD
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 13:52:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11D964B0DD1
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 13:52:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241820AbiBJMwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 07:52:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35794 "EHLO
+        id S241823AbiBJMwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 07:52:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239293AbiBJMwW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 07:52:22 -0500
+        with ESMTP id S241813AbiBJMwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 07:52:23 -0500
 Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30081.outbound.protection.outlook.com [40.107.3.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EAD8264D
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 04:52:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217142636
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 04:52:24 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fb+OZ73PbcVLqfE6gz6wE4a79ByqyH3NLhte+e7rVujGxNTDpTqA8S1+/EIwc4VQM8QodvC1FhsFRoyAQBOmogA4RzgJyzHvUQJAAEqfxBpdLyyKEKAT6joOV4o9ooS8z+akoqopPphOhUmy40b7V5HF85cdBGDnx+SWiTMsNXOKLlWlCHZFpuJ31AAd5OwbQ60/fxhgSPYykadZYPRaQ3+JEaYy9fETjzR222gwqS8npn1GvlFsQ/0JQtFBjPbK7o/VPbeJEormR0OWvQXVtuGO7eIjOlfOhXtwXl5E7yDcYmnLlr6MlNMBnrPZMg2nb67BLieS3bZBkJBO7H0McQ==
+ b=XoukG88chbWv+/irE9UQBzfdL7xVHwHjo/qkyMG+BJFDR7tTG/OSGzc5fRuTaD5HpyD9/+kZkx4v8VmKwWxw2Hg+K4BqsgWn6upwkA2hMstK1JnngeYvJG9AY/1HyWlyZ95l4SzN9B3VvIOl4Tth4j7gUhCre4X2j1RFse02uFta8CWggm44uolgDzi68Zb64ROTowC25iyPFd0g059ae2Ivb7pH7rFFKpCNZZNuxzubvgKOryJxTcRg5pu+qksjEi71MGSL0STPZAPLqY1F5MR/WIwAIJSv/5zq1M8Hn+htx9c+FNt4vCg8TNILm0NfvA7dEkQMJUvgH77d3Dsopw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=q1iOeDcXDPen86tKsOQEqJ3+pjGkSIWnWyScUZ+FtUk=;
- b=TMJZIFxt7Z1nQg6/5l/xgeBxHeA7/Xq1fRWn9FzPS7eCJVmPJFal7CRzCBgM8ZX1TvqDY3Wh+P3SUL2GnDpIb/HNzf+5JuNfXhiwC2slvk1R4we0bg9eYSo9MH3yaSegZ/KLfXolhJP3bYwSU5S7GCRDJxIwIggDMkxYzl5o0oKKm00cDadr/9SIFudnVpBZyY3w3GBlN7gHOjt6dmMAq/WDFsKoMoZmCMUck8jjzOcfQGj0cQ8TCjd403HaNav/ZP32AguJjFiInyFYNA//3CWLa2PeKcQygijPO3pwbtHx3rH2hr5IUWlH15IV860dhCCKNc3u5/PL6/7YDUaJNw==
+ bh=BdQzdsacJ8uQ+xJSPuUE3XaKwv2YhPNa6rwcgqkD5pc=;
+ b=YECwjlo8xQioqBgbtNKQzDaT8Od40tfXavR3qOkv01Ie/eyO4IHGzC07WEVKzvmKxGE8/HBsTFMvF9+LiOWxn0koip3NLfxnQgEdb6ZaCYfdoSv08uDTNpqtSi2AySgYzy0sdN6ovs8xFIerof3QphqXyxXVO//PEE3e2nl6VATvbya125VRdNmbyF48lUKy5n4XGoYyeLbv+zAQ5j8frkK/z1bgb2w/Xb+Ef8+pFadlaJZTWGc/x4JzgQ3kWuwt4gG/g9SywecnLGw4SPkEqeH3gHOXUaGQ2VfBq/hXaabf1+uU4kSWGE5zRrFZOeVfOSFmyJAmEQvSlbQlvVs8Gg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=q1iOeDcXDPen86tKsOQEqJ3+pjGkSIWnWyScUZ+FtUk=;
- b=KakaQGlrPBH8yDFZZzNniIAfqtPcb4HW9q5ee52oVf2Lq+VzE7VpX9CqO+FC+esnXo/Uv0RnmCgDZVjMRnruRQ7znfpoJoeYkAVA6Xt8uCsuAsNQoQKeV+qymfPniv8HIQUA9R+Cue/f0a9oo3n7qWBjAXMAugoj4u106/t7M5c=
+ bh=BdQzdsacJ8uQ+xJSPuUE3XaKwv2YhPNa6rwcgqkD5pc=;
+ b=picS9OyUzu3iK6v0ngvsWMhFtrrHWgnOliVxAv4qRlfRtnWwHVsXeCoZrarBxFB9ddnkNkDOJ05LVcjvF5PW18e3rDu1WgJ90n9bU2OB1ziXuMOPG+vbkFMi3Y7qyjbAoSOvu8ndcBycXrAfMg3oRBZqb8T9o3l6SUMk1+SEwSQ=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by DU2PR04MB8806.eurprd04.prod.outlook.com (2603:10a6:10:2e1::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.13; Thu, 10 Feb
- 2022 12:52:19 +0000
+ 2022 12:52:20 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Thu, 10 Feb 2022
- 12:52:18 +0000
+ 12:52:20 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -51,9 +51,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com, Jiri Pirko <jiri@resnulli.us>,
         Ivan Vecera <ivecera@redhat.com>
-Subject: [PATCH v2 net-next 03/12] net: dsa: qca8k: rename references to "lag" as "lag_dev"
-Date:   Thu, 10 Feb 2022 14:51:52 +0200
-Message-Id: <20220210125201.2859463-4-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 04/12] net: dsa: make LAG IDs one-based
+Date:   Thu, 10 Feb 2022 14:51:53 +0200
+Message-Id: <20220210125201.2859463-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220210125201.2859463-1-vladimir.oltean@nxp.com>
 References: <20220210125201.2859463-1-vladimir.oltean@nxp.com>
@@ -64,54 +64,54 @@ X-ClientProxiedBy: AM0PR08CA0014.eurprd08.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3a2c346a-eaf5-4122-8a5f-08d9ec942b7c
+X-MS-Office365-Filtering-Correlation-Id: 915f6518-c3ab-457a-b7cb-08d9ec942c50
 X-MS-TrafficTypeDiagnostic: DU2PR04MB8806:EE_
-X-Microsoft-Antispam-PRVS: <DU2PR04MB88068008488927E5DACE7476E02F9@DU2PR04MB8806.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Microsoft-Antispam-PRVS: <DU2PR04MB880634FF8AA8799F89965394E02F9@DU2PR04MB8806.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qctYBePCPL8U2b/CFMv7+9Ejoc4nDWckE2cbQzkhyG6k3wL/vKfvh2EbKNb9UGaUzWxmEcV6g6B0rXzCnt6qfyZvVVT4+5BiD8nyooxwZJXgCDjL+TAAeJ6KMVynOQX5ssFBlCZQuh9/xt5/ugGJjsHV6OwlhbSYvf7madeuZ6X3q23DtDA0gS3pOG7cv+NHN676WPvV8OV/9Zv1DJdjaYRQLlRiEewkMv2mJPLC52idEjqeWenABxdJZpLO73qgDpcL9L0T9ks1jXy4tS9ANNdCUdPmYNiLjuzAWQJeTskrR+3PxVPhuskKSPQ84vYF1eB3LKePnIkcokX9PIEgGT/t0FdJ07SlBogESgEPU2Qx2LoljXRYHFgNOAUJcRQSS2zB7cIdxljEImXXumSoFAq1oLXOmgKld2aAVaNhURD5Olcs3hYi/CLZz6QTNIx7TlWAf2ilpfTG8xyzD16JIcN3w/7sylgsYql69pBrxYbCG8sQ7kxqHC21lj2OZoEyx0uPARFhzg4MsdGz2fN54/JwdXLlDfc4bnobwhR9Ii4DVMNVM2oRVQToTVszdGYqE6FlAcbEwN8u5yV/uqP7T+7H3YYHyDllfvu9HcIm4E4CsrfX4y4FGOkAP9zTUtnDlg6ZT4LMz8eXt3yD2A+NiY1oRrwQEJgxlTSepTIhgHAbKc3MaL+eSdYGALA/bFo2qiKmiW3Kq9UwyOX1q9GtkXddAONQjcNmCn8lLvyU4LU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(316002)(38100700002)(38350700002)(66946007)(6506007)(6666004)(6916009)(54906003)(8936002)(36756003)(6486002)(5660300002)(8676002)(66556008)(66476007)(4326008)(7416002)(52116002)(86362001)(2906002)(6512007)(44832011)(83380400001)(2616005)(1076003)(26005)(186003)(32563001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: zWRHpKgd4g1bFT0SNvch/RkmPERGCtLX7y0rdq0MFdrpWn8duwulo212SdX4cjj6GPtpBGQi6lJibI2uncfYgl4UamV/Lu/+TSEAn2q72fJfGnmeJPJeB7+GrO6P7aTMM/psvtSJFaG8GoNNCwqD6yanu4oJXnRXNN/HCzP5HwsyCMtuTNZlZmIbmA+rsNwYwLWeu5DmIW4qM1whC5Rhg4ZNO57HjDBFxDTo1j/xEo+VwX+WVCg6DxKDX/PdxIgZzZKuj1+NkXbX2xrriLeJ+akSwrUjUb61WtI/pPtA/emJKOuJ80qYtArUuw575gTVXnTcEM+ZJvRqxWVNjBEVeF8Ful4DK7d0G4/8GbZBZkJRdB0bMo1/LWwEnfhOqstkvVzhmYlENBy7hh4nWFi32EeoYjK8WyqrQN+0uWiyNIPalpb12PcP7ISqCxkRjg89Rpiks5wXtgl7RqFfYdhqg8T0vocv/LXmPxaWgJx9i80GzTGbvhHiXRrQhI2tByC6CePmwEh3fuw3j+6D/FP+r+VU6REmQjOP2P4Ow2fgnXHgRvDp0XFyxom26NURom9oggs3s9/foPuN8gzIxtKOJFhC1kPnygyuXgvrgdAEsCF5TeUVT2RzmVWPcPVA1SH2RmuL0nJ8wDM9J/Eo1ggiNX1sJT/nnl16j2rpw32fgRNEQpU/bkD8iroq2wQg9BybZsJEr5wi6rSGItJi27nJKg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(316002)(38100700002)(38350700002)(66946007)(6506007)(6666004)(6916009)(54906003)(8936002)(36756003)(6486002)(5660300002)(8676002)(66556008)(66476007)(4326008)(7416002)(52116002)(86362001)(2906002)(6512007)(44832011)(83380400001)(2616005)(1076003)(26005)(186003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8Eu40ICi3aKJ49YHQShoS18pZzXSsmqJf7AqB6WjPrq1OkmCkQdxzvHFEQjJ?=
- =?us-ascii?Q?s81mOa3ecqmrNcFru+wfn8S+AU26021ePNoENdpHkITBiyr5kDdRCzUcjZHQ?=
- =?us-ascii?Q?Jo2KJR03BiEK6D12JlmcxeK7jRQ8Spup/CHhVib8g26or52Ok/4mgPlG8OTn?=
- =?us-ascii?Q?+AF6qGoeiuOL2eHSIj60rNtQ4+3ihfGMDEBIFG7cyotLCdIh7oJeR2XFoQJ9?=
- =?us-ascii?Q?18y9vAz9fBgWxg3WXLNCkxeodero2vCCyRvcfgflffkOFI39Lq0pSDPzV0LK?=
- =?us-ascii?Q?IKzhICARAMsuXyfmoQxv8PtJKkn//i8sdcYiWzHxwkQ24rLhcsmNmz1TAqFW?=
- =?us-ascii?Q?cge95m8QILNRolgcdC9BlUfK1Yi9PvVzPfoZX2H2CP7GVAcgvN02ZWIQmMq1?=
- =?us-ascii?Q?hGS8KrOY+QykZ2nZI9Rmj54HR4Z3bXEkJ8GP22AAT90MhF2ZLpnWFM9ejWzV?=
- =?us-ascii?Q?g18H/mXuSymH2a6f4wEof+00+WJj4oEpA9rU243IKEtM3tLzGjxGJ5SI1kJi?=
- =?us-ascii?Q?nkW1Getof2JnVRCpoLeqKIBUzI0gsf+KZRXi89spXB4bTtqn48I5LOoKQb08?=
- =?us-ascii?Q?QWlCbQgiNuLKi2hqqLRCpYTStMi0055zAccPM2djyUUSvT8J51DUiFRMhE/4?=
- =?us-ascii?Q?jhPD214Yb5Lux9HrxuWrv11ltNzgDU6ZNudwo91UkCsxQYcWSA+/j3aJ6WJ4?=
- =?us-ascii?Q?5ucrzsShmtfey5s9pLJEu4hzm7EPRrEUgJ2TmSi3Cw7RKAACtndVQW8fCCs4?=
- =?us-ascii?Q?lFCJyzhq/PRBA3mvx4GIGQ4BqGCJ3MnnZM6PzySiNZyIw+RTu1980gmxFAyw?=
- =?us-ascii?Q?JdBEOjooEXKZbnfI2JQiawkgbfyK9pacLJ6WPMdjyGUBLB4he/Hr+mIPxEcL?=
- =?us-ascii?Q?FqIcv1nS8KEJ+llIcw/YDm7IBuAp7JT5IXf4U1ykqbrfWyTtrMwoQ/NlEzQi?=
- =?us-ascii?Q?KPl2Gi0Sq9W3gvVkmveF0jdHJWLErXZSY0kzi5X8IxK9q0ldml4NiamqErOX?=
- =?us-ascii?Q?TwiHL3qkN7RltG0zNBugREvUS69vrbco6BjWh5Cc6FuUCluJTQLSIEtYqsx1?=
- =?us-ascii?Q?LYp+l5DhpqMcesQXCfLc5ofLC3R7MT1j7ijljWWdNhvuyrbz1k12Dz7VxBMN?=
- =?us-ascii?Q?R2YK1rKwfd4PuABvb3+Nm+Xt6QoqL/szYSS2NkmKk6DpKC2OuEDVsypfXl2P?=
- =?us-ascii?Q?vUqAAT+tPfSnbn0wYPt1xBOp/A5OMHDzyMozuf335z9PmtbxVHyIa7KwZZfK?=
- =?us-ascii?Q?2wf4JYPEBsVsnTML98UIxa71b6431oxUxx2JWsxLwVhRKCmJ/qnOUY7o9b1R?=
- =?us-ascii?Q?LRxifIsj+NfDJ+QNGmdqpAeUzJIEGFQ+EGtNSF1zEhyXjMGnesGgttw9Z3T6?=
- =?us-ascii?Q?fd/F1hf+H4pJAhXkM9Ba4sIx8ZaFEcj4TrGp0bjRE51d62Qsar0fAZjwdVIW?=
- =?us-ascii?Q?PM7HD82NRcMeQWc3BqFsf46TQfSe9CWkkgHMLFKFR7tCMPBJjTkTdmsm3y4R?=
- =?us-ascii?Q?SyelRXlX5BKsNeeu1L52lWMok9/mS60GxCZjg2enIM7SPUjdkUsBMdiJCK9O?=
- =?us-ascii?Q?Cx5ympMYEsNvqnYt8RIaH9sFvUqO69rFOItH6+CUjMKWvWHwxg8vt4OhlPpv?=
- =?us-ascii?Q?uyHSOZldk+iktyeJTjTEqs8=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PPt/+dNEsYBu9kucI4LZ1LgOARDgXQ+L+mouHQeLdIhnGodCDAT5z7myvooQ?=
+ =?us-ascii?Q?nJ7h9z05GunlHBSCdTCi8zjon/B3nyQ4A9GoS+8bgcRx5n7gROUciGwfVFvS?=
+ =?us-ascii?Q?3irUnjmUJcEC7ftDTIXhP3/3jO0fpKcfscs1Thod4/MbZEw8e5hZEkIkWX+j?=
+ =?us-ascii?Q?53i7bGmD/A+eoyGkb19++fjxROJA6lR/uiIOj2+Is4KYit4/z0zewWhCXJK9?=
+ =?us-ascii?Q?/3zkaHV1WJ7yrg/z2LJxEMk2h69QAMyuYJJoOc7M9V+Q2e32dP5jgkbcwHAX?=
+ =?us-ascii?Q?luOKvg1E7fX4Z10unapA5wr/uCj9y2v8H98DehxBcHKjjoQHUTCB1a8LogMi?=
+ =?us-ascii?Q?iylB/xa4KfLp5hz8T5d+b7xtYspkmEX79y43WSxNIozNXEbHtaywrh37tcat?=
+ =?us-ascii?Q?n6o7fd66fi9ZpFm6ERrN668BfHPFxA3S8sTtGCjaQAaYJaT6nuopzjya14jz?=
+ =?us-ascii?Q?NHOU8hoNOCmoxBWo6Rqa5pu6eR6oYW4TBqLVzCvDgg62F0Qjl6/svF1We82S?=
+ =?us-ascii?Q?3WifqI8HDcMKX2fjPQTIkmSZl53DNR8Fx9CvtT8D1MnET9KzWBBOyaSVordM?=
+ =?us-ascii?Q?2idscQCgM5R/eOsJJWqrfgFCVGcYq/jRFSghGz0LOrMQoaXFoo6HCEmlE8WA?=
+ =?us-ascii?Q?He8RHr3IlrkZ8oqE7WZb24GwjEoRi7549ZYuKlXn6GWyhek6soLq3dLzSGx0?=
+ =?us-ascii?Q?3UGBUsDFwHOi/jI5bOitlrDL9BiNgQ+Zt4FAQo9hBJhTIItQ1FmXPmVWW+48?=
+ =?us-ascii?Q?vz5rAOgS8YO/9Q7izKGpQf1xvYjqiBlQskrQIqJQEdCEkabBo4Ng1r9P2OZ3?=
+ =?us-ascii?Q?O1Sw6XdvCv1g2zIjpKG7DkidJa+GDdsBZpUu2TKLaNBdvaznkBHuLr9bcwRS?=
+ =?us-ascii?Q?MHykQ3EjdIsOWi0MwtaElY/MPSpqoyLgQ+GaNOzJKF97YN/3Bd0o3SM74bVa?=
+ =?us-ascii?Q?afppDjyzxrFEf+yLoBXp8MbG6LuPb2MStKduCvIyCQa3IF8nZFADcnOWP+Bs?=
+ =?us-ascii?Q?oG+QkHOjvcxzTaLRu0yOW6wiWQSSa/LhpExbRWn3i/3uI9owp7yP3m7HayYl?=
+ =?us-ascii?Q?gkHYCFyjl+eDW4rZ4kpIx7IcncxyAxWqxshBZd6goVAWxRuLUHB8XT8qZ4qx?=
+ =?us-ascii?Q?MTQ+0cuS1wA8UqgIH9KpxCoWDU0OQ0CFqzY1ETyNHnIvDxoS3kYFkGWyD9bv?=
+ =?us-ascii?Q?mOFnm/ERIeGWz+0H7Gk/ybKKBqCeWGowEAm2znhUqitsKwb3srl+zm6NrdiZ?=
+ =?us-ascii?Q?QiNNqLgcriwQ6XnSiqmwGaNuuSsbr2no2YY75RcQBZ7xMIRmeidnWVcc/dR0?=
+ =?us-ascii?Q?8d839pILxVGJG4gYFEhyQ6/4gbz8n6ywPpesrHiYO5wDWbsvNom6sK3+RzI4?=
+ =?us-ascii?Q?Db37Zkt1yXfMH/+Ui0X9BjnWH9V8CWqZDQ+sstorLTiZqbsi2fuPCoBW22sV?=
+ =?us-ascii?Q?Hetc3CO0Ro0rj3AZE9rqa5PYs7wQYhk652lAVCIYcoVJCqL96fVXsvAo+nA0?=
+ =?us-ascii?Q?bCmqebdQ1ksCPhbe9tXXrJNLjX1Vee2SqhqqRl15sGDmfq+MWAvPG83iKMh7?=
+ =?us-ascii?Q?992axipXnUvVbW0ZzQKyV7k3dU6yV1wC14Z5k+zBp0v8WdGAbBdE3Tf6Xk9M?=
+ =?us-ascii?Q?ISTOLkESIDK4C3OJgl+9aH8=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3a2c346a-eaf5-4122-8a5f-08d9ec942b7c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 915f6518-c3ab-457a-b7cb-08d9ec942c50
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 12:52:18.0095
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 12:52:19.4781
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: c8IXmEYdo7fjXqOI+MqFWwDy+rcrWdptRiwAoVfOkfDHYN26/iwk2C7FmZnYYe0BUU9vWgWA/T6eY68/kBprsw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: hPRH5lep+/OrPzS3j5ER7jYXi5gP2g7gRY1Wsh70GDPmsdXSW7XDbEboU8259ojivFwxpoO7SIq5vRkDW/WBeQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8806
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -123,116 +123,167 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation of converting struct net_device *dp->lag_dev into a
-struct dsa_lag *dp->lag, we need to rename, for consistency purposes,
-all occurrences of the "lag" variable in qca8k to "lag_dev".
+The DSA LAG API will be changed to become more similar with the bridge
+data structures, where struct dsa_bridge holds an unsigned int num,
+which is generated by DSA and is one-based. We have a similar thing
+going with the DSA LAG, except that isn't stored anywhere, it is
+calculated dynamically by dsa_lag_id() by iterating through dst->lags.
+
+The idea of encoding an invalid (or not requested) LAG ID as zero for
+the purpose of simplifying checks in drivers means that the LAG IDs
+passed by DSA to drivers need to be one-based too. So back-and-forth
+conversion is needed when indexing the dst->lags array, as well as in
+drivers which assume a zero-based index.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/qca8k.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 13 ++++++++-----
+ drivers/net/dsa/qca8k.c          |  5 +++--
+ include/net/dsa.h                |  8 +++++---
+ net/dsa/dsa2.c                   |  8 ++++----
+ net/dsa/tag_dsa.c                |  2 +-
+ 5 files changed, 21 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index bb2fbb6826ac..337aa612cc9f 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -2780,17 +2780,17 @@ qca8k_get_tag_protocol(struct dsa_switch *ds, int port,
- 
- static bool
- qca8k_lag_can_offload(struct dsa_switch *ds,
--		      struct net_device *lag,
-+		      struct net_device *lag_dev,
- 		      struct netdev_lag_upper_info *info)
- {
- 	struct dsa_port *dp;
- 	int id, members = 0;
- 
--	id = dsa_lag_id(ds->dst, lag);
-+	id = dsa_lag_id(ds->dst, lag_dev);
- 	if (id < 0 || id >= ds->num_lag_ids)
- 		return false;
- 
--	dsa_lag_foreach_port(dp, ds->dst, lag)
-+	dsa_lag_foreach_port(dp, ds->dst, lag_dev)
- 		/* Includes the port joining the LAG */
- 		members++;
- 
-@@ -2809,7 +2809,7 @@ qca8k_lag_can_offload(struct dsa_switch *ds,
- 
- static int
- qca8k_lag_setup_hash(struct dsa_switch *ds,
--		     struct net_device *lag,
-+		     struct net_device *lag_dev,
- 		     struct netdev_lag_upper_info *info)
- {
- 	struct qca8k_priv *priv = ds->priv;
-@@ -2817,7 +2817,7 @@ qca8k_lag_setup_hash(struct dsa_switch *ds,
- 	u32 hash = 0;
- 	int i, id;
- 
--	id = dsa_lag_id(ds->dst, lag);
-+	id = dsa_lag_id(ds->dst, lag_dev);
- 
- 	switch (info->hash_type) {
- 	case NETDEV_LAG_HASH_L23:
-@@ -2849,7 +2849,7 @@ qca8k_lag_setup_hash(struct dsa_switch *ds,
- 	if (unique_lag) {
- 		priv->lag_hash_mode = hash;
- 	} else if (priv->lag_hash_mode != hash) {
--		netdev_err(lag, "Error: Mismatched Hash Mode across different lag is not supported\n");
-+		netdev_err(lag_dev, "Error: Mismatched Hash Mode across different lag is not supported\n");
- 		return -EOPNOTSUPP;
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 454e3ee20155..fab70fd305e2 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1611,10 +1611,11 @@ static int mv88e6xxx_pvt_map(struct mv88e6xxx_chip *chip, int dev, int port)
+ 			 * FORWARD frames, which use the LAG ID as the
+ 			 * source port, we must translate dev/port to
+ 			 * the special "LAG device" in the PVT, using
+-			 * the LAG ID as the port number.
++			 * the LAG ID (one-based) as the port number
++			 * (zero-based).
+ 			 */
+ 			dev = MV88E6XXX_G2_PVT_ADDR_DEV_TRUNK;
+-			port = dsa_lag_id(dst, dp->lag_dev);
++			port = dsa_lag_id(dst, dp->lag_dev) - 1;
+ 		}
  	}
  
-@@ -2859,13 +2859,13 @@ qca8k_lag_setup_hash(struct dsa_switch *ds,
+@@ -6125,7 +6126,7 @@ static bool mv88e6xxx_lag_can_offload(struct dsa_switch *ds,
+ 		return false;
  
- static int
- qca8k_lag_refresh_portmap(struct dsa_switch *ds, int port,
--			  struct net_device *lag, bool delete)
-+			  struct net_device *lag_dev, bool delete)
- {
- 	struct qca8k_priv *priv = ds->priv;
+ 	id = dsa_lag_id(ds->dst, lag_dev);
+-	if (id < 0 || id >= ds->num_lag_ids)
++	if (id <= 0 || id > ds->num_lag_ids)
+ 		return false;
+ 
+ 	dsa_lag_foreach_port(dp, ds->dst, lag_dev)
+@@ -6156,7 +6157,8 @@ static int mv88e6xxx_lag_sync_map(struct dsa_switch *ds,
+ 	u16 map = 0;
+ 	int id;
+ 
+-	id = dsa_lag_id(ds->dst, lag_dev);
++	/* DSA LAG IDs are one-based, hardware is zero-based */
++	id = dsa_lag_id(ds->dst, lag_dev) - 1;
+ 
+ 	/* Build the map of all ports to distribute flows destined for
+ 	 * this LAG. This can be either a local user port, or a DSA
+@@ -6300,7 +6302,8 @@ static int mv88e6xxx_port_lag_join(struct dsa_switch *ds, int port,
+ 	if (!mv88e6xxx_lag_can_offload(ds, lag_dev, info))
+ 		return -EOPNOTSUPP;
+ 
+-	id = dsa_lag_id(ds->dst, lag_dev);
++	/* DSA LAG IDs are one-based */
++	id = dsa_lag_id(ds->dst, lag_dev) - 1;
+ 
+ 	mv88e6xxx_reg_lock(chip);
+ 
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 337aa612cc9f..e1e045ceec63 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -2787,7 +2787,7 @@ qca8k_lag_can_offload(struct dsa_switch *ds,
+ 	int id, members = 0;
+ 
+ 	id = dsa_lag_id(ds->dst, lag_dev);
+-	if (id < 0 || id >= ds->num_lag_ids)
++	if (id <= 0 || id > ds->num_lag_ids)
+ 		return false;
+ 
+ 	dsa_lag_foreach_port(dp, ds->dst, lag_dev)
+@@ -2865,7 +2865,8 @@ qca8k_lag_refresh_portmap(struct dsa_switch *ds, int port,
  	int ret, id, i;
  	u32 val;
  
--	id = dsa_lag_id(ds->dst, lag);
-+	id = dsa_lag_id(ds->dst, lag_dev);
+-	id = dsa_lag_id(ds->dst, lag_dev);
++	/* DSA LAG IDs are one-based, hardware is zero-based */
++	id = dsa_lag_id(ds->dst, lag_dev) - 1;
  
  	/* Read current port member */
  	ret = regmap_read(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL0, &val);
-@@ -2928,26 +2928,26 @@ qca8k_lag_refresh_portmap(struct dsa_switch *ds, int port,
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 207723e979c3..d0224f648777 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -163,9 +163,10 @@ struct dsa_switch_tree {
+ 	unsigned int last_switch;
+ };
  
- static int
- qca8k_port_lag_join(struct dsa_switch *ds, int port,
--		    struct net_device *lag,
-+		    struct net_device *lag_dev,
- 		    struct netdev_lag_upper_info *info)
++/* LAG IDs are one-based, the dst->lags array is zero-based */
+ #define dsa_lags_foreach_id(_id, _dst)				\
+-	for ((_id) = 0; (_id) < (_dst)->lags_len; (_id)++)	\
+-		if ((_dst)->lags[(_id)])
++	for ((_id) = 1; (_id) <= (_dst)->lags_len; (_id)++)	\
++		if ((_dst)->lags[(_id) - 1])
+ 
+ #define dsa_lag_foreach_port(_dp, _dst, _lag)			\
+ 	list_for_each_entry((_dp), &(_dst)->ports, list)	\
+@@ -178,7 +179,8 @@ struct dsa_switch_tree {
+ static inline struct net_device *dsa_lag_dev(struct dsa_switch_tree *dst,
+ 					     unsigned int id)
  {
- 	int ret;
- 
--	if (!qca8k_lag_can_offload(ds, lag, info))
-+	if (!qca8k_lag_can_offload(ds, lag_dev, info))
- 		return -EOPNOTSUPP;
- 
--	ret = qca8k_lag_setup_hash(ds, lag, info);
-+	ret = qca8k_lag_setup_hash(ds, lag_dev, info);
- 	if (ret)
- 		return ret;
- 
--	return qca8k_lag_refresh_portmap(ds, port, lag, false);
-+	return qca8k_lag_refresh_portmap(ds, port, lag_dev, false);
+-	return dst->lags[id];
++	/* DSA LAG IDs are one-based, dst->lags is zero-based */
++	return dst->lags[id - 1];
  }
  
- static int
- qca8k_port_lag_leave(struct dsa_switch *ds, int port,
--		     struct net_device *lag)
-+		     struct net_device *lag_dev)
+ static inline int dsa_lag_id(struct dsa_switch_tree *dst,
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index c73c376d5d2b..5670b441419f 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -86,13 +86,13 @@ void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag_dev)
  {
--	return qca8k_lag_refresh_portmap(ds, port, lag, true);
-+	return qca8k_lag_refresh_portmap(ds, port, lag_dev, true);
- }
+ 	unsigned int id;
  
- static void
+-	if (dsa_lag_id(dst, lag_dev) >= 0)
++	if (dsa_lag_id(dst, lag_dev) > 0)
+ 		/* Already mapped */
+ 		return;
+ 
+-	for (id = 0; id < dst->lags_len; id++) {
++	for (id = 1; id <= dst->lags_len; id++) {
+ 		if (!dsa_lag_dev(dst, id)) {
+-			dst->lags[id] = lag_dev;
++			dst->lags[id - 1] = lag_dev;
+ 			return;
+ 		}
+ 	}
+@@ -124,7 +124,7 @@ void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag_dev)
+ 
+ 	dsa_lags_foreach_id(id, dst) {
+ 		if (dsa_lag_dev(dst, id) == lag_dev) {
+-			dst->lags[id] = NULL;
++			dst->lags[id - 1] = NULL;
+ 			break;
+ 		}
+ 	}
+diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
+index 8abf39dcac64..26435bc4a098 100644
+--- a/net/dsa/tag_dsa.c
++++ b/net/dsa/tag_dsa.c
+@@ -251,7 +251,7 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 		 * so we inject the frame directly on the upper
+ 		 * team/bond.
+ 		 */
+-		skb->dev = dsa_lag_dev(cpu_dp->dst, source_port);
++		skb->dev = dsa_lag_dev(cpu_dp->dst, source_port + 1);
+ 	} else {
+ 		skb->dev = dsa_master_find_slave(dev, source_device,
+ 						 source_port);
 -- 
 2.25.1
 
