@@ -2,101 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9F474B0926
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 10:08:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72A464B092F
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 10:11:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238252AbiBJJHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 04:07:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40430 "EHLO
+        id S238275AbiBJJLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 04:11:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238209AbiBJJHm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 04:07:42 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BCE18B
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 01:07:43 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id f10so9114905lfu.8
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 01:07:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=Q/4HD0u0FsnyQKuk9QMRqDFGsAdNtwpy+oe3vgRYJqk=;
-        b=H0437sBkullS25ZzberqIQipH5vrhLiE1jFKeWT7M4dDVkB0x/tTE4hyBJleHxbWks
-         fu7FaBU7T44VWSoatzAy9KH8CiYY7F8CvDkqs6/+wAE3WZISyL5f0/rZRMpolpxDcTIp
-         JtHY5rFxJ0Lzxb1VluyqnPoNVgi7s4ik1+zCVKTNcHNFy2B26diPw4YtVDYnWguSvdQS
-         854z536fISY2NwjLJwdCgIDTrJRsGD91QpRF6qfFHkTR70lUmZmvgtNSzAyadheUbBjc
-         OdxpiqaRqdQP4k+O20pwmFixibIq4GB12axMnTSTZ3RHa0SWZluENmSvw1v/wA8H/jD2
-         BBNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=Q/4HD0u0FsnyQKuk9QMRqDFGsAdNtwpy+oe3vgRYJqk=;
-        b=XFbysy8BmVc4iMyEJbNwJmxwptMDYUToCZ8OqeX0T4DgQD+eJ5peDH/QZlpA4LYN5X
-         BoS/Stf3s/1aAIkFVMABcJe1CQfgzXZtSa691y+GG+083Cl2QdMnhPuhaA3I2SIO+jYQ
-         aIxKFcdOjgNpcyXGBueIbllqgyriI1gvoO9nhQQWhNuKt0UY4Dex14zJM+oKzmlc4iOd
-         b75Ujx6GiQk5WPJPv0mZ943W/qj4cvNrKlQfMPUCnbakpV2KDaIUiPwFO9fD7WP4maK3
-         yaxuYklAcrSpviKmmg+AIf4NRzkQw9d3gYAHwGnfUewB+CRYuvNukLp9/0OHF3kt/vFV
-         8Aww==
-X-Gm-Message-State: AOAM5320aJP5XfNprMHs+L0DeaPel0XNoi/Et50id1rPh6ZCx9+8Qh/J
-        DK5X3n/Zr5yx6J666T6Y45vfQx4NkTSO8w6RyuM=
-X-Google-Smtp-Source: ABdhPJyAtJufJaQ1kQevjE4+ldeyn1C5gyL96boO1gO5BXH0nX7IsfzQI2BKk5f5K9OkF+xGm0QIEQ==
-X-Received: by 2002:ac2:4472:: with SMTP id y18mr2527577lfl.209.1644484061721;
-        Thu, 10 Feb 2022 01:07:41 -0800 (PST)
-Received: from wse-c0127 ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id a21sm916698lfr.290.2022.02.10.01.07.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 01:07:41 -0800 (PST)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     Ido Schimmel <idosch@idosch.org>,
-        Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 0/5] Add support for locked bridge ports
- (for 802.1X)
-In-Reply-To: <YgPsY6KrbDo2QHgX@shredder>
-References: <20220209130538.533699-1-schultz.hans+netdev@gmail.com>
- <YgPsY6KrbDo2QHgX@shredder>
-Date:   Thu, 10 Feb 2022 10:07:09 +0100
-Message-ID: <86r18bum2q.fsf@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S236840AbiBJJLm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 04:11:42 -0500
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E27C38;
+        Thu, 10 Feb 2022 01:11:42 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R751e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V43kdfO_1644484298;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V43kdfO_1644484298)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 10 Feb 2022 17:11:39 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH net-next v7 0/5] net/smc: Optimizing performance in short-lived scenarios 
+Date:   Thu, 10 Feb 2022 17:11:33 +0800
+Message-Id: <cover.1644481811.git.alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-8.7 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NORMAL_HTTP_TO_IP,NUMERIC_HTTP_ADDR,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On ons, feb 09, 2022 at 18:31, Ido Schimmel <idosch@idosch.org> wrote:
-> On Wed, Feb 09, 2022 at 02:05:32PM +0100, Hans Schultz wrote:
->> This series starts by adding support for SA filtering to the bridge,
->> which is then allowed to be offloaded to switchdev devices. Furthermore
->> an offloading implementation is supplied for the mv88e6xxx driver.
->
-> [...]
->
->> Hans Schultz (5):
->>   net: bridge: Add support for bridge port in locked mode
->>   net: bridge: Add support for offloading of locked port flag
->>   net: dsa: Add support for offloaded locked port flag
->>   net: dsa: mv88e6xxx: Add support for bridge port locked mode
->>   net: bridge: Refactor bridge port in locked mode to use jump labels
->
-> I think it is a bit weird to add a static key for this option when other
-> options (e.g., learning) don't use one. If you have data that proves
-> it's critical, then at least add it in patch #1 where the new option is
-> introduced.
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-Do you suggest that I drop patch #5 as I don't have data that it is
-critical?
+This patch set aims to optimizing performance of SMC in short-lived
+links scenarios, which is quite unsatisfactory right now.
 
->
-> Please add a selftest under tools/testing/selftests/net/forwarding/. It
-> should allow you to test both the SW data path with veth pairs and the
-> offloaded data path with loopbacks. See tools/testing/selftests/net/forwarding/README
+In our benchmark, we test it with follow scripts:
 
-I will do that.
+./wrk -c 10000 -t 4 -H 'Connection: Close' -d 20 http://smc-server
+
+Current performance figures like that:
+
+Running 20s test @ http://11.213.45.6
+  4 threads and 10000 connections
+  4956 requests in 20.06s, 3.24MB read
+  Socket errors: connect 0, read 0, write 672, timeout 0
+Requests/sec:    247.07
+Transfer/sec:    165.28KB
+
+There are many reasons for this phenomenon, this patch set doesn't
+solve it all though, but it can be well alleviated with it in.
+
+Patch 1/5  (Make smc_tcp_listen_work() independent) :
+
+Separate smc_tcp_listen_work() from smc_listen_work(), make them
+independent of each other, the busy SMC handshake can not affect new TCP
+connections visit any more. Avoid discarding a large number of TCP
+connections after being overstock, which is undoubtedly raise the
+connection establishment time.
+
+Patch 2/5 (Limit SMC backlog connections):
+
+Since patch 1 has separated smc_tcp_listen_work() from
+smc_listen_work(), an unrestricted TCP accept have come into being. This
+patch try to put a limit on SMC backlog connections refers to
+implementation of TCP.
+
+Patch 3/5 (Limit SMC visits when handshake workqueue congested):
+
+Considering the complexity of SMC handshake right now, in short-lived
+links scenarios, this may not be the main scenario of SMC though, it's
+performance is still quite poor. This patch try to provide constraint on
+SMC handshake when handshake workqueue congested, which is the sign of
+SMC handshake stacking in our opinion.
+
+Patch 4/5 (Dynamic control handshake limitation by socket options)
+
+This patch allow applications dynamically control the ability of SMC
+handshake limitation. Since SMC don't support set SMC socket option
+before,
+this patch also have to support SMC's owns socket options.
+
+Patch 5/5 (Add global configure for handshake limitation by netlink)
+
+This patch provides a way to get benefit of handshake limitation
+without
+modifying any code for applications, which is quite useful for most
+existing applications.
+
+After this patch set, performance figures like that:
+
+Running 20s test @ http://11.213.45.6
+  4 threads and 10000 connections
+  693253 requests in 20.10s, 452.88MB read
+Requests/sec:  34488.13
+Transfer/sec:     22.53MB
+
+That's a quite well performance improvement, about to 6 to 7 times in my
+environment.
+---
+changelog:
+v1 -> v2:
+- fix compile warning
+- fix invalid dependencies in kconfig
+v2 -> v3:
+- correct spelling mistakes
+- fix useless variable declare
+v3 -> v4
+- make smc_tcp_ls_wq be static
+v4 -> v5
+- add dynamic control for SMC auto fallback by socket options
+- add global configure for SMC auto fallback through netlink
+v5 -> v6
+- move auto fallback to net namespace scope
+- remove auto fallback attribute in SMC_GEN_SYS_INFO
+- add independent attributes for auto fallback
+v6 -> v7
+- fix wording and the naming issues, rename 'auto fallback' to handshake
+  limitation.
+---
+
+D. Wythe (5):
+  net/smc: Make smc_tcp_listen_work() independent
+  net/smc: Limit backlog connections
+  net/smc: Limit SMC visits when handshake workqueue congested
+  net/smc: Dynamic control handshake limitation by socket options
+  net/smc: Add global configure for handshake limitation by netlink
+
+ include/linux/socket.h   |   1 +
+ include/linux/tcp.h      |   1 +
+ include/net/netns/smc.h  |   2 +
+ include/uapi/linux/smc.h |  15 ++++
+ net/ipv4/tcp_input.c     |   3 +-
+ net/smc/af_smc.c         | 184 ++++++++++++++++++++++++++++++++++++++++++++++-
+ net/smc/smc.h            |  13 +++-
+ net/smc/smc_netlink.c    |  15 ++++
+ net/smc/smc_pnet.c       |   3 +
+ 9 files changed, 233 insertions(+), 4 deletions(-)
+
+-- 
+1.8.3.1
+
