@@ -2,145 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BCA44B17CB
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 22:45:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9F284B17E8
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 23:06:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344769AbiBJVmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 16:42:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54216 "EHLO
+        id S1344800AbiBJWFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 17:05:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344780AbiBJVmw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 16:42:52 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153D838F
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 13:42:46 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id 10so3027719plj.1
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 13:42:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qI5O0XuH+3yZN0d/+QqH9VaLKw3dLC9zY6iO3x506DA=;
-        b=EXs9V/xVK+IAYNTRR+AmIyZxuXxMcDUz7tI5ZFVNgXKfDqA2vXK5abCJT+J8xeJMIG
-         p6a9u3yT9iGNNL5QS+CkSgmHPOarKTJkF2o0sERcGL39vG005OfbKbKsWP6lVY0Oyddi
-         NAXHzVr7WyjthyI2xe+HgSrusse5SnQ6SGoLYvh/hHXQXqoPHN9Zj10qeJks4kQWy6fv
-         l4qyH13+AAQ47luHr8urgRsW3f0CXZ35lATesHoeBO/C7MbjqAPpf/n0wUqJOOCNnae1
-         fF7IVV1nmQ6EDMN9Mkk6bJWDTC3/FJ2E/Gq+jyS5kzVJfzB4/cfRe1oWOh3b9dXb8MsQ
-         yj3g==
+        with ESMTP id S237490AbiBJWFY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 17:05:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7411EB0
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 14:05:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644530723;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CHki4NQGix/o6xHSAHI1vc1+xjLGEOdiSoRfFNXvPi8=;
+        b=PpDT6XkXf3creYyG6jbvlXe1wHUxjLTI2hqjT9tUoxoepJu4eSj/5TfXsrrz8UGqKleKr+
+        8zKjLHCUHNeEgsjb7mIDBICLZqo4L57/DlM+GhknuUzP/Rr1Hok5fbfEWNaJUGd9f4zWHC
+        busXz2MD1wSUnFnJmD6BfJ4fN37vEFk=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-401-9GjTUw3AMCKbU_hlhpxmWA-1; Thu, 10 Feb 2022 17:05:20 -0500
+X-MC-Unique: 9GjTUw3AMCKbU_hlhpxmWA-1
+Received: by mail-wr1-f71.google.com with SMTP id j8-20020adfa548000000b001e33074ac51so3055639wrb.11
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 14:05:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qI5O0XuH+3yZN0d/+QqH9VaLKw3dLC9zY6iO3x506DA=;
-        b=PduF/PHKVdonskV0SpSnKrjW2XFSAIBv+e3lKzG0pBYdYBLeiXIeoVEU/we4xFT2kK
-         1S/YwLKRS+zW8CfbZSTNw38PqZIFFClZd1Z4WjlOuwy1RP8sEMkhf0Ku58+CkZBLpEj9
-         vbmrfkcbW7LwEI4Jjf8RTDUHB6ub/ufaljf+vb0pNwJqq0nMARI3kGB0YpyVO270sr3t
-         guS76+mSMvMu3ko0grHzcmsYHbCrdZGHoAR5hjMfq07GhXLOAfgWXLpc4vtHy2aNqMSS
-         zKAieHr9WlQBy/qKPj+eilfugb/sStoG6yGdiD2gO+h5j8SH+VjA3W76FoBeQ8Xe1BlU
-         A3nw==
-X-Gm-Message-State: AOAM531H6R2T+nuocuWx933PXMEM+KUnuns97H6QFWTQdo9VmXcnaFIG
-        Cha8tXB3AmQUGLGXFZpvLyP4ForpmXM=
-X-Google-Smtp-Source: ABdhPJwzm6SrY7xfxPQJpyCyj4QpIcFZlyQa24LtLH/zSue2L0AFvJQ+rblCww9ZZoyXUaC9XFg42Q==
-X-Received: by 2002:a17:902:ccd0:: with SMTP id z16mr9632442ple.13.1644529366581;
-        Thu, 10 Feb 2022 13:42:46 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:60c1:10c1:3f4f:199d])
-        by smtp.gmail.com with ESMTPSA id s19sm23824098pfu.34.2022.02.10.13.42.45
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=CHki4NQGix/o6xHSAHI1vc1+xjLGEOdiSoRfFNXvPi8=;
+        b=yl1dCF4MAw8w1y10rnpT6VuKORL23Fyq7WhWqEU+kbvdgttPpjlw+tt7bNGvIVu9Eh
+         fZbXk7Y6wm94oNtz5Q8EEzlINpfWfzaDzR5ssfAnTjBIXLxvyZOTKBOcXxWWMHJ5ZGqr
+         EB9m98UHkXHn1KmTkPXi/sjiE4K/ySIwT540W/Rjp9Eb6bnZPGrnBULJ5n2BV+mni3S6
+         FUiIBlfuQn+Yt5Yp6zgPkmSxUFNX41c9V1EDiJFl2HECN/qJPle7yqFhU0n2W+NEIhXG
+         d/pKg3bJKPbx9dHHj4LJb9LlxavhqjxjwZ/8sjguMEeIqed90NAMEnKRsVluijFPAe7n
+         rKIg==
+X-Gm-Message-State: AOAM532lW0wAb2E7tXZsdyRk1oJ/o0DhnoM7vb0Ss3MfWEOqYfpwn4Fg
+        Z4tWMyWv5EPfmmSpnuPb6TCqEbXgXatsjL28hey10L0r7Y0gE3/RO3Oja23YG6P/D2AuOvxvq3b
+        +eVAogrOfkK0HsLEQ
+X-Received: by 2002:adf:ed8e:: with SMTP id c14mr5846582wro.688.1644530719503;
+        Thu, 10 Feb 2022 14:05:19 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwCXcAZE5KzedQudWeRn9dls4oSg7GDgn8W191HvOGCvVb9GnBGrQNKTte3JgfdQBUZWUt2ZQ==
+X-Received: by 2002:adf:ed8e:: with SMTP id c14mr5846567wro.688.1644530719255;
+        Thu, 10 Feb 2022 14:05:19 -0800 (PST)
+Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id b25sm990992wmj.46.2022.02.10.14.05.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 13:42:45 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 4/4] ipv4: add (struct uncached_list)->quarantine list
-Date:   Thu, 10 Feb 2022 13:42:31 -0800
-Message-Id: <20220210214231.2420942-5-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-In-Reply-To: <20220210214231.2420942-1-eric.dumazet@gmail.com>
-References: <20220210214231.2420942-1-eric.dumazet@gmail.com>
+        Thu, 10 Feb 2022 14:05:18 -0800 (PST)
+Date:   Thu, 10 Feb 2022 23:05:16 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCH net-next] ipv6: Reject routes configurations that specify
+ dsfield (tos)
+Message-ID: <20220210220516.GA31389@pc-4.home>
+References: <51234fd156acbe2161e928631cdc3d74b00002a7.1644505353.git.gnault@redhat.com>
+ <7bbeba35-17a7-f8ba-0587-4bb1c9b6721e@linuxfoundation.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <7bbeba35-17a7-f8ba-0587-4bb1c9b6721e@linuxfoundation.org>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Thu, Feb 10, 2022 at 11:23:20AM -0700, Shuah Khan wrote:
+> On 2/10/22 8:08 AM, Guillaume Nault wrote:
+> > The ->rtm_tos option is normally used to route packets based on both
+> > the destination address and the DS field. However it's ignored for
+> > IPv6 routes. Setting ->rtm_tos for IPv6 is thus invalid as the route
+> > is going to work only on the destination address anyway, so it won't
+> > behave as specified.
+> > 
+> > Suggested-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> > Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> > ---
+> > The same problem exists for ->rtm_scope. I'm working only on ->rtm_tos
+> > here because IPv4 recently started to validate this option too (as part
+> > of the DSCP/ECN clarification effort).
+> > I'll give this patch some soak time, then send another one for
+> > rejecting ->rtm_scope in IPv6 routes if nobody complains.
+> > 
+> >   net/ipv6/route.c                         |  6 ++++++
+> >   tools/testing/selftests/net/fib_tests.sh | 13 +++++++++++++
+> >   2 files changed, 19 insertions(+)
+> > 
+> > diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> > index f4884cda13b9..dd98a11fbdb6 100644
+> > --- a/net/ipv6/route.c
+> > +++ b/net/ipv6/route.c
+> > @@ -5009,6 +5009,12 @@ static int rtm_to_fib6_config(struct sk_buff *skb, struct nlmsghdr *nlh,
+> >   	err = -EINVAL;
+> >   	rtm = nlmsg_data(nlh);
+> > +	if (rtm->rtm_tos) {
+> > +		NL_SET_ERR_MSG(extack,
+> > +			       "Invalid dsfield (tos): option not available for IPv6");
+> 
+> Is this an expected failure on ipv6, in which case should this test report
+> pass? Should it print "failed as expected" or is returning fail from errout
+> is what should happen?
 
-This is an optimization to keep the per-cpu lists as short as possible:
+This is an expected failure. When ->rtm_tos is set, iproute2 fails with
+error code 2 and prints
+"Error: Invalid dsfield (tos): option not available for IPv6.".
 
-Whenever rt_flush_dev() changes one rtable dst.dev
-matching the disappearing device, it can can transfer the object
-to a quarantine list, waiting for a final rt_del_uncached_list().
+The selftest redirects stderr to /dev/null by default (unless -v is
+passed on the command line) and expects the command to fail and
+return 2. So the default output is just:
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/route.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+IPv6 route with dsfield tests
+    TEST: Reject route with dsfield                                     [ OK ]
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 634766e6c7cc8a472e912f7d4e99bb6be0397bb6..202d6b1fff43fb095427720ec36fe3744aeb7149 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1485,6 +1485,7 @@ static bool rt_cache_route(struct fib_nh_common *nhc, struct rtable *rt)
- struct uncached_list {
- 	spinlock_t		lock;
- 	struct list_head	head;
-+	struct list_head	quarantine;
- };
- 
- static DEFINE_PER_CPU_ALIGNED(struct uncached_list, rt_uncached_list);
-@@ -1506,7 +1507,7 @@ void rt_del_uncached_list(struct rtable *rt)
- 		struct uncached_list *ul = rt->rt_uncached_list;
- 
- 		spin_lock_bh(&ul->lock);
--		list_del(&rt->rt_uncached);
-+		list_del_init(&rt->rt_uncached);
- 		spin_unlock_bh(&ul->lock);
- 	}
- }
-@@ -1521,20 +1522,24 @@ static void ipv4_dst_destroy(struct dst_entry *dst)
- 
- void rt_flush_dev(struct net_device *dev)
- {
--	struct rtable *rt;
-+	struct rtable *rt, *safe;
- 	int cpu;
- 
- 	for_each_possible_cpu(cpu) {
- 		struct uncached_list *ul = &per_cpu(rt_uncached_list, cpu);
- 
-+		if (list_empty(&ul->head))
-+			continue;
-+
- 		spin_lock_bh(&ul->lock);
--		list_for_each_entry(rt, &ul->head, rt_uncached) {
-+		list_for_each_entry_safe(rt, safe, &ul->head, rt_uncached) {
- 			if (rt->dst.dev != dev)
- 				continue;
- 			rt->dst.dev = blackhole_netdev;
- 			dev_replace_track(dev, blackhole_netdev,
- 					  &rt->dst.dev_tracker,
- 					  GFP_ATOMIC);
-+			list_move(&rt->rt_uncached, &ul->quarantine);
- 		}
- 		spin_unlock_bh(&ul->lock);
- 	}
-@@ -3706,6 +3711,7 @@ int __init ip_rt_init(void)
- 		struct uncached_list *ul = &per_cpu(rt_uncached_list, cpu);
- 
- 		INIT_LIST_HEAD(&ul->head);
-+		INIT_LIST_HEAD(&ul->quarantine);
- 		spin_lock_init(&ul->lock);
- 	}
- #ifdef CONFIG_IP_ROUTE_CLASSID
--- 
-2.35.1.265.g69c8d7142f-goog
+Of course, on a kernel that accepts non-null ->rtm_tos, "[ OK ]"
+becomes "[FAIL]", and the the failed tests couter is incremented.
+
+> > +		goto errout;
+> > +	}
+> > +
+> >   	*cfg = (struct fib6_config){
+> >   		.fc_table = rtm->rtm_table,
+> >   		.fc_dst_len = rtm->rtm_dst_len,
+> > diff --git a/tools/testing/selftests/net/fib_tests.sh b/tools/testing/selftests/net/fib_tests.sh
+> > index bb73235976b3..e2690cc42da3 100755
+> > --- a/tools/testing/selftests/net/fib_tests.sh
+> > +++ b/tools/testing/selftests/net/fib_tests.sh
+> > @@ -988,12 +988,25 @@ ipv6_rt_replace()
+> >   	ipv6_rt_replace_mpath
+> >   }
+> > +ipv6_rt_dsfield()
+> > +{
+> > +	echo
+> > +	echo "IPv6 route with dsfield tests"
+> > +
+> > +	run_cmd "$IP -6 route flush 2001:db8:102::/64"
+> > +
+> > +	# IPv6 doesn't support routing based on dsfield
+> > +	run_cmd "$IP -6 route add 2001:db8:102::/64 dsfield 0x04 via 2001:db8:101::2"
+> > +	log_test $? 2 "Reject route with dsfield"
+> > +}
+> > +
+> >   ipv6_route_test()
+> >   {
+> >   	route_setup
+> >   	ipv6_rt_add
+> >   	ipv6_rt_replace
+> > +	ipv6_rt_dsfield
+> >   	route_cleanup
+> >   }
+> > 
+> 
+> With the above comment addressed or explained.
+> 
+> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+> 
+> thanks,
+> -- Shuah
+> 
 
