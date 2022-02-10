@@ -2,129 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 473E14B1364
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 17:48:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C6194B136B
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 17:49:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244761AbiBJQsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 11:48:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60840 "EHLO
+        id S244767AbiBJQss (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 11:48:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244961AbiBJQsP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 11:48:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 091CE98
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:48:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644511695;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=53BPBlXQ9S5Ov+amkvoqYiyiQymDxhLzSDn632g3AnI=;
-        b=TqQCAEFvVu2MN5IrnUqyRUIB3OC6sQ2O+rt3S0dNNM7lkrQ2VaPcpFIFxlj3pgXymt4KoN
-        v55Oyao0ikkeC8Dg/5UycuK/kExBgqAZ4fCRQx4TWG/ufhAP9Izek0Dqkh4nz3I6bJ794d
-        bILgDDoUSdqX1LRzbAOI/KubtoxzN/g=
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
- [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-615-_kIqx3LDP_iTzczcSO-FPg-1; Thu, 10 Feb 2022 11:48:14 -0500
-X-MC-Unique: _kIqx3LDP_iTzczcSO-FPg-1
-Received: by mail-oi1-f199.google.com with SMTP id s42-20020a05680820aa00b002cfd10820b7so1496186oiw.4
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 08:48:13 -0800 (PST)
+        with ESMTP id S231790AbiBJQsr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 11:48:47 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F247A189;
+        Thu, 10 Feb 2022 08:48:46 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id r64-20020a17090a43c600b001b8854e682eso6179903pjg.0;
+        Thu, 10 Feb 2022 08:48:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aqQlw5J1PJbV80o+XQLfHKm2M9x6OQ12KF2pGPWeqWc=;
+        b=KbdpH+hRiXwL3t+NP3b7Z+bfjLG5pkQSlxDoEJ4ZQVxOt673194ucjCkGOg5anSOOz
+         LNBTXvQW9azZxmQ4OwmFhofqZcmkqvowDf+/2TXVX72gj4LFE1V7dePcI3SSw+UPe6U7
+         8Uc6tPTIRLVCgz6o+SCr+Ra0xI3SJ8FZxWwQKhOU3szq0NM+TZPPPobh7N/BdsqiAKwG
+         3yUwic3+2c/FxFetWYmKPZXLLwkIdGKIk1N2jVujEFqikOh1VgKSr0UBjvf7Cxxe4jjv
+         Dlbl2tLevKFk+oVPnbiQ9DmkhrI2wfbPcReVIE7UBX2Cd8B8MQz8kz/rrYxHciBPHj4z
+         /tvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=53BPBlXQ9S5Ov+amkvoqYiyiQymDxhLzSDn632g3AnI=;
-        b=X/gn7YGLiB7QvdS7qV4CuIixW2jOscJSuDcEDs0FhWrnkwrz03qjIjtb419jdsaxlu
-         cCsrlNVMfpDPS1KlnPlYXKLQHTKgj6baEQRlonhPmXGMOvdUcVw3s7l01U/Qb0uXlY3e
-         l31L+BO5IMLdlu7Chkh1yDjyR2qvx+f7k8u6esvaHdf5oeEiVquJ6AP7OplgeWTx6cv5
-         h3+yIzBYp8T6OXSmvbO/MzDw9Pno0ygu8Ch6E+KtcfKCkEbe+MHpLMCpVb9AnzTT3xeb
-         gXv7oajlR2tInop9uaOIsGxphzc1BVOraN70gtxxHKW5UfPHUFwHUdnqe/LyZJS3QYd0
-         oIUA==
-X-Gm-Message-State: AOAM530UvkHPH5Re0WUtO5lv4jsT6oXp5mk+n0kqpRbZHO1qIjcCAU/l
-        n5aNuiVkdgXZ/nx/h5HLigtebjHfzRwjTfZG0MC1aW9gQMw4fSaWR4sa3KpyRG3CCb1KK+hqtCy
-        lWWuVTrZu8LRyVHIT
-X-Received: by 2002:a05:6870:12d7:: with SMTP id 23mr1060325oam.133.1644511693325;
-        Thu, 10 Feb 2022 08:48:13 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxwwaQd00a+1hW/QSYxWvHGo3F2y4/ysYql9KJVOGrs/Tngz3B2WZGdj9eeXOUi+BnYh8YJDA==
-X-Received: by 2002:a05:6870:12d7:: with SMTP id 23mr1060313oam.133.1644511693125;
-        Thu, 10 Feb 2022 08:48:13 -0800 (PST)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id el40sm9398252oab.22.2022.02.10.08.48.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 08:48:12 -0800 (PST)
-Date:   Thu, 10 Feb 2022 09:48:11 -0700
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
-        ashok.raj@intel.com, kevin.tian@intel.com,
-        shameerali.kolothum.thodi@huawei.com
-Subject: Re: [PATCH V7 mlx5-next 14/15] vfio/mlx5: Use its own PCI
- reset_done error handler
-Message-ID: <20220210094811.0f95fbd8.alex.williamson@redhat.com>
-In-Reply-To: <20220209023918.GO4160@nvidia.com>
-References: <20220207172216.206415-1-yishaih@nvidia.com>
-        <20220207172216.206415-15-yishaih@nvidia.com>
-        <20220208170801.39dab353.alex.williamson@redhat.com>
-        <20220209023918.GO4160@nvidia.com>
-Organization: Red Hat
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aqQlw5J1PJbV80o+XQLfHKm2M9x6OQ12KF2pGPWeqWc=;
+        b=VMt8RRzza+FZ/Q72oFFIOMPP1UPxaE6cjAoI+wYNrUmDVd0Ze4Hhq8SGpHZqS+1sss
+         w/yJDXDNst6XP7aCpX/zzc75Ne2KhWlBE/h/dPkEFARUquWTdD0V05YV8/BGFZUmFDYX
+         HVSwhCoVOs/VVJIjZKx3sHj/v9CgEVu1i7CfYvld27yKPt3Mo528f2oB/ZkuCmvFUSOH
+         WbiwMk/KLoaVR/YIEZ550NYbV1GcAixAFUuyupDEYOaaZ7EQ1FppctPhlJa4ySMcHS0p
+         jCwl9/2r8YULrJsmPof8sRDylRkGOPkmdV95jLtH+a9o6CFsmKaI9Hh4qgeklxJ3tYpJ
+         d75w==
+X-Gm-Message-State: AOAM532ZWkhT7DKmqS37T/9DDWIiATO6PLrm6ll1ygEHtd7vbztcIf7k
+        MEXazzVF0qnccGDc/UnbM6I=
+X-Google-Smtp-Source: ABdhPJx3T94btrdaKA0aIxiIdC3wg24SQyyLM1KoLZA/PFuUM/LZLCJleUSTZ2mNdhBHZJNvHz3cpw==
+X-Received: by 2002:a17:90b:4d11:: with SMTP id mw17mr3715979pjb.9.1644511726359;
+        Thu, 10 Feb 2022 08:48:46 -0800 (PST)
+Received: from localhost ([2405:201:2003:b021:6001:8ce1:3e29:705e])
+        by smtp.gmail.com with ESMTPSA id x126sm10291208pfb.117.2022.02.10.08.48.43
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 10 Feb 2022 08:48:45 -0800 (PST)
+Date:   Thu, 10 Feb 2022 22:18:39 +0530
+From:   Raag Jadav <raagjadav@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
+Message-ID: <20220210164839.GA3679@localhost>
+References: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
+ <Yf6QbbqaxZhZPUdC@lunn.ch>
+ <20220206171234.GA5778@localhost>
+ <YgANBQjsrmK+T/N+@lunn.ch>
+ <20220207174948.GA5183@localhost>
+ <YgHQ7Kf+2c9knxk3@lunn.ch>
+ <20220208155752.GB3003@localhost>
+ <YgLAux87L1zYmp7k@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgLAux87L1zYmp7k@lunn.ch>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 8 Feb 2022 22:39:18 -0400
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Tue, Feb 08, 2022 at 05:08:01PM -0700, Alex Williamson wrote:
-> > > @@ -477,10 +499,34 @@ static int mlx5vf_pci_get_device_state(struct vfio_device *vdev,
-> > >  
-> > >  	mutex_lock(&mvdev->state_mutex);
-> > >  	*curr_state = mvdev->mig_state;
-> > > -	mutex_unlock(&mvdev->state_mutex);
-> > > +	mlx5vf_state_mutex_unlock(mvdev);
-> > >  	return 0;  
+On Tue, Feb 08, 2022 at 08:12:59PM +0100, Andrew Lunn wrote:
+> On Tue, Feb 08, 2022 at 09:27:52PM +0530, Raag Jadav wrote:
+> > On Tue, Feb 08, 2022 at 03:09:48AM +0100, Andrew Lunn wrote:
+> > > > MAC implementation[1] in a lot of NXP SoCs comes with in-band aneg enabled
+> > > > by default, and it does expect Clause 37 auto-negotiation to complete
+> > > > between MAC and PHY before the actual data transfer happens.
+> > > > 
+> > > > [1] https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/t-series/3241/1/AN3869(1).pdf
+> > > > 
+> > > > I faced such issue while integrating VSC85xx PHY
+> > > > with one of the recent NXP SoC having similar MAC implementation.
+> > > > Not sure if this is a problem on MAC side or PHY side,
+> > > > But having Clause 37 support should help in most cases I believe.
+> > > 
+> > > So please use this information in the commit message.
+> > > 
+> > > The only danger with this change is, is the PHY O.K with auto-neg
+> > > turned on, with a MAC which does not actually perform auto-neg? It
+> > > could be we have boards which work now because PHY autoneg is turned
+> > > off.
+> > > 
 > > 
-> > I still can't see why it wouldn't be a both fairly trivial to implement
-> > and a usability improvement if the unlock wrapper returned -EAGAIN on a
-> > deferred reset so we could avoid returning a stale state to the user
-> > and a dead fd in the former case.  Thanks,  
+> > Introducing an optional device tree property could be of any help?
 > 
-> It simply is not useful - again, we always resolve this race that
-> should never happen as though the two events happened consecutively,
-> which is what would normally happen if we could use a simple mutex. We
-> do not need to add any more complexity to deal with this already
-> troublesome thing..
+> Or find out what this PHY does when the host is not performing auto
+> neg. Does the datasheet say anything about that?
+> 
 
-So walk me through how this works with QEMU, it's easy to hand-wave
-userspace race and move on, but device reset can be triggered by guest
-behavior while migration is supposed to be transparent to the guest.
-These are essentially asynchronous threads where we're imposing a
-synchronization point or lots of double checking in userspace whether
-the device actually entered the state we think it did and if the
-returned FD is usable.
+Not sure if such behaviour is explicitly mentioned in the datasheet.
+Maybe someone from Microchip can shed some light on this.
 
-Specifically, I suspect we can trigger this race if the VM reboots as
-we're initiating a migration in the STOP_COPY phase, but that's maybe
-less interesting if we expect the VM to be halted before the device
-state is stepped.  More interesting might be how a PRE_COPY transition
-works relative to asynchronous VM resets triggering device resets.  Are
-we serializing all access to reset vs this DEVICE_FEATURE op or are we
-resorting to double checking the device state, and how do we plan to
-re-initiate migration states if a VM reset occurs during migration?
-Thanks,
+Cheers,
+Raag
 
-Alex
-
+>      Andrew
