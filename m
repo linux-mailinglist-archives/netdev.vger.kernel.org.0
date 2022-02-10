@@ -2,122 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 960D54B0520
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 06:32:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 801574B05C9
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 06:51:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233883AbiBJFcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 00:32:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32846 "EHLO
+        id S234465AbiBJFuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 00:50:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233873AbiBJFcK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 00:32:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13C610A1;
-        Wed,  9 Feb 2022 21:32:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46E48B81CDA;
-        Thu, 10 Feb 2022 05:32:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A31E0C004E1;
-        Thu, 10 Feb 2022 05:32:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644471128;
-        bh=1Ba895HDYfz+/f/FPSbYCRt0YA+LLmW516azbl8jSg8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SjFLUTuELAgYzteTfvY2euv4ccWGq5iYhLOxt7rdq8+N6HO/aZr09QP+ebSHW+j+6
-         Q1MV9gxoHVUxeXWZpzJ+PkttUA6Bl4z2P1VJy1YyFzIeQJJjCXOZro4GKujBRcuSt5
-         UY7M4aTOQlHnWY2iJ8BJ442WZhFRtRmoPfyhXz2XPuXIOlsrkDCe5p9ErX+19KMkBY
-         MFg980Cv6vjdhb/zMwueAfPKBgKLNrJfFL27U2QENHN6uFy+/Mf8AMZS1PrUL18kDD
-         XKlxEkOWwoNX9P5uO6VUHjw1G2soGfyUvGBvexg4FLGOO/Akivy4fjs2iXcfh6wi2N
-         cSxqji4CkFa3A==
-Date:   Wed, 9 Feb 2022 21:32:07 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Matt Johnston <matt@codeconstruct.com.au>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
-        Zev Weiss <zev@bewilderbeest.net>
-Subject: Re: [PATCH net-next v4 2/2] mctp i2c: MCTP I2C binding driver
-Message-ID: <20220209213207.6a8c1c2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220209103121.3907832-3-matt@codeconstruct.com.au>
-References: <20220209103121.3907832-1-matt@codeconstruct.com.au>
-        <20220209103121.3907832-3-matt@codeconstruct.com.au>
+        with ESMTP id S232529AbiBJFuB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 00:50:01 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C0F610CD
+        for <netdev@vger.kernel.org>; Wed,  9 Feb 2022 21:50:03 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id y6so12323594ybc.5
+        for <netdev@vger.kernel.org>; Wed, 09 Feb 2022 21:50:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WOmvF3M8B+w5v+1bggjdo3Lq30juRX5w3Rct2I4Sfe0=;
+        b=ZOv7J8hZH/KCkU742nAXPMxScj+vXmupezkto5eFXaKMyDb1sXurwWQMHaYTqyk860
+         X5FW8vl6TD79nU+kSFEQFmfqlzEh3y4WNYGGNE1rc9k5TB9HCHmDo2X/VvXe84W9EfcZ
+         bKGnRXJzinfDH1Tu2wNDRauaw4Cv6WQpNxknTnEbYAbFIbai0O61kWZLWRDC0qsQ75cc
+         rZINDVBZtvGlRBDcIhFIsvdj8FcioDpiMAg31ymsQjseBGKu1I6cynWxq2SSsEsQckNQ
+         NEz1VB2hZeTZch1/IRsD9JY5eAa2r5sdxWOeTSKgLMkv/N7NOxegxbMLiDlt2yXgykNu
+         ireA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WOmvF3M8B+w5v+1bggjdo3Lq30juRX5w3Rct2I4Sfe0=;
+        b=ez0mhdq0lDQiLCcymscEcuHKALVSzzI0Oveijur/48TbNPLJexpOw3K/ySH++yfkx5
+         tiemn+2mSSaD87CAAY1oozhMuF0VRH49gz1tIt3Vaq7pV2BuyAcRqoMvDlN5wpodU/Ey
+         8zPf2LtPvXt/MtBkOo7vVTz8R2ToYiRRI/O6Mc0XWEVAS2dY4L2a8Sv7zfGS/ekUIrLs
+         k9VDeX0tirO0wEXXzf/x2y5LlpcSJ6DnFC8nPmK7nlccy2tkht3ReK6G8y+48ICwQAxO
+         FFEYvkpIhdoYR4oFcnCCh7dQpEPghIaSRP/6hLeSs8jzRpB6UMFNXaJEy1rM1444yX8L
+         WR0Q==
+X-Gm-Message-State: AOAM531KhVY7NohO8NKMDWxj2A0aPj6s2UXewi+/KjYznBmTRxjDUjcl
+        hwVgK49LIyq8TXMOLc/8UKwG6IG8D3VaiseFQG4HwQ==
+X-Google-Smtp-Source: ABdhPJweX61Kb6HF38XTTVHt/QC/sMJOusj48MDlAhlPzkBDIml+fYg1ySWFnWPzojOGFUPx1PgKXr18C+QTKtmbXPk=
+X-Received: by 2002:a81:3593:: with SMTP id c141mr5655782ywa.73.1644472201987;
+ Wed, 09 Feb 2022 21:50:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <cover.1644394642.git.lucien.xin@gmail.com> <76c52badfdccaa7f094d959eaf24f422ae09dec6.1644394642.git.lucien.xin@gmail.com>
+ <20220209175558.3117342d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CADvbK_ckY31iZq+++z6kOdd5rBYMyZDNe8N_cHT2wAWu8ZzoZA@mail.gmail.com> <20220209212817.4fe52d3a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220209212817.4fe52d3a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 9 Feb 2022 21:49:51 -0800
+Message-ID: <CANn89iLUhJz7pJRYmg3nBV0EOSFHM3ptcSbpKf=vdZPd+8MioA@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] vlan: move dev_put into vlan_dev_uninit
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        davem <davem@davemloft.net>,
+        Ziyang Xuan <william.xuanziyang@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  9 Feb 2022 18:31:21 +0800 Matt Johnston wrote:
-> Provides MCTP network transport over an I2C bus, as specified in
-> DMTF DSP0237. All messages between nodes are sent as SMBus Block Writes.
->=20
-> Each I2C bus to be used for MCTP is flagged in devicetree by a
-> 'mctp-controller' property on the bus node. Each flagged bus gets a
-> mctpi2cX net device created based on the bus number. A
-> 'mctp-i2c-controller' I2C client needs to be added under the adapter. In
-> an I2C mux situation the mctp-i2c-controller node must be attached only
-> to the root I2C bus. The I2C client will handle incoming I2C slave block
-> write data for subordinate busses as well as its own bus.
->=20
-> In configurations without devicetree a driver instance can be attached
-> to a bus using the I2C slave new_device mechanism.
->=20
-> The MCTP core will hold/release the MCTP I2C device while responses
-> are pending (a 6 second timeout or once a socket is closed, response
-> received etc). While held the MCTP I2C driver will lock the I2C bus so
-> that the correct I2C mux remains selected while responses are received.
->=20
-> (Ideally we would just lock the mux to keep the current bus selected for
-> the response rather than a full I2C bus lock, but that isn't exposed in
-> the I2C mux API)
->=20
-> Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
-> Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
+On Wed, Feb 9, 2022 at 9:28 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 10 Feb 2022 11:40:42 +0800 Xin Long wrote:
+> > > I think better fix would be to rewrite netdev_run_todo() to free the
+> > > netdevs in any order they become ready. That's gonna solve any
+> > > dependency problems and may even speed things up.
+> >
+> > What about I keep dev_put() in dev->priv_destructor()/vlan_dev_free() for
+> > vlan as before, and fix this problem by using for_each_netdev_reverse()
+> > in __rtnl_kill_links()?
+> > It will make sense as the late added dev should be deleted early when
+> > rtnl_link_unregister a rtnl_link_ops.
+>
+> Feels like sooner or later we'll run into a scenario when reversing will
+> cause a problem. Or some data structure will stop preserving the order.
+>
+> Do you reckon rewriting netdev_run_todo() will be a lot of effort or
+> it's too risky?
 
-drivers/net/mctp/mctp-i2c.c: In function =E2=80=98mctp_i2c_xmit=E2=80=99:
-drivers/net/mctp/mctp-i2c.c:442:38: warning: format =E2=80=98%zu=E2=80=99 e=
-xpects argument of type =E2=80=98size_t=E2=80=99, but argument 3 has type =
-=E2=80=98int=E2=80=99 [-Wformat=3D]
-  442 |                                      "Bad tx length %zu vs skb %u\n=
-",
-      |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include/linux/dev_printk.h:110:30: note: in definition of macro =E2=80=98de=
-v_printk_index_wrap=E2=80=99
-  110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                  =
-     \
-      |                              ^~~
-include/linux/dev_printk.h:146:61: note: in expansion of macro =E2=80=98dev=
-_fmt=E2=80=99
-  146 |         dev_printk_index_wrap(_dev_warn, KERN_WARNING, dev, dev_fmt=
-(fmt), ##__VA_ARGS__)
-      |                                                             ^~~~~~~
-include/linux/dev_printk.h:208:17: note: in expansion of macro =E2=80=98dev=
-_warn=E2=80=99
-  208 |                 dev_level(dev, fmt, ##__VA_ARGS__);                =
-     \
-      |                 ^~~~~~~~~
-include/linux/dev_printk.h:220:9: note: in expansion of macro =E2=80=98dev_=
-level_ratelimited=E2=80=99
-  220 |         dev_level_ratelimited(dev_warn, dev, fmt, ##__VA_ARGS__)
-      |         ^~~~~~~~~~~~~~~~~~~~~
-drivers/net/mctp/mctp-i2c.c:441:17: note: in expansion of macro =E2=80=98de=
-v_warn_ratelimited=E2=80=99
-  441 |                 dev_warn_ratelimited(&midev->adapter->dev,
-      |                 ^~~~~~~~~~~~~~~~~~~~
-drivers/net/mctp/mctp-i2c.c:442:55: note: format string is defined here
-  442 |                                      "Bad tx length %zu vs skb %u\n=
-",
-      |                                                     ~~^
-      |                                                       |
-      |                                                       long unsigned=
- int
-      |                                                     %u
+This is doable, and risky ;)
+
+BTW, I have the plan of generalizing blackhole_netdev for IPv6,
+meaning that we could perhaps get rid of the dependency
+about loopback dev, being the last device in a netns being dismantled.
