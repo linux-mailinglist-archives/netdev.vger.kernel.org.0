@@ -2,102 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56A1D4B17AA
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 22:39:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74E724B17CF
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 22:45:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344682AbiBJVgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 16:36:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49626 "EHLO
+        id S245534AbiBJVmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 16:42:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344648AbiBJVgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 16:36:38 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7568C26C9
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 13:36:38 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id s18so9084298ioa.12
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 13:36:38 -0800 (PST)
+        with ESMTP id S242175AbiBJVmf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 16:42:35 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0A92724
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 13:42:35 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id on2so6347201pjb.4
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 13:42:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jISv2sd7M+VGGWYHc7AMvBHEJbhlhhpLfU1b+J7OE3Y=;
-        b=S6tgd4/+f1shugVBQbimIlzTmJdvI5eGxO7+DNCwN8VGdq+Ha2GJzIi8pVTs+c5Wzk
-         6w9yMcwgebHlwWMiLmHqikiisn74QLoAis4KIifvJ1RCYO425QxGE89SXud3mIfljN5i
-         XSVrshuGp8f0avBqbxCdf/DonSTSZbYQAU5JI=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=302CEXOYC37eE8mNHQtpmFA59qy5jUlcpF9wgI/z7Wo=;
+        b=ci7f1RfYLy+H5Yuk3pVu6oFetx7eoErsUt20ntEy03G+KrQ33WOG2aQgR64qBzHTwO
+         9XJzzQxJhpCfY5fSVGswOBS+heWchB1YvbVeuZDhIYnb3AcjaVAhSnFPkHrQeD4ZREWA
+         1uIbe2dfY4fcZYMk9x/mvtb9OncYVIiA/sZ7DTG+4uv/kTALg1qMDH1Tj0sjDLElHyWR
+         PwAmnj6MeflADY8nySxaoGTSzWgTyK6JYzX0Z10sDr1HkUOHWWGGV5uffQIUq8Z1Qivj
+         o80VXjFnbi8CxmHN8n2+H7t2S5vBG32dTHENotRHqedt1bnqnFkmVG9pTImtmc8mBseu
+         PuJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jISv2sd7M+VGGWYHc7AMvBHEJbhlhhpLfU1b+J7OE3Y=;
-        b=jkj1CyIp09hJ4UHbslog8YhzlmjizMCWd5XsKmArurfFhM0q31+RSY0DlZ7ikWqaLC
-         hQFYhHK7lTNYvmz2pZGaCWzmsBTkkIAM+Ku4Rv5Z2zslJfYjR0et7XeD3N29rpF9LIpS
-         lh19SvNn8qsdsey5vvHgYCt+y92XFzi7EdzEPArY0mzz52tQsA8T5mdjVztSLWEH5C20
-         gfVzQSc+kdShYq06R6kxdhlMktX9ULwEoMsnw4lerm2W0tNCLmdp3xZ40Cb6XfXF0Dgg
-         UiQdrD237jEAXM7AW36NTcapxVML5WRf5m/wNg0fQ72nAqtEcolqFM6aeNcqFHTpyFUs
-         gtBg==
-X-Gm-Message-State: AOAM530nFNSQYqkFWZFe+Tc7q3FieGIlexZB9zasVm3qLGaXLbPSks5N
-        sK3ScdplA1WI8qlKaA28Rh7gEA==
-X-Google-Smtp-Source: ABdhPJz+VMFC+XfveESzcl1fhZU4kNFuh4neT8NKOj1ob1N95YkY58ueb4yAIvJJy7vbugALukp2fg==
-X-Received: by 2002:a02:7346:: with SMTP id a6mr5038215jae.299.1644528997801;
-        Thu, 10 Feb 2022 13:36:37 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id p11sm13281429iov.38.2022.02.10.13.36.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 13:36:37 -0800 (PST)
-Subject: Re: [PATCH v2] selftests/seccomp: Fix seccomp failure by adding
- missing headers
-To:     Kees Cook <keescook@chromium.org>,
-        Sherry Yang <sherry.yang@oracle.com>
-Cc:     shuah@kernel.org, luto@amacapital.net, wad@chromium.org,
-        christian@brauner.io, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220210203049.67249-1-sherry.yang@oracle.com>
- <202202101316.E38FEAFBCA@keescook>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <2e3d93a2-51ae-cef1-b251-c28ecc386dad@linuxfoundation.org>
-Date:   Thu, 10 Feb 2022 14:36:36 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        bh=302CEXOYC37eE8mNHQtpmFA59qy5jUlcpF9wgI/z7Wo=;
+        b=YStC6IR6HtbixmD1v//zNj3AEWUySvTW4H/7QgvV0QC1vkNGsdfWo7HAeBFCjo9rIb
+         6Gncjj9VLYhf+P8xKtUBGtkmJJLnNGXSrhutOppWd69kLSTS0Zm8TAq1LByiJWIQnP/n
+         G9H7ufJlxZ33Z/+f25BJ79WdDdUTnQHhwZXUUAN1/qj6ePm7FbmH+F5DRwnr5mtNxfou
+         9QkZQBHRNfCTGPDZqirhUGzWpKb6RG4Qm09swNOPGhkm+iBNestIy4D6oo/onb3TNy1J
+         8X0Jh7K4/sGzZKh7V7LFCsKEbB8j+jJJAf7RDhM6Vilvcqe8ETjTJW+u4aILLCtN4XTa
+         HlWA==
+X-Gm-Message-State: AOAM531AiT2OYlbn/stoaIxBp8wtC+M1sHn7sSUjxDwr7nbHsqpoVNyU
+        iurxY4fa9YvzdoUNu4pQCZE=
+X-Google-Smtp-Source: ABdhPJw9sS28wGD3ozsjT++MU/AIoF7uAqi2dgB2YUJtJy5a5qwO5tjvKDaAxmYXohC+ynOkutZbUw==
+X-Received: by 2002:a17:903:11c5:: with SMTP id q5mr9341433plh.136.1644529355494;
+        Thu, 10 Feb 2022 13:42:35 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:60c1:10c1:3f4f:199d])
+        by smtp.gmail.com with ESMTPSA id s19sm23824098pfu.34.2022.02.10.13.42.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 13:42:34 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next 0/4] ipv6: remove addrconf reliance on loopback
+Date:   Thu, 10 Feb 2022 13:42:27 -0800
+Message-Id: <20220210214231.2420942-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
 MIME-Version: 1.0
-In-Reply-To: <202202101316.E38FEAFBCA@keescook>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/10/22 2:16 PM, Kees Cook wrote:
-> On Thu, Feb 10, 2022 at 12:30:49PM -0800, Sherry Yang wrote:
->> seccomp_bpf failed on tests 47 global.user_notification_filter_empty
->> and 48 global.user_notification_filter_empty_threaded when it's
->> tested on updated kernel but with old kernel headers. Because old
->> kernel headers don't have definition of macro __NR_clone3 which is
->> required for these two tests. Since under selftests/, we can install
->> headers once for all tests (the default INSTALL_HDR_PATH is
->> usr/include), fix it by adding usr/include to the list of directories
->> to be searched. Use "-isystem" to indicate it's a system directory as
->> the real kernel headers directories are.
->>
->> Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
-> 
-> Thanks!
-> 
-> Reviewed-by: Kees Cook <keescook@chromium.org>
-> 
+From: Eric Dumazet <edumazet@google.com>
 
-Thank you. I will queue this up for rc5.
+Second patch in this series removes IPv6 requirement about the netns
+loopback device being the last device being dismantled.
 
-thanks,
--- Shuah
+This was needed because rt6_uncached_list_flush_dev()
+and ip6_dst_ifdown() had to switch dst dev to a known
+device (loopback).
+
+Instead of loopback, we can use the (hidden) blackhole_netdev
+which is also always there.
+
+This will allow future simplfications of netdev_run_to()
+and other parts of the stack like default_device_exit_batch().
+
+Last two patches are optimizations for both IP families.
+
+Eric Dumazet (4):
+  ipv6: get rid of net->ipv6.rt6_stats->fib_rt_uncache
+  ipv6: give an IPv6 dev to blackhole_netdev
+  ipv6: add (struct uncached_list)->quarantine list
+  ipv4: add (struct uncached_list)->quarantine list
+
+ include/net/ip6_fib.h   |  3 +-
+ net/ipv4/route.c        | 12 +++++--
+ net/ipv6/addrconf.c     | 78 +++++++++++++++++------------------------
+ net/ipv6/route.c        | 42 +++++++++++-----------
+ net/ipv6/xfrm6_policy.c |  1 -
+ 5 files changed, 64 insertions(+), 72 deletions(-)
+
+-- 
+2.35.1.265.g69c8d7142f-goog
+
