@@ -2,88 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 450124B0256
-	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 02:31:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA7CE4B02DD
+	for <lists+netdev@lfdr.de>; Thu, 10 Feb 2022 03:01:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232625AbiBJBbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Feb 2022 20:31:02 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37438 "EHLO
+        id S233799AbiBJB55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Feb 2022 20:57:57 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232563AbiBJBbB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 20:31:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0712F22527;
-        Wed,  9 Feb 2022 17:31:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AD8F616B2;
-        Thu, 10 Feb 2022 01:06:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCEB8C340E7;
-        Thu, 10 Feb 2022 01:06:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644455172;
-        bh=OBeVERzluy4DArHFC4mn3YZzQAgsdo26IY1UOV+S3po=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=neW6q5TJZCtjBdRjuhBPe+fIQsoITAs+gqkje+/Oguku7udHSpMNRMzCKSdgscQn6
-         7FmDKj+IO9dmg0svmZqafQNZ6HuHSeVuosT1ezyk+J5yEQbEWfb9JtxwbLHkUTBMBW
-         XktUDiEeL0sGM5Z+elyaa3276MG8A10Qk7Gb0/Or0qEMecOdvGmIpIyLuqbgvC0Cam
-         +PDuhw3lYYM8bFxNLSOWHdJOT/Tds/blKfKqAhEBhzcKvSyWiuwEvbHRoMElsQZ3z8
-         dnc6ltsVSwxCXn54z+6MxGujQXS6V4VyuZrRYWRuT52gneoQF8PV+TtD+ciQPvODcG
-         WsCeJxOtKjYaQ==
-Date:   Wed, 9 Feb 2022 17:06:10 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "lina.wang" <lina.wang@mediatek.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <maze@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        "Kernel hackers" <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, "Martin KaFai Lau" <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Willem Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>, <zhuoliang@mediatek.com>,
-        <chao.song@mediatek.com>
-Subject: Re: [PATCH] net: fix wrong network header length
-Message-ID: <20220209170610.10694339@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <5ca86c46109794a627e6e2a62b140963217984a0.camel@mediatek.com>
-References: <20220208025511.1019-1-lina.wang@mediatek.com>
-        <0300acca47b10384e6181516f32caddda043f3e4.camel@redhat.com>
-        <CANP3RGe8ko=18F2cr0_hVMKw99nhTyOCf4Rd_=SMiwBtQ7AmrQ@mail.gmail.com>
-        <a62abfeb0c06bf8be7f4fa271e2bcdef9d86c550.camel@redhat.com>
-        <5ca86c46109794a627e6e2a62b140963217984a0.camel@mediatek.com>
+        with ESMTP id S233732AbiBJB4N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Feb 2022 20:56:13 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 535E42AA97;
+        Wed,  9 Feb 2022 17:38:03 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id i186so7627270pfe.0;
+        Wed, 09 Feb 2022 17:38:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=R8E1uIi3+8OQz5EH8bcJFCimfA9i/IShFnqKSrhw+jA=;
+        b=DnxCQevBUHlaiRVxA8S2V5t0STdyWdb7vCOz1MZmbNfdaAqnQHJ9xL7o+NxwQZJ06i
+         U2SgAyQqMZEqsV1VTgBDMGitHbzXmTCFU2jM7T5dvWJf+cz1vtaTFiHww9lItWJo8viM
+         pjL7Wat8NcOtWXfcnZc4VWTvjR1Yjqcqd8785aC2FBl5fM6nBe5T6YVrGjNl77Ufw1sM
+         ovuNGw5CSdjDbv3qpnqzdHHLUx8bpKJFrb9wJxlbjbhiK9QJi2qvbfttqZ7RBTfnLyKY
+         1Z4aUe+PUJ5x6mfyptluFdpoCHQ/oTADlScIwYVDvJNk1+CbnSD49NCZ5IQUqAI6BIi8
+         CrXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=R8E1uIi3+8OQz5EH8bcJFCimfA9i/IShFnqKSrhw+jA=;
+        b=sX0CFX5sDXuR6ez/wRloDn18Xfz9Pf6IFkVtmoQbC8plg2HlS9l0uXPzRs0eA0xIcC
+         LXcMYjafm8VE0KVfOGjRUSl3xm5Vo72FyLXjGGMjXDXygHjyF7CStV+tiqjZw2Gb0fBA
+         JYWvxXz+77rFE35mNPbf3i+nDlKu5mgYlc/6fRqvIpOrD5iOQRlZ6akMETSoP9+TzQ8d
+         ze0RpzvIBWgAhTumCYx7TXELRT5BR9n4yN4gg+mGXgMljDfV5cEjSBM66BR5rz3upmPd
+         YeQDSfkBa5r9/fszXBdkoPyrHIRX/WoeEf3Ht3H8J6aXUAcdKD0HsXaKFAXVr7fPR3+Z
+         Q5Aw==
+X-Gm-Message-State: AOAM531Z2N8YJHgxCdhn5OWKR2BPUKhvy3Gi8qrtthkIkpOE9HLmEyA+
+        +6s/FimfblBqvG5COhjywXkUmQLjlMo=
+X-Google-Smtp-Source: ABdhPJy5Fomf6P+kFMcts/ExMC8D+CDsh8XGL9w5xwGkTidzggtLHQyJTHmFq92PBjsNDE0+LNZUeg==
+X-Received: by 2002:a63:5166:: with SMTP id r38mr4138254pgl.99.1644455592404;
+        Wed, 09 Feb 2022 17:13:12 -0800 (PST)
+Received: from [192.168.86.21] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id s14sm21770334pfk.174.2022.02.09.17.13.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 17:13:11 -0800 (PST)
+Message-ID: <3d13bcf4-8d20-0f06-5c00-3880b79363af@gmail.com>
+Date:   Wed, 9 Feb 2022 17:13:09 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH bpf-next 2/2] bpf: fix bpf_prog_pack build HPAGE_PMD_SIZE
+Content-Language: en-US
+To:     Song Liu <song@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kernel-team@fb.com, kernel test robot <lkp@intel.com>
+References: <20220208220509.4180389-1-song@kernel.org>
+ <20220208220509.4180389-3-song@kernel.org>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <20220208220509.4180389-3-song@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Feb 2022 18:25:07 +0800 lina.wang wrote:
-> We use NETIF_F_GRO_FRAGLIST not for forwarding scenary, just for
-> software udp gro. Whatever NETIF_F_GRO_FRAGLIST or NETIF_F_GRO_FWD,
-> skb_segment_list should not have bugs.
-> 
-> We modify skb_segment_list, not in epbf. One point is traversing the
-> segments costly, another is what @Maciej said, *other* helper may have
-> the same problem. In skb_segment_list, it calls
-> skb_headers_offset_update to update different headroom, which implys
-> header maybe different.
 
-Process notes:
- - the patch didn't apply so even if the discussion concludes that 
-   the patch was good you'll need to rebase on netdev/net and repost;
- - please don't top post.
+On 2/8/22 14:05, Song Liu wrote:
+> Fix build with CONFIG_TRANSPARENT_HUGEPAGE=n with BPF_PROG_PACK_SIZE as
+> PAGE_SIZE.
+>
+> Fixes: 57631054fae6 ("bpf: Introduce bpf_prog_pack allocator")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Song Liu <song@kernel.org>
+> ---
+>   kernel/bpf/core.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+>
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index 306aa63fa58e..9519264ab1ee 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -814,7 +814,11 @@ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
+>    * allocator. The prog_pack allocator uses HPAGE_PMD_SIZE page (2MB on x86)
+>    * to host BPF programs.
+>    */
+> +#ifdef CONFIG_TRANSPARENT_HUGEPAGE
+>   #define BPF_PROG_PACK_SIZE	HPAGE_PMD_SIZE
+> +#else
+> +#define BPF_PROG_PACK_SIZE	PAGE_SIZE
+> +#endif
+>   #define BPF_PROG_CHUNK_SHIFT	6
+>   #define BPF_PROG_CHUNK_SIZE	(1 << BPF_PROG_CHUNK_SHIFT)
+>   #define BPF_PROG_CHUNK_MASK	(~(BPF_PROG_CHUNK_SIZE - 1))
+
+BTW, I do not understand with module_alloc(HPAGE_PMD_SIZE) would 
+necessarily allocate a huge page.
+
+I am pretty sure it does not on x86_64 and dual socket host (NUMA)
+
+It seems you need to multiply this by num_online_nodes()  or change the 
+way __vmalloc_node_range()
+
+works, because it currently does:
+
+     if (vmap_allow_huge && !(vm_flags & VM_NO_HUGE_VMAP)) {
+         unsigned long size_per_node;
+
+         /*
+          * Try huge pages. Only try for PAGE_KERNEL allocations,
+          * others like modules don't yet expect huge pages in
+          * their allocations due to apply_to_page_range not
+          * supporting them.
+          */
+
+         size_per_node = size;
+         if (node == NUMA_NO_NODE)
+<*>          size_per_node /= num_online_nodes();
+         if (arch_vmap_pmd_supported(prot) && size_per_node >= PMD_SIZE)
+             shift = PMD_SHIFT;
+         else
+             shift = arch_vmap_pte_supported_shift(size_per_node);
+
+
+
+
