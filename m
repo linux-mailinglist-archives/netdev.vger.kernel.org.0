@@ -2,74 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 415E24B2BAB
+	by mail.lfdr.de (Postfix) with ESMTP id 91C484B2BAC
 	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 18:24:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352100AbiBKRXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 12:23:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42542 "EHLO
+        id S1352060AbiBKRYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 12:24:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352048AbiBKRXC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 12:23:02 -0500
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F34C0EB
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:23:00 -0800 (PST)
-Received: by mail-oi1-x232.google.com with SMTP id q8so10281964oiw.7
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:23:00 -0800 (PST)
+        with ESMTP id S1352045AbiBKRYo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 12:24:44 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5321FC
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:24:43 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id j2so27121622ybu.0
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:24:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=RMceFYwu1Z7FylRi/vquOuUKEuhpJXw4PqAupYCh6vw=;
-        b=hEtueQAUS0iO+9GnW1QKdY3fNXIcZb4a/Y3AiDJnNvYVnKq2lcxZKE8VREF6Tvffh9
-         03KSzmmbjFEVvFWX1vna00BpVooaseDtFYD+KaOhuBR7tPak78Tt+piAzXkS0vApwj+s
-         CVqTNMwN80d6tf+mNe0yciLDF0/h5y6cXv9gVEBCXdh7pnLVo5fZhApxNvZwmd1yUocS
-         96Iu8F7TwpcisOnVjmOXhGbhY2IHRGH9MgQekZ/0Wt+CtoghOYiv/fbQvLXrSh975xrD
-         2gj2je5Z0d8GSb/pj3zaeTmqNUiywYYy6Xev+Zw4ndPS9G9MOcD+56lblT47AqrZxhOM
-         33GA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1f5nHZJ9uVD6/I7NM/ovxfltUAK5E77rKDDs7ab4Xic=;
+        b=hdu4UcvLhoPoj1+nnYpidzG5ybt+SATEc36EIA2F0rim60MDWLZbsC80UkLLFmgXby
+         6I7VzLYSiW5Hapfkc4bxg/0zMn3VeyGHa9/SvKDExmKANfuJfsNd6je7gRTcEAM/wO2E
+         5k/ztc0BzeVqRc/H/3YbHOxS3vgNm34Mbjg/TDoA/kaFo5G8eyLRjuaGUtF9h0KcMX9m
+         fEuLqzzSDlJ0RCRESc6rqHoVWILYakTV0dwZXWrP4312DRfINDk2pgn0Fu7FKQ3rF7x0
+         25wJIFy+QCKBFG07xvaYmccVexj7YtoX+pqqDBPrxZ6At0yiOQT+AwCoJmqV3vTfAtPA
+         QcMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RMceFYwu1Z7FylRi/vquOuUKEuhpJXw4PqAupYCh6vw=;
-        b=hzgi4yM1750KMVXjAJXJ3MVimIhQ5P+dwm8U6PMk6g+3Ke2LNO+gFZNWJj60od7mlh
-         SkOMDdB7ONauuM5dfwLvn8zR5CABnA31CuDhr+2E2JQ0ZxC+yfkInYJyuHGh1Qxu2M8K
-         KvEH5iUFxUSgtKnU9IC7orypjcUeusAwcuACHzsNHYF/kn8U5MbGt27WaXirDxVQY+Hl
-         4Az2uyGMg4s5PmAkboo3fGIeEdP9JHBaqsXKiadKN0cM3v4Fw+Ny+EBOkcP4n6yom6SP
-         ZrIKWmKA7VzVKnY+SBg8hX7pGl+YXHkqThvtajrDZfnd0oyEbTlA4fy4C9bRyfC7uWDK
-         2zug==
-X-Gm-Message-State: AOAM532JhxDO6Aq0QLVAqGrlM9HhnG9O+q9cJUwy8IgBjdvR3s8lxFUY
-        ney2+eZ1LbayfH4XeGR/imo=
-X-Google-Smtp-Source: ABdhPJxf5FV4flw1bkS2B9oaf1paOmwy2yY/dfRP6r+xPFvvo06zLj9FTS09Trx26XbdF9l6yFFHhQ==
-X-Received: by 2002:a05:6808:f91:: with SMTP id o17mr10223oiw.337.1644600180266;
-        Fri, 11 Feb 2022 09:23:00 -0800 (PST)
-Received: from t14s.localdomain ([177.220.174.74])
-        by smtp.gmail.com with ESMTPSA id e16sm9428747otr.11.2022.02.11.09.22.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 09:23:00 -0800 (PST)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id 2ED3615EA1F; Fri, 11 Feb 2022 14:22:58 -0300 (-03)
-Date:   Fri, 11 Feb 2022 14:22:58 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Oz Shlomo <ozsh@nvidia.com>,
-        Eelco Chaudron <echaudro@redhat.com>
-Subject: Re: [PATCH net-next] net/sched: act_police: more accurate MTU
- policing
-Message-ID: <YgabcluXWaQY9tVv@t14s.localdomain>
-References: <876d597a0ff55f6ba786f73c5a9fd9eb8d597a03.1644514748.git.dcaratti@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1f5nHZJ9uVD6/I7NM/ovxfltUAK5E77rKDDs7ab4Xic=;
+        b=afzqmTMoEErgSNBv9/bNymlzgILf54AuOXa5TURne0lQ54r6DDNDdLNgJzF/FoSuJ/
+         hDPgtHowZYU0bMnqxL1l3MgvEzv9xdNaXd3Bg8MFapZ3AiGaXyGpNn6Ft/r1Ehw3cBTg
+         Aw7TOp1PVxnttaRqpfMn6TThE1VL/0iHYL4n+QH52LcVlg1gv3doi/JO2xyV6xdoAiVZ
+         53Qm7zoIILRa+JFng+L60dLkW/5CHtyJSM2OV3UfpZgdJTkO/HSew8sD4/S1ggE/+0jI
+         nob+tLUoJAe2Fv4gI+BUNo8qKxIALklyuICM6dQIsfbhkBbfvYa2FSLsj5NYKHfn1ROt
+         1YhA==
+X-Gm-Message-State: AOAM532+T+aTXmokhn3/qI7Bdss8OEBTNK7/mLLHajQMnACqpKXcb8Bx
+        Eqrwe0+nUjqdzr+zU/utL7CQr3Y7dHCLYNG5uDyhhg==
+X-Google-Smtp-Source: ABdhPJxmj9cstWH2lKAb2aiO3OuQbmZ8A5jPVYo/c8dto0k13vNXhpRUa1YxFuZZi/PUuAIxg/HTlYAJuXQSAWRKgDo=
+X-Received: by 2002:a25:8885:: with SMTP id d5mr2268605ybl.383.1644600281921;
+ Fri, 11 Feb 2022 09:24:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <876d597a0ff55f6ba786f73c5a9fd9eb8d597a03.1644514748.git.dcaratti@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220211164026.409225-1-ribalda@chromium.org>
+In-Reply-To: <20220211164026.409225-1-ribalda@chromium.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 11 Feb 2022 09:24:30 -0800
+Message-ID: <CANn89i+2idhm3wpGO79RHdCYMfYuKURvBaWmoXmYxBwj5z59yg@mail.gmail.com>
+Subject: Re: [PATCH] net: Fix build when CONFIG_INET is not enabled
+To:     Ricardo Ribalda <ribalda@chromium.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,19 +69,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 06:56:08PM +0100, Davide Caratti wrote:
-> in current Linux, MTU policing does not take into account that packets at
-> the TC ingress have the L2 header pulled. Thus, the same TC police action
-> (with the same value of tcfp_mtu) behaves differently for ingress/egress.
-> In addition, the full GSO size is compared to tcfp_mtu: as a consequence,
-> the policer drops GSO packets even when individual segments have the L2 +
-> L3 + L4 + payload length below the configured valued of tcfp_mtu.
-> 
-> Improve the accuracy of MTU policing as follows:
->  - account for mac_len for non-GSO packets at TC ingress.
->  - compare MTU threshold with the segmented size for GSO packets.
-> Also, add a kselftest that verifies the correct behavior.
-> 
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+On Fri, Feb 11, 2022 at 8:40 AM Ricardo Ribalda <ribalda@chromium.org> wrote:
+>
+> If the kernel is configured with CONFIG_NET, but without CONFIG_INET we
+> get the following error when building:
+>
+> sock.c:(.text+0x4c17): undefined reference to `__sk_defer_free_flush'
+>
+> Lets move __sk_defer_free_flush to sock.c
+>
 
-Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+deja vu ?
+
+commit 48cec899e357cfb92d022a9c0df6bbe72a7f6951
+Author: Gal Pressman <gal@nvidia.com>
+Date:   Thu Jan 20 14:34:40 2022 +0200
+
+    tcp: Add a stub for sk_defer_free_flush()
+
+    When compiling the kernel with CONFIG_INET disabled, the
+    sk_defer_free_flush() should be defined as a nop.
+
+    This resolves the following compilation error:
+      ld: net/core/sock.o: in function `sk_defer_free_flush':
+      ./include/net/tcp.h:1378: undefined reference to `__sk_defer_free_flush'
+
+    Fixes: 79074a72d335 ("net: Flush deferred skb free on socket destroy")
+    Reported-by: kernel test robot <lkp@intel.com>
+    Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+    Signed-off-by: Gal Pressman <gal@nvidia.com>
+    Reviewed-by: Eric Dumazet <edumazet@google.com>
+    Link: https://lore.kernel.org/r/20220120123440.9088-1-gal@nvidia.com
+    Signed-off-by: Jakub Kicinski <kuba@kernel.org>
