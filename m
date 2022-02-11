@@ -2,111 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E91694B3120
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 00:04:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F0354B3127
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 00:13:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240497AbiBKXD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 18:03:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45270 "EHLO
+        id S234906AbiBKXMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 18:12:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiBKXD4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 18:03:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90E1DD53
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 15:03:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B60E618C8
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 23:03:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEB07C340E9;
-        Fri, 11 Feb 2022 23:03:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644620633;
-        bh=hgLEu+kctMQMT9j+wS4czvwf3p/j+RHTs20WQerEncI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Uw1+BWRRahpp+gyFzexJHyiJzuDAtQGFGshNmxSmOj2mo3j+ZiqZeeRwGY1NYvXtt
-         TPgVY0U0cRgV7MGFBcKlxjnzEsqZPFboV51+34Do+9zQcJoBZM8wiuOU0wdXPMXV42
-         5s3vJgWOipU95jSYHoi95MOxNh0JNirOCOvvKEKFC0dFWGyCeMd6HDLxFXJsIeCo0s
-         GpBVbIFyUVCNkF+Fvt/mf9mo2oiVBXA6/R5Z9IhnCQEJ9D4ZD9ZuxmwKD1viP15QPm
-         lEJ5t9QFXy21BuEKiiXnP//JXc92mGZg2+0WHmLiEmqSsbRTBThQPN0atVozsZpdfy
-         OkZmb280aQxHA==
-Date:   Fri, 11 Feb 2022 15:03:52 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>
-Subject: Re: [PATCH v2 net-next 11/12] net: dsa: support FDB events on
- offloaded LAG interfaces
-Message-ID: <20220211150352.548530ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220210125201.2859463-12-vladimir.oltean@nxp.com>
-References: <20220210125201.2859463-1-vladimir.oltean@nxp.com>
-        <20220210125201.2859463-12-vladimir.oltean@nxp.com>
+        with ESMTP id S229484AbiBKXMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 18:12:54 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02994D62
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 15:12:52 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id u16so13080810pfg.3
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 15:12:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+n/Lnka+2Tyq0QmlWm7iUQEJhcCtzrJbb7eWZYa85+A=;
+        b=Y38pq6QVYG7a4T42TacAmoKbTnp588jMF3a+x3mTAkqwHe6sg+s/Om1iUCzeUfgDP9
+         HkZgf4Da+CNS3CLo4pAnEtOrCPiQ+PiOgQcgqq3sqI6muJCpb2q48dwi6UQZ9goeKQ2X
+         PJADQGzwJPsKsBlxRFWdCJ0tZeo9pRDECXGcaToFHzkvRYyEGPRp0WlpYUTvLzyoc3ST
+         RW3PksBjxevAsJkXI7b8JROrW2XCetgGtTeqvOQ4SIwmswFrmX/d57b6hiWkLUGr7SIn
+         YkoK5XeIIH2o6nEI5HK3GQh+saDW54e91SpIQDwfcUdSxlwzGzs5BMY87oiJlIGGxluC
+         22dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+n/Lnka+2Tyq0QmlWm7iUQEJhcCtzrJbb7eWZYa85+A=;
+        b=ZsTp5QKnRzIXUWyQ0z+3O/Zx0H6stKk2TyC0k6NsA1xl0IlPMHtD6jcBdlKYg86MUW
+         wriztvZT+BvtUGGigVK1wpdmeieYxLfKffIoIrzdpFwaa4fFpWKjvkWT0+93m2EGI/Fm
+         jDlM9e4qOW/Vw/RJH0vFLaV7bEncYvriDwxCzlYK6yu9SOknadGuFThJF5g/t2s+e3Gv
+         e/rP5FjcrpPnHFnSO1vZCCmSLDpWGYC2SYrvaGN/HNw+lNhP7c2DlI/WLmwZPhgUHTXa
+         zk1tB506hHOnOTfLbBTJJdkvfO8SOBOXwfFdjSUpbXrjZRsJlXj/fmyNL6o/5Q+pPrmk
+         d+AA==
+X-Gm-Message-State: AOAM530FEjxzqXmb/bBS2agNXdgVmy1XkEp5SYfcBvxXlfYrVm+54Uj4
+        aUA4vYGTMxYny3eOJ1tPxMLIVlXAEhrJwf4DnHYrpLF7uJUHwy+L
+X-Google-Smtp-Source: ABdhPJyUsjCTIV55j8J2drSADbb8RDiuKFyHdi52I7QVJcqyMsDHpaIFyZQXGtyz+jqUa7firZupnCE6UvPJh5W5rGU=
+X-Received: by 2002:a63:82c7:: with SMTP id w190mr3152902pgd.547.1644621171445;
+ Fri, 11 Feb 2022 15:12:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220211051403.3952-1-luizluca@gmail.com> <87a6exwwxl.fsf@bang-olufsen.dk>
+In-Reply-To: <87a6exwwxl.fsf@bang-olufsen.dk>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Fri, 11 Feb 2022 20:12:40 -0300
+Message-ID: <CAJq09z40AvaTK3gG6W97s1jmfZU+ER6u0_Yqy3ii0S03d4Q42A@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: realtek: realtek-mdio: reset before setup
+To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Feb 2022 14:52:00 +0200 Vladimir Oltean wrote:
-> +static int
-> +dsa_lag_fdb_event(struct net_device *lag_dev, struct net_device *orig_dev,
-> +		  unsigned long event, const void *ctx,
-> +		  const struct switchdev_notifier_fdb_info *fdb_info)
-> +{
-> +	struct dsa_switchdev_event_work *switchdev_work;
-> +	bool host_addr = fdb_info->is_local;
-> +	struct net_device *slave;
-> +	struct dsa_switch *ds;
-> +	struct dsa_port *dp;
-> +
-> +	/* Skip dynamic FDB entries, since the physical ports beneath the LAG
-> +	 * should have learned it too.
-> +	 */
-> +	if (netif_is_lag_master(orig_dev) &&
-> +	    switchdev_fdb_is_dynamically_learned(fdb_info))
-> +		return 0;
-> +
-> +	/* FDB entries learned by the software bridge should be installed as
-> +	 * host addresses only if the driver requests assisted learning.
-> +	 */
-> +	if (switchdev_fdb_is_dynamically_learned(fdb_info) &&
-> +	    !ds->assisted_learning_on_cpu_port)
-> +		return 0;
-> +
-> +	/* Get a handle to any DSA interface beneath the LAG */
-> +	slave = switchdev_lower_dev_find(lag_dev, dsa_slave_dev_check,
-> +					 dsa_foreign_dev_check);
-> +	dp = dsa_slave_to_port(slave);
-> +	ds = dp->ds;
+> >
+> > +     /* leave the device reset asserted */
+> > +     if (priv->reset)
+> > +             gpiod_set_value(priv->reset, 1);
+> > +
+> >       dsa_unregister_switch(priv->ds);
+>
+> Wouldn't you prefer to reset the chip after dsa_unregister_switch()?
 
-clang says:
-
-net/dsa/slave.c:2650:7: warning: variable 'ds' is uninitialized when used here [-Wuninitialized]
-           !ds->assisted_learning_on_cpu_port)
-            ^~
-
-It also suggests:
-
-net/dsa/slave.c:2636:23: note: initialize the variable 'ds' to silence this warning
-       struct dsa_switch *ds;
-                            ^
-                             = NULL
-
-but that's perhaps for comedic purposes.
+Thanks Alvin, you are right. Maybe a thread might ask something after
+reset/before unregisters.
