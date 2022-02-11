@@ -2,188 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC32F4B316A
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 00:40:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A8E84B3172
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 00:43:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354239AbiBKXkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 18:40:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41656 "EHLO
+        id S1354262AbiBKXmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 18:42:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238960AbiBKXkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 18:40:14 -0500
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D06CF9;
-        Fri, 11 Feb 2022 15:40:12 -0800 (PST)
-Received: by mail-il1-x135.google.com with SMTP id d7so2257735ilf.8;
-        Fri, 11 Feb 2022 15:40:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=igxBsCr8vqLoUc1GDBD/4f34OJOLGaGVg98vU5KaylA=;
-        b=OA+m4u91kxK7VKbYb4E2UfSDT+1NWBwe12ajj32cf1pm0z410HHDYzo+b5rQ29jHGC
-         nrZ7fo2BO989FVwLHeYKF4tsH3vRzHbzn+skrfQNMjcnD56RzY4otjIEWzUs8blKYVN2
-         MEEv6Pn74JEZVA6/23+mN5i/oqDyWQtSTD5VXS0miqOJZPlURXIRL/A9GODWsJb8cJsp
-         nmLY/ahkRqV2sZirEsgXDfozcMfBRMq2iIqehJolEs79ZmCAFKpJFlhOlsi4d+OpWjOU
-         dpj5jmKtBVxc7YvITyXn5dLtBTBuiLor1uN61YIMeV+Xd6fGledNC8dCboeRfHEM3Din
-         W2DA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=igxBsCr8vqLoUc1GDBD/4f34OJOLGaGVg98vU5KaylA=;
-        b=RQLrK55032Bxobr3nLfpbUwoELkg3YwuFFjp4Ng8I9kVC4NcoYaCRKyztS5dA8g+Kh
-         EwDfH6SEjk02YNTo0tEQV9XZrN98ThgNmtAoE6oenhT2s5EHa2IR+SDGEI9uEHNj6hPO
-         EO0hmEkwZ9EE1YtVx3fJ1Cdp7AOb2RKz6SUkoIKMtrNdeuSNeQYuxH7Sp7LL4qg4VN7Z
-         ETAIGAZj4+84EAtrUWTVvUlh2Qn1IdoyCNjsHg7Vo+T0FUCrNMCfs7ImdrDKxFLNrs4y
-         MsvM5vHGyZEKHpo8HQ0bWIMSCDzZNXUAZw5CqsbfHdiktgn4AAh2Uqn7D1WTm90nnH+e
-         GUiw==
-X-Gm-Message-State: AOAM530ot5Dtgneqzrn016RvnTtObYSzjOheG8Gb1VJEF8To1DOlh5K8
-        6noqb21H1BbPXkUqO2gJeezYokWoZ2ps3fT343w=
-X-Google-Smtp-Source: ABdhPJxxlElN2f1SvtJ1YH/zt9O15SV2pBiAktWpReFnhDyCzMF4i0up9jbdq5aYqonakP3QjJEsFl3k8oHuRGzm1k0=
-X-Received: by 2002:a05:6e02:190e:: with SMTP id w14mr2092874ilu.71.1644622812147;
- Fri, 11 Feb 2022 15:40:12 -0800 (PST)
+        with ESMTP id S235335AbiBKXmj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 18:42:39 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A08FCCFE;
+        Fri, 11 Feb 2022 15:42:37 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 50FECED1;
+        Fri, 11 Feb 2022 15:42:37 -0800 (PST)
+Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com [10.118.28.62])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 3C4B93F70D;
+        Fri, 11 Feb 2022 15:42:37 -0800 (PST)
+From:   Jeremy Linton <jeremy.linton@arm.com>
+To:     netdev@vger.kernel.org
+Cc:     mw@semihalf.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, rmk+kernel@armlinux.org.uk,
+        linux-kernel@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>
+Subject: [PATCH] net: mvpp2: Check for null pcs in mvpp2_acpi_start()
+Date:   Fri, 11 Feb 2022 17:42:35 -0600
+Message-Id: <20220211234235.3180025-1-jeremy.linton@arm.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220211195101.591642-1-toke@redhat.com> <CAEf4BzY=spmQrPX06-hrNMSaH_Sst-WTZiHSpNaCid4+ZNjB3w@mail.gmail.com>
- <87y22h6klq.fsf@toke.dk>
-In-Reply-To: <87y22h6klq.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 11 Feb 2022 15:40:01 -0800
-Message-ID: <CAEf4Bzadvq0yhTNJ5NQOCE-+CYP8s+-gJo=su-OjPrHGDrur+A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: Use dynamically allocated buffer when
- receiving netlink messages
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Zhiqian Guan <zhguan@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 3:37 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->
-> > On Fri, Feb 11, 2022 at 11:51 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
-@redhat.com> wrote:
-> >>
-> >> When receiving netlink messages, libbpf was using a statically allocat=
-ed
-> >> stack buffer of 4k bytes. This happened to work fine on systems with a=
- 4k
-> >> page size, but on systems with larger page sizes it can lead to trunca=
-ted
-> >> messages. The user-visible impact of this was that libbpf would insist=
- no
-> >> XDP program was attached to some interfaces because that bit of the ne=
-tlink
-> >> message got chopped off.
-> >>
-> >> Fix this by switching to a dynamically allocated buffer; we borrow the
-> >> approach from iproute2 of using recvmsg() with MSG_PEEK|MSG_TRUNC to g=
-et
-> >> the actual size of the pending message before receiving it, adjusting =
-the
-> >> buffer as necessary. While we're at it, also add retries on interrupte=
-d
-> >> system calls around the recvmsg() call.
-> >>
-> >> Reported-by: Zhiqian Guan <zhguan@redhat.com>
-> >> Fixes: 8bbb77b7c7a2 ("libbpf: Add various netlink helpers")
-> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> >> ---
-> >>  tools/lib/bpf/netlink.c | 55 ++++++++++++++++++++++++++++++++++++++--=
--
-> >>  1 file changed, 52 insertions(+), 3 deletions(-)
-> >>
-> >> diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
-> >> index c39c37f99d5c..9a6e95206bf0 100644
-> >> --- a/tools/lib/bpf/netlink.c
-> >> +++ b/tools/lib/bpf/netlink.c
-> >> @@ -87,22 +87,70 @@ enum {
-> >>         NL_DONE,
-> >>  };
-> >>
-> >> +static int __libbpf_netlink_recvmsg(int sock, struct msghdr *mhdr, in=
-t flags)
-> >
-> > let's not use names starting with underscored. Just call it
-> > "netlink_recvmsg" or something like that.
->
-> Alright, will fix.
->
-> >> +{
-> >> +       int len;
-> >> +
-> >> +       do {
-> >> +               len =3D recvmsg(sock, mhdr, flags);
-> >
-> > recvmsg returns ssize_t, is it ok to truncate to int?
->
-> In practice, yeah; the kernel is not going to return a single message
-> that overflows an int, even on 32bit. And with an int return type it's
-> more natural to return -errno instead of having the caller deal with
-> that. So unless you have strong objections I'd prefer to keep it this
-> way...
+Booting a MACCHIATObin with 5.17 the system OOPs with
+a null pointer deref when the network is started. This
+is caused by the pcs->ops structure being null on this
+particular platform/firmware.
 
-yep, int is fine
+Simply adding a null ptr check, reverts to a functional
+system with networking.
 
->
-> >> +       } while (len < 0 && (errno =3D=3D EINTR || errno =3D=3D EAGAIN=
-));
-> >> +
-> >> +       if (len < 0)
-> >> +               return -errno;
-> >> +       return len;
-> >> +}
-> >> +
-> >> +static int libbpf_netlink_recvmsg(int sock, struct msghdr *mhdr, char=
- **buf)
-> >> +{
-> >> +       struct iovec *iov =3D mhdr->msg_iov;
-> >> +       void *nbuf;
-> >> +       int len;
-> >> +
-> >> +       len =3D __libbpf_netlink_recvmsg(sock, mhdr, MSG_PEEK | MSG_TR=
-UNC);
-> >> +       if (len < 0)
-> >> +               return len;
-> >> +
-> >> +       if (len < 4096)
-> >> +               len =3D 4096;
-> >> +
-> >> +       if (len > iov->iov_len) {
-> >> +               nbuf =3D realloc(iov->iov_base, len);
-> >> +               if (!nbuf) {
-> >> +                       free(iov->iov_base);
-> >> +                       return -ENOMEM;
-> >> +               }
-> >> +               iov->iov_base =3D nbuf;
-> >
-> > this function both sets iov->iov_base *and* returns buf. It's quite a
-> > convoluted contract. Seems like buf is not necessary (and also NULL
-> > out iov->iov_base in case of error above?). But it might be cleaner to
-> > do this MSG_PEEK  + realloc + recvmsg  in libbpf_netlink_recv()
-> > explicitly. It's only one place.
->
-> Hmm, yeah, if I wrap the realloc code in a small helper that works; will
-> fix.
->
-> -Toke
->
+The OOPs looks like:
+[   18.687760] Unable to handle kernel access to user memory outside uaccess routines at virtual address 0000000000000010
+[   18.698561] Mem abort info:
+[   18.698564]   ESR = 0x96000004
+[   18.698567]   EC = 0x25: DABT (current EL), IL = 32 bits
+[   18.709821]   SET = 0, FnV = 0
+[   18.714292]   EA = 0, S1PTW = 0
+[   18.718833]   FSC = 0x04: level 0 translation fault
+[   18.725126] Data abort info:
+[   18.729408]   ISV = 0, ISS = 0x00000004
+[   18.734655]   CM = 0, WnR = 0
+[   18.738933] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000111bbf000
+[   18.745409] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
+[   18.752235] Internal error: Oops: 96000004 [#1] SMP
+[   18.757134] Modules linked in: rfkill ip_set nf_tables nfnetlink qrtr sunrpc vfat fat omap_rng fuse zram xfs crct10dif_ce mvpp2 ghash_ce sbsa_gwdt phylink xhci_plat_hcd ahci_plam
+[   18.773481] CPU: 0 PID: 681 Comm: NetworkManager Not tainted 5.17.0-0.rc3.89.fc36.aarch64 #1
+[   18.781954] Hardware name: Marvell                         Armada 7k/8k Family Board      /Armada 7k/8k Family Board      , BIOS EDK II Jun  4 2019
+[   18.795222] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[   18.802213] pc : mvpp2_start_dev+0x2b0/0x300 [mvpp2]
+[   18.807208] lr : mvpp2_start_dev+0x298/0x300 [mvpp2]
+[   18.812197] sp : ffff80000b4732c0
+[   18.815522] x29: ffff80000b4732c0 x28: 0000000000000000 x27: ffffccab38ae57f8
+[   18.822689] x26: ffff6eeb03065a10 x25: ffff80000b473a30 x24: ffff80000b4735b8
+[   18.829855] x23: 0000000000000000 x22: 00000000000001e0 x21: ffff6eeb07b6ab68
+[   18.837021] x20: ffff6eeb07b6ab30 x19: ffff6eeb07b6a9c0 x18: 0000000000000014
+[   18.844187] x17: 00000000f6232bfe x16: ffffccab899b1dc0 x15: 000000006a30f9fa
+[   18.851353] x14: 000000003b77bd50 x13: 000006dc896f0e8e x12: 001bbbfccfd0d3a2
+[   18.858519] x11: 0000000000001528 x10: 0000000000001548 x9 : ffffccab38ad0fb0
+[   18.865685] x8 : ffff80000b473330 x7 : 0000000000000000 x6 : 0000000000000000
+[   18.872851] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff80000b4732f8
+[   18.880017] x2 : 000000000000001a x1 : 0000000000000002 x0 : ffff6eeb07b6ab68
+[   18.887183] Call trace:
+[   18.889637]  mvpp2_start_dev+0x2b0/0x300 [mvpp2]
+[   18.894279]  mvpp2_open+0x134/0x2b4 [mvpp2]
+[   18.898483]  __dev_open+0x128/0x1e4
+[   18.901988]  __dev_change_flags+0x17c/0x1d0
+[   18.906187]  dev_change_flags+0x30/0x70
+[   18.910038]  do_setlink+0x278/0xa7c
+[   18.913540]  __rtnl_newlink+0x44c/0x7d0
+[   18.917391]  rtnl_newlink+0x5c/0x8c
+[   18.920892]  rtnetlink_rcv_msg+0x254/0x314
+[   18.925006]  netlink_rcv_skb+0x48/0x10c
+[   18.928858]  rtnetlink_rcv+0x24/0x30
+[   18.932449]  netlink_unicast+0x290/0x2f4
+[   18.936386]  netlink_sendmsg+0x1d0/0x41c
+[   18.940323]  sock_sendmsg+0x60/0x70
+[   18.943825]  ____sys_sendmsg+0x248/0x260
+[   18.947762]  ___sys_sendmsg+0x74/0xa0
+[   18.951438]  __sys_sendmsg+0x64/0xcc
+[   18.955027]  __arm64_sys_sendmsg+0x30/0x40
+[   18.959140]  invoke_syscall+0x50/0x120
+[   18.962906]  el0_svc_common.constprop.0+0x4c/0xf4
+[   18.967629]  do_el0_svc+0x30/0x9c
+[   18.970958]  el0_svc+0x28/0xb0
+[   18.974025]  el0t_64_sync_handler+0x10c/0x140
+[   18.978400]  el0t_64_sync+0x1a4/0x1a8
+[   18.982078] Code: 52800004 b9416262 aa1503e0 52800041 (f94008a5)
+[   18.988196] ---[ end trace 0000000000000000 ]---
+
+Fixes: cff056322372 ("net: mvpp2: use .mac_select_pcs() interface")
+Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 7cdbf8b8bbf6..d53d7648625f 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -6631,8 +6631,9 @@ static void mvpp2_acpi_start(struct mvpp2_port *port)
+ 	mvpp2_mac_prepare(&port->phylink_config, MLO_AN_INBAND,
+ 			  port->phy_interface);
+ 	mvpp2_mac_config(&port->phylink_config, MLO_AN_INBAND, &state);
+-	pcs->ops->pcs_config(pcs, MLO_AN_INBAND, port->phy_interface,
+-			     state.advertising, false);
++	if (pcs && pcs->ops)
++		pcs->ops->pcs_config(pcs, MLO_AN_INBAND, port->phy_interface,
++				     state.advertising, false);
+ 	mvpp2_mac_finish(&port->phylink_config, MLO_AN_INBAND,
+ 			 port->phy_interface);
+ 	mvpp2_mac_link_up(&port->phylink_config, NULL,
+-- 
+2.34.1
+
