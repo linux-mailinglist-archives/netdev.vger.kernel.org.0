@@ -2,124 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFCB14B21C1
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 10:25:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A21A4B21EB
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 10:29:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348628AbiBKJYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 04:24:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39470 "EHLO
+        id S1348571AbiBKJ2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 04:28:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348595AbiBKJYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 04:24:40 -0500
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03381109B;
-        Fri, 11 Feb 2022 01:24:37 -0800 (PST)
-Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0M7ZR3-1oCV3C3YYh-00xJjX;
- Fri, 11 Feb 2022 10:24:06 +0100
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marek Vasut <marek.vasut@gmail.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Song Liu <songliubraving@fb.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Adam Ford <aford173@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Olof Johansson <olof@lixom.net>,
-        Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
-        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v6 06/12] arm64: defconfig: enable bpf/cgroup firewalling
-Date:   Fri, 11 Feb 2022 10:23:16 +0100
-Message-Id: <20220211092322.287487-7-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220211092322.287487-1-marcel@ziswiler.com>
-References: <20220211092322.287487-1-marcel@ziswiler.com>
+        with ESMTP id S233723AbiBKJ2W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 04:28:22 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE045CE7;
+        Fri, 11 Feb 2022 01:28:21 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id c8-20020a17090a674800b001b91184b732so8880376pjm.5;
+        Fri, 11 Feb 2022 01:28:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gMqMmpWnTzniWqKEMO7UBChWrAVFntZ90Cuy2eCOt8k=;
+        b=iekSr8ajpH5NTm5HGsXvXjMg2IDKsYie/oY3pGant7hB4r4ijuxhEJUxiPP5axPlYP
+         UxYxVQMGGSBwi+12z+EZHr4lsodIMtXMhsYJO39/YmnQIIkcUGqp/DZMdXbGU7IfM30L
+         hZoLBCqUnkhsgJR1URTWUPxq2jbW5xQ+xx4ul47OGoTKW07h4ptPgwbTAmFfJBSZoL7N
+         LRbo1ELTnZjEGU/6S6eXdVITLLPRAltjIIZBSnSsA/sIqcozSv2COkc2AnjCDs1Z9Z47
+         MzW6Y38pzfnhAEd5JdznOP2BJ/SoAT7Le7p4idSyS4OCK4ays1Hcdlt6wK2HSRVS39NJ
+         hhJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gMqMmpWnTzniWqKEMO7UBChWrAVFntZ90Cuy2eCOt8k=;
+        b=Db3lFDLd+EEUdU3D8NKN/z3W/Z+8WlvQAaSEXKgf8V1IhI8V6dQpaszRqXHqUh97l2
+         2Lq4mfW2wukpg5/4aLOpAcziN4/XPbrmYWFNDoYYgu18GEichA4q48s1lXbzaiYEKPnI
+         R15YFx3UwZljhy1O7k5CuwDq8UMcMhQ2/L2h25cdvB9Qb12XIqRaksSfPmm2pQFd77sc
+         1JF7xq+RdEgWkLQdJSOZ7dWRtPcQuzUi+OMSzPcV2iGtrEmlWs35Mb4XD2f8bOmhK/Ry
+         qxjbb6utFLffjbHCASt9tlEV7vDjEoCi4I/eSCx7bOsTOsDtg2LzXbw/vXlLQqlQpG/e
+         C3ag==
+X-Gm-Message-State: AOAM530BoB4jzk76NkZrkEmYuuh2S17ZAL3iaVqIJedLn+w99OpeUYtp
+        uYeeBTSUS7jcgz/8EjC43Pw=
+X-Google-Smtp-Source: ABdhPJxPq3pxZbwhabvWFyW/mYI43XuCI5oucnUwD/44di+jlx7PcGq16GZcWgE91kDQ8KxiiMCT8A==
+X-Received: by 2002:a17:90b:3ec4:: with SMTP id rm4mr435248pjb.65.1644571700997;
+        Fri, 11 Feb 2022 01:28:20 -0800 (PST)
+Received: from localhost.localdomain (61-231-111-88.dynamic-ip.hinet.net. [61.231.111.88])
+        by smtp.gmail.com with ESMTPSA id 13sm25704040pfm.161.2022.02.11.01.28.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 01:28:20 -0800 (PST)
+From:   Joseph CHAMG <josright123@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joseph CHANG <josright123@gmail.com>,
+        joseph_chang@davicom.com.tw
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com,
+        andrew@lunn.ch, leon@kernel.org
+Subject: [PATCH v20, 0/2] ADD DM9051 ETHERNET DRIVER
+Date:   Fri, 11 Feb 2022 17:27:54 +0800
+Message-Id: <20220211092756.27274-1-josright123@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:rf0hT0aeHyLIdu2loRx1Zy/Fdh/cjuPMmxMTcXBYZ2EmTPwGFfz
- tyrlZLoxD7OYvX/ct1Z3LsVE0ZXI4eUav9jH7hq55G8ouOcefAA1FtpzYPlUBcrc6YsA0M+
- P6BPQH5zz8UTVpXp6mvkuBI5temNeqzofaby8EXsoHM/lGWz5cN8C2C7pGfR9cBTeBdgJ/v
- fc0nPXmlG9NosgKCSgp6w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:zrql6Y5KADM=:aTsM38AVLTMnEHGDXL5Kt7
- ms9ORCvceNmgrjSAO41QoE3DQO6UnVu+tVC5HCDFQzominrpjUN+BLKhSCTAle78ikUpGIIsj
- n95Tlm82pWsefN0QkMluYZKteSjAnPuixPFlHas1kPqGOTehncV3CYPxBLw+YOH0RvdBciQbT
- ikVSNLlpdi0STQ6bMIpWeUtuGZC2G7RmWumovOOIhxYGcgFFkuo7goKqQCfZGhOnVunjk8qFS
- WL6/2otNIz44uL43Som8sEWAcdED7Kj+SlR404rqAjQwi9MEWX2X6qZW1azerM4NUe9clT7xn
- jRSs3c7P3Bb7X5Y3Mc6GKXJgK8xMNN8qxwwhxIOtKo1bUG0ezrbAv6Om5IBTDjhtisz6rCDUH
- oTHatkSgMOAnCqndtXVcUN4T4g+7i3lwo/Q6K+ggNbi5qOvuVJtO+lz59fMqQKpbluvTD/chg
- wkQ9+X0S5HAA9+uqOspO3rQEIun9SwB/qLhKRbk0biymF+3q7DiNIk6w+VROQEO2QpwfnPTfE
- 0YdtemLYEdxY4vMxDkec3/NdIA8VPdTo86mzrmH5WI28/9CW4rLGfWt8yF9GcG/cDhv0kpcPK
- t6JWVVQjejM3AprUD2EKhO9TPtmplqzOJME7+ll3cPg1D4fFoZCWJrebRbdfLqDUfTkaZHE6K
- +lnwuQ5iFZdi0q6kWQ7JiI6Ug6iONb6rgl7k9mmjG4jOSmxYfyhXwYCzh8HX2VkRYIdPeJHx+
- F4PoYmR+CJokuKFk
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+DM9051 is a spi interface chip,
+need cs/mosi/miso/clock with an interrupt gpio pin
 
-This avoids the following systemd warning:
+Joseph CHAMG (2):
+  dt-bindings: net: Add Davicom dm9051 SPI ethernet controller
+  net: Add dm9051 driver
 
-[    2.618538] systemd[1]: system-getty.slice: unit configures an IP
- firewall, but the local system does not support BPF/cgroup firewalling.
-[    2.630916] systemd[1]: (This warning is only shown for the first
- unit using IP firewalling.)
+ .../bindings/net/davicom,dm9051.yaml          |   62 +
+ drivers/net/ethernet/davicom/Kconfig          |   31 +
+ drivers/net/ethernet/davicom/Makefile         |    1 +
+ drivers/net/ethernet/davicom/dm9051.c         | 1260 +++++++++++++++++
+ drivers/net/ethernet/davicom/dm9051.h         |  162 +++
+ 5 files changed, 1516 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/davicom,dm9051.yaml
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.c
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.h
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Acked-by: Song Liu <songliubraving@fb.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
----
-
-(no changes since v3)
-
-Changes in v3:
-- Add Krzysztof's reviewed-by tag.
-
-Changes in v2:
-- Add Song's acked-by tag.
-
- arch/arm64/configs/defconfig | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 530ad076b5cb..444fec9ec73a 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -3,6 +3,7 @@ CONFIG_POSIX_MQUEUE=y
- CONFIG_AUDIT=y
- CONFIG_NO_HZ_IDLE=y
- CONFIG_HIGH_RES_TIMERS=y
-+CONFIG_BPF_SYSCALL=y
- CONFIG_BPF_JIT=y
- CONFIG_PREEMPT=y
- CONFIG_IRQ_TIME_ACCOUNTING=y
-@@ -22,6 +23,7 @@ CONFIG_CPUSETS=y
- CONFIG_CGROUP_DEVICE=y
- CONFIG_CGROUP_CPUACCT=y
- CONFIG_CGROUP_PERF=y
-+CONFIG_CGROUP_BPF=y
- CONFIG_USER_NS=y
- CONFIG_SCHED_AUTOGROUP=y
- CONFIG_BLK_DEV_INITRD=y
+base-commit: 9d922f5df53844228b9f7c62f2593f4f06c0b69b
 -- 
-2.33.1
+2.20.1
 
