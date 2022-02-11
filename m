@@ -2,198 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4450F4B2BA6
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 18:22:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 415E24B2BAB
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 18:24:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351995AbiBKRUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 12:20:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41502 "EHLO
+        id S1352100AbiBKRXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 12:23:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243921AbiBKRUj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 12:20:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 14CAC95
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:20:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644600037;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/XYxOnFvWmBDRRN9eJZCbsz4PFzMIS6mW4rnl0OwGOQ=;
-        b=OaosaSdU3vJ9WNTGR50zDXyUT9TTp3rXlBoJiZ8CcQE5sJkQDgTzFy2uI/sAX5WHuZPHlV
-        gIWCRAtem4BPpZcdrb21X0NKijtA5ZmoBK9vcdtk5II17pNadrC6WF8RGaU2R5wWWUs6/I
-        fyfs9On+27VTWxTDXkYJEBBpZ2MuOLM=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-648-9mw3cifINaSAq5dH3BmOnQ-1; Fri, 11 Feb 2022 12:20:36 -0500
-X-MC-Unique: 9mw3cifINaSAq5dH3BmOnQ-1
-Received: by mail-ej1-f70.google.com with SMTP id v2-20020a170906292200b006a94a27f903so4409498ejd.8
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:20:36 -0800 (PST)
+        with ESMTP id S1352048AbiBKRXC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 12:23:02 -0500
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F34C0EB
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:23:00 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id q8so10281964oiw.7
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:23:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RMceFYwu1Z7FylRi/vquOuUKEuhpJXw4PqAupYCh6vw=;
+        b=hEtueQAUS0iO+9GnW1QKdY3fNXIcZb4a/Y3AiDJnNvYVnKq2lcxZKE8VREF6Tvffh9
+         03KSzmmbjFEVvFWX1vna00BpVooaseDtFYD+KaOhuBR7tPak78Tt+piAzXkS0vApwj+s
+         CVqTNMwN80d6tf+mNe0yciLDF0/h5y6cXv9gVEBCXdh7pnLVo5fZhApxNvZwmd1yUocS
+         96Iu8F7TwpcisOnVjmOXhGbhY2IHRGH9MgQekZ/0Wt+CtoghOYiv/fbQvLXrSh975xrD
+         2gj2je5Z0d8GSb/pj3zaeTmqNUiywYYy6Xev+Zw4ndPS9G9MOcD+56lblT47AqrZxhOM
+         33GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=/XYxOnFvWmBDRRN9eJZCbsz4PFzMIS6mW4rnl0OwGOQ=;
-        b=2uYYlqubnKDvOHXHH5efrUcNEz/YMMPuSVx496o3A50yGCC/jaBAOsK53iX3YF28Rd
-         J9exte6igg9DMx9AzwgYTjsGXpxq6+akchaD20lcnL11ivd4B8xpIipEHnoXdBuI7zRV
-         Y7QwQTtMc1jNSnX9RD1B4zkOcbvplkJmBpFf6f3lREeneH7PlwTYgUcppX9i2a+hw2Sv
-         uw7FMnal4pRz9S0pT48h/80gRPvtmwp2LBPt93zV9RiCEvuWPPB274uFRYuXwOpKZclW
-         6G/XfBYU7ZUgUganjD4fC/emGh1+hXTIaFsyaYkMBVorqN5DVIX7NcUFmbKXgA6u0QLo
-         2PeA==
-X-Gm-Message-State: AOAM530yaWaAENDiVSBkhg3iOrV16LZjdtrq3yXRfwy0MG5IZ7DtAETp
-        Km2v1vY/UQ608b4auVWptmYGecXWesDQD7Cn+gztEl6lfnQL+Y7Qc/7NH3Pj++tzZKDvCynYUb5
-        QCUxmqUsLu17WIWKq
-X-Received: by 2002:a17:907:6d93:: with SMTP id sb19mr2245844ejc.634.1644600034055;
-        Fri, 11 Feb 2022 09:20:34 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy2aDAkzQMMZGknbEbqOfslhVJ3HUi+miJl4LbtRA1wHdBmcLzjsR/yXVQi1PnKJkwoLKYg5g==
-X-Received: by 2002:a17:907:6d93:: with SMTP id sb19mr2245780ejc.634.1644600033033;
-        Fri, 11 Feb 2022 09:20:33 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id 27sm557023eji.66.2022.02.11.09.20.32
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RMceFYwu1Z7FylRi/vquOuUKEuhpJXw4PqAupYCh6vw=;
+        b=hzgi4yM1750KMVXjAJXJ3MVimIhQ5P+dwm8U6PMk6g+3Ke2LNO+gFZNWJj60od7mlh
+         SkOMDdB7ONauuM5dfwLvn8zR5CABnA31CuDhr+2E2JQ0ZxC+yfkInYJyuHGh1Qxu2M8K
+         KvEH5iUFxUSgtKnU9IC7orypjcUeusAwcuACHzsNHYF/kn8U5MbGt27WaXirDxVQY+Hl
+         4Az2uyGMg4s5PmAkboo3fGIeEdP9JHBaqsXKiadKN0cM3v4Fw+Ny+EBOkcP4n6yom6SP
+         ZrIKWmKA7VzVKnY+SBg8hX7pGl+YXHkqThvtajrDZfnd0oyEbTlA4fy4C9bRyfC7uWDK
+         2zug==
+X-Gm-Message-State: AOAM532JhxDO6Aq0QLVAqGrlM9HhnG9O+q9cJUwy8IgBjdvR3s8lxFUY
+        ney2+eZ1LbayfH4XeGR/imo=
+X-Google-Smtp-Source: ABdhPJxf5FV4flw1bkS2B9oaf1paOmwy2yY/dfRP6r+xPFvvo06zLj9FTS09Trx26XbdF9l6yFFHhQ==
+X-Received: by 2002:a05:6808:f91:: with SMTP id o17mr10223oiw.337.1644600180266;
+        Fri, 11 Feb 2022 09:23:00 -0800 (PST)
+Received: from t14s.localdomain ([177.220.174.74])
+        by smtp.gmail.com with ESMTPSA id e16sm9428747otr.11.2022.02.11.09.22.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 09:20:32 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7F5F8102D5F; Fri, 11 Feb 2022 18:20:31 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal =?utf-8?Q?Such?= =?utf-8?Q?=C3=A1nek?= 
-        <msuchanek@suse.de>
-Cc:     Yonghong Song <yhs@fb.com>, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: Re: BTF compatibility issue across builds
-In-Reply-To: <CAEf4BzZ6CrNGWt3DENvCBXpUKrvNiZwoK87rR75izP=CDf8YoQ@mail.gmail.com>
-References: <YfK18x/XrYL4Vw8o@syu-laptop>
- <8d17226b-730f-5426-b1cc-99fe43483ed1@fb.com>
- <20220210100153.GA90679@kunlun.suse.cz>
- <CAEf4BzZ6CrNGWt3DENvCBXpUKrvNiZwoK87rR75izP=CDf8YoQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 11 Feb 2022 18:20:31 +0100
-Message-ID: <87a6ex8gm8.fsf@toke.dk>
+        Fri, 11 Feb 2022 09:23:00 -0800 (PST)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 2ED3615EA1F; Fri, 11 Feb 2022 14:22:58 -0300 (-03)
+Date:   Fri, 11 Feb 2022 14:22:58 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Oz Shlomo <ozsh@nvidia.com>,
+        Eelco Chaudron <echaudro@redhat.com>
+Subject: Re: [PATCH net-next] net/sched: act_police: more accurate MTU
+ policing
+Message-ID: <YgabcluXWaQY9tVv@t14s.localdomain>
+References: <876d597a0ff55f6ba786f73c5a9fd9eb8d597a03.1644514748.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <876d597a0ff55f6ba786f73c5a9fd9eb8d597a03.1644514748.git.dcaratti@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+On Thu, Feb 10, 2022 at 06:56:08PM +0100, Davide Caratti wrote:
+> in current Linux, MTU policing does not take into account that packets at
+> the TC ingress have the L2 header pulled. Thus, the same TC police action
+> (with the same value of tcfp_mtu) behaves differently for ingress/egress.
+> In addition, the full GSO size is compared to tcfp_mtu: as a consequence,
+> the policer drops GSO packets even when individual segments have the L2 +
+> L3 + L4 + payload length below the configured valued of tcfp_mtu.
+> 
+> Improve the accuracy of MTU policing as follows:
+>  - account for mac_len for non-GSO packets at TC ingress.
+>  - compare MTU threshold with the segmented size for GSO packets.
+> Also, add a kselftest that verifies the correct behavior.
+> 
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 
-> On Thu, Feb 10, 2022 at 2:01 AM Michal Such=C3=A1nek <msuchanek@suse.de> =
-wrote:
->>
->> Hello,
->>
->> On Mon, Jan 31, 2022 at 09:36:44AM -0800, Yonghong Song wrote:
->> >
->> >
->> > On 1/27/22 7:10 AM, Shung-Hsi Yu wrote:
->> > > Hi,
->> > >
->> > > We recently run into module load failure related to split BTF on ope=
-nSUSE
->> > > Tumbleweed[1], which I believe is something that may also happen on =
-other
->> > > rolling distros.
->> > >
->> > > The error looks like the follow (though failure is not limited to ip=
-heth)
->> > >
->> > >      BPF:[103111] STRUCT BPF:size=3D152 vlen=3D2 BPF: BPF:Invalid na=
-me BPF:
->> > >
->> > >      failed to validate module [ipheth] BTF: -22
->> > >
->> > > The error comes down to trying to load BTF of *kernel modules from a
->> > > different build* than the runtime kernel (but the source is the same=
-), where
->> > > the base BTF of the two build is different.
->> > >
->> > > While it may be too far stretched to call this a bug, solving this m=
-ight
->> > > make BTF adoption easier. I'd natively think that we could further s=
-plit
->> > > base BTF into two part to avoid this issue, where .BTF only contain =
-exported
->> > > types, and the other (still residing in vmlinux) holds the unexporte=
-d types.
->> >
->> > What is the exported types? The types used by export symbols?
->> > This for sure will increase btf handling complexity.
->>
->> And it will not actually help.
->>
->> We have modversion ABI which checks the checksum of the symbols that the
->> module imports and fails the load if the checksum for these symbols does
->> not match. It's not concerned with symbols not exported, it's not
->> concerned with symbols not used by the module. This is something that is
->> sustainable across kernel rebuilds with minor fixes/features and what
->> distributions watch for.
->>
->> Now with BTF the situation is vastly different. There are at least three
->> bugs:
->>
->>  - The BTF check is global for all symbols, not for the symbols the
->>    module uses. This is not sustainable. Given the BTF is supposed to
->>    allow linking BPF programs that were built in completely different
->>    environment with the kernel it is completely within the scope of BTF
->>    to solve this problem, it's just neglected.
->
-> You refer to BTF use in CO-RE with the latter. It's just one
-> application of BTF and it doesn't follow that you can do the same with
-> module BTF. It's not a neglect, it's a very big technical difficulty.
->
-> Each module's BTFs are designed as logical extensions of vmlinux BTF.
-> And each module BTF is independent and isolated from other modules
-> extension of the same vmlinux BTF. The way that BTF format is
-> designed, any tiny difference in vmlinux BTF effectively invalidates
-> all modules' BTFs and they have to be rebuilt.
->
-> Imagine that only one BTF type is added to vmlinux BTF. Last BTF type
-> ID in vmlinux BTF is shifted from, say, 1000 to 1001. While previously
-> every module's BTF type ID started with 1001, now they all have to
-> start with 1002 and be shifted by 1.
->
-> Now let's say that the order of two BTF types in vmlinux BTF is
-> changed, say type 10 becomes type 20 and type 20 becomes type 10 (just
-> because of slight difference in DWARF, for instance). Any type
-> reference to 10 or 20 in any module BTF has to be renumbered now.
->
-> Another one, let's say we add a new string to vmlinux BTF string
-> section somewhere at the beginning, say "abc" at offset 100. Any
-> string offset after 100 now has to be shifted *both* in vmlinux BTF
-> and all module BTFs. And also any string reference in module BTFs have
-> to be adjusted as well because now each module's BTF's logical string
-> offset is starting at 4 logical bytes higher (due to "abc\0" being
-> added and shifting everything right).
->
-> As you can see, any tiny change in vmlinux BTF, no matter where,
-> beginning, middle, or end, causes massive changes in type IDs and
-> offsets everywhere. It's impractical to do any local adjustments, it's
-> much simpler and more reliable to completely regenerate BTF
-> completely.
-
-This seems incredibly brittle, though? IIUC this means that if you want
-BTF in your modules you *must* have not only the kernel headers of the
-kernel it's going to run on, but the full BTF information for the exact
-kernel image you're going to load that module on? How is that supposed
-to work for any kind of environment where everything is not built
-together? Third-party modules for distribution kernels is the obvious
-example that comes to mind here, but as this thread shows, they don't
-necessarily even have to be third party...
-
-How would you go about "completely regenerating BTF" in practice for a
-third-party module, say?
-
--Toke
-
+Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
