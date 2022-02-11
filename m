@@ -2,188 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AD734B1DF6
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 06:41:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B6644B1E01
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 06:54:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234272AbiBKFk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 00:40:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59158 "EHLO
+        id S237138AbiBKFyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 00:54:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234217AbiBKFk6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 00:40:58 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82541264F
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 21:40:57 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id y17so3807327plg.7
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 21:40:57 -0800 (PST)
+        with ESMTP id S237111AbiBKFyh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 00:54:37 -0500
+Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C6E10D0
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 21:54:37 -0800 (PST)
+Received: by mail-vs1-xe2c.google.com with SMTP id j26so7620560vso.12
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 21:54:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j0dCN06UtIvvo0LKZgjVcQl8BpTQYXX0PdZxGcDR1jM=;
-        b=D14kD3+Odpgdjkg/ho4bBJRDLBBqzwk6G57wcT5bWNZujMD8hjG/FkdUNYyx0zG0jS
-         p8ZbtRHzAFUl/4qw1EVxdggjRStdfYPKgL/PmI8EfbXYlu7fjmV+bjM2PgQXYSgKMzwd
-         kD6ufOedvie/ByHydXaqS0SIGmfjDFQFtmzloiqgcqjthvXVSTLOnJhhQ9kW/9L4vymr
-         H6vpGrBdeGCsNEg3FMvpsYNy7yYToAulga+XuzefcMbwKKVrl8dlX6ysJXiKYHHVs0ks
-         mZd7vVv/L3J/4QBZbJepOMI68mcjbriDHX+ZKFpYNaE2gfH4F5S5EynabizJcgMUz3KC
-         Vscg==
+         :cc:content-transfer-encoding;
+        bh=EbSg9QvGTEG7MjQvzrDkvoNELNPgB+85sOLBqpa4AUA=;
+        b=SS0XHSKcCaEsbQ4Wwn5QnKULou7/nRrOZDqvOOMFchl7PA2YkNlTMluAlF78eL3OYQ
+         aqnX2q2M8LhDU64/bBNClIsemboTs0HTNUd+0of+BhXy1fFSemYC+igZDiJz/ZESPzRd
+         beXCsmmRUkop/mDS4598qhe4S6adC9cqK24amqV0AX+xQxm2Mwg/jIz1LZa22h3Y/nZx
+         wgvEK8FFChU2l3ty8WWlxGBgcENp62qqVG56A+1mnDMi+ofrJ/XYlh3CuSczlfeWJFoG
+         Jv84tEFBEvjLuwUJl9lTtwqS6hE3/MtPnZeYync0MbqbWslvenfPrOH2XkqynFA+fi9V
+         QpTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j0dCN06UtIvvo0LKZgjVcQl8BpTQYXX0PdZxGcDR1jM=;
-        b=MDhG5sIMpZmBWrDjQ2T9hNs+DnPlZ1QxfWo5ZOaAxkLJVP+RK1EFX9jQRX4nSaiqA6
-         9VtsafKUYNtZg+xsCN/TG9H4bBsAFViq45PSBYs2YPlFhuxictJxMO2skyiDxYyMdqjH
-         /k4YsYpKmu72aQaQTItt/ipC0hYyC/YMZ8vCOqcKN6jqE75kAeVgovTe63cAaSqXqP6X
-         MmM0udhmfRW50IgHeWKi+y49iSjVkS8xZgr6VfvooDD+0869dLr5g0tDeaviihKFtOCt
-         +LlHR1O1lsFTPzFco5qDpZymEy9lHVXKVUEza82XvvpnWp6NtD871ky5vtmhYIfTgkYi
-         /l8A==
-X-Gm-Message-State: AOAM5321zCPOHrd8Tx2LF6kNq4f0scM9CTHeeWGzPY1TX14LXJuw5O51
-        uN1ILHhFIuQcacbetygosGnLfDbmQrxktcNt3WE2YAHVMdMZ7fMp
-X-Google-Smtp-Source: ABdhPJz0u0o/BjtLpAIXw+pzSg1ZCBCgdSeDgY1vXpnKKU9ndhyTCnFVTnYwuSmHma6KJPcPUURupEogkGtMIzSh4os=
-X-Received: by 2002:a17:902:cec5:: with SMTP id d5mr153832plg.143.1644558056896;
- Thu, 10 Feb 2022 21:40:56 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=EbSg9QvGTEG7MjQvzrDkvoNELNPgB+85sOLBqpa4AUA=;
+        b=WkrO+80TQlbCyJtxrZuDWWy676cUtcBlJpwvqAvhWnjcVakitO611GtMe4orOan3uT
+         AkCUJ/h1IWPiJAFnDXsjUhZCFgemDG03ilA145S7Val0gqiVby+vrmbbA4M+yKIeATqA
+         qZARY7RJaDSGZc1GXUhkQGNundTSmr8bPoE1UhPbuRfjB7+VhWPGUq3/gmjximHu4iKp
+         uKHHzjWbo3b1a4YP1/hFyi1kv0Q6SMzeOhmKm9neB4lbzn810SYtZMyNU90IrtBdCWrd
+         +IM2N2uigJMO/Cg+wezTDyj3z7ewp1Hf42jKkVv6jQ8FF/s8p6AYxR8eRYM41FM0x9x+
+         Qm3w==
+X-Gm-Message-State: AOAM530IBmtt+VIdGs45q/tTCYs/sFXwspjhR06W9Rvj86GtYhtYm4kW
+        9D9ue8rUf+rZVkXNHthWIJsjtfM1TPG4k/ADIpHsJA==
+X-Google-Smtp-Source: ABdhPJwgbeKVaaw6rh1wRuo14QINWzu6Y2BM87c7I7UpANzVeKUT6VCRWB95+kN7ykQHSH4158pU9USeGcLsab5G/4I=
+X-Received: by 2002:a67:ea8f:: with SMTP id f15mr45351vso.46.1644558875472;
+ Thu, 10 Feb 2022 21:54:35 -0800 (PST)
 MIME-Version: 1.0
-References: <CAJq09z5FCgG-+jVT7uxh1a-0CiiFsoKoHYsAWJtiKwv7LXKofQ@mail.gmail.com>
- <878rukib4f.fsf@bang-olufsen.dk> <CAJq09z71Fi8rLkQUPR=Ov6e_99jDujjKBfvBSZW0M+gTWK-ToA@mail.gmail.com>
- <CAJq09z6W+yYAaDcNC1BQEYKdQUuHvp4=vmhyW0hqbbQUzo516w@mail.gmail.com>
- <87h797gmv9.fsf@bang-olufsen.dk> <87o83eg170.fsf@bang-olufsen.dk>
-In-Reply-To: <87o83eg170.fsf@bang-olufsen.dk>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Fri, 11 Feb 2022 02:40:45 -0300
-Message-ID: <CAJq09z5g+LfUPRJOoCXfdY89yZpH_4X=A0r1CPXd3Sihp7Sivw@mail.gmail.com>
-Subject: Re: net: dsa: realtek: silent indirect reg read failures on SMP
-To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+References: <d5dd3f10c144f7150ec508fa8e6d7a78ceabfc10.camel@redhat.com> <20220211040629.23703-1-lina.wang@mediatek.com>
+In-Reply-To: <20220211040629.23703-1-lina.wang@mediatek.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Thu, 10 Feb 2022 21:54:23 -0800
+Message-ID: <CANP3RGc42sobVoq8LCs=9dAgRZmerV7ev_EMi8Qjb+1ZKeO4jQ@mail.gmail.com>
+Subject: Re: [PATCH] net: fix wrong network header length
+To:     Lina Wang <lina.wang@mediatek.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Kernel hackers <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Willem Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        zhuoliang.zhang@mediatek.com, chao.song@mediatek.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi again Luiz,
-
-Hello,
-
-> >>
-> >> Sorry but I believe my non-SMP device is not "affected enough" to help
-> >> debug this issue. Is your device SMP?
+On Thu, Feb 10, 2022 at 8:12 PM Lina Wang <lina.wang@mediatek.com> wrote:
+>
+> On Thu, 2022-02-10 at 17:02 +0100, Paolo Abeni wrote:
+>
+> > > @@ -3682,6 +3682,7 @@ struct sk_buff *skb_segment_list(struct
+> > > sk_buff *skb,
+> > >     struct sk_buff *tail =3D NULL;
+> > >     struct sk_buff *nskb, *tmp;
+> > >     int err;
+> > > +   unsigned int len_diff =3D 0;
 > >
-> > Yes, it's SMP and also with PREEMPT_RT ;-)
+> > Mintor nit: please respect the reverse x-mas tree order.
 > >
-> > But no problem, I will look into this and get back to you in this thread
-> > if I need any more feedback. Thanks for your help.
 >
-> So I had a closer look this afternoon. First some general statements.
->
-> 1. Generally the switch driver is not accessing registers unless an
->    administrator is reconfiguring the interfaces
-> 2. The exception to the above rule is the delayed_work for stats64,
->    which you can see in the code is there because get_stats64 runs in
->    atomic context. This runs every 3 seconds.
-> 3. Without the interrupt from the switch enabled, the PHY subsystem
->    resorts to polling the PHY registers (every 1 second I think you
->    said).
->
-> As a result of (2) and (3) above, you are bound at some point to have
-> both the stats work and the PHY register read callbacks executing in
-> parallel. As I mentioned in my last email, a simple busy loop with
-> phytool would return some nonsense pretty quickly. On my SMP/PREEMPT_RT
-> system this happens every 3 seconds while everything else is idle.
->
-> I tried to disable the stats delayed_work just to see, and in this case
-> I did not observe any PHY read issues. The PHY register value was always
-> as expected.
->
-> In that setup I then tried to provoke the error again, this time by
-> reading a single register with dd via regmap debugfs. And while it's
-> unlikely for a single such read to interfere with my busy phytool loop,
-> putting the dd read in a tight loop almost immediately provokes the same
-> bug. This time I noticed that the value returned by phytool is the same
-> value that I read out with dd from the other non-PHY-related register.
->
-> In general what I found is that if we read from an arbitrary register A
-> and this read coincides with the multi-register access in
-> rtl8365mb_phy_ocp_read, then the final read from
-> RTL8365MB_INDIRECT_ACCESS_READ_DATA_REG will always return the value in
-> register A. It is quite reliably the case in all my testing, and it
-> explains the nonsense values we sometimes happened to see during PHY
-> register access, because of the stats work going on in the
-> background. Probably we got some MIB counter data and this corrupted the
-> PHY register value held in the INDIRECT_ACCESS_READ_DATA_REG register.
+> Yes,v2 has change unsigned int to int
 
-It makes sense. That explains why a simple lock over indirect access
-did not solve the issue.
+Reverse christmas tree, means from longest to shortest, like so:
 
-> I am not sure why this happens - likely some peculiarity of the ASIC
-> hardware - but I wanted to check if this is also the case for the MIB
-> register access, because we also have a kind of indirect lookup
-> algorithm there. But in that case I did not see any corruption of the
-> data in the MIB counter data registers (RTL8365MB_MIB_COUNTER_REG(_x)).
->
-> So my conclusion is that this problem is unique to the indirect PHY
-> register access pattern. It should be pointed out that the regmap is
-> already protected by a lock, so I don't expect to see any weird data
-> races for non-PHY register access.
->
->
-> One more thing I wanted to point out: you mentioned that on your system
-> you conducted multiple phytool read loops and did not observe any
-> issues. I think this is easily explained by some higher-level locking
-> in the kernel which prevents concurrent PHY register reads.
->
-> ****
->
-> With all of that said, I think the solution here is simply to guard
-> against stray register access while we are in the indirect PHY register
-> access callbacks. You also posted a patch to forego the whole indirect
-> access method for MDIO-connected switches, and I think that is also a
-> good thing. My reply to that patch was just taking issue with your
-> explanation, both because the diagnosis of the bug was rather nebulous,
-> and also because it did not actually fix the bug - it just worked around
-> it.
->
-> I will take it upon myself to fix this issue of indirect PHY register
-> access yielding corrupt values and post a patch to the list next week.
-> I already have a quick-n-dirty change which ensures proper locking and
-> now I cannot reproduce the issue for several hours.
+     struct sk_buff *tail =3D NULL;
+     struct sk_buff *nskb, *tmp;
++   int len_diff =3D 0;
+     int err;
 
-I tried to find a way to lock regmap while permitting it to be used
-only by the indirect reg access.
-However, I failed to find a clean solution. It's great you got a proper fix.
+That said, I think the =3D 0 is not needed, so this can be just
 
-> In the mean time, could you resend your MDIO direct-PHY-register-access
-> patch and I will give it one more review. Please do not suggest that it
-> is a fix for this bug (because it's not) -- better yet, just add a Link:
-> to this thread and explain why you bothered implementing it to begin
-> with. You can mention that the issue is not seen with direct-access
-> (which also corroborates our findings here). Then I will base my changes
-> on your patch.
++ int len_diff, err;
+
 >
-> Alternatively you can drop the patch and we can just fix the indirect
-> access wholesale - both for SMI and MDIO. That would mean adding less
-> code (since MDIO with indirect access also works), albeit at the expense
-> of some technically unnecessary gymnastics in the driver (since MDIO
-> direct access is simpler). But I'll leave that up to you :-)
+> > >
+> > >     skb_push(skb, -skb_network_offset(skb) + offset);
+> > > @@ -3721,9 +3722,11 @@ struct sk_buff *skb_segment_list(struct
+> > > sk_buff *skb,
+> > >             skb_push(nskb, -skb_network_offset(nskb) + offset);
+> > >
+> > >             skb_release_head_state(nskb);
+> > > +           len_diff =3D skb_network_header_len(nskb) -
+> > > skb_network_header_len(skb);
+> > >              __copy_skb_header(nskb, skb);
+> > >
+> > >             skb_headers_offset_update(nskb, skb_headroom(nskb) -
+> > > skb_headroom(skb));
+> > > +           nskb->transport_header +=3D len_diff;
+> >
+> > This does not look correct ?!? the network hdr position for nskb will
+> > still be uncorrect?!? and even the mac hdr likely?!? possibly you
+> > need
+> > to change the offset in skb_headers_offset_update().
+> >
 >
-> What do you think?
+> Network hdr position and mac hdr are both right, because bpf processing &
+> skb_headers_offset_update have updated them to right position. After bpf
+> loading, the first skb's network header&mac_header became 44, transport
+> header still is 64. After skb_headers_offset_update, fraglist skb's mac
+> header and network header are still 24, the same with original packet.
+> Just fraglist skb's transport header became 44, as original is 64.
+> Only transport header cannot be easily updated the same offset, because
+> 6to4 has different network header.
 >
-
-I would prefer to drop it if we get a shared fix. There is an ongoing
-discussion that might allow us to drop the realtek-smi internal mdio
-and share phy_read/write between both interfaces. In that case, that
-different mdio code path will fit much better as an "if" inside those
-functions.
-
-> Kind regards,
-> Alvin
-
-Regards,
-Luiz
+> Actually,at the beginning, I want to change skb_headers_offset_update, bu=
+t
+> it has been called also in other place, maybe a new function should be
+> needed here.
+>
+> Skb_headers_offset_update has other wrong part in my scenary,
+> inner_transport_header\inner_network_header\inner_mac_header shouldnot be
+> changed, but they are been updated because of different headroom. They ar=
+e
+> not used later, so wrong value didnot affect anything.
+>
+> > Paolo
+> >
+>
+> Thanks!Maciej =C5=BBenczykowski, Kernel Networking Developer @ Google
