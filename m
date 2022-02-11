@@ -2,87 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 094BD4B2819
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 15:40:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB754B281B
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 15:40:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240617AbiBKOkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 09:40:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40924 "EHLO
+        id S1346676AbiBKOkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 09:40:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237110AbiBKOkD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 09:40:03 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1962A188;
-        Fri, 11 Feb 2022 06:40:02 -0800 (PST)
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nIX5R-00064w-Rf; Fri, 11 Feb 2022 15:39:49 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nIX5R-0009z4-Dh; Fri, 11 Feb 2022 15:39:49 +0100
-Subject: Re: [PATCH bpf-next v3 2/4] arm64: insn: add encoders for atomic
- operations
-To:     Hou Tao <houtao1@huawei.com>, Alexei Starovoitov <ast@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Julien Thierry <jthierry@redhat.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220129220452.194585-1-houtao1@huawei.com>
- <20220129220452.194585-3-houtao1@huawei.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <4524da71-3977-07db-bd6e-cebd1c539805@iogearbox.net>
-Date:   Fri, 11 Feb 2022 15:39:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S237110AbiBKOkO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 09:40:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63020197;
+        Fri, 11 Feb 2022 06:40:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11631B82A77;
+        Fri, 11 Feb 2022 14:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 88C81C340EF;
+        Fri, 11 Feb 2022 14:40:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644590410;
+        bh=Qbkfp88xlU29ukfRtrt3inkgqWqrG5PJBsS7q6mE7Vs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZGoOm8TGcQDZeFRm5CubmJNItqXloox55eR4a+LUUGYqVufocmjstb+AnBWvLU2ME
+         q960NYTEqMmcDF5bNefVkFCeFp7+WrVyugMZtLuNCfXuZ2kmKibUKc5o4VruDlzuQr
+         nZ4HZ2LLFa/174bmyMtvb7MWGLQmIgn6f3ZNp5PuMeJXejKXGXKEuXSWJ/snBeDMU9
+         LrhqqGDSMKDiKcVE9VO4IrALOW5yWWZQP8AzoR/Pwt2qbjbJXTQD5uJA6OLOjBhRE3
+         3c0W6LTzkCqq5qAsqjb2TDKCiVIFFQbYp5weyMQz6/lmL6whLjwewUbEuAolKJ3/W8
+         DgBbaVKoZCMtQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6E1EEE5CF96;
+        Fri, 11 Feb 2022 14:40:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20220129220452.194585-3-houtao1@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26450/Fri Feb 11 10:24:09 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: wireless-2022-02-11
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164459041044.31178.10103961709998264852.git-patchwork-notify@kernel.org>
+Date:   Fri, 11 Feb 2022 14:40:10 +0000
+References: <20220211093342.79D5EC340ED@smtp.kernel.org>
+In-Reply-To: <20220211093342.79D5EC340ED@smtp.kernel.org>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/29/22 11:04 PM, Hou Tao wrote:
-> It is a preparation patch for eBPF atomic supports under arm64. eBPF
-> needs support atomic[64]_fetch_add, atomic[64]_[fetch_]{and,or,xor} and
-> atomic[64]_{xchg|cmpxchg}. The ordering semantics of eBPF atomics are
-> the same with the implementations in linux kernel.
-> 
-> Add three helpers to support LDCLR/LDEOR/LDSET/SWP, CAS and DMB
-> instructions. STADD/STCLR/STEOR/STSET are simply encoded as aliases for
-> LDADD/LDCLR/LDEOR/LDSET with XZR as the destination register, so no extra
-> helper is added. atomic_fetch_add() and other atomic ops needs support for
-> STLXR instruction, so extend enum aarch64_insn_ldst_type to do that.
-> 
-> LDADD/LDEOR/LDSET/SWP and CAS instructions are only available when LSE
-> atomics is enabled, so just return AARCH64_BREAK_FAULT directly in
-> these newly-added helpers if CONFIG_ARM64_LSE_ATOMICS is disabled.
-> 
-> Signed-off-by: Hou Tao <houtao1@huawei.com>
+Hello:
 
-Hey Mark / Ard / Will / Catalin or others, could we get an Ack on patch 1 & 2
-at min if it looks good to you?
+This pull request was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Thanks a lot,
-Daniel
+On Fri, 11 Feb 2022 09:33:42 +0000 (UTC) you wrote:
+> Hi,
+> 
+> here's a pull request to net tree, more info below. Please let me know if there
+> are any problems.
+> 
+> Kalle
+> 
+> [...]
+
+Here is the summary with links:
+  - pull-request: wireless-2022-02-11
+    https://git.kernel.org/netdev/net/c/85d24ad38bc4
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
