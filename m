@@ -2,49 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 640B94B281D
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 15:40:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D4714B2822
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 15:42:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349877AbiBKOk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 09:40:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41154 "EHLO
+        id S1350962AbiBKOmC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 09:42:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240287AbiBKOk2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 09:40:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D02A197;
-        Fri, 11 Feb 2022 06:40:27 -0800 (PST)
+        with ESMTP id S240287AbiBKOmB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 09:42:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B214188;
+        Fri, 11 Feb 2022 06:41:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E33E8B82A77;
-        Fri, 11 Feb 2022 14:40:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B41E2C340EB;
-        Fri, 11 Feb 2022 14:40:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1926961F5F;
+        Fri, 11 Feb 2022 14:41:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 528B0C340E9;
+        Fri, 11 Feb 2022 14:41:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644590424;
-        bh=loi7Ozic4PR5aHPwFtuUrkrmW1tdNmfka4rxI9r9k8g=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=aXF21CNs5/B85ZIo+GIQaZUUOLxmT8tf0dR4wx1MVb34as3KK6HBzG3MZloLdl62P
-         46n0sFdR5TvERwu6BSPJjzdKlQHKTeOCGKgwVS80FhS5qwXOIUZ5ckFhQbADNLjNyM
-         CMAy/asXZJBJb27FNGR4ejVI3ZDNxQWkOFSUbGQy/I/Uq8ENs4qQvlaEztbj9XwYtK
-         1jSV8fCHEQjPs5VAGcme9172xTkcs1UEV1DSDKB61k40/cwRua1C+wIvQgjP1TfRdK
-         li4fxd/F03WS4gKpkTwKTOny97LqbpVvZ6402NYh7c/HrDN4Q0uzH51XJaYsbId0JR
-         /B6Wv/+Jf1THg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A2189E5CF96;
-        Fri, 11 Feb 2022 14:40:24 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1644590518;
+        bh=RY+RiJqGo1HMpzgN9TFSdlD9X2lbkG4RDXWfubFeNzQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=COnpToWE0ntRobHtXfkns9r+udoebeeWlHmKqECJGBNny/lQbM8vqpX+8MArBTpcw
+         uIhq4YjX0NSm0345Iq8RK+8+hsL/PbFkCIWq27Rdh9iSi5JA+u0GkiIk8XqP/SEhjk
+         LBsIAx6hEt0zq2IF3iC6kGZx6phCVX2s/LVyWccUwRFoIkUOp5/exo3BJmLr/xbX2N
+         zdffmTh95iNgWDI+0Nk7Ttjpq5I4o2fb/2Ii+u6XPHKhP5nW1uvpOVzBEFdRMGzXRR
+         MokPDO2UuCRjjyj9LD2AbCtK0KqBGKEvr3KzoDvGqhU67nMlBnblLU0bqiRx38HKEQ
+         B1e/PVDvASN9w==
+Date:   Fri, 11 Feb 2022 09:41:57 -0500
+From:   Sasha Levin <sashal@kernel.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Yi Chen <yiche@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        kadlec@netfilter.org, davem@davemloft.net,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.16 05/52] netfilter: nf_conntrack_netbios_ns:
+ fix helper module alias
+Message-ID: <YgZ1tYtQ4jdb7Z4I@sashalap>
+References: <20220203202947.2304-1-sashal@kernel.org>
+ <20220203202947.2304-5-sashal@kernel.org>
+ <20220203134622.5964eb15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20220203222319.GB14142@breakpoint.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless-next-2022-02-11
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164459042465.31178.124419469597096692.git-patchwork-notify@kernel.org>
-Date:   Fri, 11 Feb 2022 14:40:24 +0000
-References: <20220211094059.52B3BC340E9@smtp.kernel.org>
-In-Reply-To: <20220211094059.52B3BC340E9@smtp.kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220203222319.GB14142@breakpoint.cc>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -55,28 +61,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, Feb 03, 2022 at 11:23:19PM +0100, Florian Westphal wrote:
+>Jakub Kicinski <kuba@kernel.org> wrote:
+>> On Thu,  3 Feb 2022 15:28:59 -0500 Sasha Levin wrote:
+>> > Intentionally not adding a fixes-tag because i don't want this to go to
+>> > stable.
+>>
+>> Ekhm. ;)
+>
+>Seems there is no way to hide fixes from stable guys :-)
+>
+>Seriously, I don't think there is anything going to break here because
+>'modinfo nfct-helper-netbios_ns' and 'modinfo nfct-helper-netbios-ns'
+>return same module.
+>
+>OTOH, this was noticed by pure coincidence; I don't think its
+>important to have it in stable.
 
-This pull request was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+I'll drop it, thanks :)
 
-On Fri, 11 Feb 2022 09:40:59 +0000 (UTC) you wrote:
-> Hi,
-> 
-> here's a pull request to net-next tree, more info below. Please let me know if
-> there are any problems.
-> 
-> Kalle
-> 
-> [...]
-
-Here is the summary with links:
-  - pull-request: wireless-next-2022-02-11
-    https://git.kernel.org/netdev/net-next/c/b96a79253fff
-
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks,
+Sasha
