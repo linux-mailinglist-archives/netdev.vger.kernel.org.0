@@ -2,80 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D8AE4B2916
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 16:29:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA3194B2961
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 16:49:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351379AbiBKP3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 10:29:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49744 "EHLO
+        id S1349442AbiBKPs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 10:48:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235355AbiBKP3G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 10:29:06 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AD61A1
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 07:29:04 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id k25so23683917ejp.5
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 07:29:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zx0kDESUyN/aBgLfQ1POtV22ofASCvKpXtut85b48FE=;
-        b=S4puAcEb8Cd8YtIYXBgWo//FF0+nyNm3pizaZve0zN2KaxV/EIthMLkDYA/mmHssWW
-         Fm4VWh//yVnNg6ObYmKG5cWLKNG3P4KMNCuDMtT5EpjoR60+guFSgnkvZMFgbYG2MbRa
-         jNg8VUlXXHV+obySZsDZ7W6KtLFxM0o1pF9FjmiPIDLarsHHxWrlIxkv9ni0R+ewsOXH
-         8TJ73nNvo78Eb0x2wwy6r/6Z7xqnpRcDwBA38KjaNMWIr+oey+LKBL/i7wqBJrUilhjQ
-         jGujLWjzXpvN0L1enLAYHD3pkeDbEI0zjHVQprgHfvv4yMtAE+I/wLd6+86OUtia5N1T
-         TxTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zx0kDESUyN/aBgLfQ1POtV22ofASCvKpXtut85b48FE=;
-        b=atObATeefXvD7+pphf9Hb5RiC15ygTI+5rnVzEX9MxoydxX/uctM0Fd5iNciEpPnQ+
-         9c2tDS47YKZUfMkRx0ZcpvqTbWO0Ts466ihUW26rHD1Q3Han1UuK41FAZhGxlGgNCm1m
-         1iNjpejGmBEQZYZei4X3uq0Xym6nzYFyc6RvQiYdMi15puWo8Z44o6yDMQcOtHRDQV8V
-         Iq1LOAK/rKUVrgUAAjr3J/bayhDBgoXbcu7TS2qQtmryV8iJ0sop58v1GiXIDuVbGTOV
-         1e/6w/jbS5u3/evrpRc2wL/FJaGOr0qy0Jw1S+4/10lrbZ/zO56lPELPYwzc6UxicSiI
-         JYMw==
-X-Gm-Message-State: AOAM533MHQubIXWY0QVpPz57Iiw0ILYQDjIE6qrSFYef+SEvBCEwF7K+
-        /XQc68bEjGv6hXXkCUe6W8poZoHt+xU=
-X-Google-Smtp-Source: ABdhPJzNgjnwKSoCEwa7LZaszDG5fN3GYCHh4M9E74mKwnjGxH+bNvdsvRGLMNhZ2Jo9RpRW37AwPQ==
-X-Received: by 2002:a17:907:3ea9:: with SMTP id hs41mr1887202ejc.727.1644593343182;
-        Fri, 11 Feb 2022 07:29:03 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id i24sm4913454edt.86.2022.02.11.07.29.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 07:29:02 -0800 (PST)
-Date:   Fri, 11 Feb 2022 17:29:01 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Ido Schimmel <idosch@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@nvidia.com>, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com
-Subject: Re: [RFC PATCH net-next 1/2] net: dsa: allow setting port-based QoS
- priority using tc matchall skbedit
-Message-ID: <20220211152901.inmg5klgb6pryms7@skbuf>
-References: <20210113154139.1803705-1-olteanv@gmail.com>
- <20210113154139.1803705-2-olteanv@gmail.com>
- <X/+FKCRgkqOtoWbo@lunn.ch>
- <20210114001759.atz5vehkdrire6p7@skbuf>
- <X/+YQlEkeNYXditV@lunn.ch>
- <CA+h21hoYOZZYhoD+QgDvm-Pe11EH5LgLtzRrYPQux_8a7AeHGw@mail.gmail.com>
- <87h795dbnm.fsf@nvidia.com>
+        with ESMTP id S1348352AbiBKPsy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 10:48:54 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2058.outbound.protection.outlook.com [40.107.94.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E881A8
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 07:48:53 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KnbvvkNAASx/mH5+7vfQLA0HS75pFa1S+mx42bBZLnZk3+do4KugVvJQpDAzinOq3FoZwNFcqcyqS52Ohx18nsmbzHvcJxKCHr6/MS3R+0vRnwqmdmkDq5CbiO/kXmwc6Vttp5D8D8H73m0nj83gsEJV8W3Dl96/cba2hbXyU4qA4OaOaKjOFckkzAut1lb5jOwsCgl7vshadO6dlagDUlIaMlzbROqa1Td1zfRfp/XsruSn1IAbqeKqtg0NxyX1Sow6BuRMkcgaeH1ooEri3BRtdPRt9UFxEnO7bX9jQrrct/atybqQgCrHuZptHc4iduNEOTjH3Btp2qoZ4GqHpA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yoyH1du/WNdLJ9VrvCkgHzmeTl59rbQPMRqFtDOuowA=;
+ b=V7oCX1nxqWHZKffDlTDueMJRgZ5MyFotzho1ewZ1EmrJmoBmU7vJFkE2J3Re740F1JqEa/PXU7hN50fuBJH/S2wDg9hdBko1pACAn4bfKDKOTuOA+t/tsiAHkvQdIb0RbYALlLUSJKxI8U6TG/IaAHX8CGP2dTZo93jeQWNIsb+q02Bx78H0aPX426WeQwRt2satua5MnB9peMiExO/ddUaRjMNRH60PShmUSm7T43d2KT8l9fnIpyPxKgYruBdrgdbEbIGlTvFxXhYeOvrO90bp6csiUStPMJpRcRBBcs05DEjmmsdJQ6bnfsx8wg/iotDqtjAElmb0lVcDMNr69g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yoyH1du/WNdLJ9VrvCkgHzmeTl59rbQPMRqFtDOuowA=;
+ b=h+bU0ERanHUHHO0NTeTGfjrhF4x8fY17kwAAPPNHbycm+j+UfssXgMpCL0+WgUoTyqTSS+cWUizNRU2aPW+xfAvkojkjR45bAU+la1kZPHdQhDCFmJJF0tb2FAdm9vCM2CALCi3uOT38EjnU8W9CrFJuALHdt2r3eYk2+or66hw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by BYAPR12MB3429.namprd12.prod.outlook.com (2603:10b6:a03:a8::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.17; Fri, 11 Feb
+ 2022 15:48:50 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::ccd7:e520:c726:d0b]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::ccd7:e520:c726:d0b%7]) with mapi id 15.20.4951.019; Fri, 11 Feb 2022
+ 15:48:50 +0000
+Message-ID: <57cf8ba6-98a7-5d4a-76d0-4b533da06819@amd.com>
+Date:   Fri, 11 Feb 2022 09:48:48 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        Thomas Kupper <thomas@kupper.org>
+Cc:     netdev@vger.kernel.org
+References: <45b7130e-0f39-cb54-f6a8-3ea2f602d65e@kupper.org>
+ <c3e8cbdc-d3f9-d258-fcb6-761a5c6c89ed@amd.com>
+ <68185240-9924-a729-7f41-0c2dd22072ce@kupper.org>
+ <e1eafc13-4941-dcc8-a2d3-7f35510d0efc@amd.com>
+ <06c0ae60-5f84-c749-a485-a52201a1152b@amd.com>
+ <603a03f4-2765-c8e7-085c-808f67b42fa9@kupper.org>
+ <14d2dc72-4454-3493-20e7-ab3539854e37@amd.com>
+ <26d95ad3-0190-857b-8eb2-a065bf370ddc@kupper.org>
+ <cee9f8ff-7611-a09f-a8fe-58bcf7143639@amd.com>
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: AMD XGBE "phy irq request failed" kernel v5.17-rc2 on V1500B
+ based board
+In-Reply-To: <cee9f8ff-7611-a09f-a8fe-58bcf7143639@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SA9PR11CA0001.namprd11.prod.outlook.com
+ (2603:10b6:806:6e::6) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87h795dbnm.fsf@nvidia.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9c1d2f6a-b7b4-4eb7-ac08-08d9ed75ff8b
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3429:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB3429BAF4CC79A53F472DC3C4EC309@BYAPR12MB3429.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lZP+pshtf/cAMxfTWQBGFrWyinoM3B+5ZGIodZqgfVpSqHAkhd8ER2Lod69bQ/ojpHFrvnne/Aicy3w0trP8mghl++wDnn5ZFUlylYoAYIU5JA9TXwq1wVKFxMOMjYrgKfS76n/K5WoKRSUCFDXI4T8+/KHHJrzUQggki4wSBgODOGvv7hYKX12oMorG0vKAoIe9jEk/OXM4kp/7zXbtM/Wn9rDIIIspNk0mIV/vnj7OrEPykH5/ipuz9K4RAiBjM4h31WL01l04lqfCqOezY060jESkIZSejg3pIdaOiGntiGRm4AfjOGp66YEMtk9eRiT1/om6bs16VgfQpjMhCbdoiTjBhyG/SpKfhoAqS1+bqfi7+VeagEj3bFaV8GCalhLJcW47Yu+QtdIewm9dkwB4xhF+KClW/7jENQkJhyMY3YIf74F+QoqGgxdypRHITFDKsk7M18V2er51EAy0VN2fRIKexAfCv/qp1qz+fKTUaMNMtvDHw4BBmGiN//JBJ48V8C7jaNEbOO9yDQN/GdrOYl+dvpVXTKQAS2ysl8JK2W0+VNcWoRKWXL57rMORMCoRl30wpLJmM9dWHhfGHWBPuZpRH1bnXXut4e3yFyl1qiYy0DOBO8UYSoHVlZ7KvGFDiuA1rI+p5bR+Xg8bWVQe8vRFCT3Bau0XjJuEOfDfpu4brmadETASeVzx3/vfFmZ96pNElTqWJL60lCgYh9ByiXceJrK0zQjfOM2gnJgrzrCO05lb0x8hp5ZF03CWj3Ev3pbaGYrBvabaasiYzokoKwO5p6o97X2XAAqmgY9RAhFwW6gHeLMFYBql7yA5hyb0AnQWnISncF6EqV7LWg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(26005)(186003)(31686004)(2616005)(83380400001)(2906002)(5660300002)(66556008)(4326008)(66476007)(86362001)(31696002)(6512007)(8676002)(966005)(6486002)(316002)(53546011)(8936002)(66946007)(508600001)(6506007)(38100700002)(110136005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OVF6SzFYM0pVY3JwUDJEeTdkcXBBQlBDM1lMZU5zd1U1VVN2UC9iWU5pL0Zh?=
+ =?utf-8?B?bm9PNWZ6UFpscTBPcm1lQkZSVDA2Q0QzQmt6OGNiRHNVYmY5U3M1SHU3dnFK?=
+ =?utf-8?B?bThubER4UEFLbzUrWHkzUzdoeEFXbGtwMEFmekxiOW1kZFZLMDZ0aEwyUkEr?=
+ =?utf-8?B?cWdpUWJvNmJPQ081UEswdWMwRzBXUWZsSWIwaVM3dnJYNXZ3bGZqM2pmcVdy?=
+ =?utf-8?B?Z28rcU5BZW1tYUpoMnZrdFM0OHhRVGovK09IMWdkbzhMaTR1eVBDSHlpVmhx?=
+ =?utf-8?B?WXJFRStYMHJPNXlrS0F2eFdXYkdBWVRMaU51TXd0Wjh6Tlh3ZW00TjJ1TmZl?=
+ =?utf-8?B?Z1RWa3lrL2xzMnlJcGxKQVY1RjlmVnNNOHBSMG9INGF3Qk5zaFVpZjdWUGxC?=
+ =?utf-8?B?djZML0dBcjhtRUZoQkdQTi9tc1lMSnE1Q0k4bWZRc0pMYzh1TkJ2TXE5K3cr?=
+ =?utf-8?B?dTgyTmQ3ci9FY1R1dVc5MUtFditHUmVNb3dneUhTbE13UzZXWHZjUTRjUWg3?=
+ =?utf-8?B?TVN4OU9IWVpDZmdOTFFKVGJPWkxKUFVwdFI1VTU5K1p3SGVNR3YvRFNCUkEx?=
+ =?utf-8?B?aVNiOFpLN09kUEkwSXgwVlJWMTZjWjlXMUVKK1RKR0ZxTVVKelBlS1hwNTdr?=
+ =?utf-8?B?alN5R09BY2FkRHBSS2pnbDR0bFhDNklLZmdWZCt0OUVDMk50WXdvNzZ4TldM?=
+ =?utf-8?B?QUt0cU9MY2NiMWpxalErc1JhVGVBZDZGWWoxQW51YzQxVGRjOTRRbEJWejhF?=
+ =?utf-8?B?Um13ZGJlTWRCdko4ZHJubGpTbWhEWEpPQndCNGVZYTZmYVMwZG8rdWwwcDFp?=
+ =?utf-8?B?cEFTU0hPdVdTNDVpbFp1T1E5OFlRN3VDMWZmVDg2NkdCb2crVnJDUjBzNVVU?=
+ =?utf-8?B?TCtXclpEdWVGT3IySjRqdzZUamk0N1VUcnJqUUM1dllvNE5lczRZSENKSG53?=
+ =?utf-8?B?Sy9WUklFalBoOGMrTy9LbFBSUGpnR0N3ME1IK1RldTRLa3BSTC9sSzUzdlFo?=
+ =?utf-8?B?UnVRaGVRRjRsdmxraU9IRFBIRDJiV21rNEFiM0dGd2crOHdNS0kwMFN2YWx6?=
+ =?utf-8?B?Qk1oMlhWbHIyWVJwd3I4Wk1KY1oyejVnVUtCNGF4UTU1U2VmR0FjQkIrUFhv?=
+ =?utf-8?B?cFR6c2Y2bTdxdDZsUkhuSDZHK2t4b0srQWtYZjNzVktOdFZiWEo4Vy9ad09o?=
+ =?utf-8?B?WWJuL2J6T05Kc1Q1NHMyUWhlWFVYYm9tTC9sZnNsY3hyS1dXaitLK081ck5Q?=
+ =?utf-8?B?cFJxME9ZR21JbXRwbm85dkxCdXhHZHpZWld2alJybGdERmllQWJ3YVVtUUhD?=
+ =?utf-8?B?b1gwajJqenYvbUtXMWszS1NtOUxxL1NNRk9WVEVsUUVOUTdEejBsMzE4VDBn?=
+ =?utf-8?B?dlZJa1RaV1RMRVNROERzblJlQUpRQnRFaENlQlNiUlIvcVM3Wm9xKzIwUDQr?=
+ =?utf-8?B?Wnp1TlNMM1BBaTNhQndrWGxHdThSUitWNFE5U0IxY29URW9VRTRHa2Vic1Ba?=
+ =?utf-8?B?d2tJQmRHZkQzZXdOVlRxZU5pOEZNL0dtSitpTXZWRDM4L2M1UCswZ1BXL3ZZ?=
+ =?utf-8?B?eUJvbzVGZVI5RjJMQ09TM283cTdNZjRGV01oOEVPMW1zZFdSWHpIYXhWOFdo?=
+ =?utf-8?B?cVdCM1hLNzdseTJiL3RtN2treVFCSWxPZ0ZYV09JU0cyQjJ1cjhkck5rT3Nu?=
+ =?utf-8?B?aTlaNVIySTFJMFZLS3F0Q1hYYTFxam1reFNrZFk5RVVkZTlDU2t6YzNVa094?=
+ =?utf-8?B?dXM5N1RSekZ0SUdtaGlzWnJhN0FqQ05pMGFoZDg0Sm1nSEhML0pyY0pWcHJT?=
+ =?utf-8?B?cEdraWpiU3diclBDYmFSWnZsM0RZbDdyeW9IWVE2STNEQ05CbjVzRFE3UGFG?=
+ =?utf-8?B?R0ZxZm9CN1pJSkdacjBJUlBLVHdyTzNGcWppQmdPdU1zR3IxNXRyNTcra042?=
+ =?utf-8?B?enJzZ3pvR3ZWaU5JR1dPTGJsd1F2OXBDM0tISUk5bDA2S3g4SlQxandKYWxs?=
+ =?utf-8?B?TzR1b0dnUFRXcUt6ZkFGY2p3OUZERlJBczZFMStxV0taYVkyeGZsdndwRHNV?=
+ =?utf-8?B?cmo1L2JxQzZDV2RSK0cyNWViWHhXcXJ5MEdGZzhvaG9BYlJXOVlML3B6TVlN?=
+ =?utf-8?B?RU8wVzRta05GNzAwNUFEMnpwZWRMZ1BKUlBZNk9US3k2dFQ3c2JobFIzTTJl?=
+ =?utf-8?Q?ayVBF4ywmIMSXvZkokdm0OU=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c1d2f6a-b7b4-4eb7-ac08-08d9ed75ff8b
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Feb 2022 15:48:50.6435
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: H4GUNE6xciN5S4KsFk3pNiIlLApWFFCdGiSG2ZT9sESdAYVMWzVf+vquIWJauMEmDf8Su7TnOsYEK57/8aZDjw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3429
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,119 +134,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Petr,
+On 2/11/22 03:49, Shyam Sundar S K wrote:
+> On 2/11/2022 3:03 PM, Thomas Kupper wrote:
+>> Am 08.02.22 um 17:24 schrieb Tom Lendacky:
+>>> On 2/7/22 11:59, Thomas Kupper wrote:
+>>>> Am 07.02.22 um 16:19 schrieb Shyam Sundar S K:
+>>>>> On 2/7/2022 8:02 PM, Tom Lendacky wrote:
+>>>>>> On 2/5/22 12:14, Thomas Kupper wrote:
+>>>>>>> Am 05.02.22 um 16:51 schrieb Tom Lendacky:
+>>>>>>>> On 2/5/22 04:06, Thomas Kupper wrote:
 
-On Fri, Feb 11, 2022 at 08:52:20AM +0100, Petr Machata wrote:
+>>
+>> Thanks Tom, I now got time to update to 5.17-rc3 and add the 'debug'
+>> module parameter. I assume that parameter works with the non-debug
+>> kernel? I don't really see any new messages related to the amd-xgbe driver:
+>>
+>> dmesg right after boot:
+>>
+>> [    0.000000] Linux version 5.17.0-rc3-tk (jane@m920q-ubu21) (gcc
+>> (Ubuntu 11.2.0-7ubuntu2) 11.2.0, GNU ld (GNU Binutils for Ubuntu) 2.37)
+>> #12 SMP PREEMPT Tue Feb 8 19:52:19 CET 2022
+>> [    0.000000] Command line: BOOT_IMAGE=/boot/vmlinuz-5.17.0-rc3-tk
+>> root=UUID=8e462830-8ba0-4061-8f23-6f29ce751792 ro console=tty0
+>> console=ttyS0,115200n8 amd_xgbe.dyndbg=+p amd_xgbe.debug=0x37
+>> ...
+>> [    5.275730] amd-xgbe 0000:06:00.1 eth0: net device enabled
+>> [    5.277766] amd-xgbe 0000:06:00.2 eth1: net device enabled
+>> [    5.665315] amd-xgbe 0000:06:00.2 enp6s0f2: renamed from eth1
+>> [    5.696665] amd-xgbe 0000:06:00.1 enp6s0f1: renamed from eth0
+
+Hmmm... that's strange. There should have been some messages issued by the
+xgbe-phy-v2.c file from the xgbe_phy_init() routine.
+
+Thomas, if you're up for a bit of kernel hacking, can you remove the
+"if (netif_msg_probe(pdata)) {" that wrap the dev_dbg() calls in the
+xgbe-phy-v2.c file? There are 5 locations.
+
+>>
+>> dmesg right after 'ifconfig enp6s0f2 up'
+>>
+>> [   88.843454] amd_xgbe:xgbe_alloc_channels: amd-xgbe 0000:06:00.2
+>> enp6s0f2: channel-0: cpu=0, node=0
+
+
+> Can you add this change and see if it solves the problem?
 > 
-> Vladimir Oltean <olteanv@gmail.com> writes:
-> 
-> > Hi Andrew,
-> >
-> > On Thu, 14 Jan 2021 at 03:03, Andrew Lunn <andrew@lunn.ch> wrote:
-> >> On Thu, Jan 14, 2021 at 02:17:59AM +0200, Vladimir Oltean wrote:
-> >> > On Thu, Jan 14, 2021 at 12:41:28AM +0100, Andrew Lunn wrote:
-> >> > > On Wed, Jan 13, 2021 at 05:41:38PM +0200, Vladimir Oltean wrote:
-> >> > > > + int     (*port_priority_set)(struct dsa_switch *ds, int port,
-> >> > > > +                              struct dsa_mall_skbedit_tc_entry *skbedit);
-> >> > >
-> >> > > The fact we can turn this on/off suggests there should be a way to
-> >> > > disable this in the hardware, when the matchall is removed. I don't
-> >> > > see any such remove support in this patch.
-> >> >
-> >> > I don't understand this comment, sorry. When the matchall filter
-> >> > containing the skbedit action gets removed, DSA calls the driver's
-> >> > .port_priority_set callback again, this time with a priority of 0.
-> >> > There's nothing to "remove" about a port priority. I made an assumption
-> >> > (which I still consider perfectly reasonable) that no port-based
-> >> > prioritization means that all traffic gets classified to traffic class 0.
-> >>
-> >> That does not work for mv88e6xxx. Its default setup, if i remember
-> >> correctly, is it looks at the TOS bits to determine priority
-> >> classes. So in its default state, it is using all the available
-> >> traffic classes.  It can also be configured to look at the VLAN
-> >> priority, or the TCAM can set the priority class, or there is a per
-> >> port default priority, which is what you are describing here. There
-> >> are bits to select which of these happen on ingress, on a per port
-> >> basis.
-> >>
-> >> So setting the port priority to 0 means setting the priority of
-> >> zero. It does not mean go back to the default prioritisation scheme.
-> >>
-> >> I guess any switch which has a range of options for prioritisation
-> >> selection will have a similar problem. It defaults to something,
-> >> probably something a bit smarter than everything goes to traffic class
-> >> 0.
-> >>
-> >>       Andrew
-> >
-> > I was going through my old patches, and re-reading this conversation,
-> > it appears one of us is misunderstanding something.
-> >
-> > I looked at some Marvell datasheet and it has a similar QoS
-> > classification pipeline to Vitesse switches. There is a port-based
-> > default priority which can be overridden by IP DSCP, VLAN PCP, or
-> > advanced QoS classification (TCAM).
-> >
-> > The proposal I had was to configure the default port priority using tc
-> > matchall skbedit priority. Advanced QoS classification would then be
-> > expressed as tc-flower filters with a higher precedence than the
-> > matchall (basically the "catchall"). PCP and DSCP, I don't know if
-> > that can be expressed cleanly using tc. I think there's something in
-> > the dcb ops, but I haven't studied that too deeply.
-> 
-> In 802.1Q-2014, port-default priority is handled as APP entries matching
-> on EtherType of 0. (See Table D-9.) Those are "default priority. For use
-> when priority is not otherwise specified".
-> 
-> So DCB ops just handle these as APP entries. Dunno what DSA does. In
-> mlxsw, we call dcb_ieee_getapp_default_prio_mask() when the DCP set_app
-> hook fires to find the relevant entries and get the priority bitmask.
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=68c2d6af1f1e
 
-Thanks, these are great pointers. Last time I looked at DCB ops, the dcb
-iproute program didn't exist, one had to use some LLDP tool IIRC, and it
-was a bit cumbersome and I dismissed it without even looking at all the
-details, I didn't notice that the port-default priority corresponds to a
-selector of 1 and a protocol of 0.
+I would imagine that patch has nothing to do with the real issue. Given
+the previous messages of:
 
-The point is that I'm not bent on using tc-matchall for port-based
-default priority, it's just that I wasn't aware of a better way.
-But I'll look into adding support for DCB ops for my DSA driver, sounds
-like a much, much better fit.
+> [  648.038655] genirq: Flags mismatch irq 59. 00000000 (enp6s0f2-pcs) vs. 00000000 (enp6s0f2-pcs)
+> [  648.048303] amd-xgbe 0000:06:00.2 enp6s0f2: phy irq request failed
 
-> Now I don't understand DSA at all, but given a chip with fancy defaults,
-> for the DCB interface in particular, it would make sense to me to have
-> two ops. As long as there are default-prio entries, a "set default
-> priority" op would get invoked with the highest configured default
-> priority. When the last entry disappears, an "unset" op would be called.
+There should be no reason for not being able to obtain the IRQ.
 
-I don't understand this comment, sorry. I don't know what's a "chip with
-fancy defaults".
+I suspect it is something in the BIOS setup that is not correct and thus
+the Linux driver is not working properly because of bad input/setup from
+the BIOS. This was probably worked around by the driver used in the
+OPNsense DEC740 firewall.
 
-> Not sure what DSA does with ACLs, but it's not clear to me how TC-based
-> prioritization rules coexist with full blown ACLs. I suppose the prio
-> stuff could live on chain 0 and all actions would be skbedit prio pipe
-> goto chain 1 or something. And goto chain 0 is forbidden, because chain
-> 0 is special. Or maybe the prioritization stuff lives on a root qdisc
-> (but no, we need it for ingress packets...) One way or another it looks
-> hairy to dissect and offload accurately IMHO.
+Shyam has worked more closely with the embedded area of this device, I'll
+let him take it from here.
 
-There's nothing to understand about the DSA core at all, it has no
-saying in how prioritization or TC rules are configured, that is left
-down to the hardware driver.
+Thanks,
+Tom
 
-To make sure we use the same terminology, when you say "how TC-based
-prioritization rules coexist with full blown ACLs", you mean
-trap/drop/redirect by ACLs, right?
-
-So the ocelot driver has a programmable, fixed pipeline of multiple
-ingress stages (VCAP IS1 for VLAN editing and advanced QoS classification)
-and egress stages (VCAP ES0 for egress VLAN rewriting). We model the
-entire TCAM subsystem using one chain per TCAM lookup, and force gotos
-from the current stage to the next. See
-tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh for the
-intended usage model.
-
-Now, that's all for advanced QoS classification, not for port-based
-default, VLAN PCP and IP DSCP. My line of thinking is that we could do
-the latter via dcb-app, and leave the former where it is (skbedit with
-tc-flower), and they'd coexist just fine, right?
