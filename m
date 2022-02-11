@@ -2,80 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43DCC4B1B44
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 02:30:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6728A4B1B9E
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 02:50:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346873AbiBKBaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 20:30:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41934 "EHLO
+        id S1347019AbiBKBuL convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Feb 2022 20:50:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243303AbiBKBaC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 20:30:02 -0500
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACBCC270E;
-        Thu, 10 Feb 2022 17:30:01 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id b5so7478836qtq.11;
-        Thu, 10 Feb 2022 17:30:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Agn9nWvOVKSlYopW6GlbBUhQXIsnfExAgumi8G4eFTI=;
-        b=Oh7sp26UOvTWr/KLgtKlclcfG0wVdc5O8pe/M15xAnnxL6POaBe6FsHyQMsxM0Dk0o
-         L/IN4NTDy4HuUOhsjHF822y69aVfYTkts9Yihz7wsLgfNlJS0iauSwkIuwwptqcP6jhv
-         36BmzRcofOR+mroskXXiIyrfi1HCXDShmknELWCLmZbYPgOIaLxmum9q/Af4S9O315vP
-         CbdGItpX6O/Z9pIEVz2jIC+5h885yVzst4UIoN1nLBz6upFG/GZzEGS5mRIepx0/wv9X
-         WzhiCDZDVEe3Bl0CTOlONwRI6nF9hQGxZ16Ee/4L1mk2qJzZVbnPSqNa5QConazyeD/W
-         nZ0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Agn9nWvOVKSlYopW6GlbBUhQXIsnfExAgumi8G4eFTI=;
-        b=KrpwmBgGC14XUrTLwj9giCovp+vJKVuk5B1JWL+q1van3jXOrLM0m+BwhW6lTPwuw0
-         eDXuUEeGMaEypAOmdEaLt6khLHOioMIAxBboy4onv8SKUfLaP1LyICvp++U5vHCrXrYD
-         oGA7JO/hGCduPfizUQd7kZGbPu9Y3UhK9Y8MyrzelTC4sebxjyofYN7V3gdz5b+EwKUf
-         EU8u5rE9fLD+2F2fO0DQCs3BBqmj8M4W53kw9AgOK8Ci/G8w97KRny1AXqe3a8VbctNI
-         HierJAa84JMiQa/PEaOGeMm3dKX3EU59i3WemcsDLKxpnNdeU9AsAPxOMAcp00Hiul4Y
-         t1YQ==
-X-Gm-Message-State: AOAM532SuQ9r+BZITrfK3LP2TRwJ4OhwJc4IG9fewzBU0o8iUfM5Y8Cz
-        QZIj1PhHXLKMi/jtV3Zy9IE=
-X-Google-Smtp-Source: ABdhPJxuv9EpNP7UGy8548s4WvOHS/6phRk0lxUHHM85fP03AA3hW9YbxAAjwgTQxXtCoP2wOWUv6g==
-X-Received: by 2002:a05:622a:1049:: with SMTP id f9mr6919482qte.348.1644543000905;
-        Thu, 10 Feb 2022 17:30:00 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id h5sm11429608qti.95.2022.02.10.17.29.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 17:30:00 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     kvalo@kernel.org
-Cc:     cgel.zte@gmail.com, chi.minghao@zte.com.cn, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        wcn36xx@lists.infradead.org, zealci@zte.com.cn
-Subject: Re: [PATCH V2] wcn36xx: use struct_size over open coded arithmetic
-Date:   Fri, 11 Feb 2022 01:29:54 +0000
-Message-Id: <20220211012954.1650997-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164449505175.11894.18378600637942439052.kvalo@kernel.org>
-References: <164449505175.11894.18378600637942439052.kvalo@kernel.org>
+        with ESMTP id S230175AbiBKBuK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 20:50:10 -0500
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB5310FF
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 17:50:11 -0800 (PST)
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21ANrJRL013568
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 17:50:10 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3e58e1jm98-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 17:50:10 -0800
+Received: from twshared11487.23.frc3.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 10 Feb 2022 17:50:08 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 8DECB29EBEC5E; Thu, 10 Feb 2022 17:50:01 -0800 (PST)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <sfr@canb.auug.org.au>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH bpf-next] bpf: fix bpf_prog_pack build for ppc64_defconfig
+Date:   Thu, 10 Feb 2022 17:49:15 -0800
+Message-ID: <20220211014915.2403508-1-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: AC52mw281FCS0R9FFGQY3jd3tWd0mnJ8
+X-Proofpoint-ORIG-GUID: AC52mw281FCS0R9FFGQY3jd3tWd0mnJ8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-10_11,2022-02-09_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 phishscore=0
+ malwarescore=0 clxscore=1015 bulkscore=0 mlxlogscore=942 impostorscore=0
+ mlxscore=0 lowpriorityscore=0 adultscore=0 suspectscore=0
+ priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202110005
+X-FB-Internal: deliver
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-change log:
+bpf_prog_pack causes build error with powerpc ppc64_defconfig:
 
-v1: msg_ind = kmalloc(struct_size(*msg_ind, msg, len), GFP_ATOMIC);
-v2: msg_ind = kmalloc(struct_size(msg_ind, msg, len), GFP_ATOMIC);
+kernel/bpf/core.c:830:23: error: variably modified 'bitmap' at file scope
+  830 |         unsigned long bitmap[BITS_TO_LONGS(BPF_PROG_CHUNK_COUNT)];
+      |                       ^~~~~~
 
-thanks
-Minghao
+Fix it by turning bitmap into a 0-length array.
+
+Fixes: 57631054fae6 ("bpf: Introduce bpf_prog_pack allocator")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Song Liu <song@kernel.org>
+---
+ kernel/bpf/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 42d96549a804..44623c9b5bb1 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -827,7 +827,7 @@ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
+ struct bpf_prog_pack {
+ 	struct list_head list;
+ 	void *ptr;
+-	unsigned long bitmap[BITS_TO_LONGS(BPF_PROG_CHUNK_COUNT)];
++	unsigned long bitmap[];
+ };
+ 
+ #define BPF_PROG_MAX_PACK_PROG_SIZE	BPF_PROG_PACK_SIZE
+@@ -840,7 +840,7 @@ static struct bpf_prog_pack *alloc_new_pack(void)
+ {
+ 	struct bpf_prog_pack *pack;
+ 
+-	pack = kzalloc(sizeof(*pack), GFP_KERNEL);
++	pack = kzalloc(sizeof(*pack) + BITS_TO_BYTES(BPF_PROG_CHUNK_COUNT), GFP_KERNEL);
+ 	if (!pack)
+ 		return NULL;
+ 	pack->ptr = module_alloc(BPF_PROG_PACK_SIZE);
+-- 
+2.30.2
+
