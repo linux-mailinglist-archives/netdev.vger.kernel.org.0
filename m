@@ -2,62 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06C954B2AEC
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 17:50:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BB294B2B0A
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 17:54:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348209AbiBKQtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 11:49:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49538 "EHLO
+        id S1351835AbiBKQvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 11:51:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230029AbiBKQtw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 11:49:52 -0500
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EC58D;
-        Fri, 11 Feb 2022 08:49:50 -0800 (PST)
-Received: by mail-qt1-f172.google.com with SMTP id b5so9523989qtq.11;
-        Fri, 11 Feb 2022 08:49:50 -0800 (PST)
+        with ESMTP id S1351780AbiBKQvP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 11:51:15 -0500
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B5F3D7D;
+        Fri, 11 Feb 2022 08:51:14 -0800 (PST)
+Received: by mail-qk1-f180.google.com with SMTP id b22so8735298qkk.12;
+        Fri, 11 Feb 2022 08:51:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=+tFu3vkbTQIySarpIIX7Tezye9s6YZGK6OMSaOHlyY4=;
-        b=jknmwU3KP7JlR+SE4RCbBxJuYmfXJSR1M11ajJzjA8+EVuWWCk2hqKZ6MgilfNC787
-         t4aLhW9y9ksUARTmHkptVvoGatrGQgEHGS5od2RRp40G9RYz33UvY3xv1rPec72pajEO
-         0N4bnaTq9mYLonVWlKRRhenPnpCGwYjpNMzrtQp8DZB8DFtXlSF2iWkh8MYV9wZ9Pw9G
-         +Uxy0ZiioPYEoLx3XFnyLrFr1Zrn/x6zrmZ4lrI8XmrHgqW1YBCWimeJVtEmPtPQvasz
-         dsWYToTr/BIPlTeM5+2LdbolLaAmKBKWyOy0iMfzh4AiH6DYtAuI37hufZpDkL8ZuQeW
-         f7/w==
-X-Gm-Message-State: AOAM532zmzA8YSzI/unCdLn/XzhtewxUxrFjBVhafxOP9nOwtFbCIvx9
-        Dm0LGWFVTU6imVly7Vxmpw==
-X-Google-Smtp-Source: ABdhPJwrK4i0id3TCyebwPom3Nt5279eNZ7MttB2p50A+Y+8mKUPs7WBlXNbYfUW8gLI0GKtfduj8g==
-X-Received: by 2002:ac8:5950:: with SMTP id 16mr1742609qtz.104.1644598189334;
-        Fri, 11 Feb 2022 08:49:49 -0800 (PST)
+        bh=AYgiI7gkn9v+ZSarCY0jNpEEoK+dhB0sJ5++Eou/Ao4=;
+        b=e1hxhV/oUgk0O/+7kTFPdGI0hXq4NiLvHLgGscT35tw5H85nf8JNnU57LZjGKavbVb
+         QnLRTOTcHxrjSpJ/2c0hSLZYvmv5p6olWIwonbLKfsXKGi03s9y7cbajemtW3tcwsTng
+         zZq7UzU/HL3GOprqO6wMYZ9TKCcxKVoBvGVJdI2hsi80ob47xwXbCFOgQZN+G0pJVa4x
+         qKJ2P1ks8DcJQ1AH6OFCborSSocR2GrLLIIuLc8HsKZLjvhka8/WvgFyEe2Pn2BAgMYh
+         Yla8UwjrU6RZZmWl6utE2EPXUkxo7r9JKgxQ5QDyDv7QZziC3SDElEbskGhklAnUHF0B
+         XLlA==
+X-Gm-Message-State: AOAM532BcUrO/L3SO37696MfRtWkhN2v35riJKo2gkTfkzznqhNxEAkQ
+        C3iugSLxyYz+SUt0icuNsMdjfGcweA==
+X-Google-Smtp-Source: ABdhPJwiuw34Dp61RI8Kcr7Ko5xtI464qx96udW7XA4hfaR8FjIE/I4ihHBD6OWA9HOmFHeVvxFFww==
+X-Received: by 2002:a05:620a:4154:: with SMTP id k20mr1218053qko.293.1644598273159;
+        Fri, 11 Feb 2022 08:51:13 -0800 (PST)
 Received: from robh.at.kernel.org ([2607:fb90:5fee:dfce:b6df:c3e1:b1e5:d6d8])
-        by smtp.gmail.com with ESMTPSA id g17sm10065226qkl.122.2022.02.11.08.49.47
+        by smtp.gmail.com with ESMTPSA id i12sm11595792qko.105.2022.02.11.08.51.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 08:49:48 -0800 (PST)
-Received: (nullmailer pid 503767 invoked by uid 1000);
-        Fri, 11 Feb 2022 16:49:46 -0000
-Date:   Fri, 11 Feb 2022 10:49:46 -0600
+        Fri, 11 Feb 2022 08:51:12 -0800 (PST)
+Received: (nullmailer pid 505758 invoked by uid 1000);
+        Fri, 11 Feb 2022 16:51:10 -0000
+Date:   Fri, 11 Feb 2022 10:51:10 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v2 2/2] dt-bindings: net: add schema for
- Microchip/SMSC LAN95xx USB Ethernet controllers
-Message-ID: <YgaTqpmmb67mCdlc@robh.at.kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/2] dt-bindings: net: add schema for ASIX
+ USB Ethernet controllers
+Message-ID: <YgaT/vgTflPBP99k@robh.at.kernel.org>
 References: <20220209081025.2178435-1-o.rempel@pengutronix.de>
- <20220209081025.2178435-3-o.rempel@pengutronix.de>
- <1644420908.431570.391820.nullmailer@robh.at.kernel.org>
- <CAL_JsqL1AAMq4u3Ruj2d5AUe-JnP8FDp8bUE0KcY_8fusxC9dg@mail.gmail.com>
- <20220209160252.GB26024@pengutronix.de>
+ <20220209081025.2178435-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220209160252.GB26024@pengutronix.de>
+In-Reply-To: <20220209081025.2178435-2-o.rempel@pengutronix.de>
 X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
         FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
         HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
@@ -69,67 +65,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 05:02:52PM +0100, Oleksij Rempel wrote:
-> On Wed, Feb 09, 2022 at 09:38:57AM -0600, Rob Herring wrote:
-> > On Wed, Feb 9, 2022 at 9:35 AM Rob Herring <robh@kernel.org> wrote:
-> > >
-> > > On Wed, 09 Feb 2022 09:10:25 +0100, Oleksij Rempel wrote:
-> > > > Create initial schema for Microchip/SMSC LAN95xx USB Ethernet controllers and
-> > > > import all currently supported USB IDs form drivers/net/usb/smsc95xx.c
-> > > >
-> > > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > > > ---
-> > > >  .../bindings/net/microchip,lan95xx.yaml       | 80 +++++++++++++++++++
-> > > >  1 file changed, 80 insertions(+)
-> > > >  create mode 100644 Documentation/devicetree/bindings/net/microchip,lan95xx.yaml
-> > > >
-> > >
-> > > Running 'make dtbs_check' with the schema in this patch gives the
-> > > following warnings. Consider if they are expected or the schema is
-> > > incorrect. These may not be new warnings.
-> > >
-> > > Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-> > > This will change in the future.
-> > >
-> > > Full log is available here: https://patchwork.ozlabs.org/patch/1590223
-> > >
-> > >
-> > > smsc@2: $nodename:0: 'smsc@2' does not match '^ethernet(@.*)?$'
-> > >         arch/arm/boot/dts/tegra30-ouya.dt.yaml
-> > >
-> > > usbether@1: $nodename:0: 'usbether@1' does not match '^ethernet(@.*)?$'
-> > >         arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dt.yaml
-> > >         arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dt.yaml
-> > >         arch/arm/boot/dts/bcm2835-rpi-b.dt.yaml
-> > >         arch/arm/boot/dts/bcm2835-rpi-b-plus.dt.yaml
-> > >         arch/arm/boot/dts/bcm2835-rpi-b-rev2.dt.yaml
-> > >         arch/arm/boot/dts/bcm2836-rpi-2-b.dt.yaml
-> > >         arch/arm/boot/dts/bcm2837-rpi-3-b.dt.yaml
-> > >         arch/arm/boot/dts/omap3-beagle-xm-ab.dt.yaml
-> > >         arch/arm/boot/dts/omap3-beagle-xm.dt.yaml
-> > >         arch/arm/boot/dts/omap4-panda-a4.dt.yaml
-> > >         arch/arm/boot/dts/omap4-panda.dt.yaml
-> > >         arch/arm/boot/dts/omap4-panda-es.dt.yaml
-> > >
-> > > usbether@3: $nodename:0: 'usbether@3' does not match '^ethernet(@.*)?$'
-> > >         arch/arm/boot/dts/omap5-uevm.dt.yaml
-> > 
-> > So this binding is already in use, but was undocumented?
+On Wed, Feb 09, 2022 at 09:10:24AM +0100, Oleksij Rempel wrote:
+> Create initial schema for ASIX USB Ethernet controllers and import all
+> currently supported USB IDs form drivers/net/usb/asix_devices.c
 > 
-> Ack.
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  .../devicetree/bindings/net/asix,ax88178.yaml | 68 +++++++++++++++++++
+>  1 file changed, 68 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/asix,ax88178.yaml
 > 
-> > Or did you forget to remove the .txt file?
-> 
-> No, there was no documentation.
-> 
-> > The commit message should highlight all this.
-> > 
-> > (I don't expect you to fix all these warnings, I was just surprised to
-> > see them given this is an 'initial schema'.)
-> 
-> This patches was create before I needed to use it. Should I resent it
-> with new commit message?
+> diff --git a/Documentation/devicetree/bindings/net/asix,ax88178.yaml b/Documentation/devicetree/bindings/net/asix,ax88178.yaml
+> new file mode 100644
+> index 000000000000..2337a1a05bda
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/asix,ax88178.yaml
+> @@ -0,0 +1,68 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/asix,ax88178.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: The device tree bindings for the USB Ethernet controllers
+> +
+> +maintainers:
+> +  - Oleksij Rempel <o.rempel@pengutronix.de>
+> +
+> +description: |
+> +  Device tree properties for hard wired USB Ethernet devices.
+> +
+> +allOf:
+> +  - $ref: ethernet-controller.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - usbb95,1720   # ASIX AX88172
+> +          - usbb95,172a   # ASIX AX88172A
+> +          - usbb95,1780   # ASIX AX88178
+> +          - usbb95,7720   # ASIX AX88772
+> +          - usbb95,772a   # ASIX AX88772A
+> +          - usbb95,772b   # ASIX AX88772B
+> +          - usbb95,7e2b   # ASIX AX88772B
+> +
+> +  reg: true
+> +  local-mac-address: true
+> +  mac-address: true
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    usb {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        ethernet@1 {
+> +            compatible = "usbdb0,a877";
 
-Yes, please.
+This isn't one of the above compatibles.
 
-Rob
+> +            reg = <1>;
+> +            local-mac-address = [00 00 00 00 00 00];
+> +        };
+> +    };
+> +  - |
+> +    usb {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        usb1@1 {
+> +            compatible = "usb1234,5678";
+> +            reg = <1>;
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +
+> +            ethernet@1 {
+> +               compatible = "usbdb0,a877";
+> +               reg = <1>;
+> +            };
+> +        };
+> +    };
+> -- 
+> 2.30.2
+> 
+> 
