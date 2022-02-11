@@ -2,128 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F1CC4B2270
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 10:50:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69C804B227B
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 10:54:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238849AbiBKJuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 04:50:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34130 "EHLO
+        id S1344220AbiBKJyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 04:54:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231190AbiBKJuL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 04:50:11 -0500
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2056.outbound.protection.outlook.com [40.107.95.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66E7E51
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 01:50:08 -0800 (PST)
+        with ESMTP id S232289AbiBKJyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 04:54:18 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60125.outbound.protection.outlook.com [40.107.6.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F043AE6F
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 01:54:16 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hFQ01u4KDgW0oi2yTtzPEUA4qnugQe/9UlpdNRSMRdygGT3qZMxg+dwkVIgyar+PLdiE07QpXttWe9+S9jo4y5OGLfaBGCc8wDvo2d73WlBgNlYyy0KS54taa/qmheyI5kqya2thOW0B2BIskVgZ60+5R6ubpJU6Bdo4TAMnOWnPyk9KmfPnj15c0zlRGgN+6VsWcj0Gnnfi0V/idhe/keJRfxDWUBGY6JDgIEy5+nG2UosJtr2z1wa35WgxUiug/hwOHBrv3XE4MNvIzvDO3P2U5V7auBpEmM3JgYBMi2Dpz8mO9DOChHQyaI/g5v1vX44BkMCPutE3cgXiltjkMQ==
+ b=L08i4hbpBB05mvZtmKHnOUs87JFI6/0FxFVG412Dr0kjvYnCXnskxQkO5oqxup8ewh4+Wu25lFHJl84MHQ/Ixj4dsy+bMIUrEW4mUb5ewYiZb9IcZa4mCJ1y4JK6tUYFnRJfrqd2tK4eUG4hZDccFtTyoyhyZlpz0oB8u4t9bXIHWrzwimzbW4uyAxfeF/t8lN3dgdtSrsK0aZENkv3aXIoAL/OcLtK13olR2yWtWTZwsxrvxxBI5ITQUU1SCzOZnVHqnDW2mouvEzTVRxLheRDGp8pbf4DQCEHHApj250F+ijJxJDkK2ITwx7CovT7IyvO14or+/XIUTtz0TC5H0g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=q7zo2doQEb9/wKssbcgqBUp1W4eOvdAsrQcWUthFuPI=;
- b=ntQzy6JdId6OmldAWH4uZ6w2vilwLUkFZ4PF6nmUIGX7PEP0u/Lgg7K9IfBdymJKIv+9abyGv1J8tSNekcWjS034ZtBX5EV9Jjrpp0q2My8rJBOh6jqjVqSxZTrLKRFyGkC3S0hL6b5mpXJAKbtWWJth8R+l+YuHU3lFu2gD9CYJxMjAYbr4NgpdyjRplOkaKJVIJ44wdVVEiwkUbcJwv0veRLQ25oijrcHmvW8WyXtkLQMj0o26ntOgHcbY1gNB7Jtvt7mI15Ubds3bEw+l45zUIbnpskZ5NieVPxf9HvyyJ1v4TgjMcCD4yj70ZUJ0tjyDQLbOSy8WizRRpK8OJg==
+ bh=61s93TTbhc+6hxLsCDDKZFNJ3iFS+yulLYZQS9ZrXqE=;
+ b=mwfYh/WpgIaZzfgfRjDl//6OACy1+Cezc0IQaYbDfxfIzE9wSvcNsyczzT32+r2rfgsHCjo2qHNJDKAQpnjmr/0uPe1tQVPuelPkqRLR5rew9RhxNsWgJJ4x92tAS+mC+Hjx2EtRUMXDEX2Ap2XgqdZX68fLK0wi7tyK6ZdYmccG5+NWMjwByVez/FxATvEplUnSbSUdzZDwL5GBg3Grp3pWdSY851T8GR2+ikGc+KCp9QP9oayVJ8jKkFBbZDbMV+CxqAceXG8WyhGbKwVrWWFBM6za0exHG/d6kGrGjUvBsW3w3GDy1yyErOL7Sg+REtCeYmM/V6km8CzHDNRGMg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=q7zo2doQEb9/wKssbcgqBUp1W4eOvdAsrQcWUthFuPI=;
- b=NU4+H3f1FXDlTcV8zgArcJdigASfVvQyD1yRpSPpHVNNFJRS4Djxf6eJ2JgrCTmO7b2xCIUr9snvhQktk6usaiB/SiGz2u784VP6J4ccuOzLIWe2H66juYLlK78WLQdGPIgz2wRZzS8SYlL1qcQDDeAZ9lbJDw85kktQb7Xwrsc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BL1PR12MB5176.namprd12.prod.outlook.com (2603:10b6:208:311::19)
- by DM6PR12MB4451.namprd12.prod.outlook.com (2603:10b6:5:2ab::18) with
+ bh=61s93TTbhc+6hxLsCDDKZFNJ3iFS+yulLYZQS9ZrXqE=;
+ b=rozK62kn4yLIc+9CkjTwh4mjfb5gbvsHD+tnENPkL2b2DL7RB+a9EH+eLun8sEZH/l2x+MaxGJVXp0YeX1jVTKweJysvOpJpbaDgzLAchSuK40wayoyf9hOHIiciQNgsbKRDfWQ5DJs3F2PxygU3fOUJimvlGAL1iylqOvsNt0E=
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com (2603:10a6:20b:26::24)
+ by AS8PR03MB7784.eurprd03.prod.outlook.com (2603:10a6:20b:406::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Fri, 11 Feb
- 2022 09:50:06 +0000
-Received: from BL1PR12MB5176.namprd12.prod.outlook.com
- ([fe80::45d6:9536:15a0:9cbc]) by BL1PR12MB5176.namprd12.prod.outlook.com
- ([fe80::45d6:9536:15a0:9cbc%5]) with mapi id 15.20.4975.015; Fri, 11 Feb 2022
- 09:50:06 +0000
-Message-ID: <cee9f8ff-7611-a09f-a8fe-58bcf7143639@amd.com>
-Date:   Fri, 11 Feb 2022 15:19:56 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: AMD XGBE "phy irq request failed" kernel v5.17-rc2 on V1500B
- based board
-To:     Thomas Kupper <thomas@kupper.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Cc:     netdev@vger.kernel.org
-References: <45b7130e-0f39-cb54-f6a8-3ea2f602d65e@kupper.org>
- <c3e8cbdc-d3f9-d258-fcb6-761a5c6c89ed@amd.com>
- <68185240-9924-a729-7f41-0c2dd22072ce@kupper.org>
- <e1eafc13-4941-dcc8-a2d3-7f35510d0efc@amd.com>
- <06c0ae60-5f84-c749-a485-a52201a1152b@amd.com>
- <603a03f4-2765-c8e7-085c-808f67b42fa9@kupper.org>
- <14d2dc72-4454-3493-20e7-ab3539854e37@amd.com>
- <26d95ad3-0190-857b-8eb2-a065bf370ddc@kupper.org>
-From:   Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-In-Reply-To: <26d95ad3-0190-857b-8eb2-a065bf370ddc@kupper.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BMXPR01CA0024.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:b00:d::34) To BL1PR12MB5176.namprd12.prod.outlook.com
- (2603:10b6:208:311::19)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.19; Fri, 11 Feb
+ 2022 09:54:14 +0000
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::54e1:e5b6:d111:b8a7]) by AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::54e1:e5b6:d111:b8a7%4]) with mapi id 15.20.4975.015; Fri, 11 Feb 2022
+ 09:54:14 +0000
+From:   =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Subject: Re: [PATCH net-next] net: dsa: realtek: realtek-mdio: reset before
+ setup
+Thread-Topic: [PATCH net-next] net: dsa: realtek: realtek-mdio: reset before
+ setup
+Thread-Index: AQHYHwZAb1BodMcgWU25hJrj7CHadA==
+Date:   Fri, 11 Feb 2022 09:54:14 +0000
+Message-ID: <87a6exwwxl.fsf@bang-olufsen.dk>
+References: <20220211051403.3952-1-luizluca@gmail.com>
+In-Reply-To: <20220211051403.3952-1-luizluca@gmail.com> (Luiz Angelo Daros de
+        Luca's message of "Fri, 11 Feb 2022 02:14:04 -0300")
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 92d762d1-8e45-40ec-e3ff-08d9ed44765a
+x-ms-traffictypediagnostic: AS8PR03MB7784:EE_
+x-microsoft-antispam-prvs: <AS8PR03MB778439DF39A1EA2E169AA66083309@AS8PR03MB7784.eurprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4502;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vZRaaiJhVdZs9imnQW9IhdNLEHC4ilpGnDYslMyDWqUCD6ciwjiUiAaQ4SU9gAeY6lgriAWv0SFtXMELzpHSbecTlow7EFmFs0Rhxfd93z8hQXdqxzycG2FjOzutiSWcdw36d6kfNHZFODePJ66SR7TMUF5uN9qnVhYUOcrfCjj87nMKCltoA5UqrVMzx0isi6aMyfVGILqYflDIfgOZnUfLmEcpqKpxN5mWHIevtBKHjmMB2UoRcqeL3uDsdXyd6qRYSytiMukzdudUZWSZYNNwEl/2XSXJA67YmWWBBQ7xpE/XX3TAhVwsD+82tNQfnsVy6+gFDXwf14U4L2AwrpaWmhqna63/+Z7Ys4YA3E/VBsasMzg3lKOAt2pTSwjnTo1TSUh8pq6jBRVi2FqJh5yNYvWz4+IEq48JsDa7KJ6xAMS8mRc7/GcdtdWYgskoKJ49oVmJbtu+HN66+dy9SpJj0IOUVHASJpEPutITrRoX20q+X+7jgHeAF3RteONPDSC5QDIkL6c4C4XRSE1BGOQ539jic64u2DFyvhu5B16qLMwoXawlTFE48ECX8Ie2O5LIPwH2/xSy4el32qPLBBUuKlQnzbI34AWbDMiew1zOTyeRzh7ge0RUEL9umIN1Kd3aHg3r/TQyxu38KxJyZpIFei2VnWNcLGTUL+aB2dhG5DkUpVe6e0BJAVqnnVPr7g2TId9bisS/6lZJ1zBKug==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR03MB3943.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(316002)(122000001)(83380400001)(66574015)(6916009)(54906003)(6512007)(186003)(6506007)(2616005)(2906002)(71200400001)(38070700005)(508600001)(6486002)(8676002)(38100700002)(86362001)(8936002)(5660300002)(85202003)(36756003)(4326008)(7416002)(8976002)(91956017)(85182001)(66556008)(76116006)(66476007)(66946007)(64756008)(66446008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZjFZOHpWdm9ibE1QUk9odGp0Yyt4RVlqZlBBTzBSZFBqU2JZRGp3MTdsbDVn?=
+ =?utf-8?B?djlFL3lsTHFkSlcvUThwTWdtUnVmTVV6ekNsUDVzdjRnWWd2OFBJbE5UY2VJ?=
+ =?utf-8?B?Z3NpVjJQZVJqNzR3MTUwSm45VGxaVStmSnZBVjZjSlFQZkpxUHFFSUd5TzdP?=
+ =?utf-8?B?VzNoMnczYkNwL1JlSU5NMnJZd2hZckM3VFMzdnpBOFZlTjU5KzdhQi9PcDNB?=
+ =?utf-8?B?VVZnQ3d5T3pIUlIxUU9XNkZWZnpIMEtpSDh4cCtHQ3JkQysyMnRHQVhHM1Q4?=
+ =?utf-8?B?TElEOGdUelQyeHEzN0lxYWV6VWl0UXlhdXpBRHhhdUJoV0U3Z21xT2theGlJ?=
+ =?utf-8?B?NTZNUkZWU2pBdXgycjRtRG1CYVZwb2d6blg2M00vMVN0QVM3NmlkN21pSXZF?=
+ =?utf-8?B?bXFWd2lKNGduOWV1Tm00TjZ4eW5VV0JGZFQyTjNHNjJXNnQ4ZTJiUDh4bkVC?=
+ =?utf-8?B?WkJadXViTEhhV1ZCQzRscm40ZHdiMk9TRU9mTFVlbERXaERmd2JlbFZPYVVZ?=
+ =?utf-8?B?bkNGMzZueXBGc0N4TEYzU2ZvbXZJb0hWUDZpZHA4c2FvNGM4TklQeWh2UndP?=
+ =?utf-8?B?eWdLb0NVQnRPMlgyTzBMcVZWYmRySG1sbEREZml0TU5mRjlLMHRKMDdKTStU?=
+ =?utf-8?B?L054N2FKUVcyOHZpbVN4SWtoSkRaNVlTbE1HZ1VtNVo0ZXdJS1ExNzZiUE5K?=
+ =?utf-8?B?Z3BPOUtQZVBDNU1VajhIdTYraWowWTg3MFgwMUtFZHlNUmo4dkpVZjBUVXJO?=
+ =?utf-8?B?QXFiaWZaK3V0NGdicVZqdHJlRmpBZVFDSnd2QjRZMGxzbjRIaldXRUppaGlr?=
+ =?utf-8?B?SU4xL3hiczZLdEFnWHowUHA5TTFZM3h1U1AwM2c1NTNuMFN3alc5S0dNdGFt?=
+ =?utf-8?B?cFlUMXJsVUJaSFNKbUNEWkdnbWErWTZKYWVvR2dLTy8ydmYraEZNQ2ZuR3l1?=
+ =?utf-8?B?S3VKMnZjdktzOCtpMHNyMnliSjNWTWpad2VlRVo4UzJyWU5EN3Q2aTNwV1ZX?=
+ =?utf-8?B?NWRjYi9yZ2RkTGwxUEpPSDUxUVA5R1dIVm1yajZvaE5HV1l0UW1GaGo2OHdX?=
+ =?utf-8?B?bjhPQ2tKUStQek8xUE9UMTNLeUt3Q0pGa041YUI2ekQydXhGUS9iYzBEVVp0?=
+ =?utf-8?B?VXZCZW12R2gwQU1lL2psYnA3TDcwa1h6cTMzS3Btc240aUI4SWVjclFHcm5C?=
+ =?utf-8?B?Q3JReERFL041b1dXcXZ3aHJGdTVMY3ZQUHM3OFJEcS9hWUNNV2NZcDd6YlhU?=
+ =?utf-8?B?WTVXdXF2dzBNaHd2eks2bkNFWTF0K3JCelA5R1ozTmNqR3RrY2pkWHk2WnpD?=
+ =?utf-8?B?em5YZVFDYjRXZlpXZjVDS1YxdlovUVZlR01PMmtEcXVoZTZLTjBRa0tmUUcv?=
+ =?utf-8?B?TVBBWXdXcEVVK1dPVlZ3VmJoMHREcVltMGdKNjdtdVNYOWRXMVkycDBhNFdk?=
+ =?utf-8?B?VHZ4UTBmeGxCUjhtRktwaXNaMkI1OTY3OGZESEZ0OTNtN083ZlAwSzQxMFdx?=
+ =?utf-8?B?ZFgralJIbzJLa3FZeml4Z2lFRXk3NEFyUkdacmtVOXZTY25ZVnpLVTRiVVlu?=
+ =?utf-8?B?N0NLOUFWQW5rZ09uMno5T09iVUlkS25rRzg3UzJFQXdjNHFuYTJzU29keTVm?=
+ =?utf-8?B?VVV1Q044WVF1Wk1pWERWRW1QcW5XMVFzVHpEbk81UUpGcThIRHYxZDJIWUdw?=
+ =?utf-8?B?a1p2SE8xWUJsTW5PTEw2cXlwSUJXQ0tKR3pGcFQ4c2FYNGRiY0ZHbDFuc1pL?=
+ =?utf-8?B?R202bEpUd2NwbjAxSUFuQzAyS1hZZE5VVi9aT3FJNGxsaVdsandwbjhrdWtF?=
+ =?utf-8?B?K3RDZDJjdlFEOVNDZVVOUWVzTDhVSEYwS3lwY29lTDJTVGR4K0VUSnRldGZu?=
+ =?utf-8?B?SWZSZDkzZERCbEdCcmNPUE5PTjJLTHRPRlAwWnV6S0d4M0tTc3B1OEQxNlRJ?=
+ =?utf-8?B?RFB1QXpGdHE3TVVSTXI1TXRUbStNZGhqRTZEei9sRjdoa0g1MDFFVFY5TThF?=
+ =?utf-8?B?eUpEejh2eS9rY1c0dkhOV2J3ajJ4TCtjRmZ0dmZFWnlHV2ZTcUR5UmhNNk54?=
+ =?utf-8?B?VlFMNFFJY2czQ1NnWEVzbEg5SzdNMVVER3QyeDlsTERvUGIyNDB2Nks4VENG?=
+ =?utf-8?B?MGRJYjc0MklPT3VpOVp2cW9oTDNKbDZZZUhVOVltT0ZNZTZyYnhqWWdaRHJh?=
+ =?utf-8?Q?8E0jkXv9vYfWKkQ1KSLERlM=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <914947995BACA5409F9E5168530F0A59@eurprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2eca3d3c-b3ea-483d-3560-08d9ed43e215
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4451:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4451B3D32D393061A0BC325C9A309@DM6PR12MB4451.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ln8f7iusFAiCYqsQnmPomyI7KPxdtF80v9YawvbXA2FGDRHp/VG2tI9aUkozsfTl3jaq5rSa8D7+Nw1r3DmHD1wPUmqRIs1h+pz7Q2R8TQqvNU6c2LeoUG+uGjAHYKpZ4tGDNH38hQStIoQ1qIgSPqEccJqaNyVYK9lv1aymbcHyfBVlXa7Y0vW3ZZUFN3CljfuXHs3TYd+OPBTE/TTnlNua/JA0mAnDClzjvdEEv9Ah/yHz1AJoXGker8v5Gx+B8hALCCwgKXcqS58L3zEfS6XR71NFLB6MLQ2m3/W6EtD8QWPXCadAljOjxTwqO30q9XynjXAax4+Px+tO6i6nZoX+cH96H7NgArSqM09Fcm2he1le7tpPog2IF0poa0hcpZbfQm8foCUtDhAAaUe8Eo7vC0gpDcrhpw6OS8ppcP9lAbc2hOfwx8CdM887nxUnmEc/WUtNUjTPcXQpge6wDPH4oaNYmgIrw+F4cbcwvko622tckJwBZWof9EHf3UnhVP8JUTWz0xL588Sh8dKkb+6p5F0gRNgclcRgnabGWbjRmpynRNwqjddGFMiy+KwuLUqozYYdfE/aqkZ52CfYG1/DyphvJXxcW1ZmgZ1Z4EgQKLR6dRvohKGcSjnlRA947xpEvUwxvStfs4D1e8K8zJHtDEykdzixx14p5BDXyh8JE3gshDOmie5tQW2pbnwXb+/vK3iKbaib6R1kMVvlZDv2+FAozId3M4riGQ+2mPIL/X6nz5NcXesGyAuGtecsm79JBFj6stchoo1x2OclVKHLxRGYiIN4rLYbGivMbHHhr1ye+vu4g++hlWBUflR8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(31696002)(38100700002)(6666004)(5660300002)(8936002)(508600001)(66946007)(53546011)(2616005)(19627235002)(110136005)(316002)(966005)(6636002)(4326008)(66476007)(66556008)(8676002)(45080400002)(36756003)(6512007)(26005)(6486002)(83380400001)(31686004)(6506007)(30864003)(186003)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZDQzN0VidUYvc3FXN0d0aDBSMkRtaEdLWU5iV29UajJvRS96cUM0OEd2S09j?=
- =?utf-8?B?STZUS3BBamJOUVNjeGlpd3FIZnRLWlN6dGlBNWJiYVljcUc0WU96YVlzakVK?=
- =?utf-8?B?aFp4dXllbWNDOGtCZWdudDRwbFVxcDJvbW1iQVNKUHNMeDkyYTQ4RHZGRk5S?=
- =?utf-8?B?UVo5bWFJeDJGQk0xVnJHVFdZY04wUitvZEtrSmdrUDBNVmpYSjVUNEhReTRM?=
- =?utf-8?B?aDNJRHdZemx6bzNFOVZwUGl2ZmNPREI0Q3ZMNEtKM1JoSjB0dldDVllJV1Zs?=
- =?utf-8?B?cUU2cVhGKy9Fc09IWUpmUk13bWQ4Mk00M0VvNlE5cjE4TTh3UzdnNTJhVC81?=
- =?utf-8?B?ejBCMmhDYkpvWVVDWjhkeFNNOEF6R08zTWIxMlNEdm5jS3hObnJrVG1QcHN0?=
- =?utf-8?B?Z0dUd3hFSFBTTG82SitmOXcxZ3NHZitXYlNlZFQ5R1RCUkJMbGh1M2RTU0Ev?=
- =?utf-8?B?bllvOE0vRFlEVXFUekl4WGwzYkgwT1R1eTBUZlR4bE9VNTlTSWR6SE5GNVl1?=
- =?utf-8?B?YmsxVGlnS3drYndyVDNkaGF2WnRqYW56WVRwM3Y0bGZEdHNrNG14c1BXQ3NG?=
- =?utf-8?B?WGtlZXJja3ZzRnRDbFFSUmgvSFNFNmt4Ym5hTXJiMnpELzlaaFRldGJnSThv?=
- =?utf-8?B?ZWMrT1RERjZNOW43c0VoS0IrT09YazhFSXhPSWJvenlEcTk0b291SkFSNUxJ?=
- =?utf-8?B?K1RrWXIzM2gwNnN1RGlpakY3Z3RhcHhzMjY5WFVpNERNdHJUMVhOZjJ4YjYx?=
- =?utf-8?B?ZU4wKy8vZi85a0lPMUhWOU9aTDVrSkJjcVhSWmNJRTZ2SHd5VGxmWHFLdWdE?=
- =?utf-8?B?RmhWanlMV01Qb2o4V1F0UG1ydDZtTkwxdlhoN0lTNzJFbUtPVkFLVTBQWlRr?=
- =?utf-8?B?Zmo1WWtkU2hRODRBREJBUVAwUnFHeG1NUHp1QXNpQTdYai9WNno0ZDgzdXc2?=
- =?utf-8?B?WlV3WTZHek00Tyt4YitrcWtZeTNxWTRjWmo0VnRyUSszY245ZHJEcEdud0tV?=
- =?utf-8?B?bko5bEhYTGVqUnRVWlFweUpKODlCb1ZNTTJNUHJOTXEvNTFKeWNrQWI5ZUhU?=
- =?utf-8?B?RmZEWHNjWGhGUnBTU1JXUDd1bnJLSzYvYjZQdFFoeDIxdlZxQVowMHhoKzBQ?=
- =?utf-8?B?MnJMWTlSUGdyMUlHVExIaUxxczUrVkxxMWM4RDR6dFJxRU42YWs1TXJrQ3Jp?=
- =?utf-8?B?a29PMWdZVDRNV2NHT2JPTSt4MVBjU1FUVVRZQTE0QlFGZml3VjltMVFnOXRN?=
- =?utf-8?B?L051cHBNcFc1cU9MWm1pa1VwQUhYTmJYS2dTWFk1UlhqWjd4aGxTcWtuZVhX?=
- =?utf-8?B?ZkpJbmx5d28rQUZMcVlVR3ZvOVpmVk41cGJSYytsc3k1NEZVaEpQQ1p6UFAz?=
- =?utf-8?B?MWxrWHl1dEo2YUJlaTYvQXVXZElKamRncFFvK0pBczJ4c0RpdllCdk5RRzZk?=
- =?utf-8?B?ci9aWmNBT08xMWppQmRnWHoxalRORE44UDgxNGhWbUlkeEQxM3hiaDdsbXNW?=
- =?utf-8?B?RkliNnBodjVlLzFzZGtxNEVkZEVLS21HSzFYQnNEd09sU0F5UDBHMjgxWlov?=
- =?utf-8?B?V2FLa0tybGFMSGtXbjZWc2V1THNnNXc3M3RGOUlYbzRmcXgvMHQzSGlyRzNH?=
- =?utf-8?B?aklvYVhrcDBvSHQ1ZGZlVDZ6WmhXRE1RMzQ2MDhVZHpwSnpMQUd0S1BMaWwy?=
- =?utf-8?B?NnVvak1ubm1icjZhaE1aN3BUSWNBbmZuelVCZis3c000QWwraUYvTmJFTHZG?=
- =?utf-8?B?OXkvL3AwdWpjWFd4dCtackVvWHVOeGIrK0FLWWErd1BnS0Q0bjdWb09pTGZG?=
- =?utf-8?B?MjEzaDBlaGU0TmlFWHJFTzBlZlM4ZW1pZTdHSHdoR2RIRU1yTnhkN0toTi8y?=
- =?utf-8?B?bW0zWTRVMmprM3ZBT1VRQmx1T1FhSW1ZYWMyaENCc3BZbmxsUzloSjUvNWs2?=
- =?utf-8?B?ZFBwUWdWT29mMzdnRDlzV096anpxcFE2NTE2ME1NSDk2WXBsbHpBZ1JqSUI3?=
- =?utf-8?B?czk3VW1nZXVINnAvU0p6RzNSb01wOTU4dkNDTzJZQnRBc1VnNW4zOXN6WG9F?=
- =?utf-8?B?ZTVDLzZQMlZrSkl4bnllS1dNczUvWk9VV1BkOGpYYVd0ZjN3Q1VKcUtnRTBm?=
- =?utf-8?B?VmpyY09LdjRad3pLNzNaQlkrdWhza0FoOWRtZ2ZoOGtvSzVkcTBuSkVSS0lk?=
- =?utf-8?Q?C85wsIrYMHqZHFu0213Dv7A=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2eca3d3c-b3ea-483d-3560-08d9ed43e215
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5176.namprd12.prod.outlook.com
+X-OriginatorOrg: bang-olufsen.dk
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Feb 2022 09:50:06.5185
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR03MB3943.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92d762d1-8e45-40ec-e3ff-08d9ed44765a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Feb 2022 09:54:14.7925
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QQXAWvWWkF0JHnQFjxzEqf7m/8aqUaJXqtZjDluGrQ8mIV3n94OYzRYyr/84aePA3yK0u+atT9fcZZVm8lAHAQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4451
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: gcTRvro26EqtSFw/M6BqoY2D5VuDSP+vBPSMcsFR/RbDAmkQlCqj0WsYwDcvy8tMVp741EIfyn5IIKj9RKQc3g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB7784
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -132,628 +139,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2/11/2022 3:03 PM, Thomas Kupper wrote:
-> 
-> Am 08.02.22 um 17:24 schrieb Tom Lendacky:
->> On 2/7/22 11:59, Thomas Kupper wrote:
->>>
->>> Am 07.02.22 um 16:19 schrieb Shyam Sundar S K:
->>>>
->>>> On 2/7/2022 8:02 PM, Tom Lendacky wrote:
->>>>> On 2/5/22 12:14, Thomas Kupper wrote:
->>>>>> Am 05.02.22 um 16:51 schrieb Tom Lendacky:
->>>>>>> On 2/5/22 04:06, Thomas Kupper wrote:
->>>>>>> Reloading the module and specify the dyndbg option to get some
->>>>>>> additional debug output.
->>>>>>>
->>>>>>> I'm adding Shyam to the thread, too, as I'm not familiar with the
->>>>>>> configuration for this chip.
->>>>>>>
->>>>>> Right after boot:
->>>>>>
->>>>>> [    5.352977] amd-xgbe 0000:06:00.1 eth0: net device enabled
->>>>>> [    5.354198] amd-xgbe 0000:06:00.2 eth1: net device enabled
->>>>>> ...
->>>>>> [    5.382185] amd-xgbe 0000:06:00.1 enp6s0f1: renamed from eth0
->>>>>> [    5.426931] amd-xgbe 0000:06:00.2 enp6s0f2: renamed from eth1
->>>>>> ...
->>>>>> [    9.701637] amd-xgbe 0000:06:00.2 enp6s0f2: phy powered off
->>>>>> [    9.701679] amd-xgbe 0000:06:00.2 enp6s0f2: CL73 AN disabled
->>>>>> [    9.701715] amd-xgbe 0000:06:00.2 enp6s0f2: CL37 AN disabled
->>>>>> [    9.738191] amd-xgbe 0000:06:00.2 enp6s0f2: starting PHY
->>>>>> [    9.738219] amd-xgbe 0000:06:00.2 enp6s0f2: starting I2C
->>>>>> ...
->>>>>> [   10.742622] amd-xgbe 0000:06:00.2 enp6s0f2: firmware mailbox
->>>>>> command did not complete
->>>>>> [   10.742710] amd-xgbe 0000:06:00.2 enp6s0f2: firmware mailbox reset
->>>>>> performed
->>>>>> [   10.750813] amd-xgbe 0000:06:00.2 enp6s0f2: 10GbE SFI mode set
->>>>>> [   10.768366] amd-xgbe 0000:06:00.2 enp6s0f2: 10GbE SFI mode set
->>>>>> [   10.768371] amd-xgbe 0000:06:00.2 enp6s0f2: fixed PHY
->>>>>> configuration
->>>>>>
->>>>>> Then after 'ifconfig enp6s0f2 up':
->>>>>>
->>>>>> [  189.184928] amd-xgbe 0000:06:00.2 enp6s0f2: phy powered off
->>>>>> [  189.191828] amd-xgbe 0000:06:00.2 enp6s0f2: 10GbE SFI mode set
->>>>>> [  189.191863] amd-xgbe 0000:06:00.2 enp6s0f2: CL73 AN disabled
->>>>>> [  189.191894] amd-xgbe 0000:06:00.2 enp6s0f2: CL37 AN disabled
->>>>>> [  189.196338] amd-xgbe 0000:06:00.2 enp6s0f2: starting PHY
->>>>>> [  189.198792] amd-xgbe 0000:06:00.2 enp6s0f2: 10GbE SFI mode set
->>>>>> [  189.212036] genirq: Flags mismatch irq 69. 00000000 (enp6s0f2-pcs)
->>>>>> vs. 00000000 (enp6s0f2-pcs)
->>>>>> [  189.221700] amd-xgbe 0000:06:00.2 enp6s0f2: phy irq request failed
->>>>>> [  189.231051] amd-xgbe 0000:06:00.2 enp6s0f2: phy powered off
->>>>>> [  189.231054] amd-xgbe 0000:06:00.2 enp6s0f2: stopping I2C
->>>>>>
->>>>> Please ensure that the ethtool msglvl is on for drv and probe. I was
->>>>> expecting to see some additional debug messages that I don't see here.
->>>>>
->>>>> Also, if you can provide the lspci output for the device (using -nn
->>>>> and
->>>>> -vv) that might be helpful as well.
->>>>>
->>>>> Shyam will be the best one to understand what is going on here.
->>>> On some other platforms, we have seen similar kind of problems getting
->>>> reported. There is a fix sent for validation.
->>>>
->>>> The root cause is that removal of xgbe driver is causing interrupt
->>>> storm
->>>> on the MP2 device (Sensor Fusion Hub).
->>>>
->>>> Shall submit a fix soon to upstream once the validation is done, you
->>>> may
->>>> give it a try with that and see if that helps.
->>>>
->>>> Thanks,
->>>> Shyam
->>>>
->>>>> Thanks,
->>>>> Tom
->>>
->>> Shyam, I will check the git logs for the relevant commit then from
->>> time to time.
->>> Looking at the code diff from OPNsense and the latest Linux kernel I
->>> assumed that there would much more to do then fix a irq strom (but I
->>> have no idea about the inner working of the kernel).
->>>
->>> Nevermind: Setting the 'msglvl 0x3' with ethtool the following info
->>> can be found in dmesg:
->>>
->>> Running : $ ifconfig enp6s0f2 up
->>> SIOCSIFFLAGS: Invalid argument
->>>
->>> ... and 'dmesg':
->>>
->>> [   55.177447] amd-xgbe 0000:06:00.2 enp6s0f2: channel-0: cpu=0, node=0
->>> [   55.177456] amd-xgbe 0000:06:00.2 enp6s0f2: channel-0:
->>> dma_regs=00000000d11bf3f1, dma_irq=74, tx=00000000dd57b5c4,
->>> rx=00000000d73e70f8
->>> [   55.177464] amd-xgbe 0000:06:00.2 enp6s0f2: channel-1: cpu=1, node=0
->>> [   55.177467] amd-xgbe 0000:06:00.2 enp6s0f2: channel-1:
->>> dma_regs=000000000d972dd7, dma_irq=75, tx=00000000573bcff8,
->>> rx=000000003d9a6f65
->>> [   55.177473] amd-xgbe 0000:06:00.2 enp6s0f2: channel-2: cpu=2, node=0
->>> [   55.177476] amd-xgbe 0000:06:00.2 enp6s0f2: channel-2:
->>> dma_regs=0000000046f71179, dma_irq=76, tx=00000000897116c9,
->>> rx=0000000004ba17e7
->>> [   55.177480] amd-xgbe 0000:06:00.2 enp6s0f2: channel-0 - Tx ring:
->>> [   55.177502] amd-xgbe 0000:06:00.2 enp6s0f2:
->>> rdesc=00000000794657ba, rdesc_dma=0x000000010fad8000,
->>> rdata=0000000008ace7d8, node=0
->>> [   55.177507] amd-xgbe 0000:06:00.2 enp6s0f2: channel-0 - Rx ring:
->>> [   55.177523] amd-xgbe 0000:06:00.2 enp6s0f2:
->>> rdesc=000000009313d9b3, rdesc_dma=0x0000000114538000,
->>> rdata=00000000510e3b77, node=0
->>> [   55.177527] amd-xgbe 0000:06:00.2 enp6s0f2: channel-1 - Tx ring:
->>> [   55.177543] amd-xgbe 0000:06:00.2 enp6s0f2:
->>> rdesc=00000000d26d9194, rdesc_dma=0x000000010a774000,
->>> rdata=00000000b9419829, node=0
->>> [   55.177547] amd-xgbe 0000:06:00.2 enp6s0f2: channel-1 - Rx ring:
->>> [   55.177564] amd-xgbe 0000:06:00.2 enp6s0f2:
->>> rdesc=0000000007bf60dd, rdesc_dma=0x000000010fb84000,
->>> rdata=00000000aa48e8c0, node=0
->>> [   55.177568] amd-xgbe 0000:06:00.2 enp6s0f2: channel-2 - Tx ring:
->>> [   55.177584] amd-xgbe 0000:06:00.2 enp6s0f2:
->>> rdesc=00000000e7e6c52e, rdesc_dma=0x000000010fa2a000,
->>> rdata=0000000017b5d85c, node=0
->>> [   55.177587] amd-xgbe 0000:06:00.2 enp6s0f2: channel-2 - Rx ring:
->>> [   55.177603] amd-xgbe 0000:06:00.2 enp6s0f2:
->>> rdesc=000000000898fbf4, rdesc_dma=0x0000000101f08000,
->>> rdata=00000000aded7d4c, node=0
->>> [   55.182366] amd-xgbe 0000:06:00.2 enp6s0f2: TXq0 mapped to TC0
->>> [   55.182381] amd-xgbe 0000:06:00.2 enp6s0f2: TXq1 mapped to TC1
->>> [   55.182388] amd-xgbe 0000:06:00.2 enp6s0f2: TXq2 mapped to TC2
->>> [   55.182395] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO0 mapped to RXq0
->>> [   55.182400] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO1 mapped to RXq0
->>> [   55.182405] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO2 mapped to RXq0
->>> [   55.182410] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO3 mapped to RXq1
->>> [   55.182414] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO4 mapped to RXq1
->>> [   55.182418] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO5 mapped to RXq1
->>> [   55.182423] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO6 mapped to RXq2
->>> [   55.182427] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO7 mapped to RXq2
->>> [   55.182473] amd-xgbe 0000:06:00.2 enp6s0f2: 3 Tx hardware queues,
->>> 21760 byte fifo per queue
->>> [   55.182501] amd-xgbe 0000:06:00.2 enp6s0f2: 3 Rx hardware queues,
->>> 21760 byte fifo per queue
->>> [   55.182544] amd-xgbe 0000:06:00.2 enp6s0f2: flow control enabled
->>> for RXq0
->>> [   55.182550] amd-xgbe 0000:06:00.2 enp6s0f2: flow control enabled
->>> for RXq1
->>> [   55.182556] amd-xgbe 0000:06:00.2 enp6s0f2: flow control enabled
->>> for RXq2
->>> [   56.178946] amd-xgbe 0000:06:00.2 enp6s0f2: SFP detected:
->>> [   56.178954] amd-xgbe 0000:06:00.2 enp6s0f2:   vendor: MikroTik
->>> [   56.178958] amd-xgbe 0000:06:00.2 enp6s0f2:   part number: S+AO0005
->>> [   56.178961] amd-xgbe 0000:06:00.2 enp6s0f2:   revision level: 1.0
->>> [   56.178963] amd-xgbe 0000:06:00.2 enp6s0f2:   serial number:
->>> STST050B1900001
->>>
->>
->> Ah, it's been a while since I've had to use the debug support. Could
->> you also set the module debug parameter to 0x37 (debug=0x37) when
->> loading the module. That will capture some of the debug messages that
->> are issued on driver load. Sorry about that...
->>
->> Thanks,
->> Tom
-> 
-> Thanks Tom, I now got time to update to 5.17-rc3 and add the 'debug'
-> module parameter. I assume that parameter works with the non-debug
-> kernel? I don't really see any new messages related to the amd-xgbe driver:
-> 
-> dmesg right after boot:
-> 
-> [    0.000000] Linux version 5.17.0-rc3-tk (jane@m920q-ubu21) (gcc
-> (Ubuntu 11.2.0-7ubuntu2) 11.2.0, GNU ld (GNU Binutils for Ubuntu) 2.37)
-> #12 SMP PREEMPT Tue Feb 8 19:52:19 CET 2022
-> [    0.000000] Command line: BOOT_IMAGE=/boot/vmlinuz-5.17.0-rc3-tk
-> root=UUID=8e462830-8ba0-4061-8f23-6f29ce751792 ro console=tty0
-> console=ttyS0,115200n8 amd_xgbe.dyndbg=+p amd_xgbe.debug=0x37
-> ...
-> [    5.275730] amd-xgbe 0000:06:00.1 eth0: net device enabled
-> [    5.277766] amd-xgbe 0000:06:00.2 eth1: net device enabled
-> [    5.665315] amd-xgbe 0000:06:00.2 enp6s0f2: renamed from eth1
-> [    5.696665] amd-xgbe 0000:06:00.1 enp6s0f1: renamed from eth0
-> 
-> dmesg right after 'ifconfig enp6s0f2 up'
-> 
-> [   88.843454] amd_xgbe:xgbe_alloc_channels: amd-xgbe 0000:06:00.2
-> enp6s0f2: channel-0: cpu=0, node=0
-> [   88.843464] amd_xgbe:xgbe_alloc_channels: amd-xgbe 0000:06:00.2
-> enp6s0f2: channel-0: dma_regs=000000001078e433, dma_irq=55,
-> tx=00000000e8736669, rx=00000000fadd04ec
-> [   88.843474] amd_xgbe:xgbe_alloc_channels: amd-xgbe 0000:06:00.2
-> enp6s0f2: channel-1: cpu=1, node=0
-> [   88.843478] amd_xgbe:xgbe_alloc_channels: amd-xgbe 0000:06:00.2
-> enp6s0f2: channel-1: dma_regs=000000003c3cbea8, dma_irq=56,
-> tx=000000000836d88c, rx=00000000920d02c4
-> [   88.843485] amd_xgbe:xgbe_alloc_channels: amd-xgbe 0000:06:00.2
-> enp6s0f2: channel-2: cpu=2, node=0
-> [   88.843488] amd_xgbe:xgbe_alloc_channels: amd-xgbe 0000:06:00.2
-> enp6s0f2: channel-2: dma_regs=000000008d034191, dma_irq=57,
-> tx=00000000a0664378, rx=00000000d72ce726
-> [   88.843493] amd_xgbe:xgbe_alloc_ring_resources: amd-xgbe 0000:06:00.2
-> enp6s0f2: channel-0 - Tx ring:
-> [   88.843514] amd_xgbe:xgbe_init_ring: amd-xgbe 0000:06:00.2 enp6s0f2:
-> rdesc=00000000c6703013, rdesc_dma=0x0000000101c44000,
-> rdata=0000000029951e4c, node=0
-> [   88.843519] amd_xgbe:xgbe_alloc_ring_resources: amd-xgbe 0000:06:00.2
-> enp6s0f2: channel-0 - Rx ring:
-> [   88.843537] amd_xgbe:xgbe_init_ring: amd-xgbe 0000:06:00.2 enp6s0f2:
-> rdesc=000000003262c446, rdesc_dma=0x0000000103c74000,
-> rdata=000000001b7a4275, node=0
-> [   88.843542] amd_xgbe:xgbe_alloc_ring_resources: amd-xgbe 0000:06:00.2
-> enp6s0f2: channel-1 - Tx ring:
-> [   88.843560] amd_xgbe:xgbe_init_ring: amd-xgbe 0000:06:00.2 enp6s0f2:
-> rdesc=000000007ce3cc7e, rdesc_dma=0x00000001023c0000,
-> rdata=00000000c0fc51d9, node=0
-> [   88.843565] amd_xgbe:xgbe_alloc_ring_resources: amd-xgbe 0000:06:00.2
-> enp6s0f2: channel-1 - Rx ring:
-> [   88.843583] amd_xgbe:xgbe_init_ring: amd-xgbe 0000:06:00.2 enp6s0f2:
-> rdesc=00000000448612df, rdesc_dma=0x00000001185b6000,
-> rdata=00000000a23b7f86, node=0
-> [   88.843587] amd_xgbe:xgbe_alloc_ring_resources: amd-xgbe 0000:06:00.2
-> enp6s0f2: channel-2 - Tx ring:
-> [   88.843606] amd_xgbe:xgbe_init_ring: amd-xgbe 0000:06:00.2 enp6s0f2:
-> rdesc=00000000e509050e, rdesc_dma=0x0000000104db2000,
-> rdata=000000000d605e1a, node=0
-> [   88.843610] amd_xgbe:xgbe_alloc_ring_resources: amd-xgbe 0000:06:00.2
-> enp6s0f2: channel-2 - Rx ring:
-> [   88.843629] amd_xgbe:xgbe_init_ring: amd-xgbe 0000:06:00.2 enp6s0f2:
-> rdesc=00000000436c5cc6, rdesc_dma=0x0000000114aaa000,
-> rdata=00000000246ed062, node=0
-> [   88.848416] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2
-> enp6s0f2: TXq0 mapped to TC0
-> [   88.848432] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2
-> enp6s0f2: TXq1 mapped to TC1
-> [   88.848440] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2
-> enp6s0f2: TXq2 mapped to TC2
-> [   88.848449] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2
-> enp6s0f2: PRIO0 mapped to RXq0
-> [   88.848455] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2
-> enp6s0f2: PRIO1 mapped to RXq0
-> [   88.848461] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2
-> enp6s0f2: PRIO2 mapped to RXq0
-> [   88.848467] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2
-> enp6s0f2: PRIO3 mapped to RXq1
-> [   88.848472] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2
-> enp6s0f2: PRIO4 mapped to RXq1
-> [   88.848478] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2
-> enp6s0f2: PRIO5 mapped to RXq1
-> [   88.848483] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2
-> enp6s0f2: PRIO6 mapped to RXq2
-> [   88.848489] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2
-> enp6s0f2: PRIO7 mapped to RXq2
-> [   88.848536] amd-xgbe 0000:06:00.2 enp6s0f2: 3 Tx hardware queues,
-> 21760 byte fifo per queue
-> [   88.848565] amd-xgbe 0000:06:00.2 enp6s0f2: 3 Rx hardware queues,
-> 21760 byte fifo per queue
-> [   88.848609] amd_xgbe:xgbe_enable_tx_flow_control: amd-xgbe
-> 0000:06:00.2 enp6s0f2: flow control enabled for RXq0
-> [   88.848619] amd_xgbe:xgbe_enable_tx_flow_control: amd-xgbe
-> 0000:06:00.2 enp6s0f2: flow control enabled for RXq1
-> [   88.848627] amd_xgbe:xgbe_enable_tx_flow_control: amd-xgbe
-> 0000:06:00.2 enp6s0f2: flow control enabled for RXq2
-> [   89.862558] amd_xgbe:xgbe_phy_sfp_eeprom_info: amd-xgbe 0000:06:00.2
-> enp6s0f2: SFP detected:
-> [   89.862567] amd_xgbe:xgbe_phy_sfp_eeprom_info: amd-xgbe 0000:06:00.2
-> enp6s0f2:   vendor:         MikroTik
-> [   89.862572] amd_xgbe:xgbe_phy_sfp_eeprom_info: amd-xgbe 0000:06:00.2
-> enp6s0f2:   part number:    S+AO0005
-> [   89.862576] amd_xgbe:xgbe_phy_sfp_eeprom_info: amd-xgbe 0000:06:00.2
-> enp6s0f2:   revision level: 1.0
-> [   89.862580] amd_xgbe:xgbe_phy_sfp_eeprom_info: amd-xgbe 0000:06:00.2
-> enp6s0f2:   serial number:  STST050B1900001
-> 
-> again, dmesg diff after 'rmmod':
-
-Can you add this change and see if it solves the problem?
-
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=68c2d6af1f1e
-
-Thanks,
-Shyam
-
-> 
-> [  127.068380] ------------[ cut here ]------------
-> [  127.068386] remove_proc_entry: removing non-empty directory 'irq/53',
-> leaking at least 'enp6s0f2-i2c'
-> [  127.068398] WARNING: CPU: 4 PID: 803 at fs/proc/generic.c:715
-> remove_proc_entry+0x196/0x1b0
-> [  127.068411] Modules linked in: nls_iso8859_1 intel_rapl_msr
-> intel_rapl_common snd_hda_intel snd_intel_dspcfg snd_intel_sdw_acpi
-> edac_mce_amd snd_hda_codec snd_hda_core snd_hwdep snd_pcm kvm snd_timer
-> snd_rn_pci_acp3x snd rapl efi_pstore k10temp soundcore snd_pci_acp3x ccp
-> mac_hid sch_fq_codel msr drm ip_tables x_tables autofs4 btrfs
-> blake2b_generic zstd_compress raid10 raid456 async_raid6_recov
-> async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1
-> raid0 multipath linear crct10dif_pclmul crc32_pclmul ghash_clmulni_intel
-> aesni_intel crypto_simd igb nvme cryptd dca xhci_pci amd_xgbe(-)
-> i2c_piix4 i2c_amd_mp2_pci xhci_pci_renesas nvme_core i2c_algo_bit video
-> spi_amd
-> [  127.068485] CPU: 4 PID: 803 Comm: rmmod Not tainted 5.17.0-rc3-tk #12
-> [  127.068490] Hardware name: Deciso B.V. DEC2700 - OPNsense
-> Appliance/Netboard-A10 Gen.3, BIOS 05.32.50.0012-A10.20 11/15/2021
-> [  127.068493] RIP: 0010:remove_proc_entry+0x196/0x1b0
-> [  127.068499] Code: 60 50 5e 84 48 85 c0 48 8d 90 78 ff ff ff 48 0f 45
-> c2 49 8b 54 24 78 4c 8b 80 a0 00 00 00 48 8b 92 a0 00 00 00 e8 38 56 81
-> 00 <0f> 0b e9 44 ff ff ff e8 9e c0 87 00 66 66 2e 0f 1f 84 00 00 00 00
-> [  127.068502] RSP: 0018:ffffaf2940fffb60 EFLAGS: 00010286
-> [  127.068506] RAX: 0000000000000000 RBX: ffff91fa4022ed80 RCX:
-> 0000000000000000
-> [  127.068509] RDX: 0000000000000001 RSI: ffffffff845bf281 RDI:
-> 00000000ffffffff
-> [  127.068511] RBP: ffffaf2940fffb90 R08: 0000000000000000 R09:
-> ffffaf2940fff950
-> [  127.068513] R10: ffffaf2940fff948 R11: ffffffff84f55f48 R12:
-> ffff91fa44e8c540
-> [  127.068515] R13: ffff91fa44e8c5c0 R14: 0000000000000036 R15:
-> 0000000000000036
-> [  127.068517] FS:  00007f3a68f9c400(0000) GS:ffff91fa6af00000(0000)
-> knlGS:0000000000000000
-> [  127.068520] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  127.068522] CR2: 00007fd6c2e7fd04 CR3: 0000000104ee0000 CR4:
-> 00000000003506e0
-> [  127.068525] Call Trace:
-> [  127.068528]  <TASK>
-> [  127.068534]  unregister_irq_proc+0xe4/0x110
-> [  127.068541]  free_desc+0x2e/0x70
-> [  127.068546]  irq_free_descs+0x50/0x80
-> [  127.068550]  irq_domain_free_irqs+0x16b/0x1c0
-> [  127.068554]  __msi_domain_free_irqs+0xf1/0x160
-> [  127.068560]  msi_domain_free_irqs_descs_locked+0x20/0x50
-> [  127.068565]  pci_msi_teardown_msi_irqs+0x49/0x50
-> [  127.068571]  pci_disable_msix.part.0+0xff/0x160
-> [  127.068575]  pci_free_irq_vectors+0x45/0x60
-> [  127.068578]  xgbe_pci_remove+0x24/0x40 [amd_xgbe]
-> [  127.068596]  pci_device_remove+0x39/0xa0
-> [  127.068602]  __device_release_driver+0x181/0x250
-> [  127.068608]  driver_detach+0xd3/0x120
-> [  127.068612]  bus_remove_driver+0x59/0xd0
-> [  127.068615]  driver_unregister+0x31/0x50
-> [  127.068619]  pci_unregister_driver+0x40/0x90
-> [  127.068623]  xgbe_pci_exit+0x15/0x20 [amd_xgbe]
-> [  127.068639]  xgbe_mod_exit+0x9/0x880 [amd_xgbe]
-> [  127.068654]  __do_sys_delete_module.constprop.0+0x183/0x290
-> [  127.068660]  ? exit_to_user_mode_prepare+0x49/0x1e0
-> [  127.068666]  __x64_sys_delete_module+0x12/0x20
-> [  127.068670]  do_syscall_64+0x5c/0xc0
-> [  127.068676]  ? irqentry_exit_to_user_mode+0x9/0x20
-> [  127.068681]  ? irqentry_exit+0x33/0x40
-> [  127.068685]  ? exc_page_fault+0x89/0x180
-> [  127.068689]  ? asm_exc_page_fault+0x8/0x30
-> [  127.068694]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [  127.068697] RIP: 0033:0x7f3a690cb8eb
-> [  127.068702] Code: 73 01 c3 48 8b 0d 45 e5 0e 00 f7 d8 64 89 01 48 83
-> c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f
-> 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 15 e5 0e 00 f7 d8 64 89 01 48
-> [  127.068704] RSP: 002b:00007ffed553a818 EFLAGS: 00000206 ORIG_RAX:
-> 00000000000000b0
-> [  127.068708] RAX: ffffffffffffffda RBX: 00007f3a6a02e7b0 RCX:
-> 00007f3a690cb8eb
-> [  127.068710] RDX: 000000000000000a RSI: 0000000000000800 RDI:
-> 00007f3a6a02e818
-> [  127.068712] RBP: 0000000000000000 R08: 0000000000000000 R09:
-> 0000000000000000
-> [  127.068714] R10: 00007f3a69163ac0 R11: 0000000000000206 R12:
-> 00007ffed553aa70
-> [  127.068716] R13: 00007ffed553b84a R14: 00007f3a6a02e2a0 R15:
-> 00007f3a6a02e7b0
-> [  127.068722]  </TASK>
-> [  127.068723] ---[ end trace 0000000000000000 ]---
-> [  127.068744] ------------[ cut here ]------------
-> [  127.068746] remove_proc_entry: removing non-empty directory 'irq/54',
-> leaking at least 'enp6s0f2-pcs'
-> [  127.068755] WARNING: CPU: 4 PID: 803 at fs/proc/generic.c:715
-> remove_proc_entry+0x196/0x1b0
-> [  127.068761] Modules linked in: nls_iso8859_1 intel_rapl_msr
-> intel_rapl_common snd_hda_intel snd_intel_dspcfg snd_intel_sdw_acpi
-> edac_mce_amd snd_hda_codec snd_hda_core snd_hwdep snd_pcm kvm snd_timer
-> snd_rn_pci_acp3x snd rapl efi_pstore k10temp soundcore snd_pci_acp3x ccp
-> mac_hid sch_fq_codel msr drm ip_tables x_tables autofs4 btrfs
-> blake2b_generic zstd_compress raid10 raid456 async_raid6_recov
-> async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1
-> raid0 multipath linear crct10dif_pclmul crc32_pclmul ghash_clmulni_intel
-> aesni_intel crypto_simd igb nvme cryptd dca xhci_pci amd_xgbe(-)
-> i2c_piix4 i2c_amd_mp2_pci xhci_pci_renesas nvme_core i2c_algo_bit video
-> spi_amd
-> [  127.068810] CPU: 4 PID: 803 Comm: rmmod Tainted: G W        
-> 5.17.0-rc3-tk #12
-> [  127.068814] Hardware name: Deciso B.V. DEC2700 - OPNsense
-> Appliance/Netboard-A10 Gen.3, BIOS 05.32.50.0012-A10.20 11/15/2021
-> [  127.068815] RIP: 0010:remove_proc_entry+0x196/0x1b0
-> [  127.068820] Code: 60 50 5e 84 48 85 c0 48 8d 90 78 ff ff ff 48 0f 45
-> c2 49 8b 54 24 78 4c 8b 80 a0 00 00 00 48 8b 92 a0 00 00 00 e8 38 56 81
-> 00 <0f> 0b e9 44 ff ff ff e8 9e c0 87 00 66 66 2e 0f 1f 84 00 00 00 00
-> [  127.068822] RSP: 0018:ffffaf2940fffb60 EFLAGS: 00010286
-> [  127.068825] RAX: 0000000000000000 RBX: ffff91fa4022ed80 RCX:
-> 0000000000000000
-> [  127.068827] RDX: 0000000000000001 RSI: ffffffff845bf281 RDI:
-> 00000000ffffffff
-> [  127.068829] RBP: ffffaf2940fffb90 R08: 0000000000000000 R09:
-> ffffaf2940fff950
-> [  127.068830] R10: ffffaf2940fff948 R11: ffffffff84f55f48 R12:
-> ffff91fa4eca7000
-> [  127.068832] R13: ffff91fa4eca7080 R14: 0000000000000037 R15:
-> 0000000000000037
-> [  127.068834] FS:  00007f3a68f9c400(0000) GS:ffff91fa6af00000(0000)
-> knlGS:0000000000000000
-> [  127.068837] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  127.068839] CR2: 00007fd6c2e7fd04 CR3: 0000000104ee0000 CR4:
-> 00000000003506e0
-> [  127.068841] Call Trace:
-> [  127.068842]  <TASK>
-> [  127.068844]  unregister_irq_proc+0xe4/0x110
-> [  127.068849]  free_desc+0x2e/0x70
-> [  127.068852]  irq_free_descs+0x50/0x80
-> [  127.068856]  irq_domain_free_irqs+0x16b/0x1c0
-> [  127.068860]  __msi_domain_free_irqs+0xf1/0x160
-> [  127.068865]  msi_domain_free_irqs_descs_locked+0x20/0x50
-> [  127.068870]  pci_msi_teardown_msi_irqs+0x49/0x50
-> [  127.068873]  pci_disable_msix.part.0+0xff/0x160
-> [  127.068877]  pci_free_irq_vectors+0x45/0x60
-> [  127.068881]  xgbe_pci_remove+0x24/0x40 [amd_xgbe]
-> [  127.068896]  pci_device_remove+0x39/0xa0
-> [  127.068900]  __device_release_driver+0x181/0x250
-> [  127.068904]  driver_detach+0xd3/0x120
-> [  127.068908]  bus_remove_driver+0x59/0xd0
-> [  127.068911]  driver_unregister+0x31/0x50
-> [  127.068914]  pci_unregister_driver+0x40/0x90
-> [  127.068919]  xgbe_pci_exit+0x15/0x20 [amd_xgbe]
-> [  127.068933]  xgbe_mod_exit+0x9/0x880 [amd_xgbe]
-> [  127.068948]  __do_sys_delete_module.constprop.0+0x183/0x290
-> [  127.068952]  ? exit_to_user_mode_prepare+0x49/0x1e0
-> [  127.068957]  __x64_sys_delete_module+0x12/0x20
-> [  127.068961]  do_syscall_64+0x5c/0xc0
-> [  127.068964]  ? irqentry_exit_to_user_mode+0x9/0x20
-> [  127.068969]  ? irqentry_exit+0x33/0x40
-> [  127.068973]  ? exc_page_fault+0x89/0x180
-> [  127.068977]  ? asm_exc_page_fault+0x8/0x30
-> [  127.068980]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [  127.068983] RIP: 0033:0x7f3a690cb8eb
-> [  127.068985] Code: 73 01 c3 48 8b 0d 45 e5 0e 00 f7 d8 64 89 01 48 83
-> c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f
-> 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 15 e5 0e 00 f7 d8 64 89 01 48
-> [  127.068987] RSP: 002b:00007ffed553a818 EFLAGS: 00000206 ORIG_RAX:
-> 00000000000000b0
-> [  127.068990] RAX: ffffffffffffffda RBX: 00007f3a6a02e7b0 RCX:
-> 00007f3a690cb8eb
-> [  127.068991] RDX: 000000000000000a RSI: 0000000000000800 RDI:
-> 00007f3a6a02e818
-> [  127.068993] RBP: 0000000000000000 R08: 0000000000000000 R09:
-> 0000000000000000
-> [  127.068994] R10: 00007f3a69163ac0 R11: 0000000000000206 R12:
-> 00007ffed553aa70
-> [  127.068996] R13: 00007ffed553b84a R14: 00007f3a6a02e2a0 R15:
-> 00007f3a6a02e7b0
-> [  127.068999]  </TASK>
-> [  127.069000] ---[ end trace 0000000000000000 ]---
-> [  127.667264] irq 31: nobody cared (try booting with the "irqpoll" option)
-> [  127.674758] CPU: 4 PID: 0 Comm: swapper/4 Tainted: G W        
-> 5.17.0-rc3-tk #12
-> [  127.674764] Hardware name: Deciso B.V. DEC2700 - OPNsense
-> Appliance/Netboard-A10 Gen.3, BIOS 05.32.50.0012-A10.20 11/15/2021
-> [  127.674766] Call Trace:
-> [  127.674769]  <IRQ>
-> [  127.674773]  dump_stack_lvl+0x4c/0x63
-> [  127.674781]  dump_stack+0x10/0x12
-> [  127.674784]  __report_bad_irq+0x3a/0xaf
-> [  127.674789]  note_interrupt.cold+0xb/0x60
-> [  127.674793]  ? __this_cpu_preempt_check+0x13/0x20
-> [  127.674799]  handle_irq_event+0x71/0x80
-> [  127.674805]  handle_fasteoi_irq+0x95/0x1e0
-> [  127.674810]  __common_interrupt+0x6e/0x110
-> [  127.674815]  common_interrupt+0xbd/0xe0
-> [  127.674819]  </IRQ>
-> [  127.674820]  <TASK>
-> [  127.674822]  asm_common_interrupt+0x1e/0x40
-> [  127.674826] RIP: 0010:cpuidle_enter_state+0xdf/0x380
-> [  127.674834] Code: ff e8 25 76 73 ff 80 7d d7 00 74 17 9c 58 0f 1f 44
-> 00 00 f6 c4 02 0f 85 82 02 00 00 31 ff e8 18 8c 7a ff fb 66 0f 1f 44 00
-> 00 <45> 85 ff 0f 88 1a 01 00 00 49 63 d7 4c 89 f1 48 2b 4d c8 48 8d 04
-> [  127.674837] RSP: 0018:ffffaf29400e3e68 EFLAGS: 00000246
-> [  127.674841] RAX: ffff91fa6af00000 RBX: 0000000000000002 RCX:
-> 000000000000001f
-> [  127.674843] RDX: 0000000000000000 RSI: ffffffff845bf281 RDI:
-> ffffffff845cddcf
-> [  127.674845] RBP: ffffaf29400e3ea0 R08: 0000001db98fd21c R09:
-> 0000001d7b8fd3fc
-> [  127.674847] R10: 0000000000000001 R11: ffff91fa6af2fd84 R12:
-> ffff91fa41de6c00
-> [  127.674849] R13: ffffffff8506e4c0 R14: 0000001db98fd21c R15:
-> 0000000000000002
-> [  127.674854]  ? cpuidle_enter_state+0xbb/0x380
-> [  127.674860]  cpuidle_enter+0x2e/0x40
-> [  127.674864]  do_idle+0x203/0x290
-> [  127.674869]  cpu_startup_entry+0x20/0x30
-> [  127.674872]  start_secondary+0x118/0x150
-> [  127.674877]  secondary_startup_64_no_verify+0xd5/0xdb
-> [  127.674885]  </TASK>
-> [  127.674886] handlers:
-> [  127.677425] [<00000000b61e344c>] amd_mp2_irq_isr [i2c_amd_mp2_pci]
-> [  127.684335] Disabling IRQ #31
-> 
-> and command line output after 'modprobe -vvv amd_xgbe':
-> 
-> jane@dec740-ubu21:~$ sudo modprobe -vvv amd_xgbe
-> modprobe: INFO: ../libkmod/libkmod.c:365 kmod_set_log_fn() custom
-> logging function 0x7f74d79de780 registered
-> modprobe: DEBUG: ../libkmod/libkmod-index.c:757 index_mm_open()
-> file=/lib/modules/5.17.0-rc3-tk/modules.dep.bin
-> modprobe: DEBUG: ../libkmod/libkmod-index.c:757 index_mm_open()
-> file=/lib/modules/5.17.0-rc3-tk/modules.alias.bin
-> modprobe: DEBUG: ../libkmod/libkmod-index.c:757 index_mm_open()
-> file=/lib/modules/5.17.0-rc3-tk/modules.symbols.bin
-> modprobe: DEBUG: ../libkmod/libkmod-index.c:757 index_mm_open()
-> file=/lib/modules/5.17.0-rc3-tk/modules.builtin.alias.bin
-> modprobe: DEBUG: ../libkmod/libkmod-index.c:757 index_mm_open()
-> file=/lib/modules/5.17.0-rc3-tk/modules.builtin.bin
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:556
-> kmod_module_new_from_lookup() input alias=amd_xgbe, normalized=amd_xgbe
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:562
-> kmod_module_new_from_lookup() lookup modules.dep amd_xgbe
-> modprobe: DEBUG: ../libkmod/libkmod.c:595 kmod_search_moddep() use
-> mmaped index 'modules.dep' modname=amd_xgbe
-> modprobe: DEBUG: ../libkmod/libkmod.c:403 kmod_pool_get_module() get
-> module name='amd_xgbe' found=(nil)
-> modprobe: DEBUG: ../libkmod/libkmod.c:411 kmod_pool_add_module() add
-> 0x7f74d83862a0 key='amd_xgbe'
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:202
-> kmod_module_parse_depline() 0 dependencies for amd_xgbe
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:589
-> kmod_module_new_from_lookup() lookup amd_xgbe=0, list=0x7f74d8385c40
-> modprobe: DEBUG: ../libkmod/libkmod.c:500 lookup_builtin_file() use
-> mmaped index 'modules.builtin' modname=amd_xgbe
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1760
-> kmod_module_get_initstate() could not open
-> '/sys/module/amd_xgbe/initstate': No such file or directory
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1770
-> kmod_module_get_initstate() could not open '/sys/module/amd_xgbe': No
-> such file or directory
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1404
-> kmod_module_get_options() modname=snd_pcsp mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1404
-> kmod_module_get_options() modname=snd_usb_audio mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1404
-> kmod_module_get_options() modname=cx88_alsa mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1404
-> kmod_module_get_options() modname=snd_atiixp_modem mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1404
-> kmod_module_get_options() modname=snd_intel8x0m mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1404
-> kmod_module_get_options() modname=snd_via82xx_modem mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1404
-> kmod_module_get_options() modname=amd_xgbe mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1409
-> kmod_module_get_options() passed = modname=amd_xgbe mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1404
-> kmod_module_get_options() modname=md_mod mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1404
-> kmod_module_get_options() modname=bonding mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1404
-> kmod_module_get_options() modname=dummy mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1404
-> kmod_module_get_options() modname=amd_xgbe mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1409
-> kmod_module_get_options() passed = modname=amd_xgbe mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1404
-> kmod_module_get_options() modname=amd_xgbe mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1409
-> kmod_module_get_options() passed = modname=amd_xgbe mod->name=amd_xgbe
-> mod->alias=(null)
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1760
-> kmod_module_get_initstate() could not open
-> '/sys/module/amd_xgbe/initstate': No such file or directory
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:1770
-> kmod_module_get_initstate() could not open '/sys/module/amd_xgbe': No
-> such file or directory
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:750 kmod_module_get_path()
-> name='amd_xgbe'
-> path='/lib/modules/5.17.0-rc3-tk/kernel/drivers/net/ethernet/amd/xgbe/amd-xgbe.ko'
-> 
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:750 kmod_module_get_path()
-> name='amd_xgbe'
-> path='/lib/modules/5.17.0-rc3-tk/kernel/drivers/net/ethernet/amd/xgbe/amd-xgbe.ko'
-> 
-> insmod
-> /lib/modules/5.17.0-rc3-tk/kernel/drivers/net/ethernet/amd/xgbe/amd-xgbe.ko
-> dyndbg="+pfm" debug=0x37 dyndbg=+p debug=0x37
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:750 kmod_module_get_path()
-> name='amd_xgbe'
-> path='/lib/modules/5.17.0-rc3-tk/kernel/drivers/net/ethernet/amd/xgbe/amd-xgbe.ko'
-> 
-> modprobe: DEBUG: ../libkmod/libkmod-module.c:468 kmod_module_unref()
-> kmod_module 0x7f74d83862a0 released
-> modprobe: DEBUG: ../libkmod/libkmod.c:419 kmod_pool_del_module() del
-> 0x7f74d83862a0 key='amd_xgbe'
-> modprobe: INFO: ../libkmod/libkmod.c:332 kmod_unref() context
-> 0x7f74d83854c0 released
-> 
-> and the corresponding dmesg diff:
-> 
-> [  151.599892] amd-xgbe 0000:06:00.1 eth0: net device enabled
-> [  151.601333] amd-xgbe 0000:06:00.2 eth1: net device enabled
-> [  151.606044] amd-xgbe 0000:06:00.1 enp6s0f1: renamed from eth0
-> [  151.646262] amd-xgbe 0000:06:00.2 enp6s0f2: renamed from eth1
-> 
-> 
-> Cheers
-> Thomas
-> 
+THVpeiBBbmdlbG8gRGFyb3MgZGUgTHVjYSA8bHVpemx1Y2FAZ21haWwuY29tPiB3cml0ZXM6DQoN
+Cj4gU29tZSBkZXZpY2VzLCBsaWtlIHRoZSBzd2l0Y2ggaW4gQmFuYW5hIFBpIEJQSSBSNjQgb25s
+eSBzdGFydHMgdG8gYW5zd2VyDQo+IGFmdGVyIGEgSFcgcmVzZXQuIEl0IGlzIHRoZSBzYW1lIHJl
+c2V0IGNvZGUgZnJvbSByZWFsdGVrLXNtaS4NCj4NCj4gUmVwb3J0ZWQtYnk6IEZyYW5rIFd1bmRl
+cmxpY2ggPGZyYW5rLXdAcHVibGljLWZpbGVzLmRlPg0KPiBTaWduZWQtb2ZmLWJ5OiBMdWl6IEFu
+Z2VsbyBEYXJvcyBkZSBMdWNhIDxsdWl6bHVjYUBnbWFpbC5jb20+DQo+IC0tLQ0KPiAgZHJpdmVy
+cy9uZXQvZHNhL3JlYWx0ZWsvcmVhbHRlay1tZGlvLmMgfCAxOSArKysrKysrKysrKysrKysrKysr
+DQo+ICBkcml2ZXJzL25ldC9kc2EvcmVhbHRlay9yZWFsdGVrLXNtaS5jICB8ICA2ICsrLS0tLQ0K
+PiAgZHJpdmVycy9uZXQvZHNhL3JlYWx0ZWsvcmVhbHRlay5oICAgICAgfCAgOSArKysrKystLS0N
+Cj4gIDMgZmlsZXMgY2hhbmdlZCwgMjcgaW5zZXJ0aW9ucygrKSwgNyBkZWxldGlvbnMoLSkNCj4N
+Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2RzYS9yZWFsdGVrL3JlYWx0ZWstbWRpby5jIGIv
+ZHJpdmVycy9uZXQvZHNhL3JlYWx0ZWsvcmVhbHRlay1tZGlvLmMNCj4gaW5kZXggZTZlM2MxNzY5
+MTY2Li43OGI0MTlhNmNiMDEgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L2RzYS9yZWFsdGVr
+L3JlYWx0ZWstbWRpby5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2RzYS9yZWFsdGVrL3JlYWx0ZWst
+bWRpby5jDQo+IEBAIC0xNTIsNiArMTUyLDIxIEBAIHN0YXRpYyBpbnQgcmVhbHRla19tZGlvX3By
+b2JlKHN0cnVjdCBtZGlvX2RldmljZSAqbWRpb2RldikNCj4gIAkvKiBUT0RPOiBpZiBwb3dlciBp
+cyBzb2Z0d2FyZSBjb250cm9sbGVkLCBzZXQgdXAgYW55IHJlZ3VsYXRvcnMgaGVyZSAqLw0KPiAg
+CXByaXYtPmxlZHNfZGlzYWJsZWQgPSBvZl9wcm9wZXJ0eV9yZWFkX2Jvb2wobnAsICJyZWFsdGVr
+LGRpc2FibGUtbGVkcyIpOw0KPiAgDQo+ICsJLyogQXNzZXJ0IHRoZW4gZGVhc3NlcnQgUkVTRVQg
+Ki8NCj4gKwlwcml2LT5yZXNldCA9IGRldm1fZ3Bpb2RfZ2V0X29wdGlvbmFsKGRldiwgInJlc2V0
+IiwgR1BJT0RfT1VUX0hJR0gpOw0KPiArCWlmIChJU19FUlIocHJpdi0+cmVzZXQpKSB7DQo+ICsJ
+CWRldl9lcnIoZGV2LCAiZmFpbGVkIHRvIGdldCBSRVNFVCBHUElPXG4iKTsNCj4gKwkJcmV0dXJu
+IFBUUl9FUlIocHJpdi0+cmVzZXQpOw0KPiArCX0NCj4gKw0KPiArCWlmIChwcml2LT5yZXNldCkg
+ew0KDQpncGlvZF9zZXRfdmFsdWUgc2VlbXMgdG9sZXJhbnQgb2YgYSBOVUxMIGdwaW9fZGVzYyBw
+b2ludGVyLCBidXQgcGVyaGFwcw0KeW91IHdvdWxkIGxpa2UgdG8gYWRkIHRoZSBzYW1lIGlmIHN0
+YXRlbWVudCB0byByZWFsdGVrLXNtaSBzbyB0aGF0IGl0DQpkb2Vzbid0IHByZXRlbmQgdG8gcmVz
+ZXQgdGhlIGNoaXAgd2hlbiB0aGUgcmVzZXQgR1BJTyBpcyBhYnNlbnQ/DQoNCj4gKwkJZGV2X2lu
+Zm8oZGV2LCAiYXNzZXJ0ZWQgUkVTRVRcbiIpOw0KPiArCQltc2xlZXAoUkVBTFRFS19IV19TVE9Q
+X0RFTEFZKTsNCj4gKwkJZ3Bpb2Rfc2V0X3ZhbHVlKHByaXYtPnJlc2V0LCAwKTsNCj4gKwkJbXNs
+ZWVwKFJFQUxURUtfSFdfU1RBUlRfREVMQVkpOw0KPiArCQlkZXZfaW5mbyhkZXYsICJkZWFzc2Vy
+dGVkIFJFU0VUXG4iKTsNCj4gKwl9DQo+ICsNCj4gIAlyZXQgPSBwcml2LT5vcHMtPmRldGVjdChw
+cml2KTsNCj4gIAlpZiAocmV0KSB7DQo+ICAJCWRldl9lcnIoZGV2LCAidW5hYmxlIHRvIGRldGVj
+dCBzd2l0Y2hcbiIpOw0KPiBAQCAtMTgzLDYgKzE5OCwxMCBAQCBzdGF0aWMgdm9pZCByZWFsdGVr
+X21kaW9fcmVtb3ZlKHN0cnVjdCBtZGlvX2RldmljZSAqbWRpb2RldikNCj4gIAlpZiAoIXByaXYp
+DQo+ICAJCXJldHVybjsNCj4gIA0KPiArCS8qIGxlYXZlIHRoZSBkZXZpY2UgcmVzZXQgYXNzZXJ0
+ZWQgKi8NCj4gKwlpZiAocHJpdi0+cmVzZXQpDQo+ICsJCWdwaW9kX3NldF92YWx1ZShwcml2LT5y
+ZXNldCwgMSk7DQo+ICsNCj4gIAlkc2FfdW5yZWdpc3Rlcl9zd2l0Y2gocHJpdi0+ZHMpOw0KDQpX
+b3VsZG4ndCB5b3UgcHJlZmVyIHRvIHJlc2V0IHRoZSBjaGlwIGFmdGVyIGRzYV91bnJlZ2lzdGVy
+X3N3aXRjaCgpPw0KDQpPdGhlcndpc2U6DQoNClJldmlld2VkLWJ5OiBBbHZpbiDFoGlwcmFnYSA8
+YWxzaUBiYW5nLW9sdWZzZW4uZGs+DQoNCj4gIA0KPiAgCWRldl9zZXRfZHJ2ZGF0YSgmbWRpb2Rl
+di0+ZGV2LCBOVUxMKTsNCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2RzYS9yZWFsdGVrL3Jl
+YWx0ZWstc21pLmMgYi9kcml2ZXJzL25ldC9kc2EvcmVhbHRlay9yZWFsdGVrLXNtaS5jDQo+IGlu
+ZGV4IGE4NDliNWNiYjRlNC4uY2FkYTUzODZmNmEyIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25l
+dC9kc2EvcmVhbHRlay9yZWFsdGVrLXNtaS5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2RzYS9yZWFs
+dGVrL3JlYWx0ZWstc21pLmMNCj4gQEAgLTQzLDggKzQzLDYgQEANCj4gICNpbmNsdWRlICJyZWFs
+dGVrLmgiDQo+ICANCj4gICNkZWZpbmUgUkVBTFRFS19TTUlfQUNLX1JFVFJZX0NPVU5UCQk1DQo+
+IC0jZGVmaW5lIFJFQUxURUtfU01JX0hXX1NUT1BfREVMQVkJCTI1CS8qIG1zZWNzICovDQo+IC0j
+ZGVmaW5lIFJFQUxURUtfU01JX0hXX1NUQVJUX0RFTEFZCQkxMDAJLyogbXNlY3MgKi8NCj4gIA0K
+PiAgc3RhdGljIGlubGluZSB2b2lkIHJlYWx0ZWtfc21pX2Nsa19kZWxheShzdHJ1Y3QgcmVhbHRl
+a19wcml2ICpwcml2KQ0KPiAgew0KPiBAQCAtNDI2LDkgKzQyNCw5IEBAIHN0YXRpYyBpbnQgcmVh
+bHRla19zbWlfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4gIAkJZGV2X2Vy
+cihkZXYsICJmYWlsZWQgdG8gZ2V0IFJFU0VUIEdQSU9cbiIpOw0KPiAgCQlyZXR1cm4gUFRSX0VS
+Uihwcml2LT5yZXNldCk7DQo+ICAJfQ0KPiAtCW1zbGVlcChSRUFMVEVLX1NNSV9IV19TVE9QX0RF
+TEFZKTsNCj4gKwltc2xlZXAoUkVBTFRFS19IV19TVE9QX0RFTEFZKTsNCj4gIAlncGlvZF9zZXRf
+dmFsdWUocHJpdi0+cmVzZXQsIDApOw0KPiAtCW1zbGVlcChSRUFMVEVLX1NNSV9IV19TVEFSVF9E
+RUxBWSk7DQo+ICsJbXNsZWVwKFJFQUxURUtfSFdfU1RBUlRfREVMQVkpOw0KPiAgCWRldl9pbmZv
+KGRldiwgImRlYXNzZXJ0ZWQgUkVTRVRcbiIpOw0KPiAgDQo+ICAJLyogRmV0Y2ggTURJTyBwaW5z
+ICovDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9kc2EvcmVhbHRlay9yZWFsdGVrLmggYi9k
+cml2ZXJzL25ldC9kc2EvcmVhbHRlay9yZWFsdGVrLmgNCj4gaW5kZXggZWQ1YWJmNmNiM2Q2Li5l
+N2QzZTFiY2Y4YjggMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L2RzYS9yZWFsdGVrL3JlYWx0
+ZWsuaA0KPiArKysgYi9kcml2ZXJzL25ldC9kc2EvcmVhbHRlay9yZWFsdGVrLmgNCj4gQEAgLTUs
+MTQgKzUsMTcgQEANCj4gICAqIENvcHlyaWdodCAoQykgMjAwOS0yMDEwIEdhYm9yIEp1aG9zIDxq
+dWhvc2dAb3BlbndydC5vcmc+DQo+ICAgKi8NCj4gIA0KPiAtI2lmbmRlZiBfUkVBTFRFS19TTUlf
+SA0KPiAtI2RlZmluZSBfUkVBTFRFS19TTUlfSA0KPiArI2lmbmRlZiBfUkVBTFRFS19IDQo+ICsj
+ZGVmaW5lIF9SRUFMVEVLX0gNCj4gIA0KPiAgI2luY2x1ZGUgPGxpbnV4L3BoeS5oPg0KPiAgI2lu
+Y2x1ZGUgPGxpbnV4L3BsYXRmb3JtX2RldmljZS5oPg0KPiAgI2luY2x1ZGUgPGxpbnV4L2dwaW8v
+Y29uc3VtZXIuaD4NCj4gICNpbmNsdWRlIDxuZXQvZHNhLmg+DQo+ICANCj4gKyNkZWZpbmUgUkVB
+TFRFS19IV19TVE9QX0RFTEFZCQkyNQkvKiBtc2VjcyAqLw0KPiArI2RlZmluZSBSRUFMVEVLX0hX
+X1NUQVJUX0RFTEFZCQkxMDAJLyogbXNlY3MgKi8NCj4gKw0KPiAgc3RydWN0IHJlYWx0ZWtfb3Bz
+Ow0KPiAgc3RydWN0IGRlbnRyeTsNCj4gIHN0cnVjdCBpbm9kZTsNCj4gQEAgLTE0Miw0ICsxNDUs
+NCBAQCB2b2lkIHJ0bDgzNjZfZ2V0X2V0aHRvb2xfc3RhdHMoc3RydWN0IGRzYV9zd2l0Y2ggKmRz
+LCBpbnQgcG9ydCwgdWludDY0X3QgKmRhdGEpOw0KPiAgZXh0ZXJuIGNvbnN0IHN0cnVjdCByZWFs
+dGVrX3ZhcmlhbnQgcnRsODM2NnJiX3ZhcmlhbnQ7DQo+ICBleHRlcm4gY29uc3Qgc3RydWN0IHJl
+YWx0ZWtfdmFyaWFudCBydGw4MzY1bWJfdmFyaWFudDsNCj4gIA0KPiAtI2VuZGlmIC8qICBfUkVB
+TFRFS19TTUlfSCAqLw0KPiArI2VuZGlmIC8qICBfUkVBTFRFS19IICov
