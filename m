@@ -2,130 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44CE84B1A62
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 01:25:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E3C44B1AC0
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 01:53:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346314AbiBKAZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 19:25:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55632 "EHLO
+        id S1346563AbiBKAwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 19:52:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345707AbiBKAZb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 19:25:31 -0500
-Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32145594;
-        Thu, 10 Feb 2022 16:25:31 -0800 (PST)
-Received: by mail-vs1-xe29.google.com with SMTP id t184so8399687vst.13;
-        Thu, 10 Feb 2022 16:25:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=XsFEH8aEgkgHkeo10lC/NBTETZY5bC6A1Dsa3VentE8=;
-        b=TCzw4iKVnFA3wJCZFhzjB1KClTtQOs1KVM+jciYqMIjeBS/ATybF3d7XprHuPT72sL
-         NH9Iaa4KFYhrz3YTyIqS74pprfnbPDMN734pMwXtb0kQuKc9VKEPS2oulONZtmggU/X3
-         QmZfyk22kskIUWlfTMcdeH2BgxGKKX7ubXLN8ZVvGUl/nqpc7aHUAueOWVbDHa8J2jC0
-         6w7Ddel5r3wKyl13wJJVMmXOA7eb4E7HCLvf9MPXET6QZNwBM6CPYOvhP0eCqyQdTnPY
-         zjB8ueB60nvhTz8al3IMZLAfxwIqalLMIbPv/usHlHfXWzhpJjVMpUZS1QKzzQfhROpr
-         2P5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XsFEH8aEgkgHkeo10lC/NBTETZY5bC6A1Dsa3VentE8=;
-        b=JMOLnVgwKSN/vVohTy8SJv6VOnb8XmRxd7+gdGJb5Wqwgs1vDqjhTOdRM1BlMj+r/k
-         b3LeJvANHUC+Gmqrz1ERZ4Yw5Wh6IuoVEplqliEvERDuZ5RBomE3NjbgCXCR1uK4AyUa
-         n9hY3Y6s/He2/8lXexM5DQNIgFw9TqwNZCPEtJyK+4cK3bOy/V1WzlhSwAQ07M3gpyXg
-         fbJOeXFOxh7QZwypAnN4JXcnX6B98kxBC++BEetfjimR/FWAnYx2kyZ/6cSKHSj9M/tg
-         Djlq1GbfpnfGl5ByQbR9K35baOCE3JLFepkQCGlyDL0/ZgmyzzQr8+KsNlrWHVcLRoEn
-         owzw==
-X-Gm-Message-State: AOAM531LdVTniuc3/8U2iYczVmZC4jHLl5xY3THc6NR/U8beJTbHRvD9
-        MrCkJNouKpIJw5CLq640GC/3N4ILsnpbrMcDG00=
-X-Google-Smtp-Source: ABdhPJy+DVx47o6CflVet9riBFfvd0SjNbHLahFbTkbkxbmupv1eEoDGkqdqRBcv7nVgbUR9TPZixuDSkUCTEyedrjM=
-X-Received: by 2002:a05:6102:2e3:: with SMTP id j3mr3679038vsj.32.1644539131086;
- Thu, 10 Feb 2022 16:25:31 -0800 (PST)
+        with ESMTP id S1346528AbiBKAwa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 19:52:30 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6261E5F86;
+        Thu, 10 Feb 2022 16:52:30 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Jvw7T67qHz4xdJ;
+        Fri, 11 Feb 2022 11:52:21 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1644540742;
+        bh=tM9oSUqc6GihGbZkPvqaIHIZCKY0n+fEMRawOrrTALY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tGQqH+km47OY8CFfKc5FhDlCKoJVSG5GhYpZzJiekmm46QrOtRJ4d+oi6tDM99YnS
+         4N899PZ0reKalNLo/MaYKxsOlq/RZ8bBKvuFfQwZCPN56YKTlySLRvt3z7qOuJTm63
+         8T/pZGsvo2Fmbn4A6U7RtLJ08MYLNMh/qAUI53lQ3rLs0BgLGYkUCSAS2vXUJpjgpQ
+         yWLBwCZKNBIHUa1b+ZEauXePqRQ/SpPpkinJVn4t1dpZ3XwbOL4cQA0sUMWl8cLMq3
+         aFTQvU0biu/DnLBUlBgyaB/xM71zS1/YW2x352PE5gHGKnyGOn5u6R5ctEPcOhWH33
+         3FAWpvB+9moMQ==
+Date:   Fri, 11 Feb 2022 11:52:20 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Networking <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <song@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the net-next tree (Was:
+ Re: linux-next: build failure after merge of the bpf-next tree)
+Message-ID: <20220211115220.4d4746fe@canb.auug.org.au>
+In-Reply-To: <20220209112135.7fec872f@canb.auug.org.au>
+References: <20220209112135.7fec872f@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com>
- <20220114010627.21104-3-ricardo.martinez@linux.intel.com> <d5854453-84b-1eba-7cc7-d94f41a185d@linux.intel.com>
- <4a4b2848-d665-c9ba-c66a-dd4408e94ea5@linux.intel.com>
-In-Reply-To: <4a4b2848-d665-c9ba-c66a-dd4408e94ea5@linux.intel.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Fri, 11 Feb 2022 03:25:31 +0300
-Message-ID: <CAHNKnsT9y0ssM3zVriEdEzoRMuJyianKrOx4BAcmT80PCJBigg@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 02/13] net: wwan: t7xx: Add control DMA interface
-To:     "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
-Cc:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        chandrashekar.devegowda@intel.com,
-        Intel Corporation <linuxwwan@intel.com>,
-        chiranjeevi.rapolu@linux.intel.com,
-        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
-        <haijun.liu@mediatek.com>, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/ImzMXu3OpUzcrR/0Blb+6dX";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Ricardo,
+--Sig_/ImzMXu3OpUzcrR/0Blb+6dX
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jan 19, 2022 at 1:22 AM Martinez, Ricardo
-<ricardo.martinez@linux.intel.com> wrote:
-> On 1/18/2022 6:13 AM, Ilpo J=C3=A4rvinen wrote:
->> On Thu, 13 Jan 2022, Ricardo Martinez wrote:
-> ...
->>> +#define CLDMA_NUM 2
->> I tried to understand its purpose but it seems that only one of the
->> indexes is used in the arrays where this define gives the size? Related =
-to
->> this, ID_CLDMA0 is not used anywhere?
+Hi all,
+
+On Wed, 9 Feb 2022 11:21:35 +1100 Stephen Rothwell <sfr@canb.auug.org.au> w=
+rote:
 >
-> The modem HW has 2 CLDMAs, idx 0 for the app processor (SAP) and idx 1
-> for the modem (MD).
->
-> CLDMA_NUM is defined as 2 to reflect the HW capabilities but mainly to
-> have a cleaner upcoming patches, which will use ID_CLDMA0.
->
-> If having array's of size 1 is not a problem then we can define
-> CLDMA_NUM as 1 and play with the CLDMA indexes.
+> After merging the bpf-next tree, today's linux-next build (powerpc
+> ppc64_defconfig) failed like this:
+>=20
+> kernel/bpf/core.c:830:23: error: variably modified 'bitmap' at file scope
+>   830 |         unsigned long bitmap[BITS_TO_LONGS(BPF_PROG_CHUNK_COUNT)];
+>       |                       ^~~~~~
+>=20
+> Caused by commit
+>=20
+>   57631054fae6 ("bpf: Introduce bpf_prog_pack allocator")
+>=20
+> I have used the bpf-next tree from next-20220208 for today.
 
-Please keep CLDMA_NUM defined as 2. Especially if you have a plan for
-further driver development. Saving a few bytes in the structure for a
-short term is not worth the jungling with indexes, possible errors and
-further rework. Just document them as suggested by Ilpo and mark idx 0
-as unused at the moment.
+The net-next tree has inherited this build failure by merging the
+bpf-next tree.
 
-BTW, did you consider to define the cldma_id enum something like this:
-
-/**
- * ...
- * @CLDMA_ID_AP: ... (unused ATM)
- * @CLDMA_ID_MD: ...
- */
-enum cldma_id {
-    CLDMA_ID_AP =3D 0,
-    CLDMA_ID_MD =3D 1,
-
-    CLDMA_NUM
-};
-
-This way elements will be self descriptive as well as CLDMA_NUM value
-will be less puzzled.
+I have used the net-next tree from next-20220209 for today.
 
 --=20
-Sergey
+Cheers,
+Stephen Rothwell
+
+--Sig_/ImzMXu3OpUzcrR/0Blb+6dX
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIFs0QACgkQAVBC80lX
+0GxsDQgAlns5dBAnb2XaAy4qyu4Br0sM9tPbvnXUPnEH6p9ksbrB4rJg1C0n0md2
+BeM4yujg/8UMC/ohfOB0/UG04DpsiWDtqkvSBFSccGmNAltyBHELL6+fGIsa21Cw
+qhwMDiQguS3pvYasZcx799MM61VsdrCSw9JaAbaM2JQrcBXzveY45USYy01dy1et
+NIeeFgHKffDxtiWMs4gQoLU85snZDvhVdg1TGLZJ+GXsjF7Znr+vjlMo+/02QrJp
+/jRwD8s+axiFleJe63mTvTaYGSCIhkOPtkTVz4m5sF22uIaDPphY/qg8av0I2yRu
+RESHNzJjz5DyR37imUp63kETSd+GyQ==
+=S9bw
+-----END PGP SIGNATURE-----
+
+--Sig_/ImzMXu3OpUzcrR/0Blb+6dX--
