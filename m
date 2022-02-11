@@ -2,73 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E869F4B2F08
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 22:05:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C4904B2F20
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 22:12:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242588AbiBKVCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 16:02:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54592 "EHLO
+        id S1344144AbiBKVM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 16:12:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234849AbiBKVCC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 16:02:02 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 819E0A5
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 13:01:59 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id x3so5638991pll.3
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 13:01:59 -0800 (PST)
+        with ESMTP id S231329AbiBKVM2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 16:12:28 -0500
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1148ABFB;
+        Fri, 11 Feb 2022 13:12:26 -0800 (PST)
+Received: by mail-pj1-x1044.google.com with SMTP id om7so9136213pjb.5;
+        Fri, 11 Feb 2022 13:12:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yz38RNlOZaGDJ11OPh7x9N5SBPtZIV96QZKf5ph9jFI=;
-        b=KSGB3XOU/zht6RcCfPNsk7rwVry1zBZ5nJ0Ue9y++f3unyuy7XEO0+pAGWoGtScUv1
-         7JRR7w482Yh1pGWYHBTsFxCM9l53ixvF7IT/kqEF+q8MlbforDGXcFOmcSoUKdhoXXEe
-         b7+QMp4ZwAUc78btD72BrnXSRIgPMiLlKr4NO9yp+PmeQY3xZlr7+XJvl3spzgllmDPG
-         W8j41mxFMyIfiugxRuy/HxNVdjfXCE9WyKRNlYXI3enijPIj52Ew7Mp99aJTpzuMnV6r
-         lDp8kdqOZg9NrbZnywuFzwqhxM31oKeS5+yy/dJ7vytvQIs+88WMouzLJgFnsdt/4KM0
-         nEcw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=x8POYbCaaSySzHWe6l3CukXGIHLL9HE7GZC5/X1ii4E=;
+        b=lfhtJAp6+k5GT93BneVzOju5Su5LQoUzD6eSwEt8GbSD25uuDKp17mHBNkdRAKcOjt
+         IlFLNo152dSoS48KaqB+4sjPXLI5CBLXav/yzqQzLxJWBZKTMPo4pJOWaiVBgrqpHebQ
+         I5uKx7SSF1evRkbRrNeWTO+t9xkDAfBZVTidyaAGoB2QzoTKaTT8zilX5wsekhNUMwtN
+         GwpPL/tLG7CJnPhZE7Zodx2g+zQbAxQpcN8ML1mHzjuXHZ6dlTZcxjt8nqGoFbdrhevl
+         2hYSeCGOa9wRWO8PPARJTBFNDul/9Hq3AzMmMmxySAF6GAfG/oKCkADkJoY3Pz0dpC1q
+         nppQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yz38RNlOZaGDJ11OPh7x9N5SBPtZIV96QZKf5ph9jFI=;
-        b=HknXJwZZUwpN6YNHd8TWCxo+AkkorfAC7XvSHeVpwezan1xzFkkLx6FQ2iLR/eg9V3
-         GQypl0uDRz8snuOXgE0JOY3HrnrubKq5c9gJavf3LyqcpJ/B14ZsEdwYUTJmoGPgQ/4S
-         69o2CUjSwfprwrXmAmbge2g9ex7frMr5zpw0qhWgPIhZTOCZWzwy/BSkUt+dOKGjN2Ag
-         d/8QYmql1U44WfhLA7WrwLW6Vv5WdY3wmtJLhDzuA+NdncbKN2XlvOQxcwd2EWXi/kFQ
-         izVRJ/5vj/gC5aqUVmhL3clAYVmi+iztuBQbzwYqDan/Ias5BLYoENdJxaZyR64B6USX
-         0Tqw==
-X-Gm-Message-State: AOAM531rV6tOVD0V+5ZH3VlmhPDLnXSH5AV2tHpTGNj8s/NhfNVeWrwS
-        WENlWP3DM2hLspHD7YJ6MlU=
-X-Google-Smtp-Source: ABdhPJxCdyhKG/tDbs0kCwZdLolYVg9hS0d+2nv5LLi24wDsvcUasB1FhDlA2s38JL2uXED4sNOm6g==
-X-Received: by 2002:a17:903:1c8:: with SMTP id e8mr3206999plh.75.1644613318490;
-        Fri, 11 Feb 2022 13:01:58 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id me18sm3321513pjb.39.2022.02.11.13.01.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Feb 2022 13:01:57 -0800 (PST)
-Subject: Re: [PATCH net-next] net: dsa: realtek: realtek-mdio: reset before
- setup
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        alsi@bang-olufsen.dk, arinc.unal@arinc9.com,
-        Frank Wunderlich <frank-w@public-files.de>
-References: <20220211051403.3952-1-luizluca@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <ccf3f079-4567-7de6-46f2-7b8896b06d77@gmail.com>
-Date:   Fri, 11 Feb 2022 13:01:53 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=x8POYbCaaSySzHWe6l3CukXGIHLL9HE7GZC5/X1ii4E=;
+        b=TZ33arf6ZZNadIM8ri5QMtQRmD5T1YxLOStHXpi9emSdJn52dElE2jkjRWMlDigeYo
+         NU2REeou/iCH1PyNC7fnRGLtNoJaz8LKLoiETiFNtRw3PSaWQ/ZnK5QagKx4g75NCS0o
+         a2TqBZXe2aeIMSdMiD5S6FDZjyNR56X5+WFNsaU428k1pDD+0jq3fqnkA9TpdLIYSMC0
+         stZdEFlp7eZzl7rEwej97SPNNGEajmVgw2TZbi8j9Ihw0PZ/G89CAp+Zmv1Mq2HtBsKj
+         oDuqjpRDFBcIQuum932gFO0EXAVD7ix+8JnbZ1KKwNBFfHOQvyvmslhzxcmeXX1GqqTU
+         SjTw==
+X-Gm-Message-State: AOAM532mtJB6u67QpLmR5KD4e2Qdb6j8yl/4n449sf9JZLCAvFASYXxo
+        VV7+x6SYSndss1BCC/Y8kPE=
+X-Google-Smtp-Source: ABdhPJw9sezByfs1qcpJLn9zs0tSoH7u9M3WXlRpBtfxJWeAvWqovxCBs03Z0wNZOvkCPDJklJn89Q==
+X-Received: by 2002:a17:90b:3509:: with SMTP id ls9mr2269501pjb.119.1644613945459;
+        Fri, 11 Feb 2022 13:12:25 -0800 (PST)
+Received: from localhost ([47.9.2.133])
+        by smtp.gmail.com with ESMTPSA id f2sm27004637pfj.6.2022.02.11.13.12.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 13:12:25 -0800 (PST)
+Date:   Sat, 12 Feb 2022 02:42:21 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Zhiqian Guan <zhguan@redhat.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next] libbpf: Use dynamically allocated buffer when
+ receiving netlink messages
+Message-ID: <20220211211221.wc5ouk32krtlxhlr@apollo.legion>
+References: <20220211195101.591642-1-toke@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20220211051403.3952-1-luizluca@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220211195101.591642-1-toke@redhat.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -77,55 +79,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/10/22 9:14 PM, Luiz Angelo Daros de Luca wrote:
-> Some devices, like the switch in Banana Pi BPI R64 only starts to answer
-> after a HW reset. It is the same reset code from realtek-smi.
-> 
-> Reported-by: Frank Wunderlich <frank-w@public-files.de>
-> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+On Sat, Feb 12, 2022 at 01:21:00AM IST, Toke Høiland-Jørgensen wrote:
+> When receiving netlink messages, libbpf was using a statically allocated
+> stack buffer of 4k bytes. This happened to work fine on systems with a 4k
+> page size, but on systems with larger page sizes it can lead to truncated
+> messages. The user-visible impact of this was that libbpf would insist no
+> XDP program was attached to some interfaces because that bit of the netlink
+> message got chopped off.
+>
+> Fix this by switching to a dynamically allocated buffer; we borrow the
+> approach from iproute2 of using recvmsg() with MSG_PEEK|MSG_TRUNC to get
+> the actual size of the pending message before receiving it, adjusting the
+> buffer as necessary. While we're at it, also add retries on interrupted
+> system calls around the recvmsg() call.
+>
+> Reported-by: Zhiqian Guan <zhguan@redhat.com>
+> Fixes: 8bbb77b7c7a2 ("libbpf: Add various netlink helpers")
+> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 > ---
 
-[snip]
+Thanks for the fix!
 
->  	ret = priv->ops->detect(priv);
->  	if (ret) {
->  		dev_err(dev, "unable to detect switch\n");
-> @@ -183,6 +198,10 @@ static void realtek_mdio_remove(struct mdio_device *mdiodev)
->  	if (!priv)
->  		return;
->  
-> +	/* leave the device reset asserted */
-> +	if (priv->reset)
-> +		gpiod_set_value(priv->reset, 1);
+Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+
+>  tools/lib/bpf/netlink.c | 55 ++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 52 insertions(+), 3 deletions(-)
+>
+> diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+> index c39c37f99d5c..9a6e95206bf0 100644
+> --- a/tools/lib/bpf/netlink.c
+> +++ b/tools/lib/bpf/netlink.c
+> @@ -87,22 +87,70 @@ enum {
+>  	NL_DONE,
+>  };
+>
+> +static int __libbpf_netlink_recvmsg(int sock, struct msghdr *mhdr, int flags)
+> +{
+> +	int len;
 > +
->  	dsa_unregister_switch(priv->ds);
->  
->  	dev_set_drvdata(&mdiodev->dev, NULL);
-> diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realtek/realtek-smi.c
-> index a849b5cbb4e4..cada5386f6a2 100644
-> --- a/drivers/net/dsa/realtek/realtek-smi.c
-> +++ b/drivers/net/dsa/realtek/realtek-smi.c
-> @@ -43,8 +43,6 @@
->  #include "realtek.h"
->  
->  #define REALTEK_SMI_ACK_RETRY_COUNT		5
-> -#define REALTEK_SMI_HW_STOP_DELAY		25	/* msecs */
-> -#define REALTEK_SMI_HW_START_DELAY		100	/* msecs */
->  
->  static inline void realtek_smi_clk_delay(struct realtek_priv *priv)
+> +	do {
+> +		len = recvmsg(sock, mhdr, flags);
+> +	} while (len < 0 && (errno == EINTR || errno == EAGAIN));
+> +
+> +	if (len < 0)
+> +		return -errno;
+> +	return len;
+> +}
+> +
+> +static int libbpf_netlink_recvmsg(int sock, struct msghdr *mhdr, char **buf)
+> +{
+> +	struct iovec *iov = mhdr->msg_iov;
+> +	void *nbuf;
+> +	int len;
+> +
+> +	len = __libbpf_netlink_recvmsg(sock, mhdr, MSG_PEEK | MSG_TRUNC);
+> +	if (len < 0)
+> +		return len;
+> +
+> +	if (len < 4096)
+> +		len = 4096;
+> +
+> +	if (len > iov->iov_len) {
+> +		nbuf = realloc(iov->iov_base, len);
+> +		if (!nbuf) {
+> +			free(iov->iov_base);
+> +			return -ENOMEM;
+> +		}
+> +		iov->iov_base = nbuf;
+> +		iov->iov_len = len;
+> +	}
+> +
+> +	len = __libbpf_netlink_recvmsg(sock, mhdr, 0);
+> +	if (len > 0)
+> +		*buf = iov->iov_base;
+> +	return len;
+> +}
+> +
+>  static int libbpf_netlink_recv(int sock, __u32 nl_pid, int seq,
+>  			       __dump_nlmsg_t _fn, libbpf_dump_nlmsg_t fn,
+>  			       void *cookie)
 >  {
-> @@ -426,9 +424,9 @@ static int realtek_smi_probe(struct platform_device *pdev)
->  		dev_err(dev, "failed to get RESET GPIO\n");
->  		return PTR_ERR(priv->reset);
+> +	struct iovec iov = {};
+> +	struct msghdr mhdr = {
+> +		.msg_iov = &iov,
+> +		.msg_iovlen = 1,
+> +	};
+>  	bool multipart = true;
+>  	struct nlmsgerr *err;
+>  	struct nlmsghdr *nh;
+> -	char buf[4096];
+>  	int len, ret;
+> +	char *buf;
+> +
+>
+>  	while (multipart) {
+>  start:
+>  		multipart = false;
+> -		len = recv(sock, buf, sizeof(buf), 0);
+> +		len = libbpf_netlink_recvmsg(sock, &mhdr, &buf);
+>  		if (len < 0) {
+> -			ret = -errno;
+> +			ret = len;
+>  			goto done;
+>  		}
+>
+> @@ -151,6 +199,7 @@ static int libbpf_netlink_recv(int sock, __u32 nl_pid, int seq,
 >  	}
-> -	msleep(REALTEK_SMI_HW_STOP_DELAY);
-> +	msleep(REALTEK_HW_STOP_DELAY);
->  	gpiod_set_value(priv->reset, 0);
-> -	msleep(REALTEK_SMI_HW_START_DELAY);
-> +	msleep(REALTEK_HW_START_DELAY);
->  	dev_info(dev, "deasserted RESET\n");
+>  	ret = 0;
+>  done:
+> +	free(iov.iov_base);
+>  	return ret;
+>  }
+>
+> --
+> 2.35.1
+>
 
-Maybe demote these to debug prints since they would show up every time
-you load/unload the driver.
--- 
-Florian
+--
+Kartikeya
