@@ -2,172 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D79CC4B279B
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 15:12:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6AD04B2807
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 15:35:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241383AbiBKOM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 09:12:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53518 "EHLO
+        id S1350924AbiBKOfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 09:35:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235702AbiBKOMZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 09:12:25 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4055CDF1
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 06:12:24 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        with ESMTP id S239104AbiBKOfi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 09:35:38 -0500
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1177188;
+        Fri, 11 Feb 2022 06:35:36 -0800 (PST)
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nIX1H-0005ZS-U3; Fri, 11 Feb 2022 15:35:31 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nIWeo-0002SJ-LU; Fri, 11 Feb 2022 15:12:18 +0100
-Received: from pengutronix.de (unknown [195.138.59.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 0040A3143B;
-        Fri, 11 Feb 2022 14:12:16 +0000 (UTC)
-Date:   Fri, 11 Feb 2022 15:12:13 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: ether_addr_equal_64bits breakage with gcc-12
-Message-ID: <20220211141213.l4yitk7aifehjymp@pengutronix.de>
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nIX1H-0003vn-Ip; Fri, 11 Feb 2022 15:35:31 +0100
+Subject: Re: [PATCH bpf-next 2/2] bpf: flexible size for bpf_prog_pack
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Michal Hocko <mhocko@suse.com>
+References: <20220210064108.1095847-1-song@kernel.org>
+ <20220210064108.1095847-3-song@kernel.org>
+ <34d0ed40-30cf-a1a2-f4eb-fa3d0a55bce8@iogearbox.net>
+ <A3FB68F3-34DC-4598-8C6B-145421DCE73E@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <dd6dee71-94d7-5393-8fe6-c667938ebfac@iogearbox.net>
+Date:   Fri, 11 Feb 2022 15:35:31 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="2el65uhlktt7clfl"
-Content-Disposition: inline
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <A3FB68F3-34DC-4598-8C6B-145421DCE73E@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26450/Fri Feb 11 10:24:09 2022)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2/10/22 5:51 PM, Song Liu wrote:
+>> On Feb 10, 2022, at 12:25 AM, Daniel Borkmann <daniel@iogearbox.net> wrote:
+>> On 2/10/22 7:41 AM, Song Liu wrote:
+>>> bpf_prog_pack uses huge pages to reduce pressue on instruction TLB.
+>>> To guarantee allocating huge pages for bpf_prog_pack, it is necessary to
+>>> allocate memory of size PMD_SIZE * num_online_nodes().
+>>> On the other hand, if the system doesn't support huge pages, it is more
+>>> efficient to allocate PAGE_SIZE bpf_prog_pack.
+>>> Address different scenarios with more flexible bpf_prog_pack_size().
+>>> Signed-off-by: Song Liu <song@kernel.org>
+>>> ---
+>>>   kernel/bpf/core.c | 47 +++++++++++++++++++++++++++--------------------
+>>>   1 file changed, 27 insertions(+), 20 deletions(-)
+>>> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+>>> index 42d96549a804..d961a1f07a13 100644
+>>> --- a/kernel/bpf/core.c
+>>> +++ b/kernel/bpf/core.c
+>>> @@ -814,46 +814,53 @@ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
+>>>    * allocator. The prog_pack allocator uses HPAGE_PMD_SIZE page (2MB on x86)
+>>>    * to host BPF programs.
+>>>    */
+>>> -#ifdef CONFIG_TRANSPARENT_HUGEPAGE
+>>> -#define BPF_PROG_PACK_SIZE	HPAGE_PMD_SIZE
+>>> -#else
+>>> -#define BPF_PROG_PACK_SIZE	PAGE_SIZE
+>>> -#endif
+>>>   #define BPF_PROG_CHUNK_SHIFT	6
+>>>   #define BPF_PROG_CHUNK_SIZE	(1 << BPF_PROG_CHUNK_SHIFT)
+>>>   #define BPF_PROG_CHUNK_MASK	(~(BPF_PROG_CHUNK_SIZE - 1))
+>>> -#define BPF_PROG_CHUNK_COUNT	(BPF_PROG_PACK_SIZE / BPF_PROG_CHUNK_SIZE)
+>>>     struct bpf_prog_pack {
+>>>   	struct list_head list;
+>>>   	void *ptr;
+>>> -	unsigned long bitmap[BITS_TO_LONGS(BPF_PROG_CHUNK_COUNT)];
+>>> +	unsigned long bitmap[];
+>>>   };
+>>>   -#define BPF_PROG_MAX_PACK_PROG_SIZE	BPF_PROG_PACK_SIZE
+>>>   #define BPF_PROG_SIZE_TO_NBITS(size)	(round_up(size, BPF_PROG_CHUNK_SIZE) / BPF_PROG_CHUNK_SIZE)
+>>>     static DEFINE_MUTEX(pack_mutex);
+>>>   static LIST_HEAD(pack_list);
+>>>   +static inline int bpf_prog_pack_size(void)
+>>> +{
+>>> +	/* If vmap_allow_huge == true, use pack size of the smallest
+>>> +	 * possible vmalloc huge page: PMD_SIZE * num_online_nodes().
+>>> +	 * Otherwise, use pack size of PAGE_SIZE.
+>>> +	 */
+>>> +	return get_vmap_allow_huge() ? PMD_SIZE * num_online_nodes() : PAGE_SIZE;
+>>> +}
+>>
+>> Imho, this is making too many assumptions about implementation details. Can't we
+>> just add a new module_alloc*() API instead which internally guarantees allocating
+>> huge pages when enabled/supported (e.g. with a __weak function as fallback)?
+> 
+> I agree that this is making too many assumptions. But a new module_alloc_huge()
+> may not work, because we need the caller to know the proper size to ask for.
+> (Or maybe I misunderstood your suggestion?)
+> 
+> How about we introduce something like
+> 
+>      /* minimal size to get huge pages from vmalloc. If not possible,
+>       * return 0 (or -1?)
+>       */
+>      int vmalloc_hpage_min_size(void)
+>      {
+>          return vmap_allow_huge ? PMD_SIZE * num_online_nodes() : 0;
+>      }
 
---2el65uhlktt7clfl
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+And that would live inside mm/vmalloc.c and is exported to users ...
 
-Hello,
+>      /* minimal size to get huge pages from module_alloc */
+>      int module_alloc_hpage_min_size(void)
+>      {
+>          return vmalloc_hpage_min_size();
+>      }
 
-the current arm-linux-gnueabihf-gcc 12 snapshot in Debian breaks (at
-least with CONFIG_WERROR=3Dy):
+... and this one as wrapper in module alloc infra with __weak attr?
 
-|   CC      net/core/dev.o
-| net/core/dev.c: In function =E2=80=98bpf_prog_run_generic_xdp=E2=80=99:
-| net/core/dev.c:4618:21: warning: =E2=80=98ether_addr_equal_64bits=E2=80=
-=99 reading 8 bytes from a region of size 6 [-Wstringop-overread]
-|  4618 |         orig_host =3D ether_addr_equal_64bits(eth->h_dest, skb->d=
-ev->dev_addr);
-|       |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
-~~~~~~~~~~~
-| net/core/dev.c:4618:21: note: referencing argument 1 of type =E2=80=98con=
-st u8[8]=E2=80=99 {aka =E2=80=98const unsigned char[8]=E2=80=99}
-| net/core/dev.c:4618:21: note: referencing argument 2 of type =E2=80=98con=
-st u8[8]=E2=80=99 {aka =E2=80=98const unsigned char[8]=E2=80=99}
-| In file included from net/core/dev.c:91:
-| include/linux/etherdevice.h:375:20: note: in a call to function =E2=80=98=
-ether_addr_equal_64bits=E2=80=99
-|   375 | static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
-|       |                    ^~~~~~~~~~~~~~~~~~~~~~~
-| net/core/dev.c:4619:22: warning: =E2=80=98is_multicast_ether_addr_64bits=
-=E2=80=99 reading 8 bytes from a region of size 6 [-Wstringop-overread]
-|  4619 |         orig_bcast =3D is_multicast_ether_addr_64bits(eth->h_dest=
-);
-|       |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-| net/core/dev.c:4619:22: note: referencing argument 1 of type =E2=80=98con=
-st u8[8]=E2=80=99 {aka =E2=80=98const unsigned char[8]=E2=80=99}
-| include/linux/etherdevice.h:137:20: note: in a call to function =E2=80=98=
-is_multicast_ether_addr_64bits=E2=80=99
-|   137 | static inline bool is_multicast_ether_addr_64bits(const u8 addr[6=
-+2])
-|       |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-| net/core/dev.c:4646:27: warning: =E2=80=98ether_addr_equal_64bits=E2=80=
-=99 reading 8 bytes from a region of size 6 [-Wstringop-overread]
-|  4646 |             (orig_host !=3D ether_addr_equal_64bits(eth->h_dest,
-|       |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-|  4647 |                                                   skb->dev->dev_a=
-ddr)) ||
-|       |                                                   ~~~~~~~~~~~~~~~=
-~~~~
-| net/core/dev.c:4646:27: note: referencing argument 1 of type =E2=80=98con=
-st u8[8]=E2=80=99 {aka =E2=80=98const unsigned char[8]=E2=80=99}
-| net/core/dev.c:4646:27: note: referencing argument 2 of type =E2=80=98con=
-st u8[8]=E2=80=99 {aka =E2=80=98const unsigned char[8]=E2=80=99}
-| include/linux/etherdevice.h:375:20: note: in a call to function =E2=80=98=
-ether_addr_equal_64bits=E2=80=99
-|   375 | static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
-|       |                    ^~~~~~~~~~~~~~~~~~~~~~~
-| net/core/dev.c:4648:28: warning: =E2=80=98is_multicast_ether_addr_64bits=
-=E2=80=99 reading 8 bytes from a region of size 6 [-Wstringop-overread]
-|  4648 |             (orig_bcast !=3D is_multicast_ether_addr_64bits(eth->=
-h_dest))) {
-|       |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
-~~~~~
-| net/core/dev.c:4648:28: note: referencing argument 1 of type =E2=80=98con=
-st u8[8]=E2=80=99 {aka =E2=80=98const unsigned char[8]=E2=80=99}
-| include/linux/etherdevice.h:137:20: note: in a call to function =E2=80=98=
-is_multicast_ether_addr_64bits=E2=80=99
-|   137 | static inline bool is_multicast_ether_addr_64bits(const u8 addr[6=
-+2])
-|       |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>      static inline int bpf_prog_pack_size(void)
+>      {
+>          return module_alloc_hpage_min_size() ? : PAGE_SIZE;
+>      }
 
-| arm-linux-gnueabihf-gcc -v
-| Using built-in specs.
-| COLLECT_GCC=3D/usr/bin/arm-linux-gnueabihf-gcc
-| COLLECT_LTO_WRAPPER=3D/usr/lib/gcc-cross/arm-linux-gnueabihf/12/lto-wrapp=
-er
-| Target: arm-linux-gnueabihf
-| Configured with: ../src/configure -v --with-pkgversion=3D'Debian 12-20220=
-126-1' --with-bugurl=3Dfile:///usr/share/doc/gcc-12/README.Bugs --enable-la=
-nguages=3Dc,ada,c++,go,d,fortran,objc,obj-c++,m2 --prefix=3D/usr --with-gcc=
--major-version-only --program-suffix=3D-12 --enable-shared --enable-linker-=
-build-id --libexecdir=3D/usr/lib --without-included-gettext --enable-thread=
-s=3Dposix --libdir=3D/usr/lib --enable-nls --with-sysroot=3D/ --enable-cloc=
-ale=3Dgnu --enable-libstdcxx-debug --enable-libstdcxx-time=3Dyes --with-def=
-ault-libstdcxx-abi=3Dnew --enable-gnu-unique-object --disable-libitm --disa=
-ble-libquadmath --disable-libquadmath-support --enable-plugin --enable-defa=
-ult-pie --with-system-zlib --enable-libphobos-checking=3Drelease --without-=
-target-system-zlib --enable-multiarch --disable-sjlj-exceptions --with-arch=
-=3Darmv7-a+fp --with-float=3Dhard --with-mode=3Dthumb --disable-werror --en=
-able-checking=3Drelease --build=3Dx86_64-linux-gnu --host=3Dx86_64-linux-gn=
-u --target=3Darm-linux-gnueabihf --program-prefix=3Darm-linux-gnueabihf- --=
-includedir=3D/usr/arm-linux-gnueabihf/include
-| Thread model: posix
-| Supported LTO compression algorithms: zlib zstd
-| gcc version 12.0.1 20220126 (experimental) [master r12-6872-gf3e6ef7d873]=
- (Debian 12-20220126-1)
+Could probably work. It's not nice, but at least in the corresponding places so it's
+not exposed / hard coded inside bpf and assuming implementation details which could
+potentially break later on.
 
-regards,
-Marc
-
---
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---2el65uhlktt7clfl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIGbrgACgkQrX5LkNig
-012gKggAjL3oLaxv5ui+C8nII08VeMC2MiqeV1YyScLhE7ysR2v4cEi1LO/jhIBH
-JzX2hfRL3PxDoVj3YfwnKOB3VsTNYxNk4ln8eigSbZzgCV67OVqWjG3LDJ5/p+Zz
-PUeu43LWe95DKKzMGSRDAr9275tkE7Hd9T893PL5aj4ktJtHTWlZ5ebVFF+Zylri
-ZfE9aoMjv7K5+hmmVOSle1xTnh/KpK5oK1smut7UYMAeiQlP4CivZHz8ahJwO8b5
-J/W65RugMrsiOG+b+kMicxHjEp+zblT2Nl7bk3RnKSeJOgP7wNZd3ggWI0GxHJd5
-7Me4/ngoi+lgas7MF2f52viajv4PYQ==
-=uCpe
------END PGP SIGNATURE-----
-
---2el65uhlktt7clfl--
+Thanks,
+Daniel
