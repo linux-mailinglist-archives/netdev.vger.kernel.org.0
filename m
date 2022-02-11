@@ -2,197 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EDCE4B1E79
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 07:16:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CBCB4B1E9D
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 07:36:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237269AbiBKGPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 01:15:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56880 "EHLO
+        id S245672AbiBKGgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 01:36:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240332AbiBKGO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 01:14:57 -0500
-X-Greylist: delayed 310 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 22:14:56 PST
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B60FD5F71
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 22:14:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644560094;
-        bh=UcMqKg8/lHoUaA1L/FnQpr6E2HfUHEEM01YhIMbo3DM=;
-        h=X-UI-Sender-Class:Date:In-Reply-To:References:Subject:Reply-to:To:
-         CC:From;
-        b=dnmz7bO2zCR9X352hpII0akYAYb1ZAEpw3LFDJBXn6mKbsDU/0ow43673l0QnNRrS
-         tLvf2gzcj+iR1HHEm9ZLROiOJCh4nj13MLnwk+IO1zy4YHqyDgHKkmIMt5/1ZTFwAS
-         1QqZX6QHxPEb6r8o+C0qetxpxpRqc21gWZQ72RI8=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from frank-s9 ([217.61.154.74]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MFbVu-1nXBu33NjK-00H6Ci; Fri, 11
- Feb 2022 07:09:29 +0100
-Date:   Fri, 11 Feb 2022 07:09:25 +0100
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20220211051403.3952-1-luizluca@gmail.com>
-References: <20220211051403.3952-1-luizluca@gmail.com>
+        with ESMTP id S243174AbiBKGga (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 01:36:30 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254EDE56;
+        Thu, 10 Feb 2022 22:36:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644561390; x=1676097390;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=vvaAaRgq6EsdB48AtN0e/kt285sXi+0TKs83/n1Uo5k=;
+  b=T7PMGyXyd0sYZM8uU6+DVhljhkr7Iw3YvmZBnttwFclSP8nZfVeXBnmb
+   sRH/ww251xUYUznfaXqz0Bcz3J6gpzi3ondK43B0f8jDJ9LD4gbJMYsyp
+   k78v8XJdZPW6sVtiI4ywtMEpKfRGIuM2P12FjhhVmodcp+3/tEjxhhrvI
+   eu61WsHa83IhyePYOBEm9sya41MX6I+R8qW8D0pxwfflfp2/lMq59HNKt
+   p/IQcF6PUpuzjQtUTgWTc96RktJp0D7Wer+Ij2DIo3SglRM6ipsvB3V3Y
+   iaOjGbYyf0t1FFK8ZJedjjxuBhgYbdz9FvBGnZSQ5mnCjoumzdTBy2pYQ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="312955617"
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="312955617"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 22:36:29 -0800
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="486910936"
+Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.255.28.229]) ([10.255.28.229])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 22:36:24 -0800
+Subject: Re: [kbuild-all] Re: [PATCH] net: dsa: qca8k: fix noderef.cocci
+ warnings
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <202202100634.l8CtrpzE-lkp@intel.com>
+ <20220209221304.GA17529@d2214a582157>
+ <6c74b2f8-dd83-c4f2-cadd-07794a37dfac@gmail.com>
+ <20220210105956.336c9e6a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "Chen, Rong A" <rong.a.chen@intel.com>
+Message-ID: <161e2399-222e-b675-36e1-ec39eb96da4e@intel.com>
+Date:   Fri, 11 Feb 2022 14:36:20 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH net-next] net: dsa: realtek: realtek-mdio: reset before setup
-Reply-to: frank-w@public-files.de
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        netdev@vger.kernel.org
-CC:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, alsi@bang-olufsen.dk, arinc.unal@arinc9.com
-From:   Frank Wunderlich <frank-w@public-files.de>
-Message-ID: <43326919-9721-4150-A5D4-AAFDB8F5CD27@public-files.de>
-X-Provags-ID: V03:K1:3+3XwKWcWg97YZ2razLB/wI7JeIDP7ze2+atyMWtHnZJaeelipO
- y0HwPMLTCLNqdg7kCol802LWOSxD6EZbnkseDpBf7RoIbq4XKqg65FjVBXZdibz/KAiO8x8
- iPCMSfLQHJ3+HhG+2fdACwNvdwDDDdKSbsMKwyr0DwAEJShFMXnZoZwWEGc0SSJkW1G3pgh
- b4Fe5RxjaxZsJeH3rUj0A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:tcMANmoXKiw=:9foOhSOzJiAKiXmqS+pcC6
- 5oaZsi7yHGqniHHgo1lzmVBdkjJ401ZLVoe25MHa3AxIvjTZAwdUT3ye12qdRbg9fscoYjIi6
- TAju6P9l3+/BbyxIm6pE4ILdP5OMyg4s+bUFknKfX3Ua2iDvWQNl0vXu1aOrNPogv5ktIP9/1
- s68g6pMbRqCPRPjLdwfTGrhMYEG9BY/5zuhcHQcKaPcOaTqkhVJ5zpaHs2IG3Taz5wpDOKTW4
- 3qQTc5l3nOK3buyan1K3QnjiHpdbLjX8+pOp8PAhE80d6NFCkp7cb8JYpCpzyLtWtWXSb7YCH
- OF8oJLOu3tmNLD+wvoTfq3sgLer7i5fG506XrzZoIhuffnGz5p5z3QWAyqJDVe0ML/oSmvgBx
- OmMBIKAXxbTbbh52G1of4OYezEoqcrzT375T/RK7MG+8gIZg5+oSnl7qvl+4/MPKHZn8tPKAJ
- 3yR5yYuo4JQKe964QDudemGaMnG2OOS+szFBWeE0+ACoPcPHwC4+F2ajZNQmSezu4WffsdyNI
- kY0hLObfiIvO7x88mq47NH+9eah9Hj3fa1J5LUfsq4sWoZ/LSnRhjwW/v9ATRGfFBUSH8mssJ
- z/0nzHVpkwJTksrEf+hDTUyJqiRqjqjIOBAPkuxAH+SMzCFYl/rWDBYkkcTEOwhB3ZJvB1BWt
- 0C6MmbruGRgvsJ/Z6xQl2GWhex0BxJRICqw0U/5iVACRYLzsZmUAma42Q+WQGTU/4f7osk2m2
- 2qZpPlq6wciKLfa7x4dcsUQqQdRhnb6i0OGgrN8MvGag5G7Tm0har8INiAzevxfiK6Ce2rfM7
- gs87ivldMBeyQ/yuyk6IQ0yEiMvPBR/AoMAklDSly7jKeUWv+Vcmzh6LwwHWjTRiHgQZJXraX
- GJ8O19tCeYjhKrdu5W3HWPzn9pLfmUJncQsJDaV6eUm2EBK0JnEv4meaa6WI8VDFOvLKl2leT
- s/YnBLEUczfxuWPiMU32JL64NFYhH5Fg1HS8Mu8Q0s9Ewbm+K4B2272VIVsZ2CTQ1CCKNug5d
- BgugT6/VAaKVduBGeKqkyYRLP5QD9XZp3A9QBim31fdKMTzd0Gfk/0B3/3iFGbfbCuBI3zdp/
- SqzJhXMvMqmWMA=
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220210105956.336c9e6a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 11=2E Februar 2022 06:14:04 MEZ schrieb Luiz Angelo Daros de Luca <luizl=
-uca@gmail=2Ecom>:
->Some devices, like the switch in Banana Pi BPI R64 only starts to
->answer
->after a HW reset=2E It is the same reset code from realtek-smi=2E
->
->Reported-by: Frank Wunderlich <frank-w@public-files=2Ede>
->Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail=2Ecom>
->---
-> drivers/net/dsa/realtek/realtek-mdio=2Ec | 19 +++++++++++++++++++
-> drivers/net/dsa/realtek/realtek-smi=2Ec  |  6 ++----
-> drivers/net/dsa/realtek/realtek=2Eh      |  9 ++++++---
-> 3 files changed, 27 insertions(+), 7 deletions(-)
->
->diff --git a/drivers/net/dsa/realtek/realtek-mdio=2Ec
->b/drivers/net/dsa/realtek/realtek-mdio=2Ec
->index e6e3c1769166=2E=2E78b419a6cb01 100644
->--- a/drivers/net/dsa/realtek/realtek-mdio=2Ec
->+++ b/drivers/net/dsa/realtek/realtek-mdio=2Ec
->@@ -152,6 +152,21 @@ static int realtek_mdio_probe(struct mdio_device
->*mdiodev)
->	/* TODO: if power is software controlled, set up any regulators here
->*/
->	priv->leds_disabled =3D of_property_read_bool(np,
->"realtek,disable-leds");
->=20
->+	/* Assert then deassert RESET */
->+	priv->reset =3D devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
->+	if (IS_ERR(priv->reset)) {
->+		dev_err(dev, "failed to get RESET GPIO\n");
->+		return PTR_ERR(priv->reset);
->+	}
->+
->+	if (priv->reset) {
->+		dev_info(dev, "asserted RESET\n");
->+		msleep(REALTEK_HW_STOP_DELAY);
->+		gpiod_set_value(priv->reset, 0);
->+		msleep(REALTEK_HW_START_DELAY);
->+		dev_info(dev, "deasserted RESET\n");
->+	}
->+
-> 	ret =3D priv->ops->detect(priv);
-> 	if (ret) {
-> 		dev_err(dev, "unable to detect switch\n");
->@@ -183,6 +198,10 @@ static void realtek_mdio_remove(struct mdio_device
->*mdiodev)
-> 	if (!priv)
-> 		return;
->=20
->+	/* leave the device reset asserted */
->+	if (priv->reset)
->+		gpiod_set_value(priv->reset, 1);
->+
-> 	dsa_unregister_switch(priv->ds);
->=20
-> 	dev_set_drvdata(&mdiodev->dev, NULL);
->diff --git a/drivers/net/dsa/realtek/realtek-smi=2Ec
->b/drivers/net/dsa/realtek/realtek-smi=2Ec
->index a849b5cbb4e4=2E=2Ecada5386f6a2 100644
->--- a/drivers/net/dsa/realtek/realtek-smi=2Ec
->+++ b/drivers/net/dsa/realtek/realtek-smi=2Ec
->@@ -43,8 +43,6 @@
-> #include "realtek=2Eh"
->=20
-> #define REALTEK_SMI_ACK_RETRY_COUNT		5
->-#define REALTEK_SMI_HW_STOP_DELAY		25	/* msecs */
->-#define REALTEK_SMI_HW_START_DELAY		100	/* msecs */
->=20
-> static inline void realtek_smi_clk_delay(struct realtek_priv *priv)
-> {
->@@ -426,9 +424,9 @@ static int realtek_smi_probe(struct platform_device
->*pdev)
-> 		dev_err(dev, "failed to get RESET GPIO\n");
-> 		return PTR_ERR(priv->reset);
-> 	}
->-	msleep(REALTEK_SMI_HW_STOP_DELAY);
->+	msleep(REALTEK_HW_STOP_DELAY);
-> 	gpiod_set_value(priv->reset, 0);
->-	msleep(REALTEK_SMI_HW_START_DELAY);
->+	msleep(REALTEK_HW_START_DELAY);
-> 	dev_info(dev, "deasserted RESET\n");
->=20
-> 	/* Fetch MDIO pins */
->diff --git a/drivers/net/dsa/realtek/realtek=2Eh
->b/drivers/net/dsa/realtek/realtek=2Eh
->index ed5abf6cb3d6=2E=2Ee7d3e1bcf8b8 100644
->--- a/drivers/net/dsa/realtek/realtek=2Eh
->+++ b/drivers/net/dsa/realtek/realtek=2Eh
->@@ -5,14 +5,17 @@
->  * Copyright (C) 2009-2010 Gabor Juhos <juhosg@openwrt=2Eorg>
->  */
->=20
->-#ifndef _REALTEK_SMI_H
->-#define _REALTEK_SMI_H
->+#ifndef _REALTEK_H
->+#define _REALTEK_H
->=20
-> #include <linux/phy=2Eh>
-> #include <linux/platform_device=2Eh>
-> #include <linux/gpio/consumer=2Eh>
-> #include <net/dsa=2Eh>
->=20
->+#define REALTEK_HW_STOP_DELAY		25	/* msecs */
->+#define REALTEK_HW_START_DELAY		100	/* msecs */
->+
-> struct realtek_ops;
-> struct dentry;
-> struct inode;
->@@ -142,4 +145,4 @@ void rtl8366_get_ethtool_stats(struct dsa_switch
->*ds, int port, uint64_t *data);
-> extern const struct realtek_variant rtl8366rb_variant;
-> extern const struct realtek_variant rtl8365mb_variant;
->=20
->-#endif /*  _REALTEK_SMI_H */
->+#endif /*  _REALTEK_H */
 
-Tested on Bpi-r64 v0=2E1=2E After this reset switch gets recognized=2E Bef=
-ore mdio-read is always 0=2E
 
-Tested-by: Frank Wunderlich <frank-w@public-files=2Ede>
-regards Frank
+On 2/11/2022 2:59 AM, Jakub Kicinski wrote:
+> On Wed, 9 Feb 2022 19:30:48 -0800 Florian Fainelli wrote:
+>> On 2/9/2022 2:13 PM, kernel test robot wrote:
+>>> From: kernel test robot <lkp@intel.com>
+>>>
+>>> drivers/net/dsa/qca8k.c:422:37-43: ERROR: application of sizeof to pointer
+>>>
+>>>    sizeof when applied to a pointer typed expression gives the size of
+>>>    the pointer
+>>>
+>>> Generated by: scripts/coccinelle/misc/noderef.cocci
+>>>
+>>> Fixes: 90386223f44e ("net: dsa: qca8k: add support for larger read/write size with mgmt Ethernet")
+>>> CC: Ansuel Smith <ansuelsmth@gmail.com>
+>>> Reported-by: kernel test robot <lkp@intel.com>
+>>> Signed-off-by: kernel test robot <lkp@intel.com>
+>>
+>>> qca8k.c |    2 +-
+>>> 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> kbuild folks, would it be easy to switch to including full path here?
+> It seems like our CI expects that and ignores this patch.
+
+Hi Jakub,
+
+Thanks for the advice, will change it.
+
+Best Regards,
+Rong Chen
+
+> 
+>> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> 
+> Applied, thanks!
+> _______________________________________________
+> kbuild-all mailing list -- kbuild-all@lists.01.org
+> To unsubscribe send an email to kbuild-all-leave@lists.01.org
+> 
