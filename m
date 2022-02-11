@@ -2,102 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91C484B2BAC
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 18:24:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45D8B4B2BC9
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 18:32:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352060AbiBKRYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 12:24:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43460 "EHLO
+        id S1352133AbiBKRbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 12:31:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352045AbiBKRYo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 12:24:44 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5321FC
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:24:43 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id j2so27121622ybu.0
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:24:43 -0800 (PST)
+        with ESMTP id S231828AbiBKRbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 12:31:37 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7744F2C0
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:31:35 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id e3so16509486wra.0
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:31:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1f5nHZJ9uVD6/I7NM/ovxfltUAK5E77rKDDs7ab4Xic=;
-        b=hdu4UcvLhoPoj1+nnYpidzG5ybt+SATEc36EIA2F0rim60MDWLZbsC80UkLLFmgXby
-         6I7VzLYSiW5Hapfkc4bxg/0zMn3VeyGHa9/SvKDExmKANfuJfsNd6je7gRTcEAM/wO2E
-         5k/ztc0BzeVqRc/H/3YbHOxS3vgNm34Mbjg/TDoA/kaFo5G8eyLRjuaGUtF9h0KcMX9m
-         fEuLqzzSDlJ0RCRESc6rqHoVWILYakTV0dwZXWrP4312DRfINDk2pgn0Fu7FKQ3rF7x0
-         25wJIFy+QCKBFG07xvaYmccVexj7YtoX+pqqDBPrxZ6At0yiOQT+AwCoJmqV3vTfAtPA
-         QcMA==
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6YxyRdWisDBs8NxFScSf04/qfSxkXfn1CQ7qZqMD+ew=;
+        b=WrZx4EMt8oIJy8yHa3LeHlivxcjPXtbT/XvLI4YC4C/IkS4KBQ5Tfgav2Z3+rGgofN
+         PfS3NX8pFlXVEbOYYgHNXhUTx6cy7Y1Hqh2KYPjRJW618ZKo7l0UX/iZC1f9QOwJX/ml
+         wCLhSxc01fjSbHWUgtqXOUSaAIs7blK7eeaAU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1f5nHZJ9uVD6/I7NM/ovxfltUAK5E77rKDDs7ab4Xic=;
-        b=afzqmTMoEErgSNBv9/bNymlzgILf54AuOXa5TURne0lQ54r6DDNDdLNgJzF/FoSuJ/
-         hDPgtHowZYU0bMnqxL1l3MgvEzv9xdNaXd3Bg8MFapZ3AiGaXyGpNn6Ft/r1Ehw3cBTg
-         Aw7TOp1PVxnttaRqpfMn6TThE1VL/0iHYL4n+QH52LcVlg1gv3doi/JO2xyV6xdoAiVZ
-         53Qm7zoIILRa+JFng+L60dLkW/5CHtyJSM2OV3UfpZgdJTkO/HSew8sD4/S1ggE/+0jI
-         nob+tLUoJAe2Fv4gI+BUNo8qKxIALklyuICM6dQIsfbhkBbfvYa2FSLsj5NYKHfn1ROt
-         1YhA==
-X-Gm-Message-State: AOAM532+T+aTXmokhn3/qI7Bdss8OEBTNK7/mLLHajQMnACqpKXcb8Bx
-        Eqrwe0+nUjqdzr+zU/utL7CQr3Y7dHCLYNG5uDyhhg==
-X-Google-Smtp-Source: ABdhPJxmj9cstWH2lKAb2aiO3OuQbmZ8A5jPVYo/c8dto0k13vNXhpRUa1YxFuZZi/PUuAIxg/HTlYAJuXQSAWRKgDo=
-X-Received: by 2002:a25:8885:: with SMTP id d5mr2268605ybl.383.1644600281921;
- Fri, 11 Feb 2022 09:24:41 -0800 (PST)
-MIME-Version: 1.0
-References: <20220211164026.409225-1-ribalda@chromium.org>
-In-Reply-To: <20220211164026.409225-1-ribalda@chromium.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 11 Feb 2022 09:24:30 -0800
-Message-ID: <CANn89i+2idhm3wpGO79RHdCYMfYuKURvBaWmoXmYxBwj5z59yg@mail.gmail.com>
-Subject: Re: [PATCH] net: Fix build when CONFIG_INET is not enabled
-To:     Ricardo Ribalda <ribalda@chromium.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6YxyRdWisDBs8NxFScSf04/qfSxkXfn1CQ7qZqMD+ew=;
+        b=oW0/M4smRII4mY9PexDff5n2/cAHO4pmMZTPw5Zc8u0xkRkK3bG2qrKSYUc5SV5fQs
+         skcyQnSEsyV74rBZUfzrOBkusKQyRzqRXrQVePnkLxg46JOUkvsPfL0mvo9L/H4bsvYG
+         TFTvf9VD+MfGOo2XkfYbIT3AE67MVilf3Yhfik91QNiCBYU4GgIvy3G1KNqrU6lS8TrX
+         SFdeYdIzFw+nhE6gj07AiNKzOs006jx2sFTarmZwCbLZzWBTNi4n7+hzwOw8JJND7mGw
+         N/kqXnEcpmlqJOVCEnTsc2yeMkwSYcTJBv/T3zAbiyGBdgREQD8mylzXqOcy7vpb7Q6C
+         6GUg==
+X-Gm-Message-State: AOAM531cUhkOlkbfEPWArPJRcjMkSnZqc0Lkcmsc46cS2Wrajq73Bd8f
+        9VHIu7zrqkqQU/qc5PLlqBcBeg==
+X-Google-Smtp-Source: ABdhPJx8zSkNjiP54POzNzIvFdiix2js97+y60fvB+HNjrljHL0Kr6qt+BZpdXnOLOfb4wtv7akWnQ==
+X-Received: by 2002:adf:ab16:: with SMTP id q22mr2161408wrc.436.1644600693951;
+        Fri, 11 Feb 2022 09:31:33 -0800 (PST)
+Received: from localhost.localdomain ([198.41.152.153])
+        by smtp.gmail.com with ESMTPSA id 24sm4389498wmf.48.2022.02.11.09.31.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 09:31:33 -0800 (PST)
+From:   Ignat Korchagin <ignat@cloudflare.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         David Ahern <dsahern@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kernel-team@cloudflare.com, dpini@cloudflare.com,
+        Ignat Korchagin <ignat@cloudflare.com>
+Subject: [PATCH] ipv6: mcast: use rcu-safe version of ipv6_get_lladdr()
+Date:   Fri, 11 Feb 2022 17:30:42 +0000
+Message-Id: <20220211173042.112852-1-ignat@cloudflare.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 8:40 AM Ricardo Ribalda <ribalda@chromium.org> wrote:
->
-> If the kernel is configured with CONFIG_NET, but without CONFIG_INET we
-> get the following error when building:
->
-> sock.c:(.text+0x4c17): undefined reference to `__sk_defer_free_flush'
->
-> Lets move __sk_defer_free_flush to sock.c
->
+Some time ago 8965779d2c0e ("ipv6,mcast: always hold idev->lock before mca_lock")
+switched ipv6_get_lladdr() to __ipv6_get_lladdr(), which is rcu-unsafe
+version. That was OK, because idev->lock was held for these codepaths.
 
-deja vu ?
+In 88e2ca308094 ("mld: convert ifmcaddr6 to RCU") these external locks were
+removed, so we probably need to restore the original rcu-safe call.
 
-commit 48cec899e357cfb92d022a9c0df6bbe72a7f6951
-Author: Gal Pressman <gal@nvidia.com>
-Date:   Thu Jan 20 14:34:40 2022 +0200
+Otherwise, we occasionally get a machine crashed/stalled with the following
+in dmesg:
 
-    tcp: Add a stub for sk_defer_free_flush()
+[ 3405.966610][T230589] general protection fault, probably for non-canonical address 0xdead00000000008c: 0000 [#1] SMP NOPTI
+[ 3405.982083][T230589] CPU: 44 PID: 230589 Comm: kworker/44:3 Tainted: G           O      5.15.19-cloudflare-2022.2.1 #1
+[ 3405.998061][T230589] Hardware name: SUPA-COOL-SERV
+[ 3406.009552][T230589] Workqueue: mld mld_ifc_work
+[ 3406.017224][T230589] RIP: 0010:__ipv6_get_lladdr+0x34/0x60
+[ 3406.025780][T230589] Code: 57 10 48 83 c7 08 48 89 e5 48 39 d7 74 3e 48 8d 82 38 ff ff ff eb 13 48 8b 90 d0 00 00 00 48 8d 82 38 ff ff ff 48 39 d7 74 22 <66> 83 78 32 20 77 1b 75 e4 89 ca 23 50 2c 75 dd 48 8b 50 08 48 8b
+[ 3406.055748][T230589] RSP: 0018:ffff94e4b3fc3d10 EFLAGS: 00010202
+[ 3406.065617][T230589] RAX: dead00000000005a RBX: ffff94e4b3fc3d30 RCX: 0000000000000040
+[ 3406.077477][T230589] RDX: dead000000000122 RSI: ffff94e4b3fc3d30 RDI: ffff8c3a31431008
+[ 3406.089389][T230589] RBP: ffff94e4b3fc3d10 R08: 0000000000000000 R09: 0000000000000000
+[ 3406.101445][T230589] R10: ffff8c3a31430000 R11: 000000000000000b R12: ffff8c2c37887100
+[ 3406.113553][T230589] R13: ffff8c3a39537000 R14: 00000000000005dc R15: ffff8c3a31431000
+[ 3406.125730][T230589] FS:  0000000000000000(0000) GS:ffff8c3b9fc80000(0000) knlGS:0000000000000000
+[ 3406.138992][T230589] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 3406.149895][T230589] CR2: 00007f0dfea1db60 CR3: 000000387b5f2000 CR4: 0000000000350ee0
+[ 3406.162421][T230589] Call Trace:
+[ 3406.170235][T230589]  <TASK>
+[ 3406.177736][T230589]  mld_newpack+0xfe/0x1a0
+[ 3406.186686][T230589]  add_grhead+0x87/0xa0
+[ 3406.195498][T230589]  add_grec+0x485/0x4e0
+[ 3406.204310][T230589]  ? newidle_balance+0x126/0x3f0
+[ 3406.214024][T230589]  mld_ifc_work+0x15d/0x450
+[ 3406.223279][T230589]  process_one_work+0x1e6/0x380
+[ 3406.232982][T230589]  worker_thread+0x50/0x3a0
+[ 3406.242371][T230589]  ? rescuer_thread+0x360/0x360
+[ 3406.252175][T230589]  kthread+0x127/0x150
+[ 3406.261197][T230589]  ? set_kthread_struct+0x40/0x40
+[ 3406.271287][T230589]  ret_from_fork+0x22/0x30
+[ 3406.280812][T230589]  </TASK>
+[ 3406.288937][T230589] Modules linked in: ... [last unloaded: kheaders]
+[ 3406.476714][T230589] ---[ end trace 3525a7655f2f3b9e ]---
 
-    When compiling the kernel with CONFIG_INET disabled, the
-    sk_defer_free_flush() should be defined as a nop.
+Fixes: 88e2ca308094 ("mld: convert ifmcaddr6 to RCU")
+Reported-by: David Pinilla Caparros <dpini@cloudflare.com>
+Signed-off-by: Ignat Korchagin <ignat@cloudflare.com>
+---
+ include/net/addrconf.h | 2 --
+ net/ipv6/addrconf.c    | 4 ++--
+ net/ipv6/mcast.c       | 2 +-
+ 3 files changed, 3 insertions(+), 5 deletions(-)
 
-    This resolves the following compilation error:
-      ld: net/core/sock.o: in function `sk_defer_free_flush':
-      ./include/net/tcp.h:1378: undefined reference to `__sk_defer_free_flush'
+diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+index e7ce719838b5..59940e230b78 100644
+--- a/include/net/addrconf.h
++++ b/include/net/addrconf.h
+@@ -109,8 +109,6 @@ struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net,
+ int ipv6_dev_get_saddr(struct net *net, const struct net_device *dev,
+ 		       const struct in6_addr *daddr, unsigned int srcprefs,
+ 		       struct in6_addr *saddr);
+-int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
+-		      u32 banned_flags);
+ int ipv6_get_lladdr(struct net_device *dev, struct in6_addr *addr,
+ 		    u32 banned_flags);
+ bool inet_rcv_saddr_equal(const struct sock *sk, const struct sock *sk2,
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index f927c199a93c..3f23da8c0b10 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -1839,8 +1839,8 @@ int ipv6_dev_get_saddr(struct net *net, const struct net_device *dst_dev,
+ }
+ EXPORT_SYMBOL(ipv6_dev_get_saddr);
+ 
+-int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
+-		      u32 banned_flags)
++static int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
++			      u32 banned_flags)
+ {
+ 	struct inet6_ifaddr *ifp;
+ 	int err = -EADDRNOTAVAIL;
+diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
+index bed8155508c8..a8861db52c18 100644
+--- a/net/ipv6/mcast.c
++++ b/net/ipv6/mcast.c
+@@ -1759,7 +1759,7 @@ static struct sk_buff *mld_newpack(struct inet6_dev *idev, unsigned int mtu)
+ 	skb_reserve(skb, hlen);
+ 	skb_tailroom_reserve(skb, mtu, tlen);
+ 
+-	if (__ipv6_get_lladdr(idev, &addr_buf, IFA_F_TENTATIVE)) {
++	if (ipv6_get_lladdr(dev, &addr_buf, IFA_F_TENTATIVE)) {
+ 		/* <draft-ietf-magma-mld-source-05.txt>:
+ 		 * use unspecified address as the source address
+ 		 * when a valid link-local address is not available.
+-- 
+2.20.1
 
-    Fixes: 79074a72d335 ("net: Flush deferred skb free on socket destroy")
-    Reported-by: kernel test robot <lkp@intel.com>
-    Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-    Signed-off-by: Gal Pressman <gal@nvidia.com>
-    Reviewed-by: Eric Dumazet <edumazet@google.com>
-    Link: https://lore.kernel.org/r/20220120123440.9088-1-gal@nvidia.com
-    Signed-off-by: Jakub Kicinski <kuba@kernel.org>
