@@ -2,148 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E6A04B1FF9
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 09:16:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB1BC4B2051
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 09:42:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239039AbiBKIQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 03:16:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43526 "EHLO
+        id S1348078AbiBKIls (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 03:41:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238085AbiBKIQj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 03:16:39 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2071.outbound.protection.outlook.com [40.107.236.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5091BDA
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 00:16:38 -0800 (PST)
+        with ESMTP id S233687AbiBKIlq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 03:41:46 -0500
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10115.outbound.protection.outlook.com [40.107.1.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBC2E5E
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 00:41:45 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dvpoNKkKY5g63frqw6mDSq3D8TSaCEPiqPA9x2XwTgzPhngd3zZhnWbyhfZPaLzXVWC0J0crmwdrxoW5jVJGtXDnrcCxVopwLiUA32oJN0OLEpxtys2Mt2QENVQpdc3p5cG5wurk13m6Wke6KMzEGiJZCoRLPXR4lDOe0EoMiDCDI9aGS/zf7fWjynEyJIUd2JrJj0OFkwSmd+48t+hC8m9nC+Riefq01Sgx2E2QAnagUb1ofIH7GG7d+eKP6tqUaC4dTAY+7GOrdivOFpJ6c8cjI5mQRYQ5MXQ4SX6jnuhAKLtmH9qKHo6SBA5ix/YPThZrl6O0g6UKtpvTqtczeg==
+ b=WSxt4BuxPtE8kBQrtfPuobrSw70FhI1Dyc/cFyTz9vJz4pzCjjf1XgTacyz6sev913MIWCLHBWcf7v0V+17vUqAlnCMvk+gxdLrPbCBM2dGsTLaHBnXYQl/VbQht85wr/IxliDF9rympyyBP+LoP9GoKes9SJlH5w2ThG0hTUBSwu9OIxWA2M7ZF80lnwHr/Y+ETlTVYbuXpW0lGMslYI/PjH33zERcYVWcgluc6fQwdLqQnD38UmqMdJNVhkyGt0SrDwRJnsuuZYpFy0+JD2nAf8l+wybGuKNoU+AnL0Dfm6dPq+Mx47KjstFQcJKhigyLlCOVHrufC3hWlM/CrGA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uFADvmcajYedNPgylNy63wpU7ai02kwgAp9fSOX7FCA=;
- b=C7EeAEhY06bsnVDzAG34VUQbF4dAd7hl5AiDwsH98ZkXH8BEIDvCa0klCHr3YDLUeDyGiCrRSL68VF2GC/lanKVJ8OVm/KRxTWTdxV478/wOfFlQxdesfN6ca++/NNN94xnz3IOSHn74vnawC9CiNItg69GVdZ/mAu3IG8imogdmcWrQKuC42gWRQommKxCmj3LfnwSIXZaZRqN4jU6IPI8kToYUXcTnSQyV0zrRn49UregrSP2rtrOOYt+t3XBcHs7PU0FbS2qmf/sPULvAAwvp6mMhad/rT6aTF9bU3nSI2ZfGNnQyA1YQwvQ1V0NdO1UiflYwePPJeU4qsHo40Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=jgEj7DuH7zpO0X/ENBs4nXf+3o6tXfG0rH0sg1FO5pk=;
+ b=oaTh68bkeZj7U+YeTG82OY01ZFQi5o5ALpBZ4WcX2QP0HIUBmAwmW13EA00GjUZKmTrrdUTiz2W5Ml58aJdG38V2kfXeOwAX/PYW6EaR6MEZ6gToMlFE7SUuusAgGLy3RDnwXDwuA+V4S31nMMN66RHemjw2aiLQmuqwButU9WfG1m/4HNdnHwEDn1DTTGHIvamQy5ZIkU4Rad64As7qg3Bjdtf8rQDy0yKdtg0opohOC6RJRO2lst2iIjC38p4ZFZ6fwR6EGNYXePPBJLOF/fxW2OgkjJFicv5dNu7QcIzIuzv6q7PbHlFO9gdiVmW4hz1cZLecQNLT4aWHu5cdmg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uFADvmcajYedNPgylNy63wpU7ai02kwgAp9fSOX7FCA=;
- b=hqsCcoC9D5Y8GTSysR6C58nIqLl3p0/N/wgHgMrOjlmiNF75f9/A9H4drM0MzZUfBFAkmyy27HSO8rYemTy+OsE6DoiV5DKSvx/1uPSrT0v/fjQv+M9ApcZm0sTzJ28i5Mhou/M77kjK8Q7MUu5eGvTGD/5PB6+WVaMqIsqyVJidxBCnGJWwf1mJHTIhqnKmT9cyuBrHmCBl22+AYngMXhU5MJM1dkKvyHRMqfuCjhWeXhu4rOjBhNNmu1ewL2D9Qih143wnOh5aRZqsvjQ/gAe0ZyB7GfRcVormZ3iuMWXGivAYabEO86FsuyMNjolefIVbeSw+0l+l1r2Kmo6d5A==
-Received: from MW2PR2101CA0034.namprd21.prod.outlook.com (2603:10b6:302:1::47)
- by PH7PR12MB5656.namprd12.prod.outlook.com (2603:10b6:510:13b::10) with
+ bh=jgEj7DuH7zpO0X/ENBs4nXf+3o6tXfG0rH0sg1FO5pk=;
+ b=q9g0IErmixDxHrOe7VSvWhn/v3HpfWNhUJoZunaNc/1jA3sfkaRZLJmz4dV+qpakeyFWAbNoItWCxv4bpCqLAIbzOQQ3rIfgtANsMXHUJEczCsjHzYEyOx5RahMkc6+5ZgJGiVFPVIZTjLWBe+mI89X2trGgnB8YV4NQhhvUP4Q=
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com (2603:10a6:20b:26::24)
+ by AM6PR03MB5185.eurprd03.prod.outlook.com (2603:10a6:20b:c1::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Fri, 11 Feb
- 2022 08:16:37 +0000
-Received: from CO1NAM11FT067.eop-nam11.prod.protection.outlook.com
- (2603:10b6:302:1:cafe::29) by MW2PR2101CA0034.outlook.office365.com
- (2603:10b6:302:1::47) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.7 via Frontend
- Transport; Fri, 11 Feb 2022 08:16:36 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT067.mail.protection.outlook.com (10.13.174.212) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4975.11 via Frontend Transport; Fri, 11 Feb 2022 08:16:36 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 11 Feb
- 2022 08:16:36 +0000
-Received: from [172.27.1.47] (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Fri, 11 Feb 2022
- 00:16:34 -0800
-Message-ID: <50f74e7b-1b20-bf02-f5a8-b1667b834190@nvidia.com>
-Date:   Fri, 11 Feb 2022 10:16:30 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC 1/2] net: bridge: add knob for filtering rx/tx BPDU packets
- on a port
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.15; Fri, 11 Feb
+ 2022 08:41:43 +0000
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::54e1:e5b6:d111:b8a7]) by AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::54e1:e5b6:d111:b8a7%4]) with mapi id 15.20.4975.015; Fri, 11 Feb 2022
+ 08:41:42 +0000
+From:   =?windows-1254?Q?Alvin_=8Aipraga?= <ALSI@bang-olufsen.dk>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?windows-1254?Q?Ar=FDn=E7_=DCNAL?= <arinc.unal@arinc9.com>
+Subject: Re: net: dsa: realtek: silent indirect reg read failures on SMP
+Thread-Topic: net: dsa: realtek: silent indirect reg read failures on SMP
+Thread-Index: AQHYG5fs5yDF6pxxpUySzHA96Kq4cw==
+Date:   Fri, 11 Feb 2022 08:41:42 +0000
+Message-ID: <87o83dx0ai.fsf@bang-olufsen.dk>
+References: <CAJq09z5FCgG-+jVT7uxh1a-0CiiFsoKoHYsAWJtiKwv7LXKofQ@mail.gmail.com>
+        <878rukib4f.fsf@bang-olufsen.dk>
+        <CAJq09z71Fi8rLkQUPR=Ov6e_99jDujjKBfvBSZW0M+gTWK-ToA@mail.gmail.com>
+        <CAJq09z6W+yYAaDcNC1BQEYKdQUuHvp4=vmhyW0hqbbQUzo516w@mail.gmail.com>
+        <87h797gmv9.fsf@bang-olufsen.dk> <87o83eg170.fsf@bang-olufsen.dk>
+        <CAJq09z5g+LfUPRJOoCXfdY89yZpH_4X=A0r1CPXd3Sihp7Sivw@mail.gmail.com>
+In-Reply-To: <CAJq09z5g+LfUPRJOoCXfdY89yZpH_4X=A0r1CPXd3Sihp7Sivw@mail.gmail.com>       (Luiz
+ Angelo Daros de Luca's message of "Fri, 11 Feb 2022 02:40:45   -0300")
+Accept-Language: en-US
 Content-Language: en-US
-To:     Felix Fietkau <nbd@nbd.name>, <netdev@vger.kernel.org>
-References: <20220210142401.4912-1-nbd@nbd.name>
- <d4f1f9b1-6e8e-d21d-603f-7a0889e33a78@nvidia.com>
- <8feee888-491a-9324-6437-07f33d0d5584@nbd.name>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-In-Reply-To: <8feee888-491a-9324-6437-07f33d0d5584@nbd.name>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3ec27167-30f7-4c0c-0e5f-08d9ed36d2c0
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5656:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR12MB565618435D6B7E631DEEF5ADDF309@PH7PR12MB5656.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VPLBGlA5Z3uJfaQfHZsRHqaaTbdvEbQhW53xgBfAhUGx2tMhsrAF6+m9F2r7PhOSCZBIYRLPAFweLqd5a35R7K0hLL6ijbUB6EA7eWZ1raB7i9dankQmuEaujLMkiqZky1gRHIob+y/fNFb6TE+96st75HjgzPumh1p0iGmRniLCR1Azo7roEqB7Qzka30L+rodIYoyXxs6Z4B0+l5eKUlh9Ec+RTc46ZNmwtZ1hu49yDo8L2cjQuywSLzothefegbgUku+oPoCImG7FmBLBxPJCoAMCG2kTTVOP0EqRcIbCcABI3xc07ASSIPe6ul1Ht+0h6RwVEY3Qhyzwx/AFR1mC8O8+nbE/Qn8hSsvO70kSXTFdO+8vj5I8pDsfZJyxKbA43PiQQsmeLJgyLtSQxzryGhdl3DyZQ51QjmrhQAAVP0M7cFAxg5SW/41yV/ezybLmP/BLWReiQpcsICHoKWhWJ535oigE+o3lYyaJxnMrGf8r3ykrV0exdXOA/pMZi55whnd+dzmU/59PosYdiSYgoUIiaxNh+/FkkQLNBiJkHyYlpUBklHLiNABdjH6oPlapc4RUujhEvRskxtCKsQONkd1UObEJ4Xz100KB0z8UfLdZFl/s5COw+lmZfBsHytRI5PpYRu3xMmvdZRG5ScJAmR7mpU4EPsn/6//8zcZKWomMoM8VxcMZ8sYNR0/HqJYWKswdcNUNudI39Vws+a5IO74I51RtOTjvdxKtP2SzoM85Lz9H2dBvNtYTT0169Ssh6UXF1fND2gLuiTLUzQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(2616005)(36756003)(31696002)(26005)(2906002)(426003)(31686004)(5660300002)(508600001)(47076005)(316002)(110136005)(336012)(16576012)(8676002)(186003)(70586007)(86362001)(6666004)(36860700001)(82310400004)(81166007)(83380400001)(356005)(53546011)(40460700003)(70206006)(16526019)(8936002)(36900700001)(2101003)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Feb 2022 08:16:36.8361
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 305c0a5f-d98d-4236-f02a-08d9ed3a545a
+x-ms-traffictypediagnostic: AM6PR03MB5185:EE_
+x-microsoft-antispam-prvs: <AM6PR03MB518570E43F7B3F7263C4350F83309@AM6PR03MB5185.eurprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: X1AOiD8o0uH5CsYr/Qpb3j04vcLIcwmiTcppp5IJdZB+Ij0JRmOm3DHAlsrG+Yp/E0Qcp/1wj3LGqDv7mXvZNAkrlWXRiDu0TNiEHz7/56IS0fe6ImSxbnKWIxosw7/J177H7UzB56tp8WN/W2RQASettCr5js18ydOmiSv4HJhq494jsWk7fTIpGnDPjcvdxrTNzGPYB9Ny0F0nMH8GRo0VQK6cj3uIfMeTyIc1mLyekfQ6SVgdqYH5vuxRA9lrPuxEa1eQ54Ov7fouzv0jSC4A0ZG3rOswBr6cpwIjeF4fUajAZKn91CjGwymD7YC2IDkDXVY18qci3c1LTvPVl2p+BPKkNP0ulTIGbjyfOeMdKXQ3F4bQu0p0qQZEa/6iPfEBmy42+nNmyZn2tIh575s54tLBAQotV07wkHWQGiWbS0RRkg0n8Yj6pyA49D42xkJEiZq/dx+QF0OdaJfPhV/1u/ZAosfEdjEh/Wv4yRUtbK8Ev59uHlJ9J+1r7QdgjK+GZ12HqBzBK5uKjCEsm3cgNy/gY9s+keQd6vBMZ4ixCPWiQDuDNByKxCeocCjWKCja+U13XGezmT9579XTBNiwSRZH2oRYI8b58Y7bfwCgN5RePX3gF3q5nFGh4zAzJ9SH+OrqbU/6zPnqI1n4m49OlT/gRBGts17FascFQQ2rfL/GTlv+OtMqa7kxXFJ4t7Mb8R1p69yKSzdeS8lb3A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR03MB3943.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(186003)(26005)(66476007)(316002)(6916009)(54906003)(6506007)(4744005)(64756008)(8976002)(66446008)(66556008)(8676002)(5660300002)(4326008)(8936002)(76116006)(66946007)(2616005)(91956017)(6512007)(38070700005)(6486002)(38100700002)(36756003)(71200400001)(86362001)(508600001)(122000001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?windows-1254?Q?dkcyXF4AgF2HHJhv9yk1eKCJT9lkwDyD1tOi1939CG+3a7gtjZvILhWI?=
+ =?windows-1254?Q?2L4L7nLaP4vO+z/kRAFo1Qw776HieMz+3j8G9M2bO7P898kLxzMicifq?=
+ =?windows-1254?Q?ohkBiN1q9mxjaIWtfswx3usoBlPlToUlgqlZLpkh3pBwR1U7zjJEfnsP?=
+ =?windows-1254?Q?oTWdbm9kQB+81OpN5bcGb7fBRfYmx/svxILlc5ZaNP5B6yCZsossvq45?=
+ =?windows-1254?Q?9ZMcXL9+JvSHOzTYeGbp0syGy6bLOypPqxSHSYxaZkq5y87/9eaRhUg6?=
+ =?windows-1254?Q?dZHIqHydkmK/2NkSZ5ZmHxyyHcHm9laaJkSOY3zz33D0cd0ugu7MdeVB?=
+ =?windows-1254?Q?xNFmkAWi2XIdPwU8JFEkqULy3640XcbB9U1mD1uGE6WHOP8KsC2wf4Bc?=
+ =?windows-1254?Q?kbVo/8dlgk1vLqnfi8TkxK0pNLymJo7CBn+1ZKa2UfETuMD86AZ+KOKm?=
+ =?windows-1254?Q?+F8letfmTrHn3xFuwIfg8YrwGA+s7YxLiQpxP/RLwWTcImP5QA5iDnqk?=
+ =?windows-1254?Q?jS+fmd6NftGjUIdA1q+xlqD9F/nBSY2MXZmLcug4wr+mW29hpM0O+jai?=
+ =?windows-1254?Q?/rjNP/KOxjUlMD57AazMt6kl3slGzQHDjMOwmU0XqwEuUNJkuDWo9M6a?=
+ =?windows-1254?Q?rKqZvHcKD5/DBrDUtE2tMnHvVLNhDgKb1cW8Lj79tqVhsvJ1qmWBYhp3?=
+ =?windows-1254?Q?Pn/0npkREACjMZ3DDkPszgxCj3kQfXhZ4IGumfIKvDVN919Ni2shHv4V?=
+ =?windows-1254?Q?EhAEpgxZZKCjsLohS7Eie9uGOgeSgQf+nwsOCCIAlNg7Rez3bdkDb5Dl?=
+ =?windows-1254?Q?4IMxSX2/KBDyBKCeHrDX3ObMGve6ooZlcTksQH4fZhHKkJWWpLMErNiD?=
+ =?windows-1254?Q?n1DZIcgL/7O/eihItiK4R9D0LJqIFcCgqwyAKWGX4a9jyur8Rdnk8oN8?=
+ =?windows-1254?Q?Fj3JrtXFLcBoP3Elxd5PWsQOApamT3AtIml//H5RixZlKCifJxhaaicT?=
+ =?windows-1254?Q?+fpv8grl/JDBcKF4L6caqzkI7sN5QtGSO/F6YgJlzc0ra6HvgeQLxdTM?=
+ =?windows-1254?Q?DL+4rqxQR8OWmOqZ89epruoM4rcPcgCBXoxt/4B7sz0Vgeyizs6vUarl?=
+ =?windows-1254?Q?1GJ52+b2+i+U6ds5nc3vG7RXZp8xUxJp5ZEh/Trvf+TvmQ5AwVkAhOqY?=
+ =?windows-1254?Q?ovIaFRucYARa7Th1Dk0mnks8euAgLY9NjmOv1xB4WrfM1RqgkJ+BRj9v?=
+ =?windows-1254?Q?tMtVyBSbuC1KAGKC6rYA+ootIHF94L6/5GcdWtTncZ3g8RCCra7BzY2s?=
+ =?windows-1254?Q?JL7Hx1rsPENdLmtyxkHtTuUaCLu+u/KoBD8qONwvxAZ8HhMKWsjWoDRX?=
+ =?windows-1254?Q?yUpW5o9ZFTZG2Kqr3qzO8cjtJ8J6GNbMl1+Pv+owLanFDh8SMS6NDNQH?=
+ =?windows-1254?Q?bfK2WMCQ6z7MypvzPRwW/mXM1vfhLBz5uhVgZyp5XKyj47+HJJiSDwPk?=
+ =?windows-1254?Q?tSKFrHLExp+Jz7Ds6BK0Oxmrd1buYMFyefk+78Jqt8BVZU/z8gxOwYUp?=
+ =?windows-1254?Q?eyDnJ4LC36CdG7WSF3ZOPrYeMTacOKDW3ncbNsYPXv02qWfCPLxibApW?=
+ =?windows-1254?Q?dLSkkA5Gh/rSUFzGiNyoqiql4NUUd/ZTHjliLLpZiL7QmWif0/8xknYS?=
+ =?windows-1254?Q?xPrXX4q7LdET9HgEHcdo5wbGrcHoNmjDHT3RcFJzQBgLNFoFgs8Q+gaT?=
+ =?windows-1254?Q?escV5LgJcdp6G5jDqvU=3D?=
+Content-Type: text/plain; charset="windows-1254"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: bang-olufsen.dk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR03MB3943.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 305c0a5f-d98d-4236-f02a-08d9ed3a545a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Feb 2022 08:41:42.7674
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3ec27167-30f7-4c0c-0e5f-08d9ed36d2c0
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT067.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5656
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Zffdolko6FX7rOPH/AvHojiAhEbhs41RvH3kHwEyiev0mXvGD2SV2QOagUzhEvTRKrtxa28bSovd2QcXJFHmXg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR03MB5185
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(resending, for some reason my first email didn't make it to the mailing list)
+Hi Luiz,
 
-On 10/02/2022 18:06, Felix Fietkau wrote:
-> 
-> On 10.02.22 15:55, Nikolay Aleksandrov wrote:
->> On 10/02/2022 16:24, Felix Fietkau wrote:
->>> Some devices (e.g. wireless APs) can't have devices behind them be part of
->>> a bridge topology with redundant links, due to address limitations.
->>> Additionally, broadcast traffic on these devices is somewhat expensive, due to
->>> the low data rate and wakeups of clients in powersave mode.
->>> This knob can be used to ensure that BPDU packets are never sent or forwarded
->>> to/from these devices
->>>
->>> Signed-off-by: Felix Fietkau <nbd@nbd.name>
->>> ---
->>>  include/linux/if_bridge.h    | 1 +
->>>  include/uapi/linux/if_link.h | 1 +
->>>  net/bridge/br_forward.c      | 5 +++++
->>>  net/bridge/br_input.c        | 2 ++
->>>  net/bridge/br_netlink.c      | 6 +++++-
->>>  net/bridge/br_stp_bpdu.c     | 9 +++++++--
->>>  net/core/rtnetlink.c         | 4 +++-
->>>  7 files changed, 24 insertions(+), 4 deletions(-)
->>>
->>
->> Why can't netfilter or tc be used to filter these frames?
-> netfilter is slow as hell, and even adding a tc rule that has to look at all frames to check for useless BPDU packets costs a lot more CPU cycles than simply suppressing them at the source.
-> 
-> - Felix
+Luiz Angelo Daros de Luca <luizluca@gmail.com> writes:
 
-You can use XDP, should be much faster. I don't want new tests in the fast path
-for something that is already solved and doesn't need anything bridge-specific.
- 
-Tomorrow someone will try the same with some other packet type,
-sorry but absolutely unacceptable.
+>
+> Hello,
 
-Cheers,
- Nik
+<snip>
 
+> I would prefer to drop it if we get a shared fix. There is an ongoing
+> discussion that might allow us to drop the realtek-smi internal mdio
+> and share phy_read/write between both interfaces. In that case, that
+> different mdio code path will fit much better as an "if" inside those
+> functions.
+
+OK, sounds good!
+
+Kind regards,
+Alvin=
