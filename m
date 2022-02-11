@@ -2,176 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 182E64B265F
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 13:51:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAC094B2691
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 13:58:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350294AbiBKMux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 07:50:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51732 "EHLO
+        id S1350375AbiBKM6B convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 11 Feb 2022 07:58:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347452AbiBKMuw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 07:50:52 -0500
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276C6B6B;
-        Fri, 11 Feb 2022 04:50:51 -0800 (PST)
-Received: by mail-qt1-f171.google.com with SMTP id k25so8919254qtp.4;
-        Fri, 11 Feb 2022 04:50:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=u6rmzGmHT/gQ3Tbc1nnAWIpxZbnc090wYLn3lrC8O20=;
-        b=79gcpmMnZBaOoYFLrroyatLFFLB6t61v583z4MSuPJpVS2wE9qycGLDuKu/LvA6uyx
-         T52ecjjBeP5+Dvtg9nOYB0HBRlaprnaMPpNNxdeekZjat1WFq6wAcA1qbjmh9O5iPeLu
-         s+NgqCJlTb7l4WYs2BYHiYAxdaiVz/ubaiiGm8iniq1pS4M0sdnafiAQyE4sWl1foJAr
-         YFtcJ77qfOm1qmVPulR4VCUA01ktkLVEz2ISQSqqbApHTPXBlcRhNvlQHFEFekubTE2w
-         ThHDpT3JTwxAvTia5C1QZRodS4fvEUlXav2QIXf/dDjuse1LsxkAfLRN34XPfPPIMEOy
-         zh3g==
-X-Gm-Message-State: AOAM530Z2BCNHZy9VyiF5+vivo04XR5K15Ekh9lxc/dcIgrB0e9na1qC
-        CihwM42YhpWQUR5ZBikLOQ==
-X-Google-Smtp-Source: ABdhPJxnhE3MwVN8S27Aocl3jCWaP62tWrP7cI0vk9Yi0IoaXxKAmoQBS8EjSBot0OVZCNJT/mmHRQ==
-X-Received: by 2002:ac8:5a08:: with SMTP id n8mr923470qta.332.1644583850026;
-        Fri, 11 Feb 2022 04:50:50 -0800 (PST)
-Received: from robh.at.kernel.org ([172.58.99.10])
-        by smtp.gmail.com with ESMTPSA id k4sm12361409qta.6.2022.02.11.04.50.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 04:50:49 -0800 (PST)
-Received: (nullmailer pid 200784 invoked by uid 1000);
-        Fri, 11 Feb 2022 12:50:33 -0000
-Date:   Fri, 11 Feb 2022 06:50:33 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Michael Walle <michael@walle.cc>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Subject: Re: [PATCH REBASED 1/2] dt-bindings: nvmem: extract NVMEM cell to
- separated file
-Message-ID: <YgZbmT0WimUbZv97@robh.at.kernel.org>
-References: <20220125180114.12286-1-zajec5@gmail.com>
- <20220126070745.32305-1-zajec5@gmail.com>
+        with ESMTP id S1349140AbiBKM54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 07:57:56 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8DCF1C0;
+        Fri, 11 Feb 2022 04:57:54 -0800 (PST)
+Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JwDDQ5zv0z686th;
+        Fri, 11 Feb 2022 20:57:42 +0800 (CST)
+Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
+ fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 11 Feb 2022 13:57:52 +0100
+Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
+ fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2308.021;
+ Fri, 11 Feb 2022 13:57:52 +0100
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     Mimi Zohar <zohar@linux.ibm.com>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+CC:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Florent Revest <revest@google.com>
+Subject: RE: [PATCH] ima: Calculate digest in ima_inode_hash() if not
+ available
+Thread-Topic: [PATCH] ima: Calculate digest in ima_inode_hash() if not
+ available
+Thread-Index: AQHYHzTu9kKzqhEAHUiW0cSG9MzvPayOOgmAgAAS5hA=
+Date:   Fri, 11 Feb 2022 12:57:52 +0000
+Message-ID: <3d0bdb4599e340a78b06094797e42bc9@huawei.com>
+References: <20220211104828.4061334-1-roberto.sassu@huawei.com>
+ <f9ccc9be6cc084e9cab6cd75e87735492d120002.camel@linux.ibm.com>
+In-Reply-To: <f9ccc9be6cc084e9cab6cd75e87735492d120002.camel@linux.ibm.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.204.63.33]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220126070745.32305-1-zajec5@gmail.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 08:07:44AM +0100, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
+> From: Mimi Zohar [mailto:zohar@linux.ibm.com]
+> Sent: Friday, February 11, 2022 1:41 PM
+> Hi Roberto,
 > 
-> This will allow adding binding for more specific cells and reusing
-> (sharing) common code.
+> On Fri, 2022-02-11 at 11:48 +0100, Roberto Sassu wrote:
+> > __ima_inode_hash() checks if a digest has been already calculated by
+> > looking for the integrity_iint_cache structure associated to the passed
+> > inode.
+> >
+> > Users of ima_file_hash() and ima_inode_hash() (e.g. eBPF) might be
+> > interested in obtaining the information without having to setup an IMA
+> > policy so that the digest is always available at the time they call one of
+> > those functions.
 > 
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-> ---
->  .../devicetree/bindings/nvmem/cells/cell.yaml | 34 +++++++++++++++++++
+> Things obviously changed, but the original use case for this interface,
+> as I recall, was a quick way to determine if a file had been accessed
+> on the system.
 
-Why the 'cells' subdir? cell.yaml is a bit generic for me as DT defines 
-'cell' which is different from nvmem cell. While we have the path to 
-distinguish, '$ref: cell.yaml' doesn't.
+Hi Mimi
 
+thanks for the info. I was not sure if I should export a new
+function or reuse the existing one. In my use case, just calculating
+the digest would be sufficient.
 
->  .../devicetree/bindings/nvmem/nvmem.yaml      | 22 +-----------
->  2 files changed, 35 insertions(+), 21 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/nvmem/cells/cell.yaml
+For finding whether a file was accessed (assuming that it matches
+the policy), probably bpf_ima_inode_hash() is not anyway too reliable.
+If integrity_iint_cache is evicted from the memory, it would report
+that the inode was not accessed even if it was.
+
+Thanks
+
+Roberto
+
+HUAWEI TECHNOLOGIES Duesseldorf GmbH, HRB 56063
+Managing Director: Li Peng, Zhong Ronghua
+
+> --
+> thanks,
 > 
-> diff --git a/Documentation/devicetree/bindings/nvmem/cells/cell.yaml b/Documentation/devicetree/bindings/nvmem/cells/cell.yaml
-> new file mode 100644
-> index 000000000000..adfc2e639f43
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/nvmem/cells/cell.yaml
-> @@ -0,0 +1,34 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/nvmem/cells/cell.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: NVMEM cell
-> +
-> +maintainers:
-> +  - Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> +
-> +description: NVMEM cell is a data entry of NVMEM device.
-> +
-> +properties:
-> +  reg:
-> +    maxItems: 1
-> +    description:
-> +      Offset and size in bytes within the storage device.
-> +
-> +  bits:
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +    items:
-> +      - minimum: 0
-> +        maximum: 7
-> +        description:
-> +          Offset in bit within the address range specified by reg.
-> +      - minimum: 1
-> +        description:
-> +          Size in bit within the address range specified by reg.
-> +
-> +required:
-> +  - reg
-> +
-> +additionalProperties: true
-> diff --git a/Documentation/devicetree/bindings/nvmem/nvmem.yaml b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
-> index 43ed7e32e5ac..b79b51e98ee8 100644
-> --- a/Documentation/devicetree/bindings/nvmem/nvmem.yaml
-> +++ b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
-> @@ -41,27 +41,7 @@ properties:
->  
->  patternProperties:
->    "@[0-9a-f]+(,[0-7])?$":
-> -    type: object
-> -
-> -    properties:
-> -      reg:
-> -        maxItems: 1
-> -        description:
-> -          Offset and size in bytes within the storage device.
-> -
-> -      bits:
-> -        $ref: /schemas/types.yaml#/definitions/uint32-array
-> -        items:
-> -          - minimum: 0
-> -            maximum: 7
-> -            description:
-> -              Offset in bit within the address range specified by reg.
-> -          - minimum: 1
-> -            description:
-> -              Size in bit within the address range specified by reg.
-> -
-> -    required:
-> -      - reg
-> +    $ref: cells/cell.yaml#
->  
->  additionalProperties: true
->  
-> -- 
-> 2.31.1
-> 
-> 
+> Mimi
+
