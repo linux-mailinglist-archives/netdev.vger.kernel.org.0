@@ -2,198 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C4904B2F20
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 22:12:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C7344B2F86
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 22:41:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344144AbiBKVM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 16:12:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38816 "EHLO
+        id S1353744AbiBKVlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 16:41:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231329AbiBKVM2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 16:12:28 -0500
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1148ABFB;
-        Fri, 11 Feb 2022 13:12:26 -0800 (PST)
-Received: by mail-pj1-x1044.google.com with SMTP id om7so9136213pjb.5;
-        Fri, 11 Feb 2022 13:12:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=x8POYbCaaSySzHWe6l3CukXGIHLL9HE7GZC5/X1ii4E=;
-        b=lfhtJAp6+k5GT93BneVzOju5Su5LQoUzD6eSwEt8GbSD25uuDKp17mHBNkdRAKcOjt
-         IlFLNo152dSoS48KaqB+4sjPXLI5CBLXav/yzqQzLxJWBZKTMPo4pJOWaiVBgrqpHebQ
-         I5uKx7SSF1evRkbRrNeWTO+t9xkDAfBZVTidyaAGoB2QzoTKaTT8zilX5wsekhNUMwtN
-         GwpPL/tLG7CJnPhZE7Zodx2g+zQbAxQpcN8ML1mHzjuXHZ6dlTZcxjt8nqGoFbdrhevl
-         2hYSeCGOa9wRWO8PPARJTBFNDul/9Hq3AzMmMmxySAF6GAfG/oKCkADkJoY3Pz0dpC1q
-         nppQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=x8POYbCaaSySzHWe6l3CukXGIHLL9HE7GZC5/X1ii4E=;
-        b=TZ33arf6ZZNadIM8ri5QMtQRmD5T1YxLOStHXpi9emSdJn52dElE2jkjRWMlDigeYo
-         NU2REeou/iCH1PyNC7fnRGLtNoJaz8LKLoiETiFNtRw3PSaWQ/ZnK5QagKx4g75NCS0o
-         a2TqBZXe2aeIMSdMiD5S6FDZjyNR56X5+WFNsaU428k1pDD+0jq3fqnkA9TpdLIYSMC0
-         stZdEFlp7eZzl7rEwej97SPNNGEajmVgw2TZbi8j9Ihw0PZ/G89CAp+Zmv1Mq2HtBsKj
-         oDuqjpRDFBcIQuum932gFO0EXAVD7ix+8JnbZ1KKwNBFfHOQvyvmslhzxcmeXX1GqqTU
-         SjTw==
-X-Gm-Message-State: AOAM532mtJB6u67QpLmR5KD4e2Qdb6j8yl/4n449sf9JZLCAvFASYXxo
-        VV7+x6SYSndss1BCC/Y8kPE=
-X-Google-Smtp-Source: ABdhPJw9sezByfs1qcpJLn9zs0tSoH7u9M3WXlRpBtfxJWeAvWqovxCBs03Z0wNZOvkCPDJklJn89Q==
-X-Received: by 2002:a17:90b:3509:: with SMTP id ls9mr2269501pjb.119.1644613945459;
-        Fri, 11 Feb 2022 13:12:25 -0800 (PST)
-Received: from localhost ([47.9.2.133])
-        by smtp.gmail.com with ESMTPSA id f2sm27004637pfj.6.2022.02.11.13.12.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 13:12:25 -0800 (PST)
-Date:   Sat, 12 Feb 2022 02:42:21 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Zhiqian Guan <zhguan@redhat.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next] libbpf: Use dynamically allocated buffer when
- receiving netlink messages
-Message-ID: <20220211211221.wc5ouk32krtlxhlr@apollo.legion>
-References: <20220211195101.591642-1-toke@redhat.com>
+        with ESMTP id S232691AbiBKVlL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 16:41:11 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FFEEC6D;
+        Fri, 11 Feb 2022 13:41:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=rm0L+g8d02pQ49JYPdifRHUJjiEEX1ttH645kywwIYM=; b=tHCY3TKXj9WNvHpcFpkBWQe9nm
+        xO6QBxt+2ahM1G+8O62wl+6KJjjN+tpEkNer+SF7MHOKmMwpGfzk/W6WZx8oVpWgfSJmqfyX+Royg
+        sKparTb42Y0YHsKCcJyv0+7xHaOpbvvYZFxoWjEf41PzsaDMLzZz8u2cXjNS103rr29o=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nIdey-005WZh-FA; Fri, 11 Feb 2022 22:40:56 +0100
+Date:   Fri, 11 Feb 2022 22:40:56 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Veerasenareddy Burru <vburru@marvell.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Abhijit Ayarekar <aayarekar@marvell.com>,
+        Satananda Burla <sburla@marvell.com>
+Subject: Re: [PATCH 4/4] octeon_ep: add ethtool support for Octeon PCI
+ Endpoint NIC.
+Message-ID: <YgbX6N5efWf7J4ds@lunn.ch>
+References: <20220210213306.3599-1-vburru@marvell.com>
+ <20220210213306.3599-5-vburru@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220211195101.591642-1-toke@redhat.com>
+In-Reply-To: <20220210213306.3599-5-vburru@marvell.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 12, 2022 at 01:21:00AM IST, Toke Høiland-Jørgensen wrote:
-> When receiving netlink messages, libbpf was using a statically allocated
-> stack buffer of 4k bytes. This happened to work fine on systems with a 4k
-> page size, but on systems with larger page sizes it can lead to truncated
-> messages. The user-visible impact of this was that libbpf would insist no
-> XDP program was attached to some interfaces because that bit of the netlink
-> message got chopped off.
->
-> Fix this by switching to a dynamically allocated buffer; we borrow the
-> approach from iproute2 of using recvmsg() with MSG_PEEK|MSG_TRUNC to get
-> the actual size of the pending message before receiving it, adjusting the
-> buffer as necessary. While we're at it, also add retries on interrupted
-> system calls around the recvmsg() call.
->
-> Reported-by: Zhiqian Guan <zhguan@redhat.com>
-> Fixes: 8bbb77b7c7a2 ("libbpf: Add various netlink helpers")
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-> ---
-
-Thanks for the fix!
-
-Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-
->  tools/lib/bpf/netlink.c | 55 ++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 52 insertions(+), 3 deletions(-)
->
-> diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
-> index c39c37f99d5c..9a6e95206bf0 100644
-> --- a/tools/lib/bpf/netlink.c
-> +++ b/tools/lib/bpf/netlink.c
-> @@ -87,22 +87,70 @@ enum {
->  	NL_DONE,
->  };
->
-> +static int __libbpf_netlink_recvmsg(int sock, struct msghdr *mhdr, int flags)
+> +static void octep_get_drvinfo(struct net_device *netdev,
+> +			      struct ethtool_drvinfo *info)
 > +{
-> +	int len;
+> +	struct octep_device *oct = netdev_priv(netdev);
 > +
-> +	do {
-> +		len = recvmsg(sock, mhdr, flags);
-> +	} while (len < 0 && (errno == EINTR || errno == EAGAIN));
-> +
-> +	if (len < 0)
-> +		return -errno;
-> +	return len;
-> +}
-> +
-> +static int libbpf_netlink_recvmsg(int sock, struct msghdr *mhdr, char **buf)
+> +	strscpy(info->driver, OCTEP_DRV_NAME, sizeof(info->driver));
+> +	strscpy(info->version, OCTEP_DRV_VERSION_STR, sizeof(info->version));
+
+A driver version string is meaningless. If you don't set it, the core
+will fill in the kernel version, which is actually usable information.
+
+> +static int octep_get_link_ksettings(struct net_device *netdev,
+> +				    struct ethtool_link_ksettings *cmd)
 > +{
-> +	struct iovec *iov = mhdr->msg_iov;
-> +	void *nbuf;
-> +	int len;
+> +	struct octep_device *oct = netdev_priv(netdev);
+> +	struct octep_iface_link_info *link_info;
+> +	u32 advertised, supported;
 > +
-> +	len = __libbpf_netlink_recvmsg(sock, mhdr, MSG_PEEK | MSG_TRUNC);
-> +	if (len < 0)
-> +		return len;
+> +	ethtool_link_ksettings_zero_link_mode(cmd, supported);
+> +	ethtool_link_ksettings_zero_link_mode(cmd, advertising);
 > +
-> +	if (len < 4096)
-> +		len = 4096;
+> +	octep_get_link_info(oct);
 > +
-> +	if (len > iov->iov_len) {
-> +		nbuf = realloc(iov->iov_base, len);
-> +		if (!nbuf) {
-> +			free(iov->iov_base);
-> +			return -ENOMEM;
-> +		}
-> +		iov->iov_base = nbuf;
-> +		iov->iov_len = len;
-> +	}
+> +	advertised = oct->link_info.advertised_modes;
+> +	supported = oct->link_info.supported_modes;
+> +	link_info = &oct->link_info;
 > +
-> +	len = __libbpf_netlink_recvmsg(sock, mhdr, 0);
-> +	if (len > 0)
-> +		*buf = iov->iov_base;
-> +	return len;
-> +}
+> +	if (supported & BIT(OCTEP_LINK_MODE_10GBASE_T))
+> +		ethtool_link_ksettings_add_link_mode(cmd, supported, 10000baseT_Full);
+> +	if (supported & BIT(OCTEP_LINK_MODE_10GBASE_R))
+> +		ethtool_link_ksettings_add_link_mode(cmd, supported, 10000baseR_FEC);
+
+....
+
 > +
->  static int libbpf_netlink_recv(int sock, __u32 nl_pid, int seq,
->  			       __dump_nlmsg_t _fn, libbpf_dump_nlmsg_t fn,
->  			       void *cookie)
->  {
-> +	struct iovec iov = {};
-> +	struct msghdr mhdr = {
-> +		.msg_iov = &iov,
-> +		.msg_iovlen = 1,
-> +	};
->  	bool multipart = true;
->  	struct nlmsgerr *err;
->  	struct nlmsghdr *nh;
-> -	char buf[4096];
->  	int len, ret;
-> +	char *buf;
-> +
->
->  	while (multipart) {
->  start:
->  		multipart = false;
-> -		len = recv(sock, buf, sizeof(buf), 0);
-> +		len = libbpf_netlink_recvmsg(sock, &mhdr, &buf);
->  		if (len < 0) {
-> -			ret = -errno;
-> +			ret = len;
->  			goto done;
->  		}
->
-> @@ -151,6 +199,7 @@ static int libbpf_netlink_recv(int sock, __u32 nl_pid, int seq,
->  	}
->  	ret = 0;
->  done:
-> +	free(iov.iov_base);
->  	return ret;
+> +	if (advertised & BIT(OCTEP_LINK_MODE_10GBASE_T))
+> +		ethtool_link_ksettings_add_link_mode(cmd, advertising, 10000baseT_Full);
+> +	if (advertised & BIT(OCTEP_LINK_MODE_10GBASE_R))
+> +		ethtool_link_ksettings_add_link_mode(cmd, advertising, 10000baseR_FEC);
+
+It looks like you are doing the same thing twice, just different
+variables. Pull this out into a helper.
+
+Do you know what the link partner is advertising? It is useful debug
+information if your firmware will tell you.
+
+> diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> index 700852fd4c3a..00c6ca047332 100644
+> --- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> +++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> @@ -827,7 +827,7 @@ static int octep_set_mac(struct net_device *netdev, void *p)
+>  		return err;
+>  
+>  	memcpy(oct->mac_addr, addr->sa_data, ETH_ALEN);
+> -	memcpy(netdev->dev_addr, addr->sa_data, netdev->addr_len);
+> +	eth_hw_addr_set(netdev, addr->sa_data);
+>  
+>  	return 0;
 >  }
->
-> --
-> 2.35.1
->
+> @@ -1067,7 +1068,7 @@ static int octep_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	netdev->mtu = OCTEP_DEFAULT_MTU;
+>  
+>  	octep_get_mac_addr(octep_dev, octep_dev->mac_addr);
+> -	memcpy(netdev->dev_addr, octep_dev->mac_addr, netdev->addr_len);
+> +	eth_hw_addr_set(netdev, octep_dev->mac_addr);
 
---
-Kartikeya
+These two changes don't belong here.
+
+      Andrew
