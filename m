@@ -2,119 +2,366 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 986F74B2326
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 11:34:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA4144B23B4
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 11:48:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348927AbiBKKcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 05:32:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56822 "EHLO
+        id S1349192AbiBKKsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 05:48:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348919AbiBKKcS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 05:32:18 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205D1E9E;
-        Fri, 11 Feb 2022 02:32:17 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id d27so10642943wrb.5;
-        Fri, 11 Feb 2022 02:32:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=CTKCm88v7qTQ2R8sYmJYejrVwfkvF1N7DAtwHgyHITA=;
-        b=PEVvI8lvyG+yyMuME6bK+NTUsE9VvoSvcZ4MFjHGv/9JTjXB5/7gUu/nqdrnmGCQQm
-         OueBhXQhUMI0LuetsVxITm0ROgg7pw0c7ZZHVr44THPeXeuhKDqURax/pVdIgBIpYHXH
-         /ZIgIHxPDXcL9CPWn53STCsmHaIDtxOs5/0TYZ0ShMcOCkZQv3xNmqgPJV4ZwxW0Gqf6
-         f4QyUzQ4m3Fs50iKseKBV77iMM/V+AYaU94j531twb2pBv+DAXnjekLQHDAqn3WWbV0g
-         8m2gvpBo505dvgtughe0vKh7kEfe6SOuiXjgRZs1e9Hb3pGCg9MN9YWbjQpWbw7q/abd
-         zgjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=CTKCm88v7qTQ2R8sYmJYejrVwfkvF1N7DAtwHgyHITA=;
-        b=Mtmd2ar1ddz49s29OjxuetvpKv/JnFe3hrL5O7LwzvqdTLYwIxXroLaV7GODJvnF8C
-         o7Ro+bUgCPY62ooCXun3GzM+vs+/hWfd9Nw31rMSxcN78O/vCpXR+dAXdvJ7RFWnhENt
-         GeP63mmER+fpSfVlz7qex4rWmlwKmF7wRjfYQaa7teIuTb+tSJUR6w20nv9WUORfK+bG
-         A1F3p2oZFCOR13BGPQHZcsJ7MgkStmUXYHnGVKZqU7ViCH9PDtr1UBgr3OkD3shTGA6e
-         cPkDAUKZ2vcTcWIaYPJz7Z8JNnLAw3JZaX30WxpuLnvlFSJcjiuqCJIn2a4upfd2BYiH
-         dbig==
-X-Gm-Message-State: AOAM533GNT32bz6fAVPS0OM7rZo/r6FO80K1YPMbSGSnY5MTNwhmbWo9
-        TSEUlrewGcCUrWFF6T7yI5U=
-X-Google-Smtp-Source: ABdhPJy/olguZC72hWtA2h8VahlzAoOL3pM5jrE8dTwRcymyszjlSN/r88pZnO/nGFQlgNwxrH7new==
-X-Received: by 2002:a05:6000:137b:: with SMTP id q27mr852318wrz.430.1644575535558;
-        Fri, 11 Feb 2022 02:32:15 -0800 (PST)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id y15sm30478038wry.36.2022.02.11.02.32.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 02:32:15 -0800 (PST)
-Date:   Fri, 11 Feb 2022 11:32:13 +0100
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     hkallweit1@gmail.com, swsd@realtek.com, davem@davemloft.net,
-        kuba@kernel.org, thierry.reding@gmail.com, jonathanh@nvidia.com
-Cc:     linux-tegra@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: NETDEV WATCHDOG: enp1s0 (r8169): transmit queue 0 timed out
-Message-ID: <YgY7LW8WLtTCZUu0@Red>
+        with ESMTP id S238232AbiBKKsp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 05:48:45 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822E5D64;
+        Fri, 11 Feb 2022 02:48:43 -0800 (PST)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jw9MM6swQz687Jc;
+        Fri, 11 Feb 2022 18:48:31 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 11 Feb 2022 11:48:40 +0100
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <zohar@linux.ibm.com>, <shuah@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>, <kpsingh@kernel.org>
+CC:     <linux-integrity@vger.kernel.org>,
+        <linux-security-module@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH] ima: Calculate digest in ima_inode_hash() if not available
+Date:   Fri, 11 Feb 2022 11:48:28 +0100
+Message-ID: <20220211104828.4061334-1-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml753-chm.china.huawei.com (10.201.108.203) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
+__ima_inode_hash() checks if a digest has been already calculated by
+looking for the integrity_iint_cache structure associated to the passed
+inode.
 
-On my tegra124-jetson-tk1, I always got:
-[ 1311.064826] ------------[ cut here ]------------
-[ 1311.064880] WARNING: CPU: 0 PID: 0 at net/sched/sch_generic.c:477 dev_watchdog+0x2fc/0x300
-[ 1311.064976] NETDEV WATCHDOG: enp1s0 (r8169): transmit queue 0 timed out
-[ 1311.065011] Modules linked in:
-[ 1311.065074] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.16.7-dirty #7
-[ 1311.065116] Hardware name: NVIDIA Tegra SoC (Flattened Device Tree)
-[ 1311.065177] [<c01103e4>] (unwind_backtrace) from [<c010ade0>] (show_stack+0x10/0x14)
-[ 1311.065253] [<c010ade0>] (show_stack) from [<c0bbe884>] (dump_stack_lvl+0x40/0x4c)
-[ 1311.065322] [<c0bbe884>] (dump_stack_lvl) from [<c0122d6c>] (__warn+0xd0/0x12c)
-[ 1311.065379] [<c0122d6c>] (__warn) from [<c0bb8c48>] (warn_slowpath_fmt+0x90/0xb4)
-[ 1311.065434] [<c0bb8c48>] (warn_slowpath_fmt) from [<c0a0f0f0>] (dev_watchdog+0x2fc/0x300)
-[ 1311.065493] [<c0a0f0f0>] (dev_watchdog) from [<c01a8ab0>] (call_timer_fn+0x34/0x1a8)
-[ 1311.065554] [<c01a8ab0>] (call_timer_fn) from [<c01a8e50>] (__run_timers.part.0+0x22c/0x328)
-[ 1311.065599] [<c01a8e50>] (__run_timers.part.0) from [<c01a8f84>] (run_timer_softirq+0x38/0x68)
-[ 1311.065648] [<c01a8f84>] (run_timer_softirq) from [<c0101394>] (__do_softirq+0x124/0x3cc)
-[ 1311.065732] [<c0101394>] (__do_softirq) from [<c0129ff4>] (irq_exit+0xa4/0xd4)
-[ 1311.065818] [<c0129ff4>] (irq_exit) from [<c0100b90>] (__irq_svc+0x50/0x80)
-[ 1311.065860] Exception stack(0xc1101ed8 to 0xc1101f20)
-[ 1311.065884] 1ec0:                                                       00000000 00000001
-[ 1311.065913] 1ee0: c110a800 00000060 00000001 eed889f8 c121eaa0 418a949d 00000001 00000131
-[ 1311.065940] 1f00: 00000001 00000131 00000000 c1101f28 c08bbe20 c08bbee8 60000113 ffffffff
-[ 1311.065962] [<c0100b90>] (__irq_svc) from [<c08bbee8>] (cpuidle_enter_state+0x270/0x480)
-[ 1311.066031] [<c08bbee8>] (cpuidle_enter_state) from [<c08bc15c>] (cpuidle_enter+0x50/0x54)
-[ 1311.066078] [<c08bc15c>] (cpuidle_enter) from [<c015a658>] (do_idle+0x1e0/0x298)
-[ 1311.066133] [<c015a658>] (do_idle) from [<c015a9e0>] (cpu_startup_entry+0x18/0x1c)
-[ 1311.066174] [<c015a9e0>] (cpu_startup_entry) from [<c1000fc8>] (start_kernel+0x678/0x6bc)
-[ 1311.066242] ---[ end trace 3df1a997f30c7eb8 ]---
-[ 1311.083269] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[ 2671.118597] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[27521.391461] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[47441.629280] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[49046.691475] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[53081.713430] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[55101.737951] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[59351.771382] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[60491.797371] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[61351.805499] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[69631.911327] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[71246.958267] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[86522.110241] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[88507.174307] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[104612.315286] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-[132797.695339] r8169 0000:01:00.0 enp1s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
+Users of ima_file_hash() and ima_inode_hash() (e.g. eBPF) might be
+interested in obtaining the information without having to setup an IMA
+policy so that the digest is always available at the time they call one of
+those functions.
 
-This happen since at least 5.10.
-Any idea on how to debug this ?
+Open a new file descriptor in __ima_inode_hash(), so that this function
+could invoke ima_collect_measurement() to calculate the digest if it is not
+available. Still return -EOPNOTSUPP if the calculation failed.
 
-Regards
+Instead of opening a new file descriptor, the one from ima_file_hash()
+could have been used. However, since ima_inode_hash() was created to obtain
+the digest when the file descriptor is not available, it could benefit from
+this change too. Also, the opened file descriptor might be not suitable for
+use (file descriptor opened not for reading).
+
+This change does not cause memory usage increase, due to using a temporary
+integrity_iint_cache structure for the digest calculation, and due to
+freeing the ima_digest_data structure inside integrity_iint_cache before
+exiting from __ima_inode_hash().
+
+Finally, update the test by removing ima_setup.sh (it is not necessary
+anymore to set an IMA policy) and by directly executing /bin/true.
+
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+---
+ security/integrity/ima/ima_main.c             |  46 ++++++-
+ tools/testing/selftests/bpf/Makefile          |   1 -
+ tools/testing/selftests/bpf/ima_setup.sh      | 123 ------------------
+ .../selftests/bpf/prog_tests/test_ima.c       |  25 +---
+ 4 files changed, 43 insertions(+), 152 deletions(-)
+ delete mode 100755 tools/testing/selftests/bpf/ima_setup.sh
+
+diff --git a/security/integrity/ima/ima_main.c b/security/integrity/ima/ima_main.c
+index 8c6e4514d494..44df3f990950 100644
+--- a/security/integrity/ima/ima_main.c
++++ b/security/integrity/ima/ima_main.c
+@@ -26,6 +26,7 @@
+ #include <linux/ima.h>
+ #include <linux/iversion.h>
+ #include <linux/fs.h>
++#include <linux/fs_struct.h>
+ 
+ #include "ima.h"
+ 
+@@ -521,15 +522,43 @@ EXPORT_SYMBOL_GPL(ima_file_check);
+ 
+ static int __ima_inode_hash(struct inode *inode, char *buf, size_t buf_size)
+ {
+-	struct integrity_iint_cache *iint;
+-	int hash_algo;
++	struct integrity_iint_cache *iint = NULL, tmp_iint;
++	struct file *file;
++	struct path root, path;
++	int rc, hash_algo;
++
++	if (ima_policy_flag)
++		iint = integrity_iint_find(inode);
++
++	if (!iint) {
++		memset(&tmp_iint, 0, sizeof(tmp_iint));
++		tmp_iint.inode = inode;
++		iint = &tmp_iint;
++
++		path.dentry = d_find_alias(inode);
++		if (!path.dentry)
++			return -EOPNOTSUPP;
++
++		get_fs_root(current->fs, &root);
++		path.mnt = root.mnt;
++
++		file = dentry_open(&path, O_RDONLY, current_cred());
++		if (IS_ERR(file)) {
++			dput(path.dentry);
++			path_put(&root);
++			return -EOPNOTSUPP;
++		}
+ 
+-	if (!ima_policy_flag)
+-		return -EOPNOTSUPP;
++		rc = ima_collect_measurement(iint, file, NULL, 0, ima_hash_algo,
++					     NULL);
+ 
+-	iint = integrity_iint_find(inode);
+-	if (!iint)
+-		return -EOPNOTSUPP;
++		fput(file);
++		dput(path.dentry);
++		path_put(&root);
++
++		if (rc != 0)
++			return -EOPNOTSUPP;
++	}
+ 
+ 	mutex_lock(&iint->mutex);
+ 
+@@ -551,6 +580,9 @@ static int __ima_inode_hash(struct inode *inode, char *buf, size_t buf_size)
+ 	hash_algo = iint->ima_hash->algo;
+ 	mutex_unlock(&iint->mutex);
+ 
++	if (iint == &tmp_iint)
++		kfree(iint->ima_hash);
++
+ 	return hash_algo;
+ }
+ 
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 42ffc24e9e71..f7f850b2cf26 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -480,7 +480,6 @@ TRUNNER_EXTRA_SOURCES := test_progs.c cgroup_helpers.c trace_helpers.c	\
+ 			 network_helpers.c testing_helpers.c		\
+ 			 btf_helpers.c flow_dissector_load.h
+ TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read $(OUTPUT)/bpf_testmod.ko	\
+-		       ima_setup.sh					\
+ 		       $(wildcard progs/btf_dump_test_case_*.c)
+ TRUNNER_BPF_BUILD_RULE := CLANG_BPF_BUILD_RULE
+ TRUNNER_BPF_CFLAGS := $(BPF_CFLAGS) $(CLANG_CFLAGS) -DENABLE_ATOMICS_TESTS
+diff --git a/tools/testing/selftests/bpf/ima_setup.sh b/tools/testing/selftests/bpf/ima_setup.sh
+deleted file mode 100755
+index 8e62581113a3..000000000000
+--- a/tools/testing/selftests/bpf/ima_setup.sh
++++ /dev/null
+@@ -1,123 +0,0 @@
+-#!/bin/bash
+-# SPDX-License-Identifier: GPL-2.0
+-
+-set -e
+-set -u
+-set -o pipefail
+-
+-IMA_POLICY_FILE="/sys/kernel/security/ima/policy"
+-TEST_BINARY="/bin/true"
+-VERBOSE="${SELFTESTS_VERBOSE:=0}"
+-LOG_FILE="$(mktemp /tmp/ima_setup.XXXX.log)"
+-
+-usage()
+-{
+-	echo "Usage: $0 <setup|cleanup|run> <existing_tmp_dir>"
+-	exit 1
+-}
+-
+-ensure_mount_securityfs()
+-{
+-	local securityfs_dir=$(grep "securityfs" /proc/mounts | awk '{print $2}')
+-
+-	if [ -z "${securityfs_dir}" ]; then
+-		securityfs_dir=/sys/kernel/security
+-		mount -t securityfs security "${securityfs_dir}"
+-	fi
+-
+-	if [ ! -d "${securityfs_dir}" ]; then
+-		echo "${securityfs_dir}: securityfs is not mounted" && exit 1
+-	fi
+-}
+-
+-setup()
+-{
+-	local tmp_dir="$1"
+-	local mount_img="${tmp_dir}/test.img"
+-	local mount_dir="${tmp_dir}/mnt"
+-	local copied_bin_path="${mount_dir}/$(basename ${TEST_BINARY})"
+-	mkdir -p ${mount_dir}
+-
+-	dd if=/dev/zero of="${mount_img}" bs=1M count=10
+-
+-	losetup -f "${mount_img}"
+-	local loop_device=$(losetup -a | grep ${mount_img:?} | cut -d ":" -f1)
+-
+-	mkfs.ext2 "${loop_device:?}"
+-	mount "${loop_device}" "${mount_dir}"
+-
+-	cp "${TEST_BINARY}" "${mount_dir}"
+-	local mount_uuid="$(blkid ${loop_device} | sed 's/.*UUID="\([^"]*\)".*/\1/')"
+-
+-	ensure_mount_securityfs
+-	echo "measure func=BPRM_CHECK fsuuid=${mount_uuid}" > ${IMA_POLICY_FILE}
+-}
+-
+-cleanup() {
+-	local tmp_dir="$1"
+-	local mount_img="${tmp_dir}/test.img"
+-	local mount_dir="${tmp_dir}/mnt"
+-
+-	local loop_devices=$(losetup -a | grep ${mount_img:?} | cut -d ":" -f1)
+-
+-	for loop_dev in "${loop_devices}"; do
+-		losetup -d $loop_dev
+-	done
+-
+-	umount ${mount_dir}
+-	rm -rf ${tmp_dir}
+-}
+-
+-run()
+-{
+-	local tmp_dir="$1"
+-	local mount_dir="${tmp_dir}/mnt"
+-	local copied_bin_path="${mount_dir}/$(basename ${TEST_BINARY})"
+-
+-	exec "${copied_bin_path}"
+-}
+-
+-catch()
+-{
+-	local exit_code="$1"
+-	local log_file="$2"
+-
+-	if [[ "${exit_code}" -ne 0 ]]; then
+-		cat "${log_file}" >&3
+-	fi
+-
+-	rm -f "${log_file}"
+-	exit ${exit_code}
+-}
+-
+-main()
+-{
+-	[[ $# -ne 2 ]] && usage
+-
+-	local action="$1"
+-	local tmp_dir="$2"
+-
+-	[[ ! -d "${tmp_dir}" ]] && echo "Directory ${tmp_dir} doesn't exist" && exit 1
+-
+-	if [[ "${action}" == "setup" ]]; then
+-		setup "${tmp_dir}"
+-	elif [[ "${action}" == "cleanup" ]]; then
+-		cleanup "${tmp_dir}"
+-	elif [[ "${action}" == "run" ]]; then
+-		run "${tmp_dir}"
+-	else
+-		echo "Unknown action: ${action}"
+-		exit 1
+-	fi
+-}
+-
+-trap 'catch "$?" "${LOG_FILE}"' EXIT
+-
+-if [[ "${VERBOSE}" -eq 0 ]]; then
+-	# Save the stderr to 3 so that we can output back to
+-	# it incase of an error.
+-	exec 3>&2 1>"${LOG_FILE}" 2>&1
+-fi
+-
+-main "$@"
+-rm -f "${LOG_FILE}"
+diff --git a/tools/testing/selftests/bpf/prog_tests/test_ima.c b/tools/testing/selftests/bpf/prog_tests/test_ima.c
+index 97d8a6f84f4a..82427549f45a 100644
+--- a/tools/testing/selftests/bpf/prog_tests/test_ima.c
++++ b/tools/testing/selftests/bpf/prog_tests/test_ima.c
+@@ -13,15 +13,14 @@
+ 
+ #include "ima.skel.h"
+ 
+-static int run_measured_process(const char *measured_dir, u32 *monitored_pid)
++static int run_measured_process(u32 *monitored_pid)
+ {
+ 	int child_pid, child_status;
+ 
+ 	child_pid = fork();
+ 	if (child_pid == 0) {
+ 		*monitored_pid = getpid();
+-		execlp("./ima_setup.sh", "./ima_setup.sh", "run", measured_dir,
+-		       NULL);
++		execlp("/bin/true", "/bin/true", NULL);
+ 		exit(errno);
+ 
+ 	} else if (child_pid > 0) {
+@@ -42,10 +41,7 @@ static int process_sample(void *ctx, void *data, size_t len)
+ 
+ void test_test_ima(void)
+ {
+-	char measured_dir_template[] = "/tmp/ima_measuredXXXXXX";
+ 	struct ring_buffer *ringbuf = NULL;
+-	const char *measured_dir;
+-	char cmd[256];
+ 
+ 	int err, duration = 0;
+ 	struct ima *skel = NULL;
+@@ -63,27 +59,14 @@ void test_test_ima(void)
+ 	if (CHECK(err, "attach", "attach failed: %d\n", err))
+ 		goto close_prog;
+ 
+-	measured_dir = mkdtemp(measured_dir_template);
+-	if (CHECK(measured_dir == NULL, "mkdtemp", "err %d\n", errno))
+-		goto close_prog;
+-
+-	snprintf(cmd, sizeof(cmd), "./ima_setup.sh setup %s", measured_dir);
+-	err = system(cmd);
+-	if (CHECK(err, "failed to run command", "%s, errno = %d\n", cmd, errno))
+-		goto close_clean;
+-
+-	err = run_measured_process(measured_dir, &skel->bss->monitored_pid);
++	err = run_measured_process(&skel->bss->monitored_pid);
+ 	if (CHECK(err, "run_measured_process", "err = %d\n", err))
+-		goto close_clean;
++		goto close_prog;
+ 
+ 	err = ring_buffer__consume(ringbuf);
+ 	ASSERT_EQ(err, 1, "num_samples_or_err");
+ 	ASSERT_NEQ(ima_hash_from_bpf, 0, "ima_hash");
+ 
+-close_clean:
+-	snprintf(cmd, sizeof(cmd), "./ima_setup.sh cleanup %s", measured_dir);
+-	err = system(cmd);
+-	CHECK(err, "failed to run command", "%s, errno = %d\n", cmd, errno);
+ close_prog:
+ 	ring_buffer__free(ringbuf);
+ 	ima__destroy(skel);
+-- 
+2.32.0
+
