@@ -2,1669 +2,666 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A13A44B21F2
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 10:29:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 957834B2205
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 10:33:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348623AbiBKJ2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 04:28:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46830 "EHLO
+        id S1346818AbiBKJdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 04:33:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348634AbiBKJ2d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 04:28:33 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF505CEE;
-        Fri, 11 Feb 2022 01:28:30 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id d187so15175309pfa.10;
-        Fri, 11 Feb 2022 01:28:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=K5MYh233FKgebky7k0kPaucUVSmD28d0h+KA8cPRHuI=;
-        b=b188enqWwM3hp6fHmatVdrbpNEmviMuV8ZIxk4iX/U6KNKTkkRFdHCJIGJQhj6vKN4
-         rNBn0lk3cQ6PDK21FraI5X8YbLc68Uy+5gJR+Nr02+T38raepYlk7uWKWOY6dpWRewzC
-         JwCigJTBc35QSwSgYUqWVVkt5yLEINAQ14Xir8qYM1a6mLwpXo5OztwxwZcs1oqCk125
-         OvJwnWmABNZXtmC/0MOWBlJJoQTY5pCMSwZubQiezxDXjTBaIfj+yioKEbySCojFsIgz
-         u9EVmEqBO69XjXnWZAM4uz4WiwXmQgGU+SA0c58PojQksqiKDkoPPrOCX/5dZbDXoE79
-         CWlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=K5MYh233FKgebky7k0kPaucUVSmD28d0h+KA8cPRHuI=;
-        b=dFdDy3mmMaopYzGJ8eR5t3RlywCQwpkOeWyj8+z7DJOXf/m+r0gSh0yjjlZoPDu7u5
-         NhwJxWDDMsrlXmjeCE7V/LY5mCvzUSfo9VAYXPlLKUhUnN7XkONDegl0cH5fSTjL8MyN
-         S+NODjlXaPCB89014X2ewv9rBntNR+xYZ8tYhMEeCTc9qwjTIGNedyhyXDCB674UUUpE
-         mKPAjdNMB8PC9ZhrqezkQ8IkbEMlreJaEb2B+ii1zphwBHGvhp2mJcRTRTQO80+8QT8b
-         GIZY8uttaeeT+wpVzefP+P3W1iSM4sqIOiTFJPEgxO9zMObBKB3nMIjgNpL3A9Oadn7U
-         2gmQ==
-X-Gm-Message-State: AOAM530hWsdG3kZF2wM1WtdKGVqIu6et3MYhySvzI54qPi9xXRZQfqz1
-        Pc/Uw2dWAStkGNsII7adIBxRm5YzfOYaRA==
-X-Google-Smtp-Source: ABdhPJzvmFCBAHOSZI2+xAS0ZE2I3RDSHTIniNLr1TG3vKfYlyunZhR+wrpn448o8jDKELfkOH5WPQ==
-X-Received: by 2002:a63:f958:: with SMTP id q24mr596528pgk.372.1644571709853;
-        Fri, 11 Feb 2022 01:28:29 -0800 (PST)
-Received: from localhost.localdomain (61-231-111-88.dynamic-ip.hinet.net. [61.231.111.88])
-        by smtp.gmail.com with ESMTPSA id 13sm25704040pfm.161.2022.02.11.01.28.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 01:28:29 -0800 (PST)
-From:   Joseph CHAMG <josright123@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Joseph CHANG <josright123@gmail.com>,
-        joseph_chang@davicom.com.tw
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com,
-        andrew@lunn.ch, leon@kernel.org
-Subject: [PATCH v20, 2/2] net: Add dm9051 driver
-Date:   Fri, 11 Feb 2022 17:27:56 +0800
-Message-Id: <20220211092756.27274-3-josright123@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220211092756.27274-1-josright123@gmail.com>
-References: <20220211092756.27274-1-josright123@gmail.com>
+        with ESMTP id S229838AbiBKJdl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 04:33:41 -0500
+Received: from mxout014.mail.hostpoint.ch (mxout014.mail.hostpoint.ch [IPv6:2a00:d70:0:e::314])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB40F5B
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 01:33:37 -0800 (PST)
+Received: from [10.0.2.44] (helo=asmtp014.mail.hostpoint.ch)
+        by mxout014.mail.hostpoint.ch with esmtp (Exim 4.94.2 (FreeBSD))
+        (envelope-from <thomas@kupper.org>)
+        id 1nISJ4-000Eqm-NK; Fri, 11 Feb 2022 10:33:34 +0100
+Received: from [2001:1620:50ce:1969:35bf:a597:4774:8f96]
+        by asmtp014.mail.hostpoint.ch with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2 (FreeBSD))
+        (envelope-from <thomas@kupper.org>)
+        id 1nISJ4-000GpJ-L4; Fri, 11 Feb 2022 10:33:34 +0100
+X-Authenticated-Sender-Id: thomas@kupper.org
+Message-ID: <26d95ad3-0190-857b-8eb2-a065bf370ddc@kupper.org>
+Date:   Fri, 11 Feb 2022 10:33:34 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: AMD XGBE "phy irq request failed" kernel v5.17-rc2 on V1500B
+ based board
+Content-Language: en-US
+To:     Tom Lendacky <thomas.lendacky@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+Cc:     netdev@vger.kernel.org
+References: <45b7130e-0f39-cb54-f6a8-3ea2f602d65e@kupper.org>
+ <c3e8cbdc-d3f9-d258-fcb6-761a5c6c89ed@amd.com>
+ <68185240-9924-a729-7f41-0c2dd22072ce@kupper.org>
+ <e1eafc13-4941-dcc8-a2d3-7f35510d0efc@amd.com>
+ <06c0ae60-5f84-c749-a485-a52201a1152b@amd.com>
+ <603a03f4-2765-c8e7-085c-808f67b42fa9@kupper.org>
+ <14d2dc72-4454-3493-20e7-ab3539854e37@amd.com>
+From:   Thomas Kupper <thomas@kupper.org>
+In-Reply-To: <14d2dc72-4454-3493-20e7-ab3539854e37@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add davicom dm9051 spi ethernet driver, The driver work for the
-device platform which has the spi master
 
-Signed-off-by: Joseph CHAMG <josright123@gmail.com>
----
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Leon Romanovsky <leon@kernel.org>
-Cc: andy Shevchenko <andy.shevchenko@gmail.com>
+Am 08.02.22 um 17:24 schrieb Tom Lendacky:
+> On 2/7/22 11:59, Thomas Kupper wrote:
+>>
+>> Am 07.02.22 um 16:19 schrieb Shyam Sundar S K:
+>>>
+>>> On 2/7/2022 8:02 PM, Tom Lendacky wrote:
+>>>> On 2/5/22 12:14, Thomas Kupper wrote:
+>>>>> Am 05.02.22 um 16:51 schrieb Tom Lendacky:
+>>>>>> On 2/5/22 04:06, Thomas Kupper wrote:
+>>>>>> Reloading the module and specify the dyndbg option to get some
+>>>>>> additional debug output.
+>>>>>>
+>>>>>> I'm adding Shyam to the thread, too, as I'm not familiar with the
+>>>>>> configuration for this chip.
+>>>>>>
+>>>>> Right after boot:
+>>>>>
+>>>>> [    5.352977] amd-xgbe 0000:06:00.1 eth0: net device enabled
+>>>>> [    5.354198] amd-xgbe 0000:06:00.2 eth1: net device enabled
+>>>>> ...
+>>>>> [    5.382185] amd-xgbe 0000:06:00.1 enp6s0f1: renamed from eth0
+>>>>> [    5.426931] amd-xgbe 0000:06:00.2 enp6s0f2: renamed from eth1
+>>>>> ...
+>>>>> [    9.701637] amd-xgbe 0000:06:00.2 enp6s0f2: phy powered off
+>>>>> [    9.701679] amd-xgbe 0000:06:00.2 enp6s0f2: CL73 AN disabled
+>>>>> [    9.701715] amd-xgbe 0000:06:00.2 enp6s0f2: CL37 AN disabled
+>>>>> [    9.738191] amd-xgbe 0000:06:00.2 enp6s0f2: starting PHY
+>>>>> [    9.738219] amd-xgbe 0000:06:00.2 enp6s0f2: starting I2C
+>>>>> ...
+>>>>> [   10.742622] amd-xgbe 0000:06:00.2 enp6s0f2: firmware mailbox
+>>>>> command did not complete
+>>>>> [   10.742710] amd-xgbe 0000:06:00.2 enp6s0f2: firmware mailbox reset
+>>>>> performed
+>>>>> [   10.750813] amd-xgbe 0000:06:00.2 enp6s0f2: 10GbE SFI mode set
+>>>>> [   10.768366] amd-xgbe 0000:06:00.2 enp6s0f2: 10GbE SFI mode set
+>>>>> [   10.768371] amd-xgbe 0000:06:00.2 enp6s0f2: fixed PHY 
+>>>>> configuration
+>>>>>
+>>>>> Then after 'ifconfig enp6s0f2 up':
+>>>>>
+>>>>> [  189.184928] amd-xgbe 0000:06:00.2 enp6s0f2: phy powered off
+>>>>> [  189.191828] amd-xgbe 0000:06:00.2 enp6s0f2: 10GbE SFI mode set
+>>>>> [  189.191863] amd-xgbe 0000:06:00.2 enp6s0f2: CL73 AN disabled
+>>>>> [  189.191894] amd-xgbe 0000:06:00.2 enp6s0f2: CL37 AN disabled
+>>>>> [  189.196338] amd-xgbe 0000:06:00.2 enp6s0f2: starting PHY
+>>>>> [  189.198792] amd-xgbe 0000:06:00.2 enp6s0f2: 10GbE SFI mode set
+>>>>> [  189.212036] genirq: Flags mismatch irq 69. 00000000 (enp6s0f2-pcs)
+>>>>> vs. 00000000 (enp6s0f2-pcs)
+>>>>> [  189.221700] amd-xgbe 0000:06:00.2 enp6s0f2: phy irq request failed
+>>>>> [  189.231051] amd-xgbe 0000:06:00.2 enp6s0f2: phy powered off
+>>>>> [  189.231054] amd-xgbe 0000:06:00.2 enp6s0f2: stopping I2C
+>>>>>
+>>>> Please ensure that the ethtool msglvl is on for drv and probe. I was
+>>>> expecting to see some additional debug messages that I don't see here.
+>>>>
+>>>> Also, if you can provide the lspci output for the device (using -nn 
+>>>> and
+>>>> -vv) that might be helpful as well.
+>>>>
+>>>> Shyam will be the best one to understand what is going on here.
+>>> On some other platforms, we have seen similar kind of problems getting
+>>> reported. There is a fix sent for validation.
+>>>
+>>> The root cause is that removal of xgbe driver is causing interrupt 
+>>> storm
+>>> on the MP2 device (Sensor Fusion Hub).
+>>>
+>>> Shall submit a fix soon to upstream once the validation is done, you 
+>>> may
+>>> give it a try with that and see if that helps.
+>>>
+>>> Thanks,
+>>> Shyam
+>>>
+>>>> Thanks,
+>>>> Tom
+>>
+>> Shyam, I will check the git logs for the relevant commit then from 
+>> time to time.
+>> Looking at the code diff from OPNsense and the latest Linux kernel I 
+>> assumed that there would much more to do then fix a irq strom (but I 
+>> have no idea about the inner working of the kernel).
+>>
+>> Nevermind: Setting the 'msglvl 0x3' with ethtool the following info 
+>> can be found in dmesg:
+>>
+>> Running : $ ifconfig enp6s0f2 up
+>> SIOCSIFFLAGS: Invalid argument
+>>
+>> ... and 'dmesg':
+>>
+>> [   55.177447] amd-xgbe 0000:06:00.2 enp6s0f2: channel-0: cpu=0, node=0
+>> [   55.177456] amd-xgbe 0000:06:00.2 enp6s0f2: channel-0: 
+>> dma_regs=00000000d11bf3f1, dma_irq=74, tx=00000000dd57b5c4, 
+>> rx=00000000d73e70f8
+>> [   55.177464] amd-xgbe 0000:06:00.2 enp6s0f2: channel-1: cpu=1, node=0
+>> [   55.177467] amd-xgbe 0000:06:00.2 enp6s0f2: channel-1: 
+>> dma_regs=000000000d972dd7, dma_irq=75, tx=00000000573bcff8, 
+>> rx=000000003d9a6f65
+>> [   55.177473] amd-xgbe 0000:06:00.2 enp6s0f2: channel-2: cpu=2, node=0
+>> [   55.177476] amd-xgbe 0000:06:00.2 enp6s0f2: channel-2: 
+>> dma_regs=0000000046f71179, dma_irq=76, tx=00000000897116c9, 
+>> rx=0000000004ba17e7
+>> [   55.177480] amd-xgbe 0000:06:00.2 enp6s0f2: channel-0 - Tx ring:
+>> [   55.177502] amd-xgbe 0000:06:00.2 enp6s0f2: 
+>> rdesc=00000000794657ba, rdesc_dma=0x000000010fad8000, 
+>> rdata=0000000008ace7d8, node=0
+>> [   55.177507] amd-xgbe 0000:06:00.2 enp6s0f2: channel-0 - Rx ring:
+>> [   55.177523] amd-xgbe 0000:06:00.2 enp6s0f2: 
+>> rdesc=000000009313d9b3, rdesc_dma=0x0000000114538000, 
+>> rdata=00000000510e3b77, node=0
+>> [   55.177527] amd-xgbe 0000:06:00.2 enp6s0f2: channel-1 - Tx ring:
+>> [   55.177543] amd-xgbe 0000:06:00.2 enp6s0f2: 
+>> rdesc=00000000d26d9194, rdesc_dma=0x000000010a774000, 
+>> rdata=00000000b9419829, node=0
+>> [   55.177547] amd-xgbe 0000:06:00.2 enp6s0f2: channel-1 - Rx ring:
+>> [   55.177564] amd-xgbe 0000:06:00.2 enp6s0f2: 
+>> rdesc=0000000007bf60dd, rdesc_dma=0x000000010fb84000, 
+>> rdata=00000000aa48e8c0, node=0
+>> [   55.177568] amd-xgbe 0000:06:00.2 enp6s0f2: channel-2 - Tx ring:
+>> [   55.177584] amd-xgbe 0000:06:00.2 enp6s0f2: 
+>> rdesc=00000000e7e6c52e, rdesc_dma=0x000000010fa2a000, 
+>> rdata=0000000017b5d85c, node=0
+>> [   55.177587] amd-xgbe 0000:06:00.2 enp6s0f2: channel-2 - Rx ring:
+>> [   55.177603] amd-xgbe 0000:06:00.2 enp6s0f2: 
+>> rdesc=000000000898fbf4, rdesc_dma=0x0000000101f08000, 
+>> rdata=00000000aded7d4c, node=0
+>> [   55.182366] amd-xgbe 0000:06:00.2 enp6s0f2: TXq0 mapped to TC0
+>> [   55.182381] amd-xgbe 0000:06:00.2 enp6s0f2: TXq1 mapped to TC1
+>> [   55.182388] amd-xgbe 0000:06:00.2 enp6s0f2: TXq2 mapped to TC2
+>> [   55.182395] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO0 mapped to RXq0
+>> [   55.182400] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO1 mapped to RXq0
+>> [   55.182405] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO2 mapped to RXq0
+>> [   55.182410] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO3 mapped to RXq1
+>> [   55.182414] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO4 mapped to RXq1
+>> [   55.182418] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO5 mapped to RXq1
+>> [   55.182423] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO6 mapped to RXq2
+>> [   55.182427] amd-xgbe 0000:06:00.2 enp6s0f2: PRIO7 mapped to RXq2
+>> [   55.182473] amd-xgbe 0000:06:00.2 enp6s0f2: 3 Tx hardware queues, 
+>> 21760 byte fifo per queue
+>> [   55.182501] amd-xgbe 0000:06:00.2 enp6s0f2: 3 Rx hardware queues, 
+>> 21760 byte fifo per queue
+>> [   55.182544] amd-xgbe 0000:06:00.2 enp6s0f2: flow control enabled 
+>> for RXq0
+>> [   55.182550] amd-xgbe 0000:06:00.2 enp6s0f2: flow control enabled 
+>> for RXq1
+>> [   55.182556] amd-xgbe 0000:06:00.2 enp6s0f2: flow control enabled 
+>> for RXq2
+>> [   56.178946] amd-xgbe 0000:06:00.2 enp6s0f2: SFP detected:
+>> [   56.178954] amd-xgbe 0000:06:00.2 enp6s0f2:   vendor: MikroTik
+>> [   56.178958] amd-xgbe 0000:06:00.2 enp6s0f2:   part number: S+AO0005
+>> [   56.178961] amd-xgbe 0000:06:00.2 enp6s0f2:   revision level: 1.0
+>> [   56.178963] amd-xgbe 0000:06:00.2 enp6s0f2:   serial number: 
+>> STST050B1900001
+>>
+>
+> Ah, it's been a while since I've had to use the debug support. Could 
+> you also set the module debug parameter to 0x37 (debug=0x37) when 
+> loading the module. That will capture some of the debug messages that 
+> are issued on driver load. Sorry about that...
+>
+> Thanks,
+> Tom
 
-v1-v4
+Thanks Tom, I now got time to update to 5.17-rc3 and add the 'debug' 
+module parameter. I assume that parameter works with the non-debug 
+kernel? I don't really see any new messages related to the amd-xgbe driver:
 
-Test ok with raspberry pi 2 and pi 4
+dmesg right after boot:
 
-v5
+[    0.000000] Linux version 5.17.0-rc3-tk (jane@m920q-ubu21) (gcc 
+(Ubuntu 11.2.0-7ubuntu2) 11.2.0, GNU ld (GNU Binutils for Ubuntu) 2.37) 
+#12 SMP PREEMPT Tue Feb 8 19:52:19 CET 2022
+[    0.000000] Command line: BOOT_IMAGE=/boot/vmlinuz-5.17.0-rc3-tk 
+root=UUID=8e462830-8ba0-4061-8f23-6f29ce751792 ro console=tty0 
+console=ttyS0,115200n8 amd_xgbe.dyndbg=+p amd_xgbe.debug=0x37
+...
+[    5.275730] amd-xgbe 0000:06:00.1 eth0: net device enabled
+[    5.277766] amd-xgbe 0000:06:00.2 eth1: net device enabled
+[    5.665315] amd-xgbe 0000:06:00.2 enp6s0f2: renamed from eth1
+[    5.696665] amd-xgbe 0000:06:00.1 enp6s0f1: renamed from eth0
 
-swapped to phylib for phy connection tasks
+dmesg right after 'ifconfig enp6s0f2 up'
 
-v6
+[   88.843454] amd_xgbe:xgbe_alloc_channels: amd-xgbe 0000:06:00.2 
+enp6s0f2: channel-0: cpu=0, node=0
+[   88.843464] amd_xgbe:xgbe_alloc_channels: amd-xgbe 0000:06:00.2 
+enp6s0f2: channel-0: dma_regs=000000001078e433, dma_irq=55, 
+tx=00000000e8736669, rx=00000000fadd04ec
+[   88.843474] amd_xgbe:xgbe_alloc_channels: amd-xgbe 0000:06:00.2 
+enp6s0f2: channel-1: cpu=1, node=0
+[   88.843478] amd_xgbe:xgbe_alloc_channels: amd-xgbe 0000:06:00.2 
+enp6s0f2: channel-1: dma_regs=000000003c3cbea8, dma_irq=56, 
+tx=000000000836d88c, rx=00000000920d02c4
+[   88.843485] amd_xgbe:xgbe_alloc_channels: amd-xgbe 0000:06:00.2 
+enp6s0f2: channel-2: cpu=2, node=0
+[   88.843488] amd_xgbe:xgbe_alloc_channels: amd-xgbe 0000:06:00.2 
+enp6s0f2: channel-2: dma_regs=000000008d034191, dma_irq=57, 
+tx=00000000a0664378, rx=00000000d72ce726
+[   88.843493] amd_xgbe:xgbe_alloc_ring_resources: amd-xgbe 0000:06:00.2 
+enp6s0f2: channel-0 - Tx ring:
+[   88.843514] amd_xgbe:xgbe_init_ring: amd-xgbe 0000:06:00.2 enp6s0f2: 
+rdesc=00000000c6703013, rdesc_dma=0x0000000101c44000, 
+rdata=0000000029951e4c, node=0
+[   88.843519] amd_xgbe:xgbe_alloc_ring_resources: amd-xgbe 0000:06:00.2 
+enp6s0f2: channel-0 - Rx ring:
+[   88.843537] amd_xgbe:xgbe_init_ring: amd-xgbe 0000:06:00.2 enp6s0f2: 
+rdesc=000000003262c446, rdesc_dma=0x0000000103c74000, 
+rdata=000000001b7a4275, node=0
+[   88.843542] amd_xgbe:xgbe_alloc_ring_resources: amd-xgbe 0000:06:00.2 
+enp6s0f2: channel-1 - Tx ring:
+[   88.843560] amd_xgbe:xgbe_init_ring: amd-xgbe 0000:06:00.2 enp6s0f2: 
+rdesc=000000007ce3cc7e, rdesc_dma=0x00000001023c0000, 
+rdata=00000000c0fc51d9, node=0
+[   88.843565] amd_xgbe:xgbe_alloc_ring_resources: amd-xgbe 0000:06:00.2 
+enp6s0f2: channel-1 - Rx ring:
+[   88.843583] amd_xgbe:xgbe_init_ring: amd-xgbe 0000:06:00.2 enp6s0f2: 
+rdesc=00000000448612df, rdesc_dma=0x00000001185b6000, 
+rdata=00000000a23b7f86, node=0
+[   88.843587] amd_xgbe:xgbe_alloc_ring_resources: amd-xgbe 0000:06:00.2 
+enp6s0f2: channel-2 - Tx ring:
+[   88.843606] amd_xgbe:xgbe_init_ring: amd-xgbe 0000:06:00.2 enp6s0f2: 
+rdesc=00000000e509050e, rdesc_dma=0x0000000104db2000, 
+rdata=000000000d605e1a, node=0
+[   88.843610] amd_xgbe:xgbe_alloc_ring_resources: amd-xgbe 0000:06:00.2 
+enp6s0f2: channel-2 - Rx ring:
+[   88.843629] amd_xgbe:xgbe_init_ring: amd-xgbe 0000:06:00.2 enp6s0f2: 
+rdesc=00000000436c5cc6, rdesc_dma=0x0000000114aaa000, 
+rdata=00000000246ed062, node=0
+[   88.848416] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2 
+enp6s0f2: TXq0 mapped to TC0
+[   88.848432] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2 
+enp6s0f2: TXq1 mapped to TC1
+[   88.848440] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2 
+enp6s0f2: TXq2 mapped to TC2
+[   88.848449] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2 
+enp6s0f2: PRIO0 mapped to RXq0
+[   88.848455] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2 
+enp6s0f2: PRIO1 mapped to RXq0
+[   88.848461] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2 
+enp6s0f2: PRIO2 mapped to RXq0
+[   88.848467] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2 
+enp6s0f2: PRIO3 mapped to RXq1
+[   88.848472] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2 
+enp6s0f2: PRIO4 mapped to RXq1
+[   88.848478] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2 
+enp6s0f2: PRIO5 mapped to RXq1
+[   88.848483] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2 
+enp6s0f2: PRIO6 mapped to RXq2
+[   88.848489] amd_xgbe:xgbe_config_queue_mapping: amd-xgbe 0000:06:00.2 
+enp6s0f2: PRIO7 mapped to RXq2
+[   88.848536] amd-xgbe 0000:06:00.2 enp6s0f2: 3 Tx hardware queues, 
+21760 byte fifo per queue
+[   88.848565] amd-xgbe 0000:06:00.2 enp6s0f2: 3 Rx hardware queues, 
+21760 byte fifo per queue
+[   88.848609] amd_xgbe:xgbe_enable_tx_flow_control: amd-xgbe 
+0000:06:00.2 enp6s0f2: flow control enabled for RXq0
+[   88.848619] amd_xgbe:xgbe_enable_tx_flow_control: amd-xgbe 
+0000:06:00.2 enp6s0f2: flow control enabled for RXq1
+[   88.848627] amd_xgbe:xgbe_enable_tx_flow_control: amd-xgbe 
+0000:06:00.2 enp6s0f2: flow control enabled for RXq2
+[   89.862558] amd_xgbe:xgbe_phy_sfp_eeprom_info: amd-xgbe 0000:06:00.2 
+enp6s0f2: SFP detected:
+[   89.862567] amd_xgbe:xgbe_phy_sfp_eeprom_info: amd-xgbe 0000:06:00.2 
+enp6s0f2:   vendor:         MikroTik
+[   89.862572] amd_xgbe:xgbe_phy_sfp_eeprom_info: amd-xgbe 0000:06:00.2 
+enp6s0f2:   part number:    S+AO0005
+[   89.862576] amd_xgbe:xgbe_phy_sfp_eeprom_info: amd-xgbe 0000:06:00.2 
+enp6s0f2:   revision level: 1.0
+[   89.862580] amd_xgbe:xgbe_phy_sfp_eeprom_info: amd-xgbe 0000:06:00.2 
+enp6s0f2:   serial number:  STST050B1900001
 
-remove the redundant code that phylib has support
+again, dmesg diff after 'rmmod':
 
-v7
+[  127.068380] ------------[ cut here ]------------
+[  127.068386] remove_proc_entry: removing non-empty directory 'irq/53', 
+leaking at least 'enp6s0f2-i2c'
+[  127.068398] WARNING: CPU: 4 PID: 803 at fs/proc/generic.c:715 
+remove_proc_entry+0x196/0x1b0
+[  127.068411] Modules linked in: nls_iso8859_1 intel_rapl_msr 
+intel_rapl_common snd_hda_intel snd_intel_dspcfg snd_intel_sdw_acpi 
+edac_mce_amd snd_hda_codec snd_hda_core snd_hwdep snd_pcm kvm snd_timer 
+snd_rn_pci_acp3x snd rapl efi_pstore k10temp soundcore snd_pci_acp3x ccp 
+mac_hid sch_fq_codel msr drm ip_tables x_tables autofs4 btrfs 
+blake2b_generic zstd_compress raid10 raid456 async_raid6_recov 
+async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 
+raid0 multipath linear crct10dif_pclmul crc32_pclmul ghash_clmulni_intel 
+aesni_intel crypto_simd igb nvme cryptd dca xhci_pci amd_xgbe(-) 
+i2c_piix4 i2c_amd_mp2_pci xhci_pci_renesas nvme_core i2c_algo_bit video 
+spi_amd
+[  127.068485] CPU: 4 PID: 803 Comm: rmmod Not tainted 5.17.0-rc3-tk #12
+[  127.068490] Hardware name: Deciso B.V. DEC2700 - OPNsense 
+Appliance/Netboard-A10 Gen.3, BIOS 05.32.50.0012-A10.20 11/15/2021
+[  127.068493] RIP: 0010:remove_proc_entry+0x196/0x1b0
+[  127.068499] Code: 60 50 5e 84 48 85 c0 48 8d 90 78 ff ff ff 48 0f 45 
+c2 49 8b 54 24 78 4c 8b 80 a0 00 00 00 48 8b 92 a0 00 00 00 e8 38 56 81 
+00 <0f> 0b e9 44 ff ff ff e8 9e c0 87 00 66 66 2e 0f 1f 84 00 00 00 00
+[  127.068502] RSP: 0018:ffffaf2940fffb60 EFLAGS: 00010286
+[  127.068506] RAX: 0000000000000000 RBX: ffff91fa4022ed80 RCX: 
+0000000000000000
+[  127.068509] RDX: 0000000000000001 RSI: ffffffff845bf281 RDI: 
+00000000ffffffff
+[  127.068511] RBP: ffffaf2940fffb90 R08: 0000000000000000 R09: 
+ffffaf2940fff950
+[  127.068513] R10: ffffaf2940fff948 R11: ffffffff84f55f48 R12: 
+ffff91fa44e8c540
+[  127.068515] R13: ffff91fa44e8c5c0 R14: 0000000000000036 R15: 
+0000000000000036
+[  127.068517] FS:  00007f3a68f9c400(0000) GS:ffff91fa6af00000(0000) 
+knlGS:0000000000000000
+[  127.068520] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  127.068522] CR2: 00007fd6c2e7fd04 CR3: 0000000104ee0000 CR4: 
+00000000003506e0
+[  127.068525] Call Trace:
+[  127.068528]  <TASK>
+[  127.068534]  unregister_irq_proc+0xe4/0x110
+[  127.068541]  free_desc+0x2e/0x70
+[  127.068546]  irq_free_descs+0x50/0x80
+[  127.068550]  irq_domain_free_irqs+0x16b/0x1c0
+[  127.068554]  __msi_domain_free_irqs+0xf1/0x160
+[  127.068560]  msi_domain_free_irqs_descs_locked+0x20/0x50
+[  127.068565]  pci_msi_teardown_msi_irqs+0x49/0x50
+[  127.068571]  pci_disable_msix.part.0+0xff/0x160
+[  127.068575]  pci_free_irq_vectors+0x45/0x60
+[  127.068578]  xgbe_pci_remove+0x24/0x40 [amd_xgbe]
+[  127.068596]  pci_device_remove+0x39/0xa0
+[  127.068602]  __device_release_driver+0x181/0x250
+[  127.068608]  driver_detach+0xd3/0x120
+[  127.068612]  bus_remove_driver+0x59/0xd0
+[  127.068615]  driver_unregister+0x31/0x50
+[  127.068619]  pci_unregister_driver+0x40/0x90
+[  127.068623]  xgbe_pci_exit+0x15/0x20 [amd_xgbe]
+[  127.068639]  xgbe_mod_exit+0x9/0x880 [amd_xgbe]
+[  127.068654]  __do_sys_delete_module.constprop.0+0x183/0x290
+[  127.068660]  ? exit_to_user_mode_prepare+0x49/0x1e0
+[  127.068666]  __x64_sys_delete_module+0x12/0x20
+[  127.068670]  do_syscall_64+0x5c/0xc0
+[  127.068676]  ? irqentry_exit_to_user_mode+0x9/0x20
+[  127.068681]  ? irqentry_exit+0x33/0x40
+[  127.068685]  ? exc_page_fault+0x89/0x180
+[  127.068689]  ? asm_exc_page_fault+0x8/0x30
+[  127.068694]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  127.068697] RIP: 0033:0x7f3a690cb8eb
+[  127.068702] Code: 73 01 c3 48 8b 0d 45 e5 0e 00 f7 d8 64 89 01 48 83 
+c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f 
+05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 15 e5 0e 00 f7 d8 64 89 01 48
+[  127.068704] RSP: 002b:00007ffed553a818 EFLAGS: 00000206 ORIG_RAX: 
+00000000000000b0
+[  127.068708] RAX: ffffffffffffffda RBX: 00007f3a6a02e7b0 RCX: 
+00007f3a690cb8eb
+[  127.068710] RDX: 000000000000000a RSI: 0000000000000800 RDI: 
+00007f3a6a02e818
+[  127.068712] RBP: 0000000000000000 R08: 0000000000000000 R09: 
+0000000000000000
+[  127.068714] R10: 00007f3a69163ac0 R11: 0000000000000206 R12: 
+00007ffed553aa70
+[  127.068716] R13: 00007ffed553b84a R14: 00007f3a6a02e2a0 R15: 
+00007f3a6a02e7b0
+[  127.068722]  </TASK>
+[  127.068723] ---[ end trace 0000000000000000 ]---
+[  127.068744] ------------[ cut here ]------------
+[  127.068746] remove_proc_entry: removing non-empty directory 'irq/54', 
+leaking at least 'enp6s0f2-pcs'
+[  127.068755] WARNING: CPU: 4 PID: 803 at fs/proc/generic.c:715 
+remove_proc_entry+0x196/0x1b0
+[  127.068761] Modules linked in: nls_iso8859_1 intel_rapl_msr 
+intel_rapl_common snd_hda_intel snd_intel_dspcfg snd_intel_sdw_acpi 
+edac_mce_amd snd_hda_codec snd_hda_core snd_hwdep snd_pcm kvm snd_timer 
+snd_rn_pci_acp3x snd rapl efi_pstore k10temp soundcore snd_pci_acp3x ccp 
+mac_hid sch_fq_codel msr drm ip_tables x_tables autofs4 btrfs 
+blake2b_generic zstd_compress raid10 raid456 async_raid6_recov 
+async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 
+raid0 multipath linear crct10dif_pclmul crc32_pclmul ghash_clmulni_intel 
+aesni_intel crypto_simd igb nvme cryptd dca xhci_pci amd_xgbe(-) 
+i2c_piix4 i2c_amd_mp2_pci xhci_pci_renesas nvme_core i2c_algo_bit video 
+spi_amd
+[  127.068810] CPU: 4 PID: 803 Comm: rmmod Tainted: G W         
+5.17.0-rc3-tk #12
+[  127.068814] Hardware name: Deciso B.V. DEC2700 - OPNsense 
+Appliance/Netboard-A10 Gen.3, BIOS 05.32.50.0012-A10.20 11/15/2021
+[  127.068815] RIP: 0010:remove_proc_entry+0x196/0x1b0
+[  127.068820] Code: 60 50 5e 84 48 85 c0 48 8d 90 78 ff ff ff 48 0f 45 
+c2 49 8b 54 24 78 4c 8b 80 a0 00 00 00 48 8b 92 a0 00 00 00 e8 38 56 81 
+00 <0f> 0b e9 44 ff ff ff e8 9e c0 87 00 66 66 2e 0f 1f 84 00 00 00 00
+[  127.068822] RSP: 0018:ffffaf2940fffb60 EFLAGS: 00010286
+[  127.068825] RAX: 0000000000000000 RBX: ffff91fa4022ed80 RCX: 
+0000000000000000
+[  127.068827] RDX: 0000000000000001 RSI: ffffffff845bf281 RDI: 
+00000000ffffffff
+[  127.068829] RBP: ffffaf2940fffb90 R08: 0000000000000000 R09: 
+ffffaf2940fff950
+[  127.068830] R10: ffffaf2940fff948 R11: ffffffff84f55f48 R12: 
+ffff91fa4eca7000
+[  127.068832] R13: ffff91fa4eca7080 R14: 0000000000000037 R15: 
+0000000000000037
+[  127.068834] FS:  00007f3a68f9c400(0000) GS:ffff91fa6af00000(0000) 
+knlGS:0000000000000000
+[  127.068837] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  127.068839] CR2: 00007fd6c2e7fd04 CR3: 0000000104ee0000 CR4: 
+00000000003506e0
+[  127.068841] Call Trace:
+[  127.068842]  <TASK>
+[  127.068844]  unregister_irq_proc+0xe4/0x110
+[  127.068849]  free_desc+0x2e/0x70
+[  127.068852]  irq_free_descs+0x50/0x80
+[  127.068856]  irq_domain_free_irqs+0x16b/0x1c0
+[  127.068860]  __msi_domain_free_irqs+0xf1/0x160
+[  127.068865]  msi_domain_free_irqs_descs_locked+0x20/0x50
+[  127.068870]  pci_msi_teardown_msi_irqs+0x49/0x50
+[  127.068873]  pci_disable_msix.part.0+0xff/0x160
+[  127.068877]  pci_free_irq_vectors+0x45/0x60
+[  127.068881]  xgbe_pci_remove+0x24/0x40 [amd_xgbe]
+[  127.068896]  pci_device_remove+0x39/0xa0
+[  127.068900]  __device_release_driver+0x181/0x250
+[  127.068904]  driver_detach+0xd3/0x120
+[  127.068908]  bus_remove_driver+0x59/0xd0
+[  127.068911]  driver_unregister+0x31/0x50
+[  127.068914]  pci_unregister_driver+0x40/0x90
+[  127.068919]  xgbe_pci_exit+0x15/0x20 [amd_xgbe]
+[  127.068933]  xgbe_mod_exit+0x9/0x880 [amd_xgbe]
+[  127.068948]  __do_sys_delete_module.constprop.0+0x183/0x290
+[  127.068952]  ? exit_to_user_mode_prepare+0x49/0x1e0
+[  127.068957]  __x64_sys_delete_module+0x12/0x20
+[  127.068961]  do_syscall_64+0x5c/0xc0
+[  127.068964]  ? irqentry_exit_to_user_mode+0x9/0x20
+[  127.068969]  ? irqentry_exit+0x33/0x40
+[  127.068973]  ? exc_page_fault+0x89/0x180
+[  127.068977]  ? asm_exc_page_fault+0x8/0x30
+[  127.068980]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  127.068983] RIP: 0033:0x7f3a690cb8eb
+[  127.068985] Code: 73 01 c3 48 8b 0d 45 e5 0e 00 f7 d8 64 89 01 48 83 
+c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f 
+05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 15 e5 0e 00 f7 d8 64 89 01 48
+[  127.068987] RSP: 002b:00007ffed553a818 EFLAGS: 00000206 ORIG_RAX: 
+00000000000000b0
+[  127.068990] RAX: ffffffffffffffda RBX: 00007f3a6a02e7b0 RCX: 
+00007f3a690cb8eb
+[  127.068991] RDX: 000000000000000a RSI: 0000000000000800 RDI: 
+00007f3a6a02e818
+[  127.068993] RBP: 0000000000000000 R08: 0000000000000000 R09: 
+0000000000000000
+[  127.068994] R10: 00007f3a69163ac0 R11: 0000000000000206 R12: 
+00007ffed553aa70
+[  127.068996] R13: 00007ffed553b84a R14: 00007f3a6a02e2a0 R15: 
+00007f3a6a02e7b0
+[  127.068999]  </TASK>
+[  127.069000] ---[ end trace 0000000000000000 ]---
+[  127.667264] irq 31: nobody cared (try booting with the "irqpoll" option)
+[  127.674758] CPU: 4 PID: 0 Comm: swapper/4 Tainted: G W         
+5.17.0-rc3-tk #12
+[  127.674764] Hardware name: Deciso B.V. DEC2700 - OPNsense 
+Appliance/Netboard-A10 Gen.3, BIOS 05.32.50.0012-A10.20 11/15/2021
+[  127.674766] Call Trace:
+[  127.674769]  <IRQ>
+[  127.674773]  dump_stack_lvl+0x4c/0x63
+[  127.674781]  dump_stack+0x10/0x12
+[  127.674784]  __report_bad_irq+0x3a/0xaf
+[  127.674789]  note_interrupt.cold+0xb/0x60
+[  127.674793]  ? __this_cpu_preempt_check+0x13/0x20
+[  127.674799]  handle_irq_event+0x71/0x80
+[  127.674805]  handle_fasteoi_irq+0x95/0x1e0
+[  127.674810]  __common_interrupt+0x6e/0x110
+[  127.674815]  common_interrupt+0xbd/0xe0
+[  127.674819]  </IRQ>
+[  127.674820]  <TASK>
+[  127.674822]  asm_common_interrupt+0x1e/0x40
+[  127.674826] RIP: 0010:cpuidle_enter_state+0xdf/0x380
+[  127.674834] Code: ff e8 25 76 73 ff 80 7d d7 00 74 17 9c 58 0f 1f 44 
+00 00 f6 c4 02 0f 85 82 02 00 00 31 ff e8 18 8c 7a ff fb 66 0f 1f 44 00 
+00 <45> 85 ff 0f 88 1a 01 00 00 49 63 d7 4c 89 f1 48 2b 4d c8 48 8d 04
+[  127.674837] RSP: 0018:ffffaf29400e3e68 EFLAGS: 00000246
+[  127.674841] RAX: ffff91fa6af00000 RBX: 0000000000000002 RCX: 
+000000000000001f
+[  127.674843] RDX: 0000000000000000 RSI: ffffffff845bf281 RDI: 
+ffffffff845cddcf
+[  127.674845] RBP: ffffaf29400e3ea0 R08: 0000001db98fd21c R09: 
+0000001d7b8fd3fc
+[  127.674847] R10: 0000000000000001 R11: ffff91fa6af2fd84 R12: 
+ffff91fa41de6c00
+[  127.674849] R13: ffffffff8506e4c0 R14: 0000001db98fd21c R15: 
+0000000000000002
+[  127.674854]  ? cpuidle_enter_state+0xbb/0x380
+[  127.674860]  cpuidle_enter+0x2e/0x40
+[  127.674864]  do_idle+0x203/0x290
+[  127.674869]  cpu_startup_entry+0x20/0x30
+[  127.674872]  start_secondary+0x118/0x150
+[  127.674877]  secondary_startup_64_no_verify+0xd5/0xdb
+[  127.674885]  </TASK>
+[  127.674886] handlers:
+[  127.677425] [<00000000b61e344c>] amd_mp2_irq_isr [i2c_amd_mp2_pci]
+[  127.684335] Disabling IRQ #31
 
-read/write registers must return error code to the caller
+and command line output after 'modprobe -vvv amd_xgbe':
 
-v8
+jane@dec740-ubu21:~$ sudo modprobe -vvv amd_xgbe
+modprobe: INFO: ../libkmod/libkmod.c:365 kmod_set_log_fn() custom 
+logging function 0x7f74d79de780 registered
+modprobe: DEBUG: ../libkmod/libkmod-index.c:757 index_mm_open() 
+file=/lib/modules/5.17.0-rc3-tk/modules.dep.bin
+modprobe: DEBUG: ../libkmod/libkmod-index.c:757 index_mm_open() 
+file=/lib/modules/5.17.0-rc3-tk/modules.alias.bin
+modprobe: DEBUG: ../libkmod/libkmod-index.c:757 index_mm_open() 
+file=/lib/modules/5.17.0-rc3-tk/modules.symbols.bin
+modprobe: DEBUG: ../libkmod/libkmod-index.c:757 index_mm_open() 
+file=/lib/modules/5.17.0-rc3-tk/modules.builtin.alias.bin
+modprobe: DEBUG: ../libkmod/libkmod-index.c:757 index_mm_open() 
+file=/lib/modules/5.17.0-rc3-tk/modules.builtin.bin
+modprobe: DEBUG: ../libkmod/libkmod-module.c:556 
+kmod_module_new_from_lookup() input alias=amd_xgbe, normalized=amd_xgbe
+modprobe: DEBUG: ../libkmod/libkmod-module.c:562 
+kmod_module_new_from_lookup() lookup modules.dep amd_xgbe
+modprobe: DEBUG: ../libkmod/libkmod.c:595 kmod_search_moddep() use 
+mmaped index 'modules.dep' modname=amd_xgbe
+modprobe: DEBUG: ../libkmod/libkmod.c:403 kmod_pool_get_module() get 
+module name='amd_xgbe' found=(nil)
+modprobe: DEBUG: ../libkmod/libkmod.c:411 kmod_pool_add_module() add 
+0x7f74d83862a0 key='amd_xgbe'
+modprobe: DEBUG: ../libkmod/libkmod-module.c:202 
+kmod_module_parse_depline() 0 dependencies for amd_xgbe
+modprobe: DEBUG: ../libkmod/libkmod-module.c:589 
+kmod_module_new_from_lookup() lookup amd_xgbe=0, list=0x7f74d8385c40
+modprobe: DEBUG: ../libkmod/libkmod.c:500 lookup_builtin_file() use 
+mmaped index 'modules.builtin' modname=amd_xgbe
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1760 
+kmod_module_get_initstate() could not open 
+'/sys/module/amd_xgbe/initstate': No such file or directory
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1770 
+kmod_module_get_initstate() could not open '/sys/module/amd_xgbe': No 
+such file or directory
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1404 
+kmod_module_get_options() modname=snd_pcsp mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1404 
+kmod_module_get_options() modname=snd_usb_audio mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1404 
+kmod_module_get_options() modname=cx88_alsa mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1404 
+kmod_module_get_options() modname=snd_atiixp_modem mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1404 
+kmod_module_get_options() modname=snd_intel8x0m mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1404 
+kmod_module_get_options() modname=snd_via82xx_modem mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1404 
+kmod_module_get_options() modname=amd_xgbe mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1409 
+kmod_module_get_options() passed = modname=amd_xgbe mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1404 
+kmod_module_get_options() modname=md_mod mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1404 
+kmod_module_get_options() modname=bonding mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1404 
+kmod_module_get_options() modname=dummy mod->name=amd_xgbe mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1404 
+kmod_module_get_options() modname=amd_xgbe mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1409 
+kmod_module_get_options() passed = modname=amd_xgbe mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1404 
+kmod_module_get_options() modname=amd_xgbe mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1409 
+kmod_module_get_options() passed = modname=amd_xgbe mod->name=amd_xgbe 
+mod->alias=(null)
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1760 
+kmod_module_get_initstate() could not open 
+'/sys/module/amd_xgbe/initstate': No such file or directory
+modprobe: DEBUG: ../libkmod/libkmod-module.c:1770 
+kmod_module_get_initstate() could not open '/sys/module/amd_xgbe': No 
+such file or directory
+modprobe: DEBUG: ../libkmod/libkmod-module.c:750 kmod_module_get_path() 
+name='amd_xgbe' 
+path='/lib/modules/5.17.0-rc3-tk/kernel/drivers/net/ethernet/amd/xgbe/amd-xgbe.ko'
+modprobe: DEBUG: ../libkmod/libkmod-module.c:750 kmod_module_get_path() 
+name='amd_xgbe' 
+path='/lib/modules/5.17.0-rc3-tk/kernel/drivers/net/ethernet/amd/xgbe/amd-xgbe.ko'
+insmod 
+/lib/modules/5.17.0-rc3-tk/kernel/drivers/net/ethernet/amd/xgbe/amd-xgbe.ko 
+dyndbg="+pfm" debug=0x37 dyndbg=+p debug=0x37
+modprobe: DEBUG: ../libkmod/libkmod-module.c:750 kmod_module_get_path() 
+name='amd_xgbe' 
+path='/lib/modules/5.17.0-rc3-tk/kernel/drivers/net/ethernet/amd/xgbe/amd-xgbe.ko'
+modprobe: DEBUG: ../libkmod/libkmod-module.c:468 kmod_module_unref() 
+kmod_module 0x7f74d83862a0 released
+modprobe: DEBUG: ../libkmod/libkmod.c:419 kmod_pool_del_module() del 
+0x7f74d83862a0 key='amd_xgbe'
+modprobe: INFO: ../libkmod/libkmod.c:332 kmod_unref() context 
+0x7f74d83854c0 released
 
-not parmanently set MAC by .ndo_set_mac_address
+and the corresponding dmesg diff:
 
-v9
+[  151.599892] amd-xgbe 0000:06:00.1 eth0: net device enabled
+[  151.601333] amd-xgbe 0000:06:00.2 eth1: net device enabled
+[  151.606044] amd-xgbe 0000:06:00.1 enp6s0f1: renamed from eth0
+[  151.646262] amd-xgbe 0000:06:00.2 enp6s0f2: renamed from eth1
 
-improve the registers read/write so that error code
-return as far as possible up the call stack.
 
-v10
-
-use regmap APIs for SPI and MDIO
-
-v11
-
-use regmap_read_poll_timeout
-use corresponding regmap APIs, i.e. SPI, MDIO
-
-v12
-
-use mdiobus API instead of regmap MDIO APIs
-
-v13
-
-Simply all regmap APIs return value checked
-Clear the fifo reset report
-Eliminate redundant comments
-
-Comment that DM9051_GPR register bit 0 function for power-up
-the internal phy, if this bit is updated from 1 to 0, then the
-whole dm9051 chip registers could not be accessed within 1 ms,
-so that has mdelay(1) to wait 1 ms
-
-v14
-
-To eliminate touching PHY registers, instead take advantage of phy_start
-to have it
-Make neat to be readable exactly
-
-v15
-
-Process the mac address function to be exactly right
-Re-arrange functions for better style
-Handle to auto negotiation to be right procedure
-
-v16
-
-Let netif_wake_queue at the bottom of dm9051_open
-Add draining tx queue in dm9051_stop
-
-v17
-
-Chnage from kthread_work to work_struct 
-
-v18
-
-Clean the code with suitable macro, correctly using phy_device and
-to be a reasonable interrupt service routine
-
-v19
-
-Not to use atomic mdelay, use msleep instead
-Change some to be clarity function's names
-
-v20
-
-Re-arrange the usage of all regmap APIs
-
- drivers/net/ethernet/davicom/Kconfig  |   31 +
- drivers/net/ethernet/davicom/Makefile |    1 +
- drivers/net/ethernet/davicom/dm9051.c | 1260 +++++++++++++++++++++++++
- drivers/net/ethernet/davicom/dm9051.h |  162 ++++
- 4 files changed, 1454 insertions(+)
- create mode 100644 drivers/net/ethernet/davicom/dm9051.c
- create mode 100644 drivers/net/ethernet/davicom/dm9051.h
-
-diff --git a/drivers/net/ethernet/davicom/Kconfig b/drivers/net/ethernet/davicom/Kconfig
-index 7af86b6d4150..02e0caff98e3 100644
---- a/drivers/net/ethernet/davicom/Kconfig
-+++ b/drivers/net/ethernet/davicom/Kconfig
-@@ -3,6 +3,19 @@
- # Davicom device configuration
- #
- 
-+config NET_VENDOR_DAVICOM
-+	bool "Davicom devices"
-+	default y
-+	help
-+	  If you have a network (Ethernet) card belonging to this class, say Y.
-+
-+	  Note that the answer to this question doesn't directly affect the
-+	  kernel: saying N will just cause the configurator to skip all
-+	  the questions about Davicom devices. If you say Y, you will be asked
-+	  for your specific card in the following selections.
-+
-+if NET_VENDOR_DAVICOM
-+
- config DM9000
- 	tristate "DM9000 support"
- 	depends on ARM || MIPS || COLDFIRE || NIOS2 || COMPILE_TEST
-@@ -22,3 +35,21 @@ config DM9000_FORCE_SIMPLE_PHY_POLL
- 	  bit to determine if the link is up or down instead of the more
- 	  costly MII PHY reads. Note, this will not work if the chip is
- 	  operating with an external PHY.
-+
-+config DM9051
-+	tristate "DM9051 SPI support"
-+	depends on SPI
-+	select CRC32
-+	select MDIO
-+	select PHYLIB
-+	select REGMAP_SPI
-+	help
-+	  Support for DM9051 SPI chipset.
-+
-+	  To compile this driver as a module, choose M here.  The module
-+	  will be called dm9051.
-+
-+	  The SPI mode for the host's SPI master to access DM9051 is mode
-+	  0 on the SPI bus.
-+
-+endif # NET_VENDOR_DAVICOM
-diff --git a/drivers/net/ethernet/davicom/Makefile b/drivers/net/ethernet/davicom/Makefile
-index 173c87d21076..225f85bc1f53 100644
---- a/drivers/net/ethernet/davicom/Makefile
-+++ b/drivers/net/ethernet/davicom/Makefile
-@@ -4,3 +4,4 @@
- #
- 
- obj-$(CONFIG_DM9000) += dm9000.o
-+obj-$(CONFIG_DM9051) += dm9051.o
-diff --git a/drivers/net/ethernet/davicom/dm9051.c b/drivers/net/ethernet/davicom/dm9051.c
-new file mode 100644
-index 000000000000..cee3ff499fd4
---- /dev/null
-+++ b/drivers/net/ethernet/davicom/dm9051.c
-@@ -0,0 +1,1260 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (c) 2022 Davicom Semiconductor,Inc.
-+ * Davicom DM9051 SPI Fast Ethernet Linux driver
-+ */
-+
-+#include <linux/etherdevice.h>
-+#include <linux/ethtool.h>
-+#include <linux/interrupt.h>
-+#include <linux/iopoll.h>
-+#include <linux/irq.h>
-+#include <linux/mii.h>
-+#include <linux/module.h>
-+#include <linux/netdevice.h>
-+#include <linux/phy.h>
-+#include <linux/regmap.h>
-+#include <linux/skbuff.h>
-+#include <linux/spinlock.h>
-+#include <linux/spi/spi.h>
-+#include <linux/types.h>
-+
-+#include "dm9051.h"
-+
-+#define DRVNAME_9051	"dm9051"
-+
-+/**
-+ * struct rx_ctl_mach - rx activities record
-+ * @status_err_counter: rx status error counter
-+ * @large_err_counter: rx get large packet length error counter
-+ * @rx_err_counter: receive packet error counter
-+ * @tx_err_counter: transmit packet error counter
-+ * @fifo_rst_counter: reset operation counter
-+ *
-+ * To keep track for the driver operation statistics
-+ */
-+struct rx_ctl_mach {
-+	u16				status_err_counter;
-+	u16				large_err_counter;
-+	u16				rx_err_counter;
-+	u16				tx_err_counter;
-+	u16				fifo_rst_counter;
-+};
-+
-+/**
-+ * struct dm9051_rxctrl - dm9051 driver rx control
-+ * @hash_table: Multicast hash-table data
-+ * @rcr_all: KS_RXCR1 register setting
-+ *
-+ * The settings needs to control the receive filtering
-+ * such as the multicast hash-filter and the receive register settings
-+ */
-+struct dm9051_rxctrl {
-+	u16				hash_table[4];
-+	u8				rcr_all;
-+};
-+
-+/**
-+ * struct dm9051_rxhdr - rx packet data header
-+ * @headbyte: lead byte equal to 0x01 notifies a valid packet
-+ * @status: status bits for the received packet
-+ * @rxlen: packet length
-+ *
-+ * The Rx packed, entered into the FIFO memory, start with these
-+ * four bytes which is the Rx header, followed by the ethernet
-+ * packet data and ends with an appended 4-byte CRC data.
-+ * Both Rx packet and CRC data are for check purpose and finally
-+ * are dropped by this driver
-+ */
-+struct dm9051_rxhdr {
-+	u8				headbyte;
-+	u8				status;
-+	__le16				rxlen;
-+};
-+
-+/**
-+ * struct board_info - maintain the saved data
-+ * @spidev: spi device structure
-+ * @ndev: net device structure
-+ * @mdiobus: mii bus structure
-+ * @phydev: phy device structure
-+ * @txq: tx queue structure
-+ * @regmap_dm: regmap for register read/write
-+ * @regmap_dmbulk: extra regmap for bulk read/write
-+ * @rxctrl_work: Work queue for updating RX mode and multicast lists
-+ * @tx_work: Work queue for tx packets
-+ * @pause: ethtool pause parameter structure
-+ * @spi_lockm: between threads lock structure
-+ * @reg_mutex: regmap access lock structure
-+ * @bc: rx control statistics structure
-+ * @rxhdr: rx header structure
-+ * @rctl: rx control setting structure
-+ * @msg_enable: message level value
-+ * @imr_all: to store operating imr value for register DM9051_IMR
-+ * @lcr_all: to store operating rcr value for register DM9051_LMCR
-+ *
-+ * The saved data variables, keep up to date for retrieval back to use
-+ */
-+struct board_info {
-+	u32				msg_enable;
-+	struct spi_device		*spidev;
-+	struct net_device		*ndev;
-+	struct mii_bus			*mdiobus;
-+	struct phy_device		*phydev;
-+	struct sk_buff_head		txq;
-+	struct regmap			*regmap_dm;
-+	struct regmap			*regmap_dmbulk;
-+	struct work_struct		rxctrl_work;
-+	struct work_struct		tx_work;
-+	struct ethtool_pauseparam	pause;
-+	struct mutex			spi_lockm;
-+	struct mutex			reg_mutex;
-+	struct rx_ctl_mach		bc;
-+	struct dm9051_rxhdr		rxhdr;
-+	struct dm9051_rxctrl		rctl;
-+	u8				imr_all;
-+	u8				lcr_all;
-+};
-+
-+static int dm9051_set_reg(struct board_info *db, unsigned int reg, unsigned int val)
-+{
-+	int ret;
-+
-+	ret = regmap_write(db->regmap_dm, reg, val);
-+	if (ret < 0)
-+		netif_err(db, drv, db->ndev, "%s: error %d set reg %02x\n",
-+			  __func__, ret, reg);
-+	return ret;
-+}
-+
-+static int dm9051_update_bits(struct board_info *db, unsigned int reg, unsigned int mask,
-+			      unsigned int val)
-+{
-+	int ret;
-+
-+	ret = regmap_update_bits(db->regmap_dm, reg, mask, val);
-+	if (ret < 0)
-+		netif_err(db, drv, db->ndev, "%s: error %d update bits reg %02x\n",
-+			  __func__, ret, reg);
-+	return ret;
-+}
-+
-+/* skb buffer exhausted, just discard the received data
-+ */
-+static int dm9051_dumpblk(struct board_info *db, u8 reg, size_t count)
-+{
-+	struct net_device *ndev = db->ndev;
-+	unsigned int rb;
-+	int ret;
-+
-+	/* no skb buffer,
-+	 * both reg and &rb must be noinc,
-+	 * read once one byte via regmap_read
-+	 */
-+	do {
-+		ret = regmap_read(db->regmap_dm, reg, &rb);
-+		if (ret < 0) {
-+			netif_err(db, drv, ndev, "%s: error %d dumping read reg %02x\n",
-+				  __func__, ret, reg);
-+			break;
-+		}
-+	} while (--count);
-+
-+	return ret;
-+}
-+
-+static int dm9051_set_regs(struct board_info *db, unsigned int reg, const void *val,
-+			   size_t val_count)
-+{
-+	int ret;
-+
-+	ret = regmap_bulk_write(db->regmap_dmbulk, reg, val, val_count);
-+	if (ret < 0)
-+		netif_err(db, drv, db->ndev, "%s: error %d bulk writing regs %02x\n",
-+			  __func__, ret, reg);
-+	return ret;
-+}
-+
-+static int dm9051_get_regs(struct board_info *db, unsigned int reg, void *val,
-+			   size_t val_count)
-+{
-+	int ret;
-+
-+	ret = regmap_bulk_read(db->regmap_dmbulk, reg, val, val_count);
-+	if (ret < 0)
-+		netif_err(db, drv, db->ndev, "%s: error %d bulk reading regs %02x\n",
-+			  __func__, ret, reg);
-+	return ret;
-+}
-+
-+static int dm9051_write_mem(struct board_info *db, unsigned int reg, const void *buff,
-+			    size_t len)
-+{
-+	int ret;
-+
-+	ret = regmap_noinc_write(db->regmap_dm, reg, buff, len);
-+	if (ret < 0)
-+		netif_err(db, drv, db->ndev, "%s: error %d noinc writing regs %02x\n",
-+			  __func__, ret, reg);
-+	return ret;
-+}
-+
-+static int dm9051_read_mem(struct board_info *db, unsigned int reg, void *buff,
-+			   size_t len)
-+{
-+	int ret;
-+
-+	ret = regmap_noinc_read(db->regmap_dm, reg, buff, len);
-+	if (ret < 0)
-+		netif_err(db, drv, db->ndev, "%s: error %d noinc reading regs %02x\n",
-+			  __func__, ret, reg);
-+	return ret;
-+}
-+
-+/* waiting tx-end rather than tx-req
-+ * got faster
-+ */
-+static int dm9051_nsr_poll(struct board_info *db)
-+{
-+	unsigned int mval;
-+	int ret;
-+
-+	ret = regmap_read_poll_timeout(db->regmap_dm, DM9051_NSR, mval,
-+				       mval & (NSR_TX2END | NSR_TX1END), 1, 20);
-+	if (ret == -ETIMEDOUT)
-+		netdev_err(db->ndev, "timeout in checking for tx end\n");
-+	return ret;
-+}
-+
-+static int dm9051_epcr_poll(struct board_info *db)
-+{
-+	unsigned int mval;
-+	int ret;
-+
-+	ret = regmap_read_poll_timeout(db->regmap_dm, DM9051_EPCR, mval,
-+				       !(mval & EPCR_ERRE), 100, 10000);
-+	if (ret == -ETIMEDOUT)
-+		netdev_err(db->ndev, "eeprom/phy in processing get timeout\n");
-+	return ret;
-+}
-+
-+static int dm9051_irq_flag(struct board_info *db)
-+{
-+	struct spi_device *spi = db->spidev;
-+	int irq_type = irq_get_trigger_type(spi->irq);
-+
-+	if (irq_type)
-+		return irq_type;
-+
-+	return IRQF_TRIGGER_LOW;
-+}
-+
-+static unsigned int dm9051_intcr_value(struct board_info *db)
-+{
-+	return (dm9051_irq_flag(db) == IRQF_TRIGGER_LOW) ?
-+		INTCR_POL_LOW : INTCR_POL_HIGH;
-+}
-+
-+static int dm9051_set_fcr(struct board_info *db)
-+{
-+	u8 fcr = 0;
-+
-+	if (db->pause.rx_pause)
-+		fcr |= FCR_BKPM | FCR_FLCE;
-+	if (db->pause.tx_pause)
-+		fcr |= FCR_TXPEN;
-+
-+	return dm9051_set_reg(db, DM9051_FCR, fcr);
-+}
-+
-+static int dm9051_set_recv(struct board_info *db)
-+{
-+	int ret;
-+
-+	ret = dm9051_set_regs(db, DM9051_MAR, db->rctl.hash_table, sizeof(db->rctl.hash_table));
-+	if (ret)
-+		return ret;
-+
-+	return dm9051_set_reg(db, DM9051_RCR, db->rctl.rcr_all); /* enable rx */
-+}
-+
-+static int dm9051_core_reset(struct board_info *db)
-+{
-+	int ret;
-+
-+	db->bc.fifo_rst_counter++;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_NCR, NCR_RST); /* NCR reset */
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(db->regmap_dm, DM9051_MBNDRY, MBNDRY_BYTE); /* MemBound */
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(db->regmap_dm, DM9051_PPCR, PPCR_PAUSE_COUNT); /* Pause Count */
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(db->regmap_dm, DM9051_LMCR, db->lcr_all); /* LEDMode1 */
-+	if (ret)
-+		return ret;
-+
-+	return dm9051_set_reg(db, DM9051_INTCR, dm9051_intcr_value(db));
-+}
-+
-+static int dm9051_update_fcr(struct board_info *db)
-+{
-+	u8 fcr = 0;
-+
-+	if (db->pause.rx_pause)
-+		fcr |= FCR_BKPM | FCR_FLCE;
-+	if (db->pause.tx_pause)
-+		fcr |= FCR_TXPEN;
-+
-+	return dm9051_update_bits(db, DM9051_FCR, FCR_RXTX_BITS, fcr);
-+}
-+
-+static int dm9051_disable_interrupt(struct board_info *db)
-+{
-+	return dm9051_set_reg(db, DM9051_IMR, IMR_PAR); /* disable int */
-+}
-+
-+static int dm9051_enable_interrupt(struct board_info *db)
-+{
-+	return dm9051_set_reg(db, DM9051_IMR, db->imr_all); /* enable int */
-+}
-+
-+static int dm9051_stop_mrcmd(struct board_info *db)
-+{
-+	return dm9051_set_reg(db, DM9051_ISR, ISR_STOP_MRCMD); /* to stop mrcmd */
-+}
-+
-+static int dm9051_clear_interrupt(struct board_info *db)
-+{
-+	return dm9051_update_bits(db, DM9051_ISR, ISR_CLR_INT, ISR_CLR_INT);
-+}
-+
-+static int dm9051_eeprom_read(struct board_info *db, int offset, u8 *to)
-+{
-+	int ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPAR, offset);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPCR, EPCR_ERPRR);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_epcr_poll(db);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPCR, 0);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_bulk_read(db->regmap_dmbulk, DM9051_EPDRL, to, 2);
-+}
-+
-+static int dm9051_eeprom_write(struct board_info *db, int offset, u8 *data)
-+{
-+	int ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPAR, offset);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_bulk_write(db->regmap_dmbulk, DM9051_EPDRL, data, 2);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPCR, EPCR_WEP | EPCR_ERPRW);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_epcr_poll(db);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(db->regmap_dm, DM9051_EPCR, 0);
-+}
-+
-+static int dm9051_phyread(void *context, unsigned int reg, unsigned int *val)
-+{
-+	struct board_info *db = context;
-+	int ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPAR, DM9051_PHY | reg);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPCR, EPCR_ERPRR | EPCR_EPOS);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_epcr_poll(db);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPCR, 0);
-+	if (ret)
-+		return ret;
-+
-+	/* this is a 4 bytes data, clear to zero since following regmap_bulk_read
-+	 * only fill lower 2 bytes
-+	 */
-+	*val = 0;
-+	return regmap_bulk_read(db->regmap_dmbulk, DM9051_EPDRL, val, 2);
-+}
-+
-+static int dm9051_phywrite(void *context, unsigned int reg, unsigned int val)
-+{
-+	struct board_info *db = context;
-+	int ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPAR, DM9051_PHY | reg);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_bulk_write(db->regmap_dmbulk, DM9051_EPDRL, &val, 2);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_write(db->regmap_dm, DM9051_EPCR, EPCR_EPOS | EPCR_ERPRW);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_epcr_poll(db);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(db->regmap_dm, DM9051_EPCR, 0);
-+}
-+
-+static int dm9051_mdio_read(struct mii_bus *bus, int addr, int regnum)
-+{
-+	struct board_info *db = bus->priv;
-+	unsigned int val = 0xffff;
-+	int ret;
-+
-+	if (addr == DM9051_PHY_ADDR) {
-+		ret = dm9051_phyread(db, regnum, &val);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return val;
-+}
-+
-+static int dm9051_mdio_write(struct mii_bus *bus, int addr, int regnum, u16 val)
-+{
-+	struct board_info *db = bus->priv;
-+
-+	if (addr == DM9051_PHY_ADDR)
-+		return dm9051_phywrite(db, regnum, val);
-+
-+	return -ENODEV;
-+}
-+
-+static void dm9051_reg_lock_mutex(void *dbcontext)
-+{
-+	struct board_info *db = dbcontext;
-+
-+	mutex_lock(&db->reg_mutex);
-+}
-+
-+static void dm9051_reg_unlock_mutex(void *dbcontext)
-+{
-+	struct board_info *db = dbcontext;
-+
-+	mutex_unlock(&db->reg_mutex);
-+}
-+
-+static struct regmap_config regconfigdm = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = 0xff,
-+	.reg_stride = 1,
-+	.cache_type = REGCACHE_NONE,
-+	.read_flag_mask = 0,
-+	.write_flag_mask = DM_SPI_WR,
-+	.val_format_endian = REGMAP_ENDIAN_LITTLE,
-+	.lock = dm9051_reg_lock_mutex,
-+	.unlock = dm9051_reg_unlock_mutex,
-+};
-+
-+static struct regmap_config regconfigdmbulk = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = 0xff,
-+	.reg_stride = 1,
-+	.cache_type = REGCACHE_NONE,
-+	.read_flag_mask = 0,
-+	.write_flag_mask = DM_SPI_WR,
-+	.val_format_endian = REGMAP_ENDIAN_LITTLE,
-+	.lock = dm9051_reg_lock_mutex,
-+	.unlock = dm9051_reg_unlock_mutex,
-+	.use_single_read = true,
-+	.use_single_write = true,
-+};
-+
-+static int dm9051_map_init(struct spi_device *spi, struct board_info *db)
-+{
-+	/* create two regmap instances,
-+	 * split read/write and bulk_read/bulk_write to individual regmap
-+	 * to resolve regmap execution confliction problem
-+	 */
-+	regconfigdm.lock_arg = db;
-+	db->regmap_dm = devm_regmap_init_spi(db->spidev, &regconfigdm);
-+	if (IS_ERR(db->regmap_dm))
-+		return PTR_ERR(db->regmap_dm);
-+
-+	regconfigdmbulk.lock_arg = db;
-+	db->regmap_dmbulk = devm_regmap_init_spi(db->spidev, &regconfigdmbulk);
-+	if (IS_ERR(db->regmap_dmbulk))
-+		return PTR_ERR(db->regmap_dmbulk);
-+
-+	return 0;
-+}
-+
-+static int dm9051_map_chipid(struct board_info *db)
-+{
-+	struct device *dev = &db->spidev->dev;
-+	unsigned int ret;
-+	unsigned short wid;
-+	u8 buff[6];
-+
-+	ret = dm9051_get_regs(db, DM9051_VIDL, buff, sizeof(buff));
-+	if (ret < 0)
-+		return ret;
-+
-+	wid = get_unaligned_le16(buff + 2);
-+	if (wid != DM9051_ID) {
-+		dev_err(dev, "chipid error as %04x !\n", wid);
-+		return -ENODEV;
-+	}
-+
-+	dev_info(dev, "chip %04x found\n", wid);
-+	return 0;
-+}
-+
-+/* Read DM9051_PAR registers which is the mac address loaded from EEPROM while power-on
-+ */
-+static int dm9051_map_etherdev_par(struct net_device *ndev, struct board_info *db)
-+{
-+	u8 addr[ETH_ALEN];
-+	int ret;
-+
-+	ret = dm9051_get_regs(db, DM9051_PAR, addr, sizeof(addr));
-+	if (ret < 0)
-+		return ret;
-+
-+	if (!is_valid_ether_addr(addr)) {
-+		eth_hw_addr_random(ndev);
-+
-+		ret = dm9051_set_regs(db, DM9051_PAR, ndev->dev_addr, sizeof(ndev->dev_addr));
-+		if (ret < 0)
-+			return ret;
-+
-+		dev_dbg(&db->spidev->dev, "Use random MAC address\n");
-+		return 0;
-+	}
-+
-+	eth_hw_addr_set(ndev, addr);
-+	return 0;
-+}
-+
-+/* ethtool-ops
-+ */
-+static void dm9051_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
-+{
-+	strscpy(info->driver, DRVNAME_9051, sizeof(info->driver));
-+}
-+
-+static void dm9051_set_msglevel(struct net_device *ndev, u32 value)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+
-+	db->msg_enable = value;
-+}
-+
-+static u32 dm9051_get_msglevel(struct net_device *ndev)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+
-+	return db->msg_enable;
-+}
-+
-+static int dm9051_get_eeprom_len(struct net_device *dev)
-+{
-+	return 128;
-+}
-+
-+static int dm9051_get_eeprom(struct net_device *ndev,
-+			     struct ethtool_eeprom *ee, u8 *data)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+	int offset = ee->offset;
-+	int len = ee->len;
-+	int i, ret;
-+
-+	if ((len | offset) & 1)
-+		return -EINVAL;
-+
-+	ee->magic = DM_EEPROM_MAGIC;
-+
-+	for (i = 0; i < len; i += 2) {
-+		ret = dm9051_eeprom_read(db, (offset + i) / 2, data + i);
-+		if (ret)
-+			break;
-+	}
-+	return ret;
-+}
-+
-+static int dm9051_set_eeprom(struct net_device *ndev,
-+			     struct ethtool_eeprom *ee, u8 *data)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+	int offset = ee->offset;
-+	int len = ee->len;
-+	int i, ret;
-+
-+	if ((len | offset) & 1)
-+		return -EINVAL;
-+
-+	if (ee->magic != DM_EEPROM_MAGIC)
-+		return -EINVAL;
-+
-+	for (i = 0; i < len; i += 2) {
-+		ret = dm9051_eeprom_write(db, (offset + i) / 2, data + i);
-+		if (ret)
-+			break;
-+	}
-+	return ret;
-+}
-+
-+static void dm9051_get_pauseparam(struct net_device *ndev,
-+				  struct ethtool_pauseparam *pause)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+
-+	*pause = db->pause;
-+}
-+
-+static int dm9051_set_pauseparam(struct net_device *ndev,
-+				 struct ethtool_pauseparam *pause)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+
-+	db->pause = *pause;
-+
-+	if (pause->autoneg == AUTONEG_DISABLE)
-+		return dm9051_update_fcr(db);
-+
-+	phy_set_sym_pause(db->phydev, pause->rx_pause, pause->tx_pause,
-+			  pause->autoneg);
-+	phy_start_aneg(db->phydev);
-+	return 0;
-+}
-+
-+static const struct ethtool_ops dm9051_ethtool_ops = {
-+	.get_drvinfo = dm9051_get_drvinfo,
-+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
-+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
-+	.get_msglevel = dm9051_get_msglevel,
-+	.set_msglevel = dm9051_set_msglevel,
-+	.nway_reset = phy_ethtool_nway_reset,
-+	.get_link = ethtool_op_get_link,
-+	.get_eeprom_len = dm9051_get_eeprom_len,
-+	.get_eeprom = dm9051_get_eeprom,
-+	.set_eeprom = dm9051_set_eeprom,
-+	.get_pauseparam = dm9051_get_pauseparam,
-+	.set_pauseparam = dm9051_set_pauseparam,
-+};
-+
-+static int dm9051_all_start(struct board_info *db)
-+{
-+	int ret;
-+
-+	/* GPR power on of the internal phy
-+	 */
-+	ret = dm9051_set_reg(db, DM9051_GPR, 0);
-+	if (ret)
-+		return ret;
-+
-+	/* dm9051 chip registers could not be accessed within 1 ms
-+	 * after GPR power on, delay 1 ms is essential
-+	 */
-+	msleep(1);
-+
-+	ret = dm9051_core_reset(db);
-+	if (ret)
-+		return ret;
-+
-+	return dm9051_enable_interrupt(db);
-+}
-+
-+static int dm9051_all_stop(struct board_info *db)
-+{
-+	int ret;
-+
-+	/* GPR power off of the internal phy,
-+	 * The internal phy still could be accessed after this GPR power off control
-+	 */
-+	ret = dm9051_set_reg(db, DM9051_GPR, GPR_PHY_OFF);
-+	if (ret)
-+		return ret;
-+
-+	return dm9051_set_reg(db, DM9051_RCR, RCR_RX_DISABLE);
-+}
-+
-+/* fifo reset while rx error found
-+ */
-+static int dm9051_all_restart(struct board_info *db)
-+{
-+	struct net_device *ndev = db->ndev;
-+	int ret;
-+
-+	ret = dm9051_core_reset(db);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_enable_interrupt(db);
-+	if (ret)
-+		return ret;
-+
-+	netdev_dbg(ndev, " rxstatus_Er & rxlen_Er %d, RST_c %d\n",
-+		   db->bc.status_err_counter + db->bc.large_err_counter,
-+		   db->bc.fifo_rst_counter);
-+
-+	ret = dm9051_set_recv(db);
-+	if (ret)
-+		return ret;
-+
-+	return dm9051_set_fcr(db);
-+}
-+
-+/* read packets from the fifo memory
-+ * return value,
-+ *  > 0 - read packet number, caller can repeat the rx operation
-+ *    0 - no error, caller need stop further rx operation
-+ *  -EBUSY - read data error, caller escape from rx operation
-+ */
-+static int dm9051_loop_rx(struct board_info *db)
-+{
-+	struct net_device *ndev = db->ndev;
-+	unsigned int rxbyte;
-+	int ret, rxlen;
-+	struct sk_buff *skb;
-+	u8 *rdptr;
-+	int scanrr = 0;
-+
-+	do {
-+		ret = dm9051_read_mem(db, DM_SPI_MRCMDX, &rxbyte, 2);
-+		if (ret)
-+			return ret;
-+
-+		if ((rxbyte & GENMASK(7, 0)) != DM9051_PKT_RDY)
-+			break; /* exhaust-empty */
-+
-+		ret = dm9051_read_mem(db, DM_SPI_MRCMD, &db->rxhdr, DM_RXHDR_SIZE);
-+		if (ret)
-+			return ret;
-+
-+		ret = dm9051_stop_mrcmd(db);
-+		if (ret)
-+			return ret;
-+
-+		rxlen = le16_to_cpu(db->rxhdr.rxlen);
-+		if (db->rxhdr.status & RSR_ERR_BITS || rxlen > DM9051_PKT_MAX) {
-+			netdev_dbg(ndev, "rxhdr-byte (%02x)\n",
-+				   db->rxhdr.headbyte);
-+
-+			if (db->rxhdr.status & RSR_ERR_BITS) {
-+				db->bc.status_err_counter++;
-+				netdev_dbg(ndev, "check rxstatus-eror (%02x)\n",
-+					   db->rxhdr.status);
-+			} else {
-+				db->bc.large_err_counter++;
-+				netdev_dbg(ndev, "check rxlen large-eror (%d > %d)\n",
-+					   rxlen, DM9051_PKT_MAX);
-+			}
-+			return dm9051_all_restart(db);
-+		}
-+
-+		skb = dev_alloc_skb(rxlen);
-+		if (!skb) {
-+			ret = dm9051_dumpblk(db, DM_SPI_MRCMD, rxlen);
-+			if (ret)
-+				return ret;
-+			return scanrr;
-+		}
-+
-+		rdptr = skb_put(skb, rxlen - 4);
-+		ret = dm9051_read_mem(db, DM_SPI_MRCMD, rdptr, rxlen);
-+		if (ret) {
-+			db->bc.rx_err_counter++;
-+			dev_kfree_skb(skb);
-+			return ret;
-+		}
-+
-+		ret = dm9051_stop_mrcmd(db);
-+		if (ret)
-+			return ret;
-+
-+		skb->protocol = eth_type_trans(skb, db->ndev);
-+		if (db->ndev->features & NETIF_F_RXCSUM)
-+			skb_checksum_none_assert(skb);
-+		netif_rx_ni(skb);
-+		db->ndev->stats.rx_bytes += rxlen;
-+		db->ndev->stats.rx_packets++;
-+		scanrr++;
-+	} while (!ret);
-+
-+	return scanrr;
-+}
-+
-+/* transmit a packet,
-+ * return value,
-+ *   0 - succeed
-+ *  -ETIMEDOUT - timeout error
-+ */
-+static int dm9051_single_tx(struct board_info *db, u8 *buff, unsigned int len)
-+{
-+	int ret;
-+
-+	ret = dm9051_nsr_poll(db);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_write_mem(db, DM_SPI_MWCMD, buff, len);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_set_regs(db, DM9051_TXPLL, &len, 2);
-+	if (ret < 0)
-+		return ret;
-+
-+	return dm9051_set_reg(db, DM9051_TCR, TCR_TXREQ);
-+}
-+
-+static int dm9051_loop_tx(struct board_info *db)
-+{
-+	struct net_device *ndev = db->ndev;
-+	int ntx = 0;
-+	int ret;
-+
-+	while (!skb_queue_empty(&db->txq)) {
-+		struct sk_buff *skb;
-+
-+		skb = skb_dequeue(&db->txq);
-+		if (skb) {
-+			ntx++;
-+			ret = dm9051_single_tx(db, skb->data, skb->len);
-+			dev_kfree_skb(skb);
-+			if (ret < 0) {
-+				db->bc.tx_err_counter++;
-+				return 0;
-+			}
-+			ndev->stats.tx_bytes += skb->len;
-+			ndev->stats.tx_packets++;
-+		}
-+
-+		if (netif_queue_stopped(ndev) &&
-+		    (skb_queue_len(&db->txq) < DM9051_TX_QUE_LO_WATER))
-+			netif_wake_queue(ndev);
-+	}
-+
-+	return ntx;
-+}
-+
-+static irqreturn_t dm9051_rx_threaded_irq(int irq, void *pw)
-+{
-+	struct board_info *db = pw;
-+	int result, result_tx;
-+
-+	mutex_lock(&db->spi_lockm);
-+
-+	result = dm9051_disable_interrupt(db);
-+	if (result)
-+		goto out_unlock;
-+
-+	result = dm9051_clear_interrupt(db);
-+	if (result)
-+		goto out_unlock;
-+
-+	do {
-+		result = dm9051_loop_rx(db); /* threaded irq rx */
-+		if (result < 0)
-+			goto out_unlock;
-+		result_tx = dm9051_loop_tx(db); /* more tx better performance */
-+		if (result_tx < 0)
-+			goto out_unlock;
-+	} while (result > 0);
-+
-+	dm9051_enable_interrupt(db);
-+
-+	/* To exit and has mutex unlock while rx or tx error
-+	 */
-+out_unlock:
-+	mutex_unlock(&db->spi_lockm);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static void dm9051_tx_delay(struct work_struct *work)
-+{
-+	struct board_info *db = container_of(work, struct board_info, tx_work);
-+	int result;
-+
-+	mutex_lock(&db->spi_lockm);
-+
-+	result = dm9051_loop_tx(db);
-+	if (result < 0)
-+		netdev_err(db->ndev, "transmit packet error\n");
-+
-+	mutex_unlock(&db->spi_lockm);
-+}
-+
-+static void dm9051_rxctl_delay(struct work_struct *work)
-+{
-+	struct board_info *db = container_of(work, struct board_info, rxctrl_work);
-+	struct net_device *ndev = db->ndev;
-+	int result;
-+
-+	mutex_lock(&db->spi_lockm);
-+
-+	result = dm9051_set_regs(db, DM9051_PAR, ndev->dev_addr, sizeof(ndev->dev_addr));
-+	if (result < 0)
-+		goto out_unlock;
-+
-+	dm9051_set_recv(db);
-+
-+	/* To has mutex unlock and return from this function if regmap function fail
-+	 */
-+out_unlock:
-+	mutex_unlock(&db->spi_lockm);
-+}
-+
-+/* Open network device
-+ * Called when the network device is marked active, such as a user executing
-+ * 'ifconfig up' on the device
-+ */
-+static int dm9051_open(struct net_device *ndev)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+	struct spi_device *spi = db->spidev;
-+	int ret;
-+
-+	db->imr_all = IMR_PAR | IMR_PRM;
-+	db->lcr_all = LMCR_MODE1;
-+	db->rctl.rcr_all = RCR_DIS_LONG | RCR_DIS_CRC | RCR_RXEN;
-+	memset(db->rctl.hash_table, 0, sizeof(db->rctl.hash_table));
-+
-+	ndev->irq = spi->irq; /* by dts */
-+	ret = request_threaded_irq(spi->irq, NULL, dm9051_rx_threaded_irq,
-+				   dm9051_irq_flag(db) | IRQF_ONESHOT,
-+				   ndev->name, db);
-+	if (ret < 0) {
-+		netdev_err(ndev, "failed to get irq\n");
-+		return ret;
-+	}
-+
-+	phy_support_sym_pause(db->phydev);
-+	phy_start(db->phydev);
-+
-+	/* flow control parameters init */
-+	db->pause.rx_pause = true;
-+	db->pause.tx_pause = true;
-+	db->pause.autoneg = AUTONEG_DISABLE;
-+
-+	if (db->phydev->autoneg)
-+		db->pause.autoneg = AUTONEG_ENABLE;
-+
-+	ret = dm9051_all_start(db);
-+	if (ret) {
-+		phy_stop(db->phydev);
-+		free_irq(spi->irq, db);
-+		return ret;
-+	}
-+
-+	netif_wake_queue(ndev);
-+
-+	return 0;
-+}
-+
-+/* Close network device
-+ * Called to close down a network device which has been active. Cancel any
-+ * work, shutdown the RX and TX process and then place the chip into a low
-+ * power state while it is not being used
-+ */
-+static int dm9051_stop(struct net_device *ndev)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+	int ret;
-+
-+	ret = dm9051_all_stop(db);
-+	if (ret)
-+		return ret;
-+
-+	flush_work(&db->tx_work);
-+	flush_work(&db->rxctrl_work);
-+
-+	phy_stop(db->phydev);
-+
-+	free_irq(db->spidev->irq, db);
-+
-+	netif_stop_queue(ndev);
-+
-+	skb_queue_purge(&db->txq);
-+
-+	return 0;
-+}
-+
-+/* event: play a schedule starter in condition
-+ */
-+static netdev_tx_t dm9051_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+
-+	skb_queue_tail(&db->txq, skb);
-+	if (skb_queue_len(&db->txq) > DM9051_TX_QUE_HI_WATER)
-+		netif_stop_queue(ndev); /* enforce limit queue size */
-+
-+	schedule_work(&db->tx_work);
-+
-+	return NETDEV_TX_OK;
-+}
-+
-+/* event: play with a schedule starter
-+ */
-+static void dm9051_set_rx_mode(struct net_device *ndev)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+	struct dm9051_rxctrl rxctrl;
-+	struct netdev_hw_addr *ha;
-+	u8 rcr = RCR_DIS_LONG | RCR_DIS_CRC | RCR_RXEN;
-+	u32 hash_val;
-+
-+	memset(&rxctrl, 0, sizeof(rxctrl));
-+
-+	/* rx control */
-+	if (ndev->flags & IFF_PROMISC) {
-+		rcr |= RCR_PRMSC;
-+		netdev_dbg(ndev, "set_multicast rcr |= RCR_PRMSC, rcr= %02x\n", rcr);
-+	}
-+
-+	if (ndev->flags & IFF_ALLMULTI) {
-+		rcr |= RCR_ALL;
-+		netdev_dbg(ndev, "set_multicast rcr |= RCR_ALLMULTI, rcr= %02x\n", rcr);
-+	}
-+
-+	rxctrl.rcr_all = rcr;
-+
-+	/* broadcast address */
-+	rxctrl.hash_table[0] = 0;
-+	rxctrl.hash_table[1] = 0;
-+	rxctrl.hash_table[2] = 0;
-+	rxctrl.hash_table[3] = 0x8000;
-+
-+	/* the multicast address in Hash Table : 64 bits */
-+	netdev_for_each_mc_addr(ha, ndev) {
-+		hash_val = ether_crc_le(ETH_ALEN, ha->addr) & GENMASK(5, 0);
-+		rxctrl.hash_table[hash_val / 16] |= BIT(0) << (hash_val % 16);
-+	}
-+
-+	/* schedule work to do the actual set of the data if needed */
-+
-+	if (memcmp(&db->rctl, &rxctrl, sizeof(rxctrl))) {
-+		memcpy(&db->rctl, &rxctrl, sizeof(rxctrl));
-+		schedule_work(&db->rxctrl_work);
-+	}
-+}
-+
-+/* event: write into the mac registers and eeprom directly
-+ */
-+static int dm9051_set_mac_address(struct net_device *ndev, void *p)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+	int ret;
-+
-+	ret = eth_prepare_mac_addr_change(ndev, p);
-+	if (ret < 0)
-+		return ret;
-+
-+	eth_commit_mac_addr_change(ndev, p);
-+	return dm9051_set_regs(db, DM9051_PAR, ndev->dev_addr, sizeof(ndev->dev_addr));
-+}
-+
-+static const struct net_device_ops dm9051_netdev_ops = {
-+	.ndo_open = dm9051_open,
-+	.ndo_stop = dm9051_stop,
-+	.ndo_start_xmit = dm9051_start_xmit,
-+	.ndo_set_rx_mode = dm9051_set_rx_mode,
-+	.ndo_validate_addr = eth_validate_addr,
-+	.ndo_set_mac_address = dm9051_set_mac_address,
-+};
-+
-+static void dm9051_operation_clear(struct board_info *db)
-+{
-+	db->bc.status_err_counter = 0;
-+	db->bc.large_err_counter = 0;
-+	db->bc.rx_err_counter = 0;
-+	db->bc.tx_err_counter = 0;
-+	db->bc.fifo_rst_counter = 0;
-+}
-+
-+static int dm9051_mdio_register(struct board_info *db)
-+{
-+	struct spi_device *spi = db->spidev;
-+	int ret;
-+
-+	db->mdiobus = devm_mdiobus_alloc(&spi->dev);
-+	if (!db->mdiobus)
-+		return -ENOMEM;
-+
-+	db->mdiobus->priv = db;
-+	db->mdiobus->read = dm9051_mdio_read;
-+	db->mdiobus->write = dm9051_mdio_write;
-+	db->mdiobus->name = "dm9051-mdiobus";
-+	db->mdiobus->phy_mask = (u32)~BIT(1);
-+	db->mdiobus->parent = &spi->dev;
-+	snprintf(db->mdiobus->id, MII_BUS_ID_SIZE,
-+		 "dm9051-%s.%u", dev_name(&spi->dev), spi->chip_select);
-+
-+	ret = devm_mdiobus_register(&spi->dev, db->mdiobus);
-+	if (ret)
-+		dev_err(&spi->dev, "Could not register MDIO bus\n");
-+
-+	return ret;
-+}
-+
-+static void dm9051_handle_link_change(struct net_device *ndev)
-+{
-+	struct board_info *db = to_dm9051_board(ndev);
-+
-+	phy_print_status(db->phydev);
-+
-+	/* only write pause settings to mac. since mac and phy are integrated
-+	 * together, such as link state, speed and duplex are sync already
-+	 */
-+	if (db->phydev->link) {
-+		if (db->phydev->pause) {
-+			db->pause.rx_pause = true;
-+			db->pause.tx_pause = true;
-+		}
-+		dm9051_update_fcr(db);
-+	}
-+}
-+
-+/* phy connect as poll mode
-+ */
-+static int dm9051_phy_connect(struct board_info *db)
-+{
-+	char phy_id[MII_BUS_ID_SIZE + 3];
-+
-+	snprintf(phy_id, sizeof(phy_id), PHY_ID_FMT,
-+		 db->mdiobus->id, DM9051_PHY_ADDR);
-+
-+	db->phydev = phy_connect(db->ndev, phy_id, dm9051_handle_link_change,
-+				 PHY_INTERFACE_MODE_MII);
-+	if (IS_ERR(db->phydev))
-+		return PTR_ERR_OR_ZERO(db->phydev);
-+	return 0;
-+}
-+
-+static int dm9051_probe(struct spi_device *spi)
-+{
-+	struct device *dev = &spi->dev;
-+	struct net_device *ndev;
-+	struct board_info *db;
-+	int ret;
-+
-+	ndev = devm_alloc_etherdev(dev, sizeof(struct board_info));
-+	if (!ndev)
-+		return -ENOMEM;
-+
-+	SET_NETDEV_DEV(ndev, dev);
-+	dev_set_drvdata(dev, ndev);
-+
-+	db = netdev_priv(ndev);
-+
-+	db->msg_enable = 0;
-+	db->spidev = spi;
-+	db->ndev = ndev;
-+
-+	ndev->netdev_ops = &dm9051_netdev_ops;
-+	ndev->ethtool_ops = &dm9051_ethtool_ops;
-+
-+	mutex_init(&db->spi_lockm);
-+	mutex_init(&db->reg_mutex);
-+
-+	INIT_WORK(&db->rxctrl_work, dm9051_rxctl_delay);
-+	INIT_WORK(&db->tx_work, dm9051_tx_delay);
-+
-+	ret = dm9051_map_init(spi, db);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_map_chipid(db);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_map_etherdev_par(ndev, db);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = dm9051_mdio_register(db);
-+	if (ret)
-+		return ret;
-+
-+	ret = dm9051_phy_connect(db);
-+	if (ret)
-+		return ret;
-+
-+	dm9051_operation_clear(db);
-+	skb_queue_head_init(&db->txq);
-+
-+	ret = devm_register_netdev(dev, ndev);
-+	if (ret) {
-+		phy_disconnect(db->phydev);
-+		return dev_err_probe(dev, ret, "device register failed");
-+	}
-+
-+	return 0;
-+}
-+
-+static int dm9051_drv_remove(struct spi_device *spi)
-+{
-+	struct device *dev = &spi->dev;
-+	struct net_device *ndev = dev_get_drvdata(dev);
-+	struct board_info *db = to_dm9051_board(ndev);
-+
-+	phy_disconnect(db->phydev);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id dm9051_match_table[] = {
-+	{ .compatible = "davicom,dm9051" },
-+	{}
-+};
-+
-+static const struct spi_device_id dm9051_id_table[] = {
-+	{ "dm9051", 0 },
-+	{}
-+};
-+
-+static struct spi_driver dm9051_driver = {
-+	.driver = {
-+		.name = DRVNAME_9051,
-+		.of_match_table = dm9051_match_table,
-+	},
-+	.probe = dm9051_probe,
-+	.remove = dm9051_drv_remove,
-+	.id_table = dm9051_id_table,
-+};
-+module_spi_driver(dm9051_driver);
-+
-+MODULE_AUTHOR("Joseph CHANG <joseph_chang@davicom.com.tw>");
-+MODULE_DESCRIPTION("Davicom DM9051 network SPI driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/net/ethernet/davicom/dm9051.h b/drivers/net/ethernet/davicom/dm9051.h
-new file mode 100644
-index 000000000000..fef3120edd7c
---- /dev/null
-+++ b/drivers/net/ethernet/davicom/dm9051.h
-@@ -0,0 +1,162 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (c) 2022 Davicom Semiconductor,Inc.
-+ * Davicom DM9051 SPI Fast Ethernet Linux driver
-+ */
-+
-+#ifndef _DM9051_H_
-+#define _DM9051_H_
-+
-+#include <linux/bits.h>
-+#include <linux/netdevice.h>
-+#include <linux/types.h>
-+
-+#define DM9051_ID		0x9051
-+
-+#define DM9051_NCR		0x00
-+#define DM9051_NSR		0x01
-+#define DM9051_TCR		0x02
-+#define DM9051_RCR		0x05
-+#define DM9051_BPTR		0x08
-+#define DM9051_FCR		0x0A
-+#define DM9051_EPCR		0x0B
-+#define DM9051_EPAR		0x0C
-+#define DM9051_EPDRL		0x0D
-+#define DM9051_EPDRH		0x0E
-+#define DM9051_PAR		0x10
-+#define DM9051_MAR		0x16
-+#define DM9051_GPCR		0x1E
-+#define DM9051_GPR		0x1F
-+
-+#define DM9051_VIDL		0x28
-+#define DM9051_VIDH		0x29
-+#define DM9051_PIDL		0x2A
-+#define DM9051_PIDH		0x2B
-+#define DM9051_SMCR		0x2F
-+#define	DM9051_ATCR		0x30
-+#define	DM9051_SPIBCR		0x38
-+#define DM9051_INTCR		0x39
-+#define DM9051_PPCR		0x3D
-+
-+#define DM9051_MPCR		0x55
-+#define DM9051_LMCR		0x57
-+#define DM9051_MBNDRY		0x5E
-+
-+#define DM9051_MRRL		0x74
-+#define DM9051_MRRH		0x75
-+#define DM9051_MWRL		0x7A
-+#define DM9051_MWRH		0x7B
-+#define DM9051_TXPLL		0x7C
-+#define DM9051_TXPLH		0x7D
-+#define DM9051_ISR		0x7E
-+#define DM9051_IMR		0x7F
-+
-+#define DM_SPI_MRCMDX		0x70
-+#define DM_SPI_MRCMD		0x72
-+#define DM_SPI_MWCMD		0x78
-+
-+#define DM_SPI_WR		0x80
-+
-+/* dm9051 Ethernet controller registers bits
-+ */
-+/* 0x00 */
-+#define NCR_WAKEEN		BIT(6)
-+#define NCR_FDX			BIT(3)
-+#define NCR_RST			BIT(0)
-+/* 0x01 */
-+#define NSR_SPEED		BIT(7)
-+#define NSR_LINKST		BIT(6)
-+#define NSR_WAKEST		BIT(5)
-+#define NSR_TX2END		BIT(3)
-+#define NSR_TX1END		BIT(2)
-+/* 0x02 */
-+#define TCR_DIS_JABBER_TIMER	BIT(6) /* for Jabber Packet support */
-+#define TCR_TXREQ		BIT(0)
-+/* 0x05 */
-+#define RCR_DIS_WATCHDOG_TIMER	BIT(6)  /* for Jabber Packet support */
-+#define RCR_DIS_LONG		BIT(5)
-+#define RCR_DIS_CRC		BIT(4)
-+#define RCR_ALL			BIT(3)
-+#define RCR_PRMSC		BIT(1)
-+#define RCR_RXEN		BIT(0)
-+#define RCR_RX_DISABLE		(RCR_DIS_LONG | RCR_DIS_CRC)
-+/* 0x06 */
-+#define RSR_RF			BIT(7)
-+#define RSR_MF			BIT(6)
-+#define RSR_LCS			BIT(5)
-+#define RSR_RWTO		BIT(4)
-+#define RSR_PLE			BIT(3)
-+#define RSR_AE			BIT(2)
-+#define RSR_CE			BIT(1)
-+#define RSR_FOE			BIT(0)
-+#define	RSR_ERR_BITS		(RSR_RF | RSR_LCS | RSR_RWTO | RSR_PLE | \
-+				 RSR_AE | RSR_CE | RSR_FOE)
-+/* 0x0A */
-+#define FCR_TXPEN		BIT(5)
-+#define FCR_BKPM		BIT(3)
-+#define FCR_FLCE		BIT(0)
-+#define FCR_RXTX_BITS		(FCR_TXPEN | FCR_BKPM | FCR_FLCE)
-+/* 0x0B */
-+#define EPCR_WEP		BIT(4)
-+#define EPCR_EPOS		BIT(3)
-+#define EPCR_ERPRR		BIT(2)
-+#define EPCR_ERPRW		BIT(1)
-+#define EPCR_ERRE		BIT(0)
-+/* 0x1E */
-+#define GPCR_GEP_CNTL		BIT(0)
-+/* 0x1F */
-+#define GPR_PHY_OFF		BIT(0)
-+/* 0x30 */
-+#define	ATCR_AUTO_TX		BIT(7)
-+/* 0x39 */
-+#define INTCR_POL_LOW		(1 << 0)
-+#define INTCR_POL_HIGH		(0 << 0)
-+/* 0x3D */
-+/* Pause Packet Control Register - default = 1 */
-+#define PPCR_PAUSE_COUNT	0x08
-+/* 0x55 */
-+#define MPCR_RSTTX		BIT(1)
-+#define MPCR_RSTRX		BIT(0)
-+/* 0x57 */
-+/* LEDMode Control Register - LEDMode1 */
-+/* Value 0x81 : bit[7] = 1, bit[2] = 0, bit[1:0] = 01b */
-+#define LMCR_NEWMOD		BIT(7)
-+#define LMCR_TYPED1		BIT(1)
-+#define LMCR_TYPED0		BIT(0)
-+#define LMCR_MODE1		(LMCR_NEWMOD | LMCR_TYPED0)
-+/* 0x5E */
-+#define MBNDRY_BYTE		BIT(7)
-+/* 0xFE */
-+#define ISR_MBS			BIT(7)
-+#define ISR_LNKCHG		BIT(5)
-+#define ISR_ROOS		BIT(3)
-+#define ISR_ROS			BIT(2)
-+#define ISR_PTS			BIT(1)
-+#define ISR_PRS			BIT(0)
-+#define ISR_CLR_INT		(ISR_LNKCHG | ISR_ROOS | ISR_ROS | \
-+				 ISR_PTS | ISR_PRS)
-+#define ISR_STOP_MRCMD		(ISR_MBS)
-+/* 0xFF */
-+#define IMR_PAR			BIT(7)
-+#define IMR_LNKCHGI		BIT(5)
-+#define IMR_PTM			BIT(1)
-+#define IMR_PRM			BIT(0)
-+
-+/* Const
-+ */
-+#define DM9051_PHY_ADDR			1	/* PHY id */
-+#define DM9051_PHY			0x40	/* PHY address 0x01 */
-+#define DM9051_PKT_RDY			0x01	/* Packet ready to receive */
-+#define DM9051_PKT_MAX			1536	/* Received packet max size */
-+#define DM9051_TX_QUE_HI_WATER		50
-+#define DM9051_TX_QUE_LO_WATER		25
-+#define DM_EEPROM_MAGIC			0x9051
-+
-+#define	DM_RXHDR_SIZE			sizeof(struct dm9051_rxhdr)
-+
-+static inline struct board_info *to_dm9051_board(struct net_device *ndev)
-+{
-+	return netdev_priv(ndev);
-+}
-+
-+#endif /* _DM9051_H_ */
--- 
-2.20.1
+Cheers
+Thomas
 
