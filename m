@@ -2,98 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A491C4B2D3D
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 20:02:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C5CF4B2D6B
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 20:18:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239159AbiBKTBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 14:01:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35412 "EHLO
+        id S243487AbiBKTSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 14:18:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231374AbiBKTBI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 14:01:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F055CE9
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 11:01:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEA5C61F18
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 19:01:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D26CDC340E9;
-        Fri, 11 Feb 2022 19:01:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644606062;
-        bh=TtSm4x3vLT4OcPLZlPtwVTxTVpP77mmbPSssSdsOiX4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Nqh7dOdKlQTIijcUsQZWIUCv0RWPyfbcMhjLva7IArMScncyeOnMfVxV6BAdM+G5c
-         fYftiC9XoCbXeurWDc0Ak0gUds3JgKI9ApB+W2WdkkJWreFtclRcoP4uJG41kKrK4w
-         6aThN7r+u87ysldxjF0zR6y5OaukYDbtdrzF5yoahU5XrUIor0Q8gLiv4xn2IvJFUU
-         VCrGD1IeF06GGPfwrGbBn4WFle1c7B94AiA96d9eQ0+TfWA8cZhVUXaNV88+pfgn8A
-         J6kroG+J/Ng4QZsV6J7Zj9nm8LcGLrqY8GzEQTSxpcD1JvphWbIniOrzDqaddrIhVE
-         fIKuWj+zPEu4Q==
-Date:   Fri, 11 Feb 2022 11:01:00 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     =?UTF-8?B?w43DsWlnbw==?= Huguet <ihuguet@redhat.com>
-Cc:     Edward Cree <ecree.xilinx@gmail.com>, habetsm.xilinx@gmail.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] sfc: default config to 1 channel/core in
- local NUMA node only
-Message-ID: <20220211110100.5580d1ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CACT4ouepk83kxTGd6S3gVyFAjofofwQfxsmhe97vGP+twkoW1g@mail.gmail.com>
-References: <20220128151922.1016841-1-ihuguet@redhat.com>
-        <20220128151922.1016841-2-ihuguet@redhat.com>
-        <20220128142728.0df3707e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CACT4ouctx9+UP2BKicjk6LJSRcR2M_4yDhHmfDARcDuVj=_XAg@mail.gmail.com>
-        <20220207085311.3f6d0d19@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CACT4oucCn2ixs8hCizGhvjLPOa90k3vEZEVbuY6nUF-M23B=yw@mail.gmail.com>
-        <20220210082249.0e50668b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CACT4ouepk83kxTGd6S3gVyFAjofofwQfxsmhe97vGP+twkoW1g@mail.gmail.com>
+        with ESMTP id S240055AbiBKTSL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 14:18:11 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C250CD8;
+        Fri, 11 Feb 2022 11:18:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=tyRsIYgDptHBZbcunPbQiuuAcO0oa86ux35WhIg4QdA=; b=UkJN2NlFx/1TF6rXDBwt6dk5UA
+        zmV/f4DdqQovSjEp9P/0wK4woCeO78UknY2JmEFjN6S6E2UlUSKJp9BzW/PlfZ1PMmo9zs26o/FCw
+        H6z4nzktfBXEZUr2moDo7BJuZLPecHNFSghgseHAfz4a2b2CKqxWukRKdgcOE1qS69zQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nIbQX-005VmV-CB; Fri, 11 Feb 2022 20:17:53 +0100
+Date:   Fri, 11 Feb 2022 20:17:53 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     Martin Schiller <ms@dev.tdt.de>, Hauke Mehrtens <hauke@hauke-m.de>,
+        martin.blumenstingl@googlemail.com,
+        Florian Fainelli <f.fainelli@gmail.com>, hkallweit1@gmail.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v3] net: phy: intel-xway: enable integrated led
+ functions
+Message-ID: <Yga2YbglzJ6CvMFo@lunn.ch>
+References: <YfspazpWoKuHEwPU@lunn.ch>
+ <CAJ+vNU2v9WD2kzB9uTD5j6DqnBBKhv-XOttKLoZ-VzkwdzwjXw@mail.gmail.com>
+ <YfwEvgerYddIUp1V@lunn.ch>
+ <CAJ+vNU1qY1VJgw1QRsbmED6-TLQP2wwxSYb+bXfqZ3wiObLgHg@mail.gmail.com>
+ <YfxtglvVDx2JJM9w@lunn.ch>
+ <CAJ+vNU1td9aizbws-uZ-p-fEzsD8rJVS-mZn4TT2YFn9PY2n_w@mail.gmail.com>
+ <Yf2usAHGZSUDvLln@lunn.ch>
+ <CAJ+vNU3EY0qp-6oQ6Bjd4mZCKv9AeqiaJp=FSrN84P=8atKLrw@mail.gmail.com>
+ <YgRWl5ykcjPW0xvx@lunn.ch>
+ <CAJ+vNU1kmxgFjX2HeTok-6FcnCAApvzszhh2dbNnDgFD7ZsAiQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ+vNU1kmxgFjX2HeTok-6FcnCAApvzszhh2dbNnDgFD7ZsAiQ@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Feb 2022 12:05:19 +0100 =C3=8D=C3=B1igo Huguet wrote:
-> Totally. My comment was intended to be more like a question to see why
-> we should or shouldn't consider NUMA nodes in
-> netif_get_num_default_rss_queues. But now I understand your point
-> better.
->=20
-> However, would it make sense something like this for
-> netif_get_num_default_rss_queues, or it would be a bit overkill?
-> if the system has more than one NUMA node, allocate one queue per
-> physical core in local NUMA node.
-> else, allocate physical cores / 2
+On Thu, Feb 10, 2022 at 07:52:49AM -0800, Tim Harvey wrote:
+> On Wed, Feb 9, 2022 at 4:04 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > > The errata can be summarized as:
+> > > - 1 out of 100 boots or cable plug events RGMII GbE link will end up
+> > > going down and up 3 to 4 times then resort to a 100m link; workaround
+> > > has been found to require a pin level reset
+> >
+> > So that sounds like it is downshifting because it thinks there is a
+> > broken pair. Can you disable downshift? Problem is, that might just
+> > result in link down.
+> 
+> Its a bad situation. The actual errata is that the device latches into
+> a bad state where there is some noise on an ADC or something like that
+> that cause a high packet error rate. The firmware baked into the PHY
+> has a detection mechanism looking at these errors (SSD errors) and if
+> there are enough of them it takes the link down and up again and if
+> that doesn't resolve in 3 times it shifts down to 100mbs. They call
+> this 'ADS' or 'auto-down-speed' and you can disable it but it would
+> just result in leaving your bad gbe link up. It's unclear yet if it's
+> better to just detect the ADS event and reset or to disable ADS and
+> look for the SSD errors myself (which I can do).
 
-I don't have a strong opinion on the NUMA question, to be honest.
-It gets complicated pretty quickly. If there is one NIC we may or=20
-may not want to divide - for pure packet forwarding sure, best if
-its done on the node with the NIC, but that assumes the other node=20
-is idle or doing something else? How does it not need networking?
+I don't think it matters too much which way you detect there is a
+problem. But ideally you need a recovery which does not need a
+hardware reset. Than you don't need to worry about the other PHY
+sharing the reset line. But you know that...
 
-If each node has a separate NIC we should definitely divide. But
-it's impossible to know the NIC count at the netdev level..
+> I agree that I can't do anything in boot firmware. I was planning on
+> having some static code that registered a PHY fixup to get a call when
+> these PHYs were detected and I could then kick off a polling thread to
+> watch for errors and trigger a reset. The reset could have knowledge
+> of the PHY devices that called the fixup handler so that I can at
+> least setup each PHY again.
 
-So my thinking was let's leave NUMA configurations to manual tuning.
-If we don't do anything special for NUMA it's less likely someone will
-tell us we did the wrong thing there :) But feel free to implement what
-you suggested above.
+That sounds like a reasonable architecture. Your thread would need to
+do:
 
-One thing I'm not sure of is if anyone uses the early AMD chiplet CPUs=20
-in a NUMA-per-chiplet mode? IIRC they had a mode like that. And that'd
-potentially be problematic if we wanted to divide by number of nodes.
-Maybe not as much if just dividing by 2.
+phy_stop()
+phy_init_hw()
+phy_start()
 
-> Another thing: this patch series appears in patchwork with state
-> "Changes Requested", but no changes have been requested, actually. Can
-> the state be changed so it has more visibility to get reviews?
+and phylib probably will do the reset.
 
-I think resend would be best.
+Maybe you can put the problem detection code in the .read_status
+callback, which sets am 'im_fubar' flag in the drivers private
+structure. That gives some building blocks for other users of this PHY
+who don't have a shared reset line, and can maybe solve the problem
+within the driver.
+
+       Andrew
