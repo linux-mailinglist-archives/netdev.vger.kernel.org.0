@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCCEA4B1F1A
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 08:13:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A0B44B1F20
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 08:13:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347624AbiBKHNX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 02:13:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36606 "EHLO
+        id S1347628AbiBKHNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 02:13:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347621AbiBKHNU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 02:13:20 -0500
+        with ESMTP id S1347642AbiBKHNc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 02:13:32 -0500
 Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD68D110E
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 23:13:19 -0800 (PST)
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21ANrSNj018649
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 23:13:19 -0800
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9A126DF
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 23:13:30 -0800 (PST)
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21ANrgL9007907
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 23:13:30 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=LEZ8scgy1qDfbqzhAvnlUfuwJes0fc2MM9TH2kqtX14=;
- b=hNtQu47+Ti+nEpkvJqku9Ce6KsM/SGVGyrvQbYw+/MtYtaVnofqy0OBLqnpdWxHNNtAr
- b8uET2fv1q+tl+Kqx7S8K98k0xex6U61BPlrgXbQ7eOivNgkRZU4tMl/j25Z9zKmkYPH
- dV/1dlWwSLYaz7G6yi1hHvFaVr1CV5iUGyI= 
+ bh=/jtFkhp35HfBDdv1QEOtm4rdpgGFv2fjKm6qwsS63gM=;
+ b=WJQeVkv9GYuWglu9S0HLdpyhlEdhmG8Ev0tYs49bAwg7SKM54XpNxrqGkKMzM6WNY0Dz
+ AE/CBuDg4+OKa4VOMbo7wMYfoJtdTjjNxilW5RxU/c/3S2/L1iLdAkZKhDKUo2aAKw5Y
+ 3OwMfKjbarKg2Uh4IdOcOLePX61YJtr3unE= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3e5866v2yv-1
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3e5853c4va-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 23:13:19 -0800
-Received: from twshared14630.35.frc1.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 23:13:30 -0800
+Received: from twshared12416.02.ash9.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 10 Feb 2022 23:13:18 -0800
+ 15.1.2308.21; Thu, 10 Feb 2022 23:13:29 -0800
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 596CB6C75B6D; Thu, 10 Feb 2022 23:13:16 -0800 (PST)
+        id 9C1496C75C7C; Thu, 10 Feb 2022 23:13:22 -0800 (PST)
 From:   Martin KaFai Lau <kafai@fb.com>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
@@ -43,9 +43,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>, <kernel-team@fb.com>,
         Willem de Bruijn <willemb@google.com>
-Subject: [PATCH v4 net-next 7/8] bpf: Add __sk_buff->delivery_time_type and bpf_skb_set_delivery_time()
-Date:   Thu, 10 Feb 2022 23:13:16 -0800
-Message-ID: <20220211071316.892630-1-kafai@fb.com>
+Subject: [PATCH v4 net-next 8/8] bpf: selftests: test skb->tstamp in redirect_neigh
+Date:   Thu, 10 Feb 2022 23:13:22 -0800
+Message-ID: <20220211071322.894148-1-kafai@fb.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220211071232.885225-1-kafai@fb.com>
 References: <20220211071232.885225-1-kafai@fb.com>
@@ -53,478 +53,886 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-GUID: nNw0gq8i3Rbw1DBZiWoEmMoZJBUyGccE
-X-Proofpoint-ORIG-GUID: nNw0gq8i3Rbw1DBZiWoEmMoZJBUyGccE
+X-Proofpoint-GUID: -p5gwyddRHiUTqcXluRCmTiWcbT4cFzc
+X-Proofpoint-ORIG-GUID: -p5gwyddRHiUTqcXluRCmTiWcbT4cFzc
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-02-11_02,2022-02-09_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 priorityscore=1501
- clxscore=1015 suspectscore=0 mlxscore=0 malwarescore=0 bulkscore=0
- impostorscore=0 lowpriorityscore=0 spamscore=0 phishscore=0 adultscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 impostorscore=0
+ mlxlogscore=999 suspectscore=0 priorityscore=1501 lowpriorityscore=0
+ bulkscore=0 spamscore=0 clxscore=1015 malwarescore=0 phishscore=0
+ mlxscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2201110000 definitions=main-2202110040
 X-FB-Internal: deliver
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-* __sk_buff->delivery_time_type:
-This patch adds __sk_buff->delivery_time_type.  It tells if the
-delivery_time is stored in __sk_buff->tstamp or not.
-
-It will be most useful for ingress to tell if the __sk_buff->tstamp
-has the (rcv) timestamp or delivery_time.  If delivery_time_type
-is 0 (BPF_SKB_DELIVERY_TIME_NONE), it has the (rcv) timestamp.
-
-Two non-zero types are defined for the delivery_time_type,
-BPF_SKB_DELIVERY_TIME_MONO and BPF_SKB_DELIVERY_TIME_UNSPEC.  For UNSPEC,
-it can only happen in egress because only mono delivery_time can be
-forwarded to ingress now.  The clock of UNSPEC delivery_time
-can be deduced from the skb->sk->sk_clockid which is how
-the sch_etf doing it also.
-
-Thus, while delivery_time_type provides (rcv) timestamp
-vs delivery_time signal to tc-bpf@ingress, it should not change the
-existing way of doing thing for tc-bpf@egress other than spelling
-out more explicitly in the new __sk_buff->delivery_time_type
-instead of having the tc-bpf to deduce it by checking the sk
-is tcp (mono EDT) or by checking sk->sk_clockid for non-tcp.
-
-delivery_time_type is read only.  Its convert_ctx_access() requires
-the skb's mono_delivery_time bit and tc_at_ingress bit.
-They are moved up in sk_buff so that bpf rewrite can be done at a
-fixed offset.  tc_skip_classify is moved together with tc_at_ingress.
-To get one bit for mono_delivery_time, csum_not_inet is moved down and
-this bit is currently used by sctp.
-
-* Provide forwarded delivery_time to tc-bpf@ingress:
-With the help of the new delivery_time_type, the tc-bpf has a way
-to tell if the __sk_buff->tstamp has the (rcv) timestamp or
-the delivery_time.  During bpf load time, the verifier will learn if
-the bpf prog has accessed the new __sk_buff->delivery_time_type.
-If it does, it means the tc-bpf@ingress is expecting the
-skb->tstamp could have the delivery_time.  The kernel will then keep
-the forwarded delivery_time in skb->tstamp.  This is done by adding a
-new prog->delivery_time_access bit.
-
-Since the tc-bpf@ingress can access the delivery_time,
-it also needs to clear the skb->mono_delivery_time after
-running the bpf if 0 has been written to skb->tstamp.  This
-is the same as the tc-bpf@egress in the previous patch.
-
-For tail call, the callee will follow the __sk_buff->tstamp
-expectation of its caller at ingress.  If caller does not have
-its prog->delivery_time_access set, the callee prog will not have
-the forwarded delivery_time in __sk_buff->tstamp and will have
-the (rcv) timestamp instead.  If needed, in the future, a new
-attach_type can be added to allow the tc-bpf to explicitly specify
-its expectation on the __sk_buff->tstamp.
-
-* bpf_skb_set_delivery_time():
-The bpf_skb_set_delivery_time() helper is added to allow setting both
-delivery_time and the delivery_time_type at the same time.  If the
-tc-bpf does not need to change the delivery_time_type, it can directly
-write to the __sk_buff->tstamp as the existing tc-bpf has already been
-doing.  It will be most useful at ingress to change the
-__sk_buff->tstamp from the (rcv) timestamp to
-a mono delivery_time and then bpf_redirect_*().
-
-bpf only has mono clock helper (bpf_ktime_get_ns), and
-the current known use case is the mono EDT for fq, and
-only mono delivery time can be kept during forward now,
-so bpf_skb_set_delivery_time() only supports setting
-BPF_SKB_DELIVERY_TIME_MONO.  It can be extended later when use cases
-come up and the forwarding path also supports other clock bases.
-This function could be inline and is left as a future exercise.
+This patch adds tests on forwarding the delivery_time for
+the following cases
+- tcp/udp + ip4/ip6 + bpf_redirect_neigh
+- tcp/udp + ip4/ip6 + ip[6]_forward
+- bpf_skb_set_delivery_time
+- The old rcv timestamp expectation on tc-bpf@ingress
 
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- include/linux/filter.h         |  7 ++-
- include/linux/skbuff.h         | 20 ++++++---
- include/uapi/linux/bpf.h       | 35 ++++++++++++++-
- net/core/filter.c              | 79 +++++++++++++++++++++++++++++++++-
- tools/include/uapi/linux/bpf.h | 35 ++++++++++++++-
- 5 files changed, 164 insertions(+), 12 deletions(-)
+ .../selftests/bpf/prog_tests/tc_redirect.c    | 434 ++++++++++++++++++
+ .../selftests/bpf/progs/test_tc_dtime.c       | 348 ++++++++++++++
+ 2 files changed, 782 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_tc_dtime.c
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index e43e1701a80e..00bbde352ad0 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -572,7 +572,8 @@ struct bpf_prog {
- 				has_callchain_buf:1, /* callchain buffer allocated? */
- 				enforce_expected_attach_type:1, /* Enforce expected_attach_type chec=
-king at attach time */
- 				call_get_stack:1, /* Do we call bpf_get_stack() or bpf_get_stackid()=
- */
--				call_get_func_ip:1; /* Do we call get_func_ip() */
-+				call_get_func_ip:1, /* Do we call get_func_ip() */
-+				delivery_time_access:1; /* Accessed __sk_buff->delivery_time_type */
- 	enum bpf_prog_type	type;		/* Type of BPF program */
- 	enum bpf_attach_type	expected_attach_type; /* For some prog types */
- 	u32			len;		/* Number of filter blocks */
-@@ -705,7 +706,7 @@ static __always_inline u32 bpf_prog_run_at_ingress(co=
-nst struct bpf_prog *prog,
- 	ktime_t tstamp, saved_mono_dtime =3D 0;
- 	int filter_res;
-=20
--	if (unlikely(skb->mono_delivery_time)) {
-+	if (unlikely(skb->mono_delivery_time) && !prog->delivery_time_access) {
- 		saved_mono_dtime =3D skb->tstamp;
- 		skb->mono_delivery_time =3D 0;
- 		if (static_branch_unlikely(&netstamp_needed_key))
-@@ -723,6 +724,8 @@ static __always_inline u32 bpf_prog_run_at_ingress(co=
-nst struct bpf_prog *prog,
- 	/* __sk_buff->tstamp was not changed, restore the delivery_time */
- 	if (unlikely(saved_mono_dtime) && skb_tstamp(skb) =3D=3D tstamp)
- 		skb_set_delivery_time(skb, saved_mono_dtime, true);
-+	if (unlikely(skb->mono_delivery_time && !skb->tstamp))
-+		skb->mono_delivery_time =3D 0;
-=20
- 	return filter_res;
- }
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 0e09e75fa787..fb7146be48f7 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -893,22 +893,23 @@ struct sk_buff {
- 	__u8			vlan_present:1;	/* See PKT_VLAN_PRESENT_BIT */
- 	__u8			csum_complete_sw:1;
- 	__u8			csum_level:2;
--	__u8			csum_not_inet:1;
- 	__u8			dst_pending_confirm:1;
-+	__u8			mono_delivery_time:1;
+diff --git a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c b/tools=
+/testing/selftests/bpf/prog_tests/tc_redirect.c
+index c2426df58e17..3036154916a7 100644
+--- a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
++++ b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
+@@ -17,6 +17,8 @@
+ #include <linux/if_tun.h>
+ #include <linux/limits.h>
+ #include <linux/sysctl.h>
++#include <linux/time_types.h>
++#include <linux/net_tstamp.h>
+ #include <sched.h>
+ #include <stdbool.h>
+ #include <stdio.h>
+@@ -29,6 +31,11 @@
+ #include "test_tc_neigh_fib.skel.h"
+ #include "test_tc_neigh.skel.h"
+ #include "test_tc_peer.skel.h"
++#include "test_tc_dtime.skel.h"
 +
-+#ifdef CONFIG_NET_CLS_ACT
-+	__u8			tc_skip_classify:1;
-+	__u8			tc_at_ingress:1;
++#ifndef TCP_TX_DELAY
++#define TCP_TX_DELAY 37
 +#endif
- #ifdef CONFIG_IPV6_NDISC_NODETYPE
- 	__u8			ndisc_nodetype:2;
- #endif
--
-+	__u8			csum_not_inet:1;
- 	__u8			ipvs_property:1;
- 	__u8			inner_protocol_type:1;
- 	__u8			remcsum_offload:1;
- #ifdef CONFIG_NET_SWITCHDEV
- 	__u8			offload_fwd_mark:1;
- 	__u8			offload_l3_fwd_mark:1;
--#endif
--#ifdef CONFIG_NET_CLS_ACT
--	__u8			tc_skip_classify:1;
--	__u8			tc_at_ingress:1;
- #endif
- 	__u8			redirected:1;
- #ifdef CONFIG_NET_REDIRECT
-@@ -921,7 +922,6 @@ struct sk_buff {
- 	__u8			decrypted:1;
- #endif
- 	__u8			slow_gro:1;
--	__u8			mono_delivery_time:1;
 =20
- #ifdef CONFIG_NET_SCHED
- 	__u16			tc_index;	/* traffic control index */
-@@ -999,10 +999,16 @@ struct sk_buff {
- /* if you move pkt_vlan_present around you also must adapt these constan=
-ts */
- #ifdef __BIG_ENDIAN_BITFIELD
- #define PKT_VLAN_PRESENT_BIT	7
-+#define TC_AT_INGRESS_MASK		(1 << 0)
-+#define SKB_MONO_DELIVERY_TIME_MASK	(1 << 2)
- #else
- #define PKT_VLAN_PRESENT_BIT	0
-+#define TC_AT_INGRESS_MASK		(1 << 7)
-+#define SKB_MONO_DELIVERY_TIME_MASK	(1 << 5)
- #endif
- #define PKT_VLAN_PRESENT_OFFSET	offsetof(struct sk_buff, __pkt_vlan_pres=
-ent_offset)
-+#define TC_AT_INGRESS_OFFSET offsetof(struct sk_buff, __pkt_vlan_present=
-_offset)
-+#define SKB_MONO_DELIVERY_TIME_OFFSET offsetof(struct sk_buff, __pkt_vla=
-n_present_offset)
+ #define NS_SRC "ns_src"
+ #define NS_FWD "ns_fwd"
+@@ -61,6 +68,7 @@
+ #define CHK_PROG_PIN_FILE "/sys/fs/bpf/test_tc_chk"
 =20
- #ifdef __KERNEL__
- /*
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 16a7574292a5..b36771b1bfa1 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5076,6 +5076,31 @@ union bpf_attr {
-  *		associated to *xdp_md*, at *offset*.
-  *	Return
-  *		0 on success, or a negative error in case of failure.
-+ *
-+ * long bpf_skb_set_delivery_time(struct sk_buff *skb, u64 dtime, u32 dt=
-ime_type)
-+ *	Description
-+ *		Set a *dtime* (delivery time) to the __sk_buff->tstamp and also
-+ *		change the __sk_buff->delivery_time_type to *dtime_type*.
-+ *
-+ *		Only BPF_SKB_DELIVERY_TIME_MONO is supported in *dtime_type*
-+ *		and it is the only delivery_time_type that will be kept
-+ *		after bpf_redirect_*().
-+ *		Only ipv4 and ipv6 skb->protocol is supported.
-+ *
-+ *		If there is no need to change the __sk_buff->delivery_time_type,
-+ *		the delivery_time can be directly written to __sk_buff->tstamp
-+ *		instead.
-+ *
-+ *		This function is most useful when it needs to set a
-+ *		mono delivery_time to __sk_buff->tstamp and then
-+ *		bpf_redirect_*() to the egress of an iface.  For example,
-+ *		changing the (rcv) timestamp in __sk_buff->tstamp at
-+ *		ingress to a mono delivery time and then bpf_redirect_*()
-+ *		to sch_fq@phy-dev.
-+ *	Return
-+ *		0 on success.
-+ *		**-EINVAL** for invalid input
-+ *		**-EOPNOTSUPP** for unsupported delivery_time_type and protocol
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5269,6 +5294,7 @@ union bpf_attr {
- 	FN(xdp_get_buff_len),		\
- 	FN(xdp_load_bytes),		\
- 	FN(xdp_store_bytes),		\
-+	FN(skb_set_delivery_time),	\
- 	/* */
+ #define TIMEOUT_MILLIS 10000
++#define NSEC_PER_SEC 1000000000ULL
 =20
- /* integer value in 'imm' field of BPF_CALL instruction selects which he=
-lper
-@@ -5458,6 +5484,12 @@ union {					\
- 	__u64 :64;			\
- } __attribute__((aligned(8)))
+ #define log_err(MSG, ...) \
+ 	fprintf(stderr, "(%s:%d: errno: %s) " MSG "\n", \
+@@ -440,6 +448,431 @@ static int set_forwarding(bool enable)
+ 	return 0;
+ }
 =20
-+enum {
-+	BPF_SKB_DELIVERY_TIME_NONE,
-+	BPF_SKB_DELIVERY_TIME_UNSPEC,
-+	BPF_SKB_DELIVERY_TIME_MONO,
-+};
-+
- /* user accessible mirror of in-kernel sk_buff.
-  * new fields can only be added to the end of this structure
-  */
-@@ -5498,7 +5530,8 @@ struct __sk_buff {
- 	__u32 gso_segs;
- 	__bpf_md_ptr(struct bpf_sock *, sk);
- 	__u32 gso_size;
--	__u32 :32;		/* Padding, future use. */
-+	__u8  delivery_time_type;
-+	__u32 :24;		/* Padding, future use. */
- 	__u64 hwtstamp;
- };
-=20
-diff --git a/net/core/filter.c b/net/core/filter.c
-index a2d712be4985..0e79a6ca4a95 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7159,6 +7159,33 @@ static const struct bpf_func_proto bpf_sk_assign_p=
-roto =3D {
- 	.arg3_type	=3D ARG_ANYTHING,
- };
-=20
-+BPF_CALL_3(bpf_skb_set_delivery_time, struct sk_buff *, skb,
-+	   u64, dtime, u32, dtime_type)
++static void rcv_tstamp(int fd, const char *expected, size_t s)
 +{
-+	if (!dtime)
-+		return -EINVAL;
++	struct __kernel_timespec pkt_ts =3D {};
++	char ctl[CMSG_SPACE(sizeof(pkt_ts))];
++	struct timespec now_ts;
++	struct msghdr msg =3D {};
++	__u64 now_ns, pkt_ns;
++	struct cmsghdr *cmsg;
++	struct iovec iov;
++	char data[32];
++	int ret;
 +
-+	/* skb_clear_delivery_time() is done for inet protocol */
-+	if (dtime_type !=3D BPF_SKB_DELIVERY_TIME_MONO ||
-+	    (skb->protocol !=3D htons(ETH_P_IP) &&
-+	     skb->protocol !=3D htons(ETH_P_IPV6)))
-+		return -EOPNOTSUPP;
++	iov.iov_base =3D data;
++	iov.iov_len =3D sizeof(data);
++	msg.msg_iov =3D &iov;
++	msg.msg_iovlen =3D 1;
++	msg.msg_control =3D &ctl;
++	msg.msg_controllen =3D sizeof(ctl);
 +
-+	skb->mono_delivery_time =3D 1;
-+	skb->tstamp =3D dtime;
++	ret =3D recvmsg(fd, &msg, 0);
++	if (!ASSERT_EQ(ret, s, "recvmsg"))
++		return;
++	ASSERT_STRNEQ(data, expected, s, "expected rcv data");
++
++	cmsg =3D CMSG_FIRSTHDR(&msg);
++	if (cmsg && cmsg->cmsg_level =3D=3D SOL_SOCKET &&
++	    cmsg->cmsg_type =3D=3D SO_TIMESTAMPNS_NEW)
++		memcpy(&pkt_ts, CMSG_DATA(cmsg), sizeof(pkt_ts));
++
++	pkt_ns =3D pkt_ts.tv_sec * NSEC_PER_SEC + pkt_ts.tv_nsec;
++	ASSERT_NEQ(pkt_ns, 0, "pkt rcv tstamp");
++
++	ret =3D clock_gettime(CLOCK_REALTIME, &now_ts);
++	ASSERT_OK(ret, "clock_gettime");
++	now_ns =3D now_ts.tv_sec * NSEC_PER_SEC + now_ts.tv_nsec;
++
++	if (ASSERT_GE(now_ns, pkt_ns, "check rcv tstamp"))
++		ASSERT_LT(now_ns - pkt_ns, 5 * NSEC_PER_SEC,
++			  "check rcv tstamp");
++}
++
++static void snd_tstamp(int fd, char *b, size_t s)
++{
++	struct sock_txtime opt =3D { .clockid =3D CLOCK_TAI };
++	char ctl[CMSG_SPACE(sizeof(__u64))];
++	struct timespec now_ts;
++	struct msghdr msg =3D {};
++	struct cmsghdr *cmsg;
++	struct iovec iov;
++	__u64 now_ns;
++	int ret;
++
++	ret =3D clock_gettime(CLOCK_TAI, &now_ts);
++	ASSERT_OK(ret, "clock_get_time(CLOCK_TAI)");
++	now_ns =3D now_ts.tv_sec * NSEC_PER_SEC + now_ts.tv_nsec;
++
++	iov.iov_base =3D b;
++	iov.iov_len =3D s;
++	msg.msg_iov =3D &iov;
++	msg.msg_iovlen =3D 1;
++	msg.msg_control =3D &ctl;
++	msg.msg_controllen =3D sizeof(ctl);
++
++	cmsg =3D CMSG_FIRSTHDR(&msg);
++	cmsg->cmsg_level =3D SOL_SOCKET;
++	cmsg->cmsg_type =3D SCM_TXTIME;
++	cmsg->cmsg_len =3D CMSG_LEN(sizeof(now_ns));
++	*(__u64 *)CMSG_DATA(cmsg) =3D now_ns;
++
++	ret =3D setsockopt(fd, SOL_SOCKET, SO_TXTIME, &opt, sizeof(opt));
++	ASSERT_OK(ret, "setsockopt(SO_TXTIME)");
++
++	ret =3D sendmsg(fd, &msg, 0);
++	ASSERT_EQ(ret, s, "sendmsg");
++}
++
++static void test_inet_dtime(int family, int type, const char *addr, __u1=
+6 port)
++{
++	int opt =3D 1, accept_fd =3D -1, client_fd =3D -1, listen_fd, err;
++	char buf[] =3D "testing testing";
++	struct nstoken *nstoken;
++
++	nstoken =3D open_netns(NS_DST);
++	if (!ASSERT_OK_PTR(nstoken, "setns dst"))
++		return;
++	listen_fd =3D start_server(family, type, addr, port, 0);
++	close_netns(nstoken);
++
++	if (!ASSERT_GE(listen_fd, 0, "listen"))
++		return;
++
++	/* Ensure the kernel puts the (rcv) timestamp for all skb */
++	err =3D setsockopt(listen_fd, SOL_SOCKET, SO_TIMESTAMPNS_NEW,
++			 &opt, sizeof(opt));
++	if (!ASSERT_OK(err, "setsockopt(SO_TIMESTAMPNS_NEW)"))
++		goto done;
++
++	if (type =3D=3D SOCK_STREAM) {
++		/* Ensure the kernel set EDT when sending out rst/ack
++		 * from the kernel's ctl_sk.
++		 */
++		err =3D setsockopt(listen_fd, SOL_TCP, TCP_TX_DELAY, &opt,
++				 sizeof(opt));
++		if (!ASSERT_OK(err, "setsockopt(TCP_TX_DELAY)"))
++			goto done;
++	}
++
++	nstoken =3D open_netns(NS_SRC);
++	if (!ASSERT_OK_PTR(nstoken, "setns src"))
++		goto done;
++	client_fd =3D connect_to_fd(listen_fd, TIMEOUT_MILLIS);
++	close_netns(nstoken);
++
++	if (!ASSERT_GE(client_fd, 0, "connect_to_fd"))
++		goto done;
++
++	if (type =3D=3D SOCK_STREAM) {
++		int n;
++
++		accept_fd =3D accept(listen_fd, NULL, NULL);
++		if (!ASSERT_GE(accept_fd, 0, "accept"))
++			goto done;
++
++		n =3D write(client_fd, buf, sizeof(buf));
++		if (!ASSERT_EQ(n, sizeof(buf), "send to server"))
++			goto done;
++		rcv_tstamp(accept_fd, buf, sizeof(buf));
++	} else {
++		snd_tstamp(client_fd, buf, sizeof(buf));
++		rcv_tstamp(listen_fd, buf, sizeof(buf));
++	}
++
++done:
++	close(listen_fd);
++	if (accept_fd !=3D -1)
++		close(accept_fd);
++	if (client_fd !=3D -1)
++		close(client_fd);
++}
++
++static int netns_load_dtime_bpf(struct test_tc_dtime *skel)
++{
++	struct nstoken *nstoken;
++
++#define PIN_FNAME(__file) "/sys/fs/bpf/" #__file
++#define PIN(__prog) ({							\
++		int err =3D bpf_program__pin(skel->progs.__prog, PIN_FNAME(__prog)); \
++		if (!ASSERT_OK(err, "pin " #__prog))		\
++			goto fail;					\
++		})
++
++	/* setup ns_src tc progs */
++	nstoken =3D open_netns(NS_SRC);
++	if (!ASSERT_OK_PTR(nstoken, "setns " NS_SRC))
++		return -1;
++	PIN(egress_host);
++	PIN(ingress_host);
++	SYS("tc qdisc add dev veth_src clsact");
++	SYS("tc filter add dev veth_src ingress bpf da object-pinned "
++	    PIN_FNAME(ingress_host));
++	SYS("tc filter add dev veth_src egress bpf da object-pinned "
++	    PIN_FNAME(egress_host));
++	close_netns(nstoken);
++
++	/* setup ns_dst tc progs */
++	nstoken =3D open_netns(NS_DST);
++	if (!ASSERT_OK_PTR(nstoken, "setns " NS_DST))
++		return -1;
++	PIN(egress_host);
++	PIN(ingress_host);
++	SYS("tc qdisc add dev veth_dst clsact");
++	SYS("tc filter add dev veth_dst ingress bpf da object-pinned "
++	    PIN_FNAME(ingress_host));
++	SYS("tc filter add dev veth_dst egress bpf da object-pinned "
++	    PIN_FNAME(egress_host));
++	close_netns(nstoken);
++
++	/* setup ns_fwd tc progs */
++	nstoken =3D open_netns(NS_FWD);
++	if (!ASSERT_OK_PTR(nstoken, "setns " NS_FWD))
++		return -1;
++	PIN(ingress_fwdns_prio100);
++	PIN(egress_fwdns_prio100);
++	PIN(ingress_fwdns_prio101);
++	PIN(egress_fwdns_prio101);
++	SYS("tc qdisc add dev veth_dst_fwd clsact");
++	SYS("tc filter add dev veth_dst_fwd ingress prio 100 bpf da object-pinn=
+ed "
++	    PIN_FNAME(ingress_fwdns_prio100));
++	SYS("tc filter add dev veth_dst_fwd ingress prio 101 bpf da object-pinn=
+ed "
++	    PIN_FNAME(ingress_fwdns_prio101));
++	SYS("tc filter add dev veth_dst_fwd egress prio 100 bpf da object-pinne=
+d "
++	    PIN_FNAME(egress_fwdns_prio100));
++	SYS("tc filter add dev veth_dst_fwd egress prio 101 bpf da object-pinne=
+d "
++	    PIN_FNAME(egress_fwdns_prio101));
++	SYS("tc qdisc add dev veth_src_fwd clsact");
++	SYS("tc filter add dev veth_src_fwd ingress prio 100 bpf da object-pinn=
+ed "
++	    PIN_FNAME(ingress_fwdns_prio100));
++	SYS("tc filter add dev veth_src_fwd ingress prio 101 bpf da object-pinn=
+ed "
++	    PIN_FNAME(ingress_fwdns_prio101));
++	SYS("tc filter add dev veth_src_fwd egress prio 100 bpf da object-pinne=
+d "
++	    PIN_FNAME(egress_fwdns_prio100));
++	SYS("tc filter add dev veth_src_fwd egress prio 101 bpf da object-pinne=
+d "
++	    PIN_FNAME(egress_fwdns_prio101));
++	close_netns(nstoken);
++
++#undef PIN
 +
 +	return 0;
++
++fail:
++	close_netns(nstoken);
++	return -1;
 +}
 +
-+static const struct bpf_func_proto bpf_skb_set_delivery_time_proto =3D {
-+	.func		=3D bpf_skb_set_delivery_time,
-+	.gpl_only	=3D false,
-+	.ret_type	=3D RET_INTEGER,
-+	.arg1_type      =3D ARG_PTR_TO_CTX,
-+	.arg2_type      =3D ARG_ANYTHING,
-+	.arg3_type	=3D ARG_ANYTHING,
++enum {
++	INGRESS_FWDNS_P100,
++	INGRESS_FWDNS_P101,
++	EGRESS_FWDNS_P100,
++	EGRESS_FWDNS_P101,
++	INGRESS_ENDHOST,
++	EGRESS_ENDHOST,
++	SET_DTIME,
++	__MAX_CNT,
 +};
 +
- static const u8 *bpf_search_tcp_opt(const u8 *op, const u8 *opend,
- 				    u8 search_kind, const u8 *magic,
- 				    u8 magic_len, bool *eol)
-@@ -7746,6 +7773,8 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, con=
-st struct bpf_prog *prog)
- 		return &bpf_tcp_gen_syncookie_proto;
- 	case BPF_FUNC_sk_assign:
- 		return &bpf_sk_assign_proto;
-+	case BPF_FUNC_skb_set_delivery_time:
-+		return &bpf_skb_set_delivery_time_proto;
- #endif
- 	default:
- 		return bpf_sk_base_func_proto(func_id);
-@@ -8085,7 +8114,9 @@ static bool bpf_skb_is_valid_access(int off, int si=
-ze, enum bpf_access_type type
- 			return false;
- 		info->reg_type =3D PTR_TO_SOCK_COMMON_OR_NULL;
- 		break;
--	case offsetofend(struct __sk_buff, gso_size) ... offsetof(struct __sk_b=
-uff, hwtstamp) - 1:
-+	case offsetof(struct __sk_buff, delivery_time_type):
-+		return false;
-+	case offsetofend(struct __sk_buff, delivery_time_type) ... offsetof(str=
-uct __sk_buff, hwtstamp) - 1:
- 		/* Explicitly prohibit access to padding in __sk_buff. */
- 		return false;
- 	default:
-@@ -8432,6 +8463,8 @@ static bool tc_cls_act_is_valid_access(int off, int=
- size,
- 		break;
- 	case bpf_ctx_range_till(struct __sk_buff, family, local_port):
- 		return false;
-+	case offsetof(struct __sk_buff, delivery_time_type):
-+		return size =3D=3D sizeof(__u8);
- 	}
-=20
- 	return bpf_skb_is_valid_access(off, size, type, prog, info);
-@@ -8848,6 +8881,45 @@ static struct bpf_insn *bpf_convert_shinfo_access(=
-const struct bpf_insn *si,
- 	return insn;
++const char *cnt_names[] =3D {
++	"ingress_fwdns_p100",
++	"ingress_fwdns_p101",
++	"egress_fwdns_p100",
++	"egress_fwdns_p101",
++	"ingress_endhost",
++	"egress_endhost",
++	"set_dtime",
++};
++
++enum {
++	TCP_IP6_CLEAR_DTIME,
++	TCP_IP4,
++	TCP_IP6,
++	UDP_IP4,
++	UDP_IP6,
++	TCP_IP4_RT_FWD,
++	TCP_IP6_RT_FWD,
++	UDP_IP4_RT_FWD,
++	UDP_IP6_RT_FWD,
++	UKN_TEST,
++	__NR_TESTS,
++};
++
++const char *test_names[] =3D {
++	"tcp ip6 clear dtime",
++	"tcp ip4",
++	"tcp ip6",
++	"udp ip4",
++	"udp ip6",
++	"tcp ip4 rt fwd",
++	"tcp ip6 rt fwd",
++	"udp ip4 rt fwd",
++	"udp ip6 rt fwd",
++};
++
++static const char *dtime_cnt_str(int test, int cnt)
++{
++	static char name[64];
++
++	snprintf(name, sizeof(name), "%s %s", test_names[test], cnt_names[cnt])=
+;
++
++	return name;
++}
++
++static const char *dtime_err_str(int test, int cnt)
++{
++	static char name[64];
++
++	snprintf(name, sizeof(name), "%s %s errs", test_names[test],
++		 cnt_names[cnt]);
++
++	return name;
++}
++
++static void test_tcp_clear_dtime(struct test_tc_dtime *skel)
++{
++	int i, t =3D TCP_IP6_CLEAR_DTIME;
++	__u32 *dtimes =3D skel->bss->dtimes[t];
++	__u32 *errs =3D skel->bss->errs[t];
++
++	skel->bss->test =3D t;
++	test_inet_dtime(AF_INET6, SOCK_STREAM, IP6_DST, 0);
++
++	ASSERT_EQ(dtimes[INGRESS_FWDNS_P100], 0,
++		  dtime_cnt_str(t, INGRESS_FWDNS_P100));
++	ASSERT_EQ(dtimes[INGRESS_FWDNS_P101], 0,
++		  dtime_cnt_str(t, INGRESS_FWDNS_P101));
++	ASSERT_GT(dtimes[EGRESS_FWDNS_P100], 0,
++		  dtime_cnt_str(t, EGRESS_FWDNS_P100));
++	ASSERT_EQ(dtimes[EGRESS_FWDNS_P101], 0,
++		  dtime_cnt_str(t, EGRESS_FWDNS_P101));
++	ASSERT_GT(dtimes[EGRESS_ENDHOST], 0,
++		  dtime_cnt_str(t, EGRESS_ENDHOST));
++	ASSERT_GT(dtimes[INGRESS_ENDHOST], 0,
++		  dtime_cnt_str(t, INGRESS_ENDHOST));
++
++	for (i =3D INGRESS_FWDNS_P100; i < __MAX_CNT; i++)
++		ASSERT_EQ(errs[i], 0, dtime_err_str(t, i));
++}
++
++static void test_tcp_dtime(struct test_tc_dtime *skel, int family, bool =
+bpf_fwd)
++{
++	__u32 *dtimes, *errs;
++	const char *addr;
++	int i, t;
++
++	if (family =3D=3D AF_INET) {
++		t =3D bpf_fwd ? TCP_IP4 : TCP_IP4_RT_FWD;
++		addr =3D IP4_DST;
++	} else {
++		t =3D bpf_fwd ? TCP_IP6 : TCP_IP6_RT_FWD;
++		addr =3D IP6_DST;
++	}
++
++	dtimes =3D skel->bss->dtimes[t];
++	errs =3D skel->bss->errs[t];
++
++	skel->bss->test =3D t;
++	test_inet_dtime(family, SOCK_STREAM, addr, 0);
++
++	/* fwdns_prio100 prog does not read delivery_time_type, so
++	 * kernel puts the (rcv) timetamp in __sk_buff->tstamp
++	 */
++	ASSERT_EQ(dtimes[INGRESS_FWDNS_P100], 0,
++		  dtime_cnt_str(t, INGRESS_FWDNS_P100));
++	for (i =3D INGRESS_FWDNS_P101; i < SET_DTIME; i++)
++		ASSERT_GT(dtimes[i], 0, dtime_cnt_str(t, i));
++
++	for (i =3D INGRESS_FWDNS_P100; i < __MAX_CNT; i++)
++		ASSERT_EQ(errs[i], 0, dtime_err_str(t, i));
++}
++
++static void test_udp_dtime(struct test_tc_dtime *skel, int family, bool =
+bpf_fwd)
++{
++	__u32 *dtimes, *errs;
++	const char *addr;
++	int i, t;
++
++	if (family =3D=3D AF_INET) {
++		t =3D bpf_fwd ? UDP_IP4 : UDP_IP4_RT_FWD;
++		addr =3D IP4_DST;
++	} else {
++		t =3D bpf_fwd ? UDP_IP6 : UDP_IP6_RT_FWD;
++		addr =3D IP6_DST;
++	}
++
++	dtimes =3D skel->bss->dtimes[t];
++	errs =3D skel->bss->errs[t];
++
++	skel->bss->test =3D t;
++	test_inet_dtime(family, SOCK_DGRAM, addr, 0);
++
++	ASSERT_EQ(dtimes[INGRESS_FWDNS_P100], 0,
++		  dtime_cnt_str(t, INGRESS_FWDNS_P100));
++	/* non mono delivery time is not forwarded */
++	ASSERT_EQ(dtimes[INGRESS_FWDNS_P101], 0,
++		  dtime_cnt_str(t, INGRESS_FWDNS_P100));
++	for (i =3D EGRESS_FWDNS_P100; i < SET_DTIME; i++)
++		ASSERT_GT(dtimes[i], 0, dtime_cnt_str(t, i));
++
++	for (i =3D INGRESS_FWDNS_P100; i < __MAX_CNT; i++)
++		ASSERT_EQ(errs[i], 0, dtime_err_str(t, i));
++}
++
++static void test_tc_redirect_dtime(struct netns_setup_result *setup_resu=
+lt)
++{
++	struct test_tc_dtime *skel;
++	struct nstoken *nstoken;
++	int err;
++
++	skel =3D test_tc_dtime__open();
++	if (!ASSERT_OK_PTR(skel, "test_tc_dtime__open"))
++		return;
++
++	skel->rodata->IFINDEX_SRC =3D setup_result->ifindex_veth_src_fwd;
++	skel->rodata->IFINDEX_DST =3D setup_result->ifindex_veth_dst_fwd;
++
++	err =3D test_tc_dtime__load(skel);
++	if (!ASSERT_OK(err, "test_tc_dtime__load"))
++		goto done;
++
++	if (netns_load_dtime_bpf(skel))
++		goto done;
++
++	nstoken =3D open_netns(NS_FWD);
++	if (!ASSERT_OK_PTR(nstoken, "setns fwd"))
++		goto done;
++	err =3D set_forwarding(false);
++	close_netns(nstoken);
++	if (!ASSERT_OK(err, "disable forwarding"))
++		goto done;
++
++	test_tcp_clear_dtime(skel);
++
++	test_tcp_dtime(skel, AF_INET, true);
++	test_tcp_dtime(skel, AF_INET6, true);
++	test_udp_dtime(skel, AF_INET, true);
++	test_udp_dtime(skel, AF_INET6, true);
++
++	/* Test the kernel ip[6]_forward path instead
++	 * of bpf_redirect_neigh().
++	 */
++	nstoken =3D open_netns(NS_FWD);
++	if (!ASSERT_OK_PTR(nstoken, "setns fwd"))
++		goto done;
++	err =3D set_forwarding(true);
++	close_netns(nstoken);
++	if (!ASSERT_OK(err, "enable forwarding"))
++		goto done;
++
++	test_tcp_dtime(skel, AF_INET, false);
++	test_tcp_dtime(skel, AF_INET6, false);
++	test_udp_dtime(skel, AF_INET, false);
++	test_udp_dtime(skel, AF_INET6, false);
++
++done:
++	test_tc_dtime__destroy(skel);
++}
++
+ static void test_tc_redirect_neigh_fib(struct netns_setup_result *setup_=
+result)
+ {
+ 	struct nstoken *nstoken =3D NULL;
+@@ -787,6 +1220,7 @@ static void *test_tc_redirect_run_tests(void *arg)
+ 	RUN_TEST(tc_redirect_peer_l3);
+ 	RUN_TEST(tc_redirect_neigh);
+ 	RUN_TEST(tc_redirect_neigh_fib);
++	RUN_TEST(tc_redirect_dtime);
+ 	return NULL;
  }
 =20
-+static struct bpf_insn *bpf_convert_dtime_type_read(const struct bpf_ins=
-n *si,
-+						    struct bpf_insn *insn)
-+{
-+	__u8 value_reg =3D si->dst_reg;
-+	__u8 skb_reg =3D si->src_reg;
-+	__u8 tmp_reg =3D BPF_REG_AX;
+diff --git a/tools/testing/selftests/bpf/progs/test_tc_dtime.c b/tools/te=
+sting/selftests/bpf/progs/test_tc_dtime.c
+new file mode 100644
+index 000000000000..b52ed4e4696b
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_tc_dtime.c
+@@ -0,0 +1,348 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <stddef.h>
++#include <stdint.h>
++#include <stdbool.h>
++#include <linux/bpf.h>
++#include <linux/stddef.h>
++#include <linux/pkt_cls.h>
++#include <linux/if_ether.h>
++#include <linux/in.h>
++#include <linux/ip.h>
++#include <linux/ipv6.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_endian.h>
++#include <sys/socket.h>
 +
-+	*insn++ =3D BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg,
-+			      SKB_MONO_DELIVERY_TIME_OFFSET);
-+	*insn++ =3D BPF_ALU32_IMM(BPF_AND, tmp_reg,
-+				SKB_MONO_DELIVERY_TIME_MASK);
-+	*insn++ =3D BPF_JMP32_IMM(BPF_JEQ, tmp_reg, 0, 2);
-+	/* value_reg =3D BPF_SKB_DELIVERY_TIME_MONO */
-+	*insn++ =3D BPF_MOV32_IMM(value_reg, BPF_SKB_DELIVERY_TIME_MONO);
-+	*insn++ =3D BPF_JMP_A(IS_ENABLED(CONFIG_NET_CLS_ACT) ? 10 : 5);
-+
-+	*insn++ =3D BPF_LDX_MEM(BPF_DW, tmp_reg, skb_reg,
-+			      offsetof(struct sk_buff, tstamp));
-+	*insn++ =3D BPF_JMP_IMM(BPF_JNE, tmp_reg, 0, 2);
-+	/* value_reg =3D BPF_SKB_DELIVERY_TIME_NONE */
-+	*insn++ =3D BPF_MOV32_IMM(value_reg, BPF_SKB_DELIVERY_TIME_NONE);
-+	*insn++ =3D BPF_JMP_A(IS_ENABLED(CONFIG_NET_CLS_ACT) ? 6 : 1);
-+
-+#ifdef CONFIG_NET_CLS_ACT
-+	*insn++ =3D BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg, TC_AT_INGRESS_OFFSET);
-+	*insn++ =3D BPF_ALU32_IMM(BPF_AND, tmp_reg, TC_AT_INGRESS_MASK);
-+	*insn++ =3D BPF_JMP32_IMM(BPF_JEQ, tmp_reg, 0, 2);
-+	/* At ingress, value_reg =3D 0 */
-+	*insn++ =3D BPF_MOV32_IMM(value_reg, 0);
-+	*insn++ =3D BPF_JMP_A(1);
-+#endif
-+
-+	/* value_reg =3D BPF_SKB_DELIVERYT_TIME_UNSPEC */
-+	*insn++ =3D BPF_MOV32_IMM(value_reg, BPF_SKB_DELIVERY_TIME_UNSPEC);
-+
-+	/* 15 insns with CONFIG_NET_CLS_ACT */
-+	return insn;
-+}
-+
- static u32 bpf_convert_ctx_access(enum bpf_access_type type,
- 				  const struct bpf_insn *si,
- 				  struct bpf_insn *insn_buf,
-@@ -9169,6 +9241,11 @@ static u32 bpf_convert_ctx_access(enum bpf_access_=
-type type,
- 							     target_size));
- 		break;
-=20
-+	case offsetof(struct __sk_buff, delivery_time_type):
-+		insn =3D bpf_convert_dtime_type_read(si, insn);
-+		prog->delivery_time_access =3D 1;
-+		break;
-+
- 	case offsetof(struct __sk_buff, gso_segs):
- 		insn =3D bpf_convert_shinfo_access(si, insn);
- 		*insn++ =3D BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct skb_shared_info, gso_s=
-egs),
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bp=
-f.h
-index 16a7574292a5..b36771b1bfa1 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -5076,6 +5076,31 @@ union bpf_attr {
-  *		associated to *xdp_md*, at *offset*.
-  *	Return
-  *		0 on success, or a negative error in case of failure.
++/* veth_src --- veth_src_fwd --- veth_det_fwd --- veth_dst
++ *           |                                 |
++ *  ns_src   |              ns_fwd             |   ns_dst
 + *
-+ * long bpf_skb_set_delivery_time(struct sk_buff *skb, u64 dtime, u32 dt=
-ime_type)
-+ *	Description
-+ *		Set a *dtime* (delivery time) to the __sk_buff->tstamp and also
-+ *		change the __sk_buff->delivery_time_type to *dtime_type*.
-+ *
-+ *		Only BPF_SKB_DELIVERY_TIME_MONO is supported in *dtime_type*
-+ *		and it is the only delivery_time_type that will be kept
-+ *		after bpf_redirect_*().
-+ *		Only ipv4 and ipv6 skb->protocol is supported.
-+ *
-+ *		If there is no need to change the __sk_buff->delivery_time_type,
-+ *		the delivery_time can be directly written to __sk_buff->tstamp
-+ *		instead.
-+ *
-+ *		This function is most useful when it needs to set a
-+ *		mono delivery_time to __sk_buff->tstamp and then
-+ *		bpf_redirect_*() to the egress of an iface.  For example,
-+ *		changing the (rcv) timestamp in __sk_buff->tstamp at
-+ *		ingress to a mono delivery time and then bpf_redirect_*()
-+ *		to sch_fq@phy-dev.
-+ *	Return
-+ *		0 on success.
-+ *		**-EINVAL** for invalid input
-+ *		**-EOPNOTSUPP** for unsupported delivery_time_type and protocol
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5269,6 +5294,7 @@ union bpf_attr {
- 	FN(xdp_get_buff_len),		\
- 	FN(xdp_load_bytes),		\
- 	FN(xdp_store_bytes),		\
-+	FN(skb_set_delivery_time),	\
- 	/* */
-=20
- /* integer value in 'imm' field of BPF_CALL instruction selects which he=
-lper
-@@ -5458,6 +5484,12 @@ union {					\
- 	__u64 :64;			\
- } __attribute__((aligned(8)))
-=20
++ * ns_src and ns_dst: ENDHOST namespace
++ *            ns_fwd: Fowarding namespace
++ */
++
++#define ctx_ptr(field)		(void *)(long)(field)
++
++#define ip4_src			__bpf_htonl(0xac100164) /* 172.16.1.100 */
++#define ip4_dst			__bpf_htonl(0xac100264) /* 172.16.2.100 */
++
++#define ip6_src			{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
++				  0x00, 0x01, 0xde, 0xad, 0xbe, 0xef, 0xca, 0xfe }
++#define ip6_dst			{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
++				  0x00, 0x02, 0xde, 0xad, 0xbe, 0xef, 0xca, 0xfe }
++
++#define v6_equal(a, b)		(a.s6_addr32[0] =3D=3D b.s6_addr32[0] && \
++				 a.s6_addr32[1] =3D=3D b.s6_addr32[1] && \
++				 a.s6_addr32[2] =3D=3D b.s6_addr32[2] && \
++				 a.s6_addr32[3] =3D=3D b.s6_addr32[3])
++
++volatile const __u32 IFINDEX_SRC;
++volatile const __u32 IFINDEX_DST;
++
++#define EGRESS_ENDHOST_MAGIC	0x0b9fbeef
++#define INGRESS_FWDNS_MAGIC	0x1b9fbeef
++#define EGRESS_FWDNS_MAGIC	0x2b9fbeef
++
 +enum {
-+	BPF_SKB_DELIVERY_TIME_NONE,
-+	BPF_SKB_DELIVERY_TIME_UNSPEC,
-+	BPF_SKB_DELIVERY_TIME_MONO,
++	INGRESS_FWDNS_P100,
++	INGRESS_FWDNS_P101,
++	EGRESS_FWDNS_P100,
++	EGRESS_FWDNS_P101,
++	INGRESS_ENDHOST,
++	EGRESS_ENDHOST,
++	SET_DTIME,
++	__MAX_CNT,
 +};
 +
- /* user accessible mirror of in-kernel sk_buff.
-  * new fields can only be added to the end of this structure
-  */
-@@ -5498,7 +5530,8 @@ struct __sk_buff {
- 	__u32 gso_segs;
- 	__bpf_md_ptr(struct bpf_sock *, sk);
- 	__u32 gso_size;
--	__u32 :32;		/* Padding, future use. */
-+	__u8  delivery_time_type;
-+	__u32 :24;		/* Padding, future use. */
- 	__u64 hwtstamp;
- };
-=20
++enum {
++	TCP_IP6_CLEAR_DTIME,
++	TCP_IP4,
++	TCP_IP6,
++	UDP_IP4,
++	UDP_IP6,
++	TCP_IP4_RT_FWD,
++	TCP_IP6_RT_FWD,
++	UDP_IP4_RT_FWD,
++	UDP_IP6_RT_FWD,
++	UKN_TEST,
++	__NR_TESTS,
++};
++
++enum {
++	SRC_NS =3D 1,
++	DST_NS,
++};
++
++__u32 dtimes[__NR_TESTS][__MAX_CNT] =3D {};
++__u32 errs[__NR_TESTS][__MAX_CNT] =3D {};
++__u32 test =3D 0;
++
++static void inc_dtimes(__u32 idx)
++{
++	if (test < __NR_TESTS)
++		dtimes[test][idx]++;
++	else
++		dtimes[UKN_TEST][idx]++;
++}
++
++static void inc_errs(__u32 idx)
++{
++	if (test < __NR_TESTS)
++		errs[test][idx]++;
++	else
++		errs[UKN_TEST][idx]++;
++}
++
++static int skb_proto(int type)
++{
++	return type & 0xff;
++}
++
++static int skb_ns(int type)
++{
++	return (type >> 8) & 0xff;
++}
++
++static bool fwdns_clear_dtime(void)
++{
++	return test =3D=3D TCP_IP6_CLEAR_DTIME;
++}
++
++static bool bpf_fwd(void)
++{
++	return test < TCP_IP4_RT_FWD;
++}
++
++/* -1: parse error: TC_ACT_SHOT
++ *  0: not testing traffic: TC_ACT_OK
++ * >0: first byte is the inet_proto, second byte has the netns
++ *     of the sender
++ */
++static int skb_get_type(struct __sk_buff *skb)
++{
++	void *data_end =3D ctx_ptr(skb->data_end);
++	void *data =3D ctx_ptr(skb->data);
++	__u8 inet_proto =3D 0, ns =3D 0;
++	struct ipv6hdr *ip6h;
++	struct iphdr *iph;
++
++	switch (skb->protocol) {
++	case __bpf_htons(ETH_P_IP):
++		iph =3D data + sizeof(struct ethhdr);
++		if (iph + 1 > data_end)
++			return -1;
++		if (iph->saddr =3D=3D ip4_src)
++			ns =3D SRC_NS;
++		else if (iph->saddr =3D=3D ip4_dst)
++			ns =3D DST_NS;
++		inet_proto =3D iph->protocol;
++		break;
++	case __bpf_htons(ETH_P_IPV6):
++		ip6h =3D data + sizeof(struct ethhdr);
++		if (ip6h + 1 > data_end)
++			return -1;
++		if (v6_equal(ip6h->saddr, (struct in6_addr)ip6_src))
++			ns =3D SRC_NS;
++		else if (v6_equal(ip6h->saddr, (struct in6_addr)ip6_dst))
++			ns =3D DST_NS;
++		inet_proto =3D ip6h->nexthdr;
++		break;
++	default:
++		return 0;
++	}
++
++	if ((inet_proto !=3D IPPROTO_TCP && inet_proto !=3D IPPROTO_UDP) || !ns=
+)
++		return 0;
++
++	return (ns << 8 | inet_proto);
++}
++
++/* format: direction@iface@netns
++ * egress@veth_(src|dst)@ns_(src|dst)
++ */
++SEC("tc")
++int egress_host(struct __sk_buff *skb)
++{
++	int skb_type;
++
++	skb_type =3D skb_get_type(skb);
++	if (skb_type =3D=3D -1)
++		return TC_ACT_SHOT;
++	if (!skb_type)
++		return TC_ACT_OK;
++
++	if (skb_proto(skb_type) =3D=3D IPPROTO_TCP) {
++		if (skb->delivery_time_type =3D=3D BPF_SKB_DELIVERY_TIME_MONO &&
++		    skb->tstamp)
++			inc_dtimes(EGRESS_ENDHOST);
++		else
++			inc_errs(EGRESS_ENDHOST);
++	} else {
++		if (skb->delivery_time_type =3D=3D BPF_SKB_DELIVERY_TIME_UNSPEC &&
++		    skb->tstamp)
++			inc_dtimes(EGRESS_ENDHOST);
++		else
++			inc_errs(EGRESS_ENDHOST);
++	}
++
++	skb->tstamp =3D EGRESS_ENDHOST_MAGIC;
++
++	return TC_ACT_OK;
++}
++
++/* ingress@veth_(src|dst)@ns_(src|dst) */
++SEC("tc")
++int ingress_host(struct __sk_buff *skb)
++{
++	int skb_type;
++
++	skb_type =3D skb_get_type(skb);
++	if (skb_type =3D=3D -1)
++		return TC_ACT_SHOT;
++	if (!skb_type)
++		return TC_ACT_OK;
++
++	if (skb->delivery_time_type =3D=3D BPF_SKB_DELIVERY_TIME_MONO &&
++	    skb->tstamp =3D=3D EGRESS_FWDNS_MAGIC)
++		inc_dtimes(INGRESS_ENDHOST);
++	else
++		inc_errs(INGRESS_ENDHOST);
++
++	return TC_ACT_OK;
++}
++
++/* ingress@veth_(src|dst)_fwd@ns_fwd priority 100 */
++SEC("tc")
++int ingress_fwdns_prio100(struct __sk_buff *skb)
++{
++	int skb_type;
++
++	skb_type =3D skb_get_type(skb);
++	if (skb_type =3D=3D -1)
++		return TC_ACT_SHOT;
++	if (!skb_type)
++		return TC_ACT_OK;
++
++	/* delivery_time is only available to the ingress
++	 * if the tc-bpf checks the skb->delivery_time_type.
++	 */
++	if (skb->tstamp =3D=3D EGRESS_ENDHOST_MAGIC)
++		inc_errs(INGRESS_FWDNS_P100);
++
++	if (fwdns_clear_dtime())
++		skb->tstamp =3D 0;
++
++	return TC_ACT_UNSPEC;
++}
++
++/* egress@veth_(src|dst)_fwd@ns_fwd priority 100 */
++SEC("tc")
++int egress_fwdns_prio100(struct __sk_buff *skb)
++{
++	int skb_type;
++
++	skb_type =3D skb_get_type(skb);
++	if (skb_type =3D=3D -1)
++		return TC_ACT_SHOT;
++	if (!skb_type)
++		return TC_ACT_OK;
++
++	/* delivery_time is always available to egress even
++	 * the tc-bpf did not use the delivery_time_type.
++	 */
++	if (skb->delivery_time_type =3D=3D BPF_SKB_DELIVERY_TIME_MONO &&
++	    skb->tstamp =3D=3D INGRESS_FWDNS_MAGIC)
++		inc_dtimes(EGRESS_FWDNS_P100);
++	else
++		inc_errs(EGRESS_FWDNS_P100);
++
++	if (fwdns_clear_dtime())
++		skb->tstamp =3D 0;
++
++	return TC_ACT_UNSPEC;
++}
++
++/* ingress@veth_(src|dst)_fwd@ns_fwd priority 101 */
++SEC("tc")
++int ingress_fwdns_prio101(struct __sk_buff *skb)
++{
++	__u64 expected_dtime =3D EGRESS_ENDHOST_MAGIC;
++	int skb_type;
++
++	skb_type =3D skb_get_type(skb);
++	if (skb_type =3D=3D -1 || !skb_type)
++		/* Should have handled in prio100 */
++		return TC_ACT_SHOT;
++
++	if (skb_proto(skb_type) =3D=3D IPPROTO_UDP)
++		expected_dtime =3D 0;
++
++	if (skb->delivery_time_type) {
++		if (fwdns_clear_dtime() ||
++		    skb->delivery_time_type !=3D BPF_SKB_DELIVERY_TIME_MONO ||
++		    skb->tstamp !=3D expected_dtime)
++			inc_errs(INGRESS_FWDNS_P101);
++		else
++			inc_dtimes(INGRESS_FWDNS_P101);
++	} else {
++		if (!fwdns_clear_dtime() && expected_dtime)
++			inc_errs(INGRESS_FWDNS_P101);
++	}
++
++	if (skb->delivery_time_type =3D=3D BPF_SKB_DELIVERY_TIME_MONO) {
++		skb->tstamp =3D INGRESS_FWDNS_MAGIC;
++	} else {
++		if (bpf_skb_set_delivery_time(skb, INGRESS_FWDNS_MAGIC,
++					      BPF_SKB_DELIVERY_TIME_MONO))
++			inc_errs(SET_DTIME);
++		if (!bpf_skb_set_delivery_time(skb, INGRESS_FWDNS_MAGIC,
++					       BPF_SKB_DELIVERY_TIME_UNSPEC))
++			inc_errs(SET_DTIME);
++	}
++
++	if (skb_ns(skb_type) =3D=3D SRC_NS)
++		return bpf_fwd() ?
++			bpf_redirect_neigh(IFINDEX_DST, NULL, 0, 0) : TC_ACT_OK;
++	else
++		return bpf_fwd() ?
++			bpf_redirect_neigh(IFINDEX_SRC, NULL, 0, 0) : TC_ACT_OK;
++}
++
++/* egress@veth_(src|dst)_fwd@ns_fwd priority 101 */
++SEC("tc")
++int egress_fwdns_prio101(struct __sk_buff *skb)
++{
++	int skb_type;
++
++	skb_type =3D skb_get_type(skb);
++	if (skb_type =3D=3D -1 || !skb_type)
++		/* Should have handled in prio100 */
++		return TC_ACT_SHOT;
++
++	if (skb->delivery_time_type) {
++		if (fwdns_clear_dtime() ||
++		    skb->delivery_time_type !=3D BPF_SKB_DELIVERY_TIME_MONO ||
++		    skb->tstamp !=3D INGRESS_FWDNS_MAGIC)
++			inc_errs(EGRESS_FWDNS_P101);
++		else
++			inc_dtimes(EGRESS_FWDNS_P101);
++	} else {
++		if (!fwdns_clear_dtime())
++			inc_errs(EGRESS_FWDNS_P101);
++	}
++
++	if (skb->delivery_time_type =3D=3D BPF_SKB_DELIVERY_TIME_MONO) {
++		skb->tstamp =3D EGRESS_FWDNS_MAGIC;
++	} else {
++		if (bpf_skb_set_delivery_time(skb, EGRESS_FWDNS_MAGIC,
++					      BPF_SKB_DELIVERY_TIME_MONO))
++			inc_errs(SET_DTIME);
++		if (!bpf_skb_set_delivery_time(skb, EGRESS_FWDNS_MAGIC,
++					       BPF_SKB_DELIVERY_TIME_UNSPEC))
++			inc_errs(SET_DTIME);
++	}
++
++	return TC_ACT_OK;
++}
++
++char __license[] SEC("license") =3D "GPL";
 --=20
 2.30.2
 
