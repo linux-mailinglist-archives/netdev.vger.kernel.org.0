@@ -2,82 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 557694B2CFB
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 19:31:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40FFF4B2D05
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 19:35:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352689AbiBKSbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 13:31:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39566 "EHLO
+        id S1344254AbiBKSfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 13:35:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343586AbiBKSbM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 13:31:12 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955D4184
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 10:31:11 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id q8so10511808oiw.7
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 10:31:11 -0800 (PST)
+        with ESMTP id S240176AbiBKSfS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 13:35:18 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1028184
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 10:35:16 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id t36so6926041pfg.0
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 10:35:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=SEcNjOSXP8wGpHSIQOVacqlW5iquJAh9dHc2B4bb5SE=;
-        b=WzBaBthys2WwkdMCXDTNsF06V+ATy+meZh0VGXC+3ORYJ1qLDj5cnS8j4pFENsIv7a
-         k1+JAimDXla8L78+BTOWl6AFxj5icKUQqUjshI66RzP9gqfAQ+85fm60kZf/ZT+mPHYU
-         jC0RIoJjgojv0SuFTjXNokbRP/kJMr9RdxroSykj0GMYJtNHOiGGWRAKQmE3W26+AjWE
-         x+WPG1QT5VbKyVGt/Sq//HAQlqMATpRO/E1D73Q0Ho5Rmx296h3jjmGGOnGIasO+sjTa
-         iXXsoN7/4f4TeOz6t6DG3zjfCPL1NDAjdz4m3TZz0MrQ4+/RrNt6aMMdO/yCC8WxA0tI
-         ftgA==
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Law23MJZOOc1DSHm8VR9H3GrGJ66ArnHrnubRrOHPvQ=;
+        b=grWpmNuAVAUNtXU+FnSt5b2Kn8aHJGFT1lR4959Vnw252ve2fpXQdIQ1kKb9yyPsmj
+         RjwZFCQyZEfz6QZrdvPykM7QMkILoVaMcB3I/reCjgwP9ibSX7Rm7jSqLK5ev4mBzMuX
+         LCSgqiAf3O/nFQXdLbc2KnG1uDsUmHvcBXlfO4Zn8Tn5wy0P7uls6AEoTgzK9sDmPHD9
+         F5Ru1rSopIiSU2odYtukvpeanVTE+A1xa52+MDJIDAYT/wdFBHTOnnvJdoE2GeK4uKnO
+         NAtawK9G852cwmGmHkER95Fx7y6Q8lNaY0Gk97hPCF7lNfns17Bt3Nrv76Y2ko6BydCW
+         Fpwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=SEcNjOSXP8wGpHSIQOVacqlW5iquJAh9dHc2B4bb5SE=;
-        b=dO7tABvugkkTfc9Kazp0d8Mnv5Hb15FFXcIYDE89q8TvLkGPeG0VP0I9+RpGBPG+am
-         pUoEHP2eP8V6ID9ek+FJxPTHnxWL3dcHOyJLy7uqjKqHRlwvCyNwbp1bbmiJYc6157cw
-         sjNgVgyr8JQo/2Z/cegnXVjqBW54QoTJWkB3Uzy7+bu8fCuxq0cTuRTZjnLXWncHWoi6
-         G+0OEJmPk3iwPcSCO+LgMDcxK1dTwJZgl70dtEuw5fPXeiEBcUP5m0e9AtUxWRiwelJ3
-         BCZ+QyMKX6CiBuOTlYhFx2hzrpO294uUfGtCuPEjW3ggcbQwAxwFAAQUAIR5C+XYZSO+
-         JWXQ==
-X-Gm-Message-State: AOAM5310S/QXhWM0m6nS/A/xvDuNt+JxVgRqgAZkGZ6fONER8oDei3RC
-        KGmCdcyirjfgjcxGHDbO7BfQblquk/teo9MOmqA=
-X-Google-Smtp-Source: ABdhPJz037wQeoXY0T8vq+PSd7fTgW+wK1jrJJeu/YIHXs6gDY35SGiynFF4HqxSdMJPwcl28L2gS/ZC7QTPu/VDOoE=
-X-Received: by 2002:a05:6808:2199:: with SMTP id be25mr819516oib.303.1644604270902;
- Fri, 11 Feb 2022 10:31:10 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Law23MJZOOc1DSHm8VR9H3GrGJ66ArnHrnubRrOHPvQ=;
+        b=6Nf2QCfIOQINzErvbrrqtzG/7v1WAnbaMqWp39QIIGWPv9v4DJZrQ44530q8WoGhy/
+         jPr8jQ+P771SeAWvfw+1c8T16USlUieU476vs3CbSL66emKgnqrzk7jI3u5R79ib0Kvz
+         DcIZuXvTh5OTAmTFNFJH/GKTdTJKJap41EsBOMvB2Tqh5LIyQa3qriU6dbwPyjlI1jHm
+         62r/BLKXJclrp6qbTnmZ0TLGYLsWHi3v2tiYnEXTTQAeKQ5nEKM3Xs16rDdLm2pE1z3W
+         Z9DRfbeprmE/rPUohpAPn57G+/6YhBRDBxhqfrbimzE0sdn3qnCbxvxKAlL6JFxfjAXQ
+         Oxzg==
+X-Gm-Message-State: AOAM530OYmmc9gBb/nACa4VDwPT58xRCH7Qwg6w+9lfBaXl85QU4S++M
+        GSUS5y70gsZzbw4cuHHo6PgKHfiCkGzU79cu
+X-Google-Smtp-Source: ABdhPJz9XjGGUoTT/A2yzk9UDf0bjt//XEvmMyyYGB/gObDSgPewX+GURAnz6BGO+twFLqCsJYmNjg==
+X-Received: by 2002:a05:6a00:1a16:: with SMTP id g22mr2987950pfv.81.1644604516227;
+        Fri, 11 Feb 2022 10:35:16 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id g19sm9738509pfc.109.2022.02.11.10.35.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 10:35:15 -0800 (PST)
+Date:   Fri, 11 Feb 2022 10:35:13 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Maxim Petrov <mmrmaximuzz@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2] libnetlink: fix socket leak in
+ rtnl_open_byproto()
+Message-ID: <20220211103513.2ebc5615@hermes.local>
+In-Reply-To: <8da15fe8-92be-ee9c-0c45-1a4af38fc9bd@gmail.com>
+References: <20220210171903.66f35b6c@hermes.local>
+        <8da15fe8-92be-ee9c-0c45-1a4af38fc9bd@gmail.com>
 MIME-Version: 1.0
-Sender: dongheiram@gmail.com
-Received: by 2002:a4a:c118:0:0:0:0:0 with HTTP; Fri, 11 Feb 2022 10:31:10
- -0800 (PST)
-From:   Aisha Al-Qaddafi <aisha.gdaff21@gmail.com>
-Date:   Fri, 11 Feb 2022 10:31:10 -0800
-X-Google-Sender-Auth: d3-6AF-IANxD6EONIiqGilSDBqo
-Message-ID: <CAJGwrKGYT_yjD7xE_FRExCnU2Uvae3e32L+MZH715P+8EX8Pcw@mail.gmail.com>
-Subject: My Dear Friend
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.3 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,LOTS_OF_MONEY,
-        MILLION_HUNDRED,MONEY_FRAUD_5,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Assalamu Alaikum Wa Rahmatullahi Wa Barakatuh
-I came across your e-mail contact prior a private search while in need
-of your assistance. I am Aisha Al-Qaddafi, the only biological
-Daughter of Former President of Libya Col. Muammar Al-Qaddafi. Am a
-single Mother and a Widow with three Children.
-I have investment funds worth Twenty Seven Million Five Hundred
-Thousand United State Dollar ($27.500.000.00 ) and i need a trusted
-investment Manager/Partner because of my current refugee status,
-however, I am interested in you for investment project assistance in
-your country, may be from there, we can build business relationship in
-the nearest future.
-I am willing to negotiate investment/business profit sharing ratio
-with you base on the future investment earning profits.
-If you are willing to handle this project on my behalf kindly reply
-urgent to enable me provide you more information about the investment
-funds.
+On Fri, 11 Feb 2022 21:30:11 +0300
+Maxim Petrov <mmrmaximuzz@gmail.com> wrote:
+
+> Hello Stephen!
+> 
+> On 2022-02-11 01:19 UTC, Stephen Hemminger wrote:
+> > +	} else {
+> > +		rth->seq = time(NULL);
+> > +		return 0;
+> >  	}  
+> 
+> For me it looks slightly alien as the normal flow jumps from one 'else if' to
+> another, and the final return statement is hidden inside the else block. The
+> original version is straightforward and less surprising.
+> 
+> > Can do the same thing without introducing a goto  
+> But what's wrong with the goto here? I thought it is a perfectly legal C way to
+> handle errors, and iproute2 uses it for that purpose almost everywhere.
+
+Ok, either way. personal preference only.
