@@ -2,37 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A8E84B3172
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 00:43:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 269904B3181
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 00:49:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354262AbiBKXmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 18:42:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42622 "EHLO
+        id S1354142AbiBKXtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 18:49:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235335AbiBKXmj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 18:42:39 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A08FCCFE;
-        Fri, 11 Feb 2022 15:42:37 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 50FECED1;
-        Fri, 11 Feb 2022 15:42:37 -0800 (PST)
-Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com [10.118.28.62])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 3C4B93F70D;
-        Fri, 11 Feb 2022 15:42:37 -0800 (PST)
-From:   Jeremy Linton <jeremy.linton@arm.com>
-To:     netdev@vger.kernel.org
-Cc:     mw@semihalf.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, rmk+kernel@armlinux.org.uk,
-        linux-kernel@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>
-Subject: [PATCH] net: mvpp2: Check for null pcs in mvpp2_acpi_start()
-Date:   Fri, 11 Feb 2022 17:42:35 -0600
-Message-Id: <20220211234235.3180025-1-jeremy.linton@arm.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S233490AbiBKXtc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 18:49:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C956CF8
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 15:49:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644623369;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=VaVa3IZjf7+uYxHUheHWgkeVbJt7d2Z3wLlfkOHIfJM=;
+        b=dDsiPR+r0ZXK/qMsxA9sIHNcBtCf6j5qLE6FLpqgG8qS3gW0lvcBiI1cYnCFegGCQ875oN
+        627BPv9vQ2LskUMPo3P3xiWh5EbDJ1ynut8yspDRsfPIFbe4Dv2tvEcbe9Z5vYphMECABI
+        vao/QLhDoCyAupT8wpKuHEcr4dg4QSI=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-93-aPfHoLX4PVuyiPmpiD9r-A-1; Fri, 11 Feb 2022 18:49:28 -0500
+X-MC-Unique: aPfHoLX4PVuyiPmpiD9r-A-1
+Received: by mail-ed1-f72.google.com with SMTP id n7-20020a05640205c700b0040b7be76147so6259771edx.10
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 15:49:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VaVa3IZjf7+uYxHUheHWgkeVbJt7d2Z3wLlfkOHIfJM=;
+        b=aoLvmIdP5VXiZDIuM70l7DQG1IjLI+7u9oVPyanJAVtr9fqnBwo7aHwSOqWLZM3VB2
+         ZYVBmRQD9t/lrEdd6OhlWe3oYx79oOjJ0quoUjh7/R1kdz/56qpoUfNUp/Lz5t5r/mH+
+         AZoS9zVKoTzRy1xFuCjPWb2X5oI5QAXti6YPjssHsp4Oj9fp13vrUJm54AGYIGD+V8rc
+         LWHNYquoNBN4hcWQVvpCk96QcTRPh/FJbWu/OfBc5z2z+9F8OWJYyXUUenHuLn/ZeBc1
+         7ubXukftwVGnivz1kgUsoxFB6Jdot5Y7VS8IFz0Bi0GimEYO7MYuF9ceTV5tj+MY5i5c
+         s46Q==
+X-Gm-Message-State: AOAM5300bbHaQFfrLgCaaEaHlKSJ8oDf5OmJH9eEyQ6YOD5MHJi0Bqaa
+        MPeKh5nGwDMlGLpyynoGZCD8nhZ7Xxu949PUYq3ggQPuKGSCBJjJt3Pe4Wo0UXMACSyT7B9PLWG
+        nTmtdMjrSJ6AUJtsW
+X-Received: by 2002:aa7:cf06:: with SMTP id a6mr4494890edy.16.1644623367153;
+        Fri, 11 Feb 2022 15:49:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzEvCHEZ5ak2IQ0WT7TSoOvRodrsyMf34SG04BqYfuVd9+lhJbIzh9399k9MbHmC65JqYQYXQ==
+X-Received: by 2002:aa7:cf06:: with SMTP id a6mr4494868edy.16.1644623366829;
+        Fri, 11 Feb 2022 15:49:26 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id vp8sm7509868ejb.85.2022.02.11.15.49.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 15:49:26 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id AC738102E4F; Sat, 12 Feb 2022 00:49:25 +0100 (CET)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Zhiqian Guan <zhguan@redhat.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next v2] libbpf: Use dynamically allocated buffer when receiving netlink messages
+Date:   Sat, 12 Feb 2022 00:48:19 +0100
+Message-Id: <20220211234819.612288-1-toke@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -40,95 +84,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Booting a MACCHIATObin with 5.17 the system OOPs with
-a null pointer deref when the network is started. This
-is caused by the pcs->ops structure being null on this
-particular platform/firmware.
+When receiving netlink messages, libbpf was using a statically allocated
+stack buffer of 4k bytes. This happened to work fine on systems with a 4k
+page size, but on systems with larger page sizes it can lead to truncated
+messages. The user-visible impact of this was that libbpf would insist no
+XDP program was attached to some interfaces because that bit of the netlink
+message got chopped off.
 
-Simply adding a null ptr check, reverts to a functional
-system with networking.
+Fix this by switching to a dynamically allocated buffer; we borrow the
+approach from iproute2 of using recvmsg() with MSG_PEEK|MSG_TRUNC to get
+the actual size of the pending message before receiving it, adjusting the
+buffer as necessary. While we're at it, also add retries on interrupted
+system calls around the recvmsg() call.
 
-The OOPs looks like:
-[   18.687760] Unable to handle kernel access to user memory outside uaccess routines at virtual address 0000000000000010
-[   18.698561] Mem abort info:
-[   18.698564]   ESR = 0x96000004
-[   18.698567]   EC = 0x25: DABT (current EL), IL = 32 bits
-[   18.709821]   SET = 0, FnV = 0
-[   18.714292]   EA = 0, S1PTW = 0
-[   18.718833]   FSC = 0x04: level 0 translation fault
-[   18.725126] Data abort info:
-[   18.729408]   ISV = 0, ISS = 0x00000004
-[   18.734655]   CM = 0, WnR = 0
-[   18.738933] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000111bbf000
-[   18.745409] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
-[   18.752235] Internal error: Oops: 96000004 [#1] SMP
-[   18.757134] Modules linked in: rfkill ip_set nf_tables nfnetlink qrtr sunrpc vfat fat omap_rng fuse zram xfs crct10dif_ce mvpp2 ghash_ce sbsa_gwdt phylink xhci_plat_hcd ahci_plam
-[   18.773481] CPU: 0 PID: 681 Comm: NetworkManager Not tainted 5.17.0-0.rc3.89.fc36.aarch64 #1
-[   18.781954] Hardware name: Marvell                         Armada 7k/8k Family Board      /Armada 7k/8k Family Board      , BIOS EDK II Jun  4 2019
-[   18.795222] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   18.802213] pc : mvpp2_start_dev+0x2b0/0x300 [mvpp2]
-[   18.807208] lr : mvpp2_start_dev+0x298/0x300 [mvpp2]
-[   18.812197] sp : ffff80000b4732c0
-[   18.815522] x29: ffff80000b4732c0 x28: 0000000000000000 x27: ffffccab38ae57f8
-[   18.822689] x26: ffff6eeb03065a10 x25: ffff80000b473a30 x24: ffff80000b4735b8
-[   18.829855] x23: 0000000000000000 x22: 00000000000001e0 x21: ffff6eeb07b6ab68
-[   18.837021] x20: ffff6eeb07b6ab30 x19: ffff6eeb07b6a9c0 x18: 0000000000000014
-[   18.844187] x17: 00000000f6232bfe x16: ffffccab899b1dc0 x15: 000000006a30f9fa
-[   18.851353] x14: 000000003b77bd50 x13: 000006dc896f0e8e x12: 001bbbfccfd0d3a2
-[   18.858519] x11: 0000000000001528 x10: 0000000000001548 x9 : ffffccab38ad0fb0
-[   18.865685] x8 : ffff80000b473330 x7 : 0000000000000000 x6 : 0000000000000000
-[   18.872851] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff80000b4732f8
-[   18.880017] x2 : 000000000000001a x1 : 0000000000000002 x0 : ffff6eeb07b6ab68
-[   18.887183] Call trace:
-[   18.889637]  mvpp2_start_dev+0x2b0/0x300 [mvpp2]
-[   18.894279]  mvpp2_open+0x134/0x2b4 [mvpp2]
-[   18.898483]  __dev_open+0x128/0x1e4
-[   18.901988]  __dev_change_flags+0x17c/0x1d0
-[   18.906187]  dev_change_flags+0x30/0x70
-[   18.910038]  do_setlink+0x278/0xa7c
-[   18.913540]  __rtnl_newlink+0x44c/0x7d0
-[   18.917391]  rtnl_newlink+0x5c/0x8c
-[   18.920892]  rtnetlink_rcv_msg+0x254/0x314
-[   18.925006]  netlink_rcv_skb+0x48/0x10c
-[   18.928858]  rtnetlink_rcv+0x24/0x30
-[   18.932449]  netlink_unicast+0x290/0x2f4
-[   18.936386]  netlink_sendmsg+0x1d0/0x41c
-[   18.940323]  sock_sendmsg+0x60/0x70
-[   18.943825]  ____sys_sendmsg+0x248/0x260
-[   18.947762]  ___sys_sendmsg+0x74/0xa0
-[   18.951438]  __sys_sendmsg+0x64/0xcc
-[   18.955027]  __arm64_sys_sendmsg+0x30/0x40
-[   18.959140]  invoke_syscall+0x50/0x120
-[   18.962906]  el0_svc_common.constprop.0+0x4c/0xf4
-[   18.967629]  do_el0_svc+0x30/0x9c
-[   18.970958]  el0_svc+0x28/0xb0
-[   18.974025]  el0t_64_sync_handler+0x10c/0x140
-[   18.978400]  el0t_64_sync+0x1a4/0x1a8
-[   18.982078] Code: 52800004 b9416262 aa1503e0 52800041 (f94008a5)
-[   18.988196] ---[ end trace 0000000000000000 ]---
+v2:
+  - Move peek logic to libbpf_netlink_recv(), don't double free on ENOMEM.
 
-Fixes: cff056322372 ("net: mvpp2: use .mac_select_pcs() interface")
-Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+Reported-by: Zhiqian Guan <zhguan@redhat.com>
+Fixes: 8bbb77b7c7a2 ("libbpf: Add various netlink helpers")
+Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ tools/lib/bpf/netlink.c | 55 ++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 51 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 7cdbf8b8bbf6..d53d7648625f 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -6631,8 +6631,9 @@ static void mvpp2_acpi_start(struct mvpp2_port *port)
- 	mvpp2_mac_prepare(&port->phylink_config, MLO_AN_INBAND,
- 			  port->phy_interface);
- 	mvpp2_mac_config(&port->phylink_config, MLO_AN_INBAND, &state);
--	pcs->ops->pcs_config(pcs, MLO_AN_INBAND, port->phy_interface,
--			     state.advertising, false);
-+	if (pcs && pcs->ops)
-+		pcs->ops->pcs_config(pcs, MLO_AN_INBAND, port->phy_interface,
-+				     state.advertising, false);
- 	mvpp2_mac_finish(&port->phylink_config, MLO_AN_INBAND,
- 			 port->phy_interface);
- 	mvpp2_mac_link_up(&port->phylink_config, NULL,
+diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+index c39c37f99d5c..a598061f6fea 100644
+--- a/tools/lib/bpf/netlink.c
++++ b/tools/lib/bpf/netlink.c
+@@ -87,29 +87,75 @@ enum {
+ 	NL_DONE,
+ };
+ 
++static int netlink_recvmsg(int sock, struct msghdr *mhdr, int flags)
++{
++	int len;
++
++	do {
++		len = recvmsg(sock, mhdr, flags);
++	} while (len < 0 && (errno == EINTR || errno == EAGAIN));
++
++	if (len < 0)
++		return -errno;
++	return len;
++}
++
++static int alloc_iov(struct iovec *iov, int len)
++{
++	void *nbuf;
++
++	nbuf = realloc(iov->iov_base, len);
++	if (!nbuf)
++		return -ENOMEM;
++
++	iov->iov_base = nbuf;
++	iov->iov_len = len;
++	return 0;
++}
++
+ static int libbpf_netlink_recv(int sock, __u32 nl_pid, int seq,
+ 			       __dump_nlmsg_t _fn, libbpf_dump_nlmsg_t fn,
+ 			       void *cookie)
+ {
++	struct iovec iov = {};
++	struct msghdr mhdr = {
++		.msg_iov = &iov,
++		.msg_iovlen = 1,
++	};
+ 	bool multipart = true;
+ 	struct nlmsgerr *err;
+ 	struct nlmsghdr *nh;
+-	char buf[4096];
+ 	int len, ret;
+ 
++	ret = alloc_iov(&iov, 4096);
++	if (ret)
++		goto done;
++
+ 	while (multipart) {
+ start:
+ 		multipart = false;
+-		len = recv(sock, buf, sizeof(buf), 0);
++		len = netlink_recvmsg(sock, &mhdr, MSG_PEEK | MSG_TRUNC);
++		if (len < 0) {
++			ret = len;
++			goto done;
++		}
++
++		if (len > iov.iov_len) {
++			ret = alloc_iov(&iov, len);
++			if (ret)
++				goto done;
++		}
++
++		len = netlink_recvmsg(sock, &mhdr, 0);
+ 		if (len < 0) {
+-			ret = -errno;
++			ret = len;
+ 			goto done;
+ 		}
+ 
+ 		if (len == 0)
+ 			break;
+ 
+-		for (nh = (struct nlmsghdr *)buf; NLMSG_OK(nh, len);
++		for (nh = (struct nlmsghdr *)iov.iov_base; NLMSG_OK(nh, len);
+ 		     nh = NLMSG_NEXT(nh, len)) {
+ 			if (nh->nlmsg_pid != nl_pid) {
+ 				ret = -LIBBPF_ERRNO__WRNGPID;
+@@ -151,6 +197,7 @@ static int libbpf_netlink_recv(int sock, __u32 nl_pid, int seq,
+ 	}
+ 	ret = 0;
+ done:
++	free(iov.iov_base);
+ 	return ret;
+ }
+ 
 -- 
-2.34.1
+2.35.1
 
