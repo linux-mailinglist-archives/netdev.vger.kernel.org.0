@@ -2,117 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C21D4B1B28
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 02:22:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7A994B1B2C
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 02:24:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346768AbiBKBVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Feb 2022 20:21:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37762 "EHLO
+        id S1343913AbiBKBYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Feb 2022 20:24:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238761AbiBKBVp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 20:21:45 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4FE8267F
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 17:21:43 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id r19so13452642pfh.6
-        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 17:21:43 -0800 (PST)
+        with ESMTP id S238761AbiBKBYb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Feb 2022 20:24:31 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BFBE1120
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 17:24:31 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id m185so9641805iof.10
+        for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 17:24:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Lo2d4VwD5AAY/xrh4hcT2tzZX45H1Qy5gHAjo6j42d8=;
-        b=TuR6i4lf3tm4hL1X5PhUUcU7AxKwkQLoAR5bJNvfA8h+KvwaATOm42TBqzjKyzfChm
-         Ig4T81+OdkRoaPaKnvHdj1u6sBvXlAtBUTrlMwivFfvYx+BfKha5ZYyRBceZIKwLrwgc
-         6W0yk5+qu1MWPUR90traAtdsRnqTWUuF9xnjIr1MCix6LL5kaditn6/u4PWZ6vnHgOOI
-         HidbDlaVncL8uDzX+J0A9uc9dYHsOUAK/JTTsJkplTzefMEP4PoZ2JCRmpNX0R33iwuo
-         ttXcB3eLm4eX+hyReZtZmkuIg/pvUTsIdGAgwKqTxUlyiCqwRlE8JFsro0yx3Znwaq0K
-         Rd0g==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3/vP8H6zpQ6L96zf+xvIhHoT5mY8Lm2AN+u5z4k1QLM=;
+        b=cnaS2dkL2QubxiW3uGPDOnHb5Vyk49nyhYtZJU2MXg43vS33pCsAi8E/n6/s7Kby/8
+         r067eCxJJRfmyETFF7/Y30zBkn7+6whyqVB9qGUUyhSPP8zggpAt9Rcsu7SRqjCcpcjC
+         m2fkmawLqi5MBYXuK2p8VdH8epx//hErZkHcQ3oBhg3Vehkj5A3RoqgQBbpV79PgLFys
+         WjIRof/9o/YSAckIZX9YrSSxEh/Zql0kkyKbiRG3gziu8frCB+inxK0Z15od/7PI3ghT
+         Mqt9/cEKCZ69M58TN+7K2PVDksEP2jUHOBBphMDqa8H6r9b0yYADLkNWLbQk/ji4yx09
+         USMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Lo2d4VwD5AAY/xrh4hcT2tzZX45H1Qy5gHAjo6j42d8=;
-        b=ptZPswMitYYfmHyVxHtEDCwGeCdK/Zc2lFP0eB+wJV2pPg2RhvjAxxOCSiOTtlvc3m
-         dgGB79aipT6wrtn22OrMUggb4JOdYq5EctJ4NSHFJipdvP89zHeMLTLAma1FaB6ME05i
-         1m4u7t9doGxnvQDAiGWZR6wfIpWHni0JlwYn2gROOsL6Go4XvLJ/z8KBUhR5MvLdRDPf
-         Ll3qjGOk5WDhb2av4Dk5zgHkkUSugnyPMkA/n07ETxyO8P0acno3K35r4yGeMpqh0chE
-         Pj9x/HfA7UhW2MoQlbsf0GrBDvVhXZDjAA1R7nxwXAu1tOqAgR4Ii2IVfHlmqGKXTDzF
-         45JQ==
-X-Gm-Message-State: AOAM531N5t2ZpClYwVa3Kn2xleGegYd7VSswurFJWPTCVJj9iCWg+ql6
-        Rt15aBwlGsczq3nsWn40ul0vcA==
-X-Google-Smtp-Source: ABdhPJxpUScbKihyaGUMPC5VllmPZLi1pcb3QOC5y8sHyr4vMLS+iPfWBh9WRs/J3ugUv7H51+451w==
-X-Received: by 2002:a63:cd0a:: with SMTP id i10mr8379311pgg.190.1644542503287;
-        Thu, 10 Feb 2022 17:21:43 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id ob12sm3339493pjb.47.2022.02.10.17.21.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 17:21:42 -0800 (PST)
-Date:   Thu, 10 Feb 2022 17:21:40 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Roi Dayan <roid@nvidia.com>
-Cc:     <netdev@vger.kernel.org>, Maor Dickman <maord@nvidia.com>
-Subject: Re: [PATCH iproute2] tc_util: Fix parsing action control with space
- and slash
-Message-ID: <20220210172140.04d861d1@hermes.local>
-In-Reply-To: <20220203122046.307076-1-roid@nvidia.com>
-References: <20220203122046.307076-1-roid@nvidia.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3/vP8H6zpQ6L96zf+xvIhHoT5mY8Lm2AN+u5z4k1QLM=;
+        b=gWmPPHWa/gIga68RZh5z2EeoIGXq6wRpeVBov1lhN76vlZ26pdSmM2feWDFzyMQw2o
+         VRpwuOdccrXd7YKOeBcvsGjqkfhkelr4KEaU0+hPMdD4wN5gitwiKAIcNd8w2B2p1CTu
+         DBl6zT2wfCG/+TxwRf0sOq8IEX4MGrsVW7qA5eEU74Oa3rtyhvZsnXyeW5NX5wc9Wa9h
+         jjdkAxyK7EKjyDAtWLeoOoQ6q9Vwk+Ou8oNq4uA6/HjKnfowmh56kLqUec4wOw8k3VQv
+         o9BMcEX4+mNGABOXGVxEYncQ9hFb+ypwNrrPHqQcz7mzYVS0a2nFy05xug9xZulRe+uj
+         YaoQ==
+X-Gm-Message-State: AOAM530NcL4/2sbUTkKke+kfu7TwayGO0YKOkhUg+BOt9Y/lHABWmJp1
+        j2JW60gOXprHCVm8WEzpaAWAGzdFzsgzm8svBMpiDdNFBpE=
+X-Google-Smtp-Source: ABdhPJyq9PzTVDrKKUMGWo4S+OJU8iVZzzgxoDhtgRHDN9LScbPDqpI1lWHo3VbKFSzs9VFnFOgfmRWkm7fboxICRA4=
+X-Received: by 2002:a05:6602:1507:: with SMTP id g7mr5086434iow.7.1644542670889;
+ Thu, 10 Feb 2022 17:24:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220209143948.445823-1-dqfext@gmail.com> <YgPjgvlVkykx1e1G@lunn.ch>
+In-Reply-To: <YgPjgvlVkykx1e1G@lunn.ch>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Fri, 11 Feb 2022 09:24:20 +0800
+Message-ID: <CALW65jY4g1pVxE9hBDNrBtpxgsVXOjQ5HMK_5j1w9c291kqPmQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: phy: mediatek: remove PHY mode check on MT7531
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Landen Chao <landen.chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 3 Feb 2022 14:20:46 +0200
-Roi Dayan <roid@nvidia.com> wrote:
+On Wed, Feb 9, 2022 at 11:53 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> Is the PHY actually internal? If so PHY_INTERFACE_MODE_INTERNAL would
+> be correct.
 
-> For action police there is an conform-exceed action control
-> which can be for example "jump 2 / pipe".
-> The current parsing loop is doing one more iteration than necessary
-> and results in ok var being 3.
-> 
-> Example filter:
-> 
-> tc filter add dev enp8s0f0_0 ingress protocol ip prio 2 flower \
->     verbose action police rate 100mbit burst 12m \
->     conform-exceed jump 1 / pipe mirred egress redirect dev enp8s0f0_1 action drop
-> 
-> Before this change the command will fail.
-> Trying to add another "pipe" before mirred as a workaround for the stopping the loop
-> in ok var 3 resulting in result2 not being saved and wrong filter.
-> 
-> ... conform-exceed jump 1 / pipe pipe mirred ...
-> 
-> Example dump of the action part:
-> ... action order 1:  police 0x1 rate 100Mbit burst 12Mb mtu 2Kb action jump 1 overhead 0b  ...
-> 
-> Fix the behavior by removing redundant case 2 handling, either argc is over or breaking.
-> 
-> Example dump of the action part with the fix:
-> ... action order 1:  police 0x1 rate 100Mbit burst 12Mb mtu 2Kb action jump 1/pipe overhead 0b ...
-> 
-> Signed-off-by: Roi Dayan <roid@nvidia.com>
-> Reviewed-by: Maor Dickman <maord@nvidia.com>
-> ---
->  tc/tc_util.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/tc/tc_util.c b/tc/tc_util.c
-> index 48065897cee7..b82dbd5dc75d 100644
-> --- a/tc/tc_util.c
-> +++ b/tc/tc_util.c
-> @@ -476,7 +476,6 @@ static int parse_action_control_slash_spaces(int *argc_p, char ***argv_p,
->  			NEXT_ARG();
->  			/* fall-through */
->  		case 0: /* fall-through */
-> -		case 2:
->  			ret = parse_action_control(&argc, &argv,
->  						   result_p, allow_num);
->  			if (ret)
+I have no idea. Maybe it internally connects to the MAC with GMII.
+Add CC to mt7530 maintainers.
 
-Applied, and removed the now unnecessary second fall-through comment.
+>
+> Are you fixing the wrong thing here?
+>
+>     Andrew
