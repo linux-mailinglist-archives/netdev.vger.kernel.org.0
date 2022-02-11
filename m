@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46AAA4B1F0F
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 08:13:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A420D4B1F0D
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 08:13:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347597AbiBKHNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 02:13:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36250 "EHLO
+        id S1347616AbiBKHM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 02:12:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347594AbiBKHM5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 02:12:57 -0500
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B8710BE
+        with ESMTP id S1347594AbiBKHM4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 02:12:56 -0500
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E88910A4
         for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 23:12:56 -0800 (PST)
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21ANrYmP018278
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21ANrS2k025979
         for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 23:12:55 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=vgpYGO1YkEQ34WOQoYqpLWFVMysT+QGf6gsCwqC096M=;
- b=HGSpabQa6/1NuCUEOn62l6jmuJVoCU7QRlQQzDbPFYm2klhs/9PFuzG3Rn54gxCaCzS2
- i6cSa3YXMovcehb/iFpAKP/JxyT9FNtOh+Pm9MAyoK8dBnRuqLTHzpSgUMAQONJpMmon
- GvW8yvO/wBNz8BRC/iqJONyVwfO7d4dIbE8= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3e592ukfrk-5
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=HwB36yUzMIbq/eK7sxBobUtZt2V8qtQlQAh/HWHriW8=;
+ b=Z2IcAksZXAxAqkCvW+8yqwSPE3RBib9tuhx/QGBwLi8Ohkso17Z/ZbxAK41OpkhhY1//
+ H/Itzo9RjsDO6vNy3/+MbXRuie0IDF/xPtqciSoutxDb0JL+Yv6mO+EfEcobP60iK1sW
+ xHGmgONhSUwzTiT22EoREDoO94ni1jZ7VXU= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3e59rpu6sk-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
         for <netdev@vger.kernel.org>; Thu, 10 Feb 2022 23:12:55 -0800
-Received: from twshared0983.05.ash8.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+Received: from twshared22811.39.frc1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 10 Feb 2022 23:12:43 -0800
+ 15.1.2308.21; Thu, 10 Feb 2022 23:12:53 -0800
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 973146C756E9; Thu, 10 Feb 2022 23:12:38 -0800 (PST)
+        id DA06E6C7572C; Thu, 10 Feb 2022 23:12:44 -0800 (PST)
 From:   Martin KaFai Lau <kafai@fb.com>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
@@ -43,366 +43,319 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>, <kernel-team@fb.com>,
         Willem de Bruijn <willemb@google.com>
-Subject: [PATCH v4 net-next 1/8] net: Add skb->mono_delivery_time to distinguish mono delivery_time from (rcv) timestamp
-Date:   Thu, 10 Feb 2022 23:12:38 -0800
-Message-ID: <20220211071238.885669-1-kafai@fb.com>
+Subject: [PATCH v4 net-next 2/8] net: Add skb_clear_tstamp() to keep the mono delivery_time
+Date:   Thu, 10 Feb 2022 23:12:44 -0800
+Message-ID: <20220211071244.886294-1-kafai@fb.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220211071232.885225-1-kafai@fb.com>
 References: <20220211071232.885225-1-kafai@fb.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-GUID: K0e099wPFfQbYOKnggL8W-pDysOAj84T
-X-Proofpoint-ORIG-GUID: K0e099wPFfQbYOKnggL8W-pDysOAj84T
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
-MIME-Version: 1.0
+X-Proofpoint-ORIG-GUID: jUp8dwXeM9ctf2jvOGyqMP1dWd58kPLy
+X-Proofpoint-GUID: jUp8dwXeM9ctf2jvOGyqMP1dWd58kPLy
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-02-11_02,2022-02-09_01,2021-12-02_01
 X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 malwarescore=0
- suspectscore=0 bulkscore=0 mlxlogscore=999 clxscore=1015
- priorityscore=1501 lowpriorityscore=0 spamscore=0 impostorscore=0
- phishscore=0 adultscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx
+ spamscore=0 mlxlogscore=999 clxscore=1015 priorityscore=1501
+ suspectscore=0 mlxscore=0 impostorscore=0 bulkscore=0 phishscore=0
+ lowpriorityscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.12.0-2201110000 definitions=main-2202110040
 X-FB-Internal: deliver
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-skb->tstamp was first used as the (rcv) timestamp.
-The major usage is to report it to the user (e.g. SO_TIMESTAMP).
+Right now, skb->tstamp is reset to 0 whenever the skb is forwarded.
 
-Later, skb->tstamp is also set as the (future) delivery_time (e.g. EDT in T=
-CP)
-during egress and used by the qdisc (e.g. sch_fq) to make decision on when
-the skb can be passed to the dev.
+If skb->tstamp has the mono delivery_time, clearing it can hurt
+the performance when it finally transmits out to fq@phy-dev.
 
-Currently, there is no way to tell skb->tstamp having the (rcv) timestamp
-or the delivery_time, so it is always reset to 0 whenever forwarded
-between egress and ingress.
+The earlier patch added a skb->mono_delivery_time bit to
+flag the skb->tstamp carrying the mono delivery_time.
 
-While it makes sense to always clear the (rcv) timestamp in skb->tstamp
-to avoid confusing sch_fq that expects the delivery_time, it is a
-performance issue [0] to clear the delivery_time if the skb finally
-egress to a fq@phy-dev.  For example, when forwarding from egress to
-ingress and then finally back to egress:
+This patch adds skb_clear_tstamp() helper which keeps
+the mono delivery_time and clear everything else.
 
-            tcp-sender =3D> veth@netns =3D> veth@hostns =3D> fq@eth0@hostns
-                                     ^              ^
-                                     reset          rest
-
-This patch adds one bit skb->mono_delivery_time to flag the skb->tstamp
-is storing the mono delivery_time (EDT) instead of the (rcv) timestamp.
-
-The current use case is to keep the TCP mono delivery_time (EDT) and
-to be used with sch_fq.  A later patch will also allow tc-bpf@ingress
-to read and change the mono delivery_time.
-
-In the future, another bit (e.g. skb->user_delivery_time) can be added
-for the SCM_TXTIME where the clock base is tracked by sk->sk_clockid.
-
-[ This patch is a prep work.  The following patch will
-  get the other parts of the stack ready first.  Then another patch
-  after that will finally set the skb->mono_delivery_time. ]
-
-skb_set_delivery_time() function is added.  It is used by the tcp_output.c
-and during ip[6] fragmentation to assign the delivery_time to
-the skb->tstamp and also set the skb->mono_delivery_time.
-
-A note on the change in ip_send_unicast_reply() in ip_output.c.
-It is only used by TCP to send reset/ack out of a ctl_sk.
-Like the new skb_set_delivery_time(), this patch sets
-the skb->mono_delivery_time to 0 for now as a place
-holder.  It will be enabled in a later patch.
-A similar case in tcp_ipv6 can be done with
-skb_set_delivery_time() in tcp_v6_send_response().
-
-[0] (slide 22): https://linuxplumbersconf.org/event/11/contributions/953/at=
-tachments/867/1658/LPC_2021_BPF_Datapath_Extensions.pdf
+The delivery_time clearing is postponed until the stack knows the
+skb will be delivered locally.  It will be done in a later patch.
 
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- include/linux/skbuff.h                     | 13 +++++++++++++
- net/bridge/netfilter/nf_conntrack_bridge.c |  5 +++--
- net/ipv4/ip_output.c                       |  7 +++++--
- net/ipv4/tcp_output.c                      | 16 +++++++++-------
- net/ipv6/ip6_output.c                      |  5 +++--
- net/ipv6/netfilter.c                       |  5 +++--
- net/ipv6/tcp_ipv6.c                        |  2 +-
- 7 files changed, 37 insertions(+), 16 deletions(-)
+ drivers/net/loopback.c           |  2 +-
+ include/linux/skbuff.h           | 10 +++++++++-
+ net/bridge/br_forward.c          |  2 +-
+ net/core/filter.c                |  6 +++---
+ net/core/skbuff.c                |  2 +-
+ net/ipv4/ip_forward.c            |  2 +-
+ net/ipv6/ip6_output.c            |  2 +-
+ net/netfilter/ipvs/ip_vs_xmit.c  |  6 +++---
+ net/netfilter/nf_dup_netdev.c    |  2 +-
+ net/netfilter/nf_flow_table_ip.c |  4 ++--
+ net/netfilter/nft_fwd_netdev.c   |  2 +-
+ net/openvswitch/vport.c          |  2 +-
+ net/xfrm/xfrm_interface.c        |  2 +-
+ 13 files changed, 26 insertions(+), 18 deletions(-)
 
+diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
+index ed0edf5884ef..70a38fa09299 100644
+--- a/drivers/net/loopback.c
++++ b/drivers/net/loopback.c
+@@ -74,7 +74,7 @@ static netdev_tx_t loopback_xmit(struct sk_buff *skb,
+ 	skb_tx_timestamp(skb);
+=20
+ 	/* do not fool net_timestamp_check() with various clock bases */
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
+=20
+ 	skb_orphan(skb);
+=20
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index a5adbf6b51e8..32c793de3801 100644
+index 32c793de3801..07e618f8b41a 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -747,6 +747,10 @@ typedef unsigned char *sk_buff_data_t;
-  *	@dst_pending_confirm: need to confirm neighbour
-  *	@decrypted: Decrypted SKB
-  *	@slow_gro: state present at GRO time, slower prepare step required
-+ *	@mono_delivery_time: When set, skb->tstamp has the
-+ *		delivery_time in mono clock base (i.e. EDT).  Otherwise, the
-+ *		skb->tstamp has the (rcv) timestamp at ingress and
-+ *		delivery_time at egress.
-  *	@napi_id: id of the NAPI struct this skb came from
-  *	@sender_cpu: (aka @napi_id) source CPU in XPS
-  *	@secmark: security marking
-@@ -917,6 +921,7 @@ struct sk_buff {
- 	__u8			decrypted:1;
- #endif
- 	__u8			slow_gro:1;
-+	__u8			mono_delivery_time:1;
-=20
- #ifdef CONFIG_NET_SCHED
- 	__u16			tc_index;	/* traffic control index */
-@@ -3925,6 +3930,14 @@ static inline ktime_t net_timedelta(ktime_t t)
- 	return ktime_sub(ktime_get_real(), t);
+@@ -3938,6 +3938,14 @@ static inline void skb_set_delivery_time(struct sk=
+_buff *skb, ktime_t kt,
+ 	skb->mono_delivery_time =3D 0;
  }
 =20
-+static inline void skb_set_delivery_time(struct sk_buff *skb, ktime_t kt,
-+					 bool mono)
++static inline void skb_clear_tstamp(struct sk_buff *skb)
 +{
-+	skb->tstamp =3D kt;
-+	/* Setting mono_delivery_time will be enabled later */
-+	skb->mono_delivery_time =3D 0;
++	if (skb->mono_delivery_time)
++		return;
++
++	skb->tstamp =3D 0;
 +}
 +
  static inline u8 skb_metadata_len(const struct sk_buff *skb)
  {
  	return skb_shinfo(skb)->meta_len;
-diff --git a/net/bridge/netfilter/nf_conntrack_bridge.c b/net/bridge/netfil=
-ter/nf_conntrack_bridge.c
-index fdbed3158555..ebfb2a5c59e4 100644
---- a/net/bridge/netfilter/nf_conntrack_bridge.c
-+++ b/net/bridge/netfilter/nf_conntrack_bridge.c
-@@ -32,6 +32,7 @@ static int nf_br_ip_fragment(struct net *net, struct sock=
- *sk,
- 					   struct sk_buff *))
- {
- 	int frag_max_size =3D BR_INPUT_SKB_CB(skb)->frag_max_size;
-+	bool mono_delivery_time =3D skb->mono_delivery_time;
- 	unsigned int hlen, ll_rs, mtu;
- 	ktime_t tstamp =3D skb->tstamp;
- 	struct ip_frag_state state;
-@@ -81,7 +82,7 @@ static int nf_br_ip_fragment(struct net *net, struct sock=
- *sk,
- 			if (iter.frag)
- 				ip_fraglist_prepare(skb, &iter);
-=20
--			skb->tstamp =3D tstamp;
-+			skb_set_delivery_time(skb, tstamp, mono_delivery_time);
- 			err =3D output(net, sk, data, skb);
- 			if (err || !iter.frag)
- 				break;
-@@ -112,7 +113,7 @@ static int nf_br_ip_fragment(struct net *net, struct so=
-ck *sk,
- 			goto blackhole;
- 		}
-=20
--		skb2->tstamp =3D tstamp;
-+		skb_set_delivery_time(skb2, tstamp, mono_delivery_time);
- 		err =3D output(net, sk, data, skb2);
- 		if (err)
- 			goto blackhole;
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 0c0574eb5f5b..7af5d1849bc9 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -761,6 +761,7 @@ int ip_do_fragment(struct net *net, struct sock *sk, st=
-ruct sk_buff *skb,
- {
- 	struct iphdr *iph;
- 	struct sk_buff *skb2;
-+	bool mono_delivery_time =3D skb->mono_delivery_time;
- 	struct rtable *rt =3D skb_rtable(skb);
- 	unsigned int mtu, hlen, ll_rs;
- 	struct ip_fraglist_iter iter;
-@@ -852,7 +853,7 @@ int ip_do_fragment(struct net *net, struct sock *sk, st=
-ruct sk_buff *skb,
- 				}
- 			}
-=20
--			skb->tstamp =3D tstamp;
-+			skb_set_delivery_time(skb, tstamp, mono_delivery_time);
- 			err =3D output(net, sk, skb);
-=20
- 			if (!err)
-@@ -908,7 +909,7 @@ int ip_do_fragment(struct net *net, struct sock *sk, st=
-ruct sk_buff *skb,
- 		/*
- 		 *	Put this fragment into the sending queue.
- 		 */
--		skb2->tstamp =3D tstamp;
-+		skb_set_delivery_time(skb2, tstamp, mono_delivery_time);
- 		err =3D output(net, sk, skb2);
- 		if (err)
- 			goto fail;
-@@ -1727,6 +1728,8 @@ void ip_send_unicast_reply(struct sock *sk, struct sk=
-_buff *skb,
- 			  arg->csumoffset) =3D csum_fold(csum_add(nskb->csum,
- 								arg->csum));
- 		nskb->ip_summed =3D CHECKSUM_NONE;
-+		/* Setting mono_delivery_time will be enabled later */
-+		nskb->mono_delivery_time =3D 0;
- 		ip_push_pending_frames(sk, &fl4);
- 	}
- out:
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index e76bf1e9251e..2319531267c6 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1253,7 +1253,7 @@ static int __tcp_transmit_skb(struct sock *sk, struct=
- sk_buff *skb,
- 	tp =3D tcp_sk(sk);
- 	prior_wstamp =3D tp->tcp_wstamp_ns;
- 	tp->tcp_wstamp_ns =3D max(tp->tcp_wstamp_ns, tp->tcp_clock_cache);
--	skb->skb_mstamp_ns =3D tp->tcp_wstamp_ns;
-+	skb_set_delivery_time(skb, tp->tcp_wstamp_ns, true);
- 	if (clone_it) {
- 		oskb =3D skb;
-=20
-@@ -1589,7 +1589,7 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_=
-queue,
-=20
- 	skb_split(skb, buff, len);
-=20
--	buff->tstamp =3D skb->tstamp;
-+	skb_set_delivery_time(buff, skb->tstamp, true);
- 	tcp_fragment_tstamp(skb, buff);
-=20
- 	old_factor =3D tcp_skb_pcount(skb);
-@@ -2616,7 +2616,8 @@ static bool tcp_write_xmit(struct sock *sk, unsigned =
-int mss_now, int nonagle,
-=20
- 		if (unlikely(tp->repair) && tp->repair_queue =3D=3D TCP_SEND_QUEUE) {
- 			/* "skb_mstamp_ns" is used as a start point for the retransmit timer */
--			skb->skb_mstamp_ns =3D tp->tcp_wstamp_ns =3D tp->tcp_clock_cache;
-+			tp->tcp_wstamp_ns =3D tp->tcp_clock_cache;
-+			skb_set_delivery_time(skb, tp->tcp_wstamp_ns, true);
- 			list_move_tail(&skb->tcp_tsorted_anchor, &tp->tsorted_sent_queue);
- 			tcp_init_tso_segs(skb, mss_now);
- 			goto repair; /* Skip network transmission */
-@@ -3541,11 +3542,12 @@ struct sk_buff *tcp_make_synack(const struct sock *=
-sk, struct dst_entry *dst,
- 	now =3D tcp_clock_ns();
- #ifdef CONFIG_SYN_COOKIES
- 	if (unlikely(synack_type =3D=3D TCP_SYNACK_COOKIE && ireq->tstamp_ok))
--		skb->skb_mstamp_ns =3D cookie_init_timestamp(req, now);
-+		skb_set_delivery_time(skb, cookie_init_timestamp(req, now),
-+				      true);
- 	else
+@@ -4794,7 +4802,7 @@ static inline void skb_set_redirected(struct sk_buf=
+f *skb, bool from_ingress)
+ #ifdef CONFIG_NET_REDIRECT
+ 	skb->from_ingress =3D from_ingress;
+ 	if (skb->from_ingress)
+-		skb->tstamp =3D 0;
++		skb_clear_tstamp(skb);
  #endif
- 	{
--		skb->skb_mstamp_ns =3D now;
-+		skb_set_delivery_time(skb, now, true);
- 		if (!tcp_rsk(req)->snt_synack) /* Timestamp first SYNACK */
- 			tcp_rsk(req)->snt_synack =3D tcp_skb_timestamp_us(skb);
+ }
+=20
+diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
+index ec646656dbf1..02bb620d3b8d 100644
+--- a/net/bridge/br_forward.c
++++ b/net/bridge/br_forward.c
+@@ -62,7 +62,7 @@ EXPORT_SYMBOL_GPL(br_dev_queue_push_xmit);
+=20
+ int br_forward_finish(struct net *net, struct sock *sk, struct sk_buff *=
+skb)
+ {
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
+ 	return NF_HOOK(NFPROTO_BRIDGE, NF_BR_POST_ROUTING,
+ 		       net, sk, skb, NULL, skb->dev,
+ 		       br_dev_queue_push_xmit);
+diff --git a/net/core/filter.c b/net/core/filter.c
+index f497ca7a16d2..a2d712be4985 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2107,7 +2107,7 @@ static inline int __bpf_tx_skb(struct net_device *d=
+ev, struct sk_buff *skb)
  	}
-@@ -3594,7 +3596,7 @@ struct sk_buff *tcp_make_synack(const struct sock *sk=
-, struct dst_entry *dst,
- 	bpf_skops_write_hdr_opt((struct sock *)sk, skb, req, syn_skb,
- 				synack_type, &opts);
 =20
--	skb->skb_mstamp_ns =3D now;
-+	skb_set_delivery_time(skb, now, true);
- 	tcp_add_tx_delay(skb, tp);
+ 	skb->dev =3D dev;
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
 =20
- 	return skb;
-@@ -3771,7 +3773,7 @@ static int tcp_send_syn_data(struct sock *sk, struct =
-sk_buff *syn)
+ 	dev_xmit_recursion_inc();
+ 	ret =3D dev_queue_xmit(skb);
+@@ -2176,7 +2176,7 @@ static int bpf_out_neigh_v6(struct net *net, struct=
+ sk_buff *skb,
+ 	}
 =20
- 	err =3D tcp_transmit_skb(sk, syn_data, 1, sk->sk_allocation);
+ 	skb->dev =3D dev;
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
 =20
--	syn->skb_mstamp_ns =3D syn_data->skb_mstamp_ns;
-+	skb_set_delivery_time(syn, syn_data->skb_mstamp_ns, true);
+ 	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
+ 		skb =3D skb_expand_head(skb, hh_len);
+@@ -2274,7 +2274,7 @@ static int bpf_out_neigh_v4(struct net *net, struct=
+ sk_buff *skb,
+ 	}
 =20
- 	/* Now full SYN+DATA was cloned and sent (or not),
- 	 * remove the SYN from the original skb (syn_data)
+ 	skb->dev =3D dev;
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
+=20
+ 	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
+ 		skb =3D skb_expand_head(skb, hh_len);
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 0118f0afaa4f..3e3da8fdf8f5 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5350,7 +5350,7 @@ void skb_scrub_packet(struct sk_buff *skb, bool xne=
+t)
+=20
+ 	ipvs_reset(skb);
+ 	skb->mark =3D 0;
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
+ }
+ EXPORT_SYMBOL_GPL(skb_scrub_packet);
+=20
+diff --git a/net/ipv4/ip_forward.c b/net/ipv4/ip_forward.c
+index 00ec819f949b..92ba3350274b 100644
+--- a/net/ipv4/ip_forward.c
++++ b/net/ipv4/ip_forward.c
+@@ -79,7 +79,7 @@ static int ip_forward_finish(struct net *net, struct so=
+ck *sk, struct sk_buff *s
+ 	if (unlikely(opt->optlen))
+ 		ip_forward_options(skb);
+=20
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
+ 	return dst_output(net, sk, skb);
+ }
+=20
 diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 0c6c971ce0a5..55665f3f7a77 100644
+index 55665f3f7a77..9fc1b08cf622 100644
 --- a/net/ipv6/ip6_output.c
 +++ b/net/ipv6/ip6_output.c
-@@ -813,6 +813,7 @@ int ip6_fragment(struct net *net, struct sock *sk, stru=
-ct sk_buff *skb,
- 	struct rt6_info *rt =3D (struct rt6_info *)skb_dst(skb);
- 	struct ipv6_pinfo *np =3D skb->sk && !dev_recursion_level() ?
- 				inet6_sk(skb->sk) : NULL;
-+	bool mono_delivery_time =3D skb->mono_delivery_time;
- 	struct ip6_frag_state state;
- 	unsigned int mtu, hlen, nexthdr_offset;
- 	ktime_t tstamp =3D skb->tstamp;
-@@ -903,7 +904,7 @@ int ip6_fragment(struct net *net, struct sock *sk, stru=
-ct sk_buff *skb,
- 			if (iter.frag)
- 				ip6_fraglist_prepare(skb, &iter);
-=20
--			skb->tstamp =3D tstamp;
-+			skb_set_delivery_time(skb, tstamp, mono_delivery_time);
- 			err =3D output(net, sk, skb);
- 			if (!err)
- 				IP6_INC_STATS(net, ip6_dst_idev(&rt->dst),
-@@ -962,7 +963,7 @@ int ip6_fragment(struct net *net, struct sock *sk, stru=
-ct sk_buff *skb,
- 		/*
- 		 *	Put this fragment into the sending queue.
- 		 */
--		frag->tstamp =3D tstamp;
-+		skb_set_delivery_time(frag, tstamp, mono_delivery_time);
- 		err =3D output(net, sk, frag);
- 		if (err)
- 			goto fail;
-diff --git a/net/ipv6/netfilter.c b/net/ipv6/netfilter.c
-index 6ab710b5a1a8..1da332450d98 100644
---- a/net/ipv6/netfilter.c
-+++ b/net/ipv6/netfilter.c
-@@ -121,6 +121,7 @@ int br_ip6_fragment(struct net *net, struct sock *sk, s=
-truct sk_buff *skb,
- 				  struct sk_buff *))
- {
- 	int frag_max_size =3D BR_INPUT_SKB_CB(skb)->frag_max_size;
-+	bool mono_delivery_time =3D skb->mono_delivery_time;
- 	ktime_t tstamp =3D skb->tstamp;
- 	struct ip6_frag_state state;
- 	u8 *prevhdr, nexthdr =3D 0;
-@@ -186,7 +187,7 @@ int br_ip6_fragment(struct net *net, struct sock *sk, s=
-truct sk_buff *skb,
- 			if (iter.frag)
- 				ip6_fraglist_prepare(skb, &iter);
-=20
--			skb->tstamp =3D tstamp;
-+			skb_set_delivery_time(skb, tstamp, mono_delivery_time);
- 			err =3D output(net, sk, data, skb);
- 			if (err || !iter.frag)
- 				break;
-@@ -219,7 +220,7 @@ int br_ip6_fragment(struct net *net, struct sock *sk, s=
-truct sk_buff *skb,
- 			goto blackhole;
- 		}
-=20
--		skb2->tstamp =3D tstamp;
-+		skb_set_delivery_time(skb2, tstamp, mono_delivery_time);
- 		err =3D output(net, sk, data, skb2);
- 		if (err)
- 			goto blackhole;
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 0c648bf07f39..d4fc6641afa4 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -992,7 +992,7 @@ static void tcp_v6_send_response(const struct sock *sk,=
- struct sk_buff *skb, u32
- 		} else {
- 			mark =3D sk->sk_mark;
- 		}
--		buff->tstamp =3D tcp_transmit_time(sk);
-+		skb_set_delivery_time(buff, tcp_transmit_time(sk), true);
+@@ -440,7 +440,7 @@ static inline int ip6_forward_finish(struct net *net,=
+ struct sock *sk,
  	}
- 	fl6.flowi6_mark =3D IP6_REPLY_MARK(net, skb->mark) ?: mark;
- 	fl6.fl6_dport =3D t1->dest;
+ #endif
+=20
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
+ 	return dst_output(net, sk, skb);
+ }
+=20
+diff --git a/net/netfilter/ipvs/ip_vs_xmit.c b/net/netfilter/ipvs/ip_vs_x=
+mit.c
+index d2e5a8f644b8..029171379884 100644
+--- a/net/netfilter/ipvs/ip_vs_xmit.c
++++ b/net/netfilter/ipvs/ip_vs_xmit.c
+@@ -610,7 +610,7 @@ static inline int ip_vs_tunnel_xmit_prepare(struct sk=
+_buff *skb,
+ 		nf_reset_ct(skb);
+ 		skb_forward_csum(skb);
+ 		if (skb->dev)
+-			skb->tstamp =3D 0;
++			skb_clear_tstamp(skb);
+ 	}
+ 	return ret;
+ }
+@@ -652,7 +652,7 @@ static inline int ip_vs_nat_send_or_cont(int pf, stru=
+ct sk_buff *skb,
+ 	if (!local) {
+ 		skb_forward_csum(skb);
+ 		if (skb->dev)
+-			skb->tstamp =3D 0;
++			skb_clear_tstamp(skb);
+ 		NF_HOOK(pf, NF_INET_LOCAL_OUT, cp->ipvs->net, NULL, skb,
+ 			NULL, skb_dst(skb)->dev, dst_output);
+ 	} else
+@@ -674,7 +674,7 @@ static inline int ip_vs_send_or_cont(int pf, struct s=
+k_buff *skb,
+ 		ip_vs_drop_early_demux_sk(skb);
+ 		skb_forward_csum(skb);
+ 		if (skb->dev)
+-			skb->tstamp =3D 0;
++			skb_clear_tstamp(skb);
+ 		NF_HOOK(pf, NF_INET_LOCAL_OUT, cp->ipvs->net, NULL, skb,
+ 			NULL, skb_dst(skb)->dev, dst_output);
+ 	} else
+diff --git a/net/netfilter/nf_dup_netdev.c b/net/netfilter/nf_dup_netdev.=
+c
+index a579e59ee5c5..7873bd1389c3 100644
+--- a/net/netfilter/nf_dup_netdev.c
++++ b/net/netfilter/nf_dup_netdev.c
+@@ -19,7 +19,7 @@ static void nf_do_netdev_egress(struct sk_buff *skb, st=
+ruct net_device *dev)
+ 		skb_push(skb, skb->mac_len);
+=20
+ 	skb->dev =3D dev;
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
+ 	dev_queue_xmit(skb);
+ }
+=20
+diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_tab=
+le_ip.c
+index 889cf88d3dba..f1d387129f02 100644
+--- a/net/netfilter/nf_flow_table_ip.c
++++ b/net/netfilter/nf_flow_table_ip.c
+@@ -376,7 +376,7 @@ nf_flow_offload_ip_hook(void *priv, struct sk_buff *s=
+kb,
+ 	nf_flow_nat_ip(flow, skb, thoff, dir, iph);
+=20
+ 	ip_decrease_ttl(iph);
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
+=20
+ 	if (flow_table->flags & NF_FLOWTABLE_COUNTER)
+ 		nf_ct_acct_update(flow->ct, tuplehash->tuple.dir, skb->len);
+@@ -611,7 +611,7 @@ nf_flow_offload_ipv6_hook(void *priv, struct sk_buff =
+*skb,
+ 	nf_flow_nat_ipv6(flow, skb, dir, ip6h);
+=20
+ 	ip6h->hop_limit--;
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
+=20
+ 	if (flow_table->flags & NF_FLOWTABLE_COUNTER)
+ 		nf_ct_acct_update(flow->ct, tuplehash->tuple.dir, skb->len);
+diff --git a/net/netfilter/nft_fwd_netdev.c b/net/netfilter/nft_fwd_netde=
+v.c
+index fa9301ca6033..4b2b0946c0b6 100644
+--- a/net/netfilter/nft_fwd_netdev.c
++++ b/net/netfilter/nft_fwd_netdev.c
+@@ -140,7 +140,7 @@ static void nft_fwd_neigh_eval(const struct nft_expr =
+*expr,
+ 		return;
+=20
+ 	skb->dev =3D dev;
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
+ 	neigh_xmit(neigh_table, dev, addr, skb);
+ out:
+ 	regs->verdict.code =3D verdict;
+diff --git a/net/openvswitch/vport.c b/net/openvswitch/vport.c
+index cf2ce5812489..82a74f998966 100644
+--- a/net/openvswitch/vport.c
++++ b/net/openvswitch/vport.c
+@@ -507,7 +507,7 @@ void ovs_vport_send(struct vport *vport, struct sk_bu=
+ff *skb, u8 mac_proto)
+ 	}
+=20
+ 	skb->dev =3D vport->dev;
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
+ 	vport->ops->send(skb);
+ 	return;
+=20
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index 57448fc519fc..4991e99ced9a 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -190,7 +190,7 @@ static void xfrmi_dev_uninit(struct net_device *dev)
+=20
+ static void xfrmi_scrub_packet(struct sk_buff *skb, bool xnet)
+ {
+-	skb->tstamp =3D 0;
++	skb_clear_tstamp(skb);
+ 	skb->pkt_type =3D PACKET_HOST;
+ 	skb->skb_iif =3D 0;
+ 	skb->ignore_df =3D 0;
 --=20
 2.30.2
 
