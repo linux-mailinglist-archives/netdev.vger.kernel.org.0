@@ -2,60 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0584F4B2315
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 11:28:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB3AF4B231D
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 11:31:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237851AbiBKK2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 05:28:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54852 "EHLO
+        id S234595AbiBKKaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 05:30:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236403AbiBKK2n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 05:28:43 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9D5E88
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 02:28:43 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id y129so23427627ybe.7
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 02:28:43 -0800 (PST)
+        with ESMTP id S234309AbiBKKae (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 05:30:34 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B639E9E
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 02:30:33 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id bt13so23514490ybb.2
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 02:30:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ry9ycITC8oAUIhioPhktpO9Ofjd+lcNABWUsP0eruAA=;
-        b=MQ5WRM0qZRe5F+qGf5Fo13VS4VI4PSfIXNHKI7vQXJJHC1NqUyN3mjZWIzdo/3SrXB
-         EJMRnA2gMlwYFgcEYQhlYxxyxiCTYVMc4YpogJoeyr6ATb1XEhmDooPwSpdXRZQzmmR7
-         MYaQiSh/RMrFN+1xAqKl1cDczPItxyzJEGQT/6VAVrzzOdAczA6rzIiO5Aj0Cldkqgtv
-         fGH8HKLhoObC7VEreWR0zGIDfMRjiQHcnDCNX8Fb2X6wLcG6KlocQUbcDfNk3JcWw5k2
-         NoA0RK4fGYAOiyw/LUOw2eRWjgmOa9HgAZ6rgNVliWvEVMAkR3SodRUH+d/aqgr84qmh
-         N2uQ==
+         :cc:content-transfer-encoding;
+        bh=mSVQKCIhtdDzzhobIcYFiml7D4wPdPGcvRbaNnU5CUs=;
+        b=Bqvh4RO/O+jGZyQzdzLN8xDBdwadSnZneaVsfx4xCN+ov26Zr4IDrJb1o1xXyEnpCE
+         E1kZGQBob8NHQ+agBh824itQCZgtd2fA/P3QnxITcyUgV84NIWWKpCs09Z3/jHHrzLqa
+         sVhVu6IlcsDxgR81sbJUsNn1gdMxtsdefoUNdIQfIAYeu+icqzLaLoy49ah0812gxHzr
+         TRmF6kj8aBOuOH6IG0qtSoEOZOI+J/PFczR9vQ6xvkU33JABS5zBPF+SCMzVeEYAaR2f
+         NNZlfq4MkY5tE5HKWFc9cLO8fn3jEQVjZld3idol93bA9Cw4VEzaEdDRBNRfX5UrPjSp
+         D3yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ry9ycITC8oAUIhioPhktpO9Ofjd+lcNABWUsP0eruAA=;
-        b=f/WNdAHxfe4UCNxhmlaFu57HAQW12gfhf50QFq0DjZiPDmX35qw9SVdyqWzGdfFLPT
-         rDfuJ2dV7PD0H4x318WcFIVO+3V7ZgaCgB3ewHLKspcd8js/JiUiAP4Aa/DYi7WYK5SF
-         ymsOi9F7LTckPiEH6Q4Jstz6i6N6G0yHRbRZUB5TrUTPA+8T0qTB0D1poqeuS680OQXI
-         MWnAif6zl+2JB07v1VdCNtpM/rbdqvkM+4V08HZIjV5PiHnNGDh6CQQbbufiEk8dLyZ2
-         MYDcb2EMnpsjpz7Xo2o3q6vikwagO1lQ6PaMoMrwCxPUhVoL0rub2AsQQAiY0mdu98V8
-         r+nA==
-X-Gm-Message-State: AOAM533w9PcRGs2GtsQAj+0Y4w/inks5eP59Z+Y0cKiHcMOJ5DFNMKSS
-        i8q5VInxTSA5D+gIoe2Aghndf6sywOW7a2vrU8qCgQ==
-X-Google-Smtp-Source: ABdhPJw87S6dZQcEik5IJQ2AIqFqQU8EiTznfzofQZOI1zfmAh1j0SfmQ9XBgaSyQ05RaSPf2+0wAGHrWIiafaeQVzc=
-X-Received: by 2002:a81:4402:: with SMTP id r2mr942092ywa.126.1644575322273;
- Fri, 11 Feb 2022 02:28:42 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mSVQKCIhtdDzzhobIcYFiml7D4wPdPGcvRbaNnU5CUs=;
+        b=ImBJZeooLndWc7kS5VXAV2o62nnP6lo0iSJ40WflwB1yGxKH1FLHJItRsdKhAHR0K2
+         kgwpVSrK7wu+qdHxf/J93VNOuXnnopdMwo2Zz54bKg9SYMLCJDIfMm1e2UzQopB07ozX
+         aLbcZQWKq/vT0PaQuvxgkJK/JLozUqc+W/42KFnrklNSYid38u6sAOq1zzCQSVMYfw0E
+         uvSVhCDPBAvSlyFJqgtkIEcgr1gQ/b5GsJt35u03rxfPFPvRj8r50co3xU+Hgwgj4T/r
+         qfv7cvBraimnkCfDkhqejkOrdasRjvV+UiPolACm1YqkWVQOyBTxortnV/1EdC2ebA2Y
+         65Ig==
+X-Gm-Message-State: AOAM531qf+VrYZ430sPn2+atiLchMbI+3qCbRabHcJzOLd8CCR5uDtJQ
+        Zk2ng/KL5QvvtU0DSsYzbE0Z74ofrNfBRTQBdaqEkA==
+X-Google-Smtp-Source: ABdhPJy+m38ezp3Uh3l1G7Uldezah39PdPEsCZYeiIqRSqodMOAGYzCr6GqLXU4uA1XFR9XeF5B2JGPkfnScZUq4Qzk=
+X-Received: by 2002:a25:5143:: with SMTP id f64mr739038ybb.520.1644575432802;
+ Fri, 11 Feb 2022 02:30:32 -0800 (PST)
 MIME-Version: 1.0
-References: <20220211051403.3952-1-luizluca@gmail.com>
-In-Reply-To: <20220211051403.3952-1-luizluca@gmail.com>
+References: <20220211051403.3952-1-luizluca@gmail.com> <87a6exwwxl.fsf@bang-olufsen.dk>
+In-Reply-To: <87a6exwwxl.fsf@bang-olufsen.dk>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 11 Feb 2022 11:28:30 +0100
-Message-ID: <CACRpkdYfNhENWBcDXxshT_AS4s_t+B4bequRPAUsz1m=T0HSCA@mail.gmail.com>
+Date:   Fri, 11 Feb 2022 11:30:21 +0100
+Message-ID: <CACRpkdbL5z50pTXcKqXwbNaYhW1_SvipBY4_nfzeOjAi8cW1Xw@mail.gmail.com>
 Subject: Re: [PATCH net-next] net: dsa: realtek: realtek-mdio: reset before setup
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, ALSI@bang-olufsen.dk, arinc.unal@arinc9.com,
+To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
+Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>,
         Frank Wunderlich <frank-w@public-files.de>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -66,17 +73,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 6:14 AM Luiz Angelo Daros de Luca
-<luizluca@gmail.com> wrote:
+On Fri, Feb 11, 2022 at 10:54 AM Alvin =C5=A0ipraga <ALSI@bang-olufsen.dk> =
+wrote:
+> Luiz Angelo Daros de Luca <luizluca@gmail.com> writes:
 
-> Some devices, like the switch in Banana Pi BPI R64 only starts to answer
-> after a HW reset. It is the same reset code from realtek-smi.
+> > +     if (priv->reset) {
 >
-> Reported-by: Frank Wunderlich <frank-w@public-files.de>
-> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+> gpiod_set_value seems tolerant of a NULL gpio_desc pointer, but perhaps
+> you would like to add the same if statement to realtek-smi so that it
+> doesn't pretend to reset the chip when the reset GPIO is absent?
 
-Looks good to me!
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+That is fine by me and you can keep my review tag if you also
+add this.
 
 Yours,
 Linus Walleij
