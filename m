@@ -2,71 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BF054B2305
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 11:25:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B268A4B2303
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 11:25:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348864AbiBKKYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 05:24:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51340 "EHLO
+        id S1348886AbiBKKZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 05:25:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346916AbiBKKYJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 05:24:09 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55885220;
-        Fri, 11 Feb 2022 02:24:08 -0800 (PST)
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nIT5s-000AVF-Pf; Fri, 11 Feb 2022 11:24:00 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nIT5s-000DIF-Dm; Fri, 11 Feb 2022 11:24:00 +0100
-Subject: Re: [PATCH bpf-next 2/2] bpf: Make BPF_JIT_DEFAULT_ON selectable in
- Kconfig
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Cc:     Xuefeng Li <lixuefeng@loongson.cn>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1644569851-20859-1-git-send-email-yangtiezhu@loongson.cn>
- <1644569851-20859-3-git-send-email-yangtiezhu@loongson.cn>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <af2b415a-874d-0524-c5bb-b50c419a1559@iogearbox.net>
-Date:   Fri, 11 Feb 2022 11:23:59 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S1348880AbiBKKZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 05:25:09 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA93E47;
+        Fri, 11 Feb 2022 02:25:09 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4Jw8rK15wZz9sSL;
+        Fri, 11 Feb 2022 11:25:05 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id RVC_5M6K9gs6; Fri, 11 Feb 2022 11:25:05 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jw8rJ088Lz9sSM;
+        Fri, 11 Feb 2022 11:25:04 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id E74F28B77E;
+        Fri, 11 Feb 2022 11:25:03 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id avygUaqL76b8; Fri, 11 Feb 2022 11:25:03 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.91])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id A38D28B764;
+        Fri, 11 Feb 2022 11:25:03 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21BAOsOZ946508
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 11 Feb 2022 11:24:54 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21BAOq8A946507;
+        Fri, 11 Feb 2022 11:24:52 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org
+Subject: [PATCH 1/2] net: Allow csum_sub() to be provided in arch
+Date:   Fri, 11 Feb 2022 11:24:48 +0100
+Message-Id: <0c8eaab8f0685d2a70d125cf876238c70afd4fb6.1644574987.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <1644569851-20859-3-git-send-email-yangtiezhu@loongson.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26450/Fri Feb 11 10:24:09 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1644575088; l=989; s=20211009; h=from:subject:message-id; bh=RUCXz7rcwV3vtRjuwGPzOWG1MqwEYlRVJE5g+0Z10T0=; b=eADc4aCLdklo7HvFbLsm7mGATs8mPnBrP4sXzi8ylYEqFq0APBPHpYUY+C3ha30J+ZcvLukGCpHz n6af84NTDAWj2ByZb/YbwA6p1bUFrsK2r9w+YrLcIqegfq86tYCK
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/11/22 9:57 AM, Tiezhu Yang wrote:
-> Currently, it is not possible to set bpf_jit_enable to 1 by default
-> and the users can change it to 0 or 2, it seems bad for some users,
-> make BPF_JIT_DEFAULT_ON selectable to give them a chance.
+In the same spirit as commit 07064c6e022b ("net: Allow csum_add to be
+provided in arch"), allow csum_sub() to be provided by arch.
 
-I'm not fully sure I follow the above, so you are saying that a kconfig of
-!BPF_JIT_ALWAYS_ON and ARCH_WANT_DEFAULT_BPF_JIT, enables BPF_JIT_DEFAULT_ON
-however in such setting you are not able to reset bpf_jit_enable back to 0 at
-runtime?
+The generic implementation of csum_sub() call csum_add() with the
+complement of the addendum.
 
-Thanks,
-Daniel
+Some architectures can do it directly.
+
+This will also avoid getting several copies of csum_sub() outlined
+when building with -Os.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ include/net/checksum.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/net/checksum.h b/include/net/checksum.h
+index 9badcd5532ef..735d98724145 100644
+--- a/include/net/checksum.h
++++ b/include/net/checksum.h
+@@ -62,10 +62,12 @@ static inline __wsum csum_add(__wsum csum, __wsum addend)
+ }
+ #endif
+ 
++#ifndef HAVE_ARCH_CSUM_SUB
+ static inline __wsum csum_sub(__wsum csum, __wsum addend)
+ {
+ 	return csum_add(csum, ~addend);
+ }
++#endif
+ 
+ static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
+ {
+-- 
+2.34.1
+
