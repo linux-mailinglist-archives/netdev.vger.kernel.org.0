@@ -2,55 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2E0D4B2B7E
-	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 18:15:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CD654B2B89
+	for <lists+netdev@lfdr.de>; Fri, 11 Feb 2022 18:16:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343511AbiBKRO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 12:14:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37356 "EHLO
+        id S243717AbiBKRPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 12:15:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242158AbiBKROZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 12:14:25 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A9CC02
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:14:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644599664; x=1676135664;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=dMniU5NBdF8w4V6EPmDKSuPlk2t6kaP7q43irGMCf94=;
-  b=JaXEppTuBL7p6lP4rKlQNDJI4pYoh9JfxWhT24PamsQ/2ucuDbw+77gZ
-   8vRrotiI0oTy+LZ3Cd1XQTaxTw72f0mF9Fz+YuLHj4y0LPjA7fiZdkalV
-   rN//CZYlmXFU8Cby0JFWA0lgeONX5vVnmcUunXjCttL3HeZ5osLUNWQeL
-   yN8C/6e+373UOChKQHwa/vPqV5145FjYlJuZEvvBd2JK+63TttyPOJQ47
-   4/UGgN2iuXAJJB3ssMX+Q1H9UqypJwvxO/QlggrOnC12M+4zotV1U3azL
-   iyLJmhGCkfP8+zzA9NZUB4Sf8jqbbyvx8hru6Ak/K/UMIAevvvR7MA55m
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10255"; a="248601636"
-X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
-   d="scan'208";a="248601636"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 09:14:24 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
-   d="scan'208";a="527024483"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga007.jf.intel.com with ESMTP; 11 Feb 2022 09:14:24 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net 1/1] ice: enable parsing IPSEC SPI headers for RSS
-Date:   Fri, 11 Feb 2022 09:14:18 -0800
-Message-Id: <20220211171418.310044-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S229628AbiBKRPN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 12:15:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F94A95
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 09:15:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB51961B32
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 17:15:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7963C340ED;
+        Fri, 11 Feb 2022 17:15:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644599711;
+        bh=ZHF8Jm9QfWDGLZU4YNLDBqA54J6UCWlVJMZ3wExu1cY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=f+26O75iXZPjTpJqWsirBOVoDP5UboVz69LdR24G4zy56ZTcM+ON/OcMtvsByMipo
+         0Jejt+UMRXGukXFqIn1y9Np6YvWchnDHid/BAbyMQFk5x411Nf0z0XjNQGPUlgpxe+
+         JDWG2qEG1L7oLcBCgoPaW8CAYAR8TkJpV+4T7nxvS/8iLQ4Bq2cBQULpxyyoSmRjML
+         unAuWgUpZp0us1DZu1VHQlWdYrQLjjS7rUTEXYVOvVuEyumhIdaUwKLyapJbjfO2/8
+         7EsAGnF4oP53x0YklPqajwPR8URBWsnzOovScCUGYUS1pX+ZZo3JLMhEMGypx+jACq
+         FIMN6fatMq7WA==
+From:   David Ahern <dsahern@kernel.org>
+To:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net
+Cc:     menglong8.dong@gmail.com, edumazet@google.com, willemb@google.com,
+        David Ahern <dsahern@kernel.org>
+Subject: [PATCH net-next] ipv6: Add reasons for skb drops to __udp6_lib_rcv
+Date:   Fri, 11 Feb 2022 09:15:07 -0800
+Message-Id: <20220211171507.3969-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,47 +51,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Add reasons to __udp6_lib_rcv for skb drops. The only twist is that the
+NO_SOCKET takes precedence over the CSUM or other counters for that
+path (motivation behind this patch - csum counter was misleading).
 
-The COMMS package can enable the hardware parser to recognize IPSEC
-frames with ESP header and SPI identifier.  If this package is available
-and configured for loading in /lib/firmware, then the driver will
-succeed in enabling this protocol type for RSS.
-
-This in turn allows the hardware to hash over the SPI and use it to pick
-a consistent receive queue for the same secure flow. Without this all
-traffic is steered to the same queue for multiple traffic threads from
-the same IP address. For that reason this is marked as a fix, as the
-driver supports the model, but it wasn't enabled.
-
-If the package is not available, adding this type will fail, but the
-failure is ignored on purpose as it has no negative affect.
-
-Fixes: c90ed40cefe1 ("ice: Enable writing hardware filtering tables")
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: David Ahern <dsahern@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/ipv6/udp.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 0c187cf04fcf..53256aca27c7 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -1684,6 +1684,12 @@ static void ice_vsi_set_rss_flow_fld(struct ice_vsi *vsi)
- 	if (status)
- 		dev_dbg(dev, "ice_add_rss_cfg failed for sctp6 flow, vsi = %d, error = %d\n",
- 			vsi_num, status);
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index c6872596b408..7f0fa9bd9ffe 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -912,6 +912,7 @@ static int udp6_unicast_rcv_skb(struct sock *sk, struct sk_buff *skb,
+ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 		   int proto)
+ {
++	enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ 	const struct in6_addr *saddr, *daddr;
+ 	struct net *net = dev_net(skb->dev);
+ 	struct udphdr *uh;
+@@ -988,6 +989,8 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 		return udp6_unicast_rcv_skb(sk, skb, uh);
+ 	}
+ 
++	reason = SKB_DROP_REASON_NO_SOCKET;
 +
-+	status = ice_add_rss_cfg(hw, vsi_handle, ICE_FLOW_HASH_ESP_SPI,
-+				 ICE_FLOW_SEG_HDR_ESP);
-+	if (status)
-+		dev_dbg(dev, "ice_add_rss_cfg failed for esp/spi flow, vsi = %d, error = %d\n",
-+			vsi_num, status);
+ 	if (!uh->check)
+ 		goto report_csum_error;
+ 
+@@ -1000,10 +1003,12 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 	__UDP6_INC_STATS(net, UDP_MIB_NOPORTS, proto == IPPROTO_UDPLITE);
+ 	icmpv6_send(skb, ICMPV6_DEST_UNREACH, ICMPV6_PORT_UNREACH, 0);
+ 
+-	kfree_skb(skb);
++	kfree_skb_reason(skb, reason);
+ 	return 0;
+ 
+ short_packet:
++	if (reason == SKB_DROP_REASON_NOT_SPECIFIED)
++		reason = SKB_DROP_REASON_PKT_TOO_SMALL;
+ 	net_dbg_ratelimited("UDP%sv6: short packet: From [%pI6c]:%u %d/%d to [%pI6c]:%u\n",
+ 			    proto == IPPROTO_UDPLITE ? "-Lite" : "",
+ 			    saddr, ntohs(uh->source),
+@@ -1014,10 +1019,12 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ report_csum_error:
+ 	udp6_csum_zero_error(skb);
+ csum_error:
++	if (reason == SKB_DROP_REASON_NOT_SPECIFIED)
++		reason = SKB_DROP_REASON_UDP_CSUM;
+ 	__UDP6_INC_STATS(net, UDP_MIB_CSUMERRORS, proto == IPPROTO_UDPLITE);
+ discard:
+ 	__UDP6_INC_STATS(net, UDP_MIB_INERRORS, proto == IPPROTO_UDPLITE);
+-	kfree_skb(skb);
++	kfree_skb_reason(skb, reason);
+ 	return 0;
  }
  
- /**
 -- 
-2.31.1
+2.25.1
 
