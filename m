@@ -2,121 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C83374B32BF
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 03:44:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87D544B32C2
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 03:48:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230357AbiBLCoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 21:44:00 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52276 "EHLO
+        id S230387AbiBLCsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 21:48:18 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiBLCoA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 21:44:00 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0153207A
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 18:43:57 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id v63so3002636ybv.10
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 18:43:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1JOx1p3HsJ2taUJ8lrTvJOAknO2/dl1PDm0p2eNNr1U=;
-        b=Ti3jumDjZGXPLHqjAABBdvQExq137bv2iIyI9sJUiF/1K+Aevqlb/At+zjC8V/h/+2
-         0UpFidZylv/mwx3xeUIH23xtOWQM9qrMJv+YdwcprbVteYlgoRO7MmiC6G/4gA06R+A9
-         TGV8KQFBEGwBsFB37PWXJDi16NjbfntlfGKTVWr0sAJ0cPPyNMdYbA4dCHdNby3UFyVq
-         ok3dDow8ecg7lsNEp6A/0EMyGUSPm+MkAn6on3woj1jwFc6Es6NO4MwxlRce3czV7PEY
-         Zqf+424J3CJ3jlEYL+IYOET6MaOXavKUyPlwU4mo4iEz0BktyD2oNIIoxrxNh0hBuz5t
-         WMEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1JOx1p3HsJ2taUJ8lrTvJOAknO2/dl1PDm0p2eNNr1U=;
-        b=mtQmsU318nm3dhX8GAizR4VdslRs6PSUqM2YF5txGN3PCmcD7gI+mrVDSxOd/vFaaf
-         CdUD17E0Qjlt/mSeANtErUmHCvEOEHKqH+wnGyhSOFtODrlW7/6Nhy4fnyCMBnILrAlI
-         93Cu6hGQUOdiJqTK050YwF48a3vqwkGECOcsVhGPF5XQN6pB2AqoS1uihsaKwa0sICnN
-         ur+pVbyaoDYQ3mRzJ64k81QI4VlPucEFvyDHxmVh7yN+Hg1ktwu/NJ0NY5Rqmh6Nymvm
-         Vi/wG5gqeKlMJzI/U2r4/LRPMtN5ZMWOQnxuj8Q+hCitq9/zQW6WOlaJbq1ieG1LJZMd
-         Bpsg==
-X-Gm-Message-State: AOAM532xqK8aWEQr+rw6TRFYrI0/YTUqEibZttEnzK7sU9yQdPk1nbF+
-        4aDKt+gPoOTghh0FsHnzslllARh2JmzinHIhgoXIiuo/1zRqFXJM
-X-Google-Smtp-Source: ABdhPJwL+nePN8pP5ChEtiGDzKtW/vDGHPQ2tg2HfujbPaa2+BI5q61dMVi8abMMEIG/nZ0+ydokPF/cwGVpjKfEs/I=
-X-Received: by 2002:a25:4f41:: with SMTP id d62mr4216918ybb.156.1644633836709;
- Fri, 11 Feb 2022 18:43:56 -0800 (PST)
-MIME-Version: 1.0
-References: <202202120509.FMR7TEL1-lkp@intel.com>
-In-Reply-To: <202202120509.FMR7TEL1-lkp@intel.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 11 Feb 2022 18:43:45 -0800
-Message-ID: <CANn89iLS4N4cpX+Nh9ALjf_APOPQ4-aSPSX1P6iLpda8mJS8UQ@mail.gmail.com>
-Subject: Re: [net:master 21/30] net/netfilter/xt_socket.c:224:3: error:
- implicit declaration of function 'nf_defrag_ipv6_disable'
-To:     kernel test robot <lkp@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev <netdev@vger.kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229541AbiBLCsR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 21:48:17 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B112E081
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 18:48:12 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1644634075; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=l7lfuNdRFyYNmChwp4/EzAsg7g/fEFMdMuiBTFnIsxddW+zGNVyWnRFGIgyP1VOqgU7brQ3g2SCJxarrlv41gWxhBbYXEv4uCb1TG6/3HMEKWfP3aFpIk1U3gGZ9lQlVaR7CIxE61o1kq2LJD/GCreGqi4OwgGQS59XD4oScS7M=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1644634075; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=Qz6N2KT0jhiOGBaaM+9LS/034yOYe/AGgndLH5QDZj0=; 
+        b=WEXNwZ2DafK+jdbEl1V7Go01QKu2zfJNUUF4sVJ50Uzyw+5SdPUnGxy+BLL+fcF5m6lZqkhvBjp4qqNxQFZnzr6eZ4ah9q1WgLBxbJZcDNAtdN8zgtNR8F9GJOQqW/DlAfrgJ+fo4PdrlQmqxvdpDNCklnBljX44Do11yRADSLU=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1644634075;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Content-Type:Content-Transfer-Encoding:From:Mime-Version:Subject:Message-Id:Date:Cc:To;
+        bh=Qz6N2KT0jhiOGBaaM+9LS/034yOYe/AGgndLH5QDZj0=;
+        b=NA/P3YKPiNcdsqQ8EFdBY0/11ftrtM6e0I3+Hs9TzfzzLnxGJN5eCcaJYBdA9amW
+        kh9ocBlHGeTSTSH/nWNdcX5j67mqk4h3vfC+NDdYWSunuhsHAoGjHFvTyZNyhfYvuZE
+        XBFQ4qgPERY+mTwlYA0VhLVxZjNjsA0ZIVemo21g=
+Received: from [10.10.10.4] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
+        with SMTPS id 1644634074540224.65486788941382; Fri, 11 Feb 2022 18:47:54 -0800 (PST)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+From:   =?utf-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>
+Mime-Version: 1.0 (1.0)
+Subject: Re:  [PATCH net-next v2] net: dsa: realtek: realtek-mdio: reset before setup
+Message-Id: <B3AA2DEA-D04C-49C8-9D22-BA6D64F7A6B2@arinc9.com>
+Date:   Sat, 12 Feb 2022 05:47:49 +0300
+Cc:     netdev@vger.kernel.org, linus.walleij@linaro.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, alsi@bang-olufsen.dk,
+        Frank Wunderlich <frank-w@public-files.de>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+X-Mailer: iPhone Mail (17H35)
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 1:55 PM kernel test robot <lkp@intel.com> wrote:
->
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git master
-> head:   85d24ad38bc4658ce9a16b85b9c8dc0577d66c71
-> commit: 75063c9294fb239bbe64eb72141b6871fe526d29 [21/30] netfilter: xt_socket: fix a typo in socket_mt_destroy()
-> config: hexagon-randconfig-r045-20220211 (https://download.01.org/0day-ci/archive/20220212/202202120509.FMR7TEL1-lkp@intel.com/config)
-> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project f6685f774697c85d6a352dcea013f46a99f9fe31)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=75063c9294fb239bbe64eb72141b6871fe526d29
->         git remote add net https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git
->         git fetch --no-tags net master
->         git checkout 75063c9294fb239bbe64eb72141b6871fe526d29
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/netfilter/
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
-> >> net/netfilter/xt_socket.c:224:3: error: implicit declaration of function 'nf_defrag_ipv6_disable' [-Werror,-Wimplicit-function-declaration]
->                    nf_defrag_ipv6_disable(par->net);
->                    ^
->    net/netfilter/xt_socket.c:224:3: note: did you mean 'nf_defrag_ipv4_disable'?
->    include/net/netfilter/ipv4/nf_defrag_ipv4.h:7:6: note: 'nf_defrag_ipv4_disable' declared here
->    void nf_defrag_ipv4_disable(struct net *net);
->         ^
->    1 error generated.
->
+=EF=BB=BF
+>=20
+> On 12 Feb 2022, at 05:27, Luiz Angelo Daros de Luca <luizluca@gmail.com> w=
+rote:
+>=20
+> =EF=BB=BFSome devices, like the switch in Banana Pi BPI R64 only starts to=
+ answer
+> after a HW reset. It is the same reset code from realtek-smi.
+>=20
+> In realtek-smi, only assert the reset when the gpio is defined.
 
-I guess something like this is needed ?
+If realtek-smi also resets before setup with this patch (I don=E2=80=99t und=
+erstand code very well) can you mention it next to mdio in the summary too?
 
-diff --git a/net/netfilter/xt_socket.c b/net/netfilter/xt_socket.c
-index 662e5eb1cc39e544191b3aab388c3762674d9251..7013f55f05d1ebca3b13d29934d8f6abc1ef36f0
-100644
---- a/net/netfilter/xt_socket.c
-+++ b/net/netfilter/xt_socket.c
-@@ -220,8 +220,10 @@ static void socket_mt_destroy(const struct
-xt_mtdtor_param *par)
- {
-        if (par->family == NFPROTO_IPV4)
-                nf_defrag_ipv4_disable(par->net);
-+#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
-        else if (par->family == NFPROTO_IPV6)
-                nf_defrag_ipv6_disable(par->net);
-+#endif
- }
+In any case:
+Acked-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
 
- static struct xt_match socket_mt_reg[] __read_mostly = {
+>=20
+> Reported-by: Frank Wunderlich <frank-w@public-files.de>
+> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+> Tested-by: Frank Wunderlich <frank-w@public-files.de>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Reviewed-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
+> ---
+> drivers/net/dsa/realtek/realtek-mdio.c | 19 +++++++++++++++++++
+> drivers/net/dsa/realtek/realtek-smi.c  | 17 ++++++++++-------
+> drivers/net/dsa/realtek/realtek.h      |  3 +++
+> 3 files changed, 32 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/drivers/net/dsa/realtek/realtek-mdio.c b/drivers/net/dsa/real=
+tek/realtek-mdio.c
+> index 0c5f2bdced9d..fa2339763c71 100644
+> --- a/drivers/net/dsa/realtek/realtek-mdio.c
+> +++ b/drivers/net/dsa/realtek/realtek-mdio.c
+> @@ -152,6 +152,21 @@ static int realtek_mdio_probe(struct mdio_device *mdi=
+odev)
+>   /* TODO: if power is software controlled, set up any regulators here */
+>   priv->leds_disabled =3D of_property_read_bool(np, "realtek,disable-leds"=
+);
+>=20
+> +    /* Assert then deassert RESET */
+> +    priv->reset =3D devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH)=
+;
+> +    if (IS_ERR(priv->reset)) {
+> +        dev_err(dev, "failed to get RESET GPIO\n");
+> +        return PTR_ERR(priv->reset);
+> +    }
+> +
+> +    if (priv->reset) {
+> +        dev_dbg(dev, "asserted RESET\n");
+> +        msleep(REALTEK_HW_STOP_DELAY);
+> +        gpiod_set_value(priv->reset, 0);
+> +        msleep(REALTEK_HW_START_DELAY);
+> +        dev_dbg(dev, "deasserted RESET\n");
+> +    }
+> +
+>   ret =3D priv->ops->detect(priv);
+>   if (ret) {
+>       dev_err(dev, "unable to detect switch\n");
+> @@ -185,6 +200,10 @@ static void realtek_mdio_remove(struct mdio_device *m=
+diodev)
+>=20
+>   dsa_unregister_switch(priv->ds);
+>=20
+> +    /* leave the device reset asserted */
+> +    if (priv->reset)
+> +        gpiod_set_value(priv->reset, 1);
+> +
+>   dev_set_drvdata(&mdiodev->dev, NULL);
+> }
+>=20
+> diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realt=
+ek/realtek-smi.c
+> index 946fbbd70153..a13ef07080a2 100644
+> --- a/drivers/net/dsa/realtek/realtek-smi.c
+> +++ b/drivers/net/dsa/realtek/realtek-smi.c
+> @@ -43,8 +43,6 @@
+> #include "realtek.h"
+>=20
+> #define REALTEK_SMI_ACK_RETRY_COUNT        5
+> -#define REALTEK_SMI_HW_STOP_DELAY        25    /* msecs */
+> -#define REALTEK_SMI_HW_START_DELAY        100    /* msecs */
+>=20
+> static inline void realtek_smi_clk_delay(struct realtek_priv *priv)
+> {
+> @@ -426,10 +424,13 @@ static int realtek_smi_probe(struct platform_device *=
+pdev)
+>       dev_err(dev, "failed to get RESET GPIO\n");
+>       return PTR_ERR(priv->reset);
+>   }
+> -    msleep(REALTEK_SMI_HW_STOP_DELAY);
+> -    gpiod_set_value(priv->reset, 0);
+> -    msleep(REALTEK_SMI_HW_START_DELAY);
+> -    dev_info(dev, "deasserted RESET\n");
+> +    if (priv->reset) {
+> +        dev_dbg(dev, "asserted RESET\n");
+> +        msleep(REALTEK_HW_STOP_DELAY);
+> +        gpiod_set_value(priv->reset, 0);
+> +        msleep(REALTEK_HW_START_DELAY);
+> +        dev_dbg(dev, "deasserted RESET\n");
+> +    }
+>=20
+>   /* Fetch MDIO pins */
+>   priv->mdc =3D devm_gpiod_get_optional(dev, "mdc", GPIOD_OUT_LOW);
+> @@ -474,7 +475,9 @@ static int realtek_smi_remove(struct platform_device *=
+pdev)
+>   dsa_unregister_switch(priv->ds);
+>   if (priv->slave_mii_bus)
+>       of_node_put(priv->slave_mii_bus->dev.of_node);
+> -    gpiod_set_value(priv->reset, 1);
+> +
+> +    if (priv->reset)
+> +        gpiod_set_value(priv->reset, 1);
+>=20
+>   platform_set_drvdata(pdev, NULL);
+>=20
+> diff --git a/drivers/net/dsa/realtek/realtek.h b/drivers/net/dsa/realtek/r=
+ealtek.h
+> index 3512b832b148..e7d3e1bcf8b8 100644
+> --- a/drivers/net/dsa/realtek/realtek.h
+> +++ b/drivers/net/dsa/realtek/realtek.h
+> @@ -13,6 +13,9 @@
+> #include <linux/gpio/consumer.h>
+> #include <net/dsa.h>
+>=20
+> +#define REALTEK_HW_STOP_DELAY        25    /* msecs */
+> +#define REALTEK_HW_START_DELAY        100    /* msecs */
+> +
+> struct realtek_ops;
+> struct dentry;
+> struct inode;
+> --=20
+> 2.35.1
+
