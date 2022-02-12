@@ -2,54 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C9884B386B
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 23:43:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2618D4B3870
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 23:47:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232201AbiBLWnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Feb 2022 17:43:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57148 "EHLO
+        id S232227AbiBLWr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Feb 2022 17:47:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232187AbiBLWnU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 17:43:20 -0500
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F8A23BD9
-        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 14:43:16 -0800 (PST)
-Received: by mail-il1-f199.google.com with SMTP id f18-20020a926a12000000b002be48b02bc6so8345729ilc.17
-        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 14:43:16 -0800 (PST)
+        with ESMTP id S232214AbiBLWr1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 17:47:27 -0500
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DAF23BE1
+        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 14:47:23 -0800 (PST)
+Received: by mail-io1-f70.google.com with SMTP id k20-20020a5d91d4000000b0061299fad2fdso8594487ior.21
+        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 14:47:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=Qndx5/xlMDuMFsAiyXYtZiMwVkwJVHOfIbITY7SRWJQ=;
-        b=OP2KVAU+qcTKtWg6u/QV6H2ift0JFNU6iF6yi5FGPN9nRaUMYwP4Af0gJ4uP8J1+kq
-         uOUeVaEX2lKZPSDMSa48GQCMfgtd5UZPGTbXncMumO4455q+m+SzuaS4cTDisFLGBhRE
-         rIC8KuUWBnMY9e9hoSJo4NGS58BexWw5RRvYeT1bYF+KVHish1QB3xoJf+CxScRJJ9Ki
-         iLN3MD4Jj1QxCVCWgM6tubOjDM9o7DYjqGxgRO4SV7J1BF9uDcZ1Tbw01rm89w3P2aBj
-         QMJT7oU8s8oa1fWXjv//cEqWRMAvXczEXQClWXBtB2MIGjYkGfTP2cfKREXY8uNEX8kT
-         QuZw==
-X-Gm-Message-State: AOAM531Lm/4gf5V6iS2ls6CxunBPyfRMnOeB14WhEchT2YceOjR2BEIT
-        PWDVZ77hgNzWFEt1xK6kC/07rdXOPGaxcWxKpN3sgjWBnX+V
-X-Google-Smtp-Source: ABdhPJyYJiru2zx+c/KVjgt1xGFubXKCnNkIk4JRjg/rcylmahzVP9hbqgP6bfAIgw0MItzt6bpF6kOvtY69glToznfqQq+iuQ/5
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=P2jL7sQj/TjQng7PKMAkeDTbtim/XRQtA01kz0TN724=;
+        b=dxtH3tleV75r6cU4OGPg9up8X82CwDJbsL45EK8sT7jmyooGRrVQa814ezm+sGaCDg
+         S28rB8XdanPil3VoYy2qMWygukGGyXGtQ9xpt9ToOLVRDYPz/LDCP6r2cB3qnWEc6/Uy
+         XqFLANdQrts1uCaS/iofwB8r+2wJezfe6oGkzSAZQtkL0cNq1IuO1vZMdC7g34C9/f+y
+         sjtHfCwqmqSgftoYJ2Dwg0R6c6Mx2ptyzi5GB6uc364BcZVRaZdoh9SWktaySa/5PpFH
+         eV4buuw/0FMR/DlkcocHDcGlECsRWTT+BIbeJ64RZBNbno8EirUesoRLk8Q8EUhUUYO9
+         k1qQ==
+X-Gm-Message-State: AOAM530BchBLN4KtaJnKKvxkyBWWO5Y8fh4v+9p8M4r8eRKAblptCYbV
+        NieNDVSQlbIYgWR1UF42+mLMY2twhuhyCxZCIwpbAosQoNi4
+X-Google-Smtp-Source: ABdhPJzYFI6mQUpc72tbVCAcFfNBWcmMCEo8fuxfc/6Lc9bJZ0i5JB6ueuzKE6M7SySVfHYDwJiwU1JMb7DLEwuxIqpE+Z3hbmYP
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1806:: with SMTP id a6mr3393462ilv.272.1644705795363;
- Sat, 12 Feb 2022 14:43:15 -0800 (PST)
-Date:   Sat, 12 Feb 2022 14:43:15 -0800
-In-Reply-To: <0000000000004c57c005b0fc4114@google.com>
+X-Received: by 2002:a92:bd08:: with SMTP id c8mr4213452ile.110.1644706042783;
+ Sat, 12 Feb 2022 14:47:22 -0800 (PST)
+Date:   Sat, 12 Feb 2022 14:47:22 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b15b3505d7d9e8ca@google.com>
-Subject: Re: [syzbot] INFO: task hung in usb_get_descriptor
-From:   syzbot <syzbot+31ae6d17d115e980fd14@syzkaller.appspotmail.com>
-To:     brouer@redhat.com, coreteam@netfilter.org, davem@davemloft.net,
-        edumazet@google.com, eman.mohamed@rofaidarealestate.com,
-        gregkh@linuxfoundation.org, gustavoars@kernel.org,
-        hdanton@sina.com, ingrassia@epigenesys.com, johan@kernel.org,
-        kaber@trash.net, kadlec@blackhole.kfki.hu,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        mathias.nyman@linux.intel.com, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        skhan@linuxfoundation.org, stern@rowland.harvard.edu,
-        syzkaller-bugs@googlegroups.com
+Message-ID: <00000000000070ac6505d7d9f7a8@google.com>
+Subject: [syzbot] kernel BUG in vhost_get_vq_desc
+From:   syzbot <syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com>
+To:     jasowang@redhat.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mst@redhat.com,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        virtualization@lists.linux-foundation.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
         HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
@@ -61,24 +53,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+Hello,
 
-commit 363eaa3a450abb4e63bd6e3ad79d1f7a0f717814
-Author: Shuah Khan <skhan@linuxfoundation.org>
-Date:   Tue Mar 30 01:36:51 2021 +0000
+syzbot found the following issue on:
 
-    usbip: synchronize event handler with sysfs code paths
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1616e872700000
-start commit:   4fa56ad0d12e Merge tag 'for-linus' of git://git.kernel.org..
+HEAD commit:    83e396641110 Merge tag 'soc-fixes-5.17-1' of git://git.ker..
 git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=144ecdb0be3abc07
-dashboard link: https://syzkaller.appspot.com/bug?extid=31ae6d17d115e980fd14
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12548d11d00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13ec77e9d00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1282df74700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5707221760c00a20
+dashboard link: https://syzkaller.appspot.com/bug?extid=3140b17cb44a7b174008
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-If the result looks correct, please mark the issue as fixed by replying with:
+Unfortunately, I don't have any reproducer for this issue yet.
 
-#syz fix: usbip: synchronize event handler with sysfs code paths
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+------------[ cut here ]------------
+kernel BUG at drivers/vhost/vhost.c:2335!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 9449 Comm: vhost-9447 Not tainted 5.17.0-rc3-syzkaller-00247-g83e396641110 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:vhost_get_vq_desc+0x1d43/0x22c0 drivers/vhost/vhost.c:2335
+Code: 00 00 00 48 c7 c6 00 ac 9c 8a 48 c7 c7 28 27 8e 8d 48 89 ca 48 c1 e1 04 48 01 d9 e8 77 23 29 fd e9 74 ff ff ff e8 bd 3f a3 fa <0f> 0b e8 b6 3f a3 fa 48 8b 54 24 18 48 b8 00 00 00 00 00 fc ff df
+RSP: 0018:ffffc9000f527b88 EFLAGS: 00010212
+
+RAX: 0000000000000133 RBX: 0000000000000001 RCX: ffffc9000ef65000
+RDX: 0000000000040000 RSI: ffffffff86d46e33 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff86d45f2c R11: 0000000000000000 R12: ffff88802bac4d68
+R13: 0000000000000000 R14: dffffc0000000000 R15: ffff88802bac4bb0
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f6c74f8a718 CR3: 000000002bb11000 CR4: 00000000003526e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ vhost_vsock_handle_tx_kick+0x277/0xa20 drivers/vhost/vsock.c:522
+ vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:vhost_get_vq_desc+0x1d43/0x22c0 drivers/vhost/vhost.c:2335
+Code: 00 00 00 48 c7 c6 00 ac 9c 8a 48 c7 c7 28 27 8e 8d 48 89 ca 48 c1 e1 04 48 01 d9 e8 77 23 29 fd e9 74 ff ff ff e8 bd 3f a3 fa <0f> 0b e8 b6 3f a3 fa 48 8b 54 24 18 48 b8 00 00 00 00 00 fc ff df
+RSP: 0018:ffffc9000f527b88 EFLAGS: 00010212
+
+RAX: 0000000000000133 RBX: 0000000000000001 RCX: ffffc9000ef65000
+RDX: 0000000000040000 RSI: ffffffff86d46e33 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff86d45f2c R11: 0000000000000000 R12: ffff88802bac4d68
+R13: 0000000000000000 R14: dffffc0000000000 R15: ffff88802bac4bb0
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f6c7679a1b8 CR3: 000000002bb11000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
