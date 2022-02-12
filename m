@@ -2,107 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34C224B32BC
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 03:40:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 661F64B32BE
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 03:41:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230155AbiBLCkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 21:40:39 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50348 "EHLO
+        id S230353AbiBLClr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 21:41:47 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiBLCkj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 21:40:39 -0500
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68E522DABD;
-        Fri, 11 Feb 2022 18:40:34 -0800 (PST)
-Received: from [10.130.0.135] (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9CxDuEaHgdi9rwAAA--.3561S3;
-        Sat, 12 Feb 2022 10:40:27 +0800 (CST)
-Subject: Re: [PATCH bpf-next 2/2] bpf: Make BPF_JIT_DEFAULT_ON selectable in
- Kconfig
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-References: <1644569851-20859-1-git-send-email-yangtiezhu@loongson.cn>
- <1644569851-20859-3-git-send-email-yangtiezhu@loongson.cn>
- <af2b415a-874d-0524-c5bb-b50c419a1559@iogearbox.net>
-Cc:     Xuefeng Li <lixuefeng@loongson.cn>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-Message-ID: <65323db1-5fcb-21b3-2197-9bd6935bd96c@loongson.cn>
-Date:   Sat, 12 Feb 2022 10:40:26 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
- Thunderbird/45.4.0
+        with ESMTP id S229541AbiBLClr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 21:41:47 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21EE92982D
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 18:41:45 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id o19so29991773ybc.12
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 18:41:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MlPkl0/j4A968F1UOGz1btEHXruRjrJ+twnpMqIBKuc=;
+        b=XmPSFJiZYJdorHslig0aAnDifJeFO7Ui/9hV4k/eKk47vfIocAIj0s4WDw+RWz9AUy
+         IMJVjT7X0XZzGqlmkmvOcjJ0L1/9Q56wn7RTGW+TjzSHBxuO/8mTeoSSHNsBm0AMqdwF
+         iJ86Pm7IfAD4Ajy4GFbmHYVHhJiaXhDZCXf98/f6shPEp3xVv1kYHZt1lL3xz5a+O8L8
+         6PZJNd6ADISnGKGunYrZa/d5D/9jZAH48o9LKqFOGv36VTsVDbsDZ0N9dTdosqoly6Mt
+         wL5jti0XzPYTXjw/SDyz5gZYvleN++c+ag+zzTaMjfT+iy9VZ1KCtKvEsXPa6E9m3Lme
+         sbzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MlPkl0/j4A968F1UOGz1btEHXruRjrJ+twnpMqIBKuc=;
+        b=KWOXHxbkbc2X5O7+JChKzS7TUu2cWD0MurTn5DN4AXFkF+3dqEgJx4ZEnTfDBWlP05
+         ogapTFYnk2MnhjRYGBuSTc0aKdaov/ifAY8xznGSw4lV70oykf6H440bfJoNP6y+B1Ia
+         madUnjvTx/brz6BM2t4i/hEcSViD/3c0ymMF0qOu/M2QuqnkOMu9lELwfBDWvBt7Jb8a
+         AZzD+o3RAsM/NLoeMqcH5S2hciv1r0vpQ2S7INcXcqHJJB+1G44Xtj5w6ejI8E/6COAE
+         I4JOGR6XdmyIqIzRwZdTAMfoRe29U3w2iKpn8ku+ARp4cv7kvWBjzOQbhlvnqfIMUdb7
+         omuQ==
+X-Gm-Message-State: AOAM532vjg4iUYVL50UHbDeTSWPFEuaexAVi794ziPatCrTcsSthvlDV
+        TPQvEb0DlYC0Vi089CS//AtAe19hT23/k/Ki1po4hQ==
+X-Google-Smtp-Source: ABdhPJxCrqQAM0RtbCh+j48i1wq+HUZGjDW46/p5m1BgKtG4jEC0xZ/hsik2mkNMZ3f3k3n2VXfewpcGR67jzSm8k6o=
+X-Received: by 2002:a25:e7d6:: with SMTP id e205mr894092ybh.277.1644633704076;
+ Fri, 11 Feb 2022 18:41:44 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <af2b415a-874d-0524-c5bb-b50c419a1559@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: AQAAf9CxDuEaHgdi9rwAAA--.3561S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7ury3Wr1fAF4xZr43KrWkCrg_yoW8GFyUpw
-        4Yq34Syrs7Krs3KFs7u3W7JF48Ww48Wr1UXFs8GrWUZas7CF92kr18K3Wqqa47Z34kX3Wj
-        yFZ5ZFyDXa1Uu37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUB014x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVCY1x0267AKxVW8Jr
-        0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
-        6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
-        0_Gr1lF7xvr2IY64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxa
-        n2IY04v7Mxk0xIA0c2IEe2xFo4CEbIxvr21lc2xSY4AK67AK6r4UMxAIw28IcxkI7VAKI4
-        8JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xv
-        wVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjx
-        v20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20E
-        Y4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I
-        0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUO_MaUUUUU
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220210175557.1843151-1-eric.dumazet@gmail.com>
+ <20220210175557.1843151-5-eric.dumazet@gmail.com> <20220211141624.14d6f4ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220211141624.14d6f4ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 11 Feb 2022 18:41:33 -0800
+Message-ID: <CANn89iJy+__9r9h0HGuy7s=P915EEGOMHvqrcp_rvzqnrsbBpg@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/4] net: introduce a config option to tweak MAX_SKB_FRAGS
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 02/11/2022 06:23 PM, Daniel Borkmann wrote:
-> On 2/11/22 9:57 AM, Tiezhu Yang wrote:
->> Currently, it is not possible to set bpf_jit_enable to 1 by default
->> and the users can change it to 0 or 2, it seems bad for some users,
->> make BPF_JIT_DEFAULT_ON selectable to give them a chance.
+On Fri, Feb 11, 2022 at 2:16 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> I'm not fully sure I follow the above, so you are saying that a kconfig of
-> !BPF_JIT_ALWAYS_ON and ARCH_WANT_DEFAULT_BPF_JIT, enables
-> BPF_JIT_DEFAULT_ON
-> however in such setting you are not able to reset bpf_jit_enable back to
-> 0 at
-> runtime?
-
-Oh, no. Sorry for the unclear description.
-
-currently, only x86, arm64 and s390 select ARCH_WANT_DEFAULT_BPF_JIT,
-the other archs do not select ARCH_WANT_DEFAULT_BPF_JIT. On the archs
-without ARCH_WANT_DEFAULT_BPF_JIT, if we want to set bpf_jit_enable to
-1 by default, the only way is to enable CONFIG_BPF_JIT_ALWAYS_ON, then
-the users can not change it to 0 or 2, it seems bad for some users, we
-can select ARCH_WANT_DEFAULT_BPF_JIT for those archs if it is proper,
-but at least for now, make BPF_JIT_DEFAULT_ON selectable can give them
-a chance.
-
-Additionaly, with this patch, under !BPF_JIT_ALWAYS_ON, we can disable
-BPF_JIT_DEFAULT_ON on the archs with ARCH_WANT_DEFAULT_BPF_JIT when
-make menuconfig, it seems flexible for some developers.
-
-If you are OK, I will update the commit message and then send v2.
-
-Thanks,
-Tiezhu
-
+> On Thu, 10 Feb 2022 09:55:57 -0800 Eric Dumazet wrote:
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > Currently, MAX_SKB_FRAGS value is 17.
+> >
+> > For standard tcp sendmsg() traffic, no big deal because tcp_sendmsg()
+> > attempts order-3 allocations, stuffing 32768 bytes per frag.
+> >
+> > But with zero copy, we use order-0 pages.
 >
-> Thanks,
-> Daniel
+> If I read this right BIG TCP works but for zc cases, without this patch,
+> but there's little point to applying this patch without BIG TCP.
+>
+> Shouldn't the BIG TCP work go in first and then we'll worry about how
+> many frags can each skb carry?
 
+This is orthogonal really.
+
+My guess is that most people do not use TCP RX zerocopy, apart from Google ?
