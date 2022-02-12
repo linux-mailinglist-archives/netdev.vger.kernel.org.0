@@ -2,110 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 642894B3406
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 10:25:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ED044B3422
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 10:59:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233015AbiBLJZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Feb 2022 04:25:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38214 "EHLO
+        id S233260AbiBLJ6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Feb 2022 04:58:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiBLJZ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 04:25:56 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5492656A
-        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 01:25:53 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id a39so19601195pfx.7
-        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 01:25:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=LBn5pi2zD8C70+tSeo5aaWi3cZGhC+Mz/l9bCxEu6Vw=;
-        b=pIX7io/yePkmWF4a8VRyuboRSUJgmkPfS4IKedprtAep3MOEMCBM8GmyrZsH4mySwa
-         6XSsw/u3zbvOoRxW4kAnbzZ63RoFIBugxvy9WDK3WHogS+wyRoo028vReEBEs76iZErZ
-         U3cd/msigzLRxxJMMcU6gx90fYthIr9jkwWPE2YAEbmVpF+pWxbh/BQzjgsN6DcKTxxW
-         PSazM1P5fxUC01Ek2IHrgXQVFxsyR2mf3LyYh8bYFRoce2cczoNkwTJ9zW2vq9/CmGkX
-         TcOKKxSBjR3aXbP465T3iqslpy4HnL1rnSVnNiMLBrRUCD7JgjrRL5d6AVUDhbtbJWfI
-         JRDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=LBn5pi2zD8C70+tSeo5aaWi3cZGhC+Mz/l9bCxEu6Vw=;
-        b=NMGERLgb1871AUr1raVXdIXk4rcwGCtXthZVA3e5ALIFs+xShp0ZTRdiKx7WkOJ0H5
-         yN60dlnxgM+KK0KFyeSuRd6vRZRRjNzUy2CQ1WsonuL8w/3WpxTNOR84AnZoeJHUV+fM
-         Tde9jCLnIRE+W+uoj9330v5H548Pn/xloMSquIE9PgVW+pC1GN/97toEVrA4JpXVO7Wt
-         fTCx/r0g61SqWy0DSyv48Gqhvxcqkn+HIFYyu15RGfIspzfx4JEtW2bXXKZb0wQjb26N
-         qerc/QXaMx+XCABGCTJmnlwog9sqcMtrn/tX8iPnbpjldjk60tX4s5VrAdhD6M6tM6zB
-         h49w==
-X-Gm-Message-State: AOAM530sUSyA1LkYNVZwRxovNS4QKqktavkjJjJ0zQNlPtiedDpsBGAX
-        QdTbUdm7Yxk2riPRSfvpGe+6f9JJ5yKS+XKATIY=
-X-Google-Smtp-Source: ABdhPJwqOvdzoCm8M9elQgAmmmq9gyR88bEiTMxYRdJ++wcFEae+X3tPE3qV3L2Qd8aKVbh8ZuQ80b1+Y+lOpDZLnvA=
-X-Received: by 2002:a05:6a00:174d:: with SMTP id j13mr5314624pfc.58.1644657953224;
- Sat, 12 Feb 2022 01:25:53 -0800 (PST)
+        with ESMTP id S231477AbiBLJ6T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 04:58:19 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BA124BE2;
+        Sat, 12 Feb 2022 01:58:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=igbgibAHPAWbmEsOdSj/NeCBqcGOcsUXmWWMdBzi9LE=; b=LbMp1Kw5SaT236NypKQ9v+1DkG
+        Frb0rgXN+qToHBpB9KqbBxagU+CBAqSEoPciqZSQ3BcH2tmyOivz7MLVbBv09BnrJQu/qn0eI1p7u
+        z3WQpfjhLLY9AWB71ZPc+M10CQSkXl7pL1JQEgcC6QDFJazhhQslVc5ukWUd3arqJV1sImfpyx96J
+        P2sn7Aj19coNN8a4kSP3UGG0NoXc4wVAkooy8bbWqhp9DDZzpSN4Mzv5EvTFIzTcN0niPuli4W6QU
+        jBRqrCkE5E3kAjmxKKCuQpqFl77SDFsjYvw55aYA2uvIaLN8+GkHYXSKmlGKxGYCGoDnIlJOOJnIu
+        5j6Ie1/g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57210)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nIpAQ-00083F-9h; Sat, 12 Feb 2022 09:58:10 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nIpAO-0004Rn-8J; Sat, 12 Feb 2022 09:58:08 +0000
+Date:   Sat, 12 Feb 2022 09:58:08 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     netdev@vger.kernel.org, mw@semihalf.com, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: mvpp2: Check for null pcs in mvpp2_acpi_start()
+Message-ID: <YgeEsF/cr8pfeUR4@shell.armlinux.org.uk>
+References: <20220211234235.3180025-1-jeremy.linton@arm.com>
+ <Ygb2E1DGYVBO+mNP@shell.armlinux.org.uk>
+ <0e5f1807-22f1-ec5b-0b18-8bc02ad99760@arm.com>
 MIME-Version: 1.0
-Received: by 2002:a17:90a:9202:0:0:0:0 with HTTP; Sat, 12 Feb 2022 01:25:52
- -0800 (PST)
-Reply-To: m223443d@gmail.com
-From:   mr michael <cm09362@gmail.com>
-Date:   Sat, 12 Feb 2022 09:25:52 +0000
-Message-ID: <CAL1HOXDNo_rMif0M671=mKOYMS-riq1hsZ6Wk++35VNs5j3MaQ@mail.gmail.com>
-Subject: I need your cooperation.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=7.5 required=5.0 tests=BAYES_20,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,LOTS_OF_MONEY,MONEY_FREEMAIL_REPTO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:434 listed in]
-        [list.dnswl.org]
-        * -0.0 BAYES_20 BODY: Bayes spam probability is 5 to 20%
-        *      [score: 0.1155]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [cm09362[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [cm09362[at]gmail.com]
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  3.4 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-        *  0.0 MONEY_FREEMAIL_REPTO Lots of money from someone using free
-        *      email?
-        *  3.1 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: *******
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0e5f1807-22f1-ec5b-0b18-8bc02ad99760@arm.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings,
+On Fri, Feb 11, 2022 at 06:18:22PM -0600, Jeremy Linton wrote:
+> Hi,
+> 
+> On 2/11/22 17:49, Russell King (Oracle) wrote:
+> > On Fri, Feb 11, 2022 at 05:42:35PM -0600, Jeremy Linton wrote:
+> > > Booting a MACCHIATObin with 5.17 the system OOPs with
+> > > a null pointer deref when the network is started. This
+> > > is caused by the pcs->ops structure being null on this
+> > > particular platform/firmware.
+> > 
+> > pcs->ops should never be NULL. I'm surprised this fix results in any
+> > kind of working networking.
+> > 
+> > Instead, the initialilsation of port->pcs_*.ops needs to be moved out
+> > of the if (!mvpp2_use_acpi_compat_mode(..)) block. Please try this:
+> 
+> That appears to fix it as well, shall I re-post this with your fix, or will
+> you?
 
-With due respect to your person, I make this contact with you as I
-believe that you can be of great assistance to me. I need your
-cooperation in transferring the sum of $11.3million to your private
-account where this money can be shared between us. The money has been
-here in our bank lying dormant for years without anybody coming for
-the claim.
+I see you re-posted it anyway - that's fine. Thanks.
 
-By indicating your interest, I will send you the full details on how
-the business will be executed.
-
-Kind regards,
-Mr. Michael Doku.
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
