@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1020B4B3211
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 01:38:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95F674B3217
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 01:38:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354418AbiBLAhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 19:37:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38416 "EHLO
+        id S1354452AbiBLAiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 19:38:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236556AbiBLAhk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 19:37:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29418D82
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 16:37:39 -0800 (PST)
+        with ESMTP id S1354444AbiBLAiV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 19:38:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D603B35
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 16:38:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7144B82DF8
-        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 00:37:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AC2BC340E9;
-        Sat, 12 Feb 2022 00:37:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B62AB61C55
+        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 00:38:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E44E0C340E9;
+        Sat, 12 Feb 2022 00:38:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644626256;
-        bh=vk/6jxkhRtsUgUIgwQxn7WV3gENIyFxHdMtH89aOfmM=;
+        s=k20201202; t=1644626298;
+        bh=PbkglsZ5pGHenN7Xz98qpvWgdypqSv0PgSwaprK6RHI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qvXAMT/3ngjmDJXf8TaA18GNzrvlkABtrAhkWpqBGI2Cesb9Ogys3P3xAkGpEYwYM
-         X2dqQtTtiwL8ue2sum8xMInomdd5edFVvdv5p9hSre9h6m2mxU9azwFDv9hsf4tamA
-         ABPLyvzlXvFESBnoQIwNYWk9qgQp4Ix/FyLHBCESIdYeNu4+1y+1dxdHQ1nqTAfrB1
-         dcH+5NLj1D2PA6xM35Kepr9Qn7u8oJcQDFztZhhyGBOw8/l6+SPaEO/YFMko1YV0t5
-         qGhitf5JAPs4xcsltxuNTxg9maGxXH/WT4G3Z638TG7IMPnscf/lkVz3d8XniHU5WB
-         qIHxoP35w0rzQ==
-Date:   Fri, 11 Feb 2022 16:37:35 -0800
+        b=Of7VgPuN1IHnchwRypXWc8IfZ3zPn8Lg439Zf4UFSWnKdnQXshYJz8dPSWZGnqeUz
+         7Rj8BBc2h7aXs207DM3t2NfUomC4+V36m5euawDfvdSCbmTTbyd2ZoyzvbpQu+25N2
+         o9ZAFuevHrEPocVtd9+jFOEpezj1KFaaOQ66cjrSgvQVHGqvh9uY8XM35CsFutYJss
+         TBtRAMAzta4utPGNMQsJpwH9QgTyJFRUwalnGwRRna36tasiu+wwRaPAw8GCsiL+ou
+         kn3vm2tIdXt+KRFWIWo1U3gAjKFWFlgPPmIRjW+r3oek46oxjqUo0rmu6daguX0QIT
+         P7n9Siv0xzuSw==
+Date:   Fri, 11 Feb 2022 16:38:17 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Linus Walleij <linus.walleij@linaro.org>
 Cc:     linux-arm-kernel@lists.infradead.org,
         Imre Kaloz <kaloz@openwrt.org>,
         Krzysztof Halasa <khalasa@piap.pl>,
         "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH 08/13 v2] net: ixp4xx_eth: Drop platform data support
-Message-ID: <20220211163735.09176e2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220211223238.648934-9-linus.walleij@linaro.org>
+Subject: Re: [PATCH 09/13 v2] net: ixp4xx_hss: Check features using syscon
+Message-ID: <20220211163817.682df7c3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220211223238.648934-10-linus.walleij@linaro.org>
 References: <20220211223238.648934-1-linus.walleij@linaro.org>
-        <20220211223238.648934-9-linus.walleij@linaro.org>
+        <20220211223238.648934-10-linus.walleij@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,13 +56,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Feb 2022 23:32:33 +0100 Linus Walleij wrote:
-> All IXP4xx platforms are converted to device tree, the platform
-> data path is no longer used. Drop the code and custom include,
-> confine the driver in its own file.
+On Fri, 11 Feb 2022 23:32:34 +0100 Linus Walleij wrote:
+> If we access the syscon (expansion bus config registers) using the
+> syscon regmap instead of relying on direct accessor functions,
+> we do not need to call this static code in the machine
+> (arch/arm/mach-ixp4xx/common.c) which makes things less dependent
+> on custom machine-dependent code.
 > 
-> Depend on OF and remove ifdefs around this, as we are all probing
-> from OF now.
+> Look up the syscon regmap and handle the error: this will make
+> deferred probe work with relation to the syscon.
+> 
+> Select the syscon in Kconfig and depend on OF so we know that
+> all we need will be available.
 > 
 > Cc: David S. Miller <davem@davemloft.net>
 > Cc: Jakub Kicinski <kuba@kernel.org>
@@ -70,7 +75,7 @@ On Fri, 11 Feb 2022 23:32:33 +0100 Linus Walleij wrote:
 > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 > ---
 > ChangeLog v1->v2:
-> - Delete a small chunk of code I missed
+> - No changes.
 > 
 > Network maintainers: I'm looking for an ACK to take this
 > change through ARM SoC along with other changes removing
