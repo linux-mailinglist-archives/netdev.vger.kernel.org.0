@@ -2,298 +2,337 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBD164B337A
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 07:37:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 226044B339E
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 08:37:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232252AbiBLGhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Feb 2022 01:37:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52926 "EHLO
+        id S232457AbiBLHhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Feb 2022 02:37:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232230AbiBLGg6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 01:36:58 -0500
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BDE275CB;
-        Fri, 11 Feb 2022 22:36:55 -0800 (PST)
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21C401ot014448;
-        Fri, 11 Feb 2022 22:36:35 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=UoCwrk0chj8cQ/P0ZH5yf9dnbE+ygO1FoC2OgVVQn/s=;
- b=OXOE2Yk9n8OmW7yI6riOXBtD0kbqXVuV8yJCKhZWW1vjaCtd/kbzZgNKfU3yRoDYLh2M
- 9R8IbpeUYmLV4nltBJhDwgu9mx0dElSdbR/g+O7QUw85IUKPvlERYNxbdOFGv64yrGtM
- fnUrngPehYlK7OKBxoTusQ1CWVD5GGcw3p8= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3e5sug59kn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 11 Feb 2022 22:36:34 -0800
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 11 Feb 2022 22:36:33 -0800
+        with ESMTP id S232452AbiBLHhp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 02:37:45 -0500
+Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.109.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15A826AE5
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 23:37:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1644651460;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k3a3AtJ+edoDwHiOazXWkFbXPNpe9j8dBz/CquTc8KU=;
+        b=PGbESGJMDN2fqFSxwmIa3R5ASIqmROWY2pFofCeRQdpbBlU/n2ak6luBw5qYYxCYNfJa1K
+        /T/BCVhYLGSEmNBTvR37tRTOg4Jh/FDutAqSQRrS3h0dXlTlpZHn6JPU7kQgmO9vca+at/
+        zkHPV5d0BR64nmotJa+MsFxXBhQ9ZvA=
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com
+ (mail-he1eur01lp2055.outbound.protection.outlook.com [104.47.0.55]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-31--tWGtRXZMCiNdN1q6fZcFw-2; Sat, 12 Feb 2022 08:37:38 +0100
+X-MC-Unique: -tWGtRXZMCiNdN1q6fZcFw-2
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eLjgEyC2vKqCbqeKQHf4uKKyKyjzy527ztn73HWrBwh5HOrujKfEmR7AZR/+2VjkZV6+6emlblLZQkEGeC2LFXAW/LjeODi5vmzcjh4YXP9eliBgv6SBh2vAcXjrWQRFknQIRyMFzFwfmMtNTpkQKKUfiHdhfbjjMsDU/90Uily0nzzquvu+JohzWcKatQ+7vl/RAcJ4m273jao42SuBnWHH8n5jxBdasw8oWbrypyn40J6HcLDEb7INHUVIe/QHv48Xs7CUx9Q4JTWQaPyRRIi/pjRL1CdsLXC8C44tS+Qxhqx10ksZ3SiblZob7Qu5nu4umijdLFjbkJ9wrenpHQ==
+ b=KrJvCmWQRyleC5R7k4OYlhh6poqa8TI9rOfYVTytbAQhry2BDsJJf+tZ1nD0nc0rlK1iFPK7ihReHtlH4Qh2YgyDQS3V6yaT183GRfmdTgUO2SsmiSjfNnOdI+0GBINLQkNecjOarVJoGJqiVxTFdunaR3FQrAX2ChhPSLPkSdWFy+MjEWNX0d0LF9QT7MX4/sZaxyVXCdlf10bTt8CHd2XYYsYoKaG7yGtxnyGwIT6tMerk1B2tYb4dwzCKSjOJr5Gy/WwLVUantKg8pm4bWRT1frQwZUG/nOtdMNxv57ybvbzx7WaQ7jtXutjfHCyCYaGN/BvWmsqBu15Pj22++w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UoCwrk0chj8cQ/P0ZH5yf9dnbE+ygO1FoC2OgVVQn/s=;
- b=MprfnugcbHpYxA/Q+yfzebFgyX+TFxDeOiPDFUVA24ry2JL8V9piWPehpv8sXbRCE9TIOPk5ulclr/kDcXznWW7IRvmwM1lgt3Y1tYbX/sHsvmptnKyMXm0/wejXphF1DFFDuTdsQP34mocZZOY8/A0sz3qnQSJ/J7so04NaL6Z2PXjtoG1rXmwuCJPozYRsQ6HYiX00Sdf2HDAx3WDZeiJr7fCMkgZXtG34hLYXE3PrLZ8Y0KM6LQw18sX/GPy7vuBum0Q8bxhpNwWeQycpvnSTUu3Xf01yjr03wD/VvBUCJPEnLFgv7o2gNLTK4IGDJJzH/u2D2NCuCOH1FAR7Ng==
+ bh=DqL+WxlKbWH7pqwbOHyEPil1ld2JUcZwi+49VIPP6r8=;
+ b=JZMsFZBh4LY8uEJFyJXrjAXgALU7WF10iuxHoiqu7YNzJdBZDRQCcD9kdSArRxsNrAZzg9izKEAtCKRmq5dyfKoMLOeE3yDWAaD0lhEHY0X1CvHqpFErcAbB+m5GM+5L4Dk6yoY+3rTj7zejQjNjpR+uDeQuwqWxqxPBeleJ2svli6EXVYu5jFrEoXiOtd3y4P/8pCgdv2R5BCss/YOJNHWY3aJ9rBcioEFWEQ7qCYoTmpMUBRnE1NiZeKDADCUapSlGjP3JqiTS2nBJP8idlUfCdZRLOlgqqf2/b/ytEFGIxtihnkZFqkv6905rVgj+GUaQ8fWPPenxagUNfiM9xw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
-Received: from DM5PR1501MB2055.namprd15.prod.outlook.com (2603:10b6:4:a1::13)
- by BN6PR15MB1251.namprd15.prod.outlook.com (2603:10b6:404:ec::18) with
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from DB9PR04MB8107.eurprd04.prod.outlook.com (2603:10a6:10:243::20)
+ by AM9PR04MB8354.eurprd04.prod.outlook.com (2603:10a6:20b:3b6::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Sat, 12 Feb
- 2022 06:36:32 +0000
-Received: from DM5PR1501MB2055.namprd15.prod.outlook.com
- ([fe80::c5d8:3f44:f36d:1d4b]) by DM5PR1501MB2055.namprd15.prod.outlook.com
- ([fe80::c5d8:3f44:f36d:1d4b%6]) with mapi id 15.20.4975.011; Sat, 12 Feb 2022
- 06:36:31 +0000
-Message-ID: <8a520fa1-9a61-c21d-f2c4-d5ba8d1b9c19@fb.com>
-Date:   Fri, 11 Feb 2022 22:36:28 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: BTF compatibility issue across builds
-Content-Language: en-US
-To:     Shung-Hsi Yu <shung-hsi.yu@suse.com>
-CC:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Connor O'Brien <connoro@google.com>,
-        =?UTF-8?Q?Michal_Such=c3=a1nek?= <msuchanek@suse.de>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.12; Sat, 12 Feb
+ 2022 07:37:36 +0000
+Received: from DB9PR04MB8107.eurprd04.prod.outlook.com
+ ([fe80::e1c3:5223:dd71:3b6f]) by DB9PR04MB8107.eurprd04.prod.outlook.com
+ ([fe80::e1c3:5223:dd71:3b6f%8]) with mapi id 15.20.4975.015; Sat, 12 Feb 2022
+ 07:37:36 +0000
+Date:   Sat, 12 Feb 2022 15:37:27 +0800
+From:   Shung-Hsi Yu <shung-hsi.yu@suse.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+CC:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Michal =?utf-8?B?U3VjaMOhbmVr?= <msuchanek@suse.de>,
+        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>
+Subject: Re: BTF compatibility issue across builds
+Message-ID: <Ygdjt0Qbki0tHG4k@syu-laptop.lan>
 References: <YfK18x/XrYL4Vw8o@syu-laptop>
  <8d17226b-730f-5426-b1cc-99fe43483ed1@fb.com>
  <20220210100153.GA90679@kunlun.suse.cz>
- <bb445e64-de50-e287-1acc-abfec4568775@fb.com>
- <CAADnVQJ+OVPnBz8z3vNu8gKXX42jCUqfuvhWAyCQDu8N_yqqwQ@mail.gmail.com>
- <992ae1d2-0b26-3417-9c6b-132c8fcca0ad@fb.com>
- <YgdIWvNsc0254yiv@syu-laptop.lan>
-From:   Yonghong Song <yhs@fb.com>
-In-Reply-To: <YgdIWvNsc0254yiv@syu-laptop.lan>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-X-ClientProxiedBy: MW4PR04CA0064.namprd04.prod.outlook.com
- (2603:10b6:303:6b::9) To DM5PR1501MB2055.namprd15.prod.outlook.com
- (2603:10b6:4:a1::13)
+ <CAEf4BzZ6CrNGWt3DENvCBXpUKrvNiZwoK87rR75izP=CDf8YoQ@mail.gmail.com>
+ <87a6ex8gm8.fsf@toke.dk>
+ <CAEf4BzYJCHB-oYqFqJTfHU4D795ewgkndQtR1Po5H521fH0oMg@mail.gmail.com>
+ <87v8xl6jlw.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <87v8xl6jlw.fsf@toke.dk>
+X-ClientProxiedBy: HK2PR0302CA0021.apcprd03.prod.outlook.com
+ (2603:1096:202::31) To DB9PR04MB8107.eurprd04.prod.outlook.com
+ (2603:10a6:10:243::20)
+MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4fb8fdae-c50b-4cef-5c3c-08d9edf201aa
-X-MS-TrafficTypeDiagnostic: BN6PR15MB1251:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR15MB12519A96F1DB0845B359054DD3319@BN6PR15MB1251.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Office365-Filtering-Correlation-Id: 9a308aa6-6125-42ff-50b6-08d9edfa89dc
+X-MS-TrafficTypeDiagnostic: AM9PR04MB8354:EE_
+X-Microsoft-Antispam-PRVS: <AM9PR04MB83545F48AF995143330F2D66BF319@AM9PR04MB8354.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Jxb8RbnpcbWYEbdjMKKhOLM5Einw3kKwBRFtivXbkyXl4uPMosmgxK+HkKiFPF6YHhptrR5xiVPXNcdfnF40HdpHW0O1eZzkG6EYTfAT2i0Dqq7c3M1M5GINRbM/a2udzZ7mofxjJheOqzHxINP5lENdUVR7ItR7/aAUIIlM6Luvz6hWddSNFdO3WLKwUtbFBJUCLPxUT1P8HymZ6q98w5P09hvjBjedcPTys3WCWmIepXEnVRHIwx9jor6zs3sJKfiaIf1+iKgcBpGMPaABpCaKqACQEGrjd5Nqm3lmnYsUiK3pPBWnIVGd8MrwhnZ+LNXFxQfN+O/AtyvsfNym2VCfSFzn4t+BAKLW7JMiRi64FBFtdTDBrC75RV/z8W7ez0qzUrIEo9XOzA2yhIx31LZCMkwVIaDeXJgi2RrTNVjAsVvUKWIUxvyLJbfYP5suDp4piS7UALmiZPHM47srJB1zDrWdmXYW9ox/831fKbfzR/O5qSE9Ea9op+fNnfPCWarz54QefoYUDLeAYZkXAmgzCKXkoe2QY6q31XhNsaB2If0zUgujKwlPFrLcOa5nNg4LGAMYrjkjIIJapqNASxyCnHvYQ8NoWL+D0ZRNsVRXZCHYG8CD2WkzxWGVKYDSCTm7PWchuf+bcAE4X8iJjSUcRp/hBbWvR4RJaAXbQ7+IqjqAycccOiuzxZwEXdwAijTMh3RtSw6IP5L2zpAp2z4VmOGiGuY5EzF/Gk60V5AX9Re4D/iIlkZgnJs5w3b48yeBzys21wfSo+EMUQnlrV1u6lM44yvY/yPnImyrkUmEuoIfT2+KiRAlwOsKRau0
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1501MB2055.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(86362001)(4326008)(66556008)(31696002)(186003)(66946007)(66476007)(66574015)(8676002)(83380400001)(2906002)(5660300002)(38100700002)(6666004)(6512007)(508600001)(2616005)(6506007)(36756003)(8936002)(52116002)(6486002)(31686004)(966005)(6916009)(316002)(54906003)(53546011)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: wcOyySQlMvxQS8zMoZYLlELCpuHSjJtIYr7Uw9V9nVx0b7dVlIwin2sYkq9yaR72fjZffzq0cS2iJOLxbe8IafyX6AOoXj4GtCEKUV4WpTsUBTXQh1RTmv8s8PBT+RfBH/sQqYIctpt3cocr0J0dYUTqVsvOj2ndCCYN16VfN/jzFuZnlgmljBbNHxdzSiuufLadxEpL8tuZgEFTRTNRivw5MMCtpITyJBcjR5vB22px2UVHjbPuLuvupuwT0Oem21IbppPQOtrq4spbyuEi+EBvj8nVAdAidM3OA8AKCJpXhwD1BCG9FMWXEAyI5YdWJXZnCmqvDFZG0uftjskRCBegCoVaQR2cbDkUpfHrWAyxyACzO5qZM/stY1r4wGoeLFSLeW77Cq/ttCDk/02I6p8L1f4bJ4T5xX2EG+IeprSuXcTweimp0+MovaUd8aaVLBipwiJOfOk6Tb8u9waIl/wDUxmdZRSTiluUQoicXWZk/npABIBcpNXSt6WkNOsKoxlVcNVFh7gIqTpVgK7GrBfO81xgKsG/khXY3TO2IwRubkdbKh6PuXXtrC71VMdtZUvbEAM2jdel5ViTAbn7Eti001Vwzd17s0hJNp7mOw3HvsFeFYD058oJMyCiBVu8Ytp3CmGC0kKMeX5AlQBiCg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8107.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(36756003)(83380400001)(6512007)(8936002)(66574015)(186003)(9686003)(26005)(6916009)(8676002)(316002)(6666004)(508600001)(53546011)(6486002)(86362001)(54906003)(5660300002)(6506007)(2906002)(4326008)(66556008)(66946007)(38100700002)(66476007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RDVGY2k5aHVlRlZMd3lIbkdSTVBiR2JBVkphNlFzVEh3K2hpL0xXMEt0Sk9v?=
- =?utf-8?B?SDRZTDNnei8yRC9pK01SUjJGNit6cFNwSHVoNXBxNFdmS3RGaTM5ZWlwSTJn?=
- =?utf-8?B?TlJua0FMYkxXVE95SStvUmhxNVZmOUJhRUR1c0VWYWVuUDRhRDJWTTRJRXpG?=
- =?utf-8?B?R3liSEM3em1QODlFY0dSK0dUSWVMbWhKRUxNbUZYYk9NL1RvWUcvTExSREJH?=
- =?utf-8?B?WkEySHBlUzd4VHljdWQ0VVQzZnAyRHVjSGpxL2NlNXpGVFRLcmVrR29EN1p0?=
- =?utf-8?B?NnhET0o4YW90MDhhazNwTndQM29NZ1FJa3Z1MWF4RHppTml1d09ueFpGc2lW?=
- =?utf-8?B?V256c3psbHlhUFlXU09sM0ZnMUJVSlArenhLK0JXdENLUWR1elZZU2NkNW40?=
- =?utf-8?B?NFhZR3hzTjlsS1B3cFg4U29wQmp4OFMrVkxzRFI4akZ4ZTJFM2FKRnhmSG1x?=
- =?utf-8?B?UkpwSVp1YmUwQU5qSUQxdGxueWRpMjhHdU9DZ3hLamI4cFhEQ1h6RGVUV1k0?=
- =?utf-8?B?cHJmUUpwRS9TR2lMc045TUpYNzJoK2F3OWYvOHJycGJkN1d6UGFyWkw2dXdP?=
- =?utf-8?B?T3RqYTh5OVNqR1pFajV5K0M5cDFIMU1HdUZ3NGdFdmpoL0NIeDNKbDZqOXhi?=
- =?utf-8?B?ZHhEMTM1V3RCZHdNbGpkaVdReDJKZzF6TzA5YnlOd0l4Q0VxMEtSQXE3UHNK?=
- =?utf-8?B?TUQ0K2Vrc0pWdWJiMEtjNG1rOEVKL3Nva3NjMWpWTEhaaHRGSDZXSUR2MEl2?=
- =?utf-8?B?dS9IK25oMXF0RWZUUXN4UG8vZ2NFd0oyd1FsdmFLZTFyb044enJIcWxZL1dm?=
- =?utf-8?B?a3lGUHUydjh2UWhBRU9yWFg2MmEwWGc2T0hEWXFzdFlKWHF0RVZOMGwrZGg2?=
- =?utf-8?B?SytGNFV4ajJ3ZytYcWdUWFdFcWpKSjh0NDk0VzkxdmI4S2tBYkcwcG90Si84?=
- =?utf-8?B?bGN1S042SHNETndMZFpHT1pBK3NSZjcrWm52ZmtveE1QOTZrSXQ0V1VDem5a?=
- =?utf-8?B?UlRWSXdwb0kxTkd0UjBQT2RDWmZVVmtKN2pLNmRjZEZnS1JkbCtCWUpQUFAy?=
- =?utf-8?B?UFVndGxVVnVUdzhkU2ZDcHpkT2VaNk9FZlVuYnFweGFUYjR5M1lGRGdaRWt1?=
- =?utf-8?B?b2xScjZja2dEVThQS2RzTzRVUy9uK28yaWNER2J2VUdUUVhHNnVkMHFvM1BQ?=
- =?utf-8?B?VktwaVY0dzdDNEROV1dYTjdsbi9jd2hQTEFmT1l4WGVrQUhVcjh6bUI5M3JG?=
- =?utf-8?B?M1pDY0FEcC8yelBKSi81dUk1anNuZWtObUk0WjBucmFmbzd2S2RDM3RCTE51?=
- =?utf-8?B?d3FVZENTdm42VDR2WjVxRXFNS2lXbC9ZYXNoU21XQnFQV2NvTHB6V1AxNmli?=
- =?utf-8?B?RW1tRUF1RGNiQUd2N3NwRWY4Y2tBRytxL2tIOXVrbHlDYVpPSURVNjUxdEt4?=
- =?utf-8?B?R0xkYUNYV25XNUgrWUF1N291L0N3S1V4Z3ZoNS9MVFNld3hnOUgwQUdYUldi?=
- =?utf-8?B?ZWIxZUhUbFVRUHJhYWpwdmN0cVV2Q0UrcW5uYW0zVDZDTFBQM2ZVaWdVU0J0?=
- =?utf-8?B?eHZ6SGZMNGJjWVpBVUpUL3BYdklmWk9EVVBobG5xUGZDeTNMd2I2UWpyaDN2?=
- =?utf-8?B?YkxZTjdBUit4MmIvL1k4dlN3eUQ4MEw3UHNYeGYvVmRCaGJOcHhFZkdZb1BE?=
- =?utf-8?B?SmpXTStzSTJOSWlCZWRpeUs3TWliVm4yanhhcXhpazdwQzNKanZmNWhaTUZW?=
- =?utf-8?B?Ry9Vak1yakFMU1hOSTM5emFuVG4wbzIwYW55cHhCMTB6ajlzVWlhd3dCYWZE?=
- =?utf-8?B?TnFicXpkUm1KM1hYellJeFJWblpWMFB6bGtSK3ZHNERwRThybkhrK1YvRHV0?=
- =?utf-8?B?TnBwdGRWRjYySXZnVlpWTkJVNERRL3J1dHowQ3BhTEgycU5XbVNSdU1LV1ZD?=
- =?utf-8?B?cm8vbzN0NGIraW5HbjRzWE5WNktXdFE4WW9UUWxEMk0xWHJhTjlTYnVnelNJ?=
- =?utf-8?B?K3hNcFBMVlM0ZFNpNHlLdHlNVVZjeS9oK3llQ0kyRzNOVm9DeHFJcmpWbnor?=
- =?utf-8?B?M0hsV3BpKzBWS3pUV0t0U3hUN2EvN0pTc2c1aTlhU2IySm51YnBmZWtOWVZH?=
- =?utf-8?Q?6MztvHAOAQYeQ8ocZHW07jG6U?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4fb8fdae-c50b-4cef-5c3c-08d9edf201aa
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR1501MB2055.namprd15.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fqVaApk0BDErW8pmPLI/sqftrXolRKJDFKdHQbaNOwBtlWoTuWDruz/A2Lph?=
+ =?us-ascii?Q?56YJqlM0TKgJiG1ObI1uL1WYFPUfDhYONV3mTtfcMsS4LphO0rCT9YI5VcEX?=
+ =?us-ascii?Q?ZDOrajL9cAlWWv/GuQc8zg2ZehBBFQfEbejcnB+mwb1E0oT1LJRV5sUolGSX?=
+ =?us-ascii?Q?njaBpIhmDNWlU/FivN6PI/tNcvvLh8Kg+Sws9ea/ew8JXaNLvu/XU6wEW9R1?=
+ =?us-ascii?Q?wi+AoftpYrgaTErMxLLuRoEZZJrHMu/00mtko7NTDec9kgrtFNccCX3ggc+a?=
+ =?us-ascii?Q?7+Q46wyoepFppdUp72yKzGBTcSB3NsqRoCpi6Z5Ze0GFkk8v4TFU/r2hcWvO?=
+ =?us-ascii?Q?eClrrfsSyHPx92ub3kqoXjUapjTsN4ziPjWrM53I/C4vissHt/wowloap6x+?=
+ =?us-ascii?Q?yJCozBihcHFtnKCZWaWTOY0qI49EVPlNwhOAdsZBusSL8s5oLIEMcaqE893W?=
+ =?us-ascii?Q?8Z/lLlj+rqLXEtR1W+piIrBLhrhp2m+knMun6rFPPijo1gO6Q2DmgaIKre0L?=
+ =?us-ascii?Q?UIe+/gWSS3O4pW88JzYtCsURUjKqUI5UCg8fgCOKs2mISMIV5znGl/yw05xk?=
+ =?us-ascii?Q?V9K49d6nzmO6oMNzwA7YVr5QLfegR2B1d3lfMs1K7DgwpTWddwyZoxKYQBhT?=
+ =?us-ascii?Q?YkH0OZPNgOd1/dREZqpfuV/vQn60lKNKk2DcSi/a3haiGSSblz6DZmxDZD5b?=
+ =?us-ascii?Q?JSrvU9Nz9L7CdALFmjscJRHNeMOWUdcA7HGddjj1IFlUgvX9DUu0d5+HUY90?=
+ =?us-ascii?Q?yVPrqBLWsSm6QQ0+4e4NVRYFcQ5BNSJmQyMcDNHoZzBSJjdHeN7cpxUzmToR?=
+ =?us-ascii?Q?0hNzq9m28htHbhDb4zz5+nlRIaKXRp8DOUxbVRx20TxO9Cfj+W6MtEK1sCrH?=
+ =?us-ascii?Q?DbdID1qT7ZTHnOc/lZovNUFNqyOw5V1w3IfXGyH5HE3YaqDUuLfk679xljmR?=
+ =?us-ascii?Q?6EtcmYfPwrH81sRyDgGLWZf9DjK8+glBOI4KlVU8bqs4bN7HHrOhAwvF9KRE?=
+ =?us-ascii?Q?W8Aa/SwkW/Ud49Bqf7nIg012sroGJ1fH/uyQMS91bnsDfuIpTSYhkfS33gTw?=
+ =?us-ascii?Q?fmWnDjUaU4fHj1w/iDOnWDOBi3Sjri2iRzvHD9nYaFFfuYh6bFOQmDk7ZAfO?=
+ =?us-ascii?Q?wsh1pBNtN/jssaBJW6MQOACtd09h3xAXu0YrU3lF6BAGAzB2XZ5yM/nGZikr?=
+ =?us-ascii?Q?Onijvch3R6O7B4YetWJDrT2+vRXQcdgJYRJ9IKO6/dHFRS7z07u1zHaN2pBQ?=
+ =?us-ascii?Q?l5tTcuCmE4JrAm8GUD9X/8BH+si7TLPTO2jmVXQPTlYm7afEUHiEWBDwmBS5?=
+ =?us-ascii?Q?XWMMkINvoluMIpeNT5vOQ2Z7sCMReojS/RSk4mAkYgieq7EBopHlEy8SFBSI?=
+ =?us-ascii?Q?QPGZyF0V5SM3R4JcbVAAYP0ZYhgnsLi5s50pS76dwO5Xkv15iNpQw9IDNImm?=
+ =?us-ascii?Q?oYlx7xcIyx/Muhry7lGTKm9KyHUkM5z0a7DIx4iW8aGSr86W6Xru4y6y2ZUt?=
+ =?us-ascii?Q?pCCUlp3OwKWh3P+zatKZP5fCCrO/x1g1kJCDQsUCi3/3B7RUr/66Bw126PI0?=
+ =?us-ascii?Q?SYkWGWRyVyPMXWsn0lZjxiPn2PFiLbAXEbPmX6kPq99NL+uQdhmooWWyibe6?=
+ =?us-ascii?Q?Mrl9ssHnwnon1NgLwwd2KCY=3D?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a308aa6-6125-42ff-50b6-08d9edfa89dc
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8107.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Feb 2022 06:36:31.9039
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Feb 2022 07:37:36.1722
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xBByrpHvL5TuTh6D4S2+7aZAe1TAL1Y7/c/SgaHqseP1aWeQmN77Up6w4D5DG9ro
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR15MB1251
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: Z0K9AbvmMcEejyPmh_uAEAtvUf_wCF5M
-X-Proofpoint-GUID: Z0K9AbvmMcEejyPmh_uAEAtvUf_wCF5M
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
-MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-12_02,2022-02-11_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 priorityscore=1501
- bulkscore=0 phishscore=0 impostorscore=0 spamscore=0 mlxlogscore=999
- clxscore=1015 adultscore=0 suspectscore=0 malwarescore=0
- lowpriorityscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202120040
-X-FB-Internal: deliver
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9PPaKW74x6tuvkvrm5RlP3k7AC//+GgCpF9U3WP7msf/QeutyiEVB/3DcVQQyhLBgbAnPOKq9lC2xqPTvo8iPw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8354
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Feb 12, 2022 at 12:58:51AM +0100, Toke H=C3=B8iland-J=C3=B8rgensen =
+wrote:
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>=20
+> > On Fri, Feb 11, 2022 at 9:20 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+redhat.com> wrote:
+> >>
+> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+> >>
+> >> > On Thu, Feb 10, 2022 at 2:01 AM Michal Such=C3=A1nek <msuchanek@suse=
+.de> wrote:
+> >> >>
+> >> >> Hello,
+> >> >>
+> >> >> On Mon, Jan 31, 2022 at 09:36:44AM -0800, Yonghong Song wrote:
+> >> >> >
+> >> >> >
+> >> >> > On 1/27/22 7:10 AM, Shung-Hsi Yu wrote:
+> >> >> > > Hi,
+> >> >> > >
+> >> >> > > We recently run into module load failure related to split BTF o=
+n openSUSE
+> >> >> > > Tumbleweed[1], which I believe is something that may also happe=
+n on other
+> >> >> > > rolling distros.
+> >> >> > >
+> >> >> > > The error looks like the follow (though failure is not limited =
+to ipheth)
+> >> >> > >
+> >> >> > >      BPF:[103111] STRUCT BPF:size=3D152 vlen=3D2 BPF: BPF:Inval=
+id name BPF:
+> >> >> > >
+> >> >> > >      failed to validate module [ipheth] BTF: -22
+> >> >> > >
+> >> >> > > The error comes down to trying to load BTF of *kernel modules f=
+rom a
+> >> >> > > different build* than the runtime kernel (but the source is the=
+ same), where
+> >> >> > > the base BTF of the two build is different.
+> >> >> > >
+> >> >> > > While it may be too far stretched to call this a bug, solving t=
+his might
+> >> >> > > make BTF adoption easier. I'd natively think that we could furt=
+her split
+> >> >> > > base BTF into two part to avoid this issue, where .BTF only con=
+tain exported
+> >> >> > > types, and the other (still residing in vmlinux) holds the unex=
+ported types.
+> >> >> >
+> >> >> > What is the exported types? The types used by export symbols?
+> >> >> > This for sure will increase btf handling complexity.
+> >> >>
+> >> >> And it will not actually help.
+> >> >>
+> >> >> We have modversion ABI which checks the checksum of the symbols tha=
+t the
+> >> >> module imports and fails the load if the checksum for these symbols=
+ does
+> >> >> not match. It's not concerned with symbols not exported, it's not
+> >> >> concerned with symbols not used by the module. This is something th=
+at is
+> >> >> sustainable across kernel rebuilds with minor fixes/features and wh=
+at
+> >> >> distributions watch for.
+> >> >>
+> >> >> Now with BTF the situation is vastly different. There are at least =
+three
+> >> >> bugs:
+> >> >>
+> >> >>  - The BTF check is global for all symbols, not for the symbols the
+> >> >>    module uses. This is not sustainable. Given the BTF is supposed =
+to
+> >> >>    allow linking BPF programs that were built in completely differe=
+nt
+> >> >>    environment with the kernel it is completely within the scope of=
+ BTF
+> >> >>    to solve this problem, it's just neglected.
+> >> >
+> >> > You refer to BTF use in CO-RE with the latter. It's just one
+> >> > application of BTF and it doesn't follow that you can do the same wi=
+th
+> >> > module BTF. It's not a neglect, it's a very big technical difficulty=
+.
+> >> >
+> >> > Each module's BTFs are designed as logical extensions of vmlinux BTF=
+.
+> >> > And each module BTF is independent and isolated from other modules
+> >> > extension of the same vmlinux BTF. The way that BTF format is
+> >> > designed, any tiny difference in vmlinux BTF effectively invalidates
+> >> > all modules' BTFs and they have to be rebuilt.
+> >> >
+> >> > Imagine that only one BTF type is added to vmlinux BTF. Last BTF typ=
+e
+> >> > ID in vmlinux BTF is shifted from, say, 1000 to 1001. While previous=
+ly
+> >> > every module's BTF type ID started with 1001, now they all have to
+> >> > start with 1002 and be shifted by 1.
+> >> >
+> >> > Now let's say that the order of two BTF types in vmlinux BTF is
+> >> > changed, say type 10 becomes type 20 and type 20 becomes type 10 (ju=
+st
+> >> > because of slight difference in DWARF, for instance). Any type
+> >> > reference to 10 or 20 in any module BTF has to be renumbered now.
+> >> >
+> >> > Another one, let's say we add a new string to vmlinux BTF string
+> >> > section somewhere at the beginning, say "abc" at offset 100. Any
+> >> > string offset after 100 now has to be shifted *both* in vmlinux BTF
+> >> > and all module BTFs. And also any string reference in module BTFs ha=
+ve
+> >> > to be adjusted as well because now each module's BTF's logical strin=
+g
+> >> > offset is starting at 4 logical bytes higher (due to "abc\0" being
+> >> > added and shifting everything right).
+> >> >
+> >> > As you can see, any tiny change in vmlinux BTF, no matter where,
+> >> > beginning, middle, or end, causes massive changes in type IDs and
+> >> > offsets everywhere. It's impractical to do any local adjustments, it=
+'s
+> >> > much simpler and more reliable to completely regenerate BTF
+> >> > completely.
+> >>
+> >> This seems incredibly brittle, though? IIUC this means that if you wan=
+t
+> >> BTF in your modules you *must* have not only the kernel headers of the
+> >> kernel it's going to run on, but the full BTF information for the exac=
+t
+> >
+> > From BTF perspective, only vmlinux BTF. Having exact kernel headers
+> > would minimize type information duplication.
+>=20
+> Right, I meant you'd need the kernel headers to compile the module, and
+> the vmlinux BTF to build the module BTF info.
+>=20
+> >> kernel image you're going to load that module on? How is that supposed
+> >> to work for any kind of environment where everything is not built
+> >> together? Third-party modules for distribution kernels is the obvious
+> >> example that comes to mind here, but as this thread shows, they don't
+> >> necessarily even have to be third party...
+> >>
+> >> How would you go about "completely regenerating BTF" in practice for a
+> >> third-party module, say?
+> >
+> > Great questions. I was kind of hoping you'll have some suggestions as
+> > well, though. Not just complaints.
+>=20
+> Well, I kinda took your "not really a bug either" comment to mean you
+> weren't really open to changing the current behaviour. But if that was a
+> misunderstanding on my part, I do have one thought:
+>=20
+> The "partial BTF" thing in the modules is done to save space, right?
+> I.e., in principle there would be nothing preventing a module from
+> including a full (self-contained) set of BTF in its .ko when it is
+> compiled? Because if so, we could allow that as an optional mode that
+> can be enabled if you don't mind taking the size hit (any idea how large
+> that usually is, BTW?).
 
+This seems quite nice IMO as no change need to be made on the generation
+side of existing BTF tooling. I test it out on openSUSE Tumbleweed 5.16.5
+kernel modules, and for the sake of completeness, includes both the case
+where BTF is stripped and using a pre-trained zstd dictionary as well.
 
-On 2/11/22 9:40 PM, Shung-Hsi Yu wrote:
-> On Thu, Feb 10, 2022 at 02:59:03PM -0800, Yonghong Song wrote:
->> On 2/10/22 2:34 PM, Alexei Starovoitov wrote:
->>> On Thu, Feb 10, 2022 at 10:17 AM Yonghong Song <yhs@fb.com> wrote:
->>>> On 2/10/22 2:01 AM, Michal Suchánek wrote:
->>>>> Hello,
->>>>>
->>>>> On Mon, Jan 31, 2022 at 09:36:44AM -0800, Yonghong Song wrote:
->>>>>>
->>>>>>
->>>>>> On 1/27/22 7:10 AM, Shung-Hsi Yu wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> We recently run into module load failure related to split BTF on openSUSE
->>>>>>> Tumbleweed[1], which I believe is something that may also happen on other
->>>>>>> rolling distros.
->>>>>>>
->>>>>>> The error looks like the follow (though failure is not limited to ipheth)
->>>>>>>
->>>>>>>         BPF:[103111] STRUCT BPF:size=152 vlen=2 BPF: BPF:Invalid name BPF:
->>>>>>>
->>>>>>>         failed to validate module [ipheth] BTF: -22
->>>>>>>
->>>>>>> The error comes down to trying to load BTF of *kernel modules from a
->>>>>>> different build* than the runtime kernel (but the source is the same), where
->>>>>>> the base BTF of the two build is different.
->>>>>>>
->>>>>>> While it may be too far stretched to call this a bug, solving this might
->>>>>>> make BTF adoption easier. I'd natively think that we could further split
->>>>>>> base BTF into two part to avoid this issue, where .BTF only contain exported
->>>>>>> types, and the other (still residing in vmlinux) holds the unexported types.
->>>>>>
->>>>>> What is the exported types? The types used by export symbols?
->>>>>> This for sure will increase btf handling complexity.
->>>>>
->>>>> And it will not actually help.
->>>>>
->>>>> We have modversion ABI which checks the checksum of the symbols that the
->>>>> module imports and fails the load if the checksum for these symbols does
->>>>> not match. It's not concerned with symbols not exported, it's not
->>>>> concerned with symbols not used by the module. This is something that is
->>>>> sustainable across kernel rebuilds with minor fixes/features and what
->>>>> distributions watch for.
->>>>>
->>>>> Now with BTF the situation is vastly different. There are at least three
->>>>> bugs:
->>>>>
->>>>>     - The BTF check is global for all symbols, not for the symbols the
->>>>>       module uses. This is not sustainable. Given the BTF is supposed to
->>>>>       allow linking BPF programs that were built in completely different
->>>>>       environment with the kernel it is completely within the scope of BTF
->>>>>       to solve this problem, it's just neglected.
->>>>>     - It is possible to load modules with no BTF but not modules with
->>>>>       non-matching BTF. Surely the non-matching BTF could be discarded.
->>>>>     - BTF is part of vermagic. This is completely pointless since modules
->>>>>       without BTF can be loaded on BTF kernel. Surely it would not be too
->>>>>       difficult to do the reverse as well. Given BTF must pass extra check
->>>>>       to be used having it in vermagic is just useless moise.
->>>>>
->>>>>>> Does that sound like something reasonable to work on?
->>>>>>>
->>>>>>>
->>>>>>> ## Root case (in case anyone is interested in a verbose version)
->>>>>>>
->>>>>>> On openSUSE Tumbleweed there can be several builds of the same source. Since
->>>>>>> the source is the same, the binaries are simply replaced when a package with
->>>>>>> a larger build number is installed during upgrade.
->>>>>>>
->>>>>>> In our case, a rebuild is triggered[2], and resulted in changes in base BTF.
->>>>>>> More precisely, the BTF_KIND_FUNC{,_PROTO} of i2c_smbus_check_pec(u8 cpec,
->>>>>>> struct i2c_msg *msg) and inet_lhash2_bucket_sk(struct inet_hashinfo *h,
->>>>>>> struct sock *sk) was added to the base BTF of 5.15.12-1.3. Those functions
->>>>>>> are previously missing in base BTF of 5.15.12-1.1.
->>>>>>
->>>>>> As stated in [2] below, I think we should understand why rebuild is
->>>>>> triggered. If the rebuild for vmlinux is triggered, why the modules cannot
->>>>>> be rebuild at the same time?
->>>>>
->>>>> They do get rebuilt. However, if you are running the kernel and install
->>>>> the update you get the new modules with the old kernel. If the install
->>>>> script fails to copy the kernel to your EFI partition based on the fact
->>>>> a kernel with the same filename is alreasy there you get the same.
->>>>>
->>>>> If you have 'stable' distribution adding new symbols is normal and it
->>>>> does not break module loading without BTF but it breaks BTF.
->>>>
->>>> Okay, I see. One possible solution is that if kernel module btf
->>>> does not match vmlinux btf, the kernel module btf will be ignored
->>>> with a dmesg warning but kernel module load will proceed as normal.
->>>> I think this might be also useful for bpf lskel kernel modules as
->>>> well which tries to be portable (with CO-RE) for different kernels.
->>>
->>> That sounds like #2 that Michal is proposing:
->>> "It is possible to load modules with no BTF but not modules with
->>>    non-matching BTF. Surely the non-matching BTF could be discarded."
-> 
-> Since we're talking about matching check, I'd like bring up another issue.
-> 
-> AFAICT with current form of BTF, checking whether BTF on kernel module
-> matches cannot be made entirely robust without a new version of btf_header
-> that contain info about the base BTF.
+Uncompressed, no BTF                             362MiB -27%
+Uncompressed, parital BTF                        499MiB +0%
+Uncompressed, self-contained BTF                1026MiB +105%
 
-The base BTF is always the one associated with running kernel and 
-typically the BTF is under /sys/kernel/btf/vmlinux. Did I miss
-anything here?
+Zstd compressed, no BTF                           95MiB -35%
+Zstd compressed, partial BTF                     147MiB +0%
+Zstd compressed, self-contained BTF              361MiB +145%
+Zstd compressed (trained), self-contained BTF    299MiB +103%
 
-> 
-> As effective as the checks are in this case, by detecting a type name being
-> an empty string and thus conclude it's non-matching, with some (bad) luck a
-> non-matching BTF could pass these checks a gets loaded.
+So we'd expect quite a bit of hit as the size of kernel module would double=
+.
 
-Could you be a little bit more specific about the 'bad luck' a
-non-matching BTF could get loaded? An example will be great.
+For servers and workstation environment an additional ~200MiB of disk space
+seems like tolerable trade-off if it can get third-party kernel module to
+work. But I cannot speak for other kind of use cases.
 
+> And then we could teach 'modprobe' to do a fresh deduplication of this
+> full BTF set against the vmlinux BTF before loading such a module into th=
+e
+> kernel.
+>=20
+> Or am I missing some reason why that wouldn't work?
 
-> 
->>> That's probably the simplest way forward.
->>>
->>> The patch
->>> https://patchwork.kernel.org/project/netdevbpf/patch/20220209052141.140063-1-connoro@google.com/
->>> shouldn't be necessary too.
->>
->> Right the patch tried to address this issue and if we allow
->> non-matching BTF is ignored and then treaking DEBUG_INFO_BTF_MODULES
->> is not necessary.
-> 
-> Not being able to load kernel module with non-matching BTF and the absence
-> of robust matching check are the two reasons that lead us to the same path
-> of disabling DEBUG_INFO_BTF_MODULES a while back.
-> 
-> Ignoring non-matching BTF will solve the former, but not the latter, so I'd
-> hope that the above patch get's taken (though I'm obviously biased).
-> 
+One minor problem would be this is essentially introducing a new kernel
+module BTF format that uses exactly the same header.
+
+Ever since the introduction of split BTF, we're reusing btf_header but
+acting as if there's an extra hidden flag indicating whether the BTF is
+self-contained or partial. So far we could implicitly guess the value of th=
+e
+flag since BTF in vmlinux is always self-contained and BTF in kernel module
+is always partial; but if self-contained BTF on kernel module is introduced
+this will no longer be the case.
+
+Not sure if it'd be a issue in practice though, as we could go through the
+type info and see whether there's any type ID that is too large and cannot
+be found.
+
