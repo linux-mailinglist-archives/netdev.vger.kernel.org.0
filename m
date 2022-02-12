@@ -2,36 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCE4D4B320D
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 01:35:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7DAF4B320E
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 01:36:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354410AbiBLAfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 19:35:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37476 "EHLO
+        id S1353147AbiBLAft (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 19:35:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245212AbiBLAfC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 19:35:02 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 115BFD7E;
-        Fri, 11 Feb 2022 16:34:59 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CA104ED1;
-        Fri, 11 Feb 2022 16:34:58 -0800 (PST)
-Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com [10.118.28.62])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B78A13F70D;
-        Fri, 11 Feb 2022 16:34:58 -0800 (PST)
-From:   Jeremy Linton <jeremy.linton@arm.com>
-To:     netdev@vger.kernel.org
-Cc:     mw@semihalf.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, rmk+kernel@armlinux.org.uk,
-        linux-kernel@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>
-Subject: [BUG/PATCH v2] net: mvpp2: always set port pcs ops
-Date:   Fri, 11 Feb 2022 18:34:54 -0600
-Message-Id: <20220212003454.3214726-1-jeremy.linton@arm.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S245212AbiBLAfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 19:35:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79DFED7F
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 16:35:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFDECB82DF9
+        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 00:35:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FB4EC340E9;
+        Sat, 12 Feb 2022 00:35:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644626143;
+        bh=770kDDXLOHwqej7GKkp6lR8iVXtDxx6M30EgN5vV3jk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cqSjGOYAUsV34uvrxHaRyN5XQvcnGAoqS5DP3+klOefdzuFRfkkz4pOat1nd00y8Y
+         kv0z9AWZ+ffmwyADbu8SI/FIeGc6GVeRMLTUZauoIxhtpkDXm9W1daDP4GLkhJ8W3i
+         kQ0qH4n343D/HNZtBDAZQt0tNTmt9UjzMNHs4FJ1Th7BpaTHtav5Z9TDaKY5rXzUbz
+         6dXoldysIBcQBUDFQAaVQR+/LA6AU3c/z60sBOgVFmlqH9kGDdmOuW+VymMfvlZlvJ
+         BFe/ll4LHLj/U66p3NWV7fS7YrgU/E+ub0Lz8rCcAIcIjwwBAl/lXP5FIoOsT2Hsje
+         ys5/v2kle6M9g==
+Date:   Fri, 11 Feb 2022 16:35:41 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Kees Cook <keescook@chromium.org>
+Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: ether_addr_equal_64bits breakage with gcc-12
+Message-ID: <20220211163541.74b0836a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220211141213.l4yitk7aifehjymp@pengutronix.de>
+References: <20220211141213.l4yitk7aifehjymp@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -40,104 +54,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Booting a MACCHIATObin with 5.17, the system OOPs with
-a null pointer deref when the network is started. This
-is caused by the pcs->ops structure being null in
-mcpp2_acpi_start() when it tries to call pcs_config().
+On Fri, 11 Feb 2022 15:12:13 +0100 Marc Kleine-Budde wrote:
+> Hello,
+>=20
+> the current arm-linux-gnueabihf-gcc 12 snapshot in Debian breaks (at
+> least with CONFIG_WERROR=3Dy):
+>=20
+> |   CC      net/core/dev.o
+> | net/core/dev.c: In function =E2=80=98bpf_prog_run_generic_xdp=E2=80=99:
+> | net/core/dev.c:4618:21: warning: =E2=80=98ether_addr_equal_64bits=E2=80=
+=99 reading 8 bytes from a region of size 6 [-Wstringop-overread]
+> |  4618 |         orig_host =3D ether_addr_equal_64bits(eth->h_dest, skb-=
+>dev->dev_addr);
+> |       |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~~~~~~~~~~
+> | net/core/dev.c:4618:21: note: referencing argument 1 of type =E2=80=98c=
+onst u8[8]=E2=80=99 {aka =E2=80=98const unsigned char[8]=E2=80=99}
+> | net/core/dev.c:4618:21: note: referencing argument 2 of type =E2=80=98c=
+onst u8[8]=E2=80=99 {aka =E2=80=98const unsigned char[8]=E2=80=99}
+> | In file included from net/core/dev.c:91:
+> | include/linux/etherdevice.h:375:20: note: in a call to function =E2=80=
+=98ether_addr_equal_64bits=E2=80=99
+> |   375 | static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
+> |       |                    ^~~~~~~~~~~~~~~~~~~~~~~
+> | net/core/dev.c:4619:22: warning: =E2=80=98is_multicast_ether_addr_64bit=
+s=E2=80=99 reading 8 bytes from a region of size 6 [-Wstringop-overread]
+> |  4619 |         orig_bcast =3D is_multicast_ether_addr_64bits(eth->h_de=
+st);
+> |       |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> | net/core/dev.c:4619:22: note: referencing argument 1 of type =E2=80=98c=
+onst u8[8]=E2=80=99 {aka =E2=80=98const unsigned char[8]=E2=80=99}
+> | include/linux/etherdevice.h:137:20: note: in a call to function =E2=80=
+=98is_multicast_ether_addr_64bits=E2=80=99
+> |   137 | static inline bool is_multicast_ether_addr_64bits(const u8 addr=
+[6+2])
+> |       |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> | net/core/dev.c:4646:27: warning: =E2=80=98ether_addr_equal_64bits=E2=80=
+=99 reading 8 bytes from a region of size 6 [-Wstringop-overread]
+> |  4646 |             (orig_host !=3D ether_addr_equal_64bits(eth->h_dest,
+> |       |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> |  4647 |                                                   skb->dev->dev=
+_addr)) ||
+> |       |                                                   ~~~~~~~~~~~~~=
+~~~~~~
+> | net/core/dev.c:4646:27: note: referencing argument 1 of type =E2=80=98c=
+onst u8[8]=E2=80=99 {aka =E2=80=98const unsigned char[8]=E2=80=99}
+> | net/core/dev.c:4646:27: note: referencing argument 2 of type =E2=80=98c=
+onst u8[8]=E2=80=99 {aka =E2=80=98const unsigned char[8]=E2=80=99}
+> | include/linux/etherdevice.h:375:20: note: in a call to function =E2=80=
+=98ether_addr_equal_64bits=E2=80=99
+> |   375 | static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
+> |       |                    ^~~~~~~~~~~~~~~~~~~~~~~
+> | net/core/dev.c:4648:28: warning: =E2=80=98is_multicast_ether_addr_64bit=
+s=E2=80=99 reading 8 bytes from a region of size 6 [-Wstringop-overread]
+> |  4648 |             (orig_bcast !=3D is_multicast_ether_addr_64bits(eth=
+->h_dest))) {
+> |       |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~~~~
+> | net/core/dev.c:4648:28: note: referencing argument 1 of type =E2=80=98c=
+onst u8[8]=E2=80=99 {aka =E2=80=98const unsigned char[8]=E2=80=99}
+> | include/linux/etherdevice.h:137:20: note: in a call to function =E2=80=
+=98is_multicast_ether_addr_64bits=E2=80=99
+> |   137 | static inline bool is_multicast_ether_addr_64bits(const u8 addr=
+[6+2])
+> |       |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>=20
+> | arm-linux-gnueabihf-gcc -v
+> | Using built-in specs.
+> | COLLECT_GCC=3D/usr/bin/arm-linux-gnueabihf-gcc
+> | COLLECT_LTO_WRAPPER=3D/usr/lib/gcc-cross/arm-linux-gnueabihf/12/lto-wra=
+pper
+> | Target: arm-linux-gnueabihf
+> | Configured with: ../src/configure -v --with-pkgversion=3D'Debian 12-202=
+20126-1' --with-bugurl=3Dfile:///usr/share/doc/gcc-12/README.Bugs --enable-=
+languages=3Dc,ada,c++,go,d,fortran,objc,obj-c++,m2 --prefix=3D/usr --with-g=
+cc-major-version-only --program-suffix=3D-12 --enable-shared --enable-linke=
+r-build-id --libexecdir=3D/usr/lib --without-included-gettext --enable-thre=
+ads=3Dposix --libdir=3D/usr/lib --enable-nls --with-sysroot=3D/ --enable-cl=
+ocale=3Dgnu --enable-libstdcxx-debug --enable-libstdcxx-time=3Dyes --with-d=
+efault-libstdcxx-abi=3Dnew --enable-gnu-unique-object --disable-libitm --di=
+sable-libquadmath --disable-libquadmath-support --enable-plugin --enable-de=
+fault-pie --with-system-zlib --enable-libphobos-checking=3Drelease --withou=
+t-target-system-zlib --enable-multiarch --disable-sjlj-exceptions --with-ar=
+ch=3Darmv7-a+fp --with-float=3Dhard --with-mode=3Dthumb --disable-werror --=
+enable-checking=3Drelease --build=3Dx86_64-linux-gnu --host=3Dx86_64-linux-=
+gnu --target=3Darm-linux-gnueabihf --program-prefix=3Darm-linux-gnueabihf- =
+--includedir=3D/usr/arm-linux-gnueabihf/include
+> | Thread model: posix
+> | Supported LTO compression algorithms: zlib zstd
+> | gcc version 12.0.1 20220126 (experimental) [master r12-6872-gf3e6ef7d87=
+3] (Debian 12-20220126-1)
 
-Hoisting the code which sets pcs_gmac.ops and pcs_xlg.ops,
-assuring they are always set, fixes the problem.
+Maybe Kees will have as suggestion - Kees, are there any best practices
+for dealing with such issues? For the reference we do a oversized load
+from a structure (read 8B of a 6B array):
 
-The OOPs looks like:
-[   18.687760] Unable to handle kernel access to user memory outside uaccess routines at virtual address 0000000000000010
-[   18.698561] Mem abort info:
-[   18.698564]   ESR = 0x96000004
-[   18.698567]   EC = 0x25: DABT (current EL), IL = 32 bits
-[   18.709821]   SET = 0, FnV = 0
-[   18.714292]   EA = 0, S1PTW = 0
-[   18.718833]   FSC = 0x04: level 0 translation fault
-[   18.725126] Data abort info:
-[   18.729408]   ISV = 0, ISS = 0x00000004
-[   18.734655]   CM = 0, WnR = 0
-[   18.738933] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000111bbf000
-[   18.745409] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
-[   18.752235] Internal error: Oops: 96000004 [#1] SMP
-[   18.757134] Modules linked in: rfkill ip_set nf_tables nfnetlink qrtr sunrpc vfat fat omap_rng fuse zram xfs crct10dif_ce mvpp2 ghash_ce sbsa_gwdt phylink xhci_plat_hcd ahci_plam
-[   18.773481] CPU: 0 PID: 681 Comm: NetworkManager Not tainted 5.17.0-0.rc3.89.fc36.aarch64 #1
-[   18.781954] Hardware name: Marvell                         Armada 7k/8k Family Board      /Armada 7k/8k Family Board      , BIOS EDK II Jun  4 2019
-[   18.795222] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   18.802213] pc : mvpp2_start_dev+0x2b0/0x300 [mvpp2]
-[   18.807208] lr : mvpp2_start_dev+0x298/0x300 [mvpp2]
-[   18.812197] sp : ffff80000b4732c0
-[   18.815522] x29: ffff80000b4732c0 x28: 0000000000000000 x27: ffffccab38ae57f8
-[   18.822689] x26: ffff6eeb03065a10 x25: ffff80000b473a30 x24: ffff80000b4735b8
-[   18.829855] x23: 0000000000000000 x22: 00000000000001e0 x21: ffff6eeb07b6ab68
-[   18.837021] x20: ffff6eeb07b6ab30 x19: ffff6eeb07b6a9c0 x18: 0000000000000014
-[   18.844187] x17: 00000000f6232bfe x16: ffffccab899b1dc0 x15: 000000006a30f9fa
-[   18.851353] x14: 000000003b77bd50 x13: 000006dc896f0e8e x12: 001bbbfccfd0d3a2
-[   18.858519] x11: 0000000000001528 x10: 0000000000001548 x9 : ffffccab38ad0fb0
-[   18.865685] x8 : ffff80000b473330 x7 : 0000000000000000 x6 : 0000000000000000
-[   18.872851] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff80000b4732f8
-[   18.880017] x2 : 000000000000001a x1 : 0000000000000002 x0 : ffff6eeb07b6ab68
-[   18.887183] Call trace:
-[   18.889637]  mvpp2_start_dev+0x2b0/0x300 [mvpp2]
-[   18.894279]  mvpp2_open+0x134/0x2b4 [mvpp2]
-[   18.898483]  __dev_open+0x128/0x1e4
-[   18.901988]  __dev_change_flags+0x17c/0x1d0
-[   18.906187]  dev_change_flags+0x30/0x70
-[   18.910038]  do_setlink+0x278/0xa7c
-[   18.913540]  __rtnl_newlink+0x44c/0x7d0
-[   18.917391]  rtnl_newlink+0x5c/0x8c
-[   18.920892]  rtnetlink_rcv_msg+0x254/0x314
-[   18.925006]  netlink_rcv_skb+0x48/0x10c
-[   18.928858]  rtnetlink_rcv+0x24/0x30
-[   18.932449]  netlink_unicast+0x290/0x2f4
-[   18.936386]  netlink_sendmsg+0x1d0/0x41c
-[   18.940323]  sock_sendmsg+0x60/0x70
-[   18.943825]  ____sys_sendmsg+0x248/0x260
-[   18.947762]  ___sys_sendmsg+0x74/0xa0
-[   18.951438]  __sys_sendmsg+0x64/0xcc
-[   18.955027]  __arm64_sys_sendmsg+0x30/0x40
-[   18.959140]  invoke_syscall+0x50/0x120
-[   18.962906]  el0_svc_common.constprop.0+0x4c/0xf4
-[   18.967629]  do_el0_svc+0x30/0x9c
-[   18.970958]  el0_svc+0x28/0xb0
-[   18.974025]  el0t_64_sync_handler+0x10c/0x140
-[   18.978400]  el0t_64_sync+0x1a4/0x1a8
-[   18.982078] Code: 52800004 b9416262 aa1503e0 52800041 (f94008a5)
-[   18.988196] ---[ end trace 0000000000000000 ]---
+struct ethhdr {
+	unsigned char	h_dest[6];
+	unsigned char	h_source[6];
+	__be16		h_proto;
+} __attribute__((packed));
 
-Fixes: cff056322372 ("net: mvpp2: use .mac_select_pcs() interface")
-Suggested-by: Russel King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+But then discard the irrelevant bytes:
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 7cdbf8b8bbf6..1a835b48791b 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -6870,6 +6870,9 @@ static int mvpp2_port_probe(struct platform_device *pdev,
- 	dev->max_mtu = MVPP2_BM_JUMBO_PKT_SIZE;
- 	dev->dev.of_node = port_node;
- 
-+	port->pcs_gmac.ops = &mvpp2_phylink_gmac_pcs_ops;
-+	port->pcs_xlg.ops = &mvpp2_phylink_xlg_pcs_ops;
-+
- 	if (!mvpp2_use_acpi_compat_mode(port_fwnode)) {
- 		port->phylink_config.dev = &dev->dev;
- 		port->phylink_config.type = PHYLINK_NETDEV;
-@@ -6940,9 +6943,6 @@ static int mvpp2_port_probe(struct platform_device *pdev,
- 				  port->phylink_config.supported_interfaces);
- 		}
- 
--		port->pcs_gmac.ops = &mvpp2_phylink_gmac_pcs_ops;
--		port->pcs_xlg.ops = &mvpp2_phylink_xlg_pcs_ops;
--
- 		phylink = phylink_create(&port->phylink_config, port_fwnode,
- 					 phy_mode, &mvpp2_phylink_ops);
- 		if (IS_ERR(phylink)) {
--- 
-2.34.1
+#if defined(CONFIG_HAVE_EFFICIENT...
+	u64 fold =3D (*(const u64 *)addr1) ^ (*(const u64 *)addr2);
+#ifdef __BIG_ENDIAN
+	return (fold >> 16) =3D=3D 0;
+#else ...
 
+
+The structure is uAPI, for added fun.
