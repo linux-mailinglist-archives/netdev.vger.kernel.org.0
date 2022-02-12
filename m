@@ -2,67 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC3C24B3469
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 12:10:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1DF54B3466
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 12:04:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234019AbiBLLKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Feb 2022 06:10:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34570 "EHLO
+        id S234008AbiBLLD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Feb 2022 06:03:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234014AbiBLLKM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 06:10:12 -0500
-Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF87F26553
-        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 03:10:08 -0800 (PST)
-Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.94.2)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1nIqI0-000bvs-UW; Sat, 12 Feb 2022 12:10:04 +0100
-Received: from laforge by localhost.localdomain with local (Exim 4.95)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1nIqAx-005Bsx-I4;
-        Sat, 12 Feb 2022 12:02:47 +0100
-Date:   Sat, 12 Feb 2022 12:02:47 +0100
-From:   Harald Welte <laforge@gnumonks.org>
-To:     "Drewek, Wojciech" <wojciech.drewek@intel.com>
-Cc:     Marcin Szycik <marcin.szycik@linux.intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "michal.swiatkowski@linux.intel.com" 
-        <michal.swiatkowski@linux.intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "osmocom-net-gprs@lists.osmocom.org" 
-        <osmocom-net-gprs@lists.osmocom.org>
-Subject: Re: [RFC PATCH net-next v3 1/5] gtp: Allow to create GTP device
- without FDs
-Message-ID: <YgeT1wXjvWgR3Xkl@nataraja>
-References: <20220127163749.374283-1-marcin.szycik@linux.intel.com>
- <20220127163900.374645-1-marcin.szycik@linux.intel.com>
- <Yf6nBDg/v1zuTf8l@nataraja>
- <fd23700b-4269-a615-a73d-10476ffaf82d@linux.intel.com>
- <YgYoT4UWw0Efq33K@nataraja>
- <MW4PR11MB57766A32DF641A69831B610EFD309@MW4PR11MB5776.namprd11.prod.outlook.com>
+        with ESMTP id S230370AbiBLLD5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 06:03:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EAD26118;
+        Sat, 12 Feb 2022 03:03:54 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F82260C39;
+        Sat, 12 Feb 2022 11:03:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E3BC340E7;
+        Sat, 12 Feb 2022 11:03:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644663833;
+        bh=WBxU8KD2tx8yFPWkCbVlkknktZ8woK4/C70+cUT2Zn0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gDxvQMLVmTUQ1ghllMVEXweI3x22o77EItHUL5WrNFsZ0E+5OgBRB8Dv6aghQYEmK
+         JGxWiNMXtyBol3MPipq0Rh3EEslCpO7n9q1Gglt+ayjgdwW+y0CWIZrLxZsGzTdldE
+         CFGKMpxRjZtBv8H9Q3akx4S47zQvFOCex/QPtHBT4X2MfhWehAWVwoJNsAZcxqI+uw
+         9UYMOqfd0HMpVVgZ4IoK7R/ueLHVcEzf0hMj+OQuFysyETcJ4RBe6rSd6c+yhxn7VX
+         AuNk8HdjnTbZoxGNiM4NycKfMVYod5d7z3OHTun+L8MaMk4ihEBS3WT8sWrbZRYA+5
+         8TsZ8+YVKg9TA==
+Date:   Sat, 12 Feb 2022 12:03:49 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net, brouer@redhat.com,
+        toke@redhat.com, pabeni@redhat.com, echaudro@redhat.com,
+        lorenzo.bianconi@redhat.com, toshiaki.makita1@gmail.com,
+        andrii@kernel.org
+Subject: Re: [PATCH bpf-next 2/3] veth: rework veth_xdp_rcv_skb in order to
+ accept non-linear skb
+Message-ID: <YgeUFb4LIP7VfeL9@lore-desk>
+References: <cover.1644541123.git.lorenzo@kernel.org>
+ <8c5e6e5f06d1ba93139f1b72137f8f010db15808.1644541123.git.lorenzo@kernel.org>
+ <20220211170414.7223ff09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="kY1oPGr7SkP0djq6"
 Content-Disposition: inline
-In-Reply-To: <MW4PR11MB57766A32DF641A69831B610EFD309@MW4PR11MB5776.namprd11.prod.outlook.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220211170414.7223ff09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 10:05:54AM +0000, Drewek, Wojciech wrote:
 
-> Thanks for triggering CI.
-> Do I see correctly that results for our changes are the same as for master?
+--kY1oPGr7SkP0djq6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The results are identical to master/net-next, so all good!
--- 
-- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
-============================================================================
-"Privacy in residential applications is a desirable marketing option."
-                                                  (ETSI EN 300 175-7 Ch. A6)
+On Feb 11, Jakub Kicinski wrote:
+> On Fri, 11 Feb 2022 02:20:31 +0100 Lorenzo Bianconi wrote:
+> > +	if (skb_shared(skb) || skb_head_is_locked(skb)) {
+>=20
+> Is this sufficient to guarantee that the frags can be written?
+> skb_cow_data() tells a different story.
+
+Do you mean to consider paged part of the skb always not writable, right?
+In other words, we should check something like:
+
+	if (skb_shared(skb) || skb_head_is_locked(skb) ||
+	    skb_shinfo(skb)->nr_frags) {
+	    ...
+	}
+
+Regards,
+Lorenzo
+
+--kY1oPGr7SkP0djq6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYgeUFQAKCRA6cBh0uS2t
+rK7TAP49QVtQPAOU594/gvg59ydlesiIqubsDusmQOqoDMhDhgEA0SHdxUlB09Wb
+9xBPXSmUIHZZVcxFXdfZzXHM0t1mJwo=
+=AcAC
+-----END PGP SIGNATURE-----
+
+--kY1oPGr7SkP0djq6--
