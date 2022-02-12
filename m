@@ -2,83 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ED044B3422
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 10:59:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 411A04B3424
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 10:59:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233260AbiBLJ6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Feb 2022 04:58:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57146 "EHLO
+        id S233302AbiBLJ6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Feb 2022 04:58:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231477AbiBLJ6T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 04:58:19 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BA124BE2;
-        Sat, 12 Feb 2022 01:58:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=igbgibAHPAWbmEsOdSj/NeCBqcGOcsUXmWWMdBzi9LE=; b=LbMp1Kw5SaT236NypKQ9v+1DkG
-        Frb0rgXN+qToHBpB9KqbBxagU+CBAqSEoPciqZSQ3BcH2tmyOivz7MLVbBv09BnrJQu/qn0eI1p7u
-        z3WQpfjhLLY9AWB71ZPc+M10CQSkXl7pL1JQEgcC6QDFJazhhQslVc5ukWUd3arqJV1sImfpyx96J
-        P2sn7Aj19coNN8a4kSP3UGG0NoXc4wVAkooy8bbWqhp9DDZzpSN4Mzv5EvTFIzTcN0niPuli4W6QU
-        jBRqrCkE5E3kAjmxKKCuQpqFl77SDFsjYvw55aYA2uvIaLN8+GkHYXSKmlGKxGYCGoDnIlJOOJnIu
-        5j6Ie1/g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57210)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nIpAQ-00083F-9h; Sat, 12 Feb 2022 09:58:10 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nIpAO-0004Rn-8J; Sat, 12 Feb 2022 09:58:08 +0000
-Date:   Sat, 12 Feb 2022 09:58:08 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     netdev@vger.kernel.org, mw@semihalf.com, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: mvpp2: Check for null pcs in mvpp2_acpi_start()
-Message-ID: <YgeEsF/cr8pfeUR4@shell.armlinux.org.uk>
-References: <20220211234235.3180025-1-jeremy.linton@arm.com>
- <Ygb2E1DGYVBO+mNP@shell.armlinux.org.uk>
- <0e5f1807-22f1-ec5b-0b18-8bc02ad99760@arm.com>
+        with ESMTP id S231477AbiBLJ6f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 04:58:35 -0500
+Received: from smtp.smtpout.orange.fr (smtp09.smtpout.orange.fr [80.12.242.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B47F24BEA
+        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 01:58:30 -0800 (PST)
+Received: from pop-os.home ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id IpAhndzDgtSo5IpAhneZDI; Sat, 12 Feb 2022 10:58:29 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 12 Feb 2022 10:58:29 +0100
+X-ME-IP: 90.126.236.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH] net: bridge: Slightly optimize br_stp_change_bridge_id()
+Date:   Sat, 12 Feb 2022 10:58:20 +0100
+Message-Id: <73f674075ae5279e3d2fa07d61a0a75bc50790f3.1644659879.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0e5f1807-22f1-ec5b-0b18-8bc02ad99760@arm.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 06:18:22PM -0600, Jeremy Linton wrote:
-> Hi,
-> 
-> On 2/11/22 17:49, Russell King (Oracle) wrote:
-> > On Fri, Feb 11, 2022 at 05:42:35PM -0600, Jeremy Linton wrote:
-> > > Booting a MACCHIATObin with 5.17 the system OOPs with
-> > > a null pointer deref when the network is started. This
-> > > is caused by the pcs->ops structure being null on this
-> > > particular platform/firmware.
-> > 
-> > pcs->ops should never be NULL. I'm surprised this fix results in any
-> > kind of working networking.
-> > 
-> > Instead, the initialilsation of port->pcs_*.ops needs to be moved out
-> > of the if (!mvpp2_use_acpi_compat_mode(..)) block. Please try this:
-> 
-> That appears to fix it as well, shall I re-post this with your fix, or will
-> you?
+ether_addr_equal_64bits() can easy be used in place of ether_addr_equal()
+here.
+Padding in the 'net_bridge_port' structure is already there because it is a
+huge structure and the required fields are not at the end.
+'oldaddr' is local to the function. So add the required padding
+explicitly and simplify its definition.
 
-I see you re-posted it anyway - that's fine. Thanks.
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+This patch is more a POC for me.
 
+I'm unsure that using ether_addr_equal_64bits() is really useful. The
+speedup should be mostly un-noticeable.
+
+To make sure that we have the required padding, we either need to waste
+some space or rely on the fact that the address is embedded in a large
+enough structure. (which is the case here)
+
+So, it looks fragile to me and not future-proof.
+
+Feed-back highly appreciated to see if such patches are welcome and if I
+should spend some time on it.
+---
+ net/bridge/br_private.h |  5 +++++
+ net/bridge/br_stp_if.c  | 12 +++++++-----
+ 2 files changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 2661dda1a92b..2f78090574c9 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -363,6 +363,11 @@ struct net_bridge_port {
+ 	unsigned char			config_pending;
+ 	port_id				port_id;
+ 	port_id				designated_port;
++	/*
++	 * designated_root and designated_bridge must NOT be at the end of the
++	 * structure because ether_addr_equal_64bits() requires 2 bytes of
++	 * padding.
++	 */
+ 	bridge_id			designated_root;
+ 	bridge_id			designated_bridge;
+ 	u32				path_cost;
+diff --git a/net/bridge/br_stp_if.c b/net/bridge/br_stp_if.c
+index 75204d36d7f9..1bf0aaf29e5e 100644
+--- a/net/bridge/br_stp_if.c
++++ b/net/bridge/br_stp_if.c
+@@ -221,9 +221,11 @@ int br_stp_set_enabled(struct net_bridge *br, unsigned long val,
+ /* called under bridge lock */
+ void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
+ {
+-	/* should be aligned on 2 bytes for ether_addr_equal() */
+-	unsigned short oldaddr_aligned[ETH_ALEN >> 1];
+-	unsigned char *oldaddr = (unsigned char *)oldaddr_aligned;
++	/*
++	 * should be aligned on 2 bytes and have 2 bytes of padding for
++	 * ether_addr_equal_64bits()
++	 */
++	unsigned char oldaddr[ETH_ALEN + 2] __aligned(2);
+ 	struct net_bridge_port *p;
+ 	int wasroot;
+ 
+@@ -236,10 +238,10 @@ void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
+ 	eth_hw_addr_set(br->dev, addr);
+ 
+ 	list_for_each_entry(p, &br->port_list, list) {
+-		if (ether_addr_equal(p->designated_bridge.addr, oldaddr))
++		if (ether_addr_equal_64bits(p->designated_bridge.addr, oldaddr))
+ 			memcpy(p->designated_bridge.addr, addr, ETH_ALEN);
+ 
+-		if (ether_addr_equal(p->designated_root.addr, oldaddr))
++		if (ether_addr_equal_64bits(p->designated_root.addr, oldaddr))
+ 			memcpy(p->designated_root.addr, addr, ETH_ALEN);
+ 	}
+ 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.32.0
+
