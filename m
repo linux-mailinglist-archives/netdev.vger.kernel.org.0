@@ -2,78 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46DBD4B3847
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 22:58:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C9884B386B
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 23:43:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbiBLV6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Feb 2022 16:58:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60786 "EHLO
+        id S232201AbiBLWnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Feb 2022 17:43:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229779AbiBLV6y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 16:58:54 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AED5360A80
-        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 13:58:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644703128;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=A2Cw52X1+qOYmJurqYnkoU4CLJrh/MQPlo1UwPWCQTo=;
-        b=UkpRhrv5aUvTClY6XygWLskVDhwdlbfDrBPZzaW7w5nQs8qW6ywn4hKpMLlkEFGA/8A57+
-        2D578NY8dfo/VlD2QOy+j0fhOZ/w2S/cAU5Tt9IypiCRkaEpCL/a8kir3sN5VT/ZQjV5oy
-        /wrEyYega5+gT+7tgCp1HH+nLMlUX1c=
-Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com
- [209.85.219.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-49-O01GRKbGMOuNpX8con6Nog-1; Sat, 12 Feb 2022 16:58:47 -0500
-X-MC-Unique: O01GRKbGMOuNpX8con6Nog-1
-Received: by mail-yb1-f198.google.com with SMTP id j17-20020a25ec11000000b0061dabf74012so26296631ybh.15
-        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 13:58:47 -0800 (PST)
+        with ESMTP id S232187AbiBLWnU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 17:43:20 -0500
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F8A23BD9
+        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 14:43:16 -0800 (PST)
+Received: by mail-il1-f199.google.com with SMTP id f18-20020a926a12000000b002be48b02bc6so8345729ilc.17
+        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 14:43:16 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=A2Cw52X1+qOYmJurqYnkoU4CLJrh/MQPlo1UwPWCQTo=;
-        b=xsniz8UiX2n/NhV4M/X6b2pMcAmX5oTk1GdZh6vMa+mpmzn/jLFOwyIILlwEqoSTdb
-         0QPxBsn+C0IXPvKsfqOCoD8Q1+KYRshGVeFDX6MY+5feZsrfY5dU9zGEvRfGSVCdqLFc
-         q283xSwHXlabU/fMUjDFo9+B1YQ5TbDVmbfioAOkMNBCb9O19l0kY5jaOwISCDaGGfls
-         sD1cKxl1atZPFmHMiSrH6f8TUcsdNEB1B8LX+XSW7ko8PdHxbKFozhq3hmDcIiywy1j4
-         S9QDZTCV6pHzIFpcr/lpWtSzI/tLmMPTP+F0RRnzPmLxpxwupPDP98oO2S9ve9vQzEe/
-         xkEg==
-X-Gm-Message-State: AOAM533cwErghsXT+CW3HzP8XqR4O2e7oEQoEH3KQa/+X8vNYJqrE9nU
-        9tpj3DiOH9mpPr0hGY9dJbGQlIssxhdQoA4xyRlwO9/E83X3S7nK6HLRO7O62SE85dCb/BGrvJ1
-        ExMLPlQCtyjaH2B0AqkB1syxFwyU8rGI8
-X-Received: by 2002:a81:998c:: with SMTP id q134mr7867244ywg.29.1644703126224;
-        Sat, 12 Feb 2022 13:58:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz6xKJ8Vy5jYdaFIUhwSOxKWkmQhlN9SOfJe/I8QaKuzargWJNwN+xx//QgsOW0nGlZiW3kBq7cjVdtfMAHuco=
-X-Received: by 2002:a81:998c:: with SMTP id q134mr7867239ywg.29.1644703126022;
- Sat, 12 Feb 2022 13:58:46 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Qndx5/xlMDuMFsAiyXYtZiMwVkwJVHOfIbITY7SRWJQ=;
+        b=OP2KVAU+qcTKtWg6u/QV6H2ift0JFNU6iF6yi5FGPN9nRaUMYwP4Af0gJ4uP8J1+kq
+         uOUeVaEX2lKZPSDMSa48GQCMfgtd5UZPGTbXncMumO4455q+m+SzuaS4cTDisFLGBhRE
+         rIC8KuUWBnMY9e9hoSJo4NGS58BexWw5RRvYeT1bYF+KVHish1QB3xoJf+CxScRJJ9Ki
+         iLN3MD4Jj1QxCVCWgM6tubOjDM9o7DYjqGxgRO4SV7J1BF9uDcZ1Tbw01rm89w3P2aBj
+         QMJT7oU8s8oa1fWXjv//cEqWRMAvXczEXQClWXBtB2MIGjYkGfTP2cfKREXY8uNEX8kT
+         QuZw==
+X-Gm-Message-State: AOAM531Lm/4gf5V6iS2ls6CxunBPyfRMnOeB14WhEchT2YceOjR2BEIT
+        PWDVZ77hgNzWFEt1xK6kC/07rdXOPGaxcWxKpN3sgjWBnX+V
+X-Google-Smtp-Source: ABdhPJyYJiru2zx+c/KVjgt1xGFubXKCnNkIk4JRjg/rcylmahzVP9hbqgP6bfAIgw0MItzt6bpF6kOvtY69glToznfqQq+iuQ/5
 MIME-Version: 1.0
-References: <20220212175922.665442-1-omosnace@redhat.com>
-In-Reply-To: <20220212175922.665442-1-omosnace@redhat.com>
-From:   Ondrej Mosnacek <omosnace@redhat.com>
-Date:   Sat, 12 Feb 2022 22:58:34 +0100
-Message-ID: <CAFqZXNtuZ8C5sSJDktTSWiPJbPxTK7ES21NJYVvFC9N4toehew@mail.gmail.com>
-Subject: Re: [PATCH net v3 0/2] security: fixups for the security hooks in sctp
-To:     network dev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        SElinux list <selinux@vger.kernel.org>,
-        Paul Moore <paul@paul-moore.com>
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        Richard Haines <richard_c_haines@btinternet.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        Linux Security Module list 
-        <linux-security-module@vger.kernel.org>,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>
+X-Received: by 2002:a05:6e02:1806:: with SMTP id a6mr3393462ilv.272.1644705795363;
+ Sat, 12 Feb 2022 14:43:15 -0800 (PST)
+Date:   Sat, 12 Feb 2022 14:43:15 -0800
+In-Reply-To: <0000000000004c57c005b0fc4114@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b15b3505d7d9e8ca@google.com>
+Subject: Re: [syzbot] INFO: task hung in usb_get_descriptor
+From:   syzbot <syzbot+31ae6d17d115e980fd14@syzkaller.appspotmail.com>
+To:     brouer@redhat.com, coreteam@netfilter.org, davem@davemloft.net,
+        edumazet@google.com, eman.mohamed@rofaidarealestate.com,
+        gregkh@linuxfoundation.org, gustavoars@kernel.org,
+        hdanton@sina.com, ingrassia@epigenesys.com, johan@kernel.org,
+        kaber@trash.net, kadlec@blackhole.kfki.hu,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        mathias.nyman@linux.intel.com, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        skhan@linuxfoundation.org, stern@rowland.harvard.edu,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,64 +61,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 12, 2022 at 6:59 PM Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> This is a third round of patches to fix the SCTP-SELinux interaction
-> w.r.t. client-side peeloff. The patches are a modified version of Xin
-> Long's patches posted previously, of which only a part was merged (the
-> rest was merged for a while, but was later reverted):
-> https://lore.kernel.org/selinux/cover.1635854268.git.lucien.xin@gmail.com/T/
->
-> In gist, these patches replace the call to
-> security_inet_conn_established() in SCTP with a new hook
-> security_sctp_assoc_established() and implement the new hook in SELinux
-> so that the client-side association labels are set correctly (which
-> matters in case the association eventually gets peeled off into a
-> separate socket).
->
-> Note that other LSMs than SELinux don't implement the SCTP hooks nor
-> inet_conn_established, so they shouldn't be affected by any of these
-> changes.
->
-> These patches were tested by selinux-testsuite [1] with an additional
-> patch [2] and by lksctp-tools func_tests [3].
->
-> Changes since v2:
-> - patches 1 and 2 dropped as they are already in mainline (not reverted)
-> - in patch 3, the return value of security_sctp_assoc_established() is
->   changed to int, the call is moved earlier in the function, and if the
->   hook returns an error value, the packet will now be discarded,
->   aborting the association
-> - patch 4 has been changed a lot - please see the patch description for
->   details on how the hook is now implemented and why
->
-> [1] https://github.com/SELinuxProject/selinux-testsuite/
-> [2] https://patchwork.kernel.org/project/selinux/patch/20211021144543.740762-1-omosnace@redhat.com/
+syzbot suspects this issue was fixed by commit:
 
-Actually, that patch no longer applies to the current master. Please
-refer to this rebased version instead:
-https://patchwork.kernel.org/project/selinux/patch/20220212213454.689886-1-omosnace@redhat.com/
+commit 363eaa3a450abb4e63bd6e3ad79d1f7a0f717814
+Author: Shuah Khan <skhan@linuxfoundation.org>
+Date:   Tue Mar 30 01:36:51 2021 +0000
 
-> [3] https://github.com/sctp/lksctp-tools/tree/master/src/func_tests
->
-> Ondrej Mosnacek (2):
->   security: add sctp_assoc_established hook
->   security: implement sctp_assoc_established hook in selinux
->
->  Documentation/security/SCTP.rst | 22 ++++----
->  include/linux/lsm_hook_defs.h   |  2 +
->  include/linux/lsm_hooks.h       |  5 ++
->  include/linux/security.h        |  8 +++
->  net/sctp/sm_statefuns.c         |  8 +--
->  security/security.c             |  7 +++
->  security/selinux/hooks.c        | 90 ++++++++++++++++++++++++---------
->  7 files changed, 103 insertions(+), 39 deletions(-)
->
-> --
-> 2.34.1
->
+    usbip: synchronize event handler with sysfs code paths
 
--- 
-Ondrej Mosnacek
-Software Engineer, Linux Security - SELinux kernel
-Red Hat, Inc.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1616e872700000
+start commit:   4fa56ad0d12e Merge tag 'for-linus' of git://git.kernel.org..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=144ecdb0be3abc07
+dashboard link: https://syzkaller.appspot.com/bug?extid=31ae6d17d115e980fd14
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12548d11d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13ec77e9d00000
 
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: usbip: synchronize event handler with sysfs code paths
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
