@@ -2,63 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14FEF4B361C
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 16:54:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04F474B3623
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 16:57:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236689AbiBLPyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Feb 2022 10:54:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57266 "EHLO
+        id S236763AbiBLP5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Feb 2022 10:57:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232094AbiBLPyC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 10:54:02 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B52B9
-        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 07:53:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644681239; x=1676217239;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=f7IDvLlOE+eTC6EiSiyRTyO3hbUar7Tqaz6EUokbg2Y=;
-  b=DfQAvfnYZYOGnYn0vk5uuVOrEWyFfELi6EfvPmQDcL7sCekJaOlnwGeT
-   qko0+EFpR5JKHX4ipOSt/cydXuIBGwuCDqkbuyGp5xAzp/BhVj1galx+8
-   azgYFU6LJE82t2n4X8cbwD2DBnC96AMd/5nYqSurAGn3eRk3JPayMhSdZ
-   bANr/8AnV+7cy3m6+PjJj5hlR2CMRGRxsEombsm0/YHTCfn9AHP2male+
-   ygwbruwJH8jsPjF/DXQwONAMGperwRhU1ywYDGFkiTLPwjPbCb11hLxUm
-   G9RIFEXiJrmWr/zjZPiCm3VUBu5+ABWEZYxABM7hYO2pCnJwq8MGZ3FvF
-   g==;
-IronPort-SDR: jShMyL4+Qeh3hPQofox9UsCxyu+iUALlnQzwAl4MV42/2/xqZ7J5liZDkvqWY8LkvrKUzB/o9f
- 0g+MFBjmTgFtzcpRU8F6YR7plJymhgpl6rjSWBppnsYocRvOHGN2c5SwRoxFbbL1dFE/Bqeuq+
- N5R33i1NvpwyKtsISVK7lyniWT3Pq4Ea5bSXt3IyhZxEBRzL6pht8HanAN2rWARSMHOgopv7Vn
- yY7ttSqDcVN8m2K1L4NovXZGGfm0ZUzDnnPi053FkI7A3hm45LLwr5bW41Su6pQ01IVdbFP8IX
- SZbJWHEwXJDqG6e8njyNQwt3
-X-IronPort-AV: E=Sophos;i="5.88,363,1635231600"; 
-   d="scan'208";a="152858654"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Feb 2022 08:53:57 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sat, 12 Feb 2022 08:53:35 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Sat, 12 Feb 2022 08:53:33 -0700
-From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-To:     <netdev@vger.kernel.org>, <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <UNGLinuxDriver@microchip.com>
-Subject: [PATCH net-next V1 5/5] net: lan743x: Add support for Clause-45 MDIO PHY management
-Date:   Sat, 12 Feb 2022 21:23:15 +0530
-Message-ID: <20220212155315.340359-6-Raju.Lakkaraju@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220212155315.340359-1-Raju.Lakkaraju@microchip.com>
-References: <20220212155315.340359-1-Raju.Lakkaraju@microchip.com>
+        with ESMTP id S236740AbiBLP5r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 10:57:47 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D16CD197
+        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 07:57:43 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nIumI-00036C-9A; Sat, 12 Feb 2022 16:57:38 +0100
+Received: from pengutronix.de (unknown [195.138.59.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 9D0DB31CE4;
+        Sat, 12 Feb 2022 15:57:36 +0000 (UTC)
+Date:   Sat, 12 Feb 2022 16:57:33 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH] can: etas_es58x: change opened_channel_cnt's type from
+ atomic_t to u8
+Message-ID: <20220212155733.gfwkcs7xcwlqzi6r@pengutronix.de>
+References: <20220212112713.577957-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="or7bahfvzj2pyh3l"
+Content-Disposition: inline
+In-Reply-To: <20220212112713.577957-1-mailhol.vincent@wanadoo.fr>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,188 +54,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for Clause-45 MDIO PHY management
 
-Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
----
-Changes:
- V1: 1. Remove "freq" argument in lan743x_mac_mmd_access( ) function
-     2. Define MMD Operation macros instead of values
+--or7bahfvzj2pyh3l
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
- drivers/net/ethernet/microchip/lan743x_main.c | 109 +++++++++++++++++-
- drivers/net/ethernet/microchip/lan743x_main.h |  16 +++
- 2 files changed, 122 insertions(+), 3 deletions(-)
+On 12.02.2022 20:27:13, Vincent Mailhol wrote:
+> The driver uses an atomic_t variable: es58x_device:opened_channel_cnt
+> to keep track of the number of opened channels in order to only
+> allocate memory for the URBs when this count changes from zero to one.
+>=20
+> While the intent was to prevent race conditions, the choice of an
+> atomic_t turns out to be a bad idea for several reasons:
+>=20
+>   - implementation is incorrect and fails to decrement
+>     opened_channel_cnt when the URB allocation fails as reported in
+>     [1].
+>=20
+>   - even if opened_channel_cnt were to be correctly decremented,
+>     atomic_t is insufficient to cover edge cases: there can be a race
+>     condition in which 1/ a first process fails to allocate URBs
+>     memory 2/ a second process enters es58x_open() before the first
+>     process does its cleanup and decrements opened_channed_cnt. In
+>     which case, the second process would successfully return despite
+>     the URBs memory not being allocated.
+>=20
+>   - actually, any kind of locking mechanism was useless here because
+>     it is redundant with the network stack big kernel lock
+>     (a.k.a. rtnl_lock) which is being hold by all the callers of
+>     net_device_ops:ndo_open() and net_device_ops:ndo_close(). c.f. the
+>     ASSERST_RTNL() calls in __dev_open() [2] and __dev_close_many()
+>     [3].
+>=20
+> The atmomic_t is thus replaced by a simple u8 type and the logic to
+> increment and decrement es58x_device:opened_channel_cnt is simplified
+> accordingly fixing the bug reported in [1]. We do not check again for
+> ASSERST_RTNL() as this is already done by the callers.
+>=20
+> [1] https://lore.kernel.org/linux-can/20220201140351.GA2548@kili/T/#u
+> [2] https://elixir.bootlin.com/linux/v5.16/source/net/core/dev.c#L1463
+> [3] https://elixir.bootlin.com/linux/v5.16/source/net/core/dev.c#L1541
+>=20
+> Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X
+> CAN USB interfaces")
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index 8b0890aa66fa..5282d25a6f9b 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -18,6 +18,11 @@
- #include "lan743x_main.h"
- #include "lan743x_ethtool.h"
- 
-+#define MMD_ACCESS_ADDRESS	0
-+#define MMD_ACCESS_WRITE	1
-+#define MMD_ACCESS_READ		2
-+#define MMD_ACCESS_READ_INC	3
-+
- static void pci11x1x_strap_get_status(struct lan743x_adapter *adapter)
- {
- 	u32 chip_rev;
-@@ -814,6 +819,96 @@ static int lan743x_mdiobus_write(struct mii_bus *bus,
- 	return ret;
- }
- 
-+static u32 lan743x_mac_mmd_access(int id, int index, int op)
-+{
-+	u16 dev_addr;
-+	u32 ret;
-+
-+	dev_addr = (index >> 16) & 0x1f;
-+	ret = (id << MAC_MII_ACC_PHY_ADDR_SHIFT_) &
-+		MAC_MII_ACC_PHY_ADDR_MASK_;
-+	ret |= (dev_addr << MAC_MII_ACC_MIIMMD_SHIFT_) &
-+		MAC_MII_ACC_MIIMMD_MASK_;
-+	if (op == MMD_ACCESS_WRITE)
-+		ret |= MAC_MII_ACC_MIICMD_WRITE_;
-+	else if (op == MMD_ACCESS_READ)
-+		ret |= MAC_MII_ACC_MIICMD_READ_;
-+	else if (op == MMD_ACCESS_READ_INC)
-+		ret |= MAC_MII_ACC_MIICMD_READ_INC_;
-+	else
-+		ret |= MAC_MII_ACC_MIICMD_ADDR_;
-+	ret |= (MAC_MII_ACC_MII_BUSY_ | MAC_MII_ACC_MIICL45_);
-+
-+	return ret;
-+}
-+
-+static int lan743x_mdiobus_c45_read(struct mii_bus *bus, int phy_id, int index)
-+{
-+	struct lan743x_adapter *adapter = bus->priv;
-+	u32 mmd_access;
-+	int ret;
-+
-+	/* comfirm MII not busy */
-+	ret = lan743x_mac_mii_wait_till_not_busy(adapter);
-+	if (ret < 0)
-+		return ret;
-+	if (index & MII_ADDR_C45) {
-+		/* Load Register Address */
-+		lan743x_csr_write(adapter, MAC_MII_DATA, (u32)(index & 0xffff));
-+		mmd_access = lan743x_mac_mmd_access(phy_id, index,
-+						    MMD_ACCESS_ADDRESS);
-+		lan743x_csr_write(adapter, MAC_MII_ACC, mmd_access);
-+		ret = lan743x_mac_mii_wait_till_not_busy(adapter);
-+		if (ret < 0)
-+			return ret;
-+		/* Read Data */
-+		mmd_access = lan743x_mac_mmd_access(phy_id, index,
-+						    MMD_ACCESS_READ);
-+		lan743x_csr_write(adapter, MAC_MII_ACC, mmd_access);
-+		ret = lan743x_mac_mii_wait_till_not_busy(adapter);
-+		if (ret < 0)
-+			return ret;
-+		ret = lan743x_csr_read(adapter, MAC_MII_DATA);
-+		return (int)(ret & 0xFFFF);
-+	}
-+
-+	ret = lan743x_mdiobus_read(bus, phy_id, index);
-+	return ret;
-+}
-+
-+static int lan743x_mdiobus_c45_write(struct mii_bus *bus,
-+				     int phy_id, int index, u16 regval)
-+{
-+	struct lan743x_adapter *adapter = bus->priv;
-+	u32 mmd_access;
-+	int ret;
-+
-+	/* confirm MII not busy */
-+	ret = lan743x_mac_mii_wait_till_not_busy(adapter);
-+	if (ret < 0)
-+		return ret;
-+	if (index & MII_ADDR_C45) {
-+		/* Load Register Address */
-+		lan743x_csr_write(adapter, MAC_MII_DATA, (u32)(index & 0xffff));
-+		mmd_access = lan743x_mac_mmd_access(phy_id, index,
-+						    MMD_ACCESS_ADDRESS);
-+		lan743x_csr_write(adapter, MAC_MII_ACC, mmd_access);
-+		ret = lan743x_mac_mii_wait_till_not_busy(adapter);
-+		if (ret < 0)
-+			return ret;
-+		/* Write Data */
-+		lan743x_csr_write(adapter, MAC_MII_DATA, (u32)regval);
-+		mmd_access = lan743x_mac_mmd_access(phy_id, index,
-+						    MMD_ACCESS_WRITE);
-+		lan743x_csr_write(adapter, MAC_MII_ACC, mmd_access);
-+		ret = lan743x_mac_mii_wait_till_not_busy(adapter);
-+	} else {
-+		ret = lan743x_mdiobus_write(bus, phy_id, index, regval);
-+	}
-+
-+	return ret;
-+}
-+
- static void lan743x_mac_set_address(struct lan743x_adapter *adapter,
- 				    u8 *addr)
- {
-@@ -2847,11 +2942,19 @@ static int lan743x_mdiobus_init(struct lan743x_adapter *adapter)
- 			netif_dbg(adapter, drv, adapter->netdev,
- 					  "(R)GMII operation\n");
- 		}
-+
-+		adapter->mdiobus->probe_capabilities = MDIOBUS_C22_C45;
-+		adapter->mdiobus->read = lan743x_mdiobus_c45_read;
-+		adapter->mdiobus->write = lan743x_mdiobus_c45_write;
-+		adapter->mdiobus->name = "lan743x-mdiobus-c45";
-+		netif_dbg(adapter, drv, adapter->netdev, "lan743x-mdiobus-c45\n");
-+	} else {
-+		adapter->mdiobus->read = lan743x_mdiobus_read;
-+		adapter->mdiobus->write = lan743x_mdiobus_write;
-+		adapter->mdiobus->name = "lan743x-mdiobus";
-+		netif_dbg(adapter, drv, adapter->netdev, "lan743x-mdiobus\n");
- 	}
- 
--	adapter->mdiobus->read = lan743x_mdiobus_read;
--	adapter->mdiobus->write = lan743x_mdiobus_write;
--	adapter->mdiobus->name = "lan743x-mdiobus";
- 	snprintf(adapter->mdiobus->id, MII_BUS_ID_SIZE,
- 		 "pci-%s", pci_name(adapter->pdev));
- 
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
-index 7c387ca2d25c..2c8e76b4e1f7 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.h
-+++ b/drivers/net/ethernet/microchip/lan743x_main.h
-@@ -151,6 +151,13 @@
- #define MAC_RX_ADDRL			(0x11C)
- 
- #define MAC_MII_ACC			(0x120)
-+#define MAC_MII_ACC_MDC_CYCLE_SHIFT_	(16)
-+#define MAC_MII_ACC_MDC_CYCLE_MASK_	(0x00070000)
-+#define MAC_MII_ACC_MDC_CYCLE_2_5MHZ_	(0)
-+#define MAC_MII_ACC_MDC_CYCLE_5MHZ_	(1)
-+#define MAC_MII_ACC_MDC_CYCLE_12_5MHZ_	(2)
-+#define MAC_MII_ACC_MDC_CYCLE_25MHZ_	(3)
-+#define MAC_MII_ACC_MDC_CYCLE_1_25MHZ_	(4)
- #define MAC_MII_ACC_PHY_ADDR_SHIFT_	(11)
- #define MAC_MII_ACC_PHY_ADDR_MASK_	(0x0000F800)
- #define MAC_MII_ACC_MIIRINDA_SHIFT_	(6)
-@@ -159,6 +166,15 @@
- #define MAC_MII_ACC_MII_WRITE_		(0x00000002)
- #define MAC_MII_ACC_MII_BUSY_		BIT(0)
- 
-+#define MAC_MII_ACC_MIIMMD_SHIFT_	(6)
-+#define MAC_MII_ACC_MIIMMD_MASK_	(0x000007C0)
-+#define MAC_MII_ACC_MIICL45_		BIT(3)
-+#define MAC_MII_ACC_MIICMD_MASK_	(0x00000006)
-+#define MAC_MII_ACC_MIICMD_ADDR_	(0x00000000)
-+#define MAC_MII_ACC_MIICMD_WRITE_	(0x00000002)
-+#define MAC_MII_ACC_MIICMD_READ_	(0x00000004)
-+#define MAC_MII_ACC_MIICMD_READ_INC_	(0x00000006)
-+
- #define MAC_MII_DATA			(0x124)
- 
- #define MAC_EEE_TX_LPI_REQ_DLY_CNT		(0x130)
--- 
-2.25.1
+Applied to can/testing.
 
+I you (or someone else) wants to increase their patch count feel free to
+convert the other USB CAN drivers from atomic_t to u8, too.
+
+Thanks,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--or7bahfvzj2pyh3l
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIH2OoACgkQrX5LkNig
+010rfQf/Ypr0HCUdEvv9P+qkSUewRSnI68KG9s7/aL3RUX3UJIbUXufDK0Ktgx9h
+sMjEqlxMXT+6ED6FRSVo90sIdnAla4QY9+qmYkXSr7UeWBmFWGk1ctjg6ZOFeXCb
+5rxy1S+bM9IGoicut5gJQkg981C+Bh2P99FQsZ7sKWrlQUUEdv3HIFAB7PrMVMTG
+il5dE+QAk1HwFR0DXk7lyKmYtM7pvdSAhdzhIx8ndUPwHx0xP1ZhzSrGfK0rQN+d
+ccma9L/1AejOf9IRJPI0jxbKtVElfyiMRQAKsVSgrIRb9uJ+I2jBC56j8khgdQUm
+Nag0SzvYY4jMrQwJ4zywAxwd0qq95g==
+=1A7l
+-----END PGP SIGNATURE-----
+
+--or7bahfvzj2pyh3l--
