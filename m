@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87D544B32C2
-	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 03:48:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E2164B32D9
+	for <lists+netdev@lfdr.de>; Sat, 12 Feb 2022 04:24:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230387AbiBLCsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Feb 2022 21:48:18 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53934 "EHLO
+        id S231185AbiBLDYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Feb 2022 22:24:18 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:48016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiBLCsR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 21:48:17 -0500
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B112E081
-        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 18:48:12 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1644634075; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=l7lfuNdRFyYNmChwp4/EzAsg7g/fEFMdMuiBTFnIsxddW+zGNVyWnRFGIgyP1VOqgU7brQ3g2SCJxarrlv41gWxhBbYXEv4uCb1TG6/3HMEKWfP3aFpIk1U3gGZ9lQlVaR7CIxE61o1kq2LJD/GCreGqi4OwgGQS59XD4oScS7M=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1644634075; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=Qz6N2KT0jhiOGBaaM+9LS/034yOYe/AGgndLH5QDZj0=; 
-        b=WEXNwZ2DafK+jdbEl1V7Go01QKu2zfJNUUF4sVJ50Uzyw+5SdPUnGxy+BLL+fcF5m6lZqkhvBjp4qqNxQFZnzr6eZ4ah9q1WgLBxbJZcDNAtdN8zgtNR8F9GJOQqW/DlAfrgJ+fo4PdrlQmqxvdpDNCklnBljX44Do11yRADSLU=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1644634075;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Content-Type:Content-Transfer-Encoding:From:Mime-Version:Subject:Message-Id:Date:Cc:To;
-        bh=Qz6N2KT0jhiOGBaaM+9LS/034yOYe/AGgndLH5QDZj0=;
-        b=NA/P3YKPiNcdsqQ8EFdBY0/11ftrtM6e0I3+Hs9TzfzzLnxGJN5eCcaJYBdA9amW
-        kh9ocBlHGeTSTSH/nWNdcX5j67mqk4h3vfC+NDdYWSunuhsHAoGjHFvTyZNyhfYvuZE
-        XBFQ4qgPERY+mTwlYA0VhLVxZjNjsA0ZIVemo21g=
-Received: from [10.10.10.4] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1644634074540224.65486788941382; Fri, 11 Feb 2022 18:47:54 -0800 (PST)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-From:   =?utf-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>
-Mime-Version: 1.0 (1.0)
-Subject: Re:  [PATCH net-next v2] net: dsa: realtek: realtek-mdio: reset before setup
-Message-Id: <B3AA2DEA-D04C-49C8-9D22-BA6D64F7A6B2@arinc9.com>
-Date:   Sat, 12 Feb 2022 05:47:49 +0300
-Cc:     netdev@vger.kernel.org, linus.walleij@linaro.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, alsi@bang-olufsen.dk,
-        Frank Wunderlich <frank-w@public-files.de>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-X-Mailer: iPhone Mail (17H35)
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        with ESMTP id S231166AbiBLDYS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Feb 2022 22:24:18 -0500
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE0622CC8E
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 19:24:15 -0800 (PST)
+Received: by mail-il1-f200.google.com with SMTP id x6-20020a92d306000000b002bdff65a8e1so7133918ila.3
+        for <netdev@vger.kernel.org>; Fri, 11 Feb 2022 19:24:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=HIaZdliGeUGHxPX/pnldMtfHMd66z97/0dotF/EKdqA=;
+        b=FgSQor8rsHpDd8Gt04fH0G6rhYPEdoEbH4cRU52ueeqscciHzlR7ZQH36SbxCSpPel
+         6DPFcLwn+KfsHeXGdIaoRZRO3Ohk1Iq8pkIVwX68wIIIYPYyJ/Z2tFPfRG8vFHe8/er6
+         A0xjMGQ125QUaAQPmrin8emJxg4SOEM/MaoopPVXOBXVFFYS27ltv+CVOtELi6ypGG0u
+         Ufe+p2kv9oaIGTlK4TUydfGYotzKIz05tuKe0KHCI+BcxBfO/DLc7Ypw46sEtAaWVRwm
+         myGptU0fpOi12tvXyO9KHBwCG//lstKX/q2Y1dnuf08xAfDKpJaiWKMx8NxfVwwk1iUC
+         7uYQ==
+X-Gm-Message-State: AOAM530HXAj88cKXWiaszGV6aWqVx2SXKz5P7uNAolLGZZHQJUK20TSe
+        ikwzMhv/NYP2+hoe+UPwtSg1vKcdE6fCb1t0RrOlzjY2RhRI
+X-Google-Smtp-Source: ABdhPJxCfK7Iy7cDY5K320ofBfU6awjoOFIusgr1bupoMTBw316F8wBt29XqX3iJC5RJtJdQr8Xai18AjbafKuofTwhgsZBaceQV
+MIME-Version: 1.0
+X-Received: by 2002:a05:6e02:160a:: with SMTP id t10mr2564156ilu.65.1644636255275;
+ Fri, 11 Feb 2022 19:24:15 -0800 (PST)
+Date:   Fri, 11 Feb 2022 19:24:15 -0800
+In-Reply-To: <000000000000c560bd05ad3c5187@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c7d07705d7c9b7a4@google.com>
+Subject: Re: [syzbot] WARNING in rtnl_dellink
+From:   syzbot <syzbot+b3b5c64f4880403edd36@syzkaller.appspotmail.com>
+To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
+        fw@strlen.de, harshit.m.mogalapalli@oracle.com, hawk@kernel.org,
+        jiri@mellanox.com, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@chromium.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        roopa@cumulusnetworks.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yajun.deng@linux.dev, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,137 +59,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=EF=BB=BF
->=20
-> On 12 Feb 2022, at 05:27, Luiz Angelo Daros de Luca <luizluca@gmail.com> w=
-rote:
->=20
-> =EF=BB=BFSome devices, like the switch in Banana Pi BPI R64 only starts to=
- answer
-> after a HW reset. It is the same reset code from realtek-smi.
->=20
-> In realtek-smi, only assert the reset when the gpio is defined.
+syzbot suspects this issue was fixed by commit:
 
-If realtek-smi also resets before setup with this patch (I don=E2=80=99t und=
-erstand code very well) can you mention it next to mdio in the summary too?
+commit f123cffdd8fe8ea6c7fded4b88516a42798797d0
+Author: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Date:   Mon Nov 29 17:53:27 2021 +0000
 
-In any case:
-Acked-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
+    net: netlink: af_netlink: Prevent empty skb by adding a check on len.
 
->=20
-> Reported-by: Frank Wunderlich <frank-w@public-files.de>
-> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> Tested-by: Frank Wunderlich <frank-w@public-files.de>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Reviewed-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
-> ---
-> drivers/net/dsa/realtek/realtek-mdio.c | 19 +++++++++++++++++++
-> drivers/net/dsa/realtek/realtek-smi.c  | 17 ++++++++++-------
-> drivers/net/dsa/realtek/realtek.h      |  3 +++
-> 3 files changed, 32 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/net/dsa/realtek/realtek-mdio.c b/drivers/net/dsa/real=
-tek/realtek-mdio.c
-> index 0c5f2bdced9d..fa2339763c71 100644
-> --- a/drivers/net/dsa/realtek/realtek-mdio.c
-> +++ b/drivers/net/dsa/realtek/realtek-mdio.c
-> @@ -152,6 +152,21 @@ static int realtek_mdio_probe(struct mdio_device *mdi=
-odev)
->   /* TODO: if power is software controlled, set up any regulators here */
->   priv->leds_disabled =3D of_property_read_bool(np, "realtek,disable-leds"=
-);
->=20
-> +    /* Assert then deassert RESET */
-> +    priv->reset =3D devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH)=
-;
-> +    if (IS_ERR(priv->reset)) {
-> +        dev_err(dev, "failed to get RESET GPIO\n");
-> +        return PTR_ERR(priv->reset);
-> +    }
-> +
-> +    if (priv->reset) {
-> +        dev_dbg(dev, "asserted RESET\n");
-> +        msleep(REALTEK_HW_STOP_DELAY);
-> +        gpiod_set_value(priv->reset, 0);
-> +        msleep(REALTEK_HW_START_DELAY);
-> +        dev_dbg(dev, "deasserted RESET\n");
-> +    }
-> +
->   ret =3D priv->ops->detect(priv);
->   if (ret) {
->       dev_err(dev, "unable to detect switch\n");
-> @@ -185,6 +200,10 @@ static void realtek_mdio_remove(struct mdio_device *m=
-diodev)
->=20
->   dsa_unregister_switch(priv->ds);
->=20
-> +    /* leave the device reset asserted */
-> +    if (priv->reset)
-> +        gpiod_set_value(priv->reset, 1);
-> +
->   dev_set_drvdata(&mdiodev->dev, NULL);
-> }
->=20
-> diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realt=
-ek/realtek-smi.c
-> index 946fbbd70153..a13ef07080a2 100644
-> --- a/drivers/net/dsa/realtek/realtek-smi.c
-> +++ b/drivers/net/dsa/realtek/realtek-smi.c
-> @@ -43,8 +43,6 @@
-> #include "realtek.h"
->=20
-> #define REALTEK_SMI_ACK_RETRY_COUNT        5
-> -#define REALTEK_SMI_HW_STOP_DELAY        25    /* msecs */
-> -#define REALTEK_SMI_HW_START_DELAY        100    /* msecs */
->=20
-> static inline void realtek_smi_clk_delay(struct realtek_priv *priv)
-> {
-> @@ -426,10 +424,13 @@ static int realtek_smi_probe(struct platform_device *=
-pdev)
->       dev_err(dev, "failed to get RESET GPIO\n");
->       return PTR_ERR(priv->reset);
->   }
-> -    msleep(REALTEK_SMI_HW_STOP_DELAY);
-> -    gpiod_set_value(priv->reset, 0);
-> -    msleep(REALTEK_SMI_HW_START_DELAY);
-> -    dev_info(dev, "deasserted RESET\n");
-> +    if (priv->reset) {
-> +        dev_dbg(dev, "asserted RESET\n");
-> +        msleep(REALTEK_HW_STOP_DELAY);
-> +        gpiod_set_value(priv->reset, 0);
-> +        msleep(REALTEK_HW_START_DELAY);
-> +        dev_dbg(dev, "deasserted RESET\n");
-> +    }
->=20
->   /* Fetch MDIO pins */
->   priv->mdc =3D devm_gpiod_get_optional(dev, "mdc", GPIOD_OUT_LOW);
-> @@ -474,7 +475,9 @@ static int realtek_smi_remove(struct platform_device *=
-pdev)
->   dsa_unregister_switch(priv->ds);
->   if (priv->slave_mii_bus)
->       of_node_put(priv->slave_mii_bus->dev.of_node);
-> -    gpiod_set_value(priv->reset, 1);
-> +
-> +    if (priv->reset)
-> +        gpiod_set_value(priv->reset, 1);
->=20
->   platform_set_drvdata(pdev, NULL);
->=20
-> diff --git a/drivers/net/dsa/realtek/realtek.h b/drivers/net/dsa/realtek/r=
-ealtek.h
-> index 3512b832b148..e7d3e1bcf8b8 100644
-> --- a/drivers/net/dsa/realtek/realtek.h
-> +++ b/drivers/net/dsa/realtek/realtek.h
-> @@ -13,6 +13,9 @@
-> #include <linux/gpio/consumer.h>
-> #include <net/dsa.h>
->=20
-> +#define REALTEK_HW_STOP_DELAY        25    /* msecs */
-> +#define REALTEK_HW_START_DELAY        100    /* msecs */
-> +
-> struct realtek_ops;
-> struct dentry;
-> struct inode;
-> --=20
-> 2.35.1
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=107b5472700000
+start commit:   cd02217a5d81 Merge tag 'for-linus' of git://git.kernel.org..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a0437fdd630bee11
+dashboard link: https://syzkaller.appspot.com/bug?extid=b3b5c64f4880403edd36
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=116f8172900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1145d1b1900000
 
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: net: netlink: af_netlink: Prevent empty skb by adding a check on len.
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
