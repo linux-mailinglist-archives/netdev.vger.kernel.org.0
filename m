@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81BCD4B3D3B
-	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 21:08:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6962F4B3D4D
+	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 21:13:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236992AbiBMUDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Feb 2022 15:03:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41936 "EHLO
+        id S238139AbiBMUNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Feb 2022 15:13:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230399AbiBMUDG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 15:03:06 -0500
-Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30044.outbound.protection.outlook.com [40.107.3.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9E14A912
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 12:02:58 -0800 (PST)
+        with ESMTP id S238055AbiBMUNu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 15:13:50 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60071.outbound.protection.outlook.com [40.107.6.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18FB532DE
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 12:13:43 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DNSmcg3wLToXlcVSVlnoGgwbFzp/3GLAxjjQHGQlvjmOlRQmwwEiVdD1q5K5zlZCj2m8e12JvcAs/rpsHqeha+vLbzPAXjOm2a3ETwBsifdIef+Jdj2WmHt2ff2Gk5M0Qwd8gm1LauePldOFAXVxCeq4BOkR1kTaqwr4KRGuoG5+fIMpu1nthXWsopFnGKcWHoT+3svmk1tw18rXQh8fcDFAKpFRQK6G5yrYn0qrIwp2MQJSYu4/tSk/5UCL3UuEMuqIkjYht4q+xBOICU5emAx/HoxAJ/dfkdFh3hybLZjxO8PYR2qMw6CxVuctTjXgYk5G/URJcv4IGGADf/D2dA==
+ b=JNBRQDphnQJ8mUKInxuN/THZHI2LutELsJduY9LHHjPa498MKr+wRDoP6m8zGXhjCdZv8fzKOUti/RpiiEIUjXd//g7bdOq87/69EyNzbwaGnKySghSrcmuiR3gkCTAjzkBafYwV5nnNUNsZMGk9iLwrGbuvQJSjOA1OClp/bv6KPi0tfN5puonI+0HkDcUxGGuL/WUCsGec5+HnhDS+E4acaGhc9nAShsYa+eTfEiHehioM3E2Am+LA+siT/gdLhcNVB3KTrmA6JHFHyDgO17BvyCphcFVLzGRHk1SAr6uE5gqW0h2qeZ8uIAbEX8PybAyHNxwqJDqpQBoE2h+7wQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ua0XrtdOcuBp9FuBBD3pg0+eldvra4QEl5wfjWpG2f4=;
- b=Xjk1Bhy+UKoem4ndAP8T0VOxqXnPy0ePxay1JwajG2PFmb/0qJHGbtdiEK7Y2rfvFnFy2aLgJx0jQcAoJSWveEk5JlcTVKDj3bCDA1iwq7uRKMfJ8SnoghsY3VxCK0uyqNsMdvCvQzNI0YE6rYmp+FlMD6hn+N30S6UvlgPImKmBekgclANtuf3KpRJzKxBDT2+DLZ2ru49q1Q5bSNvvmwv0TzRYe+yPr13TBg/fG7opjED0UTbS7s3NKNyFnKrS8bd6Zek3EOHVmbkXRBmsU+/eRMJE4DfJMOtWYSglwGgj+LmSQzG+8KStvdJ17X1WP81EZALxHrMPte79PqRXRA==
+ bh=6HQZ0QvEMNgjDTCBcRH269nw8YzInE127XUUQ9kp9AA=;
+ b=QjyLkIzSiCfXr2eNI99NBOveeytZtUagcwgQW87Yup1ChB5KLsGpcgSCufi2gnDY89KSXzUr67CJdp+lfWzZQABwH6Pv4kLquci5rExJ1/FDN0zg0NqCeoDAcxIvhkC5zlY76A2jUFob8+hJyVvBrXuOKJzGRaKlPFXYlv6DZ9X7ElFyxaCBAtvg74yKIBNwILGwBdbj/IFgqvXNxuPAsjjFyAdZ+q/q3LkFBTf8iQ1E7c4lDC/kEVIB7B5c52RuRdaaAFEC9rbhRVmwmbMxNf8WeRaTUL5wVE4d95FLkJbW98BoU86S/Nzros+xDJrVRZQNybxYrAobBwPP6wenbA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ua0XrtdOcuBp9FuBBD3pg0+eldvra4QEl5wfjWpG2f4=;
- b=UC/NIFb8NkaxWeP2/xMUg9yvFQIlGjc+rDkx0pyU/pVANBkBazc/PSjiiA1L/vpjaw+zU7VAHVMYmTvEjz5h4Yx34aGdTlY5ZnBwTGek3rU8YhEhb0Eds3vvXIpzUhc4wXaMj2G0meUl4uQBVZQdVW+pILCFMvWwyov9WJ6ds9Y=
+ bh=6HQZ0QvEMNgjDTCBcRH269nw8YzInE127XUUQ9kp9AA=;
+ b=HCB++DX+SSgdl6SkFc2NuYI52jHf1bo/GsncG1mRFK/Y3/oQliq8e7HZOHuCt0SBKwKTo7he9VzgqQBWiif+Yb7JwF640SsHqcSIH6pelumXcl0hWPfZqpcW5vYRBHRhLWZemBWDbA0xrP98eTel311jkcKsih9bRYzSDp6Ri88=
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM6PR04MB6056.eurprd04.prod.outlook.com (2603:10a6:20b:ba::12) with
+ by VI1PR04MB6192.eurprd04.prod.outlook.com (2603:10a6:803:101::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.18; Sun, 13 Feb
- 2022 20:02:56 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.15; Sun, 13 Feb
+ 2022 20:13:40 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Sun, 13 Feb 2022
- 20:02:55 +0000
+ 20:13:40 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Nikolay Aleksandrov <nikolay@nvidia.com>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -54,12 +54,13 @@ Subject: Re: [RFC PATCH net-next 0/5] Replay and offload host VLAN entries in
  DSA
 Thread-Topic: [RFC PATCH net-next 0/5] Replay and offload host VLAN entries in
  DSA
-Thread-Index: AQHYHfxXQePXs1M3lEOTgYyrlnmZbayR2mIAgAATBoA=
-Date:   Sun, 13 Feb 2022 20:02:55 +0000
-Message-ID: <20220213200255.3iplletgf4daey54@skbuf>
+Thread-Index: AQHYHfxXQePXs1M3lEOTgYyrlnmZbayR2mIAgAATBoCAAAMBAA==
+Date:   Sun, 13 Feb 2022 20:13:40 +0000
+Message-ID: <20220213201340.nf7n7qmuitnysmuc@skbuf>
 References: <20220209213044.2353153-1-vladimir.oltean@nxp.com>
  <7b3c0c29-428b-061d-8a30-6817f0caa8da@nvidia.com>
-In-Reply-To: <7b3c0c29-428b-061d-8a30-6817f0caa8da@nvidia.com>
+ <20220213200255.3iplletgf4daey54@skbuf>
+In-Reply-To: <20220213200255.3iplletgf4daey54@skbuf>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -67,59 +68,59 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d5ec5768-4756-457a-9c94-08d9ef2bd369
-x-ms-traffictypediagnostic: AM6PR04MB6056:EE_
-x-microsoft-antispam-prvs: <AM6PR04MB60560804FD0EC754EFCA489DE0329@AM6PR04MB6056.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-office365-filtering-correlation-id: c86bb498-5409-4d17-530a-08d9ef2d538e
+x-ms-traffictypediagnostic: VI1PR04MB6192:EE_
+x-microsoft-antispam-prvs: <VI1PR04MB6192AC29C0258A962E2178C7E0329@VI1PR04MB6192.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: j7ZDV2RwQyzGh3+8u0u6W/fFsU1x7ZoccLuD3DqygfYpZPQUHZUCtNKM/I2m8No3gHeIN1tUUBl8soYPN4VI9hkV4ZEAhzBEXtzZ3t92YP3KMpXWhFGiWH997Xn9wrpyxyNNWT/7MkbOsG/p2+++5p8dq15HDdzN91+RhJSrxCUkb/2Ocbb4fEAu+YNktiaa6vHFnpN6p46sYyjWOFomZia/NxsjqWct1N/OHTPYYJQToXsw9tx5dISAFEf7YjiKUwSLZP79StNwwk2G6POW1raQ7be4+u81KBdGgyQ7yGGOyBDYnGQInwjYwXIjRc0mXQambyXuJlBfZrPzmLqxI5ULqpjz/jaXZTryx1vSe59un8NimUo2zC4kRtLvUx8L+KISSnxoaVh2p/Q5UHgXA8JOXPj5ZktLG6KO92i0UDuE0jy6RtEBZdYXWC1mvyfDsjWdm96uyGIJL/JIRCgyt2/5q4XDKLNalLWAFB2PLIoozBBMKAcrpVfnhArFLKMPNe0SMXC7oCJBAnAFxgo8TMNJJiBYYh3ds4NmziBEkDrTjXtm0vX2PeAK9N61aSNegHl4hrJaPGIMMN7qxOMkWBm7ylhwvmFyCG39B0rbdTJgxB8UmksB78ePtbEnq3nA/ocYrWMMx3pZKVYaTy98t+Dbzg0geOdQuJv6PWKgM01//XGfZF8pI4hi1pxdJCbgcd0mNuG+yyVf/l7DmXia8w==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(86362001)(54906003)(6916009)(316002)(6486002)(8676002)(64756008)(66446008)(38070700005)(4326008)(66946007)(66556008)(508600001)(76116006)(7416002)(38100700002)(5660300002)(71200400001)(122000001)(66476007)(8936002)(186003)(26005)(83380400001)(33716001)(9686003)(6506007)(6512007)(44832011)(2906002)(1076003);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: ElOAoXr3n+h7YAh6BBmWa76GistJt3EmmyYtBhpFcQ691zyQF4FPaqWTAAg/Dm+2nhaTdqbMz6Jlo37iNygWvRAr8xfG4KElZ0eXVqgnuWmTlxEo7Wg+uryFjr4LS2t0K+9qUXXYlwTHFRGNAoOtmGlJtxEHlDRgnkOr/fswDbegU5FhFH+675WTl98yAGxFAkMz/FUjO3j257M48oPVcMoCiAOiXv3WkEhLotHVUAuFx77d8soRFx8NLPTUlSYjLj1kksFvbWDGJIkX19aVsOiN6qS4O/8a5hvUFrOSZLFJf1faAceKbdVWCFNhOJzR8L5vloU8ZdWUv+taSgLdaDKBvoA0lQqH+ugXs2OdhVTOmZDtwA0zwIbTmRqMmOzTi04NQDKkB5oYXbLJ6vlUmnDmONuzu61g2W40RBw6oDsSsu28S5CuqKZSfunFditAK0lM/bt6kITzb0ZYQ6MnaRS0neYtl1aDbFOqHqfHIoci5njNtXxg93GNiFVEQ3pH7fn+wqq6ztCVnca92tsWySgo5O4Vx7QOrrMGHX2NTS1Fxg/xgwej37Ai+yPVdOMPN4BotRJ2HSZRhd1H83qNeLVPP1gPrISGn5JmjyRgKLA30t32QQPkv8gfbsbzSRl1XEps/Hse1mCpNljbx4KR33bMrn8RXY5KuKjbGyRj9Qurfy4KtfrtHwnoyQW4ZDLzfgEyIVWk7+qXX36Q0QKfsg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(9686003)(6512007)(26005)(7416002)(186003)(1076003)(38100700002)(8936002)(5660300002)(66946007)(66476007)(66446008)(64756008)(8676002)(76116006)(86362001)(4326008)(54906003)(6916009)(38070700005)(33716001)(71200400001)(6506007)(66556008)(6486002)(2906002)(316002)(508600001)(83380400001)(122000001)(44832011);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?iaiJiYVzPEv3kZAUIp7zLzc1/cO5i66tKILlBTDsX9hCzO2MIQTdw8+XvR/6?=
- =?us-ascii?Q?lhpedFU7F6ZpkaTFUxmE/UwbiqqtGdkuJRQ8ryLklM6APQDxjlr6ZEmodUx7?=
- =?us-ascii?Q?GQwEi/N1fGIv8g4vUZI//2H89+NApC07k0SkJJXfaEk/IGsbOdv4jfnR3hAu?=
- =?us-ascii?Q?SJpJLjLwiMr5Nyr/f9e4efAbGCi3GPsn0FPdI78vVgEFyus4glVHRWwtp3Yc?=
- =?us-ascii?Q?H8s4jcHSOu4puvo0pvv/9NAZSA3NEljyzQB+vTklsudXUKkgrl7DA8+y39TY?=
- =?us-ascii?Q?bYu9vN6tPjMgej8+My14S9+Dgs/LBSDuhwyjmrhIC8WlAfQw1AzW8ebTSBGb?=
- =?us-ascii?Q?yFwYTqK/5al6hPPteBwONHGDU+JumpofqH0cAlucN1T3uFb34bkyzh+dDy/N?=
- =?us-ascii?Q?WG8WpzqU2qKOtwoemZ080Ouf0wsBOaEt/jWsRqyixle8ElilyylBbLayhTk5?=
- =?us-ascii?Q?vQq7dj052wmbVdFpZ8k0Xk8ZIO3Kj6ZGqwzlFwIA5K3Wlzz16wwBHCQp38qU?=
- =?us-ascii?Q?ei5rpcpjFzUPLLPlUk/sqgm9bPvnQ9sotigkZPiS9wb9Z1kDVwF2971khc4O?=
- =?us-ascii?Q?RFExXoPhzWAFKiq1kLlA8pYu9VT4If9hy1eHqzrtHV1Fv2OJIhtTu5ruHZrF?=
- =?us-ascii?Q?2rLNqUc+j9pMQIMKKyuQZwUEka1kNDoufiZW6EbT0q3HcPYT+jdcZJzH/7iY?=
- =?us-ascii?Q?Ih6HbwrpyZqcPSdlEaDrHv/DceijiVGJskvoCrZp75l7UYATiuFL8OaVmCZK?=
- =?us-ascii?Q?nxSEwVuOGg/ooq2QBGVVx6iddvggLJDfNAs0dxL1Mr+aUUKg8x3KSiLyowGV?=
- =?us-ascii?Q?XNzbVWK3b+zmgE+ZIxcriqW3PKO3w3x/M9fmB/jTHTaFoeLQH/hl7EqVRrAg?=
- =?us-ascii?Q?5TR+02pew8WJgwK8w3iMyySWME6FyFyRZDr0dZ5lcc3hF9AJvSaZLYHy+ers?=
- =?us-ascii?Q?sfXQn0gPjSjplS05dnwN23dWpiw6yUV4sz3Ow/GkvNe9KmEQS55DUd+iM5Eo?=
- =?us-ascii?Q?+3x2jPKE5ctJFNqW5bTgCz+2SYkQwmVnQi4gGEyCgjmOr+u4x90tEqMwrzQD?=
- =?us-ascii?Q?eYhAfu9FAqUorMb2mK87CGpKnDuc2Plif+6kbVf32oQRSqy5FCAjIEyEvAj6?=
- =?us-ascii?Q?uy9SiYMtWucOsoPDXZ5g7UVLgHCeU9f04fi19qETAdXboul2Is3bL6clTP3V?=
- =?us-ascii?Q?Zc67va+OGUY4RKEXg9r2my5E0LnCvBVSuBD4JVXWypTQCsZXUtgeSOoADqLa?=
- =?us-ascii?Q?h9XwdsMFMPucwyCkUt+LXJ5xWA7KC1nd0kAVurKwHeXv+D2d2uGPmx/DXpUD?=
- =?us-ascii?Q?Pczw8k6PxRW3n0ANmjWe1uY4n1JZr3cdl1MT5japeVxEaEgCaKPyc+kIc8ni?=
- =?us-ascii?Q?mQ3/A72O9caCMERcUJC6X+aZEkOfxDItoi33rmjm5FT/RJSFh13jp7gYvBGL?=
- =?us-ascii?Q?bhxXhn07cWjVMz9Dc/479TpgJpd4v0hzQG0cPnrfe7FIUl20JnGKg4BY4wsu?=
- =?us-ascii?Q?WJfiNm3UW66qjkn13xF+HzgEvd5Dsr5oWgn4Hr6Msqq3Yz4Tqgi1o2AOmd6Q?=
- =?us-ascii?Q?PO2Q1eIEjSkLED55aoOQ09HVtMhpHVfIEau+IIBE7wT6eKTydKFdJwPcwNqO?=
- =?us-ascii?Q?wonl0aBAp7AiiiVaHJ/PLm8=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?fqSHOg/vhYlbDmN5RzN6045iim3AmqktUCUXBSqHU0GIwmubGFj2ID1ci+oo?=
+ =?us-ascii?Q?P0r3/MvIKRcFt2OPoS7hvBcOmxNzbBxqj11EL5Ym2AlAGdv6QbJkM+l1sNcM?=
+ =?us-ascii?Q?Vc7tcnPaJ9kz1BwbU6CBVxmgBO6clNqjm6kDACFRwR06rTCdyn5hxnJWK4xI?=
+ =?us-ascii?Q?rjzCMs0pgAuRyAMV9hGYMpUteD18l7Tt9fEdZ7E3rsdhkDd+PKhfV9c3F6ac?=
+ =?us-ascii?Q?JlXKAFfdE0FTxHPiiSMPySZmIKTBRtQ7YfoTyUkT11RrJeWY9VFfjbI9oKrc?=
+ =?us-ascii?Q?UEPhNrzPUADvBVFdWBDILe0Y0H6CBhPWOitC24h1gz5C96E3RF0UhY3J1wOY?=
+ =?us-ascii?Q?UBYkvEQt+DhjAQxtVq4ymPnszdGCNGiILn2Q5uWjnfIOqH8NP3IcotEWP5Tj?=
+ =?us-ascii?Q?/aX7kGnvXL42G4K9b0xcj28PC4J/7HsFChQlk+ftVzpteqDhzcLDkUA7Qve4?=
+ =?us-ascii?Q?e89eqGc54CI7FPSxZ/m00HL6xQ7Hrnm29l1CgzblnA9yswdD+82yfeJfm213?=
+ =?us-ascii?Q?SU55g5ZC6XqQ6vxdHYoLAWxbVEENGTc+UIaA0d2dQDZ9BFG3VJR4hehIftlI?=
+ =?us-ascii?Q?xRH9V9kLYvPc8gRqsquvD3Jmyc5HN9QEUjOaa9GxCyycGN66btTWKU0uC8DO?=
+ =?us-ascii?Q?sY/6KsnkQAlwPm0Bx/OmdQfHh/o1VUVha3z/sZxajgIbnNQbaI2a2oH2+qbd?=
+ =?us-ascii?Q?6D0MJLABlWixmaThPh8U4OIKNeiI4vd2CyzO7Aqr4CUoYs/1/jps3HL0UwSO?=
+ =?us-ascii?Q?1z/pee4l8RXG5MCxaJ/Jbn+LklYOpg6JPWX2zoSq4Mu1S/7BM6kBAGOfW6KK?=
+ =?us-ascii?Q?We9OaEOZMTMsdHYzdTp4M6ffbpKEy9fYU7s26pZEHQC6X9YiNVfjnnHaNR/A?=
+ =?us-ascii?Q?1DPQY6OhzG3MCfA+QPL/K3g19XJ92yQA70yUkySHos7tSE3UXNEisERsrC0J?=
+ =?us-ascii?Q?W8BK4RGaFBoWhdzRvVNpc2Mz2bpdXvghk+TzlKjIjgogaLGBXe5y0FIAZmnb?=
+ =?us-ascii?Q?jtURnPtd1Fx32ACBndZ4Ia3yTAJIneGxheiR4Bji4LR+mPfZQVH+ltqOFCcJ?=
+ =?us-ascii?Q?TCFgHNXWaGkwnTbkGFu/1OSjBnJnpZVAOMd3NegtkXS5QpSgzGMXeeV4sMCC?=
+ =?us-ascii?Q?X8i+1eHe3zXC0G3fBf9Pexe7MN1jlxeI3tQuyWUNVQfwdsgsfwrm4hxFzPWA?=
+ =?us-ascii?Q?AlUN3Sqnco57Z1jR9vokJcKMAVmTxLb+9MgYMqEZVhseyoi9IWXAdP/yI/AR?=
+ =?us-ascii?Q?welz1KxHSPiwMSwanRAnQ1G1Ed9xLyDrML14y5do4p1p6GQC9nl+8mAKEp7A?=
+ =?us-ascii?Q?wgKboFmDKGkHwwq92SH1/6UGT1SV6++GNqkP9p5Ok3EahqA3/XFsoWL+AkH5?=
+ =?us-ascii?Q?43QRaFDiVRHn/XGEBEkRVLpnVL85eQIKXOGIsgTtqgIIjSZqikDM0gWyLNKB?=
+ =?us-ascii?Q?+1q1TUJoEm/sT79JSgxp7xaOcb/l1zLdnqqDKAS8UGZYMpmEOcmBc+2xplQk?=
+ =?us-ascii?Q?PosRlsrdVdE/tU98LYFg7mwSvAq41lefLYJ4YovpDaBslMIEQTIApzmkCGNE?=
+ =?us-ascii?Q?P+B2fsE4MNX8gCuv2zQ6K1iExpjYILTULvWeFRI0+5h1vwTK1Qd5TVNcf3Dj?=
+ =?us-ascii?Q?EMkxWLjRVlPJZ05uPqK61iI=3D?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <8D458A0C60286B4BBE1B21E5A2B5CA27@eurprd04.prod.outlook.com>
+Content-ID: <79FDE101393C3F4895280926F715645E@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d5ec5768-4756-457a-9c94-08d9ef2bd369
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Feb 2022 20:02:55.8088
+X-MS-Exchange-CrossTenant-Network-Message-Id: c86bb498-5409-4d17-530a-08d9ef2d538e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Feb 2022 20:13:40.3570
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: PBWeXVe/3U6zLJugd1d9Gg9W8japCUqoP7me5Vc6e8k8Ix2TSGT2eFgmjHy1WFU+oAI37Gl9EBtxb82GHgTe1A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6056
+X-MS-Exchange-CrossTenant-userprincipalname: tLTmvEmLvvYXzuTozj2yxA+aWvMxFa6RPI83Zw8zAh+8ivsQLgR95Yf86Yw8Vv0FrRhKWro9YYMfMJPT7KdazA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6192
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -130,76 +131,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nikolay,
+On Sun, Feb 13, 2022 at 10:02:55PM +0200, Vladimir Oltean wrote:
+> (a) call br_vlan_get_info() from the DSA switchdev notification handler
+>     to figure out whether the VLAN is new or not. As far as I can see in
+>     __vlan_add(), br_switchdev_port_vlan_add() is called before the
+>     insertion of the VLAN into &vg->vlan_hash, so the absence from there
+>     could be used as an indicator that the VLAN is new, and that the
+>     refcount needs to be bumped, regardless of knowing exactly which
+>     bridge or bridge port the VLAN came from. The important part is that
+>     it isn't just a flag change, for which we don't want to bump the
+>     refcount, and that we can rely on the bridge database and not keep a
+>     separate one. The disadvantage seems to be that the solution is a
+>     bit fragile and puts a bit too much pressure on the bridge code
+>     structure, if it even works (need to try).
 
-On Sun, Feb 13, 2022 at 08:54:50PM +0200, Nikolay Aleksandrov wrote:
-> Hi,
-> I don't like the VLAN delete on simple flags change to workaround some de=
-vices'
-> broken behaviour, in general I'd like to avoid adding driver workarounds =
-in the bridge.
-> Either those drivers should be fixed (best approach IMO), or the workarou=
-nd should only
-> affect them, and not everyone. The point is that a vlan has much more sta=
-te than a simple
-> fdb, and deleting it could result in a lot more unnecessary churn which c=
-an be avoided
-> if these flags can be changed properly.
-
-Agree, but the broken drivers was just an added bonus I thought I'd mention=
-,
-since the subtle implications of the API struck me as odd the first time
-I realized them.
-
-The point is that it's impossible for a switchdev driver to do correct
-refcounting for this example (taken from Tobias):
-
-   br0
-   / \
-swp0 tap0
- ^     ^
-DSA   foreign interface
-
-(1) ip link add br0 type bridge
-(2) ip link set swp0 master br0
-(3) ip link set tap0 master br0
-(4) bridge vlan add dev tap0 vid 100
-(5) bridge vlan add dev br0 vid 100 self
-(6) bridge vlan add dev br0 vid 100 pvid self
-(7) bridge vlan add dev br0 vid 100 pvid untagged self
-(8) bridge vlan del dev br0 vid 100 self
-(8) bridge vlan del dev tap0 vid 100
-
-basically, if DSA were to keep track of the host-facing users of VID 100
-in order to keep the CPU port programmed in that VID, it needs a way to
-detect the fact that commands (6) and (7) operate on the same VID as (5),
-and on a different VID than (8). So practically, it needs to keep a
-shadow copy of each bridge VLAN so that it can figure out whether a
-switchdev notification is for an existing VLAN or for a new one.
-
-This is really undesirable in my mind as well, and I see two middle grounds
-(both untested):
-
-(a) call br_vlan_get_info() from the DSA switchdev notification handler
-    to figure out whether the VLAN is new or not. As far as I can see in
-    __vlan_add(), br_switchdev_port_vlan_add() is called before the
-    insertion of the VLAN into &vg->vlan_hash, so the absence from there
-    could be used as an indicator that the VLAN is new, and that the
-    refcount needs to be bumped, regardless of knowing exactly which
-    bridge or bridge port the VLAN came from. The important part is that
-    it isn't just a flag change, for which we don't want to bump the
-    refcount, and that we can rely on the bridge database and not keep a
-    separate one. The disadvantage seems to be that the solution is a
-    bit fragile and puts a bit too much pressure on the bridge code
-    structure, if it even works (need to try).
-
-(b) extend struct switchdev_obj_port_vlan with a "bool existing" flag
-    which is set to true by the "_add_existing" bridge code paths.
-    This flag can be ignored by non-interested parties, and used by DSA
-    and others as a hint whether to bump a refcount on the VID or not.
-
-(c) (just a variation of b) I feel there should have been a
-    SWITCHDEV_PORT_OBJ_CHANGE instead of just SWITCHDEV_PORT_OBJ_ADD,
-    but it's probably too late for that.
-
-So what do you think about option (b)?=
+Ah, this is too fragile, I thought of a case where it's broken already:
+for VLAN replays, it's technically a 'new VLAN' not a changed one, yet
+br_vlan_get_info() will still find it so it will get detected as changed.
+So the bridge has to pass the information that the switchdev notifier is
+just for a change of flags somehow.=
