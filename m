@@ -2,43 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E772E4B38F6
-	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 03:41:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 738034B3928
+	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 04:02:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232965AbiBMCjR convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 12 Feb 2022 21:39:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41918 "EHLO
+        id S233117AbiBMDBe convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 12 Feb 2022 22:01:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232954AbiBMCjQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 21:39:16 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 028AC6006D
-        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 18:39:11 -0800 (PST)
+        with ESMTP id S229558AbiBMDBd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 22:01:33 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C523A287
+        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 19:01:28 -0800 (PST)
 Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
  relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-267-jz20NOQ6P6ya1sjHH6f2FQ-1; Sun, 13 Feb 2022 02:39:08 +0000
-X-MC-Unique: jz20NOQ6P6ya1sjHH6f2FQ-1
+ uk-mta-230-aZDGCbkKMKmOLXdRHLKgCw-1; Sun, 13 Feb 2022 03:01:25 +0000
+X-MC-Unique: aZDGCbkKMKmOLXdRHLKgCw-1
 Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
  AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Sun, 13 Feb 2022 02:39:06 +0000
+ Server (TLS) id 15.0.1497.28; Sun, 13 Feb 2022 03:01:24 +0000
 Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
  AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Sun, 13 Feb 2022 02:39:06 +0000
+ 15.00.1497.028; Sun, 13 Feb 2022 03:01:24 +0000
 From:   David Laight <David.Laight@ACULAB.COM>
 To:     'Christophe Leroy' <christophe.leroy@csgroup.eu>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "Michael Ellerman" <mpe@ellerman.id.au>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH] net: Remove branch in csum_shift()
-Thread-Topic: [PATCH] net: Remove branch in csum_shift()
-Thread-Index: AQHYHyQqmTo4K/pb5UWdDmTfE7rfRayQxWFw
-Date:   Sun, 13 Feb 2022 02:39:06 +0000
-Message-ID: <7f16910a8f63475dae012ef5135f41d1@AcuMS.aculab.com>
-References: <efeeb0b9979b0377cd313311ad29cf0ac060ae4b.1644569106.git.christophe.leroy@csgroup.eu>
-In-Reply-To: <efeeb0b9979b0377cd313311ad29cf0ac060ae4b.1644569106.git.christophe.leroy@csgroup.eu>
+Subject: RE: [PATCH 2/2] powerpc/32: Implement csum_sub
+Thread-Topic: [PATCH 2/2] powerpc/32: Implement csum_sub
+Thread-Index: AQHYHzGljVa6S8GqcUW0lv81TntuEayQyZKA
+Date:   Sun, 13 Feb 2022 03:01:24 +0000
+Message-ID: <a87eb9e5bb6d483f8352ccb4b7374286@AcuMS.aculab.com>
+References: <0c8eaab8f0685d2a70d125cf876238c70afd4fb6.1644574987.git.christophe.leroy@csgroup.eu>
+ <c2a3f87d97f0903fdef3bbcb84661f75619301bf.1644574987.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <c2a3f87d97f0903fdef3bbcb84661f75619301bf.1644574987.git.christophe.leroy@csgroup.eu>
 Accept-Language: en-GB, en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
@@ -52,7 +56,7 @@ X-Mimecast-Originator: aculab.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -62,71 +66,43 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Christophe Leroy
-> Sent: 11 February 2022 08:48
+> Sent: 11 February 2022 10:25
 > 
-> Today's implementation of csum_shift() leads to branching based on
-> parity of 'offset'
+> When building kernel with CONFIG_CC_OPTIMISE_FOR_SIZE, several
+> copies of csum_sub() are generated, with the following code:
 > 
-> 	000002f8 <csum_block_add>:
-> 	     2f8:	70 a5 00 01 	andi.   r5,r5,1
-> 	     2fc:	41 a2 00 08 	beq     304 <csum_block_add+0xc>
-> 	     300:	54 84 c0 3e 	rotlwi  r4,r4,24
-> 	     304:	7c 63 20 14 	addc    r3,r3,r4
-> 	     308:	7c 63 01 94 	addze   r3,r3
-> 	     30c:	4e 80 00 20 	blr
+> 	00000170 <csum_sub>:
+> 	     170:	7c 84 20 f8 	not     r4,r4
+> 	     174:	7c 63 20 14 	addc    r3,r3,r4
+> 	     178:	7c 63 01 94 	addze   r3,r3
+> 	     17c:	4e 80 00 20 	blr
 > 
-> Use first bit of 'offset' directly as input of the rotation instead of
-> branching.
+> Let's define a PPC32 version with subc/addme, and for it's inlining.
 > 
-> 	000002f8 <csum_block_add>:
-> 	     2f8:	54 a5 1f 38 	rlwinm  r5,r5,3,28,28
-> 	     2fc:	20 a5 00 20 	subfic  r5,r5,32
-> 	     300:	5c 84 28 3e 	rotlw   r4,r4,r5
-> 	     304:	7c 63 20 14 	addc    r3,r3,r4
-> 	     308:	7c 63 01 94 	addze   r3,r3
-> 	     30c:	4e 80 00 20 	blr
-> 
-> And change to left shift instead of right shift to skip one more
-> instruction. This has no impact on the final sum.
-> 
-> 	000002f8 <csum_block_add>:
-> 	     2f8:	54 a5 1f 38 	rlwinm  r5,r5,3,28,28
-> 	     2fc:	5c 84 28 3e 	rotlw   r4,r4,r5
-> 	     300:	7c 63 20 14 	addc    r3,r3,r4
-> 	     304:	7c 63 01 94 	addze   r3,r3
-> 	     308:	4e 80 00 20 	blr
+> It will return 0 instead of 0xffffffff when subtracting 0x80000000 to itself,
+> this is not an issue as 0 and ~0 are equivalent, refer to RFC 1624.
 
-That is ppc64.
-What happens on x86-64?
+They are not always equivalent.
+In particular in the UDP checksum field one of them is (0?) 'checksum not calculated'.
 
-Trying to do the same in the x86 ipcsum code tended to make the code worse.
-(Although that test is for an odd length fragment and can just be removed.)
+I think all the Linux functions have to return a non-zero value (for non-zero input).
+
+If the csum is going to be converted to 16 bit, inverted, and put into a packet
+the code usually has to have a check that changes 0 to 0xffff.
+However if the csum functions guarantee never to return zero they can feed
+an extra 1 into the first csum_partial() then just invert and add 1 at the end.
+Because (~csum_partion(buffer, 1) + 1) is the same as ~csum_partial(buffer, 0)
+except when the buffer's csum is 0xffffffff.
+
+I did do some experiments and the 64bit value can be reduced directly to
+16bits using '% 0xffff'.
+This is different because it returns 0 not 0xffff.
+However gcc 'randomly' picks between the fast 'multiply by reciprocal'
+and slow divide instruction paths.
+The former is (probably) faster than reducing using shifts and adc.
+The latter definitely slower.
 
 	David
-
-> 
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-> ---
->  include/net/checksum.h | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/include/net/checksum.h b/include/net/checksum.h
-> index 5218041e5c8f..9badcd5532ef 100644
-> --- a/include/net/checksum.h
-> +++ b/include/net/checksum.h
-> @@ -83,9 +83,7 @@ static inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
->  static inline __wsum csum_shift(__wsum sum, int offset)
->  {
->  	/* rotate sum to align it with a 16b boundary */
-> -	if (offset & 1)
-> -		return (__force __wsum)ror32((__force u32)sum, 8);
-> -	return sum;
-> +	return (__force __wsum)rol32((__force u32)sum, (offset & 1) << 3);
->  }
-> 
->  static inline __wsum
-> --
-> 2.34.1
 
 -
 Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
