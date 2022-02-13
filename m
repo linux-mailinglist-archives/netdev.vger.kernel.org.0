@@ -2,136 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B0944B3BFF
-	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 16:18:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92F1D4B3C0D
+	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 16:32:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236727AbiBMPSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Feb 2022 10:18:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38412 "EHLO
+        id S236779AbiBMPdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Feb 2022 10:33:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236716AbiBMPSB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 10:18:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C0F85C37A
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 07:17:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644765475;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EU0aBUqG+RdRFWk7yiQfXhjL54RqsubwuXU5pneRySc=;
-        b=EzHKOqr2pPva6CrGy1XyLenicPuJc1bOlj5gC+UYlqU6+lyssU5BKEgN8vbuC6V0T53ciN
-        VHlf3CO0x9z/29k5+9joHlc5sxV2DOHfnuVIQLaSlTvP8GBHJIxQcj6T+I4CbX30Hv3Yr3
-        irUr9WitBAaqsxaDB2Sg8guvo1RR3Cg=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-166-Wl2l4k5ZMFy8l0PihulUWA-1; Sun, 13 Feb 2022 10:17:52 -0500
-X-MC-Unique: Wl2l4k5ZMFy8l0PihulUWA-1
-Received: by mail-ed1-f70.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso8628130edt.20
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 07:17:51 -0800 (PST)
+        with ESMTP id S231319AbiBMPdB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 10:33:01 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE755EDE8
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 07:32:55 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id t14so18973344ljh.8
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 07:32:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=f1OVYBJ4Uo8ogM4J/JOzZP0+MRYmTOMfv4l7hJHey9U=;
+        b=uHf3RfU5Nwz9vQ6LZSNL3UXtT4KQt2FTqTB3BcnyI9r5IINzqIOTI8/uJv9e7+kTU5
+         HnF/l4sXyiIqjsEYXUIl907R0gTLEUbR+YWlA0yUP7Mty/64OXTLqdO14wnMBiVlyWn3
+         nwBpIMRwUQnEcezdWd3iq0axu7bbYcOpHzn1ocipkqBIFjXFKQf+HRQNdVTmPpYjszIN
+         CZUtfbzWF3SNV7jwahxzywSwtdB2CQnaQQF45WPcIYxkn+UlR8hAiNb7wHlGwJtTgFzL
+         4DCTWpKF39TVyydiJBJVJ/HPzjYGyyavdwQL/k4igVTgmUZe+fHmfjQWHVUI2s8E9AE0
+         BJhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=EU0aBUqG+RdRFWk7yiQfXhjL54RqsubwuXU5pneRySc=;
-        b=PhnRk6e4d47wsq8BJx7nW93DcodhICP65FjdAVIf2jN6WAxE5BwXgI5pV9F1TpvdmZ
-         eIMv9lBN0ow9eCd7/lt+jnC5j2qU0T6sQPAxo4DgebttEw0Z1glyEPXoz5BXA1nE5Pqb
-         0j5fa4Z65juoF3YQdBurKQd8TrDMJSYNZY8YaEyMNS465FCCXo0ahSt1HGKlHgNhzKHV
-         j9t7l31Pwqzwi3e7Cap5kXwnLJ3SjhM0GgNcH85FKx9ASK7+ObWSby/IlfJN6bN5r2IW
-         nw9Z7dc60+YbHaUiK/vZAPPEMVG1ouBuDMfhH+vBkJXEDbIS3cOmPS6EIfqNM0oZhVRF
-         JBYw==
-X-Gm-Message-State: AOAM530F8g6GzzM8sUJvKvp0x5HjAvLNJLc6tcviiMTc7tqlrvFSXsFa
-        4MQRygYLAdaOtctR0bizWb3t/b0fA7hYLsuws9bpSrVpb+iSwWsin4uIcZ34Gy1cIw7s7+JO2vo
-        KdHfN8mRmMNrBdz34
-X-Received: by 2002:aa7:d406:: with SMTP id z6mr11607261edq.66.1644765470269;
-        Sun, 13 Feb 2022 07:17:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzRv21PC9qBN2ndh1MgmPCJg6IqIv0t1Ag19zVpEkFQRZEl5LeCLTHRzpIsu1qiF9mdf4oxQQ==
-X-Received: by 2002:aa7:d406:: with SMTP id z6mr11607165edq.66.1644765468966;
-        Sun, 13 Feb 2022 07:17:48 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id p19sm4805068ejx.30.2022.02.13.07.17.47
+         :message-id:mime-version;
+        bh=f1OVYBJ4Uo8ogM4J/JOzZP0+MRYmTOMfv4l7hJHey9U=;
+        b=w71tdapUWErSeDFeQPc3RB941Tn47a/Nb1CeyFL6UxrxgjwUg5WJTiRHSaoAlpB2WW
+         3g2w6hpVdxURWpBxMo8HdZ9ms7r9Eu7dfXlAk8cXJvMfwElD7ssUqsolM6JNn6C/iif6
+         nLBFhkZLzNOA9TY3ArqBwpovDqry+3VTWoO3rxfsEPdOH6l9rgi9z3T7o+1uJhYSRsKU
+         QvcjOK+c1JBOq5TP2mwOwSmXyANXrAUhTAew1WNqZ6e+7eTpvOy7nDsclFRI5JFhWKWh
+         EM9A/YbjI/2wtwa/SpSMMoeSJg2wTdHMRD3tV6CuQV8zVjwsNqdH2HcCt6ZxwSMESM09
+         JABg==
+X-Gm-Message-State: AOAM532iobWYFPr5+oEBM6xT0WpO+zq7VEYUDdpPYPhPPTCJfXRuJJmb
+        Nf4gUYg5Xdc4ItF+s31M3M7x9A==
+X-Google-Smtp-Source: ABdhPJz5hFHpifG1UjEjJPDeE46TzbLjCROtI1DXwsoL1GpplUIwA5abpb+tqZC7vGYEYpL5k8U4wg==
+X-Received: by 2002:a2e:a546:: with SMTP id e6mr6704048ljn.368.1644766373691;
+        Sun, 13 Feb 2022 07:32:53 -0800 (PST)
+Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
+        by smtp.gmail.com with ESMTPSA id f5sm1362483lfs.245.2022.02.13.07.32.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Feb 2022 07:17:48 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 441D61031B1; Sun, 13 Feb 2022 16:17:47 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Zhiqian Guan <zhguan@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v2] libbpf: Use dynamically allocated buffer
- when receiving netlink messages
-In-Reply-To: <CAEf4BzYURbRGL2D-WV=VUs6to=024wO2u=bGtwwxLEKc6pmfhQ@mail.gmail.com>
-References: <20220211234819.612288-1-toke@redhat.com>
- <CAEf4BzYURbRGL2D-WV=VUs6to=024wO2u=bGtwwxLEKc6pmfhQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sun, 13 Feb 2022 16:17:47 +0100
-Message-ID: <87h7927q3o.fsf@toke.dk>
+        Sun, 13 Feb 2022 07:32:53 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Fix validation of
+ built-in PHYs on 6095/6097
+In-Reply-To: <YgkAfy3fQ1hq7nlf@shell.armlinux.org.uk>
+References: <20220213003702.2440875-1-tobias@waldekranz.com>
+ <YgkAfy3fQ1hq7nlf@shell.armlinux.org.uk>
+Date:   Sun, 13 Feb 2022 16:32:51 +0100
+Message-ID: <87tud2aijg.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
-
-> On Fri, Feb 11, 2022 at 3:49 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> When receiving netlink messages, libbpf was using a statically allocated
->> stack buffer of 4k bytes. This happened to work fine on systems with a 4k
->> page size, but on systems with larger page sizes it can lead to truncated
->> messages. The user-visible impact of this was that libbpf would insist no
->> XDP program was attached to some interfaces because that bit of the netl=
-ink
->> message got chopped off.
->>
->> Fix this by switching to a dynamically allocated buffer; we borrow the
->> approach from iproute2 of using recvmsg() with MSG_PEEK|MSG_TRUNC to get
->> the actual size of the pending message before receiving it, adjusting the
->> buffer as necessary. While we're at it, also add retries on interrupted
->> system calls around the recvmsg() call.
->>
->> v2:
->>   - Move peek logic to libbpf_netlink_recv(), don't double free on ENOME=
-M.
->>
->> Reported-by: Zhiqian Guan <zhguan@redhat.com>
->> Fixes: 8bbb77b7c7a2 ("libbpf: Add various netlink helpers")
->> Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
->> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->> ---
+On Sun, Feb 13, 2022 at 12:58, "Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+> Hi,
 >
-> Applied to bpf-next.
+> Thanks for spotting this. Some comments below.
+>
+> On Sun, Feb 13, 2022 at 01:37:01AM +0100, Tobias Waldekranz wrote:
+>> +static void mv88e6095_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
+>> +				       struct phylink_config *config)
+>> +{
+>> +	u8 cmode = chip->ports[port].cmode;
+>> +
+>> +	config->mac_capabilities = MAC_SYM_PAUSE | MAC_10 | MAC_100;
+>> +
+>> +	if (mv88e6xxx_phy_is_internal(chip->ds, port)) {
+>> +		if (cmode == MV88E6185_PORT_STS_CMODE_PHY)
+>> +			__set_bit(PHY_INTERFACE_MODE_MII,
+>> +				  config->supported_interfaces);
+>
+> Hmm. First, note that with mv88e6xxx_get_caps(), you'll end up with both
+> MII and GMII here. GMII is necessary as that's the phylib default if no
 
-Awesome, thanks!
+I did notice that.
 
-> One improvement would be to avoid initial malloc of 4096, especially
-> if that size is enough for most cases. You could detect this through
-> iov.iov_base =3D=3D buf and not free(iov.iov_base) at the end. Seems
-> reliable and simple enough. I'll leave it up to you to follow up, if
-> you think it's a good idea.
+> one specifies anything different in the firmware description. I assume
+> you've noticed a problem because you specify MII for the internal ports
+> in firmware?
 
-Hmm, seems distributions tend to default the stack size limit to 8k; so
-not sure if blowing half of that on a buffer just to avoid a call to
-malloc() in a non-performance-sensitive is ideal to begin with? I think
-I'd prefer to just keep the dynamic allocation...
+Precisely.
 
--Toke
+> I'm wondering what the point of checking the cmode here is - if the port
+> is internal, won't this switch always have cmode == PHY?
 
+For all intents and purposes: I think so. It is just that the functional
+spec. also lists cmode == 4 == disabled (PHYDetect == 0) for the
+internal ports. So I figured that there might be some way of strapping
+ports as disabled that I had never come across.
+
+Do you think we should drop it?
