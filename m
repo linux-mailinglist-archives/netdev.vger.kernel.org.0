@@ -2,68 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98BFD4B3C7F
-	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 18:22:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3F0A4B3C93
+	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 18:37:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237405AbiBMRWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Feb 2022 12:22:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41826 "EHLO
+        id S235273AbiBMRho (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Feb 2022 12:37:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231301AbiBMRWk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 12:22:40 -0500
-Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D7F517F9
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 09:22:34 -0800 (PST)
-Received: by mail-oo1-xc2d.google.com with SMTP id k13-20020a4a948d000000b003172f2f6bdfso16753030ooi.1
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 09:22:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6gOn1TOfNbMYLyYypKWqKuyTET7LgcArVblqVE8rQPA=;
-        b=wgN6IGSEI7Z4WyUQRMYo3hg1Eyj/7D3v4ndCYWxXPMwiHyQZtx39kgmrd7M08chLQO
-         PGzPMjzgGOW8PpSkd3QmwcMGwokLOdrLGojEodkXUWfu+VC50pFR/rOq/vJt27Sye2ua
-         WaPRpO054M0tMgT/sw7OV2Jp00U0LeObVrh4ccCUiIM+Nsi09tJdWxmdD0wCTxtWKoYR
-         +2XHEEeGa50aM7Q2xzixvYE6ZzRUAglEJbbYavQ+bozoD3ZhBU1HB2Ulztd619xGhGvh
-         xJFTcNVbPfrZHmmPLXh/C42UwAKgnB0kAu91fXHo5fqvX9V2nkio5+dSO5fKMS2I2Xrl
-         3IlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6gOn1TOfNbMYLyYypKWqKuyTET7LgcArVblqVE8rQPA=;
-        b=A7xPPtydax4lsmuLKLBo4nXrDhRqESkvaX0RZiczUpsQ62ZOPQqXmB8yQ+NoyGQwgF
-         iIhjyKfu6l9vrXAqjuG90TjlcjYbHfSefGeXXrl1clBmJ+mc6Kx8HKnxPtB5TFfxC5oR
-         4HbyjnIAEoVOvX+pQtOKuX3eWw3t0hmNYoSB2ZDBIbPvYU45ZEjmdmqaFn139p4W4kI2
-         p/ax+/ZH3HQ0fpzSKGUI7GXwcXswHmCOZO170AZlm1bhqf8Ttc00ulvNqmdri7G78yPW
-         hYYWEquI+BfHqjZLqbEuFKeb2HvR8NlnWoDhHMx8697fRHIKcPxVITBxUK9JyOPsP3BN
-         Iy+g==
-X-Gm-Message-State: AOAM533pk86Aafl9j3homABi8KwgQamPB9IEOh+AompQbQwLEwLRuSfK
-        /mQ2Ed/3pji1RWnfciQ1lEDuh/TeBQODZzOshOxZow==
-X-Google-Smtp-Source: ABdhPJz82meVOYuliKCNgF06zpRUPtI5pe4EBPzRa1KfIkD9BUZy/9+Lxm8YzJocRT68c/rZijNBZ1CgcHQ7P689+Vg=
-X-Received: by 2002:a05:6870:7687:: with SMTP id dx7mr1469694oab.327.1644772953668;
- Sun, 13 Feb 2022 09:22:33 -0800 (PST)
+        with ESMTP id S229581AbiBMRhn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 12:37:43 -0500
+Received: from mxo2.dft.dmz.twosigma.com (mxo2.dft.dmz.twosigma.com [208.77.212.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD3E59A6B
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 09:37:37 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by mxo2.dft.dmz.twosigma.com (Postfix) with ESMTP id 4JxZLR6xY4z15HG;
+        Sun, 13 Feb 2022 17:37:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=twosigma.com;
+        s=202008; t=1644773856;
+        bh=tLByhHj8OKVxCrx+wTGjEMCYKdv+OUXDTbmNFyROlCY=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=B/P7Ckhype8XkgUx3kG5p4IWWdjMVF1/D+4gbpEOQY74u8VTEK0hhFkfBYtQ3+n2V
+         5QzC1NFrkz63w5A1jOWeXO8+CgQAA5z5n4HUfqE0wzk6/T7bbaoXzk2f+IzgAxixcQ
+         sjzzjP4/mbdusXYs5U6tVlVWAL/jbFMXpiJDUKezOYQqj5WfNq09AQiQ+UOFnIJYSK
+         2NqKWtMJ1PDBRvtuuztvlLqlxZNOqyNlqVpd0uqOPGgv2NvfE/xa8ERi7QMhaPjIYX
+         cmBn32UHHhDbHssxTP6aw9gGaYF0JwoqspdMN7BPvl/eVd8SpbEplDHqfGu0hVt7Zy
+         jH31SXfWJHFsA==
+X-Virus-Scanned: Debian amavisd-new at twosigma.com
+Received: from mxo2.dft.dmz.twosigma.com ([127.0.0.1])
+        by localhost (mxo2.dft.dmz.twosigma.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id VCNFChGt1gRG; Sun, 13 Feb 2022 17:37:35 +0000 (UTC)
+Received: from exmbdft6.ad.twosigma.com (exmbdft6.ad.twosigma.com [172.22.1.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mxo2.dft.dmz.twosigma.com (Postfix) with ESMTPS id 4JxZLR4x40z15HF;
+        Sun, 13 Feb 2022 17:37:35 +0000 (UTC)
+Received: from exmbdft6.ad.twosigma.com (172.22.1.5) by
+ exmbdft6.ad.twosigma.com (172.22.1.5) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Sun, 13 Feb 2022 17:37:35 +0000
+Received: from exmbdft6.ad.twosigma.com ([fe80::c47f:175e:9f31:d58c]) by
+ exmbdft6.ad.twosigma.com ([fe80::c47f:175e:9f31:d58c%17]) with mapi id
+ 15.00.1497.012; Sun, 13 Feb 2022 17:37:35 +0000
+From:   Tian Lan <Tian.Lan@twosigma.com>
+To:     Eric Dumazet <edumazet@google.com>, Tian Lan <tilan7663@gmail.com>
+CC:     netdev <netdev@vger.kernel.org>,
+        Andrew Chester <Andrew.Chester@twosigma.com>
+Subject: RE: [PATCH] tcp: allow the initial receive window to be greater than
+ 64KiB
+Thread-Topic: [PATCH] tcp: allow the initial receive window to be greater than
+ 64KiB
+Thread-Index: AQHYII8R50vJ9luEckWkqpgQGqAi+KyQ4b2AgADavqA=
+Date:   Sun, 13 Feb 2022 17:37:35 +0000
+Message-ID: <101663cb4d7d43e9b6bfa946f6b8036b@exmbdft6.ad.twosigma.com>
+References: <20220213040545.365600-1-tilan7663@gmail.com>
+ <CANn89i+=wXy-UFTy1a+1gaVgmynQ9u4LiAutFBf=dsE2fgF3rA@mail.gmail.com>
+In-Reply-To: <CANn89i+=wXy-UFTy1a+1gaVgmynQ9u4LiAutFBf=dsE2fgF3rA@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.23.151.37]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220208181510.787069-1-andrew@daynix.com> <20220208181510.787069-5-andrew@daynix.com>
- <CA+FuTScRp5hhkvETuVRsUxMRCZVU0wVrmd5_=a5UoKNLDv4LnA@mail.gmail.com>
-In-Reply-To: <CA+FuTScRp5hhkvETuVRsUxMRCZVU0wVrmd5_=a5UoKNLDv4LnA@mail.gmail.com>
-From:   Andrew Melnichenko <andrew@daynix.com>
-Date:   Sun, 13 Feb 2022 19:22:22 +0200
-Message-ID: <CABcq3pGQkw7uyQc+nfK0OZ5ejh3+7ws+cj41zyW99+3FsKW0og@mail.gmail.com>
-Subject: Re: [PATCH v3 4/4] drivers/net/virtio_net: Added RSS hash report control.
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Yan Vugenfirer <yan@daynix.com>,
-        Yuri Benditovich <yuri.benditovich@daynix.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,123 +74,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
-
-
-On Tue, Feb 8, 2022 at 10:59 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Tue, Feb 8, 2022 at 1:19 PM Andrew Melnychenko <andrew@daynix.com> wrote:
-> >
-> > Now it's possible to control supported hashflows.
-> > Added hashflow set/get callbacks.
-> > Also, disabling RXH_IP_SRC/DST for TCP would disable then for UDP.
->
-> I don't follow this comment. Can you elaborate?
-
-I'll rephrase it in next version of patches.
-The idea is that VirtioNet RSS doesn't distinguish IP hashes between
-TCP and UDP.
-For TCP and UDP it's possible to set IP+PORT hashes.
-But disabling IP hashes will disable them for TCP and UDP simultaneously.
-It's possible to set IP+PORT for TCP and IP for everything else(UDP, ICMP etc.)
-
->
-> > TCP and UDP supports only:
-> > ethtool -U eth0 rx-flow-hash tcp4 sd
-> >     RXH_IP_SRC + RXH_IP_DST
-> > ethtool -U eth0 rx-flow-hash tcp4 sdfn
-> >     RXH_IP_SRC + RXH_IP_DST + RXH_L4_B_0_1 + RXH_L4_B_2_3
-> >
-> > Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
-> > ---
-> >  drivers/net/virtio_net.c | 141 ++++++++++++++++++++++++++++++++++++++-
-> >  1 file changed, 140 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index 543da2fbdd2d..88759d5e693c 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -231,6 +231,7 @@ struct virtnet_info {
-> >         u8 rss_key_size;
-> >         u16 rss_indir_table_size;
-> >         u32 rss_hash_types_supported;
-> > +       u32 rss_hash_types_saved;
->
-> hash_types_active?
-
-I think "hash_types_saved" is more suitable for the current field.
-Idea is that the user may disable RSS/HASH and we need to save
-what hash type configurations previously were enabled.
-So, we can restore it when the user will enable RSS/HASH back.
-
->
-> > +static bool virtnet_set_hashflow(struct virtnet_info *vi, struct ethtool_rxnfc *info)
-> > +{
-> > +       u32 new_hashtypes = vi->rss_hash_types_saved;
-> > +       bool is_disable = info->data & RXH_DISCARD;
-> > +       bool is_l4 = info->data == (RXH_IP_SRC | RXH_IP_DST | RXH_L4_B_0_1 | RXH_L4_B_2_3);
-> > +
-> > +       /* supports only 'sd', 'sdfn' and 'r' */
-> > +       if (!((info->data == (RXH_IP_SRC | RXH_IP_DST)) | is_l4 | is_disable))
->
-> maybe add an is_l3
-
-There used to be "is_l3", but that variable was used only in that
-condition statement.
-So I've decided to inplace it.
-
->
-> > +               return false;
-> > +
-> > +       switch (info->flow_type) {
-> > +       case TCP_V4_FLOW:
-> > +               new_hashtypes &= ~(VIRTIO_NET_RSS_HASH_TYPE_IPv4 | VIRTIO_NET_RSS_HASH_TYPE_TCPv4);
-> > +               if (!is_disable)
-> > +                       new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv4
-> > +                               | (is_l4 ? VIRTIO_NET_RSS_HASH_TYPE_TCPv4 : 0);
-> > +               break;
-> > +       case UDP_V4_FLOW:
-> > +               new_hashtypes &= ~(VIRTIO_NET_RSS_HASH_TYPE_IPv4 | VIRTIO_NET_RSS_HASH_TYPE_UDPv4);
-> > +               if (!is_disable)
-> > +                       new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv4
-> > +                               | (is_l4 ? VIRTIO_NET_RSS_HASH_TYPE_UDPv4 : 0);
-> > +               break;
-> > +       case IPV4_FLOW:
-> > +               new_hashtypes &= ~VIRTIO_NET_RSS_HASH_TYPE_IPv4;
-> > +               if (!is_disable)
-> > +                       new_hashtypes = VIRTIO_NET_RSS_HASH_TYPE_IPv4;
-> > +               break;
-> > +       case TCP_V6_FLOW:
-> > +               new_hashtypes &= ~(VIRTIO_NET_RSS_HASH_TYPE_IPv6 | VIRTIO_NET_RSS_HASH_TYPE_TCPv6);
-> > +               if (!is_disable)
-> > +                       new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv6
-> > +                               | (is_l4 ? VIRTIO_NET_RSS_HASH_TYPE_TCPv6 : 0);
-> > +               break;
-> > +       case UDP_V6_FLOW:
-> > +               new_hashtypes &= ~(VIRTIO_NET_RSS_HASH_TYPE_IPv6 | VIRTIO_NET_RSS_HASH_TYPE_UDPv6);
-> > +               if (!is_disable)
-> > +                       new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv6
-> > +                               | (is_l4 ? VIRTIO_NET_RSS_HASH_TYPE_UDPv6 : 0);
-> > +               break;
-> > +       case IPV6_FLOW:
-> > +               new_hashtypes &= ~VIRTIO_NET_RSS_HASH_TYPE_IPv6;
-> > +               if (!is_disable)
-> > +                       new_hashtypes = VIRTIO_NET_RSS_HASH_TYPE_IPv6;
-> > +               break;
-> > +       default:
-> > +               /* unsupported flow */
-> > +               return false;
-> > +       }
-> > +
-> > +       /* if unsupported hashtype was set */
-> > +       if (new_hashtypes != (new_hashtypes & vi->rss_hash_types_supported))
-> > +               return false;
-> > +
-> > +       if (new_hashtypes != vi->rss_hash_types_saved) {
-> > +               vi->rss_hash_types_saved = new_hashtypes;
->
-> should only be updated if the commit function returned success?
-
-Not really, we already made all checks against "supported" hash types.
-Also, the commit function may not be called if RSS is disabled by the user.
+PiBUaGUgb25seSB3YXkgYSBzZW5kZXIgY291bGQgdXNlIHlvdXIgYmlnZ2VyIHdpbmRvdyB3b3Vs
+ZCBiZSB0byB2aW9sYXRlIFRDUCBzcGVjcyBhbmQgc2VuZCBtb3JlIHRoYW4gPiA2NEtCIGluIHRo
+ZSBmaXJzdCBSVFQsIGFzc3VtaW5nIHRoZSByZWNlaXZlciBoYXMgaW4gZmFjdCBhIFJXSU4gYmln
+Z2VyIHRoYW4gNjRLID8/Pz8NCg0KSnVzdCB3YW50IHRvIGNsYXJpZnksIHRoZSBpbnRlbnQgb2Yg
+dGhpcyBwYXRjaCBpcyBub3QgdHJ5aW5nIHRvIHZpb2xhdGUgdGhlIFRDUCBwcm90b2NvbC4gVGhl
+IGdvYWwgaXMgdG8gYWxsb3cgdGhlIHJlY2VpdmVyIGFkdmVydGlzZSBhIG11Y2ggImxhcmdlciIg
+cmN2X3duZCBvbmNlIHRoZSBjb25uZWN0aW9uIGlzIGVzdGFibGlzaGVkLiBTbyBpbnN0ZWFkIG9m
+IGhhdmluZyB0aGUgcmVjZWl2ZXIgZ3JvdyB0aGUgcmN2X3duZCBzdGFydGluZyB3aXRoIDY0S2lC
+LCB0aGUgcmVjZWl2ZXIgY291bGQgYWR2ZXJ0aXNlIHRoZSBuZXcgcmN2X3duZCBiYXNlZCBvbiBh
+IG11Y2ggbGFyZ2VyIGluaXRpYWwgd2luZG93LiANCg0KU29ycnkgZm9yIHRoZSBjb25mdXNpb24s
+IGhhcHB5IHRvIGNoYXQgbW9yZSBpZiB5b3UgaGF2ZSBxdWVzdGlvbnMgb3IgY29uY2VybnMuIA0K
+DQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogRXJpYyBEdW1hemV0IDxlZHVtYXpl
+dEBnb29nbGUuY29tPiANClNlbnQ6IFNhdHVyZGF5LCBGZWJydWFyeSAxMiwgMjAyMiAxMToyMyBQ
+TQ0KVG86IFRpYW4gTGFuIDx0aWxhbjc2NjNAZ21haWwuY29tPg0KQ2M6IG5ldGRldiA8bmV0ZGV2
+QHZnZXIua2VybmVsLm9yZz47IEFuZHJldyBDaGVzdGVyIDxBbmRyZXcuQ2hlc3RlckB0d29zaWdt
+YS5jb20+OyBUaWFuIExhbiA8VGlhbi5MYW5AdHdvc2lnbWEuY29tPg0KU3ViamVjdDogUmU6IFtQ
+QVRDSF0gdGNwOiBhbGxvdyB0aGUgaW5pdGlhbCByZWNlaXZlIHdpbmRvdyB0byBiZSBncmVhdGVy
+IHRoYW4gNjRLaUINCg0KT24gU2F0LCBGZWIgMTIsIDIwMjIgYXQgODowNiBQTSBUaWFuIExhbiA8
+dGlsYW43NjYzQGdtYWlsLmNvbT4gd3JvdGU6DQo+DQo+IEZyb206IFRpYW4gTGFuIDxUaWFuLkxh
+bkB0d29zaWdtYS5jb20+DQo+DQo+IENvbW1pdCAxM2QzYjFlYmUyODcgKCJicGY6IFN1cHBvcnQg
+Zm9yIHNldHRpbmcgaW5pdGlhbCByZWNlaXZlIA0KPiB3aW5kb3ciKSBpbnRyb2R1Y2VkIGEgQlBG
+X1NPQ0tfT1BTIG9wdGlvbiB3aGljaCBhbGxvd3Mgc2V0dGluZyBhIA0KPiBsYXJnZXIgdmFsdWUg
+Zm9yIHRoZSBpbml0aWFsIGFkdmVydGlzZWQgcmVjZWl2ZSB3aW5kb3cgdXAgdG8gdGhlIA0KPiBy
+ZWNlaXZlIGJ1ZmZlciBzcGFjZSBmb3IgYm90aCBhY3RpdmUgYW5kIHBhc3NpdmUgVENQIGNvbm5l
+Y3Rpb25zLg0KPg0KPiBIb3dldmVyLCB0aGUgY29tbWl0IGEzMzc1MzFiOTQyYiAoInRjcDogdXAg
+aW5pdGlhbCBybWVtIHRvIDEyOEtCIGFuZCANCj4gU1lOIHJ3aW4gdG8gYXJvdW5kIDY0S0IiKSB3
+b3VsZCBsaW1pdCB0aGUgaW5pdGlhbCByZWNlaXZlIHdpbmRvdyB0byBiZSANCj4gYXQgbW9zdCA2
+NEtpQiB3aGljaCBwYXJ0aWFsbHkgbmVnYXRlcyB0aGUgY2hhbmdlIG1hZGUgcHJldmlvdXNseS4N
+Cj4NCj4gV2l0aCB0aGlzIHBhdGNoLCB0aGUgaW5pdGlhbCByZWNlaXZlIHdpbmRvdyB3aWxsIGJl
+IHNldCB0byB0aGUgDQo+IG1pbig2NEtpQiwgc3BhY2UpIGlmIHRoZXJlIGlzIG5vIGluaXRfcmN2
+X3duZCBwcm92aWRlZC4gRWxzZSBzZXQgdGhlIA0KPiBpbml0aWFsIHJlY2VpdmUgd2luZG93IHRv
+IGJlIHRoZSBtaW4oaW5pdF9yY3Zfd25kICogbXNzLCBzcGFjZSkuDQoNCg0KSSBkbyBub3Qgc2Vl
+IGhvdyBwcmV0ZW5kaW5nIHRvIGhhdmUgYSBsYXJnZSByY3Z3aW4gaXMgZ29pbmcgdG8gaGVscCBm
+b3IgcGFzc2l2ZSBjb25uZWN0aW9ucywgZ2l2ZW4gdGhlIFdJTiBpbiBTWU4gYW5kIFNZTkFDSyBw
+YWNrZXQgaXMgbm90IHNjYWxlZC4NCg0KU28gdGhpcyBwYXRjaCBJIHRoaW5rIGlzIG1pc2xlYWRp
+bmcuIEdldCBvdmVyIGl0LCBUQ1AgaGFzIG5vdCBiZWVuIGRlc2lnbmVkIHRvIGFubm91bmNlIG1v
+cmUgdGhhbiA2NEtCIGluIHRoZSAzV0hTLg0KDQpUaGUgb25seSB3YXkgYSBzZW5kZXIgY291bGQg
+dXNlIHlvdXIgYmlnZ2VyIHdpbmRvdyB3b3VsZCBiZSB0byB2aW9sYXRlIFRDUCBzcGVjcyBhbmQg
+c2VuZCBtb3JlIHRoYW4gNjRLQiBpbiB0aGUgZmlyc3QgUlRULCBhc3N1bWluZyB0aGUgcmVjZWl2
+ZXIgaGFzIGluIGZhY3QgYSBSV0lOIGJpZ2dlciB0aGFuIDY0SyA/Pz8/DQo=
