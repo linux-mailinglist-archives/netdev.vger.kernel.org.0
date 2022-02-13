@@ -2,92 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C71B44B3B6A
-	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 13:58:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF4C04B3B83
+	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 14:06:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236083AbiBMM6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Feb 2022 07:58:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60466 "EHLO
+        id S236190AbiBMNGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Feb 2022 08:06:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236088AbiBMM6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 07:58:53 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D696A5B88E;
-        Sun, 13 Feb 2022 04:58:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=76rqzaWttVih/dB1HTOqZ2nr+hKq7a/b3VRkDpxa+lc=; b=Nq+JN+NnVPwtOeljjpbmascntu
-        DVMUZ+IreQIYZxM6UaN/s4OlBNX3Z6LA9amdN5oPeBCBpKbXMLGzOdpTu52eqHBCm/tiJGxxQZPMR
-        4YuW7QxKHvxHqu7uYXhbdU1tQpr22me9/ZW5BbexJUgCAk0Zg3JX6wWm/llWMJTLM+Llzx8jOZYfb
-        urG6NsStPy6oCGRdb6/rQ7bUliGbUzLCEDceSdSP22smbQhdZ+ut4Bg/W04cFS8gGDCKT5nsdBf7j
-        mon6JwUpAPhVRarsLPiU0301RjMbuqSXl7zCW/724DTMukgrkutFNPSNCghxvBY6sukoqu1yNImDj
-        z22wIrtQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57228)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nJESf-0000QO-OX; Sun, 13 Feb 2022 12:58:41 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nJESd-0005aV-DT; Sun, 13 Feb 2022 12:58:39 +0000
-Date:   Sun, 13 Feb 2022 12:58:39 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Fix validation of built-in
- PHYs on 6095/6097
-Message-ID: <YgkAfy3fQ1hq7nlf@shell.armlinux.org.uk>
-References: <20220213003702.2440875-1-tobias@waldekranz.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220213003702.2440875-1-tobias@waldekranz.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229674AbiBMNGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 08:06:43 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61735B88E;
+        Sun, 13 Feb 2022 05:06:37 -0800 (PST)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21DAPOGv007992;
+        Sun, 13 Feb 2022 13:06:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=cQPiw2dyD8PgwyjWmIk8sBpF1FR7uPpYLP5WigSzu+0=;
+ b=oi/0aktaJZz9GBmenntUm1blxvOZlDwfwkiFmHKZdAGwBSRZiU4J0+iC51ml9JhBJa64
+ GTS7HfFh6QjxmhBcyaYKDTLoGg0aJTk/AXN4GsfCwp6mtB7o5n3Svd1MifVsLbegVFng
+ f3RIrQ02HBrLlXjvIkKNoSFgnn5xSOeIs4W/jFiZzAiFNV0c47cZDXGHw21j7BvPjKCd
+ R7sgx5WSEZxY+xXZtk71XX2s5YK4+B3374zwhBmBb2DD6eLlJ3ZlopabtVncTEwzTlg+
+ qoQaEk1fkOgT2vhSuypr4LsqvFkx6AA84dKyZEHoNkSZAIi2+T7R2d3urbI1zMfz4O7e wA== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e6ueedjc0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 13 Feb 2022 13:06:08 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21DD3Ht9003084;
+        Sun, 13 Feb 2022 13:06:05 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma06fra.de.ibm.com with ESMTP id 3e645j63u0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 13 Feb 2022 13:06:05 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21DD63VF39715094
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 13 Feb 2022 13:06:03 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 32020AE053;
+        Sun, 13 Feb 2022 13:06:03 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ACE5CAE051;
+        Sun, 13 Feb 2022 13:06:01 +0000 (GMT)
+Received: from sig-9-65-82-84.ibm.com (unknown [9.65.82.84])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Sun, 13 Feb 2022 13:06:01 +0000 (GMT)
+Message-ID: <537635732d9cbcc42bcf7be5ed932d284b03d39f.camel@linux.ibm.com>
+Subject: Re: [PATCH] ima: Calculate digest in ima_inode_hash() if not
+ available
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Roberto Sassu <roberto.sassu@huawei.com>, shuah@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kpsingh@kernel.org, Florent Revest <revest@chromium.org>
+Cc:     linux-integrity@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Sun, 13 Feb 2022 08:06:01 -0500
+In-Reply-To: <20220211104828.4061334-1-roberto.sassu@huawei.com>
+References: <20220211104828.4061334-1-roberto.sassu@huawei.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 9yEoyiBIJvR4y7HasDH_lt1HNEe7aV9K
+X-Proofpoint-GUID: 9yEoyiBIJvR4y7HasDH_lt1HNEe7aV9K
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-13_04,2022-02-11_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ phishscore=0 bulkscore=0 malwarescore=0 suspectscore=0 spamscore=0
+ priorityscore=1501 clxscore=1011 adultscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202130089
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Roberto,
 
-Thanks for spotting this. Some comments below.
+On Fri, 2022-02-11 at 11:48 +0100, Roberto Sassu wrote:
+> __ima_inode_hash() checks if a digest has been already calculated by
+> looking for the integrity_iint_cache structure associated to the passed
+> inode.
+> 
+> Users of ima_file_hash() and ima_inode_hash() (e.g. eBPF) might be
+> interested in obtaining the information without having to setup an IMA
+> policy so that the digest is always available at the time they call one of
+> those functions.
+> 
+> Open a new file descriptor in __ima_inode_hash(), so that this function
+> could invoke ima_collect_measurement() to calculate the digest if it is not
+> available. Still return -EOPNOTSUPP if the calculation failed.
+> 
+> Instead of opening a new file descriptor, the one from ima_file_hash()
+> could have been used. However, since ima_inode_hash() was created to obtain
+> the digest when the file descriptor is not available, it could benefit from
+> this change too. Also, the opened file descriptor might be not suitable for
+> use (file descriptor opened not for reading).
+> 
+> This change does not cause memory usage increase, due to using a temporary
+> integrity_iint_cache structure for the digest calculation, and due to
+> freeing the ima_digest_data structure inside integrity_iint_cache before
+> exiting from __ima_inode_hash().
+> 
+> Finally, update the test by removing ima_setup.sh (it is not necessary
+> anymore to set an IMA policy) and by directly executing /bin/true.
+> 
+> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
 
-On Sun, Feb 13, 2022 at 01:37:01AM +0100, Tobias Waldekranz wrote:
-> +static void mv88e6095_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
-> +				       struct phylink_config *config)
-> +{
-> +	u8 cmode = chip->ports[port].cmode;
-> +
-> +	config->mac_capabilities = MAC_SYM_PAUSE | MAC_10 | MAC_100;
-> +
-> +	if (mv88e6xxx_phy_is_internal(chip->ds, port)) {
-> +		if (cmode == MV88E6185_PORT_STS_CMODE_PHY)
-> +			__set_bit(PHY_INTERFACE_MODE_MII,
-> +				  config->supported_interfaces);
+Although this patch doesn't directly modify either ima_file_hash() or
+ima_inode_hash(),  this change affects both functions.  ima_file_hash()
+was introduced to be used with eBPF.  Based on Florent's post, changing
+the ima_file_hash() behavor seems fine.  Since I have no idea whether
+anyone is still using ima_inode_hash(), perhaps it would be safer to
+limit this behavior change to just ima_file_hash().
 
-Hmm. First, note that with mv88e6xxx_get_caps(), you'll end up with both
-MII and GMII here. GMII is necessary as that's the phylib default if no
-one specifies anything different in the firmware description. I assume
-you've noticed a problem because you specify MII for the internal ports
-in firmware?
+Please update the ima_file_hash() doc.  While touching this area, I'd
+appreciate your fixing the first doc line in both ima_file_hash() and
+ima_inode_hash() cases, which wraps spanning two lines.
 
-I'm wondering what the point of checking the cmode here is - if the port
-is internal, won't this switch always have cmode == PHY?
+Please split the IMA from the eBPF changes.
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+thanks,
+
+Mimi
+
