@@ -2,70 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A36D14B38D9
-	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 03:03:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E772E4B38F6
+	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 03:41:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232840AbiBMCCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Feb 2022 21:02:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60222 "EHLO
+        id S232965AbiBMCjR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 12 Feb 2022 21:39:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230179AbiBMCB7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 21:01:59 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93CBE5FF1C
-        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 18:01:54 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id s10so7786092wrb.1
-        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 18:01:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=Prmmfg2rEV4uJgRWjd+vofDxNghZEzQF4wrdv02e8Pg=;
-        b=BryKYgTPWtJvRUN+v/dMDyqSoOsL1IpCd8dKzn/DRbB1xtEJkHNGuXoRp3T2QzQHL0
-         c7ODHAhOLr0M8H5eP4TiU449zPp2ATMlM05ckGUi8I7qzFLH204aNwSfrCjGJL9CBT17
-         OyobpttUIyNWTOa08HFq0hy1zpCkielX6xgJg51cUs1ZLLxTjFJPl7b/N4fnlL1Wr1uM
-         KkOTg6nFn02lXlRCR+JxVUgJ5jof07debDLI06D37HbwiF47hpYnY3WXeSdj4xyX9v5f
-         3gvZeJTJbZYxO8rAocrGdEwhBvXZ6BYlc2rmCVZ4CVjUMNDKnDyi75W4+Z1W9nTmPkA5
-         4L1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=Prmmfg2rEV4uJgRWjd+vofDxNghZEzQF4wrdv02e8Pg=;
-        b=THn8G7bawBzdI+LS7iH1BgWiQ9GRCeSXHbX3ulLAwwe5mQFCoWAoBVOgvE9HmLuSWd
-         Wa1fuPXVrIKfNnsxVUHhXaL9ZWBdNYFx3WuYWf/53tVPDsKogWCEQUT0yPPhPtREbxNC
-         887YPYvtqALIkkVKt3XcQRm9eqF6szgf4/uF6Jyehe/Mrh9XQqTC3rbFreke4L5jTOxS
-         IPp/JQYsyglLe2qFGaZq5zP97IqmPJ+dGdRw2CMYuoSz1MaPDvMBB0MC90yFD/ssJ/dl
-         pUO9RWKp6dW51A1OMco+hE6ybei+8TkRwsBFyLZlmjnPCQR6u8+BLDu6nhCZzcunC8mD
-         Hxvw==
-X-Gm-Message-State: AOAM533mYEsh7TE57UVrL73sLya9riv3d4om+LmsGcqO37TD/D6e21w+
-        0cuHkaPQi6kap7hH+YpaPj1B0OJxGvc13W2YG50=
-X-Google-Smtp-Source: ABdhPJw5JvXHeFA8e4hU5bm9MeW4dT0AcOKrv/0YGsPwaUXPuqltXqijB0evKrpdPzNshdpGc7kN+Q9P5MhcD9K2Wec=
-X-Received: by 2002:a05:6000:168c:: with SMTP id y12mr6273528wrd.265.1644717713073;
- Sat, 12 Feb 2022 18:01:53 -0800 (PST)
+        with ESMTP id S232954AbiBMCjQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Feb 2022 21:39:16 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 028AC6006D
+        for <netdev@vger.kernel.org>; Sat, 12 Feb 2022 18:39:11 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-267-jz20NOQ6P6ya1sjHH6f2FQ-1; Sun, 13 Feb 2022 02:39:08 +0000
+X-MC-Unique: jz20NOQ6P6ya1sjHH6f2FQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Sun, 13 Feb 2022 02:39:06 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Sun, 13 Feb 2022 02:39:06 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christophe Leroy' <christophe.leroy@csgroup.eu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH] net: Remove branch in csum_shift()
+Thread-Topic: [PATCH] net: Remove branch in csum_shift()
+Thread-Index: AQHYHyQqmTo4K/pb5UWdDmTfE7rfRayQxWFw
+Date:   Sun, 13 Feb 2022 02:39:06 +0000
+Message-ID: <7f16910a8f63475dae012ef5135f41d1@AcuMS.aculab.com>
+References: <efeeb0b9979b0377cd313311ad29cf0ac060ae4b.1644569106.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <efeeb0b9979b0377cd313311ad29cf0ac060ae4b.1644569106.git.christophe.leroy@csgroup.eu>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Sender: malindaandrew04@gmail.com
-Received: by 2002:a05:6020:d789:b0:18d:5f8b:ae1 with HTTP; Sat, 12 Feb 2022
- 18:01:52 -0800 (PST)
-From:   "Mrs. Latifa Rassim Mohamad" <rassimlatifa400@gmail.com>
-Date:   Sat, 12 Feb 2022 18:01:52 -0800
-X-Google-Sender-Auth: 5QiKJFAts1GAvN6JqRx2RA3-zcM
-Message-ID: <CAL7GHSHvLwmhLGpJdg1i3H=mnjvE+Zz3=HtyLN8Vdj3wvFyAHQ@mail.gmail.com>
-Subject: CONFIRM YOUR EMAIL....
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=3.6 required=5.0 tests=BAYES_40,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,
-        T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: ***
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good Morning from here this Morning and how are you doing today? My
-name is Mrs. Latifa Rassim Mohamad from Saudi Arabia, I have something
-very important and serious i will like to discuss with you privately,
-so i hope this is your private email?
+From: Christophe Leroy
+> Sent: 11 February 2022 08:48
+> 
+> Today's implementation of csum_shift() leads to branching based on
+> parity of 'offset'
+> 
+> 	000002f8 <csum_block_add>:
+> 	     2f8:	70 a5 00 01 	andi.   r5,r5,1
+> 	     2fc:	41 a2 00 08 	beq     304 <csum_block_add+0xc>
+> 	     300:	54 84 c0 3e 	rotlwi  r4,r4,24
+> 	     304:	7c 63 20 14 	addc    r3,r3,r4
+> 	     308:	7c 63 01 94 	addze   r3,r3
+> 	     30c:	4e 80 00 20 	blr
+> 
+> Use first bit of 'offset' directly as input of the rotation instead of
+> branching.
+> 
+> 	000002f8 <csum_block_add>:
+> 	     2f8:	54 a5 1f 38 	rlwinm  r5,r5,3,28,28
+> 	     2fc:	20 a5 00 20 	subfic  r5,r5,32
+> 	     300:	5c 84 28 3e 	rotlw   r4,r4,r5
+> 	     304:	7c 63 20 14 	addc    r3,r3,r4
+> 	     308:	7c 63 01 94 	addze   r3,r3
+> 	     30c:	4e 80 00 20 	blr
+> 
+> And change to left shift instead of right shift to skip one more
+> instruction. This has no impact on the final sum.
+> 
+> 	000002f8 <csum_block_add>:
+> 	     2f8:	54 a5 1f 38 	rlwinm  r5,r5,3,28,28
+> 	     2fc:	5c 84 28 3e 	rotlw   r4,r4,r5
+> 	     300:	7c 63 20 14 	addc    r3,r3,r4
+> 	     304:	7c 63 01 94 	addze   r3,r3
+> 	     308:	4e 80 00 20 	blr
+
+That is ppc64.
+What happens on x86-64?
+
+Trying to do the same in the x86 ipcsum code tended to make the code worse.
+(Although that test is for an odd length fragment and can just be removed.)
+
+	David
+
+> 
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> ---
+>  include/net/checksum.h | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/include/net/checksum.h b/include/net/checksum.h
+> index 5218041e5c8f..9badcd5532ef 100644
+> --- a/include/net/checksum.h
+> +++ b/include/net/checksum.h
+> @@ -83,9 +83,7 @@ static inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
+>  static inline __wsum csum_shift(__wsum sum, int offset)
+>  {
+>  	/* rotate sum to align it with a 16b boundary */
+> -	if (offset & 1)
+> -		return (__force __wsum)ror32((__force u32)sum, 8);
+> -	return sum;
+> +	return (__force __wsum)rol32((__force u32)sum, (offset & 1) << 3);
+>  }
+> 
+>  static inline __wsum
+> --
+> 2.34.1
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
