@@ -2,54 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 039524B3BFB
-	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 16:16:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B0944B3BFF
+	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 16:18:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236678AbiBMPQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Feb 2022 10:16:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37826 "EHLO
+        id S236727AbiBMPSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Feb 2022 10:18:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236577AbiBMPQf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 10:16:35 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1D25BD0B;
-        Sun, 13 Feb 2022 07:16:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98230B80923;
-        Sun, 13 Feb 2022 15:16:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2D14C004E1;
-        Sun, 13 Feb 2022 15:16:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644765387;
-        bh=aGp7kWkbr372vbj+uaoixxJhotpk14CM+9+g9ENcKGs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=I4aiMhyKZpFno6Ge7gRgBh8qrAa89pnSx+q7agiMQg61uTjpBa26llyyXPnkhjdIt
-         v+qp3H9IHUVlOBDgLiuBQyuWKr15D8tPXIU8xNxiOsyCRhjqnYyISDINkSq/KjVSuz
-         zXYzsJPWDGOC3X+v5eRnBXlnezMSTRhc138/qB2mG2z2udZpygMjFAJf5hPcOqooly
-         X3URKTnKnjjFk4A3vaKCA0N5iZFLLofrqd6KkwtqrslhxR5vuu4hW5rghtM2F8ypii
-         0uQZfqKrit6iNJUNAY6RnEuu4smDcQn7q52mmpw1GhOdwoWETpLoqlzMioZTlE7Li9
-         5qE1Por+t1DHw==
-Date:   Sun, 13 Feb 2022 17:16:22 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Veerasenareddy Burru <vburru@marvell.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Abhijit Ayarekar <aayarekar@marvell.com>,
-        Satananda Burla <sburla@marvell.com>
-Subject: Re: [PATCH 2/4] octeon_ep: add support for ndo ops.
-Message-ID: <YgkgxhXrXPmdAuM2@unreal>
-References: <20220210213306.3599-1-vburru@marvell.com>
- <20220210213306.3599-3-vburru@marvell.com>
+        with ESMTP id S236716AbiBMPSB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 10:18:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C0F85C37A
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 07:17:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644765475;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EU0aBUqG+RdRFWk7yiQfXhjL54RqsubwuXU5pneRySc=;
+        b=EzHKOqr2pPva6CrGy1XyLenicPuJc1bOlj5gC+UYlqU6+lyssU5BKEgN8vbuC6V0T53ciN
+        VHlf3CO0x9z/29k5+9joHlc5sxV2DOHfnuVIQLaSlTvP8GBHJIxQcj6T+I4CbX30Hv3Yr3
+        irUr9WitBAaqsxaDB2Sg8guvo1RR3Cg=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-166-Wl2l4k5ZMFy8l0PihulUWA-1; Sun, 13 Feb 2022 10:17:52 -0500
+X-MC-Unique: Wl2l4k5ZMFy8l0PihulUWA-1
+Received: by mail-ed1-f70.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso8628130edt.20
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 07:17:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=EU0aBUqG+RdRFWk7yiQfXhjL54RqsubwuXU5pneRySc=;
+        b=PhnRk6e4d47wsq8BJx7nW93DcodhICP65FjdAVIf2jN6WAxE5BwXgI5pV9F1TpvdmZ
+         eIMv9lBN0ow9eCd7/lt+jnC5j2qU0T6sQPAxo4DgebttEw0Z1glyEPXoz5BXA1nE5Pqb
+         0j5fa4Z65juoF3YQdBurKQd8TrDMJSYNZY8YaEyMNS465FCCXo0ahSt1HGKlHgNhzKHV
+         j9t7l31Pwqzwi3e7Cap5kXwnLJ3SjhM0GgNcH85FKx9ASK7+ObWSby/IlfJN6bN5r2IW
+         nw9Z7dc60+YbHaUiK/vZAPPEMVG1ouBuDMfhH+vBkJXEDbIS3cOmPS6EIfqNM0oZhVRF
+         JBYw==
+X-Gm-Message-State: AOAM530F8g6GzzM8sUJvKvp0x5HjAvLNJLc6tcviiMTc7tqlrvFSXsFa
+        4MQRygYLAdaOtctR0bizWb3t/b0fA7hYLsuws9bpSrVpb+iSwWsin4uIcZ34Gy1cIw7s7+JO2vo
+        KdHfN8mRmMNrBdz34
+X-Received: by 2002:aa7:d406:: with SMTP id z6mr11607261edq.66.1644765470269;
+        Sun, 13 Feb 2022 07:17:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzRv21PC9qBN2ndh1MgmPCJg6IqIv0t1Ag19zVpEkFQRZEl5LeCLTHRzpIsu1qiF9mdf4oxQQ==
+X-Received: by 2002:aa7:d406:: with SMTP id z6mr11607165edq.66.1644765468966;
+        Sun, 13 Feb 2022 07:17:48 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id p19sm4805068ejx.30.2022.02.13.07.17.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Feb 2022 07:17:48 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 441D61031B1; Sun, 13 Feb 2022 16:17:47 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Zhiqian Guan <zhguan@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v2] libbpf: Use dynamically allocated buffer
+ when receiving netlink messages
+In-Reply-To: <CAEf4BzYURbRGL2D-WV=VUs6to=024wO2u=bGtwwxLEKc6pmfhQ@mail.gmail.com>
+References: <20220211234819.612288-1-toke@redhat.com>
+ <CAEf4BzYURbRGL2D-WV=VUs6to=024wO2u=bGtwwxLEKc6pmfhQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Sun, 13 Feb 2022 16:17:47 +0100
+Message-ID: <87h7927q3o.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220210213306.3599-3-vburru@marvell.com>
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,104 +89,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 01:33:04PM -0800, Veerasenareddy Burru wrote:
-> Add support for ndo ops to set MAC address, change MTU, get stats.
-> Add control path support to set MAC address, change MTU, get stats,
-> set speed, get and set link mode.
-> 
-> Signed-off-by: Veerasenareddy Burru <vburru@marvell.com>
-> Signed-off-by: Abhijit Ayarekar <aayarekar@marvell.com>
-> Signed-off-by: Satananda Burla <sburla@marvell.com>
-> ---
->  .../marvell/octeon_ep/octep_ctrl_net.c        | 105 ++++++++++++++++++
->  .../ethernet/marvell/octeon_ep/octep_main.c   |  67 +++++++++++
->  2 files changed, 172 insertions(+)
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-Please don't put "." in end of patch title.
+> On Fri, Feb 11, 2022 at 3:49 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> When receiving netlink messages, libbpf was using a statically allocated
+>> stack buffer of 4k bytes. This happened to work fine on systems with a 4k
+>> page size, but on systems with larger page sizes it can lead to truncated
+>> messages. The user-visible impact of this was that libbpf would insist no
+>> XDP program was attached to some interfaces because that bit of the netl=
+ink
+>> message got chopped off.
+>>
+>> Fix this by switching to a dynamically allocated buffer; we borrow the
+>> approach from iproute2 of using recvmsg() with MSG_PEEK|MSG_TRUNC to get
+>> the actual size of the pending message before receiving it, adjusting the
+>> buffer as necessary. While we're at it, also add retries on interrupted
+>> system calls around the recvmsg() call.
+>>
+>> v2:
+>>   - Move peek logic to libbpf_netlink_recv(), don't double free on ENOME=
+M.
+>>
+>> Reported-by: Zhiqian Guan <zhguan@redhat.com>
+>> Fixes: 8bbb77b7c7a2 ("libbpf: Add various netlink helpers")
+>> Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> ---
+>
+> Applied to bpf-next.
 
-> 
-> diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
-> index 1f0d8ba3c8ee..be9b0f31c754 100644
-> --- a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
-> +++ b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
-> @@ -87,3 +87,108 @@ int octep_get_mac_addr(struct octep_device *oct, u8 *addr)
->  
->  	return 0;
->  }
-> +
-> +int octep_set_mac_addr(struct octep_device *oct, u8 *addr)
-> +{
-> +	struct octep_ctrl_mbox_msg msg = { 0 };
-> +	struct octep_ctrl_net_h2f_req req = { 0 };
+Awesome, thanks!
 
-It is enough to write {} without 0.
+> One improvement would be to avoid initial malloc of 4096, especially
+> if that size is enough for most cases. You could detect this through
+> iov.iov_base =3D=3D buf and not free(iov.iov_base) at the end. Seems
+> reliable and simple enough. I'll leave it up to you to follow up, if
+> you think it's a good idea.
 
-> +
-> +	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_MAC;
-> +	req.mac.cmd = OCTEP_CTRL_NET_CMD_SET;
-> +	memcpy(&req.mac.addr, addr, ETH_ALEN);
-> +
-> +	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-> +	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_MAC_REQ_SZW;
-> +	msg.msg = &req;
-> +	return octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
-> +}
-> +
-> +int octep_set_mtu(struct octep_device *oct, int mtu)
-> +{
-> +	struct octep_ctrl_mbox_msg msg = { 0 };
-> +	struct octep_ctrl_net_h2f_req req = { 0 };
-> +
-> +	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_MTU;
-> +	req.mtu.cmd = OCTEP_CTRL_NET_CMD_SET;
-> +	req.mtu.val = mtu;
-> +
-> +	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-> +	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_MTU_REQ_SZW;
-> +	msg.msg = &req;
-> +	return octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
-> +}
-> +
-> +int octep_get_if_stats(struct octep_device *oct)
-> +{
-> +	struct octep_ctrl_mbox_msg msg = { 0 };
-> +	struct octep_ctrl_net_h2f_req req = { 0 };
-> +	struct octep_iface_rx_stats *iface_rx_stats;
-> +	struct octep_iface_tx_stats *iface_tx_stats;
-> +	int err;
+Hmm, seems distributions tend to default the stack size limit to 8k; so
+not sure if blowing half of that on a buffer just to avoid a call to
+malloc() in a non-performance-sensitive is ideal to begin with? I think
+I'd prefer to just keep the dynamic allocation...
 
-Reversed Christmas tree, in all functions.
+-Toke
 
-> +
-> +	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_GET_IF_STATS;
-> +	req.mac.cmd = OCTEP_CTRL_NET_CMD_GET;
-> +	req.get_stats.offset = oct->ctrl_mbox_ifstats_offset;
-> +
-> +	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-> +	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_GET_STATS_REQ_SZW;
-> +	msg.msg = &req;
-> +	err = octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
-> +	if (!err) {
-
-Please use success oriented approach, in all places.
-
-if (err)
-   return err;
-
-....
-
-> +		iface_rx_stats = (struct octep_iface_rx_stats *)(oct->ctrl_mbox.barmem +
-> +								 oct->ctrl_mbox_ifstats_offset);
-> +		iface_tx_stats = (struct octep_iface_tx_stats *)(oct->ctrl_mbox.barmem +
-> +								 oct->ctrl_mbox_ifstats_offset +
-> +								 sizeof(struct octep_iface_rx_stats)
-> +								);
-> +		memcpy(&oct->iface_rx_stats, iface_rx_stats, sizeof(struct octep_iface_rx_stats));
-> +		memcpy(&oct->iface_tx_stats, iface_tx_stats, sizeof(struct octep_iface_tx_stats));
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-
-Thanks
