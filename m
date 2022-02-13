@@ -2,139 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10BA94B3CF6
-	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 19:52:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4CED4B3D04
+	for <lists+netdev@lfdr.de>; Sun, 13 Feb 2022 19:58:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237749AbiBMSwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Feb 2022 13:52:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53368 "EHLO
+        id S235966AbiBMS6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Feb 2022 13:58:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234745AbiBMSwL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 13:52:11 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F51E580D9
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 10:52:05 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id i14so23512436wrc.10
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 10:52:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=5b6T59mtoBLg2aHTqbBo/r+mo6q1zaT8htW2r31opOo=;
-        b=jkcJuibzzNnKOpzhPiGpqn62fKaL16PjFsJa9ECq+C+9uKDFnGlijB7gW+8kO7w+HY
-         JTcmBFp3EXWo8QZxjaYvYNZmWqtKY53glpL8tsHmTXry7U0lPDGb0TWpinKA5mPeGL14
-         kDUW1Ri44IFGs5CQt4gY1kJHP3LLzsCHOzrL4MFDt2iS0ahGKDxBtEqHdiKsXO6wREoz
-         zgKTBZX068Vk/n8xLuTiT/ydSusfeWg8P2AgGIYZU0B2/wTqzDMOkjsHC4EWiT+Fnw3Y
-         BU9gqnjg5KAlnM2NRS4uDHlhXeU27TTzmSObP9PDmVxnVVIQYWMX27BEh5GwhM+snTIy
-         GYOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=5b6T59mtoBLg2aHTqbBo/r+mo6q1zaT8htW2r31opOo=;
-        b=q0Zkjr0p3GipJ4k0XB9Hr3XF4if2P2thQhshes6r0DEKjPJk+uiqSBOpws1jGjZTJl
-         rK0lGRHFMZO4qVlGEG2xkiaBxSk6hn1BtgnNzElmUQ5bQtaW1eu3OTKPAlNFeagO3qcW
-         ZQWo5ueCS/Oc7BwDnFD4jCPVjAciytUDsnHYNTf+ALysBUpIF15MTUooTlVu6VVIYC/a
-         Bv6nPl6ayEmnNJabLN6P8mE3qTFvssGH+u1RIrItZDtTsqmzOKBnOzMAqlHq4mYc8gOO
-         WJ1Y8z9p20O23rsNDhxSPAZCvMTC3XXRF96lbLRLOChuPZWG5I3BN481RVxBcVhxCvkh
-         qxcg==
-X-Gm-Message-State: AOAM531xYoVz03410Pn446IYsIDtgpKplG7nazHMlKkgymlMslhC9KMG
-        rUW7x8Mp91Sq/LQOxR7wwg0EaeZf/4EifQ==
-X-Google-Smtp-Source: ABdhPJwjXJQ+chY2+2rwARmjalWZYGCDghqclK/Ut0wkfk6IbBp15ag9Ju/I1wD+LzfC15WFaL6/2A==
-X-Received: by 2002:a05:6000:81:: with SMTP id m1mr8479062wrx.94.1644778324070;
-        Sun, 13 Feb 2022 10:52:04 -0800 (PST)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id j5sm25659049wrq.31.2022.02.13.10.52.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Feb 2022 10:52:03 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next] net: dsa: mv88e6xxx: Fix validation of built-in PHYs on 6095/6097
-Date:   Sun, 13 Feb 2022 19:51:54 +0100
-Message-Id: <20220213185154.3262207-1-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S235146AbiBMS6D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 13:58:03 -0500
+X-Greylist: delayed 308 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 13 Feb 2022 10:57:55 PST
+Received: from mxo2.nje.dmz.twosigma.com (mxo2.nje.dmz.twosigma.com [208.77.214.162])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A1D058388
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 10:57:55 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by mxo2.nje.dmz.twosigma.com (Postfix) with ESMTP id 4Jxc1B25tsz28tv;
+        Sun, 13 Feb 2022 18:52:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=twosigma.com;
+        s=202008; t=1644778366;
+        bh=i4OCLTOZoS3HdCkHA1yLbQLmQSYKicZWYIu/y6YNjqg=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=iUEjC+qzQGXH4DamppRRqNk/ZG+TBAt6WZZpilZbkq/hLje98Ypng4FZ0ArSnLQWb
+         Yw9vRcqpG6bkmB0FapZwmPdjXBewVbTojpb+kHO+QF/jAUjGzwAtQla9ulljv1pRue
+         NMbRzgHlgHLXpUYztV4EzP2fyb9wY0IRFilo34+FjPqhadQ9QIBqjDK5HN+j/rSnI8
+         fxXGR+ViTsiFyjzsf6r6zco1q8+WESLmudeS9O1cv3G8/W6piV2mp8VIpg/QLw4eVm
+         olUZVinB71pxq3BqaBylt2bhOFYQyXDbO3fuxxh/J1j2TU+AB/+KPokexs6ytVdcd+
+         a7DbZcLUNLMpw==
+X-Virus-Scanned: Debian amavisd-new at twosigma.com
+Received: from mxo2.nje.dmz.twosigma.com ([127.0.0.1])
+        by localhost (mxo2.nje.dmz.twosigma.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id WuxHZHYj_FFg; Sun, 13 Feb 2022 18:52:46 +0000 (UTC)
+Received: from exmbdft8.ad.twosigma.com (exmbdft8.ad.twosigma.com [172.22.2.84])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mxo2.nje.dmz.twosigma.com (Postfix) with ESMTPS id 4Jxc1B0z0Hz28r3;
+        Sun, 13 Feb 2022 18:52:46 +0000 (UTC)
+Received: from exmbdft6.ad.twosigma.com (172.22.1.5) by
+ exmbdft8.ad.twosigma.com (172.22.2.84) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Sun, 13 Feb 2022 18:52:45 +0000
+Received: from exmbdft6.ad.twosigma.com ([fe80::c47f:175e:9f31:d58c]) by
+ exmbdft6.ad.twosigma.com ([fe80::c47f:175e:9f31:d58c%17]) with mapi id
+ 15.00.1497.012; Sun, 13 Feb 2022 18:52:45 +0000
+From:   Tian Lan <Tian.Lan@twosigma.com>
+To:     Eric Dumazet <edumazet@google.com>
+CC:     Tian Lan <tilan7663@gmail.com>, netdev <netdev@vger.kernel.org>,
+        "Andrew Chester" <Andrew.Chester@twosigma.com>
+Subject: RE: [PATCH] tcp: allow the initial receive window to be greater than
+ 64KiB
+Thread-Topic: [PATCH] tcp: allow the initial receive window to be greater than
+ 64KiB
+Thread-Index: AQHYII8R50vJ9luEckWkqpgQGqAi+KyQ4b2AgADavqCAAAbEgIAAAnNA
+Date:   Sun, 13 Feb 2022 18:52:45 +0000
+Message-ID: <dd7f3fd1b08a44328d59116cd64f483a@exmbdft6.ad.twosigma.com>
+References: <20220213040545.365600-1-tilan7663@gmail.com>
+ <CANn89i+=wXy-UFTy1a+1gaVgmynQ9u4LiAutFBf=dsE2fgF3rA@mail.gmail.com>
+ <101663cb4d7d43e9b6bfa946f6b8036b@exmbdft6.ad.twosigma.com>
+ <CANn89iKDzgHk_gk9+56xumy9M40br-aEoUXJ13KtFgxZRQJVOw@mail.gmail.com>
+In-Reply-To: <CANn89iKDzgHk_gk9+56xumy9M40br-aEoUXJ13KtFgxZRQJVOw@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.23.151.37]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These chips have 8 built-in FE PHYs and 3 SERDES interfaces that can
-run at 1G. With the blamed commit, the built-in PHYs could no longer
-be connected to, using an MII PHY interface mode.
-
-Create a separate .phylink_get_caps callback for these chips, which
-takes the FE/GE split into consideration.
-
-Fixes: 2ee84cfefb1e ("net: dsa: mv88e6xxx: convert to phylink_generic_validate()")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 85527fe4fcc8..34036c555977 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -580,6 +580,25 @@ static const u8 mv88e6185_phy_interface_modes[] = {
- 	[MV88E6185_PORT_STS_CMODE_PHY]		 = PHY_INTERFACE_MODE_SGMII,
- };
- 
-+static void mv88e6095_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
-+				       struct phylink_config *config)
-+{
-+	u8 cmode = chip->ports[port].cmode;
-+
-+	config->mac_capabilities = MAC_SYM_PAUSE | MAC_10 | MAC_100;
-+
-+	if (mv88e6xxx_phy_is_internal(chip->ds, port)) {
-+		__set_bit(PHY_INTERFACE_MODE_MII, config->supported_interfaces);
-+	} else {
-+		if (cmode < ARRAY_SIZE(mv88e6185_phy_interface_modes) &&
-+		    mv88e6185_phy_interface_modes[cmode])
-+			__set_bit(mv88e6185_phy_interface_modes[cmode],
-+				  config->supported_interfaces);
-+
-+		config->mac_capabilities |= MAC_1000FD;
-+	}
-+}
-+
- static void mv88e6185_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
- 				       struct phylink_config *config)
- {
-@@ -3803,7 +3822,7 @@ static const struct mv88e6xxx_ops mv88e6095_ops = {
- 	.reset = mv88e6185_g1_reset,
- 	.vtu_getnext = mv88e6185_g1_vtu_getnext,
- 	.vtu_loadpurge = mv88e6185_g1_vtu_loadpurge,
--	.phylink_get_caps = mv88e6185_phylink_get_caps,
-+	.phylink_get_caps = mv88e6095_phylink_get_caps,
- 	.set_max_frame_size = mv88e6185_g1_set_max_frame_size,
- };
- 
-@@ -3850,7 +3869,7 @@ static const struct mv88e6xxx_ops mv88e6097_ops = {
- 	.rmu_disable = mv88e6085_g1_rmu_disable,
- 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
- 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
--	.phylink_get_caps = mv88e6185_phylink_get_caps,
-+	.phylink_get_caps = mv88e6095_phylink_get_caps,
- 	.set_max_frame_size = mv88e6185_g1_set_max_frame_size,
- };
- 
--- 
-2.25.1
-
+PiBUbyBiZSBjbGVhciwgaWYgdGhlIHNlbmRlciByZXNwZWN0cyB0aGUgaW5pdGlhbCB3aW5kb3cg
+aW4gZmlyc3QgUlRUICwgdGhlbiBmaXJzdCBBQ0sgaXQgd2lsbCByZWNlaXZlIGFsbG93cyBhIG11
+Y2ggYmlnZ2VyIHdpbmRvdyAoYXQgbGVhc3QgMngpLCAgYWxsb3dpbmcgZm9yIHN0YW5kYXJkIHNs
+b3cgc3RhcnQgYmVoYXZpb3IsIGRvdWJsaW5nIENXTkQgYXQgZWFjaCBSVFQ+DQo+DQo+IGxpbnV4
+IFRDUCBzdGFjayBpcyBjb25zZXJ2YXRpdmUsIGFuZCB3YW50cyBhIHByb29mIG9mIHJlbW90ZSBw
+ZWVyIHdlbGwgYmVoYXZpbmcgYmVmb3JlIG9wZW5pbmcgdGhlIGdhdGVzLg0KPg0KPiBUaGUgdGhp
+bmcgaXMsIHdlIGhhdmUgdGhpcyBpc3N1ZSBiZWluZyBkaXNjdXNzZWQgZXZlcnkgMyBtb250aHMg
+b3Igc28sIGJlY2F1c2Ugc29tZSBwZW9wbGUgdGhpbmsgdGhlIFJXSU4gaXMgbmV2ZXIgY2hhbmdl
+ZCBvciBzb21ldGhpbmcuDQo+DQo+IExhc3QgdGltZSwgd2UgYXNrZWQgdG8gbm90IGNoYW5nZSB0
+aGUgc3RhY2ssIGFuZCBpbnN0ZWFkIHN1Z2dlc3RlZCB1c2VycyB0dW5lIGl0IHVzaW5nIGVCUEYg
+aWYgdGhleSByZWFsbHkgbmVlZCB0byBieXBhc3MgVENQIHN0YW5kYXJkcy4NCj4NCj4gaHR0cHM6
+Ly9sa21sLm9yZy9sa21sLzIwMjEvMTIvMjIvNjUyDQoNCkkgdG90YWxseSB1bmRlcnN0YW5kIHRo
+YXQgTGludXggd2FudHMgdG8gYmUgY29uc2VydmF0aXZlIGJlZm9yZSBvcGVuaW5nIHVwIHRoZSBn
+YXRlIGFuZCBJJ20gZnVsbHkgc3VwcG9ydCBvZiB0aGlzIGlkZWEuIEkgdGhpbmsgdGhlIGN1cnJl
+bnQgTGludXggYmVoYXZpb3IgaXMgZ29vZCBmb3IgbmV0d29yayB3aXRoIGxvdyBsYXRlbmN5LCBi
+dXQgaW4gYW4gZW52aXJvbm1lbnQgd2l0aCBoaWdoIFJUVCAoaS5lIDIwbXMpLCB0aGUgcmN2X3du
+ZCByZWFsbHkgYmVjb21lcyB0aGUgYm90dGxlbmVjay4gSXQgdG9vayBhcHByb3hpbWF0ZWx5IDYg
+KiBSVFQgb24gYXZlcmFnZSBmb3IgNE1pQiB0cmFuc2ZlciBldmVuIHdpdGggbGFyZ2UgaW5pdGlh
+bCBzbmRfY3duZC4gSSB0aGluayBhbGxvd2luZyBhIGxhcmdlciBkZWZhdWx0IHJjdl93bmQgd291
+bGQgZ3JlYXRseSByZWR1Y2UgdGhlIG51bWJlciBvZiBSVFQgcmVxdWlyZWQgZm9yIHRoZSB0cmFu
+c2Zlci4gDQoNCkZyb20gbXkgdW5kZXJzdGFuZGluZywgQlBGX1NPQ0tfT1BTX1JXTkRfSU5JVCB3
+YXMgYWRkZWQgdG8gdGhlIGtlcm5lbCB0byBhbGxvdyB0aGUgdXNlcnMgdG8gYnktcGFzcyB0aGUg
+ZGVmYXVsdCBpZiB0aGV5IGNob29zZSB0by4gUHJpb3IgdG8ga2VybmVsIDQuMTksIHRoZSByY3Zf
+d25kIHNldCB2aWEgQlBGX1NPQ0tfT1BTX1JXTkRfSU5JVCBjb3VsZCBleGNlZWQgNjRLaUIgYW5k
+IHVwIHRvIHRoZSBzcGFjZS4gQnV0IHNpbmNlIHRoZW4sIHRoZSBpbml0aWFsIHJ3bmQgd291bGQg
+YWx3YXlzIGJlIGxpbWl0ZWQgdG8gdGhlIDY0S2lCLiBUaGlzIHBhdGNoIHdvdWxkIGp1c3QgbWFr
+ZSB0aGUga2VybmVsIGJlaGF2ZSBzaW1pbGFybHkgdG8gdGhlIGtlcm5lbCBwcmlvciB0byA0LjE5
+IGlmIHJjdl93bmQgaXMgc2V0IGJ5IGVCUEYuIA0KDQpXaGF0IHdvdWxkIHlvdSBzdWdnZXN0IGZv
+ciB0aGUgYXBwbGljYXRpb24gdGhhdCBjdXJyZW50bHkgcmVsaWVzIG9uIHNldHRpbmcgYSAibGFy
+Z2VyIiByY3Zfd25kIHZpYSBCUEZfU09DS19PUFNfUldORF9JTklULCBkbyB5b3UgdGhpbmsgaWYg
+aXQgaXMgYSBiZXR0ZXIgaWRlYSBpZiB0aGUgcmN2X3duZCBpcyBzZXQgYWZ0ZXIgdGhlIGNvbm5l
+Y3Rpb24gaXMgZXN0YWJsaXNoZWQuIA0K
