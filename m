@@ -2,134 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 150D64B5B65
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 21:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 184624B5B0C
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 21:40:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229876AbiBNUqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 15:46:22 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39552 "EHLO
+        id S229898AbiBNUTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 15:19:24 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229699AbiBNUp6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 15:45:58 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE7D1B4005
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 12:44:00 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id z17so11445010plb.9
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 12:44:00 -0800 (PST)
+        with ESMTP id S229883AbiBNUTX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 15:19:23 -0500
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B96053AA6C
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 12:19:09 -0800 (PST)
+Received: by mail-qt1-f179.google.com with SMTP id t1so16488650qtq.13
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 12:19:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=tXzV6UfdgK2bFqeHo+R7QexQELCVo82Dje9rkGsbYQI=;
-        b=jP2QNd6ym1cA44N4Z4M2eAlHfETlLaPmWkBpDrEyOpnRPWZQljUHC6rZg8rbQpe8H4
-         zH/1dkaFslDcSQbIJvrG2JwWKWqfKIMatpBI8p5zBpaB+qfHWfVgJViE01Wx9I6BWo/t
-         6A8I1z1fp+L43jra0eshS5jiVYCCCxGsYoPzU=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pqBwcF4YvHD4OBoaDlpWJJY2D7mKx5h302J7i1Paroc=;
+        b=TZeHEqU9QNvmuOgh7IxK+sme+acyrG/8RpPccZY8AXd9TR+MwnB+ILXJc/inEd8Wfq
+         GKFRhu5Hchtg5brodXpvOj4phbFI8iuVJBqQVINJGF2+UrGDQsCxeg3Oj4lN2DUU4Lmj
+         5zNEYSOtwwMwIXtZsISKNIw0dORL0gErSbZIL9J9lIYAM7+eWqwp2ANu7tacohLQPJQc
+         HSdSi27Qd1Rac0w48GuoQQ/t0MmCJ4I5gLan3Fn2MHRuy5zAVCzVQIZPbUQgV1vw2G5e
+         unpSB+e85FJLYL3u8CxTS1zJfcVogmBGSDOkBH22/715LnWMGFwjVAj3B9QA8MowBQGr
+         2b7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=tXzV6UfdgK2bFqeHo+R7QexQELCVo82Dje9rkGsbYQI=;
-        b=T7ONfeKIUiLK2+qJj8dIZRPJWxfTJW6sQyVKbMkX78yvULPbYDXqAOMh6yrwprPxi1
-         sE3VeTM6fMSQq9BXiFqERmBeXegeLhH+OXwcR20ueVCA25wmM36JpDvznwPfxMAW9/dw
-         zrnqQFUo1NrqeKFUL4AQ/DWYl4AdL2+N9UQ8E71IGjb3K4Q16ShJPoEyIrQOfGFbar3w
-         iJQSfdm4ctPjfplQnkdit0pGJRnJA+/1c022YBl4DFX4UIBuj79QpyjJ4W1WcDopHAky
-         vaM5ily8z5vzP2CYMJs+tCoac5VkaR+qWDUssQ4wGAj6knaqpgGfHEQScpAKPEk4X4PX
-         tMrg==
-X-Gm-Message-State: AOAM530yB6btYhcMmXfEDOFtGG6S/7gb1WWJ3vo2g3kxYiriQwng0ccg
-        yMHcEIcbDuyqMKxIyt/kx2Bh5cZIeGSs5Z/M76ALxD0bDBC7fLtigR9KSD/36e2oN4yAnKy0mLj
-        TGfn2g6gvdGs+fw+WG4n74dj24V4oCXI2mZNfKAdT9viIjt5EE8xtCVv4rE8ShSWqXxjb
-X-Google-Smtp-Source: ABdhPJyQMJnRt89r/SDWDxWYCyjJYmJoDAgBo+dNDJkSw3t/uGFZROKgmAvjBgUj1smOVbwo7oUDbA==
-X-Received: by 2002:a17:902:c40b:: with SMTP id k11mr494510plk.121.1644869017216;
-        Mon, 14 Feb 2022 12:03:37 -0800 (PST)
-Received: from localhost.localdomain (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
-        by smtp.gmail.com with ESMTPSA id a38sm25010916pfx.121.2022.02.14.12.03.35
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 14 Feb 2022 12:03:36 -0800 (PST)
-From:   Joe Damato <jdamato@fastly.com>
-To:     netdev@vger.kernel.org, kuba@kernel.org,
-        ilias.apalodimas@linaro.org, davem@davemloft.net, hawk@kernel.org,
-        saeed@kernel.org, ttoukan.linux@gmail.com, brouer@redhat.com
-Cc:     Joe Damato <jdamato@fastly.com>
-Subject: [net-next v5 2/2] page_pool: Add function to batch and return stats
-Date:   Mon, 14 Feb 2022 12:02:29 -0800
-Message-Id: <1644868949-24506-3-git-send-email-jdamato@fastly.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644868949-24506-1-git-send-email-jdamato@fastly.com>
-References: <1644868949-24506-1-git-send-email-jdamato@fastly.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pqBwcF4YvHD4OBoaDlpWJJY2D7mKx5h302J7i1Paroc=;
+        b=B91c4jrQB61e307f/pL/oaR2xkOn1uEQOkj7pJNkIWAaG2guQuRJaaKiHy9dnqH6wn
+         hHeGSf5TWVB3aeDfbgfPw2pSYkjdpTYB/lK5XZbosOgjKN+a6yKbkFDkrZ5412GR61XM
+         Yok4DVP/865Wwu1NCtInOO4EZyfwy1pA2STHYhpGpnU6/b8NK0gl0KQf2Kqcyma2P/rQ
+         FwWWJCyO5Zzptn8jBJTcYGu8L5RXqmSYPyI7ny/CmbJBEO1bTHjyGeODPMyGfxTSftqI
+         G3qFhKmGdSwyJ1t/ns+cFjgzuon8wyGeByepTPsgFf+1CoHPqOvS3LhfuVUXmCakckda
+         gUiw==
+X-Gm-Message-State: AOAM531WvRCZDxapDAtUFDVBicpY9q1hgj7LvIvlL4gbcMMoFgltdeH+
+        Hk+EWCoSerkUCKXRVW+5AL6grM9uaEo=
+X-Google-Smtp-Source: ABdhPJxN1rIMbp3ZSGn0uebm+1I82vBfQXThxnIARvvl6TiIr43k0f9/a3SnrxFoM11JoLLyjA0Spw==
+X-Received: by 2002:a05:620a:1511:: with SMTP id i17mr329386qkk.77.1644869043730;
+        Mon, 14 Feb 2022 12:04:03 -0800 (PST)
+Received: from willemb.c.googlers.com.com (55.87.194.35.bc.googleusercontent.com. [35.194.87.55])
+        by smtp.gmail.com with ESMTPSA id u36sm7289296qtc.42.2022.02.14.12.04.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 12:04:03 -0800 (PST)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Willem de Bruijn <willemb@google.com>,
+        Congyu Liu <liu3101@purdue.edu>
+Subject: [PATCH net] ipv6: per-netns exclusive flowlabel checks
+Date:   Mon, 14 Feb 2022 15:04:00 -0500
+Message-Id: <20220214200400.513069-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds a function page_pool_get_stats which can be used by drivers to obtain
-the batched stats for a specified page pool.
+From: Willem de Bruijn <willemb@google.com>
 
-Signed-off-by: Joe Damato <jdamato@fastly.com>
+Ipv6 flowlabels historically require a reservation before use.
+Optionally in exclusive mode (e.g., user-private).
+
+Commit 59c820b2317f ("ipv6: elide flowlabel check if no exclusive
+leases exist") introduced a fastpath that avoids this check when no
+exclusive leases exist in the system, and thus any flowlabel use
+will be granted.
+
+That allows skipping the control operation to reserve a flowlabel
+entirely. Though with a warning if the fast path fails:
+
+  This is an optimization. Robust applications still have to revert to
+  requesting leases if the fast path fails due to an exclusive lease.
+
+Still, this is subtle. Better isolate network namespaces from each
+other. Flowlabels are per-netns. Also record per-netns whether
+exclusive leases are in use. Then behavior does not change based on
+activity in other netns.
+
+Fixes: 59c820b2317f ("ipv6: elide flowlabel check if no exclusive leases exist")
+Link: https://lore.kernel.org/netdev/MWHPR2201MB1072BCCCFCE779E4094837ACD0329@MWHPR2201MB1072.namprd22.prod.outlook.com/
+Reported-by: Congyu Liu <liu3101@purdue.edu>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+Tested-by: Congyu Liu <liu3101@purdue.edu>
 ---
- include/net/page_pool.h |  9 +++++++++
- net/core/page_pool.c    | 25 +++++++++++++++++++++++++
- 2 files changed, 34 insertions(+)
+ include/net/ipv6.h       | 3 ++-
+ include/net/netns/ipv6.h | 3 ++-
+ net/ipv6/ip6_flowlabel.c | 4 +++-
+ 3 files changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index d827ab1..6016c0c 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -153,6 +153,15 @@ struct page_pool_stats {
- 		u64 waive;  /* failed refills due to numa zone mismatch */
- 	} alloc;
- };
-+
-+/*
-+ * Drivers that wish to harvest page pool stats and report them to users
-+ * (perhaps via ethtool, debugfs, or another mechanism) can allocate a
-+ * struct page_pool_stats and call page_pool_get_stats to get the batched pcpu
-+ * stats.
-+ */
-+bool page_pool_get_stats(struct page_pool *pool,
-+			 struct page_pool_stats *stats);
- #endif
+diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+index 3afcb128e064..49b885784298 100644
+--- a/include/net/ipv6.h
++++ b/include/net/ipv6.h
+@@ -399,7 +399,8 @@ extern struct static_key_false_deferred ipv6_flowlabel_exclusive;
+ static inline struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk,
+ 						    __be32 label)
+ {
+-	if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key))
++	if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key) &&
++	    READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
+ 		return __fl6_sock_lookup(sk, label) ? : ERR_PTR(-ENOENT);
  
- struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp);
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index f29dff9..9cad108 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -33,6 +33,31 @@
- 		struct page_pool_stats __percpu *s = pool->stats;	\
- 		__this_cpu_inc(s->alloc.__stat);			\
- 	} while (0)
-+
-+bool page_pool_get_stats(struct page_pool *pool,
-+			 struct page_pool_stats *stats)
-+{
-+	int cpu = 0;
-+
-+	if (!stats)
-+		return false;
-+
-+	for_each_possible_cpu(cpu) {
-+		const struct page_pool_stats *pcpu =
-+			per_cpu_ptr(pool->stats, cpu);
-+
-+		stats->alloc.fast += pcpu->alloc.fast;
-+		stats->alloc.slow += pcpu->alloc.slow;
-+		stats->alloc.slow_high_order +=
-+			pcpu->alloc.slow_high_order;
-+		stats->alloc.empty += pcpu->alloc.empty;
-+		stats->alloc.refill += pcpu->alloc.refill;
-+		stats->alloc.waive += pcpu->alloc.waive;
-+	}
-+
-+	return true;
-+}
-+EXPORT_SYMBOL(page_pool_get_stats);
- #else
- #define this_cpu_inc_alloc_stat(pool, __stat)
+ 	return NULL;
+diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
+index a4b550380316..6bd7e5a85ce7 100644
+--- a/include/net/netns/ipv6.h
++++ b/include/net/netns/ipv6.h
+@@ -77,9 +77,10 @@ struct netns_ipv6 {
+ 	spinlock_t		fib6_gc_lock;
+ 	unsigned int		 ip6_rt_gc_expire;
+ 	unsigned long		 ip6_rt_last_gc;
++	unsigned char		flowlabel_has_excl;
+ #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+-	unsigned int		fib6_rules_require_fldissect;
+ 	bool			fib6_has_custom_rules;
++	unsigned int		fib6_rules_require_fldissect;
+ #ifdef CONFIG_IPV6_SUBTREES
+ 	unsigned int		fib6_routes_require_src;
  #endif
+diff --git a/net/ipv6/ip6_flowlabel.c b/net/ipv6/ip6_flowlabel.c
+index aa673a6a7e43..ceb85c67ce39 100644
+--- a/net/ipv6/ip6_flowlabel.c
++++ b/net/ipv6/ip6_flowlabel.c
+@@ -450,8 +450,10 @@ fl_create(struct net *net, struct sock *sk, struct in6_flowlabel_req *freq,
+ 		err = -EINVAL;
+ 		goto done;
+ 	}
+-	if (fl_shared_exclusive(fl) || fl->opt)
++	if (fl_shared_exclusive(fl) || fl->opt) {
++		WRITE_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl, 1);
+ 		static_branch_deferred_inc(&ipv6_flowlabel_exclusive);
++	}
+ 	return fl;
+ 
+ done:
 -- 
-2.7.4
+2.35.1.265.g69c8d7142f-goog
 
