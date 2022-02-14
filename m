@@ -2,241 +2,312 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA4644B5B5B
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 21:52:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 078044B5B54
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 21:52:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229934AbiBNUqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 15:46:49 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38168 "EHLO
+        id S229668AbiBNUuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 15:50:55 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:41402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229865AbiBNUqB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 15:46:01 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B961BD698;
-        Mon, 14 Feb 2022 12:44:30 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 7F624210FA;
-        Mon, 14 Feb 2022 20:19:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644869987; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PPYDxwn02j+uAz2XIbkytGv7cPvbywJp1Y3k1ZeKMaw=;
-        b=iXid/fzFeEnhGNDrDAKdNjfAJGDw6h7H265CbtDR8Rt+TUka0y7tc3KvRqZ5tQbz2xzNe9
-        Yad98s+dqYLxOz4JdwiMErpMPZdPd4OYOzBxNrXMJh/kgCbSG8D7n6OqngFTh7qni1iIF+
-        Fj0os55imocQj1L3iUGTXN+DQDwJoKU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644869987;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PPYDxwn02j+uAz2XIbkytGv7cPvbywJp1Y3k1ZeKMaw=;
-        b=A1Gz7oByjgxwz4lxRcOEAXegE/ONC8Uqt8sp0fXt+xtrEno8a/+ThB22TA8Un1VRQjTXG7
-        ZTlhPXjKL5hveeCQ==
-Received: from kunlun.suse.cz (unknown [10.100.128.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 662AAA3B85;
-        Mon, 14 Feb 2022 20:19:47 +0000 (UTC)
-Date:   Mon, 14 Feb 2022 21:19:46 +0100
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: Re: BTF compatibility issue across builds
-Message-ID: <20220214201946.GO3113@kunlun.suse.cz>
-References: <YfK18x/XrYL4Vw8o@syu-laptop>
- <8d17226b-730f-5426-b1cc-99fe43483ed1@fb.com>
- <20220210100153.GA90679@kunlun.suse.cz>
- <CAEf4BzZ6CrNGWt3DENvCBXpUKrvNiZwoK87rR75izP=CDf8YoQ@mail.gmail.com>
- <87a6ex8gm8.fsf@toke.dk>
- <CAEf4BzYJCHB-oYqFqJTfHU4D795ewgkndQtR1Po5H521fH0oMg@mail.gmail.com>
- <87v8xl6jlw.fsf@toke.dk>
- <Ygdjt0Qbki0tHG4k@syu-laptop.lan>
- <87ee467p1f.fsf@toke.dk>
+        with ESMTP id S229928AbiBNUuu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 15:50:50 -0500
+Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB6C16BCF8
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 12:50:27 -0800 (PST)
+Received: by mail-pf1-f176.google.com with SMTP id f6so10292233pfj.11
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 12:50:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=erYUjJEW3B/ZBUaYe4c2FsM5YXLiYEIg5CMxC9wXPKs=;
+        b=DI4lycw33Z5EXpIIuYO4c6J20KEWmghRroX5iHitn+b44rUPLYSrBh4RF7spPbSdt8
+         inYpla2yWN0LRQUSR5uwpHqsA+vSh2ZgtwBMLgHVXHF2gNCj65zhFkCd/XiFd4W9/XCE
+         btPMA1m509IaA0Y9S3kqO7IS+EOhBeNBsh5vCQFlfVfPfkxmCN41Hwi+H2np5W39WZB8
+         vd8/N/jDwy/+JfsR7JTfkA75ecnBxhGcwSAJrmgRl9WBFXHAFyUKohElMifFmfkix8Gj
+         4yePAT02Od1pXQZipvORnYrT4F9iWKqX8zW68/eBHKx0PERlYWWOyQpNFzQNsG5danXs
+         zmAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=erYUjJEW3B/ZBUaYe4c2FsM5YXLiYEIg5CMxC9wXPKs=;
+        b=YoOICaXpA/vsI4/23sMN3P6bsoca6MD6kcSb34IpADHGXcv3nsjfBKGzEDjZ/NNFZu
+         pFd+z/buOYe/3GOjm81VyLYHJylB5WXKY0ucGsaGxwkQZBPSD8BVtPwB3RVigi+Bv6sE
+         oAK2O/pIWBBquEMWrJ9HFi717fNMYRJ9oQqn6ep/v7VmF+dfYTKIlhcaV/fDbTBtynls
+         lxzE6floJZhzG49hTEsvE/EfMNe/6M3jbuySxkOYHykMRHzi2IOhTNb6zSygrtj6SEOT
+         eZ6bIl5cIdBXWZ14UnLv0hhDVYsKzfw4kUC3s+xXqS7eAeOG/qua8ohZj3S/lVMIjbMc
+         /3Jw==
+X-Gm-Message-State: AOAM531NkEYrKkQe1cSYQ3FXIUeu4wrexqaYYdcznK1UbTdBUDt56fK/
+        YZLvYXi2X+45zW+ZXyzLMuOVy9gsbjQ=
+X-Google-Smtp-Source: ABdhPJzoAuXtqjoW++qIECLNqpJhG99NiY/Yw962/PD08MlZ6Yvhs+NZ8wUyOuLuSnPALCaOeJVJfQ==
+X-Received: by 2002:a63:390:: with SMTP id 138mr686343pgd.76.1644870877927;
+        Mon, 14 Feb 2022 12:34:37 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:ff52:228f:b44e:a40b])
+        by smtp.gmail.com with ESMTPSA id j8sm12964422pjc.11.2022.02.14.12.34.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 12:34:37 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net] net: sched: limit TC_ACT_REPEAT loops
+Date:   Mon, 14 Feb 2022 12:34:34 -0800
+Message-Id: <20220214203434.838623-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87ee467p1f.fsf@toke.dk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 13, 2022 at 04:40:44PM +0100, Toke Høiland-Jørgensen wrote:
-> Shung-Hsi Yu <shung-hsi.yu@suse.com> writes:
-> 
-> > On Sat, Feb 12, 2022 at 12:58:51AM +0100, Toke Høiland-Jørgensen wrote:
-> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
-> >> 
-> >> > On Fri, Feb 11, 2022 at 9:20 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
-> >> >>
-> >> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
-> >> >>
-> >> >> > On Thu, Feb 10, 2022 at 2:01 AM Michal Suchánek <msuchanek@suse.de> wrote:
-> >> >> >>
-> >> >> >> Hello,
-> >> >> >>
-> >> >> >> On Mon, Jan 31, 2022 at 09:36:44AM -0800, Yonghong Song wrote:
-> >> >> >> >
-> >> >> >> >
-> >> >> >> > On 1/27/22 7:10 AM, Shung-Hsi Yu wrote:
-> >> >> >> > > Hi,
-> >> >> >> > >
-> >> >> >> > > We recently run into module load failure related to split BTF on openSUSE
-> >> >> >> > > Tumbleweed[1], which I believe is something that may also happen on other
-> >> >> >> > > rolling distros.
-> >> >> >> > >
-> >> >> >> > > The error looks like the follow (though failure is not limited to ipheth)
-> >> >> >> > >
-> >> >> >> > >      BPF:[103111] STRUCT BPF:size=152 vlen=2 BPF: BPF:Invalid name BPF:
-> >> >> >> > >
-> >> >> >> > >      failed to validate module [ipheth] BTF: -22
-> >> >> >> > >
-> >> >> >> > > The error comes down to trying to load BTF of *kernel modules from a
-> >> >> >> > > different build* than the runtime kernel (but the source is the same), where
-> >> >> >> > > the base BTF of the two build is different.
-> >> >> >> > >
-> >> >> >> > > While it may be too far stretched to call this a bug, solving this might
-> >> >> >> > > make BTF adoption easier. I'd natively think that we could further split
-> >> >> >> > > base BTF into two part to avoid this issue, where .BTF only contain exported
-> >> >> >> > > types, and the other (still residing in vmlinux) holds the unexported types.
-> >> >> >> >
-> >> >> >> > What is the exported types? The types used by export symbols?
-> >> >> >> > This for sure will increase btf handling complexity.
-> >> >> >>
-> >> >> >> And it will not actually help.
-> >> >> >>
-> >> >> >> We have modversion ABI which checks the checksum of the symbols that the
-> >> >> >> module imports and fails the load if the checksum for these symbols does
-> >> >> >> not match. It's not concerned with symbols not exported, it's not
-> >> >> >> concerned with symbols not used by the module. This is something that is
-> >> >> >> sustainable across kernel rebuilds with minor fixes/features and what
-> >> >> >> distributions watch for.
-> >> >> >>
-> >> >> >> Now with BTF the situation is vastly different. There are at least three
-> >> >> >> bugs:
-> >> >> >>
-> >> >> >>  - The BTF check is global for all symbols, not for the symbols the
-> >> >> >>    module uses. This is not sustainable. Given the BTF is supposed to
-> >> >> >>    allow linking BPF programs that were built in completely different
-> >> >> >>    environment with the kernel it is completely within the scope of BTF
-> >> >> >>    to solve this problem, it's just neglected.
-> >> >> >
-> >> >> > You refer to BTF use in CO-RE with the latter. It's just one
-> >> >> > application of BTF and it doesn't follow that you can do the same with
-> >> >> > module BTF. It's not a neglect, it's a very big technical difficulty.
-> >> >> >
-> >> >> > Each module's BTFs are designed as logical extensions of vmlinux BTF.
-> >> >> > And each module BTF is independent and isolated from other modules
-> >> >> > extension of the same vmlinux BTF. The way that BTF format is
-> >> >> > designed, any tiny difference in vmlinux BTF effectively invalidates
-> >> >> > all modules' BTFs and they have to be rebuilt.
-> >> >> >
-> >> >> > Imagine that only one BTF type is added to vmlinux BTF. Last BTF type
-> >> >> > ID in vmlinux BTF is shifted from, say, 1000 to 1001. While previously
-> >> >> > every module's BTF type ID started with 1001, now they all have to
-> >> >> > start with 1002 and be shifted by 1.
-> >> >> >
-> >> >> > Now let's say that the order of two BTF types in vmlinux BTF is
-> >> >> > changed, say type 10 becomes type 20 and type 20 becomes type 10 (just
-> >> >> > because of slight difference in DWARF, for instance). Any type
-> >> >> > reference to 10 or 20 in any module BTF has to be renumbered now.
-> >> >> >
-> >> >> > Another one, let's say we add a new string to vmlinux BTF string
-> >> >> > section somewhere at the beginning, say "abc" at offset 100. Any
-> >> >> > string offset after 100 now has to be shifted *both* in vmlinux BTF
-> >> >> > and all module BTFs. And also any string reference in module BTFs have
-> >> >> > to be adjusted as well because now each module's BTF's logical string
-> >> >> > offset is starting at 4 logical bytes higher (due to "abc\0" being
-> >> >> > added and shifting everything right).
-> >> >> >
-> >> >> > As you can see, any tiny change in vmlinux BTF, no matter where,
-> >> >> > beginning, middle, or end, causes massive changes in type IDs and
-> >> >> > offsets everywhere. It's impractical to do any local adjustments, it's
-> >> >> > much simpler and more reliable to completely regenerate BTF
-> >> >> > completely.
-> >> >>
-> >> >> This seems incredibly brittle, though? IIUC this means that if you want
-> >> >> BTF in your modules you *must* have not only the kernel headers of the
-> >> >> kernel it's going to run on, but the full BTF information for the exact
-> >> >
-> >> > From BTF perspective, only vmlinux BTF. Having exact kernel headers
-> >> > would minimize type information duplication.
-> >> 
-> >> Right, I meant you'd need the kernel headers to compile the module, and
-> >> the vmlinux BTF to build the module BTF info.
-> >> 
-> >> >> kernel image you're going to load that module on? How is that supposed
-> >> >> to work for any kind of environment where everything is not built
-> >> >> together? Third-party modules for distribution kernels is the obvious
-> >> >> example that comes to mind here, but as this thread shows, they don't
-> >> >> necessarily even have to be third party...
-> >> >>
-> >> >> How would you go about "completely regenerating BTF" in practice for a
-> >> >> third-party module, say?
-> >> >
-> >> > Great questions. I was kind of hoping you'll have some suggestions as
-> >> > well, though. Not just complaints.
-> >> 
-> >> Well, I kinda took your "not really a bug either" comment to mean you
-> >> weren't really open to changing the current behaviour. But if that was a
-> >> misunderstanding on my part, I do have one thought:
-> >> 
-> >> The "partial BTF" thing in the modules is done to save space, right?
-> >> I.e., in principle there would be nothing preventing a module from
-> >> including a full (self-contained) set of BTF in its .ko when it is
-> >> compiled? Because if so, we could allow that as an optional mode that
-> >> can be enabled if you don't mind taking the size hit (any idea how large
-> >> that usually is, BTW?).
-> >
-> > This seems quite nice IMO as no change need to be made on the generation
-> > side of existing BTF tooling. I test it out on openSUSE Tumbleweed 5.16.5
-> > kernel modules, and for the sake of completeness, includes both the case
-> > where BTF is stripped and using a pre-trained zstd dictionary as well.
-> >
-> > Uncompressed, no BTF                             362MiB -27%
-> > Uncompressed, parital BTF                        499MiB +0%
-> > Uncompressed, self-contained BTF                1026MiB +105%
-> >
-> > Zstd compressed, no BTF                           95MiB -35%
-> > Zstd compressed, partial BTF                     147MiB +0%
-> > Zstd compressed, self-contained BTF              361MiB +145%
-> > Zstd compressed (trained), self-contained BTF    299MiB +103%
-> >
-> > So we'd expect quite a bit of hit as the size of kernel module would double.
-> >
-> > For servers and workstation environment an additional ~200MiB of disk space
-> > seems like tolerable trade-off if it can get third-party kernel module to
-> > work. But I cannot speak for other kind of use cases.
-> 
-> Well, there are also in-between tradeoffs (i.e., you can build a subset
-> of the modules with self-contained BTF and a subset with partial BTF
-> depending on what fits your build environment).
+From: Eric Dumazet <edumazet@google.com>
 
-As for that you would typically want in-tree modules with partial BTF.
-It's a bug if they don't match, and if you can ignore the non-matching
-BTF you should bee able to boot a system that is functional enough to
-re-install the kernel. Today nothing critical depends on CO-RE.
+We have been living dangerously, at the mercy of malicious users,
+abusing TC_ACT_REPEAT, as shown by this syzpot report [1].
 
-On the othere hand if you build something out-of-tree be it virtualbox
-or some module updated with cutting edge experimental changes you will
-likely want full BTF.
+Add an arbitrary limit to the number of times an action can
+return TC_ACT_REPEAT.
 
-Thanks
+[1] (C repro available on demand)
 
-Michal
+rcu: INFO: rcu_preempt self-detected stall on CPU
+rcu:    1-...!: (10500 ticks this GP) idle=021/1/0x4000000000000000 softirq=5592/5592 fqs=0
+        (t=10502 jiffies g=5305 q=190)
+rcu: rcu_preempt kthread timer wakeup didn't happen for 10502 jiffies! g5305 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402
+rcu:    Possible timer handling issue on cpu=0 timer-softirq=3527
+rcu: rcu_preempt kthread starved for 10505 jiffies! g5305 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402 ->cpu=0
+rcu:    Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expected behavior.
+rcu: RCU grace-period kthread stack dump:
+task:rcu_preempt     state:I stack:29344 pid:   14 ppid:     2 flags:0x00004000
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:4986 [inline]
+ __schedule+0xab2/0x4db0 kernel/sched/core.c:6295
+ schedule+0xd2/0x260 kernel/sched/core.c:6368
+ schedule_timeout+0x14a/0x2a0 kernel/time/timer.c:1881
+ rcu_gp_fqs_loop+0x186/0x810 kernel/rcu/tree.c:1963
+ rcu_gp_kthread+0x1de/0x320 kernel/rcu/tree.c:2136
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+rcu: Stack dump where RCU GP kthread last ran:
+Sending NMI from CPU 1 to CPUs 0:
+NMI backtrace for cpu 0
+CPU: 0 PID: 3646 Comm: syz-executor358 Not tainted 5.17.0-rc3-syzkaller-00149-gbf8e59fd315f #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:rep_nop arch/x86/include/asm/vdso/processor.h:13 [inline]
+RIP: 0010:cpu_relax arch/x86/include/asm/vdso/processor.h:18 [inline]
+RIP: 0010:pv_wait_head_or_lock kernel/locking/qspinlock_paravirt.h:437 [inline]
+RIP: 0010:__pv_queued_spin_lock_slowpath+0x3b8/0xb40 kernel/locking/qspinlock.c:508
+Code: 48 89 eb c6 45 01 01 41 bc 00 80 00 00 48 c1 e9 03 83 e3 07 41 be 01 00 00 00 48 b8 00 00 00 00 00 fc ff df 4c 8d 2c 01 eb 0c <f3> 90 41 83 ec 01 0f 84 72 04 00 00 41 0f b6 45 00 38 d8 7f 08 84
+RSP: 0018:ffffc9000283f1b0 EFLAGS: 00000206
+RAX: 0000000000000003 RBX: 0000000000000000 RCX: 1ffff1100fc0071e
+RDX: 0000000000000001 RSI: 0000000000000201 RDI: 0000000000000000
+RBP: ffff88807e0038f0 R08: 0000000000000001 R09: ffffffff8ffbf9ff
+R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000004c1e
+R13: ffffed100fc0071e R14: 0000000000000001 R15: ffff8880b9c3aa80
+FS:  00005555562bf300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffdbfef12b8 CR3: 00000000723c2000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt.h:591 [inline]
+ queued_spin_lock_slowpath arch/x86/include/asm/qspinlock.h:51 [inline]
+ queued_spin_lock include/asm-generic/qspinlock.h:85 [inline]
+ do_raw_spin_lock+0x200/0x2b0 kernel/locking/spinlock_debug.c:115
+ spin_lock_bh include/linux/spinlock.h:354 [inline]
+ sch_tree_lock include/net/sch_generic.h:610 [inline]
+ sch_tree_lock include/net/sch_generic.h:605 [inline]
+ prio_tune+0x3b9/0xb50 net/sched/sch_prio.c:211
+ prio_init+0x5c/0x80 net/sched/sch_prio.c:244
+ qdisc_create.constprop.0+0x44a/0x10f0 net/sched/sch_api.c:1253
+ tc_modify_qdisc+0x4c5/0x1980 net/sched/sch_api.c:1660
+ rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5594
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
+ netlink_unicast+0x539/0x7e0 net/netlink/af_netlink.c:1343
+ netlink_sendmsg+0x904/0xe00 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:725
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2413
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2467
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2496
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f7ee98aae99
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 41 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffdbfef12d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007ffdbfef1300 RCX: 00007f7ee98aae99
+RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 000000000000000d R09: 000000000000000d
+R10: 000000000000000d R11: 0000000000000246 R12: 00007ffdbfef12f0
+R13: 00000000000f4240 R14: 000000000004ca47 R15: 00007ffdbfef12e4
+ </TASK>
+INFO: NMI handler (nmi_cpu_backtrace_handler) took too long to run: 2.293 msecs
+NMI backtrace for cpu 1
+CPU: 1 PID: 3260 Comm: kworker/1:3 Not tainted 5.17.0-rc3-syzkaller-00149-gbf8e59fd315f #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: mld mld_ifc_work
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ nmi_cpu_backtrace.cold+0x47/0x144 lib/nmi_backtrace.c:111
+ nmi_trigger_cpumask_backtrace+0x1b3/0x230 lib/nmi_backtrace.c:62
+ trigger_single_cpu_backtrace include/linux/nmi.h:164 [inline]
+ rcu_dump_cpu_stacks+0x25e/0x3f0 kernel/rcu/tree_stall.h:343
+ print_cpu_stall kernel/rcu/tree_stall.h:604 [inline]
+ check_cpu_stall kernel/rcu/tree_stall.h:688 [inline]
+ rcu_pending kernel/rcu/tree.c:3919 [inline]
+ rcu_sched_clock_irq.cold+0x5c/0x759 kernel/rcu/tree.c:2617
+ update_process_times+0x16d/0x200 kernel/time/timer.c:1785
+ tick_sched_handle+0x9b/0x180 kernel/time/tick-sched.c:226
+ tick_sched_timer+0x1b0/0x2d0 kernel/time/tick-sched.c:1428
+ __run_hrtimer kernel/time/hrtimer.c:1685 [inline]
+ __hrtimer_run_queues+0x1c0/0xe50 kernel/time/hrtimer.c:1749
+ hrtimer_interrupt+0x31c/0x790 kernel/time/hrtimer.c:1811
+ local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1086 [inline]
+ __sysvec_apic_timer_interrupt+0x146/0x530 arch/x86/kernel/apic/apic.c:1103
+ sysvec_apic_timer_interrupt+0x8e/0xc0 arch/x86/kernel/apic/apic.c:1097
+ </IRQ>
+ <TASK>
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
+RIP: 0010:__sanitizer_cov_trace_const_cmp4+0xc/0x70 kernel/kcov.c:286
+Code: 00 00 00 48 89 7c 30 e8 48 89 4c 30 f0 4c 89 54 d8 20 48 89 10 5b c3 0f 1f 80 00 00 00 00 41 89 f8 bf 03 00 00 00 4c 8b 14 24 <89> f1 65 48 8b 34 25 00 70 02 00 e8 14 f9 ff ff 84 c0 74 4b 48 8b
+RSP: 0018:ffffc90002c5eea8 EFLAGS: 00000246
+RAX: 0000000000000007 RBX: ffff88801c625800 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: ffff8880137d3100 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff874fcd88 R11: 0000000000000000 R12: ffff88801d692dc0
+R13: ffff8880137d3104 R14: 0000000000000000 R15: ffff88801d692de8
+ tcf_police_act+0x358/0x11d0 net/sched/act_police.c:256
+ tcf_action_exec net/sched/act_api.c:1049 [inline]
+ tcf_action_exec+0x1a6/0x530 net/sched/act_api.c:1026
+ tcf_exts_exec include/net/pkt_cls.h:326 [inline]
+ route4_classify+0xef0/0x1400 net/sched/cls_route.c:179
+ __tcf_classify net/sched/cls_api.c:1549 [inline]
+ tcf_classify+0x3e8/0x9d0 net/sched/cls_api.c:1615
+ prio_classify net/sched/sch_prio.c:42 [inline]
+ prio_enqueue+0x3a7/0x790 net/sched/sch_prio.c:75
+ dev_qdisc_enqueue+0x40/0x300 net/core/dev.c:3668
+ __dev_xmit_skb net/core/dev.c:3756 [inline]
+ __dev_queue_xmit+0x1f61/0x3660 net/core/dev.c:4081
+ neigh_hh_output include/net/neighbour.h:533 [inline]
+ neigh_output include/net/neighbour.h:547 [inline]
+ ip_finish_output2+0x14dc/0x2170 net/ipv4/ip_output.c:228
+ __ip_finish_output net/ipv4/ip_output.c:306 [inline]
+ __ip_finish_output+0x396/0x650 net/ipv4/ip_output.c:288
+ ip_finish_output+0x32/0x200 net/ipv4/ip_output.c:316
+ NF_HOOK_COND include/linux/netfilter.h:296 [inline]
+ ip_output+0x196/0x310 net/ipv4/ip_output.c:430
+ dst_output include/net/dst.h:451 [inline]
+ ip_local_out+0xaf/0x1a0 net/ipv4/ip_output.c:126
+ iptunnel_xmit+0x628/0xa50 net/ipv4/ip_tunnel_core.c:82
+ geneve_xmit_skb drivers/net/geneve.c:966 [inline]
+ geneve_xmit+0x10c8/0x3530 drivers/net/geneve.c:1077
+ __netdev_start_xmit include/linux/netdevice.h:4683 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4697 [inline]
+ xmit_one net/core/dev.c:3473 [inline]
+ dev_hard_start_xmit+0x1eb/0x920 net/core/dev.c:3489
+ __dev_queue_xmit+0x2985/0x3660 net/core/dev.c:4116
+ neigh_hh_output include/net/neighbour.h:533 [inline]
+ neigh_output include/net/neighbour.h:547 [inline]
+ ip6_finish_output2+0xf7a/0x14f0 net/ipv6/ip6_output.c:126
+ __ip6_finish_output net/ipv6/ip6_output.c:191 [inline]
+ __ip6_finish_output+0x61e/0xe90 net/ipv6/ip6_output.c:170
+ ip6_finish_output+0x32/0x200 net/ipv6/ip6_output.c:201
+ NF_HOOK_COND include/linux/netfilter.h:296 [inline]
+ ip6_output+0x1e4/0x530 net/ipv6/ip6_output.c:224
+ dst_output include/net/dst.h:451 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ mld_sendpack+0x9a3/0xe40 net/ipv6/mcast.c:1826
+ mld_send_cr net/ipv6/mcast.c:2127 [inline]
+ mld_ifc_work+0x71c/0xdc0 net/ipv6/mcast.c:2659
+ process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
+ worker_thread+0x657/0x1110 kernel/workqueue.c:2454
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+----------------
+Code disassembly (best guess):
+   0:   48 89 eb                mov    %rbp,%rbx
+   3:   c6 45 01 01             movb   $0x1,0x1(%rbp)
+   7:   41 bc 00 80 00 00       mov    $0x8000,%r12d
+   d:   48 c1 e9 03             shr    $0x3,%rcx
+  11:   83 e3 07                and    $0x7,%ebx
+  14:   41 be 01 00 00 00       mov    $0x1,%r14d
+  1a:   48 b8 00 00 00 00 00    movabs $0xdffffc0000000000,%rax
+  21:   fc ff df
+  24:   4c 8d 2c 01             lea    (%rcx,%rax,1),%r13
+  28:   eb 0c                   jmp    0x36
+* 2a:   f3 90                   pause <-- trapping instruction
+  2c:   41 83 ec 01             sub    $0x1,%r12d
+  30:   0f 84 72 04 00 00       je     0x4a8
+  36:   41 0f b6 45 00          movzbl 0x0(%r13),%eax
+  3b:   38 d8                   cmp    %bl,%al
+  3d:   7f 08                   jg     0x47
+  3f:   84                      .byte 0x84
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/sched/act_api.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index 32563cef85bfa29679f3790599b9d34ebd504b5c..b1fb395ca7c1e12945dc70219608eb166e661203 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -1037,6 +1037,7 @@ int tcf_action_exec(struct sk_buff *skb, struct tc_action **actions,
+ restart_act_graph:
+ 	for (i = 0; i < nr_actions; i++) {
+ 		const struct tc_action *a = actions[i];
++		int repeat_ttl;
+ 
+ 		if (jmp_prgcnt > 0) {
+ 			jmp_prgcnt -= 1;
+@@ -1045,11 +1046,17 @@ int tcf_action_exec(struct sk_buff *skb, struct tc_action **actions,
+ 
+ 		if (tc_act_skip_sw(a->tcfa_flags))
+ 			continue;
++
++		repeat_ttl = 10;
+ repeat:
+ 		ret = a->ops->act(skb, a, res);
+-		if (ret == TC_ACT_REPEAT)
+-			goto repeat;	/* we need a ttl - JHS */
+-
++		if (unlikely(ret == TC_ACT_REPEAT)) {
++			if (--repeat_ttl != 0)
++				goto repeat;
++			/* suspicious opcode, stop pipeline */
++			pr_err_once("TC_ACT_REPEAT abuse ?\n");
++			return TC_ACT_OK;
++		}
+ 		if (TC_ACT_EXT_CMP(ret, TC_ACT_JUMP)) {
+ 			jmp_prgcnt = ret & TCA_ACT_MAX_PRIO_MASK;
+ 			if (!jmp_prgcnt || (jmp_prgcnt > nr_actions)) {
+-- 
+2.35.1.265.g69c8d7142f-goog
+
