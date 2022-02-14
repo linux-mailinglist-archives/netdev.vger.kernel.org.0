@@ -2,130 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C753C4B42BD
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 08:24:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA8F44B4313
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 08:47:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241214AbiBNHXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 02:23:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38392 "EHLO
+        id S236842AbiBNHoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 02:44:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231745AbiBNHXQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 02:23:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 751B5593A2
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 23:23:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644823388;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Le97n5fv3dcCWOo7tuL8CFHljuRE0qTHh9i8vGZj8do=;
-        b=RLESd8lGsd5lDCB4f6Pp+yJ25kLZG75iEQ5zMc8UoJnVSRFCUphw4V6X7geHA/1prNoClS
-        1RiWwI5rhVTeR9Io//K8z4hzib5EcCEqa1qCEFdF1Y5YeOPU/kjI5Gee+d4RcH71BMnrS9
-        Qr9ERcOpTXVF+QO0PCkBL5e4LHW3qJM=
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
- [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-504-Lt2UP1wrMemacMpNUfaE7A-1; Mon, 14 Feb 2022 02:23:06 -0500
-X-MC-Unique: Lt2UP1wrMemacMpNUfaE7A-1
-Received: by mail-io1-f71.google.com with SMTP id 193-20020a6b01ca000000b00612778c712aso9985953iob.14
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 23:23:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Le97n5fv3dcCWOo7tuL8CFHljuRE0qTHh9i8vGZj8do=;
-        b=T3fKuXkf2w6j+Vnz6xFlSBa4u/7AktiKL4pGJd73UjrcEr/aHpMQU0vAuteYG/fH8M
-         EUvHLUyMLcn9r8vz+Q79wGkjGon/pbXMpPOm4S6dQ3bDU9cPszu65ND9oPiQG3PxdIG3
-         p5E1flYcoATNuJCS6cDFsk6cg4zdS9iDMHk9nDfVmAG6CSt4FN5oaaaQa9qWoNxhTqxa
-         lUvpxNYcAjy7Fmlyt9MtAzpolHy/S3KrLQR84WLWZMCws4rs013sbDrX30aMY5tkgml8
-         KlDuc/zQHbl3qoyYcLBZoKP9NjvhTCM3d7j65T7m63Hg8aNlt2p2OuodpJaDBnbFgoV4
-         rKQg==
-X-Gm-Message-State: AOAM5319sshv+9xF1+xlFmfTwFO8lb1bNH4Lhw4Ag3Zw6Ii25dDnzlEd
-        bsbaWtt+CwrXFO0/W7GohE2xNP31bW/vKPf6JTm7eJvdSH6dksCsF6s9shD5Cl78SOMbBSK1k7O
-        AwZN6oXYb8nm84qWeULAAFZ5VGuXPwxvz
-X-Received: by 2002:a05:6e02:1d94:: with SMTP id h20mr7440346ila.312.1644823385890;
-        Sun, 13 Feb 2022 23:23:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyOIZ/kpb7xi7xCCWjR9fqD4lOyhvzNcKb8uaolNFzUBqSzTc/ZeliMZeDJLbkZnqjlpPyZo/miYr3CbnGJ0Q0=
-X-Received: by 2002:a05:6e02:1d94:: with SMTP id h20mr7440339ila.312.1644823385646;
- Sun, 13 Feb 2022 23:23:05 -0800 (PST)
+        with ESMTP id S235718AbiBNHoS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 02:44:18 -0500
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4645A59E
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 23:44:10 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id D40F65C00F2;
+        Mon, 14 Feb 2022 02:44:07 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Mon, 14 Feb 2022 02:44:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=4dSVolvJBKEgqDGgP
+        djwbbEgmtJVcyb7tHJDTHg95ko=; b=C21JRaAGTlsqW9Oid/ss47GnL4rJwL/bY
+        q+gxGRj/sLuceSQCgl1J3XgwkLm3xcH6n8D2ueFlV3uChy1FkMoSd9IT3f8xLQzJ
+        cJSUVm/ENPnxEYQDJ4sWqQavibkQAsOOM5HaeEgbWuj6+LuCNrjCm4jDcwlk00me
+        RHEUNJezHI6oAJ+lSenfiwIOaBjULQq35Et6Bop+rFdpy7djdvl8va2rsiV2p2U9
+        bubW+85VXubzxeN/F/iwW+h+r05GPJwxZ1f4d1U1ovbDjDBEzS00rf0K4GE8DPxT
+        cZyRS6V2qOau6W6VKYVKwCU+QxGejGb8cdRdww5869AEiWBGyWNyw==
+X-ME-Sender: <xms:RwgKYngN_d1O5d5OViPvFRF6xtG_tZnYpEje8t1yFWvUXMyhq3fbVw>
+    <xme:RwgKYkCobqEUY6TLVdLEIz13mB2Hrtd_Tsl12wK-UynPynydeLI6hcp2R71HLobuf
+    CXz7ZukVhq2Des>
+X-ME-Received: <xmr:RwgKYnF7p7nOl8eGm4AEmYR3pKyBLjTYCaPAnZ9HDAoI-w4d-s2dEh7Lg6C_KVwM2yyQGexstBHyJnbVGOJ4bR45A8Y>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjedugdduuddtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:RwgKYkSBRpT7LiHsGiRkcII-WtHaMVExa98-uSIRhmQamG3PtVqZlg>
+    <xmx:RwgKYkzmG9lZTSGjdZIeWVbncHUYlxDtbu9qQR1XpIqNvloZqF0T_Q>
+    <xmx:RwgKYq7yvziD47ZHgHFmyl6inui0VIi9GQ9qoC1PSsL5PnI8LLKSBA>
+    <xmx:RwgKYuvfFC48qJOqsUZR6P2SQbwXn_3WzhHWXDGf3RmNfmYoNuvQYg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 14 Feb 2022 02:44:06 -0500 (EST)
+Date:   Mon, 14 Feb 2022 09:44:02 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: Re: [PATCH net-next] ipv6: blackhole_netdev needs snmp6 counters
+Message-ID: <YgoIQtZSkual5TsU@shredder>
+References: <20220214021056.389298-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-References: <20220128151922.1016841-1-ihuguet@redhat.com> <20220128151922.1016841-2-ihuguet@redhat.com>
- <20220128142728.0df3707e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CACT4ouctx9+UP2BKicjk6LJSRcR2M_4yDhHmfDARcDuVj=_XAg@mail.gmail.com>
- <20220207085311.3f6d0d19@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CACT4oucCn2ixs8hCizGhvjLPOa90k3vEZEVbuY6nUF-M23B=yw@mail.gmail.com>
- <20220210082249.0e50668b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CACT4ouepk83kxTGd6S3gVyFAjofofwQfxsmhe97vGP+twkoW1g@mail.gmail.com> <20220211110100.5580d1ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220211110100.5580d1ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
-Date:   Mon, 14 Feb 2022 08:22:54 +0100
-Message-ID: <CACT4ouf2nuHQG+t3uFLD7iFNSwSi1aoDfdfXG0ReZcNBwWK6Cw@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] sfc: default config to 1 channel/core in
- local NUMA node only
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Edward Cree <ecree.xilinx@gmail.com>, habetsm.xilinx@gmail.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214021056.389298-1-eric.dumazet@gmail.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 8:01 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri, 11 Feb 2022 12:05:19 +0100 =C3=8D=C3=B1igo Huguet wrote:
-> > Totally. My comment was intended to be more like a question to see why
-> > we should or shouldn't consider NUMA nodes in
-> > netif_get_num_default_rss_queues. But now I understand your point
-> > better.
-> >
-> > However, would it make sense something like this for
-> > netif_get_num_default_rss_queues, or it would be a bit overkill?
-> > if the system has more than one NUMA node, allocate one queue per
-> > physical core in local NUMA node.
-> > else, allocate physical cores / 2
->
-> I don't have a strong opinion on the NUMA question, to be honest.
-> It gets complicated pretty quickly. If there is one NIC we may or
-> may not want to divide - for pure packet forwarding sure, best if
-> its done on the node with the NIC, but that assumes the other node
-> is idle or doing something else? How does it not need networking?
->
-> If each node has a separate NIC we should definitely divide. But
-> it's impossible to know the NIC count at the netdev level..
->
-> So my thinking was let's leave NUMA configurations to manual tuning.
-> If we don't do anything special for NUMA it's less likely someone will
-> tell us we did the wrong thing there :) But feel free to implement what
-> you suggested above.
+On Sun, Feb 13, 2022 at 06:10:56PM -0800, Eric Dumazet wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+> 
+> Whenever rt6_uncached_list_flush_dev() swaps rt->rt6_idev
+> to the blackhole device, parts of IPv6 stack might still need
+> to increment one SNMP counter.
+> 
+> Root cause, patch from Ido, changelog from Eric :)
+> 
+> This bug suggests that we need to audit rt->rt6_idev usages
+> and make sure they are properly using RCU protection.
+> 
+> Fixes: e5f80fcf869a ("ipv6: give an IPv6 dev to blackhole_netdev")
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
 
-Agreed, the more you try to be smart, the more less common case you
-might fail to do it well.
-
-If nobody else speaks in favor of my suggestion I will go the simpler way.
-
->
-> One thing I'm not sure of is if anyone uses the early AMD chiplet CPUs
-> in a NUMA-per-chiplet mode? IIRC they had a mode like that. And that'd
-> potentially be problematic if we wanted to divide by number of nodes.
-> Maybe not as much if just dividing by 2.
->
-> > Another thing: this patch series appears in patchwork with state
-> > "Changes Requested", but no changes have been requested, actually. Can
-> > the state be changed so it has more visibility to get reviews?
->
-> I think resend would be best.
->
-
-
---=20
-=C3=8D=C3=B1igo Huguet
-
+Thanks for taking care of this, Eric. I applied the patch to our tree
+last night before logging off and regression does look fine.
