@@ -2,199 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AF044B41E3
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 07:17:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1B1B4B41E6
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 07:22:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240758AbiBNGQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 01:16:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54570 "EHLO
+        id S233761AbiBNGWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 01:22:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233761AbiBNGQQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 01:16:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 01E40517C8
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 22:16:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644819367;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NF1/NPeUWNiJlC0A0ifogeZR5Lr3JaYAP0Q8qqKkG4w=;
-        b=SglZ35rNYkrOyN+6wMugAom/r/UmzbV0qjrbzRW980KvYZqeiCZ64lg76Gr6H5JQg0/NO7
-        zzqyJUJhsDDyF2zdl6sYo63wUM9vxSLi2fozzTTVO/Sx9+bXBnENawCL5DWhCCzLNkxu3A
-        /qcNunFG5gPh9T4rg2tRUYCOCYPjYBk=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-479-fP_HvOaDPceiHM1cck45HQ-1; Mon, 14 Feb 2022 01:16:06 -0500
-X-MC-Unique: fP_HvOaDPceiHM1cck45HQ-1
-Received: by mail-pj1-f70.google.com with SMTP id q12-20020a17090a2e0c00b001b874772fecso10225519pjd.2
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 22:16:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=NF1/NPeUWNiJlC0A0ifogeZR5Lr3JaYAP0Q8qqKkG4w=;
-        b=Cxz/C8InLcJEGPZHeHgX4T1qzCu54ydqtYZgL7rJOLja1jw2dhtZ6lloqZJW6KiZR+
-         VvSEXr0XDy0iR3agbc/umvbF39TKYB+/YiiqeDPCDd5WjbxezFR6uZ6Am8Tqtskx7KE9
-         jglaNp03QXLTLKOsj2jTv+bhk52Huc/0NgJiO35CwyomvT89Ya11r6hZd9OP6YoN4CTF
-         gBdBquzOKp64iWFSjGSQEXXMeJgGmitqkbY6w9kFRSExfvIrfUK1HPr2lu7X5DX12rTK
-         eNEA5WzazFCoRb+1zSUpEQrjGWlIFDKY8Cdoh6sZSCXCBM8lBwyMWoD/XgUgXJpn0a+G
-         pK1g==
-X-Gm-Message-State: AOAM531DubFtq6OKgeFDhe6NvFQfe3hZgresyY905R3icdAyJPYJkkM+
-        Tv9iuEN0lHlkenDexlMX9653Xdjfc8xqJhOdd/1DL/ig9WZcPV0P3Km6GnbSX10ncU3WwYQrBCb
-        u81OmIeGcTZoGyAum
-X-Received: by 2002:a05:6a00:1892:: with SMTP id x18mr12764897pfh.20.1644819365614;
-        Sun, 13 Feb 2022 22:16:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx6SwUZsLff3cs83pvyeBxbCmftVQTztg6Yvm98p1XlJI3EP/KbBrzcE7/YJjwVZOOLrhfVig==
-X-Received: by 2002:a05:6a00:1892:: with SMTP id x18mr12764878pfh.20.1644819365375;
-        Sun, 13 Feb 2022 22:16:05 -0800 (PST)
-Received: from [10.72.12.239] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id w2sm18461513pfb.139.2022.02.13.22.16.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 13 Feb 2022 22:16:04 -0800 (PST)
-Message-ID: <5b9e287a-08bd-10b9-4159-5b36f192a387@redhat.com>
-Date:   Mon, 14 Feb 2022 14:15:58 +0800
+        with ESMTP id S231168AbiBNGWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 01:22:23 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2254E389
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 22:22:16 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1644819714; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=H/fgOajawYGQ4hrV726EtzM/rvnwIVLCPSDbxxycZ8gsKgVpKeglaXcz41abHs8D9S1cl0UTWaiQbSKHDVbv4vb0a6jko8j5wc/Ah5JiQRJBbH3xjXO2dg4qrq4RMLedDdK9qPNA5nuliLEy0QvlECA/sG7f55+V6MNZQSNLBpw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1644819714; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=GtUxy4lLQG9OlQtWhyQ9FZhb+h2aCKv1ZBWFLqkahsw=; 
+        b=feH4m4oxDcZk8PtTbIRx4IH8RbIwRtX2LrjgkK6wIETzmn0e+V46vEeMuzFpxojsEbS286sk/IUh+Ml0MqVdtAAH+87ZqGW9Lk1DqkG/ugW7ULapH4sEhm6iCWC909aaNyAjxd2EHq2NZLbCtVPO1UcphxCP3Kh5D/jw+clX22w=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1644819714;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+        bh=GtUxy4lLQG9OlQtWhyQ9FZhb+h2aCKv1ZBWFLqkahsw=;
+        b=NAtVhu55pcnAlGiRX70SLT1tKKZZstKUofSeTbwchOO4VFVw8zXJ6pgvtXvk2CC2
+        WPQBOS5kKxFkKWgvSuHHGjE1WPjHCwQLLUnVUdF6BUtZJTukPElYajZomHYkng9SVuL
+        m8c+vxpfTLqw+RMi4MakY26EuzAK+EkWimTojdTE=
+Received: from [10.10.10.3] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
+        with SMTPS id 1644819709237931.1376275419315; Sun, 13 Feb 2022 22:21:49 -0800 (PST)
+Message-ID: <d0e6be61-4c1f-a660-07b6-8aa0a4586a05@arinc9.com>
+Date:   Mon, 14 Feb 2022 09:21:44 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [PATCH V4 1/4] vDPA/ifcvf: implement IO read/write helpers in the
- header file
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH net-next v3 1/2] net: dsa: realtek: realtek-smi: clean-up
+ reset
 Content-Language: en-US
-To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com
-Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org
-References: <20220203072735.189716-1-lingshan.zhu@intel.com>
- <20220203072735.189716-2-lingshan.zhu@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220203072735.189716-2-lingshan.zhu@intel.com>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, alsi@bang-olufsen.dk
+References: <20220214022012.14787-1-luizluca@gmail.com>
+ <20220214022012.14787-2-luizluca@gmail.com>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20220214022012.14787-2-luizluca@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 14/02/2022 05:20, Luiz Angelo Daros de Luca wrote:
+> When reset GPIO was missing, the driver was still printing an info
+> message and still trying to assert the reset. Although gpiod_set_value()
+> will silently ignore calls with NULL gpio_desc, it is better to make it
+> clear the driver might allow gpio_desc to be NULL.
+> 
+> The initial value for the reset pin was changed to GPIOD_OUT_LOW,
+> followed by a gpiod_set_value() asserting the reset. This way, it will
+> be easier to spot if and where the reset really happens.
+> 
+> A new "asserted RESET" message was added just after the reset is
+> asserted, similar to the existing "deasserted RESET" message. Both
+> messages were demoted to dbg. The code comment is not needed anymore.
+> 
+> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 
-在 2022/2/3 下午3:27, Zhu Lingshan 写道:
-> re-implement IO read/write helpers in the header file, so that
-> they can be utilized among modules.
->
-> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-
-I wonder if we can simply use include/linux/virtio_pci_modern.h.
-
-The accessors vp_ioreadX/writeX() there were decoupled from the 
-virtio_pci_modern_device structure.
-
-Thanks
-
-
-> ---
->   drivers/vdpa/ifcvf/ifcvf_base.c | 36 --------------------------------
->   drivers/vdpa/ifcvf/ifcvf_base.h | 37 +++++++++++++++++++++++++++++++++
->   2 files changed, 37 insertions(+), 36 deletions(-)
->
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
-> index 7d41dfe48ade..397692ae671c 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_base.c
-> +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
-> @@ -10,42 +10,6 @@
->   
->   #include "ifcvf_base.h"
->   
-> -static inline u8 ifc_ioread8(u8 __iomem *addr)
-> -{
-> -	return ioread8(addr);
-> -}
-> -static inline u16 ifc_ioread16 (__le16 __iomem *addr)
-> -{
-> -	return ioread16(addr);
-> -}
-> -
-> -static inline u32 ifc_ioread32(__le32 __iomem *addr)
-> -{
-> -	return ioread32(addr);
-> -}
-> -
-> -static inline void ifc_iowrite8(u8 value, u8 __iomem *addr)
-> -{
-> -	iowrite8(value, addr);
-> -}
-> -
-> -static inline void ifc_iowrite16(u16 value, __le16 __iomem *addr)
-> -{
-> -	iowrite16(value, addr);
-> -}
-> -
-> -static inline void ifc_iowrite32(u32 value, __le32 __iomem *addr)
-> -{
-> -	iowrite32(value, addr);
-> -}
-> -
-> -static void ifc_iowrite64_twopart(u64 val,
-> -				  __le32 __iomem *lo, __le32 __iomem *hi)
-> -{
-> -	ifc_iowrite32((u32)val, lo);
-> -	ifc_iowrite32(val >> 32, hi);
-> -}
-> -
->   struct ifcvf_adapter *vf_to_adapter(struct ifcvf_hw *hw)
->   {
->   	return container_of(hw, struct ifcvf_adapter, vf);
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-> index c486873f370a..949b4fb9d554 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
-> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-> @@ -42,6 +42,43 @@
->   #define ifcvf_private_to_vf(adapter) \
->   	(&((struct ifcvf_adapter *)adapter)->vf)
->   
-> +static inline u8 ifc_ioread8(u8 __iomem *addr)
-> +{
-> +	return ioread8(addr);
-> +}
-> +
-> +static inline u16 ifc_ioread16(__le16 __iomem *addr)
-> +{
-> +	return ioread16(addr);
-> +}
-> +
-> +static inline u32 ifc_ioread32(__le32 __iomem *addr)
-> +{
-> +	return ioread32(addr);
-> +}
-> +
-> +static inline void ifc_iowrite8(u8 value, u8 __iomem *addr)
-> +{
-> +	iowrite8(value, addr);
-> +}
-> +
-> +static inline void ifc_iowrite16(u16 value, __le16 __iomem *addr)
-> +{
-> +	iowrite16(value, addr);
-> +}
-> +
-> +static inline void ifc_iowrite32(u32 value, __le32 __iomem *addr)
-> +{
-> +	iowrite32(value, addr);
-> +}
-> +
-> +static inline void ifc_iowrite64_twopart(u64 val,
-> +				  __le32 __iomem *lo, __le32 __iomem *hi)
-> +{
-> +	ifc_iowrite32((u32)val, lo);
-> +	ifc_iowrite32(val >> 32, hi);
-> +}
-> +
->   struct vring_info {
->   	u64 desc;
->   	u64 avail;
-
+Arınç
