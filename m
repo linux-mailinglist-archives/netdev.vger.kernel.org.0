@@ -2,73 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7500B4B3EB3
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 01:49:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B97224B3ED2
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 02:13:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238915AbiBNAtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Feb 2022 19:49:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56472 "EHLO
+        id S238972AbiBNBNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Feb 2022 20:13:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233732AbiBNAtG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 19:49:06 -0500
-Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612F2522DD
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 16:48:59 -0800 (PST)
-Received: by mail-vs1-xe30.google.com with SMTP id g21so4295422vsp.6
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 16:48:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j/DD1kcEEx1FzzkCqZJ0YWoWrY+Puf6kpaDWO9X0kpE=;
-        b=UxXnQ+h5Be3hyDTbwpzsDKmzhSOjZW5TMJJU4VBOPp2yJx3PBW91E31z9r5A+8/8qs
-         HPyU04cC9MHBRasi8tkCnmogo1Bbo0S6EtK0te9cYYko3udaFH2ilwtO5t7u7ldmSkBc
-         cBZ4CEKRcpyTb55h8tezHTVFr+7R3RkfYXje0g8FHi11jYBg/OwZoEbsebSnyJO4LuEs
-         rD4CRAjamnZXp+Xnuqnm6JgdlY8RVonXmVFI3OyjeAQFa6K9M5VbQxlBsI+qaGIkGrsC
-         R040JN7eZXO6Kd1wuXxEgoIzVXsl69g1L1f1Xmcbx0T7meKtCJ+vEY4tBTreHEV8DrAy
-         Lupw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j/DD1kcEEx1FzzkCqZJ0YWoWrY+Puf6kpaDWO9X0kpE=;
-        b=S+3H1tibiS1o0Hv8AUaBiv8JgKvWSZlsFWaYzJm/20WiBLjFHTu5qrv7OuRYMDQLrH
-         5WNfWvNMLIKkF5c19GsqTXt6KQNiz9CGDL4QgAxCGvzcR8f7xDtIVDx0RwtL30BD2SaK
-         SDWnilTpAcgtlCYxR4Mmn0QL2ZQN4b3HR/6gbKf9YsM4Dzuv0CyBxUck1JqgOCpgay9i
-         H0bPH+cTcW4PgKouoSHM2v+s7gSqyoAragr6fanl5vq7apVwcMocXyeFuHLLSSn4f3re
-         gnI0bTLfUy68NZW2Gxz5ygnn1pUi568qgU40Ft34kbkTkc1GTbELwI6sUEMDbEqUCozc
-         zVxw==
-X-Gm-Message-State: AOAM532Om5uqOZgOaORxXESqHj4lPQgWBd0IIPjzQYK6gWxYTVNxnkXL
-        +4htCjy4sScdNGQyg3iSOs2gncwXFg0=
-X-Google-Smtp-Source: ABdhPJxV8HYuo6lOYCJFX3KN6k5gLB+lfqdMK0HsH/XrJ2I0DDsuj5pr3O2kEjKJ3/3CVt3SrWCimg==
-X-Received: by 2002:a05:6102:3751:: with SMTP id u17mr817314vst.81.1644799738374;
-        Sun, 13 Feb 2022 16:48:58 -0800 (PST)
-Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com. [209.85.221.170])
-        by smtp.gmail.com with ESMTPSA id x18sm5383208vsj.20.2022.02.13.16.48.57
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 13 Feb 2022 16:48:57 -0800 (PST)
-Received: by mail-vk1-f170.google.com with SMTP id o129so7369763vko.7
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 16:48:57 -0800 (PST)
-X-Received: by 2002:a05:6122:78d:: with SMTP id k13mr3230602vkr.29.1644799737434;
- Sun, 13 Feb 2022 16:48:57 -0800 (PST)
+        with ESMTP id S229532AbiBNBNj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 20:13:39 -0500
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2135.outbound.protection.outlook.com [40.107.22.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2794E527D3;
+        Sun, 13 Feb 2022 17:13:31 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GspGhb4IgWJaFdPJv30nllFXED+uosYcbhN6mqOxxDckqGhpcCGrvJxuxzDAXNhPH0Lh5en23waFiTOp5+/9YJAA/Qo5tPD/kODJT4pW87PtGCB0umgzO62fHGxGb/R1JCwnWEf969ifL1C4QwX7JnmmO3k0HEHCBn1bpM+/074WBf0xDE9/bjlB7Kg2pFcJ8pPb0KHzZLEQyQG6fS1135uZgq1zJH5w2yS9VELyA4OGvRHy1m+bUjW9VN0cPV18WSc7cmFcZDOUkx4ZL2OJdxKby7OIGcCQVtBd9oGp+/2xX2rawMP+m+Y63uWGHZgzIkWP94fObdNmUOBoHeGShg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6od7VRUyVFGNPGxJj6mpfqpcgwp7NkUJVG4PIxYq6/Y=;
+ b=c1wquMoxWrLnLFGvqAJccFp1HJLjVMwxz5uOQFJIeEmk2HWdQygw4WV/PNThZ15FK+x1qjxeO/arSL9AGVrs6GEJ/c5ETy7SULSx7gmeiNgKZAETHhyGEJSHS4QbRcjm9oJqY6O/BUBw1j820KCr/XlliwIAP43AYu1sAnRsm2uhbDSlY1ngqhM3+U8Z2V9nWlt7yJyiCOjEvSNc4jguZmLz8hQ3mbc6AWCFarni8QUUk8x0iim5ki3frtDpcwVgiP9yTR3wMuTdEISLiGNoHvnC0l8M5pPDLrpcXBcrJn8JJCPRR9oG6/W63D/4GhPm17OoMnGyaqHI7l4KJ+ZOJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6od7VRUyVFGNPGxJj6mpfqpcgwp7NkUJVG4PIxYq6/Y=;
+ b=ygq4lgBSwV7t5PBgxsII/hPTZPDeN2qeKH9lmCJ2Hw3mc0r8L7OziOlSQOvXWsCOSme49RNo3kycfge8Bjolp8Nws1dXBXYBfjkJb+1/niY12ebHK4n5mmGH36j8nTVOb0RmNqwxUUUghEt/KuQrPtYvgfk2NfNkai93Dr3dyR4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=plvision.eu;
+Received: from AM9P190MB1122.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:262::24)
+ by DB9P190MB1098.EURP190.PROD.OUTLOOK.COM (2603:10a6:10:22e::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.14; Mon, 14 Feb
+ 2022 01:13:28 +0000
+Received: from AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
+ ([fe80::c93a:58e1:db16:e117]) by AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
+ ([fe80::c93a:58e1:db16:e117%4]) with mapi id 15.20.4975.018; Mon, 14 Feb 2022
+ 01:13:28 +0000
+From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
+To:     netdev@vger.kernel.org
+Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vadym Kochan <vadym.kochan@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: marvell: prestera: Fix includes
+Date:   Mon, 14 Feb 2022 03:12:28 +0200
+Message-Id: <20220214011228.5625-1-yevhen.orlov@plvision.eu>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: FR0P281CA0086.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1e::22) To AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:20b:262::24)
 MIME-Version: 1.0
-References: <MWHPR2201MB1072BCCCFCE779E4094837ACD0329@MWHPR2201MB1072.namprd22.prod.outlook.com>
- <CA+FuTSeY-GNfBCppjRwhWrOnUg9JDOaesjby2+QbuvPOO5g-=Q@mail.gmail.com> <CA+FuTScRGQV5ePxbu7LReuAUc_AU3sQd7Mb8KGVmu+X2jSQSCQ@mail.gmail.com>
-In-Reply-To: <CA+FuTScRGQV5ePxbu7LReuAUc_AU3sQd7Mb8KGVmu+X2jSQSCQ@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sun, 13 Feb 2022 19:48:21 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSc77mc6kwRpA4pvbyK-y5MdaJLkvWMqgXSohGp9XJFibw@mail.gmail.com>
-Message-ID: <CA+FuTSc77mc6kwRpA4pvbyK-y5MdaJLkvWMqgXSohGp9XJFibw@mail.gmail.com>
-Subject: Re: BUG: potential net namespace bug in IPv6 flow label management
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     "Liu, Congyu" <liu3101@purdue.edu>,
-        "security@kernel.org" <security@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 08ac4925-ab3d-44ff-2c8c-08d9ef573503
+X-MS-TrafficTypeDiagnostic: DB9P190MB1098:EE_
+X-Microsoft-Antispam-PRVS: <DB9P190MB109819254D5194534AB0F1BC93339@DB9P190MB1098.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2043;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vXhImy/1c0LN6ffkBO1cQqH1yN5I8ch9hcdP0TBYd2ymVnhy/d8nGs5nlEGFhW2E4k6Li0VYoTUItJ9swQipYdbQ9tuk8bQc09MZej4kVjyJFBBA47gqttLFxVPeTLnYnCgYwKlWssLHq3MrT/8Fjxhv27qoX0VDnjlBw6Km1G4E1TWj+kL3qFRmkUHJJ6AYHFDgXrhnqI/visVnBKV8YBIvUHnF4MZ7Qr6emD7oBg+tLcZ57sn//uV7G9aUwj+AmYyePAk6vq9MbJxXSm5WDxIkIPhjD84lr7wkvYlMKiRS0zM30dG57G+qrwusB3tH4LV6+ohyWE+Sdc3+oMA6tJHYFSLOeW9cFJCbaS1az+EHPqxG/dgOC3/j375L4isc3ypUF5huhRxbN4p7GBgGCX8Fn8P97FeXUD73QD3uJkkDREtOwIEmnAx6S/rtOgaE/A0zbv1qJFUiBsyIe/ioIdF5z9VvRH1zDfDouSCVm2xLWc+lWpnxdGQl0khLJxZ62LrPDV/A2B+eruYwW4Q3B8e+R5rGl94xGXcQdjpmYTLjIFpbXFbrdmWxb3t2VvROt2cLP/p42CX2DYwfhPTu5Am03UVk9YEWCIH1gSwK2xr8TO/GoWHxSZAQZ/4lDsdVGJq89h9CVrb6pxJcW51Yid17rJ8cfQZDRmiU2xh0I/js2W9GYG8GrPVpeLQcVp6hrdU5SI2cF/vHMCocTzBM1Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9P190MB1122.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(396003)(136003)(376002)(366004)(39830400003)(346002)(4326008)(44832011)(66946007)(36756003)(2906002)(86362001)(5660300002)(66556008)(66476007)(8936002)(8676002)(4744005)(52116002)(38350700002)(38100700002)(54906003)(6512007)(6506007)(6486002)(2616005)(6916009)(1076003)(186003)(508600001)(316002)(26005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xenz51kzyMu8LE7AjbXcnnvbV4kTGXSdqIdR2rF7Zf6kEes7G6aVZgBwygTy?=
+ =?us-ascii?Q?tcmg/gJTqw1jyWta2C9GKSD9f3jeF2Wh/cDYi1mtWjmDkyTBNNg0xwHZqOS1?=
+ =?us-ascii?Q?xnIKo2Ud7icxlYPd3bfg/Qe19KOeia1Wd6twfRKIKP6bek81UANa+/rfdO8n?=
+ =?us-ascii?Q?kuKVauUoFTrInGG+KOnjZbfhaNoNGuGTJdtl1BKFRG19AgwYk9gdr+3veMWl?=
+ =?us-ascii?Q?wRYUqoRPxstggnks+eQPTwcm7Y8aGMeHeNvszeoq9c8wcHFN1jnIz/5TwKcg?=
+ =?us-ascii?Q?AreL0ye8VB7aoH/qX5VLIZJrHNSLuEYVMbQeqj9uyx++IJ8UURUfz/zupHz+?=
+ =?us-ascii?Q?hFzfLoUtpXc3nxWFtQu1oPABtRA0Fgq16Gcg2SFVKqilYUf/FiwaOnI+3Bci?=
+ =?us-ascii?Q?YrGh5qJ8BgazRGLxrftCGz50YRBIWB9YEbPRKM8q80ALyG8O3oGtdVQqyv9f?=
+ =?us-ascii?Q?JHYs4duBsqnlPPuIbc81HoXziBEcj/iIhIiFM8A911iN/V2nXwc0RI0ypUIH?=
+ =?us-ascii?Q?F7+vsTqP1eZiPQ8etZW87ODfb1SIpD2TKP5320dSjNVoLGaZOFrNmMsmi31o?=
+ =?us-ascii?Q?M/MSQS3wNMA1gmMkigif2SAXjAS0e4XCukdhOayG8e9PyTejx7ni9zT80XJm?=
+ =?us-ascii?Q?UOuvuk5ilA1Flwv17ci+ptQbSKo11QTL43jZicOLar7zxbVoktCaZWvkvmzh?=
+ =?us-ascii?Q?/ZPv6zgM8s4QalrYGWom8GStS9Gycw+ux9sHlRLJt/zyn/+Ut9xMxwQVezwv?=
+ =?us-ascii?Q?g4hJItI9Wfi0bNQxt+jURF4VZOUfy4aAfN11kpiEm4JGVom7+FIOMDdCiP+M?=
+ =?us-ascii?Q?lbnrj8IZxAsCFKkx9K6kStvc7FCE+2ghRTUJoBAYewGyQJk/tcyxukbUC/do?=
+ =?us-ascii?Q?kYOlgyjKi78AshhzcGvYSOxg31RyHdhePYWKu4XFBASP02k9vttnu6zjacmy?=
+ =?us-ascii?Q?BBThsmi67Ul+ZADWz5hg5Wy+pYEJu/vqMI8ymk0kLri/ATthvTjO/TiptaR1?=
+ =?us-ascii?Q?9VUI1JvEQo1e2fhgRsW9CC+up6NI/K1Ee97Bm93zjv0x6RX5TYHE5w2+1inL?=
+ =?us-ascii?Q?PAknwoaMpQAoGzGk0i32Gyj469UQNwStzirDbApq9559iHwcOk6unOCD9zVs?=
+ =?us-ascii?Q?jk76Y9TdTY3c7mRYokR7fhw8Nbh1Ktf7V0LT3w6xZ4NCaQrOQ/m9j1f3jGL5?=
+ =?us-ascii?Q?E7cjI9a14FuOUkEMk+QG5zmXzoAOxcwprucv43v+osLBnAThT/XPKoQs5r7F?=
+ =?us-ascii?Q?HYhlCXq8i+CKt1VMZxuxVi/U2ILqoMXcMtaOsfh8vQNbKdet+9gvmF8U0pAt?=
+ =?us-ascii?Q?0sxbfTD77fSPHrrJIMWWmI3AKh6AaqbKY25obgx33DH+58q9adjrTmlEoPPm?=
+ =?us-ascii?Q?D+Dyezl+UPAkJtu6mS1/yNaHN6qVcJSgSrfKfOzYt4csSYy1Ht6XoNnaLpRI?=
+ =?us-ascii?Q?seojWcOpbaQikDKFa7eSDWl7o7b0M3ROouFLsiC2LUzOYV/1eMGvWkh8pelj?=
+ =?us-ascii?Q?Gf890hOslHEIcoeBxjTr9/9tdoKcO5ddRvfmR4czsTDvP0Ovcwis53KiCY9a?=
+ =?us-ascii?Q?4EU6YI98WXrPRf5pNuoRYSkLXhNMpOiQGu/RlEj26uPmGhzFZ5G711xW+j0r?=
+ =?us-ascii?Q?L7qZ3ShQsjquTU1XOebzv4SKsKhDNoweXJMkPDeqXYRN62YnrpOiftorpQP+?=
+ =?us-ascii?Q?Xpkmeg=3D=3D?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 08ac4925-ab3d-44ff-2c8c-08d9ef573503
+X-MS-Exchange-CrossTenant-AuthSource: AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2022 01:13:28.3197
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: s6esh5GBBym8EP+d9ImOSDRS6IXW6fUH7pSNK1pNIX4sdJS7c/oIpDKNJ4sNwqmpS/5Kofciu7K7wh5APDdT+Jz1te2q0yXOxtEXPAjAcAQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9P190MB1098
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,125 +123,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 13, 2022 at 6:47 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Sun, Feb 13, 2022 at 11:10 AM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > On Sun, Feb 13, 2022 at 5:31 AM Liu, Congyu <liu3101@purdue.edu> wrote:
-> > >
-> > >
-> > > Hi,
-> > >
-> > > In the test conducted on namespace, I found that one unsuccessful IPv6 flow label
-> > > management from one net ns could stop other net ns's data transmission that requests
-> > > flow label for a short time. Specifically, in our test case, one unsuccessful
-> > > `setsockopt` to get flow label will affect other net ns's `sendmsg` with flow label
-> > > set in cmsg. Simple PoC is included for verification. The behavior descirbed above
-> > > can be reproduced in latest kernel.
-> > >
-> > > I managed to figure out the data flow behind this: when asking to get a flow label,
-> > > some `setsockopt` parameters can trigger function `ipv6_flowlabel_get` to call `fl_create`
-> > > to allocate an exclusive flow label, then call `fl_release` to release it before returning
-> > > -ENOENT. Global variable `ipv6_flowlabel_exclusive`, a rate limit jump label that keeps
-> > > track of number of alive exclusive flow labels, will get increased instantly after calling
-> > > `fl_create`. Due to its rate limit design, `ipv6_flowlabel_exclusive` can only decrease
-> > > sometime later after calling `fl_decrease`. During this period, if data transmission function
-> > > in other net ns (e.g. `udpv6_sendmsg`) calls `fl_lookup`, the false `ipv6_flowlabel_exclusive`
-> > > will invoke the `__fl_lookup`. In the test case observed, this function returns error and
-> > > eventually stops the data transmission.
-> > >
-> > > I further noticed that this bug could somehow be vulnerable: if `setsockopt` is called
-> > > continuously, then `sendmmsg` call from other net ns will be blocked forever. Using the PoC
-> > > provided, if attack and victim programs are running simutaneously, victim program cannot transmit
-> > > data; when running without attack program, the victim program can transmit data normally.
-> >
-> > Thanks for the clear explanation.
-> >
-> > Being able to use flowlabels without explicitly registering them
-> > through a setsockopt is a fast path optimization introduced in commit
-> > 59c820b2317f ("ipv6: elide flowlabel check if no exclusive leases
-> > exist").
-> >
-> > Before this, any use of flowlabels required registering them, whether
-> > the use was exclusive or not. As autoflowlabels already skipped this
-> > stateful action, the commit extended this fast path to all non-exclusive
-> > use. But if any exclusive flowlabel is active, to protect it, all
-> > other flowlabel use has to be registered too.
-> >
-> > The commit message does state
-> >
-> >     This is an optimization. Robust applications still have to revert to
-> >     requesting leases if the fast path fails due to an exclusive lease.
-> >
-> > Though I can see how the changed behavior has changed the perception of the API.
-> >
-> > That this extends up to a second after release of the last exclusive
-> > flowlabel due to deferred release is only tangential to the issue?
-> >
-> > Flowlabels are stored globally, but associated with a netns
-> > (fl->fl_net). Perhaps we can add a per-netns check to the
-> > static_branch and maintain stateless behavior in other netns, even if
-> > some netns maintain exclusive leases.
->
-> The specific issue could be avoided by moving
->
->        if (fl_shared_exclusive(fl) || fl->opt)
->                static_branch_deferred_inc(&ipv6_flowlabel_exclusive);
->
-> until later in ipv6_flowlabel_get, after the ENOENT response.
->
-> But reserving a flowlabel is not a privileged operation, including for
-> exclusive use. So the attack program can just be revised to pass
-> IPV6_FL_F_CREATE and hold a real reservation. Then it also does
-> not have to retry in a loop.
->
-> The drop behavior is fully under control of the victim. If it reserves
-> the flowlabel it intends to use, then the issue does not occur. For
-> this reason I don't see this as a vulnerability.
->
-> But the behavior is non-obvious and it is preferable to isolate netns
-> from each other. I'm looking into whether we can add a per-netns
-> "has exclusive leases" check.
+Include prestera.h in prestera_hw.h, because it may contain common
+definitions.
 
-Easiest is just to mark the netns as requiring the check only once it
-starts having exclusive labels:
+Fixes: 501ef3066c89 ("net: marvell: prestera: Add driver for Prestera family ASIC devices")
+Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+---
+ drivers/net/ethernet/marvell/prestera/prestera_hw.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-+++ b/include/net/ipv6.h
-@@ -399,7 +399,8 @@ extern struct static_key_false_deferred
-ipv6_flowlabel_exclusive;
- static inline struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk,
-                                                    __be32 label)
- {
--       if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key))
-+       if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key) &&
-+           READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                return __fl6_sock_lookup(sk, label) ? : ERR_PTR(-ENOENT);
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.h b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
+index 3ff12bae5909..24f2cf1c875f 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_hw.h
++++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
+@@ -5,6 +5,7 @@
+ #define _PRESTERA_HW_H_
+ 
+ #include <linux/types.h>
++#include "prestera.h"
+ #include "prestera_acl.h"
+ 
+ enum prestera_accept_frm_type {
+-- 
+2.17.1
 
-@@ -77,9 +77,10 @@ struct netns_ipv6 {
-        spinlock_t              fib6_gc_lock;
-        unsigned int             ip6_rt_gc_expire;
-        unsigned long            ip6_rt_last_gc;
-+       unsigned char           flowlabel_has_excl;
- #ifdef CONFIG_IPV6_MULTIPLE_TABLES
--       unsigned int            fib6_rules_require_fldissect;
-        bool                    fib6_has_custom_rules;
-+       unsigned int            fib6_rules_require_fldissect;
-
-+++ b/net/ipv6/ip6_flowlabel.c
-@@ -450,8 +450,10 @@ fl_create(struct net *net, struct sock *sk,
-struct in6_flowlabel_req *freq,
-                err = -EINVAL;
-                goto done;
-        }
--       if (fl_shared_exclusive(fl) || fl->opt)
-+       if (fl_shared_exclusive(fl) || fl->opt) {
-+               WRITE_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl, 1);
-                static_branch_deferred_inc(&ipv6_flowlabel_exclusive);
-+       }
-        return fl;
-
-Clearing flowlabel_has_excl when it stops using labels is more complex,
-requiring either an atomic_t or walking the entire flowlabel hashtable on
-each flowlabel free in the namespace. It can be skipped.
