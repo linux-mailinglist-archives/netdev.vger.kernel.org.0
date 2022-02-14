@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AAE04B435E
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 09:14:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B08694B4384
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 09:15:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241612AbiBNIO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 03:14:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41792 "EHLO
+        id S241650AbiBNIOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 03:14:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238522AbiBNIO1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 03:14:27 -0500
+        with ESMTP id S241619AbiBNIOk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 03:14:40 -0500
 Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C1E95F8EE;
-        Mon, 14 Feb 2022 00:14:20 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R251e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V4O5x7N_1644826457;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V4O5x7N_1644826457)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555C85F8EF;
+        Mon, 14 Feb 2022 00:14:33 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V4Oo2Aj_1644826458;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V4Oo2Aj_1644826458)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 14 Feb 2022 16:14:18 +0800
+          Mon, 14 Feb 2022 16:14:19 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
@@ -28,9 +28,9 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
-Subject: [PATCH v5 01/22] virtio_pci: struct virtio_pci_common_cfg add queue_notify_data
-Date:   Mon, 14 Feb 2022 16:13:55 +0800
-Message-Id: <20220214081416.117695-2-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v5 02/22] virtio: queue_reset: add VIRTIO_F_RING_RESET
+Date:   Mon, 14 Feb 2022 16:13:56 +0800
+Message-Id: <20220214081416.117695-3-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220214081416.117695-1-xuanzhuo@linux.alibaba.com>
 References: <20220214081416.117695-1-xuanzhuo@linux.alibaba.com>
@@ -47,37 +47,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add queue_notify_data in struct virtio_pci_common_cfg, which comes from
-here https://github.com/oasis-tcs/virtio-spec/issues/89
-
-For not breaks uABI, add a new struct virtio_pci_common_cfg_notify.
-
-Since I want to add queue_reset after queue_notify_data, I submitted
-this patch first.
+Added VIRTIO_F_RING_RESET, it came from here
+https://github.com/oasis-tcs/virtio-spec/issues/124
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- include/uapi/linux/virtio_pci.h | 7 +++++++
- 1 file changed, 7 insertions(+)
+ include/uapi/linux/virtio_config.h | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/virtio_pci.h b/include/uapi/linux/virtio_pci.h
-index 3a86f36d7e3d..22bec9bd0dfc 100644
---- a/include/uapi/linux/virtio_pci.h
-+++ b/include/uapi/linux/virtio_pci.h
-@@ -166,6 +166,13 @@ struct virtio_pci_common_cfg {
- 	__le32 queue_used_hi;		/* read-write */
- };
+diff --git a/include/uapi/linux/virtio_config.h b/include/uapi/linux/virtio_config.h
+index b5eda06f0d57..0862be802ff8 100644
+--- a/include/uapi/linux/virtio_config.h
++++ b/include/uapi/linux/virtio_config.h
+@@ -52,7 +52,7 @@
+  * rest are per-device feature bits.
+  */
+ #define VIRTIO_TRANSPORT_F_START	28
+-#define VIRTIO_TRANSPORT_F_END		38
++#define VIRTIO_TRANSPORT_F_END		41
  
-+struct virtio_pci_common_cfg_notify {
-+	struct virtio_pci_common_cfg cfg;
+ #ifndef VIRTIO_CONFIG_NO_LEGACY
+ /* Do we get callbacks when the ring is completely used, even if we've
+@@ -92,4 +92,9 @@
+  * Does the device support Single Root I/O Virtualization?
+  */
+ #define VIRTIO_F_SR_IOV			37
 +
-+	__le16 queue_notify_data;	/* read-write */
-+	__le16 padding;
-+};
-+
- /* Fields in VIRTIO_PCI_CAP_PCI_CFG: */
- struct virtio_pci_cfg_cap {
- 	struct virtio_pci_cap cap;
++/*
++ * This feature indicates that the driver can reset a queue individually.
++ */
++#define VIRTIO_F_RING_RESET		40
+ #endif /* _UAPI_LINUX_VIRTIO_CONFIG_H */
 -- 
 2.31.0
 
