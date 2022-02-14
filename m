@@ -2,444 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE1EE4B5E6C
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 00:49:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D13C4B5E6A
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 00:48:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230492AbiBNXtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 18:49:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37350 "EHLO
+        id S232214AbiBNXsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 18:48:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbiBNXtW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 18:49:22 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263D81402E
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 15:49:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644882553; x=1676418553;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=06tmGudHz31nq+18iqRjT9pi8sBK3LuB78ri/HwR/wc=;
-  b=G8CNOlaKudObWzn8XssXDsFwdCI0tY+PQhPcOjNYvrlo4m68vcF8SuCu
-   JpYupixDT/4WosIs6MmqE1mXg3d3InRwzX4cxV3Rg/gBWjtQXMPqfO6r5
-   u2prSPx2Ku/nd496wdctdoRIJRI+KEAGyR3w2b7umZmbjidWTf8DZvrXG
-   ZzooK2H4zbWwEj5PT2ad3as28X0Jjb0FfVvr0eT7RvqzfsLyN75p+8/Vd
-   wO3xovFKBBB9oHFkm4Lu8SHDsq7Tsqh1NMU0BK47yxWj0t9inPQlhi8EO
-   eL7ZFFL5WXAhK+f7vgDidHSzwFurOHyi6BTs0SVoZUdL0aIGA3SJAKf+K
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="336639184"
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="336639184"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 15:48:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="543990889"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 14 Feb 2022 15:48:22 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJl4w-00092r-6z; Mon, 14 Feb 2022 23:48:22 +0000
-Date:   Tue, 15 Feb 2022 07:48:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, davem@davemloft.net,
-        kuba@kernel.org, Willem de Bruijn <willemb@google.com>,
-        Congyu Liu <liu3101@purdue.edu>
-Subject: Re: [PATCH net] ipv6: per-netns exclusive flowlabel checks
-Message-ID: <202202150740.uPYefwp7-lkp@intel.com>
-References: <20220214200400.513069-1-willemdebruijn.kernel@gmail.com>
+        with ESMTP id S229588AbiBNXsu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 18:48:50 -0500
+Received: from smtp.smtpout.orange.fr (smtp05.smtpout.orange.fr [80.12.242.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907231402D
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 15:48:40 -0800 (PST)
+Received: from localhost.localdomain ([124.33.176.97])
+        by smtp.orange.fr with ESMTPA
+        id Jl4ynKYlVPEU7Jl59na5Tp; Tue, 15 Feb 2022 00:48:37 +0100
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
+X-ME-Date: Tue, 15 Feb 2022 00:48:37 +0100
+X-ME-IP: 124.33.176.97
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     netdev@vger.kernel.org, linux-can@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Maximilian Schneider <max@schneidersoft.net>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [RFC PATCH v1] can: gs_usb: change active_channels's type from atomic_t to u8
+Date:   Tue, 15 Feb 2022 08:48:14 +0900
+Message-Id: <20220214234814.1321599-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220214200400.513069-1-willemdebruijn.kernel@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Willem,
+The driver uses an atomic_t variable: gs_usb:active_channels to keep
+track of the number of opened channels in order to only allocate
+memory for the URBs when this count changes from zero to one.
 
-Thank you for the patch! Yet something to improve:
+However, the driver does not decrement the counter when an error
+occurs in gs_can_open(). This issue is fixed by changing the type from
+atomic_t to u8 and by simplifying the logic accordingly.
 
-[auto build test ERROR on net/master]
+It is safe to use an u8 here because the network stack big kernel lock
+(a.k.a. rtnl_mutex) is being hold. For details, please refer to [1].
 
-url:    https://github.com/0day-ci/linux/commits/Willem-de-Bruijn/ipv6-per-netns-exclusive-flowlabel-checks/20220215-042330
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 86006f996346e8a5a1ea80637ec949ceeea4ecbc
-config: arm-netwinder_defconfig (https://download.01.org/0day-ci/archive/20220215/202202150740.uPYefwp7-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project ea071884b0cc7210b3cc5fe858f0e892a779a23b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/0day-ci/linux/commit/5d3936d3544b4cdd6d63c896d158d4975a4822c3
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Willem-de-Bruijn/ipv6-per-netns-exclusive-flowlabel-checks/20220215-042330
-        git checkout 5d3936d3544b4cdd6d63c896d158d4975a4822c3
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash net/mptcp/
+[1] https://lore.kernel.org/linux-can/CAMZ6Rq+sHpiw34ijPsmp7vbUpDtJwvVtdV7CvRZJsLixjAFfrg@mail.gmail.com/T/#t
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from net/mptcp/protocol.c:16:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:49:33: note: expanded from macro 'READ_ONCE'
-           compiletime_assert_rwonce_type(x);                              \
-                                          ^
-   include/asm-generic/rwonce.h:36:35: note: expanded from macro 'compiletime_assert_rwonce_type'
-           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
-                                            ^
-   include/linux/compiler_types.h:313:10: note: expanded from macro '__native_word'
-           (sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
-                   ^
-   include/linux/compiler_types.h:346:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                               ^~~~~~~~~
-   include/linux/compiler_types.h:334:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-                                ^~~~~~~~~
-   include/linux/compiler_types.h:326:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   In file included from net/mptcp/protocol.c:16:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:49:33: note: expanded from macro 'READ_ONCE'
-           compiletime_assert_rwonce_type(x);                              \
-                                          ^
-   include/asm-generic/rwonce.h:36:35: note: expanded from macro 'compiletime_assert_rwonce_type'
-           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
-                                            ^
-   include/linux/compiler_types.h:313:39: note: expanded from macro '__native_word'
-           (sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
-                                                ^
-   include/linux/compiler_types.h:346:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                               ^~~~~~~~~
-   include/linux/compiler_types.h:334:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-                                ^~~~~~~~~
-   include/linux/compiler_types.h:326:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   In file included from net/mptcp/protocol.c:16:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:49:33: note: expanded from macro 'READ_ONCE'
-           compiletime_assert_rwonce_type(x);                              \
-                                          ^
-   include/asm-generic/rwonce.h:36:35: note: expanded from macro 'compiletime_assert_rwonce_type'
-           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
-                                            ^
-   include/linux/compiler_types.h:314:10: note: expanded from macro '__native_word'
-            sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
-                   ^
-   include/linux/compiler_types.h:346:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                               ^~~~~~~~~
-   include/linux/compiler_types.h:334:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-                                ^~~~~~~~~
-   include/linux/compiler_types.h:326:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   In file included from net/mptcp/protocol.c:16:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:49:33: note: expanded from macro 'READ_ONCE'
-           compiletime_assert_rwonce_type(x);                              \
-                                          ^
-   include/asm-generic/rwonce.h:36:35: note: expanded from macro 'compiletime_assert_rwonce_type'
-           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
-                                            ^
-   include/linux/compiler_types.h:314:38: note: expanded from macro '__native_word'
-            sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
-                                               ^
-   include/linux/compiler_types.h:346:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                               ^~~~~~~~~
-   include/linux/compiler_types.h:334:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-                                ^~~~~~~~~
-   include/linux/compiler_types.h:326:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   In file included from net/mptcp/protocol.c:16:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:49:33: note: expanded from macro 'READ_ONCE'
-           compiletime_assert_rwonce_type(x);                              \
-                                          ^
-   include/asm-generic/rwonce.h:36:48: note: expanded from macro 'compiletime_assert_rwonce_type'
-           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
-                                                         ^
-   include/linux/compiler_types.h:346:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                               ^~~~~~~~~
-   include/linux/compiler_types.h:334:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-                                ^~~~~~~~~
-   include/linux/compiler_types.h:326:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   In file included from net/mptcp/protocol.c:16:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:50:14: note: expanded from macro 'READ_ONCE'
-           __READ_ONCE(x);                                                 \
-                       ^
-   include/asm-generic/rwonce.h:44:65: note: expanded from macro '__READ_ONCE'
-   #define __READ_ONCE(x)  (*(const volatile __unqual_scalar_typeof(x) *)&(x))
-                                                                    ^
-   include/linux/compiler_types.h:302:13: note: expanded from macro '__unqual_scalar_typeof'
-                   _Generic((x),                                           \
-                             ^
-   In file included from net/mptcp/protocol.c:16:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:50:14: note: expanded from macro 'READ_ONCE'
-           __READ_ONCE(x);                                                 \
-                       ^
-   include/asm-generic/rwonce.h:44:72: note: expanded from macro '__READ_ONCE'
-   #define __READ_ONCE(x)  (*(const volatile __unqual_scalar_typeof(x) *)&(x))
-                                                                           ^
-   In file included from net/mptcp/protocol.c:16:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:402:60: error: invalid operands to binary expression ('long' and 'void')
-           if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key) &&
-               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
-   8 errors generated.
---
-   In file included from net/mptcp/options.c:11:
-   In file included from include/net/tcp.h:32:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:49:33: note: expanded from macro 'READ_ONCE'
-           compiletime_assert_rwonce_type(x);                              \
-                                          ^
-   include/asm-generic/rwonce.h:36:35: note: expanded from macro 'compiletime_assert_rwonce_type'
-           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
-                                            ^
-   include/linux/compiler_types.h:313:10: note: expanded from macro '__native_word'
-           (sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
-                   ^
-   include/linux/compiler_types.h:346:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                               ^~~~~~~~~
-   include/linux/compiler_types.h:334:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-                                ^~~~~~~~~
-   include/linux/compiler_types.h:326:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   In file included from net/mptcp/options.c:11:
-   In file included from include/net/tcp.h:32:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:49:33: note: expanded from macro 'READ_ONCE'
-           compiletime_assert_rwonce_type(x);                              \
-                                          ^
-   include/asm-generic/rwonce.h:36:35: note: expanded from macro 'compiletime_assert_rwonce_type'
-           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
-                                            ^
-   include/linux/compiler_types.h:313:39: note: expanded from macro '__native_word'
-           (sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
-                                                ^
-   include/linux/compiler_types.h:346:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                               ^~~~~~~~~
-   include/linux/compiler_types.h:334:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-                                ^~~~~~~~~
-   include/linux/compiler_types.h:326:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   In file included from net/mptcp/options.c:11:
-   In file included from include/net/tcp.h:32:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:49:33: note: expanded from macro 'READ_ONCE'
-           compiletime_assert_rwonce_type(x);                              \
-                                          ^
-   include/asm-generic/rwonce.h:36:35: note: expanded from macro 'compiletime_assert_rwonce_type'
-           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
-                                            ^
-   include/linux/compiler_types.h:314:10: note: expanded from macro '__native_word'
-            sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
-                   ^
-   include/linux/compiler_types.h:346:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                               ^~~~~~~~~
-   include/linux/compiler_types.h:334:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-                                ^~~~~~~~~
-   include/linux/compiler_types.h:326:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   In file included from net/mptcp/options.c:11:
-   In file included from include/net/tcp.h:32:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:49:33: note: expanded from macro 'READ_ONCE'
-           compiletime_assert_rwonce_type(x);                              \
-                                          ^
-   include/asm-generic/rwonce.h:36:35: note: expanded from macro 'compiletime_assert_rwonce_type'
-           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
-                                            ^
-   include/linux/compiler_types.h:314:38: note: expanded from macro '__native_word'
-            sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
-                                               ^
-   include/linux/compiler_types.h:346:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                               ^~~~~~~~~
-   include/linux/compiler_types.h:334:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-                                ^~~~~~~~~
-   include/linux/compiler_types.h:326:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   In file included from net/mptcp/options.c:11:
-   In file included from include/net/tcp.h:32:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:49:33: note: expanded from macro 'READ_ONCE'
-           compiletime_assert_rwonce_type(x);                              \
-                                          ^
-   include/asm-generic/rwonce.h:36:48: note: expanded from macro 'compiletime_assert_rwonce_type'
-           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
-                                                         ^
-   include/linux/compiler_types.h:346:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                               ^~~~~~~~~
-   include/linux/compiler_types.h:334:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-                                ^~~~~~~~~
-   include/linux/compiler_types.h:326:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   In file included from net/mptcp/options.c:11:
-   In file included from include/net/tcp.h:32:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:50:14: note: expanded from macro 'READ_ONCE'
-           __READ_ONCE(x);                                                 \
-                       ^
-   include/asm-generic/rwonce.h:44:65: note: expanded from macro '__READ_ONCE'
-   #define __READ_ONCE(x)  (*(const volatile __unqual_scalar_typeof(x) *)&(x))
-                                                                    ^
-   include/linux/compiler_types.h:302:13: note: expanded from macro '__unqual_scalar_typeof'
-                   _Generic((x),                                           \
-                             ^
-   In file included from net/mptcp/options.c:11:
-   In file included from include/net/tcp.h:32:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:50:14: note: expanded from macro 'READ_ONCE'
-           __READ_ONCE(x);                                                 \
-                       ^
-   include/asm-generic/rwonce.h:44:72: note: expanded from macro '__READ_ONCE'
-   #define __READ_ONCE(x)  (*(const volatile __unqual_scalar_typeof(x) *)&(x))
-                                                                           ^
-   In file included from net/mptcp/options.c:11:
-   In file included from include/net/tcp.h:32:
-   In file included from include/net/inet_hashtables.h:27:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
->> include/net/ipv6.h:402:60: error: invalid operands to binary expression ('long' and 'void')
-           if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key) &&
-               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
-   net/mptcp/options.c:552:21: warning: parameter 'remaining' set but not used [-Wunused-but-set-parameter]
-                                             unsigned int remaining,
-                                                          ^
-   1 warning and 8 errors generated.
-
-
-vim +403 include/net/ipv6.h
-
-   397	
-   398	extern struct static_key_false_deferred ipv6_flowlabel_exclusive;
-   399	static inline struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk,
-   400							    __be32 label)
-   401	{
- > 402		if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key) &&
- > 403		    READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-   404			return __fl6_sock_lookup(sk, label) ? : ERR_PTR(-ENOENT);
-   405	
-   406		return NULL;
-   407	}
-   408	
-
+Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN
+devices")
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/net/can/usb/gs_usb.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/can/usb/gs_usb.c b/drivers/net/can/usb/gs_usb.c
+index b487e3fe770a..d35749fad1ef 100644
+--- a/drivers/net/can/usb/gs_usb.c
++++ b/drivers/net/can/usb/gs_usb.c
+@@ -191,8 +191,8 @@ struct gs_can {
+ struct gs_usb {
+ 	struct gs_can *canch[GS_MAX_INTF];
+ 	struct usb_anchor rx_submitted;
+-	atomic_t active_channels;
+ 	struct usb_device *udev;
++	u8 active_channels;
+ };
+ 
+ /* 'allocate' a tx context.
+@@ -589,7 +589,7 @@ static int gs_can_open(struct net_device *netdev)
+ 	if (rc)
+ 		return rc;
+ 
+-	if (atomic_add_return(1, &parent->active_channels) == 1) {
++	if (!parent->active_channels) {
+ 		for (i = 0; i < GS_MAX_RX_URBS; i++) {
+ 			struct urb *urb;
+ 			u8 *buf;
+@@ -690,6 +690,7 @@ static int gs_can_open(struct net_device *netdev)
+ 
+ 	dev->can.state = CAN_STATE_ERROR_ACTIVE;
+ 
++	parent->active_channels++;
+ 	if (!(dev->can.ctrlmode & CAN_CTRLMODE_LISTENONLY))
+ 		netif_start_queue(netdev);
+ 
+@@ -705,7 +706,8 @@ static int gs_can_close(struct net_device *netdev)
+ 	netif_stop_queue(netdev);
+ 
+ 	/* Stop polling */
+-	if (atomic_dec_and_test(&parent->active_channels))
++	parent->active_channels--;
++	if (!parent->active_channels)
+ 		usb_kill_anchored_urbs(&parent->rx_submitted);
+ 
+ 	/* Stop sending URBs */
+@@ -984,8 +986,6 @@ static int gs_usb_probe(struct usb_interface *intf,
+ 
+ 	init_usb_anchor(&dev->rx_submitted);
+ 
+-	atomic_set(&dev->active_channels, 0);
+-
+ 	usb_set_intfdata(intf, dev);
+ 	dev->udev = interface_to_usbdev(intf);
+ 
+-- 
+2.34.1
+
