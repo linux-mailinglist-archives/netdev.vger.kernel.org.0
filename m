@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BB7C4B439E
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 09:15:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D590C4B438B
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 09:15:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241705AbiBNIPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 03:15:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41998 "EHLO
+        id S241664AbiBNIPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 03:15:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241692AbiBNIPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 03:15:05 -0500
+        with ESMTP id S241748AbiBNIPU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 03:15:20 -0500
 Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9FA75F8FE;
-        Mon, 14 Feb 2022 00:14:57 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V4NGfTX_1644826478;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V4NGfTX_1644826478)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6D06006B;
+        Mon, 14 Feb 2022 00:15:10 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V4NbDQt_1644826479;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V4NbDQt_1644826479)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 14 Feb 2022 16:14:39 +0800
+          Mon, 14 Feb 2022 16:14:40 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
@@ -28,9 +28,9 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
-Subject: [PATCH v5 20/22] virtio_net: set the default max ring num
-Date:   Mon, 14 Feb 2022 16:14:14 +0800
-Message-Id: <20220214081416.117695-21-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v5 21/22] virtio_net: get max ring size by virtqueue_get_vring_max_size()
+Date:   Mon, 14 Feb 2022 16:14:15 +0800
+Message-Id: <20220214081416.117695-22-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220214081416.117695-1-xuanzhuo@linux.alibaba.com>
 References: <20220214081416.117695-1-xuanzhuo@linux.alibaba.com>
@@ -47,37 +47,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sets the default maximum ring num based on virtio_set_max_ring_num().
-
-The default maximum ring num is 1024.
+Use virtqueue_get_vring_max_size() in virtnet_get_ringparam() to set
+tx,rx_max_pending.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/net/virtio_net.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/virtio_net.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index a4ffd7cdf623..77e61fe0b2ce 100644
+index 77e61fe0b2ce..f9bb760c6dbd 100644
 --- a/drivers/net/virtio_net.c
 +++ b/drivers/net/virtio_net.c
-@@ -35,6 +35,8 @@ module_param(napi_tx, bool, 0644);
- #define GOOD_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
- #define GOOD_COPY_LEN	128
+@@ -2302,10 +2302,10 @@ static void virtnet_get_ringparam(struct net_device *dev,
+ {
+ 	struct virtnet_info *vi = netdev_priv(dev);
  
-+#define VIRTNET_DEFAULT_MAX_RING_NUM 1024
-+
- #define VIRTNET_RX_PAD (NET_IP_ALIGN + NET_SKB_PAD)
+-	ring->rx_max_pending = virtqueue_get_vring_size(vi->rq[0].vq);
+-	ring->tx_max_pending = virtqueue_get_vring_size(vi->sq[0].vq);
+-	ring->rx_pending = ring->rx_max_pending;
+-	ring->tx_pending = ring->tx_max_pending;
++	ring->rx_max_pending = virtqueue_get_vring_max_size(vi->rq[0].vq);
++	ring->tx_max_pending = virtqueue_get_vring_max_size(vi->sq[0].vq);
++	ring->rx_pending = virtqueue_get_vring_size(vi->rq[0].vq);
++	ring->tx_pending = virtqueue_get_vring_size(vi->sq[0].vq);
+ }
  
- /* Amount of XDP headroom to prepend to packets for use by xdp_adjust_head */
-@@ -3045,6 +3047,8 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
- 			ctx[rxq2vq(i)] = true;
- 	}
  
-+	virtio_set_max_ring_num(vi->vdev, VIRTNET_DEFAULT_MAX_RING_NUM);
-+
- 	ret = virtio_find_vqs_ctx(vi->vdev, total_vqs, vqs, callbacks,
- 				  names, ctx, NULL);
- 	if (ret)
 -- 
 2.31.0
 
