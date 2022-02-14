@@ -2,111 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D1184B5E57
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 00:37:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C97C4B5E5A
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 00:41:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232170AbiBNXhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 18:37:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54998 "EHLO
+        id S232173AbiBNXl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 18:41:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232169AbiBNXhT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 18:37:19 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2076.outbound.protection.outlook.com [40.107.21.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4B3116D3A
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 15:37:09 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N7Qqf5c4drFLD0cIwhi50L7Mu77Owl6poJVFKdYmNH2KuQ93/tNRSPmktK8Qf61WtP9pv0ZY0APTmlbNDvio5kvmTcSZ1NYObJWgNxKLQcP9n4IL8lhAatxPQuL7f9EPBNoDgupRG/2snYDLdjBuW3h71dMfAUO16+oecttk4fJncO0sQIOTmasEG/7rP41cNPVOdnanJhVmKj1HBPy8PbxiXVdxhL40D6vFlnQ+PIzyK/w55t6E5rBm6Xv3xRYOh1qqYx7M1yhs+/JspcAGKuQq3LaPQCSax1K6tu+8MeuPKo72kmxS2onoM/Qpzt2s1qA1/lTmCNOApbqThi+eVA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2HCH9w26Ohg5rUsT6m9M/bvVHdFpukXr1rFw2TZbBRU=;
- b=l8Z3WHpblhZyYr1qHFQEQMH0h9rAD5XhZR2AddcTW+An+t8yPbzcP3nF68C27vnTtk+DII1fVaG/n/bhC4D2OmD0lHxBfKd2fX9yoHJgN6vYHpjDvVXiBUJ6nPMX/nG0udIdqhkgxDP9fygxmLJ5Ue+dIzr7x6KAVqR/rnjKpXEvj5Ce0j/7Ca7vOIKV5bqEDPBBqU/9J8gOu1LzpvCFF1XCvTDNpdUcNP4Up+cPVnTiJtamuchG9mdMLxx2XuH0YQ5nGv/CGtwR+u2Ld4VeHxxpqtCVpHhre5RBbeNo5qnuUlq+ZhPTSLkX1xKAHYdN4hW6VEZtVdzZA6ZMUdjDVQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2HCH9w26Ohg5rUsT6m9M/bvVHdFpukXr1rFw2TZbBRU=;
- b=oA5KbH/+LnKsmOPRqsBRXDXNb2bAg3CcDiiR8ZIhIM4QwSSdTAsUU/02Sh3rmWRsXEBMFg+vclmqL8GjKzWyZ5lrZSn3TKElLbD1Qs0ut6tflVYgVPlSGGpnEZYnb4z3zyyaNiCNUPsWe3lFjCKBt0IIoacPCq2zIxmCzYDKRbw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5504.eurprd04.prod.outlook.com (2603:10a6:803:d8::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.18; Mon, 14 Feb
- 2022 23:37:07 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Mon, 14 Feb 2022
- 23:37:06 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] net: bridge: vlan: check for errors from __vlan_del in __vlan_flush
-Date:   Tue, 15 Feb 2022 01:36:46 +0200
-Message-Id: <20220214233646.1592855-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM5P194CA0023.EURP194.PROD.OUTLOOK.COM
- (2603:10a6:203:8f::33) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        with ESMTP id S229582AbiBNXl2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 18:41:28 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27C16114762;
+        Mon, 14 Feb 2022 15:41:18 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E5C8C1063;
+        Mon, 14 Feb 2022 15:41:17 -0800 (PST)
+Received: from [192.168.122.164] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9FB523F70D;
+        Mon, 14 Feb 2022 15:41:17 -0800 (PST)
+Message-ID: <0384e0b3-0f3d-ea89-7385-48bed60ec1a0@arm.com>
+Date:   Mon, 14 Feb 2022 17:41:07 -0600
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c0446d1b-df19-4b44-0da4-08d9f012e97c
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5504:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5504A72BA30D938565D23452E0339@VI1PR04MB5504.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7j8QISVWNsNPeu+9J7v6rldPfLsfJwWVVmsFceUcRoovvR1pzhRg3lCGGXhREzH2/BQjx1kGOO0wyiyb3DbjSlb0pON08A4hHthEsmEd1wzVNEFxqsJy7GPhiMpKEnw0NYU4kbGCRnbLWNbb5poFwQ34Fl6DMXKBYajrbnsTRqXMUb0XbCpGi5qjcwq36vKcrzKBZQimeJJ80PdpImwPGjU8ubl8BJw8i5hpXrCxDTWk0PgqYiQEFef4h5GE3ZGLp0gt7HYkP7GaVHgS+5OfvfrNdS8g1EPpDVXaRdBRJrTVAHNqqXk0D3O2siRCNnSF9dFXphXaq5YvHZDbYDrLOn0ch9N7z0OGAjIZvldnGjhsrPKpkuhCdHayk+MBLcs5jrdVBvo5Ufudu4MFmt27E8iYQbd9O77hOBCpReSlM6pXS8fNAVYlqQUy6RJBG5fBRxY9Nk0EcvHA2ibJs0L5i47TlwtKIUeEC0KSCKtm3LG3iYE6qNMtaahro0EJWvSDvL9XLeQc41WhX+PcpOuhHFvOGg0b/Tnny+5/uBBQBpnFjcyRnyJmxJpxZVWOTDCPdQgCyQ4+CJqFSzre0qvv2vkiMIyEtZJQqxnMsIRMc0j7ETq6sD2SRMq2EOh/ZPqEBtXd2iYqWTlpJW5k3gaG16SCyiw/oGZh8dLwS+YmjhBnX9iZJHuxXxlHQv7HI4nZ9/BNI1YGQrkwedQeqel9/Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(66556008)(6512007)(2616005)(54906003)(508600001)(6666004)(6506007)(52116002)(6486002)(8676002)(6916009)(2906002)(4326008)(44832011)(36756003)(83380400001)(316002)(26005)(186003)(1076003)(66476007)(86362001)(38350700002)(38100700002)(66946007)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KI1B79qY6CJ828xaK1N9ixK1hJjAnzrZ4vAL6CrUCIBH9IBs5yIq3tDYGRFJ?=
- =?us-ascii?Q?xufBGHs4hNeOnAzs6gsUJeee/VuLTBjSRmMSxvxyfsj/4MUgYKJ6y0K7RgDx?=
- =?us-ascii?Q?t+1QBC6iJGbdHzWo2FzonSQC4W/6EDtl7fOpN7LiGqpoFgtFpgyLMIoAOhgL?=
- =?us-ascii?Q?zKc5feQjB9XHBmWg9rXkfftIlxczyoC8C7qA2cafV5E40MrK2hip31CxyOjw?=
- =?us-ascii?Q?rGk2BGaixUpqvtG2yXVexCE704aKJQAChInRINwE4O/qRBA8cEXtkZ41smay?=
- =?us-ascii?Q?iDXq3y0AVDhPORHYKq2vqo+2IxWxSrNCBwO4C24Y4TSWUC+Jv5fg4yguXuHU?=
- =?us-ascii?Q?vZ0JYQtOfsbvp1drE/kJU8UU2lwi8Lx7kOgJFDNFHYmTe0SRdztvrG/sNjpx?=
- =?us-ascii?Q?/Hp6nkSRSGp6z3MtjjBpSEA42r5MJUDrTQsGrWREt7+oN0gxr2+ZR06Od9os?=
- =?us-ascii?Q?yWHfz+alt1p69HpAC13FTUMSIVILkYhKDSBTtfJU2i5B9z1R64bodYc5wPax?=
- =?us-ascii?Q?z6Q08efGP6RxMbVg1L1by5vBeN4EKK76/SH5qkXLjzP0FivJPYK1/3/YMPpX?=
- =?us-ascii?Q?ar3WdDGBIFFln3tLuws4/oecqXvJOzB+P2tLIZFCNJCg/+gwdI3iBF88Bpi6?=
- =?us-ascii?Q?eyJEF0HgVOmFDzU9EaMQLY8q8qQflMWSmASwlTUPN9+DGBc7s3vfsjA710VM?=
- =?us-ascii?Q?FT40MpxmnkAb0Dq8kUYpvpce3FZ0dkRSn8FphxUHTdf0NOT283cnaN8CS8hA?=
- =?us-ascii?Q?efkjvAw3D4yPy8F/mQWuFdlKahO0UgAV+kOHKMsNeiVdUuSzHDm/aoTN8rCO?=
- =?us-ascii?Q?NP2Yw3kI4e97A5gQy87uWsxd/IsDeDSjv7NB+2slDu2UVrB9b9OGfep3J0x2?=
- =?us-ascii?Q?Nrw3R+S8DL0/QhfZe+GlNHJu32kdAC+UXVWbghiZYdAl34VTjKeHTUt82ETg?=
- =?us-ascii?Q?7+mdUByrt/sA1c7yed+xOz1RJgvOC+KYbmsKF8j8lBBy+4EIpQ+HVpbHIGsH?=
- =?us-ascii?Q?ZjR1unlJG7Xj13VsDYPwrrDFGuA4j7oZV01pgvu36aWnfREGEvbqscmYaR7/?=
- =?us-ascii?Q?466gguPTwhc0uDhwxVlDlTANfikQGy+KUgCWPxrl1ijsBQzWhKM76qs7AINi?=
- =?us-ascii?Q?Ujd1S2SDBipzPjS9G8RAxFxe4R8sERwQCaz4g+PSqu1gRw6m92PW+1vq8cyF?=
- =?us-ascii?Q?8cx16Q/o5KOCLwph5ELRmWS6wNy5CskUGwQ2JnZbvCn+CBhnusjbN5edFPjz?=
- =?us-ascii?Q?m1urghMsN0Fww/IYCBkeTn6FA/A61Fq5LK3MHvkR2981GCZP1U24/J7YBy6l?=
- =?us-ascii?Q?5s9rvWOEpilvqgeFW/F/RF4zf1YvOALQkfvAl1Cv4FmcOOALuSoRGhxogpzn?=
- =?us-ascii?Q?2mlvbTBqrx+L08rgmxjGpuQffixEvmne67FLWna2sGn6m0i+wcf8Du5DMJEZ?=
- =?us-ascii?Q?Mbr9iOaW1LWWB+Z4YkWfAXqbC/Kb7tDAkAINOPyaUw7JMgGwZblRuELJMv8u?=
- =?us-ascii?Q?eUhf01PtRyBNhPlewQz3Y2RhtbzPaaJ3SMTJ4mqrkiQ+T8MGszz4q4N8T8CN?=
- =?us-ascii?Q?kf3giSr+coGpYQf5nG995SveDMnuzjRdUAJ0EGVt2R8t9WezgQcjBQRP/dZe?=
- =?us-ascii?Q?oFQUcpEpptJBFwTw42XJFv4=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c0446d1b-df19-4b44-0da4-08d9f012e97c
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2022 23:37:06.8028
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IyQbbVnqI91ixMkEa5TVsAhUSMAwGiQy0Cegi1oUNxXEYGLQf4DDZlrQdXdBJUQ/GAF8mHpXVJGi2hjpfTOiow==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5504
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [BUG/PATCH v2] net: mvpp2: always set port pcs ops
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, mw@semihalf.com, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org
+References: <20220212003454.3214726-1-jeremy.linton@arm.com>
+ <YgeFKsRjlxNiJbSa@shell.armlinux.org.uk>
+From:   Jeremy Linton <jeremy.linton@arm.com>
+In-Reply-To: <YgeFKsRjlxNiJbSa@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -114,53 +45,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the following call path returns an error from switchdev:
+Hi,
 
-nbp_vlan_flush
--> __vlan_del
-   -> __vlan_vid_del
-      -> br_switchdev_port_vlan_del
--> __vlan_group_free
-   -> WARN_ON(!list_empty(&vg->vlan_list));
+On 2/12/22 04:00, Russell King (Oracle) wrote:
+> On Fri, Feb 11, 2022 at 06:34:54PM -0600, Jeremy Linton wrote:
+>> Booting a MACCHIATObin with 5.17, the system OOPs with
+>> a null pointer deref when the network is started. This
+>> is caused by the pcs->ops structure being null in
+>> mcpp2_acpi_start() when it tries to call pcs_config().
+>>
+>> Hoisting the code which sets pcs_gmac.ops and pcs_xlg.ops,
+>> assuring they are always set, fixes the problem.
+>>
+>> The OOPs looks like:
+>> [   18.687760] Unable to handle kernel access to user memory outside uaccess routines at virtual address 0000000000000010
+>> [   18.698561] Mem abort info:
+>> [   18.698564]   ESR = 0x96000004
+>> [   18.698567]   EC = 0x25: DABT (current EL), IL = 32 bits
+>> [   18.709821]   SET = 0, FnV = 0
+>> [   18.714292]   EA = 0, S1PTW = 0
+>> [   18.718833]   FSC = 0x04: level 0 translation fault
+>> [   18.725126] Data abort info:
+>> [   18.729408]   ISV = 0, ISS = 0x00000004
+>> [   18.734655]   CM = 0, WnR = 0
+>> [   18.738933] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000111bbf000
+>> [   18.745409] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
+>> [   18.752235] Internal error: Oops: 96000004 [#1] SMP
+>> [   18.757134] Modules linked in: rfkill ip_set nf_tables nfnetlink qrtr sunrpc vfat fat omap_rng fuse zram xfs crct10dif_ce mvpp2 ghash_ce sbsa_gwdt phylink xhci_plat_hcd ahci_plam
+>> [   18.773481] CPU: 0 PID: 681 Comm: NetworkManager Not tainted 5.17.0-0.rc3.89.fc36.aarch64 #1
+>> [   18.781954] Hardware name: Marvell                         Armada 7k/8k Family Board      /Armada 7k/8k Family Board      , BIOS EDK II Jun  4 2019
+>> [   18.795222] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+>> [   18.802213] pc : mvpp2_start_dev+0x2b0/0x300 [mvpp2]
+>> [   18.807208] lr : mvpp2_start_dev+0x298/0x300 [mvpp2]
+>> [   18.812197] sp : ffff80000b4732c0
+>> [   18.815522] x29: ffff80000b4732c0 x28: 0000000000000000 x27: ffffccab38ae57f8
+>> [   18.822689] x26: ffff6eeb03065a10 x25: ffff80000b473a30 x24: ffff80000b4735b8
+>> [   18.829855] x23: 0000000000000000 x22: 00000000000001e0 x21: ffff6eeb07b6ab68
+>> [   18.837021] x20: ffff6eeb07b6ab30 x19: ffff6eeb07b6a9c0 x18: 0000000000000014
+>> [   18.844187] x17: 00000000f6232bfe x16: ffffccab899b1dc0 x15: 000000006a30f9fa
+>> [   18.851353] x14: 000000003b77bd50 x13: 000006dc896f0e8e x12: 001bbbfccfd0d3a2
+>> [   18.858519] x11: 0000000000001528 x10: 0000000000001548 x9 : ffffccab38ad0fb0
+>> [   18.865685] x8 : ffff80000b473330 x7 : 0000000000000000 x6 : 0000000000000000
+>> [   18.872851] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff80000b4732f8
+>> [   18.880017] x2 : 000000000000001a x1 : 0000000000000002 x0 : ffff6eeb07b6ab68
+>> [   18.887183] Call trace:
+>> [   18.889637]  mvpp2_start_dev+0x2b0/0x300 [mvpp2]
+>> [   18.894279]  mvpp2_open+0x134/0x2b4 [mvpp2]
+>> [   18.898483]  __dev_open+0x128/0x1e4
+>> [   18.901988]  __dev_change_flags+0x17c/0x1d0
+>> [   18.906187]  dev_change_flags+0x30/0x70
+>> [   18.910038]  do_setlink+0x278/0xa7c
+>> [   18.913540]  __rtnl_newlink+0x44c/0x7d0
+>> [   18.917391]  rtnl_newlink+0x5c/0x8c
+>> [   18.920892]  rtnetlink_rcv_msg+0x254/0x314
+>> [   18.925006]  netlink_rcv_skb+0x48/0x10c
+>> [   18.928858]  rtnetlink_rcv+0x24/0x30
+>> [   18.932449]  netlink_unicast+0x290/0x2f4
+>> [   18.936386]  netlink_sendmsg+0x1d0/0x41c
+>> [   18.940323]  sock_sendmsg+0x60/0x70
+>> [   18.943825]  ____sys_sendmsg+0x248/0x260
+>> [   18.947762]  ___sys_sendmsg+0x74/0xa0
+>> [   18.951438]  __sys_sendmsg+0x64/0xcc
+>> [   18.955027]  __arm64_sys_sendmsg+0x30/0x40
+>> [   18.959140]  invoke_syscall+0x50/0x120
+>> [   18.962906]  el0_svc_common.constprop.0+0x4c/0xf4
+>> [   18.967629]  do_el0_svc+0x30/0x9c
+>> [   18.970958]  el0_svc+0x28/0xb0
+>> [   18.974025]  el0t_64_sync_handler+0x10c/0x140
+>> [   18.978400]  el0t_64_sync+0x1a4/0x1a8
+>> [   18.982078] Code: 52800004 b9416262 aa1503e0 52800041 (f94008a5)
+>> [   18.988196] ---[ end trace 0000000000000000 ]---
+>>
+>> Fixes: cff056322372 ("net: mvpp2: use .mac_select_pcs() interface")
+>> Suggested-by: Russel King (Oracle) <rmk+kernel@armlinux.org.uk>
+> 
+> Please spell my name correctly, especially in attributations. I really
+> don't want this committed with this mistake.
 
-then the deletion of the net_bridge_vlan is silently halted, which will
-trigger the WARN_ON from __vlan_group_free().
+Sorry about that, no real excuse, I have posted a v3 with that corrected.
 
-The WARN_ON is rather unhelpful, because nothing about the source of the
-error is printed. Add a print to catch errors from __vlan_del.
+Thanks again for you help.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/bridge/br_vlan.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index 6f3ee4d8fea8..84070524f657 100644
---- a/net/bridge/br_vlan.c
-+++ b/net/bridge/br_vlan.c
-@@ -418,6 +418,7 @@ static void __vlan_flush(const struct net_bridge *br,
- {
- 	struct net_bridge_vlan *vlan, *tmp;
- 	u16 v_start = 0, v_end = 0;
-+	int err;
- 
- 	__vlan_delete_pvid(vg, vg->pvid);
- 	list_for_each_entry_safe(vlan, tmp, &vg->vlan_list, vlist) {
-@@ -431,7 +432,13 @@ static void __vlan_flush(const struct net_bridge *br,
- 		}
- 		v_end = vlan->vid;
- 
--		__vlan_del(vlan);
-+		err = __vlan_del(vlan);
-+		if (err) {
-+			br_err(br,
-+			       "port %u(%s) failed to delete vlan %d: %pe\n",
-+			       (unsigned int) p->port_no, p->dev->name,
-+			       vlan->vid, ERR_PTR(err));
-+		}
- 	}
- 
- 	/* notify about the last/whole vlan range */
--- 
-2.25.1
+> 
+>> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+>> ---
+>>   drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 6 +++---
+>>   1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+>> index 7cdbf8b8bbf6..1a835b48791b 100644
+>> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+>> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+>> @@ -6870,6 +6870,9 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+>>   	dev->max_mtu = MVPP2_BM_JUMBO_PKT_SIZE;
+>>   	dev->dev.of_node = port_node;
+>>   
+>> +	port->pcs_gmac.ops = &mvpp2_phylink_gmac_pcs_ops;
+>> +	port->pcs_xlg.ops = &mvpp2_phylink_xlg_pcs_ops;
+>> +
+>>   	if (!mvpp2_use_acpi_compat_mode(port_fwnode)) {
+>>   		port->phylink_config.dev = &dev->dev;
+>>   		port->phylink_config.type = PHYLINK_NETDEV;
+>> @@ -6940,9 +6943,6 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+>>   				  port->phylink_config.supported_interfaces);
+>>   		}
+>>   
+>> -		port->pcs_gmac.ops = &mvpp2_phylink_gmac_pcs_ops;
+>> -		port->pcs_xlg.ops = &mvpp2_phylink_xlg_pcs_ops;
+>> -
+>>   		phylink = phylink_create(&port->phylink_config, port_fwnode,
+>>   					 phy_mode, &mvpp2_phylink_ops);
+>>   		if (IS_ERR(phylink)) {
+>> -- 
+>> 2.34.1
+>>
+>>
+> 
 
