@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC0984B5E46
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 00:32:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88D4C4B5E47
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 00:32:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231952AbiBNXcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 18:32:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52700 "EHLO
+        id S232142AbiBNXcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 18:32:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbiBNXcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 18:32:14 -0500
+        with ESMTP id S231728AbiBNXcP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 18:32:15 -0500
 Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2069.outbound.protection.outlook.com [40.107.21.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC817107A94
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 15:32:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F94107A95
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 15:32:07 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JtKV68tQYu8whyWd1oD2v99zCKbgUabgCrzTWqp5jm4yVgvXEKLssT6ALSLovCq0cI9RBE3HzXOfNm0vqn03lfa/DKv8VgI7mt7hh6fTurGyNo30kqycw62W80OsCSp18z/cec/XGejZyGAGvbrR/tPdpP0nEh6m5BSkEFjJhsmTwjNALLdIlz6YLQ9T6LJPdG2JflBg6qHhRmPcLY4pk9y7eiEVJisaYcdDJLYsr2nIN7I1WWtW0KJjTukWwtYC4zMGsEx8A3W6h3UyS096N04v4OMjRGJgpEOY+2N01CRXPu5CTUltpE68X4Qd71kQUdBOI19N+sP/bmlXjK2GVA==
+ b=C1qw9LgQBF1AFWbhrZwcS6rcsyYpMtm2sUGhxV3w6rDQrNWU7Y0eA2crTTxQHVceELj/Lw5TqwIYb4mM7G/0Pd1N3F6ynRMCbeDAzesaSi88vUqqBgq4qvoIHNsBWUtmDyvKnPRnmGBLERryxyQNneeplPD4bW4y+ht3u4zkrZM8VeLtZVE47k7b0MOfVx6MSRzlBM7SWjSMB+pN2yqTDTGBO64HvahEvXEF69vzz9KEPZftJzHEOtnuVYL6DImn22KZL3IpL3Ii6IZkIgijXkdLl7Z/yDbKbaUXEG0hwr4kJjgJ06tVWbO7TB8JGqxE0iIwD87CViaZeQ3Jh+Qhkg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=T2NCOSaBTQ8GmJ5+jvV2NG78eIwps/hyoFLkjYGzeU8=;
- b=UzHIuSfWZwjVjDomUTBqppxz9JZiHmf5PHkk5zhpHyAvMP3hRkU/RSCETLisuEPAukw2ni9E6OV+Yc5alyn7HSFWQ+ccV67hxlK7GJmKFwg45tvrIUQcXwAFk2s49UlOpgmZyFlGENkoDXdK7J77dwkPt7V0UUEjthkgUy5fsFyn5JqxP2dEs7I11EoVa+A9zw2jEIgWP/sEmg+tei1O7nmWNmfuQOslg2LJjzuGwfvAl/vECGYm7d3FnCJFo6rl9wriJ6wdjfGbJc6Bs4oxZUAGEkSK/fDgp80rPqQ2MDxiDZDqqKurQnauNcQ7LAYkrUuWuvlCM9uMvTFVmBQkVw==
+ bh=yayvcIRK8DR5g5i0lDfYKjm4dOnet8Dk+A4PbHr34WM=;
+ b=RCEFDsbjPz2Vnj9+065ccTfNvLtq24iEhmCtCzW82UJFA4rlpBRloez5B/5jrObOvHEqXnc/gFURmY/8r+0sbvJ/wqAXaefEgHlYj1Rh0irj3ZhlJRoGT0Kw85En/sg0uivdsuyyCIzZwwAx0Wx7fi3An/kukUC1Btu20RZpoWZGstA6m0ImcEiautVGiREIyAIXaUH6ExqQGcJvSOf6M0c7AyGMbSh7WvY97i+Ar8qvimBNjllSjfjq1LpygOCuQxW32xZzhMZJUc2wSpS/yhrrjgm6d0QuKBBbvjQ3Lb1f0Oj/wA9CMyihuzeGiVtwGkyU4z5G1BBtGmLIgSEAcQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=T2NCOSaBTQ8GmJ5+jvV2NG78eIwps/hyoFLkjYGzeU8=;
- b=F7oJAvPXUF17lPYK9KEyDSl9cOIU05hGa02i2wLnG9AbunMtVlw0go+CJYCvmysRj6jvrs3ML7YNjyCFbvSdw/YCTB8mi/UNPPjx04u+6IZ7vQkOLSOzQiAR/mKCsl56/s9n4o0k8/UGyic/c5HPUFYjl9GJT7b0IacodzlnRVg=
+ bh=yayvcIRK8DR5g5i0lDfYKjm4dOnet8Dk+A4PbHr34WM=;
+ b=AzycIWonS2eodTaDZEVHmcbtd6LKu/XcMLibxNIfA4gFuvtSHOJyNNxw39hN5q4RpN8uF/eeBhnGVLaXBuy+dHxxEMmiLDBjQaujS5CGwuBBuoFjd3mFS9Gsi0P161SEuDHgACsEREiTe4flh6lZNaBVecrf8Ogs1pt/sE37cAk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB5504.eurprd04.prod.outlook.com (2603:10a6:803:d8::29) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.18; Mon, 14 Feb
- 2022 23:32:03 +0000
+ 2022 23:32:04 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Mon, 14 Feb 2022
- 23:32:02 +0000
+ 23:32:04 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -52,10 +52,12 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Rafael Richter <rafael.richter@gin.de>,
         Daniel Klauer <daniel.klauer@gin.de>,
         Tobias Waldekranz <tobias@waldekranz.com>
-Subject: [PATCH v2 net-next 0/8] Replay and offload host VLAN entries in DSA
-Date:   Tue, 15 Feb 2022 01:31:03 +0200
-Message-Id: <20220214233111.1586715-1-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 1/8] net: bridge: vlan: notify switchdev only when something changed
+Date:   Tue, 15 Feb 2022 01:31:04 +0200
+Message-Id: <20220214233111.1586715-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220214233111.1586715-1-vladimir.oltean@nxp.com>
+References: <20220214233111.1586715-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: AS9PR06CA0377.eurprd06.prod.outlook.com
@@ -63,54 +65,54 @@ X-ClientProxiedBy: AS9PR06CA0377.eurprd06.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a2d520f0-1a57-445a-eb43-08d9f012341c
+X-MS-Office365-Filtering-Correlation-Id: dd3764d6-aec1-43d1-dd53-08d9f01234f5
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5504:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5504D020053898D41FF1C692E0339@VI1PR04MB5504.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR04MB5504E248927DFA50EF2B709FE0339@VI1PR04MB5504.eurprd04.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7hQ2I3nGLaIFRd5qHYrnAleUIJy/LVzy3251YGc6hiMzmfwR5OUUkaEoA1gKP3DzQXLpOGpIrvcYZ44sPKgSaeHkuqSfBt68lZtQuoffLa3ZqtDBhJEjtaFKsfvO8y0FuvSNUWRihsY+kB3kzYQBCyQL2k9dxWLm8QUlOO3Lso2OZtnif6aBxXFaMGHZGDyeEW8xya5jba7YXFgYbe8N8pa1psjpMSBlKc2ci5/bDZwpH6tHf7zK98IR+TyhFUlNdg1jGJ7T+wyv207YAgS1fjfDC0K1vbU4KDWW/CEv1OjciCcUM4H5OT01cKpe7S33+vw4OlcpdGlRRffFNkwnbNUAL/Rm+dJAYtLZolkoz3T1LfhRKAcH2kdV86AmjKTvJMgmyOUAQNWSV3xyUsRPQfcufHMhPzsnKu/q6oz13GxTcPmLNGMO+BsKWaiNI44dqNrSyc2fZ8kyA/ds9j71QNtm9V1IjuM8Weswj9wqYJ3mMv97pyw7L5qOhrvIaRYE83c75z7LnMFyXze0IR16Qp6CSfj285azTu9JUf5mFneWILSRyIJkbBOULmEWNxkbV3G4dg/AcTSTS+EmPcEtPgP+dpTYBdYCPTudU8DH21KP6kH9rKVLcMZczxUeAg+DiUfFLBPxVMVtxNnjeAUJFvW1xoRYzjRyNSsbVPT5a+5re2WLglTzzvRzwGkc4g858aa9zNZYcJrenQ7If+jRMyCl7PaVaQ/gJyGywY/wi470gMT9xbuX8d3ZQB//4m6hf2r+ZnS1Kvi0B96of8dm5gLjYD+c+wVqAwsCevN+ryc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(7416002)(5660300002)(66556008)(6512007)(2616005)(54906003)(508600001)(6506007)(52116002)(966005)(6486002)(8676002)(6916009)(2906002)(4326008)(44832011)(36756003)(83380400001)(316002)(26005)(186003)(1076003)(66476007)(86362001)(38350700002)(38100700002)(66946007)(8936002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: HiwMPR2wjr12UZdst2SJx3ke/DioMylYSHjoa/3ZHfCFaiSKb7p0ED+kCBn/0BsYkQCaaNow+Cn4t6lKVZkcbHICK+W8KM+VpKKSRQoy7gEScXKmPGWbrvxDLFnYNJF0zOChvolXYjV+sQUyaMNY/WunArgzty7d108f8mt5coyH5v5okM2Zqt0+RVLFHxAYiCYLXllD3zingIpSArXE9FfXmIEjPTp5YwXY1JPeRkmngUD0j3xLbzomuiIWB5bwiTsuGXc48c6X3fSquVaAAr5t0JTwosjmQzpR7thAqYH6gNxa/smAz6sKyqiBJTFGELhEs3yqAsdWT9KODCoqiao/10Unw0q2a+LSZEicPvQ8qyisAX4849VgBALsNNUHIE8BeIBcPeco8owIwSACejLIRUJW9Cz904q9RaibMJP82qp9W2Fokq17UHn9IuFqnm4B7EYWSOrG0OMYbGSs8SKfrQjNJd70JqGvdhi/yvNuYHTgRUsGgNk9CpByHcGq7oGmaYtg+r0okwjGgoFQv6Qz3ayYH1wzNBF6e8/GXXzbJm1SrJ/wW1eJUtoHHmUhPgbqwZXZBlrwkUaWXRYAYtjdqjJ1eJYxXLi0DgMPdkJrsCk99ctvSq9dxBe7gVPDbfhb/w0D/OeHVpUUQ/DVS942scRx65cwd6CxTr6DHGxN06ZXNXGhmh3aA7G4YAwrGZeR2k04XvtKq5+iJZP5JA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(7416002)(5660300002)(66556008)(6512007)(2616005)(54906003)(508600001)(6506007)(52116002)(6486002)(8676002)(6916009)(2906002)(4326008)(44832011)(36756003)(83380400001)(316002)(26005)(186003)(1076003)(66476007)(86362001)(38350700002)(38100700002)(66946007)(8936002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iQZptRzciy6A2G5N9BA0nkqxt0nOoxb5W1Lue88Fp+EEbvYDV99H3bVm3agH?=
- =?us-ascii?Q?wOAw5KyeN8+9g41ApclKbH/XrjN+GjHq5VZcGVcnC2ztCywx53fJCVIGThlM?=
- =?us-ascii?Q?9NDgZgdInFQhes5PF/zYS3bQ73nvTLjGnx8cHitI+DYqGqRXbTpvtcABjl5l?=
- =?us-ascii?Q?NYaZCl/26BEHNt8tB1356FQ/jOE0mEcOA06tooI07prkMGxaIsVTa6gefimH?=
- =?us-ascii?Q?NMm2O0KYJMrv60gTE8CUzQM/g2PCQKu19fwN+i7is0V7ji17n2wVNEJvNI5V?=
- =?us-ascii?Q?nOaCnVWGUPQMljg568dFC2RZLs04JIea4mKsR7Xo50HiEtDu03+G2z0kt+ZV?=
- =?us-ascii?Q?KJ9mB2Yd6X9Wfu5Lv/mmQ/m8G7fr+ETGLs+eQMIK7hk02nNkK5rR6CLh8jTl?=
- =?us-ascii?Q?+EaH8IWs9xBUUGb3tSB8E4R1mVTJaFYRCIOqKI4Fyl6IIaFvPJj293wdJR3P?=
- =?us-ascii?Q?4K2fvnL+s/r27caZ+zaj+yJZC7ahITHuPU7qTqvA/OZa+ol4fsH6lakdyDj+?=
- =?us-ascii?Q?lclNVY/zLTRBNI+T+TCnD6cNwfU/1D6zXuXATq2m1nKOR6AQ//gK99tT5uCT?=
- =?us-ascii?Q?cvBoC0/k58e9j6geozg+bBtNfBwBadQnGnyzU9fRudQ0shutaz6k9de86k/Y?=
- =?us-ascii?Q?f8tVXMcbV6q5xlxHYuft0YcKW3IlNrvEs60Hn+HXaXLGxv6zoKeeRlG+Mai8?=
- =?us-ascii?Q?NxF9D5EFTtX4Pe/NvZ1+kveh0Z9dpTFf4CZDk0vj7tl4ytwX6CfqLbuuWJjJ?=
- =?us-ascii?Q?iMP4xKGoyKDMHzREOn19GjuwBOKDeRcqo7NgJpsWCEMRURCuuEQ7NqAlqdIb?=
- =?us-ascii?Q?90jHUCFmFh5JXI2FF4Fb9gEVFLngu8OTxj0Gxu8WR5Bq+MMjuSuP6IyHuEja?=
- =?us-ascii?Q?FA3/7nD1FF8ZPE3s86ACsNYSpW62kDwgYWT3jfv7YT5MUWabFXoGNru5OdF3?=
- =?us-ascii?Q?Sl4wlE+IoIlu6hlm1BYBwp7gEVNczIPEwZ4IzTgn34Nf1J44ngt/Xh1087dQ?=
- =?us-ascii?Q?lPaReAFMktZpgPJWzeIf3lO5Q6teqXR1HQjJLsjDHCOo/Bs8JQaL3P2WiAxn?=
- =?us-ascii?Q?VDsWnivFFkTUkclNW6HE276JTEAbqOTmvAAkXWUsjjmroPRzFrYL+3kXiEkG?=
- =?us-ascii?Q?xPArPUWgjgt1WqknC/UMFgQZzH8MH6FABtN5WVF1iryY3NcO/i2ooYNxNUAP?=
- =?us-ascii?Q?Ugx+DpDbv57Rsn2pLxtAbSCddu+71YR205L/yLGOEjLdjQNfo+kmlrQYaaNf?=
- =?us-ascii?Q?NMi5MFWOFG/mrJb6Z68Nzyamn7oBLxEURzgXrXVIjVpvEj35PFqn5cl/kOAt?=
- =?us-ascii?Q?WE8YSrf54NEL5yh9MFA6mEsZ3zItm67Lz2e44jYOXG0JHUxXD1tnPEGcwAx9?=
- =?us-ascii?Q?4C2lAfU7kfjQ+lnNoB1f1j10R9tL7rp525/8MgSkVPs9loAdTIYAFsxRPxU5?=
- =?us-ascii?Q?yrC0cgm+DCP/y+295s03tmSogGifag70QAhEWdItUQwur2t0tn2vWp5jSEYr?=
- =?us-ascii?Q?wGFWTXUBRMyvRnoCskTqFu6bZhignrsiLBevnUmO4mSWuUMlz8uujmSdFQi4?=
- =?us-ascii?Q?cz/EBaZPSUIZIx8Ywexy9P3WYAoVGCY61Y2gqgy1HpfTsG7ep5aTlUXgolwR?=
- =?us-ascii?Q?hx+PT9cNFze9ZjtrBz5vG10=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UQzUhb5TMBa4wh3MPNY70YIJVdeHbhlMvMOiD574VBczmO6F9wB5EQgSUD58?=
+ =?us-ascii?Q?/90LdmvNtY5IR8om3gFz6LK7beck5x45gNNp+6CY2P0QWuxXovuKjXh2Q8a9?=
+ =?us-ascii?Q?iNVQmWW+ulNm0sx2PlpNvbBFa6hRxdTtyC3Juy5uCN/EcZPkvY3no6AZ540Q?=
+ =?us-ascii?Q?eEmlyz4WUde2jNRj6Z08XBiweNn3iEqZn94+uViluf3wjKx2pPV6BsZbtTc4?=
+ =?us-ascii?Q?UQNoQFISehloKWtTqh7C3qWQujVUgMcvZgBS0Asfh2SHOXG0VkxAZu2SiF/6?=
+ =?us-ascii?Q?YpKz3DAygkKRPuEBWE1v0Iur463y9pjEGTK9rIy8cXzzsqVxVRYUZ5nJKyd/?=
+ =?us-ascii?Q?jtT/pFq8I9HG9G7vxw5L0rGs1AS5UyvQTewyG6pY3cT27WsQgFCo7lpQm0qR?=
+ =?us-ascii?Q?k3aDANoROA/aii0Kuhxv6iRpIJrg7RTaDUL2yNV/YdZCpRtASOXC6aIj4TaJ?=
+ =?us-ascii?Q?LSelSlVcr3wSEZqy0d8V+zrw8rHggH6cUK8vvoC5Vl57AtLxfOVUotCGe6iK?=
+ =?us-ascii?Q?4pL5SOsC1WnIxKA/s2gUOoPSjtZPFv6MyY0r+IA6zrX5tBqr7m7KLfqOn04q?=
+ =?us-ascii?Q?UgBO0gywym2M43VIFxgG+ubddbctLFk7Ov9r+onpRbza5c3+kNADEqzfrUDb?=
+ =?us-ascii?Q?zNS37yMMqTovxYX7jlcj5S1dPHtR1oOaANe2MUPJ4vGw3KriL3QYP10+QePl?=
+ =?us-ascii?Q?+pcRFqRlLmL91xlxWVTJpz192gxjYJsd3G5kxWoEHl1s4stKpCs8e2D5ZUtq?=
+ =?us-ascii?Q?dyj8HxdXLegJLCxt5kOs5N5xxO6G15eUKFB3XBf5RVucjSIBmj/CRq0hI59w?=
+ =?us-ascii?Q?fTzcV3XLQoN9hXqutFatyQ0vVnHcb/f6uU5raqXBM07DppLKBaG/dOEDVVl4?=
+ =?us-ascii?Q?RvZjlCssdMrzdTpEfJtpYPjoO0NdXWYiU0bk/VNTq/q7Px78G+dvz8zAR51V?=
+ =?us-ascii?Q?8yvLFB7oLYJYfnrjidHw4ZumKa46A7Y4GdZeo7XHzGTxJx3ahuOcH6ZeyRUp?=
+ =?us-ascii?Q?Cr5l6eMGEv9H39wNksRPbV7t+Sp9Xt0J/ffGJK2WPbPjOVMKCa6gwNHsso5o?=
+ =?us-ascii?Q?B1SppuhBQic5R7S3f5DQ7BxIglOILa5Wfx4ArgJTaBVYLJk5epiMgY9UlmxS?=
+ =?us-ascii?Q?MQ/Mzgiat4ImdG6kEoUImZSDyGgEvHN28bVr3hQ3KIVqhTXSXkeQMoW1r++L?=
+ =?us-ascii?Q?OQ7BAIgbFn46z3fqz8u12vHiHcmanQ4eE5cga12NynYredha+3iVEeZdnibE?=
+ =?us-ascii?Q?+XY5X9+0/GsJUMacDloap5Rgsxh2WgViwIhSbI5LZTN3Mn9PMa9EFSfEbrMz?=
+ =?us-ascii?Q?U0X0tFAPaJhdbz6CrtPS1jA/7w4IC0Etq9vPIUxVIzjEMXdzSeffKYU2J3bx?=
+ =?us-ascii?Q?cy8liNky+s8zqo6G2RfEnW3Gf/ezfvLC6eKKQ/26P4qczgSBu2ftM+aQEtSZ?=
+ =?us-ascii?Q?ZJPtAZ9n31UEazR70IQRLlALUABdoLrgtzXzGxwHpgVhqXAU2tVm525L0OVR?=
+ =?us-ascii?Q?8DK4fGcaVYyvX+bOqJltW3srY2nN38m4+wKN9N5ZcGUg0zO0qr+wWyYe75fb?=
+ =?us-ascii?Q?A45Wy3pOOx1cDNrdy5lpcsKN8BHBpks+WFKVpWA3r7/JK64MLbCybMToW0/P?=
+ =?us-ascii?Q?7I8dYVcvW1Ae6REoXEl2L78=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2d520f0-1a57-445a-eb43-08d9f012341c
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd3764d6-aec1-43d1-dd53-08d9f01234f5
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2022 23:32:02.5742
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2022 23:32:03.9491
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KtmjoqBXMhPz0VCSo8cdyvUrAShaCGnbkniqDu9ppaRETTPUqnnvY+t2BpJHjk2KFgDMgisnr6Y4Ss3q58WVsA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: AT1dxfHiG/kS6G1gYFwD5r76MqKjnEAqe/1McochOPwQ8bgZT3OKVFzJOuUtGShU4i7zxTkjd0pmgl6eUGjQLg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5504
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -122,167 +124,180 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v1->v2:
-- prune switchdev VLAN additions with no actual change differently
-- no longer need to revert struct net_bridge_vlan changes on error from
-  switchdev
-- no longer need to first delete a changed VLAN before readding it
-- pass 'bool changed' and 'u16 old_flags' through switchdev_obj_port_vlan
-  so that DSA can do some additional post-processing with the
-  BRIDGE_VLAN_INFO_BRENTRY flag
-- support VLANs on foreign interfaces
-- fix the same -EOPNOTSUPP error in mv88e6xxx, this time on removal, due
-  to VLAN deletion getting replayed earlier than FDB deletion
+Currently, when a VLAN entry is added multiple times in a row to a
+bridge port, nbp_vlan_add() calls br_switchdev_port_vlan_add() each
+time, even if the VLAN already exists and nothing about it has changed:
 
-The motivation behind these patches is that Rafael reported the
-following error with mv88e6xxx when the first switch port joins a
-bridge:
+bridge vlan add dev lan12 vid 100 master static
 
-mv88e6085 0x0000000008b96000:00: port 0 failed to add a6:ef:77:c8:5f:3d vid 1 to fdb: -95 (-EOPNOTSUPP)
+Similarly, when a VLAN is added multiple times in a row to a bridge,
+br_vlan_add_existing() doesn't filter at all the calls to
+br_switchdev_port_vlan_add():
 
-The FDB entry that's added is the MAC address of the bridge, in VID 1
-(the default_pvid), being replayed as part of br_add_if() -> ... ->
-nbp_switchdev_sync_objs().
+bridge vlan add dev br0 vid 100 self
 
--EOPNOTSUPP is the mv88e6xxx driver's way of saying that VID 1 doesn't
-exist in the VTU, so it can't program the ATU with a FID, something
-which it needs.
+This behavior makes driver-level accounting of VLANs impossible, since
+it is enough for a single deletion event to remove a VLAN, but the
+addition event can be emitted an unlimited number of times.
 
-It appears to be a race, but it isn't, since we only end up installing
-VID 1 in the VTU by coincidence. DSA's approximation of programming
-VLANs on the CPU port together with the user ports breaks down with
-host FDB entries on mv88e6xxx, since that strictly requires the VTU to
-contain the VID. But the user may freely add VLANs pointing just towards
-the bridge, and FDB entries in those VLANs, and DSA will not be aware of
-them, because it only listens for VLANs on user ports.
+The cause for this can be identified as follows: we rely on
+__vlan_add_flags() to retroactively tell us whether it has changed
+anything about the VLAN flags or VLAN group pvid. So we'd first have to
+call __vlan_add_flags() before calling br_switchdev_port_vlan_add(), in
+order to have access to the "bool *changed" information. But we don't
+want to change the event ordering, because we'd have to revert the
+struct net_bridge_vlan changes we've made if switchdev returns an error.
 
-To create a solution that scales properly to cross-chip setups and
-doesn't leak entries behind, some changes in the bridge driver are
-required. I believe that these are for the better overall, but I may be
-wrong. Namely, the same refcounting procedure that DSA has in place for
-host FDB and MDB entries can be replicated for VLANs, except that it's
-garbage in, garbage out: the VLAN addition and removal notifications
-from switchdev aren't balanced. So the first 2 patches attempt to deal
-with that.
+So to solve this, we need another function that tells us whether any
+change is going to occur in the VLAN or VLAN group, _prior_ to calling
+__vlan_add_flags(). In fact, we even make __vlan_add_flags() return void.
 
-This patch set has been superficially tested on a board with 3 mv88e6xxx
-switches in a daisy chain and appears to produce the primary desired
-effect - the driver no longer returns -EOPNOTSUPP when the first port
-joins a bridge, and is successful in performing local termination under
-a VLAN-aware bridge.
-As an additional side effect, it silences the annoying "p%d: already a
-member of VLAN %d\n" warning messages that the mv88e6xxx driver produces
-when coupled with systemd-networkd, and a few VLANs are configured.
-Furthermore, it advances Florian's idea from a few years back, which
-never got merged:
-https://lore.kernel.org/lkml/20180624153339.13572-1-f.fainelli@gmail.com/
-v2 has also been tested on the NXP LS1028A felix switch.
+With this lookahead function in place, we can avoid notifying switchdev
+if nothing changed for the VLAN and VLAN group.
 
-Some testing:
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+v1->v2: drop the br_vlan_restore_existing() approach, just figure out
+        ahead of time what will change.
 
-root@debian:~# bridge vlan add dev br0 vid 101 pvid self
-[  100.709220] mv88e6085 d0032004.mdio-mii:10: mv88e6xxx_port_vlan_add: port 9 vlan 101
-[  100.873426] mv88e6085 d0032004.mdio-mii:10: mv88e6xxx_port_vlan_add: port 10 vlan 101
-[  100.892314] mv88e6085 d0032004.mdio-mii:11: mv88e6xxx_port_vlan_add: port 9 vlan 101
-[  101.053392] mv88e6085 d0032004.mdio-mii:11: mv88e6xxx_port_vlan_add: port 10 vlan 101
-[  101.076994] mv88e6085 d0032004.mdio-mii:12: mv88e6xxx_port_vlan_add: port 9 vlan 101
-root@debian:~# bridge vlan add dev br0 vid 101 pvid self
-root@debian:~# bridge vlan add dev br0 vid 101 pvid self
-root@debian:~# bridge vlan
-port              vlan-id
-eth0              1 PVID Egress Untagged
-lan9              1 PVID Egress Untagged
-lan10             1 PVID Egress Untagged
-lan11             1 PVID Egress Untagged
-lan12             1 PVID Egress Untagged
-lan13             1 PVID Egress Untagged
-lan14             1 PVID Egress Untagged
-lan15             1 PVID Egress Untagged
-lan16             1 PVID Egress Untagged
-lan17             1 PVID Egress Untagged
-lan18             1 PVID Egress Untagged
-lan19             1 PVID Egress Untagged
-lan20             1 PVID Egress Untagged
-lan21             1 PVID Egress Untagged
-lan22             1 PVID Egress Untagged
-lan23             1 PVID Egress Untagged
-lan24             1 PVID Egress Untagged
-sfp               1 PVID Egress Untagged
-lan1              1 PVID Egress Untagged
-lan2              1 PVID Egress Untagged
-lan3              1 PVID Egress Untagged
-lan4              1 PVID Egress Untagged
-lan5              1 PVID Egress Untagged
-lan6              1 PVID Egress Untagged
-lan7              1 PVID Egress Untagged
-lan8              1 PVID Egress Untagged
-br0               1 Egress Untagged
-                  101 PVID
-root@debian:~# bridge vlan del dev br0 vid 101 pvid self
-[  108.340487] mv88e6085 d0032004.mdio-mii:11: mv88e6xxx_port_vlan_del: port 9 vlan 101
-[  108.379167] mv88e6085 d0032004.mdio-mii:11: mv88e6xxx_port_vlan_del: port 10 vlan 101
-[  108.402319] mv88e6085 d0032004.mdio-mii:12: mv88e6xxx_port_vlan_del: port 9 vlan 101
-[  108.425866] mv88e6085 d0032004.mdio-mii:10: mv88e6xxx_port_vlan_del: port 9 vlan 101
-[  108.452280] mv88e6085 d0032004.mdio-mii:10: mv88e6xxx_port_vlan_del: port 10 vlan 101
-root@debian:~# bridge vlan del dev br0 vid 101 pvid self
-root@debian:~# bridge vlan del dev br0 vid 101 pvid self
-root@debian:~# bridge vlan
-port              vlan-id
-eth0              1 PVID Egress Untagged
-lan9              1 PVID Egress Untagged
-lan10             1 PVID Egress Untagged
-lan11             1 PVID Egress Untagged
-lan12             1 PVID Egress Untagged
-lan13             1 PVID Egress Untagged
-lan14             1 PVID Egress Untagged
-lan15             1 PVID Egress Untagged
-lan16             1 PVID Egress Untagged
-lan17             1 PVID Egress Untagged
-lan18             1 PVID Egress Untagged
-lan19             1 PVID Egress Untagged
-lan20             1 PVID Egress Untagged
-lan21             1 PVID Egress Untagged
-lan22             1 PVID Egress Untagged
-lan23             1 PVID Egress Untagged
-lan24             1 PVID Egress Untagged
-sfp               1 PVID Egress Untagged
-lan1              1 PVID Egress Untagged
-lan2              1 PVID Egress Untagged
-lan3              1 PVID Egress Untagged
-lan4              1 PVID Egress Untagged
-lan5              1 PVID Egress Untagged
-lan6              1 PVID Egress Untagged
-lan7              1 PVID Egress Untagged
-lan8              1 PVID Egress Untagged
-br0               1 Egress Untagged
-root@debian:~# bridge vlan del dev br0 vid 101 pvid self
+ net/bridge/br_vlan.c | 71 ++++++++++++++++++++++++++++----------------
+ 1 file changed, 46 insertions(+), 25 deletions(-)
 
-Vladimir Oltean (8):
-  net: bridge: vlan: notify switchdev only when something changed
-  net: bridge: switchdev: differentiate new VLANs from changed ones
-  net: bridge: make nbp_switchdev_unsync_objs() follow reverse order of
-    sync()
-  net: bridge: switchdev: replay all VLAN groups
-  net: switchdev: rename switchdev_lower_dev_find to
-    switchdev_lower_dev_find_rcu
-  net: switchdev: introduce switchdev_handle_port_obj_{add,del} for
-    foreign interfaces
-  net: dsa: add explicit support for host bridge VLANs
-  net: dsa: offload bridge port VLANs on foreign interfaces
-
- include/net/dsa.h         |  10 ++
- include/net/switchdev.h   |  45 +++++++++
- net/bridge/br_private.h   |   6 +-
- net/bridge/br_switchdev.c |  95 ++++++++++---------
- net/bridge/br_vlan.c      |  77 ++++++++++------
- net/dsa/dsa2.c            |   8 ++
- net/dsa/dsa_priv.h        |   7 ++
- net/dsa/port.c            |  42 +++++++++
- net/dsa/slave.c           | 164 ++++++++++++++++++++++++---------
- net/dsa/switch.c          | 187 ++++++++++++++++++++++++++++++++++++--
- net/switchdev/switchdev.c | 152 ++++++++++++++++++++++++++++---
- 11 files changed, 656 insertions(+), 137 deletions(-)
-
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index 1402d5ca242d..c5355695c976 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -34,36 +34,29 @@ static struct net_bridge_vlan *br_vlan_lookup(struct rhashtable *tbl, u16 vid)
+ 	return rhashtable_lookup_fast(tbl, &vid, br_vlan_rht_params);
+ }
+ 
+-static bool __vlan_add_pvid(struct net_bridge_vlan_group *vg,
++static void __vlan_add_pvid(struct net_bridge_vlan_group *vg,
+ 			    const struct net_bridge_vlan *v)
+ {
+ 	if (vg->pvid == v->vid)
+-		return false;
++		return;
+ 
+ 	smp_wmb();
+ 	br_vlan_set_pvid_state(vg, v->state);
+ 	vg->pvid = v->vid;
+-
+-	return true;
+ }
+ 
+-static bool __vlan_delete_pvid(struct net_bridge_vlan_group *vg, u16 vid)
++static void __vlan_delete_pvid(struct net_bridge_vlan_group *vg, u16 vid)
+ {
+ 	if (vg->pvid != vid)
+-		return false;
++		return;
+ 
+ 	smp_wmb();
+ 	vg->pvid = 0;
+-
+-	return true;
+ }
+ 
+-/* return true if anything changed, false otherwise */
+-static bool __vlan_add_flags(struct net_bridge_vlan *v, u16 flags)
++static void __vlan_add_flags(struct net_bridge_vlan *v, u16 flags)
+ {
+ 	struct net_bridge_vlan_group *vg;
+-	u16 old_flags = v->flags;
+-	bool ret;
+ 
+ 	if (br_vlan_is_master(v))
+ 		vg = br_vlan_group(v->br);
+@@ -71,16 +64,36 @@ static bool __vlan_add_flags(struct net_bridge_vlan *v, u16 flags)
+ 		vg = nbp_vlan_group(v->port);
+ 
+ 	if (flags & BRIDGE_VLAN_INFO_PVID)
+-		ret = __vlan_add_pvid(vg, v);
++		__vlan_add_pvid(vg, v);
+ 	else
+-		ret = __vlan_delete_pvid(vg, v->vid);
++		__vlan_delete_pvid(vg, v->vid);
+ 
+ 	if (flags & BRIDGE_VLAN_INFO_UNTAGGED)
+ 		v->flags |= BRIDGE_VLAN_INFO_UNTAGGED;
+ 	else
+ 		v->flags &= ~BRIDGE_VLAN_INFO_UNTAGGED;
++}
++
++/* return true if anything will change as a result of __vlan_add_flags,
++ * false otherwise
++ */
++static bool __vlan_flags_would_change(struct net_bridge_vlan *v, u16 flags)
++{
++	struct net_bridge_vlan_group *vg;
++	u16 old_flags = v->flags;
++	bool pvid_changed;
+ 
+-	return ret || !!(old_flags ^ v->flags);
++	if (br_vlan_is_master(v))
++		vg = br_vlan_group(v->br);
++	else
++		vg = nbp_vlan_group(v->port);
++
++	if (flags & BRIDGE_VLAN_INFO_PVID)
++		pvid_changed = (vg->pvid == v->vid);
++	else
++		pvid_changed = (vg->pvid != v->vid);
++
++	return pvid_changed || !!(old_flags ^ v->flags);
+ }
+ 
+ static int __vlan_vid_add(struct net_device *dev, struct net_bridge *br,
+@@ -672,9 +685,13 @@ static int br_vlan_add_existing(struct net_bridge *br,
+ {
+ 	int err;
+ 
+-	err = br_switchdev_port_vlan_add(br->dev, vlan->vid, flags, extack);
+-	if (err && err != -EOPNOTSUPP)
+-		return err;
++	*changed = __vlan_flags_would_change(vlan, flags);
++	if (*changed) {
++		err = br_switchdev_port_vlan_add(br->dev, vlan->vid, flags,
++						 extack);
++		if (err && err != -EOPNOTSUPP)
++			return err;
++	}
+ 
+ 	if (!br_vlan_is_brentry(vlan)) {
+ 		/* Trying to change flags of non-existent bridge vlan */
+@@ -696,8 +713,7 @@ static int br_vlan_add_existing(struct net_bridge *br,
+ 		br_multicast_toggle_one_vlan(vlan, true);
+ 	}
+ 
+-	if (__vlan_add_flags(vlan, flags))
+-		*changed = true;
++	__vlan_add_flags(vlan, flags);
+ 
+ 	return 0;
+ 
+@@ -1247,11 +1263,16 @@ int nbp_vlan_add(struct net_bridge_port *port, u16 vid, u16 flags,
+ 	*changed = false;
+ 	vlan = br_vlan_find(nbp_vlan_group(port), vid);
+ 	if (vlan) {
+-		/* Pass the flags to the hardware bridge */
+-		ret = br_switchdev_port_vlan_add(port->dev, vid, flags, extack);
+-		if (ret && ret != -EOPNOTSUPP)
+-			return ret;
+-		*changed = __vlan_add_flags(vlan, flags);
++		*changed = __vlan_flags_would_change(vlan, flags);
++		if (*changed) {
++			/* Pass the flags to the hardware bridge */
++			ret = br_switchdev_port_vlan_add(port->dev, vid,
++							 flags, extack);
++			if (ret && ret != -EOPNOTSUPP)
++				return ret;
++		}
++
++		__vlan_add_flags(vlan, flags);
+ 
+ 		return 0;
+ 	}
 -- 
 2.25.1
 
