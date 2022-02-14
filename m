@@ -2,125 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC0F24B55F9
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 17:21:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 929F24B574F
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 17:44:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356308AbiBNQVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 11:21:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33386 "EHLO
+        id S1346197AbiBNQof convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 14 Feb 2022 11:44:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356331AbiBNQU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 11:20:58 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E2742EE7
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 08:20:50 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id g7so11790157edb.5
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 08:20:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:in-reply-to:references:from:date:message-id
-         :subject:cc;
-        bh=7MR/c1c0HoGO/HVVoYlYmh/1TEGUfmBelnD0hQ6ZZJc=;
-        b=Tqt+g8MeJIddSizPcYyneq7VdZtE9IYp8qFx3XOpgvvftUekwgEGZIieibAKUIS3hY
-         I8N1aVsujZ8xsZ077/YVb/VMh401O3iz77HyTKwBkeKmBa0SzCINNS8G+oU2lgTueTIH
-         AgGzLeslhzk4jAOojwJvu3zrgbmxYJ5XXgWbnRSfSLNYKlJT9osKHiTIOFBMm74kUt0Z
-         vuV5jpgGX64hxxjY0LCpfGdQJf9iz+jaXvOQR7WJqlJM/pugeEtwu9JjI+WQzcaRZhBT
-         G752dV/Dn3AU+8wpOMZb3g4y+uo35kSyYpd12E3KUlNeQadVWPO4qj8g2CdrCAUwy3RZ
-         0ZTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:in-reply-to:references
-         :from:date:message-id:subject:cc;
-        bh=7MR/c1c0HoGO/HVVoYlYmh/1TEGUfmBelnD0hQ6ZZJc=;
-        b=3M5Vy1Xd7Xdrykr/s+i7jUasAoG7W8SOblla4ftog1gqJHFM56tshIRx+EGuDogxLG
-         iKwyFtpZEkqKxMP8m3dmgHCfAwVbnpiUP/1tQcn5ZX//Z08MejbX+OQEnSX0WrfGWFS1
-         G67fVVMgbPAAfvhaEzpPk1XyALX9rz76KzWyUVIwcfRiNGxWJNsw4uXsP94mNqfPdiAt
-         473v9CbtMoG5IVt1U4dSIF0cBMIG16fFeWRRCwQxQk1gGA3/tZtVFgMfOU38Mn8QkEJc
-         Guo29C7DUC0ybnl5OEeCY/SzC87JcHb8pbDA1LypizA1jRgPdhos50Zk8Mc4IPDw6OX9
-         qmjA==
-X-Gm-Message-State: AOAM533KCXte81DzBCkL0NeYo7rbsk5BefS2mZI88GWOSdbsBHyJr6Wj
-        DWziDNRwD5s3IgYE9PMvs99AgvKl+zNhma8+AkI=
-X-Received: by 2002:a05:6402:d0d:: with SMTP id eb13mt324080edb.6.1644855648718;
- Mon, 14 Feb 2022 08:20:48 -0800 (PST)
+        with ESMTP id S231733AbiBNQoe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 11:44:34 -0500
+Received: from unicorn.mansr.com (unicorn.mansr.com [IPv6:2001:8b0:ca0d:8d8e::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879FB4DF73
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 08:44:25 -0800 (PST)
+Received: from raven.mansr.com (raven.mansr.com [IPv6:2001:8b0:ca0d:8d8e::3])
+        by unicorn.mansr.com (Postfix) with ESMTPS id BFB9E15360
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 16:44:22 +0000 (GMT)
+Received: by raven.mansr.com (Postfix, from userid 51770)
+        id ABA1D219C0A; Mon, 14 Feb 2022 16:44:22 +0000 (GMT)
+From:   =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
+To:     netdev@vger.kernel.org
+Subject: DSA using cpsw and lan9303
+Date:   Mon, 14 Feb 2022 16:44:22 +0000
+Message-ID: <yw1x8rud4cux.fsf@mansr.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Received: by 2002:a54:3ac7:0:0:0:0:0 with HTTP; Mon, 14 Feb 2022 08:20:47
- -0800 (PST)
-Reply-To: israelbarney287@gmail.com
-In-Reply-To: <CAL-3urjUgS02pTdapMpXa_0vvJbY1JNoJr0pL4huj_CrL_81-Q@mail.gmail.com>
-References: <CAL-3urjUgS02pTdapMpXa_0vvJbY1JNoJr0pL4huj_CrL_81-Q@mail.gmail.com>
-From:   israel barney <solomonhiroshi@gmail.com>
-Date:   Mon, 14 Feb 2022 17:20:47 +0100
-Message-ID: <CAL-3urgyszfbig0JOAc20nG4OBHdhCH-QWHMJbCXgPb+RYRK1Q@mail.gmail.com>
-Subject: hi
-Cc:     lisamuna2001@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.4 required=5.0 tests=BAYES_50,DEAR_FRIEND,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,LOTS_OF_MONEY,
-        MISSING_HEADERS,MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=ham autolearn_force=no
         version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:531 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [israelbarney287[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [solomonhiroshi[at]gmail.com]
-        *  1.0 MISSING_HEADERS Missing To: header
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  2.6 DEAR_FRIEND BODY: Dear Friend? That's not very dear!
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  0.0 MONEY_FREEMAIL_REPTO Lots of money from someone using free
-        *      email?
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+The hardware I'm working on has a LAN9303 switch connected to the
+Ethernet port of an AM335x (ZCE package).  In trying to make DSA work
+with this combination, I have encountered two problems.
 
-I'm happy to inform you that i finally succeeded in getting the funds
-transferred under the cooperation of a new partner from India,
-Presently I'm in India, for investment projects with my own share of
-the money and also on charity work to the less privileges and the
-orphanages. Meanwhile i didn't forget your past efforts to assist me.
+Firstly, the cpsw driver configures the hardware to filter out frames
+with unknown VLAN tags.  To make it accept the tagged frames coming from
+the LAN9303, I had to modify the latter driver like this:
 
-After your inability to cooperate I found a new partner who helped in
-getting those funds transferred for charity work , please use this
-share of the money for your self and also invest some on charity work
-in your country.
+diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
+index 2de67708bbd2..460c998c0c33 100644
+--- a/drivers/net/dsa/lan9303-core.c
++++ b/drivers/net/dsa/lan9303-core.c
+@@ -1078,20 +1079,28 @@ static int lan9303_port_enable(struct dsa_switch *ds, int port,
+                               struct phy_device *phy)
+ {
+        struct lan9303 *chip = ds->priv;
++       struct net_device *master;
+ 
+        if (!dsa_is_user_port(ds, port))
+                return 0;
+ 
++       master = dsa_to_port(chip->ds, 0)->master;
++       vlan_vid_add(master, htons(ETH_P_8021Q), port);
++
+        return lan9303_enable_processing_port(chip, port);
+ }
+ 
+Secondly, the cpsw driver strips VLAN tags from incoming frames, and
+this prevents the DSA parsing from working.  As a dirty workaround, I
+did this:
 
-So i left a Visa Card of $850,000.00 US Dollars for you as
-compensation for your past effort. Contact my office manager and give
-her your complete address so she can send you the Visa Card through
-Courier Delivery Logistics
+diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
+index 424e644724e4..e15f42ece8bf 100644
+--- a/drivers/net/ethernet/ti/cpsw_priv.c
++++ b/drivers/net/ethernet/ti/cpsw_priv.c
+@@ -235,6 +235,7 @@ void cpsw_rx_vlan_encap(struct sk_buff *skb)
+ 
+        /* Remove VLAN header encapsulation word */
+        skb_pull(skb, CPSW_RX_VLAN_ENCAP_HDR_SIZE);
++       return;
+ 
+        pkt_type = (rx_vlan_encap_hdr >>
+                    CPSW_RX_VLAN_ENCAP_HDR_PKT_TYPE_SHIFT) &
 
-Her Name is Miss . Lisa Muna
+With these changes, everything seems to work as expected.
 
-Email: lisamuna2001@gmail.com
+Now I'd appreciate if someone could tell me how I should have done this.
+Please don't make me send an actual patch.
 
-NOTE; The Visa Card is an international Visa Card and you can cash it
-in any ATM machine in your Country.
-
-Regards
-lisa muna
+-- 
+Måns Rullgård
