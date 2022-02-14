@@ -2,111 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 475774B4E99
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 12:34:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 485774B4EBC
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 12:34:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231231AbiBNLcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 06:32:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59382 "EHLO
+        id S1351237AbiBNLeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 06:34:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352668AbiBNLbw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 06:31:52 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB066C946
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 03:16:49 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id d10so36621593eje.10
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 03:16:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2RgNpTio3f/m7dwocv4BhJx72BQspzNQNdo1pztTa+g=;
-        b=g4eAF15fR8tZ8DfrcD3yGx2dV0T4akhEXA1Lgdx0BAoZ7e8+03dVGHQQu92BaOXmHV
-         ZLkCP6GRHPeNtNPCDH1DgYjUK3KlMw4AxeJ8cGgaAexpXTzJZ1WSKFPZMgZC1WZhsxZ2
-         cMtoMJYHxPxuyldc5gMX9U49yC+sfdeJN2L0JbGU8D2DDeFUQLjriQSYYLM2WnYwRk/4
-         gYUqAdeDi67+/9hdFy72mYxyS7PRRrPhHVNtnQjdAoprStM1Xz8EuHPmug4si7XuXhl1
-         JVfo23Ytbq0+9OSiPpBvwGBZa3VcjY2wy3Y10SKGr9vM8BsIbbLRiV8b/f7r7iC8Pc/3
-         UMjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2RgNpTio3f/m7dwocv4BhJx72BQspzNQNdo1pztTa+g=;
-        b=7FcQiRIi5ared0NJnq7xWK8iZPjTWGCc8IeiD9DwvuRu8AgQP0xQwkqCaOFrF/BzEb
-         Ftx2HyFlXTWJti5PxaWikXWlbtVtRNgB/KMyPharHDjTG15gMzaiDcXAVCFG0WxtlP5L
-         ykBBy2eMA2J09tyF5Ggblpr/R1TbbalDlSpXi0p4xD/U3oiR+V/doWBGhe0fLzQWT8rS
-         etRTmQoAc19oHRePAvNC2xCEeYCROuYv19AzzO2QGtuPPbgCNWZ1F05cREsfIi8DlAJr
-         t5tB2MTb2idozpwxLUT+0V/UburU7wHfSecajiXjIApG4QZ/CSuvcxVSzhgL5JhgkkF8
-         pVyQ==
-X-Gm-Message-State: AOAM531o5aGxTeiwesoGOzkcF6IjbO2BSQEEV4M5EGkpMrKncHw7UZqc
-        j9WAsUvewnn2JSUldOLkdDCZ96J1b0xfHAnNAvc=
-X-Google-Smtp-Source: ABdhPJw10YYnD9dtnNn9oa5fgLOy2GW//SUW5nu8ZbrfVZk/BCCnfvscNEiDx7STHYfkvCb8bk7IAvImZHoJqhyC3T0=
-X-Received: by 2002:a17:907:c07:: with SMTP id ga7mr11373590ejc.536.1644837407510;
- Mon, 14 Feb 2022 03:16:47 -0800 (PST)
+        with ESMTP id S1351867AbiBNLd5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 06:33:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4CD694A2;
+        Mon, 14 Feb 2022 03:20:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67E6D61140;
+        Mon, 14 Feb 2022 11:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BA768C340F4;
+        Mon, 14 Feb 2022 11:20:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644837610;
+        bh=zWy0Fim2DwHOqTznLyHN/+gBuNl38IaDVjY6vI5cAbc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ByKf4xlzTOWN4zaJBApDy94pxmz1dtM683EsWZe7YQgB+7CG3ElSqXWY2nx8IIAEa
+         gUdXdXud4e//MmD/9eOiO0xRz8oLbCJ+6NipSvWydSaDvTN2aHVHQHi+2CSy/pY4Tz
+         lHJOn3Gr7py+zZ5q4L0mdbrWB732VkCjb9BW35VGjnLl9GAYy0Q6g/xbVEXT38bkDo
+         dsA4BQERYiVCdFTdteuap97ZKUeJP8bvOWKCo+MvGXxKPh5h/Hly29lzQL6qutdWEr
+         DvQx4Lj34Ze9zO+mOgKN6R05FH5Bw/0GQEWPhxdSsYEp0e5cpk7rWcaylrHdfYjLzr
+         J3TLa3r37/N0Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A44C1E7BB04;
+        Mon, 14 Feb 2022 11:20:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220126143206.23023-1-xiangxia.m.yue@gmail.com>
- <20220126143206.23023-3-xiangxia.m.yue@gmail.com> <CAM_iQpU3yK2bft7gvPkf+pEkqDUOPhkBSJH1y+rqM44bw2sNVg@mail.gmail.com>
- <a2ecd27f-f5b5-0de4-19df-9c30671f4a9f@mojatatu.com> <CAMDZJNUHmrYBbnXrXmiSDF2dOMMCviAM+P_pEqsu=puxWeGuvA@mail.gmail.com>
- <CAMDZJNUbpK_Fn6eFoSHFg7Mei5aMoop01MmgoKuf+XDr_LXaqA@mail.gmail.com> <20220209072645.126734ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220209072645.126734ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Mon, 14 Feb 2022 19:16:11 +0800
-Message-ID: <CAMDZJNW0tcue5kt-GgontVTo-yBEEBPD98xnhtOu2XjCy9WR9g@mail.gmail.com>
-Subject: Re: [net-next v8 2/2] net: sched: support hash/classid/cpuid
- selecting tx queue
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] etherdevice: Adjust ether_addr* prototypes to silence
+ -Wstringop-overead
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164483761066.10850.7033053223597897963.git-patchwork-notify@kernel.org>
+Date:   Mon, 14 Feb 2022 11:20:10 +0000
+References: <20220212171449.3000885-1-keescook@chromium.org>
+In-Reply-To: <20220212171449.3000885-1-keescook@chromium.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     kuba@kernel.org, mkl@pengutronix.de, davem@davemloft.net,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, linux-hardening@vger.kernel.org
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 11:26 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 9 Feb 2022 22:17:24 +0800 Tonghao Zhang wrote:
-> > > > This doesnt work in some environments. Example:
-> > > >
-> > > > 1) Some data centres (telco large and medium sized enteprises that
-> > > > i have personally encountered) dont allow for anything that requires
-> > > > compilation to be introduced (including ebpf).
-> > > > They depend on upstream - if something is already in the kernel and
-> > > > requires a script it becomes an operational issue which is a simpler
-> > > > process.
-> > > > This is unlike large organizations who have staff of developers
-> > > > dedicated to coding stuff. Most of the folks i am talking about
-> > > > have zero developers in house. But even if they did have a few,
-> > > > introducing code into the kernel that has to be vetted by a
-> > > > multitude of internal organizations tends to be a very
-> > > > long process.
-> > > Yes, really agree with that.
-> > Hi Jakub, do you have an opinion?
->
-> I think the patches are perfectly acceptable, nothing changed.
-Hi Jakub
-Will we apply this patchset ? We waited for  Cong to answer Jamal's
-comment for a long time.
+Hello:
 
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
+On Sat, 12 Feb 2022 09:14:49 -0800 you wrote:
+> With GCC 12, -Wstringop-overread was warning about an implicit cast from
+> char[6] to char[8]. However, the extra 2 bytes are always thrown away,
+> alignment doesn't matter, and the risk of hitting the edge of unallocated
+> memory has been accepted, so this prototype can just be converted to a
+> regular char *. Silences:
+> 
+> net/core/dev.c: In function ‘bpf_prog_run_generic_xdp’: net/core/dev.c:4618:21: warning: ‘ether_addr_equal_64bits’ reading 8 bytes from a region of size 6 [-Wstringop-overread]
+>  4618 |         orig_host = ether_addr_equal_64bits(eth->h_dest, > skb->dev->dev_addr);
+>       |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> net/core/dev.c:4618:21: note: referencing argument 1 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+> net/core/dev.c:4618:21: note: referencing argument 2 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+> In file included from net/core/dev.c:91: include/linux/etherdevice.h:375:20: note: in a call to function ‘ether_addr_equal_64bits’
+>   375 | static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
+>       |                    ^~~~~~~~~~~~~~~~~~~~~~~
+> 
+> [...]
+
+Here is the summary with links:
+  - etherdevice: Adjust ether_addr* prototypes to silence -Wstringop-overead
+    https://git.kernel.org/netdev/net-next/c/2618a0dae09e
+
+You are awesome, thank you!
 -- 
-Best regards, Tonghao
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
