@@ -2,167 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 241A24B3F61
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 03:21:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8285E4B3FC9
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 03:51:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233742AbiBNCV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Feb 2022 21:21:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41758 "EHLO
+        id S239536AbiBNCu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Feb 2022 21:50:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238841AbiBNCVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 21:21:23 -0500
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48D355496
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 18:21:15 -0800 (PST)
-Received: by mail-oi1-x22c.google.com with SMTP id y23so15960388oia.13
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 18:21:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Q4U77wHQmDqUfeCh34vVheVm6z6dQNy1UJnXJPf9w3E=;
-        b=Tu0akXWdXLFlPT5UPHshwxheKD3hcQ7lMU415aKqADGI7lkUH2bjq+ztC8SoYsjIYG
-         AFOj1ANT6jY/wRs/7oLj7tEZtExOrMHr9QLUUeHTYPsa0MIGCDQv0eLmjo+piXJzN1Ml
-         i6nLKGaUDanFbw/5/O+K3328v4XQ2mKupgrYs0sB4KT+3DuDHpbpZ0lSvjJrt18ybezH
-         HOWipSmykSg7dZbJE5Vo+eDM55ufdC03zNRJUHzFlNrsJATqUeb7tPVspdyTHlL0TKM2
-         M9p8M+NJB+DXgZGyHsKYoxkPeoEhzp9cwinZrwjdkF28GRHYhU8nigpJon17nt1Ki6/6
-         EqvQ==
+        with ESMTP id S239502AbiBNCuZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 21:50:25 -0500
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 074305046E
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 18:50:18 -0800 (PST)
+Received: by mail-il1-f199.google.com with SMTP id a18-20020a923312000000b002b384dccc91so10455292ilf.1
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 18:50:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Q4U77wHQmDqUfeCh34vVheVm6z6dQNy1UJnXJPf9w3E=;
-        b=pc9c+t2aPT89pBAVi8XGFWRcBxKoSt7Dao/R/q4cTZtt7t//52wnHl9iEAEjdkl5i7
-         w/5vZUzLGLhTLuw3Ar3t5fr5kaJlFu9fUzpakdfiA5OVF+SiklhAMc0Iob/jX+o63AZZ
-         1r/5tNuLnPlmG22B/Xdb77MEMUG/D3ATM/ALJgP87cL8fzXXRDT/MOsxzE1m7OfpvvuA
-         Zy5umoXiSmdz1/zYlE23XCyaCTI++TeYIE/gpArl8C7/O0KVnKVA/13j15qgyR/W1jyy
-         8AFgRbRaQVbWIFee5T4F6v0roR6spsy7tDjN3wiVjNBTUEzijuTi1A+LsWJ8/YyMhXJy
-         rsJA==
-X-Gm-Message-State: AOAM531IsEFx1M+6UnKfpypM5jz0oAMsL3sL6P/8WKQwzIVwFIY6xudj
-        tUvJZpiEQ1SAM1xzOaRS6/8o82tr7EV42A==
-X-Google-Smtp-Source: ABdhPJxF3W6KWR8o4wJ6jVlH7YZZdyV29BSOZ/1xTQqTrN7lbVmjWVnLUujyEQitU6QeM4/++zFpYw==
-X-Received: by 2002:a05:6808:e82:: with SMTP id k2mr4710111oil.10.1644805274286;
-        Sun, 13 Feb 2022 18:21:14 -0800 (PST)
-Received: from tresc043793.tre-sc.gov.br (187-049-235-234.floripa.net.br. [187.49.235.234])
-        by smtp.gmail.com with ESMTPSA id h203sm12321150oif.27.2022.02.13.18.21.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Feb 2022 18:21:13 -0800 (PST)
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, alsi@bang-olufsen.dk, arinc.unal@arinc9.com,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Subject: [PATCH net-next v3 2/2] net: dsa: realtek: realtek-mdio: reset before setup
-Date:   Sun, 13 Feb 2022 23:20:12 -0300
-Message-Id: <20220214022012.14787-3-luizluca@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214022012.14787-1-luizluca@gmail.com>
-References: <20220214022012.14787-1-luizluca@gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=+jq+QysxQkWFCMcSOLTxGlsKrZFeW5BnbyJngHYSa6c=;
+        b=niy53QiAK3rthT0uvGE5gYVLWMoC/1dtSFnjP73n0/ImDPe6HhO8xsz6jx9RYg6JcG
+         xKAGdahbsps8qmm59RSUE1J3B36Q9JY5fV0UKD1SGBnnZYkFOeS7s8uiTt93IxaqF268
+         agkbbGxAbZWL5Ecvb0U7JNXHe6MbQNOOVtFSZjXrYk9f8n7tEqmP1W9qV8KN/Bh5oZaj
+         ZEJxZP3Uf6/z7/tmSGKlFZCMtmEieVnkVQeF/eRQEVUbLGexIQGY4na6ZaEfMAiVzxMD
+         jvW1BgWoOq5S5xoohgcoc+2RZB4jAZiahGm/FZaDlh4Mk8jdzuOaSwJ1xUIRkc5k14y+
+         9CtA==
+X-Gm-Message-State: AOAM532txF3S8vPuIULnEjQfUb+8QgmBkTSpI0LQuDDvz1OcRnoFg2M9
+        QkudaTfDzOyPue3y1VBl+i4cBzsJx+av+DYfl/hfGeW49Mdl
+X-Google-Smtp-Source: ABdhPJzvtqd5odrpnUu7RRRQa+faT7ZRBKYCSLDaK9pFc/byhODAwwGkMKQXgDPoDS3o1oc3URVohypTQVpgtbK81olEaPSLlhw4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6638:2493:: with SMTP id x19mr7130809jat.219.1644807017384;
+ Sun, 13 Feb 2022 18:50:17 -0800 (PST)
+Date:   Sun, 13 Feb 2022 18:50:17 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fed00c05d7f179e0@google.com>
+Subject: [syzbot] WARNING: kmalloc bug in xdp_umem_pin_pages
+From:   syzbot <syzbot+1dd093e0edb4647f5b69@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bjorn@kernel.org,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        jonathan.lemon@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        magnus.karlsson@intel.com, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some devices, like the switch in Banana Pi BPI R64 only starts to answer
-after a HW reset. It is the same reset code from realtek-smi.
+Hello,
 
-Reported-by: Frank Wunderlich <frank-w@public-files.de>
-Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Tested-by: Frank Wunderlich <frank-w@public-files.de>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+syzbot found the following issue on:
+
+HEAD commit:    f4bc5bbb5fef Merge tag 'nfsd-5.17-2' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13c2aa3c700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=88e0a6a3dbf057cf
+dashboard link: https://syzkaller.appspot.com/bug?extid=1dd093e0edb4647f5b69
+compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+1dd093e0edb4647f5b69@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 5535 at mm/util.c:590 kvmalloc_node+0xd9/0xe0 mm/util.c:590
+Modules linked in:
+CPU: 1 PID: 5535 Comm: syz-executor.2 Not tainted 5.17.0-rc3-syzkaller-00043-gf4bc5bbb5fef #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:kvmalloc_node+0xd9/0xe0 mm/util.c:590
+Code: 00 00 48 89 df 44 89 fa 44 89 f1 5b 41 5e 41 5f 5d e9 5b fd 0b 00 e8 46 46 cc ff 48 89 e8 5b 41 5e 41 5f 5d c3 e8 37 46 cc ff <0f> 0b 31 ed eb eb 90 41 56 53 49 89 f6 48 89 fb e8 22 46 cc ff 48
+RSP: 0018:ffffc90009e67bb0 EFLAGS: 00010287
+RAX: ffffffff81b96759 RBX: 00000007ff810000 RCX: 0000000000040000
+RDX: ffffc90005534000 RSI: 0000000000001ca2 RDI: 0000000000001ca3
+RBP: 0000000000000000 R08: ffffffff81b96719 R09: 00000000ffffffff
+R10: fffff520013ccf49 R11: 0000000000000000 R12: ffff888023eb9d00
+R13: dffffc0000000000 R14: 00000000ffffffff R15: 0000000000002dc0
+FS:  00007fc31c85f700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fdaa9958058 CR3: 0000000075e10000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ kvmalloc include/linux/slab.h:732 [inline]
+ kvmalloc_array include/linux/slab.h:750 [inline]
+ kvcalloc include/linux/slab.h:755 [inline]
+ xdp_umem_pin_pages+0x57/0x330 net/xdp/xdp_umem.c:102
+ xdp_umem_reg net/xdp/xdp_umem.c:219 [inline]
+ xdp_umem_create+0x790/0xb40 net/xdp/xdp_umem.c:252
+ xsk_setsockopt+0x86f/0xac0 net/xdp/xsk.c:1051
+ __sys_setsockopt+0x552/0x980 net/socket.c:2180
+ __do_sys_setsockopt net/socket.c:2191 [inline]
+ __se_sys_setsockopt net/socket.c:2188 [inline]
+ __x64_sys_setsockopt+0xb1/0xc0 net/socket.c:2188
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fc31deea059
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fc31c85f168 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
+RAX: ffffffffffffffda RBX: 00007fc31dffcf60 RCX: 00007fc31deea059
+RDX: 0000000000000004 RSI: 000000000000011b RDI: 0000000000000003
+RBP: 00007fc31df4408d R08: 0000000000000020 R09: 0000000000000000
+R10: 0000000020000080 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fff15fae91f R14: 00007fc31c85f300 R15: 0000000000022000
+ </TASK>
+
+
 ---
- drivers/net/dsa/realtek/realtek-mdio.c | 19 +++++++++++++++++++
- drivers/net/dsa/realtek/realtek-smi.c  |  6 ++----
- drivers/net/dsa/realtek/realtek.h      |  3 +++
- 3 files changed, 24 insertions(+), 4 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/dsa/realtek/realtek-mdio.c b/drivers/net/dsa/realtek/realtek-mdio.c
-index 0c5f2bdced9d..0308be95d00a 100644
---- a/drivers/net/dsa/realtek/realtek-mdio.c
-+++ b/drivers/net/dsa/realtek/realtek-mdio.c
-@@ -152,6 +152,21 @@ static int realtek_mdio_probe(struct mdio_device *mdiodev)
- 	/* TODO: if power is software controlled, set up any regulators here */
- 	priv->leds_disabled = of_property_read_bool(np, "realtek,disable-leds");
- 
-+	priv->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
-+	if (IS_ERR(priv->reset)) {
-+		dev_err(dev, "failed to get RESET GPIO\n");
-+		return PTR_ERR(priv->reset);
-+	}
-+
-+	if (priv->reset) {
-+		gpiod_set_value(priv->reset, 1);
-+		dev_dbg(dev, "asserted RESET\n");
-+		msleep(REALTEK_HW_STOP_DELAY);
-+		gpiod_set_value(priv->reset, 0);
-+		msleep(REALTEK_HW_START_DELAY);
-+		dev_dbg(dev, "deasserted RESET\n");
-+	}
-+
- 	ret = priv->ops->detect(priv);
- 	if (ret) {
- 		dev_err(dev, "unable to detect switch\n");
-@@ -185,6 +200,10 @@ static void realtek_mdio_remove(struct mdio_device *mdiodev)
- 
- 	dsa_unregister_switch(priv->ds);
- 
-+	/* leave the device reset asserted */
-+	if (priv->reset)
-+		gpiod_set_value(priv->reset, 1);
-+
- 	dev_set_drvdata(&mdiodev->dev, NULL);
- }
- 
-diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realtek/realtek-smi.c
-index 33cf5a0692de..8806b74bd7a8 100644
---- a/drivers/net/dsa/realtek/realtek-smi.c
-+++ b/drivers/net/dsa/realtek/realtek-smi.c
-@@ -43,8 +43,6 @@
- #include "realtek.h"
- 
- #define REALTEK_SMI_ACK_RETRY_COUNT		5
--#define REALTEK_SMI_HW_STOP_DELAY		25	/* msecs */
--#define REALTEK_SMI_HW_START_DELAY		100	/* msecs */
- 
- static inline void realtek_smi_clk_delay(struct realtek_priv *priv)
- {
-@@ -428,9 +426,9 @@ static int realtek_smi_probe(struct platform_device *pdev)
- 	if (priv->reset) {
- 		gpiod_set_value(priv->reset, 1);
- 		dev_dbg(dev, "asserted RESET\n");
--		msleep(REALTEK_SMI_HW_STOP_DELAY);
-+		msleep(REALTEK_HW_STOP_DELAY);
- 		gpiod_set_value(priv->reset, 0);
--		msleep(REALTEK_SMI_HW_START_DELAY);
-+		msleep(REALTEK_HW_START_DELAY);
- 		dev_dbg(dev, "deasserted RESET\n");
- 	}
- 
-diff --git a/drivers/net/dsa/realtek/realtek.h b/drivers/net/dsa/realtek/realtek.h
-index ed5abf6cb3d6..443cf51cb918 100644
---- a/drivers/net/dsa/realtek/realtek.h
-+++ b/drivers/net/dsa/realtek/realtek.h
-@@ -13,6 +13,9 @@
- #include <linux/gpio/consumer.h>
- #include <net/dsa.h>
- 
-+#define REALTEK_HW_STOP_DELAY		25	/* msecs */
-+#define REALTEK_HW_START_DELAY		100	/* msecs */
-+
- struct realtek_ops;
- struct dentry;
- struct inode;
--- 
-2.35.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
