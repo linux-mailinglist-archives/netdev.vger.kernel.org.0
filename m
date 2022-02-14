@@ -2,205 +2,321 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7762D4B53A0
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 15:46:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E0B04B5414
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 16:02:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355326AbiBNOqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 09:46:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49892 "EHLO
+        id S230297AbiBNPBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 10:01:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353435AbiBNOp7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 09:45:59 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2040.outbound.protection.outlook.com [40.107.93.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285614BFC6;
-        Mon, 14 Feb 2022 06:45:52 -0800 (PST)
+        with ESMTP id S1349841AbiBNPBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 10:01:42 -0500
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2081.outbound.protection.outlook.com [40.107.102.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857004D26B
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 07:01:27 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Pk1xk5ZSIZhbQ73MnDOBxgs43+xtZwR49JSPtV8NLQADXahj9LfmSZNEEDFDdtKzQm6ycOjPW7PGrGK85Wv3CmlupTMqcMXhM3c+5RDf6fdd/lr+ck+/XCSQNv49w2WbjWxvBR3l+s+Kgl4lbb1FHC9ic0F2J0ThXtUAIfTQJwvqWZWiuEng19/OR8jc6xkg2lFhaqnqLLZ9WEAlUUxSdO4pEV6vG51oHbbFeqnjK7CmYzdSHxRHbmPHW9GZ6yDQpvjK6IlYXO29hCwbleKUvimr0Fq/f6Uo1uzCIxf63hrTff74Btq0wxZlfn92iJm7un0N9OmBeyXNRwqHaqeNgQ==
+ b=RJxsOQZ5FaqKeqW0VdzU+kcpoGQGcP9OhQh7AhNx8xMtlmzfuVkjSBbrX2TZ+TBdR9CxExEisAL08+3+6Izjw15TiJRaYqQjHlxwsTNYbQ2pfj/0BY6mig+FvyPjN+ewDQovkSfy3HEUugiYkiMBG3NDG5xOYvGg7eJNmCzkh7EM2htIpSawgkDPOJXrpBFfYz0FDbYT4o/P5rf2gcE9QD5AI43bsRnUBFAE+nenYzsjT17yGY92EqnI+IJu3MXjOVPBX3BgwqL8K8rtIu13Fezj5nUXu0VpROcdZ9fAcb7C9XGD8gYXy2ojISSowyevGH9u3kGyINVRMk5raxzmlg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5YvLm4C9y+H+y0r6WDprxyq97qgCsqEcJn81pqcTF3o=;
- b=lWZ1v9Il/ypk9uaL6iaDxW6dkmCn25H/isNS3E8BNiCIJEsvz2/y/NNiVWeV46P8yYclCEdmJWqCxY9BA11g8W/PnFEyqWAcaagGXlC4VedbM5pc0cHaEjW4qVONF4OrxIJamTKvit0CjWirTeQLFySX36ZqHK0eqs3aC5U38/wMbMZBM/M8HkaENjyZzNmDHk7M4IngALOtcDbGdNKThJXFNBCDffJ8axadNDR2RN9ReNd0sYB8wLz/J5LOHS02MLwrphhaAbdUcZeWED2FrqeECPfaZfbrV+4DslyDG0P/8eD/eDZqbIrFkKlWez2Lzk7Qg3PUkrsN1yTm61LqvQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
+ bh=JMB5Xo6/VSaxEzMe3i/b4eWDkQFpQm+oMs0LPhvF3YM=;
+ b=Zd9pejd4OrvGABP0P7R4EjAiCQg54gy4Y9pfXdCVs1Y+sttOeDtsg87A84rJyHvaQ92ROHSEqNNjihvU6AtCz6Uxp4z2/UX4TJt3yXf7qDQn7c5IYmZPetxR+dHd/tCUzf/f1vnhUzg14n0MoBGhYNueHo89UKMHCWdkpdsxFbhEnqXLdpPLXJenMQvvgSjzuXScZNf066KlPZPimw/5r/FnlThxDEa0YwIR0PChtLoija4d8lDVBPeW/zuVtbcfkBGt5KIfnZ2GCvf6RH06YOU80jU1iCrEOAH9o5ybuIAUUQpdUfpCZ+TGo4VA4RimcquYCcvCunMO6kgjvR0Y9Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5YvLm4C9y+H+y0r6WDprxyq97qgCsqEcJn81pqcTF3o=;
- b=HgPAGlg/ftvmLexYaaVg3CNPvCO6tu3kvs0zvYVaddtE6gTHjJLIScJaPY+sRRqD77QCk1DWz2eybHpczNw8MG76SbYyOp4Wbiie2BzrmiNigZ7ZJibPGMSxTbxfkytQIP8JgyzvZyFNi3lYnWNczJb/I/GR4XCcsOJoOU0RXcNDpXQx03vJWtrlQ3lsydKyxl7tK90sNABsywwM7Jhfl8OGR4s2kaEY/U1Sb5XntPpHas/xejMhxWdF1RfKwkal6/KRb+uXbtMTj1M4sO5Aytk+K1Nop2BA4WIrxFKqwDYe3kpoxj94yKlrKZd7+gxRHCybgzLC/QSh/P6YpRQYuw==
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
- by CY4PR12MB1848.namprd12.prod.outlook.com (2603:10b6:903:11d::23) with
+ bh=JMB5Xo6/VSaxEzMe3i/b4eWDkQFpQm+oMs0LPhvF3YM=;
+ b=bs1B/+l11xvwC0r0+qyDTH3KTbkonNHu7hUZyVW0YJLWRwWrpqt97lJG6Y0jhJWq7uk8RhyGJyQlj18DHrDF18ph38AisbTp3zQW7W3/0lfofqcWGBMDVlzhhl5mJkq8N24DkKrWDfMFnBm2sItIfFy5ciPB3IV1Xk5+DnLoyJcGS9rJVwlINrecly+tLZGTXob0sFRb5FhyesX2nZjjK56yDd1u6OVlMZjwjvlRL6vsvfYfhR+dyse+tnjQAkNJOfMWkIcKWTa9Y6TK1L1U0pYN6BiqEopHBv8Q/f9sQmuGGoCIgM2kLPn5i0TzsVQoxR68DNSFaWpCw/kJPThang==
+Received: from DS7PR07CA0010.namprd07.prod.outlook.com (2603:10b6:5:3af::29)
+ by BN6PR12MB1331.namprd12.prod.outlook.com (2603:10b6:404:17::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.18; Mon, 14 Feb
- 2022 14:45:50 +0000
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::8527:54fa:c63d:16b]) by PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::8527:54fa:c63d:16b%5]) with mapi id 15.20.4975.019; Mon, 14 Feb 2022
- 14:45:49 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>, Moshe Shemesh <moshe@nvidia.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next v2 0/4] net/mlx5: Introduce devlink param to
- disable SF aux dev probe
-Thread-Topic: [PATCH net-next v2 0/4] net/mlx5: Introduce devlink param to
- disable SF aux dev probe
-Thread-Index: AQHYHyi7LP1bSM9810iOk5A08UDRx6yPHP2AgAPzdgA=
-Date:   Mon, 14 Feb 2022 14:45:48 +0000
-Message-ID: <PH0PR12MB548137BB5A70195983DFF74EDC339@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <1644571221-237302-1-git-send-email-moshe@nvidia.com>
- <20220211171251.29c7c241@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220211171251.29c7c241@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0102c106-e547-45ec-89df-08d9efc8b0f5
-x-ms-traffictypediagnostic: CY4PR12MB1848:EE_
-x-microsoft-antispam-prvs: <CY4PR12MB18482E096347204EA5D94A82DC339@CY4PR12MB1848.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QD+U/vnnJqpmqHRs3MNA7Ftrs2olJqnaKeGih7jNoR5iwWK2mzI2JaDlxyDBlzVjyAHbVJ0rTdITTSH+pvi0Xpc0PGrKLkrP+yA8qDMeblPuF04gNaFz0AQBi2UhASjk40ywXcOMHx6gE2BX3mSR+LcpIVMMlQHrcFx6R3stC8dvV8lC6oVblCCKzNBFZ4DX9ogLVOLHrl/LOJ4aQXY4PcTdrlUJbjG/eeZzAbjyLdOESGIMp/uNmQYEWg7T0hFW4ieQmiwvHYd0CxiovOzoG9eWAFbMTDUm+h7H75/NwNAxgUmVqdRjDccBBZzxsj9h70R/gPDGL3WRf+rzurSlJ0EMkgyTw6dzBI/mnc2TcX0dykF4/vXTlZCb7b+jtG/EPXc99chuwlhv0tbMgXJBi/h+anBhI81GUBpSwzlVDAbg9yAaD/hj93g4uIZiZL7VXL7JmFYzvdpLiSp5N9sZlB1LdpLTLZvUFVmZ8pwhCeeSup29XCBRAO/mZg20ictC9+mnB5USdWUkP7ahivCSM0GUy/Oi6jijd5swckwGIEWKGVasxbSEYlJ7MN0wD/U8ihdvbo7GaFdYrxYlvKg7rdkqC9+pBnug2HCulLoxrfZQyJI+6HYhdO5GhjJTOn6PKEvQi/xr7kHlRZ+pDM9Mn7pPuRu0EnlgJTYylaqYXHLb3Rpmfrxn6NGkOvRp8Isvdzg5cEmSh941dzTUoXNMcw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(76116006)(7696005)(6506007)(9686003)(66476007)(33656002)(71200400001)(64756008)(83380400001)(66446008)(186003)(26005)(52536014)(2906002)(8936002)(5660300002)(66556008)(4326008)(508600001)(66946007)(8676002)(38100700002)(86362001)(6636002)(54906003)(110136005)(55016003)(38070700005)(122000001)(316002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?CzGBHcVODYjxhwlBfHVUE0czb8hYccSU0wOSY3HJ1MxGjFF/Q2XB4ZGI/dKO?=
- =?us-ascii?Q?XlxLl8p1VMZqzyFwW6p2kr6TrvMvbUrVjvdb2DR+SJUXY7wj3VfRUhflLijS?=
- =?us-ascii?Q?L+3izl7UWrCvFhQpv2Xd+Q7NPOlvR8NiEFbDWD2Dl52SMxtyLRueu8PcCUNO?=
- =?us-ascii?Q?a/a+QAnTu7+n+GdJAUOCtCCGdeovOoAOsFf9XAL+yla32oVvph4mMc/PPnWE?=
- =?us-ascii?Q?0PK18DLjU/TGQZbhflPQzYXQAfW9KZ22qfr9Zd+4mG3FcfQWfpa3mfhQCsrS?=
- =?us-ascii?Q?vzLTVOpy6Ud76yPwKgyUUKf28rJzQy+tUII6Q+Yb0NRT+IQUFjOVk1986fcP?=
- =?us-ascii?Q?ewEM4m7rwe1/0lyCAz+RJbk+i3kCEcam+9MXMO20P6s+JLWm/DpdRi980hf/?=
- =?us-ascii?Q?0r5vqKmm03HbtQWzOnLrU7GeUuzEPu0RizcOb5c5ou8VHwaHFR4tRHJ83MET?=
- =?us-ascii?Q?2hQMpBfhpsMxFOAOyWGowNV4xKpSzOXU0GGGqI2M6oVS98YgLZLOAAiVLp0D?=
- =?us-ascii?Q?ExhvXe7ZjBZGlFuvG73/MaPV2YY+yIiQTSsgVo3Bl66Bk6yaRvWZjfWU0adU?=
- =?us-ascii?Q?OxdzGmDA9R54kC+TzIFBq8iSeeh0HepSEICT8sQ1NwYEfwhmThDvksKeeKPT?=
- =?us-ascii?Q?UIizKO4avS8/7Pw+VdfUGSR7dLRlfEKktn/cVDh3XglO8Ltk0EhaiQVFnqh0?=
- =?us-ascii?Q?s+68g8AWM/PSlDH3HiIp4t53X2dXEQld7FPZYj+sR8/QR1/0pzZ1vt4orkZi?=
- =?us-ascii?Q?1UavGbQtrxUPmIUwf2NRh7vbQ9ok3dWC178cmeYLsu61e86NY3MqRTJLNjgr?=
- =?us-ascii?Q?qeiZVMWJ1Mkf8RRlLNlq11O+6AT09/s8rhfyt/A+0m5kZOQI3a0GdeatP4hp?=
- =?us-ascii?Q?LX2oDaL38pEsJCSL46nfAYpHLcZ8QDK3u5ZDhAjs59iBKxLowgGNZYuKl+fN?=
- =?us-ascii?Q?j72fTyMhapZq5mZWn0LyvBCbFtG1pxB48G7a7JmeWWnaTmJ/vWFOL2IuXeYr?=
- =?us-ascii?Q?8vKPJpeGuut+c+5GB3diWabYoQG25EuWFKwRuFV/C0YtMcR4XUgC2iHQhBb1?=
- =?us-ascii?Q?GmfNF0HgPKes3ee5vd6wOzNounZ0iTHDOOAJsoBsLsuy7Q20yZIwH8iwmAS2?=
- =?us-ascii?Q?vO1yMGnaQaSdGJQfw+o9S6vdKmyDCukfn0oWUCBV1rLzJZ10EU9OHPtgbqVE?=
- =?us-ascii?Q?551KRqrSF6hCWtAeF4hiT/M5Q6PbqzuTk7GFkldlH9DFYd6n4lo21spcyIqm?=
- =?us-ascii?Q?w6QRLqPH4RlrjLdbr5Etk5DOUZ2Mguk7TAlC/CQ3Jp64Zb5ILTfjcmERpDkr?=
- =?us-ascii?Q?ifqFvwDyCyRgRpLs5wJdpTKOIv68OOGijziz1vLWfoplmEwOLrdZwhr8KA3F?=
- =?us-ascii?Q?xxhrGiSMK/IHrLD/6Uhz/myDyNTADAsM4ViVRY2irhckhmLBeSE9xovqU9eF?=
- =?us-ascii?Q?5qeIbTB3OARYSolQftHxD1DTA545lfQL/MmPJQQecoEgvXNFlKzDteZm6R/+?=
- =?us-ascii?Q?wchcZqL1TL3jsq6UipOjuO3vooXiLh3MFVdiSlTvaKI/6E/u9jAYD/LovZ98?=
- =?us-ascii?Q?BwPSliONXzfIXtcBIXaUeLEcJESL5crczo1i6ur+pitdtFSn3WDZo6tJ+BXr?=
- =?us-ascii?Q?plc2Lv+dFCHk4AmGz6W2Kmc=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Mon, 14 Feb
+ 2022 15:01:25 +0000
+Received: from DM6NAM11FT054.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3af:cafe::f9) by DS7PR07CA0010.outlook.office365.com
+ (2603:10b6:5:3af::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.14 via Frontend
+ Transport; Mon, 14 Feb 2022 15:01:25 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT054.mail.protection.outlook.com (10.13.173.95) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4975.11 via Frontend Transport; Mon, 14 Feb 2022 15:01:23 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 14 Feb
+ 2022 15:01:23 +0000
+Received: from [172.27.14.193] (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Mon, 14 Feb 2022
+ 07:01:16 -0800
+Message-ID: <c1ce21c6-1d9c-90f3-fef0-b023730bf271@nvidia.com>
+Date:   Mon, 14 Feb 2022 17:01:13 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH net-next 0/5] Replay and offload host VLAN entries in
+ DSA
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Rafael Richter <rafael.richter@gin.de>,
+        Daniel Klauer <daniel.klauer@gin.de>,
+        "Tobias Waldekranz" <tobias@waldekranz.com>
+References: <20220209213044.2353153-1-vladimir.oltean@nxp.com>
+ <7b3c0c29-428b-061d-8a30-6817f0caa8da@nvidia.com>
+ <20220213200255.3iplletgf4daey54@skbuf>
+ <ac47ea65-d61d-ea60-287a-bdeb97495ade@nvidia.com> <Ygon5v7r0nerBxG7@shredder>
+ <20220214100729.hmnsvwkmp4kmpqwt@skbuf>
+ <fb06ccb9-63ab-04ff-4016-00aae3b0482e@nvidia.com>
+ <20220214104217.5asztbbep4utqllh@skbuf>
+ <bee3d33c-1c66-2234-2be2-f0a279bafc42@nvidia.com>
+ <20220214120427.gngyotzetmj6b3c2@skbuf>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+In-Reply-To: <20220214120427.gngyotzetmj6b3c2@skbuf>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 01afdb15-ac9b-4c11-59f6-08d9efcade65
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1331:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR12MB1331EED5EEDEE4A2F806A95BDF339@BN6PR12MB1331.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mIXbKh5rd/Gp0fe3NVNwwKLgnKoo1seGDlBWnXsSEW19Vfxtpjc7d+cU6mygOpPZs6J2SVTqZIJXxcUDOCvk2C6vyK7vUj8gGUg/9IR65e7Lt/kL+X7p16qfPXp6lWmWpdi7HD0kdhwfJ884+BkpjOwAIaGhoJKptsp69wThozVeDQBwwOubbLEhG9tDRRDkrZ9dvXkIES2pGCZgKgbrEAe17YTyD8wQLsmVx8iVDxJOj7P+VxccM8xQhzhRclPfwZcTeDqiPsPFhzXGs3/GWG0HbggcswVFNu/KQZDmW9fnk5DIiavtkVBlMdfWdWgZdV+NJAkMA/M8a9Y72wZCTo/anTrF09D6q2pxfqb0cWUNW95I8Z4Xang0OnDf5LGwOOrxgH4hva8nCdC2RWN2v2eJyhW0a88szpQ7zT/Pmzcmag96UhisAs0Nhe6ndWRLlLTU229CSCDLvVmMOhozUd1IUJV2syWMfuLQG+nLbnLdjG6XlmVtskyEcHTCwJUkXEJlp833PaaC6Zka8RZCDEDvVp7qEbrasn76liFb5+FJI8rAFUbJHw3/t/XIxsJc47QbmPCZVRyPVbUhXmf0aQqUIiDJljtc7vYJ66WSbLrVMYdNvaNvVmuMxkZJ5NlEK2OB3WbWbJeD7M7NnkoDvT4+En5v5KFwvA5JSu1XYro+niE/lOyYtVyAeKjT5Ww7DSr5Vlwuj8loTxHmzLjHEDTxiHA6JMTo6V9eHKtZ2GXB3TWx0qhFtcX9oVV9Uc1e
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(36860700001)(82310400004)(2906002)(316002)(16576012)(6916009)(81166007)(8676002)(4326008)(70586007)(70206006)(356005)(54906003)(31696002)(40460700003)(508600001)(8936002)(7416002)(16526019)(5660300002)(83380400001)(26005)(53546011)(31686004)(186003)(86362001)(336012)(2616005)(426003)(47076005)(36756003)(6666004)(36900700001)(43740500002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0102c106-e547-45ec-89df-08d9efc8b0f5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Feb 2022 14:45:49.0077
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2022 15:01:23.9971
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8JG76y8qqxSTJUYKdas97TCXbMvw9E0flbmNfFJ2iLMOwyOIRyaxR/RBt130wlGTLlE+nAMQT+mLyUXkD/eilQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1848
+X-MS-Exchange-CrossTenant-Network-Message-Id: 01afdb15-ac9b-4c11-59f6-08d9efcade65
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT054.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1331
 X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 14/02/2022 14:04, Vladimir Oltean wrote:
+> On Mon, Feb 14, 2022 at 01:11:01PM +0200, Nikolay Aleksandrov wrote:
+>> On 14/02/2022 12:42, Vladimir Oltean wrote:
+>>> On Mon, Feb 14, 2022 at 12:27:57PM +0200, Nikolay Aleksandrov wrote:
+>>>> On 14/02/2022 12:07, Vladimir Oltean wrote:
+>>>>> On Mon, Feb 14, 2022 at 11:59:02AM +0200, Ido Schimmel wrote:
+>>>>>> Sounds good to me as well. I assume it means patches #1 and #2 will be
+>>>>>> changed to make use of this flag and patch #3 will be dropped?
+>>>>>
+>>>>> Not quite. Patches 1 and 2 will be kept as-is, since fundamentally,
+>>>>> their goal is to eliminate a useless SWITCHDEV_PORT_OBJ_ADD event when
+>>>>> really nothing has changed (flags == old_flags, no brentry was created).
+>>>>>
+>>>>
+>>>> I don't think that's needed, a two-line change like
+>>>> "vlan_already_exists == true && old_flags == flags then do nothing"
+>>>> would do the trick in DSA for all drivers and avoid the churn of these patches.
+>>>> It will also keep the order of the events consistent with (most of) the rest
+>>>> of the bridge. I'd prefer the simpler change which avoids config reverts than
+>>>> these two patches.
+>>>
+>>> I understand you prefer the simpler change which avoids reverting the
+>>> struct net_bridge_vlan on error, but "vlan_already_exists == true &&
+>>> old_flags == flags then do nothing" is not possible in DSA, because DSA
+>>> does not know "old_flags" unless we also pass that via
+>>> struct switchdev_obj_port_vlan. If we do that, I don't have much of an
+>>> objection, but it still seems cleaner to me if the bridge didn't notify
+>>> switchdev at all when it has nothing to say.
+>>>
+>>> Or where do you mean to place the two-line change?
+>>
+>> You mention a couple of times in both patches that you'd like to add dsa
+>> vlan refcounting infra similar to dsa's host fdb and mdb. So I assumed that involves
+>> keeping track of vlan entries in dsa? If so, then I thought you'd record the old flags there.
+>>
+>> Alternatively I don't mind passing old flags if you don't intend on keeping
+>> vlan information in dsa, it's uglier but it will avoid the reverts which will
+>> also avoid additional notifications when these cases are hit. It makes sense
+>> to have both old flags and new flags if the switchdev checks are done pre-config
+>> change so it can veto any transitions it can't handle for some reason.
+>>
+>> A third option is to do the flags check in the bridge and avoid doing the
+>> switchdev call (e.g. in br_switchdev_port_vlan_ calls), that should avoid
+>> the reverts as well.
+>>
+>> If you intend to add vlan refcounting in dsa, then I'd go with just keeping track
+>> of the flags, you'll have vlan state anyway, otherwise it's up to you. I'm ok
+>> with both options for old flags. 
+> 
+> I understand it can be confusing why DSA needs to keep VLAN refcounting
+> yet it doesn't keep track of flags, so let me explain.
+> 
+> First thing to mention is that VLAN flags on CPU and DSA (cascade) ports
+> don't make much sense at the level of the DSA core. These ports are
+> really pipes that transport packets between switches and between the
+> switch and the CPU, so 'pvid' and 'untagged' don't really make sense.
+> An unwritten convention is for DSA hardware drivers to program the CPU
+> and DSA ports such that the VLAN information is unmodified w.r.t. how it
+> was/will be on the wire. The only important aspect about VLAN on DSA and
+> CPU ports is the VID membership list.
+> 
+> This isn't the major reason, though, so secondly, I need to introduce a topology.
+> 
+>                eth0                                           eth1
+>            (DSA master)                                (foreign interface)
+>                 |
+>                 |
+>                 | CPU port (no netdev)
+>         +----------------+
+>         |     sw0p0      |
+>         |                |
+>         |    Switch 0    |
+>         |                |
+>         | sw0p0   sw0p1  |
+>         +----------------+
+>             |       | DSA/cascade port (no netdev)
+>             |       |
+>             |       |
+>             |       | DSA/cascade port (no netdev)
+>             |    +--------------+
+>             |    | sw1p0        |
+>             |    |              |
+>             |    |   Switch 1   |
+>             |    |              |
+>             |    |sw1p1  sw1p2  |
+>             |    +--------------+
+>  user port  |       |      |
+> (has netdev)   user port  user port
+> 
+> -----------------------------------------------------------
+> 
+> Example 1: you want forwarding in VLAN 100 between sw0p0, sw1p1 and
+> sw1p2, so you issue these commands:
+> 
+> ip link add br0 type bridge vlan_filtering 1
+> ip link set sw0p0 master br0 && bridge vlan add dev sw0p0 vid 100
+> ip link set sw1p1 master br0 && bridge vlan add dev sw1p1 vid 100
+> ip link set sw1p2 master br0 && bridge vlan add dev sw1p2 vid 100
+> 
+> DSA must figure out that the sw0p1 and sw1p0 (the cascade ports
+> interconnecting the 2 switches) must also be members of VID 100.
+> So it must privately add each cascade port of a switch to this VID,
+> as long as a user port of that switch is in VID 100.
+> 
+> So the refcounting must be kept on the destination of where those VLANs
+> are programmed (the cascade ports), not on the sources of where those
+> VLANs came from (the user ports).
+> 
+> In this example, sw0p1 and sw1p0 will be members of VID 100 and will
+> have a refcount of 3 on it (it is needed by 3 user ports).
+> 
+> -----------------------------------------------------------
+> 
+> Example 2: you figure out that sw1p2 should in fact be pvid untagged in
+> VID 100, so you change that:
+> 
+> bridge vlan add dev sw1p2 pvid untagged
+> 
+> DSA doesn't care about a change of flags, so it needs to change nothing
+> about the DSA ports. It just needs to pass on the notification of the
+> change of flags to the device driver for sw1p2.
+> 
+> -----------------------------------------------------------
+> 
+> Example 3: you realize that you know what, you don't want sw1p2 to be a
+> member in VID 100 at all:
+> 
+> bridge vlan del dev sw1p2 vid 100
+> 
+> DSA must decrement the refcount of VID 100 on sw0p1 and sw1p0 from 3 to 2.
+> 
+> -----------------------------------------------------------
+> 
+> Example 4: you want local termination in VID 100 for this bridge, so you do:
+> 
+> bridge vlan add dev br0 vid 100 self
+> 
+> To ensure local termination works for all DSA user ports that are
+> members of the bridge (sw0p0, sw1p1), DSA must ensure that the CPU port
+> and the DSA ports towards it are members of VID 100.
+> 
+> So sw0p0 joins VID 100 with a refcount of 1, while sw0p1 and sw1p0 just
+> bump the refcount again from 2 to 3.
+> 
+> -----------------------------------------------------------
+> 
+> Example 5: you actually want to forward in VID 100 to a foreign
+> interface as well:
+> 
+> ip link set eth1 master br0 && bridge vlan add dev eth1 vid 100
+> 
+> DSA must bump the refcount of VID 100 on sw0p0 (the CPU port) from 1 to 2,
+> and for the cascade ports from 3 to 4. This is such that, if we decide
+> that we no longer want local termination (example 4), VID 100 is not
+> removed on those ports. Local termination vs software forwarding is
+> identical from DSA's perspective, but different from the stack's perspective.
+> 
+> 
+> The way this worked until now was by an approximation that held quite
+> honorably more often than not: whenever a bridge VLAN is added to a user
+> port, just add it to all DSA and CPU ports too, and never remove it.
+> However, it gets quite limiting.
+> 
+> 
+> 
+> So the way in which VLAN membership on CPU and DSA ports is refcounted
+> makes it not really practical to keep original flags of each VLAN on
+> each source port it came from. Your suggestion of keeping each vlan->flags
+> in DSA practically boils down to keeping an entire copy of the bridge
+> VLAN database. I hope it's clearer now why it isn't really the path I
+> would like to follow.
+> 
 
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Saturday, February 12, 2022 6:43 AM
->=20
-> On Fri, 11 Feb 2022 11:20:17 +0200 Moshe Shemesh wrote:
-> > v1->v2:
-> >  - updated example to make clear SF port and SF device creation PFs
-> >  - added example when SF port and device creation PFs are on different
-> > hosts
->=20
-> How does this address my comments?
->
-Which one?
-Your suggestion in [1] to specify vnet during port function spawning time?
-Or=20
-Your suggestion in [2] to add "noprobe" option?
+I see, thank you for the examples and the detailed explanation.
 
-> We will not define Linux APIs based on what your firmware can or cannot d=
-o
-> today.=20
-Sure. I just answered and clarified what it is the device capable to do.
-We can possibly enhance the fw if it looks correct.
+> I can look into pruning useless calls in br_switchdev_port_vlan_add()
+> itself, if that's what you prefer. Before looking closer at the code,
+> that's what I originally had in mind, but it would pollute all callers
+> of that function, since we'd have to provide a "bool existing" +
+> "u16 old_flags" set of extra arguments to it, and most call paths would
+> pass "false, 0". When I noticed that the call paths I'm interested in
+> already compute "bool changed" based on __vlan_add_flags(), I thought it
+> would be a bit redundant to duplicate logic from that function.
+> Just reorder the call to __vlan_add_flags() and I have the info I need.
 
-> Otherwise, why the global policy and all the hoops to jump thru?
-> User wants a device with a vnet, give them a device with a vnet.
->
-User wants a device with specific attributes.
-Do you suggest to tunnel those params at port spawning time to share to dif=
-ferent host via fw?
-Some are HW/FW capabilities, and some are hints.
-Some are hints because vnet also uses some eth resources by its very nature=
- of being vnet.
+You already have to add "existing", so I don't see why not add
+old flags as well. As I mentioned it makes sense to have it for pre-config
+veto of unsupported state transitions. I think it will be simpler and
+we'll avoid the config reverts and more notifications.
 
-Lets discuss two use cases.
-Use case -1:
-User wants params of [3] to below value.
-eth=3Dfalse, vnet=3Dfalse, rdma=3Dtrue, roce=3Dfalse, io_eq_size=3D4, event=
-_eq_size=3D256, max_macs=3D1.
+Cheers,
+ Nik
 
-Use case -2:
-User wants params of [3] be below value.
-eth=3Dtrue, vnet=3Dfalse, rdma=3Dtrue, roce=3Dtrue, rest=3Ddon't care.
-
-Last year, when we added "roce" in [4] on the eswitch side, you commented i=
-n [4] to leave the decision on the SF side.
-Based on this feedback, you can see growth of such params on the SF side in=
- [5], [6] and reusing existing params in [7].
-(instead of doing them on port spawning side)
-
-Port spawning time attributes should cover minimum of below attributes of [=
-3].
-(a) enable_vnet,eth,roce,rdma,iwarp (b) io_eq_size, (c) event_eq_size (d) m=
-ax_macs.
-
-Do you agree if above list is worth addition as port function attributes?
-If not, its not addressing the user needs.
-
-Did you get a chance to read my reply in [8]?
-In future when user wants to change the cpu affinity of a SF, user needs to=
- perform devlink reload.
-And params of [3] + any new devlink params also benefit from single devlink=
- reload?
-For example, which and how many cpus to use is something best decided by th=
-e depending on the workload and use case.
-
-> You left out from your steps how ESW learns that the device has to be
-> spawned.=20
-I read above note few times, but didn't understand. Can you please explain?
-
-> Given there's some form of communication between user intent and
-> ESW the location of the two is completely irrelevant.
-I find it difficult to have all attributes on the port function, specially =
-knobs which are very host specific.
-Few valid knobs that I see on host side are=20
-(a) cpu affinity mask
-(b) number of msix vectors to consume within driver internally vs map to us=
-er space
-
-At present I see knobs on both sides.
-Saeed is offline this week, and I want to gather his feedback as well on pa=
-ssing hints from port spawning side to host side.
