@@ -2,63 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2C714B3F36
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 03:11:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E245F4B3F5F
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 03:21:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239118AbiBNCLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Feb 2022 21:11:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38000 "EHLO
+        id S231963AbiBNCVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Feb 2022 21:21:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234025AbiBNCLH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 21:11:07 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 469F354BF1
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 18:11:01 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id om7so13124155pjb.5
-        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 18:11:01 -0800 (PST)
+        with ESMTP id S235569AbiBNCVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 21:21:13 -0500
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7988E55489
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 18:21:06 -0800 (PST)
+Received: by mail-ot1-x32e.google.com with SMTP id l43-20020a9d1cab000000b005aa50ff5869so10734183ota.0
+        for <netdev@vger.kernel.org>; Sun, 13 Feb 2022 18:21:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=rheNOBz9Jn84jNDWwxerVciRKNAi9ptp/E9hKVwOCeQ=;
-        b=mJYzAUdOxedidyEkzZlcIK+FNkalgCSwIWAnaBeYjNxujugNpRQ/oUZf5noRoc9Duu
-         SL0HgJFj5GjZnYKoIMPKqO94IhDNa0Yvhk58gAJx5ldHqTIKqMT50fJ+dnEAA8Z6PG8B
-         SZnVxAwzWWk5vSQpYAgPmzcSp0KiCvqWzIskvYLGz3vW/RcFQTCqAvHg9IKq9ogZFfVk
-         NuwB8PiB0Ji2CMfeREjrOf+MpGJ7FDtO+TT1ZzGt2bjCsI3y2A5bPOo7n0NG7ZCaDwRR
-         CPw5+DS7ormvPyCZq59mOfgqMfy0z/Tkxf5C/pQK8Nm8gBvdsSgSTVN6DXYvAWwX4iuM
-         Mokw==
+        bh=YAglB4GVOKipk35qUMqvzObg9akmFK63RMOZvXbnD2Q=;
+        b=XpnEUMiE2aNI+XhOJ1ZVI32tn5soPlSnTyw/CmARId3bgFAVVAkcnVD0AEXxFforiA
+         wfsz8iy1oOyS/oyUE106ba8/geFqxdsCBRbaAl8xDDBf8IKggewbsXW6r3ZbU4PrH5mO
+         HPDxekT/ug7E02w0aFzxQrUAESm5kUdWZXhKzzmHHJihvhvxM3LDNPVslLsrXLwc5wYl
+         Lt+kAawB2A9Zk+FBlTTqoVW6PLe/qs5VLhhQQ3BrWtySDwNN2wHhIZdNE7rr4Q2Nr+KD
+         tv1FmKgynymzbWO/vVg9rCkmD5jGL7knDCEdRNTLECBsP8wl6Y28MzrnSRslikcOZ0fY
+         d/BA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=rheNOBz9Jn84jNDWwxerVciRKNAi9ptp/E9hKVwOCeQ=;
-        b=Gsu/SUA+31y9qx+vMf7kAh4Js1Vm5S/knWbjK/fieDIUBxyr2HoK8cxBgN70lkvJVp
-         O58J6GEbHLe1wse/nhk/qEUeR+spLo4FcsEumCA+jGhaaFsec05hTrtnJpi/7chjX0aD
-         EPf6QbLMIxa6sSp3sQM4EI/E6+DoVJSvOhci9QJx66fZQZrVCYrGUESV5Z4vJKsvphWH
-         XIYlPx13Pm+sbkDMMkBXyVFeIzrCSTNJkKtC97/AQTDmd7pFKexh0Oge3yn42AWCxZ7l
-         VckPonbqNfNrcoLhPzRtIJVaYcjFPUFOpAuJCHb3IlDCBj6qvjx0Du+Bqazu4PdJ7tpi
-         sizg==
-X-Gm-Message-State: AOAM5333ATiIDQBPj/EXhnXrJ2Tmp1C0rPoBtnibP/hK5g5i+rLSbrRX
-        rRIajmcIh9C3yxBiT7SaJKc=
-X-Google-Smtp-Source: ABdhPJwnJ9kjX4+TDqVuc5U3lcEfuCFvbWInEkxf5bZlvfejjKGCMpxvLEg74M4On7wpuxUVX1aUVA==
-X-Received: by 2002:a17:902:8e8a:: with SMTP id bg10mr4512451plb.44.1644804660715;
-        Sun, 13 Feb 2022 18:11:00 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7e68:a272:168b:5cac])
-        by smtp.gmail.com with ESMTPSA id s6sm2135208pfk.86.2022.02.13.18.10.59
+        bh=YAglB4GVOKipk35qUMqvzObg9akmFK63RMOZvXbnD2Q=;
+        b=LVFTxg3Q8cO/FmDbxXJal7WLrrbNAhzjLNw28KwCRNj6154h/y1W47KNjSLpSfEm3X
+         Uv6QF8Kz3lUgZH4hsvw4ZHdB6tNBZVkwxMMpSsuwPjBYBxG6mrDLn9El+9dmI6hDj8hV
+         75lI22jzgUXJ/sEYxv3OwPNeJVEsQZGdTD/HMBJf24QmABTJP+FwChpXhaEwJm+xqIbz
+         SGDxAKAU7Pl2SzvyQchKgm5H/xiwG8uNY1/KNMzfUwzMSFB3qV+fsLJOLsOZJIUnV0ZH
+         r1GItTSDgR0bwtiHHCZNYdUZe4TWCXz5Jg9sTBmYEYrWXC6oRXUuF3sZRZn2GnATI42l
+         VBqw==
+X-Gm-Message-State: AOAM5339OArCMrurlnbEKPl+3pHnDgQdCttsBUV48Xxvhyq7vFawAwSm
+        AO17F+LtKov4G1VRCz9r+vzZR5K0l0cZng==
+X-Google-Smtp-Source: ABdhPJyIWBsSXCOqjT4quIPeo7UCt78s18oaqPYFMv3Z4CweVUe0RHxaskq4n+olYcAWf/h2bkaYbA==
+X-Received: by 2002:a9d:2f25:: with SMTP id h34mr4301740otb.346.1644805265437;
+        Sun, 13 Feb 2022 18:21:05 -0800 (PST)
+Received: from tresc043793.tre-sc.gov.br (187-049-235-234.floripa.net.br. [187.49.235.234])
+        by smtp.gmail.com with ESMTPSA id h203sm12321150oif.27.2022.02.13.18.21.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Feb 2022 18:11:00 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net-next] ipv6: blackhole_netdev needs snmp6 counters
-Date:   Sun, 13 Feb 2022 18:10:56 -0800
-Message-Id: <20220214021056.389298-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+        Sun, 13 Feb 2022 18:21:04 -0800 (PST)
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, alsi@bang-olufsen.dk, arinc.unal@arinc9.com
+Subject: [PATCH net-next v3 0/2] net: dsa: realtek: realtek-mdio: reset before setup
+Date:   Sun, 13 Feb 2022 23:20:10 -0300
+Message-Id: <20220214022012.14787-1-luizluca@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -71,55 +68,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+This patch series cleans the realtek-smi reset code and copy that to the
+realtek-mdio.
 
-Whenever rt6_uncached_list_flush_dev() swaps rt->rt6_idev
-to the blackhole device, parts of IPv6 stack might still need
-to increment one SNMP counter.
+v1-v2)
+- do not run reset code block if GPIO is missing. It was printing "RESET
+  deasserted" even when there is no GPIO configured.
+- reset switch after dsa_unregister_switch()
+- demote reset messages to debug
 
-Root cause, patch from Ido, changelog from Eric :)
+v2-v3)
+- do not assert the reset on gpiod_get. Do it explicitly aferwards.
+- split the commit into two (one for each module)
 
-This bug suggests that we need to audit rt->rt6_idev usages
-and make sure they are properly using RCU protection.
-
-Fixes: e5f80fcf869a ("ipv6: give an IPv6 dev to blackhole_netdev")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/ipv6/addrconf.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
-
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 02d31d4fcab3b3d529c4fe3260216ecee1108e82..57fbd6f03ff8d118e50d8aa6ea0ab938a1bb3cbc 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -400,16 +400,16 @@ static struct inet6_dev *ipv6_add_dev(struct net_device *dev)
- 	/* We refer to the device */
- 	dev_hold_track(dev, &ndev->dev_tracker, GFP_KERNEL);
- 
--	if (dev != blackhole_netdev) {
--		if (snmp6_alloc_dev(ndev) < 0) {
--			netdev_dbg(dev, "%s: cannot allocate memory for statistics\n",
--				   __func__);
--			neigh_parms_release(&nd_tbl, ndev->nd_parms);
--			dev_put_track(dev, &ndev->dev_tracker);
--			kfree(ndev);
--			return ERR_PTR(err);
--		}
-+	if (snmp6_alloc_dev(ndev) < 0) {
-+		netdev_dbg(dev, "%s: cannot allocate memory for statistics\n",
-+			   __func__);
-+		neigh_parms_release(&nd_tbl, ndev->nd_parms);
-+		dev_put_track(dev, &ndev->dev_tracker);
-+		kfree(ndev);
-+		return ERR_PTR(err);
-+	}
- 
-+	if (dev != blackhole_netdev) {
- 		if (snmp6_register_dev(ndev) < 0) {
- 			netdev_dbg(dev, "%s: cannot create /proc/net/dev_snmp6/%s\n",
- 				   __func__, dev->name);
--- 
-2.35.1.265.g69c8d7142f-goog
 
