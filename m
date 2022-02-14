@@ -2,163 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 577EE4B489C
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 10:57:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4142D4B4998
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 11:35:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243272AbiBNJ5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 04:57:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43692 "EHLO
+        id S1346066AbiBNKNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 05:13:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344961AbiBNJ4b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 04:56:31 -0500
-Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DDE8092D
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 01:45:01 -0800 (PST)
-Received: by mail-vk1-xa2a.google.com with SMTP id j201so1394931vke.11
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 01:45:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=KPrE96Y6H/rAOZwse4kRwXZYhqrqMrcdRmQmWPkHrvw=;
-        b=Z5WvS7tiwrX2oYsgXV++NB89dWgOcQOGzi6dvTRiiBfUmHMBzffaXUqmJqPeiTbt4D
-         cxU4xaktgc3eOR9VyCh0J52D6y2sJ55omTKQP+ubdLtpbJN2URpc1dLv7pg4kjDmqPuE
-         FAPj9qR/zYhAY8xH2w38Re2+ncW7Pt+UokFuaQAuTx+yE1MsWUCq3dQws76evvQMp0+p
-         HwI0yoeTsFCDr6Bxr0c3KhyCGlODFvwRB7PamIR5EQGFPwOfpKN1jFV2QAyXYtzdkXrL
-         ojDXAlVPNE3zNXjO540Hhd/Oi0on+stNnaAe80A19408UFKVsmuv61oDu0USSjfjeuIy
-         aUdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=KPrE96Y6H/rAOZwse4kRwXZYhqrqMrcdRmQmWPkHrvw=;
-        b=lrUZ7tVCpiMBaNxH9ut76IFyS1Z/lCMbKXDgcy4aIS42xftkz8NGlpMt4LBtpiM1da
-         gZdzJTlMDjaX+q9E06mlSS6JGY0MRcew9c03cJVqYUqB8mC8Dg3vNtoDblN2vtUm32ky
-         +P5H/KoBLfXhh9joxq9YAESPjCm11xQFdVBFxn+YSBXfdhRWrZo+HcgP5TVpQVqLD+eP
-         uy9mJtHdI0Hv8/jHYQi06fyBffSTiEu+GXM/cZ+RSrEFM6QHLB+8YqRkKBUHOI+4yrjn
-         slKU17kx+TK6mR2nyISvF/gihkcCr9S36fIH60+Do8zat4ItscAPsWuzYz2L41nsbK5V
-         GIeg==
-X-Gm-Message-State: AOAM532eZjMkZjwkbwYnjuxdTGfW4fArRF6FTQ3Kc19FZ90K+6sG1BOL
-        FZ2bYBRouKwhM7yZ4bbU44lUZRSz4zu+LqwwPGs=
-X-Google-Smtp-Source: ABdhPJwFT/ZvDBKQz9gxJLH78wEOEJeTGp+6il1iyVqc4lGTeGXVmKxLFN3wiHXA1gg2FxQgKjDB6YpbaprtRJofHus=
-X-Received: by 2002:a05:6122:7ca:: with SMTP id l10mr649290vkr.9.1644831900436;
- Mon, 14 Feb 2022 01:45:00 -0800 (PST)
-MIME-Version: 1.0
-Received: by 2002:ab0:2c19:0:0:0:0:0 with HTTP; Mon, 14 Feb 2022 01:45:00
- -0800 (PST)
-Reply-To: tonyelumelu5501@gmail.com
-From:   POST OFFICE <mrmajidaahmedmuhammed@gmail.com>
-Date:   Mon, 14 Feb 2022 09:45:00 +0000
-Message-ID: <CAD-=s3Ux_arrmi5n-TrRUNw2D_wSNktvVZQW+AuQdt=F9--cyg@mail.gmail.com>
-Subject: =?UTF-8?Q?Lep_pozdrav_dragi_lastnik_elektronske_po=C5=A1te?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S1345779AbiBNKNO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 05:13:14 -0500
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130055.outbound.protection.outlook.com [40.107.13.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A909E657A7;
+        Mon, 14 Feb 2022 01:51:45 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Jw6X5MYEb5vqJw1VTPOYyiKLTGczPlCBPimZruUeQTJ6Aj/vghkB3DKfAWiKHnJvdpreconYu3ZC8n6t1oe1fXjfp6Bn0PyJJSSaDoloSo2F81woSm4/C1B61+AUoJ5HdmbwUwHWVJVwp1lAm+eTm5E80LPmzzkuqqWhzgQh9CZcC7QX/h4sFkD16A8G7TglTUzh+OxHahskJ+1a3O7J2nnXlmtdSqC5x3wkgdEFbQmr8Fgyg2jLAww1Rw8yH6SFOMgqriDXDvDkcHs+MNdY54kJDIHgig8URXruubXoaYTgZM2Ffh4HmHa1VpPUj29Sk1qMEH44k8krLBNjtQgsVA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7s5qj6ZbAYYJo2HZeMMBwMaIySq+Z6lG7jSlAFeUt0k=;
+ b=cQKUVg9/Vk/lTMIfUoNM4Sl2Q4ji/R5CTYXGWeYeKs3DNToLbuV+hcbzvLrWvkAxjqA8Do6MZyaBRKPKzAZ7XGOHph/S7yLxjUQTr2qZoAEXpnsJugbp12kjDvIWJO3E4XOGQz3g5Mx2tKoYNfyWDWnpuEe+Aj8QMv8e2knt8OdHgTwmF5dJ03e6Nxif219G3kuzLTLmOE7oRWmBYw4eYTnNhq05DbBZ0oL0b9MY/P3tL0oBcM8g1tS//K11DAFC90At+zeO1GfA2uqLf5hU+lXXHtPvwWEDLiMUiT0Ej+i/7T2Y1VuOwSR6X5MHcgZHUDJwS/yQ2aaGEsIoX1R6Nw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7s5qj6ZbAYYJo2HZeMMBwMaIySq+Z6lG7jSlAFeUt0k=;
+ b=Ok1QPf7Y5A0ipfxLzsluY6jcmKysIUlvZ42Qv1gvxpM921Mm1woQonYT0TGi1ag0ehyxQcG+Xf1VcnlTT6aOz9ZZUaq9sBEJlsctFCVlZm4ko8YIraYqX0j8qhkMWiYkllubNpEWmFN+kc3azk87hvnFGAIIh9Jen8Gg5q8mNXU=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM9PR04MB8382.eurprd04.prod.outlook.com (2603:10a6:20b:3ea::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.18; Mon, 14 Feb
+ 2022 09:51:41 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Mon, 14 Feb 2022
+ 09:51:40 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Subject: Re: [PATCH v7 net-next 4/4] net: mscc: ocelot: use bulk reads for
+ stats
+Thread-Topic: [PATCH v7 net-next 4/4] net: mscc: ocelot: use bulk reads for
+ stats
+Thread-Index: AQHYIQ3AYXOdYKMSCUmkRckqwTRmUaySztIA
+Date:   Mon, 14 Feb 2022 09:51:40 +0000
+Message-ID: <20220214095140.gkltte6lbr7uzoze@skbuf>
+References: <20220213191254.1480765-1-colin.foster@in-advantage.com>
+ <20220213191254.1480765-5-colin.foster@in-advantage.com>
+In-Reply-To: <20220213191254.1480765-5-colin.foster@in-advantage.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f0648487-c5a1-4e41-6872-08d9ef9f99de
+x-ms-traffictypediagnostic: AM9PR04MB8382:EE_
+x-microsoft-antispam-prvs: <AM9PR04MB83822110B955F2E1F0FE2AF9E0339@AM9PR04MB8382.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2043;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: m7WmOTpHqC/qYnhjh/1klJCgUMpEuShS9z4X5wUdx7al2xHgbg6kCO9fWkO61QByxakKn8VaePHkY4Ddvhu0YoVcssQ24F1GS+9ag7LJrHw/Y02bWmLIoHq2t1sVmbOpDVmescu2wBl+34PcQ/Rh05S8mOcXXRXelCzTG9gHqTxoCS6EWk7DcUQgtjVjwb+8YgpUTfGDA6HmQxOI41y/GMqvb8Vp8QNv24WuIyH1iiZC4YyMqSqaQdGn15ySDalsdvkHq76BLQuWNlX8f87IByErMnbdVF5+y7gGJvA40VjWD4iGZa0Ximt+LLcO/d1K74779k1v+vneY/XMS65eIEmIok0wAIAicXriXo9lL3KSdYAaSj80plcn6qY2Op9N9Jm6MrMDqtNW5GB7eGqNUbbCD9Y87cY6fi5gWXr57MoDzMBpLsEfW/pxkWR1kfr/+r7A6EMiAVTLfTSiXoOawbNx0dADKdD/pfo2Xob7/6NZYV/Uc6+CKFlx++MVrKkOuS25QV4V2ULb1PB91cyicbjUmrl/GSPM6ADLWvV9S/xpaJ8YvHHg5rrUy9CQb1NbwSYGTLDgFPNiTV3+JCCiS0bxEIQPIm3T6SoA2M1VAwVk+y1cKflp3TRCVLH7aQOYoyIyEDwBFV4FJXkGUkzu6lTSTpXtTzB7bKRff4BM5Bt+pU/1c09xAGeUHbgKOHto2U25vGVReY1L8BD59aXbPA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(38100700002)(8936002)(26005)(186003)(86362001)(6506007)(122000001)(38070700005)(71200400001)(2906002)(83380400001)(1076003)(4326008)(91956017)(5660300002)(9686003)(6512007)(44832011)(4744005)(33716001)(508600001)(6486002)(54906003)(6916009)(316002)(76116006)(66476007)(8676002)(66446008)(66946007)(66556008)(64756008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?SoFwHl+8hHlSJrhmc2bzQf363t1LRlvaMrJvcEoOsVTnv1PtKmgS5HlruP8i?=
+ =?us-ascii?Q?9WRnmq2H8OLBIt193vJo1eGmydEzkk5A8TuegGXLSC/JjuTNo/WJ4MjaB4ow?=
+ =?us-ascii?Q?VTCoDV3SuQnZmmcq1IDQYSU3pirvFNA1yWlJSmTUjU5ATtk4Bs44xIxCHwy3?=
+ =?us-ascii?Q?Egk3N4ncLpAq5XJ68+VFDbGQ+k+IoVtZDschtYuFtEDDyYO+YGuPOtsZIAjT?=
+ =?us-ascii?Q?d1AEW1RSeLWFoY2UUJ0VBOI9LmvfOPDSnqMj7tiAwWtRpx/A4vToPiBVzL1J?=
+ =?us-ascii?Q?Pgl6z4+J2yDcjiw3d3ZOUPex9apkErVLiUMVYfnCBF046qCYrY+V+OLs8At7?=
+ =?us-ascii?Q?Cu39Zr0NIfo9jq9IdUFsVKyUDmBGuhz+7F+kwU90ZmF1J861x2JnKv+1gx/6?=
+ =?us-ascii?Q?BSGoPTdQbbWU9HBlqvsQGxHvgmt67WyEfjOolsqFmuRxb2XfalpTX7MdbB7V?=
+ =?us-ascii?Q?IPbD4OMfXVj9jlJp5s5t7qzTjr1qdWX90/3tf79pnzXANUqVL1kRSPAojJj2?=
+ =?us-ascii?Q?zoozHXbXc4xE3zyHNw3uQ999JCyRzDfROm34E1WAJYotRbdT+d3+S3posvdv?=
+ =?us-ascii?Q?Ipy/rK50cwKGLaFfdzy1LpVOjosvQpis7JqXGI+4oJfNjoa7yxRKCjfyOR2z?=
+ =?us-ascii?Q?mO8FkJVzNi4ujltwsDoHLUOF3BKGk8OLS80PSlm/IeSxTiP9j/ZGT4YpdXJe?=
+ =?us-ascii?Q?T1q26WMcJwOMrpUPsdqKvRbK2Kvm1aZURWA5brAKGgaG1Neo17VRg6tZANTl?=
+ =?us-ascii?Q?gydPoKiHdlDKfVvv11tVRWsEiDji9B66Ide/0dx42gH6FNUGmeyPXfKYphUB?=
+ =?us-ascii?Q?FT7uxUTAlduaeWdX7fCK473Q7cTmYH9QcChu/R4QC2iAQOwqBdMkL0AhATcx?=
+ =?us-ascii?Q?9/sOuB0+BTZPGLcGpdCx5h9jkVHoJCU+e+wMoaj+WweU8p//eGJNCjZV7Tbk?=
+ =?us-ascii?Q?DQGUcD5gCLVoWm2/Fm6LzgSPCbxakuzu8Adqk74FEEVx5oOyDDPeeBkLMiaQ?=
+ =?us-ascii?Q?ukDShyoMPPN5CHTkLKEnviGjszt+o1quxmz2bTR5tn9EMEB02WSG3h+cjuCF?=
+ =?us-ascii?Q?NFOJUBYqTTGsXkSN9oIjzraoXqfXbmWZRFIjXssw8vtbIjVYbaxL8eIk51kJ?=
+ =?us-ascii?Q?HbHy72YuZsY4L42kI9xx355SKkZ/nW6rPp6D34vU6J1FCY5jwv3/+1ETNqY7?=
+ =?us-ascii?Q?uqPUlfFgcIkFq1rpqN7M8Zihe3sRG+X4H4VEpZPvsgXzSofiiiwffPS527bY?=
+ =?us-ascii?Q?QKfNaQw4dgsUlj0RFhQfb3bi58TunGg+ZCqaOvZ/CDM1je1BdTT0csD1Yk8c?=
+ =?us-ascii?Q?xidj/VsK4XomXWsFIiNtqCdidIejlJtNPyQnhwyXZumX8q8FTiGwB+XKlt+8?=
+ =?us-ascii?Q?gr0psdnP9VUEIIUPmJHf/ahVRU1fmVgzgjWZFUSrdDgQRLN06kTXEHh17dYQ?=
+ =?us-ascii?Q?7lm+jGODyfVJyDRSNrcV88Kd/aAYrmOqcJYM226sCICYgQ+UGubnZxEPLxn/?=
+ =?us-ascii?Q?KNLHt0EhnK+b7VXGMU2mCKY4IPCjJMvI7OQU7b1u9Qqo3OEo0GgvGqJPzhG9?=
+ =?us-ascii?Q?OcuTPtbWdetcdsVwG2IYA/6rqLsTxHIH4IdttI8+CtuFIDT+t+q7uR+6iDNw?=
+ =?us-ascii?Q?JXguyze9TpHU1nCJnAIt0Dk=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <7F3DADFB82496F47AB8941F075547397@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=5.3 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:a2a listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [tonyelumelu5501[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [mrmajidaahmedmuhammed[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.5 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f0648487-c5a1-4e41-6872-08d9ef9f99de
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Feb 2022 09:51:40.8870
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 69iiEutXixPtTId9+GhsYPTNl7+uZQXWu8Nd/3bZcWXTX8AYAEJ5TSJT7fuaCiiadMuoeOT/FoOxvmr+d1z60Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8382
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dobrodo=C5=A1li na uradni e-po=C5=A1ti I.M.F. GOSPA DIREKTOR. KRISTALINA
-GEORGIEVA. NA=C5=A0E PORO=C4=8CILO: UBT (UNION BANK OF TOGOLESE)
+On Sun, Feb 13, 2022 at 11:12:54AM -0800, Colin Foster wrote:
+> Create and utilize bulk regmap reads instead of single access for gatheri=
+ng
+> stats. The background reading of statistics happens frequently, and over
+> a few contiguous memory regions.
+>=20
+> High speed PCIe buses and MMIO access will probably see negligible
+> performance increase. Lower speed buses like SPI and I2C could see
+> significant performance increase, since the bus configuration and registe=
+r
+> access times account for a large percentage of data transfer time.
+>=20
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> ---
 
-Dober dan: Spo=C5=A1tovani lastnik e-po=C5=A1te!
-
-To pismo sem vam poslal pred enim mesecem, vendar se nisem oglasil,
-nisem prepri=C4=8Dan, ali ste ga prejeli. In zato =C5=A1e enkrat povem: Prv=
-i=C4=8D,
-jaz sem gospa Kristalina Georgieva, generalna direktorica in
-predsednica Mednarodnega denarnega sklada.
-
-Pravzaprav smo pregledali vse ovire in te=C5=BEave v zvezi z va=C5=A1o nepo=
-polno
-transakcijo in va=C5=A1o nezmo=C5=BEnostjo izpolnjevanja stro=C5=A1kov pren=
-osa, ki so
-vam jih zara=C4=8Dunavale prej=C5=A1nje mo=C5=BEnosti prenosa. Za potrditev=
- si
-oglejte na=C5=A1o spletno stran 38 =C2=B0 53=E2=80=B256 =E2=80=B3 N 77 =C2=
-=B0 2 =E2=80=B2 39 =E2=80=B3 W
-
-Mi, upravni odbor, Svetovna banka in Mednarodni denarni sklad (IMF)
-Washington, D.C., skupaj z Ministrstvom za finance ZDA in nekaterimi
-drugimi ustreznimi raziskovalnimi agencijami tukaj v Zdru=C5=BEenih
-dr=C5=BEavah. je naro=C4=8Dil na=C5=A1i enoti za nakazila tujih pla=C4=8Dil=
-, United Bank
-of Africa Lome Togo, da vam izda kartico VISA, na katero bo va=C5=A1 sklad
-poslan (1,2 milijona USD) USD za kasnej=C5=A1i dvig iz va=C5=A1ega sklada.
-
-Med na=C5=A1o preiskavo smo na na=C5=A1o zaskrbljenost ugotovili, da so na=
-=C5=A1e
-pla=C4=8Dilo po nepotrebnem zamujali zaradi korumpiranih uradnikov banke,
-ki so posku=C5=A1ali svoja sredstva preusmeriti na svoje zasebne ra=C4=8Dun=
-e.
-
-In danes vas obve=C5=A1=C4=8Damo, da je UBA Bank va=C5=A1 denar nakazal na =
-kartico
-VISA in je tudi pripravljen za dostavo. Zdaj se obrnite na generalnega
-direktorja in direktorja UBA Bank. Ime mu je g. Tony Elumelu,
-
-Takoj stopite v stik z g. Tonyjem Elumelujem, DIREKTORJEM ZDRU=C5=BDENE
-BANKE ZA AFRIKO, ker je va=C5=A1a ATM VISA CARD zdaj odobrena za dostavo.
-
-Elektronski naslov: (tonyelumelu5501@gmail.com)
-WhatsApp Tel: +228 91889773
-
-Po=C5=A1ljite mu naslednje podatke za dostavo va=C5=A1e akreditirane kartic=
-e Atm
-Visa na va=C5=A1 naslov.
-
-1. Polno ime:
-
-2. Priimek:
-
-3. Dr=C5=BEavljanstvo:
-
-4. Va=C5=A1 doma=C4=8Di naslov:
-
-5. Telefonska =C5=A1tevilka:
-
-6. Va=C5=A1a osebna izkaznica ali potni list =C5=A1t.
-
-=C4=8Cakam na potrditev va=C5=A1ih osebnih podatkov, zato bomo nadaljevali =
-z
-dostavo kurirske slu=C5=BEbe za po=C5=A1iljanje va=C5=A1e ATM kartice na va=
-=C5=A1 doma=C4=8Di
-naslov v va=C5=A1i dr=C5=BEavi.
-
-Z lepimi pozdravi
-
-GOSPA KRISTALINA GEORGIEVA
-(IMF) Predsednik.
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>=
