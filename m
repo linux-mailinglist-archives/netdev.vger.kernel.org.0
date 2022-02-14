@@ -2,112 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 443884B4047
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 04:27:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCBCF4B4095
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 05:03:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239986AbiBND1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Feb 2022 22:27:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55474 "EHLO
+        id S240162AbiBNEDt convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 13 Feb 2022 23:03:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233121AbiBND1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 22:27:35 -0500
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C0B755489;
-        Sun, 13 Feb 2022 19:27:29 -0800 (PST)
-Received: by mail-qv1-xf2c.google.com with SMTP id x3so8093403qvd.8;
-        Sun, 13 Feb 2022 19:27:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1Mk4g7a4kkGp+4mbNE5PqLoN+dulOsHzWj8LqpF9LSE=;
-        b=G01Mpr4f6OfVK0fOPp4lzC84aqgY6vPtk3GEISIKlPMcJ/WQ0ySrF5A+nd2aTcdY7d
-         2qRieK0AhBO8jDaPmxb3vGBoFByaK6WvboWBGyeEYFofALpT9ZCv6S2a56ULo7t+ef4P
-         8MA9tliHSPOVhXUQnheyq3Q1pGZGTuplN1YxHqf0He9T+wNzXUmZWxQMhJuaUwuiid2e
-         yDUpBBtOg2B2e2wM7PzuCTh/bWgWDqC3FtQpwTJjGUQip8ZETW3cHE18/7rC1R1gWMdM
-         mfxDORPVIp7RfSVy4eIRznakKzl/CCATv39NupxpkLOazTPTjCyFT6pu8ZjJ7TsMF+bc
-         l0Ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1Mk4g7a4kkGp+4mbNE5PqLoN+dulOsHzWj8LqpF9LSE=;
-        b=2QPzE00re9HMgvFJISif9UyBts+9yYaJuNkt/chxib8FioIS3UZhDaKPevOCcMP+ap
-         oRnv7Q53MYbfDlzHGnzIHMbIbsA0zBkY5j8s+R5wPL3Fp2cBqvhs2gWji+AIlQ1esO2L
-         YY1MOOHGZTAUEWH/dpfuxBPvoSf2/Q4UkaksOiz+c5ybKJdamgcHZ7oJrjUxYKB4NtNS
-         zVIO69h79IUwoAs7ngriZOo0fwtZalZMToKTYlXv1Hd8fWpp4OFXnNX0X/jfzrz3uHgd
-         Swpor+ZEB8Seerz8pt60xYHmo1nKsJJGDUQ0rOwOAMGBsnJ/9Af1L6tS6qy8QZZKFkt3
-         34/Q==
-X-Gm-Message-State: AOAM531+0V7fFXgS8qk+MiC6f8eMMADW6hursvJv2d8gcDG9AuT9yBNV
-        FsqMjAXiGbk7Dz1gLQPtOVA=
-X-Google-Smtp-Source: ABdhPJyvpHHKq86EMPjgff598oi5GUBwcfc1+ZO5YI+bd4eKKIg3oe0uXcPJZD56SIsQq34JCdgO4Q==
-X-Received: by 2002:a05:6214:19e5:: with SMTP id q5mr6399886qvc.42.1644809248326;
-        Sun, 13 Feb 2022 19:27:28 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id n6sm17006667qtx.23.2022.02.13.19.27.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Feb 2022 19:27:27 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: zhang.yunkai@zte.com.cn
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zhang Yunkai <zhang.yunkai@zte.com.cn>
-Subject: [PATCH v2] ipv4: add description about martian source
-Date:   Mon, 14 Feb 2022 03:27:21 +0000
-Message-Id: <20220214032721.1716878-1-zhang.yunkai@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S234964AbiBNEDs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Feb 2022 23:03:48 -0500
+Received: from mail-m2458.qiye.163.com (mail-m2458.qiye.163.com [220.194.24.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15954EA3B;
+        Sun, 13 Feb 2022 20:03:40 -0800 (PST)
+Received: from smtpclient.apple (unknown [117.48.120.186])
+        by mail-m2458.qiye.163.com (Hmail) with ESMTPA id C8EC17401B9;
+        Mon, 14 Feb 2022 12:03:38 +0800 (CST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.20.0.1.32\))
+Subject: Re: [PATCH] gso: do not skip outer ip header in case of ipip and
+ net_failover
+From:   Tao Liu <thomas.liu@ucloud.cn>
+In-Reply-To: <CA+FuTSdODATw3hSAMv9aZUmJNM8ZE-YP58pr17bO9rGJUgfegw@mail.gmail.com>
+Date:   Mon, 14 Feb 2022 12:03:38 +0800
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, edumazet@google.com, sridhar.samudrala@intel.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <CFD9B65A-6762-4D9B-ADEB-B4C0B1902E02@ucloud.cn>
+References: <20220213150234.31602-1-thomas.liu@ucloud.cn>
+ <CA+FuTSdODATw3hSAMv9aZUmJNM8ZE-YP58pr17bO9rGJUgfegw@mail.gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+X-Mailer: Apple Mail (2.3693.20.0.1.32)
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
+        kWDxoPAgseWUFZKDYvK1lXWShZQUlCN1dZLVlBSVdZDwkaFQgSH1lBWRoaThhWSh4ZQ08fHh0aGh
+        lPVRkRExYaEhckFA4PWVdZFhoPEhUdFFlBWVVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Phg6EQw4SjIzMwo6ODFIOAoI
+        PB0aFC5VSlVKTU9PQ0pKT0pCSkNLVTMWGhIXVQ8TFBYaCFUXEg47DhgXFA4fVRgVRVlXWRILWUFZ
+        SkpMVU9DVUpJS1VKQ01ZV1kIAVlBTUlLSTcG
+X-HM-Tid: 0a7ef6667d798c17kuqtc8ec17401b9
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhang Yunkai <zhang.yunkai@zte.com.cn>
+Sorry for bothering, just repost it.
 
-When multiple containers are running in the environment and multiple
-macvlan network port are configured in each container, a lot of martian
-source prints will appear after martian_log is enabled. they are almost
-the same, and printed by net_warn_ratelimited. Each arp message will
-trigger this print on each network port.
+> 2022年2月14日 09:28，Willem de Bruijn <willemdebruijn.kernel@gmail.com> 写道：
+> 
+> On Sun, Feb 13, 2022 at 10:10 AM Tao Liu <thomas.liu@ucloud.cn> wrote:
+>> 
+>> We encouter a tcp drop issue in our cloud environment. Packet GROed in host
+>> forwards to a VM virtio_net nic with net_failover enabled. VM acts as a
+>> IPVS LB with ipip encapsulation. The full path like:
+>> host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
+>> -> ipip encap -> net_failover tx -> virtio_net tx
+>> 
+>> When net_failover transmits a ipip pkt (gso_type = 0x0103), there is no gso
+>> performed because it supports TSO and GSO_IPXIP4. But network_header has
+>> been pointing to inner ip header.
+> 
+> If the packet is configured correctly, and net_failover advertises
+> that it can handle TSO packets with IPIP encap, then still virtio_net
+> should not advertise it and software GSO be applied on its
+> dev_queue_xmit call.
+> 
+> This is assuming that the packet not only has SKB_GSO_IPXIP4 correctly
+> set, but also tunneling fields like skb->encapsulated and
+> skb_inner_network_header.
+Thanks very much for your comment!
 
-Such as:
-IPv4: martian source 173.254.95.16 from 173.254.100.109,
-on dev eth0
-ll header: 00000000: ff ff ff ff ff ff 40 00 ad fe 64 6d
-08 06        ......@...dm..
-IPv4: martian source 173.254.95.16 from 173.254.100.109,
-on dev eth1
-ll header: 00000000: ff ff ff ff ff ff 40 00 ad fe 64 6d
-08 06        ......@...dm..
+Yes, the packet is correct. Another thing i have not pointed directly is
+that the pkt has SKB_GSO_DODGY. net_failover do not advertises GSO_ROBUST
+but virtio_net do.
 
-There is no description of this kind of source in the RFC1812.
+>> ---
+>> net/ipv4/af_inet.c | 10 +++++++++-
+>> 1 file changed, 9 insertions(+), 1 deletion(-)
+>> 
+>> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+>> index 9c465ba..f8b3f8a 100644
+>> --- a/net/ipv4/af_inet.c
+>> +++ b/net/ipv4/af_inet.c
+>> @@ -1425,10 +1425,18 @@ struct sk_buff *inet_gso_segment(struct sk_buff *skb,
+>> static struct sk_buff *ipip_gso_segment(struct sk_buff *skb,
+>>                                        netdev_features_t features)
+>> {
+>> +       struct sk_buff *segs;
+>> +       int nhoff;
+>> +
+>>        if (!(skb_shinfo(skb)->gso_type & SKB_GSO_IPXIP4))
+>>                return ERR_PTR(-EINVAL);
+>> 
+>> -       return inet_gso_segment(skb, features);
+>> +       nhoff = skb_network_header(skb) - skb_mac_header(skb);
+>> +       segs = inet_gso_segment(skb, features);
+>> +       if (!segs)
+>> +               skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
+>> +
+>> +       return segs;
+>> }
+> 
+> If this would be needed for IPIP, then the same would be needed for SIT, etc.
+> 
+> Is the skb_network_header
+> 
+> 1. correctly pointing to the outer header of the TSO packet before the
+> call to inet_gso_segment
+> 2. incorrectly pointing to the inner header of the (still) TSO packet
+> after the call to inet_gso_segment
+> 
+> inet_gso_segment already does the same operation: save nhoff, pull
+> network header, call callbacks.gso_segment (which can be
+> ipip_gso_segment->inet_gso_segment), then place the network header
+> back at nhoff.
+> 
+values print in skb_mac_gso_segment() before callbacks.gso_segment:
+ipip:               vlan_depth=0 mac_len=0 skb->network_header=206
+net_failover:  vlan_depth=14 mac_len=14 skb->network_header=186
+virtio_net:      vlan_depth=34 mac_len=34 skb->network_header=206
 
-Signed-off-by: Zhang Yunkai <zhang.yunkai@zte.com.cn>
----
- net/ipv4/fib_frontend.c | 3 +++
- 1 file changed, 3 insertions(+)
+agree to add sit/ip4ip6/ip6ip6, and patch can be simplified as:
 
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 4d61ddd8a0ec..3564308e849a 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -436,6 +436,9 @@ int fib_validate_source(struct sk_buff *skb, __be32 src, __be32 dst,
- 		if (net->ipv4.fib_has_custom_local_routes ||
- 		    fib4_has_custom_rules(net))
- 			goto full_check;
-+		/* Within the same container, it is regarded as a martian source,
-+		 * and the same host but different containers are not.
-+		 */
- 		if (inet_lookup_ifaddr_rcu(net, src))
- 			return -EINVAL;
- 
--- 
-2.25.1
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 9c465ba..72fde28 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1376,8 +1376,11 @@ struct sk_buff *inet_gso_segment(struct sk_buff *skb,
+        }
+
+        ops = rcu_dereference(inet_offloads[proto]);
+-       if (likely(ops && ops->callbacks.gso_segment))
++       if (likely(ops && ops->callbacks.gso_segment)) {
+                segs = ops->callbacks.gso_segment(skb, features);
++               if (!segs)
++                       skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
++       }
+
+        if (IS_ERR_OR_NULL(segs))
+                goto out;
+diff --git a/net/ipv6/ip6_offload.c b/net/ipv6/ip6_offload.c
+index b29e9ba..5f577e2 100644
+--- a/net/ipv6/ip6_offload.c
++++ b/net/ipv6/ip6_offload.c
+@@ -114,6 +114,8 @@ static struct sk_buff *ipv6_gso_segment(struct sk_buff *skb,
+        if (likely(ops && ops->callbacks.gso_segment)) {
+                skb_reset_transport_header(skb);
+                segs = ops->callbacks.gso_segment(skb, features);
++               if (!segs)
++                       skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
+        }
+
+        if (IS_ERR_OR_NULL(segs))
+
 
