@@ -2,344 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C3C64B557D
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 17:00:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82F424B558B
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 17:04:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356061AbiBNP77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 10:59:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47872 "EHLO
+        id S1356082AbiBNQEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 11:04:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231151AbiBNP75 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 10:59:57 -0500
-Received: from mx07-0057a101.pphosted.com (mx07-0057a101.pphosted.com [205.220.184.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C85049F97
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 07:59:48 -0800 (PST)
-Received: from pps.filterd (m0214197.ppops.net [127.0.0.1])
-        by mx07-0057a101.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 21EEs7OZ025253;
-        Mon, 14 Feb 2022 16:59:27 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=westermo.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=12052020; bh=WIa686bP+fB4AI17kvp1VMPlc4SlSqb7vBBlev6uVHI=;
- b=ah/tIwXO/CYX1IiG2j7VC10CVSpIHjrp84NpmLeQKK2llHngydamMyNMCRkBR6Q4eWr/
- kypOEqZ1kXVeoVirqVRg9i8IwjFZ5leQciw6Ux7umV1HVEk4q91qPmsQt1K3P/5/tzn9
- slpNQfwgRF34ZHeQwaVlEkhObiyDsTw8KhbkvIgp0FbIDF24IoQCN1MJGObRsVYyMnpl
- bMEryEoyrbW5rXU9skfFrkldhmuzibwgl5k1yFiVsGMhHvbbtOJdNWk2BUWgme6DuYvr
- /F+1uQ8H8SaDyLjLXPp0Q9dhrvr8r+mjf7wUaIOXT6GXWNg4wJpoDhwuklCa/Qx3+VlF cQ== 
-Received: from mail.beijerelectronics.com ([195.67.87.131])
-        by mx07-0057a101.pphosted.com (PPS) with ESMTPS id 3e624et6u7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 16:59:27 +0100
-Received: from jacques-work.labs.westermo.se (192.168.131.30) by
- EX01GLOBAL.beijerelectronics.com (10.101.10.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.2375.17; Mon, 14 Feb 2022 16:59:26 +0100
-From:   Jacques de Laval <Jacques.De.Laval@westermo.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>
-CC:     <netdev@vger.kernel.org>,
-        Jacques de Laval <Jacques.De.Laval@westermo.com>
-Subject: [PATCH v3 net-next 1/1] net: Add new protocol attribute to IP addresses
-Date:   Mon, 14 Feb 2022 16:59:06 +0100
-Message-ID: <20220214155906.906381-1-Jacques.De.Laval@westermo.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
-Content-Transfer-Encoding: 8bit
+        with ESMTP id S1345126AbiBNQEa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 11:04:30 -0500
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2052.outbound.protection.outlook.com [40.107.20.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED4E449F97
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 08:04:20 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gn2/7Z3W9Gw4vEh87mRgH3COEuf2jZEnjSEqH/i9tFvp89k5J7KSII9adQrnruU/LxHVqc2/I3KDn4zW88d86tQFXxRv1gfMNlUXrVT6uWro6WQf767aEveAOlr29Kmph06pBG4S+7AB86mkTh7/L6TRrbESB8nS4kWvwuq1J+uvkj9LeHnPvGdGmq+rxSNcTI4iTE3jIU86lU+juIjn/SRQLL1RsH/JtuOjZWuvWP9vkJtcwZaq/pz6TWXGp6niJ6UMo8/BjK3moYf549DoUkVua6i0+Q3Othi2SX3CY9oGBwWjKei2cHmU+giFZRR2UqXxNBKXSPsCBIv5JNfyuA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1Y/Wjlq/UwyHW2n6TXnlQqMwr4cvn3pJ3345FZqd85Y=;
+ b=QXfKrPbGFgzAsLntGoy2o4zp3qqPKTE8NEv0NOLgDGMVKAxtOwIFIeN7cpQmgxlJFZjKdIHt4POB4C4M6kiT6RatHa+cKsv+JMd7NNmY/s31VWMJKbj7FiZ0CbI8ivB1gSEeo/XO0kMIj+oPpXd2MI6wI8iVf88eyvi19xOYKD9iIucd2PBqJjFWv1rOZc2UyMfpg48iDHl9uBNSDbpXYA28IhYQq5G3Q//YnWXAhYxx7cvKzIp4IYY03kW2zhiIxc26a0GRcfUEEuyVU5SMOUkueqhzaUCKSs0zhHMzdpeQ5vTRm1X2IOU3hM4PkxqiyEaQ1yZ51oDGmZpf0UP5hg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1Y/Wjlq/UwyHW2n6TXnlQqMwr4cvn3pJ3345FZqd85Y=;
+ b=Ht9lmj0tm7T1aN5ep0A04ROb5gzSdqqhakqBCkQN53zAaoFvzbqnIvcWQ6+nHvftyzP+JSZZilrh/d9hG/ix1skbysWsexn1DrIPedBcYW5x96uWtoVdsEE102tgOJK3KXJM0437uoaJs9Td9qIlA8Fh65vY5XQ3Top280mzJpg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5903.eurprd04.prod.outlook.com (2603:10a6:803:e0::10)
+ by AM7PR04MB6981.eurprd04.prod.outlook.com (2603:10a6:20b:103::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.18; Mon, 14 Feb
+ 2022 16:04:18 +0000
+Received: from VI1PR04MB5903.eurprd04.prod.outlook.com
+ ([fe80::c1c5:68b4:ab53:d366]) by VI1PR04MB5903.eurprd04.prod.outlook.com
+ ([fe80::c1c5:68b4:ab53:d366%5]) with mapi id 15.20.4975.018; Mon, 14 Feb 2022
+ 16:04:18 +0000
+From:   Radu Bulie <radu-andrei.bulie@nxp.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, ioana.ciornei@nxp.com, yangbo.lu@nxp.com,
+        Radu Bulie <radu-andrei.bulie@nxp.com>
+Subject: [PATCH net-next 0/2] Provide direct access to 1588 one step register
+Date:   Mon, 14 Feb 2022 18:03:46 +0200
+Message-Id: <20220214160348.25124-1-radu-andrei.bulie@nxp.com>
+X-Mailer: git-send-email 2.17.1
 Content-Type: text/plain
-X-Originating-IP: [192.168.131.30]
-X-ClientProxiedBy: wsevst-s0023.westermo.com (192.168.130.120) To
- EX01GLOBAL.beijerelectronics.com (10.101.10.25)
-X-Proofpoint-ORIG-GUID: cO-J--jvNSAbyAF56Qtp00qiMQyV6nPO
-X-Proofpoint-GUID: cO-J--jvNSAbyAF56Qtp00qiMQyV6nPO
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-ClientProxiedBy: AM3PR04CA0148.eurprd04.prod.outlook.com (2603:10a6:207::32)
+ To VI1PR04MB5903.eurprd04.prod.outlook.com (2603:10a6:803:e0::10)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5de8aeee-7b17-4a04-21f4-08d9efd3a7e4
+X-MS-TrafficTypeDiagnostic: AM7PR04MB6981:EE_
+X-Microsoft-Antispam-PRVS: <AM7PR04MB69810E14DF315E80606E8B93B0339@AM7PR04MB6981.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7m+xldfeqcn2B7S6CDrz+pUX3cqqM7cYPiZ3agBkh0kL/QyhVqH3OWIomwalkxvlcPnMzx2O7MIYqjdgaKNMTWwTk19/vJe5XrseFvzqVUnD3ITlsbIn4ZGuVUBfwFXaIm3V7h2srXQfNw7MbWlsi0Nv2zLmk0IIxpuhV0jz6DcEMbR7ItT8q7RMm+aR/jWpf6E0AmkhcpTqnwOQyCI6RLlRM+hOUVS48Wm9eQVALXe/olBB9TrYFtA05XmaY/tykQbCIlQnbngaM4S3SrnQjOOEulyvRsvBhQc9jCPC+cfjkYo9Qe1AjOMmWU3RxisEqfuryCEWSjlcyuare+5UEHZcGiqu69aynQtnF1LkI//MEGeHta9OzcOTA5eY5SAx2B7N0ebrgRqVWpcCRlAJY/CncVHh6UGFymJEq6DLUTwGWTZOT1Dea824f8flZ1ekDva9bWIsLWPfyGH1d0I17QhUM4TQkoKjkd1ToNLRje4VinaE8u1V+QIK613IL9jA0GNoIWh61rmKWRUOvKLbozq/lDpPjfB/8YWVrjwnoSQ0qUwqQpLt2xK3uc8jptfy5DqL9xzeSrEKhLBZV82EEMHs/hrJsFfOHDrTltyRvMp75moYY/6YzfBG0M9pdaTnWIZlKmvKgj1+K6ESyTh0ga4FBfYb1DJNQY95yaY8Z+q3CaUKDTZSgaxZtbmCjb6U1EjFJYz8rhgACk9PUHEDXQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5903.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(66556008)(66476007)(38100700002)(6512007)(6666004)(5660300002)(8676002)(8936002)(6506007)(52116002)(4326008)(83380400001)(38350700002)(2616005)(186003)(26005)(508600001)(86362001)(36756003)(2906002)(1076003)(316002)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+Da52C4B/9+jhHfIY+Do/SjiRkJ4NPEhSP7XKNlqlV2bgAsI63SoSJ2MxvL7?=
+ =?us-ascii?Q?o1EF8qwFMTKFWOFz5lixdyZ6Bh7x4OrykHp6l5NW5kQUn+Zcy8AAiJaKZQ/e?=
+ =?us-ascii?Q?wxhExSIOyoNQezyXI7XlKquIKVZ2z2kq4/nhyaZ15YELiE/lv5VRCKgOnrQe?=
+ =?us-ascii?Q?2ae01R2dILCSu6m3KU/uyK2+2D93WknRazgWf2Mtux3v1tyu4hkSA2hbxWLL?=
+ =?us-ascii?Q?5WB1PbNLiJb3Lf1FzU0tMJHWe7W9zgi45zIi5PkDMCfUf6H1xNErKtoZSVBD?=
+ =?us-ascii?Q?pjrgPbCOnFNENjACG2qDUJRAsA3IOp7ahyRfo/O50SaYbpyK2B3t2cdfYzCe?=
+ =?us-ascii?Q?f1y1YFJfuqNDGsRvq42g1wNDN6U01cr3WH/O50h0/YtaBFf0ot2/0GpElJMr?=
+ =?us-ascii?Q?6s+PJhWgexQ5fgSvlJuayYSO+yCBj1mlbsXgCHHbpL97HcGiJ3FmZmgff4ni?=
+ =?us-ascii?Q?Yx4qFcpFf4K2Vf1aAiJvv8OWFEGsvjfisgMjZmbaqmbltwnu44lP5zaYl21U?=
+ =?us-ascii?Q?RFKPaE+CJ66thrkKC5UNoRqZYpsLscEsSBd7jGvOVSNJjwspk4UIsSmJIyO4?=
+ =?us-ascii?Q?rUbEXy3mem6pFJ36hmcmqtSRy3V9T+wl+p+d0zbK3/d4NXLliPgQCUYJzkIu?=
+ =?us-ascii?Q?NE7YGzN0crhwHh75FowvTgqvwOxPPbmrr7mrBqoS/ypcv83gcpqUkXGqG/ZI?=
+ =?us-ascii?Q?yhH6Gj6qvSIcBl8ZtwZWok/k/0tBgTtSJKPoIpRxJBu8rGRTIVsCph7Xf5Z+?=
+ =?us-ascii?Q?rRK/CPsXoBg1WJhVXIxcrs5Y72/ulQKDRMeBDw2bzu+b07JhhJ4kkJz530iv?=
+ =?us-ascii?Q?cMnJ8hmKPjHKNkUJYW45PkSAgRcrY7lYH29qC9urUddMQgeiHiZiIZxHlWYI?=
+ =?us-ascii?Q?x3+l0lAZm6J5X0dN9CYt+zqGec0WQPtBHl73yImeVBg44fIHqnHRjJ/ZR/ru?=
+ =?us-ascii?Q?Gg6beoCTw0G84+SRv2AK68jmreuiLVe0kGYR7x+go8QOIKYqMS6V9CHcXdHo?=
+ =?us-ascii?Q?SStUV/ZbuHm5hgAGXUg0b4Tth7ZgO5e6JtskTVR9sCRkQbNB8rsqL3UY4PMQ?=
+ =?us-ascii?Q?jOMSh6J083rJsHJ+dpemzbiAQPiF4JD9PH6TZejrnHgNktghbV/DPZAwX3ui?=
+ =?us-ascii?Q?3WjkWfD3YDcpzY7GHoleKeGcH3ixAL8bmRGXedBDvzTi24tTejaBl9ExSBaX?=
+ =?us-ascii?Q?7BE79vSTH0MCGqEvFbySd6yeI0gcysSA9Qw/4Z0qQr/dmtspFHyHdap81IuL?=
+ =?us-ascii?Q?eIdCJzpE55ZP6JOhyGu4bQDNx5iablkm4ttGg7MscxTnoVLBtDcL//IzK07e?=
+ =?us-ascii?Q?DR+qeEd2ndvXXW2HLP7teTI+M2qp3ZxilID2dYHFihpp4u6aGAZ7sxMWs3KX?=
+ =?us-ascii?Q?a3YPsjmteUUGz9e89OwvC8EcRfpbp6JlmdXp0Vyyvblostg1UDVKbUOgmrrI?=
+ =?us-ascii?Q?E2u2sD/i8P2Ws1MMtKKb4BzhvtNd3IyAiR4zhLQJvwzXvFca5zyrJUR049lN?=
+ =?us-ascii?Q?nZbDxi93U7DMAROxuAOatFgHUf+4UJ5C9XOUYlhdA2IwQPkzCT4140/Nnka+?=
+ =?us-ascii?Q?APwpk/0jAw0m4llvvAkwErGV2iNKQXUoR48pqksDBP0n2HaFo0H7y9JebMEK?=
+ =?us-ascii?Q?KeRHgUOICBLLYM+jd5wJIvh5RV0yB+oXdnAwuLee6uJr0Rr8hX6BPChqqtfO?=
+ =?us-ascii?Q?oYkqbw=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5de8aeee-7b17-4a04-21f4-08d9efd3a7e4
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5903.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2022 16:04:18.5707
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QfT4bX+G2WgUYGt+Ygk30zUE++pz1hy7PsynV8l2sS3FjPcEaAd8QgFoSlcdp8JPM2fFMJywu3QPTKQXdTtTQX84aefRqda6ClXPsNLsxdM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6981
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a new protocol attribute to IPv4 and IPv6 addresses.
-Inspiration was taken from the protocol attribute of routes. User space
-applications like iproute2 can set/get the protocol with the Netlink API.
+DPAA2 MAC supports 1588 one step timestamping.
+If this option is enabled then for each transmitted PTP event packet,
+the 1588 SINGLE_STEP register is accessed to modify the following fields:
 
-The attribute is stored as an 8-bit unsigned integer.
+-offset of the correction field inside the PTP packet
+-UDP checksum update bit,  in case the PTP event packet has
+ UDP encapsulation
 
-The protocol attribute is set by kernel for these categories:
+These values can change any time, because there may be multiple
+PTP clients connected, that receive various 1588 frame types:
+- L2 only frame
+- UDP / Ipv4
+- UDP / Ipv6
+- other
 
-- IPv4 and IPv6 loopback addresses
-- IPv6 addresses generated from router announcements
-- IPv6 link local addresses
+The current implementation uses dpni_set_single_step_cfg to update the
+SINLGE_STEP register.
+Using an MC command  on the Tx datapath for each transmitted 1588 message
+introduces high delays, leading to low throughput and consequently to a
+small number of supported PTP clients. Besides these, the nanosecond
+correction field from the PTP packet will contain the high delay from the
+driver which together with the originTimestamp will render timestamp
+values that are unacceptable in a GM clock implementation.
 
-User space may pass custom protocols, not defined by the kernel.
+This patch series replaces the dpni_set_single_step_cfg function call from
+the Tx datapath for 1588 messages (when one step timestamping is enabled) 
+with a callback that either implements direct access to the SINGLE_STEP
+register, eliminating the overhead caused by the MC command that will need
+to be dispatched by the MC firmware through the MC command portal
+interface or falls back to the dpni_set_single_step_cfg in case the MC
+version does not have support for returning the single step register
+base address.
 
-Grouping addresses on their origin is useful in scenarios where you want
-to distinguish between addresses based on who added them, e.g. kernel
-vs. user space.
+In other words all the delay introduced by dpni_set_single_step_cfg
+function will be eliminated (if MC version has support for returning the
+base address of the single step register), improving the egress driver
+performance for PTP packets when single step timestamping is enabled.
 
-Tagging addresses with a string label is an existing feature that could be
-used as a solution. Unfortunately the max length of a label is
-15 characters, and for compatibility reasons the label must be prefixed
-with the name of the device followed by a colon. Since device names also
-have a max length of 15 characters, only -1 characters is guaranteed to be
-available for any origin tag, which is not that much.
+The first patch adds a new attribute that contains the base address of
+the SINGLE_STEP register. It will be used to directly update the register
+on the Tx datapath.
 
-A reference implementation of user space setting and getting protocols
-is available for iproute2:
+The second patch updates the driver such that the SINGLE_STEP
+register is either accessed directly if MC version >= 10.32 or is
+accessed through dpni_set_single_step_cfg command when 1588 messages
+are transmitted.
 
-https://github.com/westermo/iproute2/commit/9a6ea18bd79f47f293e5edc7780f315ea42ff540
+Radu Bulie (2):
+  dpaa2-eth: Update dpni_get_single_step_cfg command
+  dpaa2-eth: Provide direct access to 1588 one step register
 
-Signed-off-by: Jacques de Laval <Jacques.De.Laval@westermo.com>
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 96 +++++++++++++++++--
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  | 12 ++-
+ .../net/ethernet/freescale/dpaa2/dpni-cmd.h   |  6 +-
+ drivers/net/ethernet/freescale/dpaa2/dpni.c   |  2 +
+ drivers/net/ethernet/freescale/dpaa2/dpni.h   |  6 ++
+ 5 files changed, 110 insertions(+), 12 deletions(-)
 
----
-v1 -> v2:
-  - Move ifa_prot to existing holes in structs (David)
-  - Change __u8 to u8 (Jakub)
-  - Define and use constants for addresses set by kernel (David)
-v2 -> v3:
-  - Document userspace attribute in comment (David)
-  - Fix comment formatting (David)
-  - Don't set IFAPROT_KERNEL_LO in inet_set_ifa, could be userspace
-    initiated (David)
-  - Only set protocol attribute if specified (David)
----
- include/linux/inetdevice.h   |  1 +
- include/net/addrconf.h       |  2 ++
- include/net/if_inet6.h       |  2 ++
- include/uapi/linux/if_addr.h |  9 ++++++++-
- net/ipv4/devinet.c           |  7 +++++++
- net/ipv6/addrconf.c          | 27 +++++++++++++++++++++------
- 6 files changed, 41 insertions(+), 7 deletions(-)
-
-diff --git a/include/linux/inetdevice.h b/include/linux/inetdevice.h
-index a038feb63f23..6a8bca95a443 100644
---- a/include/linux/inetdevice.h
-+++ b/include/linux/inetdevice.h
-@@ -146,6 +146,7 @@ struct in_ifaddr {
- 	__be32			ifa_broadcast;
- 	unsigned char		ifa_scope;
- 	unsigned char		ifa_prefixlen;
-+	unsigned char		ifa_proto;
- 	__u32			ifa_flags;
- 	char			ifa_label[IFNAMSIZ];
- 
-diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-index 78ea3e332688..54890114127f 100644
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -62,6 +62,8 @@ struct ifa6_config {
- 	const struct in6_addr	*pfx;
- 	unsigned int		plen;
- 
-+	u8			ifa_proto;
-+
- 	const struct in6_addr	*peer_pfx;
- 
- 	u32			rt_priority;
-diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
-index 653e7d0f65cb..9127ab101af5 100644
---- a/include/net/if_inet6.h
-+++ b/include/net/if_inet6.h
-@@ -71,6 +71,8 @@ struct inet6_ifaddr {
- 
- 	bool			tokenized;
- 
-+	u8			ifa_proto;
-+
- 	struct rcu_head		rcu;
- 	struct in6_addr		peer_addr;
- };
-diff --git a/include/uapi/linux/if_addr.h b/include/uapi/linux/if_addr.h
-index dfcf3ce0097f..1c392dd95a5e 100644
---- a/include/uapi/linux/if_addr.h
-+++ b/include/uapi/linux/if_addr.h
-@@ -33,8 +33,9 @@ enum {
- 	IFA_CACHEINFO,
- 	IFA_MULTICAST,
- 	IFA_FLAGS,
--	IFA_RT_PRIORITY,  /* u32, priority/metric for prefix route */
-+	IFA_RT_PRIORITY,	/* u32, priority/metric for prefix route */
- 	IFA_TARGET_NETNSID,
-+	IFA_PROTO,		/* u8, address protocol */
- 	__IFA_MAX,
- };
- 
-@@ -69,4 +70,10 @@ struct ifa_cacheinfo {
- #define IFA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ifaddrmsg))
- #endif
- 
-+/* ifa_proto */
-+#define IFAPROT_UNSPEC		0
-+#define IFAPROT_KERNEL_LO	1	/* loopback */
-+#define IFAPROT_KERNEL_RA	2	/* set by kernel from router announcement */
-+#define IFAPROT_KERNEL_LL	3	/* link-local set by kernel */
-+
- #endif
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index 4744c7839de5..8db1d337449c 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -102,6 +102,7 @@ static const struct nla_policy ifa_ipv4_policy[IFA_MAX+1] = {
- 	[IFA_FLAGS]		= { .type = NLA_U32 },
- 	[IFA_RT_PRIORITY]	= { .type = NLA_U32 },
- 	[IFA_TARGET_NETNSID]	= { .type = NLA_S32 },
-+	[IFA_PROTO]		= { .type = NLA_U8 },
- };
- 
- struct inet_fill_args {
-@@ -887,6 +888,9 @@ static struct in_ifaddr *rtm_to_ifaddr(struct net *net, struct nlmsghdr *nlh,
- 	if (tb[IFA_RT_PRIORITY])
- 		ifa->ifa_rt_priority = nla_get_u32(tb[IFA_RT_PRIORITY]);
- 
-+	if (tb[IFA_PROTO])
-+		ifa->ifa_proto = nla_get_u8(tb[IFA_PROTO]);
-+
- 	if (tb[IFA_CACHEINFO]) {
- 		struct ifa_cacheinfo *ci;
- 
-@@ -1623,6 +1627,7 @@ static size_t inet_nlmsg_size(void)
- 	       + nla_total_size(4) /* IFA_BROADCAST */
- 	       + nla_total_size(IFNAMSIZ) /* IFA_LABEL */
- 	       + nla_total_size(4)  /* IFA_FLAGS */
-+	       + nla_total_size(1)  /* IFA_PROTO */
- 	       + nla_total_size(4)  /* IFA_RT_PRIORITY */
- 	       + nla_total_size(sizeof(struct ifa_cacheinfo)); /* IFA_CACHEINFO */
- }
-@@ -1697,6 +1702,8 @@ static int inet_fill_ifaddr(struct sk_buff *skb, struct in_ifaddr *ifa,
- 	     nla_put_in_addr(skb, IFA_BROADCAST, ifa->ifa_broadcast)) ||
- 	    (ifa->ifa_label[0] &&
- 	     nla_put_string(skb, IFA_LABEL, ifa->ifa_label)) ||
-+	    (ifa->ifa_proto &&
-+	     nla_put_u8(skb, IFA_PROTO, ifa->ifa_proto)) ||
- 	    nla_put_u32(skb, IFA_FLAGS, ifa->ifa_flags) ||
- 	    (ifa->ifa_rt_priority &&
- 	     nla_put_u32(skb, IFA_RT_PRIORITY, ifa->ifa_rt_priority)) ||
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 846037e73723..235114e418c6 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -1117,6 +1117,7 @@ ipv6_add_addr(struct inet6_dev *idev, struct ifa6_config *cfg,
- 	ifa->prefix_len = cfg->plen;
- 	ifa->rt_priority = cfg->rt_priority;
- 	ifa->flags = cfg->ifa_flags;
-+	ifa->ifa_proto = cfg->ifa_proto;
- 	/* No need to add the TENTATIVE flag for addresses with NODAD */
- 	if (!(cfg->ifa_flags & IFA_F_NODAD))
- 		ifa->flags |= IFA_F_TENTATIVE;
-@@ -2598,6 +2599,7 @@ int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device *dev,
- 			.valid_lft = valid_lft,
- 			.preferred_lft = prefered_lft,
- 			.scope = addr_type & IPV6_ADDR_SCOPE_MASK,
-+			.ifa_proto = IFAPROT_KERNEL_RA
- 		};
- 
- #ifdef CONFIG_IPV6_OPTIMISTIC_DAD
-@@ -3069,7 +3071,7 @@ int addrconf_del_ifaddr(struct net *net, void __user *arg)
- }
- 
- static void add_addr(struct inet6_dev *idev, const struct in6_addr *addr,
--		     int plen, int scope)
-+		     int plen, int scope, u8 proto)
- {
- 	struct inet6_ifaddr *ifp;
- 	struct ifa6_config cfg = {
-@@ -3078,7 +3080,8 @@ static void add_addr(struct inet6_dev *idev, const struct in6_addr *addr,
- 		.ifa_flags = IFA_F_PERMANENT,
- 		.valid_lft = INFINITY_LIFE_TIME,
- 		.preferred_lft = INFINITY_LIFE_TIME,
--		.scope = scope
-+		.scope = scope,
-+		.ifa_proto = proto
- 	};
- 
- 	ifp = ipv6_add_addr(idev, &cfg, true, NULL);
-@@ -3123,7 +3126,7 @@ static void add_v4_addrs(struct inet6_dev *idev)
- 	}
- 
- 	if (addr.s6_addr32[3]) {
--		add_addr(idev, &addr, plen, scope);
-+		add_addr(idev, &addr, plen, scope, IFAPROT_UNSPEC);
- 		addrconf_prefix_route(&addr, plen, 0, idev->dev, 0, pflags,
- 				      GFP_KERNEL);
- 		return;
-@@ -3146,7 +3149,8 @@ static void add_v4_addrs(struct inet6_dev *idev)
- 					flag |= IFA_HOST;
- 				}
- 
--				add_addr(idev, &addr, plen, flag);
-+				add_addr(idev, &addr, plen, flag,
-+					 IFAPROT_UNSPEC);
- 				addrconf_prefix_route(&addr, plen, 0, idev->dev,
- 						      0, pflags, GFP_KERNEL);
- 			}
-@@ -3169,7 +3173,7 @@ static void init_loopback(struct net_device *dev)
- 		return;
- 	}
- 
--	add_addr(idev, &in6addr_loopback, 128, IFA_HOST);
-+	add_addr(idev, &in6addr_loopback, 128, IFA_HOST, IFAPROT_KERNEL_LO);
- }
- 
- void addrconf_add_linklocal(struct inet6_dev *idev,
-@@ -3181,7 +3185,8 @@ void addrconf_add_linklocal(struct inet6_dev *idev,
- 		.ifa_flags = flags | IFA_F_PERMANENT,
- 		.valid_lft = INFINITY_LIFE_TIME,
- 		.preferred_lft = INFINITY_LIFE_TIME,
--		.scope = IFA_LINK
-+		.scope = IFA_LINK,
-+		.ifa_proto = IFAPROT_KERNEL_LL
- 	};
- 	struct inet6_ifaddr *ifp;
- 
-@@ -4626,6 +4631,7 @@ static const struct nla_policy ifa_ipv6_policy[IFA_MAX+1] = {
- 	[IFA_FLAGS]		= { .len = sizeof(u32) },
- 	[IFA_RT_PRIORITY]	= { .len = sizeof(u32) },
- 	[IFA_TARGET_NETNSID]	= { .type = NLA_S32 },
-+	[IFA_PROTO]             = { .len = sizeof(u8) },
- };
- 
- static int
-@@ -4750,6 +4756,7 @@ static int inet6_addr_modify(struct inet6_ifaddr *ifp, struct ifa6_config *cfg)
- 	ifp->tstamp = jiffies;
- 	ifp->valid_lft = cfg->valid_lft;
- 	ifp->prefered_lft = cfg->preferred_lft;
-+	ifp->ifa_proto = cfg->ifa_proto;
- 
- 	if (cfg->rt_priority && cfg->rt_priority != ifp->rt_priority)
- 		ifp->rt_priority = cfg->rt_priority;
-@@ -4843,6 +4850,9 @@ inet6_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	if (tb[IFA_RT_PRIORITY])
- 		cfg.rt_priority = nla_get_u32(tb[IFA_RT_PRIORITY]);
- 
-+	if (tb[IFA_PROTO])
-+		cfg.ifa_proto = nla_get_u8(tb[IFA_PROTO]);
-+
- 	cfg.valid_lft = INFINITY_LIFE_TIME;
- 	cfg.preferred_lft = INFINITY_LIFE_TIME;
- 
-@@ -4946,6 +4956,7 @@ static inline int inet6_ifaddr_msgsize(void)
- 	       + nla_total_size(16) /* IFA_ADDRESS */
- 	       + nla_total_size(sizeof(struct ifa_cacheinfo))
- 	       + nla_total_size(4)  /* IFA_FLAGS */
-+	       + nla_total_size(1)  /* IFA_PROTO */
- 	       + nla_total_size(4)  /* IFA_RT_PRIORITY */;
- }
- 
-@@ -5023,6 +5034,10 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
- 	if (nla_put_u32(skb, IFA_FLAGS, ifa->flags) < 0)
- 		goto error;
- 
-+	if (ifa->ifa_proto &&
-+	    nla_put_u8(skb, IFA_PROTO, ifa->ifa_proto))
-+		goto error;
-+
- 	nlmsg_end(skb, nlh);
- 	return 0;
- 
 -- 
-2.35.1
+2.17.1
 
