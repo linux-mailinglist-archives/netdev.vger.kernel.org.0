@@ -2,108 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6110A4B5887
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 18:30:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D5EA4B588C
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 18:32:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345282AbiBNRaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 12:30:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55212 "EHLO
+        id S244982AbiBNRc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 12:32:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231523AbiBNRaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 12:30:20 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD86652FF
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 09:30:12 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id p6so10889607plf.10
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 09:30:12 -0800 (PST)
+        with ESMTP id S238624AbiBNRcz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 12:32:55 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4445065406;
+        Mon, 14 Feb 2022 09:32:46 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id v12so28125573wrv.2;
+        Mon, 14 Feb 2022 09:32:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=tWeBivdFQWK4tciH9zAFPTd1KwaCUjbhdlyIMnERNgk=;
-        b=i7sK2qM0nbMfqz06BCEnFNidC5HNdyW+Qk90n4ktUjiSqBQxsqVVTChKaSNzoM5r0M
-         h5VLXLwI+YYYTYvk9LhNpYkuD8PWSsgGJ6YJ96jGYNpTJVMwo1N7Wqvlx55Sn3BJRDLA
-         CpxgGXULJHK7KU2bL6lFNwCEjVmSHO/kP1QI9/raHr82T301SmEyXNzt9C2X8wbHRcju
-         xFgGvHGxtscilYML2YDEX5V2z9Sk7+NyApRuD2jWFhrll3qHAIjqPH5ZplQIYu5VV/sK
-         m/WoUoT3+XUr1bac0dHcQU65Txu9NXRGzI/gQf9mMKtP5Q/I9gLsuqhs70Kq2kzYgjIJ
-         cDAw==
+        bh=hptSBMKt9IKU4INC+fVfwFIMnoNyAn21o8ZVMp5gKAY=;
+        b=iNRKLvIPYB87xGwXyPBV7ueJX2pIL+OQ+ad9WyTyI/i5DIs57p08UIKXvEhmqchtIk
+         HKgQ3CfxJnZyDP5D58rvmkWv+KpTxtXkFY8Drr+BuVz0WeW9A0zi7zYAwA+VkiMhMn9l
+         XtT7Mx0O5ZcqOTEW5gP43UWzfsb47DgDLg/+3E/OLi09JeptW8FEMUC9hD00DR4uyE9g
+         +cotBCIY1iJh2Vijh6PMPzG3iNurpTGVLVrNakPUiV7l9+YMn3nDPPRRn5eYQWRynom7
+         pS/2kWv8e3864DAS3NAapts5WG3VqWFvaMO0Du76Cq7uwgSmTmvcfFJGhOuKSMreBRYG
+         6XIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=tWeBivdFQWK4tciH9zAFPTd1KwaCUjbhdlyIMnERNgk=;
-        b=1yNeaWd4v3Ycnrm64sIM12GTWOZWROuqd1IF1B2k6v57yZyzKrJ8bQY/dugB+cqpkj
-         gDuWs0+83zq8zt534GJgbywjJVuhsPMJKIVCDQa7Vcj6TDqj7BVRM02iQ3dLayQ4PLHJ
-         T5PSbNcnakA1PmKyYTTwPXP2ksuJCLomfIQpJXwk7UU1eqzCPlsWxTQc+I68q7M71UVE
-         4LPmZvWUpiUAPNgkYOm0oezkiGlAZYqwh0tZT6qnIrlX9ZuryE3KiZW0V5y2ueO0lBHP
-         4ND0wotgvoEJy6Xp+a0wokqxIPFrrp9xyHiUJjxJ+v+OfJ1ccgUUv6wmawFhDP9baLr4
-         L5jQ==
-X-Gm-Message-State: AOAM530kaIeJaDAvUr63Zd5Oj+Wkm6sApOxYcPDU4JwL/5cZK4OIjtYX
-        9t2CeRrTE5ILtiQxWLpBFId70cpOR/36T4/0
-X-Google-Smtp-Source: ABdhPJyBmJqJfgv7BWaLR9G4cOcSFBNg7KGyy8zCY+ZmcPuQtO35cgFFU/oPhIZ7tofZa97L26nAQg==
-X-Received: by 2002:a17:902:b185:: with SMTP id s5mr18752plr.123.1644859811299;
-        Mon, 14 Feb 2022 09:30:11 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id hk13sm1758306pjb.30.2022.02.14.09.30.10
-        for <netdev@vger.kernel.org>
+        bh=hptSBMKt9IKU4INC+fVfwFIMnoNyAn21o8ZVMp5gKAY=;
+        b=2fBMMHPnpXaGkCwCPfD9iGcK8EEYQmMKCV3M7uLM2B1GSwLH40e4xiU9hQqcwfM9wG
+         QX2/FW2nmQMGuDARz69ojnqby4yOphaaPW4FW/bUMHebhVYJkBxOgXihQn88D6MvEGWt
+         W4sLfjrVLCGfOBm73YHMdaxTTHCYKhA49yklkLh/TXHELY+CC1f8rFNGqHlngytEtzOI
+         kjinWm6VLnlf3ZCMhp8Rix993Nja4CWGE0QC26LAE1UGC9Qrte2NwcUYsJsGK5aR0siz
+         lDYHq+HVGZm4RkmwO+Odba0l659y2zk6XRNgI9ythYMdwQhEQvVIipeebRlFDg/20Doe
+         siJg==
+X-Gm-Message-State: AOAM530yttr/3a8I3A5kwRoih8VHKbSnwmGNVKqD4PuMD/S68WgvY7B1
+        VlJf/O9rGyWAQMGXfOI+bMNfY+nh2fmgMQ==
+X-Google-Smtp-Source: ABdhPJy0+4MMhFyDRD81SLmmOEANHZ/y98v/g3IHCQ7+IXmwjkyG8WbdFOV12AKcRWQ0BRgLP6n32g==
+X-Received: by 2002:adf:e68a:: with SMTP id r10mr72416wrm.498.1644859964823;
+        Mon, 14 Feb 2022 09:32:44 -0800 (PST)
+Received: from syracuse.iliad.local (freebox.vlq16.iliad.fr. [213.36.7.13])
+        by smtp.gmail.com with ESMTPSA id p4sm7039125wmq.40.2022.02.14.09.32.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 09:30:10 -0800 (PST)
-Date:   Mon, 14 Feb 2022 09:30:08 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 215599] New: System freeze after add mirror rule from
- traffic control
-Message-ID: <20220214093008.7e8f9cdd@hermes.local>
+        Mon, 14 Feb 2022 09:32:44 -0800 (PST)
+From:   Nicolas Escande <nico.escande@gmail.com>
+To:     linux-wireless@vger.kernel.org
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Michal Kazior <michal.kazior@tieto.com>,
+        Thomas Pedersen <thomas@cozybit.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Nicolas Escande <nico.escande@gmail.com>,
+        Remi Pommarel <repk@triplefau.lt>
+Subject: [PATCH] mac80211: fix forwarded mesh frames AC & queue selection
+Date:   Mon, 14 Feb 2022 18:32:14 +0100
+Message-Id: <20220214173214.368862-1-nico.escande@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+There are two problems with the current code that have been highlighted
+with the AQL feature that is now enbaled by default.
 
+First problem is in ieee80211_rx_h_mesh_fwding(),
+ieee80211_select_queue_80211() is used on received packets to choose
+the sending AC queue of the forwarding packet although this function
+should only be called on TX packet (it uses ieee80211_tx_info).
+This ends with forwarded mesh packets been sent on unrelated random AC
+queue. To fix that, AC queue can directly be infered from skb->priority
+which has been extracted from QOS info (see ieee80211_parse_qos()).
 
-Begin forwarded message:
+Second problem is the value of queue_mapping set on forwarded mesh
+frames via skb_set_queue_mapping() is not the AC of the packet but a
+hardware queue index. This may or may not work depending on AC to HW
+queue mapping which is driver specific.
 
-Date: Sat, 12 Feb 2022 21:16:42 +0000
-From: bugzilla-daemon@kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 215599] New: System freeze after add mirror rule from traffic control
+Both of these issues lead to improper AC selection while forwarding
+mesh packets but more importantly due to improper airtime accounting
+(which is done on a per STA, per AC basis) caused traffic stall with
+the introduction of AQL.
 
+Fixes: cf44012810cc ("mac80211: fix unnecessary frame drops in mesh fwding")
+Fixes: d3c1597b8d1b ("mac80211: fix forwarded mesh frame queue mapping")
+Co-developed-by: Remi Pommarel <repk@triplefau.lt>
+Signed-off-by: Remi Pommarel <repk@triplefau.lt>
+Signed-off-by: Nicolas Escande <nico.escande@gmail.com>
+---
+ net/mac80211/rx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215599
-
-            Bug ID: 215599
-           Summary: System freeze after add mirror rule from traffic
-                    control
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.16.5-arch1-1
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: Other
-          Assignee: stephen@networkplumber.org
-          Reporter: ne-vlezay80@yandex.ru
-        Regression: No
-
-The rule:
-tc qdisc add dev eth1 handle ffff: ingress
-tc filter add dev eth1 parent 1: flower src_mac 22:22:22:22:22:22 action mirred
-ingress mirror dev gretap-test0
-
-System freezes after creating the rule from container.
-
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 8885d3923bed..ca7e1f99a8c0 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -2923,13 +2923,13 @@ ieee80211_rx_h_mesh_fwding(struct ieee80211_rx_data *rx)
+ 	    ether_addr_equal(sdata->vif.addr, hdr->addr3))
+ 		return RX_CONTINUE;
+ 
+-	ac = ieee80211_select_queue_80211(sdata, skb, hdr);
++	ac = ieee802_1d_to_ac[skb->priority];
+ 	q = sdata->vif.hw_queue[ac];
+ 	if (ieee80211_queue_stopped(&local->hw, q)) {
+ 		IEEE80211_IFSTA_MESH_CTR_INC(ifmsh, dropped_frames_congestion);
+ 		return RX_DROP_MONITOR;
+ 	}
+-	skb_set_queue_mapping(skb, q);
++	skb_set_queue_mapping(skb, ac);
+ 
+ 	if (!--mesh_hdr->ttl) {
+ 		if (!is_multicast_ether_addr(hdr->addr1))
 -- 
-You may reply to this email to add a comment.
+2.35.1
 
-You are receiving this mail because:
-You are the assignee for the bug.
