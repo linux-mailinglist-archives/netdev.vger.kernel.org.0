@@ -2,54 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50B814B5919
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 18:51:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFF784B5922
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 18:53:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357252AbiBNRvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 12:51:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39504 "EHLO
+        id S1357260AbiBNRvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 12:51:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346837AbiBNRvO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 12:51:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E2F765435;
-        Mon, 14 Feb 2022 09:51:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CF216159F;
-        Mon, 14 Feb 2022 17:51:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3154C340FD;
-        Mon, 14 Feb 2022 17:51:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644861065;
-        bh=E1fsyjxKOo6eUswTTQIheKg+D7Wu36faXZ8v2Mp0QAY=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=fnRHp1SDoiGaz950pAvCga0KFRBWDRQKJlrwuFNhnCNWPH1hl17X8tC5/cjIMsmed
-         h35N35Ap0wJedOWMgq+sEu7BWJIirrxmvG+QblRh0SBQQA2ACZBN5KdlxlHT8ij2xk
-         Alu+BrjI4GOJBDZIHYxXukivBKK9aJZTVzoeRkjYZcOObJ0MN/SavShoQCyFkauJH1
-         M3U/xCZky3wW14K89d9c7z7bWqE1H3F88dSfux8apLq6o6YF+MPEaEUdE0naH/eAF5
-         SNrPUMyxP+HlDc8jOhSuFH6xGq+DupO87IbYHd3tj443iTgNpWNdIa2br7tHFY4r9E
-         8Yh4GRrsU2bfQ==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1346837AbiBNRvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 12:51:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D6E1FC40
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 09:51:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644861106;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=sRClfikrb2SAycFi2aWUxJvEEU6PW+e2USfmkK1Iaug=;
+        b=UVRN1nDA2L4V0QTsPM2TJIgUNYbVNPM+/2zZDl5RfW2OIb7WrYH1CHXtB3Chd6t0FSQKAy
+        hz9E6JNXzVgSGOh7mqL8XvU2CBP/xs3e888ewcWhN/agkNFTBop+z4OvtqrDKowK1GRxdJ
+        nAyIfDY3nRArpNDEuW35SFd9I4VQs0Y=
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
+ [209.85.210.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-329-CRpa71_qML-0NkRs0u3b-Q-1; Mon, 14 Feb 2022 12:51:44 -0500
+X-MC-Unique: CRpa71_qML-0NkRs0u3b-Q-1
+Received: by mail-ot1-f70.google.com with SMTP id q4-20020a056830018400b0059eb82177ceso10792760ota.1
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 09:51:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sRClfikrb2SAycFi2aWUxJvEEU6PW+e2USfmkK1Iaug=;
+        b=gdbzHOYPznQSeSMCPGLxUk4Mn5lIuXaFYQ0c1Sl5a3Ik1kH/jbO+oRf7ai+dDe70ve
+         fzrYNRcp5IFX+a9KgNy7T2ENlpbXSk3m1RdJBOb44RxwZ4/+5yuMw9+gHHwY/TJSqMuM
+         naOGZtNvrTcqI7lwLVOzAyCqh+lZLD/RHZMc3Lcs4CKzXghPP1QWpJWZcMk8S9ONNCqm
+         WwovRqJtARbgIpyNPgtmvGJDeXCv8Vjg5liYEk110DXeOg1i7U/mNNqh6UAGZYGwYt6K
+         oCD3ESHJv+ywwD3206Y06gtt4RiurjslKJESCEx4qyzJFvKRPLp5KJPeXBx1/53p4vBn
+         v48w==
+X-Gm-Message-State: AOAM531snOUAiv1UdiIOxOCuCJ3LmkNu/6x+nRUpyQoMWJSv29r912+n
+        vlm4whrqa6VJPviDhReEzkTW/41YxikiGFBceI4bNzxuhwN98J3lMi+rthBKbT6XGfwOskmowv3
+        Mk0/06x3ZajTgeM44
+X-Received: by 2002:a9d:6e84:: with SMTP id a4mr18935otr.43.1644861103174;
+        Mon, 14 Feb 2022 09:51:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzcnHxTDhHzI4mHvMfEWEZ41qbHYDvsaNz05h/swvvbijMzbRD2lKpXlDtrTUoDdBuBcdn0Yg==
+X-Received: by 2002:a9d:6e84:: with SMTP id a4mr18930otr.43.1644861102975;
+        Mon, 14 Feb 2022 09:51:42 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id w20sm12910024ooe.3.2022.02.14.09.51.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 09:51:42 -0800 (PST)
+From:   trix@redhat.com
+To:     jk@codeconstruct.com.au, matt@codeconstruct.com.au,
+        davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
+Subject: [PATCH] mctp: fix use after free
+Date:   Mon, 14 Feb 2022 09:51:38 -0800
+Message-Id: <20220214175138.2902947-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH V2] wcn36xx: use struct_size over open coded arithmetic
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220208015606.1514022-1-chi.minghao@zte.com.cn>
-References: <20220208015606.1514022-1-chi.minghao@zte.com.cn>
-To:     cgel.zte@gmail.com
-Cc:     davem@davemloft.net, kuba@kernel.org, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164486106193.4355.17554368439155667103.kvalo@kernel.org>
-Date:   Mon, 14 Feb 2022 17:51:03 +0000 (UTC)
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,30 +75,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cgel.zte@gmail.com wrote:
+From: Tom Rix <trix@redhat.com>
 
-> Replace zero-length array with flexible-array member and make use
-> of the struct_size() helper in kmalloc(). For example:
-> 
-> struct wcn36xx_hal_ind_msg {
->     struct list_head list;
->     size_t msg_len;
->     u8 msg[];
-> };
-> 
-> Make use of the struct_size() helper instead of an open-coded version
-> in order to avoid any potential type mistakes.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
-> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Clang static analysis reports this problem
+route.c:425:4: warning: Use of memory after it is freed
+  trace_mctp_key_acquire(key);
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+When mctp_key_add() fails, key is freed but then is later
+used in trace_mctp_key_acquire().  Add an else statement
+to use the key only when mctp_key_add() is successful.
 
-Patch applied to ath-next branch of ath.git, thanks.
+Fixes: 4a992bbd3650 ("mctp: Implement message fragmentation & reassembly")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ net/mctp/route.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-be24835f8323 wcn36xx: use struct_size over open coded arithmetic
-
+diff --git a/net/mctp/route.c b/net/mctp/route.c
+index 17e3482aa770..0c4c56e1bd6e 100644
+--- a/net/mctp/route.c
++++ b/net/mctp/route.c
+@@ -419,13 +419,14 @@ static int mctp_route_input(struct mctp_route *route, struct sk_buff *skb)
+ 			 * this function.
+ 			 */
+ 			rc = mctp_key_add(key, msk);
+-			if (rc)
++			if (rc) {
+ 				kfree(key);
++			} else {
++				trace_mctp_key_acquire(key);
+ 
+-			trace_mctp_key_acquire(key);
+-
+-			/* we don't need to release key->lock on exit */
+-			mctp_key_unref(key);
++				/* we don't need to release key->lock on exit */
++				mctp_key_unref(key);
++			}
+ 			key = NULL;
+ 
+ 		} else {
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220208015606.1514022-1-chi.minghao@zte.com.cn/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.26.3
 
