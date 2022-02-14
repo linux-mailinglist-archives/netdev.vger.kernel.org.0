@@ -2,173 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C11F54B5138
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 14:10:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D57D4B51ED
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 14:41:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353995AbiBNNKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 08:10:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55740 "EHLO
+        id S1354446AbiBNNkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 08:40:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244267AbiBNNKl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 08:10:41 -0500
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A09404EA0F
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 05:10:32 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0V4S1jRv_1644844229;
-Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V4S1jRv_1644844229)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 14 Feb 2022 21:10:30 +0800
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     dsahern@kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Subject: [RFC PATCH net] vrf: fix incorrect dereferencing of skb->cb
-Date:   Mon, 14 Feb 2022 21:10:29 +0800
-Message-Id: <1644844229-54977-1-git-send-email-alibuda@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231216AbiBNNkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 08:40:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D58385621C;
+        Mon, 14 Feb 2022 05:40:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 719F9614FD;
+        Mon, 14 Feb 2022 13:40:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D58A7C36AE3;
+        Mon, 14 Feb 2022 13:40:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644846009;
+        bh=t+3A7IemZeIy2izi4BzkNKp+rbO8ID2k2gzjcH33Apk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Si76sOSy0APJPpUgebjXIL54VMSVC2yfSVrlH/2Lmrthaa9OcMnhUpgDRKWFzjtEm
+         bZq1AuFActM4qVBkM7KVLtMs78Nwp1xyY4E+vkTAKuqAVetxGwrO9gCmKDXgHwiCJO
+         LZaZ7c1obNLc3E7vj++1Rl6ptjnsGYAY7aPvikZp3/lloHO9bXFd26s/QlwZUuQe12
+         QsRHQdW9VLuCRKbl6kIPBbriTHYiCrcXTgzeueTT6V8ZnTTXAwySfoDYFcxbxRUuaF
+         ee6Z1K51rP/OVdqOajqb4RUNIeuNHxRPRxhZUZc1xAAcYHca0KV32gAQ2G4ewuej9o
+         zKkkx0ihr4fjg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C06A1E5D09D;
+        Mon, 14 Feb 2022 13:40:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] ipv6: mcast: use rcu-safe version of ipv6_get_lladdr()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164484600978.23487.12151105643711844035.git-patchwork-notify@kernel.org>
+Date:   Mon, 14 Feb 2022 13:40:09 +0000
+References: <20220211173042.112852-1-ignat@cloudflare.com>
+In-Reply-To: <20220211173042.112852-1-ignat@cloudflare.com>
+To:     Ignat Korchagin <ignat@cloudflare.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@cloudflare.com,
+        dpini@cloudflare.com
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "D. Wythe" <alibuda@linux.alibaba.com>
+Hello:
 
-There is a failed test case in vrf scenario, it can be reproduced
-with script:
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-./vrf_route_leaking.sh -t ipv6_ping_frag
+On Fri, 11 Feb 2022 17:30:42 +0000 you wrote:
+> Some time ago 8965779d2c0e ("ipv6,mcast: always hold idev->lock before mca_lock")
+> switched ipv6_get_lladdr() to __ipv6_get_lladdr(), which is rcu-unsafe
+> version. That was OK, because idev->lock was held for these codepaths.
+> 
+> In 88e2ca308094 ("mld: convert ifmcaddr6 to RCU") these external locks were
+> removed, so we probably need to restore the original rcu-safe call.
+> 
+> [...]
 
-Which output is similar to following:
+Here is the summary with links:
+  - ipv6: mcast: use rcu-safe version of ipv6_get_lladdr()
+    https://git.kernel.org/netdev/net/c/26394fc118d6
 
-TEST: Basic IPv6 connectivity			[ OK ]
-TEST: Ping received ICMP Packet too big		[FAIL]
-
-The direct cause of this issue is because the Packet too big in ICMPv6
-is sent by the message whose source address is IPv6 loopback address and
-is discarded dues to its input interface is not the local loopback device.
-But the root cause is there's a bug that affects the correct source
-address selection.
-
-In the above case the calling stack is as follows:
-
-    icmp6_send+1
-    ip6_fragment+543
-    ip6_output+98
-    vrf_ip6_local_out+78
-    vrf_xmit+424
-    dev_hard_start_xmit+221
-    __dev_queue_xmit+2792
-    ip6_finish_output2+705
-    ip6_output+98
-    ip6_forward+1464
-    ipv6_rcv+67
-
-To be more specific:
-
-ipv6_rcv()
-	init skb->cb as struct inet6_skb_parm
-...
-__dev_queue_xmit()
-	qdisc_pkt_len_init()
-	init skb->cb as struct qdisc_skb_cb
-...
-vrf_xmit
-	fill skb->cb to zero.
-...
-ip6_fragment()
-icmp6_send()
-	treats skb->cb as struct inet6_skb_parm.
-
-icmp6_send() will try to use original input interface in IP6CB for
-selecting a more meaningful source address, we should keep the old IP6CB
-rather than overwrite it.
-
-This patch try remove the memset and make the struct qdisc_skb_cb
-contains inet_skb_parm/inet6_skb_parm, which makes it possible to read
-the correct IP6CB in icmp6_send() without any changes in that case.
-
-One problem is that the size of struct qdisc_skb_cb has increased,
-the original skb->cb cannnot fit struct bpf_skb_data_end anymore, which
-requires increase the size of skb->cb. This patch try increase it by the
-union size of inet_skb_parm/inet6_skb_parm, which is 24.
-
-struct bpf_skb_data_end {
-	struct qdisc_skb_cb qdisc_cb;
-	void *data_meta;
-	void *data_end;
-};
-
-Fixes: ee201011c1e1 ("vrf: Reset IPCB/IP6CB when processing outbound pkts in vrf dev xmit")
-Fixes: 35402e313663 ("net: Add IPv6 support to VRF device")
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
----
- drivers/net/vrf.c         | 2 --
- include/linux/skbuff.h    | 2 +-
- include/net/sch_generic.h | 7 +++++++
- 3 files changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index e0b1ab9..a3601d0 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -498,7 +498,6 @@ static netdev_tx_t vrf_process_v6_outbound(struct sk_buff *skb,
- 	/* strip the ethernet header added for pass through VRF device */
- 	__skb_pull(skb, skb_network_offset(skb));
- 
--	memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
- 	ret = vrf_ip6_local_out(net, skb->sk, skb);
- 	if (unlikely(net_xmit_eval(ret)))
- 		dev->stats.tx_errors++;
-@@ -581,7 +580,6 @@ static netdev_tx_t vrf_process_v4_outbound(struct sk_buff *skb,
- 					       RT_SCOPE_LINK);
- 	}
- 
--	memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
- 	ret = vrf_ip_local_out(dev_net(skb_dst(skb)->dev), skb->sk, skb);
- 	if (unlikely(net_xmit_eval(ret)))
- 		vrf_dev->stats.tx_errors++;
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index a5adbf6..0328d05 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -811,7 +811,7 @@ struct sk_buff {
- 	 * want to keep them across layers you have to do a skb_clone()
- 	 * first. This is owned by whoever has the skb queued ATM.
- 	 */
--	char			cb[48] __aligned(8);
-+	char			cb[72] __aligned(8);
- 
- 	union {
- 		struct {
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 9bab396..64cb250 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -19,6 +19,7 @@
- #include <net/gen_stats.h>
- #include <net/rtnetlink.h>
- #include <net/flow_offload.h>
-+#include <net/ip.h>
- 
- struct Qdisc_ops;
- struct qdisc_walker;
-@@ -440,6 +441,12 @@ struct tcf_proto {
- };
- 
- struct qdisc_skb_cb {
-+	union {
-+		struct inet_skb_parm	h4;
-+#if IS_ENABLED(CONFIG_IPV6)
-+		struct inet6_skb_parm	h6;
-+#endif
-+	} header;
- 	struct {
- 		unsigned int		pkt_len;
- 		u16			slave_dev_queue_mapping;
+You are awesome, thank you!
 -- 
-1.8.3.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
