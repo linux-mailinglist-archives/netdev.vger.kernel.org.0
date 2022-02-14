@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 627F34B43A5
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 09:15:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BB3E4B43A1
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 09:15:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241646AbiBNIPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 03:15:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41996 "EHLO
+        id S241627AbiBNIOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 03:14:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241707AbiBNIO4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 03:14:56 -0500
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B76395FF2E;
-        Mon, 14 Feb 2022 00:14:48 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V4OcHDr_1644826462;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V4OcHDr_1644826462)
+        with ESMTP id S241614AbiBNIOh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 03:14:37 -0500
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0004F5F8F8;
+        Mon, 14 Feb 2022 00:14:28 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V4Oo2BN_1644826464;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V4Oo2BN_1644826464)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 14 Feb 2022 16:14:23 +0800
+          Mon, 14 Feb 2022 16:14:24 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
@@ -28,9 +28,9 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
-Subject: [PATCH v5 06/22] virtio_ring: queue_reset: packed: support enable reset queue
-Date:   Mon, 14 Feb 2022 16:14:00 +0800
-Message-Id: <20220214081416.117695-7-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v5 07/22] virtio_ring: queue_reset: extract the release function of the vq ring
+Date:   Mon, 14 Feb 2022 16:14:01 +0800
+Message-Id: <20220214081416.117695-8-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220214081416.117695-1-xuanzhuo@linux.alibaba.com>
 References: <20220214081416.117695-1-xuanzhuo@linux.alibaba.com>
@@ -47,97 +47,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The purpose of this patch is to make vring packed support re-enable reset
-vq.
-
-Based on whether the incoming vq passed by vring_setup_virtqueue() is
-NULL or not, distinguish whether it is a normal create virtqueue or
-re-enable a reset queue.
-
-When re-enable a reset queue, reuse the original callback, name, indirect.
+Extract a function __vring_del_virtqueue() from vring_del_virtqueue() to
+handle releasing vq's ring.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/virtio/virtio_ring.c | 29 ++++++++++++++++++-----------
- 1 file changed, 18 insertions(+), 11 deletions(-)
+ drivers/virtio/virtio_ring.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 4639e1643c78..20659f7ca582 100644
+index 20659f7ca582..c5dd17c7dd4a 100644
 --- a/drivers/virtio/virtio_ring.c
 +++ b/drivers/virtio/virtio_ring.c
-@@ -1683,7 +1683,8 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 	bool context,
- 	bool (*notify)(struct virtqueue *),
- 	void (*callback)(struct virtqueue *),
--	const char *name)
-+	const char *name,
-+	struct virtqueue *_vq)
+@@ -2355,12 +2355,10 @@ struct virtqueue *vring_new_virtqueue(unsigned int index,
+ }
+ EXPORT_SYMBOL_GPL(vring_new_virtqueue);
+ 
+-void vring_del_virtqueue(struct virtqueue *_vq)
++static void __vring_del_virtqueue(struct vring_virtqueue *vq)
  {
- 	struct vring_virtqueue *vq;
- 	struct vring_packed_desc *ring;
-@@ -1713,13 +1714,20 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 	if (!device)
- 		goto err_device;
+-	struct vring_virtqueue *vq = to_vvq(_vq);
+-
+ 	spin_lock(&vq->vq.vdev->vqs_list_lock);
+-	list_del(&_vq->list);
++	list_del(&vq->vq.list);
+ 	spin_unlock(&vq->vq.vdev->vqs_list_lock);
  
--	vq = kmalloc(sizeof(*vq), GFP_KERNEL);
--	if (!vq)
--		goto err_vq;
-+	if (_vq) {
-+		vq = to_vvq(_vq);
-+	} else {
-+		vq = kmalloc(sizeof(*vq), GFP_KERNEL);
-+		if (!vq)
-+			goto err_vq;
+ 	if (vq->we_own_ring) {
+@@ -2393,6 +2391,13 @@ void vring_del_virtqueue(struct virtqueue *_vq)
+ 		kfree(vq->split.desc_state);
+ 		kfree(vq->split.desc_extra);
+ 	}
++}
 +
-+		vq->vq.callback = callback;
-+		vq->vq.name = name;
-+		vq->indirect = virtio_has_feature(vdev, VIRTIO_RING_F_INDIRECT_DESC) &&
-+			!context;
-+	}
- 
--	vq->vq.callback = callback;
- 	vq->vq.vdev = vdev;
--	vq->vq.name = name;
- 	vq->vq.num_free = num;
- 	vq->vq.index = index;
- 	vq->we_own_ring = true;
-@@ -1736,8 +1744,6 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 	vq->last_add_time_valid = false;
- #endif
- 
--	vq->indirect = virtio_has_feature(vdev, VIRTIO_RING_F_INDIRECT_DESC) &&
--		!context;
- 	vq->event = virtio_has_feature(vdev, VIRTIO_RING_F_EVENT_IDX);
- 
- 	if (virtio_has_feature(vdev, VIRTIO_F_ORDER_PLATFORM))
-@@ -1778,7 +1784,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 		goto err_desc_extra;
- 
- 	/* No callback?  Tell other side not to bother us. */
--	if (!callback) {
-+	if (!vq->vq.callback) {
- 		vq->packed.event_flags_shadow = VRING_PACKED_EVENT_FLAG_DISABLE;
- 		vq->packed.vring.driver->flags =
- 			cpu_to_le16(vq->packed.event_flags_shadow);
-@@ -1792,7 +1798,8 @@ static struct virtqueue *vring_create_virtqueue_packed(
- err_desc_extra:
- 	kfree(vq->packed.desc_state);
- err_desc_state:
--	kfree(vq);
-+	if (!_vq)
-+		kfree(vq);
- err_vq:
- 	vring_free_queue(vdev, event_size_in_bytes, device, device_event_dma_addr);
- err_device:
-@@ -2317,7 +2324,7 @@ struct virtqueue *vring_setup_virtqueue(
- 	if (virtio_has_feature(vdev, VIRTIO_F_RING_PACKED))
- 		return vring_create_virtqueue_packed(index, num, vring_align,
- 				vdev, weak_barriers, may_reduce_num,
--				context, notify, callback, name);
-+				context, notify, callback, name, vq);
- 
- 	return vring_create_virtqueue_split(index, num, vring_align,
- 			vdev, weak_barriers, may_reduce_num,
++void vring_del_virtqueue(struct virtqueue *_vq)
++{
++	struct vring_virtqueue *vq = to_vvq(_vq);
++
++	__vring_del_virtqueue(vq);
+ 	kfree(vq);
+ }
+ EXPORT_SYMBOL_GPL(vring_del_virtqueue);
 -- 
 2.31.0
 
