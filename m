@@ -2,138 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F0A44B52CC
-	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 15:08:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E28C4B52CF
+	for <lists+netdev@lfdr.de>; Mon, 14 Feb 2022 15:10:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354615AbiBNOIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 09:08:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46768 "EHLO
+        id S1354942AbiBNOKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 09:10:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233557AbiBNOIc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 09:08:32 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AE82ACA;
-        Mon, 14 Feb 2022 06:08:24 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        with ESMTP id S1354904AbiBNOKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 09:10:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6DD25F4
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 06:10:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id E2138210F9;
-        Mon, 14 Feb 2022 14:08:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644847702; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=LNgU2/TJ32LMaRjH5/bFlTFRrwxbTuUloB22no9O++8=;
-        b=EDeDstbblMYM3sn5sKYtajQTBbO0ywVQ2dZrhn33a2Jno9zraWdQ+4p6th8n7BasNslfyt
-        YZz0ReIOgnTYREZ4qFI8hnspevKYIgy1Ko722avcsHc1Uieny7m//7YgnfZSRnqIgiLHSQ
-        04aIvFijxcsBJwDA02Btprnl7G204Gg=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8486413B3A;
-        Mon, 14 Feb 2022 14:08:22 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id nz1bHlZiCmIBPAAAMHmgww
-        (envelope-from <oneukum@suse.com>); Mon, 14 Feb 2022 14:08:22 +0000
-From:   Oliver Neukum <oneukum@suse.com>
-To:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, gregKH@linuxfoundation.org
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        Ross Maynard <bids.7405@bigpond.com>
-Subject: [PATCHv3] USB: zaurus: support another broken Zaurus
-Date:   Mon, 14 Feb 2022 15:08:18 +0100
-Message-Id: <20220214140818.26600-1-oneukum@suse.com>
-X-Mailer: git-send-email 2.34.1
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8831960FC3
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 14:10:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EEED4C340F5;
+        Mon, 14 Feb 2022 14:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644847811;
+        bh=Y4/XDgc+544Dgh9xNve5sRdD88/V2UCbZa/mjVTRaFM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=sRCujBVgv1DPZFsh833dCAsx13BTJnCT4XlstqaIcf1shtsb7gkqRxEjNQtF3JqNL
+         vVCCh7g80YR4VGpnwtfHmEVan7cosE3/9+QHr0KRVfJwP+6JZqmNBpMWIy6fJRx77a
+         p6f4W9DA6vJlNk0GcvctIUQracHkY0VMFSROa7B62lc5eAvhSa21OQmeP61u7Zu45K
+         0jcIgu/aTqeuJzMPkFyU5eEIlveA2Igbus69AA9TtHXuDCk7Wtf08LdSr7BL/Apmgv
+         Edt7GQNhKWJD+EdeXpsKziPj7ddYo1A/UpV71XfPefTKcOxOn3aWGVugeFIhBV0hV1
+         hK+2dp05YBYaw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DCB89E6D453;
+        Mon, 14 Feb 2022 14:10:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Subject: Re: [PATCH net-next v3 0/2] net: dsa: realtek: realtek-mdio: reset before
+ setup
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164484781089.8191.12338422990431960463.git-patchwork-notify@kernel.org>
+Date:   Mon, 14 Feb 2022 14:10:10 +0000
+References: <20220214022012.14787-1-luizluca@gmail.com>
+In-Reply-To: <20220214022012.14787-1-luizluca@gmail.com>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     netdev@vger.kernel.org, linus.walleij@linaro.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, alsi@bang-olufsen.dk,
+        arinc.unal@arinc9.com
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This SL-6000 says Direct Line, not Ethernet
+Hello:
 
-v2: added Reporter and Link
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Reported-by: Ross Maynard <bids.7405@bigpond.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
----
+On Sun, 13 Feb 2022 23:20:10 -0300 you wrote:
+> This patch series cleans the realtek-smi reset code and copy that to the
+> realtek-mdio.
+> 
+> v1-v2)
+> - do not run reset code block if GPIO is missing. It was printing "RESET
+>   deasserted" even when there is no GPIO configured.
+> - reset switch after dsa_unregister_switch()
+> - demote reset messages to debug
+> 
+> [...]
 
-v2: added Reporter and Link
-v3: checkpatch issues
+Here is the summary with links:
+  - [net-next,v3,1/2] net: dsa: realtek: realtek-smi: clean-up reset
+    https://git.kernel.org/netdev/net-next/c/9a236b543f6b
+  - [net-next,v3,2/2] net: dsa: realtek: realtek-mdio: reset before setup
+    https://git.kernel.org/netdev/net-next/c/05f7b042c5a6
 
- drivers/net/usb/cdc_ether.c | 12 ++++++++++++
- drivers/net/usb/zaurus.c    | 12 ++++++++++++
- 2 files changed, 24 insertions(+)
-
-diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
-index eb3817d70f2b..9b4dfa3001d6 100644
---- a/drivers/net/usb/cdc_ether.c
-+++ b/drivers/net/usb/cdc_ether.c
-@@ -583,6 +583,11 @@ static const struct usb_device_id	products[] = {
- 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
- 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
- 
-+#define ZAURUS_FAKE_INTERFACE \
-+	.bInterfaceClass	= USB_CLASS_COMM, \
-+	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
-+	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
-+
- /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
-  * wire-incompatible with true CDC Ethernet implementations.
-  * (And, it seems, needlessly so...)
-@@ -636,6 +641,13 @@ static const struct usb_device_id	products[] = {
- 	.idProduct              = 0x9032,	/* SL-6000 */
- 	ZAURUS_MASTER_INTERFACE,
- 	.driver_info		= 0,
-+}, {
-+	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-+		 | USB_DEVICE_ID_MATCH_DEVICE,
-+	.idVendor               = 0x04DD,
-+	.idProduct              = 0x9032,	/* SL-6000 */
-+	ZAURUS_FAKE_INTERFACE,
-+	.driver_info		= 0,
- }, {
- 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
- 		 | USB_DEVICE_ID_MATCH_DEVICE,
-diff --git a/drivers/net/usb/zaurus.c b/drivers/net/usb/zaurus.c
-index 8e717a0b559b..7984f2157d22 100644
---- a/drivers/net/usb/zaurus.c
-+++ b/drivers/net/usb/zaurus.c
-@@ -256,6 +256,11 @@ static const struct usb_device_id	products [] = {
- 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
- 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
- 
-+#define ZAURUS_FAKE_INTERFACE \
-+	.bInterfaceClass	= USB_CLASS_COMM, \
-+	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
-+	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
-+
- /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
- {
- 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
-@@ -313,6 +318,13 @@ static const struct usb_device_id	products [] = {
- 	.idProduct              = 0x9032,	/* SL-6000 */
- 	ZAURUS_MASTER_INTERFACE,
- 	.driver_info = ZAURUS_PXA_INFO,
-+}, {
-+	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-+			    | USB_DEVICE_ID_MATCH_DEVICE,
-+	.idVendor		= 0x04DD,
-+	.idProduct		= 0x9032,	/* SL-6000 */
-+	ZAURUS_FAKE_INTERFACE,
-+	.driver_info = (unsigned long)&bogus_mdlm_info,
- }, {
- 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
- 		 | USB_DEVICE_ID_MATCH_DEVICE,
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
