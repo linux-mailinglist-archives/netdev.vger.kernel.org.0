@@ -2,252 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9CF24B7381
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:44:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09ADB4B72B9
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:42:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237035AbiBOPma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 10:42:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38270 "EHLO
+        id S240317AbiBOPoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 10:44:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241536AbiBOPlb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 10:41:31 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073F9125585
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 07:35:24 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id y6so57153887ybc.5
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 07:35:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=O4eypergZV3m6Zzdl4fNq7xKdAiZHF46BD1z85Nc8jg=;
-        b=QXVXjkwWhHxjoLXOmL4F9kN9NOD62pL1mWBMaTYzAESbupVXKNh5VqF9KgeTTv80NX
-         8qM68EjdMMonVbDhSSRJ/xxdMD/ZnUyHwl/MAXaBsdLu5vBPwCP3zq2uW6MXcDeKBWMg
-         LYAVlC8HVQcez0QQi1WnMtf35FtsRNXzyzL1S2Ty5WGzqw7aPbVl9hB3LSoWvi0p+LPb
-         m3hfDp+37V/UnGccbWP2lFtEQk3mAItXOd8GiHBVZWv2LGwEa8oyhACoUx/U+U1wpY8Q
-         s6evXE37CnbGzrC3sZPINlGMGyVjjpql9t1fBcWMI8aqIguTkyXmX3UXiePkMlSN6qMm
-         6k1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=O4eypergZV3m6Zzdl4fNq7xKdAiZHF46BD1z85Nc8jg=;
-        b=kD0iAuzmSAUh/33MEB7BscMjl1c6hZOC9ORsALtFazwsl6VsDwOowz7hbiJUXIK5/C
-         OhV0d36vewFZPxs6mYWx0rq1cylxGjDG6EZS8hyt+ro9J8SfZZcgNfzvagslGLoNDhgV
-         VghVVk8i9nT4bsefyzthc+aBm5MCPMwlmm0hL1Nkge0gYFrz0TwNAkHUTHmZNq7kSlh6
-         A+Kgb0x5PQmwVflCkbwzn7zIkR7k4ZS08dN4JkUFlmN0JTbadP4PhWyKdsTYR+lL4AbQ
-         VxtfJAEtI8l8HH2ARUBIwL2LEOzppV2yvKy7NrYzfj4z6wB2hK3PYAwuyu+MyERMN6Dp
-         +gOQ==
-X-Gm-Message-State: AOAM530FJEDhxIfqhNCHkji83QMxkr4M3GcnuTF3YeRQ+Ps/WHS4SgUv
-        Cjr/cmkBjtW0XISWXKGr+DT88jjI04/BNyN+Gjgqtw==
-X-Google-Smtp-Source: ABdhPJxRvA4gT9FlG4INWIsLr7W6swMmTrbJAhDieVE8mfjvg+BfEtJeIG89DlINozKWNR5djGyY1BHeaHKW0G90v/A=
-X-Received: by 2002:a25:8885:: with SMTP id d5mr4091214ybl.383.1644939322315;
- Tue, 15 Feb 2022 07:35:22 -0800 (PST)
-MIME-Version: 1.0
-References: <20220213150234.31602-1-thomas.liu@ucloud.cn> <CA+FuTSdODATw3hSAMv9aZUmJNM8ZE-YP58pr17bO9rGJUgfegw@mail.gmail.com>
- <CFD9B65A-6762-4D9B-ADEB-B4C0B1902E02@ucloud.cn> <CA+FuTSfQOUEyEDnOU8VVZ=STw_ii-hTwyg-cvpcViPkVK4pLUA@mail.gmail.com>
- <42554FCB-9180-4B32-B5CF-6D3236237D99@ucloud.cn> <CAF=yD-+1RSj_o8n5LDOLVyn_dvVQvmDQo5pacSoDFPOR3M2g5g@mail.gmail.com>
-In-Reply-To: <CAF=yD-+1RSj_o8n5LDOLVyn_dvVQvmDQo5pacSoDFPOR3M2g5g@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 15 Feb 2022 07:35:10 -0800
-Message-ID: <CANn89i+T=Ny7pfUomSsa1ub77u8LfYtRZPzmp_0-=oWKt0abLg@mail.gmail.com>
-Subject: Re: [PATCH] gso: do not skip outer ip header in case of ipip and net_failover
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Tao Liu <thomas.liu@ucloud.cn>, David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        with ESMTP id S240943AbiBOPnz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 10:43:55 -0500
+Received: from EUR02-VE1-obe.outbound.protection.outlook.com (mail-eopbgr20081.outbound.protection.outlook.com [40.107.2.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F8CE1B59
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 07:38:13 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EJt++L5yyHRk7KP+MMXdorDEs5bYiVuDoZm4RrkCQoG5EY/EPMM91dqPYrQejHKSNKRJLka/PKFGf5mBll+dNRVGUpqVH5rwmXFYnQfADRKrU1SQW0dU7pSOw1Hxxm/49wOtXPgwGIWY3TEovwCYIZCM/Z7AwAJ2aQFQb58fzXG7IfVmT/Xy+m1z64ty83IGrfgKQ9kIw3wUtSjUcAveWC6DrIY/jXwbaGpmux1n3JAF47PTjCwz+6+5f81iE7mF6+OXIZfJc2+UsJd9PMq/huZKAg+vu7xSapyT/VWlyniMwCtT54cLykJNiD/tR+KjAY6pan6n9Mog8yFoCITi7w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KrosWMznxqf74IqPaEvBXeoxhKx+h56bPNeMOVMWXIk=;
+ b=nZMl0y+ROmboh5SQ3j3VpGM/Se5TKOkGOZQC4YFZQuIiXruFBepwaEopqyh9hr4dmFeHRcqT60gMTwzNR4cQEstLEpQ+6hDlPlRBVWqmySEoO0bAHlOq4kntBE+GdeCMHVdm8usqoj4UdNXnMRwqhnDvfomXWyHJ9QP99OTpTjhb4K++KEHXHwoWClRoSVFPkrycDDrmfxLNZKNTeqsktP88fkcD5aQxVdQpxQSiL09iWNnTFCquqiT3X+FngcUnrCij25fD5rvOMF8Uv3cnTTxfqf1kwzEQbSurcsp/reJyyFZzkl2q+K6WnJcMxsNCNJw58UpA3oOHMK2j60hDxw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KrosWMznxqf74IqPaEvBXeoxhKx+h56bPNeMOVMWXIk=;
+ b=eS6BALAfWqQ9Ea5lJ2LDd9x88aY9WBsr1Q0nPWtUDaCWi35YsA9CPwNhQrvXJRugUTT+EpOAPiXjrnOBIuVMw+KC6GPIj7Uya5VSdOqYVx3DWV8y3iGxjAhrPjg9iOOf/affnZIM18T01X/Wd8VBTopMvoqGaKdzOirq4pLwR3c=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB3070.eurprd04.prod.outlook.com (2603:10a6:802:4::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14; Tue, 15 Feb
+ 2022 15:38:04 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Tue, 15 Feb 2022
+ 15:38:04 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Rafael Richter <rafael.richter@gin.de>,
+        Daniel Klauer <daniel.klauer@gin.de>,
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: Re: [PATCH v2 net-next 1/8] net: bridge: vlan: notify switchdev only
+ when something changed
+Thread-Topic: [PATCH v2 net-next 1/8] net: bridge: vlan: notify switchdev only
+ when something changed
+Thread-Index: AQHYIfsSmRmY0oOnV0uNWER612b7d6yUT04AgAAQq4CAAAUOgIAABQWAgAAKo4CAAEtkgA==
+Date:   Tue, 15 Feb 2022 15:38:04 +0000
+Message-ID: <20220215153803.hlibqjxa4b5x2kup@skbuf>
+References: <20220214233111.1586715-1-vladimir.oltean@nxp.com>
+ <20220214233111.1586715-2-vladimir.oltean@nxp.com>
+ <bcb8c699-4abc-d458-a694-d975398f1c57@nvidia.com>
+ <20220215095405.d2cy6rjd2faj3az2@skbuf>
+ <a38ac2a6-d9b9-190a-f144-496be1768b98@nvidia.com>
+ <20220215103009.fcw4wjnpbxx5tybj@skbuf>
+ <5db82bf1-844d-0709-c85e-cbe62445e7dc@nvidia.com>
+In-Reply-To: <5db82bf1-844d-0709-c85e-cbe62445e7dc@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 19f87a4a-f1d6-4d6f-4920-08d9f0992817
+x-ms-traffictypediagnostic: VI1PR04MB3070:EE_
+x-microsoft-antispam-prvs: <VI1PR04MB3070B0CD83176123A08519E7E0349@VI1PR04MB3070.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: yGZt4sfMM0z8K63r+mYs35PQh2FBKwBAgcq+QOjMwt7+FNzrugVvKA2JOYbvOS6dofD5026IyN9vsBE6Vv/lnuDvCUiPdR2JL1fvLvHOscHUHXlKHg9xkMsyZ8X2pV+T3JHFJVHjrOCyve8gx/rKGRYoA56lWDi4CsIFmV0qxkYRNBceXmN89wufaVIJF/SLSZ74M2m/E2ZavSoRfqnOpBPI3Q2RohJFoqUIpk/1cjM19wrr6fLi5cCacY775pC8wBv2sYe+LBKNTZ4SNoABoFuuUv3nrx9fAQYmuKfpOKtCp7B4HU4wUdeTjWDZMgqrxr4Kur+QmZdrvaSX66nBekZfX+97RPT6xca5fg700bqZmGtEbG6ynZTf2qDpzyJDUuCUl3JocNqMOH+7QuMCBC5iDcewA6fc78miMO8IMMqfikzzz6/CyDCctSDY2eQ59i6VVHtKhqnH7W2vG5pMXHcFjsHiG2s7tL942pNKQu2wozpOcwFL3E61Pbr3Q2dVPdDc/AUuBclW/uqqxGJGLnuoPqkoqvD2EW1O7ZPNEMdNqcs/q+iWBYZoznkbQtYrnwOt1eep92br/WclHvFCK5fmmyKWkMNddKwu79L1edsXPklfEG2645I+XzmGBCB9mEs2bF2tPSIQfb39wWpaWByhz/KGNXE7zUtWssCrlsmJK8knAF4DTk7u2y94aRG8e1Bev36Ipna8vWqPKO6UZg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(316002)(8676002)(6916009)(86362001)(33716001)(1076003)(66946007)(4326008)(6506007)(6512007)(122000001)(38100700002)(9686003)(64756008)(66556008)(66476007)(66446008)(76116006)(186003)(26005)(54906003)(6486002)(83380400001)(508600001)(44832011)(38070700005)(2906002)(8936002)(5660300002)(71200400001)(7416002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?RDEvkgg7wFesBi9TFqOe7om7vdJEZ3AWK5VDL1ucTw1nccWgcXUF0D/FJB7f?=
+ =?us-ascii?Q?ZyPMwfL456WbmHmtXe+bBvcCucQ+epFAdHjvWFULRYC0YFuy1zb+ED9iL7Jp?=
+ =?us-ascii?Q?gaFL/rSUBF9PLtWXMbGi7ri/Z0PVZz8zKXvweA8dJUcASuZKYVfd5rIw7gF+?=
+ =?us-ascii?Q?E+7/CmXbttbybLUoyeXOT9NzIuG2nvOm3/XSUktD8Kl1rmdea086NmvC4rqp?=
+ =?us-ascii?Q?w4K2YSm/fN8hVVk5ICpt17cmUY2ZoZ+67CYdKDK+yGo11eXuxo87imNM38h5?=
+ =?us-ascii?Q?fa1rZWCJi8keaqKyFOXSnkJO7lY1AZk2Z0OcsPu57G/xlAmPH+yj4CErTwkw?=
+ =?us-ascii?Q?uknZ17c0C9BWCMTsSXaQNhn0v09bDmaCxid0+Wbhvxw2zWEWBm9aX2zzi9Bm?=
+ =?us-ascii?Q?d2deUh8RrwxD1O4hd2wZLuJ+xxjzdVV3DY780g43kftYunVURKal3lIi/TRQ?=
+ =?us-ascii?Q?/fd90tOBSqUQ0AblXVvOqEjQ9KAXLVGPD4aCbLOCm6ANR0KFW+lM3mC3lI9S?=
+ =?us-ascii?Q?jLsK/oIt0NX9R6qCbUgZB+0Wq1hKVxAQUgSLMm/a6D6X41aX1QJjvmBNDHSg?=
+ =?us-ascii?Q?JuX2MX36bLHYsh1W1lZLeLkgEEod/tFAFx8eXlBYQUhkBOo59m2DkC8xi7Bs?=
+ =?us-ascii?Q?5N81u6+7Lqmt/Tp5wujM8niqeA01gGI9raq0Q9NUPhUmm1VuSiPERSYbD7E5?=
+ =?us-ascii?Q?FZwECahGr1U6g7wgTpM+LE8eXi+c9U1kZF2LJAYSN7aBmeaQgivdBJxuccdr?=
+ =?us-ascii?Q?PtQKj/CaoprmexOeoNw60lalwPNv8x5Kqu0NkShTe8skVuKrQAWgNr+gJ7Eg?=
+ =?us-ascii?Q?Sg9sJpVq/B3rhPNUwqfBqwwg63bHkG0sfdyjV547zKLFJaJVxUNStvh88H/g?=
+ =?us-ascii?Q?F7mytuhW49RvIF2r1NIfIjECWfT5q3guznt/NS2+LxxjYKYPzXg4syEWyF1Y?=
+ =?us-ascii?Q?NY2Sr4fcsnYDObrequwJG6esfJc7yW/GwzODzTim9z4Ka6BcynRGvhFy4fyz?=
+ =?us-ascii?Q?kXAhWMnY2TVIsuBgFbJLB7GViLMHjTv3chos4XIpIcAzBi2fFCVZMvNfeHdv?=
+ =?us-ascii?Q?t22etoPEZusd4JQ7oqYXaeFpwz/WirqTYmepGn3H90TPjAzCpdJqnPqtBm7h?=
+ =?us-ascii?Q?ZPJAAdeTqSCEwMu+Gm9LPDmf7A4CFaDqQ+oUKCelXUupBINfSZ3ogshxzSdq?=
+ =?us-ascii?Q?7FFii0mdQXPXc84dRKw8gb93qCYk8/Jv6Pur+lcm1AZKTDh5dpk+nBHuvi/L?=
+ =?us-ascii?Q?KxM5BGX4K1l7k4HHSjvJkJ5BhpIWWQpeDLTEMuZayI8QadsKOZgiy6C3/uyk?=
+ =?us-ascii?Q?JOtiIcF66TUdhc4TnSdpL+I3ABHGRjrUIU4ek8341tO8EmIAsHQqiw+Ikwt+?=
+ =?us-ascii?Q?D0fT/8xjQZxHJW7KpNTx2x7cDr3Kjrw5g9IJ9h0utqphMN6Bvu8apRHf/BzF?=
+ =?us-ascii?Q?LST9Ut406t/IkC73SpCsahq/K3TIXEh1PZMRBrWOOfIzQeE78Mc6Gc5hGkIv?=
+ =?us-ascii?Q?AkNbOi+wiUxSLLNshMtk5b0kxuzGJYBr8AGK5Z/WGkDcCd14bCtwEiTZZKYo?=
+ =?us-ascii?Q?FC6xLnYRixPVpVcD7qfsBSd+02Ly/satcnwHnZu/LLEjifpmTQfPYMgRyQgS?=
+ =?us-ascii?Q?uf6pjgwL+EhNO3mjdqjo7fb5VA9ZwzIlPKYAqjX0bGN7?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <B7314E84D6F3D247A2AAA36FA64F0008@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 19f87a4a-f1d6-4d6f-4920-08d9f0992817
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Feb 2022 15:38:04.2444
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: L7P/1InXJE5K4NBGcQYlJb+flzOZrzpOn6xJNO7QjjmbLfsSb9/RqD5LCPnwHDho01E+m7R4lcie0RQHX6ZzMw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3070
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 7:01 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Mon, Feb 14, 2022 at 8:38 PM Tao Liu <thomas.liu@ucloud.cn> wrote:
-> >
-> > Sorry to resend it.
-> >
-> > 2022=E5=B9=B42=E6=9C=8814=E6=97=A5 12:27=EF=BC=8CWillem de Bruijn <will=
-emdebruijn.kernel@gmail.com> =E5=86=99=E9=81=93=EF=BC=9A
-> >
-> > On Sun, Feb 13, 2022 at 11:03 PM Tao Liu <thomas.liu@ucloud.cn> wrote:
-> >
-> >
-> > Sorry for bothering, just repost it.
-> >
-> > 2022=E5=B9=B42=E6=9C=8814=E6=97=A5 09:28=EF=BC=8CWillem de Bruijn <will=
-emdebruijn.kernel@gmail.com> =E5=86=99=E9=81=93=EF=BC=9A
-> >
-> > On Sun, Feb 13, 2022 at 10:10 AM Tao Liu <thomas.liu@ucloud.cn> wrote:
-> >
-> >
-> > We encouter a tcp drop issue in our cloud environment. Packet GROed in =
-host
-> > forwards to a VM virtio_net nic with net_failover enabled. VM acts as a
-> > IPVS LB with ipip encapsulation. The full path like:
-> > host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
-> > -> ipip encap -> net_failover tx -> virtio_net tx
-> >
-> > When net_failover transmits a ipip pkt (gso_type =3D 0x0103), there is =
-no gso
-> > performed because it supports TSO and GSO_IPXIP4. But network_header ha=
-s
-> > been pointing to inner ip header.
-> >
-> >
-> > If the packet is configured correctly, and net_failover advertises
-> > that it can handle TSO packets with IPIP encap, then still virtio_net
-> > should not advertise it and software GSO be applied on its
-> > dev_queue_xmit call.
-> >
-> > This is assuming that the packet not only has SKB_GSO_IPXIP4 correctly
-> > set, but also tunneling fields like skb->encapsulated and
-> > skb_inner_network_header.
-> >
-> > Thanks very much for your comment!
-> >
-> > Yes, the packet is correct. Another thing i have not pointed directly i=
-s
-> > that the pkt has SKB_GSO_DODGY. net_failover do not advertises GSO_ROBU=
-ST
-> > but virtio_net do.
-> >
-> >
-> > If net_failover does not advertise NETIF_F_GSO_ROBUST, then
-> > tcp_gso_segment will pass a packet with SKB_GSO_DODGY to the
-> > software gso stack, not taking the branch
-> >
-> >        if (skb_gso_ok(skb, features | NETIF_F_GSO_ROBUST)) {
-> >
-> > As i tested, packet with SKB_GSO_DODGY hits this branch. packet's gso_t=
-ype=3D0x0103, which
-> > means SKB_GSO_TCPV4, SKB_GSO_DODGY and SKB_GSO_IPXIP4. net_failover mat=
-ches
-> > the condition.
-> >
-> > Consequently, tcp_gso_segment returns NULL, there is no software gso di=
-d here. And
-> > network_header points to inner iph.
-> >
-> > Software gso is did by virtio_net which not advertises NETIF_F_GSO_IPXI=
-P4. It skips the outer
-> > iph, and keeps it unchanged.
-> >
-> > ---
-> > net/ipv4/af_inet.c | 10 +++++++++-
-> > 1 file changed, 9 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-> > index 9c465ba..f8b3f8a 100644
-> > --- a/net/ipv4/af_inet.c
-> > +++ b/net/ipv4/af_inet.c
-> > @@ -1425,10 +1425,18 @@ struct sk_buff *inet_gso_segment(struct sk_buff=
- *skb,
-> > static struct sk_buff *ipip_gso_segment(struct sk_buff *skb,
-> >                                       netdev_features_t features)
-> > {
-> > +       struct sk_buff *segs;
-> > +       int nhoff;
-> > +
-> >       if (!(skb_shinfo(skb)->gso_type & SKB_GSO_IPXIP4))
-> >               return ERR_PTR(-EINVAL);
-> >
-> > -       return inet_gso_segment(skb, features);
-> > +       nhoff =3D skb_network_header(skb) - skb_mac_header(skb);
-> > +       segs =3D inet_gso_segment(skb, features);
-> > +       if (!segs)
-> > +               skb->network_header =3D skb_mac_header(skb) + nhoff - s=
-kb->head;
-> > +
-> > +       return segs;
-> > }
-> >
-> >
-> > If this would be needed for IPIP, then the same would be needed for SIT=
-, etc.
-> >
-> > Is the skb_network_header
-> >
-> > 1. correctly pointing to the outer header of the TSO packet before the
-> > call to inet_gso_segment
-> > 2. incorrectly pointing to the inner header of the (still) TSO packet
-> > after the call to inet_gso_segment
-> >
-> > inet_gso_segment already does the same operation: save nhoff, pull
-> > network header, call callbacks.gso_segment (which can be
-> > ipip_gso_segment->inet_gso_segment), then place the network header
-> > back at nhoff.
-> >
-> > values print in skb_mac_gso_segment() before callbacks.gso_segment:
-> > ipip:               vlan_depth=3D0 mac_len=3D0 skb->network_header=3D20=
-6
-> > net_failover:  vlan_depth=3D14 mac_len=3D14 skb->network_header=3D186
-> > virtio_net:      vlan_depth=3D34 mac_len=3D34 skb->network_header=3D206
-> >
-> > agree to add sit/ip4ip6/ip6ip6, and patch can be simplified as:
-> >
-> >
-> > If IPIP GSO was so broken, I think we would have found it long before.
-> >
-> > As said, inet_gso_segment should already do the right thing for ipip:
-> > it will be called twice.
-> >
-> >
-> > SKB_GSO_DODGY flag and net_failover conduct this issue. local traffic j=
-ust works fine.
->
-> Got it. That is an uncommon combination. SKB_GSO_DODGY is set from
-> external virtio_net, which does not support tunnels. But a path with
-> an added tunnel might cause this combination.
->
-> And inet_gso_segment resets the network header, both times, before
-> calling callbacks.gso_segment()
->
->         skb_reset_network_header(skb);
->         nhoff =3D skb_network_header(skb) - skb_mac_header(skb);
->
->         [...]
->
->         if (likely(ops && ops->callbacks.gso_segment))
->                 segs =3D ops->callbacks.gso_segment(skb, features);
->
-> And resets that after for each skb in segs.
->
->         skb =3D segs;
->         do {
->                 [...]
->                 skb->network_header =3D (u8 *)iph - skb->head;
->
-> But does not do this if segs =3D=3D NULL.
->
-> The packet has to be restored before it is passed to the device. I
-> think we have to handle this case correctly in inet_gso_segment,
-> instead of patching it up in all the various tunnel devices.
->
-> The same holds for ipv6_gso_segment.
+Hi Nikolay,
 
-Back in the days, GRO was modified so that we passed a context (nhoff)
-in called functions,
-instead of changing skb offsets. The concept of outer/inner header
-only works with 1 encap.
+On Tue, Feb 15, 2022 at 01:08:13PM +0200, Nikolay Aleksandrov wrote:
+> +static bool __vlan_add_flags(struct net_bridge_vlan *v, u16 flags, bool =
+commit)
+>  {
+>         struct net_bridge_vlan_group *vg;
+> -       u16 old_flags =3D v->flags;
+> -       bool ret;
+> +       bool change;
+> =20
+>         if (br_vlan_is_master(v))
+>                 vg =3D br_vlan_group(v->br);
+>         else
+>                 vg =3D nbp_vlan_group(v->port);
+> =20
+> +       /* check if anything would be changed on commit */
+> +       change =3D (!!(flags & BRIDGE_VLAN_INFO_PVID) =3D=3D !!(vg->pvid =
+!=3D v->vid) ||
+> +                 ((flags ^ v->flags) & BRIDGE_VLAN_INFO_UNTAGGED));
+> +
+> +       if (!commit)
+> +               goto out;
+> +
+>         if (flags & BRIDGE_VLAN_INFO_PVID)
+> -               ret =3D __vlan_add_pvid(vg, v);
+> +               __vlan_add_pvid(vg, v);
+>         else
+> -               ret =3D __vlan_delete_pvid(vg, v->vid);
+> +               __vlan_delete_pvid(vg, v->vid);
+> =20
+>         if (flags & BRIDGE_VLAN_INFO_UNTAGGED)
+>                 v->flags |=3D BRIDGE_VLAN_INFO_UNTAGGED;
+>         else
+>                 v->flags &=3D ~BRIDGE_VLAN_INFO_UNTAGGED;
+> =20
+> -       return ret || !!(old_flags ^ v->flags);
+> +out:
+> +       return change;
+> +}
 
-Perhaps it is time to do the same in GSO, to allow arbitrary levels of
-encapsulation.
-Then we no longer mess with these limited
-'network_header/inner_network_header' fields
-in the skb.
+I'm really sorry that I keep insisting, but could you please clarify
+something for me.
 
-Stuffing state in the skb has been a mistake I think.
+Here you change the behavior of __vlan_add_flags(): yes, it only changes
+BRIDGE_VLAN_INFO_UNTAGGED and BRIDGE_VLAN_INFO_PVID, but it used to
+return true if other flags changed as well, like BRIDGE_VLAN_INFO_BRENTRY.
+Now it does not, since you've explicitly made it so, and for good
+reason: make the function do what it says on the box.
+
+However, this forces me to add extra logic in br_vlan_add_existing()
+such that a transition of master vlan flags from !BRENTRY -> BRENTRY is
+still notified to switchdev.
+
+Which begs the question, why exactly do we even bother to notify to
+switchdev master VLANs that aren't brentries?! All drivers that I could
+find just ignore VLANs that aren't brentries.
+
+I can suppress the switchdev notification of these private bridge data
+structures like this, and nothing else seems to be affected:
+
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index 6fc2e366f13a..4607689c4e6a 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -300,10 +300,12 @@ static int __vlan_add(struct net_bridge_vlan *v, u16 =
+flags,
+ 		}
+ 		br_multicast_port_ctx_init(p, v, &v->port_mcast_ctx);
+ 	} else {
+-		err =3D br_switchdev_port_vlan_add(dev, v->vid, flags, false, 0,
+-						 extack);
+-		if (err && err !=3D -EOPNOTSUPP)
+-			goto out;
++		if (br_vlan_should_use(v)) {
++			err =3D br_switchdev_port_vlan_add(dev, v->vid, flags,
++							 false, 0, extack);
++			if (err && err !=3D -EOPNOTSUPP)
++				goto out;
++		}
+ 		br_multicast_ctx_init(br, v, &v->br_mcast_ctx);
+ 		v->priv_flags |=3D BR_VLFLAG_GLOBAL_MCAST_ENABLED;
+ 	}
+
+Would you mind if I added an extra patch that also does this (it would
+also remove the need for this check in drivers, plus it would change the
+definition of "changed" to something IMO more reasonable, i.e. a master
+VLAN that isn't brentry doesn't really exist, so even though the
+!BRENTRY->BRENTRY is a flag change, it isn't a change of a switchdev
+VLAN object that anybody offloads), or is there some reason I'm missing?=
