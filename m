@@ -2,110 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64A2F4B6628
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 09:32:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4385A4B664A
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 09:39:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232364AbiBOIcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 03:32:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34750 "EHLO
+        id S234369AbiBOIjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 03:39:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbiBOIcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 03:32:08 -0500
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2072.outbound.protection.outlook.com [40.107.100.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 369068302A
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 00:31:56 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W/bDk7/pvDwJSlpahEU03iHcGhmWB5OhWvOWI2bu6Qlauz06VDxt2tOnZvFUwU0OV9QNThH1wCiapm+U3WtRpVeytoVZF5cw7NU+AuQnrQMqvb6CYxFk5kXFE/ml8jfUafKkQLmxIp+GhhzYZnocYiNdKEpmWthgmfDrtuLg4QBRHjU/My0IhutLA8OD4MWx/dyu5qNo+wwy8vQDuwAkdt2HHRccO6opvc4jS8iLxM/Mai3dWRizGEJkeYDKSPsd57tR7uvRnwnqVuTjfU1QyeZ2v8BtD1jyxZ4trI1t/SIZX5vuo0mcR6wqkqYXzGCncQ8HUZEchY5YoJ6uAkL63A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LwksxREnqDZhIxaP722rqDcCTZJ0GA30yPvOjRHAYo0=;
- b=C9iKa6NzoVXoVxxMoZVkAlLUM2WMprJQuBJf2sKz4NNU3hBWYhTbSNTNma5G/IS9rcLawI5kGwpkkH8kQCBBVJvboDOIH2wOrfmpb/c7sx4qAA52xFv388eBMffCkdi2I3OX0tFpnbdWF7W9G6Oh3PM3fKcgUHi2D1qCR+xGIOjZBoprxBmrlD3/jGPUh0Fre8YtW/3yZCsmL20CPGYUCzBpYjhrIbsMvWBFTj6VWTWOw0PArIdyQovjrCt7QRdtFN7piyx0g168L9ZpECj3+jzlUBi5aX9EeLZ/edQpRKDB3Cin2Z0G5RjI+oV5LmTc9naK4ZYZ+6EDXY1jt3HqqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=lists.linux-foundation.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LwksxREnqDZhIxaP722rqDcCTZJ0GA30yPvOjRHAYo0=;
- b=g4QfpHz8xXM2mIOiHsc+z6zc3UyL1kI/y0hhLAHjklTPopP/z0XGtMeQWPyBIZleOVUh5DHlf2aDc2YJ/R7bMfmX5LQDc3Im0SgW4Hr5pINvalZe/YDthQ9QZ/KGyx3KGQvyqLaV5dA6ijc8U1v9uuDNzzGCU+0q5SbKgSQM/ehQy8wo3tCN8N7wZRfs9HcdMfay5DknhT5RJ6cn4rRfNsV9qpmrztGFHChZJGyigHqL6dIzqWtTOOvrXFl0C1tMmn7BkhUJ4/bO3BjthCDr4r8hTn6l+O6Y0MpJRP/0Km+MFlUvbMksfSmzXjAq3qVCzqiamFWHchZgGAHjQ2tiuw==
-Received: from DM6PR07CA0068.namprd07.prod.outlook.com (2603:10b6:5:74::45) by
- MN2PR12MB4423.namprd12.prod.outlook.com (2603:10b6:208:24f::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.15; Tue, 15 Feb
- 2022 08:31:54 +0000
-Received: from DM6NAM11FT019.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:74:cafe::14) by DM6PR07CA0068.outlook.office365.com
- (2603:10b6:5:74::45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.17 via Frontend
- Transport; Tue, 15 Feb 2022 08:31:54 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- DM6NAM11FT019.mail.protection.outlook.com (10.13.172.172) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4975.11 via Frontend Transport; Tue, 15 Feb 2022 08:31:53 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 15 Feb
- 2022 08:31:50 +0000
-Received: from [172.27.13.89] (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Tue, 15 Feb 2022
- 00:31:45 -0800
-Message-ID: <9429cc71-1b0f-7fe3-c9dc-12246a397e96@nvidia.com>
-Date:   Tue, 15 Feb 2022 10:31:41 +0200
+        with ESMTP id S233311AbiBOIjI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 03:39:08 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA228EF787
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 00:38:57 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id u20so6883287lff.2
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 00:38:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=b9cKiex4dTYU+JK1gPd+hEZp9w4hTub6Pglrmgq8pNY=;
+        b=kYLtXwSgyJP34xR4VQeX416IBeflukjyoe7UdPG6hcby5u46ATRiMMkKcQuEaqKVna
+         7Zg2FpdZtvJ1t5kPxRuSh7Dpw50yU9n0ALqix3gE3cYT5f2MdUDNyHXILKkyWVdwmg24
+         WDUhkt3l+7qgz3v2XcvrgVkLXIDsMfS/ufWbE+LBTAwSwxHD5rpJjo2xJ7O5kZZ2RQMa
+         DjOYorX20pyY25HKbfmH5uGtMni89p9JZBad8eFX6DCXdNrMKWq372pdyAeceth07tIP
+         3ZyCqVhqy4uxhIPjOw34MsPHm/BD/g5DKBhYnfdIbnVJebqz+cUZOLr0F3vmuQZI8mNP
+         77ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=b9cKiex4dTYU+JK1gPd+hEZp9w4hTub6Pglrmgq8pNY=;
+        b=HVVzAMVDYftnmUqqOLjeAMnCxnFOlnZhleNY7aTyZu6T01zjQ6WD0VaZ9zkgIg/Ioi
+         E9jUhPU0egflrMXypiDMnLaaK6HGKvth3ZEMN9rvg0FbC7xSR1dbgeqGtCEQzpJrKrn+
+         2a8J6SV50TVUHJqoiFN9gTi1w9j52CamE53O0gPPxLN9MNz5Z0oaHjnA1ICIlGp2RlBF
+         Ile2zzctAD23irDxCloPZIpc0WXrGYqS8qi30YSwNeQySbmSgtwGhdA0YbDx9VRS7/3V
+         kcXNZMvoEefLJW36iOKbDy8s2tW0jYqNsFXJ1ABy4nBVOjiAVdHbSI8OZGz5GuJ3q2Sh
+         pUOA==
+X-Gm-Message-State: AOAM530r6duxCCpyVFn1Eg9y24VOSe2o3ntgU0Q/eE7Q/ToLwxmZDW5E
+        hVgQDwnk7nM1arbrqF1EWs5TVKjhugWdKqvInY5B4w==
+X-Google-Smtp-Source: ABdhPJwBUL0XNat1oOmTd/6uilyeaVO/lmgZx+65oNEr07oHiH/ufFj8PYa8oqIbKHlG5Hh4LT5FykceRacCBATmln0=
+X-Received: by 2002:a19:6e0b:: with SMTP id j11mr2325842lfc.514.1644914336029;
+ Tue, 15 Feb 2022 00:38:56 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] net: bridge: multicast: notify switchdev driver whenever
- MC processing gets disabled
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-CC:     <netdev@vger.kernel.org>, Roopa Prabhu <roopa@nvidia.com>,
+References: <20220214231852.3331430-1-jeremy.linton@arm.com>
+In-Reply-To: <20220214231852.3331430-1-jeremy.linton@arm.com>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Tue, 15 Feb 2022 09:38:44 +0100
+Message-ID: <CAPv3WKczaLS8zKwTyEXTCD=YEVF5KcDGTr0uqM-7=MKahMQJYA@mail.gmail.com>
+Subject: Re: [BUG/PATCH v3] net: mvpp2: always set port pcs ops
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        <bridge@lists.linux-foundation.org>,
-        "Vladimir Oltean" <vladimir.oltean@nxp.com>,
-        Ido Schimmel <idosch@idosch.org>
-References: <20220211131426.5433-1-oleksandr.mazur@plvision.eu>
- <20220214211309.261bd9d6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-In-Reply-To: <20220214211309.261bd9d6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b7ad1dbc-5865-4909-9325-08d9f05d9e9c
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4423:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB442330A554E555BEE4506E0DDF349@MN2PR12MB4423.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RpsOXHshMIyZOw/94c8fPqfI6GAkK3KUsBHGWvqskgVgnSYezB0SejL9SUnsaEbLzmQY20OOPgivnm0jFw+WBN/rHVmUTOQY7nVPmK9QrKuokyHF9WIKiRtlXLexddRMlc60HJbguDFo4ahR5vNPBJ83pEaRfuay1UsEOSGTg8h9EdIHBHrCuSVmxCxgIDjqM5TAA/9KiN+hYUwsZqIYDCk+Tay4f5VZSG1FgneodgoSIEZJIzT1pKyVH8LhAwyT0eoo1v68xZGuyHAxOF/9vO/JlDLmLbQEf9RbcClRoodFdg+T1uN5K1+gU57FMYkRiuw+9x7eczgLpX9Qgb3f/tDc7MS+Uz0UgJ52dr3RiVtA5gzzW2RiWFQvhc1vsH8xM+6z2P+JAINocqj9yZH6Pw9mpAv6hnKUNy6zsBTqW7/IveewJ+PgE48RpVStKuJtDGWvYOKyJBj+sGkhxQuTaAxxoRYX8rFf0P+GULesqzERnvPAK3//h1oU6vjoYyfcFwkfLH5sop0VzH4o6COLRllvMzYedsIcyzWvDH7l89WC31NaQf9VPi4lcWchVRAwAMJ3TseVj14pDC+lTEf9XkxhPimoiEMyvWpFdWBSAA2THvi9esdg4asCzkdiJoT0R07+BIsVB0USmml6MjZunNK8LXqkBs4wn/n0j3MGwjy9cHkVWAo7EgUcDmJUGjzwNFFkjsa+7zVZ1srOXk3t6z8z94If56EQTRJ6MlitDuK5WfmmEzChMTzCSEhMpY17
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(81166007)(4326008)(426003)(53546011)(508600001)(86362001)(2616005)(70586007)(70206006)(356005)(336012)(5660300002)(83380400001)(8676002)(82310400004)(6666004)(8936002)(36860700001)(110136005)(31696002)(2906002)(186003)(16576012)(316002)(54906003)(36756003)(40460700003)(31686004)(26005)(16526019)(47076005)(43740500002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 08:31:53.2228
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b7ad1dbc-5865-4909-9325-08d9f05d9e9c
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT019.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4423
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -113,27 +69,142 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(+CC Ido)
-On 15/02/2022 07:13, Jakub Kicinski wrote:
-> On Fri, 11 Feb 2022 15:14:26 +0200 Oleksandr Mazur wrote:
->> Whenever bridge driver hits the max capacity of MDBs, it disables
->> the MC processing (by setting corresponding bridge option), but never
->> notifies switchdev about such change (the notifiers are called only upon
->> explicit setting of this option, through the registered netlink interface).
->>
->> This could lead to situation when Software MDB processing gets disabled,
->> but this event never gets offloaded to the underlying Hardware.
->>
->> Fix this by adding a notify message in such case.
-> 
-> Any comments on this one?
-> 
-> We have drivers offloading mdb so presumably this should have a Fixes
-> tag and go to net, right?
+Hi Jeremy,
 
-The change looks ok, but it'd be nice to get switchdev folks comment as well.
-About the tree, -net should be targeted. I think the issue has existed
-since mdb disabled could be offloaded, so the tag should be:
 
-Fixes: 147c1e9b902c ("switchdev: bridge: Offload multicast disabled")
+wt., 15 lut 2022 o 00:18 Jeremy Linton <jeremy.linton@arm.com> napisa=C5=82=
+(a):
+>
+> Booting a MACCHIATObin with 5.17, the system OOPs with
+> a null pointer deref when the network is started. This
+> is caused by the pcs->ops structure being null in
+> mcpp2_acpi_start() when it tries to call pcs_config().
+>
+> Hoisting the code which sets pcs_gmac.ops and pcs_xlg.ops,
+> assuring they are always set, fixes the problem.
+>
+> The OOPs looks like:
+> [   18.687760] Unable to handle kernel access to user memory outside uacc=
+ess routines at virtual address 0000000000000010
+> [   18.698561] Mem abort info:
+> [   18.698564]   ESR =3D 0x96000004
+> [   18.698567]   EC =3D 0x25: DABT (current EL), IL =3D 32 bits
+> [   18.709821]   SET =3D 0, FnV =3D 0
+> [   18.714292]   EA =3D 0, S1PTW =3D 0
+> [   18.718833]   FSC =3D 0x04: level 0 translation fault
+> [   18.725126] Data abort info:
+> [   18.729408]   ISV =3D 0, ISS =3D 0x00000004
+> [   18.734655]   CM =3D 0, WnR =3D 0
+> [   18.738933] user pgtable: 4k pages, 48-bit VAs, pgdp=3D0000000111bbf00=
+0
+> [   18.745409] [0000000000000010] pgd=3D0000000000000000, p4d=3D000000000=
+0000000
+> [   18.752235] Internal error: Oops: 96000004 [#1] SMP
+> [   18.757134] Modules linked in: rfkill ip_set nf_tables nfnetlink qrtr =
+sunrpc vfat fat omap_rng fuse zram xfs crct10dif_ce mvpp2 ghash_ce sbsa_gwd=
+t phylink xhci_plat_hcd ahci_plam
+> [   18.773481] CPU: 0 PID: 681 Comm: NetworkManager Not tainted 5.17.0-0.=
+rc3.89.fc36.aarch64 #1
+> [   18.781954] Hardware name: Marvell                         Armada 7k/8=
+k Family Board      /Armada 7k/8k Family Board      , BIOS EDK II Jun  4 20=
+19
+> [   18.795222] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYP=
+E=3D--)
+> [   18.802213] pc : mvpp2_start_dev+0x2b0/0x300 [mvpp2]
+> [   18.807208] lr : mvpp2_start_dev+0x298/0x300 [mvpp2]
+> [   18.812197] sp : ffff80000b4732c0
+> [   18.815522] x29: ffff80000b4732c0 x28: 0000000000000000 x27: ffffccab3=
+8ae57f8
+> [   18.822689] x26: ffff6eeb03065a10 x25: ffff80000b473a30 x24: ffff80000=
+b4735b8
+> [   18.829855] x23: 0000000000000000 x22: 00000000000001e0 x21: ffff6eeb0=
+7b6ab68
+> [   18.837021] x20: ffff6eeb07b6ab30 x19: ffff6eeb07b6a9c0 x18: 000000000=
+0000014
+> [   18.844187] x17: 00000000f6232bfe x16: ffffccab899b1dc0 x15: 000000006=
+a30f9fa
+> [   18.851353] x14: 000000003b77bd50 x13: 000006dc896f0e8e x12: 001bbbfcc=
+fd0d3a2
+> [   18.858519] x11: 0000000000001528 x10: 0000000000001548 x9 : ffffccab3=
+8ad0fb0
+> [   18.865685] x8 : ffff80000b473330 x7 : 0000000000000000 x6 : 000000000=
+0000000
+> [   18.872851] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff80000=
+b4732f8
+> [   18.880017] x2 : 000000000000001a x1 : 0000000000000002 x0 : ffff6eeb0=
+7b6ab68
+> [   18.887183] Call trace:
+> [   18.889637]  mvpp2_start_dev+0x2b0/0x300 [mvpp2]
+> [   18.894279]  mvpp2_open+0x134/0x2b4 [mvpp2]
+> [   18.898483]  __dev_open+0x128/0x1e4
+> [   18.901988]  __dev_change_flags+0x17c/0x1d0
+> [   18.906187]  dev_change_flags+0x30/0x70
+> [   18.910038]  do_setlink+0x278/0xa7c
+> [   18.913540]  __rtnl_newlink+0x44c/0x7d0
+> [   18.917391]  rtnl_newlink+0x5c/0x8c
+> [   18.920892]  rtnetlink_rcv_msg+0x254/0x314
+> [   18.925006]  netlink_rcv_skb+0x48/0x10c
+> [   18.928858]  rtnetlink_rcv+0x24/0x30
+> [   18.932449]  netlink_unicast+0x290/0x2f4
+> [   18.936386]  netlink_sendmsg+0x1d0/0x41c
+> [   18.940323]  sock_sendmsg+0x60/0x70
+> [   18.943825]  ____sys_sendmsg+0x248/0x260
+> [   18.947762]  ___sys_sendmsg+0x74/0xa0
+> [   18.951438]  __sys_sendmsg+0x64/0xcc
+> [   18.955027]  __arm64_sys_sendmsg+0x30/0x40
+> [   18.959140]  invoke_syscall+0x50/0x120
+> [   18.962906]  el0_svc_common.constprop.0+0x4c/0xf4
+> [   18.967629]  do_el0_svc+0x30/0x9c
+> [   18.970958]  el0_svc+0x28/0xb0
+> [   18.974025]  el0t_64_sync_handler+0x10c/0x140
+> [   18.978400]  el0t_64_sync+0x1a4/0x1a8
+> [   18.982078] Code: 52800004 b9416262 aa1503e0 52800041 (f94008a5)
+> [   18.988196] ---[ end trace 0000000000000000 ]---
+>
+> Fixes: cff056322372 ("net: mvpp2: use .mac_select_pcs() interface")
+> Suggested-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+> ---
+> v1->v2: Apply Russell's fix
+> v2->v3: Fix Russell's name
+>
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/ne=
+t/ethernet/marvell/mvpp2/mvpp2_main.c
+> index 7cdbf8b8bbf6..1a835b48791b 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> @@ -6870,6 +6870,9 @@ static int mvpp2_port_probe(struct platform_device =
+*pdev,
+>         dev->max_mtu =3D MVPP2_BM_JUMBO_PKT_SIZE;
+>         dev->dev.of_node =3D port_node;
+>
+> +       port->pcs_gmac.ops =3D &mvpp2_phylink_gmac_pcs_ops;
+> +       port->pcs_xlg.ops =3D &mvpp2_phylink_xlg_pcs_ops;
+> +
+>         if (!mvpp2_use_acpi_compat_mode(port_fwnode)) {
+>                 port->phylink_config.dev =3D &dev->dev;
+>                 port->phylink_config.type =3D PHYLINK_NETDEV;
+> @@ -6940,9 +6943,6 @@ static int mvpp2_port_probe(struct platform_device =
+*pdev,
+>                                   port->phylink_config.supported_interfac=
+es);
+>                 }
+>
+> -               port->pcs_gmac.ops =3D &mvpp2_phylink_gmac_pcs_ops;
+> -               port->pcs_xlg.ops =3D &mvpp2_phylink_xlg_pcs_ops;
+> -
+>                 phylink =3D phylink_create(&port->phylink_config, port_fw=
+node,
+>                                          phy_mode, &mvpp2_phylink_ops);
+>                 if (IS_ERR(phylink)) {
+> --
+> 2.34.1
+>
 
+I'd like to test the patch - what EDK2 version are you using?
+
+Best regards,
+Marcin
