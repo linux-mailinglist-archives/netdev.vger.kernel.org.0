@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E852C4B657E
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 09:11:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADA284B657B
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 09:11:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235252AbiBOIKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 03:10:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52650 "EHLO
+        id S235182AbiBOIKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 03:10:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235233AbiBOIKb (ORCPT
+        with ESMTP id S235140AbiBOIKb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 03:10:31 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62B4D2E0AD
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 00:10:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A3B62E082
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 00:10:08 -0800 (PST)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1nJsu4-0002EI-5g; Tue, 15 Feb 2022 09:09:40 +0100
+        id 1nJsu4-0002EJ-5T; Tue, 15 Feb 2022 09:09:40 +0100
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nJsu2-009UlL-8c; Tue, 15 Feb 2022 09:09:38 +0100
+        id 1nJsu2-009UlU-9s; Tue, 15 Feb 2022 09:09:38 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -41,9 +41,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
         linux-tegra@vger.kernel.org
-Subject: [PATCH v3 5/8] ARM: dts: exynos: fix ethernet node name for different odroid boards
-Date:   Tue, 15 Feb 2022 09:09:34 +0100
-Message-Id: <20220215080937.2263111-5-o.rempel@pengutronix.de>
+Subject: [PATCH v3 6/8] ARM: dts: omap3/4/5: fix ethernet node name for different OMAP boards
+Date:   Tue, 15 Feb 2022 09:09:35 +0100
+Message-Id: <20220215080937.2263111-6-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220215080937.2263111-1-o.rempel@pengutronix.de>
 References: <20220215080937.2263111-1-o.rempel@pengutronix.de>
@@ -67,113 +67,64 @@ The node name of Ethernet controller should be "ethernet" instead of
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- arch/arm/boot/dts/exynos4412-odroidu3.dts       | 4 ++--
- arch/arm/boot/dts/exynos4412-odroidx.dts        | 8 ++++----
- arch/arm/boot/dts/exynos5410-odroidxu.dts       | 4 ++--
- arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts | 6 +++---
- arch/arm/boot/dts/exynos5422-odroidxu3.dts      | 6 +++---
- 5 files changed, 14 insertions(+), 14 deletions(-)
+ arch/arm/boot/dts/omap3-beagle-xm.dts     | 2 +-
+ arch/arm/boot/dts/omap4-panda-common.dtsi | 2 +-
+ arch/arm/boot/dts/omap5-igep0050.dts      | 2 +-
+ arch/arm/boot/dts/omap5-uevm.dts          | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/exynos4412-odroidu3.dts b/arch/arm/boot/dts/exynos4412-odroidu3.dts
-index efaf7533e84f..36c369c42b77 100644
---- a/arch/arm/boot/dts/exynos4412-odroidu3.dts
-+++ b/arch/arm/boot/dts/exynos4412-odroidu3.dts
-@@ -119,8 +119,8 @@ &ehci {
- 	phys = <&exynos_usbphy 2>, <&exynos_usbphy 3>;
- 	phy-names = "hsic0", "hsic1";
- 
--	ethernet: usbether@2 {
--		compatible = "usb0424,9730";
-+	ethernet: ethernet@2 {
-+		compatible = "usb424,9730";
- 		reg = <2>;
- 		local-mac-address = [00 00 00 00 00 00]; /* Filled in by a bootloader */
- 	};
-diff --git a/arch/arm/boot/dts/exynos4412-odroidx.dts b/arch/arm/boot/dts/exynos4412-odroidx.dts
-index 440135d0ff2a..ba46baf9117f 100644
---- a/arch/arm/boot/dts/exynos4412-odroidx.dts
-+++ b/arch/arm/boot/dts/exynos4412-odroidx.dts
-@@ -70,19 +70,19 @@ &ehci {
- 	phy-names = "hsic0";
- 
- 	hub@2 {
--		compatible = "usb0424,3503";
-+		compatible = "usb424,3503";
- 		reg = <2>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 
- 		hub@1 {
--			compatible = "usb0424,9514";
-+			compatible = "usb424,9514";
- 			reg = <1>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 
--			ethernet: usbether@1 {
--				compatible = "usb0424,ec00";
-+			ethernet: ethernet@1 {
-+				compatible = "usb424,ec00";
- 				reg = <1>;
- 				/* Filled in by a bootloader */
- 				local-mac-address = [00 00 00 00 00 00];
-diff --git a/arch/arm/boot/dts/exynos5410-odroidxu.dts b/arch/arm/boot/dts/exynos5410-odroidxu.dts
-index 884fef55836c..4c7039e771db 100644
---- a/arch/arm/boot/dts/exynos5410-odroidxu.dts
-+++ b/arch/arm/boot/dts/exynos5410-odroidxu.dts
-@@ -675,8 +675,8 @@ &usbhost2 {
- 	#address-cells = <1>;
- 	#size-cells = <0>;
- 
--	ethernet: usbether@2 {
--		compatible = "usb0424,9730";
-+	ethernet: ethernet@2 {
-+		compatible = "usb424,9730";
- 		reg = <2>;
- 		local-mac-address = [00 00 00 00 00 00]; /* Filled in by a bootloader */
- 	};
-diff --git a/arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts b/arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts
-index 62c5928aa994..e3154a1cae23 100644
---- a/arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts
-+++ b/arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts
-@@ -113,13 +113,13 @@ &usbhost2 {
- 	#size-cells = <0>;
- 
- 	hub@1 {
--		compatible = "usb0424,9514";
-+		compatible = "usb424,9514";
- 		reg = <1>;
+diff --git a/arch/arm/boot/dts/omap3-beagle-xm.dts b/arch/arm/boot/dts/omap3-beagle-xm.dts
+index a858ebfa1500..35eced6521ef 100644
+--- a/arch/arm/boot/dts/omap3-beagle-xm.dts
++++ b/arch/arm/boot/dts/omap3-beagle-xm.dts
+@@ -370,7 +370,7 @@ hub@2 {
  		#address-cells = <1>;
  		#size-cells = <0>;
  
 -		ethernet: usbether@1 {
--			compatible = "usb0424,ec00";
 +		ethernet: ethernet@1 {
-+			compatible = "usb424,ec00";
+ 			compatible = "usb424,ec00";
  			reg = <1>;
- 			local-mac-address = [00 00 00 00 00 00]; /* Filled in by a bootloader */
  		};
-diff --git a/arch/arm/boot/dts/exynos5422-odroidxu3.dts b/arch/arm/boot/dts/exynos5422-odroidxu3.dts
-index cecaeb69e623..a378d4937ff7 100644
---- a/arch/arm/boot/dts/exynos5422-odroidxu3.dts
-+++ b/arch/arm/boot/dts/exynos5422-odroidxu3.dts
-@@ -80,13 +80,13 @@ &usbhost2 {
- 	#size-cells = <0>;
- 
- 	hub@1 {
--		compatible = "usb0424,9514";
-+		compatible = "usb424,9514";
- 		reg = <1>;
+diff --git a/arch/arm/boot/dts/omap4-panda-common.dtsi b/arch/arm/boot/dts/omap4-panda-common.dtsi
+index 609a8dea946b..518652a599bd 100644
+--- a/arch/arm/boot/dts/omap4-panda-common.dtsi
++++ b/arch/arm/boot/dts/omap4-panda-common.dtsi
+@@ -558,7 +558,7 @@ hub@1 {
  		#address-cells = <1>;
  		#size-cells = <0>;
  
 -		ethernet: usbether@1 {
--			compatible = "usb0424,ec00";
 +		ethernet: ethernet@1 {
-+			compatible = "usb424,ec00";
+ 			compatible = "usb424,ec00";
  			reg = <1>;
- 			local-mac-address = [00 00 00 00 00 00]; /* Filled in by a bootloader */
  		};
+diff --git a/arch/arm/boot/dts/omap5-igep0050.dts b/arch/arm/boot/dts/omap5-igep0050.dts
+index 76e499d89d24..3851120857d7 100644
+--- a/arch/arm/boot/dts/omap5-igep0050.dts
++++ b/arch/arm/boot/dts/omap5-igep0050.dts
+@@ -128,7 +128,7 @@ hub@2 {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+-		ethernet: usbether@3 {
++		ethernet: ethernet@3 {
+ 			compatible = "usb424,7500";
+ 			reg = <3>;
+ 		};
+diff --git a/arch/arm/boot/dts/omap5-uevm.dts b/arch/arm/boot/dts/omap5-uevm.dts
+index 51d5fcae5081..453da9f18a99 100644
+--- a/arch/arm/boot/dts/omap5-uevm.dts
++++ b/arch/arm/boot/dts/omap5-uevm.dts
+@@ -209,7 +209,7 @@ hub@2 {
+ 		#size-cells = <0>;
+ 	};
+ 
+-	ethernet: usbether@3 {
++	ethernet: ethernet@3 {
+ 		compatible = "usb424,9730";
+ 		reg = <3>;
+ 	};
 -- 
 2.30.2
 
