@@ -2,121 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2D0D4B60BD
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 03:06:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0B8C4B60CE
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 03:09:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233440AbiBOCGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 21:06:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49482 "EHLO
+        id S233294AbiBOCJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 21:09:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231868AbiBOCF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 21:05:59 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E87D31EC75
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 18:05:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644890748;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=rcVCDBo5DVaghZVQQl2zbGTyQ7E+laKLLxGgEjqHxnk=;
-        b=BsxIUDJ0NFwUiJ43PxEXU25y1vTuIzFDlJT36TVEeYsSeAjix370M3S14x+VeiVImZpYVh
-        ybAaCpPtG7IAqjI2MIlyPAfEqj5tohTeDvfW1P383T/n32JInI3MLvmIx6m44mo3fpgB5S
-        HGUF20Hn81Et1PA9gKO6PtJYyrlm8GU=
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
- [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-218-I8I0kJyHMV60amBYl900tg-1; Mon, 14 Feb 2022 21:05:47 -0500
-X-MC-Unique: I8I0kJyHMV60amBYl900tg-1
-Received: by mail-oo1-f69.google.com with SMTP id s14-20020a4aa54e000000b002ea553d580eso11709440oom.4
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 18:05:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rcVCDBo5DVaghZVQQl2zbGTyQ7E+laKLLxGgEjqHxnk=;
-        b=UJ3Vk0NNxkcJyL7EVVf7S9MWf96buWmwF9e3Q/cUiy+CbX4UxaBYQVw24r5MZFE5q6
-         olELTBBvCNAuX8IPVEiDQRxS/jVeyn5xGi4Fv10aDGxcHCdl1SfQOjQL04GRIkrgKFuE
-         NAu4sjTQXCMAH3kGtb0d0hAXF3Q5XRrPzoBbgjyFrf75Ek9jVg0czh8P3pzK6vJVJuCw
-         9FCI3CzhJq9sdCKmfoaCT12czdBLqAtI5LwrPkb1jdYnzJ2MjuKUFtaI5Ou7shV1vQJj
-         raa+pQsfBZPC8AOXGWaX1mshfxAhqpDm13hfaUmMAzexkWSIRFFHU6Laau1LflzN4atE
-         BRDA==
-X-Gm-Message-State: AOAM531nh6+K7zGBmEQ/Spx3SN7zn0r5xsJM5AHenpbMSqBsIejhxvD7
-        +bclRwwHFwC6xFlE334Usb8CqO3jzkWF0gJZlb/Ry6R1MboKTR989as9S3GLERWyGh8J4W0PBTK
-        DbX6xOo4ajoFckdEo
-X-Received: by 2002:a05:6830:4113:: with SMTP id w19mr688310ott.120.1644890746730;
-        Mon, 14 Feb 2022 18:05:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzEs/cQG7EnoAYBz/PX072UhjyPsRpX8PJZ5Lr3Q9WSLBCh3TgTI0hgly/YAlr42AGrYmPADg==
-X-Received: by 2002:a05:6830:4113:: with SMTP id w19mr688302ott.120.1644890746552;
-        Mon, 14 Feb 2022 18:05:46 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id r41sm14527325oap.2.2022.02.14.18.05.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 18:05:46 -0800 (PST)
-From:   trix@redhat.com
-To:     jk@codeconstruct.com.au, matt@codeconstruct.com.au,
-        davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
-        ndesaulniers@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
-Subject: [PATCH v2] mctp: fix use after free
-Date:   Mon, 14 Feb 2022 18:05:41 -0800
-Message-Id: <20220215020541.2944949-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        with ESMTP id S232709AbiBOCJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 21:09:14 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E5FB0EB1
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 18:09:05 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JyPf345gTz4xmx;
+        Tue, 15 Feb 2022 13:08:59 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1644890941;
+        bh=jNVBosbQbGGAchN+rgYcERAl9WqcOR3uLr69A+zy5Vw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=LKfag+YMqlOwzH6TUmJnMzGQokV8tnqYLKfdQ/vhj85yeTJ8+IZOEwnIvtZWBDS+O
+         1ph+5DR1zdvoS59EOnWjyd35+cDC505I4kaT0snsvJDeNNneTAiPUbvRhT438rX8rM
+         MRIvtr2LmVeUC1dNF2iLOzfFDtIB2nnf9kXX8QmNzQe4cCY750xWZUcPQoWDqLLe1R
+         PI0/UeomabEDBjuGdlBi0/sn8CqOmYFpzPPtquV5MDuK9Os46krUIKZ6aOCdRLzgXr
+         oJHCs3NUU9xAm1DpZ8arAeuMprWgm9jDcmztjJMG5avr7OdelDcdVLkPkPWHEU33lz
+         y/TFSmgOVi1xQ==
+Date:   Tue, 15 Feb 2022 13:08:58 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Joseph CHAMG <josright123@gmail.com>,
+        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the spi tree
+Message-ID: <20220215130858.2b821de7@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/gDr2hkWEpFU5xfCtpNz2eX1";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+--Sig_/gDr2hkWEpFU5xfCtpNz2eX1
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Clang static analysis reports this problem
-route.c:425:4: warning: Use of memory after it is freed
-  trace_mctp_key_acquire(key);
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-When mctp_key_add() fails, key is freed but then is later
-used in trace_mctp_key_acquire().  Add an else statement
-to use the key only when mctp_key_add() is successful.
+Hi all,
 
-Fixes: 4f9e1ba6de45 ("mctp: Add tracepoints for tag/key handling")
-Signed-off-by: Tom Rix <trix@redhat.com>
+After merging the spi tree, today's linux-next build (x86_64 allmodconfig)
+failed like this:
+
+drivers/net/ethernet/davicom/dm9051.c:1253:19: error: initialization of 'vo=
+id (*)(struct spi_device *)' from incompatible pointer type 'int (*)(struct=
+ spi_device *)' [-Werror=3Dincompatible-pointer-types]
+ 1253 |         .remove =3D dm9051_drv_remove,
+      |                   ^~~~~~~~~~~~~~~~~
+drivers/net/ethernet/davicom/dm9051.c:1253:19: note: (near initialization f=
+or 'dm9051_driver.remove')
+
+Caused by commit
+
+  a0386bba7093 ("spi: make remove callback a void function")
+
+interacting with commit
+
+  2dc95a4d30ed ("net: Add dm9051 driver")
+
+from the net-next tree.
+
+I applied the following merge resolution and can carry it until the
+trees are merged.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Tue, 15 Feb 2022 13:05:41 +1100
+Subject: [PATCH] fix up for "pi: make remove callback a void function"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
 ---
-v2: change the Fixes: line
+ drivers/net/ethernet/davicom/dm9051.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
- net/mctp/route.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/net/mctp/route.c b/net/mctp/route.c
-index 17e3482aa770..0c4c56e1bd6e 100644
---- a/net/mctp/route.c
-+++ b/net/mctp/route.c
-@@ -419,13 +419,14 @@ static int mctp_route_input(struct mctp_route *route, struct sk_buff *skb)
- 			 * this function.
- 			 */
- 			rc = mctp_key_add(key, msk);
--			if (rc)
-+			if (rc) {
- 				kfree(key);
-+			} else {
-+				trace_mctp_key_acquire(key);
- 
--			trace_mctp_key_acquire(key);
+diff --git a/drivers/net/ethernet/davicom/dm9051.c b/drivers/net/ethernet/d=
+avicom/dm9051.c
+index cee3ff499fd4..d2513c97f83e 100644
+--- a/drivers/net/ethernet/davicom/dm9051.c
++++ b/drivers/net/ethernet/davicom/dm9051.c
+@@ -1223,15 +1223,13 @@ static int dm9051_probe(struct spi_device *spi)
+ 	return 0;
+ }
+=20
+-static int dm9051_drv_remove(struct spi_device *spi)
++static void dm9051_drv_remove(struct spi_device *spi)
+ {
+ 	struct device *dev =3D &spi->dev;
+ 	struct net_device *ndev =3D dev_get_drvdata(dev);
+ 	struct board_info *db =3D to_dm9051_board(ndev);
+=20
+ 	phy_disconnect(db->phydev);
 -
--			/* we don't need to release key->lock on exit */
--			mctp_key_unref(key);
-+				/* we don't need to release key->lock on exit */
-+				mctp_key_unref(key);
-+			}
- 			key = NULL;
- 
- 		} else {
--- 
-2.26.3
+-	return 0;
+ }
+=20
+ static const struct of_device_id dm9051_match_table[] =3D {
+--=20
+2.34.1
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/gDr2hkWEpFU5xfCtpNz2eX1
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmILCzoACgkQAVBC80lX
+0Gw2+wf/RruQmrxu7OQjwDYcKbHPKocQg3GRROdxtfSyFo8zE7F7+FeQKocnF+HX
+TQt3yWTX/3DGQ2cLHE7l3UE9S+tG4dqpcPIf/Fs+RegEVXdmWUGX9L0++3w1Hw0C
+DD18gXGI4+mQ2cnliD1735iymQpKY/Y3lREaKeRvbm/CoGD2SQZR5pTNkxCc2Rf2
+Y1lAQbKKhNdSon/mUA7CW0mymNEt/4uRVd3/2ZEDDY1G6I7ifgxOtVUGM4sLXbsP
+6F9eB1gIUDfpqUK/Hjz1mGJLx14ACpVdI8tU6Wg8biTJwMBhhcSRkeWCdcE/FkHz
+Cz3C0iUFG0RAD1yyO0D76U/7UnknGg==
+=F5YH
+-----END PGP SIGNATURE-----
+
+--Sig_/gDr2hkWEpFU5xfCtpNz2eX1--
