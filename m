@@ -2,119 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 103B94B77BE
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:51:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E89C74B7714
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:50:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241247AbiBOSR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 13:17:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34888 "EHLO
+        id S243159AbiBOSmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 13:42:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242966AbiBOSRz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 13:17:55 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A2D119F5F
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 10:17:42 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id d9-20020a17090a498900b001b8bb1d00e7so2846765pjh.3
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 10:17:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=rU/cr+2YS83r8ZzfG0ihHyfke5lY7dzNO33vRqwTRo0=;
-        b=BbY3zUMbpsKVLuD6QiFaFpnxej58wpxQPVVGisDcf+K+2coTsFmZNXGoWqBeKoLb1x
-         3ZptFg7el6LpqeSuHR1QjwuSCHfpkEX/T+XcjAHpaQzkvx2kHT7d0+kYGoaayuMfQhPV
-         CAs5kcpK7DDzn/NDlTFukbq1xe316LjUYcWLM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=rU/cr+2YS83r8ZzfG0ihHyfke5lY7dzNO33vRqwTRo0=;
-        b=F64ONJAl4grQ+m7DJ6182PeMVcmPvI6gbsOl5lQNyzm2qSTAIdqijfVgRdOwbsWomX
-         237SX9QyStr4iSLgF9iz/k5yesjjeu03N3+X4FC7AKW7fgckUmiI8lBSLu4Bry0aOe4a
-         shNoP1fZ8FtnlCPjwPRYoUDOThnpkOE4L2YPev3DkM67t+ChwU/oSitmcw/n/Lp3RfDW
-         JlOlNdTheBYoQng6/tkfvTcQ2jo6fh2nQ+a5Nm9aQvLNXJXz/dnSDLgUgc11OrQdg7PY
-         RaHsVt1F6sYwoBenH4tDMMOEjkQPJjhwFiPLrNmjjGvBVExNuUALqqRu1av8xKyeGzhE
-         +Krw==
-X-Gm-Message-State: AOAM530uqW4qewERtI0Kqhs8+RNQwGXCiQqCET1LMxXoN+gD17kB0COT
-        QJjtlwousRTZ56f2VETmKZMrIw==
-X-Google-Smtp-Source: ABdhPJwjJJkj0fC2gO+FdGjnaisWCk9FKkCf0qazg7PUuY4rrjoW+egyeLOWB+yCEr/MI5qa+9+dbA==
-X-Received: by 2002:a17:902:eb8f:: with SMTP id q15mr235036plg.67.1644949062021;
-        Tue, 15 Feb 2022 10:17:42 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id a186sm3157627pgc.70.2022.02.15.10.17.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 10:17:41 -0800 (PST)
-Date:   Tue, 15 Feb 2022 10:17:40 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     GR-QLogic-Storage-Upstream@marvell.com,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        linux-crypto@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org, mpi3mr-linuxdrv.pdl@broadcom.com,
-        linux-staging@lists.linux.dev,
-        linux-rpi-kernel@lists.infradead.org, sparmaintainer@unisys.com,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-ext4@vger.kernel.org, linux-acpi@vger.kernel.org,
-        devel@acpica.org, linux-arch@vger.kernel.org, linux-mm@kvack.org,
-        greybus-dev@lists.linaro.org, linux-i3c@lists.infradead.org,
-        linux-rdma@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] treewide: Replace zero-length arrays with
- flexible-array members
-Message-ID: <202202151016.C0471D6E@keescook>
-References: <20220215174743.GA878920@embeddedor>
+        with ESMTP id S243155AbiBOSmw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 13:42:52 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6929327FEA;
+        Tue, 15 Feb 2022 10:42:42 -0800 (PST)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21FH4N62029572;
+        Tue, 15 Feb 2022 18:42:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2021-07-09; bh=zXmbrA+nSO5dCXMa3+3nbbOi7Ym51eV5ADJO++TfFv0=;
+ b=oqxhdoF2rIqYW/BJuSS/ErAWNzD765UjQwIZsoI1GRVfs8Q4rXVcbrU0FnnU2cLvawLF
+ AYQae2Cd1+DskOtQ8w0jBO1dosO2XnVLEnsQC0jWQs51B0aIWTzltga+MqrU8TT6TYuE
+ 6wZRUb+QiL0SiOtIHwASsKyJLCAD5FQ09A07Gzue+CMRKkVOs3wDPkZEg1hjEkmZf/0C
+ Y4R6t4FzGXAUV4f/3cdB3op7Dw+UoIkXqGgD7iu/thJxqgEhn1U8mAAj1qbkrBKeemu+
+ cBSwqrCWSrO7kIUkT7hFcBjN4Pf+m4/bIXwZOO2udmhOmdEx6mAWMMzdpbLPqSunLQcQ bw== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3e8570taav-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Feb 2022 18:42:18 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21FIfEKi150005;
+        Tue, 15 Feb 2022 18:42:17 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 3e620xg50s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Feb 2022 18:42:17 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 21FIgHrN152289;
+        Tue, 15 Feb 2022 18:42:17 GMT
+Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
+        by userp3030.oracle.com with ESMTP id 3e620xg50h-1;
+        Tue, 15 Feb 2022 18:42:17 +0000
+From:   Sherry Yang <sherry.yang@oracle.com>
+To:     skhan@linuxfoundation.org, shuah@kernel.org, keescook@chromium.org,
+        luto@amacapital.net, wad@chromium.org, christian@brauner.io,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        usama.anjum@collabora.com, sherry.yang@oracle.com
+Subject: [PATCH v3] selftests/seccomp: Fix seccomp failure by adding missing headers
+Date:   Tue, 15 Feb 2022 10:42:15 -0800
+Message-Id: <20220215184215.40093-1-sherry.yang@oracle.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220215174743.GA878920@embeddedor>
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Proofpoint-ORIG-GUID: NohrFFT0X_beyLbk1JWdxuHwTzUHtHwb
+X-Proofpoint-GUID: NohrFFT0X_beyLbk1JWdxuHwTzUHtHwb
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 11:47:43AM -0600, Gustavo A. R. Silva wrote:
-> There is a regular need in the kernel to provide a way to declare
-> having a dynamically sized set of trailing elements in a structure.
-> Kernel code should always use “flexible array members”[1] for these
-> cases. The older style of one-element or zero-length arrays should
-> no longer be used[2].
-> 
-> This code was transformed with the help of Coccinelle:
-> (next-20220214$ spatch --jobs $(getconf _NPROCESSORS_ONLN) --sp-file script.cocci --include-headers --dir . > output.patch)
-> 
-> @@
-> identifier S, member, array;
-> type T1, T2;
-> @@
-> 
-> struct S {
->   ...
->   T1 member;
->   T2 array[
-> - 0
->   ];
-> };
+seccomp_bpf failed on tests 47 global.user_notification_filter_empty
+and 48 global.user_notification_filter_empty_threaded when it's
+tested on updated kernel but with old kernel headers. Because old
+kernel headers don't have definition of macro __NR_clone3 which is
+required for these two tests. Use KHDR_INCLUDES to correctly reach
+the installed headers.
 
-These all look trivially correct to me. Only two didn't have the end of
-the struct visible in the patch, and checking those showed them to be
-trailing members as well, so:
+Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
+Tested-by: Sherry Yang <sherry.yang@oracle.com>
+---
+ tools/testing/selftests/seccomp/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
-
+diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
+index 0ebfe8b0e147..7eaed95ba4b3 100644
+--- a/tools/testing/selftests/seccomp/Makefile
++++ b/tools/testing/selftests/seccomp/Makefile
+@@ -1,5 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0
+-CFLAGS += -Wl,-no-as-needed -Wall
++CFLAGS += -Wl,-no-as-needed -Wall $(KHDR_INCLUDES)
+ LDFLAGS += -lpthread
+ 
+ TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
 -- 
-Kees Cook
+2.31.1
+
