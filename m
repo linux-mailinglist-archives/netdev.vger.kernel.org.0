@@ -2,91 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03F404B7557
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:47:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C7F14B7708
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:50:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242161AbiBORHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 12:07:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33756 "EHLO
+        id S240847AbiBOR1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 12:27:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242162AbiBORHD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 12:07:03 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BA0C7C27
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 09:06:53 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id q7so33126118wrc.13
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 09:06:53 -0800 (PST)
+        with ESMTP id S232081AbiBOR1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 12:27:44 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 165EA140FD
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 09:27:34 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id j12so36033381ybh.8
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 09:27:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=64ujAZGCy+wXFieA5/Bj8ZqtpVN9eii19Jh2KoGa8VQ=;
-        b=L2GzMwlPsZ7uQ/GDO30qwxGgBGqGNVBqZLTl0CXEl3tlyoMniWdKzQPzNGWr9Zxt7/
-         S5EcncmoO3Vw6GI+9aYAF8XbQ2lw3eyls4FC+lu2pAGfHzvu7Ob9zAEnfKAY55nAZ6d7
-         12ZXoaI6kh9hCMmHJKPUPJWRfpf6aZb1MOCaA/opO4hgdQ7V4m3ZtnODWzCIGCLjzaPX
-         8pch32l9fJrzyx5tHBR80+hjG6gWW502dJ5O6nBV6jv+wteAuFr6DruQCRQ44Q7mlt0o
-         yQp/0bUYoYSK3/5I6s8OVvcmzbUB0SR0uAoaemIRpTrOX7Vp8Q7iZY+iMwRGautRQehC
-         2LFA==
+        bh=aLaWiu1JFL8ml5eOPFlgSjkRJzbN2Qiow7Vm2dhjtxQ=;
+        b=fELzMEYkNiNP8URDJm/NJ8Shk3PS6AjtEj2+S5K7htmvoEZy1Xl7zMNPIrdk8wH7QB
+         zN0V5DNXpI7lk+8MgRyyHPmnZ3zw55gOiXr/kWIW2kr7ttw/pZ3J/4znYZm23y5c30/b
+         H9l8vmLh9jrqfNFoSyALXPBN8wM2Nky0My0qZVVsDSqBLLoWZk/Bi/Jn86RlhsUv7CBh
+         lfp4nrtPPAfvWR3dQsGklpEUjRW9ZeO0I8J2255xa0lvhJAtv6hDnFDtHBCo3FjU3TmX
+         eq9/ufQYtFYxJfOuGlO4hZmwnfeCFZ99wN+qavbBQQPiSjJjaNVVhZGlMxxBAyVNL5FN
+         ELPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=64ujAZGCy+wXFieA5/Bj8ZqtpVN9eii19Jh2KoGa8VQ=;
-        b=kLE9Cx8JM9xL1YfjeyC06CzKD9r3H2/ZtUoLElsrlRFJsimY7K/2dMKPZW1UiNgr9w
-         okK8g8Hk0LUT3dp3UV3y3u1Wqcg7Xu3vEu0A8fjoY0MWJTxAcAlSQYlr82wmRgpAniTn
-         iBKI6JJ9+o3UvPRUdtbBRXK7nShu2nOC0YoAyxezsbY18dpF8Kq4tNwWhMYbTytGneuJ
-         yrsMZi7j7A9BslAeeaTYR0mlBZ0NnuJnXZNH7iU7FjI8YSw3bxT84LD8VPw1u+KOBauW
-         c7vZlG7fzwze58n/34R90xHTa5KvN/RIS3/0H+sy+aDb8KYmeosJ42DLL/kq2ZD8whRA
-         KyyQ==
-X-Gm-Message-State: AOAM532aa5UfvxwmU+rk5FlZnMzB2ydLyRN3/6I3f4EBOUik+xg/YDDd
-        Mzg1H5e95+2WysxAhxh2VkZxYe3Mt0CTDRL3Ic7lBGTAKc9Zy68F
-X-Google-Smtp-Source: ABdhPJxt7DoTqqlSMnPR20BUAU/D51eBUmhuL5qPMitPYI1QjXmZpvB3HO4dQNvSBDK/LIrFk4jiPFqroLEgJdBXdCk=
-X-Received: by 2002:a5d:47cf:: with SMTP id o15mr3959105wrc.412.1644944811535;
- Tue, 15 Feb 2022 09:06:51 -0800 (PST)
+        bh=aLaWiu1JFL8ml5eOPFlgSjkRJzbN2Qiow7Vm2dhjtxQ=;
+        b=ny1vqGiQHFU0s8TvCazgpKlrLu7ApmbfG5UjezvmLDDUVxAEy5VIZz7zTODMgAAi6l
+         gdQsijBmYon/BEUY7twcEbHs5T6cZrqmTRcNOV77GHewY/FPlgetwj8wkoIfx93K1aa3
+         c5auVvJFcCU4jCTGw1tBw9gqijp13M86iBjqCsNGyRu/n5Cyr55Z8v+hpz5hRcGHOtZT
+         UPOdK3Mt9RdcnWB+OCiypgxepQAvXm+hl437R+5D4NePLJ3FJ3qISqOKVnDOMShNiyuz
+         5Fwo3wYORHQA0uIB/iRcMmEoOWoSl8bSssMDpPklzDYbh6DQ9eVdoUJfg+eGnWd8919c
+         VAKA==
+X-Gm-Message-State: AOAM531XWJi2taNpFLr2YbzlP1HRJnh+RbXKaItIMgxUlWgLPasZuY9m
+        E0XKdQ8Jr2GKnktnud7HN/tLO/sjOOkUej+o9Jh7IHFPp0ETBrph
+X-Google-Smtp-Source: ABdhPJz4NOmVzX5UE/6Fjrn97iLKTV+R0r9Gt9E27K8jPEZZXRv3N8g0OSWYzAWurnf8jLN+cPHLMp8zBVz7DOgBAmQ=
+X-Received: by 2002:a81:a841:: with SMTP id f62mr4816962ywh.255.1644946052978;
+ Tue, 15 Feb 2022 09:27:32 -0800 (PST)
 MIME-Version: 1.0
-References: <20220213150234.31602-1-thomas.liu@ucloud.cn> <CA+FuTSdODATw3hSAMv9aZUmJNM8ZE-YP58pr17bO9rGJUgfegw@mail.gmail.com>
- <CFD9B65A-6762-4D9B-ADEB-B4C0B1902E02@ucloud.cn> <CA+FuTSfQOUEyEDnOU8VVZ=STw_ii-hTwyg-cvpcViPkVK4pLUA@mail.gmail.com>
- <42554FCB-9180-4B32-B5CF-6D3236237D99@ucloud.cn> <CAF=yD-+1RSj_o8n5LDOLVyn_dvVQvmDQo5pacSoDFPOR3M2g5g@mail.gmail.com>
- <CANn89i+T=Ny7pfUomSsa1ub77u8LfYtRZPzmp_0-=oWKt0abLg@mail.gmail.com> <CA+FuTSc9ZeuLE7tqNT-GnqHb27SE7UAtVRVsZHR+dV6ua=UKPA@mail.gmail.com>
-In-Reply-To: <CA+FuTSc9ZeuLE7tqNT-GnqHb27SE7UAtVRVsZHR+dV6ua=UKPA@mail.gmail.com>
+References: <20220214203434.838623-1-eric.dumazet@gmail.com>
+ <YgsE30gfoQkruTYS@pop-os.localdomain> <CANn89i+2KYH+DKrNPttbmrvx992P+ufgo=QWyvr1Ku6b=1BY0Q@mail.gmail.com>
+In-Reply-To: <CANn89i+2KYH+DKrNPttbmrvx992P+ufgo=QWyvr1Ku6b=1BY0Q@mail.gmail.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 15 Feb 2022 09:06:39 -0800
-Message-ID: <CANn89iLtXW-MFJ74UhP4WyC3a60LrevAxddBjJ1nGu78eSG1DQ@mail.gmail.com>
-Subject: Re: [PATCH] gso: do not skip outer ip header in case of ipip and net_failover
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Tao Liu <thomas.liu@ucloud.cn>, David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+Date:   Tue, 15 Feb 2022 09:27:21 -0800
+Message-ID: <CANn89iJDWUE5mTSuWQaHO0SfyXLTso5Cp=rYzRGwWoZC_gHmmg@mail.gmail.com>
+Subject: Re: [PATCH net] net: sched: limit TC_ACT_REPEAT loops
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        netdev <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        syzbot <syzkaller@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 7:46 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
-
-> > Stuffing state in the skb has been a mistake I think.
+On Mon, Feb 14, 2022 at 5:54 PM Eric Dumazet <edumazet@google.com> wrote:
 >
-> If we could unwind those skb inner_* fields (and reclaim the skbuff
-> space!) that would be fantastic.
-
-Not sure we can easily remove the space, many networking drivers need them,
-we probably do not want to dissect packets in their ndo_start_xmit()
-
+> > > +             repeat_ttl = 10;
+> >
+> > Not sure if there is any use case of repeat action with 10+ repeats...
+> > Use a sufficiently larger one to be 100% safe?
 >
-> Immediately for this bug: perhaps it can be fixed by resetting the
-> network_header on the gso skb if segs == NULL. As the offset is stored
-> on the stack.
+> I have no idea of what the practical limit would be ?
+>
+> 100, 1000, time limit ?
 
-It seems correct. Any other fields we need to take care of ?
+Jamal, you already gave your Ack, but Cong is concerned about the 10 limit.
+
+What should I used for v2 ?
+
+Honestly I fail to see a valid reason for TC_ACT_REPEAT more than few times,
+but I have no idea of what real world actions using REPEAT look like.
+
+Thanks.
