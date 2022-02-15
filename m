@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3700A4B7747
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:50:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D27844B7631
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:48:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242099AbiBORDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 12:03:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59072 "EHLO
+        id S242127AbiBORDW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 12:03:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242093AbiBORCt (ORCPT
+        with ESMTP id S242090AbiBORCt (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 12:02:49 -0500
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10077.outbound.protection.outlook.com [40.107.1.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B0D119F7D
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10075.outbound.protection.outlook.com [40.107.1.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8E8511941C
         for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 09:02:38 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=erH5vRrvmAr1Mkvr9BE01FQlJ+lmY8NrDwf5+flQcJnXC9kOO49IhMW6bh1Ex5bJaeT9IS2zP1YuqJvtUnNYCPWes6VVuu0L1LRaaZfGeJEyhtI3YdaqYyQG9VYSIbdTbpYoX8+RXfoy5zuaCEwYSWeV0/QkXLc04o026db9jAwVEGkXfsXWVhHJxwhp9sQdQT+lKmSwqkXdO+/btmI5oIXjC0XguyOE+/LlkEx0QPr/+fF3rea3AhkVNhl09WhmThEnkQetWE7kmkNcX4ST/JrrPKDBqEV+lkiL88DXE+lOlmkU7x19lJYThRbgqU7A63wHo7K7dGlqtI525ps/jw==
+ b=PaaS33gCNh4ovZ+kPfcEe9Z4BGmWEYdNjavvVLNOILz11SgdUh1Ocq4rnnJ/ItjSNfyIR6Cf8p5Aw0ftnClsSI2Mc5IKH9s0wOVnGtpIo1QacEEj8faAfaXAj3ISMTVS1SgX9I3m7UY2lriakhjGhxTDn1yRw6h1DJkhJo+HYc1qrhfbW8LLVPQJjbZDJ4PNecV2k6SIYAyMy1uMREY9zj5gZGH4cufCe9miDudL76xK0Z4eao6nCTpGAeEpvIlMh9OXtQUaLC/rCVh0+nE5MPI+ZYfscY5/ShKV52a3PQ18aH8HvrPO9r1T3lEbE5vSLkgsgSeTiAXMJQVY/AUW+g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mPo8sxnHLu1/e/643gWg04NBEWT0VYM8ILWVP/dRzyQ=;
- b=kiqUmG1NV+UQgoB+0QDTKd3F7JCI/mLLvvMnaoz6msqH0pk3rGYGDdxx+RH6yo7emjrilmUvwUrCs0U7o7Cz6eI1UsG5n9BApgVAEzq78woVRqUNRoYl3tXZF5eYF8Y/hZgI7A+XwquPB2O4HTq0C38Qg5GeSggwwsjfzh3E9Kt3jzugF7TO+x04wm7W5VoTXJO7q//dYjKdgVYOntCyEhPsLAvVeHlsaMpYr+EqWzi0hTOJ2xEn1iUWrCPWYopw7a+1F9RF8HxWvy9pD6UqQZYHTWv9H679gcO9jJAJ0OhCnYj/5X6ax+vvEduwGKPOB1TwVBoPnOtkiucGPlBpmw==
+ bh=9Sv5W3P370XA+tZ55ADTPx2ydzBmsfzfXLeyxjsjUiE=;
+ b=G9Mz6CRWdLpNlQlzJeKozGLYKgScJXeqrxURhWMY2PxMM1/116mbasLhUnoHtfsRzS1ei2jJksgi426HCPeceM2DcZTP1Flc31/2uQxUaAxhZ8/6Aa9sd4LppvDlD/xeBV+2S7uFPei/5l63qZNlro6/97bcaYoiFy8z0yfQw8dp5pc+8J9gQwNra8AF7wiPBJdNPoIdlcUtdDkVdh+NlahzGq7HEbRtTGP12aE/sfIBoSPEIhYAO7U54jmV3twJl/MqVpsZ3F0nP5ed1wlkiWo+plHwUBqTdklVRNnPB//bNvaZeX1xjr/H2Hpi4W9+FdzQnGGgCEDnnD6kPPJb6g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mPo8sxnHLu1/e/643gWg04NBEWT0VYM8ILWVP/dRzyQ=;
- b=EdLCpP7bUl/SgvPFIFvU8Ek0vtpwsJWEoLIiatwZlGtV/joyohP+P6ZkWwibg0aLXsDZVvF6bZwyQkxBYl1qgb7331d5M2eost3oltQT9NZCogZ2k0xcOUSdZNnwnjdevJsv1Ut9l7YO04iYlvguZ8jkxVVwAbw4Ow3p4oPLYAo=
+ bh=9Sv5W3P370XA+tZ55ADTPx2ydzBmsfzfXLeyxjsjUiE=;
+ b=CGiT3LioIj0jo44zkAtl90TGbeCcQ4mQ4y3zTjHnZLr+zUY2cpNRDpYM7XOwYEXq9+0gZkvniDwC+HUZSzRjsfkbl+HsR34NPgBERXiUIsxULkuFBkc0l9AKkMX8SVUNAHmlRDlYQgGyxmNAPrx2nLwKm+NwYhWWHPuhq8v8aic=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB5342.eurprd04.prod.outlook.com (2603:10a6:803:46::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.15; Tue, 15 Feb
- 2022 17:02:32 +0000
+ 2022 17:02:33 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Tue, 15 Feb 2022
- 17:02:32 +0000
+ 17:02:33 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -52,9 +52,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Rafael Richter <rafael.richter@gin.de>,
         Daniel Klauer <daniel.klauer@gin.de>,
         Tobias Waldekranz <tobias@waldekranz.com>
-Subject: [PATCH v3 net-next 09/11] net: switchdev: introduce switchdev_handle_port_obj_{add,del} for foreign interfaces
-Date:   Tue, 15 Feb 2022 19:02:16 +0200
-Message-Id: <20220215170218.2032432-10-vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 10/11] net: dsa: add explicit support for host bridge VLANs
+Date:   Tue, 15 Feb 2022 19:02:17 +0200
+Message-Id: <20220215170218.2032432-11-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220215170218.2032432-1-vladimir.oltean@nxp.com>
 References: <20220215170218.2032432-1-vladimir.oltean@nxp.com>
@@ -65,54 +65,54 @@ X-ClientProxiedBy: VI1PR0302CA0003.eurprd03.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 696d251f-ff02-4dbb-498e-08d9f0a4f516
+X-MS-Office365-Filtering-Correlation-Id: e2e8c9eb-b5c6-4d15-a5e1-08d9f0a4f575
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5342:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5342BF4B40FBAB073CE3B456E0349@VI1PR04MB5342.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB53429642FEC9EBCE34ECA442E0349@VI1PR04MB5342.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7dSsjQULxXGYasYU67hVGUxVv7Av2cZMgiY136Qfo33i40bS+lFl8zOmg7tXCSPYlXHsQNaQyIbE/LJYWxZBpnV0admzDBN+WUyayYJk4S/0euf5e+IrYugtlouTldR+8AEJ9750YjahrMzMJD6h7XKmQhBurSnlqT1bH/D+7cQrT7lH1MVBFehZ19ANPddNl1zy8eN1jFx0D+Isuh+nS5UK2hk8bYehDZfQ/8JhxrX1m3AYb9GZ2IMF9DXnl/oSsv7YsfQ1w4GNJQeqSAxg4oyb1HawMlB1tFuszvnorahEVRGbeT3JOrMLi9FxPdz2I2gcBDMSpDQF+iOO/3qjXZZ9NMRZzgV3wZNJSToVnx2fLMO05PmzYT1oMTeuktdw0Dbr78c5R58WWL/BiQDBBuKOgRxenZSIGalen8GHn27GoNXBrxkWTmKQTLniiDdlQtTu93O6p+98iWVdAAq9p4RPcIK7ECDpfXXQzNObY7EgVfyvYfSRvKLUv8V3dGDRx5r2WfrSBI2m/t8S8nMcY+EyHkpla1+mX4s19jWd+mYwjW4ODiTVpgZpzMVmW9/H9DGN+xZ3r9gT2WnmI9tR9EIfYt25y/aw4m+qbPG9ZJ1Ajuz/oPrlAFXjv7yHyMb1OHScU8mODk9zXXxOAZGXiB9WF/9Cko2BSx8QkFn4kouf3Vdlv/6iT5Ze+A6G3DpYGWMeDJXd8nTdBJAfaR9+jA==
+X-Microsoft-Antispam-Message-Info: BV9OYX0h34fI47n8psg4XLoEk+47HzKAEYLy94bi5+xBayUaiPTSo7gRcHoJt7idznMeXEP+zyGQWbj2NM951d9JVam7FSPmZxrNOThd5Idfh4MGAE6R1atO8NMOXDxLSm1mouTTQdWpnhRHzFd7ChCo76NTPa0C1XpasIzqfFBwqTT0KhF/SBBQClm1mzE9+wU9ym7eG65AyMDMCbTJPwnGV49FDxlTIWhXxJ8rgjY4acmKlfbiUtuPvmpDHP8v1xrQ0/Cki0zNIOFWrjqvFBUkqNXmh+6o+FsajkR5b3JVicB/6ur34gJYP4Swi/CA+mEIKrs+NTAntnTr1nYuzV6w/oiFZMqXRyVaiyY2dLIPhbgbBVkHloquYHxtMJXcxJMxo63AmjKphGyrfgoUFl6nVBMdPvzldvTLEbSRjlV84IDrj2S9e9bxA2LTtoIqluqkj78FrSGRj8q5rLsAkDJtR/K+FDxFxt7MeVzZqbLGfIhRqTB6xGBmJKg4C/SP7ldR5nEO8Ksma3Hn6MLl1AX+atefTfftjMJQdSGnayQmm9hhdM52WN4LyISHswxx7bDz3idEyyBVCtaWP641cyJAp3SNQYSkaGuIfASKjZjBOAohEuKPHVQ+25oDrOMbJhdOWznYQpgXa0DWM1+O5XXtgUFwX3zKL2CjOWCcjaLSWmgpQwn878LGt9JSwzYnSRV1mPUrlrJGfJigHeBPkA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(508600001)(2616005)(316002)(26005)(6506007)(6512007)(54906003)(1076003)(38100700002)(6486002)(6916009)(52116002)(38350700002)(2906002)(66946007)(4326008)(44832011)(30864003)(5660300002)(66556008)(8936002)(66476007)(7416002)(8676002)(6666004)(83380400001)(86362001)(36756003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Z19r9+D/64P931ooO35fMc1AzzIVccj5IotSyOzY1Tgwy//4Tl90BBYVwPVs?=
- =?us-ascii?Q?FTRHj2R0Zd+LFSCyniRKMrLvB0pBFqGDETvjSP/o1AzdyJadJwvH5iKUVG9F?=
- =?us-ascii?Q?/Gqo4Mw351ncN5BRSeiLWydssMcJRV+A9vs2GwdDDOnqyTZkGH+Jq2pmeckQ?=
- =?us-ascii?Q?gLYno7AkB4dvrJE19+wI77CdR1rBYaSfWfZKjHF1pGmxXNBX/Mkv+SiYrWg0?=
- =?us-ascii?Q?bmoudaoVitCI4q58h2clrFd4J4efJ0z4nCn+uSHfroyieWBI2fGJVIqviYoT?=
- =?us-ascii?Q?5LOqBruOQFGkdi2LIQIsal1ZfShCo8FVLgQEubtKPl++Jvm3z5/F0RjHELPr?=
- =?us-ascii?Q?uPweg7/JzQFdmQKD975SgUzrdu/cdyT26u/MW0jAgylfB4WHNGvZBKBL4AkS?=
- =?us-ascii?Q?6vHdqs3Kl3z8OAoNjOs3kDWBu+hWuJI3q2BCnvcdgql3i+4gfQy3hTEtcxia?=
- =?us-ascii?Q?Iwy7p4xvbC6hfOCGMQ2yFbUIY1tv8xnMQJvZaQ0glEtRlvJ4rcdnupSc/4eg?=
- =?us-ascii?Q?7RQL6Frx+7GXGMmRTHBzezQEWLwljjJsp4UX8qKnuFukV6nXFG2J6e22Uyc4?=
- =?us-ascii?Q?uIS/NdhTrQf6mjT7M2p/PBpnkJhtKMbtaUuHb6FlvzAjvubO6rvKuqbIWp6z?=
- =?us-ascii?Q?VeCqTRiEO5OcvALJqGgqsqzdT88QL0QxlaQsCq3Ugn3m2WYpXWpHVxSQ/zA9?=
- =?us-ascii?Q?Epb17iTz0t/WdOOSxB75EfqyjFjP08xxCNaZexaKgQTtQaXS4vqbVuKnFYTO?=
- =?us-ascii?Q?nU6vyFT0xaw2kffCqvpLxt3rTsJKgShyBm+3yzLhHXJtrjle8M7YnYHoIKdo?=
- =?us-ascii?Q?PvcUK/2+xPxBUqOXRISETRBM97Ns/PTaT3OaGPOwAFd0f8HxITZWV0KWKVtF?=
- =?us-ascii?Q?7FmyX1SVNcYhToVyZrARqqWVgB8DKB5nwD4NELpA/7Uoq9uNYqZCrg3uqY6C?=
- =?us-ascii?Q?GoYThMPKabhN9Dtg7e9j7NfRK+OkGh81mbW24Ixu18Ak2D7dyII8fX/545iM?=
- =?us-ascii?Q?RHKBTr8n3gpZnt7i98C+G9Nj5bFoYN2to83n9ISlJow8q19woVNG/nZvXtm8?=
- =?us-ascii?Q?9oHRwjiERE9su25nKbM/V2VviEGLDM/rSU1ItGSiZFFNV4m1+IHmsHTU/lFB?=
- =?us-ascii?Q?MyUMMkf3oLUmC61TTASOwP5DnyPXmhEY4+oERpSWHpr+K3ZfAHzuGuX6uzz0?=
- =?us-ascii?Q?zeFXC5sNhR1umC7Hl52X85xZNoJP3ap3nd3yhPdz3Gvxb0TpvVLCNyHUh/Ik?=
- =?us-ascii?Q?TSpBbur/zLcCQyyRgwomoe5zXQv+CoM0tC81wa+gS8a5AWu88cHHnWC4FI/5?=
- =?us-ascii?Q?UIeEdPYrvsEaq3JjV1Hlt1XLPOQOJv0rJDUldqEVfdoqP+mp+uw8UueZfxRV?=
- =?us-ascii?Q?MyxdCzg/AJFXQdqXdT08uNZ7eQflLO5OObCa/sy/idZxN/ItyEJOHA40UL+Q?=
- =?us-ascii?Q?fImyOOanAjJIsrhjECkoPxOHOHJegDrVkXek9Ja1YP5QSezuSrcNCC5D1KBL?=
- =?us-ascii?Q?X/+rpIvnj7JOT1dKkH5pfQ5bOrQ4/LnQFomU/RFh7ulsnxMp/jwPEwjznyTg?=
- =?us-ascii?Q?jvl0kust3m1uMftUl5mZwrE600ch2nqXb1x7iXlelTuidptN2JOIsKDrTylG?=
- =?us-ascii?Q?UIpaFxM+FFQiRQ+q+jUR4Hw=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1VNIhb+vigWfSGBAYAuAl1W/t3HmJznS6/QjqB/JinFU4pQ5+jC2aROIydin?=
+ =?us-ascii?Q?e5flEc2gM3RbvE2BOx4o2kXaPgcEnOqQCIGhyCDosGKKPvFBJgn5lMThp38Z?=
+ =?us-ascii?Q?5N9TKUdZfGMVq6x+9PxIAB83VVTCVsLy5IzJQjssSnYLB3dwdnHMniKC/mN/?=
+ =?us-ascii?Q?0wZh5vTEXrZpCJOXQW5bzgQ4GZJ16k2V/mH8Wfnl5yAwbkwSbqvM2q6FCoy5?=
+ =?us-ascii?Q?gFXBhWD8v9vPFaw8+5bHmC0qSE7rIPbY+l/1UL/9Y3s+37KHx0IBYjv4chUH?=
+ =?us-ascii?Q?HW+uaXxuZ6wo8q2ae5J5xFFeiekWXdb/TNuvF+JBVvqg59iebxbYAv5H0dOV?=
+ =?us-ascii?Q?fH7jYcYSY+Ovvfxh5eY+bfvO9XMcdtTbqIxgSSjDkMG0PS3Vs/0XsiZuuy5c?=
+ =?us-ascii?Q?DA8CaT9TMc/PPS+G70scwGeUVLD4tpYf4Z0dU964tTvDziZEJzyvWWMJb0PE?=
+ =?us-ascii?Q?H5HgHG7Ti42jFo5iP4vNxDpu6QucVmv7O7EjXGdnr2lrV7FRfvxlHmVXvWw9?=
+ =?us-ascii?Q?vYwvufGnnHbh94uqmVYcDRYC1vCdhj6vEofHqS+VcocutLvxN0HsEU6AXWCM?=
+ =?us-ascii?Q?SarvEjmK1uzVfL/MLkZw2hSw24C0iDJc956ogZSi5b1ACoUtPe8NZpjdEUGN?=
+ =?us-ascii?Q?9tGzWUZ5vhQm65F9PHknIez/6gZzXwgspqa5ZRF9qclzSO/Kj4Fw9Nkb29Lx?=
+ =?us-ascii?Q?6rSJ/2rwIlUqz+/qjNxXVpapleFtmL6iochTfVDTea7lcBZ+WbDhK07IaVMN?=
+ =?us-ascii?Q?8gOeVIr94oPSUepah9ta75Fkq0HYjGQiuxdIr2SmRF0F/Dt8KgZ8Staacyzx?=
+ =?us-ascii?Q?LFrom0LQ6WSY1DqKioQTcan3CrqYZwtX8b81kjaCPJCHQsgh4zkMBXPJwc3G?=
+ =?us-ascii?Q?pxMHAQjA3+/np9iTrSc4IgtTXqHnL+h9D+q+t4eZtDCpN1I3uts+uxGL1Ygk?=
+ =?us-ascii?Q?z2gtaCEIqTmP3nmGsVmcWIe2ZQAg7NEHhNGtQeJciZZsXOKC/ZSJrR+s7OW1?=
+ =?us-ascii?Q?6asHzSDfL0X9bVEs4W49XYOh+hG9D2FTdlp0xDHNvIzQfVP+4wiuv6POQTpJ?=
+ =?us-ascii?Q?c/fEXPM/Cq+gUWn9k8JmkKrPSl0FQakeKKMbuIbqRLXvbcxL23uYkOuKncBR?=
+ =?us-ascii?Q?sYfzOfpEyJXKpjQjMYC7JnVqET6GuqYT4vdsiuXScRBAfAeMtuN82RYOUJeM?=
+ =?us-ascii?Q?tuNcao6FXhnu0mYo3e2K30phEkqoxtZmqaXmjXxQUlCRN/qOPzh8Okd1ecXy?=
+ =?us-ascii?Q?YlLSQTNeh+7AKsZzetNKfkTg/s0wBtb5nktfh/Z2YIVgcXlncoE/jUXilbHT?=
+ =?us-ascii?Q?76fgi0hJc3zBOZghRKd1Vs4of7hNkzPMAQNRZs1rs5MuKBTa6Z6uo2QjyoUe?=
+ =?us-ascii?Q?D4eNhvWYE4/6SzJd6EyVL2nKCtLVUu5mhmasTUNNsGOp97CzHqrnTascebKm?=
+ =?us-ascii?Q?z7AKpfdMq4q6RO4+uGAdq2hUXpEIZScxmfSqY/zQw8Q2kHkcC2UbxmxWetkN?=
+ =?us-ascii?Q?Mz2869M9YFSYxoPyV+XA7LUGBim0xEqE1F9PWmCGr39jXNzHq8Jo8Fol+yhq?=
+ =?us-ascii?Q?2BPneasL8qYO/EeqqlQf2cO4OtrOS26ANrJVTkFzNwSaSqDcsJ1ZGMn6O/UW?=
+ =?us-ascii?Q?xgJDxBu8r4eNwaiK8M676L4=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 696d251f-ff02-4dbb-498e-08d9f0a4f516
+X-MS-Exchange-CrossTenant-Network-Message-Id: e2e8c9eb-b5c6-4d15-a5e1-08d9f0a4f575
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 17:02:32.8535
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 17:02:33.4629
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /V3lsC9bl5Y3pICWQZnHKiAwuSqKR2TNsV6/V40aqbNdk8qxcVY18076kJcUOsV7qxDz4bW77O67IrqWbw2Gjw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 44581YMdjBgZNGWxg40xwspsTd0FIQtcHo+ooZqqZonUH7Qch9fCIV8VN4oSwmvcslyz8ii4Y0j6sZGgFmGq2g==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5342
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -124,383 +124,632 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The switchdev_handle_port_obj_add() helper is good for replicating a
-port object on the lower interfaces of @dev, if that object was emitted
-on a bridge, or on a bridge port that is a LAG.
+Currently, DSA programs VLANs on shared (DSA and CPU) ports each time it
+does so on user ports. This is good for basic functionality but has
+several limitations:
 
-However, drivers that use this helper limit themselves to a box from
-which they can no longer intercept port objects notified on neighbor
-ports ("foreign interfaces").
+- the VLAN group which must reach the CPU may be radically different
+  from the VLAN group that must be autonomously forwarded by the switch.
+  In other words, the admin may want to isolate noisy stations and avoid
+  traffic from them going to the control processor of the switch, where
+  it would just waste useless cycles. The bridge already supports
+  independent control of VLAN groups on bridge ports and on the bridge
+  itself, and when VLAN-aware, it will drop packets in software anyway
+  if their VID isn't added as a 'self' entry towards the bridge device.
 
-One such driver is DSA, where software bridging with foreign interfaces
-such as standalone NICs or Wi-Fi APs is an important use case. There, a
-VLAN installed on a neighbor bridge port roughly corresponds to a
-forwarding VLAN installed on the DSA switch's CPU port.
+- Replaying host FDB entries may depend, for some drivers like mv88e6xxx,
+  on replaying the host VLANs as well. The 2 VLAN groups are
+  approximately the same in most regular cases, but there are corner
+  cases when timing matters, and DSA's approximation of replicating
+  VLANs on shared ports simply does not work.
 
-To support this use case while also making use of the benefits of the
-switchdev_handle_* replication helper for port objects, introduce a new
-variant of these functions that crawls through the neighbor ports of
-@dev, in search of potentially compatible switchdev ports that are
-interested in the event.
+- If a user makes the bridge (implicitly the CPU port) join a VLAN by
+  accident, there is no way for the CPU port to isolate itself from that
+  noisy VLAN except by rebooting the system. This is because for each
+  VLAN added on a user port, DSA will add it on shared ports too, but
+  for each VLAN deletion on a user port, it will remain installed on
+  shared ports, since DSA has no good indication of whether the VLAN is
+  still in use or not.
 
-The strategy is identical to switchdev_handle_fdb_event_to_device():
-if @dev wasn't a switchdev interface, then go one step upper, and
-recursively call this function on the bridge that this port belongs to.
-At the next recursion step, __switchdev_handle_port_obj_add() will
-iterate through the bridge's lower interfaces. Among those, some will be
-switchdev interfaces, and one will be the original @dev that we came
-from. To prevent infinite recursion, we must suppress reentry into the
-original @dev, and just call the @add_cb for the switchdev_interfaces.
+Now that the bridge driver emits well-balanced SWITCHDEV_OBJ_ID_PORT_VLAN
+addition and removal events, DSA has a simple and straightforward task
+of separating the bridge port VLANs (these have an orig_dev which is a
+DSA slave interface, or a LAG interface) from the host VLANs (these have
+an orig_dev which is a bridge interface), and to keep a simple reference
+count of each VID on each shared port.
 
-It looks like this:
+Forwarding VLANs must be installed on the bridge ports and on all DSA
+ports interconnecting them. We don't have a good view of the exact
+topology, so we simply install forwarding VLANs on all DSA ports, which
+is what has been done until now.
 
-                br0
-               / | \
-              /  |  \
-             /   |   \
-           swp0 swp1 eth0
+Host VLANs must be installed primarily on the dedicated CPU port of each
+bridge port. More subtly, they must also be installed on upstream-facing
+and downstream-facing DSA ports that are connecting the bridge ports and
+the CPU. This ensures that the mv88e6xxx's problem (VID of host FDB
+entry may be absent from VTU) is still addressed even if that switch is
+in a cross-chip setup, and it has no local CPU port.
 
-1. __switchdev_handle_port_obj_add(eth0)
-   -> check_cb(eth0) returns false
-   -> eth0 has no lower interfaces
-   -> eth0's bridge is br0
-   -> switchdev_lower_dev_find(br0, check_cb, foreign_dev_check_cb))
-      finds br0
-
-2. __switchdev_handle_port_obj_add(br0)
-   -> check_cb(br0) returns false
-   -> netdev_for_each_lower_dev
-      -> check_cb(swp0) returns true, so we don't skip this interface
-
-3. __switchdev_handle_port_obj_add(swp0)
-   -> check_cb(swp0) returns true, so we call add_cb(swp0)
-
-(back to netdev_for_each_lower_dev from 2)
-      -> check_cb(swp1) returns true, so we don't skip this interface
-
-4. __switchdev_handle_port_obj_add(swp1)
-   -> check_cb(swp1) returns true, so we call add_cb(swp1)
-
-(back to netdev_for_each_lower_dev from 2)
-      -> check_cb(eth0) returns false, so we skip this interface to
-         avoid infinite recursion
-
-Note: eth0 could have been a LAG, and we don't want to suppress the
-recursion through its lowers if those exist, so when check_cb() returns
-false, we still call switchdev_lower_dev_find() to estimate whether
-there's anything worth a recursion beneath that LAG. Using check_cb()
-and foreign_dev_check_cb(), switchdev_lower_dev_find() not only figures
-out whether the lowers of the LAG are switchdev, but also whether they
-actively offload the LAG or not (whether the LAG is "foreign" to the
-switchdev interface or not).
-
-The port_obj_info->orig_dev is preserved across recursive calls, so
-switchdev drivers still know on which device was this notification
-originally emitted.
+Therefore:
+- user ports contain only bridge port (forwarding) VLANs, and no
+  refcounting is necessary
+- DSA ports contain both forwarding and host VLANs. Refcounting is
+  necessary among these 2 types.
+- CPU ports contain only host VLANs. Refcounting is also necessary.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v2->v3: none
-v1->v2: patch is new
+v2->v3:
+- no BRIDGE_VLAN_INFO_BRENTRY flag checks and manipulations in DSA
+  whatsoever, use the "bool changed" bit as-is after changing what it
+  means.
+v1->v2:
+- figure out locally within DSA whether to bump the refcount or not for
+  a VLAN, based on the new "changed" and "old_flags" properties.
 
- include/net/switchdev.h   |  39 +++++++++++
- net/switchdev/switchdev.c | 140 +++++++++++++++++++++++++++++++++++---
- 2 files changed, 171 insertions(+), 8 deletions(-)
+ include/net/dsa.h  |  10 +++
+ net/dsa/dsa2.c     |   2 +
+ net/dsa/dsa_priv.h |   7 ++
+ net/dsa/port.c     |  42 ++++++++++
+ net/dsa/slave.c    |  97 +++++++++++++----------
+ net/dsa/switch.c   | 187 +++++++++++++++++++++++++++++++++++++++++++--
+ 6 files changed, 298 insertions(+), 47 deletions(-)
 
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index 92cc763991e9..c32e1c8f79ec 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -324,11 +324,26 @@ int switchdev_handle_port_obj_add(struct net_device *dev,
- 			int (*add_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_obj *obj,
- 				      struct netlink_ext_ack *extack));
-+int switchdev_handle_port_obj_add_foreign(struct net_device *dev,
-+			struct switchdev_notifier_port_obj_info *port_obj_info,
-+			bool (*check_cb)(const struct net_device *dev),
-+			bool (*foreign_dev_check_cb)(const struct net_device *dev,
-+						     const struct net_device *foreign_dev),
-+			int (*add_cb)(struct net_device *dev, const void *ctx,
-+				      const struct switchdev_obj *obj,
-+				      struct netlink_ext_ack *extack));
- int switchdev_handle_port_obj_del(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
- 			bool (*check_cb)(const struct net_device *dev),
- 			int (*del_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_obj *obj));
-+int switchdev_handle_port_obj_del_foreign(struct net_device *dev,
-+			struct switchdev_notifier_port_obj_info *port_obj_info,
-+			bool (*check_cb)(const struct net_device *dev),
-+			bool (*foreign_dev_check_cb)(const struct net_device *dev,
-+						     const struct net_device *foreign_dev),
-+			int (*del_cb)(struct net_device *dev, const void *ctx,
-+				      const struct switchdev_obj *obj));
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 3f683773aaf6..1456313a1faa 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -312,6 +312,10 @@ struct dsa_port {
+ 	struct mutex		addr_lists_lock;
+ 	struct list_head	fdbs;
+ 	struct list_head	mdbs;
++
++	/* List of VLANs that CPU and DSA ports are members of. */
++	struct mutex		vlans_lock;
++	struct list_head	vlans;
+ };
  
- int switchdev_handle_port_attr_set(struct net_device *dev,
- 			struct switchdev_notifier_port_attr_info *port_attr_info,
-@@ -447,6 +462,18 @@ switchdev_handle_port_obj_add(struct net_device *dev,
- 	return 0;
+ /* TODO: ideally DSA ports would have a single dp->link_dp member,
+@@ -332,6 +336,12 @@ struct dsa_mac_addr {
+ 	struct list_head list;
+ };
+ 
++struct dsa_vlan {
++	u16 vid;
++	refcount_t refcount;
++	struct list_head list;
++};
++
+ struct dsa_switch {
+ 	struct device *dev;
+ 
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index e498c927c3d0..1df8c2356463 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -453,8 +453,10 @@ static int dsa_port_setup(struct dsa_port *dp)
+ 		return 0;
+ 
+ 	mutex_init(&dp->addr_lists_lock);
++	mutex_init(&dp->vlans_lock);
+ 	INIT_LIST_HEAD(&dp->fdbs);
+ 	INIT_LIST_HEAD(&dp->mdbs);
++	INIT_LIST_HEAD(&dp->vlans);
+ 
+ 	if (ds->ops->port_setup) {
+ 		err = ds->ops->port_setup(ds, dp->index);
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 6076d695a917..a37f0883676a 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -34,6 +34,8 @@ enum {
+ 	DSA_NOTIFIER_HOST_MDB_DEL,
+ 	DSA_NOTIFIER_VLAN_ADD,
+ 	DSA_NOTIFIER_VLAN_DEL,
++	DSA_NOTIFIER_HOST_VLAN_ADD,
++	DSA_NOTIFIER_HOST_VLAN_DEL,
+ 	DSA_NOTIFIER_MTU,
+ 	DSA_NOTIFIER_TAG_PROTO,
+ 	DSA_NOTIFIER_TAG_PROTO_CONNECT,
+@@ -233,6 +235,11 @@ int dsa_port_vlan_add(struct dsa_port *dp,
+ 		      struct netlink_ext_ack *extack);
+ int dsa_port_vlan_del(struct dsa_port *dp,
+ 		      const struct switchdev_obj_port_vlan *vlan);
++int dsa_port_host_vlan_add(struct dsa_port *dp,
++			   const struct switchdev_obj_port_vlan *vlan,
++			   struct netlink_ext_ack *extack);
++int dsa_port_host_vlan_del(struct dsa_port *dp,
++			   const struct switchdev_obj_port_vlan *vlan);
+ int dsa_port_mrp_add(const struct dsa_port *dp,
+ 		     const struct switchdev_obj_mrp *mrp);
+ int dsa_port_mrp_del(const struct dsa_port *dp,
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index bd78192e0e47..cca5cf686f74 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -904,6 +904,48 @@ int dsa_port_vlan_del(struct dsa_port *dp,
+ 	return dsa_port_notify(dp, DSA_NOTIFIER_VLAN_DEL, &info);
  }
  
-+static inline int switchdev_handle_port_obj_add_foreign(struct net_device *dev,
-+			struct switchdev_notifier_port_obj_info *port_obj_info,
-+			bool (*check_cb)(const struct net_device *dev),
-+			bool (*foreign_dev_check_cb)(const struct net_device *dev,
-+						     const struct net_device *foreign_dev),
-+			int (*add_cb)(struct net_device *dev, const void *ctx,
-+				      const struct switchdev_obj *obj,
-+				      struct netlink_ext_ack *extack))
++int dsa_port_host_vlan_add(struct dsa_port *dp,
++			   const struct switchdev_obj_port_vlan *vlan,
++			   struct netlink_ext_ack *extack)
 +{
++	struct dsa_notifier_vlan_info info = {
++		.sw_index = dp->ds->index,
++		.port = dp->index,
++		.vlan = vlan,
++		.extack = extack,
++	};
++	struct dsa_port *cpu_dp = dp->cpu_dp;
++	int err;
++
++	err = dsa_port_notify(dp, DSA_NOTIFIER_HOST_VLAN_ADD, &info);
++	if (err && err != -EOPNOTSUPP)
++		return err;
++
++	vlan_vid_add(cpu_dp->master, htons(ETH_P_8021Q), vlan->vid);
++
++	return err;
++}
++
++int dsa_port_host_vlan_del(struct dsa_port *dp,
++			   const struct switchdev_obj_port_vlan *vlan)
++{
++	struct dsa_notifier_vlan_info info = {
++		.sw_index = dp->ds->index,
++		.port = dp->index,
++		.vlan = vlan,
++	};
++	struct dsa_port *cpu_dp = dp->cpu_dp;
++	int err;
++
++	err = dsa_port_notify(dp, DSA_NOTIFIER_HOST_VLAN_DEL, &info);
++	if (err && err != -EOPNOTSUPP)
++		return err;
++
++	vlan_vid_del(cpu_dp->master, htons(ETH_P_8021Q), vlan->vid);
++
++	return err;
++}
++
+ int dsa_port_mrp_add(const struct dsa_port *dp,
+ 		     const struct switchdev_obj_mrp *mrp)
+ {
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 2f6caf5d037e..734c381f89ca 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -348,9 +348,8 @@ static int dsa_slave_vlan_add(struct net_device *dev,
+ 			      const struct switchdev_obj *obj,
+ 			      struct netlink_ext_ack *extack)
+ {
+-	struct net_device *master = dsa_slave_to_master(dev);
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+-	struct switchdev_obj_port_vlan vlan;
++	struct switchdev_obj_port_vlan *vlan;
+ 	int err;
+ 
+ 	if (dsa_port_skip_vlan_configuration(dp)) {
+@@ -358,14 +357,14 @@ static int dsa_slave_vlan_add(struct net_device *dev,
+ 		return 0;
+ 	}
+ 
+-	vlan = *SWITCHDEV_OBJ_PORT_VLAN(obj);
++	vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
+ 
+ 	/* Deny adding a bridge VLAN when there is already an 802.1Q upper with
+ 	 * the same VID.
+ 	 */
+ 	if (br_vlan_enabled(dsa_port_bridge_dev_get(dp))) {
+ 		rcu_read_lock();
+-		err = dsa_slave_vlan_check_for_8021q_uppers(dev, &vlan);
++		err = dsa_slave_vlan_check_for_8021q_uppers(dev, vlan);
+ 		rcu_read_unlock();
+ 		if (err) {
+ 			NL_SET_ERR_MSG_MOD(extack,
+@@ -374,21 +373,29 @@ static int dsa_slave_vlan_add(struct net_device *dev,
+ 		}
+ 	}
+ 
+-	err = dsa_port_vlan_add(dp, &vlan, extack);
+-	if (err)
+-		return err;
++	return dsa_port_vlan_add(dp, vlan, extack);
++}
+ 
+-	/* We need the dedicated CPU port to be a member of the VLAN as well.
+-	 * Even though drivers often handle CPU membership in special ways,
++static int dsa_slave_host_vlan_add(struct net_device *dev,
++				   const struct switchdev_obj *obj,
++				   struct netlink_ext_ack *extack)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct switchdev_obj_port_vlan vlan;
++
++	if (dsa_port_skip_vlan_configuration(dp)) {
++		NL_SET_ERR_MSG_MOD(extack, "skipping configuration of VLAN");
++		return 0;
++	}
++
++	vlan = *SWITCHDEV_OBJ_PORT_VLAN(obj);
++
++	/* Even though drivers often handle CPU membership in special ways,
+ 	 * it doesn't make sense to program a PVID, so clear this flag.
+ 	 */
+ 	vlan.flags &= ~BRIDGE_VLAN_INFO_PVID;
+ 
+-	err = dsa_port_vlan_add(dp->cpu_dp, &vlan, extack);
+-	if (err)
+-		return err;
+-
+-	return vlan_vid_add(master, htons(ETH_P_8021Q), vlan.vid);
++	return dsa_port_host_vlan_add(dp, &vlan, extack);
+ }
+ 
+ static int dsa_slave_port_obj_add(struct net_device *dev, const void *ctx,
+@@ -415,10 +422,17 @@ static int dsa_slave_port_obj_add(struct net_device *dev, const void *ctx,
+ 		err = dsa_port_host_mdb_add(dp, SWITCHDEV_OBJ_PORT_MDB(obj));
+ 		break;
+ 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+-		if (!dsa_port_offloads_bridge_port(dp, obj->orig_dev))
+-			return -EOPNOTSUPP;
++		if (netif_is_bridge_master(obj->orig_dev)) {
++			if (!dsa_port_offloads_bridge_dev(dp, obj->orig_dev))
++				return -EOPNOTSUPP;
++
++			err = dsa_slave_host_vlan_add(dev, obj, extack);
++		} else {
++			if (!dsa_port_offloads_bridge_port(dp, obj->orig_dev))
++				return -EOPNOTSUPP;
+ 
+-		err = dsa_slave_vlan_add(dev, obj, extack);
++			err = dsa_slave_vlan_add(dev, obj, extack);
++		}
+ 		break;
+ 	case SWITCHDEV_OBJ_ID_MRP:
+ 		if (!dsa_port_offloads_bridge_dev(dp, obj->orig_dev))
+@@ -444,26 +458,29 @@ static int dsa_slave_port_obj_add(struct net_device *dev, const void *ctx,
+ static int dsa_slave_vlan_del(struct net_device *dev,
+ 			      const struct switchdev_obj *obj)
+ {
+-	struct net_device *master = dsa_slave_to_master(dev);
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	struct switchdev_obj_port_vlan *vlan;
+-	int err;
+ 
+ 	if (dsa_port_skip_vlan_configuration(dp))
+ 		return 0;
+ 
+ 	vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
+ 
+-	/* Do not deprogram the CPU port as it may be shared with other user
+-	 * ports which can be members of this VLAN as well.
+-	 */
+-	err = dsa_port_vlan_del(dp, vlan);
+-	if (err)
+-		return err;
++	return dsa_port_vlan_del(dp, vlan);
++}
+ 
+-	vlan_vid_del(master, htons(ETH_P_8021Q), vlan->vid);
++static int dsa_slave_host_vlan_del(struct net_device *dev,
++				   const struct switchdev_obj *obj)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct switchdev_obj_port_vlan *vlan;
+ 
+-	return 0;
++	if (dsa_port_skip_vlan_configuration(dp))
++		return 0;
++
++	vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
++
++	return dsa_port_host_vlan_del(dp, vlan);
+ }
+ 
+ static int dsa_slave_port_obj_del(struct net_device *dev, const void *ctx,
+@@ -489,10 +506,17 @@ static int dsa_slave_port_obj_del(struct net_device *dev, const void *ctx,
+ 		err = dsa_port_host_mdb_del(dp, SWITCHDEV_OBJ_PORT_MDB(obj));
+ 		break;
+ 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+-		if (!dsa_port_offloads_bridge_port(dp, obj->orig_dev))
+-			return -EOPNOTSUPP;
++		if (netif_is_bridge_master(obj->orig_dev)) {
++			if (!dsa_port_offloads_bridge_dev(dp, obj->orig_dev))
++				return -EOPNOTSUPP;
+ 
+-		err = dsa_slave_vlan_del(dev, obj);
++			err = dsa_slave_host_vlan_del(dev, obj);
++		} else {
++			if (!dsa_port_offloads_bridge_port(dp, obj->orig_dev))
++				return -EOPNOTSUPP;
++
++			err = dsa_slave_vlan_del(dev, obj);
++		}
+ 		break;
+ 	case SWITCHDEV_OBJ_ID_MRP:
+ 		if (!dsa_port_offloads_bridge_dev(dp, obj->orig_dev))
+@@ -1347,7 +1371,6 @@ static int dsa_slave_get_ts_info(struct net_device *dev,
+ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
+ 				     u16 vid)
+ {
+-	struct net_device *master = dsa_slave_to_master(dev);
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	struct switchdev_obj_port_vlan vlan = {
+ 		.obj.id = SWITCHDEV_OBJ_ID_PORT_VLAN,
+@@ -1367,7 +1390,7 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
+ 	}
+ 
+ 	/* And CPU port... */
+-	ret = dsa_port_vlan_add(dp->cpu_dp, &vlan, &extack);
++	ret = dsa_port_host_vlan_add(dp, &vlan, &extack);
+ 	if (ret) {
+ 		if (extack._msg)
+ 			netdev_err(dev, "CPU port %d: %s\n", dp->cpu_dp->index,
+@@ -1375,13 +1398,12 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
+ 		return ret;
+ 	}
+ 
+-	return vlan_vid_add(master, proto, vid);
++	return 0;
+ }
+ 
+ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
+ 				      u16 vid)
+ {
+-	struct net_device *master = dsa_slave_to_master(dev);
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	struct switchdev_obj_port_vlan vlan = {
+ 		.vid = vid,
+@@ -1390,16 +1412,11 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
+ 	};
+ 	int err;
+ 
+-	/* Do not deprogram the CPU port as it may be shared with other user
+-	 * ports which can be members of this VLAN as well.
+-	 */
+ 	err = dsa_port_vlan_del(dp, &vlan);
+ 	if (err)
+ 		return err;
+ 
+-	vlan_vid_del(master, proto, vid);
+-
+-	return 0;
++	return dsa_port_host_vlan_del(dp, &vlan);
+ }
+ 
+ static int dsa_slave_restore_vlan(struct net_device *vdev, int vid, void *arg)
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index 4866b58649e4..0bb3987bd4e6 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -558,6 +558,7 @@ static int dsa_switch_host_mdb_del(struct dsa_switch *ds,
+ 	return err;
+ }
+ 
++/* Port VLANs match on the targeted port and on all DSA ports */
+ static bool dsa_port_vlan_match(struct dsa_port *dp,
+ 				struct dsa_notifier_vlan_info *info)
+ {
+@@ -570,6 +571,126 @@ static bool dsa_port_vlan_match(struct dsa_port *dp,
+ 	return false;
+ }
+ 
++/* Host VLANs match on the targeted port's CPU port, and on all DSA ports
++ * (upstream and downstream) of that switch and its upstream switches.
++ */
++static bool dsa_port_host_vlan_match(struct dsa_port *dp,
++				     struct dsa_notifier_vlan_info *info)
++{
++	struct dsa_port *targeted_dp, *cpu_dp;
++	struct dsa_switch *targeted_ds;
++
++	targeted_ds = dsa_switch_find(dp->ds->dst->index, info->sw_index);
++	targeted_dp = dsa_to_port(targeted_ds, info->port);
++	cpu_dp = targeted_dp->cpu_dp;
++
++	if (dsa_switch_is_upstream_of(dp->ds, targeted_ds))
++		return dsa_port_is_dsa(dp) || dp == cpu_dp;
++
++	return false;
++}
++
++static struct dsa_vlan *dsa_vlan_find(struct list_head *vlan_list,
++				      const struct switchdev_obj_port_vlan *vlan)
++{
++	struct dsa_vlan *v;
++
++	list_for_each_entry(v, vlan_list, list)
++		if (v->vid == vlan->vid)
++			return v;
++
++	return NULL;
++}
++
++static int dsa_port_do_vlan_add(struct dsa_port *dp,
++				const struct switchdev_obj_port_vlan *vlan,
++				struct netlink_ext_ack *extack)
++{
++	struct dsa_switch *ds = dp->ds;
++	int port = dp->index;
++	struct dsa_vlan *v;
++	int err = 0;
++
++	/* No need to bother with refcounting for user ports. */
++	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
++		return ds->ops->port_vlan_add(ds, port, vlan, extack);
++
++	/* No need to propagate on shared ports the existing VLANs that were
++	 * re-notified after just the flags have changed. This would cause a
++	 * refcount bump which we need to avoid, since it unbalances the
++	 * additions with the deletions.
++	 */
++	if (vlan->changed)
++		return 0;
++
++	mutex_lock(&dp->vlans_lock);
++
++	v = dsa_vlan_find(&dp->vlans, vlan);
++	if (v) {
++		refcount_inc(&v->refcount);
++		goto out;
++	}
++
++	v = kzalloc(sizeof(*v), GFP_KERNEL);
++	if (!v) {
++		err = -ENOMEM;
++		goto out;
++	}
++
++	err = ds->ops->port_vlan_add(ds, port, vlan, extack);
++	if (err) {
++		kfree(v);
++		goto out;
++	}
++
++	v->vid = vlan->vid;
++	refcount_set(&v->refcount, 1);
++	list_add_tail(&v->list, &dp->vlans);
++
++out:
++	mutex_unlock(&dp->vlans_lock);
++
++	return err;
++}
++
++static int dsa_port_do_vlan_del(struct dsa_port *dp,
++				const struct switchdev_obj_port_vlan *vlan)
++{
++	struct dsa_switch *ds = dp->ds;
++	int port = dp->index;
++	struct dsa_vlan *v;
++	int err = 0;
++
++	/* No need to bother with refcounting for user ports */
++	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
++		return ds->ops->port_vlan_del(ds, port, vlan);
++
++	mutex_lock(&dp->vlans_lock);
++
++	v = dsa_vlan_find(&dp->vlans, vlan);
++	if (!v) {
++		err = -ENOENT;
++		goto out;
++	}
++
++	if (!refcount_dec_and_test(&v->refcount))
++		goto out;
++
++	err = ds->ops->port_vlan_del(ds, port, vlan);
++	if (err) {
++		refcount_set(&v->refcount, 1);
++		goto out;
++	}
++
++	list_del(&v->list);
++	kfree(v);
++
++out:
++	mutex_unlock(&dp->vlans_lock);
++
++	return err;
++}
++
+ static int dsa_switch_vlan_add(struct dsa_switch *ds,
+ 			       struct dsa_notifier_vlan_info *info)
+ {
+@@ -581,8 +702,8 @@ static int dsa_switch_vlan_add(struct dsa_switch *ds,
+ 
+ 	dsa_switch_for_each_port(dp, ds) {
+ 		if (dsa_port_vlan_match(dp, info)) {
+-			err = ds->ops->port_vlan_add(ds, dp->index, info->vlan,
+-						     info->extack);
++			err = dsa_port_do_vlan_add(dp, info->vlan,
++						   info->extack);
+ 			if (err)
+ 				return err;
+ 		}
+@@ -594,15 +715,61 @@ static int dsa_switch_vlan_add(struct dsa_switch *ds,
+ static int dsa_switch_vlan_del(struct dsa_switch *ds,
+ 			       struct dsa_notifier_vlan_info *info)
+ {
++	struct dsa_port *dp;
++	int err;
++
+ 	if (!ds->ops->port_vlan_del)
+ 		return -EOPNOTSUPP;
+ 
+-	if (ds->index == info->sw_index)
+-		return ds->ops->port_vlan_del(ds, info->port, info->vlan);
++	dsa_switch_for_each_port(dp, ds) {
++		if (dsa_port_vlan_match(dp, info)) {
++			err = dsa_port_do_vlan_del(dp, info->vlan);
++			if (err)
++				return err;
++		}
++	}
++
 +	return 0;
 +}
 +
- static inline int
- switchdev_handle_port_obj_del(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
-@@ -457,6 +484,18 @@ switchdev_handle_port_obj_del(struct net_device *dev,
- 	return 0;
- }
- 
-+static inline int
-+switchdev_handle_port_obj_del_foreign(struct net_device *dev,
-+			struct switchdev_notifier_port_obj_info *port_obj_info,
-+			bool (*check_cb)(const struct net_device *dev),
-+			bool (*foreign_dev_check_cb)(const struct net_device *dev,
-+						     const struct net_device *foreign_dev),
-+			int (*del_cb)(struct net_device *dev, const void *ctx,
-+				      const struct switchdev_obj *obj))
++static int dsa_switch_host_vlan_add(struct dsa_switch *ds,
++				    struct dsa_notifier_vlan_info *info)
 +{
++	struct dsa_port *dp;
++	int err;
++
++	if (!ds->ops->port_vlan_add)
++		return -EOPNOTSUPP;
++
++	dsa_switch_for_each_port(dp, ds) {
++		if (dsa_port_host_vlan_match(dp, info)) {
++			err = dsa_port_do_vlan_add(dp, info->vlan,
++						   info->extack);
++			if (err)
++				return err;
++		}
++	}
++
 +	return 0;
 +}
 +
- static inline int
- switchdev_handle_port_attr_set(struct net_device *dev,
- 			struct switchdev_notifier_port_attr_info *port_attr_info,
-diff --git a/net/switchdev/switchdev.c b/net/switchdev/switchdev.c
-index d53f364870a5..6a00c390547b 100644
---- a/net/switchdev/switchdev.c
-+++ b/net/switchdev/switchdev.c
-@@ -429,6 +429,27 @@ switchdev_lower_dev_find_rcu(struct net_device *dev,
- 	return switchdev_priv.lower_dev;
- }
- 
-+static struct net_device *
-+switchdev_lower_dev_find(struct net_device *dev,
-+			 bool (*check_cb)(const struct net_device *dev),
-+			 bool (*foreign_dev_check_cb)(const struct net_device *dev,
-+						      const struct net_device *foreign_dev))
++static int dsa_switch_host_vlan_del(struct dsa_switch *ds,
++				    struct dsa_notifier_vlan_info *info)
 +{
-+	struct switchdev_nested_priv switchdev_priv = {
-+		.check_cb = check_cb,
-+		.foreign_dev_check_cb = foreign_dev_check_cb,
-+		.dev = dev,
-+		.lower_dev = NULL,
-+	};
-+	struct netdev_nested_priv priv = {
-+		.data = &switchdev_priv,
-+	};
-+
-+	netdev_walk_all_lower_dev(dev, switchdev_lower_dev_walk, &priv);
-+
-+	return switchdev_priv.lower_dev;
-+}
-+
- static int __switchdev_handle_fdb_event_to_device(struct net_device *dev,
- 		struct net_device *orig_dev, unsigned long event,
- 		const struct switchdev_notifier_fdb_info *fdb_info,
-@@ -536,13 +557,15 @@ EXPORT_SYMBOL_GPL(switchdev_handle_fdb_event_to_device);
- static int __switchdev_handle_port_obj_add(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
- 			bool (*check_cb)(const struct net_device *dev),
-+			bool (*foreign_dev_check_cb)(const struct net_device *dev,
-+						     const struct net_device *foreign_dev),
- 			int (*add_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_obj *obj,
- 				      struct netlink_ext_ack *extack))
- {
- 	struct switchdev_notifier_info *info = &port_obj_info->info;
-+	struct net_device *br, *lower_dev;
- 	struct netlink_ext_ack *extack;
--	struct net_device *lower_dev;
- 	struct list_head *iter;
- 	int err = -EOPNOTSUPP;
- 
-@@ -566,15 +589,42 @@ static int __switchdev_handle_port_obj_add(struct net_device *dev,
- 		if (netif_is_bridge_master(lower_dev))
- 			continue;
- 
-+		/* When searching for switchdev interfaces that are neighbors
-+		 * of foreign ones, and @dev is a bridge, do not recurse on the
-+		 * foreign interface again, it was already visited.
-+		 */
-+		if (foreign_dev_check_cb && !check_cb(lower_dev) &&
-+		    !switchdev_lower_dev_find(lower_dev, check_cb, foreign_dev_check_cb))
-+			continue;
-+
- 		err = __switchdev_handle_port_obj_add(lower_dev, port_obj_info,
--						      check_cb, add_cb);
-+						      check_cb, foreign_dev_check_cb,
-+						      add_cb);
- 		if (err && err != -EOPNOTSUPP)
- 			return err;
- 	}
- 
--	return err;
-+	/* Event is neither on a bridge nor a LAG. Check whether it is on an
-+	 * interface that is in a bridge with us.
-+	 */
-+	if (!foreign_dev_check_cb)
-+		return err;
-+
-+	br = netdev_master_upper_dev_get(dev);
-+	if (!br || !netif_is_bridge_master(br))
-+		return err;
-+
-+	if (!switchdev_lower_dev_find(br, check_cb, foreign_dev_check_cb))
-+		return err;
-+
-+	return __switchdev_handle_port_obj_add(br, port_obj_info, check_cb,
-+					       foreign_dev_check_cb, add_cb);
- }
- 
-+/* Pass through a port object addition, if @dev passes @check_cb, or replicate
-+ * it towards all lower interfaces of @dev that pass @check_cb, if @dev is a
-+ * bridge or a LAG.
-+ */
- int switchdev_handle_port_obj_add(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
- 			bool (*check_cb)(const struct net_device *dev),
-@@ -585,21 +635,46 @@ int switchdev_handle_port_obj_add(struct net_device *dev,
- 	int err;
- 
- 	err = __switchdev_handle_port_obj_add(dev, port_obj_info, check_cb,
--					      add_cb);
-+					      NULL, add_cb);
- 	if (err == -EOPNOTSUPP)
- 		err = 0;
- 	return err;
- }
- EXPORT_SYMBOL_GPL(switchdev_handle_port_obj_add);
- 
-+/* Same as switchdev_handle_port_obj_add(), except if object is notified on a
-+ * @dev that passes @foreign_dev_check_cb, it is replicated towards all devices
-+ * that pass @check_cb and are in the same bridge as @dev.
-+ */
-+int switchdev_handle_port_obj_add_foreign(struct net_device *dev,
-+			struct switchdev_notifier_port_obj_info *port_obj_info,
-+			bool (*check_cb)(const struct net_device *dev),
-+			bool (*foreign_dev_check_cb)(const struct net_device *dev,
-+						     const struct net_device *foreign_dev),
-+			int (*add_cb)(struct net_device *dev, const void *ctx,
-+				      const struct switchdev_obj *obj,
-+				      struct netlink_ext_ack *extack))
-+{
++	struct dsa_port *dp;
 +	int err;
 +
-+	err = __switchdev_handle_port_obj_add(dev, port_obj_info, check_cb,
-+					      foreign_dev_check_cb, add_cb);
-+	if (err == -EOPNOTSUPP)
-+		err = 0;
-+	return err;
-+}
-+EXPORT_SYMBOL_GPL(switchdev_handle_port_obj_add_foreign);
++	if (!ds->ops->port_vlan_del)
++		return -EOPNOTSUPP;
 +
- static int __switchdev_handle_port_obj_del(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
- 			bool (*check_cb)(const struct net_device *dev),
-+			bool (*foreign_dev_check_cb)(const struct net_device *dev,
-+						     const struct net_device *foreign_dev),
- 			int (*del_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_obj *obj))
- {
- 	struct switchdev_notifier_info *info = &port_obj_info->info;
--	struct net_device *lower_dev;
-+	struct net_device *br, *lower_dev;
- 	struct list_head *iter;
- 	int err = -EOPNOTSUPP;
++	dsa_switch_for_each_port(dp, ds) {
++		if (dsa_port_host_vlan_match(dp, info)) {
++			err = dsa_port_do_vlan_del(dp, info->vlan);
++			if (err)
++				return err;
++		}
++	}
  
-@@ -621,15 +696,42 @@ static int __switchdev_handle_port_obj_del(struct net_device *dev,
- 		if (netif_is_bridge_master(lower_dev))
- 			continue;
- 
-+		/* When searching for switchdev interfaces that are neighbors
-+		 * of foreign ones, and @dev is a bridge, do not recurse on the
-+		 * foreign interface again, it was already visited.
-+		 */
-+		if (foreign_dev_check_cb && !check_cb(lower_dev) &&
-+		    !switchdev_lower_dev_find(lower_dev, check_cb, foreign_dev_check_cb))
-+			continue;
-+
- 		err = __switchdev_handle_port_obj_del(lower_dev, port_obj_info,
--						      check_cb, del_cb);
-+						      check_cb, foreign_dev_check_cb,
-+						      del_cb);
- 		if (err && err != -EOPNOTSUPP)
- 			return err;
- 	}
- 
--	return err;
-+	/* Event is neither on a bridge nor a LAG. Check whether it is on an
-+	 * interface that is in a bridge with us.
-+	 */
-+	if (!foreign_dev_check_cb)
-+		return err;
-+
-+	br = netdev_master_upper_dev_get(dev);
-+	if (!br || !netif_is_bridge_master(br))
-+		return err;
-+
-+	if (!switchdev_lower_dev_find(br, check_cb, foreign_dev_check_cb))
-+		return err;
-+
-+	return __switchdev_handle_port_obj_del(br, port_obj_info, check_cb,
-+					       foreign_dev_check_cb, del_cb);
+-	/* Do not deprogram the DSA links as they may be used as conduit
+-	 * for other VLAN members in the fabric.
+-	 */
+ 	return 0;
  }
  
-+/* Pass through a port object deletion, if @dev passes @check_cb, or replicate
-+ * it towards all lower interfaces of @dev that pass @check_cb, if @dev is a
-+ * bridge or a LAG.
-+ */
- int switchdev_handle_port_obj_del(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
- 			bool (*check_cb)(const struct net_device *dev),
-@@ -639,13 +741,35 @@ int switchdev_handle_port_obj_del(struct net_device *dev,
- 	int err;
- 
- 	err = __switchdev_handle_port_obj_del(dev, port_obj_info, check_cb,
--					      del_cb);
-+					      NULL, del_cb);
- 	if (err == -EOPNOTSUPP)
- 		err = 0;
- 	return err;
- }
- EXPORT_SYMBOL_GPL(switchdev_handle_port_obj_del);
- 
-+/* Same as switchdev_handle_port_obj_del(), except if object is notified on a
-+ * @dev that passes @foreign_dev_check_cb, it is replicated towards all devices
-+ * that pass @check_cb and are in the same bridge as @dev.
-+ */
-+int switchdev_handle_port_obj_del_foreign(struct net_device *dev,
-+			struct switchdev_notifier_port_obj_info *port_obj_info,
-+			bool (*check_cb)(const struct net_device *dev),
-+			bool (*foreign_dev_check_cb)(const struct net_device *dev,
-+						     const struct net_device *foreign_dev),
-+			int (*del_cb)(struct net_device *dev, const void *ctx,
-+				      const struct switchdev_obj *obj))
-+{
-+	int err;
-+
-+	err = __switchdev_handle_port_obj_del(dev, port_obj_info, check_cb,
-+					      foreign_dev_check_cb, del_cb);
-+	if (err == -EOPNOTSUPP)
-+		err = 0;
-+	return err;
-+}
-+EXPORT_SYMBOL_GPL(switchdev_handle_port_obj_del_foreign);
-+
- static int __switchdev_handle_port_attr_set(struct net_device *dev,
- 			struct switchdev_notifier_port_attr_info *port_attr_info,
- 			bool (*check_cb)(const struct net_device *dev),
+@@ -764,6 +931,12 @@ static int dsa_switch_event(struct notifier_block *nb,
+ 	case DSA_NOTIFIER_VLAN_DEL:
+ 		err = dsa_switch_vlan_del(ds, info);
+ 		break;
++	case DSA_NOTIFIER_HOST_VLAN_ADD:
++		err = dsa_switch_host_vlan_add(ds, info);
++		break;
++	case DSA_NOTIFIER_HOST_VLAN_DEL:
++		err = dsa_switch_host_vlan_del(ds, info);
++		break;
+ 	case DSA_NOTIFIER_MTU:
+ 		err = dsa_switch_mtu(ds, info);
+ 		break;
 -- 
 2.25.1
 
