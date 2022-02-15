@@ -2,107 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DFB54B7B45
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 00:38:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E638C4B7B6A
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 00:52:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244572AbiBOXiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 18:38:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59078 "EHLO
+        id S244887AbiBOXwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 18:52:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244570AbiBOXiu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 18:38:50 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D79699A4FB
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 15:38:38 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id h9so684286qvm.0
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 15:38:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8SsLtS4tPebNRfj6b8mD9v4xQ54HCUXQMxFf3XsHYrs=;
-        b=xFUbdbFaus0agFZUzVWQXL0yLB/RFVN5BYD8bqXtDPEhhYPCuujqG4x7eQPFSJbwLd
-         DdumwDqN0h+I/jgJFgA8Eo078gzXGawQ9UtoMqhZCJxNT2mX8qcNt1LktCd3fEuaVWIr
-         OmxGMgEpLK4TYDuvY0XIEE4jWYCgXEPyCwmrxbO3IEq+s8iJbIkCqD/mFY9awKCDtFaX
-         HzQG22XXpyTTi+fCZoPUdfoPKbhp6lKUVRExogcguXZPr1GIFN+ItTE10xHBxa9KxynT
-         x280hL2HZiHUQwbmK+delbMZy0FBzsTx86cwGGWisurRUEZiAnad7SgIfrGk4Dv7+XL0
-         V33Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8SsLtS4tPebNRfj6b8mD9v4xQ54HCUXQMxFf3XsHYrs=;
-        b=qIhmGE2FFnBwcn59uVszJSMzzkYIuBTbTlFM8paZRhL/dpGUdRpcbSralc4QAGh56M
-         Bp0XxHd64C5PEKZ2gokZ1LY5oCEPkNuNrZlpCVcwyh9CT15y/7rI1iZXzReAwjalt4M+
-         LPiKq+EQVy4ETCcuHCWehPrjaIP2JIDUizWdp07ejysdOda8IyFVIfBI68CMQxD2Dg0c
-         t1E/rayE2q2Bnmn7oyklNt92ZtmQJnTt9pf9e0AZ11/s5DqYftl3upyT3vX5lZlglXJl
-         COjoGx87SJ8mpKcXOEMHGlzl5/X37l4DJi7roPShnBujQv+k+jYmLGK9R+ESZUjcTzQ4
-         /oDA==
-X-Gm-Message-State: AOAM531CdXqgHbxf0z44TcZ1M0NxzEN0esBdoApLd6WZsLwlE7yFl25i
-        wsIXxqEAZ9xt4GChZOmbKeR4vwHWbDs5nw==
-X-Google-Smtp-Source: ABdhPJyhTSoT1ieClt8DGBx49iBQe66oYdDdWNgGd7CXIVnMWA6qROS7+fFHsFw8N7cK6HzrFkLblg==
-X-Received: by 2002:a05:6214:d82:b0:42c:1263:c7eb with SMTP id e2-20020a0562140d8200b0042c1263c7ebmr240841qve.47.1644968318105;
-        Tue, 15 Feb 2022 15:38:38 -0800 (PST)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-74.dsl.bell.ca. [184.148.47.74])
-        by smtp.googlemail.com with ESMTPSA id bq33sm18764778qkb.64.2022.02.15.15.38.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 15:38:37 -0800 (PST)
-Message-ID: <b394f7b5-393e-d079-c909-4cb05e061655@mojatatu.com>
-Date:   Tue, 15 Feb 2022 18:38:35 -0500
+        with ESMTP id S237886AbiBOXwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 18:52:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C777B887BA;
+        Tue, 15 Feb 2022 15:52:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75BABB81D4F;
+        Tue, 15 Feb 2022 23:52:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1541C340F0;
+        Tue, 15 Feb 2022 23:52:22 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="BRfZKOGi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644969138;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GMm9EAolxAtPMXh1X1nKAXKitpaKoxPDLSCUjxHh4ks=;
+        b=BRfZKOGi1a2g1iAFygTGRfQSBpQItd4ogiJv2CsIHInjzDvjY1hkTOyr/rknIKu4ucizQV
+        Rc5KH/CEOeLhOCtpcaLxU2rEicJ7G1oUN2sd48JJ2Ywiq6y0ZdHF+13zTe8/j5Qv8OJQx5
+        2p58pO4Ue2jxJS9jzl86tivW5ZcDubQ=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 2a124aa7 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 15 Feb 2022 23:52:18 +0000 (UTC)
+Received: by mail-yb1-f180.google.com with SMTP id l125so987501ybl.4;
+        Tue, 15 Feb 2022 15:52:16 -0800 (PST)
+X-Gm-Message-State: AOAM532tWilof7TOfYIKyW6mggPsSqlsZAakWIkMPtT4Hw4KLXAOlghH
+        1pJjYmW7z8zWCUq5+x0/vDVsZ0LjqHlOKl3a6eE=
+X-Google-Smtp-Source: ABdhPJyZNoC98Q81CRhjYyC9iywczoAHqV6JDC3RmYMvG7wWiGpeJ+1knd618Ptg+zK7xD23lTHpW08gYGl69nXWKQw=
+X-Received: by 2002:a81:7d04:0:b0:2d0:d0e2:126f with SMTP id
+ y4-20020a817d04000000b002d0d0e2126fmr126329ywc.485.1644969136220; Tue, 15 Feb
+ 2022 15:52:16 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH net] net: sched: limit TC_ACT_REPEAT loops
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@resnulli.us>,
-        syzbot <syzkaller@googlegroups.com>
-References: <20220214203434.838623-1-eric.dumazet@gmail.com>
- <YgsE30gfoQkruTYS@pop-os.localdomain>
- <CANn89i+2KYH+DKrNPttbmrvx992P+ufgo=QWyvr1Ku6b=1BY0Q@mail.gmail.com>
- <CANn89iJDWUE5mTSuWQaHO0SfyXLTso5Cp=rYzRGwWoZC_gHmmg@mail.gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <CANn89iJDWUE5mTSuWQaHO0SfyXLTso5Cp=rYzRGwWoZC_gHmmg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:7110:88a:b0:15e:9450:8ed4 with HTTP; Tue, 15 Feb 2022
+ 15:52:15 -0800 (PST)
+In-Reply-To: <87o8374sx3.fsf@toke.dk>
+References: <CAHmME9r4+ENUhZ6u26rAbq0iCWoKqTPYA7=_LWbGG98KvaCE6g@mail.gmail.com>
+ <20220215162812.195716-1-Jason@zx2c4.com> <87o8374sx3.fsf@toke.dk>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 16 Feb 2022 00:52:15 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pZaYW-p=zU4v96TjeSijm-g03cNpvUJcNvhOqh5v+Lwg@mail.gmail.com>
+Message-ID: <CAHmME9pZaYW-p=zU4v96TjeSijm-g03cNpvUJcNvhOqh5v+Lwg@mail.gmail.com>
+Subject: Re: [PATCH] ath9k: use hw_random API instead of directly dumping into random.c
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>
+Cc:     miaoqing@codeaurora.org, rsalvaterra@gmail.com,
+        Jason Cooper <jason@lakedaemon.net>,
+        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
+        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-02-15 12:27, Eric Dumazet wrote:
-> On Mon, Feb 14, 2022 at 5:54 PM Eric Dumazet <edumazet@google.com> wrote:
+On 2/16/22, Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk> wrote:
+> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+>
+>> Hardware random number generators are supposed to use the hw_random
+>> framework. This commit turns ath9k's kthread-based design into a proper
+>> hw_random driver.
 >>
->>>> +             repeat_ttl = 10;
->>>
->>> Not sure if there is any use case of repeat action with 10+ repeats...
->>> Use a sufficiently larger one to be 100% safe?
+>> This compiles, but I have no hardware or other ability to determine
+>> whether it works. I'll leave further development up to the ath9k
+>> and hw_random maintainers.
 >>
->> I have no idea of what the practical limit would be ?
+>> Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> Cc: Kalle Valo <kvalo@kernel.org>
+>> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+>> Cc: Herbert Xu <herbert@gondor.apana.org.au>
+>> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+>> ---
+>>  drivers/net/wireless/ath/ath9k/ath9k.h |  2 +-
+>>  drivers/net/wireless/ath/ath9k/rng.c   | 62 +++++++++-----------------
+>>  2 files changed, 23 insertions(+), 41 deletions(-)
 >>
->> 100, 1000, time limit ?
-> 
-> Jamal, you already gave your Ack, but Cong is concerned about the 10 limit.
-> 
-> What should I used for v2 ?
-> 
-> Honestly I fail to see a valid reason for TC_ACT_REPEAT more than few times,
-> but I have no idea of what real world actions using REPEAT look like.
-> 
+>> diff --git a/drivers/net/wireless/ath/ath9k/ath9k.h
+>> b/drivers/net/wireless/ath/ath9k/ath9k.h
+>> index ef6f5ea06c1f..142f472903dc 100644
+>> --- a/drivers/net/wireless/ath/ath9k/ath9k.h
+>> +++ b/drivers/net/wireless/ath/ath9k/ath9k.h
+>> @@ -1072,7 +1072,7 @@ struct ath_softc {
+>>
+>>  #ifdef CONFIG_ATH9K_HWRNG
+>>  	u32 rng_last;
+>> -	struct task_struct *rng_task;
+>> +	struct hwrng rng_ops;
+>>  #endif
+>>  };
+>>
+>> diff --git a/drivers/net/wireless/ath/ath9k/rng.c
+>> b/drivers/net/wireless/ath/ath9k/rng.c
+>> index aae2bd3cac69..369b222908ba 100644
+>> --- a/drivers/net/wireless/ath/ath9k/rng.c
+>> +++ b/drivers/net/wireless/ath/ath9k/rng.c
+>> @@ -22,9 +22,6 @@
+>>  #include "hw.h"
+>>  #include "ar9003_phy.h"
+>>
+>> -#define ATH9K_RNG_BUF_SIZE	320
+>> -#define ATH9K_RNG_ENTROPY(x)	(((x) * 8 * 10) >> 5) /* quality: 10/32 */
+>
+> So this comment says "quality: 10/32" but below you're setting "quality"
+> as 320. No idea what the units are supposed to be, but is this right?
 
-I havent seen more than a few. I was indifferent but maybe go for
-something like 32.
+I think the unit is supposed to be how many entropic bits there are
+out of 1024 bits? These types of estimates are always BS, so keeping
+it on the lower end as before seemed right. Herbert can jump in here
+if he has a better idea; that's his jig.
 
-cheers,
-jamal
+>
+>>  static DECLARE_WAIT_QUEUE_HEAD(rng_queue);
+>>
+>>  static int ath9k_rng_data_read(struct ath_softc *sc, u32 *buf, u32
+>> buf_size)
+>
+> This function takes buf as a *u32, and interprets buf_size as a number
+> of u32s...
 
+Oh my... Nice catch. I'll send a v2 shortly. I wonder how this managed
+to work for Rui.
 
+>
+>> @@ -72,61 +69,46 @@ static u32 ath9k_rng_delay_get(u32 fail_stats)
+>>  	return delay;
+>>  }
+>>
+>> -static int ath9k_rng_kthread(void *data)
+>> +static int ath9k_rng_read(struct hwrng *rng, void *buf, size_t max, boo=
+l
+>> wait)
+>>  {
+>> +	struct ath_softc *sc =3D container_of(rng, struct ath_softc, rng_ops);
+>>  	int bytes_read;
+>> -	struct ath_softc *sc =3D data;
+>> -	u32 *rng_buf;
+>> -	u32 delay, fail_stats =3D 0;
+>> -
+>> -	rng_buf =3D kmalloc_array(ATH9K_RNG_BUF_SIZE, sizeof(u32), GFP_KERNEL)=
+;
+>> -	if (!rng_buf)
+>> -		goto out;
+>> -
+>> -	while (!kthread_should_stop()) {
+>> -		bytes_read =3D ath9k_rng_data_read(sc, rng_buf,
+>> -						 ATH9K_RNG_BUF_SIZE);
+>> -		if (unlikely(!bytes_read)) {
+>> -			delay =3D ath9k_rng_delay_get(++fail_stats);
+>> -			wait_event_interruptible_timeout(rng_queue,
+>> -							 kthread_should_stop(),
+>> -							 msecs_to_jiffies(delay));
+>> -			continue;
+>> -		}
+>> -
+>> -		fail_stats =3D 0;
+>> -
+>> -		/* sleep until entropy bits under write_wakeup_threshold */
+>> -		add_hwgenerator_randomness((void *)rng_buf, bytes_read,
+>> -					   ATH9K_RNG_ENTROPY(bytes_read));
+>> -	}
+>> +	u32 fail_stats =3D 0;
+>>
+>> -	kfree(rng_buf);
+>> -out:
+>> -	sc->rng_task =3D NULL;
+>> +retry:
+>> +	bytes_read =3D ath9k_rng_data_read(sc, buf, max);
+>
+> ... but AFAICT here you're calling it with a buffer size from hw_random
+> that's in bytes?
+
+V2 on its way. Rui - you may need to re-test...
+
+Jason
