@@ -2,78 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADB5D4B7AB1
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 23:49:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6D034B7ABB
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 23:53:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244218AbiBOWtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 17:49:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58310 "EHLO
+        id S243471AbiBOWxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 17:53:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243497AbiBOWtU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 17:49:20 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F1A8D4C84
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:49:05 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id v13-20020a17090ac90d00b001b87bc106bdso4620038pjt.4
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:49:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YX/HT7gPaKWr0sE+LX/uodwT5+ro27QMyTVCAvr+soA=;
-        b=p5s/2c0a9WCzAB9RshvS6TstODtXtvuceSVMYfyMudMBbt5mo7Mn7TV9K62fSw94Yw
-         KS3kaqkbEqdiX570pTm06tXVhFmH9rjpdl5HqgaeShUFWYpAviJmJFR/Of13abiIJ21H
-         0CRfJI9VTR8eFgISpFimswkZUJQvAcA4SyQ9ap3mbk82SnsEUwgIaegoTj/2xncvtUjP
-         QoGUpoS2IUnH8LM1FlCcvgLMcPPTkob+wO+95ioUIyNaAXFj2f2dhpxGNiYCBKMc44Vy
-         IuBR9ULiuDjxUGp09jc9vMQOu6REeQGXdgNk9aSe2UM7VJNKZzzXE+ti/sf8GlteUHIA
-         TLJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YX/HT7gPaKWr0sE+LX/uodwT5+ro27QMyTVCAvr+soA=;
-        b=LuaTjMMAq9r1DywRdYpD2T85BJhjAfmRkYw2KefzN0u8dCDn+zvRVdGa25QKaOuhrt
-         c1qPItOJooLnSRrzcrth/ygUl0pPfLH9Aib7Qc8808Og2pMV+Um7hqjegMmoZy2Jxnjc
-         ZuY3G87o+zWZZwN4ALFWFSo5nTxALBgGfkcirr4wlisYeDTAicTMj41ZyPMuE3r0dgmf
-         93loZnszKrwRteWmpcbx4uZ8jSuZinOA6bIIvrBzJvrraCH18hsrvfkOf9TgIwq9cTjn
-         maJAOKL7M/DmE3NZbO3maEEPNsyvZIaLokPXsQsSc4n5l2GgqYgyGLo5EXAkvdENRDaw
-         9A5w==
-X-Gm-Message-State: AOAM531ZiRyBj5P65k5H4haRQwx9m6UyB3MKhOwamKnYOM+oz2IcUpGm
-        FYMbixCYNLPcDc6eqaTWUth8bzdTe/WwiwB3
-X-Google-Smtp-Source: ABdhPJxiVRWSt+FLeTB+BTgjTSQsjXXgKKRxeFUjaTWsFAo//tONYnZpS0v87CZsxChaufttZOSFdg==
-X-Received: by 2002:a17:902:d3c6:: with SMTP id w6mr1281085plb.4.1644965344985;
-        Tue, 15 Feb 2022 14:49:04 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id l22sm43403085pfc.191.2022.02.15.14.49.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 14:49:04 -0800 (PST)
-Date:   Tue, 15 Feb 2022 14:49:01 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Maxim Petrov <mmrmaximuzz@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2] lnstat: fix strdup leak in -w argument parsing
-Message-ID: <20220215144901.1ba007a1@hermes.local>
-In-Reply-To: <9766312d-58ae-4219-036e-73a587de1111@gmail.com>
-References: <9766312d-58ae-4219-036e-73a587de1111@gmail.com>
+        with ESMTP id S231292AbiBOWx3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 17:53:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CF190FCD
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:53:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8AB2B81AEA
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 22:53:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E3C8C340EB;
+        Tue, 15 Feb 2022 22:53:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644965595;
+        bh=rWGXoXCWwEqhGlsLzBAeG8RngZXYWA46qiGVDyTsfNw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=X16YRA9ED64BQS70y6pf6sXzeZgrzxNOZldW64my8quXCSGNv9piw4q6f/19M1r/V
+         qUStdHJdx/wlQ0x6HmiHgjsvEz24rKtC58iYrBG1P4SBydARBIv4nlr/pMuwOWwDh1
+         LmQLH6RUoqNUNplWstb1k8GLbX04A4ZVtib/o9juHLUFAck9/38sXgBAqbSRDnom/d
+         SXUyhPmusOPFZCxOFXCLzdEGvCH9zXITFx74ZZNt0BZX0Nhpfw6FKYH56QrI7T4hd4
+         L/q6BVaRZvJnknvxp7VCvK0c7D3GS/4vq0s1J521PjLciFptmqZq/LdSAurId4RhvE
+         uGdutXDvjLxJQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, lucien.xin@gmail.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 1/2] net: transition netdev reg state earlier in run_todo
+Date:   Tue, 15 Feb 2022 14:53:09 -0800
+Message-Id: <20220215225310.3679266-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Feb 2022 23:53:47 +0300
-Maxim Petrov <mmrmaximuzz@gmail.com> wrote:
+In prep for unregistering netdevs out of order move the netdev
+state validation and change outside of the loop.
 
-> 'tmp' string is used for safe tokenizing, but it is not required after
-> getting all the widths in -w option. As 'tmp' string is obtained by strdup
-> call, the caller has to deallocate it to avoid memory leak.
-> 
-> Signed-off-by: Maxim Petrov <mmrmaximuzz@gmail.com>
+While at it modernize this code and use WARN() instead of
+pr_err() + dump_stack().
 
-Would strdupa() be cleaner/simpler. I have no strong preference.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ net/core/dev.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 909fb3815910..2749776e2dd2 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9906,6 +9906,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
+  */
+ void netdev_run_todo(void)
+ {
++	struct net_device *dev, *tmp;
+ 	struct list_head list;
+ #ifdef CONFIG_LOCKDEP
+ 	struct list_head unlink_list;
+@@ -9926,24 +9927,23 @@ void netdev_run_todo(void)
+ 
+ 	__rtnl_unlock();
+ 
+-
+ 	/* Wait for rcu callbacks to finish before next phase */
+ 	if (!list_empty(&list))
+ 		rcu_barrier();
+ 
+-	while (!list_empty(&list)) {
+-		struct net_device *dev
+-			= list_first_entry(&list, struct net_device, todo_list);
+-		list_del(&dev->todo_list);
+-
++	list_for_each_entry_safe(dev, tmp, &list, todo_list) {
+ 		if (unlikely(dev->reg_state != NETREG_UNREGISTERING)) {
+-			pr_err("network todo '%s' but state %d\n",
+-			       dev->name, dev->reg_state);
+-			dump_stack();
++			netdev_WARN(dev, "run_todo but not unregistering\n");
++			list_del(&dev->todo_list);
+ 			continue;
+ 		}
+ 
+ 		dev->reg_state = NETREG_UNREGISTERED;
++	}
++
++	while (!list_empty(&list)) {
++		dev = list_first_entry(&list, struct net_device, todo_list);
++		list_del(&dev->todo_list);
+ 
+ 		netdev_wait_allrefs(dev);
+ 
+-- 
+2.34.1
+
