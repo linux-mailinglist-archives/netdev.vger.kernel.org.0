@@ -2,139 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64A314B769A
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:49:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 871AB4B7580
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:47:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242716AbiBORxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 12:53:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33968 "EHLO
+        id S242830AbiBOSFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 13:05:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235112AbiBORxS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 12:53:18 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFA3FDFBF;
-        Tue, 15 Feb 2022 09:53:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644947586; x=1676483586;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fjS+jLcimlpk3IgAjjxRkS7J2bLZR7vNKhdUAkDnH0s=;
-  b=edbVc8amMd0XPgXkRK8/61mMkGK9aavolWBCev63EO+m9Ds9sFFXv65o
-   oYF3FFHAn3t1StRdZ/jT258RCC64cFTJI4h83HkcWyQXWiB6r5tPapRB0
-   jT4Ojh4xBFHBL5mXxJsw6ZAibRDHB5mDtIx7ISpRCle1X064UguMWAsha
-   6q0fZ8tcWfl2PEWLFdOSm4Z5/hZMA/7Dufgz23b6QqrZ0Y3uhm0sgswUu
-   bejq82d/yDspDR53UDjbBzySNPrjaTRbxguXzJrDpZAYh54uwh5xe8pX9
-   9I4pOlrRJn95wsB8Fqlqj4rmu9E8O1q7inlQIxXDSmwMMxF4+nbPT5gz3
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="230374786"
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="230374786"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 09:53:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="502570210"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 15 Feb 2022 09:53:01 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nK20b-0009uF-90; Tue, 15 Feb 2022 17:53:01 +0000
-Date:   Wed, 16 Feb 2022 01:52:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Joseph Hwang <josephsih@chromium.org>,
-        linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com, pali@kernel.org
-Cc:     kbuild-all@lists.01.org,
-        chromeos-bluetooth-upstreaming@chromium.org, josephsih@google.com,
-        Joseph Hwang <josephsih@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] Bluetooth: aosp: surface AOSP quality report
- through mgmt
-Message-ID: <202202160117.jjnGwidL-lkp@intel.com>
-References: <20220215213519.v4.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
+        with ESMTP id S232844AbiBOSFE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 13:05:04 -0500
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B2011861E
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 10:04:54 -0800 (PST)
+Received: by mail-oi1-x22d.google.com with SMTP id 4so21568592oil.11
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 10:04:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8FkbrW//0IgWQygghqQsiP3JwGJ2D9CY24Xy8wfl6Kc=;
+        b=tCVAaYeTHV6om8mv2EbLq/7QqmPUcfldxZOtAV0HONmrxT0EjskE241oYjeqfycv8B
+         0DVZRo3e0S8sfb8KsqNbHB35hIn4ZWRVx4/M+gLO1WTSKxxpqiMwjVT1Rgrm1/XT+KUh
+         HopiXfN2G4kFIchQzDWKbr0dM9IFTGnEDniw0WMqp/Vj+VABo0PQWUlFH5A36LNrHiKB
+         Bv/5D5Q2veFU0ZB2RYh1QrXFrGFiEdBU38g4T/RNOsHqM5x1UDmsB3FV6WcLra7WMjD+
+         Evq78pqDmc/INmF2/F/QChm07sjXvKqufL5TWQEXH2seAUfZ+0+U5OZPw4F59Cr7zUBe
+         FOow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8FkbrW//0IgWQygghqQsiP3JwGJ2D9CY24Xy8wfl6Kc=;
+        b=hxpD78ixMK5bJdu6KsGg4YZqNYNe7wsrTc8Hi2F6EROE0ELTmLTXKj1+0srloRqmgs
+         3HWiil1oXcI11d8MeKh/3HQHIJYw3VHEPF4+Guu7dH7u70gkymaL1yPthKdFlYwODx8h
+         Dag4CHCcXkBqmFjgh0taWGFFb/urD9mVN8solNEAnknM4sYsGtnBtdBY4o8sZGbiMfYB
+         mHWGDISwRWMoUWLySQcpz0+svmvn84g32GABW9C0GbIUucnmJDHN3ekc5Et84n4B2Saq
+         UiTXhtr39+uBqSgMcep9STwWBAQe0ZHFKu2J7r6x9LuS06AEgpe4flJhBn1EPawH4ASU
+         PTlQ==
+X-Gm-Message-State: AOAM532uCgZXKrK+u2OTFk9RZhpYi8z8E8B1U33ioHwRNBX6id6yHeDr
+        NXsoC1lQa7RiQnCJlKRsEtiyt05sjuwXORbh8FR6MMjlOmUIUg==
+X-Google-Smtp-Source: ABdhPJxNDbZDdo2yVpmlNODvXD6j6NahxG5NvwXi4o4t05Om9sq9lRIUr9w01zVeke8/LzOItBWhahCBTG9Hu8KAHqo=
+X-Received: by 2002:a05:6808:5c7:: with SMTP id d7mr29618oij.80.1644948293188;
+ Tue, 15 Feb 2022 10:04:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220215213519.v4.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220214024134.223939-1-haiyue.wang@intel.com> <20220215051751.260866-1-haiyue.wang@intel.com>
+In-Reply-To: <20220215051751.260866-1-haiyue.wang@intel.com>
+From:   Bailey Forrest <bcf@google.com>
+Date:   Tue, 15 Feb 2022 10:04:42 -0800
+Message-ID: <CANH7hM5tYYU7GyYLboEVdin6xivV3LmbPxMxEa3sxb_YEBfH8w@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] gve: enhance no queue page list detection
+To:     Haiyue Wang <haiyue.wang@intel.com>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Jeroen de Borst <jeroendb@google.com>,
+        Catherine Sullivan <csully@google.com>,
+        David Awogbemila <awogbemila@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Tao Liu <xliutaox@google.com>,
+        John Fraker <jfraker@google.com>,
+        Yangchun Fu <yangchun@google.com>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joseph,
+On Mon, Feb 14, 2022 at 9:52 PM Haiyue Wang <haiyue.wang@intel.com> wrote:
+>
+> The commit
+> a5886ef4f4bf ("gve: Introduce per netdev `enum gve_queue_format`")
+> introduces three queue format type, only GVE_GQI_QPL_FORMAT queue has
+> page list. So it should use the queue page list number to detect the
+> zero size queue page list. Correct the design logic.
+>
+> Using the 'queue_format == GVE_GQI_RDA_FORMAT' may lead to request zero
+> sized memory allocation, like if the queue format is GVE_DQO_RDA_FORMAT.
+>
+> The kernel memory subsystem will return ZERO_SIZE_PTR, which is not NULL
+> address, so the driver can run successfully. Also the code still checks
+> the queue page list number firstly, then accesses the allocated memory,
+> so zero number queue page list allocation will not lead to access fault.
+>
+> Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
 
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on bluetooth-next/master]
-[also build test WARNING on net-next/master next-20220215]
-[cannot apply to net/master v5.17-rc4]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Joseph-Hwang/Bluetooth-aosp-surface-AOSP-quality-report-through-mgmt/20220215-213800
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git master
-config: h8300-randconfig-s032-20220214 (https://download.01.org/0day-ci/archive/20220216/202202160117.jjnGwidL-lkp@intel.com/config)
-compiler: h8300-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/0day-ci/linux/commit/8c2212761e41006d67f3fad819b5bde57bc17773
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Joseph-Hwang/Bluetooth-aosp-surface-AOSP-quality-report-through-mgmt/20220215-213800
-        git checkout 8c2212761e41006d67f3fad819b5bde57bc17773
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=h8300 SHELL=/bin/bash net/bluetooth/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
-   net/bluetooth/hci_event.c:338:15: sparse: sparse: restricted __le16 degrades to integer
->> net/bluetooth/hci_event.c:4288:3: sparse: sparse: symbol 'evt_prefixes' was not declared. Should it be static?
-   net/bluetooth/hci_event.c: note: in included file (through include/net/bluetooth/hci_core.h):
-   include/net/bluetooth/hci.h:2473:47: sparse: sparse: array of flexible structures
-   include/net/bluetooth/hci.h:2559:43: sparse: sparse: array of flexible structures
-
-vim +/evt_prefixes +4288 net/bluetooth/hci_event.c
-
-  4275	
-  4276	/* Every distinct vendor specification must have a well-defined vendor
-  4277	 * event prefix to determine if a vendor event meets the specification.
-  4278	 * If an event prefix is fixed, it should be delcared with FIXED_EVT_PREFIX.
-  4279	 * Otherwise, DYNAMIC_EVT_PREFIX should be used for variable prefixes.
-  4280	 */
-  4281	struct vendor_event_prefix {
-  4282		__u8 *prefix;
-  4283		__u8 prefix_len;
-  4284		void (*vendor_func)(struct hci_dev *hdev, void *data,
-  4285				    struct sk_buff *skb);
-  4286		__u8 *(*get_prefix)(struct hci_dev *hdev);
-  4287		__u8 (*get_prefix_len)(struct hci_dev *hdev);
-> 4288	} evt_prefixes[] = {
-  4289		FIXED_EVT_PREFIX(AOSP_BQR_PREFIX, aosp_quality_report_evt),
-  4290		DYNAMIC_EVT_PREFIX(get_msft_evt_prefix, get_msft_evt_prefix_len,
-  4291				   msft_vendor_evt),
-  4292	
-  4293		/* end with a null entry */
-  4294		{},
-  4295	};
-  4296	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Reviewed-by: Bailey Forrest <bcf@google.com>
