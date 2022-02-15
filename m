@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A94F4B6382
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 07:34:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD0064B6385
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 07:34:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234449AbiBOGcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 01:32:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44512 "EHLO
+        id S234482AbiBOGdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 01:33:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234452AbiBOGcs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 01:32:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2A7AF1D6
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 22:32:39 -0800 (PST)
+        with ESMTP id S234474AbiBOGdE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 01:33:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E293CAB45C
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 22:32:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6553861521
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 06:32:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75696C340F1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8344DB80764
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 06:32:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04102C340F4;
         Tue, 15 Feb 2022 06:32:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644906758;
-        bh=n3TUZlf5R5dmc5EZ7PJTc+UHE7S+I5FODPfJpQMhBbc=;
+        s=k20201202; t=1644906759;
+        bh=V36DAGgGDu2ZZl2rbpPvwgz8CWVd7enL6itC8+sd3TA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AL6n64Pv19kRO+x8zmi/5TMeWNR6Pjb2s77FRLfb/fDRDwy6oBry4Gnh0M58yj0jT
-         4bvVdh9ao95b6GIjhxJoXlrnztVMPYvp3JJIfIjul5L9F1KMvw0m+GsmSOO8iFQZ0K
-         K7wp0FM/xj0srCekIMnQNKCv1AYhw5Bc5tucO0AL0EED2nzi4hUNGiSWYTkLlF6X/L
-         j9Orz1H3qIlsqqX5XZThYXjMgVckuuA5pLRmnIyjEmXf8r9T9f9RIM+twTTNIjMUzy
-         wNgopRhA4UdvOR90zp/+gujvjtHx0QQi0c63EGNplFfNa3sNAe2LKoyMhbU3wIKZih
-         B+If4lXXBBuog==
+        b=PU5eMmVtB4dkP1N84wv2JOhawjUJoDRWDu/C8zuBLYjgkY2pY/WPltiz/jPMe+U1U
+         UqttgHK+j/Wib36eURbf1u1JfLhrZsrPDYpMky+lH/3cVF/k9dPIR8BCg0ID+E9Hps
+         65kjhGg9HxSWl+SVNZwwRlv3hqboa0kIMONHArLSQ3LE7QYIgqFl73qPPTSY17qFQV
+         kKih5jYqsXtwvAoxhbXnxlwoQ4GqcNarK8n5B4g/UISRgNEV0Ow1K3CrccQx4DTC1U
+         gSqqbCU+u4HO7ETr1yxRvAAzchPwDz2nHwneT/HJn/mnKBcZMGbyHe6NmNeu9tTq48
+         mT1whoMMECRiQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 05/15] net/mlx5e: Disable TX queues before registering the netdev
-Date:   Mon, 14 Feb 2022 22:32:19 -0800
-Message-Id: <20220215063229.737960-6-saeed@kernel.org>
+Subject: [net-next 06/15] net/mlx5e: Use a barrier after updating txq2sq
+Date:   Mon, 14 Feb 2022 22:32:20 -0800
+Message-Id: <20220215063229.737960-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215063229.737960-1-saeed@kernel.org>
 References: <20220215063229.737960-1-saeed@kernel.org>
@@ -57,31 +57,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-Normally, the queues are disabled when the channels are deactivated, and
-enabled when the channels are activated. However, on register, the
-channels are not active, but the queues are enabled by default. This
-change fixes it, preventing mlx5e_xmit from running when the channels
-are deactivated in the beginning.
+mlx5e_build_txq_maps updates txq2sq while TX queues are stopped. Add a
+barrier to ensure that these changes are visible before the queues are
+started and mlx5e_xmit reads from txq2sq.
+
+This commit handles regular TX queues. Synchronization between HTB TX
+queues and mlx5e_xmit is handled in the following commit.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 8507ebec1266..d84d9cdbdbd4 100644
+index d84d9cdbdbd4..e64c3cb15ef6 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -5359,6 +5359,7 @@ mlx5e_create_netdev(struct mlx5_core_dev *mdev, const struct mlx5e_profile *prof
+@@ -2688,10 +2688,10 @@ static void mlx5e_build_txq_maps(struct mlx5e_priv *priv)
  	}
  
- 	netif_carrier_off(netdev);
-+	netif_tx_disable(netdev);
- 	dev_net_set(netdev, mlx5_core_net(mdev));
+ 	if (!priv->channels.ptp)
+-		return;
++		goto out;
  
- 	return netdev;
+ 	if (!test_bit(MLX5E_PTP_STATE_TX, priv->channels.ptp->state))
+-		return;
++		goto out;
+ 
+ 	for (tc = 0; tc < num_tc; tc++) {
+ 		struct mlx5e_ptp *c = priv->channels.ptp;
+@@ -2700,6 +2700,13 @@ static void mlx5e_build_txq_maps(struct mlx5e_priv *priv)
+ 		priv->txq2sq[sq->txq_ix] = sq;
+ 		priv->port_ptp_tc2realtxq[tc] = priv->num_tc_x_num_ch + tc;
+ 	}
++
++out:
++	/* Make the change to txq2sq visible before the queue is started.
++	 * As mlx5e_xmit runs under a spinlock, there is an implicit ACQUIRE,
++	 * which pairs with this barrier.
++	 */
++	smp_wmb();
+ }
+ 
+ static void mlx5e_update_num_tc_x_num_ch(struct mlx5e_priv *priv)
 -- 
 2.34.1
 
