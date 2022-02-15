@@ -2,53 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CA3E4B69BA
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 11:50:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 608B24B69E9
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 11:55:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236705AbiBOKuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 05:50:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60148 "EHLO
+        id S232664AbiBOKzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 05:55:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236712AbiBOKuY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 05:50:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C720FD226A
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 02:50:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7289BB81894
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 10:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3EC9FC340F1;
-        Tue, 15 Feb 2022 10:50:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644922212;
-        bh=0CgmcEROgDgs9jG7cQ2fI6d3QUAf5+LfRFP88lTzX8k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ds9dQHlkTt/1r78BVI4xi7usezapR3ex8YGOOzx95Y7w5Vdzjggtr1PMUPdpf/V5x
-         spJEAb8GSWjdQOxhysTXt+kevVRGNAyB/mWfqm1Kye5vaCT0fM1o8iZdbsUC+zWM/z
-         ia01+2XXJUCihLMt8LC9HHqqlmW/oaX5n+z/nQlPjA2EuXhWuzqSpMbftXaZSINGOZ
-         hUGvvgSqkPyEJCRprtTjW7lviPwyHnVnl0ptP6S9J/mUSNuCggAzMC6zl8r54tuqH3
-         9ULT7VHUV7PK//gTwmzVDBNO3vf8UfYoAhXUCP3kJKHxPpIVq5whN2tZQZgqpclJHe
-         Cxklj4RUTRdfw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 27C05E5D07D;
-        Tue, 15 Feb 2022 10:50:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232355AbiBOKzm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 05:55:42 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1B6D76D5
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 02:55:31 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nJvTx-0001Ed-JO; Tue, 15 Feb 2022 11:54:53 +0100
+Received: from pengutronix.de (unknown [195.138.59.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 0933833A8B;
+        Tue, 15 Feb 2022 10:54:51 +0000 (UTC)
+Date:   Tue, 15 Feb 2022 11:54:47 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Ray Jui <rjui@broadcom.com>, Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Scott Branden <sbranden@broadcom.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tony Lindgren <tony@atomide.com>, devicetree@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org, kernel@pengutronix.de,
+        linux-tegra@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v4 1/8] dt-bindings: net: add schema for ASIX USB
+ Ethernet controllers
+Message-ID: <20220215105447.vimwbnyabyfxyl4v@pengutronix.de>
+References: <20220215100018.2306046-1-o.rempel@pengutronix.de>
+ <20220215100018.2306046-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next 01/15] net/mlx5e: Remove unused tstamp SQ field
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164492221215.12084.15190713396104689323.git-patchwork-notify@kernel.org>
-Date:   Tue, 15 Feb 2022 10:50:12 +0000
-References: <20220215063229.737960-2-saeed@kernel.org>
-In-Reply-To: <20220215063229.737960-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        tariqt@nvidia.com, ayal@nvidia.com, saeedm@nvidia.com
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ifqdzi4p4d6arjx2"
+Content-Disposition: inline
+In-Reply-To: <20220215100018.2306046-2-o.rempel@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,58 +69,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Saeed Mahameed <saeedm@nvidia.com>:
+--ifqdzi4p4d6arjx2
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 14 Feb 2022 22:32:15 -0800 you wrote:
-> From: Tariq Toukan <tariqt@nvidia.com>
-> 
-> Remove tstamp pointer in mlx5e_txqsq as it's no longer used after
-> commit 7c39afb394c7 ("net/mlx5: PTP code migration to driver core section").
-> 
-> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-> Reviewed-by: Aya Levin <ayal@nvidia.com>
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> 
-> [...]
+On 15.02.2022 11:00:11, Oleksij Rempel wrote:
+> Create schema for ASIX USB Ethernet controllers and import some of
+> currently supported USB IDs form drivers/net/usb/asix_devices.c
+>=20
+> This devices are already used in some of DTs. So, this schema makes it of=
+ficial.
+These
 
-Here is the summary with links:
-  - [net-next,01/15] net/mlx5e: Remove unused tstamp SQ field
-    https://git.kernel.org/netdev/net-next/c/9536923d3f35
-  - [net-next,02/15] net/mlx5e: Read max WQEBBs on the SQ from firmware
-    https://git.kernel.org/netdev/net-next/c/c27bd1718c06
-  - [net-next,03/15] net/mlx5e: Use FW limitation for max MPW WQEBBs
-    https://git.kernel.org/netdev/net-next/c/76c31e5f7585
-  - [net-next,04/15] net/mlx5e: Cleanup of start/stop all queues
-    https://git.kernel.org/netdev/net-next/c/befa41771f9e
-  - [net-next,05/15] net/mlx5e: Disable TX queues before registering the netdev
-    https://git.kernel.org/netdev/net-next/c/d08c6e2a4d03
-  - [net-next,06/15] net/mlx5e: Use a barrier after updating txq2sq
-    https://git.kernel.org/netdev/net-next/c/6ce204eac387
-  - [net-next,07/15] net/mlx5e: Sync txq2sq updates with mlx5e_xmit for HTB queues
-    https://git.kernel.org/netdev/net-next/c/17c84cb46e33
-  - [net-next,08/15] net/mlx5e: Introduce select queue parameters
-    https://git.kernel.org/netdev/net-next/c/8bf30be75069
-  - [net-next,09/15] net/mlx5e: Move mlx5e_select_queue to en/selq.c
-    https://git.kernel.org/netdev/net-next/c/6b23f6ab86a4
-  - [net-next,10/15] net/mlx5e: Use select queue parameters to sync with control flow
-    https://git.kernel.org/netdev/net-next/c/3ab45777a27c
-  - [net-next,11/15] net/mlx5e: Move repeating code that gets TC prio into a function
-    https://git.kernel.org/netdev/net-next/c/62f7991feab6
-  - [net-next,12/15] net/mlx5e: Use READ_ONCE/WRITE_ONCE for DCBX trust state
-    https://git.kernel.org/netdev/net-next/c/ed5f9cf06b20
-  - [net-next,13/15] net/mlx5e: Optimize mlx5e_select_queue
-    https://git.kernel.org/netdev/net-next/c/3c87aedd4899
-  - [net-next,14/15] net/mlx5e: Optimize modulo in mlx5e_select_queue
-    https://git.kernel.org/netdev/net-next/c/3a9e5fff2ab0
-  - [net-next,15/15] net/mlx5e: Optimize the common case condition in mlx5e_select_queue
-    https://git.kernel.org/netdev/net-next/c/71753b8ec103
+Marc
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
+--ifqdzi4p4d6arjx2
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmILhnUACgkQrX5LkNig
+0127EAf8CJJABhnS+oUjbFpBGUxKQ7ySwvBPYhNMil097GqJDDjXWk8nLPgGs0PV
+kXT/pRPTBDeVWP9o48FVVyOLtWRgK/8mqia24ZAvb6MqXEUTVVOV5xQi7nQsChwp
+B6coQO7Py9d1yOw61MNEj/QR33O5qP3E4GqY4d0UE1p7DNVyeX9apoWDI5xRdZrL
+NV5wzDHIE45Cdgm0Gry8x9UVy8kMbPFV4wqiZo4OS9Ct7b+JkjM6dCFL3gvv7EuK
+kpaJSV2hefMCyrevDo4S6s0laNbec69cXTso9FXJVeWmZfz7L4xbiU3hRBXdyYNH
+kK3tvNuH8nP8Rw0vJyzQlK027HRKCw==
+=unWf
+-----END PGP SIGNATURE-----
+
+--ifqdzi4p4d6arjx2--
