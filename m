@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDAE44B6C5C
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 13:42:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 103414B6C7A
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 13:44:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237878AbiBOMmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 07:42:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51638 "EHLO
+        id S238016AbiBOMoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 07:44:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237807AbiBOMmI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 07:42:08 -0500
+        with ESMTP id S237888AbiBOMnm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 07:43:42 -0500
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E300140D1;
-        Tue, 15 Feb 2022 04:41:43 -0800 (PST)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jygg61fqbz67y8P;
-        Tue, 15 Feb 2022 20:40:50 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125B820F69;
+        Tue, 15 Feb 2022 04:43:03 -0800 (PST)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JygcX42SSz67yS4;
+        Tue, 15 Feb 2022 20:38:36 +0800 (CST)
 Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
  fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Feb 2022 13:41:41 +0100
+ 15.1.2308.21; Tue, 15 Feb 2022 13:43:00 +0100
 From:   Roberto Sassu <roberto.sassu@huawei.com>
 To:     <zohar@linux.ibm.com>, <shuah@kernel.org>, <ast@kernel.org>,
         <daniel@iogearbox.net>, <andrii@kernel.org>, <kpsingh@kernel.org>,
@@ -30,9 +30,9 @@ CC:     <linux-integrity@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH v2 4/6] selftests/bpf: Add test for bpf_ima_file_hash()
-Date:   Tue, 15 Feb 2022 13:40:40 +0100
-Message-ID: <20220215124042.186506-5-roberto.sassu@huawei.com>
+Subject: [PATCH v2 5/6] bpf-lsm: Make bpf_lsm_kernel_read_file() as sleepable
+Date:   Tue, 15 Feb 2022 13:40:41 +0100
+Message-ID: <20220215124042.186506-6-roberto.sassu@huawei.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220215124042.186506-1-roberto.sassu@huawei.com>
 References: <20220215124042.186506-1-roberto.sassu@huawei.com>
@@ -52,102 +52,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Modify the existing IMA test to call bpf_ima_file_hash() and update the
-expected result accordingly.
+Make bpf_lsm_kernel_read_file() as sleepable, so that bpf_ima_inode_hash()
+or bpf_ima_file_hash() can be called inside the implementation of this
+hook.
 
 Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
 ---
- .../selftests/bpf/prog_tests/test_ima.c       | 29 ++++++++++++++++---
- tools/testing/selftests/bpf/progs/ima.c       | 10 +++++--
- 2 files changed, 33 insertions(+), 6 deletions(-)
+ kernel/bpf/bpf_lsm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/test_ima.c b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-index 97d8a6f84f4a..62bf0e830453 100644
---- a/tools/testing/selftests/bpf/prog_tests/test_ima.c
-+++ b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-@@ -13,9 +13,10 @@
+diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
+index e8d27af5bbcc..064eccba641d 100644
+--- a/kernel/bpf/bpf_lsm.c
++++ b/kernel/bpf/bpf_lsm.c
+@@ -187,6 +187,7 @@ BTF_ID(func, bpf_lsm_inode_setxattr)
+ BTF_ID(func, bpf_lsm_inode_symlink)
+ BTF_ID(func, bpf_lsm_inode_unlink)
+ BTF_ID(func, bpf_lsm_kernel_module_request)
++BTF_ID(func, bpf_lsm_kernel_read_file)
+ BTF_ID(func, bpf_lsm_kernfs_init_security)
  
- #include "ima.skel.h"
- 
--static int run_measured_process(const char *measured_dir, u32 *monitored_pid)
-+static int run_measured_process(const char *measured_dir, u32 *monitored_pid,
-+				bool *use_ima_file_hash)
- {
--	int child_pid, child_status;
-+	int err, child_pid, child_status;
- 
- 	child_pid = fork();
- 	if (child_pid == 0) {
-@@ -24,6 +25,21 @@ static int run_measured_process(const char *measured_dir, u32 *monitored_pid)
- 		       NULL);
- 		exit(errno);
- 
-+	} else if (child_pid > 0) {
-+		waitpid(child_pid, &child_status, 0);
-+		err = WEXITSTATUS(child_status);
-+		if (err)
-+			return err;
-+	}
-+
-+	child_pid = fork();
-+	if (child_pid == 0) {
-+		*monitored_pid = getpid();
-+		*use_ima_file_hash = true;
-+		execlp("./ima_setup.sh", "./ima_setup.sh", "run", measured_dir,
-+		       NULL);
-+		exit(errno);
-+
- 	} else if (child_pid > 0) {
- 		waitpid(child_pid, &child_status, 0);
- 		return WEXITSTATUS(child_status);
-@@ -72,12 +88,17 @@ void test_test_ima(void)
- 	if (CHECK(err, "failed to run command", "%s, errno = %d\n", cmd, errno))
- 		goto close_clean;
- 
--	err = run_measured_process(measured_dir, &skel->bss->monitored_pid);
-+	err = run_measured_process(measured_dir, &skel->bss->monitored_pid,
-+				   &skel->bss->use_ima_file_hash);
- 	if (CHECK(err, "run_measured_process", "err = %d\n", err))
- 		goto close_clean;
- 
- 	err = ring_buffer__consume(ringbuf);
--	ASSERT_EQ(err, 1, "num_samples_or_err");
-+	/*
-+	 * 1 sample with use_ima_file_hash = false
-+	 * 2 samples with use_ima_file_hash = true (./ima_setup.sh, /bin/true)
-+	 */
-+	ASSERT_EQ(err, 3, "num_samples_or_err");
- 	ASSERT_NEQ(ima_hash_from_bpf, 0, "ima_hash");
- 
- close_clean:
-diff --git a/tools/testing/selftests/bpf/progs/ima.c b/tools/testing/selftests/bpf/progs/ima.c
-index 96060ff4ffc6..9bb63f96cfc0 100644
---- a/tools/testing/selftests/bpf/progs/ima.c
-+++ b/tools/testing/selftests/bpf/progs/ima.c
-@@ -18,6 +18,8 @@ struct {
- 
- char _license[] SEC("license") = "GPL";
- 
-+bool use_ima_file_hash;
-+
- SEC("lsm.s/bprm_committed_creds")
- void BPF_PROG(ima, struct linux_binprm *bprm)
- {
-@@ -28,8 +30,12 @@ void BPF_PROG(ima, struct linux_binprm *bprm)
- 
- 	pid = bpf_get_current_pid_tgid() >> 32;
- 	if (pid == monitored_pid) {
--		ret = bpf_ima_inode_hash(bprm->file->f_inode, &ima_hash,
--					 sizeof(ima_hash));
-+		if (!use_ima_file_hash)
-+			ret = bpf_ima_inode_hash(bprm->file->f_inode, &ima_hash,
-+						 sizeof(ima_hash));
-+		else
-+			ret = bpf_ima_file_hash(bprm->file, &ima_hash,
-+						sizeof(ima_hash));
- 		if (ret < 0 || ima_hash == 0)
- 			return;
- 
+ #ifdef CONFIG_KEYS
 -- 
 2.32.0
 
