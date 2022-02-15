@@ -2,97 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E89C74B7714
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:50:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 292234B783F
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:51:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243159AbiBOSmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 13:42:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45154 "EHLO
+        id S235205AbiBOSoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 13:44:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243155AbiBOSmw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 13:42:52 -0500
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6929327FEA;
-        Tue, 15 Feb 2022 10:42:42 -0800 (PST)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21FH4N62029572;
-        Tue, 15 Feb 2022 18:42:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2021-07-09; bh=zXmbrA+nSO5dCXMa3+3nbbOi7Ym51eV5ADJO++TfFv0=;
- b=oqxhdoF2rIqYW/BJuSS/ErAWNzD765UjQwIZsoI1GRVfs8Q4rXVcbrU0FnnU2cLvawLF
- AYQae2Cd1+DskOtQ8w0jBO1dosO2XnVLEnsQC0jWQs51B0aIWTzltga+MqrU8TT6TYuE
- 6wZRUb+QiL0SiOtIHwASsKyJLCAD5FQ09A07Gzue+CMRKkVOs3wDPkZEg1hjEkmZf/0C
- Y4R6t4FzGXAUV4f/3cdB3op7Dw+UoIkXqGgD7iu/thJxqgEhn1U8mAAj1qbkrBKeemu+
- cBSwqrCWSrO7kIUkT7hFcBjN4Pf+m4/bIXwZOO2udmhOmdEx6mAWMMzdpbLPqSunLQcQ bw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e8570taav-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Feb 2022 18:42:18 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21FIfEKi150005;
-        Tue, 15 Feb 2022 18:42:17 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 3e620xg50s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Feb 2022 18:42:17 +0000
-Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 21FIgHrN152289;
-        Tue, 15 Feb 2022 18:42:17 GMT
-Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
-        by userp3030.oracle.com with ESMTP id 3e620xg50h-1;
-        Tue, 15 Feb 2022 18:42:17 +0000
-From:   Sherry Yang <sherry.yang@oracle.com>
-To:     skhan@linuxfoundation.org, shuah@kernel.org, keescook@chromium.org,
-        luto@amacapital.net, wad@chromium.org, christian@brauner.io,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        usama.anjum@collabora.com, sherry.yang@oracle.com
-Subject: [PATCH v3] selftests/seccomp: Fix seccomp failure by adding missing headers
-Date:   Tue, 15 Feb 2022 10:42:15 -0800
-Message-Id: <20220215184215.40093-1-sherry.yang@oracle.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S240627AbiBOSoA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 13:44:00 -0500
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF58827FF5
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 10:43:49 -0800 (PST)
+Received: by mail-il1-x134.google.com with SMTP id d7so9743437ilf.8
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 10:43:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=A0+kP93DPXHvr6brEvM8VXEFzWB0S5lRFdtA9kDJkyE=;
+        b=VbnG0DTFoD5oInsLnSpyK8TY1b9yTtEV8jmDclcI0lVoHXaRfQ+1Kei06xf8rXYF7T
+         Wg/jkDG2mswlylVxkUyUwagh7VpOigDobBSIN+ruOXrKdEbqescCjLVZjKa5xcviv9J2
+         6BHdIVuOY/izVwkXKs6tMZ1SXb1wuGFnkP+R4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=A0+kP93DPXHvr6brEvM8VXEFzWB0S5lRFdtA9kDJkyE=;
+        b=m24fLa1yxqyuXl7GbVmL5VpfYu1tBh1lv5VrixEoMxI2z+K14puLa0Zc1k8g6k/yX7
+         26FyhVlGli0yIL1v4qc+ebGBW99z62cDhAC/wEQnnWrn+2nKIqbRzGa6jQC9KM6q9VGd
+         FCTikJOsqBWg5WNZz/NKpTz/XZy72KMQ72Y9SthB5d8eiYkI8/YidGt2SKyMteo9r4jZ
+         xINv0iyVyHEp3msGxC8u2vyxj1AP5yvDOIXzs68oryeid1qaUyadNi+xLg9yPYROCBdJ
+         2pwa4DFkNbTv+Xbdg5HIM6tKfOBXar7e4V9QLrvCcR5rHcvPnxXpVKAOXpbCGKp4ar8j
+         P+xQ==
+X-Gm-Message-State: AOAM532BugsYZ+7Ue4cF/n+aP/KjsZOEQ/T58E0S+2S+HYH/5xzdBOiR
+        CegXVrdhwxXApoiZtRFqhg5f4A==
+X-Google-Smtp-Source: ABdhPJy2vlGZWPGrF4v8TITllv20RRsSaBCpm9YRhgNODL/5uMIm2Jii7qjTHVGojYsoa6gztygi5g==
+X-Received: by 2002:a05:6e02:1bc1:: with SMTP id x1mr258711ilv.268.1644950629300;
+        Tue, 15 Feb 2022 10:43:49 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id s16sm12850411iow.10.2022.02.15.10.43.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 10:43:49 -0800 (PST)
+Subject: Re: [PATCH v2] selftests/seccomp: Fix seccomp failure by adding
+ missing headers
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Sherry Yang <sherry.yang@oracle.com>
+Cc:     "shuah@kernel.org" <shuah@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        "luto@amacapital.net" <luto@amacapital.net>,
+        "wad@chromium.org" <wad@chromium.org>,
+        "christian@brauner.io" <christian@brauner.io>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220210203049.67249-1-sherry.yang@oracle.com>
+ <755ec9b2-8781-a75a-4fd0-39fb518fc484@collabora.com>
+ <85DF69B3-3932-4227-978C-C6DAC7CAE64D@oracle.com>
+ <66140ffb-306e-2956-2f6b-c017a38e18f8@collabora.com>
+ <4b739847-0622-c221-33b3-9fe428a52bc0@collabora.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <2f59f86c-dbd7-7dbf-021d-bc62ebbe2a43@linuxfoundation.org>
+Date:   Tue, 15 Feb 2022 11:43:48 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
+In-Reply-To: <4b739847-0622-c221-33b3-9fe428a52bc0@collabora.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: NohrFFT0X_beyLbk1JWdxuHwTzUHtHwb
-X-Proofpoint-GUID: NohrFFT0X_beyLbk1JWdxuHwTzUHtHwb
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-seccomp_bpf failed on tests 47 global.user_notification_filter_empty
-and 48 global.user_notification_filter_empty_threaded when it's
-tested on updated kernel but with old kernel headers. Because old
-kernel headers don't have definition of macro __NR_clone3 which is
-required for these two tests. Use KHDR_INCLUDES to correctly reach
-the installed headers.
+On 2/15/22 11:17 AM, Muhammad Usama Anjum wrote:
+> 
+> On 2/14/22 9:12 PM, Muhammad Usama Anjum wrote:
+>>>> "../../../../usr/include/" directory doesn't have header files if
+>>>> different output directory is used for kselftests build like "make -C
+>>>> tools/tests/selftest O=build". Can you try adding recently added
+>>>> variable, KHDR_INCLUDES here which makes this kind of headers inclusion
+>>>> easy and correct for other build combinations as well?
+>>>>
+>>>>
+>>>
+>>> Hi Muhammad,
+>>>
+>>> I just pulled linux-next, and tried with KHDR_INCLUDES. It works. Very nice
+>>> work! I really appreciate you made headers inclusion compatible. However,
+>>> my case is a little more complicated. It will throw warnings with -I, using
+>>> -isystem can suppress these warnings, more details please refer to
+>>> https://lore.kernel.org/all/C340461A-6FD2-440A-8EFC-D7E85BF48DB5@oracle.com/
+>>>
+>>> According to this case, do you think will it be better to export header path
+>>> (KHDR_INCLUDES) without “-I”?
+>> Well said. I've thought about it and it seems like -isystem is better
+>> than -I. I've sent a patch:
+>> https://lore.kernel.org/linux-kselftest/20220214160756.3543590-1-usama.anjum@collabora.com/
+>> I'm looking forward to discussion on it.
+> The patch has been accepted. It should appear in linux-next soon. You
+> should be able to use KHDR_INCLUDES easily now.
+> 
 
-Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
-Tested-by: Sherry Yang <sherry.yang@oracle.com>
----
- tools/testing/selftests/seccomp/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Sherry,
 
-diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
-index 0ebfe8b0e147..7eaed95ba4b3 100644
---- a/tools/testing/selftests/seccomp/Makefile
-+++ b/tools/testing/selftests/seccomp/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
--CFLAGS += -Wl,-no-as-needed -Wall
-+CFLAGS += -Wl,-no-as-needed -Wall $(KHDR_INCLUDES)
- LDFLAGS += -lpthread
- 
- TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
--- 
-2.31.1
+I pulled in your patch as a fix as is for 5.17-rc5.
 
+Using KHDR_INCLUDES can be separate patch for next release.
+This way the fix is going to be pulled for this release
+without dependencies on other patches.
+
+thanks,
+-- Shuah
