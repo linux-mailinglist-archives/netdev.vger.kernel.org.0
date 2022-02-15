@@ -2,50 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 698E04B624E
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 06:04:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61C6E4B6251
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 06:13:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231651AbiBOFEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 00:04:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38080 "EHLO
+        id S231696AbiBOFNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 00:13:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbiBOFEV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 00:04:21 -0500
+        with ESMTP id S229586AbiBOFNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 00:13:20 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B6A1029DB;
-        Mon, 14 Feb 2022 21:04:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5288DD04B2
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 21:13:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57FF5612CF;
-        Tue, 15 Feb 2022 05:04:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F3D2C340EC;
-        Tue, 15 Feb 2022 05:04:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0D5061331
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 05:13:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0486AC340F0;
+        Tue, 15 Feb 2022 05:13:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644901451;
-        bh=PX9u+6e9QNinBvycdzgGx+KcKDyFl4Dcs+o64X5VPL8=;
+        s=k20201202; t=1644901990;
+        bh=5G1G+iYda0ASt2hoy/703UMcV7F/fJHwIIgyIs2HQ98=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CMb2PgLzLXx7wKXCZVsLow2ZhDlkO9pq/g3CjzFkE7ipJn5Q4wlwr6qrLTEUXhxNG
-         9El6rqnXP3dbmSiNMtoKv8UyvEYMyf5i0t9a20Nfl2Y0nLYAsPshDy1uKHPqPFn+pC
-         8oawFRliEkgadAhzmWM9Th4K3CHjn9Z+eFFGVaYcLJzY11sTvkjGYxSj6uITANU0xv
-         XVZGggC3N6WY5XrD/s2F3jMzwaZFYD+RhlCGeJPWfyvRNrPHS2Tf5h3dDLvS+czwMA
-         8L1T9qp24uqGztSfri0cMsRV6jMXat25ySPHO15HLfakKsnDDyvqk6U45J2LplbunI
-         mU+kzA48hJ98w==
-Date:   Mon, 14 Feb 2022 21:04:10 -0800
+        b=MqFqeMqptslXxyLRQR+fn0lmy5fzANcj33vTrFvQIuslIPE3p7WheSnyQqIMF0Z8B
+         TX4liZDUUDGGLdD8J8LxNjK3lGkNN9Sh/ICYMCnUzb4J7qwJTSNDYjg7s2GYEwZURu
+         7HshVtxvfyBINL5dxW78vwy+4SAdhF6HNzMJd1vGCWcKaAGxukfbsOdSXfdU/cBMft
+         yaylW0h6CX7XPBySjJSsyJuthyyFk9cPyQXs0aHF+fgoaKA5blcN+K2F7Ug5GOa8YL
+         ZZrhLDtthSqP6m/hGq0TYbLnqkUFfuGTn2czrr1MtqJxw+EsC21j8rFlRHIYJO+MQ6
+         s6qAfFupCaOmw==
+Date:   Mon, 14 Feb 2022 21:13:09 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Matt Johnston <matt@codeconstruct.com.au>
-Cc:     Wolfram Sang <wsa@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
-        Zev Weiss <zev@bewilderbeest.net>
-Subject: Re: [PATCH net-next v5 2/2] mctp i2c: MCTP I2C binding driver
-Message-ID: <20220214210410.2d49e55f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <b857c3087443f86746d81c1d686eaf5044db98a7.camel@codeconstruct.com.au>
-References: <20220210063651.798007-1-matt@codeconstruct.com.au>
-        <20220210063651.798007-3-matt@codeconstruct.com.au>
-        <20220211143815.55fb29e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <b857c3087443f86746d81c1d686eaf5044db98a7.camel@codeconstruct.com.au>
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Cc:     netdev@vger.kernel.org, Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        bridge@lists.linux-foundation.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH] net: bridge: multicast: notify switchdev driver
+ whenever MC processing gets disabled
+Message-ID: <20220214211309.261bd9d6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220211131426.5433-1-oleksandr.mazur@plvision.eu>
+References: <20220211131426.5433-1-oleksandr.mazur@plvision.eu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,34 +57,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Feb 2022 12:22:14 +0800 Matt Johnston wrote:
-> On Fri, 2022-02-11 at 14:38 -0800, Jakub Kicinski wrote:
-> >   
-> > > +// Removes and unregisters a mctp-i2c netdev
-> > > +static void mctp_i2c_free_netdev(struct mctp_i2c_dev *midev)
-> > >   
-> > You're doing a lot before the unregister call, this is likely racy.
-> > The usual flow is to unregister the netdev, then do uninit, then free.
-> > For instance you purge the queue but someone may Tx afterwards.
-> > needs_free_netdev is a footgun.  
+On Fri, 11 Feb 2022 15:14:26 +0200 Oleksandr Mazur wrote:
+> Whenever bridge driver hits the max capacity of MDBs, it disables
+> the MC processing (by setting corresponding bridge option), but never
+> notifies switchdev about such change (the notifiers are called only upon
+> explicit setting of this option, through the registered netlink interface).
 > 
-> Thanks Jakub. I've reworked it here to do the work before register/after
-> unregister, without needs_free_netdev.
+> This could lead to situation when Software MDB processing gets disabled,
+> but this event never gets offloaded to the underlying Hardware.
 > 
-> One question, the tx thread calls netif_wake_queue() - is it safe to call
-> that after unregister_netdev()? (before free_netdev)
+> Fix this by adding a notify message in such case.
 
-I don't think so.
+Any comments on this one?
 
-> I've moved the kthread_stop() to the post-unregister cleanup.
-
-The usual way to deal with Tx would be to quiesce the worker in
-ndo_stop. Maybe keep it simple and add a mutex around the worker?
-You can then take the same mutex around:
-
-	stop queue
-	purge queue
-	
-Thanks to the mutex you'd know the worker is not running and as
-long as worker does its !skb_queue_empty() under the same mutex
-it will not wake the queue.
+We have drivers offloading mdb so presumably this should have a Fixes
+tag and go to net, right?
