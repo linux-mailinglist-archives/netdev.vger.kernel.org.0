@@ -2,131 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A4C94B5EFD
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 01:22:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4E414B5F03
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 01:25:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232488AbiBOAWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 19:22:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48530 "EHLO
+        id S232496AbiBOAY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 19:24:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiBOAWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 19:22:53 -0500
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679FB135725
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 16:22:45 -0800 (PST)
-Received: by mail-qk1-x72d.google.com with SMTP id bs32so15946065qkb.1
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 16:22:45 -0800 (PST)
+        with ESMTP id S232519AbiBOAYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 19:24:51 -0500
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CC44140C1F
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 16:24:43 -0800 (PST)
+Received: by mail-qk1-x72b.google.com with SMTP id b35so15914603qkp.6
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 16:24:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=2jZUgLqnhahw+gLupg9iynRXZT4E5Qs4e6rKnkb62s8=;
-        b=U3jYD+3lN36eR/1MR9TQJ+pYkeI5pCasgWXk7WsbBP17WZzobhniqnhWC1LvLYITmm
-         FXhEdh+ROFUuPv6qfO5tILU9dFafxqcWQvv9x6ihHPrw6xtzdaclJWg+D+x4sJxSj7Uz
-         RdEiSeEgEVkLMshmFU/pVHHwfN+f9s3+xwU2i7Hhco5CX54piU7e35b7NZc353uJZVCv
-         th6sK1Czgy05L4TJnswR/SqEk7F54hwpLtQTHdZzX4R8neywUxb4cGHozQDxpLZsN/HF
-         nCh5BsMLlez+fWoI5B/ih3NC2ddLJs42i1U4FF5pRYdzH6kWZql+ls5vtiRQS+Zl3Air
-         +DVw==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GujBXUvXi+0yeSrz79gsYrhquGzZSm1r2EHDrdrY/wg=;
+        b=BUKhOEiVIe/ExiWuFzr64XnbbqhpNlfHtsJYo5bS1aqXgxs7qrffvzdcMLurb0lrTG
+         l4qFZmrBgLLfVsWnsE94OGQTvFKaCRGzrl4VPDVvnTExzL4Fr3p71FJtJntnmJJylEaX
+         9xiNe86SzvqI2+Kar+EYyJrmL5u7QphK3NmU2AcYjuzLms5iRzbAJgV4u0TydyFi7eX2
+         OBGuf1KHdxwN2whKZj5iWEC61LBgc8m5dzZlz50P34O0RauSnwSCQakMgHZ/a5tiqyB6
+         0W2VpnBtXvdKwjVDiI33KKjkLyFtK2KHTL8BqWk15F9KRN4UlQnM4PjOaWLMz2ewJyYc
+         aP7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=2jZUgLqnhahw+gLupg9iynRXZT4E5Qs4e6rKnkb62s8=;
-        b=eIe/oRUUH2ft+y00uQnVnIu3xKlZjfI/AyYzKEqFY/rAP652/tnVL5gkT9wK7PYdB0
-         AtlkZlw7EK66so6uF1UtKywlY9wGvc+Ge11xkoiIikNOChdiP9m+pIUIZjPwg+pUidTq
-         fdDVtQ+DP1VIatnMt1bd++ybBJ7fZbe4nn5SQ66WZCPIu6p26cT+kUlTPXCF5Roaqf4I
-         t2/9k2/UmUvf2sUt/dQ77piHtskdzjwW6r6xhrIiKYuXW9QyHtZD7F3wncLcuFyh04C5
-         3ehFXd274Qx7t6fvs7l3k+lawLbzgKCLWZyp3J/xD8ri8xuWu8eohLmLDwRNbhqOGMmL
-         S1Rw==
-X-Gm-Message-State: AOAM532G9rGME/weU2Vvm7ZD7Nkf1KS33N5bZRchOsNFNpbg8jTgY6VU
-        pqW269VmYSxmNyqNBiJbgr1OKQ==
-X-Google-Smtp-Source: ABdhPJyZpdPXqb4ZeC8Sw/PAMKA42ZqfL643lIGknDrQ1sT7gV2naDFTcPxmNmz1GeVNl5H4LCwbKA==
-X-Received: by 2002:a05:620a:4149:: with SMTP id k9mr857398qko.323.1644884564517;
-        Mon, 14 Feb 2022 16:22:44 -0800 (PST)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-74.dsl.bell.ca. [184.148.47.74])
-        by smtp.googlemail.com with ESMTPSA id n7sm18992481qta.78.2022.02.14.16.22.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 16:22:43 -0800 (PST)
-Message-ID: <0b486c4e-0af5-d142-44e5-ed81aa0b98c2@mojatatu.com>
-Date:   Mon, 14 Feb 2022 19:22:42 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [net-next v8 2/2] net: sched: support hash/classid/cpuid
- selecting tx queue
-Content-Language: en-US
-To:     xiangxia.m.yue@gmail.com, netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GujBXUvXi+0yeSrz79gsYrhquGzZSm1r2EHDrdrY/wg=;
+        b=nYLGLtaVAoED25FiCS9nTnhWARYeXuGjn0jUxsM8BVObQPcp/FPytd7Jd3ml3eeR5X
+         IgzRxsyGB3Q6cgmLry4yScm9xa4EPyPSJca/Cd7VwW1pw/kYHuMixLVAZf1h+/qP8bTS
+         JwQ+u3nYgHPTR/3I3U+aYCww3a6PTVfHeenNCdZhFAoW93TqQ1nXJBVkO34TLuKUEM8w
+         Q0zn4RzyXarC7SRePSaS0hp1idloteaN3BgKNOLKGWeGCsdm0Vx65yYPymX3pXD9ttKK
+         s7hHmH43/b6gqaimiWrB9hqCqQk85F1/OUKL4BFUnw1Ljsii6n94vF+SgEwhIlRc9+9I
+         YsLg==
+X-Gm-Message-State: AOAM531le9zDSYzIMFjs4lqWQRaTGlb0pyjaPqG57WYQ6hWKeTX8pWjI
+        qFtrobul9nIFy3IjNl9qUS4=
+X-Google-Smtp-Source: ABdhPJySTir/8tL/gaw0CAwuUB0p5k2xnwGzY3Mr/vwpW5Pa0IyPHp33WaxQBEhMrhy1tYLKvPp3nA==
+X-Received: by 2002:a05:620a:430e:: with SMTP id u14mr852167qko.561.1644884682272;
+        Mon, 14 Feb 2022 16:24:42 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:1336:e323:f59d:db64])
+        by smtp.gmail.com with ESMTPSA id p6sm6271517qkg.33.2022.02.14.16.24.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 16:24:41 -0800 (PST)
+Date:   Mon, 14 Feb 2022 16:24:40 -0800
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-References: <20220126143206.23023-1-xiangxia.m.yue@gmail.com>
- <20220126143206.23023-3-xiangxia.m.yue@gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <20220126143206.23023-3-xiangxia.m.yue@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        Cong Wang <cong.wang@bytedance.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: Re: [PATCH net] ipmr,ip6mr: acquire RTNL before calling
+ ip[6]mr_free_table() on failure path
+Message-ID: <YgryyOR3PaTztFn8@pop-os.localdomain>
+References: <20220208053451.2885398-1-eric.dumazet@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220208053451.2885398-1-eric.dumazet@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-01-26 09:32, xiangxia.m.yue@gmail.com wrote:
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Mon, Feb 07, 2022 at 09:34:51PM -0800, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> This patch allows user to select queue_mapping, range
-> from A to B. And user can use skbhash, cgroup classid
-> and cpuid to select Tx queues. Then we can load balance
-> packets from A to B queue. The range is an unsigned 16bit
-> value in decimal format.
+> ip[6]mr_free_table() can only be called under RTNL lock.
 > 
-> $ tc filter ... action skbedit queue_mapping skbhash A B
-> 
-> "skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit")
-> is enhanced with flags:
-> * SKBEDIT_F_TXQ_SKBHASH
-> * SKBEDIT_F_TXQ_CLASSID
-> * SKBEDIT_F_TXQ_CPUID
-> 
-> Use skb->hash, cgroup classid, or cpuid to distribute packets.
-> Then same range of tx queues can be shared for different flows,
-> cgroups, or CPUs in a variety of scenarios.
-> 
-> For example, F1 may share range R1 with F2. The best way to do
-> that is to set flag to SKBEDIT_F_TXQ_HASH, using skb->hash to
-> share the queues. If cgroup C1 want to share the R1 with cgroup
-> C2 .. Cn, use the SKBEDIT_F_TXQ_CLASSID. Of course, in some other
-> scenario, C1 use R1, while Cn can use the Rn.
-> 
+> RTNL: assertion failed at net/core/dev.c (10367)
+> WARNING: CPU: 1 PID: 5890 at net/core/dev.c:10367 unregister_netdevice_many+0x1246/0x1850 net/core/dev.c:10367
+> Modules linked in:
+> CPU: 1 PID: 5890 Comm: syz-executor.2 Not tainted 5.16.0-syzkaller-11627-g422ee58dc0ef #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:unregister_netdevice_many+0x1246/0x1850 net/core/dev.c:10367
+> Code: 0f 85 9b ee ff ff e8 69 07 4b fa ba 7f 28 00 00 48 c7 c6 00 90 ae 8a 48 c7 c7 40 90 ae 8a c6 05 6d b1 51 06 01 e8 8c 90 d8 01 <0f> 0b e9 70 ee ff ff e8 3e 07 4b fa 4c 89 e7 e8 86 2a 59 fa e9 ee
+> RSP: 0018:ffffc900046ff6e0 EFLAGS: 00010286
+> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> RDX: ffff888050f51d00 RSI: ffffffff815fa008 RDI: fffff520008dfece
+> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+> R10: ffffffff815f3d6e R11: 0000000000000000 R12: 00000000fffffff4
+> R13: dffffc0000000000 R14: ffffc900046ff750 R15: ffff88807b7dc000
+> FS:  00007f4ab736e700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007fee0b4f8990 CR3: 000000001e7d2000 CR4: 00000000003506e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  <TASK>
+>  mroute_clean_tables+0x244/0xb40 net/ipv6/ip6mr.c:1509
+>  ip6mr_free_table net/ipv6/ip6mr.c:389 [inline]
+>  ip6mr_rules_init net/ipv6/ip6mr.c:246 [inline]
+>  ip6mr_net_init net/ipv6/ip6mr.c:1306 [inline]
 
-So while i dont agree that ebpf is the solution for reasons i mentioned
-earlier - after looking at the details think iam confused by this change
-and maybe i didnt fully understand the use case.
+Isn't that new table still empty in this case? Which means
+mroute_clean_tables() should not actually unregister any netdevice??
 
-What is the driver that would work  with this?
-You said earlier packets are coming out of some pods and then heading to
-the wire and you are looking to balance and isolate between bulk and
-latency  sensitive traffic - how are any of these metadatum useful for
-that? skb->priority seems more natural for that.
+Should we just move that assertion after list empty check?
 
 
-cheers,
-jamal
-
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 909fb3815910..ff6e7d0074dd 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10359,11 +10359,11 @@ void unregister_netdevice_many(struct list_head *head)
+        LIST_HEAD(close_head);
+ 
+        BUG_ON(dev_boot_phase);
+-       ASSERT_RTNL();
+ 
+        if (list_empty(head))
+                return;
+ 
++       ASSERT_RTNL();
+        list_for_each_entry_safe(dev, tmp, head, unreg_list) {
+                /* Some devices call without registering
+                 * for initialization unwind. Remove those
 
