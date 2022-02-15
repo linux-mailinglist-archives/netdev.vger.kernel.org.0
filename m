@@ -2,145 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCB684B79B3
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 22:49:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBD494B79F8
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 22:51:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244450AbiBOViX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 16:38:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36768 "EHLO
+        id S239363AbiBOVvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 16:51:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243584AbiBOViV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 16:38:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A52F9E56B
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 13:38:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644961089;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=lw6VFDNDin3+pbk+tx5AobUrmHH/xqmLZ9mW+ngKQHA=;
-        b=b8jTXvwtJ5+Ua986iowvGdhZcXDa2QIsPJhkWmYNm3waE1tHdVtuuqFEi2uKpbxZ1kf28z
-        YplXuX/b6YemvF9aVDbSv9Dwn1Clay3ERqXJ+fkXedNS8iILG4ZhTE86n1NEt8M8I1H5QG
-        F8mGmHqfiwZMf9BgqyPVy7hPZlY0wB8=
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
- [209.85.167.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-325-uiGr85x2PoSV1w-_8Q3qSw-1; Tue, 15 Feb 2022 16:38:08 -0500
-X-MC-Unique: uiGr85x2PoSV1w-_8Q3qSw-1
-Received: by mail-oi1-f200.google.com with SMTP id bj38-20020a05680819a600b002d2f27f444fso198251oib.18
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 13:38:08 -0800 (PST)
+        with ESMTP id S234664AbiBOVvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 16:51:23 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31BC2D5F72;
+        Tue, 15 Feb 2022 13:51:13 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id m7so502396pjk.0;
+        Tue, 15 Feb 2022 13:51:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=mexl3os4BQqYiQV1Two8gyEZOIW76cOBbYjh80oXZRc=;
+        b=XuFSQmRrVV5aRBEPyP3BEPRjdy/3JQIe2BH9WIOfwaBRne8yld3renrqxEmMJh+ElN
+         vH1LuvUiyeSSIUfg2W//ST8J55qFhQIpj8nfzUVCjxjudsKcWDIE57FIepm0C+nSuupX
+         Sk7ADm8lFFtdQr54NfN2GZWNhRP4JD9eWnu2B81UbaykpWelj6gFC00T9Nby2fjW1x6P
+         yfdP8nvNXP1HstDUZ4vuQ6agbv38e2JApSEs6Ke/UwX0aKKn9lAUSCXUlX1sta3KSz4Q
+         /yj05EqV+MOM5OCXL51GHne6DBtDWb6/LdIj8NQ9rm7FLV/HixV+41W3yHIgSICVXDsU
+         lXcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=lw6VFDNDin3+pbk+tx5AobUrmHH/xqmLZ9mW+ngKQHA=;
-        b=57wer6rsrZ7H/GboGuG6aCRlqJlhSvja9GOQISWnEM7EOxKL92v6qprUkSJHZWKu94
-         sJlV2gmikBGdqYvMgbqglrBkscsepJx3mnmTGtlU74XJCqBZFpIQYll5i6tsp47bRJdZ
-         vbWcqSrT2FIeAOk37OvaPxq9R84K+DIeMYPvQYHuqNAaHyttRIqcMFcn99yZPM4B6G3p
-         RdA0fAzcGlQa436TV3CUfJGZn4+AzOPQxQ72Bs9ceO0lVhoVuSafNZPR6r+722THkGQZ
-         wZekSM3TE+A44eftymm19CTOyjBRq8/tcnHpXbAR0UpwyDJnSlOGzdgAEMTKlDHjuoaW
-         oP/Q==
-X-Gm-Message-State: AOAM533TQpa0WTsddXShA1KH2pNLbzx6gIDbNEJGIDa5bVrluXazD4CU
-        XDyFXuhWao2laYb9cIiWRHdD0hX6VYfR1lruO+xkpOz35jxm/oGKgEWT6oLSQN0FQGGSyOPvb8O
-        D8GSOnALcnlB6cGXT
-X-Received: by 2002:a05:6830:1493:: with SMTP id s19mr397257otq.85.1644961087405;
-        Tue, 15 Feb 2022 13:38:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxHMQprTXozHvAqtiU55fjLcSJcPyW6e11I36Ur5jnj6V1ImozP4x5z3TQW31gX7xF9l32RWg==
-X-Received: by 2002:a05:6830:1493:: with SMTP id s19mr397250otq.85.1644961087159;
-        Tue, 15 Feb 2022 13:38:07 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id u32sm10936990oiw.28.2022.02.15.13.38.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 13:38:06 -0800 (PST)
-From:   trix@redhat.com
-To:     joyce.ooi@intel.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] net: ethernet: altera: cleanup comments
-Date:   Tue, 15 Feb 2022 13:38:02 -0800
-Message-Id: <20220215213802.3043178-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        bh=mexl3os4BQqYiQV1Two8gyEZOIW76cOBbYjh80oXZRc=;
+        b=g9cU6rgy6MIUOu6UwbVjgUu4JQdjUJF4zDJDkVQKcgwRikvlhr/VXY02tcnX+RQwMQ
+         DQD1Mc9YQR2MTtXtT2+gjvxCG8F46ZsFM+qauUwtZY5F++6HdhUuyqw3f6tfHCuEXg5V
+         wQE6e2XYO4ElWl46B/PokDV5mqiIbtZOamAccDJbib47HnE6b+O0lNwxbsY0GHG57Z+Y
+         lZw340kEji4pb2uuuuSFsPWYCM8tnNNPdI0P9OQkeKQiF570VLJEJIrujXT10W1hivcp
+         FEMW+/L+BLjL6USSGffG15K6Ua9VajLJB1nHIRawzvzwbrg6Xl63t4O6kUTDACldnGZs
+         OzLg==
+X-Gm-Message-State: AOAM530LGeLh6Wh6WrggSmQvaRyRuRMnkqm3fIJ1NqdEMEM6DPnp5s2P
+        LxkaSuvZcTvYSpKJOkcaja4=
+X-Google-Smtp-Source: ABdhPJxQ/5GF4sBQCPRsKWvD0cB3cbEOz0QRM4q8OD13AysF+sxQaMhIkcxg5Bn3ML5+05shYbB8gQ==
+X-Received: by 2002:a17:90b:3e85:: with SMTP id rj5mr946051pjb.65.1644961872676;
+        Tue, 15 Feb 2022 13:51:12 -0800 (PST)
+Received: from [192.168.86.21] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id e4sm2230484pgr.35.2022.02.15.13.51.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 13:51:12 -0800 (PST)
+Message-ID: <8cb46dd1-c2eb-869a-0af8-443d84a83b85@gmail.com>
+Date:   Tue, 15 Feb 2022 13:51:10 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: 4 missing check bugs
+Content-Language: en-US
+To:     Jinmeng Zhou <jjjinmeng.zhou@gmail.com>, marcel@holtmann.org,
+        johan.hedberg@gmail.com, davem@davemloft.net,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        shenwenbosmile@gmail.com
+References: <CAA-qYXiUFi5atN8tGRdORbiGqWnbdquuAeKuwdpWSVFVO2FveA@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <CAA-qYXiUFi5atN8tGRdORbiGqWnbdquuAeKuwdpWSVFVO2FveA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
 
-Replacements:
-queueing to queuing
-trasfer to transfer
-aditional to additional
-adaptor to adapter
-transactino to transaction
+On 2/15/22 04:37, Jinmeng Zhou wrote:
+> Dear maintainers,
+>
+> Hi, our tool finds several missing check bugs on
+> Linux kernel v4.18.5 using static analysis.
+> We are looking forward to having more experts' eyes on this. Thank you!
+>
+> Before calling sk_alloc() with SOCK_RAW type,
+> there should be a permission check, ns_capable(ns,CAP_NET_RAW).
+> For example,
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/ethernet/altera/altera_sgdma.c    | 2 +-
- drivers/net/ethernet/altera/altera_tse_main.c | 8 ++++----
- 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/altera/altera_sgdma.c b/drivers/net/ethernet/altera/altera_sgdma.c
-index db97170da8c7..7f247ccbe6ba 100644
---- a/drivers/net/ethernet/altera/altera_sgdma.c
-+++ b/drivers/net/ethernet/altera/altera_sgdma.c
-@@ -513,7 +513,7 @@ static int sgdma_txbusy(struct altera_tse_private *priv)
- {
- 	int delay = 0;
- 
--	/* if DMA is busy, wait for current transactino to finish */
-+	/* if DMA is busy, wait for current transaction to finish */
- 	while ((csrrd32(priv->tx_dma_csr, sgdma_csroffs(status))
- 		& SGDMA_STSREG_BUSY) && (delay++ < 100))
- 		udelay(1);
-diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
-index 993b2fb42961..a3816264c35c 100644
---- a/drivers/net/ethernet/altera/altera_tse_main.c
-+++ b/drivers/net/ethernet/altera/altera_tse_main.c
-@@ -72,7 +72,7 @@ MODULE_PARM_DESC(dma_tx_num, "Number of descriptors in the TX list");
-  */
- #define ALTERA_RXDMABUFFER_SIZE	2048
- 
--/* Allow network stack to resume queueing packets after we've
-+/* Allow network stack to resume queuing packets after we've
-  * finished transmitting at least 1/4 of the packets in the queue.
-  */
- #define TSE_TX_THRESH(x)	(x->tx_ring_size / 4)
-@@ -390,7 +390,7 @@ static int tse_rx(struct altera_tse_private *priv, int limit)
- 				   "RCV pktstatus %08X pktlength %08X\n",
- 				   pktstatus, pktlength);
- 
--		/* DMA trasfer from TSE starts with 2 aditional bytes for
-+		/* DMA transfer from TSE starts with 2 additional bytes for
- 		 * IP payload alignment. Status returned by get_rx_status()
- 		 * contains DMA transfer length. Packet is 2 bytes shorter.
- 		 */
-@@ -1044,7 +1044,7 @@ static void altera_tse_set_mcfilterall(struct net_device *dev)
- 		csrwr32(1, priv->mac_dev, tse_csroffs(hash_table) + i * 4);
- }
- 
--/* Set or clear the multicast filter for this adaptor
-+/* Set or clear the multicast filter for this adapter
-  */
- static void tse_set_rx_mode_hashfilter(struct net_device *dev)
- {
-@@ -1064,7 +1064,7 @@ static void tse_set_rx_mode_hashfilter(struct net_device *dev)
- 	spin_unlock(&priv->mac_cfg_lock);
- }
- 
--/* Set or clear the multicast filter for this adaptor
-+/* Set or clear the multicast filter for this adapter
-  */
- static void tse_set_rx_mode(struct net_device *dev)
- {
--- 
-2.26.3
+v4.18 is not a stable kernel.
+
+No one is supposed to use v4.18.5, and expect others to fix bugs in it.
+
 
