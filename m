@@ -2,115 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B39B34B65CA
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 09:18:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2C674B65FA
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 09:24:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234908AbiBOIRM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 03:17:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45042 "EHLO
+        id S235415AbiBOIZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 03:25:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233692AbiBOIRL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 03:17:11 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50095811AB
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 00:17:02 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nJt0w-0004Wb-Ba; Tue, 15 Feb 2022 09:16:46 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nJt0v-0000QV-3a; Tue, 15 Feb 2022 09:16:45 +0100
-Date:   Tue, 15 Feb 2022 09:16:45 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        linux-samsung-soc@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-rpi-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Scott Branden <sbranden@broadcom.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, Shawn Guo <shawnguo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v3 5/8] ARM: dts: exynos: fix ethernet node name for
- different odroid boards
-Message-ID: <20220215081645.GD672@pengutronix.de>
-References: <20220215080937.2263111-1-o.rempel@pengutronix.de>
- <20220215080937.2263111-5-o.rempel@pengutronix.de>
- <20220215081240.hhie4niqnc5tuka2@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220215081240.hhie4niqnc5tuka2@pengutronix.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 09:13:37 up 66 days, 16:59, 71 users,  load average: 0.06, 0.15,
- 0.16
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S232487AbiBOIZE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 03:25:04 -0500
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F8C2B715F;
+        Tue, 15 Feb 2022 00:24:53 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V4XPoIJ_1644913490;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V4XPoIJ_1644913490)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 15 Feb 2022 16:24:51 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH net-next] net/smc: return ETIMEDOUT when smc_connect_clc() timeout
+Date:   Tue, 15 Feb 2022 16:24:50 +0800
+Message-Id: <1644913490-21594-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 09:12:40AM +0100, Marc Kleine-Budde wrote:
-> On 15.02.2022 09:09:34, Oleksij Rempel wrote:
-> > The node name of Ethernet controller should be "ethernet" instead of
-> > "usbether"
-> > 
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > ---
-> >  arch/arm/boot/dts/exynos4412-odroidu3.dts       | 4 ++--
-> >  arch/arm/boot/dts/exynos4412-odroidx.dts        | 8 ++++----
-> >  arch/arm/boot/dts/exynos5410-odroidxu.dts       | 4 ++--
-> >  arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts | 6 +++---
-> >  arch/arm/boot/dts/exynos5422-odroidxu3.dts      | 6 +++---
-> >  5 files changed, 14 insertions(+), 14 deletions(-)
-> > 
-> > diff --git a/arch/arm/boot/dts/exynos4412-odroidu3.dts b/arch/arm/boot/dts/exynos4412-odroidu3.dts
-> > index efaf7533e84f..36c369c42b77 100644
-> > --- a/arch/arm/boot/dts/exynos4412-odroidu3.dts
-> > +++ b/arch/arm/boot/dts/exynos4412-odroidu3.dts
-> > @@ -119,8 +119,8 @@ &ehci {
-> >  	phys = <&exynos_usbphy 2>, <&exynos_usbphy 3>;
-> >  	phy-names = "hsic0", "hsic1";
-> >  
-> > -	ethernet: usbether@2 {
-> > -		compatible = "usb0424,9730";
-> > +	ethernet: ethernet@2 {
-> > +		compatible = "usb424,9730";
-> 
-> The change of the compatible is not mentioned in the patch description.
-> Is this intentional?
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-No, I forgot to mentione it. According to the USB schema 0 should be
-removed. So, this compatible was incorrect as well. With leading zero
-present yaml schema was not able to detect and validate this node.
+When smc_connect_clc() times out, it will return -EAGAIN(tcp_recvmsg
+retuns -EAGAIN while timeout), then this value will passed to the
+application, which is quite confusing to the applications, makes
+inconsistency with TCP.
 
-Regards,
-Oleksij
+From the manual of connect, ETIMEDOUT is more suitable, and this patch
+try convert EAGAIN to ETIMEDOUT in that case.
+
+Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+---
+ net/smc/af_smc.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 246c874..38a4064 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -1372,8 +1372,14 @@ static int __smc_connect(struct smc_sock *smc)
+ 
+ 	/* perform CLC handshake */
+ 	rc = smc_connect_clc(smc, aclc2, ini);
+-	if (rc)
++	if (rc) {
++		/* -EAGAIN on timeout, see tcp_recvmsg() */
++		if (rc == -EAGAIN) {
++			rc = -ETIMEDOUT;
++			smc->sk.sk_err = ETIMEDOUT;
++		}
+ 		goto vlan_cleanup;
++	}
+ 
+ 	/* check if smc modes and versions of CLC proposal and accept match */
+ 	rc = smc_connect_check_aclc(ini, aclc);
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+1.8.3.1
+
