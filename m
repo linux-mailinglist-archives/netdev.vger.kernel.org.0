@@ -2,47 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFB074B6D78
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 14:31:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0B064B6D9E
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 14:36:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238300AbiBONbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 08:31:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57648 "EHLO
+        id S236432AbiBONfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 08:35:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236089AbiBONbF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 08:31:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 351A2106B0E;
-        Tue, 15 Feb 2022 05:30:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7BBEB819C7;
-        Tue, 15 Feb 2022 13:30:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2847C340EB;
-        Tue, 15 Feb 2022 13:30:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644931852;
-        bh=SGwiNnAFsMNuAXfkYvqfCtWSIiMbagOqHSBujmw9Ntc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NC/gbd/rINWKSV+WAACc5+rd5EBgu251vktYAYJE86giJTlrvUEtxbtniVnOv5civ
-         7Z/Ht4DtxAnne6YZnTGvZ5I2ix7SwPiH4ybM3Zj+U2a4H+86i97Qw2RC1R2NVMuht2
-         x1T/UOC2JnehTeow5jlKbZ+ObAZdxb8p1gc/FduY=
-Date:   Tue, 15 Feb 2022 14:30:49 +0100
-From:   Greg KH <gregKH@linuxfoundation.org>
-To:     Oliver Neukum <oneukum@suse.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] CDC-NCM: avoid overflow in sanity checking
-Message-ID: <YgurCSqIL/VkaBmR@kroah.com>
-References: <20220215103547.29599-1-oneukum@suse.com>
+        with ESMTP id S229445AbiBONfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 08:35:15 -0500
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7BF106CAA;
+        Tue, 15 Feb 2022 05:35:05 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id DFBE05C02F4;
+        Tue, 15 Feb 2022 08:35:01 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Tue, 15 Feb 2022 08:35:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=MqEd8VO3pWd8SQKjx
+        AoofoUTvP3sevVVpQLDzXC7wFE=; b=Pz+oyQxsNY3rMYGN2rUE8Q/ggVHBOL389
+        VPPg6q4vxv1/NB5s1IFK6IvK2F+gN0mYWxciGiORo9QCBfL0QKdQYw8zpwcLA/Rm
+        ylmUHvu1g2dUrtWoV+1lgT7RRyTZQ6azCc9MdwAHuZ2wc2cf+kHZUa7mTSBFp+GR
+        QsPA1yuwLoOjlRAtIGlBJ77vnBKyhZjXKLdDhOq4hnyWxikoK+2Gt629AWMdWIpM
+        0eYF6pV/gVz+TWla6ocFX0uQmny1P6BLnzxpoYsrgC8UPFQglhULmRvQgznaKB8z
+        SFDnWqphhZyOYmCap08dwCoA1V+6OIdYcfiMgqv6g6xVbGJ1V2t3A==
+X-ME-Sender: <xms:BawLYo8EBx_jRMog3T9Tku2muQqLbSNNt3FaxQgq6Z32GDmK9IeyHQ>
+    <xme:BawLYguH3wH-v6UxtDi3bkVE50PY2g_2vfnubMsL1-wx8h5Yy376Mxcg5N4ozyjXZ
+    ZMns7PWJcvytao>
+X-ME-Received: <xmr:BawLYuC5BJ9tjNWxVBJ23BRLkX5_SwV-0M8RuAR7BjDtYnMPkhrIEB3hFQh4hKm3J9z9A-VkM7qFZx6nvp5Q2fg9T5g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjeeggdehvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:BawLYofQZdPdGm9tAINYRMvAUBRKNSvuje8rRXxQ9TbLCN3NgZV8Hg>
+    <xmx:BawLYtPXagadaZzZEWEehaICbtHMD-Xy9X1A4EkV7QwoKbzH9QNe9w>
+    <xmx:BawLYikT0Cq0yQdHvAXwiXov_1cLxd37o7hPC6WdCx-kTpTSIDn0YA>
+    <xmx:BawLYg0LCk-IXsQ-uwquKCqS1k7Lqc-586uGuwIyXndR2B10mq-Ekg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 15 Feb 2022 08:35:00 -0500 (EST)
+Date:   Tue, 15 Feb 2022 15:34:56 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Cc:     netdev@vger.kernel.org, Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: bridge: multicast: notify switchdev driver whenever
+ MC processing gets disabled
+Message-ID: <YgusADHmOIwQiI3a@shredder>
+References: <20220211131426.5433-1-oleksandr.mazur@plvision.eu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220215103547.29599-1-oneukum@suse.com>
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <20220211131426.5433-1-oleksandr.mazur@plvision.eu>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,51 +74,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 11:35:47AM +0100, Oliver Neukum wrote:
-> A broken device may give an extreme offset like 0xFFF0
-> and a reasonable length for a fragment. In the sanity
-> check as formulated now, this will create an integer
-> overflow, defeating the sanity check. Both offset
-> and offset + len need to be checked in such a manner
-> that no overflow can occur.
-> And those quantities should be unsigned.
+On Fri, Feb 11, 2022 at 03:14:26PM +0200, Oleksandr Mazur wrote:
+> Whenever bridge driver hits the max capacity of MDBs, it disables
+> the MC processing (by setting corresponding bridge option), but never
+> notifies switchdev about such change (the notifiers are called only upon
+> explicit setting of this option, through the registered netlink interface).
 > 
-> Signed-off-by: Oliver Neukum <oneukum@suse.com>
+> This could lead to situation when Software MDB processing gets disabled,
+> but this event never gets offloaded to the underlying Hardware.
+> 
+> Fix this by adding a notify message in such case.
+> 
+> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 > ---
->  drivers/net/usb/cdc_ncm.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+>  net/bridge/br_multicast.c | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
-> diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-> index e303b522efb5..15f91d691bba 100644
-> --- a/drivers/net/usb/cdc_ncm.c
-> +++ b/drivers/net/usb/cdc_ncm.c
-> @@ -1715,10 +1715,10 @@ int cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in)
->  {
->  	struct sk_buff *skb;
->  	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
-> -	int len;
-> +	unsigned int len;
->  	int nframes;
->  	int x;
-> -	int offset;
-> +	unsigned int offset;
->  	union {
->  		struct usb_cdc_ncm_ndp16 *ndp16;
->  		struct usb_cdc_ncm_ndp32 *ndp32;
-> @@ -1790,8 +1790,8 @@ int cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in)
->  			break;
->  		}
+> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+> index de2409889489..d53c08906bc8 100644
+> --- a/net/bridge/br_multicast.c
+> +++ b/net/bridge/br_multicast.c
+> @@ -82,6 +82,9 @@ static void br_multicast_find_del_pg(struct net_bridge *br,
+>  				     struct net_bridge_port_group *pg);
+>  static void __br_multicast_stop(struct net_bridge_mcast *brmctx);
 >  
-> -		/* sanity checking */
-> -		if (((offset + len) > skb_in->len) ||
-> +		/* sanity checking - watch out for integer wrap*/
-> +		if ((offset > skb_in->len) || (len > skb_in->len - offset) ||
->  				(len > ctx->rx_max) || (len < ETH_HLEN)) {
->  			netif_dbg(dev, rx_err, dev->net,
->  				  "invalid frame detected (ignored) offset[%u]=%u, length=%u, skb=%p\n",
-> -- 
-> 2.34.1
-> 
+> +static int br_mc_disabled_update(struct net_device *dev, bool value,
+> +				 struct netlink_ext_ack *extack);
+> +
+>  static struct net_bridge_port_group *
+>  br_sg_port_find(struct net_bridge *br,
+>  		struct net_bridge_port_group_sg_key *sg_p)
+> @@ -1156,6 +1159,8 @@ struct net_bridge_mdb_entry *br_multicast_new_group(struct net_bridge *br,
+>  		return mp;
+>  
+>  	if (atomic_read(&br->mdb_hash_tbl.nelems) >= br->hash_max) {
+> +		err = br_mc_disabled_update(br->dev, false, NULL);
+> +		WARN_ON(err && err != -EOPNOTSUPP);
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: stable <stable@vger.kernel.org>
+What is the purpose of the WARN_ON()? There are a lot of operations that
+can fail in rollback paths, but we never WARN_ON() there
+
+I suggest:
+
+br_mc_disabled_update(br->dev, false, NULL);
+
+>  		br_opt_toggle(br, BROPT_MULTICAST_ENABLED, false);
+>  		return ERR_PTR(-E2BIG);
+>  	}
+> -- 
+> 2.17.1
+> 
