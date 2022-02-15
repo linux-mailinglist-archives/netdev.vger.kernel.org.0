@@ -2,63 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62A114B6BD0
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 13:14:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A2584B6C0A
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 13:30:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237555AbiBOMPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 07:15:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51792 "EHLO
+        id S237584AbiBOMaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 07:30:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232311AbiBOMO7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 07:14:59 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EEBF1074C8;
-        Tue, 15 Feb 2022 04:14:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Bs8klJwTLBDrvOVFtUAi+wX0579+9qYln0qvbgucQxU=; b=kNOkfgULpIWj99EbMjYsAtK/ER
-        2k8hgD8HcmXdPG/f5f3jKawpdoJTKDOVK/fBPHAmX0FOID7w5KbFJ1N+MqhLEuobMCJsNX4OqK1Y3
-        SLmZwN/EJ4YBUxE91kezOy2wVEvqO+rDmTfL4ScUoJX+UNn5+yMEJhXzD3UaWfUwanJw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nJwj3-00655L-Hw; Tue, 15 Feb 2022 13:14:33 +0100
-Date:   Tue, 15 Feb 2022 13:14:33 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alexey Khoroshilov <khoroshilov@ispras.ru>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
-Subject: Re: [PATCH] net: dsa: lantiq_gswip: fix use after free in
- gswip_remove()
-Message-ID: <YguZKd6F2CNWdhLX@lunn.ch>
-References: <1644921768-26477-1-git-send-email-khoroshilov@ispras.ru>
+        with ESMTP id S236596AbiBOMaX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 07:30:23 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43939107D13
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 04:30:14 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id j12so33277277ybh.8
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 04:30:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=nEBxpoV3vW03GgpeF1rAwShLZRERiYrr7ByXykQZSfs=;
+        b=RJvB+MV89/fr68L9OlFOHxWNuuNdAJVHUd6ra3iXeOXfO139tUe4omuldWiKrmIe8l
+         6hm8o9mZOY6WwJX1u3c3ttd2oAHjBCTpz/7ID37MJjsm/LeQfydS6jSmf/pR101otcOR
+         DyW/8k9qI9NT3KN6TixFplrDcYGG9uKhk1AxqapKmFXulDgkLxOd21MBG9QtRlp/LK2D
+         v9CBznuYGTQZGkN0yj2Ta5KxA1IfcmTv5YOhm/RjFSk6YA6cN3LZK/6/xbj3F/r5HN1Y
+         uvR0DEW5wE21jVrdIUqj7/blL4NIx+ECR2ieMvknAn/9SgmRgxtylGUh2YoT0IAYOsF/
+         R+2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=nEBxpoV3vW03GgpeF1rAwShLZRERiYrr7ByXykQZSfs=;
+        b=kNGOhUifAJDZ2FJGxQKLw9wh79OniIJ0+GUWioSV/0c7GKsGVzt5XihGAG+bxqrd0w
+         JLbJcJOVRPCYQuEoYLZBgpb7QdkcIKPcWHI1mPqZJnLbKjbu7a7G51W5E+3G/+xMKy9b
+         S23qK/X5xMudT2wMfd2JYZ5KsNXrVabS7dy6b375dQfeY3zzKy2fV7waBr3QH9V2qlXM
+         XQ6LU6+kaKoO4E/bqkRFmu8DbAQLU3ndH+WLc3arPldE3/LiFMuhUK0a4p5fRMoM8Y/8
+         EWcukxl2uTum2hm/JWu9rE/TKg1idk6zXpSTQr1eydX4sTM8pgi4lhNldJ/fgO5v6mO5
+         oXsA==
+X-Gm-Message-State: AOAM533VX+8pUFnI0iTqAGzxBB9fPXb2f1xHWxWeb4h20eS8Fku5aKUI
+        yVghrE1ftJ3CI01evb3WTrHTaNWCH/sWLFwsvg==
+X-Google-Smtp-Source: ABdhPJwOWvSx1LSgKj3bhUacKIlG5024X/lL1/STrqEKIR0LUlvUJ4m2oZR/LtAWJe56Dtj8BU/kNnaxWfloJpLn1RA=
+X-Received: by 2002:a81:a7c7:: with SMTP id e190mr3490796ywh.244.1644928213447;
+ Tue, 15 Feb 2022 04:30:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1644921768-26477-1-git-send-email-khoroshilov@ispras.ru>
+From:   Jinmeng Zhou <jjjinmeng.zhou@gmail.com>
+Date:   Tue, 15 Feb 2022 20:30:02 +0800
+Message-ID: <CAA-qYXgrcXsgHMoDyTR74bryDsofzPajTfT6WZHGH-vaDixDwA@mail.gmail.com>
+Subject: A missing check bug and an inconsistent check bug
+To:     isdn@linux-pingi.de, Jakub Kicinski <kuba@kernel.org>,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, shenwenbosmile@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 01:42:48PM +0300, Alexey Khoroshilov wrote:
-> of_node_put(priv->ds->slave_mii_bus->dev.of_node) should be
-> done before mdiobus_free(priv->ds->slave_mii_bus).
-> 
-> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-> Fixes: 0d120dfb5d67 ("net: dsa: lantiq_gswip: don't use devres for mdiobus")
+Dear maintainers,
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Hi, our tool finds a missing check bug(v4.18.5),
+and an inconsistent check bug (v5.10.7) using static analysis.
+We are looking forward to having more experts' eyes on this. Thank you!
 
-    Andrew
+Before calling sk_alloc() with SOCK_RAW type,
+there should be a permission check, ns_capable(ns,CAP_NET_RAW).
+
+In kernel v4.18.5, there is no check in base_sock_create().
+However, v5.10.7 adds a check.  (1) So is it a missing check bug?
+
+drivers/isdn/mISDN/socket.c (v4.18.5)
+static int
+base_sock_create(struct net *net, struct socket *sock, int protocol, int kern)
+{
+struct sock *sk;
+
+if (sock->type != SOCK_RAW)
+return -ESOCKTNOSUPPORT;
+
+sk = sk_alloc(net, PF_ISDN, GFP_KERNEL, &mISDN_proto, kern);
+if (!sk)
+return -ENOMEM;
+...
+}
+
+
+In kernel v5.10.7, a check is added in the same function,
+base_sock_create(), which is not ns-aware. (2) Should it use ns_capable()?
+
+drivers/isdn/mISDN/socket.c (v5.10.7)
+static int
+base_sock_create(struct net *net, struct socket *sock, int protocol, int kern)
+{
+struct sock *sk;
+
+if (sock->type != SOCK_RAW)
+return -ESOCKTNOSUPPORT;
+if (!capable(CAP_NET_RAW))
+return -EPERM;
+
+sk = sk_alloc(net, PF_ISDN, GFP_KERNEL, &mISDN_proto, kern);
+if (!sk)
+return -ENOMEM;
+...
+}
+
+
+Thanks again!
+
+
+Best regards,
+Jinmeng Zhou
