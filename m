@@ -2,151 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32C204B646C
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 08:34:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C61E4B64EE
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 09:00:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234845AbiBOHe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 02:34:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53260 "EHLO
+        id S235045AbiBOIAx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 15 Feb 2022 03:00:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233661AbiBOHe3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 02:34:29 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA949119434
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 23:34:18 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nJsLZ-0005U6-Cc; Tue, 15 Feb 2022 08:34:01 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nJsLW-00GhvR-Dz; Tue, 15 Feb 2022 08:33:57 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nJsLV-003I02-1a; Tue, 15 Feb 2022 08:33:57 +0100
-Date:   Tue, 15 Feb 2022 08:33:48 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Mark Brown <broonie@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Joseph CHAMG <josright123@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the spi tree
-Message-ID: <20220215073348.i5lkvd4ny46ecnzh@pengutronix.de>
-References: <20220215130858.2b821de7@canb.auug.org.au>
+        with ESMTP id S235011AbiBOIAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 03:00:48 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DBF313E1B;
+        Tue, 15 Feb 2022 00:00:38 -0800 (PST)
+Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JyYLg2SbYz67ts3;
+        Tue, 15 Feb 2022 15:56:11 +0800 (CST)
+Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
+ fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Feb 2022 09:00:35 +0100
+Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
+ fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2308.021;
+ Tue, 15 Feb 2022 09:00:35 +0100
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     Mimi Zohar <zohar@linux.ibm.com>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        Florent Revest <revest@chromium.org>
+CC:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] ima: Calculate digest in ima_inode_hash() if not
+ available
+Thread-Topic: [PATCH] ima: Calculate digest in ima_inode_hash() if not
+ available
+Thread-Index: AQHYHzTu9kKzqhEAHUiW0cSG9MzvPayRZbiAgAHZaqCAAFdHgIAArm+A
+Date:   Tue, 15 Feb 2022 08:00:34 +0000
+Message-ID: <311b5d0b3b824c548a4032a76a408944@huawei.com>
+References: <20220211104828.4061334-1-roberto.sassu@huawei.com>
+         <537635732d9cbcc42bcf7be5ed932d284b03d39f.camel@linux.ibm.com>
+         <cc6bcb7742dc432ba990ee38b5909496@huawei.com>
+ <36f85113f181f78eda3576823bd92be3f9cd1802.camel@linux.ibm.com>
+In-Reply-To: <36f85113f181f78eda3576823bd92be3f9cd1802.camel@linux.ibm.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.204.63.33]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="u4m62lh54wtt4to2"
-Content-Disposition: inline
-In-Reply-To: <20220215130858.2b821de7@canb.auug.org.au>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> From: Mimi Zohar [mailto:zohar@linux.ibm.com]
+> Sent: Monday, February 14, 2022 11:33 PM
+> On Mon, 2022-02-14 at 17:05 +0000, Roberto Sassu wrote:
+> > > From: Mimi Zohar [mailto:zohar@linux.ibm.com]
+> > > Sent: Sunday, February 13, 2022 2:06 PM
+> > > Hi Roberto,
+> > >
+> > > On Fri, 2022-02-11 at 11:48 +0100, Roberto Sassu wrote:
+> > > > __ima_inode_hash() checks if a digest has been already calculated by
+> > > > looking for the integrity_iint_cache structure associated to the passed
+> > > > inode.
+> > > >
+> > > > Users of ima_file_hash() and ima_inode_hash() (e.g. eBPF) might be
+> > > > interested in obtaining the information without having to setup an IMA
+> > > > policy so that the digest is always available at the time they call one of
+> > > > those functions.
+> > > >
+> > > > Open a new file descriptor in __ima_inode_hash(), so that this function
+> > > > could invoke ima_collect_measurement() to calculate the digest if it is not
+> > > > available. Still return -EOPNOTSUPP if the calculation failed.
+> > > >
+> > > > Instead of opening a new file descriptor, the one from ima_file_hash()
+> > > > could have been used. However, since ima_inode_hash() was created to
+> > > obtain
+> > > > the digest when the file descriptor is not available, it could benefit from
+> > > > this change too. Also, the opened file descriptor might be not suitable for
+> > > > use (file descriptor opened not for reading).
+> > > >
+> > > > This change does not cause memory usage increase, due to using a
+> temporary
+> > > > integrity_iint_cache structure for the digest calculation, and due to
+> > > > freeing the ima_digest_data structure inside integrity_iint_cache before
+> > > > exiting from __ima_inode_hash().
+> > > >
+> > > > Finally, update the test by removing ima_setup.sh (it is not necessary
+> > > > anymore to set an IMA policy) and by directly executing /bin/true.
+> > > >
+> > > > Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+> > >
+> > > Although this patch doesn't directly modify either ima_file_hash() or
+> > > ima_inode_hash(),  this change affects both functions.  ima_file_hash()
+> > > was introduced to be used with eBPF.  Based on Florent's post, changing
+> > > the ima_file_hash() behavor seems fine.  Since I have no idea whether
+> > > anyone is still using ima_inode_hash(), perhaps it would be safer to
+> > > limit this behavior change to just ima_file_hash().
+> >
+> > Hi Mimi
+> >
+> > ok.
+> >
+> > I found that just checking that iint->ima_hash is not NULL is not enough
+> > (ima_inode_hash() might still return the old digest after a file write).
+> > Should I replace that check with !(iint->flags & IMA_COLLECTED)?
+> > Or should I do only for ima_file_hash() and recalculate the digest
+> > if necessary?
+> 
+> Updating the file hash after each write would really impact IMA
+> performance.  If you really want to detect any file change, no matter
+> how frequently it occurs, your best bet would be to track i_generation
+> and i_version.  Stefan is already adding "i_generation" for IMA
+> namespacing.
 
---u4m62lh54wtt4to2
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I just wanted the ability to get a fresh digest after a file opened
+for writing is closed. Since in my use case I would not use an IMA
+policy, that would not be a problem.
 
-Hello,
+Thanks
 
-On Tue, Feb 15, 2022 at 01:08:58PM +1100, Stephen Rothwell wrote:
-> Hi all,
->=20
-> After merging the spi tree, today's linux-next build (x86_64 allmodconfig)
-> failed like this:
->=20
-> drivers/net/ethernet/davicom/dm9051.c:1253:19: error: initialization of '=
-void (*)(struct spi_device *)' from incompatible pointer type 'int (*)(stru=
-ct spi_device *)' [-Werror=3Dincompatible-pointer-types]
->  1253 |         .remove =3D dm9051_drv_remove,
->       |                   ^~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/davicom/dm9051.c:1253:19: note: (near initialization=
- for 'dm9051_driver.remove')
->=20
-> Caused by commit
->=20
->   a0386bba7093 ("spi: make remove callback a void function")
->=20
-> interacting with commit
->=20
->   2dc95a4d30ed ("net: Add dm9051 driver")
->=20
-> from the net-next tree.
->=20
-> I applied the following merge resolution and can carry it until the
-> trees are merged.
->=20
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Tue, 15 Feb 2022 13:05:41 +1100
-> Subject: [PATCH] fix up for "pi: make remove callback a void function"
+Roberto
 
-s/"p/"sp/
+HUAWEI TECHNOLOGIES Duesseldorf GmbH, HRB 56063
+Managing Director: Li Peng, Zhong Ronghua
 
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->  drivers/net/ethernet/davicom/dm9051.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/davicom/dm9051.c b/drivers/net/ethernet=
-/davicom/dm9051.c
-> index cee3ff499fd4..d2513c97f83e 100644
-> --- a/drivers/net/ethernet/davicom/dm9051.c
-> +++ b/drivers/net/ethernet/davicom/dm9051.c
-> @@ -1223,15 +1223,13 @@ static int dm9051_probe(struct spi_device *spi)
->  	return 0;
->  }
-> =20
-> -static int dm9051_drv_remove(struct spi_device *spi)
-> +static void dm9051_drv_remove(struct spi_device *spi)
->  {
->  	struct device *dev =3D &spi->dev;
->  	struct net_device *ndev =3D dev_get_drvdata(dev);
->  	struct board_info *db =3D to_dm9051_board(ndev);
-> =20
->  	phy_disconnect(db->phydev);
-> -
-> -	return 0;
->  }
-> =20
->  static const struct of_device_id dm9051_match_table[] =3D {
+> > > Please update the ima_file_hash() doc.  While touching this area, I'd
+> > > appreciate your fixing the first doc line in both ima_file_hash() and
+> > > ima_inode_hash() cases, which wraps spanning two lines.
+> >
+> > Did you mean to make the description shorter or to have everything
+> > in one line? According to the kernel documentation (kernel-doc.rst),
+> > having the brief description in multiple lines should be fine.
+> 
+> Thanks for checking kernel-doc.   The "brief description"  not wrapping
+> across multiple lines did in fact change.
+> 
+> > > Please split the IMA from the eBPF changes.
+> >
+> > Ok.
+> 
+> --
+> thanks,
+> 
+> Mimi
 
-The patch looks right, thanks.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---u4m62lh54wtt4to2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmILV1kACgkQwfwUeK3K
-7AkEpAf+Pmr//MLYtKY++zlkbzlGqWAxEK1/8EYe0liDe9XWk4EB0d2VEyJTSzb9
-dcYjnq9s7lCZVDEhbcKtiD2kA6AeVQpuvTqyKXuP5dFzR6FyEAlA6dbo4q13pZ8R
-jW0M2+AT789xrXMPg45hUxDcq8rW8spp6xEGODIJA+0MANi9lZksbh8NwCMNBomg
-hBMuPAhDMaUP+EkOqbIFYLz/Md59k9ezDsytnvVNWWkfeezTl2XDcZEz4hOW8MEM
-3rD9/97Y1zA7mJsJ6XMxkaM01wGkiVshtoGP16vuDLUZF1InbAMfgfx16svjBvw3
-uBSGSn5nVUvZwkz7MsjH5hXhUIzyUg==
-=h7Il
------END PGP SIGNATURE-----
-
---u4m62lh54wtt4to2--
