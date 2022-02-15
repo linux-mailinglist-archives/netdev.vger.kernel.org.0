@@ -2,98 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C70A4B773F
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:50:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62B3A4B75F0
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:48:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243659AbiBOTZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 14:25:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58104 "EHLO
+        id S241185AbiBOTm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 14:42:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230290AbiBOTY6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 14:24:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79308566E;
-        Tue, 15 Feb 2022 11:24:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 513F3617CB;
-        Tue, 15 Feb 2022 19:24:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8127AC340EB;
-        Tue, 15 Feb 2022 19:24:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644953086;
-        bh=kUCZYr9eynBGfoyFNpGztKhdR0TjeWfPR20goAdEojo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pgheRwOAKjRlXMfJul10RwEjs5CBKHR/i0QEhyIM79774uc0ovg3u5myvyhB8s/qu
-         xkZdoun6Ve/NuXn1+qZDB9F/trYlid+yq9euKiwm3PP7bJ4zoGvDfPTjgfeWCzsH6f
-         Z5GtGABFqXnkSAxbAOokUuetZQuukvg8GogLN1PAUilOeXNWgORbaiYjI/aeCr++5W
-         YWvZj7f6KVH+xfahOEVmZaopl52rdr1jj6eaQg39ut/UgM8cVQWsEKIq8K1eRZzAAa
-         TaPAe7uN1AmbZCmz+9XMV8T/S9ihvGxGOcJfBqdWD8uwk44Sq4S7ITZBKug7wSeC6N
-         S7tHpNRHJfaSA==
-Date:   Tue, 15 Feb 2022 13:32:21 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        GR-QLogic-Storage-Upstream@marvell.com,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        linux-crypto@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org, mpi3mr-linuxdrv.pdl@broadcom.com,
-        linux-staging@lists.linux.dev,
-        linux-rpi-kernel@lists.infradead.org, sparmaintainer@unisys.com,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-ext4@vger.kernel.org, linux-acpi@vger.kernel.org,
-        devel@acpica.org, linux-arch@vger.kernel.org, linux-mm@kvack.org,
-        greybus-dev@lists.linaro.org, linux-i3c@lists.infradead.org,
-        linux-rdma@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] treewide: Replace zero-length arrays with
- flexible-array members
-Message-ID: <20220215193221.GA884407@embeddedor>
-References: <20220215174743.GA878920@embeddedor>
- <202202151016.C0471D6E@keescook>
- <20220215192110.GA883653@embeddedor>
- <Ygv8wY75hNqS7zO6@unreal>
+        with ESMTP id S229495AbiBOTm1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 14:42:27 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79E21B7B9
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 11:42:16 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id b20so47966ljf.7
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 11:42:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=scBaLfaGLWYYxtrlYU1JbIy2UJbbECdZygDHVPbgRRk=;
+        b=lJP1yVdHufaCOzEkkjwdzlhxcctxP39rYiSDo8a2MXhB+GgPvhgLw6MCHYH5T5t/FQ
+         nSpEnu9AuwpaiPiMgurzncCC3pIY50Fi/JoIzF71JmdI/CidTfrdaU+afI49C2/z/4we
+         YnGAyB1qCVxghAFklVWc/ZYuUMF2Z3ATE/ENZqt1LKRrVZfmyMQuwGD2MSyFKI6Zo7gm
+         Tsk61FxSAYjYAkDX31UTXa4uG+wyyh5QqcCdsgVR3zst/tkoYtVgN+33IDZLfTwBYBFb
+         YHXOYNoumFJw50NPD1yysElaq4kVymT98hLvV4fLbfweVhc2S/NE2TER+lDvYSvPeqZo
+         mohA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=scBaLfaGLWYYxtrlYU1JbIy2UJbbECdZygDHVPbgRRk=;
+        b=q+UBe8XJcY1plTU6T1kQCM4cIp8dTtH1PLeBHDauCZ+DB9P8db3gDZhw/HeY1emtIR
+         PsqiOcOP3qgppmQ2dG5RXbCyGZKtLIpgsPX1GSnIG5jDNSdaZQBsUZJUaounH1ohUmvb
+         ymqnMZWDsanG8fVqNEwF3jAwKQXN4gCyhJ5NEMUzJA2sV1owofM10BeyWBQnrUIVcvSo
+         Fo+1nJ92Epm1Z2mVdX0ZvTGyEtEWhv+6dYSb8nzECE6kDBqfTHNGugGMXls9yjZtwhGl
+         X+gScaAT+5FoFNvsC1impaoQCbhyYT2nWUurhHkwE4GO+RcVMzoKa7ZRqy8R6V4N2dmS
+         eWbw==
+X-Gm-Message-State: AOAM531SpRDJqn0aA1bqAJlZw/lBd/Mm8BdF5fIohYpEftdHrIat3h4N
+        Yz3yHKTTSp+nTHrgqBseF4inOMZYGr41qj2hLGrcB+txN+Y=
+X-Google-Smtp-Source: ABdhPJzfSSA3stmYRDtGVr8aeAPeZeLZIDE3WmXVsx/LCmKZBtGQxbOB8RdUyWAPezYun7pq/C1CNTW4pBuvRhLj2Hg=
+X-Received: by 2002:a05:651c:2121:: with SMTP id a33mr426220ljq.220.1644954134959;
+ Tue, 15 Feb 2022 11:42:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ygv8wY75hNqS7zO6@unreal>
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220214175138.2902947-1-trix@redhat.com> <daabe69d3863caa62f7874a472edbf2bc892d99e.camel@codeconstruct.com.au>
+ <6590666e-524d-51c3-0859-f8bf0c43c5ca@redhat.com>
+In-Reply-To: <6590666e-524d-51c3-0859-f8bf0c43c5ca@redhat.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 15 Feb 2022 11:42:03 -0800
+Message-ID: <CAKwvOd=ntKk7PwtYKWCV_44nf9ccCVDKiGJk_wB4yqfvPFDUbw@mail.gmail.com>
+Subject: Re: [PATCH] mctp: fix use after free
+To:     Tom Rix <trix@redhat.com>, Jeremy Kerr <jk@codeconstruct.com.au>
+Cc:     matt@codeconstruct.com.au, davem@davemloft.net, kuba@kernel.org,
+        nathan@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 09:19:29PM +0200, Leon Romanovsky wrote:
-> On Tue, Feb 15, 2022 at 01:21:10PM -0600, Gustavo A. R. Silva wrote:
-> > On Tue, Feb 15, 2022 at 10:17:40AM -0800, Kees Cook wrote:
-> > > On Tue, Feb 15, 2022 at 11:47:43AM -0600, Gustavo A. R. Silva wrote:
-> > > 
-> > > These all look trivially correct to me. Only two didn't have the end of
-> > > the struct visible in the patch, and checking those showed them to be
-> > > trailing members as well, so:
-> > > 
-> > > Reviewed-by: Kees Cook <keescook@chromium.org>
-> > 
-> > I'll add this to my -next tree.
-> 
-> I would like to ask you to send mlx5 patch separately to netdev. We are working
-> to delete that file completely and prefer to avoid from unnecessary merge conflicts.
+On Mon, Feb 14, 2022 at 6:16 PM Tom Rix <trix@redhat.com> wrote:
+>
+>
+> On 2/14/22 4:44 PM, Jeremy Kerr wrote:
+> > Hi Tom,
+> >
+> > Also, can you share how you're doing the clang static analysis there?
+> > I'll get that included in my checks too.
+>
+> build clang, then use it
+>
+> scan-build \
+>      --use-cc=clang \
+>      make CC=clang
 
-Oh OK. Sure thing; I will do so.
+I'm pretty sure we have a make target in Kbuild, too. It uses
+clang-tidy as the driver, as clang-tidy can do BOTH the static
+analyses AND clang-tidy checks.
 
-Thanks
---
-Gustavo
+$ make LLVM=1 all clang-analyzer
+
+>
+> There are a couple of configs that aren't happy with clang, these you
+> can sed away with
+>
+> sed -e 's/CONFIG_FRAME_WARN=2048/CONFIG_FRAME_WARN=0/;
+> s/CONFIG_RETPOLINE=y/CONFIG_RETPOLINE=n/;
+> s/CONFIG_READABLE_ASM=y/CONFIG_READABLE_ASM=n/;
+> s/CONFIG_FORTIFY_SOURCE=y/CONFIG_FORTIFY_SOURCE=n/'
+>
+> I am using clang 14
+
+-- 
+Thanks,
+~Nick Desaulniers
