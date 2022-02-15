@@ -2,189 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 219614B7AF2
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 23:59:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C26D24B7B3E
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 00:31:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244773AbiBOXAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 18:00:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36046 "EHLO
+        id S244814AbiBOXb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 18:31:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244735AbiBOW7v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 17:59:51 -0500
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD1AE3891
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:59:41 -0800 (PST)
-Received: by mail-qv1-xf2a.google.com with SMTP id e22so542727qvf.9
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:59:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=00kNnbEYq6tbiMxdi0KoXmVdKHxRLF0dsYFQaPX8gPo=;
-        b=A5aSlT2CSqucv5QjkGQUWHdoFjjo2yp1qByI2Qx5bXmPZ1rs2UjMc2X2khbQuloVP4
-         G+zGwR0dSH0c+UeowRSsl+SJbk1IravS6GP8jL4/ru/Jgi/SaW58+BeOKE3NIFOqHeQH
-         PLfSujzgpcX3uNmrE0EnHf4Al2sTPY0AP0ULE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=00kNnbEYq6tbiMxdi0KoXmVdKHxRLF0dsYFQaPX8gPo=;
-        b=kl7tX2QSC9PP/sjVJeKJsFTRtXHfbOQ9XtLWaga1vt3j2hytTs27uE0N9JtFHifFd5
-         GDAiFPocOF+w34wN0cYI9P87RB33sxwzNm3QS4V86FsB9Pds+Z28KSspML6CF5LVf6Tq
-         Se5eQr8W8lrfH1m7tc47c5p2rCsca5MKo/ml9DPiwn2U1CtschGS+zvDZTOLxmLzqhdW
-         Nk1XjeRI3gpFmKJSwxNvtilOi87fb9tfWUC1J0ZlXs5Yu3QfqvBuxRPtg+3KDRgTMo9l
-         c6pfRNzy3I77mtpRwe5qAtZZkFMyI0xe9cTtm8Nd+vjLom5V9mIk5lcC/u5WAawRI99P
-         02hw==
-X-Gm-Message-State: AOAM53303rAAyHfJap0/bbV4q6L/6WH7uHeG++FrfvQlcP+AWAURhhVx
-        //3gCtcuClZK86UeRFXjdwleRcJdZPEQZGhmNUCCb7sNpgvgFGR8SP8GrBPHBbDb6oxeTvt3GC6
-        omKWzC5El1YwWXrYYsdzN3kCooVcVrD8HMmpAk1b4cohM9F7b6+JsmhkPdV4isYdqdEQLvQ==
-X-Google-Smtp-Source: ABdhPJwBNuVRqYwLOoapcJC89s5ddcVxvGvP3EXFtuiek8WFJ2sGpz3PlidgpEfG/JWec7jzxrb7Yg==
-X-Received: by 2002:a0c:8051:0:b0:42d:ef02:183c with SMTP id 75-20020a0c8051000000b0042def02183cmr212322qva.28.1644965977977;
-        Tue, 15 Feb 2022 14:59:37 -0800 (PST)
-Received: from localhost.localdomain ([181.136.110.101])
-        by smtp.gmail.com with ESMTPSA id w19sm15520021qkp.6.2022.02.15.14.59.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 14:59:37 -0800 (PST)
-From:   =?UTF-8?q?Mauricio=20V=C3=A1squez?= <mauricio@kinvolk.io>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
-Subject: [PATCH bpf-next v7 7/7] selftests/bpf: Test "bpftool gen min_core_btf"
-Date:   Tue, 15 Feb 2022 17:58:56 -0500
-Message-Id: <20220215225856.671072-8-mauricio@kinvolk.io>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220215225856.671072-1-mauricio@kinvolk.io>
-References: <20220215225856.671072-1-mauricio@kinvolk.io>
+        with ESMTP id S231760AbiBOXby (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 18:31:54 -0500
+X-Greylist: delayed 574 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 15:31:41 PST
+Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8559B65433;
+        Tue, 15 Feb 2022 15:31:40 -0800 (PST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1644967321; bh=oxkQ8fDff2RyUMjp4s/XquWC9mjWFRhyAC3CN7OibR0=;
+        h=From:To:Subject:In-Reply-To:References:Date:From;
+        b=BHhGm1ivKzDXxW39urxXsDcW9o58WBEd2ZtYXSLxYBzqTWqWg/o0qAcjzaBsESXCA
+         ORStYpUObPZCcUZQnn9becjxPhyYz50ZfF0IpmjyxxV0a3iq61jj8bSUMIMwKrIrfK
+         Zfe3GXZuihe4NZTcFvf1bplfqLMhebGQDqWpovo5X4Dx0MoL0KL4UbEkn4x2hcv0PG
+         BIB0Hy644SZUin9TgUF8p0HLDYki6ts+APQJ0diYsbAr9CPvoCM6TAyjdx182OtatO
+         htMO9mBpeiT8zNtYe8lHHSBE7bvn7GSWXMtt5hDdgLQRI83NuLPhviSslMfvGGGYKj
+         jzyWMuD+cGIkw==
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, miaoqing@codeaurora.org,
+        Jason Cooper <jason@lakedaemon.net>,
+        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
+        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH] ath9k: use hw_random API instead of directly dumping
+ into random.c
+In-Reply-To: <20220215162812.195716-1-Jason@zx2c4.com>
+References: <CAHmME9r4+ENUhZ6u26rAbq0iCWoKqTPYA7=_LWbGG98KvaCE6g@mail.gmail.com>
+ <20220215162812.195716-1-Jason@zx2c4.com>
+Date:   Wed, 16 Feb 2022 00:22:00 +0100
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87o8374sx3.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit reuses the core_reloc test to check if the BTF files
-generated with "bpftool gen min_core_btf" are correct. This introduces
-test_core_btfgen() that runs all the core_reloc tests, but this time
-the source BTF files are generated by using "bpftool gen min_core_btf".
+"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
 
-The goal of this test is to check that the generated files are usable,
-and not to check if the algorithm is creating an optimized BTF file.
+> Hardware random number generators are supposed to use the hw_random
+> framework. This commit turns ath9k's kthread-based design into a proper
+> hw_random driver.
+>
+> This compiles, but I have no hardware or other ability to determine
+> whether it works. I'll leave further development up to the ath9k
+> and hw_random maintainers.
+>
+> Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Cc: Herbert Xu <herbert@gondor.apana.org.au>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  drivers/net/wireless/ath/ath9k/ath9k.h |  2 +-
+>  drivers/net/wireless/ath/ath9k/rng.c   | 62 +++++++++-----------------
+>  2 files changed, 23 insertions(+), 41 deletions(-)
+>
+> diff --git a/drivers/net/wireless/ath/ath9k/ath9k.h b/drivers/net/wireles=
+s/ath/ath9k/ath9k.h
+> index ef6f5ea06c1f..142f472903dc 100644
+> --- a/drivers/net/wireless/ath/ath9k/ath9k.h
+> +++ b/drivers/net/wireless/ath/ath9k/ath9k.h
+> @@ -1072,7 +1072,7 @@ struct ath_softc {
+>=20=20
+>  #ifdef CONFIG_ATH9K_HWRNG
+>  	u32 rng_last;
+> -	struct task_struct *rng_task;
+> +	struct hwrng rng_ops;
+>  #endif
+>  };
+>=20=20
+> diff --git a/drivers/net/wireless/ath/ath9k/rng.c b/drivers/net/wireless/=
+ath/ath9k/rng.c
+> index aae2bd3cac69..369b222908ba 100644
+> --- a/drivers/net/wireless/ath/ath9k/rng.c
+> +++ b/drivers/net/wireless/ath/ath9k/rng.c
+> @@ -22,9 +22,6 @@
+>  #include "hw.h"
+>  #include "ar9003_phy.h"
+>=20=20
+> -#define ATH9K_RNG_BUF_SIZE	320
+> -#define ATH9K_RNG_ENTROPY(x)	(((x) * 8 * 10) >> 5) /* quality: 10/32 */
 
-Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
-Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
-Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
-Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
----
- .../selftests/bpf/prog_tests/core_reloc.c     | 50 ++++++++++++++++++-
- 1 file changed, 48 insertions(+), 2 deletions(-)
+So this comment says "quality: 10/32" but below you're setting "quality"
+as 320. No idea what the units are supposed to be, but is this right?
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-index 68e4c8dafa00..fa2908879c77 100644
---- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-+++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-@@ -2,6 +2,7 @@
- #include <test_progs.h>
- #include "progs/core_reloc_types.h"
- #include "bpf_testmod/bpf_testmod.h"
-+#include <linux/limits.h>
- #include <sys/mman.h>
- #include <sys/syscall.h>
- #include <bpf/btf.h>
-@@ -836,13 +837,27 @@ static size_t roundup_page(size_t sz)
- 	return (sz + page_size - 1) / page_size * page_size;
- }
- 
--void test_core_reloc(void)
-+static int run_btfgen(const char *src_btf, const char *dst_btf, const char *objpath)
-+{
-+	char command[4096];
-+	int n;
-+
-+	n = snprintf(command, sizeof(command),
-+		     "./tools/build/bpftool/bpftool gen min_core_btf %s %s %s",
-+		     src_btf, dst_btf, objpath);
-+	if (n < 0 || n >= sizeof(command))
-+		return -1;
-+
-+	return system(command);
-+}
-+
-+static void run_core_reloc_tests(bool use_btfgen)
- {
- 	const size_t mmap_sz = roundup_page(sizeof(struct data));
- 	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, open_opts);
- 	struct core_reloc_test_case *test_case;
- 	const char *tp_name, *probe_name;
--	int err, i, equal;
-+	int err, i, equal, fd;
- 	struct bpf_link *link = NULL;
- 	struct bpf_map *data_map;
- 	struct bpf_program *prog;
-@@ -854,6 +869,7 @@ void test_core_reloc(void)
- 	my_pid_tgid = getpid() | ((uint64_t)syscall(SYS_gettid) << 32);
- 
- 	for (i = 0; i < ARRAY_SIZE(test_cases); i++) {
-+		char btf_file[] = "/tmp/core_reloc.btf.XXXXXX";
- 		test_case = &test_cases[i];
- 		if (!test__start_subtest(test_case->case_name))
- 			continue;
-@@ -863,6 +879,25 @@ void test_core_reloc(void)
- 			continue;
- 		}
- 
-+		/* generate a "minimal" BTF file and use it as source */
-+		if (use_btfgen) {
-+			if (!test_case->btf_src_file || test_case->fails) {
-+				test__skip();
-+				continue;
-+			}
-+
-+			fd = mkstemp(btf_file);
-+			if (CHECK(fd < 0, "btf_tmp", "failed to create file: %d\n", fd))
-+				goto cleanup;
-+			close(fd); /* we only need the path */
-+			err = run_btfgen(test_case->btf_src_file, btf_file,
-+					 test_case->bpf_obj_file);
-+			if (!ASSERT_OK(err, "run_btfgen"))
-+				goto cleanup;
-+
-+			test_case->btf_src_file = btf_file;
-+		}
-+
- 		if (test_case->setup) {
- 			err = test_case->setup(test_case);
- 			if (CHECK(err, "test_setup", "test #%d setup failed: %d\n", i, err))
-@@ -954,8 +989,19 @@ void test_core_reloc(void)
- 			CHECK_FAIL(munmap(mmap_data, mmap_sz));
- 			mmap_data = NULL;
- 		}
-+		remove(btf_file);
- 		bpf_link__destroy(link);
- 		link = NULL;
- 		bpf_object__close(obj);
- 	}
- }
-+
-+void test_core_reloc(void)
-+{
-+	run_core_reloc_tests(false);
-+}
-+
-+void test_core_btfgen(void)
-+{
-+	run_core_reloc_tests(true);
-+}
--- 
-2.25.1
+>  static DECLARE_WAIT_QUEUE_HEAD(rng_queue);
+>=20=20
+>  static int ath9k_rng_data_read(struct ath_softc *sc, u32 *buf, u32 buf_s=
+ize)
 
+This function takes buf as a *u32, and interprets buf_size as a number
+of u32s...
+
+> @@ -72,61 +69,46 @@ static u32 ath9k_rng_delay_get(u32 fail_stats)
+>  	return delay;
+>  }
+>=20=20
+> -static int ath9k_rng_kthread(void *data)
+> +static int ath9k_rng_read(struct hwrng *rng, void *buf, size_t max, bool=
+ wait)
+>  {
+> +	struct ath_softc *sc =3D container_of(rng, struct ath_softc, rng_ops);
+>  	int bytes_read;
+> -	struct ath_softc *sc =3D data;
+> -	u32 *rng_buf;
+> -	u32 delay, fail_stats =3D 0;
+> -
+> -	rng_buf =3D kmalloc_array(ATH9K_RNG_BUF_SIZE, sizeof(u32), GFP_KERNEL);
+> -	if (!rng_buf)
+> -		goto out;
+> -
+> -	while (!kthread_should_stop()) {
+> -		bytes_read =3D ath9k_rng_data_read(sc, rng_buf,
+> -						 ATH9K_RNG_BUF_SIZE);
+> -		if (unlikely(!bytes_read)) {
+> -			delay =3D ath9k_rng_delay_get(++fail_stats);
+> -			wait_event_interruptible_timeout(rng_queue,
+> -							 kthread_should_stop(),
+> -							 msecs_to_jiffies(delay));
+> -			continue;
+> -		}
+> -
+> -		fail_stats =3D 0;
+> -
+> -		/* sleep until entropy bits under write_wakeup_threshold */
+> -		add_hwgenerator_randomness((void *)rng_buf, bytes_read,
+> -					   ATH9K_RNG_ENTROPY(bytes_read));
+> -	}
+> +	u32 fail_stats =3D 0;
+>=20=20
+> -	kfree(rng_buf);
+> -out:
+> -	sc->rng_task =3D NULL;
+> +retry:
+> +	bytes_read =3D ath9k_rng_data_read(sc, buf, max);
+
+... but AFAICT here you're calling it with a buffer size from hw_random
+that's in bytes?
+
+-Toke
