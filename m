@@ -2,118 +2,399 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E59A4B7AC2
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 23:55:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA4424B7ACB
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 23:56:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244658AbiBOWzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 17:55:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60830 "EHLO
+        id S235253AbiBOW4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 17:56:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235253AbiBOWzk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 17:55:40 -0500
-Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010B890FCD;
-        Tue, 15 Feb 2022 14:55:29 -0800 (PST)
-Received: by mail-vs1-xe31.google.com with SMTP id g21so495235vsp.6;
-        Tue, 15 Feb 2022 14:55:29 -0800 (PST)
+        with ESMTP id S244680AbiBOW4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 17:56:46 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 703B8B2534
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:56:35 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id e5so415103lfr.9
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:56:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=kinvolk.io; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=KljjfGaV0qNt4Ev1SWfuB6ILy2vnkwj3ke0c4tgXkDM=;
-        b=mbMo0Q4i+HlaNWhZT8LNGMSW0FdRYfBAJLjE0PFzMRGRJMdjKbxitQn7gU/vWHJ/q6
-         HvfVRRq974rn1gScL5uXeVg/cZA9VLS+gVSXcEH0MufIw0Edw6MfBbmocdtGf2FvyPle
-         N/6zSvrIUlLSlwNS7sU88ZX/JG4K5rprCbAiRuPxIc2qihmi0LQa747PkghiL+Eb1NG/
-         SP4m16K9wANZQuk62vp0PkOGuM1K6tR4vMO91QNWtyKgZwU/muop4jzJdRV+MWFEoOMk
-         ZPWSwpqYhPQeJNb7zIdWdQkZ17dnVC6cCBQI8AT0qOznenonzJgv90icdxeFDlwA4+Ip
-         FkeQ==
+        bh=HvcNOTPY9mrOmPvj56kx4PinMlX2lwm0O+mcKnQd2jM=;
+        b=DkSYn6xevQnvsjXFYPDH8Aykh5l08kNBpuEIGLWgRtkLXkezLlg9UlUY+XwYXSJCaQ
+         xWIUesIzjYNrGb/piRAqT+Zg3h2vOY18lD5pkQvsgysfADWTlaq+CU/zsdCCRaao9/r9
+         sjFnnCAJLouwsm2glTinlvIqRCF3RcR6MJ214=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=KljjfGaV0qNt4Ev1SWfuB6ILy2vnkwj3ke0c4tgXkDM=;
-        b=4jKXNTQX2/WEIKj8PYo6CPY9lxpHwqWenuN3XdNnyOoC8ptSMuKMv21q72AmfYpUC0
-         6IeXP+ynmP5dmQ3JxI2CS0vndMLjJXK92on3jjk9p0QzumkmhZsI3l5Psn2VDxuqPrK3
-         8OhSj7jJW4mzsk5Gmgt/nVVlwQSxiv7NxkBIS7G05Cm1bm+6mMpxyJjtPMe0wPyUswma
-         bQbSbEwbZ9c10Oul6e0hBupnp0JI7vbwhBjqMAyaT14zMEQWqG7z4qgbYFvsZRhpIGJn
-         OxQ4wgO/D2v/wOceBqrbcxVfv43D6aFKOUfW7ad1wZbTn+Mk1bidLaQ8RK9YCT6NKTto
-         ellg==
-X-Gm-Message-State: AOAM532CRUcS6xuPB3I3AM1K5IYy8B5ryD/Hd/ior/wWjBdeagFVlu5b
-        s2sIF49PU9h+Nf5cMOxwYQFyZxHIqod1LQYNOUIIbvCMiJFV
-X-Google-Smtp-Source: ABdhPJybrisSKT22sdMBiVzA1X9BxupYuQBcoJrjdciqXqEyZPvh8/tXEC6HfbTugPH1cYBwKz7hnpp4xQ4CAhBglSY=
-X-Received: by 2002:a05:6102:c11:: with SMTP id x17mr452025vss.4.1644965729117;
- Tue, 15 Feb 2022 14:55:29 -0800 (PST)
+        bh=HvcNOTPY9mrOmPvj56kx4PinMlX2lwm0O+mcKnQd2jM=;
+        b=OgrhyNHy7rYnVJ21lgw3RDfqu4E50dw3y6XJrJCSf6PkwE84uGYBIycAakaUdiBvlE
+         jYV6EMG/jEezUyWAAx0s0qIDK0hSRp78gsc6SH/xfuDUpQU6UXnf2JQlgug2Y+oRuumK
+         e8N56XFXg9JHJl5z8N6+GOz3Y7TVe4SqP8QHvJk4YZ03b6jDaQuwk0RY4aOxKtnmexgo
+         TF/qFDnjBtVrYBI5D6hkQzCzDFRHHnDuD8b5l0664ctFTs/UN5pkDFethou8p/szDyCF
+         KFcKuMFwkSxk/3j4Hbj7xBspnnpBcD14eyXBUOm4gTiEX7q1ARs+agwC5dvYevpy0TUm
+         ObHA==
+X-Gm-Message-State: AOAM532DVeYRMWow+9hjcl7xwy1NoG5H0HVetWTTBOA/CaxcNwvwrOmk
+        Ro0R1IcX2EXGI3MwvdXLel/+HfGQDSFRKEQc0wPA5Q==
+X-Google-Smtp-Source: ABdhPJwq6Gz1swL3EZ3yFuFK07y5Oqr8RodTmAsVuTSdQUaeDIEMNPrNyoqNm9Sy6APBGMunHLqMg2FOUKnyjzXOxtE=
+X-Received: by 2002:a05:6512:2394:: with SMTP id c20mr940615lfv.569.1644965793633;
+ Tue, 15 Feb 2022 14:56:33 -0800 (PST)
 MIME-Version: 1.0
-References: <CAHmME9r4+ENUhZ6u26rAbq0iCWoKqTPYA7=_LWbGG98KvaCE6g@mail.gmail.com>
- <20220215162812.195716-1-Jason@zx2c4.com>
-In-Reply-To: <20220215162812.195716-1-Jason@zx2c4.com>
-From:   Rui Salvaterra <rsalvaterra@gmail.com>
-Date:   Tue, 15 Feb 2022 22:55:18 +0000
-Message-ID: <CALjTZvZb9oFLT5zOvxgt3ZrsOc+id8o3KXGFJobO6ks6UZtgWg@mail.gmail.com>
-Subject: Re: [PATCH] ath9k: use hw_random API instead of directly dumping into random.c
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     miaoqing@codeaurora.org, Jason Cooper <jason@lakedaemon.net>,
-        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
-        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
+References: <20220209222646.348365-1-mauricio@kinvolk.io> <20220209222646.348365-5-mauricio@kinvolk.io>
+ <CAEf4BzZaVTdsQbFhStzNavHMhkv4yVm=yc2vqsgFQnZqKZfXpg@mail.gmail.com>
+In-Reply-To: <CAEf4BzZaVTdsQbFhStzNavHMhkv4yVm=yc2vqsgFQnZqKZfXpg@mail.gmail.com>
+From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
+Date:   Tue, 15 Feb 2022 17:56:22 -0500
+Message-ID: <CAHap4zswzgkJYTxYcmvnokEwfT2=XtJ46x5sjxFc3_PJ01YQcA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 4/7] bpftool: Implement minimize_btf() and
+ relocations recording for BTFGen
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
+        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
+        Leonardo Di Donato <leonardo.didonato@elastic.co>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Jason,
-
-On Tue, 15 Feb 2022 at 22:44, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+On Fri, Feb 11, 2022 at 7:42 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> Hardware random number generators are supposed to use the hw_random
-> framework. This commit turns ath9k's kthread-based design into a proper
-> hw_random driver.
+> On Wed, Feb 9, 2022 at 2:27 PM Mauricio V=C3=A1squez <mauricio@kinvolk.io=
+> wrote:
+> >
 >
-> This compiles, but I have no hardware or other ability to determine
-> whether it works. I'll leave further development up to the ath9k
-> and hw_random maintainers.
+> It would be good to shorten the subject line, it's very long.
 >
-> Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[patch snipped]
+Will do.
 
-On my laptop, with a=E2=80=A6
+> > minimize_btf() receives the path of a source and destination BTF files
+> > and a list of BPF objects. This function records the relocations for
+> > all objects and then generates the BTF file by calling btfgen_get_btf()
+> > (implemented in the following commit).
+> >
+> > btfgen_record_obj() loads the BTF and BTF.ext sections of the BPF
+> > objects and loops through all CO-RE relocations. It uses
+> > bpf_core_calc_relo_insn() from libbpf and passes the target spec to
+> > btfgen_record_reloc(), that calls one of the following functions
+> > depending on the relocation kind.
+> >
+> > btfgen_record_field_relo() uses the target specification to mark all th=
+e
+> > types that are involved in a field-based CO-RE relocation. In this case
+> > types resolved and marked recursively using btfgen_mark_type().
+> > Only the struct and union members (and their types) involved in the
+> > relocation are marked to optimize the size of the generated BTF file.
+> >
+> > btfgen_record_type_relo() marks the types involved in a type-based
+> > CO-RE relocation. In this case no members for the struct and union
+> > types are marked as libbpf doesn't use them while performing this kind
+> > of relocation. Pointed types are marked as they are used by libbpf in
+> > this case.
+> >
+> > btfgen_record_enumval_relo() marks the whole enum type for enum-based
+> > relocations.
+>
+> It should be enough to leave only used enumerators, but I suppose it
+> doesn't take much space to record all. We can adjust that later, if
+> necessary.
+>
 
-02:00.0 Network controller: Qualcomm Atheros AR9462 Wireless Network
-Adapter (rev 01)
+I think the overhead is really minimal and we can improve later on if we wa=
+nt.
 
-=E2=80=A6 I have the following=E2=80=A6
+> >
+> > Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
+> > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
+> > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
+> > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
+> > ---
+> >  tools/bpf/bpftool/Makefile |   8 +-
+> >  tools/bpf/bpftool/gen.c    | 452 ++++++++++++++++++++++++++++++++++++-
+> >  2 files changed, 454 insertions(+), 6 deletions(-)
+> >
+>
+> Looks good, few nits and concerns, but it feels like it's really close
+> to being ready.
+>
+> [...]
+>
+> > +}
+> > +
+> > +struct btfgen_info {
+> > +       struct btf *src_btf;
+> > +       struct btf *marked_btf; // btf structure used to mark used type=
+s
+>
+> C++ comment, please use /* */
+>
+> > +};
+> > +
+> > +static size_t btfgen_hash_fn(const void *key, void *ctx)
+> > +{
+> > +       return (size_t)key;
+> > +}
+> > +
+> > +static bool btfgen_equal_fn(const void *k1, const void *k2, void *ctx)
+> > +{
+> > +       return k1 =3D=3D k2;
+> > +}
+> > +
+> > +static void *uint_as_hash_key(int x)
+> > +{
+> > +       return (void *)(uintptr_t)x;
+> > +}
+> > +
+> > +static void *u32_as_hash_key(__u32 x)
+> > +{
+> > +       return (void *)(uintptr_t)x;
+> > +}
+> > +
+> > +static void btfgen_free_info(struct btfgen_info *info)
+> > +{
+> > +       if (!info)
+> > +               return;
+> > +
+> > +       btf__free(info->src_btf);
+> > +       btf__free(info->marked_btf);
+> > +
+> > +       free(info);
+> > +}
+> > +
+> > +static struct btfgen_info *
+> > +btfgen_new_info(const char *targ_btf_path)
+> > +{
+> > +       struct btfgen_info *info;
+> > +       int err;
+> > +
+> > +       info =3D calloc(1, sizeof(*info));
+> > +       if (!info)
+> > +               return NULL;
+> > +
+> > +       info->src_btf =3D btf__parse(targ_btf_path, NULL);
+> > +       if (!info->src_btf) {
+> > +               p_err("failed parsing '%s' BTF file: %s", targ_btf_path=
+, strerror(errno));
+> > +               err =3D -errno;
+>
+> save errno before p_err, it can clobber errno otherwise
+>
+> > +               goto err_out;
+> > +       }
+> > +
+> > +       info->marked_btf =3D btf__parse(targ_btf_path, NULL);
+> > +       if (!info->marked_btf) {
+> > +               p_err("failed parsing '%s' BTF file: %s", targ_btf_path=
+, strerror(errno));
+> > +               err =3D -errno;
+>
+> same, always save errno first before any non-trivial function/macro call
+>
 
-rui@arrandale:~$ cat /sys/devices/virtual/misc/hw_random/rng_available
-ath9k
-rui@arrandale:~$ cat /sys/devices/virtual/misc/hw_random/rng_current
-ath9k
-rui@arrandale:~$
+oh right, thanks!
 
-=E2=80=A6 and sure enough, /dev/hwrng is created and outputs a stream of
-random data, as expected. I haven't done any serious randomness
-quality testing, but it should be the same as the one produced by the
-original code. I consider this patch thus
+>
+> > +               goto err_out;
+> > +       }
+> > +
+> > +       return info;
+> > +
+> > +err_out:
+> > +       btfgen_free_info(info);
+> > +       errno =3D -err;
+> > +       return NULL;
+> > +}
+> > +
+> > +#define MARKED UINT32_MAX
+> > +
+> > +static void btfgen_mark_member(struct btfgen_info *info, int type_id, =
+int idx)
+> > +{
+> > +       const struct btf_type *t =3D btf__type_by_id(info->marked_btf, =
+type_id);
+> > +       struct btf_member *m =3D btf_members(t) + idx;
+> > +
+> > +       m->name_off =3D MARKED;
+> > +}
+> > +
+> > +static int
+> > +btfgen_mark_type(struct btfgen_info *info, unsigned int id, bool follo=
+w_pointers)
+>
+> id is type_id or could be some other id? It's best to be consistent in
+> naming to avoid second guessing like in this case.
 
-Tested-by: Rui Salvaterra <rsalvaterra@gmail.com>
+It's always type_id. Renamed it.
 
-Thanks,
-Rui
+>
+> > +{
+> > +       const struct btf_type *btf_type =3D btf__type_by_id(info->src_b=
+tf, id);
+> > +       struct btf_type *cloned_type;
+> > +       struct btf_param *param;
+> > +       struct btf_array *array;
+> > +       int err, i;
+>
+> [...]
+>
+> > +       /* tells if some other type needs to be handled */
+> > +       default:
+> > +               p_err("unsupported kind: %s (%d)", btf_kind_str(btf_typ=
+e), id);
+> > +               return -EINVAL;
+> > +       }
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +static int btfgen_record_field_relo(struct btfgen_info *info, struct b=
+pf_core_spec *targ_spec)
+> > +{
+> > +       struct btf *btf =3D (struct btf *) info->src_btf;
+>
+> why the cast?
+>
+
+No reason. Will remove it.
+
+> > +       const struct btf_type *btf_type;
+> > +       struct btf_member *btf_member;
+> > +       struct btf_array *array;
+> > +       unsigned int id =3D targ_spec->root_type_id;
+> > +       int idx, err;
+> > +
+> > +       /* mark root type */
+> > +       btf_type =3D btf__type_by_id(btf, id);
+> > +       err =3D btfgen_mark_type(info, id, false);
+> > +       if (err)
+> > +               return err;
+> > +
+> > +       /* mark types for complex types (arrays, unions, structures) */
+> > +       for (int i =3D 1; i < targ_spec->raw_len; i++) {
+> > +               /* skip typedefs and mods */
+> > +               while (btf_is_mod(btf_type) || btf_is_typedef(btf_type)=
+) {
+> > +                       id =3D btf_type->type;
+> > +                       btf_type =3D btf__type_by_id(btf, id);
+> > +               }
+> > +
+> > +               switch (btf_kind(btf_type)) {
+> > +               case BTF_KIND_STRUCT:
+> > +               case BTF_KIND_UNION:
+> > +                       idx =3D targ_spec->raw_spec[i];
+> > +                       btf_member =3D btf_members(btf_type) + idx;
+> > +
+> > +                       /* mark member */
+> > +                       btfgen_mark_member(info, id, idx);
+> > +
+> > +                       /* mark member's type */
+> > +                       id =3D btf_member->type;
+> > +                       btf_type =3D btf__type_by_id(btf, id);
+> > +                       err =3D btfgen_mark_type(info, id, false);
+>
+> why would it not follow the pointer? E.g., if I have a field defined as
+>
+> struct blah ***my_field;
+>
+> You at the very least would need either an empty struct blah or FWD
+> for struct blah, no?
+>
+
+It's an optimization we do, we don't follow the pointer here because
+it is possible that the definition of the pointed type is not needed.
+For instance, a relocation like:
+
+BPF_CORE_READ(task, nsproxy);
+
+will generate this:
+
+[1] STRUCT 'task_struct' size=3D9472 vlen=3D1
+    'nsproxy' type_id=3D2 bits_offset=3D23040
+[2] PTR '(anon)' type_id=3D0
+
+struct nsproxy is not really accessed, so we don't need it's
+definition. On the other hand, something like
+
+BPF_CORE_READ(task, nsproxy, count);
+
+has two relocations, and nsproxy is actually accessed, so in this case
+the generated BTF includes a nsproxy struct:
+
+[1] STRUCT '(anon)' size=3D4 vlen=3D0
+[2] TYPEDEF 'atomic_t' type_id=3D1
+[3] STRUCT 'task_struct' size=3D9472 vlen=3D1
+    'nsproxy' type_id=3D4 bits_offset=3D23040
+[4] PTR '(anon)' type_id=3D5
+[5] STRUCT 'nsproxy' size=3D72 vlen=3D1
+    'count' type_id=3D2 bits_offset=3D0
+
+> > +                       if (err)
+> > +                               return err;
+> > +                       break;
+> > +               case BTF_KIND_ARRAY:
+> > +                       array =3D btf_array(btf_type);
+> > +                       id =3D array->type;
+> > +                       btf_type =3D btf__type_by_id(btf, id);
+> > +                       break;
+>
+> [...]
+>
+> > +err_out:
+> > +       bpf_core_free_cands(cands);
+> > +       errno =3D -err;
+> > +       return NULL;
+> > +}
+> > +
+> > +/* Record relocation information for a single BPF object*/
+>
+> nit: missing space before */
+>
+> > +static int btfgen_record_obj(struct btfgen_info *info, const char *obj=
+_path)
+> > +{
+> > +       const struct btf_ext_info_sec *sec;
+> > +       const struct bpf_core_relo *relo;
+> > +       const struct btf_ext_info *seg;
+> > +       struct hashmap_entry *entry;
+> > +       struct hashmap *cand_cache =3D NULL;
+> > +       struct btf_ext *btf_ext =3D NULL;
+> > +       unsigned int relo_idx;
+> > +       struct btf *btf =3D NULL;
+> > +       size_t i;
+> > +       int err;
+> > +
+> > +       btf =3D btf__parse(obj_path, &btf_ext);
+> > +       if (!btf) {
+> > +               p_err("failed to parse BPF object '%s': %s", obj_path, =
+strerror(errno));
+> > +               return -errno;
+> > +       }
+>
+> check that btf_ext is not NULL?
+>
+
+Done.
+
+
+> > +
+> > +       if (btf_ext->core_relo_info.len =3D=3D 0) {
+> > +               err =3D 0;
+> > +               goto out;
+> > +       }
+> > +
+>
+> [...]
