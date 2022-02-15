@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C64724B7AD0
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 23:56:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E91304B7AD5
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 23:57:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244701AbiBOW47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 17:56:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33714 "EHLO
+        id S244682AbiBOW5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 17:57:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244694AbiBOW44 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 17:56:56 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BB7BA75E
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:56:44 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id t14so648518ljh.8
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:56:44 -0800 (PST)
+        with ESMTP id S244708AbiBOW5P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 17:57:15 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90396B91D0
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:56:48 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id t14so648711ljh.8
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:56:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kinvolk.io; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=KgVZkUUbGUZQ31ZvNwCOIzIiGTf7WnYCysAE6/qgMwU=;
-        b=jkpiSQy0pO5BRcFNR90Bqpn7JoS+4arc8FJd0S6Dam6/avw3TDN8o6vprTobszQt1Q
-         /cGe7c9LVfx9qXrs1NGvIeo6YHcJHszV1ykPWhO6QR2hvIUg026GjgDOL7ip/FihwDvi
-         rVOTR5gGVwJ58kA0IOlegJNi08TJr/CrqvWL4=
+        bh=5Rudsg4/aOy/jdyhsSWJWFGI4znB4WD+Ii8G12zC9Nc=;
+        b=j5qNrOw4KZOloLLjvNpXBoqTEpmgtLMbECmOR+kwE3JSrQQF+wIw2cT/gDWIHXBpuA
+         HppNp+B0xUvUQ67WrvvdGxF/xxC7eGNMbWXyYIpofq45B24Ad0a5m7dK6NNnIQtc/Nhv
+         gfeSei2B3haqroNBjoJGYAgLNrQWidG0hV8EY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=KgVZkUUbGUZQ31ZvNwCOIzIiGTf7WnYCysAE6/qgMwU=;
-        b=5V80MxZmJDft7bZQh3vbNLqT2uo1wYweTHNEizRuQ5T98/df2Pb/13zl5JYpxt/wfm
-         DmJqkRAaonp6DGQbY3X9ftt+i3TDSGFaYRm2fKEcFHdVfQ+xBY4Dtis+RSWKxs2Xeuig
-         Mn82W3Y/tYnrwK0ffnqIPr+KKweun3Ibcn3xqoNLH4+xR7l54Oone4jg7qh4OMmRWhdq
-         eN8S8WKbEfRjjAM+lbSqLylQbPRVMxWAOqqgpcbuZThesG36Jb6QExgvqfr13f0ENbJE
-         Buo8A8W3A+VMzSUURTOBohS5oX9BDdJ62Wif/jTQ79Yv7+xmJbYleCjKUkB7/fSokoKa
-         3D+g==
-X-Gm-Message-State: AOAM533JQYXTQjqa2mNkAUYbDLqtP/iJfS5b7R0GTAmSGkSFiuutsxSH
-        XSpNn8pLd2wV6MMo/ZKzdOumf0AQBsmGqITRGI2+/w==
-X-Google-Smtp-Source: ABdhPJzE4wAiM8xsgQMVU9mjRRGUb9KfcCe+Pj7DgIWMdz/n7DiwZkVB1IoZTu7jvNUymg/+ylaTOdvY519yYIh5M/E=
-X-Received: by 2002:a05:651c:990:b0:240:752f:a224 with SMTP id
- b16-20020a05651c099000b00240752fa224mr48937ljq.266.1644965802672; Tue, 15 Feb
- 2022 14:56:42 -0800 (PST)
+        bh=5Rudsg4/aOy/jdyhsSWJWFGI4znB4WD+Ii8G12zC9Nc=;
+        b=Xro7rwg2HR54n/DqNOqUBcS1nLPS4RCK5gnEmxUIA/1BZhlkKaIMCQitv2sYkUfZES
+         7OEENtyGeT/UNzJT/ujBDKbTXxbh0yS3286zGbOp7kuiLEi7MuLtl5wivXZLX8rnFRXx
+         bujbNzUhiXbylELjAFgDD7lUCmS8IufLwvbo4WzUXazNQfmRS0U9QyxWi/riRWzOBP31
+         P0M3ceUcns3aGMDFGUdFG+JnLucnpOZE0noTvJEhj3ruDgKigfkYSwskVccULUueOR+4
+         FOSUjJ2OB7KbCiPqMOC95ZeFH0gquGZK8NtfgqrdC8qVVvfsDEpgClnh4L45B+S6ftz0
+         wukg==
+X-Gm-Message-State: AOAM533WBfGb9B121St1zIiiC5uADwTMHq/u8khVcPqEaHmKB94B7w01
+        o12+Iy79ZF6VjHx7fqJUn3H0GQ0ATU3ozK3pSt7mdw==
+X-Google-Smtp-Source: ABdhPJz3BVAV85ar7UFxQnh0GbPZOCxut/t1YPLrE0wZmx4l95hzHY8n9c2AEDOIvFGLYba2do0+uhJaAMN2t/b1n10=
+X-Received: by 2002:a2e:9c82:0:b0:23a:eea8:cd0f with SMTP id
+ x2-20020a2e9c82000000b0023aeea8cd0fmr51725lji.218.1644965806968; Tue, 15 Feb
+ 2022 14:56:46 -0800 (PST)
 MIME-Version: 1.0
-References: <20220209222646.348365-1-mauricio@kinvolk.io> <20220209222646.348365-6-mauricio@kinvolk.io>
- <CAEf4BzZDU5wvjsYa8QoCCbvjHtnn--VN2c=uOxq0y0Qx0i1DUw@mail.gmail.com>
-In-Reply-To: <CAEf4BzZDU5wvjsYa8QoCCbvjHtnn--VN2c=uOxq0y0Qx0i1DUw@mail.gmail.com>
+References: <20220209222646.348365-1-mauricio@kinvolk.io> <20220209222646.348365-7-mauricio@kinvolk.io>
+ <CAEf4BzYp4bCBYrbXGw75x6WFqM_k6Bhy3D73hR9TR1O8S7gXcQ@mail.gmail.com>
+In-Reply-To: <CAEf4BzYp4bCBYrbXGw75x6WFqM_k6Bhy3D73hR9TR1O8S7gXcQ@mail.gmail.com>
 From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Date:   Tue, 15 Feb 2022 17:56:31 -0500
-Message-ID: <CAHap4zt52W5ifY_6wPa0-4pC+E_xizixTeZ+sMnVpRK=_N=Nbg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6 5/7] bpftool: Implement btfgen_get_btf()
+Date:   Tue, 15 Feb 2022 17:56:36 -0500
+Message-ID: <CAHap4ztLNVm81jchDkAe15UybKRCFEJNci-BFFCRQf86iW_pVw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 6/7] bpftool: gen min_core_btf explanation and examples
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -76,271 +76,62 @@ On Fri, Feb 11, 2022 at 7:42 PM Andrii Nakryiko
 > On Wed, Feb 9, 2022 at 2:27 PM Mauricio V=C3=A1squez <mauricio@kinvolk.io=
 > wrote:
 > >
-> > The last part of the BTFGen algorithm is to create a new BTF object wit=
-h
-> > all the types that were recorded in the previous steps.
+> > From: Rafael David Tinoco <rafaeldtinoco@gmail.com>
 > >
-> > This function performs two different steps:
-> > 1. Add the types to the new BTF object by using btf__add_type(). Some
-> > special logic around struct and unions is implemented to only add the
-> > members that are really used in the field-based relocations. The type
-> > ID on the new and old BTF objects is stored on a map.
-> > 2. Fix all the type IDs on the new BTF object by using the IDs saved in
-> > the previous step.
+> > Add "min_core_btf" feature explanation and one example of how to use it
+> > to bpftool-gen man page.
 > >
 > > Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
 > > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
 > > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
 > > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
 > > ---
-> >  tools/bpf/bpftool/gen.c | 136 +++++++++++++++++++++++++++++++++++++++-
-> >  1 file changed, 135 insertions(+), 1 deletion(-)
+> >  .../bpf/bpftool/Documentation/bpftool-gen.rst | 93 +++++++++++++++++++
+> >  1 file changed, 93 insertions(+)
 > >
-> > diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-> > index c3e34db2ec8a..1efc7f3c64b2 100644
-> > --- a/tools/bpf/bpftool/gen.c
-> > +++ b/tools/bpf/bpftool/gen.c
-> > @@ -1481,10 +1481,144 @@ static int btfgen_record_obj(struct btfgen_inf=
-o *info, const char *obj_path)
-> >         return err;
-> >  }
-> >
-> > +static unsigned int btfgen_get_id(struct hashmap *ids, unsigned int ol=
-d)
-> > +{
-> > +       uintptr_t new;
+>
+> [...]
+>
+> > +Now, the "5.4.0-smaller.btf" file may be used by libbpf as an external=
+ BTF file
+> > +when loading the "one.bpf.o" object into the "5.4.0-example" kernel. N=
+ote that
+> > +the generated BTF file won't allow other eBPF objects to be loaded, ju=
+st the
+> > +ones given to min_core_btf.
 > > +
-> > +       if (!hashmap__find(ids, uint_as_hash_key(old), (void **)&new))
-> > +               /* return id for BTF_KIND_VOID as it's possible that th=
-e
-> > +                * ID we're looking for is the type of a pointer that
-> > +                * we're not adding.
-> > +                */
-> > +               return 0;
+> > +::
 > > +
-> > +       return (unsigned int)(uintptr_t)new;
-> > +}
+> > +  struct bpf_object *obj =3D NULL;
+> > +  struct bpf_object_open_opts openopts =3D {};
 > > +
-> > +static int btfgen_add_id(struct hashmap *ids, unsigned int old, unsign=
-ed int new)
-> > +{
-> > +       return hashmap__add(ids, uint_as_hash_key(old), uint_as_hash_ke=
-y(new));
-> > +}
+> > +  openopts.sz =3D sizeof(struct bpf_object_open_opts);
+> > +  openopts.btf_custom_path =3D "./5.4.0-smaller.btf";
 > > +
-> > +static int btfgen_remap_id(__u32 *type_id, void *ctx)
-> > +{
-> > +       struct hashmap *ids =3D ctx;
-> > +
-> > +       *type_id =3D btfgen_get_id(ids, *type_id);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> >  /* Generate BTF from relocation information previously recorded */
-> >  static struct btf *btfgen_get_btf(struct btfgen_info *info)
-> >  {
-> > -       return ERR_PTR(-EOPNOTSUPP);
-> > +       struct btf *btf_new =3D NULL;
-> > +       struct hashmap *ids =3D NULL;
-> > +       unsigned int i;
-> > +       int err =3D 0;
-> > +
-> > +       btf_new =3D btf__new_empty();
-> > +       if (!btf_new) {
-> > +               err =3D -errno;
-> > +               goto err_out;
-> > +       }
-> > +
-> > +       ids =3D hashmap__new(btfgen_hash_fn, btfgen_equal_fn, NULL);
-> > +       if (IS_ERR(ids)) {
-> > +               err =3D PTR_ERR(ids);
-> > +               goto err_out;
-> > +       }
-> > +
-> > +       /* first pass: add all marked types to btf_new and add their ne=
-w ids to the ids map */
-> > +       for (i =3D 1; i < btf__type_cnt(info->marked_btf); i++) {
+> > +  obj =3D bpf_object__open_file("./one.bpf.o", &openopts);
 >
-> small nit: why keep calling btf__type_cnt() on each iteration? store
-> it as n =3D btf__type_cnt(...) and do i < n ?
-
-Fixed
-
+> Can you please use LIBBPF_OPTS() macro in the example, that's how
+> users are normally expected to use OPTS-based APIs anyways. Also there
+> is no need for "./" when specifying file location. This is a different
+> case than running a binary in the shell, where binary is searched in
+> PATH. This is never done when opening files.
 >
-> > +               const struct btf_type *cloned_type, *btf_type;
-> > +               int new_id;
-> > +
-> > +               cloned_type =3D btf__type_by_id(info->marked_btf, i);
-> > +
-> > +               if (cloned_type->name_off !=3D MARKED)
-> > +                       continue;
+> So all this should be:
 >
-> see, if you did
->
-> #define MARKED (1<<31)
->
-> and did
->
-> t->name_off |=3D MARKED
->
-> everywhere, then you wouldn't need src_btf anymore, as you'd just
-> restore original name_off right here with t->name_off &=3D ~MARKED.
->
-> But it's fine, just wanted to point out why I wanted to use one bit,
-> so that original values are still available.
-
-I see, thanks for the explanation. In both cases a BTF copy to pass to
-libbpf is needed, hence I'd say there's not that much difference.
-
->
-> > +
-> > +               btf_type =3D btf__type_by_id(info->src_btf, i);
-> > +
-> > +               /* add members for struct and union */
-> > +               if (btf_is_struct(btf_type) || btf_is_union(btf_type)) =
-{
->
-> btf_is_composite(btf_type)
->
-> > +                       struct btf_type *btf_type_cpy;
-> > +                       int nmembers =3D 0, idx_dst, idx_src;
-> > +                       size_t new_size;
-> > +
-> > +                       /* calculate nmembers */
-> > +                       for (idx_src =3D 0; idx_src < btf_vlen(cloned_t=
-ype); idx_src++) {
-> > +                               struct btf_member *cloned_m =3D btf_mem=
-bers(cloned_type) + idx_src;
->
-> a bit nicer pattern is:
->
->
-> struct btf_member *m =3D btf_members(cloned_type);
-> int vlen =3D btf_vlen(cloned_type)
->
-> for (i =3D 0; i < vlen; i++, m++) {
-> }
->
-> That way you don't have to re-calculate member
+> LIBBPF_OPTS(bpf_object_open_opts, opts, .btf_custom_path =3D "5.4.0-small=
+er.btf");
+> struct bpf_object *obj;
 >
 
-Reworked the code with the other suggestions below.
+I suppose you meant DECLARE_LIBBPF_OPTS(...)
 
-> > +
-> > +                               if (cloned_m->name_off =3D=3D MARKED)
-> > +                                       nmembers++;
-> > +                       }
-> > +
-> > +                       new_size =3D sizeof(struct btf_type) + nmembers=
- * sizeof(struct btf_member);
-> > +
-> > +                       btf_type_cpy =3D malloc(new_size);
-> > +                       if (!btf_type_cpy)
-> > +                               goto err_out;
-> > +
-> > +                       /* copy btf type */
-> > +                       *btf_type_cpy =3D *btf_type;
-> > +
-> > +                       idx_dst =3D 0;
-> > +                       for (idx_src =3D 0; idx_src < btf_vlen(cloned_t=
-ype); idx_src++) {
-> > +                               struct btf_member *btf_member_src, *btf=
-_member_dst;
-> > +                               struct btf_member *cloned_m =3D btf_mem=
-bers(cloned_type) + idx_src;
-> > +
-> > +                               /* copy only members that are marked as=
- used */
-> > +                               if (cloned_m->name_off !=3D MARKED)
-> > +                                       continue;
-> > +
-> > +                               btf_member_src =3D btf_members(btf_type=
-) + idx_src;
-> > +                               btf_member_dst =3D btf_members(btf_type=
-_cpy) + idx_dst;
-> > +
-> > +                               *btf_member_dst =3D *btf_member_src;
-> > +
-> > +                               idx_dst++;
-> > +                       }
-> > +
-> > +                       /* set new vlen */
-> > +                       btf_type_cpy->info =3D btf_type_info(btf_kind(b=
-tf_type_cpy), nmembers,
-> > +                                                          btf_kflag(bt=
-f_type_cpy));
-> > +
-> > +                       err =3D btf__add_type(btf_new, info->src_btf, b=
-tf_type_cpy);
-> > +                       free(btf_type_cpy);
+> obj =3D bpf_object__open_file("one.bpf.o", &opts);
 >
-> hmm.. this malloc and the rest still feels clunky... why not do it
-> explicitly with btf__add_struct()/btf__add_union() and then
-> btf__add_field() for each marked field? You also won't need to
-> pre-calculate the number of members (libbpf will adjust number of
-> members automatically, it's pretty nice API, try it).
->
-
-You're right. Code looks better with this API.
-
-> You can also use err =3D err ?: btf__add_xxx() pattern to minimize error
-> handling conditionals
->
-
-mmm, I didn't find a place where it could improve the code in this case.
-
+> That's all.
 >
 >
-> > +               } else {
-> > +                       err =3D btf__add_type(btf_new, info->src_btf, b=
-tf_type);
-> > +               }
 > > +
-> > +               if (err < 0)
-> > +                       goto err_out;
-> > +
-> > +               new_id =3D err;
-> > +
-> > +               /* add ID mapping */
-> > +               err =3D btfgen_add_id(ids, i, new_id);
->
-> Why using clunky hashmap API if we are talking about mapping
-> sequential integers? Just allocate an array of btf__type_cnt()
-> integers and use that as a straightforward map?
->
-
-Makes sense. Probably a hashmap will use a bit less memory but I think
-the readability improvement is worth it.
-
-
->
-> > +               if (err)
-> > +                       goto err_out;
-> > +       }
-> > +
-> > +       /* second pass: fix up type ids */
-> > +       for (i =3D 1; i < btf__type_cnt(btf_new); i++) {
-> > +               struct btf_type *btf_type =3D (struct btf_type *) btf__=
-type_by_id(btf_new, i);
-> > +
-> > +               err =3D btf_type_visit_type_ids(btf_type, btfgen_remap_=
-id, ids);
-> > +               if (err)
-> > +                       goto err_out;
-> > +       }
-> > +
-> > +       hashmap__free(ids);
-> > +       return btf_new;
-> > +
-> > +err_out:
-> > +       btf__free(btf_new);
-> > +       hashmap__free(ids);
-> > +       errno =3D -err;
-> > +       return NULL;
-> >  }
-> >
-> >  /* Create minimized BTF file for a set of BPF objects.
+> > +  ...
 > > --
 > > 2.25.1
 > >
