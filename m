@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EAC74B73AF
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:44:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D30744B730C
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:43:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240779AbiBOPgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 10:36:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46154 "EHLO
+        id S240710AbiBOPht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 10:37:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240883AbiBOPfu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 10:35:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B856365146;
-        Tue, 15 Feb 2022 07:31:31 -0800 (PST)
+        with ESMTP id S240973AbiBOPf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 10:35:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D01163BE;
+        Tue, 15 Feb 2022 07:31:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 149636168B;
-        Tue, 15 Feb 2022 15:31:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 527D2C340EB;
-        Tue, 15 Feb 2022 15:31:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE43161690;
+        Tue, 15 Feb 2022 15:31:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39D9BC340EB;
+        Tue, 15 Feb 2022 15:31:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939090;
-        bh=bJzk+MFGzdcR9CO+eXnU6w55eP9b3igNabas5tmvae0=;
+        s=k20201202; t=1644939096;
+        bh=1ty7S9Vm8g+WfjVy043z5bQVkPsETuhBALszDxFf2Ls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LP+IXXGwauyagwAv9OUl3sZvk6WlycOvusjU9VacDGoqpo4Nr33dwuCeLvMkhtXHL
-         1BEWqHvZJx8mgGCUoQogPUb43yXdJ1CUf/AURQUbX4LsJKA0+qCmYe8quXsjeT0Ew2
-         4M6dlfNQcQDyRmZ9+GH+RzrEdsTDTElB71Q0QOb+toIRD5ORobIIbWvzsL4YZYIsQo
-         wP62QjiUJul/7cM5xxhiPDLVnk5gT7pi+VwEF3UBelBl2Zbx+XF8n9/07lKurkML/W
-         zbHmL7N5FRTjeCoGAX+huj0AENuaIJU+EHh8ja7yskC4a49sDzMoa/1otZJOAs4w5O
-         U1vJB2+ndvIMA==
+        b=QVTo+VQNSSRAUoZi2Ih8OkyTOzBjJt+l4YpUyQdl2L4mMKB50z8YTq++m20UhMohj
+         33FKLcEBIfKsMn1justTImUWKN7XVIxJChNqNePO7qDiwH+etvQ6Kt0femLeIZJA7q
+         tXhac/25CRawQOWOHYa0C1CqL49SohvNyhu9NHsUeKAQ39hj5eitUfDYsWQZBldHGt
+         V418avi4gqc36ntiPFprKDuA3Go2Znw83p0RGCQ40jI/4IxU/uLGFus3KC9Wxr/3S8
+         tCSpHQMnTGWXr0SQ/qn5qa6u6e2JZfXaFYvqkGKj+RnRPPX0BDz/AU7rh5KeJp3jvy
+         z3wYwjgR7HfcA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marc St-Amand <mstamand@ciena.com>,
-        Harini Katakam <harini.katakam@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, claudiu.beznea@microchip.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 5/5] net: macb: Align the dma and coherent dma masks
-Date:   Tue, 15 Feb 2022 10:31:22 -0500
-Message-Id: <20220215153122.581930-5-sashal@kernel.org>
+Cc:     Slark Xiao <slark_xiao@163.com>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 3/3] net: usb: qmi_wwan: Add support for Dell DW5829e
+Date:   Tue, 15 Feb 2022 10:31:30 -0500
+Message-Id: <20220215153131.582008-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220215153122.581930-1-sashal@kernel.org>
-References: <20220215153122.581930-1-sashal@kernel.org>
+In-Reply-To: <20220215153131.582008-1-sashal@kernel.org>
+References: <20220215153131.582008-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -60,49 +59,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marc St-Amand <mstamand@ciena.com>
+From: Slark Xiao <slark_xiao@163.com>
 
-[ Upstream commit 37f7860602b5b2d99fc7465f6407f403f5941988 ]
+[ Upstream commit 8ecbb179286cbc91810c16caeb3396e06305cd0c ]
 
-Single page and coherent memory blocks can use different DMA masks
-when the macb accesses physical memory directly. The kernel is clever
-enough to allocate pages that fit into the requested address width.
+Dell DW5829e same as DW5821e except the CAT level.
+DW5821e supports CAT16 but DW5829e supports CAT9.
+Also, DW5829e includes normal and eSIM type.
+Please see below test evidence:
 
-When using the ARM SMMU, the DMA mask must be the same for single
-pages and big coherent memory blocks. Otherwise the translation
-tables turn into one big mess.
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e6 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-  [   74.959909] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
-  [   74.959989] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
-  [   75.173939] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
-  [   75.173955] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e4 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-Since using the same DMA mask does not hurt direct 1:1 physical
-memory mappings, this commit always aligns DMA and coherent masks.
-
-Signed-off-by: Marc St-Amand <mstamand@ciena.com>
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Tested-by: Conor Dooley <conor.dooley@microchip.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Acked-by: Bjørn Mork <bjorn@mork.no>
+Link: https://lore.kernel.org/r/20220209024717.8564-1-slark_xiao@163.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/qmi_wwan.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index b07ea8a26c20a..045ab0ec5ca25 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -3528,7 +3528,7 @@ static int macb_probe(struct platform_device *pdev)
- 
- #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
- 	if (GEM_BFEXT(DAW64, gem_readl(bp, DCFG6))) {
--		dma_set_mask(&pdev->dev, DMA_BIT_MASK(44));
-+		dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(44));
- 		bp->hw_dma_cap |= HW_DMA_CAP_64B;
- 	}
- #endif
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index a8c960152a357..003c53a5bb336 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -964,6 +964,8 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproduction config */
+ 	{QMI_FIXED_INTF(0x413c, 0x81e0, 0)},	/* Dell Wireless 5821e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e4, 0)},	/* Dell Wireless 5829e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e6, 0)},	/* Dell Wireless 5829e */
+ 	{QMI_FIXED_INTF(0x03f0, 0x4e1d, 8)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
+ 	{QMI_FIXED_INTF(0x03f0, 0x9d1d, 1)},	/* HP lt4120 Snapdragon X5 LTE */
+ 	{QMI_FIXED_INTF(0x22de, 0x9061, 3)},	/* WeTelecom WPD-600N */
 -- 
 2.34.1
 
