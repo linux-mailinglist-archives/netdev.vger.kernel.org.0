@@ -2,63 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC83E4B79A7
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 22:49:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 927E54B79E8
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 22:50:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240997AbiBOUyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 15:54:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48692 "EHLO
+        id S244219AbiBOUyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 15:54:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237170AbiBOUyD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 15:54:03 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D029F27159
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 12:53:50 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id u6so39271785lfc.3
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 12:53:50 -0800 (PST)
+        with ESMTP id S243497AbiBOUyc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 15:54:32 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B78527171
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 12:54:21 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id u18so334254edt.6
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 12:54:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
-         :subject:content-transfer-encoding;
-        bh=zs1X+4dxG6okt2I00rgovQNtmvzB1hcgZ4AtIwR6ja4=;
-        b=Pxyt2Sj69HAuCQbk/xiNvFWlU30e4vcxlO9FLridgLaqPAYn3ELvG1kjNpI48i4bQl
-         +5f62N2lKQGERrx+wmMZH2AY2gken4mYHG/1eXzjDBTbIIvcQaWAqPLQHWRU6dz/ZAuL
-         GWZN15B/MOJtfXTd7RZuYQXw5Z5NEDQAp9YmT3aDMRpwn1wFNlLkoh0jSPAvfBwSbSXa
-         av1xtyztg5YtOT20kIQn/4z/FJHfpZFAqVCF2OJ4ol9pPKpke2MjdJtRoU5fMoJYvvjB
-         wNQOKhPtBb3itjx6HqhX4h88vrfNoVf7yfQ1IdJi4eJ77nJGu7gkrlzQmPn5PhjQrCqC
-         GbJw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=71WCayc5/CJZ92qfXlhwclA6u/LxWQLtdQOYakxN0WE=;
+        b=kuBsG/MdxpCLBosQOY7fdYzzVAqzvoon2EOIUg36FoJHlJyCO7qyn+l54oM8E34SSt
+         aUxUOEoMQKZ6hgfFhgA+j8JRENBMTjGxnMBkWXZ8JBUN5oAuwgD0itaW8UgyGo+k0xK+
+         lH9WyoAN3Q12FoYfFBrZg/th4Pk8VmvibKC05kAa6MRSLDeGMjKJzzPUJ6gSyJPu0eiN
+         HITcDqFEJlRLryumwi07XPasnOE95rJPWfvnQvvXChCKpiDcPYJ4zZsH/O5AM7Bvf/GN
+         TsBWjCBb7a8K2Rk59I7RwJFQQEeIOnKoVPEAbm7BeY25R7zn45QSTY7j3yQgqbTmIU/T
+         IX5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:from:subject:content-transfer-encoding;
-        bh=zs1X+4dxG6okt2I00rgovQNtmvzB1hcgZ4AtIwR6ja4=;
-        b=ekivuYOqbCVR1ZaKnExFvH/k6GFPD+x+0ks9E67W0EQ5twPmtJdxosrLe9Utvaheya
-         eTWSk8VYDxQYGKu8i+YrryljyfdsJy9l/WvFA2uFwGM2EfDdJtjpDa66J7+UE9j/OyAu
-         QKslLeBfAU8XLkr50PkhtzM315VOiF0WgjpuDitGtQy9JnDI76+QzmepH2nmvJlNNqQY
-         4UnqpERFwhrA7HAiqyJMrj570bMQqoHvqRrVKoPPMkoSUbz3aH1gDgOChaGvP8pM4t8k
-         uoVZRBGTvgEUcLXQGIA1C5pbv8bhUQe1Sgj2kLpApFCNyXdeN1UmzSUDQY8vAyZqTHN7
-         ASVA==
-X-Gm-Message-State: AOAM531EGhzfqSO6CpJS+WmvmBBnmLhzC2zyL1KaZZRyY7spyk7xTAbA
-        4v9afFWRlEeMDvXz/1q0tJoPIOeo8T0=
-X-Google-Smtp-Source: ABdhPJyMN3ccXvC8MeySSLuzmNsEtM7TwLmf9gVY/EfLm6rq/yyEYnrGxyboV36v79AkZapminPGxw==
-X-Received: by 2002:a05:6512:398a:: with SMTP id j10mr648960lfu.189.1644958428811;
-        Tue, 15 Feb 2022 12:53:48 -0800 (PST)
-Received: from [192.168.88.200] (pppoe.178-66-239-7.dynamic.avangarddsl.ru. [178.66.239.7])
-        by smtp.gmail.com with ESMTPSA id f6sm1132215lfs.64.2022.02.15.12.53.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 12:53:48 -0800 (PST)
-Message-ID: <9766312d-58ae-4219-036e-73a587de1111@gmail.com>
-Date:   Tue, 15 Feb 2022 23:53:47 +0300
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=71WCayc5/CJZ92qfXlhwclA6u/LxWQLtdQOYakxN0WE=;
+        b=qJy4pR++sn+K1Ashq+nQxo+mXlCHS1hpOHY1BT+7Vf/a9uQnI4EIZ2UL9OQfT0+Pg9
+         HjdxI6aJ3PuyE5ApPkT6t9iia7aUEuSumS8oiMaZ4ldJjXGfKIc9ZfZGgEI5fo+0KKcl
+         Do3myQT5UeAq+SsIY6jf8ZU9oqMAVqIAz7nfcbQIaNfoNWaHDvF1h6fzestLQPHhdn38
+         oVtKD1C343Bys+DGKaU9wgfj1tocxvXCEuWEYylvjVosxEg152X43kwLQHwqMtTzzn0F
+         Gry8gS7+eIfpM2Ufnw0cGL6cldfgOh7JC1CuA/sQpVy2LesRK9fL6qJ1oyGHYQ5Vkrn9
+         /3cw==
+X-Gm-Message-State: AOAM530tdCSYL2ntOpFLHoXgOhWpXsdfWERKNfplGVwKLwFxajVDmg4L
+        XYYYVXWg9PxlZ48rDOF2vGo=
+X-Google-Smtp-Source: ABdhPJz5uEeJdSEk+g9GHEq6BaxThauJOyer1hVHv28y9fmTDNLx3xy4cXz92AboHoIXT2CIqgd2Hw==
+X-Received: by 2002:a05:6402:11cd:: with SMTP id j13mr756562edw.119.1644958459952;
+        Tue, 15 Feb 2022 12:54:19 -0800 (PST)
+Received: from skbuf ([188.27.184.105])
+        by smtp.gmail.com with ESMTPSA id o18sm405722edw.102.2022.02.15.12.54.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 12:54:19 -0800 (PST)
+Date:   Tue, 15 Feb 2022 22:54:18 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     =?utf-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>,
+        netdev@vger.kernel.org,
+        Egil Hjelmeland <privat@egil-hjelmeland.no>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Juergen Borleis <jbe@pengutronix.de>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        lorenzo@kernel.org
+Subject: Re: DSA using cpsw and lan9303
+Message-ID: <20220215205418.a25ro255qbv5hpjk@skbuf>
+References: <yw1x8rud4cux.fsf@mansr.com>
+ <d19abc0a-4685-514d-387b-ac75503ee07a@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>
-From:   Maxim Petrov <mmrmaximuzz@gmail.com>
-Subject: [PATCH iproute2] lnstat: fix strdup leak in -w argument parsing
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <d19abc0a-4685-514d-387b-ac75503ee07a@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -69,26 +77,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'tmp' string is used for safe tokenizing, but it is not required after
-getting all the widths in -w option. As 'tmp' string is obtained by strdup
-call, the caller has to deallocate it to avoid memory leak.
+Hi Måns,
 
-Signed-off-by: Maxim Petrov <mmrmaximuzz@gmail.com>
----
- misc/lnstat.c | 1 +
- 1 file changed, 1 insertion(+)
+On Mon, Feb 14, 2022 at 09:16:10AM -0800, Florian Fainelli wrote:
+> +others,
+> 
+> netdev is a high volume list, you should probably copy directly the
+> people involved with the code you are working with.
+> 
+> On 2/14/22 8:44 AM, Måns Rullgård wrote:
+> > The hardware I'm working on has a LAN9303 switch connected to the
+> > Ethernet port of an AM335x (ZCE package).  In trying to make DSA work
+> > with this combination, I have encountered two problems.
+> > 
+> > Firstly, the cpsw driver configures the hardware to filter out frames
+> > with unknown VLAN tags.  To make it accept the tagged frames coming from
+> > the LAN9303, I had to modify the latter driver like this:
+> > 
+> > diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
+> > index 2de67708bbd2..460c998c0c33 100644
+> > --- a/drivers/net/dsa/lan9303-core.c
+> > +++ b/drivers/net/dsa/lan9303-core.c
+> > @@ -1078,20 +1079,28 @@ static int lan9303_port_enable(struct dsa_switch *ds, int port,
+> >                                struct phy_device *phy)
+> >  {
+> >         struct lan9303 *chip = ds->priv;
+> > +       struct net_device *master;
+> >  
+> >         if (!dsa_is_user_port(ds, port))
+> >                 return 0;
+> >  
+> > +       master = dsa_to_port(chip->ds, 0)->master;
+> > +       vlan_vid_add(master, htons(ETH_P_8021Q), port);
+> 
+> That looks about right given that net/dsa/tag_lan9303.c appears to be a
+> quasi DSA_TAG_PROTO_8021Q implementation AFAICT.
 
-diff --git a/misc/lnstat.c b/misc/lnstat.c
-index 98904d45..c3293a8e 100644
---- a/misc/lnstat.c
-+++ b/misc/lnstat.c
-@@ -331,6 +331,7 @@ int main(int argc, char **argv)
- 				for (i = 0; i < MAX_FIELDS; i++)
- 					fp.params[i].print.width = len;
- 			}
-+			free(tmp);
- 			break;
- 		default:
- 			usage(argv[0], 1);
--- 
-2.25.1
+In case it was not clear, I agree with Florian that this looks "about right",
+I just thought that mentioning it wouldn't bring much to the table.
+But I noticed you submitted a patch for the other issue and not for this.
+
+Some complaints about accessing the CPU port as dsa_to_port(chip->ds, 0),
+but it's not the first place in this driver where that is done.
+
+dsa_tag_8021q_port_setup() also has:
+
+	/* Add @rx_vid to the master's RX filter. */
+	vlan_vid_add(master, ctx->proto, rx_vid);
+
+which is an indication that other switches with VLAN-based tagging
+protocols should handle this somehow, somewhere.
+
+Note, though, that vlan_vid_add() allocates memory, so it would be good
+to have a vlan_vid_del() too at some point.
