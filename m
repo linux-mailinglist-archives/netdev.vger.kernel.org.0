@@ -2,54 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFA184B719C
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:40:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C62DF4B73A4
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:44:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239449AbiBOO7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 09:59:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48388 "EHLO
+        id S239474AbiBOPAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 10:00:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239422AbiBOO7x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 09:59:53 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9A2DEB7
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 06:59:43 -0800 (PST)
-Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nJzIp-0007mL-Fd; Tue, 15 Feb 2022 15:59:39 +0100
-Message-ID: <6da289bf-86a5-44ce-cd19-85529ec1bfe5@leemhuis.info>
-Date:   Tue, 15 Feb 2022 15:59:38 +0100
+        with ESMTP id S239385AbiBOPAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 10:00:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D9D06C947;
+        Tue, 15 Feb 2022 07:00:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B046161521;
+        Tue, 15 Feb 2022 15:00:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1D374C340F1;
+        Tue, 15 Feb 2022 15:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644937211;
+        bh=G88olntChB3S8bFzM9P3swMi/WCvEb5gb4eSGyTeYO0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=NLaG9GSwkVzusfVRrcdB3UoRgTmWrlqsf4LyKVcAcNtNelHct9l8OTM7DXCUCFRgB
+         8y7IFfEsVFp/YvRMMBSZ8OpCitem+TSLwPUyczzGUyjD3xyF60X0odeEH6gv/NNcCO
+         ErVNHv5/ftKyN+cjSIWKNH2Ui10i5WdlRTgfrNKhIhFEH+hvPNG/D01RFb/+b+MzaA
+         z9XUHmDb15cf4gbMvBjWRV1zbBf2MaGbjkYVW2kwWya8bLrUekrOdQxqPh07NBH8Y/
+         3Nw4YYm6JxliY4t3/rcaPgWnuVYLjZnAFcAwa/2p8v4/ddXj23R4J+qw9bTZmt+qvL
+         QkcDj77jnTQ6Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 04D29E6D458;
+        Tue, 15 Feb 2022 15:00:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] Revert "xfrm: xfrm_state_mtu should return at least 1280
- for ipv6"
-Content-Language: en-BW
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Jiri Bohac <jbohac@suse.cz>
-Cc:     Sabrina Dubroca <sd@queasysnail.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mike Maloney <maloneykernel@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-References: <20220114173133.tzmdm2hy4flhblo3@dwarf.suse.cz>
- <20220114174058.rqhtuwpfhq6czldn@dwarf.suse.cz>
- <20220119073519.GJ1223722@gauss3.secunet.de>
- <20220119091233.pzqdlzpcyicjavk5@dwarf.suse.cz>
- <20220124154531.GM1223722@gauss3.secunet.de>
- <20220125094102.ju7bhuplcxnkyv4x@dwarf.suse.cz>
- <20220126064214.GO1223722@gauss3.secunet.de>
- <20220126150018.7cdfxtkq2nfkqj4j@dwarf.suse.cz>
- <20220201064639.GS1223722@gauss3.secunet.de>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <20220201064639.GS1223722@gauss3.secunet.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1644937183;79b2bef5;
-X-HE-SMSGID: 1nJzIp-0007mL-Fd
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] CDC-NCM: avoid overflow in sanity checking
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164493721101.12867.17864293347718933449.git-patchwork-notify@kernel.org>
+Date:   Tue, 15 Feb 2022 15:00:11 +0000
+References: <20220215103547.29599-1-oneukum@suse.com>
+In-Reply-To: <20220215103547.29599-1-oneukum@suse.com>
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, gregKH@linuxfoundation.org,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -58,57 +56,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, this is your Linux kernel regression tracker speaking.
+Hello:
 
-The patch discussed below is now in linux-next for about 11 days, but
-not yet in the net tree afaics. Will it be merged this week? And
-shouldn't this patch have these stables tags?
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Cc: <stable@vger.kernel.org> # 5.14: 6596a0229541 xfrm: fix MTU regression
-Cc: <stable@vger.kernel.org> # 5.14
-
-And maybe a fixes tag, too?
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I'm getting a lot of
-reports on my table. I can only look briefly into most of them and lack
-knowledge about most of the areas they concern. I thus unfortunately
-will sometimes get things wrong or miss something important. I hope
-that's not the case here; if you think it is, don't hesitate to tell me
-in a public reply, it's in everyone's interest to set the public record
-straight.
-
-#regzbot poke
-
-On 01.02.22 07:46, Steffen Klassert wrote:
-> On Wed, Jan 26, 2022 at 04:00:18PM +0100, Jiri Bohac wrote:
->> This reverts commit b515d2637276a3810d6595e10ab02c13bfd0b63a.
->>
->> Commit b515d2637276a3810d6595e10ab02c13bfd0b63a ("xfrm: xfrm_state_mtu
->> should return at least 1280 for ipv6") in v5.14 breaks the TCP MSS
->> calculation in ipsec transport mode, resulting complete stalls of TCP
->> connections. This happens when the (P)MTU is 1280 or slighly larger.
->>
->> The desired formula for the MSS is:
->> MSS = (MTU - ESP_overhead) - IP header - TCP header
->>
->> However, the above commit clamps the (MTU - ESP_overhead) to a
->> minimum of 1280, turning the formula into
->> MSS = max(MTU - ESP overhead, 1280) -  IP header - TCP header
->>
->> With the (P)MTU near 1280, the calculated MSS is too large and the
->> resulting TCP packets never make it to the destination because they
->> are over the actual PMTU.
->>
->> The above commit also causes suboptimal double fragmentation in
->> xfrm tunnel mode, as described in
->> https://lore.kernel.org/netdev/20210429202529.codhwpc7w6kbudug@dwarf.suse.cz/
->>
->> The original problem the above commit was trying to fix is now fixed
->> by commit 6596a0229541270fb8d38d989f91b78838e5e9da ("xfrm: fix MTU
->> regression").
->>
->> Signed-off-by: Jiri Bohac <jbohac@suse.cz>
+On Tue, 15 Feb 2022 11:35:47 +0100 you wrote:
+> A broken device may give an extreme offset like 0xFFF0
+> and a reasonable length for a fragment. In the sanity
+> check as formulated now, this will create an integer
+> overflow, defeating the sanity check. Both offset
+> and offset + len need to be checked in such a manner
+> that no overflow can occur.
+> And those quantities should be unsigned.
 > 
-> Applied, thanks Jiri!
+> [...]
+
+Here is the summary with links:
+  - CDC-NCM: avoid overflow in sanity checking
+    https://git.kernel.org/netdev/net/c/8d2b1a1ec9f5
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
