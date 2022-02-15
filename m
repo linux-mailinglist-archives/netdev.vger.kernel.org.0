@@ -2,62 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA6994B5EF2
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 01:19:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A4C94B5EFD
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 01:22:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232470AbiBOATi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 19:19:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34282 "EHLO
+        id S232488AbiBOAWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 19:22:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbiBOATh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 19:19:37 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC94C12D0B2
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 16:19:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644884368; x=1676420368;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZSirIDvlIWHGucFV8M2Rio4bqMTvd2u/FR+TdqsQcwk=;
-  b=TDWZbu8g7WgAA3NYGID3bGdezPo0JGrVvPmAL+fx8DDcIgFlu6AdACMP
-   ytg4bZ3ZCanpMdicJyvchz3P8DdqO2vzmm5l2RUcmPw31gMLVLuRr82GK
-   ZCUQcIRFn84VgAlz/yzHQc46Cnf6fNOsSkuOaW2tF+dVc4+NF8hjbLkdA
-   +dA0+xJo5iDFpHD1ffTMFthEzS6aVJrz0a+9qSxGlJ1j13B87OqDGarOC
-   4hgnVPqQibNHHVn0hZlSV6HTAjEQ2lgb3oD4AYJcVyD86gwOgjjOP4vS4
-   RwLI6CQsiaruE4grDPOBRUgnXDRzpcIbv8EhSiRPjF5zOrhW5rzWR5sDN
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="274789373"
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="274789373"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 16:19:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="570547087"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 14 Feb 2022 16:19:26 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJlYz-000951-HR; Tue, 15 Feb 2022 00:19:25 +0000
-Date:   Tue, 15 Feb 2022 08:18:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, davem@davemloft.net,
-        kuba@kernel.org, Willem de Bruijn <willemb@google.com>,
-        Congyu Liu <liu3101@purdue.edu>
-Subject: Re: [PATCH net] ipv6: per-netns exclusive flowlabel checks
-Message-ID: <202202150837.bGbeRjWx-lkp@intel.com>
-References: <20220214200400.513069-1-willemdebruijn.kernel@gmail.com>
+        with ESMTP id S229671AbiBOAWx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 19:22:53 -0500
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679FB135725
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 16:22:45 -0800 (PST)
+Received: by mail-qk1-x72d.google.com with SMTP id bs32so15946065qkb.1
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 16:22:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2jZUgLqnhahw+gLupg9iynRXZT4E5Qs4e6rKnkb62s8=;
+        b=U3jYD+3lN36eR/1MR9TQJ+pYkeI5pCasgWXk7WsbBP17WZzobhniqnhWC1LvLYITmm
+         FXhEdh+ROFUuPv6qfO5tILU9dFafxqcWQvv9x6ihHPrw6xtzdaclJWg+D+x4sJxSj7Uz
+         RdEiSeEgEVkLMshmFU/pVHHwfN+f9s3+xwU2i7Hhco5CX54piU7e35b7NZc353uJZVCv
+         th6sK1Czgy05L4TJnswR/SqEk7F54hwpLtQTHdZzX4R8neywUxb4cGHozQDxpLZsN/HF
+         nCh5BsMLlez+fWoI5B/ih3NC2ddLJs42i1U4FF5pRYdzH6kWZql+ls5vtiRQS+Zl3Air
+         +DVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2jZUgLqnhahw+gLupg9iynRXZT4E5Qs4e6rKnkb62s8=;
+        b=eIe/oRUUH2ft+y00uQnVnIu3xKlZjfI/AyYzKEqFY/rAP652/tnVL5gkT9wK7PYdB0
+         AtlkZlw7EK66so6uF1UtKywlY9wGvc+Ge11xkoiIikNOChdiP9m+pIUIZjPwg+pUidTq
+         fdDVtQ+DP1VIatnMt1bd++ybBJ7fZbe4nn5SQ66WZCPIu6p26cT+kUlTPXCF5Roaqf4I
+         t2/9k2/UmUvf2sUt/dQ77piHtskdzjwW6r6xhrIiKYuXW9QyHtZD7F3wncLcuFyh04C5
+         3ehFXd274Qx7t6fvs7l3k+lawLbzgKCLWZyp3J/xD8ri8xuWu8eohLmLDwRNbhqOGMmL
+         S1Rw==
+X-Gm-Message-State: AOAM532G9rGME/weU2Vvm7ZD7Nkf1KS33N5bZRchOsNFNpbg8jTgY6VU
+        pqW269VmYSxmNyqNBiJbgr1OKQ==
+X-Google-Smtp-Source: ABdhPJyZpdPXqb4ZeC8Sw/PAMKA42ZqfL643lIGknDrQ1sT7gV2naDFTcPxmNmz1GeVNl5H4LCwbKA==
+X-Received: by 2002:a05:620a:4149:: with SMTP id k9mr857398qko.323.1644884564517;
+        Mon, 14 Feb 2022 16:22:44 -0800 (PST)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-74.dsl.bell.ca. [184.148.47.74])
+        by smtp.googlemail.com with ESMTPSA id n7sm18992481qta.78.2022.02.14.16.22.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 16:22:43 -0800 (PST)
+Message-ID: <0b486c4e-0af5-d142-44e5-ed81aa0b98c2@mojatatu.com>
+Date:   Mon, 14 Feb 2022 19:22:42 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220214200400.513069-1-willemdebruijn.kernel@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [net-next v8 2/2] net: sched: support hash/classid/cpuid
+ selecting tx queue
+Content-Language: en-US
+To:     xiangxia.m.yue@gmail.com, netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+References: <20220126143206.23023-1-xiangxia.m.yue@gmail.com>
+ <20220126143206.23023-3-xiangxia.m.yue@gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+In-Reply-To: <20220126143206.23023-3-xiangxia.m.yue@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,149 +87,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Willem,
+On 2022-01-26 09:32, xiangxia.m.yue@gmail.com wrote:
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> 
+> This patch allows user to select queue_mapping, range
+> from A to B. And user can use skbhash, cgroup classid
+> and cpuid to select Tx queues. Then we can load balance
+> packets from A to B queue. The range is an unsigned 16bit
+> value in decimal format.
+> 
+> $ tc filter ... action skbedit queue_mapping skbhash A B
+> 
+> "skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit")
+> is enhanced with flags:
+> * SKBEDIT_F_TXQ_SKBHASH
+> * SKBEDIT_F_TXQ_CLASSID
+> * SKBEDIT_F_TXQ_CPUID
+> 
+> Use skb->hash, cgroup classid, or cpuid to distribute packets.
+> Then same range of tx queues can be shared for different flows,
+> cgroups, or CPUs in a variety of scenarios.
+> 
+> For example, F1 may share range R1 with F2. The best way to do
+> that is to set flag to SKBEDIT_F_TXQ_HASH, using skb->hash to
+> share the queues. If cgroup C1 want to share the R1 with cgroup
+> C2 .. Cn, use the SKBEDIT_F_TXQ_CLASSID. Of course, in some other
+> scenario, C1 use R1, while Cn can use the Rn.
+> 
 
-Thank you for the patch! Perhaps something to improve:
+So while i dont agree that ebpf is the solution for reasons i mentioned
+earlier - after looking at the details think iam confused by this change
+and maybe i didnt fully understand the use case.
 
-[auto build test WARNING on net/master]
-
-url:    https://github.com/0day-ci/linux/commits/Willem-de-Bruijn/ipv6-per-netns-exclusive-flowlabel-checks/20220215-042330
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 86006f996346e8a5a1ea80637ec949ceeea4ecbc
-config: hexagon-randconfig-r036-20220214 (https://download.01.org/0day-ci/archive/20220215/202202150837.bGbeRjWx-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project ea071884b0cc7210b3cc5fe858f0e892a779a23b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/5d3936d3544b4cdd6d63c896d158d4975a4822c3
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Willem-de-Bruijn/ipv6-per-netns-exclusive-flowlabel-checks/20220215-042330
-        git checkout 5d3936d3544b4cdd6d63c896d158d4975a4822c3
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/ceph/ net/sched/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-           compiletime_assert_rwonce_type(x);                              \
-                                          ^
-   include/asm-generic/rwonce.h:36:35: note: expanded from macro 'compiletime_assert_rwonce_type'
-           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
-                                            ^
-   include/linux/compiler_types.h:314:10: note: expanded from macro '__native_word'
-            sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
-                   ^
-   include/linux/compiler_types.h:346:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                               ^~~~~~~~~
-   include/linux/compiler_types.h:334:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-                                ^~~~~~~~~
-   include/linux/compiler_types.h:326:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   In file included from net/sched/cls_flow.c:24:
-   In file included from include/net/ip.h:30:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
-   include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:49:33: note: expanded from macro 'READ_ONCE'
-           compiletime_assert_rwonce_type(x);                              \
-                                          ^
-   include/asm-generic/rwonce.h:36:35: note: expanded from macro 'compiletime_assert_rwonce_type'
-           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
-                                            ^
-   include/linux/compiler_types.h:314:38: note: expanded from macro '__native_word'
-            sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
-                                               ^
-   include/linux/compiler_types.h:346:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                               ^~~~~~~~~
-   include/linux/compiler_types.h:334:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-                                ^~~~~~~~~
-   include/linux/compiler_types.h:326:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   In file included from net/sched/cls_flow.c:24:
-   In file included from include/net/ip.h:30:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
-   include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:49:33: note: expanded from macro 'READ_ONCE'
-           compiletime_assert_rwonce_type(x);                              \
-                                          ^
-   include/asm-generic/rwonce.h:36:48: note: expanded from macro 'compiletime_assert_rwonce_type'
-           compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),  \
-                                                         ^
-   include/linux/compiler_types.h:346:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-                               ^~~~~~~~~
-   include/linux/compiler_types.h:334:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-                                ^~~~~~~~~
-   include/linux/compiler_types.h:326:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   In file included from net/sched/cls_flow.c:24:
-   In file included from include/net/ip.h:30:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
-   include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:50:14: note: expanded from macro 'READ_ONCE'
-           __READ_ONCE(x);                                                 \
-                       ^
-   include/asm-generic/rwonce.h:44:65: note: expanded from macro '__READ_ONCE'
-   #define __READ_ONCE(x)  (*(const volatile __unqual_scalar_typeof(x) *)&(x))
-                                                                    ^
-   include/linux/compiler_types.h:302:13: note: expanded from macro '__unqual_scalar_typeof'
-                   _Generic((x),                                           \
-                             ^
-   In file included from net/sched/cls_flow.c:24:
-   In file included from include/net/ip.h:30:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
-   include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
-               READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
-                         ~~~~~~~~~~~~  ^
-   include/asm-generic/rwonce.h:50:14: note: expanded from macro 'READ_ONCE'
-           __READ_ONCE(x);                                                 \
-                       ^
-   include/asm-generic/rwonce.h:44:72: note: expanded from macro '__READ_ONCE'
-   #define __READ_ONCE(x)  (*(const volatile __unqual_scalar_typeof(x) *)&(x))
-                                                                           ^
-   In file included from net/sched/cls_flow.c:24:
-   In file included from include/net/ip.h:30:
-   In file included from include/net/route.h:24:
-   In file included from include/net/inetpeer.h:16:
-   include/net/ipv6.h:402:60: error: invalid operands to binary expression ('long' and 'void')
-           if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key) &&
-               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
->> net/sched/cls_flow.c:63:52: warning: shift count >= width of type [-Wshift-count-overflow]
-           return (a & 0xFFFFFFFF) ^ (BITS_PER_LONG > 32 ? a >> 32 : 0);
-                                                             ^  ~~
-   1 warning and 8 errors generated.
+What is the driver that would work  with this?
+You said earlier packets are coming out of some pods and then heading to
+the wire and you are looking to balance and isolate between bulk and
+latency  sensitive traffic - how are any of these metadatum useful for
+that? skb->priority seems more natural for that.
 
 
-vim +63 net/sched/cls_flow.c
+cheers,
+jamal
 
-e5dfb815181fcb Patrick McHardy 2008-01-31  58  
-e5dfb815181fcb Patrick McHardy 2008-01-31  59  static inline u32 addr_fold(void *addr)
-e5dfb815181fcb Patrick McHardy 2008-01-31  60  {
-e5dfb815181fcb Patrick McHardy 2008-01-31  61  	unsigned long a = (unsigned long)addr;
-e5dfb815181fcb Patrick McHardy 2008-01-31  62  
-e5dfb815181fcb Patrick McHardy 2008-01-31 @63  	return (a & 0xFFFFFFFF) ^ (BITS_PER_LONG > 32 ? a >> 32 : 0);
-e5dfb815181fcb Patrick McHardy 2008-01-31  64  }
-e5dfb815181fcb Patrick McHardy 2008-01-31  65  
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
