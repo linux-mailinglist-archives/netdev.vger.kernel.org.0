@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 913F94B5F9A
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 01:54:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0BD44B5F98
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 01:54:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232939AbiBOAxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 19:53:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48870 "EHLO
+        id S230364AbiBOAyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 19:54:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232132AbiBOAxQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 19:53:16 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71E0B82DA;
-        Mon, 14 Feb 2022 16:52:44 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id z17so11830981plb.9;
-        Mon, 14 Feb 2022 16:52:44 -0800 (PST)
+        with ESMTP id S232065AbiBOAym (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 19:54:42 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56C513C9DA
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 16:54:17 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id 124so23206688ybn.11
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 16:54:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dv3kssat0G0+r/mn6cZ8o0DJdBpH+IYK8WlYpDl7VRk=;
-        b=SiiOQxbKe+V7ewVUSXRYdLtkyJFMtToCQ0GCZt4YMjE1T6aYhYrtpfQKxavLNorTDE
-         Y3/jPyC0k3UntNxxiyrIIMOvRe2MYad/kG6kRl4pr9IpKljm1P3Hg2rtKHSd2gDg9pCE
-         ublTc4KTbQc6RTf6KD2bh9xI6mJ1X6VbJgdUdjHNqzq9j3mY25Y3cCWMOjVbmKUcyIj4
-         47FKm+6D1xSvvztKjtPUhl7YO5BHtGLJuFUuY+npoWVIWnOH1F9Zuhg3q8aYKLn+QKke
-         wJTBq1Ebfmjxr8Mn3Y7QBG27CnVBTwiCQYlzMBGbqPl7/kLaUZmduGPIIwRZdhtRMg3j
-         0VPw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+AX2SYoC4msJOh9OJc3IccwcSk5p5Afcs2DP3Zp2Qvg=;
+        b=UM9q3k7K5CuUBXwtgck8hLLXSV6Hd6T/btHOyEF29xCMhoQb4t8kdhXmA42PrDR0bQ
+         mypRKZ5hRGJDDrbtC0j//EW9/k53PcekkX9mPE/xwKJUV1ofX5YTuHAyusuDqiKo+1ne
+         uvHa74MVxE/xkU+Z+BpH6G5xenS+BQt9AFHoDihQ4/PHvPLYYp0ArR1/2SFcdP9yJhtS
+         ffeOzbgpEu5HsGPgaOKmLtK102AI1pvjxzf2+CSxegobs9O960xqJfg5fj41QsQcXE47
+         +v2t712L9LwB+S+z1BwmFrFlFNS3FbqRYpCdABljL/uOgeQqSnhCkfVCd3Vxzy+Z7gKV
+         Lc7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dv3kssat0G0+r/mn6cZ8o0DJdBpH+IYK8WlYpDl7VRk=;
-        b=bGOqIjP1gfvzmGflaIr5zOBxpdmxQokXuzf3bMWLKQMtyR3S/G46daO4gEmOPKVhEg
-         4sKaJD0pFsapcNRv2VTiI65qnjNbAMQBymVNJ0ls3P59pctdy4/kL7d9IBhoGuVgIxPn
-         Nm9qM7/eFtc5akgfgFoWJ44S8dxvpI0J7uIgl5JHor1owvufEgU7e8Fr8UQkwxnpgOf6
-         AY2na6L//DGGHmVZDMU70pccLPR6Y9NY38E8XK/SQgYg4RqbH+HhQV6Y4AXG6JlubL/I
-         1vtnOYI5vdJuxTg8ZWyMd+Exbk4LKlYCP7ltkG8X5iSjEwABwRJFSUkvqecuYqnOw5/l
-         J9CA==
-X-Gm-Message-State: AOAM532+UauM54jo0r646ICLum+cUIuotuBBDQIAsG7t2lsiiTpK4QcM
-        YqCxPoNSu17QP+rVOOQ6cnnc3orwDmY=
-X-Google-Smtp-Source: ABdhPJywNgst+GINAh2ryDsXhp3cqrx9PpdL4N7LTQmDZF2YSZEu16v/j4TLyB9n2OCN8nGWaHk/LQ==
-X-Received: by 2002:a17:90b:4ac4:b0:1ba:3b4:d3c with SMTP id mh4-20020a17090b4ac400b001ba03b40d3cmr1346349pjb.201.1644886363049;
-        Mon, 14 Feb 2022 16:52:43 -0800 (PST)
-Received: from localhost.localdomain (192.243.120.247.16clouds.com. [192.243.120.247])
-        by smtp.gmail.com with ESMTPSA id w198sm4014674pff.96.2022.02.14.16.52.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 16:52:42 -0800 (PST)
-From:   davidcomponentone@gmail.com
-To:     toke@toke.dk
-Cc:     davidcomponentone@gmail.com, kvalo@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yang Guang <yang.guang5@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] ath9k: use swap() to make code cleaner
-Date:   Tue, 15 Feb 2022 08:52:29 +0800
-Message-Id: <a2400dd73f6ea8672bb6e50124cc3041c0c43d6d.1644838854.git.yang.guang5@zte.com.cn>
-X-Mailer: git-send-email 2.30.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+AX2SYoC4msJOh9OJc3IccwcSk5p5Afcs2DP3Zp2Qvg=;
+        b=gUWuyisKSnAIHhK7V8FzxGXZCsQTvmfC2jzWfZGLX2Yt/I3K7fTMQHFXllJUkRTMHl
+         8xd/vuiMxBMo/zM1bO5ea34+BXfmcoSTzffF8ydjKSpWoZLRA8pdU9Hx5Dwghdj4FLPa
+         4+ZWDofD3BFqUdqshRj7KjPqU/LS8O3NcjJi9TWcVlQydblDlrfcmdlJvgGiAl+PtS9E
+         DLu0bOj9JDUeRBknVB1a4Tm0bo3EMLlNbYG47i/p6W1em8p3cR0JeU7Msp8VRmAPTplp
+         WbRYiCvUrIdoMs0L55IfQaWXVjYLFXv2j8TNz+bIiv5fJGJSBqIwoPZBdcDcwvuvmfYT
+         ESBQ==
+X-Gm-Message-State: AOAM532+YaNBuHD5zMt+wy4ZGd2YlECvj74Fcqp7Chf9DWnc6kLyLSuo
+        pTUsBTUdAWY8qlm1Oj21BA71/xXOrsmyC2rt/5A=
+X-Google-Smtp-Source: ABdhPJyYfX2UFsj/xY+/Kqy80rxXxyKIq5Uj8vZ3Uho+pUHytHaUAefR4V+uqV6CBRO9NucJvhv8z+HgOGaSjkBuYNI=
+X-Received: by 2002:a81:ee06:: with SMTP id l6mr1471760ywm.450.1644886455201;
+ Mon, 14 Feb 2022 16:54:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220208053451.2885398-1-eric.dumazet@gmail.com>
+ <YgryyOR3PaTztFn8@pop-os.localdomain> <CANn89iKNOpRSGC_1WcXQ+=R4NnZSp6w9V+HFSZ7OPO+gZdPheg@mail.gmail.com>
+In-Reply-To: <CANn89iKNOpRSGC_1WcXQ+=R4NnZSp6w9V+HFSZ7OPO+gZdPheg@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 14 Feb 2022 16:54:04 -0800
+Message-ID: <CAM_iQpWYJQW31JOiTNUTs4jarSkd_m4Es_yK=AZSf3a2X3CTwg@mail.gmail.com>
+Subject: Re: [PATCH net] ipmr,ip6mr: acquire RTNL before calling
+ ip[6]mr_free_table() on failure path
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -70,33 +71,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+On Mon, Feb 14, 2022 at 4:36 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Mon, Feb 14, 2022 at 4:24 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > On Mon, Feb 07, 2022 at 09:34:51PM -0800, Eric Dumazet wrote:
+> > > From: Eric Dumazet <edumazet@google.com>
+> > >
+> > > ip[6]mr_free_table() can only be called under RTNL lock.
+> > >
+> > > RTNL: assertion failed at net/core/dev.c (10367)
+> > > WARNING: CPU: 1 PID: 5890 at net/core/dev.c:10367 unregister_netdevice_many+0x1246/0x1850 net/core/dev.c:10367
+> > > Modules linked in:
+> > > CPU: 1 PID: 5890 Comm: syz-executor.2 Not tainted 5.16.0-syzkaller-11627-g422ee58dc0ef #0
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > > RIP: 0010:unregister_netdevice_many+0x1246/0x1850 net/core/dev.c:10367
+> > > Code: 0f 85 9b ee ff ff e8 69 07 4b fa ba 7f 28 00 00 48 c7 c6 00 90 ae 8a 48 c7 c7 40 90 ae 8a c6 05 6d b1 51 06 01 e8 8c 90 d8 01 <0f> 0b e9 70 ee ff ff e8 3e 07 4b fa 4c 89 e7 e8 86 2a 59 fa e9 ee
+> > > RSP: 0018:ffffc900046ff6e0 EFLAGS: 00010286
+> > > RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> > > RDX: ffff888050f51d00 RSI: ffffffff815fa008 RDI: fffff520008dfece
+> > > RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+> > > R10: ffffffff815f3d6e R11: 0000000000000000 R12: 00000000fffffff4
+> > > R13: dffffc0000000000 R14: ffffc900046ff750 R15: ffff88807b7dc000
+> > > FS:  00007f4ab736e700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 00007fee0b4f8990 CR3: 000000001e7d2000 CR4: 00000000003506e0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > Call Trace:
+> > >  <TASK>
+> > >  mroute_clean_tables+0x244/0xb40 net/ipv6/ip6mr.c:1509
+> > >  ip6mr_free_table net/ipv6/ip6mr.c:389 [inline]
+> > >  ip6mr_rules_init net/ipv6/ip6mr.c:246 [inline]
+> > >  ip6mr_net_init net/ipv6/ip6mr.c:1306 [inline]
+> >
+> > Isn't that new table still empty in this case? Which means
+> > mroute_clean_tables() should not actually unregister any netdevice??
+> >
+> > Should we just move that assertion after list empty check?
+> >
+> >
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 909fb3815910..ff6e7d0074dd 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -10359,11 +10359,11 @@ void unregister_netdevice_many(struct list_head *head)
+> >         LIST_HEAD(close_head);
+> >
+> >         BUG_ON(dev_boot_phase);
+> > -       ASSERT_RTNL();
+> >
+> >         if (list_empty(head))
+>
+> The rule is that we need to hold RTNL when calling unregister_netdevice_many().
+>
+> Adding a special case for empty list would avoid this safety check,
+> and perhaps hide future bugs.
 
-Use the macro 'swap()' defined in 'include/linux/minmax.h' to avoid
-opencoding it.
+Why is that? What bugs are you talking about when it is just a nop?
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
----
- drivers/net/wireless/ath/ath9k/calib.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+>
+> This ASSER_RTNL() check has been there forever (before git)
 
-diff --git a/drivers/net/wireless/ath/ath9k/calib.c b/drivers/net/wireless/ath/ath9k/calib.c
-index 0422a33395b7..daf88330e13b 100644
---- a/drivers/net/wireless/ath/ath9k/calib.c
-+++ b/drivers/net/wireless/ath/ath9k/calib.c
-@@ -33,9 +33,7 @@ static int16_t ath9k_hw_get_nf_hist_mid(int16_t *nfCalBuffer)
- 	for (i = 0; i < ATH9K_NF_CAL_HIST_MAX - 1; i++) {
- 		for (j = 1; j < ATH9K_NF_CAL_HIST_MAX - i; j++) {
- 			if (sort[j] > sort[j - 1]) {
--				nfval = sort[j];
--				sort[j] = sort[j - 1];
--				sort[j - 1] = nfval;
-+				swap(sort[j], sort[j - 1]);
- 			}
- 		}
- 	}
--- 
-2.30.2
+So is this bug? ;)
 
+>
+> Not sure what this brings, my patch only fixed a super-rare case ?
+> Do you think the added rtrnl acquisition is an issue ?
+
+Yes, it is just completely unnecessary, I fail to see why we want to
+use RTNL to protect a nop.
+
+Thanks.
