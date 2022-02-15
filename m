@@ -2,65 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62DB04B7088
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:39:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BC214B727F
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:42:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239438AbiBOOwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 09:52:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33996 "EHLO
+        id S239607AbiBOPG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 10:06:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238770AbiBOOvw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 09:51:52 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAA9105290;
-        Tue, 15 Feb 2022 06:50:51 -0800 (PST)
-Date:   Tue, 15 Feb 2022 15:50:46 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644936648;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ipSRQfa6UIjEiEWlLrIVz6abv3g7iod4IaRrr/RJMrk=;
-        b=xK6+Uw/pq6yA+MSuOsm5RMMpP6S6CSqFAOtgJlROqOhRqW0L5FYMVHEoFx9FEBD1g87c8J
-        Hkj7CKLBNk3+jdRQ2jPf/qOVmYfroHz4LLGxsK78Evi+xc2XpFv3qLij1GbXyuhIhOTsvB
-        YbQz0Utnu2orN8bufazagopdGHaKe7pOOszWq2x0W477Hw21j3Aqh8XX0zOreczWP00pmF
-        xi5ZWdZrN9Mre9U+rNdXkLortKL+i0ng975WAmbXwi2oWxC5wmXj9pB/Y71XGzqVlaxLcJ
-        1pL/A6wjNEJQ+G5SuhV5vAUJP1B2wELaiFqVfyYloZbsQ2wrjNVqUJfSwwCxbg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644936648;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ipSRQfa6UIjEiEWlLrIVz6abv3g7iod4IaRrr/RJMrk=;
-        b=UC9OLWjhpk9QTLHPdXI5gsmcyGj7qN3h6zOIE4bZBBE0/Eq3PVOsrG/TU7/btaq2JtDWm9
-        z5XntHoRJVFbJEAg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        with ESMTP id S236756AbiBOPG6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 10:06:58 -0500
+X-Greylist: delayed 431 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 07:06:47 PST
+Received: from unicorn.mansr.com (unicorn.mansr.com [IPv6:2001:8b0:ca0d:8d8e::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C8F6384;
+        Tue, 15 Feb 2022 07:06:47 -0800 (PST)
+Received: from raven.mansr.com (raven.mansr.com [81.2.72.235])
+        by unicorn.mansr.com (Postfix) with ESMTPS id D195915360;
+        Tue, 15 Feb 2022 14:59:32 +0000 (GMT)
+Received: by raven.mansr.com (Postfix, from userid 51770)
+        id CEC7A219C0A; Tue, 15 Feb 2022 14:59:32 +0000 (GMT)
+From:   Mans Rullgard <mans@mansr.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH v4 0/7] Provide and use generic_handle_irq_safe() where
- appropriate.
-Message-ID: <Ygu9xtrMxxq36FRH@linutronix.de>
-References: <20220211181500.1856198-1-bigeasy@linutronix.de>
- <Ygu6UewoPbYC9yPa@google.com>
+        Juergen Borleis <jbe@pengutronix.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: dsa: lan9303: handle hwaccel VLAN tags
+Date:   Tue, 15 Feb 2022 14:59:13 +0000
+Message-Id: <20220215145913.10694-1-mans@mansr.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Ygu6UewoPbYC9yPa@google.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,10 +44,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-02-15 14:36:01 [+0000], Lee Jones wrote:
-> Do we really need to coordinate this series cross-subsystem?
+Check for a hwaccel VLAN tag on rx and use it if present.  Otherwise,
+use __skb_vlan_pop() like the other tag parsers do.  This fixes the case
+where the VLAN tag has already been consumed by the master.
 
-I would suggest to merge it via irq subsystem but I leave the logistics
-to tglx.
+Signed-off-by: Mans Rullgard <mans@mansr.com>
+---
+ net/dsa/tag_lan9303.c | 21 +++++++--------------
+ 1 file changed, 7 insertions(+), 14 deletions(-)
 
-Sebastian
+diff --git a/net/dsa/tag_lan9303.c b/net/dsa/tag_lan9303.c
+index cb548188f813..7fe180941ac4 100644
+--- a/net/dsa/tag_lan9303.c
++++ b/net/dsa/tag_lan9303.c
+@@ -77,7 +77,6 @@ static struct sk_buff *lan9303_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ static struct sk_buff *lan9303_rcv(struct sk_buff *skb, struct net_device *dev)
+ {
+-	__be16 *lan9303_tag;
+ 	u16 lan9303_tag1;
+ 	unsigned int source_port;
+ 
+@@ -87,14 +86,15 @@ static struct sk_buff *lan9303_rcv(struct sk_buff *skb, struct net_device *dev)
+ 		return NULL;
+ 	}
+ 
+-	lan9303_tag = dsa_etype_header_pos_rx(skb);
+-
+-	if (lan9303_tag[0] != htons(ETH_P_8021Q)) {
+-		dev_warn_ratelimited(&dev->dev, "Dropping packet due to invalid VLAN marker\n");
+-		return NULL;
++	skb_push_rcsum(skb, ETH_HLEN);
++	if (skb_vlan_tag_present(skb)) {
++		lan9303_tag1 = skb_vlan_tag_get(skb);
++		__vlan_hwaccel_clear_tag(skb);
++	} else {
++		__skb_vlan_pop(skb, &lan9303_tag1);
+ 	}
++	skb_pull_rcsum(skb, ETH_HLEN);
+ 
+-	lan9303_tag1 = ntohs(lan9303_tag[1]);
+ 	source_port = lan9303_tag1 & 0x3;
+ 
+ 	skb->dev = dsa_master_find_slave(dev, 0, source_port);
+@@ -103,13 +103,6 @@ static struct sk_buff *lan9303_rcv(struct sk_buff *skb, struct net_device *dev)
+ 		return NULL;
+ 	}
+ 
+-	/* remove the special VLAN tag between the MAC addresses
+-	 * and the current ethertype field.
+-	 */
+-	skb_pull_rcsum(skb, 2 + 2);
+-
+-	dsa_strip_etype_header(skb, LAN9303_TAG_LEN);
+-
+ 	if (!(lan9303_tag1 & LAN9303_TAG_RX_TRAPPED_TO_CPU))
+ 		dsa_default_offload_fwd_mark(skb);
+ 
+-- 
+2.35.1
+
