@@ -2,134 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68DE94B799B
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 22:49:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCB684B79B3
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 22:49:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240418AbiBOVZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 16:25:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55290 "EHLO
+        id S244450AbiBOViX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 16:38:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233069AbiBOVZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 16:25:23 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2116.outbound.protection.outlook.com [40.107.21.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F182E61D8;
-        Tue, 15 Feb 2022 13:25:10 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HnD20I6a+Kv2e0gy4kYBXiNBARr8Y+TUw3JT2iu86NExyd+u3zBGvJNOGko+Y/cq9Ewa3MkYkt1XEQzuzZUDhsV9+u2ohiPiQ32+mDEpy1weSKnGbtCVz/hgCIV9yT+LUa2UW6QQoXnsU01JHjBk0NZYFdoDF6BH//mOAOt17hAGF3zq+/4CfIZiwPNg4LhFK+dzrfJBE3sNyT0Y2rV/jKqstXIbfekVx/Jd0cLpvm5xnyxZtmzXguc+V5Yla3Qo6E9GpQOnf5HSt2xw4mMYJpYF/6Z5/SmkSfNobxoZd08jt/T7SrlY11VmCdaScPOwtEe+KkJTi92JJuUev3eFcA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RO03c2eyEscVUcWMCZemjPrFXyHKQn3010VbuxhDgys=;
- b=KXXd67wJ190aIuo44VBF3+wapvUWQYSAwUpBa1b7F61MTa+4ZkoeKhonDSv3TWeK0pV77QA1lVTCQKWZXUIrxJCF4zZ4Ynq+8QCbuXnZY+Z7oGw54KGh74BDiqhIg9sjkvlXbnm97oXc0K8GNxa4i3gNi5jBq5yW5Wrnoo8Ma2FsX8bYW7ChjtDko6pxBWwpqBeP5b9kvDvSsofsQne2x8ZkfK/5ed86rCWLa9ZvvXD/VlFfFM3LPF3VqqLaDJ34T9VvbVqIJbk/ig1QoLqf/RclWC+JDnXbg3lB8tqlCJVbNIRe+88Y7uza/qDGwy891zLPSrUF/6TVk1072KUAhA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RO03c2eyEscVUcWMCZemjPrFXyHKQn3010VbuxhDgys=;
- b=oIBXFwijj0vzmRewyMmfvBEY0nmRJEEvpcBkDn9hFeAJ9NaZr8PzTP1B5N1X1JSZpkdTQJQcS49WorxY29npVUESFVtIAJi+AssSnCjR1/XBBPKjD3e8qJHbYPbKGY1t1fkMmWAFtqucf2AZnq+Xnmfgi16DjBPOBQ+rLV1hgQk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-Received: from AM9P190MB1122.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:262::24)
- by AM9P190MB1425.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:3e7::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.15; Tue, 15 Feb
- 2022 21:25:07 +0000
-Received: from AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
- ([fe80::c93a:58e1:db16:e117]) by AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
- ([fe80::c93a:58e1:db16:e117%5]) with mapi id 15.20.4995.014; Tue, 15 Feb 2022
- 21:25:07 +0000
-Date:   Tue, 15 Feb 2022 23:25:04 +0200
-From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vadym Kochan <vadym.kochan@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: marvell: prestera: Fix includes
-Message-ID: <YgwaMO/13LuekTvj@yorlov.ow.s>
-References: <20220214011228.5625-1-yevhen.orlov@plvision.eu>
- <20220214211743.6fbd3075@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220214211743.6fbd3075@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-ClientProxiedBy: FR3P281CA0044.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:4a::7) To AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:262::24)
+        with ESMTP id S243584AbiBOViV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 16:38:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A52F9E56B
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 13:38:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644961089;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=lw6VFDNDin3+pbk+tx5AobUrmHH/xqmLZ9mW+ngKQHA=;
+        b=b8jTXvwtJ5+Ua986iowvGdhZcXDa2QIsPJhkWmYNm3waE1tHdVtuuqFEi2uKpbxZ1kf28z
+        YplXuX/b6YemvF9aVDbSv9Dwn1Clay3ERqXJ+fkXedNS8iILG4ZhTE86n1NEt8M8I1H5QG
+        F8mGmHqfiwZMf9BgqyPVy7hPZlY0wB8=
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
+ [209.85.167.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-325-uiGr85x2PoSV1w-_8Q3qSw-1; Tue, 15 Feb 2022 16:38:08 -0500
+X-MC-Unique: uiGr85x2PoSV1w-_8Q3qSw-1
+Received: by mail-oi1-f200.google.com with SMTP id bj38-20020a05680819a600b002d2f27f444fso198251oib.18
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 13:38:08 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lw6VFDNDin3+pbk+tx5AobUrmHH/xqmLZ9mW+ngKQHA=;
+        b=57wer6rsrZ7H/GboGuG6aCRlqJlhSvja9GOQISWnEM7EOxKL92v6qprUkSJHZWKu94
+         sJlV2gmikBGdqYvMgbqglrBkscsepJx3mnmTGtlU74XJCqBZFpIQYll5i6tsp47bRJdZ
+         vbWcqSrT2FIeAOk37OvaPxq9R84K+DIeMYPvQYHuqNAaHyttRIqcMFcn99yZPM4B6G3p
+         RdA0fAzcGlQa436TV3CUfJGZn4+AzOPQxQ72Bs9ceO0lVhoVuSafNZPR6r+722THkGQZ
+         wZekSM3TE+A44eftymm19CTOyjBRq8/tcnHpXbAR0UpwyDJnSlOGzdgAEMTKlDHjuoaW
+         oP/Q==
+X-Gm-Message-State: AOAM533TQpa0WTsddXShA1KH2pNLbzx6gIDbNEJGIDa5bVrluXazD4CU
+        XDyFXuhWao2laYb9cIiWRHdD0hX6VYfR1lruO+xkpOz35jxm/oGKgEWT6oLSQN0FQGGSyOPvb8O
+        D8GSOnALcnlB6cGXT
+X-Received: by 2002:a05:6830:1493:: with SMTP id s19mr397257otq.85.1644961087405;
+        Tue, 15 Feb 2022 13:38:07 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxHMQprTXozHvAqtiU55fjLcSJcPyW6e11I36Ur5jnj6V1ImozP4x5z3TQW31gX7xF9l32RWg==
+X-Received: by 2002:a05:6830:1493:: with SMTP id s19mr397250otq.85.1644961087159;
+        Tue, 15 Feb 2022 13:38:07 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id u32sm10936990oiw.28.2022.02.15.13.38.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 13:38:06 -0800 (PST)
+From:   trix@redhat.com
+To:     joyce.ooi@intel.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] net: ethernet: altera: cleanup comments
+Date:   Tue, 15 Feb 2022 13:38:02 -0800
+Message-Id: <20220215213802.3043178-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9a9d5575-7cba-4101-48c8-08d9f0c9a343
-X-MS-TrafficTypeDiagnostic: AM9P190MB1425:EE_
-X-Microsoft-Antispam-PRVS: <AM9P190MB1425422150BD5CB9822BF52193349@AM9P190MB1425.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: anbUB7oYUiZiOWJvWbc1ELXjnrE9AMUXzbpzR13GuXN5cfTTvmPZJAxHF9acI+YSN7AFQb78LwT5JwOb+xQA7HGQ+SNfC6WQV/IW5gcarZabdX1ORIVl9irYMcha/tkmfBZxd1tzmPbSOS4Qh9eYwu/mFcizIafFxT45OkTIqeEnKvMTjeg8OkAmp1qZRVflHvUWlFHyjvqCHtX1c0dC9EK1iGfinR9XKOxXubOnUrU6A+6p7EJpuEU0Uf1TjqqcPMsAcI/2lFAvThU+Q8qn5vzPxv2v0jfF8ufcITJ222F7lAyNRdd+oC2H3Dc1gNr7u5o7/+Uzb1iGN8fYCy3qZgZZ5Gnaiwj/9QO3u98STIZE+enyC8NIubOjrpHlJsZw0QuYEI6hwjGjyoVmsSFilJcoWVWZ/eTqpiCBGw+gIU9YxuhciOqgPMuBmpkkn2qsviFZlEGvjHoW1Fj/WfxpSn4LZQjKCdaWivYn+zBTn2qZqaCsv6jUS5onH2x53BURPw+HPZnhIcOEOabh22enUz7311BQq5lQo+Ussj69q6gjhBDoX5jFIShysfFNRhboBdeChkbnoeKmZFBt8bRu7NZrS6L9OSa5V3VYxylDOdaeqnZWOJngXcWRwqsYWuO5lKXjJZNew0OA0s3rsfFVAty0trAy2dYOaw7aVKxkqkh81tfK/T6nh8s/23eBqEl4qjrfreff4cZHA2b2HdxMpw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9P190MB1122.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(376002)(396003)(346002)(39830400003)(136003)(366004)(66476007)(4744005)(8936002)(44832011)(5660300002)(66946007)(4326008)(8676002)(38350700002)(9686003)(38100700002)(6506007)(6666004)(6512007)(66556008)(52116002)(86362001)(186003)(26005)(2906002)(316002)(6486002)(508600001)(6916009)(54906003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iOfJceMAJo941RPB0R/OHLF3kaef814pLMKXVXQxNW7u4VikZaQQyhYwg8Sh?=
- =?us-ascii?Q?xxylOCzCXmPN1ebWvkARDrWfsG00nrg7JPkIAyhd3xrNbvERcTaPa9EwUEHH?=
- =?us-ascii?Q?EvWbxoWYLzLb+Hu7QupQXfCyfMsK/D1cz2DJVY5URUMeCOiTSWKJvSXXU68j?=
- =?us-ascii?Q?OlSbYUFCd+dJo9OUq1exdWMkfA90ZcWGveyGtPdMQtKP5zqdj2ZyX+kW6q4L?=
- =?us-ascii?Q?9ZV5IHkr6iz8RGQM4eANQz8o3lfg8swqV9IrQ2hHvFYRjw2qk2QFA0W3GLnA?=
- =?us-ascii?Q?V10lMx1go8wzDLKebX0pvV2pUEY1KdfJk+kS/UqS7/0JP5Jwf8NXrx0iZzgU?=
- =?us-ascii?Q?HOY1dhYsiEBoOpZrfOW4RuticXkeq+lQNf1/CUBqr4+SLKVG7zZMV2wpjc5Y?=
- =?us-ascii?Q?Dh5LhhPB3+pukG/i0DguWSc3Hjutv2OwLPCj1n4uwXNhTSx9H+JjFNQy8m2X?=
- =?us-ascii?Q?Xi/PK2HIBOeVq6CqFSu8ANy6LQWYX+YUiiObBb0cIvc29eKOUtXMQIPKbdNG?=
- =?us-ascii?Q?jW2aL6Z39luFHYKFvD+qpM9dNuQmKkXY0MlbAUzKy/fdAcqwyBnCjSdwNe/v?=
- =?us-ascii?Q?6Dkbvqnz0w5RHFG4JC4ZPRnbMZW8UJNFUvAoRBYMlL1mQcoccC54bXEYZms1?=
- =?us-ascii?Q?D9Q1Y84GpPaXLo/2MXSp6cCRgnQT7PYOLL9gcdnrRaVp+P6Neb/CfdKisJBK?=
- =?us-ascii?Q?CkuGNcSTKMk96O4PrWoRN4GwXYq/SA14YNM2NRZLG860mECURLruOSsv312i?=
- =?us-ascii?Q?ssaPQHhKksfgz2KHPJoF2SvH1BS/THYyRaPdkv6AKq3FEUR7sNNZGNjiwPdE?=
- =?us-ascii?Q?c/KfeHsqNZJ/17Vo+qCy55q/S9tTXWK2VOVfpnTCT/sXwXsYTK+MD/dVp1fJ?=
- =?us-ascii?Q?bdgwWuLs3C44dQoFSbqnOSAlCW6R3m/GgVik3IxbleiyGi9HIJB6L6zSX94O?=
- =?us-ascii?Q?EG6slKbJgV/bZr5FPpHAu+w4FT54jzFAIJh3A0hf+ydKSkzukzS15KHJPjZb?=
- =?us-ascii?Q?g7lF6Ynp9jHOOxwJKe19ylzeql1e81Sdb6g/64aqJLC6DBuFTJ4lR1GNzZp3?=
- =?us-ascii?Q?uNmdAeh6KVo8XHEeFxoCgpGJ75kg1wdbhobQCxzS2bOaGlbY8D1EIJzGFXgK?=
- =?us-ascii?Q?0Sm109NI+wYukJlsDdwpoEjFhFvf6syBEnaH5hm2PZMJFCOCdT4h6IljU+Gy?=
- =?us-ascii?Q?jbkEXIUTgEu4jMHBDSrtBwE9//Vg+oGDqVkucewwVSAtrr7AUJ8GI7F+xsDB?=
- =?us-ascii?Q?QUk2UWMn2G8AydwmJs84V9VI06CtuSe4dVwunqSvAVUfRwrE19xNZ6315Kni?=
- =?us-ascii?Q?ax22PodzuvN9epJ6wNSTN5G3XwnTkqLAiRZWmQSgVlo20u0G8aK07seKnxfA?=
- =?us-ascii?Q?PIA7g6u22ie4Bt17r5UT1bIjrVK1tzCPs1bGbF8QYQSjKBK2kP2ZeiAPa7O8?=
- =?us-ascii?Q?zLp1LklL8IjVvUhh63YI9qRjIZwnk/Ys4bcEJCyUcl2TEDDMTVzYOqdInqx6?=
- =?us-ascii?Q?akh1bh5eGvBEOuwKkjXk8wQ+PmkD8t899P2LxOWmddeFyhfe8yPRR+KmDS5b?=
- =?us-ascii?Q?1eZcq7QO7QCxoOK9ddRErQj+uz6c3EUucI6HopukyMeczhJgyyYgvL+N8LTH?=
- =?us-ascii?Q?J5MEFiqT+kX6VkCLImDJ23gG2thzExBj82gZNZQJ+jpu/Jgngkmj+Aw9ewp7?=
- =?us-ascii?Q?mrCcgg=3D=3D?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9a9d5575-7cba-4101-48c8-08d9f0c9a343
-X-MS-Exchange-CrossTenant-AuthSource: AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 21:25:07.1261
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 10ua0tm/lKMDyvfsMtBVEkRb9/q4OTcezVPcKpwFYhvFdJhghvGLoYjUgHuthS7CTxVlncbT1GoXJBPNjS8mlhTy6M1tHcTtMlulSFoKgvw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9P190MB1425
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 09:17:43PM -0800, Jakub Kicinski wrote:
-> *May*? Is prestera_hw.h using definitions from prestera.h today?
-> Dependencies between header files are best avoided completely.
+From: Tom Rix <trix@redhat.com>
 
-Make sense. Thank you for review.
-I will try to avoid such dependencies in the future.
-This patch could be abandoned.
+Replacements:
+queueing to queuing
+trasfer to transfer
+aditional to additional
+adaptor to adapter
+transactino to transaction
+
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/ethernet/altera/altera_sgdma.c    | 2 +-
+ drivers/net/ethernet/altera/altera_tse_main.c | 8 ++++----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/altera/altera_sgdma.c b/drivers/net/ethernet/altera/altera_sgdma.c
+index db97170da8c7..7f247ccbe6ba 100644
+--- a/drivers/net/ethernet/altera/altera_sgdma.c
++++ b/drivers/net/ethernet/altera/altera_sgdma.c
+@@ -513,7 +513,7 @@ static int sgdma_txbusy(struct altera_tse_private *priv)
+ {
+ 	int delay = 0;
+ 
+-	/* if DMA is busy, wait for current transactino to finish */
++	/* if DMA is busy, wait for current transaction to finish */
+ 	while ((csrrd32(priv->tx_dma_csr, sgdma_csroffs(status))
+ 		& SGDMA_STSREG_BUSY) && (delay++ < 100))
+ 		udelay(1);
+diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
+index 993b2fb42961..a3816264c35c 100644
+--- a/drivers/net/ethernet/altera/altera_tse_main.c
++++ b/drivers/net/ethernet/altera/altera_tse_main.c
+@@ -72,7 +72,7 @@ MODULE_PARM_DESC(dma_tx_num, "Number of descriptors in the TX list");
+  */
+ #define ALTERA_RXDMABUFFER_SIZE	2048
+ 
+-/* Allow network stack to resume queueing packets after we've
++/* Allow network stack to resume queuing packets after we've
+  * finished transmitting at least 1/4 of the packets in the queue.
+  */
+ #define TSE_TX_THRESH(x)	(x->tx_ring_size / 4)
+@@ -390,7 +390,7 @@ static int tse_rx(struct altera_tse_private *priv, int limit)
+ 				   "RCV pktstatus %08X pktlength %08X\n",
+ 				   pktstatus, pktlength);
+ 
+-		/* DMA trasfer from TSE starts with 2 aditional bytes for
++		/* DMA transfer from TSE starts with 2 additional bytes for
+ 		 * IP payload alignment. Status returned by get_rx_status()
+ 		 * contains DMA transfer length. Packet is 2 bytes shorter.
+ 		 */
+@@ -1044,7 +1044,7 @@ static void altera_tse_set_mcfilterall(struct net_device *dev)
+ 		csrwr32(1, priv->mac_dev, tse_csroffs(hash_table) + i * 4);
+ }
+ 
+-/* Set or clear the multicast filter for this adaptor
++/* Set or clear the multicast filter for this adapter
+  */
+ static void tse_set_rx_mode_hashfilter(struct net_device *dev)
+ {
+@@ -1064,7 +1064,7 @@ static void tse_set_rx_mode_hashfilter(struct net_device *dev)
+ 	spin_unlock(&priv->mac_cfg_lock);
+ }
+ 
+-/* Set or clear the multicast filter for this adaptor
++/* Set or clear the multicast filter for this adapter
+  */
+ static void tse_set_rx_mode(struct net_device *dev)
+ {
+-- 
+2.26.3
+
