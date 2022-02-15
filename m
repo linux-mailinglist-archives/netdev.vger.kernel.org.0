@@ -2,112 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E43FC4B75D2
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:48:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03F404B7557
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:47:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240020AbiBORFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 12:05:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60500 "EHLO
+        id S242161AbiBORHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 12:07:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234951AbiBORFM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 12:05:12 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4382D11AA1F;
-        Tue, 15 Feb 2022 09:04:59 -0800 (PST)
-Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JynQl6ZBqz67KsG;
-        Wed, 16 Feb 2022 01:00:31 +0800 (CST)
-Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
- fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Feb 2022 18:04:56 +0100
-Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
- fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2308.021;
- Tue, 15 Feb 2022 18:04:56 +0100
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     Yonghong Song <yhs@fb.com>,
-        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "revest@chromium.org" <revest@chromium.org>
-CC:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 3/6] bpf-lsm: Introduce new helper bpf_ima_file_hash()
-Thread-Topic: [PATCH v2 3/6] bpf-lsm: Introduce new helper bpf_ima_file_hash()
-Thread-Index: AQHYImlh7GCSPCaH8Uastxbf0OJz26yUxh4AgAARGHA=
-Date:   Tue, 15 Feb 2022 17:04:56 +0000
-Message-ID: <b896e06f871645a6a2fb9a6f6cf4a8ff@huawei.com>
-References: <20220215124042.186506-1-roberto.sassu@huawei.com>
- <20220215124042.186506-4-roberto.sassu@huawei.com>
- <f939bd53-96d0-d1dc-306f-6215ade6a7f1@fb.com>
-In-Reply-To: <f939bd53-96d0-d1dc-306f-6215ade6a7f1@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.204.63.33]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S242162AbiBORHD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 12:07:03 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BA0C7C27
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 09:06:53 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id q7so33126118wrc.13
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 09:06:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=64ujAZGCy+wXFieA5/Bj8ZqtpVN9eii19Jh2KoGa8VQ=;
+        b=L2GzMwlPsZ7uQ/GDO30qwxGgBGqGNVBqZLTl0CXEl3tlyoMniWdKzQPzNGWr9Zxt7/
+         S5EcncmoO3Vw6GI+9aYAF8XbQ2lw3eyls4FC+lu2pAGfHzvu7Ob9zAEnfKAY55nAZ6d7
+         12ZXoaI6kh9hCMmHJKPUPJWRfpf6aZb1MOCaA/opO4hgdQ7V4m3ZtnODWzCIGCLjzaPX
+         8pch32l9fJrzyx5tHBR80+hjG6gWW502dJ5O6nBV6jv+wteAuFr6DruQCRQ44Q7mlt0o
+         yQp/0bUYoYSK3/5I6s8OVvcmzbUB0SR0uAoaemIRpTrOX7Vp8Q7iZY+iMwRGautRQehC
+         2LFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=64ujAZGCy+wXFieA5/Bj8ZqtpVN9eii19Jh2KoGa8VQ=;
+        b=kLE9Cx8JM9xL1YfjeyC06CzKD9r3H2/ZtUoLElsrlRFJsimY7K/2dMKPZW1UiNgr9w
+         okK8g8Hk0LUT3dp3UV3y3u1Wqcg7Xu3vEu0A8fjoY0MWJTxAcAlSQYlr82wmRgpAniTn
+         iBKI6JJ9+o3UvPRUdtbBRXK7nShu2nOC0YoAyxezsbY18dpF8Kq4tNwWhMYbTytGneuJ
+         yrsMZi7j7A9BslAeeaTYR0mlBZ0NnuJnXZNH7iU7FjI8YSw3bxT84LD8VPw1u+KOBauW
+         c7vZlG7fzwze58n/34R90xHTa5KvN/RIS3/0H+sy+aDb8KYmeosJ42DLL/kq2ZD8whRA
+         KyyQ==
+X-Gm-Message-State: AOAM532aa5UfvxwmU+rk5FlZnMzB2ydLyRN3/6I3f4EBOUik+xg/YDDd
+        Mzg1H5e95+2WysxAhxh2VkZxYe3Mt0CTDRL3Ic7lBGTAKc9Zy68F
+X-Google-Smtp-Source: ABdhPJxt7DoTqqlSMnPR20BUAU/D51eBUmhuL5qPMitPYI1QjXmZpvB3HO4dQNvSBDK/LIrFk4jiPFqroLEgJdBXdCk=
+X-Received: by 2002:a5d:47cf:: with SMTP id o15mr3959105wrc.412.1644944811535;
+ Tue, 15 Feb 2022 09:06:51 -0800 (PST)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220213150234.31602-1-thomas.liu@ucloud.cn> <CA+FuTSdODATw3hSAMv9aZUmJNM8ZE-YP58pr17bO9rGJUgfegw@mail.gmail.com>
+ <CFD9B65A-6762-4D9B-ADEB-B4C0B1902E02@ucloud.cn> <CA+FuTSfQOUEyEDnOU8VVZ=STw_ii-hTwyg-cvpcViPkVK4pLUA@mail.gmail.com>
+ <42554FCB-9180-4B32-B5CF-6D3236237D99@ucloud.cn> <CAF=yD-+1RSj_o8n5LDOLVyn_dvVQvmDQo5pacSoDFPOR3M2g5g@mail.gmail.com>
+ <CANn89i+T=Ny7pfUomSsa1ub77u8LfYtRZPzmp_0-=oWKt0abLg@mail.gmail.com> <CA+FuTSc9ZeuLE7tqNT-GnqHb27SE7UAtVRVsZHR+dV6ua=UKPA@mail.gmail.com>
+In-Reply-To: <CA+FuTSc9ZeuLE7tqNT-GnqHb27SE7UAtVRVsZHR+dV6ua=UKPA@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 15 Feb 2022 09:06:39 -0800
+Message-ID: <CANn89iLtXW-MFJ74UhP4WyC3a60LrevAxddBjJ1nGu78eSG1DQ@mail.gmail.com>
+Subject: Re: [PATCH] gso: do not skip outer ip header in case of ipip and net_failover
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Tao Liu <thomas.liu@ucloud.cn>, David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBZb25naG9uZyBTb25nIFttYWlsdG86eWhzQGZiLmNvbV0NCj4gU2VudDogVHVlc2Rh
-eSwgRmVicnVhcnkgMTUsIDIwMjIgNjowMyBQTQ0KPiBPbiAyLzE1LzIyIDQ6NDAgQU0sIFJvYmVy
-dG8gU2Fzc3Ugd3JvdGU6DQo+ID4gaW1hX2ZpbGVfaGFzaCgpIGhhcyBiZWVuIG1vZGlmaWVkIHRv
-IGNhbGN1bGF0ZSB0aGUgbWVhc3VyZW1lbnQgb2YgYSBmaWxlIG9uDQo+ID4gZGVtYW5kLCBpZiBp
-dCBoYXMgbm90IGJlZW4gYWxyZWFkeSBwZXJmb3JtZWQgYnkgSU1BLiBGb3IgY29tcGF0aWJpbGl0
-eQ0KPiA+IHJlYXNvbnMsIGltYV9pbm9kZV9oYXNoKCkgcmVtYWlucyB1bmNoYW5nZWQuDQo+ID4N
-Cj4gPiBLZWVwIHRoZSBzYW1lIGFwcHJvYWNoIGluIGVCUEYgYW5kIGludHJvZHVjZSB0aGUgbmV3
-IGhlbHBlcg0KPiA+IGJwZl9pbWFfZmlsZV9oYXNoKCkgdG8gdGFrZSBhZHZhbnRhZ2Ugb2YgdGhl
-IG1vZGlmaWVkIGJlaGF2aW9yIG9mDQo+ID4gaW1hX2ZpbGVfaGFzaCgpLg0KPiA+DQo+ID4gU2ln
-bmVkLW9mZi1ieTogUm9iZXJ0byBTYXNzdSA8cm9iZXJ0by5zYXNzdUBodWF3ZWkuY29tPg0KPiA+
-IC0tLQ0KPiA+ICAgaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oICAgICAgIHwgMTEgKysrKysrKysr
-KysNCj4gPiAgIGtlcm5lbC9icGYvYnBmX2xzbS5jICAgICAgICAgICB8IDIwICsrKysrKysrKysr
-KysrKysrKysrDQo+ID4gICB0b29scy9pbmNsdWRlL3VhcGkvbGludXgvYnBmLmggfCAxMSArKysr
-KysrKysrKw0KPiA+ICAgMyBmaWxlcyBjaGFuZ2VkLCA0MiBpbnNlcnRpb25zKCspDQo+ID4NCj4g
-PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oIGIvaW5jbHVkZS91YXBpL2xp
-bnV4L2JwZi5oDQo+ID4gaW5kZXggYjAzODNkMzcxYjlhLi5iYTMzZDU3MThkNmIgMTAwNjQ0DQo+
-ID4gLS0tIGEvaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oDQo+ID4gKysrIGIvaW5jbHVkZS91YXBp
-L2xpbnV4L2JwZi5oDQo+ID4gQEAgLTQ2NDgsNiArNDY0OCwxNiBAQCB1bmlvbiBicGZfYXR0ciB7
-DQo+ID4gICAgKgkJKiotRU9QTk9UU1VQKiogaWYgSU1BIGlzIGRpc2FibGVkIG9yICoqLUVJTlZB
-TCoqIGlmDQo+ID4gICAgKgkJaW52YWxpZCBhcmd1bWVudHMgYXJlIHBhc3NlZC4NCj4gPiAgICAq
-DQo+ID4gKyAqIGxvbmcgYnBmX2ltYV9maWxlX2hhc2goc3RydWN0IGZpbGUgKmZpbGUsIHZvaWQg
-KmRzdCwgdTMyIHNpemUpDQo+ID4gKyAqCURlc2NyaXB0aW9uDQo+ID4gKyAqCQlSZXR1cm5zIGEg
-Y2FsY3VsYXRlZCBJTUEgaGFzaCBvZiB0aGUgKmZpbGUqLg0KPiA+ICsgKgkJSWYgdGhlIGhhc2gg
-aXMgbGFyZ2VyIHRoYW4gKnNpemUqLCB0aGVuIG9ubHkgKnNpemUqDQo+ID4gKyAqCQlieXRlcyB3
-aWxsIGJlIGNvcGllZCB0byAqZHN0Kg0KPiA+ICsgKglSZXR1cm4NCj4gPiArICoJCVRoZSAqKmhh
-c2hfYWxnbyoqIGlzIHJldHVybmVkIG9uIHN1Y2Nlc3MsDQo+ID4gKyAqCQkqKi1FT1BOT1RTVVAq
-KiBpZiB0aGUgaGFzaCBjYWxjdWxhdGlvbiBmYWlsZWQgb3IgKiotRUlOVkFMKioNCj4gaWYNCj4g
-PiArICoJCWludmFsaWQgYXJndW1lbnRzIGFyZSBwYXNzZWQuDQo+ID4gKyAqDQo+ID4gICAgKiBz
-dHJ1Y3Qgc29ja2V0ICpicGZfc29ja19mcm9tX2ZpbGUoc3RydWN0IGZpbGUgKmZpbGUpDQo+ID4g
-ICAgKglEZXNjcmlwdGlvbg0KPiA+ICAgICoJCUlmIHRoZSBnaXZlbiBmaWxlIHJlcHJlc2VudHMg
-YSBzb2NrZXQsIHJldHVybnMgdGhlIGFzc29jaWF0ZWQNCj4gPiBAQCAtNTE4Miw2ICs1MTkyLDcg
-QEAgdW5pb24gYnBmX2F0dHIgew0KPiA+ICAgCUZOKGJwcm1fb3B0c19zZXQpLAkJXA0KPiA+ICAg
-CUZOKGt0aW1lX2dldF9jb2Fyc2VfbnMpLAlcDQo+ID4gICAJRk4oaW1hX2lub2RlX2hhc2gpLAkJ
-XA0KPiA+ICsJRk4oaW1hX2ZpbGVfaGFzaCksCQlcDQo+IA0KPiBQbGVhc2UgcHV0IHRoZSBhYm92
-ZSBGTihpbWFfZmlsZV9oYXNoKSB0byB0aGUgZW5kIG9mIHRoZSBsaXN0Lg0KPiBPdGhlcndpc2Us
-IHdlIGhhdmUgYSBiYWNrd2FyZCBjb21wYXRhYmlsaXR5IGlzc3VlLg0KDQpIaSBZb25naG9uZw0K
-DQpzdXJlLCB3aWxsIGRvLg0KDQpUaGFua3MNCg0KUm9iZXJ0bw0KDQpIVUFXRUkgVEVDSE5PTE9H
-SUVTIER1ZXNzZWxkb3JmIEdtYkgsIEhSQiA1NjA2Mw0KTWFuYWdpbmcgRGlyZWN0b3I6IExpIFBl
-bmcsIFpob25nIFJvbmdodWENCg0KPiA+ICAgCUZOKHNvY2tfZnJvbV9maWxlKSwJCVwNCj4gPiAg
-IAlGTihjaGVja19tdHUpLAkJCVwNCj4gPiAgIAlGTihmb3JfZWFjaF9tYXBfZWxlbSksCQlcDQo+
-ID4gZGlmZiAtLWdpdCBhL2tlcm5lbC9icGYvYnBmX2xzbS5jIGIva2VybmVsL2JwZi9icGZfbHNt
-LmMNCj4gPiBpbmRleCA5ZTRlY2M5OTA2NDcuLmU4ZDI3YWY1YmJjYyAxMDA2NDQNCj4gPiAtLS0g
-YS9rZXJuZWwvYnBmL2JwZl9sc20uYw0KPiA+ICsrKyBiL2tlcm5lbC9icGYvYnBmX2xzbS5jDQo+
-IFsuLi5dDQo=
+On Tue, Feb 15, 2022 at 7:46 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+
+> > Stuffing state in the skb has been a mistake I think.
+>
+> If we could unwind those skb inner_* fields (and reclaim the skbuff
+> space!) that would be fantastic.
+
+Not sure we can easily remove the space, many networking drivers need them,
+we probably do not want to dissect packets in their ndo_start_xmit()
+
+>
+> Immediately for this bug: perhaps it can be fixed by resetting the
+> network_header on the gso skb if segs == NULL. As the offset is stored
+> on the stack.
+
+It seems correct. Any other fields we need to take care of ?
