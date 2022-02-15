@@ -2,162 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C26D24B7B3E
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 00:31:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A5424B7B27
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 00:22:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244814AbiBOXb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 18:31:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36760 "EHLO
+        id S241817AbiBOXWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 18:22:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231760AbiBOXby (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 18:31:54 -0500
-X-Greylist: delayed 574 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 15:31:41 PST
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8559B65433;
-        Tue, 15 Feb 2022 15:31:40 -0800 (PST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1644967321; bh=oxkQ8fDff2RyUMjp4s/XquWC9mjWFRhyAC3CN7OibR0=;
-        h=From:To:Subject:In-Reply-To:References:Date:From;
-        b=BHhGm1ivKzDXxW39urxXsDcW9o58WBEd2ZtYXSLxYBzqTWqWg/o0qAcjzaBsESXCA
-         ORStYpUObPZCcUZQnn9becjxPhyYz50ZfF0IpmjyxxV0a3iq61jj8bSUMIMwKrIrfK
-         Zfe3GXZuihe4NZTcFvf1bplfqLMhebGQDqWpovo5X4Dx0MoL0KL4UbEkn4x2hcv0PG
-         BIB0Hy644SZUin9TgUF8p0HLDYki6ts+APQJ0diYsbAr9CPvoCM6TAyjdx182OtatO
-         htMO9mBpeiT8zNtYe8lHHSBE7bvn7GSWXMtt5hDdgLQRI83NuLPhviSslMfvGGGYKj
-         jzyWMuD+cGIkw==
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, miaoqing@codeaurora.org,
-        Jason Cooper <jason@lakedaemon.net>,
-        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
-        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH] ath9k: use hw_random API instead of directly dumping
- into random.c
-In-Reply-To: <20220215162812.195716-1-Jason@zx2c4.com>
-References: <CAHmME9r4+ENUhZ6u26rAbq0iCWoKqTPYA7=_LWbGG98KvaCE6g@mail.gmail.com>
- <20220215162812.195716-1-Jason@zx2c4.com>
-Date:   Wed, 16 Feb 2022 00:22:00 +0100
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87o8374sx3.fsf@toke.dk>
+        with ESMTP id S231760AbiBOXWs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 18:22:48 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382EF9E9DF
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 15:22:37 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id t14-20020a17090a3e4e00b001b8f6032d96so746837pjm.2
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 15:22:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iXMJMLf8Lj2ZbSgpQjmpfd9PHiK1C5t09Xb+ZEaiUQ0=;
+        b=NrLBzErf9CdS3i0EYctuPOHPwUMgwHkdj9CvxFrgunJsmMKGD51hF/XWAo15S0MWZH
+         WL0OMF24LJNGhoFtsNatGfjBIIm5ymp530qPF6GUjErq5TGQsDNUB8i6/D/i9LjCpWMi
+         3PP3n7+JvVO0sn6xM4Qfp46lpluqMADeqtr0tzQCqNl7/pOCVZSRX3XTqNqNZUOmFx0h
+         YIWroC5kmQETecIXANMpX+iQgW11cemhIzFYafNJVEr0OG/PkuKk6lTibs3aE8Qkqhzv
+         zLyMpshBKzasBdgAJtQHdoEg2B+qVmmmK2OqaghQO/LjpXEEUPKMIGPmWYrswHqvX8dV
+         wdRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iXMJMLf8Lj2ZbSgpQjmpfd9PHiK1C5t09Xb+ZEaiUQ0=;
+        b=N0HQTfaiiyg+EzWsGqqPjkyDAcDruq6krCUknYaOJDBdYS0R96SAYvEahvoMX5k8KM
+         0rEjHGg3RE37su/56qA3taYDHFwIUC269wIgyV3rhVQkNlxUkrz2Tuh0lb5P5rk7IKRf
+         aozj0cDA6aeAr8aEu2Ze3UO8wdN4N+UmJtgJRr5tDVZ+7aFHmBJ3SAQaL8gqmfFlHL8t
+         QOtaSOvRbhg5HA4M9t665P9m7+4k6HAjRY5jFWf+SS/hyIL2DnIUc3DiAu/in2ATJ6Sh
+         BKstiF9B2XxLXK8C67HORjTvydWQivt6jg15LbTdEFiLph1bAJ3Q0GXEKgFVKq3XUVAV
+         dp0Q==
+X-Gm-Message-State: AOAM530Wi9AuHOXHXRJe4M+96tLdBz1mz8IDG2Lw3Q1X+7UDbF/aZC/0
+        5buMrkSwEErDh9JafDADLqitwNoxRlNUqaXy
+X-Google-Smtp-Source: ABdhPJwUZ3XefpjG+55KHRT+MLYDAmKbGQdSHQn1oR3I7D+tUwJRDwskEzIlunYyEZGCHgAe/mb7yg==
+X-Received: by 2002:a17:90a:7f85:: with SMTP id m5mr1302174pjl.5.1644967356452;
+        Tue, 15 Feb 2022 15:22:36 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id b14sm41661279pfm.17.2022.02.15.15.22.35
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 15:22:36 -0800 (PST)
+Date:   Tue, 15 Feb 2022 15:22:33 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 215610] New: eth0 not working after upgrade from 5.16.8 to
+ 5.16.9
+Message-ID: <20220215152233.2c15de26@hermes.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
 
-> Hardware random number generators are supposed to use the hw_random
-> framework. This commit turns ath9k's kthread-based design into a proper
-> hw_random driver.
->
-> This compiles, but I have no hardware or other ability to determine
-> whether it works. I'll leave further development up to the ath9k
-> and hw_random maintainers.
->
-> Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->  drivers/net/wireless/ath/ath9k/ath9k.h |  2 +-
->  drivers/net/wireless/ath/ath9k/rng.c   | 62 +++++++++-----------------
->  2 files changed, 23 insertions(+), 41 deletions(-)
->
-> diff --git a/drivers/net/wireless/ath/ath9k/ath9k.h b/drivers/net/wireles=
-s/ath/ath9k/ath9k.h
-> index ef6f5ea06c1f..142f472903dc 100644
-> --- a/drivers/net/wireless/ath/ath9k/ath9k.h
-> +++ b/drivers/net/wireless/ath/ath9k/ath9k.h
-> @@ -1072,7 +1072,7 @@ struct ath_softc {
->=20=20
->  #ifdef CONFIG_ATH9K_HWRNG
->  	u32 rng_last;
-> -	struct task_struct *rng_task;
-> +	struct hwrng rng_ops;
->  #endif
->  };
->=20=20
-> diff --git a/drivers/net/wireless/ath/ath9k/rng.c b/drivers/net/wireless/=
-ath/ath9k/rng.c
-> index aae2bd3cac69..369b222908ba 100644
-> --- a/drivers/net/wireless/ath/ath9k/rng.c
-> +++ b/drivers/net/wireless/ath/ath9k/rng.c
-> @@ -22,9 +22,6 @@
->  #include "hw.h"
->  #include "ar9003_phy.h"
->=20=20
-> -#define ATH9K_RNG_BUF_SIZE	320
-> -#define ATH9K_RNG_ENTROPY(x)	(((x) * 8 * 10) >> 5) /* quality: 10/32 */
 
-So this comment says "quality: 10/32" but below you're setting "quality"
-as 320. No idea what the units are supposed to be, but is this right?
+Begin forwarded message:
 
->  static DECLARE_WAIT_QUEUE_HEAD(rng_queue);
->=20=20
->  static int ath9k_rng_data_read(struct ath_softc *sc, u32 *buf, u32 buf_s=
-ize)
+Date: Tue, 15 Feb 2022 16:24:06 +0000
+From: bugzilla-daemon@kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 215610] New: eth0 not working after upgrade from 5.16.8 to 5.16.9
 
-This function takes buf as a *u32, and interprets buf_size as a number
-of u32s...
 
-> @@ -72,61 +69,46 @@ static u32 ath9k_rng_delay_get(u32 fail_stats)
->  	return delay;
->  }
->=20=20
-> -static int ath9k_rng_kthread(void *data)
-> +static int ath9k_rng_read(struct hwrng *rng, void *buf, size_t max, bool=
- wait)
->  {
-> +	struct ath_softc *sc =3D container_of(rng, struct ath_softc, rng_ops);
->  	int bytes_read;
-> -	struct ath_softc *sc =3D data;
-> -	u32 *rng_buf;
-> -	u32 delay, fail_stats =3D 0;
-> -
-> -	rng_buf =3D kmalloc_array(ATH9K_RNG_BUF_SIZE, sizeof(u32), GFP_KERNEL);
-> -	if (!rng_buf)
-> -		goto out;
-> -
-> -	while (!kthread_should_stop()) {
-> -		bytes_read =3D ath9k_rng_data_read(sc, rng_buf,
-> -						 ATH9K_RNG_BUF_SIZE);
-> -		if (unlikely(!bytes_read)) {
-> -			delay =3D ath9k_rng_delay_get(++fail_stats);
-> -			wait_event_interruptible_timeout(rng_queue,
-> -							 kthread_should_stop(),
-> -							 msecs_to_jiffies(delay));
-> -			continue;
-> -		}
-> -
-> -		fail_stats =3D 0;
-> -
-> -		/* sleep until entropy bits under write_wakeup_threshold */
-> -		add_hwgenerator_randomness((void *)rng_buf, bytes_read,
-> -					   ATH9K_RNG_ENTROPY(bytes_read));
-> -	}
-> +	u32 fail_stats =3D 0;
->=20=20
-> -	kfree(rng_buf);
-> -out:
-> -	sc->rng_task =3D NULL;
-> +retry:
-> +	bytes_read =3D ath9k_rng_data_read(sc, buf, max);
+https://bugzilla.kernel.org/show_bug.cgi?id=215610
 
-... but AFAICT here you're calling it with a buffer size from hw_random
-that's in bytes?
+            Bug ID: 215610
+           Summary: eth0 not working after upgrade from 5.16.8 to 5.16.9
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.16.9
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: joerg.sigle@jsigle.com
+        Regression: No
 
--Toke
+After rebooting with kernel 5.16.9, the eth0 connection did not work any more.
+
+The interface is shown in ifconfig, but ping or other services don't reach any
+machines in the LAN or in the internet.
+
+I've not done much research but went back to 5.16.8 which works well again.
+
+In 5.16.8, lspci shows:
+
+00:19.0 Ethernet controller: Intel Corporation Ethernet Connection I217-LM (rev
+04)
+        Subsystem: Lenovo Ethernet Connection I217-LM
+        Flags: bus master, fast devsel, latency 0, IRQ 33
+        Memory at b4a00000 (32-bit, non-prefetchable) [size=128K]
+        Memory at b4a3e000 (32-bit, non-prefetchable) [size=4K]
+        I/O ports at 5080 [size=32]
+        Capabilities: [c8] Power Management version 2
+        Capabilities: [d0] MSI: Enable+ Count=1/1 Maskable- 64bit+
+        Capabilities: [e0] PCI Advanced Features
+        Kernel driver in use: e1000e
+
+Kind regards, js
+
+-- 
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
