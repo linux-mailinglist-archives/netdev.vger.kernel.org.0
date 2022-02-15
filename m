@@ -2,169 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8357B4B6F1B
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 15:46:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E917D4B6F13
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 15:46:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238724AbiBOOhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 09:37:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44760 "EHLO
+        id S238769AbiBOOkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 09:40:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238551AbiBOOhO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 09:37:14 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF5C810240F;
-        Tue, 15 Feb 2022 06:37:03 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A5E7F1396;
-        Tue, 15 Feb 2022 06:37:03 -0800 (PST)
-Received: from [192.168.122.164] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5ABD53F718;
-        Tue, 15 Feb 2022 06:37:03 -0800 (PST)
-Message-ID: <33a8e31c-c271-2e3a-36cf-caea5a7527dc@arm.com>
-Date:   Tue, 15 Feb 2022 08:36:54 -0600
+        with ESMTP id S235661AbiBOOkV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 09:40:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F160C102428
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 06:40:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DAE460AD9
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F05FFC340F6;
+        Tue, 15 Feb 2022 14:40:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644936011;
+        bh=o9qN3xv/j9w7td+XQAIQjbnTz5cv3V1kghwTBLsAH+M=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=nw666Mu6KtUmI0dofRi3Dlc7kfX2FXXiow7mBJdtPkNeEmibGoYGf0p0GjD3ZI8Rv
+         fSqEil+hAqq9vgN8i5Mc6tNus+cmBpoKMM5xTKZVLLkQeOMQgKvDeatbuwkZW8IzlK
+         +Q+4M8BRTYqk9b4kg2k5b6PNNDmrlTCDuLhtPK1fe7DieC/RQXXL+FCjHV365ftU+R
+         xP75+bffXzXNGpox1g2xw2fVJ8QkgAN60hPqX5TatNbZO5wKvFlaet9PEL2sjn/GFd
+         PilbltkMcQvycaw4xXOagh+MT480DnwHlxKykTidpSqkNJPrv+1inEBonh+zVr01EU
+         kxjQmBiREFXqQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DC81BE7BB04;
+        Tue, 15 Feb 2022 14:40:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [BUG/PATCH v3] net: mvpp2: always set port pcs ops
-Content-Language: en-US
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-References: <20220214231852.3331430-1-jeremy.linton@arm.com>
- <CAPv3WKczaLS8zKwTyEXTCD=YEVF5KcDGTr0uqM-7=MKahMQJYA@mail.gmail.com>
-From:   Jeremy Linton <jeremy.linton@arm.com>
-In-Reply-To: <CAPv3WKczaLS8zKwTyEXTCD=YEVF5KcDGTr0uqM-7=MKahMQJYA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net] dpaa2-eth: Initialize mutex used in one step timestamping
+ path
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164493601089.31968.6975486893401355075.git-patchwork-notify@kernel.org>
+Date:   Tue, 15 Feb 2022 14:40:10 +0000
+References: <20220214174534.1051-1-radu-andrei.bulie@nxp.com>
+In-Reply-To: <20220214174534.1051-1-radu-andrei.bulie@nxp.com>
+To:     Radu Bulie <radu-andrei.bulie@nxp.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        ioana.ciornei@nxp.com, yangbo.lu@nxp.com
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello:
 
-On 2/15/22 02:38, Marcin Wojtas wrote:
-> Hi Jeremy,
-> 
-> 
-> wt., 15 lut 2022 o 00:18 Jeremy Linton <jeremy.linton@arm.com> napisał(a):
->>
->> Booting a MACCHIATObin with 5.17, the system OOPs with
->> a null pointer deref when the network is started. This
->> is caused by the pcs->ops structure being null in
->> mcpp2_acpi_start() when it tries to call pcs_config().
->>
->> Hoisting the code which sets pcs_gmac.ops and pcs_xlg.ops,
->> assuring they are always set, fixes the problem.
->>
->> The OOPs looks like:
->> [   18.687760] Unable to handle kernel access to user memory outside uaccess routines at virtual address 0000000000000010
->> [   18.698561] Mem abort info:
->> [   18.698564]   ESR = 0x96000004
->> [   18.698567]   EC = 0x25: DABT (current EL), IL = 32 bits
->> [   18.709821]   SET = 0, FnV = 0
->> [   18.714292]   EA = 0, S1PTW = 0
->> [   18.718833]   FSC = 0x04: level 0 translation fault
->> [   18.725126] Data abort info:
->> [   18.729408]   ISV = 0, ISS = 0x00000004
->> [   18.734655]   CM = 0, WnR = 0
->> [   18.738933] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000111bbf000
->> [   18.745409] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
->> [   18.752235] Internal error: Oops: 96000004 [#1] SMP
->> [   18.757134] Modules linked in: rfkill ip_set nf_tables nfnetlink qrtr sunrpc vfat fat omap_rng fuse zram xfs crct10dif_ce mvpp2 ghash_ce sbsa_gwdt phylink xhci_plat_hcd ahci_plam
->> [   18.773481] CPU: 0 PID: 681 Comm: NetworkManager Not tainted 5.17.0-0.rc3.89.fc36.aarch64 #1
->> [   18.781954] Hardware name: Marvell                         Armada 7k/8k Family Board      /Armada 7k/8k Family Board      , BIOS EDK II Jun  4 2019
->> [   18.795222] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->> [   18.802213] pc : mvpp2_start_dev+0x2b0/0x300 [mvpp2]
->> [   18.807208] lr : mvpp2_start_dev+0x298/0x300 [mvpp2]
->> [   18.812197] sp : ffff80000b4732c0
->> [   18.815522] x29: ffff80000b4732c0 x28: 0000000000000000 x27: ffffccab38ae57f8
->> [   18.822689] x26: ffff6eeb03065a10 x25: ffff80000b473a30 x24: ffff80000b4735b8
->> [   18.829855] x23: 0000000000000000 x22: 00000000000001e0 x21: ffff6eeb07b6ab68
->> [   18.837021] x20: ffff6eeb07b6ab30 x19: ffff6eeb07b6a9c0 x18: 0000000000000014
->> [   18.844187] x17: 00000000f6232bfe x16: ffffccab899b1dc0 x15: 000000006a30f9fa
->> [   18.851353] x14: 000000003b77bd50 x13: 000006dc896f0e8e x12: 001bbbfccfd0d3a2
->> [   18.858519] x11: 0000000000001528 x10: 0000000000001548 x9 : ffffccab38ad0fb0
->> [   18.865685] x8 : ffff80000b473330 x7 : 0000000000000000 x6 : 0000000000000000
->> [   18.872851] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff80000b4732f8
->> [   18.880017] x2 : 000000000000001a x1 : 0000000000000002 x0 : ffff6eeb07b6ab68
->> [   18.887183] Call trace:
->> [   18.889637]  mvpp2_start_dev+0x2b0/0x300 [mvpp2]
->> [   18.894279]  mvpp2_open+0x134/0x2b4 [mvpp2]
->> [   18.898483]  __dev_open+0x128/0x1e4
->> [   18.901988]  __dev_change_flags+0x17c/0x1d0
->> [   18.906187]  dev_change_flags+0x30/0x70
->> [   18.910038]  do_setlink+0x278/0xa7c
->> [   18.913540]  __rtnl_newlink+0x44c/0x7d0
->> [   18.917391]  rtnl_newlink+0x5c/0x8c
->> [   18.920892]  rtnetlink_rcv_msg+0x254/0x314
->> [   18.925006]  netlink_rcv_skb+0x48/0x10c
->> [   18.928858]  rtnetlink_rcv+0x24/0x30
->> [   18.932449]  netlink_unicast+0x290/0x2f4
->> [   18.936386]  netlink_sendmsg+0x1d0/0x41c
->> [   18.940323]  sock_sendmsg+0x60/0x70
->> [   18.943825]  ____sys_sendmsg+0x248/0x260
->> [   18.947762]  ___sys_sendmsg+0x74/0xa0
->> [   18.951438]  __sys_sendmsg+0x64/0xcc
->> [   18.955027]  __arm64_sys_sendmsg+0x30/0x40
->> [   18.959140]  invoke_syscall+0x50/0x120
->> [   18.962906]  el0_svc_common.constprop.0+0x4c/0xf4
->> [   18.967629]  do_el0_svc+0x30/0x9c
->> [   18.970958]  el0_svc+0x28/0xb0
->> [   18.974025]  el0t_64_sync_handler+0x10c/0x140
->> [   18.978400]  el0t_64_sync+0x1a4/0x1a8
->> [   18.982078] Code: 52800004 b9416262 aa1503e0 52800041 (f94008a5)
->> [   18.988196] ---[ end trace 0000000000000000 ]---
->>
->> Fixes: cff056322372 ("net: mvpp2: use .mac_select_pcs() interface")
->> Suggested-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
->> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
->> ---
->> v1->v2: Apply Russell's fix
->> v2->v3: Fix Russell's name
->>
->>   drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 6 +++---
->>   1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
->> index 7cdbf8b8bbf6..1a835b48791b 100644
->> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
->> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
->> @@ -6870,6 +6870,9 @@ static int mvpp2_port_probe(struct platform_device *pdev,
->>          dev->max_mtu = MVPP2_BM_JUMBO_PKT_SIZE;
->>          dev->dev.of_node = port_node;
->>
->> +       port->pcs_gmac.ops = &mvpp2_phylink_gmac_pcs_ops;
->> +       port->pcs_xlg.ops = &mvpp2_phylink_xlg_pcs_ops;
->> +
->>          if (!mvpp2_use_acpi_compat_mode(port_fwnode)) {
->>                  port->phylink_config.dev = &dev->dev;
->>                  port->phylink_config.type = PHYLINK_NETDEV;
->> @@ -6940,9 +6943,6 @@ static int mvpp2_port_probe(struct platform_device *pdev,
->>                                    port->phylink_config.supported_interfaces);
->>                  }
->>
->> -               port->pcs_gmac.ops = &mvpp2_phylink_gmac_pcs_ops;
->> -               port->pcs_xlg.ops = &mvpp2_phylink_xlg_pcs_ops;
->> -
->>                  phylink = phylink_create(&port->phylink_config, port_fwnode,
->>                                           phy_mode, &mvpp2_phylink_ops);
->>                  if (IS_ERR(phylink)) {
->> --
->> 2.34.1
->>
-> 
-> I'd like to test the patch - what EDK2 version are you using?
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-I don't have access to the machine at the moment (maybe in a couple days 
-again) but it was running a build from late 2019 IIRC. So, definitely 
-not a bleeding edge version for sure.
+On Mon, 14 Feb 2022 19:45:34 +0200 you wrote:
+> 1588 Single Step Timestamping code path uses a mutex to
+> enforce atomicity for two events:
+> - update of ptp single step register
+> - transmit ptp event packet
+> 
+> Before this patch the mutex was not initialized. This
+> caused unexpected crashes in the Tx function.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] dpaa2-eth: Initialize mutex used in one step timestamping path
+    https://git.kernel.org/netdev/net/c/07dd44852be8
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
