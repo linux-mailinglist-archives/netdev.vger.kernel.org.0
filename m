@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18D714B7AF0
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 23:59:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 219614B7AF2
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 23:59:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244751AbiBOW7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 17:59:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35996 "EHLO
+        id S244773AbiBOXAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 18:00:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244721AbiBOW7t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 17:59:49 -0500
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3EDB91D0
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:59:38 -0800 (PST)
-Received: by mail-qk1-x72d.google.com with SMTP id m25so190726qka.9
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:59:38 -0800 (PST)
+        with ESMTP id S244735AbiBOW7v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 17:59:51 -0500
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD1AE3891
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:59:41 -0800 (PST)
+Received: by mail-qv1-xf2a.google.com with SMTP id e22so542727qvf.9
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 14:59:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kinvolk.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xbFKcU53Bx8IxhGu5tT7Io5EIpPtArnrR0J3NTHuSn8=;
-        b=JTH94c58zi3YNw+9JjT9llW8O6voOOGG3IRnUuEeV8LJPIJXBJjnAhPx7gglMHeI45
-         kv6AMM5xdKIq3YxMZEhi7bGybg7KBODJDKdpAsfTmwf0c9t//QpYIIt9K8HID4nKvbyB
-         i6xRzPWdCDTS0KhV+XLOFJkMGLnLkRb8W/huU=
+        bh=00kNnbEYq6tbiMxdi0KoXmVdKHxRLF0dsYFQaPX8gPo=;
+        b=A5aSlT2CSqucv5QjkGQUWHdoFjjo2yp1qByI2Qx5bXmPZ1rs2UjMc2X2khbQuloVP4
+         G+zGwR0dSH0c+UeowRSsl+SJbk1IravS6GP8jL4/ru/Jgi/SaW58+BeOKE3NIFOqHeQH
+         PLfSujzgpcX3uNmrE0EnHf4Al2sTPY0AP0ULE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xbFKcU53Bx8IxhGu5tT7Io5EIpPtArnrR0J3NTHuSn8=;
-        b=ONaWbqUsQam5KZ65VcNFXzoIisYld29TshFHd78a7030o81XEF6lGptBU4NvV81E1n
-         SOpQs8eEh0ECBuAPT2bp5H7rU7iFCKE1111vRIkueo5EyjWIgONl8uj7ABBrU1lURoVz
-         e6kgHRgCYIhoMQzm7P4haKRJaAowDvrIbBJzEW1U6aod89fJM6GabbNzLKKMuSgu3qk1
-         UTdDb1gDGySw3rWFj8Fu6lko+vBGaaFsdz/X9z2b+QpTlCSRBvtEwsaVRPyY3QPXSCDx
-         DOoS62phkyZNMc8CWQ1NO93gbeGVZqejhYB0do1JfYtnC6RVQP5LJFb6JPiV6NnUL22t
-         qu5w==
-X-Gm-Message-State: AOAM5306qWRLT4I2P+8wbH41E72xJ5lRl5FeyRJbzivEePQU765m98s6
-        BerFwu/kwcio2ihPLBpL7qOTAP+QmqRw6e7joUffzBQ9SOA3GCKYcBT0G1IugRM/LnAz6/2xiDY
-        1l+iGyFbDF43TTBvI5v5oMQyXc4qId4ipPSSNtSgZGhFQlyUcg+WW3Nqn8J0v1nnU8ikyBA==
-X-Google-Smtp-Source: ABdhPJxJm5ZTRWEdF0NRnlXz1LHPfH33wRWX55r/SXCwXUcppHl25YUReLSXqqiVG+yDSc5BXkjTxw==
-X-Received: by 2002:a37:6756:0:b0:508:a180:b2ae with SMTP id b83-20020a376756000000b00508a180b2aemr38395qkc.497.1644965975320;
-        Tue, 15 Feb 2022 14:59:35 -0800 (PST)
+        bh=00kNnbEYq6tbiMxdi0KoXmVdKHxRLF0dsYFQaPX8gPo=;
+        b=kl7tX2QSC9PP/sjVJeKJsFTRtXHfbOQ9XtLWaga1vt3j2hytTs27uE0N9JtFHifFd5
+         GDAiFPocOF+w34wN0cYI9P87RB33sxwzNm3QS4V86FsB9Pds+Z28KSspML6CF5LVf6Tq
+         Se5eQr8W8lrfH1m7tc47c5p2rCsca5MKo/ml9DPiwn2U1CtschGS+zvDZTOLxmLzqhdW
+         Nk1XjeRI3gpFmKJSwxNvtilOi87fb9tfWUC1J0ZlXs5Yu3QfqvBuxRPtg+3KDRgTMo9l
+         c6pfRNzy3I77mtpRwe5qAtZZkFMyI0xe9cTtm8Nd+vjLom5V9mIk5lcC/u5WAawRI99P
+         02hw==
+X-Gm-Message-State: AOAM53303rAAyHfJap0/bbV4q6L/6WH7uHeG++FrfvQlcP+AWAURhhVx
+        //3gCtcuClZK86UeRFXjdwleRcJdZPEQZGhmNUCCb7sNpgvgFGR8SP8GrBPHBbDb6oxeTvt3GC6
+        omKWzC5El1YwWXrYYsdzN3kCooVcVrD8HMmpAk1b4cohM9F7b6+JsmhkPdV4isYdqdEQLvQ==
+X-Google-Smtp-Source: ABdhPJwBNuVRqYwLOoapcJC89s5ddcVxvGvP3EXFtuiek8WFJ2sGpz3PlidgpEfG/JWec7jzxrb7Yg==
+X-Received: by 2002:a0c:8051:0:b0:42d:ef02:183c with SMTP id 75-20020a0c8051000000b0042def02183cmr212322qva.28.1644965977977;
+        Tue, 15 Feb 2022 14:59:37 -0800 (PST)
 Received: from localhost.localdomain ([181.136.110.101])
-        by smtp.gmail.com with ESMTPSA id w19sm15520021qkp.6.2022.02.15.14.59.33
+        by smtp.gmail.com with ESMTPSA id w19sm15520021qkp.6.2022.02.15.14.59.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 14:59:34 -0800 (PST)
+        Tue, 15 Feb 2022 14:59:37 -0800 (PST)
 From:   =?UTF-8?q?Mauricio=20V=C3=A1squez?= <mauricio@kinvolk.io>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -54,9 +54,9 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Rafael David Tinoco <rafaeldtinoco@gmail.com>,
         Lorenzo Fontana <lorenzo.fontana@elastic.co>,
         Leonardo Di Donato <leonardo.didonato@elastic.co>
-Subject: [PATCH bpf-next v7 6/7] bpftool: gen min_core_btf explanation and examples
-Date:   Tue, 15 Feb 2022 17:58:55 -0500
-Message-Id: <20220215225856.671072-7-mauricio@kinvolk.io>
+Subject: [PATCH bpf-next v7 7/7] selftests/bpf: Test "bpftool gen min_core_btf"
+Date:   Tue, 15 Feb 2022 17:58:56 -0500
+Message-Id: <20220215225856.671072-8-mauricio@kinvolk.io>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220215225856.671072-1-mauricio@kinvolk.io>
 References: <20220215225856.671072-1-mauricio@kinvolk.io>
@@ -73,140 +73,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafael David Tinoco <rafaeldtinoco@gmail.com>
+This commit reuses the core_reloc test to check if the BTF files
+generated with "bpftool gen min_core_btf" are correct. This introduces
+test_core_btfgen() that runs all the core_reloc tests, but this time
+the source BTF files are generated by using "bpftool gen min_core_btf".
 
-Add "min_core_btf" feature explanation and one example of how to use it
-to bpftool-gen man page.
+The goal of this test is to check that the generated files are usable,
+and not to check if the algorithm is creating an optimized BTF file.
 
 Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
 Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
 Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
 Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
 ---
- .../bpf/bpftool/Documentation/bpftool-gen.rst | 91 +++++++++++++++++++
- 1 file changed, 91 insertions(+)
+ .../selftests/bpf/prog_tests/core_reloc.c     | 50 ++++++++++++++++++-
+ 1 file changed, 48 insertions(+), 2 deletions(-)
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-gen.rst b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-index bc276388f432..4bf8e6447718 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-@@ -25,6 +25,7 @@ GEN COMMANDS
+diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
+index 68e4c8dafa00..fa2908879c77 100644
+--- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
++++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
+@@ -2,6 +2,7 @@
+ #include <test_progs.h>
+ #include "progs/core_reloc_types.h"
+ #include "bpf_testmod/bpf_testmod.h"
++#include <linux/limits.h>
+ #include <sys/mman.h>
+ #include <sys/syscall.h>
+ #include <bpf/btf.h>
+@@ -836,13 +837,27 @@ static size_t roundup_page(size_t sz)
+ 	return (sz + page_size - 1) / page_size * page_size;
+ }
  
- |	**bpftool** **gen object** *OUTPUT_FILE* *INPUT_FILE* [*INPUT_FILE*...]
- |	**bpftool** **gen skeleton** *FILE* [**name** *OBJECT_NAME*]
-+|	**bpftool** **gen min_core_btf** *INPUT* *OUTPUT* *OBJECT* [*OBJECT*...]
- |	**bpftool** **gen help**
+-void test_core_reloc(void)
++static int run_btfgen(const char *src_btf, const char *dst_btf, const char *objpath)
++{
++	char command[4096];
++	int n;
++
++	n = snprintf(command, sizeof(command),
++		     "./tools/build/bpftool/bpftool gen min_core_btf %s %s %s",
++		     src_btf, dst_btf, objpath);
++	if (n < 0 || n >= sizeof(command))
++		return -1;
++
++	return system(command);
++}
++
++static void run_core_reloc_tests(bool use_btfgen)
+ {
+ 	const size_t mmap_sz = roundup_page(sizeof(struct data));
+ 	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, open_opts);
+ 	struct core_reloc_test_case *test_case;
+ 	const char *tp_name, *probe_name;
+-	int err, i, equal;
++	int err, i, equal, fd;
+ 	struct bpf_link *link = NULL;
+ 	struct bpf_map *data_map;
+ 	struct bpf_program *prog;
+@@ -854,6 +869,7 @@ void test_core_reloc(void)
+ 	my_pid_tgid = getpid() | ((uint64_t)syscall(SYS_gettid) << 32);
  
- DESCRIPTION
-@@ -149,6 +150,26 @@ DESCRIPTION
- 		  (non-read-only) data from userspace, with same simplicity
- 		  as for BPF side.
+ 	for (i = 0; i < ARRAY_SIZE(test_cases); i++) {
++		char btf_file[] = "/tmp/core_reloc.btf.XXXXXX";
+ 		test_case = &test_cases[i];
+ 		if (!test__start_subtest(test_case->case_name))
+ 			continue;
+@@ -863,6 +879,25 @@ void test_core_reloc(void)
+ 			continue;
+ 		}
  
-+	**bpftool** **gen min_core_btf** *INPUT* *OUTPUT* *OBJECT* [*OBJECT*...]
-+		  Generate a minimum BTF file as *OUTPUT*, derived from a given
-+		  *INPUT* BTF file, containing all needed BTF types so one, or
-+		  more, given eBPF objects CO-RE relocations may be satisfied.
++		/* generate a "minimal" BTF file and use it as source */
++		if (use_btfgen) {
++			if (!test_case->btf_src_file || test_case->fails) {
++				test__skip();
++				continue;
++			}
 +
-+		  When kernels aren't compiled with CONFIG_DEBUG_INFO_BTF,
-+		  libbpf, when loading an eBPF object, has to rely in external
-+		  BTF files to be able to calculate CO-RE relocations.
++			fd = mkstemp(btf_file);
++			if (CHECK(fd < 0, "btf_tmp", "failed to create file: %d\n", fd))
++				goto cleanup;
++			close(fd); /* we only need the path */
++			err = run_btfgen(test_case->btf_src_file, btf_file,
++					 test_case->bpf_obj_file);
++			if (!ASSERT_OK(err, "run_btfgen"))
++				goto cleanup;
 +
-+		  Usually, an external BTF file is built from existing kernel
-+		  DWARF data using pahole. It contains all the types used by
-+		  its respective kernel image and, because of that, is big.
++			test_case->btf_src_file = btf_file;
++		}
 +
-+		  The min_core_btf feature builds smaller BTF files, customized
-+		  to one or multiple eBPF objects, so they can be distributed
-+		  together with an eBPF CO-RE based application, turning the
-+		  application portable to different kernel versions.
+ 		if (test_case->setup) {
+ 			err = test_case->setup(test_case);
+ 			if (CHECK(err, "test_setup", "test #%d setup failed: %d\n", i, err))
+@@ -954,8 +989,19 @@ void test_core_reloc(void)
+ 			CHECK_FAIL(munmap(mmap_data, mmap_sz));
+ 			mmap_data = NULL;
+ 		}
++		remove(btf_file);
+ 		bpf_link__destroy(link);
+ 		link = NULL;
+ 		bpf_object__close(obj);
+ 	}
+ }
 +
-+		  Check examples bellow for more information how to use it.
++void test_core_reloc(void)
++{
++	run_core_reloc_tests(false);
++}
 +
- 	**bpftool gen help**
- 		  Print short help message.
- 
-@@ -215,7 +236,9 @@ This is example BPF application with two BPF programs and a mix of BPF maps
- and global variables. Source code is split across two source code files.
- 
- **$ clang -target bpf -g example1.bpf.c -o example1.bpf.o**
-+
- **$ clang -target bpf -g example2.bpf.c -o example2.bpf.o**
-+
- **$ bpftool gen object example.bpf.o example1.bpf.o example2.bpf.o**
- 
- This set of commands compiles *example1.bpf.c* and *example2.bpf.c*
-@@ -329,3 +352,71 @@ BPF ELF object file *example.bpf.o*.
-   my_static_var: 7
- 
- This is a stripped-out version of skeleton generated for above example code.
-+
-+min_core_btf
-+------------
-+
-+**$ bpftool btf dump file ./5.4.0-example.btf format raw**
-+
-+::
-+
-+  [1] INT 'long unsigned int' size=8 bits_offset=0 nr_bits=64 encoding=(none)
-+  [2] CONST '(anon)' type_id=1
-+  [3] VOLATILE '(anon)' type_id=1
-+  [4] ARRAY '(anon)' type_id=1 index_type_id=21 nr_elems=2
-+  [5] PTR '(anon)' type_id=8
-+  [6] CONST '(anon)' type_id=5
-+  [7] INT 'char' size=1 bits_offset=0 nr_bits=8 encoding=(none)
-+  [8] CONST '(anon)' type_id=7
-+  [9] INT 'unsigned int' size=4 bits_offset=0 nr_bits=32 encoding=(none)
-+  <long output>
-+
-+**$ bpftool btf dump file ./one.bpf.o format raw**
-+
-+::
-+
-+  [1] PTR '(anon)' type_id=2
-+  [2] STRUCT 'trace_event_raw_sys_enter' size=64 vlen=4
-+        'ent' type_id=3 bits_offset=0
-+        'id' type_id=7 bits_offset=64
-+        'args' type_id=9 bits_offset=128
-+        '__data' type_id=12 bits_offset=512
-+  [3] STRUCT 'trace_entry' size=8 vlen=4
-+        'type' type_id=4 bits_offset=0
-+        'flags' type_id=5 bits_offset=16
-+        'preempt_count' type_id=5 bits_offset=24
-+  <long output>
-+
-+**$ bpftool gen min_core_btf ./5.4.0-example.btf ./5.4.0-smaller.btf ./one.bpf.o**
-+
-+**$ bpftool btf dump file ./5.4.0-smaller.btf format raw**
-+
-+::
-+
-+  [1] TYPEDEF 'pid_t' type_id=6
-+  [2] STRUCT 'trace_event_raw_sys_enter' size=64 vlen=1
-+        'args' type_id=4 bits_offset=128
-+  [3] STRUCT 'task_struct' size=9216 vlen=2
-+        'pid' type_id=1 bits_offset=17920
-+        'real_parent' type_id=7 bits_offset=18048
-+  [4] ARRAY '(anon)' type_id=5 index_type_id=8 nr_elems=6
-+  [5] INT 'long unsigned int' size=8 bits_offset=0 nr_bits=64 encoding=(none)
-+  [6] TYPEDEF '__kernel_pid_t' type_id=8
-+  [7] PTR '(anon)' type_id=3
-+  [8] INT 'int' size=4 bits_offset=0 nr_bits=32 encoding=SIGNED
-+  <end>
-+
-+Now, the "5.4.0-smaller.btf" file may be used by libbpf as an external BTF file
-+when loading the "one.bpf.o" object into the "5.4.0-example" kernel. Note that
-+the generated BTF file won't allow other eBPF objects to be loaded, just the
-+ones given to min_core_btf.
-+
-+::
-+
-+  struct bpf_object *obj = NULL;
-+
-+  DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts, .btf_custom_path = "5.4.0-smaller.btf");
-+
-+  obj = bpf_object__open_file("one.bpf.o", &opts);
-+
-+  ...
++void test_core_btfgen(void)
++{
++	run_core_reloc_tests(true);
++}
 -- 
 2.25.1
 
