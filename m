@@ -2,132 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D33B34B6F08
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 15:46:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8357B4B6F1B
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 15:46:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238722AbiBOOgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 09:36:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41854 "EHLO
+        id S238724AbiBOOhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 09:37:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238551AbiBOOgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 09:36:38 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2059.outbound.protection.outlook.com [40.107.21.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8D642A1C
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 06:36:27 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WDIxSwWB6aSOiYMh868z/FxlQivyedRbFO222soxsBXzUotUy+j78zC4AZMU2CLVDBto8neueNin3mQlJHFDaj7w3xgUk+HIGBW0w4ovekpGjjNRenB7SKckHFIEzkObckxMnLTcznt6tnYDfX4G6AprAHoGsQ3plKC3cYH1G/dNMA6tl3lxigAQOH+1Ca8ZNMvghQXgQeIlKZ+YM31myO/svwnmhhuAVotJ+FdQ8kxl4fDHIv0K2fxTLTKTKqU+UacPw3a2vOvH9u0ZXlSydbDetctYp9djNwVmrylQx5Q7rDzeZdGVH1YrJ4tYamKSjcHZB2964eXhx9j3rsVODQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+vyPELfoAgksDJjGCINRK45GPzmjI0sCkjbHBiTWlrQ=;
- b=M/g4LzXcY7fnNIJEbeyVwlFsL56hS1gP9QlBHXCnqRKs0kvl47rcD5jLA5khoEi9cfxpqHXyn2hdGWUEDyD62lYd6hZpLPlHJ+03snXU9AM76KbQgqj7L3uDOA3aihvtJrG2waLkTR2MFX6rG5Qf/6JwznvsTs6x8bh93ej+QOwhupI8tK8CsNo5cmv+ALuTnO8Jbo71DXwg5YEwhl57VSEPHpCWGBLPrAelRT9iW+jzjg4mBcTJG2u3S/QHHUXefWVNcP1zH/Z5Ib6xHb2Gh3UoRHBKuW0y+EfSC30g/fZ2XI68CVvfBWbLY0VcUk6iDuVhd7TfJgipVXEch304Ag==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+vyPELfoAgksDJjGCINRK45GPzmjI0sCkjbHBiTWlrQ=;
- b=RqSE3TbSSAU/UzoV3SsmssUmQPyDSnNKqFxDEWpompZUWZDVUKZBWE2KyATs6hIE/7htF/yhY/0O5WeOhs8ByWVIhVgSSmgaNMcnB+pYmEHzht/geuceS6p4rt34q/JC8K8OCxrjiTFJdAv85McQuKflJmuQorFuxwkNskpIKYQ=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0402MB3567.eurprd04.prod.outlook.com (2603:10a6:803:c::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.18; Tue, 15 Feb
- 2022 14:36:24 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Tue, 15 Feb 2022
- 14:36:24 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Rafael Richter <rafael.richter@gin.de>,
-        Daniel Klauer <daniel.klauer@gin.de>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Subject: Re: [PATCH v2 net-next 1/8] net: bridge: vlan: notify switchdev only
- when something changed
-Thread-Topic: [PATCH v2 net-next 1/8] net: bridge: vlan: notify switchdev only
- when something changed
-Thread-Index: AQHYIfsSmRmY0oOnV0uNWER612b7d6yUT04AgAAQq4CAAAUOgIAABQWAgAAKo4CAADopgA==
-Date:   Tue, 15 Feb 2022 14:36:23 +0000
-Message-ID: <20220215143623.wg436nxsr3yxj7as@skbuf>
-References: <20220214233111.1586715-1-vladimir.oltean@nxp.com>
- <20220214233111.1586715-2-vladimir.oltean@nxp.com>
- <bcb8c699-4abc-d458-a694-d975398f1c57@nvidia.com>
- <20220215095405.d2cy6rjd2faj3az2@skbuf>
- <a38ac2a6-d9b9-190a-f144-496be1768b98@nvidia.com>
- <20220215103009.fcw4wjnpbxx5tybj@skbuf>
- <5db82bf1-844d-0709-c85e-cbe62445e7dc@nvidia.com>
-In-Reply-To: <5db82bf1-844d-0709-c85e-cbe62445e7dc@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 72b13fe4-3903-480b-5070-08d9f0908aa9
-x-ms-traffictypediagnostic: VI1PR0402MB3567:EE_
-x-microsoft-antispam-prvs: <VI1PR0402MB3567C36F9D581B1CEB3A7FFFE0349@VI1PR0402MB3567.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: skMJL+P4GUqkQPbZn8oCBKe6LKw5FKDRyPOmP4afk0OWSTea7eomzy6p8Rd5GjZ6vpTFp3BIqUeDXjwyKUS2HYzI/OEPkJLpIpEFrbEwpHAOn9cZR3EBNmsZsgG6bqAAwDSFRqz76S79u2RL29KyrlE4G68ygf7ozuX8MFjfRyWZ1CG72aA9SocMXFGT4DIkcf+NfCrmKwMU7hOCD0jR9BpeQyHxY3EZmDgY/FrPtJuOdjusUqS7bEZxKuTCwXfyGEhBX9uqZ7StlJLWVyUQZeuyLaVa8Os2qDJnF4hgXGNQGj6YdxtwnCBAp8z1+Qu2jmMRRQ2y5A69Iau1jb9xWMzOF431KXStCx5NRi+XonEQdEvfo025XT4NHX2UyMLzRee6Cch2Hchb1ir41IZ732+YybNVRy5TkpjaHuh2s5wt2V4f3rbuPWIjRLC4HYd7afuMtUN/D3EhJdLnpRUwh6yg4xpRxC7vDT11phdTyA0DHRA4XD1+RuOu3WnT5aPkjM6f7/Z+qBcq5l3WEWWRvPlXKP/qR0B6Vy/TpM83naLCU/mclu5tubxKCisGnSVdIoVU09qZTqOIxIqKDYCamNjA4tFQMEwjl8lAq4dMrywVTrbgPHEWmULcK5wEcAb8JFp/6ObAn++f7Elm27tJpzAx1ndSbtMTgRHRrF/DFpH7TFmkKqPqxEsRUiaRA0tDspvh+gAaBeMSrfqyA6fcNA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(76116006)(86362001)(38070700005)(66476007)(38100700002)(122000001)(4326008)(6916009)(64756008)(316002)(66946007)(66556008)(8676002)(66446008)(54906003)(33716001)(91956017)(44832011)(1076003)(6512007)(7416002)(8936002)(2906002)(5660300002)(186003)(26005)(6486002)(83380400001)(9686003)(6506007)(508600001)(53546011)(71200400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?gjz4iwbdhgLg+FSzvxuPzRI14VlwNJBSIUJIKjflv29qPvYYO0jmcoQXP5qN?=
- =?us-ascii?Q?2ZM3Mhu7KdGBCbcBwFYWK5tuOpVuldQ5JIAFDhEXNHV9uJ5y11lQRt45cbEm?=
- =?us-ascii?Q?m3ejANHWLuYRLPGExeCu+4vN9FPZYMhH4Ov4d1mQnqUjAhJBUKHvovwpufPy?=
- =?us-ascii?Q?9/vwJ0hDVhWS4k1Cm8qaiCsqUY9qasoFRMyrCqTPtrkkhYizG9bCbVhNycN7?=
- =?us-ascii?Q?FsFLrgcwV2WVZUp67P9BkNFuLkDKbwO6AroknjelbCiIXOyV+TiTYf0YDOiN?=
- =?us-ascii?Q?uGBq/HrUNU3qVOOn3L4GdIuQFeq9xtNETQFqjNMNfWJuyhpZcUYEt+28Loxj?=
- =?us-ascii?Q?0E/dG8qmWaPtX8CTI/vKIZBr0tPMJCPpTYVJLM0I/t5LLjWYKrTHxe5aeeVL?=
- =?us-ascii?Q?l3dkV/qvv/+F2aA3+o7vRiC3Az3+T89XQNtRePERVy2jVJFNPJIaoiz3qmLG?=
- =?us-ascii?Q?BKqt47+SWDrxyyWb5UBdLTjrAlix7QrVq1LfYC63oEhLzhyfPKhuhwN2yqpA?=
- =?us-ascii?Q?arV+Y0BznYA1Ww6y+gj8M/lMDW2/kXppHA2S1NGv7dpaJr9cb08KE310YXoV?=
- =?us-ascii?Q?XG0eaMAg3AwYb+R2oH5aP8Redr/Rl3E31BjrB56A+QiRf+UN5ipVdXQZF4tC?=
- =?us-ascii?Q?fOenU1sav8KbawMeWDNAw5FbMQ8efqPQttYHGTyqaQAVwRLp21X3D0Bb4eUO?=
- =?us-ascii?Q?SEA1H/MhWOXnoJ4g1DtdElLcmiLMXqHtp9bas8Y3z/nrxqhWEDSFdq6NNk8d?=
- =?us-ascii?Q?S9vhbklsAE12trFeFDXmIsi1nGOjqqbaQNtpM6WqswXitK6MlY/P+dHXR/z9?=
- =?us-ascii?Q?cDXnYnhXAETogbGbR/HuJS6Tlyqn9VIm31D4RtS05tMwLzEN8Ka+osT4WZ/m?=
- =?us-ascii?Q?zypWigLG/LoMTiq1NB8A0OmHSkJ5ooVYYmN2l5NDwUXCBoMG9YnErE2MsY4N?=
- =?us-ascii?Q?Nb81OsXSX9KBpr6syP1+l+FW91WXM6PzwDpfls7/SBAL+VlGiJFRbekK0rwL?=
- =?us-ascii?Q?AoLeJGNMrhiTB22kn/v+4EjCEE1S22r/pBg6S9lZ/Nk82YzObayUDruAhjZl?=
- =?us-ascii?Q?EsPNZnnOOIU72C7OViVYeFWLv1r+zTaJVCX77pdQYe7GUwGj/3xD9IhdsrsP?=
- =?us-ascii?Q?9XGfUfI+f7Toq8C3VXcgSrTYcyCaQCKTVgD0OIO6yABy2CpHHLhphhjriVF7?=
- =?us-ascii?Q?UXl06M/6nHtY0/kpiBKw0lh9R/8St/i5NBoZe4hCo1vCOf8fzV1bxJaAeTXk?=
- =?us-ascii?Q?At9y/HZPYwDUNhGLf3pGKALlqtx5/B74RcyGBqFzxss68jY43VE2cRFTkxU3?=
- =?us-ascii?Q?xv6/gbtuFqDrYwfOUr55FhCRxk3LDhXSi5YGK/msiMGS9MuK+WYrWaJAKY8V?=
- =?us-ascii?Q?ht5dsdY3PS1u6SW8F3aiVcu1WycV1NcaOmRVnjU20APwwizovGAjtqPB0mY0?=
- =?us-ascii?Q?8W4C1KeOmIKsL0nRQcZx/yBdkBamID8sKFUn5jEHBNVJXydStQroHYmvoTUL?=
- =?us-ascii?Q?2wgADGkp8uELkTildd5EE6cm8ow3YfGVyAk+DYXJJ9q6buVvZJZJqcOqXjdV?=
- =?us-ascii?Q?UqW4yT1MD2EE8SR90PeXvVuLtrfamXGpahlhWJPWvsie4dbSigNXMVwkkOSj?=
- =?us-ascii?Q?5Dh0aG1fHpv6IguthI4ltc0=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <7A54735D7A922241B7CA0B810F35295D@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S238551AbiBOOhO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 09:37:14 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF5C810240F;
+        Tue, 15 Feb 2022 06:37:03 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A5E7F1396;
+        Tue, 15 Feb 2022 06:37:03 -0800 (PST)
+Received: from [192.168.122.164] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5ABD53F718;
+        Tue, 15 Feb 2022 06:37:03 -0800 (PST)
+Message-ID: <33a8e31c-c271-2e3a-36cf-caea5a7527dc@arm.com>
+Date:   Tue, 15 Feb 2022 08:36:54 -0600
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 72b13fe4-3903-480b-5070-08d9f0908aa9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Feb 2022 14:36:24.0382
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Sy0SPmHay4+CHBtHt74SGrbcc4D5BYBKGszhsDh4Q0YhkDXI+Y7oD7sSGDPl3MVoU+F9oExzpAGokXxnIU3CZw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3567
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [BUG/PATCH v3] net: mvpp2: always set port pcs ops
+Content-Language: en-US
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+References: <20220214231852.3331430-1-jeremy.linton@arm.com>
+ <CAPv3WKczaLS8zKwTyEXTCD=YEVF5KcDGTr0uqM-7=MKahMQJYA@mail.gmail.com>
+From:   Jeremy Linton <jeremy.linton@arm.com>
+In-Reply-To: <CAPv3WKczaLS8zKwTyEXTCD=YEVF5KcDGTr0uqM-7=MKahMQJYA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -135,167 +49,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 01:08:13PM +0200, Nikolay Aleksandrov wrote:
-> On 15/02/2022 12:30, Vladimir Oltean wrote:
-> > On Tue, Feb 15, 2022 at 12:12:11PM +0200, Nikolay Aleksandrov wrote:
-> >> On 15/02/2022 11:54, Vladimir Oltean wrote:
-> >>> On Tue, Feb 15, 2022 at 10:54:26AM +0200, Nikolay Aleksandrov wrote:
-> >>>>> +/* return true if anything will change as a result of __vlan_add_f=
-lags,
-> >>>>> + * false otherwise
-> >>>>> + */
-> >>>>> +static bool __vlan_flags_would_change(struct net_bridge_vlan *v, u=
-16 flags)
-> >>>>> +{
-> >>>>> +	struct net_bridge_vlan_group *vg;
-> >>>>> +	u16 old_flags =3D v->flags;
-> >>>>> +	bool pvid_changed;
-> >>>>> =20
-> >>>>> -	return ret || !!(old_flags ^ v->flags);
-> >>>>> +	if (br_vlan_is_master(v))
-> >>>>> +		vg =3D br_vlan_group(v->br);
-> >>>>> +	else
-> >>>>> +		vg =3D nbp_vlan_group(v->port);
-> >>>>> +
-> >>>>> +	if (flags & BRIDGE_VLAN_INFO_PVID)
-> >>>>> +		pvid_changed =3D (vg->pvid =3D=3D v->vid);
-> >>>>> +	else
-> >>>>> +		pvid_changed =3D (vg->pvid !=3D v->vid);
-> >>>>> +
-> >>>>> +	return pvid_changed || !!(old_flags ^ v->flags);
-> >>>>>  }
-> >>>>
-> >>>> These two have to depend on each other, otherwise it's error-prone a=
-nd
-> >>>> surely in the future someone will forget to update both.
-> >>>> How about add a "commit" argument to __vlan_add_flags and possibly r=
-ename
-> >>>> it to __vlan_update_flags, then add 2 small helpers like __vlan_upda=
-te_flags_precommit
-> >>>> with commit =3D=3D false and __vlan_update_flags_commit with commit =
-=3D=3D true.
-> >>>> Or some other naming, the point is to always use the same flow and c=
-hecks
-> >>>> when updating the flags to make sure people don't forget.
-> >>>
-> >>> You want to squash __vlan_flags_would_change() and __vlan_add_flags()
-> >>> into a single function? But "would_change" returns bool, and "add"
-> >>> returns void.
-> >>>
-> >>
-> >> Hence the wrappers for commit =3D=3D false and commit =3D=3D true. You=
- could name the precommit
-> >> one __vlan_flags_would_change or something more appropriate. The point=
- is to make
-> >> sure we always update both when flags are changed.
-> >=20
-> > I still have a little doubt that I understood you properly.
-> > Do you mean like this?
-> >=20
->=20
-> By the way I just noticed that __vlan_flags_would_change has another bug,=
- it's testing
-> vlan's flags against themselves without any change (old_flags =3D=3D v->f=
-lags).
+Hi,
 
-Yes, I think I noticed that too when I put some debugging prints, I
-wasn't sure where it came from though.
+On 2/15/22 02:38, Marcin Wojtas wrote:
+> Hi Jeremy,
+> 
+> 
+> wt., 15 lut 2022 o 00:18 Jeremy Linton <jeremy.linton@arm.com> napisał(a):
+>>
+>> Booting a MACCHIATObin with 5.17, the system OOPs with
+>> a null pointer deref when the network is started. This
+>> is caused by the pcs->ops structure being null in
+>> mcpp2_acpi_start() when it tries to call pcs_config().
+>>
+>> Hoisting the code which sets pcs_gmac.ops and pcs_xlg.ops,
+>> assuring they are always set, fixes the problem.
+>>
+>> The OOPs looks like:
+>> [   18.687760] Unable to handle kernel access to user memory outside uaccess routines at virtual address 0000000000000010
+>> [   18.698561] Mem abort info:
+>> [   18.698564]   ESR = 0x96000004
+>> [   18.698567]   EC = 0x25: DABT (current EL), IL = 32 bits
+>> [   18.709821]   SET = 0, FnV = 0
+>> [   18.714292]   EA = 0, S1PTW = 0
+>> [   18.718833]   FSC = 0x04: level 0 translation fault
+>> [   18.725126] Data abort info:
+>> [   18.729408]   ISV = 0, ISS = 0x00000004
+>> [   18.734655]   CM = 0, WnR = 0
+>> [   18.738933] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000111bbf000
+>> [   18.745409] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
+>> [   18.752235] Internal error: Oops: 96000004 [#1] SMP
+>> [   18.757134] Modules linked in: rfkill ip_set nf_tables nfnetlink qrtr sunrpc vfat fat omap_rng fuse zram xfs crct10dif_ce mvpp2 ghash_ce sbsa_gwdt phylink xhci_plat_hcd ahci_plam
+>> [   18.773481] CPU: 0 PID: 681 Comm: NetworkManager Not tainted 5.17.0-0.rc3.89.fc36.aarch64 #1
+>> [   18.781954] Hardware name: Marvell                         Armada 7k/8k Family Board      /Armada 7k/8k Family Board      , BIOS EDK II Jun  4 2019
+>> [   18.795222] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+>> [   18.802213] pc : mvpp2_start_dev+0x2b0/0x300 [mvpp2]
+>> [   18.807208] lr : mvpp2_start_dev+0x298/0x300 [mvpp2]
+>> [   18.812197] sp : ffff80000b4732c0
+>> [   18.815522] x29: ffff80000b4732c0 x28: 0000000000000000 x27: ffffccab38ae57f8
+>> [   18.822689] x26: ffff6eeb03065a10 x25: ffff80000b473a30 x24: ffff80000b4735b8
+>> [   18.829855] x23: 0000000000000000 x22: 00000000000001e0 x21: ffff6eeb07b6ab68
+>> [   18.837021] x20: ffff6eeb07b6ab30 x19: ffff6eeb07b6a9c0 x18: 0000000000000014
+>> [   18.844187] x17: 00000000f6232bfe x16: ffffccab899b1dc0 x15: 000000006a30f9fa
+>> [   18.851353] x14: 000000003b77bd50 x13: 000006dc896f0e8e x12: 001bbbfccfd0d3a2
+>> [   18.858519] x11: 0000000000001528 x10: 0000000000001548 x9 : ffffccab38ad0fb0
+>> [   18.865685] x8 : ffff80000b473330 x7 : 0000000000000000 x6 : 0000000000000000
+>> [   18.872851] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff80000b4732f8
+>> [   18.880017] x2 : 000000000000001a x1 : 0000000000000002 x0 : ffff6eeb07b6ab68
+>> [   18.887183] Call trace:
+>> [   18.889637]  mvpp2_start_dev+0x2b0/0x300 [mvpp2]
+>> [   18.894279]  mvpp2_open+0x134/0x2b4 [mvpp2]
+>> [   18.898483]  __dev_open+0x128/0x1e4
+>> [   18.901988]  __dev_change_flags+0x17c/0x1d0
+>> [   18.906187]  dev_change_flags+0x30/0x70
+>> [   18.910038]  do_setlink+0x278/0xa7c
+>> [   18.913540]  __rtnl_newlink+0x44c/0x7d0
+>> [   18.917391]  rtnl_newlink+0x5c/0x8c
+>> [   18.920892]  rtnetlink_rcv_msg+0x254/0x314
+>> [   18.925006]  netlink_rcv_skb+0x48/0x10c
+>> [   18.928858]  rtnetlink_rcv+0x24/0x30
+>> [   18.932449]  netlink_unicast+0x290/0x2f4
+>> [   18.936386]  netlink_sendmsg+0x1d0/0x41c
+>> [   18.940323]  sock_sendmsg+0x60/0x70
+>> [   18.943825]  ____sys_sendmsg+0x248/0x260
+>> [   18.947762]  ___sys_sendmsg+0x74/0xa0
+>> [   18.951438]  __sys_sendmsg+0x64/0xcc
+>> [   18.955027]  __arm64_sys_sendmsg+0x30/0x40
+>> [   18.959140]  invoke_syscall+0x50/0x120
+>> [   18.962906]  el0_svc_common.constprop.0+0x4c/0xf4
+>> [   18.967629]  do_el0_svc+0x30/0x9c
+>> [   18.970958]  el0_svc+0x28/0xb0
+>> [   18.974025]  el0t_64_sync_handler+0x10c/0x140
+>> [   18.978400]  el0t_64_sync+0x1a4/0x1a8
+>> [   18.982078] Code: 52800004 b9416262 aa1503e0 52800041 (f94008a5)
+>> [   18.988196] ---[ end trace 0000000000000000 ]---
+>>
+>> Fixes: cff056322372 ("net: mvpp2: use .mac_select_pcs() interface")
+>> Suggested-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+>> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+>> ---
+>> v1->v2: Apply Russell's fix
+>> v2->v3: Fix Russell's name
+>>
+>>   drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 6 +++---
+>>   1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+>> index 7cdbf8b8bbf6..1a835b48791b 100644
+>> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+>> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+>> @@ -6870,6 +6870,9 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+>>          dev->max_mtu = MVPP2_BM_JUMBO_PKT_SIZE;
+>>          dev->dev.of_node = port_node;
+>>
+>> +       port->pcs_gmac.ops = &mvpp2_phylink_gmac_pcs_ops;
+>> +       port->pcs_xlg.ops = &mvpp2_phylink_xlg_pcs_ops;
+>> +
+>>          if (!mvpp2_use_acpi_compat_mode(port_fwnode)) {
+>>                  port->phylink_config.dev = &dev->dev;
+>>                  port->phylink_config.type = PHYLINK_NETDEV;
+>> @@ -6940,9 +6943,6 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+>>                                    port->phylink_config.supported_interfaces);
+>>                  }
+>>
+>> -               port->pcs_gmac.ops = &mvpp2_phylink_gmac_pcs_ops;
+>> -               port->pcs_xlg.ops = &mvpp2_phylink_xlg_pcs_ops;
+>> -
+>>                  phylink = phylink_create(&port->phylink_config, port_fwnode,
+>>                                           phy_mode, &mvpp2_phylink_ops);
+>>                  if (IS_ERR(phylink)) {
+>> --
+>> 2.34.1
+>>
+> 
+> I'd like to test the patch - what EDK2 version are you using?
 
-> I meant something similar to this (quickly hacked, untested, add flags pr=
-obably
-> could be renamed to something more appropriate):
->=20
-> diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-> index 1402d5ca242d..1de69090d3cb 100644
-> --- a/net/bridge/br_vlan.c
-> +++ b/net/bridge/br_vlan.c
-> @@ -34,53 +34,66 @@ static struct net_bridge_vlan *br_vlan_lookup(struct =
-rhashtable *tbl, u16 vid)
->         return rhashtable_lookup_fast(tbl, &vid, br_vlan_rht_params);
->  }
-> =20
-> -static bool __vlan_add_pvid(struct net_bridge_vlan_group *vg,
-> +static void __vlan_add_pvid(struct net_bridge_vlan_group *vg,
->                             const struct net_bridge_vlan *v)
->  {
->         if (vg->pvid =3D=3D v->vid)
-> -               return false;
-> +               return;
-> =20
->         smp_wmb();
->         br_vlan_set_pvid_state(vg, v->state);
->         vg->pvid =3D v->vid;
-> -
-> -       return true;
->  }
-> =20
-> -static bool __vlan_delete_pvid(struct net_bridge_vlan_group *vg, u16 vid=
-)
-> +static void __vlan_delete_pvid(struct net_bridge_vlan_group *vg, u16 vid=
-)
->  {
->         if (vg->pvid !=3D vid)
-> -               return false;
-> +               return;
-> =20
->         smp_wmb();
->         vg->pvid =3D 0;
-> -
-> -       return true;
->  }
-> =20
->  /* return true if anything changed, false otherwise */
-> -static bool __vlan_add_flags(struct net_bridge_vlan *v, u16 flags)
-> +static bool __vlan_add_flags(struct net_bridge_vlan *v, u16 flags, bool =
-commit)
->  {
->         struct net_bridge_vlan_group *vg;
-> -       u16 old_flags =3D v->flags;
-> -       bool ret;
-> +       bool change;
-> =20
->         if (br_vlan_is_master(v))
->                 vg =3D br_vlan_group(v->br);
->         else
->                 vg =3D nbp_vlan_group(v->port);
-> =20
-> +       /* check if anything would be changed on commit */
-> +       change =3D (!!(flags & BRIDGE_VLAN_INFO_PVID) =3D=3D !!(vg->pvid =
-!=3D v->vid) ||
-> +                 ((flags ^ v->flags) & BRIDGE_VLAN_INFO_UNTAGGED));
-> +
-> +       if (!commit)
-> +               goto out;
-> +
->         if (flags & BRIDGE_VLAN_INFO_PVID)
-> -               ret =3D __vlan_add_pvid(vg, v);
-> +               __vlan_add_pvid(vg, v);
->         else
-> -               ret =3D __vlan_delete_pvid(vg, v->vid);
-> +               __vlan_delete_pvid(vg, v->vid);
-> =20
->         if (flags & BRIDGE_VLAN_INFO_UNTAGGED)
->                 v->flags |=3D BRIDGE_VLAN_INFO_UNTAGGED;
->         else
->                 v->flags &=3D ~BRIDGE_VLAN_INFO_UNTAGGED;
-> =20
-> -       return ret || !!(old_flags ^ v->flags);
-> +out:
-> +       return change;
-> +}
-> +
-> +static bool __vlan_flags_would_change(struct net_bridge_vlan *v, u16 fla=
-gs)
-> +{
-> +       return __vlan_add_flags(v, flags, false);
-> +}
-> +
-> +static bool __vlan_flags_commit(struct net_bridge_vlan *v, u16 flags)
-> +{
-> +       return __vlan_add_flags(v, flags, true);
->  }
-> =20
->  static int __vlan_vid_add(struct net_device *dev, struct net_bridge *br,
+I don't have access to the machine at the moment (maybe in a couple days 
+again) but it was running a build from late 2019 IIRC. So, definitely 
+not a bleeding edge version for sure.
 
-Ah, ok, now I understand what you mean. I'll integrate this, retest and
-prepare a v3 if there are no other objections. Thanks!=
