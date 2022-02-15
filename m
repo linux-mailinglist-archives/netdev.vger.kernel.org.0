@@ -2,116 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEF974B785A
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:52:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81E3F4B7786
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:50:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241530AbiBOSp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 13:45:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54614 "EHLO
+        id S243255AbiBOSrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 13:47:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241580AbiBOSpz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 13:45:55 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47714DB495
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 10:45:44 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id k18so9069423ils.11
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 10:45:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=n3AOo60tfBaJy0Iklwh+IzdN0WzcJlMEZNrEs/WOwvw=;
-        b=LrwQguX72d7dQoMRVwv17UfZHO/gfxy7H+qTm1mQL7cG385yS/SywqjBNPcGMad0Au
-         ex+cSrtSKEzSpSHI/BABqhNvi2VO/qwGn6c+BOo4r1Ixiv2iLXEgQrB0Dwh0LW4Cdhz1
-         JjYJXGtTXuY0TMIUrdSNceDkXBYN8LyO6KYaY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=n3AOo60tfBaJy0Iklwh+IzdN0WzcJlMEZNrEs/WOwvw=;
-        b=Ohbp+bCH3WSEayvM9S26xLkwabriyTPwUP1OajQxYyjaUEQT2xkuGctkpjorrGyJJJ
-         1FF8/XcAhUcK/FZr02EEgGORQeOEwJm3rhMHD80eCNRTYk3rA5l+yxrIv7NyMNoNKvS8
-         Hsf7W8rnNwyoQXJPUohcNm0pzWdyCf7I6AJdL7EZAZCiU0Slq7F5YjAGwYNRyL3Vj+sk
-         T/jH1P20hJczVIRVucih1eT5HNVvrUdFDZO/QMQ7uu9St9YKY2bK/MnVucdeAXeb19/2
-         3Gk9v5CHE4RIiktdcDzLtUwGepEBIbFXc32kA9F+bbEnGjyPQfcTtYAfg9yR2uUbyU1J
-         +0Fg==
-X-Gm-Message-State: AOAM533Xz9QTiMtRQ51jle26xLERdNP9o/RJD7lnfFB/h4Mvd9r/ws2n
-        77X91v2yD1BiY7ZXnWYdqJHkqw==
-X-Google-Smtp-Source: ABdhPJzy8r32H631rMEUqmMguE25zJsdVa5JigyKXSP1Nt1BwBWWh7OYkf9i+9yWOzq7PhycuDOl1Q==
-X-Received: by 2002:a05:6e02:1a21:: with SMTP id g1mr280061ile.154.1644950743677;
-        Tue, 15 Feb 2022 10:45:43 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id n12sm22596509ili.69.2022.02.15.10.45.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 10:45:43 -0800 (PST)
-Subject: Re: [PATCH v3] selftests/seccomp: Fix seccomp failure by adding
- missing headers
-To:     Sherry Yang <sherry.yang@oracle.com>, shuah@kernel.org,
-        keescook@chromium.org, luto@amacapital.net, wad@chromium.org,
-        christian@brauner.io, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        usama.anjum@collabora.com, Shuah Khan <skhan@linuxfoundation.org>
-References: <20220215184215.40093-1-sherry.yang@oracle.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <022c8d4f-25aa-76e4-3e7c-eae1d1431a01@linuxfoundation.org>
-Date:   Tue, 15 Feb 2022 11:45:42 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        with ESMTP id S243253AbiBOSrP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 13:47:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA813206E;
+        Tue, 15 Feb 2022 10:47:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AC3661719;
+        Tue, 15 Feb 2022 18:47:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42CEFC340EB;
+        Tue, 15 Feb 2022 18:47:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644950823;
+        bh=kscKovcHd2nlQ0B0p+OkiWybB5K6IGKqiw3FP0tR73g=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=bZgNh/7E+ij5VtobYi835qErjEZ5CZIIWSw+rLFCeGkBtalOcAGX3VuMfBGh8/Fpy
+         Z+dPTdLQBOPRwhcKCCoYqjGG4zZEfkTzL47ixHBYj58eQou4DtJd0qCkgcBMWiRQmO
+         s+t2Ogh4W/J8YGy7rgYOQgsqh8sLFq8UdZnshCvOhSzx0REVacxP+FYkTS/yr/KPlK
+         oEABv+tD5xRtI86zL5WT8vKBHvIBOLUwYwDnq2jSXpqq+j1BM1uJanDvjnklImh6fZ
+         zVg/gv30VM+NEH20toivT9Prlwo1a0HCEqtAXKCn5bEQsCbHbymf+9UkumvlQci/dB
+         lhfydPN0JyW0A==
+Message-ID: <f626571a-30de-5549-a73e-aaef874d3c36@kernel.org>
+Date:   Tue, 15 Feb 2022 11:47:01 -0700
 MIME-Version: 1.0
-In-Reply-To: <20220215184215.40093-1-sherry.yang@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: [PATCH net-next 01/19] net: tcp: introduce tcp_drop_reason()
 Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>,
+        Menglong Dong <menglong8.dong@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        flyingpeng@tencent.com
+References: <20220215112812.2093852-1-imagedong@tencent.com>
+ <20220215112812.2093852-2-imagedong@tencent.com>
+ <CANn89iLWOBy=X1CpY+gvukhQ-bb7hDWd5y+m46K7o5XR0Pbt_A@mail.gmail.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <CANn89iLWOBy=X1CpY+gvukhQ-bb7hDWd5y+m46K7o5XR0Pbt_A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/15/22 11:42 AM, Sherry Yang wrote:
-> seccomp_bpf failed on tests 47 global.user_notification_filter_empty
-> and 48 global.user_notification_filter_empty_threaded when it's
-> tested on updated kernel but with old kernel headers. Because old
-> kernel headers don't have definition of macro __NR_clone3 which is
-> required for these two tests. Use KHDR_INCLUDES to correctly reach
-> the installed headers.
+On 2/15/22 10:34 AM, Eric Dumazet wrote:
+>> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+>> index af94a6d22a9d..e3811afd1756 100644
+>> --- a/net/ipv4/tcp_input.c
+>> +++ b/net/ipv4/tcp_input.c
+>> @@ -4684,10 +4684,19 @@ static bool tcp_ooo_try_coalesce(struct sock *sk,
+>>         return res;
+>>  }
+>>
+>> -static void tcp_drop(struct sock *sk, struct sk_buff *skb)
+>> +static void tcp_drop_reason(struct sock *sk, struct sk_buff *skb,
+>> +                           enum skb_drop_reason reason)
+>>  {
+>>         sk_drops_add(sk, skb);
+>> -       __kfree_skb(skb);
+>> +       /* why __kfree_skb() used here before, other than kfree_skb()?
+>> +        * confusing......
 > 
-> Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
-> Tested-by: Sherry Yang <sherry.yang@oracle.com>
-> ---
->   tools/testing/selftests/seccomp/Makefile | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> Do not add comments like that if you do not know the difference...
 > 
-> diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
-> index 0ebfe8b0e147..7eaed95ba4b3 100644
-> --- a/tools/testing/selftests/seccomp/Makefile
-> +++ b/tools/testing/selftests/seccomp/Makefile
-> @@ -1,5 +1,5 @@
->   # SPDX-License-Identifier: GPL-2.0
-> -CFLAGS += -Wl,-no-as-needed -Wall
-> +CFLAGS += -Wl,-no-as-needed -Wall $(KHDR_INCLUDES)
->   LDFLAGS += -lpthread
->   
->   TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
-> 
+> __kfree_skb() is used by TCP stack because it owns skb in receive
+> queues, and avoids touching skb->users
+> because it must be one already.
 
-Sherry,
-
-Please see comments on v2. Your v2 is in next for rc5.
-
-I pulled in your patch as a fix as is for 5.17-rc5.
-
-Using KHDR_INCLUDES can be separate patch for next release.
-This way the fix is going to be pulled for this release
-without dependencies on other patches.
-
-thanks,
--- Shuah
+and it bypasses kfree_skb tracepoint which seems by design.
