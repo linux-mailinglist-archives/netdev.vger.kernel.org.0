@@ -2,190 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CE124B7341
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:43:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C2BB4B70F1
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:39:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234691AbiBOPZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 10:25:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42094 "EHLO
+        id S239857AbiBOP1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 10:27:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238727AbiBOPZy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 10:25:54 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15A458F988
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 07:25:44 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id p5so56882007ybd.13
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 07:25:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=857+qV47ddm8WE8KTWXLHPQ7djLUydmVO+RXbwgQrfk=;
-        b=D/mNPmTVJktt/9sUx/SBEKcVTfsa+TjCn2lpj52UUTHad0PYCP5Y5GRCI5TsYp/Qb4
-         +3GRI9/4MzexhaYzhS1sAqdgGVT0f+0MRLF/NNyIfoc/F4Gny6uGGwGZX5yY/oC69zyU
-         q7sKT2+fhC81GUp9Tt55QBzS+BOkBsnQqsHYKpOfiPoQZ+Obe1Xgjr8O8vtBz+eAaMa4
-         y3o7yKo5gCKZxcglyuEHZlXGeK4UGpDYUtiyhWlGWOVamG4O4oaeCRkDm2Zcpr2kGGK7
-         l1pP12h2lndBiXfbkyBb2/wULR3aPBHDIuFoWjZGf3a7HZM2PbN3evJ5bxgQTp+mMTYf
-         QD7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=857+qV47ddm8WE8KTWXLHPQ7djLUydmVO+RXbwgQrfk=;
-        b=Ix/h7TjI/FqrPRojDTdrYU5g3rjgmx4EoPBfJ1Z+pZw3ZLdhoB0Q+Nf9sd6VEfwIpq
-         ygI3um58xplygbX6xt0D8+/I/0Cm6qZAnXBoKbodLisudH37oH4sz0943rLDjT52CJQD
-         ZQneB6T+ylqva/yk1rZBp+leHZViboVF2jsh7Y9s2ZEYa8Nx9pYXgA4q46yRZ5VmjHGE
-         uNCjIUsuQODewUDDf8UfPHkKuQD8cNRDAXsFahESRCVx6oH/DkmC++h0GlAadKQyLTfQ
-         ND1719y09yuyTLti4L1ukk9Fl+nIsT2Vgz4vQ6YdjuQfD55P5xqXNY84LDvg1zNZ70iB
-         QeJQ==
-X-Gm-Message-State: AOAM5303PrbjG0BM+icJTdRg4NXE2uer67WwMTUllsNQeTEiFi5ir/WT
-        ok/N2cDTgy6OxZnnPw53swLu92YS5VumR3NIPvFimcGBu3pbcxbQDho=
-X-Google-Smtp-Source: ABdhPJxk7mrbL3RMym2ruQfovDQ1leVFG4JQH55yguTM8qjJSu1NPA/AjTgXDZUUTMFqhfKeqlX581mdgioFNv/nHJw=
-X-Received: by 2002:a81:ff05:: with SMTP id k5mr4176036ywn.474.1644938742804;
- Tue, 15 Feb 2022 07:25:42 -0800 (PST)
+        with ESMTP id S239830AbiBOP1g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 10:27:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86876A6522;
+        Tue, 15 Feb 2022 07:27:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31601B81AEF;
+        Tue, 15 Feb 2022 15:27:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7B2EC36B01;
+        Tue, 15 Feb 2022 15:27:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644938839;
+        bh=7/S17zKKZcRI0PTGG5WL6TzosOzrdPRFquTzATca4EI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oK27XSTglrrqS//CzDaZwWpq/FPQww1lRUrM3HDBUNO/lg6Q2dr8sofe9u8tTZhI+
+         U9kNIpYMfLdjHcEM0q5yvjDUfDpfHJ11FvzO5G25WjZkNPLWdevsYB0EphNmJiBfeO
+         xplPK8Ss9f/GSphZayNhjHUHM691L7Psv6qjOzaK5CZtsDjoiIvVJsRB/oujlBcnlj
+         mRKxf36wt5z6H5vmmwMHc2tXh8j27v+etAKHA3PDJcnr92dZWuihPvDqcYZDJ4XBqH
+         x9U2MZlGn+1fTcbY0OzCUisFAZ+1kAvbhGy7WVycRcu3esz2yvnxNVvT06+1YVh9WH
+         R7EEr06jnBQTw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Florian Westphal <fw@strlen.de>,
+        Vivek Thrivikraman <vivek.thrivikraman@est.tech>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
+        davem@davemloft.net, kuba@kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 09/34] netfilter: conntrack: don't refresh sctp entries in closed state
+Date:   Tue, 15 Feb 2022 10:26:32 -0500
+Message-Id: <20220215152657.580200-9-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220215152657.580200-1-sashal@kernel.org>
+References: <20220215152657.580200-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220215103639.11739-1-kerneljasonxing@gmail.com>
-In-Reply-To: <20220215103639.11739-1-kerneljasonxing@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 15 Feb 2022 07:25:31 -0800
-Message-ID: <CANn89iL8vOUOH9bZaiA-cKcms+PotuKCxv7LpVx3RF0dDDSnmg@mail.gmail.com>
-Subject: Re: [PATCH] net: do not set SOCK_RCVBUF_LOCK if sk_rcvbuf isn't reduced
-To:     Jason Xing <kerneljasonxing@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Wei Wang <weiwan@google.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>, Florian Westphal <fw@strlen.de>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jason Xing <xingwanli@kuaishou.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 2:37 AM <kerneljasonxing@gmail.com> wrote:
->
-> From: Jason Xing <xingwanli@kuaishou.com>
->
-> Normally, user doesn't care the logic behind the kernel if they're
-> trying to set receive buffer via setsockopt. However, if the new value
-> of the receive buffer is not smaller than the initial value which is
-> sysctl_tcp_rmem[1] implemented in tcp_rcv_space_adjust(), the server's
-> wscale will shrink and then lead to the bad bandwidth. I think it is
-> not appropriate.
+From: Florian Westphal <fw@strlen.de>
 
-Then do not use SO_RCVBUF ?
+[ Upstream commit 77b337196a9d87f3d6bb9b07c0436ecafbffda1e ]
 
-It is working as intended really.
+Vivek Thrivikraman reported:
+ An SCTP server application which is accessed continuously by client
+ application.
+ When the session disconnects the client retries to establish a connection.
+ After restart of SCTP server application the session is not established
+ because of stale conntrack entry with connection state CLOSED as below.
 
->
-> Here are some numbers:
-> $ sysctl -a | grep rmem
-> net.core.rmem_default = 212992
-> net.core.rmem_max = 40880000
-> net.ipv4.tcp_rmem = 4096        425984  40880000
->
-> Case 1
-> on the server side
->     # iperf -s -p 5201
-> on the client side
->     # iperf -c [client ip] -p 5201
-> It turns out that the bandwidth is 9.34 Gbits/sec while the wscale of
-> server side is 10. It's good.
->
-> Case 2
-> on the server side
->     #iperf -s -p 5201 -w 425984
-> on the client side
->     # iperf -c [client ip] -p 5201
-> It turns out that the bandwidth is reduced to 2.73 Gbits/sec while the
-> wcale is 2, even though the receive buffer is not changed at all at the
-> very beginning.
+ (removing this entry manually established new connection):
 
-Great, you discovered auto tuning is working as intended.
+ sctp 9 CLOSED src=10.141.189.233 [..]  [ASSURED]
 
->
-> Therefore, I added one condition where only user is trying to set a
-> smaller rx buffer. After this patch is applied, the bandwidth of case 2
-> is recovered to 9.34 Gbits/sec.
->
-> Fixes: e88c64f0a425 ("tcp: allow effective reduction of TCP's rcv-buffer via setsockopt")
+Just skip timeout update of closed entries, we don't want them to
+stay around forever.
 
-This commit has nothing to do with your patch or feature.
+Reported-and-tested-by: Vivek Thrivikraman <vivek.thrivikraman@est.tech>
+Closes: https://bugzilla.netfilter.org/show_bug.cgi?id=1579
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/netfilter/nf_conntrack_proto_sctp.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-> Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
-> ---
->  net/core/filter.c | 7 ++++---
->  net/core/sock.c   | 8 +++++---
->  2 files changed, 9 insertions(+), 6 deletions(-)
->
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 4603b7c..99f5d9c 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -4795,9 +4795,10 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
->                 case SO_RCVBUF:
->                         val = min_t(u32, val, sysctl_rmem_max);
->                         val = min_t(int, val, INT_MAX / 2);
-> -                       sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
-> -                       WRITE_ONCE(sk->sk_rcvbuf,
-> -                                  max_t(int, val * 2, SOCK_MIN_RCVBUF));
-> +                       val = max_t(int, val * 2, SOCK_MIN_RCVBUF);
-> +                       if (val < sock_net(sk)->ipv4.sysctl_tcp_rmem[1])
-> +                               sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
-> +                       WRITE_ONCE(sk->sk_rcvbuf, val);
->                         break;
->                 case SO_SNDBUF:
->                         val = min_t(u32, val, sysctl_wmem_max);
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 4ff806d..e5e9cb0 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -923,8 +923,6 @@ static void __sock_set_rcvbuf(struct sock *sk, int val)
->          * as a negative value.
->          */
->         val = min_t(int, val, INT_MAX / 2);
-> -       sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
-> -
->         /* We double it on the way in to account for "struct sk_buff" etc.
->          * overhead.   Applications assume that the SO_RCVBUF setting they make
->          * will allow that much actual data to be received on that socket.
-> @@ -935,7 +933,11 @@ static void __sock_set_rcvbuf(struct sock *sk, int val)
->          * And after considering the possible alternatives, returning the value
->          * we actually used in getsockopt is the most desirable behavior.
->          */
-> -       WRITE_ONCE(sk->sk_rcvbuf, max_t(int, val * 2, SOCK_MIN_RCVBUF));
-> +       val = max_t(int, val * 2, SOCK_MIN_RCVBUF);
-> +       if (val < sock_net(sk)->ipv4.sysctl_tcp_rmem[1])
-> +               sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
-> +
-> +       WRITE_ONCE(sk->sk_rcvbuf, val);
->  }
->
->  void sock_set_rcvbuf(struct sock *sk, int val)
+diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
+index 2394238d01c91..5a936334b517a 100644
+--- a/net/netfilter/nf_conntrack_proto_sctp.c
++++ b/net/netfilter/nf_conntrack_proto_sctp.c
+@@ -489,6 +489,15 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
+ 			pr_debug("Setting vtag %x for dir %d\n",
+ 				 ih->init_tag, !dir);
+ 			ct->proto.sctp.vtag[!dir] = ih->init_tag;
++
++			/* don't renew timeout on init retransmit so
++			 * port reuse by client or NAT middlebox cannot
++			 * keep entry alive indefinitely (incl. nat info).
++			 */
++			if (new_state == SCTP_CONNTRACK_CLOSED &&
++			    old_state == SCTP_CONNTRACK_CLOSED &&
++			    nf_ct_is_confirmed(ct))
++				ignore = true;
+ 		}
+ 
+ 		ct->proto.sctp.state = new_state;
+-- 
+2.34.1
 
-You are breaking applications that want to set sk->sk_rcvbuf  to a fixed value,
-to control memory usage on millions of active sockets in a host.
-
-I think that you want new functionality, with new SO_ socket options,
-targeting net-next tree (No spurious FIxes: tag)
-
-For instance letting an application set  or unset  SOCK_RCVBUF_LOCK
-would be more useful, and would not break applications.
