@@ -2,152 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B478A4B7205
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:41:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F22294B7116
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:40:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241048AbiBOPwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 10:52:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51214 "EHLO
+        id S240962AbiBOP4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 10:56:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232757AbiBOPwQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 10:52:16 -0500
-Received: from EUR02-VE1-obe.outbound.protection.outlook.com (mail-eopbgr20043.outbound.protection.outlook.com [40.107.2.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7905D9D4E3
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 07:52:06 -0800 (PST)
+        with ESMTP id S239731AbiBOP4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 10:56:19 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2050.outbound.protection.outlook.com [40.107.92.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 412B99E57A;
+        Tue, 15 Feb 2022 07:56:05 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fhb4vprAWpVGJZ6vsbUBmFFBdzFT6x444lKAYEt6UgUckmOnLuRZtx7bT9oZxcHYdSNVIzHqI8XCkXTMGTa+OxejvZOWUOTNBqmGGo3NtM9RU6eNll9xIBXfx9/kidj7sy6EFD/6BIQkb6hde/1Qr/CgHCu9rzLtKUCn06I3Z1BPJTk5ZBx98T0GZV9UR9pHZLt6cW39QSB5DvUicQXY5dl3pN69irdztn7RGxIHu+2gCXL+S9xoOqdNqnmA1H+ucOmXlGca1ArD5wlQ4Pujhxo1zMkFstQpf1cV3SzoFb75Zr3zFk2nxSHe40sDEkGsw7Fxliir0GVYip/MM59AtA==
+ b=JTX0kKSs60Pnecxb2/PTG95Y7QbFn/09PMJvPwI8ZTaNTRakLYQpsNZXplaQ/D1bvcKFk6RPPGtsm96B+XLhfs0pmnu+C6ZWWHKt5hTisXsQFa+Du+MKO0+CJKQ+4Dglm6SzriJYUtIdXy1XVqQui157yZG3vtsetkQEqTk41Qa8VvUH7n8avI/asvoRFGGlmwvMf5mSMUNWMsO/H5wt5rFoEG6hV9AUrKwuiAUOI9nthysokOYN1/B4M+osTX0hinQheFt13UN6Dzj2w6qkiKTM5oQbLOpUazrA0ax3R3+HJUkYX1LW/pPQMhLnqYbbcfuh/nXUnwpWVRwwFsI7Xw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zWUOJY4L0JKv9Rk4hR/m2GqtKa0Iw1un7NfFhfK+deQ=;
- b=kBFzrHzvy+lsqTie5DcpX3ebk1YjsWDcXIsel5Ot+zvSH9QOBlP+gSoxEchJOzteUrkDlSAzTFbI+AIf4/QupualUcIuWC3A+VJP17Hn15VWW+XQYK5CTYFS1QT/nRINVlLwd/WaGGf3nBMmFEKFroRq/slEMgBACpDbcmkdcw3X8d5mNQs0XjJwdkjCLwzpHtfFSncehNMvELnYf0s3MVH0O7skcfPkTBXJ1ebIGLyWsIMAD4HDB9uTUA3173dZNCcZzrl8jFykKA96tb7gPP2yrvK2F6jkA7pQwUMWkzueNKXMAzbWJTSt8pOJO3WUSlaYF8CQxqvLc4mK7OvAFQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ bh=JULRuBXTDT2NSj8/68Dvu12VImVPZwhhvXTRAjqfIgc=;
+ b=CknymNw/o75Pcn6uq56TBp+LdPMj87Tp2PvDHDwlKvnBDLHCs7qkCmjC8iZfOt/0q5wpbsl/c2UQxhGTiGntCcoLw7Oeciz+iTmrK0sHbGcGHzKJH6NwxAMtQyzZCl+priVIoiqs3i/Z+S/9CFxa1Hd3J2ZfYyoo+iAAtx34qpXJSrKLaY8gaFvwDczQ+bkPpHKNDP2HEn+x5zoWIuS3/F9nXSLMY9k1iI1rX5GcnFuICNMGSBKnqMXgQbCmr7Gw7le67pfECwovqEAqB8rkC3gqNBGQvgEau2duGHGtwYD9ReqGYj5lFGemfDbamWCtS/vGi/pp01AcaFQWT2xs7g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zWUOJY4L0JKv9Rk4hR/m2GqtKa0Iw1un7NfFhfK+deQ=;
- b=IRdO/Y1gkjfyaJwbVRxfm+zbT1rZTlfv9O8ZxbU/1w1miJj7ow+nLs98rYy6kSGsAt/BLlMo/5bqza2UNFo28ldght/btkXjrCAwVZF/MgrEh2JMTDuIqYQqzeDHhMmgSEIcbUdnAD45nl+EEK/3i3w+ylO4Ylhen9V1bZj9Ejw=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB4525.eurprd04.prod.outlook.com (2603:10a6:803:6b::17) with
+ bh=JULRuBXTDT2NSj8/68Dvu12VImVPZwhhvXTRAjqfIgc=;
+ b=Kz9fYNqv6kKeqjAavbU3V365mdVjjSRfhQOabZBZkYd+vx40YkCde1yqMvRQiZy3UC2d1QQd6rne0zBJhtM9bkh2diSnpC+khqk0TGu9iapIqQ6XvohtGlrOUzhsLjS0C2nn/ISYLQwcRe93iXxHgY578p4lBKSe8mqaDIHRcZAS0won5qtn4L2EYxv9kFNMdjxxXtiZ86oapFajTL9GR/UCoJa4TLxnpYZl138n1eQECb7A80RXc/6UQ5ZY2BH4l8rI+XBnzmkYl9/lvoNyCVq2elgJMSw8UcHmCJAhD2YFuN3O9JJpvMYRzkT3GueS/lXWB/hkPOZQEMtN+JIAGw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH2PR12MB4181.namprd12.prod.outlook.com (2603:10b6:610:a8::16)
+ by BN6PR1201MB2466.namprd12.prod.outlook.com (2603:10b6:404:b0::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.19; Tue, 15 Feb
- 2022 15:52:03 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Tue, 15 Feb 2022
- 15:52:03 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Rafael Richter <rafael.richter@gin.de>,
-        Daniel Klauer <daniel.klauer@gin.de>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Subject: Re: [PATCH v2 net-next 1/8] net: bridge: vlan: notify switchdev only
- when something changed
-Thread-Topic: [PATCH v2 net-next 1/8] net: bridge: vlan: notify switchdev only
- when something changed
-Thread-Index: AQHYIfsSmRmY0oOnV0uNWER612b7d6yUT04AgAAQq4CAAAUOgIAABQWAgAAKo4CAAEtkgIAAAegAgAACAAA=
-Date:   Tue, 15 Feb 2022 15:52:02 +0000
-Message-ID: <20220215155202.vfrg2xbxtetpdk6q@skbuf>
-References: <20220214233111.1586715-1-vladimir.oltean@nxp.com>
- <20220214233111.1586715-2-vladimir.oltean@nxp.com>
- <bcb8c699-4abc-d458-a694-d975398f1c57@nvidia.com>
- <20220215095405.d2cy6rjd2faj3az2@skbuf>
- <a38ac2a6-d9b9-190a-f144-496be1768b98@nvidia.com>
- <20220215103009.fcw4wjnpbxx5tybj@skbuf>
- <5db82bf1-844d-0709-c85e-cbe62445e7dc@nvidia.com>
- <20220215153803.hlibqjxa4b5x2kup@skbuf>
- <49709ba6-7f4f-493d-88c9-553d7c300397@nvidia.com>
-In-Reply-To: <49709ba6-7f4f-493d-88c9-553d7c300397@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: cd5d0f75-209a-4583-0d0d-08d9f09b1c02
-x-ms-traffictypediagnostic: VI1PR04MB4525:EE_
-x-microsoft-antispam-prvs: <VI1PR04MB45251722B3C3E4CAB1A373FBE0349@VI1PR04MB4525.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 6H6vKAy3UYfa4QkPFl4TMAQd0Sd7Nf8pcIO/ne0a6dFMuC130wqwuL82AvJpROyCkcnIi399ehrO/gnZMVdqUue9Y9wzyn2nCTbyLvcUO/h83Z6xP3gj9YxpKMTSxVB2AoycCkPa7nug7YW0qyMOOspUAUjGTWuym8Bb9Tz0l3H4qD6SO9PhYRDo9A6t/n5gjxSFLwrjk3aL11PxScienSgw1YHVcewv/XCY+hYOYgndKer7VwQmbhXha8OOSIrqFVruFNRZGJ3NEi+ZFjlhsQ/tO5qz41Zw+1a2HEu4wHG/64dmJMO1l7oU6hLzMtlUODsZglAeOC5bFiMObjHAfb/IuUXCGFUSqcwbIhvLlQYWGAzwAiFgj2XV1ySM5SBwevkOKi4VRUVcBSiWiXe/37WsOpfV0bmwiqF0FF+qMAWJm905WidJqoVYMF7xLuqSTWKq4LNkto5qaBJhZXiEl+2csnwf+vy50SIumFai+y+tVHf0+LLisq+LIoWfQ1VN5i71z3I5Hx+l4Sw+q5buIBUqG76SybTH8xncQJWk2uGhNLEf9m2I6WO7DFrDJg5gu/5G1W1fq+Uw98h6Wh3bN/WO5U3yx3IbEw6S0zuGLIXDNbcbiqCnfchF7qEQu+RftRQ63ORwBKvjsKt0wnJfJ0j+biwJVPUmc34Dvam6Il8YtmK07AXea9mUuwOpuUuiCycK6ZKrkhFZk2Q/9+xB4Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(76116006)(122000001)(38100700002)(26005)(64756008)(316002)(66446008)(66946007)(33716001)(66476007)(186003)(66556008)(86362001)(38070700005)(508600001)(7416002)(5660300002)(54906003)(8676002)(6916009)(9686003)(6512007)(71200400001)(6506007)(4326008)(8936002)(6486002)(44832011)(4744005)(2906002)(1076003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?1GGAuLbeYSFeD2SHHmSZVknxx5zS5BB1EuKp1/AQK6dtlwfYN33nqGLCAU/P?=
- =?us-ascii?Q?fBHKYiVA6J9rSVvQ+oJ7YmSuGbplkMjOroppghElObo8EbQ/WlniCIewenih?=
- =?us-ascii?Q?dKwuj0KW43nHnijtP2FlYVcaoCPVmm9WrYm5udmtDCkUD3J79CTQLrf5zcij?=
- =?us-ascii?Q?18k0c0Fyl4/x0BnPmHZ/g2e0bVeR7kUnzJhpJpNJHkDfbYH+b63aMqoChk0+?=
- =?us-ascii?Q?PzRMwRVaUh5VbvU0mkZRONEFVRzUy+0NMzS90isPH9QCVhZY8sQZh0RbKEnt?=
- =?us-ascii?Q?qEG/Y8KNQLYWt0aKdOnzUNiAnd1mOYke6BjCa8y00CXpjDJgJM/N0wXejyHa?=
- =?us-ascii?Q?jBl6vdxDsuggAc4d/zEKybp866GkTlkY0wCZg5BaEYKtYsvo3ZQQwd+JSgJH?=
- =?us-ascii?Q?n2PJpbweR8kxOJzve1pr6H5CX9KsOCvf56Tnk3nMDTxqzPVAxP8DDRw31119?=
- =?us-ascii?Q?l0C3jWaSGLEd9iImoXIl8aDCLhFOHUW6VS8EmUFhh3T+KifKWFRtAE8rQesE?=
- =?us-ascii?Q?Qtx6w31Ey63Y2fyhvjha21qvTm8eJojgNvjB350gexXCqc1G2uXl2KJtTOhZ?=
- =?us-ascii?Q?qpD/5HXE+uvySjE5a98NAIexnNhbCFfRqpEeVOpOlbuqWgGebX+zmaBEcwzW?=
- =?us-ascii?Q?oXoODiKE47O/3qKBcSTU1y1EKUceE3AT8WrqGClLwPV2f4uu56iOoNn0v277?=
- =?us-ascii?Q?O3ryYZVfIO0sKCPVv/yma3Ih2jGBZWPUG587H0lvvRyED+s40f4raS5A4zxw?=
- =?us-ascii?Q?XkEAvozQk8VcGOl4mkTzKMccnyEe9zZUBx6ai8EczLSJnkHFaOrG9W9eM3nH?=
- =?us-ascii?Q?SZMQJT7EelkOT1KHttM0m9l5IdJSf73s6b8M+9Kc2yCjdKNDB2/bWr2GafqY?=
- =?us-ascii?Q?+A404bSIHLpfJGWNKFzxPLdZ1PdDYAcRY5iJJCjGxibSOBteJKHcwX4FnHEK?=
- =?us-ascii?Q?feCWG8MKZ4pvxl74T/zRU15CK+Qtf5MFpH/9mjRtVzFqCVW4OFTJOOsTCtZH?=
- =?us-ascii?Q?x1jabK73pnuADt1izc2N/fEX7WSENMKhJ/YzBhzWyyY1uma8lngQ0mvFXw4R?=
- =?us-ascii?Q?VwIsaO1jOXg1HHHJCsB+ndFjREC85F3MuejmQqDQcs6truLy+kF05SbrV7Nx?=
- =?us-ascii?Q?IACF2wvBxCb6bf4FDlp5Y+shgwHK+6YB/rNBr+fH6iV969OTMoXCF8QoCC1E?=
- =?us-ascii?Q?AAD5RpqUjIcWCY2UIi27pSobOYzCLbWEAzOm/oo5xTU7VyIvp9pouvh88FHT?=
- =?us-ascii?Q?tvUjLinkQsswI9M9pOevpzhH9GQbVPipoLzbbrqC8omK0G8dnXaJLgBZFQRZ?=
- =?us-ascii?Q?Lkfnnw+R+0nRGPW9fcpBBQ5xP69hx3asakj6QmjsC/4CSNWOJkcgdYyrgybg?=
- =?us-ascii?Q?pgM4Drb3kQio/h4A19Q44hFPkp6qGFanDpNRh8ro57BulJh602hSKdXvzGu6?=
- =?us-ascii?Q?zM31cjS4DrmZh1VQ3P25DHREv+IT1dqnP1njOC1YglxCVSz99WvjcYgmd4hg?=
- =?us-ascii?Q?vwLEFegUF1BUjObUPe/re9GH9xKBZ2icraGce3HQo9EmU5bjkwRaXeu/C5wo?=
- =?us-ascii?Q?q4qf6bBt54KvGgC5pMWx2wDmBz6vBrOk+sewSEsKTCkKW/F2EYESm7dtiOvZ?=
- =?us-ascii?Q?eAU9vKTo+FArXE+mJumQdl5X7dFNjbUJP2/YrDfQMNnO?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <079CAD4E386700439CB96A152FC507BC@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14; Tue, 15 Feb
+ 2022 15:56:03 +0000
+Received: from CH2PR12MB4181.namprd12.prod.outlook.com
+ ([fe80::287d:b5f6:ed76:64ba]) by CH2PR12MB4181.namprd12.prod.outlook.com
+ ([fe80::287d:b5f6:ed76:64ba%4]) with mapi id 15.20.4975.019; Tue, 15 Feb 2022
+ 15:56:03 +0000
+Date:   Tue, 15 Feb 2022 11:56:02 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     "Tian, Kevin" <kevin.tian@intel.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "saeedm@nvidia.com" <saeedm@nvidia.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "leonro@nvidia.com" <leonro@nvidia.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "mgurtovoy@nvidia.com" <mgurtovoy@nvidia.com>,
+        "maorg@nvidia.com" <maorg@nvidia.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        "shameerali.kolothum.thodi@huawei.com" 
+        <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH V7 mlx5-next 09/15] vfio: Extend the device migration
+ protocol with RUNNING_P2P
+Message-ID: <20220215155602.GB1046125@nvidia.com>
+References: <20220207172216.206415-1-yishaih@nvidia.com>
+ <20220207172216.206415-10-yishaih@nvidia.com>
+ <BN9PR11MB5276D169554630B8345DB7598C349@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276D169554630B8345DB7598C349@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: BL1PR13CA0261.namprd13.prod.outlook.com
+ (2603:10b6:208:2ba::26) To CH2PR12MB4181.namprd12.prod.outlook.com
+ (2603:10b6:610:a8::16)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e4afdd80-c1db-4a99-e871-08d9f09bab1e
+X-MS-TrafficTypeDiagnostic: BN6PR1201MB2466:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR1201MB246615D212491BF17FA77C1BC2349@BN6PR1201MB2466.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qjTNLQSGtl/oPX98AQGQRBDfmJNrBcd9bUY1Pwj1ba57NgskZqXybOIOywFNlZNr5QAVOoKiOp3oiXGKn+VfG/PbFioOiAU+Im78hteRGClh3W+YzzSVNRiWsR8uIjg+oJOuzkrb0qX6a89CQYKfy8nRPlkpBV7meiua1UgN1UIADn0i3TW21QCmlOjPoAudXO0r8JCzz62lYztmF19Mp4MkibyY4l2ebQnZhoQJPZ38cDATCwCVcjUdN+dapwK2EgL9W7GPH1PGOEjMUGXzObWfSFheIqHIcqp+kZ0Uo3RKb88VDup2rAgbIVFulDYjc4YbvkCQCe7rTKd5a5NxiKgMNwAIFQ0+LuWYn7YKkfGiEGvQ9NqNSSIJVb7pG3/qhvwQxx8WjCsJNlL8rGXkDvwMVp2wHHfPgrKtgUioMheOkCR4cR+Ii5PuyN3yby9aVSvEcSQfq1q+DANdHVU2G7LFjd3o6HHo6ES5NREWHuNzDR1NoWd1kImtpXNFO7pzZxV+HOims/C2ob6t3MhjG0+0akvo7gkXXeU4FTO3/ofWd0dKRKCpcwYibHxGhQ/qf8ZxHYA8879OjUAAH0N+zPXvoeI8cc5GLIBHABFBBcoFHTib1mV0lw5pX6cxFMNLZymlnhHqXRUBc0xhgHfr/A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB4181.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(38100700002)(8936002)(6486002)(508600001)(5660300002)(66946007)(8676002)(6916009)(66476007)(66556008)(54906003)(316002)(26005)(186003)(4326008)(2906002)(2616005)(1076003)(6512007)(6506007)(86362001)(33656002)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xaRLavEEre+H7JQUZuI23q5YgvVOZ7G8tTdaBENjMi0/wx5I9wlL3C7jmye5?=
+ =?us-ascii?Q?mHsb7h51R96FLIL2q+PfJTBeOJvuqIu++DEoR73SvXhApC36jY91mYKz3BNK?=
+ =?us-ascii?Q?gnxBBO1ibXbiXMj43n9yA4Mlua2JdghcsIJ46gc1KRUKUfc03ezx6GKabICs?=
+ =?us-ascii?Q?+eiI6uLL0Y9pUyFKBKYhXT/IBc4QZ45EwGvbbHdvAEnAveuhBbDVjaVn/51W?=
+ =?us-ascii?Q?aJtrW4h6drtApUKcRniTGlKjtJGOi+NwVElGyO351354qk835U6b7jY0ar26?=
+ =?us-ascii?Q?t0t0vq6Ac/6kwihCdOy3ajlQ60KjKab0LL/KfcrXlhBUO7Tv556QsPCn4bWT?=
+ =?us-ascii?Q?UnaBbPeins1m1eUdnffXusok+8TYt6IP+6h/6/ZQ2Saq6g0UhfGzdp5tFchR?=
+ =?us-ascii?Q?RNAl3gZKJqyfpDM3krIZQpbjevdnn+G1pfuStRUABEySjky+XjNmodvdRMC8?=
+ =?us-ascii?Q?A1NPDsZX6CPY+dFwTBvtpKUVUMO7k+hoaXNZZ5wXoUiQQiYx83gvw/X9m3JY?=
+ =?us-ascii?Q?qNJyG/P6C17nk4ofSt451sbGps+CJxC9Hboh5oB6oTzQqZ92r2st3aXjpFYw?=
+ =?us-ascii?Q?+LjFP1rWTaFd8InE3RFWKkp3zYF2AeWip/E+26mHnHKrZeAHjh6RZvVhq/1u?=
+ =?us-ascii?Q?PiKYf5TKvS141iesxfSZI48wKGXO8QBb+lYZvqBmKYCdJVAcxll/0X/kCW24?=
+ =?us-ascii?Q?df8F+3bIvKOQ7vMrqCOfe1KjbTGCDdnfjK+g4+ZallpAN7xE0nwQy1CCVD+1?=
+ =?us-ascii?Q?tZAzzBAXPJHmZZCYgApOc36iEdIZ2xhXe5anMY/vOI5yOYsACHI8vRV5l1OL?=
+ =?us-ascii?Q?Fwep/2rcEGjk/Ev6RShEWrqKzW8qLBlP/2yjOfm1KJP+zaPhtRwJSSECI2aj?=
+ =?us-ascii?Q?ZBu8IIgv9mIzlTsYSzNqiXK87QDK1i+1In95WLSQjqoBVQvevWu7CsPKCj8v?=
+ =?us-ascii?Q?6ROJtzbiFM23Fi6rKjqaDlJQHwOhY6E+aHNHqCrTOdTwAlDGXhlVzWgATJjD?=
+ =?us-ascii?Q?iExP/gqOjuZBaKryoCiRjzf3PMtbCZy69Okc0YGtYrY4h6ryYtwaGOK6eIH/?=
+ =?us-ascii?Q?dX39wbeJhgq7u2JUtU2jM7PF/1ym+UN2VYnc4N+sLSb4FPmLYxGydQrfMb3e?=
+ =?us-ascii?Q?ic/csc23mtNaDyl07Pxq/2Z6x/OK2ZICtia9dkwDfmDXAwcQaFJfupcoRlHZ?=
+ =?us-ascii?Q?c1Wb6ewa9BAPT/+w4t7zoDWPPJjdmv7Y9aKSGvemRXU2ttYr9FVAB9PCwuBe?=
+ =?us-ascii?Q?2bKcnnHzQQEvzsV6f1pvKqXitA/7TfKMPmzyo63xJPvg6p5tR+7y/e41o7eC?=
+ =?us-ascii?Q?GGZDaHR0uU9/SSO8k7/T8aO6Tq98LgZGqhMxC0AeFk42b842NSFSOANzIwWj?=
+ =?us-ascii?Q?7jhdxNm6taNTfw1Env/ZD5TVLt0c9tpd/agVqTBSX3d5h+UR1Bh3nr16Q5yC?=
+ =?us-ascii?Q?YZnUlL/OM5GTOuM6fwi/x/zUfM0wndsYTitLbPCaXnN+tJu//hG4ze5R5OOo?=
+ =?us-ascii?Q?+we5qggfj9VJewHfaCPx04h9WOH1wY6B71aAjU1EBFKs5Fg8SZcZtkS/VV0d?=
+ =?us-ascii?Q?Ul4+ub5+4DF2BgQ8lps=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e4afdd80-c1db-4a99-e871-08d9f09bab1e
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB4181.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd5d0f75-209a-4583-0d0d-08d9f09b1c02
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Feb 2022 15:52:02.9191
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 15:56:03.2893
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8v4pnIQwx1/DV0393WQ7HMfTDiedhoTiUPLiFyVkhfS0rbZL7zdGK9o/fWV46hiq9Pp/mWbDAt2X104FAu0Sbw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4525
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fxwX/41INSAF0myux8qa7hE41Ka5WNO+vo7sHXaA/A9WCLz4SU18rVKBxw4q7+Bj
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB2466
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 05:44:52PM +0200, Nikolay Aleksandrov wrote:
-> > Would you mind if I added an extra patch that also does this (it would
-> > also remove the need for this check in drivers, plus it would change th=
-e
-> > definition of "changed" to something IMO more reasonable, i.e. a master
-> > VLAN that isn't brentry doesn't really exist, so even though the
-> > !BRENTRY->BRENTRY is a flag change, it isn't a change of a switchdev
-> > VLAN object that anybody offloads), or is there some reason I'm missing=
-?
->=20
-> I agree, patch looks good to me. I see that everyone already filters the
-> !BRENTRY case anyway.
+On Tue, Feb 15, 2022 at 10:18:11AM +0000, Tian, Kevin wrote:
+> > From: Yishai Hadas <yishaih@nvidia.com>
+> > Sent: Tuesday, February 8, 2022 1:22 AM
+> > 
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > 
+> > The RUNNING_P2P state is designed to support multiple devices in the same
+> > VM that are doing P2P transactions between themselves. When in
+> > RUNNING_P2P
+> > the device must be able to accept incoming P2P transactions but should not
+> > generate outgoing transactions.
+> 
+> outgoing 'P2P' transactions.
 
-Thanks, this simplifies things quite a bit.=
+Yes
+
+> > As an optional extension to the mandatory states it is defined as
+> > inbetween STOP and RUNNING:
+> >    STOP -> RUNNING_P2P -> RUNNING -> RUNNING_P2P -> STOP
+> > 
+> > For drivers that are unable to support RUNNING_P2P the core code silently
+> > merges RUNNING_P2P and RUNNING together. Drivers that support this will
+> 
+> It would be clearer if following message could be also reflected here:
+> 
+>   + * The optional states cannot be used with SET_STATE if the device does not
+>   + * support them. The user can discover if these states are supported by using
+>   + * VFIO_DEVICE_FEATURE_MIGRATION. 
+> 
+> Otherwise the original context reads like RUNNING_P2P can be used as
+> end state even if the underlying driver doesn't support it then makes me
+> wonder what is the point of the new capability bit.
+
+You've read it right. Lets just add a simple "Unless driver support is
+present the new state cannot be used in SET_STATE"
+
+> >  	*next_fsm = vfio_from_fsm_table[cur_fsm][new_fsm];
+> > +	while ((state_flags_table[*next_fsm] & device->migration_flags) !=
+> > +			state_flags_table[*next_fsm])
+> > +		*next_fsm = vfio_from_fsm_table[*next_fsm][new_fsm];
+> > +
+> 
+> A comment highlighting the silent merging of unsupported states would
+> be informative here.
+
+	/*
+	 * Arcs touching optional and unsupported states are skipped over. The
+	 * driver will instead  see an arc from the original state to the next
+	 * logical state, as per the above comment.
+	 */
+
+> Defining RUNNING_P2P in above way implies that RUNNING_P2P inherits 
+> all behaviors in RUNNING except blocking outbound P2P:
+> 	* generate interrupts and DMAs
+> 	* respond to MMIO
+> 	* all vfio regions are functional
+> 	* device may advance its internal state
+> 	* drain and block outstanding P2P requests
+
+Correct.
+
+The device must be able to recieve and process any MMIO P2P
+transaction during this state.
+
+We discussed and left interrupts as allowed behavior.
+
+> I think this is not the intended behavior when NDMA was being discussed
+> in previous threads, as above definition suggests the user could continue
+> to submit new requests after outstanding P2P requests are completed given
+> all vfio regions are functional when the device is in RUNNING_P2P.
+
+It is the desired behavior. The device must internally stop generating
+DMA from new work, it cannot rely on external things not poking it
+with MMIO, because the whole point of the state is that MMIO P2P is
+still allowed to happen.
+
+What gets confusing is that in normal cases I wouldn't expect any P2P
+activity to trigger a new work submission.
+
+Probably, since many devices can't implement this, we will end up with
+devices providing a weaker version where they do RUNNING_P2P but this
+relies on the VM operating the device "sanely" without programming P2P
+work submission. It is similar to your notion that migration requires
+guest co-operation in the vPRI case.
+
+I don't like it, and better devices really should avoid requiring
+guest co-operation, but it seems like where things are going.
+
+> Though just a naming thing, possibly what we really require is a STOPPING_P2P
+> state which indicates the device is moving to the STOP (or STOPPED)
+> state.
+
+No, I've deliberately avoided STOP because this isn't anything like
+STOP. It is RUNNING with one restriction.
+
+> In this state the device is functional but vfio regions are not so the user still
+> needs to restrict device access:
+
+The device is not functional in STOP. STOP means the device does not
+provide working MMIO. Ie mlx5 devices will discard all writes and
+read all 0's when in STOP.
+
+The point of RUNNING_P2P is to allow the device to continue to recieve
+all MMIO while halting generation of MMIO to other devices.
+
+> In virtualization this means Qemu must stop vCPU first before entering
+> STOPPING_P2P for a device.
+
+This is already the case. RUNNING/STOP here does not refer to the
+vCPU, it refers to this device.
+
+> Back to your earlier suggestion on reusing RUNNING_P2P to cover vPRI 
+> usage via a new capability bit [1]:
+> 
+>     "A cap like "running_p2p returns an event fd, doesn't finish until the
+>     VCPU does stuff, and stops pri as well as p2p" might be all that is
+>     required here (and not an actual new state)"
+> 
+> vPRI requires a RUNNING semantics. A new capability bit can change 
+> the behaviors listed above for STOPPING_P2P to below:
+> 	* both P2P and vPRI requests should be drained and blocked;
+> 	* all vfio regions are functional (with a RUNNING behavior) so
+> 	  vCPUs can continue running to help drain vPRI requests;
+> 	* an eventfd is returned for the user to poll-wait the completion
+> 	  of state transition;
+
+vPRI draining is not STOP either. If the device is expected to provide
+working MMIO it is not STOP by definition.
+
+> One additional requirement in driver side is to dynamically mediate the 
+> fast path and queue any new request which may trigger vPRI or P2P
+> before moving out of RUNNING_P2P. If moving to STOP_COPY, then
+> queued requests will also be included as device state to be replayed
+> in the resuming path.
+
+This could make sense. I don't know how you dynamically mediate
+though, or how you will trap ENQCMD..
+
+> Does above sound a reasonable understanding of this FSM mechanism? 
+
+Other than mis-using the STOP label, it is close yes.
+
+> > + * The optional states cannot be used with SET_STATE if the device does not
+> > + * support them. The user can disocver if these states are supported by
+> 
+> 'disocver' -> 'discover'
+
+Yep, thanks
+
+Jason
