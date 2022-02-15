@@ -2,164 +2,320 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DEAA4B5EC8
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 01:05:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE7724B5EE8
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 01:14:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232375AbiBOAFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 19:05:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60238 "EHLO
+        id S232206AbiBOAOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 19:14:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232370AbiBOAFq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 19:05:46 -0500
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2052.outbound.protection.outlook.com [40.107.20.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A82B7921C
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 16:05:38 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FcwnOWVaiECZvLpewNLjerQlrB7fpy8zpk2zpZ8H/ns5nxLzOoeKzPWcZxKoyCcNKQTz4zJFa3xonBWpaeED9hcevm5W4m6xgOS/EQz5wmebgbPBXLOyVMzmj3hkgioLPcvNMxWhw5t0hx1XkaSbMxfBQB9RDmkF9S5jVoXeTnctUkDS9uIp4p3DrgLs0sUUQ3CsMepWS9rhmqeeQDgur8FB9/y4H3zKnj4onqsmmiFTQnnQMUm/Wav5NkFYJww/JzyhdHceppGC3AmRfuRsU9tmW1FFUCy8goruHbtjt+uSLhZCI13ksCi+/r1w5+sqsPZ0RPKalFJ4eT2aOF+JDg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pynQI2c5qGpIhMX6Eg3jGR8nWl/9wPxekv4wejVQojU=;
- b=oLdPIiOK7t58h28p8sdkSu0VGw2Ba6uew1m9KhFS4n4nu0FOPvenCdk9+0x5tWQGDceVkzBiMDhCU641J9Phf1D/h0wlkPT6IX/MuzrzzTlBY9QvX4r9fjrGYuyjI9R3s9FF+Gusf2CQh6do7aGuQrvheew71PqU6ilcPLu8NHOS6K/oOeqwuXDoYspLHD+UBloGdp4XATeH8Oj444rDsVy2m2cAygBzkehiQ7v587nimduZEWmMd85jTXmVPCCiWqWXA02hb4ktk3DOntaGuroOSS3Ki7/aDVD+f34AXSPGkKzhDbDOjCVGsWODB5Gf94/TeO8SbZEAYwkr+ZhGCw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pynQI2c5qGpIhMX6Eg3jGR8nWl/9wPxekv4wejVQojU=;
- b=kL763pM5azzLCPtPS4fosJF9+gajDo0rXIdsbBBfHOhkfyZICG3H+Ketus+PHPowVBAIj7OumFVHTP+085rNWDMkR8Qt+u0TUnVPjoYEQ/cpYZBh3ZynFeBal97Ie0QC4GAeW+7fXDOZTZ8mQELMpsCItTKuNCb8wmuZPCPHcMY=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by PAXPR04MB8288.eurprd04.prod.outlook.com (2603:10a6:102:1bc::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.19; Tue, 15 Feb
- 2022 00:05:35 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Tue, 15 Feb 2022
- 00:05:35 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Rafael Richter <rafael.richter@gin.de>,
-        Daniel Klauer <daniel.klauer@gin.de>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Subject: Re: [PATCH v2 net-next 1/8] net: bridge: vlan: notify switchdev only
- when something changed
-Thread-Topic: [PATCH v2 net-next 1/8] net: bridge: vlan: notify switchdev only
- when something changed
-Thread-Index: AQHYIfsSmRmY0oOnV0uNWER612b7d6yTu4sA
-Date:   Tue, 15 Feb 2022 00:05:35 +0000
-Message-ID: <20220215000534.y6lhn2uvdtepx2v3@skbuf>
-References: <20220214233111.1586715-1-vladimir.oltean@nxp.com>
- <20220214233111.1586715-2-vladimir.oltean@nxp.com>
-In-Reply-To: <20220214233111.1586715-2-vladimir.oltean@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c5371566-e0f0-4fb8-371e-08d9f016e3fb
-x-ms-traffictypediagnostic: PAXPR04MB8288:EE_
-x-microsoft-antispam-prvs: <PAXPR04MB8288D03991A27DC08FC900E1E0349@PAXPR04MB8288.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Qogpw3REYa25wYDttiR2iiW80XmVQNLVvc+MPL7QP0qQUv1rz7YojV7UH2kUY5ErItX71n8AjXYylMHf/c7hTvUADrtzIqeKbsgyf7YVHFniiCngWaN8fpHnniUNi+u0/AbGbA11cEuWwfAUPDT7WtmKcXFIjxP8o+GWoJ63hVluHEsjcK29YmKL8ymC2UDgmF/nVz4BI0iyqj14cK46hO0HsedGmejZHi1IyeyUTIrSo/kPuDsmv4CsQnxTIHb1rpN8z4gacvosjHa6Wiy07GpO+0PZOFgeLJYBy9E2oqVhRUJwcrv8C7YdgxKlPREFRMSQ3/e3QqHpWIDHfbZK9c+t5aYKsvD4Pckt/mTpS7PAQOrDhF78NFMURUgBP/vM2CesqDHQmk3nKk4ta0SoEUqB3C+3XLuSPjnYYqVo7KR5zrPEApvYq9RaMpH6mJ42kTp6LVPQJtjhhNZhBvY9xi3zhTtKWAlw3PRIteZUXEXVUcaX5elYPKbPNYzrGU+K0PoRdtLkWseJBaZR5UInEzp9IErlnVSlSDXlR2sMllg/yC7bYJdysrrZVGdE1m/Rtwv15ZjqvmM3AJ/1F/LL3m+5Eu1w4aoTn2+Tk/62cx4aPHYGxL7IdKxsmDcqeRXCOrgJadCrzPE7J5G9e0jPsdWysP/Bpo/TMcucPzSLCF2xAKq7ezgoZl8qGivqgSYLTINuT9wDmLt/iCZ4lZyE4g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(6512007)(316002)(38070700005)(66556008)(66446008)(64756008)(91956017)(6916009)(54906003)(33716001)(66476007)(5660300002)(2906002)(4744005)(7416002)(66946007)(38100700002)(6506007)(26005)(1076003)(44832011)(8936002)(186003)(86362001)(6486002)(122000001)(8676002)(9686003)(4326008)(71200400001)(76116006)(508600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?a1FbiC0je4Ss6wfX9Pt7FhtZVtgSHgZ/3X3ajKAyjs2iNB9BXRoxTBlctekE?=
- =?us-ascii?Q?02NU0T4XvXxJNd9hMgQ+LBo/YxcqmESYYc8xXR4ksn0nTs64rsWtZokhJZbq?=
- =?us-ascii?Q?CyuDp6jTDVQ6mbvb6kZJvexV3E8hflguYuTD0+aVHwYCPz+fo6IX6Loz3KG/?=
- =?us-ascii?Q?KY22LsSVyjdYTLbN4Y6ekLyb+usKNxaExRTfW2z4C062M78MVOx9BNo5tRH/?=
- =?us-ascii?Q?43DP+uYKdNi7kffiK2TS253HWdQ2dhHR06Viwg5tf8x7qci8EDY7W8jF1E3K?=
- =?us-ascii?Q?D8qJKaUDBbCHiM6bSqs448OjCcHz++vM5ouslHLxaxt4DgaI9kMRG4UpOx2V?=
- =?us-ascii?Q?jVZYGat47ff0AgbLKK/X7Wh53Se6uMaQZ1kiw7bSsSWbB9eCtQpOERGT2d9O?=
- =?us-ascii?Q?xtQQlOVU06wm/EO6BGSsnveMdTv/WJeP3HMBPP3Y4VsbI61x/Q1QwHLBVNAN?=
- =?us-ascii?Q?ifdkvycuBbohfxj8+Blp51hSPqJjEK3WG8jup3L87v+UJa0BP1BUfyGNU7SB?=
- =?us-ascii?Q?V5nWh1qeJ7e5lMPdK3KC9o625+f5U3Pmiwwh4NlITYfvdgi2kA+PMYndF1gK?=
- =?us-ascii?Q?3qYXRmF6VpeLhbJWryyvF0XLKlb8o3CPhkNFbJB++FFJLv7Iw6yGkkw0WsAq?=
- =?us-ascii?Q?w2cPXVlRMSurtIOmpM3IBEV4PdU/dRghhGbFmeA8bEwwvMhyGD8jPb2iaDxp?=
- =?us-ascii?Q?RzDST8Ov4Us10R6yc/MKxqre9BCfZdhkXxmCxzpcYttwBca47bvvXGBvg30o?=
- =?us-ascii?Q?nSnW8oQE7diMBjXrCoeME7cib5M9df6nLDk4dKVuKlKqPBw42MjbSLFBZ71i?=
- =?us-ascii?Q?qXkwvU/sfr8FnO7UGO4Mv8Nx+Al4RPAlZhoUo1DO9qVSiTXRxVlDb86KlRJw?=
- =?us-ascii?Q?2ZKGYhpimM2m/pz1WaByRVvfwwS95OOhucCXNTfT4Zr4hXzxG+yLXptGStHk?=
- =?us-ascii?Q?1d2il00Unlt1OUI467fqKBovfq+PfsYV/tQed6Dc5OhNJRSqMkLmuT1z+Yfg?=
- =?us-ascii?Q?EDBs/+bwP6Crj67WvnGOCsR7l4kXAs9b94F8D6WirLtcXdBBtE9DPf6qBbWT?=
- =?us-ascii?Q?c1x4YlP9I40BOcbXX0MciqGmwhzG9dVMcE/56nR0B+qxZCLw6ppZd2ZnqAKC?=
- =?us-ascii?Q?NP4Y9WVOBhYL5jMEsgKDPc7P54GLT8h/kekR0VyDJ2VTJFODKJXF8tyzHlW3?=
- =?us-ascii?Q?BT0jKqwMKxjoKPxeEbmGJEo61Y72wmHSt/KZH2l3rBiNawgM6pmqcIQsoMhy?=
- =?us-ascii?Q?2dCF4WXJfN4OJsyHDapJHJFscV3SsJtp6WbjrdvJ7nVdjKCppBR9uQTnGuHd?=
- =?us-ascii?Q?gyIsCqv51yLsylS+Bmtd33NkPebsBt1pdcr7QynfsYvJtjEEjjOSTMZjaI7s?=
- =?us-ascii?Q?oqL9c2lnZuyZePvx77BDiu/Nx3i91vtpX0vSQo1F0o5qraG+Yfn2AWCXUk3M?=
- =?us-ascii?Q?s+cAny4ff8ew2WEZV5d3ERI4cLRZdnT230HJTbBTuQ2Tns+QeMPbYVE0cJka?=
- =?us-ascii?Q?6KiLLVLKq160PfS7ETcudl53eLpsWfe0bp4u5cKUHqxO4Z5ukqljf+rkc3d3?=
- =?us-ascii?Q?NIKc8OWsSQCMDzWpn665UbpwHQka6LZMg4AYWa0ycFnmftcsBxQZANaLuGNd?=
- =?us-ascii?Q?Qs8N1LlA/yg1Pr7fyOd0YsU=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <84537482B0AC9C4CA6D2309A2E410F7F@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229729AbiBOAOk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 19:14:40 -0500
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C02E10076B
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 16:14:31 -0800 (PST)
+Received: by mail-qk1-x733.google.com with SMTP id 200so15930895qki.2
+        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 16:14:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=8rVvM/VDhcQPtqhcAVOYlIhbp6EZDcl+1BZdIGAsB60=;
+        b=Zk+RgOrGsWoloQMmz5m8AgBOdCw6tTsjEKgTjYqjUylQLw7d138TtrL4/tO8y/lPkH
+         ZzVunWSzioNc2zEQgzglMNAfJ8K990Y0CU3G0yPgv1ynj53MNG6ra6K1tR4JU1044czN
+         jx9Ss22YOxhHgj4vJLuw7/xrOblavymt8cywbDD7MGKiPBkh5cRhBBt3Hk6NEzoUbbmL
+         ym1bmzbezVD46LccRgtOMjzmMvFUlBy3wCY1R/yQjRFPxBZeEqvCUCnHkiqsTYXHZUC0
+         I+NGS7zgYCsin0Il3h57KPbSCnKtVDHB/Fls5V97pvNMMujLzNdDkNxvsi271V0wEKQX
+         gAZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8rVvM/VDhcQPtqhcAVOYlIhbp6EZDcl+1BZdIGAsB60=;
+        b=hw9TiYq5U9v1gSdWkmz9Vhwxb2SGXV8jX9icuC3u4SlO7YSAvGtqJo3Uk6HQHnX/zX
+         lhFKMfdYlo4tEaMvNYpfSP0ribyGOWtisMWROjxlKU0lPHmiUtYSRDeUbF44Nu+EJMCf
+         mgXrj5NkZ6Da2INLuJdsFPHu7MXvMf47uusZ4jhFrF76XimwMz0xpgwY7vcBhiPS81xy
+         ECxmqhaG38JAcFfCY3VJ7FhDkfdcV19ts62HQkgU9wV6vB1uUQk7hZap0QHN+m+cP5WE
+         R0xELbNIqZySNo1T+rXWoRYTFeCRFYcAk8LK5KjNPcrUVIe671uA+NGAJqkOAZ78eiCk
+         hg4A==
+X-Gm-Message-State: AOAM530g90SEJIw+wt8Jd4OxMwa4WvXQ5HY9CJGW+eX6HUfGw8rYUTFi
+        ZzVO/r/V8L1wYUagZPCm8K/C9w==
+X-Google-Smtp-Source: ABdhPJwBMFRzYPUpeqnHB8d/Gk9eu7EG5OO0Q/MQ4RLchQaZ865sZAXoIWQvSwmd/kD/9mvYgL1bhg==
+X-Received: by 2002:a37:de0d:: with SMTP id h13mr842663qkj.452.1644884070708;
+        Mon, 14 Feb 2022 16:14:30 -0800 (PST)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-74.dsl.bell.ca. [184.148.47.74])
+        by smtp.googlemail.com with ESMTPSA id o6sm5238991qkj.43.2022.02.14.16.14.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 16:14:29 -0800 (PST)
+Message-ID: <b2ec623c-3b2a-3edb-804a-ca2ffd4fe182@mojatatu.com>
+Date:   Mon, 14 Feb 2022 19:14:27 -0500
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c5371566-e0f0-4fb8-371e-08d9f016e3fb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Feb 2022 00:05:35.3380
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mn3FscekJhcfO8wUyCu0HPYleKUKJNH5ER+Za4NwzHAw2r7iPXnJcCZLmF29h16N8OVd9ffyh0uGY5nSglAN9w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8288
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [net-next v8 1/2] net: sched: use queue_mapping to pick tx queue
+Content-Language: en-US
+To:     xiangxia.m.yue@gmail.com, netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+References: <20220126143206.23023-1-xiangxia.m.yue@gmail.com>
+ <20220126143206.23023-2-xiangxia.m.yue@gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+In-Reply-To: <20220126143206.23023-2-xiangxia.m.yue@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 01:31:04AM +0200, Vladimir Oltean wrote:
-> +/* return true if anything will change as a result of __vlan_add_flags,
-> + * false otherwise
-> + */
-> +static bool __vlan_flags_would_change(struct net_bridge_vlan *v, u16 fla=
-gs)
+
+On 2022-01-26 09:32, xiangxia.m.yue@gmail.com wrote:
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> 
+> This patch fixes issue:
+> * If we install tc filters with act_skbedit in clsact hook.
+>    It doesn't work, because netdev_core_pick_tx() overwrites
+>    queue_mapping.
+> 
+>    $ tc filter ... action skbedit queue_mapping 1
+
+This seems reasonable but your explanation below is confusing. You
+mention things like xps which apply in the opposite direction.
+
+Can you please help clarify?
+If i understand correctly you are interested in separating the
+bulk vs latency sensitive traffic into different queues on
+outgoing packets, the traditional way of doing this is setting
+skb->priority; a lot of traditional hardware mechanisms and even
+qdiscs in s/w are already mapped to handle this (and cgroup
+priority is also nicely mapped to handle that).
+
+
+The diagram shows traffic coming out of the pods towards
+the wire. Out of curiosity:
+What is the underlying driver that is expecting queue map to
+be maintained for queue selection?
+
+
+cheers,
+jamal
+
+> 
+> And this patch is useful:
+> * We can use FQ + EDT to implement efficient policies. Tx queues
+>    are picked by xps, ndo_select_queue of netdev driver, or skb hash
+>    in netdev_core_pick_tx(). In fact, the netdev driver, and skb
+>    hash are _not_ under control. xps uses the CPUs map to select Tx
+>    queues, but we can't figure out which task_struct of pod/containter
+>    running on this cpu in most case. We can use clsact filters to classify
+>    one pod/container traffic to one Tx queue. Why ?
+> 
+>    In containter networking environment, there are two kinds of pod/
+>    containter/net-namespace. One kind (e.g. P1, P2), the high throughput
+>    is key in these applications. But avoid running out of network resource,
+>    the outbound traffic of these pods is limited, using or sharing one
+>    dedicated Tx queues assigned HTB/TBF/FQ Qdisc. Other kind of pods
+>    (e.g. Pn), the low latency of data access is key. And the traffic is not
+>    limited. Pods use or share other dedicated Tx queues assigned FIFO Qdisc.
+>    This choice provides two benefits. First, contention on the HTB/FQ Qdisc
+>    lock is significantly reduced since fewer CPUs contend for the same queue.
+>    More importantly, Qdisc contention can be eliminated completely if each
+>    CPU has its own FIFO Qdisc for the second kind of pods.
+> 
+>    There must be a mechanism in place to support classifying traffic based on
+>    pods/container to different Tx queues. Note that clsact is outside of Qdisc
+>    while Qdisc can run a classifier to select a sub-queue under the lock.
+> 
+>    In general recording the decision in the skb seems a little heavy handed.
+>    This patch introduces a per-CPU variable, suggested by Eric.
+> 
+>    The xmit.skip_txqueue flag is firstly cleared in __dev_queue_xmit().
+>    - Tx Qdisc may install that skbedit actions, then xmit.skip_txqueue flag
+>      is set in qdisc->enqueue() though tx queue has been selected in
+>      netdev_tx_queue_mapping() or netdev_core_pick_tx(). That flag is cleared
+>      firstly in __dev_queue_xmit(), is useful:
+>    - Avoid picking Tx queue with netdev_tx_queue_mapping() in next netdev
+>      in such case: eth0 macvlan - eth0.3 vlan - eth0 ixgbe-phy:
+>      For example, eth0, macvlan in pod, which root Qdisc install skbedit
+>      queue_mapping, send packets to eth0.3, vlan in host. In __dev_queue_xmit() of
+>      eth0.3, clear the flag, does not select tx queue according to skb->queue_mapping
+>      because there is no filters in clsact or tx Qdisc of this netdev.
+>      Same action taked in eth0, ixgbe in Host.
+>    - Avoid picking Tx queue for next packet. If we set xmit.skip_txqueue
+>      in tx Qdisc (qdisc->enqueue()), the proper way to clear it is clearing it
+>      in __dev_queue_xmit when processing next packets.
+> 
+>    For performance reasons, use the static key. If user does not config the NET_EGRESS,
+>    the patch will not be compiled.
+> 
+>    +----+      +----+      +----+
+>    | P1 |      | P2 |      | Pn |
+>    +----+      +----+      +----+
+>      |           |           |
+>      +-----------+-----------+
+>                  |
+>                  | clsact/skbedit
+>                  |      MQ
+>                  v
+>      +-----------+-----------+
+>      | q0        | q1        | qn
+>      v           v           v
+>    HTB/FQ      HTB/FQ  ...  FIFO
+> 
+> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+> Cc: Cong Wang <xiyou.wangcong@gmail.com>
+> Cc: Jiri Pirko <jiri@resnulli.us>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Alexander Lobakin <alobakin@pm.me>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Talal Ahmad <talalahmad@google.com>
+> Cc: Kevin Hao <haokexin@gmail.com>
+> Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> Cc: Antoine Tenart <atenart@kernel.org>
+> Cc: Wei Wang <weiwan@google.com>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Suggested-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> ---
+>   include/linux/netdevice.h |  3 +++
+>   include/linux/rtnetlink.h |  1 +
+>   net/core/dev.c            | 31 +++++++++++++++++++++++++++++--
+>   net/sched/act_skbedit.c   |  6 +++++-
+>   4 files changed, 38 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index e490b84732d1..60e14b2b091d 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -3015,6 +3015,9 @@ struct softnet_data {
+>   	struct {
+>   		u16 recursion;
+>   		u8  more;
+> +#ifdef CONFIG_NET_EGRESS
+> +		u8  skip_txqueue;
+> +#endif
+>   	} xmit;
+>   #ifdef CONFIG_RPS
+>   	/* input_queue_head should be written by cpu owning this struct,
+> diff --git a/include/linux/rtnetlink.h b/include/linux/rtnetlink.h
+> index bb9cb84114c1..e87c2dccc4d5 100644
+> --- a/include/linux/rtnetlink.h
+> +++ b/include/linux/rtnetlink.h
+> @@ -100,6 +100,7 @@ void net_dec_ingress_queue(void);
+>   #ifdef CONFIG_NET_EGRESS
+>   void net_inc_egress_queue(void);
+>   void net_dec_egress_queue(void);
+> +void netdev_xmit_skip_txqueue(bool skip);
+>   #endif
+>   
+>   void rtnetlink_init(void);
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 1baab07820f6..842473fa8e9f 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -3860,6 +3860,25 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+>   
+>   	return skb;
+>   }
+> +
+> +static struct netdev_queue *
+> +netdev_tx_queue_mapping(struct net_device *dev, struct sk_buff *skb)
 > +{
-> +	struct net_bridge_vlan_group *vg;
-> +	u16 old_flags =3D v->flags;
-> +	bool pvid_changed;
-> =20
-> -	return ret || !!(old_flags ^ v->flags);
-> +	if (br_vlan_is_master(v))
-> +		vg =3D br_vlan_group(v->br);
-> +	else
-> +		vg =3D nbp_vlan_group(v->port);
+> +	int qm = skb_get_queue_mapping(skb);
 > +
-> +	if (flags & BRIDGE_VLAN_INFO_PVID)
-> +		pvid_changed =3D (vg->pvid =3D=3D v->vid);
-> +	else
-> +		pvid_changed =3D (vg->pvid !=3D v->vid);
-
-Yikes, I was planning to fix this but I forgot. The conditions are in
-reverse, it should be:
-
-	if (flags & BRIDGE_VLAN_INFO_PVID)
-		pvid_changed =3D (vg->pvid !=3D v->vid);
-	else
-		pvid_changed =3D (vg->pvid =3D=3D v->vid);
-
+> +	return netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, qm));
+> +}
 > +
-> +	return pvid_changed || !!(old_flags ^ v->flags);
->  }=
+> +static bool netdev_xmit_txqueue_skipped(void)
+> +{
+> +	return __this_cpu_read(softnet_data.xmit.skip_txqueue);
+> +}
+> +
+> +void netdev_xmit_skip_txqueue(bool skip)
+> +{
+> +	__this_cpu_write(softnet_data.xmit.skip_txqueue, skip);
+> +}
+> +EXPORT_SYMBOL_GPL(netdev_xmit_skip_txqueue);
+>   #endif /* CONFIG_NET_EGRESS */
+>   
+>   #ifdef CONFIG_XPS
+> @@ -4030,7 +4049,7 @@ struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
+>   static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+>   {
+>   	struct net_device *dev = skb->dev;
+> -	struct netdev_queue *txq;
+> +	struct netdev_queue *txq = NULL;
+>   	struct Qdisc *q;
+>   	int rc = -ENOMEM;
+>   	bool again = false;
+> @@ -4058,11 +4077,17 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+>   			if (!skb)
+>   				goto out;
+>   		}
+> +
+> +		netdev_xmit_skip_txqueue(false);
+> +
+>   		nf_skip_egress(skb, true);
+>   		skb = sch_handle_egress(skb, &rc, dev);
+>   		if (!skb)
+>   			goto out;
+>   		nf_skip_egress(skb, false);
+> +
+> +		if (netdev_xmit_txqueue_skipped())
+> +			txq = netdev_tx_queue_mapping(dev, skb);
+>   	}
+>   #endif
+>   	/* If device/qdisc don't need skb->dst, release it right now while
+> @@ -4073,7 +4098,9 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+>   	else
+>   		skb_dst_force(skb);
+>   
+> -	txq = netdev_core_pick_tx(dev, skb, sb_dev);
+> +	if (likely(!txq))
+> +		txq = netdev_core_pick_tx(dev, skb, sb_dev);
+> +
+>   	q = rcu_dereference_bh(txq->qdisc);
+>   
+>   	trace_net_dev_queue(skb);
+> diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
+> index ceba11b198bb..d5799b4fc499 100644
+> --- a/net/sched/act_skbedit.c
+> +++ b/net/sched/act_skbedit.c
+> @@ -58,8 +58,12 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
+>   		}
+>   	}
+>   	if (params->flags & SKBEDIT_F_QUEUE_MAPPING &&
+> -	    skb->dev->real_num_tx_queues > params->queue_mapping)
+> +	    skb->dev->real_num_tx_queues > params->queue_mapping) {
+> +#ifdef CONFIG_NET_EGRESS
+> +		netdev_xmit_skip_txqueue(true);
+> +#endif
+>   		skb_set_queue_mapping(skb, params->queue_mapping);
+> +	}
+>   	if (params->flags & SKBEDIT_F_MARK) {
+>   		skb->mark &= ~params->mask;
+>   		skb->mark |= params->mark & params->mask;
+
