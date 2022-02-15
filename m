@@ -2,93 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7921D4B6200
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 05:16:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AA6B4B6206
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 05:22:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbiBOEQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Feb 2022 23:16:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45090 "EHLO
+        id S231370AbiBOEW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Feb 2022 23:22:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiBOEQm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 23:16:42 -0500
-Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE840C24B2
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 20:16:32 -0800 (PST)
-Received: by mail-vs1-xe2b.google.com with SMTP id w4so2720591vsq.1
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 20:16:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KPSye3DP/aFMtQWU+DcD705eQqcCbNUk8oNVOh77QSE=;
-        b=AoFMavfC/VlDk5aFgDQJotxl1ztysH/sXAcOoinln3hBw8Pdv0uLD+H+iWhPL9KiTK
-         aMVfYd6GdURq5JYLbTmPVcOzyBZLeIob1xqQFJ1x+TNQ0RgEYMg+NyTE7rSe3yZW7fh/
-         zxDPNP0Z7zQUxzhg8WsTyZt2m8dgrGz1n1T0OMPbsUr81VLFfeJZtAMFPI7xDrJbSIaV
-         Lw1hVXz4TuLLQ8ETlG+4SKp4urQM1N3gPtOxigrySdv7N5C1alNttEyEgn/9m6HGG0OE
-         h1rHtGgn2IBIkJWuoJJA0TLoBoa2MY548/b1DHdo4RGGZQEJiZ/rXu0oB2i0W03iIG7L
-         07bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KPSye3DP/aFMtQWU+DcD705eQqcCbNUk8oNVOh77QSE=;
-        b=Ycrot6B3MGQTW0mI37DZIcZBe6euJBmaJSXfbnTNNi86toJIxdyLSafnOBGMDaUgYB
-         RLtdy633z7DcXr3v5ZS58nsW7DaKQdVtEBBpvMxxNGonGQ6HAp6TQD4keOqe5ZCSt51/
-         7EweA2oi+rropgnz9TusNfRrK8rlsJCZSpLB1W0K2/+Jo5Za7nrIIynVgwAow8LfWGSu
-         KQB/KaN1vmTDkWEMI/LBbPe0YgsBbNNpEeISVvk4KVxsfKPc02y3kgH27Y7pwL6dPqKC
-         YeJV8yDH0Jz5ISL0liRWX9qtILTdMv6sopl7OLa9qenmIW32fsSihcodBgMgJ6cfby8e
-         6KoA==
-X-Gm-Message-State: AOAM532rQGtwET6ovFSmMPgddvdLQmhhuvibAdmjdPyY/OBQTtK1Nf1Q
-        XeKCLgDlG6Fgk8wcNMxJtCs/xFYiTsY=
-X-Google-Smtp-Source: ABdhPJx03QmP1A8mv6fQyC46i3LdrlmKzT8PqQ2FnXKn2aBviVYyXD488VzcVpd/p8l7M6VASy9zYg==
-X-Received: by 2002:a67:ae0a:: with SMTP id x10mr754357vse.87.1644898591899;
-        Mon, 14 Feb 2022 20:16:31 -0800 (PST)
-Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com. [209.85.217.46])
-        by smtp.gmail.com with ESMTPSA id t23sm3195081uar.15.2022.02.14.20.16.30
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 20:16:31 -0800 (PST)
-Received: by mail-vs1-f46.google.com with SMTP id e26so4946677vso.3
-        for <netdev@vger.kernel.org>; Mon, 14 Feb 2022 20:16:30 -0800 (PST)
-X-Received: by 2002:a67:d118:: with SMTP id u24mr765733vsi.35.1644898590656;
- Mon, 14 Feb 2022 20:16:30 -0800 (PST)
-MIME-Version: 1.0
-References: <20220214200400.513069-1-willemdebruijn.kernel@gmail.com> <202202150837.bGbeRjWx-lkp@intel.com>
-In-Reply-To: <202202150837.bGbeRjWx-lkp@intel.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 14 Feb 2022 23:15:54 -0500
-X-Gmail-Original-Message-ID: <CA+FuTScqkbST6PZAfZ0brq04+26kCkvhgG0uYii2iPDeC5MzXA@mail.gmail.com>
-Message-ID: <CA+FuTScqkbST6PZAfZ0brq04+26kCkvhgG0uYii2iPDeC5MzXA@mail.gmail.com>
-Subject: Re: [PATCH net] ipv6: per-netns exclusive flowlabel checks
-To:     kernel test robot <lkp@intel.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, davem@davemloft.net, kuba@kernel.org,
-        Congyu Liu <liu3101@purdue.edu>
+        with ESMTP id S230508AbiBOEW2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Feb 2022 23:22:28 -0500
+Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D19FA88B8;
+        Mon, 14 Feb 2022 20:22:17 -0800 (PST)
+Received: from [192.168.12.102] (unknown [159.196.94.94])
+        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id B2E712015A;
+        Tue, 15 Feb 2022 12:22:14 +0800 (AWST)
+Message-ID: <b857c3087443f86746d81c1d686eaf5044db98a7.camel@codeconstruct.com.au>
+Subject: Re: [PATCH net-next v5 2/2] mctp i2c: MCTP I2C binding driver
+From:   Matt Johnston <matt@codeconstruct.com.au>
+To:     Jakub Kicinski <kuba@kernel.org>, Wolfram Sang <wsa@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
+        Zev Weiss <zev@bewilderbeest.net>
+Date:   Tue, 15 Feb 2022 12:22:14 +0800
+In-Reply-To: <20220211143815.55fb29e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220210063651.798007-1-matt@codeconstruct.com.au>
+         <20220210063651.798007-3-matt@codeconstruct.com.au>
+         <20220211143815.55fb29e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Evolution 3.40.4-1ubuntu2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,KHOP_HELO_FCRDNS,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 7:19 PM kernel test robot <lkp@intel.com> wrote:
->
-> Hi Willem,
->
-> Thank you for the patch! Perhaps something to improve:
+On Fri, 2022-02-11 at 14:38 -0800, Jakub Kicinski wrote:
+> 
+> > +// Removes and unregisters a mctp-i2c netdev
+> > +static void mctp_i2c_free_netdev(struct mctp_i2c_dev *midev)
+> > 
+> You're doing a lot before the unregister call, this is likely racy.
+> The usual flow is to unregister the netdev, then do uninit, then free.
+> For instance you purge the queue but someone may Tx afterwards.
+> needs_free_netdev is a footgun.
 
->    In file included from net/sched/cls_flow.c:24:
->    In file included from include/net/ip.h:30:
->    In file included from include/net/route.h:24:
->    In file included from include/net/inetpeer.h:16:
->    include/net/ipv6.h:403:30: error: no member named 'ipv6' in 'struct net'
->                READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
+Thanks Jakub. I've reworked it here to do the work before register/after
+unregister, without needs_free_netdev.
 
-I'll wrap the whole function in IS_ENABLED(CONFIG_IPV6).
-fl6_sock_lookup is only called from code in .c files that are
-conditional on CONFIG_IPV6.
+One question, the tx thread calls netif_wake_queue() - is it safe to call
+that after unregister_netdev()? (before free_netdev)
+I've moved the kthread_stop() to the post-unregister cleanup.
+
+static int mctp_i2c_tx_thread(void *data)
+{
+	struct mctp_i2c_dev *midev = data;
+	struct sk_buff *skb;
+	unsigned long flags;
+
+	for (;;) {
+		if (kthread_should_stop())
+			break;
+
+		spin_lock_irqsave(&midev->tx_queue.lock, flags);
+		skb = __skb_dequeue(&midev->tx_queue);
+		if (netif_queue_stopped(midev->ndev))
+			netif_wake_queue(midev->ndev);      // <-------
+		spin_unlock_irqrestore(&midev->tx_queue.lock, flags);
+
+
+> > +	INIT_LIST_HEAD(&mi_driver_state.clients);
+> > +	mutex_init(&mi_driver_state.lock);
+> 
+> I think there are static initializers for these.
+*nod*
+
+
+Thanks,
+Matt
+
+
