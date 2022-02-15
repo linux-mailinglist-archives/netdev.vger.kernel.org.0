@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BB4E4B7367
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:43:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 851294B716F
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 17:40:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240543AbiBOPfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 10:35:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46182 "EHLO
+        id S240722AbiBOPgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 10:36:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240637AbiBOPfE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 10:35:04 -0500
+        with ESMTP id S240696AbiBOPf1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 10:35:27 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D06AC0876;
-        Tue, 15 Feb 2022 07:30:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43E91275E3;
+        Tue, 15 Feb 2022 07:31:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F421B81AF7;
-        Tue, 15 Feb 2022 15:30:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89116C340F2;
-        Tue, 15 Feb 2022 15:30:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C237B81AEF;
+        Tue, 15 Feb 2022 15:31:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E2F9C340EB;
+        Tue, 15 Feb 2022 15:31:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644939046;
-        bh=0x6i4OlwnfiUrwgKFWTgJ7ebyVDAj1Ju/6rNnIfShrw=;
+        s=k20201202; t=1644939061;
+        bh=rojVUV0GG1fSvXX88QZI35YPMHRuRihnLfELbps2iD4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ucgiqVi8oo2o+ra/wz0brBenEiKiqpXKtyI/FZTN64W1BTc/y2YIu9KioNDIFC3P5
-         AAKg8Ml06BO0T6AlV/iIfYrinn4DKIPtVWCCdcnr7CGqYDzNUuKZv/2t0e1I3H1Zwv
-         PZNxFuZNEol0RKGJ57DMBx0HOwzw9UkJYZpV/VuFIMKZCL1IEK6d4SNB7KgAl1PxPz
-         98wAmPZ03P6GzCI22FBBm2OFXkdqP7B/CLa6HyRLFI3vGOPCp4Gp7RgKfLJqSrgdGE
-         MXKlOxxnF8i3I4kL5Ku239UJl3QYkIeWUAeSou2xvwawOTz8J5APGN7rqCeRkc3/BF
-         Q7/8wmXqvJc7A==
+        b=Zk8Nkl4ar6TRyOvCPRpkI0thZT2s+rDV77y1vKIrBfu1XnQLfCNhuOkO4R9d0XWYo
+         sssrmU/Xl1CRngBveMJNXvLtuRsgjcISqlywCMl1+3IwsaYEW4EwVbsDxzvCY3uVgq
+         ZLc+qr2Y168l2zfz6moX+fZB3YXa0kVqBvlx+lakjouZFzlq4WYuQC+9tUxUOQtwRF
+         S3qEdOxyPwfpCGhMNnk0bFIkehbsvr1o6h4JtESLOuIfhe+Oa9J0qulmkhDTxCAy4x
+         DDcaaOvvFyDdr0iMMmnA8I6vs0Idqs6YeiQAQfJCDKfoMqhJWqftTmUMjtQ0WbiDex
+         5EJUBJMvcnNXg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>,
-        Vivek Thrivikraman <vivek.thrivikraman@est.tech>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
-        davem@davemloft.net, kuba@kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 05/17] netfilter: conntrack: don't refresh sctp entries in closed state
-Date:   Tue, 15 Feb 2022 10:30:25 -0500
-Message-Id: <20220215153037.581579-5-sashal@kernel.org>
+Cc:     Slark Xiao <slark_xiao@163.com>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 15/17] net: usb: qmi_wwan: Add support for Dell DW5829e
+Date:   Tue, 15 Feb 2022 10:30:35 -0500
+Message-Id: <20220215153037.581579-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215153037.581579-1-sashal@kernel.org>
 References: <20220215153037.581579-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -60,53 +59,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Slark Xiao <slark_xiao@163.com>
 
-[ Upstream commit 77b337196a9d87f3d6bb9b07c0436ecafbffda1e ]
+[ Upstream commit 8ecbb179286cbc91810c16caeb3396e06305cd0c ]
 
-Vivek Thrivikraman reported:
- An SCTP server application which is accessed continuously by client
- application.
- When the session disconnects the client retries to establish a connection.
- After restart of SCTP server application the session is not established
- because of stale conntrack entry with connection state CLOSED as below.
+Dell DW5829e same as DW5821e except the CAT level.
+DW5821e supports CAT16 but DW5829e supports CAT9.
+Also, DW5829e includes normal and eSIM type.
+Please see below test evidence:
 
- (removing this entry manually established new connection):
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e6 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
- sctp 9 CLOSED src=10.141.189.233 [..]  [ASSURED]
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e4 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-Just skip timeout update of closed entries, we don't want them to
-stay around forever.
-
-Reported-and-tested-by: Vivek Thrivikraman <vivek.thrivikraman@est.tech>
-Closes: https://bugzilla.netfilter.org/show_bug.cgi?id=1579
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Acked-by: Bjørn Mork <bjorn@mork.no>
+Link: https://lore.kernel.org/r/20220209024717.8564-1-slark_xiao@163.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_proto_sctp.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/usb/qmi_wwan.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
-index 810cca24b3990..7626f3e1c70a7 100644
---- a/net/netfilter/nf_conntrack_proto_sctp.c
-+++ b/net/netfilter/nf_conntrack_proto_sctp.c
-@@ -489,6 +489,15 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
- 			pr_debug("Setting vtag %x for dir %d\n",
- 				 ih->init_tag, !dir);
- 			ct->proto.sctp.vtag[!dir] = ih->init_tag;
-+
-+			/* don't renew timeout on init retransmit so
-+			 * port reuse by client or NAT middlebox cannot
-+			 * keep entry alive indefinitely (incl. nat info).
-+			 */
-+			if (new_state == SCTP_CONNTRACK_CLOSED &&
-+			    old_state == SCTP_CONNTRACK_CLOSED &&
-+			    nf_ct_is_confirmed(ct))
-+				ignore = true;
- 		}
- 
- 		ct->proto.sctp.state = new_state;
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 6508d70056b3a..566ea48fd6078 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1355,6 +1355,8 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproduction config */
+ 	{QMI_FIXED_INTF(0x413c, 0x81e0, 0)},	/* Dell Wireless 5821e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e4, 0)},	/* Dell Wireless 5829e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e6, 0)},	/* Dell Wireless 5829e */
+ 	{QMI_FIXED_INTF(0x03f0, 0x4e1d, 8)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
+ 	{QMI_FIXED_INTF(0x03f0, 0x9d1d, 1)},	/* HP lt4120 Snapdragon X5 LTE */
+ 	{QMI_FIXED_INTF(0x22de, 0x9061, 3)},	/* WeTelecom WPD-600N */
 -- 
 2.34.1
 
