@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 755FE4B6AF3
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 12:32:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A12CA4B6AFA
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 12:32:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237292AbiBOLcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 06:32:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54774 "EHLO
+        id S231124AbiBOLc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 06:32:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237203AbiBOLcF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 06:32:05 -0500
+        with ESMTP id S237276AbiBOLcK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 06:32:10 -0500
 Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550281B7B9;
-        Tue, 15 Feb 2022 03:31:54 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id c10so8781379pfv.8;
-        Tue, 15 Feb 2022 03:31:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F631D0C9;
+        Tue, 15 Feb 2022 03:32:00 -0800 (PST)
+Received: by mail-pf1-x443.google.com with SMTP id z16so12492106pfh.3;
+        Tue, 15 Feb 2022 03:32:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jfI9lhFX9fm5bOhvpIeKtOFzl85DBlhHHLJFTwcXk7E=;
-        b=dYOQpCY3N4DCxoqKc+iyHy72EN9Wh/RQkGNvCd2BkDkhgL58jNwxErlMgskwEUp5MN
-         p92R1RzA3bfqTqV5Phx1cvLaivDOK6cCGGqetF5dyL903OFRSTViQKPFYGUbdm2q51x9
-         gATTXmkhe/L2hLK+ipt5i17psRZWU67UqL5OuDcuZleJtFgJ9TpjWTcVQumfMJTEvPS5
-         84HFmR9Iyc5wPFh9L/vYg3Ote2cclijfE9fhe+gB65XJx9O2AKWE8Mh6oUfx9grcWn8H
-         Hy6PoRafFhsl8LR1Sl2lSVFE4b/7b3uaGxM3273zASaXuYA4XxOKfAFdO4tCtMI2vYcp
-         Gbcw==
+        bh=X06QuFP/yl7TqcgHiQEothXnvH7lD4rIikeiUy/iGKA=;
+        b=At1Pl+hpDThg3GfUVuCCz5vj5bbLsK85uqz6To7gZrkAlwMzt7oT3dEqVjzOXXGOwg
+         wPZ8RurgieWHvvSBQDx+Rw1FkgBNuqUOUsX9YbI9C2nZMhZKVM341W1NAKx8C6/ZzlkA
+         d89qt4j9+Eo0Zjp3tbWN514m1OFq+GX4q7NvSCjdALh2a8Mv2sL8krj41AzVioegv0yo
+         3homwSbFh7MbWc9QZnFqZUKSQrUDeZ/NV45zEc9jsfex37Mybw/DjhUApq7+uZdh/zuc
+         11JnpsrWoqd2ca5XWAgTX0Ee5ybnklG3TK6q+OnJePhe8ynU0GqObMqubAwkvyaxc5l8
+         labw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jfI9lhFX9fm5bOhvpIeKtOFzl85DBlhHHLJFTwcXk7E=;
-        b=hdAUghU8hj0Yn7x0ohXitWvqLFPgEWX1Q07xmLnExc2/6A1eq57L7MjxLwNUSipBVS
-         ORuvOex+Q7mrs6SHlkvv0e9u7qfRnxeGf8TC0hMhJBhPx2vaJNNVs8tLLqy+hKUTrd1d
-         BxHcXgBdAVNsjk6Fn79Czol0w8+s7u/hZr5N5YbuIpzRI5nGmKZgdgndk10wazdOLUvB
-         Ro8VWGUC6mmea0LfN7ENzf8euTf2yU/lruCGwitWBFL7FWHdXWAeZuQIZtPe6Vt91qVC
-         Yx920TX1mqDIpJzeYJo8kf4UPEWT8R69CHFYmnbhnVMB118E1VKbgzYPhSHLAjRTWxKv
-         g2tw==
-X-Gm-Message-State: AOAM5313Tu9ShNpynMQRInh4QZDA0OCd81eFyb/5CaJsSSyuBi9DWQrz
-        H0SmVgmdetCWQ3cjzz7OhQ8=
-X-Google-Smtp-Source: ABdhPJxoizMI5FWyfJ4R5ufkPNEyGqS8EcnNCcCWUB2b8DIhLRXPfM8MEqLQSSrbs/YrZesIRZkP7w==
-X-Received: by 2002:a05:6a00:1a89:: with SMTP id e9mr475846pfv.84.1644924713536;
-        Tue, 15 Feb 2022 03:31:53 -0800 (PST)
+        bh=X06QuFP/yl7TqcgHiQEothXnvH7lD4rIikeiUy/iGKA=;
+        b=4zHWXL9DTFSS+uiOCejHzrFqwXD1cDN41F4+60fRQVvlserblo6cuTg6OkpX+APJQc
+         kdZnly5l/BfpDEB941/51nFMtL/76ImulKk1sUZjfQhUTfm2Jzw5tArMTWijIvsg4ewN
+         VWQsGDQRXany6d+3PNMHIg6mIw4v2V+jNVuSa9DP/VBnOU91dkmNMORFN7+cLdK8HIvc
+         wYLK/yyttzQKB0dsr8ko+wsVLBITYfvc+mWP4pXMX79rZtR5BlXbgHXpBq0YM0w4gEmH
+         bF/PFCqKqts0OkVKSOzLaJBmnl2Qwijim0cUujqDhfJyx8f3mezrwL5Vxl8vSdImDVRn
+         SF+g==
+X-Gm-Message-State: AOAM5337eqxh30Wd71DxyVQyPwPr4cyosRh1LsaZbmv825h9jBAjFNNS
+        kfjoRkYDXH/6UM0J6J43/Wo=
+X-Google-Smtp-Source: ABdhPJzCMqnT4ZZNKfLuu1n+m4J6Ch0EkyG5spcVLgiXXSpKKQ8Py2pk5vCbpLXk6SC+P0Ig5C+WYQ==
+X-Received: by 2002:a05:6a00:174d:: with SMTP id j13mr3501886pfc.58.1644924720397;
+        Tue, 15 Feb 2022 03:32:00 -0800 (PST)
 Received: from localhost.localdomain ([203.205.141.113])
-        by smtp.gmail.com with ESMTPSA id s11sm44515513pfu.58.2022.02.15.03.31.46
+        by smtp.gmail.com with ESMTPSA id s11sm44515513pfu.58.2022.02.15.03.31.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 03:31:53 -0800 (PST)
+        Tue, 15 Feb 2022 03:31:59 -0800 (PST)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     dsahern@kernel.org, kuba@kernel.org
@@ -61,9 +61,9 @@ Cc:     edumazet@google.com, davem@davemloft.net, rostedt@goodmis.org,
         vvs@virtuozzo.com, cong.wang@bytedance.com,
         luiz.von.dentz@intel.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org, flyingpeng@tencent.com
-Subject: [PATCH net-next 10/19] net: ip: add skb drop reasons during ip outputting
-Date:   Tue, 15 Feb 2022 19:28:03 +0800
-Message-Id: <20220215112812.2093852-11-imagedong@tencent.com>
+Subject: [PATCH net-next 11/19] net: neigh: use kfree_skb_reason() for __neigh_event_send()
+Date:   Tue, 15 Feb 2022 19:28:04 +0800
+Message-Id: <20220215112812.2093852-12-imagedong@tencent.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220215112812.2093852-1-imagedong@tencent.com>
 References: <20220215112812.2093852-1-imagedong@tencent.com>
@@ -81,129 +81,77 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-As kfree_skb() is not used frequently during packet outputting in ip
-layer, we do this job (add reasons for skb drops) at once.
+Replace kfree_skb() used in __neigh_event_send() with
+kfree_skb_reason(). Following drop reasons are added:
 
-kfree_skb() is replaced by kfree_skb_reason() in following functions:
+SKB_DROP_REASON_NEIGH_FAILED
+SKB_DROP_REASON_NEIGH_QUEUEFULL
 
-__ip_queue_xmit(), ip_finish_output(), ip_mc_finish_output(),
-ip6_output(), ip6_finish_output(), ip6_finish_output2()
-
-and following drop reasons are added:
-
-SKB_DROP_REASON_IP_OUTNOROUTES
-SKB_DROP_REASON_BPF_CGROUP_EGRESS
-SKB_DROP_REASON_IPV6DSIABLED
+The two reasons above should be the hot path that skb drops in neighbour
+layer.
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/linux/skbuff.h     | 13 +++++++++++++
- include/trace/events/skb.h |  4 ++++
- net/ipv4/ip_output.c       |  6 +++---
- net/ipv6/ip6_output.c      |  6 +++---
- 4 files changed, 23 insertions(+), 6 deletions(-)
+ include/linux/skbuff.h     | 9 +++++++++
+ include/trace/events/skb.h | 2 ++
+ net/core/neighbour.c       | 4 ++--
+ 3 files changed, 13 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 73ed01d87e43..c7394b4790a0 100644
+index c7394b4790a0..136af29be256 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -374,6 +374,19 @@ enum skb_drop_reason {
- 	SKB_DROP_REASON_TCP_OFOMERGE,	/* the data of skb is already in
- 					 * the ofo queue.
+@@ -387,6 +387,15 @@ enum skb_drop_reason {
+ 					 * see the doc for disable_ipv6
+ 					 * in ip-sysctl.rst for detail
  					 */
-+	SKB_DROP_REASON_IP_OUTNOROUTES,	/* route lookup failed during
-+					 * packet outputting
++	SKB_DROP_REASON_NEIGH_FAILED,	/* dropped as the state of
++					 * neighbour is NUD_FAILED
 +					 */
-+	SKB_DROP_REASON_BPF_CGROUP_EGRESS,	/* dropped by eBPF program
-+						 * with type of BPF_PROG_TYPE_CGROUP_SKB
-+						 * and attach type of
-+						 * BPF_CGROUP_INET_EGRESS
-+						 * during packet sending
++	SKB_DROP_REASON_NEIGH_QUEUEFULL,	/* the skbs that waiting
++						 * for sending on the queue
++						 * of neigh->arp_queue is
++						 * full, and the skbs on the
++						 * tail will be dropped
 +						 */
-+	SKB_DROP_REASON_IPV6DSIABLED,	/* IPv6 is disabled on the device,
-+					 * see the doc for disable_ipv6
-+					 * in ip-sysctl.rst for detail
-+					 */
  	SKB_DROP_REASON_MAX,
  };
  
 diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index 2ab7193313aa..47dedef7b6b8 100644
+index 47dedef7b6b8..dd06366ded4a 100644
 --- a/include/trace/events/skb.h
 +++ b/include/trace/events/skb.h
-@@ -37,6 +37,10 @@
- 	EM(SKB_DROP_REASON_TCP_OLD_DATA, TCP_OLD_DATA)		\
- 	EM(SKB_DROP_REASON_TCP_OVERWINDOW, TCP_OVERWINDOW)	\
- 	EM(SKB_DROP_REASON_TCP_OFOMERGE, TCP_OFOMERGE)		\
-+	EM(SKB_DROP_REASON_IP_OUTNOROUTES, IP_OUTNOROUTES)	\
-+	EM(SKB_DROP_REASON_BPF_CGROUP_EGRESS,			\
-+	   BPF_CGROUP_EGRESS)					\
-+	EM(SKB_DROP_REASON_IPV6DSIABLED, IPV6DSIABLED)		\
+@@ -41,6 +41,8 @@
+ 	EM(SKB_DROP_REASON_BPF_CGROUP_EGRESS,			\
+ 	   BPF_CGROUP_EGRESS)					\
+ 	EM(SKB_DROP_REASON_IPV6DSIABLED, IPV6DSIABLED)		\
++	EM(SKB_DROP_REASON_NEIGH_FAILED, NEIGH_FAILED)		\
++	EM(SKB_DROP_REASON_NEIGH_QUEUEFULL, NEIGH_QUEUEFULL)	\
  	EMe(SKB_DROP_REASON_MAX, MAX)
  
  #undef EM
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 0c0574eb5f5b..df549b7415fb 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -317,7 +317,7 @@ static int ip_finish_output(struct net *net, struct sock *sk, struct sk_buff *sk
- 	case NET_XMIT_CN:
- 		return __ip_finish_output(net, sk, skb) ? : ret;
- 	default:
--		kfree_skb(skb);
-+		kfree_skb_reason(skb, SKB_DROP_REASON_BPF_CGROUP_EGRESS);
- 		return ret;
- 	}
- }
-@@ -337,7 +337,7 @@ static int ip_mc_finish_output(struct net *net, struct sock *sk,
- 	case NET_XMIT_SUCCESS:
- 		break;
- 	default:
--		kfree_skb(skb);
-+		kfree_skb_reason(skb, SKB_DROP_REASON_BPF_CGROUP_EGRESS);
- 		return ret;
- 	}
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index ec0bf737b076..c353834e8fa9 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -1171,7 +1171,7 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb,
+ 			neigh->updated = jiffies;
+ 			write_unlock_bh(&neigh->lock);
  
-@@ -536,7 +536,7 @@ int __ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl,
- no_route:
- 	rcu_read_unlock();
- 	IP_INC_STATS(net, IPSTATS_MIB_OUTNOROUTES);
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, SKB_DROP_REASON_IP_OUTNOROUTES);
- 	return -EHOSTUNREACH;
- }
- EXPORT_SYMBOL(__ip_queue_xmit);
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 0c6c971ce0a5..4cd9e5fd25e4 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -130,7 +130,7 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
- 	rcu_read_unlock_bh();
- 
- 	IP6_INC_STATS(net, idev, IPSTATS_MIB_OUTNOROUTES);
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, SKB_DROP_REASON_IP_OUTNOROUTES);
- 	return -EINVAL;
- }
- 
-@@ -202,7 +202,7 @@ static int ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff *s
- 	case NET_XMIT_CN:
- 		return __ip6_finish_output(net, sk, skb) ? : ret;
- 	default:
--		kfree_skb(skb);
-+		kfree_skb_reason(skb, SKB_DROP_REASON_BPF_CGROUP_EGRESS);
- 		return ret;
- 	}
- }
-@@ -217,7 +217,7 @@ int ip6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
- 
- 	if (unlikely(idev->cnf.disable_ipv6)) {
- 		IP6_INC_STATS(net, idev, IPSTATS_MIB_OUTDISCARDS);
--		kfree_skb(skb);
-+		kfree_skb_reason(skb, SKB_DROP_REASON_IPV6DSIABLED);
- 		return 0;
- 	}
- 
+-			kfree_skb(skb);
++			kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_FAILED);
+ 			return 1;
+ 		}
+ 	} else if (neigh->nud_state & NUD_STALE) {
+@@ -1193,7 +1193,7 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb,
+ 				if (!buff)
+ 					break;
+ 				neigh->arp_queue_len_bytes -= buff->truesize;
+-				kfree_skb(buff);
++				kfree_skb_reason(buff, SKB_DROP_REASON_NEIGH_QUEUEFULL);
+ 				NEIGH_CACHE_STAT_INC(neigh->tbl, unres_discards);
+ 			}
+ 			skb_dst_force(skb);
 -- 
 2.34.1
 
